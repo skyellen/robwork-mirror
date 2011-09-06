@@ -1,7 +1,11 @@
 #ifndef NETFTLOGGING_HPP
 #define NETFTLOGGING_HPP
 
+#include "NetFTCommon.hpp"
+
+// RW
 #include <rw/common/Ptr.hpp>
+#include <rw/common/TimerUtil.hpp>
 
 // STL
 #include <iostream>
@@ -38,12 +42,12 @@ namespace rwhw {
             // NetFT packet
             struct NetFTData {
                 // Constructor
-                NetFTData(unsigned int statuss, unsigned int lostt, unsigned int countt, const std::vector<double>& dataa, double timestampp) :
+                NetFTData(unsigned int statuss, unsigned int lostt, unsigned int countt, const Wrench3D& dataa, double timestampp) :
                           status(statuss), lost(lostt), count(countt), data(dataa), timestamp(timestampp) {}
                 // Status, lost packets, packet count
                 unsigned int status, lost, count;
                 // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
-                std::vector<double> data;
+                Wrench3D data;
 
                 double timestamp;
             };
@@ -75,17 +79,17 @@ namespace rwhw {
             NetFTLogging::NetFTData getAllData();
             
             // Get only F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
-            std::vector<double> getData();
+            Wrench3D getData();
             
             // Print status/lost packet count/packet count and data to a stream
-            void print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData);
+            void print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData) const;
             
             // Print data to a stream
-            void print(std::ostream& os, const std::vector<double>& netftData);
+            void print(std::ostream& os, const Wrench3D& netftData) const;
 
             // Setters/getters
-            double getDriverTime();
-            void setAddress(const std::string& address) { _address = address; }
+            inline double getDriverTime() const { return rw::common::TimerUtil::currentTime(); }
+            inline void setAddress(const std::string& address) { _address = address; }
         
         private:
             // Thread function
@@ -96,7 +100,7 @@ namespace rwhw {
             void sendStartCommand();
             
             // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
-            std::vector<double> _data;
+            Wrench3D _data;
         
 
             // Socket members

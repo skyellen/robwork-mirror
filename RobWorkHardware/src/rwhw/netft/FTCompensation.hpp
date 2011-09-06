@@ -1,6 +1,8 @@
 #ifndef FTCOMPENSATION_HPP
 #define FTCOMPENSATION_HPP
 
+#include "NetFTCommon.hpp"
+
 // Boost
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -11,7 +13,6 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/models/Device.hpp>
-
 
 namespace rwhw {
    /**
@@ -28,19 +29,19 @@ namespace rwhw {
     * FTCompensation ftc(robotdevice, state, calibfile);
     * while(RUNNING) {
     *    ftc.update(ft, q, dq, ddq); // Updates the status flag based on current measurements
-    *    if(!ftc.getStatus())
+    *    if(ftc.inCollision())
     *       ACTION
     * }
     * \endcode
     */
    class FTCompensation {
       public:
-	   	   typedef rw::common::Ptr<FTCompensation> Ptr;
+	   	typedef rw::common::Ptr<FTCompensation> Ptr;
 
          /**
           * @brief F/T vector type
           */
-         typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
+//         typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
          
          /**
           * @brief F/T calibration
@@ -62,9 +63,9 @@ namespace rwhw {
             double a;
             
             /**
-             * Calibrated distance to COG
+             * Calibrated center of gravity (COG)
              */
-            double d;
+            rw::math::Vector3D<> r;
             
             /**
              * Calibrated bias
@@ -205,11 +206,11 @@ namespace rwhw {
           * Calculate F/T tool forward kinematics
           */
          inline void fk(const rw::math::Q& q) {
-            // Update robot tool FK
+            // Update base-relative tool FK
             _dev->setQ(q, _state);
             _bTft = _dev->baseTend(_state);
             
-            // Transform to F/T tool
+            // Update F/T tool FK
             _bTft.R() = _bTft.R() * _eTft.R();
          }
          

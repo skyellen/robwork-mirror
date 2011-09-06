@@ -66,18 +66,10 @@ void FTCompensation::gravitate() {
    // Gravitational force
    const double Fg = -9.80665*_calib.m;
    
-   // Get F/T tool rotation
+   // Base-relative F/T tool rotation
    Rotation3D<> bRft = _bTft.R();
-//   const Vector3D<> rx = bRft.getCol(0),
-//                    ry = bRft.getCol(1),
-//                    rz = bRft.getCol(2);
    
-//   // Compensate for gravity force using vertical components
-//   _ft.first[0] -= Fg * rx[2];
-//   _ft.first[1] -= Fg * ry[2];
-//   _ft.first[2] -= Fg * rz[2];
-   
-   // Gravitational force in base
+   // Base-relative gravitational force
    const Vector3D<> Fgb(0, 0, Fg);
    
    // Gravitational force in F/T frame
@@ -86,11 +78,8 @@ void FTCompensation::gravitate() {
    // Compensate for gravitational force
    _ft.first -= Fgft;
    
-   // Torque arm in F/T frame
-   const Vector3D<> r(0, 0, _calib.d);
-   
    // Torque in F/T frame
-   const Vector3D<> tau = cross(r, Fgft);
+   const Vector3D<> tau = cross(_calib.r, Fgft);
    
    // Compensate for gravity induced torque
    _ft.second -= tau;
@@ -98,6 +87,7 @@ void FTCompensation::gravitate() {
 
 bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft) {
    try {
+      
       // Open the file
       ptree tree;
       read_xml(filename.c_str(), tree);
@@ -111,8 +101,10 @@ bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Tran
       
       // Get calibrated tool roll angle and distance to COG and set transformation from robot tool to F/T tool
       calib.a = tree.get<double>("a");
-      calib.d = tree.get<double>("d");
-      eTft.P() = Vector3D<>(0, 0, calib.d);
+      calib.r[0] = tree.get<double>("r.x");
+      calib.r[1] = tree.get<double>("r.y");
+      calib.r[2] = tree.get<double>("r.z");
+      eTft.P() = calib.r;
       eTft.R() = RPY<>(calib.a, 0, 0).toRotation3D();
       
       // Get calibrated bias
@@ -121,6 +113,7 @@ bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Tran
       iss >> calib.bias.second[0] >> calib.bias.second[1] >> calib.bias.second[2];
       
       return true;
+      
    } catch(const xml_parser_error& e) {
       std::cerr << "Parsing of the XML file failed:" << std::endl << "\t" << e.what() << std::endl;
    } catch(const std::exception& e) {

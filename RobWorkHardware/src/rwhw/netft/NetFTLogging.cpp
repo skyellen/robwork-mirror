@@ -3,12 +3,12 @@
 // STL
 #include <exception>
 
-// RobWork
+// RW
 #include <rw/common/macros.hpp>
-#include <rw/common/TimerUtil.hpp>
 
 using namespace rwhw;
 using namespace rw::common;
+using namespace rw::math;
 
 using namespace boost::asio;
 using namespace boost::asio::ip;
@@ -16,8 +16,7 @@ using namespace boost::asio::ip;
 NetFTLogging::NetFTLogging(const std::string& address,
              unsigned short port,
              unsigned int countsPerForce,
-             unsigned int countsPerTorque) : _data(6, 0.0),
-                                             _address(address),
+             unsigned int countsPerTorque) : _address(address),
                                              _port(port),
                                              _socket(_ioservice),
                                              _countsF(countsPerForce),
@@ -136,13 +135,13 @@ void NetFTLogging::runReceive() {
                 _lastRdtSequence = msg._rdtSequence;
                 if(seqDiff >= 1) {
                     // Store
-                    std::vector<double> tmpData(6, 0.0);
-                    tmpData[0] = double(msg._fx) * _scaleF;
-                    tmpData[1] = double(msg._fy) * _scaleF;
-                    tmpData[2] = double(msg._fz) * _scaleF;
-                    tmpData[3] = double(msg._tx) * _scaleT;
-                    tmpData[4] = double(msg._ty) * _scaleT;
-                    tmpData[5] = double(msg._tz) * _scaleT;
+                    Wrench3D tmpData;
+                    tmpData.first[0] = double(msg._fx) * _scaleF;
+                    tmpData.first[1] = double(msg._fy) * _scaleF;
+                    tmpData.first[2] = double(msg._fz) * _scaleF;
+                    tmpData.second[0] = double(msg._tx) * _scaleT;
+                    tmpData.second[1] = double(msg._ty) * _scaleT;
+                    tmpData.second[2] = double(msg._tz) * _scaleT;
                     
                     // Acquire mutex
                     boost::unique_lock<boost::mutex> lock(_mutex);
@@ -169,7 +168,7 @@ void NetFTLogging::runReceive() {
 NetFTLogging::NetFTData NetFTLogging::getAllData() {
     // Instantiate return values
     unsigned int status, lost, count;
-    std::vector<double> data;
+    Wrench3D data;
     double timestamp;
     
     // Acquire mutex
@@ -185,9 +184,9 @@ NetFTLogging::NetFTData NetFTLogging::getAllData() {
     return NetFTLogging::NetFTData(status, lost, count, data, timestamp);
 }
 
-std::vector<double> NetFTLogging::getData() {
+Wrench3D NetFTLogging::getData() {
     // Instantiate return value
-    std::vector<double> data;
+   Wrench3D data;
     
     // Acquire mutex
     {
@@ -198,27 +197,19 @@ std::vector<double> NetFTLogging::getData() {
     return data;
 }
 
-
-double NetFTLogging::getDriverTime() {
-	return TimerUtil::currentTime();
-}
-
-void NetFTLogging::print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData) {
+void NetFTLogging::print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData) const {
     // Acquire data
-    const unsigned int &status = netftAllData.status,
-                       &lost = netftAllData.lost,
-                       &count = netftAllData.count;
-    const std::vector<double>& data = netftAllData.data;
+    const Wrench3D& data = netftAllData.data;
     
     // Print
-    os << "Status: " << status << std::endl;
-    os << "Lost packets: " << lost << std::endl;
-    os << "Packet count: " << count << std::endl;
-    os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << ", " << data[4] << ", " << data[5] << "}" << std::endl;
+    os << "Status: " << netftAllData.status << std::endl;
+    os << "Lost packets: " << netftAllData.lost << std::endl;
+    os << "Packet count: " << netftAllData.count << std::endl;
+    os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data.first[0] << ", " << data.first[1] << ", " << data.first[2] << ", "
+                                             << data.second[0] << ", " << data.second[1] << ", " << data.second[2] << "}" << std::endl;
 }
 
-void NetFTLogging::print(std::ostream& os, const std::vector<double>& netftData) {
-    for(std::vector<double>::const_iterator it = netftData.begin(); it != netftData.end(); ++it)
-        os << *it << " ";
-    os << std::endl;
+void NetFTLogging::print(std::ostream& os, const Wrench3D& netftData) const {
+   os << netftData.first[0] << " " << netftData.first[1] << " " << netftData.first[2] << " "
+      << netftData.second[0] << " " << netftData.second[1] << " " << netftData.second[2] << std::endl;
 }
