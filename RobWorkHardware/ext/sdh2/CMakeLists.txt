@@ -30,44 +30,37 @@ endif ()
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
 if (DEFINED CYGWIN)
-    MESSAGE(STATUS "CYGWIN")
+
 elseif(DEFINED MSVC)
-    MESSAGE(STATUS "MSVC")
     add_definitions(-DSDH_USE_VCC)
     SET(SDH_USE_VCC on)
 elseif(DEFINED WIN32)
     # this is for MINGW
     MESSAGE(STATUS "MINGW")
     SET(SDH_USE_VCC on)
-    SET(WITH_ESD_CAN on)
     add_definitions(-DSDH_USE_VCC)
-    add_definitions(-DWITH_ESD_CAN)
 else ()
-    MESSAGE(STATUS "NONE")
 
- 	SET(WITH_ESD_CAN off)
-    #add_definitions(-DWITH_ESD_CAN)
-	SET(WITH_PEAK_CAN on)
-    add_definitions(-DWITH_PEAK_CAN)
 endif () 
 
+LIST(APPEND CMAKE_MODULE_PATH ${ROOT}/build)
+FIND_PACKAGE(ESDCAN)
+FIND_PACKAGE(PEAKCAN)
+
+IF(ESDCAN_FOUND)
+    SET(WITH_ESD_CAN on)
+    add_definitions(-DWITH_ESD_CAN)
+ENDIF()
+
+IF(PEAKCAN_FOUND)
+    SET(WITH_PEAK_CAN on)
+    add_definitions(-DWITH_PEAK_CAN)
+ENDIF()
 
 # make sure to setup include and lib directories
 include_directories(${ROOT}/sdh/ )
 include_directories(${ROOT})
 link_directories( ${ROOT}/libs/ )
-
-
-
-#INCLUDE(${ROOT}/../../build/FindESDCAN.cmake)
-#include_directories(${ESDCAN_INCLUDE_DIR})
-#LINK_LIBRARIES(${ESDCAN_LIBRARY})
-
-
-#link_libraries(${ROOT}/../esd/ntcan.lib)
-#link_libraries(${ROOT}/../esd/ntcan.lib)
-#include_directories("C:/Program Files/ESD/CAN/SDK/include")
-#link_directories("C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
 
 # Set default library path
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${ROOT}/libs/) 
@@ -98,9 +91,6 @@ CONFIGURE_FILE(
 # Include directories.
 
 # Subdirectories to process.
-add_subdirectory(sdh CMakeTmp/sdh)
-add_subdirectory(demo CMakeTmp/demo)
-#if (DEFINED MSVC)
-#    add_subdirectory(demo CMakeTmp/demo) 
-#endif ()
+add_subdirectory(sdh)
+add_subdirectory(demo)
 
