@@ -106,7 +106,6 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
 
     PropertyMap *currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     if(currentSettings==NULL){
-        std::cout << "NOEXIST" << std::endl;
         _propMap.add("RobWorkStudioSettings", "Settings for RobWorkStudio", settings);
         currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     } /*else {
@@ -442,7 +441,6 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
     int intarea = _settingsMap->get<int>( std::string("PluginArea_")+pname , (int)area);
 
     addDockWidget((Qt::DockWidgetArea)intarea, plugin);
-    std::cout << "LOADING: " << std::string("PluginVisible_")+pname << " vis: " << isVisible << std::endl;
     //addDockWidget(area, plugin);
     plugin->setFloating(isFloating);
     //IMPORTANT visibility must be set as the last thing....
@@ -602,18 +600,17 @@ void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
 
 void RobWorkStudio::dropEvent(QDropEvent* event)
 {
-    std::cout << "DROPEVENT" << std::endl;
-    if (event->mimeData()->hasText()) {
+    if (event->mimeData()->hasUrls()) {
+            QList<QUrl> urls = event->mimeData()->urls();
+            if (urls.size() == 1) {
+                openFile(urls[0].toLocalFile().toStdString());
+            }
+    } else if (event->mimeData()->hasHtml()) {
+        std::cout << "html dropped: "  << std::endl;
+
+    } else if (event->mimeData()->hasText()) {
         QString text = event->mimeData()->text();
         Log::infoLog() << text.toStdString() << std::endl;
-    } else if (event->mimeData()->hasHtml()) {
-        // std::cout << "html dropped: "  << std::endl;
-
-    } else if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls = event->mimeData()->urls();
-        if (urls.size() == 1) {
-            openFile(urls[0].toLocalFile().toStdString());
-        }
     } else {
         event->ignore();
     }
@@ -631,7 +628,7 @@ void RobWorkStudio::openFile(const std::string& file)
 
     try {
         const QString filename(file.c_str());
-
+        std::cout << filename.toStdString() << std::endl;
         if (!filename.isEmpty()) {
             std::vector<std::string> lastfiles = _settingsMap->get<std::vector<std::string> >("LastOpennedFiles", std::vector<std::string>());
             lastfiles.push_back(file);
