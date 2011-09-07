@@ -1465,13 +1465,15 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 
         ODEBody* odeBody = _rwFrameToODEBody[bframe];
         // TODO: this should be a list of sensors for each body/frame
-        if(_odeBodyToSensor.find(odeBody->getBodyID())!=_odeBodyToSensor.end()){
-        	RW_ASSERT(0);
-        }
-
-        _odeBodyToSensor[odeBody->getBodyID()] = odesensor;
+        //if(_odeBodyToSensor.find(odeBody->getBodyID())!=_odeBodyToSensor.end()){
+        //	RW_ASSERT(0);
+        //}
+        _rwsensorToOdesensor[sensor] = odesensor;
+        _odeBodyToSensor[odeBody->getBodyID()].push_back( odesensor );
 
         _odeSensors.push_back(odesensor);
+    } else {
+        _rwsensorToOdesensor[sensor] = NULL;
     }
 }
 
@@ -1489,18 +1491,36 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
     }
 
     ODEBody* odeBody = _rwFrameToODEBody[bframe];
-    ODETactileSensor *odesensor = _odeBodyToSensor[odeBody->getBodyID()];
-    if(odesensor==NULL)
-        return;
-    _odeBodyToSensor.erase( _odeBodyToSensor.find(odeBody->getBodyID()) );
-    //_odeBodyToSensor[odeBody->getBodyID()] = NULL;
-    std::vector<ODETactileSensor*> newOdeSensors;
-    BOOST_FOREACH(ODETactileSensor* oldsen , _odeSensors){
-        if(odesensor != oldsen )
-            newOdeSensors.push_back(oldsen);
+
+    if(_rwsensorToOdesensor.find(sensor)!=_rwsensorToOdesensor.end()){
+        ODETactileSensor *tsensor = _rwsensorToOdesensor[sensor];
+        // the sensor has an equivalent ode sensor remove that too
+        std::vector<ODETactileSensor*>& odesensors = _odeBodyToSensor[odeBody->getBodyID()];
+
+        if(odesensors.size()==0)
+            return;
+
+        std::vector<ODETactileSensor*> nodesensors;
+        for(size_t i=0;i<odesensors.size();i++){
+            if(odesensors[i]!=tsensor)
+                nodesensors.push_back(odesensors[i]);
+        }
+
+        _odeBodyToSensor[odeBody->getBodyID()] = nodesensors;
+
+        std::vector<ODETactileSensor*> newOdeSensors;
+        BOOST_FOREACH(ODETactileSensor* oldsen , _odeSensors){
+            if(tsensor != oldsen )
+                newOdeSensors.push_back(oldsen);
+        }
+
+        if(newOdeSensors.size()==0)
+            _odeBodyToSensor.erase( _odeBodyToSensor.find(odeBody->getBodyID()) );
+
+        _odeSensors = newOdeSensors;
+
+        delete tsensor;
     }
-    _odeSensors = newOdeSensors;
-    delete odesensor;
 
 };
 
@@ -1830,8 +1850,8 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     //RW_DEBUGS("- detected: " << frameB1->getName() << " " << frameB2->getName());
 
     // check if any of the bodies are actually sensors
-    ODETactileSensor *odeSensorb1 = _odeBodyToSensor[dataB1->getBodyID()];
-    ODETactileSensor *odeSensorb2 = _odeBodyToSensor[dataB2->getBodyID()];
+    std::vector<ODETactileSensor*>& odeSensorb1 = _odeBodyToSensor[dataB1->getBodyID()];
+    std::vector<ODETactileSensor*>& odeSensorb2 = _odeBodyToSensor[dataB2->getBodyID()];
 
     // perform contact clustering
     //double threshold = std::min(dataB1->getCRThres(), dataB2->getCRThres());
@@ -1943,7 +1963,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     std::vector<dJointFeedback*> feedbacks;
     std::vector<dContactGeom> feedbackContacts;
     bool enableFeedback = false;
-    if(odeSensorb1!=NULL || odeSensorb2!=NULL){
+    if(odeSensorb1.size()>0 || odeSensorb2.size()>0){
         //if( (dataB1->getType()!=ODEBody::FIXED) && (dataB2->getType()!=ODEBody::FIXED) ){
         //    if( (f1 != world) && (f2!=world) ){
                 enableFeedback = true;
@@ -2025,14 +2045,18 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         }
     }
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
-    if(enableFeedback && odeSensorb1){
+    if(enableFeedback && odeSensorb1.size()>0){
     	//std::cout << "----------- ADD FEEDBACK\n";
-        odeSensorb1->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+        BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
+            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+        }
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
-    if(enableFeedback && odeSensorb2){
+    if(enableFeedback && odeSensorb2.size()>0){
     	//std::cout << "----------- ADD FEEDBACK\n";
-    	odeSensorb2->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+        BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
+    	        sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+        }
         //odeSensorb2->setContacts(result,wTa,wTb);
     }
 
@@ -2083,20 +2107,16 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
         RW_THROW("Bodies are NULL");
     }
 
-    ODETactileSensor *odeSensorb1 = _odeBodyToSensor[dataB1->getBodyID()];
-    ODETactileSensor *odeSensorb2 = _odeBodyToSensor[dataB2->getBodyID()];
-
+    std::vector<ODETactileSensor*>& odeSensorb1 = _odeBodyToSensor[dataB1->getBodyID()];
+    std::vector<ODETactileSensor*>& odeSensorb2 = _odeBodyToSensor[dataB2->getBodyID()];
 
 
     std::vector<dJointFeedback*> feedbacks;
     std::vector<dContactGeom> feedbackContacts;
     bool enableFeedback = false;
-    if(odeSensorb1!=NULL || odeSensorb2!=NULL){
-        //if( (dataB1->getType()!=ODEBody::FIXED) && (dataB2->getType()!=ODEBody::FIXED) ){
+    if(odeSensorb1.size()>0 || odeSensorb2.size()>0){
         enableFeedback = true;
-        //}
     }
-
     for (size_t i = 0; i < nr_con; i++) {
         dContact con = contacts[i];
         // add to all contacts
@@ -2124,12 +2144,19 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
     }
 
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
-    if(enableFeedback && odeSensorb1){
-        odeSensorb1->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+    if(enableFeedback && odeSensorb1.size()>0){
+        //std::cout << "----------- ADD FEEDBACK\n";
+        BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
+            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+        }
+        //odeSensorb1->setContacts(result,wTa,wTb);
     }
-
-    if(enableFeedback && odeSensorb2){
-        odeSensorb2->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+    if(enableFeedback && odeSensorb2.size()>0){
+        //std::cout << "----------- ADD FEEDBACK\n";
+        BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
+                sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+        }
+        //odeSensorb2->setContacts(result,wTa,wTb);
     }
 
 

@@ -387,7 +387,8 @@ namespace simulator {
         std::vector<ODEJoint*> _allODEJoints;
         double _maxPenetration;
 
-        std::map< dBodyID, ODETactileSensor*> _odeBodyToSensor;
+        std::map< dBodyID, std::vector<ODETactileSensor*> > _odeBodyToSensor;
+        std::map<rwlibs::simulation::SimulatedSensor::Ptr, ODETactileSensor*> _rwsensorToOdesensor;
         std::vector<ODETactileSensor*> _odeSensors;
 
         std::vector<ODEDevice*> _odeDevices;
