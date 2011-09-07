@@ -282,7 +282,7 @@ void RWSimPlugin::btnPressed(){
             return;
         }
 
-    	_sim->setState( getRobWorkStudio()->getState() );
+    	_sim->reset( getRobWorkStudio()->getState() );
     } else if( obj == _saveStatePathBtn )  {
     	//_gtable.save("GraspTableSchunkSim.rwplay");
         getRobWorkStudio()->setTimedStatePath(_path);

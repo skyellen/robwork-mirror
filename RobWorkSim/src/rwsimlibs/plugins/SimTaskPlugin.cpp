@@ -95,8 +95,11 @@ void SimTaskPlugin::startSimulation() {
         QMessageBox::information(this, "SimTaskPlugin", "Grasp simulator has not been created yet!");
         return;
     }
-
-    _graspSim->startSimulation( getRobWorkStudio()->getState() );
+    try {
+        _graspSim->startSimulation( getRobWorkStudio()->getState() );
+    } catch(...){
+        return;
+    }
     //RW_WARN("1");
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _graspSim->getSimulator()->getSimulator()->createDebugRender();
     if( debugRender == NULL ){
