@@ -67,6 +67,9 @@ public:
      */
     static void saveText(GraspTask::Ptr task, const std::string& name );
 
+
+    static GraspTask::Ptr load(const std::string& name);
+
 private:
 
     rwlibs::task::CartesianTask::Ptr _task;

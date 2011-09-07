@@ -75,6 +75,7 @@ void ThreadSimulator::start(){
 }
 
 void ThreadSimulator::stop(){
+    std::cout << "ThreadSimulator::stop()" << std::endl;
    {
         boost::mutex::scoped_lock lock(_simMutex);
         _running = false;
@@ -82,10 +83,11 @@ void ThreadSimulator::stop(){
         	return;
         }
     }
+
     _thread->join();
     delete _thread;
     _thread = NULL;
-
+    std::cout << "ThreadSimulator::stopped" << std::endl;
 }
 
 void ThreadSimulator::step(){
