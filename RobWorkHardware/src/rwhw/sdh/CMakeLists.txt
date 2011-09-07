@@ -10,12 +10,13 @@ ELSE()
     
     IF(SDH_FOUND)
         MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
+        
         INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} ${ESDCAN_INCLUDE_DIR})
         
         SET(SRC_FILES )
         SET(SRC_FILES_HPP )
         IF(TOLUA++_FOUND)
-            ADD_TOLUA_PACKAGE("SDHDriverLua" "SDHDriverLuaStub")
+        #    ADD_TOLUA_PACKAGE("SDHDriverLua" "SDHDriverLuaStub")
         ENDIF()
         
         ADD_LIBRARY(rwhw_sdh SDHDriver.cpp SDHDriver.hpp ${SRC_FILES} ${SRC_FILES_HPP})
@@ -23,6 +24,7 @@ ELSE()
         set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sdh;")
         
     ELSE()
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - SDH library and/or ESD can was not found")
+        MESSAGE(FATAL_ERROR "RobWorkHardware: ${component_name} component DISABLED - SDH library and/or ESD can was not found")
+        
     ENDIF()
 ENDIF()
