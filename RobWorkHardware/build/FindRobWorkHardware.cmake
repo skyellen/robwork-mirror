@@ -50,13 +50,14 @@ SET(ROBWORKHARDWARE_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 SET(RWHW_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 
 INCLUDE(${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-#MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
+MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
 
 SET(LIBRARIES_TO_INCLUDE ) # Libraries that must be included
 SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have been build
 IF(RobWorkHardware_FIND_COMPONENTS)
     # FIRST check if all required components are installed/build
     FOREACH(component IN LISTS RobWorkHardware_FIND_COMPONENTS)
+        
         LIST(FIND RWH_BUILD_WITH_LIBRARIES "rwhw_${component}" COMP_FOUND)
         IF(${COMP_FOUND} GREATER -1)
             LIST(APPEND LIBRARIES_TO_INCLUDE "rwhw_${component}")
