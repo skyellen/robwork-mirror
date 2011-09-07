@@ -74,7 +74,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     QMainWindow(NULL),
     _robwork(robwork),
     _inStateUpdate(false),
-    _propMap(map),
+    //_propMap(map),
     _settingsMap(NULL)
 {
     RobWork::setInstance(robwork);
@@ -94,6 +94,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
             //settings = XMLPropertyLoader::load("rwsettings.xml");
             //_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
             _propMap = XMLPropertyLoader::load("rwsettings.xml");
+
         } catch(rw::common::Exception &e){
             RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
         } catch(std::exception &e){
@@ -105,6 +106,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
 
     PropertyMap *currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     if(currentSettings==NULL){
+        std::cout << "NOEXIST" << std::endl;
         _propMap.add("RobWorkStudioSettings", "Settings for RobWorkStudio", settings);
         currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     } /*else {
@@ -155,8 +157,6 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
 
 RobWorkStudio::~RobWorkStudio()
 {
-    close();
-
     _settingsMap->set<int>("WindowPosX", this->pos().x());
     _settingsMap->set<int>("WindowPosY", this->pos().y());
 
@@ -166,8 +166,10 @@ RobWorkStudio::~RobWorkStudio()
     if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
         _propMap.set("cmdline", PropertyMap());
         try {
-            //XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+            //XMLPropertySaver::save(*_settingsMap, "rwsettings2.xml");
+
             XMLPropertySaver::save(_propMap, "rwsettings.xml");
+
         } catch(const rw::common::Exception& e) {
             RW_WARN("Error saving settings file: " << e);
         } catch(...) {
@@ -176,7 +178,7 @@ RobWorkStudio::~RobWorkStudio()
     } else {
 
     }
-    //std::cout<<"Ready to delete plugins"<<std::endl;
+
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
         delete *it;
@@ -189,10 +191,8 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 }
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
-    
 	// save the settings of each plugin
     BOOST_FOREACH(RobWorkStudioPlugin* plugin, _plugins){
-
         bool visible = plugin->isVisible();
 
         bool floating = plugin->isFloating();
@@ -442,7 +442,7 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
     int intarea = _settingsMap->get<int>( std::string("PluginArea_")+pname , (int)area);
 
     addDockWidget((Qt::DockWidgetArea)intarea, plugin);
-
+    std::cout << "LOADING: " << std::string("PluginVisible_")+pname << " vis: " << isVisible << std::endl;
     //addDockWidget(area, plugin);
     plugin->setFloating(isFloating);
     //IMPORTANT visibility must be set as the last thing....
@@ -602,6 +602,7 @@ void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
 
 void RobWorkStudio::dropEvent(QDropEvent* event)
 {
+    std::cout << "DROPEVENT" << std::endl;
     if (event->mimeData()->hasText()) {
         QString text = event->mimeData()->text();
         Log::infoLog() << text.toStdString() << std::endl;
@@ -936,10 +937,10 @@ bool RobWorkStudio::event(QEvent *event)
         std::cout << "CLOSING ROBWORKSTUDIO" << std::endl;
         closeWorkCell();		
         rwse->done();
-        QCoreApplication::exit(1);
-
+        //QCoreApplication::exit(1);
+        abort();
     } else {
-        event->ignore();
+        //event->ignore();
     }
     return QMainWindow::event(event);
 }
