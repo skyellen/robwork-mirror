@@ -21,9 +21,14 @@ SET(CMAKE_INSTALL_PREFIX ${output})
 set( ENV{ROBWORKHARDWARE_LIBRARIES} "")
 
 # Used to resolve absolute path names
-SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-SET(ROBWORKHARDWARE_ROOT ${ROOT})
-SET(RWHW_ROOT ${ROOT})
+IF (NOT RWHW_ROOT)
+    SET(RWHW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+ENDIF ()
+
+
+# Used to resolve absolute path names
+SET(ROOT ${RWHW_ROOT})
+SET(ROBWORKHARDWARE_ROOT ${RWHW_ROOT})
 #Include default settings for constructing a robwork dependent project
 INCLUDE(${ROOT}/build/ProjectSetup.cmake)
 
