@@ -1,9 +1,0 @@
-<area shape="rect" href="$struct_s_d_h_1_1c_d_s_a_1_1s_response.html" title="data structure for storing responses from the remote DSACON32m controller" alt="" coords="5,448,171,576">
-<area shape="rect" href="$struct_s_d_h_1_1c_d_s_a_1_1s_controller_info.html" title="A data structure describing the controller info about the remote DSACON32m controller..." alt="" coords="195,400,381,624">
-<area shape="rect" href="$class_s_d_h_1_1c_d_b_g.html" title="A class to print colored debug messages." alt="" coords="405,400,517,624">
-<area shape="rect" href="$struct_s_d_h_1_1c_d_s_a_1_1s_sensor_info.html" title="A data structure describing the sensor info about the remote DSACON32m controller..." alt="" coords="541,432,712,592">
-<area shape="rect" href="$struct_s_d_h_1_1c_d_s_a_1_1s_tactile_sensor_frame.html" title="{SDH::cDSA::sTactileSensorFrame\n|+ timestamp\l+ flags\l+ texel\l|+ sTactileSensorFrame()\l}" alt="" coords="736,456,963,568">
-<area shape="rect" href="$class_s_d_h_1_1c_simple_time.html" title="Very simple class to measure elapsed time." alt="" coords="987,424,1120,600">
-<area shape="rect" href="$struct_s_d_h_1_1c_d_s_a_1_1s_matrix_info.html" title="A data structure describing a single sensor matrix connected to the remote DSACON32m..." alt="" coords="1144,352,1309,672">
-<area shape="rect" href="$class_s_d_h_1_1c_r_s232.html" title="Low&#45;level communication class to access a serial port on Cygwin and Linux." alt="" coords="1333,296,1531,728">
-<area shape="rect" href="$class_s_d_h_1_1c_serial_base.html" title="Low&#45;level communication class to access a serial port." alt="" coords="1368,5,1496,245">

@@ -1,7 +1,0 @@
-<area shape="rect" href="$sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="331,304,475,331">
-<area shape="rect" href="$dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="37,229,93,256">
-<area shape="rect" href="$sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="353,229,465,256">
-<area shape="rect" href="$simplevector_8h.html" title="Interface of class SDH::cSimpleVector." alt="" coords="453,155,560,181">
-<area shape="rect" href="$simplestringlist_8h.html" title="Interface of class SDH::cSimpleStringList." alt="" coords="107,155,227,181">
-<area shape="rect" href="$sdhbase_8h.html" title="Interface of class SDH::cSDHBase." alt="" coords="285,80,368,107">
-<area shape="rect" href="$serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="584,155,677,181">
