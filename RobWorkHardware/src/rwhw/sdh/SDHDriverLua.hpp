@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWS_LUA_RWSTUDIO_HPP
-#define RWS_LUA_RWSTUDIO_HPP
+#ifndef RWHW_SDHDRIVERLUA_HPP
+#define RWHW_SDHDRIVERLUA_HPP
 
 #include "SDHDriver.hpp"
 

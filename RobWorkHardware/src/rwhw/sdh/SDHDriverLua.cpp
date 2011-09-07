@@ -18,12 +18,13 @@
 #include "SDHDriverLua.hpp"
 
 #include <rw/common.hpp>
+#include "SDHDriver.hpp"
 
-using namespace rwlua::rwhw;
 #include <iostream>
-using namespace std;
 #include <sstream>
 
+using namespace std;
+using namespace rwlua::rwhw;
 #define NS rw::math
 
 namespace

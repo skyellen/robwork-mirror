@@ -97,7 +97,7 @@ SDHDriver::~SDHDriver(){
 
 bool SDHDriver::connect(const std::string& device, int canBaudRate, double canTimeOut, int id_read, int id_write){
     try {
-        _hand->OpenCAN_PEAK( canBaudRate , canTimeOut, id_read, id_write, device );
+        _hand->OpenCAN_PEAK( canBaudRate , canTimeOut, id_read, id_write, device.c_str() );
     } catch (cSDHLibraryException* e){
         rw::common::Log::errorLog() << e->what();
         delete e;
@@ -139,6 +139,8 @@ bool SDHDriver::connect( CanPort::Ptr canport, double canTimeOut, int id_read, i
             return false;
         }
         return initConnection();
+	#elif RWHW_HAS_PEAKCAN
+        // TODO: implement a peak can interface under can
     #else
         RW_THROW("RobWorkHardware does not seem to be build with ESDCANPort!");
         return false;
