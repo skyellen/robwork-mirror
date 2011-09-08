@@ -91,12 +91,14 @@ namespace rwhw {
             inline double getDriverTime() const { return rw::common::TimerUtil::currentTime(); }
             inline void setAddress(const std::string& address) { _address = address; }
         
+
+            bool waitForNewData();
         private:
             // Thread function
             void runReceive();
             
             // Helper functions
-            bool waitForNewData();
+
             void sendStartCommand();
             
             // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}

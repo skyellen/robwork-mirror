@@ -222,8 +222,8 @@ namespace rwhw {
                meanBias.second += it->second;
             }
             const double n(biases.size());
-            meanBias.first *= n;
-            meanBias.second *= n;
+            meanBias.first /= n;
+            meanBias.second /= n;
             
             // Add to bias            
             _calib.bias.first += meanBias.first;
