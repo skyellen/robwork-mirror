@@ -57,7 +57,7 @@ INCLUDE_DIRECTORIES(
 )
 
 # Subdirectories to process.
-#add_subdirectory(ext)
+add_subdirectory(ext)
 add_subdirectory(src)
 #add_subdirectory(test CMakeTmp/test)
 add_subdirectory(example)

@@ -12,8 +12,13 @@ using namespace boost::asio::ip;
 
 URCallBackInterface::URCallBackInterface():
 _stopServer(false),
-_robotStopped(true)
+_robotStopped(true),
+_isMoving(false)
 {
+}
+
+bool URCallBackInterface::isMoving() const {
+	return _isMoving;
 }
 
 double URCallBackInterface::driverTime() const {
@@ -106,30 +111,21 @@ void URCallBackInterface::run() {
 				//  std::cout<<"Data Recieved = "<<var<<std::endl;
 				  if (var == "STOP") {
 					  if (_robotStopped) {
-						//  std::cout<<"Send Robot Stopped"<<std::endl;
 						  URCommon::send(&socket, "STOP 1\n");
 					  }
 					  else {
-						 // std::cout<<"Send Robot Not Stopped"<<std::endl;
 						  URCommon::send(&socket, "STOP 0\n");
 					  }
 
 				  } else if (var == "CMD") {
-					  //std::cout<<"Handle CMD Request"<<std::endl;
 					  handleCmdRequest(socket, var);
-					  //TODO: Handle new command request
 				  }
 			  }
 			  else if (str == "SET") {
 				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
 				//  std::cout<<"Data Recieved = "<<var<<std::endl;
 				  if (var.substr(0,3) == "FIN" && var.substr(3,1)=="1") {
-					  if (_commands.size() > 0) {
-					//	  std::cout<<"Pops command"<<std::endl;
-						//  _commands.pop();
-					  }
- 					 //if (_commands.size() == 0)
- 					//	 _robotStopped = true;
+					  _isMoving = false;
 				  }
 			  }
 		  }
@@ -149,6 +145,7 @@ void URCallBackInterface::stopRobot() {
 	//std::cout<<"RWHW Stop UR"<<std::endl;
 	//_commands.push(URScriptCommand(URScriptCommand::STOP));
 	_robotStopped = true;
+	_isMoving = false;
 }
 
 void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
@@ -157,10 +154,12 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
     std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
+    _isMoving = true;
 }
 
 void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform) {
     boost::mutex::scoped_lock lock(_mutex);
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
+    _isMoving = true;
 }

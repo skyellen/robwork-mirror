@@ -27,8 +27,6 @@ public:
 
 	void stopInterface();
 
-
-
 	void run();
 
 	URPrimaryInterface& getPrimaryInterface();
@@ -41,6 +39,8 @@ public:
 
 	double driverTime() const;
 
+	bool isMoving() const;
+
 private:
 	URPrimaryInterface _urPrimary;
 
@@ -51,6 +51,8 @@ private:
 
 	bool _stopServer;
 	bool _robotStopped;
+
+	bool _isMoving;
 
 	class URScriptCommand {
 	public:

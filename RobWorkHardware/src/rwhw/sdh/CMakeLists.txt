@@ -11,7 +11,7 @@ ELSE()
     IF(SDH_FOUND)
         MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
         
-        INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} ${ESDCAN_INCLUDE_DIR})
+        INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} )
         
         SET(SRC_FILES )
         SET(SRC_FILES_HPP )
