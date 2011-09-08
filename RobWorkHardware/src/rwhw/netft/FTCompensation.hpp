@@ -204,6 +204,41 @@ namespace rwhw {
           */
          static bool LoadCalib(const std::string& filename, FTCalib& calib, rw::math::Transform3D<>& eTft);
          
+         /**
+          * Update the F/T sensor bias based on a set of recent measurements, which can be necessary under e.g.
+          * temperature drift.
+          * 
+          * It is the intention that this function be used from a set of recent outputs using \code getFT() \endcode,
+          * which should ideally be zero. Therefore, it is advised to keep the sensor steady while retrieving
+          * a set of e.g. 20 measurements as input for this function.
+          * 
+          * @param biases a set of recent (compensated measurements), retrieved by \code getFT() \endcode
+          */
+         inline void updateBias(const std::vector<Wrench3D>& biases) {
+            // Calculate the mean of the input vector 
+            Wrench3D meanBias;
+            for(std::vector<Wrench3D>::const_iterator it = biases.begin(); it != biases.end(); ++it) {
+               meanBias.first += it->first;
+               meanBias.second += it->second;
+            }
+            const double n(biases.size());
+            meanBias.first *= n;
+            meanBias.second *= n;
+            
+            // Add to bias            
+            _calib.bias.first += meanBias.first;
+            _calib.bias.second += meanBias.second;
+         }
+         
+         /**
+          * Remove old bias vector and replace with a new one
+          *  
+          * @param bias the new bias
+          */
+         inline void resetBias(const Wrench3D& bias) {
+            _calib.bias = bias;
+         }
+         
       private:
          /**
           * Default constructor
