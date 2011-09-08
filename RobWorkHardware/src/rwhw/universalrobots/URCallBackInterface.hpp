@@ -35,7 +35,7 @@ public:
 
 	void stopRobot();
 
-	void moveQ(const rw::math::Q& q);
+	void moveQ(const rw::math::Q& q, float speed);
 
 	void moveT(const rw::math::Transform3D<>& transform);
 
@@ -57,9 +57,10 @@ private:
 
 		enum CmdType { MOVEQ = 1, MOVET };
 
-		URScriptCommand(CmdType type, const rw::math::Q& q):
+		URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
 			_type(MOVEQ),
-			_q(q)
+			_q(q),
+			_speed(speed)
 		{
 		}
 
@@ -73,6 +74,7 @@ private:
 		CmdType _type;
 		rw::math::Q _q;
 		rw::math::Transform3D<> _transform;
+		float _speed;
 	};
 
 	std::queue<URScriptCommand> _commands;

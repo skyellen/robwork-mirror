@@ -147,6 +147,16 @@ public:
 		send(socket, sstr.str());
 	}
 
+	static inline void send(boost::asio::ip::tcp::socket* socket, rw::math::Q& q, float speed) {
+		std::stringstream sstr;
+		sstr<<"(";
+		for (size_t i = 0; i<q.size(); i++) {
+			sstr<<q(i)<<",";
+		}
+		sstr<<speed<<")";
+		send(socket, sstr.str());
+	}
+
 	static inline double driverTimeStamp() {
 		return rw::common::TimerUtil::currentTime();
 	}

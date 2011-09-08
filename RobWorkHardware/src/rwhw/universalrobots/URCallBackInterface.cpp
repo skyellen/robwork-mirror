@@ -42,9 +42,14 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
-	std::cout<<"Handle Cmd Request "<<_commands.size()<<std::endl;
-	if (_commands.size() == 0)
+	//std::cout<<"Handle Cmd Request "<<_commands.size()<<std::endl;
+	if (_commands.size() == 0) {
+		std::stringstream sstr;
+		sstr<<name<<" "<<0<<"\n";
+	//	std::cout<<"Send 0 Command = "<<sstr.str()<<std::endl;
+		URCommon::send(&socket, sstr.str());
 		return;
+	}
 
 	URScriptCommand cmd = _commands.front();
 
@@ -56,7 +61,9 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 	switch (cmd._type) {
 	case URScriptCommand::MOVEQ:
 		std::cout<<"Ready to execute move Q"<<std::endl;
-		URCommon::send(&socket, cmd._q);
+
+		URCommon::send(&socket, cmd._q, cmd._speed);
+
 		break;
 	case URScriptCommand::MOVET:
 		//URCommon::send(&socket, cmd._transform);
@@ -74,7 +81,7 @@ void URCallBackInterface::run() {
 	boost::asio::io_service io_service;
 
 	tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _callbackPort));
-
+	int cnt = 0;
 	while(!_stopServer)
 	{
 	  tcp::socket socket(io_service);
@@ -88,14 +95,15 @@ void URCallBackInterface::run() {
 			  std::cout<<"Reached EOF"<<std::endl;
 			  break;
 		  }
-		 // std::cout<<"Server Available "<<available<<std::endl;
+		  //if (available != 0)
+		  //	  std::cout<<cnt++<<"Available "<<available<<std::endl;
 		  if (available > 3) {
 			  unsigned int offset = 0;
 			  std::string str = URCommon::getString(&socket, 3, offset);
-			  std::cout<<"str = "<<str<<std::endl;
+			//  std::cout<<"str = "<<str<<std::endl;
 			  if (str == "GET") {
 				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
-				  std::cout<<"Data Recieved = "<<var<<std::endl;
+				//  std::cout<<"Data Recieved = "<<var<<std::endl;
 				  if (var == "STOP") {
 					  if (_robotStopped) {
 						//  std::cout<<"Send Robot Stopped"<<std::endl;
@@ -114,10 +122,10 @@ void URCallBackInterface::run() {
 			  }
 			  else if (str == "SET") {
 				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
-				  std::cout<<"Data Recieved = "<<var<<std::endl;
+				//  std::cout<<"Data Recieved = "<<var<<std::endl;
 				  if (var.substr(0,3) == "FIN" && var.substr(3,1)=="1") {
 					  if (_commands.size() > 0) {
-						  std::cout<<"Pops command"<<std::endl;
+					//	  std::cout<<"Pops command"<<std::endl;
 						//  _commands.pop();
 					  }
  					 //if (_commands.size() == 0)
@@ -143,10 +151,10 @@ void URCallBackInterface::stopRobot() {
 	_robotStopped = true;
 }
 
-void URCallBackInterface::moveQ(const rw::math::Q& q) {
+void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
 	std::cout<<"Received a moveQ to "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
-    _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q));
+    _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
     std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
 }
