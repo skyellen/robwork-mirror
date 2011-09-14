@@ -261,10 +261,15 @@ Ptr<StateDraw> PlayBack::makeMyStateDraw()
 
 //----------------------------------------------------------------------
 // Slots
-
+namespace
+{
+    const double timerInterval = 1.0 / 50;
+}
 void PlayBack::record(bool record) {
-    if (_player.get() == NULL)
-        return;
+    if (_player.get() == NULL || _player->_path.size()==0){
+        // create a dummy player
+        _player = ownedPtr(new Player(1.0/5.0, getRobWorkStudio()));
+    }
 
     if (record) {
         _player->setupRecording(_settings.getRecordFilename(), _settings.getRecordFileType());
@@ -321,10 +326,7 @@ void PlayBack::interpolateChanged(int state)
     _player->setInterpolate(state != 0);
 }
 
-namespace
-{
-    const double timerInterval = 1.0 / 50;
-}
+
 
 void PlayBack::openPath()
 {

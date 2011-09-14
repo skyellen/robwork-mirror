@@ -46,6 +46,11 @@ public:
            double tickInterval,
            rws::RobWorkStudio* rwstudio);
 
+    // used for recording only
+    Player(
+           double tickInterval,
+           rws::RobWorkStudio* rwstudio);
+
     // Start the playback in forward direction.
     void forward();
 
@@ -112,11 +117,11 @@ private:
     double getEndTime() const { return _trajectory->duration(); }
     void draw();
 
-private:
+public:
     // Where to do the drawing.
 	rw::trajectory::StateTrajectory::Ptr _trajectory;
 	rw::trajectory::TimedStatePath _path;
-
+private:
     // How to do the drawing.
     StateDrawPtr _drawer;
 
@@ -140,7 +145,8 @@ private:
     bool _loop;
 
     bool _interpolate;
-
+public:
+    bool _recordingOnly;
 private:
     Player(const Player&);
     Player& operator=(const Player&);

@@ -14,8 +14,8 @@ SET(SrcFiles
 # Header files to moc and compile:
 QT4_WRAP_CPP(MocSrcFiles 
   PlayBack.hpp
-  Player.hpp
-  PlayBackSettings.hpp
+  Player.hpp 
+  PlayBackSettings.hpp 
 )
 
 # Rcc the files:

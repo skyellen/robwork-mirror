@@ -50,7 +50,8 @@ Player::Player(
     _velocityScale(1),
     _timer(this),
     _loop(false),
-    _interpolate(true)
+    _interpolate(true),
+    _recordingOnly(false)
 {
     RW_ASSERT(_tickInterval > 0);
     RW_ASSERT(drawer);
@@ -60,6 +61,28 @@ Player::Player(
 }
 
 
+Player::Player(
+    double tickInterval,
+    RobWorkStudio* rwstudio)
+    :
+    _trajectory( TrajectoryFactory::makeLinearTrajectory(TimedStatePath()) ),
+    _tickInterval(tickInterval),
+    _rwstudio(rwstudio),
+    _record(false),
+    _recNo(0),
+    _now(0),
+    _direction(1),
+    _velocityScale(1),
+    _timer(this),
+    _loop(false),
+    _interpolate(true),
+    _recordingOnly(true)
+{
+    RW_ASSERT(_tickInterval > 0);
+    std::cout << "SETTING RECORDING ONLY " << std::endl;
+    // Connect the timer:
+    connect(&_timer, SIGNAL(timeout()), this, SLOT(tick()));
+}
 void Player::setTickInterval(double interval) {
     _tickInterval = interval;
     if (_timer.isActive()) {
@@ -75,16 +98,23 @@ void Player::setupRecording(const QString filename, const QString& type) {
 }
 
 void Player::startRecording() {
+    std::cout << "start rec"<< std::endl;
     _record = true;
     _recNo = 0;
+    startTimer();
 }
 
 void Player::stopRecording() {
+    std::cout << "end rec"<< std::endl;
+    stopTimer();
     _record = false;
 }
 
 void Player::tick()
 {
+
+    if(!_recordingOnly){
+
     const double end = getEndTime();
 
     // Make sure that we do show the robot at the position at the start or end
@@ -133,6 +163,17 @@ void Player::tick()
             _direction *
             _velocityScale *
             _tickInterval;
+    }
+    } else {
+        if (_record && _rwstudio != NULL) {
+
+            //Create Filename
+            QString number = QString::number(_recNo++);
+            //while (number.length() < RECORD_NUM_OF_DIGITS)
+            //    number.prepend("0");
+            QString filename = _recordFilename + number + "." + _recordType;
+            _rwstudio->saveViewGL(filename);
+        }
     }
 }
 
