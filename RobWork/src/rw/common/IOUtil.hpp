@@ -150,7 +150,16 @@ namespace rw { namespace common {
          * @param filename [in] name of file
          * @return time of modification
          */
-        std::time_t getLastFileWrite(const std::string& filename);
+        static std::time_t getLastFileWrite(const std::string& filename);
+
+        /**
+         * @brief extracts the first element tag in any xml document.
+         *
+         * throws if not xml document or file cannot be openned
+         * @param filename [in] name of the xml file
+         * @return name of first xml element
+         */
+        static std::string getFirstXMLElement(const std::string& filename);
     };
 
     /**@}*/

@@ -30,6 +30,12 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <fstream>
+#include <iostream>
+#include <boost/spirit/include/support_istream_iterator.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -265,4 +271,26 @@ std::time_t IOUtil::getLastFileWrite(const std::string& filename){
     fs::path p( filename, fs::native );
     std::time_t ft = fs::last_write_time( p );
     return ft;
+}
+
+std::string IOUtil::getFirstXMLElement(const std::string& filename){
+    using namespace boost;
+    using namespace boost::spirit::qi;
+    // check the first element of the file
+    std::ifstream input(filename.c_str());
+    input.unsetf(std::ios::skipws);
+    std::cout << "BUMBUM" << std::endl;
+    spirit::istream_iterator begin(input);
+    spirit::istream_iterator end;
+    std::string result;
+    // use iterator to parse file data
+    bool res = spirit::qi::phrase_parse(begin, end, "<" >>
+                                        *(char_ - (char_('>')|char_(' ')))[boost::bind(static_cast<std::string& (std::string::*)( size_t, char )>(&std::string::append),&result, 1, ::_1)] >>
+                                        *(char_ - char_('>'))[std::cout << boost::lambda::_1] >> ">"
+                       // THE skip parser comes next
+                      , (spirit::qi::blank-' ') | ("<!--" >> *(char_ - "-->") >> "-->" | "<?" >> *(char_ - "?>") >> "?>")
+        );
+    if(!res)
+        RW_THROW("file \""<<filename<<"\" is not a wellformed xml document!");
+    return result;
 }
