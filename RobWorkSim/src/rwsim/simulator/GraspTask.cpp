@@ -261,6 +261,7 @@ namespace {
         rwlibs::task::CartesianTarget::Ptr target = ownedPtr( new rwlibs::task::CartesianTarget(Transform3D<>()) );
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
+            std::cout << p->first << std::endl;
             if(isName(p->first, "pose") ){
                 // position
                 PTree& pos_tree = p->second.get_child("position");
@@ -272,6 +273,7 @@ namespace {
                 std::string rotdomain = pos_tree.get_child("<xmlattr>").get<std::string>("domain","SO3");
                 Rotation3D<> rot;
                 for (CI p1 = rot_tree.begin(); p1 != rot_tree.end(); ++p1) {
+                    std::cout << p1->first << std::endl;
                     if (isName(p1->first,"quaternion")) {
                         std::vector<double> vals = readArray(p1->second);
                         if(vals.size()!=4)
@@ -291,7 +293,7 @@ namespace {
                 }
 
                 //ctask->getPropertyMap().set<std::string>("GripperName", gripperType);
-                target->get() = Transform3D<>(pos/1000.0,rot);
+                target->get() = Transform3D<>(pos,rot);
             } else if(isName(p->first, "outcome")){
                 std::vector<double> qualities;
                 int status = GraspTask::UnInitialized;
@@ -342,6 +344,8 @@ namespace {
     }
 
     rwlibs::task::CartesianTask::Ptr readExperiment(PTree& tree, ParserState& state){
+
+        std::cout << "experiment" << std::endl;
         rwlibs::task::CartesianTask::Ptr ctask = ownedPtr( new rwlibs::task::CartesianTask() );
         std::vector<double> qualities;
 
@@ -349,7 +353,7 @@ namespace {
         //for (OCI p = tree.ordered_begin(); p != tree.not_found(); ++p) {
         for (CI p = tree.begin(); p != tree.end(); ++p) {
 
-            //std::cout << p->first << "\n";
+            std::cout << p->first << "\n";
             if ( isName(p->first, "gripper") ) {
                 string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
                 Q params = readQ(p->second.get_child("params"));
@@ -372,10 +376,11 @@ namespace {
                 }
             } else if(isName(p->first, "<xmlattr>")){
                 // todo: uri
+            } else if(isName(p->first, "notes")){
             } else {
                 RW_THROW("Unknown element!" << p->first);
             }
-
+            std::cout << "read experiment end" << std::endl;
         }
 
         return ctask;
@@ -402,17 +407,18 @@ namespace {
     rwlibs::task::CartesianTask::Ptr readExperiments(PTree& data, ParserState& state){
         // this is a container for experiments
         rwlibs::task::CartesianTask::Ptr grasptasks = ownedPtr( new rwlibs::task::CartesianTask() );
-
+        std::cout << "read experiments" << std::endl;
         for (CI p = data.begin(); p != data.end(); ++p) {
             // each experiment is a GraspTask
             if(isName(p->first, "experiment")){
-                grasptasks->addTask( readExperiment(data, state) );
+                grasptasks->addTask( readExperiment(p->second, state) );
             } else if(p->first=="notes") {
                 // grasptasks->getPropertyMap().set<std::string>( );
             } else if(p->first=="<xmlattr>") {
                 // uri
             }
         }
+        std::cout << "read experiments end" << std::endl;
         return grasptasks;
 
     }
@@ -420,28 +426,41 @@ namespace {
 
 
 GraspTask::Ptr GraspTask::load(const std::string& filename){
+
+
     std::string file = IOUtil::getAbsoluteFileName(filename);
+    std::string firstelem = IOUtil::getFirstXMLElement(file);
+    std::cout << "FIRST ELEMENT: " << firstelem << std::endl;
+
     rwlibs::task::CartesianTask::Ptr grasptask;
-    try {
-        ParserState state(file);
 
-        //state.dir = StringUtil::getDirectoryName(file);
-        rwlibs::task::CartesianTask::Ptr grasptask;
+    if(firstelem=="CartesianTask"){
+        XMLTaskLoader loader;
+        loader.load( file );
+        grasptask = loader.getCartesianTask();
+    } else {
 
-        PTree tree;
-        read_xml(file, tree);
+        try {
+            ParserState state(file);
 
-        for (CI p = tree.begin(); p != tree.end(); ++p) {
-            //std::cout << p->first << "\n";
-            if ( isName(p->first, "experiments") ) {
-                grasptask = readExperiments(p->second, state);
+            //state.dir = StringUtil::getDirectoryName(file);
+            PTree tree;
+            read_xml(file, tree);
+
+            for (CI p = tree.begin(); p != tree.end(); ++p) {
+                //std::cout << p->first << "\n";
+                if ( isName(p->first, "experiments") ) {
+                    grasptask = readExperiments(p->second, state);
+                }
             }
+            //rw::loaders::XML::printTree(tree, std::cout);
+        } catch (const ptree_error& e) {
+            // Convert from parse errors to RobWork errors.
+            RW_THROW(e.what());
         }
-        //rw::loaders::XML::printTree(tree, std::cout);
-    } catch (const ptree_error& e) {
-        // Convert from parse errors to RobWork errors.
-        RW_THROW(e.what());
+
     }
+
     GraspTask::Ptr gtask = ownedPtr( new GraspTask(grasptask) );
     return gtask;
 }
