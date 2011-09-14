@@ -35,7 +35,7 @@ public:
 
 	void moveQ(const rw::math::Q& q, float speed);
 
-	void moveT(const rw::math::Transform3D<>& transform);
+	void moveT(const rw::math::Transform3D<>& transform, float speed);
 
 	double driverTime() const;
 

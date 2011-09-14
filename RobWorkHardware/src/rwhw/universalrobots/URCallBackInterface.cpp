@@ -2,11 +2,13 @@
 /* */
 #include "URCallBackInterface.hpp"
 #include "URCommon.hpp"
-
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/EAA.hpp>
 #include <rw/common/StringUtil.hpp>
 
 
 using namespace rw::common;
+using namespace rw::math;
 using namespace rwhw;
 using namespace boost::asio::ip;
 
@@ -71,7 +73,11 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 
 		break;
 	case URScriptCommand::MOVET:
-		//URCommon::send(&socket, cmd._transform);
+		std::cout<<"Ready to execute move Q"<<std::endl;
+		const Vector3D<>& p = cmd._transform.P();
+		EAA<> eaa(cmd._transform.R());
+		Q q(6, p(0), p(1), p(2), eaa(0), eaa(1), eaa(2));
+		URCommon::send(&socket, q, cmd._speed);
 		break;
 	}
 
@@ -86,7 +92,6 @@ void URCallBackInterface::run() {
 	boost::asio::io_service io_service;
 
 	tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _callbackPort));
-	int cnt = 0;
 	while(!_stopServer)
 	{
 	  tcp::socket socket(io_service);
@@ -142,7 +147,7 @@ void URCallBackInterface::run() {
 
 
 void URCallBackInterface::stopRobot() {
-	//std::cout<<"RWHW Stop UR"<<std::endl;
+	std::cout<<"RWHW Stop UR"<<std::endl;
 	//_commands.push(URScriptCommand(URScriptCommand::STOP));
 	_robotStopped = true;
 	_isMoving = false;
@@ -157,7 +162,8 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
     _isMoving = true;
 }
 
-void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform) {
+void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float speed) {
+	std::cout<<"Received a moveT to "<<transform<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
