@@ -1,7 +1,7 @@
 #include "SimTaskVisPlugin.hpp"
 
 #include <rwsim/rwsim.hpp>
-#include <rw/rw.hpp>
+//#include <rw/rw.hpp>
 #include <QPushButton>
 #include <RobWorkStudio.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
@@ -15,6 +15,11 @@
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rwsim/simulator/GraspTask.hpp>
+
+//#define PHOENIX_LIMIT 15
 
 USE_ROBWORK_NAMESPACE
 USE_ROBWORKSIM_NAMESPACE
@@ -221,7 +226,7 @@ void SimTaskVisPlugin::btnPressed() {
             int qIdx = _qualitySpin->value();
             Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 0.0));
             if(quality.size()==0){
-                continue;
+                //continue;
                 quality = Q(1, 0.0);
             }
 
@@ -234,12 +239,12 @@ void SimTaskVisPlugin::btnPressed() {
                 maxQual = quality(qIdx);
             if( minQual>quality(qIdx) )
                 minQual = quality(qIdx);
-
-            if(quality(qIdx)<_fromThresSpin->value())
-                continue;
-            if(quality(qIdx)>_toThresSpin->value())
-                continue;
-
+            if(_showQuality->isChecked()){
+                if(quality(qIdx)<_fromThresSpin->value())
+                    continue;
+                if(quality(qIdx)>_toThresSpin->value())
+                    continue;
+            }
 
             if(testStatus==-1){
             	if(!_untestedBox->isChecked() )
@@ -317,6 +322,7 @@ void SimTaskVisPlugin::btnPressed() {
             }
 
         }
+        std::cout << "NR TARGETS:: " << rtargets.size() << std::endl;
 
         // if quality should be shown then we start by calculating the offset and scale
         double offset = 0;
@@ -531,6 +537,9 @@ rw::common::PropertyMap& SimTaskVisPlugin::settings(){
 }
 
 
+
+
+
 void SimTaskVisPlugin::loadTasks(bool automatic){
     _taskQueue.clear();
     std::string prevDir = settings().get<std::string>("RWSimLastOpennedDIR","");
@@ -558,9 +567,22 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
 
     if(taskFile=="")
         return;
+
+    std::string firstelem = IOUtil::getFirstXMLElement(taskFile);
+    std::cout << "FIRST ELEMENT: " << firstelem << std::endl;
+
     log().info() << "Loading tasks: ";
     log().info() << "\t-Filename: " << taskFile;
     rwlibs::task::CartesianTask::Ptr task;
+
+    try {
+        GraspTask::Ptr gtask = GraspTask::load(taskFile);
+        task = gtask->getRootTask();
+    } catch (const Exception& exp) {
+        QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
+        return;
+    }
+    /*
     try {
         XMLTaskLoader loader;
         loader.load( taskFile );
@@ -569,6 +591,8 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
         QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
         return;
     }
+    */
+
     // iterate over all tasks and add them to the taskQueue
     _roottask = task;
     int nrOfTargets = 0;

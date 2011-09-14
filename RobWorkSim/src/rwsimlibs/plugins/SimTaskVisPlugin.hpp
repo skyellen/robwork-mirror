@@ -1,7 +1,7 @@
 #ifndef SimTaskVisPlugin_HPP
 #define SimTaskVisPlugin_HPP
 
-#include <rw/rw.hpp>
+
 #include <rwlibs/task.hpp>
 #include <rwsim/rwsim.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
