@@ -279,16 +279,21 @@ std::string IOUtil::getFirstXMLElement(const std::string& filename){
     // check the first element of the file
     std::ifstream input(filename.c_str());
     input.unsetf(std::ios::skipws);
-    std::cout << "BUMBUM" << std::endl;
+
     spirit::istream_iterator begin(input);
     spirit::istream_iterator end;
     std::string result;
     // use iterator to parse file data
-    bool res = spirit::qi::phrase_parse(begin, end, "<" >>
+    bool res = spirit::qi::phrase_parse(begin, end,
+                                        -("<?" >> *(char_ - '>')[std::cout << boost::lambda::_1] >> char_('>')) >>
+                                        "<" >>
                                         *(char_ - (char_('>')|char_(' ')))[boost::bind(static_cast<std::string& (std::string::*)( size_t, char )>(&std::string::append),&result, 1, ::_1)] >>
                                         *(char_ - char_('>'))[std::cout << boost::lambda::_1] >> ">"
                        // THE skip parser comes next
-                      , (spirit::qi::blank-' ') | ("<!--" >> *(char_ - "-->") >> "-->" | "<?" >> *(char_ - "?>") >> "?>")
+                      , (spirit::qi::blank - ' ')
+                      | (spirit::qi::space - ' ')
+                      | ("<!--" >> *(char_ - '>') >> '>')
+
         );
     if(!res)
         RW_THROW("file \""<<filename<<"\" is not a wellformed xml document!");
