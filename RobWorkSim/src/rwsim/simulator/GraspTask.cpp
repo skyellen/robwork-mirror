@@ -55,7 +55,7 @@ namespace {
         Quaternion<> quat(pose.R());
         out << "<pose>\n"
                 << " <position domain=\"R3\">\n"
-                << "  <euclidean>" << pose.P()[0] << " " << pose.P()[1] << " " << pose.P()[2] << "</euclidean>\n"
+                << "  <euclidean>" << pose.P()[0]*1000.0 << " " << pose.P()[1]*1000.0 << " " << pose.P()[2]*1000.0 << "</euclidean>\n"
                 << " </position>\n"
                 << " <orientation domain=\"SO3\">\n"
                 << "  <quaternion format=\"wxyz\">" << quat(3) << " " << quat(0) << " " << quat(1) << " "<< quat(2) << "</quaternion>\n"
@@ -266,7 +266,8 @@ namespace {
                 // position
                 PTree& pos_tree = p->second.get_child("position");
                 std::string posdomain = pos_tree.get_child("<xmlattr>").get<std::string>("domain","R3");
-                Vector3D<> pos = readVector3D( pos_tree.get_child("euclidean") );
+                Vector3D<> pos = readVector3D( pos_tree.get_child("euclidean") )/1000.0;
+
                 // orientation
                 //std::cout << "---------------------------" << std::endl;
                 PTree& rot_tree = p->second.get_child("orientation");
