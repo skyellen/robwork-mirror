@@ -20,6 +20,7 @@
 
 #include "macros.hpp"
 
+#include <limits>
 #include <fstream>
 #include <iostream>
 #include <cassert>
