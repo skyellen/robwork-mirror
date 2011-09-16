@@ -453,17 +453,17 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         tasks->getPropertyMap().set<std::string>("TCP","TCPGS20");
     } else if( type== "SDH_PAR"){
         openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
-        closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
+        closeQ = Q(7,-1.571,-1.571,1.571,0.0,0.419,0.0,0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
         type = "SchunkHand";
     } else if( type== "SDH_BALL"){
         openQ = Q(7,-1.048, 0.174, 1.047 ,-1.048, 0.174, -1.048, 0.174);
-        closeQ = Q(7, 0.0, 0.349, 1.047,0.0, 0.349,0, 0.349);
+        closeQ = Q(7, 0.0, 0.349, 1.047,0.0, 0.349,0.0, 0.349);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
         type = "SchunkHand";
     } else if( type== "SDH_CYL"){
         openQ = Q(7, -1.048, 0.174, 0.0, -1.048, 0.174,-1.048, 0.174);
-        closeQ = Q(7, 0.0, 0.349, 0.0, 0.0, 0.349,0, 0.349);
+        closeQ = Q(7, 0.0, 0.349, 0.0, 0.0, 0.349, 0.0, 0.349);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
         type = "SchunkHand";
     } else if( type== "SCUP"){
