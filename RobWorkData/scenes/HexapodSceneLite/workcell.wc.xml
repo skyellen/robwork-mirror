@@ -4,11 +4,11 @@
  <Frame name="Hexapod" refframe="WORLD">
   <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos></Frame>
  <Include file="../../devices/paralleldev/hexapod/hexapod_jens1.wc.xml" />
- <!--
+ 
  <Frame name="Tool" refframe="Hexapod.tool1ref">
   <RPY>0.0 0.0 0.0</RPY><Pos>0 0.0 0.0</Pos></Frame>
- <Include file="../../devices/paralleldev/hexapod/tool.xml" />
- -->
+ <Include file="../../devices/paralleldev/hexapod/gripper2.wc.xml" />
+ 
   <Frame name="Object" refframe="WORLD" type="Movable">
 	<RPY /> <Pos>0.0 0.0 0.092</Pos>
  </Frame>
