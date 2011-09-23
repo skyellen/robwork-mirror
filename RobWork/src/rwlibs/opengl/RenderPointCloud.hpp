@@ -118,9 +118,14 @@ namespace rwlibs { namespace opengl {
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;
 
-    private:
-        //Initilized the color and thickness parameters
+        /**
+		* @brief Rerender the scene into the display list.
+		* This method need to be called after all points has been added.
+		*/
         void rerender();
+
+    private:
+
 
         std::string _id;
 		std::vector<rw::math::Vector3D<float> > _points;

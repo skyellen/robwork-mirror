@@ -84,7 +84,6 @@ void RenderPointCloud::rerender() {
 void RenderPointCloud::addPoint(const Vector3D<float>& point)
 {
     _points.push_back(point);
-    rerender();
 }
 
 void RenderPointCloud::addPoint(const Vector3D<double>& point) 
@@ -94,7 +93,6 @@ void RenderPointCloud::addPoint(const Vector3D<double>& point)
 
 void RenderPointCloud::addPoints(const std::vector<Vector3D<float> >& points) {
 	_points.insert(_points.end(), points.begin(), points.end());
-    rerender();
 }
 
 void RenderPointCloud::addPoints(const std::vector<rw::math::Vector3D<double> >& points) {
@@ -115,6 +113,5 @@ void RenderPointCloud::setPointSize(float pointSize) {
 }
 
 void RenderPointCloud::clear() {
-    _points.clear();
-    rerender();
+    _points.clear();    
 }
