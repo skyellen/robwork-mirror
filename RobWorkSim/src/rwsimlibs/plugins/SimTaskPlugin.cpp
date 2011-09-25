@@ -450,6 +450,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     } else if( type== "GS20_WIDE"){
         openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
+        type = "GS20";
         tasks->getPropertyMap().set<std::string>("TCP","TCPGS20");
     } else if( type== "SDH_PAR"){
         openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
