@@ -35,8 +35,11 @@ RenderPointCloud::RenderPointCloud():
     _pointSize(2)
 
 {
-	_displayListId = glGenLists(1);
-	rerender();
+    // Using displaylists in the constructor is a HUGE NONO. The opengl context must be initialized before
+    // calling any opengl functions. Safest is to keep opengl functions in draw call
+
+    //_displayListId = glGenLists(1);
+	//rerender();
 }
 
 RenderPointCloud::RenderPointCloud(const std::vector<Vector3D<float> >& points):
@@ -45,13 +48,13 @@ RenderPointCloud::RenderPointCloud(const std::vector<Vector3D<float> >& points):
     _alpha(1),
     _pointSize(2)
 {
-	_displayListId = glGenLists(1);
-	rerender();
+	//_displayListId = glGenLists(1);
+	//rerender();
 }
 
 RenderPointCloud::~RenderPointCloud()
 {
-	glDeleteLists(_displayListId, 1);
+	//glDeleteLists(_displayListId, 1);
 }
 
 void RenderPointCloud::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
@@ -60,25 +63,23 @@ void RenderPointCloud::draw(const DrawableNode::RenderInfo& info, DrawableNode::
 
 	glColor4f(_r, _g, _b, _alpha);
     glPointSize(_pointSize);
-    glCallList(_displayListId);
+
+    glBegin(GL_POINTS);
+    // Draw all faces.
+    BOOST_FOREACH(const Vector3D<float>& point, _points) {
+        glVertex3f(point(0),point(1),point(2));
+    }
+    glEnd();
 
     glPopAttrib();
 }
 
 void RenderPointCloud::rerender() {
-    glNewList(_displayListId, GL_COMPILE);
+    //glNewList(_displayListId, GL_COMPILE);
     
-	glBegin(GL_POINTS);
-    // Draw all faces.
-    BOOST_FOREACH(const Vector3D<float>& point, _points) {
-        glVertex3f(static_cast<float>(point(0)),
-				   static_cast<float>(point(1)),
-				   static_cast<float>(point(2)));
-	}
-    glEnd();
 
 
-    glEndList();
+    //glEndList();
 }
 
 void RenderPointCloud::addPoint(const Vector3D<float>& point)
