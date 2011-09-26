@@ -137,7 +137,7 @@ namespace control {
 	private:
 		dynamics::DynamicDevice *_ddev;
 		rw::math::Q _maxVel;
-		rw::math::Q _lastError, _target, _currentQ, _currentVel;
+		rw::math::Q _lastError, _currentError, _target, _currentQ, _currentVel;
 		rw::math::Q _targetVel;
 		std::vector<PDParam> _pdparams;
 		ControlMode _mode;

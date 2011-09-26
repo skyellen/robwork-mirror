@@ -27,6 +27,7 @@ PDController::PDController(
 	JointController(name, &rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
+	_currentError(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_target(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_currentQ(_target),
 	_currentVel(rw::math::Q::zero(_target.size())),
@@ -50,6 +51,7 @@ PDController::PDController(
 	JointController(name, &rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
+	_currentError(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_target(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_currentQ(_target),_currentVel(rw::math::Q::zero(_target.size())),
 	_targetVel(rw::math::Q::zero(_target.size())),
@@ -96,29 +98,41 @@ void PDController::update(const rwlibs::simulation::Simulator::UpdateInfo& info,
 	//_accTime+=dt;
 	//if(_accTime<_stime)
 	//	return;
+    rw::math::Q q = _ddev->getModel().getQ(state);
+
+    if(!info.rollback){
+        _lastError = _currentError;
+        if(info.dt_prev>0.0){
+            _currentVel = (q - _currentQ)/info.dt_prev;
+        } else {
+            _currentVel = Q::zero(q.size());
+        }
+    }
 
 	double rdt = _accTime;
 	_accTime -= _stime;
-	rw::math::Q q = _ddev->getModel().getQ(state);
+
+
 	RW_ASSERT(_target.size()>0);
 	RW_ASSERT( q.size()>0);
-	rw::math::Q error = _target-q;
-	rw::math::Q nvel(error.size());
+	_currentError = _target-q;
+	rw::math::Q nvel(_currentError.size());
+
 	RW_ASSERT(_pdparams.size()==_lastError.size() );
-	RW_ASSERT_MSG(_pdparams.size()==error.size(), _pdparams.size() << "==" << error.size() );
+	RW_ASSERT_MSG(_pdparams.size()==_currentError.size(), _pdparams.size() << "==" << _currentError.size() );
 
 	for(size_t i=0;i<_pdparams.size();i++){
 		const double P = _pdparams[i].P;
 		const double D = _pdparams[i].D;
-		nvel[i] = P*error[i] + ((error[i]-_lastError[i])/info.dt)*D;
+		nvel[i] = P*_currentError[i];
+		if(info.dt_prev>0.0)
+		    nvel[i] += ((_currentError[i]-_lastError[i])/info.dt_prev)*D;
 	}
 
 	// std::cout  << "PD ERROR: " << error << std::endl;
 
-	_lastError = error;
 	_ddev->setVelocity( (_targetVel + nvel), state);
 	//2std::cout  << "T " << _target[0]<< " " << error[0]<< " "<< nvel[0] << " "<< _targetVel[0] << std::endl;
-	_currentVel = (q - _currentQ)/info.dt;
 	_currentQ = q;
 
 }
