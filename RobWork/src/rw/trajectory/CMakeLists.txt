@@ -17,11 +17,13 @@ SET(FILES_CPP
   InterpolatorTrajectory.cpp
   BlendedTrajectory.cpp
   TimeMetricUtil.cpp
+  RampInterpolator.cpp
 )
 
 SET(FILES_HPP
   Blend.hpp
   CircularInterpolator.hpp
+  RampInterpolator.hpp
   CubicSplineFactory.hpp
   CubicSplineInterpolator.hpp
   Interpolator.hpp
