@@ -38,40 +38,24 @@ namespace
 
 
 RenderGeometry::RenderGeometry(Geometry::Ptr geometry):
-		_geometry(geometry), _r(0.8f),_g(0.8f),_b(0.8f),_isCompiled(false)
+		_geometry(geometry), _r(0.8f),_g(0.8f),_b(0.8f)
 {
     setGeometry(_geometry);
 }
 
 RenderGeometry::RenderGeometry(rw::geometry::TriMesh::Ptr mesh):
-        _geometry(rw::common::ownedPtr( new Geometry(mesh) ) ), _r(0.8f),_g(0.8f),_b(0.8f),_isCompiled(false)
+        _geometry(rw::common::ownedPtr( new Geometry(mesh) ) ), _r(0.8f),_g(0.8f),_b(0.8f)
 {
     setGeometry(_geometry);
 }
 
 void RenderGeometry::setGeometry(rw::geometry::Geometry::Ptr geom){
     _geometry = geom;
-    _isCompiled = true;
     GeometryData::Ptr geomdata = geom->getGeometryData();
     _mesh = geomdata->getTriMesh(false);
-/*
-    if(_isCompiled){
-        glDeleteLists(_displayListId, 1);
-    }
-    _isCompiled = true;
-    _geometry = geom;
-
-    // create displaylist
-    _displayListId = glGenLists(1);
-    glNewList(_displayListId, GL_COMPILE);
-  */
- //   glEndList();
 }
 
 RenderGeometry::~RenderGeometry() {
-    //if(_isCompiled){
-    //    glDeleteLists(_displayListId, 1);
-    //}
 }
 
 void RenderGeometry::setColor(float r, float g, float b) {
@@ -96,16 +80,13 @@ void RenderGeometry::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dr
 	switch(type){
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
-		//glCallList(_displayListId);
     	render();
 		break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-		//glCallList(_displayListId);
     	render();
     case DrawableNode::WIRE: // Draw nice frame
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    	//glCallList(_displayListId);
     	render();
     	break;
 	}

@@ -92,12 +92,9 @@ namespace opengl {
         GLfloat _specular[4];
         GLfloat _shininess[1];
 
-        GLuint _displayListId;
         rw::geometry::Geometry::Ptr _geometry;
         rw::geometry::TriMesh::Ptr _mesh;
         float _r, _g, _b;
-
-        bool _isCompiled;
     };
 
 #ifdef RW_USE_DEPRECATED

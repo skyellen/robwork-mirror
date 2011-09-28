@@ -39,8 +39,7 @@ namespace rwlibs { namespace opengl {
     {
     private:
         float _size;
-        GLUquadricObj *_quadratic;
-        GLuint _displayListId;
+        mutable GLUquadricObj *_quadratic;
 
         mutable float _green[4];
         mutable float _red[4];
@@ -58,9 +57,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief Destructor
          */
-        virtual ~RenderFrame(){
-        	glDeleteLists(_displayListId,1);
-        };
+        virtual ~RenderFrame();
 
     	/* Functions inherited from Render */
 

@@ -104,6 +104,7 @@ namespace rwlibs { namespace opengl {
 
     private:
         std::vector<rwlibs::opengl::RWGLTexture::Ptr> _textures;
+        bool _shownormals;
     };
 
     /*@}*/

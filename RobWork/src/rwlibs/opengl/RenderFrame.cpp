@@ -73,14 +73,17 @@ namespace {
 
 RenderFrame::RenderFrame(float size):
     _size(size),
-    _displayListId(0)
+    _quadratic(NULL)
 {
 	initializeColors(_red,_green,_blue);
-    _quadratic = gluNewQuadric();
 }
+
+RenderFrame::~RenderFrame(){}
 
 void RenderFrame::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
+    if(_quadratic==NULL)
+        _quadratic = gluNewQuadric();
 	const float width = 0.3f;
 	_green[3] = (float)alpha;
 	_red[3] = (float)alpha;

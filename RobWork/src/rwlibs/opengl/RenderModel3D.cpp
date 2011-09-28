@@ -231,9 +231,10 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 	}
 
 	glPopMatrix();
-/*
+
 	// Show the normals?
-	if (shownormals)
+	/*
+	if (_shownormals)
 	{
 		// Loop through the vertices and normals and draw the normal
 		for (int k = 0; k < Objects.at(i).numVerts * 3; k += 3)

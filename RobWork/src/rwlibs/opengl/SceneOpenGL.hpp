@@ -70,7 +70,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief Destroys object
          */
-        ~SceneOpenGL();
+        virtual ~SceneOpenGL();
 
         /**
          * @brief Clears the drawable cache by deleting all drawables
