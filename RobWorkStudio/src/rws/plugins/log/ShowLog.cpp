@@ -111,20 +111,20 @@ ShowLog::ShowLog():
 
     setWidget(_editor);  // Sets the widget on the QDockWidget
 
-    _writers.push_back( new WriterWrapper(this, Qt::black, Log::Info) );
-    _writers.push_back( new WriterWrapper(this, Qt::darkYellow, Log::Warning) );
-    _writers.push_back( new WriterWrapper(this, Qt::darkRed, Log::Error) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::black, Log::Info) ) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkYellow, Log::Warning) ) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkRed, Log::Error) ) );
 
 }
 
 ShowLog::~ShowLog()
 {
-
+    delete _endCursor;
 }
 
 bool ShowLog::event(QEvent *event){
     if(event->type()==MESSAGE_ADDED_EVENT){
-        BOOST_FOREACH(WriterWrapper* writer, _writers){
+        BOOST_FOREACH(rw::common::Ptr<WriterWrapper> writer, _writers){
             for(unsigned int i=0;i<writer->_msgQueue.size();i++){
                 write(writer->_msgQueue[i].first, writer->_msgQueue[i].second);
             }

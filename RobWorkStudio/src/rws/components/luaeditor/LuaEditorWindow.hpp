@@ -50,10 +50,13 @@ class LuaRunThread : public QThread
  public:
      LuaRunThread(const std::string& cmd,
                   LuaState *lstate,
-				  rw::common::Log::Ptr output):
+				  rw::common::Log::Ptr output,
+				  QWidget *parent=NULL):
+				      QThread(parent),
                       _cmd(cmd),
                       _lua(lstate),
-                      _output(output){}
+                      _output(output)
+     {}
 
      void set(const std::string& cmd,
                   LuaState *lstate,

@@ -24,7 +24,7 @@ public:
     /**
      * @brief Destructor
      */
-    ~AboutBox();
+    virtual ~AboutBox();
 
     /**
      * @brief Adds about text for a plugin.

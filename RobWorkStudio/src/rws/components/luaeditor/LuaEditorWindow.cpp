@@ -164,7 +164,7 @@ void LuaEditorWindow::setupEditor(){
 
     _highlighter = new LuaHighlighter(_editor->document());
 
-    _luaRunner =  new LuaRunThread("",_lua,_output);
+    _luaRunner =  new LuaRunThread("",_lua,_output, this);
 
     connect(_editor, SIGNAL(modificationChanged(bool)), this, SLOT(textChanged()));
 

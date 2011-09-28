@@ -114,14 +114,14 @@ void RobWorkStudio::updateAndRepaint(){
 //	return _rws->getView();
 //}
 
-RobWorkStudio *rwstudio_internal = NULL;
+rw::common::Ptr<RobWorkStudio> rwstudio_internal;
 
 RobWorkStudio* rws::lua::rwstudio::getRobWorkStudio(){
-	return rwstudio_internal;
+	return rwstudio_internal.get();
 }
 
 void rws::lua::rwstudio::setRobWorkStudio(rws::RobWorkStudio* rwstudio){
-	rwstudio_internal = new RobWorkStudio(rwstudio);
+	rwstudio_internal = rw::common::ownedPtr( new RobWorkStudio(rwstudio) );
 }
 
 DummyPtr rws::lua::rwstudio::makeDummy(){

@@ -9,7 +9,9 @@ struct lua_State;
 
 class LuaState {
 public:
-    LuaState():_rws(NULL){}
+    LuaState();
+
+    virtual ~LuaState();
 
     void reset();
 
@@ -22,10 +24,10 @@ public:
     typedef boost::function<void(lua_State*)> AddLibraryCB;
     void addLibrary(AddLibraryCB cb);
 
-    lua_State* get() { return _lua.get();}
+    lua_State* get() { return _lua;}
 
 private:
-    rw::common::Ptr<struct lua_State> _lua;
+    struct lua_State *_lua;
     rws::RobWorkStudio* _rws;
     std::vector<AddLibraryCB> _libraryCBs;
 };

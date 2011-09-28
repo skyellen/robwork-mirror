@@ -38,6 +38,8 @@ public:
 
     PropertyViewEditor(QWidget *parent);
 
+    virtual ~PropertyViewEditor();
+
     /**
      * @brief set the propertymap and update it.
      * @param map

@@ -344,7 +344,7 @@ void SceneOpenGLViewer::clear()
 }
 
 void SceneOpenGLViewer::renderView(View::Ptr view){
-    boost::mutex::scoped_lock lock(_renderMutex);
+    //boost::mutex::scoped_lock lock(_renderMutex);
     makeCurrent();
 
     _renderInfo._mask = view->_drawMask;
@@ -363,7 +363,7 @@ void SceneOpenGLViewer::renderView(View::Ptr view){
 void SceneOpenGLViewer::glDraw(){
     // we need to make this thread safe, since sensor cameras and
     // stuff might want to draw stuff too
-    boost::mutex::scoped_lock lock(_renderMutex);
+    //boost::mutex::scoped_lock lock(_renderMutex);
     QGLWidget::glDraw();
 }
 
@@ -484,6 +484,7 @@ void SceneOpenGLViewer::initializeGL()
 
 void SceneOpenGLViewer::paintGL()
 {
+
     if( _cameraCtrl ){
         // for now we scale the pivot such that its not unrealistically large/small
         getViewCamera()->setTransform(_cameraCtrl->getTransform());

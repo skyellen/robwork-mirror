@@ -84,7 +84,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     sstr << " RobWorkStudio v" << RW_VERSION;
     QString qstr(sstr.str().c_str());
     setWindowTitle( qstr );
-    setWindowIcon( *(new QIcon(":/images/rw_logo_64x64.png") ) );
+    setWindowIcon( QIcon(":/images/rw_logo_64x64.png") );
 
     _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
     boost::filesystem::path settingsPath("rwsettings.xml");
@@ -120,7 +120,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     setupFileActions();
     setupViewGL();
 
-    _propEditor = new PropertyViewEditor(NULL);
+    _propEditor = new PropertyViewEditor( NULL );
     _propEditor->setPropertyMap( &_propMap  );
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
@@ -156,27 +156,8 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
 
 RobWorkStudio::~RobWorkStudio()
 {
-    _settingsMap->set<int>("WindowPosX", this->pos().x());
-    _settingsMap->set<int>("WindowPosY", this->pos().y());
-
-    _settingsMap->set<int>("WindowWidth", this->width());
-    _settingsMap->set<int>("WindowHeight", this->height());
-
-    if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
-        _propMap.set("cmdline", PropertyMap());
-        try {
-            //XMLPropertySaver::save(*_settingsMap, "rwsettings2.xml");
-
-            XMLPropertySaver::save(_propMap, "rwsettings.xml");
-
-        } catch(const rw::common::Exception& e) {
-            RW_WARN("Error saving settings file: " << e);
-        } catch(...) {
-            RW_WARN("Error saving settings file due to unknown exception!");
-        }
-    } else {
-
-    }
+    delete _assistant;
+    delete _propEditor;
 
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
@@ -190,6 +171,8 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 }
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
+
+    std::cout << "CLOSE EVENT" << std::endl;
 	// save the settings of each plugin
     BOOST_FOREACH(RobWorkStudioPlugin* plugin, _plugins){
         bool visible = plugin->isVisible();
@@ -202,11 +185,37 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
         _settingsMap->set<int>( std::string("PluginArea_")+ pname , intarea);
     }
 
-	_propEditor->close();
+    _settingsMap->set<int>("WindowPosX", this->pos().x());
+    _settingsMap->set<int>("WindowPosY", this->pos().y());
+    _settingsMap->set<int>("WindowWidth", this->width());
+    _settingsMap->set<int>("WindowHeight", this->height());
 
-    // now call accept
-    e->accept();
-	
+    if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
+        _propMap.set("cmdline", PropertyMap());
+        try {
+            XMLPropertySaver::save(_propMap, "rwsettings.xml");
+        } catch(const rw::common::Exception& e) {
+            RW_WARN("Error saving settings file: " << e);
+        } catch(...) {
+            RW_WARN("Error saving settings file due to unknown exception!");
+        }
+    }
+    _propMap = PropertyMap();
+    _propEditor->close();
+
+    closeAllPlugins();
+    _view->clear();
+	_view->close();
+
+	// close all plugins
+    typedef std::vector<RobWorkStudioPlugin*>::iterator I;
+    for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
+        std::cout << "closing PLUGIN: " << (*it)->name().toStdString() << std::endl;
+        (*it)->QWidget::close();
+    }
+
+	// now call accept
+	e->accept();
 }
 
 
@@ -545,8 +554,8 @@ namespace
 {
 	WorkCell::Ptr emptyWorkCell()
     {
-		WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(new StateStructure()));
-        CollisionSetup::set(CollisionSetup(), workcell.get());
+		WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(ownedPtr(new StateStructure())));
+        CollisionSetup::set(CollisionSetup(), workcell);
         return workcell;
     }
 
@@ -866,7 +875,7 @@ void RobWorkStudio::setState(const rw::kinematics::State& state)
 void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& path){
     bool handshake = false;
     QApplication::postEvent( this, new RobWorkStudioEvent(path, &handshake) );
-    RobWorkStudioEvent::wait(&handshake);
+    //RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postExit(){
@@ -931,11 +940,11 @@ bool RobWorkStudio::event(QEvent *event)
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-        std::cout << "CLOSING ROBWORKSTUDIO" << std::endl;
-        closeWorkCell();		
+        closeWorkCell();
         rwse->done();
+        close();
         //QCoreApplication::exit(1);
-        abort();
+        //abort();
     } else {
         //event->ignore();
     }

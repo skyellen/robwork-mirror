@@ -6,7 +6,9 @@ AboutBox::AboutBox(const QString& version, const QString& revision, QWidget *par
     : QDialog(parent)
 {
     ui.setupUi(this);
-    ui.lblLogo->setPixmap(QPixmap(":/images/rw_logo_64x64.png"));
+    QPixmap logo(":/images/rw_logo_64x64.png");
+    if(!logo.isNull())
+        ui.lblLogo->setPixmap( logo );
     ui.lblVersion->setText(version);
     ui.lblRevision->setText(revision);
     ui.tabWidget->clear();

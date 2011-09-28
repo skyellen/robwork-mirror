@@ -23,9 +23,9 @@ using namespace rw::math;
 
 PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(parent)
 {
-    _variantFactory = new QtVariantEditorFactory();
+    _variantFactory = new QtVariantEditorFactory( this );
 
-    _variantManager = new QtVariantPropertyManager();
+    _variantManager = new QtVariantPropertyManager( this );
 
     connect(_variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
                 this, SLOT(slotValueChanged(QtProperty *, const QVariant &)));
@@ -40,6 +40,15 @@ PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(p
     this->setPropertiesWithoutValueMarked(true);
     this->setRootIsDecorated(false);
 
+}
+
+PropertyViewEditor::~PropertyViewEditor(){
+    this->clear();
+    _variantManager->clear();
+    _qtPropToRwProp.clear();
+    _qtPropToRwPropMap.clear();
+
+    RW_WARN("1");
 }
 
 namespace {

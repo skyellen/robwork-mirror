@@ -503,7 +503,6 @@ namespace rws {
 
 		rw::RobWork::Ptr _robwork;
 
-		//SceneViewerWidget* _sceneview;
 		RWStudioView3D* _view;
 		AboutBox* _aboutBox;
 		
@@ -516,7 +515,6 @@ namespace rws {
 		QMenu* _pluginsMenu, *_fileMenu, *_viewMenu;
 		QToolBar* _pluginsToolBar, _viewToolBar;
 
-		PropertyInspector* _inspector;
 		PropertyViewEditor *_propEditor;
 		
 		bool _inStateUpdate;

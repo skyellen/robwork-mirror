@@ -94,7 +94,7 @@ private:
 private:
     QTextEdit* _editor;
     QTextCursor *_endCursor;
-    std::vector<WriterWrapper*> _writers;
+    std::vector<rw::common::Ptr<WriterWrapper> > _writers;
 
     //rw::kinematics::State _state;
 };

@@ -84,7 +84,7 @@ Lua::Lua()
     toolbar->addAction(editorAction);
     toolbar->addAction(resetAction);
 
-    _console = new LuaConsoleWidget();
+    _console = new LuaConsoleWidget( this );
     //_console->setReadOnly(true);
     lay->addWidget(_console);
 
@@ -100,6 +100,7 @@ Lua::Lua()
 Lua::~Lua()
 {
     // Close the Lua state.
+    delete _lua;
 }
 
 void Lua::initialize()

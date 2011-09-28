@@ -17,10 +17,19 @@ extern "C" {
     #include <lauxlib.h>
 }
 
+LuaState::LuaState():_rws(NULL),_lua(NULL)
+{}
+
+LuaState::~LuaState(){
+    if(_lua!=NULL)
+        lua_close(_lua);
+    _lua = NULL;
+}
+
 int LuaState::runCmd(const std::string& cmd){
-    int error = luaL_loadbuffer(_lua.get(), cmd.c_str(), cmd.size(), "");
+    int error = luaL_loadbuffer(_lua, cmd.c_str(), cmd.size(), "");
     if (!error)
-        error = lua_pcall(_lua.get(), 0, 0, 0);
+        error = lua_pcall(_lua, 0, 0, 0);
     return error;
 }
 
@@ -30,16 +39,17 @@ void LuaState::addLibrary(AddLibraryCB cb){
 
 void LuaState::reset(){
     if (_lua!=NULL)
-        lua_close(_lua.get());
+        lua_close(_lua);
 
     // Open the Lua state.
     _lua = lua_open();
-    luaL_openlibs(_lua.get());
-    rwlua::rw::luaRobWork_open(_lua.get());
-    tolua_LuaRWStudio_open(_lua.get());
+    luaL_openlibs(_lua);
+
+    rwlua::rw::luaRobWork_open(_lua);
+    tolua_LuaRWStudio_open(_lua);
     rws::lua::rwstudio::setRobWorkStudio( _rws );
     BOOST_FOREACH(AddLibraryCB &cb, _libraryCBs){
-        cb(_lua.get());
+        cb(_lua);
     }
 
     // add rw and rws namespaces
