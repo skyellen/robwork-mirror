@@ -45,7 +45,7 @@ CollisionDetector::CollisionDetector(WorkCell::Ptr workcell):
         _npstrategy(NULL)
 {
 	RW_ASSERT(workcell);
-	_bpfilter = new BasicFilterStrategy(workcell);
+	_bpfilter = ownedPtr( new BasicFilterStrategy(workcell) );
 }
 
 CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
@@ -55,7 +55,7 @@ CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    _bpfilter = new BasicFilterStrategy(workcell);
+    _bpfilter = ownedPtr( new BasicFilterStrategy(workcell) );
 
     // build the frame map
     std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
