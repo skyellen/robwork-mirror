@@ -12,6 +12,8 @@ namespace {
     class QImageLoader: public rw::loaders::ImageLoader {
     public:
 
+        virtual ~QImageLoader(){}
+
         rw::sensor::Image::Ptr loadImage(const std::string& filename){
             // load the image
             QImage img;

@@ -234,7 +234,6 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
     _view->setWorldNode( _wcscene->getWorldNode() );
 
     // add a floor grid drawable to the scene
-
     std::vector<Line> lines;
     lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
     lines.push_back(Line(Vector3D<>(0,5,0),Vector3D<>(0,-5,0)));
@@ -319,7 +318,7 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
 }
 
 void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
-    std::cout << "Menu event ;)" << std::endl;
+    //std::cout << "Menu event ;)" << std::endl;
 
 
 }

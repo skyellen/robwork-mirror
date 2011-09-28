@@ -161,7 +161,8 @@ RobWorkStudio::~RobWorkStudio()
 
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
-        delete *it;
+        std::cout << (*it)->name().toStdString() << std::endl;
+        //delete *it;
     }
 }
 
@@ -171,8 +172,6 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 }
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
-
-    std::cout << "CLOSE EVENT" << std::endl;
 	// save the settings of each plugin
     BOOST_FOREACH(RobWorkStudioPlugin* plugin, _plugins){
         bool visible = plugin->isVisible();
@@ -210,7 +209,7 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
 	// close all plugins
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
-        std::cout << "closing PLUGIN: " << (*it)->name().toStdString() << std::endl;
+        //std::cout << "closing PLUGIN: " << (*it)->name().toStdString() << std::endl;
         (*it)->QWidget::close();
     }
 
@@ -637,7 +636,8 @@ void RobWorkStudio::openFile(const std::string& file)
 
     try {
         const QString filename(file.c_str());
-        std::cout << filename.toStdString() << std::endl;
+        //std::cout << filename.toStdString() << std::endl;
+
         if (!filename.isEmpty()) {
             std::vector<std::string> lastfiles = _settingsMap->get<std::vector<std::string> >("LastOpennedFiles", std::vector<std::string>());
             lastfiles.push_back(file);
@@ -650,6 +650,7 @@ void RobWorkStudio::openFile(const std::string& file)
                 filename.endsWith(".TRI", Qt::CaseInsensitive) ||
                 filename.endsWith(".OBJ", Qt::CaseInsensitive))
             {
+                Log::infoLog() << "Opening drawable file: " << filename.toStdString() << "\n";
                 openDrawable(filename);
                 _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", lastfiles);
                 updateLastFiles();
@@ -658,10 +659,12 @@ void RobWorkStudio::openFile(const std::string& file)
                        filename.endsWith(".DEV", Qt::CaseInsensitive) ||
                        filename.endsWith(".XML", Qt::CaseInsensitive) )
             {
+                Log::infoLog() << "Opening workcell file: " << filename.toStdString() << "\n";
                 openWorkCellFile(filename);
                 _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", lastfiles);
                 updateLastFiles();
             } else {
+                Log::infoLog() << "Failed loading file: " << filename.toStdString() << "\n";
                 QMessageBox::information(
                     NULL,
                     "Unknown extension",
@@ -679,7 +682,7 @@ void RobWorkStudio::openFile(const std::string& file)
             exp.getMessage().getText().c_str(),
             QMessageBox::Ok);
 
-        closeWorkCell();
+        //closeWorkCell();
     }
     //std::cout << "Update handler!" << std::endl;
     updateHandler();

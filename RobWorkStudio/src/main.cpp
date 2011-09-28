@@ -96,6 +96,7 @@ using namespace rws;
 	}
 #endif // RW_STATIC_LINK_PLUGINS 
 
+
 int main(int argc, char** argv)
 {
 
@@ -109,55 +110,53 @@ int main(int argc, char** argv)
     poptions.parse(argc, argv);
 
     PropertyMap map = poptions.getPropertyMap();
+
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
-    QApplication app(argc, argv);
-    try {
-	
-        std::vector<rws::RobWorkStudio::PluginSetup> plugins; 
-		
-        QPixmap pixmap(":/images/splash.jpg");
-
-        QSplashScreen splash(pixmap); 
-        splash.show();
-        // Loading some items
-        splash.showMessage("Adding static plugins");
+    RobWork robwork;
+    {
+        QApplication app(argc, argv);
+        try {
         
-		plugins = getPlugins();
+            std::vector<rws::RobWorkStudio::PluginSetup> plugins;
 
-        app.processEvents();
-        // Establishing connections
-        splash.showMessage("Loading dynamic plugins");
+            QPixmap pixmap(":/images/splash.jpg");
 
-        RobWork robwork;
-        std::string pluginFolder = "./plugins/";
+            QSplashScreen splash(pixmap);
+            splash.show();
+            // Loading some items
+            splash.showMessage("Adding static plugins");
 
-		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
-		std::cout<<"Finished Construction"<<std::endl;
-        if(!inputfile.empty()){ 
-			std::cout<<"Try to open file"<<std::endl;
-            rwstudio.openFile(inputfile);
-			std::cout<<"File Opned"<<std::endl;
+            plugins = getPlugins();
+
+            app.processEvents();
+            // Establishing connections
+            splash.showMessage("Loading dynamic plugins");
+            std::string pluginFolder = "./plugins/";
+
+            {
+                rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
+                if(!inputfile.empty()){
+                    splash.showMessage("Openning dynamic workcell...");
+                    rwstudio.openFile(inputfile);
+                }
+
+                // load configuration into RobWorkStudio
+                splash.showMessage("Loading settings");
+                splash.finish(&rwstudio);
+                rwstudio.show();
+                res = app.exec();
+            }
+        } catch (const Exception& e) {
+            std::cout << e.what() << std::endl;
+            QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
+            return -1;
+        } catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+            QMessageBox::critical(NULL, "Exception", e.what());
+            return -1;
         }
-
-        // load configuration into RobWorkStudio
-        splash.showMessage("Loading settings");
-		std::cout<<"Ready to show"<<std::endl;
-        rwstudio.show();
-		std::cout<<"Show finished"<<std::endl;
-        splash.finish(&rwstudio);
-        res = app.exec();
-        std::cout << "Application Ready to Terminate" << std::endl;
-    } catch (const Exception& e) {
-        std::cout << e.what() << std::endl;
-        QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
-        return -1;
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-        QMessageBox::critical(NULL, "Exception", e.what());
-        return -1;
     }
-
     return 0;
 }
 
