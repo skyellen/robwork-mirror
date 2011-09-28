@@ -697,6 +697,12 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//if(badLCPSolution)
 	//    RW_WARN("Possibly bad LCP Solution.");
 
+    Simulator::UpdateInfo conStepInfo;
+    conStepInfo.dt = dttmp;
+    conStepInfo.dt_prev = lastDt;
+    conStepInfo.time = _time;
+    conStepInfo.rollback = false;
+
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
 	BOOST_FOREACH(ODEDevice *dev, _odeDevices){
@@ -712,11 +718,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Sensor update :");
     //std::cout << "Sensor update :" << std::endl;
     // update all sensors with the values of the joints
-    Simulator::UpdateInfo conStepInfo;
-    conStepInfo.dt = dttmp;
-    conStepInfo.dt_prev = lastDt;
-    conStepInfo.time = _time;
-    conStepInfo.rollback = false;
     BOOST_FOREACH(ODETactileSensor *odesensor, _odeSensors){
         odesensor->update(conStepInfo, state);
     }
@@ -779,7 +780,7 @@ ODEBody* ODESimulator::createRigidBody(Body* rwbody,
 
 
     //std::cout << "RW inertia: " << info.inertia << std::endl;
-    printMassInfo(m, *rwbody->getBodyFrame() );
+    //printMassInfo(m, *rwbody->getBodyFrame() );
     dMassCheck(&m);
     // create the body and initialize mass, inertia and stuff
 
@@ -803,6 +804,16 @@ ODEBody* ODESimulator::createRigidBody(Body* rwbody,
         dBodySetData (bodyId, (void*)odeBody);
         //_odeBodies.push_back(odeBody);
         _allbodies.push_back(bodyId);
+    }
+
+    // check if body frame has any properties that relate to ODE
+    if( rwbody->getBodyFrame()->getPropertyMap().has("LinearDamping") ){
+        dReal linDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("LinearDamping");
+        dBodySetLinearDamping(bodyId, linDamp);
+    }
+    if( rwbody->getBodyFrame()->getPropertyMap().has("AngularDamping") ){
+        dReal angDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("AngularDamping");
+        dBodySetAngularDamping(bodyId, angDamp);
     }
 
 	// now associate all geometry with the body
@@ -1654,7 +1665,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
-        bool softcontact = false;
+        bool softcontact = true;
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
@@ -1695,7 +1706,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
             if( softcontact ){
                 // scale the distances to fit into MAX_SEP_DISTANCE
+                //std::cout << res->distances[i] << ";" << res->distances[i]*_maxSepDistance/(_maxSepDistance+softlayer) << std::endl;
                 res->distances[i] *= _maxSepDistance/(_maxSepDistance+softlayer);
+                //res->distances[i] *= _maxSepDistance/_maxSepDistance;
             }
             //double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
             double penDepth = _maxAllowedPenetration - res->distances[i];
@@ -1920,8 +1933,10 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         int idxFrom = _srcIdx[i];
         const int idxTo = _srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        OBRManifold manifold(0.02,1.2);
+        OBRManifold manifold(10*Deg2Rad,0.2);
+
         //std::cout << "Adding clustered points to manifold!" << std::endl;
+
         for(;idxFrom<idxTo; idxFrom++){
             ContactPoint &point = src[_dstIdx[idxFrom]];
             //std::cout << point.p << std::endl;
@@ -1939,6 +1954,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     BOOST_FOREACH(OBRManifold& obr, manifolds){
         contactNormalAvg += obr.getNormal();
         int nrContacts = obr.getNrOfContacts();
+        //std::cout << "Manifold: " << nrContacts << ";" << std::endl;
         for(int j=0;j<nrContacts; j++){
             _allcontacts.push_back( obr.getContact(j) );
             dst[contactIdx] = obr.getContact(j);
@@ -2000,19 +2016,19 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         cNormal += point->n;
         double rwnlength = MetricUtil::norm2(point->n);
         if((0.9>rwnlength) || (rwnlength>1.1)){
-        	std::cout <<  "\n\n Normal not normalized _0_ !\n"<<std::endl;
+        	//std::cout <<  "\n\n Normal not normalized _0_ !\n"<<std::endl;
         	continue;
         }
         ODEUtil::toODEVector(point->n, con.geom.normal);
         ODEUtil::toODEVector(point->p, con.geom.pos);
 
-        double odenlength = sqrt( con.geom.normal[0]*con.geom.normal[0] +
-                                  con.geom.normal[1]*con.geom.normal[1] +
-                                  con.geom.normal[2]*con.geom.normal[2] );
+        //double odenlength = sqrt( con.geom.normal[0]*con.geom.normal[0] +
+        //                          con.geom.normal[1]*con.geom.normal[1] +
+        //                          con.geom.normal[2]*con.geom.normal[2] );
 
 
-        if( (0.9>odenlength) || (odenlength>1.1) )
-        	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
+        //if( (0.9>odenlength) || (odenlength>1.1) )
+        //	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
 
         con.geom.depth = point->penetration;
 
