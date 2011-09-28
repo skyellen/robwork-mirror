@@ -61,6 +61,8 @@ SimTaskPlugin::SimTaskPlugin():
     _typeComboBox->addItem("PG70_SMALL");
     _typeComboBox->addItem("SDH_BALL");
     _typeComboBox->addItem("SDH_PAR");
+    _typeComboBox->addItem("SDH_PAR1");
+    _typeComboBox->addItem("SDH_PAR2");
     _typeComboBox->addItem("SDH_CYL");
     _typeComboBox->addItem("GS20");
     _typeComboBox->addItem("GS20_WIDE");
@@ -78,6 +80,10 @@ SimTaskPlugin::SimTaskPlugin():
 
 SimTaskPlugin::~SimTaskPlugin()
 {
+    std::cout << "destroy SimTaskPlugin " << std::endl;
+    if(_timer!=NULL)
+        _timer->stop();
+
 }
 
 void SimTaskPlugin::initialize() {
@@ -107,7 +113,7 @@ void SimTaskPlugin::startSimulation() {
         return;
     }
     //RW_WARN("1");
-    debugRender->setDrawMask( 7 );
+    debugRender->setDrawMask( 15 );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( debugRender, "DebugRender" );
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
     //RW_WARN("1");
@@ -172,6 +178,7 @@ void SimTaskPlugin::open(WorkCell* workcell)
 
 void SimTaskPlugin::close() {
     // destroy simulation and stuff
+    _timer->stop();
     if(_graspSim!=NULL){
         _graspSim->pauseSimulation();
     }
@@ -182,6 +189,7 @@ void SimTaskPlugin::close() {
     _saveResultBtn->setEnabled(false);
     _startBtn->setEnabled(false);
     _stopBtn->setEnabled(false);
+
 }
 
 void SimTaskPlugin::btnPressed() {
@@ -207,6 +215,7 @@ void SimTaskPlugin::btnPressed() {
                 // generate an initial task list and set it
                 rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
                 setCurrentTask(tasks);
+                _mergedResult = ownedPtr( new CartesianTask() );
             }
             startSimulation();
         } else {
@@ -287,7 +296,7 @@ void SimTaskPlugin::btnPressed() {
         double avgGraspTime = (_wallTotalTimer.getTime()/(nrgrasps))*1000;
         _timePerGraspLbl->setText( Timer((int)avgGraspTime).toString("ss:zzz").c_str() );
         _timeToFinishLbl->setText( Timer((int)(avgGraspTime* (_graspSim->getNrTargetsDone()-nrgrasps))).toString("hh:mm").c_str() );
-        RW_WARN("1");
+
         if( _graspSim->isFinished() && !_genTasksBox->isChecked()){
             std::cout << "_graspSim->isFinished() && !_genTasksBox->isChecked()" << std::endl;
             _saveResultBtn->setEnabled(true);
@@ -312,24 +321,25 @@ void SimTaskPlugin::btnPressed() {
             }
 
             // read back result and add it to the merged result
-            if(_mergedResult==NULL){
-                _mergedResult = _graspSim->getResult();
-                _mergedResult->getTargets().resize(0);
-
-            }
-            log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
+            //log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
             if(_onlySuccessBox->isChecked()){
                 // remove all failing grasp targets
                 std::cout << "MERGE ALL SUCCESSES" << std::endl;
-                BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, _graspSim->getResult()->getTargets()){
-                    std::cout << "TARGET" << std::endl;
-                    int status = target->getPropertyMap().get<int> ("TestStatus",-1);
-                    if(status==GraspTaskSimulator::Success || status==GraspTaskSimulator::ObjectSlipped){
 
-                        log().info() << "MERGE" << std::endl;
-                        _mergedResult->getTargets().push_back(target);
+                //BOOST_FOREACH(CartesianTask::Ptr task, _graspSim->getResult()->getTasks() ){
+                    CartesianTask::Ptr task = _graspSim->getResult();
+                    std::vector<CartesianTarget::Ptr> stargets;
+                    BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
+                        std::cout << "TARGET" << std::endl;
+                        int status = target->getPropertyMap().get<int> ("TestStatus",-1);
+                        if(status==GraspTaskSimulator::Success || status==GraspTaskSimulator::ObjectSlipped){
+                            log().info() << "MERGE" << std::endl;
+                            stargets.push_back(target);
+                        }
                     }
-                }
+                    task->getTargets() = stargets;
+                    _mergedResult->addTask(task);
+                //}
             }
 
             log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
@@ -341,6 +351,8 @@ void SimTaskPlugin::btnPressed() {
                 setCurrentTask(tasks);
 
                 _graspSim->startSimulation( getRobWorkStudio()->getState() );
+            } else {
+                _timer->stop();
             }
             // save tasks
             log().info() << "SAVE MERGED TASKS\n";
@@ -453,9 +465,19 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         type = "GS20";
         tasks->getPropertyMap().set<std::string>("TCP","TCPGS20");
     } else if( type== "SDH_PAR"){
-        openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
-        closeQ = Q(7,-1.571,-1.571,1.571,0.0,0.419,0.0,0.419);
+        openQ =  Q(7,-1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
+        closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
+        type = "SchunkHand";
+    } else if( type== "SDH_PAR1"){
+        openQ =  Q(7,-1.571,-1.571,1.571, -0.296, 0.240, -0.296, 0.240);
+        closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
+        tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
+        type = "SchunkHand";
+    } else if( type== "SDH_PAR2"){
+        openQ =  Q(7,-1.571,-1.571,1.571, -0.1, 0.1, -0.1, 0.1);
+        closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
+        tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
         type = "SchunkHand";
     } else if( type== "SDH_BALL"){
         openQ = Q(7,-1.048, 0.174, 1.047 ,-1.048, 0.174, -1.048, 0.174);
@@ -632,7 +654,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
     }
     rwlibs::task::CartesianTask::Ptr grasptask = ownedPtr( new rwlibs::task::CartesianTask() );
     grasptask->addTask(result);
-    GraspTask gtask(grasptask);
+    GraspTask gtask(_mergedResult);
     try {
         if(_outputFormatBox->currentText()=="RWTask"){
             GraspTask::saveRWTask(&gtask, taskFile);

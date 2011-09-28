@@ -114,22 +114,74 @@ RWSimPlugin::RWSimPlugin():
 
     // seed generat
     Math::seed( clock() );
-    Vector3D<> v,v2;
-    ODEUtil::toODEVector(v, &v2[0]);
-    _timer = new QTimer( NULL );
+
+    _timer = new QTimer( this );
     _timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
+}
+RWSimPlugin::~RWSimPlugin(){
+    if(_timerShot!=NULL)
+        _timerShot->stop();
+    _timer->stop();
+};
+
+
+
+namespace {
+    boost::tuple<QWidget*, QAction*, int> getAction(QWidget* widget, const std::string& actionName){
+        QList<QAction*> list = widget->actions();
+        for (int i = 0; i < list.size(); ++i) {
+            //std::cout << list.at(i)->text().toStdString() << "==" <<  actionName << std::endl;
+            if (list.at(i)->text().toStdString() == actionName){
+                //std::cout << "Found File at position " << i << std::endl;
+                return boost::make_tuple(widget,list.at(i), i);
+            }
+        }
+        return boost::make_tuple(widget,(QAction*)NULL, -1);
+    }
+
+    boost::tuple<QWidget*, QMenu*,int> getMenu(QWidget* widget, const std::string& menuName){
+        boost::tuple<QWidget*, QAction*,int> res = getAction(widget, menuName);
+        if( (res.get<1>()!=NULL) && (res.get<1>()->menu()!=NULL) ){
+            return boost::make_tuple(widget, res.get<1>()->menu(), res.get<2>());
+        }
+        return boost::make_tuple(widget,(QMenu*)NULL, -1);
+    }
+
+    boost::tuple<QMenu*, QAction*,int> getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2){
+        QWidget *wid; QMenu *pmenu; QAction* action; int index;
+        boost::tie(wid, pmenu,index) = getMenu(widget,actionName);
+        if(pmenu==NULL)
+            return boost::make_tuple((QMenu*)NULL,(QAction*)NULL, -1);
+        boost::tie(wid, action, index) = getAction(pmenu, actionName2);
+        if(action==NULL)
+            return boost::make_tuple((QMenu*)NULL, (QAction*)NULL, -1);
+        return boost::make_tuple(pmenu, action, index);
+    }
+
 
 }
 
 
-void RWSimPlugin::setupMenu(QMenu* menu){
-    QMenu *dynMenu = getRobWorkStudio()->menuBar()->addMenu(tr("Dynamics"));
+void RWSimPlugin::setupMenu(QMenu* pluginmenu){
+
+    QMenuBar *menu = getRobWorkStudio()->menuBar();
 
     _openAction = new QAction(QIcon(":/images/open.png"), tr("&Open DynamicWorkCell..."), this); // owned
     connect(_openAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    // insert the "open dynamics" into the file menu
+    boost::tuple<QMenu*, QAction*, int> action = getAction(menu, "&File", "&Close");
+    if(action.get<1>()!=NULL)
+        action.get<0>()->insertAction(action.get<1>(), _openAction);
+
+    QMenu *dynMenu = new QMenu(tr("Simulation"), this);
     dynMenu->addAction(_openAction);
     dynMenu->addSeparator();
+
+    boost::tuple<QWidget*, QAction*, int> action2 = getAction(menu, "Help");
+    if(action.get<1>()!=NULL)
+        menu->insertMenu(action2.get<1>(), dynMenu);
 
     //dynMenu->addAction("Create Simulator", _createSimulatorBtn)
     //dynMenu->addAction("Settings", _createSimulatorBtn)
@@ -198,8 +250,6 @@ void RWSimPlugin::btnPressed(){
 
     	KinematicBody *sucbody = _dwc->findBody<KinematicBody>("BaseFrame");
         if( sucbody!=NULL ){
-            std::cout << "Create Body" << std::endl;
-            std::cout << "successss" << std::endl;
             Transform3D<> t3d = Kinematics::worldTframe(sucbody->getBodyFrame(), state);
             t3d.P()[2] -= 0.01;
             sim->setTarget(sucbody, t3d ,state);
@@ -458,7 +508,8 @@ void RWSimPlugin::updateStatus(){
 }
 
 void RWSimPlugin::open(rw::models::WorkCell* workcell){
-	if( workcell==NULL || _dwc==NULL ){
+
+    if( workcell==NULL || _dwc==NULL ){
 	    _openCalled = true;
 		return;
 	}
@@ -494,6 +545,7 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
         RW_ASSERT(ctrl!=NULL);
         _deviceControlBox->addItem(ctrl->getControllerName().c_str());
     }
+
 }
 
 void RWSimPlugin::openDwc(const std::string& file){
@@ -553,30 +605,8 @@ void RWSimPlugin::openDwc(const std::string& file){
         }
     }
 
-    // TEST: suction cup
-    //Body *sucbody = _dwc->findBody("SuctionGripper.Base");
-    RigidDevice *sucdev = dynamic_cast<RigidDevice*>( _dwc->findDevice("SuctionGripper") );
-    if( sucdev!=NULL ){
-
-        // add a suction gripper to simulation.
-        //Transform3D<> b2 = Transform3D<>::identity();
-        //b2.P()[2] += 0.05;
-
-        //SuctionCup::Ptr suctionCup = ownedPtr( new SuctionCup(sucbody, b2 , 0.02, 0.06, 1000.0) );
-
-        //suctionCup->addToWorkCell( _dwc );
-
-        // now add a controller
-
-        //BodyContactSensor* sensor = new BodyContactSensor("SucDevSensor", sucdev->getRigidJoints().back()->getBodyFrame() );
-        //SuctionCupController::Ptr suc_ctrl = ownedPtr( new SuctionCupController( "MySuctionCupController", sucdev, sensor) );
-        //_dwc->addController( suc_ctrl );
-        //_dwc->addSensor(sensor);
-
-
-    }
-
     // adding the DynamicWorkcell to the propertymap such that others can use it
+
     getRobWorkStudio()->getPropertyMap().add<DynamicWorkCell::Ptr>(
             "DynamicWorkcell",
             "A workcell with dynamic description",
@@ -597,9 +627,10 @@ void RWSimPlugin::initialize(){
     getRobWorkStudio()->stateChangedEvent().add(
     		boost::bind(&RWSimPlugin::stateChangedListener, this, _1), this);
 
-    _timerShot = new QTimer( NULL );
+    _timerShot = NULL;
 
     if( getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("DWC") ){
+        _timerShot = new QTimer( this );
         _timerShot->setSingleShot(false);
         _timerShot->setInterval( 500 );
         _timerShot->start();
@@ -616,4 +647,5 @@ void RWSimPlugin::stateChangedListener(const State& state){
     updateDialog();
 }
 
-Q_EXPORT_PLUGIN(RWSimPlugin);
+Q_EXPORT_PLUGIN2(RWSimPlugin, RWSimPlugin);
+

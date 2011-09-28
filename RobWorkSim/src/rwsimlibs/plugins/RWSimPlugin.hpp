@@ -61,7 +61,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
         /**
          * @brief destructor
          */
-        virtual ~RWSimPlugin(){};
+        virtual ~RWSimPlugin();
 
         /**
          * @copydoc RobWorkStudioPlugin::open
