@@ -45,10 +45,7 @@ namespace simulator {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~ThreadSimulator(){
-			if(isRunning())
-				stop();
-		};
+		virtual ~ThreadSimulator();
 
 		/**
 		 * @brief Sets the time between

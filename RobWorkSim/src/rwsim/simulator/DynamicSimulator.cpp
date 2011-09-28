@@ -97,6 +97,10 @@ void DynamicSimulator::setTarget(dynamics::Body* body, const rw::math::Transform
     _bodyController->setTarget(body, t3d, state);
 }
 
+void DynamicSimulator::setTarget(dynamics::Body* body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state){
+    _bodyController->setTarget(body, traj, state);
+}
+
 void DynamicSimulator::disableBodyControl( dynamics::Body* body ){
     _bodyController->disableBodyControl( body );
 }

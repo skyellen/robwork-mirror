@@ -50,6 +50,12 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
 {
 }
 
+ThreadSimulator::~ThreadSimulator(){
+    if(isRunning())
+        stop();
+};
+
+
 void ThreadSimulator::setPeriodMs(long period){
     boost::mutex::scoped_lock lock(_simMutex);
     _period = period;
@@ -143,6 +149,8 @@ void ThreadSimulator::stepperLoop(){
             boost::mutex::scoped_lock lock(_simMutex);
             if(_postStop){
                 _postStop = false;
+                running = false;
+                _running = false;
                 break;
             }
             running = _running;
@@ -174,4 +182,5 @@ void ThreadSimulator::stepperLoop(){
         }
         time = nextTime;
     }
+    _thread = NULL;
 }

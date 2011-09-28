@@ -28,7 +28,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-
+#include <rw/trajectory/Trajectory.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwsim/control/BodyController.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -176,6 +176,8 @@ namespace simulator {
 		  * @param state [in] current state
 		  */
 		 void setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
+
+		 void setTarget(dynamics::Body* body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
 
 		 /**
 		  * @brief disables the target control of body \b body.

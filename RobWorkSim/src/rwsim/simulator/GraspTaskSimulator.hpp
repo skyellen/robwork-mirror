@@ -67,6 +67,8 @@ public:
 
 	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
+	virtual ~GraspTaskSimulator();
+
 	/**
 	 * @brief load tasks
 	 */

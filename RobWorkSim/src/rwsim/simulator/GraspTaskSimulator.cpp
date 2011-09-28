@@ -62,7 +62,10 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 		_nrOfThreads(1),
 		_currentTargetIndex(0)
 {
+}
 
+GraspTaskSimulator::~GraspTaskSimulator(){
+    std::cout << "Destroying grasp simulator" << std::endl;
 }
 
 void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState){
@@ -176,7 +179,7 @@ void GraspTaskSimulator::load(rwlibs::task::CartesianTask::Ptr graspTasks){
 
 //----- simulation control and query function api
 void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState){
-    RW_WARN("1");
+    _nrOfExperiments = 0;
     if(!_initialized)
         init(_dwc, initState);
 
@@ -265,7 +268,7 @@ bool GraspTaskSimulator::isRunning(){
 }
 
 bool GraspTaskSimulator::isFinished(){
-    std::cout << "_totalNrOfExperiments==_nrOfExperiments" << _totalNrOfExperiments<<"=="<<_nrOfExperiments << "\n";
+    //std::cout << "_totalNrOfExperiments==_nrOfExperiments" << _totalNrOfExperiments<<"=="<<_nrOfExperiments << "\n";
     return _totalNrOfExperiments==_nrOfExperiments;
 }
 
@@ -423,7 +426,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         // test if object has been lifted
         bool isLifted = true;
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
-        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.005;
+        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.00001;
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
         //std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
@@ -739,6 +742,7 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
         return qualities;
     Grasp3D g3d( contacts );
 
+    /*
     if(g3d.contacts.size()<4){
         std::vector<Contact3D > cons = g3d.contacts;
         BOOST_FOREACH(Contact3D& c, cons){
@@ -749,7 +753,7 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
             g3d.contacts.push_back(c);
         }
     }
-
+    */
 
     //std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
     /*
