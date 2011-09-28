@@ -41,6 +41,7 @@
 #include "./trajectory/TrajectoryFactory.hpp"
 #include "./trajectory/TrajectoryIterator.hpp"
 #include "./trajectory/TrajectorySequence.hpp"
+#include "./trajectory/RampInterpolator.hpp"
 
 
 #endif /* TRAJECTORY_HPP_ */
