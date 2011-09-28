@@ -26,6 +26,8 @@ namespace control {
 	        double offset;
 	    };
 
+	    typedef rw::common::Ptr<SpringJointController> Ptr;
+
 		/**
 		 * @brief constructor
 		 * @param rdev [in] device that is to be controlled

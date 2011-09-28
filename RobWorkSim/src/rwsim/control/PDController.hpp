@@ -29,7 +29,7 @@ namespace control {
 	class PDController: public rwlibs::control::JointController, public rwlibs::simulation::SimulatedController {
 	public:
 
-
+	    typedef rw::common::Ptr<PDController> Ptr;
 		/**
 		 * @brief constructor
 		 * @param rdev [in] device that is to be controlled
