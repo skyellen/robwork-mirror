@@ -94,35 +94,47 @@ const XMLCh* XMLBasisTypes::StringPairId = XMLString::transcode("StringPair");
 
 const XMLCh* XMLBasisTypes::UnitAttributeId = XMLString::transcode("unit");
 
+namespace {
+struct UnitMap {
+public:
+    std::map<std::string, double> _map;
 
-const XMLBasisTypes::UnitMap XMLBasisTypes::_Units;
+    UnitMap(){
+        _map["mm"] = 1.0/1000.0;
+        _map["cm"] = 1.0/100.0;
+        _map["m"] = 1;
+        _map["inch"] = 0.0254;
 
+        _map["deg"] = Deg2Rad;
+        _map["rad"] = 1;
 
+        _map["m/s"] = 1;
+        _map["cm/s"] = 1.0/100.0;
+        _map["mm/s"] = 1.0/1000.0;
 
-//Setup map with units
-XMLBasisTypes::UnitMap::UnitMap() {
-	_map["mm"] = 1.0/1000.0; 
-    _map["cm"] = 1.0/100.0;
-    _map["m"] = 1;
-    _map["inch"] = 0.0254;
+        _map["m/s^2"] = 1;
+        _map["cm/s^2"] = 1.0/100.0;
+        _map["mm/s^2"] = 1.0/1000.0;
 
-    _map["deg"] = Deg2Rad;
-    _map["rad"] = 1;
+        _map["deg/s"] = Deg2Rad;
+        _map["rad/s"] = 1;
 
-    _map["m/s"] = 1;
-    _map["cm/s"] = 1.0/100.0;
-    _map["mm/s"] = 1.0/1000.0;
+        _map["deg/s^2"] = Deg2Rad;
+        _map["rad/s^2"] = 1;
+    };
+    UnitMap(const std::map<std::string, double>& map):
+    _map(map)
+    {
+    }
 
-    _map["m/s^2"] = 1;
-    _map["cm/s^2"] = 1.0/100.0;
-    _map["mm/s^2"] = 1.0/1000.0;
-
-    _map["deg/s"] = Deg2Rad;
-    _map["rad/s"] = 1;
-
-    _map["deg/s^2"] = Deg2Rad;
-    _map["rad/s^2"] = 1;
+    ~UnitMap(){
+    }
+};
 }
+
+//const XMLBasisTypes::UnitMap XMLBasisTypes::_Units;
+const UnitMap _Units;
+
 
 
 double XMLBasisTypes::getUnit(const XMLCh* key) {

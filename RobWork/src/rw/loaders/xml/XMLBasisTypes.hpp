@@ -706,18 +706,11 @@ private:
     /*
      * Map used for mapping unit identifiers o their corresponding values
      */
-    class UnitMap {
-    public:
-		std::map<std::string, double> _map;
 
-        UnitMap();
-		UnitMap(const std::map<std::string, double>& map):
-		_map(map) {}
-    };
 
 	
 
-    static const UnitMap _Units;
+    //static const UnitMap _Units;
 };
 
 /** @} */
