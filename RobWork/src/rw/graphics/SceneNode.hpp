@@ -51,6 +51,7 @@ namespace graphics {
         SceneNode(const std::string& name, int type):_name(name),_type(type){}
 
     public:
+        virtual ~SceneNode(){};
 
         /*void setParent(SceneNode::Ptr node){
             _parent = node;

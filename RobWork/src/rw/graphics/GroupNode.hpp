@@ -39,6 +39,8 @@ namespace graphics {
         //! @brief constructor
         GroupNode(const std::string& name);
 
+        virtual ~GroupNode(){};
+
         //! @copydoc SceneNode::asGroupNode
         GroupNode* asGroupNode();
 

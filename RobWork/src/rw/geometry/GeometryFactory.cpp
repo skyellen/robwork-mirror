@@ -162,7 +162,7 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
         }
 
         if (useCache && getCache().isInCache(filename))
-            return new Geometry(getCache().get(filename));
+            return ownedPtr( new Geometry(getCache().get(filename)) );
 
 
 		if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {

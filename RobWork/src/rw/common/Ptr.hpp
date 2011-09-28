@@ -221,7 +221,7 @@ namespace rw { namespace common {
        @relates Ptr
     */
     template <class T>
-    Ptr<T> ownedPtr(T* ptr) { return Ptr<T>(std::auto_ptr<T>(ptr)); }
+    Ptr<T> ownedPtr(T* ptr) { return Ptr<T>(boost::shared_ptr<T>(ptr)); }
 
 	/*@}*/
 }} // end namespaces

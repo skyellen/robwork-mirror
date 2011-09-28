@@ -92,7 +92,7 @@ namespace rw { namespace graphics {
     	    bool _renderTransparent;
     	    bool _renderSolid;
     	};
-
+    	virtual ~DrawableNode(){}
 
         /**
          * @brief draws the object.

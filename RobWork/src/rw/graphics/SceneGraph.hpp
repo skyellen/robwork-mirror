@@ -86,6 +86,8 @@ namespace graphics {
             //DrawType dtype;
         };
 
+        virtual ~SceneGraph(){};
+
         /**
          * @brief draws the scene, using the specified render information
          */
