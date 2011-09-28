@@ -40,9 +40,6 @@ WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
 
 WorkCell::~WorkCell()
 {
-	/*typedef std::vector<Device::Ptr>::const_iterator I;
-    for (I it = _devices.begin(); it != _devices.end(); ++it)
-        delete *it;*/
 }
 
 Frame* WorkCell::getWorldFrame() const
