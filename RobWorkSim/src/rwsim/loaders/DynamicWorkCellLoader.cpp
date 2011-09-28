@@ -178,7 +178,6 @@ namespace
 
 
 
-
     std::vector<Geometry::Ptr> loadGeometrySingle(Frame &f, const State& rwstate){
         std::vector<Geometry::Ptr> geoms;
         Frame *frame = &f;
@@ -352,10 +351,8 @@ namespace
             return InertiaMatrix<>(q[0],q[1],q[2]);
         } else if( q.size()==9){
             return InertiaMatrix<>(q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8]);
-        }else {
-            RW_THROW("Inertia needs either 3 or 9 arguments, it got " << q.size() );
         }
-
+        RW_THROW("Inertia needs either 3 or 9 arguments, it got " << q.size() );
     }
 
 
@@ -377,6 +374,32 @@ namespace
         }
         return t3d;
     }
+
+
+    void readProperties(PTree& tree, PropertyMap& map){
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if(p->first == "Property") {
+                std::string name = p->second.get_child("<xmlattr>").get<std::string>("name");
+                //std::string desc = p->second.get_child_optional("Description").get<std::string>("desc","");
+                std::string type = p->second.get_child("<xmlattr>").get<std::string>("type","string");
+                if( type=="string" ){
+                    std::string value = p->second.get_value<std::string>();
+                    map.add<std::string>(name, "", value);
+                } else if( type=="int" ){
+                    int value = p->second.get_value<int>();
+                    map.add<int>(name, "", value);
+                } else if( type=="float" ){
+                    double value = p->second.get_value<double>();
+                    map.add<double>(name, "", value);
+                } else {
+                    RW_THROW("DynamicWorkCellLoader: Unknown engine property type: " << StringUtil::quote(type) );
+                }
+
+            }
+        }
+    }
+
+
 
     Frame *getFrameFromAttr(PTree& tree, ParserState &state, const std::string& attr){
         //Log::debugLog()<< "getFrameFromAttr" << std::endl;
@@ -427,6 +450,10 @@ namespace
         		info.inertia = InertiaMatrix<>::makeSolidSphereInertia(info.mass, 0.0001);
         	}
         }
+
+
+        readProperties(tree, mframe->getPropertyMap());
+
         info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
         RigidBody *body = new RigidBody(info, mframe, geometry);
@@ -601,7 +628,7 @@ namespace
         }
 
         DynamicDevice *ddev = findDynamicDevice(state, dev);
-        SpringJointController *controller = new SpringJointController(controllername, ddev, params, dt);
+        SpringJointController::Ptr controller = ownedPtr(new SpringJointController(controllername, ddev, params, dt) );
         state.controllers.push_back( controller );
     }
 
@@ -649,7 +676,7 @@ namespace
         state.allbodies.push_back(end);
         state.bodies.push_back(base);
         state.bodies.push_back(end);
-        SuctionCup *scup = new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2);
+        SuctionCup *scup = new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2) ;
         state.wc->addDevice(scup->getKinematicModel());
         return scup;
     }
@@ -810,7 +837,7 @@ namespace
             RW_THROW("Not currently supported!");
             //SyncPDController *controller = new SyncPDController();
         } else {
-            PDController *controller = new PDController(controllername, ddev, controlType, params, dt);
+            PDController::Ptr controller = ownedPtr( new PDController(controllername, ddev, controlType, params, dt) );
             state.controllers.push_back( controller );
         }
     }
