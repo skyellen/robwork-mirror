@@ -76,6 +76,10 @@ SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
     _kindev = getKinematicModel();
 }
 
+SuctionCup::~SuctionCup(){
+    delete _kindev;
+}
+
 void SuctionCup::addToWorkCell(DynamicWorkCell::Ptr dwc){
     //dwc->getWorkcell()->addDevice( getKinematicModel() );
 

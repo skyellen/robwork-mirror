@@ -207,7 +207,7 @@ namespace dynamics {
     	/**
     	 * @brief gets the default kinematic workcell
     	 */
-    	rw::models::WorkCell* getWorkcell(){ return _workcell.get(); };
+    	rw::models::WorkCell::Ptr getWorkcell(){ return _workcell; };
 
     	/**
     	 * @brief the collision margin describe how close

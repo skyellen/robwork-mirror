@@ -23,12 +23,13 @@ namespace dynamics {
     public:
         /**
          * @brief
-         * @param thres
-         * @param sepThres
-         * @return
+         * @param thres [in] the angle threshold in radians. Threshold of angle between
+         * contact normals
+         * @param sepThres [in] the max seperating distance in meter between contacting points
          */
         OBRManifold(double thres = 0.03, double sepThres = 0.01):
             _threshold(thres),
+            _cosThreshold( fabs( std::cos(thres) ) ),
             _sepThreshold(sepThres),
             _deepestIdx(0),
             _nrOfContacts(0)
@@ -77,9 +78,15 @@ namespace dynamics {
                 return true;
             } else if(_nrOfContacts>1) {
                 // only add a point if its on the contact manifold plane
-                double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
-                if(dist>_threshold)
+                //double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
+                double dist = fabs( dot(p.n,_normal) );
+                if(acos(dist)>_threshold)
                     return false;
+                // now also test if the point is close enough to the contacting plane
+                //double d = -dot(_normal, _points[0].p);
+                //dist = fabs( dot(_normal,p.p)+d );
+                //if(dist>_sepThreshold)
+                //    return false;
 
                 // with at least 3 points we can create a manifold plane
                 fit(p);
@@ -89,9 +96,14 @@ namespace dynamics {
                 _nrOfContacts++;
             } else if(_nrOfContacts==1) {
                 // only add a point if its on the contact manifold plane
-                double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
-                if(dist>_threshold)
+                // here we only check if the angle between the contact normals is not too large
+                //double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
+                double dist = dot(p.n,_normal);
+
+                if( acos(dist)>_threshold ){
+                    std::cout << acos(dist) << ">" << _threshold << std::endl;
                     return false;
+                }
 
                 _normal = (p.n + _points[0].n)/2;
                 _points[_nrOfContacts] = p;
@@ -139,13 +151,13 @@ namespace dynamics {
                 // check distance to the deepest point
                 const double dist = MetricUtil::dist2(p.p,_points[_deepestIdx].p);
                 //std::cout << "1: Dist too point: " << dist << std::endl;
-                if( dist <_threshold ) return true;
+                if( dist <_sepThreshold ) return true;
                 else return false;
             } else if( _nrOfContacts == 2 ){
                 // check distance to the line
                 const double dist = MetricUtil::dist2(p.p,_points[_deepestIdx].p);
                 //std::cout << "1: Dist too point: " << dist << std::endl;
-                if( dist <_threshold ) return true;
+                if( dist <_sepThreshold ) return true;
                 else return false;
     /*            const Vector3D<> &p1 = p.p;
                 const Vector3D<> &x1 = _points[0].p;
@@ -156,7 +168,7 @@ namespace dynamics {
                 else return false;*/
             } else {
                 const double dist = MetricUtil::dist2(p.p,_points[_deepestIdx].p);
-                if( dist <_threshold ) return true;
+                if( dist <_sepThreshold ) return true;
                 // check if the point is inside the manifold box
                 // project it onto the plane
                 return isInsideOBB(p.p);
@@ -324,7 +336,7 @@ namespace dynamics {
         ContactPoint _points[5];
         bool _onBorderMap[6];
         //Frame *_objA,*_objB;
-        double _threshold,_sepThreshold;
+        double _threshold,_sepThreshold, _cosThreshold;
         int _deepestIdx,_nrOfContacts;
     };
 

@@ -39,7 +39,7 @@ namespace dynamics {
                    rw::math::Q springConstant1,
                    rw::math::Q springConstant2);
 
-        virtual ~SuctionCup(){};
+        virtual ~SuctionCup();
 
         rwsim::dynamics::Body* getBaseBody(){ return _baseBody; }
 
