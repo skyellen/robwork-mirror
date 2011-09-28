@@ -96,7 +96,7 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
                                     QWidget *parent):
     QDialog(parent),
     _defaultState(state),
-    _wc(dwc->getWorkcell() ),
+    _wc(dwc->getWorkcell().get() ),
     _dwc(dwc),
     _detector(detector),
     _restPoseDialog(NULL),
