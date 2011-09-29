@@ -33,7 +33,7 @@
 #include <fstream>
 #include <iostream>
 #include <boost/version.hpp>
-#if(BOOST_VERSION<104500)
+#if(BOOST_VERSION<104100)
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
@@ -297,7 +297,7 @@ std::time_t IOUtil::getLastFileWrite(const std::string& filename){
 std::string IOUtil::getFirstXMLElement(const std::string& filename){
     using namespace boost;
 
-#if(BOOST_VERSION<104500)
+#if(BOOST_VERSION<104100)
     using namespace boost::spirit;
     using namespace boost::spirit::classic;
     using namespace phoenix;
