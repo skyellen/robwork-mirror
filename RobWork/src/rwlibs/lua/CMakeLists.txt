@@ -15,8 +15,10 @@ IF( SWIG_FOUND )
 	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES CPLUSPLUS ON)
 	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES SWIG_FLAGS "-includeall")
 	
-	SWIG_ADD_MODULE(luaswigrw lua aswigmodule.i) 
+	SWIG_ADD_MODULE(luaswigrw lua aswigmodule.i)
+	SWIG_ADD_MODULE(pythonswigrw python aswigmodule.i)  
 	SWIG_LINK_LIBRARIES(luaswigrw rw)
+	SWIG_LINK_LIBRARIES(pythonswigrw rw)
 ENDIF()
 
 
