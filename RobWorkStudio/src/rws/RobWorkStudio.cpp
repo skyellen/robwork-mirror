@@ -159,11 +159,11 @@ RobWorkStudio::~RobWorkStudio()
     delete _assistant;
     delete _propEditor;
 
-    typedef std::vector<RobWorkStudioPlugin*>::iterator I;
-    for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
-        std::cout << (*it)->name().toStdString() << std::endl;
+    //typedef std::vector<RobWorkStudioPlugin*>::iterator I;
+    //for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
+        //std::cout << (*it)->name().toStdString() << std::endl;
         //delete *it;
-    }
+    //}
 }
 
 void RobWorkStudio::propertyChangedListener(PropertyBase* base){
