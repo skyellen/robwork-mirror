@@ -32,10 +32,30 @@
 
 #include <fstream>
 #include <iostream>
+#include <boost/version.hpp>
+#if(BOOST_VERSION<104100)
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+//#include <boost/spirit.hpp>
+//#include <boost/spirit/core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+#include <boost/spirit/include/classic_symbols.hpp>
+
+#include <boost/spirit/include/classic_common.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+#include <boost/spirit/include/support_istream_iterator.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/bind.hpp>
+
+#else
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
+#endif
 
 #include <fstream>
 #include <iostream>
@@ -275,6 +295,38 @@ std::time_t IOUtil::getLastFileWrite(const std::string& filename){
 
 std::string IOUtil::getFirstXMLElement(const std::string& filename){
     using namespace boost;
+
+#if(BOOST_VERSION<104100)
+    using namespace boost::spirit;
+    using namespace boost::spirit::classic;
+    using namespace phoenix;
+    std::ifstream input(filename.c_str());
+    input.unsetf(std::ios::skipws);
+
+    spirit::istream_iterator begin(input);
+    spirit::istream_iterator end;
+    std::string result;
+    // use iterator to parse file data
+    parse_info<spirit::istream_iterator> info = parse(begin, end,
+                                        !("<?" >> *(anychar_p - '>')//[std::cout << boost::lambda::_1]
+                                        >> '>')
+                                        >> "<"
+                                        //>> *( (anychar_p - '>') | (anychar_p -' '))[boost::bind(static_cast<std::string& (std::string::*)( size_t, char )>(&std::string::append),&result, 1, ::_1)]
+                                        >> *( (anychar_p - '>') | (anychar_p -' '))[var( result ) = construct_<std::string>(arg1,arg2)]
+                                        >> *(anychar_p - '>')//[std::cout << boost::lambda::_1]
+                                        >> ">"
+                       // THE skip parser comes next
+                      , (blank_p - ' ')
+                      | (space_p - ' ')
+                      | ("<!--" >> *(anychar_p - '>') >> '>')
+
+        );
+    if ( !info.hit )
+        RW_THROW("file \""<<filename<<"\" is not a wellformed xml document!");
+    return result;
+
+
+#else
     using namespace boost::spirit::qi;
     // check the first element of the file
     std::ifstream input(filename.c_str());
@@ -298,4 +350,5 @@ std::string IOUtil::getFirstXMLElement(const std::string& filename){
     if(!res)
         RW_THROW("file \""<<filename<<"\" is not a wellformed xml document!");
     return result;
+#endif
 }
