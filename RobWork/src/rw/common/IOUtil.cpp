@@ -33,7 +33,7 @@
 #include <fstream>
 #include <iostream>
 #include <boost/version.hpp>
-#if(BOOST_VERSION<104100)
+#if(BOOST_VERSION<104500)
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
@@ -46,7 +46,8 @@
 #include <boost/spirit/include/classic_ast.hpp>
 #include <boost/spirit/include/classic_parse_tree.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
-#include <boost/spirit/include/support_istream_iterator.hpp>
+#include <boost/spirit/iterator/file_iterator.hpp>
+
 #include <boost/lambda/lambda.hpp>
 #include <boost/bind.hpp>
 
@@ -296,18 +297,24 @@ std::time_t IOUtil::getLastFileWrite(const std::string& filename){
 std::string IOUtil::getFirstXMLElement(const std::string& filename){
     using namespace boost;
 
-#if(BOOST_VERSION<104100)
+#if(BOOST_VERSION<104500)
     using namespace boost::spirit;
     using namespace boost::spirit::classic;
     using namespace phoenix;
-    std::ifstream input(filename.c_str());
-    input.unsetf(std::ios::skipws);
 
-    spirit::istream_iterator begin(input);
-    spirit::istream_iterator end;
+    file_iterator<> first(filename.c_str());
+
+    if (!first)
+    {
+       // Clean up, throw an exception, whatever
+       RW_THROW("Unable to open file!\n");
+    }
+
+    file_iterator<> last = first.make_end();
+
     std::string result;
     // use iterator to parse file data
-    parse_info<spirit::istream_iterator> info = parse(begin, end,
+    parse_info<file_iterator<char> > info = parse(first, last,
                                         !("<?" >> *(anychar_p - '>')//[std::cout << boost::lambda::_1]
                                         >> '>')
                                         >> "<"
