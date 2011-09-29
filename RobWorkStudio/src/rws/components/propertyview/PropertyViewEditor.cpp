@@ -47,8 +47,6 @@ PropertyViewEditor::~PropertyViewEditor(){
     _variantManager->clear();
     _qtPropToRwProp.clear();
     _qtPropToRwPropMap.clear();
-
-    RW_WARN("1");
 }
 
 namespace {
