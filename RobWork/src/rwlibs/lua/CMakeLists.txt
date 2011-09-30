@@ -14,11 +14,21 @@ IF( SWIG_FOUND )
 
 	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES CPLUSPLUS ON)
 	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES SWIG_FLAGS "-includeall")
+
+    SWIG_ADD_MODULE(luaswigrw lua aswigmodule.i)
+    SWIG_LINK_LIBRARIES(luaswigrw rw)
 	
-	SWIG_ADD_MODULE(luaswigrw lua aswigmodule.i)
-	SWIG_ADD_MODULE(pythonswigrw python aswigmodule.i)  
-	SWIG_LINK_LIBRARIES(luaswigrw rw)
-	SWIG_LINK_LIBRARIES(pythonswigrw rw)
+	FIND_PACKAGE(PythonInterp)
+	FIND_PACKAGE(PythonLibs)
+	MESSAGE("PYTHONINTERP_FOUND:  ${PYTHONINTERP_FOUND}" )
+	MESSAGE("PYTHONLIBS_FOUND:  ${PYTHONLIBS_FOUND}" )
+	IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
+	    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+	    SWIG_ADD_MODULE(pythonswigrw python aswigmodule.i)
+	    SWIG_LINK_LIBRARIES(pythonswigrw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+	ENDIF()  
+	
+	
 ENDIF()
 
 
