@@ -44,6 +44,7 @@ void RenderImage::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawT
 {
 	if(_w==0 || _h==0)
 		return;
+
     glEnable(GL_TEXTURE_2D);
     glColor4f(1.0f, 1.0f, 1.0f, (float)alpha);
 
@@ -52,12 +53,13 @@ void RenderImage::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawT
 
     glBindTexture(GL_TEXTURE_2D, _tex.getTextureID() );
 
+    /*
     glTexCoord2f(0, 0);
     glVertex3f(-_w/2.0f*_scale, _h/2.0f, 0);
 
     glTexCoord2f(1, 0);
     glVertex3f(-_w/2.0f*_scale, _h/2.0f, 0);
-
+     */
     float w = _w/2.0f*_scale;
     float h = _h/2.0f*_scale;
 
