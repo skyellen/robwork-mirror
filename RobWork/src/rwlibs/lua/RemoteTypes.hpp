@@ -1,20 +1,33 @@
-/*
- * RemoteTypes.hpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: Aug 21, 2011
- *      Author: jimali
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
-#ifndef REMOTETYPES_HPP_
-#define REMOTETYPES_HPP_
+#ifndef RWLIBS_SWIG_REMOTETYPES_HPP_
+#define RWLIBS_SWIG_REMOTETYPES_HPP_
 
 #include <rw/math.hpp>
 #include <rw/geometry.hpp>
 #include <rw/common.hpp>
+#include <rw/kinematics.hpp>
 #include <rw/sensor.hpp>
 #include <rw/models.hpp>
 #include <rw/loaders.hpp>
 #include <rw/proximity.hpp>
+#include <rw/graphics.hpp>
+#include <rw/RobWork.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -71,8 +84,14 @@ typedef rw::sensor::Image Image;
 typedef rw::geometry::ConvexHull3D ConvexHull3D;
 typedef rw::geometry::Geometry Geometry;
 
+typedef rw::kinematics::StateData StateData;
 typedef rw::kinematics::Frame Frame;
+typedef rw::kinematics::MovableFrame MovableFrame;
+typedef rw::kinematics::FixedFrame FixedFrame;
 typedef rw::kinematics::State State;
+
+typedef rw::trajectory::TimedStatePath TimedStatePath;
+typedef rw::trajectory::TimedState TimedState;
 
 typedef rw::models::WorkCell WorkCell;
 typedef rw::models::Joint Joint;
@@ -94,6 +113,13 @@ typedef rw::loaders::ImageFactory ImageFactory;
 typedef rw::loaders::WorkCellLoader WorkCellLoader;
 typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
 typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
+
+typedef rw::RobWork RobWork;
+
+typedef rw::graphics::WorkCellScene WorkCellScene;
+typedef rw::graphics::SceneViewer SceneViewer;
+typedef rw::graphics::SceneNode SceneNode;
+typedef rw::graphics::DrawableNode DrawableNode;
 }
 }
 
