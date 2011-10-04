@@ -211,75 +211,95 @@ void ProgramOptions::setPositionalOption(const std::string& name, int i){
 	_posOptionDesc.add(name.c_str(), i);
 }
 
+void ProgramOptions::checkVariablesMap(po::variables_map &vm){
+    if (vm.count("help")) {
+        std::cout << "Usage:\n\n"
+                  << "\t" << _appName <<" [options] <project-file> \n"
+                  << "\t" << _appName <<" [options] <workcell-file> \n"
+                  << "\t" << _appName <<" [options] <device-file> \n"
+                  << "\n";
+        rw::common::Log::infoLog() << _optionDesc << "\n";
+        abort();
+    }
+
+    if (vm.count("version") ){
+        std::cout << "\n\t" << _appName <<" version " << _version << std::endl;
+        abort();
+    }
+
+    if( vm.count("property") ){
+        StringOptionList vals = vm["property"].as< StringOptionList >();
+        BOOST_FOREACH(StringOption& prop, vals){
+            _pmap.add(prop.name,"",prop.value);
+        }
+    }
+    if( vm.count("intproperty") ){
+        IntOptionList vals = vm["intproperty"].as< IntOptionList >();
+        BOOST_FOREACH(IntOption& prop, vals){
+            _pmap.add(prop.name,"",prop.value);
+        }
+    }
+    if( vm.count("doubleproperty") ){
+        DoubleOptionList vals = vm["doubleproperty"].as< DoubleOptionList >();
+        BOOST_FOREACH(DoubleOption& prop, vals){
+            _pmap.add(prop.name,"",prop.value);
+        }
+    }
+    if( vm.count("qproperty") ){
+        QOptionList vals = vm["qproperty"].as< QOptionList >();
+        BOOST_FOREACH(QOption& prop, vals){
+            _pmap.add(prop.name,"",prop.value);
+        }
+    }
+
+    BOOST_FOREACH(std::string strOption, _additionalStringOptions){
+        //std::cout << strOption <<" sfdkjskf "<< std::endl;
+        if( vm.count(strOption.c_str()) ){
+            std::string val = vm[strOption.c_str()].as< std::string >();
+            _pmap.add(strOption,"",val);
+        }
+    }
+    //if( vm.count("input-file") ){
+        //std::cout << "input-file: " << vm["input-file"].as<std::string>() << std::endl;
+    //    inputfile = vm["input-file"].as<std::string>();
+    //}
+
+/*
+    if( vm.count("ini-file") ){
+        inifile = vm["ini-file"].as<std::string>();
+    }
+    */
+
+}
+
+void ProgramOptions::parse(const std::string& str){
+    try {
+        po::variables_map vm;
+        std::vector<std::string> args = po::split_unix(str);
+        po::store(po::command_line_parser(args).
+                  options(_optionDesc).positional(_posOptionDesc).run(), vm);
+        po::notify(vm);
+
+    } catch (std::exception &e){
+        rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
+        rw::common::Log::infoLog() << "Specify --help for usage. \n";
+        abort();
+    }
+
+}
+
 void ProgramOptions::parse(int argc, char** argv){
 	try {
         po::variables_map vm;
         po::store(po::command_line_parser(argc, argv).
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
 		po::notify(vm);
-
-        if (vm.count("help")) {
-            std::cout << "Usage:\n\n"
-                      << "\t" << _appName <<" [options] <project-file> \n"
-                      << "\t" << _appName <<" [options] <workcell-file> \n"
-                      << "\t" << _appName <<" [options] <device-file> \n"
-                      << "\n";
-            rw::common::Log::infoLog() << _optionDesc << "\n";
-            abort();
-        }
-
-        if (vm.count("version") ){
-        	std::cout << "\n\t" << _appName <<" version " << _version << std::endl;
-            abort();
-        }
-
-        if( vm.count("property") ){
-            StringOptionList vals = vm["property"].as< StringOptionList >();
-            BOOST_FOREACH(StringOption& prop, vals){
-                _pmap.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("intproperty") ){
-            IntOptionList vals = vm["intproperty"].as< IntOptionList >();
-            BOOST_FOREACH(IntOption& prop, vals){
-                _pmap.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("doubleproperty") ){
-            DoubleOptionList vals = vm["doubleproperty"].as< DoubleOptionList >();
-            BOOST_FOREACH(DoubleOption& prop, vals){
-                _pmap.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("qproperty") ){
-            QOptionList vals = vm["qproperty"].as< QOptionList >();
-            BOOST_FOREACH(QOption& prop, vals){
-                _pmap.add(prop.name,"",prop.value);
-            }
-        }
-
-        BOOST_FOREACH(std::string strOption, _additionalStringOptions){
-        	//std::cout << strOption <<" sfdkjskf "<< std::endl;
-            if( vm.count(strOption.c_str()) ){
-                std::string val = vm[strOption.c_str()].as< std::string >();
-                _pmap.add(strOption,"",val);
-            }
-        }
-        //if( vm.count("input-file") ){
-            //std::cout << "input-file: " << vm["input-file"].as<std::string>() << std::endl;
-        //    inputfile = vm["input-file"].as<std::string>();
-        //}
-
-/*
-        if( vm.count("ini-file") ){
-            inifile = vm["ini-file"].as<std::string>();
-        }
-        */
-
-
+		checkVariablesMap(vm);
     } catch (std::exception &e){
     	rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
     	rw::common::Log::infoLog() << "Specify --help for usage. \n";
         abort();
     }
 }
+
+
