@@ -66,19 +66,14 @@ using namespace rwlibs::proximitystrategies;
 
 using namespace rws;
 
-RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
-                             const std::vector<PluginSetup>& plugins,
-                             const PropertyMap& map,
-                             const std::string& inifile)
+RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     :
     QMainWindow(NULL),
-    _robwork(robwork),
+    _robwork(RobWork::getInstance()),
     _inStateUpdate(false),
-    //_propMap(map),
     _settingsMap(NULL)
 {
-    RobWork::setInstance(robwork);
-    robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
+    _robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
 
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
@@ -135,11 +130,11 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     resize(width, height);
     this->move(x,y);
 
-	//Initialize plugins
-	loadSettingsSetupPlugins(inifile);
-    BOOST_FOREACH(const PluginSetup& plugin, plugins) {
-        addPlugin(plugin.plugin, plugin.visible, plugin.area);
-    }
+    //Initialize plugins
+    //loadSettingsSetupPlugins(inifile);
+    //BOOST_FOREACH(const PluginSetup& plugin, plugins) {
+    //    addPlugin(plugin.plugin, plugin.visible, plugin.area);
+    //}
 
     // search for plugins in user specified locations
     //StringList slist;
@@ -458,7 +453,7 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
 }
 
 
-QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
+void RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
 {
 	
     QSettings settings(file.c_str(), QSettings::IniFormat);
@@ -481,8 +476,9 @@ QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& fil
         // Nothing to report here.
         break;
     }
-    return settings.status();
 
+    // TODO: make error reply if necesarry
+    //return settings.status();
 }
 
 

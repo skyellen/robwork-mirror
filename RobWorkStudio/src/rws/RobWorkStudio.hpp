@@ -31,7 +31,7 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <QSettings>
-#include "HelpAssistant.hpp"
+
 
 #include <rw/RobWork.hpp>
 #include <rw/models/WorkCell.hpp>
@@ -43,10 +43,9 @@
 #include <rws/components/propertyview/PropertyViewEditor.hpp>
 
 #include "RobWorkStudioPlugin.hpp"
-#include "AboutBox.hpp"
 #include "RWStudioView3D.hpp"
-
-
+#include "HelpAssistant.hpp"
+#include "AboutBox.hpp"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -61,8 +60,6 @@ namespace rws {
     /** @addtogroup rws
         @{ */
 
-	//class ViewGL;
-
 	/**
 	 * @brief main robwork studio class
 	 */
@@ -72,38 +69,9 @@ namespace rws {
 	public:
 
 		/**
-		   @brief A tuple of (plugin, visible, dockingArea).
-		*/
-		struct PluginSetup {
-			/**
-			 * @brief Constructor
-			 * @param plugin [in] Plugin
-			 * @param visible [in] Whether the plugin should be visible from start
-			 * @param area [in] The default dock area.
-			 */
-			PluginSetup(RobWorkStudioPlugin* plugin,
-						bool visible,
-						Qt::DockWidgetArea area):
-				plugin(plugin),
-				visible(visible),
-				area(area)
-			{}
-
-			//! The RobWorkStudio plugin
-			RobWorkStudioPlugin* plugin;
-			//! Whether is should be visible from start
-			bool visible;
-			//! Default dock area to use
-			Qt::DockWidgetArea area;
-		};
-
-		/**
 		   @brief RobWorkStudio object with a number of plugins loaded elsewhere.
 		*/
-		RobWorkStudio(rw::RobWork::Ptr robwork,
-					  const std::vector<PluginSetup>& plugins,
-					  const rw::common::PropertyMap& map,
-					  const std::string& inifile);
+		RobWorkStudio(const rw::common::PropertyMap& map);
 
 		/**
 		 * @brief destructor
@@ -448,6 +416,11 @@ namespace rws {
 		
 		void propertyChangedListener(rw::common::PropertyBase* base);
 
+        void addPlugin(RobWorkStudioPlugin* plugin,
+                       bool visible,
+                       Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+
+        void loadSettingsSetupPlugins(const std::string& file);
 
 	private:
 		// all events are defined here
@@ -487,15 +460,12 @@ namespace rws {
 	private:
 	    void updateLastFiles();
 
-		void addPlugin(RobWorkStudioPlugin* plugin,
-					   bool visible,
-					   Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 		void setupFileActions();
 		void setupViewGL();
 		void setupHelpMenu();
 
 		void createPlugins();
-		QSettings::Status loadSettingsSetupPlugins(const std::string& file);
+
 		void setupPlugins(QSettings& settings);
 
 		void openDrawable(const QString& filename);

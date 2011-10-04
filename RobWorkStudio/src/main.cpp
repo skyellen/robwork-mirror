@@ -32,7 +32,6 @@
 #include <RobWorkStudioConfig.hpp>
 #include <RobWorkConfig.hpp>
  
-
 #include <fstream>
 
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
@@ -40,61 +39,24 @@
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 #include <boost/foreach.hpp>
 
+#ifdef RWS_USE_STATIC_LINK_PLUGINS
+    #include <rws/plugins/log/ShowLog.hpp>
+    #include <rws/plugins/jog/Jog.hpp>
+    #include <rws/plugins/treeview/TreeView.hpp>
+    #include <rws/plugins/playback/PlayBack.hpp>
+    #include <rws/plugins/planning/Planning.hpp>
+    #include <rws/plugins/propertyview/PropertyView.hpp>
+    #include <rws/plugins/sensors/Sensors.hpp>
+    #include <rws/plugins/lua/Lua.hpp>
+#endif
+
 
 using namespace rw;
 using namespace rw::common;
 using namespace rw::loaders;
 using namespace rws;
 
-#ifdef RWS_USE_STATIC_LINK_PLUGINS
 
-	#include <rws/plugins/log/ShowLog.hpp>
-	#include <rws/plugins/jog/Jog.hpp>
-	#include <rws/plugins/treeview/TreeView.hpp>
-	#include <rws/plugins/playback/PlayBack.hpp>
-	#include <rws/plugins/planning/Planning.hpp>
-	#include <rws/plugins/propertyview/PropertyView.hpp>
-	#include <rws/plugins/sensors/Sensors.hpp>
-	#include <rws/plugins/lua/Lua.hpp>
-
-	#ifdef RWS_HAVE_SANDBOX
-	//Plugins which are available in the sandbox
-	#endif
-
-	std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
-	{
-		typedef rws::RobWorkStudio::PluginSetup Pl;
-		std::vector<Pl> plugins;
-
-		plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
-		plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
-		plugins.push_back(Pl(new rws::TreeView(), false, Qt::LeftDockWidgetArea));
-		plugins.push_back(Pl(new rws::PlayBack(), false, Qt::BottomDockWidgetArea));
-		plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
-		plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
-		plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
-
-	
-		#if RWS_HAVE_LUA
-			plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
-		#endif
-
-		#if RWS_HAVE_SANDBOX
-			//Plugins which are avaible in the sandbox
-		#endif
-
-		return plugins;
-	}
-#else
-	std::vector<RobWorkStudio::PluginSetup> getPlugins()
-	{
-		return std::vector<RobWorkStudio::PluginSetup>();
-	}
-
-	std::vector<int> getIntegers() {
-		return std::vector<int>();
-	}
-#endif // RW_STATIC_LINK_PLUGINS 
 
 
 int main(int argc, char** argv)
@@ -113,13 +75,11 @@ int main(int argc, char** argv)
 
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
-    RobWork robwork;
+
     {
         QApplication app(argc, argv);
         try {
         
-            std::vector<rws::RobWorkStudio::PluginSetup> plugins;
-
             QPixmap pixmap(":/images/splash.jpg");
 
             QSplashScreen splash(pixmap);
@@ -127,15 +87,36 @@ int main(int argc, char** argv)
             // Loading some items
             splash.showMessage("Adding static plugins");
 
-            plugins = getPlugins();
-
             app.processEvents();
             // Establishing connections
-            splash.showMessage("Loading dynamic plugins");
+            splash.showMessage("Loading static plugins");
             std::string pluginFolder = "./plugins/";
 
             {
-                rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
+                rws::RobWorkStudio rwstudio(map);
+
+                #ifdef RWS_USE_STATIC_LINK_PLUGINS
+                    rwstudio.addPlugin(new rws::ShowLog(), false, Qt::BottomDockWidgetArea);
+                    rwstudio.addPlugin(new rws::Jog(), false, Qt::LeftDockWidgetArea);
+                    rwstudio.addPlugin(new rws::TreeView(), false, Qt::LeftDockWidgetArea);
+                    rwstudio.addPlugin(new rws::PlayBack(), false, Qt::BottomDockWidgetArea);
+                    rwstudio.addPlugin(new rws::PropertyView(), false, Qt::LeftDockWidgetArea);
+                    rwstudio.addPlugin(new rws::Planning(), false, Qt::LeftDockWidgetArea);
+                    rwstudio.addPlugin(new rws::Sensors(), false, Qt::RightDockWidgetArea);
+
+
+                    #if RWS_HAVE_LUA
+                    rwstudio.addPlugin(new rws::Lua(), false, Qt::LeftDockWidgetArea);
+                    #endif
+
+                    #if RWS_HAVE_SANDBOX
+                        //Plugins which are avaible in the sandbox
+                    #endif
+                #endif
+
+                splash.showMessage("Loading static plugins");
+                rwstudio.loadSettingsSetupPlugins( inifile );
+
                 if(!inputfile.empty()){
                     splash.showMessage("Openning dynamic workcell...");
                     rwstudio.openFile(inputfile);
