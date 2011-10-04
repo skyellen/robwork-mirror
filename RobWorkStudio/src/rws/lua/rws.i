@@ -134,6 +134,7 @@ Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args){
     // create a thread that start QApplication and
     if(robApp==NULL){
         robApp =new RobWorkStudioApplication( args );
+        robApp->start();
         while(robApp->_rwstudio==NULL){
             rw::common::TimerUtil::sleepMs(100);
         }
