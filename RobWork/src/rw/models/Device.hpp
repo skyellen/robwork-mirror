@@ -89,6 +89,8 @@ namespace rw { namespace models {
          */
         virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
+        virtual void removeStateData(rw::kinematics::StateStructure::Ptr sstruct){};
+
         /**
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
          *
