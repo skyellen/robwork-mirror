@@ -26,11 +26,23 @@ using namespace rw::common;
 
 template<class T> class Ptr {
 public:
+    Ptr();
+    Ptr(T* ptr);
+    //Ptr(boost::shared_ptr<T> ptr);
+    //Ptr(std::auto_ptr<T> ptr);
+    bool isShared();
+    bool isNull();
+    bool operator==(void* p) const;
+
+    template<class A>
+    bool operator==(const Ptr<A>& p) const;
 
     T *operator->() const;
 };
 
 
+%template (WorkCellPtr) Ptr<WorkCell>;
+%template (DevicePtr) Ptr<Device>;
 
 
 /**************************
@@ -515,6 +527,7 @@ private:
  *************************************************************************/
 class WorkCell {
 public:
+    WorkCell(const std::string& name);
     std::string getName() const;
     Frame* getWorldFrame() const;
     void addDevice(Ptr<Device> device);
