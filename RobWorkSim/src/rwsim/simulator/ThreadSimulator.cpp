@@ -67,21 +67,15 @@ void ThreadSimulator::setTimeStep(double dt){
 }
 
 void ThreadSimulator::start(){
-
-    boost::mutex::scoped_lock lock(_simMutex);
-    if( _thread != NULL ){
-        // stop current running thread and start a new
-        _running = false;
-        _thread->join();
-        delete _thread;
-        _thread = NULL;
+    stop();
+    {
+        boost::mutex::scoped_lock lock(_simMutex);
+        _running = true;
+        _thread = new boost::thread(boost::bind(&ThreadSimulator::stepperLoop, this));
     }
-    _running = true;
-    _thread = new boost::thread(boost::bind(&ThreadSimulator::stepperLoop, this));
 }
 
 void ThreadSimulator::stop(){
-    std::cout << "ThreadSimulator::stop()" << std::endl;
    {
         boost::mutex::scoped_lock lock(_simMutex);
         _running = false;
@@ -93,7 +87,6 @@ void ThreadSimulator::stop(){
     _thread->join();
     delete _thread;
     _thread = NULL;
-    std::cout << "ThreadSimulator::stopped" << std::endl;
 }
 
 void ThreadSimulator::step(){

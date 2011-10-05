@@ -236,12 +236,9 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
         _simulators[i]->setTimeStep(0.01);
         _simStates[_simulators[i]] = sstate;
     }
-    std::cout << "STARTING SIMULATORS" << std::endl;
     for(size_t i=0;i<_simulators.size();i++){
-        std::cout << "STARTING SIMULATOR: " << i << std::endl;
         _simulators[i]->start();
     }
-    std::cout << "all started " << std::endl;
 }
 
 void GraspTaskSimulator::pauseSimulation(){
@@ -378,7 +375,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         //std::cout << "grasping" << std::endl;
         if(sim->getTime()> sstate._approachedTime+0.2){
             // test if the grasp is in rest
-            bool isResting = DynamicUtil::isResting(_dhand, state, 0.02);
+            bool isResting = DynamicUtil::isResting(_dhand, state, 0.06);
             //std::cout << isResting << "&&" << sim->getTime() << "-" << _restingTime << ">0.08" << std::endl;
             // if it is in rest then lift object
             if( (isResting && ( (sim->getTime()-sstate._restingTime)>0.4)) || sim->getTime()>10 ){
@@ -534,7 +531,9 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             sstate._wTtcp_initTarget = wTref * refToffset * offsetTtarget;
             sstate._wTmbase_initTarget     = sstate._wTtcp_initTarget * inverse(mbaseTtcp);
             sstate._wTmbase_approachTarget = sstate._wTtcp_initTarget * sstate._approach * inverse(mbaseTtcp);
-            sstate._wTmbase_retractTarget  = sstate._wTtcp_initTarget * sstate._approach * sstate._retract * inverse(mbaseTtcp);
+            //sstate._wTmbase_retractTarget  = sstate._wTtcp_initTarget * sstate._approach * sstate._retract * inverse(mbaseTtcp);
+            Transform3D<> wTretract =  wTref * refToffset * sstate._retract;
+            sstate._wTmbase_retractTarget  = wTretract * sstate._wTmbase_approachTarget;
             //RW_WARN("1");
             // we initialize the transform
             //std::cout << "inverse(wTmparent)" << inverse(wTmparent) << std::endl;
