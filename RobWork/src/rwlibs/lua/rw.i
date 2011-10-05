@@ -360,7 +360,7 @@ public:
     Sphere(const Q& initQ);
     Sphere(double radi):_radius(radi);
     double getRadius();
-    TriMesh::Ptr createMesh(int resolution) const;
+    Ptr<TriMesh> createMesh(int resolution) const;
     Q getParameters() const;
     GeometryData::GeometryType getType() const;
 };
@@ -370,7 +370,7 @@ public:
     Box();
     Box(double x, double y, double z);
     Box(const Q& initQ);
-    TriMesh::Ptr createMesh(int resolution) const;
+    Ptr<TriMesh> createMesh(int resolution) const;
     Q getParameters() const;
     GeometryType getType() const;
 };
@@ -401,7 +401,7 @@ public:
     //double d() const;
     double distance(const Vector3D& point);
     double refit( std::vector<Vector3D >& data );
-    TriMesh::Ptr createMesh(int resolution) const ;
+    Ptr<TriMesh> createMesh(int resolution) const ;
     Q getParameters() const;
     GeometryType getType() const{ return PlanePrim; };
 };
@@ -626,10 +626,10 @@ public:
 
     enum Type { QType = 0, Vector3DType, Rotation3DType, Transform3DType};
     Type getType();
-    rw::trajectory::QTrajectory::Ptr getQTrajectory();
-    rw::trajectory::Vector3DTrajectory::Ptr getVector3DTrajectory();
-    rw::trajectory::Rotation3DTrajectory::Ptr getRotation3DTrajectory();
-    rw::trajectory::Transform3DTrajectory::Ptr getTransform3DTrajectory();
+    Ptr<rw::trajectory::QTrajectory> getQTrajectory();
+    Ptr<rw::trajectory::Vector3DTrajectory> getVector3DTrajectory();
+    Ptr<rw::trajectory::Rotation3DTrajectory> getRotation3DTrajectory();
+    Ptr<rw::trajectory::Transform3DTrajectory> getTransform3DTrajectory();
 };
 
 class XMLTrajectorySaver
