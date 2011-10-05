@@ -127,6 +127,10 @@ class RobWorkStudioApplication : public QThread
      std::string _args;
  };
 
+%template (RobWorkStudioPtr) Ptr<RobWorkStudio>;
+%template (RWStudioView3DPtr) Ptr<RWStudioView3D>;
+
+
 static RobWorkStudioApplication *robApp = NULL;
 
 Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args){
