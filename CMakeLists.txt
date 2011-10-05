@@ -16,7 +16,7 @@ ENDIF()
 
 add_subdirectory(RobWork)
 add_subdirectory(RobWorkStudio)
-add_subdirectory(RobWorkSim)
+#add_subdirectory(RobWorkSim)
 
 #add_dependencies(RobWorkStudio RobWork)
 #add_dependencies(RobWorkSim RobWork RobWorkStudio)
