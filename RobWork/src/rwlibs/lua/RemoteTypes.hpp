@@ -59,6 +59,8 @@ typedef rw::math::Pose6D<double> Pose6D;
 typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
 typedef rw::math::Jacobian Jacobian;
 
+typedef rw::common::PropertyMap PropertyMap;
+
 typedef rw::geometry::GeometryData GeometryData;
 typedef rw::geometry::Primitive Primitive;
 typedef rw::geometry::Box Box;

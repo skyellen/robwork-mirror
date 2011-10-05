@@ -4,7 +4,6 @@
 #include <rwlibs/lua/RemoteTypes.hpp>
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::rwr;
-using namespace rw::common;
 %}
 
 %include <std_string.i>
@@ -23,7 +22,7 @@ using namespace rw::common;
  * COMMON
  */
 
-
+namespace rw { namespace common {
 template<class T> class Ptr {
 public:
     Ptr();
@@ -35,14 +34,15 @@ public:
     bool operator==(void* p) const;
 
     template<class A>
-    bool operator==(const Ptr<A>& p) const;
+    bool operator==(const rw::common::Ptr<A>& p) const;
 
     T *operator->() const;
 };
+}}
 
 
-%template (WorkCellPtr) Ptr<WorkCell>;
-%template (DevicePtr) Ptr<Device>;
+%template (WorkCellPtr) rw::common::Ptr<WorkCell>;
+%template (DevicePtr) rw::common::Ptr<Device>;
 
 
 /**************************
@@ -328,8 +328,8 @@ public:
 *********************************************************************/
 
 
-%template(GeometryDataPtr) Ptr<GeometryData>;
-%template(TriMeshPtr) Ptr<TriMesh>;
+%template(GeometryDataPtr) rw::common::Ptr<GeometryData>;
+%template(TriMeshPtr) rw::common::Ptr<TriMesh>;
 
 class GeometryData {
     typedef enum {PlainTriMesh,
@@ -340,7 +340,7 @@ class GeometryData {
                   UserType} GeometryType;
 
     virtual GeometryType getType() const = 0;
-    virtual Ptr<TriMesh> getTriMesh(bool forceCopy=true) = 0;
+    virtual rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true) = 0;
     static std::string toString(GeometryType type);
 };
 
@@ -353,16 +353,16 @@ public:
     virtual void getTriangle(size_t idx, Trianglef& dst) const = 0;
     virtual size_t getSize() const = 0;
     virtual size_t size() const = 0;
-    virtual Ptr<TriMesh> clone() const = 0;
-    Ptr<TriMesh> getTriMesh(bool forceCopy=true);
-    //Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
+    virtual rw::common::Ptr<TriMesh> clone() const = 0;
+    rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true);
+    //rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
 };
 
 
 class Primitive: public GeometryData {
 public:
-    Ptr<TriMesh> getTriMesh(bool forceCopy=true);
-    virtual Ptr<TriMesh> createMesh(int resolution) const = 0;
+    rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true);
+    virtual rw::common::Ptr<TriMesh> createMesh(int resolution) const = 0;
     virtual Q getParameters() const = 0;
 };
 
@@ -372,7 +372,7 @@ public:
     Sphere(const Q& initQ);
     Sphere(double radi):_radius(radi);
     double getRadius();
-    Ptr<TriMesh> createMesh(int resolution) const;
+    rw::common::Ptr<TriMesh> createMesh(int resolution) const;
     Q getParameters() const;
     GeometryData::GeometryType getType() const;
 };
@@ -382,7 +382,7 @@ public:
     Box();
     Box(double x, double y, double z);
     Box(const Q& initQ);
-    Ptr<TriMesh> createMesh(int resolution) const;
+    rw::common::Ptr<TriMesh> createMesh(int resolution) const;
     Q getParameters() const;
     GeometryType getType() const;
 };
@@ -394,7 +394,7 @@ public:
     double getHeight();
     double getTopRadius();
     double getBottomRadius();
-    Ptr<TriMesh> createMesh(int resolution) const;
+    rw::common::Ptr<TriMesh> createMesh(int resolution) const;
     Q getParameters() const;
     GeometryType getType() const;
 };
@@ -413,7 +413,7 @@ public:
     //double d() const;
     double distance(const Vector3D& point);
     double refit( std::vector<Vector3D >& data );
-    Ptr<TriMesh> createMesh(int resolution) const ;
+    rw::common::Ptr<TriMesh> createMesh(int resolution) const ;
     Q getParameters() const;
     GeometryType getType() const{ return PlanePrim; };
 };
@@ -427,14 +427,14 @@ public:
     virtual PlainTriMeshN1* toTriMesh() = 0;
 };
 
-%template(GeometryPtr) Ptr<Geometry>;
-//typedef Ptr<Geometry> GeometryPtr;
+%template(GeometryPtr) rw::common::Ptr<Geometry>;
+//typedef rw::common::Ptr<Geometry> GeometryPtr;
 
 class Geometry {
 public:
-    Geometry(Ptr<GeometryData> data, double scale=1.0);
+    Geometry(rw::common::Ptr<GeometryData> data, double scale=1.0);
 
-    Geometry(Ptr<GeometryData> data,
+    Geometry(rw::common::Ptr<GeometryData> data,
              const Transform3D& t3d,
              double scale=1.0);
 
@@ -442,24 +442,24 @@ public:
     void setScale(double scale);
     void setTransform(const Transform3D& t3d);
     const Transform3D& getTransform() const;
-    Ptr<GeometryData> getGeometryData();
-    const Ptr<GeometryData> getGeometryData() const;
-    void setGeometryData(Ptr<GeometryData> data);
+    rw::common::Ptr<GeometryData> getGeometryData();
+    const rw::common::Ptr<GeometryData> getGeometryData() const;
+    void setGeometryData(rw::common::Ptr<GeometryData> data);
     const std::string& getName() const;
     const std::string& getId() const;
     void setName(const std::string& name);
     void setId(const std::string& id);
-    static Ptr<Geometry> makeSphere(double radi);
-    static Ptr<Geometry> makeBox(double x, double y, double z);
-    static Ptr<Geometry> makeCone(double height, double radiusTop, double radiusBot);
-    static Ptr<Geometry> makeCylinder(float radius, float height);
+    static rw::common::Ptr<Geometry> makeSphere(double radi);
+    static rw::common::Ptr<Geometry> makeBox(double x, double y, double z);
+    static rw::common::Ptr<Geometry> makeCone(double height, double radiusTop, double radiusBot);
+    static rw::common::Ptr<Geometry> makeCylinder(float radius, float height);
 };
 
 
 class STLFile {
 public:
     static void save(const TriMesh& mesh, const std::string& filename);
-    static Ptr<PlainTriMeshN1f> load(const std::string& filename);
+    static rw::common::Ptr<PlainTriMeshN1f> load(const std::string& filename);
 };
 
 /**************************************************************************
@@ -530,14 +530,14 @@ public:
     WorkCell(const std::string& name);
     std::string getName() const;
     Frame* getWorldFrame() const;
-    void addDevice(Ptr<Device> device);
-    const std::vector<Ptr<Device> >& getDevices() const;
+    void addDevice(rw::common::Ptr<Device> device);
+    const std::vector<rw::common::Ptr<Device> >& getDevices() const;
     Frame* findFrame(const std::string& name) const;
     std::vector<Frame*> getFrames() const;
-    Ptr<Device> findDevice(const std::string& name) const;
+    rw::common::Ptr<Device> findDevice(const std::string& name) const;
     State getDefaultState() const;
 
-    //Ptr<StateStructure> getStateStructure();
+    //rw::common::Ptr<StateStructure> getStateStructure();
 
     PropertyMap& getPropertyMap();
 private:
@@ -572,7 +572,7 @@ public:
     virtual Jacobian baseJend(const State& state) const = 0;
     virtual Jacobian baseJframe(const Frame* frame,const State& state) const;
     virtual Jacobian baseJframes(const std::vector<Frame*>& frames,const State& state) const;
-    //virtual Ptr<JacobianCalculator> baseJCend(const kinematics::State& state) const;
+    //virtual rw::common::Ptr<JacobianCalculator> baseJCend(const kinematics::State& state) const;
     //virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
     //virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
 private:
@@ -619,14 +619,14 @@ public:
 
 class WorkCellLoader{
 public:
-    static Ptr<WorkCell> load(const std::string& filename);
+    static rw::common::Ptr<WorkCell> load(const std::string& filename);
 private:
     WorkCellLoader();
 };
 
 class ImageFactory{
 public:
-    static Ptr<Image> load(const std::string& filename);
+    static rw::common::Ptr<Image> load(const std::string& filename);
 private:
     ImageFactory();
 };
@@ -639,10 +639,10 @@ public:
 
     enum Type { QType = 0, Vector3DType, Rotation3DType, Transform3DType};
     Type getType();
-    Ptr<rw::trajectory::QTrajectory> getQTrajectory();
-    Ptr<rw::trajectory::Vector3DTrajectory> getVector3DTrajectory();
-    Ptr<rw::trajectory::Rotation3DTrajectory> getRotation3DTrajectory();
-    Ptr<rw::trajectory::Transform3DTrajectory> getTransform3DTrajectory();
+    rw::common::Ptr<rw::trajectory::QTrajectory> getQTrajectory();
+    rw::common::Ptr<rw::trajectory::Vector3DTrajectory> getVector3DTrajectory();
+    rw::common::Ptr<rw::trajectory::Rotation3DTrajectory> getRotation3DTrajectory();
+    rw::common::Ptr<rw::trajectory::Transform3DTrajectory> getTransform3DTrajectory();
 };
 
 class XMLTrajectorySaver
