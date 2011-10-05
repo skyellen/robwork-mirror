@@ -25,8 +25,10 @@
 
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
 #include "Device.hpp"
+#include "Object.hpp"
 #include <vector>
 #include <map>
 #include <string>
@@ -69,6 +71,15 @@ namespace rw { namespace models {
 		typedef rw::common::Ptr<WorkCell> Ptr;
 
 		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED} WorkCellEventType;
+
+        /**
+         * @brief Constructs an empty WorkCell
+         *
+         * @param name [in] The name of the workcell. A good name for the
+         * workcell would be the (eventual) file that the workcell was loaded
+         * from.
+         */
+        WorkCell(const std::string& name);
 
 		/**
          * @brief Constructs a WorkCell
@@ -114,6 +125,7 @@ namespace rw { namespace models {
          * @param device [in] pointer to device.
          */
 		void addDevice(rw::common::Ptr<Device> device);
+
 
         /**
          * @brief Returns a reference to a vector with pointers to the Device(s)
@@ -234,6 +246,82 @@ namespace rw { namespace models {
          */
         kinematics::State getDefaultState() const;
 
+
+
+
+
+
+        /**
+         * @brief Returns sensor with the specified name.
+         *
+         * If multiple sensors has the same name, the first sensor encountered
+         * will be returned. If no sensor is found, the method returns NULL.
+         *
+         * @param name [in] name of sensor.
+         *
+         * @return The sensor with name \b name or NULL if no such sensor.
+         */
+        rw::sensor::Sensor::Ptr findSensor(const std::string& name) const;
+
+        /**
+         * @brief Returns sensor with the specified name and type \b T.
+         *
+         * If multiple sensors has the same name, the first sensor encountered
+         * will be returned. If no sensor is found, the method returns NULL.
+         * if a sensor is found and it is nt of type \b T then NULL is returned.
+         *
+         * @param name [in] name of sensor.
+         *
+         * @return The sensor with name \b name or NULL if no such sensor or the sensor is not of type \b T.
+         */
+        template<class T>
+        rw::common::Ptr<T> findSensor(const std::string& name) const{
+            rw::sensor::Sensor::Ptr sensor = findSensor(name);
+            if(sensor==NULL)
+                return NULL;
+            return sensor.cast<T>();
+        }
+
+        /**
+         * @brief Returns all frames of a specific type \b T.
+         * @return all frames of type \b T in the workcell
+         */
+        template<class T>
+        std::vector<rw::common::Ptr<T> > findSensors() const{
+            const std::vector<rw::sensor::Sensor::Ptr> sensors = _sensors;
+            std::vector<rw::common::Ptr<T> > result;
+            BOOST_FOREACH(rw::sensor::Sensor::Ptr f, sensors){
+                rw::common::Ptr<T> res = f.cast<T>();
+                if(res!=NULL)
+                    result.push_back(res);
+            }
+            return result;
+        }
+
+        /**
+         * @brief Returns all frames in workcell
+         * @return List of all frames
+         */
+        std::vector<rw::sensor::Sensor::Ptr> getSensors() const {
+            std::vector<rw::sensor::Sensor::Ptr> sensors;
+            BOOST_FOREACH(rw::sensor::Sensor::Ptr sensor, _sensors){
+                if(sensor!=NULL)
+                    sensors.push_back(sensor);
+            }
+
+            return sensors;
+        }
+
+
+
+        // new overloaded add methods
+        void add(rw::common::Ptr<Device> device){ addDevice(device); }
+        void add(rw::common::Ptr<Object> object);
+        void add(rw::common::Ptr<rw::sensor::Sensor> sensor);
+
+
+
+
         /**
          * @brief gets the complete state structure of the workcell.
          * @return the state structure of the workcell.
@@ -263,6 +351,9 @@ namespace rw { namespace models {
          */
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
 
+
+
+
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);
         void stateDataRemovedListener(const rw::kinematics::StateData* data);
@@ -270,9 +361,11 @@ namespace rw { namespace models {
     private:
         rw::kinematics::StateStructure::Ptr _tree;
 		std::vector<rw::common::Ptr<Device> > _devices;
+		std::vector<rw::common::Ptr<Object> > _objects;
         std::string _name;
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
+        std::vector<rw::sensor::Sensor::Ptr> _sensors;
     private:
         WorkCell(const WorkCell&);
         WorkCell& operator=(const WorkCell&);

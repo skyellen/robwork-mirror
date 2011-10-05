@@ -25,6 +25,19 @@
 using namespace rw::models;
 using namespace rw::kinematics;
 
+WorkCell::WorkCell(const std::string& name)
+    :
+    _tree(rw::common::ownedPtr(new StateStructure())),
+    _name(name)
+{
+    // Because we want the assertion, we initialize _frameMap here.
+    RW_ASSERT( _tree );
+    //_frameMap = Kinematics::buildFrameMap(*(_tree->getRoot()), _tree->getDefaultState());
+
+    _tree->stateDataAddedEvent().add( boost::bind(&WorkCell::stateDataAddedListener, this, _1), this );
+    _tree->stateDataRemovedEvent().add( boost::bind(&WorkCell::stateDataRemovedListener, this, _1), this );
+}
+
 WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
     :
     _tree(tree),
@@ -51,6 +64,19 @@ void WorkCell::addDevice(Device::Ptr device)
 {
     device->registerStateData(_tree);
     _devices.push_back(device);
+    //TODO: notify changed
+}
+
+void WorkCell::add(rw::common::Ptr<Object> object){
+
+    object->registerStateData(_tree);
+    _objects.push_back(object);
+    //TODO: notify changed
+}
+
+void WorkCell::add(rw::common::Ptr<rw::sensor::Sensor> sensor){
+    sensor->registerStateData(_tree);
+    _sensors.push_back(sensor);
 }
 
 const std::vector<Device::Ptr>& WorkCell::getDevices() const
@@ -61,6 +87,15 @@ const std::vector<Device::Ptr>& WorkCell::getDevices() const
 Frame* WorkCell::findFrame(const std::string& name) const
 {
     return _tree->findFrame(name);
+}
+
+rw::sensor::Sensor::Ptr WorkCell::findSensor(const std::string& name) const
+{
+    BOOST_FOREACH(rw::sensor::Sensor::Ptr sensor, _sensors){
+        if(name == sensor->getName())
+            return sensor;
+    }
+    return NULL;
 }
 
 Device::Ptr WorkCell::findDevice(const std::string& name) const

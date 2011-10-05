@@ -33,6 +33,7 @@ SET(FILES_CPP
   DrawableModelInfo.cpp
   CollisionModelInfo.cpp
   DHParameterSet.cpp
+  Object.cpp
 )
 
 SET(FILES_HPP
@@ -70,6 +71,7 @@ SET(FILES_HPP
   DrawableModelInfo.hpp
   CollisionModelInfo.hpp
   DHParameterSet.hpp
+  Object.hpp
 )
 
 SOURCE_GROUP(models FILES ${FILES_CPP} ${FILES_HPP})
