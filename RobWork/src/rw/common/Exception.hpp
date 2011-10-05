@@ -24,7 +24,7 @@
  */
 
 #include "Message.hpp"
-
+#include <exception>
 #include <iostream>
 #include <string>
 
@@ -41,7 +41,7 @@ namespace rw { namespace common {
      * An exception contains a message (of type Message) for the user and
      * nothing else.
      */
-    class Exception
+    class Exception: public std::exception
     {
     public:
         /** 
@@ -52,7 +52,11 @@ namespace rw { namespace common {
         Exception(const Message& message) :
             _id(-1),
             _message(message)
-        {}
+        {
+            std::stringstream sstr;
+            sstr<<"Id["<<_id<<"]"<<_message.getFullText();
+            _whatMsg = sstr.str();
+        }
 
         /** 
          * @brief Constructor
@@ -63,8 +67,14 @@ namespace rw { namespace common {
         Exception(int id, const Message& message) :
             _id(id),
             _message(message)
-        {}
+        {
+            std::stringstream sstr;
+            sstr<<"Id["<<_id<<"]"<<_message.getFullText();
+            _whatMsg = sstr.str();
+        }
 
+
+        virtual ~Exception() throw() {};
 
         /** 
          * @brief The message for the user describing the reason for the error.
@@ -85,15 +95,22 @@ namespace rw { namespace common {
          * @brief readable description of this esception
          * @return string description
          */
-        std::string what() const {
-            std::stringstream sstr;
-            sstr<<"Id["<<_id<<"]"<<_message.getFullText();
-            return sstr.str();
+        //std::string what() const {
+        //    return _whatMsg;
+        //}
+
+        /**
+         * @brief readable description of this esception
+         * @return string description
+         */
+        const char* what() const throw() {
+            return _whatMsg.c_str();
         }
 
     private:
         int _id;
         Message _message;
+        std::string _whatMsg;
     };
 
 
