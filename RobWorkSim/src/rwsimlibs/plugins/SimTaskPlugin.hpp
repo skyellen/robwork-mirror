@@ -95,7 +95,7 @@ private:
 
     rw::common::PropertyMap _config;
     PropertyViewEditor *_propertyView;
-
+    rw::kinematics::State _initState;
     rwlibs::task::CartesianTask::Ptr _mergedResult;
 
 };

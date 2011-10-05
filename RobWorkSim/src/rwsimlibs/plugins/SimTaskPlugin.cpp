@@ -102,7 +102,7 @@ void SimTaskPlugin::startSimulation() {
         return;
     }
     try {
-        _graspSim->startSimulation( getRobWorkStudio()->getState() );
+        _graspSim->startSimulation( _initState );
     } catch(...){
         return;
     }
@@ -152,7 +152,7 @@ void SimTaskPlugin::open(WorkCell* workcell)
     }
     _typeComboBox->setCurrentIndex(idx);
 
-
+    _initState = getRobWorkStudio()->getState();
     //_genTasksBox enabled and nr of task
     //std::string objectName = _objectComboBox->currentText().toStdString();
 
@@ -211,11 +211,11 @@ void SimTaskPlugin::btnPressed() {
         saveTasks(false);
     } else if(obj==_startBtn){
         if( !_graspSim->isRunning() ){
+            _mergedResult = ownedPtr( new CartesianTask() );
             if( _genTasksBox->isChecked() ){
                 // generate an initial task list and set it
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(5000);
                 setCurrentTask(tasks);
-                _mergedResult = ownedPtr( new CartesianTask() );
             }
             startSimulation();
         } else {
@@ -330,15 +330,15 @@ void SimTaskPlugin::btnPressed() {
                     CartesianTask::Ptr task = _graspSim->getResult();
                     std::vector<CartesianTarget::Ptr> stargets;
                     BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
-                        std::cout << "TARGET" << std::endl;
                         int status = target->getPropertyMap().get<int> ("TestStatus",-1);
                         if(status==GraspTaskSimulator::Success || status==GraspTaskSimulator::ObjectSlipped){
-                            log().info() << "MERGE" << std::endl;
                             stargets.push_back(target);
                         }
                     }
-                    task->getTargets() = stargets;
-                    _mergedResult->addTask(task);
+                    if(stargets.size()>0){
+                        task->getTargets() = stargets;
+                        _mergedResult->addTask(task);
+                    }
                 //}
             }
 
@@ -346,11 +346,11 @@ void SimTaskPlugin::btnPressed() {
             // generate new targets
             // generaAutote an initial task list and set it
             if( _continuesBox->isChecked() ){
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(5000);
                 std::cout << "setting new tasks" << std::endl;
                 setCurrentTask(tasks);
 
-                _graspSim->startSimulation( getRobWorkStudio()->getState() );
+                _graspSim->startSimulation( _initState );
             } else {
                 _timer->stop();
             }
@@ -479,6 +479,18 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
         type = "SchunkHand";
+
+    } else if( type== "SDH_PAR1_TABLE"){
+        openQ =  Q(7,-1.571,-1.571,1.571, -0.296, 0.240, -0.296, 0.240);
+        closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
+        tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
+        type = "SchunkHand";
+    } else if( type== "SDH_PAR2_TABLE"){
+        openQ =  Q(7,-1.571,-1.571,1.571, -0.1, 0.1, -0.1, 0.1);
+        closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
+        tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
+        type = "SchunkHand";
+
     } else if( type== "SDH_BALL"){
         openQ = Q(7,-1.048, 0.174, 1.047 ,-1.048, 0.174, -1.048, 0.174);
         closeQ = Q(7, 0.0, 0.349, 1.047,0.0, 0.349,0.0, 0.349);
@@ -507,7 +519,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
     } else {
         tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.0)) );
-        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
+        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,0.10)));
     }
     tasks->getPropertyMap().set<Q>("OpenQ", openQ);
     tasks->getPropertyMap().set<Q>("CloseQ", closeQ);
@@ -522,12 +534,41 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     }
 
     // now we choose a random number in the total area
-    State state = getRobWorkStudio()->getState();
+    State state = _initState;
     Transform3D<> wTo = rw::kinematics::Kinematics::worldTframe(body->getBodyFrame(), state);
-    for(int i=0; i<nrTasks; i++){
-        Transform3D<> target = wTo*ssurf.sample();
-        CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
-        tasks->addTarget( ctarget );
+    if( type== "SDH_PAR1_TABLE" || type== "SDH_PAR2_TABLE"  ){
+        Device::Ptr dev = _wc->findDevice(type);
+        std::string tcp = tasks->getPropertyMap().get<std::string>("TCP");
+        Frame *tcpframe = _wc->findFrame(tcp);
+        MovableFrame *base = dynamic_cast<MovableFrame*>( dev->getBase() );
+        dev->setQ(closeQ,state);
+        RW_ASSERT(dev);
+        Transform3D<> baseTtcp = Kinematics::frameTframe(base,tcpframe, state);
+        for(int i=0; i<nrTasks; i++){
+            // we only sample
+            bool incollision = 0;
+            Transform3D<> target;
+            CollisionDetector::QueryResult result;
+            do {
+                target = wTo*ssurf.sample();
+                Transform3D<> wTbase = target*inverse(baseTtcp);
+                base->setTransform(wTbase, state);
+                incollision = true;
+                if( getRobWorkStudio()->getCollisionDetector()->inCollision(state, &result) ){
+
+                }
+            } while(incollision);
+
+
+            CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
+            tasks->addTarget( ctarget );
+        }
+    } else {
+        for(int i=0; i<nrTasks; i++){
+            Transform3D<> target = wTo*ssurf.sample();
+            CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
+            tasks->addTarget( ctarget );
+        }
     }
     return tasks;
 }
@@ -536,7 +577,7 @@ void SimTaskPlugin::setCurrentTask(rwlibs::task::CartesianTask::Ptr task){
     try {
         _graspSim->load(task);
     } catch(const Exception& exp){
-        QMessageBox::information(this, "SimTaskPlugin", exp.what().c_str());
+        QMessageBox::information(this, "SimTaskPlugin", exp.what());
         return;
     }
 
