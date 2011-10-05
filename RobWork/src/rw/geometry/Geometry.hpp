@@ -29,7 +29,7 @@ namespace rw { namespace geometry {
 
 	/**
 	 * @brief a class for representing a geometry that is scaled
-	 * and transformed.
+	 * and transformed, and which is attached to a frame.
 	 *
 	 * Each geometry must have a unique ID. This is either auto
 	 * generated or specified by user. The ids are used in collision
@@ -111,7 +111,7 @@ namespace rw { namespace geometry {
 		//void setBV(GeometryData* bv){_bv = bv;};
 
 	private:
-
+		rw::kinematics::Frame *_refFrame;
 		GeometryData::Ptr _data;
 		//GeometryData *_bv;
 		rw::math::Transform3D<> _transform;
