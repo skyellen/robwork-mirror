@@ -6,8 +6,6 @@
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::rwr;
 using namespace rws::rwr;
-using namespace rw::common;
-
 %}
 
 %import <rwlibs/lua/rw.i>
@@ -37,7 +35,7 @@ class RobWorkStudioApplication : public QThread
      void run(){
          Q_INIT_RESOURCE(rwstudio_resources);
          int res = 0;
-         ProgramOptions poptions("RobWorkStudio", RW_VERSION);
+         rw::common::ProgramOptions poptions("RobWorkStudio", RW_VERSION);
          poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
          poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
          poptions.setPositionalOption("input-file", -1);
@@ -111,9 +109,9 @@ class RobWorkStudioApplication : public QThread
                      rwstudio.show();
                      res = app.exec();
                  }
-             } catch (const Exception& e) {
+             } catch (const rw::common::Exception& e) {
                  std::cout << e.what() << std::endl;
-                 QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
+                 QMessageBox::critical(NULL, "RW Exception", e.what());
 
              } catch (std::exception& e) {
                  std::cout << e.what() << std::endl;
@@ -127,13 +125,9 @@ class RobWorkStudioApplication : public QThread
      std::string _args;
  };
 
-%template (RobWorkStudioPtr) Ptr<RobWorkStudio>;
-%template (RWStudioView3DPtr) Ptr<RWStudioView3D>;
-
-
 static RobWorkStudioApplication *robApp = NULL;
 
-Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args){
+rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args){
 
     // create a thread that start QApplication and
     if(robApp==NULL){
@@ -148,7 +142,11 @@ Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args){
 
 %}
 
-Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args);
+%template (RobWorkStudioPtr) rw::common::Ptr<RobWorkStudio>;
+%template (RWStudioView3DPtr) rw::common::Ptr<RWStudioView3D>;
+
+
+rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args);
 
 class RWStudioView3D {
 public:
@@ -156,10 +154,10 @@ public:
     void showPivotPoint(bool visible);
     //void setDrawType(rw::graphics::DrawableNode::DrawType drawType);
     Frame* pickFrame(int x, int y);
-    Ptr<DrawableNode> pick(int x, int y);
+    rw::common::Ptr<DrawableNode> pick(int x, int y);
 
-    Ptr<WorkCellScene> getWorkCellScene();
-    Ptr<SceneViewer> getSceneViewer();
+    rw::common::Ptr<WorkCellScene> getWorkCellScene();
+    rw::common::Ptr<SceneViewer> getSceneViewer();
     void saveBufferToFile(const QString& filename);
 
 };
@@ -172,15 +170,15 @@ public:
 
     PropertyMap& getPropertyMap();
 
-    void setWorkcell(Ptr<WorkCell> workcell);
+    void setWorkcell(rw::common::Ptr<WorkCell> workcell);
 
-    Ptr<WorkCell> getWorkcell();
+    rw::common::Ptr<WorkCell> getWorkcell();
 
-    Ptr<CollisionDetector> getCollisionDetector();
+    rw::common::Ptr<CollisionDetector> getCollisionDetector();
 
-    Ptr<WorkCellScene> getWorkCellScene();
+    rw::common::Ptr<WorkCellScene> getWorkCellScene();
 
-    Ptr<RWStudioView3D> getView();
+    rw::common::Ptr<RWStudioView3D> getView();
 
     const TimedStatePath& getTimedStatePath();
 

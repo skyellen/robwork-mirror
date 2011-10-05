@@ -284,7 +284,7 @@ bool LuaEditorWindow::save(const std::string& filename) {
      } catch (std::exception& e) {
          QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(e.what()));
      } catch (const Exception& exp) {
-         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what().c_str()));
+         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what()));
      }
  }
 
