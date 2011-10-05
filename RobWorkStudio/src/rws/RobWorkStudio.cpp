@@ -930,7 +930,7 @@ bool RobWorkStudio::event(QEvent *event)
         } catch (std::exception& e) {
             QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(e.what()));
         } catch (const Exception& exp) {
-            QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(exp.what().c_str()));
+            QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(exp.what()));
         } catch ( ... ){
             QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view"));
 

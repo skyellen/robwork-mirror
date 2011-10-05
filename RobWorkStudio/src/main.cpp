@@ -130,7 +130,7 @@ int main(int argc, char** argv)
             }
         } catch (const Exception& e) {
             std::cout << e.what() << std::endl;
-            QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
+            QMessageBox::critical(NULL, "RW Exception", e.what());
             return -1;
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
