@@ -113,8 +113,8 @@ using namespace rwlibs::simulation;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 
-#define RW_DEBUGS(str) std::cout << str << std::endl
-//#define RW_DEBUGS(str)
+//#define RW_DEBUGS(str) std::cout << str << std::endl
+#define RW_DEBUGS(str)
 
 namespace
 {
@@ -454,7 +454,7 @@ namespace
 
         readProperties(tree, mframe->getPropertyMap());
 
-        info.print();
+        //info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
         RigidBody *body = new RigidBody(info, mframe, geometry);
         state.wc->getStateStructure()->addData(body);
