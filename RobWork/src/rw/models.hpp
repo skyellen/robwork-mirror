@@ -58,5 +58,6 @@
 #include "./models/TreeDevice.hpp"
 #include "./models/WorkCell.hpp"
 #include "./models/VirtualJoint.hpp"
+#include "./models/Object.hpp"
 
 #endif /* MODELS_HPP_ */

@@ -25,11 +25,12 @@
 
 #include <string>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 
-
-namespace rw { namespace kinematics {
-    class Frame;
-}} // end namespaces
+namespace rw {
+    namespace kinematics { class Frame;}
+    namespace models { class WorkCell;}
+} // end namespaces
 
 namespace rw { namespace sensor {
 
@@ -70,6 +71,8 @@ namespace rw { namespace sensor {
 
     public:
 
+        typedef rw::common::Ptr<Sensor> Ptr;
+
         virtual ~Sensor(){}
         /**
          * @brief returns the name of this sensor
@@ -103,6 +106,11 @@ namespace rw { namespace sensor {
         rw::common::PropertyMap& getPropertyMap(){
             return _propertyMap;
         }
+
+    protected:
+        friend class models::WorkCell;
+        virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
+        virtual void removeStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
     private:
         Sensor(){};
