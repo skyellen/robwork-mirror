@@ -504,6 +504,7 @@ public:
     static rw::common::Ptr<Geometry> makeCylinder(float radius, float height);
 };
 
+%template(PlainTriMeshN1fPtr) rw::common::Ptr<PlainTriMeshN1f>;
 
 class STLFile {
 public:
@@ -672,7 +673,7 @@ public:
 private:
     WorkCellLoader();
 };
-
+%template(ImagePtr) rw::common::Ptr<Image>;
 class ImageFactory{
 public:
     static rw::common::Ptr<Image> load(const std::string& filename);
@@ -709,3 +710,121 @@ private:
     XMLTrajectorySaver();
 };
 
+
+
+
+/******************************************************************************
+ *  LOADERS
+ *
+ * *************************************************************************/
+
+%template(InvKinSolverPtr) rw::common::Ptr<InvKinSolver>;
+class InvKinSolver
+{
+public:
+    virtual std::vector<Q> solve(const Transform3D& baseTend, const State& state) const = 0;
+    virtual void setCheckJointLimits(bool check) = 0;
+};
+
+%template(IterativeIKPtr) rw::common::Ptr<IterativeIK>;
+class IterativeIK: public InvKinSolver
+{
+public:
+    virtual void setMaxError(double maxError);
+
+    virtual double getMaxError() const;
+
+    virtual void setMaxIterations(int maxIterations);
+
+    virtual int getMaxIterations() const;
+
+    virtual PropertyMap& getProperties();
+
+    virtual const PropertyMap& getProperties() const;
+
+    static rw::common::Ptr<IterativeIK> makeDefault(rw::common::Ptr<Device> device, const State& state);
+};
+
+
+class JacobianIKSolver : public IterativeIK
+{
+public:
+    typedef enum{Transpose, SVD, DLS, SDLS} JacobianSolverType;
+
+    JacobianIKSolver(rw::common::Ptr<Device> device, const State& state);
+
+    JacobianIKSolver(rw::common::Ptr<Device> device, Frame *foi, const State& state);
+
+    std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+
+    void setInterpolatorStep(double interpolatorStep);
+
+     void setEnableInterpolation(bool enableInterpolation);
+
+     bool solveLocal(const Transform3D &bTed,
+                     double maxError,
+                     State &state,
+                     int maxIter) const;
+
+     void setClampToBounds(bool enableClamping);
+
+     void setSolverType(JacobianSolverType type);
+
+     void setCheckJointLimits(bool check);
+
+};
+
+
+//typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
+//typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
+//typedef rw::invkin::IKMetaSolver IKMetaSolver;
+%template(CollisionDetectorPtr) rw::common::Ptr<CollisionDetector>;
+
+class IKMetaSolver: public IterativeIK
+{
+public:
+    IKMetaSolver(rw::common::Ptr<IterativeIK> iksolver,
+        const rw::common::Ptr<Device> device,
+        rw::common::Ptr<CollisionDetector> collisionDetector = NULL);
+
+    //IKMetaSolver(rw::common::Ptr<IterativeIK> iksolver,
+    //    const rw::common::Ptr<Device> device,
+    //    rw::common::Ptr<QConstraint> constraint);
+
+    std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+
+    void setMaxAttempts(size_t maxAttempts);
+
+    void setStopAtFirst(bool stopAtFirst);
+
+    void setProximityLimit(double limit);
+
+    void setCheckJointLimits(bool check);
+
+    std::vector<Q> solve(const Transform3D& baseTend, const State& state, size_t cnt, bool stopatfirst) const;
+
+};
+
+
+%template(ClosedFormIKPtr) rw::common::Ptr<ClosedFormIK>;
+
+class ClosedFormIK: public InvKinSolver
+{
+public:
+    static rw::common::Ptr<ClosedFormIK> make(const Device& device, const State& state);
+};
+
+
+class PieperSolver: public ClosedFormIK {
+public:
+    PieperSolver(const std::vector<DHParameterSet>& dhparams,
+                 const Transform3D& joint6Tend,
+                 const Transform3D& baseTdhRef = Transform3D::identity());
+
+    PieperSolver(SerialDevice& dev, const Transform3D& joint6Tend, const State& state);
+
+    virtual std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+
+    virtual void setCheckJointLimits(bool check);
+
+};

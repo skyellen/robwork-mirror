@@ -27,6 +27,8 @@
 #include <rw/loaders.hpp>
 #include <rw/proximity.hpp>
 #include <rw/graphics.hpp>
+#include <rw/invkin.hpp>
+
 #include <rw/RobWork.hpp>
 #include <iostream>
 #include <sstream>
@@ -104,12 +106,22 @@ typedef rw::models::Device Device;
 typedef rw::models::JointDevice JointDevice;
 typedef rw::models::SerialDevice SerialDevice;
 typedef rw::models::TreeDevice TreeDevice;
+typedef rw::models::DHParameterSet DHParameterSet;
 
 typedef rw::proximity::CollisionDetector CollisionDetector;
 typedef rw::proximity::CollisionStrategy CollisionStrategy;
 typedef rw::proximity::DistanceCalculator DistanceCalculator;
 typedef rw::proximity::DistanceStrategy DistanceStrategy;
 
+
+typedef rw::invkin::InvKinSolver InvKinSolver;
+typedef rw::invkin::IterativeIK IterativeIK;
+typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
+typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
+typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
+typedef rw::invkin::IKMetaSolver IKMetaSolver;
+typedef rw::invkin::ClosedFormIK ClosedFormIK;
+typedef rw::invkin::PieperSolver PieperSolver;
 
 typedef rw::loaders::ImageFactory ImageFactory;
 typedef rw::loaders::WorkCellLoader WorkCellLoader;
