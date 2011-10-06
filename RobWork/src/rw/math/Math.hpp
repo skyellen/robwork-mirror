@@ -319,9 +319,12 @@ namespace rw { namespace math {
 		 */
 		template<class T>
 		static rw::math::Rotation3D<T> ranRotation3D() {
-			Vector3D<T> axis(ran(-1,1),ran(-1,1),ran(-1,1));			
-			EAA<> eaa(normalize(axis), ran(0,Pi));
-			return eaa.toRotation3D();
+		    using namespace rw::common;
+	        double u1 = Math::ran();
+	        double u2 = Math::ran();
+	        double u3 = Math::ran();
+	        Quaternion<T> q( std::sqrt(1-u1)*sin(2*Pi*u2), std::sqrt(1-u1)*cos(2*Pi*u2), std::sqrt(u1)*sin(2*Pi*u3), std::sqrt(u1)*cos(2*Pi*u3) );
+			return q.toRotation3D();
 		}
 
         /**
