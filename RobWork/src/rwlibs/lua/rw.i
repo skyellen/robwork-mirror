@@ -72,7 +72,11 @@ public:
     double normInf();
 
     %extend {
-        std::string __tostring() { return toString(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
     };
@@ -101,7 +105,11 @@ public:
     %rename(elem) operator[];
 
     %extend {
-        std::string __tostring() { return toString<Vector3D>(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
     };
@@ -138,7 +146,11 @@ public:
 };
 
 %extend Rotation3D {
-    std::string __tostring() { return toString<Rotation3D>(*$self); }
+    char *__str__() {
+         static char tmp[256];
+         sprintf(tmp,"%s", toString(*$self).c_str());
+         return tmp;
+    }
 
    double __getitem__(int x,int y)const {
        return (*$self)(x,y);
@@ -181,10 +193,16 @@ public:
 
     //bool operator==(const EAA &rhs) const;
     // std::string __tostring() const;
+
+
 };
 
 %extend EAA {
-    std::string __tostring() { return toString<EAA>(*$self); }
+    char *__str__() {
+         static char tmp[256];
+         sprintf(tmp,"%s", toString(*$self).c_str());
+         return tmp;
+    }
    double __getitem__(int i)const {
        return (*$self)[i];
    }
@@ -206,7 +224,11 @@ public:
     RPY(double roll, double pitch, double yaw);
     Rotation3D toRotation3D() const;
     %extend {
-        std::string __tostring() { return toString<RPY>(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
         double __getitem__(int i)const { return (*$self)(i); }
         void __setitem__(int i,double d){ (*$self)(i) = d; }
     };
@@ -259,7 +281,11 @@ public:
     Rotation3D& R();
 
     %extend {
-       std::string __tostring() { return toString<Transform3D>(*$self); }
+       char *__str__() {
+            static char tmp[256];
+            sprintf(tmp,"%s", toString(*$self).c_str());
+            return tmp;
+       }
        Transform3D inverse(){ return inverse(*$self); }
        //Transform3D inverse(const Transform3D& val);
     };
@@ -274,7 +300,11 @@ public:
 
     Transform3D toTransform3D();
     %extend {
-       std::string __tostring() { return toString<Pose6D>(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
     };
 };
 
@@ -290,7 +320,11 @@ public:
     double& elem(int i, int j);
 
     %extend {
-       std::string __tostring() { return toString<Jacobian>(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
     };
 };
 
@@ -315,7 +349,11 @@ public:
     double normInf();
 
     %extend {
-       std::string __tostring() { return toString<VelocityScrew6D>(*$self); }
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
     };
 
 
