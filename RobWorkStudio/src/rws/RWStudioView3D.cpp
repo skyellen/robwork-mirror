@@ -295,14 +295,15 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
 };
 
 rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
-
-
     DrawableNode::Ptr d = _view->pickDrawable( x, y);
-
     if(d==NULL)
         return NULL;
     return _wcscene->getFrame(d);
+}
 
+rw::graphics::DrawableNode::Ptr RWStudioView3D::pick(int x, int y){
+    DrawableNode::Ptr d = _view->pickDrawable( x, y);
+    return d;
 }
 
 void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){

@@ -68,10 +68,10 @@ namespace
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glBegin(GL_QUADS);
-            glColor3fv(_colorBottom);
+            glColor4fv(_colorBottom);
             glVertex2f(_x, _y);
             glVertex2f(_width, _y);
-            glColor3fv(_colorTop);
+            glColor4fv(_colorTop);
             glVertex2f(_width, _height);
             glVertex2f(_x, _height);
             glEnd();
@@ -83,12 +83,14 @@ namespace
             _colorTop[0] = color[0];
             _colorTop[1] = color[1];
             _colorTop[2] = color[2];
+            _colorTop[3] = 1;
         }
 
         void setBottomColor(const Vector3D<>& color){
             _colorBottom[0] = color[0];
             _colorBottom[1] = color[1];
             _colorBottom[2] = color[2];
+            _colorBottom[3] = 1;
         }
 
         void setViewPort(int x,int y,int width,int height){
