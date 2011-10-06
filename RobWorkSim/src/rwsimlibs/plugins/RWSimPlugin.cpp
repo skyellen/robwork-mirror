@@ -626,7 +626,7 @@ void RWSimPlugin::close(){
 void RWSimPlugin::initialize(){
     getRobWorkStudio()->stateChangedEvent().add(
     		boost::bind(&RWSimPlugin::stateChangedListener, this, _1), this);
-
+    Log::setLog( _log );
     _timerShot = NULL;
 
     if( getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("DWC") ){

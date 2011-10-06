@@ -93,6 +93,7 @@ private:
     rw::common::Timer _wallTimer, _wallTotalTimer;
     double _restingTime, _simTime;
 
+    rwsim::drawable::SimulatorDebugRender::Ptr _debugRender;
     rw::common::PropertyMap _config;
     PropertyViewEditor *_propertyView;
     rw::kinematics::State _initState;

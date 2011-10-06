@@ -63,6 +63,9 @@ SimTaskPlugin::SimTaskPlugin():
     _typeComboBox->addItem("SDH_PAR");
     _typeComboBox->addItem("SDH_PAR1");
     _typeComboBox->addItem("SDH_PAR2");
+    _typeComboBox->addItem("SDH_PAR1_TABLE");
+    _typeComboBox->addItem("SDH_PAR2_TABLE");
+
     _typeComboBox->addItem("SDH_CYL");
     _typeComboBox->addItem("GS20");
     _typeComboBox->addItem("GS20_WIDE");
@@ -92,8 +95,10 @@ void SimTaskPlugin::initialize() {
 
     getRobWorkStudio()->genericEvent().add(
           boost::bind(&SimTaskPlugin::genericEventListener, this, _1), this);
-
-    Log::setLog( _log );
+    //_log->info() << "Current log..." << std::endl;
+    //_log = getRobWorkInstance()->getLogPtr();
+    //_log->info() << "NEW log..." << std::endl;
+    //Log::setLog( _log );
 }
 
 void SimTaskPlugin::startSimulation() {
@@ -107,14 +112,15 @@ void SimTaskPlugin::startSimulation() {
         return;
     }
     //RW_WARN("1");
-    rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _graspSim->getSimulator()->getSimulator()->createDebugRender();
-    if( debugRender == NULL ){
+
+    if( _debugRender == NULL ){
+        _debugRender = _graspSim->getSimulator()->getSimulator()->createDebugRender();
         Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
         return;
     }
     //RW_WARN("1");
-    debugRender->setDrawMask( 15 );
-    rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( debugRender, "DebugRender" );
+    _debugRender->setDrawMask( 15 );
+    rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( _debugRender, "DebugRender" );
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
     //RW_WARN("1");
     _timer->start();
@@ -125,6 +131,8 @@ void SimTaskPlugin::open(WorkCell* workcell)
 {
     if(workcell==NULL || _dwc==NULL)
         return;
+
+    Math::seed( TimerUtil::currentTimeUs() );
 
     _wc = workcell;
     _graspSim = ownedPtr( new GraspTaskSimulator(_dwc) );
@@ -214,7 +222,7 @@ void SimTaskPlugin::btnPressed() {
             _mergedResult = ownedPtr( new CartesianTask() );
             if( _genTasksBox->isChecked() ){
                 // generate an initial task list and set it
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(5000);
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
                 setCurrentTask(tasks);
             }
             startSimulation();
@@ -322,12 +330,11 @@ void SimTaskPlugin::btnPressed() {
 
             // read back result and add it to the merged result
             //log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
-            if(_onlySuccessBox->isChecked()){
-                // remove all failing grasp targets
-                std::cout << "MERGE ALL SUCCESSES" << std::endl;
+            if( _continuesBox->isChecked() ){
+                // copy grasp results into merged
+                CartesianTask::Ptr task = _graspSim->getResult();
 
-                //BOOST_FOREACH(CartesianTask::Ptr task, _graspSim->getResult()->getTasks() ){
-                    CartesianTask::Ptr task = _graspSim->getResult();
+                if(_onlySuccessBox->isChecked()){
                     std::vector<CartesianTarget::Ptr> stargets;
                     BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
                         int status = target->getPropertyMap().get<int> ("TestStatus",-1);
@@ -337,16 +344,16 @@ void SimTaskPlugin::btnPressed() {
                     }
                     if(stargets.size()>0){
                         task->getTargets() = stargets;
-                        _mergedResult->addTask(task);
                     }
-                //}
+                }
+                _mergedResult->addTask(task);
             }
 
             log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
             // generate new targets
             // generaAutote an initial task list and set it
             if( _continuesBox->isChecked() ){
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(5000);
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
                 std::cout << "setting new tasks" << std::endl;
                 setCurrentTask(tasks);
 
@@ -536,7 +543,8 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     // now we choose a random number in the total area
     State state = _initState;
     Transform3D<> wTo = rw::kinematics::Kinematics::worldTframe(body->getBodyFrame(), state);
-    if( type== "SDH_PAR1_TABLE" || type== "SDH_PAR2_TABLE"  ){
+    if( (type== "SDH_PAR1_TABLE") || (type== "SDH_PAR2_TABLE")  ){
+        std::cout << "SDH_PAR1_TABLE" << std::endl;
         Device::Ptr dev = _wc->findDevice(type);
         std::string tcp = tasks->getPropertyMap().get<std::string>("TCP");
         Frame *tcpframe = _wc->findFrame(tcp);
@@ -545,8 +553,9 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         RW_ASSERT(dev);
         Transform3D<> baseTtcp = Kinematics::frameTframe(base,tcpframe, state);
         for(int i=0; i<nrTasks; i++){
+            std::cout << "task" << std::endl;
             // we only sample
-            bool incollision = 0;
+            bool incollision;
             Transform3D<> target;
             CollisionDetector::QueryResult result;
             do {
@@ -555,6 +564,15 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
                 base->setTransform(wTbase, state);
                 incollision = true;
                 if( getRobWorkStudio()->getCollisionDetector()->inCollision(state, &result) ){
+                    incollision = false;
+                    BOOST_FOREACH(kinematics::FramePair pair, result.collidingFrames){
+                        //test if it collides with anything else than the object, if it does then its a failure
+                        std::cout << pair.first->getName() << " -- "<< pair.second->getName() << std::endl;
+                        if( (pair.first!=body->getBodyFrame()) && (pair.second!=body->getBodyFrame()) ){
+                            incollision = true;
+                            break;
+                        }
+                    }
 
                 }
             } while(incollision);
@@ -564,7 +582,9 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
             tasks->addTarget( ctarget );
         }
     } else {
+
         for(int i=0; i<nrTasks; i++){
+            std::cout << "BASDaslfhlasd" << std::endl;
             Transform3D<> target = wTo*ssurf.sample();
             CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
             tasks->addTarget( ctarget );
