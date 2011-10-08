@@ -1,8 +1,8 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
     
-    models/BeamJoint.cpp
-    opengl/RenderBeam.cpp
+    #models/BeamJoint.cpp
+    #opengl/RenderBeam.cpp
     #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
     #loaders/ColladaLoader.cpp
