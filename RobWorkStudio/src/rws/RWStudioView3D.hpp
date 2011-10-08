@@ -154,8 +154,8 @@ public:
 
     rw::models::WorkCell::Ptr  getWorkCell(){ return _wc; };
 
-    void saveBufferToFile(const QString& filename){
-        _view->saveBufferToFile(filename.toStdString());
+    void saveBufferToFile(const QString& filename, const int fillR=0, const int fillG=0, const int fillB=0){
+        _view->saveBufferToFile(filename.toStdString(), fillR, fillG, fillB);
     }
 
     //// events inherited from QtWidget

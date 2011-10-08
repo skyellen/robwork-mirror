@@ -739,7 +739,7 @@ void RWStudioView3D::saveBufferToFileDialog()
             _pmap->getValue().set<std::string>("LastDir", lastDir);
             
             // Save
-            _view->saveBufferToFile(filename.toStdString());
+            _view->saveBufferToFile(filename.toStdString(), 0, 0, 0);
         } catch (const std::string& exp) {
             QMessageBox::information(
                 this, "Failed to save file ", exp.c_str(), QMessageBox::Ok);

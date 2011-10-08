@@ -235,7 +235,7 @@ SceneViewer::View::Ptr SceneOpenGLViewer::createView(const std::string& name, bo
     if(enableBackground){
         SceneCamera::Ptr backCam = _scene->makeCamera("BackgroundCam");
         backCam->setEnabled(true);
-        std::cout << "CREATING BACKGROUND CAMERA AGAIN" << std::endl;
+//        std::cout << "CREATING BACKGROUND CAMERA AGAIN" << std::endl;
         backCam->setRefNode(_backgroundnode);
         backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
         backCam->setClearBufferEnabled(true);
@@ -737,7 +737,8 @@ void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
     QGLWidget::wheelEvent(event);
 }
 
-void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
+void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename,
+                                         const int fillR, const int fillG, const int fillB)
 {
     QString filename(stdfilename.c_str());
     QImage img = grabFrameBuffer();
@@ -758,7 +759,7 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
         } else { // Else
             // Fill
             dstimg = QImage(w, h, img.format());
-            dstimg.fill(qRgb(0, 0, 0));
+            dstimg.fill(qRgb(fillR, fillG, fillB));
             // Insert at bottom of destination
             const int yOffset = h - height;
             for(int x = 0; x < std::min(width, w); ++x) {
@@ -773,7 +774,7 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 
     if (!img.save(filename))
         throw std::string(
-            "SceneOpenGLViewer::saveBufferToFile: Could not save file") +
+            "SceneOpenGLViewer::saveBufferToFile: Could not save file: ") +
             filename.toStdString();
 }
 

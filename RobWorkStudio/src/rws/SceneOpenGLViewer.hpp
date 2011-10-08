@@ -163,8 +163,12 @@ public:
      *
      * @param filename [in] Path and name of the file. The filename extension
      * should be either ".jpg", ".bmp" or ".png" to specify which format to use.
+     * @param fillR [in] Fill color if viewport is smaller than image, red component [0,255]
+     * @param fillG [in] Fill color if viewport is smaller than image, green component [0,255]
+     * @param fillB [in] Fill color if viewport is smaller than image, blue component [0,255]
      */
-    void saveBufferToFile(const std::string& stdfilename);
+    void saveBufferToFile(const std::string& stdfilename,
+                          const int fillR, const int fillG, const int fillB);
 
     /**
      * @brief key pressed listener function. Key events in the opengl view

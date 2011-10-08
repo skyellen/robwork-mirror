@@ -50,7 +50,8 @@ namespace graphics {
 
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;
 
-        virtual void saveBufferToFile(const std::string& stdfilename) = 0;
+        virtual void saveBufferToFile(const std::string& stdfilename,
+                                      const int fillR, const int fillG, const int fillB) = 0;
 
         //// ---------------- View functions
         /**

@@ -25,5 +25,5 @@ add_subdirectory(RobWorkStudio)
 #add_subdirectory(RobWorkData)
 
 # Packaging
-INCLUDE(build/packing.cmake)
+#INCLUDE(build/packing.cmake)
 
