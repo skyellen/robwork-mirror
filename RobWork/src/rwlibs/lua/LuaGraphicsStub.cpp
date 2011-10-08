@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaGraphics
-** Generated automatically by tolua++-1.0.93 on Fri Aug 19 20:39:08 2011.
+** Generated automatically by tolua++-1.0.92 on Sat Oct  8 12:04:58 2011.
 */
 
 #ifndef __cplusplus
