@@ -19,12 +19,10 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rwlibs/drawable/Drawable.hpp>
+#include <rw/graphics/Model3DLoader.hpp>
 //#include <rwlibs/drawable/RenderSTL.hpp>
-#include <rwlibs/drawable/ac3d/LoaderAC3D.hpp>
-#include <rwlibs/drawable/DrawableFactory.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
-
+#include <rw/graphics/ac3d/LoaderAC3D.hpp>
+#include <rwlibs/opengl/DrawableFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 
@@ -42,59 +40,60 @@
 using namespace boost::unit_test;
 
 using namespace rw::models;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
+using namespace rwlibs::opengl;
 using namespace rw::math;
 using namespace rw::kinematics;
 
 BOOST_AUTO_TEST_CASE( testSTLLoading ){
     BOOST_MESSAGE("- testing loading");
     // test loading stl file
-    rwlibs::drawable::Drawable::Ptr stlaObject =
-    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/chair.stla" );
-    rwlibs::drawable::Drawable::Ptr stlbObject =
-    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/cube.stlb" );
+    rwlibs::opengl::Drawable::Ptr stlaObject =
+    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/chair.stla", "chair" );
+    rwlibs::opengl::Drawable::Ptr stlbObject =
+    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/cube.stlb", "cube" );
 }
 
 BOOST_AUTO_TEST_CASE( testAC3DLoading ){
     // test loading AC3D file
-    rwlibs::drawable::Drawable::Ptr ac3dObject =
-    		DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac");
-    rwlibs::drawable::Drawable::Ptr ac3dObject1 =
-            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac3d");
+    rwlibs::opengl::Drawable::Ptr ac3dObject =
+    		DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac", "gantry");
+    rwlibs::opengl::Drawable::Ptr ac3dObject1 =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac3d", "gantry1");
 }
 
 BOOST_AUTO_TEST_CASE( testOBJLoading ){
     // test loading OBJ file
-    rwlibs::drawable::Drawable::Ptr objObject =
-            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/fod1.obj");
+    rwlibs::opengl::Drawable::Ptr objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/fod1.obj", "fod1");
 }
 
 BOOST_AUTO_TEST_CASE( testTRILoading ){
     // test loading TRI file
-    rwlibs::drawable::Drawable::Ptr objObject =
-            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Rob-0.tri");
+    rwlibs::opengl::Drawable::Ptr objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Rob-0.tri", "rob-0");
 }
 
 BOOST_AUTO_TEST_CASE( test3DSLoading ){
     // test loading 3ds file
-    rwlibs::drawable::Drawable::Ptr objObject =
-            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/motor.3ds");
+    rwlibs::opengl::Drawable::Ptr objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/motor.3ds", "motor");
 }
 
 BOOST_AUTO_TEST_CASE( testIVGLoading ){
     // test loading 3ds file
-    rwlibs::drawable::Drawable::Ptr objObject =
-            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/staubli0.ivg");
+    rwlibs::opengl::Drawable::Ptr objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/staubli0.ivg", "staubli");
 }
 
 BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
     BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
-    rwlibs::drawable::Drawable::Ptr stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/chair");
-    rwlibs::drawable::Drawable::Ptr stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/cube");
+    rwlibs::opengl::Drawable::Ptr stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/chair", "chair3");
+    rwlibs::opengl::Drawable::Ptr stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/cube", "cube3");
     //rwlibs::drawable::Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
-    rwlibs::drawable::Drawable::Ptr ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Environment");
+    rwlibs::opengl::Drawable::Ptr ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Environment","environment");
 
     stlaObject->setHighlighted(true);
     stlbObject->setHighlighted(true);
@@ -104,7 +103,6 @@ BOOST_AUTO_TEST_CASE(testDrawableFactory)
 
 BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     BOOST_MESSAGE("- testing workcellGLDrawer");
-    WorkCellGLDrawer workCellGLDrawer;
 
     const std::string filename = testFilePath() + "cube";
 
@@ -116,23 +114,12 @@ BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     tree.addFrame(object1,world);
     tree.addFrame(object2,world);
 
-    DrawableModelInfo info(filename);
-    Accessor::drawableModelInfo().set(*object1, std::vector<DrawableModelInfo>(1,info) );
-    Accessor::drawableModelInfo().set(*object2, std::vector<DrawableModelInfo>(1,info) );
+    DrawableModelInfo info(filename,"mydrawable");
+    DrawableModelInfo::set(std::vector<DrawableModelInfo>(1,info), object1);
+    DrawableModelInfo::set(std::vector<DrawableModelInfo>(1,info), object2);
 
-    Drawable::Ptr drawable1 = DrawableFactory::loadDrawableFile(filename);
+    Drawable::Ptr drawable1 = DrawableFactory::loadDrawableFile(filename,"mydrawable1");
     BOOST_REQUIRE(drawable1 != NULL);
-    Drawable::Ptr drawable2 = DrawableFactory::loadDrawableFile(filename);
+    Drawable::Ptr drawable2 = DrawableFactory::loadDrawableFile(filename,"mydrawable2");
     BOOST_REQUIRE(drawable2 != NULL);
-
-    //drawer.addDrawableToFrame(&object1, drawable1);
-    //drawer.addDrawableToFrame(&object2, drawable2);
-
-    std::vector<rwlibs::drawable::Drawable::Ptr> copy1 = workCellGLDrawer.getDrawablesForFrame(object1);
-    BOOST_CHECK(copy1.size() == 1);
-
-    std::vector<rwlibs::drawable::Drawable::Ptr> copy2 = workCellGLDrawer.getDrawablesForFrame(object2);
-    BOOST_CHECK(copy2.size() == 1);
-
-    BOOST_CHECK(workCellGLDrawer.getDrawablesForFrame(world).size() == 0);
 }

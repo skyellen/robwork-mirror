@@ -63,6 +63,84 @@ namespace {
 
 }
 
+BOOST_AUTO_TEST_CASE( RampInterpolatorTest ) {
+    int n=5;
+    Q dqlimit(n);
+    Q ddqlimit(n);
+    for (size_t i = 0; i<n; i++) {
+        dqlimit(i) = 2;
+        ddqlimit(i) = 4;
+    }
+
+    Q q1(n);
+    Q q2(n);
+    for (size_t i = 0; i<n; i++) {
+        q1(i) = 1;
+        q2(i) = 7;
+    }
+
+    RampInterpolator<Q> ramp(q1,q2,dqlimit, ddqlimit);
+
+    double stepSize = ramp.duration()/100.0;
+    for(int i=0;i<100;i++){
+        double t = stepSize*i;
+        Q q = ramp.x(t);
+        //std::cout << t << ";" << q(0) << ";" << q(1) << ";" << q(2) << ";" << q(3) << std::endl;
+    }
+    //std::cout << "duration: " << ramp.duration() << std::endl;
+
+
+    RPY<> start(0.2,0,0);
+    RPY<> end(0.2,0.6,0.9);
+
+    RampInterpolator<Rotation3D<> > rampR(start.toRotation3D(),end.toRotation3D(),0.8,0.1);
+
+    stepSize = rampR.duration()/100.0;
+    for(int i=0;i<100;i++){
+        double t = stepSize*i;
+        Rotation3D<> rot = rampR.x(t);
+        EAA<> eaa(rot);
+        Vector3D<> axis = eaa.axis();
+        double angle = eaa.angle();
+        //std::cout << t << ";" << angle << ";" << axis(0) << ";" << axis(1) << ";" << axis(2) << std::endl;
+    }
+    //std::cout << "duration: " << rampR.duration() << std::endl;
+    //std::cout << RPY<>( rampR.x(0) ) << std::endl;
+    //std::cout << RPY<>( rampR.x(rampR.duration()) ) << std::endl;
+
+    Vector3D<> startP(0,0,0);
+    Vector3D<> endP(0,0,0.04);
+    RampInterpolator<Vector3D<> > rampP(startP,endP,0.05, 0.005);
+
+    stepSize = rampP.duration()/100.0;
+    for(int i=0;i<100;i++){
+        double t = stepSize*i;
+        Vector3D<> p = rampP.x(t);
+        std::cout << t << ";" << p(0) << ";" << p(1) << ";" << p(2) << std::endl;
+    }
+    std::cout << "duration: " << rampP.duration() << std::endl;
+    std::cout << Vector3D<>( rampP.x(0) ) << std::endl;
+    std::cout << Vector3D<>( rampP.x(rampP.duration()) ) << std::endl;
+
+
+    /*
+    double t = ramp.duration();
+    BOOST_CHECK(fabs(t - 3.5) < 1e-12);
+    BOOST_CHECK(ramp.x(0) == q1);
+    BOOST_CHECK(ramp.x(t) == q2);
+    BOOST_CHECK(ramp.x(t/2.0) == (q1+q2)/2.0);
+
+    BOOST_CHECK(ramp.dx(0) == Q::Zero(n));
+    BOOST_CHECK(ramp.dx(t) == Q::Zero(n));
+    BOOST_CHECK(ramp.dx(t/2) == dqlimit);
+
+    BOOST_CHECK(ramp.ddx(0) == ddqlimit);
+    BOOST_CHECK(ramp.ddx(t-0.001) == -ddqlimit);
+    BOOST_CHECK(ramp.ddx(t/2.0) == Q::Zero(n));
+   */
+}
+
+
 BOOST_AUTO_TEST_CASE( IteratorTest ) {
 	QInterpolatorTrajectory traj;
 	Q q1(1);

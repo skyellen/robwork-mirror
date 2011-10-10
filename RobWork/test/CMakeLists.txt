@@ -86,10 +86,10 @@ ADD_TEST( collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/collision-test ${DEFA
 ADD_DEPENDENCIES(collision-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_DRAWABLE_LIBRARY_LIST.
-#ADD_EXECUTABLE( drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
-#TARGET_LINK_LIBRARIES( drawables-test ${TEST_LIBRARIES} )
-#ADD_TEST( drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
-#ADD_DEPENDENCIES(drawables-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
+TARGET_LINK_LIBRARIES( drawables-test ${TEST_LIBRARIES} )
+ADD_TEST( drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(drawables-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_PATHPLANNERS_LIBRARY_LIST.
 ADD_EXECUTABLE( planner-test ${DO_EXCLUDE} test-main.cpp pathplanning/PathPlanningTest.cpp)       
@@ -117,10 +117,10 @@ IF ( RW_ENABLE_PERFORMANCE_TESTS )
 ENDIF()
 
 
-ADD_CUSTOM_TARGET(tests ctest -V 
+ADD_CUSTOM_TARGET(robwork-tests ctest -V 
   DEPENDS math-test common-test geometry-test models-test invkin-test loader-test kinematics-test 
           trajectory-test collision-test 
-          #drawables-test 
+          drawables-test 
           planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -129,7 +129,7 @@ INSTALL(TARGETS
             math-test common-test models-test geometry-test 
             invkin-test loader-test kinematics-test 
             trajectory-test collision-test 
-            #drawables-test 
+            drawables-test 
             planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_BIN_INSTALL_DIR})
         
