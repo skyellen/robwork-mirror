@@ -370,7 +370,7 @@ namespace proximity {
       const Rotation3D<T> &aRb = aTb.R();
 
       const Rotation3D<T> &bRa = inverse(aRb);
-      const Vector3D<T>& bPa = -bRa*aPb;
+      const Vector3D<T>& bPa = -(bRa*aPb);
 
       // this is the rotated a*A_x+ vector
       T a_x0 = a[0]*aRb(0,0);

@@ -63,6 +63,10 @@ void ProximityStrategyRW::destroyModel(rw::proximity::ProximityModel* model){
 
 }
 
+bool ProximityStrategyRW::addGeometry(rw::proximity::ProximityModel*, rw::geometry::Geometry::Ptr, bool){
+    return false;
+}
+
 bool ProximityStrategyRW::addGeometry(ProximityModel* model, const Geometry& geom) {
 
 

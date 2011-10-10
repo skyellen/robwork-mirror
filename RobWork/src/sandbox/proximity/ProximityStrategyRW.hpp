@@ -145,6 +145,8 @@ namespace rwlibs { namespace proximitystrategies {
          */
         bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
+        bool addGeometry(rw::proximity::ProximityModel*, rw::geometry::Geometry::Ptr, bool);
+
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry
          */
