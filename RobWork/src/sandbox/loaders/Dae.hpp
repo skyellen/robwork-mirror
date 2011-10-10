@@ -10,31 +10,56 @@
 #ifndef DAE_HPP_
 #define DAE_HPP_
 
+// we use this macro to define some standard interface functione on
+#define DAE_DATA_TYPE(dae_type) \
+    class dae_type: public Data {\
+    public: \
+        dae_type(Data* parent):Data(parent){} \
+        dae_type(const std::string& id, const std::string& sid, Data* parent):Data(id, sid, parent){}
+
 class Dae {
 public:
 
-    struct Data {
+    class Data {
+    public:
         Data():parent(NULL),initialized(false){}
+        Data(Data *p):parent(p),initialized(true){
+            p->children.push_back(this);
+        }
+        Data(const std::string& id_, const std::string& sid_, Data *p):
+            parent(p),id(id_),sid(sid_),initialized(true){
+            p->children.push_back(this);
+        }
+        virtual ~Data(){
+            BOOST_FOREACH(Data* d, children){
+                delete d;
+            }
+        };
         Data *parent;
+        std::string id;
+        std::string sid;
         bool initialized;
         std::list<Data*> children;
+        std::list<Data*> scope;
     };
 
-
-    struct SetParam : public Data  {
+    DAE_DATA_TYPE(SetParam)
         std::string ref;
     };
 
-    struct NewParam : public Data  {
-        std::string sid;
+    DAE_DATA_TYPE(NewParam)
+
     };
 
-    struct Float: public Data { double value;};
-    struct Int: public Data { int value;};
-    struct Bool: public Data { bool value;};
-    struct String: public Data {std::string value;};
-    struct Extra: public Data {
-
+    DAE_DATA_TYPE(Float)
+        double value;};
+    DAE_DATA_TYPE(Int)
+        int value;};
+    DAE_DATA_TYPE(Bool)
+        bool value;};
+    DAE_DATA_TYPE(String)
+        std::string value;};
+    DAE_DATA_TYPE(Extra)
     };
 
     //template <class T>
@@ -42,95 +67,98 @@ public:
     // The technique common depends on parent type, so we use template specialization
 
 
-    struct Technique: public Data {
+    DAE_DATA_TYPE(Technique)
         std::string profile, xmlns;
         // TODO: any wellformed xml data is okay here, so lets just save the XML node
         //std::vector<DOMElement*> elements;
     };
 
-    struct Contributor: public Data {
+    DAE_DATA_TYPE(Contributor)
         std::string author, authoring_tool, comments;
     };
 
-    struct Unit: public Data{
+    DAE_DATA_TYPE(Unit)
         double meter;
         std::string name;
     };
 
-    struct Asset: public Data {
-        Contributor contributer;
+    DAE_DATA_TYPE(Asset)
+        Contributor *contributer;
         std::string created, modified;
-        Unit unit;
+        Unit *unit;
         std::string up_axis;
     };
 
 
-    struct TechniqueCommonOptics: public Data {
+    DAE_DATA_TYPE(TechniqueCommonOptics)
         rw::math::ProjectionMatrix projection;
     };
 
-    struct Optics: public Data {
-        TechniqueCommonOptics techniqueCommon;
-        std::vector<Technique> technique;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Optics)
+        TechniqueCommonOptics *techniqueCommon;
+        std::vector<Technique*> technique;
+        std::vector<Extra*> extras;
     };
 
 
-    struct Imager: public Data {
-        Technique technique;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Imager)
+        Technique *technique;
+        std::vector<Extra*> extras;
     };
 
-    struct Camera: public Data {
-        int id;
+    DAE_DATA_TYPE(InstanceCamera)
+        std::string name, url;
+        std::vector<Extra*> extras;
+    };
+
+    DAE_DATA_TYPE(Camera)
         std::string name;
-        Asset asset;
-        Optics optics;
-        Imager imager;
-        std::vector<Extra> extras;
+        Asset *asset;
+        Optics *optics;
+        Imager *imager;
+        std::vector<Extra*> extras;
     };
 
 
 
 
     template <class T>
-    struct Library: public Data {
-        std::string id, name;
-        Asset asset;
-        std::vector<T> elements;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Library)
+        std::string name;
+        Asset *asset;
+        std::vector<T*> elements;
+        std::vector<Extra*> extras;
     };
 
     /// KINEMATICS
 
-    struct ParamKin: public Data {
+    DAE_DATA_TYPE(ParamKin)
         std::string ref;
     };
 
-    struct Param: public Data {
+    DAE_DATA_TYPE(Param)
         std::string name,
-                    sid,
                     type,
                     semantic;
     };
 
-    struct Bind: public Data {
+    DAE_DATA_TYPE(Bind)
         std::string symbol;
         // one of the following
-        ParamKin param;
-        Float floatVal;
-        Int intVal;
-        Bool boolVal;
-        String sidref;
+        ParamKin *param;
+        Float *floatVal;
+        Int *intVal;
+        Bool *boolVal;
+        std::string sidref;
     };
 
-    struct BindFX: public Data {
+    DAE_DATA_TYPE(BindFX)
         std::string semantic, target;
     };
 
-    struct AxisInfoKinematics: public Data {
-        std::string sid, name, axis;
-        std::vector<NewParam> params;
+    DAE_DATA_TYPE(AxisInfoKinematics)
+        std::string name, axis;
+        std::vector<NewParam*> params;
         bool active;
         bool locked;
         std::vector<int> indexes;
@@ -139,45 +167,45 @@ public:
         //std::vector<InstanceFormula> instanceFormula;
     };
 
-    struct AxisInfoMotion: public Data {
-        std::string sid, name, axis;
-        std::vector<Bind> binds;
-        std::vector<NewParam> newParams;
-        std::vector<SetParam> setParams;
+    DAE_DATA_TYPE(AxisInfoMotion)
+        std::string  name, axis;
+        std::vector<Bind*> binds;
+        std::vector<NewParam*> newParams;
+        std::vector<SetParam*> setParams;
         double speed;
         double acceleration;
         double decceleration;
         double jerk;
     };
 
-    struct TechniqueCommonMotion: public Data {
-        std::vector<AxisInfoMotion> axisInfo;
+    DAE_DATA_TYPE(TechniqueCommonMotion)
+        std::vector<AxisInfoMotion*> axisInfo;
         //std::vector<EffectorInfo> effectorInfo;
     };
 
-    struct InstanceArticulatedSystem: public Data {
-        std::string sid, name, url;
-        std::vector<Bind> binds;
-        std::vector<SetParam> setParams;
-        std::vector<NewParam> newParams;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(InstanceArticulatedSystem)
+        std::string  name, url;
+        std::vector<Bind*> binds;
+        std::vector<SetParam*> setParams;
+        std::vector<NewParam*> newParams;
+        std::vector<Extra*> extras;
     };
 
-    struct Motion: public Data {
-        InstanceArticulatedSystem insArticulatedSystem;
-        TechniqueCommonMotion techniqueCommon;
-        std::vector<Technique> techniques;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Motion)
+        InstanceArticulatedSystem *insArticulatedSystem;
+        TechniqueCommonMotion *techniqueCommon;
+        std::vector<Technique*> techniques;
+        std::vector<Extra*> extras;
     };
 
     template<class T>
-    struct Array : public Data {
+    DAE_DATA_TYPE(Array )
         unsigned int count;
-        std::string id, name;
+        std::string  name;
         rw::common::Ptr<std::vector<T> > data;
     };
 
-    struct Accessor: public Data {
+    DAE_DATA_TYPE(Accessor)
         unsigned int count;
         unsigned int offset;
         std::string source;
@@ -186,175 +214,239 @@ public:
         std::vector<Param> params;
     };
 
-    struct Source {
-        std::string id, name;
-        Asset asset;
+    DAE_DATA_TYPE(Source)
+        std::string name;
+        Asset *asset;
 
-        Array<bool> boolArray;
-        Array<double> floatArray;
-        Array<int> intArray;
-        Array<std::string> idRefArray;
-        Array<std::string> nameArray;
-        Array<std::string> sidRefArray;
-        Array<std::string> tokenArray;
+        Array<bool> *boolArray;
+        Array<double> *floatArray;
+        Array<int> *intArray;
+        Array<std::string> *idRefArray;
+        Array<std::string> *nameArray;
+        Array<std::string> *sidRefArray;
+        Array<std::string> *tokenArray;
         // technique common
-        Accessor accessor;
+        Accessor *accessor;
         // technique
-        Technique technique;
+        Technique *technique;
 
     };
 
-    struct InputShared: public Data {
+    DAE_DATA_TYPE(InputShared)
         unsigned int offset;
         std::string semantic;
         std::string source;
         unsigned int set;
     };
 
-    struct Input: public Data {
+    DAE_DATA_TYPE(Input)
         std::string semantic;
         std::string source;
     };
 
-    struct Vertices: public Data {
-        std::string id, name;
-        std::vector<Input> inputs;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Vertices)
+        std::string  name;
+        std::vector<Input*> inputs;
+        std::vector<Extra*> extras;
     };
 
-    struct Triangles: public Data {
+    DAE_DATA_TYPE(Triangles)
         std::string name;
         unsigned int count;
         std::string material;
-        std::vector<InputShared> inputs;
+        std::vector<InputShared*> inputs;
         rw::common::Ptr<std::vector<unsigned int> > p;
-        std::vector<Extra> extras;
+        std::vector<Extra*> extras;
     };
 
-    struct Mesh: public Data {
-        std::vector<Source> sources;
-        Vertices vertices;
-        std::vector<Triangles> tris;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Mesh)
+        std::vector<Source*> sources;
+        Vertices *vertices;
+        std::vector<Triangles*> tris;
+        std::vector<Extra*> extras;
     };
 
 
-    struct Kinematics {
+    DAE_DATA_TYPE(Kinematics)
 
     };
 
-    struct ArticulatedSystem {
-        Asset asset;
-        Kinematics kinematics;
-        Motion motion;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(ArticulatedSystem)
+        Asset *asset;
+        Kinematics *kinematics;
+        Motion *motion;
+        std::vector<Extra*> extras;
     };
 
-    struct Geometry {
-        std::string id,name;
-        Asset asset;
+    DAE_DATA_TYPE(Geometry)
+        std::string name;
+        Asset *asset;
         //rw::geometry::Geometry::Ptr geom;
-        std::vector<Extra> extras;
+        std::vector<Dae::Mesh*> meshes;
+        std::vector<Extra*> extras;
 
     };
 
-    struct Transform {
+    DAE_DATA_TYPE(InstanceGeometry)
+        std::string name;
+        std::string url;
+        //std::vector<BindMaterial*> bindMaterials;
+        std::vector<Extra*> extras;
+    };
+
+
+    DAE_DATA_TYPE(Transform)
         Transform():matrix(boost::numeric::ublas::zero_matrix<double>(4,4)){}
-        std::string sid;
+
         rw::math::Transform3D<> transform;
         boost::numeric::ublas::bounded_matrix<double, 4, 4> matrix;
     };
 
-    struct Node : public Data {
-        std::string id,name, sid;
+    DAE_DATA_TYPE(InstanceNode)
+        std::string name;
+        std::string url;
+        std::string proxy;
+    };
+
+    DAE_DATA_TYPE(Node)
+        std::string name;
         std::string type; // NODE or JOINT, default is NODE
         //std::vector<std::string> layers;
         std::string layers;
-        Asset asset;
-        std::vector<Transform> transforms;
-        std::vector<Node> nodes;
-        std::vector<Extra> extras;
+        Asset *asset;
+        std::vector<Transform*> transforms;
+        std::vector<InstanceCamera*> icameras;
+        //std::vector<InstanceController*> icontrollers;
+        std::vector<InstanceGeometry*> igeometries;
+        //std::vector<InstanceLight*> ilights;
+        std::vector<InstanceNode*> inodes;
+        std::vector<Node*> nodes;
+        std::vector<Extra*> extras;
     };
 
-    struct InstanceMaterial: public Data {
+    DAE_DATA_TYPE(InstanceMaterial)
         std::string url;
         // technique override
         std::string ref, pass;
 
-        std::vector<BindFX> binds;
-        std::vector<Extra> extras;
+        std::vector<BindFX*> binds;
+        std::vector<Extra*> extras;
     };
 
-    struct Render {
-        std::string name, sid;
+    DAE_DATA_TYPE(Render)
+        std::string name;
         std::string cameraNode;
 
         std::vector<std::string> layers;
-        InstanceMaterial iMaterial;
-        std::vector<Extra> extras;
+        InstanceMaterial *iMaterial;
+        std::vector<Extra*> extras;
     };
 
-    struct EvaluateScene {
-        std::string id, name;
-        std::string sid;
+    DAE_DATA_TYPE(EvaluateScene)
+        std::string  name;
+
         bool enable;
-        Asset asset;
-        std::vector<Render> renders;
-        std::vector<Extra> extras;
+        Asset *asset;
+        std::vector<Render*> renders;
+        std::vector<Extra*> extras;
     };
 
-    struct VisualScene {
-        std::string id, name;
-        Asset asset;
-        std::vector<Node> nodes;
-        std::vector<EvaluateScene> evaluateScenes;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(VisualScene)
+        std::string  name;
+        Asset *asset;
+        std::vector<Node*> nodes;
+        std::vector<EvaluateScene*> evaluateScenes;
+        std::vector<Extra*> extras;
     };
 
-    struct InstanceEffect{
+    DAE_DATA_TYPE(InstanceVisualScene)
+        std::string name;
+        std::string url;
+        std::vector<Extra*> extras;
+    };
+
+    DAE_DATA_TYPE(InstanceEffect)
 
     };
 
-    struct Material: public Data {
-        std::string id, name;
-        Asset asset;
-        InstanceEffect iEffect;
-        std::vector<Extra> extras;
+    DAE_DATA_TYPE(Material)
+        std::string  name;
+        Asset *asset;
+        InstanceEffect* iEffect;
+        std::vector<Extra*> extras;
     };
 
     // COMPLETE COLLADA SCENE
-    struct Collada {
+    DAE_DATA_TYPE(Collada)
+        Collada():Data(){}
         std::string version, xmlns, base;
 
-        Asset asset;
+        Asset *asset;
 
         //std::vector<Library<AnimationClips> > libAnimationClips;
         //std::vector<LibraryAnimation> libAnimations;
-        std::vector<Library<ArticulatedSystem> > libArticulatedSystems;
-        std::vector<Library<Camera> > libCameras;
+        std::vector<Library<ArticulatedSystem>* > libArticulatedSystems;
+        std::vector<Library<Camera>* > libCameras;
         //std::vector<LibraryControllers> libControllers;
         //std::vector<LibraryEffects> libEffects;
         //std::vector<Library<ForceField> > libForceFields;
         //std::vector<Library<Formulas> > libFormulas;
-        std::vector<Library<Geometry> > libGeometries;
+        std::vector<Library<Geometry>* > libGeometries;
         //std::vector<Library<Images> > libImages;
         //std::vector<Library<Joints> > libJoints;
         //std::vector<Library<KinematicsModel> > libKinematicsModels;
         //std::vector<Library<KinematicsScenes> > libKinematicsScenes;
         //std::vector<Library<Light> > libLights;
-        std::vector<Library<Material> > libMaterials;
-        std::vector<Library<Node> > libNodes;
+        std::vector<Library<Material>* > libMaterials;
+        std::vector<Library<Node>* > libNodes;
         //std::vector<LibraryPhysicsMaterials> libPhysicsMaterials;
         //std::vector<LibraryPhysicsModels> libPhysicsModels;
         //std::vector<LibraryPhysicsScenes> libPhysicsScenes;
-        std::vector<Library<VisualScene> > libVisualScenes;
+        std::vector<Library<VisualScene>* > libVisualScenes;
 
         //Scene scene;
-        std::vector<Extra> extras;
+        std::vector<Extra*> extras;
+
+        /*
+        template<class T>
+        T* find(std::vector<Library<T> >& libs){
+            BOOST_FOREACH(Library<T>& lib, libs){
+                lib.
+            }
+        }
+
+        T* getGeometry(const std::string& url){
+            std::vector<Library<T> > &libs = libGeometries;
+
+        }
+        */
+
+        Data* getData(const std::string& scope, const std::string& url){
+            // first extract element id
+
+            return NULL;
+        }
+
+        Data* getData(const std::string& url){
+            // look in all libraries
+            if(idToData.find(url)==idToData.end())
+                RW_THROW("Could Not find data: " << url);
+            return idToData[url];
+        }
+
+        void addData(Data* data){
+            //std::cout << "ADDING DATA: " << data->id << " : " << data->sid << std::endl;
+            if(data->id!="")
+                idToData[data->id] = data;
+        }
+
+        std::map<std::string, Data*> idToData;
+
     };
 
 
     std::vector<Collada> data;
+
 };
 
 #endif /* DAE_HPP_ */

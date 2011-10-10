@@ -29,6 +29,8 @@
 
 #include <xercesc/dom/DOMElement.hpp>
 #include <string>
+#include <stack>
+
 #include "Dae.hpp"
 
 
@@ -89,33 +91,92 @@ namespace loaders {
         rw::models::WorkCell::Ptr getWorkCell();
 
         struct ParserState {
+            //Dae dae;
             Dae::Collada data;
+            rw::models::WorkCell::Ptr wc;
+            //rw::graphics::WorkCellScene::Ptr wcscene;
+
+            ParserState(){
+                scope.push(&data);
+            }
             //std::vector<Dae::Data*>
+
+
+            Dae::Data* getData(const std::string& url){
+                if(url[0]=='#'){
+                    // data is inside file
+                    return data.getData(url.substr(1,url.size()-1));
+                } else {
+                    RW_THROW("External reference not yet implemented!");
+                }
+                return NULL;
+            }
+
+            template <class T>
+            T* get(const std::string& url){
+                Dae::Data *d = getData(url);
+                T* res = dynamic_cast<T*>(d);
+                if(res==NULL)
+                    RW_THROW("Data could not be found. Type:" << typeid(T).name() << " url:"<< url);
+                return res;
+            }
+
+            template <class T>
+            T* make(){ return new T(scope.top()); }
+
+            template <class T>
+            T* make(const std::string& id, const std::string& sid){
+                return new T(id, sid, scope.top());
+            }
+
+            void push(Dae::Data *d){
+                scope.top()->scope.push_back(d);
+                scope.push(d);
+            }
+
+            Dae::Data* pop(){
+                Dae::Data* d = scope.top();
+                scope.pop();
+                return d;
+            }
+
+            void add(Dae::Data *d, const std::string& id, const std::string& sid){
+                d->id = id;
+                d->sid = sid;
+                data.addData(d);
+            }
+            std::stack<Dae::Data*> scope;
         };
 
     private:
 
         void readCollada(xercesc::DOMElement* element, ParserState& data);
 
-        Dae::Library<Dae::Camera> readLibraryCameras(xercesc::DOMElement* element, ParserState& data);
-        Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
-        Dae::Library<Dae::VisualScene> readLibraryVisualScenes(xercesc::DOMElement* element, ParserState& data);
-        Dae::Library<Dae::ArticulatedSystem> readLibraryArticulatedSystem(xercesc::DOMElement* element, ParserState& data);
-        Dae::Library<Dae::Node> readLibraryNodes(xercesc::DOMElement* element, ParserState& data);
-        Dae::Library<Dae::Material> readLibraryMaterials(xercesc::DOMElement* element, ParserState& state);
+        Dae::Library<Dae::Camera>* readLibraryCameras(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Geometry>* readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::VisualScene>* readLibraryVisualScenes(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::ArticulatedSystem>* readLibraryArticulatedSystem(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Node>* readLibraryNodes(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Material>* readLibraryMaterials(xercesc::DOMElement* element, ParserState& state);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
 
-        Dae::Geometry readGeometry(xercesc::DOMElement* element, ParserState& data);
-        Dae::VisualScene readVisualScene(xercesc::DOMElement* element, ParserState& data);
-        Dae::Camera readCamera(xercesc::DOMElement* element, ParserState& data);
-        Dae::Node readNode(xercesc::DOMElement* element, ParserState& data);
+        Dae::Geometry* readGeometry(xercesc::DOMElement* element, ParserState& data);
+        Dae::VisualScene* readVisualScene(xercesc::DOMElement* element, ParserState& data);
+        Dae::Camera* readCamera(xercesc::DOMElement* element, ParserState& data);
+        Dae::Node* readNode(xercesc::DOMElement* element, ParserState& data);
+
+        void readScene(xercesc::DOMElement* element, ParserState& data);
+        Dae::InstanceVisualScene* readInstanceVisualScene(xercesc::DOMElement* element, ParserState& state);
+
 
         void readColladaWorkCell(xercesc::DOMElement* element);
 
         rw::models::WorkCell::Ptr _workcell;
+
+        ParserState _pstate;
     };
 
     /** @} */
