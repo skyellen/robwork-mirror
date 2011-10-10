@@ -5,7 +5,7 @@ SET(SRC_FILES
     #opengl/RenderBeam.cpp
     #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
-    #loaders/ColladaLoader.cpp
+    loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
     loaders/RWXMLFile.cpp
     #osg/SceneOSG.cpp
@@ -67,7 +67,7 @@ SET(SRC_FILES
 
 SET(SRC_FILES_HPP
     #ClarkHullND.hpp
-    models/BeamJoint.hpp
+    #models/BeamJoint.hpp
     #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
     geometry/OBB.hpp
