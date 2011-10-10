@@ -56,7 +56,24 @@ using namespace rw::common;
 using namespace rw::loaders;
 using namespace rws;
 
+class MyQApplication: public QApplication {
+public:
+    MyQApplication(int& argc, char** argv):QApplication(argc,argv){}
 
+    bool notify(QObject * rec, QEvent * ev)
+    {
+      try {
+          return QApplication::notify(rec,ev);
+      } catch(rw::common::Exception & e) {
+          QMessageBox::warning(0,tr("An error occurred"), e.what());
+      } catch(...) {
+          QMessageBox::warning(0,
+                             tr("An unexpected error occurred"),
+                             tr("This is likely a bug."));
+      }
+      return false;
+    }
+};
 
 
 int main(int argc, char** argv)
@@ -77,7 +94,7 @@ int main(int argc, char** argv)
     std::string inputfile = map.get<std::string>("input-file", "");
 
     {
-        QApplication app(argc, argv);
+        MyQApplication app(argc, argv);
         try {
         
             QPixmap pixmap(":/images/splash.jpg");
