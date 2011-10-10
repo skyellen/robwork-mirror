@@ -229,6 +229,8 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
     _sensorCameraViews.clear();
     _wc = workcell;
 
+	resetCameraViewMenu();
+
     _wcscene->setWorkCell(_wc);
 
     _view->setWorldNode( _wcscene->getWorldNode() );
@@ -486,11 +488,8 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     _customViewMenu->addSeparator();
 
     /// --------------------------------------------------------------------------
-    _cameraViewMenu = menu->addMenu(tr("Camera views"));
-    _cameraViewMenu->addAction(_addCameraViewAction);
-    _cameraViewMenu->addAction(_clearCameraViewsAction);
-    _cameraViewMenu->addAction(_selectMainViewAction);
-    _cameraViewMenu->addSeparator();
+	_cameraViewMenu = menu->addMenu(tr("Camera views"));
+	resetCameraViewMenu();
 
 
     /// --------------------------------------------------------------------------
@@ -499,13 +498,26 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     menu->addAction(_saveBufferToFileAction);
 }
 
-void RWStudioView3D::clear(){
+void RWStudioView3D::resetCameraViewMenu() {
+	//We need to delete all the old camera views.
+	QList<QAction*> actions = _cameraViewMenu->actions();
+	BOOST_FOREACH(QAction* action, actions) {
+		_cameraViewMenu->removeAction(action);
+	}
 
+    _cameraViewMenu->addAction(_addCameraViewAction);
+    _cameraViewMenu->addAction(_clearCameraViewsAction);
+    _cameraViewMenu->addAction(_selectMainViewAction);
+    _cameraViewMenu->addSeparator();
+}
+
+void RWStudioView3D::clear(){
+	_view->selectView( _view->getMainView() );
     _sensorCameraViews.clear();
     _wc = NULL;
     _wcscene->setWorkCell(_wc);
     _view->setWorldNode( _wcscene->getWorldNode() );
-
+	resetCameraViewMenu();
 }
 
 void RWStudioView3D::setDrawType(Render::DrawType drawType)
@@ -671,6 +683,7 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
     view._action = nAction;
 
     connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+	
     _cameraViewMenu->addAction(nAction);
 
     return view;
