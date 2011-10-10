@@ -78,6 +78,7 @@ namespace {
         fstr << "<notes> Generated with RobWork, rwsim::simulator::GraspTask </notes>\n";
 
         BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr task, grasptask->getTasks() ){
+
             Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
             Vector3D<> approach = task->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
@@ -103,9 +104,10 @@ namespace {
                  << "  </gripper>\n";
             fstr << "  <grasps>\n";
             fstr << "   <notes>  </notes>\n"; // don't have any notes yet
-            std::cout << "NR OF GRAPS: " << task->getTargets().size() << std::endl;
+
             // we don't add predictiondef
             BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
+
                 Transform3D<> trans = wTe_n * target->get();
                 fstr << "   <grasp>\n";
                 writePose(fstr, trans);
@@ -126,6 +128,7 @@ namespace {
 
 
 void GraspTask::saveUIBK(GraspTask::Ptr task, const std::string& name ){
+
     writeUIBK(task, name);
 }
 
@@ -261,7 +264,7 @@ namespace {
         rwlibs::task::CartesianTarget::Ptr target = ownedPtr( new rwlibs::task::CartesianTarget(Transform3D<>()) );
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
-            std::cout << p->first << std::endl;
+            //std::cout << p->first << std::endl;
             if(isName(p->first, "pose") ){
                 // position
                 PTree& pos_tree = p->second.get_child("position");
@@ -274,7 +277,7 @@ namespace {
                 std::string rotdomain = pos_tree.get_child("<xmlattr>").get<std::string>("domain","SO3");
                 Rotation3D<> rot;
                 for (CI p1 = rot_tree.begin(); p1 != rot_tree.end(); ++p1) {
-                    std::cout << p1->first << std::endl;
+                    //std::cout << p1->first << std::endl;
                     if (isName(p1->first,"quaternion")) {
                         std::vector<double> vals = readArray(p1->second);
                         if(vals.size()!=4)
@@ -346,7 +349,7 @@ namespace {
 
     rwlibs::task::CartesianTask::Ptr readExperiment(PTree& tree, ParserState& state){
 
-        std::cout << "experiment" << std::endl;
+        //std::cout << "experiment" << std::endl;
         rwlibs::task::CartesianTask::Ptr ctask = ownedPtr( new rwlibs::task::CartesianTask() );
         std::vector<double> qualities;
 
@@ -354,7 +357,7 @@ namespace {
         //for (OCI p = tree.ordered_begin(); p != tree.not_found(); ++p) {
         for (CI p = tree.begin(); p != tree.end(); ++p) {
 
-            std::cout << p->first << "\n";
+            //std::cout << p->first << "\n";
             if ( isName(p->first, "gripper") ) {
                 string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
                 Q params = readQ(p->second.get_child("params"));
@@ -381,7 +384,7 @@ namespace {
             } else {
                 RW_THROW("Unknown element!" << p->first);
             }
-            std::cout << "read experiment end" << std::endl;
+            //std::cout << "read experiment end" << std::endl;
         }
 
         return ctask;
@@ -408,7 +411,7 @@ namespace {
     rwlibs::task::CartesianTask::Ptr readExperiments(PTree& data, ParserState& state){
         // this is a container for experiments
         rwlibs::task::CartesianTask::Ptr grasptasks = ownedPtr( new rwlibs::task::CartesianTask() );
-        std::cout << "read experiments" << std::endl;
+        //std::cout << "read experiments" << std::endl;
         for (CI p = data.begin(); p != data.end(); ++p) {
             // each experiment is a GraspTask
             if(isName(p->first, "experiment")){
@@ -419,7 +422,7 @@ namespace {
                 // uri
             }
         }
-        std::cout << "read experiments end" << std::endl;
+        //std::cout << "read experiments end" << std::endl;
         return grasptasks;
 
     }
@@ -431,7 +434,7 @@ GraspTask::Ptr GraspTask::load(const std::string& filename){
 
     std::string file = IOUtil::getAbsoluteFileName(filename);
     std::string firstelem = IOUtil::getFirstXMLElement(file);
-    std::cout << "FIRST ELEMENT: " << firstelem << std::endl;
+    //std::cout << "FIRST ELEMENT: " << firstelem << std::endl;
 
     rwlibs::task::CartesianTask::Ptr grasptask;
 

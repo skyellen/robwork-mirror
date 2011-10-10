@@ -65,7 +65,7 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 }
 
 GraspTaskSimulator::~GraspTaskSimulator(){
-    std::cout << "Destroying grasp simulator" << std::endl;
+
 }
 
 void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState){
@@ -78,18 +78,18 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
     _simulators.clear();
 
     for(int i=0;i<_nrOfThreads;i++){
-        Log::debugLog() << "Making physics engine";
+        //Log::debugLog() << "Making physics engine";
         ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
-        Log::debugLog() << "Making simulator";
+        //Log::debugLog() << "Making simulator";
         DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
-        Log::debugLog() << "Initializing simulator";
+        //Log::debugLog() << "Initializing simulator";
         try {
             State istate = initState;
             sim->init(istate);
         } catch(...){
             RW_THROW("could not initialize simulator!\n");
         }
-        Log::debugLog() << "Creating Thread simulator";
+        //Log::debugLog() << "Creating Thread simulator";
 
         ThreadSimulator::Ptr tsim = ownedPtr( new ThreadSimulator(sim, initState) );
         ThreadSimulator::StepCallback cb( boost::bind(&GraspTaskSimulator::stepCB, this, _1, _2) );
@@ -219,7 +219,6 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
 
 
     // FOR NOW WE ONLY USE ONE THREAD
-    std::cout << "simsize: "<< _simulators.size() << std::endl;
     for(size_t i=0;i<_simulators.size();i++){
         DynamicSimulator::Ptr sim = _simulators[i]->getSimulator();
         SimState sstate;
@@ -227,8 +226,8 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
 
         _hbase->getMovableFrame()->setTransform(Transform3D<>(Vector3D<>(100,100,100)), sstate._state);
 
-        for(size_t i=0;i<_objects.size();i++){
-            sstate._bsensors.push_back( ownedPtr(new BodyContactSensor("SimTaskObjectSensor", _objects[i]->getBodyFrame())) );
+        for(size_t j=0;j<_objects.size();j++){
+            sstate._bsensors.push_back( ownedPtr(new BodyContactSensor("SimTaskObjectSensor", _objects[j]->getBodyFrame())) );
             sim->addSensor( sstate._bsensors.back() , sstate._state);
         }
 
@@ -266,7 +265,7 @@ bool GraspTaskSimulator::isRunning(){
 
 bool GraspTaskSimulator::isFinished(){
     //std::cout << "_totalNrOfExperiments==_nrOfExperiments" << _totalNrOfExperiments<<"=="<<_nrOfExperiments << "\n";
-    return _totalNrOfExperiments==_nrOfExperiments;
+    return (_totalNrOfExperiments==_nrOfExperiments) && !isRunning();
 }
 
 size_t GraspTaskSimulator::getNrTargets(){
@@ -504,11 +503,9 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //RW_WARN("1");
             if( !getNextTarget(sstate) ){
                 // end we are done with this threadsimulator
-                std::cout << "STOP" << std::endl;
                 sstate._stopped = true;
                 sim->postStop();
                 // stop the thread
-
                 return;
             }
             //RW_WARN("1");
@@ -516,7 +513,6 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if( sstate._target->getPropertyMap().get<int>("TestStatus",-1)>=0 ){
                 // if test status is set then we allready processed this task.
                 _skipped++;
-                std::cout << "SKIPPING TARGET - allready processed!\n";
                 continue;
             }
 
