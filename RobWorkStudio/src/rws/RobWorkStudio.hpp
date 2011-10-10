@@ -183,6 +183,8 @@ namespace rws {
 		 */		
 		rw::common::Log& log();
 
+		rw::common::Log::Ptr logPtr();
+
 		bool event(QEvent *event);
 
 		///////////////////////////////

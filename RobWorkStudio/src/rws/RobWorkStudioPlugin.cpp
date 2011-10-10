@@ -39,7 +39,8 @@ void RobWorkStudioPlugin::close()
 {}
 
 void RobWorkStudioPlugin::initialize() {
-
+    _log = _studio->logPtr();
+    Log::setLog( _log );
 }
 
 void RobWorkStudioPlugin::open(WorkCell* workcell) {
@@ -94,6 +95,7 @@ RobWorkStudio* RobWorkStudioPlugin::getRobWorkStudio() {
 
 
 void RobWorkStudioPlugin::setRobWorkInstance(RobWork::Ptr robwork) {
+    RobWork::setInstance(robwork);
     _robwork = robwork;
 }
 
@@ -108,4 +110,5 @@ rw::common::Log& RobWorkStudioPlugin::log(){
 
 void RobWorkStudioPlugin::setLog(rw::common::Log::Ptr log){
     _log = log;
+    Log::setLog(_log);
 }

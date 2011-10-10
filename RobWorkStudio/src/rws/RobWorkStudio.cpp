@@ -217,6 +217,10 @@ rw::common::Log& RobWorkStudio::log(){
     return _robwork->getLog();  	
 }
 
+rw::common::Log::Ptr RobWorkStudio::logPtr(){
+    return _robwork->getLogPtr();
+}
+
 void RobWorkStudio::updateLastFiles()
 {
         QMenu* filemenu = _fileMenu;
@@ -426,7 +430,7 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
                               bool visible,
                               Qt::DockWidgetArea area)
 {
-    plugin->setLog( Log::getInstance() );
+    plugin->setLog( _robwork->getLogPtr() );
     plugin->setRobWorkStudio(this);
     plugin->setRobWorkInstance(_robwork);
     plugin->setupMenu(_pluginsMenu);
@@ -840,8 +844,8 @@ namespace {
         }
 
         void done(){
-            if(_hs!=NULL)
-                *_hs = true;
+            //if(_hs!=NULL)
+            //    *_hs = true;
         }
 
         static void wait(bool *_hs){
@@ -880,6 +884,7 @@ void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& pat
 void RobWorkStudio::postExit(){
     bool handshake = false;
     QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent, &handshake) );
+
 }
 
 void RobWorkStudio::postState(const rw::kinematics::State& state){
@@ -939,11 +944,16 @@ bool RobWorkStudio::event(QEvent *event)
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+
         closeWorkCell();
+
         rwse->done();
+
         close();
+
         //QCoreApplication::exit(1);
         //abort();
+        return true;
     } else {
         //event->ignore();
     }
@@ -954,3 +964,4 @@ bool RobWorkStudio::event(QEvent *event)
 void RobWorkStudio::saveViewGL(const QString& filename) {
     _view->saveBufferToFile(filename);
 }
+
