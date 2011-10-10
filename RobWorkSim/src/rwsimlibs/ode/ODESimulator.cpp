@@ -1184,7 +1184,7 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
 
 void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
     createBody(body.get(), state, _spaceId );
-    body->getInfo().print();
+    //body->getInfo().print();
 }
 
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
@@ -1902,7 +1902,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 									&_rwcontacts[0], numc,
                                     &_srcIdx[0], &_dstIdx[0],
                                     &_rwClusteredContacts[0],
-                                    0.2);
+                                    10*Deg2Rad);
 
     //std::cout << "Threshold: " << threshold << " numc:" << numc << " fnumc:" << fnumc << std::endl;
     RW_DEBUGS(" numc:" << numc << " fnumc:" << fnumc);
@@ -1933,7 +1933,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         int idxFrom = _srcIdx[i];
         const int idxTo = _srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        OBRManifold manifold(10*Deg2Rad,0.2);
+        OBRManifold manifold(11*Deg2Rad,0.2);
 
         //std::cout << "Adding clustered points to manifold!" << std::endl;
 

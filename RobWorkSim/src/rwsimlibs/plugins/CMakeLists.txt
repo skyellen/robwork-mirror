@@ -24,7 +24,7 @@ TARGET_LINK_LIBRARIES(RWSimulatorPlugin ${ROBWORKSIM_LIBRARIES})
 #link_directories("C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
 
 #SET(SrcFiles SDHPlugin.cpp )
-#SET(MocSrcFiles SDHPlugin.cpp )
+#SET(MocSrcFiles SDHPlugin.cpp ) 
 #SET(MocHeaderFiles SDHPlugin.hpp )
 #SET(QrcFiles resources.qrc)
 

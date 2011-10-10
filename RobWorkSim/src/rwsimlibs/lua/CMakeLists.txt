@@ -1,6 +1,9 @@
 
 set(Here ${CMAKE_CURRENT_SOURCE_DIR})
 
+
+
+
 # With MSVC++ the program executables go to OutDir.
 if (DEFINED MSVC)
   set(LuaCommand ${RW_ROOT}/bin/$(OutDir)/tolua)

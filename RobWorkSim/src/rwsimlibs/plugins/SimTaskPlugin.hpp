@@ -99,6 +99,8 @@ private:
     rw::kinematics::State _initState;
     rwlibs::task::CartesianTask::Ptr _mergedResult;
 
+    int _nrOfTargetsToGen;
+
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/

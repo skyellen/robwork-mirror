@@ -30,7 +30,8 @@ using namespace rws;
 using namespace rwlibs::simulation;
 
 SimTaskPlugin::SimTaskPlugin():
-    RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png"))
+    RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png")),
+    _nrOfTargetsToGen(1000)
 {
     setupUi(this);
 
@@ -83,9 +84,6 @@ SimTaskPlugin::SimTaskPlugin():
 
 SimTaskPlugin::~SimTaskPlugin()
 {
-    std::cout << "destroy SimTaskPlugin " << std::endl;
-    if(_timer!=NULL)
-        _timer->stop();
 
 }
 
@@ -111,20 +109,18 @@ void SimTaskPlugin::startSimulation() {
     } catch(...){
         return;
     }
-    //RW_WARN("1");
+
 
     if( _debugRender == NULL ){
         _debugRender = _graspSim->getSimulator()->getSimulator()->createDebugRender();
-        Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
-        return;
+        if(_debugRender==NULL)
+            Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
     }
-    //RW_WARN("1");
+
     _debugRender->setDrawMask( 15 );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( _debugRender, "DebugRender" );
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
-    //RW_WARN("1");
     _timer->start();
-    //RW_WARN("1");
 }
 
 void SimTaskPlugin::open(WorkCell* workcell)
@@ -163,22 +159,17 @@ void SimTaskPlugin::open(WorkCell* workcell)
     _initState = getRobWorkStudio()->getState();
     //_genTasksBox enabled and nr of task
     //std::string objectName = _objectComboBox->currentText().toStdString();
+    _nrOfTargetsToGen = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<int>("GenerateTasksSize",1000);
 
     if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
-        std::cout << "AUTO" << std::endl;
         if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("GenerateTasks") ){
             _genTasksBox->setChecked(true);
-            std::cout << "GENERATETASKS" << std::endl;
-            int nrTasks = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<int>("GenerateTasksSize",10000);
-            std::cout << "GENERATETASKS" << std::endl;
-            setCurrentTask( generateTasks(nrTasks) );
-            std::cout << "currenttasks" << std::endl;
+            setCurrentTask( generateTasks(_nrOfTargetsToGen) );
         } else {
             // load tasks from file
             _genTasksBox->setChecked(false);
             loadTasks(true);
         }
-
         //start simulation
         startSimulation();
     }
@@ -222,7 +213,7 @@ void SimTaskPlugin::btnPressed() {
             _mergedResult = ownedPtr( new CartesianTask() );
             if( _genTasksBox->isChecked() ){
                 // generate an initial task list and set it
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(_nrOfTargetsToGen);
                 setCurrentTask(tasks);
             }
             startSimulation();
@@ -306,30 +297,30 @@ void SimTaskPlugin::btnPressed() {
         _timeToFinishLbl->setText( Timer((int)(avgGraspTime* (_graspSim->getNrTargetsDone()-nrgrasps))).toString("hh:mm").c_str() );
 
         if( _graspSim->isFinished() && !_genTasksBox->isChecked()){
-            std::cout << "_graspSim->isFinished() && !_genTasksBox->isChecked()" << std::endl;
             _saveResultBtn->setEnabled(true);
-            //RW_WARN("1");
+            //
             _timer->stop();
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
-                std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
+                _timer->stop();
                 saveTasks(true);
                 getRobWorkStudio()->postExit();
+                return;
             } else {
-                std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
+
             }
         } else if(_graspSim->isFinished() && _genTasksBox->isChecked()){
-            std::cout << "_graspSim->isFinished() && !_genTasksBox->isChecked()" << std::endl;
-
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
-                std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
+                _timer->stop();
                 saveTasks(true);
                 getRobWorkStudio()->postExit();
+                return;
             } else {
-                std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
+
             }
 
             // read back result and add it to the merged result
             //log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
+
             if( _continuesBox->isChecked() ){
                 // copy grasp results into merged
                 CartesianTask::Ptr task = _graspSim->getResult();
@@ -353,10 +344,8 @@ void SimTaskPlugin::btnPressed() {
             // generate new targets
             // generaAutote an initial task list and set it
             if( _continuesBox->isChecked() ){
-                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
-                std::cout << "setting new tasks" << std::endl;
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(_nrOfTargetsToGen);
                 setCurrentTask(tasks);
-
                 _graspSim->startSimulation( _initState );
             } else {
                 _timer->stop();
@@ -366,7 +355,6 @@ void SimTaskPlugin::btnPressed() {
             GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
 
         } else {
-            //RW_WARN("1");
             // update progress
             _progressBar->setValue( _graspSim->getNrTargetsDone() );
         }
@@ -434,8 +422,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     rwlibs::task::CartesianTask::Ptr tasks = ownedPtr(new rwlibs::task::CartesianTask());
     Body* body = _dwc->findBody(objectName);
     if(body==NULL){
-        std::cout << "OBJECT DOES NOT EXIST: " << objectName << std::endl;
-        return tasks;
+        RW_THROW("OBJECT DOES NOT EXIST: " << objectName);
     }
     std::vector<Geometry::Ptr> geoms = body->getGeometry();
     SurfacePoseSampler ssurf( geoms );
@@ -584,7 +571,6 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     } else {
 
         for(int i=0; i<nrTasks; i++){
-            std::cout << "BASDaslfhlasd" << std::endl;
             Transform3D<> target = wTo*ssurf.sample();
             CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
             tasks->addTarget( ctarget );
@@ -701,6 +687,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
     } else {
         result = _graspSim->getResult();
     }
+
     if(_onlySuccessBox->isChecked()){
         // remove all failing grasp targets
         std::vector<rwlibs::task::CartesianTarget::Ptr> filteredtargets;
@@ -713,9 +700,12 @@ void SimTaskPlugin::saveTasks(bool automatic){
         }
         result->getTargets() = filteredtargets;
     }
+
     rwlibs::task::CartesianTask::Ptr grasptask = ownedPtr( new rwlibs::task::CartesianTask() );
     grasptask->addTask(result);
-    GraspTask gtask(_mergedResult);
+
+    GraspTask gtask(grasptask);
+
     try {
         if(_outputFormatBox->currentText()=="RWTask"){
             GraspTask::saveRWTask(&gtask, taskFile);
@@ -727,9 +717,9 @@ void SimTaskPlugin::saveTasks(bool automatic){
     } catch (const Exception& exp) {
         QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
     }
-    std::stringstream sstr;
-    sstr << taskFile << ".m.txt";
-    exportMathematica(sstr.str());
+    //std::stringstream sstr;
+    //sstr << taskFile << ".m.txt";
+    //exportMathematica(sstr.str());
 
 }
 
