@@ -518,13 +518,12 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     tasks->getPropertyMap().set<Q>("OpenQ", openQ);
     tasks->getPropertyMap().set<Q>("CloseQ", closeQ);
 
-
-    if( type!="SCUP" ){
-        ssurf.setBoundsD(0.001,0.05);
-    } else if( type!="GS20" || type!="GS20_WIDE"){
+    if( type=="GS20" || type=="GS20_WIDE"){
         ssurf.setBoundsD(-0.03,0.03);
-    } else {
+    } else if( type=="SCUP" ){
         ssurf.setBoundsD(-0.05,0.05);
+    } else {
+        ssurf.setBoundsD(-0.04,0.04);
     }
 
     // now we choose a random number in the total area
