@@ -198,7 +198,7 @@ private:
     void setupActions();
 
     virtual void setupToolBarAndMenu(QMainWindow *mwindow);
-	void RWStudioView3D::resetCameraViewMenu();
+	void resetCameraViewMenu();
     SensorCameraView makeCameraView(const std::string& name,double fovy, double w, double h, double n, double f, rw::kinematics::Frame* frame);
 protected:
 
