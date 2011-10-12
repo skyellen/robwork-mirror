@@ -3,6 +3,7 @@
 add_subdirectory(algorithms)
 add_subdirectory(control)
 add_subdirectory(lua)
+add_subdirectory(swig)
 add_subdirectory(opengl)
 add_subdirectory(pathoptimization)
 add_subdirectory(pathplanners)
