@@ -70,7 +70,7 @@ bool RWGLFrameBuffer::initialize() {
     glRenderbufferStorageEXT                 = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
     glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)wglGetProcAddress("glGetRenderbufferParameterivEXT");
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
-#elif defined(RW_MAC)
+#elif defined(RW_MACOS)
 
     glGenFramebuffersEXT                     = glGenFramebuffers;
     glDeleteFramebuffersEXT                  = glDeleteFramebuffers;
