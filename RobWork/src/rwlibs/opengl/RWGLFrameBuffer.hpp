@@ -56,7 +56,7 @@
 */
 
 #if defined(RW_MACOS)
-typedef GLboolean (APIENTRYP PFNGLISRENDERBUFFEREXTPROC) (GLuint renderbuffer);
+typedef GLboolean (PFNGLISRENDERBUFFEREXTPROC) (GLuint renderbuffer);
 typedef void (PFNGLBINDRENDERBUFFEREXTPROC) (GLenum target, GLuint renderbuffer);
 typedef void (PFNGLDELETERENDERBUFFERSEXTPROC) (GLsizei n, const GLuint *renderbuffers);
 typedef void (PFNGLGENRENDERBUFFERSEXTPROC) (GLsizei n, GLuint *renderbuffers);
