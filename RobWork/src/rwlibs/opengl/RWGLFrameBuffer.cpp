@@ -29,6 +29,7 @@ bool RWGLFrameBuffer::_frameBuffersInitialized = false;
 
 
 // Framebuffer object
+#if !defined(RW_MACOS)
 PFNGLGENFRAMEBUFFERSEXTPROC                     RWGLFrameBuffer::glGenFramebuffersEXT = 0;                      // FBO name generation procedure
 PFNGLDELETEFRAMEBUFFERSEXTPROC                  RWGLFrameBuffer::glDeleteFramebuffersEXT = 0;                   // FBO deletion procedure
 PFNGLBINDFRAMEBUFFEREXTPROC                     RWGLFrameBuffer::glBindFramebufferEXT = 0;                      // FBO bind procedure
@@ -44,7 +45,7 @@ PFNGLBINDRENDERBUFFEREXTPROC                    RWGLFrameBuffer::glBindRenderbuf
 PFNGLRENDERBUFFERSTORAGEEXTPROC                 RWGLFrameBuffer::glRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
 PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          RWGLFrameBuffer::glGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
 PFNGLISRENDERBUFFEREXTPROC                      RWGLFrameBuffer::glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
-
+#endif
 
 
 bool RWGLFrameBuffer::initialize() {
