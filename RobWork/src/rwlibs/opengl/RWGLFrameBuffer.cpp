@@ -73,20 +73,20 @@ bool RWGLFrameBuffer::initialize() {
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
 #elif defined(RW_MACOS)
 
-    glGenFramebuffersEXT                     = glGenFramebuffers;
-    glDeleteFramebuffersEXT                  = glDeleteFramebuffers;
-    glBindFramebufferEXT                     = glBindFramebuffer;
-    glCheckFramebufferStatusEXT              = glCheckFramebufferStatus;
-    glGetFramebufferAttachmentParameterivEXT = glGetFramebufferAttachmentParameteriv;
-    glGenerateMipmapEXT                      = glGenerateMipmap;
-    glFramebufferTexture2DEXT                = lFramebufferTexture2D;
-    glFramebufferRenderbufferEXT             = glFramebufferRenderbuffer;
-    glGenRenderbuffersEXT                    = glGenRenderbuffers;
-    glDeleteRenderbuffersEXT                 = glDeleteRenderbuffers;
-    glBindRenderbufferEXT                    = glBindRenderbuffer;
-    glRenderbufferStorageEXT                 = glRenderbufferStorage;
-    glGetRenderbufferParameterivEXT          = glGetRenderbufferParameteriv;
-    glIsRenderbufferEXT                      = glIsRenderbuffer;
+    glGenFramebuffersEXT                     = &glGenFramebuffers;
+    glDeleteFramebuffersEXT                  = &glDeleteFramebuffers;
+    glBindFramebufferEXT                     = &glBindFramebuffer;
+    glCheckFramebufferStatusEXT              = &glCheckFramebufferStatus;
+    glGetFramebufferAttachmentParameterivEXT = &glGetFramebufferAttachmentParameteriv;
+    glGenerateMipmapEXT                      = &glGenerateMipmap;
+    glFramebufferTexture2DEXT                = &lFramebufferTexture2D;
+    glFramebufferRenderbufferEXT             = &glFramebufferRenderbuffer;
+    glGenRenderbuffersEXT                    = &glGenRenderbuffers;
+    glDeleteRenderbuffersEXT                 = &glDeleteRenderbuffers;
+    glBindRenderbufferEXT                    = &glBindRenderbuffer;
+    glRenderbufferStorageEXT                 = &glRenderbufferStorage;
+    glGetRenderbufferParameterivEXT          = &glGetRenderbufferParameteriv;
+    glIsRenderbufferEXT                      = &glIsRenderbuffer;
 
 #else
     // get pointers to GL functions
