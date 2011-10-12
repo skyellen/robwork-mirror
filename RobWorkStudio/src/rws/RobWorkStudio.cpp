@@ -506,9 +506,24 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         Qt::DockWidgetArea dockarea =
             (Qt::DockWidgetArea)settings.value("DockArea").toInt();
 
-        filename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
+        QString pfilename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
+        bool e1 = boost::filesystem::exists( filename.toStdString() );
+        if(!e1){
+            pfilename = pathname+ "/" + filename + ".so";
+            e1 = boost::filesystem::exists( filename.toStdString() );
+        }
+        if(!e1){
+            pfilename = pathname+ "/" + filename + ".dll";
+            e1 = boost::filesystem::exists( pfilename.toStdString() );
+        }
+        if(!e1){
+            pfilename = pathname+ "/" + filename + ".dylib";
+            e1 = boost::filesystem::exists( pfilename.toStdString() );
+        }
 
-        QPluginLoader loader(filename);
+
+
+        QPluginLoader loader(pfilename);
 #if QT_VERSION >= 0x040400
 		// Needed to make dynamicly loaded libraries use dynamic
 		// cast on each others objects. ONLY on linux though.
@@ -521,7 +536,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         if (pluginObject != NULL) {
         	RobWorkStudioPlugin* testP = dynamic_cast<RobWorkStudioPlugin*>(pluginObject);
             if (testP == NULL)
-                RW_THROW("Loaded plugin is NULL, tried loading \"" << filename.toStdString() << "\"" );
+                RW_THROW("Loaded plugin is NULL, tried loading \"" << pfilename.toStdString() << "\"" );
             RobWorkStudioPlugin* plugin = qobject_cast<RobWorkStudioPlugin*>(pluginObject);
 
             if (plugin) {
@@ -531,13 +546,13 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
                 QMessageBox::information(
                     this,
                     "Unable to load Plugin",
-                    filename + " was not of type RobWorkStudioPlugin",
+                    pfilename + " was not of type RobWorkStudioPlugin",
                     QMessageBox::Ok);
         } else {
             QMessageBox::information(
                 this,
                 "Unable to load Plugin",
-                filename + " was not loaded: \"" + loader.errorString() + "\"",
+                pfilename + " was not loaded: \"" + loader.errorString() + "\"",
                 QMessageBox::Ok);
         }
 
