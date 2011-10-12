@@ -36,7 +36,7 @@
 #include <rw/common/LogWriter.hpp>
 
 
-
+/*
 
 #define glGenFramebuffersEXT                        pglGenFramebuffersEXT
 #define glDeleteFramebuffersEXT                     pglDeleteFramebuffersEXT
@@ -53,15 +53,12 @@
 #define glRenderbufferStorageEXT                    pglRenderbufferStorageEXT
 #define glGetRenderbufferParameterivEXT             pglGetRenderbufferParameterivEXT
 #define glIsRenderbufferEXT                         pglIsRenderbufferEXT
-
+*/
 
 
 
 namespace rwlibs {
 namespace opengl {
-
-
-
 
 class RWGLFrameBuffer
 {
@@ -73,21 +70,21 @@ public:
     static bool isFrameBuffersInitialized();
 
     // Framebuffer object
-    static PFNGLGENFRAMEBUFFERSEXTPROC                     pglGenFramebuffersEXT;                      // FBO name generation procedure
-    static PFNGLDELETEFRAMEBUFFERSEXTPROC                  pglDeleteFramebuffersEXT;                   // FBO deletion procedure
-    static PFNGLBINDFRAMEBUFFEREXTPROC                     pglBindFramebufferEXT;                      // FBO bind procedure
-    static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC              pglCheckFramebufferStatusEXT;               // FBO completeness test procedure
-    static PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC pglGetFramebufferAttachmentParameterivEXT;  // return various FBO parameters
-    static PFNGLGENERATEMIPMAPEXTPROC                      pglGenerateMipmapEXT;                       // FBO automatic mipmap generation procedure
-    static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                pglFramebufferTexture2DEXT;                 // FBO texdture attachement procedure
-    static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             pglFramebufferRenderbufferEXT;              // FBO renderbuffer attachement procedure
+    static PFNGLGENFRAMEBUFFERSEXTPROC                     glGenFramebuffersEXT;                      // FBO name generation procedure
+    static PFNGLDELETEFRAMEBUFFERSEXTPROC                  glDeleteFramebuffersEXT;                   // FBO deletion procedure
+    static PFNGLBINDFRAMEBUFFEREXTPROC                     glBindFramebufferEXT;                      // FBO bind procedure
+    static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC              glCheckFramebufferStatusEXT;               // FBO completeness test procedure
+    static PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;  // return various FBO parameters
+    static PFNGLGENERATEMIPMAPEXTPROC                      glGenerateMipmapEXT;                       // FBO automatic mipmap generation procedure
+    static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                glFramebufferTexture2DEXT;                 // FBO texdture attachement procedure
+    static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             glFramebufferRenderbufferEXT;              // FBO renderbuffer attachement procedure
     // Renderbuffer object
-    static PFNGLGENRENDERBUFFERSEXTPROC                    pglGenRenderbuffersEXT;                     // renderbuffer generation procedure
-    static PFNGLDELETERENDERBUFFERSEXTPROC                 pglDeleteRenderbuffersEXT;                  // renderbuffer deletion procedure
-    static PFNGLBINDRENDERBUFFEREXTPROC                    pglBindRenderbufferEXT;                     // renderbuffer bind procedure
-    static PFNGLRENDERBUFFERSTORAGEEXTPROC                 pglRenderbufferStorageEXT;                  // renderbuffer memory allocation procedure
-    static PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          pglGetRenderbufferParameterivEXT;           // return various renderbuffer parameters
-    static PFNGLISRENDERBUFFEREXTPROC                      pglIsRenderbufferEXT;                       // determine renderbuffer object type
+    static PFNGLGENRENDERBUFFERSEXTPROC                    glGenRenderbuffersEXT;                     // renderbuffer generation procedure
+    static PFNGLDELETERENDERBUFFERSEXTPROC                 glDeleteRenderbuffersEXT;                  // renderbuffer deletion procedure
+    static PFNGLBINDRENDERBUFFEREXTPROC                    glBindRenderbufferEXT;                     // renderbuffer bind procedure
+    static PFNGLRENDERBUFFERSTORAGEEXTPROC                 glRenderbufferStorageEXT;                  // renderbuffer memory allocation procedure
+    static PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          glGetRenderbufferParameterivEXT;           // return various renderbuffer parameters
+    static PFNGLISRENDERBUFFEREXTPROC                      glIsRenderbufferEXT;                       // determine renderbuffer object type
 
 
 
@@ -96,6 +93,7 @@ private:
     static bool _hasFrameBuffers;
     static bool _frameBuffersInitialized;
 };
+
 
 } //end namespace simulation
 } //end namespace rwlibs

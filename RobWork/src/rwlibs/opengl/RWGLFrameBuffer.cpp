@@ -29,21 +29,21 @@ bool RWGLFrameBuffer::_frameBuffersInitialized = false;
 
 
 // Framebuffer object
-PFNGLGENFRAMEBUFFERSEXTPROC                     RWGLFrameBuffer::pglGenFramebuffersEXT = 0;                      // FBO name generation procedure
-PFNGLDELETEFRAMEBUFFERSEXTPROC                  RWGLFrameBuffer::pglDeleteFramebuffersEXT = 0;                   // FBO deletion procedure
-PFNGLBINDFRAMEBUFFEREXTPROC                     RWGLFrameBuffer::pglBindFramebufferEXT = 0;                      // FBO bind procedure
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC              RWGLFrameBuffer::pglCheckFramebufferStatusEXT = 0;               // FBO completeness test procedure
-PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC RWGLFrameBuffer::pglGetFramebufferAttachmentParameterivEXT = 0;  // return various FBO parameters
-PFNGLGENERATEMIPMAPEXTPROC                      RWGLFrameBuffer::pglGenerateMipmapEXT = 0;                       // FBO automatic mipmap generation procedure
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                RWGLFrameBuffer::pglFramebufferTexture2DEXT = 0;                 // FBO texdture attachement procedure
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             RWGLFrameBuffer::pglFramebufferRenderbufferEXT = 0;              // FBO renderbuffer attachement procedure
+PFNGLGENFRAMEBUFFERSEXTPROC                     RWGLFrameBuffer::glGenFramebuffersEXT = 0;                      // FBO name generation procedure
+PFNGLDELETEFRAMEBUFFERSEXTPROC                  RWGLFrameBuffer::glDeleteFramebuffersEXT = 0;                   // FBO deletion procedure
+PFNGLBINDFRAMEBUFFEREXTPROC                     RWGLFrameBuffer::glBindFramebufferEXT = 0;                      // FBO bind procedure
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC              RWGLFrameBuffer::glCheckFramebufferStatusEXT = 0;               // FBO completeness test procedure
+PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC RWGLFrameBuffer::glGetFramebufferAttachmentParameterivEXT = 0;  // return various FBO parameters
+PFNGLGENERATEMIPMAPEXTPROC                      RWGLFrameBuffer::glGenerateMipmapEXT = 0;                       // FBO automatic mipmap generation procedure
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                RWGLFrameBuffer::glFramebufferTexture2DEXT = 0;                 // FBO texdture attachement procedure
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             RWGLFrameBuffer::glFramebufferRenderbufferEXT = 0;              // FBO renderbuffer attachement procedure
 // Renderbuffer object
-PFNGLGENRENDERBUFFERSEXTPROC                    RWGLFrameBuffer::pglGenRenderbuffersEXT = 0;                     // renderbuffer generation procedure
-PFNGLDELETERENDERBUFFERSEXTPROC                 RWGLFrameBuffer::pglDeleteRenderbuffersEXT = 0;                  // renderbuffer deletion procedure
-PFNGLBINDRENDERBUFFEREXTPROC                    RWGLFrameBuffer::pglBindRenderbufferEXT = 0;                     // renderbuffer bind procedure
-PFNGLRENDERBUFFERSTORAGEEXTPROC                 RWGLFrameBuffer::pglRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
-PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          RWGLFrameBuffer::pglGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
-PFNGLISRENDERBUFFEREXTPROC                      RWGLFrameBuffer::pglIsRenderbufferEXT = 0;                       // determine renderbuffer object type
+PFNGLGENRENDERBUFFERSEXTPROC                    RWGLFrameBuffer::glGenRenderbuffersEXT = 0;                     // renderbuffer generation procedure
+PFNGLDELETERENDERBUFFERSEXTPROC                 RWGLFrameBuffer::glDeleteRenderbuffersEXT = 0;                  // renderbuffer deletion procedure
+PFNGLBINDRENDERBUFFEREXTPROC                    RWGLFrameBuffer::glBindRenderbufferEXT = 0;                     // renderbuffer bind procedure
+PFNGLRENDERBUFFERSTORAGEEXTPROC                 RWGLFrameBuffer::glRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
+PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          RWGLFrameBuffer::glGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
+PFNGLISRENDERBUFFEREXTPROC                      RWGLFrameBuffer::glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
 
 
 
@@ -70,6 +70,23 @@ bool RWGLFrameBuffer::initialize() {
     glRenderbufferStorageEXT                 = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
     glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)wglGetProcAddress("glGetRenderbufferParameterivEXT");
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
+#elif defined(RW_MAC)
+
+    glGenFramebuffersEXT                     = glGenFramebuffers;
+    glDeleteFramebuffersEXT                  = glDeleteFramebuffers;
+    glBindFramebufferEXT                     = glBindFramebuffer;
+    glCheckFramebufferStatusEXT              = glCheckFramebufferStatus;
+    glGetFramebufferAttachmentParameterivEXT = glGetFramebufferAttachmentParameteriv;
+    glGenerateMipmapEXT                      = glGenerateMipmap;
+    glFramebufferTexture2DEXT                = lFramebufferTexture2D;
+    glFramebufferRenderbufferEXT             = glFramebufferRenderbuffer;
+    glGenRenderbuffersEXT                    = glGenRenderbuffers;
+    glDeleteRenderbuffersEXT                 = glDeleteRenderbuffers;
+    glBindRenderbufferEXT                    = glBindRenderbuffer;
+    glRenderbufferStorageEXT                 = glRenderbufferStorage;
+    glGetRenderbufferParameterivEXT          = glGetRenderbufferParameteriv;
+    glIsRenderbufferEXT                      = glIsRenderbuffer;
+
 #else
     // get pointers to GL functions
     glGenFramebuffersEXT                     = (PFNGLGENFRAMEBUFFERSEXTPROC)glXGetProcAddress((GLubyte*)"glGenFramebuffersEXT");
