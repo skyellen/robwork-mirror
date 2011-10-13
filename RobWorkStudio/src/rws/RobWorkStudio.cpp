@@ -510,7 +510,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         bool e1 = boost::filesystem::exists( filename.toStdString() );
         if(!e1){
             pfilename = pathname+ "/" + filename + ".so";
-            e1 = boost::filesystem::exists( filename.toStdString() );
+            e1 = boost::filesystem::exists( pfilename.toStdString() );
         }
         if(!e1){
             pfilename = pathname+ "/" + filename + ".dll";
