@@ -333,11 +333,12 @@ void SimTaskPlugin::btnPressed() {
                             stargets.push_back(target);
                         }
                     }
-                    if(stargets.size()>0){
+                    //if(stargets.size()>0){
                         task->getTargets() = stargets;
-                    }
+                    //}
                 }
-                _mergedResult->addTask(task);
+                if(task->getTargets().size()>0)
+                    _mergedResult->addTask(task);
             }
             // save tasks
             log().info() << "SAVE MERGED TASKS\n";
