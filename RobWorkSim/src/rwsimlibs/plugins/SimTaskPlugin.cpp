@@ -343,6 +343,7 @@ void SimTaskPlugin::btnPressed() {
             // save tasks
             log().info() << "SAVE MERGED TASKS\n";
             std::cout << "SAVE MERGED TASKS\n";
+
             GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
 
             std::cout << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
@@ -351,9 +352,13 @@ void SimTaskPlugin::btnPressed() {
             // generate new targets
             // generaAutote an initial task list and set it
             if( _continuesBox->isChecked() ){
+                RW_WARN("1");
                 rwlibs::task::CartesianTask::Ptr tasks = generateTasks(_nrOfTargetsToGen);
+                RW_WARN("1");
                 setCurrentTask(tasks);
+                RW_WARN("1");
                 _graspSim->startSimulation( _initState );
+                RW_WARN("1");
             } else {
                 _timer->stop();
             }
