@@ -339,8 +339,14 @@ void SimTaskPlugin::btnPressed() {
                 }
                 _mergedResult->addTask(task);
             }
+            // save tasks
+            log().info() << "SAVE MERGED TASKS\n";
+            std::cout << "SAVE MERGED TASKS\n";
+            GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
 
+            std::cout << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
             log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
+
             // generate new targets
             // generaAutote an initial task list and set it
             if( _continuesBox->isChecked() ){
@@ -350,9 +356,6 @@ void SimTaskPlugin::btnPressed() {
             } else {
                 _timer->stop();
             }
-            // save tasks
-            log().info() << "SAVE MERGED TASKS\n";
-            GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
 
         } else {
             // update progress
