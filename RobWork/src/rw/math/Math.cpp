@@ -19,6 +19,7 @@
 #include "Math.hpp"
 #include "MetricUtil.hpp"
 #include <rw/common/macros.hpp>
+#include <rw/common/TimerUtil.hpp>
 
 #include <boost/random.hpp>
 
@@ -55,6 +56,10 @@ void Math::seed(unsigned seed)
     generator.seed(
         static_cast<boost::mt19937::result_type>(
             seed));
+}
+
+void Math::seed() {
+	seed(rw::common::TimerUtil::currentTimeMs());
 }
 
 double Math::ran(double from, double to)

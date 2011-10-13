@@ -242,6 +242,13 @@ namespace rw { namespace math {
         static void seed(unsigned seed);
 
         /**
+         * @brief Seeds the random number generator with current time of day
+         *
+         * @note Uses boost::random
+         */
+		static void seed();
+
+        /**
          * @brief A random double in the range [from, to[.
          *
          * @note Uses boost::random
