@@ -42,7 +42,7 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     	    drawUsingSimple(info, type, alpha);
     	//else
         //    drawUsingArrays(info,type, alpha);
-    	//break;
+    	break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
         if(_model->_textures.size()>0)
