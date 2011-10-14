@@ -272,10 +272,21 @@ void ProgramOptions::checkVariablesMap(po::variables_map &vm){
 
 }
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 void ProgramOptions::parse(const std::string& str){
     try {
         po::variables_map vm;
+
+#if(BOOST_VERSION<104100)
+        using namespace boost::algorithm;
+        //std::vector<std::string> args = po::split_unix(str);
+        std::vector<std::string> args; // #2: Search for tokens
+        split( args, str, is_any_of(" \t") );
+#else
         std::vector<std::string> args = po::split_unix(str);
+#endif
         po::store(po::command_line_parser(args).
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
         po::notify(vm);
