@@ -164,7 +164,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     int meshSize = data.size-maxMeshSize*j;
                     if( meshSize > maxMeshSize)
                         meshSize = maxMeshSize;
-
+                    std::cout << meshSize << " , ";
                     glBegin(GL_TRIANGLES);
                     for(size_t i=data.startIdx+maxMeshSize*j; i<data.startIdx+maxMeshSize*j+meshSize; i++){
                         // draw faces
@@ -178,6 +178,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     }
                     glEnd();
                 }
+                std::cout << "\n";
             }
         }
     }
