@@ -120,6 +120,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
             useMaterial( _model->_materials[data.matId], type, alpha);
 
             if (obj.hasTexture()){
+                /*
                 if(obj._mappedToFaces){
                     glBegin(GL_TRIANGLES);
                     for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
@@ -157,6 +158,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     }
                     glEnd();
                 }
+                */
             } else {
                 int nrObjects = std::floor(data.size/(maxMeshSize*1.0))+1;
 
