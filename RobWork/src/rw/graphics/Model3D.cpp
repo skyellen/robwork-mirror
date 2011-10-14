@@ -48,25 +48,37 @@ void Model3D::removeObject(const std::string& name){
 }
 
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
-    int matId = addMaterial( mat );
-    Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
-    obj->_vertices.resize(mesh.size()*3);
-    obj->_normals.resize(mesh.size()*3);
-    obj->_faces.resize(mesh.size());
-    for(size_t i=0;i<mesh.size();i++){
-        Triangle<> tri = mesh.getTriangle( i );
-        Vector3D<float> normal = cast<float>(tri.calcFaceNormal());
-        obj->_vertices[i*3+0] = cast<float>(tri[0]);
-        obj->_vertices[i*3+1] = cast<float>(tri[1]);
-        obj->_vertices[i*3+2] = cast<float>(tri[2]);
-        obj->_normals[i*3+0] = normal;
-        obj->_normals[i*3+1] = normal;
-        obj->_normals[i*3+2] = normal;
-        obj->_faces[i] = IndexedTriangle<uint16_t>(i*3+0,i*3+1,i*3+2);
+    const int maxMeshSize = 65535; // we use 16 bit indexing
+    if(mesh.size()>maxMeshSize){
+        RW_WARN("SPLITTING LARGE TRIANGLE MESH: " << mesh.size());
     }
-    obj->_materialMap.push_back( Object3D::MaterialMapData(matId,0,mesh.size()) );
 
-    _objects.push_back(obj);
+    int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
+
+    int matId = addMaterial( mat );
+
+    for(int objNr = 0; objNr<nrObjects; objNr++){
+        int meshSize = mesh.size()-maxMeshSize*objNr;
+
+        Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
+        obj->_vertices.resize(meshSize*3);
+        obj->_normals.resize(meshSize*3);
+        obj->_faces.resize(meshSize);
+        for(size_t i=0;i<meshSize;i++){
+            Triangle<> tri = mesh.getTriangle( maxMeshSize*objNr + i );
+            Vector3D<float> normal = cast<float>(tri.calcFaceNormal());
+            obj->_vertices[i*3+0] = cast<float>(tri[0]);
+            obj->_vertices[i*3+1] = cast<float>(tri[1]);
+            obj->_vertices[i*3+2] = cast<float>(tri[2]);
+            obj->_normals[i*3+0] = normal;
+            obj->_normals[i*3+1] = normal;
+            obj->_normals[i*3+2] = normal;
+            obj->_faces[i] = IndexedTriangle<uint16_t>(i*3+0,i*3+1,i*3+2);
+        }
+        obj->_materialMap.push_back( Object3D::MaterialMapData(matId,0,meshSize) );
+
+        _objects.push_back(obj);
+    }
 }
 
 
