@@ -64,12 +64,13 @@ void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
         obj->_vertices.resize(meshSize*3);
         obj->_normals.resize(meshSize*3);
         obj->_faces.resize(meshSize);
+        Triangle<float> tri;
         for(size_t i=0;i<meshSize;i++){
-            Triangle<> tri = mesh.getTriangle( maxMeshSize*objNr + i );
-            Vector3D<float> normal = cast<float>(tri.calcFaceNormal());
-            obj->_vertices[i*3+0] = cast<float>(tri[0]);
-            obj->_vertices[i*3+1] = cast<float>(tri[1]);
-            obj->_vertices[i*3+2] = cast<float>(tri[2]);
+            mesh.getTriangle(maxMeshSize*objNr + i , tri);
+            Vector3D<float> normal = tri.calcFaceNormal();
+            obj->_vertices[i*3+0] = tri[0];
+            obj->_vertices[i*3+1] = tri[1];
+            obj->_vertices[i*3+2] = tri[2];
             obj->_normals[i*3+0] = normal;
             obj->_normals[i*3+1] = normal;
             obj->_normals[i*3+2] = normal;
@@ -106,7 +107,6 @@ namespace {
 }
 
 void Model3D::optimize(double smooth_angle, SmoothMethod method){
-    RW_WARN("OPTIMIZE");
     std::stack<Object3D::Ptr> objects;
     BOOST_FOREACH(Object3D::Ptr obj, _objects){ objects.push(obj);}
 
