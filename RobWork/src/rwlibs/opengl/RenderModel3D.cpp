@@ -158,10 +158,10 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     glEnd();
                 }
             } else {
-                int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
+                int nrObjects = std::floor(data.size/(maxMeshSize*1.0))+1;
 
                 for(size_t j=0; j<nrObjects; j++){
-                    int meshSize = mesh.size()-maxMeshSize*j;
+                    int meshSize = data.size-maxMeshSize*j;
                     if( meshSize > maxMeshSize)
                         meshSize = maxMeshSize;
 
