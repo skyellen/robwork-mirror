@@ -120,15 +120,15 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                         // draw faces
                         const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
                         glTexCoord2fv(&obj._texCoords[i*3](0) );
-                        glNormal3fv(&obj._vertices[tri[0]](0));
+                        glNormal3fv(&obj._normals[tri[0]](0));
                         glVertex3fv(&obj._vertices[tri[0]](0));
 
                         glTexCoord2fv(&obj._texCoords[i*3+1](0) );
-                        glNormal3fv(&obj._vertices[tri[1]](0));
+                        glNormal3fv(&obj._normals[tri[1]](0));
                         glVertex3fv(&obj._vertices[tri[1]](0));
 
                         glTexCoord2fv(&obj._texCoords[i*3+2](0) );
-                        glNormal3fv(&obj._vertices[tri[2]](0));
+                        glNormal3fv(&obj._normals[tri[2]](0));
                         glVertex3fv(&obj._vertices[tri[2]](0));
                     }
                     glEnd();
@@ -138,15 +138,15 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                         // draw faces
                         const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
                         glTexCoord2fv(&obj._texCoords[tri[0]](0) );
-                        glNormal3fv(&obj._vertices[tri[0]](0));
+                        glNormal3fv(&obj._normals[tri[0]](0));
                         glVertex3fv(&obj._vertices[tri[0]](0));
 
                         glTexCoord2fv(&obj._texCoords[tri[1]](0) );
-                        glNormal3fv(&obj._vertices[tri[1]](0));
+                        glNormal3fv(&obj._normals[tri[1]](0));
                         glVertex3fv(&obj._vertices[tri[1]](0));
 
                         glTexCoord2fv(&obj._texCoords[tri[2]](0) );
-                        glNormal3fv(&obj._vertices[tri[2]](0));
+                        glNormal3fv(&obj._normals[tri[2]](0));
                         glVertex3fv(&obj._vertices[tri[2]](0));
                     }
                     glEnd();
@@ -157,12 +157,12 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
                     // draw faces
                     const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                    glNormal3fv(&obj._vertices[tri[0]](0));
-                    glVertex3fv(&obj._vertices[tri[0]](0));
-                    glNormal3fv(&obj._vertices[tri[1]](0));
-                    glVertex3fv(&obj._vertices[tri[1]](0));
-                    glNormal3fv(&obj._vertices[tri[2]](0));
-                    glVertex3fv(&obj._vertices[tri[2]](0));
+                    glNormal3fv( &obj._normals[ tri[0] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[0] ](0) );
+                    glNormal3fv( &obj._normals[ tri[1] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[1] ](0) );
+                    glNormal3fv( &obj._normals[ tri[2] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[2] ](0) );
                 }
                 glEnd();
             }
