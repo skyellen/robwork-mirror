@@ -48,7 +48,7 @@ void Model3D::removeObject(const std::string& name){
 }
 
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
-    const size_t maxMeshSize = 65535; // we use 16 bit indexing
+    const size_t maxMeshSize = 16000; // we use 16 bit indexing
 
     int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
     int matId = addMaterial( mat );
