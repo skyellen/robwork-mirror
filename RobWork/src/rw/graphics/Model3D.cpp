@@ -48,18 +48,14 @@ void Model3D::removeObject(const std::string& name){
 }
 
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
-    const int maxMeshSize = 16380; // we use 16 bit indexing
-    if(mesh.size()>maxMeshSize){
-        RW_WARN("SPLITTING LARGE TRIANGLE MESH: " << mesh.size());
-    }
+    const size_t maxMeshSize = 65535; // we use 16 bit indexing
 
     int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
-    std::cout << "NR OBJECTS: " << nrObjects << std::endl;
     int matId = addMaterial( mat );
 
-    for(int objNr = 0; objNr<nrObjects; objNr++){
+    for(size_t objNr = 0; objNr<nrObjects; objNr++){
 
-        int meshSize = mesh.size()-maxMeshSize*objNr;
+        size_t meshSize = mesh.size()-maxMeshSize*objNr;
         if( meshSize > maxMeshSize)
             meshSize = maxMeshSize;
 
