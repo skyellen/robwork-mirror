@@ -140,7 +140,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
     	// create a geometry
 
         PlainTriMeshN1F::Ptr data = STLFile::load(filename);
-        STLFile::save(data,"test_badstl_stuff.stl");
+        STLFile::save(*data,"test_badstl_stuff.stl");
 
         Model3D::Ptr model = ownedPtr(new Model3D());
 
