@@ -56,11 +56,11 @@ void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
     int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
     std::cout << "NR OBJECTS: " << nrObjects << std::endl;
     int matId = addMaterial( mat );
-    RW_ASSERT(0);
+
     for(int objNr = 0; objNr<nrObjects; objNr++){
 
-        int meshSize = mesh.size();
-        if( (mesh.size()-maxMeshSize*objNr) > maxMeshSize)
+        int meshSize = mesh.size()-maxMeshSize*objNr;
+        if( meshSize > maxMeshSize)
             meshSize = maxMeshSize;
 
         Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
