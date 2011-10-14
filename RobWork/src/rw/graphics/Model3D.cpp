@@ -48,7 +48,7 @@ void Model3D::removeObject(const std::string& name){
 }
 
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
-    const int maxMeshSize = 16000; // we use 16 bit indexing
+    const int maxMeshSize = 65535; // we use 16 bit indexing
     if(mesh.size()>maxMeshSize){
         RW_WARN("SPLITTING LARGE TRIANGLE MESH: " << mesh.size());
     }
@@ -106,6 +106,7 @@ namespace {
 }
 
 void Model3D::optimize(double smooth_angle, SmoothMethod method){
+    RW_WARN("OPTIMIZE");
     std::stack<Object3D::Ptr> objects;
     BOOST_FOREACH(Object3D::Ptr obj, _objects){ objects.push(obj);}
 
