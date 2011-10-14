@@ -39,9 +39,9 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
     	//if(_model->_textures.size()>0)
-    	//    drawUsingSimple(info, type, alpha);
+    	    drawUsingSimple(info, type, alpha);
     	//else
-            drawUsingArrays(info,type, alpha);
+        //    drawUsingArrays(info,type, alpha);
     	break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
@@ -79,7 +79,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, DrawTy
 
 void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
 	glPushMatrix();
-	//std::cout << "draw arrays" << std::endl;
+	std::cout << "draw arrays" << std::endl;
 	// Move the model
 	DrawableUtil::multGLTransform( _model->getTransform() );
 	//glScalef(scale, scale, scale);
@@ -152,6 +152,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     glEnd();
                 }
             } else {
+                std::cout << "sdfljsdklfhdfjklns dlfnsdf" << std::endl;
                 glBegin(GL_TRIANGLES);
                 for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
                     // draw faces
