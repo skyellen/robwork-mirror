@@ -58,7 +58,9 @@ void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
     int matId = addMaterial( mat );
 
     for(int objNr = 0; objNr<nrObjects; objNr++){
-        int meshSize = mesh.size()-maxMeshSize*objNr;
+        int meshSize = mesh.size();
+        if( (mesh.size()-maxMeshSize*objNr) > maxMeshSize)
+            meshSize = maxMeshSize;
 
         Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
         obj->_vertices.resize(meshSize*3);
