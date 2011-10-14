@@ -154,7 +154,7 @@
 	<Polytope file="geometry/joint5" /> 
  </Drawable>
 
- <CollisionSetup file="CollisionSetup.xml" />
+ <CollisionSetup file="setup.prox.xml" />
 
 <Q name="Home">0 -1.5707963267948966 0 -1.5707963267948966 0 0</Q>
 </SerialDevice>
