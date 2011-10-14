@@ -96,9 +96,6 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, DrawTy
 void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
     // for some reason opengl does not allow drawing to large meshes within glBegin/glEnd
     // so we split it up in smaller chunks
-    const size_t maxMeshSize = 4095;
-
-
 
     glPushMatrix();
     DrawableUtil::multGLTransform( obj._transform );
@@ -160,27 +157,18 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 }
                 */
             } else {
-                int nrObjects = std::floor(data.size/(maxMeshSize*1.0))+1;
-
-                for(size_t j=0; j<nrObjects; j++){
-                    int meshSize = data.size-maxMeshSize*j;
-                    if( meshSize > maxMeshSize)
-                        meshSize = maxMeshSize;
-                    std::cout << meshSize << " , ";
-                    glBegin(GL_TRIANGLES);
-                    for(size_t i=data.startIdx+maxMeshSize*j; i<data.startIdx+maxMeshSize*j+meshSize; i++){
-                        // draw faces
-                        const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
-                        glNormal3fv( &obj._normals[ tri[0] ](0) );
-                        glVertex3fv( &obj._vertices[ tri[0] ](0) );
-                        glNormal3fv( &obj._normals[ tri[1] ](0) );
-                        glVertex3fv( &obj._vertices[ tri[1] ](0) );
-                        glNormal3fv( &obj._normals[ tri[2] ](0) );
-                        glVertex3fv( &obj._vertices[ tri[2] ](0) );
-                    }
-                    glEnd();
+                glBegin(GL_TRIANGLES);
+                for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+                    // draw faces
+                    const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
+                    glNormal3fv( &obj._normals[ tri[0] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[0] ](0) );
+                    glNormal3fv( &obj._normals[ tri[1] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[1] ](0) );
+                    glNormal3fv( &obj._normals[ tri[2] ](0) );
+                    glVertex3fv( &obj._vertices[ tri[2] ](0) );
                 }
-                std::cout << "\n";
+                glEnd();
             }
         }
     }
