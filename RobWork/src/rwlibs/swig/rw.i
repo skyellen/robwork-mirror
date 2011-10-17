@@ -661,6 +661,22 @@ public:
  *
  * *************************************************************************/
 
+/*
+class CollisionDetector
+{
+public:
+    //! @brief types of collision query
+    typedef enum
+    {
+        AllContactsFullInfo, //! find all collisions and return full collision information
+        AllContactsNoInfo, //! find all collisions but without collision information
+        FirstContactFullInfo,//! return on first contact and include full collision information
+        FirstContactNoInfo //! return on first collision but without collision information
+    } QueryType;
+
+
+};
+*/
 
 /******************************************************************************
  *  LOADERS
@@ -714,7 +730,7 @@ private:
 
 
 /******************************************************************************
- *  LOADERS
+ *  Inverse kinematics
  *
  * *************************************************************************/
 
@@ -828,3 +844,6 @@ public:
     virtual void setCheckJointLimits(bool check);
 
 };
+
+
+
