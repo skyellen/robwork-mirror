@@ -1,9 +1,0 @@
-<DynamicWorkcell workcell="test_scene.wc.xml">
- 
- <Gravity>0 0 -9.8</Gravity>
- 
- <Include file="../../../properties/DynamicMaterialDataBase.xml" />
-
- <Include file="PG70.dwc.xml" />
- 
-</DynamicWorkcell>
