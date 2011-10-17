@@ -18,7 +18,7 @@
 #ifndef RWS_SWIG_REMOTETYPES_HPP_
 #define RWS_SWIG_REMOTETYPES_HPP_
 
-#include <rwlibs/lua/RemoteTypes.hpp>
+#include <rwlibs/swig/ScriptTypes.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
