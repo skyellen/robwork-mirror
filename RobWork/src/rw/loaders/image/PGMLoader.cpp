@@ -110,7 +110,7 @@ namespace {
 	struct PGMParser: grammar<PGMParser>
 	{
 	public:
-	    mutable std::vector<char>& _data;
+	    std::vector<char>& _data;
 	    mutable int width, height, maxgrayval;
 
 
