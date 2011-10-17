@@ -1,7 +1,0 @@
-<CollisionSetup>
-    <Exclude>
-    <FramePair first="Platform" second="PA10.Base" />
-    <FramePair first="PA10.Joint6" second="ToolPlate" />
-    <FramePair first="ToolPlate" second="PG70.Base" />
-    </Exclude>
-</CollisionSetup>

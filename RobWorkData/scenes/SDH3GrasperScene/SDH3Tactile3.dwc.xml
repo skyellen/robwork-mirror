@@ -1,7 +1,0 @@
-<DynamicWorkcell workcell="rwc_125.xml">
- 
- <Include file="../default/default_setup.xml"/>
- 
- <Include file="../SchunkHand/DSchunkHandTactile6.xml"/>
- 
-</DynamicWorkcell>
