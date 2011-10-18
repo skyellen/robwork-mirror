@@ -21,6 +21,8 @@
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
+#include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/PrismaticJoint.hpp>
 
 #include "Accessor.hpp"
 #include <rwsim/dynamics/RigidDevice.hpp>
@@ -339,12 +341,24 @@ std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
     return bodies;
 }
 
-bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State& state, double max_jointvel){
+bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State& state, double max_linjointvel, double max_angjointvel){
     if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev.get())){
+        std::vector<RigidJoint*> rjoints = rdev->getRigidJoints();
         Q vel = rdev->getActualVelocity(state);
-        if( MetricUtil::normInf( vel ) > max_jointvel ){
-            return false;
+        RW_ASSERT_MSG(vel.size()<=rjoints.size(), vel.size() << "<=" << rjoints.size());
+        int depOffset = 0;
+        for(size_t i=0; i<rjoints.size();i++){
+            if( dynamic_cast<rw::models::RevoluteJoint*>(rjoints[i]->getJoint()) ){
+                if(max_angjointvel<vel[i-depOffset])
+                    return false;
+            } else if(dynamic_cast<rw::models::PrismaticJoint*>(rjoints[i]->getJoint())){
+                if(max_linjointvel<vel[i-depOffset])
+                    return false;
+            } else {
+                depOffset++;
+            }
         }
+
     }
     return true;
 }
@@ -366,12 +380,9 @@ bool DynamicUtil::isResting(DynamicWorkCell::Ptr dwc, const rw::kinematics::Stat
 
     std::vector<DynamicDevice*> devices = dwc->getDynamicDevices();
     BOOST_FOREACH(DynamicDevice* dev, devices){
-        if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev)){
-            Q vel = rdev->getActualVelocity(state);
-            if( MetricUtil::normInf( vel ) > max_jointvel ){
-                return false;
-            }
-        }
+
+        if(!DynamicUtil::isResting(dev, state, max_lin, max_jointvel) )
+            return false;
     }
     return true;
 }

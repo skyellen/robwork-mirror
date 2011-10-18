@@ -82,13 +82,14 @@ namespace dynamics {
 
 		static bool isResting(DynamicWorkCell::Ptr dwc,
 		                      const rw::kinematics::State& state,
-		                      double max_linvel = 0.01,
+		                      double max_linvel = 0.02,
 		                      double max_angvel = 0.1,
-		                      double max_jointvel = 0.002);
+		                      double max_jointvel = 0.05);
 
         static bool isResting(DynamicDevice::Ptr dev,
                               const rw::kinematics::State& state,
-                              double max_jointvel = 0.02);
+                              double max_linjointvel = 0.02,
+                              double max_jointvel = 0.05);
 
 	};
 	//! @}
