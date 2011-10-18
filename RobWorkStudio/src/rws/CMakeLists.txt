@@ -5,7 +5,7 @@ ADD_SUBDIRECTORY(components)
 # compile the plugins 
 SET(ENV{RWS_PLUGIN_LIBRARIES} "")
 ADD_SUBDIRECTORY(plugins)
-
+ADD_SUBDIRECTORY(swig)
 
 SET(UIS_FILES AboutBox.ui )
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
