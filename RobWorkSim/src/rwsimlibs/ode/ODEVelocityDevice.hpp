@@ -78,6 +78,8 @@ namespace simulator {
 		dynamics::RigidDevice *_rdev;
 		std::vector<ODEJoint*> _odeJoints;
 		rw::math::Q _maxForce;
+		rw::math::Q _lastQ;
+		double _lastDt;
 	};
 }
 }

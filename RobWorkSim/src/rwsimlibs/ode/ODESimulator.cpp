@@ -696,6 +696,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	// if the solution is bad then throw an exception
 	//if(badLCPSolution)
 	//    RW_WARN("Possibly bad LCP Solution.");
+	//std::cout << "dt:" << dttmp << " dt_p:" << lastDt << " time:"<< _time << std::endl;
 
     Simulator::UpdateInfo conStepInfo;
     conStepInfo.dt = dttmp;
@@ -1902,7 +1903,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 									&_rwcontacts[0], numc,
                                     &_srcIdx[0], &_dstIdx[0],
                                     &_rwClusteredContacts[0],
-                                    10*Deg2Rad);
+                                    5*Deg2Rad);
 
     //std::cout << "Threshold: " << threshold << " numc:" << numc << " fnumc:" << fnumc << std::endl;
     RW_DEBUGS(" numc:" << numc << " fnumc:" << fnumc);
@@ -1933,7 +1934,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         int idxFrom = _srcIdx[i];
         const int idxTo = _srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        OBRManifold manifold(11*Deg2Rad,0.2);
+        OBRManifold manifold(6*Deg2Rad,0.2);
 
         //std::cout << "Adding clustered points to manifold!" << std::endl;
 

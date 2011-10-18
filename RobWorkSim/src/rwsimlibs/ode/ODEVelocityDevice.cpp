@@ -83,6 +83,7 @@ namespace {
 
 
 void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
+    _lastDt = dt;
 	rw::math::Q flim = _rdev->getForceLimit();
 	rw::math::Q testtorque = _rdev->_torque;
 	bool fmaxChanged = false;
@@ -90,6 +91,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 		fmaxChanged = true;
 		_maxForce = flim;
 	}
+	_lastQ = _rdev->getModel().getQ(state);
 
     rw::math::Q velQ = _rdev->getVelocity(state);
     rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
@@ -212,6 +214,11 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
     //std::cout  << "Actual vel: " << actualVel << std::endl;
     _rdev->getModel().setQ(q, state);
     _rdev->setActualVelocity(actualVel, state);
+
+    //Q currentQ = _rdev->getModel().getQ(state);
+    //Q myActVel = (_lastQ-currentQ)/_lastDt;
+    //std::cout << "ActVel1: " << actualVel << std::endl;
+    //std::cout << "ActVel2: " << myActVel << std::endl;
 }
 /*
 ODEVelocityDevice* ODEVelocityDevice::makeDevice(RigidDevice *rdev,
