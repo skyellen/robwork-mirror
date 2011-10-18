@@ -155,7 +155,7 @@ public:
                 _simTime,
                 _graspTime,
                 _approachedTime; // the simulation time when the approach has finished
-
+        int _restCount;
         // the explicit values from _task
         rw::kinematics::Frame* _taskRefFrame;
         rw::math::Transform3D<> _taskOffset;

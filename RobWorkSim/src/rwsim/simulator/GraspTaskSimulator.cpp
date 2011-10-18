@@ -362,7 +362,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             sstate._currentState=GRASPING;
             sstate._approachedTime = sim->getTime();
             sstate._restingTime = sstate._approachedTime;
-
+            sstate._restCount = 0;
             Transform3D<> t3d  = Kinematics::frameTframe(_tcp, _objects[0]->getBodyFrame(), state);
             sstate._target->getPropertyMap().set<Transform3D<> > ("ObjectTtcpApproach", inverse(t3d) );
         }
@@ -374,7 +374,11 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         //std::cout << "grasping" << std::endl;
         if(sim->getTime()> sstate._approachedTime+0.2){
             // test if the grasp is in rest
-            bool isResting = DynamicUtil::isResting(_dhand, state, 0.06);
+
+            if(DynamicUtil::isResting(_dhand, state, 0.02, 0.1))
+                sstate._restCount++;
+
+            bool isResting = sstate._restCount > 15;
             //std::cout << isResting << "&&" << sim->getTime() << "-" << _restingTime << ">0.08" << std::endl;
             // if it is in rest then lift object
             if( (isResting && ( (sim->getTime()-sstate._restingTime)>0.4)) || sim->getTime()>10 ){
@@ -409,7 +413,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._currentState = LIFTING;
                 }
             }
-            if( !isResting ){
+            if( sstate._restCount == 3 ){
             	sstate._restingTime = sim->getTime();
             }
 
