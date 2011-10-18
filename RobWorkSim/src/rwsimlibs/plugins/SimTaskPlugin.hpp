@@ -100,7 +100,7 @@ private:
     rwlibs::task::CartesianTask::Ptr _mergedResult;
 
     int _nrOfTargetsToGen;
-
+    int _imgRecordPostfix;
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/

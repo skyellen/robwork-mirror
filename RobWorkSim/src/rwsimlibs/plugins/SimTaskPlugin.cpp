@@ -31,7 +31,8 @@ using namespace rwlibs::simulation;
 
 SimTaskPlugin::SimTaskPlugin():
     RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png")),
-    _nrOfTargetsToGen(1000)
+    _nrOfTargetsToGen(1000),
+    _imgRecordPostfix(0)
 {
     setupUi(this);
 
@@ -40,7 +41,6 @@ SimTaskPlugin::SimTaskPlugin():
     connect(_saveResultBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_stopBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_updateConfigBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_showTaskSpinBox    ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
     connect(_delaySpin    ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
     connect(_genTasksBox    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
@@ -52,10 +52,6 @@ SimTaskPlugin::SimTaskPlugin():
 
     _propertyView = new PropertyViewEditor(this);
     _propertyView->setPropertyMap(&_config);
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(_propertyView);
-    _configGroupBox->setLayout(vbox);
 
     _typeComboBox->addItem("SCUP");
     _typeComboBox->addItem("PG70");
@@ -100,6 +96,7 @@ void SimTaskPlugin::initialize() {
 }
 
 void SimTaskPlugin::startSimulation() {
+    _imgRecordPostfix = 0;
     if(_graspSim==NULL){
         QMessageBox::information(this, "SimTaskPlugin", "Grasp simulator has not been created yet!");
         return;
@@ -116,6 +113,7 @@ void SimTaskPlugin::startSimulation() {
         if(_debugRender==NULL)
             Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
     }
+
 
     _debugRender->setDrawMask( 15 );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( _debugRender, "DebugRender" );
@@ -221,9 +219,6 @@ void SimTaskPlugin::btnPressed() {
             _graspSim->resumeSimulation();
             _saveResultBtn->setEnabled(false);
         }
-    } else if(obj==_updateConfigBtn){
-        _propertyView->update();
-        updateConfig();
     } else if(obj==_stopBtn){
         _saveResultBtn->setEnabled(true);
         _graspSim->pauseSimulation();
@@ -283,6 +278,15 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_timer){
         if(_graspSim->getSimulator()==NULL)
             return;
+
+        if(_recordBox->isChecked()){
+            std::stringstream sstr;
+
+            sstr << "record_" << _wc->getName()<< "_" << _imgRecordPostfix << ".png";
+            _imgRecordPostfix++;
+            getRobWorkStudio()->saveViewGL(sstr.str().c_str());
+        }
+
         State state = _graspSim->getSimulator()->getState();
         // update the RobWorkStudio state
         //State state = _tsim->getState();
@@ -428,6 +432,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
 
     std::string objectName = _objectComboBox->currentText().toStdString();
     std::string type = _typeComboBox->currentText().toStdString();
+    std::string gripperName = type;
     rwlibs::task::CartesianTask::Ptr tasks = ownedPtr(new rwlibs::task::CartesianTask());
     Body* body = _dwc->findBody(objectName);
     if(body==NULL){
@@ -452,68 +457,72 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     Q closeQ(1,1.0);
     if( type=="PG70" ){
         openQ  = Q(1, 0.034);
+        gripperName = type;
         closeQ = Q(1, 0.0);
         tasks->getPropertyMap().set<std::string>("TCP","TCPPG70");
     } else if( type== "PG70_SMALL"){
         openQ  = Q(1, 0.01);
         closeQ = Q(1, 0.0);
+        gripperName = type;
         tasks->getPropertyMap().set<std::string>("TCP","TCPPG70");
     } else if( type== "GS20"){
         openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
+        gripperName = type;
         tasks->getPropertyMap().set<std::string>("TCP","TCPGS20");
     } else if( type== "GS20_WIDE"){
         openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
-        type = "GS20";
+        gripperName = "GS20";
         tasks->getPropertyMap().set<std::string>("TCP","TCPGS20");
     } else if( type== "SDH_PAR"){
         openQ =  Q(7,-1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
     } else if( type== "SDH_PAR1"){
         openQ =  Q(7,-1.571,-1.571,1.571, -0.296, 0.240, -0.296, 0.240);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
     } else if( type== "SDH_PAR2"){
         openQ =  Q(7,-1.571,-1.571,1.571, -0.1, 0.1, -0.1, 0.1);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
 
     } else if( type== "SDH_PAR1_TABLE"){
         openQ =  Q(7,-1.571,-1.571,1.571, -0.296, 0.240, -0.296, 0.240);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
     } else if( type== "SDH_PAR2_TABLE"){
         openQ =  Q(7,-1.571,-1.571,1.571, -0.1, 0.1, -0.1, 0.1);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP1");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
 
     } else if( type== "SDH_BALL"){
         openQ = Q(7,-1.048, 0.174, 1.047 ,-1.048, 0.174, -1.048, 0.174);
         closeQ = Q(7, 0.0, 0.349, 1.047,0.0, 0.349,0.0, 0.349);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
     } else if( type== "SDH_CYL"){
         openQ = Q(7, -1.048, 0.174, 0.0, -1.048, 0.174,-1.048, 0.174);
         closeQ = Q(7, 0.0, 0.349, 0.0, 0.0, 0.349, 0.0, 0.349);
         tasks->getPropertyMap().set<std::string>("TCP","SchunkHand.SDHTCP");
-        type = "SchunkHand";
+        gripperName = "SchunkHand";
     } else if( type== "SCUP"){
         openQ  = Q(1, 0.0);
         closeQ = Q(1, 1.0);
         tasks->getPropertyMap().set<std::string>("TCP","EndFrame");
+        gripperName = type;
     } else {
         RW_THROW(" The gripper type is wrong! please specify a valid grippertype: (PG70, SCUP, SDH_PAR, SDH_CYL, SDH_BALL)");
     }
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
-    tasks->getPropertyMap().set<std::string >("Gripper", type);
+    tasks->getPropertyMap().set<std::string >("Gripper", gripperName);
     tasks->getPropertyMap().set<std::string >("Object", objectName);
     tasks->getPropertyMap().set<Transform3D<> >("Offset", wTe_n);
     tasks->getPropertyMap().set<Transform3D<> >("Home", wTe_home);
@@ -540,7 +549,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     Transform3D<> wTo = rw::kinematics::Kinematics::worldTframe(body->getBodyFrame(), state);
     if( (type== "SDH_PAR1_TABLE") || (type== "SDH_PAR2_TABLE")  ){
         std::cout << "SDH_PAR1_TABLE" << std::endl;
-        Device::Ptr dev = _wc->findDevice(type);
+        Device::Ptr dev = _wc->findDevice(gripperName);
         std::string tcp = tasks->getPropertyMap().get<std::string>("TCP");
         Frame *tcpframe = _wc->findFrame(tcp);
         MovableFrame *base = dynamic_cast<MovableFrame*>( dev->getBase() );
@@ -548,16 +557,21 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         RW_ASSERT(dev);
         Transform3D<> baseTtcp = Kinematics::frameTframe(base,tcpframe, state);
         for(int i=0; i<nrTasks; i++){
-            std::cout << "task" << std::endl;
             // we only sample
             bool incollision;
             Transform3D<> target;
-            CollisionDetector::QueryResult result;
+
             do {
+                CollisionDetector::QueryResult result;
                 target = wTo*ssurf.sample();
                 Transform3D<> wTbase = target*inverse(baseTtcp);
-                base->setTransform(wTbase, state);
-                incollision = true;
+                Transform3D<> wTparent = Kinematics::worldTframe(base->getParent(state), state);
+                dev->setQ(openQ,state);
+                base->setTransform(inverse(wTparent)*wTbase, state);
+                incollision = getRobWorkStudio()->getCollisionDetector()->inCollision(state, &result);
+
+                /*
+                dev->setQ(closeQ,state);
                 if( getRobWorkStudio()->getCollisionDetector()->inCollision(state, &result) ){
                     incollision = false;
                     BOOST_FOREACH(kinematics::FramePair pair, result.collidingFrames){
@@ -568,10 +582,10 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
                             break;
                         }
                     }
-
                 }
+                */
             } while(incollision);
-
+            std::cout << "Found: " << i+1 << "    \r";
 
             CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
             tasks->addTarget( ctarget );
