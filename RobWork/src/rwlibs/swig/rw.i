@@ -49,10 +49,11 @@ public:
 
 %template (WorkCellPtr) rw::common::Ptr<WorkCell>;
 %template (DevicePtr) rw::common::Ptr<Device>;
-%template (DevicePtrVector) std::vector< rw::common::Ptr<Device> >;
+%template (DevicePtrVector) std::vector<rw::common::Ptr<Device> >;
 %template (FrameVector) std::vector<Frame*>;
 %template (JointVector) std::vector<Joint*>;
 %template (Vector3DVector) std::vector<Vector3D>;
+%template (QVector) std::vector<Q>;
 
 
 
