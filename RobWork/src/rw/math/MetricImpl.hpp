@@ -171,7 +171,7 @@ namespace rw {
 
                 inline ScalarType done(ScalarType result) const
                 {
-                    return sqrt(result);
+                    return Math::sqr(result);
                 }
             };
 
