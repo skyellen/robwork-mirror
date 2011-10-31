@@ -97,7 +97,7 @@ namespace rw { namespace graphics {
         /**
          * @brief draws the object.
          */
-        virtual void draw(const DrawableNode::RenderInfo& info) const = 0;
+        virtual void draw(const DrawableNode::RenderInfo& info = RenderInfo()) const = 0;
 
         /**
          * @brief enables or disables highlighting of the drawable class
