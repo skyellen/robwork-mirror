@@ -139,7 +139,7 @@ ENDIF()
 UNSET(Boost_USE_STATIC_LIBS)
 UNSET(Boost_FIND_QUIETLY)
 IF(DEFINED UNIX)
-  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)  
+  FIND_PACKAGE(Boost REQUIRED filesystem program_options regex serialization system thread)  
   # Test libraries are optional
   SET(Boost_FIND_QUIETLY TRUE)
   FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
@@ -150,7 +150,7 @@ ELSEIF(DEFINED WIN32)
   IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
      NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
     SET(Boost_USE_STATIC_LIBS OFF)
-    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)
+    FIND_PACKAGE(Boost REQUIRED filesystem program_options egex serialization system thread)
   ENDIF()
   
   # Test libraries are optional
