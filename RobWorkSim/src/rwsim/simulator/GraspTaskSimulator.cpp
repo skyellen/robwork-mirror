@@ -802,15 +802,15 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
 
     if(_currentTask==NULL || (_currentTargetIndex>=_currentTask->getTargets().size()-1)){
         //RW_WARN("1");
-        if(_taskQueue.empty() ){
-            //RW_WARN("1");
-            _currentTask = NULL;
-            return false;
-        }
-
 
         // if the current target is the last target then get the next task
         do{
+            if(_taskQueue.empty() ){
+                //RW_WARN("1");
+                _currentTask = NULL;
+                return false;
+            }
+
             _currentTask = _taskQueue.top();
             _taskQueue.pop();
 
