@@ -592,6 +592,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
                 */
             } while(incollision);
             std::cout << "Found: " << i+1 << "    \r";
+            std::cout.flush();
 
 
             CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
