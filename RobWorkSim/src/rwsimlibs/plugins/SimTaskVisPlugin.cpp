@@ -189,12 +189,15 @@ void SimTaskVisPlugin::btnPressed() {
 
     } else if(obj==_updateBtn){
         // we need the frame that this should be drawn with respect too
-        std::cout << "update" << std::endl;
+        //std::cout << "update" << std::endl;
         std::string fname = _frameSelectBox->currentText().toStdString();
         MovableFrame* selframe = getRobWorkStudio()->getWorkcell()->findFrame<MovableFrame>(fname);
         if(selframe==NULL)
             return;
         double maxQual=-1000000, minQual=10000000;
+
+        // for stats
+        int droppedStat=0, missedStat=0, successStat=0, slippedStat=0, collisionStat=0, otherStat=0;
 
         Transform3D<> wTo = Kinematics::worldTframe(selframe, getRobWorkStudio()->getState() );
         int nrToShow = _nrOfTargetSpin->value();
@@ -254,31 +257,35 @@ void SimTaskVisPlugin::btnPressed() {
 
             	if(!_droppedBox->isChecked() )
             		continue;
+            	droppedStat++;
             	rt.color[0] = 1.0;
             } else if(testStatus==ObjectMissed){
             	if(!_missedBox->isChecked() )
             		continue;
+            	missedStat++;
                 rt.color[0] = 0.5;
             } else if(testStatus==Success){
             	if(!_successBox->isChecked() )
             		continue;
+            	successStat++;
                 rt.color[1] = 1.0;
             } else if(testStatus==ObjectSlipped){
             	if(!_slippedBox->isChecked() )
             		continue;
+            	slippedStat++;
                 rt.color[0] = 0.0;
                 rt.color[1] = 1.0;
                 rt.color[2] = 1.0;
             } else if(testStatus==CollisionInitially){
             	if(!_collisionsBox->isChecked() )
             		continue;
-
+            	collisionStat++;
                 rt.color[0] = 1.0;
                 rt.color[2] = 1.0;
             } else {
             	if(!_otherBox->isChecked() )
             		continue;
-
+            	otherStat++;
                 rt.color[0] = 0.5;
                 rt.color[1] = 0.5;
                 rt.color[2] = 0.5;
@@ -290,7 +297,7 @@ void SimTaskVisPlugin::btnPressed() {
                 rt.scale = 1.0;
             }
             if(_showTargetBox->isChecked()){
-                std::cout << wTe_n << std::endl;
+                //std::cout << wTe_n << std::endl;
                 bool has = target->getPropertyMap().has("ObjectTtcpApproach");
                 if(has){
                     rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpApproach");
@@ -322,7 +329,7 @@ void SimTaskVisPlugin::btnPressed() {
             }
 
         }
-        std::cout << "NR TARGETS:: " << rtargets.size() << std::endl;
+        //std::cout << "NR TARGETS:: " << rtargets.size() << std::endl;
 
         // if quality should be shown then we start by calculating the offset and scale
         double offset = 0;
@@ -345,7 +352,7 @@ void SimTaskVisPlugin::btnPressed() {
                     t.color[1] = t.color[1] * (t.scale+offset)*scale;
                     t.color[2] = t.color[2] * (t.scale+offset)*scale;
                 }
-                std::cout << t.color[0] << " (" << t.scale << "+" << offset<<")*" << scale << std::endl;
+                //std::cout << t.color[0] << " (" << t.scale << "+" << offset<<")*" << scale << std::endl;
             }
         }
         _fromThresSpin->setMinimum(minQual);
@@ -353,7 +360,16 @@ void SimTaskVisPlugin::btnPressed() {
         _toThresSpin->setMinimum(minQual);
         _toThresSpin->setMaximum(maxQual);
 
-        std::cout << "setting : " << rtargets.size() << std::endl;
+        log().info() << "Total:" << successStat+slippedStat+otherStat+collisionStat+droppedStat+missedStat
+                     << " Succes:"<<successStat
+                     << " Slipped:"<<slippedStat
+                     << " Dropped:"<<droppedStat
+                     << " Missed:"<<missedStat
+                     << " Collision:"<<collisionStat
+                     << " Other:"<<otherStat << "\n";
+
+
+        //std::cout << "setting : " << rtargets.size() << std::endl;
         ((RenderTargets*)_render.get())->setTargets(rtargets);
         getRobWorkStudio()->postUpdateAndRepaint();
     }

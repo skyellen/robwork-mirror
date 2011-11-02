@@ -82,8 +82,8 @@ private slots:
 
     void stateChangedListener(const rw::kinematics::State& state);
 private:
-    void setCurrentTask(rwlibs::task::CartesianTask::Ptr task);
-    rwlibs::task::CartesianTask::Ptr generateTasks(int nrTasks);
+    void setCurrentTask(GraspTask::Ptr task);
+    GraspTask::Ptr generateTasks(int nrTasks);
 private:
     rw::models::WorkCell* _wc;
     rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
@@ -97,7 +97,8 @@ private:
     rw::common::PropertyMap _config;
     PropertyViewEditor *_propertyView;
     rw::kinematics::State _initState;
-    rwlibs::task::CartesianTask::Ptr _mergedResult;
+    GraspTask::Ptr _mergedResult;
+
 
     int _nrOfTargetsToGen;
     int _imgRecordPostfix;
