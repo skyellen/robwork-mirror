@@ -39,7 +39,8 @@ public:
         ObjectSlipped, TimeOut,
         SimulationFailure,
         InvKinFailure,
-        PoseEstimateFailure
+        PoseEstimateFailure,
+        CollisionFiltered
      } TestStatus;
 
     GraspTask():_task(rw::common::ownedPtr(new rwlibs::task::CartesianTask() ) ){}
