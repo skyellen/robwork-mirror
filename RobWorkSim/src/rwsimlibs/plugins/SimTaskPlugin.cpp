@@ -298,6 +298,7 @@ void SimTaskPlugin::btnPressed() {
         _timeToFinishLbl->setText( Timer((int)(avgGraspTime* (_graspSim->getNrTargetsDone()-nrgrasps))).toString("hh:mm").c_str() );
 
         if( _graspSim->isFinished() && !_genTasksBox->isChecked()){
+
             _saveResultBtn->setEnabled(true);
             //
             _timer->stop();
@@ -310,6 +311,7 @@ void SimTaskPlugin::btnPressed() {
 
             }
         } else if(_graspSim->isFinished() && _genTasksBox->isChecked()){
+
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
                 _timer->stop();
                 saveTasks(true);
@@ -691,6 +693,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
 
     std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("TaskTestOutFile", "test.task.xml");
     std::string taskFile = filename;
+    std::cout << "SAVING TASK: " << filename << std::endl;
     if(!automatic){
 
         QString selectedFilter;
@@ -712,9 +715,12 @@ void SimTaskPlugin::saveTasks(bool automatic){
     log().info() << "\t-Filename: " << taskFile << "\n";
 
     GraspTask::Ptr result;
-
-    if(_mergedResult!=NULL){
-        result = _mergedResult;
+    if( _mergeResultBox->isChecked() ){
+        if(_mergedResult!=NULL ){
+            result = _mergedResult;
+        } else {
+            result = _graspSim->getResult();
+        }
     } else {
         result = _graspSim->getResult();
     }
@@ -725,7 +731,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
             std::vector<rwlibs::task::CartesianTarget::Ptr> filteredtargets;
             BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
                 int status = target->getPropertyMap().get<int> ("TestStatus",-1);
-                if(status==GraspTaskSimulator::Success || status==GraspTaskSimulator::ObjectSlipped){
+                if(status==GraspTask::Success || status==GraspTask::ObjectSlipped){
                     filteredtargets.push_back(target);
                 }
             }
