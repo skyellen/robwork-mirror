@@ -42,9 +42,17 @@ public:
         PoseEstimateFailure
      } TestStatus;
 
+    GraspTask():_task(rw::common::ownedPtr(new rwlibs::task::CartesianTask() ) ){}
     GraspTask(rwlibs::task::CartesianTask::Ptr task):_task(task){}
 
     rwlibs::task::CartesianTask::Ptr getRootTask(){ return _task; }
+
+    std::string getGripperID();
+    std::string getTCPID();
+    std::string getGraspControllerID();
+    void setGripperID(const std::string& id);
+    void setTCPID(const std::string& id);
+    void setGraspControllerID(const std::string& id);
 
     /**
      * @brief save as UIBK format
@@ -69,6 +77,12 @@ public:
 
 
     static GraspTask::Ptr load(const std::string& name);
+
+
+
+    /**
+     * @brief assumes
+     */
 
 private:
 

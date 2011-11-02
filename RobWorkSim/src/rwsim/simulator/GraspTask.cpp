@@ -469,3 +469,24 @@ GraspTask::Ptr GraspTask::load(const std::string& filename){
     return gtask;
 }
 
+void GraspTask::setGripperID(const std::string& id){
+    _task->getPropertyMap().set<std::string>("Gripper",id);
+}
+void GraspTask::setTCPID(const std::string& id){
+    _task->getPropertyMap().set<std::string>("TCP",id);
+}
+void GraspTask::setGraspControllerID(const std::string& id){
+    _task->getPropertyMap().set<std::string>("ControllerName",id);
+}
+
+std::string GraspTask::getGripperID(){
+    return _task->getPropertyMap().get<std::string>("Gripper");
+}
+std::string GraspTask::getTCPID(){
+    return _task->getPropertyMap().get<std::string>("TCP");
+}
+std::string GraspTask::getGraspControllerID(){
+    return _task->getPropertyMap().get<std::string>("ControllerName","GraspController");
+}
+
+

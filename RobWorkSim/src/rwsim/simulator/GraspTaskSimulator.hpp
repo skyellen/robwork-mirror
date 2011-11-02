@@ -19,7 +19,7 @@
 #include "ThreadSimulator.hpp"
 #include <stack>
 #include <rwsim/dynamics/KinematicBody.hpp>
-
+#include "GraspTask.hpp"
 namespace rwsim {
 namespace simulator {
 /**
@@ -78,11 +78,11 @@ public:
 	 * @brief
 	 * @param graspTasks
 	 */
-	void load(rwlibs::task::CartesianTask::Ptr graspTasks);
+	void load(GraspTask::Ptr graspTasks);
 
 	// these are basically the same since the result is added to the loaded tasks
-	rwlibs::task::CartesianTask::Ptr getTasks(){ return _roottask; };
-	rwlibs::task::CartesianTask::Ptr getResult(){ return _roottask; }
+	GraspTask::Ptr getTasks(){ return _gtask; };
+	GraspTask::Ptr getResult(){ return _gtask; }
 
 	//! @brief get the number of targets
 	size_t getNrTargets();
@@ -122,8 +122,8 @@ public:
 	// simulation target performed event
 	typedef enum {TaskFormat, CommaSeperatedFormat} ExportFormat;
 
-	static void save(const std::string& filename, rwlibs::task::CartesianTask::Ptr tasks,  ExportFormat format=TaskFormat);
-	static void save(std::ostream& ostr, rwlibs::task::CartesianTask::Ptr tasks, ExportFormat format=TaskFormat);
+	//static void save(const std::string& filename, rwlibs::task::CartesianTask::Ptr tasks,  ExportFormat format=TaskFormat);
+	//static void save(std::ostream& ostr, rwlibs::task::CartesianTask::Ptr tasks, ExportFormat format=TaskFormat);
 
 	struct GraspedObject {
         GraspedObject():object(NULL){}
@@ -230,6 +230,7 @@ private:
 	std::vector<rwsim::simulator::ThreadSimulator::Ptr> _simulators;
 
 	rwlibs::task::CartesianTask::Ptr _roottask, _currentTask;
+	GraspTask::Ptr _gtask;
 	std::stack<rwlibs::task::CartesianTask::Ptr> _taskQueue;
 	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;

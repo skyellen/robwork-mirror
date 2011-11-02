@@ -109,11 +109,9 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
 void GraspTaskSimulator::load(const std::string& filename){
     Log::infoLog() << "Loading tasks: ";
     Log::infoLog() << "\t-Filename: " << filename;
-    rwlibs::task::CartesianTask::Ptr task;
+    GraspTask::Ptr task;
     try {
-        XMLTaskLoader loader;
-        loader.load( filename );
-        task = loader.getCartesianTask();
+        GraspTask::load( filename );
     } catch (const Exception& exp) {
         RW_WARN("Unable to load tasks from file! " << filename);
         return;
@@ -121,16 +119,17 @@ void GraspTaskSimulator::load(const std::string& filename){
     load(task);
 }
 
-void GraspTaskSimulator::load(rwlibs::task::CartesianTask::Ptr graspTasks){
+void GraspTaskSimulator::load(GraspTask::Ptr graspTasks){
     while(!_taskQueue.empty())
         _taskQueue.pop();
-    _roottask = graspTasks;
+    _gtask = graspTasks;
+    _roottask = graspTasks->getRootTask();
     _taskQueue.push(_roottask);
     _currentTask = NULL;
 
     int nrOfTargets = 0;
     std::stack<rwlibs::task::CartesianTask::Ptr> tmpStack;
-    tmpStack.push(graspTasks);
+    tmpStack.push(_roottask);
     while(!tmpStack.empty()){
         rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
         tmpStack.pop();
@@ -506,6 +505,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         do{
             //RW_WARN("1");
             if( !getNextTarget(sstate) ){
+                std::cout << "STOPP" << std::endl;
                 // end we are done with this threadsimulator
                 sstate._stopped = true;
                 sim->postStop();
@@ -517,6 +517,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if( sstate._target->getPropertyMap().get<int>("TestStatus",-1)>=0 ){
                 // if test status is set then we allready processed this task.
                 _skipped++;
+                _nrOfExperiments++;
+                colFreeSetup=false;
                 continue;
             }
 
@@ -651,7 +653,7 @@ namespace {
 	}
 
 }
-
+/*
 void GraspTaskSimulator::save(const std::string& filename, CartesianTask::Ptr tasks, ExportFormat format){
 	std::ofstream outfile(filename.c_str());
 	save(outfile, tasks, format);
@@ -673,7 +675,7 @@ void GraspTaskSimulator::save(std::ostream& ostr, CartesianTask::Ptr tasks, Expo
 		RW_THROW("Unkown Export Format!");
 	}
 }
-
+*/
 
 
 std::vector<rw::sensor::Contact3D> GraspTaskSimulator::getObjectContacts(const rw::kinematics::State& state,
@@ -808,14 +810,17 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
 
 
         // if the current target is the last target then get the next task
-        _currentTask = _taskQueue.top();
-        _taskQueue.pop();
-        _currentTargetIndex=0;
+        do{
+            _currentTask = _taskQueue.top();
+            _taskQueue.pop();
 
-        // push all task children on the queue
-        for(int i=_currentTask->getTasks().size()-1; i>=0; i--){
-            _taskQueue.push(_currentTask->getTasks()[i]);
-        }
+            // push all task children on the queue
+            for(int i=_currentTask->getTasks().size()-1; i>=0; i--){
+                _taskQueue.push(_currentTask->getTasks()[i]);
+            }
+
+        } while(_currentTask->getTargets().size()==0);
+        _currentTargetIndex=0;
 
     } else {
         //RW_WARN("1");
