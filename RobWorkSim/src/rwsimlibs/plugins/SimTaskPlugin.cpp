@@ -134,6 +134,8 @@ void SimTaskPlugin::open(WorkCell* workcell)
         _objectComboBox->addItem(body->getName().c_str());
     }
 
+    bool successOnly = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("SuccessOnly");
+    _onlySuccessBox->setEnabled(successOnly);
     std::string taskFormat = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("OutputFormat","RWTask");
     int idx = _outputFormatBox->findText(taskFormat.c_str());
     if(idx>=0)
@@ -549,6 +551,8 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     State state = _initState;
     Transform3D<> wTo = rw::kinematics::Kinematics::worldTframe(body->getBodyFrame(), state);
     if( (type== "SDH_PAR1_TABLE") || (type== "SDH_PAR2_TABLE")  ){
+        ssurf.setZAxisDirectionEnabled(true);
+        ssurf.setZAxisDirection(Vector3D<>(0,0,-1));
         std::cout << "SDH_PAR1_TABLE" << std::endl;
         Device::Ptr dev = _wc->findDevice(gripperName);
         std::string tcp = rtask->getPropertyMap().get<std::string>("TCP");
