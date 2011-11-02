@@ -40,28 +40,33 @@ namespace {
 
 	void renderSolid(float alpha, float width, float size, GLUquadricObj *quad){
 		const float REL_WIDTH = 0.05f;
+		const float lenHead = size*3*REL_WIDTH; // the arrow head
+		const float widthHead = size*2*REL_WIDTH;
+		const float lenBody = size-lenHead; // the arrow body
+		const float widthBody = width*size*REL_WIDTH;
+
         // Nice frame
         // Draw z-axis
         glColor4f(0.0f, 0.0f, 1.0f, alpha); // Blue color
-		gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
-        glTranslatef(0.0f,0.0f,size);// Center The Cone
-        gluCylinder(quad,size*2*REL_WIDTH,0.0f,size*2*REL_WIDTH,32,32); // A Cone
+		gluCylinder(quad, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
+        glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
+        gluCylinder(quad,widthHead,0.0f,lenHead,32,32); // A Cone
 
         // Draw x-axis
         glColor4f(1.0f, 0.0f, 0.0f, alpha); // Red color
-        glTranslatef(0.0f,0.0f,-size); // Center The Cylinder
+        glTranslatef(0.0f,0.0f,-lenBody); // Center The Cylinder
         glRotatef(90.0f,0.0f,1.0f,0.0f); // Rotate around y-ax
-        gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
-        glTranslatef(0.0f,0.0f,size);// Center The Cone
-        gluCylinder(quad,size*2*REL_WIDTH,0.0f,size*2*REL_WIDTH,32,32);// A Cone
+        gluCylinder(quad, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
+        glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
+        gluCylinder(quad,widthHead,0.0f,lenHead,32,32);// A Cone
 
         // Draw y-axis
         glColor4f(0.0f, 1.0f, 0.0f, alpha); // Green color
-        glTranslatef(0.0f,0.0f,-size);                     // Center The Cylinder
+        glTranslatef(0.0f,0.0f,-lenBody);                     // Center The Cylinder
         glRotatef(90.0f,-1.0f,0.0f,0.0f); // Rotate around y-axis
-        gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
-        glTranslatef(0.0f,0.0f,size);// Center The Cone
-        gluCylinder(quad, size*2*REL_WIDTH, 0.0f, size*3*REL_WIDTH, 32, 32);// A Cone
+        gluCylinder(quad, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
+        glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
+        gluCylinder(quad, widthHead, 0.0f, lenHead, 32, 32);// A Cone
 	};
 
 	void initializeColors(float *r, float *g, float *b){

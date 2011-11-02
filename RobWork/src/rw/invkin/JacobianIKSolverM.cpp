@@ -176,7 +176,19 @@ bool JacobianIKSolverM::solveLocal(
         }
         break;
         case(SVD):{
-            Jp = LinearAlgebra::pseudoInverse(J.m());
+            //std::cout << " size: "  << J.m().size1() <<  " < "<< J.m().size2() << std::endl;
+            /*ublas::identity_matrix<double> I ( J.m().size1() );
+            ublas::matrix<double> W = I;
+            //std::cout << "3";
+            for(size_t i=0;i<J.m().size1()/6;i++){
+                int off = i*6;
+                W(off+3,off+3) = 4;
+                W(off+4,off+4) = 4;
+                W(off+5,off+5) = 4;
+            }*/
+            //std::cout << " size: "  << W.size1() <<  " < "<< W.size2() << std::endl;
+            //Jp = LinearAlgebra::pseudoInverse( prod(W, J.m()) );
+            Jp = LinearAlgebra::pseudoInverse(  J.m() );
             Q dq ( prod( Jp , b_eXed_vec) );
             double dq_len = dq.normInf();
             if( dq_len > 0.8 )

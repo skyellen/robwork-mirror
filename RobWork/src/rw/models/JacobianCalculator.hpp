@@ -46,12 +46,6 @@ public:
      * @return Jacobian for \b state
      */
     virtual rw::math::Jacobian get(const rw::kinematics::State& state) const = 0;
-    /*
-    {
-        rw::kinematics::FKTable fk(state);
-        return get(fk);
-    }
-    */
 
     /**
      * @brief Returns the Jacobian calculated based on the content of \b fk

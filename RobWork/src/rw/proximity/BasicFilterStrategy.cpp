@@ -53,8 +53,7 @@ BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell):
 	initializeCollisionFramePairs(workcell->getDefaultState());
 }
 
-BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,
-	const ProximitySetup& setup):
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,const ProximitySetup& setup):
 	_workcell(workcell),
 	_psetup(setup)
 {

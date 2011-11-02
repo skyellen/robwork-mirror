@@ -92,15 +92,6 @@ public:
 	 */
 	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell, const ProximitySetup& setup);
 
-	/**
-	 * @brief constructor - building the include/exclude frampair relations from
-	 * the collision setup, though with the strategy for filtering out frames that has
-	 * no collision geometry.
-	 * @param workcell [in] the workcell
-	 * @param strategy [in] the collision strategy
-	 * @param setup [in] the collision setup describing exclude/include relations
-	 */
-	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell, CollisionStrategy::Ptr strategy, const ProximitySetup& setup);
 
 	//! @brief destructor
 	virtual ~BasicFilterStrategy(){};

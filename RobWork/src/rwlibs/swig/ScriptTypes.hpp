@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_SWIG_REMOTETYPES_HPP_
-#define RWLIBS_SWIG_REMOTETYPES_HPP_
+#ifndef RWLIBS_SWIG_SCRIPTTYPES_HPP_
+#define RWLIBS_SWIG_SCRIPTTYPES_HPP_
 
 #include <rw/math.hpp>
 #include <rw/geometry.hpp>
@@ -28,6 +28,7 @@
 #include <rw/proximity.hpp>
 #include <rw/graphics.hpp>
 #include <rw/invkin.hpp>
+#include <rw/trajectory.hpp>
 
 #include <rw/RobWork.hpp>
 #include <iostream>
@@ -60,6 +61,8 @@ typedef rw::math::Transform3D<double> Transform3D;
 typedef rw::math::Pose6D<double> Pose6D;
 typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
 typedef rw::math::Jacobian Jacobian;
+typedef rw::math::QMetric QMetric;
+typedef rw::math::Transform3DMetric Transform3DMetric;
 
 typedef rw::common::PropertyMap PropertyMap;
 
@@ -96,6 +99,12 @@ typedef rw::kinematics::State State;
 
 typedef rw::trajectory::TimedStatePath TimedStatePath;
 typedef rw::trajectory::TimedState TimedState;
+//typedef rw::trajectory::TrajectoryFactory TrajectoryFactory;
+typedef rw::trajectory::StateTrajectory StateTrajectory;
+typedef rw::trajectory::QTrajectory QTrajectory;
+typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
+
+
 
 typedef rw::models::WorkCell WorkCell;
 typedef rw::models::Joint Joint;
@@ -134,6 +143,10 @@ typedef rw::graphics::WorkCellScene WorkCellScene;
 typedef rw::graphics::SceneViewer SceneViewer;
 typedef rw::graphics::SceneNode SceneNode;
 typedef rw::graphics::DrawableNode DrawableNode;
+
+
+
+
 }
 }
 

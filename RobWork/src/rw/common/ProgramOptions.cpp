@@ -223,7 +223,7 @@ void ProgramOptions::checkVariablesMap(po::variables_map &vm){
     }
 
     if (vm.count("version") ){
-        std::cout << "\n\t" << _appName <<" version " << _version << std::endl;
+        Log::infoLog() << "\n\t" << _appName <<" version " << _version << std::endl;
         abort();
     }
 

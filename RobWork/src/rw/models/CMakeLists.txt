@@ -17,9 +17,11 @@ SET(FILES_CPP
   Joint.cpp
   JacobianCalculator.cpp
   JointDeviceJacobianCalculator.cpp  
+  #DeviceJacobianCalculator.cpp
   MobileDevice.cpp
   TreeDevice.cpp
   CompositeDevice.cpp
+  CompositeJointDevice.cpp
   ParallelDevice.cpp
   ParallelLeg.cpp
   DependentJoint.cpp
@@ -34,6 +36,7 @@ SET(FILES_CPP
   CollisionModelInfo.cpp
   DHParameterSet.cpp
   Object.cpp
+  SE3Device.cpp
 )
 
 SET(FILES_HPP
@@ -72,6 +75,7 @@ SET(FILES_HPP
   CollisionModelInfo.hpp
   DHParameterSet.hpp
   Object.hpp
+  SE3Device.hpp
 )
 
 SOURCE_GROUP(models FILES ${FILES_CPP} ${FILES_HPP})

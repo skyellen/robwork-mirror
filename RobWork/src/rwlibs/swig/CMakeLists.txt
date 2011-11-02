@@ -16,17 +16,22 @@ IF( SWIG_FOUND )
 	SET_SOURCE_FILES_PROPERTIES(rw.i PROPERTIES CPLUSPLUS ON)
 	SET_SOURCE_FILES_PROPERTIES(rw.i PROPERTIES SWIG_FLAGS "-includeall")
 	
+	# lua interface generation
     SWIG_ADD_MODULE(rwlua lua rw.i)
     SWIG_LINK_LIBRARIES(rwlua rw ${ROBWORK_LIBRARIES})
 	
+	# PYthon interface generation
 	FIND_PACKAGE(PythonInterp)
 	FIND_PACKAGE(PythonLibs)
 	MESSAGE("PYTHONINTERP_FOUND:  ${PYTHONINTERP_FOUND}" )
 	MESSAGE("PYTHONLIBS_FOUND:  ${PYTHONLIBS_FOUND}" )
 	IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
 	    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-	    SWIG_ADD_MODULE(rwl python rw.i)
-	    SWIG_LINK_LIBRARIES(rwl ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+	    SWIG_ADD_MODULE(rw python rw.i)
+	    SWIG_LINK_LIBRARIES(rw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+	    
+	    # TODO we need to invoke python distutils to compile a shared library that has the c++ objects available.
+	    
 	ENDIF()  
 	
 	

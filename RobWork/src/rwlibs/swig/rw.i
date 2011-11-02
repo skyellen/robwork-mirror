@@ -4,6 +4,7 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::swig;
+using rw::trajectory::Interpolator;
 %}
 
 %include <std_string.i>
@@ -54,8 +55,22 @@ public:
 %template (JointVector) std::vector<Joint*>;
 %template (Vector3DVector) std::vector<Vector3D>;
 %template (QVector) std::vector<Q>;
+%template (GeometryPtr) rw::common::Ptr<Geometry>;
+%template (GeometryDataPtr) rw::common::Ptr<GeometryData>;
+%template (TriMeshPtr) rw::common::Ptr<TriMesh>;
+%template (CollisionDetectorPtr) rw::common::Ptr<CollisionDetector>;
+%template (PlainTriMeshN1fPtr) rw::common::Ptr<PlainTriMeshN1f>;
+%template (ImagePtr) rw::common::Ptr<Image>;
+%template (InvKinSolverPtr) rw::common::Ptr<InvKinSolver>;
+%template (IterativeIKPtr) rw::common::Ptr<IterativeIK>;
+%template (ClosedFormIKPtr) rw::common::Ptr<ClosedFormIK>;
 
-
+%template (QMetricPtr) rw::common::Ptr<QMetric>;
+%template (Transform3DMetricPtr) rw::common::Ptr<Transform3DMetric>;
+// trajectory
+%template (StateTrajectoryPtr) rw::common::Ptr<StateTrajectory>;
+%template (QTrajectoryPtr) rw::common::Ptr<QTrajectory>;
+%template (Transform3DTrajectoryPtr) rw::common::Ptr<Transform3DTrajectory>;
 
 /**************************
  * MATH
@@ -377,10 +392,6 @@ public:
 // now we go on to geometry
 *********************************************************************/
 
-
-%template(GeometryDataPtr) rw::common::Ptr<GeometryData>;
-%template(TriMeshPtr) rw::common::Ptr<TriMesh>;
-
 class GeometryData {
     typedef enum {PlainTriMesh,
                   IdxTriMesh,
@@ -477,8 +488,6 @@ public:
     virtual PlainTriMeshN1* toTriMesh() = 0;
 };
 
-%template(GeometryPtr) rw::common::Ptr<Geometry>;
-//typedef rw::common::Ptr<Geometry> GeometryPtr;
 
 class Geometry {
 public:
@@ -505,7 +514,7 @@ public:
     static rw::common::Ptr<Geometry> makeCylinder(float radius, float height);
 };
 
-%template(PlainTriMeshN1fPtr) rw::common::Ptr<PlainTriMeshN1f>;
+
 
 class STLFile {
 public:
@@ -657,6 +666,66 @@ public:
 
 };
 
+
+/******************************************************************************
+ *  TRAJECTORY
+ *
+ * *************************************************************************/
+
+template <class T>
+class Interpolator
+{
+public:
+    virtual T x(double t) const = 0;
+    virtual T dx(double t) const = 0;
+    virtual T ddx(double t) const = 0;
+    virtual double duration() const = 0;
+};
+
+template <class T>
+class Trajectory
+{
+public:
+    virtual T x(double t) const = 0;
+    virtual T dx(double t) const = 0;
+    virtual T ddx(double t) const = 0;
+    virtual double duration() const = 0;
+    virtual double startTime() const = 0;
+    virtual double endTime() const;
+
+    std::vector<T> getPath(double dt, bool uniform = true);
+    virtual typename rw::common::Ptr< TrajectoryIterator<T> > getIterator(double dt = 1) const = 0;
+
+protected:
+    /**
+     * @brief Construct an empty trajectory
+     */
+    Trajectory() {};
+};
+
+
+/*
+class TrajectoryFactory
+{
+public:
+    static rw::common::Ptr<StateTrajectory> makeFixedTrajectory(const rw::kinematics::State& state, double duration);
+    static rw::common::Ptr<QTrajectory> makeFixedTrajectory(const rw::math::Q& q, double duration);
+    static rw::common::Ptr<StateTrajectory> makeLinearTrajectory(const TimedStatePath& path);
+    static rw::common::Ptr<StateTrajectory> makeLinearTrajectory(const StatePath& path,
+        const models::WorkCell& workcell);
+    static rw::common::Ptr<StateTrajectory> makeLinearTrajectoryUnitStep(const StatePath& path);
+    static rw::common::Ptr<QTrajectory> makeLinearTrajectory(const TimedQPath& path);
+    static rw::common::Ptr<QTrajectory> makeLinearTrajectory(const QPath& path, const rw::math::Q& speeds);
+    static rw::common::Ptr<QTrajectory> makeLinearTrajectory(const QPath& path, const models::Device& device);
+    static rw::common::Ptr<QTrajectory> makeLinearTrajectory(const QPath& path, rw::common::Ptr<QMetric> metric);
+    static rw::common::Ptr<Transform3DTrajectory> makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times);
+    static rw::common::Ptr<Transform3DTrajectory> makeLinearTrajectory(const Transform3DPath& path, const rw::common::Ptr<Transform3DMetric> metric);
+    static rw::common::Ptr<StateTrajectory> makeEmptyStateTrajectory();
+    static rw::common::Ptr<QTrajectory > makeEmptyQTrajectory();
+};
+
+*/
+
 /******************************************************************************
  *  PROXIMITY
  *
@@ -690,7 +759,8 @@ public:
 private:
     WorkCellLoader();
 };
-%template(ImagePtr) rw::common::Ptr<Image>;
+
+
 class ImageFactory{
 public:
     static rw::common::Ptr<Image> load(const std::string& filename);
@@ -735,7 +805,7 @@ private:
  *
  * *************************************************************************/
 
-%template(InvKinSolverPtr) rw::common::Ptr<InvKinSolver>;
+
 class InvKinSolver
 {
 public:
@@ -743,7 +813,7 @@ public:
     virtual void setCheckJointLimits(bool check) = 0;
 };
 
-%template(IterativeIKPtr) rw::common::Ptr<IterativeIK>;
+
 class IterativeIK: public InvKinSolver
 {
 public:
@@ -795,7 +865,7 @@ public:
 //typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
 //typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
 //typedef rw::invkin::IKMetaSolver IKMetaSolver;
-%template(CollisionDetectorPtr) rw::common::Ptr<CollisionDetector>;
+
 
 class IKMetaSolver: public IterativeIK
 {
@@ -823,7 +893,7 @@ public:
 };
 
 
-%template(ClosedFormIKPtr) rw::common::Ptr<ClosedFormIK>;
+
 
 class ClosedFormIK: public InvKinSolver
 {
