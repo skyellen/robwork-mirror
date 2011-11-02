@@ -30,7 +30,8 @@ public:
     SurfacePoseSampler(rw::geometry::Geometry::Ptr geom):
         _minD(0.02),
         _maxD(0.02),
-        _genRandomRotation(true)
+        _genRandomRotation(true),
+        _filterByDirection(false)
     {
         init(geom);
     }
@@ -38,7 +39,8 @@ public:
     SurfacePoseSampler(const std::vector<rw::geometry::Geometry::Ptr>& geoms):
         _minD(0.02),
         _maxD(0.02),
-        _genRandomRotation(true)
+        _genRandomRotation(true),
+        _filterByDirection(false)
     {
         init(geoms[0]);
     }
@@ -60,24 +62,29 @@ public:
 
     rw::math::Transform3D<> sample(){
         using namespace rw::math;
-        double rnum = rw::math::Math::ran(0.0, _sAreaSum);
-        int triIds = binSearchRec(rnum, 0, _mesh->size()-1);
-        rw::geometry::Triangle<> tri = _mesh->getTriangle(triIds);
+        Transform3D<> target;
+        do{
+            double rnum = rw::math::Math::ran(0.0, _sAreaSum);
+            int triIds = binSearchRec(rnum, 0, _mesh->size()-1);
+            rw::geometry::Triangle<> tri = _mesh->getTriangle(triIds);
 
-        // random sample the triangle
-        double b0 = Math::ran();
-        double b1 = ( 1.0f - b0 ) * Math::ran();
-        double b2 = 1 - b0 - b1;
+            // random sample the triangle
+            double b0 = Math::ran();
+            double b1 = ( 1.0f - b0 ) * Math::ran();
+            double b2 = 1 - b0 - b1;
 
-        Vector3D<> position = tri[0] * b0 + tri[1] * b1 + tri[2] * b2;
+            Vector3D<> position = tri[0] * b0 + tri[1] * b1 + tri[2] * b2;
 
-        // and sample the orientation
-        //EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
-        Transform3D<> target( position, Math::ranRotation3D<double>());
-        target.P() -= (target.R()*Vector3D<>::z())*Math::ran(_minD,_maxD);
-        if(_genRandomRotation){
-            target.R() = Math::ranRotation3D<double>();
-        }
+            // and sample the orientation
+            //EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
+            target = Transform3D<>( position, Math::ranRotation3D<double>());
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(_minD,_maxD);
+            if(_genRandomRotation){
+                target.R() = Math::ranRotation3D<double>();
+            }
+            if(!_filterByDirection)
+                return target;
+        } while ( dot(_direction,target.R()*Vector3D<>::z())>0);
         return target;
     }
 
@@ -89,6 +96,11 @@ public:
     void setRandomRotationEnabled(bool enabled){
         _genRandomRotation = enabled;
     }
+
+    void setZAxisDirectionEnabled(bool enabled) { _filterByDirection = enabled; }
+
+    void setZAxisDirection(const rw::math::Vector3D<>& dir){_direction = dir;}
+
 
 private:
     int binSearchRec(const double value, size_t start, size_t end){
@@ -104,9 +116,10 @@ private:
 
 private:
     double _sAreaSum, _minD, _maxD;
-    bool _genRandomRotation;
+    bool _genRandomRotation, _filterByDirection;
     std::vector<double> _surfaceArea;
     rw::geometry::TriMesh::Ptr _mesh;
+    rw::math::Vector3D<> _direction;
 };
 
 
