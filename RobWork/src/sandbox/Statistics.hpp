@@ -65,7 +65,8 @@ public:
 	/** 
 	 * @brief Finds the maximal value in \b data
 	 */
-	static T maxValue(const std::list<T>& data) {
+	template <class V>
+	static T maxValue(const V& data) {
 		if (data.size() == 0)
 			return 0;
 		T var = data.front();
@@ -79,7 +80,8 @@ public:
 	/** 
 	 * @brief Finds the minimal and maximal value in \b data 
 	 */
-	static std::pair<T,T> minAndMaxValue(const std::list<T>& data) {
+	template <class V>
+	static std::pair<T,T> minAndMaxValue(const V& data) {
 		if (data.size() == 0)
 			return std::pair<T,T>(0,0);
 		T ma = data.front();
