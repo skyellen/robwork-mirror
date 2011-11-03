@@ -13,7 +13,8 @@ public:
 	/**
 	 * @brief Calculates the mean for a list of data
 	 */
-	static T mean(const std::list<T>& data) {
+	template <class V>
+	static T mean(const typename V& data) {
 		T sum = 0;
 		BOOST_FOREACH(T d, data) {
 			sum += d;
@@ -24,10 +25,11 @@ public:
 	/**
 	 * @brief Calculates the variance for a list of data
 	 * @param data [in] data 
-	 * @param meam [in] The mean value of the data
+	 * @param mean [in] The mean value of the data
 	 * @return variance of data
 	 */
-	static T variance(const std::list<T>& data, const T& mean) {
+	template <class V>
+	static T variance(const V& data, const T& mean) {
 		T var = 0;
 		BOOST_FOREACH(T d, data) {
 			var += Math::sqr(d-mean);
@@ -39,10 +41,58 @@ public:
 	/**
 	 * Calculates the mean and variance of a list of data
 	 */
-	static std::pair<T,T> meanAndVariance(const std::list<T>& data) {
+	template <class V>
+	static std::pair<T,T> meanAndVariance(const V& data) {
 		T my = mean(data);
-		return std::make_pair(my, Statistics::variance(data, var));
+		return std::make_pair(my, Statistics::variance(data, my));
 	}
+
+	/** 
+	 * @brief Finds the minimal value in \b data
+	 */
+	template <class V>
+	static T minValue(const V& data) {
+		if (data.size() == 0)
+			return 0;
+		T var = data.front();
+		BOOST_FOREACH(T d, data) {
+			if (d < var)
+				var = d;
+		}
+		return var;
+	}
+
+	/** 
+	 * @brief Finds the maximal value in \b data
+	 */
+	static T maxValue(const std::list<T>& data) {
+		if (data.size() == 0)
+			return 0;
+		T var = data.front();
+		BOOST_FOREACH(T d, data) {
+			if (d > var)
+				var = d;
+		}
+		return var;
+	}
+
+	/** 
+	 * @brief Finds the minimal and maximal value in \b data 
+	 */
+	static std::pair<T,T> minAndMaxValue(const std::list<T>& data) {
+		if (data.size() == 0)
+			return std::pair<T,T>(0,0);
+		T ma = data.front();
+		T mi = data.front();
+		BOOST_FOREACH(T d, data) {
+			if (d < mi)
+				mi = d;
+			if (d > ma)
+				ma = d;
+		}
+		return std::make_pair(mi, ma);
+	}
+
 
 	/**
 	 * @brief Returns the mean of the values added 
@@ -72,6 +122,36 @@ public:
 		return Statistics::meanAndVariance(_data);
 	}
 
+
+	/**
+	 * @brief Returns the minimum value of data added.
+	 *
+	 * If no data is added 0 is returned. 
+	 */
+	T minValue() const {
+		return Statistics::minValue(_data);
+	}
+
+	/**
+	 * @brief Returns the maximum value of data added.
+	 *
+	 * If no data is added 0 is returned.
+	 */
+	T maxValue() const {
+		return Statistics::maxValue(_data);
+	}
+
+	/**
+	 * @brief Returns pair containing the minimum and maximum value of the data added.
+	 *
+	 * If no data is added 0 is returned for both values.
+	 */
+	std::pair<T,T> minAndMaxValue() const {
+		return Statistics::minAndMaxValue(_data);
+	}
+
+
+
 	/**
 	 * @brief Add data to statistics
 	 */
@@ -93,7 +173,12 @@ public:
 	 * @return the resulting stream
 	 */
 	friend std::ostream& operator<<(std::ostream& os, const Statistics<T>& statistics){
-		return os <<"(Mean, Var):{ "<<statistics.mean()<<", "<<statistics.variance()<<"}";
+		std::pair<T, T> meanAndVariance = statistics.meanAndVariance();
+		std::pair<T, T> minAndMax = statistics.minAndMaxValue();
+		os <<"Mean: "<<meanAndVariance.first<<std::endl;
+		os <<"Variance: "<<meanAndVariance.second<<std::endl;
+		os <<"Min Value: "<<minAndMax.first<<std::endl;
+		return os <<"Max Value: "<<minAndMax.second<<std::endl;
 	}
 
 private:
