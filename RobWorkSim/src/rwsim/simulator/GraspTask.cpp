@@ -144,8 +144,7 @@ void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
 }
 
 void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
-   std::fstream outfile;
-   outfile.open(name.c_str());
+   std::ofstream outfile(name.c_str());
    if(!outfile.is_open())
        RW_THROW("Could not open file: " << name);
    int gripperDim = 0;
