@@ -172,7 +172,7 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
        //outfile<<"{" << task->getId() << "}\n";
        BOOST_FOREACH(CartesianTarget::Ptr target, targets) {
           Transform3D<> ttrans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
-          if( MetricUtil::dist2(ttrans.P(), target->get().P())<0.00001 ){
+          if( MetricUtil::dist2(ttrans.P(), Vector3D<>(0,0,0))<0.00001 ){
               ttrans = target->get();
           }
 
