@@ -533,6 +533,9 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     if( type== "SCUP"){
         tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.04)) );
         tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
+    } else if( gripperName=="GS20"){
+        tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.01)) );
+        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,0.10)));    	
     } else {
         tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.0)) );
         tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,0.10)));
