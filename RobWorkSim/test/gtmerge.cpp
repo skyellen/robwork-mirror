@@ -116,7 +116,10 @@ int main(int argc, char** argv)
             GraspTask::Ptr grasptask = GraspTask::load( ifile );
             if(gtask==NULL){
                 gtask = ownedPtr( new GraspTask() );
-                gtask->getRootTask()->getPropertyMap() = grasptask->getRootTask()->getPropertyMap();
+		gtask->setGripperID( grasptask->getGripperID() );
+		gtask->setTCPID( grasptask->getTCPID() );
+		gtask->setGraspControllerID( grasptask->getGraspControllerID() );
+                //gtask->getRootTask()->getPropertyMap() = grasptask->getRootTask()->getPropertyMap();
             }
             // put all subtasks into gtask
             BOOST_FOREACH(CartesianTask::Ptr stask, grasptask->getRootTask()->getTasks()){
