@@ -72,7 +72,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    using namespace boost::filesystem3;
+    using namespace boost::filesystem;
 
 
     std::map<int,bool> includeMap;
