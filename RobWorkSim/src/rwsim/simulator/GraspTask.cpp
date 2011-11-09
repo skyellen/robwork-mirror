@@ -145,8 +145,8 @@ void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
 
 void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
    std::fstream outfile;
-   outfile.is_open()
-   outfile.open(name.c_str());
+   while(!outfile.is_open())
+       outfile.open(name.c_str());
    int gripperDim = 0;
    std::string sep(";");
   // outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<gripperDim<<"), "
