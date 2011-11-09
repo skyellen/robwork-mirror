@@ -174,6 +174,10 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
           Transform3D<> ttrans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
           const Vector3D<>& pos = ttrans.P();
           Quaternion<> quat(ttrans.R());
+          if( MetricUtil::dist2(pos, target->get().P())<0.00001 ){
+              ttrans = target->get();
+          }
+
           int status = target->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
 
           outfile<<pos(0)<<sep<<pos(1)<<sep<<pos(2)<<sep<<quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep<<status<<sep;
