@@ -29,7 +29,9 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
+#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
+
 #include "VisGraBGraspTask.hpp"
 #include "VisGraBBenchmark.hpp"
 
