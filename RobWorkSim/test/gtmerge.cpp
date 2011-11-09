@@ -76,11 +76,17 @@ int main(int argc, char** argv)
 
 
     std::map<int,bool> includeMap;
-    const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
-    BOOST_FOREACH(std::string include, includes){
-        if(include=="Success"){ includeMap[GraspTask::Success] = true; }
-        else if(include=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = true; }
-        else { RW_THROW("Unsupported include tag!"); }
+    if(vm.count("include")){
+        const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
+        BOOST_FOREACH(std::string include, includes){
+            if(include=="Success"){ includeMap[GraspTask::Success] = true; }
+            else if(include=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = true; }
+            else { RW_THROW("Unsupported include tag!"); }
+        }
+    } else {
+        // include all
+        for(in i=0;i<GraspTask::SizeOfStatusArray;i++)
+            includeMap[i] = true;
     }
 
     // resolve output directory
