@@ -135,7 +135,7 @@ void SimTaskPlugin::open(WorkCell* workcell)
     }
 
     bool successOnly = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("SuccessOnly");
-    _onlySuccessBox->setEnabled(successOnly);
+    _onlySuccessBox->setChecked(successOnly);
     std::string taskFormat = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("OutputFormat","RWTask");
     int idx = _outputFormatBox->findText(taskFormat.c_str());
     if(idx>=0)
@@ -515,6 +515,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         openQ  = Q(1, 0.0);
         closeQ = Q(1, 1.0);
         gtask->setTCPID("EndFrame");
+        _graspSim->setAlwaysResting(true);
         gripperName = type;
     } else {
         RW_THROW(" The gripper type is wrong! please specify a valid grippertype: (PG70, SCUP, SDH_PAR, SDH_CYL, SDH_BALL)");

@@ -593,6 +593,7 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
 
     try {
         GraspTask::Ptr gtask = GraspTask::load(taskFile);
+        std::cout << "Loading done" << std::endl;
         task = gtask->getRootTask();
     } catch (const Exception& exp) {
         QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
@@ -614,20 +615,25 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
     int nrOfTargets = 0;
     std::stack<rwlibs::task::CartesianTask::Ptr> tmpStack;
     tmpStack.push(task);
+    RW_WARN("1");
     while(!tmpStack.empty()){
         rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
+        RW_ASSERT(tmpTask!=NULL);
         tmpStack.pop();
         _taskQueue.push_back(tmpTask);
         nrOfTargets += tmpTask->getTargets().size();
         BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, tmpTask->getTasks()){
             tmpStack.push(subtask);
         }
+        RW_WARN("1");
     }
+    RW_WARN("1");
 
     _totalNrOfExperiments = nrOfTargets;
     log().info() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
+    RW_WARN("1");
     setTask(0);
-
+    RW_WARN("1");
 }
 
 void SimTaskVisPlugin::stateChangedListener(const State& state) {
@@ -652,19 +658,24 @@ rwlibs::task::CartesianTask::Ptr SimTaskVisPlugin::getTask(){
 void SimTaskVisPlugin::setTask(int i){
     if(i<0 || i>= (int)_taskQueue.size())
         return;
-
+    RW_WARN("1");
     _currentTaskIndex = i;
     _currenttask = _taskQueue[i];
     _targets = &_currenttask->getTargets();
     _nextTargetIndex = 0;
-
+    RW_WARN("1");
     _wTe_n = _currenttask->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
+    RW_WARN("1");
     _wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+    RW_WARN("1");
     Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
+    RW_WARN("1");
     _approachDef = Transform3D<>( approach, Rotation3D<>::identity());
+    RW_WARN("1");
     _openQ = _currenttask->getPropertyMap().get<Q>("OpenQ", _openQ);
+    RW_WARN("1");
     _closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
-
+    RW_WARN("1");
     //log().info() << "openQ" << _openQ << "\n";
     //log().info() << "closeQ" << _closeQ << "\n";
 }
