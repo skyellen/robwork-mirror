@@ -53,9 +53,9 @@ target_link_libraries(ExtendVisGrabTask rwsim ${ROBWORK_LIBRARIES})
 add_executable(gtmerge gtmerge.cpp)
 target_link_libraries(gtmerge rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
-add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
-target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-MESSAGE("${ROBWORK_LIBRARIES}")
+#add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
+#target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+#MESSAGE("${ROBWORK_LIBRARIES}")
 
 # add_executable(RemoteRobworkBuilding RemoteRobworkBuilding.cpp)
 # target_link_libraries(RemoteRobworkBuilding ${ROBWORK_LIBRARIES})
