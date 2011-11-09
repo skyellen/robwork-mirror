@@ -85,7 +85,7 @@ int main(int argc, char** argv)
         }
     } else {
         // include all
-        for(in i=0;i<GraspTask::SizeOfStatusArray;i++)
+        for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
             includeMap[i] = true;
     }
 
