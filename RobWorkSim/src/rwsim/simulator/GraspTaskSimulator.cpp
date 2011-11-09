@@ -60,7 +60,8 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 		_stat(SimulationFailure),
 		_initialized(false),
 		_nrOfThreads(1),
-		_currentTargetIndex(0)
+		_currentTargetIndex(0),
+		_alwaysResting(false)
 {
 }
 
@@ -182,8 +183,11 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
     if(!_initialized)
         init(_dwc, initState);
 
-    if(_totalNrOfExperiments==0)
-        RW_THROW("there are no tasks to simulate!");
+    if(_totalNrOfExperiments==0){
+        _requestSimulationStop = true;
+        return;
+        //RW_THROW("there are no tasks to simulate!");
+    }
 
     _requestSimulationStop = false;
 
@@ -373,8 +377,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         //std::cout << "grasping" << std::endl;
         if(sim->getTime()> sstate._approachedTime+0.2){
             // test if the grasp is in rest
-
-            if(DynamicUtil::isResting(_dhand, state, 0.02, 0.1))
+            Log::infoLog() << _alwaysResting;
+            if(DynamicUtil::isResting(_dhand, state, 0.02, 0.1) || _alwaysResting)
                 sstate._restCount++;
 
             bool isResting = sstate._restCount > 15;
@@ -425,9 +429,9 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         // test if object has been lifted
         bool isLifted = true;
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
-        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.00001;
+        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.001;
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
-        //std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
+        std::cout << MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
         if (isLifted) {
             GraspedObject gobj = getObjectContacts(state, sstate);
@@ -585,6 +589,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         // reset simulation
         _dhand->getBase()->reset(nstate);
         sim->reset(nstate);
+        sim->setState(nstate);
+
         sim->getSimulator()->disableBodyControl();
         sim->getSimulator()->setTarget(_dhand->getBase(), sstate._wTmbase_approachTarget, nstate);
         _graspController->setTargetPos(sstate._openQ);

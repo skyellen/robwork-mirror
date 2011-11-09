@@ -143,8 +143,74 @@ void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
     outfile.close();
 }
 
-void GraspTask::saveText(GraspTask::Ptr task, const std::string& name ){
+void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
+   std::fstream outfile( name.c_str() );
 
+   int gripperDim = 0;
+   std::string sep(";");
+  // outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<gripperDim<<"), "
+  //         "GripperTObject.pos, GripperTObject.rpy, ObjectTtcpBefore.pos, ObjectTtcpBefore.rpy, ObjectTtcpAfter.pos, ObjectTtcpAfter.rpy}\n";
+   outfile << "// One grasp per line, Line Description (quat is xyzw encoded): target.pos(3), target.quat(4), TestStatus(1), "
+              "GripperTObject.pos(3); GripperTObject.quat(4); "
+              "ObjectTtcpBefore.pos(3); ObjectTtcpBefore.quat(4); "
+              "ObjectTtcpAfter.pos(3); ObjectTtcpAfter.quat(4); "
+              "GripperConfiguration(x)\n";
+
+   outfile << "// TestStatus enum { UnInitialized=0, Success=1, CollisionInitially=2, ObjectMissed=3, ObjectDropped=4, ObjectSlipped=5, TimeOut=6, SimulationFailure=7}\n";
+
+   std::string gripperID = gtask->getGripperID();
+   std::string tcpID = gtask->getTCPID();
+   std::string graspcontrollerID = gtask->getGraspControllerID();
+   CartesianTask::Ptr root = gtask->getRootTask();
+
+   BOOST_FOREACH(CartesianTask::Ptr task, root->getTasks()){
+       Q openQ = task->getPropertyMap().get<Q>("OpenQ");
+       Q closeQ = task->getPropertyMap().get<Q>("CloseQ");
+
+       std::vector<CartesianTarget::Ptr> targets = task->getTargets();
+       //outfile<<"{" << task->getId() << "}\n";
+       BOOST_FOREACH(CartesianTarget::Ptr target, targets) {
+          Transform3D<> ttrans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
+          const Vector3D<>& pos = ttrans.P();
+          Quaternion<> quat(ttrans.R());
+          int status = target->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
+
+          outfile<<pos(0)<<sep<<pos(1)<<sep<<pos(2)<<sep<<quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep<<status<<sep;
+
+          Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject0", Transform3D<>::identity());
+          //RPY<> rpyObj(t3d.R());
+          quat = Quaternion<>(t3d.R());
+          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
+          quat = Quaternion<>(t3d.R());
+          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach", Transform3D<>::identity() );
+          quat = Quaternion<>(t3d.R());
+          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpGrasp", Transform3D<>::identity() );
+          quat = Quaternion<>(t3d.R());
+          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpLift", Transform3D<>::identity() );
+          quat = Quaternion<>(t3d.R());
+          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          Q distance = target->getPropertyMap().get<Q>("GripperConfigurationPost", Q::zero(gripperDim));
+          for(size_t i=0;i<distance.size();i++)
+              outfile << distance[i] << sep;
+
+          outfile << "\n";
+       }
+
+   }
 }
 
 

@@ -111,6 +111,8 @@ public:
 	std::vector<int> getStat(){ return _stat; }
 	int getNrTargetsDone();
 
+
+	void setAlwaysResting(bool alwaysResting){_alwaysResting=true;}
 	/**
 	 * @brief add a delay each time the simulation has stepped.
 	 * usefull for debuging or visualization.
@@ -195,6 +197,7 @@ private:
 
 	bool getNextTarget(SimState & sstate);
 
+
 private:
 	rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 
@@ -203,7 +206,7 @@ private:
 	int _nrOfThreads;
 	bool _requestSimulationStop;
 	bool _initialized;
-
+	bool _alwaysResting;
 	std::vector<int> _stat;
 	int _failed, _success, _slipped, _collision, _timeout, _simfailed, _skipped,
 	    _nrOfExperiments, _lastSaveTaskIndex;

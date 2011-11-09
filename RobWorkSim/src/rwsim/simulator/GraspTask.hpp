@@ -40,7 +40,8 @@ public:
         SimulationFailure,
         InvKinFailure,
         PoseEstimateFailure,
-        CollisionFiltered
+        CollisionFiltered,
+        SizeOfStatusArray
      } TestStatus;
 
     GraspTask():_task(rw::common::ownedPtr(new rwlibs::task::CartesianTask() ) ){}
