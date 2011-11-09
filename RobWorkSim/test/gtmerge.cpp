@@ -106,7 +106,7 @@ int main(int argc, char** argv)
         }
 
         BOOST_FOREACH(std::string ifile, infiles){
-            std::cout << "Processing: " << path(ifile).filename().string() << " ";
+            std::cout << "Processing: " << path(ifile).filename() << " ";
             GraspTask::Ptr grasptask = GraspTask::load( ifile );
             if(gtask==NULL){
                 gtask = ownedPtr( new GraspTask() );
