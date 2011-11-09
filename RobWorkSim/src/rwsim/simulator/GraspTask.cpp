@@ -172,11 +172,12 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
        //outfile<<"{" << task->getId() << "}\n";
        BOOST_FOREACH(CartesianTarget::Ptr target, targets) {
           Transform3D<> ttrans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
-          const Vector3D<>& pos = ttrans.P();
-          Quaternion<> quat(ttrans.R());
-          if( MetricUtil::dist2(pos, target->get().P())<0.00001 ){
+          if( MetricUtil::dist2(ttrans.P(), target->get().P())<0.00001 ){
               ttrans = target->get();
           }
+
+          const Vector3D<>& pos = ttrans.P();
+          Quaternion<> quat(ttrans.R());
 
           int status = target->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
 
