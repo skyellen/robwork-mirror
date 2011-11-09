@@ -179,7 +179,7 @@ VisGraBBenchmark::Ptr VisGraBBenchmark::load(const std::string& filename){
 
     VisGraBBenchmark::Ptr benchmark;
 
-    if(!boost::filesystem3::exists( file ))
+    if(!boost::filesystem::exists( file ))
         RW_THROW("File does not exist!");
 
     try {
@@ -196,7 +196,7 @@ VisGraBBenchmark::Ptr VisGraBBenchmark::load(const std::string& filename){
                 if(isName(type,"GraspUnknownObject")){
 
                     GraspUnknownObjectStereoBM::Ptr gbm = readGraspUnknownObjectStereoBM(p->second, state);
-                    boost::filesystem3::path p(file);
+                    boost::filesystem::path p(file);
                     gbm->fullpathBenchmark = p.parent_path().string();
                     return gbm;
                 } else {
