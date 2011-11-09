@@ -209,8 +209,8 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
 
           outfile << "\n";
        }
-
    }
+   outfile.close();
 }
 
 
