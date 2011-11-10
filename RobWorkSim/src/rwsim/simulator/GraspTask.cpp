@@ -77,26 +77,26 @@ namespace {
              << "<experiments xmlns=\"http://iis.uibk.ac.at/ns/grasping\">\n";
         fstr << "<notes> Generated with RobWork, rwsim::simulator::GraspTask </notes>\n";
 
+        std::string gripperID = gtask->getGripperID();
+        std::string tcpID = gtask->getTCPID();
+        std::string graspcontrollerID = gtask->getGraspControllerID();
+
         BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr task, grasptask->getTasks() ){
 
             Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
-            Vector3D<> approach = task->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
-            Transform3D<> approachDef = Transform3D<>( approach, Rotation3D<>::identity());
+            Transform3D<> approachDef = task->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
             Q openQ = task->getPropertyMap().get<Q>("OpenQ");
             Q closeQ = task->getPropertyMap().get<Q>("CloseQ");
             std::string objectId = task->getPropertyMap().get<std::string>("Object",std::string("Undefined"));
-            std::string gripperId = task->getPropertyMap().get<std::string>("Gripper");
-            std::string controllerName = task->getPropertyMap().get<std::string>("ControllerName", "GraspController");
-            std::string tcpName = task->getPropertyMap().get<std::string>("TCP");
 
             fstr << " <experiment>\n";
             fstr << "  <notes></notes>\n";
             fstr << "  <object type=\"" << objectId << "\">\n";
             fstr << "   <notes> </notes>\n";
             fstr << "  </object>\n";
-            fstr << "  <gripper type=\""<< gripperId << "\">\n";
-            fstr << "   <notes> GraspController:"<<controllerName << " TCP:" << tcpName <<" CloseQ:"<< closeQ << "</notes>\n";
+            fstr << "  <gripper type=\""<< gripperID << "\">\n";
+            fstr << "   <notes> GraspController:"<<graspcontrollerID << " TCP:" << tcpID <<" CloseQ:"<< closeQ << "</notes>\n";
             fstr << "   <params>";
             for(size_t i=0;i<openQ.size();i++)
                 fstr << openQ[i] << " ";
@@ -107,8 +107,13 @@ namespace {
 
             // we don't add predictiondef
             BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
-
                 Transform3D<> trans = wTe_n * target->get();
+
+                bool has = target->getPropertyMap().has("ObjectTtcpApproach");
+                if(has)
+                    trans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach");
+
+
                 fstr << "   <grasp>\n";
                 writePose(fstr, trans);
                 writeOutcome(fstr, target);
