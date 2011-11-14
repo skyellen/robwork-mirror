@@ -620,7 +620,8 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
         rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
         RW_ASSERT(tmpTask!=NULL);
         tmpStack.pop();
-        _taskQueue.push_back(tmpTask);
+        if(tmpTask->getTargets().size()>0)
+            _taskQueue.push_back(tmpTask);
         nrOfTargets += tmpTask->getTargets().size();
         BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, tmpTask->getTasks()){
             tmpStack.push(subtask);
@@ -661,6 +662,7 @@ void SimTaskVisPlugin::setTask(int i){
     RW_WARN("1");
     _currentTaskIndex = i;
     _currenttask = _taskQueue[i];
+
     _targets = &_currenttask->getTargets();
     _nextTargetIndex = 0;
     RW_WARN("1");
@@ -668,9 +670,7 @@ void SimTaskVisPlugin::setTask(int i){
     RW_WARN("1");
     _wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
     RW_WARN("1");
-    Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
-    RW_WARN("1");
-    _approachDef = Transform3D<>( approach, Rotation3D<>::identity());
+    _approachDef = _currenttask->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
     RW_WARN("1");
     _openQ = _currenttask->getPropertyMap().get<Q>("OpenQ", _openQ);
     RW_WARN("1");

@@ -16,9 +16,6 @@
 #include <fstream>
 #include <iostream>
 
-
-const int NR_OF_QUALITY_MEASURES = 3;
-
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 
@@ -156,6 +153,10 @@ void SimTaskPlugin::open(WorkCell* workcell)
     //std::string objectName = _objectComboBox->currentText().toStdString();
     _nrOfTargetsToGen = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<int>("GenerateTasksSize",1000);
 
+    //std::string seedTargets = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<string>("Seed","");
+    //if(boost::filesystem::exists(seedTargets)){
+    //    _seedTargets = GraspTask::load( seedTargets );
+    //}
     if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
         if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("GenerateTasks") ){
             _genTasksBox->setChecked(true);
@@ -608,7 +609,9 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     } else {
 
         for(int i=0; i<nrTasks; i++){
-            Transform3D<> target = wTo*ssurf.sample();
+            Transform3D<> target;
+
+            target = wTo*ssurf.sample();
             CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
             tasks->addTarget( ctarget );
         }

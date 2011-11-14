@@ -98,7 +98,7 @@ private:
     PropertyViewEditor *_propertyView;
     rw::kinematics::State _initState;
     GraspTask::Ptr _mergedResult;
-
+    GraspTask::Ptr _seedTargets;
 
     int _nrOfTargetsToGen;
     int _imgRecordPostfix;
