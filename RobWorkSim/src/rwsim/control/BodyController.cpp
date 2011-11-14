@@ -48,12 +48,12 @@ namespace {
 
         Transform3D<> wTt = nextPose;
         Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
+
         const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
         const VelocityScrew6D<> vel( bTt );
         const VelocityScrew6D<> velW = (wTb.R() * vel);
 
         Vector3D<> vErrW = velW.linear()/info.dt;
-
         // check if the current velocity will overshoot the target if we have a constant deacceleration of ACC_MAX
         // compute arrive time assuming konstant deacceleration
         body->setLinVelW( vErrW , state);
@@ -117,10 +117,11 @@ void BodyController::setTarget(rwsim::dynamics::Body *body,
     }
 
     TargetData& data = _bodyMap[body];
+    data.reset();
     data._type = Pose6DController;
 
     RampInterpolator<Transform3D<> >::Ptr ramp =
-            rw::common::ownedPtr( new RampInterpolator<Transform3D<> >( from , target, 0.5, 0.05, 0.4, 0.1));
+            rw::common::ownedPtr( new RampInterpolator<Transform3D<> >( from , target, 0.5, 0.03, 0.4, 0.1));
     InterpolatorTrajectory<Transform3D<> >::Ptr traj =
             rw::common::ownedPtr( new InterpolatorTrajectory<Transform3D<> >() );
     traj->add(ramp);
@@ -137,6 +138,7 @@ void BodyController::setTarget(rwsim::dynamics::Body *body,
 
 void BodyController::setTarget(Body* body, rw::trajectory::Trajectory<Transform3D<> >::Ptr traj, State& state){
     TargetData& data = _bodyMap[body];
+    data.reset();
     data._type = TrajectoryController;
     data._traj = traj;
     data._target = traj->x( traj->endTime() );

@@ -76,9 +76,13 @@ namespace control {
 
         typedef enum {Pose6DController, TrajectoryController} ControlType;
         struct TargetData {
-            TargetData():_type(Pose6DController),_enabled(false){}
-            TargetData(ControlType type):_type(type),_enabled(true){}
-
+            TargetData():_type(Pose6DController),_enabled(false){ reset();}
+            TargetData(ControlType type):_type(type),_enabled(true){ reset(); }
+            void reset(){
+                _time = 0;
+                _lastTime = 0;
+                _lastDt = 0;
+            }
             ControlType _type;
             rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr _traj;
             rw::math::Transform3D<> _target;
