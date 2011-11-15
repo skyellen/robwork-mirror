@@ -95,20 +95,6 @@ std::vector<Frame*> Kinematics::findAllFrames(Frame* root)
 }
 
 
-Frame& Kinematics::worldFrame(Frame& frame, const State& state)
-{
-    Frame* parent = &frame;
-    while (parent->getParent(state))
-        parent = parent->getParent(state);
-    return *parent;
-}
-
-const Frame& Kinematics::worldFrame(const Frame& frame, const State& state)
-{
-    // Forward to non-const version.
-    return worldFrame(const_cast<Frame&> (frame), state);
-}
-
 std::vector<Frame*> Kinematics::childToParentChain(Frame* child, Frame* parent,
                                                    const State& state)
 {
@@ -160,6 +146,7 @@ std::vector<Frame*> Kinematics::parentToChildChain(Frame* parent, Frame* child,
     return result;
 }
 
+#ifdef RW_USE_DEPRECATED
 Kinematics::FrameMap Kinematics::buildFrameMap(Frame& root, const State& state)
 {
     FrameMap result;
@@ -170,6 +157,46 @@ Kinematics::FrameMap Kinematics::buildFrameMap(Frame& root, const State& state)
     return result;
 }
 
+Frame& Kinematics::worldFrame(Frame& frame, const State& state)
+{
+    Frame* parent = &frame;
+    while (parent->getParent(state))
+        parent = parent->getParent(state);
+    return *parent;
+}
+
+const Frame& Kinematics::worldFrame(const Frame& frame, const State& state)
+{
+    // Forward to non-const version.
+    return worldFrame(const_cast<Frame&> (frame), state);
+}
+
+#endif
+
+std::map<std::string, Frame*> Kinematics::buildFrameMap(Frame* root, const State& state)
+{
+    std::map<std::string, Frame*> result;
+    BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(root, state))
+    {
+        result.insert(std::make_pair(frame->getName(), frame));
+    }
+    return result;
+}
+
+Frame* Kinematics::worldFrame(Frame* frame, const State& state)
+{
+    Frame* parent = frame;
+    while (parent->getParent(state))
+        parent = parent->getParent(state);
+    return parent;
+}
+
+const Frame* Kinematics::worldFrame(const Frame* frame, const State& state)
+{
+    // Forward to non-const version.
+    return worldFrame(const_cast<Frame*> (frame), state);
+}
+
 //----------------------------------------------------------------------
 // DAF manipulation
 
@@ -177,13 +204,6 @@ namespace {
     std::string quote(const std::string& str)
     {
         return StringUtil::quote(str);
-    }
-
-    Transform3D<> frameToFrame(const Frame& from, const Frame& to,
-                               const State& state)
-    {
-        FKRange range(&from, &to, state);
-        return range.get(state);
     }
 
     void attachFrame(State& state, Frame& frame, Frame& parent)
@@ -216,6 +236,9 @@ namespace {
     }
 }
 
+
+#ifdef RW_USE_DEPRECATED
+
 bool Kinematics::isDAF(const Frame& frame)
 {
     // Unfortunately this reports the world frame to be a DAF!
@@ -224,7 +247,7 @@ bool Kinematics::isDAF(const Frame& frame)
 
 bool Kinematics::isFixedFrame(const Frame& frame)
 {
-	return dynamic_cast<const FixedFrame*>(&frame) != 0;
+    return dynamic_cast<const FixedFrame*>(&frame) != 0;
 }
 
 void Kinematics::gripFrame(State& state, Frame& item, Frame& gripper)
@@ -255,13 +278,38 @@ State Kinematics::grippedMovableFrame(const State& state, MovableFrame& item,
     return result;
 }
 
+#endif
+
+bool Kinematics::isDAF(const Frame* frame)
+{
+    // Unfortunately this reports the world frame to be a DAF!
+    return (frame->getParent() == NULL);
+}
+
+bool Kinematics::isFixedFrame(const Frame* frame)
+{
+    return dynamic_cast<const FixedFrame*>(frame) != 0;
+}
+
+void Kinematics::gripFrame(Frame* item, Frame* gripper, State& state)
+{
+    const Transform3D<>& relative = Kinematics::frameTframe(gripper, item, state);
+    attachFrame(state, *item, *gripper, relative);
+}
+
+void Kinematics::gripFrame(MovableFrame* item, Frame* gripper, State& state)
+{
+    const Transform3D<>& relative = Kinematics::frameTframe(gripper, item, state);
+    attachMovableFrame(state, *item, *gripper, relative);
+}
+
 
 
 namespace {
 	
     bool isNonDafAndFixed(const Frame& frame)
     {
-		return !Kinematics::isDAF(frame) && Kinematics::isFixedFrame(frame);
+		return !Kinematics::isDAF(&frame) && Kinematics::isFixedFrame(&frame);
     }
 
     //// The set of all frames of type FixedFrame that are not a DAF.

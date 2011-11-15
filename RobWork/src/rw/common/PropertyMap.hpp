@@ -275,11 +275,12 @@ namespace rw { namespace common {
          *
          */
         template<class T>
-        T& get(const std::string& identifier, T& defval)
+        T& get(const std::string& identifier, const T& defval)
         {
             T* p = getPtr<T>(identifier);
             if (!p) {
-            	return defval;
+                set<T>(identifier,defval);
+                return *getPtr<T>(identifier);
             }
             return *p;
         }
@@ -287,7 +288,7 @@ namespace rw { namespace common {
         /**
          * @brief Get the value of a property
          *
-         * If a property of the given identifier and type cannot be found, the
+         * If a property of the given identifier and type cannot be found
          * method throws an exception
          *
          * \b example

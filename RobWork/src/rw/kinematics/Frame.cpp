@@ -99,7 +99,7 @@ void Frame::attachTo(Frame* parent, State& state)
 }
 
 bool Frame::isDAF(){
-    return Kinematics::isDAF(*this);
+    return Kinematics::isDAF(this);
 }
 
 std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)

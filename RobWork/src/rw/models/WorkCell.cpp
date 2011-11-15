@@ -67,6 +67,19 @@ void WorkCell::addDevice(Device::Ptr device)
     //TODO: notify changed
 }
 
+void WorkCell::addFrame(Frame* frame, Frame* parent){
+    _tree->addFrame(frame, parent);
+}
+
+void WorkCell::addDAF(Frame* frame, Frame* parent){
+    _tree->addDAF(frame, parent);
+}
+
+void WorkCell::remove(Frame* frame){
+    _tree->remove( frame );
+}
+
+
 void WorkCell::add(rw::common::Ptr<Object> object){
 
     object->registerStateData(_tree);

@@ -117,6 +117,10 @@ namespace rw { namespace models {
          */
         kinematics::Frame* getWorldFrame() const;
 
+        void addFrame(kinematics::Frame* frame, kinematics::Frame* parent=NULL);
+        void addDAF(kinematics::Frame* frame, kinematics::Frame* parent=NULL);
+        void remove(kinematics::Frame* frame);
+
         /**
          * @brief Adds a Device to the WorkCell.
          *

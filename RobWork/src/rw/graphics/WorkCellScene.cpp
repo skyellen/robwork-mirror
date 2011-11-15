@@ -226,7 +226,7 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
             data.second->setTransform( data.first->getTransform(state) );
 
             // 2. also make sure that all parent relationships are updated
-            if( data.first!=_wc->getWorldFrame() && Kinematics::isDAF(*data.first) ){
+            if( data.first!=_wc->getWorldFrame() && Kinematics::isDAF(data.first) ){
                 Frame *parent = data.first->getParent(state);
                 if( !data.second->hasParent( _frameNodeMap[parent] ) ){
                     // 1. we remove the child from its parent

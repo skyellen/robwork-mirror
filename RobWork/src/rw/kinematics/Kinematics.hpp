@@ -114,7 +114,7 @@ namespace rw { namespace kinematics {
            The state \b state is needed to retrieve the parent frames, but the
            world frame returned is the same for any (valid) state.
         */
-        static Frame& worldFrame(Frame& frame, const State& state);
+        static Frame* worldFrame(Frame* frame, const State& state);
 
         /**
            @brief Find the world frame of the workcell by traversing the path
@@ -123,7 +123,7 @@ namespace rw { namespace kinematics {
            The state \b state is needed to retrieve the parent frames, but the
            world frame returned is the same for any (valid) state.
         */
-        static const Frame& worldFrame(const Frame& frame, const State& state);
+        static const Frame* worldFrame(const Frame* frame, const State& state);
 
         /**
            @brief The chain of frames connecting \b child to \b parent.
@@ -163,6 +163,39 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief A map linking frame names to frames.
+         *
+         * The map contains an entry for every frame below \b root in the tree with
+         * structure described by \b state.
+         *
+         * @param root [in] Root of the kinematics tree to search.
+         *
+         * @param state [in] The kinematics tree structure.
+         */
+        static std::map<std::string, kinematics::Frame*> buildFrameMap(kinematics::Frame* root,
+                                                                       const kinematics::State& state);
+
+
+#ifdef RW_USE_DEPRECATED
+        /**
+           @brief Find the world frame of the workcell by traversing the path
+           from \b frame to the root of the tree.
+
+           The state \b state is needed to retrieve the parent frames, but the
+           world frame returned is the same for any (valid) state.
+        */
+        static Frame& worldFrame(Frame& frame, const State& state);
+
+        /**
+           @brief Find the world frame of the workcell by traversing the path
+           from \b frame to the root of the tree.
+
+           The state \b state is needed to retrieve the parent frames, but the
+           world frame returned is the same for any (valid) state.
+        */
+        static const Frame& worldFrame(const Frame& frame, const State& state);
+
+        /**
+         * @brief A map linking frame names to frames.
          */
         typedef std::map<std::string, kinematics::Frame*> FrameMap;
 
@@ -179,12 +212,13 @@ namespace rw { namespace kinematics {
         static FrameMap buildFrameMap(kinematics::Frame& root,
                                       const kinematics::State& state);
 
+
         /**
            @brief True if \b frame is a DAF and false otherwise.
         */
         static bool isDAF(const Frame& frame);
 
-		static bool isFixedFrame(const Frame& frame);
+        static bool isFixedFrame(const Frame& frame);
 
         /**
            @brief Grip \b item with \b gripper thereby modifying \b state.
@@ -193,8 +227,7 @@ namespace rw { namespace kinematics {
 
            An exception is thrown if \b item is not of this type.
         */
-        static void gripFrame(State& state, Frame& item, Frame& gripper);
-
+		static void gripFrame(State& state, Frame& item, Frame& gripper);
         /**
            @brief Like gripFrame(), except the state is not modified but updated
            and returned.
@@ -221,6 +254,28 @@ namespace rw { namespace kinematics {
         static State grippedMovableFrame(
             const State& state, MovableFrame& item, Frame& gripper);
 
+
+#endif
+
+        /**
+           @brief True if \b frame is a DAF and false otherwise.
+        */
+        static bool isDAF(const Frame* frame);
+
+        static bool isFixedFrame(const Frame* frame);
+
+		static void gripFrame(Frame* item, Frame* gripper, State& state);
+
+        /**
+           @brief Grip \b item with \b gripper thereby modifying \b state.
+
+           \b item must be a DAF.
+
+           An exception is thrown if \b item is not a DAF.
+
+           See also gripFrame().
+        */
+        static void gripFrame(MovableFrame* item, Frame* gripper, State& state);
 
 		static std::vector<FrameList> getStaticFrameGroups(Frame* root, const State& state);
     };

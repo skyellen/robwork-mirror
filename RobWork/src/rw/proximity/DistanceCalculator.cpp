@@ -38,16 +38,16 @@ using namespace rw::geometry;
 namespace
 {
     // Find the frame or crash.
-    Frame& lookupFrame(const Kinematics::FrameMap& frameMap,
+    Frame* lookupFrame(const std::map<std::string,Frame*>& frameMap,
     				   const std::string& frameName)
     {
-        const Kinematics::FrameMap::const_iterator pos = frameMap.find(frameName);
+        const std::map<std::string,Frame*>::const_iterator pos = frameMap.find(frameName);
         if (pos == frameMap.end())
             RW_THROW("Frame "
                      << StringUtil::quote(frameName)
                      << " is not present in frame map.");
 
-        return *pos->second;
+        return pos->second;
     }
 
     bool isInList(const FramePair& pair,
@@ -127,13 +127,13 @@ void DistanceCalculator::initialize()
 
     // All pairs of frames to exclude.
     FramePairList exclude_pairs;
-    const Kinematics::FrameMap& frameMap = Kinematics::buildFrameMap(*_root, _state);
+    const std::map<std::string,Frame*>& frameMap = Kinematics::buildFrameMap(_root, _state);
     const ProximityPairList& exclude = _setup.getExcludeList();
 
     typedef ProximityPairList::const_iterator EI;
     for (EI p = exclude.begin(); p != exclude.end(); ++p) {
-        Frame* first = &lookupFrame(frameMap, p->first);
-        Frame* second = &lookupFrame(frameMap, p->second);
+        Frame* first = lookupFrame(frameMap, p->first);
+        Frame* second = lookupFrame(frameMap, p->second);
         exclude_pairs.push_back(FramePair(first, second));
         exclude_pairs.push_back(FramePair(second, first));
     }

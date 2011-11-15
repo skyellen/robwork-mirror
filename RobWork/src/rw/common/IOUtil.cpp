@@ -346,16 +346,16 @@ std::string IOUtil::getFirstXMLElement(const std::string& filename){
     bool res = spirit::qi::phrase_parse(begin, end,
                                         -("<?" >> *(char_ - '>')/*[std::cout << boost::lambda::_1]*/ >> char_('>')) >>
                                         "<" >>
-                                        *(char_ - (char_('>')|char_(' ')))[boost::bind(static_cast<std::string& (std::string::*)( size_t, char )>(&std::string::append),&result, 1, ::_1)] >>
+                                        *(char_ - (char_('>')))[boost::bind(static_cast<std::string& (std::string::*)( size_t, char )>(&std::string::append),&result, 1, ::_1)] >>
                                         *(char_ - char_('>'))/*[std::cout << boost::lambda::_1]*/ >> ">"
                        // THE skip parser comes next
-                      , (spirit::qi::blank - ' ')
-                      | (spirit::qi::space - ' ')
+                      , spirit::qi::blank
+                      | spirit::qi::space
                       | ("<!--" >> *(char_ - '>') >> '>')
 
         );
     if(!res)
-        RW_THROW("file \""<<filename<<"\" is not a wellformed xml document!");
+        RW_THROW("file \""<<filename<<"\" is not a wellformed xml document! " << result);
     return result;
 #endif
 }
