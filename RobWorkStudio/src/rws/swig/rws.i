@@ -172,7 +172,7 @@ public:
 
     void setWorkcell(rw::common::Ptr<WorkCell> workcell);
 
-    rw::common::Ptr<WorkCell> getWorkcell();
+    rw::common::Ptr<WorkCell> getWorkCell();
 
     rw::common::Ptr<CollisionDetector> getCollisionDetector();
 
@@ -182,23 +182,46 @@ public:
 
     const TimedStatePath& getTimedStatePath();
 
-    void setTimedStatePath(const TimedStatePath& path);
-
-    void updateAndRepaint();
-
-
-    void setState(const State& state);
+    //void updateAndRepaint();
+    //void setState(const State& state);
+    //void setTimedStatePath(const TimedStatePath& path);
     void postState(const State& state);
     void postUpdateAndRepaint();
     void postSaveViewGL(const std::string& str);
-
     void postTimedStatePath(const TimedStatePath& path);
     void postExit();
 
 
-    //Transform3D getViewTransform();
-    //void setViewTransform(Transform3D t3d);
+    %extend {
+        void setTimedStatePath(const TimedStatePath& path){
+            $self->postTimedStatePath(path);
+        }
 
+        void setState(const State& state){
+            $self->postState(state);
+        }
+
+        void saveViewGL(const std::string& filename){
+            $self->postSaveViewGL( filename );
+        }
+
+        Transform3D getViewTransform(){
+            return $self->getView()->getSceneViewer()->getTransform();
+        }
+
+        void setViewTransform(Transform3D t3d){
+            $self->getView()->getSceneViewer()->setTransform(t3d);
+            $self->postUpdateAndRepaint();
+        }
+
+        void updateAndRepaint(){
+            $self->postUpdateAndRepaint();
+        }
+
+        void fireGenericEvent(const std::string& str){
+            $self->genericEvent().fire(str);
+        }
+    }
     // events
     //StateChangedEvent& stateChangedEvent();
     //FrameSelectedEvent& frameSelectedEvent();
@@ -209,3 +232,97 @@ public:
     //PositionSelectedEvent& positionSelectedEvent();
 
 };
+
+
+RobWorkStudio* getRobWorkStudio();
+
+void setRobWorkStudio(RobWorkStudio* rwstudio);
+
+
+%inline %{
+    const State& getState(){ return getRobWorkStudio()->getState(); }
+    void setState(State& state){ return getRobWorkStudio()->postState(state); }
+    rw::common::Ptr<Device> findDevice(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findDevice(name);
+    }
+    rw::common::Ptr<JointDevice> findJointDevice(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findDevice<JointDevice>(name);
+    }
+    rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findDevice<SerialDevice>(name);
+    }
+    rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findDevice<TreeDevice>(name);
+    }
+    rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findDevice<ParallelDevice>(name);
+    }
+    Frame* findFrame(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findFrame(name);
+    }
+
+    MovableFrame* findMovableFrame(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findFrame<MovableFrame>(name);
+    }
+    FixedFrame* findFixedFrame(const std::string& name){
+        return getRobWorkStudio()->getWorkCell()->findFrame<FixedFrame>(name);
+    }
+
+
+%}
+/*
+State& getState();
+void setState(State& state);
+rw::common::Ptr<Device> findDevice(const std::string& name);
+rw::common::Ptr<JointDevice> findJointDevice(const std::string& name);
+rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name);
+rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name);
+rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
+*/
+
+#ifdef SWIGLUA
+%luacode {
+
+    function getDevice(name)
+      local wc = rws.getRobWorkStudio():getWorkCell()
+      return wc:findDevice(name)
+    end
+
+    function findFrame(name)
+      local wc = rws.getRobWorkStudio():getWorkCell()
+      return wc:findFrame(name)
+    end
+
+    function getFrame(name)
+      local wc = rws.getRobWorkStudio():getWorkCell()
+      return wc:findFrame(name)
+    end
+
+    function getQ(dev)
+      local state = getState()
+      return dev:getQ(state)
+    end
+
+    function setQ(dev, q)
+      local state = getState()
+      dev:setQ(q, state)
+      setState(state)
+    end
+
+    function setTransform(frame, trans)
+      local state = getState()
+      frame:setTransform(trans, state)
+      setState(state)
+    end
+
+
+    function wTf(frame)
+      return rw.worldTframe(frame, getState() )
+    end
+
+    function fTf(frameA, frameB)
+      return rw.worldTframe(frameA, frameB, getState() )
+    end
+}
+#endif
+

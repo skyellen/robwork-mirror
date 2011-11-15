@@ -22,6 +22,14 @@
 #include <rws/RobWorkStudio.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+    int luaopen_rws(struct lua_State* L); // declare the wrapped module
+#ifdef __cplusplus
+}
+#endif
+
 namespace rws {
 namespace swig {
 
@@ -37,6 +45,19 @@ namespace swig {
     typedef rws::RobWorkStudioPlugin RobWorkStudioPlugin;
 
     typedef rws::RWStudioView3D RWStudioView3D;
+
+
+
+    // for now we add all static functions here
+    RobWorkStudio* getRobWorkStudio();
+
+    /**
+     * @brief set current robworkstudio instance
+     */
+    void setRobWorkStudio(RobWorkStudio* rwstudio);
+
+    /// These functions all work on the current robworkstudio state
+
 }
 }
 

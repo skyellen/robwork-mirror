@@ -15,8 +15,11 @@ IF( SWIG_FOUND )
 	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES CPLUSPLUS ON)
 	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES SWIG_FLAGS "-includeall")
 
-    SWIG_ADD_MODULE(rwslua lua rws.i)
+    SWIG_ADD_MODULE(rwslua lua rws.i LuaState.cpp ScriptTypes.cpp)
     SWIG_LINK_LIBRARIES(rwslua rwstudio ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+    
+    ADD_LIBRARY(rwstudio_lua STATIC ${swig_generated_sources} ${swig_other_sources})
+    LINK_LIBRARIES(rwstudio_lua rwstudio ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 	
 	FIND_PACKAGE(PythonInterp)
 	FIND_PACKAGE(PythonLibs)

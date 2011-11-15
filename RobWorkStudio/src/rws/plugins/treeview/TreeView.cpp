@@ -188,7 +188,7 @@ void TreeView::stateChangedListener(const rw::kinematics::State& state){
 
     bool forceUpdate = false;
     BOOST_FOREACH( TreeView::FrameMap::value_type p, _frameMap){
-        if( Kinematics::isDAF(*p.second) ){
+        if( Kinematics::isDAF(p.second) ){
             // test if parent changed
             if(p.second->getParent(state)!=p.second->getParent(_state)){
                 forceUpdate = true;

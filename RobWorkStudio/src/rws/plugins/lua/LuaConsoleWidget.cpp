@@ -3,7 +3,14 @@
 #include <QtGui>
 #include <iostream>
 
-#include <rwlibs/lua/LuaRobWork.hpp>
+extern "C" {
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
+    #include "tolua++.h"
+}
+
+#include <rwlibs/swig/ScriptTypes.hpp>
 
 
 using namespace rw::common;
@@ -330,7 +337,7 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     //std::cout << "Executing command:" << command.toStdString() << std::endl;
     // make sure to output to console window
 
-    rwlua::rw::setLualog(_logWriter);
+    rwlibs::swig::setlog(_logWriter);
 
     // if we want to include echo of command...
     //displayPrompt();

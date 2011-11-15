@@ -28,8 +28,7 @@ extern "C" {
 
 #include "TreeModelCompleter.hpp"
 
-#include <rwlibs/lua/LuaRobWork.hpp>
-using namespace rwlua::rw;
+#include <rwlibs/swig/ScriptTypes.hpp>
 using namespace rw::common;
 
 
@@ -290,7 +289,7 @@ bool LuaEditorWindow::save(const std::string& filename) {
 
 void LuaEditorWindow::on_actionRun_triggered(bool) {
     _lua->reset();
-    rwlua::rw::setLualog( &Log::infoLog() );
+    rwlibs::swig::setlog( &Log::infoLog() );
 
     const std::string cmd = _editor->toPlainText().toStdString();
     _editor->setEnabled(false);

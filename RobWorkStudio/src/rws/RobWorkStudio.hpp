@@ -101,11 +101,13 @@ namespace rws {
 		 * @param workcell [in] the workcell
 		 */		
 		void setWorkcell(rw::models::WorkCell::Ptr workcell);
+		void setWorkCell(rw::models::WorkCell::Ptr workcell){ setWorkcell(workcell); }
 
 		/**
 		 * @brief Returns the workcell opened in RobWorkStudio
 		 */
 		rw::models::WorkCell::Ptr getWorkcell();
+		rw::models::WorkCell::Ptr getWorkCell(){ return getWorkcell(); }
 
 		/**
 		 * @brief Returns the collision detector used in the user interface

@@ -20,10 +20,17 @@
 
 #include <sstream>
 #include <rw/common/StringUtil.hpp>
-#include <rwlibs/lua/LuaRobWork.hpp>
+#include <rwlibs/swig/ScriptTypes.hpp>
+
 #include <rws/RobWorkStudio.hpp>
-#include <rws/lua/LuaRWStudioStub.hpp>
-#include <rws/lua/LuaRWStudio.hpp>
+#include <rws/swig/ScriptTypes.hpp>
+#include <rws/swig/LuaState.hpp>
+
+extern "C" {
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
+}
 
 using namespace rw::math;
 using namespace rw::kinematics;
