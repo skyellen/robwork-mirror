@@ -3,8 +3,14 @@
 %{
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
+#if defined (SWIGLUA)
+#include <rwlibs/swig/Lua.hpp>
+#endif
+
 using namespace rwlibs::swig;
 using rw::trajectory::Interpolator;
+
+
 %}
 
 %include <std_string.i>
@@ -50,6 +56,10 @@ public:
 
 %template (WorkCellPtr) rw::common::Ptr<WorkCell>;
 %template (DevicePtr) rw::common::Ptr<Device>;
+%template (JointDevicePtr) rw::common::Ptr<JointDevice>;
+%template (SerialDevicePtr) rw::common::Ptr<SerialDevice>;
+%template (ParallelDevicePtr) rw::common::Ptr<ParallelDevice>;
+%template (TreeDevicePtr) rw::common::Ptr<TreeDevice>;
 %template (DevicePtrVector) std::vector<rw::common::Ptr<Device> >;
 %template (FrameVector) std::vector<Frame*>;
 %template (JointVector) std::vector<Joint*>;
@@ -81,7 +91,7 @@ class Q
 public:
     // first we define functions that are native to Q
 	Q();
-	%feature("autodoc", "1")
+	 %feature("autodoc","1");
     Q(int n, double vals[n]);
     int size() const;
 
@@ -116,8 +126,8 @@ class Vector3D
 {
 public:
     Vector3D();
-    %feature("autodoc", "1")
-    Vector3D(double x,double y, double z);
+    %feature("autodoc","1");
+    Vector3D(double x, double y, double z);
     size_t size() const;
     Vector3D operator*(double scale) const;
     Vector3D operator+(const Vector3D& other) const;
@@ -149,7 +159,7 @@ class Rotation3D
 public:
     // Lua methods:
     Rotation3D();
-    %feature("autodoc", "1")
+    %feature("autodoc","1");
     Rotation3D(double v0,double v1,double v2,
     			double v3,double v4,double v5,
     			double v6,double v7,double v8);
@@ -196,15 +206,15 @@ class EAA
 public:
     // Lua methods:
     EAA();
-    %feature("autodoc", "1")
+     %feature("autodoc","1");
     EAA(const EAA& eaa);
-    %feature("autodoc", "1")
+     %feature("autodoc","1");
     EAA(const Rotation3D& rot);
-    %feature("autodoc", "1")
+     %feature("autodoc","1");
     EAA(const Vector3D& axis, double angle);
-    %feature("autodoc", "1")
+     %feature("autodoc","1");
     EAA(double thetakx, double thetaky, double thetakz);
-    %feature("autodoc", "1")
+     %feature("autodoc","1");
     EAA(const Vector3D& v1, const Vector3D& v2);
 
     double angle() const;
@@ -267,6 +277,7 @@ class Quaternion
 public:
     // Lua methods:
     Quaternion();
+    Quaternion(double qx, double qy, double qz, double qw);
     Quaternion(const Quaternion& eaa);
     Quaternion(const Rotation3D& rot);
     Quaternion operator*(double s);
@@ -565,6 +576,16 @@ public:
     const_iterator_pair getDafChildren(const State& state) const;
     iterator_pair getDafChildren(const State& state);
 */
+    %extend {
+        Transform3D wTt(const State& state) const{
+            return ::rw::kinematics::Kinematics::worldTframe($self, state);
+        }
+
+        Transform3D fTf(const Frame* frame, const State& state) const{
+            return ::rw::kinematics::Kinematics::frameTframe($self, frame, state);
+        }
+    }
+
     void attachTo(Frame* parent, State& state);
     bool isDAF();
 
@@ -573,6 +594,47 @@ private:
     Frame(const Frame&);
     Frame& operator=(const Frame&);
 };
+
+class MovableFrame: public Frame{
+public:
+   explicit MovableFrame(const std::string& name);
+
+   void setTransform(const Transform3D& transform, State& state);
+};
+
+class FixedFrame: public Frame {
+public:
+    FixedFrame(const std::string& name, const Transform3D& transform);
+    void setTransform(const Transform3D& transform);
+
+    const Transform3D& getFixedTransform() const;
+};
+
+%inline %{
+    Transform3D frameTframe(const Frame* from, const Frame* to, const State& state){
+        return ::rw::kinematics::Kinematics::frameTframe(from, to, state );
+    }
+
+    Transform3D worldTframe(const Frame* to, const State& state){
+        return ::rw::kinematics::Kinematics::worldTframe( to,  state);
+    }
+
+    Frame* worldFrame(Frame* frame, const State& state) {
+        return ::rw::kinematics::Kinematics::worldFrame( frame, state );
+    }
+
+    void gripFrame(Frame* item, Frame* gripper, State& state){
+        return ::rw::kinematics::Kinematics::gripFrame( item, gripper, state);
+    }
+
+    void gripFrame(MovableFrame* item, Frame* gripper, State& state){
+        return ::rw::kinematics::Kinematics::gripFrame( item, gripper, state);
+    }
+
+    bool isDAF(const Frame* frame){
+        return ::rw::kinematics::Kinematics::isDAF( frame );
+    }
+%}
 
 /**************************************************************************
  *  SENSOR
@@ -590,11 +652,35 @@ public:
     WorkCell(const std::string& name);
     std::string getName() const;
     Frame* getWorldFrame() const;
+
+    void addFrame(Frame* frame, Frame* parent=NULL);
+    void addDAF(Frame* frame, Frame* parent=NULL);
+    void remove(Frame* frame);
     void addDevice(rw::common::Ptr<Device> device);
     const std::vector<rw::common::Ptr<Device> >& getDevices() const;
     Frame* findFrame(const std::string& name) const;
+
+    %extend {
+        MovableFrame* findMovableFrame(const std::string& name)
+        { return $self->rw::models::WorkCell::findFrame<MovableFrame>(name); }
+        FixedFrame* findFixedFrame(const std::string& name)
+        { return $self->rw::models::WorkCell::findFrame<FixedFrame>(name); }
+    };
+
     std::vector<Frame*> getFrames() const;
     rw::common::Ptr<Device> findDevice(const std::string& name) const;
+    %extend {
+        rw::common::Ptr<JointDevice> findJointDevice(const std::string& name)
+                { return $self->rw::models::WorkCell::findDevice<JointDevice>(name); }
+        rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name)
+                { return $self->rw::models::WorkCell::findDevice<SerialDevice>(name); }
+        rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name)
+                { return $self->rw::models::WorkCell::findDevice<TreeDevice>(name); }
+        rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name)
+                { return $self->rw::models::WorkCell::findDevice<ParallelDevice>(name); }
+    };
+
+
     State getDefaultState() const;
 
     //rw::common::Ptr<StateStructure> getStateStructure();
@@ -916,5 +1002,89 @@ public:
 
 };
 
+void writelog(const std::string& msg);
+
+%inline %{
+    void sleep(double t){
+        ::rw::common::TimerUtil::sleepMs( (int) (t*1000) );
+    }
+    void info(const std::string& msg){
+        ::rw::common::Log::infoLog() << msg;
+    }
+    void debug(const std::string& msg){
+        ::rw::common::Log::debugLog() << msg;
+    }
+    void warn(const std::string& msg){
+        ::rw::common::Log::warningLog() << msg;
+    }
+    void error(const std::string& msg){
+        ::rw::common::Log::errorLog() << msg;
+    }
+%}
+
+#if defined (SWIGLUA)
+%luacode {
+
+-- Group: Lua functions
+-- Var: print_to_log
+local print_to_log = true
+
+-- Var: overrides the global print function
+local global_print = print
+
+-- Function: print
+--  Forwards the global print functions to the rw.print functions
+--  whenever print_to_log is defined.
+function print(...)
+    if print_to_log then
+        for i, v in ipairs{...} do
+            if i > 1 then rw.writelog("\t") end
+            rw.writelog(tostring(v))
+        end
+        rw.writelog('\n')
+    else
+        global_print(...)
+    end
+end
+
+-- Function:
+function reflect( mytableArg )
+ local mytable
+ if not mytableArg then
+  mytable = _G
+ else
+  mytable = mytableArg
+ end
+ if type(mytable)=="table" then
+  a = {}
+  b = { }
+  for key,value in pairs( mytable ) do
+    if (key:sub(0, 2)=="__") or (key:sub(0, 1)==".") then
+    else
+      if type(value)=="table" then
+          table.insert(b, key)
+      else
+          table.insert(a, key)
+      end
+    end
+  end
+  table.sort(a)
+  print("--- Functions ---")
+  for i,n in ipairs(a) do print(n .. "()") end
+
+  print("--- Objects/Tables ---")
+  for i,n in ipairs(b) do print(n) end
+ else
+  for key,value in pairs( getmetatable(mytable) ) do
+      print(key);
+  end
+ end
+end
+
+function help( mytable )
+   reflect( mytable )
+end
+}
+#endif
 
 

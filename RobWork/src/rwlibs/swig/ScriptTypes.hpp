@@ -115,6 +115,7 @@ typedef rw::models::Device Device;
 typedef rw::models::JointDevice JointDevice;
 typedef rw::models::SerialDevice SerialDevice;
 typedef rw::models::TreeDevice TreeDevice;
+typedef rw::models::ParallelDevice ParallelDevice;
 typedef rw::models::DHParameterSet DHParameterSet;
 
 typedef rw::proximity::CollisionDetector CollisionDetector;
@@ -145,8 +146,22 @@ typedef rw::graphics::SceneNode SceneNode;
 typedef rw::graphics::DrawableNode DrawableNode;
 
 
+void writelog(const std::string& msg);
 
+void setlog(::rw::common::LogWriter::Ptr writer);
 
+/*
+//! set the current workcell instance
+void setWorkCell(WorkCell::Ptr workcell);
+//! get current instance of workcell
+WorkCell::Ptr getWorkCell();
+
+void setState(const State& state);
+
+State& getState();
+
+void addChangedListener(  );
+*/
 }
 }
 

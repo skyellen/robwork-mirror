@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+"""
+setup.py file for SWIG example
+"""
+
+from distutils.core import setup, Extension
+
+#'/D "NDEBUG"','/D "/NODEFAULTLIB:library"
+rw_module = Extension('_rw', 
+				extra_compile_args=[ @RW_CXX_FLAGS@ ],
+			   	extra_link_args=[ @RW_CXX_FLAGS@ ],
+                sources=['rwPYTHON_wrap.cxx'],
+                include_dirs=[ @CMAKE_INCLUDE_DIRS@ ],
+			    library_dirs = [@CMAKE_LIBRARY_DIRS@ ],
+			   libraries=['xerces-c_static_3','rw','lapack_win32','blas_win32','qhull','libf2c_win32','kernel32',
+					'user32','gdi32','winspool','comdlg32','advapi32',
+					'shell32','ole32','oleaut32','uuid','odbc32','odbccp32' ]
+                           )
+
+#Extension(...,
+#          library_dirs=['/usr/X11R6/lib'],
+#          libraries=['X11', 'Xt'])
+#
+setup (name = 'rw',
+       version = '0.1',
+       author      = "RobWork",
+       description = """Simple swig example from docs""",
+       ext_modules = [rwl_module],
+       py_modules = ["rwl"],
+       )
