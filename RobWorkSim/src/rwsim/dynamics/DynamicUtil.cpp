@@ -345,6 +345,7 @@ bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State&
     if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev.get())){
         std::vector<RigidJoint*> rjoints = rdev->getRigidJoints();
         Q vel = rdev->getActualVelocity(state);
+        //std::cout << vel << std::endl;
         RW_ASSERT_MSG(vel.size()<=rjoints.size(), vel.size() << "<=" << rjoints.size());
         int depOffset = 0;
         for(size_t i=0; i<rjoints.size();i++){
