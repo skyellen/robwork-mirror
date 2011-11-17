@@ -45,7 +45,7 @@ ENDIF()
 
 # Specify which optional packages you want. These external pacakges are included 
 # with RobWork and will be used if other packages are not specified
-SET(USE_LUA ON)
+SET(USE_LUA OFF)
 SET(USE_YAOBI ON)
 SET(USE_PQP ON)
 
