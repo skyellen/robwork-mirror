@@ -51,7 +51,7 @@ FIND_FILE(ROBWORKSTUDIO_FOUND RobWorkStudioSetup.cmake
 IF(NOT ROBWORKSTUDIO_FOUND)
  MESSAGE(SEND_ERROR "Path to RobWorkStudio root (RWSTUDIO_ROOT) is incorrectly setup! \nRWSTUDIO_ROOT == ${RWSTUDIO_ROOT}")
 ENDIF()
-MESSAGE(STATUS "RobWorkStudio root: ${RWSTUDIO_ROOT}")
+#MESSAGE(STATUS "RobWorkStudio root: ${RWSTUDIO_ROOT}")
 
 # Add extra linker flags for linking with OpenGL on mac os computers
 if (DEFINED APPLE)
@@ -67,7 +67,7 @@ ELSE()
 	INCLUDE(${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake)
 ENDIF()
 
-MESSAGE(STATUS "RobWorkStudio VERSION: ${RWS_BUILD_WITH_VERSION}")
+#MESSAGE(STATUS "RobWorkStudio VERSION: ${RWS_BUILD_WITH_VERSION}")
 
 IF(NOT DEFINED QTDIR)
 #	SET(QTDIR "${RWS_BUILD_WITH_QTDIR}")
@@ -122,10 +122,10 @@ ENDIF()
 IF (RWS_BUILD_WITH_SANDBOX)
   SET(RWS_SANDBOX_LIB rwstudio_sandbox)
   SET(RWS_HAVE_SANDBOX ON)
-  MESSAGE(STATUS "RobWorkStudio: Sandbox ENABLED!")
+  #MESSAGE(STATUS "RobWorkStudio: Sandbox ENABLED!")
 ELSE ()
   SET(RWS_HAVE_SANDBOX OFF) 
-  MESSAGE(STATUS "RobWorkStudio: Sandbox DISABLED!")
+  #MESSAGE(STATUS "RobWorkStudio: Sandbox DISABLED!")
 ENDIF ()
 
 # Setup RobWorkStudio include and link directories
