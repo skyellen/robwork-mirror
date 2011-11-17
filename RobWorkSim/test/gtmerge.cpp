@@ -32,8 +32,7 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-#include "VisGraBGraspTask.hpp"
-#include "VisGraBBenchmark.hpp"
+#include <rwsim/simulator/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;

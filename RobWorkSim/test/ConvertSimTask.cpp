@@ -152,7 +152,7 @@ namespace {
         rwlibs::task::CartesianTask::Ptr ctask = ownedPtr( new rwlibs::task::CartesianTask() );
         std::vector<double> qualities;
         CartesianTarget::Ptr target;
-        GraspTaskSimulator::Status status = GraspTaskSimulator::UnInitialized;
+        GraspTask::Status status = GraspTask::UnInitialized;
         //for (OCI p = tree.ordered_begin(); p != tree.not_found(); ++p) {
         for (CI p = tree.begin(); p != tree.end(); ++p) {
 
@@ -199,7 +199,7 @@ namespace {
             } else if(isName(p->first, "outcome")){
                 //string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
                 if( has_child(p->second, "success") ){
-                    status = GraspTaskSimulator::Success;
+                    status = GraspTask::Success;
                     if(has_child(p->second.get_child("success"),"<xmlattr>")){
                         double squal = p->second.get_child("success").get_child("<xmlattr>").get<double>("quality",0.0);
                         qualities.push_back(squal);
@@ -207,21 +207,21 @@ namespace {
                         qualities.push_back(0.0);
                     }
                 } else if(has_child(p->second,"failure") ){
-                    status = GraspTaskSimulator::ObjectDropped;
+                    status = GraspTask::ObjectDropped;
                     std::string cause = p->second.get_child("failure").get_child("<xmlattr>").get<std::string>("cause");
                     if(cause=="POSE"){
-                        status = GraspTaskSimulator::PoseEstimateFailure;
+                        status = GraspTask::PoseEstimateFailure;
                     } else if(cause=="PLAN"){
-                        status = GraspTaskSimulator::InvKinFailure;
+                        status = GraspTask::InvKinFailure;
                     } else if(cause=="SERVO"){
-                        status = GraspTaskSimulator::CollisionInitially;
+                        status = GraspTask::CollisionInitially;
                     } else if(cause=="GRASP"){
-                        status = GraspTaskSimulator::ObjectMissed;
+                        status = GraspTask::ObjectMissed;
                     } else if(cause=="LIFT"){
-                        status = GraspTaskSimulator::ObjectDropped;
+                        status = GraspTask::ObjectDropped;
                     }
                 } else {
-                    status = GraspTaskSimulator::UnInitialized;
+                    status = GraspTask::UnInitialized;
                 }
                 /*
                 element success {
