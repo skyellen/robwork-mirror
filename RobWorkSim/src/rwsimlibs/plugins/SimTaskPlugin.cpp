@@ -333,7 +333,7 @@ void SimTaskPlugin::btnPressed() {
                         std::vector<CartesianTarget::Ptr> stargets;
                         BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, stask->getTargets()){
                             int status = target->getPropertyMap().get<int> ("TestStatus",-1);
-                            if(status==GraspTaskSimulator::Success || status==GraspTaskSimulator::ObjectSlipped){
+                            if(status==GraspTask::Success || status==GraspTask::ObjectSlipped){
                                 stargets.push_back(target);
                             }
                         }
