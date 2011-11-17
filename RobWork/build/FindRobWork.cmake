@@ -69,11 +69,11 @@ ENDIF()
 
 IF((DEFINED ROBWORK_INCLUDE_DIR) AND (DEFINED ROBWORK_LIBRARY_DIRS) AND (DEFINED ROBWORK_LIBRARIES) )
 # Everything has alleready been loaded
-MESSAGE("(DEFINED ROBWORK_INCLUDE_DIR) AND (DEFINED ROBWORK_LIBRARY_DIRS) AND (DEFINED ROBWORK_LIBRARIES)")
+#MESSAGE("(DEFINED ROBWORK_INCLUDE_DIR) AND (DEFINED ROBWORK_LIBRARY_DIRS) AND (DEFINED ROBWORK_LIBRARIES)")
     
 ELSE ()
 
-MESSAGE(STATUS "RobWork Path: ${ROBWORK_ROOT}")
+#MESSAGE(STATUS "RobWork Path: ${ROBWORK_ROOT}")
 
 GET_FILENAME_COMPONENT(ROBWORK_ROOT_TMP  ${RW_ROOT_PATH_TEST} PATH)
 SET(ROBWORK_ROOT "${ROBWORK_ROOT_TMP}/../")
@@ -105,7 +105,7 @@ if( NOT (${RobWork_FIND_VERSION_MINOR} EQUAL ${RW_BUILD_WITH_VERSION_MINOR}) )
 endIF()
 endIF()
 
-MESSAGE(STATUS "RobWork VERSION: ${RW_BUILD_WITH_VERSION}")
+#MESSAGE(STATUS "RobWork VERSION: ${RW_BUILD_WITH_VERSION}")
 
 ####################################################################
 # DEPENDENCIES - REQUIRED
@@ -166,9 +166,9 @@ ENDIF()
 
 # Print test libraries status
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  MESSAGE(STATUS "Found additional Boost libraries:")
-	MESSAGE(STATUS "  test_exec_monitor")
-	MESSAGE(STATUS "  unit_test_framework")
+  #MESSAGE(STATUS "Found additional Boost libraries:")
+	#MESSAGE(STATUS "  test_exec_monitor")
+	#MESSAGE(STATUS "  unit_test_framework")
 ELSE()
   # Set necessary directory for disabling linking with test libraries for MSVC
 	IF(DEFINED MSVC)
@@ -214,13 +214,13 @@ IF(RW_BUILD_WITH_XERCES)
     ENDIF()
     FIND_PACKAGE(XercesC REQUIRED)
     IF( XERCESC_FOUND )
-        MESSAGE(STATUS "RobWork: Xerces REQUIRED! FOUND!")
+        #MESSAGE(STATUS "RobWork: Xerces REQUIRED! FOUND!")
         SET(RW_HAVE_XERCES True)
     ELSE ()
         MESSAGE(SEND_ERROR "RobWork: Xerces REQUIRED! NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
     ENDIF ()
 ELSE()
-    MESSAGE(STATUS "RobWork: Xerces DISABLED! Not built into RobWork!")
+    #MESSAGE(STATUS "RobWork: Xerces DISABLED! Not built into RobWork!")
 ENDIF()
 
 
@@ -236,18 +236,18 @@ IF(RW_BUILD_WITH_YAOBI)
         SET(YAOBI_LIBRARIES yaobi)
         SET(YAOBI_LIBRARY_DIRS )
         
-        MESSAGE(STATUS "RobWork: Yaobi REQUIRED! Using RobWork Yaobi.")
+        #MESSAGE(STATUS "RobWork: Yaobi REQUIRED! Using RobWork Yaobi.")
     ELSE ()    
     
         FIND_PACKAGE(Yaobi REQUIRED)
         IF( YAOBI_FOUND )
-            MESSAGE(STATUS "RobWork: Yaobi REQUIRED! FOUND!")
+            #MESSAGE(STATUS "RobWork: Yaobi REQUIRED! FOUND!")
         ELSE ()
             MESSAGE(SEND_ERROR "RobWork: Yaobi REQUIRED! NOT FOUND! Try setting YAOBI_INCLUDE_DIR and YAOBI_LIB_DIR.")
         ENDIF ()
     ENDIF()
 ELSE ()
-    MESSAGE(STATUS "RobWork: Yaobi DISABLED! Not built into RobWork!")
+    #MESSAGE(STATUS "RobWork: Yaobi DISABLED! Not built into RobWork!")
     SET(YAOBI_INCLUDE_DIR "")
 ENDIF()
 
@@ -266,17 +266,17 @@ IF(RW_BUILD_WITH_PQP)
         SET(PQP_LIBRARIES pqp)
         SET(PQP_LIBRARY_DIRS )
         
-        MESSAGE(STATUS "RobWork: PQP REQUIRED! Using RobWork PQP.")
+        #MESSAGE(STATUS "RobWork: PQP REQUIRED! Using RobWork PQP.")
     ELSE ()    
         FIND_PACKAGE(PQP REQUIRED)
         IF( PQP_FOUND )
-            MESSAGE(STATUS "RobWork: PQP REQUIRED! FOUND!")
+            #MESSAGE(STATUS "RobWork: PQP REQUIRED! FOUND!")
         ELSE ()
             MESSAGE(SEND_ERROR "RobWork: PQP REQUIRED! NOT FOUND! Try setting PQP_INCLUDE_DIR and PQP_LIB_DIR.")
         ENDIF ()
     ENDIF()
 ELSE ()
-    MESSAGE(STATUS "RobWork: PQP DISABLED! Not built into RobWork!")   
+    #MESSAGE(STATUS "RobWork: PQP DISABLED! Not built into RobWork!")   
     SET(PQP_INCLUDE_DIR "")
 ENDIF()
 
@@ -295,15 +295,15 @@ IF(RW_BUILD_WITH_LUA AND RW_BUILD_WITH_SWIG)
         SET(LUA_INCLUDE_DIR ${RW_BUILD_WITH_LUA_INCLUDE_DIR})
         SET(LUA_LIBRARIES lua51)
         SET(LUA_LIBRARY_DIRS )        
-        MESSAGE(STATUS "RobWork: Lua ENABLED! Using RobWork Lua.")
+        #MESSAGE(STATUS "RobWork: Lua ENABLED! Using RobWork Lua.")
     ELSE ()
-        MESSAGE(STATUS "RobWork: LUA ENABLED!")
+        #MESSAGE(STATUS "RobWork: LUA ENABLED!")
         FIND_PACKAGE(Lua51 QUIET)
         IF( LUA51_FOUND )
-            MESSAGE(STATUS "FOUND Lua!")
+            #MESSAGE(STATUS "FOUND Lua!")
         ELSE ()
             SET(RW_USE_RW_LUA False)
-            MESSAGE(STATUS "Lua NOT FOUND! Disabling use of rw_lua.")
+            #MESSAGE(STATUS "Lua NOT FOUND! Disabling use of rw_lua.")
         ENDIF ()
     ENDIF()
     
@@ -315,11 +315,11 @@ IF(RW_BUILD_WITH_LUA AND RW_BUILD_WITH_SWIG)
     #ENDIF()
     
     FIND_PACKAGE(SWIG QUIET 1.3)
-    IF( SWIG_FOUND )
-        MESSAGE(STATUS "RobWork: Swig ENABLED! Using Swig.")
+    IF( SWIG_FOUND AND RW_USE_RW_LUA)
+        #MESSAGE(STATUS "RobWork: Swig ENABLED! Using Swig.")
     ELSE ()
-            SET(RW_USE_RW_LUA False)
-            MESSAGE(STATUS "Swig NOT FOUND! Disabling use of rw_lua.")
+        SET(RW_USE_RW_LUA False)
+        MESSAGE(STATUS "Swig NOT FOUND! Disabling use of rw_lua.")
     ENDIF()
     
     #IF(RW_BUILD_WITH_INTERNAL_TOLUA)
@@ -338,7 +338,7 @@ IF(RW_BUILD_WITH_LUA AND RW_BUILD_WITH_SWIG)
     #    ENDIF ()
     #ENDIF()
 ELSE ()
-    MESSAGE(STATUS "RobWork: LUA DISABLED! Lua and Swig was not built into RobWork!")   
+    #MESSAGE(STATUS "RobWork: LUA DISABLED! Lua and Swig was not built into RobWork!")   
     SET(LUA_INCLUDE_DIR "")
     SET(RW_USE_RW_LUA False)
 ENDIF()
@@ -349,7 +349,7 @@ ENDIF()
 
 
 IF (RW_BUILD_WITH_SANDBOX)
-    MESSAGE(STATUS "RobWork: Sandbox ENABLED!")
+    #MESSAGE(STATUS "RobWork: Sandbox ENABLED!")
     SET(SANDBOX_LIB "rw_sandbox")
 ELSE ()
     MESSAGE(STATUS "RobWork: Sandbox DISABLED! Not built into RobWork!")    
@@ -364,10 +364,10 @@ ENDIF ()
 # Enable the RW_ASSERT() macro.
 #
 IF( RW_BUILD_WITH_RW_ASSERT )
-    MESSAGE(STATUS "RobWork: RW_ASSERT enabled.")
+    #MESSAGE(STATUS "RobWork: RW_ASSERT enabled.")
     ADD_DEFINITIONS(-DRW_ENABLE_ASSERT)
 ELSE ()
-    MESSAGE(STATUS "RobWork: RW_ASSERT disabled.")
+    #MESSAGE(STATUS "RobWork: RW_ASSERT disabled.")
 ENDIF ()
 
 #
@@ -378,7 +378,7 @@ SET(RW_CXX_FLAGS ${RW_BUILD_WITH_CXX_FLAGS}
                   flags and not those of RobWork"
 )
 ADD_DEFINITIONS(${RW_CXX_FLAGS})
-MESSAGE(STATUS "RobWork: Using CXX flags: ${RW_CXX_FLAGS}")
+#MESSAGE(STATUS "RobWork: Using CXX flags: ${RW_CXX_FLAGS}")
 
 #
 # Set extra linker flags. The user should be able to change this
@@ -392,14 +392,14 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${RW_LINKER_FLAGS}" 
 IF(WIN32)
 	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
 ENDIF()
-MESSAGE(STATUS "RobWork: Using linker flags: ${RW_LINKER_FLAGS}")
+#MESSAGE(STATUS "RobWork: Using linker flags: ${RW_LINKER_FLAGS}")
 
 #MESSAGE(" ${Boost_MAJOR_VERSION} ${Boost_MINOR_VERSION} ")
 IF(${Boost_MINOR_VERSION} VERSION_LESS 41 ) 
     # proerty tree is not included in earlier versions 1.41 of boost
     # so we include it from our own
     SET(ADDITIONAL_BOOST_BINDINGS "${RW_ROOT}/ext/deprecated")
-    MESSAGE(STATUS "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Adding from ext!")   
+    #MESSAGE(STATUS "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Adding from ext!")   
 ENDIF()
 
 

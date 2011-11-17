@@ -88,9 +88,7 @@ ENDIF()
 
 # Print test libraries status
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  MESSAGE(STATUS "Found additional Boost libraries:")
-	MESSAGE(STATUS "  test_exec_monitor")
-	MESSAGE(STATUS "  unit_test_framework")
+  MESSAGE(STATUS "RobWork: Found additional Boost libraries: test_exec_monitor and unit_test_framework")
 ELSE()
   # Set necessary directory for disabling linking with test libraries for MSVC
 	IF(DEFINED MSVC)
@@ -133,34 +131,28 @@ ENDFOREACH(lib)
 # For some libs we need the opengl package, though it is OPTIONAL 
 #
 FIND_PACKAGE(OpenGL)
-
+INCLUDE(CMakeDependentOption)
 #
 # For some of the xml parsing we need xerces, though it is OPTIONAL
 #
 SET(RW_HAVE_XERCES False)
-OPTION(USE_XERCES "Set when you want to use xerces for xml loading" ${USE_XERCES})
-IF(USE_XERCES)
-    FIND_PACKAGE(XercesC REQUIRED)
-    IF( XERCESC_FOUND )
-        SET(RW_HAVE_XERCES True)
-    ELSE ()
-        MESSAGE(SEND_ERROR "RobWork: Xerces ENABLED! NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
-    ENDIF ()
+FIND_PACKAGE(XercesC REQUIRED)
+IF( XERCESC_FOUND )
+    SET(RW_HAVE_XERCES True)
 ELSE ()
-    MESSAGE(STATUS "RobWork: Xerces DISABLED!")
+    MESSAGE(SEND_ERROR "RobWork: Xerces NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
 ENDIF ()
 
 #
 # If the user wants to use yaobi then search for it, OPTIONAL
 #
 SET(RW_HAVE_YAOBI False)
-OPTION(USE_YAOBI "Set to ON to include Yaobi support.
+CMAKE_DEPENDENT_OPTION(RW_USE_YAOBI "Set to ON to include Yaobi support.
                 Set YAOBI_INCLUDE_DIR and YAOBI_LIBRARY_DIR 
                 to specify your own YAOBI else RobWork YAOBI will 
                 be used!"
-      ${USE_YAOBI}
-)
-IF(USE_YAOBI)   
+      ON "NOT RW_DISABLE_YAOBI" OFF)
+IF(RW_USE_YAOBI)
     FIND_PACKAGE(Yaobi QUIET)
     IF( YAOBI_FOUND )
         MESSAGE(STATUS "RobWork: Yaobi ENABLED! FOUND!")
@@ -183,13 +175,13 @@ ENDIF()
 # If the user wants to use PQP then search for it or use the default
 #
 SET(RW_HAVE_PQP False)
-OPTION(USE_PQP "Set to ON to include PQP support.
+CMAKE_DEPENDENT_OPTION(RW_USE_PQP "Set to ON to include PQP support.
                 Set PQP_INCLUDE_DIR and PQP_LIB_DIR 
                 to specify your own PQP else RobWork PQP will 
                 be used!" 
-    ${USE_PQP}
+    ON "NOT RW_DISABLE_PQP" OFF
 )
-IF(USE_PQP)
+IF(RW_USE_PQP)
     FIND_PACKAGE(PQP QUIET)
     IF( PQP_FOUND )
         MESSAGE(STATUS "RobWork: PQP ENABLED! FOUND!")
@@ -213,50 +205,41 @@ ENDIF()
 #
 SET(RW_HAVE_LUA False)
 SET(RW_HAVE_SWIG False)
-OPTION(USE_LUA "Set to ON to include PQP support.
+
+FIND_PACKAGE(SWIG 1.3 QUIET)
+CMAKE_DEPENDENT_OPTION(RW_USE_LUA "Set to ON to include PQP support.
                 Set PQP_INCLUDE_DIR and PQP_LIB_DIR 
                 to specify your own PQP else RobWork PQP will 
                 be used!" 
-    ${USE_LUA}
-)
-IF(USE_LUA)
-    SET(RW_HAVE_LUA True)
-    MESSAGE(STATUS "RobWork: LUA ENABLED!")
+    ON "SWIG_FOUND;NOT RW_DISABLE_LUA" OFF)
+    
+IF(RW_USE_LUA)
     FIND_PACKAGE(Lua51 QUIET)
     IF( LUA51_FOUND )
-        MESSAGE(STATUS "FOUND Lua!")
+        MESSAGE(STATUS "RobWork: External lua FOUND!")
     ELSE ()
         SET(RW_ENABLE_INTERNAL_LUA_TARGET ON)
-        MESSAGE(STATUS "Lua NOT FOUND! Using RobWork native Lua.")
+        MESSAGE(STATUS "RobWork:  External lua NOT FOUND! Using RobWork native Lua.")
         SET(LUA_INCLUDE_DIR "${RW_ROOT}/ext/lua/src/")
         SET(LUA_LIBRARIES "lua51")
         SET(LUA_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
     ENDIF ()
 
-        
-    FIND_PACKAGE(SWIG 1.3)
     IF( SWIG_FOUND )
-        MESSAGE(STATUS "FOUND Swig!")
+        MESSAGE(STATUS "RobWork: LUA ENABLED! Both SWIG and Lua FOUND!")
         SET(RW_HAVE_SWIG True)
+        SET(RW_HAVE_LUA True)
     ELSE ()
         SET(RW_HAVE_SWIG False)
-        MESSAGE(SEND_ERROR "RobWork: Lua ENABLED! However, SWIG required and NOT FOUND!")
+        SET(RW_HAVE_LUA True)
+        MESSAGE(SEND_ERROR "RobWork: Lua DISABLED! Since SWIG was NOT FOUND!")
     ENDIF ()
-
-    #SET(RW_HAVE_TOLUA True)    
-    #FIND_PACKAGE(Tolua++ QUIET)
-    #IF( TOLUA++_FOUND )
-    #    MESSAGE(STATUS "FOUND Tolua!")
-    #ELSE ()
-    #    SET(RW_ENABLE_INTERNAL_TOLUA_TARGET ON)
-    #    MESSAGE(STATUS "Tolua NOT FOUND! Using RobWork native Tolua.")
-    #    SET(TOLUA_INCLUDE_DIR "${RW_ROOT}/ext/tolua/include/")
-    #    SET(TOLUA_CMD "${RW_RUNTIME_OUT_DIR}/tolua")
-    #    SET(TOLUA_LIBRARIES "tolua51")
-    #    SET(TOLUA_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
-    #ENDIF ()
 ELSE ()
-    MESSAGE(STATUS "RobWork: LUA DISABLED!")   
+    IF(SWIG_FOUND)
+        
+    ELSE()
+        MESSAGE(STATUS "RobWork: LUA DISABLED! Swig not found!")
+    ENDIF()
     SET(LUA_INCLUDE_DIR "")
     #SET(TOLUA_INCLUDE_DIR "")
 ENDIF()

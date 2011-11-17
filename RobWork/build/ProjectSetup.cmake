@@ -27,14 +27,14 @@ ENDIF ()
 IF (NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
 ENDIF ()
-MESSAGE(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
+MESSAGE(STATUS "RobWork: Build configuration: ${CMAKE_BUILD_TYPE}")
 
 # Load the optional Default.cmake file.
 INCLUDE(${ROOT}/config.cmake OPTIONAL)
 IF (NOT EXISTS ${ROOT}/config.cmake)
   # Setup the default settings in case no RobWork.cmake exist.
   INCLUDE(${ROOT}/config.cmake.template)
-  MESSAGE(STATUS "No config.cmake file loaded, using default settings from config.cmake.template")
+  #MESSAGE(STATUS "No config.cmake file loaded, using default settings from config.cmake.template")
 ENDIF ()
 
 # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
