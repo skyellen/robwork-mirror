@@ -38,7 +38,7 @@ file(GLOB qhull_hdr *.h)
 #endif(UNIX)
 
 add_library(qhullstatic STATIC ${qhull_src})
-set_property(TARGET qhullstatic PROPERTY OUTPUT_NAME "qhull")
+set_property(TARGET qhullstatic PROPERTY OUTPUT_NAME "rw_qhull")
 
 set(qhullcmd_SOURCES  unix.c)
 set(rbox_SOURCES  rbox.c)
