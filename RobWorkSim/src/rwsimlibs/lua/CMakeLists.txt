@@ -1,8 +1,6 @@
+IF(RWSIM_HAVE_LUA)
 
 set(Here ${CMAKE_CURRENT_SOURCE_DIR})
-
-
-
 
 # With MSVC++ the program executables go to OutDir.
 if (DEFINED MSVC)
@@ -30,3 +28,5 @@ ADD_LIBRARY(rwsim_lua
   ${Here}/RWSimLuaStub.cpp)
 
 INSTALL(TARGETS rwsim_lua DESTINATION ${RWSIM_LIB_INSTALL_DIR})
+
+ENDIF()
