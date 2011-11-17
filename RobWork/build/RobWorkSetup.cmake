@@ -212,7 +212,7 @@ ENDIF()
 # If the user wants to use LUA then search for it or use the default
 #
 SET(RW_HAVE_LUA False)
-SET(RW_HAVE_TOLUA False)
+SET(RW_HAVE_SWIG False)
 OPTION(USE_LUA "Set to ON to include PQP support.
                 Set PQP_INCLUDE_DIR and PQP_LIB_DIR 
                 to specify your own PQP else RobWork PQP will 
@@ -233,22 +233,32 @@ IF(USE_LUA)
         SET(LUA_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
     ENDIF ()
 
-    SET(RW_HAVE_TOLUA True)    
-    FIND_PACKAGE(Tolua++ QUIET)
-    IF( TOLUA++_FOUND )
-        MESSAGE(STATUS "FOUND Tolua!")
+        
+    FIND_PACKAGE(SWIG 1.3)
+    IF( SWIG_FOUND )
+        MESSAGE(STATUS "FOUND Swig!")
+        SET(RW_HAVE_SWIG True)
     ELSE ()
-        SET(RW_ENABLE_INTERNAL_TOLUA_TARGET ON)
-        MESSAGE(STATUS "Tolua NOT FOUND! Using RobWork native Tolua.")
-        SET(TOLUA_INCLUDE_DIR "${RW_ROOT}/ext/tolua/include/")
-        SET(TOLUA_CMD "${RW_RUNTIME_OUT_DIR}/tolua")
-        SET(TOLUA_LIBRARIES "tolua51")
-        SET(TOLUA_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+        SET(RW_HAVE_SWIG False)
+        MESSAGE(SEND_ERROR "RobWork: Lua ENABLED! However, SWIG required and NOT FOUND!")
     ENDIF ()
+
+    #SET(RW_HAVE_TOLUA True)    
+    #FIND_PACKAGE(Tolua++ QUIET)
+    #IF( TOLUA++_FOUND )
+    #    MESSAGE(STATUS "FOUND Tolua!")
+    #ELSE ()
+    #    SET(RW_ENABLE_INTERNAL_TOLUA_TARGET ON)
+    #    MESSAGE(STATUS "Tolua NOT FOUND! Using RobWork native Tolua.")
+    #    SET(TOLUA_INCLUDE_DIR "${RW_ROOT}/ext/tolua/include/")
+    #    SET(TOLUA_CMD "${RW_RUNTIME_OUT_DIR}/tolua")
+    #    SET(TOLUA_LIBRARIES "tolua51")
+    #    SET(TOLUA_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+    #ENDIF ()
 ELSE ()
     MESSAGE(STATUS "RobWork: LUA DISABLED!")   
     SET(LUA_INCLUDE_DIR "")
-    SET(TOLUA_INCLUDE_DIR "")
+    #SET(TOLUA_INCLUDE_DIR "")
 ENDIF()
   
 IF (RW_BUILD_SANDBOX)
@@ -397,6 +407,8 @@ SET(ROBWORK_LIBRARY_DIRS
     ${RW_ARCHIVE_OUT_DIR}
 )
 
+
+
 #
 # Setup the Library List here. We need to make sure the correct order is maintained
 # which is crucial for some compilers.
@@ -420,5 +432,5 @@ SET(ROBWORK_LIBRARIES
   ${Boost_LIBRARIES}
   ${LAPACK_LIBRARIES} 
   ${BLAS_LIBRARIES}
-  qhull
+  rw_qhull
 )
