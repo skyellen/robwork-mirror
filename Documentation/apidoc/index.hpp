@@ -37,17 +37,17 @@ their applications.
 
 
 \section sec_release_notes Release Notes
-- Changelog and release notes can be found here \subpage page_release_notes
+- Changelog and release notes can be found here \ref page_release_notes
 
 \section sec_index_manual Manuals and tutorials
-- \subpage page_rw_manual
+- \ref page_rw_manual
 
 \section sec_index_download Download
 
 - Download \b RobWork and \b RobWorkStudio from the <a href="http://www.robwork.dk">RobWork homepage</a>.
 
 \section sec_index_installation Installation
-- Installation instructions are included in \subpage page_rw_installation. However, online installation
+- Installation instructions are included in \ref page_rw_installation. However, online installation
 instructions are typically more up to date and these can be found at the <a href="http://www.robwork.dk">RobWork homepage</a>.
 
 \section sec_index_license License

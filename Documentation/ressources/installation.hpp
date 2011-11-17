@@ -3,6 +3,7 @@
 /**
 
 \page page_rw_installation Installation
+- \ref sec_rw_install_intro
 
 - \ref sec_rw_install_common
 -- \ref sec_rw_dependencies
@@ -19,7 +20,56 @@
 -- \ref sec_rw_install_boost_visual
 -- \ref sec_rw_compiling_robwork_visual
 
-\section sec_rw_install_common Installation instructions common for all platforms
+
+\section sec_rw_install_intro Introduction
+RobWork uses several external libraries such as
+Boost, Xerces and for RobWorkStudio also Qt. Furthermore, RobWork is developed
+for multiple platforms (Linux, Win7/xp MinGW, Mac, and Win7/xp Visual Studio) which
+sometimes complicates the installation.
+
+Here you find articles that describe how to install RobWork or compile RobWork
+and the dependencies on several different platforms.
+
+
+\section sec_rw_install_SDK Installing RobWork SDK
+ The quickest installation obtained through the provided SDK packages for Ubuntu (Debian packages)
+ and Windows (NSIS installers). The Debian packages automatically install all dependencies and
+ the NSIS installers contain headers and precompiled libraries for all dependencies.
+ These SDKs are suitable for users who want to get started quickly with the development of
+ RobWork and RobWorkStudio plugins.
+
+Please look at the <a href="http://www.robwork.dk/jrobwork/index.php?option=com_jdownloads&view=viewcategory&catid=8&Itemid=83">download</a>
+section on the homepage for downloading the SDK packages.
+
+
+\section sec_rw_install_compile Installing RobWork from source
+This section will explain how to install RobWork from source. Several platforms and compilers
+are supported and one should look for the description including he's platform.
+
+\subsection sec_rw_install_download Downloading the source
+RobWork source is made available through half year releases and SVN. The source releases can be downloaded
+from the RobWork homepage.
+
+You can get the latest developer snapshot of the RobWork source code from SVN using this account:
+
+Username: RO-RobWork
+
+Password: anonymous
+
+SVN repository: https://svn.mip.sdu.dk/RobWork/trunk
+
+Since the trunk is actively developed there might be bugs or compile issues in the source. Therefore
+check out the nightly builds on our cdash servers, these should indicate any problems there might be on
+the different supported platforms.
+
+The trunk is compiled nightly with several different compilers on both 32 and 64 bit platforms (Ubuntu Linux, Windows XP and Windows 7).
+The status of these builds is submitted to the following dashboards which enable users to keep track of broken builds:
+
+http://www.robwork.org/cdash/index.php?project=RobWork
+
+http://www.robwork.org/cdash/index.php?project=RobWorkStudio
+
+\subsection sec_rw_install_common Installation instructions common for all platforms
 
 Download and install the \b RobWork and \b RobWorkStudio packages and
 place them both in single directory of your choice. Uncompress the
@@ -74,6 +124,9 @@ and try opening a workcell file like for example \c
 RobWork/docs/workcell.wu.
 
 \section sec_rw_dependencies Dependencies of RobWork
+
+
+
 
 \section sec_rw_install_linux Installation on Linux
 
