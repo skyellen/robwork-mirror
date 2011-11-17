@@ -36,7 +36,6 @@ ENDIF()
 
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
 # CMake is able to find the Xerces include and lib dir
-SET(USE_XERCES ON)
 IF(DEFINED ENV{XERCES_ROOT})
   FILE(TO_CMAKE_PATH $ENV{XERCES_ROOT} XERCES_ROOT) # to make sure that we use / instead of \ in path
   SET(XERCESC_INCLUDE_DIR "${XERCES_ROOT}/include")
@@ -45,9 +44,9 @@ ENDIF()
 
 # Specify which optional packages you want. These external pacakges are included 
 # with RobWork and will be used if other packages are not specified
-SET(USE_LUA OFF)
-SET(USE_YAOBI ON)
-SET(USE_PQP ON)
+#SET(RW_DISABLE_LUA OFF)
+#SET(RW_DISABLE_YAOBI ON)
+#SET(RW_DISABLE_PQP ON)
 
 
 

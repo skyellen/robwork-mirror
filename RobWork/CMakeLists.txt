@@ -81,7 +81,7 @@ ENDIF()
 FIND_PACKAGE(Subversion)
 IF(Subversion_FOUND)
     Subversion_WC_INFO(${RW_ROOT} RobWork)
-    MESSAGE(STATUS "Current revision is ${RobWork_WC_REVISION}")
+    MESSAGE(STATUS "RobWork: Current revision is ${RobWork_WC_REVISION}")
 ENDIF(Subversion_FOUND)
 
 # Store the test results in a RobWorkConfig.hpp file.
