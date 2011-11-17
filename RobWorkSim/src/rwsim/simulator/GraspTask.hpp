@@ -34,13 +34,18 @@ public:
     //! the possible discrete outcomes of a single task simulation
     typedef enum Status {
         UnInitialized = 0,
-        Success, CollisionInitially,
-        ObjectMissed, ObjectDropped,
-        ObjectSlipped, TimeOut,
+        Success,
+        CollisionInitially,
+        ObjectMissed,
+        ObjectDropped,
+        ObjectSlipped,
+        TimeOut,
         SimulationFailure,
         InvKinFailure,
         PoseEstimateFailure,
         CollisionFiltered,
+        CollisionObjectInitially,
+        CollisionEnvironmentInitially,
         SizeOfStatusArray
      } TestStatus;
 

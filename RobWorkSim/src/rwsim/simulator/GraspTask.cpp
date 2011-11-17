@@ -41,6 +41,8 @@ namespace {
             case(GraspTask::InvKinFailure): out << "INVKINFAILURE"; break;
             case(GraspTask::TimeOut): out << "TIMEOUT"; break;
             case(GraspTask::SimulationFailure): out << "SIMULATIONFAILURE"; break;
+            case(GraspTask::CollisionObjectInitially): out << "COLLISIONOBJECT"; break;
+            case(GraspTask::CollisionEnvironmentInitially): out << "COLLISIONENV"; break;
             default:
                 RW_THROW("Not supposed to go here!");
                 break;

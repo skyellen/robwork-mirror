@@ -53,7 +53,7 @@ public:
 	typedef rw::common::Ptr<GraspTaskSimulator> Ptr;
 
 	//! the possible discrete outcomes of a single task simulation
-	typedef enum Status {
+	/*typedef enum Status {
 		UnInitialized = 0,
         Success, CollisionInitially,
         ObjectMissed, ObjectDropped,
@@ -62,7 +62,7 @@ public:
         InvKinFailure,
         PoseEstimateFailure
 	 } TestStatus;
-
+    */
 public:
 
 	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
@@ -103,8 +103,8 @@ public:
 	 * @param status [in]
 	 * @return
 	 */
-	int getStat(TestStatus status){
-	    if(status>=0 && status<=SimulationFailure)
+	int getStat(GraspTask::TestStatus status){
+	    if(status>=0 && status<=GraspTask::SizeOfStatusArray)
 	        return _stat[status];
 	    RW_THROW("Unknown TestStatus!");
 	}
@@ -121,11 +121,6 @@ public:
 	void setStepDelay(int delay){ _stepDelayMs=delay;};
 
 	// events
-	// simulation target performed event
-	typedef enum {TaskFormat, CommaSeperatedFormat} ExportFormat;
-
-	//static void save(const std::string& filename, rwlibs::task::CartesianTask::Ptr tasks,  ExportFormat format=TaskFormat);
-	//static void save(std::ostream& ostr, rwlibs::task::CartesianTask::Ptr tasks, ExportFormat format=TaskFormat);
 
 	struct GraspedObject {
         GraspedObject():object(NULL){}
