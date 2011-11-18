@@ -111,9 +111,9 @@ namespace {
             BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
                 Transform3D<> trans = wTe_n * target->get();
 
-                bool has = target->getPropertyMap().has("ObjectTtcpApproach");
-                if(has)
-                    trans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach");
+                //bool has = target->getPropertyMap().has("ObjectTtcpApproach");
+                //if(has)
+                //    trans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach");
 
 
                 fstr << "   <grasp>\n";
