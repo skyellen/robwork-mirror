@@ -229,9 +229,10 @@ IF(RW_USE_LUA)
         MESSAGE(STATUS "RobWork: LUA ENABLED! Both SWIG and Lua FOUND!")
         SET(RW_HAVE_SWIG True)
         SET(RW_HAVE_LUA True)
+        set(RW_LUA_LIBS rw_lua)
     ELSE ()
         SET(RW_HAVE_SWIG False)
-        SET(RW_HAVE_LUA True)
+        SET(RW_HAVE_LUA False)
         MESSAGE(SEND_ERROR "RobWork: Lua DISABLED! Since SWIG was NOT FOUND!")
     ENDIF ()
 ELSE ()
@@ -403,8 +404,7 @@ SET(ROBWORK_LIBRARIES
   rw_pathoptimization
   rw_simulation
   rw_opengl
-  rw_lua
-  ${TOLUA_LIBRARIES}
+  ${RW_LUA_LIBS}
   ${LUA_LIBRARIES}
   rw_proximitystrategies
   ${YAOBI_LIBRARIES}
