@@ -43,6 +43,8 @@ namespace {
             Transform3D<> trans;
             double scale;
             bool enabled;
+            CartesianTask::Ptr ctask;
+            CartesianTarget::Ptr ctarget;
         };
 
         RenderTargets():_size(-0.02), _zoffset(0.0){
@@ -88,6 +90,8 @@ namespace {
             _targets = targets;
         }
 
+        const std::vector<Target>& getTargets(){ return _targets; }
+
         void setZOffset(float offset){
             _zoffset = offset;
         }
@@ -120,6 +124,8 @@ SimTaskVisPlugin::SimTaskVisPlugin():
     connect(_loadTaskBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_updateBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_zoffsetSpin    ,SIGNAL(valueChanged(double)), this, SLOT(btnPressed()) );
+
+    connect(_graspSelectSpin    ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
     _updateBtn->setEnabled(false);
 
     //_propertyView = new PropertyViewEditor(this);
@@ -156,12 +162,24 @@ void SimTaskVisPlugin::open(WorkCell* workcell)
     // add drawable to the workcell
     if(workcell==NULL)
         return;
-
+    _wc = workcell;
     _render = ownedPtr( new RenderTargets() );
     getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame() );
 
     BOOST_FOREACH(MovableFrame* object, workcell->findFrames<MovableFrame>() ){
         _frameSelectBox->addItem(object->getName().c_str());
+    }
+
+    BOOST_FOREACH(Frame* object, workcell->findFrames<Frame>() ){
+        _tcpSelectBox->addItem(object->getName().c_str());
+    }
+
+    BOOST_FOREACH(MovableFrame* object, workcell->findFrames<MovableFrame>() ){
+        _baseSelectBox->addItem(object->getName().c_str());
+    }
+
+    BOOST_FOREACH(Device::Ptr dev, workcell->getDevices() ){
+        _deviceSelectBox->addItem(dev->getName().c_str());
     }
 
 }
@@ -186,6 +204,41 @@ void SimTaskVisPlugin::btnPressed() {
     } else if(obj==_zoffsetSpin){
 
         ((RenderTargets*)_render.get())->setZOffset( _zoffsetSpin->value() );
+
+    } else if(obj==_graspSelectSpin){
+        std::cout << "select event" << std::endl;
+        int index = _graspSelectSpin->value();
+        std::vector<RenderTargets::Target> targets = ((RenderTargets*)_render.get())->getTargets();
+        if(!((index>=0) && (index<=targets.size())) ){
+             return;
+        }
+
+        // get the selected TCP frame
+        std::string tcpName = _tcpSelectBox->currentText().toStdString();
+        std::string baseName = _baseSelectBox->currentText().toStdString();
+        std::string objectName = _frameSelectBox->currentText().toStdString();
+        std::string devName = _deviceSelectBox->currentText().toStdString();
+
+        Frame* tcp = _wc->findFrame(tcpName);
+        MovableFrame* base = _wc->findFrame<MovableFrame>(baseName);
+        MovableFrame* object = _wc->findFrame<MovableFrame>(objectName);
+        Device::Ptr device = _wc->findDevice(devName);
+        State state = getRobWorkStudio()->getState();
+        Transform3D<> wTtcp = targets[index].trans;
+
+        if(tcp!=NULL && base!=NULL){
+            Transform3D<> tcpTbase = Kinematics::frameTframe(tcp,base,state);
+            base->moveTo(wTtcp * tcpTbase, state);
+        }
+
+        if(device!=NULL){
+            if( targets[index].ctask->getPropertyMap().has("OpenQ") ){
+                Q q = targets[index].ctask->getPropertyMap().get<Q>("OpenQ");
+                if(q.size()==device->getDOF())
+                    device->setQ(q, state);
+            }
+        }
+        getRobWorkStudio()->setState(state);
 
     } else if(obj==_updateBtn){
         // we need the frame that this should be drawn with respect too
@@ -221,6 +274,8 @@ void SimTaskVisPlugin::btnPressed() {
 
 
             RenderTargets::Target rt;
+            rt.ctask = task;
+            rt.ctarget = target;
             rt.color[0] = 0.0;
             rt.color[1] = 0.0;
             rt.color[2] = 0.0;
@@ -330,6 +385,8 @@ void SimTaskVisPlugin::btnPressed() {
 
         }
         //std::cout << "NR TARGETS:: " << rtargets.size() << std::endl;
+        _graspSelectSpin->setMinimum(0);
+        _graspSelectSpin->setMaximum(rtargets.size()-1);
 
         // if quality should be shown then we start by calculating the offset and scale
         double offset = 0;
@@ -590,9 +647,9 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
     log().info() << "Loading tasks: ";
     log().info() << "\t-Filename: " << taskFile;
     rwlibs::task::CartesianTask::Ptr task;
-
+    GraspTask::Ptr gtask;
     try {
-        GraspTask::Ptr gtask = GraspTask::load(taskFile);
+        gtask = GraspTask::load(taskFile);
         std::cout << "Loading done" << std::endl;
         task = gtask->getRootTask();
     } catch (const Exception& exp) {
@@ -609,6 +666,35 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
         return;
     }
     */
+    std::string tcpID;
+    try{
+        tcpID = gtask->getTCPID();
+    } catch (...){
+
+    }
+    std::string gripperID;
+    try{
+        gripperID= gtask->getGripperID();
+    } catch (...){
+
+    }
+
+
+    int tcpIdx = _tcpSelectBox->findText(tcpID.c_str());
+    if(tcpIdx!=-1)
+        _tcpSelectBox->setCurrentIndex(tcpIdx);
+
+    int gripperIdx = _deviceSelectBox->findText(gripperID.c_str());
+    if(gripperIdx!=-1){
+        _deviceSelectBox->setCurrentIndex(gripperIdx);
+        Device::Ptr dev = _wc->findDevice( gripperID );
+        std::string basename = dev->getBase()->getName();
+        int baseIdx = _baseSelectBox->findText(basename.c_str());
+        _baseSelectBox->setCurrentIndex(baseIdx);
+    }
+
+
+
 
     // iterate over all tasks and add them to the taskQueue
     _roottask = task;
