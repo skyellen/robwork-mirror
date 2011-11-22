@@ -4,7 +4,7 @@ SET(FILES_CPP
   ./ac3d/LoaderAC3D.cpp
   ./3ds/Loader3DS.cpp
   ./3ds/Model3DS.cpp
-  ./ivg/LoaderIVG.cpp
+  #./ivg/LoaderIVG.cpp
   ./obj/LoaderOBJ.cpp
   ./tri/LoaderTRI.cpp
 
