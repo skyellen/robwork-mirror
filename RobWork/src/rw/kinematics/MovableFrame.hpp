@@ -53,12 +53,32 @@ namespace rw { namespace kinematics {
          */
         explicit MovableFrame(const std::string& name);
 
+        //! destructor
+        virtual ~MovableFrame(){};
+
         /**
-         * @brief Sets the transform in the state
-         * @param transform [in] transform to set
+         * @brief Sets the transform in the state. The transform is relative to the
+         * MovableFrame's parent frame.
+         * @param transform [in] transform to set. the transform is described relative to parent frame
          * @param state [out] state into which to set the transform
          */
         void setTransform(const math::Transform3D<>& transform, State& state);
+
+        /**
+         * @brief Changes the transform in the state, such that the movable frame is located in the
+         * transform which is described relative to world.
+         * @param transform [in] transform to set. transform is described relative to world frame
+         * @param state [out] state into which to set the transform
+         */
+        void moveTo(const math::Transform3D<>& transform, State& state);
+
+        /**
+         * @brief Changes the transform in the state, such that the movable frame is located in the
+         * transform which is described relative to refframe
+         * @param transform [in] transform to set. transform is described relative to refframe
+         * @param state [out] state into which to set the transform
+         */
+        void moveTo(const math::Transform3D<>& transform, Frame* refframe, State& state);
 
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,
