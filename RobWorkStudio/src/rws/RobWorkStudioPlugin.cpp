@@ -53,6 +53,7 @@ RobWorkStudioPlugin::RobWorkStudioPlugin(const QString& name, const QIcon& icon)
     _name(name),
     _log(NULL)
 {
+    setObjectName(name);
     connect(&_showAction, SIGNAL(triggered()), this, SLOT(showPlugin()));
     _log = Log::getInstance();
 }

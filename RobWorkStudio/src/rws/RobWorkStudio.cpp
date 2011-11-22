@@ -126,6 +126,15 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     int height = _settingsMap->get<int>("WindowHeight", 800);
     int x = _settingsMap->get<int>("WindowPosX", this->pos().x());
     int y = _settingsMap->get<int>("WindowPosY", this->pos().y());
+    std::vector<int> state_vector = _settingsMap->get<std::vector<int> >("QtMainWindowState", std::vector<int>());
+    if(state_vector.size()>0){
+        QByteArray mainAppState(state_vector.size(),0);
+        for(int i=0;i<mainAppState.size();i++){
+            mainAppState[i] = (char) state_vector[i];
+        }
+        this->restoreState(mainAppState);
+    }
+
 
     resize(width, height);
     this->move(x,y);
@@ -167,7 +176,32 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 }
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
-	// save the settings of each plugin
+    // save main window settings
+
+    //settings.setValue("pos", pos());
+    //settings.setValue("size", size());
+    //settings.setValue("state", saveState());
+    QByteArray mainAppState = saveState();
+    std::cout << mainAppState.data() << std::endl;
+    std::vector<int> state_vector( mainAppState.size() );
+    for(int i=0;i<mainAppState.size();i++){
+        state_vector[i] = mainAppState[i];
+    }
+
+
+    //QString myStringState;
+    //QTextStream out(&myStringState);
+    //out << mainAppState;
+    //std::cout << myStringState.toStdString()<< std::endl;
+
+    _settingsMap->set<std::vector<int> >("QtMainWindowState", state_vector);
+    _settingsMap->set<int>("WindowPosX", this->pos().x());
+    _settingsMap->set<int>("WindowPosY", this->pos().y());
+    _settingsMap->set<int>("WindowWidth", this->width());
+    _settingsMap->set<int>("WindowHeight", this->height());
+
+    // save the settings of each plugin
+    /*
     BOOST_FOREACH(RobWorkStudioPlugin* plugin, _plugins){
         bool visible = plugin->isVisible();
 
@@ -178,11 +212,7 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
         _settingsMap->set<bool>( std::string("PluginFloating_")+pname , floating);
         _settingsMap->set<int>( std::string("PluginArea_")+ pname , intarea);
     }
-
-    _settingsMap->set<int>("WindowPosX", this->pos().x());
-    _settingsMap->set<int>("WindowPosY", this->pos().y());
-    _settingsMap->set<int>("WindowWidth", this->width());
-    _settingsMap->set<int>("WindowHeight", this->height());
+    */
 
     if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
         _propMap.set("cmdline", PropertyMap());
@@ -454,6 +484,16 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
     plugin->setVisible(isVisible);
     // Only open the plugin if the work cell is loaded.
     if (_workcell) openPlugin(*plugin);
+
+    std::vector<int> state_vector = _settingsMap->get<std::vector<int> >("QtMainWindowState", std::vector<int>());
+    if(state_vector.size()>0){
+        QByteArray mainAppState(state_vector.size(),0);
+        for(int i=0;i<mainAppState.size();i++){
+            mainAppState[i] = (char) state_vector[i];
+        }
+        this->restoreState(mainAppState);
+    }
+
 }
 
 
