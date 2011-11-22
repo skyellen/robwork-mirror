@@ -90,7 +90,8 @@ const XMLCh* XMLBasisTypes::IntegerId = XMLString::transcode("Integer");
 const XMLCh* XMLBasisTypes::StringId = XMLString::transcode("String");
 const XMLCh* XMLBasisTypes::StringListId = XMLString::transcode("StringList");
 const XMLCh* XMLBasisTypes::StringPairId = XMLString::transcode("StringPair");
-
+const XMLCh* XMLBasisTypes::IntListId = XMLString::transcode("IntList");
+const XMLCh* XMLBasisTypes::DoubleListId = XMLString::transcode("DoubleList");
 
 const XMLCh* XMLBasisTypes::UnitAttributeId = XMLString::transcode("unit");
 
@@ -350,6 +351,17 @@ VelocityScrew6D<> XMLBasisTypes::readVelocityScrew6D(xercesc::DOMElement* elemen
 
 }
 
+std::vector<double> XMLBasisTypes::readDoubleList(xercesc::DOMElement* element, bool doCheckHeader ){
+    return readNVector(element);
+}
+
+std::vector<int> XMLBasisTypes::readIntList(xercesc::DOMElement* element, bool doCheckHeader ){
+    std::vector<double> res2 = readNVector(element);
+    std::vector<int> res(res2.size());
+    for(size_t i=0;i<res2.size();i++)
+        res[i] = (int)res2[i];
+    return res;
+}
 
 /**
  * @brief Returns rw::kinematics::State<> element read from \b element
@@ -547,6 +559,22 @@ namespace {
         return createStringFromArray<T>(v, v.size());
     }
 
+    template <class T>
+    XMLStr createStringFromVector(const T& v, size_t n) {
+        std::ostringstream str;
+        for (size_t i = 0; i<n; ++i) {
+            str<<v[i];
+            if (i != n-1)
+                str<<" ";
+        }
+        return XMLStr(str.str());
+    }
+
+    template <class T>
+    XMLStr createStringFromVector(const T& v) {
+        return createStringFromVector<T>(v, v.size());
+    }
+
 }
     xercesc::DOMElement* XMLBasisTypes::createElement(const XMLCh* id, const XMLCh* value, xercesc::DOMDocument* doc) {
         DOMElement* element = doc->createElement(id);
@@ -653,6 +681,13 @@ DOMElement* XMLBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D
     return element;*/
 }
 
+xercesc::DOMElement* XMLBasisTypes::createIntList(const std::vector<int>& ints, xercesc::DOMDocument* doc){
+    return createElement(IntListId, createStringFromVector(ints).uni(), doc);
+}
+
+xercesc::DOMElement* XMLBasisTypes::createDoubleList(const std::vector<double>& doubles, xercesc::DOMDocument* doc){
+    return createElement(DoubleListId, createStringFromVector(doubles).uni(), doc);
+}
 
 xercesc::DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
     return createElement(QStateId, createStringFromArray<State>(state, state.size()).uni(), doc);

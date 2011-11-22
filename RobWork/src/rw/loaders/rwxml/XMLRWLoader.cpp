@@ -854,7 +854,9 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
 
 	ProximitySetup::set( proximitySetup, wc );
 
-
+	BOOST_FOREACH( DummyProperty dprop, setup.dwc->_properties ){
+	    wc->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+	}
 
     // make sure to add the name of the workcell file to the workcell propertymap
     wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);

@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-#include "WorkCellLoader.hpp"
+#include "WorkCellFactory.hpp"
 
 #include <rw/loaders/tul/TULLoader.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
@@ -55,7 +55,7 @@ namespace {
 
 }
 
-WorkCell::Ptr WorkCellLoader::load(const std::string& file)
+WorkCell::Ptr WorkCellFactory::load(const std::string& file)
 {
     const std::string ext = StringUtil::getFileExtension(file);
 	if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev") {
@@ -65,7 +65,7 @@ WorkCell::Ptr WorkCellLoader::load(const std::string& file)
 	}
 }
 
-WorkCell::Ptr WorkCellLoader::load(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene)
+WorkCell::Ptr WorkCellFactory::load(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene)
 {
     const std::string ext = StringUtil::getFileExtension(file);
     if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev") {

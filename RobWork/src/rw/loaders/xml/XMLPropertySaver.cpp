@@ -175,6 +175,16 @@ xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc:
         elem = XMLPathSaver::createElement<Transform3D<>, Transform3DPath>(prop->getValue(), XMLPathFormat::T3DPathId, doc);
         break;
     }
+    case PropertyType::IntList: {
+        const Property<std::vector<int> >* prop = dynamic_cast<const Property<std::vector<int> >*>(property.get());
+        elem = XMLBasisTypes::createIntList(prop->getValue(), doc);
+        break;
+    }
+    case PropertyType::DoubleList: {
+        const Property<std::vector<double> >* prop = dynamic_cast<const Property<std::vector<double> >*>(property.get());
+        elem = XMLBasisTypes::createDoubleList(prop->getValue(), doc);
+        break;
+    }
     } //end switch(property.getType)
 
 

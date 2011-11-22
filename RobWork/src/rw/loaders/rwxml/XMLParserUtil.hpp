@@ -280,6 +280,7 @@ public:
     std::vector< DummyModel > _models;
     std::vector< DummyCollisionSetup > _colmodels;
 	std::vector< DummyProximitySetup > _proxmodels;
+	std::vector< DummyProperty > _properties;
 };
 
 /**********    Useful functors for the parsing proces    **********/

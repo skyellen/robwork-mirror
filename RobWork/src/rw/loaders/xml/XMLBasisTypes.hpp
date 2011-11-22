@@ -114,7 +114,8 @@ public:
 
     static const XMLCh* StringId;
     static const XMLCh* StringListId;
-
+    static const XMLCh* IntListId;
+    static const XMLCh* DoubleListId;
     static const XMLCh* StringPairId;
 
 
@@ -388,6 +389,10 @@ public:
      * @return int represented in \b element
      */
     static int readInt(xercesc::DOMElement* element, bool doCheckHeader = false);
+
+    static std::vector<int> readIntList(xercesc::DOMElement* element, bool doCheckHeader = false);
+
+    static std::vector<double> readDoubleList(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
      * @brief Reads in a boolean element
@@ -684,6 +689,9 @@ public:
      * @return Pointer to the newly created DOMElement
      */
     static xercesc::DOMElement* createStringList(const std::vector<std::string>& strings, xercesc::DOMDocument* doc);
+
+    static xercesc::DOMElement* createIntList(const std::vector<int>& ints, xercesc::DOMDocument* doc);
+    static xercesc::DOMElement* createDoubleList(const std::vector<double>& doubles, xercesc::DOMDocument* doc);
 
     /**
      * @brief Creates an element to represent strings \b first and \b second.

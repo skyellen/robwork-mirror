@@ -724,6 +724,7 @@ namespace {
                            | camera_r
                            | colsetup_r[ push_back_a(_wc._colmodels)]
 						   | proxsetup_r[ push_back_a(_wc._proxmodels)]
+				           | property_p[push_back_a( _wc._properties ) ]
 
                         )
                     );
