@@ -284,5 +284,10 @@ tutorial/MathJoggling.cpp
  For this exercise you should consider the class Kinematics.
 
 
+\section rw_tut_primer_invkin Inverse Kinematics
+
+
+
+
 
  */
