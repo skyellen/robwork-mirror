@@ -26,7 +26,7 @@
 
 #include <rw/graphics/3ds/Loader3DS.hpp>
 #include <rw/graphics/ac3d/LoaderAC3D.hpp>
-#include <rw/graphics/ivg/LoaderIVG.hpp>
+//#include <rw/graphics/ivg/LoaderIVG.hpp>
 #include <rw/graphics/obj/LoaderOBJ.hpp>
 #include <rw/graphics/tri/LoaderTRI.hpp>
 
@@ -184,12 +184,14 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
+    /*
     } else if (filetype == ".IVG") {
     	LoaderIVG loader;
 		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
+    */
 	} else {
         RW_THROW(
             "Unknown extension "
