@@ -80,11 +80,13 @@ BOOST_AUTO_TEST_CASE( test3DSLoading ){
             DrawableFactory::loadDrawableFile(testFilePath() + "geoms/motor.3ds", "motor");
 }
 
+/*
 BOOST_AUTO_TEST_CASE( testIVGLoading ){
     // test loading 3ds file
     rwlibs::opengl::Drawable::Ptr objObject =
             DrawableFactory::loadDrawableFile(testFilePath() + "geoms/staubli0.ivg", "staubli");
 }
+*/
 
 BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
