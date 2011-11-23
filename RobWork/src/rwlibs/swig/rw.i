@@ -9,6 +9,7 @@
 
 using namespace rwlibs::swig;
 using rw::trajectory::Interpolator;
+using rw::trajectory::Blend;
 using rw::trajectory::Trajectory;
 using rw::trajectory::InterpolatorTrajectory;
 
@@ -761,6 +762,24 @@ public:
  *  TRAJECTORY
  *
  * *************************************************************************/
+template <class T>
+class Blend
+{
+public:
+    virtual T x(double t) const = 0;
+    virtual T dx(double t) const = 0;
+    virtual T ddx(double t) const = 0;
+    virtual double tau1() const = 0;
+    virtual double tau2() const = 0;
+};
+
+%template (BlendR1) Blend<double>;
+%template (BlendR2) Blend<Vector2D>;
+%template (BlendR3) Blend<Vector3D>;
+%template (BlendSO3) Blend<Rotation3D>;
+%template (BlendSE3) Blend<Transform3D>;
+%template (BlendQ) Blend<Q>;
+
 
 template <class T>
 class Interpolator
@@ -950,13 +969,21 @@ public:
     void add(rw::common::Ptr<Interpolator<T> > interpolator);
     void add(rw::common::Ptr<Blend<T> > blend,
              rw::common::Ptr<Interpolator<T> > interpolator);
-    void add(Trajectory<T>* trajectory);
+    void add(InterpolatorTrajectory<T>* trajectory);
     size_t getSegmentsCount() const;
 
 
 
     //std::pair<rw::common::Ptr<Blend<T> >, rw::common::Ptr<Interpolator<T> > > getSegment(size_t index) const;
 };
+
+%template (InterpolatorTrajectoryR1) InterpolatorTrajectory<double>;
+%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2D>;
+%template (InterpolatorTrajectoryR3) InterpolatorTrajectory<Vector3D>;
+%template (InterpolatorTrajectorySO3) InterpolatorTrajectory<Rotation3D>;
+%template (InterpolatorTrajectorySE3) InterpolatorTrajectory<Transform3D>;
+%template (InterpolatorTrajectoryQ) InterpolatorTrajectory<Q>;
+
 
 /*
 class TrajectoryFactory
