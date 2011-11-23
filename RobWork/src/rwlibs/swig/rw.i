@@ -9,7 +9,8 @@
 
 using namespace rwlibs::swig;
 using rw::trajectory::Interpolator;
-
+using rw::trajectory::Trajectory;
+using rw::trajectory::InterpolatorTrajectory;
 
 %}
 
@@ -81,6 +82,9 @@ public:
 %template (StateTrajectoryPtr) rw::common::Ptr<StateTrajectory>;
 %template (QTrajectoryPtr) rw::common::Ptr<QTrajectory>;
 %template (Transform3DTrajectoryPtr) rw::common::Ptr<Transform3DTrajectory>;
+
+
+
 
 /**************************
  * MATH
@@ -768,6 +772,149 @@ public:
     virtual double duration() const = 0;
 };
 
+%template (InterpolatorR1) Interpolator<double>;
+%template (InterpolatorR2) Interpolator<Vector2D>;
+%template (InterpolatorR3) Interpolator<Vector3D>;
+%template (InterpolatorSO3) Interpolator<Rotation3D>;
+%template (InterpolatorSE3) Interpolator<Transform3D>;
+%template (InterpolatorQ) Interpolator<Q>;
+
+class LinearInterpolator: public Interpolator<double> {
+    LinearInterpolator(const double& start,
+                          const double& end,
+                          double duration);
+
+    virtual ~LinearInterpolator();
+
+    double x(double t) const;
+    double dx(double t) const;
+    double ddx(double t) const;
+    double duration() const;
+};
+
+class LinearInterpolatorQ: public Interpolator<Q> {
+    LinearInterpolatorQ(const Q& start,
+                          const Q& end,
+                          double duration);
+
+    virtual ~LinearInterpolator();
+
+    Q x(double t) const;
+    Q dx(double t) const;
+    Q ddx(double t) const;
+    double duration() const;
+};
+
+class LinearInterpolatorR3: public Interpolator<Vector3D> {
+    LinearInterpolatorR3(const Vector3D& start,
+                          const Vector3D& end,
+                          double duration);
+
+    virtual ~LinearInterpolator();
+
+    Vector3D x(double t) const;
+    Vector3D dx(double t) const;
+    Vector3D ddx(double t) const;
+    double duration() const;
+};
+
+class LinearInterpolatorSO3: public Interpolator<Rotation3D> {
+public:
+    LinearInterpolatorSO3(const Rotation3D& start,
+                          const Rotation3D& end,
+                          double duration);
+
+    virtual ~LinearInterpolatorSO3();
+
+    Rotation3D x(double t) const;
+    Rotation3D dx(double t) const;
+    Rotation3D ddx(double t) const;
+    double duration() const;
+};
+
+class LinearInterpolatorSE3: public Interpolator<Transform3D> {
+public:
+    LinearInterpolatorSE3(const Transform3D& start,
+                          const Transform3D& end,
+                          double duration);
+
+    virtual ~LinearInterpolatorSE3();
+
+    Transform3D x(double t) const;
+    Transform3D dx(double t) const;
+    Transform3D ddx(double t) const;
+    double duration() const;
+};
+
+
+//////////// RAMP interpolator
+
+class RampInterpolator: public Interpolator<double> {
+    RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits);
+    RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits, double duration);
+    virtual ~RampInterpolator();
+
+    double x(double t) const;
+    double dx(double t) const;
+    double ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolatorQ: public Interpolator<Q> {
+    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits);
+    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits, double duration);
+
+    virtual ~RampInterpolator();
+
+    Q x(double t) const;
+    Q dx(double t) const;
+    Q ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolatorR3: public Interpolator<Vector3D> {
+    RampInterpolatorR3(const Vector3D& start, const Vector3D& end,
+                       double vellimit,double acclimit);
+
+    virtual ~RampInterpolator();
+
+    Vector3D x(double t) const;
+    Vector3D dx(double t) const;
+    Vector3D ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolatorSO3: public Interpolator<Rotation3D> {
+public:
+    RampInterpolatorSO3(const Rotation3D& start,
+                          const Rotation3D& end,
+                          double vellimit,double acclimit);
+
+    virtual ~RampInterpolatorSO3();
+
+    Rotation3D x(double t) const;
+    Rotation3D dx(double t) const;
+    Rotation3D ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolatorSE3: public Interpolator<Transform3D> {
+public:
+    RampInterpolatorSE3(const Transform3D& start,
+                          const Transform3D& end,
+                          double linvellimit,double linacclimit,
+                          double angvellimit,double angacclimit);
+
+    virtual ~RampInterpolatorSE3();
+
+    Transform3D x(double t) const;
+    Transform3D dx(double t) const;
+    Transform3D ddx(double t) const;
+    double duration() const;
+};
+
+
+
 template <class T>
 class Trajectory
 {
@@ -780,7 +927,7 @@ public:
     virtual double endTime() const;
 
     std::vector<T> getPath(double dt, bool uniform = true);
-    virtual typename rw::common::Ptr< TrajectoryIterator<T> > getIterator(double dt = 1) const = 0;
+    //virtual typename rw::common::Ptr< TrajectoryIterator<T> > getIterator(double dt = 1) const = 0;
 
 protected:
     /**
@@ -789,6 +936,27 @@ protected:
     Trajectory() {};
 };
 
+%template (TrajectoryR1) Trajectory<double>;
+%template (TrajectoryR2) Trajectory<Vector2D>;
+%template (TrajectoryR3) Trajectory<Vector3D>;
+%template (TrajectorySO3) Trajectory<Rotation3D>;
+%template (TrajectorySE3) Trajectory<Transform3D>;
+%template (TrajectoryQ) Trajectory<Q>;
+
+template <class T>
+class InterpolatorTrajectory: public Trajectory<T> {
+public:
+    InterpolatorTrajectory(double startTime = 0);
+    void add(rw::common::Ptr<Interpolator<T> > interpolator);
+    void add(rw::common::Ptr<Blend<T> > blend,
+             rw::common::Ptr<Interpolator<T> > interpolator);
+    void add(Trajectory<T>* trajectory);
+    size_t getSegmentsCount() const;
+
+
+
+    //std::pair<rw::common::Ptr<Blend<T> >, rw::common::Ptr<Interpolator<T> > > getSegment(size_t index) const;
+};
 
 /*
 class TrajectoryFactory

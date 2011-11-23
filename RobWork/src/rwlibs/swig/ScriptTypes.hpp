@@ -29,6 +29,9 @@
 #include <rw/graphics.hpp>
 #include <rw/invkin.hpp>
 #include <rw/trajectory.hpp>
+#include <rw/trajectory/LinearInterpolator.hpp>
+#include <rw/trajectory/RampInterpolator.hpp>
+#include <rw/trajectory/InterpolatorTrajectory.hpp>
 
 #include <rw/RobWork.hpp>
 #include <iostream>
@@ -49,10 +52,9 @@ std::string toString(const T& x)
 
 
 // math types
-
+typedef rw::math::Vector2D<double> Vector2D;
 typedef rw::math::Vector3D<double> Vector3D;
 typedef rw::math::Q Q;
-typedef rw::math::Vector3D<double> Vector3D;
 typedef rw::math::Rotation3D<double> Rotation3D;
 typedef rw::math::EAA<double> EAA;
 typedef rw::math::RPY<double> RPY;
@@ -104,6 +106,19 @@ typedef rw::trajectory::StateTrajectory StateTrajectory;
 typedef rw::trajectory::QTrajectory QTrajectory;
 typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
 
+typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
+typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
+typedef rw::trajectory::LinearInterpolator<rw::math::Vector2D<double> > LinearInterpolatorR2;
+typedef rw::trajectory::LinearInterpolator<rw::math::Vector3D<double> > LinearInterpolatorR3;
+typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
+typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
+
+typedef rw::trajectory::RampInterpolator<double> RampInterpolator;
+typedef rw::trajectory::RampInterpolator<rw::math::Q> RampInterpolatorQ;
+typedef rw::trajectory::RampInterpolator<rw::math::Vector2D<double> > RampInterpolatorR2;
+typedef rw::trajectory::RampInterpolator<rw::math::Vector3D<double> > RampInterpolatorR3;
+typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
+typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
 
 typedef rw::models::WorkCell WorkCell;
