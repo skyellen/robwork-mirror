@@ -89,7 +89,7 @@ ENDIF ()
 # optional compilation of sandbox
 include(CMakeDependentOption)
 SET(RWS_HAVE_LUA False)
-CMAKE_DEPENDENT_OPTION(RWS_DISABLE_LUA "Set when you want to disable lua!" OFF "NOT RW_BUILD_WITH_LUA" ON)
+CMAKE_DEPENDENT_OPTION(RWS_DISABLE_LUA "Set when you want to disable lua!" OFF "RW_BUILD_WITH_LUA" ON)
 IF( NOT RWS_DISABLE_LUA )
     IF (RW_BUILD_WITH_LUA)
         MESSAGE(STATUS "RobWorkStudio: Lua ENABLED!")
