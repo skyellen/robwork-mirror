@@ -1,23 +1,63 @@
 
+INCLUDE(ExternalProject)
+
+# A short alias for the current directory.
+set(Root ${CMAKE_CURRENT_SOURCE_DIR})
+
+SET(LIB_INSTALL_DIR ${RW_LIB_INSTALL_DIR})
+SET(SRC_INSTALL_DIR ${RW_EXT_INSTALL_DIR})
+
 # Subdirectories to process.
 IF(RW_ENABLE_INTERNAL_PQP_TARGET)
+    #ExternalProject_Add(
+    #   rwPQP
+    #   SOURCE_DIR ${Root}/PQP
+    #   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+    #              -DLIB_INSTALL_DIR=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    #              -DSRC_INSTALL_DIR=${RW_EXT_INSTALL_DIR}
+    #   INSTALL_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    #)
     add_subdirectory(PQP)
 ENDIF()
+
 IF(RW_ENABLE_INTERNAL_YAOBI_TARGET)
+    #ExternalProject_Add(
+    #       rwyaobi
+       
+    #   SOURCE_DIR ${Root}/yaobi
+     #  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+     #             -DLIB_INSTALL_DIR=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    #              -DSRC_INSTALL_DIR=${RW_EXT_INSTALL_DIR}
+    #   INSTALL_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    #)
+
     add_subdirectory(yaobi)
 ENDIF()
 IF(RW_ENABLE_INTERNAL_LUA_TARGET)
+    #ExternalProject_Add(
+    #   rwlua
+    #   SOURCE_DIR ${Root}/lua
+    #   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+    #              -DLIB_INSTALL_DIR=${RW_LIB_INSTALL_DIR}
+    #              -DSRC_INSTALL_DIR=${RW_EXT_INSTALL_DIR}
+    #   INSTALL_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    #)
     add_subdirectory(lua)
 ENDIF()
 #IF(RW_ENABLE_INTERNAL_TOLUA_TARGET)
 #    add_subdirectory(tolua)
 #ENDIF()
 #IF(RW_ENABLE_INTERNAL_QHULL_TARGET)
-    add_subdirectory(qhull)
+#ExternalProject_Add(
+#   rwqhull
+#   SOURCE_DIR ${Root}/qhull
+#   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#   INSTALL_COMMAND ""
+#)
+add_subdirectory(qhull)
 #ENDIF()
 
-# A short alias for the current directory.
-set(Root ${CMAKE_CURRENT_SOURCE_DIR})
+
 
 # Copy libraries according to compiler (Linux users compile libraries manually)
 IF(WIN32)
