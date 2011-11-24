@@ -12,7 +12,6 @@ using rw::trajectory::Interpolator;
 using rw::trajectory::Blend;
 using rw::trajectory::Trajectory;
 using rw::trajectory::InterpolatorTrajectory;
-
 %}
 
 %include <std_string.i>
@@ -799,11 +798,12 @@ public:
 %template (InterpolatorQ) Interpolator<Q>;
 
 class LinearInterpolator: public Interpolator<double> {
+public:
     LinearInterpolator(const double& start,
                           const double& end,
                           double duration);
 
-    virtual ~LinearInterpolator();
+    virtual ~LinearInterpolatorQ();
 
     double x(double t) const;
     double dx(double t) const;
@@ -811,12 +811,14 @@ class LinearInterpolator: public Interpolator<double> {
     double duration() const;
 };
 
+
 class LinearInterpolatorQ: public Interpolator<Q> {
+public:
     LinearInterpolatorQ(const Q& start,
                           const Q& end,
                           double duration);
 
-    virtual ~LinearInterpolator();
+    virtual ~LinearInterpolatorQ();
 
     Q x(double t) const;
     Q dx(double t) const;
@@ -824,16 +826,15 @@ class LinearInterpolatorQ: public Interpolator<Q> {
     double duration() const;
 };
 
-class LinearInterpolatorR3: public Interpolator<Vector3D> {
-    LinearInterpolatorR3(const Vector3D& start,
-                          const Vector3D& end,
+class LinearInterpolatorR3: public Interpolator<Rotation3D> {
+public:
+    LinearInterpolatorR3(const Rotation3D& start,
+                          const Rotation3D& end,
                           double duration);
 
-    virtual ~LinearInterpolator();
-
-    Vector3D x(double t) const;
-    Vector3D dx(double t) const;
-    Vector3D ddx(double t) const;
+    Rotation3D x(double t) const;
+    Rotation3D dx(double t) const;
+    Rotation3D ddx(double t) const;
     double duration() const;
 };
 
@@ -842,8 +843,6 @@ public:
     LinearInterpolatorSO3(const Rotation3D& start,
                           const Rotation3D& end,
                           double duration);
-
-    virtual ~LinearInterpolatorSO3();
 
     Rotation3D x(double t) const;
     Rotation3D dx(double t) const;
@@ -857,8 +856,6 @@ public:
                           const Transform3D& end,
                           double duration);
 
-    virtual ~LinearInterpolatorSE3();
-
     Transform3D x(double t) const;
     Transform3D dx(double t) const;
     Transform3D ddx(double t) const;
@@ -868,34 +865,11 @@ public:
 
 //////////// RAMP interpolator
 
-class RampInterpolator: public Interpolator<double> {
-    RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits);
-    RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits, double duration);
-    virtual ~RampInterpolator();
-
-    double x(double t) const;
-    double dx(double t) const;
-    double ddx(double t) const;
-    double duration() const;
-};
-
-class RampInterpolatorQ: public Interpolator<Q> {
-    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits);
-    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits, double duration);
-
-    virtual ~RampInterpolator();
-
-    Q x(double t) const;
-    Q dx(double t) const;
-    Q ddx(double t) const;
-    double duration() const;
-};
 
 class RampInterpolatorR3: public Interpolator<Vector3D> {
+public:
     RampInterpolatorR3(const Vector3D& start, const Vector3D& end,
                        double vellimit,double acclimit);
-
-    virtual ~RampInterpolator();
 
     Vector3D x(double t) const;
     Vector3D dx(double t) const;
@@ -908,8 +882,6 @@ public:
     RampInterpolatorSO3(const Rotation3D& start,
                           const Rotation3D& end,
                           double vellimit,double acclimit);
-
-    virtual ~RampInterpolatorSO3();
 
     Rotation3D x(double t) const;
     Rotation3D dx(double t) const;
@@ -924,11 +896,31 @@ public:
                           double linvellimit,double linacclimit,
                           double angvellimit,double angacclimit);
 
-    virtual ~RampInterpolatorSE3();
-
     Transform3D x(double t) const;
     Transform3D dx(double t) const;
     Transform3D ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolator: public Interpolator<double> {
+public:
+    RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits);
+    //RampInterpolator(const double& start, const double& end, const double& vellimits, const double& acclimits, double duration);
+
+    double x(double t) const;
+    double dx(double t) const;
+    double ddx(double t) const;
+    double duration() const;
+};
+
+class RampInterpolatorQ: public Interpolator<Q> {
+public:
+    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits);
+    //RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits, double duration);
+
+    Q x(double t) const;
+    Q dx(double t) const;
+    Q ddx(double t) const;
     double duration() const;
 };
 

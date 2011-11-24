@@ -109,7 +109,7 @@ typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
 typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
 typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
 typedef rw::trajectory::LinearInterpolator<rw::math::Vector2D<double> > LinearInterpolatorR2;
-typedef rw::trajectory::LinearInterpolator<rw::math::Vector3D<double> > LinearInterpolatorR3;
+typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorR3;
 typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
 typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
 
