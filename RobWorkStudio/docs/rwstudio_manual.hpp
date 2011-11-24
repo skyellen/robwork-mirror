@@ -165,7 +165,7 @@ Following is an example of how to add a new frame to the workcell from your own 
 \code
     State oldState; // this is your old state
     Frame *newFrame = make_new_frame(); // create your frame
-    getRobWorkStudio()->getWorkCell()->getStructure()->addFrame(newFrame,parentFrame);
+    getRobWorkStudio()->getWorkcell()->getStructure()->addFrame(newFrame,parentFrame);
     // now update the oldState with the new state
     oldState = getRobWorkStudio()->getWorkCell()->getStructure()->upgradeState(oldState);
     // now this is VERY important, remember to update the RobWorkStudio state
