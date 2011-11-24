@@ -251,11 +251,13 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Up: {
             // take the last command in history
             int count = _commandHistory.count();
-            if(count==0) return;
+            if(count==0)
+                return;
             _histIdx--;
             if(_histIdx<0)
                 _histIdx = count-1;
             setCommand(_commandHistory[_histIdx]);
+
             return;
         }
         break;
@@ -350,13 +352,13 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     //According to the return value, display the result either in red or in blue
     if (res == 0){
         setTextColor(_outColor);
-        _histIdx = _commandHistory.count();
     } else {
         setTextColor(_errColor);
         append(strRes);
     }
-
     _commandHistory.append(command);
+    _histIdx = _commandHistory.count();
+
     //append(strRes);
 
     setTextColor(_cmdColor);
