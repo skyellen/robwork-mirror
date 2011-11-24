@@ -1,16 +1,8 @@
 
-#MESSAGE(STATUS "${SWIG_FOUND}")
-#MESSAGE(STATUS "${SWIG_DIR}")
-#MESSAGE(STATUS "${SWIG_EXECUTABLE}")
-#MESSAGE(STATUS "${SWIG_VERSION}")
-
-CMAKE_DEPENDENT_OPTION(RWS_DISABLE_LUA "Set to ON to disable Lua support!" OFF "NOT RWS_DISABLE_LUA" OFF)
-
-IF( RW_BUILD_WITH_LUA )
+IF( RWS_HAVE_LUA )
        
     FIND_PACKAGE(SWIG 1.3 QUIET)
     IF( SWIG_FOUND )
-        MESSAGE(STATUS "RobWorkStudio: Lua Enabled!")
     	
     	INCLUDE(UseSWIG)
     	SET(CMAKE_SWIG_FLAGS "")
@@ -35,7 +27,8 @@ IF( RW_BUILD_WITH_LUA )
     	ELSE()
     	    MESSAGE(STATUS "RobWorkStudio: Python interface generation DISABLED!")
     	ENDIF()  
+	ELSE()
+	    MESSAGE(FATAL_ERROR "RobWorkStudio: SWIG not found, LUA disabled DISABLED!")
     ENDIF()
-ELSE()
-    	MESSAGE(STATUS "RobWorkStudio: Lua DISABLED!")
+
 ENDIF()
