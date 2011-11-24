@@ -15,8 +15,8 @@ SET(RWS_BUILD_SANDBOX ON)
 #       have compiled Boost yourself with the -fPIC compiler flag
 SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 
-# Enable Lua
-SET(RWS_USE_LUA ON)
+# Disable Lua
+# SET(RWS_DISABLE_LUA ON)
 
 # Enable tests
 SET(RWS_BUILD_TESTS ON)
