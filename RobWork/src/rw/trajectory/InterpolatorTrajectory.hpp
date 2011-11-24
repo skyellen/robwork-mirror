@@ -217,7 +217,7 @@ namespace rw { namespace trajectory {
          *
          * @param trajectory [in] Trajectory to append
          */
-        void add(Trajectory<T>* trajectory)
+        void add(InterpolatorTrajectory<T>* trajectory)
         {
             BOOST_FOREACH(const Segment& segment, trajectory->_segments) {
                 addSegment(segment.blend1, segment.blend2, segment.interpolator);

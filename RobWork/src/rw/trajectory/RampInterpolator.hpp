@@ -259,6 +259,68 @@ namespace rw { namespace trajectory {
         double _tau_e;
     };
 
+
+    template <>
+    class RampInterpolator<double> : public Interpolator<double>
+    {
+    public:
+        //! @brief smart pointer type to this class
+        typedef typename rw::common::Ptr<RampInterpolator<double> > Ptr;
+
+        //! @brief smart pointer type const instance of class
+        typedef typename rw::common::Ptr<const RampInterpolator<double> > CPtr;
+
+        /**
+         * @brief Construct RampInterpolator starting a \b start and finishing in \b end.
+         *
+         * @param start [in] Start of interpolator
+         * @param end [in] End of interpolator
+         * @param velLimit [in] the max velocity in m/sec
+         * @param accLimit [in] the max acceleration in m/sec^2
+         */
+        RampInterpolator(double start, double end, double velLimit,double accLimit):
+            _start( start ),
+            _end( end ),
+            _ramp(rw::math::Q(1,0.0), rw::math::Q(1,_end), rw::math::Q(1,velLimit), rw::math::Q(1,accLimit) )
+        {
+        }
+
+        //! @copydoc Interpolator::x()
+        double x(double t) const { return _ramp.x(t)(0); }
+
+        //! @copydoc Interpolator::dx()
+        double dx(double t) const { return _ramp.dx(t)(0); }
+
+        //! @copydoc Interpolator::ddx()
+        double ddx(double t) const { return _ramp.ddx(t)(0); }
+
+        /**
+         * @brief Returns the start rotation of the interpolator
+         * @return The start rotation of the interpolator
+         */
+        double getStart() const { return _start; }
+
+        /**
+         * @brief Returns the end rotation of the interpolator
+         * @return The end rotation of the interpolator
+         */
+        double getEnd() const { return _end; }
+
+        /**
+         * @copydoc Interpolator::duration()
+         */
+        double duration() const { return _ramp.duration(); }
+
+    private:
+        double _start;
+        double _end;
+        double _b;
+        RampInterpolator<rw::math::Q> _ramp;
+
+        double _duration;
+    };
+
+
     /**
      * @brief Forward declaration for parabolic blend to make the
      * RampInterpolator<rw::math::Transform3D<T> > a friend

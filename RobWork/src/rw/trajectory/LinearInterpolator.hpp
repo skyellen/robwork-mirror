@@ -30,7 +30,6 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/MetricFactory.hpp>
 #include <rw/math/Metric.hpp>
-
 #include "Interpolator.hpp"
 #include "InterpolatorUtil.hpp"
 
@@ -82,15 +81,13 @@ namespace rw { namespace trajectory {
                 RW_THROW("Duration of an interpolator need to have a non-negative value");
 
             if (_duration == 0) {
-            	for (size_t i = 0; i<_vel.size(); i++)
-            		_vel(0) = 0;
+                _vel = _vel*0;
             } else {
-            	_vel = _b/_duration;
+                _vel = _b/_duration;
             }
-
-        	for (size_t i = 0; i<_vel.size(); i++)
-        		_acc(0) = 0;
+            _acc = _acc*0;
         }
+
 
         /**
          * @copydoc Interpolator::x()

@@ -22,7 +22,7 @@
 
 using namespace rw::trajectory;
 
-//template class RampInterpolator<double>;
+template class RampInterpolator<double>;
 template class RampInterpolator<rw::math::Q>;
 template class RampInterpolator<rw::math::Rotation3D<double> >;
 template class RampInterpolator<rw::math::Vector3D<double> >;
