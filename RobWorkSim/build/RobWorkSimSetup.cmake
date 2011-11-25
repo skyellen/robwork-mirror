@@ -94,15 +94,19 @@ ENDIF()
 
 # test if Bullet exists
 SET(RWSIM_HAVE_BULLET False)
-OPTION(RWSIM_USE_BULLET "Set to ON if Bullet should be use. you may need to set BULLET_ROOT")
-IF(RWSIM_USE_BULLET)
+#OPTION(RWSIM_USE_BULLET "Set to ON if Bullet should be use. you may need to set BULLET_ROOT")
+FIND_PACKAGE(Bullet QUIET)
+CMAKE_DEPENDENT_OPTION(RWSIM_DISABLE_BULLET "Set when you want to disable Bullet!" OFF "BULLET_FOUND" ON)
+IF(NOT RWSIM_DISABLE_BULLET)
     FIND_PACKAGE(Bullet)
     IF(BULLET_FOUND)
     	SET(RWSIM_HAVE_BULLET TRUE)
     	#INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIR} ${BULLET_ROOT}/Demos/)
-    	SET(RWSIM_BULLET_LIBRARY rwsim_bullet)
+    	SET(RWSIM_BULLET_LIBRARY rwsim_bullet ${BULLET_LIBRARIES})
+
         # BULLET_LIBRARIES
         MESSAGE(STATUS "RobWorkSim: Bullet enabled and found.")
+        SET(RW_BULLET_INCLUDE_DIR ${BULLET_INCLUDE_DIR} ${BULLET_ROOT}/Demos/ )
     ELSE()
         SET(RWSIM_HAVE_BULLET FALSE)
         MESSAGE(SEND_ERROR "RobWorkSim: Bullet enabled but not found. Please setup BULLET_ROOT." ${RWSIM_USE_ODE})
@@ -113,15 +117,18 @@ ENDIF()
 
 # test if ODE exists
 SET(RWSIM_HAVE_ODE False)
-OPTION(RWSIM_USE_ODE "Set to ON if ODE should be use. you may need to set ODE_ROOT" ${RWSIM_USE_ODE})
-IF(RWSIM_USE_ODE)
+FIND_PACKAGE(ODE QUIET)
+CMAKE_DEPENDENT_OPTION(RWSIM_DISABLE_ODE "Set when you want to disable Bullet!" OFF "ODE_FOUND" ON)
+#OPTION(RWSIM_USE_ODE "Set to ON if ODE should be use. you may need to set ODE_ROOT" ${RWSIM_USE_ODE})
+IF(NOT RWSIM_DISABLE_ODE)
     FIND_PACKAGE(ODE)
     IF(ODE_FOUND)
     	SET(RWSIM_HAVE_ODE TRUE)
     	#INCLUDE_DIRECTORIES( ${ODE_INCLUDE_DIR} )
-    	SET(RWSIM_ODE_LIBRARY rwsim_ode)
+    	SET(RWSIM_ODE_LIBRARY rwsim_ode ${ODE_LIBRARIES})
     	# ODE_LIBRARIES
         MESSAGE(STATUS "RobWorkSim: ODE enabled and found. Using ${ODE_BUILD_WITH}")
+        SET(RW_ODE_INCLUDE_DIR ${RW_ODE_INCLUDE_DIR} )
     ELSE()
         SET(RWSIM_HAVE_ODE FALSE)
         MESSAGE(SEND_ERROR "RobWorkSim: ODE enabled but not found. Please setup ODE_ROOT.")
@@ -132,10 +139,10 @@ ENDIF()
 
 
 SET(RWSIM_HAVE_RWPHYS False)
-OPTION(RWSIM_USE_RWPHYS "Set to ON if ODE should be use. you may need to set ODE_ROOT" ${RWSIM_USE_ODE})
-IF(RWSIM_USE_RWPHYS)
+OPTION(RWSIM_DISABLE_RWPHYS "Set when you want to disable RWPhysics engine!" OFF)
+IF(NOT RWSIM_DISABLE_RWPHYS)
 	SET(RWSIM_HAVE_RWPHYS TRUE)
-    MESSAGE(STATUS "RobWorkSim: RWPhysics enabled and found.")
+    MESSAGE(STATUS "RobWorkSim: RWPhysics enabled.")
 ENDIF()
 
 # Add additional packages that are required by your project here
@@ -145,7 +152,7 @@ IF( USE_OPENCV AND DEFINED OpenCV_ROOT_DIR)
     SET(OpenCV_FIND_REQUIRED_COMPONENTS CV CXCORE HIGHGUI)
     FIND_PACKAGE( OpenCV REQUIRED "CV CXCORE HIGHGUI")
     INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
-    MESSAGE("USING OPENCV")
+    MESSAGE("RobWorkSim: USING OPENCV")
 ENDIF()
 
 
@@ -199,9 +206,8 @@ SET(ROBWORKSIM_INCLUDE_DIR
     ${RWSIM_ROOT}/src
     ${ROBWORKSTUDIO_INCLUDE_DIR}
     ${ROBWORK_INCLUDE_DIR}
-    ${ODE_INCLUDE_DIR}
-    ${BULLET_INCLUDE_DIR} 
-    ${BULLET_ROOT}/Demos/
+    ${RW_ODE_INCLUDE_DIR}
+    ${RW_BULLET_INCLUDE_DIR}
 )
 
 #
@@ -227,8 +233,6 @@ SET(ROBWORKSIM_LIBRARIES
   ${RWSIM_ODE_LIBRARY}
   #${RWSIM_LUA}
   rwsim
-  ${BULLET_LIBRARIES}
-  ${ODE_LIBRARIES}
   ${ROBWORKSTUDIO_LIBRARIES}
   ${ROBWORK_LIBRARIES}
 )
