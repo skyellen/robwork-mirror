@@ -104,7 +104,8 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
     Jacobian jacobian = _device->baseJend(state);
 
     int iterations=0;
-    double error=1, last_error=1;
+    double error=1;
+    //double last_error=1;
     if (jacobian.size1() == jacobian.size2()) {
         // The jacobian has full rank, use Newton-Raphson to solve for deltaQ
         do {
@@ -163,7 +164,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
             jacobian = _device->baseJend(state);
 
             error = deltaX.norm2();
-            last_error = error;
+            //last_error = error;
             iterations++;
         } while( maxerror < error && iterations < maxiterations);
 
@@ -230,7 +231,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
             jacobian = _device->baseJend(state);
 
             error = deltaX.norm2();
-            last_error = error;
+            //last_error = error;
             iterations++;
         } while( maxerror<error && iterations < maxiterations );
 

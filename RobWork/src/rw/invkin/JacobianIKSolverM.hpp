@@ -112,6 +112,9 @@ namespace rw { namespace invkin {
                           const std::vector<kinematics::Frame*>& foi,
                           const kinematics::State& state);
 
+        //! @brief destructor
+        virtual ~JacobianIKSolverM(){}
+
         /**
          * @brief configures the iterative solver to return the best fit
          * found, even though error criterias was not met.

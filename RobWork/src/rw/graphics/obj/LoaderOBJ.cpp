@@ -835,12 +835,11 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
                     poly[j] = nb_points-face->_element.size()+j;
                 std::vector<IndexedTriangle<> > tris;
                 triangulatePolygon(poly, obj->_vertices, tris);
-                BOOST_FOREACH(IndexedTriangle<> &tri, tris){
+                obj->addTriangles(tris);
+                //BOOST_FOREACH(IndexedTriangle<> &tri, tris){
                     //obj->_faces.push_back( tri );
                     //mface->_subFaces.push_back( tri );
-                    obj->addTriangles(tris);
-
-                }
+                //}
             }
 		}
 	}

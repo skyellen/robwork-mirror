@@ -53,6 +53,9 @@ namespace rw { namespace kinematics {
         FixedFrame(const std::string& name,
 			const rw::math::Transform3D<>& transform);
 
+        //! @brief destructor
+        virtual ~FixedFrame(){}
+
         /**
          * @brief Sets the fixed transform of this frame.
          * @param transform [in] the new transformation of this frame

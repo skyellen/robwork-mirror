@@ -160,7 +160,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
 
             //std::vector<Model3D::MaterialFaces*> matFaces( model->_materials.size(), NULL );
             std::vector<Model3D::MaterialPolys*> matPolys( model->_materials.size(), NULL );
-            size_t nrMatFaces=0, nrMatPolys=0;
+            //size_t nrMatFaces=0, nrMatPolys=0;
             // for now we only support triangle meshes
 
             size_t nrFaces = obj->surfaces.size();
