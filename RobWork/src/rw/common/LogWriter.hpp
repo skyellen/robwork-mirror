@@ -92,6 +92,12 @@ namespace rw { namespace common {
         	return *this;
         }
 
+        LogWriter& operator<<(const Message& msg){
+            write(msg);
+            return *this;
+        }
+
+
         /**
          * @brief specialized stream operator
          */
