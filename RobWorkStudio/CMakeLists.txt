@@ -231,9 +231,9 @@ ENDIF()
 INCLUDE(build/packing.cmake)
 
 # Dashboard
-IF(DEFINED USE_CDASH AND USE_CDASH)
+#IF(DEFINED USE_CDASH AND USE_CDASH)
 	CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
-ENDIF()
+#ENDIF()
 
 # Check for supported MSVC compilers
 # TODO: relocate to test/CMakeLists.txt?
