@@ -375,16 +375,16 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
     //std::cout << "step callback" << std::endl;
     if(sstate._currentState==GRASPING){
         //std::cout << "grasping" << std::endl;
-        if(sim->getTime()> sstate._approachedTime+0.2){
+        if(sim->getTime()> sstate._approachedTime+0.5){
             // test if the grasp is in rest
-            Log::infoLog() << _alwaysResting;
+            //Log::infoLog() << _alwaysResting;
             if(DynamicUtil::isResting(_dhand, state, 0.0001, 0.1) /*|| _alwaysResting*/)
                 sstate._restCount++;
 
             bool isResting = sstate._restCount > 15;
             //std::cout << isResting << "&& (" << sim->getTime() << "-" << sstate._restingTime << ">0.4) || " << sim->getTime() << ">" << 10 << std::endl;
             // if it is in rest then lift object
-            if( (isResting && ( (sim->getTime()-sstate._restingTime)>0.4)) || sim->getTime()>10 ){
+            if( (isResting && ( (sim->getTime()-sstate._restingTime)>1.5)) || sim->getTime()>8 ){
                 // remember to check the transform of object relative to gripper
                 //_restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
                 sstate._graspTime = sim->getTime();
@@ -407,7 +407,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._target->getPropertyMap().set<Q>("QualityBeforeLifting", Q::zero(NR_OF_QUALITY_MEASURES));
                     sstate._currentState = NEW_GRASP;
                 } else {
-                    std::cout << "LIFTING" << std::endl;
+                    //std::cout << "LIFTING" << std::endl;
                     State nstate = state;
                     Q qualities = calcGraspQuality(state, sstate);
                     sstate._target->getPropertyMap().set<Q>("QualityBeforeLifting", qualities);
