@@ -25,7 +25,7 @@ SET(MATH_TEST_SRC
 ) 
 
 SET(COMMON_TEST_SRC
-  common/LogTestSuite.cpp
+  #common/LogTestSuite.cpp
   common/PropertyTest.cpp
   common/StringUtilTest.cpp
   common/CommonTest.cpp
