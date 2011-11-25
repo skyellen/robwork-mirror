@@ -285,6 +285,8 @@ namespace rw { namespace trajectory {
         {
         }
 
+        virtual ~RampInterpolator(){}
+
         //! @copydoc Interpolator::x()
         double x(double t) const { return _ramp.x(t)(0); }
 
