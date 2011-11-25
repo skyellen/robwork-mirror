@@ -239,7 +239,7 @@ INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
 # Install the API doc if doxygen has been run
 #IF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
 #	INSTALL(DIRECTORY "${RW_ROOT}/apidocs/html" DESTINATION "${RW_INSTALL_DIR}/apidocs"
-#		    PATTERN ".svn" EXCLUDE
+#		    PATTERN ".svn" EXCLUDc
 #	)
 #ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
 
@@ -255,9 +255,9 @@ ENDIF()
 INCLUDE(build/packing.cmake)
 
 # Dashboard
-IF(DEFINED USE_CDASH)
+#IF(DEFINED USE_CDASH)
 	CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
-ENDIF()
+#ENDIF()
 
 # Check for supported MSVC compilers
 # TODO: relocate to test/CMakeLists.txt?
