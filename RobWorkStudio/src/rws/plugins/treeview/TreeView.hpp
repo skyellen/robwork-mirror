@@ -144,9 +144,9 @@ private:
     // maintains the drawables that are not constructed and added from this plugin
     DrawableMap _drawableMap;
 
-    typedef std::map<rw::graphics::DrawableNode::Ptr, QTreeWidgetItem*> DrawableToItemMap;
+    //typedef std::map<rw::graphics::DrawableNode::Ptr, QTreeWidgetItem*> DrawableToItemMap;
     // maintains all drawables that are added by this map
-    DrawableToItemMap _drawableToItemMap;
+    //DrawableToItemMap _drawableToItemMap;
 
 };
 }

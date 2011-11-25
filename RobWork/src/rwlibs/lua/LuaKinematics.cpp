@@ -93,7 +93,7 @@ std::string rwkin::Frame::getName(){
 }
 
 bool rwkin::Frame::isDAF(){
-	return ::rw::kinematics::Kinematics::isDAF(*_frame);
+	return ::rw::kinematics::Kinematics::isDAF(_frame);
 }
 
 Transform3D rwkin::Frame::wTt(const State& state) const{
@@ -158,15 +158,15 @@ Transform3D rwkin::worldTframe(const rwkin::Frame* to, const rwkin::State& state
 
 
 rwkin::Frame rwkin::worldFrame(rwkin::Frame& frame, const rwkin::State& state) {
-    return rwkin::Frame(&::rw::kinematics::Kinematics::worldFrame( *frame.get(), state ));
+	return rwkin::Frame(::rw::kinematics::Kinematics::worldFrame( frame.get(), state ));
 }
 
 void rwkin::gripFrame(rwkin::State& state, rwkin::Frame& item, rwkin::Frame& gripper){
-	return ::rw::kinematics::Kinematics::gripFrame( state, *item.get(), *gripper.get() );
+	return ::rw::kinematics::Kinematics::gripFrame( item.get(), gripper.get(), state );
 }
 
 
 bool rwkin::isDAF(const rwkin::Frame& frame){
-	return ::rw::kinematics::Kinematics::isDAF( *frame.get() );
+	return ::rw::kinematics::Kinematics::isDAF( frame.get() );
 }
 

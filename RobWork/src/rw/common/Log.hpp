@@ -78,18 +78,19 @@ namespace rw { namespace common {
         typedef rw::common::Ptr<Log> Ptr;
 
         //! @brief log level mask
-    	enum LogLevelMask {
+    	enum LogIndexMask {
     		FatalMask=1, CriticalMask=2,
     		ErrorMask=4, WarningMask=8,
     		InfoMask=16, DebugMask=32,
     		User1Mask=64, User2Mask=128,
     		User3Mask=256, User4Mask=512,
     		User5Mask=1024, User6Mask=2048,
-    		User7Mask=4096, User8Mask=8096
+    		User7Mask=4096, User8Mask=8096,
+			AllMask = 0xFFFF
     	};
 
-    	//! @brief log level
-    	enum LogLevel {
+    	//! @brief Indices for different logs.
+    	enum LogIndex {
     		Fatal=0, Critical=1,
     		Error=2, Warning=3,
     		Info=4, Debug=5,
@@ -99,33 +100,43 @@ namespace rw { namespace common {
     		User7=12, User8=13
     	};
 
+
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the info log level
     	 * @return info LogWriter
     	 */
-        static LogWriter& infoLog(){ return Log::log().get(Info);};
+        static LogWriter& infoLog() { 
+			return Log::log().info();
+		};
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the warning log level
     	 * @return warning LogWriter
     	 */
-        static LogWriter& warningLog(){ return Log::log().get(Warning);};
+        static LogWriter& warningLog() { 
+			return Log::log().warning();
+		};
+
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the error log level
     	 * @return error LogWriter
     	 */
-        static LogWriter& errorLog(){ return Log::log().get(Error);};
+        static LogWriter& errorLog() { 
+			return Log::log().error();
+		};
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the debug log level
     	 * @return debug LogWriter
     	 */
-        static LogWriter& debugLog(){ return Log::log().get(Debug);};
+        static LogWriter& debugLog() { 
+			return Log::log().get(Debug);
+		};
 
     	/**
     	 * @brief returns the global log instance. Global in the sence
@@ -158,7 +169,7 @@ namespace rw { namespace common {
         virtual ~Log();
 
         /**
-         * @brief Associates a LogWriter with the loglevel \b id.
+         * @brief Associates a LogWriter with the LogIndex \b id.
          *
          * SetWriter can either be used to redefine an existing log or to create a new
          * custom output.
@@ -169,20 +180,37 @@ namespace rw { namespace common {
          * RW_LOG(Log::User1, "Message send to User log 1");
          * \endcode
          *
-         * @param id [in] the loglevel that the logwriter is associated with.
+         * @param id [in] the LogIndex that the logwriter is associated with.
          * @param writer [in] LogWriter object to use
          */
-        void setWriter(LogLevel id, LogWriter::Ptr writer);
+        void setWriter(LogIndex id, LogWriter::Ptr writer);
 
         /**
-         * @brief Returns the LogWriter that is associated with loglevel \b id
+         * @brief Associates a LogWriter with the logs specified with \b mask.
+         *
+         * SetWriter can either be used to redefine an existing log or to create a new
+         * custom output.
+         *
+         * Example:
+         * \code
+         * log.setWriterForMask(Log::InfoMask | Log::DebugMask, new LogStreamWriter(std::cout));
+         * RW_LOG(Log::Info, "Message send to User log 1");
+         * \endcode
+         *
+         * @param id [in] the LogIndex that the logwriter is associated with.
+         * @param writer [in] LogWriter object to use
+         */
+		void setWriterForMask(int mask, LogWriter::Ptr writer);
+
+        /**
+         * @brief Returns the LogWriter that is associated with LogIndex \b id
          *
          * If the \b id is unknown an exception is thrown.
          *
          * @param id [in] Log level
          * @return Reference to LogWriter object
          */
-        LogWriter& get(LogLevel id);
+        LogWriter& get(LogIndex id);
 
         /**
          * @brief Writes \b message to the log
@@ -192,10 +220,10 @@ namespace rw { namespace common {
          * @param id [in] Log identifier
          * @param message [in] String message to write
          */
-        void write(LogLevel id, const std::string& message);
+        void write(LogIndex id, const std::string& message);
 
         /**
-         * @brief Writes \b message to the logwriter associated with loglevel \b id
+         * @brief Writes \b message to the logwriter associated with LogIndex \b id
          *
          * If the \b id cannot be found an exception is thrown
 
@@ -203,7 +231,7 @@ namespace rw { namespace common {
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
-        void write(LogLevel id, const Message& message);
+        void write(LogIndex id, const Message& message);
 
         /**
          * @brief Writes \b message followed by a '\\n' to the log
@@ -213,7 +241,7 @@ namespace rw { namespace common {
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
-        void writeln(LogLevel id, const std::string& message);
+        void writeln(LogIndex id, const std::string& message);
 
         /**
          * @brief Calls flush on the specified log
@@ -222,12 +250,14 @@ namespace rw { namespace common {
          *
          * @param id [in] Log level
          */
-        void flush(LogLevel id);
+        void flush(LogIndex id);
+
 
         /**
          * @brief Calls flush on all logs
          */
         void flushAll();
+
 
         /**
          * @brief Removes a log
@@ -236,53 +266,97 @@ namespace rw { namespace common {
          *
          * @param id [in] Log identifier
          */
-        void remove(LogLevel id);
+        void remove(LogIndex id);
+
+
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the info log level
     	 * @return info LogWriter
     	 */
-        rw::common::LogWriter& info(){ return get(Info);};
+        rw::common::LogWriter& info(){ 
+			if (isLogEnabled(InfoMask))
+				return get(Info);
+			else
+				return *_defaultWriter;
+		};
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the warning log level
     	 * @return info LogWriter
     	 */
-        rw::common::LogWriter& warning(){ return get(Warning);};
+        rw::common::LogWriter& warning(){ 
+			if (isLogEnabled(WarningMask))			
+				return get(Warning);
+			else
+				return *_defaultWriter;
+		};
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the error log level
     	 * @return info LogWriter
     	 */
-        rw::common::LogWriter& error(){ return get(Error);};
+        rw::common::LogWriter& error(){ 
+			if (isLogEnabled(ErrorMask))			
+				return get(Error);
+			else
+				return *_defaultWriter;
+		};
 
     	/**
     	 * @brief convenience function for getting the LogWriter
     	 * that is associated with the debug log level
     	 * @return info LogWriter
     	 */
-        rw::common::LogWriter& debug(){ return get(Debug);};
+        rw::common::LogWriter& debug(){ 
+			if (isLogEnabled(DebugMask)) 
+				return get(Debug);
+			else
+				return *_defaultWriter;
+			};
 
         /**
          * @brief the log level is a runtime handle for enabling/disabling
          * logging to specific log levels.
-         * @param loglvl
+         * @param mask
+		 *
+		 * @note DEPRECATED. Use setEnable/setDisable instead
          */
-        void setLogLevelMask( int loglvl ){ _logLevelMask=loglvl; };
+        void setLogIndexMask( int mask ){ _logEnabledMask=mask; };
+
 
         /**
          * @brief get the current log level
-         * @return the loglevel
-         */
-        int getLogLevelMask() const{ return _logLevelMask; };
+         * @return the LogIndex
+		 * @note DEPRECATED. To be removed
+		 */
+        int getLogIndexMask() const{ return _logEnabledMask; };
+
+
+		/** 
+		 *
+		 */
+		void setEnable(int mask) {
+			_logEnabledMask = _logEnabledMask | mask;
+		}
+
+		void setDisable(int mask) {
+			_logEnabledMask = _logEnabledMask ^ mask;
+		}
+
 
     private:
-    	bool isValidLogLevel(LogLevel id);
+    	bool isValidLogIndex(LogIndex id);
 
-		int _logLevelMask;
+		bool isLogEnabled(LogIndexMask mask) {
+			return (_logEnabledMask & mask) != 0;
+		}
+
+
+		int _logEnabledMask;
 		std::vector<rw::common::LogWriter::Ptr> _writers;
 		rw::common::LogWriter::Ptr _defaultWriter;
     };

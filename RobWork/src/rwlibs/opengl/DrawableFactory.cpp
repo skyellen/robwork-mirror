@@ -144,7 +144,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
 
         Model3D::Ptr model = ownedPtr(new Model3D());
 
-        model->addTriMesh(Model3D::Material("stlmat",0.6,0.6,0.6), *data);
+        model->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *data);
 
         model->optimize(45*rw::math::Deg2Rad);
 

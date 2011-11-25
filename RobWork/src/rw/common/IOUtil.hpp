@@ -143,7 +143,7 @@ namespace rw { namespace common {
          * @param filename [in] name of file
          * @return the size of file in bytes
          */
-        static int getFileSize(const std::string& filename);
+        static size_t getFileSize(const std::string& filename);
 
         /**
          * @brief get the last date of writing of the file \b filename

@@ -57,7 +57,7 @@ public:
      */
     struct JointSpaceAnalysis {
        /** Number of nodes */
-       int nodecount;
+       double nodecount;
        /** Total length in joint space */
        double length;
 

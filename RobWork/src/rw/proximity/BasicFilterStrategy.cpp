@@ -231,7 +231,7 @@ namespace
 			}
 		}
 	}
-}
+} 
 
 
 void BasicFilterStrategy::initializeCollisionFramePairs(const State& state) {

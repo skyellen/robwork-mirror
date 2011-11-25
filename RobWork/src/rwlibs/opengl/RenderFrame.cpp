@@ -83,7 +83,10 @@ RenderFrame::RenderFrame(float size):
 	initializeColors(_red,_green,_blue);
 }
 
-RenderFrame::~RenderFrame(){}
+RenderFrame::~RenderFrame() {
+	if (_quadratic != NULL)
+		gluDeleteQuadric(_quadratic);
+}
 
 void RenderFrame::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {

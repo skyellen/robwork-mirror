@@ -50,7 +50,7 @@ void Model3D::removeObject(const std::string& name){
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
     const size_t maxMeshSize = 21845; // we use 16 bit indexing, so with normal array at size = 3*nrTriangles we get (2^16)/3 allowed
 
-    int nrObjects = std::floor(mesh.size()/(maxMeshSize*1.0))+1;
+    size_t nrObjects = (size_t)std::floor(mesh.size()/(maxMeshSize*1.0))+1;
     int matId = addMaterial( mat );
 
     for(size_t objNr = 0; objNr<nrObjects; objNr++){

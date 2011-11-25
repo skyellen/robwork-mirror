@@ -35,7 +35,7 @@ using namespace rws;
     class WriterWrapper: public LogWriter {
     public:
         typedef std::pair<std::string, QColor> Message;
-        WriterWrapper(ShowLog* slog, QColor color, Log::LogLevel id):
+        WriterWrapper(ShowLog* slog, QColor color, Log::LogIndex id):
             _slog(slog),_color(color),_id(id)
         {
 
@@ -88,7 +88,7 @@ using namespace rws;
     private:
         ShowLog *_slog;
         QColor _color;
-        Log::LogLevel _id;
+        Log::LogIndex _id;
         bool _isNewLine;
 
     };

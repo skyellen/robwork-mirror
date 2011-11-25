@@ -168,6 +168,16 @@ public:
 		_data.clear();
 	}
 
+
+	/**
+	 * @brief Provides reference to the internal data container
+	 */
+	const std::list<T>& data() const {
+		return _data;
+	}
+
+
+
 	/**
 	 * @brief Statitics to stream
 	 * @param os [in/out] stream to use

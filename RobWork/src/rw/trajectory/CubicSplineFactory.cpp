@@ -223,16 +223,16 @@ InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr 
 
     ublas::vector<T> B(N+1); // make room for boundary conditions
     ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
-    ublas::vector<T> E(N,timeStep),ETmp(N); // the left/right to the diagonal
+    ublas::vector<T> E(N,(T)timeStep),ETmp(N); // the left/right to the diagonal
     ublas::vector<T> Y(N+1); // the points that the spline should intersect
 
     ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
 
-    D[0] = 2*timeStep;
+    D[0] = (T)(2*timeStep);
     for (size_t i=1; i<D.size()-1; i++) {
-        D[i] = 2*(timeStep+timeStep);
+        D[i] = (T)(2*(timeStep+timeStep));
     }
-    D[N] = 2*timeStep;
+    D[N] = (T)(2*timeStep);
 
     for (size_t j=0; j<(size_t)dim; j++) {
         for (size_t i=0; i<(size_t)N+1; i++) {
@@ -242,11 +242,11 @@ InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr 
         ETmp = E;
         DTmp = D;
 
-        B[0] = 3.0*(Y[1]-Y[0])/timeStep-3*dqStart[j];
+        B[0] = (T)(3.0*(Y[1]-Y[0])/timeStep-3*dqStart[j]);
         for (size_t i=1; i<B.size()-1; i++) {
-            B[i] = 3.0*((Y[i+1]-Y[i])/timeStep - (Y[i]-Y[i-1])/timeStep);
+            B[i] = (T)(3.0*((Y[i+1]-Y[i])/timeStep - (Y[i]-Y[i-1])/timeStep));
         }
-        B[N] = 3*dqEnd[j]-3.0*(Y[N]-Y[N-1])/timeStep;
+        B[N] = (T)(3*dqEnd[j]-3.0*(Y[N]-Y[N-1])/timeStep);
 
         // solution will be available in B
         if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
@@ -258,8 +258,8 @@ InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr 
 
         for (size_t i=0; i<(size_t)N; i++) {
             c[j+i*dim] = B[i];
-            b[j+i*dim] =  (Y[i+1]-Y[i])/timeStep  -   timeStep*(B[i+1] + 2*B[i])/3.0;
-            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*timeStep);
+            b[j+i*dim] = (T)( (Y[i+1]-Y[i])/timeStep  -   timeStep*(B[i+1] + 2*B[i])/3.0);
+            d[j+i*dim] = (T)( (B[i+1]-B[i])/(3.0*timeStep) );
         }
     }
 
@@ -321,11 +321,11 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(T
         ETmp = H;
         DTmp = D;
 
-        B[0] = 3.0*(Y[1]-Y[0])/H[0]-3*dqStart[j];
+        B[0] = (T)(3.0*(Y[1]-Y[0])/H[0]-3*dqStart[j]);
         for (size_t i=1; i<B.size()-1; i++) {
-            B[i] = 3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]);
+            B[i] = (T)(3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]));
         }
-        B[N] = 3*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1];
+        B[N] = (T)(3.0*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
         // solution will be available in B
         if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
@@ -337,8 +337,8 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(T
 
         for (size_t i=0; i<(size_t)N; i++) {
             c[j+i*dim] = B[i];
-            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0;
-            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*H[i]);//   +B[i]+B[i+1];
+            b[j+i*dim] =  (T)((Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0);
+            d[j+i*dim] =  (T)((B[i+1]-B[i])/(3.0*H[i]));//   +B[i]+B[i+1];
         }
     }
 

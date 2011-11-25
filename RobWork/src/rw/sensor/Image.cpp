@@ -180,10 +180,10 @@ void Image::setPixel(size_t x, size_t y, const Pixel4f& value) {
             ((float*)&_imageData[cidx])[i] = value.ch[i];
     } else if( _depth == Image::Depth16S || _depth == Image::Depth16U) {
         for(size_t i=0;i<_nrChannels;i++)
-            ((int16_t*)&_imageData[cidx])[i] = value.ch[i];
+            ((int16_t*)&_imageData[cidx])[i] = (int16_t)value.ch[i];
     } else if( _depth == Image::Depth8S || _depth == Image::Depth8U) {
         for(size_t i=0;i<_nrChannels;i++)
-            ((int8_t*)&_imageData[cidx])[i] = value.ch[i];
+            ((int8_t*)&_imageData[cidx])[i] = (int8_t)value.ch[i];
     }
 }
 

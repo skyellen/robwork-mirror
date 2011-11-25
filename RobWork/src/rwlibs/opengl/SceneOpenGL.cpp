@@ -395,10 +395,10 @@ namespace {
                 //std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
                 if( vp.w/(double)vp.h<cam->getAspectRatio() ){
                     double h = vp.w/cam->getAspectRatio();
-                    glViewport( vp.x, vp.y + (vp.h-h)/2.0, vp.w, h);
+                    glViewport( vp.x, (GLint) (vp.y + (vp.h-h)/2.0), vp.w, (GLsizei)h);
                 } else {
                     double w = vp.h*cam->getAspectRatio();
-                    glViewport( vp.x+ (vp.w-w)/2.0, vp.y, w, vp.h);
+                    glViewport( (GLint)(vp.x+ (vp.w-w)/2.0), vp.y, (GLsizei)w, vp.h);
                 }
                 break;
             }

@@ -24,7 +24,7 @@ RenderModel3D::RenderModel3D(Model3D::Ptr model):
             _textures.push_back(gltex);
         } else {
             rw::math::Vector3D<float> rgb = texdata.getRGBData();
-            RWGLTexture::Ptr gltex = rw::common::ownedPtr( new RWGLTexture(rgb[0], rgb[1], rgb[2]) );
+            RWGLTexture::Ptr gltex = rw::common::ownedPtr( new RWGLTexture((unsigned char)(255*rgb[0]), (unsigned char)(255*rgb[1]), (unsigned char)(255*rgb[2])) );
             _textures.push_back(gltex);
         }
     }
@@ -158,7 +158,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 */
             } else {
                 glBegin(GL_TRIANGLES);
-                for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+                for(int i=data.startIdx; i<data.startIdx+data.size; i++){
                     // draw faces
                     const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
                     glNormal3fv( &obj._normals[ tri[0] ](0) );

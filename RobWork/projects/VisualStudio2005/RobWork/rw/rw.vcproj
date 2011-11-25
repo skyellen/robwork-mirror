@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="rw"
 	ProjectGUID="{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}"
 	RootNamespace="rw"
@@ -3364,6 +3364,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\RampInterpolator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\RampInterpolator.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Timed.cpp"

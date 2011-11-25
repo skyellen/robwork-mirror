@@ -265,10 +265,10 @@ namespace rw { namespace trajectory {
     {
     public:
         //! @brief smart pointer type to this class
-        typedef typename rw::common::Ptr<RampInterpolator<double> > Ptr;
+        typedef rw::common::Ptr<RampInterpolator<double> > Ptr;
 
         //! @brief smart pointer type const instance of class
-        typedef typename rw::common::Ptr<const RampInterpolator<double> > CPtr;
+        typedef rw::common::Ptr<const RampInterpolator<double> > CPtr;
 
         /**
          * @brief Construct RampInterpolator starting a \b start and finishing in \b end.

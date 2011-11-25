@@ -64,14 +64,14 @@ void MovableFrame::setTransform(const Transform3D<>& transform, State& state)
     setData(state, q);
 }
 
-void MovableFrame::moveTo(const math::Transform3D<>& wTtarget, State& state){
+void MovableFrame::moveTo(const Transform3D<>& wTtarget, State& state){
     // first calculate transform from refframe to parent frame
     Transform3D<> wTparent = Kinematics::worldTframe(getParent(), state);
     Transform3D<> parentTmframe = inverse(wTparent) * wTtarget;
     setTransform( parentTmframe, state );
 }
 
-void MovableFrame::moveTo(const math::Transform3D<>& refTtarget, Frame* refframe, State& state){
+void MovableFrame::moveTo(const Transform3D<>& refTtarget, Frame* refframe, State& state){
     // first calculate transform from refframe to parent frame
     Transform3D<> parentTref = Kinematics::frameTframe(getParent(), refframe, state);
     Transform3D<> parentTmframe = parentTref * refTtarget;

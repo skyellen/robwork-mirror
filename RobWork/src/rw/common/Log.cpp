@@ -70,15 +70,16 @@ Log::Ptr Log::getInstance(){
 }
 
 Log::Log():
-	_logLevelMask(Log::Debug),
+	_logEnabledMask(Log::AllMask),
 	_writers(32)
-
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
     setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
     setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
     setWriter(Warning, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
     setWriter(Error, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
+	setWriter(Critical, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
+	setWriter(Fatal, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
 	
 }
 
@@ -87,33 +88,48 @@ Log::~Log() {
 
 }
 
-void Log::setWriter(LogLevel id, rw::common::LogWriter::Ptr writer)
+void Log::setWriter(LogIndex id, rw::common::LogWriter::Ptr writer)
 {
 	_writers[id] = writer;
 }
 
-rw::common::LogWriter& Log::get(LogLevel id)
+void Log::setWriterForMask(int mask, LogWriter::Ptr writer) 
 {
-	if(isValidLogLevel(id))
+	//The mask and log indices follows each other such that
+	//index "i" has mask "2^i"
+	int pattern = 1;
+	size_t index = 0;
+	do {
+		if (mask & pattern)
+			_writers[index] = writer;
+		pattern = pattern << 1;
+		index++;
+	} while (index < _writers.size());
+
+}
+
+rw::common::LogWriter& Log::get(LogIndex id)
+{
+	if(isValidLogIndex(id))
 		return *_writers[id];
 	return *_defaultWriter;
 	//RW_ASSERT("No such writer");
     //RW_THROW("LogWriter named: " << id << " does not exist");
 }
 
-void Log::write(LogLevel id, const std::string& message){
+void Log::write(LogIndex id, const std::string& message){
     get(id).write(message);
 }
 
-void Log::write(LogLevel id, const rw::common::Message& message){
+void Log::write(LogIndex id, const rw::common::Message& message){
     get(id).write(message);
 }
 
-void Log::writeln(LogLevel id, const std::string& message){
+void Log::writeln(LogIndex id, const std::string& message){
     get(id).write(message + '\n');
 }
 
-void Log::flush(LogLevel id){
+void Log::flush(LogIndex id){
     get(id).flush();
 }
 
@@ -125,12 +141,12 @@ void Log::flushAll(){
 }
 
 
-void Log::remove(LogLevel id)
+void Log::remove(LogIndex id)
 {
 	_writers[id] = NULL;
 }
 
-bool Log::isValidLogLevel(LogLevel id){
+bool Log::isValidLogIndex(LogIndex id){
 	if(id<0 || _writers.size()<(size_t)id)
 		return false;
 	if(_writers[id]==NULL)
