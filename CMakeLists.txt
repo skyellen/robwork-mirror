@@ -15,52 +15,53 @@ IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release) 
 ENDIF()
 
-include(ExternalProject)
-ExternalProject_Add(
-   RobWork
-   SOURCE_DIR ${RW_ROOT}
-   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-   INSTALL_COMMAND ""
-)
+#include(ExternalProject)
+#ExternalProject_Add(
+#   RobWork
+#   SOURCE_DIR ${RW_ROOT}
+#   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#   INSTALL_COMMAND ""
+#)
 
-ExternalProject_Add(
-   RobWorkStudio
-   SOURCE_DIR ${RWS_ROOT}
-   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-   INSTALL_COMMAND ""
-)
+#ExternalProject_Add(
+#   RobWorkStudio
+#   SOURCE_DIR ${RWS_ROOT}
+#   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#   INSTALL_COMMAND ""
+#)
 
-ExternalProject_Add(
-   RobWorkSim
-   SOURCE_DIR ${RWSIM_ROOT}
-   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-   INSTALL_COMMAND ""
-)
+#ExternalProject_Add(
+#   RobWorkSim
+#   SOURCE_DIR ${RWSIM_ROOT}
+#   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#   INSTALL_COMMAND ""
+#)
 
-ExternalProject_Add(
-   RobWorkHardware
-   SOURCE_DIR ${RWSIM_ROOT}
-   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-   INSTALL_COMMAND ""
-)
+#ExternalProject_Add(
+#   RobWorkHardware
+#   SOURCE_DIR ${RWHW_ROOT}
+#   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#   INSTALL_COMMAND ""
+#)
 
-add_dependencies(RobWorkStudio RobWork)
-add_dependencies(RobWorkSim RobWork RobWorkStudio)
-add_dependencies(RobWorkHardware RobWork RobWorkStudio)
+#add_dependencies(RobWorkStudio RobWork)
+#add_dependencies(RobWorkSim RobWork RobWorkStudio)
+#add_dependencies(RobWorkHardware RobWork RobWorkStudio)
+
+
+#SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
+#FIND_PACKAGE(RobWork)
+#MESSAGE(${ROBWORK_VERSION})
+add_subdirectory(RobWork)
+add_subdirectory(RobWorkStudio)
+add_subdirectory(RobWorkSim)
+
+CONFIGURE_FILE(${ROOT}/Documentation/Doxyfile.in ${ROOT}/Documentation/Doxyfile) 
 
 FIND_PROGRAM(doc_executable doxygen)
 IF(doc_executable)
-    ADD_CUSTOM_TARGET(doc ${doc_executable} WORKING_DIRECTORY ${ROOT}/Documentation)
+    ADD_CUSTOM_TARGET(rwdoc ${doc_executable} WORKING_DIRECTORY ${ROOT}/Documentation)
 ENDIF()
-
-SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(RobWork)
-MESSAGE(${ROBWORK_VERSION})
-#add_subdirectory(RobWork)
-#add_subdirectory(RobWorkStudio)
-#add_subdirectory(RobWorkSim)
-
-CONFIGURE_FILE(${ROOT}/Documentation/Doxyfile.in ${ROOT}/Documentation/Doxyfile) 
 
 
 #add_subdirectory(RobWorkHardware)
