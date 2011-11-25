@@ -91,6 +91,8 @@ namespace {
 		DeviceInitState(rw::math::Q q, rw::models::Device::Ptr dev):
 	        _q(q),_dev(dev){}
 
+		virtual ~DeviceInitState(){};
+
         void setInitialState(rw::kinematics::State& state) {
             _dev->setQ(_q, state);
         }
@@ -232,6 +234,7 @@ namespace {
                     break;
                 default:
                     val << "";
+                    break;
             }
 
             if( model._isDrawable ){
@@ -265,6 +268,7 @@ namespace {
                 break;
             default:
                 assert(0);
+                break;
         }
     }
 

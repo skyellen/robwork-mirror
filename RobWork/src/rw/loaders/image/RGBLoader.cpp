@@ -25,8 +25,7 @@
 using namespace rw::loaders;
 using namespace rw::sensor;
 
-namespace {     rw::sensor::Image::Ptr loadImage(const std::string& filename);
-
+namespace {
 
     #ifndef SEEK_SET
     #  define SEEK_SET 0
@@ -135,6 +134,9 @@ namespace {     rw::sensor::Image::Ptr loadImage(const std::string& filename);
         }
 
         size_t stat = fread(raw, 1, 12, raw->file);
+        if (stat != 12) {
+            RW_THROW("Reading error");
+        }
 
         if (swapFlag) {
             ConvertShort(&raw->imagic, 6);
@@ -192,6 +194,7 @@ namespace {     rw::sensor::Image::Ptr loadImage(const std::string& filename);
             fseek(raw->file, raw->rowStart[y + z * raw->sizeY], SEEK_SET);
             stat = fread(raw->tmp, 1, (unsigned int) raw->rowSize[y + z * raw->sizeY],
                   raw->file);
+            if (stat != (size_t)raw->rowSize[y + z * raw->sizeY]) {RW_THROW("Reading error");}
 
             iPtr = raw->tmp;
             oPtr = buf;
@@ -216,6 +219,7 @@ namespace {     rw::sensor::Image::Ptr loadImage(const std::string& filename);
             fseek(raw->file, 512 + (y * raw->sizeX) + (z * raw->sizeX
                     * raw->sizeY), SEEK_SET);
             stat = fread(buf, 1, raw->sizeX, raw->file);
+            if (stat != raw->sizeX) {RW_THROW("Reading error");}
         }
     }
 

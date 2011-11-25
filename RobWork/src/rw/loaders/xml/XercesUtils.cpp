@@ -199,7 +199,7 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::s
 
 
 void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, XMLFormatTarget* formatTarget) {
-      int retval;
+      //int retval;
       {
 
           try
@@ -246,14 +246,14 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, XMLFormatTar
           catch (const OutOfMemoryException&)
           {
               XERCES_STD_QUALIFIER cerr << "OutOfMemoryException" << XERCES_STD_QUALIFIER endl;
-              retval = 5;
+              //retval = 5;
           }
           catch (XMLException& e)
           {
               XERCES_STD_QUALIFIER cerr << "An error occurred during creation of output transcoder. Msg is:"
                   << XERCES_STD_QUALIFIER endl
                   << XMLStr(e.getMessage()).str() << XERCES_STD_QUALIFIER endl;
-              retval = 4;
+              //retval = 4;
           }
 
       }

@@ -570,7 +570,6 @@ namespace
         const Tag::PropertyList& vals)
     {
         typedef Tag::PropertyList::const_iterator I;
-        const I end = vals.end();
         for (I p = vals.begin(); p != vals.end(); ++p) {
             out << " ";
             emitTagProperty(out, **p);

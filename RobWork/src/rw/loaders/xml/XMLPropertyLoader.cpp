@@ -58,9 +58,7 @@ namespace {
         }
 		if (throwOnEmpty)
 			RW_THROW("No child element to node " + XMLStr(element->getNodeName()).str());
-		else	
-			return NULL;
-        
+		return NULL;
     }
 
 
