@@ -47,7 +47,9 @@
     #include <rws/plugins/planning/Planning.hpp>
     #include <rws/plugins/propertyview/PropertyView.hpp>
     #include <rws/plugins/sensors/Sensors.hpp>
+#if RWS_HAVE_LUA
     #include <rws/plugins/lua/Lua.hpp>
+#endif
 #endif
 
 
