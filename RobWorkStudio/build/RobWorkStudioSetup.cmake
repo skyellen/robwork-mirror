@@ -95,6 +95,7 @@ IF( NOT RWS_DISABLE_LUA )
         MESSAGE(STATUS "RobWorkStudio: Lua ENABLED!")
         SET(RWS_LUA "rwstudio_lua")
         SET(RWS_HAVE_LUA True)
+        SET(LUA_EDITOR_WINDOW LuaEditorWindow)
     ELSE ()
         MESSAGE(STATUS "RobWorkStudio: Lua DISABLED! - RobWork is NOT compiled with Lua support!")
         SET(RWS_HAVE_LUA False)    
@@ -192,13 +193,15 @@ SET(ROBWORKSTUDIO_LIBRARY_DIRS
     ${RWS_ARCHIVE_OUT_DIR}
 )
 
+
+
 #
 # Setup the Library List here. We need to make sure the correct order is maintained
 # which is crucial for some compilers.
 # 
 SET(ROBWORKSTUDIO_LIBRARIES
   ${RWS_SANDBOX}
-  LuaEditorWindow
+  ${LUA_EDITOR_WINDOW}
   ${RWS_LUA}
   #rwstudio_glview
   rwstudio
