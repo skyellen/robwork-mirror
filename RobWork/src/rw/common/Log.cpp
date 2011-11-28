@@ -39,6 +39,7 @@ namespace {
         virtual void write(const std::string& str){};
         virtual void write(const rw::common::Message& msg){};
         virtual void writeln(const std::string& str){};
+		virtual void setTabLevel(int) {};
 	};
 }
 
@@ -90,7 +91,8 @@ Log::~Log() {
 
 void Log::setWriter(LogIndex id, rw::common::LogWriter::Ptr writer)
 {
-	_writers[id] = writer;
+	writer->setTabLevel(_tabLevel);
+	_writers[id] = writer;	
 }
 
 void Log::setWriterForMask(int mask, LogWriter::Ptr writer) 
@@ -144,6 +146,25 @@ void Log::flushAll(){
 void Log::remove(LogIndex id)
 {
 	_writers[id] = NULL;
+}
+
+
+void Log::increaseTabLevel() {
+	_tabLevel++;
+    for(size_t i=0;i<_writers.size();i++){
+    	if(_writers[i]!=NULL)
+    		_writers[i]->setTabLevel(_tabLevel);
+    }
+}
+
+void Log::describeTabLevel() {
+	if (_tabLevel > 0)
+		_tabLevel--;
+
+    for(size_t i=0;i<_writers.size();i++){
+    	if(_writers[i]!=NULL)
+    		_writers[i]->setTabLevel(_tabLevel);
+    }
 }
 
 bool Log::isValidLogIndex(LogIndex id){

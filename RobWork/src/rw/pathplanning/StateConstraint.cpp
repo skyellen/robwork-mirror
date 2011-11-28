@@ -17,6 +17,7 @@
 
 
 #include "StateConstraint.hpp"
+#include <rw/common/macros.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::pathplanning;
@@ -37,11 +38,25 @@ namespace
     private:
         bool doInCollision(const State& state) const
         {
-            return _detector->inCollision(state);
+			if (_log == NULL)
+				return _detector->inCollision(state, 0, true);
+			else {
+				CollisionDetector::QueryResult res;
+				bool inCollision = _detector->inCollision(state, &res, true);
+				BOOST_FOREACH(FramePair pair, res.collidingFrames) {
+					_log->debug()<<RW_MSG("Colliding Frames: "<<pair.first->getName()<<" - "<<pair.second->getName());
+				}
+				return inCollision;
+			}	
         }
+
+		void doSetLog(Log::Ptr log) {
+			_log = log;
+		}
 
     private:
 		rw::common::Ptr<CollisionDetector> _detector;
+		Log::Ptr _log;
     };
 
     class FromConstraints : public StateConstraint
@@ -62,6 +77,12 @@ namespace
             return false;
         }
 
+		void doSetLog(Log::Ptr log) {
+			BOOST_FOREACH(const StateConstraint::Ptr& sc, _constraints) {
+                sc->setLog(log);
+			}
+		}
+
     private:
 		std::vector<StateConstraint::Ptr> _constraints;
     };
@@ -70,6 +91,10 @@ namespace
 bool StateConstraint::inCollision(const rw::kinematics::State& state) const
 {
     return doInCollision(state);
+}
+
+void StateConstraint::setLog(rw::common::Log::Ptr log) {
+	doSetLog(log);
 }
 
 StateConstraint::Ptr StateConstraint::make(CollisionDetector::Ptr detector)

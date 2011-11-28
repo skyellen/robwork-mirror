@@ -24,6 +24,7 @@
 */
 
 #include <rw/common/Ptr.hpp>
+#include <rw/common/Log.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
@@ -45,6 +46,13 @@ namespace rw { namespace pathplanning {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<StateConstraint> Ptr;
+
+
+		/**
+		 * @brief Set the log to be used for writing debug info
+		 * @param log [in] Log to which debug information is to be written
+		 */
+		virtual void setLog(rw::common::Log::Ptr log);
 
         /**
            @brief True if the work cell is considered to be in collision for the
@@ -77,6 +85,8 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the inCollision() method.
         */
         virtual bool doInCollision(const rw::kinematics::State& state) const = 0;
+
+		virtual void doSetLog(rw::common::Log::Ptr log) = 0;
 
         /**
            @brief Constructor

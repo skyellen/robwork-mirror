@@ -63,8 +63,14 @@ namespace rw { namespace common {
          */
         void flush();
 
+		/** 
+	 	 * @copydoc LogWriter::setTabLevel(int)
+		 */
+		void setTabLevel(int tabLevel);
+
     private:
         std::ostream* _stream;
+		int _tabLevel;
     };
 
 	/*@}*/

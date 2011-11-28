@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "Message1");
 
-        RW_LOG_TEXT(Log::Info, "Message");
-        RW_LOG_TEXT(Log::Info, "2"<<std::endl);
+        RW_LOG_INFO("Message");
+        RW_LOG_INFO("2"<<std::endl);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "Message2");
         Log::log().setWriter(Log::Info, ownedPtr( new LogStreamWriter(&std::cout)) );
@@ -63,9 +63,9 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         std::ostringstream outstream;
         const Log::LogLevel ID = Log::User1;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedMsg(&outstream)) );
-        RW_LOG_TEXT(ID, "Message");
-        RW_LOG_TEXT(ID, "A"<<std::endl);
-        RW_LOG_TEXT(ID, "MessageB"<<std::endl);
+        RW_LOG(ID, "Message");
+        RW_LOG(ID, "A"<<std::endl);
+        RW_LOG(ID, "MessageB"<<std::endl);
         Log::log().flushAll();
 
         std::istringstream instream(outstream.str());
@@ -94,16 +94,16 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         const Log::LogLevel ID = Log::User2;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_FIRST)) );
-        RW_LOG_TEXT(ID, "0123");
-        RW_LOG_TEXT(ID, "4567");
+        RW_LOG(ID, "0123");
+        RW_LOG(ID, "4567");
         Log::log().flush(ID);
         char msg[100];
 
         outstream->getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "234567");
         outstream->clear();
-        RW_LOG_TEXT(ID, "89"<<std::endl);
-        RW_LOG_TEXT(ID, "A"<<std::endl);
+        RW_LOG(ID, "89"<<std::endl);
+        RW_LOG(ID, "A"<<std::endl);
         Log::log().flush(ID);
         outstream->getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "89");
@@ -130,16 +130,16 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         const Log::LogLevel ID = Log::User1;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, &outstream, LogBufferedChar::REMOVE_LAST)) );
-        RW_LOG_TEXT(ID, "0123");
-        RW_LOG_TEXT(ID, "4567");
-        RW_LOG_TEXT(ID, "89");
+        RW_LOG(ID, "0123");
+        RW_LOG(ID, "4567");
+        RW_LOG(ID, "89");
         Log::log().flush(ID);
         char msg[100];
 
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "012345");
         outstream.clear();
-        RW_LOG_TEXT(ID, "0123456789");
+        RW_LOG(ID, "0123456789");
         Log::log().flush(ID);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "012345");
@@ -154,8 +154,8 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         const Log::LogLevel ID = Log::User1;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, &outstream, LogBufferedChar::AUTO_FLUSH)) );
-        RW_LOG_TEXT(ID, "0123");
-        RW_LOG_TEXT(ID, "4567");
+        RW_LOG(ID, "0123");
+        RW_LOG(ID, "4567");
 
         char msg[100];
         outstream.getline(msg, 100);
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         outstream.clear();
 
 
-        RW_LOG_TEXT(ID, "1234");
+        RW_LOG(ID, "1234");
         Log::log().flush(ID);
 
         outstream.getline(msg, 100);

@@ -59,6 +59,10 @@ namespace
 			_state = state;			
 		}
 
+		void doSetLog(Log::Ptr log) {
+			_detector->setLog(log);
+		}
+
     private:
 		StateConstraint::Ptr _detector;
 		Device::Ptr _device;
@@ -89,6 +93,12 @@ namespace
 			}
 		}
 
+		void doSetLog(Log::Ptr log) {
+			BOOST_FOREACH(const QConstraint::Ptr& sc, _constraints) {
+				sc->setLog(log);
+			}
+		}
+
     private:
 		std::vector<QConstraint::Ptr> _constraints;
     };
@@ -112,6 +122,10 @@ namespace
             return _constraint->inCollision(q);
         }
 
+		void doSetLog(Log::Ptr log) {
+			_constraint->setLog(log);
+		}
+
     private:
 		QConstraint::Ptr _constraint;
         QNormalizer _normalizer;
@@ -123,10 +137,19 @@ namespace
         FixedConstraint(bool value) : _value(value) {}
 
     private:
-        bool doInCollision(const Q&) const { return _value; }
+        bool doInCollision(const Q&) const { 
+			if (_log != NULL)		
+				_log->debug()<<"FixedConstraint returns "<<_value;
+			return _value; 			
+		}
+
+		void doSetLog(Log::Ptr log) {
+			_log = log;
+		}
 
     private:
         bool _value;
+		Log::Ptr _log;
     };
 
     class BoundsConstraint : public QConstraint
@@ -138,17 +161,33 @@ namespace
     private:
         bool doInCollision(const Q& q) const
         {
-            return !Models::inBounds(q, _bounds);
+			if (_log != NULL) {
+				bool res = !Models::inBounds(q, _bounds);
+				if (res) {
+					_log->debug()<<"The configuration: "<<q<<" is outside bounds: Min="<<_bounds.first<<" Max="<<_bounds.second;
+				}
+				return res;
+			} else 
+				return !Models::inBounds(q, _bounds);
         }
+
+		void doSetLog(Log::Ptr log) {
+			_log = log;
+		}
 
     private:
         Device::QBox _bounds;
+		Log::Ptr _log;
     };
 }
 
 bool QConstraint::inCollision(const rw::math::Q& q) const
 {
     return doInCollision(q);
+}
+
+void QConstraint::setLog(rw::common::Log::Ptr log) {
+	doSetLog(log);
 }
 
 void QConstraint::update(const rw::kinematics::State& state) {

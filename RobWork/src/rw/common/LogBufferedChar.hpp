@@ -83,6 +83,11 @@ public:
 	 */
 	void flush();
 
+	/**
+	 * @copydoc LogWriter::setTabLevel
+	 */
+	void setTabLevel(int tablevel);
+
 private:
     std::ostream* _stream;
     std::vector<char> _buffer;
@@ -90,8 +95,9 @@ private:
     int _index;
     OverflowPolicy _policy;
     bool _overflow;
-
+	
     char* get(int index) { return &_buffer[0] + index; }
+	int _tabLevel;
 };
 
 

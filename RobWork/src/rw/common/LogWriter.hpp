@@ -50,6 +50,12 @@ namespace rw { namespace common {
          */
         virtual void flush() = 0;
 
+		/**
+		 * @brief Set the tab level
+		 */
+		virtual void setTabLevel(int tabLevel) = 0;
+
+
         /**
          * @brief Writes \b str to the log
          * @param str [in] message to write

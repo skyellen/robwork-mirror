@@ -51,7 +51,7 @@ using namespace rws;
          * @brief Writes \b str to the log
          * @param str [in] message to write
          */
-        virtual void write(const std::string& str){
+        virtual void write(const std::string& input){
             /*    	std::stringstream buf;
 
 
@@ -70,14 +70,23 @@ using namespace rws;
             _slog->write(buf.str(),_color);
             */
             //_slog->write(str,_color);
-            _msgQueue.push_back( Message(str,_color) );
+
+			std::stringstream sstr;
+			sstr << std::setw(_tabLevel)<<std::setfill(' ');
+			sstr << input;
+
+			_msgQueue.push_back( Message(sstr.str().c_str(),_color) );
             _isNewLine = false;
             QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
 
         }
 
-        virtual void writeln(const std::string& str){
-            _msgQueue.push_back( Message(str,_color) );
+        virtual void writeln(const std::string& input){
+			std::stringstream sstr;
+			sstr << std::setw(_tabLevel)<<std::setfill(' ');
+			sstr << input;
+
+            _msgQueue.push_back( Message(sstr.str().c_str(),_color) );
             //_slog->write(str,_color);
             _isNewLine = true;
             QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
@@ -85,11 +94,16 @@ using namespace rws;
 
         std::vector< std::pair<std::string, QColor> > _msgQueue;
 
+		void setTabLevel(int tabLevel) {
+			_tabLevel = tabLevel;
+		}
+
     private:
         ShowLog *_slog;
         QColor _color;
         Log::LogIndex _id;
         bool _isNewLine;
+		int _tabLevel;
 
     };
 

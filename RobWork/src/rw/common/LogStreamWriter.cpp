@@ -19,7 +19,7 @@
 #include "LogStreamWriter.hpp"
 
 #include "macros.hpp"
-
+#include <iomanip>
 using namespace rw::common;
 
 LogStreamWriter::LogStreamWriter(std::ostream* stream) :
@@ -35,10 +35,15 @@ LogStreamWriter::~LogStreamWriter()
 
 void LogStreamWriter::write(const std::string& str)
 {
+	*_stream << std::setw(_tabLevel)<<std::setfill(' ');
     *_stream << str;
 }
 
 void LogStreamWriter::flush()
 {
     _stream->flush();
+}
+
+void LogStreamWriter::setTabLevel(int tabLevel) {
+	_tabLevel = tabLevel;
 }

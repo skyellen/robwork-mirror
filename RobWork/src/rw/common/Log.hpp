@@ -269,6 +269,10 @@ namespace rw { namespace common {
         void remove(LogIndex id);
 
 
+		void increaseTabLevel();
+
+		void describeTabLevel();
+
 
     	/**
     	 * @brief convenience function for getting the LogWriter
@@ -357,8 +361,11 @@ namespace rw { namespace common {
 
 
 		int _logEnabledMask;
+		int _tabLevel;
 		std::vector<rw::common::LogWriter::Ptr> _writers;
 		rw::common::LogWriter::Ptr _defaultWriter;
+
+
     };
 
 #ifdef RW_USE_DEPRECATED

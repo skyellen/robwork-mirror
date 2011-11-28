@@ -19,6 +19,9 @@
 #include "LogFileWriter.hpp"
 
 #include "macros.hpp"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 using namespace rw::common;
 
@@ -42,10 +45,15 @@ LogFileWriter::~LogFileWriter()
 
 void LogFileWriter::write(const std::string& str)
 {
-    _stream << str;
+	_stream << std::setw(_tabLevel)<<std::setfill(' ');
+	_stream << str;
 }
 
 void LogFileWriter::flush()
 {
     _stream.flush();
+}
+
+void LogFileWriter::setTabLevel(int tabLevel) {
+	_tabLevel = tabLevel;
 }

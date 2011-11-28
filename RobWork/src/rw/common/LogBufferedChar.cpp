@@ -18,6 +18,7 @@
 
 #include "LogBufferedChar.hpp"
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 
 using namespace rw::common;
@@ -40,7 +41,12 @@ LogBufferedChar::~LogBufferedChar()
     flush();
 }
 
-void LogBufferedChar::write(const std::string& str) {
+void LogBufferedChar::write(const std::string& input) {
+	std::stringstream sstr;
+	sstr << std::setw(_tabLevel)<<std::setfill(' ');
+	sstr<<input;
+
+	std::string str = sstr.str();
 
     //If a single message is large than the entire buffer we skip the last part of the message
     size_t cnt = std::min(str.size(), _size);
@@ -86,4 +92,9 @@ void LogBufferedChar::flush() {
     _buffer[_index] = 0;
     _overflow = false;
     _stream->flush();
+}
+
+
+void LogBufferedChar::setTabLevel(int tabLevel) {
+	_tabLevel = tabLevel;
 }

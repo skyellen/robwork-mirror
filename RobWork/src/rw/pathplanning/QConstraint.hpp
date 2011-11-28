@@ -59,6 +59,12 @@ namespace rw { namespace pathplanning {
         virtual ~QConstraint() {}
 
 		/**
+		 * @brief Set the log to be used for writing debug info
+		 * @param log [in] Log to which debug information is to be written
+		 */
+		virtual void setLog(rw::common::Log::Ptr log);
+
+		/**
 		 * @brief Updates the constraint with a new state
 		 * 
 		 * The method might not have an effect on all constrainttypes.
@@ -155,6 +161,8 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the inCollision() method.
         */
         virtual bool doInCollision(const rw::math::Q& q) const = 0;
+
+		virtual void doSetLog(rw::common::Log::Ptr log) = 0;
 
 		virtual void doUpdate(const rw::kinematics::State& state) {};
 

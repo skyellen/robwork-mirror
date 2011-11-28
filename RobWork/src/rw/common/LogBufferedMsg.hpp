@@ -64,9 +64,15 @@ namespace rw { namespace common {
          */
         virtual void flush();
 
+		/**
+		 * @copydoc LogWriter::setTabLevel
+		 */
+		void setTabLevel(int tablevel);
+
     private:
-        std::vector<std::string> _buffer;
+		std::vector<std::pair<std::string, int> > _buffer;
         std::ostream* _stream;
+		int _tabLevel;
     };
 
 }} // end namespaces

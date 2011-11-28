@@ -3846,18 +3846,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ivg"
-				>
-				<File
-					RelativePath="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.hpp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="obj"
 				>
 				<File

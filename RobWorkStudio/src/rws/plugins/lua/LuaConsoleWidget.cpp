@@ -32,19 +32,25 @@ public:
      * @brief Writes \b str to the log
      * @param str [in] message to write
      */
-    virtual void write(const std::string& str){
-        //_slog->setTextCursor(*_endCursor);
-        _slog->insertPlainText(str.c_str());
+    virtual void write(const std::string& str) { 
+		std::stringstream sstr;
+        sstr << std::setw(_tabLevel)<<std::setfill(' ');
+        sstr << str;
+        _slog->insertPlainText(sstr.str().c_str());
     }
 
     virtual void writeln(const std::string& str){
-        //_slog->append(str.c_str());
-        _slog->insertPlainText(str.c_str());
-
+		write(str);
     }
+
+	virtual void setTabLevel(int tabLevel) {
+		_tabLevel = tabLevel;
+	}
+
 private:
     QTextEdit *_slog;
     QColor _color;
+	int _tabLevel;
 };
 }
 

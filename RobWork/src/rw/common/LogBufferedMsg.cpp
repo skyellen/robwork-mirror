@@ -20,6 +20,7 @@
 
 #include <boost/foreach.hpp>
 #include <iostream>
+#include <iomanip>
 
 using namespace rw::common;
 
@@ -34,14 +35,20 @@ LogBufferedMsg::~LogBufferedMsg()
 
 void LogBufferedMsg::write(const std::string& msg)
 {
-    _buffer.push_back(msg);
+	_buffer.push_back(std::make_pair(msg, _tabLevel));
 }
 
 void LogBufferedMsg::flush()
 {
-    BOOST_FOREACH(const std::string& str, _buffer) {
-        *_stream << str;
+	typedef std::pair<std::string, int> StringIntPair;
+	BOOST_FOREACH(const StringIntPair& pair, _buffer) {
+		*_stream << std::setw(pair.second)<<std::setfill(' ');
+        *_stream << pair.first;
     }
     _stream->flush();
     _buffer.clear();
+}
+
+void LogBufferedMsg::setTabLevel(int tablevel) {
+	_tabLevel = tablevel;
 }

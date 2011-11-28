@@ -66,7 +66,7 @@ namespace rw { namespace common {
          */
         Message(const std::string& file,
                 int line,
-                const std::string& message):
+                const std::string& message = ""):
             _file(file),
             _line(line),
             _message(message)
@@ -103,6 +103,47 @@ namespace rw { namespace common {
             sstr<<_file<<":"<<_line<<" : "<<_message;
             return sstr.str();
         }
+
+        /**
+         * @brief general stream operator
+         */
+        template< class T>
+        Message& operator<<( T t ){
+            std::stringstream tmp;
+            tmp << t;
+			_message = _message + tmp.str();
+			return *this;
+            //return this->operator<<( tmp.str() );
+        }
+
+        ///**
+        // * @brief specialized stream operator
+        // */
+        //Message& operator<<(const std::string& str){
+        //	_message = _message + str;
+        //	return *this;
+        //}
+
+
+        ///**
+        // * @brief specialized stream operator
+        // */
+        //Message& operator<<(const char* str){
+        //	_message = _message + str;
+        //	return *this;
+        //}
+
+        /**
+         * @brief Handle the std::endl and other stream functions.
+         */
+		//Message& operator<<(std::ostream& (*pf)(std::ostream&)) {
+		//	std::ostringstream buf;
+		//	buf << pf;
+		//	_message = _message + buf.str();			
+		//	return *this;
+		//}
+
+
 
     private:
         std::string _file;
