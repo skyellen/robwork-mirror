@@ -271,7 +271,7 @@ namespace rw { namespace common {
 
 		void increaseTabLevel();
 
-		void describeTabLevel();
+		void decreaseTabLevel();
 
 
     	/**

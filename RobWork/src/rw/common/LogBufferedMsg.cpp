@@ -25,7 +25,8 @@
 using namespace rw::common;
 
 LogBufferedMsg::LogBufferedMsg(std::ostream* stream):
-    _stream(stream)
+    _stream(stream),
+	_tabLevel(0)
 {}
 
 LogBufferedMsg::~LogBufferedMsg()

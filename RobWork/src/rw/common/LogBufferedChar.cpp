@@ -27,7 +27,8 @@ LogBufferedChar::LogBufferedChar(size_t size, std::ostream* stream, OverflowPoli
     _stream(stream),
     _buffer(size),
     _size(size),
-    _policy(policy)
+    _policy(policy),
+	_tabLevel(0)
 {
     _buffer[0] = 0;
 

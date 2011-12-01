@@ -25,7 +25,8 @@
 
 using namespace rw::common;
 
-LogFileWriter::LogFileWriter(const std::string& filename)    
+LogFileWriter::LogFileWriter(const std::string& filename):
+	_tabLevel(0)
 {
     try {
         _stream.open(filename.c_str());

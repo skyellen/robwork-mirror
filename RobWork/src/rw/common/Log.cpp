@@ -50,7 +50,7 @@ struct InitLog {
         _log =  ownedPtr( new Log() );
     }
     virtual ~InitLog(){};
-};
+}; 
 
 InitLog _initLog;
 
@@ -72,7 +72,8 @@ Log::Ptr Log::getInstance(){
 
 Log::Log():
 	_logEnabledMask(Log::AllMask),
-	_writers(32)
+	_writers(32),
+	_tabLevel(0)
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
     setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
@@ -157,7 +158,7 @@ void Log::increaseTabLevel() {
     }
 }
 
-void Log::describeTabLevel() {
+void Log::decreaseTabLevel() {
 	if (_tabLevel > 0)
 		_tabLevel--;
 
