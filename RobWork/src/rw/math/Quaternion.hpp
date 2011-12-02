@@ -323,7 +323,8 @@ namespace rw { namespace math {
         template <class R>
         void setRotation(const Rotation3D<R>& rot)
         {
-#define USE_OLD_CONVERSION
+/*
+            #define USE_OLD_CONVERSION
 #ifdef USE_OLD_CONVERSION
             const T tr = static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1);
 
@@ -362,14 +363,15 @@ namespace rw { namespace math {
                 }
             }
 #else
-            this->d = sqrt( Math::max( 0, 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
-            this->a = sqrt( Math::max( 0, 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
-            this->b = sqrt( Math::max( 0, 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
-            this->c = sqrt( Math::max( 0, 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
-            this->a = _copysign( this->a, rot(2,1) - rot(1,2) );
-            this->b = _copysign( this->b, rot(0,2) - rot(2,0) );
-            this->c = _copysign( this->c, rot(1,0) - rot(0,1) );
-#endif
+*/
+            this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+            this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
+            this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
+            this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
+            this->a = copysign( this->a, rot(2,1) - rot(1,2) );
+            this->b = copysign( this->b, rot(0,2) - rot(2,0) );
+            this->c = copysign( this->c, rot(1,0) - rot(0,1) );
+//#endif
 
         }
 
