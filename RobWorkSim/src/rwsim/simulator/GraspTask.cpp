@@ -15,9 +15,13 @@ using namespace boost::property_tree;
 
 
 namespace {
-    void writeOutcome( std::ostream& out, rwlibs::task::CartesianTarget::Ptr target){
-        int status = target->getPropertyMap().get<int> ("TestStatus");
-        Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q::zero(1));
+    void writeOutcome( std::ostream& out, GraspTarget& target){
+        GraspResult::Ptr res = target.result;
+        if(res==NULL)
+            return;
+
+        int status = res->testStatus; // target->getPropertyMap().get<int> ("TestStatus");
+        Q quality = res->qualityAfterLifting; //target->getPropertyMap().get<Q>("QualityAfterLifting", Q::zero(1));
 
         out << "    <outcome>\n";
         // if success we write all informal qualities
@@ -26,6 +30,7 @@ namespace {
             for(size_t i=0;i<quality.size();i++){
                 out << "     <informal uri=\"rwgq" << i << "\" quality=\""<< quality[i] << "\" />\n";
             }
+            RW_ASSERT(quality.size()>0);
             if(quality[0]>0.01){ // we use a weak fixed quality rule here
                 out << "     <success quality=\"" << quality[0] <<"\" />\n";
             } else {
@@ -72,9 +77,10 @@ namespace {
 
     void writeUIBK(GraspTask::Ptr gtask, const std::string& outfile){
 
-        rwlibs::task::CartesianTask::Ptr grasptask = gtask->getRootTask();
+        //rwlibs::task::CartesianTask::Ptr grasptask = gtask->getRootTask();
 
         std::ofstream fstr(outfile.c_str());
+        fstr << setprecision(16);
         fstr << "<?xml version=\"1.0\"?> \n"
              << "<experiments xmlns=\"http://iis.uibk.ac.at/ns/grasping\">\n";
         fstr << "<notes> Generated with RobWork, rwsim::simulator::GraspTask </notes>\n";
@@ -83,14 +89,13 @@ namespace {
         std::string tcpID = gtask->getTCPID();
         std::string graspcontrollerID = gtask->getGraspControllerID();
 
-        BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr task, grasptask->getTasks() ){
+        BOOST_FOREACH(GraspSubTask &task, gtask->getSubTasks() ){
 
-            Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-            Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
-            Transform3D<> approachDef = task->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
-            Q openQ = task->getPropertyMap().get<Q>("OpenQ");
-            Q closeQ = task->getPropertyMap().get<Q>("CloseQ");
-            std::string objectId = task->getPropertyMap().get<std::string>("Object",std::string("Undefined"));
+            Transform3D<> wTe_n = task.offset; //->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
+            Transform3D<> approachDef = task.approach; //task->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
+            Q openQ = task.openQ; //task->getPropertyMap().get<Q>("OpenQ");
+            Q closeQ = task.closeQ; //task->getPropertyMap().get<Q>("CloseQ");
+            std::string objectId = task.objectID; //task->getPropertyMap().get<std::string>("Object",std::string("Undefined"));
 
             fstr << " <experiment>\n";
             fstr << "  <notes></notes>\n";
@@ -108,8 +113,9 @@ namespace {
             fstr << "   <notes>  </notes>\n"; // don't have any notes yet
 
             // we don't add predictiondef
-            BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
-                Transform3D<> trans = wTe_n * target->get();
+            //BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
+            BOOST_FOREACH( GraspTarget &target, task.targets ){
+                Transform3D<> trans = wTe_n * target.pose;
 
                 //bool has = target->getPropertyMap().has("ObjectTtcpApproach");
                 //if(has)
@@ -139,14 +145,128 @@ void GraspTask::saveUIBK(GraspTask::Ptr task, const std::string& name ){
     writeUIBK(task, name);
 }
 
+
+rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
+    rwlibs::task::CartesianTask::Ptr root= ownedPtr( new rwlibs::task::CartesianTask() );
+
+    root->getPropertyMap().set<std::string>("Gripper",_gripperID);
+    root->getPropertyMap().set<std::string>("TCP",_tcpID);
+    root->getPropertyMap().set<std::string>("GraspController",_graspControllerID);
+    //std::cout << "SIZE SUBTASKS" << _subtasks.size() << std::endl;
+    BOOST_FOREACH(GraspSubTask &stask, _subtasks ){
+        rwlibs::task::CartesianTask::Ptr subtask = ownedPtr( new rwlibs::task::CartesianTask() );
+        root->addTask( subtask );
+
+        subtask->getPropertyMap().set<std::string>("refframe",stask.refframe);;
+        subtask->getPropertyMap().set<Transform3D<> >("Offset",stask.offset);
+        subtask->getPropertyMap().set<Transform3D<> >("Approach", stask.approach );
+        subtask->getPropertyMap().set<Transform3D<> >("Retract",stask.retract );
+        subtask->getPropertyMap().set<Q>("OpenQ", stask.openQ);
+        subtask->getPropertyMap().set<Q>("CloseQ", stask.closeQ);
+        subtask->getPropertyMap().set<Q>("TauMax", stask.tauMax);
+        subtask->setId( stask.getTaskID() );
+
+        //std::cout << "Size targets: " << stask.targets.size() << std::endl;
+        BOOST_FOREACH(GraspTarget &gtarget, stask.targets){
+            CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget( gtarget.pose ));
+
+            if(gtarget.result==NULL){
+                subtask->addTarget( ctarget );
+                continue;
+            }
+
+            //gtarget.result = ownedPtr( new GraspResult() );
+            GraspResult::Ptr result = gtarget.result;
+            // all results saved in the target should be transferred
+            ctarget->getPropertyMap().set<int>("TestStatus", result->testStatus);
+
+            if(result->gripperConfigurationGrasp.size()>0)
+                ctarget->getPropertyMap().set<Q>("GripperConfiguration", result->gripperConfigurationGrasp);
+            if(result->gripperConfigurationLift.size()>0)
+                ctarget->getPropertyMap().set<Q>("GripperConfigurationPost", result->gripperConfigurationLift);
+
+            // configuration of gripper when task is done
+            if(result->qualityBeforeLifting.size()>0)
+                ctarget->getPropertyMap().set<Q>("QualityBeforeLifting", result->qualityBeforeLifting);
+            if(result->qualityAfterLifting.size()>0)
+                ctarget->getPropertyMap().set<Q>("QualityAfterLifting", result->qualityAfterLifting);
+
+
+            if(!(result->objectTtcpTarget.equal( Transform3D<>::identity() ) ) )
+                    ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcptTarget", result->objectTtcpTarget );
+            if(!(result->objectTtcpApproach==Transform3D<>::identity()) )
+                    ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpApproach", result->objectTtcpApproach );
+            if(!(result->objectTtcpGrasp==Transform3D<>::identity()) )
+                ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpGrasp", result->objectTtcpGrasp );
+            if(!(result->objectTtcpLift==Transform3D<>::identity()) )
+                ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpLift", result->objectTtcpLift );
+
+            if( result->testStatus==GraspTask::Success || result->testStatus==GraspTask::ObjectSlipped || result->testStatus==GraspTask::ObjectDropped ){
+                ctarget->getPropertyMap().set<double> ("LiftResult", result->liftresult);
+
+                std::vector<double> contactlist(result->contactsGrasp.size()*9, 0.0);
+                size_t idxOffset = 0;
+                BOOST_FOREACH(rw::sensor::Contact3D& contact, result->contactsGrasp){
+                    contactlist[ idxOffset+0 ] = contact.p(0);
+                    contactlist[ idxOffset+1 ] = contact.p(1);
+                    contactlist[ idxOffset+2 ] = contact.p(2);
+                    contactlist[ idxOffset+3 ] = contact.n(0);
+                    contactlist[ idxOffset+4 ] = contact.n(1);
+                    contactlist[ idxOffset+5 ] = contact.n(2);
+                    contactlist[ idxOffset+6 ] = contact.f(0);
+                    contactlist[ idxOffset+7 ] = contact.f(1);
+                    contactlist[ idxOffset+8 ] = contact.f(2);
+                }
+                if(contactlist.size()>0){
+                    ctarget->getPropertyMap().set<std::vector<double> > ("ContactsGrasp", contactlist);
+                }
+            }
+
+            if( result->testStatus==GraspTask::Success || result->testStatus==GraspTask::ObjectSlipped ){
+                ctarget->getPropertyMap().set<int> ("LiftStatus", GraspTask::Success);
+
+                std::vector<double> contactlist(result->contactsLift.size()*9, 0.0);
+                size_t idxOffset = 0;
+                BOOST_FOREACH(rw::sensor::Contact3D& contact, result->contactsLift){
+                    contactlist[ idxOffset+0 ] = contact.p(0);
+                    contactlist[ idxOffset+1 ] = contact.p(1);
+                    contactlist[ idxOffset+2 ] = contact.p(2);
+                    contactlist[ idxOffset+3 ] = contact.n(0);
+                    contactlist[ idxOffset+4 ] = contact.n(1);
+                    contactlist[ idxOffset+5 ] = contact.n(2);
+                    contactlist[ idxOffset+6 ] = contact.f(0);
+                    contactlist[ idxOffset+7 ] = contact.f(1);
+                    contactlist[ idxOffset+8 ] = contact.f(2);
+                }
+                if(contactlist.size()>0){
+                    ctarget->getPropertyMap().set<std::vector<double> > ("ContactsLift", contactlist);
+                }
+
+            } else {
+                ctarget->getPropertyMap().set<int> ("LiftStatus", GraspTask::ObjectDropped);
+            }
+
+            //std::vector<rw::math::Transform3D<> > gripperTobjects;
+
+
+            subtask->addTarget( ctarget );
+        }
+    }
+
+    return root;
+}
+
 void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
     std::ofstream outfile(name.c_str());
+    rwlibs::task::CartesianTask::Ptr ctask = task->toCartesianTask();
+
     try {
         XMLTaskSaver saver;
-        saver.save(task->getRootTask(), outfile );
+        saver.save(ctask, outfile );
     } catch (const Exception& exp) {
         RW_THROW("Unable to save task: " << exp.what());
     }
+
     outfile.close();
 }
 
@@ -154,12 +274,14 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
    std::ofstream outfile(name.c_str());
    if(!outfile.is_open())
        RW_THROW("Could not open file: " << name);
+   outfile << setprecision(16);
    int gripperDim = 0;
    std::string sep(";");
   // outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<gripperDim<<"), "
   //         "GripperTObject.pos, GripperTObject.rpy, ObjectTtcpBefore.pos, ObjectTtcpBefore.rpy, ObjectTtcpAfter.pos, ObjectTtcpAfter.rpy}\n";
-   outfile << "// One grasp per line, Line Description (quat is xyzw encoded): target.pos(3), target.quat(4), TestStatus(1), "
-              "GripperTObject.pos(3); GripperTObject.quat(4); "
+   outfile << "// One grasp per line, Line Description (quat is xyzw encoded): "
+              "target.pos(3), target.quat(4), TestStatus(1), "
+              "ObjectTtcpTarget.pos(3); ObjectTtcpTarget.quat(4); "
               "ObjectTtcpBefore.pos(3); ObjectTtcpBefore.quat(4); "
               "ObjectTtcpAfter.pos(3); ObjectTtcpAfter.quat(4); "
               "GripperConfiguration(x)\n";
@@ -169,18 +291,20 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
    std::string gripperID = gtask->getGripperID();
    std::string tcpID = gtask->getTCPID();
    std::string graspcontrollerID = gtask->getGraspControllerID();
-   CartesianTask::Ptr root = gtask->getRootTask();
+   //CartesianTask::Ptr root = gtask->getRootTask();
 
-   BOOST_FOREACH(CartesianTask::Ptr task, root->getTasks()){
-       Q openQ = task->getPropertyMap().get<Q>("OpenQ");
-       Q closeQ = task->getPropertyMap().get<Q>("CloseQ");
+   //BOOST_FOREACH(CartesianTask::Ptr task, root->getTasks()){
+   BOOST_FOREACH(GraspSubTask& task, gtask->getSubTasks()){
+       Q openQ = task.openQ; //getPropertyMap().get<Q>("OpenQ");
+       Q closeQ = task.closeQ; //->getPropertyMap().get<Q>("CloseQ");
 
-       std::vector<CartesianTarget::Ptr> targets = task->getTargets();
+       //std::vector<CartesianTarget::Ptr> targets = task->getTargets();
        //outfile<<"{" << task->getId() << "}\n";
-       BOOST_FOREACH(CartesianTarget::Ptr target, targets) {
-           Transform3D<> ttrans;
+       //BOOST_FOREACH(CartesianTarget::Ptr target, targets) {
+       BOOST_FOREACH(GraspTarget& target, task.targets) {
+           Transform3D<> ttrans = target.pose;
           //if(!target->getPropertyMap().has("ObjectTtcpTarget")){
-              ttrans = target->get();
+          //    ttrans = target->get();
           //} else {
           //    Transform3D<> ttrans = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
           //}
@@ -188,37 +312,43 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
           const Vector3D<>& pos = ttrans.P();
           Quaternion<> quat(ttrans.R());
 
-          int status = target->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
+          if(target.result==NULL){
+              continue;
+          }
+
+
+          int status = target.result->testStatus; //target->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
 
           outfile<<pos(0)<<sep<<pos(1)<<sep<<pos(2)<<sep<<quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep<<status<<sep;
 
-          Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject0", Transform3D<>::identity());
+          Transform3D<> t3d;
+          //Transform3D<> t3d = target.result->gripperTobjects[0]; //target->getPropertyMap().get<Transform3D<> >("GripperTObject0", Transform3D<>::identity());
           //RPY<> rpyObj(t3d.R());
+          //quat = Quaternion<>(t3d.R());
+          //outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
+          //        << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
+
+          t3d = target.result->objectTtcpTarget; //target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
           quat = Quaternion<>(t3d.R());
           outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
                   << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
 
-          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
+          t3d = target.result->objectTtcpApproach; //target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach", Transform3D<>::identity() );
           quat = Quaternion<>(t3d.R());
           outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
                   << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
 
-          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach", Transform3D<>::identity() );
+          t3d = target.result->objectTtcpGrasp; //target->getPropertyMap().get<Transform3D<> >("ObjectTtcpGrasp", Transform3D<>::identity() );
           quat = Quaternion<>(t3d.R());
           outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
                   << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
 
-          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpGrasp", Transform3D<>::identity() );
+          t3d = target.result->objectTtcpLift; //target->getPropertyMap().get<Transform3D<> >("ObjectTtcpLift", Transform3D<>::identity() );
           quat = Quaternion<>(t3d.R());
           outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
                   << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
 
-          t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpLift", Transform3D<>::identity() );
-          quat = Quaternion<>(t3d.R());
-          outfile << t3d.P()[0] << sep << t3d.P()[1] << sep <<t3d.P()[2] << sep
-                  << quat.getQx()<<sep<<quat.getQy()<<sep<<quat.getQz()<<sep<<quat.getQw()<<sep;
-
-          Q distance = target->getPropertyMap().get<Q>("GripperConfigurationPost", Q::zero(gripperDim));
+          Q distance = target.result->gripperConfigurationLift; //->getPropertyMap().get<Q>("GripperConfigurationPost", Q::zero(gripperDim));
           for(size_t i=0;i<distance.size();i++)
               outfile << distance[i] << sep;
 
@@ -357,21 +487,29 @@ namespace {
                 PTree& rot_tree = p->second.get_child("orientation");
                 std::string rotdomain = pos_tree.get_child("<xmlattr>").get<std::string>("domain","SO3");
                 Rotation3D<> rot;
+                bool qrotDone = false; // we prefer using quaternion if possible
                 for (CI p1 = rot_tree.begin(); p1 != rot_tree.end(); ++p1) {
                     //std::cout << p1->first << std::endl;
                     if (isName(p1->first,"quaternion")) {
                         std::vector<double> vals = readArray(p1->second);
                         if(vals.size()!=4)
                             RW_THROW("quaternion is wrongly dimensioned!");
-                        rot = Quaternion<>(vals[1], vals[2],vals[3], vals[0]).toRotation3D();
+
+                        Quaternion<> quat(vals[1], vals[2],vals[3], vals[0]);
+                        quat.normalize();
+                        rot = quat.toRotation3D();
+                        qrotDone = true;
                     } else if (isName(p1->first,"rotmatrix")) {
-                        std::vector<double> vals = readArray(p1->second);
-                        if(vals.size()!=9)
-                            RW_THROW("rotmatrix is wrongly dimensioned!");
-                        rot = Rotation3D<>(
-                                vals[0], vals[1], vals[2],
-                                vals[3], vals[4], vals[5],
-                                vals[6], vals[7], vals[8]);
+                        if(!qrotDone){
+                            std::vector<double> vals = readArray(p1->second);
+                            if(vals.size()!=9)
+                                RW_THROW("rotmatrix is wrongly dimensioned!");
+                            rot = Rotation3D<>(
+                                    vals[0], vals[1], vals[2],
+                                    vals[3], vals[4], vals[5],
+                                    vals[6], vals[7], vals[8]);
+                            rot.normalize();
+                        }
                     } else {
                         //RW_THROW("Unknown element!" << p1->first);
                     }
@@ -394,7 +532,7 @@ namespace {
                 } else if(has_child(p->second,"failure") ){
                     status = GraspTask::ObjectDropped;
                     std::string cause = p->second.get_child("failure").get_child("<xmlattr>").get<std::string>("cause");
-
+                    qualities.push_back(0.0);
                     if(cause=="UNINITIALIZED"){
                         status = GraspTask::UnInitialized;
                     } else if(cause=="COLLISIONINITIALLY"){
@@ -415,9 +553,15 @@ namespace {
                         status = GraspTask::InvKinFailure;
                     }
                 } else {
-
+                    qualities.push_back(0.0);
                 }
                 // todo: get all informal quality measures
+                for (CI p1 = p->second.begin(); p1 != p->second.end(); ++p1) {
+                    if(isName(p1->first, "informal")){
+                        double qualval = p1->second.get_child("<xmlattr>").get<double>("quality",0.0);
+                        qualities.push_back( qualval );
+                    }
+                }
 
                 Q qqual(qualities.size(), &qualities[0]);
                 target->getPropertyMap().set<Q>("QualityAfterLifting", qqual);
@@ -550,24 +694,124 @@ GraspTask::Ptr GraspTask::load(const std::string& filename){
     return gtask;
 }
 
+
+GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
+    // convert from the Carteasean format
+    _gripperID = task->getPropertyMap().get<std::string>("Gripper","");
+    _tcpID = task->getPropertyMap().get<std::string>("TCP","");
+    _graspControllerID = task->getPropertyMap().get<std::string>("GraspController","");
+
+    _subtasks.resize( task->getTasks().size() );
+    //std::cout << "NR SUB TASKS: " << task->getTasks().size() << std::endl;
+    for(size_t i=0;i<task->getTasks().size();i++){
+        rwlibs::task::CartesianTask::Ptr stask = task->getTasks()[i];
+        _subtasks[i].refframe = stask->getPropertyMap().get<std::string>("refframe","WORLD");;
+        _subtasks[i].offset = stask->getPropertyMap().get<Transform3D<> >("Offset",Transform3D<>::identity() );
+        _subtasks[i].approach = stask->getPropertyMap().get<Transform3D<> >("Approach",Transform3D<>::identity() );
+        _subtasks[i].retract = stask->getPropertyMap().get<Transform3D<> >("Retract",Transform3D<>::identity() );
+        _subtasks[i].openQ = stask->getPropertyMap().get<Q>("OpenQ", Q());
+        _subtasks[i].closeQ = stask->getPropertyMap().get<Q>("CloseQ", Q());
+        _subtasks[i].tauMax = stask->getPropertyMap().get<Q>("TauMax", Q());
+        _subtasks[i].setTaskID( stask->getId() );
+
+        _subtasks[i].targets.resize( stask->getTargets().size() );
+       // std::cout << "Targets size: " <<  stask->getTargets().size() << std::endl;
+        for(size_t j=0;j<stask->getTargets().size();j++){
+            CartesianTarget::Ptr ctarget = stask->getTargets()[j];
+            _subtasks[i].targets[j].pose = ctarget->get();
+            _subtasks[i].targets[j].result = ownedPtr( new GraspResult() );
+            GraspResult::Ptr result = _subtasks[i].targets[j].result;
+            // all results saved in the target should be transferred
+            result->testStatus = ctarget->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
+
+            result->gripperConfigurationGrasp = ctarget->getPropertyMap().get<Q>("GripperConfiguration", Q());
+            result->gripperConfigurationLift = ctarget->getPropertyMap().get<Q>("GripperConfigurationLift", Q());
+
+            result->qualityBeforeLifting = ctarget->getPropertyMap().get<Q>("QualityBeforeLifting", Q());
+            result->qualityAfterLifting = ctarget->getPropertyMap().get<Q>("QualityAfterLifting", Q());
+
+            result->objectTtcpTarget = ctarget->getPropertyMap().get<Transform3D<> > ("ObjectTtcptTarget", Transform3D<>::identity() );
+            result->objectTtcpApproach = ctarget->getPropertyMap().get<Transform3D<> > ("ObjectTtcpApproach", Transform3D<>::identity() );
+            result->objectTtcpGrasp = ctarget->getPropertyMap().get<Transform3D<> > ("ObjectTtcpGrasp", Transform3D<>::identity() );
+            result->objectTtcpLift = ctarget->getPropertyMap().get<Transform3D<> > ("ObjectTtcpLift", Transform3D<>::identity() );
+
+            std::vector<double> contactlist = ctarget->getPropertyMap().get<std::vector<double> > ("ContactsGrasp", std::vector<double>());
+            if(contactlist.size()>0){
+                for(size_t m=0;m<contactlist.size();m+=9){
+                    rw::sensor::Contact3D contact;
+                    contact.p(0) = contactlist[ m+0 ];
+                    contact.p(1) = contactlist[ m+1 ];
+                    contact.p(2) = contactlist[ m+2 ];
+                    contact.n(0) = contactlist[ m+3 ];
+                    contact.n(1) = contactlist[ m+4 ];
+                    contact.n(2) = contactlist[ m+5 ];
+                    contact.f(0) = contactlist[ m+6 ];
+                    contact.f(1) = contactlist[ m+7 ];
+                    contact.f(2) = contactlist[ m+8 ];
+                    result->contactsGrasp.push_back(contact);
+                }
+            }
+
+            contactlist = ctarget->getPropertyMap().get<std::vector<double> > ("ContactsLift", std::vector<double>());
+            if(contactlist.size()>0){
+                for(size_t m=0;m<contactlist.size();m+=9){
+                    rw::sensor::Contact3D contact;
+                    contact.p(0) = contactlist[ m+0 ];
+                    contact.p(1) = contactlist[ m+1 ];
+                    contact.p(2) = contactlist[ m+2 ];
+                    contact.n(0) = contactlist[ m+3 ];
+                    contact.n(1) = contactlist[ m+4 ];
+                    contact.n(2) = contactlist[ m+5 ];
+                    contact.f(0) = contactlist[ m+6 ];
+                    contact.f(1) = contactlist[ m+7 ];
+                    contact.f(2) = contactlist[ m+8 ];
+                    result->contactsGrasp.push_back(contact);
+                }
+            }
+
+        }
+    }
+}
+
 void GraspTask::setGripperID(const std::string& id){
-    _task->getPropertyMap().set<std::string>("Gripper",id);
+    _gripperID = id;
 }
 void GraspTask::setTCPID(const std::string& id){
-    _task->getPropertyMap().set<std::string>("TCP",id);
+    _tcpID = id;
 }
 void GraspTask::setGraspControllerID(const std::string& id){
-    _task->getPropertyMap().set<std::string>("ControllerName",id);
+    _graspControllerID = id;
 }
 
 std::string GraspTask::getGripperID(){
-    return _task->getPropertyMap().get<std::string>("Gripper");
+    return _gripperID;
 }
 std::string GraspTask::getTCPID(){
-    return _task->getPropertyMap().get<std::string>("TCP");
+    return _tcpID;
 }
 std::string GraspTask::getGraspControllerID(){
-    return _task->getPropertyMap().get<std::string>("ControllerName","GraspController");
+    return _graspControllerID;
 }
 
+void GraspTask::filterTasks( std::vector<GraspTask::TestStatus> &includeMask){
+    // generate map
+    std::map<int,bool> includeMap;
+    for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
+        includeMap[i] = false;
+    BOOST_FOREACH(GraspTask::TestStatus includeRule, includeMask){
+        includeMap[(int)includeRule] = true;
+    }
+    BOOST_FOREACH(GraspSubTask &stask, getSubTasks()){
+        std::vector<GraspTarget> stargets;
+        BOOST_FOREACH(GraspTarget &target, stask.targets){
+            if(target.result==NULL)
+                continue;
+            GraspTask::TestStatus status = (GraspTask::TestStatus)target.result->testStatus;
+            if( includeMap[status] ){
+                stargets.push_back(target);
+            }
+        }
+        stask.targets = stargets;
+    }
 
+}
