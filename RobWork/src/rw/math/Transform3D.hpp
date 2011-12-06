@@ -233,6 +233,26 @@ namespace rw { namespace math {
             return (R() == rhs.R());// && (P() == rhs.P()());
         }
 
+
+        /**
+         * @brief Compares the transformations with a given precision
+         *
+         * Performs an element wise comparison. Two elements are considered equal if the difference
+         * are less than \b precision.
+         *
+         * @param rot [in] Rotation to compare with
+         * @param precision [in] The precision to use for testing
+         * @return True if all elements are less than \b precision apart.
+         */
+        bool equal(const Transform3D<>& t3d, T precision=0.000001) {
+            if(!R().equal(t3d.R(),precision) )
+                return false;
+            for(size_t i=0;i<3;i++)
+                if(fabs(P()[i]-t3d.P()[i])>precision)
+                    return false;
+            return true;
+        }
+
         /**
          * @brief Calculates @f$ \robabx{a}{c}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}} \robabx{b}{c}{\mathbf{T}} @f$
          * @param aTb [in] @f$ \robabx{a}{b}{\mathbf{T}} @f$
