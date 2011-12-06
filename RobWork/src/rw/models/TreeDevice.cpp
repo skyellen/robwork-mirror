@@ -118,6 +118,11 @@ TreeDevice::TreeDevice(Frame* base,
 
 }
 
+
+TreeDevice::~TreeDevice(){
+
+}
+
 // Jacobians
 
 Jacobian TreeDevice::baseJends(const State& state) const
@@ -127,3 +132,4 @@ Jacobian TreeDevice::baseJends(const State& state) const
     //return inverse(start.R()) * _djmulti->get(fk);
     return inverse(start.R()) * _djmulti->get(state);
 }
+

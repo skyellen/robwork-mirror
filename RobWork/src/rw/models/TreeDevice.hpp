@@ -105,6 +105,9 @@ namespace rw { namespace models {
             const std::string& name,
             const kinematics::State& state);
 
+        //! @brief destructor
+        virtual ~TreeDevice();
+
         /**
          * @brief like Device::baseJend() but with a Jacobian calculated for all
          * end effectors.
