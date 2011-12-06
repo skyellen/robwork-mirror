@@ -171,7 +171,7 @@ namespace {
 			return tridata;
 		}
 
-        bool ownedData = false;
+        //bool ownedData = false;
         RW_DEBUGS("indexed stuff");
         IndexedTriMesh<float>::Ptr imesh;
 
@@ -180,12 +180,12 @@ namespace {
 		if( !dynamic_cast<TriMesh*>(gdata.get()) ){
 		    TriMesh::Ptr mesh = gdata->getTriMesh();
 		    imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*mesh,0.00001);
-		    ownedData = true;
+		    //ownedData = true;
 		} else if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
 			// convert the trimesh to an indexed trimesh
 			RW_DEBUGS("to indexed tri mesh");
 			imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*((TriMesh*)gdata.get()),0.00001);
-			ownedData = true;
+			//ownedData = true;
 		} else {
 			imesh = static_cast< IndexedTriMesh<float>* >(gdata.get());
 		}
@@ -980,7 +980,7 @@ ODEBody* ODESimulator::createFixedBody(Body* rwbody,
 		RW_WARN("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
 	}
 
-    Vector3D<> mc = info.masscenter;
+    //Vector3D<> mc = info.masscenter;
     Transform3D<> wTb = Kinematics::worldTframe(rbody->getBodyFrame(), state);
 
     // create vector of geomids
@@ -1138,7 +1138,9 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 
     RW_DEBUGS( "- ADDING BODIES " );
     BOOST_FOREACH(Body* body, _dwc->getBodies() ){
-        addBody(body, state);
+        // check if a body is part
+        if(!_dwc->inDevice(body) )
+            addBody(body, state);
     }
 
 	Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
@@ -1178,7 +1180,7 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
     } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body ) ) {
         odeBody = createFixedBody(fbody, state, spaceid);
     } else {
-        RW_WARN("Unsupported body type");
+        RW_WARN("Unsupported body type, name: " << body->getName() );
     }
     return odeBody;
 }
@@ -1215,7 +1217,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
          Frame *baseParent = base->getParent();
          dBodyID baseParentBodyID = 0;
          if(_rwFrameToODEBody.find(baseParent) == _rwFrameToODEBody.end()){
-             RW_WARN("No parent data available, connecting base to world!");
+             //RW_WARN("No parent data available, connecting base to world!");
              dBodyID baseParentBodyId = dBodyCreate(_worldId);
              ODEUtil::setODEBodyT3D(baseParentBodyId, Kinematics::worldTframe(baseParent,state));
              baseParentBodyID = 0;
@@ -1267,7 +1269,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
              RW_DEBUGS(parent->getName() << "<--" << joint->getName());
 
              ODEBody *odeParent;// = _rwFrameToODEBody[parent];
-             Frame *parentFrame = NULL;
+             //Frame *parentFrame = NULL;
              if(_rwFrameToODEBody.find(parent) == _rwFrameToODEBody.end() ){
                  // could be that the reference is
                  RW_WARN("odeParent is NULL, " << joint->getName() << "-->"
@@ -1278,7 +1280,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
                  _rwFrameToODEBody[parent] = odeParent;
              }
              odeParent = _rwFrameToODEBody[parent];
-             parentFrame = _rwODEBodyToFrame[odeParent];
+             //parentFrame = _rwODEBodyToFrame[odeParent];
 
              ODEBody* odeChild = createRigidBody(rjoint, state, space ); //_rwFrameToBtBody[joint];
              if(odeChild==NULL){
@@ -1975,7 +1977,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 
 
     //std::cout << "- Filtered contacts: " << numc << " --> " << fnumc << std::endl;
-    Frame *world = _dwc->getWorkcell()->getWorldFrame();
+    //Frame *world = _dwc->getWorkcell()->getWorldFrame();
     _nrOfCon = fnumc;
     std::vector<dJointFeedback*> feedbacks;
     std::vector<dContactGeom> feedbackContacts;
