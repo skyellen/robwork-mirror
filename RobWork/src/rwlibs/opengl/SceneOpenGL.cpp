@@ -298,9 +298,11 @@ namespace {
                     glPushMatrix();
                     DrawableUtil::multGLTransform( _stack.top() );
                     if(_pushNames){
-                        glPushName( *( (GLuint*)dnode ) );
+                        GLuint uid = *((GLuint*)&dnode);
+                        //glPushName( uid );
+                        glLoadName(uid);
                         dnode->draw(_info);
-                        glPopName();
+                        //glPopName();
                     } else {
                         dnode->draw(_info);
                     }
@@ -376,6 +378,11 @@ namespace {
             }
         }
 
+        if(usePickMatrix){
+            // for picking we need an enabled z-buffer
+            glInitNames();
+        }
+
         BOOST_FOREACH(SceneCamera::Ptr cam, camGroup->getCameras() ){
             if(!cam->isEnabled())
                 continue;
@@ -442,8 +449,10 @@ namespace {
 
             // setup model view
             glMatrixMode(GL_MODELVIEW);
-            if(usePickMatrix)
-                glInitNames();
+            if(usePickMatrix){
+                //glInitNames();
+                glPushName(0);
+            }
 
             Transform3D<> camtransform = cam->getTransform();
             if( cam->getAttachedNode().get() != NULL ){
@@ -462,7 +471,7 @@ namespace {
             glLoadMatrixf( matrix );
 
             //GLfloat lpos[] = {0.0f, 10.0f, 10.0f, 0.0f};
-            //glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+            //glLightfv(GL_LIGHT2, GL_POSITION, lpos);
 
 
             // iterate scenegraph from node specified by camera.
@@ -476,6 +485,13 @@ namespace {
             previsitor._info._renderTransparent = true;
             previsitor._info._renderSolid = false;
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
+
+            if(usePickMatrix){
+                if(!cam->isDepthTestEnabled())
+                    glPopName();
+                //glLoadName(0);
+                //glPopName();
+            }
         }
         if(scam!=NULL){
             if( (scam->_renderToImage) && scam->_img!=NULL){
@@ -553,7 +569,7 @@ void SceneOpenGL::draw(SceneGraph::RenderInfo& info, SceneNode::Ptr node){
     //drawScene(this, getCameraGroup(info.cameraGroup), info, node, preVisitor, postVisitor, false, 0,0);
     drawScene(this, info.cams, info, node, preVisitor, postVisitor, false, 0,0);
 }
-
+#include <stdio.h>
 DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x, int y){
     #define GL_SELECT_BUFSIZE 512
     GLuint _selectBuf[GL_SELECT_BUFSIZE];
@@ -582,30 +598,45 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
     GLuint minZ = 0xffffffff;
     for (int i = 0; i < hits; i++) {
        names = *ptr;
+       /*
+       printf( "Number: %d\n"
+                  "Min Z: %d\n"
+                  "Max Z: %d\n"
+                  "Name on stack: %d\n",
+                  (GLubyte)ptr[i * 4],
+                  (GLubyte)ptr[i * 4 + 1],
+                  (GLubyte)ptr[i * 4 + 2],
+                  (GLubyte)ptr[i * 4 + 3]
+                  );
+        */
+
        ptr++;
        GLuint depthZ = *ptr;
        GLuint *ptrN = ptr+2;
 
-       //std::cout << "Z depth: " << depthZ << " names: " << *ptrN << std::endl;
+       std::cout << "Z depth: " << depthZ << " names: " << *ptrN << std::endl;
        //const Frame *frame = _cell.state->getFrame(*ptrN);
        //if( frame!=NULL )
        //    std::cout << " " << frame->getName() << std::endl;
-
-       if (depthZ < minZ) {
-           numberOfNames = names;
-           minZ = depthZ;
-           ptrNames = ptrN;
+       if(names!=0){
+           if (depthZ < minZ) {
+               numberOfNames = names;
+               minZ = depthZ;
+               ptrNames = ptrN;
+           }
        }
-
        ptr += names+2;
-     }
-   //std::cout << "The closest hit names are "  << numberOfNames << std::endl;
+   }
+   std::cout << "The closest hit names are "  << numberOfNames << std::endl;
    ptr = ptrNames;
 
    std::vector<DrawableNode::Ptr> drawables = getDrawables();
+   //std::cout << "nr drawables: " << drawables.size() << std::endl;
    BOOST_FOREACH(DrawableNode::Ptr d, drawables){
-       if((*((GLuint*)d.get()))==*ptr){
-           //std::cout << "name: " << d->getName() << std::endl;
+       DrawableNode *dnode = d.get();
+       std::cout << *((GLuint*)&dnode) << "==" << *ptr << std::endl;
+       if(*((GLuint*)&dnode)==*ptr){
+           std::cout << "name: " << d->getName() << std::endl;
            return d;
        }
    }

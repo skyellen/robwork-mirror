@@ -104,5 +104,6 @@ void RenderFrame::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawT
     	break;
     case DrawableNode::WIRE:
     	renderWire(width, _size);
+    	break;
     }
 }
