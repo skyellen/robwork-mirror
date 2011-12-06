@@ -97,13 +97,13 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 	std::cout<<"Path subdivided into "<<path.size()<<" in "<<timer.getTime()<<std::endl;
 
 	double newClearance = calcAvgClearance(path);
-	double oldClearance = 0;
+	//double oldClearance = 0;
 	size_t cnt = 0;
 	std::cout<<"Ready to while loop "<<timer.getTime()<<std::endl;
 	while ( (cnt == 0 || cnt < maxcount) && (maxtime == 0 || timer.getTime() < maxtime)) {
 	    std::cout<<".";
 	    //std::cout<<"AvgClearance = "<<newClearance<<std::endl;
-	    oldClearance = newClearance;
+	    //oldClearance = newClearance;
 		AugmentedPath newPath = path;
 		Q dir = randomDirection();
 		for (AugmentedPath::iterator it = ++(newPath.begin()); it != --(newPath.end()); ++it) {
