@@ -204,7 +204,7 @@ void GraspSelectionDialog::btnPressed(){
 
     	Q q(6);
     	q(0) = 1;q(1) = 1;q(2) = 1;q(3) = -180*Deg2Rad; q(4) = 0;q(5) = 0;
-    	GraspTable::GraspData *data = _kdtree->nnSearch(q).value;
+    	GraspTable::GraspData *data = _kdtree->nnSearch(q).valueAs<GraspTable::GraspData*>();
     	setGraspState(*data,_state);
     	stateChanged(_state);
 

@@ -26,7 +26,7 @@
 
 #include <rw/proximity/CollisionDetector.hpp>
 
-#include <rwlibs/algorithms/kdtree/KDTree.hpp>
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
 #include <QObject>
 #include <QtGui>
@@ -131,7 +131,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
         rwsim::util::MovingAverage _avgTime;
 
         rw::common::Ptr<rw::graspplanning::GraspTable> _gtable;
-        typedef rwlibs::algorithms::KDTree<rw::graspplanning::GraspTable::GraspData*> SearchTree;
+        typedef rwlibs::algorithms::KDTreeQ SearchTree;
         SearchTree *_kdtree;
         std::vector<SearchTree::KDNode> _nodes;
 };
