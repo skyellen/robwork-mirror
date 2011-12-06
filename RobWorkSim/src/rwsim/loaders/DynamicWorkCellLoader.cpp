@@ -674,8 +674,8 @@ namespace
 
         state.allbodies.push_back(base);
         state.allbodies.push_back(end);
-        state.bodies.push_back(base);
-        state.bodies.push_back(end);
+        //state.bodies.push_back(base);
+        //state.bodies.push_back(end);
         SuctionCup *scup = new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2) ;
         state.wc->addDevice(scup->getKinematicModel());
         return scup;
@@ -791,7 +791,7 @@ namespace
         if(bodyFrame==NULL)
             RW_THROW("No frame is referenced by the body contact sensor.");
 
-        BOOST_FOREACH(Body *b, state.bodies){
+        BOOST_FOREACH(Body *b, state.allbodies){
             if(b->getBodyFrame()!=bodyFrame)
                 continue;
             BodyContactSensor *bsensor = new BodyContactSensor(bsname, bodyFrame);
@@ -1130,7 +1130,7 @@ namespace
         //  create the dynamic workcell
         DynamicWorkCell *dynWorkcell =
             //new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
-			new DynamicWorkCell(state.wc, state.allbodies, state.devices, state.controllers);
+			new DynamicWorkCell(state.wc, state.bodies, state.allbodies, state.devices, state.controllers);
 
         dynWorkcell->setGravity(state.gravity);
         dynWorkcell->getMaterialData() = state.materialData;
