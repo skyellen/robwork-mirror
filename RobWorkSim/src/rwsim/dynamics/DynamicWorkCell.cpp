@@ -23,6 +23,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/models/WorkCell.hpp>
 
 #include "Body.hpp"
 #include "Accessor.hpp"
@@ -36,17 +37,19 @@ using namespace rwsim::dynamics;
 
 DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
                                  const DynamicWorkCell::BodyList& bodies,
+                                 const DynamicWorkCell::BodyList& allbodies,
                                  const DynamicWorkCell::DeviceList& devices,
                                  const ControllerList& controllers):
     _workcell(workcell),
     _bodies(bodies),
+    _allbodies(allbodies),
     _devices(devices),
     _controllers(controllers),
     _collisionMargin(0.001),
     _worldDimension(Vector3D<>(0,0,0), Vector3D<>(20,20,20)),
     _gravity(0,0,-9.82)
 {
-    BOOST_FOREACH(Body* b, _bodies){
+    BOOST_FOREACH(Body* b, _allbodies){
         _frameToBody[b->getBodyFrame()] = b;
     }
 }
@@ -61,6 +64,14 @@ DynamicDevice* DynamicWorkCell::findDevice(const std::string& name){
             return  ddev;
     }
     return NULL;
+}
+
+bool DynamicWorkCell::inDevice(Body* body){
+    BOOST_FOREACH(Body* b, _bodies){
+        if(body==b)
+            return false;
+    }
+    return true;
 }
 
 rwlibs::simulation::SimulatedController::Ptr DynamicWorkCell::findController(const std::string& name){
@@ -87,6 +98,7 @@ Body* DynamicWorkCell::getBody(rw::kinematics::Frame *f){
 void DynamicWorkCell::addBody(Body* body){
     //TODO: change STATE and WorkCell accordingly
     _frameToBody[body->getBodyFrame()] = body;
+    _allbodies.push_back(body);
     _bodies.push_back(body);
 }
 

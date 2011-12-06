@@ -75,6 +75,7 @@ namespace dynamics {
          */
     	DynamicWorkCell(rw::models::WorkCell::Ptr workcell,
                         const BodyList& bodies,
+                        const BodyList& allbodies,
                         const DeviceList& devices,
                         const ControllerList& controllers);
 
@@ -86,7 +87,7 @@ namespace dynamics {
         /**
          * @brief gets a list of all bodies in the dynamic workcell
          */
-        const BodyList& getBodies(){ return _bodies;};
+        const BodyList& getBodies(){ return _allbodies;};
 
         /**
          * @brief find a specific body with name \b name
@@ -114,7 +115,7 @@ namespace dynamics {
         template<class T>
         std::vector<T*> findBodies() const{
             std::vector<T*> bodies;
-            BOOST_FOREACH(Body* b, _bodies ){
+            BOOST_FOREACH(Body* b, _allbodies ){
                 if(T* tb = dynamic_cast<T*>(b)){
                     bodies.push_back(tb);
                 }
@@ -225,6 +226,13 @@ namespace dynamics {
         }
 
         /**
+         * @brief tests if a body is part of a device
+         * @param
+         * @return
+         */
+        bool inDevice(Body* body);
+
+        /**
          * @brief Set the gravity in this dynamic workcell
          * @return gravity
          */
@@ -253,6 +261,7 @@ namespace dynamics {
         rw::models::WorkCell::Ptr _workcell;
         // length of nr of bodies
         BodyList _bodies;
+        BodyList _allbodies;
         DeviceList _devices;
         // list of controllers in the workcell
         ControllerList _controllers;
