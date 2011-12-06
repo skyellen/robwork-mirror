@@ -254,10 +254,11 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
     if (values.size() != 9)
         RW_THROW("Expected 9 floating points for Rotation3D. Only "<<values.size()<<" values found");
 
-    return Rotation3D<>(values[0], values[1], values[2],
+    Rotation3D<> rot(values[0], values[1], values[2],
                         values[3], values[4], values[5],
                         values[6], values[7], values[8]);
-
+    rot.normalize();
+    return rot;
 }
 
 Rotation2D<> XMLBasisTypes::readRotation2D(DOMElement* element, bool doCheckHeader) {
@@ -322,6 +323,7 @@ Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHe
 
         }
     }
+    rotation.normalize();
     return Transform3D<>(position, rotation);
 }
 
