@@ -333,6 +333,18 @@ public:
     };
 };
 
+/*
+%inline %{
+
+    Transform3D inverse(Transform3D t3d){ return rw::math::inverse(t3d); }
+
+    Rotation3D inverse(Rotation3D t3d){
+        std::cout << "CALLING LUA INVERSE.... DUNNO WHY" << std::endl;
+        return rw::math::inverse(t3d);
+    }
+
+%}
+*/
 
 class Pose6D {
 public:
