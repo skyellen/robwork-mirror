@@ -2,6 +2,7 @@
 SET(SRC_FILES
   ${RW_ALGORITHMS_USER_FILES}
   ./kdtree/KDTree.cpp
+  ./kdtree/KDTreeQ.cpp
   ./qpcontroller/IKQPSolver.cpp
   ./qpcontroller/QPController.cpp
   ./qpcontroller/QPSolver.cpp
@@ -15,6 +16,7 @@ SET(SRC_FILES
 
 SET(SRC_FILES_HPP
   ./kdtree/KDTree.hpp
+  ./kdtree/KDTreeQ.hpp
   ./qpcontroller/IKQPSolver.hpp
   ./qpcontroller/QPController.hpp
   ./qpcontroller/QPSolver.hpp
