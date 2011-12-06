@@ -263,6 +263,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
         _frameNodeMap[_wc->getWorldFrame()] = node;
     }*/
     _frameNodeMap[ NULL ] = _scene->getRoot(); // for world frame parent
+    _nodeFrameMap[_scene->getRoot()] = NULL;
     RW_ASSERT(_scene->getRoot()!=NULL);
     std::stack<Frame*> frames;
     frames.push( _wc->getWorldFrame() );
@@ -277,11 +278,14 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
             GroupNode::Ptr node = _scene->makeGroupNode(frame->getName());
             _scene->addChild( node, parentNode );
             _frameNodeMap[ frame ] = node;
+            _nodeFrameMap[node] = frame;
         }
 
         // the frame is there, check that the parent relationship is correct
         GroupNode::Ptr node = _frameNodeMap[frame];
+        _nodeFrameMap[node] = frame;
         GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
+
         if(node==NULL){
             RW_WARN("Node is null!");
             continue;
@@ -598,7 +602,7 @@ bool WorkCellScene::removeDrawable(const std::string& name, rw::kinematics::Fram
 }
 
 rw::kinematics::Frame* WorkCellScene::getFrame(DrawableNode::Ptr d){
-
+    //std::cout << d->_parentNodes.size() << std::endl;
     GroupNode::Ptr gn = d->_parentNodes.front().cast<GroupNode>();
     if(gn==NULL)
         return NULL;

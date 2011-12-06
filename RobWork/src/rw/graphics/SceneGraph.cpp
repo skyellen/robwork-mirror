@@ -51,7 +51,7 @@ namespace {
         bool operator()(SceneNode::Ptr& child, SceneNode::Ptr& parent){
             if( child->asDrawableNode() ){
                 DrawableNode::Ptr d = child.cast<DrawableNode>();
-                if(dmap.find(d.get())!=dmap.end()){
+                if(dmap.find(d.get())==dmap.end()){
                     drawables.push_back(d);
                     dmap[d.get()] = 1;
                 }
