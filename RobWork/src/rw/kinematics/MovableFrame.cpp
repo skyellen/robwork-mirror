@@ -26,7 +26,7 @@ using namespace rw::math;
 
 MovableFrame::MovableFrame(const std::string& name)
     :
-    Frame(7, name)
+    Frame(12, name)
 {}
 
 void MovableFrame::doMultiplyTransform(const Transform3D<>& parent,
@@ -39,28 +39,45 @@ void MovableFrame::doMultiplyTransform(const Transform3D<>& parent,
 
 Transform3D<> MovableFrame::doGetTransform(const State& state) const {
     const double* q = getData(state);
-    Quaternion<> quat(q[0], q[1], q[2], q[3]);
-    const Vector3D<> pos(q[4], q[5], q[6]);
-    quat.normalize();
+    //Quaternion<> quat(q[0], q[1], q[2], q[3]);
 
-    return Transform3D<>(pos, quat.toRotation3D());
+    const Vector3D<> pos(q[0], q[1], q[2]);
+    const Rotation3D<> rot(q[3], q[4], q[5],
+                           q[6], q[7], q[8],
+                           q[9], q[10], q[11]);
+    //quat.normalize();
+
+    return Transform3D<>(pos, rot);
 }
 
 
 
 void MovableFrame::setTransform(const Transform3D<>& transform, State& state)
 {
-    const Quaternion<> quat(transform.R());
+    //const Quaternion<> quat(transform.R());
     const Vector3D<> pos(transform.P());
+    const Rotation3D<> rot(transform.R());
 
-    double q[7];
-    q[0] = quat(0);
-    q[1] = quat(1);
-    q[2] = quat(2);
-    q[3] = quat(3);
-    q[4] = pos(0);
-    q[5] = pos(1);
-    q[6] = pos(2);
+    double q[12];
+
+    //q[0] = quat(0);
+    //q[1] = quat(1);
+    //q[2] = quat(2);
+    //q[3] = quat(3);
+    q[0] = pos(0);
+    q[1] = pos(1);
+    q[2] = pos(2);
+
+    q[3] = rot(0,0);
+    q[4] = rot(0,1);
+    q[5] = rot(0,2);
+    q[6] = rot(1,0);
+    q[7] = rot(1,1);
+    q[8] = rot(1,2);
+    q[9] = rot(2,0);
+    q[10] = rot(2,1);
+    q[11] = rot(2,2);
+
     setData(state, q);
 }
 
