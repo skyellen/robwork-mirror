@@ -161,20 +161,22 @@ namespace rw { namespace models {
 
 
 
-        virtual void setBounds(const QBox& bounds){};
-        virtual math::Q getVelocityLimits() const{};
+        virtual void setBounds(const QBox& bounds);
 
+        virtual math::Q getVelocityLimits() const;
 
-        virtual void setVelocityLimits(const math::Q& vellimits){};
+        virtual void setVelocityLimits(const math::Q& vellimits);
 
-        math::Q getAccelerationLimits() const{};
+        math::Q getAccelerationLimits() const;
 
-        void setAccelerationLimits(const math::Q& acclimits){};
+        void setAccelerationLimits(const math::Q& acclimits);
 
 
     private:
         rw::kinematics::Frame* _base;
         rw::kinematics::MovableFrame* _mframe;
+        rw::math::Q _vellimits, _acclimits;
+
     };
 
     /*@}*/

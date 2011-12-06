@@ -68,3 +68,19 @@ Jacobian SE3Device::baseJend(const State& state) const
 {
     return Jacobian(Jacobian::IdentityBase(6, 6));
 }
+
+rw::math::Q SE3Device::getVelocityLimits() const{
+    return _vellimits;
+}
+
+void SE3Device::setVelocityLimits(const rw::math::Q& vellimits){
+    _vellimits = vellimits;
+}
+
+rw::math::Q SE3Device::getAccelerationLimits() const{
+    return _acclimits;
+}
+
+void SE3Device::setAccelerationLimits(const math::Q& acclimits){
+    _acclimits = acclimits;
+}
