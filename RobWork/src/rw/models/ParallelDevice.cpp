@@ -185,7 +185,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 
     int iterations = 0;
     double error = 1;
-    double lasterror = 1;
+    //double lasterror = 1;
     do{
         // update the unactuated joints and unactuated joint jacobian
         for(i=0; i<_unActuatedJoints.size(); i++){
@@ -246,7 +246,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 
         // Calculate the new change in the unactuated joints
         error = deltaY.norm2();
-        lasterror = error;
+        //lasterror = error;
         deltaQUA = Q(prod(LinearAlgebra::pseudoInverse(*_uaJointJ), deltaY.m()));
         iterations++;
     } while( e < error && iterations < MAX_ITERATIONS);
