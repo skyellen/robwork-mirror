@@ -70,25 +70,23 @@ XMLTaskLoader::~XMLTaskLoader() {
 namespace {
 
 int readIntAttribute(xercesc::DOMElement* element, const XMLCh* id) {
-    if (element->hasAttribute(id)) {
-        const XMLCh* attr = element->getAttribute(id);
-        XMLDouble value(attr);
-        return (int)value.getValue();
+    if (!element->hasAttribute(id)) {
+        RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
     }
-    RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
+    const XMLCh* attr = element->getAttribute(id);
+    XMLDouble value(attr);
+    return (int)value.getValue();
 }
 
 std::string readStringAttribute(xercesc::DOMElement* element, const XMLCh* id) {
-    if (element->hasAttribute(id)) {
-        const XMLCh* attr = element->getAttribute(id);
-		char* buffer = XMLString::transcode(attr);
-		std::string str = buffer;
-		delete buffer;
-		 return str;
-
-		
+    if (!element->hasAttribute(id)) {
+        RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
     }
-    RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
+    const XMLCh* attr = element->getAttribute(id);
+    char* buffer = XMLString::transcode(attr);
+    std::string str = buffer;
+    delete buffer;
+    return str;
 }
 
 MotionType readMotionTypeAttribute(xercesc::DOMElement* element, const XMLCh* id) {
