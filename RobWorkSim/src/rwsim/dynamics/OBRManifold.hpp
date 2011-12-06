@@ -336,7 +336,7 @@ namespace dynamics {
         ContactPoint _points[5];
         bool _onBorderMap[6];
         //Frame *_objA,*_objB;
-        double _threshold,_sepThreshold, _cosThreshold;
+        double _threshold, _cosThreshold, _sepThreshold;
         int _deepestIdx,_nrOfContacts;
     };
 
