@@ -16,12 +16,4 @@
  ********************************************************************************/
 
 
-#include "KDTree.hpp"
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Pose6D.hpp>
-
-using namespace rwlibs::algorithms;
-
-template class KDTree<rw::math::Vector3D<>, 3>;
-//template class KDTree<rw::math::Pose6D<>, 6>;
+#include "KDTreeQ.hpp"

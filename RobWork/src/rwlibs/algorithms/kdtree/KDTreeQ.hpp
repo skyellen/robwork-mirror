@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RWLIBS_ALGORTIHMS_KDTREE_KDTREE_HPP_
-#define RWLIBS_ALGORTIHMS_KDTREE_KDTREE_HPP_
+#ifndef RWLIBS_ALGORTIHMS_KDTREEQ_HPP_
+#define RWLIBS_ALGORTIHMS_KDTREEQ_HPP_
 
 #include <boost/foreach.hpp>
 #include <vector>
@@ -26,17 +26,13 @@
 #include <queue>
 #include <rw/math/Q.hpp>
 #include <rw/math/MetricUtil.hpp>
-#include <rw/math/Metric.hpp>
+#include "KDTree.hpp"
 #include <rw/common/macros.hpp>
 #include <float.h>
 #include <rw/math/Math.hpp>
 #include <boost/any.hpp>
 
 namespace rwlibs { namespace algorithms {
-
-    // We can't define this as a static variable within the class, so we put it
-    // here for now.
-    const double kdtree_epsilon = 0.000000001;
 
     /** \addtogroup algorithms */
     /*@{*/
@@ -46,30 +42,33 @@ namespace rwlibs { namespace algorithms {
      * Used for searches involving multi.dimensional search keys, including nearest
      * neighbor and range search.
      *
-     * KEY must implement:
-     * copyable
-     * operator[]
-     *
+     * This KDTree implementation takes any value type but the key is constrained to a
+     * rw::math::Q
      */
-    template<class KEY, size_t DIM>
-    class KDTree
+    class KDTreeQ
     {
     private:
 
         struct TreeNode;
 
+        size_t _dim;
         size_t _nrOfNodes;
         TreeNode *_root;
         std::vector<TreeNode>* _nodes;
-        rw::common::Ptr< rw::math::Metric<KEY> > _metric;
 
     public:
+        typedef rw::math::Q KEY;
 
         //! a struct for the node in the tree
         struct KDNode {
-            KDNode(const KEY& k, boost::any val):key(k),value(val){}
-            KEY key;
+            KDNode(rw::math::Q k, boost::any val):key(k),value(val){}
+            rw::math::Q key;
             boost::any value;
+
+            template<class T>
+            T valueAs() { return boost::any_cast<T>(value); }
+            template<class T>
+            T valueAs() const { return boost::any_cast<T>(value); }
         };
 
         struct KDResult {
@@ -80,12 +79,13 @@ namespace rwlibs { namespace algorithms {
 
         /**
         * @brief Constructor
-        * @param dim [in] the dimension of the keys in the KDTree
+        * @param dim [in] the dimension of the keys in the KDTreeQ
         */
-        KDTree(rw::common::Ptr< rw::math::Metric<KEY> > metric):
-        _nrOfNodes(0),
-        _root(NULL),
-        _nodes(new std::vector<TreeNode>())
+        KDTreeQ(size_t dim):
+            _dim(dim),
+            _nrOfNodes(0),
+            _root(NULL),
+            _nodes(new std::vector<TreeNode>())
         {
         }
 
@@ -93,23 +93,19 @@ namespace rwlibs { namespace algorithms {
         /**
         * @brief destructor
         */
-        virtual ~KDTree(){
-            if(_root!=NULL )
-                delete _root;
-            if(_nodes!=NULL )
-                delete _nodes;
+        virtual ~KDTreeQ(){
+            delete _root;
+            delete _nodes;
         };
 
 
-        rw::common::Ptr< rw::math::Metric<KEY> > getMetric(){ return _metric; }
-
         /**
-        * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient
-        * than creating an empty KDTree and then inserting nodes
+        * @brief Builds a KDTreeQ from a list of key values and nodes. This method is more efficient
+        * than creating an empty KDTreeQ and then inserting nodes
         * @param nodes [in] a list of KDNode's
         * @return if build succesfull then a pointer to a KD-tree is returned else NULL
         */
-        static KDTree<KEY,DIM>* buildTree(std::vector<KDNode>& nodes, rw::common::Ptr< rw::math::Metric<KEY> > metric){
+        static KDTreeQ* buildTree(std::vector<KDNode>& nodes){
             if(nodes.size()==0)
                 return NULL;
 
@@ -124,18 +120,19 @@ namespace rwlibs { namespace algorithms {
             }
 
             // create a simple median balanced tree
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, DIM);
+            size_t nrOfDims = nodes.front().key.size();
+            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
 
-            return new KDTree<KEY,DIM>(*root, tNodes, metric);
+            return new KDTreeQ(*root, tNodes);
         }
 
         /**
-        * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient
-        * than creating an empty KDTree and then inserting nodes
+        * @brief Builds a KDTreeQ from a list of key values and nodes. This method is more efficient
+        * than creating an empty KDTreeQ and then inserting nodes
         * @param nodes [in] a list of KDNode's
         * @return if build succesfull then a pointer to a KD-tree is returned else NULL
         */
-        static KDTree<KEY,DIM>* buildTree(const std::vector<KDNode*>& nodes, rw::common::Ptr< rw::math::Metric<KEY> > metric){
+        static KDTreeQ* buildTree(const std::vector<KDNode*>& nodes){
             if(nodes.size()==0)
                 return NULL;
 
@@ -150,36 +147,37 @@ namespace rwlibs { namespace algorithms {
             }
 
             // create a simple median balanced tree
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, DIM);
+            size_t nrOfDims = nodes.front()->key.size();
+            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
 
-            return new KDTree<KEY,DIM>(*root, tNodes, metric);
+            return new KDTreeQ(*root, tNodes);
         }
 
         /**
-        * @brief gets the number of dimensions that this KDTree supports
+        * @brief gets the number of dimensions that this KDTreeQ supports
         * @return the nr of dimensions of this KD-Tree
         */
         size_t getDimensions() const{
-            return DIM;
+            return _dim;
         };
 
         /**
-        * @brief adds a key value pair to the KDTree.
-        * @param key [in] must be the same length as the dimensionality of the KDTree
+        * @brief adds a key value pair to the KDTreeQ.
+        * @param key [in] must be the same length as the dimensionality of the KDTreeQ
         * @param val [in] value that is to be stored at the keys position
         */
-        void addNode(const KEY& key, boost::any val);
+        void addNode(const rw::math::Q& key, boost::any val);
 
         /**
         * @brief finds the KDNode with key equal to nnkey
         * @param nnkey [in] the key that is to be found
         * @return KDNode with key equal to nnkey if existing, else NULL
         */
-        KDNode* search(const KEY& nnkey){
+        KDNode* search(const rw::math::Q& nnkey){
             TreeNode *tmpNode = _root;
-            for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%DIM ){
-                KEY& key = tmpNode->_kdnode->key;
-                if( nnkey[lev]==key[lev] && !(tmpNode->_deleted) && (_metric->distance(nnkey,key)<0.000001 ) ) {
+            for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%_dim ){
+                rw::math::Q& key = tmpNode->_kdnode->key;
+                if( nnkey(lev)==key(lev) && !(tmpNode->_deleted) && (nnkey == key) ) {
                     return tmpNode->_kdnode;
                 } else if( nnkey(lev) > key(lev) ){
                     tmpNode = tmpNode->_right;
@@ -195,23 +193,24 @@ namespace rwlibs { namespace algorithms {
         * @param nnkey [in] the key to which the nearest neighbor is found
         * @return the nearest neighbor to nnkey
         */
-        KDNode& nnSearch(const KEY& nnkey){
-            //std::cout << "nnSearch " << DIM << std::endl;
+        KDNode& nnSearch(const rw::math::Q& nnkey){
+            //std::cout << "nnSearch " << _dim << std::endl;
 
-            //RW_ASSERT(_metric->size(nnkey)==DIM);
+            RW_ASSERT(nnkey.size()==_dim);
             if (_root==NULL)
-                RW_THROW("KDTree has no data!");
+                RW_THROW("KDTreeQ has no data!");
 
-            KEY min = nnkey, max = nnkey;
+            rw::math::Q min(_dim), max(_dim);
             KDResult result(NULL, DBL_MAX);
-            for(size_t i=0;i<DIM;i++){
-                min[i] = -DBL_MAX;
-                max[i] =  DBL_MAX;
+            for(size_t i=0;i<_dim;i++){
+
+                min(i) = -DBL_MAX;
+                max(i) =  DBL_MAX;
             }
             //std::cout << "nnSearchRec" << std::endl;
             nnSearchRec(nnkey, _root, min, max, result);
             if( result.n == NULL )
-                RW_THROW("KDTree has no data!");
+                RW_THROW("KDTreeQ has no data!");
             return *result.n;
         }
 
@@ -221,22 +220,23 @@ namespace rwlibs { namespace algorithms {
         * @param radi [in] the radius of the hyperelipse in euclidean 2-norm
         * @param nodes [out] a container for all nodes that is found within the hyperelipse
         */
-        void nnSearchElipse(const KEY& nnkey,
-                            const KEY& radi,
+        void nnSearchElipse(const rw::math::Q& nnkey,
+                            const rw::math::Q& radi,
                             std::list<const KDNode*>& nodes)
         {
             //typedef std::pair<TreeNode*,size_t> QElem;
             using namespace rw::math;
             std::queue<TreeNode*> unhandled;
             unhandled.push( _root );
-            double distRadi = _metric->distance( radi );
-            KEY low = nnkey, upp = nnkey;
-            for(size_t i=0;i<DIM;i++){
-                low[i] = nnkey[i]-distRadi;
-                upp[i] = nnkey[i]+distRadi;
+            double distSqr = MetricUtil::norm2Sqr(radi);
+            double distRadi = sqrt(distSqr);
+            Q low( _dim ),upp( _dim );
+            for(size_t i=0;i<_dim;i++){
+                low(i) = nnkey(i)-distRadi;
+                upp(i) = nnkey(i)+distRadi;
             }
 
-            nnSearchElipseRec(nnkey, _root, low, upp, distRadi, nodes);
+            nnSearchElipseRec(nnkey, _root, low, upp, distSqr, nodes);
         }
 
         /**
@@ -245,18 +245,18 @@ namespace rwlibs { namespace algorithms {
         * @param radi [in] the radius of the hyperelipse in euclidean 2-norm
         * @param nodes [out] a container for all nodes that is found within the hyperelipse
         */
-        void nnSearchElipseRect(const KEY& nnkey,
-                                const KEY& radi,
+        void nnSearchElipseRect(const rw::math::Q& nnkey,
+                                const rw::math::Q& radi,
                                 std::list<const KDNode*>& nodes )
         {
             //typedef std::pair<TreeNode*,size_t> QElem;
             using namespace rw::math;
             std::queue<TreeNode*> unhandled;
             unhandled.push( _root );
-
-            double distRadi = _metric->distance( radi );
-            KEY low = nnkey, upp = nnkey;
-            for(size_t i=0;i<DIM;i++){
+            double distSqr = MetricUtil::norm2Sqr( radi );
+            double distRadi = sqrt(distSqr);
+            Q low( _dim ),upp( _dim );
+            for(size_t i=0;i<_dim;i++){
                 low(i) = nnkey(i)-distRadi;
                 upp(i) = nnkey(i)+distRadi;
             }
@@ -267,18 +267,18 @@ namespace rwlibs { namespace algorithms {
                 unhandled.pop();
 
                 unsigned char axis = n->_axis;
-                KEY &key = n->_kdnode->key;
+                rw::math::Q &key = n->_kdnode->key;
 
                 //std::cout << "Axis: " << axis << std::endl;
 
                 // if the key is in range then add it to the result
                 size_t j;
-                for( j=0; j<DIM && low[j]<=key[j] && upp[j] >= key[j]; j++ );
-                //std::cout << j << "==" << DIM << " k:" << key << std::endl;
-                if( j==DIM ) {// this is in range if
-                    double dist = _metric->distance(nnkey,key);
+                for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
+                //std::cout << j << "==" << _dim << " k:" << key << std::endl;
+                if( j==_dim ) {// this is in range if
+                    double dist = MetricUtil::dist2Sqr(nnkey,key);
                     //std::cout << "Dist: " << dist << " < " << distSqr << std::endl;
-                    if( dist<distRadi )
+                    if( dist<distSqr )
                         nodes.push_back( n->_kdnode );
                 }
 
@@ -294,7 +294,7 @@ namespace rwlibs { namespace algorithms {
         * @brief finds all neighbors in the hyperrectangle defined by the lower bound and the
         * upper bound
         */
-        void nnSearchRect(const KEY& low, const KEY& upp,
+        void nnSearchRect(const rw::math::Q& low, const rw::math::Q& upp,
                           std::list<const KDNode*>& nodes ){
             //typedef std::pair<TreeNode*,size_t> QElem;
             std::queue<TreeNode*> unhandled;
@@ -310,15 +310,15 @@ namespace rwlibs { namespace algorithms {
                 unhandled.pop();
 
                 unsigned char axis = n->_axis;
-                KEY &key = n->_kdnode->key;
+                rw::math::Q &key = n->_kdnode->key;
 
                 //std::cout << "Axis: " << axis << std::endl;
 
                 // if the key   is in range then add it to the result
                 size_t j;
-                for( j=0; j<DIM && low[j]<=key[j] && key[j] <= upp[j]; j++ );
-                //std::cout << j << "==" << DIM << " k:" << key << std::endl;
-                if( j==DIM ) // this is in range
+                for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
+                //std::cout << j << "==" << _dim << " k:" << key << std::endl;
+                if( j==_dim ) // this is in range
                     nodes.push_back( n->_kdnode );
 
                 // add the children to the unhandled queue if the current dimension
@@ -331,10 +331,11 @@ namespace rwlibs { namespace algorithms {
 
     private:
 
-        KDTree(){};
+        KDTreeQ(){};
 
-        KDTree(TreeNode &root, std::vector<TreeNode> *nodes, rw::common::Ptr< rw::math::Metric<KEY> > metric):
-            _root(&root),_nodes(nodes),_metric(metric)
+        KDTreeQ(TreeNode &root, std::vector<TreeNode> *nodes):
+            _dim(root._kdnode->key.size()),
+            _root(&root),_nodes(nodes)
         {
         };
 
@@ -401,17 +402,8 @@ namespace rwlibs { namespace algorithms {
             return &mNode;
         }
 
-        template <class T>
-        T clamp(const T& val, const T& min, const T& max){
-            T result = val;
-            for(size_t i=0;i<DIM;i++){
-                result[i] = rw::math::Math::clamp(val[i], min[i], max[i]);
-            }
-            return result;
-        }
-
-        void nnSearchRec(const KEY& nnkey, TreeNode* node,
-                         KEY &min, KEY &max,
+        void nnSearchRec(const rw::math::Q& nnkey, TreeNode* node,
+                         rw::math::Q &min, rw::math::Q &max,
                          KDResult& out){
             using namespace rw::math;
             if(node==NULL)
@@ -419,8 +411,8 @@ namespace rwlibs { namespace algorithms {
             size_t axis = node->_axis;
             //std::cout << "nnSearchRec("<< axis << ")" << std::endl;
 
-            KEY &key = node->_kdnode->key;
-            double distSqr = _metric->distance(nnkey, key);
+            Q &key = node->_kdnode->key;
+            double distSqr( MetricUtil::dist2Sqr(nnkey, key) );
             //std::cout << "le" << std::endl;
 
             // if this node is closer than any other then update out
@@ -464,24 +456,24 @@ namespace rwlibs { namespace algorithms {
             if( isLeftFarthest ){
                 double maxTmp = max(axis);
                 max(axis) = key(axis);
-                KEY closest = clamp(nnkey, min, max);
-                if( _metric->distance(nnkey, closest) < out.dist )
+                rw::math::Q closest = Math::clampQ(nnkey, min, max);
+                if( MetricUtil::dist2Sqr(nnkey, closest) < out.dist )
                     nnSearchRec(nnkey, node->_left, min, max, out);
                 // undo the change of max
                 max(axis) = maxTmp;
             } else {
                 double minTmp = min(axis);
                 min(axis) = key(axis);
-                KEY closest = clamp(nnkey, min, max);
-                if( _metric->distance(nnkey, closest) < out.dist )
+                rw::math::Q closest = Math::clampQ(nnkey, min, max);
+                if( MetricUtil::dist2Sqr(nnkey, closest) < out.dist )
                     nnSearchRec(nnkey, node->_right, min, max, out);
                 // undo the change of max
                 min(axis) = minTmp;
             }
         };
 
-        void nnSearchElipseRec(const KEY& nnkey, TreeNode* node,
-                               KEY &min, KEY &max,
+        void nnSearchElipseRec(const rw::math::Q& nnkey, TreeNode* node,
+                               rw::math::Q &min, rw::math::Q &max,
                                double maxRadiSqr,
                                std::list<const KDNode*>& nodes){
             using namespace rw::math;
@@ -490,8 +482,8 @@ namespace rwlibs { namespace algorithms {
             size_t axis = node->_axis;
             //std::cout << "nnSearchRec("<< axis << ")" << std::endl;
 
-            KEY &key = node->_kdnode->key;
-            double distSqr = _metric->distance(nnkey, key);
+            Q &key = node->_kdnode->key;
+            double distSqr( MetricUtil::dist2Sqr(nnkey, key) );
 
             // if this node is closer than any other then update out
             if( distSqr<maxRadiSqr && !node->_deleted){
@@ -529,16 +521,16 @@ namespace rwlibs { namespace algorithms {
             if( isLeftFarthest ){
                 double maxTmp = max(axis);
                 max(axis) = key(axis);
-                KEY closest = clamp(nnkey, min, max);
-                if( _metric->distance(nnkey, closest) < maxRadiSqr )
+                rw::math::Q closest = Math::clampQ(nnkey, min, max);
+                if( MetricUtil::dist2Sqr(nnkey, closest) < maxRadiSqr )
                     nnSearchElipseRec(nnkey, node->_left, min, max,maxRadiSqr, nodes);
                 // undo the change of max
                 max(axis) = maxTmp;
             } else {
                 double minTmp = min(axis);
                 min(axis) = key(axis);
-                KEY closest = clamp(nnkey, min, max);
-                if( _metric->distance(nnkey, closest) < maxRadiSqr )
+                rw::math::Q closest = Math::clampQ(nnkey, min, max);
+                if( MetricUtil::dist2Sqr(nnkey, closest) < maxRadiSqr )
                     nnSearchElipseRec(nnkey, node->_right, min, max,maxRadiSqr, nodes);
                 // undo the change of max
                 min(axis) = minTmp;
@@ -553,4 +545,4 @@ namespace rwlibs { namespace algorithms {
 } //namespace algorithms
 } // namespace rwlibs
 
-#endif /*KDTREE_HPP_*/
+#endif
