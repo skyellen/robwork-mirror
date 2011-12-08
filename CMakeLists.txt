@@ -49,12 +49,18 @@ ENDIF()
 #add_dependencies(RobWorkHardware RobWork RobWorkStudio)
 
 
-#SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
-#FIND_PACKAGE(RobWork)
 #MESSAGE(${ROBWORK_VERSION})
 add_subdirectory(RobWork)
 add_subdirectory(RobWorkStudio)
 add_subdirectory(RobWorkSim)
+
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${RWS_ROOT}/build ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(RobWork)
+FIND_PACKAGE(RobWorkStudio)
+
+# we need to explicitly add dependencies
+ADD_DEPENDENCIES(rwstudio ${ROBWORK_LIBRARIES} )
+ADD_DEPENDENCIES(rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
 CONFIGURE_FILE(${ROOT}/Documentation/Doxyfile.in ${ROOT}/Documentation/Doxyfile) 
 
