@@ -43,12 +43,12 @@ namespace {
             Transform3D<> trans;
             double scale;
             bool enabled;
-            CartesianTask::Ptr ctask;
-            CartesianTarget::Ptr ctarget;
+            GraspSubTask *ctask;
+            GraspTarget ctarget;
         };
 
         RenderTargets():_size(-0.02), _zoffset(0.0){
-            rw::geometry::Box box(_size/2,_size/8,_size/2);
+            rw::geometry::Box box(_size/8,_size/2,_size/2);
             mesh = box.getTriMesh();
         };
 
@@ -193,23 +193,14 @@ void SimTaskVisPlugin::btnPressed() {
     if(obj==_loadTaskBtn){
         // load tasks from a filename
         loadTasks(false);
-
-        _ymtargets.clear();
-        setTask(0);
-        while(hasNextTarget()){
-            CartesianTarget::Ptr target = getNextTarget();
-            _ymtargets.push_back( std::make_pair( getTask(), target ) );
-        }
         _updateBtn->setEnabled(true);
     } else if(obj==_zoffsetSpin){
-
         ((RenderTargets*)_render.get())->setZOffset( _zoffsetSpin->value() );
-
     } else if(obj==_graspSelectSpin){
         std::cout << "select event" << std::endl;
         int index = _graspSelectSpin->value();
-        std::vector<RenderTargets::Target> targets = ((RenderTargets*)_render.get())->getTargets();
-        if(!((index>=0) && (index<=targets.size())) ){
+        const std::vector<RenderTargets::Target>& targets = ((RenderTargets*)_render.get())->getTargets();
+        if(!((index>=0) && (index<targets.size())) ){
              return;
         }
 
@@ -220,24 +211,59 @@ void SimTaskVisPlugin::btnPressed() {
         std::string devName = _deviceSelectBox->currentText().toStdString();
 
         Frame* tcp = _wc->findFrame(tcpName);
+
         MovableFrame* base = _wc->findFrame<MovableFrame>(baseName);
         MovableFrame* object = _wc->findFrame<MovableFrame>(objectName);
         Device::Ptr device = _wc->findDevice(devName);
+
+        if(object==NULL)
+            RW_THROW("selected object is not movable frame!");
+        if(base==NULL)
+            RW_THROW("selected base is not movable frame!");
+        if(device==NULL)
+            RW_THROW("selected device is not valid!");
+
+
         State state = getRobWorkStudio()->getState();
         Transform3D<> wTtcp = targets[index].trans;
-
+        wTtcp.R().normalize();
         if(tcp!=NULL && base!=NULL){
-            Transform3D<> tcpTbase = Kinematics::frameTframe(tcp,base,state);
-            base->moveTo(wTtcp * tcpTbase, state);
+            std::cout << "basename:" << base->getName() << std::endl;
+            std::cout << "tcpname :" << tcp->getName() << std::endl;
+
+            std::cout << "wTbase:" <<  Kinematics::worldTframe(base ,state) << std::endl;
+            std::cout << "wTtcp :" <<  Kinematics::worldTframe(tcp ,state) << std::endl;
+            std::cout << "bTf_e :" <<  inverse(Kinematics::worldTframe(base ,state)) * Kinematics::worldTframe(tcp ,state) << std::endl;
+
+            std::cout << "TARGET:" << wTtcp << std::endl;
+            wTtcp.R().normalize();
+            std::cout << "TARGET:" << wTtcp << std::endl;
+            Transform3D<> baseTtcp = Kinematics::frameTframe(base, tcp ,state);
+            std::cout << "bTf   :" << baseTtcp << std::endl;
+            Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
+            std::cout << "wTbase:" <<  wTbase << std::endl;
+            wTbase.R().normalize();
+            std::cout << "wTbase:" <<  wTbase << std::endl;
+            std::cout << "wTtcp:" <<  wTbase*baseTtcp << std::endl;
+
+            base->setTransform( wTbase, state );
+            std::cout << "wTbase:" <<  base->getTransform( state ) << std::endl;
+            std::cout << "wTbase:" <<  Kinematics::worldTframe(base ,state) << std::endl;
+            std::cout << "wTtcp :" <<  Kinematics::worldTframe(tcp ,state) << std::endl;
+            //Transform3D<> wTtcp = Kinematics::frameTframe(base, tcp ,state);
+            //base->moveTo(wTtcp * inverse(baseTtcp), state);
+
         }
 
+
         if(device!=NULL){
-            if( targets[index].ctask->getPropertyMap().has("OpenQ") ){
-                Q q = targets[index].ctask->getPropertyMap().get<Q>("OpenQ");
+            if( targets[index].ctask->openQ.size()>0 ){
+                Q q = targets[index].ctask->openQ;
                 if(q.size()==device->getDOF())
                     device->setQ(q, state);
             }
         }
+
         getRobWorkStudio()->setState(state);
 
     } else if(obj==_updateBtn){
@@ -245,6 +271,10 @@ void SimTaskVisPlugin::btnPressed() {
         //std::cout << "update" << std::endl;
         std::string fname = _frameSelectBox->currentText().toStdString();
         MovableFrame* selframe = getRobWorkStudio()->getWorkcell()->findFrame<MovableFrame>(fname);
+        std::string tcpname = _tcpSelectBox->currentText().toStdString();
+        Frame* tcpframe = getRobWorkStudio()->getWorkcell()->findFrame(tcpname);
+        if(tcpframe==NULL)
+            return;
         if(selframe==NULL)
             return;
         double maxQual=-1000000, minQual=10000000;
@@ -252,7 +282,11 @@ void SimTaskVisPlugin::btnPressed() {
         // for stats
         int droppedStat=0, missedStat=0, successStat=0, slippedStat=0, collisionStat=0, otherStat=0;
 
+        bool showInGripperFrame = _invertBox->isChecked();
+
         Transform3D<> wTo = Kinematics::worldTframe(selframe, getRobWorkStudio()->getState() );
+        Transform3D<> wTtcp = Kinematics::worldTframe(tcpframe, getRobWorkStudio()->getState() );
+
         int nrToShow = _nrOfTargetSpin->value();
         std::vector<RenderTargets::Target> rtargets;
         for(int i=0;i<nrToShow; i++){
@@ -266,12 +300,13 @@ void SimTaskVisPlugin::btnPressed() {
                     break;
             }
 
-            CartesianTask::Ptr task = _ymtargets[idx].first;
-            CartesianTarget::Ptr target = _ymtargets[idx].second;
+            GraspSubTask *task = _ymtargets[idx].first;
+            GraspTarget target = _ymtargets[idx].second;
 
-            Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-            Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+            Transform3D<> wTe_n = task->offset;
 
+            if(target.result==NULL)
+                continue;
 
             RenderTargets::Target rt;
             rt.ctask = task;
@@ -280,9 +315,9 @@ void SimTaskVisPlugin::btnPressed() {
             rt.color[1] = 0.0;
             rt.color[2] = 0.0;
             rt.color[3] = 0.5;
-            int testStatus = target->getPropertyMap().get<int>("TestStatus", -1);
+            int testStatus = target.result->testStatus;
             int qIdx = _qualitySpin->value();
-            Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 0.0));
+            Q quality = target.result->qualityAfterLifting;
             if(quality.size()==0){
                 //continue;
                 quality = Q(1, 0.0);
@@ -308,30 +343,30 @@ void SimTaskVisPlugin::btnPressed() {
             	if(!_untestedBox->isChecked() )
             		continue;
 
-            } else if(testStatus==ObjectDropped){
+            } else if(testStatus==GraspTask::ObjectDropped){
 
             	if(!_droppedBox->isChecked() )
             		continue;
             	droppedStat++;
             	rt.color[0] = 1.0;
-            } else if(testStatus==ObjectMissed){
+            } else if(testStatus==GraspTask::ObjectMissed){
             	if(!_missedBox->isChecked() )
             		continue;
             	missedStat++;
                 rt.color[0] = 0.5;
-            } else if(testStatus==Success){
+            } else if(testStatus==GraspTask::Success){
             	if(!_successBox->isChecked() )
             		continue;
             	successStat++;
                 rt.color[1] = 1.0;
-            } else if(testStatus==ObjectSlipped){
+            } else if(testStatus==GraspTask::ObjectSlipped){
             	if(!_slippedBox->isChecked() )
             		continue;
             	slippedStat++;
                 rt.color[0] = 0.0;
                 rt.color[1] = 1.0;
                 rt.color[2] = 1.0;
-            } else if(testStatus==CollisionInitially){
+            } else if(testStatus==GraspTask::CollisionInitially){
             	if(!_collisionsBox->isChecked() )
             		continue;
             	collisionStat++;
@@ -353,34 +388,35 @@ void SimTaskVisPlugin::btnPressed() {
             }
             if(_showTargetBox->isChecked()){
                 //std::cout << wTe_n << std::endl;
-                bool has = target->getPropertyMap().has("ObjectTtcpApproach");
-                if(has){
-                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpApproach");
+                if(!showInGripperFrame){
+                    //rt.trans = wTo * target.result->objectTtcpTarget;
+                    //if(target.result->objectTtcpTarget.P().norm2()<0.000001)
+                        rt.trans = target.pose;
                 } else {
-                    rt.trans = wTe_n*target->get();
+                    //rt.trans = wTtcp * inverse(target.result->objectTtcpTarget);
+                    //if(target.result->objectTtcpTarget.P().norm2()<0.000001)
+                        rt.trans = wTtcp * inverse( target.pose );
                 }
                 rtargets.push_back(rt);
             }
 
             if(_showEndGraspTargetBox->isChecked()){
                 // this should be relative to the object frame
-                bool has = target->getPropertyMap().has("ObjectTtcpGrasp");
-                //bool has = target->getPropertyMap().has("ObjectTtcpApproach");
-
-                if(has){
-                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpGrasp");
-                    rtargets.push_back(rt);
+                if(!showInGripperFrame){
+                    rt.trans = wTo * target.result->objectTtcpGrasp;
+                } else {
+                    rt.trans = wTtcp * inverse( target.result->objectTtcpGrasp );
                 }
+                rtargets.push_back(rt);
             }
 
             if(_showEndLiftTargetBox->isChecked()){
-                //bool has = target->getPropertyMap().has("ObjectTtcpLift");
-                bool has = target->getPropertyMap().has("GripperTObjectLift0");
-
-                if(has){
-                    rt.trans = wTo * inverse( target->getPropertyMap().get<Transform3D<> > ("GripperTObjectLift0") );
-                    rtargets.push_back(rt);
+                if(!showInGripperFrame){
+                    rt.trans = wTo * target.result->objectTtcpLift;
+                } else {
+                    rt.trans = wTtcp * inverse( target.result->objectTtcpLift );
                 }
+                rtargets.push_back(rt);
             }
 
         }
@@ -430,191 +466,13 @@ void SimTaskVisPlugin::btnPressed() {
         ((RenderTargets*)_render.get())->setTargets(rtargets);
         getRobWorkStudio()->postUpdateAndRepaint();
     }
-
-}
-
-
-void SimTaskVisPlugin::loadConfig(bool automatic){
-    std::string prevDir = settings().get<std::string>("RWSimLastOpennedDIR","");
-
-    std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("SimTaskConfig", "");
-    std::string simTaskConfigFile = filename;
-    if(!automatic){
-
-        QString selectedFilter;
-        if(filename=="")
-            filename = prevDir;
-        const QString dir(filename.c_str());
-
-        QString filename = QFileDialog::getOpenFileName(
-            this,
-            "Open Property file", // Title
-            dir, // Directory
-            "All supported ( *.xml )"
-            " \nRW TASK files ( *.prop.xml )"
-            " \n All ( *.* )",
-            &selectedFilter);
-
-        simTaskConfigFile = filename.toStdString();
-    }
-
-    if(simTaskConfigFile!=""){
-        log().info() << "Loading tasks: ";
-        log().info() << "\t-Filename: " << simTaskConfigFile;
-        try {
-            _config = XMLPropertyLoader::load( simTaskConfigFile );
-        } catch(...) {
-            QMessageBox::information(this, "SimTaskVisPlugin", "SimTaskConfig could not be loaded!");
-        }
-    }
-    updateConfig();
-
-    // for some reason this crashes sometimes...
-    //_propertyView->setPropertyMap( &_config );
-}
-
-void SimTaskVisPlugin::updateConfig(){
-    // START
-    State state = getRobWorkStudio()->getState();
-
-    std::string devName;
-    if( !_config.has("DeviceName") || _config.get<std::string>("DeviceName")==""){
-        if(_dwc->getDynamicDevices().size()>0){
-            devName = _dwc->getDynamicDevices()[0]->getModel().getName();
-        }
-        _config.add<std::string>("DeviceName","Name of the hand used for grasping!", devName);
-    }
-    devName = _config.get<std::string>("DeviceName");
-    _hand =_wc->findDevice<Device>(devName).get();
-    _dhand = _dwc->findDevice(devName);
-
-    std::string baseName;
-    if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
-        // check all frames from device base to world
-        if(_hand != NULL ){
-            std::vector<Frame*> frames = Kinematics::childToParentChain(_hand->getBase(), _wc->getWorldFrame(), state);
-            BOOST_FOREACH(Frame *tmpKinFrame, frames){
-                if( KinematicBody *kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
-                    baseName = kbody->getName();
-                }
-            }
-        }
-        _config.add<std::string>("MovableBase","Name of the body that the hand is attached to",baseName);
-    }
-    baseName = _config.get<std::string>("MovableBase");
-    _mbase = _wc->findFrame<MovableFrame>(baseName);
-
-    if( !_config.has("TCP") || _config.get<std::string>("TCP")=="" ){
-        _config.add<std::string>("TCP", "Name of the Tool Center Point of the hand", baseName);
-    }
-    std::string tcpName = _config.get<std::string>("TCP");
-    _tcp = _wc->findFrame(tcpName);
-
-    std::string objName;
-    if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
-        // find the first rigid body if no ObjectName specified in the config file
-        std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
-        if(rbodies.size()>0)
-            objName = rbodies[0]->getName();
-        _config.add<std::string>("ObjectName","Name of the object that is to be grasped", objName);
-    }
-    objName = _config.get<std::string>("ObjectName");
-    RigidBody *object = _dwc->findBody<RigidBody>(objName);
-    if(object!=NULL)
-        _objects.push_back(object);
-
-    // TWOOBJ: check if ObjectName2 exists
-    std::string objName2;
-    if( _config.has("ObjectName2") && _config.get<std::string>("ObjectName2")!="" ){
-      objName2 = _config.get<std::string>("ObjectName2");
-      object = _dwc->findBody<RigidBody>(objName2);
-      if(object!=NULL)
-          _objects.push_back(object);
-    }
-
-    if( !_config.has("CalculateWrenchQuality") ){
-        _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
-    }
-    _calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
-
-    if( !_config.has("MaxObjectGripperDistance") ){
-        _config.add<double>("MaxObjectGripperDistance","The maximum allowed distance between gripper and object", 50.0);
-    }
-    _maxObjectGripperDistance = _config.get<double>("MaxObjectGripperDistance", 50);
-
-
-    if(_hand!=NULL ){
-        _openQ = _config.get<Q>("DefOpenQ", _hand->getQ(state));
-        _closeQ = _config.get<Q>("DefCloseQ", _hand->getQ(state));
-    }
-
-
-
-    if(_mbase!=NULL && _tcp!=NULL)
-        _bTe = Kinematics::frameTframe(_mbase, _tcp, state);
-
-    _homeState = state;
-    _restObjState = state;
-
-    _config.add<bool>("ShowDebug","If enabled, all contacts and simulation geometry is visualized", false);
-
-    log().info()
-            << (_hand!=NULL) <<"&&"
-            << (_tcp!=NULL) <<"&&"
-            << (_objects.size()>0) <<"&&"
-            << (_mbase!=NULL) <<"&&"
-            << (_dhand!=NULL) <<"&&"<< "\n";
-    // TODO: body sensor, wrench space analysis, if choosen
-    if(_hand!=NULL && _tcp!=NULL && _objects.size()>0 && _mbase!=NULL && _dhand!=NULL){
-        _loadTaskBtn->setEnabled(true);
-        _configured = true;
-    } else {
-        //std::cout << (_hand!=NULL) <<" && " << (_tcp!=NULL) <<" && " << (_objects.size()>0) <<" && " << (_mbase!=NULL) <<" && " << (_dhand!=NULL) << std::endl;
-        _loadTaskBtn->setEnabled(false);
-        _configured = false;
-    }
-}
-
-void SimTaskVisPlugin::saveConfig(){
-
-    std::string simConfigFile("simConfigFile.prop.xml");
-    QString selectedFilter;
-    const QString file(simConfigFile.c_str());
-
-    QString filename = QFileDialog::getSaveFileName(
-        this,
-        "Save config file", // Title
-        file, // Directory/file
-        "All supported ( *.xml )"
-        " \nRW TASK files ( *.task.xml )"
-        " \n All ( *.* )",
-        &selectedFilter);
-
-    simConfigFile = filename.toStdString();
-
-    if(simConfigFile=="")
-        return;
-
-    log().info() << "Saving configuration: \n";
-    log().info() << "\t-Filename: " << simConfigFile << "\n";
-
-    try {
-        XMLPropertySaver::save(_config, simConfigFile);
-    } catch(...) {
-        QMessageBox::information(this, "SimTaskVisPlugin", "SimTaskConfig could not be loadet!");
-    }
 }
 
 rw::common::PropertyMap& SimTaskVisPlugin::settings(){
     return getRobWorkStudio()->getPropertyMap().get<rw::common::PropertyMap>("RobWorkStudioSettings");
 }
 
-
-
-
-
 void SimTaskVisPlugin::loadTasks(bool automatic){
-    _taskQueue.clear();
     std::string prevDir = settings().get<std::string>("RWSimLastOpennedDIR","");
     std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("TaskTestFile", "");
     std::string taskFile = filename;
@@ -641,44 +499,18 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
     if(taskFile=="")
         return;
 
-    std::string firstelem = IOUtil::getFirstXMLElement(taskFile);
-    std::cout << "FIRST ELEMENT: " << firstelem << std::endl;
-
     log().info() << "Loading tasks: ";
     log().info() << "\t-Filename: " << taskFile;
-    rwlibs::task::CartesianTask::Ptr task;
     GraspTask::Ptr gtask;
     try {
         gtask = GraspTask::load(taskFile);
-        std::cout << "Loading done" << std::endl;
-        task = gtask->getRootTask();
     } catch (const Exception& exp) {
         QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
         return;
     }
-    /*
-    try {
-        XMLTaskLoader loader;
-        loader.load( taskFile );
-        task = loader.getCartesianTask();
-    } catch (const Exception& exp) {
-        QMessageBox::information(this, "SimTaskVisPlugin", "Unable to load tasks from file");
-        return;
-    }
-    */
-    std::string tcpID;
-    try{
-        tcpID = gtask->getTCPID();
-    } catch (...){
-
-    }
-    std::string gripperID;
-    try{
-        gripperID= gtask->getGripperID();
-    } catch (...){
-
-    }
-
+    _graspTask = gtask;
+    std::string tcpID = gtask->getTCPID();
+    std::string gripperID = gtask->getGripperID();
 
     int tcpIdx = _tcpSelectBox->findText(tcpID.c_str());
     if(tcpIdx!=-1)
@@ -693,98 +525,20 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
         _baseSelectBox->setCurrentIndex(baseIdx);
     }
 
-
-
-
-    // iterate over all tasks and add them to the taskQueue
-    _roottask = task;
-    int nrOfTargets = 0;
-    std::stack<rwlibs::task::CartesianTask::Ptr> tmpStack;
-    tmpStack.push(task);
-    RW_WARN("1");
-    while(!tmpStack.empty()){
-        rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
-        RW_ASSERT(tmpTask!=NULL);
-        tmpStack.pop();
-        if(tmpTask->getTargets().size()>0)
-            _taskQueue.push_back(tmpTask);
-        nrOfTargets += tmpTask->getTargets().size();
-        BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, tmpTask->getTasks()){
-            tmpStack.push(subtask);
+    _ymtargets.clear();
+    BOOST_FOREACH(GraspSubTask &subtask, gtask->getSubTasks()){
+        BOOST_FOREACH(GraspTarget &target, subtask.targets){
+            _ymtargets.push_back( std::make_pair(&subtask, target) );
         }
-        RW_WARN("1");
     }
-    RW_WARN("1");
 
-    _totalNrOfExperiments = nrOfTargets;
-    log().info() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
-    RW_WARN("1");
-    setTask(0);
-    RW_WARN("1");
+    _totalNrOfExperiments = _ymtargets.size();
+    log().info() << "LOAD TASKS DONE, nr of tasks: " << _ymtargets.size() << "\n";
 }
 
 void SimTaskVisPlugin::stateChangedListener(const State& state) {
 
 }
-
-
-
-bool SimTaskVisPlugin::hasNextTarget(){
-    if(_targets == NULL || _nextTargetIndex >= (int)_targets->size()){
-        if(_currentTaskIndex+1 >= (int)_taskQueue.size()){
-            return false;
-        }
-    }
-    return true;
-}
-
-rwlibs::task::CartesianTask::Ptr SimTaskVisPlugin::getTask(){
-    return _currenttask;
-}
-
-void SimTaskVisPlugin::setTask(int i){
-    if(i<0 || i>= (int)_taskQueue.size())
-        return;
-    RW_WARN("1");
-    _currentTaskIndex = i;
-    _currenttask = _taskQueue[i];
-
-    _targets = &_currenttask->getTargets();
-    _nextTargetIndex = 0;
-    RW_WARN("1");
-    _wTe_n = _currenttask->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-    RW_WARN("1");
-    _wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
-    RW_WARN("1");
-    _approachDef = _currenttask->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
-    RW_WARN("1");
-    _openQ = _currenttask->getPropertyMap().get<Q>("OpenQ", _openQ);
-    RW_WARN("1");
-    _closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
-    RW_WARN("1");
-    //log().info() << "openQ" << _openQ << "\n";
-    //log().info() << "closeQ" << _closeQ << "\n";
-}
-
-rwlibs::task::CartesianTarget::Ptr SimTaskVisPlugin::getNextTarget(){
-    // were we iterate over all tasks and their targets
-
-    if(_targets == NULL || _nextTargetIndex>= (int)_targets->size()){
-        // get the next task and reinitialize _targets and _currentTaskIndex
-        if(_currentTaskIndex+1 >= (int)_taskQueue.size()){
-            return NULL; // there is no more tasks
-        }
-        setTask(_currentTaskIndex+1);
-    }
-    _currentTargetIndex = _nextTargetIndex;
-    _nextTargetIndex++;
-    return (*_targets)[ _currentTargetIndex ];
-}
-
-rwlibs::task::CartesianTarget::Ptr SimTaskVisPlugin::getTarget(){
-    return (*_targets)[ _currentTargetIndex ];
-}
-
 
 void SimTaskVisPlugin::genericEventListener(const std::string& event){
     if( event=="DynamicWorkcellLoadet" ){

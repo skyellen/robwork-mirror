@@ -328,23 +328,19 @@ void SimTaskPlugin::btnPressed() {
             if( _continuesBox->isChecked() ){
                 // copy grasp results into merged
                 GraspTask::Ptr task = _graspSim->getResult();
+
                 if(_onlySuccessBox->isChecked()){
-                    BOOST_FOREACH(CartesianTask::Ptr stask, task->getRootTask()->getTasks()){
-                        std::vector<CartesianTarget::Ptr> stargets;
-                        BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, stask->getTargets()){
-                            int status = target->getPropertyMap().get<int> ("TestStatus",-1);
-                            if(status==GraspTask::Success || status==GraspTask::ObjectSlipped){
-                                stargets.push_back(target);
-                            }
-                        }
-                        stask->getTargets() = stargets;
-                    }
+                    std::vector<GraspTask::TestStatus> includefilter;
+                    includefilter.push_back( GraspTask::Success );
+                    includefilter.push_back( GraspTask::ObjectSlipped );
+                    task->filterTasks( includefilter );
                 }
-                if(_mergedResult->getRootTask()->getTasks().size()==0){
+
+                if(_mergedResult->getSubTasks().size()==0){
                     _mergedResult = task;
                 } else {
-                    BOOST_FOREACH(CartesianTask::Ptr stask, task->getRootTask()->getTasks()){
-                        _mergedResult->getRootTask()->addTask(stask);
+                    BOOST_FOREACH(GraspSubTask &stask, task->getSubTasks()){
+                        _mergedResult->getSubTasks().push_back(stask);
                     }
                 }
             }
@@ -433,7 +429,6 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     std::string type = _typeComboBox->currentText().toStdString();
     std::string gripperName = type;
     GraspTask::Ptr gtask = ownedPtr(new GraspTask());
-    CartesianTask::Ptr rtask = gtask->getRootTask();
     Body* body = _dwc->findBody(objectName);
     if(body==NULL){
         RW_THROW("OBJECT DOES NOT EXIST: " << objectName);
@@ -524,27 +519,28 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
     gtask->setGripperID(gripperName);
-    rtask->getPropertyMap().set<std::string >("Object", objectName);
+    //rtask->getPropertyMap().set<std::string >("Object", objectName);
 
-    CartesianTask::Ptr tasks = ownedPtr( new CartesianTask());
-    rtask->addTask(tasks);
+    //CartesianTask::Ptr tasks = ownedPtr( new CartesianTask());
+    gtask->getSubTasks().resize(1);
+    GraspSubTask &subtask = gtask->getSubTasks()[0];
 
-    tasks->getPropertyMap().set<Transform3D<> >("Offset", wTe_n);
-    tasks->getPropertyMap().set<Transform3D<> >("Home", wTe_home);
+    //rtask->addTask(tasks);
+
+    subtask.offset = wTe_n;
     if( type== "SCUP"){
-        tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.04)) );
-        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
+        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
     } else if( gripperName=="GS20"){
-        tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.0)) );
-        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
+        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
     } else {
-        tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.0)) );
-        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.10)));
+        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.10));
     }
 
-
-    tasks->getPropertyMap().set<Q>("OpenQ", openQ);
-    tasks->getPropertyMap().set<Q>("CloseQ", closeQ);
+    subtask.openQ = openQ;
+    subtask.closeQ = closeQ;
 
     if( type=="GS20" || type=="GS20_WIDE"){
         ssurf.setBoundsD(-0.02,0.02);
@@ -562,7 +558,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         ssurf.setZAxisDirection(Vector3D<>(0,0,1));
         std::cout << "SDH_PAR1_TABLE" << std::endl;
         Device::Ptr dev = _wc->findDevice(gripperName);
-        std::string tcp = rtask->getPropertyMap().get<std::string>("TCP");
+        std::string tcp = gtask->getTCPID();
         Frame *tcpframe = _wc->findFrame(tcp);
         MovableFrame *base = dynamic_cast<MovableFrame*>( dev->getBase() );
         dev->setQ(closeQ,state);
@@ -601,9 +597,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
             std::cout << "Found: " << i+1 << "    \r";
             std::cout.flush();
 
-
-            CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
-            tasks->addTarget( ctarget );
+            subtask.targets.push_back( GraspTarget( target ) );
         }
         log().info() << "Collisions: " << nrOfCollisions << "\n";
     } else {
@@ -612,8 +606,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
             Transform3D<> target;
 
             target = wTo*ssurf.sample();
-            CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
-            tasks->addTarget( ctarget );
+            subtask.targets.push_back( GraspTarget( target ) );
         }
     }
     return gtask;
@@ -734,16 +727,10 @@ void SimTaskPlugin::saveTasks(bool automatic){
 
     if(_onlySuccessBox->isChecked()){
         // remove all failing grasp targets
-        BOOST_FOREACH(CartesianTask::Ptr task,result->getRootTask()->getTasks()){
-            std::vector<rwlibs::task::CartesianTarget::Ptr> filteredtargets;
-            BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
-                int status = target->getPropertyMap().get<int> ("TestStatus",-1);
-                if(status==GraspTask::Success || status==GraspTask::ObjectSlipped){
-                    filteredtargets.push_back(target);
-                }
-            }
-            task->getTargets() = filteredtargets;
-        }
+        std::vector<GraspTask::TestStatus> includefilter;
+        includefilter.push_back( GraspTask::Success );
+        includefilter.push_back( GraspTask::ObjectSlipped );
+        result->filterTasks( includefilter );
     }
 
     try {
