@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     if(outformat=="RWTASK"){ iformat=0;}
     else if(outformat=="UIBK"){iformat=1;}
     else if(outformat=="Text"){iformat=2;}
-    else { RW_THROW("unknown format:" << outformat); }
+    else { RW_THROW("Unknown format:" << outformat << ". Please choose one of: RWTASK, UIBK, Text\n"); }
 
     GraspTask::Ptr gtask;
     const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
@@ -115,16 +115,19 @@ int main(int argc, char** argv)
             GraspTask::Ptr grasptask = GraspTask::load( ifile );
             if(gtask==NULL){
                 gtask = ownedPtr( new GraspTask() );
-		gtask->setGripperID( grasptask->getGripperID() );
-		gtask->setTCPID( grasptask->getTCPID() );
-		gtask->setGraspControllerID( grasptask->getGraspControllerID() );
+                gtask->setGripperID( grasptask->getGripperID() );
+                gtask->setTCPID( grasptask->getTCPID() );
+                gtask->setGraspControllerID( grasptask->getGraspControllerID() );
                 //gtask->getRootTask()->getPropertyMap() = grasptask->getRootTask()->getPropertyMap();
             }
             // put all subtasks into gtask
-            BOOST_FOREACH(CartesianTask::Ptr stask, grasptask->getRootTask()->getTasks()){
-                std::vector<CartesianTarget::Ptr> filteredTargets;
-                BOOST_FOREACH(CartesianTarget::Ptr target, stask->getTargets()){
-                    int teststatus = target->getPropertyMap().get<int>("TestStatus");
+
+            BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
+                std::vector<GraspTarget> filteredTargets;
+                BOOST_FOREACH(GraspTarget &target, stask.targets){
+                    if(target.result==NULL)
+                        continue;
+                    int teststatus = target.result->testStatus;
                     if(teststatus<0)
                         teststatus=0;
                     testStat[teststatus]++;
@@ -134,9 +137,9 @@ int main(int argc, char** argv)
                         filteredTargets.push_back(target);
                     }
                 }
-                stask->getTargets() = filteredTargets;
+                stask.targets = filteredTargets;
                 if(filteredTargets.size()>0)
-                    gtask->getRootTask()->addTask( stask );
+                    gtask->getSubTasks().push_back( stask );
             }
             std::cout << totaltargets << "," << targets << std::endl;
         }
