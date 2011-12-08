@@ -120,7 +120,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QCheckBox" name="_showQuality">
@@ -134,7 +134,7 @@
           </item>
          </layout>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="topMargin">
            <number>0</number>
@@ -164,7 +164,7 @@
           </item>
          </layout>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="topMargin">
            <number>10</number>
@@ -206,6 +206,13 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="_invertBox">
+          <property name="text">
+           <string>GripperTObject</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
