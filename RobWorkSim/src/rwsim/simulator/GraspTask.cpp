@@ -194,11 +194,11 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
 
             if(!(result->objectTtcpTarget.equal( Transform3D<>::identity() ) ) )
                     ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcptTarget", result->objectTtcpTarget );
-            if(!(result->objectTtcpApproach==Transform3D<>::identity()) )
+            if(!(result->objectTtcpApproach.equal(Transform3D<>::identity())) )
                     ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpApproach", result->objectTtcpApproach );
-            if(!(result->objectTtcpGrasp==Transform3D<>::identity()) )
+            if(!(result->objectTtcpGrasp.equal(Transform3D<>::identity())) )
                 ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpGrasp", result->objectTtcpGrasp );
-            if(!(result->objectTtcpLift==Transform3D<>::identity()) )
+            if(!(result->objectTtcpLift.equal(Transform3D<>::identity())) )
                 ctarget->getPropertyMap().set<Transform3D<> > ("ObjectTtcpLift", result->objectTtcpLift );
 
             if( result->testStatus==GraspTask::Success || result->testStatus==GraspTask::ObjectSlipped || result->testStatus==GraspTask::ObjectDropped ){
@@ -473,7 +473,7 @@ namespace {
 
     rwlibs::task::CartesianTarget::Ptr readGrasp(PTree& tree, ParserState& state){
         rwlibs::task::CartesianTarget::Ptr target = ownedPtr( new rwlibs::task::CartesianTarget(Transform3D<>()) );
-
+        std::vector<double> qualities;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             //std::cout << p->first << std::endl;
             if(isName(p->first, "pose") ){
@@ -517,8 +517,14 @@ namespace {
 
                 //ctask->getPropertyMap().set<std::string>("GripperName", gripperType);
                 target->get() = Transform3D<>(pos,rot);
+            } else if(isName(p->first, "prediction")){
+                double prediction = toDouble( p->second.get_value<string>() ).second;
+                //double squal = p->second.get<double>("quality",0.0);
+                qualities.push_back( prediction );
+
+                //<prediction def="http://iis.uibk.ac.at/uri/gd-exchange/probability-generative/kde/default">0.65691438799972202</prediction>
             } else if(isName(p->first, "outcome")){
-                std::vector<double> qualities;
+
                 int status = GraspTask::UnInitialized;
                 //string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
                 if( has_child(p->second, "success") ){
@@ -563,11 +569,12 @@ namespace {
                     }
                 }
 
-                Q qqual(qualities.size(), &qualities[0]);
-                target->getPropertyMap().set<Q>("QualityAfterLifting", qqual);
                 target->getPropertyMap().set<int>("TestStatus", (int)status);
                 // TODO: convert from UIBK to RW format
             }
+            Q qqual(qualities.size(), &qualities[0]);
+            target->getPropertyMap().set<Q>("QualityAfterLifting", qqual);
+
         }
         return target;
     }
@@ -597,8 +604,10 @@ namespace {
             } else if(isName(p->first, "grasps") ){
                 for (CI p1 = p->second.begin(); p1 != p->second.end(); ++p1) {
                     if(isName(p1->first, "grasp")){
+
                         CartesianTarget::Ptr target = readGrasp(p1->second, state);
                         ctask->addTarget(target);
+
                     } else if(isName(p1->first, "notes") ){
                         // TODO: add notes
                     }
@@ -725,7 +734,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
             result->testStatus = ctarget->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
 
             result->gripperConfigurationGrasp = ctarget->getPropertyMap().get<Q>("GripperConfiguration", Q());
-            result->gripperConfigurationLift = ctarget->getPropertyMap().get<Q>("GripperConfigurationLift", Q());
+            result->gripperConfigurationLift = ctarget->getPropertyMap().get<Q>("GripperConfigurationPost", Q());
 
             result->qualityBeforeLifting = ctarget->getPropertyMap().get<Q>("QualityBeforeLifting", Q());
             result->qualityAfterLifting = ctarget->getPropertyMap().get<Q>("QualityAfterLifting", Q());

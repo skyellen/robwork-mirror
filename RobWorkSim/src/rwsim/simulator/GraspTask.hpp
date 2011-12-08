@@ -134,7 +134,7 @@ private:
 struct GraspResult {
     typedef rw::common::Ptr<GraspResult> Ptr;
 
-    GraspResult():testStatus(GraspTask::UnInitialized){}
+    GraspResult():testStatus(GraspTask::UnInitialized),liftresult(0.0){}
 
     int testStatus;
     // the distance that

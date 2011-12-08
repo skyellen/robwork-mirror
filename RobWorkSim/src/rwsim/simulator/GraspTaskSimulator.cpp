@@ -484,6 +484,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 if (liftResult > 0.50) { // At most 1cm difference with hand lift
                     _success++;
                     sstate._target.result->testStatus = GraspTask::Success;
+
                     //std::cout << sim->getTime() << " : " << "Success" << std::endl;
                 } else {
                     _slipped++;
@@ -637,6 +638,7 @@ std::vector<rw::sensor::Contact3D> GraspTaskSimulator::getObjectContacts(const r
     std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap(_hand->getBase(),  state);
     frameTree[_hand->getBase()->getName()] = _hand->getBase();
     for(size_t i=0; i<bodies.size(); i++){
+        std::cout << "Contacts: " << contacts[i].p << contacts[i].n << contacts[i].f << contacts[i].normalForce << std::endl;
         if( bodies[i]!=NULL ){
             // test that the body frame is part of the gripper
             //std::cout << "Body: " << bodies[i]->getBodyFrame()->getName() << std::endl;
