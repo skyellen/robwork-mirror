@@ -17,6 +17,12 @@ target_link_libraries(ModelPropertyTest rwsim
 add_executable(RWSimTest RWSimTest.cpp)
 target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
 
+#add_executable(UniformSelectGrasps UniformSelectGrasps.cpp)
+#target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
+
+add_executable(ToGraspTaskHGP ToGraspTaskHGP.cpp)
+target_link_libraries(ToGraspTaskHGP rwsim ${ROBWORK_LIBRARIES})
+
 add_executable(ModelStablePoseTest ModelStablePoseTest.cpp)
 target_link_libraries(ModelStablePoseTest rwsim ${ROBWORK_LIBRARIES})
 
@@ -52,6 +58,12 @@ target_link_libraries(ExtendVisGrabTask rwsim ${ROBWORK_LIBRARIES})
 
 add_executable(gtmerge gtmerge.cpp)
 target_link_libraries(gtmerge rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+add_executable(ParJawGripperPoseSampler ParJawGripperPoseSampler.cpp)
+target_link_libraries(ParJawGripperPoseSampler rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+add_executable(ToComma ToComma.cpp)
+target_link_libraries(ToComma rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 #add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
 #target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
