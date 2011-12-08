@@ -1716,9 +1716,10 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             //double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
             double penDepth = _maxAllowedPenetration - res->distances[i];
             con.geom.depth = penDepth;
-
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
+
+            //std::cout << "Collision: " << p << n << penDepth << " " << res->distances[i]<< std::endl;
 
             // friction direction between the bodies ...
             // Not necesary to calculate, unless we need explicit control
@@ -1946,6 +1947,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 
             if( !manifold.addPoint(point) ){
                 // hmm, create a new manifold for this point
+                std::cout << "POINT NOT IN MANIFOLD................................" << std::endl;
             }
         }
         manifolds.push_back(manifold);
@@ -1957,11 +1959,20 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     BOOST_FOREACH(OBRManifold& obr, manifolds){
         contactNormalAvg += obr.getNormal();
         int nrContacts = obr.getNrOfContacts();
-        //std::cout << "Manifold: " << nrContacts << ";" << std::endl;
-        for(int j=0;j<nrContacts; j++){
-            _allcontacts.push_back( obr.getContact(j) );
-            dst[contactIdx] = obr.getContact(j);
+        // if the manifold area is very small then we only use a single point
+        // for contact
+        Vector3D<> hf = obr.getHalfLengths();
+        if(hf(0)*hf(1)<(0.001*0.001)){
+            _allcontacts.push_back( obr.getDeepestPoint() );
+            dst[contactIdx] = obr.getDeepestPoint();
             contactIdx++;
+        } else {
+            //std::cout << "Manifold: " << nrContacts << ";" << std::endl;
+            for(int j=0;j<nrContacts; j++){
+                _allcontacts.push_back( obr.getContact(j) );
+                dst[contactIdx] = obr.getContact(j);
+                contactIdx++;
+            }
         }
     }
     RW_DEBUGS("Add material map");

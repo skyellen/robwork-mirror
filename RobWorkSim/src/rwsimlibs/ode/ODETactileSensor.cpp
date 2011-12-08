@@ -73,6 +73,7 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
             std::vector<dContactGeom>& geoms = _geoms[midx];
              for(size_t i=0;i<feedback.size(); i++){
                  rw::math::Vector3D<> force,snormal;
+
                  if(bodyIdx==0){
                      force = ODEUtil::toVector3D( feedback[i]->f1 );
                      snormal = ODEUtil::toVector3D( geoms[i].normal );
@@ -80,6 +81,12 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
                      force = ODEUtil::toVector3D(feedback[i]->f2);
                      snormal = -ODEUtil::toVector3D(geoms[i].normal);
                  }
+                 if(force.norm1()<0.0000001)
+                     continue;
+                 // TODO:
+                 //std::cout << "force : " << ODEUtil::toVector3D(feedback[i]->f1) << " -- " << ODEUtil::toVector3D(feedback[i]->f2) << std::endl;
+                 //std::cout << "torque: " << ODEUtil::toVector3D(feedback[i]->t1) << " -- " << ODEUtil::toVector3D(feedback[i]->t2) << std::endl;
+
                  _rwsensor->addForceW( ODEUtil::toVector3D(geoms[i].pos), force, snormal, state, _rwBody[midx]);
              }
         }
