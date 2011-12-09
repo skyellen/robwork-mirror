@@ -83,7 +83,7 @@ void BodyContactSensor::addForce(const rw::math::Vector3D<>& point,
                   dynamics::Body *body)
 {
     //if(body!=NULL)
-    std::cout << "addForce("<< point << force << snormal << std::endl;
+    //std::cout << "addForce("<< point << force << snormal << std::endl;
 
     _bodiesTmp.push_back( body );
     _contactsTmp.push_back( Contact3D(point, snormal, force)  );
