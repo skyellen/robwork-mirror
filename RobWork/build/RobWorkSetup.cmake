@@ -86,6 +86,8 @@ ELSEIF(DEFINED WIN32)
   ENDIF()
 ENDIF()
 
+MESSAGE(STATUS "RobWork: Boost version ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found!")
+
 # Print test libraries status
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
   MESSAGE(STATUS "RobWork: Found additional Boost libraries: test_exec_monitor and unit_test_framework")
