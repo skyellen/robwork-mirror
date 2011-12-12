@@ -322,17 +322,18 @@ namespace rw { namespace trajectory {
         {
             // Perform Binary search for the right segment
             const size_t n = _segments.size();
-            if (n > 0) {
-                if (t < 0 || _segments.back().t2 < t)
-                    RW_THROW(
-                        "The requested time is outside the interval of the trajectory.\n"
-                        "t: " << t << " end: " << duration() << " cnt: " << (int)_segments.size()
-                        );
-
-                return segmentSearch(t, n/2.0, n/2.0);
-            } else {
+            if( n<1 ){
                 RW_THROW("Cannot request values from an empty Trajectory");
             }
+
+            if (t < 0 || _segments.back().t2 < t){
+                RW_THROW(
+                    "The requested time is outside the interval of the trajectory.\n"
+                    "t: " << t << " end: " << duration() << " cnt: " << (int)_segments.size()
+                    );
+            }
+
+            return segmentSearch(t, n/2.0, n/2.0);
         }
 
         T getX(const typename InterpolatorTrajectory<T>::Segment& segment, double t) const
