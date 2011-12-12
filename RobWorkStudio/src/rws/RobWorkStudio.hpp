@@ -50,7 +50,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
-
+#include <boost/any.hpp>
 class QDragEnterEvent;
 class QDragDropEvent;
 class QDragMoveEvent;
@@ -277,6 +277,20 @@ namespace rws {
 		 */		
 		GenericEvent& genericEvent() { return _genericEvent; }
 
+
+        typedef boost::function<void(const std::string&, boost::any)> GenericAnyEventListener;
+
+        /**
+         * @brief Defines event for generic user events
+         */
+        typedef rw::common::Event<GenericEventListener, const std::string&, boost::any> GenericAnyEvent;
+
+        /**
+         * @brief Returns GenericEvent needed for subscription and firing of events
+         * @return Reference to the GenericEvent
+         */
+        GenericAnyEvent& genericAnyEvent() { return _genericAnyEvent; }
+
 		/**
 		 * @brief Defines a key pressed event listener.
 		 *
@@ -431,6 +445,7 @@ namespace rws {
 		StateChangedEvent _stateChangedEvent;
 		FrameSelectedEvent _frameSelectedEvent;
 		GenericEvent _genericEvent;
+		GenericAnyEvent _genericAnyEvent;
 		KeyEvent _keyEvent;
 		MousePressedEvent _mousePressedEvent;
 		StateTrajectoryChangedEvent _stateTrajectoryChangedEvent;
