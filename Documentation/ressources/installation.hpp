@@ -4,21 +4,17 @@
 
 \page page_rw_installation Installation
 - \ref sec_rw_install_intro
-
+- \ref sec_rw_install_SDK
+- \ref sec_rw_install_compile
+ - \ref sec_rw_install_download
+ - \ref sec_rw_install_common
+- \ref sec_rw_dependencies
 - \ref sec_rw_install_common
--- \ref sec_rw_dependencies
-
+ - \ref sec_rw_dependencies
 - \ref sec_rw_install_linux
-
-- \ref sec_rw_install_windows_mingw
--- \ref sec_rw_install_xerces_mingw
--- \ref sec_rw_install_boost_mingw
--- \ref sec_rw_compiling_robwork_mingw
-
+- \ref sec_rw_install_windows
+ - \ref subsec_rw_install_windows_mingw
 - \ref subsec_rw_install_windows_visual
--- \ref sec_rw_install_xerces_visual
--- \ref sec_rw_install_boost_visual
--- \ref sec_rw_compiling_robwork_visual
 
 
 \section sec_rw_install_intro Introduction
@@ -65,9 +61,9 @@ the different supported platforms.
 The trunk is compiled nightly with several different compilers on both 32 and 64 bit platforms (Ubuntu Linux, Windows XP and Windows 7).
 The status of these builds is submitted to the following dashboards which enable users to keep track of broken builds:
 
-http://www.robwork.org/cdash/index.php?project=RobWork
+http://www.robwork.dk/cdash/index.php?project=RobWork
 
-http://www.robwork.org/cdash/index.php?project=RobWorkStudio
+http://www.robwork.dk/cdash/index.php?project=RobWorkStudio
 
 \subsection sec_rw_install_common Installation instructions common for all platforms
 
