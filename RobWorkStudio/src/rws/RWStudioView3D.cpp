@@ -298,9 +298,15 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
 
 rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
     DrawableNode::Ptr d = _view->pickDrawable( x, y);
+    RW_WARN("1");
     if(d==NULL)
         return NULL;
-    return _wcscene->getFrame(d);
+    RW_WARN("2");
+    Frame *res = _wcscene->getFrame(d);
+    if(res==NULL)
+        RW_WARN("3");
+
+    return res;
 }
 
 rw::graphics::DrawableNode::Ptr RWStudioView3D::pick(int x, int y){
@@ -310,12 +316,14 @@ rw::graphics::DrawableNode::Ptr RWStudioView3D::pick(int x, int y){
 
 void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
     if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
+
         int winx = event->x();
         int winy = height()-event->y();
         // we pick the scene before
         Frame *frame = pickFrame(winx,winy);
-        if( frame ){
+        if( frame != NULL){
             _rws->frameSelectedEvent().fire( frame );
+            std::cout << "Fraem: " << frame->getName() << std::endl;
         }
     }
 }
