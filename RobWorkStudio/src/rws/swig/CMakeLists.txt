@@ -15,7 +15,9 @@ IF( RWS_HAVE_LUA )
         
         ADD_LIBRARY(rwstudio_lua STATIC ${swig_generated_sources} ${swig_other_sources})
         LINK_LIBRARIES(rwstudio_lua rwstudio ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
-    	
+        # this is used to indicate static linking to Visual Studio or mingw 
+	    SET_TARGET_PROPERTIES(rwstudio_lua PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
+	
     	FIND_PACKAGE(PythonInterp)
     	FIND_PACKAGE(PythonLibs)
     	
