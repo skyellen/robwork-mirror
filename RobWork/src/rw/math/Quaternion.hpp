@@ -28,6 +28,7 @@
 
 #include <ostream>
 #include <boost/math/quaternion.hpp>
+#include <boost/math/special_functions/sign.hpp>
 
 namespace rw { namespace math {
 
@@ -368,9 +369,10 @@ namespace rw { namespace math {
             this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
             this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
             this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
-            this->a = copysign( this->a, rot(2,1) - rot(1,2) );
-            this->b = copysign( this->b, rot(0,2) - rot(2,0) );
-            this->c = copysign( this->c, rot(1,0) - rot(0,1) );
+
+            this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
+            this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
+            this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
 //#endif
 
         }
