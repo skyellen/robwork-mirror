@@ -29,6 +29,10 @@ _vec(n)
         _vec(i) = values[i];
 }
 
+void Q::init(size_t n, const double* values){
+    for (size_t i = 0; i<n; i++)
+        _vec(i) = values[i];
+}
 
 Q::Q(size_t n, double value):
     _vec(n)
@@ -118,4 +122,43 @@ rw::math::Q rw::math::concat(const Q& q1, const Q& q2){
         q(q1.size()+i) = q2(i);
     return q;
 }
+
+
+Q::Q(size_t n, double a0, double a1):_vec(n){
+    if(n<2) RW_THROW("Vector size must be >= 2");
+     _vec[0] = a0; _vec[1] = a1;
+}
+Q::Q(size_t n, double a0, double a1, double a2):_vec(n){
+    if(n<3) RW_THROW("Vector size must be >= 3");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3):_vec(n){
+    if(n<4) RW_THROW("Vector size must be >= 4");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4):_vec(n){
+    if(n<5) RW_THROW("Vector size must be >= 5");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5):_vec(n){
+    if(n<6) RW_THROW("Vector size must be >= 6");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6):_vec(n){
+    if(n<7) RW_THROW("Vector size must be >= 7");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5; _vec[6] = a6;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7):_vec(n){
+    if(n<8) RW_THROW("Vector size must be >= 8");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5; _vec[6] = a6; _vec[7] = a7;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8):_vec(n){
+    if(n<9) RW_THROW("Vector size must be >= 9");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5; _vec[6] = a6; _vec[7] = a7; _vec[8] = a8;
+}
+Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9):_vec(n){
+    if(n<10) RW_THROW("Vector size must be >= 10");
+    _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5; _vec[6] = a6; _vec[7] = a7; _vec[8] = a8; _vec[9] = a9;
+}
+
 

@@ -104,6 +104,7 @@ namespace rw { namespace math {
          * @param ... [in] Values to initialize [q(2);q(n-1)]
          *
          */
+        /*
         Q(size_t n, double arg1, double arg2, ...):
             _vec(n)
         {
@@ -115,7 +116,16 @@ namespace rw { namespace math {
                 _vec[i] = va_arg(ap, double);
             }
             va_end(ap);
-          }
+          }*/
+        Q(size_t n, double a0, double a1);
+        Q(size_t n, double a0, double a1, double a2);
+        Q(size_t n, double a0, double a1, double a2, double a3);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8);
+        Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9);
 
         /**
          * @brief Construct a configuration vector from a std::vector
@@ -373,6 +383,8 @@ namespace rw { namespace math {
 			}
 			return false;
 		}
+    private:
+		void init(size_t n, const double* values);
 
     private:
         Base _vec;
