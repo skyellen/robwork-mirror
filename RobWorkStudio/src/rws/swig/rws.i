@@ -264,8 +264,29 @@ void setRobWorkStudio(RobWorkStudio* rwstudio);
     MovableFrame* findMovableFrame(const std::string& name){
         return getRobWorkStudio()->getWorkCell()->findFrame<MovableFrame>(name);
     }
+
     FixedFrame* findFixedFrame(const std::string& name){
         return getRobWorkStudio()->getWorkCell()->findFrame<FixedFrame>(name);
+    }
+
+    void moveTo(MovableFrame* mframe, Transform3D wTframe ){
+        State state = getState();
+        mframe->moveTo(wTframe, state);
+        setState(state);
+    }
+
+    void moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp ){
+        State state = getState();
+        Transform3D tcpTbase = rw::kinematics::Kinematics::frameTframe(frame, mframe, state);
+        Transform3D wTbase_target = wTtcp * tcpTbase;
+        mframe->moveTo(wTbase_target, state);
+        setState(state);
+    }
+
+    void moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe ){
+        Frame *fframe = findFrame(fname);
+        MovableFrame *mframe = findMovableFrame(mname);
+        moveTo(fframe, mframe, wTframe);
     }
 
 
@@ -299,18 +320,18 @@ rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
     end
 
     function getQ(dev)
-      local state = getState()
+      local state = rws.getState()
       return dev:getQ(state)
     end
 
     function setQ(dev, q)
-      local state = getState()
+      local state = rws.getState()
       dev:setQ(q, state)
       setState(state)
     end
 
     function setTransform(frame, trans)
-      local state = getState()
+      local state = rws.getState()
       frame:setTransform(trans, state)
       setState(state)
     end
