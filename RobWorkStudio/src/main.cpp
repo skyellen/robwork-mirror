@@ -66,7 +66,7 @@ public:
     {
       try {
           return QApplication::notify(rec,ev);
-      } catch(rw::common::Exception & e) {
+      } catch(std::exception & e) {
           QMessageBox::warning(0,tr("An error occurred"), e.what());
       } catch(...) {
           QMessageBox::warning(0,
