@@ -360,9 +360,9 @@ namespace rwlibs { namespace algorithms {
             {};
 
             static void swap(TreeNode& n1, TreeNode& n2){
-                std::swap<TreeNode*>(n1._left,n2._left);
-                std::swap<TreeNode*>(n1._right,n2._right);
-                std::swap<KDNode*>(n1._kdnode,n2._kdnode);
+                std::swap(n1._left,n2._left);
+                std::swap(n1._right,n2._right);
+                std::swap(n1._kdnode,n2._kdnode);
             }
 
             TreeNode *_left,*_right;
