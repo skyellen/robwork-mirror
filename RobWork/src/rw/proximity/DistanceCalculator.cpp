@@ -88,6 +88,7 @@ DistanceCalculator::DistanceCalculator(Frame* root,
     _state(initialState)
 {
     RW_ASSERT(root);
+
     RW_ASSERT(strategy);
 
     initialize();

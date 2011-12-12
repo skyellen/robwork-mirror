@@ -209,8 +209,34 @@ public:
 
 #endif // RW_USE_DEPRECATED
 
-	void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
-	void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
+	/**
+	 * @brief Add Geometry associated to \b frame
+	 * 
+	 * The current shape of the geometry is copied, hence later changes to \b geometry has no effect
+	 *
+	 * @param frame [in] Frame to associated geometry to
+	 * @param geometry [in] Geometry to add
+	 */
+	void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+
+	/**
+	 * @brief Removes geometry from CollisionDetector
+	 * 
+	 * The id of the geometry is used to match the collision model to the geometry.
+	 *
+	 * @param frame [in] The frame which has the geometry associated
+	 * @param geometry [in] Geometry with the id to be removed
+	 */
+	void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+	
+	/**
+	 * @brief Removes geometry from CollisionDetector
+	 * 
+	 * The \b geometryId is used to match the collision model to the geometry.
+	 *
+	 * @param frame [in] The frame which has the geometry associated
+	 * @param geometryId [in] Id of geometry to be removed
+	 */
 	void removeGeometry(rw::kinematics::Frame* frame, const std::string geometryId);
 
 
