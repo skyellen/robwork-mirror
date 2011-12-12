@@ -128,6 +128,15 @@ ELSE ()
   #MESSAGE(STATUS "RobWorkStudio: Sandbox DISABLED!")
 ENDIF ()
 
+# optional compilation of sandbox
+IF (RWS_BUILD_WITH_SANDBOX)
+    MESSAGE(STATUS "RobWorkStudio: Lua ENABLED!")
+    SET(RWSTUDIO_LUA rwstudio_lua LuaEditorWindow)
+ELSE ()
+    MESSAGE(STATUS "RobWorkStudio: Lua DISABLED!")
+ENDIF ()
+
+
 # Setup RobWorkStudio include and link directories
 SET(ROBWORKSTUDIO_INCLUDE_DIR
     ${RWSTUDIO_ROOT}/src/
@@ -141,7 +150,7 @@ SET(ROBWORKSTUDIO_LIBRARY_DIRS
 
 SET(ROBWORKSTUDIO_LIBRARIES_TMP
     ${RWS_SANDBOX_LIB}
-    rwstudio_lua
+    ${RWSTUDIO_LUA}
     rwstudio
     rwstudio_propertyinspector
     qtpropertybrowser
