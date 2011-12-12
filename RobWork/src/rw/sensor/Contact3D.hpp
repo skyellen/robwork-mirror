@@ -31,6 +31,10 @@ class Contact3D
 public:
     //! @brief constructor
     Contact3D() :
+        normalForce(0.0),
+        _faceIdx(0),
+        _faceIdx2(0),
+        curvature(0.0),
         mu(0.6)
     {
     }
@@ -42,7 +46,11 @@ public:
      * @param normalf [in] normal force in the contact
      */
     Contact3D(rw::math::Vector3D<> tp, rw::math::Vector3D<> tn, double normalf) :
-        p(tp), n(tn), f(n * normalf), normalForce(normalf), mu(0.6)
+        p(tp), n(tn), f(n * normalf), normalForce(normalf),
+        _faceIdx(0),
+        _faceIdx2(0),
+        curvature(0.0),
+        mu(0.6)
     {
     }
 
@@ -53,7 +61,11 @@ public:
      * @param tf [in] force in the contact
      */
     Contact3D(rw::math::Vector3D<> tp, rw::math::Vector3D<> tn, rw::math::Vector3D<> tf) :
-        p(tp), n(tn), f(tf), mu(0.6)
+        p(tp), n(tn), f(tf),
+        _faceIdx(0),
+        _faceIdx2(0),
+        curvature(0.0),
+        mu(0.6)
     {
         normalForce = dot(f, n);
     }
