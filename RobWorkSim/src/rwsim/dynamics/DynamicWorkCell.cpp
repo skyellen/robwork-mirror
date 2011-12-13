@@ -59,7 +59,9 @@ DynamicWorkCell::~DynamicWorkCell()
 }
 
 DynamicDevice* DynamicWorkCell::findDevice(const std::string& name){
+    std::cout << "nr of devices: " << _devices.size() << std::endl;
     BOOST_FOREACH(DynamicDevice *ddev, _devices){
+        std::cout << "Device: " << ddev->getModel().getName() << std::endl;
         if(ddev->getModel().getName()==name)
             return  ddev;
     }
