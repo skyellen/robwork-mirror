@@ -78,7 +78,7 @@ ColladaLoader::ColladaLoader(const std::string& filename, const std::string& sch
     }
 
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
 
     readColladaWorkCell(elementRoot);
@@ -93,7 +93,7 @@ ColladaLoader::ColladaLoader(std::istream& instream, const std::string& schemaFi
     }
 
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
     readColladaWorkCell(elementRoot);
 }
