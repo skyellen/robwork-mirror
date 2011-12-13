@@ -79,7 +79,8 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::CollisionStrategy,
         public rw::proximity::CollisionToleranceStrategy,
         public rw::proximity::DistanceStrategy,
-        public rw::proximity::DistanceToleranceStrategy
+        public rw::proximity::DistanceToleranceStrategy,
+		public rw::proximity::DistanceThresholdStrategy
     {
     public:
 
@@ -258,6 +259,8 @@ namespace rwlibs { namespace proximitystrategies {
          * @brief clears the bounding volume and triangle test counters.
          */
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
+
+		void setThreshold(double threshold);
     private:
 
         struct QueryData {
@@ -269,12 +272,13 @@ namespace rwlibs { namespace proximitystrategies {
                             rw::proximity::ProximityModel::Ptr& bModel,
                             rw::proximity::ProximityStrategyData &data);
     private:
-
     	int _numBVTests,_numTriTests;
 
     	std::vector<RWPQPModel> _allmodels;
     	std::map<std::string, std::vector<int> > _geoIdToModelIdx;
-    };
+		double _threshold;
+
+	};
 
 }} // end namespaces
 

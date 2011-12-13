@@ -157,6 +157,7 @@ DistanceCalculator::~DistanceCalculator()
 DistanceResult DistanceCalculator::distance(const State& state,
 											std::vector<DistanceResult>* result) const
 {
+	_cnt++;
 	ScopedTimer stimer(_timer);
     FKTable fk(state);
 

@@ -31,6 +31,7 @@
 #include "ProximityFilter.hpp"
 
 #include <rw/common/Ptr.hpp>
+#include <rw/common/Timer.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
@@ -244,6 +245,13 @@ public:
 	void removeRule(const ProximitySetupRule& rule);
 
 
+	double getComputationTime() {
+		return _timer.getTime();
+	}
+	void resetComputationTime() {
+		_timer.resetAndPause();
+	}
+
     /**
      * @brief return the ids of all the geometries of this frames.
      */
@@ -252,6 +260,8 @@ public:
     //void reset(CollisionStrategyPtr strategy);
 
 private:
+	mutable rw::common::Timer _timer;
+
 	ProximityFilterStrategy::Ptr _bpfilter;
 
     // the narrow phase collision strategy

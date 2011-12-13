@@ -177,7 +177,8 @@ namespace
 // ProximityStrategyPQP
 
 ProximityStrategyPQP::ProximityStrategyPQP() :
-    _firstContact(true)
+    _firstContact(true),
+	_threshold(DBL_MAX)
 {
 	clearStats();
 }
@@ -425,7 +426,7 @@ DistanceResult& ProximityStrategyPQP::distance(
     QueryData qdata = initQuery(aModel,bModel,data);
 
     DistanceResult &rwresult = data.getDistanceData();
-    rwresult.distance = DBL_MAX;
+    rwresult.distance = _threshold;
 
     rwresult.a = aModel;
     rwresult.b = bModel;
@@ -462,7 +463,7 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
     QueryData qdata = initQuery(aModel,bModel,data);
 
     MultiDistanceResult &rwresult = data.getMultiDistanceData();
-    rwresult.distance = DBL_MAX;
+    rwresult.distance = _threshold;
 
     rwresult.a = aModel;
     rwresult.b = bModel;

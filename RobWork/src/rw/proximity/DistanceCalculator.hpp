@@ -184,14 +184,21 @@ namespace rw { namespace proximity {
 		double getComputationTime() {
 			return _timer.getTime();
 		}
-		void resetComputationTime() {
+
+		int getCount() {
+			return _cnt;
+		}
+
+		void resetComputationTimeAndCount() {
 			_timer.resetAndPause();
+			_cnt = 0;
 		}
 
 
 		void setDistanceThresholdStrategy(DistanceThresholdStrategy::Ptr strategy);
     private:
 		mutable rw::common::Timer _timer;
+		mutable int _cnt;
 
     	bool _shortestDistance;
 

@@ -164,7 +164,7 @@ namespace
 			if (_log != NULL) {
 				bool res = !Models::inBounds(q, _bounds);
 				if (res) {
-					_log->debug()<<"The configuration: "<<q<<" is outside bounds: Min="<<_bounds.first<<" Max="<<_bounds.second;
+					_log->debug()<<"The configuration: "<<q<<" is outside bounds: Min="<<_bounds.first<<" Max="<<_bounds.second<<std::endl;
 				}
 				return res;
 			} else 

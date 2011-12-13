@@ -183,8 +183,7 @@ namespace geometry {
         // Inherited from TriMesh
         //! @copydoc IndexedTriMesh::getTriangle
         Triangle<double> getTriangle(size_t i) const {
-            using namespace rw::math;
-            RW_WARN("");
+            using namespace rw::math;            
             const uint32_t idx = _stride*i; // this is the unmasked idx
             const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
             const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));

@@ -21,6 +21,7 @@
 #include "CollisionSetup.hpp"
 #include "Proximity.hpp"
 
+#include <rw/common/ScopedTimer.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
@@ -85,6 +86,8 @@ bool CollisionDetector::inCollision(const State& state,
 									QueryResult* result,
 									bool stopAtFirstContact) const
 {
+	ScopedTimer stimer(_timer);
+
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state
 	ProximityFilter::Ptr filter = _bpfilter->update(state);
