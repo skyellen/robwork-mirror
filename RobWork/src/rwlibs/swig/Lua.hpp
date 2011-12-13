@@ -5,26 +5,21 @@
  *      Author: jimali
  */
 
-#ifndef LUA_HPP_
-#define LUA_HPP_
+#ifndef RWLIBS_SWIG_LUA_HPP_
+#define RWLIBS_SWIG_LUA_HPP_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-
-    int luaopen_rw(lua_State* L); // declare the wrapped module
-
-#ifdef __cplusplus
-}
-#endif
-
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
 namespace rwlibs {
 namespace swig {
 
+    /**
+     * @brief initialize a lua state
+     * @param L
+     * @return
+     */
     int openLuaLibRW(lua_State* L);
 
 }

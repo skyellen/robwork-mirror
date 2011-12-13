@@ -22,9 +22,12 @@ IF( SWIG_FOUND )
 
     ADD_LIBRARY(rw_lua STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
     LINK_LIBRARIES(rw_lua rw ${ROBWORK_LIBRARIES})
-	# this is used to indicate static linking to Visual Studio or mingw 
-	SET_TARGET_PROPERTIES(rw_lua PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
-	
+	# this is used to indicate static linking to Visual Studio or mingw
+	IF (DEFINED MSVC) 
+	    SET_TARGET_PROPERTIES(rw_lua PROPERTIES COMPILE_FLAGS "/DSTATIC_LINKED")
+	ELSE()
+	    SET_TARGET_PROPERTIES(rw_lua PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
+	ENDIF()
 	
 	# PYthon interface generation
 	FIND_PACKAGE(PythonInterp)
