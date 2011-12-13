@@ -5,8 +5,8 @@
  *      Author: jimali
  */
 
-#ifndef GRASPRESTINGPOSEDIALOG_HPP_
-#define GRASPRESTINGPOSEDIALOG_HPP_
+#ifndef TACTILESENSORDIALOG_HPP_
+#define TACTILESENSORDIALOG_HPP_
 
 #ifdef __WIN32
 #include <windows.h>
