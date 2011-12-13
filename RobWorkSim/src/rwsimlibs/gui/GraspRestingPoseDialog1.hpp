@@ -5,8 +5,8 @@
  *      Author: jimali
  */
 
-#ifndef GRASPRESTINGPOSEDIALOG_HPP_
-#define GRASPRESTINGPOSEDIALOG_HPP_
+#ifndef GRASPRESTINGPOSEDIALOG1_HPP_
+#define GRASPRESTINGPOSEDIALOG1_HPP_
 
 #ifdef __WIN32
 #include <windows.h>
@@ -16,18 +16,18 @@
 
 #include <rw/kinematics/State.hpp>
 
-#include <dynamics/RigidBody.hpp>
-#include <dynamics/DynamicWorkCell.hpp>
-#include <simulator/ThreadSimulator.hpp>
-#include <control/PDController.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
+#include <rwsim/control/PDController.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
-#include <util/MovingAverage.hpp>
+#include <rwsim/util/MovingAverage.hpp>
 
 #include <rw/proximity/CollisionDetector.hpp>
-#include <dynamics/RigidDevice.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
-#include <sensors/BodyContactSensor.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
 
 #include <QObject>
 #include <QtGui>
@@ -45,13 +45,13 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
 
     public:
         GraspRestingPoseDialog(const rw::kinematics::State& state,
-                          dynamics::DynamicWorkCell *dwc,
+                          rwsim::dynamics::DynamicWorkCell *dwc,
                           rw::proximity::CollisionDetector *detector,
                           QWidget *parent = 0);
 
         const rw::kinematics::State& getState(){ return _state; };
 
-        std::vector<dynamics::RigidBody*>& getBodies(){ return _bodies; };
+        std::vector<rwsim::dynamics::RigidBody*>& getBodies(){ return _bodies; };
 
         std::vector<rw::kinematics::State>& getStartPoses(){return _startPoses;};
 
