@@ -146,7 +146,13 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
         rw::graspplanning::GraspTable _gtable;
 
-        QAction *_openAction;
+        QAction *_openAction,
+                *_planarPoseDistAction,
+                *_poseDistAction,
+                *_graspSelectionAction,
+                *_graspRestPoseAction,
+                *_restPoseAction,
+                *_poseAnalyserAction;
 
 };
 

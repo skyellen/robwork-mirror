@@ -23,11 +23,6 @@
 #include <rw/proximity/Proximity.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 
-#include <rwsimlibs/gui/JointControlDialog.hpp>
-#include <rwsimlibs/gui/SimCfgDialog.hpp>
-#include <rwsimlibs/gui/CreateEngineDialog.hpp>
-#include <rwsimlibs/gui/BodyControllerWidget.hpp>
-
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
@@ -47,6 +42,18 @@
 #include "rwsim/control/BeamJointController.hpp"
 //#include <rwsim/dynamics/SuctionCup.hpp>
 //#include <rwsim/control/SuctionCupController1.hpp>
+
+#include <rwsimlibs/gui/JointControlDialog.hpp>
+#include <rwsimlibs/gui/SimCfgDialog.hpp>
+#include <rwsimlibs/gui/CreateEngineDialog.hpp>
+#include <rwsimlibs/gui/BodyControllerWidget.hpp>
+#include <rwsimlibs/gui/GraspRestingPoseDialog.hpp>
+
+#include <rwsimlibs/gui/GraspSelectionDialog.hpp>
+#include <rwsimlibs/gui/SupportPoseAnalyserDialog.hpp>
+#include <rwsimlibs/gui/TactileSensorDialog.hpp>
+
+
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
@@ -170,6 +177,24 @@ void RWSimPlugin::setupMenu(QMenu* pluginmenu){
     _openAction = new QAction(QIcon(":/images/open.png"), tr("&Open DynamicWorkCell..."), this); // owned
     connect(_openAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
 
+    _planarPoseDistAction = new QAction(tr("&Planar Pose Distributions"), this); // owned
+    connect(_planarPoseDistAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    _poseDistAction = new QAction(tr("&Pose Distributions"), this); // owned
+    connect(_poseDistAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    _graspSelectionAction = new QAction(tr("&Grasp selection"), this); // owned
+    connect(_graspSelectionAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    _graspRestPoseAction = new QAction(tr("&Grasp Simulation"), this); // owned
+    connect(_graspRestPoseAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    _restPoseAction = new QAction(tr("&Object Drop Simulation"), this); // owned
+    connect(_restPoseAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
+    _poseAnalyserAction = new QAction(tr("&Pose Analyser"), this); // owned
+    connect(_poseAnalyserAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+
     // insert the "open dynamics" into the file menu
     boost::tuple<QMenu*, QAction*, int> action = getAction(menu, "&File", "&Close");
     if(action.get<1>()!=NULL)
@@ -178,6 +203,13 @@ void RWSimPlugin::setupMenu(QMenu* pluginmenu){
     QMenu *dynMenu = new QMenu(tr("Simulation"), this);
     dynMenu->addAction(_openAction);
     dynMenu->addSeparator();
+    dynMenu->addAction( _planarPoseDistAction );
+    dynMenu->addAction( _poseDistAction );
+    dynMenu->addAction( _graspSelectionAction );
+    dynMenu->addAction( _graspRestPoseAction );
+    dynMenu->addAction( _restPoseAction );
+    dynMenu->addAction( _poseAnalyserAction );
+
 
     boost::tuple<QWidget*, QAction*, int> action2 = getAction(menu, "Help");
     if(action.get<1>()!=NULL)
@@ -393,7 +425,66 @@ void RWSimPlugin::btnPressed(){
         _tactileSensorDialog->show();
         _tactileSensorDialog->raise();
         _tactileSensorDialog->activateWindow();
+    } else if( obj== _planarPoseDistAction) {
+
+    } else if( obj== _poseDistAction) {
+
+    } else if( obj== _graspSelectionAction) {
+        if(_dwc==NULL){
+            QMessageBox::information( NULL,"Error","This requires an openned Dynamic WorkCell!", QMessageBox::Ok);
+            return;
+        }
+        State state = getRobWorkStudio()->getState();
+        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+        GraspSelectionDialog *graspSelectionDialog = new GraspSelectionDialog(state, _dwc.get(), colDect.get(),  this);
+        connect(graspSelectionDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        graspSelectionDialog->show();
+        graspSelectionDialog->raise();
+        graspSelectionDialog->activateWindow();
+
+    } else if( obj== _graspRestPoseAction) {
+        if(_dwc==NULL){
+            QMessageBox::information( NULL,"Error","This requires an openned Dynamic WorkCell!", QMessageBox::Ok);
+            return;
+        }
+        State state = getRobWorkStudio()->getState();
+        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+        GraspRestingPoseDialog *graspRestPoseDialog = new GraspRestingPoseDialog(state, _dwc.get(), colDect.get(),  this);
+        connect(graspRestPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        //connect(graspRestPoseDialog,SIGNAL(restingPoseEvent(const RestingConfig&)), this,SLOT(restConfigEvent(const RestingConfig&)) );
+        // TODO: this should use the genericAnyEvent
+        graspRestPoseDialog->show();
+        graspRestPoseDialog->raise();
+        graspRestPoseDialog->activateWindow();
+
+    } else if( obj== _restPoseAction) {
+        if(_dwc==NULL){
+            QMessageBox::information( NULL,"Error","This requires an openned Dynamic WorkCell!", QMessageBox::Ok);
+            return;
+        }
+
+        State state = getRobWorkStudio()->getState();
+        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+        RestingPoseDialog *restPoseDialog = new RestingPoseDialog(state, _dwc.get(), colDect.get(),  this);
+        connect(restPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        restPoseDialog->show();
+        restPoseDialog->raise();
+        restPoseDialog->activateWindow();
+    } else if( obj== _poseAnalyserAction) {
+        if(_dwc==NULL){
+            QMessageBox::information( NULL,"Error","This requires an openned Dynamic WorkCell!", QMessageBox::Ok);
+            return;
+        }
+
+        State state = getRobWorkStudio()->getState();
+        rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
+        SupportPoseAnalyserDialog *poseAnalyserDialog = new SupportPoseAnalyserDialog(state, _dwc.get(), colDect.get(),  getRobWorkStudio(), this);
+        connect(poseAnalyserDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        poseAnalyserDialog->show();
+        poseAnalyserDialog->raise();
+        poseAnalyserDialog->activateWindow();
     }
+
 }
 
 namespace {
