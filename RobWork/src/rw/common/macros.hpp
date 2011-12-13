@@ -164,12 +164,13 @@ do { int RW__line = __LINE__;                                               \
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-//#define RW_LOG_TEXT(id, ostreamExpression) do {     \
-//    std::stringstream RW__stream;                   \
-//    RW__stream << ostreamExpression;                \
-//    rw::common::Log::log().write(id, RW__stream.str());   \
-//} while (0)
-
+/*
+#define RW_LOG_TEXT(id, ostreamExpression) do {     \
+    std::stringstream RW__stream;                   \
+    RW__stream << ostreamExpression;                \
+    rw::common::Log::log().write(id, RW__stream.str());   \
+} while (0)
+*/
 
 /**
  * @brief Writes \b ostreamExpression augmented with file name and line number
@@ -186,12 +187,13 @@ do { int RW__line = __LINE__;                                               \
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-//#define RW_LOG(id, ostreamExpression) do {                                      \
-//    std::stringstream RW__stream;                                               \
-//    RW__stream << ostreamExpression << "\n";                                    \
-//    rw::common::Log::log().get(id).write(Message(RW__stream.str(), __LINE__, __FILE__));   \
-//} while (0)
-
+/*
+#define RW_LOG(id, ostreamExpression) do {                                      \
+    std::stringstream RW__stream;                                               \
+    RW__stream << ostreamExpression << "\n";                                    \
+    rw::common::Log::log().get(id).write(Message(RW__stream.str(), __LINE__, __FILE__));   \
+} while (0)
+*/
 
 /**
  * @brief Writes \b ostreamExpression to \b log.
@@ -268,12 +270,13 @@ RW_LOG_ERROR(log, Log::Debug, "")
 */
 //
 //
-//#define RW_LOG(log, ostreamExpression) do {                               \
-//    std::stringstream RW__stream;                                               \
-//    RW__stream << ostreamExpression << "\n";                                    \
-//	log.write(Message(RW__stream.str(), __LINE__, __FILE__));                                                \
-//} while (0)
-
+/*
+#define RW_LOG(log, ostreamExpression) do {                               \
+    std::stringstream RW__stream;                                               \
+    RW__stream << ostreamExpression << "\n";                                    \
+	log.write(Message(RW__stream.str(), __LINE__, __FILE__));                                                \
+} while (0)
+*/
 
 
 /**
