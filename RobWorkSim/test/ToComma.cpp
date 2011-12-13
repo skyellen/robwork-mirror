@@ -109,12 +109,12 @@ int main(int argc, char** argv)
                 continue;
             if(target.result->testStatus!=GraspTask::Success && target.result->testStatus!=GraspTask::ObjectSlipped)
                 continue;
-            if(target.result->qualityAfterLifting[0]<0.1)
+            if(target.result->qualityAfterLifting[0]<0.05)
                 continue;
 
             Transform3D<> t3d = target.pose;
 
-            Q key(7);
+            Q key(6);
             key[0] = t3d.P()[0];
             key[1] = t3d.P()[1];
             key[2] = t3d.P()[2];
@@ -122,9 +122,9 @@ int main(int argc, char** argv)
             key[3] = eaa.axis()(0);
             key[4] = eaa.axis()(1);
             key[5] = eaa.axis()(2);
-            key[6] = eaa.angle();
-            for(size_t i=0;i<key.size(); i++)
-                key[i] = key[i] * scale[i];
+            //key[6] = eaa.angle();
+            //for(size_t i=0;i<key.size(); i++)
+            //    key[i] = key[i] * scale[i];
 
             simnodes.push_back( KDTreeQ::KDNode(key, target.result) );
             Q pos(3);
@@ -139,9 +139,11 @@ int main(int argc, char** argv)
     KDTreeQ *nntree = KDTreeQ::buildTree(simnodes);
     KDTreeQ *nntree_pos = KDTreeQ::buildTree(posnodes);
 
-    Q diff(7, 0.005, 0.005, 0.005, 8*Deg2Rad, 8*Deg2Rad, 8*Deg2Rad, 10*Deg2Rad);
-    for(size_t i=0;i<diff.size(); i++)
-        diff[i] = diff[i] * scale[i];
+    //Q diff(7, 0.015, 0.015, 0.015, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad);
+    Q diff(6, 0.005, 0.005, 0.005, 8*Deg2Rad, 8*Deg2Rad, 8*Deg2Rad);
+    std::cout << "DIFF: "<<diff<<std::endl;
+    //for(size_t i=0;i<diff.size(); i++)
+    //    diff[i] = diff[i] * scale[i];
 
     std::list<const KDTreeQ::KDNode*> result;
     size_t maxNeigh = 0;
@@ -161,12 +163,16 @@ int main(int argc, char** argv)
     }
     std::cout << "MAX NEIGHBORS: " << maxNeigh << std::endl;
 
+    std::cout << "DIFF: "<<diff<<std::endl;
+
     // normalize to [0;1]
     RW_WARN("2");
     BOOST_FOREACH(KDTreeQ::KDNode& node, simnodes){
         GraspResult::Ptr res = node.valueAs<GraspResult::Ptr>();
         res->qualityAfterLifting[res->qualityAfterLifting.size()-1] *= (1.0/maxNeigh);
     }
+
+    std::cout << "DIFF: "<<diff<<std::endl;
 
     //KDTreeQ *nntree = KDTreeQ::buildTree(simnodes);
     RW_WARN("2");
@@ -180,7 +186,7 @@ int main(int argc, char** argv)
 	        Transform3D<> t3d = target.pose;
 
 
-            Q key(7);
+            Q key(6);
             key[0] = t3d.P()[0];
             key[1] = t3d.P()[1];
             key[2] = t3d.P()[2]; // scale it to be in 0..1 size
@@ -188,7 +194,7 @@ int main(int argc, char** argv)
             key[3] = eaa.axis()(0);
             key[4] = eaa.axis()(1);
             key[5] = eaa.axis()(2);
-            key[6] = eaa.angle();
+            //key[6] = eaa.angle();
             Q key_scaled = key;
             for(size_t i=0;i<key_scaled.size(); i++)
                 key_scaled[i] = key[i] * scale[i];
@@ -198,9 +204,12 @@ int main(int argc, char** argv)
             GraspResult::Ptr gres = target.getResult(); //node.valueAs<GraspResult::Ptr>();
 
             nntree->nnSearchRect(key-diff,key+diff, result);
+            std::cout << key-diff << std::endl;
+            std::cout << key+diff << std::endl;
 
             size_t nrNeighbors = result.size();
             std::cout << "nrNeighbors: " << nrNeighbors << std::endl;
+            int exptestStatus = gres->testStatus;
             gres->testStatus = GraspTask::Success;
 
             Q quality(gres->qualityAfterLifting.size()+1);
@@ -258,7 +267,7 @@ int main(int argc, char** argv)
             std::cout << (closest_node->key-key) << std::endl;
             Q qual = gressim->qualityAfterLifting;
             q_dim = qual.size();
-            if((gres->testStatus==GraspTask::Success) || (gres->testStatus==GraspTask::ObjectSlipped)){
+            if((exptestStatus==GraspTask::Success) || (exptestStatus==GraspTask::ObjectSlipped)){
                 ss << "1\t"<< dist;
                 BOOST_FOREACH(double q, gres->qualityAfterLifting){ss << "\t" << q; }
                 BOOST_FOREACH(double q, key_scaled){ss << "\t" << q; }

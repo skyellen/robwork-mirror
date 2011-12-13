@@ -124,7 +124,7 @@ int main(int argc, char** argv)
         targets.push_back( GraspTarget( t3d ) );
         nrPosesWritten++;
         if(nrPosesWritten>30000){
-            GraspTask::saveUIBK( gtask, grasptask_file_out+"_"+boost::lexical_cast<std::string>(nrSaves)+"_init_samples.uibk.xml" );
+            GraspTask::saveRWTask( gtask, grasptask_file_out+"_"+boost::lexical_cast<std::string>(nrSaves)+"_init_samples.uibk.xml" );
             nrSaves++;
             targets.clear();
             nrPosesWritten = 0;
@@ -143,7 +143,7 @@ int main(int argc, char** argv)
         targets2.push_back( GraspTarget( t3d ) );
         nrPosesWritten++;
         if(nrPosesWritten>30000){
-            GraspTask::saveUIBK( gtask, grasptask_file_out+"_"+boost::lexical_cast<std::string>(nrSaves)+"_samples.uibk.xml" );
+            GraspTask::saveRWTask( gtask, grasptask_file_out+"_"+boost::lexical_cast<std::string>(nrSaves)+"_samples.uibk.xml" );
             nrSaves++;
             targets2.clear();
             nrPosesWritten = 0;
