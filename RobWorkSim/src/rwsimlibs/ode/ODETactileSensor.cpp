@@ -63,37 +63,33 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
     RW_ASSERT(_feedback.size() == _rwBody.size());
     RW_ASSERT(_rwsensor);
 
-
-    //std::cout << "update sensor"<< std::endl;
-    //if( dynamic_cast<BodyContactSensor*>(_rwsensor)){
-
-        for(size_t midx=0;midx<_feedback.size();midx++){
-            int bodyIdx=_bodyIdx[midx];
-            std::vector<dJointFeedback*>& feedback = _feedback[midx];
-            std::vector<dContactGeom>& geoms = _geoms[midx];
-             for(size_t i=0;i<feedback.size(); i++){
-                 rw::math::Vector3D<> force,snormal;
-
-                 if(bodyIdx==0){
-                     force = ODEUtil::toVector3D( feedback[i]->f1 );
-                     snormal = ODEUtil::toVector3D( geoms[i].normal );
-                 } else {
-                     force = ODEUtil::toVector3D(feedback[i]->f2);
-                     snormal = -ODEUtil::toVector3D(geoms[i].normal);
-                 }
-                 if(force.norm1()<0.0000001)
-                     continue;
-                 // TODO:
-                 //std::cout << "force : " << ODEUtil::toVector3D(feedback[i]->f1) << " -- " << ODEUtil::toVector3D(feedback[i]->f2) << std::endl;
-                 //std::cout << "torque: " << ODEUtil::toVector3D(feedback[i]->t1) << " -- " << ODEUtil::toVector3D(feedback[i]->t2) << std::endl;
-
-                 _rwsensor->addForceW( ODEUtil::toVector3D(geoms[i].pos), force, snormal, state, _rwBody[midx]);
+    for(size_t midx=0;midx<_feedback.size();midx++){
+        int bodyIdx=_bodyIdx[midx];
+        std::vector<dJointFeedback*>& feedback = _feedback[midx];
+        std::vector<dContactGeom>& geoms = _geoms[midx];
+         for(size_t i=0;i<feedback.size(); i++){
+             rw::math::Vector3D<> force,snormal,posw;
+             double depth = geoms[i].depth;
+             posw = ODEUtil::toVector3D(geoms[i].pos);
+             if(bodyIdx==0){
+                 force = ODEUtil::toVector3D( feedback[i]->f1 );
+                 snormal = ODEUtil::toVector3D( geoms[i].normal );
+             } else {
+                 force = ODEUtil::toVector3D(feedback[i]->f2);
+                 snormal = -ODEUtil::toVector3D(geoms[i].normal);
              }
-        }
-        clear();
-        _rwsensor->update(info, state);
-    //    return;
-    //}
+             if(force.norm1()<0.0000001){
+                 std::cout << "0 " << depth << " " << snormal << std::endl;
+             } else {
+                 std::cout << "1 " << depth << " " << snormal << std::endl;
+             }
+
+             _rwsensor->addForceW( posw, force, snormal, state, _rwBody[midx]);
+         }
+    }
+    clear();
+    _rwsensor->update(info, state);
+
 /*
     for(size_t midx=0;midx<_feedback.size();midx++){
         int bodyIdx=_bodyIdx[midx];
