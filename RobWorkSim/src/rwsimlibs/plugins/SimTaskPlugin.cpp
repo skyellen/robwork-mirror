@@ -536,7 +536,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
     } else {
-        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.10));
     }
 
