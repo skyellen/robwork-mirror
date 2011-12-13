@@ -519,6 +519,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
     gtask->setGripperID(gripperName);
+    gtask->setGraspControllerID("GraspController");
     //rtask->getPropertyMap().set<std::string >("Object", objectName);
 
     //CartesianTask::Ptr tasks = ownedPtr( new CartesianTask());
