@@ -151,7 +151,7 @@ void GraspTaskSimulator::load(GraspTask::Ptr graspTasks){
     std::string handName = _gtask->getGripperID();
     _dhand = _dwc->findDevice( handName);
     if(_dhand==NULL)
-        RW_THROW("No such gripper in workcell: " << handName);
+        RW_THROW("No such gripper in dynamic workcell: " << handName);
     _rhand = dynamic_cast<RigidDevice*>(_dhand);
     _hand = _dhand->getKinematicModel();
     _gripperDim = _hand->getDOF();
