@@ -8,9 +8,17 @@
 #ifndef RWLIBS_SWIG_LUA_HPP_
 #define RWLIBS_SWIG_LUA_HPP_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+
+#ifdef __cplusplus
+}
+#endif
 
 namespace rwlibs {
 namespace swig {
