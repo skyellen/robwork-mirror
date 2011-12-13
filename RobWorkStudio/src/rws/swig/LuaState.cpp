@@ -11,15 +11,7 @@
 #include <rwlibs/swig/Lua.hpp>
 #include "ScriptTypes.hpp"
 
-extern "C" {
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-}
-
-
 //extern int luaopen_rws(lua_State* L); // declare the wrapped module
-
 
 LuaState::LuaState():_rws(NULL),_lua(NULL)
 {}
