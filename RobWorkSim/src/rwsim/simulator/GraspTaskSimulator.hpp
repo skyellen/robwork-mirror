@@ -140,8 +140,8 @@ public:
 
         rw::kinematics::State _state;
         rw::common::Timer _wallTimer;
-        GraspSubTask* _task;
-        GraspTarget _target;
+        GraspSubTask *_task;
+        GraspTarget *_target;
         StepState _currentState;
 
         rw::kinematics::State _postLiftObjState;
@@ -227,10 +227,10 @@ private:
 	std::map<rwsim::simulator::ThreadSimulator::Ptr, SimState> _simStates;
 	std::vector<rwsim::simulator::ThreadSimulator::Ptr> _simulators;
 
-	GraspSubTask* _currentTask;
-	GraspTarget _currentTarget;
+	GraspSubTask *_currentTask;
+	GraspTarget *_currentTarget;
 	GraspTask::Ptr _gtask;
-	std::stack<std::pair<GraspSubTask*, GraspTarget> > _taskQueue;
+	std::stack<std::pair<GraspSubTask*, GraspTarget*> > _taskQueue;
 	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 };
