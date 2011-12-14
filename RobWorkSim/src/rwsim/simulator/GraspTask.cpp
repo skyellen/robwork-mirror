@@ -216,6 +216,7 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
                     contactlist[ idxOffset+6 ] = contact.f(0);
                     contactlist[ idxOffset+7 ] = contact.f(1);
                     contactlist[ idxOffset+8 ] = contact.f(2);
+                    idxOffset += 9;
                 }
                 if(contactlist.size()>0){
                     ctarget->getPropertyMap().set<std::vector<double> > ("ContactsGrasp", contactlist);
@@ -237,6 +238,7 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
                     contactlist[ idxOffset+6 ] = contact.f(0);
                     contactlist[ idxOffset+7 ] = contact.f(1);
                     contactlist[ idxOffset+8 ] = contact.f(2);
+                    idxOffset += 9;
                 }
                 if(contactlist.size()>0){
                     ctarget->getPropertyMap().set<std::vector<double> > ("ContactsLift", contactlist);
@@ -732,6 +734,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
             GraspResult::Ptr result = _subtasks[i].targets[j].result;
             // all results saved in the target should be transferred
             result->testStatus = ctarget->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
+            result->liftresult = ctarget->getPropertyMap().get<double>("LiftResult", 0.0);
 
             result->gripperConfigurationGrasp = ctarget->getPropertyMap().get<Q>("GripperConfiguration", Q());
             result->gripperConfigurationLift = ctarget->getPropertyMap().get<Q>("GripperConfigurationPost", Q());
@@ -774,7 +777,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
                     contact.f(0) = contactlist[ m+6 ];
                     contact.f(1) = contactlist[ m+7 ];
                     contact.f(2) = contactlist[ m+8 ];
-                    result->contactsGrasp.push_back(contact);
+                    result->contactsLift.push_back(contact);
                 }
             }
 

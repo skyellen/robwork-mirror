@@ -35,7 +35,7 @@ using rw::geometry::GeometryUtil;
 using rw::graspplanning::Grasp3D;
 using rwlibs::simulation::SimulatedController;
 
-const int NR_OF_QUALITY_MEASURES = 5;
+const int NR_OF_QUALITY_MEASURES = 3;
 
 namespace {
     double getMaxObjectDistance(std::vector<RigidBody*> objects, const State& s1, const State& s2){
@@ -452,15 +452,23 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 Body* gripperBody = gobj.bodies[0];
 
                 sstate._target.result->contactsLift = gobj.contacts;
+                Vector3D<> contactAvg(0,0,0);
+                BOOST_FOREACH(Contact3D& c, sstate._target.result->contactsLift){
+                    contactAvg += c.p;
+                }
+                contactAvg = contactAvg/sstate._target.result->contactsLift.size();
 
                 Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), sstate._postLiftObjState);
                 Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
                 sstate._target.result->objectTtcpGrasp = inverse(tcpTo_before);
                 sstate._target.result->objectTtcpLift = inverse(tcpTo_after);
 
+                //Transform3D<> wTo_before = Kinematics::worldTframe(object->getBodyFrame(), sstate._postLiftObjState);
+                //Transform3D<> wTo_after  = Kinematics::worldTframe(object->getBodyFrame(), state);
+                Transform3D<> oTc( contactAvg );
 
-                Transform3D<> oTg_before = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), sstate._postLiftObjState);
-                Transform3D<> oTg_after  = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), state);
+                Transform3D<> oTg_before = inverse(oTc)*Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), sstate._postLiftObjState);
+                Transform3D<> oTg_after  = inverse(oTc)*Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), state);
                 Vector3D<> slipVector = oTg_after.P() - oTg_before.P();
                 // allow op to 2 cm slip else its a fault
 
@@ -511,7 +519,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         do{
             //RW_WARN("1");
             if( !getNextTarget(sstate) ){
-                std::cout << "STOPP" << std::endl;
+                //std::cout << "STOPP" << std::endl;
                 // end we are done with this threadsimulator
                 sstate._stopped = true;
                 sim->postStop();
@@ -638,18 +646,21 @@ std::vector<rw::sensor::Contact3D> GraspTaskSimulator::getObjectContacts(const r
     std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap(_hand->getBase(),  state);
     frameTree[_hand->getBase()->getName()] = _hand->getBase();
     for(size_t i=0; i<bodies.size(); i++){
-        std::cout << "Contacts: " << contacts[i].p << contacts[i].n << contacts[i].f << contacts[i].normalForce << std::endl;
+        //std::cout << "Contacts: " << contacts[i].p << contacts[i].n << contacts[i].f << contacts[i].normalForce << std::endl;
         if( bodies[i]!=NULL ){
             // test that the body frame is part of the gripper
             //std::cout << "Body: " << bodies[i]->getBodyFrame()->getName() << std::endl;
             if( frameTree.find(bodies[i]->getBodyFrame()->getName() ) != frameTree.end() ){
-                if(contacts[i].normalForce>0.0001){
+                //if(contacts[i].normalForce>0.0001){
+                    //std::cout << "Contacts: 1 " << contacts[i].p << contacts[i].n << contacts[i].f << contacts[i].normalForce << std::endl;
                     contactres.push_back(contacts[i]);
                     contactres.back().mu = _dwc->getMaterialData().getFrictionData(object->getMaterialID(),bodies[i]->getMaterialID()).parameters[0].second(0);
                     // allso save the body of the gripper that is in contact
                     if(std::find(gripperbodies.begin(), gripperbodies.end(), bodies[i]) == gripperbodies.end() )
                         gripperbodies.push_back(bodies[i]);
-                }
+                //} else {
+                //    std::cout << "Contacts: 0 " << contacts[i].p << contacts[i].n << contacts[i].f << contacts[i].normalForce << std::endl;
+                //}
             }
         } else {
             //std::cout << "Body: NULL" << std::endl;
@@ -719,10 +730,10 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
     //std::cout << "cm    : " << cm << std::endl;
     //std::cout << "Radius: " << r<< std::endl;
 
-    rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
-    wmeasure2.setObjectCenter(cm);
-    wmeasure2.setLambda(1/r);
-    wmeasure2.quality(g3d);
+    //rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
+    //wmeasure2.setObjectCenter(cm);
+    //wmeasure2.setLambda(1/r);
+    //wmeasure2.quality(g3d);
 
     rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
     wmeasure3.setObjectCenter(cm);
@@ -731,14 +742,14 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
 
     //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
-    qualities(0) = wmeasure2.getMinWrench();
-    qualities(1) = wmeasure2.getAvgWrench();
-    qualities(2) = wmeasure3.getMinWrench();
-    qualities(3) = wmeasure3.getAvgWrench();
+    //qualities(0) = wmeasure2.getMinWrench();
+    //qualities(1) = wmeasure2.getAvgWrench();
+    qualities(0) = wmeasure3.getMinWrench();
+    qualities(1) = wmeasure3.getAvgWrench();
 
     //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
-    qualities(4) = CMCPP.quality( g3d );
+    qualities(2) = CMCPP.quality( g3d );
     //std::cout << "Quality: " << qualities << std::endl;
     return qualities;
 }
