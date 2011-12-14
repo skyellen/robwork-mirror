@@ -62,7 +62,7 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
     RW_ASSERT(_feedback.size() == _bodyIdx.size());
     RW_ASSERT(_feedback.size() == _rwBody.size());
     RW_ASSERT(_rwsensor);
-
+    //std::cout << "\n";
     for(size_t midx=0;midx<_feedback.size();midx++){
         int bodyIdx=_bodyIdx[midx];
         std::vector<dJointFeedback*>& feedback = _feedback[midx];
@@ -78,11 +78,13 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
                  force = ODEUtil::toVector3D(feedback[i]->f2);
                  snormal = -ODEUtil::toVector3D(geoms[i].normal);
              }
+             /*
              if(force.norm1()<0.0000001){
                  std::cout << "0 " << depth << " " << snormal << std::endl;
              } else {
                  std::cout << "1 " << depth << " " << snormal << std::endl;
              }
+             */
 
              _rwsensor->addForceW( posw, force, snormal, state, _rwBody[midx]);
          }
