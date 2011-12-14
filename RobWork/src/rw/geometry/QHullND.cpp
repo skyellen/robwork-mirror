@@ -73,7 +73,7 @@ void qhull::build(size_t dim,
     //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
     //char flags[] = "qhull Qs Pp Qt n";
 
-    char flags[] = "qhull QJ";
+    char flags[] = "qhull Pp QJ";
 
 
     exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
