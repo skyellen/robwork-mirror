@@ -42,7 +42,7 @@ bool OBRManifold::addPoint(ContactPoint& p){
         //double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
         double dist = dot(p.n,_normal);
         if(acos(dist)>_threshold){
-            std::cout << acos(dist)*Rad2Deg << std::endl;
+            //std::cout << acos(dist)*Rad2Deg << std::endl;
             return false;
         }
 
@@ -74,7 +74,7 @@ bool OBRManifold::addPoint(ContactPoint& p){
         //double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
         double dist = dot(p.n,_normal);
         if( acos(dist)>_threshold ){
-            RW_WARN(acos(dist) << ">" << _threshold);
+            //RW_WARN(acos(dist) << ">" << _threshold);
             return false;
         }
         _normal = (p.n + _points[0].n)/2;
