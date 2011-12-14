@@ -109,7 +109,7 @@ void SimTaskPlugin::startSimulation() {
     }
 
 
-    _debugRender->setDrawMask( 15 );
+    _debugRender->setDrawMask( SimulatorDebugRender::DRAW_CONTACT_NORMAL | SimulatorDebugRender::DRAW_FRICTION_CONE | SimulatorDebugRender::DRAW_BODY_FORCES );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( _debugRender, "DebugRender" );
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
     _timer->start();
