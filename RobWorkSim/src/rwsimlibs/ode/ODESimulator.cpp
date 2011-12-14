@@ -1937,7 +1937,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         int idxFrom = _srcIdx[i];
         const int idxTo = _srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        OBRManifold manifold(13*Deg2Rad,0.2);
+        OBRManifold manifold(15*Deg2Rad,0.2);
 
         //std::cout << "Adding clustered points to manifold!" << std::endl;
 
@@ -1947,7 +1947,8 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 
             if( !manifold.addPoint(point) ){
                 // hmm, create a new manifold for this point
-                std::cout << "POINT NOT IN MANIFOLD................................" << std::endl;
+                // TODO: Create a new manifold here to hold points that do not belong
+                //std::cout << "POINT NOT IN MANIFOLD................................" << std::endl;
             }
         }
         manifolds.push_back(manifold);
