@@ -129,7 +129,7 @@ ELSE ()
 ENDIF ()
 
 # optional compilation of sandbox
-IF (RWS_BUILD_WITH_SANDBOX)
+IF (RWS_BUILD_WITH_LUA)
     MESSAGE(STATUS "RobWorkStudio: Lua ENABLED!")
     SET(RWSTUDIO_LUA rwstudio_lua LuaEditorWindow)
 ELSE ()
