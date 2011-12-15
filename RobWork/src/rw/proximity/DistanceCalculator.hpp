@@ -123,6 +123,9 @@ namespace rw { namespace proximity {
         DistanceResult distance(const kinematics::State& state,
                                 std::vector<DistanceResult>* result = 0) const;
 
+		DistanceResult distanceOMP(const kinematics::State& state,
+					  			   std::vector<DistanceResult>* result = 0) const;
+
         /**
          * @brief Calculates the distance between frame and the rest of the tree
          *

@@ -23,6 +23,8 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/geometry/TriMesh.hpp>
+
+#include <omp.h>
 #include <float.h>
 #include <algorithm>
 
@@ -101,6 +103,8 @@ DistanceCalculator::DistanceCalculator(FramePairList pairs,
 
 {
     RW_ASSERT(strategy);
+	_thresholdStrategy = _strategy.cast<DistanceThresholdStrategy>();
+	_timer.resetAndPause();
 }
 
 void DistanceCalculator::initialize()
@@ -167,14 +171,15 @@ DistanceResult DistanceCalculator::distance(const State& state,
     ProximityStrategyData data;
     DistanceResult distance;
     distance.distance = DBL_MAX;
-    typedef FramePairList::const_iterator I;
-    for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
+
+	typedef FramePairList::const_iterator I;
+	for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
 
         DistanceResult *dist;
         if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
-	        dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
+	       dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
 		} else {
 	        dist = &_thresholdStrategy->distance(a, fk.get(*a), b, fk.get(*b), distance.distance, data);
 		}
@@ -187,10 +192,70 @@ DistanceResult DistanceCalculator::distance(const State& state,
 
         if (result != NULL)
             result->push_back(*dist);
+
     }
 
     return distance;
 }
+
+DistanceResult DistanceCalculator::distanceOMP(const State& state,
+											std::vector<DistanceResult>* result) const
+{
+	_cnt++;
+	ScopedTimer stimer(_timer);
+    FKTable fk(state);
+
+    if (result != NULL)
+    	result->clear();
+
+    ProximityStrategyData data;
+    DistanceResult distance;
+    distance.distance = DBL_MAX;
+	//std::cout<<"Distance Pairs = "<<_distancePairs.size()<<std::endl;
+	const int N = _distancePairs.size();
+	int i;
+	Transform3D<> ta, tb; 
+		
+#pragma omp parallel for shared(distance, result, fk) private(i, data, ta, tb) schedule(static, 1)
+	for (i = 0; i<N; i++) {
+	//for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
+        //const Frame* a = p->first;
+        //const Frame* b = p->second;
+		const Frame* a = _distancePairs[i].first;
+		const Frame* b = _distancePairs[i].second;
+
+        DistanceResult *dist;
+#pragma omp critical
+		{
+		ta = fk.get(*a);
+		tb = fk.get(*b);
+		}
+
+        if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
+	       dist = &_strategy->distance(a, ta, b, tb, data);
+		} else {
+	        dist = &_thresholdStrategy->distance(a, ta, b, tb, distance.distance, data);
+		}
+
+        dist->f1 = a;
+        dist->f2 = b;
+
+#pragma omp critical
+	{
+        if (dist->distance < distance.distance)
+            distance = *dist;
+
+        if (result != NULL)
+            result->push_back(*dist);
+		
+	} //#End #pragma omp critical
+
+    }
+//	} //End #pragma omp parallel for schedule
+
+    return distance;
+}
+
 
 DistanceResult DistanceCalculator::distance(const State& state,
                                             const Frame* frame,
