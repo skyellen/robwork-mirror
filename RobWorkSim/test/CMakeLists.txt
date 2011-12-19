@@ -38,8 +38,8 @@ target_link_libraries(ScaleWorkCell rwsim ${ROBWORK_LIBRARIES})
 add_executable(PathFilter PathFilter.cpp)
 target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
 
-add_executable(SimulateMultiTask SimulateMultiTask.cpp)
-target_link_libraries(SimulateMultiTask rwsim ${ROBWORK_LIBRARIES})
+add_executable(SimulateTask SimulateTask.cpp)
+target_link_libraries(SimulateTask rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 add_executable(GenSuctionCupTask GenSuctionCupTask.cpp)
 target_link_libraries(GenSuctionCupTask rwsim ${ROBWORK_LIBRARIES})
