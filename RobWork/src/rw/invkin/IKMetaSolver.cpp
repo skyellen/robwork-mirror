@@ -55,7 +55,8 @@ IKMetaSolver::IKMetaSolver(IterativeIK::Ptr iksolver,
 
 
 void IKMetaSolver::initialize() {
-    _proximityLimit = 1e-5;
+	_checkForLimits = true;
+	_proximityLimit = 1e-5;
     _bounds = _device->getBounds();
     _dof = _device->getDOF();
     _maxAttempts = 25;
