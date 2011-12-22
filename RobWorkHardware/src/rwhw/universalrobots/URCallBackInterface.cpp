@@ -46,11 +46,43 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 	return _urPrimary;
 }
 
+/*Q URCallBackInterface::getServoSpeed(const Transform3D<>& transform, const VelocityScrew6D<>& velocity) {
+	_device->setQ(_qservo, _state);
+    Frame* tcpFrame = _device->getEnd();
+    Transform3D<> Tcurrent = _device->baseTframe(tcpFrame, _state);
+    Transform3D<> Tdiff = inverse(Tcurrent)*transform;
+
+
+    VelocityScrew6D<> vs(Tdiff);
+    double gain = 0.1;
+    VelocityScrew6D<> diff = gain*(Tcurrent.R()*vs);
+    diff += velocity;
+
+    double linvel = diff.linear().norm2();
+
+    const double maxLinearVelocity = 0.5;
+    if (linvel > maxLinearVelocity) {
+        diff *= maxLinearVelocity/linvel;
+    }
+
+    const double maxAngularVelocity = 0.5;
+    if (diff.angular().angle() > maxAngularVelocity) {
+        diff *= maxAngularVelocity/diff.angular().angle();
+    }
+
+    Q dqtarget = _xqp->solve(_qservo, _dqservo, diff, std::list<XQPController::Constraint>());
+    _dqservo = dqtarget;
+    _qservo += _dt*_dqservo;
+
+    return _dqservo;
+
+
+}*/
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
 	//std::cout<<"Handle Cmd Request "<<_commands.size()<<std::endl;
-	if (_commands.size() == 0) {
+	if (_commands.size() == 0 || _isMoving) {
 		std::stringstream sstr;
 		sstr<<name<<" "<<0<<"\n";
 	//	std::cout<<"Send 0 Command = "<<sstr.str()<<std::endl;
@@ -70,18 +102,28 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 		std::cout<<"Ready to execute move Q"<<std::endl;
 
 		URCommon::send(&socket, cmd._q, cmd._speed);
-
+		_isMoving = true;
 		break;
-	case URScriptCommand::MOVET:
+	case URScriptCommand::MOVET: {
 		std::cout<<"Ready to execute move Q"<<std::endl;
 		const Vector3D<>& p = cmd._transform.P();
 		EAA<> eaa(cmd._transform.R());
 		Q q(6, p(0), p(1), p(2), eaa(0), eaa(1), eaa(2));
 		URCommon::send(&socket, q, cmd._speed);
+		_isMoving = true;
 		break;
 	}
-
-	_commands.pop();
+	case URScriptCommand::SERVO: {
+		std::cout<<"Ready to do some servoing"<<std::endl;
+		URCommon::send(&socket, cmd._q, cmd._speed);
+		//Q dq = getServoSpeed(cmd._transform, cmd.velocity);
+		//URCommon::send(&socket, dq, 0);
+		_isMoving = true;
+		break;
+	}
+	}
+	//if (cmd._type != URScriptCommand::SERVO)
+		_commands.pop();
 
 
 }
@@ -99,6 +141,7 @@ void URCallBackInterface::run() {
 	  acceptor.accept(socket);
 	  std::cout<<"Incoming accepted"<<std::endl;
 	  while (!_stopServer) {
+		  std::cout<<"\b\b\bm="<<_isMoving;
 		  boost::system::error_code error;
 		  size_t available = socket.available(error);
 		  if (error == boost::asio::error::eof) {
@@ -159,7 +202,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
     std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
-    _isMoving = true;
+//    _isMoving = true;
 }
 
 void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float speed) {
@@ -167,5 +210,28 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
     boost::mutex::scoped_lock lock(_mutex);
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
-    _isMoving = true;
+//    _isMoving = true;
 }
+
+void URCallBackInterface::servo(const rw::math::Q& q) {
+	std::cout<<"Received a servoQ "<<q<<std::endl;
+    boost::mutex::scoped_lock lock(_mutex);
+    while (!_commands.empty())
+    	_commands.pop();
+    _commands.push(URScriptCommand(URScriptCommand::SERVO, q, 1));
+    _robotStopped = false;
+
+}
+
+/*
+void URCallBackInterface::servo(const Transform3D<>& transform) {
+	std::cout<<"Received servoT "<<transform<<std::endl;
+
+    boost::mutex::scoped_lock lock(_mutex);
+    while (!_commands.empty())
+    	_commands.pop();
+    _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
+    _robotStopped = false;
+
+
+}*/
