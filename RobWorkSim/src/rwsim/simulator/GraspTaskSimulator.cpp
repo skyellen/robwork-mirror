@@ -97,7 +97,7 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
 
         tsim->setStepCallBack( cb );
         tsim->setPeriodMs(-1);
-        tsim->setTimeStep(0.01);
+        tsim->setTimeStep(0.005);
 
         _simulators.push_back(tsim);
         _homeState = initState;
@@ -227,7 +227,7 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
         }
 
         _simulators[i]->setPeriodMs(-1);
-        _simulators[i]->setTimeStep(0.01);
+        _simulators[i]->setTimeStep(0.005);
         _simStates[_simulators[i]] = sstate;
     }
     for(size_t i=0;i<_simulators.size();i++){
