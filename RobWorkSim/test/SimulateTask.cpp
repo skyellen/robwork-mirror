@@ -137,6 +137,13 @@ int main(int argc, char** argv)
         std::cout << "loading: " << path(ifile).filename() << " ";
         GraspTask::Ptr grasptask = GraspTask::load( ifile );
         std::cout << "Starting simulation:" << std::endl;
+
+
+        // temporarilly change refframe to Object change
+        BOOST_FOREACH(GraspSubTask &stask, grasptask){
+            stask.setRefFrame("Object");
+        }
+
         graspSim->load(grasptask);
         graspSim->startSimulation(initState);
 
