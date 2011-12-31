@@ -144,6 +144,10 @@ int main(int argc, char** argv)
         // temporarilly change refframe to Object change
         BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
             stask.setRefFrame("object");
+            // also remove results
+            BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
+                target.result = NULL;
+            }
         }
 
         graspSim->load(grasptask);
