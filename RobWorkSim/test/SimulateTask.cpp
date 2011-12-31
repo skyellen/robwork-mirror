@@ -173,7 +173,7 @@ int main(int argc, char** argv)
             GraspTask::saveUIBK(grasptask, sstr.str() );
         } else if(iformat==2){
             sstr << ".txt";
-            GraspTask::saveText(grasptask, outputfile.string() );
+            GraspTask::saveText(grasptask, sstr.str() );
         }
 
 
