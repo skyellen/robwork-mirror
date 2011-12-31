@@ -108,7 +108,9 @@ int main(int argc, char** argv)
     }
 
     // resolve output directory
-    path outputfile( vm["output"].as<std::string>() );
+    //path outputfile( vm["output"].as<std::string>() );
+    std::string outputpostfix = vm["output"].as<std::string>();
+
     std::string outformat = vm["oformat"].as<std::string>();
     int iformat = 0;
     if(outformat=="RWTASK"){ iformat=0;}
@@ -158,14 +160,16 @@ int main(int argc, char** argv)
         grasptask = graspSim->getResult();
         // save the result
         totaltargets++;
-        std::cout << "Saving to: " << outputfile.string() << std::endl;
         std::stringstream sstr;
-        sstr << outputfile.string() << "_" << totaltargets << "_";
+        //sstr << outputfile.string() << "_" << totaltargets << "_";
+        sstr << ifile << "_" << outputpostfix;
+        std::cout << "Saving to: " << sstr.str() << std::endl;
+
         if(iformat==0){
-            sstr << ".xml";
+            sstr << ".task.xml";
             GraspTask::saveRWTask(grasptask, sstr.str() );
         } else if(iformat==1){
-            sstr << ".xml";
+            sstr << ".uibk.xml";
             GraspTask::saveUIBK(grasptask, sstr.str() );
         } else if(iformat==2){
             sstr << ".txt";
