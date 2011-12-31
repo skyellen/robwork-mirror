@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
 
         // temporarilly change refframe to Object change
-        BOOST_FOREACH(GraspSubTask &stask, grasptask){
+        BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
             stask.setRefFrame("Object");
         }
 
