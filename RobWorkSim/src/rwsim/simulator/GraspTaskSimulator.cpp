@@ -330,7 +330,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     if(sstate._currentState!=NEW_GRASP ){
         if( getMaxObjectDistance( _objects, _homeState, state) > _maxObjectGripperDistanceThreshold ){
-            double mdist=getMaxObjectDistance( _objects, _homeState, state);
+            //double mdist=getMaxObjectDistance( _objects, _homeState, state);
             _simfailed++;
             //std::cout <<sim->getTime() << " : ";
             //std::cout << "TASK FAILURE1: " << mdist << ">" << 0.5 << std::endl;
@@ -444,7 +444,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 Q qualities = calcGraspQuality(state, sstate);
                 sstate._target->getResult()->qualityAfterLifting = qualities;
 
-                Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.object->getBodyFrame(), state);
+                //Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.object->getBodyFrame(), state);
 
                 // Test the success of lifting the object.
                 // We need to look at the objects that are actually touching
@@ -585,7 +585,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 typedef std::pair<Frame*,Frame*> FramePair;
                 bool colObject=false;
                 BOOST_FOREACH(FramePair pair, res.collidingFrames){
-                    for(int i=0;i<_objects.size();i++){
+                    for(size_t i=0;i<_objects.size();i++){
                         if( _objects[i]->getBodyFrame() == pair.first || _objects[i]->getBodyFrame() == pair.second){
                             colObject = true;
                             break;
