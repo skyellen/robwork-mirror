@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 
     // resolve output directory
     //path outputfile( vm["output"].as<std::string>() );
-    std::string outputpostfix = vm["output"].as<std::string>();
+    std::string outputdir = vm["output"].as<std::string>();
 
     std::string outformat = vm["oformat"].as<std::string>();
     int iformat = 0;
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
         totaltargets++;
         std::stringstream sstr;
         //sstr << outputfile.string() << "_" << totaltargets << "_";
-        sstr << ifile << "_" << outputpostfix;
+        sstr << outputdir << "/" << path(ifile).filename();
         std::cout << "Saving to: " << sstr.str() << std::endl;
 
         if(iformat==0){
