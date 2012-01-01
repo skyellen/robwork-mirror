@@ -521,6 +521,16 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if( !getNextTarget(sstate) ){
                 //std::cout << "STOPP" << std::endl;
                 // end we are done with this threadsimulator
+
+                Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex
+                             << " success:"<< std::setw(5) << _success
+                             << " slipped:" << std::setw(5) << _slipped
+                             << " failed:" << std::setw(5) << _failed
+                             << " collisions:" << std::setw(5) << _collision
+                             << " timeouts:" << std::setw(5) << _timeout
+                             << " skipped:" << std::setw(5) << _skipped
+                             << " simfailures:" << std::setw(5) <<_simfailed << "\n";
+
                 sstate._stopped = true;
                 sim->postStop();
                 // stop the thread
@@ -780,7 +790,7 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
         sstate._openQ = _currentTask->getOpenQ();
         sstate._closeQ = _currentTask->getCloseQ();
     }
-
+/*
     Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex
                  << " success:"<< std::setw(5) << _success
                  << " slipped:" << std::setw(5) << _slipped
@@ -789,7 +799,7 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
                  << " timeouts:" << std::setw(5) << _timeout
                  << " skipped:" << std::setw(5) << _skipped
                  << " simfailures:" << std::setw(5) <<_simfailed << "\n";
-
+*/
     return true;
 }
 
