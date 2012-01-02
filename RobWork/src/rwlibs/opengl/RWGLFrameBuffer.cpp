@@ -79,7 +79,7 @@ bool RWGLFrameBuffer::initialize() {
     glCheckFramebufferStatusEXT              = &glCheckFramebufferStatus;
     glGetFramebufferAttachmentParameterivEXT = &glGetFramebufferAttachmentParameteriv;
     glGenerateMipmapEXT                      = &glGenerateMipmap;
-    glFramebufferTexture2DEXT                = &lFramebufferTexture2D;
+    glFramebufferTexture2DEXT                = &glFramebufferTexture2D;
     glFramebufferRenderbufferEXT             = &glFramebufferRenderbuffer;
     glGenRenderbuffersEXT                    = &glGenRenderbuffers;
     glDeleteRenderbuffersEXT                 = &glDeleteRenderbuffers;
