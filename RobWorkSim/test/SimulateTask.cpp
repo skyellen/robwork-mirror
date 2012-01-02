@@ -136,7 +136,25 @@ int main(int argc, char** argv)
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
     BOOST_FOREACH(std::string ifile, infiles){
+
+
         std::cout << "loading: " << path(ifile).filename() << " ";
+
+        std::stringstream sstr;
+        //sstr << outputfile.string() << "_" << totaltargets << "_";
+        sstr << outputdir << "/" << path(ifile).filename();
+        if(iformat==0){
+            sstr << ".task.xml";
+        } else if(iformat==1){
+            sstr << ".uibk.xml";
+        } else if(iformat==2){
+            sstr << ".txt";
+        }
+        if( boost::filesystem::exists( path( sstr.str() ) ) ){
+            std::cout << "result already exists!" << std::endl;
+            continue;
+        }
+
         GraspTask::Ptr grasptask = GraspTask::load( ifile );
         std::cout << "Starting simulation:" << std::endl;
 
@@ -164,19 +182,13 @@ int main(int argc, char** argv)
         grasptask = graspSim->getResult();
         // save the result
         totaltargets++;
-        std::stringstream sstr;
-        //sstr << outputfile.string() << "_" << totaltargets << "_";
-        sstr << outputdir << "/" << path(ifile).filename();
-        std::cout << "Saving to: " << sstr.str() << std::endl;
 
+        std::cout << "Saving to: " << sstr.str() << std::endl;
         if(iformat==0){
-            sstr << ".task.xml";
             GraspTask::saveRWTask(grasptask, sstr.str() );
         } else if(iformat==1){
-            sstr << ".uibk.xml";
             GraspTask::saveUIBK(grasptask, sstr.str() );
         } else if(iformat==2){
-            sstr << ".txt";
             GraspTask::saveText(grasptask, sstr.str() );
         }
 
