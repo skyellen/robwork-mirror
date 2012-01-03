@@ -60,13 +60,13 @@ int main(int argc, char** argv)
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
-
+	RW_WARN("1");
     variables_map vm;
     //store(parse_command_line(argc, argv, desc), vm);
     store(command_line_parser(argc, argv).
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
-
+	RW_WARN("1");
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
@@ -82,8 +82,8 @@ int main(int argc, char** argv)
         cout << "\n Error: baseline experiments are required!\n";
         return 10;
     }
-
-    // extract base line grasps
+	RW_WARN("1");
+    // extract base line gasps
     std::vector<std::string> baselinefiles;
     std::string baseinput = vm["baseline"].as<string>();
     path baseip(baseinput);
@@ -92,11 +92,13 @@ int main(int argc, char** argv)
     } else {
         baselinefiles.push_back( baseip.string() );
     }
-
+	RW_WARN("1");
 
     // extract all task files that should be simulated
     std::vector<std::string> infiles;
-    const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
+    	RW_WARN("1");
+    if(vm.count("input")){
+   const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
     BOOST_FOREACH(std::string input, inputs){
         path ip(input);
         if( is_directory(ip) ){
@@ -105,26 +107,25 @@ int main(int argc, char** argv)
             infiles.push_back( ip.string() );
         }
     }
-
-    // resolve output directory
-    //path outputfile( vm["output"].as<std::string>() );
-    std::string outputdir = vm["output"].as<std::string>();
-
-    std::string outformat = vm["oformat"].as<std::string>();
-    int iformat = 0;
-    if(outformat=="RWTASK"){ iformat=0;}
-    else if(outformat=="UIBK"){iformat=1;}
-    else if(outformat=="Text"){iformat=2;}
-    else { RW_THROW("Unknown format:" << outformat << ". Please choose one of: RWTASK, UIBK, Text\n"); }
+}
+	RW_WARN("1");
 
     // first check if we need to do a comparison or just baseline statistics
     if(infiles.size()==0){
         // compile baseline statistics
+	std::cout << "Doing baseline statistics" << std::endl;
         int targets = 0, results = 0;
         std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
         BOOST_FOREACH(std::string ifile, baselinefiles){
-            GraspTask::Ptr grasptask = GraspTask::load( ifile );
+	    std::cout << "Processing: " << ifile << std::endl;
+            GraspTask::Ptr grasptask;	    
+	    try{
+		grasptask = GraspTask::load( ifile );
+            } catch(...) {
+		std::cout << "\t\tFailed..." << std::endl;
+		continue;
+	    }
             // get all stats from grasptask
             BOOST_FOREACH(GraspSubTask& stask, grasptask->getSubTasks()){
                 BOOST_FOREACH(GraspTarget& target, stask.getTargets()){
@@ -154,9 +155,9 @@ int main(int argc, char** argv)
         // the criteria is that the first part of the filename of input must match that of baseline
         std::vector<std::pair<std::string, std::string> > matches;
         BOOST_FOREACH(std::string inputl, infiles){
-            std::string namein = path(inputl).filename().string();
+            std::string namein = path(inputl).filename();
             BOOST_FOREACH(std::string basel, baselinefiles){
-                std::string name = path(basel).filename().string();
+                std::string name = path(basel).filename();
                 if(name == namein.substr(0,name.size())){
                     matches.push_back(make_pair(basel,inputl));
                     break;
@@ -175,7 +176,7 @@ int main(int argc, char** argv)
 
         }
     }
-
+	RW_WARN("1");
     std::cout << "Done" << std::endl;
     return 0;
 }
