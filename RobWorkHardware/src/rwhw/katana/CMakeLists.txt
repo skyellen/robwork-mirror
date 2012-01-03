@@ -1,5 +1,11 @@
 SET(component_name katana)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+
+INCLUDE(CMakeDependentOption)
+FIND_PACKAGE(KATANA)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ON "KATANA_FOUND" OFF)
+
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." OFF)
 IF( NOT COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()

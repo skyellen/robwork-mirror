@@ -1,5 +1,6 @@
 SET(component_name pcube)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ON)
+
 IF( NOT COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()

@@ -1,5 +1,11 @@
 SET(component_name swissranger)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+
+
+INCLUDE(CMakeDependentOption)
+FIND_PACKAGE(SwissRanger)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ON "SWISSRANGER_FOUND" OFF)
+
 IF( NOT COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()

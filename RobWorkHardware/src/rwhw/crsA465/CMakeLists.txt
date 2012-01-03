@@ -1,10 +1,12 @@
-OPTION(COMPONENT_CRSA465_ENABLE "Enable CRSA465 component" ${COMPONENT_CRSA465_ENABLE})
-IF( COMPONENT_CRSA465_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: CRSA465 component ENABLED")
+SET(component_name CRSA465)
+
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." OFF)                       
+IF( COMPONENT_${component_name}_ENABLE )
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
     
     ADD_LIBRARY(rwhw_crsa465 ./CRSA465.cpp ./crs_aci.cpp)
     INSTALL(TARGETS rwhw_crsa465 DESTINATION ${RWHW_LIB_INSTALL_DIR})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_crsa465;")
 ELSE()
-    MESSAGE(STATUS "RobWorkHardware: CRSA465 component DISABLED")
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

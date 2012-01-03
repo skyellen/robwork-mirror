@@ -1,5 +1,6 @@
 SET(component_name fanucdriver)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." OFF)
+
 IF( NOT COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()

@@ -126,7 +126,7 @@ bool SchunkPG70::initialize(const std::string& port) {
 		_cubePort = CubePort::make(_port);
 		cubes = rwhw::Cube::getCubes(12, 13, _cubePort);
 	} catch(rw::common::Exception& e) {
-		logTextReadySig("Parallel gripper error: "+e.what(), true);
+		logTextReadySig(std::string("Parallel gripper error: ") + e.what(), true);
 		return false;
 	}
 	if(cubes.size() == 0) {

@@ -1,5 +1,11 @@
 SET(component_name sdh)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+
+
+INCLUDE(CMakeDependentOption)
+FIND_PACKAGE(SDH)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ON "SDH_FOUND" OFF)
+
 IF( NOT COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()
