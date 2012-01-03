@@ -109,20 +109,15 @@ namespace {
 void errorHandler(int error, int lineNum);
 
 Trakstar::Trakstar() {
-	
-	_flagInitBird = false;
-	_initStatus = -1;
-	
-	
-	// Initialize system by calling _InitializeBird in a thread
-	_initThread = boost::thread(boost::bind(&Trakstar::initializeBird, this));
 
-	// Start polling thread
-	_pollThread = boost::thread(boost::bind(&Trakstar::pollData, this));
-	_flagStopPoll = true;
+	_initStatus = -1;
 }
 
 Trakstar::~Trakstar() {
+    // first stop polling
+    stopPolling();
+
+    // next deallocate resources used
 	_id = -1;
 	SetSystemParameter(SELECT_TRANSMITTER, &_id, sizeof(_id));
 	if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
@@ -131,18 +126,12 @@ Trakstar::~Trakstar() {
 	CloseBIRDSystem();
 }
 
-void Trakstar::initialize() {
-	if (!_flagInitBird) 
-	{
-		// Aquire mutex
-		boost::mutex::scoped_lock lock(_mutexInitBird);
-		
-		// Set flag
-		_flagInitBird = true;
-		
-		// Signal condition to _InitializeBird()
-		_conditionInitBird.notify_one();
-	}
+void Trakstar::initialize(bool block) {
+
+    // Initialize system by calling _InitializeBird in a thread
+    _initThread = boost::thread(boost::bind(&Trakstar::initializeBird, this));
+    //if(block)
+    _initThread.join();
 }
 
 /** 
@@ -152,118 +141,110 @@ void Trakstar::initialize() {
 void Trakstar::initializeBird()
 {
 	int initStatusLocal = -1;
-	while (1) {
 				
-		// Aquire mutex
-		boost::mutex::scoped_lock lock(_mutexInitBird);
+    // Aquire mutex
+    boost::mutex::scoped_lock lock(_mutexInitBird);
 
-		// Stop this thread until the condition is signalled from another thread (InitializeSystem())
-		_conditionInitBird.wait(lock);
-		
-		if (_flagInitBird)
-		{
-			// Set initStatusLocal to "initializing"
-			initStatusLocal = 0;
-			
-			// Update _initStatus immediately
-			_initStatus = initStatusLocal;
-			
-			// Initialize Bird system
-			Log::log().info() << "Initializing Trakstar System... This takes some seconds." << endl;
-			_errorCode = InitializeBIRDSystem();
-			if(_errorCode!=BIRD_ERROR_SUCCESS) {
-				errorHandler(_errorCode, __LINE__);
-				initStatusLocal = -1; // Failed. Not initialized
-			} else
-			{
-				Log::log().info() << "Initialization successfull." << endl;
+    // Stop this thread until the condition is signalled from another thread (InitializeSystem())
+    //_conditionInitBird.wait(lock);
 
-				// Set parameters
-				// Measurement rate, 80 is standard
-				//SET_SYSTEM_PARAMETER( MEASUREMENT_RATE, 100, __LINE__ );
+    // Set initStatusLocal to "initializing"
+    initStatusLocal = 0;
 
-				// Metric (use millimeters)
-				SET_SYSTEM_PARAMETER( METRIC, true, __LINE__ );
+    // Update _initStatus immediately
+    _initStatus = initStatusLocal;
 
-				// Report Rate (how fast does the box prepare new data). reportRate / ( 3*measure_rate ). eg. 120 / (3*80) = 0.500seconds per update.
-				// Similarly 1 / (3*80) = 4ms per update or 240hz
+    // Initialize Bird system
+    Log::log().info() << "Initializing Trakstar System... This takes some seconds." << endl;
+    _errorCode = InitializeBIRDSystem();
+    if(_errorCode!=BIRD_ERROR_SUCCESS) {
+        errorHandler(_errorCode, __LINE__);
+        initStatusLocal = -1; // Failed. Not initialized
+    } else
+    {
+        Log::log().info() << "Initialization successfull." << endl;
+
+        // Set parameters
+        // Measurement rate, 80 is standard
+        //SET_SYSTEM_PARAMETER( MEASUREMENT_RATE, 100, __LINE__ );
+
+        // Metric (use millimeters)
+        SET_SYSTEM_PARAMETER( METRIC, true, __LINE__ );
+
+        // Report Rate (how fast does the box prepare new data). reportRate / ( 3*measure_rate ). eg. 120 / (3*80) = 0.500seconds per update.
+        // Similarly 1 / (3*80) = 4ms per update or 240hz
 //				SET_SYSTEM_PARAMETER( REPORT_RATE, 1, __LINE__ );
-			
-				// Get configuration (read from system into m_config struct)
-				_errorCode = GetBIRDSystemConfiguration(&_ATC3DG);
-				if(_errorCode!=BIRD_ERROR_SUCCESS) {
-					errorHandler(_errorCode, __LINE__);
-					initStatusLocal = -1; // Failed. Not initialized
-				} else
-				{
-					std::cout << "Trakstar system configuration information read." << endl;
-					std::cout << "Number Boards          = " << _ATC3DG.numberBoards << endl;
-					std::cout << "Number Sensors         = " << _ATC3DG.numberSensors << endl;
-					std::cout << "Number Transmitters    = " << _ATC3DG.numberTransmitters << endl << endl;
 
-					std::cout << "System AGC mode	       = " << _ATC3DG.agcMode << endl;
-					std::cout << "Maximum Range          = " << _ATC3DG.maximumRange << endl;
-					std::cout << "Measurement Rate       = " << _ATC3DG.measurementRate << endl;
-					std::cout << "Metric Mode            = " << _ATC3DG.metric << endl;
-					std::cout << "Line Frequency         = " << _ATC3DG.powerLineFrequency << endl;
-					std::cout << "Transmitter ID Running = " << _ATC3DG.transmitterIDRunning << endl;
+        // Get configuration (read from system into m_config struct)
+        _errorCode = GetBIRDSystemConfiguration(&_ATC3DG);
+        if(_errorCode!=BIRD_ERROR_SUCCESS) {
+            errorHandler(_errorCode, __LINE__);
+            initStatusLocal = -1; // Failed. Not initialized
+        } else
+        {
+            std::cout << "Trakstar system configuration information read." << endl;
+            std::cout << "Number Boards          = " << _ATC3DG.numberBoards << endl;
+            std::cout << "Number Sensors         = " << _ATC3DG.numberSensors << endl;
+            std::cout << "Number Transmitters    = " << _ATC3DG.numberTransmitters << endl << endl;
 
-					// we now know the number of sensors so we setup _record
-					_rawValues.resize(_ATC3DG.numberSensors);
-					_record.resize(_ATC3DG.numberSensors);
-					_recordTmp.resize(_ATC3DG.numberSensors);
+            std::cout << "System AGC mode	       = " << _ATC3DG.agcMode << endl;
+            std::cout << "Maximum Range          = " << _ATC3DG.maximumRange << endl;
+            std::cout << "Measurement Rate       = " << _ATC3DG.measurementRate << endl;
+            std::cout << "Metric Mode            = " << _ATC3DG.metric << endl;
+            std::cout << "Line Frequency         = " << _ATC3DG.powerLineFrequency << endl;
+            std::cout << "Transmitter ID Running = " << _ATC3DG.transmitterIDRunning << endl;
 
-					//////////////////////////////////////////////////////////////////////////////
-					//////////////////////////////////////////////////////////////////////////////
-					//////////////////////////////////////////////////////////////////////////////
-					//
-					// GET TRANSMITTER CONFIGURATION
-					//
-					// The call to GetTransmitterConfiguration() performs a similar task to the 
-					// GetSensorConfiguration() call. It also returns a status in the filled
-					// structure which indicates whether a transmitter is attached to this
-					// port or not. In a single transmitter system it is only necessary to 
-					// find where that transmitter is in order to turn it on and use it.
-					//
+            // we now know the number of sensors so we setup _record
+            _rawValues.resize(_ATC3DG.numberSensors);
+            _record.resize(_ATC3DG.numberSensors);
+            _recordTmp.resize(_ATC3DG.numberSensors);
 
-					_pXmtr.resize(_ATC3DG.numberTransmitters);
-					for(int i=0;i<_ATC3DG.numberTransmitters;i++)
-					{
-						_errorCode = GetTransmitterConfiguration(i, &_pXmtr[i]);
-						if(_errorCode!=BIRD_ERROR_SUCCESS) {
-							errorHandler(_errorCode, __LINE__);
-							initStatusLocal = -1; // Failed. Not initialized
-						} else {
-							
-							// We have successfully initialized the system.
-							initStatusLocal = 1;
-						}
-					}
-					
-					DOUBLE_ANGLES_RECORD anglesRecord = {0, 0, 180};
+            //////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////
+            //
+            // GET TRANSMITTER CONFIGURATION
+            //
+            // The call to GetTransmitterConfiguration() performs a similar task to the
+            // GetSensorConfiguration() call. It also returns a status in the filled
+            // structure which indicates whether a transmitter is attached to this
+            // port or not. In a single transmitter system it is only necessary to
+            // find where that transmitter is in order to turn it on and use it.
+            //
 
-					SET_TRANSMITTER_PARAMETER(0, REFERENCE_FRAME, anglesRecord, __LINE__);
-					SET_TRANSMITTER_PARAMETER(0, XYZ_REFERENCE_FRAME, true, __LINE__);
-					
-					// Set Sensors to FRONT Hemisphere
-					for(int i = 0; i < _ATC3DG.numberSensors ; i++)
-					{
-						SET_SENSOR_PARAMETER(i, HEMISPHERE, FRONT, __LINE__);
+            _pXmtr.resize(_ATC3DG.numberTransmitters);
+            for(int i=0;i<_ATC3DG.numberTransmitters;i++)
+            {
+                _errorCode = GetTransmitterConfiguration(i, &_pXmtr[i]);
+                if(_errorCode!=BIRD_ERROR_SUCCESS) {
+                    errorHandler(_errorCode, __LINE__);
+                    initStatusLocal = -1; // Failed. Not initialized
+                } else {
+
+                    // We have successfully initialized the system.
+                    initStatusLocal = 1;
+                }
+            }
+
+            DOUBLE_ANGLES_RECORD anglesRecord = {0, 0, 180};
+
+            SET_TRANSMITTER_PARAMETER(0, REFERENCE_FRAME, anglesRecord, __LINE__);
+            SET_TRANSMITTER_PARAMETER(0, XYZ_REFERENCE_FRAME, true, __LINE__);
+
+            // Set Sensors to FRONT Hemisphere
+            for(int i = 0; i < _ATC3DG.numberSensors ; i++)
+            {
+                SET_SENSOR_PARAMETER(i, HEMISPHERE, FRONT, __LINE__);
 /*						HEMISPHERE_TYPE buffer;
-						_errorCode = GetSensorParameter(i, HEMISPHERE, &buffer, sizeof(buffer));
-						if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
-						cout << buffer << endl;*/
-					}
-				}
-			}
-			
-			_initStatus = initStatusLocal;
-			_flagInitBird = false;
-			
-		} // if (_flagInitBird)
-		
-		
-	} // while(1)
+                _errorCode = GetSensorParameter(i, HEMISPHERE, &buffer, sizeof(buffer));
+                if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
+                cout << buffer << endl;*/
+            }
+        }
+    }
+
+    _initStatus = initStatusLocal;
+
 }
 
 int Trakstar::getInitStatus() {
@@ -278,6 +259,9 @@ int Trakstar::numberSensorsAttached() {
 }
 
 void Trakstar::startPolling() {
+    if(!_flagStopPoll){
+        stopPolling();
+    }
 
 	// Search for transmitters. Turn the first one on. (there is only one)
 	for(_id=0; _id < _ATC3DG.numberTransmitters; _id++)
@@ -292,17 +276,17 @@ void Trakstar::startPolling() {
 			break;
 		}
 	}
-		
+
 	// Set the data format type for each attached sensor.
 	for(int i = 0; i < _ATC3DG.numberSensors ; i++)
 	{
-		DATA_FORMAT_TYPE type = DOUBLE_POSITION_QUATERNION_TIME_Q_BUTTON;
+		DATA_FORMAT_TYPE type = DOUBLE_POSITION_QUATERNION_TIME_Q_BUTTON; //DOUBLE_POSITION_QUATERNION_TIME_Q_BUTTON_RECORD
 		_errorCode = SetSensorParameter(i, DATA_FORMAT, &type, sizeof(type));
 		if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
 	}
-	
+
 	// Count how many sensors are attached by fetching a single record from all and reading status
-	_errorCode = GetSynchronousRecord(ALL_SENSORS, &_rawValues[0], sizeof(_rawValues[0]));
+	_errorCode = GetSynchronousRecord(ALL_SENSORS, &_rawValues[0], sizeof(_rawValues[0])*_rawValues.size());
 	if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
 	
 
@@ -316,9 +300,11 @@ void Trakstar::startPolling() {
 			_sensorsAttached++;
 		}
 	}
-	
-	_flagStopPoll = false;
-	
+
+    // Start polling thread
+    _flagStopPoll = false;
+	_pollThread = boost::thread(boost::bind(&Trakstar::pollData, this));
+
 }
 
 void Trakstar::pollData() {
@@ -331,7 +317,7 @@ void Trakstar::pollData() {
 			boost::this_thread::sleep(boost::posix_time::milliseconds(2));
 		
 			// scan the sensors (all)
-			_errorCode = GetSynchronousRecord(ALL_SENSORS, &_rawValues[0], sizeof(_rawValues[0]));
+			_errorCode = GetSynchronousRecord(ALL_SENSORS, &_rawValues[0], sizeof(_rawValues[0])*_rawValues.size());
 			if(_errorCode!=BIRD_ERROR_SUCCESS) errorHandler(_errorCode, __LINE__);
 			
 			// Get status of sensors (only updates after a Get***Record call)
@@ -384,18 +370,21 @@ void Trakstar::pollData() {
                 _record = _recordTmp;
 			}
 		} else {
-
-			boost::this_thread::sleep(boost::posix_time::milliseconds(100));			
+		    // if polling is stopped then the thread is killed
+		    break;
+			//boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 		}
 	}
-	
+
+
 }
 
 
 void Trakstar::stopPolling() {
 		
-	// Signal to _poll to stop polling
+	// Signal to _pollThread to stop polling
 	_flagStopPoll = true;
+	_pollThread.join();
 	
 	// Get active transmitter
 	short buffer, *pBuffer = &buffer;

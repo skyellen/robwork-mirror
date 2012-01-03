@@ -52,7 +52,8 @@ namespace rwhw {
         Trakstar(); // Constructor
         virtual ~Trakstar(); // Destructor
 
-        void initialize();
+        void initialize(bool block=true);
+        bool isInitialized(){ return _initStatus>=0;}
 
         int getInitStatus();
 
@@ -71,10 +72,12 @@ namespace rwhw {
         void pollData(); // Should always run in a thread. Has (stoppable) while(1) loop.
 
     private:
+        typedef DOUBLE_POSITION_QUATERNION_TIME_Q_BUTTON_RECORD TrakstarRawData;
+
         SYSTEM_CONFIGURATION      _ATC3DG;   // a pointer to a single instance of the system class
         std::vector<SENSOR_CONFIGURATION> _pSensor;  // a pointer to an array of sensor objects
         std::vector<TRANSMITTER_CONFIGURATION> _pXmtr;    // a pointer to an array of transmitter objects
-        std::vector<DOUBLE_POSITION_QUATERNION_TIME_Q_BUTTON_RECORD> _rawValues;
+        std::vector<TrakstarRawData> _rawValues;
 
         int             _errorCode;         // used to hold error code returned from procedure call
         int             _i;
