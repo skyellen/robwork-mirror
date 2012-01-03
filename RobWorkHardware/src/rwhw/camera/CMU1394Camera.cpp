@@ -53,7 +53,6 @@ namespace
 CMU1394Camera::CMU1394Camera(C1394Camera* cmuCam)
     :
     CameraFirewire(
-        NULL,
         getCameraName(cmuCam),
         getCameraVendor(cmuCam)),
     _policy(CONTINUES),

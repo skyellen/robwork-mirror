@@ -33,10 +33,9 @@ using namespace rw::kinematics;
 namespace rwhw { namespace camera {
 
 DC1394Camera::DC1394Camera(
-    Frame* parent,
     dc1394camera_t* dc1394cam)
     :
-    CameraFirewire(parent, dc1394cam->model, dc1394cam->vendor),
+    CameraFirewire(dc1394cam->model, dc1394cam->vendor),
     _dccamera(dc1394cam),
     _isAcquired(false),
     _policy(SINGLE_SHOT),

@@ -60,7 +60,6 @@ namespace rwhw { namespace camera {
          * @param dc1394cam [in] handle to camera
          */
         DC1394Camera(
-            rw::kinematics::Frame* frame,
             dc1394camera_t* dc1394cam);
 
 //    public:

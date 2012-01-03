@@ -58,7 +58,7 @@ namespace
 
 CMU1394CameraC::CMU1394CameraC(CameraID cmuCam, std::string camName, std::string vendorName)
     :
-    CameraFirewire(NULL, camName, vendorName),
+    CameraFirewire(camName, vendorName),
     _policy(CONTINUES),
     _isAquired(false),
     _camID(cmuCam),
