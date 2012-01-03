@@ -44,6 +44,12 @@ namespace algorithms {
 class XQPController
 {
 public:
+
+	/**
+	 * @brief Definition of smart pointer to XQPController
+	 */
+	typedef rw::common::Ptr<XQPController> Ptr;
+
     /**
      * @brief Constraint for the XQPController
      *
@@ -74,7 +80,7 @@ public:
      * @param state [in] State specifying how frames are assempled
      * @param dt [in] time step size
      */
-	XQPController(rw::models::Device* device,
+	XQPController(rw::models::Device::Ptr device,
 				  rw::kinematics::Frame* controlFrame,
 				  const rw::kinematics::State& state,
 				  double dt);
@@ -156,7 +162,7 @@ public:
 	 */
 	void setVelScale(double scale);
 private:
-	rw::models::Device* _device;
+	rw::models::Device::Ptr _device;
 	rw::kinematics::Frame* _controlFrame;
 	rw::kinematics::State _state;
 	double _dt;

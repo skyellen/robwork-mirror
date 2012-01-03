@@ -32,7 +32,7 @@ using namespace rwlibs::algorithms::qpcontroller;
 using namespace boost::numeric::ublas;
 
 
-XQPController::XQPController(Device* device,
+XQPController::XQPController(Device::Ptr device,
 							 Frame* controlFrame,
 							 const State& state,
 							 double dt):
