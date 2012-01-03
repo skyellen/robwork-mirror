@@ -9,13 +9,14 @@
 
 IF( UNIX AND NOT CYGWIN )
     FIND_PATH(PEAKCAN_INCLUDE_DIR libpcan.h
-       # TODO paths?
-       /usr/include
-       /include
+              PATHS 
+              /usr/include 
+              /include
     )
 ELSEIF( CYGWIN OR WIN32) 
     FIND_PATH(PEAKCAN_INCLUDE_DIR Pcan_usb.h
        # TODO paths?
+       PATHS
        /usr/include
        /include
     )

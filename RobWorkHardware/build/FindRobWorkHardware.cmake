@@ -131,6 +131,7 @@ RWHW_ADD_INTERNAL_LIBRARY("rwhw_tatile")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_can")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_universalrobots")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_netft")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_trakstar")
 
 
 #IEICAN

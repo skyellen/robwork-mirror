@@ -1,10 +1,14 @@
 
+FIND_PATH(SWISSRANGER_INCLUDE_DIR "swissranger/linux/swissranger.h"
+          PATHS
+           /usr/include
+           /include
+          )
+SET(SWISSRANGER_FOUND false)
+if (SWISSRANGER_INCLUDE_DIR)
+    #message(STATUS "CMU1394 enabled! 1394camera.lib - found!")
+    SET(SWISSRANGER_FOUND true)
+else ()
+    #message(STATUS "CMU1394 disabled! 1394camera.lib - not found!")
+endif ()
 
-   find_library(CMU1394 1394camera.lib ) #  1394camera.dll 1394camera.dll 1394camera.dll
-   if (CMU1394)
- message(STATUS "CMU1394 enabled! 1394camera.lib - found!")
- set(CameraFile ./CMU1394Camera.cpp)
- include_directories(${Ext}/dcam/win/cmu1394)
-   else ()
- message(STATUS "CMU1394 disabled! 1394camera.lib - not found!")
-   endif ()

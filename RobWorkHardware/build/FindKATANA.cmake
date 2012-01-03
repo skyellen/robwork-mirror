@@ -2,8 +2,9 @@
 
 FIND_FILE(katana_kmlBase_h "KNI/kmlBase.h" ${KATANA_INCLUDE_DIR})
 
+SET(KATANA_FOUND FALSE)
 IF(NOT katana_kmlBase_h)
-    MESSAGE(STATUS "Katana disabled! include dir not found!")
+    #MESSAGE(STATUS "Katana disabled! include dir not found!")
 ELSE()
     include_directories(${KATANA_INCLUDE_DIR})
     
@@ -17,14 +18,12 @@ ELSE()
     
     
     if (NOT katana_cdlCOM_h)
-    	message(STATUS "Could not find KNI/cdlCOM.h required to compile Kanata")
-    endif()
-    
-    if (NOT katana_cplSerial_h)
-    	message(STATUS "Could not find KNI/cplSerial.h required to compile Katana")
-    endif()
-    
-    if (NOT katana_kmlBase_h)
-    	message(STATUS "Could not find KNI/kmlBase.h required to compile Katana")
+    	#message(STATUS "Could not find KNI/cdlCOM.h required to compile Kanata")
+    elseif(NOT katana_cplSerial_h)
+    	#message(STATUS "Could not find KNI/cplSerial.h required to compile Katana")
+    elseif (NOT katana_kmlBase_h)
+        #message(STATUS "Could not find KNI/kmlBase.h required to compile Katana")
+    else ()
+        SET(KATANA_FOUND TRUE)
     endif()
 ENDIF()
