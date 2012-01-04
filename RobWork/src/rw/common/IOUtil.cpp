@@ -278,9 +278,9 @@ void IOUtil::getFilesInFolder(const std::string& path, const std::string& fileMa
 std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool recursive, bool addPath, const std::string& fileMask) {
     std::vector<std::string> result;
     getFilesInFolder(path, fileMask, recursive, addPath, result);
-    BOOST_FOREACH(std::string p, result){
+    /*BOOST_FOREACH(std::string p, result){
         std::cout << p << std::endl;
-    }
+    }*/
     return result;
 }
 
