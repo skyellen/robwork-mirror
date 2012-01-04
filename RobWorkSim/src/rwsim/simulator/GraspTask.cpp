@@ -260,8 +260,9 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
 
 void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
     std::ofstream outfile(name.c_str());
+    std::cout << "ToCartTask" << std::endl;
     rwlibs::task::CartesianTask::Ptr ctask = task->toCartesianTask();
-
+    std::cout << "SaveCartTask" << std::endl;
     try {
         XMLTaskSaver saver;
         saver.save(ctask, outfile );

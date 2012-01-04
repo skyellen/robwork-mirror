@@ -57,7 +57,7 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 		_stepDelayMs(0),
 		_autoSaveInterval(40),
 		_maxObjectGripperDistanceThreshold(50),
-		_stat(GraspTask::SimulationFailure),
+		_stat(GraspTask::SizeOfStatusArray, 0),
 		_initialized(false),
 		_nrOfThreads(1),
 		_currentTargetIndex(0),

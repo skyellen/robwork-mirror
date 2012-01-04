@@ -90,7 +90,9 @@ namespace simulator {
 
 		void stepperLoop();
 
-		bool isRunning(){ return _thread!=NULL; };
+		bool isRunning(){
+		    return _thread!=NULL && _running==true;
+		};
 
 		double getTime();
 

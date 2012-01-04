@@ -175,5 +175,5 @@ void ThreadSimulator::stepperLoop(){
         }
         time = nextTime;
     }
-    _thread = NULL;
+    //_thread = NULL;
 }
