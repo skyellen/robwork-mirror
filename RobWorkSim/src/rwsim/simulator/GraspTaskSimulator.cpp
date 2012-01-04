@@ -199,6 +199,7 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
     _skipped = 0;
     _nrOfExperiments = 0;
     _lastSaveTaskIndex = 0;
+    _stat = std::vector<int>(GraspTask::SizeOfStatusArray, 0);
 
     // remove all sensors if there are any
     // first remove any SimTaskObjectSensor from the simulator
