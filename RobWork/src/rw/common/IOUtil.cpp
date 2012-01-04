@@ -251,7 +251,8 @@ void IOUtil::getFilesInFolder(const std::string& path, const std::string& fileMa
         for (boost::filesystem::directory_iterator it(path); it != end; it++)
         {			        
             if (boost::filesystem::is_directory(it->status())) {
-                getFilesInFolder(it->path().string(), fileMask, recursive, addPath, result);
+                if(recursive)
+                    getFilesInFolder(it->path().string(), fileMask, recursive, addPath, result);
                 continue;
             }
 
