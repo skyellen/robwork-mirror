@@ -128,15 +128,14 @@ int main(int argc, char** argv)
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
     // create GraspTaskSimulator
-
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc) );
 
     // do the simulation
-
     int targets = 0, totaltargets = 0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
     BOOST_FOREACH(std::string ifile, infiles){
-        GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc) );
+
 
 
         std::cout << "loading: " << path(ifile).filename() << " ";
