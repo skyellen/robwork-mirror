@@ -316,13 +316,14 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
     }
 
     //Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
-    if( sim->isInError() ) {
+    if( sim->isInError() && sstate._currentState != NEW_GRASP) {
         // the simulator is in error, reinitialize or fix the error
         _simfailed++;
         //std::cout << "SIMULATION FAILURE0: " << std::endl;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::SimulationFailure;
         _stat[GraspTask::SimulationFailure]++;
+        sim->reset(_homeState);
         //_restObjState = state;
         //for(size_t i=0; i<_objects.size(); i++){
         //    Transform3D<> restTransform = Kinematics::frameTframe(_mbase, _objects[i]->getBodyFrame(), state);
