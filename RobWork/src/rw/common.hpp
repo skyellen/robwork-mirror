@@ -40,6 +40,7 @@
 #include "./common/PropertyBase.hpp"
 #include "./common/PropertyMap.hpp"
 #include "./common/PropertyType.hpp"
+#include "./common/ProgramOptions.hpp"
 #include "./common/Ptr.hpp"
 #include "./common/StringUtil.hpp"
 #include "./common/Timer.hpp"
