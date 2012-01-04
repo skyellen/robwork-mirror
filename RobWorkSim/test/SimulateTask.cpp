@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 
         graspSim->load(grasptask);
         graspSim->startSimulation(initState);
-
+        TimerUtil::sleepMs(2000);
         do{
             TimerUtil::sleepMs(500);
             std::vector<int> stat = graspSim->getStat();
