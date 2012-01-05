@@ -108,13 +108,11 @@ IF(WIN32)
 	SET(QT_BINARY_DIR "\${RWS_ROOT}/${RWS_BIN_INSTALL_DIR}")
 ENDIF()
 
-# this is needed in the BuildConfig file
-FILE(TO_CMAKE_PATH $ENV{RWS_ROOT} RWS_ROOT_ENV)
-
 # Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robworkstudio
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  @ONLY
 )
 # Configure build script for installer
 SET(INSTALLATION TRUE)
