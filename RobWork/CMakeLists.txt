@@ -91,9 +91,11 @@ CONFIGURE_FILE(
 
 # Configure build/RobWorkBuildConfig.cmake.in such that other projects might use robwork
 SET(INSTALLATION FALSE)
+
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
   "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  @ONLY
 )
 
 # Store the build paths in a temporary list
