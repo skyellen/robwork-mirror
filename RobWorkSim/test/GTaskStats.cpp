@@ -155,9 +155,9 @@ int main(int argc, char** argv)
         // the criteria is that the first part of the filename of input must match that of baseline
         std::vector<std::pair<std::string, std::string> > matches;
         BOOST_FOREACH(std::string inputl, infiles){
-            std::string namein = path(inputl).filename();
+            std::string namein = path(inputl).filename().string();
             BOOST_FOREACH(std::string basel, baselinefiles){
-                std::string name = path(basel).filename();
+                std::string name = path(basel).filename().string();
                 if(name == namein.substr(0,name.size())){
                     matches.push_back(make_pair(basel,inputl));
                     break;
@@ -180,4 +180,8 @@ int main(int argc, char** argv)
     std::cout << "Done" << std::endl;
     return 0;
 }
+
+//std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr ){
+
+//}
 
