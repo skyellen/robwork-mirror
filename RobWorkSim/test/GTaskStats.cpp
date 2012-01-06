@@ -35,7 +35,7 @@
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
-
+#include <boost/numeric/ublas/matrix.hpp>
 #include <rwsim/simulator/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -47,7 +47,7 @@ using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
 
 std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask);
-
+void printConfMatrix(boost::numeric::ublas::bounded_matrix<int, 7, 7>& mat);
 
 int main(int argc, char** argv)
 {
@@ -167,19 +167,22 @@ int main(int argc, char** argv)
                 }
             }
         }
-        std::cout << "NR of matches: " << matches.size() << std::endl;
+        std::cout << "NR of matches: " << matches.size() << " from (" << baselinefiles.size() << ";" << infiles.size()<< ")" << std::endl;
 
         using namespace boost::numeric::ublas;
 
-        bounded_matrix<double, 7, 7> confMatTotal = zero_matrix<double>(7,7);
+        bounded_matrix<int, 7, 7> confMatTotal = zero_matrix<int>(7,7);
 
         // foreach match we write the test status of each grasp
         typedef std::pair<std::string,std::string> StrPair;
         BOOST_FOREACH(StrPair data, matches){
+            std::cout << "processing: \n-" << data.first.substr(data.first.size()-61,60);
+            std::cout << "\n-" << data.second.substr(data.second.size()-61,60);
+
             GraspTask::Ptr baselinetask = GraspTask::load( data.first );
             GraspTask::Ptr inputtask = GraspTask::load( data.second );
 
-            bounded_matrix<double, 7, 7> confMat = zero_matrix<double>(7,7);
+            bounded_matrix<int, 7, 7> confMat = zero_matrix<int>(7,7);
 
             // load results into two large vectors and compare them, if they are not of the same size then something went wrong
             std::vector<std::pair<GraspSubTask*,GraspTarget*> > baselinetargets = getTargets(baselinetask);
@@ -209,11 +212,22 @@ int main(int argc, char** argv)
                 confMat(stat1,stat2)++;
             }
             confMatTotal = confMatTotal+confMat;
+            printConfMatrix( confMatTotal);
         }
     }
 	RW_WARN("1");
     std::cout << "Done" << std::endl;
     return 0;
+}
+
+void printConfMatrix(boost::numeric::ublas::bounded_matrix<int, 7, 7>& mat){
+    std::cout << "\n";
+    for(int y=0;y<7;y++){
+        for(int x=0;x<7;x++){
+            std::cout << mat(x,y) << "\t";
+        }
+        std::cout << "\n";
+    }
 }
 
 std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask){
