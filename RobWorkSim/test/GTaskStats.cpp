@@ -174,7 +174,7 @@ int main(int argc, char** argv)
         typedef std::pair<std::string,std::string> StrPair;
         BOOST_FOREACH(StrPair data, matches){
             std::cout << "processing: \n-" << data.first.substr(data.first.size()-61,60);
-            std::cout << "\n-" << data.second.substr(data.second.size()-61,60);
+            std::cout << "\n-" << data.second.substr(data.second.size()-61,60) << std::endl;
 
             GraspTask::Ptr baselinetask = GraspTask::load( data.first );
             GraspTask::Ptr inputtask = GraspTask::load( data.second );
@@ -224,7 +224,7 @@ std::string groups[] = {"succ","Fmis","Fdrop","Cenv","SimFail","Cobj","other"};
 
 void printConfMatrix(boost::numeric::ublas::bounded_matrix<int, 7, 7>& mat){
     std::cout << "\n";
-    std::cout << "succ\tFmis\tFdrop\tCenv\tSimFail\tCobj\tother\n";
+    std::cout << "\tsucc\tFmis\tFdrop\tCenv\tSimFail\tCobj\tother\n";
     for(int y=0;y<7;y++){
         std::cout << groups[y] << "\t";
         for(int x=0;x<7;x++){
