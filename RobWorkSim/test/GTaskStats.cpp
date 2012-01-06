@@ -33,7 +33,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
-#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 
 #include <rwsim/simulator/GraspTask.hpp>
@@ -158,9 +158,9 @@ int main(int argc, char** argv)
         // the criteria is that the first part of the filename of input must match that of baseline
         std::vector<std::pair<std::string, std::string> > matches;
         BOOST_FOREACH(std::string inputl, infiles){
-            std::string namein = path(inputl).filename().string();
+            std::string namein = path(inputl).filename();
             BOOST_FOREACH(std::string basel, baselinefiles){
-                std::string name = path(basel).filename().string();
+                std::string name = path(basel).filename();
                 if(name == namein.substr(0,name.size())){
                     matches.push_back(make_pair(basel,inputl));
                     break;
