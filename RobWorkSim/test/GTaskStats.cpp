@@ -46,6 +46,9 @@ using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
 
+std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask);
+
+
 int main(int argc, char** argv)
 {
     // we need
@@ -166,14 +169,46 @@ int main(int argc, char** argv)
         }
         std::cout << "NR of matches: " << matches.size() << std::endl;
 
+        using namespace boost::numeric::ublas;
+
+        bounded_matrix<double, 7, 7> confMatTotal = zero_matrix<double>(7,7);
+
         // foreach match we write the test status of each grasp
         typedef std::pair<std::string,std::string> StrPair;
         BOOST_FOREACH(StrPair data, matches){
             GraspTask::Ptr baselinetask = GraspTask::load( data.first );
             GraspTask::Ptr inputtask = GraspTask::load( data.second );
 
-            // load results into two large vectors and compare them, if they are not of the same size then something went wrong
+            bounded_matrix<double, 7, 7> confMat = zero_matrix<double>(7,7);
 
+            // load results into two large vectors and compare them, if they are not of the same size then something went wrong
+            std::vector<std::pair<GraspSubTask*,GraspTarget*> > baselinetargets = getTargets(baselinetask);
+            std::vector<std::pair<GraspSubTask*,GraspTarget*> > inputtargets = getTargets(inputtask);
+            size_t minsize = std::min(baselinetargets.size(), inputtargets.size());
+            for(size_t i = 0; i<minsize; i++){
+                int tstatus1 = baselinetargets[i].second->getResult()->testStatus;
+                int tstatus2 = inputtargets[i].second->getResult()->testStatus;
+                int stat1=0,stat2=0; // 0 is collision, 1 success, 2
+
+                if(tstatus1==GraspTask::ObjectSlipped || tstatus1==GraspTask::Success ){ stat1 = 0;}
+                else if(tstatus1==GraspTask::ObjectMissed){ stat1 = 1;}
+                else if(tstatus1==GraspTask::ObjectDropped){ stat1 = 2;}
+                else if(tstatus1==GraspTask::CollisionEnvironmentInitially){ stat1 = 3;}
+                else if(tstatus1==GraspTask::SimulationFailure){ stat1 = 4;}
+                else if(tstatus1==GraspTask::CollisionObjectInitially){ stat1 = 5;}
+                else { stat1 = 6;}
+
+                if(tstatus2==GraspTask::ObjectSlipped || tstatus2==GraspTask::Success ){ stat2 = 0;}
+                else if(tstatus2==GraspTask::ObjectMissed){ stat2 = 1;}
+                else if(tstatus2==GraspTask::ObjectDropped){ stat2 = 2;}
+                else if(tstatus2==GraspTask::CollisionEnvironmentInitially){ stat2 = 3;}
+                else if(tstatus2==GraspTask::SimulationFailure){ stat2 = 4;}
+                else if(tstatus2==GraspTask::CollisionObjectInitially){ stat2 = 5;}
+                else { stat2 = 6;}
+
+                confMat(stat1,stat2)++;
+            }
+            confMatTotal = confMatTotal+confMat;
         }
     }
 	RW_WARN("1");
@@ -181,7 +216,13 @@ int main(int argc, char** argv)
     return 0;
 }
 
-//std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr ){
-
-//}
+std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask){
+    std::vector<std::pair<GraspSubTask*,GraspTarget*> > res;
+    BOOST_FOREACH(GraspSubTask& subtask, gtask->getSubTasks()){
+        BOOST_FOREACH(GraspTarget& gtarget, subtask.getTargets()){
+            res.push_back( make_pair(&subtask,&gtarget) );
+        }
+    }
+    return res;
+}
 
