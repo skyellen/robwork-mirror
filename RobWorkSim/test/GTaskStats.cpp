@@ -63,13 +63,13 @@ int main(int argc, char** argv)
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
-	RW_WARN("1");
+
     variables_map vm;
     //store(parse_command_line(argc, argv, desc), vm);
     store(command_line_parser(argc, argv).
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
-	RW_WARN("1");
+
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
         cout << "\n Error: baseline experiments are required!\n";
         return 10;
     }
-	RW_WARN("1");
+
     // extract base line gasps
     std::vector<std::string> baselinefiles;
     std::string baseinput = vm["baseline"].as<string>();
@@ -95,11 +95,9 @@ int main(int argc, char** argv)
     } else {
         baselinefiles.push_back( baseip.string() );
     }
-	RW_WARN("1");
 
     // extract all task files that should be simulated
     std::vector<std::string> infiles;
-    	RW_WARN("1");
     if(vm.count("input")){
    const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
     BOOST_FOREACH(std::string input, inputs){
@@ -111,7 +109,6 @@ int main(int argc, char** argv)
         }
     }
 }
-	RW_WARN("1");
 
     // first check if we need to do a comparison or just baseline statistics
     if(infiles.size()==0){
@@ -143,11 +140,11 @@ int main(int argc, char** argv)
             }
         }
         std::cout << "\n";
-        for(int i=0;i<testStat.size();i++){
+        for(size_t i=0;i<testStat.size();i++){
             std::cout << GraspTask::toString((GraspTask::TestStatus)i) << "\t";
         }
         std::cout << "\n";
-        for(int i=0;i<testStat.size();i++){
+        for(size_t i=0;i<testStat.size();i++){
             std::cout << testStat[i] << "\t";
         }
         std::cout << std::endl;
@@ -187,6 +184,8 @@ int main(int argc, char** argv)
             // load results into two large vectors and compare them, if they are not of the same size then something went wrong
             std::vector<std::pair<GraspSubTask*,GraspTarget*> > baselinetargets = getTargets(baselinetask);
             std::vector<std::pair<GraspSubTask*,GraspTarget*> > inputtargets = getTargets(inputtask);
+            std::cout << "ListSize: (" << baselinetargets.size() << ";"<< inputtargets.size() << ")" << std::endl;
+
             size_t minsize = std::min(baselinetargets.size(), inputtargets.size());
             for(size_t i = 0; i<minsize; i++){
                 int tstatus1 = baselinetargets[i].second->getResult()->testStatus;
@@ -215,14 +214,19 @@ int main(int argc, char** argv)
             printConfMatrix( confMatTotal);
         }
     }
-	RW_WARN("1");
+
     std::cout << "Done" << std::endl;
     return 0;
 }
 
+std::string groups[] = {"succ","Fmis","Fdrop","Cenv","SimFail","Cobj","other"};
+
+
 void printConfMatrix(boost::numeric::ublas::bounded_matrix<int, 7, 7>& mat){
     std::cout << "\n";
+    std::cout << "succ\tFmis\tFdrop\tCenv\tSimFail\tCobj\tother\n";
     for(int y=0;y<7;y++){
+        std::cout << groups[y] << "\t";
         for(int x=0;x<7;x++){
             std::cout << mat(x,y) << "\t";
         }
