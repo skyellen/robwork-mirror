@@ -73,7 +73,7 @@ rw::math::Q SE3Device::getVelocityLimits() const{
     return _vellimits;
 }
 
-void SE3Device::setVelocityLimits(const rw::math::Q& vellimits){
+void SE3Device::setVelocityLimits(const Q& vellimits){
     _vellimits = vellimits;
 }
 
@@ -81,6 +81,6 @@ rw::math::Q SE3Device::getAccelerationLimits() const{
     return _acclimits;
 }
 
-void SE3Device::setAccelerationLimits(const math::Q& acclimits){
+void SE3Device::setAccelerationLimits(const Q& acclimits){
     _acclimits = acclimits;
 }
