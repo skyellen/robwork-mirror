@@ -10,6 +10,7 @@ SET(SRC_FILES
   ./Task.cpp
   ./TaskUtils.cpp
   ./TypeRepository.cpp
+  ./GraspTask.cpp
 )
 
 
@@ -21,7 +22,7 @@ SET(SRC_FILES_HPP
   ./Task.hpp
   ./TaskUtils.hpp
   ./TypeRepository.hpp
-
+  ./GraspTask.hpp
 )
 
 
