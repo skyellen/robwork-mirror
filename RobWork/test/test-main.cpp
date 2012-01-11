@@ -1,7 +1,12 @@
 
 //#define BOOST_TEST_MODULE "core-test"
-#include <boost/test/included/unit_test.hpp>
+#include "TestSuiteConfig.hpp"
 
+#ifdef RW_USE_BOOST_STATIC_TEST_LIBS
+#include <boost/test/unit_test.hpp>
+#else
+#include <boost/test/included/unit_test.hpp>
+#endif
 using boost::unit_test::test_suite;
 
 /**
