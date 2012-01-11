@@ -7,7 +7,6 @@ extern "C" {
     #include <lua.h>
     #include <lualib.h>
     #include <lauxlib.h>
-    #include "tolua++.h"
 }
 
 #include <rwlibs/swig/ScriptTypes.hpp>
