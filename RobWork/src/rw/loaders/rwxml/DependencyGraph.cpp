@@ -26,29 +26,6 @@
 using namespace boost;
 using namespace rw::loaders;
 
-namespace {
-
-    struct print_visitor : public bfs_visitor<> {
-        template <class Vertex, class Graph>
-        void discover_vertex(Vertex v, Graph&) {
-            //std::cout << name[v] << " ";
-        }
-    };
-
-    struct cycle_detector : public dfs_visitor<>
-    {
-        cycle_detector(bool& has_cycle)
-            : m_has_cycle(has_cycle) { }
-
-        template <class Edge, class Graph>
-        void back_edge(Edge, Graph&) {
-            m_has_cycle = true;
-        }
-
-    protected:
-        bool& m_has_cycle;
-    };
-}
 
 void DependencyGraph::addDependency( const std::string& from, const std::string& to )
 {
@@ -74,6 +51,7 @@ void DependencyGraph::addDependency( const std::string& from, const std::string&
 
 bool DependencyGraph::hasCycleDependency()
 {
+
     bool has_cycle = false;
     cycle_detector vis(has_cycle);
     depth_first_search(_g, visitor(vis));
