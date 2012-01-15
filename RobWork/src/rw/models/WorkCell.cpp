@@ -68,10 +68,14 @@ void WorkCell::addDevice(Device::Ptr device)
 }
 
 void WorkCell::addFrame(Frame* frame, Frame* parent){
+    if(parent==NULL)
+        parent = getWorldFrame();
     _tree->addFrame(frame, parent);
 }
 
 void WorkCell::addDAF(Frame* frame, Frame* parent){
+    if(parent==NULL)
+        parent = getWorldFrame();
     _tree->addDAF(frame, parent);
 }
 
