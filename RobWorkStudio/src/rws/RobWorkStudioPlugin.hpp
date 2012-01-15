@@ -70,6 +70,10 @@ namespace rws {
 		/**
 		 * @brief is called when RobWorkStudio instance is valid. Can be used
 		 * to initialize values in the plugin that depend on RobWorkStudio
+		 *
+		 * @note DO NOT fire any events under initialization since the order of
+		 * which plugins are initialized is unknown. Therefore undefined behavior
+		 * might occour. Instead wait until open is called for the first time.
 		 */
 		virtual void initialize();
 
