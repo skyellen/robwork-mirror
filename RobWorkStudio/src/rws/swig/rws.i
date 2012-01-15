@@ -191,6 +191,8 @@ public:
     void postTimedStatePath(const TimedStatePath& path);
     void postExit();
 
+    const State& getState();
+
 
     %extend {
         void setTimedStatePath(const TimedStatePath& path){
@@ -240,6 +242,7 @@ void setRobWorkStudio(RobWorkStudio* rwstudio);
 
 
 %inline %{
+
     const State& getState(){ return getRobWorkStudio()->getState(); }
     void setState(State& state){ return getRobWorkStudio()->postState(state); }
     rw::common::Ptr<Device> findDevice(const std::string& name){
@@ -288,8 +291,6 @@ void setRobWorkStudio(RobWorkStudio* rwstudio);
         MovableFrame *mframe = findMovableFrame(mname);
         moveTo(fframe, mframe, wTframe);
     }
-
-
 %}
 /*
 State& getState();

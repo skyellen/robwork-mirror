@@ -26,17 +26,18 @@ IF( RWS_HAVE_LUA )
 	    
 	    
 	
-    	FIND_PACKAGE(PythonInterp)
-    	FIND_PACKAGE(PythonLibs)
+    	#FIND_PACKAGE(PythonInterp)
+    	#FIND_PACKAGE(PythonLibs)
     	
-    	IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
-    	    MESSAGE(STATUS "RobWorkStudio: Python interface generation ENABLED!")
-    	    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-    	    SWIG_ADD_MODULE(rws python rws.i)
-    	    SWIG_LINK_LIBRARIES(rws rwstudio ${RWS_COMPONENT_LIBRARIES} ${RWS_PLUGIN_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
-    	ELSE()
-    	    MESSAGE(STATUS "RobWorkStudio: Python interface generation DISABLED!")
-    	ENDIF()  
+    	#IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
+    	#    MESSAGE(STATUS "RobWorkStudio: Python interface generation ENABLED!")
+    	#    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+    	#    SWIG_ADD_MODULE(rws python rws.i)
+    	#    SWIG_LINK_LIBRARIES(rws rwstudio ${RWS_COMPONENT_LIBRARIES} ${RWS_PLUGIN_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+    	#ELSE()
+    	#    MESSAGE(STATUS "RobWorkStudio: Python interface generation DISABLED!")
+    	#ENDIF()  
+    	
 	ELSE()
 	    MESSAGE(FATAL_ERROR "RobWorkStudio: SWIG not found, LUA disabled DISABLED!")
     ENDIF()
