@@ -85,10 +85,13 @@ QT4_WRAP_CPP(MocSrcFiles RWSimPlugin.hpp)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
+IF(RWSIM_HAVE_LUA)
+    SET(RWSIM_LUA_LIB rwsim_lua)
+ENDIF()
 
 ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 #ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(RWSimPlugin ${ROBWORKSIM_LIBRARIES})
+TARGET_LINK_LIBRARIES(RWSimPlugin ${RWSIM_LUA_LIB} ${ROBWORKSIM_LIBRARIES})
 
 
 

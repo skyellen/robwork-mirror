@@ -54,7 +54,6 @@
 #include <rwsimlibs/gui/TactileSensorDialog.hpp>
 
 
-
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
 using namespace rw::loaders;
@@ -92,6 +91,11 @@ RWSimPlugin::RWSimPlugin():
 {
     setupUi(this);
 
+#ifdef RWSIM_HAVE_LUA
+    _luastate = 0;
+#endif
+
+
     connect(_openDwcBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_openLastDwcBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_editDwcBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
@@ -126,13 +130,12 @@ RWSimPlugin::RWSimPlugin():
     _timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 }
+
 RWSimPlugin::~RWSimPlugin(){
     if(_timerShot!=NULL)
         _timerShot->stop();
     _timer->stop();
 };
-
-
 
 namespace {
     boost::tuple<QWidget*, QAction*, int> getAction(QWidget* widget, const std::string& actionName){
@@ -165,8 +168,6 @@ namespace {
             return boost::make_tuple((QMenu*)NULL, (QAction*)NULL, -1);
         return boost::make_tuple(pmenu, action, index);
     }
-
-
 }
 
 
@@ -209,7 +210,6 @@ void RWSimPlugin::setupMenu(QMenu* pluginmenu){
     dynMenu->addAction( _graspRestPoseAction );
     dynMenu->addAction( _restPoseAction );
     dynMenu->addAction( _poseAnalyserAction );
-
 
     boost::tuple<QWidget*, QAction*, int> action2 = getAction(menu, "Help");
     if(action.get<1>()!=NULL)
@@ -599,6 +599,17 @@ void RWSimPlugin::updateStatus(){
 }
 
 void RWSimPlugin::open(rw::models::WorkCell* workcell){
+#ifdef RWSIM_HAVE_LUA
+    // check if the lua state is there and if RobWorkSim libraries has been added
+    LuaState *lstate = getRobWorkStudio()->getPropertyMap().get<LuaState*>("LuaState", NULL);
+    if(lstate!=NULL && lstate!=_luastate){
+        _luastate = lstate;
+        _luastate->addLibrary( LuaState::AddLibraryCB( rwsim::swig::openLuaLibRWSim ) );
+    }
+    if(_luastate!=NULL && _dwc!=NULL){
+        rwsim::swig::setDynamicWorkCell( _dwc.get() );
+    }
+#endif
 
     if( workcell==NULL || _dwc==NULL ){
 	    _openCalled = true;

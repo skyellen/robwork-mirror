@@ -34,6 +34,14 @@
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
+#include <RWSimConfig.hpp>
+#ifdef RWSIM_HAVE_LUA
+#include <rws/swig/LuaState.hpp>
+#include <rwsimlibs/swig/Lua.hpp>
+#include <rwsimlibs/swig/ScriptTypes.hpp>
+#endif
+
+
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
@@ -110,6 +118,12 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
     	rw::common::PropertyMap& settings();
 
     private:
+
+
+        #ifdef RWSIM_HAVE_LUA
+    	LuaState *_luastate;
+        #endif
+
 
         Ui::RWSimPlugin _ui;
 
