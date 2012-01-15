@@ -127,8 +127,6 @@ void Lua::initialize()
             "LuaState",
             "A lua state handle",
             _lua );
-    //getRobWorkStudio()->genericEvent().fire("LuaState");
-
 }
 
 void Lua::stateChangedListener(const State& state)
