@@ -9,7 +9,7 @@
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwsim/util/SurfacePoseSampler.hpp>
 
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/lexical_cast.hpp>
 #include <QPushButton>
@@ -23,8 +23,8 @@ USE_ROBWORKSIM_NAMESPACE
 using namespace robworksim;
 
 using namespace rws;
-
 using namespace rwlibs::simulation;
+using namespace rwlibs::task;
 
 SimTaskPlugin::SimTaskPlugin():
     RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png")),
@@ -227,7 +227,7 @@ void SimTaskPlugin::btnPressed() {
             _graspSim->getSimulator()->setPeriodMs(delay);
     } else if(obj==_showTaskSpinBox){
 
-        /*
+/*
         if(_targets==NULL){
             log().error() << "No targets\n";
             return;
@@ -626,7 +626,7 @@ void SimTaskPlugin::setCurrentTask(GraspTask::Ptr task){
     _nrTaskSpinBox->setRange( 0, _graspSim->getNrTargets() );
     _nrTaskSpinBox->setValue( _graspSim->getNrTargets()-1 );
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _graspSim->getNrTargets();
-    _progressBar->setMaximum( _graspSim->getNrTargets()-1);
+    _progressBar->setMaximum( _graspSim->getNrTargets());
     _startBtn->setEnabled(true);
     _stopBtn->setEnabled(true);
 

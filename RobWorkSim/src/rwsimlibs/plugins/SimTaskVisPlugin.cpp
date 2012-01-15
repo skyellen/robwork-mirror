@@ -17,7 +17,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 
 //#define PHOENIX_LIMIT 15
 
@@ -27,7 +27,7 @@ using namespace robwork;
 using namespace robworksim;
 using namespace rws;
 using namespace rwlibs::simulation;
-
+using namespace rwlibs::task;
 
 namespace {
 
@@ -200,7 +200,7 @@ void SimTaskVisPlugin::btnPressed() {
         std::cout << "select event" << std::endl;
         int index = _graspSelectSpin->value();
         const std::vector<RenderTargets::Target>& targets = ((RenderTargets*)_render.get())->getTargets();
-        if(!((index>=0) && (index<targets.size())) ){
+        if( (index<0) || (index>=targets.size()) ){
              return;
         }
 
@@ -226,7 +226,7 @@ void SimTaskVisPlugin::btnPressed() {
 
         State state = getRobWorkStudio()->getState();
         Transform3D<> wTtcp = targets[index].trans;
-        wTtcp.R().normalize();
+        //wTtcp.R().normalize();
         if(tcp!=NULL && base!=NULL){
             std::cout << "basename:" << base->getName() << std::endl;
             std::cout << "tcpname :" << tcp->getName() << std::endl;
@@ -236,13 +236,13 @@ void SimTaskVisPlugin::btnPressed() {
             std::cout << "bTf_e :" <<  inverse(Kinematics::worldTframe(base ,state)) * Kinematics::worldTframe(tcp ,state) << std::endl;
 
             std::cout << "TARGET:" << wTtcp << std::endl;
-            wTtcp.R().normalize();
+            //wTtcp.R().normalize();
             std::cout << "TARGET:" << wTtcp << std::endl;
             Transform3D<> baseTtcp = Kinematics::frameTframe(base, tcp ,state);
             std::cout << "bTf   :" << baseTtcp << std::endl;
             Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
             std::cout << "wTbase:" <<  wTbase << std::endl;
-            wTbase.R().normalize();
+            //wTbase.R().normalize();
             std::cout << "wTbase:" <<  wTbase << std::endl;
             std::cout << "wTtcp:" <<  wTbase*baseTtcp << std::endl;
 
@@ -251,7 +251,8 @@ void SimTaskVisPlugin::btnPressed() {
             std::cout << "wTbase:" <<  Kinematics::worldTframe(base ,state) << std::endl;
             std::cout << "wTtcp :" <<  Kinematics::worldTframe(tcp ,state) << std::endl;
             //Transform3D<> wTtcp = Kinematics::frameTframe(base, tcp ,state);
-            //base->moveTo(wTtcp * inverse(baseTtcp), state);
+
+            base->moveTo(wTtcp * inverse(baseTtcp), state);
 
         }
 
@@ -301,7 +302,7 @@ void SimTaskVisPlugin::btnPressed() {
             }
 
             GraspSubTask *task = _ymtargets[idx].first;
-            GraspTarget target = _ymtargets[idx].second;
+            GraspTarget &target = *_ymtargets[idx].second;
 
             Transform3D<> wTe_n = task->offset;
 
@@ -525,12 +526,7 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
         _baseSelectBox->setCurrentIndex(baseIdx);
     }
 
-    _ymtargets.clear();
-    BOOST_FOREACH(GraspSubTask &subtask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget &target, subtask.targets){
-            _ymtargets.push_back( std::make_pair(&subtask, target) );
-        }
-    }
+    _ymtargets = gtask->getAllTargets();
 
     _totalNrOfExperiments = _ymtargets.size();
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _ymtargets.size() << "\n";

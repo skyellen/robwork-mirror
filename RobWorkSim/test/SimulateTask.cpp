@@ -26,7 +26,7 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
 #include <boost/program_options/options_description.hpp>
@@ -36,7 +36,7 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -45,6 +45,7 @@ using namespace boost::program_options;
 using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
+using namespace rwlibs::task;
 
 int main(int argc, char** argv)
 {

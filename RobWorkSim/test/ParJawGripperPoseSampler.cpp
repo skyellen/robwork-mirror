@@ -12,7 +12,7 @@
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
 #include <vector>
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <rw/geometry/STLFile.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
@@ -40,6 +40,7 @@ USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
 using namespace rwsim::dynamics;
+using namespace rwlibs::task;
 
 using namespace boost::numeric::ublas;
 

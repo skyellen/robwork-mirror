@@ -12,7 +12,7 @@
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
 #include <vector>
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <rw/geometry/STLFile.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>

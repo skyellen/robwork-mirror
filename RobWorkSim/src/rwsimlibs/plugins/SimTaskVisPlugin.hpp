@@ -8,7 +8,7 @@
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rwsim/control/BodyController.hpp>
 #include "ui_SimTaskVisPlugin.h"
-#include <rwsim/simulator/GraspTask.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
@@ -74,8 +74,8 @@ private:
     int _nrOfExperiments, _totalNrOfExperiments;
 
     QTimer *_timer;
-    GraspTask::Ptr _graspTask;
-    std::vector<std::pair<GraspSubTask*, GraspTarget> > _ymtargets;
+    rwlibs::task::GraspTask::Ptr _graspTask;
+    std::vector<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _ymtargets;
 
     rw::graphics::Render::Ptr _render;
 };
