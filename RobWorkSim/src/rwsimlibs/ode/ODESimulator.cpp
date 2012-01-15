@@ -1685,11 +1685,11 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
-        bool softcontact = false;
+        bool softcontact = true;
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
-            softlayer = 0.0015;
+            softlayer = 0.001;
         }
 
         data.setCollisionQueryType(AllContacts);
