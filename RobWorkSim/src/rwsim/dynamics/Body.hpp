@@ -56,7 +56,7 @@ namespace dynamics {
         std::string integratorType;
         std::vector<rw::kinematics::Frame*> frames;
 
-        void print(){
+        void print() const{
         	std::cout << "Material: " << material << "\n";
         	std::cout << "Mass    : " << mass << "\n";
         	std::cout << "Frames: \n";
@@ -68,7 +68,7 @@ namespace dynamics {
         	std::cout << std::endl;
         }
 
-        void print(std::ostream& ostr){
+        void print(std::ostream& ostr) const{
         	ostr << "Material: " << material << "\n";
         	ostr << "Mass    : " << mass << "\n";
         	ostr << "Frames: \n";
@@ -159,6 +159,8 @@ namespace dynamics {
 
         /**
          * @brief retrieve body information
+         *
+         * NOTICE: changing this will not force a changed event.
          */
         BodyInfo& getInfo(){return _info;};
 
@@ -173,6 +175,55 @@ namespace dynamics {
          */
         const rw::math::InertiaMatrix<>& getInertia() const { return _info.inertia; };
 
+        typedef enum{MassChangedEvent} BodyEventType;
+        /**
+         * @brief Defines a state changed listener.
+         *
+         * Listeners to this event is called when a change of the state occurs.
+         *
+         * StateChangedListener describes the signature of a callback method.
+         *
+         * Example usage in a plugin:
+         * \code
+         * void MyPlugin::initialize()
+         * {
+         *     getRobWorkStudio()->stateChangedEvent().add(
+         *         boost::bind(&MyPlugin::stateChangedListener, this, _1), this);
+         * }
+         *
+         * void MyPlugin::stateChangedListener(const State& state)
+         * {
+         * ...
+         * }
+         * \endcode
+         */
+        typedef boost::function<void(BodyEventType)> BodyChangedListener;
+        typedef rw::common::Event<BodyChangedListener, BodyEventType> BodyChangedEvent;
+
+        /**
+         * @brief Returns StateChangeEvent needed for subscribing and firing the event.
+         * @return Reference to the StateChangedEvent
+         */
+        BodyChangedEvent& changedEvent() { return _bodyChangedEvent; }
+        BodyChangedEvent _bodyChangedEvent;
+
+        void setMass(double m){
+            _info.mass = m;
+            _bodyChangedEvent.fire(MassChangedEvent);
+        }
+
+        void setMass(double m, const rw::math::InertiaMatrix<>& inertia){
+            _info.mass = m;
+            _info.inertia = inertia;
+            _bodyChangedEvent.fire(MassChangedEvent);
+        }
+
+        void setMass(double m, const rw::math::InertiaMatrix<>& inertia, const rw::math::Vector3D<>& com){
+            _info.mass = m;
+            _info.inertia = inertia;
+            _info.masscenter = com;
+            _bodyChangedEvent.fire(MassChangedEvent);
+        }
 
         //--------------------------- interface functions ------------------
         /**

@@ -31,7 +31,7 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include "DynamicDevice.hpp"
-
+#include <boost/any.hpp>
 namespace rwsim {
 namespace dynamics {
 	//! @addtogroup dynamics
@@ -156,6 +156,7 @@ namespace dynamics {
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
             sensor->addStateData( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
+            _changedEvent.fire(GravityChangedEvent, boost::any(sensor) );
         };
 
         /**
@@ -181,6 +182,7 @@ namespace dynamics {
     	    //TODO: change STATE and WorkCell accordingly
     	    manipulator->addStateData( _workcell->getStateStructure() );
     		_controllers.push_back(manipulator);
+    		_changedEvent.fire(ControllerAddedEvent, boost::any(manipulator) );
     	}
 
     	rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name);
@@ -238,6 +240,7 @@ namespace dynamics {
          */
         void setGravity(const rw::math::Vector3D<>& grav){
             _gravity = grav;
+            _changedEvent.fire(GravityChangedEvent, boost::any(grav) );
         }
 
         /**
@@ -256,7 +259,27 @@ namespace dynamics {
         	return _engineSettings;
         }
 
+
+        typedef enum{GravityChangedEvent,
+                    ConstraintAddedEvent,
+                    BodyAddedEvent,
+                    DeviceAddedEvent,
+                    ControllerAddedEvent,
+                    SensorAddedEvent
+        } DWCEventType;
+
+        typedef boost::function<void(DWCEventType, boost::any)> DWCChangedListener;
+        typedef rw::common::Event<DWCChangedListener, DWCEventType, boost::any> DWCChangedEvent;
+
+        /**
+         * @brief Returns StateChangeEvent needed for subscribing and firing the event.
+         * @return Reference to the StateChangedEvent
+         */
+        DWCChangedEvent& changedEvent() { return _changedEvent; }
+
+
     private:
+        DWCChangedEvent _changedEvent;
         // the workcell
         rw::models::WorkCell::Ptr _workcell;
         // length of nr of bodies

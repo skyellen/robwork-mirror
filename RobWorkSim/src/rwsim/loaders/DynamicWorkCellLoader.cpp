@@ -443,7 +443,15 @@ namespace
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
         	if(geometry.size()!=0){
-				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	    if( tree.get_optional<string>("COG") ){
+        	        // if COG specified then use it and calculate inertia
+
+        	        info.masscenter = readVector3D( tree.get_child("COG") );
+        	        Transform3D<> ref(info.masscenter);
+        	        info.inertia = GeometryUtil::estimateInertia(info.mass, geometry, ref);
+        	    } else {
+        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	    }
         	} else {
         		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
         		info.masscenter = Vector3D<>(0,0,0);

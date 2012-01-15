@@ -119,26 +119,6 @@ namespace {
     //InitStruct initializeStaticStuff;
 
 
-
-
-   Vector3D<> toVector3D(const dReal *v){
-        return Vector3D<>(v[0],v[1],v[2]);
-    }
-
-
-	void setODEBodyMass(dMass *m, double mass, Vector3D<> c, InertiaMatrix<> I){
-		dReal i11 = I(0,0);
-		dReal i22 = I(1,1);
-		dReal i33 = I(2,2);
-		dReal i12 = I(0,1);
-		dReal i13 = I(0,2);
-		dReal i23 = I(1,2);
-		dMassSetParameters(m, mass,
-                           c(0), c(1), c(2),
-						   i11, i22, i33,
-						   i12, i13, i23);
-	}
-
 	std::string printArray(const dReal* arr, int n){
 	    std::stringstream str;
 	    str << "(";
@@ -393,7 +373,15 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
         }
     }
 
+    // setup DWC changed event
+    _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
 }
+
+void ODESimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){
+    std::cout << "DWC changed, type: " << type << std::endl;
+    // TODO: handle all the event types
+}
+
 
 void ODESimulator::setEnabled(Body* body, bool enabled){
     if(!body)
@@ -440,15 +428,15 @@ namespace {
 
 		return rsum<eps && psum<eps;
 	}
+
+    void drealCopy(const dReal *src, dReal *dst, int n){
+        for(int i=0;i<n;i++)
+            dst[i]=src[i];
+    }
+
 }
 
 
-namespace {
-	void drealCopy(const dReal *src, dReal *dst, int n){
-		for(int i=0;i<n;i++)
-			dst[i]=src[i];
-	}
-}
 /*
     *  Reset each body's position - dBody[Get,Set]Position()
     * Reset each body's quaternion - dBody[Get,Set]Quaternion() ODE stores rotation in quaternions, so don't save/restore in euler angles because it will have to convert to/from quaternions and you won't get a perfect restoration.
@@ -602,6 +590,43 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         RW_DEBUGS("------------- Step dt=" << dttmp <<" at " << _time << " :");
 
 		//TIMING("Step: ", dWorldStep(_worldId, dttmp));
+        /*
+        std::cout << "-- time    : " << _time << "\n";
+        std::cout << "-- dt orig : " << dt << "\n";
+        std::cout << "-- dt div  : " << dttmp << "\n";
+        std::cout << "-- step divisions: " << i << "\n";
+        std::cout << "-- bad lcp count : " << badLCPcount << "\n";
+        std::cout << "-- Bodies: \n";
+        BOOST_FOREACH(dBodyID body, _allbodies){
+            dReal vec[4];
+            ODEBody *data = (ODEBody*) dBodyGetData(body);
+            if(data!=NULL){
+                std::cout << "--- Body: " << data->getRwBody()->getName();
+            } else {
+                std::cout << "--- Body: NoRWBODY";
+            }
+            drealCopy( dBodyGetPosition(body), vec, 3);
+            std::cout << "\n---- pos   : " << printArray(vec, 3);
+            drealCopy( dBodyGetQuaternion(body), vec, 4);
+            std::cout << "\n---- rot   : " << printArray(vec, 4);
+            drealCopy( dBodyGetLinearVel  (body), vec, 3);
+            std::cout << "\n---- linvel: " << printArray(vec, 3);
+            drealCopy( dBodyGetAngularVel (body), vec, 3);
+            std::cout << "\n---- angvel: " << printArray(vec, 3);
+            drealCopy( dBodyGetForce  (body), vec, 3);
+            std::cout << "\n---- force : " << printArray(vec, 3);
+            drealCopy( dBodyGetTorque (body), vec, 3);
+            std::cout << "\n---- torque: " << printArray(vec, 3);
+            std::cout << "\n";
+        }
+        std::cout << "--\n-- contacts: \n";
+        BOOST_FOREACH(ContactPoint p, _allcontactsTmp){
+            std::cout << "-- pos: "<< p.p << "\n";
+            std::cout << "-- normal: "<< p.n << "\n";
+            std::cout << "-- depth: "<< p.penetration << "\n";
+        }
+
+*/
 	    try {
 	        switch(_stepMethod){
 	        case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dttmp)); break;
@@ -609,6 +634,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	        //case(WorldFast1): TIMING("Step: ", dWorldStepFast1(_worldId, dt, _maxIter)); break;
 	        default:
 	            TIMING("Step: ", dWorldStep(_worldId, dttmp));
+	            break;
 	        }
 	    } catch ( ... ) {
 	        std::cout << "ERROR";
@@ -776,20 +802,11 @@ ODEBody* ODESimulator::createRigidBody(Body* rwbody,
 	}
 
     Vector3D<> mc = info.masscenter;
-    dMass m;
-    setODEBodyMass(&m, info.mass, Vector3D<>(0,0,0), info.inertia);
-
-
-    //std::cout << "RW inertia: " << info.inertia << std::endl;
-    //printMassInfo(m, *rwbody->getBodyFrame() );
-    dMassCheck(&m);
     // create the body and initialize mass, inertia and stuff
 
     dBodyID bodyId = dBodyCreate(_worldId);
 	ODEUtil::setODEBodyT3D(bodyId, rwbody->wTcom(state) );
-	//ODEUtil::setODEBodyMass(bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
-
-	dBodySetMass(bodyId, &m);
+	ODEUtil::setODEBodyMass(bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
 
     int mid = _materialMap.getDataID( info.material );
     int oid = _contactMap.getDataID( info.objectType );
@@ -1668,7 +1685,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
-        bool softcontact = true;
+        bool softcontact = false;
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
@@ -1884,8 +1901,8 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         //if(con.geom.depth>0.01)
         //    continue;
 
-        point.n = normalize( toVector3D(con.geom.normal) );
-        point.p = toVector3D(con.geom.pos);
+        point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
+        point.p = ODEUtil::toVector3D(con.geom.pos);
         point.penetration = con.geom.depth;
         point.userdata = (void*) &(_contacts[i]);
         RW_DEBUGS("-- Depth/Pos  : " << con.geom.depth << " " << printArray(con.geom.normal,3));
@@ -1965,12 +1982,14 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         Vector3D<> hf = obr.getHalfLengths();
         if(hf(0)*hf(1)<(0.001*0.001)){
             _allcontacts.push_back( obr.getDeepestPoint() );
+            RW_ASSERT( contactIdx<dst.size() );
             dst[contactIdx] = obr.getDeepestPoint();
             contactIdx++;
         } else {
             //std::cout << "Manifold: " << nrContacts << ";" << std::endl;
             for(int j=0;j<nrContacts; j++){
                 _allcontacts.push_back( obr.getContact(j) );
+                RW_ASSERT( contactIdx<dst.size() );
                 dst[contactIdx] = obr.getContact(j);
                 contactIdx++;
             }
@@ -2152,8 +2171,8 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
         dContact con = contacts[i];
         // add to all contacts
         ContactPoint point;
-        point.n = normalize( toVector3D(con.geom.normal) );
-        point.p = toVector3D(con.geom.pos);
+        point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
+        point.p = ODEUtil::toVector3D(con.geom.pos);
         point.penetration = con.geom.depth;
         _allcontacts.push_back(point);
 

@@ -33,7 +33,7 @@ namespace dynamics {
         static rw::math::Transform3D<> placeBody( rwsim::dynamics::Body::Ptr body,
                                         rw::proximity::CollisionDetector::Ptr coldect,
                                         const rw::kinematics::State& state,
-                                        const rw::math::Vector3D<>& dir = -rw::math::Vector3D<>::z()*20);
+                                        const rw::math::Vector3D<>& dir = -rw::math::Vector3D<>::z());
 
     };
 

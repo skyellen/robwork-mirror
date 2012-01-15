@@ -149,6 +149,9 @@ namespace simulator {
 			return _time;
 		}
 
+		void DWCChangedListener(dynamics::DynamicWorkCell::DWCEventType type, boost::any data);
+
+
 		/**
 		 * @copydoc Simulator::setEnabled
 		 */

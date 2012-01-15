@@ -1,5 +1,5 @@
 /*
- * GraspTaskSimulator.hpp
+ * rwlibs::task::GraspTaskSimulator.hpp
  *
  *  Created on: Jun 28, 2011
  *      Author: jimali
@@ -19,7 +19,7 @@
 #include "ThreadSimulator.hpp"
 #include <stack>
 #include <rwsim/dynamics/KinematicBody.hpp>
-#include "GraspTask.hpp"
+#include <rwlibs/task/GraspTask.hpp>
 namespace rwsim {
 namespace simulator {
 /**
@@ -78,11 +78,11 @@ public:
 	 * @brief
 	 * @param graspTasks
 	 */
-	void load(GraspTask::Ptr graspTasks);
+	void load(rwlibs::task::GraspTask::Ptr graspTasks);
 
 	// these are basically the same since the result is added to the loaded tasks
-	GraspTask::Ptr getTasks(){ return _gtask; };
-	GraspTask::Ptr getResult(){ return _gtask; }
+	rwlibs::task::GraspTask::Ptr getTasks(){ return _gtask; };
+	rwlibs::task::GraspTask::Ptr getResult(){ return _gtask; }
 
 	//! @brief get the number of targets
 	size_t getNrTargets();
@@ -103,8 +103,8 @@ public:
 	 * @param status [in]
 	 * @return
 	 */
-	int getStat(GraspTask::TestStatus status){
-	    if(status>=0 && status<=GraspTask::SizeOfStatusArray)
+	int getStat(rwlibs::task::GraspTask::TestStatus status){
+	    if(status>=0 && status<=rwlibs::task::GraspTask::SizeOfStatusArray)
 	        return _stat[status];
 	    RW_THROW("Unknown TestStatus!");
 	}
@@ -140,8 +140,8 @@ public:
 
         rw::kinematics::State _state;
         rw::common::Timer _wallTimer;
-        GraspSubTask *_task;
-        GraspTarget *_target;
+        rwlibs::task::GraspSubTask *_task;
+        rwlibs::task::GraspTarget *_target;
         StepState _currentState;
 
         rw::kinematics::State _postLiftObjState;
@@ -227,10 +227,10 @@ private:
 	std::map<rwsim::simulator::ThreadSimulator::Ptr, SimState> _simStates;
 	std::vector<rwsim::simulator::ThreadSimulator::Ptr> _simulators;
 
-	GraspSubTask *_currentTask;
-	GraspTarget *_currentTarget;
-	GraspTask::Ptr _gtask;
-	std::stack<std::pair<GraspSubTask*, GraspTarget*> > _taskQueue;
+	rwlibs::task::GraspSubTask *_currentTask;
+	rwlibs::task::GraspTarget *_currentTarget;
+	rwlibs::task::GraspTask::Ptr _gtask;
+	std::stack<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _taskQueue;
 	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 };

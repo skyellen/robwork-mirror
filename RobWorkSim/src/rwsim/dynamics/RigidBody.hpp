@@ -140,7 +140,7 @@ namespace dynamics {
         /**
          *
          */
-        rw::math::InertiaMatrix<> getEffectiveMassW(const rw::math::Vector3D<>& wPc);
+        //rw::math::InertiaMatrix<> getEffectiveMassW(const rw::math::Vector3D<>& wPc);
 
         /**
          * @brief return the parent frame
@@ -247,7 +247,7 @@ namespace dynamics {
          * @brief returns the mass of this body
          */
         inline double getMass() const {
-            return _mass;
+            return getInfo().mass;
         }
 
         /**
@@ -281,7 +281,7 @@ namespace dynamics {
          * @brief returns the inverse of the inertia tensor described in
          * world frame.
          */
-        rw::math::InertiaMatrix<> calcInertiaTensorInvW(const rw::kinematics::State& state) const;
+        //rw::math::InertiaMatrix<> calcInertiaTensorInvW(const rw::kinematics::State& state) const;
 
         /**
          * @brief returns the inverse of the inertia tensor described in
@@ -306,9 +306,9 @@ namespace dynamics {
          */
         rw::math::InertiaMatrix<> calcEffectiveMassW(const rw::math::Vector3D<>& wPc, const rw::kinematics::State& state) const;
 
-        rw::math::InertiaMatrix<> calcEffectiveInertia(const rw::kinematics::State& state) const;
+        //rw::math::InertiaMatrix<> calcEffectiveInertia(const rw::kinematics::State& state) const;
 
-        rw::math::InertiaMatrix<> calcEffectiveInertiaInv(const rw::kinematics::State& state) const;
+        //rw::math::InertiaMatrix<> calcEffectiveInertiaInv(const rw::kinematics::State& state) const;
 
 
     protected:

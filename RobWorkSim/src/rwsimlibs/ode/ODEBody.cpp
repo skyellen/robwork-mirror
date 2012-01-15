@@ -46,6 +46,7 @@ ODEBody::ODEBody(dBodyID odeBody,
                 _materialID(matID),
                 _contactID(conID)
 {
+    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
 ODEBody::ODEBody(dBodyID odeBody,
@@ -61,6 +62,7 @@ ODEBody::ODEBody(dBodyID odeBody,
                 _materialID(matID),
                 _contactID(conID)
 {
+    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
 ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
@@ -76,6 +78,7 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
                 _materialID(matID),
                 _contactID(conID)
 {
+    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
 ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, int conID):
@@ -90,6 +93,7 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, 
                 _materialID(matID),
                 _contactID(conID)
 {
+    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
 void ODEBody::update(double dt, rw::kinematics::State& state){
@@ -133,6 +137,7 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
     break;
     default:
         RW_WARN("UNSUPPORTED ODEBody type");
+        break;
     }
 }
 
@@ -186,7 +191,37 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     break;
     default:
         RW_WARN("UNSUPPORTED ODEBody type");
+        break;
     }
+}
+
+void ODEBody::bodyChangedListener(dynamics::Body::BodyEventType eventtype){
+    std::cout << "BODY Changed event"  << std::endl;
+    switch(_type){
+    case(ODEBody::RIGID): {
+        BodyInfo info = _rwBody->getInfo();
+        ODEUtil::setODEBodyMass(_bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
+    }
+    break;
+    case(ODEBody::RIGIDJOINT): {
+        BodyInfo info = _rwBody->getInfo();
+        ODEUtil::setODEBodyMass(_bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
+    }
+    break;
+    case(ODEBody::KINEMATIC): {
+
+    }
+    break;
+    case(ODEBody::FIXED): {
+        // TODO: run through all fixed objects and set their configuration
+    }
+    break;
+    default:
+        RW_WARN("UNSUPPORTED ODEBody type");
+        break;
+    }
+
+
 }
 
 void ODEBody::reset(const rw::kinematics::State& state){
@@ -196,6 +231,7 @@ void ODEBody::reset(const rw::kinematics::State& state){
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
     }
+    break;
     case(ODEBody::RIGIDJOINT): {
     	//std::cout << "Reset rigid joint" << std::endl;
     	//Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
@@ -222,6 +258,7 @@ void ODEBody::reset(const rw::kinematics::State& state){
     break;
     default:
     	RW_WARN("UNSUPPORTED ODEBody type");
+    	break;
 	}
 
 	if(_bodyId!=0){

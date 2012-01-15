@@ -153,6 +153,8 @@ namespace simulator {
 
 		rw::math::Vector3D<> getLastForce(){ return _lastForce; }
 
+
+		void bodyChangedListener(dynamics::Body::BodyEventType eventtype);
 	private:
 		// for rigid body
 		dBodyID _bodyId;
