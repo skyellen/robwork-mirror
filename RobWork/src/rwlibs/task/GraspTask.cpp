@@ -12,7 +12,7 @@ using namespace robwork;
 using namespace std;
 using namespace boost::numeric;
 using namespace boost::property_tree;
-
+using namespace rwlibs::task;
 
 namespace {
     void writeOutcome( std::ostream& out, GraspTarget& target){
@@ -827,4 +827,16 @@ void GraspTask::filterTasks( std::vector<GraspTask::TestStatus> &includeMask){
         stask.targets = stargets;
     }
 
+}
+
+std::vector<std::pair<GraspSubTask*,GraspTarget*> > GraspTask::getAllTargets(){
+    std::vector< std::pair<GraspSubTask*,GraspTarget*> > result;
+
+    BOOST_FOREACH(GraspSubTask &stask, getSubTasks()){
+        BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
+            result.push_back( std::make_pair(&stask,&target) );
+        }
+    }
+
+    return result;
 }

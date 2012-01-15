@@ -415,6 +415,44 @@ public:
     // std::string __tostring() const;
 };
 
+
+
+class InertiaMatrix{
+public:
+    InertiaMatrix(
+        double r11, double r12, double r13,
+        double r21, double r22, double r23,
+        double r31, double r32, double r33);
+
+    InertiaMatrix(
+        const Vector3D& i,
+        const Vector3D& j,
+        const Vector3D& k);
+
+    InertiaMatrix(
+        double i = 0.0,
+        double j = 0.0,
+        double k = 0.0);
+
+    double& operator()(size_t row, size_t column);
+    const double& operator()(size_t row, size_t column) const;
+
+    //const Base& m() const;
+    //Base& m();
+
+    //friend InertiaMatrix operator*(const Rotation3D<T>& aRb, const InertiaMatrix& bRc);
+    //friend InertiaMatrix operator*(const InertiaMatrix& aRb, const Rotation3D<T>& bRc);
+    //friend InertiaMatrix operator+(const InertiaMatrix& I1, const InertiaMatrix& I2);
+    //friend Vector3D<T> operator*(const InertiaMatrix& aRb, const Vector3D<T>& bVc);
+    //friend InertiaMatrix inverse(const InertiaMatrix& aRb);
+    //friend std::ostream& operator<<(std::ostream &os, const InertiaMatrix& r);
+
+    static InertiaMatrix makeSolidSphereInertia(double mass, double radi);
+    static InertiaMatrix makeHollowSphereInertia(double mass, double radi);
+    static InertiaMatrix makeCuboidInertia(double mass, double x, double y, double z);
+};
+
+
 /********************************************************************
 // now we go on to geometry
 *********************************************************************/

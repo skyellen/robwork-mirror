@@ -5,13 +5,15 @@
  *      Author: jimali
  */
 
-#ifndef GRASPTASK_HPP_
-#define GRASPTASK_HPP_
+#ifndef RWLIBS_TASK_GRASPTASK_HPP_
+#define RWLIBS_TASK_GRASPTASK_HPP_
 
 #include <rw/common/Ptr.hpp>
 #include <rw/sensor/Contact3D.hpp>
 #include "Task.hpp"
 
+namespace rwlibs {
+namespace task {
 
 /**
  * @brief a container for describing one or multiple grasping tasks. It is based on the rwlibs::tasks library
@@ -70,6 +72,12 @@ public:
 
     void filterTasks( std::vector<GraspTask::TestStatus> &includeMask);
 
+    /**
+     * @brief iterates the grasptask and assemble all targets and the GraspSubTask that
+     * they are associated to.
+     * @return vector of subtask and target pairs.
+     */
+    std::vector<std::pair<class GraspSubTask*,class GraspTarget*> > getAllTargets();
 
     static std::string toString(TestStatus status){
         static std::string strArr[] = {"UnInitialized",
@@ -228,6 +236,7 @@ public:
 
     std::string taskID;
 };
-
+}
+}
 
 #endif /* GRASPTASK_HPP_ */

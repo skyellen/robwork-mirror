@@ -32,7 +32,8 @@
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
-
+#include <rwlibs/simulation/SimulatedController.hpp>
+#include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rw/RobWork.hpp>
 #include <iostream>
 #include <sstream>
@@ -62,6 +63,7 @@ typedef rw::math::Quaternion<double> Quaternion;
 typedef rw::math::Transform3D<double> Transform3D;
 typedef rw::math::Pose6D<double> Pose6D;
 typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
+typedef rw::math::InertiaMatrix<double> InertiaMatrix;
 typedef rw::math::Jacobian Jacobian;
 typedef rw::math::QMetric QMetric;
 typedef rw::math::Transform3DMetric Transform3DMetric;
@@ -138,7 +140,6 @@ typedef rw::proximity::CollisionStrategy CollisionStrategy;
 typedef rw::proximity::DistanceCalculator DistanceCalculator;
 typedef rw::proximity::DistanceStrategy DistanceStrategy;
 
-
 typedef rw::invkin::InvKinSolver InvKinSolver;
 typedef rw::invkin::IterativeIK IterativeIK;
 typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
@@ -159,6 +160,11 @@ typedef rw::graphics::WorkCellScene WorkCellScene;
 typedef rw::graphics::SceneViewer SceneViewer;
 typedef rw::graphics::SceneNode SceneNode;
 typedef rw::graphics::DrawableNode DrawableNode;
+
+
+// not added yet
+typedef rwlibs::simulation::SimulatedController SimulatedController;
+typedef rwlibs::simulation::SimulatedSensor SimulatedSensor;
 
 
 void writelog(const std::string& msg);
