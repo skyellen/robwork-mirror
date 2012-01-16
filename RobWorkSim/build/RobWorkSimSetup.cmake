@@ -90,7 +90,7 @@ IF( NOT RWSIM_DISABLE_LUA )
 ELSE ()
     MESSAGE(STATUS "RobWorkSim: Lua DISABLED!")
 ENDIF()
-
+#MESSAGE(" ${RWSIM_DISABLE_LUA} and ${RW_BUILD_WITH_LUA} ") 
 
 # test if Bullet exists
 SET(RWSIM_HAVE_BULLET False)
@@ -128,7 +128,7 @@ IF(NOT RWSIM_DISABLE_ODE)
     	SET(RWSIM_ODE_LIBRARY rwsim_ode ${ODE_LIBRARIES})
     	# ODE_LIBRARIES
         MESSAGE(STATUS "RobWorkSim: ODE enabled and found. Using ${ODE_BUILD_WITH}")
-        SET(RW_ODE_INCLUDE_DIR ${RW_ODE_INCLUDE_DIR} )
+        SET(RW_ODE_INCLUDE_DIR ${ODE_INCLUDE_DIR} )
     ELSE()
         SET(RWSIM_HAVE_ODE FALSE)
         MESSAGE(SEND_ERROR "RobWorkSim: ODE enabled but not found. Please setup ODE_ROOT.")
