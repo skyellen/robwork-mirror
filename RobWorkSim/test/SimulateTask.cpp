@@ -60,6 +60,7 @@ int main(int argc, char** argv)
         ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<vector<string> >(), "input Files to simulate.")
+        ("align", value<bool>()->default_value(false), "Use aligned grasps from input.")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -69,7 +70,7 @@ int main(int argc, char** argv)
     store(command_line_parser(argc, argv).
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
-
+    bool useAlignedGrasp = vm["align"].as<bool>();
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
@@ -165,6 +166,13 @@ int main(int argc, char** argv)
             stask.setRefFrame("object");
             // also remove results
             BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
+                if(target.result!=NULL){
+                    if(useAlignedGrasp){
+                        if( target.result->testStatus==GraspTask::Success || target.result->testStatus==GraspTask::ObjectSlipped){
+                            target.pose = target.result->objectTtcpGrasp;
+                        }
+                    }
+                }
                 target.result = NULL;
             }
         }
