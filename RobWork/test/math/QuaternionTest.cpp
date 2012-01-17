@@ -25,11 +25,11 @@
 #include <rw/math/MetricUtil.hpp>
 #include <iostream>
 #include <rw/common/Timer.hpp>
-
-using namespace rw::math;
-
+#include <math.h>
+#include <boost/math/special_functions/sign.hpp>
 #include <boost/test/unit_test.hpp>
 
+using namespace rw::math;
 typedef Quaternion<double> QuatD;	// just abbreviations
 typedef Quaternion<float>  QuatF;
 
@@ -41,17 +41,15 @@ bool close_enough(Quaternion<> q1,Quaternion<> q2){
     fabs((q1).getQw()-(q2).getQw())<1e-16;
 }
 
-#include <math.h>
-
 Quaternion<> toQuatN( const Rotation3D<>& rot){
 
     double d = sqrt( std::max( 0.0, 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
     double a = sqrt( std::max( 0.0, 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
     double b = sqrt( std::max( 0.0, 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
     double c = sqrt( std::max( 0.0, 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
-    a = copysign( a, rot(2,1) - rot(1,2) );
-    b = copysign( b, rot(0,2) - rot(2,0) );
-    c = copysign( c, rot(1,0) - rot(0,1) );
+    a = boost::math::copysign( a, rot(2,1) - rot(1,2) );
+    b = boost::math::copysign( b, rot(0,2) - rot(2,0) );
+    c = boost::math::copysign( c, rot(1,0) - rot(0,1) );
 
     return Quaternion<>(a,b,c,d);
 }
