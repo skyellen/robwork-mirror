@@ -61,7 +61,7 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 UNSET(Boost_USE_STATIC_LIBS)
 UNSET(Boost_FIND_QUIETLY)
 IF(DEFINED UNIX)
-  SET(Boost_USE_STATIC_LIBS ON)
+  #SET(Boost_USE_STATIC_LIBS ON)
   FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)  
   # Test libraries are optional
   SET(Boost_FIND_QUIETLY TRUE)
