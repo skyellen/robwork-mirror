@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     store(command_line_parser(argc, argv).
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
-
+    rw::math::Math::seed( clock() );
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
@@ -145,14 +145,14 @@ int main(int argc, char** argv)
     if( vm.count("gentask") ){
         string objectName = vm["object"].as<string>();
         string type = vm["gripper"].as<string>();
-
+        int offset = Math::ranI(0,1000) * 20;
         while(1){
             totalNrTasks += nrTasks;
             taskIndex += 1;
 
             std::stringstream sstr;
             //sstr << outputfile.string() << "_" << totaltargets << "_";
-            sstr << outputdir << "/task_" << taskIndex;
+            sstr << outputdir << "/task_" << offset + taskIndex;
             if(iformat==0){
                 sstr << ".task.xml";
             } else if(iformat==1){
