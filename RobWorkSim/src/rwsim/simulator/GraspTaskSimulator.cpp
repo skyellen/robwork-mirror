@@ -51,7 +51,7 @@ namespace {
 }
 
 
-GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc):
+GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc,int nrThreads):
         _dwc(dwc),
 		_requestSimulationStop(false),
 		_stepDelayMs(0),
@@ -63,6 +63,9 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 		_currentTargetIndex(0),
 		_alwaysResting(false)
 {
+    if(nrThreads>0 && nrThreads<8)
+        _nrOfThreads = nrThreads;
+
 }
 
 GraspTaskSimulator::~GraspTaskSimulator(){

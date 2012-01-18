@@ -65,7 +65,7 @@ public:
     */
 public:
 
-	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc, int nrThreads=1);
 
 	virtual ~GraspTaskSimulator();
 
