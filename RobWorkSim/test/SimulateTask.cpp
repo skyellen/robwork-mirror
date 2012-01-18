@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc) );
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 4) );
 
     // do the simulation
     int targets = 0, totaltargets = 0;
@@ -164,12 +164,27 @@ int main(int argc, char** argv)
         // temporarilly change refframe to Object change
         BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
             stask.setRefFrame("object");
+
+            if( grasptask->getGripperID()=="SchunkHand"){
+                Q tau = Q(7, 2.0, 2.0, 10.0, 2.0, 2.0, 2.0, 2.0);
+                // depending on the value of joint 2 adjust the forces
+                double alpha = stask.openQ(2);
+                if(alpha<45*Deg2Rad){
+                    tau(3) = tau(0)/(2*cos(alpha));
+                    tau(5) = tau(0)/(2*cos(alpha));
+                } else {
+                    tau(0) = std::max( 2*cos(alpha)*tau(3), 0.2);
+                }
+                stask.tauMax = tau;
+            }
+            stask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
+
             // also remove results
             BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
                 if(target.result!=NULL){
                     if(useAlignedGrasp){
                         if( target.result->testStatus==GraspTask::Success || target.result->testStatus==GraspTask::ObjectSlipped){
-                            target.pose = target.result->objectTtcpGrasp;
+                            target.pose = target.result->objectTtcpLift;
                         }
                     }
                 }

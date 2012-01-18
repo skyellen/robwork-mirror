@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc) );
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 4) );
 
     int nrTasks = 5000, totalNrTasks = 0, taskIndex=0;
     if( vm.count("gentask") ){
@@ -347,6 +347,9 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     } else {
         RW_THROW(" The gripper type is wrong! please specify a valid grippertype: (PG70, SCUP, SDH_PAR, SDH_CYL, SDH_BALL)");
     }
+
+
+
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
     gtask->setGripperID(gripperName);
@@ -357,6 +360,20 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     gtask->getSubTasks().resize(1);
     GraspSubTask &subtask = gtask->getSubTasks()[0];
 
+
+    if( gripperName=="SchunkHand"){
+        Q tau = Q(7, 2.0, 2.0, 10.0, 2.0, 2.0, 2.0, 2.0);
+        // depending on the value of joint 2 adjust the forces
+        double alpha = openQ(2);
+        if(alpha<45*Deg2Rad){
+            tau(3) = tau(0)/(2*cos(alpha));
+            tau(5) = tau(0)/(2*cos(alpha));
+        } else {
+            tau(0) = std::max( 2*cos(alpha)*tau(3), 0.2);
+        }
+        subtask.tauMax = tau;
+    }
+
     //rtask->addTask(tasks);
 
     subtask.offset = wTe_n;
@@ -365,10 +382,10 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
         subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
     } else if( gripperName=="GS20"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
     } else {
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.10));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
     }
 
     subtask.openQ = openQ;
