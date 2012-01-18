@@ -548,7 +548,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             }
             //RW_WARN("1");
 
-            if( sstate._target->getResult()->testStatus != GraspTask::UnInitialized ){
+            if( sstate._target->getResult()->testStatus != GraspTask::UnInitialized &&
+                    sstate._target->getResult()->testStatus !=GraspTask::SimulationFailure ){
                 // if test status is set then we allready processed this task.
                 if(sstate._target->getResult()->testStatus<GraspTask::SizeOfStatusArray)
                     _stat[sstate._target->getResult()->testStatus]++;
@@ -570,7 +571,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             sstate._wTmbase_initTarget     = sstate._wTtcp_initTarget * inverse(mbaseTtcp);
             sstate._wTmbase_approachTarget = sstate._wTtcp_initTarget * sstate._approach * inverse(mbaseTtcp);
             //sstate._wTmbase_retractTarget  = sstate._wTtcp_initTarget * sstate._approach * sstate._retract * inverse(mbaseTtcp);
-            Transform3D<> wTretract =  wTref * refToffset * sstate._retract;
+            Transform3D<> wTretract =  /*wTref * refToffset * */ sstate._retract;
             sstate._wTmbase_retractTarget  = wTretract * sstate._wTmbase_approachTarget;
             //RW_WARN("1");
             // we initialize the transform
