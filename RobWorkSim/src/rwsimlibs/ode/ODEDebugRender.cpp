@@ -25,6 +25,8 @@
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rw/math.hpp>
 #include <rw/kinematics.hpp>
+#include <boost/foreach.hpp>
+#include "ODESuctionCupDevice.hpp"
 
 using namespace rwsim::drawable;
 using namespace rwlibs::opengl;
@@ -161,4 +163,42 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
 
         }
     }
+
+    if (DRAW_COLLISION_GEOMETRY & _drawMask) {
+    std::vector<ODEDevice*> devices = _sim->getODEDevices();
+    BOOST_FOREACH(ODEDevice* dev, devices){
+        ODESuctionCupDevice* sdev = dynamic_cast<ODESuctionCupDevice*>( dev );
+        rw::geometry::TriMesh::Ptr mesh = sdev->getSpikedMesh();
+        dBodyID body = sdev->getEndBody()->getBodyID();
+
+        const dReal* pos = dBodyGetPosition(body);
+        const dReal* rot = dBodyGetRotation(body);
+
+        float gltrans[16];
+        odeToGLTransform(pos, rot, gltrans);
+
+        glPushMatrix();
+        glMultMatrixf(gltrans);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBegin(GL_TRIANGLES);
+        rw::geometry::Triangle<float> tri;
+        for (size_t i = 0; i < mesh->getSize(); i++) {
+            mesh->getTriangle(i, tri);
+            const float *p;
+            p = &tri[0][0];
+            glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+
+            p = &tri[1][0];
+            glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+
+            p = &tri[2][0];
+            glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+        }
+
+        // draw all contacts
+        glEnd();
+        glPopMatrix();
+    }
+    }
+
 }
