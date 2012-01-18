@@ -96,7 +96,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
     _narrowStrategy = ownedPtr( new rwlibs::proximitystrategies::ProximityStrategyPQP() );
 
     // create the spiked cup geometry
-    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.01, dev->getRadius(), 1, NR_OF_SPIKES);
+    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.003, dev->getRadius(), 1, NR_OF_SPIKES);
 
     _spikedCup = new Geometry(_spikedCupMesh);
 
@@ -141,7 +141,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     // then we use our own collision stuff to determine contact.
     //std::cout << (!_isInContact) <<  "&&"  << (object!=NULL) << std::endl;
     if( !_isInContact && object!=NULL){
-    	//std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
+    	std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
         Transform3D<> wTobj = Kinematics::worldTframe(object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
         // test if the suction gripper is in "complete" contact with the object
@@ -193,10 +193,11 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         ProximityModel::Ptr objModel = _narrowStrategy->getModel( _object->getBodyFrame() );
 
         // rotate z into y by rotating 90 degree around x-axis
-        Transform3D<> yTz( RPY<>(0,0,Pi/2).toRotation3D() );
+        //Transform3D<> yTz( RPY<>(0,0,Pi/2).toRotation3D() );
 
-        if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup*yTz, _pdata) ){
+        if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup, _pdata) ){
             if( _pdata.getCollisionData()._geomPrimIds.size()<NR_OF_SPIKES-1 ){
+                std::cout << " Contact lost, only: " << _pdata.getCollisionData()._geomPrimIds.size() << " contacts" << std::endl;
                 _object = NULL;
                 _isInContact = false;
                 dJointGroupEmpty(_contactGroupId);
@@ -206,7 +207,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     //if( _isInContact ){
     if( firstContact ) {
         // apply forces to object
-
+        std::cout << " first contact " << std::endl;
         double forceFromVacuum = 10; // normal
         double forceCupFromVacuum = -1; // normal
         Transform3D<> t3d = _tcp->getTransformW( state );
@@ -292,9 +293,10 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 
     //ODEBody *odeobject = _odesim->getODEBody(object->getBodyFrame());
     //RW_ASSERT()
-    if(_contacts.size()>0 && _object!=NULL)
+    if(_contacts.size()>0 && _object!=NULL){
+        std::cout << "adding contacts: " << _contacts.size() << std::endl;
         _odesim->addContacts(_contacts, _contacts.size(), _odeEnd, _odesim->getODEBody(_object->getBodyFrame()));
-
+    }
     //Q _elasticity(3);
     //_elasticity(0) = 100/0.017; // total compression is 0.017 where a maximum force of 50 should be resisted, so
     //_elasticity(1) = 0.5/(40*Deg2Rad); // total compression is 40 degree where a maximum torque of X should be resisted

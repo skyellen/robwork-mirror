@@ -540,6 +540,19 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.10));
     }
 
+    if( gripperName=="SchunkHand"){
+        Q tau = Q(7, 2.0, 2.0, 10.0, 2.0, 2.0, 2.0, 2.0);
+        // depending on the value of joint 2 adjust the forces
+        double alpha = openQ(2);
+        if(alpha<45*Deg2Rad){
+            tau(3) = tau(0)/(2*cos(alpha));
+            tau(5) = tau(0)/(2*cos(alpha));
+        } else {
+            tau(0) = std::max( 2*cos(alpha)*tau(3), 0.2);
+        }
+        subtask.tauMax = tau;
+    }
+
     subtask.openQ = openQ;
     subtask.closeQ = closeQ;
 

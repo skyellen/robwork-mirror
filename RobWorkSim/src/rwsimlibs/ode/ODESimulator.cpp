@@ -380,6 +380,11 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
 void ODESimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){
     std::cout << "DWC changed, type: " << type << std::endl;
     // TODO: handle all the event types
+    if( type==DynamicWorkCell::GravityChangedEvent ) {
+        Vector3D<> gravity = _dwc->getGravity();
+        dWorldSetGravity ( _worldId, gravity(0), gravity(1), gravity(2) );
+    }
+
 }
 
 

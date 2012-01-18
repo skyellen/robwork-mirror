@@ -234,6 +234,9 @@ namespace simulator {
 
 		dBodyID getODEBodyId(rwsim::dynamics::Body* body){ return getODEBodyId(body->getBodyFrame()); }
 
+
+        std::vector<ODEDevice*> getODEDevices() { return _odeDevices;}
+
 	public:
 		//ODEBody* createKinematicBody(KinematicBody* kbody, rw::kinematics::State &state, dSpaceID spaceid);
 

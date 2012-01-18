@@ -78,6 +78,10 @@ namespace simulator {
 
 		static ODESuctionCupDevice* makeSuctionCup(rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state);
 
+		rw::geometry::TriMesh::Ptr getSpikedMesh(){ return _spikedCupMesh; }
+
+		ODEBody* getEndBody(){ return _odeEnd; }
+
 	protected:
 		//ODESuctionCupDevice(){};
 

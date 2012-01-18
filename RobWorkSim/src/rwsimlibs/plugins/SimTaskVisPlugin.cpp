@@ -273,6 +273,7 @@ void SimTaskVisPlugin::btnPressed() {
         std::string fname = _frameSelectBox->currentText().toStdString();
         MovableFrame* selframe = getRobWorkStudio()->getWorkcell()->findFrame<MovableFrame>(fname);
         std::string tcpname = _tcpSelectBox->currentText().toStdString();
+
         Frame* tcpframe = getRobWorkStudio()->getWorkcell()->findFrame(tcpname);
         if(tcpframe==NULL)
             return;
@@ -345,7 +346,6 @@ void SimTaskVisPlugin::btnPressed() {
             		continue;
 
             } else if(testStatus==GraspTask::ObjectDropped){
-
             	if(!_droppedBox->isChecked() )
             		continue;
             	droppedStat++;
@@ -366,8 +366,10 @@ void SimTaskVisPlugin::btnPressed() {
             	slippedStat++;
                 rt.color[0] = 0.0;
                 rt.color[1] = 1.0;
-                rt.color[2] = 1.0;
-            } else if(testStatus==GraspTask::CollisionInitially){
+                rt.color[2] = 0.1;
+            } else if(testStatus==GraspTask::CollisionInitially ||
+                      testStatus==GraspTask::CollisionEnvironmentInitially ||
+                      testStatus==GraspTask::CollisionObjectInitially){
             	if(!_collisionsBox->isChecked() )
             		continue;
             	collisionStat++;
@@ -377,9 +379,15 @@ void SimTaskVisPlugin::btnPressed() {
             	if(!_otherBox->isChecked() )
             		continue;
             	otherStat++;
-                rt.color[0] = 0.5;
-                rt.color[1] = 0.5;
-                rt.color[2] = 0.5;
+            	if(testStatus==GraspTask::SimulationFailure){
+                    rt.color[0] = 1;
+                    rt.color[1] = 1;
+                    rt.color[2] = 1;
+            	} else {
+                    rt.color[0] = 0.5;
+                    rt.color[1] = 0.5;
+                    rt.color[2] = 0.5;
+            	}
             }
             if( _showQuality->isChecked() ){
 
@@ -392,7 +400,7 @@ void SimTaskVisPlugin::btnPressed() {
                 if(!showInGripperFrame){
                     //rt.trans = wTo * target.result->objectTtcpTarget;
                     //if(target.result->objectTtcpTarget.P().norm2()<0.000001)
-                        rt.trans = target.pose;
+                        rt.trans = wTo * target.pose;
                 } else {
                     //rt.trans = wTtcp * inverse(target.result->objectTtcpTarget);
                     //if(target.result->objectTtcpTarget.P().norm2()<0.000001)
