@@ -783,6 +783,8 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
 }
 
 bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
+    boost::mutex::scoped_lock lock(_nextTargetLock);
+
     // were we iterate over all tasks and their targets
     //RW_WARN("1");
     if(_taskQueue.empty()){

@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 4) );
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
     // do the simulation
     int targets = 0, totaltargets = 0;

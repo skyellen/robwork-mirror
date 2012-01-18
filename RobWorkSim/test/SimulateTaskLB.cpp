@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 4) );
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
     int nrTasks = 5000, totalNrTasks = 0, taskIndex=0;
     if( vm.count("gentask") ){
@@ -149,6 +149,26 @@ int main(int argc, char** argv)
         while(1){
             totalNrTasks += nrTasks;
             taskIndex += 1;
+
+            std::stringstream sstr;
+            //sstr << outputfile.string() << "_" << totaltargets << "_";
+            sstr << outputdir << "/task_" << taskIndex;
+            if(iformat==0){
+                sstr << ".task.xml";
+            } else if(iformat==1){
+                sstr << ".uibk.xml";
+            } else if(iformat==2){
+                sstr << ".txt";
+            }
+            if(boost::filesystem::exists(sstr.str())){
+                std::cout << "File allready simulated... skipping" << std::endl;
+                if(totalNrTasks>=100000){
+                    return 0;
+                }
+                continue;
+            }
+
+
             GraspTask::Ptr grasptask = generateTasks(nrTasks, dwc, objectName, type);
 
             graspSim->load(grasptask);
@@ -165,18 +185,14 @@ int main(int argc, char** argv)
             grasptask = graspSim->getResult();
             // save the result
 
-            std::stringstream sstr;
+
             //sstr << outputfile.string() << "_" << totaltargets << "_";
-            sstr << outputdir << "/task_" << taskIndex;
             std::cout << "Saving to: " << sstr.str() << std::endl;
             if(iformat==0){
-                sstr << ".task.xml";
                 GraspTask::saveRWTask(grasptask, sstr.str() );
             } else if(iformat==1){
-                sstr << ".uibk.xml";
                 GraspTask::saveUIBK(grasptask, sstr.str() );
             } else if(iformat==2){
-                sstr << ".txt";
                 GraspTask::saveText(grasptask, sstr.str() );
             }
 

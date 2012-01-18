@@ -233,6 +233,8 @@ private:
 	std::stack<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _taskQueue;
 	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
+
+	boost::mutex _nextTargetLock;
 };
 
 }
