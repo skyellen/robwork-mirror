@@ -38,11 +38,14 @@ extern "C"
 #endif
 
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/thread.hpp>
 
 using namespace std;
 using namespace rw::geometry;
 using namespace boost::numeric;
 // Contact pos, normal, hastighed, depth, idA, idB
+
+boost::mutex _qhullMutex;
 
 void qhull::build(size_t dim,
                   double *coords,
@@ -52,6 +55,8 @@ void qhull::build(size_t dim,
                   std::vector<double>& faceNormals,
                   std::vector<double>& faceOffsets)
 {
+    boost::mutex::scoped_lock lock(_qhullMutex);
+
     vertIdxs.clear();
     faceIdxs.clear();
     faceNormals.clear();
@@ -64,19 +69,24 @@ void qhull::build(size_t dim,
     boolT ismalloc = false;
     int argc = 0;
     char** argv = NULL;
-    qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
-    //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
-    //char flags[] = "qhull Qt Pp Qs";
 
-    //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
-    //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
-    //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
-    //char flags[] = "qhull Qs Pp Qt n";
+        qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
+        //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
+        //char flags[] = "qhull Qt Pp Qs";
 
-    char flags[] = "qhull Pp QJ";
+        //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
+        //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
+        //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
+        //char flags[] = "qhull Qs Pp Qt n";
+
+        char flags[] = "qhull Pp QJ";
 
 
-    exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
+
+        exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
+
+
+
 
     if (!exitcode) {
         //        facetT *facet;
