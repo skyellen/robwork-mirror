@@ -12,12 +12,9 @@ RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
 # MESSAGE("LUA UI FILES ${UIS_OUT_H}")
 
-SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp 
-    TreeModelCompleter.cpp 
-    ${UIS_OUT_H})
+SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp TreeModelCompleter.cpp ${UIS_OUT_H})
 
-QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp LuaHighlighter.hpp CodeEditor.hpp 
-    TreeModelCompleter.hpp )
+QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp LuaHighlighter.hpp CodeEditor.hpp TreeModelCompleter.hpp )
 
 # Rcc the files:
 QT4_ADD_RESOURCES(RccSrcFiles )
@@ -36,7 +33,7 @@ ELSE ()
   INSTALL(TARGETS ${TargetName} DESTINATION ${RWS_BIN_INSTALL_DIR})
 ENDIF ()
 
-ADD_DEPENDENCIES(${TargetName} rwstudio rwstudio_lua)
+ADD_DEPENDENCIES(${TargetName} rwstudio)
 
 SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}${TargetName};")
 
