@@ -60,6 +60,7 @@ int main(int argc, char** argv)
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
         ("baseline,l", value<string>(), "The base line experiments (Folder).")
+        ("silent", value<bool>()->default_value(false), "suppress everything exept results.")
         ("input", value<vector<string> >(), "input Files to compare with baseline (optional).")
     ;
     positional_options_description optionDesc;
@@ -86,6 +87,7 @@ int main(int argc, char** argv)
         cout << "\n Error: baseline experiments are required!\n";
         return 10;
     }
+    bool silent = vm["silent"].as<bool>();
 
     // extract base line gasps
     std::vector<std::string> baselinefiles;
@@ -100,33 +102,34 @@ int main(int argc, char** argv)
     // extract all task files that should be simulated
     std::vector<std::string> infiles;
     if(vm.count("input")){
-   const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
-    BOOST_FOREACH(std::string input, inputs){
-        path ip(input);
-        if( is_directory(ip) ){
-            infiles = IOUtil::getFilesInFolder( ip.string(), false, true);
-        } else {
-            infiles.push_back( ip.string() );
+        const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
+        BOOST_FOREACH(std::string input, inputs){
+            path ip(input);
+            if( is_directory(ip) ){
+                infiles = IOUtil::getFilesInFolder( ip.string(), false, true);
+            } else {
+                infiles.push_back( ip.string() );
+            }
         }
     }
-}
 
     // first check if we need to do a comparison or just baseline statistics
     if(infiles.size()==0){
         // compile baseline statistics
-	std::cout << "Doing baseline statistics" << std::endl;
+        if(!silent)
+            std::cout << "Doing baseline statistics" << std::endl;
         int targets = 0, results = 0;
         std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
         BOOST_FOREACH(std::string ifile, baselinefiles){
-	    std::cout << "Processing: " << ifile << std::endl;
-            GraspTask::Ptr grasptask;	    
-	    try{
-		grasptask = GraspTask::load( ifile );
+            //std::cout << "Processing: " << ifile << std::endl;
+            GraspTask::Ptr grasptask;
+            try{
+              grasptask = GraspTask::load( ifile );
             } catch(...) {
-		std::cout << "\t\tFailed..." << std::endl;
-		continue;
-	    }
+               //std::cout << "\t\tFailed..." << std::endl;
+              continue;
+            }
             // get all stats from grasptask
             BOOST_FOREACH(GraspSubTask& stask, grasptask->getSubTasks()){
                 BOOST_FOREACH(GraspTarget& target, stask.getTargets()){
@@ -140,11 +143,13 @@ int main(int argc, char** argv)
                 }
             }
         }
-        std::cout << "\n";
-        for(size_t i=0;i<testStat.size();i++){
-            std::cout << GraspTask::toString((GraspTask::TestStatus)i) << "\t";
+        if(!silent){
+            std::cout << "\n";
+            for(size_t i=0;i<testStat.size();i++){
+                std::cout << GraspTask::toString((GraspTask::TestStatus)i) << "\t";
+            }
+            std::cout << "\n";
         }
-        std::cout << "\n";
         for(size_t i=0;i<testStat.size();i++){
             std::cout << testStat[i] << "\t";
         }
@@ -174,9 +179,10 @@ int main(int argc, char** argv)
         // foreach match we write the test status of each grasp
         typedef std::pair<std::string,std::string> StrPair;
         BOOST_FOREACH(StrPair data, matches){
-            std::cout << "processing: \n-" << data.first.substr(data.first.size()-61,60);
-            std::cout << "\n-" << data.second.substr(data.second.size()-61,60) << std::endl;
-
+            if(!silent){
+                std::cout << "processing: \n-" << data.first.substr(data.first.size()-61,60);
+                std::cout << "\n-" << data.second.substr(data.second.size()-61,60) << std::endl;
+            }
             GraspTask::Ptr baselinetask = GraspTask::load( data.first );
             GraspTask::Ptr inputtask = GraspTask::load( data.second );
 
@@ -185,7 +191,8 @@ int main(int argc, char** argv)
             // load results into two large vectors and compare them, if they are not of the same size then something went wrong
             std::vector<std::pair<GraspSubTask*,GraspTarget*> > baselinetargets = getTargets(baselinetask);
             std::vector<std::pair<GraspSubTask*,GraspTarget*> > inputtargets = getTargets(inputtask);
-            std::cout << "ListSize: (" << baselinetargets.size() << ";"<< inputtargets.size() << ")" << std::endl;
+            if(!silent)
+                std::cout << "ListSize: (" << baselinetargets.size() << ";"<< inputtargets.size() << ")" << std::endl;
 
             size_t minsize = std::min(baselinetargets.size(), inputtargets.size());
             for(size_t i = 0; i<minsize; i++){
@@ -212,11 +219,13 @@ int main(int argc, char** argv)
                 confMat(stat1,stat2)++;
             }
             confMatTotal = confMatTotal+confMat;
-            printConfMatrix( confMatTotal);
+            if(!silent)
+                printConfMatrix( confMatTotal);
         }
+        printConfMatrix( confMatTotal);
     }
 
-    std::cout << "Done" << std::endl;
+    //std::cout << "Done" << std::endl;
     return 0;
 }
 
