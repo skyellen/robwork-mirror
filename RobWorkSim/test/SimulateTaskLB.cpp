@@ -75,7 +75,8 @@ int main(int argc, char** argv)
     store(command_line_parser(argc, argv).
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
-    rw::math::Math::seed( clock() );
+
+    rw::math::Math::seed( TimerUtil::currentTimeMs() );
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
