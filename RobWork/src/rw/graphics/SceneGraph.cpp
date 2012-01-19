@@ -237,11 +237,32 @@ std::vector<DrawableNode::Ptr> SceneGraph::findDrawables(const std::string& name
 
 
 bool SceneGraph::removeDrawables(GroupNode::Ptr node){
+	//Does not work with BOOST_FOREACH as we modify the list which we are iterating through
+/*	for (std::list<SceneNode::Ptr>::iterator it = node->_childNodes.begin(); it != node->_childNodes.end(); /* Do not increment. This is done inside the loop */ /*) {
+		SceneNode::Ptr child = *it;		
+		if( child->asDrawableNode() ) {
+			child->removeParent( node );
+			it = node->_childNodes.erase(it);
+		} else {
+			++it;
+		}
+	}
+*/
+	//The remove child method on GroupNode changed the iterator used by BOOST_FOREACH. 
+	//It therefore may result in errors.
+    BOOST_FOREACH(SceneNode::Ptr child, node->_childNodes){
+        if( child->asDrawableNode() ) {
+			child->removeParent( node );            
+        }
+    }
+	node->_childNodes.clear();
+
+/*
     BOOST_FOREACH(SceneNode::Ptr child, node->_childNodes){
         if( child->asDrawableNode() ){
             node->removeChild(child);
         }
-    }
+    }*/
     return true;
 }
 

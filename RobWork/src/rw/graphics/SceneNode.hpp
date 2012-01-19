@@ -73,7 +73,6 @@ namespace graphics {
             return location !=_parentNodes.end();
         }
 
-    protected:
         /**
          * @brief erases the parent from the parent list.
          * @note this node is not removed from the parents child list, using this
@@ -87,10 +86,14 @@ namespace graphics {
                 _parentNodes.erase(location);
         }
 
-
         static void removeParent(SceneNode::Ptr node, SceneNode::Ptr parent){
             node->removeParent(parent);
         }
+
+
+    protected:
+
+
 
     public:
         virtual GroupNode* asGroupNode(){ return NULL; }

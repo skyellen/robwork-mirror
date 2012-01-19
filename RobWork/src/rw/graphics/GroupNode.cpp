@@ -37,13 +37,12 @@ bool GroupNode::hasChild(SceneNode::Ptr child){
     return location !=_childNodes.end();
 }
 
-void GroupNode::removeChild(SceneNode::Ptr node){
-    std::list<SceneNode::Ptr >::iterator location =
-      std::find(_childNodes.begin(), _childNodes.end(), node);
+void GroupNode::removeChild(SceneNode::Ptr child){
+    std::list<SceneNode::Ptr >::iterator location = std::find(_childNodes.begin(), _childNodes.end(), child);
 
     if(location!=_childNodes.end()){
         // 1. remove this from the childs parent list
-        removeParent( node, this );
+        removeParent( child, this );
         // 2. erase the child from the child list
         _childNodes.erase(location);
     }
