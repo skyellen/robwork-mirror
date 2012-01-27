@@ -82,7 +82,7 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
 	//std::cout<<"Handle Cmd Request "<<_commands.size()<<std::endl;
-	if (_commands.size() == 0 || _isMoving) {
+	if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
 		std::stringstream sstr;
 		sstr<<name<<" "<<0<<"\n";
 	//	std::cout<<"Send 0 Command = "<<sstr.str()<<std::endl;
@@ -97,10 +97,10 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 	std::cout<<"Send Command = "<<sstr.str()<<std::endl;
 	URCommon::send(&socket, sstr.str());
 
+    _isServoing = false;
 	switch (cmd._type) {
 	case URScriptCommand::MOVEQ:
 		std::cout<<"Ready to execute move Q"<<std::endl;
-
 		URCommon::send(&socket, cmd._q, cmd._speed);
 		_isMoving = true;
 		break;
@@ -119,10 +119,11 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 		//Q dq = getServoSpeed(cmd._transform, cmd.velocity);
 		//URCommon::send(&socket, dq, 0);
 		_isMoving = true;
+        _isServoing = true;
 		break;
 	}
 	}
-	//if (cmd._type != URScriptCommand::SERVO)
+//	if (cmd._type != URScriptCommand::SERVO)
 		_commands.pop();
 
 
@@ -216,8 +217,8 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
 void URCallBackInterface::servo(const rw::math::Q& q) {
 	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
-    while (!_commands.empty())
-    	_commands.pop();
+   // while (!_commands.empty())
+   // 	_commands.pop();
     _commands.push(URScriptCommand(URScriptCommand::SERVO, q, 1));
     _robotStopped = false;
 

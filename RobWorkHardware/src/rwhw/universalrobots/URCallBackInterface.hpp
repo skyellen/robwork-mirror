@@ -57,6 +57,7 @@ private:
 	bool _robotStopped;
 
 	bool _isMoving;
+    bool _isServoing;
 
 	class URScriptCommand {
 	public:
