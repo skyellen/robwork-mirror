@@ -27,8 +27,6 @@
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <cmath>
 
 USE_ROBWORK_NAMESPACE

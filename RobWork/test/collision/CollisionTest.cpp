@@ -45,8 +45,6 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #endif
 
-#include <boost/test/unit_test.hpp>
-
 #include <string>
 
 USE_ROBWORK_NAMESPACE

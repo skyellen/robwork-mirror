@@ -15,8 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#include <boost/test/unit_test.hpp>
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/interpolator/StraightInterpolator.hpp>

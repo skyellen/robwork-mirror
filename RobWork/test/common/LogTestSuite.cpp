@@ -15,6 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/common/Log.hpp>
 #include <rw/common/LogStreamWriter.hpp>
@@ -23,7 +24,6 @@
 #include <rw/common/macros.hpp>
 #include <sstream>
 
-#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>

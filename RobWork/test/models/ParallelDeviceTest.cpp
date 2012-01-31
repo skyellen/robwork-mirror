@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include "../TestSuiteConfig.hpp"
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
@@ -38,8 +38,6 @@
 #include <rw/kinematics/Tree.hpp>
 
 #include <vector>
-
-#include <boost/test/unit_test.hpp>
 
 
 using namespace rw::math;

@@ -15,6 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -27,7 +28,7 @@
 #include <rw/common/Timer.hpp>
 #include <math.h>
 #include <boost/math/special_functions/sign.hpp>
-#include <boost/test/unit_test.hpp>
+
 
 using namespace rw::math;
 typedef Quaternion<double> QuatD;	// just abbreviations
@@ -183,12 +184,12 @@ BOOST_AUTO_TEST_CASE(QuaternionConversionTest){
     //for(size_t m=0;m<100; m++)
     for(size_t i=0;i<count; i++){
         Rotation3D<> rot = rotations[i];
-        Quaternion<> q = toQuatN2( rot );
+        Quaternion<> q( rot );
         Rotation3D<> res = q.toRotation3D();
 
         BOOST_CHECK_MESSAGE(MetricUtil::dist2(res*Vector3D<>::z(), rot*Vector3D<>::z() )<epsilon, i << " : " << MetricUtil::dist2(res*Vector3D<>::z(), rot*Vector3D<>::z() ) << " q:" << q);
-        BOOST_CHECK(MetricUtil::dist2(res*Vector3D<>::y(), rot*Vector3D<>::y() )<epsilon);
-        BOOST_CHECK(MetricUtil::dist2(res*Vector3D<>::x(), rot*Vector3D<>::x() )<epsilon);
+        BOOST_REQUIRE(MetricUtil::dist2(res*Vector3D<>::y(), rot*Vector3D<>::y() )<epsilon);
+        BOOST_REQUIRE(MetricUtil::dist2(res*Vector3D<>::x(), rot*Vector3D<>::x() )<epsilon);
     }
 
     time.pause();

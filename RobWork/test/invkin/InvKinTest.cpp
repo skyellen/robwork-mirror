@@ -21,7 +21,6 @@
 #include <rw/rw.hpp>
 
 #include <string>
-#include <boost/test/unit_test.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;

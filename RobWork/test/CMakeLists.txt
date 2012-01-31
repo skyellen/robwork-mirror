@@ -40,97 +40,98 @@ SET(TEST_DEPENDENCIES
 )
   
 # Repeat for each test
-ADD_EXECUTABLE( math-test ${DO_EXCLUDE} test-main.cpp ${MATH_TEST_SRC})       
-TARGET_LINK_LIBRARIES( math-test ${TEST_LIBRARIES} )
-ADD_TEST( math-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/math-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(math-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_math-test ${DO_EXCLUDE} test-main.cpp ${MATH_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_math-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_math-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/math-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_math-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
-TARGET_LINK_LIBRARIES( common-test ${TEST_LIBRARIES} )
-ADD_TEST( common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/common-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(common-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_common-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/common-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_common-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( geometry-test ${DO_EXCLUDE} test-main.cpp geometry/GeometryTest.cpp)       
-TARGET_LINK_LIBRARIES( geometry-test ${TEST_LIBRARIES} )
-ADD_TEST( geometry-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/geometry-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(geometry-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_geometry-test ${DO_EXCLUDE} test-main.cpp geometry/GeometryTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_geometry-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_geometry-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/geometry-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_geometry-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp)       
-TARGET_LINK_LIBRARIES( models-test ${TEST_LIBRARIES} )
-ADD_TEST( models-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/models-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(models-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_models-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_models-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/models-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_models-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( invkin-test ${DO_EXCLUDE} test-main.cpp invkin/InvKinTest.cpp)       
-TARGET_LINK_LIBRARIES( invkin-test ${TEST_LIBRARIES} )
-ADD_TEST( invkin-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/invkin-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(invkin-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_invkin-test ${DO_EXCLUDE} test-main.cpp invkin/InvKinTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_invkin-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_invkin-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/invkin-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_invkin-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp)       
-TARGET_LINK_LIBRARIES( loader-test ${TEST_LIBRARIES} )
-ADD_TEST( loader-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/loader-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(loader-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_loader-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_loader-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/loader-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_loader-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( kinematics-test ${DO_EXCLUDE} test-main.cpp kinematics/KinematicsTest.cpp)       
-TARGET_LINK_LIBRARIES( kinematics-test ${TEST_LIBRARIES} )
-ADD_TEST( kinematics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/kinematics-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(kinematics-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_kinematics-test ${DO_EXCLUDE} test-main.cpp kinematics/KinematicsTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_kinematics-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_kinematics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/kinematics-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_kinematics-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( trajectory-test ${DO_EXCLUDE} test-main.cpp trajectory/PathTest.cpp trajectory/trajectory.cpp)       
-TARGET_LINK_LIBRARIES( trajectory-test ${TEST_LIBRARIES} )
-ADD_TEST( trajectory-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/trajectory-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(trajectory-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_trajectory-test ${DO_EXCLUDE} test-main.cpp trajectory/PathTest.cpp trajectory/trajectory.cpp)       
+TARGET_LINK_LIBRARIES( rw_trajectory-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_trajectory-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/trajectory-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_trajectory-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( collision-test ${DO_EXCLUDE} test-main.cpp collision/CollisionTest.cpp)       
-TARGET_LINK_LIBRARIES( collision-test ${TEST_LIBRARIES} )
-ADD_TEST( collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/collision-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(collision-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_collision-test ${DO_EXCLUDE} test-main.cpp collision/CollisionTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_collision-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/collision-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_collision-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_DRAWABLE_LIBRARY_LIST.
-ADD_EXECUTABLE( drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
-TARGET_LINK_LIBRARIES( drawables-test ${TEST_LIBRARIES} )
-ADD_TEST( drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(drawables-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_PATHPLANNERS_LIBRARY_LIST.
-ADD_EXECUTABLE( planner-test ${DO_EXCLUDE} test-main.cpp pathplanning/PathPlanningTest.cpp)       
-TARGET_LINK_LIBRARIES( planner-test ${TEST_LIBRARIES} )
-ADD_TEST( planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/planner-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(planner-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_planner-test ${DO_EXCLUDE} test-main.cpp pathplanning/PathPlanningTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_planner-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/planner-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_planner-test ${TEST_DEPENDENCIES})
 
 IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
-    ADD_EXECUTABLE( sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp)       
-    TARGET_LINK_LIBRARIES( sandbox-test ${TEST_LIBRARIES} )
-    ADD_TEST( sandbox-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sandbox-test ${DEFAULT_TEST_ARGS})
-    ADD_DEPENDENCIES(sandbox-test ${TEST_DEPENDENCIES})
-    SET(SANDBOX_TEST sandbox-test) 
+    ADD_EXECUTABLE( rw_sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp)       
+    TARGET_LINK_LIBRARIES( rw_sandbox-test ${TEST_LIBRARIES} )
+    ADD_TEST( rw_sandbox-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sandbox-test ${DEFAULT_TEST_ARGS})
+    ADD_DEPENDENCIES(rw_sandbox-test ${TEST_DEPENDENCIES})
+    SET(SANDBOX_TEST rw_sandbox-test) 
 endif()
 
 OPTION(RW_ENABLE_PERFORMANCE_TESTS "Set when you want to build the performance tests" ${RW_ENABLE_PERFORMANCE_TESTS})
 IF ( RW_ENABLE_PERFORMANCE_TESTS )
-    ADD_EXECUTABLE( performance-test ${DO_EXCLUDE} test-main.cpp 
+    ADD_EXECUTABLE( rw_performance-test ${DO_EXCLUDE} test-main.cpp 
     #performance/invkin.cpp 
     performance/collisionStrategy.cpp)       
-    TARGET_LINK_LIBRARIES( performance-test ${TEST_LIBRARIES} )
-    ADD_TEST( performance-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/performance-test ${DEFAULT_TEST_ARGS} )
-    ADD_DEPENDENCIES(performance-test ${TEST_DEPENDENCIES})
-    SET(PERFORMANCE_TEST performance-test)     
+    TARGET_LINK_LIBRARIES( rw_performance-test ${TEST_LIBRARIES} )
+    ADD_TEST( rw_performance-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/performance-test ${DEFAULT_TEST_ARGS} )
+    ADD_DEPENDENCIES(rw_performance-test ${TEST_DEPENDENCIES})
+    SET(PERFORMANCE_TEST rw_performance-test)     
 ENDIF()
 
 
-ADD_CUSTOM_TARGET(robwork-tests ctest -V 
-  DEPENDS math-test common-test geometry-test models-test invkin-test loader-test kinematics-test 
-          trajectory-test collision-test 
-          drawables-test 
-          planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
+ADD_CUSTOM_TARGET(rw_all-tests ctest -V 
+  DEPENDS rw_math-test rw_common-test rw_geometry-test rw_models-test rw_invkin-test 
+          rw_loader-test rw_kinematics-test 
+          rw_trajectory-test rw_collision-test 
+          rw_drawables-test 
+          rw_planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 INSTALL(TARGETS 
-            math-test common-test models-test geometry-test 
-            invkin-test loader-test kinematics-test 
-            trajectory-test collision-test 
-            drawables-test 
-            planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
+            rw_math-test rw_common-test rw_models-test rw_geometry-test 
+            rw_invkin-test rw_loader-test rw_kinematics-test 
+            rw_trajectory-test rw_collision-test 
+            rw_drawables-test 
+            rw_planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_BIN_INSTALL_DIR})
         
         

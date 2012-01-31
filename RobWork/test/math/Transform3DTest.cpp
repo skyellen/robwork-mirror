@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include "../TestSuiteConfig.hpp"
 #include <rw/math/Transform3D.hpp>
 
 #include <rw/math/Rotation3D.hpp>
@@ -23,7 +23,6 @@
 #include <rw/math/EAA.hpp>
 #include <rw/math/Constants.hpp>
 
-#include <boost/test/unit_test.hpp>
 
 using namespace rw::math;
 

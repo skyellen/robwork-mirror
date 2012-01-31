@@ -32,7 +32,6 @@
 #include <rw/math/MetricFactory.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
-#include <boost/test/unit_test.hpp>
 
 #if RW_HAVE_PQP == 1
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>

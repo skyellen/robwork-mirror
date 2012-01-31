@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ********************************************************************************/
-
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/Joint.hpp>
@@ -37,8 +37,6 @@
 #include <rw/math/RPY.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Math.hpp>
-
-#include <boost/test/unit_test.hpp>
 
 using namespace rw;
 using namespace rw::math;

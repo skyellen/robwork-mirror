@@ -15,11 +15,9 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include "../TestSuiteConfig.hpp"
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/DynamicObject.hpp>
-
-#include <boost/test/unit_test.hpp>
 
 using namespace rw;
 using namespace rw::models;

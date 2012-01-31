@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-//#include "../TestSuiteConfig.hpp"
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/math/EAA.hpp>
 
@@ -33,8 +33,6 @@
 #include <sandbox/AsciiPathSaver.hpp>
 
 #include <iostream>
-
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::math;

@@ -15,6 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/StateStructure.hpp>
@@ -25,8 +26,6 @@
 #include <rw/math/RPY.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 
 #include <boost/foreach.hpp>
 

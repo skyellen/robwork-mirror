@@ -28,8 +28,6 @@
 
 #include <string>
 
-#include <boost/test/unit_test.hpp>
-
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 

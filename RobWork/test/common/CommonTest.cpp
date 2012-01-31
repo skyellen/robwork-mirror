@@ -15,11 +15,9 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/common/StringUtil.hpp>
-
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
 

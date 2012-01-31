@@ -16,10 +16,9 @@
  ********************************************************************************/
 
 
+#include "../TestSuiteConfig.hpp"
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Pose6D.hpp>
-
-#include <boost/test/unit_test.hpp>
 
 #include <iostream>
 

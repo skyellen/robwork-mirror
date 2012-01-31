@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
-#include <boost/test/unit_test.hpp>
+
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;

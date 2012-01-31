@@ -15,10 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include "../TestSuiteConfig.hpp"
 #include <rw/math/Vector3D.hpp>
-
-#include <boost/test/unit_test.hpp>
 
 using namespace rw::math;
 
