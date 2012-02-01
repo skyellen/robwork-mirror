@@ -229,7 +229,7 @@ namespace rw { namespace math {
          * @param rhs [in] Transform to compare with
          * @return True if equal.
          */
-        bool operator==(const Transform3D<> &rhs) const {
+        bool operator==(const Transform3D<T> &rhs) const {
             return (R() == rhs.R()) && (P() == rhs.P());
         }
 
@@ -244,7 +244,7 @@ namespace rw { namespace math {
          * @param precision [in] The precision to use for testing
          * @return True if all elements are less than \b precision apart.
          */
-        bool equal(const Transform3D<>& t3d, T precision=0.000001) {
+        bool equal(const Transform3D<T>& t3d, T precision=0.000001) {
             if(!R().equal(t3d.R(),precision) )
                 return false;
             for(size_t i=0;i<3;i++)
