@@ -66,7 +66,13 @@ double Math::ran(double from, double to)
 {
     RW_ASSERT(from <= to);
 
-    return from + (to - from) * Math::ran();
+	double res = from;
+	do {
+		res = from + (to - from) * Math::ran();
+	} while (res >= to);
+
+	return res;
+
 }
 
 int Math::ranI(int from, int to)

@@ -230,7 +230,7 @@ namespace rw { namespace math {
          * @return True if equal.
          */
         bool operator==(const Transform3D<> &rhs) const {
-            return (R() == rhs.R());// && (P() == rhs.P()());
+            return (R() == rhs.R()) && (P() == rhs.P());
         }
 
 
