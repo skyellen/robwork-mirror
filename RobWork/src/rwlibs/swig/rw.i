@@ -95,8 +95,20 @@ class Q
 public:
     // first we define functions that are native to Q
 	Q();
-	 %feature("autodoc","1");
-    Q(int n, double vals[n]);
+	//%feature("autodoc","1");
+    Q(int n, double a0, double a1);
+    Q(int n, double a0, double a1, double a2);
+    Q(int n, double a0, double a1, double a2, double a3);
+    Q(int n, double a0, double a1, double a2, double a3, double a4);
+    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5);
+    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6);
+    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7);
+    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8);
+    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9);
+
+    Q(const std::vector<double>& r);
+    Q(int n, const double* values);
+
     int size() const;
 
     //
