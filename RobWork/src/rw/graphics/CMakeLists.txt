@@ -9,6 +9,7 @@ SET(FILES_CPP
   ./tri/LoaderTRI.cpp
 
   Model3D.cpp
+  Model3DFactory.cpp
   DrawableGeometryNode.cpp
   ProjectionMatrix.cpp
   SceneGraph.cpp
@@ -24,6 +25,7 @@ SET(FILES_CPP
 
 SET(FILES_HPP
   Model3D.hpp
+  Model3DFactory.hpp
   DrawableGeometryNode.hpp
   ProjectionMatrix.hpp
   SceneGraph.hpp

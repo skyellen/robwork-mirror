@@ -583,7 +583,7 @@ void OBJReader::load(const std::string& fileName)
 
 			std::map<std::string, FuncPtr>::iterator it = _objTypeMap.find(token);
 			if(it == _objTypeMap.end())
-				RW_THROW("Unknown type: '" << token << "' in line " << lineNum);
+				RW_WARN("Unknown type: '" << token << "' in line " << lineNum);
 			(this->*it->second)(&next_token);
 		}
 		line = rwStrtok(NULL, "\r\n", &next_line);
