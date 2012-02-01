@@ -27,7 +27,7 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
-
+#include <rw/math/LinearAlgebra.hpp>
 #include <sstream>
 #include <map>
 #include <vector>
@@ -258,6 +258,11 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
                         values[3], values[4], values[5],
                         values[6], values[7], values[8]);
     rot.normalize();
+    if( fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+        std::cout << rot << std::endl;
+        RW_THROW("Parse of Rotation3D failed. A rotation 3d must be an "
+                 "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+    }
     return rot;
 }
 
