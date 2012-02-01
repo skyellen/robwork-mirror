@@ -88,6 +88,16 @@ namespace rw { namespace common {
 			_map[key] = ownedPtr(val);
 		}
 
+        /**
+         * @brief Ads a value to a key that was aquired at some specific
+         * time.
+         */
+        void add(const KEY& key, rw::common::Ptr<VAL> val, const STAMP_T& stamp)
+        {
+            _keyToStamp[key] = stamp;
+            _map[key] = val;
+        }
+
 		/**
 		 * @brief remove all values-key pairs that match key
 		 */
