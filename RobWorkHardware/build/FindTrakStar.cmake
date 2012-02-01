@@ -24,14 +24,18 @@ ENDIF()
 
 FIND_PATH(TRAKSTAR_LIBRARY_DIR
              ATC3DGlib64.so 
-             PATHS "/usr/lib"
+             PATHS 
+             "/usr/lib"
+             "/usr/lib64"
              /opt/3DGuidance.Rev.E.64/3DGuidanceAPI)
 
 
 FIND_LIBRARY(TRAKSTAR_LIBRARIES
              NAMES "ATC3DGlib64.so" 
-             PATHS "/usr/lib"
-             /opt/3DGuidance.Rev.E.64/3DGuidanceAPI)
+             PATHS 
+             "/usr/lib"
+             "/usr/lib64"
+             "/opt/3DGuidance.Rev.E.64/3DGuidanceAPI")
 
 
 
@@ -40,6 +44,14 @@ FIND_LIBRARY(TRAKSTAR_LIBRARIES
 
 IF (TRAKSTAR_INCLUDE_DIR AND TRAKSTAR_LIBRARIES)
     SET (TRAKSTAR_FOUND 1)
+    GET_TARGET_PROPERTY(libATC3D_location libATC3D LOCATION)
+    IF( libATC3D_location )
+        # target allready exists
+    ELSE()
+        ADD_LIBRARY(libATC3D SHARED IMPORTED)
+        SET_PROPERTY(TARGET libATC3D PROPERTY IMPORTED_LOCATION ${TRAKSTAR_LIBRARIES})
+    ENDIF()
+    SET(TRAKSTAR_LIBRARIES libATC3D) 
 ELSE()
 
 ENDIF()
