@@ -5,6 +5,8 @@
 #include <RobWorkStudio.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <fstream>
@@ -149,8 +151,15 @@ void SimTemplatePlugin::stateChangedListener(const State& state) {
 }
 
 void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
+    State tmpState = state;
     // in here we are able to perform stuff on the simulation control
+    RigidBody *body = _dwc->findBody<RigidBody>("object");
+    if(body!=NULL){
+        body->setForce( Vector3D<>(0,1,0), tmpState );
+    }
 
+
+    sim->setState(tmpState);
 }
 
 void SimTemplatePlugin::genericEventListener(const std::string& event){
