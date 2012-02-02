@@ -11,10 +11,10 @@
  To use the plugin in your robworkstudio installation add the following line to the 
  RobWorkStudio.ini file in the RobWorkStudio.exe directory:
  
-	SamplePlugin\DockArea=2
-	SamplePlugin\Filename=libSamplePlugin
-	SamplePlugin\Path=c:/workspace/RobWorkSudio/example/pluginUIapp/libs/release
-	SamplePlugin\Visible=true
+SimTemplatePlugin\DockArea=2
+SimTemplatePlugin\Filename=libSimTemplatePlugin
+SimTemplatePlugin\Path=../../../RobWorkSim/example/SimTemplatePlugin/libs/Release/
+SimTemplatePlugin\Visible=true
  
 how to build the example:
 
