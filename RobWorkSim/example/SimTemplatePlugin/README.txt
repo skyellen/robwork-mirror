@@ -23,3 +23,10 @@ Building win32 with mingw
   mingw32-make all
   
   
+NOTE:
+To be able to use this plugin you should also add this plugin which is created by RobWorkSim 
+
+RWSimPlugin\DockArea=2
+RWSimPlugin\Filename=libRWSimPlugin
+RWSimPlugin\Path=../../../RobWorkSim/libs/Release/
+RWSimPlugin\Visible=false
