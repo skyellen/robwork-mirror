@@ -5,6 +5,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/EAA.hpp>
 #include <rw/common/StringUtil.hpp>
+#include <rw/common/TimerUtil.hpp>
 
 
 using namespace rw::common;
@@ -81,7 +82,7 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
-	//std::cout<<"Handle Cmd Request "<<_commands.size()<<std::endl;
+//	std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
 	if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
 		std::stringstream sstr;
 		sstr<<name<<" "<<0<<"\n";
@@ -94,7 +95,7 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 
 	std::stringstream sstr;
 	sstr<<name<<" "<<cmd._type<<"\n";
-	std::cout<<"Send Command = "<<sstr.str()<<std::endl;
+	//std::cout<<"Send Command = "<<sstr.str()<<std::endl;
 	URCommon::send(&socket, sstr.str());
 
     _isServoing = false;
@@ -114,7 +115,7 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 		break;
 	}
 	case URScriptCommand::SERVO: {
-		std::cout<<"Ready to do some servoing"<<std::endl;
+	//	std::cout<<"Ready to do some servoing"<<std::endl;
 		URCommon::send(&socket, cmd._q, cmd._speed);
 		//Q dq = getServoSpeed(cmd._transform, cmd.velocity);
 		//URCommon::send(&socket, dq, 0);
@@ -123,8 +124,9 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 		break;
 	}
 	}
-//	if (cmd._type != URScriptCommand::SERVO)
+    if (cmd._type != URScriptCommand::SERVO) {                
 		_commands.pop();
+    }
 
 
 }
@@ -141,8 +143,10 @@ void URCallBackInterface::run() {
 	  std::cout<<"Ready to accept incoming connections "<<std::endl;
 	  acceptor.accept(socket);
 	  std::cout<<"Incoming accepted"<<std::endl;
+      
 	  while (!_stopServer) {
-		  std::cout<<"\b\b\bm="<<_isMoving;
+		  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
+//          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl;
 		  boost::system::error_code error;
 		  size_t available = socket.available(error);
 		  if (error == boost::asio::error::eof) {
@@ -178,7 +182,7 @@ void URCallBackInterface::run() {
 				  }
 			  }
 		  }
-		  boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+		  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 		  //_thread->yield();
 	  }
 	}
@@ -215,10 +219,15 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
 }
 
 void URCallBackInterface::servo(const rw::math::Q& q) {
-	std::cout<<"Received a servoQ "<<q<<std::endl;
+//	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
    // while (!_commands.empty())
    // 	_commands.pop();
+
+    while (_commands.front()._type == URScriptCommand::SERVO) {
+        _commands.pop();
+    }
+
     _commands.push(URScriptCommand(URScriptCommand::SERVO, q, 1));
     _robotStopped = false;
 
