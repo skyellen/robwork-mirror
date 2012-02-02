@@ -168,9 +168,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
     	LoaderAC3D loader;
 		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
-
         getCache().add(filename, render, moddate);
-
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     } else if (filetype == ".TRI") {
     	LoaderTRI loader;

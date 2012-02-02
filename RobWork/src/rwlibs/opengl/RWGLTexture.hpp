@@ -39,7 +39,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief constructor
          */
-    	RWGLTexture(){};
+    	RWGLTexture();
 
         /**
          * @brief constructor that creates a texture based on an image

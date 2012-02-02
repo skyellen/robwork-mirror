@@ -21,31 +21,27 @@
 
 using namespace rw::sensor;
 using namespace rwlibs::opengl;
-/*
-RWGLTexture::RWGLTexture(int width, int height, rw::sensor::Image::ColorCode ccode):
-    _width(width),_height(height)
+
+
+RWGLTexture::RWGLTexture():
+    _width(0),_height(0),_textureID(0)
 {
-    glGenTextures(1, &_textureID);
-    Image img(width,height,ccode);
-
-    init(img);
-
 }
-*/
 
 RWGLTexture::RWGLTexture(const rw::sensor::Image& img):
-    _width(img.getWidth()),_height(img.getHeight())
+    _width(img.getWidth()),_height(img.getHeight()),_textureID(0)
 {
     glGenTextures(1, &_textureID);
+    if(_textureID==0)
+        RW_THROW("Texture cannot be allocated! Make sure constructor is called after a valid OpenGl context has been created!");
+
     init(img);
 }
 
 RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
-    _width(2),_height(2)
+    _width(2),_height(2),_textureID(0)
 {
-    glGenTextures(1, &_textureID);
-
-    unsigned char data[14]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
+    unsigned char data[12]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
 
     // Store the data
     for(int i = 0; i < 12; i += 3)
@@ -54,10 +50,10 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
         data[i+1] = g;
         data[i+2] = b;
     }
-
     // Generate the OpenGL texture id
     glGenTextures(1, &_textureID);
-
+    if(_textureID==0)
+        RW_THROW("Texture cannot be allocated! Make sure constructor is called after a valid OpenGl context has been created!");
     // Bind this texture to its id
     glBindTexture(GL_TEXTURE_2D, _textureID);
 
@@ -68,12 +64,19 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
     // Generate the texture
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
 }
 
 void RWGLTexture::init(const rw::sensor::Image& img){
+
+    if(_textureID==0){
+        glGenTextures(1, &_textureID);
+        if(_textureID==0)
+            RW_THROW("Texture cannot be allocated! Make sure this method is called after a valid OpenGl context has been created!");
+    }
     _width = img.getWidth(); _height = img.getHeight();
-    const char *data = img.getImageData();
+    //const char *data = (const char*)img.getImageData();
+
     //TODO: do something sensible with the image format
     //unsigned char bitsPerPixel = img.getBitsPerPixel();
     //unsigned char nrOfChannels = img.getNrOfChannels();
@@ -92,8 +95,8 @@ void RWGLTexture::init(const rw::sensor::Image& img){
     case(Image::RGB):  format = GL_RGB; break;
     case(Image::RGBA): format = GL_RGBA; break;
     default:
-        RW_WARN("Mode is not supported!");
-        RW_ASSERT(0);
+        RW_THROW("Mode is not supported!");
+        break;
     }
 
     //type        Specifies the data type for data.  Must be
@@ -111,8 +114,8 @@ void RWGLTexture::init(const rw::sensor::Image& img){
     case(Image::Depth32S): type = GL_INT; break;
     case(Image::Depth32F): type = GL_FLOAT; break;
     default:
-        RW_WARN("Mode is not supported!");
-        RW_ASSERT(0);
+        RW_THROW("Mode is not supported!");
+        break;
     }
 
     glBindTexture(GL_TEXTURE_2D, _textureID);
