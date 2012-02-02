@@ -156,7 +156,6 @@ void ThreadSimulator::stepperLoop(){
             	_simulator->step(_dt, _state);
             } catch (...){
             	_inError = true;
-            	//std::cout << "ThreadSimulator Caught Nasty Error" << std::endl;
             }
         }
         {

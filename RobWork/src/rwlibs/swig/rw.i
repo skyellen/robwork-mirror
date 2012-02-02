@@ -30,6 +30,7 @@ using rw::trajectory::InterpolatorTrajectory;
 
 namespace std {
     %template(StringVector) std::vector <string>;
+    %template(DoubleVector) std::vector <double>;
 };
 
 /********************************************
@@ -1304,31 +1305,59 @@ function reflect( mytableArg )
  else
   mytable = mytableArg
  end
- if type(mytable)=="table" then
-  a = {}
-  b = { }
-  for key,value in pairs( mytable ) do
-    if (key:sub(0, 2)=="__") or (key:sub(0, 1)==".") then
-    else
-      if type(value)=="table" then
+   local a = {} -- all functions
+   local b = {} -- all Objects/Tables
+
+ if type(mytable)=="userdata" then
+   -- this is a SWIG generated user data, show functions and stuff
+   local m = getmetatable( mytable )
+   for key,value in pairs( m['.fn'] ) do
+      if (key:sub(0, 2)=="__") or (key:sub(0, 1)==".") then
           table.insert(b, key)
       else
           table.insert(a, key)
       end
-    end
-  end
-  table.sort(a)
-  print("--- Functions ---")
-  for i,n in ipairs(a) do print(n .. "()") end
+   end
+   table.sort(a)
+   table.sort(b)
+   print("Object type: \n  " .. m['.type'])
 
-  print("--- Objects/Tables ---")
-  for i,n in ipairs(b) do print(n) end
+   print("Member Functions:")
+   for i,n in ipairs(a) do print("  " .. n .. "(...)") end
+   for i,n in ipairs(b) do print("  " .. n .. "(...)") end
+
  else
-  for key,value in pairs( getmetatable(mytable) ) do
-      print(key);
-  end
+   local c = {} -- all constants
+   for key,value in pairs( mytable ) do
+    print(type(value))
+      if (type(value)=="function") then
+          table.insert(a, key)
+      elseif (type(value)=="number") then
+          table.insert(c, key)
+      else
+          table.insert(b, key)
+      end
+   end
+   table.sort(a)
+   table.sort(b)
+   table.sort(c)
+   print("Object type: \n  " .. "Table")
+
+   print("Functions:")
+   for i,n in ipairs(a) do print("  " .. n .. "(...)") end
+   print("Constants:")
+   for i,n in ipairs(c) do print("  " .. n) end
+   print("Misc:")
+   for i,n in ipairs(b) do print("  " .. n) end
+
+
+--  print("Metatable:")
+--  for key,value in pairs( getmetatable(mytable) ) do
+--      print(key);
+--      print(value);
+--  end
+
  end
-end
 
 function help( mytable )
    reflect( mytable )

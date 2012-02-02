@@ -17,8 +17,8 @@ IF( SWIG_FOUND )
 	SET_SOURCE_FILES_PROPERTIES(rw.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	# lua interface generation
-    SWIG_ADD_MODULE(rwlua lua rw.i ScriptTypes.cpp)
-	SWIG_LINK_LIBRARIES(rwlua rw ${ROBWORK_LIBRARIES})
+    SWIG_ADD_MODULE(rw_ilua lua rw.i ScriptTypes.cpp)
+	SWIG_LINK_LIBRARIES(rw_ilua rw ${ROBWORK_LIBRARIES})
 
     ADD_LIBRARY(rw_lua STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
     LINK_LIBRARIES(rw_lua rw ${ROBWORK_LIBRARIES})
