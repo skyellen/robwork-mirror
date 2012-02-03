@@ -421,7 +421,7 @@ void SimTaskPlugin::updateConfig(){
     BOOST_FOREACH(RigidBody* object, rbodies){
     	if(object->getBodyFrame()->getName()=="EndFrame")
     		continue;
-    	Kinematics::FrameMap fmap = Kinematics::buildFrameMap(*_hand->getBase(), state);
+    	std::map<std::string, Frame*> fmap = Kinematics::buildFrameMap(_hand->getBase(), state);
         if( fmap.find(object->getBodyFrame()->getName()) ==fmap.end())
         	_objects.push_back(object);
     }
@@ -595,7 +595,7 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
     RW_ASSERT(bodies.size() == contacts.size() );
     //std::cout << "nr contacts: " << contacts.size() << " body: " << object->getName() << std::endl;
     std::vector<rw::sensor::Contact3D> contactres;
-    std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap( *_hand->getBase(),  state);
+    std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap( _hand->getBase(),  state);
     frameTree[_hand->getBase()->getName()] = _hand->getBase();
     for(size_t i=0; i<bodies.size(); i++){
         if( bodies[i]!=NULL ){
