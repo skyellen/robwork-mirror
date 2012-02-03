@@ -1,0 +1,96 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+
+
+#include "../TestSuiteConfig.hpp"
+
+#include <rw/graphics/Model3DLoader.hpp>
+#include <rw/graphics/Model3DFactory.hpp>
+//#include <rwlibs/drawable/RenderSTL.hpp>
+#include <rw/graphics/ac3d/LoaderAC3D.hpp>
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/Rotation3D.hpp>
+
+#include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/StateStructure.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
+
+#include <rw/models/Accessor.hpp>
+
+#include <string>
+#include <fstream>
+
+using namespace boost::unit_test;
+
+using namespace rw::models;
+using namespace rw::graphics;
+using namespace rw::math;
+using namespace rw::kinematics;
+
+BOOST_AUTO_TEST_CASE( testSTLLoading ){
+    BOOST_MESSAGE("- testing loading");
+    // test loading stl file
+    Model3D::Ptr stlaObject =
+    		Model3DFactory::loadModel( testFilePath() + "geoms/chair.stla", "chair" );
+    Model3D::Ptr stlbObject =
+    		Model3DFactory::loadModel( testFilePath() + "geoms/cube.stlb", "cube" );
+}
+
+BOOST_AUTO_TEST_CASE( testAC3DLoading ){
+    // test loading AC3D file
+    Model3D::Ptr ac3dObject =
+            Model3DFactory::loadModel(testFilePath() + "geoms/Gantry0.ac", "gantry");
+    Model3D::Ptr ac3dObject1 =
+            Model3DFactory::loadModel(testFilePath() + "geoms/Gantry0.ac3d", "gantry1");
+}
+
+BOOST_AUTO_TEST_CASE( testOBJLoading ){
+    // test loading OBJ file
+    Model3D::Ptr objObject =
+            Model3DFactory::loadModel(testFilePath() + "geoms/fod1.obj", "fod1");
+}
+
+BOOST_AUTO_TEST_CASE( testTRILoading ){
+    // test loading TRI file
+    Model3D::Ptr objObject =
+            Model3DFactory::loadModel(testFilePath() + "geoms/Rob-0.tri", "rob-0");
+}
+
+BOOST_AUTO_TEST_CASE( test3DSLoading ){
+    // test loading 3ds file
+    Model3D::Ptr objObject =
+            Model3DFactory::loadModel(testFilePath() + "geoms/motor.3ds", "motor");
+}
+
+/*
+BOOST_AUTO_TEST_CASE( testIVGLoading ){
+    // test loading 3ds file
+    rwlibs::opengl::Drawable::Ptr objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/staubli0.ivg", "staubli");
+}
+*/
+
+BOOST_AUTO_TEST_CASE(testDrawableFactory)
+{
+    BOOST_MESSAGE("- testing DrawableFactory");
+    // test ascii stl format load
+    Model3D::Ptr stlaObject = Model3DFactory::loadModel(testFilePath() + "geoms/chair", "chair3");
+    Model3D::Ptr stlbObject = Model3DFactory::loadModel(testFilePath() + "geoms/cube", "cube3");
+    Model3D::Ptr ac3dObject = Model3DFactory::loadModel(testFilePath() + "geoms/Environment","environment");
+
+}

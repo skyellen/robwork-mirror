@@ -86,10 +86,16 @@ ADD_TEST( rw_collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/collision-test ${D
 ADD_DEPENDENCIES(rw_collision-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_DRAWABLE_LIBRARY_LIST.
-ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
-TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
-ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
-ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
+#ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
+#TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
+#ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
+#ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
+
+ADD_EXECUTABLE( rw_graphics-test ${DO_EXCLUDE} test-main.cpp graphics/GraphicsTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_graphics-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_graphics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/graphics-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_graphics-test ${TEST_DEPENDENCIES})
+
 
 # This depends on RW_PATHPLANNERS_LIBRARY_LIST.
 ADD_EXECUTABLE( rw_planner-test ${DO_EXCLUDE} test-main.cpp pathplanning/PathPlanningTest.cpp)       
@@ -121,7 +127,7 @@ ADD_CUSTOM_TARGET(rw_all-tests ctest -V
   DEPENDS rw_math-test rw_common-test rw_geometry-test rw_models-test rw_invkin-test 
           rw_loader-test rw_kinematics-test 
           rw_trajectory-test rw_collision-test 
-          rw_drawables-test 
+          rw_graphics-test 
           rw_planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -130,7 +136,7 @@ INSTALL(TARGETS
             rw_math-test rw_common-test rw_models-test rw_geometry-test 
             rw_invkin-test rw_loader-test rw_kinematics-test 
             rw_trajectory-test rw_collision-test 
-            rw_drawables-test 
+            rw_graphics-test 
             rw_planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_BIN_INSTALL_DIR})
         
