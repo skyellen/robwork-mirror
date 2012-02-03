@@ -139,18 +139,30 @@ ENDIF()
 UNSET(Boost_USE_STATIC_LIBS)
 UNSET(Boost_FIND_QUIETLY)
 IF(DEFINED UNIX)
-  FIND_PACKAGE(Boost REQUIRED filesystem program_options regex serialization system thread)  
+  #SET(Boost_USE_STATIC_LIBS ON)
+  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)  
   # Test libraries are optional
   SET(Boost_FIND_QUIETLY TRUE)
   FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+  
+  IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+    # header only
+    #SET(Boost_USE_STATIC_LIBS OFF)
+    #FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS off)
+  ELSE()
+    # libraries found 
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)  
+  ENDIF()
+  
 ELSEIF(DEFINED WIN32)
   SET(Boost_USE_STATIC_LIBS ON)
-  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread)
+  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options)
   # If static libraries for Windows were not found, try searching again for the shared ones
   IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
      NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
     SET(Boost_USE_STATIC_LIBS OFF)
-    FIND_PACKAGE(Boost REQUIRED filesystem program_options egex serialization system thread)
+    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)
   ENDIF()
   
   # Test libraries are optional
@@ -159,8 +171,13 @@ ELSEIF(DEFINED WIN32)
   FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
   # If static libraries for Windows were not found, try searching again for the shared ones
   IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
-    SET(Boost_USE_STATIC_LIBS OFF)
-    FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+    #SET(Boost_USE_STATIC_LIBS OFF)
+    #FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS off)
+  ELSE()
+    # libraries found 
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)  
+    
   ENDIF()
 ENDIF()
 
