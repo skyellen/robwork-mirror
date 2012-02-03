@@ -34,7 +34,7 @@
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
-#include <RWSimConfig.hpp>
+#include <RobWorkSimConfig.hpp>
 #ifdef RWSIM_HAVE_LUA
 #include <rws/swig/LuaState.hpp>
 #include <rwsimlibs/swig/Lua.hpp>
