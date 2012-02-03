@@ -1,0 +1,17 @@
+// -*- c++ -*-
+
+#include <string>
+#include <RobWorkSimConfig.hpp>
+
+#define RWSIM_TEST_FILE_DIR "@CMAKE_CURRENT_SOURCE_DIR@/testfiles/"
+#cmakedefine RW_USE_BOOST_STATIC_TEST_LIBS
+
+#ifdef RW_USE_BOOST_STATIC_TEST_LIBS
+#include <boost/test/unit_test.hpp>
+#else
+#include <boost/test/included/unit_test.hpp>
+#endif
+
+namespace {
+	std::string testFilePath() { return RWSIM_TEST_FILE_DIR; }
+}

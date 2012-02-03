@@ -1,0 +1,155 @@
+  <IncludeData>
+   <RigidDevice device="SchunkHand">
+ 	<ForceLimit joint="f1.Joint2">2.1</ForceLimit>	
+	<ForceLimit joint="f1.Joint3">1.4</ForceLimit>	
+	<ForceLimit joint="F2Joint1">2.1</ForceLimit>
+	<ForceLimit joint="f2.Joint2">2.1</ForceLimit>	
+	<ForceLimit joint="f2.Joint3">1.4</ForceLimit>	
+	<ForceLimit joint="F3Joint1">2.1</ForceLimit>	
+	<ForceLimit joint="f3.Joint2">2.1</ForceLimit>	
+	<ForceLimit joint="f3.Joint3">1.4</ForceLimit>	
+	
+ 	<!--ForceLimit joint="f1.Joint2">1.0</ForceLimit>	
+	<ForceLimit joint="f1.Joint3">0.7</ForceLimit>	
+	<ForceLimit joint="F2Joint1">1.0</ForceLimit>
+	<ForceLimit joint="f2.Joint2">1.0</ForceLimit>	
+	<ForceLimit joint="f2.Joint3">0.7</ForceLimit>	
+	<ForceLimit joint="F3Joint1">1.0</ForceLimit>	
+	<ForceLimit joint="f3.Joint2">1.0</ForceLimit>	
+	<ForceLimit joint="f3.Joint3">0.7</ForceLimit-->	
+	
+    <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+	<!--FixedBase frame="Base">
+		<MaterialID>Rubber</MaterialID> </FixedBase-->
+	<!-- if a kinematic base, use this -->
+	<KinematicBase frame="Base">
+		<MaterialID>Plastic</MaterialID>
+	</KinematicBase> 
+	<!-- if a rigidbase is created then make sure it references a movable frame-->
+	<!--RigidBase frame="Base">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>	  
+	</RigidBase-->
+		
+	<RigidJoint joint="f1.Joint2">
+	  <Mass>0.1</Mass>
+	  <COG>-3.4639e-005  0.0440533  0.000589354</COG>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="f1.Joint3">
+	  <Mass>0.1</Mass>
+	  <COG>-0.000216234  0.0308393  0.0014567</COG>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidBody>
+
+    <RigidJoint joint="F2Joint1">
+	  <Mass>0.1</Mass>
+	  <COG>1.28577e-006  -0.00291929  -0.00562509</COG>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint> 
+		
+	<RigidJoint joint="f2.Joint2">
+	  <Mass>0.1</Mass>
+	  <COG>-3.4639e-005  0.0440533  0.000589354</COG>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="f2.Joint3">
+	  <Mass>0.1</Mass>
+	  <COG>-0.000216234  0.0308393  0.0014567</COG>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="F3Joint1">
+	  <Mass>0.1</Mass>
+	  <COG>1.28577e-006  -0.00291929  -0.00562509</COG>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidBody>
+	
+	<RigidJoint joint="f3.Joint2">
+	  <Mass>0.1</Mass>
+	  <COG>-3.4639e-005  0.0440533  0.000589354</COG>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="f3.Joint3">
+	  <Mass>0.1</Mass>
+	  <COG>-0.000216234  0.0308393  0.0014567</COG>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidJoint>
+ </RigidDevice>
+ 
+  <TactileArraySensor frame="SchunkHand.f1.Joint3">
+   <Name>DistFinger1</Sensor>
+   <Pos>0 0.02 0.01</Pos>
+   <RPY>90 0 -90</RPY>
+   <TexelArray>13 6</TexelArray>
+   <TexelHeightMap>
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   </TexelHeightMap>
+   <TexelSize>0.0034 0.0034</TexelSize>
+   <MaxPenetration>0.015</MaxPenetration>
+   <MaxForce>250000</MaxForce>
+   <MinForce>0</MinForce>
+   <Body>SchunkHand.f1.Joint3</Body>
+ </TactileArraySensor>
+ 
+ <TactileArraySensor frame="SchunkHand.f2.Joint3">
+   <Name>DistFinger2</Sensor>
+   <Pos>0 0.02 0.01</Pos>
+   <RPY>90 0 -90</RPY>
+   <TexelArray>13 6</TexelArray>
+   <TexelHeightMap>
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   </TexelHeightMap>
+   <TexelSize>0.0034 0.0034</TexelSize>
+   <MaxPenetration>0.015</MaxPenetration>
+   <MaxForce>250000</MaxForce>
+   <MinForce>0</MinForce>
+   <Body>SchunkHand.f2.Joint3</Body>
+ </TactileArraySensor>
+ 
+ <TactileArraySensor frame="SchunkHand.f3.Joint3">
+   <Name>DistFinger3</Sensor>
+   <Pos>0 0.02 0.01</Pos>
+   <RPY>90 0 -90</RPY>
+   <TexelArray>13 6</TexelArray>
+   <TexelHeightMap>
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   0.010 0.010 0.010 0.010 0.010 0.00978947 0.00938219 0.00877951 0.00798349 0.00699624 0.00582167 0.00446375 0.00292706 0.00121679
+   </TexelHeightMap>
+   <TexelSize>0.0034 0.0034</TexelSize>
+   <MaxPenetration>0.015</MaxPenetration>
+   <MaxForce>250000</MaxForce>
+   <MinForce>0</MinForce>
+   <Body>SchunkHand.f3.Joint3</Body>
+ </TactileArraySensor>
+ </IncludeData>

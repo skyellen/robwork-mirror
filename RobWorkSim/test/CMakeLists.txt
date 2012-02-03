@@ -1,83 +1,34 @@
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp)
 
-#add_executable(GraspTest grasptest.cpp)
-#target_link_libraries(GraspTest rwsim ${LibraryList})
+SET(TEST_LIBRARIES
+  ${ROBWORK_LIBRARIES}
+  #${ROBWORKSIM_LIBRARIES}
+  #${ROBWORKSTUDIO_LIBRARIES}
+  #${RW_DRAWABLE_LIBRARY_LIST}
+  #${RW_PATHPLANNERS_LIBRARY_LIST}
+  #${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
+  #${ROBWORK_LIBRARIES}
+)
 
-#add_executable(ForceClosureTest forceclosuretest.cpp)
-#target_link_libraries(ForceClosureTest rwsim ${LibraryList})
+SET(COMMON_TEST_SRC
+  common/CommonTest.cpp
+)
 
-LINK_DIRECTORIES( ${BulletLinkDir} ${OdeLinkDir} )
-INCLUDE_DIRECTORIES( ${BulletIncludes} ${OdeIncludes} )
+SET(TEST_DEPENDENCIES 
+    ${ROBWORKSIM_LIBRARIES}
+)
+  
+# Repeat for each test 
+ADD_EXECUTABLE( rwsim_common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
+ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
+ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
 
-INCLUDE_DIRECTORIES("${RW_ROOT}/example/simplegui")
+ADD_CUSTOM_TARGET(tests ctest -V 
+  DEPENDS rwsim_common-test ${TEST_DEPENDENCIES}
+    WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
-add_executable(ModelPropertyTest ModelPropertyTest.cpp)
-target_link_libraries(ModelPropertyTest rwsim 
-    ${ROBWORK_LIBRARIES})
-
-add_executable(RWSimTest RWSimTest.cpp)
-target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
-
-#add_executable(UniformSelectGrasps UniformSelectGrasps.cpp)
-#target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(ToGraspTaskHGP ToGraspTaskHGP.cpp)
-target_link_libraries(ToGraspTaskHGP rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(ModelStablePoseTest ModelStablePoseTest.cpp)
-target_link_libraries(ModelStablePoseTest rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(GraspTableConvert GraspTableConvert.cpp)
-target_link_libraries(GraspTableConvert rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(LoadGraspTableKTH LoadGraspTableKTH.cpp)
-target_link_libraries(LoadGraspTableKTH rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(ScaleWorkCell ScaleWorkCell.cpp)
-target_link_libraries(ScaleWorkCell rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(PathFilter PathFilter.cpp)
-target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(SimulateTask SimulateTask.cpp)
-target_link_libraries(SimulateTask rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-add_executable(SimulateTaskLB SimulateTaskLB.cpp)
-target_link_libraries(SimulateTaskLB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-add_executable(GTaskStats GTaskStats.cpp)
-target_link_libraries(GTaskStats rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-add_executable(GenSuctionCupTask GenSuctionCupTask.cpp)
-target_link_libraries(GenSuctionCupTask rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(SampleSurface SampleSurface.cpp)
-target_link_libraries(SampleSurface rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(ConvertSimTask ConvertSimTask.cpp)
-target_link_libraries(ConvertSimTask rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(imageFeaturesToStl imageFeaturesToStl.cpp)
-target_link_libraries(imageFeaturesToStl rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(ExtendVisGrabTask ExtendVisGrabTask.cpp)
-target_link_libraries(ExtendVisGrabTask rwsim ${ROBWORK_LIBRARIES})
-
-add_executable(gtmerge gtmerge.cpp)
-target_link_libraries(gtmerge rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-add_executable(ParJawGripperPoseSampler ParJawGripperPoseSampler.cpp)
-target_link_libraries(ParJawGripperPoseSampler rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-add_executable(ToComma ToComma.cpp)
-target_link_libraries(ToComma rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-
-#add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
-#target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-#MESSAGE("${ROBWORK_LIBRARIES}")
-
-# add_executable(RemoteRobworkBuilding RemoteRobworkBuilding.cpp)
-# target_link_libraries(RemoteRobworkBuilding ${ROBWORK_LIBRARIES})
-
-
-#add_executable(RestingPoseSimulation RestingPoseSimulation.cpp)
-#target_link_libraries(RestingPoseSimulation rwsim ${ROBWORK_LIBRARIES})
+INSTALL(TARGETS 
+            rwsim_common-test DESTINATION ${RWSIM_BIN_INSTALL_DIR})
