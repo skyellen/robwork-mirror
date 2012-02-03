@@ -18,21 +18,20 @@
 #ifndef RWSIM_SIMULATOR_PHYSICSENGINEFACTORY_HPP_
 #define RWSIM_SIMULATOR_PHYSICSENGINEFACTORY_HPP_
 
-#include <RWSimConfig.hpp>
+#include <RobWorkSimConfig.hpp>
 
-#include <vector>
-#include <boost/function.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include "DynamicSimulator.hpp"
 
-#include <RWSimConfig.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/rwphysics/RWSimulator.hpp>
 
+#include <boost/function.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp> // !
 #include <boost/lambda/construct.hpp>
 #include <boost/function.hpp>
 
+#include <vector>
 
 #ifdef RWSIM_HAVE_ODE
 //#include <rwsimlibs/ode/ODESimulator.hpp>
