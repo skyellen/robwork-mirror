@@ -60,7 +60,7 @@ LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 # Store the test results in a RWSimConfig.hpp file.
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/src/RWSimConfig.hpp.in
-  ${RWSIM_ROOT}/src/RWSimConfig.hpp)
+  ${RWSIM_ROOT}/src/RobWorkSimConfig.hpp)
 
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/src/rwsimlibs/gui/RWSimGuiConfig.hpp.in
