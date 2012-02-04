@@ -62,7 +62,7 @@ FIND_PACKAGE(RobWorkStudio)
 ADD_DEPENDENCIES(rwstudio ${ROBWORK_LIBRARIES} )
 ADD_DEPENDENCIES(rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
-CONFIGURE_FILE(${ROOT}/Documentation/Doxyfile.in ${ROOT}/Documentation/Doxyfile) 
+CONFIGURE_FILE(${ROOT}/doc/Doxyfile.in ${ROOT}/doc/Doxyfile) 
 
 FIND_PROGRAM(doc_executable doxygen)
 IF(doc_executable)
