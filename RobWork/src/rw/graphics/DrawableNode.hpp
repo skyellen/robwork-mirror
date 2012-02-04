@@ -91,6 +91,8 @@ namespace rw { namespace graphics {
     	    rw::kinematics::State *_state;
     	    bool _renderTransparent;
     	    bool _renderSolid;
+    	    // global disabling of rendering of normals
+    	    bool _disableNormalRender;
     	};
     	virtual ~DrawableNode(){}
 

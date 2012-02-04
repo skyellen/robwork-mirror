@@ -105,6 +105,7 @@ namespace rw { namespace geometry {
             axis = 0;
             std::sort(verticesIdx->begin(),verticesIdx->end());
 
+            //int bmi=0;
             // run through the semi sorted list and merge vertices that are alike
             //std::stack<VertexCmp<T>*>
             std::stack<SortJob> sjobs;
@@ -123,22 +124,33 @@ namespace rw { namespace geometry {
                 do{
                     //std::cout << "j" << j << "," << job.axis << " ";
                     //RW_ASSERT(j<verticesIdx->size());
-                    axisVal = (*verticesIdx)[j].n[job.axis];
                     j++;
+                    axisVal = (*verticesIdx)[j].n[job.axis];
                 } while(axisVal<lastAxisVal+epsilon && j<job.to);
+                // if j==job.to, then we might have two possible outcomes,
+                // we change j to point to the element that is not equal to lastVal
+                if(j==job.to && axisVal<lastAxisVal+epsilon)
+                    j++;
 
-                axis = job.axis+1;
+                // the previus has determined an interval [job.from;j] in which values in job.axis equal
+                // now add the unproccessed in a new job [j;job.to]
                 if( j<job.to )
                     sjobs.push(SortJob(job.axis, j , job.to));
+
                 if( job.axis==0 )
                     sjobs.push(SortJob(job.axis+1, job.from , j-1));
-                std::sort(verticesIdx->begin()+job.from, verticesIdx->begin()+j-1);
-                /*
-                std::cout << axis << job.from << " --> " << j-1 << "   ";
-                for(int i=job.from;i<j;i++){
-                	std::cout << (*verticesIdx)[i].n << " " << std::endl;;
-                }
-                 */
+
+                axis = job.axis+1;
+                std::sort(verticesIdx->begin()+job.from, verticesIdx->begin()+j);
+
+                //std::cout << axis << ", " << job.from << " --> " << j << "   \n";
+                //if(axis==2){
+                //    for(int i=job.from;i<j;i++){
+                //        std::cout << bmi << ": "<< (*verticesIdx)[i].n << " " << std::endl;;
+                //        bmi++;
+                //    }
+                //}
+
             }
 
             return verticesIdx;
@@ -170,7 +182,11 @@ namespace rw { namespace geometry {
 		    // create a sorted vertice list with backreference to the triangle list
 		    std::vector<VertexCmp<T> >* verticesIdx =
 		    		createSortedVerticeIdxList<T>(triMesh, epsilon);
-
+		    //int myi=0;
+		    //BOOST_FOREACH(VertexCmp<T> c, *verticesIdx){
+		    //    std::cout << myi << ": " << c.n << "\n";
+		    //    myi++;
+		    //}
 		    // Now copy all sorted vertices into the vertice array
             // and make sure vertices that are close to each other are discarded
             std::vector<Vector3D<T> > *vertices =

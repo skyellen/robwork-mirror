@@ -48,6 +48,9 @@ namespace rw { namespace geometry {
 					  TrianglePrim, CylinderPrim, PlanePrim, RayPrim,
 					  UserType} GeometryType;
 
+	    //! @brief destructor
+		virtual ~GeometryData(){};
+
 		/**
 		 * @brief the type of this primitive
 		 */

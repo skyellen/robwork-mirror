@@ -107,10 +107,9 @@ namespace {
 
 void Model3D::optimize(double smooth_angle, SmoothMethod method){
     std::stack<Object3D::Ptr> objects;
-    BOOST_FOREACH(Object3D::Ptr obj, _objects){ objects.push(obj);}
+    BOOST_FOREACH(Object3D::Ptr obj, _objects){ objects.push(obj); }
 
     while(!objects.empty()){
-    //BOOST_FOREACH(Object3D::Ptr obj, _objects){
         Object3D::Ptr obj = objects.top();
         objects.pop();
 
@@ -118,8 +117,6 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
         BOOST_FOREACH(Object3D::Ptr kid, obj->_kids){
             objects.push(kid);
         }
-
-
 
         // 1. Merge close vertices if choosen
         // we create an indexed triangle mesh that is used to calculate a new mesh
@@ -132,6 +129,11 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
         IndexedTriMeshN0<float, uint16_t>::Ptr nmesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >( triMesh );
 
         obj->_vertices = nmesh->getVertices();
+        //Vector3D<float> prev(0,0,0);
+        //BOOST_FOREACH(Vector3D<float> v, obj->_vertices){
+        //    std::cout << v << "   " << MetricUtil::dist2(v,prev) << "\n";
+        //}
+
         obj->_normals.resize( obj->_vertices.size() );
         obj->_faces = nmesh->getTriangles();
 
@@ -169,7 +171,7 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
                 bool ingroup = false;
                 BOOST_FOREACH(std::list<size_t>& group, groups){
                     BOOST_FOREACH(size_t groupface, group){
-                        if( smooth_angle>angle(calcNormal(obj, groupface), facenormal)){
+                        if( smooth_angle>std::acos( dot( normalize(calcNormal(obj, groupface)), normalize(facenormal)) )){
                             // the face should be put into this group
                             ingroup = true;
                             break;
@@ -190,6 +192,7 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
 
             // the following groups each get a new vertice
             for(size_t j=1;j<groups.size();j++){
+                //std::cout << "ADDING VERTICES" << std::endl;
                 size_t nidx = obj->_vertices.size();
                 obj->_vertices.push_back( obj->_vertices[i] );
                 obj->_normals.push_back( calcGroupNormal(obj, groups[j] , method) );

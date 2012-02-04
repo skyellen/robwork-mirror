@@ -117,7 +117,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
             useMaterial( _model->_materials[data.matId], type, alpha);
 
             if (obj.hasTexture()){
-                /*
+                
                 if(obj._mappedToFaces){
                     glBegin(GL_TRIANGLES);
                     for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
@@ -136,6 +136,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                         glVertex3fv(&obj._vertices[tri[2]](0));
                     }
                     glEnd();
+
                 } else {
                     glBegin(GL_TRIANGLES);
                     for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
@@ -154,8 +155,10 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                         glVertex3fv(&obj._vertices[tri[2]](0));
                     }
                     glEnd();
+
+
                 }
-                */
+                
             } else {
                 glBegin(GL_TRIANGLES);
                 for(int i=data.startIdx; i<data.startIdx+data.size; i++){
@@ -170,6 +173,22 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 }
                 glEnd();
             }
+/* this render the normals
+            glBegin(GL_LINES);
+            for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+                // draw faces
+                const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
+                glVertex3fv(&obj._vertices[tri[0]](0));
+                glVertex3fv(&(obj._normals[tri[0]]*0.01+obj._vertices[tri[0]])(0));
+
+                glVertex3fv(&obj._vertices[tri[1]](0));
+                glVertex3fv(&(obj._normals[tri[1]]*0.01+obj._vertices[tri[1]])(0));
+
+                glVertex3fv(&obj._vertices[tri[2]](0));
+                glVertex3fv(&(obj._normals[tri[2]]*0.01+obj._vertices[tri[2]])(0));
+            }
+            glEnd();
+            */
         }
     }
 
