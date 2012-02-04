@@ -69,7 +69,12 @@ CONFIGURE_FILE(
 # process sub directories
 #add_subdirectory(ext)
 add_subdirectory(src)
-add_subdirectory(test)
+
+OPTION(RWSIM_BUILD_TESTS "Set when you want to build the tests" TRUE)
+IF(RWSIM_BUILD_TESTS)
+  INCLUDE(CTest)
+  add_subdirectory(test)
+ENDIF()
 
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/build/RobWorkSimBuildConfig.cmake.in
