@@ -1358,6 +1358,7 @@ function reflect( mytableArg )
 --  end
 
  end
+ end
 
 function help( mytable )
    reflect( mytable )
