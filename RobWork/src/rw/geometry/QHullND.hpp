@@ -122,7 +122,7 @@ namespace geometry {
             for(size_t i=0; i<_faceIdxs.size()/N; i++){
                 RW_ASSERT(_faceIdxs.size()> i*N);
                 int faceVerticeIdx = _faceIdxs[i*N];
-                RW_ASSERT(faceVerticeIdx<vertices.size());
+                RW_ASSERT(faceVerticeIdx<(int)vertices.size());
                 RW_ASSERT(i<_faceNormals.size());
                 double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
                 // dist will be negative if point is inside, and positive if point is outside
@@ -165,7 +165,7 @@ namespace geometry {
             for(size_t i=0; i<_faceIdxs.size()/N; i++){
                 RW_ASSERT(_faceIdxs.size()> i*N);
                 int faceVerticeIdx = _faceIdxs[i*N];
-                RW_ASSERT(faceVerticeIdx<vertices.size());
+                RW_ASSERT(faceVerticeIdx<(int)vertices.size());
                 RW_ASSERT(i<_faceNormals.size());
                 double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
                 // dist will be negative if point is inside, and positive if point is outside
