@@ -278,16 +278,6 @@ void RWSimPlugin::btnPressed(){
 
     	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack, this, _2) );
 
-        // TODO: TEST
-
-    	KinematicBody *sucbody = _dwc->findBody<KinematicBody>("BaseFrame");
-        if( sucbody!=NULL ){
-            Transform3D<> t3d = Kinematics::worldTframe(sucbody->getBodyFrame(), state);
-            t3d.P()[2] -= 0.01;
-            sim->setTarget(sucbody, t3d ,state);
-        }
-
-
         _deviceControlBox->addItem(sim->getBodyController()->getControllerName().c_str());
     	_controlGroupBox->setEnabled(true);
         _deviceGroupBox->setEnabled(true);
