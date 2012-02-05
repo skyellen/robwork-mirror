@@ -285,6 +285,10 @@ private:
 	void parse_mtl_Ns(char **next_token, Mtl **material);
 	void parse_mtl_d(char **next_token, Mtl **material);
 
+    void parse_mtl_map_Ka(char **next_token, Mtl **material);
+    void parse_mtl_map_Kd(char **next_token, Mtl **material);
+    //void parse_mtl_map_Kd(char **next_token, Mtl **material);
+
 	int parseInt(char **next_token);
 	float parseFloat(char **next_token);
 	float parseOptionalFloat(char **next_token, float defaultVal);
@@ -387,6 +391,10 @@ OBJReader::OBJReader()
 	_mtlTypeMap["Ks"]			= &OBJReader::parse_mtl_Ks;
 	_mtlTypeMap["Ns"]			= &OBJReader::parse_mtl_Ns;
 	_mtlTypeMap["d"]			= &OBJReader::parse_mtl_d;
+	_mtlTypeMap["Tr"]            = &OBJReader::parse_mtl_d;
+    _mtlTypeMap["map_Kd"]           = &OBJReader::parse_mtl_Kd;
+    _mtlTypeMap["map_Ka"]           = &OBJReader::parse_mtl_Ka;
+
 }
 
 OBJReader::~OBJReader()
@@ -394,6 +402,14 @@ OBJReader::~OBJReader()
 	std::map<std::string, Mtl*>::iterator it;
 	for(it=_materials.begin(); it!=_materials.end(); it++)
 		delete it->second;
+}
+
+void OBJReader::parse_mtl_map_Ka(char **next_token, Mtl **material){
+    // TODO: implements map_Ka functionality
+}
+
+void OBJReader::parse_mtl_map_Kd(char **next_token, Mtl **material){
+    // TODO: implements map_Kd functionality
 }
 
 
