@@ -159,7 +159,7 @@ void URCallBackInterface::run() {
 
 
 void URCallBackInterface::stopRobot() {
-	std::cout<<"RWHW Stop UR"<<std::endl;
+	//std::cout<<"RWHW Stop UR"<<std::endl;
 	//_commands.push(URScriptCommand(URScriptCommand::STOP));
 	_robotStopped = true;
 	_isMoving = false;
@@ -169,7 +169,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
 	std::cout<<"Received a moveQ to "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
-    std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
+//    std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
 //    _isMoving = true;
 }
