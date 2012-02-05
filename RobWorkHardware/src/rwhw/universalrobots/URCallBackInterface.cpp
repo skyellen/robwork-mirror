@@ -47,46 +47,15 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 	return _urPrimary;
 }
 
-/*Q URCallBackInterface::getServoSpeed(const Transform3D<>& transform, const VelocityScrew6D<>& velocity) {
-	_device->setQ(_qservo, _state);
-    Frame* tcpFrame = _device->getEnd();
-    Transform3D<> Tcurrent = _device->baseTframe(tcpFrame, _state);
-    Transform3D<> Tdiff = inverse(Tcurrent)*transform;
 
-
-    VelocityScrew6D<> vs(Tdiff);
-    double gain = 0.1;
-    VelocityScrew6D<> diff = gain*(Tcurrent.R()*vs);
-    diff += velocity;
-
-    double linvel = diff.linear().norm2();
-
-    const double maxLinearVelocity = 0.5;
-    if (linvel > maxLinearVelocity) {
-        diff *= maxLinearVelocity/linvel;
-    }
-
-    const double maxAngularVelocity = 0.5;
-    if (diff.angular().angle() > maxAngularVelocity) {
-        diff *= maxAngularVelocity/diff.angular().angle();
-    }
-
-    Q dqtarget = _xqp->solve(_qservo, _dqservo, diff, std::list<XQPController::Constraint>());
-    _dqservo = dqtarget;
-    _qservo += _dt*_dqservo;
-
-    return _dqservo;
-
-
-}*/
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
+
 //	std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
 	if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
 		std::stringstream sstr;
 		sstr<<name<<" "<<0<<"\n";
-	//	std::cout<<"Send 0 Command = "<<sstr.str()<<std::endl;
 		URCommon::send(&socket, sstr.str());
 		return;
 	}
@@ -95,7 +64,6 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 
 	std::stringstream sstr;
 	sstr<<name<<" "<<cmd._type<<"\n";
-	//std::cout<<"Send Command = "<<sstr.str()<<std::endl;
 	URCommon::send(&socket, sstr.str());
 
     _isServoing = false;
@@ -153,8 +121,6 @@ void URCallBackInterface::run() {
 			  std::cout<<"Reached EOF"<<std::endl;
 			  break;
 		  }
-		  //if (available != 0)
-		  //	  std::cout<<cnt++<<"Available "<<available<<std::endl;
 		  if (available > 3) {
 			  unsigned int offset = 0;
 			  std::string str = URCommon::getString(&socket, 3, offset);
@@ -176,14 +142,12 @@ void URCallBackInterface::run() {
 			  }
 			  else if (str == "SET") {
 				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
-				//  std::cout<<"Data Recieved = "<<var<<std::endl;
 				  if (var.substr(0,3) == "FIN" && var.substr(3,1)=="1") {
 					  _isMoving = false;
 				  }
 			  }
 		  }
 		  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-		  //_thread->yield();
 	  }
 	}
   }
@@ -221,10 +185,9 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
 void URCallBackInterface::servo(const rw::math::Q& q) {
 //	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
-   // while (!_commands.empty())
-   // 	_commands.pop();
 
-    while (_commands.front()._type == URScriptCommand::SERVO) {
+
+    while ((_commands.size() > 0) && (_commands.front()._type == URScriptCommand::SERVO)) {
         _commands.pop();
     }
 
@@ -233,15 +196,4 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 
 }
 
-/*
-void URCallBackInterface::servo(const Transform3D<>& transform) {
-	std::cout<<"Received servoT "<<transform<<std::endl;
 
-    boost::mutex::scoped_lock lock(_mutex);
-    while (!_commands.empty())
-    	_commands.pop();
-    _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
-    _robotStopped = false;
-
-
-}*/
