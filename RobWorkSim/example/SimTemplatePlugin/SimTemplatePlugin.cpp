@@ -7,7 +7,9 @@
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
+#include <rwlibs/control/JointController.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
+#include <rwsim/control/SyncPDController.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <fstream>
 #include <iostream>
@@ -23,6 +25,8 @@ using namespace robworksim;
 
 using namespace rws;
 
+using namespace rwsim::control;
+using namespace rwlibs::control;
 using namespace rwlibs::simulation;
 
 SimTemplatePlugin::SimTemplatePlugin():
@@ -153,11 +157,24 @@ void SimTemplatePlugin::stateChangedListener(const State& state) {
 void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
     State tmpState = state;
     // in here we are able to perform stuff on the simulation control
-    RigidBody *body = _dwc->findBody<RigidBody>("object");
-    if(body!=NULL){
-        body->setForce( Vector3D<>(0,1,0), tmpState );
+    KinematicBody *body = _dwc->findBody<KinematicBody>("PG70.Base");
+    PDController::Ptr jc = _dwc->findController<PDController>("GraspController");
+    if (body != NULL) {
+        //body->setForce( Vector3D<>(0,1,0), tmpState );
+
+        _sim->setTarget(body, Transform3D<>(Vector3D<>(0, 0, 2)), tmpState);
+
     }
 
+    if(jc!=NULL){
+        std::cout << ((int)sim->getTime()) % 2 << std::endl;
+        Q q = jc->getModel().getQ(state);
+        if( ((int)sim->getTime()) % 2 ){
+            jc->setTargetPos( jc->getModel().getBounds().first );
+        } else {
+            jc->setTargetPos( jc->getModel().getBounds().second );
+        }
+    }
 
     sim->setState(tmpState);
 }
