@@ -40,7 +40,7 @@ PoseController::PoseController(
     _targetVel(0,0,0,0,0,0),
     _stime(dt),
     _accTime(0),
-	_xqp( ownedPtr(new XQPController(_device, _endframe, state, _stime)))
+	_xqp( ownedPtr(new XQPController(_device, _endframe, state, dt)))
 {
 }
 
@@ -77,18 +77,18 @@ void PoseController::update(const rwlibs::simulation::Simulator::UpdateInfo& inf
     VelocityScrew6D<> vs(Tdiff);
 
     // we use a small gain
-    double gain = 0.1;
+    double gain = 0.8;
     VelocityScrew6D<> diff = gain*(Tcurrent.R()*vs);
     diff += _targetVel;
 
     double linvel = diff.linear().norm2();
 
-    const double maxLinearVelocity = 0.5;
+    const double maxLinearVelocity = 1.5;
     if (linvel > maxLinearVelocity) {
         diff *= maxLinearVelocity/linvel;
     }
 
-    const double maxAngularVelocity = 0.5;
+    const double maxAngularVelocity = 1.5;
     if (diff.angular().angle() > maxAngularVelocity) {
         diff *= maxAngularVelocity/diff.angular().angle();
     }

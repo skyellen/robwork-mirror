@@ -83,6 +83,8 @@ namespace control {
 
 		std::string getControllerName(){ return getName(); };
 
+		rw::common::Ptr<rw::models::Device> getControlledDevice(){ return _device; }
+
 		////// inherited from JointController
 
 		//! @copydoc JointController::setTargetPos
