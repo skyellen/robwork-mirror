@@ -10,6 +10,7 @@
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwsim/control/SyncPDController.hpp>
+#include <rwsim/control/PoseController.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <fstream>
 #include <iostream>
@@ -159,6 +160,7 @@ void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& 
     // in here we are able to perform stuff on the simulation control
     KinematicBody *body = _dwc->findBody<KinematicBody>("PG70.Base");
     PDController::Ptr jc = _dwc->findController<PDController>("GraspController");
+    PoseController::Ptr jp = _dwc->findController<PoseController>("URPoseController");
     if (body != NULL) {
         //body->setForce( Vector3D<>(0,1,0), tmpState );
 
@@ -173,6 +175,15 @@ void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& 
             jc->setTargetPos( jc->getModel().getBounds().first );
         } else {
             jc->setTargetPos( jc->getModel().getBounds().second );
+        }
+    }
+
+    if(jp!=NULL){
+        std::cout << ((int)sim->getTime()) % 2 << std::endl;
+        if( ((int)sim->getTime()) % 2 ){
+            jp->setTarget( Transform3D<>( Vector3D<>(0,0.5,0.7) ) );
+        } else {
+            jp->setTarget( Transform3D<>( Vector3D<>(0,-0.5,0.7) ) );
         }
     }
 
