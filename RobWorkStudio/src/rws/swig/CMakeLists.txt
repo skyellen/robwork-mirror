@@ -11,14 +11,17 @@ IF( RWS_HAVE_LUA )
     	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES SWIG_FLAGS "-includeall")
     
         SWIG_ADD_MODULE(rwslua lua rws.i LuaState.cpp ScriptTypes.cpp)
-        SWIG_LINK_LIBRARIES(rwslua rwstudio ${RWS_COMPONENT_LIBRARIES} ${RWS_PLUGIN_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES})
+        SWIG_LINK_LIBRARIES(rwslua rwstudio 
+                    ${RWS_COMPONENT_LIBRARIES} 
+                    ${RWS_PLUGIN_LIBRARIES} 
+                    ${ROBWORKSTUDIO_LIBRARIES} 
+                    ${ROBWORK_LIBRARIES})
         
         ADD_DEPENDENCIES(rwslua LuaEditorWindow)
         
         ADD_LIBRARY(rwstudio_lua STATIC ${swig_generated_sources} ${swig_other_sources})
         LINK_LIBRARIES(rwstudio_lua rwstudio ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 
-        # LuaEditorWindow depends on rwstudio_lua.... 
         ADD_DEPENDENCIES(rwstudio_lua LuaEditorWindow)
 
         #MESSAGE("${ROBWORKSTUDIO_LIBRARIES} \n ROBWORK ${ROBWORK_LIBRARIES}" )
