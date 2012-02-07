@@ -37,7 +37,9 @@ namespace sensor {
 		 * @param name [in] identifier
 		 * @param body [in] the body that this sensor is attached to
 		 */
-		TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body);
+		//TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body);
+
+        TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body, dynamics::Body *body1);
 
 		/**
 		 * @brief destructor
@@ -56,14 +58,27 @@ namespace sensor {
 		void addForceW(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
+					   rw::kinematics::State& state,
 					   dynamics::Body *body = NULL);
 
 		//! @copydoc SimulatedTactileSensor::addForce
 		void addForce(const rw::math::Vector3D<>& point,
 					  const rw::math::Vector3D<>& force,
 					  const rw::math::Vector3D<>& cnormal,
+					  rw::kinematics::State& state,
 					  dynamics::Body *body=NULL);
 
+        void addWrenchToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL);
+
+        void addWrenchWToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL);
 
 		//! @copydoc TactileMultiAxisSensor::getTransform
 		rw::math::Transform3D<> getTransform();
@@ -84,17 +99,25 @@ namespace sensor {
 
 		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
 
+		void acquire(){}
+
+		 rw::sensor::Sensor* getSensor(){ return this;};
+
+		 rwsim::dynamics::Body * getBody1(){ return _body;};
+		 rwsim::dynamics::Body * getBody2(){ return _body1;};
 	private:
 		TactileMultiAxisSimSensor();
 
 	private:
 		// the frame that the force and torque is described in relation to
 		rw::math::Transform3D<> _transform;
-		rw::math::Vector3D<> _force, _torque;
+		rw::math::Vector3D<> _force, _forceTmp, _torque, _torqueTmp;
 		double _maxForce,_maxTorque;
 
 		//! aux variables updated through \b update
 		rw::math::Transform3D<> _wTf, _fTw;
+
+		rwsim::dynamics::Body *_body,*_body1;
 	};
 	//! @}
 }

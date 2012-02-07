@@ -66,6 +66,7 @@
 
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
+#include <rwsim/sensor/TactileMultiAxisSimSensor.hpp>
 
 #include <rwsim/control/SpringJointController.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
@@ -86,8 +87,7 @@
 #include <rwsim/control/VelRampController.hpp>
 //#include <rwsim/control/TrajectoryController.hpp>
 #include <rwsim/control/SuctionCupController.hpp>
-
-//#include <rw/loaders/xml/XML.hpp>
+#include <rwsim/control/PoseController.hpp>
 
 typedef boost::property_tree::ptree PTree;
 
@@ -808,6 +808,34 @@ namespace
         }
     }
 
+    void readTactileMultiAxisSensor(PTree& tree, ParserState &state){
+        //Log::debugLog()<< "ReadBodyContactData" << std::endl;
+        std::string bsname = tree.get_child("<xmlattr>").get<std::string>("name");
+
+        Frame *bodyFrame = getFrameFromAttr(tree, state, "body");
+        Frame *body1Frame = getFrameFromAttr(tree, state, "body1");
+
+        if(bodyFrame==NULL)
+            RW_THROW("No frame is referenced by the body contact sensor.");
+
+        if(body1Frame==NULL)
+            RW_THROW("No frame is referenced by the body contact sensor.");
+
+        Body *b1=NULL,*b2=NULL;
+        BOOST_FOREACH(Body *b, state.allbodies){
+            if(b->getBodyFrame()==bodyFrame)
+                b1=b;
+            if(b->getBodyFrame()==body1Frame)
+                b2=b;
+        }
+
+        if(b1==NULL || b2==NULL)
+            RW_THROW("No frame is referenced by the body contact sensor.");
+
+        TactileMultiAxisSimSensor *bsensor = new TactileMultiAxisSimSensor(bsname, b1, b2);
+        state.sensors.push_back( ownedPtr( bsensor ) );
+    }
+
     JointController::ControlMode readControlMode(PTree& tree, const std::string& tname ){
         string controlType = tree.get<std::string>(tname);
         if(controlType=="Position") return JointController::POSITION;
@@ -850,7 +878,23 @@ namespace
         }
     }
 
+    void readPoseDeviceController(PTree& tree, ParserState &state){
+            //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
+            std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
+            Device* dev = getDeviceFromAttr(tree, state);
+
+            if(dev==NULL)
+                RW_THROW("No valid is referenced by the PoseDeviceController.");
+
+            Frame* tcp = getFrameFromAttr(tree, state, "tcp");
+
+            double dt = tree.get<double>("TimeStep");
+
+            DynamicDevice *ddev = findDynamicDevice(state, dev);
+            PoseController::Ptr controller = ownedPtr( new PoseController(controllername, ddev, state.wc->getDefaultState(), dt) );
+            state.controllers.push_back( controller );
+        }
 
     void readFrictionDatas(PTree& tree, string first, string second, ParserState &state){
         //Log::debugLog()<< "ReadFrictionDatas1" << std::endl;
@@ -1084,12 +1128,23 @@ namespace
             } else if (p->first == "ContactMap") {
                 readContactMap(p->second,state);
             } else if (p->first == "ContactModel") {
-            } else if (p->first == "TactileArraySensor") {
+
+
+            } else
+            ///// THE DIFFERENT SENSOR MODELS
+            if (p->first == "TactileArraySensor") {
                 readTactileSensor(p->second, state);
             } else if (p->first == "BodyContactSensor") {
                 readBodySensor(p->second, state);
-            } else if (p->first == "PDDeviceController") {
+            } else if (p->first == "TactileMultiAxisSensor") {
+                readTactileMultiAxisSensor(p->second, state);
+
+            } else
+            ///// THE DIFFERENT CONTROLLER MODELS
+            if (p->first == "PDDeviceController") {
                 readPDDeviceController(p->second, state);
+            } else if (p->first == "PoseDeviceController") {
+                readPoseDeviceController(p->second, state);
             } else if (p->first == "SpringJointController") {
                 readSpringJointController(p->second, state);
             } else if (p->first == "Include") {

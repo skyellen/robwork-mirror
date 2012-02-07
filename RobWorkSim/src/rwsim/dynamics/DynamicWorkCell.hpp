@@ -187,6 +187,13 @@ namespace dynamics {
 
     	rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name);
 
+    	template<class T>
+    	rw::common::Ptr<T> findController(const std::string& name){
+    	    rwlibs::simulation::SimulatedController::Ptr controller = findController(name);
+              if(controller==NULL) return NULL;
+              return controller.cast<T>();
+    	}
+
     	/**
     	 * @brief gets the static contact data information
     	 */

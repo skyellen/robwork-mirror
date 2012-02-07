@@ -120,6 +120,18 @@ namespace sensor {
             getClassState(state)->addForce(point, force, snormal, body);
         }
 
+        void addWrenchToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL){ };
+
+        void addWrenchWToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL){};
+
         /**
          * @copydoc rwlibs::simulation::SimulatedSensor::update
          */

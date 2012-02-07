@@ -62,6 +62,25 @@ namespace sensor {
 					  rw::kinematics::State& state,
 					  dynamics::Body *body=NULL) = 0;
 
+
+        virtual void addWrenchToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL) = 0;
+
+        /**
+         *
+         * @param force
+         * @param state
+         * @param body
+         */
+        virtual void addWrenchWToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL) = 0;
+
 	};
 	//! @}
 }

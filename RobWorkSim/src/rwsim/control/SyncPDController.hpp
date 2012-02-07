@@ -25,6 +25,9 @@ namespace control {
 	class SyncPDController: public rwlibs::control::JointController, public rwlibs::simulation::SimulatedController {
 
 	public:
+
+	    typedef rw::common::Ptr<SyncPDController> Ptr;
+
 		/**
 		 * @brief constrictor
 		 * @param rdev

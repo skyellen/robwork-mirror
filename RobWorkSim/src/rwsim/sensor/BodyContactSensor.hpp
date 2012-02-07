@@ -76,6 +76,20 @@ namespace sensor {
 					   rw::kinematics::State& state,
 					   dynamics::Body *body = NULL);
 
+
+        void addWrenchToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL){ };
+
+        void addWrenchWToCOM(
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& torque,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body=NULL){};
+
+
 		// now for the functions belonging to this class
 		/**
 		 * @brief return all contacts registered in the last timestep

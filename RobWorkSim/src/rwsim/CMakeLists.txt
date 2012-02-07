@@ -75,6 +75,7 @@ add_library(rwsim
     control/BeamJointController.cpp
     control/SpringJointController.cpp
     #control/TrajectoryController.cpp
+	control/PoseController.cpp
     
 	simulator/DynamicSimulator.cpp
 	simulator/ThreadSimulator.cpp
