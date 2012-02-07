@@ -80,7 +80,6 @@
 
 #include "Model3DS.hpp"
 
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/loaders/ImageFactory.hpp>
 #include <cmath>                       // Header file for the math library
 
@@ -904,9 +903,9 @@ void Model3DS::VertexListChunkProcessor(long length, long findex, int objindex)
     // sign of the z coordinate
     for (int i = 0; i < numVerts * 3; i+=3)
     {
-        stat = fread(&Objects.at(objindex).Vertexes.at(i),sizeof(GLfloat),1,bin3ds);
-        stat = fread(&Objects.at(objindex).Vertexes.at(i+2),sizeof(GLfloat),1,bin3ds);
-        stat = fread(&Objects.at(objindex).Vertexes.at(i+1),sizeof(GLfloat),1,bin3ds);
+        stat = fread(&Objects.at(objindex).Vertexes.at(i),sizeof(float),1,bin3ds);
+        stat = fread(&Objects.at(objindex).Vertexes.at(i+2),sizeof(float),1,bin3ds);
+        stat = fread(&Objects.at(objindex).Vertexes.at(i+1),sizeof(float),1,bin3ds);
 
         // Change the sign of the z coordinate
         Objects.at(objindex).Vertexes.at(i+2) = -Objects.at(objindex).Vertexes.at(i+2);
@@ -939,8 +938,8 @@ void Model3DS::TexCoordsChunkProcessor(long length, long findex, int objindex)
     // Read teh texture coordiantes into the array
     for (int i = 0; i < numCoords * 2; i+=2)
     {
-        stat = fread(&Objects.at(objindex).TexCoords.at(i),sizeof(GLfloat),1,bin3ds);
-        stat = fread(&Objects.at(objindex).TexCoords.at(i+1),sizeof(GLfloat),1,bin3ds);
+        stat = fread(&Objects.at(objindex).TexCoords.at(i),sizeof(float),1,bin3ds);
+        stat = fread(&Objects.at(objindex).TexCoords.at(i+1),sizeof(float),1,bin3ds);
     }
 
     // move the file pointer back to where we got it so

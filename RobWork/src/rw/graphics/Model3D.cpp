@@ -208,4 +208,5 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
             }
         }
     }
+
 }

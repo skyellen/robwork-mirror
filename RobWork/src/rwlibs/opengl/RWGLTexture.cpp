@@ -41,7 +41,7 @@ RWGLTexture::RWGLTexture(const rw::sensor::Image& img):
 RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
     _width(2),_height(2),_textureID(0)
 {
-    unsigned char data[12]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
+    unsigned char data[14]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
 
     // Store the data
     for(int i = 0; i < 12; i += 3)
@@ -124,6 +124,7 @@ void RWGLTexture::init(const rw::sensor::Image& img){
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     bool wrap = false;
+/*
     // select modulate to mix texture with color for shading
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
@@ -139,8 +140,11 @@ void RWGLTexture::init(const rw::sensor::Image& img){
                       (GLfloat)(wrap ? GL_REPEAT : GL_CLAMP) );
      glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                       (GLfloat)(wrap ? GL_REPEAT : GL_CLAMP) );
+*/
+     //redefine standard texture values
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
      // Use mipmapping filter
      // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -150,7 +154,7 @@ void RWGLTexture::init(const rw::sensor::Image& img){
 
      Image::Ptr flippedImg = img.copyFlip(true,false);
      const char *flippedData = flippedImg->getImageData();
-
+     std::cout << "loading texture!!!!!! " << std::endl;
      // Generate the mipmaps
      gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels,
                       _width, _height,

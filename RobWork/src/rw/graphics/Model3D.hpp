@@ -61,22 +61,23 @@ namespace graphics {
          */
         struct Material {
             //! @brief default constructor
-            Material():name(""), textured(false), simplergb(true){};
+            Material():name(""), simplergb(true), texId(-1){};
             //! @brief constructor for simple material
             Material(const std::string& nam, float r, float g, float b, float a=1.0):
-                name(nam), textured(false), simplergb(true)
+                name(nam), simplergb(true), texId(-1)
             {
                 rgb[0] = r;
                 rgb[1] = g;
                 rgb[2] = b;
                 rgb[3] = a;
             }
+
+            bool hasTexture() const { return texId>=0; };
+            int getTextureID() const { return texId; };
             //! @brief material name, not necesarily unique
             std::string name;
             //! @brief index to a texture which is stored in Model3D, -1 if not used
             short int texId;
-            //! @brief true is the material is textured
-            bool textured;	// whether or not it is textured
             //! @brief true if this material is a simple material
             bool simplergb;
             //! @brief Red, Green, Blue and alpha color (simple) or diffues color(advanced)
@@ -138,14 +139,15 @@ namespace graphics {
             Object3D(const std::string& name):
                 _name(name),
                 _parentObj(-1),
-                _texture(-1),
+                //_texture(-1),
+                _hasTexture(false),
                 _texOffset(0,0),
                 _texRepeat(0,0),
                 _materialMap(1,MaterialMapData(0,0,0))
                 {};
 
-            //! @brief test if this object is textured
-            bool hasTexture() const{ return _texture>=0;};
+            //! @brief test if the object is textured
+            bool hasTexture() const{ return _hasTexture;};
 
             void addTriangle(const rw::geometry::IndexedTriangle<uint16_t>& tri){
                 _faces.push_back(tri);
@@ -191,8 +193,8 @@ namespace graphics {
             std::string _name;
             //! @brief index of parent object
             int _parentObj;
-            //! @brief texture id
-            int _texture;
+            //! true if any of the materials used has texture
+            bool _hasTexture;
 
             //! @brief Vertice array
             std::vector<rw::math::Vector3D<float> > _vertices;

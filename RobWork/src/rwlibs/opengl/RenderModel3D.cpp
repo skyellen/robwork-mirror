@@ -38,23 +38,23 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     switch (type) {
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
-    	if(_model->_textures.size()>0)
+    	//if(_model->_textures.size()>0)
     	    drawUsingSimple(info, type, alpha);
-    	else
-            drawUsingArrays(info,type, alpha);
+    	//else
+        //    drawUsingArrays(info,type, alpha);
     	break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-        if(_model->_textures.size()>0)
+        //if(_model->_textures.size()>0)
             drawUsingSimple(info, type, alpha);
-        else
-            drawUsingArrays(info, type, alpha);
+        //else
+            //drawUsingArrays(info, type, alpha);
     case DrawableNode::WIRE:
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        if(_model->_textures.size()>0)
+        //if(_model->_textures.size()>0)
             drawUsingSimple(info, type, alpha);
-        else
-            drawUsingArrays(info, type, alpha);
+        //else
+        //    drawUsingArrays(info, type, alpha);
     	break;
     }
     glPopAttrib();
@@ -96,13 +96,10 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, DrawTy
 void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
     // for some reason opengl does not allow drawing to large meshes within glBegin/glEnd
     // so we split it up in smaller chunks
-
     glPushMatrix();
+
     DrawableUtil::multGLTransform( obj._transform );
     if(obj._normals.size()!=0 && obj._vertices.size()!=0){
-        if (obj.hasTexture()){
-            glBindTexture(GL_TEXTURE_2D, _textures[obj._texture]->getTextureID() );
-        }
 
         // Loop through the faces as sorted by material and draw them
         BOOST_FOREACH(const Model3D::Object3D::MaterialMapData& data, obj._materialMap){
@@ -138,6 +135,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                     glEnd();
 
                 } else {
+                    RW_ASSERT(obj._texCoords.size()==obj._normals.size());
                     glBegin(GL_TRIANGLES);
                     for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
                         // draw faces
@@ -173,7 +171,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 }
                 glEnd();
             }
-/* this render the normals
+            /* this render the normals
             glBegin(GL_LINES);
             for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
                 // draw faces
@@ -190,6 +188,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
             glEnd();
             */
         }
+        //std::cout << glGetError() << std::endl;
     }
 
     // draw children
@@ -197,13 +196,17 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
         drawUsingSimple(info, *child, type, alpha);
     }
 
+    //if (obj.hasTexture()){
+        //glBindTexture(GL_TEXTURE_2D, 0 );
+        //glDisable(GL_TEXTURE_2D);
+
+    //}
     glPopMatrix();
 }
 
 void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
 	//std::cout << "obj._normals.size()==" << obj._normals.size() << "\n";
 	//std::cout << "obj._vertices.size()==" << obj._vertices.size() << "\n";
-
 	glPushMatrix();
 	DrawableUtil::multGLTransform( obj._transform );
 
@@ -211,7 +214,6 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 
 		// Enable texture coordiantes, ngetormals, and vertices arrays
 		if (obj.hasTexture()){
-		    glBindTexture(GL_TEXTURE_2D, _textures[obj._texture]->getTextureID() );
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		//if (lit)
@@ -297,6 +299,15 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 
 
 void RenderModel3D::useMaterial(const Model3D::Material& mat, DrawType type, double alpha) const {
+    if (mat.hasTexture()){
+        //glEnable(GL_TEXTURE_2D);
+        //std::cout << "TexID: " << mat.getTextureID() << " ";
+        glBindTexture(GL_TEXTURE_2D, _textures[mat.getTextureID() ]->getTextureID() );
+        //std::cout << " " << _textures[mat.getTextureID()]->getTextureID() << std::endl;
+    }
+
+
+    //std::cout << mat.name << std::endl;
 	if(mat.simplergb){
 		glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
 	} else {

@@ -74,7 +74,6 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 			mat_dst.rgb[j] = ((unsigned char*)&mat_src.color.r)[j]/256.0f;
 
 		if( mat_src.textured ){
-			mat_dst.textured = true;
 			textures.push_back( mat_src.tex );
 			mat_dst.texId = textures.size()-1;
 		}
@@ -127,6 +126,8 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 			const Model3DS::MaterialFaces &mat = obj_src.MatFaces[j];
 			//Model3D::MaterialFaces *faces = new Model3D::MaterialFaces();
 			//obj_dst._matFaces[j] = faces;
+			if(materials[mat.MatIndex].hasTexture())
+			    obj_dst._hasTexture = true;
 
 		    obj_dst.setMaterial( mat.MatIndex );
 			//faces->_matIndex = mat.MatIndex;
@@ -150,6 +151,7 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 		obj_dst._texCoords.resize(obj_src.TexCoords.size()/2);
 		for(size_t j=0; j<obj_dst._texCoords.size();j++)
 			obj_dst._texCoords[j] = toVector2D(&(obj_src.TexCoords[j*2]));
+		obj_dst._mappedToFaces = false;
 /*
 		std::cout << "Model stats : \n";
 		std::cout << "nr vertices : " << obj_dst._vertices.size() << std::endl;
@@ -164,8 +166,9 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 		std::cout << "size_of(IndexedTriangle): " << sizeof(IndexedTriangleN0<unsigned short>) << std::endl;
 		std::cout << "size_of(uint16_t): " << sizeof(uint16_t) << std::endl;
 		std::cout << "size_of(uint8_t): " << sizeof(uint8_t) << std::endl;
-*/
+		*/
+
 	}
-	model->optimize(35*Deg2Rad);
+	//model->optimize(35*Deg2Rad);
 	return model;
 }

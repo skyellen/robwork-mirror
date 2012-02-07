@@ -103,10 +103,8 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             Model3D::Material &m = materials[i];
             AC3DMaterial &ac3m = model->_materials[i];
             m.name = ac3m.name;
-            // texture is in the AC3D an object property. for now we set it to null
+            // texture is in the AC3D an object property. for now we set it to -1. later we know which objects use which material
             m.texId = -1;
-            m.textured = false;
-
             //
             m.simplergb = false;
 
@@ -116,7 +114,6 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             std::copy(ac3m.specular,ac3m.specular+4,m.specular);
             m.shininess = ac3m.shininess;
             m.transparency = ac3m.transparency;
-
         }
 
         // next we copy all textures
@@ -141,11 +138,11 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             rwobj->_texRepeat(0) = obj->texture_repeat_x;
             rwobj->_texRepeat(1) = obj->texture_repeat_y;
 
-            rwobj->_texture = obj->texture;
+            rwobj->_hasTexture = obj->texture>=0;
 
             //if(obj->texture!=-1)
             //    rwobj->_texCoords.resize( obj->vertices.size(), Vector2D<float>(-1,-1) );
-            if(obj->texture!=-1)
+            if(rwobj->_hasTexture)
                 rwobj->_mappedToFaces = true;
 
             rwobj->_vertices.resize( obj->vertices.size() );
@@ -167,7 +164,14 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             // rwobj->_faces.resize(nrFaces); // we don't know if its triangles or polys
             for(size_t i=0; i<nrFaces;i++){
                 AC3DSurface &s = obj->surfaces[i];
-
+                if( rwobj->hasTexture() ){
+                    // make sure the material is set properly
+                    if(materials[s.mat].texId<0)
+                        materials[s.mat].texId = obj->texture;
+                    else if(materials[s.mat].texId != obj->texture){
+                        RW_THROW("One matrial is assigned two TEXTURES.... IMPOSIBLE");
+                    }
+                }
                 if(s.vertrefs.size()<3){
                     // TODO: we don't support line drawings in Model3D
 
@@ -186,8 +190,6 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                         rwobj->_texCoords.push_back(s.uvs[1]);
                         rwobj->_texCoords.push_back(s.uvs[2]);
 	                }
-
-
                 } else {
             	    // its a polygon, since we don't support that in Model3D, we make triangles of it
                     IndexedPolygonN<> poly(s.vertrefs.size());
@@ -261,7 +263,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         }
         setlocale(LC_ALL, locale.c_str());
         delete model;
-        rwmodel->optimize(45*Deg2Rad);
+        //rwmodel->optimize(45*Deg2Rad);
         return ownedPtr(rwmodel);
 
     } catch (...) {} 
