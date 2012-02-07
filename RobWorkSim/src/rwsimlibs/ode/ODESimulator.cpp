@@ -1174,15 +1174,15 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	RW_DEBUGS( "- ADDING DEVICES " );
 	// this needs to be done in the correct order, which means if any device is attached to another then the
 	// bottom one should  be added first.
-    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
+    /*BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
         JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
         if(jdev!=NULL){
-            Q offsets = Q::zero( jdev->getQ(state).size() );
-            jdev->setQ( offsets , state );
+            Q offsets = Q::zero( jdev->getQ(initState).size() );
+            jdev->setQ( offsets , initState );
         }
-    }
+    }*/
     BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
-        addDevice(device, state);
+        addDevice(device, initState);
     }
 
     RW_DEBUGS( "- ADDING SENSORS " );

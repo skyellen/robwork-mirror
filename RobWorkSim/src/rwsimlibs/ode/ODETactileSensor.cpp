@@ -48,6 +48,7 @@ void ODETactileSensor::addFeedback(const std::vector<dJointFeedback*>& fback,
 void ODETactileSensor::addFeedbackGlobal(dJointFeedback* joint, dynamics::Body* b, int body){
     _feedbackGlobal.push_back(joint);
     _bodyGlobalIdx.push_back(body);
+    _bodyGlobal.push_back(b);
 }
 
 
@@ -106,7 +107,7 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
              torque = ODEUtil::toVector3D( _feedbackGlobal[i]->t2 );
          }
         std::cout << force << torque << std::endl;
-        _rwsensor->addForce(Vector3D<>(0,0,0), force, Vector3D<>(0,0,0), state, NULL );
+        _rwsensor->addWrenchWToCOM(force, torque, state, _bodyGlobal[i] );
     }
 
     clear();

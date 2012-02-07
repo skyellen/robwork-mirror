@@ -62,7 +62,8 @@ namespace simulator {
 		std::vector<dynamics::Body*> _rwBody;
 		sensor::SimulatedTactileSensor *_rwsensor;
 		//rw::math::Vector3D<> point;
-		std::vector<int> _bodyIdx,_bodyGlobalIdx;
+		std::vector<int> _bodyIdx, _bodyGlobalIdx;
+		std::vector<dynamics::Body*> _bodyGlobal;
 
 	};
 }
