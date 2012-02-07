@@ -66,7 +66,7 @@ void FTCompensation::update(const Wrench3D& ft, const Q& q, const Q& dq, const Q
    decelerate(a);
    
    // Set the collision flag
-   _status = std::abs(_ft.first[0]) > _thres.first[0] ||
+   _collision = std::abs(_ft.first[0]) > _thres.first[0] ||
              std::abs(_ft.first[1]) > _thres.first[1] ||
              std::abs(_ft.first[2]) > _thres.first[2] ||
              std::abs(_ft.second[0]) > _thres.second[0] ||
