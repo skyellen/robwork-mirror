@@ -63,6 +63,7 @@
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
+#include <rwsim/sensor/TactileMultiAxisSimSensor.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rw/common/Log.hpp>
 
@@ -353,7 +354,9 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _contactMap(dwc->getContactData()),
     _narrowStrategy(new ProximityStrategyPQP()),
     _sensorFeedbacks(5000),
+    _sensorFeedbacksGlobal(100),
     _nextFeedbackIdx(0),
+    _nextFeedbackGlobalIdx(0),
     _excludeMap(0,100),
     _oldTime(0),
     _useRobWorkContactGeneration(true)
@@ -1169,6 +1172,15 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	_rwODEBodyToFrame[0] = wframe;
 
 	RW_DEBUGS( "- ADDING DEVICES " );
+	// this needs to be done in the correct order, which means if any device is attached to another then the
+	// bottom one should  be added first.
+    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
+        JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
+        if(jdev!=NULL){
+            Q offsets = Q::zero( jdev->getQ(state).size() );
+            jdev->setQ( offsets , state );
+        }
+    }
     BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
         addDevice(device, state);
     }
@@ -1277,6 +1289,11 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
                  dJointID baseJoint = dJointCreateFixed(_worldId, 0);
                  dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
                  dJointSetFixed(baseJoint);
+                 std::string name = _rwFrameToODEBody[baseParent]->getRwBody()->getBodyFrame()->getName();
+                 RW_DEBUGS("BASE: connecting base to body: "<<name);
+        	 } else  {
+                 RW_DEBUGS("BASE: connecting base to world");
+
         	 }
          }
 
@@ -1486,8 +1503,62 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 	_sensors.push_back(sensor);
 
 	SimulatedSensor *ssensor = sensor.get();
-    if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
+	if( dynamic_cast<TactileMultiAxisSimSensor*>(ssensor) ){
+	    // this sensor only monitores the forces acting on a specific constraint.
+	    TactileMultiAxisSimSensor* tsensor = dynamic_cast<TactileMultiAxisSimSensor*>(sensor.get());
+        Frame *parentFrame = tsensor->getBody1()->getBodyFrame();
+        Frame *sensorFrame = tsensor->getBody2()->getBodyFrame();
 
+        //std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
+        //std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
+        if( _rwFrameToODEBody.find(sensorFrame)== _rwFrameToODEBody.end()){
+            RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!");
+        }
+        if( _rwFrameToODEBody.find(parentFrame)== _rwFrameToODEBody.end()){
+            RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!");
+        }
+
+        ODETactileSensor *odesensor = new ODETactileSensor(tsensor);
+        ODEBody* parentOdeBody = _rwFrameToODEBody[parentFrame];
+        ODEBody* sensorOdeBody = _rwFrameToODEBody[sensorFrame];
+
+        // TODO: this should be a list of sensors for each body/frame
+        //if(_odeBodyToSensor.find(odeBody->getBodyID())!=_odeBodyToSensor.end()){
+        //  RW_ASSERT(0);
+        //}
+        _rwsensorToOdesensor[sensor] = odesensor;
+        // we don't add this to the map since its only used for contact joint sensing
+        //_odeBodyToSensor[odeBody->getBodyID()].push_back( odesensor );
+        _odeSensors.push_back(odesensor);
+
+	    // we find any permanent constraints between the two bodies and add permanent feedbacks
+        int nrJoints = dBodyGetNumJoints(parentOdeBody->getBodyID());
+        for(int i=0;i<nrJoints;i++){
+            dJointID joint = dBodyGetJoint(parentOdeBody->getBodyID(), i);
+
+            dBodyID cbody1 = dJointGetBody(joint,0);
+            dBodyID cbody2 = dJointGetBody(joint,1);
+
+
+            if(cbody1==sensorOdeBody->getBodyID()){
+                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+                _nextFeedbackGlobalIdx++;
+                dJointSetFeedback( joint, feedback );
+                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 0);
+            } else if( cbody2==sensorOdeBody->getBodyID() ) {
+                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+                _nextFeedbackGlobalIdx++;
+                dJointSetFeedback( joint, feedback );
+                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 1);
+            } else {
+                // the constraint is not shared between both bodies
+                continue;
+            }
+
+        }
+
+	} else if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
+	    // this is a general tactile sensor, only contact joints will be monitored.
         SimulatedTactileSensor *tsensor = dynamic_cast<SimulatedTactileSensor*>(sensor.get());
         Frame *bframe = tsensor->getSensorFrame();
 
@@ -1498,8 +1569,8 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         }
 
         ODETactileSensor *odesensor = new ODETactileSensor(tsensor);
-
         ODEBody* odeBody = _rwFrameToODEBody[bframe];
+
         // TODO: this should be a list of sensors for each body/frame
         //if(_odeBodyToSensor.find(odeBody->getBodyID())!=_odeBodyToSensor.end()){
         //	RW_ASSERT(0);

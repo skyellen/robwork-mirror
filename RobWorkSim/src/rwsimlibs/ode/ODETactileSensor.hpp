@@ -37,6 +37,8 @@ namespace simulator {
 
 		virtual ~ODETactileSensor(){};
 
+        void addFeedbackGlobal(dJointFeedback*, dynamics::Body* b, int body);
+
 		void addFeedback(const std::vector<dJointFeedback*>& fback, const std::vector<dContactGeom> &g, dynamics::Body* b, int body);
 
 		void clear();
@@ -51,6 +53,8 @@ namespace simulator {
 	private:
 		std::vector<rw::math::Transform3D<> > _wTa,_wTb;
 
+		std::vector<dJointFeedback*> _feedbackGlobal;
+
 		std::vector<std::vector<dJointFeedback*> > _feedback;
 		std::vector<std::vector<dContactGeom> > _geoms;
 		//std::vector<rw::proximity::MultiDistanceResult> _contacts;
@@ -58,7 +62,7 @@ namespace simulator {
 		std::vector<dynamics::Body*> _rwBody;
 		sensor::SimulatedTactileSensor *_rwsensor;
 		//rw::math::Vector3D<> point;
-		std::vector<int> _bodyIdx;
+		std::vector<int> _bodyIdx,_bodyGlobalIdx;
 
 	};
 }

@@ -367,7 +367,9 @@ namespace simulator {
         dynamics::ContactDataMap _contactMap;
         rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
         std::vector<dJointFeedback> _sensorFeedbacks;
-        int _nextFeedbackIdx;
+        std::vector<dJointFeedback> _sensorFeedbacksGlobal;
+
+        int _nextFeedbackIdx, _nextFeedbackGlobalIdx;
         rw::kinematics::FramePairMap<int> _excludeMap;
 
         // ODE specific variables
