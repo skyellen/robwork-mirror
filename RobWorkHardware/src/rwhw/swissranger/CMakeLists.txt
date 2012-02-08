@@ -1,14 +1,10 @@
 SET(component_name swissranger)
 
-
 INCLUDE(CMakeDependentOption)
-FIND_PACKAGE(SwissRanger)
 CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ON "SWISSRANGER_FOUND" OFF)
+                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
 
-IF( NOT COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-ELSE()
+IF( COMPONENT_${component_name}_ENABLE )
     FIND_PACKAGE(SwissRanger)
     IF(SwissRanger_FOUND)
         MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
@@ -21,4 +17,6 @@ ELSE()
     ELSE ()
         MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - swissranger lib not found")
     ENDIF()
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

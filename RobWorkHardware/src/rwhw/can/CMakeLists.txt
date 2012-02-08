@@ -1,6 +1,10 @@
+SET(component_name CAN)
+
 INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_CAN_ENABLE "Enable CAN component." OFF "COMPONENT_CAN_DISABLE" ON)
-IF( COMPONENT_CAN_ENABLE )
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+                       
+IF( COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: CAN component ENABLED")
     
     SET(SRC_CPP ${RW_IO_USER_FILES} CANPortFactory.cpp)

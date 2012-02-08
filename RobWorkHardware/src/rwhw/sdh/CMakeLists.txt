@@ -1,15 +1,10 @@
 SET(component_name sdh)
 
-
 INCLUDE(CMakeDependentOption)
-FIND_PACKAGE(SDH)
 CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ON "SDH_FOUND" OFF)
+                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
 
-IF( NOT COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-ELSE()
-    
+IF( COMPONENT_${component_name}_ENABLE )
     # make sure that SDH can be found
     FIND_PACKAGE(SDH)
     #FIND_PACKAGE(ESDCAN)
@@ -33,4 +28,6 @@ ELSE()
         MESSAGE(FATAL_ERROR "RobWorkHardware: ${component_name} component DISABLED - SDH library and/or ESD can was not found")
         
     ENDIF()
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

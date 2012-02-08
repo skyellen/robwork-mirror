@@ -26,7 +26,7 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 MESSAGE(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
-MESSAGE("ROOT = ${ROOT}")    
+MESSAGE(STATUS "ROOT = ${ROOT}")    
 
 # Load the optional Default.cmake file.
 INCLUDE(${ROOT}/config.cmake OPTIONAL)

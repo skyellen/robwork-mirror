@@ -1,9 +1,10 @@
 SET(component_name pa10)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
-IF( NOT COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-ELSE()
-        
+
+INCLUDE(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ON "COMPONENT_${component_name}_ENABLE" ON)
+
+IF( COMPONENT_${component_name}_ENABLE )  
     IF (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
     	SET(LINUX_HEADER_LIBRARY /usr/src/linux/include /usr/src)
     	
@@ -31,6 +32,7 @@ ELSE()
     else ()
       MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - linux only")
     endif()
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()
-
 

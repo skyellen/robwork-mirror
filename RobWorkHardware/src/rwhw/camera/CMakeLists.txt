@@ -2,10 +2,9 @@ SET(component_name camera)
 
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       OFF "COMPONENT_${component_name}_DISABLE" ON)
-IF( NOT COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-ELSE()
+                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+
+IF( COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
     SET(SRC_CPP ${RW_IO_USER_FILES} CameraFactory.cpp)
@@ -55,5 +54,6 @@ ELSE()
     ADD_LIBRARY(rwhw_camera ${SRC_CPP} ${SRC_HPP} )
     INSTALL(TARGETS rwhw_camera DESTINATION ${RWHW_LIB_INSTALL_DIR})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_camera;")
-    
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

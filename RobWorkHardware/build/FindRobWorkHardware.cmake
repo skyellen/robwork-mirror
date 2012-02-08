@@ -1,29 +1,37 @@
 # Find and sets up RobWorkHardware
-# 
-#  ROBWORKHARDWARE_INCLUDE_DIR - Where to find robwork include sub-directory.
-#  ROBWORKHARDWARE_LIBRARIES   - List of libraries when using RobWork (includes all libraries that RobWork depends on).
-#  ROBWORKHARDWARE_LIBRARY_DIRS - List of directories where libraries of RobWork are located. 
-#  ROBWORKHARDWARE_FOUND       - True if RobWork was found. (not impl yet)
 #
-#  ROBWORKHARDWARE_ROOT             - If set this defines the root of RobWorkHardware if not set then it
-#                              if possible be autodetected.
+#  Output variables:
+#    ROBWORKHARDWARE_INCLUDE_DIR  - Where to find robwork include sub-directory.
+#    ROBWORKHARDWARE_LIBRARIES    - List of libraries when using RobWork (includes all libraries that RobWork depends on).
+#    ROBWORKHARDWARE_LIBRARY_DIRS - List of directories where libraries of RobWork are located. 
+#    ROBWORKHARDWARE_FOUND        - True if RobWork was found. (not impl yet)
 #
-# components
-#	can
-#	crsa465
-#	dockwelder
-#	fanucdevice
-#	katana
-#	motomanIA20
-#	pa10
-#	pcube
-#	sdh
-#	serialport
-#	sick
-#	swissranger   
-#	tactile
-
-# 
+#    ROBWORKHARDWARE_ROOT         - If set this defines the root of RobWorkHardware if not set then it
+#                                   if possible be autodetected.
+#
+#  Input variables:
+#    RobWorkHardware_FIND_COMPONENTS - List of required RWHW components to search for (see list below).
+#                                      A error is reported if these are not found.
+#
+#  Components:
+#    camera
+#	 can
+#	 crsa465
+#	 dockwelder
+#	 fanucdevice
+#	 katana
+#	 motomanIA20
+#    netft
+#	 pa10
+#	 pcube
+#    schunkpg70
+#	 sdh
+#	 serialport
+#	 sick
+#	 swissranger
+#	 tactile
+#    trakstar
+#    universalrobots
 
 # Allow the syntax else (), endif (), etc.
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)

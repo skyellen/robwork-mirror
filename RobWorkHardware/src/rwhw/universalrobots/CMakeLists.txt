@@ -1,8 +1,10 @@
 SET(component_name universalrobots)
-OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
-IF( NOT COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-ELSE()
+
+INCLUDE(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
+                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+
+IF( COMPONENT_${component_name}_ENABLE )
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
     SET(SRC_CPP UniversalRobotsData.cpp UniversalRobotsRTLogging.cpp URCommon.cpp URPrimaryInterface.cpp URCallBackInterface.cpp)
@@ -10,5 +12,7 @@ ELSE()
     
     ADD_LIBRARY(rwhw_universalrobots ${SRC_CPP} ${SRC_HPP})
     INSTALL(TARGETS rwhw_universalrobots DESTINATION ${RWHW_LIB_INSTALL_DIR})
-    set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_universalrobots;")
+    SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_universalrobots;")
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()
