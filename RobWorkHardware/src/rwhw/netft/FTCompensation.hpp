@@ -185,7 +185,7 @@ namespace rwhw {
           * 
           * @return collision flag
           */
-         inline double inCollision() const { return _status; }
+         inline double inCollision() const { return _collision; }
          
          /**
           * @brief Set calibration
@@ -350,9 +350,9 @@ namespace rwhw {
          rwhw::IIRFilterB5W20 _filter;
          
          /**
-          * Status flag, false on threshold violation
+          * Collision flag, true on threshold violation
           */
-         bool _status;
+         bool _collision;
    };
 }
 
