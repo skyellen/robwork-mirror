@@ -184,7 +184,6 @@
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber25D.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\KinematicSimulator.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\simulation\RWGLFrameBuffer.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\SimulatedController.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\SimulatedScanner25D.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\simulation\SimulatedScanner2D.cpp" />
@@ -199,7 +198,6 @@
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber25D.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\KinematicSimulator.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\simulation\RWGLFrameBuffer.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\SimulatedController.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\SimulatedScanner25D.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\simulation\SimulatedScanner2D.hpp" />

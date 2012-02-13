@@ -205,6 +205,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\rw\common\ProgramOptions.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Box.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Cone.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Contour2D.cpp" />
@@ -238,7 +239,6 @@
     <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableNode.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graphics\GroupNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graphics\Model3D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graphics\Model3DLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.cpp" />
@@ -482,6 +482,7 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\STLFile.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Triangle.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\TriangleUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\ProgramOptions.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\geometry\Covariance.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\geometry\Triangulate.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\TriMesh.hpp" />
@@ -546,7 +547,6 @@
     <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableNode.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graphics\GroupNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graphics\Model3D.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graphics\Model3DLoader.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graphics\NodeFiler.hpp" />

@@ -41,6 +41,7 @@
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderScan.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.cpp" />
     <ClCompile Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.hpp" />
     <ClInclude Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.hpp" />
