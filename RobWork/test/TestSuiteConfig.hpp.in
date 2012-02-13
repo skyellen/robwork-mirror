@@ -6,11 +6,8 @@
 #define RW_TEST_FILE_DIR "@CMAKE_CURRENT_SOURCE_DIR@/testfiles/"
 #cmakedefine RW_USE_BOOST_STATIC_TEST_LIBS
 
-#ifdef RW_USE_BOOST_STATIC_TEST_LIBS
+
 #include <boost/test/unit_test.hpp>
-#else
-#include <boost/test/included/unit_test.hpp>
-#endif
 
 #include <boost/test/floating_point_comparison.hpp>
 
