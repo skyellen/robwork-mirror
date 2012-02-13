@@ -143,7 +143,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\main.cpp" />
-    <ClCompile Include="..\..\..\..\src\ProgramOptions.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_rwstudio_resources.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -152,9 +151,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\ProgramOptions.hpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="..\..\..\..\src\plugins\playback\backward.png">
@@ -422,9 +418,6 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\RobWork\ext\lua\VisualStudio2010\lua.vcxproj">
-      <Project>{52a4d050-5888-451f-a062-72a902c1b9b3}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\ext\PQP\VS2010\pqp\pqp.vcxproj">
       <Project>{9c656944-e067-45e5-8830-0486c1922290}</Project>
     </ProjectReference>
@@ -439,9 +432,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_drawable\rw_drawable.vcxproj">
       <Project>{7626f501-49cd-419b-b421-e88007980994}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_lua\rw_lua.vcxproj">
-      <Project>{c293a7ab-95f6-495d-9c92-67fdbb978a51}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathoptimization\rw_pathoptimization.vcxproj">
       <Project>{119e5643-41a0-42c0-b663-536aa1c151b2}</Project>

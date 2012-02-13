@@ -125,7 +125,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>runtolua.bat "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -161,7 +162,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>runtolua.bat "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -178,7 +180,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
-      <Command>runtolua.bat "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -213,7 +216,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">
     <PreBuildEvent>
-      <Command>runtolua.bat "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -243,8 +247,10 @@
     <ClCompile Include="..\..\..\..\src\rws\AboutBox.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\ArcBallController.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\HelpAssistant.cpp" />
+    <ClCompile Include="..\..\..\..\src\rws\ImageUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\RobWorkStudio.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\RobWorkStudioPlugin.cpp" />
+    <ClCompile Include="..\..\..\..\src\rws\RWSImageLoaderPlugin.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\RWStudioView3D.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\SceneOpenGLViewer.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\SceneViewerWidget.cpp" />
@@ -295,30 +301,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_Jog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_Lua.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="generatedfiles\release\moc_LuaConsoleWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_LuaEditorWindow.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_LuaHighlighter.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
@@ -469,78 +451,6 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_Jog.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_Lua.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="generatedfiles\debug\moc_LuaConsoleWidget.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_LuaEditorWindow.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_LuaHighlighter.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
@@ -918,78 +828,6 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release No LTCG\moc_Lua.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release No LTCG\moc_LuaConsoleWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release No LTCG\moc_LuaEditorWindow.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release No LTCG\moc_LuaHighlighter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release No LTCG\moc_Planning.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -1290,18 +1128,11 @@
     <ClCompile Include="..\..\..\..\src\rws\plugins\planning\Planning.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\plugins\sensors\Sensors.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\plugins\sensors\SensorView.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\plugins\lua\Lua.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\components\propertyview\PropertyViewDialog.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\components\propertyview\PropertyViewEditor.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\components\imageview\ImageView.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\components\luaeditor\CodeEditor.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\components\luaeditor\LuaState.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\components\luaeditor\TreeModelCompleter.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\lua\LuaRWStudio.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\lua\LuaRWStudioStub.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\..\src\rws\AboutBox.hpp">
@@ -1467,6 +1298,8 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="..\..\..\..\src\rws\ImageUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rws\RWSImageLoaderPlugin.hpp" />
     <ClInclude Include="..\..\..\..\src\rws\SceneViewerWidget.hpp" />
     <ClInclude Include="GeneratedFiles\ui_AboutBox.h" />
     <ClInclude Include="GeneratedFiles\ui_LuaEditorWindow.h" />
@@ -1825,70 +1658,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\..\src\rws\plugins\lua\Lua.hpp">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\Lua.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\plugins\lua\LuaConsoleWidget.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
     <CustomBuild Include="..\..\..\..\src\rws\components\propertyview\PropertyViewDialog.hpp">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
@@ -2049,71 +1818,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." -I".\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I"$(QTDIR)\include\QtOpenGL\." -I".\." -I".\..\..\..\..\src\." -I".\..\..\..\..\..\RobWork\src\." -I".\..\..\..\..\..\RobWork\ext\." -I".\..\..\..\..\src\rws\." -I".\..\..\..\..\rwstudio\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I"$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\src\." -I"$(XERCES_VS_ROOT)\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\src\." "..\..\..\..\src\rws\components\luaeditor\LuaHighlighter.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
-    <ClInclude Include="..\..\..\..\src\rws\components\luaeditor\LuaState.hpp" />
     <CustomBuild Include="..\..\..\..\src\rws\components\luaeditor\TreeModelCompleter.hpp">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)%(Extension)...</Message>
@@ -2146,8 +1850,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <ClInclude Include="..\..\..\..\src\rws\lua\LuaRWStudio.hpp" />
-    <ClInclude Include="..\..\..\..\src\rws\lua\LuaRWStudioStub.hpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\..\src\rws\plugins\sensors\SensorsPlugin.ui">
@@ -2183,38 +1885,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\src\rws\components\propertyview\PropertyViewDialog.ui">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic%27ing %(Filename)%(Extension)...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\..\src\rws\components\luaeditor\LuaEditorWindow.ui">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Filename)%(Extension)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Filename)%(Extension)...</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"
