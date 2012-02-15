@@ -65,6 +65,8 @@ ADD_SUBDIRECTORY(src)
 OPTION(RW_BUILD_TESTS "Set when you want to build the tests" ${RW_BUILD_TESTS})
 IF( RW_BUILD_TESTS )
     MESSAGE(STATUS "RobWork tests ENABLED!")
+    # TODO Specify SET(SITE "myname") to configure the site name to use when uploading 
+    
     
     # Before including tests we need to specify the BUILDNAME which will show up on the cdash
     # CPU architecture
@@ -82,7 +84,7 @@ IF( RW_BUILD_TESTS )
         # this will add kernel version eg Linux_3.0....
         #EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE KERNEL_VERSION)
         #SET(SUFFIX "${SUFFIX}_${KERNEL_VERSION}")
-        SET(SUFFIX "${SUFFIX}_${ARCH}")
+        SET(SUFFIX "${SUFFIX}_${ARCH}_${CMAKE_BUILD_TYPE}")
         STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
         STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
     
