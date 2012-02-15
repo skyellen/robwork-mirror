@@ -75,19 +75,20 @@ IF( RW_BUILD_TESTS )
     ENDIF()
     # Compiler dependent suffix
     IF(UNIX)
-        EXECUTE_PROCESS(COMMAND uname -s OUTPUT_VARIABLE SUFFIX)
-        STRING(LENGTH "${SUFFIX}" SUFFIX_LEN)
-        MATH(EXPR SUFFIX_LEN "${SUFFIX_LEN} - 1")
-        STRING(SUBSTRING "${SUFFIX}" 0 ${SUFFIX_LEN} SUFFIX)
+        #EXECUTE_PROCESS(COMMAND cat /etc/issue OUTPUT_VARIABLE SUFFIX)
+        EXECUTE_PROCESS(COMMAND cat /etc/lsb-release OUTPUT_VARIABLE SUFFIX)
+        STRING( REGEX MATCHALL "\".+\"" SUFFIX ${SUFFIX} )
         
-        EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE SUFFIX1)
-        STRING(LENGTH "${SUFFIX1}" SUFFIX1_LEN)
-        MATH(EXPR SUFFIX1_LEN "${SUFFIX1_LEN} - 1")
-        STRING(SUBSTRING "${SUFFIX1}" 0 ${SUFFIX1_LEN} SUFFIX1)
-        SET(SUFFIX "${SUFFIX}_${SUFFIX1}")
-        #STRING(SUBSTRING "${SUFFIX}" 0 ${SUFFIX_LEN} SUFFIX)
-        STRING(TOLOWER "${SUFFIX}" SUFFIX)
-        
+        # this will add kernel version eg Linux_3.0....
+        #EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE KERNEL_VERSION)
+        #SET(SUFFIX "${SUFFIX}_${KERNEL_VERSION}")
+        SET(SUFFIX "${SUFFIX}_${ARCH}")
+        STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
+        STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
+    
+        # this will make it lowercase        
+        #STRING(TOLOWER "${SUFFIX}" SUFFIX)
+        #MESSAGE("${SUFFIX}")
     ELSEIF(MINGW)
     	SET(SUFFIX "windows-mingw-${ARCH}")
     ELSEIF(MSVC)
