@@ -60,14 +60,61 @@ LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
+
+
 OPTION(RW_BUILD_TESTS "Set when you want to build the tests" ${RW_BUILD_TESTS})
 IF( RW_BUILD_TESTS )
     MESSAGE(STATUS "RobWork tests ENABLED!")
+    
+    # Before including tests we need to specify the BUILDNAME which will show up on the cdash
+    # CPU architecture
+    IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    	SET(ARCH "x86")
+    ELSE()
+    	SET(ARCH "amd64")
+    ENDIF()
+    # Compiler dependent suffix
+    IF(UNIX)
+        EXECUTE_PROCESS(COMMAND uname -s OUTPUT_VARIABLE SUFFIX)
+        STRING(LENGTH "${SUFFIX}" SUFFIX_LEN)
+        MATH(EXPR SUFFIX_LEN "${SUFFIX_LEN} - 1")
+        STRING(SUBSTRING "${SUFFIX}" 0 ${SUFFIX_LEN} SUFFIX)
+        
+        EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE SUFFIX1)
+        STRING(LENGTH "${SUFFIX1}" SUFFIX1_LEN)
+        MATH(EXPR SUFFIX1_LEN "${SUFFIX1_LEN} - 1")
+        STRING(SUBSTRING "${SUFFIX1}" 0 ${SUFFIX1_LEN} SUFFIX1)
+        SET(SUFFIX "${SUFFIX}_${SUFFIX1}")
+        #STRING(SUBSTRING "${SUFFIX}" 0 ${SUFFIX_LEN} SUFFIX)
+        STRING(TOLOWER "${SUFFIX}" SUFFIX)
+        
+    ELSEIF(MINGW)
+    	SET(SUFFIX "windows-mingw-${ARCH}")
+    ELSEIF(MSVC)
+    	IF(MSVC80)
+    		SET(SUFFIX "windows-msvc2005-${ARCH}")
+    	ELSEIF(MSVC90)
+    		SET(SUFFIX "windows-msvc2008-${ARCH}")
+    	ELSEIF(MSVC10)
+    		SET(SUFFIX "windows-msvc2010-${ARCH}")
+    	ENDIF()
+    ELSE()
+    	# Trouble
+    	
+    ENDIF()
+
+    SET(BUILDNAME "${SUFFIX}")
+    
+    ENABLE_TESTING()
     INCLUDE(CTest)
     ADD_SUBDIRECTORY(test)
 ELSE ()
     MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
+
+CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
+INCLUDE(${RW_ROOT}/CTestConfig.cmake)
+
 
 OPTION(RW_BUILD_EXAMPLES "Set when you want to build the examples" ${RW_BUILD_EXAMPLES})
 IF( RW_BUILD_EXAMPLES )
@@ -256,10 +303,10 @@ ENDIF()
 # Packaging
 INCLUDE(build/packing.cmake)
 
-# Dashboard
+    # Dashboard
 #IF(DEFINED USE_CDASH)
-	CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
 #ENDIF()
+
 
 # Check for supported MSVC compilers
 # TODO: relocate to test/CMakeLists.txt?
