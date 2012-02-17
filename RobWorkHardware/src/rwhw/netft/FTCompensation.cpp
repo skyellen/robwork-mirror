@@ -157,11 +157,11 @@ void FTCompensation::decelerate(const Vector3D<>& a) {
 
 bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft) {
    try {
-      
+      std::cout << "LOCALE: " << std::setlocale(LC_NUMERIC, 'C') << std::endl;
       // Open the file
-      ptree tree;
-      read_xml(filename.c_str(), tree);
-      tree = tree.get_child("ftcalib");
+      ptree root;
+      read_xml(filename.c_str(), root);
+      ptree tree = root.get_child("ftcalib");
       
       // Get the identifier label
       calib.label = tree.get_child("<xmlattr>").get<std::string>("label");
