@@ -39,6 +39,7 @@ FTCompensation::FTCompensation(Device::Ptr dev,
    
    // Bootstrap previous measurement vectors
    _qP = _dqP = Q::zero(dev->getDOF());
+
    // Start timer
    _prevT = boost::posix_time::microsec_clock::universal_time();
 }
@@ -157,7 +158,6 @@ void FTCompensation::decelerate(const Vector3D<>& a) {
 
 bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft) {
    try {
-
       // Open the file
       ptree root;
       read_xml(filename.c_str(), root);
@@ -183,13 +183,14 @@ bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Tran
       iss >> calib.bias.second[0] >> calib.bias.second[1] >> calib.bias.second[2];
       
       return true;
-      
-   } catch(const xml_parser_error& e) {
+   } catch(const ptree_bad_path& e) {
+      std::cerr << "Parsing of the XML file failed due to a bad path:" << std::endl << "\t" << e.what() << std::endl;
+   } catch(const ptree_error& e) {
       std::cerr << "Parsing of the XML file failed:" << std::endl << "\t" << e.what() << std::endl;
    } catch(const std::exception& e) {
       std::cerr << "Reading of the XML file failed:" << std::endl << "\t" << e.what() << std::endl;
    } catch(...) {
-      std::cerr << "Parsing of the XML file failed due to an unknown exception!" << std::endl;
+      std::cerr << "Loading of the XML file failed due to an unknown exception!" << std::endl;
    }
 
    return false;
