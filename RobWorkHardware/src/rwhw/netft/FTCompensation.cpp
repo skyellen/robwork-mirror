@@ -157,7 +157,7 @@ void FTCompensation::decelerate(const Vector3D<>& a) {
 
 bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft) {
    try {
-      std::cout << "LOCALE: " << std::setlocale(LC_NUMERIC, 'C') << std::endl;
+
       // Open the file
       ptree root;
       read_xml(filename.c_str(), root);
