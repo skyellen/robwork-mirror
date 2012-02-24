@@ -41,6 +41,8 @@ namespace simulation {
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedSensor> Ptr;
 
+        virtual ~SimulatedSensor(){};
+
         /**
          * @brief steps the the SimulatedSensor with time \b dt and saves any state
          *  changes in \b state.
@@ -62,8 +64,11 @@ namespace simulation {
          */
         virtual rw::kinematics::Frame* getSensorFrame() = 0;
 
+        /**
+         * @brief get the sensor interface of this simulated sensor. This might be
+         * NULL when the simulatedsensor does not implement the Sensor interface.
+         */
         virtual rw::sensor::Sensor* getSensor() = 0;
-
     };
 
     //! @}
