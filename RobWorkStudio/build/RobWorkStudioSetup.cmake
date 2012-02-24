@@ -155,7 +155,9 @@ QT4_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
 FOREACH (it ${ui_files})
   GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
   GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
-  SET(outfile ${CMAKE_CURRENT_SOURCE_DIR}/ui_${outfile}.h)
+  GET_FILENAME_COMPONENT(outpath ${it} PATH)
+  
+  SET(outfile ${CMAKE_CURRENT_SOURCE_DIR}/${outpath}/ui_${outfile}.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
     COMMAND ${QT_UIC_EXECUTABLE}
     ARGS ${ui_options} -o ${outfile} ${infile}
@@ -206,7 +208,6 @@ SET(ROBWORKSTUDIO_LIBRARIES
   #rwstudio_glview
   rwstudio
   rwstudio_imageview
-  rwstudio_propertyinspector
   qtpropertybrowser
   ${ROBWORK_LIBRARIES}
   ${QT_LIBRARIES}
