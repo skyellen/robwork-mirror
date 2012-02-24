@@ -34,7 +34,7 @@ namespace simulator {
 	 */
 	class ThreadSimulator {
 	public:
-
+	    //! smart pointer type
 	    typedef rw::common::Ptr<ThreadSimulator> Ptr;
 
 		/**
@@ -71,6 +71,9 @@ namespace simulator {
 		 */
 		void stop();
 
+		/**
+		 * @brief same as stop but this version is non-blocking.
+		 */
 		void postStop(){ _postStop=true;};
 
 		/**
@@ -84,16 +87,30 @@ namespace simulator {
 		 */
 		rw::kinematics::State getState();
 
+		/**
+		 * @brief set the state of the simulator
+		 * @param state [in] the new state
+		 */
 		void setState(const rw::kinematics::State& state);
 
+		/**
+		 * @brief reset the simulator to this state. The difference from the setState is
+		 * that any changes to the non state-states such as the transform of the fixed frame,
+		 * will also be updated.
+		 * @param state [in] the new state
+		 */
 		void reset(const rw::kinematics::State& state);
 
-		void stepperLoop();
-
+		/**
+		 * @brief test if this thread simulator is running
+		 */
 		bool isRunning(){
 		    return _thread!=NULL && _running==true;
 		};
 
+		/**
+		 * @brief get the current simulator time in seconds
+		 */
 		double getTime();
 
 		/**
@@ -105,10 +122,12 @@ namespace simulator {
 			return _simulator;
 		};
 
-		typedef boost::function<void(ThreadSimulator* sim, const rw::kinematics::State&)> StepCallback;
+		//! The callback type for a hook into the step call
+		typedef boost::function<void(ThreadSimulator* sim, rw::kinematics::State&)> StepCallback;
 
 		/**
-		 * @brief if set this callback function will be called after each timestep
+		 * @brief if set this callback function will be called once on start and then
+		 * after each step of the simulator.
 		 *
 		 * Set to NULL if no callback is wanted
 		 */
@@ -116,10 +135,24 @@ namespace simulator {
 			_stepcb = cb;
 		};
 
+		/**
+		 * @brief the simulator might fail because of too large penetrations. This method tests
+		 * if the simulator is in an error.
+		 */
 		bool isInError(){
 			return _inError;
 		}
+
+		/**
+		 * @brief this can be used to force the resetting of an error state.
+		 * @param inError
+		 */
 		void setInError(bool inError){_inError = inError;}
+
+	private:
+		//! @brief the stepper loop
+		void stepperLoop();
+
 	private:
 		DynamicSimulator::Ptr _simulator;
 		boost::thread *_thread;

@@ -30,6 +30,10 @@ namespace sensor {
 	 */
 	class SimulatedTactileSensor: public rwlibs::simulation::SimulatedSensor {
 	public:
+
+	    //! destructor
+	    virtual ~SimulatedTactileSensor(){}
+
 		/**
 		 * @brief add a force to a point on the sensor geometry. The force is described
 		 * relative to the world frame.
@@ -62,7 +66,13 @@ namespace sensor {
 					  rw::kinematics::State& state,
 					  dynamics::Body *body=NULL) = 0;
 
-
+		/**
+		 * @brief add a wrench to the center of mass of this object
+		 * @param force
+		 * @param torque
+		 * @param state
+		 * @param body
+		 */
         virtual void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
@@ -70,7 +80,7 @@ namespace sensor {
                       dynamics::Body *body=NULL) = 0;
 
         /**
-         *
+         * @brief add a wrench described in World frame to the center of mass of this object
          * @param force
          * @param state
          * @param body

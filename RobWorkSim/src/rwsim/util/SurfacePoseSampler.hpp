@@ -31,7 +31,8 @@ public:
         _minD(0.02),
         _maxD(0.02),
         _genRandomRotation(true),
-        _filterByDirection(false)
+        _filterByDirection(false),
+        _genRandomPostion(true)
     {
         init(geom);
     }
@@ -40,7 +41,8 @@ public:
         _minD(0.02),
         _maxD(0.02),
         _genRandomRotation(true),
-        _filterByDirection(false)
+        _filterByDirection(false),
+        _genRandomPostion(true)
     {
         init(geoms[0]);
     }
@@ -77,8 +79,16 @@ public:
 
             // and sample the orientation
             //EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
-            target = Transform3D<>( position, Math::ranRotation3D<double>());
-            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(_minD,_maxD);
+            if(_genRandomPostion){
+                target = Transform3D<>( position, Math::ranRotation3D<double>());
+                target.P() -= (target.R()*Vector3D<>::z())*Math::ran(_minD,_maxD);
+            } else {
+                target.P() = position;
+                // align z-axis of rotation with triangle normal
+                EAA<> eaa( Vector3D<>::z(), tri.calcFaceNormal() );
+                target.R() = eaa.toRotation3D();
+            }
+
             if(_genRandomRotation){
                 target.R() = Math::ranRotation3D<double>();
             }
@@ -95,6 +105,10 @@ public:
 
     void setRandomRotationEnabled(bool enabled){
         _genRandomRotation = enabled;
+    }
+
+    void setRandomPositionEnabled(bool enabled){
+        _genRandomPostion = enabled;
     }
 
     void setZAxisDirectionEnabled(bool enabled) { _filterByDirection = enabled; }
@@ -116,7 +130,7 @@ private:
 
 private:
     double _sAreaSum, _minD, _maxD;
-    bool _genRandomRotation, _filterByDirection;
+    bool _genRandomRotation, _filterByDirection, _genRandomPostion;
     std::vector<double> _surfaceArea;
     rw::geometry::TriMesh::Ptr _mesh;
     rw::math::Vector3D<> _direction;

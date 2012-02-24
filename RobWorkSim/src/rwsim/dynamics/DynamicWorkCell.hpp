@@ -135,6 +135,18 @@ namespace dynamics {
     	 */
     	DynamicDevice* findDevice(const std::string& name);
 
+        /**
+         * @brief find a specific device with name \b name and type \b T
+         * @param name [in] name of body
+         * @return body if found, NULL otherwise
+         */
+        template<class T>
+        T* findDevice(const std::string& name) const{
+            DynamicDevice *body = findDevice(name);
+            if(body==NULL) return NULL;
+            return dynamic_cast<T*>(body);
+        }
+
     	/**
     	 * @brief gets a list of all controllers in the dynamic workcell
     	 */
@@ -158,6 +170,25 @@ namespace dynamics {
             _sensors.push_back(sensor);
             _changedEvent.fire(GravityChangedEvent, boost::any(sensor) );
         };
+
+        /**
+         * @brief find a sensor
+         * @param name [in] the sensor
+         * @return
+         */
+        rwlibs::simulation::SimulatedSensor::Ptr findSensor(const std::string& name);
+
+        /**
+         * @brief find a sensor of a specific type.
+         * @param name [in] name of sensor
+         * @return
+         */
+        template<class T>
+        rw::common::Ptr<T> findSensor(const std::string& name){
+            rwlibs::simulation::SimulatedSensor::Ptr sensor = findSensor(name);
+              if(sensor==NULL) return NULL;
+              return sensor.cast<T>();
+        }
 
         /**
          * @brief

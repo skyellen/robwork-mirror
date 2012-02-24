@@ -20,8 +20,10 @@
 #include <stack>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwlibs/task/GraspTask.hpp>
+
 namespace rwsim {
 namespace simulator {
+
 /**
  * @brief A class for simulating multiple grasping tasks.
  *
@@ -46,27 +48,21 @@ namespace simulator {
  * - HandCloseConfig
  * - MinRestingTime
  *
- *
  */
 class GraspTaskSimulator {
 public:
-	typedef rw::common::Ptr<GraspTaskSimulator> Ptr;
+    //! smart pointer type
+    typedef rw::common::Ptr<GraspTaskSimulator> Ptr;
 
-	//! the possible discrete outcomes of a single task simulation
-	/*typedef enum Status {
-		UnInitialized = 0,
-        Success, CollisionInitially,
-        ObjectMissed, ObjectDropped,
-        ObjectSlipped, TimeOut,
-        SimulationFailure,
-        InvKinFailure,
-        PoseEstimateFailure
-	 } TestStatus;
-    */
 public:
-
+    /**
+     * @brief constructor
+     * @param dwc [in] the dynamic workcell
+     * @param nrThreads [in] the number of parallel simulations to run
+     */
 	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc, int nrThreads=1);
 
+	//! @brief destructor
 	virtual ~GraspTaskSimulator();
 
 	/**
@@ -104,15 +100,24 @@ public:
 	 * @return
 	 */
 	int getStat(rwlibs::task::GraspTask::TestStatus status){
-	    if(status>=0 && status<=rwlibs::task::GraspTask::SizeOfStatusArray)
-	        return _stat[status];
-	    RW_THROW("Unknown TestStatus!");
+	    if(status<0 && status>rwlibs::task::GraspTask::SizeOfStatusArray)
+	        RW_THROW("Unknown TestStatus!");
+	    return _stat[status];
 	}
+
+	/**
+	 * @brief get the current statistics. The array is based on the
+     * enumeration rwlibs::task::GraspTask::TestStatus
+	 */
 	std::vector<int> getStat(){ return _stat; }
+
+	/**
+	 * @brief get the number of targets that have been simulated until now
+	 */
 	int getNrTargetsDone();
 
-
 	void setAlwaysResting(bool alwaysResting){_alwaysResting=true;}
+
 	/**
 	 * @brief add a delay each time the simulation has stepped.
 	 * usefull for debuging or visualization.
@@ -131,27 +136,28 @@ public:
 
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} StepState;
     struct SimState {
-        SimState():_restingTime(0),
+        SimState():
+                _restingTime(0),
                 _simTime(0),
                 _graspTime(0),
                 _approachedTime(0),
                 _currentState(NEW_GRASP)
         {}
+        double  _restingTime,
+                _simTime,
+                _graspTime,
+                _approachedTime; // the simulation time when the approach has finished
+
+        StepState _currentState;
 
         rw::kinematics::State _state;
         rw::common::Timer _wallTimer;
         rwlibs::task::GraspSubTask *_task;
         rwlibs::task::GraspTarget *_target;
-        StepState _currentState;
 
         rw::kinematics::State _postLiftObjState;
 
         std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
-
-        double  _restingTime,
-                _simTime,
-                _graspTime,
-                _approachedTime; // the simulation time when the approach has finished
         int _restCount;
         // the explicit values from _task
         rw::kinematics::Frame* _taskRefFrame;
@@ -166,9 +172,7 @@ public:
                                 _wTmbase_approachTarget, // approach to this config from _initTarget
                                 _wTmbase_retractTarget; // retract to this config from _approachTarget
 
-
         bool _stopped;
-
     };
 private:
 
@@ -195,22 +199,22 @@ private:
 
 private:
 	rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
+    bool _requestSimulationStop;
+    int _stepDelayMs;
+    int _autoSaveInterval;
+    // if any object exceeds this threshold the simulation is considered faulty
+    double _maxObjectGripperDistanceThreshold;
+    std::vector<int> _stat;
+    bool _initialized;
+    int _nrOfThreads;
+    int _currentTargetIndex;
+    bool _alwaysResting;
 
-	int _gripperDim;
-	int _stepDelayMs;
-	int _nrOfThreads;
-	bool _requestSimulationStop;
-	bool _initialized;
-	bool _alwaysResting;
-	std::vector<int> _stat;
+    int _gripperDim;
+
 	int _failed, _success, _slipped, _collision, _timeout, _simfailed, _skipped,
 	    _nrOfExperiments, _lastSaveTaskIndex;
 	int _totalNrOfExperiments;
-
-	int _autoSaveInterval;
-
-	// if any object exceeds this threshold the simulation is considered faulty
-	double _maxObjectGripperDistanceThreshold;
 
 	std::vector<rwsim::dynamics::RigidBody*> _objects;
 	rwsim::dynamics::DynamicDevice *_dhand;
@@ -231,7 +235,7 @@ private:
 	rwlibs::task::GraspTarget *_currentTarget;
 	rwlibs::task::GraspTask::Ptr _gtask;
 	std::stack<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _taskQueue;
-	int _currentTargetIndex;
+
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 
 	boost::mutex _nextTargetLock;

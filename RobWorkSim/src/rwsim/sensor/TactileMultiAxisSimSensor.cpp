@@ -65,7 +65,7 @@ void TactileMultiAxisSimSensor::addForce(const rw::math::Vector3D<>& point,
               dynamics::Body *body)
 {
     _forceTmp += force;
-    _torqueTmp = cross(point, force);
+    _torqueTmp += cross(point, force);
 }
 
 void TactileMultiAxisSimSensor::addWrenchToCOM(
@@ -84,9 +84,8 @@ void TactileMultiAxisSimSensor::addWrenchWToCOM(
               rw::kinematics::State& state,
               dynamics::Body *body)
 {
-    // TODO: convert to body frames
-    _forceTmp += force;
-    _torqueTmp += torque;
+    _forceTmp += _fTw.R() * force;
+    _torqueTmp += _fTw.R() * torque;
 };
 
 
@@ -96,8 +95,8 @@ void TactileMultiAxisSimSensor::update(const rwlibs::simulation::Simulator::Upda
 	_fTw = inverse(_wTf);
 	_force = _forceTmp;
     _torque = _torqueTmp;
-
-    std::cout << "FTSensor:" << _force << _torque << std::endl;
+    _forceTmp = Vector3D<>();
+    _torqueTmp = Vector3D<>();
 }
 
 void TactileMultiAxisSimSensor::reset(const rw::kinematics::State& state){
