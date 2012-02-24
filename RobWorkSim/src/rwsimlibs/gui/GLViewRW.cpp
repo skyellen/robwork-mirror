@@ -244,16 +244,6 @@ GLViewRW::~GLViewRW()
 
 void GLViewRW::keyPressEvent(QKeyEvent *e)
 {
-    size_t camNr=0;
-    switch(e->key()){
-    case(Qt::Key_1): camNr = 0; break;
-    case(Qt::Key_2): camNr = 1; break;
-    case(Qt::Key_3): camNr = 2; break;
-    case(Qt::Key_4): camNr = 3; break;
-    case(Qt::Key_5): camNr = 4; break;
-    default:
-        return;
-    }
     e->accept();
 }
 
@@ -458,8 +448,8 @@ void GLViewRW::mouseDoubleClickEvent(QMouseEvent* event)
     if (event->button() == Qt::LeftButton &&
             event->modifiers() == Qt::ControlModifier) {
 
-        int winx = event->x();
-        int winy = height()-event->y();
+        //int winx = event->x();
+        //int winy = height()-event->y();
         // we pick the scene before
         //Frame *frame = pickFrame(winx,winy);
         //if( frame ){

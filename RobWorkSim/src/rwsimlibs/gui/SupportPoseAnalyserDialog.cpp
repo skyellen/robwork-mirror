@@ -480,7 +480,7 @@ void SupportPoseAnalyserDialog::showPlanarDistribution(){
         int x = (int)Math::clamp(q(xIdx)/(50.0*Deg2Rad)*640+640/2.0, 0.0, 639.0);
         int y = (int)Math::clamp(q(yIdx)/(50.0*Deg2Rad)*640+640/2.0, 0.0, 639.0);
         img.setPixel( x, y, 1);
-        RW_ASSERT( j<_xaxis[0].size() );
+        RW_ASSERT( j<(int)_xaxis[0].size() );
         _xaxis[0][j] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
         _yaxis[0][j] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
         _zaxis[0][j] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
@@ -1024,6 +1024,8 @@ void SupportPoseAnalyserDialog::process(){
 	if( _bodies.size()==0 )
 		return;
 
+#ifdef USE_OPENCV
+
 	int houghThres = _thresholdSpin->value();
 	double epsilon = _epsilonSpin->value();
 
@@ -1032,7 +1034,6 @@ void SupportPoseAnalyserDialog::process(){
 		const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame()->getParent(), _defaultState);
 		const Transform3D<> wTb = Kinematics::worldTframe(_bodies[j]->getMovableFrame(), _defaultState);
 
-#ifdef USE_OPENCV
 		std::vector<CircleModel> circlesXTmp = extractCircles(_xaxis[j],houghThres);
 		std::vector<CircleModel> circlesYTmp = extractCircles(_yaxis[j],houghThres);
 		std::vector<CircleModel> circlesZTmp = extractCircles(_zaxis[j],houghThres);
@@ -1169,8 +1170,8 @@ void SupportPoseAnalyserDialog::process(){
 		}
 		//std::cout << "Nr of unique circle poses: " << circlePoses.size() << std::endl;
 
-#endif
 	}
+#endif
 
 	updateRenderView();
 	updateResultView();
