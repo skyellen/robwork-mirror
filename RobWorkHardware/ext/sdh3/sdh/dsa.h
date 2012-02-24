@@ -637,7 +637,7 @@ class VCC_EXPORT cDSA
     */
     inline unsigned long GetAgeOfFrame( sTactileSensorFrame* frame_p )
     {
-        return ((unsigned long) (start_pc.Elapsed()*1000.0)) - (frame_p->timestamp - start_dsa);
+        return start_pc.Elapsed_ms() - (frame_p->timestamp - start_dsa);
     }
 
     double GetContactArea( int m );

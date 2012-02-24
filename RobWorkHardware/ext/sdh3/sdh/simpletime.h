@@ -120,6 +120,12 @@ public:
     }
     //----------------------------------------------------------------------
 
+    long Elapsed_ms( void ) const
+    {
+        cSimpleTime now;
+
+        return Elapsed_ms( now );
+    }
 
     //! Return time in micro seconds elapsed between the time stored in the object and now.
     long Elapsed_us( void ) const
@@ -161,6 +167,13 @@ public:
         return seconds + usec / 1000000.0;
     }
     //----------------------------------------------------------------------
+
+    long Elapsed_ms( cSimpleTime const& other ) const
+    {
+        long seconds = other.a_time.tv_sec - a_time.tv_sec;
+        long usec    = other.a_time.tv_usec - a_time.tv_usec;
+        return seconds * 1000 + usec/1000;
+    }
 
     //! Return time in micro seconds elapsed between the time stored in the object and \a other.
     long Elapsed_us( cSimpleTime const& other ) const
