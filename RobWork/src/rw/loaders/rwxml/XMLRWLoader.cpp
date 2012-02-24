@@ -356,12 +356,12 @@ namespace {
         // add dhparam as property to the frame if dh params was specified
         if( dframe._hasDHparam ){
             DHParam &param = dframe._dhparam;
+
             if( param._dhtype == Revolute ) {
                 rw::models::DHParameterSet dhset(
                         param._alpha,param._a,
                         param._d,param._offset,param._type);
                 DHParameterSet::set(dhset, frame);
-
             } else if( param._dhtype == Prismatic ) {
                 rw::models::DHParameterSet dhset(
                         param._alpha,param._a,

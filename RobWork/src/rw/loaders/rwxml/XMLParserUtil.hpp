@@ -74,9 +74,12 @@ struct DHParam {
     double _alpha;
     double _a;
     double _d;
+    double _b;
+    double _beta;
     double _theta;
     double _offset;
-    std::string _type; // craig, schilling
+    std::string _hgptype; // parallel, non-parallel
+    std::string _type; // craig, schilling, HGP
 };
 
 struct DummyLimit {
@@ -487,6 +490,18 @@ struct SetTransform3D {
 					_t3d = rw::math::Transform3D<>::DH(
 						_param->_alpha,_param->_a,
 						_param->_d,_param->_offset);
+            	} else if( _param->_type == "HGP" ){
+            	    // check if its parallel
+            	    if(_param->_hgptype=="parallel"){
+                        _t3d = rw::math::Transform3D<>::DHHGP(
+                            _param->_alpha,_param->_a,
+                            _param->_beta,_param->_offset);
+            	    } else {
+                        _t3d = rw::math::Transform3D<>::DH(
+                            _param->_alpha,_param->_a,
+                            _param->_d,_param->_offset);
+            	    }
+
             	} else {
 					_t3d = rw::math::Transform3D<>::craigDH(
 						_param->_alpha,_param->_a,
@@ -497,6 +512,19 @@ struct SetTransform3D {
 					_t3d = rw::math::Transform3D<>::DH(
 						_param->_alpha,_param->_a,
 						_param->_offset,_param->_theta);
+                } else if( _param->_type == "HGP" ){
+
+                    // check if its parallel
+                    if(_param->_hgptype=="parallel"){
+                        _t3d = rw::math::Transform3D<>::DHHGP(
+                            _param->_alpha,_param->_a,
+                            _param->_offset, _param->_b);
+                    } else {
+                        _t3d = rw::math::Transform3D<>::DH(
+                            _param->_alpha,_param->_a,
+                            _param->_offset, _param->_theta);
+                    }
+
             	} else {
 					_t3d = rw::math::Transform3D<>::craigDH(
 						_param->_alpha,_param->_a,

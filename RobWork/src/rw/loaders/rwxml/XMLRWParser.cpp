@@ -594,6 +594,21 @@ namespace {
                                 [ push_back_a( _frame._models ) ]
                         )
                     );
+                // T alpha, T a,   beta, b,
+                // T alpha, T a,   d, theta
+                /*
+
++   if (isParallel)
++       return Transform3D(
++               Vector3D<T>(a * cos(beta), b, - a * sin(beta)),
++               Rotation3D<T>(
++                   cos(beta), sin(alpha) * sin(beta), cos(alpha) * sin(beta),
++                   0, cos(alpha), -sin(alpha),
++                   -sin(beta), sin(alpha) * cos(beta), cos(alpha) * cos(beta)));
++   else
++       return Transform3D<T>::DH(alpha, a, d, theta);
+
+                 */
 
                 dhjoint_r = eps_p[ var( _frame ) = construct_<DummyFrame>() ] >> // init _frame
                     XMLAttElem_p("DHJoint",
@@ -618,6 +633,26 @@ namespace {
                                     [ var( _dhparam._offset ) = arg1 ])
                                 )
                             )
+                          | (XMLAtt_p("beta", real_p
+                                      [ var( _dhparam._dhtype ) = Prismatic ]
+                                      [ var( _frame._type ) = "Revolute" ]
+                                      [ var( _dhparam._hgptype ) = "parallel" ]
+                                      [ var( _dhparam._beta ) = arg1*Deg2Rad ])
+
+                                  >> (XMLAtt_p("offset", real_p
+                                          [ var( _dhparam._offset ) = arg1 ])
+                                      )
+                                  )
+                          | (XMLAtt_p("b", real_p
+                                      [ var( _dhparam._dhtype ) = Revolute ]
+                                      [ var( _frame._type ) = "Prismatic" ]
+                                      [ var( _dhparam._hgptype ) = "parallel" ]
+                                      [ var( _dhparam._b ) = arg1*Deg2Rad ])
+                                  >> (XMLAtt_p("offset", real_p
+                                          [ var( _dhparam._offset ) = arg1 ])
+                                      )
+                                  )
+
                          ) >>
                          !(XMLAtt_p("state", jointstate_r))
                          >>
