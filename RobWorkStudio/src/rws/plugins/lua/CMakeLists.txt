@@ -7,10 +7,10 @@ IF( RWS_HAVE_LUA )
 SET(TargetName rws_plugin_lua)
 
 # Standard cpp files to compile:
-SET(SrcFiles Lua.cpp LuaConsoleWidget.cpp)
+SET(SrcFiles Lua.cpp)
 
 # Header files to moc and compile:
-QT4_WRAP_CPP(MocSrcFiles Lua.hpp LuaConsoleWidget.hpp)
+QT4_WRAP_CPP(MocSrcFiles Lua.hpp)
 
 # Rcc the files:
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)

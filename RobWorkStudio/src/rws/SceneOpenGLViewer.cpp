@@ -63,8 +63,17 @@ namespace
          * @copydoc Render::draw
          */
         void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
+
             glPushMatrix();
             glLoadIdentity();
+
+            //GLenum matRendering = GL_FRONT;
+            //GLfloat specularReflection[]={1.0f,1.0f,1.0f,1.0f};
+            //GLfloat matEmission[]={0.0f,0.0f,0.0f,1.0f};
+            //glMaterialfv(matRendering, GL_SPECULAR, specularReflection);
+            //glMaterialfv(matRendering, GL_EMISSION, matEmission);
+            //glMateriali(matRendering, GL_SHININESS, 128);
+
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glBegin(GL_QUADS);
@@ -98,6 +107,46 @@ namespace
         }
 
     };
+
+    class RenderFonts : public Render
+    {
+    private:
+        QFont _font;
+        QString _text;
+        QGLWidget *_qglwidget;
+
+        double _x, _y, _z;
+        bool _renderInWindowCoord;
+
+    public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderQuad> Ptr;
+
+        RenderFonts(double x, double y, double z, QString text, QFont font, QGLWidget* glwidget):
+            _x(x),_y(y),_z(z),_text(text),_font(font),_qglwidget(glwidget){
+            _renderInWindowCoord = false;
+        }
+
+        RenderFonts(double x, double y, QString text, QFont font, QGLWidget* glwidget):
+            _x(x),_y(y),_text(text),_font(font),_qglwidget(glwidget){
+            _renderInWindowCoord = true;
+        }
+
+
+        /* Functions inherited from Render */
+        /**
+         * @copydoc Render::draw
+         */
+        void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
+            if(_renderInWindowCoord){
+                _qglwidget->renderText(_x,_y,_text, _font);
+            } else {
+                _qglwidget->renderText(_x,_y,_z,_text, _font);
+            }
+        }
+
+    };
+
 
     /**
      * @brief clamp val to either min or max
@@ -424,9 +473,10 @@ void SceneOpenGLViewer::initializeGL()
     glEnable(GL_LIGHT0);
     DrawableUtil::setupHighlightLight();
     glEnable(GL_COLOR_MATERIAL);
-    //GLenum matRendering = GL_FRONT_AND_BACK;
-    GLenum matRendering = GL_FRONT;
+    GLenum matRendering = GL_FRONT_AND_BACK;
+    //GLenum matRendering = GL_FRONT;
     glColorMaterial(matRendering, GL_AMBIENT_AND_DIFFUSE);
+
     GLfloat specularReflection[]={1.0f,1.0f,1.0f,1.0f};
     GLfloat matEmission[]={0.0f,0.0f,0.0f,1.0f};
     glMaterialfv(matRendering, GL_SPECULAR, specularReflection);

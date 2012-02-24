@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_STUDIO_LUA_MODULE_H
-#define RW_STUDIO_LUA_MODULE_H
+#ifndef RWS_PLUGIN_LUA_HPP
+#define RWS_PLUGIN_LUA_HPP
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
@@ -26,58 +26,61 @@
 #include <rw/trajectory/Path.hpp>
 
 #include <rws/components/luaeditor/LuaEditorWindow.hpp>
-
-#include "LuaConsoleWidget.hpp"
+#include <rws/components/luaeditor/LuaConsoleWidget.hpp>
 
 struct lua_State;
 
 namespace rws {
 
-class Lua : public RobWorkStudioPlugin
-{
-    Q_OBJECT
-#ifndef RW_STATIC_LINK_PLUGINS
-    Q_INTERFACES(rws::RobWorkStudioPlugin)
-#endif
-public:
-    Lua();
+    /**
+     * @brief this plugin provides access to editing and executing lua commands.
+     */
+    class Lua : public RobWorkStudioPlugin
+    {
+        Q_OBJECT
+    #ifndef RW_STATIC_LINK_PLUGINS
+        Q_INTERFACES(rws::RobWorkStudioPlugin)
+    #endif
+    public:
+        //! @brief constructor
+        Lua();
 
-    ~Lua();
+        //! @brief destructor
+        virtual ~Lua();
 
-    void initialize();
+        //! @copydoc RobWorkStudioPlugin::initialize
+        void initialize();
 
-    void open(rw::models::WorkCell* workcell);
+        //! @copydoc RobWorkStudioPlugin::open
+        void open(rw::models::WorkCell* workcell);
 
-    void close();
+        //! @copydoc RobWorkStudioPlugin::close
+        void close();
 
-    //void setupToolBar(QToolBar* toolbar);
-private:
-    // This listens for changes to the state of RobWorkStudio.
-    void stateChangedListener(const rw::kinematics::State& state);
+        //void setupToolBar(QToolBar* toolbar);
+    private:
+        // This listens for changes to the state of RobWorkStudio.
+        void stateChangedListener(const rw::kinematics::State& state);
 
-    // This listens for changes to the state of the Lua interpreter.
-    void luaStateChangedListener(const rw::kinematics::State& state);
+        // This listens for changes to the state of the Lua interpreter.
+        void luaStateChangedListener(const rw::kinematics::State& state);
 
-    // This listens for changes to the path of the Lua interpreter.
-    void luaPathChangedListener(const rw::trajectory::StatePath& path);
+        // This listens for changes to the path of the Lua interpreter.
+        void luaPathChangedListener(const rw::trajectory::StatePath& path);
 
-private slots:
-    void startEditor();
-    void resetLua();
+    private slots:
+        void startEditor();
+        void resetLua();
 
+    private:
+        LuaState* _lua;
+        rw::kinematics::State _state;
+        std::string _previousOpenDirectory;
 
-private:
-/*    QTextEdit* _input;
-    QTextEdit* _output;
-*/
-    LuaState* _lua;
-    rw::kinematics::State _state;
-    std::string _previousOpenDirectory;
+        LuaEditorWindow *_editor;
 
-    LuaEditorWindow *_editor;
-
-    LuaConsoleWidget *_console;
-};
+        LuaConsoleWidget *_console;
+    };
 
 }
 

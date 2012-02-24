@@ -82,7 +82,6 @@ int main(int argc, char** argv)
 {
 
     Q_INIT_RESOURCE(rwstudio_resources);
-    int res = 0;
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);
     poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
     poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
@@ -145,7 +144,7 @@ int main(int argc, char** argv)
                 splash.showMessage("Loading settings");
                 splash.finish(&rwstudio);
                 rwstudio.show();
-                res = app.exec();
+                app.exec();
             }
         } catch (const Exception& e) {
             std::cout << e.what() << std::endl;

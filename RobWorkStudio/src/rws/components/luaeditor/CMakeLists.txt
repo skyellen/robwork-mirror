@@ -12,9 +12,20 @@ RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
 # MESSAGE("LUA UI FILES ${UIS_OUT_H}")
 
-SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp TreeModelCompleter.cpp ${UIS_OUT_H})
+SET(SrcFiles LuaEditorWindow.cpp 
+    LuaHighlighter.cpp 
+    CodeEditor.cpp
+    TreeModelCompleter.cpp
+    LuaExecutionThread.cpp
+    LuaConsoleWidget.cpp
+    ${UIS_OUT_H})
 
-QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp LuaHighlighter.hpp CodeEditor.hpp TreeModelCompleter.hpp )
+QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp 
+    LuaHighlighter.hpp 
+    CodeEditor.hpp 
+    TreeModelCompleter.hpp
+    LuaExecutionThread.hpp
+    LuaConsoleWidget.hpp)
 
 # Rcc the files:
 QT4_ADD_RESOURCES(RccSrcFiles )

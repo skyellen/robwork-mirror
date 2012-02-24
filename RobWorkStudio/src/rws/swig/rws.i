@@ -34,7 +34,6 @@ class RobWorkStudioApplication : public QThread
 
      void run(){
          Q_INIT_RESOURCE(rwstudio_resources);
-         int res = 0;
          rw::common::ProgramOptions poptions("RobWorkStudio", RW_VERSION);
          poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
          poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
@@ -46,12 +45,11 @@ class RobWorkStudioApplication : public QThread
 
          std::string inifile = map.get<std::string>("ini-file", "");
          std::string inputfile = map.get<std::string>("input-file", "");
-
          {
 
              char *argv[30];
              std::vector<std::string> args = boost::program_options::split_unix(_args);
-             for(int i=0;i<args.size();i++){
+             for(size_t i=0;i<args.size();i++){
                  argv[i] = &(args[i][0]);
              }
 
@@ -107,7 +105,7 @@ class RobWorkStudioApplication : public QThread
                      splash.showMessage("Loading settings");
                      splash.finish(&rwstudio);
                      rwstudio.show();
-                     res = app.exec();
+                     app.exec();
                  }
              } catch (const rw::common::Exception& e) {
                  std::cout << e.what() << std::endl;

@@ -1,3 +1,20 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #include "LuaConsoleWidget.hpp"
 
 #include <QtGui>
@@ -13,44 +30,55 @@ extern "C" {
 
 
 using namespace rw::common;
+using namespace rws;
+
+#define MESSAGE_ADDED_EVENT 2345
 
 namespace {
-class WriterWrapper: public LogWriter {
-public:
-    WriterWrapper(QTextEdit* slog):
-        _slog(slog)
-    {
-    }
 
-    virtual ~WriterWrapper(){}
+    class WriterWrapper: public LogWriter {
+    public:
+        WriterWrapper(QTextEdit* slog):
+            _slog(slog),_tabLevel(0)
+        {
+        }
 
-    virtual void flush(){
-    }
+        virtual ~WriterWrapper(){}
 
-    /**
-     * @brief Writes \b str to the log
-     * @param str [in] message to write
-     */
-    virtual void write(const std::string& str) { 
-		std::stringstream sstr;
-        sstr << std::setw(_tabLevel)<<std::setfill(' ');
-        sstr << str;
-        _slog->insertPlainText(sstr.str().c_str());
-    }
+        virtual void flush(){
+        }
 
-    virtual void writeln(const std::string& str){
-		write(str);
-    }
+        /**
+         * @brief Writes \b str to the log
+         * @param str [in] message to write
+         */
+        virtual void write(const std::string& str) {
+            std::stringstream sstr;
+            sstr << std::setw(_tabLevel)<<std::setfill(' ');
+            sstr << str;
 
-	virtual void setTabLevel(int tabLevel) {
-		_tabLevel = tabLevel;
-	}
+            _msgQueue.push_back(std::make_pair(sstr.str(), _color));
+            QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
+        }
 
-private:
-    QTextEdit *_slog;
-    QColor _color;
-	int _tabLevel;
-};
+        virtual void writeln(const std::string& str){
+            write(str);
+        }
+
+        virtual void setTabLevel(int tabLevel) {
+            _tabLevel = tabLevel;
+        }
+
+    public:
+        std::vector< std::pair<std::string, QColor> > _msgQueue;
+
+    private:
+        QTextEdit *_slog;
+        QColor _color;
+        int _tabLevel;
+    };
+
+
 }
 
 LuaConsoleWidget::LuaConsoleWidget(QWidget *parent) :
@@ -62,7 +90,8 @@ LuaConsoleWidget::LuaConsoleWidget(QWidget *parent) :
      //connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
      //connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateLineNumberArea(const QRect &, int)));
      //connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-
+    _luaRunner =  new LuaExecutionThread("", _luastate, _logWriter, this);
+    connect(_luaRunner, SIGNAL(finished()), this, SLOT(runFinished()));
      //updateLineNumberAreaWidth(0);
      //highlightCurrentLine();
     reset();
@@ -81,6 +110,23 @@ void LuaConsoleWidget::reset()
     //history.clear();
     //recordedScript.clear();
     displayPrompt();
+}
+
+
+bool LuaConsoleWidget::event(QEvent *event){
+    if(event->type()==MESSAGE_ADDED_EVENT){
+        WriterWrapper* writer = (WriterWrapper*)_logWriter.get();
+        for(unsigned int i=0;i<writer->_msgQueue.size();i++){
+            //write(writer->_msgQueue[i].first, writer->_msgQueue[i].second);
+            insertPlainText(writer->_msgQueue[i].first.c_str());
+        }
+        writer->_msgQueue.clear();
+        moveCursor(QTextCursor::End);
+        return true;
+    } else {
+        event->ignore();
+    }
+    return QTextEdit::event(event);
 }
 
 
@@ -341,18 +387,32 @@ QString LuaConsoleWidget::interpretCommand(QString cmd, int *res){
 }
 
 bool LuaConsoleWidget::execCommand(QString command, bool b){
-    //std::cout << "Executing command:" << command.toStdString() << std::endl;
-    // make sure to output to console window
-
-    rwlibs::swig::setlog(_logWriter);
-
     // if we want to include echo of command...
     //displayPrompt();
     //insertPlainText(command);
+    rwlibs::swig::setlog( _logWriter );
     setTextColor(_outColor);
+    this->setEnabled(false);
 
-    int res;
-    QString strRes = interpretCommand(command, &res);
+    _luaRunner->set(command.toStdString(), _luastate , _logWriter);
+    _luaRunner->start();
+
+    return true;
+}
+
+void LuaConsoleWidget::setLuaState(LuaState *lstate){
+    //_luaRunner->_lua = lstate;
+    _luastate=lstate;
+}
+
+
+void LuaConsoleWidget::runFinished(){
+
+    int res = _luaRunner->getReturnValue();
+    QString strRes = _luaRunner->getReturnString().c_str();
+    QString command = _luaRunner->getCommand().c_str();
+
+
 
     //According to the return value, display the result either in red or in blue
     if (res == 0){
@@ -368,11 +428,13 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
 
     setTextColor(_cmdColor);
 
+    this->setEnabled(true);
+
     //Display the prompt again
     displayPrompt();
 
-
-    return true;
+    moveCursor(QTextCursor::End);
+    setFocus(Qt::OtherFocusReason);
 }
 
 bool LuaConsoleWidget::isCommandComplete(QString command){

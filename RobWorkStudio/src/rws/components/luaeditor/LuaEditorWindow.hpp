@@ -28,6 +28,7 @@
 #include "ui_LuaEditorWindow.h"
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
+#include "LuaExecutionThread.hpp"
 
  #include <QMainWindow>
  #include <QThread>
@@ -44,94 +45,85 @@
 
 class QTextEdit;
 
-class LuaRunThread : public QThread
- {
-    Q_OBJECT
- public:
-     LuaRunThread(const std::string& cmd,
-                  LuaState *lstate,
-				  rw::common::Log::Ptr output,
-				  QWidget *parent=NULL):
-				      QThread(parent),
-                      _cmd(cmd),
-                      _lua(lstate),
-                      _output(output)
-     {}
 
-     void set(const std::string& cmd,
-                  LuaState *lstate,
-				  rw::common::Log::Ptr output)
-     {
-         _cmd = cmd;
-         _lua = lstate;
-         _output = output;
-     }
+namespace rws {
 
-     void run();
+    /**
+     * @brief A lua editor and programming pad designed to resemble a teach pendent
+     * for devices in robworkstudio.
+     *
+     * This editor will enable lua scripting and execution from within robworkstudio.
+     */
+    class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
+        Q_OBJECT
+    public:
 
-     std::string _cmd;
-     LuaState *_lua;
-	 rw::common::Log::Ptr _output;
- };
+        /**
+         * @brief Constructor
+         * @param lua [in] the lua state on which to operate
+         * @param output [in] the log on which to stream print functionality and errors
+         * @param rwstudio [in] instance of RobWorkStudio
+         * @param parent [in] the Qt parent widget
+         */
+        LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent);
 
+        //! @brief destructor
+        virtual ~LuaEditorWindow();
 
-class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
-	Q_OBJECT
+        /**
+         * @brief change the lua state
+         * @param lua [in] the new lua state which is to be used.
+         */
+        void setLuaState(LuaState* lua){_lua = lua;}
 
-public:
+    public slots:
+        //void newFile();
+        //void openFile(const QString &path = QString());
+        //void closeFile();
+        //void runChunk();
+        //void run();
 
-	LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent);
-	virtual ~LuaEditorWindow();
+        void on_actionNew_triggered(bool);
+        void on_actionOpen_triggered(bool);
+        void on_actionSave_triggered(bool);
+        void on_actionRun_triggered(bool);
+        void on_actionStop_triggered(bool);
+        void on_actionReload_triggered(bool);
 
-	void setLuaState(LuaState* lua){_lua = lua;}
+        void textChanged();
 
-public slots:
-	//void newFile();
-	//void openFile(const QString &path = QString());
-	//void closeFile();
-	//void runChunk();
-	//void run();
+        void runFinished();
 
-    void on_actionNew_triggered(bool);
-    void on_actionOpen_triggered(bool);
-    void on_actionSave_triggered(bool);
-    void on_actionRun_triggered(bool);
-    void on_actionStop_triggered(bool);
-    void on_actionReload_triggered(bool);
-
-    void textChanged();
-
-    void runFinished();
-
-    void ShowContextMenu(const QPoint& p);
-    void setCheckAction(QAction*);
+        void ShowContextMenu(const QPoint& p);
+        void setCheckAction(QAction*);
 
 
-private:
-    QAbstractItemModel *modelFromFile(const QString& fileName);
+    private:
+        QAbstractItemModel *modelFromFile(const QString& fileName);
 
 
-    void setupEditor();
+        void setupEditor();
 
-    //QPlainTextEdit *_editor;
-    CodeEditor *_editor;
-    LuaHighlighter *_highlighter;
-    LuaState *_lua;
-	rw::common::Log::Ptr _output;
-    rw::common::PropertyMap _pmap;
-    //QCompleter *_completer;
-    TreeModelCompleter *_completer;
+        //QPlainTextEdit *_editor;
+        CodeEditor *_editor;
+        LuaHighlighter *_highlighter;
+        LuaState *_lua;
+        rw::common::Log::Ptr _output;
+        rw::common::PropertyMap _pmap;
+        //QCompleter *_completer;
+        TreeModelCompleter *_completer;
 
-    //bool _modified;
-    bool _isRunning;
+        //bool _modified;
+        bool _isRunning;
 
-    bool save();
-    bool saveAs();
-    bool save(const std::string& filename);
+        bool save();
+        bool saveAs();
+        bool save(const std::string& filename);
 
-    LuaRunThread *_luaRunner;
-    rws::RobWorkStudio* _rws;
-};
+        LuaExecutionThread *_luaRunner;
+        rws::RobWorkStudio* _rws;
+    };
 
+}
 
 #endif /* LUAEDITORWINDOW_HPP_ */

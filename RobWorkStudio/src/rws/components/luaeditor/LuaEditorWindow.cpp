@@ -27,21 +27,13 @@ extern "C" {
 }
 
 #include "TreeModelCompleter.hpp"
-
+#include "LuaExecutionThread.hpp"
 #include <rwlibs/swig/ScriptTypes.hpp>
+
 using namespace rw::common;
-
-
-
+using namespace rws;
 
 namespace {
-	void processError(int error, lua_State* lua, Log::Ptr output)
-	{
-		if (error) {
-			output->info() << lua_tostring(lua, -1) << "\n";
-			lua_pop(lua, 1);
-		}
-	}
 
 	void luaLineHook(lua_State *L, lua_Debug *ar){
 		lua_getinfo(L, "nS", ar);
@@ -65,7 +57,7 @@ LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws
 
 //    _modified = false;
 
-    //lua_sethook(_lua, luaLineHook, LUA_MASKLINE, 0);
+    lua_sethook(_lua->get(), luaLineHook, LUA_MASKLINE, 0);
 
 	this->setCentralWidget(_editor);
 
@@ -97,7 +89,7 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
         QMenu *devMenu = new QMenu(dev->getName().c_str());
         connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
         QAction *action = devMenu->addAction( "Get Q" );
-
+        devMenu->addAction(action);
         //devMenu->addAction( "Get Pos Limits" );
         //devMenu->addAction( "Get Vel Limits" );
         //devMenu->addAction( "Get Acc Limits" );
@@ -163,7 +155,7 @@ void LuaEditorWindow::setupEditor(){
 
     _highlighter = new LuaHighlighter(_editor->document());
 
-    _luaRunner =  new LuaRunThread("",_lua,_output, this);
+    _luaRunner =  new LuaExecutionThread("", _lua, _output->getWriter(Log::Info), this);
 
     connect(_editor, SIGNAL(modificationChanged(bool)), this, SLOT(textChanged()));
 
@@ -267,33 +259,13 @@ bool LuaEditorWindow::save(const std::string& filename) {
     }
 }
 
- void LuaRunThread::run()
- {
-     //QObject::moveToThread(this);
-     try {
-         //const std::string cmd = _editor->textCursor().block().text().toStdString();
-         int error = luaL_loadbuffer(_lua->get(), _cmd.data(), _cmd.size(), "");
-         if (!error)
-             error = lua_pcall(_lua->get(), 0, 0, 0);
-
-         if(error){
-             //_editor->setLineState(number, CodeEditor::ExecutedError);
-             processError(error, _lua->get(), _output);
-         }
-     } catch (const Exception& exp) {
-         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what()));
-     } catch (std::exception& e) {
-         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(e.what()));
-     } 
- }
-
 void LuaEditorWindow::on_actionRun_triggered(bool) {
     _lua->reset();
     rwlibs::swig::setlog( &Log::infoLog() );
 
     const std::string cmd = _editor->toPlainText().toStdString();
     _editor->setEnabled(false);
-    _luaRunner->set(cmd,_lua,_output);
+    _luaRunner->set(cmd,_lua,_output->getWriter(Log::Info));
     _luaRunner->start();
     //_luaRunner->run(); // TODO: some lua code will not work in separate threads
 }
@@ -420,8 +392,3 @@ QAbstractItemModel *LuaEditorWindow::modelFromFile(const QString& fileName)
  }
 #endif
 
-/*void LuaEditorWindow::run(){
-	// start a thread and start executing lines
-
-}
-*/
