@@ -56,7 +56,7 @@ Transform3D<> DependentRevoluteJoint::doGetTransform(const State& state) const
     const double q_owner = _owner->getData(state)[0];
     const double q = _scale * q_owner + _offset;
 
-    return _helper.getJointTransform(Q(1,q));
+    return _helper.getTransform(q);
 }
 
 Jacobian DependentRevoluteJoint::doGetJacobian(const State& state) const
@@ -76,6 +76,18 @@ double DependentRevoluteJoint::calcQ(const rw::kinematics::State& state){
     const double q = _scale * q_owner + _offset;
     return q;
 }
+
+void DependentRevoluteJoint::setFixedTransform( const rw::math::Transform3D<>& t3d){
+    _helper.setFixedTransform( t3d );
+}
+
+rw::math::Transform3D<> DependentRevoluteJoint::getJointTransform(const rw::kinematics::State& state) const{
+    const double q_owner = _owner->getData(state)[0];
+    const double q = _scale * q_owner + _offset;
+
+    return _helper.getJointTransform(q);
+}
+
 
 
 

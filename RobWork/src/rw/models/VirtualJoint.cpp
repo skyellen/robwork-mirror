@@ -32,8 +32,8 @@ VirtualJoint::VirtualJoint(const std::string& name,
 
 
 void VirtualJoint::doMultiplyTransform(const Transform3D<>& parent,
-                                     const State& state,
-                                     Transform3D<>& result) const
+                                      const State& state,
+                                      Transform3D<>& result) const
 {
     Transform3D<>::multiply(parent, _transform, result);
 }
@@ -42,3 +42,12 @@ void VirtualJoint::doMultiplyTransform(const Transform3D<>& parent,
 Transform3D<> VirtualJoint::doGetTransform(const State& state) const {
     return _transform;
 }
+
+void VirtualJoint::setFixedTransform( const rw::math::Transform3D<>& t3d){
+    _transform = t3d;
+}
+
+rw::math::Transform3D<> VirtualJoint::getJointTransform(const rw::kinematics::State& state) const{
+    return _transform;
+}
+

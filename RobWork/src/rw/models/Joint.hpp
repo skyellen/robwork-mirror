@@ -149,9 +149,16 @@ namespace rw { namespace models {
          */
         virtual rw::math::Transform3D<> getFixedTransform() const = 0;
 
+        virtual void setFixedTransform( const rw::math::Transform3D<>& t3d) = 0;
+
+        virtual math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const = 0;
+
         void setActive(bool isActive){ _isActive=isActive; };
 
         bool isActive() const { return _isActive; };
+
+
+
     private:
         std::pair<math::Q, math::Q> _bounds;
         math::Q _maxVelocity;

@@ -117,6 +117,13 @@ namespace rw { namespace models {
         //! @copydoc Joint::getFixedTransform()
         rw::math::Transform3D<> getFixedTransform() const{ return _helper.getFixedTransform();};
 
+        //! @copydoc Joint::setFixedTransform()
+        void setFixedTransform( const rw::math::Transform3D<>& t3d) ;
+
+        //! @copydoc Joint::getJointTransform()
+        math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const;
+
+        math::Transform3D<> getJointTransform(double q) const;
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,

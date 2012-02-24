@@ -70,6 +70,10 @@ namespace rw { namespace models {
         //! @copydoc Joint::getFixedTransform()
         rw::math::Transform3D<> getFixedTransform() const{ return _transform; };
 
+        void setFixedTransform( const rw::math::Transform3D<>& t3d);
+
+        math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const;
+
     protected:
         math::Transform3D<> doGetTransform(const kinematics::State& state) const;
 

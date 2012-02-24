@@ -83,9 +83,35 @@ namespace rw { namespace models {
          *
          * @param q [in] Joint values for the joint
          *
-         * @return The transform of the frame relative to its parent.
+         * @return The transform of the frame relative to its displacement transform.
          */
-        math::Transform3D<> getJointTransform(const math::Q& q) const;
+        math::Transform3D<> getJointTransform(double q) const;
+
+        /**
+         * @brief The transform of the joint relative to its parent.
+         *
+         * The transform is calculated for the joint values of \b state.
+         *
+         * This method is equivalent to Frame::multiplyTransform except that is operates
+         * directly on a joint vector instead of a State.
+         *
+         *
+         * @param q [in] Joint values for the joint
+         *
+         * @return The transform of the frame relative to its parent transform.
+         */
+        math::Transform3D<> getTransform(double q) const;
+        // we need to declare the getTransform again because its shadowed by the getTransform(q)
+        using rw::kinematics::Frame::getTransform;
+
+        //! @copydoc Joint::getFixedTransform()
+        rw::math::Transform3D<> getFixedTransform() const;
+
+        //! @copydoc Joint::setFixedTransform()
+        void setFixedTransform( const rw::math::Transform3D<>& t3d);
+
+        //! @copydoc Joint::getJointTransform()
+        math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const;
 
         /**
          * @copydoc Joint::getJacobian();
@@ -96,9 +122,6 @@ namespace rw { namespace models {
                          const math::Transform3D<>& tcp,
                          const kinematics::State& state,
                          math::Jacobian& jacobian) const;
-
-        //! @copydoc Joint::getFixedTransform()
-        rw::math::Transform3D<> getFixedTransform() const;
 
     protected:
         /**

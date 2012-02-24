@@ -55,7 +55,7 @@ Transform3D<> DependentPrismaticJoint::doGetTransform(const State& state) const
     const double q_owner = _owner->getData(state)[0];
     const double q = _scale * q_owner + _offset;
 
-    return _helper.getJointTransform(Q(1,q));
+    return _helper.getTransform(q);
 }
 
 
@@ -69,3 +69,17 @@ void DependentPrismaticJoint::getJacobian(size_t row, size_t col, const Transfor
 
     jacobian.addPosition(_scale * axis, row, col);
 }
+
+
+void DependentPrismaticJoint::setFixedTransform( const rw::math::Transform3D<>& t3d) {
+    _helper.setFixedTransform( t3d );
+}
+
+rw::math::Transform3D<> DependentPrismaticJoint::getJointTransform(const rw::kinematics::State& state) const{
+    const double q_owner = _owner->getData(state)[0];
+    const double q = _scale * q_owner + _offset;
+
+    return _helper.getJointTransform(q);
+}
+
+

@@ -67,11 +67,6 @@ void PrismaticJoint::multiplyJointTransform(const Transform3D<>& parent,
 }
 
 
-Transform3D<> PrismaticJoint::getJointTransform(const Q& q) const
-{
-    return _impl->getTransform(q(0));
-}
-
 
 void PrismaticJoint::doMultiplyTransform(const Transform3D<>& parent,
                                          const State& state,
@@ -95,19 +90,29 @@ rw::math::Transform3D<> PrismaticJoint::getFixedTransform() const{
 	return _impl->getFixedTransform();
 }
 
-//----------------------------------------------------------------------
-// Constructors
-/*
-PrismaticJoint* PrismaticJoint::make(
-    const std::string& name,
-    const Transform3D<>& transform)
-{
-    if (transform.P() == Vector3D<>(0, 0, 0))
-		return new PrismaticJointZeroOffsetImpl(name, transform.R());
+void PrismaticJoint::setFixedTransform( const rw::math::Transform3D<>& t3d) {
+    PrismaticJointImpl *tmp = _impl;
+    const Rotation3D<>& rot = t3d.R();
+    if (rot == Rotation3D<>::identity())
+        _impl = new PrismaticJointZeroRotationImpl(t3d.P());
+    else if (t3d.P() == Vector3D<>(0, 0, 0))
+        _impl = new PrismaticJointZeroOffsetImpl(t3d.R());
     else
-        return new PrismaticJointImpl(name, transform);
-
-    // More cases can be added for joints with a change in rotation of zero
-    // (which is also a common case).
+        _impl = new PrismaticJointImplBasic(t3d);
+    delete tmp;
 }
-*/
+
+rw::math::Transform3D<> PrismaticJoint::getTransform(double q) const{
+    return _impl->getTransform( q );
+}
+
+Transform3D<> PrismaticJoint::getJointTransform(double q) const
+{
+    return rw::math::Transform3D<>( rw::math::Vector3D<>(0, 0, q) );
+}
+
+rw::math::Transform3D<> PrismaticJoint::getJointTransform(const rw::kinematics::State& state) const{
+    const double q = getData(state)[0];
+    return getJointTransform(q);
+}
+

@@ -61,6 +61,15 @@ public:
         _type(type)
     {}
 
+    DHParameterSet(double alpha, double a, double beta, double b, bool parallel) :
+        _alpha(alpha),
+        _a(a),
+        _b(b),
+        _beta(beta),
+        _type("HGP")
+    {}
+
+
     /** @brief \f$\alpha_{i-1}\f$ **/
     double alpha() const {
         return _alpha;
@@ -80,6 +89,18 @@ public:
     double theta() const {
         return _theta;
     }
+
+    /** $brief \f$\theta_{i} \f$ **/
+    double b() const {
+        return _b;
+    }
+
+    /** $brief \f$\theta_{i} \f$ **/
+    double beta() const {
+        return _beta;
+    }
+
+    bool isParallel(){ return _isParallel; }
 
     /**
      * @brief the DH-convention type
@@ -115,7 +136,9 @@ private:
     double _d;
     /** $brief \f$\theta_{i} \f$ **/
     double _theta;
-
+    double _beta;
+    double _b;
+    bool _isParallel;
     std::string _type;
 };
 
