@@ -1329,7 +1329,7 @@ function reflect( mytableArg )
  else
    local c = {} -- all constants
    for key,value in pairs( mytable ) do
-    print(type(value))
+      -- print(type(value))
       if (type(value)=="function") then
           table.insert(a, key)
       elseif (type(value)=="number") then
