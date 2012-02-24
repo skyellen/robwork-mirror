@@ -64,6 +64,60 @@ void sharedPtrTest(){
 }
 */
 
+class StateCacheObject: public StateCache {
+public:
+    int A;
+
+    StateCacheObject():A(0){}
+
+    size_t size() const{ return sizeof(StateCacheObject); };
+
+    StateCache::Ptr clone() const{
+        StateCacheObject *scache = new StateCacheObject();
+        scache->A = A;
+        return rw::common::ownedPtr( scache );
+    }
+};
+
+class StateDataWithCache: public StateData {
+public:
+    StateDataWithCache():StateData(2,"MyStateWithCache", true){
+    }
+
+    void setA(int i, State &state){
+
+        StateCache::Ptr cache = this->getCache(state);
+
+        // if cache is empty, then initialize it
+        if(cache == NULL){
+
+            cache = rw::common::ownedPtr( new StateCacheObject() );
+
+            setCache( cache , state);
+
+        }
+
+        StateCacheObject *sobj = (StateCacheObject*)cache.get();
+
+        sobj->A = i;
+
+    }
+
+    int getA(State &state){
+        StateCache::Ptr cache = this->getCache(state);
+        // if cache is empty, then initialize it
+        if(cache == NULL){
+            cache = rw::common::ownedPtr( new StateCacheObject() );
+            setCache( cache , state);
+        }
+        StateCacheObject *sobj = (StateCacheObject*)cache.get();
+        return sobj->A;
+    }
+
+
+};
+
+
 BOOST_AUTO_TEST_CASE( StateStructureTest )
 {
     //sharedPtrTest();
@@ -149,17 +203,37 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[2], m1_t3d.P()[2] , 1e-6);
 
 
-    //Frame::iterator_pair iter = world->getChildren();
-    //for(;iter.first!=iter.second; ++iter.first)
-        //std::cout << "c:" << (*(iter.first)).getID();
-    //std::cout << std::endl;
-    //iter = world->getChildren(state);
-    //for(;iter.first!=iter.second; ++iter.first)
-    //    std::cout << "c:" << (*(iter.first)).getID();
-    //std::cout << std::endl;
+    BOOST_MESSAGE("-- Testing StateCache ");
+    // this should test the influence on StateCache when state is copied/deep-copied
 
-    //std::cout << "Nr of children: " << children.size() << std::endl;
-    //std::cout << "Nr of DAF children: " << dafchildren.size() << std::endl;
+    StateDataWithCache *o1 = new StateDataWithCache();
+
+    tree->addData( o1 );
+
+    nstate = tree->getDefaultState();
+
+    o1->setA(1,nstate);
+
+    // standard shallow copy
+    State cstate = nstate;
+    // first test that the values are the same in the two states
+    BOOST_REQUIRE_EQUAL(o1->getA(nstate),o1->getA(cstate));
+    // now change it in one state and verify that the values are still the same
+    o1->setA(20,nstate);
+    BOOST_REQUIRE_EQUAL(o1->getA(nstate),o1->getA(cstate));
+
+    // deep copy
+    State dcstate = nstate.clone();
+    // first test that the values are the same in the two states
+    BOOST_REQUIRE_EQUAL(o1->getA(nstate),o1->getA(dcstate));
+    // now change it in one state and verify that the values are NOT the same anymore
+    o1->setA(50,nstate);
+    BOOST_REQUIRE_NE(o1->getA(nstate),o1->getA(dcstate));
+
+
+
+
+
 
     BOOST_MESSAGE("-- Testing Kinematic utils");
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
@@ -192,9 +266,8 @@ BOOST_AUTO_TEST_CASE( removeFramesTest )
     Frame *parent; // = frame->getParent(tree->getDefaultState());
     tree->remove(frame);
     while(frame!=world){
-
         parent = frame->getParent(tree->getDefaultState());
-        std::cout << "frame: " << frame->getName() << "  parent: " << parent->getName() << std::endl;
+        //std::cout << "frame: " << frame->getName() << "  parent: " << parent->getName() << std::endl;
         tree->remove(frame);
         frame = parent;
     }
