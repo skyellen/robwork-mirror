@@ -76,10 +76,10 @@ namespace graphics {
             int getTextureID() const { return texId; };
             //! @brief material name, not necesarily unique
             std::string name;
-            //! @brief index to a texture which is stored in Model3D, -1 if not used
-            short int texId;
             //! @brief true if this material is a simple material
             bool simplergb;
+            //! @brief index to a texture which is stored in Model3D, -1 if not used
+            short int texId;
             //! @brief Red, Green, Blue and alpha color (simple) or diffues color(advanced)
             float rgb[4];
             //! @brief Ambient color as RGBA

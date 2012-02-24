@@ -647,6 +647,7 @@ LoaderAC3D::AC3DObject* LoaderAC3D::load_object(
         break;
         default:
             RW_WARN("LoaderAC3D: UNKNOWN token!! ");
+            break;
         }
     }
     calc_vertex_normals(ob);

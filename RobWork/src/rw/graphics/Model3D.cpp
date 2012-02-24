@@ -174,6 +174,7 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
                         if( smooth_angle>std::acos( dot( normalize(calcNormal(obj, groupface)), normalize(facenormal)) )){
                             // the face should be put into this group
                             ingroup = true;
+
                             break;
                         }
                     }

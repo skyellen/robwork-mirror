@@ -150,7 +150,6 @@ namespace graphics {
 
 
 
-
     private:
         PositionSelectedEvent _positionSelectedEvent;
         //View::Ptr _mainView;

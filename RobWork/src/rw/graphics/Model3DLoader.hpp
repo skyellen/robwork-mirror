@@ -34,7 +34,8 @@ namespace graphics {
 	 */
     class Model3DLoader {
     public:
-
+        //! destructor
+        virtual ~Model3DLoader(){};
         /**
          * @brief load a Model3D from file \b filename
          * @param filename [in] name of file to load
