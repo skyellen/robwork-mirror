@@ -50,7 +50,7 @@ namespace rw { namespace kinematics {
         StateSetup():
             _version(-1), _tree(NULL),
             _dof(0),_nrOfDAF(0),_nrOfValidFrames(0),
-            _initMaxID(0)
+            _initMaxID(0),_nrCaches(0)
         {
         }
 
@@ -77,7 +77,15 @@ namespace rw { namespace kinematics {
             const int id =  data.getID();
             if(id<0 || id>=_initMaxID)
                 return -1;
-            return _offsets.at(id);
+            return _offsets[id];
+        }
+
+        inline int getCacheIdx(const StateData& data) const
+        {
+            const int id =  data.getID();
+            if(id<0 || id>=_initMaxID)
+                return -1;
+            return _sdataTCacheIdx[id];
         }
 
         /**
@@ -188,6 +196,10 @@ namespace rw { namespace kinematics {
             return _datas;
         }
 
+        inline int getCacheIdx(int id){ return _sdataTCacheIdx[id]; }
+
+        inline int getMaxCacheIdx() const { return  _nrCaches; }
+
     private:
         friend class StateData;
 
@@ -200,6 +212,7 @@ namespace rw { namespace kinematics {
         std::vector<boost::shared_ptr<StateData> > _datas;
 
         std::vector<Frame*> _dafs;
+
         ////////////////////////////////// QState stuff
         // Offsets into the QState array.
         // size == <nr of state datas>
@@ -213,7 +226,8 @@ namespace rw { namespace kinematics {
         int _nrOfValidFrames;
         // the initial number of max id
         const int _initMaxID;
-
+        // the number of caches
+        int _nrCaches;
         ////////////////////////////////// TreeState stuff
         // indexes into the DAF parents, if -1 then no DAF parent exist
         // size == <nr of statedata>
@@ -223,6 +237,9 @@ namespace rw { namespace kinematics {
         // size==<nr of statedata>
         std::vector<int> _dafChildidx;
 
+        // indexes into the StateCache array,
+        // size==<nr of statedata>
+        std::vector<int> _sdataTCacheIdx;
     private:
         // You _can_ go around copying StateSetup without memory leaks or other
         // infelicities, but we don't expect to do that so we disallow it.

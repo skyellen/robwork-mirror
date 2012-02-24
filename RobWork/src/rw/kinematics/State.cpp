@@ -28,8 +28,32 @@ using namespace rw::kinematics;
 
 State::State() {}
 
+State::State(const QState& q_state,
+      const TreeState& tree_state,
+      int stateUniqueId) :
+    _tree_state(tree_state),
+    _q_state(q_state),
+    _stateUniqueId(stateUniqueId)
+{
+    _cache_state.resize( _tree_state.getStateSetup()->getMaxCacheIdx() );
+}
+
 Frame* State::getFrame(int id){
     return _q_state.getStateSetup()->getFrame(id);
+}
+
+rw::common::Ptr<StateCache> State::getCache(int id){
+    int cacheIdx = _q_state.getStateSetup()->getCacheIdx(id);
+    if(cacheIdx<0)
+        return NULL;
+    return _cache_state[cacheIdx];
+}
+
+void State::setCache(int id, rw::common::Ptr<StateCache> cache){
+    int cacheIdx = _q_state.getStateSetup()->getCacheIdx(id);
+    if(cacheIdx<0)
+        return;
+    _cache_state[cacheIdx] = cache;
 }
 
 void State::copy(const State &from){
@@ -49,7 +73,17 @@ void State::copy(const State &from){
         // check if frame exist in state
         if( f==NULL )
             continue;
+
         const StateData& data = *f;
+
+        if( data.hasCache() ){
+            int fromCacheIdx = fromQState.getStateSetup()->getCacheIdx(data);
+            int toCacheIdx = _q_state.getStateSetup()->getCacheIdx(data);
+            if(fromCacheIdx>=0 && toCacheIdx>=0){
+                _cache_state[toCacheIdx] = from._cache_state[fromCacheIdx];
+            }
+        }
+
         int offset = fromQState.getStateSetup()->getOffset(data);
         if(offset<0)
             continue;
@@ -63,6 +97,7 @@ void State::copy(const State &from){
     const TreeState& tstate = from.getTreeState();
     const std::vector<Frame*>& dafs = fromQState.getStateSetup()->getTree()->getDAFs();
     BOOST_FOREACH(Frame* daf, dafs){
+
 
         // check if daf is still in newstate
         int dafidx = tstate.getStateSetup()->getDAFIdx(daf);
@@ -83,7 +118,36 @@ void State::copy(const State &from){
     _stateUniqueId = from.getUniqueId();
 }
 
+State State::clone(){
+    State state;
+    state.clone(*this);
+    return state;
+}
+
+/**
+ * @brief performs a deep copy of \b src into this state.
+ * @param state [in] the state that is to be cloned
+ */
+void State::clone( const State& from ){
+    // first copy the qstate and tree state, and shallow copy cache
+    *this = from;
+    // next run through cach and perform deep copies
+    BOOST_FOREACH(StateCache::Ptr &cache, _cache_state){
+        if(cache!=NULL)
+            cache = cache->clone();
+    }
+}
+
+
 
 Ptr<StateStructure> State::getStateStructure() const {
     return _tree_state.getStateSetup()->getTree();
+}
+
+
+void State::upgrade(){
+    // we only upgrade if the version differs
+    if(_tree_state.getStateSetup()->getTree()->getDefaultState().getUniqueId() != _stateUniqueId ){
+        upgradeTo(_tree_state.getStateSetup()->getTree()->getDefaultState());
+    }
 }

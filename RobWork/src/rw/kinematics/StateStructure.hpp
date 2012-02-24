@@ -26,6 +26,7 @@
 #include "Frame.hpp"
 #include <vector>
 #include "State.hpp"
+#include "StateCache.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Event.hpp>
@@ -86,14 +87,15 @@ namespace rw { namespace kinematics {
         void addData(StateData *data);
 
         /**
-         * @brief adds a frame to the frame tree and staticly associates
+         * @brief adds a frame to the frame tree and statically associates
          * the frame with the parent frame. This method updates the default
          * state.
          *
-         * @note the parent frame must exist in the frame tree and cannot be
-         * NULL.
+         * If parent frame is null then the frame will be attached to the world
+         * frame.
+         *
          */
-        void addFrame(Frame *frame, Frame *parent);
+        void addFrame(Frame *frame, Frame *parent=NULL);
 
         /**
          * @brief adds a DAF to the frame tree and dynamicly associates
@@ -131,7 +133,7 @@ namespace rw { namespace kinematics {
          * @brief get the default state of the frame tree
          * @return the default tree state
          */
-        State getDefaultState() const;
+        const State& getDefaultState() const;
 
         /**
          * @brief set the default state of the dynamic frame tree
@@ -184,7 +186,7 @@ namespace rw { namespace kinematics {
          */
         void cleanup();
 
-        /**
+        /*
          * @brief test if the state structure has a specific frame
          * @param frame [in]
          * @return

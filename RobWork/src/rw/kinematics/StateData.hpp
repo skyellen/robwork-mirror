@@ -28,6 +28,7 @@
 #include <iostream>
 
 #include "State.hpp"
+#include "StateCache.hpp"
 
 namespace rw { namespace kinematics {
 
@@ -58,7 +59,7 @@ namespace rw { namespace kinematics {
          * StateData present in different trees may have identical IDs.
          *
          * IDs are used for the efficient implementation of State. Normally,
-         * you should not make use of frame IDs yourself.
+         * you should not make use of StateData IDs yourself.
          *
          * @return An integer ID for the frame.
          */
@@ -133,7 +134,10 @@ namespace rw { namespace kinematics {
             state.getQState().setQ(*this, vals);
         }
 
+        inline bool hasCache() const { return _hasCache; };
+
     protected:
+
         /**
          * @brief A state with \b size number of doubles in the State vector.
          *
@@ -150,7 +154,13 @@ namespace rw { namespace kinematics {
          *
          * @param name [in] The name of the frame.
          */
-        StateData(int size, const std::string& name);
+        StateData(int size, const std::string& name, bool hasCache=false);
+
+
+        //StateData(int size, StateCache::Ptr defaultCache, const std::string& name);
+        rw::common::Ptr<StateCache> getCache(State& state);
+
+        void setCache(rw::common::Ptr<StateCache> cache, State& state);
 
     private:
         // The tree is responsible for the assignment of the IDs that are later
@@ -176,6 +186,9 @@ namespace rw { namespace kinematics {
 
         // The name of the state data.
         std::string _name;
+
+        bool _hasCache;
+
 
     private:
         // StateData should not be copied.

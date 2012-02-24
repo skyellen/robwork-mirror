@@ -69,10 +69,13 @@ void StateStructure::addData(StateData *data){
 
 void StateStructure::addDataInternal(StateData *data){
     // frame must not be in tree allready
-    RW_ASSERT(!has(data));
+    if(has(data))
+        RW_THROW("The StateData has allready been added! State data can only be added once.");
+
     _version++;
     const int id = allocateDataID();
     data->setID(id);
+
     // There is no turning back. Ownership is forever taken.
     boost::shared_ptr<StateData> sharedData( data );
     _allDatas.at(id) = sharedData;
@@ -83,17 +86,32 @@ void StateStructure::addDataInternal(StateData *data){
     // lastly update the default state
 }
 
-void StateStructure::addFrame(Frame *frame, Frame *parent){
+void StateStructure::addFrame(Frame *frame, Frame *parent_arg){
     // both frame and parent must be well defined
+    if(frame==NULL)
+        RW_THROW("Input frame must not be NULL!");
+    Frame *parent = parent_arg;
+    if(parent_arg==NULL){
+        parent = getRoot();
+    }
     RW_ASSERT(frame && parent);
+
     // and parent must exist in the tree, but not the frame
-    RW_ASSERT(!has(frame));
-    RW_ASSERT(has(parent));
+    if( has(frame) ){
+        RW_THROW("The frame has allready been added to the state structure!");
+    }
+
+    if( !has(parent) ){
+        RW_THROW("The parent is not part of the state structure and should be added before frame is!");
+    }
+
     // and lastly we must check if the frame has been added to other StateStructure
-    RW_ASSERT( frame->getID()==-1 );
+    if( frame->getID()!=-1  ){
+        RW_THROW("The frame has allready been added to another state structure");
+    }
     // check if frame name is unique
-    if(findFrame(frame->getName())!=NULL)
-        RW_THROW("Frame name is not unique: "<< frame->getName() );
+    if( findFrame(frame->getName())!=NULL )
+        RW_THROW("Frame name is not unique: "<< frame->getName());
 
     // update the parent child relationships
     frame->setParent(parent);
@@ -180,7 +198,7 @@ State StateStructure::upgradeState(const State& oldState)
     return state;
 }
 
-State StateStructure::getDefaultState() const
+const State& StateStructure::getDefaultState() const
 {
     return _defaultState;
 }

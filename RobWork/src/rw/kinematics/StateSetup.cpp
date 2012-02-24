@@ -41,6 +41,21 @@ StateSetup::StateSetup(int version, StateStructure& tree,
     }
     _dof = offset;
 
+    //*********'*** Next create setup data for the StateCache data
+    _sdataTCacheIdx.resize( tree.getMaxID() );
+    // initialize the _offsets with -1 such that empty data's return -1 when requested
+    BOOST_FOREACH(int &offsetIdx, _sdataTCacheIdx){ offsetIdx = -1; }
+    // Traverse the data and calculate the offsets.
+    offset = 0;
+    BOOST_FOREACH(boost::shared_ptr<StateData>& dval, _datas){
+        if( dval==NULL )
+            continue;
+        if(dval->hasCache()){
+            _sdataTCacheIdx.at(dval->getID()) = offset;
+            offset++;
+        }
+    }
+    _nrCaches = offset;
     //************* next create setup data for the TreeState
     // create daf cildren offsets
     // create parent-children offsets

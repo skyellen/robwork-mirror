@@ -22,24 +22,3 @@
 #include <rw/common/macros.hpp>
 
 using namespace rw::kinematics;
-
-StateData::StateData(int size, const std::string& name, bool hasCache):
-    _id(-1),
-    _size(size),
-    _name(name),
-    _hasCache(hasCache)
-{
-    RW_ASSERT(0 <= size);
-}
-
-
-StateCache::Ptr StateData::getCache(State& state){
-    if( _hasCache==false )
-        return NULL; // stop early if we know size is 0
-    return state.getCache(_id);
-}
-
-void StateData::setCache(rw::common::Ptr<StateCache> cache, State& state){
-    if( _hasCache==false ) return; // stop early if we know size is 0
-    state.setCache(_id, cache);
-}

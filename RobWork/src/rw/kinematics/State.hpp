@@ -28,7 +28,7 @@
 
 #include "QState.hpp"
 #include "TreeState.hpp"
-
+#include "StateCache.hpp"
 #include <rw/common/Ptr.hpp>
 
 
@@ -96,7 +96,7 @@ namespace rw { namespace kinematics {
         { to.getQState() = getQState(); }
 
         /**
-         * @brief Assign to a state the tree state of the anoter state.
+         * @brief Assign to a state the tree state of the another state.
          *
          * The State can be thought of as consisting of a tree state
          * (TreeState) (for the structure of the tree) and a configuration state
@@ -182,8 +182,31 @@ namespace rw { namespace kinematics {
          * @brief copies data from a state into this state. The version
          * of the state is allowed to be different from this state. Only
          * state data that is valid for both states will be copied.
+         * @param src [in] the state that is to be copied
          */
-        void copy(const State &state);
+        void copy(const State &src);
+
+        /**
+         * @brief performs a deep copy of this state and returns the clone. Both
+         * QState and TreeState are (deep) copied as normal however the cachestates will
+         * be copied using their clone method.
+         * @return a deep copy of this state (clone)
+         */
+        State clone();
+
+        /**
+         * @brief performs a deep copy of \b src into this state.
+         * @param state [in] the state that is to be cloned
+         */
+        void clone( const State& src );
+
+
+        /**
+         * @brief this function upgrades the current version of this
+         * State to the newest state. It will not override data values that
+         * is set in the current state.
+         */
+        void upgrade();
 
         /**
          * @brief this function upgrades the current version of this
@@ -249,6 +272,9 @@ namespace rw { namespace kinematics {
          * @return Pointer to the StateStructure matching the frame
          */
 		rw::common::Ptr<StateStructure> getStateStructure() const;
+
+
+
     private:
         friend class StateData;
         friend class Frame;
@@ -274,19 +300,27 @@ namespace rw { namespace kinematics {
         TreeState& getTreeState() { return _tree_state; }
 
         /**
+         * @brief the cache part of the state
+         * @return vector of caches, the mapping from StateData to cache is located in StateSetup
+         */
+        //std::vector<rw::common::Ptr<StateCache> >& getCacheState(){return _cache_state;}
+
+        rw::common::Ptr<StateCache> getCache(int id);
+
+        void setCache(int id, rw::common::Ptr<StateCache> cache);
+
+
+        /**
          * @brief Constructs a state
          */
         State(const QState& q_state,
               const TreeState& tree_state,
-              int stateUniqueId) :
-            _tree_state(tree_state),
-            _q_state(q_state),
-            _stateUniqueId(stateUniqueId)
-        {}
+              int stateUniqueId);
 
     private:
         TreeState _tree_state;
         QState _q_state;
+        std::vector<rw::common::Ptr<StateCache> > _cache_state;
         int _stateUniqueId;
     };
 
