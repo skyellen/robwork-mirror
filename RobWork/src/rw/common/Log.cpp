@@ -72,8 +72,8 @@ Log::Ptr Log::getInstance(){
 
 Log::Log():
 	_logEnabledMask(Log::AllMask),
-	_writers(32),
-	_tabLevel(0)
+	_tabLevel(0),
+	_writers(32)
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
     setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
@@ -89,6 +89,11 @@ Log::~Log() {
     // std::cout << "Destroing log!! " << std::endl;
 
 }
+
+LogWriter::Ptr Log::getWriter(LogIndex id){
+    return _writers[id];
+}
+
 
 void Log::setWriter(LogIndex id, rw::common::LogWriter::Ptr writer)
 {

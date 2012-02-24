@@ -5,13 +5,13 @@
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/phoenix.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
 #include <boost/foreach.hpp>
 
 using namespace phoenix;
 using namespace boost::program_options;
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 using namespace rw::common;
 //using namespace rw::math;
 

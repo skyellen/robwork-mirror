@@ -169,6 +169,13 @@ namespace rw { namespace common {
         virtual ~Log();
 
         /**
+         * @brief gets the log writer associated to logindex \b id
+         * @param id [in] logindex
+         * @return log writer
+         */
+        LogWriter::Ptr getWriter(LogIndex id);
+
+        /**
          * @brief Associates a LogWriter with the LogIndex \b id.
          *
          * SetWriter can either be used to redefine an existing log or to create a new
