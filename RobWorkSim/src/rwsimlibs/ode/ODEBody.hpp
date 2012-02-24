@@ -156,29 +156,24 @@ namespace simulator {
 
 		void bodyChangedListener(dynamics::Body::BodyEventType eventtype);
 	private:
+
 		// for rigid body
 		dBodyID _bodyId;
         dynamics::Body *_body;
         dynamics::RigidBody *_rwBody;
+        dynamics::KinematicBody *_kBody;
         rw::kinematics::MovableFrame *_mframe;
-
-		dJointID _jointId;
-
-		dynamics::KinematicBody *_kBody;
-
-		// the type of this body
-		ODEBodyType _type;
+        rw::math::Vector3D<> _offset;
+        rw::kinematics::Frame *_rwframe;
+        // the type of this body
+        ODEBodyType _type;
+        double _contactReductionThreshold;
+        int _materialID, _contactID;
 
 		dGeomID _geomId;
 		std::vector<dGeomID> _geomIds;
-		rw::kinematics::Frame *_rwframe;
-
-		rw::math::Vector3D<> _offset;
 
 		rw::math::Vector3D<> _lastForce;
-
-		int _materialID, _contactID;
-		double _contactReductionThreshold;
 	};
 }
 }

@@ -68,12 +68,12 @@ ODEBody::ODEBody(dBodyID odeBody,
 ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 				_mframe(kbody->getMovableFrame()),
 				_bodyId(odeBody),
-				_rwBody(NULL),
-				_kBody(kbody),
 				_body(kbody),
-				_offset(0,0,0),
+				_rwBody(NULL),
+                _offset(0,0,0),
+				_kBody(kbody),
+                _type(ODEBody::KINEMATIC),
 				_rwframe(kbody->getBodyFrame()),
-				_type(ODEBody::KINEMATIC),
 				_contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
                 _contactID(conID)
@@ -84,14 +84,14 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, int conID):
                 _mframe(NULL),
                 _bodyId(0), // a fixed object in ODE is allways part of the 0 body
-                _geomId(geomIds[0]),
-                _geomIds(geomIds),
                 _body(body),
                 _rwframe(body->getBodyFrame()),
                 _type(ODEBody::FIXED),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
-                _contactID(conID)
+                _contactID(conID),
+                _geomId(geomIds[0]),
+                _geomIds(geomIds)
 {
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }

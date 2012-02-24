@@ -1134,6 +1134,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
         break;
         default:{
             RW_THROW("UNSUPPORTED SPACE TYPE!");
+            break;
         }
 	}
 
@@ -2058,14 +2059,14 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         Vector3D<> hf = obr.getHalfLengths();
         if(hf(0)*hf(1)<(0.001*0.001)){
             _allcontacts.push_back( obr.getDeepestPoint() );
-            RW_ASSERT( contactIdx<dst.size() );
+            RW_ASSERT( contactIdx<(int)dst.size() );
             dst[contactIdx] = obr.getDeepestPoint();
             contactIdx++;
         } else {
             //std::cout << "Manifold: " << nrContacts << ";" << std::endl;
             for(int j=0;j<nrContacts; j++){
                 _allcontacts.push_back( obr.getContact(j) );
-                RW_ASSERT( contactIdx<dst.size() );
+                RW_ASSERT( contactIdx<(int)dst.size() );
                 dst[contactIdx] = obr.getContact(j);
                 contactIdx++;
             }
