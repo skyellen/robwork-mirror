@@ -34,6 +34,17 @@ const Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
           0, sin(alpha), cos(alpha)));
 }
 
+template<class T>
+const Transform3D<T> Transform3D<T>::DHHGP(T alpha, T a, T beta, T b)
+{
+       return Transform3D(
+               Vector3D<T>(a * cos(beta), b, - a * sin(beta)),
+               Rotation3D<T>(
+                   cos(beta), sin(alpha) * sin(beta), cos(alpha) * sin(beta),
+                   0, cos(alpha), -sin(alpha),
+                   -sin(beta), sin(alpha) * cos(beta), cos(alpha) * cos(beta)));
+}
+
 
 template<class T>
 const Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)

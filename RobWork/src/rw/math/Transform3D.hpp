@@ -160,6 +160,34 @@ namespace rw { namespace math {
         static const Transform3D craigDH(T alpha, T a, T d, T theta);
 
 
+        /**
+         * @brief Constructs a homogeneous transform using the Gordon (modified)
+         * Denavit-Hartenberg notation
+         *
+         * @param alpha [in] @f$ \alpha_i @f$
+         * @param a [in] @f$ a_i @f$
+         * @param beta [in] @f$ \beta_i @f$
+         * @param b [in] @f$ b_i @f$
+         * @return @f$ ^{i-1}\mathbf{T}_i @f$
+         *
+         * @note The Gordon (modified) Denavit-Hartenberg differs from
+         * the original Denavit-Hartenberg as it branches between parallel
+         * and non-parallel z-axes.
+         *
+         * @f$ z_{i-1} @f$ is close to parallel to @f$ z_i @f$
+         * @f$
+         *  \robabx{i-1}{i}{\mathbf{T}}=
+         *  \left[
+         *    \begin{array}{cccc}
+         *       c\beta_i & s\alpha_i s\beta_i &  c\alpha_i s\beta_i &  a_i c\beta_i \\
+         *       0        & c\alpha_i          & -s\alpha_i          &  b_i \\
+         *      -s\beta_i & s\alpha_i c\beta_i &  c\alpha_i c\beta_i & -a_i s\beta \\
+         *      0         & 0                  & 0                    & 1
+         *    \end{array}
+         *  \right]
+         * @f$
+         */
+        static const Transform3D DHHGP(T alpha, T a, T beta, T b);
 
         /**
          * @brief Constructs the identity transform

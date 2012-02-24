@@ -169,9 +169,10 @@ namespace rw {
                     result += Math::sqr(val);
                 }
 
-                inline ScalarType done(ScalarType result) const
+                // JAJ: MSVC does not allow the template implementation before
+                inline double done(ScalarType result) const
                 {
-                    return sqrt(result); //Math::sqr(result);
+                    return sqrt((double)result); //Math::sqr(result);
                 }
             };
 
