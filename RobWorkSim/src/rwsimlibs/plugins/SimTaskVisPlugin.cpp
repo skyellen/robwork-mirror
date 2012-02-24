@@ -200,7 +200,7 @@ void SimTaskVisPlugin::btnPressed() {
         std::cout << "select event" << std::endl;
         int index = _graspSelectSpin->value();
         const std::vector<RenderTargets::Target>& targets = ((RenderTargets*)_render.get())->getTargets();
-        if( (index<0) || (index>=targets.size()) ){
+        if( (index<0) || (index>=(int)targets.size()) ){
              return;
         }
 
@@ -228,6 +228,7 @@ void SimTaskVisPlugin::btnPressed() {
         Transform3D<> wTtcp = targets[index].trans;
         //wTtcp.R().normalize();
         if(tcp!=NULL && base!=NULL){
+            /*
             std::cout << "basename:" << base->getName() << std::endl;
             std::cout << "tcpname :" << tcp->getName() << std::endl;
 
@@ -238,20 +239,11 @@ void SimTaskVisPlugin::btnPressed() {
             std::cout << "TARGET:" << wTtcp << std::endl;
             //wTtcp.R().normalize();
             std::cout << "TARGET:" << wTtcp << std::endl;
+            */
             Transform3D<> baseTtcp = Kinematics::frameTframe(base, tcp ,state);
-            std::cout << "bTf   :" << baseTtcp << std::endl;
             Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
-            std::cout << "wTbase:" <<  wTbase << std::endl;
-            //wTbase.R().normalize();
-            std::cout << "wTbase:" <<  wTbase << std::endl;
-            std::cout << "wTtcp:" <<  wTbase*baseTtcp << std::endl;
-
             base->setTransform( wTbase, state );
-            std::cout << "wTbase:" <<  base->getTransform( state ) << std::endl;
-            std::cout << "wTbase:" <<  Kinematics::worldTframe(base ,state) << std::endl;
-            std::cout << "wTtcp :" <<  Kinematics::worldTframe(tcp ,state) << std::endl;
             //Transform3D<> wTtcp = Kinematics::frameTframe(base, tcp ,state);
-
             base->moveTo(wTtcp * inverse(baseTtcp), state);
 
         }
@@ -295,17 +287,17 @@ void SimTaskVisPlugin::btnPressed() {
         // generate target list and add it to the render
 
             int idx = i;
-            if(nrToShow<_ymtargets.size()){
+            if(nrToShow<(int)_ymtargets.size()){
                 idx = Math::ranI(0, _ymtargets.size());
             } else {
-                if(idx>=_ymtargets.size())
+                if(idx>=(int)_ymtargets.size())
                     break;
             }
 
             GraspSubTask *task = _ymtargets[idx].first;
             GraspTarget &target = *_ymtargets[idx].second;
 
-            Transform3D<> wTe_n = task->offset;
+            //Transform3D<> wTe_n = task->offset;
 
             if(target.result==NULL)
                 continue;

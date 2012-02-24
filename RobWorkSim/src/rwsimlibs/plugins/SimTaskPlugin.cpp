@@ -531,13 +531,13 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     subtask.offset = wTe_n;
     if( type== "SCUP"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
     } else if( gripperName=="GS20"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
     } else {
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.10));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
     }
 
     if( gripperName=="SchunkHand"){

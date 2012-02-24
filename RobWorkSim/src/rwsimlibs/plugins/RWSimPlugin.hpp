@@ -121,7 +121,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
 
         #ifdef RWSIM_HAVE_LUA
-    	LuaState *_luastate;
+    	rws::LuaState *_luastate;
         #endif
 
 

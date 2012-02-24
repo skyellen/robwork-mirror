@@ -99,8 +99,9 @@ private: // qt stuff
 private:
     rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
     RestingPoseDialog *_restPoseDialog;
-    GraspRestingPoseDialog *_graspRestPoseDialog;
+
     SupportPoseAnalyserDialog *_poseAnalyserDialog;
+    GraspRestingPoseDialog *_graspRestPoseDialog;
     GraspSelectionDialog *_graspSelectionDialog;
     QTimer *_timer;
 };
