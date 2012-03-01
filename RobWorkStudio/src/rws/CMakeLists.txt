@@ -2,7 +2,9 @@
 
 # if we want to use ui files add them here
 SET(UIS_FILES AboutBox.ui propertyview/PropertyViewEditor.ui propertyview/PropertyViewDialog.ui)
+
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+
 
 # Standard files to compile:
 SET(SRC_FILES_CPP
@@ -11,6 +13,7 @@ SET(SRC_FILES_CPP
   RWSImageLoaderPlugin.cpp
   ImageUtil.cpp
   RobWorkStudio.cpp
+  RobWorkStudioApp.cpp
   RWStudioView3D.cpp
   SceneOpenGLViewer.cpp
   RobWorkStudioPlugin.cpp
@@ -19,8 +22,7 @@ SET(SRC_FILES_CPP
   propertyview/PropertyViewEditor.cpp
   propertyview/PropertyViewDialog.cpp 
   propertyview/PropertyInspector.cpp
-  propertyview/VariantManager.cpp
-  ${UIS_OUT_H})
+  propertyview/VariantManager.cpp)
 
 SET(SRC_FILES_HPP
   ArcBallController.hpp
@@ -28,6 +30,7 @@ SET(SRC_FILES_HPP
   ImageUtil.hpp
   #FixedAxisController.hpp
   RobWorkStudio.hpp
+  RobWorkStudioApp.hpp
   SceneOpenGLViewer.hpp
   RobWorkStudioPlugin.hpp
   RWStudioView3D.hpp
@@ -51,9 +54,11 @@ SET(MocHeaderFiles
   propertyview/PropertyViewDialog.hpp )
 
 
+set_source_files_properties(${SRC_FILES_CPP} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
+
 SET(MocSrcFiles)
 QT4_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} ${UIS_OUT_H})
-
+MESSAGE( ${UIS_OUT_H} )
 # Resource files to rcc and compile:
 IF(RWS_BUILD_SANDBOX)
     #SET(SandboxResourceFiles rwstudio_sandbox_resources.qrc)
@@ -63,9 +68,7 @@ QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qr
 
 # We create a static library named rwstudio that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.
-set(TargetName rwstudio)
-
-ADD_LIBRARY(${TargetName}
+ADD_LIBRARY(rwstudio
             ${SRC_FILES_CPP}
             ${MocSrcFiles}
             ${ResourceFiles}
