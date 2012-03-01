@@ -24,7 +24,7 @@
 #include <rw/math/Constants.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rws/components/propertyview/PropertyViewDialog.hpp>
+#include <rws/propertyview/PropertyViewDialog.hpp>
 #include "RobWorkStudio.hpp"
 #include "SceneOpenGLViewer.hpp"
 #include <QThread>
