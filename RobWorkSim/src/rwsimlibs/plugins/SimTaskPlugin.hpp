@@ -14,7 +14,7 @@
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
-#include <rws/components/propertyview/PropertyViewEditor.hpp>
+#include <rws/propertyview/PropertyViewEditor.hpp>
 #include <rw/common/Timer.hpp>
 
 /**
