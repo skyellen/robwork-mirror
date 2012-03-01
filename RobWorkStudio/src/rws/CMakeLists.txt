@@ -13,7 +13,7 @@ SET(SRC_FILES_CPP
   RWSImageLoaderPlugin.cpp
   ImageUtil.cpp
   RobWorkStudio.cpp
-  RobWorkStudioApp.cpp
+  #RobWorkStudioApp.cpp
   RWStudioView3D.cpp
   SceneOpenGLViewer.cpp
   RobWorkStudioPlugin.cpp
@@ -30,7 +30,7 @@ SET(SRC_FILES_HPP
   ImageUtil.hpp
   #FixedAxisController.hpp
   RobWorkStudio.hpp
-  RobWorkStudioApp.hpp
+  #RobWorkStudioApp.hpp
   SceneOpenGLViewer.hpp
   RobWorkStudioPlugin.hpp
   RWStudioView3D.hpp
