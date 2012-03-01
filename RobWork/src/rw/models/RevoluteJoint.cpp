@@ -193,18 +193,18 @@ Transform3D<> RevoluteJoint::getJointTransform(double q) const
     const double sq = sin(q);
 
     rw::math::Transform3D<> result;
-    result(0,0) = cq + sq;
-    result(0,1) = cq - sq;
+    result(0,0) =  cq;
+    result(0,1) = -sq;
     result(0,2) = 0;
     result(0,3) = 0;
 
-    result(1,0) = cq + sq;
-    result(1,1) = cq - sq;
+    result(1,0) = sq;
+    result(1,1) = cq;
     result(1,2) = 0;
     result(1,3) = 0;
 
-    result(2,0) = cq + sq;
-    result(2,1) = cq - sq;
+    result(2,0) = 0;
+    result(2,1) = 0;
     result(2,2) = 1;
     result(2,3) = 0;
 
