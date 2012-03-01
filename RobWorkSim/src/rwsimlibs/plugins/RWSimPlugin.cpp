@@ -411,7 +411,10 @@ void RWSimPlugin::btnPressed(){
     } else if( obj==_tactileSensorBtn ){
         if( _tactileSensorDialog==NULL )
             _tactileSensorDialog = new TactileSensorDialog(_dwc.get(), this);
-        connect(this,SIGNAL(updateDialog()),_tactileSensorDialog,SLOT(updateState()) );
+
+        //connect(this,SIGNAL(updateDialog()),_tactileSensorDialog,SLOT(updateState()) );
+        connect(this,SIGNAL(updateDialog(const rw::kinematics::State&)),_tactileSensorDialog,SLOT(setState(const rw::kinematics::State&)) );
+
         _tactileSensorDialog->show();
         _tactileSensorDialog->raise();
         _tactileSensorDialog->activateWindow();
@@ -427,7 +430,7 @@ void RWSimPlugin::btnPressed(){
         State state = getRobWorkStudio()->getState();
         rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
         GraspSelectionDialog *graspSelectionDialog = new GraspSelectionDialog(state, _dwc.get(), colDect.get(),  this);
-        connect(graspSelectionDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        connect(graspSelectionDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(setRobWorkStudioState(const rw::kinematics::State&)) );
         graspSelectionDialog->show();
         graspSelectionDialog->raise();
         graspSelectionDialog->activateWindow();
@@ -475,6 +478,10 @@ void RWSimPlugin::btnPressed(){
         poseAnalyserDialog->activateWindow();
     }
 
+}
+
+void RWSimPlugin::setRobWorkStudioState(const rw::kinematics::State& state){
+    getRobWorkStudio()->setState(state);
 }
 
 namespace {
@@ -736,7 +743,7 @@ void RWSimPlugin::initialize(){
 }
 
 void RWSimPlugin::stateChangedListener(const State& state){
-    updateDialog();
+    updateDialog(state);
 }
 
 Q_EXPORT_PLUGIN2(RWSimPlugin, RWSimPlugin);

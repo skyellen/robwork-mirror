@@ -106,11 +106,13 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
     signals:
         void updateView();
-        void updateDialog();
+        //void updateDialog();
+        void updateDialog(const rw::kinematics::State& state);
 
     private slots:
         void btnPressed();
         void changedEvent();
+        void setRobWorkStudioState(const rw::kinematics::State& state);
 
     protected:
     	void updateStatus();
