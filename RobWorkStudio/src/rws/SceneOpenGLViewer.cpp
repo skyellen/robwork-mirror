@@ -406,7 +406,7 @@ void SceneOpenGLViewer::renderView(View::Ptr view){
 
     GLenum res = glGetError();
     if(res!=GL_NO_ERROR){
-        std::cout << "AN OPENGL ERROR: " << res << "\n";
+        //std::cout << "AN OPENGL ERROR: " << res << "\n";
     }
 
 }
@@ -565,7 +565,7 @@ void SceneOpenGLViewer::paintGL()
 
     GLenum res = glGetError();
     if(res!=GL_NO_ERROR){
-        std::cout << "AN OPENGL ERROR: " << res << "\n";
+        //std::cout << "AN OPENGL ERROR: " << res << "\n";
     }
 }
 
