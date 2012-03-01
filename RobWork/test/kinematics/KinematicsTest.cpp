@@ -81,7 +81,7 @@ public:
 
 class StateDataWithCache: public StateData {
 public:
-    StateDataWithCache():StateData(2,"MyStateWithCache", true){
+    StateDataWithCache():StateData(2,"MyStateWithCache", rw::common::ownedPtr( new StateCacheObject() ) ){
     }
 
     void setA(int i, State &state){
