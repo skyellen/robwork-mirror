@@ -179,21 +179,24 @@ void GraspSelectionDialog::btnPressed(){
     	}
     	if( obj==NULL || dynamic_cast<MovableFrame*>(obj)==NULL){
     		Log::errorLog() << "Object: "<< _gtable->getObjectName() << " not found in workcell!\n";
-    		return;
+    		//return;
+    		_object = NULL;
+    	} else {
+    	    _object = dynamic_cast<MovableFrame*>(obj);
     	}
-    	_object = dynamic_cast<MovableFrame*>(obj);
-
     	_graspTableSlider->setRange(0, _gtable->size()-1);
     	Frame* fbase = _dev->getBase()->getParent(_state);
     	while( !dynamic_cast<MovableFrame*>(fbase) ){
     		fbase = fbase->getParent(_state);
     		if(fbase == NULL){
     			Log::errorLog() << "Could not find movable hand base\n";
-    			return;
+    			break;
     		}
     	}
-    	_handBase = dynamic_cast<MovableFrame*>(fbase);
-
+    	if(fbase!=NULL)
+    	    _handBase = dynamic_cast<MovableFrame*>(fbase);
+    	else
+    	    _handBase = NULL;
     } else if( obj == _startBtn ) {
 
     } else if( obj == _searchBtn)  {
@@ -235,12 +238,15 @@ void GraspSelectionDialog::btnPressed(){
 }
 
 void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinematics::State &state){
-	_dev->setQ(data.cq,state);
+	std::cout << data.cq << std::endl;
+    _dev->setQ(data.cq,state);
 	Transform3D<> hbTo = data.hp.toTransform3D();
 	Transform3D<> wTo = data.op.toTransform3D();
 
-	_object->setTransform( wTo, state );
-	_handBase->setTransform( wTo*inverse(hbTo), state);
+	if(_object)
+	    _object->setTransform( wTo, state );
+	if(_handBase)
+	    _handBase->setTransform( wTo*inverse(hbTo), state);
 
 	TactileArraySensor *tsensor;
 	int j=0;
@@ -248,6 +254,7 @@ void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinema
 		if( tsensor = dynamic_cast<TactileArraySensor*>(_dwc->getSensors()[i].get() ) ){
 			if(j>=data._tactiledata.size())
 				continue;
+			std::cout << "tsensorname" << j <<": "  << tsensor->getName() << std::endl;
 			tsensor->setTexelData(data._tactiledata[j], state);
 			j++;
 		}
