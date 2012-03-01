@@ -15,8 +15,13 @@ SET(RWS_BUILD_SANDBOX ON)
 #       have compiled Boost yourself with the -fPIC compiler flag
 SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 
-# Disable Lua
+# Disable the embedded lua utilities Lua
 # SET(RWS_DISABLE_LUA ON)
+
+# enable/disable the generation of dynamically linked lua or python bindings. If not defined
+# then it will be included if dependencies are met. 
+# SET(RWS_LUA_BINDINGS_ENABLED ON)
+# SET(RWS_PYTHON_BINDINGS_ENABLED ON) 
 
 # Enable tests
 SET(RWS_BUILD_TESTS ON)
