@@ -10,6 +10,8 @@ using namespace rwlibs::swig;
 rw::common::Ptr<rws::swig::RobWorkStudio> rwstudio_internal;
 
 rws::swig::RobWorkStudio* rws::swig::getRobWorkStudio(){
+    if(rwstudio_internal==NULL)
+        rwstudio_internal = getRobWorkStudioInstance("");
     return rwstudio_internal.get();
 }
 
@@ -69,6 +71,10 @@ void rws::swig::moveTo(const std::string& fname, const std::string& mname, Trans
 
 static rws::RobWorkStudioApp *robApp = NULL;
 
+rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(){
+    return getRobWorkStudioInstance("");
+}
+
 rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(const std::string& args){
 
     // create a thread that start QApplication and
@@ -78,6 +84,8 @@ rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(const std::st
         while(robApp->_rwstudio==NULL){
             rw::common::TimerUtil::sleepMs(100);
         }
+        if(rwstudio_internal==NULL)
+            rwstudio_internal = robApp->_rwstudio;
     }
     return robApp->_rwstudio;
 }

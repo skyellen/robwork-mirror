@@ -14,6 +14,7 @@ using namespace rws::swig;
 %template (RobWorkStudioPtr) rw::common::Ptr<RobWorkStudio>;
 %template (RWStudioView3DPtr) rw::common::Ptr<RWStudioView3D>;
 
+rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance();
 rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args);
 
 class RWStudioView3D {

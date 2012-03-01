@@ -58,6 +58,8 @@ namespace swig {
 
     /// These functions all work on the current robworkstudio state
 
+    rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance();
+
     rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args);
 
     const rwlibs::swig::State& getState();
