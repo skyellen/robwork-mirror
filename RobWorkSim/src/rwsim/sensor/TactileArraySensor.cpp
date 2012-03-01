@@ -139,6 +139,8 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _tau(0.1)
 {
 	this->attachTo(frame);
+
+
     // calculate the normals and centers of all texels
     // first calculate the 3D vertexes of the grid from the heightmap specification
     double tw = _texelSize(0), th = _texelSize(1);
@@ -277,6 +279,10 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 	}
 	//std::cout << "Dist" << _distDefMatrix << std::endl;
 
+    // create state object and add it to
+    _mystate = new StateData(0, name, ownedPtr(new ClassState(this, _w, _h) ) );
+    addStateData( _mystate );
+
 
 }
 /*
@@ -301,12 +307,11 @@ TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):
 }
 */
 
-TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, const ValueMatrix& heightMap):
+TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, size_t dim_x, size_t dim_y):
     _tsensor(tsensor),
-    _distMatrix(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
-
-    _accForces(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
-    _pressure(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
+    _distMatrix(ublas::zero_matrix<float>(dim_x,dim_y)),
+    _accForces(ublas::zero_matrix<float>(dim_x,dim_y)),
+    _pressure(ublas::zero_matrix<float>(dim_x,dim_y)),
     _accTime(0),
     _stime(0.005)
 {

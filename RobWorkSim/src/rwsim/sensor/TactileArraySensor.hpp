@@ -242,11 +242,13 @@ namespace sensor {
 
 	public:
 
-		class ClassState: public rw::kinematics::ObjectStateData {
+
+
+		class ClassState: public rw::kinematics::StateCache {
 		public:
 		    typedef rw::common::Ptr<TactileArraySensor::ClassState> Ptr;
 
-		    ClassState(TactileArraySensor* tsensor, const ValueMatrix& heightMap);
+		    ClassState(TactileArraySensor* tsensor,  size_t dim_x, size_t dim_y);
 
 	        //! @copydoc TactileArray::acquire
 		    virtual void acquire();
@@ -283,6 +285,17 @@ namespace sensor {
             std::vector<TactileArraySensor::DistPoint>
                 generateContacts(dynamics::Body *body, const rw::math::Vector3D<>& normal, const rw::kinematics::State& state);
 
+            virtual size_t size() const{
+                return 0;
+            }
+
+            /**
+             * @brief this creates a deep copy of this cache
+             */
+            rw::common::Ptr<rw::kinematics::StateCache> clone() const{
+                return rw::common::ownedPtr( new ClassState( *this ) );
+            }
+
             TactileArraySensor* _tsensor;
             ValueMatrix _accForces,_pressure;
             rw::math::Transform3D<> _wTf, _fTw;
@@ -294,22 +307,28 @@ namespace sensor {
 
         };
 
-        const ClassState::Ptr getClassState(const rw::kinematics::State& state) const {
-            return _cstate;
+        ClassState::Ptr getClassState(const rw::kinematics::State& state) const {
+            if( _mystate->getCache(state) == NULL)
+                return NULL;
+            return _mystate->getCache(state).cast<ClassState>();
         }
 
-        ClassState::Ptr getClassState(const rw::kinematics::State& state){
-            return _cstate;
+        ClassState::Ptr getClassState(rw::kinematics::State& state) {
+            if( _mystate->getCache(state) == NULL){
+                return NULL;
+            }
+            return _mystate->getCache(state).cast<ClassState>();
         }
 
+        /*
         void setClassState(ClassState::Ptr cstate, rw::kinematics::State& state){
             _cstate = cstate;
         }
-
+        */
 
 	protected:
-		ClassState::Ptr _cstate;
-
+		//ClassState::Ptr _cstate;
+		rw::kinematics::StateData *_mystate;
 		VertexMatrix _centerMatrix;
 		// matrix containing the surface normal of each tactil. Calculated from VertexShape
 		VertexMatrix _normalMatrix;
