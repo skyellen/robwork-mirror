@@ -17,8 +17,7 @@ SET(SrcFiles LuaEditorWindow.cpp
     CodeEditor.cpp
     TreeModelCompleter.cpp
     LuaExecutionThread.cpp
-    LuaConsoleWidget.cpp
-    ${UIS_OUT_H})
+    LuaConsoleWidget.cpp)
 
 QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp 
     LuaHighlighter.hpp 
@@ -30,6 +29,7 @@ QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp
 # Rcc the files:
 QT4_ADD_RESOURCES(RccSrcFiles )
 
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 #----------------------------------------------------------------------
 # Everything below should be common for all components:
 
