@@ -103,6 +103,8 @@ namespace rws {
 		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 		void setWorkCell(rw::models::WorkCell::Ptr workcell){ setWorkcell(workcell); }
 
+		void postWorkCell(rw::models::WorkCell::Ptr workcell);
+		void postOpenWorkCell(const std::string& string);
 		/**
 		 * @brief Returns the workcell opened in RobWorkStudio
 		 */

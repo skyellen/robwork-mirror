@@ -38,7 +38,6 @@ public:
 
     PropertyMap& getPropertyMap();
 
-    void setWorkcell(rw::common::Ptr<WorkCell> workcell);
 
     rw::common::Ptr<WorkCell> getWorkCell();
 
@@ -57,6 +56,8 @@ public:
     void postUpdateAndRepaint();
     void postSaveViewGL(const std::string& str);
     void postTimedStatePath(const TimedStatePath& path);
+    void postWorkCell(rw::common::Ptr<WorkCell> workcell);
+    void postOpenWorkCell(const std::string& str);
     void postExit();
 
     const State& getState();
@@ -69,6 +70,14 @@ public:
 
         void setState(const State& state){
             $self->postState(state);
+        }
+
+        void setWorkCell(rw::common::Ptr<WorkCell> workcell){
+            $self->postWorkCell(workcell);
+        }
+
+        void openWorkCell(const std::string& file){
+            $self->postOpenWorkCell(file);
         }
 
         void saveViewGL(const std::string& filename){

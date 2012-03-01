@@ -879,12 +879,17 @@ namespace {
         static const QEvent::Type UpdateAndRepaintEvent = (QEvent::Type)1202;
         static const QEvent::Type SaveViewGLEvent = (QEvent::Type)1203;
         static const QEvent::Type ExitEvent = (QEvent::Type)1204;
+        static const QEvent::Type SetWorkCell = (QEvent::Type)1205;
+        static const QEvent::Type OpenWorkCell = (QEvent::Type)1206;
 
         //static QEvent::Type SetStateEvent = 1200;
         RobWorkStudioEvent(QEvent::Type type, bool *handshake=NULL):QEvent(type),_hs(handshake){}
 
         RobWorkStudioEvent(QEvent::Type type, const std::string& string, bool *handshake=NULL):
             QEvent(type), _str(string),_hs(handshake){}
+
+        RobWorkStudioEvent(QEvent::Type type, rw::models::WorkCell::Ptr wc, bool *handshake=NULL):
+            QEvent(type), _wc(wc),_hs(handshake){}
 
         RobWorkStudioEvent(const State& state, bool *handshake=NULL):
             QEvent(SetStateEvent),_hs(handshake)
@@ -912,6 +917,7 @@ namespace {
 
 		rw::common::PropertyBase::Ptr _data;
         std::string _str;
+        rw::models::WorkCell::Ptr _wc;
         bool *_hs;
     };
 }
@@ -960,6 +966,18 @@ void RobWorkStudio::postSaveViewGL(const std::string& filename){
     //RobWorkStudioEvent::wait(&handshake);
 }
 
+void RobWorkStudio::postWorkCell(rw::models::WorkCell::Ptr workcell){
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SetWorkCell, workcell, &handshake) );
+    //RobWorkStudioEvent::wait(&handshake);
+}
+
+void RobWorkStudio::postOpenWorkCell(const std::string& filename){
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::OpenWorkCell, filename, &handshake) );
+    //RobWorkStudioEvent::wait(&handshake);
+}
+
 bool RobWorkStudio::event(QEvent *event)
 {
     if (event->type() == RobWorkStudioEvent::SetStateEvent ) {
@@ -995,6 +1013,16 @@ bool RobWorkStudio::event(QEvent *event)
             QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view"));
 
         }
+        rwse->done();
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::SetWorkCell){
+        RobWorkStudioEvent *rwse =  static_cast<RobWorkStudioEvent *>(event);
+        setWorkCell( rwse->_wc);
+        rwse->done();
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::OpenWorkCell){
+        RobWorkStudioEvent *rwse =  static_cast<RobWorkStudioEvent *>(event);
+        openWorkCellFile( rwse->_str.c_str() );
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
