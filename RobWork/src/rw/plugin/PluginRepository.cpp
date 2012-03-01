@@ -46,7 +46,7 @@ void PluginRepository::load(const std::string& filename) {
         const std::string id = constructor->identifier();
         if (_str2constructorMap.find(id) == _str2constructorMap.end()) {
             _str2constructorMap[id] = constructor;
-            Log::debugLog()<<"Loaded Plugin "<<id<<std::endl;
+            //Log::debugLog()<<"Loaded Plugin "<<id<<std::endl;
         } else {
             RW_THROW("A Plugin with identifier "<<id<<" has already been loaded!");
         }
@@ -59,7 +59,7 @@ void PluginRepository::addPlugin(PluginFactoryBase::Ptr plugin, bool force){
     const std::string id = plugin->identifier();
     if (force || (_str2constructorMap.find(id) == _str2constructorMap.end()) ) {
         _str2constructorMap[id] = plugin;
-        Log::debugLog()<<"Loaded Plugin "<<id<<std::endl;
+        //Log::debugLog()<<"Loaded Plugin "<<id<<std::endl;
     } else {
         RW_WARN("A Plugin with identifier "<<id<<" has already been loaded!");
     }
@@ -71,7 +71,7 @@ void PluginRepository::loadFilesInFolder(const std::string& path, bool searchSub
 //    std::vector<std::string> files = IOUtil::getFilesInFolder(path, true, "*.dll");
 
     BOOST_FOREACH(std::string str, files) {
-        std::cout<<"DLL File = "<<str<<std::endl;
+        //std::cout<<"DLL File = "<<str<<std::endl;
         load(str);        
     }
 }

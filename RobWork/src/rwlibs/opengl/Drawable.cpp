@@ -85,10 +85,6 @@ void RWDrawable::draw(const DrawableNode::RenderInfo& info) const
 
     BOOST_FOREACH(const Render::Ptr& render, _renders){
         render->draw(info, dtype, _alpha);
-        GLenum res = glGetError();
-        if(res!=GL_NO_ERROR){
-            std::cout << "AN OPENGL ERROR: " << res << "\n";
-        }
     }
     if (highlight) {
         glEnable(GL_LIGHT0);
