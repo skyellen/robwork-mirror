@@ -788,7 +788,7 @@ PAPER_TYPE = a4wide
 # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
 # packages that should be included in the LaTeX output.
 
-EXTRA_PACKAGES = amssymb listings ../../Documentation/layout/notation
+EXTRA_PACKAGES = amssymb listings ../../doc/layout/notation
 
 # layout/notation
 

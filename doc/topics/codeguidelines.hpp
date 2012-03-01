@@ -5,6 +5,8 @@
 
 @{
 
+This section will present the coding guidelines that are used in RobWork. <br>
+
 We use the following guide lines:<br>
 http://geosoft.no/development/cppstyle.html
 

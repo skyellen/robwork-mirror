@@ -55,11 +55,10 @@ RobWork source is made available through half year releases and SVN. The source 
 from the RobWork homepage.
 
 You can get the latest developer snapshot of the RobWork source code from SVN using this account:
-
+\verbatim
 Username: RO-RobWork
-
 Password: anonymous
-
+\endverbatim
 
 For svn use the complete project:
 
@@ -241,6 +240,9 @@ supported Visual Studio compilers (2005, 2008 and 2010).
 
 You may install Boost wherever you like. Create a new environment variable BOOST_ROOT containing the path to
 the Boost installation and Boost should be ready to use.
+
+A more complete binary installer for various boost versions can be found on BoostPro
+http://www.boostpro.com/download . Make sure to choose the MultiThreaded libs on install.
 
 Alternatively download Boost from http://www.boost.org/users/download/ and compile it your self. When
 configuring make sure to enable all packages, something like:

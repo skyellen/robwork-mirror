@@ -2,7 +2,7 @@
 
 /**
 
-\page page_lua Lua scripting language interface
+\page page_lua  Lua scripting language interface
 
 - \ref sec_lua_intro
 - \ref sec_lua_basics
