@@ -11,8 +11,6 @@ ADD_SUBDIRECTORY(rws/components)
 # compile the plugins 
 SET(ENV{RWS_PLUGIN_LIBRARIES} "")
 ADD_SUBDIRECTORY(rws/plugins)
-ADD_SUBDIRECTORY(rws/swig)
-
 
 # Then sandbox if choosen
 OPTION(RWS_BUILD_SANDBOX "Set when you want to build the sandbox library" ${RWS_BUILD_SANDBOX})
@@ -22,6 +20,9 @@ ENDIF ()
 	
 SET(RWS_PLUGIN_LIBRARIES $ENV{RWS_PLUGIN_LIBRARIES} CACHE string "plugin libs")
 SET(RWS_COMPONENT_LIBRARIES $ENV{RWS_COMPONENT_LIBRARIES} CACHE string "component libs")
+
+# swig might depend on RWS_PLUGIN_LIBRARIES
+ADD_SUBDIRECTORY(rws/swig)
 
 # now create the actual RobWorkStudio executable
 
