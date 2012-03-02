@@ -102,6 +102,9 @@ public:
             $self->genericEvent().fire(str);
         }
 
+        void send(const std::string& id){
+            $self->genericEvent().fire(id);
+        }
         void send(const std::string& id, const std::string& val){
             $self->genericAnyEvent().fire(id, val);
         }
