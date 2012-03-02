@@ -24,9 +24,12 @@ namespace rws {
         void start();
         void run();
 
+        bool isRunning(){ return _isRunning; }
+
          RobWorkStudio *_rwstudio;
          std::string _args;
          boost::thread *_thread;
+         bool _isRunning;
      };
 }
 

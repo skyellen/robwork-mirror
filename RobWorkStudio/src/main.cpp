@@ -85,29 +85,31 @@ int main(int argc, char** argv)
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);
     poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
     poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
+    poptions.addStringOption("nosplash", "", "If defined the splash screen will not be shown");
     poptions.setPositionalOption("input-file", -1);
     poptions.initOptions();
     poptions.parse(argc, argv);
 
     PropertyMap map = poptions.getPropertyMap();
-
+    bool showSplash = !map.has("nosplash");
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
 
     {
         MyQApplication app(argc, argv);
         try {
-        
-            QPixmap pixmap(":/images/splash.jpg");
-
-            QSplashScreen splash(pixmap);
-            splash.show();
-            // Loading some items
-            splash.showMessage("Adding static plugins");
-
+            QSplashScreen *splash;
+            if(showSplash){
+                QPixmap pixmap(":/images/splash.jpg");
+                splash = new QSplashScreen(pixmap);
+                splash->show();
+                // Loading some items
+                splash->showMessage("Adding static plugins");
+            }
             app.processEvents();
             // Establishing connections
-            splash.showMessage("Loading static plugins");
+            if(showSplash)
+                splash->showMessage("Loading static plugins");
             std::string pluginFolder = "./plugins/";
 
             {
@@ -131,18 +133,21 @@ int main(int argc, char** argv)
                         //Plugins which are avaible in the sandbox
                     #endif
                 #endif
-
-                splash.showMessage("Loading static plugins");
+                if(showSplash)
+                    splash->showMessage("Loading static plugins");
                 rwstudio.loadSettingsSetupPlugins( inifile );
 
                 if(!inputfile.empty()){
-                    splash.showMessage("Openning dynamic workcell...");
+                    if(showSplash)
+                        splash->showMessage("Openning dynamic workcell...");
                     rwstudio.openFile(inputfile);
                 }
 
                 // load configuration into RobWorkStudio
-                splash.showMessage("Loading settings");
-                splash.finish(&rwstudio);
+                if(showSplash){
+                    splash->showMessage("Loading settings");
+                    splash->finish(&rwstudio);
+                }
                 rwstudio.show();
                 app.exec();
             }

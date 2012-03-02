@@ -22,7 +22,7 @@ using namespace robwork;
 using namespace rws;
 
 RobWorkStudioApp::RobWorkStudioApp(const std::string& args):
-            _args(args)
+            _args(args),_isRunning(false),_rwstudio(NULL)
         {}
 
 
@@ -32,6 +32,7 @@ RobWorkStudioApp::~RobWorkStudioApp()
 }
 
 void RobWorkStudioApp::start(){
+    _isRunning=true;
     _thread = new boost::thread(boost::bind(&RobWorkStudioApp::run, this));
 }
 
@@ -41,13 +42,17 @@ void initReasource(){
 }
 
  void RobWorkStudioApp::run(){
-     initReasource();
      rw::common::ProgramOptions poptions("RobWorkStudio", RW_VERSION);
      poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
      poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
      poptions.setPositionalOption("input-file", -1);
      poptions.initOptions();
-     poptions.parse(_args);
+     if(poptions.parse(_args)<0){
+         _isRunning = false;
+         return;
+     }
+
+     initReasource();
 
      PropertyMap map = poptions.getPropertyMap();
 
@@ -125,4 +130,5 @@ void initReasource(){
 
          }
      }
+     _isRunning = false;
  }

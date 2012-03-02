@@ -78,13 +78,15 @@ rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(){
 rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(const std::string& args){
 
     // create a thread that start QApplication and
-    if(robApp==NULL){
-        robApp =new RobWorkStudioApp( args );
+    if(robApp==NULL || !robApp->isRunning() ){
+        robApp = new RobWorkStudioApp( args );
         robApp->start();
         while(robApp->_rwstudio==NULL){
+            if(!robApp->isRunning())
+                return NULL;
             rw::common::TimerUtil::sleepMs(100);
         }
-        if(rwstudio_internal==NULL)
+        //if(rwstudio_internal==NULL)
             rwstudio_internal = robApp->_rwstudio;
     }
     return robApp->_rwstudio;
