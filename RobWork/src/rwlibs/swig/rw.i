@@ -724,7 +724,6 @@ public:
     void addDAF(Frame* frame, Frame* parent=NULL);
     void remove(Frame* frame);
     void addDevice(rw::common::Ptr<Device> device);
-    const std::vector<rw::common::Ptr<Device> >& getDevices() const;
     Frame* findFrame(const std::string& name) const;
 
     %extend {
@@ -745,6 +744,8 @@ public:
                 { return $self->rw::models::WorkCell::findDevice<TreeDevice>(name); }
         rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name)
                 { return $self->rw::models::WorkCell::findDevice<ParallelDevice>(name); }
+        std::vector<rw::common::Ptr<Device> > getDevices() const
+                { return $self->rw::models::WorkCell::getDevices(); }
     };
 
 
