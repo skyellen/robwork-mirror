@@ -101,6 +101,23 @@ public:
         void fireGenericEvent(const std::string& str){
             $self->genericEvent().fire(str);
         }
+
+        void send(const std::string& id, const std::string& val){
+            $self->genericAnyEvent().fire(id, val);
+        }
+
+        void send(const std::string& id, double val){
+            $self->genericAnyEvent().fire(id, val);
+        }
+
+        void send(const std::string& id, Q val){
+            $self->genericAnyEvent().fire(id, val);
+        }
+
+        void send(const std::string& id, const PropertyMap& val){
+            $self->genericAnyEvent().fire(id, val);
+        }
+
     }
     // events
     //StateChangedEvent& stateChangedEvent();

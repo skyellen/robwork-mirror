@@ -285,11 +285,12 @@ namespace rws {
         /**
          * @brief Defines event for generic user events
          */
-        typedef rw::common::Event<GenericEventListener, const std::string&, boost::any> GenericAnyEvent;
+        typedef rw::common::Event<GenericAnyEventListener, const std::string&, boost::any> GenericAnyEvent;
 
         /**
-         * @brief Returns GenericEvent needed for subscription and firing of events
-         * @return Reference to the GenericEvent
+         * @brief a generic event like GenericEvent but with the possibility of attaching
+         * any data to the event message.
+         * @return Reference to the GenericAnyEvent
          */
         GenericAnyEvent& genericAnyEvent() { return _genericAnyEvent; }
 
