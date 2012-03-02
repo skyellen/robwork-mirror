@@ -18,17 +18,17 @@ namespace kinematics {
     public:
 
         virtual void addStateData(rw::kinematics::StateStructure::Ptr statestructure){
-            for(size_t i=0;i<_objectDatas.size();i++){
-                statestructure->addData(_objectDatas[i]);
+            for(size_t i=0;i<_stateDatas.size();i++){
+                statestructure->addData(_stateDatas[i]);
             }
         }
 
     protected:
-        void addObjectStateData(ObjectStateData* objStateData){
-            _objectDatas.push_back(objStateData);
+        void addStateData(StateData* objStateData){
+            _stateDatas.push_back(objStateData);
         }
 
-        std::vector<ObjectStateData*> _objectDatas;
+        std::vector<StateData*> _stateDatas;
     };
 
 }

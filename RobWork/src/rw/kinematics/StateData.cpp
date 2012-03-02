@@ -23,15 +23,30 @@
 
 using namespace rw::kinematics;
 
-StateData::StateData(int size, const std::string& name, bool hasCache):
+StateData::StateData(int size, const std::string& name):
     _id(-1),
     _size(size),
     _name(name),
-    _hasCache(hasCache)
+    _hasCache(false)
 {
     RW_ASSERT(0 <= size);
 }
 
+StateData::StateData(int size, const std::string& name, rw::common::Ptr<StateCache> cache):
+    _id(-1),
+    _size(size),
+    _name(name),
+    _hasCache(true),
+    _cache(cache)
+{
+    RW_ASSERT(0 <= size);
+}
+
+rw::common::Ptr<StateCache> StateData::getCache(const State& state) const{
+    if( _hasCache==false )
+        return NULL; // stop early if we know size is 0
+    return state.getCache(_id);
+}
 
 StateCache::Ptr StateData::getCache(State& state){
     if( _hasCache==false )

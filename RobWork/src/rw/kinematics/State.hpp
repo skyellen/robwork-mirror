@@ -307,6 +307,8 @@ namespace rw { namespace kinematics {
 
         rw::common::Ptr<StateCache> getCache(int id);
 
+        rw::common::Ptr<StateCache> getCache(int id) const;
+
         void setCache(int id, rw::common::Ptr<StateCache> cache);
 
 

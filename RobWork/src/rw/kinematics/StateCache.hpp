@@ -84,12 +84,11 @@ namespace rw { namespace kinematics {
 
     protected:
         StateCache(){};
+        // StateCache should not be copied by other than its inherited class.
+        //StateCache(const StateCache&);
+        //StateCache& operator=(const StateCache&);
     private:
 
-
-        // StateCache should not be copied.
-        StateCache(const StateCache&);
-        StateCache& operator=(const StateCache&);
 
     };
     /*@}*/

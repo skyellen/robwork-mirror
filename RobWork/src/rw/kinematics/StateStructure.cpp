@@ -266,6 +266,13 @@ void StateStructure::updateDefaultState(){
     _stateSetupUniqueId++;
     // copy the default values into newState
     newState.copy( _defaultState );
+    // all caches that are null should be updated with their default cache
+    BOOST_FOREACH(boost::shared_ptr<StateData>& data, _currDatas){
+        if(data->hasCache()){
+            if( data->getCache(newState) == NULL )
+                data->setCache( data->getDefaultCache()->clone(), newState );
+        }
+    }
     _defaultState = newState;
 }
 

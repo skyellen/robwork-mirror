@@ -196,7 +196,7 @@ namespace rw { namespace kinematics {
             return _datas;
         }
 
-        inline int getCacheIdx(int id){ return _sdataTCacheIdx[id]; }
+        inline int getCacheIdx(int id) const { return _sdataTCacheIdx[id]; }
 
         inline int getMaxCacheIdx() const { return  _nrCaches; }
 

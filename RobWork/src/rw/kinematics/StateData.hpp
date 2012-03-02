@@ -136,7 +136,14 @@ namespace rw { namespace kinematics {
 
         inline bool hasCache() const { return _hasCache; };
 
-    protected:
+        //StateData(int size, StateCache::Ptr defaultCache, const std::string& name);
+        rw::common::Ptr<StateCache> getCache(const State& state) const ;
+        rw::common::Ptr<StateCache> getCache(State& state);
+        rw::common::Ptr<StateCache> getDefaultCache(){ return _cache; }
+        void setCache(rw::common::Ptr<StateCache> cache, State& state);
+
+
+    public:
 
         /**
          * @brief A state with \b size number of doubles in the State vector.
@@ -154,13 +161,9 @@ namespace rw { namespace kinematics {
          *
          * @param name [in] The name of the frame.
          */
-        StateData(int size, const std::string& name, bool hasCache=false);
+        StateData(int size, const std::string& name);
+        StateData(int size, const std::string& name, rw::common::Ptr<StateCache> cache);
 
-
-        //StateData(int size, StateCache::Ptr defaultCache, const std::string& name);
-        rw::common::Ptr<StateCache> getCache(State& state);
-
-        void setCache(rw::common::Ptr<StateCache> cache, State& state);
 
     private:
         // The tree is responsible for the assignment of the IDs that are later
@@ -189,6 +192,7 @@ namespace rw { namespace kinematics {
 
         bool _hasCache;
 
+        rw::common::Ptr<StateCache> _cache;
 
     private:
         // StateData should not be copied.
