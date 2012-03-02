@@ -294,6 +294,8 @@ namespace rws {
          */
         GenericAnyEvent& genericAnyEvent() { return _genericAnyEvent; }
 
+        boost::any waitForAnyEvent(const std::string& id, double timeout = -1.0);
+
 		/**
 		 * @brief Defines a key pressed event listener.
 		 *

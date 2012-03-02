@@ -1056,3 +1056,41 @@ void RobWorkStudio::saveViewGL(const QString& filename) {
     _view->saveBufferToFile(filename);
 }
 
+namespace {
+    class AnyEventListener {
+    public:
+        AnyEventListener(const std::string& myid):_id(myid),_eventSuccess(false){}
+        void cb(const std::string& id, boost::any data){
+            if(!_eventSuccess){
+                if(_id==id){
+                    _data = data;
+                    _eventSuccess=true;
+                }
+            }
+        }
+        std::string _id;
+        boost::any _data;
+        bool _eventSuccess;
+    };
+}
+
+boost::any RobWorkStudio::waitForAnyEvent(const std::string& id, double timeout){
+    AnyEventListener listener(id);
+    genericAnyEvent().add( boost::bind(&AnyEventListener::cb, &listener, _1, _2), &listener );
+    // now wait until event is called
+    const double starttime = TimerUtil::currentTime();
+    bool reachedTimeout = false;
+    while(!listener._eventSuccess){
+        TimerUtil::sleepMs(10);
+        if((timeout>0.0) && (TimerUtil::currentTime()-starttime>timeout)){
+            reachedTimeout = true;
+            break;
+        }
+    }
+    // remove the listener from the event
+    genericAnyEvent().remove( &listener );
+    // now return result
+    if(reachedTimeout)
+        RW_THROW("Timeout!");
+    return listener._data;
+}

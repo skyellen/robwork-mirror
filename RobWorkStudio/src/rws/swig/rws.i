@@ -121,6 +121,32 @@ public:
             $self->genericAnyEvent().fire(id, val);
         }
 
+        int wait(const std::string& id){
+            try {
+                $self->waitForAnyEvent(id);
+            } catch ( ... ){
+                return 0;
+            }
+            return 1;
+        }
+
+        int wait(const std::string& id, double timeout){
+            try {
+                $self->waitForAnyEvent(id, timeout);
+            } catch ( ... ){ return 0; }
+            return 1;
+        }
+
+        int wait(const std::string& id, Q& result, double timeout=-1.0){
+            try {
+                boost::any data = $self->waitForAnyEvent(id, timeout);
+                Q* q = boost::any_cast<Q>(&data);
+                if(q!=NULL)
+                    result = *q;
+            } catch ( ... ){ return 0;}
+            return 1;
+        }
+
     }
     // events
     //StateChangedEvent& stateChangedEvent();
