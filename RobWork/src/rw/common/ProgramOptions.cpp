@@ -211,7 +211,7 @@ void ProgramOptions::setPositionalOption(const std::string& name, int i){
 	_posOptionDesc.add(name.c_str(), i);
 }
 
-void ProgramOptions::checkVariablesMap(po::variables_map &vm){
+int ProgramOptions::checkVariablesMap(po::variables_map &vm){
     if (vm.count("help")) {
         std::cout << "Usage:\n\n"
                   << "\t" << _appName <<" [options] <project-file> \n"
@@ -219,12 +219,12 @@ void ProgramOptions::checkVariablesMap(po::variables_map &vm){
                   << "\t" << _appName <<" [options] <device-file> \n"
                   << "\n";
         rw::common::Log::infoLog() << _optionDesc << "\n";
-        abort();
+        return -1;
     }
 
     if (vm.count("version") ){
         Log::infoLog() << "\n\t" << _appName <<" version " << _version << std::endl;
-        abort();
+        return -1;
     }
 
     if( vm.count("property") ){
@@ -269,13 +269,13 @@ void ProgramOptions::checkVariablesMap(po::variables_map &vm){
         inifile = vm["ini-file"].as<std::string>();
     }
     */
-
+    return 0;
 }
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
-void ProgramOptions::parse(const std::string& str){
+int ProgramOptions::parse(const std::string& str){
     try {
         po::variables_map vm;
 
@@ -290,26 +290,26 @@ void ProgramOptions::parse(const std::string& str){
         po::store(po::command_line_parser(args).
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
         po::notify(vm);
-
+        return checkVariablesMap(vm);
     } catch (std::exception &e){
         rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
         rw::common::Log::infoLog() << "Specify --help for usage. \n";
-        abort();
+        return -1;
     }
 
 }
 
-void ProgramOptions::parse(int argc, char** argv){
+int ProgramOptions::parse(int argc, char** argv){
 	try {
         po::variables_map vm;
         po::store(po::command_line_parser(argc, argv).
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
 		po::notify(vm);
-		checkVariablesMap(vm);
+		return checkVariablesMap(vm);
     } catch (std::exception &e){
     	rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
     	rw::common::Log::infoLog() << "Specify --help for usage. \n";
-        abort();
+    	return -1;
     }
 }
 

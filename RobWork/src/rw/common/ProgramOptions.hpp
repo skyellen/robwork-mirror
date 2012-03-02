@@ -38,15 +38,21 @@ namespace common {
 		void addStringOption(const std::string& name, const std::string& defval, const std::string& desc);
 		void setPositionalOption(const std::string& name, int i);
 
-		void parse(int argc, char** argv);
-		void parse(const std::string& string);
+		/**
+		 * @brief parses input, if
+		 * @param argc
+		 * @param argv
+		 * @return if 0 is returned then help or an error
+		 */
+		int parse(int argc, char** argv);
+		int parse(const std::string& string);
 
 		boost::program_options::options_description& getOptionDescription(){ return _optionDesc; }
 		boost::program_options::positional_options_description& getPosOptionDescription(){ return _posOptionDesc; }
 
 		rw::common::PropertyMap getPropertyMap(){ return _pmap;};
 	private:
-		void checkVariablesMap(boost::program_options::variables_map &vm);
+		int checkVariablesMap(boost::program_options::variables_map &vm);
 	private:
 		std::string _appName;
 		rw::common::PropertyMap _pmap;
