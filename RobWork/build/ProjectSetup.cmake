@@ -37,6 +37,10 @@ IF (NOT EXISTS ${ROOT}/config.cmake)
   #MESSAGE(STATUS "No config.cmake file loaded, using default settings from config.cmake.template")
 ENDIF ()
 
+SET(RW_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" )
+SET(RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" )
+SET(RW_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" )
+
 # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
 IF (DEFINED MSVC)
     SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin" CACHE PATH "Runtime directory" FORCE)
