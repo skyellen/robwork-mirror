@@ -81,6 +81,15 @@ namespace swig {
 
     void moveTo(const std::string& fname, const std::string& mname, rwlibs::swig::Transform3D wTframe );
 
+    // utility functions for
+    rwlibs::swig::Q getQ(rw::common::Ptr<rwlibs::swig::Device> dev);
+    void setQ(rw::common::Ptr<rwlibs::swig::Device> dev, rwlibs::swig::Q);
+
+    void setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3D wTframe );
+
+    rwlibs::swig::Transform3D wTf(rwlibs::swig::Frame* frame);
+    rwlibs::swig::Transform3D fTf(rwlibs::swig::Frame* frame,rwlibs::swig::Frame* to);
+
 }
 }
 

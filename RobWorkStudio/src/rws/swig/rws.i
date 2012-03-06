@@ -185,7 +185,16 @@ MovableFrame* findMovableFrame(const std::string& name);
 
  void moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp );
 
- void moveTo(const std::string& fname, const std::string& mname, rwlibs::swig::Transform3D wTframe );
+ void moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe );
+
+ Q getQ(rw::common::Ptr<Device> dev);
+ void setQ(rw::common::Ptr<Device> dev, Q);
+
+ void setTransform(Frame* mframe, Transform3D wTframe );
+
+  Transform3D wTf(Frame* frame);
+ Transform3D fTf(Frame* frame,Frame* frame);
+
 
 /*
 State& getState();

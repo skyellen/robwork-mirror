@@ -92,3 +92,32 @@ rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(const std::st
     return robApp->_rwstudio;
 }
 
+rwlibs::swig::Q rws::swig::getQ(rw::common::Ptr<rwlibs::swig::Device> dev){
+    if(dev==NULL)
+        RW_THROW("Device is NULL!");
+    return dev->getQ(getState());
+}
+void rws::swig::setQ(rw::common::Ptr<rwlibs::swig::Device> dev, rwlibs::swig::Q q){
+    if(dev==NULL)
+        RW_THROW("Device is NULL!");
+    State state = getState();
+    dev->setQ(q, state);
+    setState(state);
+}
+
+void rws::swig::setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3D wTframe ){
+    if(FixedFrame *ff = dynamic_cast<FixedFrame*>(mframe) ){
+        ff->setTransform( wTframe );
+    } else if( MovableFrame *mf = dynamic_cast<MovableFrame*>(mframe) ){
+        State state = getState();
+        mf->setTransform(wTframe, state);
+        setState( state );
+    }
+}
+
+rwlibs::swig::Transform3D rws::swig::wTf(rwlibs::swig::Frame* frame){
+    return rw::kinematics::Kinematics::worldTframe(frame, getState());
+}
+rwlibs::swig::Transform3D rws::swig::fTf(rwlibs::swig::Frame* frame, rwlibs::swig::Frame* to){
+    return rw::kinematics::Kinematics::frameTframe(frame, to, getState());
+}
