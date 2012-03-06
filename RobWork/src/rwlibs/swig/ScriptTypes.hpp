@@ -32,8 +32,13 @@
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
+
+#include <rw/pathplanning.hpp>
+
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
+#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rw/RobWork.hpp>
 #include <iostream>
 #include <sstream>
@@ -78,22 +83,19 @@ typedef rw::geometry::Sphere Sphere;
 typedef rw::geometry::Plane Plane;
 typedef rw::geometry::Cylinder Cylinder;
 typedef rw::geometry::STLFile STLFile;
-
 typedef rw::geometry::Triangle<double> Triangle;
 typedef rw::geometry::Triangle<float> Trianglef;
 typedef rw::geometry::TriangleN1<double> TriangleN1;
 typedef rw::geometry::TriangleN1<float> TriangleN1f;
-
 typedef rw::geometry::TriMesh TriMesh;
 typedef rw::geometry::PlainTriMesh<Triangle> PlainTriMesh;
 typedef rw::geometry::PlainTriMesh<Trianglef> PlainTriMeshf;
 typedef rw::geometry::PlainTriMesh<TriangleN1> PlainTriMeshN1;
 typedef rw::geometry::PlainTriMesh<TriangleN1f> PlainTriMeshN1f;
-
-typedef rw::sensor::Image Image;
-
 typedef rw::geometry::ConvexHull3D ConvexHull3D;
 typedef rw::geometry::Geometry Geometry;
+
+typedef rw::sensor::Image Image;
 
 typedef rw::kinematics::StateData StateData;
 typedef rw::kinematics::Frame Frame;
@@ -101,6 +103,7 @@ typedef rw::kinematics::MovableFrame MovableFrame;
 typedef rw::kinematics::FixedFrame FixedFrame;
 typedef rw::kinematics::State State;
 
+typedef rw::trajectory::Path<Q> QPath;
 typedef rw::trajectory::TimedStatePath TimedStatePath;
 typedef rw::trajectory::TimedState TimedState;
 //typedef rw::trajectory::TrajectoryFactory TrajectoryFactory;
@@ -160,6 +163,10 @@ typedef rw::graphics::WorkCellScene WorkCellScene;
 typedef rw::graphics::SceneViewer SceneViewer;
 typedef rw::graphics::SceneNode SceneNode;
 typedef rw::graphics::DrawableNode DrawableNode;
+
+
+typedef rw::pathplanning::QToQPlanner QToQPlanner;
+typedef rw::pathplanning::StopCriteria StopCriteria;
 
 
 // not added yet

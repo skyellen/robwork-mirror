@@ -10,8 +10,10 @@
 using namespace rwlibs::swig;
 using rw::trajectory::Interpolator;
 using rw::trajectory::Blend;
+using rw::trajectory::Path;
 using rw::trajectory::Trajectory;
 using rw::trajectory::InterpolatorTrajectory;
+using rw::pathplanning::PathPlanner;
 %}
 
 %include <std_string.i>
@@ -50,7 +52,7 @@ public:
 
     template<class A>
     bool operator==(const rw::common::Ptr<A>& p) const;
-
+    T* get() const;
     T *operator->() const;
 };
 }}
@@ -76,6 +78,8 @@ public:
 %template (InvKinSolverPtr) rw::common::Ptr<InvKinSolver>;
 %template (IterativeIKPtr) rw::common::Ptr<IterativeIK>;
 %template (ClosedFormIKPtr) rw::common::Ptr<ClosedFormIK>;
+%template (QPathPtr) rw::common::Ptr<Path<Q> >;
+%template (QToQPlannerPtr) rw::common::Ptr<QToQPlanner>;
 
 %template (QMetricPtr) rw::common::Ptr<QMetric>;
 %template (Transform3DMetricPtr) rw::common::Ptr<Transform3DMetric>;
@@ -826,6 +830,24 @@ public:
  *
  * *************************************************************************/
 template <class T>
+class Path: public std::vector<T>
+{
+public:
+
+    Path();
+    Path(size_t cnt);
+    Path(size_t cnt, const T& value);
+    Path(const std::vector<T>& v);
+
+    %extend {
+        size_t size(){ return $self->std::vector<T>::size(); }
+        T& elem(size_t idx){ return (*$self)[idx]; }
+    };
+};
+
+%template (QPath) Path<Q>;
+
+template <class T>
 class Blend
 {
 public:
@@ -1067,23 +1089,58 @@ public:
  *  PROXIMITY
  *
  * *************************************************************************/
-
+%nodefaultctor CollisionStrategy;
+class CollisionStrategy {
+public:
 /*
+    virtual bool inCollision(
+        const kinematics::Frame* a,
+        const math::Transform3D<>& wTa,
+        const kinematics::Frame *b,
+        const math::Transform3D<>& wTb,
+        CollisionQueryType type = FirstContact);
+
+    virtual bool inCollision(
+        const kinematics::Frame* a,
+        const math::Transform3D<>& wTa,
+        const kinematics::Frame *b,
+        const math::Transform3D<>& wTb,
+        ProximityStrategyData& data,
+        CollisionQueryType type = FirstContact);
+
+    virtual bool inCollision(
+        ProximityModel::Ptr a,
+        const math::Transform3D<>& wTa,
+        ProximityModel::Ptr b,
+        const math::Transform3D<>& wTb,
+        ProximityStrategyData& data) = 0;
+*/
+    /*
+    static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy, double tolerance);
+
+    static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
+                     const rw::kinematics::FrameMap<double>& frameToTolerance,
+                     double defaultTolerance);
+     */
+};
+
+
 class CollisionDetector
 {
 public:
-    //! @brief types of collision query
-    typedef enum
+   /* typedef enum
     {
         AllContactsFullInfo, //! find all collisions and return full collision information
         AllContactsNoInfo, //! find all collisions but without collision information
         FirstContactFullInfo,//! return on first contact and include full collision information
         FirstContactNoInfo //! return on first collision but without collision information
     } QueryType;
+*/
+    CollisionDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy);
 
 
 };
-*/
+
 
 /******************************************************************************
  *  LOADERS
@@ -1252,6 +1309,95 @@ public:
     virtual void setCheckJointLimits(bool check);
 
 };
+
+
+/******************************************************************************
+ *  PATHPLANNERS
+ *
+ * *************************************************************************/
+%nodefaultctor StopCriteria;
+class StopCriteria
+ {
+ public:
+     bool stop() const;
+     rw::common::Ptr<StopCriteria> instance() const;
+     virtual ~StopCriteria();
+     static rw::common::Ptr<StopCriteria> stopAfter(double time);
+     static rw::common::Ptr<StopCriteria> stopNever();
+     static rw::common::Ptr<StopCriteria> stopNow();
+     static rw::common::Ptr<StopCriteria> stopByFlag(bool* stop);
+     //static rw::common::Ptr<StopCriteria> stopByFun(boost::function<bool ()> fun);
+     static rw::common::Ptr<StopCriteria> stopCnt(int cnt);
+     static rw::common::Ptr<StopCriteria> stopEither(
+         const std::vector<rw::common::Ptr<StopCriteria> >& criteria);
+
+     static rw::common::Ptr<StopCriteria> stopEither(
+         const rw::common::Ptr<StopCriteria>& a,
+         const rw::common::Ptr<StopCriteria>& b);
+};
+/*
+%nodefaultctor PathPlanner;
+template <class From, class To, class PATH = Path<From> >
+class PathPlanner
+{
+public:
+
+    bool query(const From& from, To& to, PATH& path, const StopCriteria& stop);
+
+    bool query(const From& from, To& to, PATH& path, double time);
+
+    bool query(const From& from, To& to, PATH& path);
+
+    PropertyMap& getProperties();
+
+};
+%nodefaultctor QToQPathPlanner;
+%template (QToQPathPlanner) PathPlanner<Q,const Q,QPath>;
+*/
+%nodefaultctor QToQPlanner;
+class QToQPlanner {
+public:
+
+    %extend {
+
+        rw::common::Ptr<Path<Q> > query(Q from, Q to, rw::common::Ptr<StopCriteria> stop){
+            rw::common::Ptr<QPath> path = rw::common::ownedPtr(new QPath());
+            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,*stop);
+            return path;
+        }
+
+        rw::common::Ptr<Path<Q> > query(Q from, Q to, double time){
+            rw::common::Ptr<QPath> path = rw::common::ownedPtr(new QPath());
+            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,time);
+            return path;
+        }
+
+        rw::common::Ptr<Path<Q> > query(Q from, Q to){
+            rw::common::Ptr<QPath> path = rw::common::ownedPtr(new QPath());
+            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path);
+            return path;
+        }
+
+        PropertyMap& getProperties(){
+            return $self->rw::pathplanning::PathPlanner<Q,const Q>::getProperties();
+        }
+
+        static rw::common::Ptr<QToQPlanner> makeRRT(rw::common::Ptr<CollisionDetector> cdect, rw::common::Ptr<Device> dev, const State& state){
+            const rw::pathplanning::PlannerConstraint constraint = rw::pathplanning::PlannerConstraint::make(
+                cdect.get(), dev, state);
+            return rwlibs::pathplanners::RRTPlanner::makeQToQPlanner(constraint, dev);
+        }
+
+        static rw::common::Ptr<QToQPlanner> makeSBL(rw::common::Ptr<CollisionDetector> cdect, rw::common::Ptr<Device> dev, const State& state){
+            rw::pathplanning::QConstraint::Ptr qconstraint = rw::pathplanning::QConstraint::make(cdect.get(), dev, state);
+            return rwlibs::pathplanners::SBLPlanner::makeQToQPlanner(rwlibs::pathplanners::SBLSetup::make(qconstraint, rw::pathplanning::QEdgeConstraintIncremental::makeDefault(qconstraint, dev), dev));
+        }
+    };
+};
+
+
+
+
 
 void writelog(const std::string& msg);
 
