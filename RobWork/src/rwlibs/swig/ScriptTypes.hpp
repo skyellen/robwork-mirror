@@ -32,6 +32,7 @@
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
+#include <rw/trajectory/TimedUtil.hpp>
 
 #include <rw/pathplanning.hpp>
 

@@ -12,6 +12,7 @@ using rw::math::Metric;
 using rw::trajectory::Interpolator;
 using rw::trajectory::Blend;
 using rw::trajectory::Path;
+using rw::trajectory::Timed;
 using rw::trajectory::Trajectory;
 using rw::trajectory::InterpolatorTrajectory;
 using rw::pathplanning::PathPlanner;
@@ -845,6 +846,27 @@ public:
  *  TRAJECTORY
  *
  * *************************************************************************/
+
+template <class T>
+class Timed
+{
+public:
+    Timed();
+    Timed(double time, const T& value);
+
+    double getTime() const;
+    T& getValue();
+
+    %extend {
+        void setTime(double time){
+            $self->rw::trajectory::Timed<T>::getTime() = time;
+        }
+    };
+};
+
+%template (TimedQ) Timed<Q>;
+%template (TimedState) Timed<State>;
+
 template <class T>
 class Path: public std::vector<T>
 {
@@ -856,12 +878,44 @@ public:
     Path(const std::vector<T>& v);
 
     %extend {
-        size_t size(){ return $self->std::vector<T>::size(); }
+        size_t size(){ return $self->std::vector<T >::size(); }
         T& elem(size_t idx){ return (*$self)[idx]; }
     };
 };
 
+//%template (QVector) std::vector<Q>;
+%template (TimedQVector) std::vector<Timed<Q> >;
+%template (TimedStateVector) std::vector<Timed<State> >;
+%template (TimedQVectorPtr) rw::common::Ptr<std::vector<Timed<Q> > >;
+%template (TimedStateVectorPtr) rw::common::Ptr<std::vector<Timed<State> > >;
+
 %template (QPath) Path<Q>;
+%template (TimedQPath) Path<Timed<Q> >;
+%template (TimedStatePath) Path<Timed<State> >;
+%template (TimedQPathPtr) rw::common::Ptr<Path<Timed<Q> > >;
+%template (TimedStatePathPtr) rw::common::Ptr<Path<Timed<State> > >;
+
+%extend Path<Q> {
+    rw::common::Ptr<Path<Timed<Q> > > toTimedQPath(Q speed){
+        rw::trajectory::TimedQPath tpath =
+                rw::trajectory::TimedUtil::makeTimedQPath(speed, *$self);
+        return rw::common::ownedPtr( new rw::trajectory::TimedQPath(tpath) );
+    }
+
+    rw::common::Ptr<Path<Timed<Q> > > toTimedQPath(rw::common::Ptr<Device> dev){
+        rw::trajectory::TimedQPath tpath =
+                rw::trajectory::TimedUtil::makeTimedQPath(*dev, *$self);
+        return rw::common::ownedPtr( new rw::trajectory::TimedQPath(tpath) );
+    }
+
+    rw::common::Ptr<Path<Timed<State> > > toTimedStatePath(rw::common::Ptr<Device> dev,
+                                                     const State& state){
+        rw::trajectory::TimedStatePath tpath =
+                rw::trajectory::TimedUtil::makeTimedStatePath(*dev, *$self, state);
+        return rw::common::ownedPtr( new rw::trajectory::TimedStatePath(tpath) );
+    }
+
+};
 
 template <class T>
 class Blend

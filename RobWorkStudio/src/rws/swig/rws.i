@@ -6,6 +6,15 @@
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::swig;
 using namespace rws::swig;
+
+using rw::trajectory::Interpolator;
+using rw::trajectory::Blend;
+using rw::trajectory::Path;
+using rw::trajectory::Timed;
+using rw::trajectory::Trajectory;
+using rw::trajectory::InterpolatorTrajectory;
+using rw::pathplanning::PathPlanner;
+
 %}
 
 %import <rwlibs/swig/rw.i>
@@ -65,8 +74,8 @@ public:
 
 
     %extend {
-        void setTimedStatePath(const TimedStatePath& path){
-            $self->postTimedStatePath(path);
+        void setTimedStatePath(rw::common::Ptr<Path<Timed<State> > > path){
+            $self->postTimedStatePath(*path);
         }
 
         void setState(const State& state){
