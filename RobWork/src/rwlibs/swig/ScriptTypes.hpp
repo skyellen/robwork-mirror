@@ -39,6 +39,8 @@
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+#include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
+#include <rwlibs/pathoptimization/clearance/ClearanceOptimizer.hpp>
 #include <rw/RobWork.hpp>
 #include <iostream>
 #include <sstream>
@@ -167,7 +169,10 @@ typedef rw::graphics::DrawableNode DrawableNode;
 
 typedef rw::pathplanning::QToQPlanner QToQPlanner;
 typedef rw::pathplanning::StopCriteria StopCriteria;
+typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
 
+typedef rwlibs::pathoptimization::PathLengthOptimizer PathLengthOptimizer;
+typedef rwlibs::pathoptimization::ClearanceOptimizer ClearanceOptimizer;
 
 // not added yet
 typedef rwlibs::simulation::SimulatedController SimulatedController;

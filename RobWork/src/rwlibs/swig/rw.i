@@ -8,6 +8,7 @@
 #endif
 
 using namespace rwlibs::swig;
+using rw::math::Metric;
 using rw::trajectory::Interpolator;
 using rw::trajectory::Blend;
 using rw::trajectory::Path;
@@ -81,7 +82,7 @@ public:
 %template (QPathPtr) rw::common::Ptr<Path<Q> >;
 %template (QToQPlannerPtr) rw::common::Ptr<QToQPlanner>;
 
-%template (QMetricPtr) rw::common::Ptr<QMetric>;
+%template (QMetricPtr) rw::common::Ptr<Metric<Q> >;
 %template (Transform3DMetricPtr) rw::common::Ptr<Transform3DMetric>;
 // trajectory
 %template (StateTrajectoryPtr) rw::common::Ptr<StateTrajectory>;
@@ -468,6 +469,21 @@ public:
     static InertiaMatrix makeHollowSphereInertia(double mass, double radi);
     static InertiaMatrix makeCuboidInertia(double mass, double x, double y, double z);
 };
+
+%nodefaultctor Metric;
+template <class T>
+class Metric
+{
+public:
+    double distance(const T& q) const;
+
+    double distance(const T& a, const T& b) const;
+
+    int size() const;
+
+};
+
+%template (QMetric) Metric<Q>;
 
 
 /********************************************************************
@@ -1315,6 +1331,45 @@ public:
  *  PATHPLANNERS
  *
  * *************************************************************************/
+class PlannerConstraint
+{
+public:
+    PlannerConstraint();
+
+    //PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
+
+    bool inCollision(const Q& q);
+
+    bool inCollision(const Q& q1, const Q& q2);
+
+    //QConstraint& getQConstraint() const { return *_constraint; }
+
+    //QEdgeConstraint& getQEdgeConstraint() const { return *_edge; }
+
+    //const QConstraint::Ptr& getQConstraintPtr() const { return _constraint; }
+
+    //const QEdgeConstraint::Ptr& getQEdgeConstraintPtr() const { return _edge; }
+
+    //static PlannerConstraint make(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
+
+    static PlannerConstraint make(rw::common::Ptr<CollisionDetector> detector,
+                                  rw::common::Ptr<Device> device,
+                                  const State& state);
+
+    static PlannerConstraint make(rw::common::Ptr<CollisionStrategy> strategy,
+                                  rw::common::Ptr<WorkCell> workcell,
+                                  rw::common::Ptr<Device> device,
+                                  const State& state);
+
+    /*
+    static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
+        const rw::proximity::CollisionSetup& setup,
+        rw::common::Ptr<WorkCell> workcell,
+        rw::common::Ptr<Device> device,
+        const State& state);
+     */
+};
+
 %nodefaultctor StopCriteria;
 class StopCriteria
  {
@@ -1396,6 +1451,71 @@ public:
 };
 
 
+/******************************************************************************
+ *  PATHOPTIMIZATION
+ *
+ * *************************************************************************/
+
+class PathLengthOptimizer
+{
+public:
+
+    %extend {
+
+        PathLengthOptimizer(rw::common::Ptr<CollisionDetector> cd,
+                            rw::common::Ptr<Device> dev,
+                            const State &state)
+        {
+            rw::pathplanning::PlannerConstraint constraint =
+                    rw::pathplanning::PlannerConstraint::make(cd.get(), dev, state);
+            return new PathLengthOptimizer(constraint, rw::math::MetricFactory::makeEuclidean< Q>());
+        }
+
+        PathLengthOptimizer(rw::common::Ptr<CollisionDetector> cd,
+                            rw::common::Ptr<Device> dev,
+                            rw::common::Ptr<Metric<Q> > metric,
+                            const State &state)
+        {
+            rw::pathplanning::PlannerConstraint constraint =
+                    rw::pathplanning::PlannerConstraint::make(cd.get(), dev, state);
+            return new PathLengthOptimizer(constraint, metric );
+        }
+
+        PathLengthOptimizer(rw::common::Ptr<PlannerConstraint> constraint,
+                            rw::common::Ptr<Metric<Q> > metric)
+        {
+            return new PathLengthOptimizer(*constraint, metric);
+        }
+
+        rw::common::Ptr<Path<Q> > pathPruning(rw::common::Ptr<Path<Q> > path){
+            QPath res = $self->rwlibs::pathoptimization::PathLengthOptimizer::pathPruning(*path);
+            return rw::common::ownedPtr( new QPath(res) );
+        }
+/*
+        rw::common::Ptr<Path<Q> > shortCut(rw::common::Ptr<Path<Q> > path,
+                                       size_t cnt,
+                                       double time,
+                                       double subDivideLength);
+*/
+        rw::common::Ptr<Path<Q> > shortCut(rw::common::Ptr<Path<Q> > path){
+            QPath res = $self->rwlibs::pathoptimization::PathLengthOptimizer::shortCut(*path);
+            return rw::common::ownedPtr( new QPath(res) );
+        }
+
+        rw::common::Ptr<Path<Q> > partialShortCut(rw::common::Ptr<Path<Q> > path){
+            QPath res = $self->rwlibs::pathoptimization::PathLengthOptimizer::partialShortCut(*path);
+            return rw::common::ownedPtr( new QPath(res) );
+        }
+/*
+        rw::common::Ptr<Path<Q> > partialShortCut(rw::common::Ptr<Path<Q> > path,
+                                              size_t cnt,
+                                              double time,
+                                              double subDivideLength);
+                                              */
+    }
+    PropertyMap& getPropertyMap();
+
+};
 
 
 

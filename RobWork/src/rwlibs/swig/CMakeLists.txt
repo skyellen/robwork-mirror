@@ -1,5 +1,3 @@
-#FIND_PACKAGE(Tolua++)
-
 #FIND_PACKAGE(SWIG 1.3)
 #MESSAGE(STATUS "${SWIG_FOUND}")
 #MESSAGE(STATUS "${SWIG_DIR}")
@@ -29,19 +27,24 @@ IF( SWIG_FOUND )
 	    SET_TARGET_PROPERTIES(rw_lua PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
 	ENDIF()
 	
-	# PYthon interface generation
-	FIND_PACKAGE(PythonInterp)
-	FIND_PACKAGE(PythonLibs)
-	#MESSAGE("PYTHONINTERP_FOUND:  ${PYTHONINTERP_FOUND}" )
-	#MESSAGE("PYTHONLIBS_FOUND:  ${PYTHONLIBS_FOUND}" )
-	IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
-	    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-	    SWIG_ADD_MODULE(rw python rw.i)
-	    SWIG_LINK_LIBRARIES(rw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
-	    
-	    # TODO we need to invoke python distutils to compile a shared library that has the c++ objects available.
-	    
-	ENDIF()  
 	
+	
+	FIND_PACKAGE(PythonInterp)
+    FIND_PACKAGE(PythonLibs)
+    INCLUDE(CMakeDependentOption)
+    CMAKE_DEPENDENT_OPTION(RW_PYTHON_BINDINGS_ENABLED "Enable python bindings." 
+                       ON "PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND" OFF)
+    IF( RWS_PYTHON_BINDINGS_ENABLED )
+        IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
+            MESSAGE(STATUS "RobWorkStudio: Python bindings ENABLED!")
+            INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+            SWIG_ADD_MODULE(rw python rw.i)
+	        SWIG_LINK_LIBRARIES(rw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+        ELSE()
+            MESSAGE(STATUS "RobWorkStudio: Python bindings DISABLED!")
+        ENDIF()
+    ELSE()
+        MESSAGE(STATUS "RobWorkStudio: Python bindings DISABLED")
+    ENDIF() 	
 	
 ENDIF()
