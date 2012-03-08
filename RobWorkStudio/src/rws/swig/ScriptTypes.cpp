@@ -10,8 +10,8 @@ using namespace rwlibs::swig;
 rw::common::Ptr<rws::swig::RobWorkStudio> rwstudio_internal;
 
 rws::swig::RobWorkStudio* rws::swig::getRobWorkStudio(){
-    if(rwstudio_internal==NULL)
-        rwstudio_internal = getRobWorkStudioInstance("");
+    //if(rwstudio_internal==NULL)
+    //    rwstudio_internal = getRobWorkStudioInstance("");
     return rwstudio_internal.get();
 }
 
