@@ -1,6 +1,6 @@
 #include "PlanarSupportPoseGenerator.hpp"
 
-#include <rw/geometry/GiftWrapHull3D.hpp>
+#include <rw/geometry/QHull3D.hpp>
 //#include <rw/geometry/IncrementalHull.hpp>
 #include <rw/common/Ptr.hpp>
 #include <boost/foreach.hpp>
@@ -148,7 +148,7 @@ namespace {
 
 
 
-PlanarSupportPoseGenerator::PlanarSupportPoseGenerator():_hullGenerator(ownedPtr( new GiftWrapHull3D() )){}
+PlanarSupportPoseGenerator::PlanarSupportPoseGenerator():_hullGenerator(ownedPtr( new QHull3D() )){}
 
 PlanarSupportPoseGenerator::PlanarSupportPoseGenerator(ConvexHull3D::Ptr hullGenerator):_hullGenerator(hullGenerator){}
 
