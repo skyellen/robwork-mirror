@@ -21,7 +21,7 @@ SET(FILES_CPP
     Plane.cpp  
     ConvexHull2D.cpp
     ConvexHull3D.cpp    
-    GiftWrapHull3D.cpp
+    #GiftWrapHull3D.cpp
     IncrementalHull3D.cpp
     Contour2D.cpp
     Contour2DUtil.cpp
@@ -58,7 +58,7 @@ SET(FILES_HPP
     ConvexHull2D.hpp
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
-    GiftWrapHull3D.hpp
+    #GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
