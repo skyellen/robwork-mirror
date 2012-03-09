@@ -12,7 +12,7 @@
 #include <rw/loaders.hpp>
 #include <rw/common.hpp>
 
-#include <rw/geometry/GiftWrapHull3D.hpp>
+#include <rw/geometry/QHull3D.hpp>
 
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/Proximity.hpp>
@@ -591,7 +591,7 @@ void GraspTableGeneratorPlugin::stepCallBack(int i, const rw::kinematics::State&
             std::cout << cm;
             //std::cout << "Wrench calc" << std::endl;
             if(g3d.contacts.size()>1){
-                WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+                WrenchMeasure3D wmeasure(new QHull3D(), 6 );
                 wmeasure.setObjectCenter(cm);
                 wmeasure.quality(g3d);
                 //std::cout << "Wrench calc done!" << std::endl;
@@ -947,7 +947,7 @@ bool GraspTableGeneratorPlugin::saveRestingState(int simidx, SimulatorPtr sim , 
     Vector3D<> cm = _body->getInfo().masscenter;
     std::cout << cm;
     //std::cout << "Wrench calc" << std::endl;
-    WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+    WrenchMeasure3D wmeasure(new QHull3D(), 6 );
     wmeasure.setObjectCenter(cm);
     wmeasure.quality(g3d);
     //std::cout << "Wrench calc done!" << std::endl;

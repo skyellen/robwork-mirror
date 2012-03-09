@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>288</width>
-    <height>696</height>
+    <height>733</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -134,7 +134,7 @@
           </item>
          </layout>
         </item>
-        <item row="7" column="0">
+        <item row="9" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="topMargin">
            <number>0</number>
@@ -164,7 +164,7 @@
           </item>
          </layout>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="topMargin">
            <number>10</number>
@@ -211,6 +211,23 @@
          <widget class="QCheckBox" name="_invertBox">
           <property name="text">
            <string>GripperTObject</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QCheckBox" name="_lowIsHigh">
+          <property name="text">
+           <string>Low number is high quality</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QCheckBox" name="_costumThreshold">
+          <property name="text">
+           <string>Costum threshold</string>
           </property>
          </widget>
         </item>

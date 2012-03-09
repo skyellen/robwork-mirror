@@ -382,7 +382,6 @@ void SimTaskVisPlugin::btnPressed() {
             	}
             }
             if( _showQuality->isChecked() ){
-
                 rt.scale = quality(qIdx);
             } else {
                 rt.scale = 1.0;
@@ -442,17 +441,37 @@ void SimTaskVisPlugin::btnPressed() {
                     t.color[1] = (1-(t.scale+offset)*scale);
                     t.color[2] = (1-(t.scale+offset)*scale);
                 } else {
-                    t.color[0] = t.color[0] * (t.scale+offset)*scale;
-                    t.color[1] = t.color[1] * (t.scale+offset)*scale;
-                    t.color[2] = t.color[2] * (t.scale+offset)*scale;
+                    // a value between 0 and 1, with 1 being high quality and 0 being low
+                    double sval = (t.scale+offset)*scale;
+                    if( _lowIsHigh->isChecked() ){
+                        sval = 1-sval;
+                    }
+                    Vector3D<float> red(1,0,0),yellow(1,1,0),green(0,1,0), color;
+                    if(sval<0.5){
+                        // red to yellow
+                        color = red+normalize(yellow-red)*sval*2;
+                    } else {
+                        // sval is
+                        // yellow to green
+                        color = yellow+normalize(green-yellow)*(sval-0.5)*2;
+                    }
+                    t.color[0] = color[0];
+                    t.color[1] = color[1];
+                    t.color[2] = color[2];
                 }
                 //std::cout << t.color[0] << " (" << t.scale << "+" << offset<<")*" << scale << std::endl;
             }
         }
-        _fromThresSpin->setMinimum(minQual);
-        _fromThresSpin->setMaximum(maxQual);
-        _toThresSpin->setMinimum(minQual);
-        _toThresSpin->setMaximum(maxQual);
+
+        _fromThresSpin->setMinimum(minQual - (maxQual-minQual));
+        _fromThresSpin->setMaximum(maxQual + (maxQual-minQual));
+        _toThresSpin->setMinimum(minQual - (maxQual-minQual));
+        _toThresSpin->setMaximum(maxQual + (maxQual-minQual));
+
+        if( !_costumThreshold->isChecked() ){
+            _fromThresSpin->setValue(minQual);
+            _toThresSpin->setValue(maxQual);
+        }
 
         log().info() << "Total:" << successStat+slippedStat+otherStat+collisionStat+droppedStat+missedStat
                      << " Succes:"<<successStat
