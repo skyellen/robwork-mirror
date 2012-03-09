@@ -49,8 +49,8 @@
 
 #include "./geometry/ConvexHull2D.hpp"
 #include "./geometry/ConvexHull3D.hpp"
-//#GiftWrapHull2D.hpp
-#include "./geometry/GiftWrapHull3D.hpp"
+//#include "./geometry/GiftWrapHull3D.hpp"
+#include "./geometry/QHull3D.hpp"
 //#include "./geometry/triangulate.hpp"
 #include "./geometry/Contour2D.hpp"
 //#include "./geometry/Contour2Dto3D.hpp"
