@@ -113,7 +113,9 @@ TactileSensorDialog::TactileSensorDialog(
                                     QWidget *parent):
     QDialog(parent),
     _dwc(dwc),
-    _nrOfPadsH(3)
+    _nrOfPadsH(3),
+    _saveCnt(0),
+_renderingToImage(false)
 {
 
 	RW_ASSERT( _dwc );
@@ -331,11 +333,11 @@ void TactileSensorDialog::btnPressed(){
         std::cout << "Save btn pushed!" << std::endl;
         QImage img(640,480,QImage::Format_RGB32);
         QPainter painter(&img);
-        _gview->scene()->render(&painter);
+        _gview->render(&painter);
         double time = TimerUtil::currentTime();
         std::stringstream sstr;
         int s = (int)(time);
-        sstr << "c:/tmp/ImageSave_"<< s << ".png";
+        sstr << "TactileImageSave_"<< s << ".png";
         img.save(sstr.str().c_str());
     } else if(obj==_loadDataBtn){
         QString selectedFilter;
@@ -402,16 +404,22 @@ void TactileSensorDialog::setState(const rw::kinematics::State& state){
     detectFeatures();
     drawTactileInput();
     if(_saveCheckBox->isChecked()){
+        if(_renderingToImage)
+            return;
+        _renderingToImage = true;
         Frame *world = _dwc->getWorkcell()->getWorldFrame();
         std::string gqual = world->getPropertyMap().get<std::string>("GraspQuality",std::string("NO"));
         QImage img(640,480,QImage::Format_RGB32);
         QPainter painter(&img);
-        _gview->scene()->render(&painter);
+        painter.setBackground( QBrush(QColor(Qt::white)));
+        _gview->render(&painter);
         double time = TimerUtil::currentTime();
         std::stringstream sstr;
         int s = (int)(time);
-        sstr << "c:/tmp/ImageSave_"<< s << "_" << gqual <<  ".png";
+        sstr << "TactileImageSave_"<< _saveCnt << ".png";
+        _saveCnt++;
         img.save(sstr.str().c_str());
+        _renderingToImage = false;
     }
 }
 

@@ -27,7 +27,7 @@
 #include <rw/graspplanning/WrenchMeasure3D.hpp>
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 
-#include <rw/geometry/GiftWrapHull3D.hpp>
+#include <rw/geometry/QHull3D.hpp>
 
 #include <boost/filesystem/operations.hpp>
 #include <iostream>

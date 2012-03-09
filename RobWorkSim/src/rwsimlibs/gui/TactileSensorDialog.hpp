@@ -82,12 +82,14 @@ class TactileSensorDialog : public QDialog, public Ui::TactileSensorDialog
         std::vector<rwsim::sensor::TactileArraySensor*> _tsensors;
         std::vector<boost::numeric::ublas::matrix<float> > _values;
         QGraphicsScene *_scene;
+        bool _renderingToImage;
 
         std::vector< std::vector<QGraphicsRectItem*> > _rectItems;
         std::vector<QGraphicsEllipseItem*> _centerItems;
         std::vector<QGraphicsLineItem*> _momentItems;
         std::vector<QGraphicsLineItem*> _momentSecItems;
         std::vector<std::pair<int,int> > _dims;
+        int _saveCnt;
 
 
         //typedef std::pair<rw::math::Vector2D<>,rw::math::Vector2D<> > Moment;
