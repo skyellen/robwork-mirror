@@ -94,9 +94,15 @@ namespace geometry {
 		    qhull::build(N, vertArray, vertices.size(), _vertiIdxs, _faceIdxs, _faceNormalsTmp, _faceOffsets);
 		    delete[] vertArray;
 
+		    std::vector<int> vertIdxMap(vertices.size());
 		    _hullVertices.resize(_vertiIdxs.size());
 		    for(size_t i=0;i<_vertiIdxs.size(); i++){
 		        _hullVertices[i] = vertices[_vertiIdxs[i]];
+		        vertIdxMap[ _vertiIdxs[i] ] = i;
+		    }
+		    for(size_t i=0;i<_faceIdxs.size();i++){
+		        int tmp = _faceIdxs[i];
+		        _faceIdxs[i] = vertIdxMap[ tmp ];
 		    }
 		    _faceOffsets.resize(_faceIdxs.size()/N);
 		    _faceNormals.resize(_faceIdxs.size()/N);
@@ -106,11 +112,7 @@ namespace geometry {
             }
 		}
 
-        //! @copydoc ConvexHull3D::isInside
-        bool isInside(const rw::math::VectorND<N>& vertex) { return 0; }
-
-		//! @copydoc ConvexHull3D::isInside
-		bool isInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
+		bool isInside(const rw::math::VectorND<N>& vertex){
 		    using namespace rw::math;
             //const static double EPSILON = 0.0000001;
             if( _faceIdxs.size()==0 ){
@@ -122,7 +124,8 @@ namespace geometry {
             for(size_t i=0; i<_faceIdxs.size()/N; i++){
                 RW_ASSERT(_faceIdxs.size()> i*N);
                 int faceVerticeIdx = _faceIdxs[i*N];
-                RW_ASSERT(faceVerticeIdx<(int)vertices.size());
+                //RW_ASSERT(faceVerticeIdx<(int)vertices.size());
+                RW_ASSERT(faceVerticeIdx<(int)_hullVertices.size());
                 RW_ASSERT(i<_faceNormals.size());
                 double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
                 // dist will be negative if point is inside, and positive if point is outside
@@ -155,7 +158,8 @@ namespace geometry {
         }
 
 		//! if negative then point is outside hull
-		double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
+		/*
+        double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
 		    using namespace rw::math;
 		    if( _faceIdxs.size()==0 ){
 		        //std::cout << "No Tris" << std::endl;
@@ -172,7 +176,7 @@ namespace geometry {
                 minDist = std::min( -dist, minDist );
             }
 		    return minDist;
-		}
+		}*/
 
 		const std::vector<rw::math::VectorND<N> >& getHullVertices(){ return _hullVertices; }
 

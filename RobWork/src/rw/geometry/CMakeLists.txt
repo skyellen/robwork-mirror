@@ -30,6 +30,7 @@ SET(FILES_CPP
     Covariance.cpp
     ConvexHullND.cpp
     QHullND.cpp
+    QHull3D.cpp
 )
 
 SET(FILES_HPP
@@ -62,6 +63,7 @@ SET(FILES_HPP
     Contour2DUtil.hpp
     Covariance.hpp
     QHullND.hpp
+    QHull3D.hpp
 )
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})

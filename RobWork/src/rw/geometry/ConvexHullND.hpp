@@ -52,7 +52,8 @@ namespace geometry {
 		/**
 		 * @brief test if the given vertex is inside the convex hull
 		 */
-		virtual bool isInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices) = 0;
+		//virtual bool isInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices) = 0;
+		virtual bool isInside(const rw::math::VectorND<N>& vertex) = 0;
 
 		/**
 		 * @brief If the vertex is inside the convex hull the minimum distance
@@ -61,7 +62,8 @@ namespace geometry {
 		 * @param vertex
 		 * @return
 		 */
-		virtual double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices) = 0;
+		//virtual double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices) = 0;
+		virtual double getMinDistInside(const rw::math::VectorND<N>& vertex) = 0;
 
 		/**
 		 * @brief If the vertex is outside the convex hull the minimum distance
