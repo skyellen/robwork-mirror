@@ -25,7 +25,7 @@
 #include <rwsim/dynamics/ContactManifold.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 
-#include <rw/geometry/GiftWrapHull3D.hpp>
+#include <rw/geometry/QHull3D.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -77,18 +77,22 @@ int main(int argc, char** argv)
 
 	std::cout << "- nr vertices: " << idxMesh->getVertices().size() << std::endl;
 
-	GiftWrapHull3D hull;
+	QHull3D hull;
     hull.rebuild( idxMesh->getVertices() );
 
     PlainTriMesh<TriangleN1<> > *fmesh = hull.toTriMesh();
+    //std::cout << "SIZE of mesh: " << fmesh->size() << std::endl;
     // now project the center of mass onto all triangles in the trimesh
     // If it is inside a triangle then the triangle is a stable pose
     std::vector<TriangleN1<> > result;
     for(size_t i=0;i<fmesh->getSize();i++){
+        std::cout << (*fmesh)[i].getVertex(0) << std::endl;
+        std::cout << (*fmesh)[i].getVertex(1) << std::endl;
+        std::cout << (*fmesh)[i].getVertex(2) << std::endl;
         if( (*fmesh)[i].isInside(masscenter) )
             result.push_back((*fmesh)[i]);
     }
-
+    //std::cout << "NR of result : " << result.size() << std::endl;
     std::vector<TriangleN1<> > result2;
     BOOST_FOREACH(TriangleN1<>& tri, result){
         Vector3D<> n = tri.getFaceNormal();
@@ -104,7 +108,18 @@ int main(int argc, char** argv)
     }
 
     BOOST_FOREACH(TriangleN1<>& tri, result2){
-        std::cout << "- " << -tri.getFaceNormal() << std::endl;
+        // calculate distance from cog to face
+        // this is the height to place the object in
+        double z = tri.halfSpaceDist( masscenter );
+        // calculate the orientation of the object
+        EAA<> rot(-tri.getFaceNormal(), Vector3D<>::z());
+        RPY<> rpy(rot.toRotation3D());
+        std::cout << "pos: " << Vector3D<>(0,0,z) << std::endl;
+        std::cout << "rpy: " << rpy << std::endl;
+
+        //std::cout << "- " << -tri.getFaceNormal() << std::endl;
+
+
     }
     std::cout << "------- Model properties END ----- \n";
     //std::cout << "write to file..." << std::endl;

@@ -23,7 +23,6 @@
 
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/GiftWrapHull3D.hpp>
 
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rw/common/Log.hpp>

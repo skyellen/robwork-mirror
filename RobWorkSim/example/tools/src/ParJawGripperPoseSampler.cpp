@@ -139,7 +139,8 @@ int main(int argc, char** argv)
     Vector3D<> d(0,0,-0.02);
     Transform3D<> wTe_n(pos, rot);
     Transform3D<> wTe_home(pos+inverse(rot)*d, rot);
-    const double OPENQ = 0.035;
+    //const double OPENQ = 0.035;
+    const double OPENQ = 0.0055;
     const double CLOSEQ = 0.0005;
 
 
@@ -153,12 +154,13 @@ int main(int argc, char** argv)
     if( type== "SCUP"){
         stask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
     } else {
-        stask.approach = Transform3D<>(Vector3D<>(0,0,0));
+        stask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
     }
     stask.openQ = openQ;
     stask.closeQ = closeQ;
     //gtask.setTCPID("GS20TCP");
     gtask.setTCPID("GRIPPER_TCP");
+    gtask.setGraspControllerID("GraspController");
 
     CollisionStrategy::Ptr cstrategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
     CollisionDetector cdetect(wc, cstrategy);
@@ -216,7 +218,7 @@ int main(int argc, char** argv)
         } else {
             GraspTarget gtarget( target );
             gtarget.result = ownedPtr( new GraspResult() );
-            gtarget.result->testStatus = GraspTask::Success;
+            gtarget.result->testStatus = GraspTask::UnInitialized;
             gtarget.result->objectTtcpTarget = target;
             stask.addTarget( gtarget );
 
@@ -287,8 +289,8 @@ int main(int argc, char** argv)
 
 
     try {
-        //GraspTask::saveRWTask( &gtask, outfile );
-        GraspTask::saveUIBK( &gtask, outfile );
+        GraspTask::saveRWTask( &gtask, outfile );
+        //GraspTask::saveUIBK( &gtask, outfile );
     } catch (const Exception& exp) {
        RW_WARN("Task Execution Widget: Unable to save tasks");
     }
