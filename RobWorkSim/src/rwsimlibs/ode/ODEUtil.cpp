@@ -17,10 +17,6 @@
 
 #include "ODEUtil.hpp"
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Quaternion.hpp>
-
-
 using namespace rw::math;
 using namespace rwsim::simulator;
 
