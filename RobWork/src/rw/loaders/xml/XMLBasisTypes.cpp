@@ -257,12 +257,34 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
     Rotation3D<> rot(values[0], values[1], values[2],
                         values[3], values[4], values[5],
                         values[6], values[7], values[8]);
-    rot.normalize();
-    if( fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+    using namespace boost::numeric::ublas;
+    /*
+    */
+
+    while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
         std::cout << rot << std::endl;
-        RW_THROW("Parse of Rotation3D failed. A rotation 3d must be an "
+        RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
                  "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+        LinearAlgebra::Matrix<>::type u, v;
+        boost::numeric::ublas::vector<double> w;
+        LinearAlgebra::svd(rot.m(), u, w ,v);
+        LinearAlgebra::Matrix<>::type res = prod(u,trans(v));
+
+        rot = Rotation3D<>(res);
+
     }
+/*
+    int cnt =0;
+    while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+        if(cnt>3){
+            std::cout << rot << std::endl;
+            RW_THROW("Parse of Rotation3D failed. A rotation 3d must be an "
+                     "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+        }
+        cnt++;
+        rot.normalize();
+    }
+    */
     return rot;
 }
 
@@ -274,8 +296,7 @@ Rotation2D<> XMLBasisTypes::readRotation2D(DOMElement* element, bool doCheckHead
     if (values.size() != 4)
         RW_THROW("Expected 4 floating points for Rotation3D. Only "<<values.size()<<" values found");
 
-    return Rotation2D<>(values[0], values[1],
-                        values[2], values[3]);
+    return Rotation2D<>(values[0], values[1], values[2], values[3]);
 }
 
 Rotation3D<> XMLBasisTypes::readRotation3DStructure(DOMElement* element) {
@@ -306,7 +327,7 @@ Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHe
             if (XMLString::equals(child->getNodeName(), MatrixId)) {
                 std::vector<double> values = readNVector(child);
                 if (values.size() != 12)
-                    RW_THROW("Expected <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
+                    RW_THROW("Expected   <Matrix> with 12 doubles when parsing Transform3D. Found "<<values.size()<<" values");
                 rotation(0,0) = values[0];
                 rotation(0,1) = values[1];
                 rotation(0,2) = values[2];
