@@ -13,16 +13,17 @@
 namespace rw {
 namespace proximity {
 
-
+#ifdef xkdfnslafn
     /**
      * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes
      */
-    template<class BVTREE, class BV>
+    template<class BVTREE, class BV, class PRIM>
     class IdxNode {
     public:
         typedef BV BVType;
+        typedef PRIM PRIMType;
 
-        class NodeIterator: public BVTreeNode<typename IdxNode<BVTREE,BV>::NodeIterator, BV>
+        class NodeIterator: public BVTreeIterator<typename IdxNode<BVTREE,BV,PRIM>::NodeIterator, BV, PRIM>
         {
         public:
             typedef IdxNode BVNode;
@@ -38,8 +39,8 @@ namespace proximity {
             inline NodeIterator left() const { return NodeIterator( _tree, _tree->left(_nodeIdx), _depth+1 ); };
             inline NodeIterator right() const { return NodeIterator( _tree, _tree->right(_nodeIdx), _depth+1 ); };
             inline unsigned char depth() const { return _depth; };
-            inline size_t triangleIdx() const {return _tree->primIdx(_nodeIdx);}
-            inline size_t nrOfTriangles() const { return _tree->nrOfPrims(_nodeIdx);}
+            inline size_t primitiveIdx() const {return _tree->primIdx(_nodeIdx);}
+            inline size_t nrOfPrimitives() const { return _tree->nrOfPrims(_nodeIdx);}
 
             const BVTREE *_tree;
             int _nodeIdx;
@@ -97,13 +98,13 @@ namespace proximity {
 	 * because of its pointer based structure.
 	 *
 	 */
-	template <class BV>
-	class BinaryIdxBVTree : public BVTree< typename IdxNode<BinaryIdxBVTree<BV>, BV>::NodeIterator > {
+	template <class BV, class PRIM>
+	class BinaryIdxBVTree : public BVTree<typename IdxNode<BinaryIdxBVTree<BV, PRIM> >::NodeIterator > {
 	public:
 		typedef BV BVType;
 		typedef typename BV::value_type value_type;
 
-		typedef IdxNode< BinaryIdxBVTree<BV>, BV> Node;
+		typedef IdxNode< BinaryIdxBVTree<BV, PRIM>, BV, PRIM> Node;
         typedef typename Node::NodeIterator iterator;
         typedef typename Node::NodeIterator node_iterator;
 
@@ -111,8 +112,8 @@ namespace proximity {
 
 	public:
 		//! @brief constructor
-		BinaryIdxBVTree(rw::geometry::TriMesh::Ptr mesh):
-		    BVTree< typename IdxNode<BinaryIdxBVTree<BV>, BV>::NodeIterator >(mesh)
+		BinaryIdxBVTree(PrimArrayAccessor<PRIM>* paccessor):
+		    BVTree<node_iterator>(paccessor)
 		{
 		    _nodes.reserve(300);
 		}
@@ -207,10 +208,10 @@ namespace proximity {
 		std::vector<Node> _nodes;
 		std::vector<size_t> _leafIndexes;
 	};
+#endif
 
-
-	typedef BinaryIdxBVTree<rw::geometry::OBB<> > BinaryOBBIdxTreeD;
-	typedef BinaryIdxBVTree<rw::geometry::OBB<float> > BinaryOBBIdxTreeF;
+	//typedef BinaryIdxBVTree<rw::geometry::OBB<> > BinaryOBBIdxTreeD;
+	//typedef BinaryIdxBVTree<rw::geometry::OBB<float> > BinaryOBBIdxTreeF;
 
 }
 }

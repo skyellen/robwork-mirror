@@ -18,12 +18,9 @@ namespace proximity {
 	/**
 	 * @brief class for testing if two Oriented Bounding Boxes are overlapping
 	 */
-
 	template<class T=double>
-	class OBBCollider : public BVCollider<OBBCollider<T>, rw::geometry::OBB<T> > {
+	class OBBCollider : public BVCollider<OBBCollider<T>, rw::geometry::OBB<T> >{
 	public:
-		typedef typename rw::geometry::OBB<> BVType;
-		typedef T value_type;
 
 		//! @brief constructor
 		OBBCollider(){};
@@ -36,8 +33,9 @@ namespace proximity {
 		 * obbB relative to obbA's coordinate frame
 		 */
 		bool collides(const rw::geometry::OBB<T>& obbA,
-								 const rw::geometry::OBB<T>& obbB,
-								 const rw::math::Transform3D<T>& aTb);
+					  const rw::geometry::OBB<T>& obbB,
+					  const rw::math::Transform3D<T>& aTb);
+
 	};
 
 	template<class T>

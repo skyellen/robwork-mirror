@@ -27,9 +27,6 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
-#include <rw/models/Accessor.hpp>
-
-
 
 #include <boost/foreach.hpp>
 
@@ -46,7 +43,6 @@ using namespace rwlibs::proximitystrategies;
 // ProximityStrategyRW
 
 ProximityStrategyRW::ProximityStrategyRW()
-
 {
 	clearStats();
 }
@@ -99,7 +95,7 @@ bool ProximityStrategyRW::addGeometry(ProximityModel* model, const Geometry& geo
         const double scale = geom.getScale();
 
         BVTreeFactory treefactory;
-        BinaryBVTree<OBB<> >::Ptr tree = treefactory.makeTopDownOBBTreeCovarMedian(mesh,1);
+        BinaryOBBPtrTreeD::Ptr tree = treefactory.makeTopDownOBBTreeCovarMedian<BinaryOBBPtrTreeD>(mesh,1);
 
         rwmodel = ownedPtr( new Model(geom.getId(), geom.getTransform(), tree) );
         rwmodel->ckey = key;
@@ -147,7 +143,7 @@ ProximityStrategyRW::QueryData ProximityStrategyRW::initQuery(ProximityModel::Pt
 
     qdata.cache = static_cast<PCache*>(data.getCache().get());
     if(qdata.cache->tcollider==NULL)
-        qdata.cache->tcollider = ownedPtr( BVTreeColliderFactory::makeBalancedDFSColliderOBB<BinaryBVTree<OBB<> > >() );
+        qdata.cache->tcollider = ownedPtr( BVTreeColliderFactory::makeBalancedDFSColliderOBB<BinaryOBBPtrTreeD>() );
 
     qdata.a = (RWProximityModel*)aModel.get();
     qdata.b = (RWProximityModel*)bModel.get();
@@ -192,6 +188,57 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
                 data._aTb = inverse(wTa)*wTb;
                 nrOfCollidingGeoms++;
 
+
+                //data._collisionPairs.resize(nrOfCollidingGeoms);
+                //data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
+                //data._collisionPairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
+                //data._collisionPairs[nrOfCollidingGeoms-1].startIdx = startIdx;
+                //data._collisionPairs[nrOfCollidingGeoms-1].size = data._geomPrimIds.size()-startIdx;
+
+                if(firstContact)
+                    return true;
+                col_res = true;
+            }
+            geoIdxB++;
+        }
+        geoIdxA++;
+    }
+    return col_res;
+}
+
+bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
+    const Transform3D<>& wTa,
+    ProximityModel::Ptr bModel,
+    const Transform3D<>& wTb,
+    double tolerance,
+    ProximityStrategyData &pdata)
+{
+    QueryData qdata = initQuery(aModel,bModel,pdata);
+
+    CollisionResult &data = pdata.getCollisionData();
+
+    data.clear();
+
+    size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
+    bool col_res = false;
+    bool firstContact = pdata.getCollisionQueryType() == FirstContact;
+
+    qdata.cache->tcollider->setQueryType( pdata.getCollisionQueryType() );
+
+    BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
+        BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
+            int startIdx = data._geomPrimIds.size();
+            bool res = qdata.cache->tcollider->collides(wTa, *ma->tree, wTb, *mb->tree, &data._geomPrimIds);
+
+            //std::cout << res << std::endl;
+            _numBVTests += qdata.cache->tcollider->getNrOfTestedBVs();
+            _numTriTests += qdata.cache->tcollider->getNrOfTestedPrimitives();
+
+            if(res==true){
+                data.a = aModel;
+                data.b = bModel;
+                data._aTb = inverse(wTa)*wTb;
+                nrOfCollidingGeoms++;
 
                 //data._collisionPairs.resize(nrOfCollidingGeoms);
                 //data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;

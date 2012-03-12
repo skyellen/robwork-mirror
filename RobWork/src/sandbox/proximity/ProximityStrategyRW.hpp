@@ -45,6 +45,9 @@
 #include "BinaryIdxBVTree.hpp"
 #include "BVTreeFactory.hpp"
 #include "BVTreeCollider.hpp"
+#include "BVTreeColliderFactory.hpp"
+
+
 #include "OBBCollider.hpp"
 #include "RSSDistanceCalc.hpp"
 
@@ -74,24 +77,28 @@ namespace rwlibs { namespace proximitystrategies {
      * For further information check out http://www.cs.unc.edu/~geom/SSV/
      */
     class ProximityStrategyRW :
-        public rw::proximity::CollisionStrategy
-        //,
-        //public rw::proximity::CollisionToleranceStrategy,
+        public rw::proximity::CollisionStrategy,
+        public rw::proximity::CollisionToleranceStrategy
         //public rw::proximity::DistanceStrategy,
         //public rw::proximity::DistanceToleranceStrategy
     {
     public:
+        typedef rw::common::Ptr<ProximityStrategyRW> Ptr;
+
         //! @brief cache key
         typedef std::pair<std::string, double> CacheKey;
 
-        //! @brief cache for any of the queries possible on this PQPStrategy
+        //! @brief cache for any of the queries possible on this strategy
         struct PCache: public rw::proximity::ProximityCache{
             PCache(void *owner):ProximityCache(owner){}
             virtual size_t size() const{ return 0;};
             virtual void clear(){};
 
             // TODO: reuse stuff from the collision test
-            rw::common::Ptr<rw::proximity::BVTreeCollider<rw::proximity::BinaryBVTree< rw::geometry::OBB<> > > > tcollider;
+            rw::common::Ptr<rw::proximity::BVTreeCollider<rw::proximity::BinaryOBBPtrTreeD > > tcollider;
+            rw::common::Ptr<rw::proximity::BVTreeCollider<rw::proximity::BinaryOBBPtrTreeD > > tolcollider;
+            rw::proximity::OBBToleranceCollider<> *tolCollider;
+
         };
 
         //! @brief
@@ -99,13 +106,13 @@ namespace rwlibs { namespace proximitystrategies {
         struct Model {
             typedef rw::common::Ptr<Model > Ptr;
 
-            Model(std::string id, rw::math::Transform3D<> trans, rw::proximity::BinaryBVTree<rw::geometry::OBB<> >::Ptr obbtree):
+            Model(std::string id, rw::math::Transform3D<> trans, rw::proximity::BinaryOBBPtrTreeD::Ptr obbtree):
                 geoid(id),t3d(trans),tree(obbtree){}
 
             std::string geoid;
             double scale;
             rw::math::Transform3D<> t3d;
-            rw::proximity::BinaryBVTree<rw::geometry::OBB<> >::Ptr tree;
+            rw::proximity::BinaryOBBPtrTreeD::Ptr tree;
             CacheKey ckey;
         };
 
@@ -173,6 +180,17 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
+         * @copydoc rw::proximity::CollisionToleranceStrategy::collision
+         */
+        bool inCollision(
+            rw::proximity::ProximityModel::Ptr a,
+            const rw::math::Transform3D<>& wTa,
+            rw::proximity::ProximityModel::Ptr b,
+            const rw::math::Transform3D<>& wTb,
+            double tolerance,
+            rw::proximity::ProximityStrategyData &data);
+
+        /**
          *  @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
@@ -208,7 +226,7 @@ namespace rwlibs { namespace proximitystrategies {
 
     	int _numBVTests,_numTriTests;
 
-    	rw::proximity::BVTreeCollider<rw::proximity::BinaryBVTree<rw::geometry::OBB<> > >::Ptr _tcollider;
+    	rw::proximity::BVTreeCollider<rw::proximity::BinaryOBBPtrTreeD>::Ptr _tcollider;
     	std::vector<Model::Ptr> _allModels;
     };
 

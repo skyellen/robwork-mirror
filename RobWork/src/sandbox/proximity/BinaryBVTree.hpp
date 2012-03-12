@@ -10,30 +10,73 @@
 
 #include <stack>
 #include "BVTree.hpp"
+#include <boost/tuple/tuple.hpp>
+
 namespace rw {
 namespace proximity {
 
-
     /**
-     * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes
+     * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes.
+     * This is an inefficient storage method and for general usage the other types should be used.
+     * However, there is only a small overhead for adding and deleting nodes so
+     * for very dynamic uses this might still be applicable.
      */
-    template<class BV>
-    class PtrNode {
+    template<class BV, class PRIM>
+    class BTPNode {
     public:
         typedef BV BVType;
+        typedef PRIM PRIMType;
 
+        BTPNode():_size(0){
+            _data._children._left = NULL;
+            _data._children._right = NULL;
+            _data._primIdxArray._primIdx = 0;
+        }
+
+        BTPNode(const BV& bv):
+            _bv(bv),_size(0)
+        {
+            _data._children._left = NULL;
+            _data._children._right = NULL;
+            _data._primIdxArray._primIdx = 0;
+        }
+
+        virtual ~BTPNode(){
+            /*
+            if(_data._children._left)
+                delete _data._children._left;
+            if(_data._children._right)
+                delete _data._children._right;
+            */
+        }
+
+        //! @brief get the OBB of this node
+        inline BV& bv() {return _bv;}
+        inline size_t& primIdx() {return _data._primIdxArray._primIdx;}
+        inline int nrOfPrims() {return (int)_size;}
+        inline void setNrOfPrims(int size){_size = (unsigned char)size;};
+
+        inline BTPNode* left(){ return _data._children._left; };
+        inline BTPNode* right(){ return _data._children._right; };
+
+        inline void setLeft(BTPNode*  left){_data._children._left = left;};
+        inline void setRight(BTPNode* right){_data._children._right = right;};
+
+        inline bool isLeaf(){ return _size>0 /*|| ((left()==NULL) && (right()==NULL))*/;}
+
+
+    public:
         /**
          * @brief an iterator for the PtrNode
          */
-        class NodeIterator: public BVTreeNode<typename PtrNode<BV>::NodeIterator, BV>
+        class NodeIterator: public BVTreeIterator<typename BTPNode<BV,PRIM>::NodeIterator, BV>
         {
         public:
-            typedef PtrNode<BV> BVNode;
-            typedef BV BVType;
+            typedef BTPNode<BV,PRIM> Node;
 
             //! @brief constructor
             NodeIterator():node(NULL),_depth(0){};
-            NodeIterator(PtrNode<BV>* n, unsigned char dep):node(n),_depth(dep){};
+            NodeIterator(Node* n, unsigned char dep):node(n),_depth(dep){};
 
             inline const BVType& bv() const { return node->bv(); };
             inline bool leaf() const { return node->isLeaf(); };
@@ -42,59 +85,23 @@ namespace proximity {
             inline unsigned char depth() const { return _depth; };
             inline bool hasLeft() const { return node->left()!=NULL; }
             inline bool hasRight() const { return node->right()!=NULL; }
-            inline int getId()const { return (int)node; };
+            //inline int getId() const { return (int)node; };
 
-            inline size_t triangleIdx() const {return node->primIdx();}
-            inline size_t nrOfTriangles() const { return node->nrOfPrims();}
+            inline size_t primitiveIdx() const {return node->primIdx();}
+            inline size_t nrOfPrimitives() const { return node->nrOfPrims();}
 
-            PtrNode<BV> *node;
+            Node *node;
             unsigned char _depth;
         };
 
-    public:
-
-        PtrNode():_size(0){
-            _data._children._left = NULL;
-            _data._children._right = NULL;
-            _data._primIdxArray._primIdx = 0;
-        }
-
-        PtrNode(const BV& bv):
-            _bv(bv),_size(0)
-        {
-            _data._children._left = NULL;
-            _data._children._right = NULL;
-            _data._primIdxArray._primIdx = 0;
-        }
-
-        virtual ~PtrNode(){
-            if(_data._children._left)
-                delete _data._children._left;
-            if(_data._children._right)
-                delete _data._children._right;
-        }
-
-        //! @brief get the OBB of this node
-        BV& bv() {return _bv;}
-        size_t& primIdx() {return _data._primIdxArray._primIdx;}
-        int nrOfPrims() {return (int)_size;}
-        void setNrOfPrims(int size){_size = (unsigned char)size;};
-
-        PtrNode* left(){ return _data._children._left; };
-        PtrNode* right(){ return _data._children._right; };
-
-        void setLeft(PtrNode*  left){_data._children._left = left;};
-        void setRight(PtrNode* right){_data._children._right = right;};
-
-        bool isLeaf(){ return _size>0 || ((left()==NULL) && (right()==NULL));}
 
     private:
         BV _bv;
 
-        struct {
+        union {
             struct {
-                PtrNode *_left;
-                PtrNode *_right;
+                BTPNode *_left;
+                BTPNode *_right;
             } _children;
             struct {
                 size_t _primIdx; // only used if its a leaf node
@@ -104,72 +111,104 @@ namespace proximity {
         unsigned char _size;
     };
 
+
 	/**
 	 * @brief a generic pointer based tree structure. This is not the most efficient
 	 * structure for bounding volume trees. though it is quite generic and easy to work with
 	 * because of its pointer based structure.
 	 *
 	 */
-	template <class BV>
-	class BinaryBVTree : public BVTree<typename PtrNode<BV>::NodeIterator> {
+	template <class BV, class PRIM>
+	class BinaryBVTree : public BVTree< BinaryBVTree<BV,PRIM> > {
 	public:
-
-
-		typedef BV BVType;
+	    typedef BV BVType;
+		typedef PRIM PRIMType;
 		typedef typename BV::value_type value_type;
-
-		//typedef Node<BV> BVNode;
-
-        typedef typename PtrNode<BV>::NodeIterator iterator;
-        typedef typename PtrNode<BV>::NodeIterator node_iterator;
-        typedef PtrNode<BV> Node;
-
-		iterator getIterator() const { return getRootIterator(); };
-
-		typedef rw::common::Ptr<BinaryBVTree<BV> > Ptr;
+		typedef rw::common::Ptr<BinaryBVTree<BV,PRIM> > Ptr;
+		typedef BTPNode<BV,PRIM> Node;
+		typedef typename BTPNode<BV,PRIM>::NodeIterator NodeIterator;
 
 	public:
 		//! @brief constructor
-		BinaryBVTree(rw::geometry::TriMesh::Ptr mesh):
-		    BVTree<typename PtrNode<BV>::NodeIterator>(mesh),
-		    _root(NULL){}
-
-		//! @brief constructor
-		//BinaryBVTree(const BV& bv):_root(bv){}
-
-		node_iterator createLeft( node_iterator parent){
-            parent.node->setLeft( new Node() );
-            return node_iterator(parent.node->left(), parent.depth()+1);
-        }
-
-		node_iterator createRight( node_iterator parent ){
-		    parent.node->setRight( new Node() );
-		    return node_iterator(parent.node->right(), parent.depth()+1);
+		BinaryBVTree(PrimArrayAccessor<PRIM>* paccessor):
+		    BVTree<BinaryBVTree<BV,PRIM> >(paccessor),
+		    _root(NULL)
+		{
+		    std::cout << "SIZE OF NODE: " << sizeof(Node) << std::endl;
 		}
 
-		node_iterator createRoot(){
+		NodeIterator getIterator() const { return getRootIterator(); };
+
+		NodeIterator createLeft( NodeIterator parent){
+            parent.node->setLeft( new Node() );
+            return NodeIterator(parent.node->left(), parent.depth()+1);
+        }
+
+		NodeIterator createRight( NodeIterator parent ){
+		    parent.node->setRight( new Node() );
+		    return NodeIterator(parent.node->right(), parent.depth()+1);
+		}
+
+		NodeIterator createRoot(){
 		    if( _root ==NULL){
 		        _root = new Node();
 		    }
-		    return node_iterator(_root,0);
+		    return NodeIterator(_root,0);
 		}
 
-        void setBV(const BVType& bv, node_iterator node){
+        void setBV(const BVType& bv, NodeIterator node){
             node.node->bv() = bv;
         }
 
-        void setNrOfPrims(int size, node_iterator node){
+        void setNrOfPrims(int size, NodeIterator node){
             node.node->setNrOfPrims(size);
         }
 
-        void setPrimIdx(int primIdx, node_iterator node){
+        void setPrimIdx(int primIdx, NodeIterator node){
             node.node->primIdx() = primIdx;
         }
 
-        void compile(){
+        void optimize(){
+            using namespace rw::common;
+            using namespace boost;
+            /*
+            // this copies all nodes into a memory friendlier structure
+            std::pair<int,int> nrNodes = countNodes();
+            rw::common::Ptr<std::vector<Node> > nodes = ownedPtr( new std::vector<Node>(nrNodes.first+nrNodes.second) );
+            // now we start with the root node and add all nodes in a preorder traversal fashion.
+            int nodeIndex = 0;
+            // tuple <new parent, child, isLeft>
+            std::stack<boost::tuple<Node*, Node*, bool> > children;
+            children.push(boost::make_tuple((Node*)NULL, _root, true) );
+            while(!children.empty()){
+                //std::cout << count << std::endl;
+                boost::tuple<Node*, Node*, bool> node = children.top();
+                children.pop();
 
+                if(get<1>( node )==NULL)
+                    continue;
+
+                // copy node to next index
+                (*nodes)[nodeIndex] = *node.get<1>();
+                // change parent to point to this new child
+                if(node.get<0>()!=NULL){
+                    if(node.get<2>())// then its left
+                        node.get<0>()->setLeft(&((*nodes)[nodeIndex]));
+                    else
+                        node.get<0>()->setRight(&((*nodes)[nodeIndex]));
+                }
+                // we increase node index
+                nodeIndex++;
+                if(!node.get<1>()->isLeaf()){
+                    children.push(boost::make_tuple(node.get<1>(), node.get<1>()->right(), false) );
+                    children.push(boost::make_tuple(node.get<1>(), node.get<1>()->left(), true) );
+                }
+            }
+            // in the end we change root node
+            _root = &((*nodes)[0]);
+            _nodes = nodes;
+            */
         }
-
 
 		void setLeafPrimitives(Node* node, size_t primStartIdxs){
 		    RW_ASSERT(0);
@@ -177,11 +216,10 @@ namespace proximity {
 				RW_THROW("Not a leaf node!");
 
 			node->primIdx() = _leafIndexes.size();
-
 		}
 
-		node_iterator getRootIterator() const {
-                return node_iterator(_root, 0);
+		NodeIterator getRootIterator() const {
+                return NodeIterator(_root, 0);
 		};
 
 		Node* getRoot(){return _root;};
@@ -257,13 +295,34 @@ namespace proximity {
 
 		Node *_root;
 		std::vector<size_t> _leafIndexes;
+		rw::common::Ptr<std::vector<Node> > _nodes;
 	};
 
 
-	typedef BinaryBVTree<rw::geometry::OBB<> > BinaryOBBPtrTreeD;
-	typedef BinaryBVTree<rw::geometry::OBB<float> > BinaryOBBPtrTreeF;
+	typedef BinaryBVTree<rw::geometry::OBB<>, rw::geometry::Triangle<> > BinaryOBBPtrTreeD;
+	typedef BinaryBVTree<rw::geometry::OBB<float>, rw::geometry::Triangle<float> > BinaryOBBPtrTreeF;
+
 
 }
+/*
+    //! define traits of the NodeIterator
+    template<class BV, class PRIM>
+    struct Traits<proximity::BTPNode<BV,PRIM>::NodeIterator >{
+        typedef BV BVType;
+        typedef PRIM PRIMType;
+        //typedef proximity::BTPNode<BV,PRIM> Node;
+    };
+*/
+    //! define traits of the BinaryBVTree
+    template<class BV, class PRIM> struct Traits<proximity::BinaryBVTree<BV,PRIM> >{
+        typedef BV BVType;
+        typedef PRIM PRIMType;
+        typedef typename proximity::BTPNode<BV,PRIM> Node;
+        typedef typename proximity::BTPNode<BV,PRIM>::NodeIterator NodeIterator;
+    };
+
+
+
 }
 
 #endif /* BINARYTREE_HPP_ */
