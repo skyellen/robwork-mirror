@@ -570,7 +570,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //std::cout << "mbase parent: "<< _mbase->getParent(_homeState)->getName() << std::endl;
             //RW_WARN("1");
             // and calculate the home lifting position
-            sstate._wTtcp_initTarget = wTref * refToffset * offsetTtarget;
+            sstate._wTtcp_initTarget = wTref * refToffset * offsetTtarget * inverse(sstate._approach);
             sstate._wTmbase_initTarget     = sstate._wTtcp_initTarget * inverse(mbaseTtcp);
             sstate._wTmbase_approachTarget = sstate._wTtcp_initTarget * sstate._approach * inverse(mbaseTtcp);
             //sstate._wTmbase_retractTarget  = sstate._wTtcp_initTarget * sstate._approach * sstate._retract * inverse(mbaseTtcp);
