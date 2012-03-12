@@ -20,7 +20,7 @@ void rws::swig::setRobWorkStudio(rws::swig::RobWorkStudio* rwstudio){
 }
 
 const State& rws::swig::getState(){ return getRobWorkStudio()->getState(); }
-void rws::swig::setState(State& state){ return getRobWorkStudio()->postState(state); }
+void rws::swig::setState(State& state){ getRobWorkStudio()->postState(state); }
 rw::common::Ptr<Device> rws::swig::findDevice(const std::string& name){
     return getRobWorkStudio()->getWorkCell()->findDevice(name);
 }
