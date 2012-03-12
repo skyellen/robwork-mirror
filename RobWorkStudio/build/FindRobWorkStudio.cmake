@@ -151,6 +151,7 @@ SET(ROBWORKSTUDIO_LIBRARY_DIRS
 SET(ROBWORKSTUDIO_LIBRARIES_TMP
     ${RWS_SANDBOX_LIB}
     ${RWSTUDIO_LUA}
+    ${RWS_PLUGIN_LIBRARIES}
     rwstudioapp
     rwstudio
     qtpropertybrowser
