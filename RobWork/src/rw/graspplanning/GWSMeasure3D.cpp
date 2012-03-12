@@ -122,8 +122,8 @@ double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
     }
     center = center/_chullCalculator->getHullVertices().size();
     //_isInside = _chullCalculator->isInside( origin );
-    _minWrench = _chullCalculator->getMinDistInside( origin, vertices);
-    _avgWrench = _chullCalculator->getMinDistInside( center, vertices);
+    _minWrench = _chullCalculator->getMinDistInside( origin);
+    _avgWrench = _chullCalculator->getMinDistInside( center);
 
     _isInside = _minWrench>=0;
 
