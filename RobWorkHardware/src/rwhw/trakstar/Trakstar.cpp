@@ -130,8 +130,8 @@ void Trakstar::initialize(bool block) {
 
     // Initialize system by calling _InitializeBird in a thread
     _initThread = boost::thread(boost::bind(&Trakstar::initializeBird, this));
-    //if(block)
-    _initThread.join();
+    if(block)
+        _initThread.join();
 }
 
 /** 
@@ -259,6 +259,10 @@ int Trakstar::numberSensorsAttached() {
 }
 
 void Trakstar::startPolling() {
+    if(!_initStatus){
+        RW_THROW("Sensor is still not initialized!");
+    }
+
     if(!_flagStopPoll){
         stopPolling();
     }
