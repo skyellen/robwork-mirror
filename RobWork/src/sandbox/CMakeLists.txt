@@ -5,9 +5,9 @@ SET(SRC_FILES
     #opengl/RenderBeam.cpp
     #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
-    loaders/ColladaLoader.cpp
+    #loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
-    loaders/RWXMLFile.cpp
+    #loaders/RWXMLFile.cpp
     #osg/SceneOSG.cpp
     
     #control/JointController.cpp    
@@ -26,21 +26,28 @@ SET(SRC_FILES
     geometry/Pose2D.cpp
     geometry/RANSACFitting.cpp
     
-    proximity/Raycast.cpp
-    proximity/BVTree.cpp
-    proximity/BVTreeFactory.cpp
-    proximity/BVTreeCollider.cpp
-    proximity/BinaryIdxBVTree.cpp
-    proximity/BinaryBVTree.cpp
-    proximity/OBBCollider.cpp
+    #proximity/Raycast.cpp
+    #proximity/BVTree.cpp
+    #proximity/BVTreeFactory.cpp
+    #proximity/BVTreeCollider.cpp
+    #proximity/OBVTreeDFSCollider.cpp
+    #proximity/BVTreeColliderFactory.cpp
+    #proximity/BinaryIdxBVTree.cpp
+    #proximity/BinaryBVTree.cpp
+    #proximity/OBBCollider.cpp
+    #proximity/OBBToleranceCollider.cpp
+    
     #proximity/OBBTreeBuilder.cpp
-    proximity/ProximityStrategyRW.cpp
+    #proximity/ProximityStrategyRW.cpp
+    #proximity/TriDistanceCalc.cpp
 
     #proximity/BVCollider.cpp
     #proximity/OBBTreeFactory.cpp
-        
-    geometry/OBB.cpp
-    geometry/TRIDeviller.cpp
+    #geometry/BV.cpp
+    #geometry/BSphere.cpp
+    #geometry/AABB.cpp
+    #geometry/OBB.cpp
+    #geometry/TRIDeviller.cpp
     #geometry/IndexedTriArray.cpp
     
     ConvertUtil.cpp
@@ -70,7 +77,7 @@ SET(SRC_FILES_HPP
     #models/BeamJoint.hpp
     #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
-    geometry/OBB.hpp
+    #geometry/OBB.hpp
     #ClarkHullND.hpp
     
     #MovingAverage.hpp
