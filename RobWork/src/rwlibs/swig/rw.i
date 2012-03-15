@@ -1296,6 +1296,8 @@ public:
     static rw::common::Ptr<IterativeIK> makeDefault(rw::common::Ptr<Device> device, const State& state);
 };
 
+%template (JacobianIKSolverPtr) rw::common::Ptr<JacobianIKSolver>;
+%template (IKMetaSolverPtr) rw::common::Ptr<IKMetaSolver>;
 
 class JacobianIKSolver : public IterativeIK
 {
