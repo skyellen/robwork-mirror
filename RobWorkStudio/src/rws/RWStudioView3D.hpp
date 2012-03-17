@@ -146,13 +146,11 @@ public:
 
     rw::graphics::SceneViewer::Ptr getSceneViewer(){ return _view; }
 
+    void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene);
 
+    rw::graphics::WorkCellScene::Ptr makeWorkCellScene();
 
     void clear();
-
-    void setWorkCell(rw::models::WorkCell::Ptr workcell);
-
-    rw::models::WorkCell::Ptr  getWorkCell(){ return _wc; };
 
     void saveBufferToFile(const QString& filename, const int fillR=0, const int fillG=0, const int fillB=0){
         _view->saveBufferToFile(filename.toStdString(), fillR, fillG, fillB);

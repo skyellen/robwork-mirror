@@ -37,13 +37,13 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
-
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/loaders/WorkCellFactory.hpp>
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
@@ -52,6 +52,8 @@
 #include <boost/filesystem.hpp>
 #include <sstream>
 #include "RWSImageLoaderPlugin.hpp"
+
+#include <sandbox/loaders/ColladaLoader.hpp>
 
 using namespace rw;
 using namespace rw::common;
@@ -74,6 +76,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     _settingsMap(NULL)
 {
     _robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
+    _robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
 
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
@@ -632,7 +635,8 @@ void RobWorkStudio::newWorkCell()
     _detector = makeCollisionDetector(_workcell);
 
     // Workcell given to view.
-    _view->setWorkCell( _workcell );
+    _view->getWorkCellScene()->setWorkCell( _workcell );
+    _view->setWorkCellScene( _view->getWorkCellScene() );
     _view->setState(_state);
 
     // Workcell sent to plugins.
@@ -719,12 +723,17 @@ void RobWorkStudio::openFile(const std::string& file)
                 _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", lastfiles);
                 updateLastFiles();
             } else {
+                // we try openning a workcell
+
+                openWorkCellFile(filename);
+                /*
                 Log::infoLog() << "Failed loading file: " << filename.toStdString() << "\n";
                 QMessageBox::information(
                     NULL,
                     "Unknown extension",
                     "The file specified has an unknown extension type!",
                     QMessageBox::Ok);
+                    */
             }
         }
     }
@@ -778,14 +787,34 @@ void RobWorkStudio::openDrawable(const QString& filename)
 
 void RobWorkStudio::openWorkCellFile(const QString& filename)
 {
-    setWorkcell(WorkCellLoader::load(filename.toStdString()));
+
+    // Always close the workcell.
+    closeWorkCell();
+    rw::graphics::WorkCellScene::Ptr wcsene = _view->makeWorkCellScene();
+    WorkCell::Ptr wc = WorkCellFactory::load(filename.toStdString(), wcsene);
+    if(wc==NULL || wcsene->getWorkCell()==NULL){
+        RW_THROW("Loading of workcell failed!");
+    }
+
+    //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
+    // don't set any variables before we know they are good
+
+    CollisionDetector::Ptr detector = makeCollisionDetector(wc);
+    _workcell = wc;
+    _state = _workcell->getDefaultState();
+    _detector = detector;
+    _view->setWorkCellScene(wcsene);
+    _view->setState(_state);
+
+
+    openAllPlugins();
 }
 
 void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 {
 
     // Always close the workcell.
-    if (_workcell) 
+    if (_workcell && _workcell!=_workcell)
 		closeWorkCell();
 
     // Open a new workcell if there is one.<
@@ -799,7 +828,8 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
         _state = _workcell->getDefaultState();
         _detector = detector;
 
-        _view->setWorkCell( _workcell );
+        //_view->getWorkCellScene()->setWorkCell( _workcell );
+        //_view->setWorkCellScene( _view->getWorkCellScene() );
         _view->setState(_state);
 
         openAllPlugins();
@@ -818,13 +848,6 @@ void RobWorkStudio::closeWorkCell()
     // Call close on all modules
     closeAllPlugins();
 
-    // Delete all loaded Drawables
-    {
-        //typedef std::vector<Drawable*>::iterator DI;
-        //for (DI it = _drawables.begin(); it != _drawables.end(); ++it)
-        //    delete *it;
-        //_drawables.clear();
-    }
     updateHandler();
 }
 

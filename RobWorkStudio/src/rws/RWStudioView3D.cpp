@@ -133,8 +133,6 @@ void RWStudioView3D::setupActions(){
 }
 
 
-
-
 RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     QWidget(parent),
     _view(NULL),
@@ -180,6 +178,12 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     setAcceptDrops(TRUE);
 }
 
+RWStudioView3D::~RWStudioView3D()
+{
+
+}
+
+
 void RWStudioView3D::ShowContextMenu(const QPoint& pos){
     //QMenu *menu = _editor->createStandardContextMenu();
 
@@ -208,11 +212,6 @@ void RWStudioView3D::setupGUI(QMainWindow* mainwindow){
     setupToolBarAndMenu(mainwindow);
 }
 
-RWStudioView3D::~RWStudioView3D()
-{
-
-}
-
 void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
     _viewWidget = viewer;
     _view = viewer;
@@ -225,26 +224,35 @@ void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
     setLayout(layout);
 }
 
-void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
-    _sensorCameraViews.clear();
-    _wc = workcell;
+rw::graphics::WorkCellScene::Ptr RWStudioView3D::makeWorkCellScene(){
+    return ownedPtr( new WorkCellScene(_view->getScene()) );
+}
 
+
+void RWStudioView3D::setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene){
+    _sensorCameraViews.clear();
+    _wc = wcscene->getWorkCell();
+    if(_wc==NULL){
+        RW_THROW("Workcell is null!");
+    }
 	resetCameraViewMenu();
 
-    _wcscene->setWorkCell(_wc);
+    _view->setWorldNode( wcscene->getWorldNode() );
 
-    _view->setWorldNode( _wcscene->getWorldNode() );
 
-    // add a floor grid drawable to the scene
-    std::vector<Line> lines;
-    lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
-    lines.push_back(Line(Vector3D<>(0,5,0),Vector3D<>(0,-5,0)));
-    _floorDrawable = _wcscene->addLines("FloorGrid", Line::makeGrid(10,10,0.5,0.5), workcell->getWorldFrame(), DrawableNode::Virtual);
-    _floorDrawable->setColor( Vector3D<>(0.8f, 0.8f, 0.8f) );
-
+    _wcscene = wcscene;
+    // if the grid is allready there then don't add it again
+    if( !_wcscene->getWorldNode()->hasChild( "FloorGrid" ) ){
+        // add a floor grid drawable to the scene
+        std::vector<Line> lines;
+        lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
+        lines.push_back(Line(Vector3D<>(0,5,0),Vector3D<>(0,-5,0)));
+        _floorDrawable = _wcscene->addLines("FloorGrid", Line::makeGrid(10,10,0.5,0.5), _wc->getWorldFrame(), DrawableNode::Virtual);
+        _floorDrawable->setColor( Vector3D<>(0.8f, 0.8f, 0.8f) );
+    }
     // look for all cameras in the scene
 
-    std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), _wc->getDefaultState());
+    std::vector<Frame*> frames = Kinematics::findAllFrames(_wc->getWorldFrame(), _wc->getDefaultState());
     BOOST_FOREACH(Frame* frame, frames) {
         if (frame->getPropertyMap().has("Camera")) {
             double fovy;
@@ -254,12 +262,15 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
             std::istringstream iss (camParam, std::istringstream::in);
             iss >> fovy >> width >> height;
 
-            SensorCameraView view = makeCameraView(frame->getName() + "Cam", fovy, (double)width, (double)height, 0.001, 4.0, frame);
+            std::string camName = frame->getName() + "Cam";
+            if(!_wcscene->findDrawable(camName, frame)){
+                SensorCameraView view = makeCameraView(frame->getName() + "Cam", fovy, (double)width, (double)height, 0.001, 4.0, frame);
 
-            RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
-            camFrustum->setPerspective(width/(double)height, fovy, 0.001, 4.0);
-            _wcscene->addRender("FloorGrid", camFrustum , frame,  DrawableNode::Virtual);
-            _sensorCameraViews.push_back( std::make_pair(view, camFrustum) );
+                RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
+                camFrustum->setPerspective(width/(double)height, fovy, 0.001, 4.0);
+                _wcscene->addRender("CamFrustrum", camFrustum , frame,  DrawableNode::Virtual);
+                _sensorCameraViews.push_back( std::make_pair(view, camFrustum) );
+            }
         }
     }
 
