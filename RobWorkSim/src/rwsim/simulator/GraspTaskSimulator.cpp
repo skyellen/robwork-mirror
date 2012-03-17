@@ -809,6 +809,7 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
         sstate._retract = _currentTask->getRetract();
         sstate._openQ = _currentTask->getOpenQ();
         sstate._closeQ = _currentTask->getCloseQ();
+        sstate._closeQ = _currentTask->getPropertyMap().get<Q>("MaxForce");
     }
 /*
     Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex

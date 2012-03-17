@@ -2,7 +2,6 @@
 
 #include <rw/geometry/Geometry.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/models/CollisionModelInfo.hpp>
 
 #include <string>
 #include <iostream>

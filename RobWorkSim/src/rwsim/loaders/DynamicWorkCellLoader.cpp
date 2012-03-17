@@ -76,7 +76,8 @@
 
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
-#include <rwlibs/control/JointController.hpp>
+#include <rwlibs/control/JointController.hpp>#include <rw/models/CollisionModelInfo.hpp>
+
 
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
