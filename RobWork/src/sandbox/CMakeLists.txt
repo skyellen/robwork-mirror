@@ -5,7 +5,7 @@ SET(SRC_FILES
     #opengl/RenderBeam.cpp
     #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
-    #loaders/ColladaLoader.cpp
+    loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
     #loaders/RWXMLFile.cpp
     #osg/SceneOSG.cpp
