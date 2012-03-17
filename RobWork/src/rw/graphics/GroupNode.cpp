@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "GroupNode.hpp"
+#include <boost/foreach.hpp>
 
 using namespace rw::graphics;
 
@@ -36,6 +37,15 @@ bool GroupNode::hasChild(SceneNode::Ptr child){
       std::find(_childNodes.begin(), _childNodes.end(), child);
     return location !=_childNodes.end();
 }
+
+bool GroupNode::hasChild(const std::string& childname){
+    BOOST_FOREACH(SceneNode::Ptr childnode, _childNodes){
+        if(childname==childnode->getName())
+            return true;
+    }
+    return false;
+}
+
 
 void GroupNode::removeChild(SceneNode::Ptr child){
     std::list<SceneNode::Ptr >::iterator location = std::find(_childNodes.begin(), _childNodes.end(), child);
