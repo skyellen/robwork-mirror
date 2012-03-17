@@ -17,17 +17,26 @@
         dae_type(Data* parent):Data(parent){} \
         dae_type(const std::string& id, const std::string& sid, Data* parent):Data(id, sid, parent){}
 
+#define DAE_DATA_TYPE_I(dae_type, INIT_LIST) \
+    class dae_type: public Data {\
+    public: \
+        dae_type(Data* parent):Data(parent),INIT_LIST{} \
+        dae_type(const std::string& id, const std::string& sid, Data* parent):Data(id, sid, parent),INIT_LIST{}
+
+
 class Dae {
 public:
 
+    class Asset;
+
     class Data {
     public:
-        Data():parent(NULL),initialized(false){}
-        Data(Data *p):parent(p),initialized(true){
+        Data():parent(NULL),initialized(false),asset(NULL){}
+        Data(Data *p):parent(p),initialized(true),asset(NULL){
             p->children.push_back(this);
         }
         Data(const std::string& id_, const std::string& sid_, Data *p):
-            parent(p),id(id_),sid(sid_),initialized(true){
+            parent(p),id(id_),sid(sid_),initialized(true),asset(NULL){
             p->children.push_back(this);
         }
         virtual ~Data(){
@@ -41,6 +50,7 @@ public:
         bool initialized;
         std::list<Data*> children;
         std::list<Data*> scope;
+        Asset *asset;
     };
 
     DAE_DATA_TYPE(SetParam)
@@ -73,19 +83,24 @@ public:
         //std::vector<DOMElement*> elements;
     };
 
-    DAE_DATA_TYPE(Contributor)
+    //DAE_DATA_TYPE(Contributor)
+    class Contributor{
+    public:
         std::string author, authoring_tool, comments;
     };
 
-    DAE_DATA_TYPE(Unit)
+    //DAE_DATA_TYPE(Unit)
+    class Unit{
+    public:
+        Unit():meter(1.0),name("meter"){}
         double meter;
         std::string name;
     };
 
-    DAE_DATA_TYPE(Asset)
-        Contributor *contributer;
+    DAE_DATA_TYPE_I(Asset,up_axis("Z_UP"))
+        Contributor contributer;
         std::string created, modified;
-        Unit *unit;
+        Unit unit;
         std::string up_axis;
     };
 
@@ -113,7 +128,7 @@ public:
 
     DAE_DATA_TYPE(Camera)
         std::string name;
-        Asset *asset;
+        //Asset *asset;
         Optics *optics;
         Imager *imager;
         std::vector<Extra*> extras;
@@ -125,7 +140,7 @@ public:
     template <class T>
     DAE_DATA_TYPE(Library)
         std::string name;
-        Asset *asset;
+        //Asset *asset;
         std::vector<T*> elements;
         std::vector<Extra*> extras;
     };
@@ -211,12 +226,12 @@ public:
         std::string source;
         unsigned int stride;
 
-        std::vector<Param> params;
+        std::vector<Param*> params;
     };
 
     DAE_DATA_TYPE(Source)
         std::string name;
-        Asset *asset;
+        //Asset *asset;
 
         Array<bool> *boolArray;
         Array<double> *floatArray;
@@ -248,6 +263,7 @@ public:
         std::string  name;
         std::vector<Input*> inputs;
         std::vector<Extra*> extras;
+
     };
 
     DAE_DATA_TYPE(Triangles)
@@ -272,7 +288,7 @@ public:
     };
 
     DAE_DATA_TYPE(ArticulatedSystem)
-        Asset *asset;
+        //Asset *asset;
         Kinematics *kinematics;
         Motion *motion;
         std::vector<Extra*> extras;
@@ -280,9 +296,12 @@ public:
 
     DAE_DATA_TYPE(Geometry)
         std::string name;
-        Asset *asset;
+        //Asset *asset;
         //rw::geometry::Geometry::Ptr geom;
+        //std::vector<Dae::ConvexMesh> cmeshes;
         std::vector<Dae::Mesh*> meshes;
+        //std::vector<Dae::Spline> splines;
+        //std::vector<Dae::BRep> breps;
         std::vector<Extra*> extras;
 
     };
@@ -313,7 +332,7 @@ public:
         std::string type; // NODE or JOINT, default is NODE
         //std::vector<std::string> layers;
         std::string layers;
-        Asset *asset;
+        //Asset *asset;
         std::vector<Transform*> transforms;
         std::vector<InstanceCamera*> icameras;
         //std::vector<InstanceController*> icontrollers;
@@ -346,14 +365,14 @@ public:
         std::string  name;
 
         bool enable;
-        Asset *asset;
+        //Asset *asset;
         std::vector<Render*> renders;
         std::vector<Extra*> extras;
     };
 
     DAE_DATA_TYPE(VisualScene)
         std::string  name;
-        Asset *asset;
+        //Asset *asset;
         std::vector<Node*> nodes;
         std::vector<EvaluateScene*> evaluateScenes;
         std::vector<Extra*> extras;
@@ -366,29 +385,74 @@ public:
     };
 
     DAE_DATA_TYPE(InstanceEffect)
-
+        std::string name;
+        std::string url;
+        std::vector<Extra*> extras;
     };
 
     DAE_DATA_TYPE(Material)
         std::string  name;
-        Asset *asset;
+        //Asset *asset;
         InstanceEffect* iEffect;
         std::vector<Extra*> extras;
     };
+
+    typedef enum{ConstantShader, LambertShader, PhongShader,BlinnShader} ShaderTypeCommonFX;
+
+    DAE_DATA_TYPE(ShaderElementCommenFX)
+        ShaderTypeCommonFX shaderType;
+        float emission[4];
+        float ambient[4];
+        float diffuse[4];
+        float specular[4];
+        float shininess[4];
+        float reflective[4];
+        float reflectivity;
+        float transparent[4];
+        float transparency[4];
+        float idxOfRefraction;
+    };
+
+    DAE_DATA_TYPE(TechniqueCommenFX)
+        std::vector<ShaderElementCommenFX*> shaderElements;
+        std::vector<Extra*> extras;
+    };
+
+    DAE_DATA_TYPE(ProfileCOMMON)
+        std::vector<Param*> params;
+        TechniqueCommenFX* technique;
+        std::vector<Extra*> extras;
+    };
+
+    DAE_DATA_TYPE(Effect)
+        std::string  name;
+        std::vector<Param*> params;
+
+        // profiles
+        //std::vector<ProfileBRIDGE*> pBRIDGE;
+        //std::vector<ProfileCG*> pCG;
+        //std::vector<ProfileGLES*> pGLES;
+        //std::vector<ProfileGLES2*> pGLES2;
+        //std::vector<ProfileGLSL*> pGLSL;
+        std::vector<ProfileCOMMON*> pCommon;
+
+        std::vector<Extra*> extras;
+    };
+
 
     // COMPLETE COLLADA SCENE
     DAE_DATA_TYPE(Collada)
         Collada():Data(){}
         std::string version, xmlns, base;
 
-        Asset *asset;
+        //Asset *asset;
 
         //std::vector<Library<AnimationClips> > libAnimationClips;
         //std::vector<LibraryAnimation> libAnimations;
         std::vector<Library<ArticulatedSystem>* > libArticulatedSystems;
         std::vector<Library<Camera>* > libCameras;
         //std::vector<LibraryControllers> libControllers;
-        //std::vector<LibraryEffects> libEffects;
+        std::vector<Library<Effect>* > libEffects;
         //std::vector<Library<ForceField> > libForceFields;
         //std::vector<Library<Formulas> > libFormulas;
         std::vector<Library<Geometry>* > libGeometries;
@@ -439,6 +503,15 @@ public:
             if(data->id!="")
                 idToData[data->id] = data;
         }
+
+        void printAllData(){
+            typedef std::pair<std::string, Data*> DataPair;
+            std::cout << "\n All data saved so far:" << std::endl;
+            BOOST_FOREACH(const DataPair& idAndData, idToData){
+                std::cout << idAndData.first << std::endl;
+            }
+        }
+
 
         std::map<std::string, Data*> idToData;
 

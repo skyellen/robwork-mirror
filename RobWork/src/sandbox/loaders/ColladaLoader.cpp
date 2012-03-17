@@ -44,6 +44,7 @@
 #include <rw/trajectory/CircularInterpolator.hpp>
 #include <rw/trajectory/ParabolicBlend.hpp>
 #include <rw/trajectory/LloydHaywardBlend.hpp>
+#include <rw/graphics/Model3D.hpp>
 
 #include <rw/loaders/xml/XercesErrorHandler.hpp>
 #include <rw/loaders/xml/XMLBasisTypes.hpp>
@@ -69,42 +70,50 @@ using namespace rw::geometry;
 } while (0)
 
 
-ColladaLoader::ColladaLoader(const std::string& filename, const std::string& schemaFileName)
+ColladaLoader::ColladaLoader(const std::string& schemaFileName):_schemaFileName(schemaFileName)
 {
-    try {
-       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    } catch( XMLException& e ){
-       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
-    }
-
-    XercesDOMParser parser;
-    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
-
-    readColladaWorkCell(elementRoot);
 }
 
-
-ColladaLoader::ColladaLoader(std::istream& instream, const std::string& schemaFileName) {
-    try {
-       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    } catch( XMLException& e ){
-       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
-    }
-
-    XercesDOMParser parser;
-    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
-    readColladaWorkCell(elementRoot);
-}
-
-
-ColladaLoader::ColladaLoader(DOMElement* element) {
-    readColladaWorkCell(element);
-}
 
 ColladaLoader::~ColladaLoader()
 {
+}
+
+
+WorkCell::Ptr ColladaLoader::loadWorkCell(const std::string& filename)
+{
+    try {
+       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+    } catch( XMLException& e ){
+       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
+    }
+
+    XercesDOMParser parser;
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, _schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+
+    readColladaWorkCell(elementRoot);
+    return _workcell;
+}
+
+
+WorkCell::Ptr ColladaLoader::loadWorkCell(std::istream& instream) {
+    try {
+       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+    } catch( XMLException& e ){
+       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
+    }
+
+    XercesDOMParser parser;
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, _schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    readColladaWorkCell(elementRoot);
+    return _workcell;
+}
+
+WorkCell::Ptr ColladaLoader::loadWorkCell(DOMElement* element) {
+    readColladaWorkCell(element);
+    return _workcell;
 }
 
 
@@ -349,26 +358,35 @@ namespace {
     }
 
     double getAttribDouble(DOMElement* element, const char* str, double defVal){
-        std::cout << str << std::endl;
+        //std::cout << "\t" << str << ":";
         const XMLCh *val = element->getAttribute(XMLStr(str).uni());
-        if( val==NULL)
-            return defVal;
-        if( XMLStr(val).str()=="" )
-            return defVal;
-        double dval = defVal;
-        try {
-            dval = XMLDouble(val).getValue();
-        } catch (...){
-            return defVal;
+        double retVal = defVal;
+        if( val==NULL){
+            retVal = defVal;
+        } else if( XMLStr(val).str()=="" ) {
+            retVal = defVal;
+        } else {
+            try {
+                retVal = XMLDouble(val).getValue();
+            } catch (...){
+                //std::cout << "EXCEPTION" << std::endl;
+            }
         }
-        return dval;
+        //std::cout << retVal << std::endl;
+        return retVal;
     }
 /*
     XMLCh* getAttribute(DOMElement* element, const char* str, const std::string& defval){
         return element->getAttribute(XMLStr(str).uni);
     }
 */
+/*
+    struct Accessor {
 
+        size_t getStride();
+
+    };
+*/
     void getArrayValue(std::string &val, const XMLCh* str){ val = XMLStr(str).str(); }
     void getArrayValue(unsigned int &val, const XMLCh* str){ val = (unsigned int)(XMLDouble(str).getValue()); }
     void getArrayValue(int &val, const XMLCh* str){ val = (int)(XMLDouble(str).getValue()); }
@@ -384,15 +402,18 @@ namespace {
     template<class T>
     void readNArray(DOMElement *elem, std::vector<T>& array, int n){
         array.resize(n);
-        XMLStringTokenizer tokenizer(elem->getNodeValue());
+        XMLStringTokenizer tokenizer(elem->getTextContent());
+        //std::cout << "values: " << XMLStr(elem->getTextContent()).str() << std::endl;
         int i=0;
         T val;
         while(tokenizer.hasMoreTokens()){
             RW_ASSERT_MSG(i<(int)array.size(), i<< "<" << array.size());
             getArrayValue(val, tokenizer.nextToken());
             array[i] = val;
+            //std::cout << val << ",";
             i++;
         }
+        //std::cout << std::endl;
     }
 
     template<class T>
@@ -403,8 +424,9 @@ namespace {
         array->name = getAttrib(elem, "name");
         array->data = ownedPtr<std::vector<T> >( new std::vector<T>(array->count) );
         state.add(array, array->id, "");
-
-        XMLStringTokenizer tokenizer(elem->getNodeValue());
+        //std::cout << "values: " << XMLStr(elem->getTextContent()).str() << std::endl;
+        XMLStringTokenizer tokenizer(elem->getTextContent());
+        //std::cout << "Count tokens: " << tokenizer.countTokens() << std::endl;
         int i=0;
         T val;
         while(tokenizer.hasMoreTokens()){
@@ -412,7 +434,9 @@ namespace {
             getArrayValue(val, tokenizer.nextToken());
             (*array->data)[i] = val;
             i++;
+            //std::cout << val << ",";
         }
+        //std::cout << std::endl;
         return array;
     }
 /*
@@ -451,9 +475,29 @@ namespace {
         ColladaLoader::ParserState& _state;
     };
 
+
+    size_t getStride(std::vector<Dae::InputShared*>& inputs){
+        size_t stride = 0;
+        BOOST_FOREACH(Dae::InputShared* input,  inputs){
+            if(input->semantic=="TEXCOORD"){
+                stride+=1;
+            } else if(input->semantic=="VERTEX"){
+                stride+=1;
+            } else {
+                RW_THROW("Unknown semantic!");
+            }
+
+        }
+        return stride;
+    }
+
+
+
+
     Dae::Param* readParam(DOMElement* element, ColladaLoader::ParserState& state){
         Dae::Param *param = state.make<Dae::Param>();
         param->name = getAttrib(element, "name");
+        std::cout << "parname: " << param->name << std::endl;
         param->sid = getAttrib(element, "sid");
         param->type = getAttrib(element, "type");
         param->semantic = getAttrib(element, "semantic");
@@ -477,6 +521,7 @@ namespace {
                 accessor->params.push_back( readParam(child, state) );
             }
         }
+        std::cout << "Accessor params: " << accessor->params.size() << std::endl;
         return accessor;
     }
 
@@ -577,9 +622,12 @@ namespace {
             if ( isName(child, "input" ) ) {
                 tris->inputs.push_back( readInputShared(child, state) );
             } else if( isName(child, "p")){
-                tris->p = ownedPtr( new std::vector<unsigned int>(tris->count) );
-                readNArray(child, *tris->p, tris->count);
-            } else if( isName(child, "lines")){
+                // calculate the stride based on the inputs
+                size_t tristride = getStride(tris->inputs)*3;// the getStride is per vertex
+                tris->p = ownedPtr( new std::vector<unsigned int>( tristride*tris->count ) );
+                readNArray(child, *tris->p, tristride*tris->count);
+            } else if( isName(child, "extra")){
+
             }
         }
 
@@ -605,6 +653,7 @@ namespace {
             } else if( isName(child, "linestrips")){
                 RW_WARN("NOT IMPLEMENTED YET!");
             } else if( isName(child, "polygons")){
+                //mesh->.push_back( readPolygons(child, state));
                 RW_WARN("NOT IMPLEMENTED YET!");
             } else if( isName(child, "polylist")){
                 RW_WARN("NOT IMPLEMENTED YET!");
@@ -614,6 +663,7 @@ namespace {
                 RW_WARN("NOT IMPLEMENTED YET!");
             } else if( isName(child, "tristrips")){
                 /// TODO: implement parsing of all primitives
+                RW_WARN("NOT IMPLEMENTED YET!");
             } else if( isName(child, "extra")){
                 mesh->extras.push_back( readExtra(child,state) );
             } else {
@@ -629,7 +679,7 @@ namespace {
         BOOST_FOREACH(DOMElement* child, domChildren){
             DEBUGL( XMLStr(child->getNodeName()).str() );
             if ( isName(child, name ) ) {
-                XMLStr xmlstr(child->getNodeValue());
+                XMLStr xmlstr(child->getTextContent());
                 return xmlstr.str();
             }
         }
@@ -645,23 +695,47 @@ namespace {
             DEBUGL( XMLStr(child->getNodeName()).str() );
 
             if ( isName(child, "contributor") ) {
-                asset->contributer = state.make<Dae::Contributor>();
-                asset->contributer->author = getChildString(child, "author");
-                asset->contributer->authoring_tool = getChildString(child, "authoring_tool");
-                asset->contributer->comments = getChildString(child, "comments");
+                //asset->contributer = state.make<Dae::Contributor>();
+                asset->contributer.author = getChildString(child, "author");
+                asset->contributer.authoring_tool = getChildString(child, "authoring_tool");
+                asset->contributer.comments = getChildString(child, "comments");
             } else if( isName(child, "created" ) ){
-                asset->created = XMLStr(child->getNodeValue()).str();
+                asset->created = XMLStr(child->getTextContent()).str();
             } else if( isName(child, "modified" ) ){
-                asset->modified = XMLStr(child->getNodeValue()).str();
+                asset->modified = XMLStr(child->getTextContent()).str();
             } else if( isName(child, "unit" ) ){
-                asset->unit = state.make<Dae::Unit>();
-                asset->unit->meter = XMLDouble(child->getAttribute(XMLStr("meter").uni())).getValue();
-                asset->unit->name = XMLStr(child->getAttribute(XMLStr("name").uni())).str();
+                //asset->unit = state.make<Dae::Unit>();
+                asset->unit.meter = XMLDouble(child->getAttribute(XMLStr("meter").uni())).getValue();
+                asset->unit.name = XMLStr(child->getAttribute(XMLStr("name").uni())).str();
             } else if( isName(child, "up_axis" ) ){
-                asset->up_axis = XMLStr(child->getNodeValue()).str();
+                asset->up_axis = XMLStr(child->getTextContent()).str();
             }
         }
         return asset;
+    }
+
+    Dae::InstanceEffect* readInstanceEffect(DOMElement* element, ColladaLoader::ParserState& state){
+        Dae::InstanceEffect* mat = state.make<Dae::InstanceEffect>();
+        mat->sid = getAttrib(element, "sid");
+        mat->name = getAttrib(element, "name");
+        mat->url = getAttrib(element, "url");
+        state.add(mat, "", mat->sid);
+        ScopedPush p(mat, state);
+
+        DOMElemChildVector domChildren(element);
+        BOOST_FOREACH(DOMElement* child, domChildren){
+            DEBUGL( XMLStr(child->getNodeName()).str() );
+            if(isName(child, "technique_hint")){
+                RW_WARN("NOT IMPL YET");
+            } else if(isName(child, "setparam")){
+                RW_WARN("NOT IMPL YET");
+            } else if(isName(child, "extra")){
+                mat->extras.push_back( readExtra(child,state) );
+            }
+        }
+
+        return mat;
+
     }
 
     Dae::Material* readMaterial(DOMElement* element, ColladaLoader::ParserState& state){
@@ -678,7 +752,7 @@ namespace {
             if(isName(child, "asset")){
                 mat->asset = readAsset(child, state);
             } else if(isName(child, "instance_effect")){
-                RW_WARN("NOT IMPLEMENTED YET!");
+                mat->iEffect = readInstanceEffect(child, state);
             } else if(isName(child, "extra")){
                 mat->extras.push_back( readExtra(child,state) );
             }
@@ -722,7 +796,7 @@ namespace {
         BOOST_FOREACH(DOMElement* child, domChildren){
             DEBUGL( XMLStr(child->getNodeName()).str() );
             if(isName(child, "layer")){
-                render->layers.push_back( XMLStr(child->getNodeValue()).str() );
+                render->layers.push_back( XMLStr(child->getTextContent()).str() );
             } else if(isName(child, "instance_material")){
                 render->iMaterial = readInstanceMaterial(child, state);
             } else if(isName(child, "extra")){
@@ -757,6 +831,29 @@ namespace {
         return evalScene;
     }
 
+
+    Dae::Effect* readEffect(DOMElement* element, ColladaLoader::ParserState& state){
+        Dae::Effect *effect = state.make<Dae::Effect>();
+        effect->id = getAttrib(element, "id");
+        effect->name = getAttrib(element, "name");
+        state.add(effect, effect->id, effect->sid);
+        ScopedPush p(effect, state);
+
+        DOMElemChildVector domChildren(element);
+        BOOST_FOREACH(DOMElement* child, domChildren){
+            DEBUGL( XMLStr(child->getNodeName()).str() );
+            if(isName(child, "asset")){
+                effect->asset = readAsset(child, state);
+            } else if(isName(child, "newparam")){
+                RW_WARN("");
+            } else if(isName(child, "extra")){
+                effect->extras.push_back( readExtra(child,state) );
+            }
+        }
+        return effect;
+    }
+
+
     Dae::InstanceNode* readInstanceNode(DOMElement* element, ColladaLoader::ParserState& state){
         Dae::InstanceNode *node = state.make<Dae::InstanceNode>();
         node->sid = getAttrib(element, "sid");
@@ -766,6 +863,353 @@ namespace {
         state.add(node, "", node->sid);
         ScopedPush p(node, state);
         return node;
+    }
+
+    struct Accessor {
+        Accessor():_acc(NULL){}
+        Accessor(Dae::Accessor* accessor):_acc(accessor)
+        {
+            //std::cout << "Nr params: " << _acc->params.size() << std::endl;
+            //std::cout << _acc->stride << std::endl;
+            //std::cout << _acc->offset << std::endl;
+            //std::cout << _acc->name << std::endl;
+        }
+
+        int getVal(int i){
+            return _acc->offset + i*_acc->stride;
+        }
+
+        int getValIndex(const std::string& v){
+
+            int i=0;
+            BOOST_FOREACH(Dae::Param *param, _acc->params){
+                if(param->name==v)
+                    return i;
+                i++;
+            }
+            RW_THROW("No such param in accessor! " << v);
+            return -1;
+        }
+
+        int getDOF(){
+            if(_acc==NULL)
+                return 0;
+            return _acc->params.size();
+        }
+
+        size_t size(){
+            if(_acc==NULL)
+                return 0;
+            return _acc->count;
+        };
+
+        Dae::Accessor *_acc;
+    };
+
+    std::vector<std::string> getPosParams(){
+        std::vector<std::string> params;
+        params.push_back("X");
+        params.push_back("Y");
+        params.push_back("Z");
+        return params;
+    }
+
+    std::vector<std::string> getTexParams(){
+        std::vector<std::string> params;
+        params.push_back("S");
+        params.push_back("T");
+        return params;
+    }
+
+    struct AccessorFloat {
+        AccessorFloat(Dae::Source* source, std::vector<std::string> params):
+            _source(source),_params(params),_param_offsets(params.size(),0),_floats(params.size(),0)
+        {
+            if(source!=NULL){
+                // the pos accessor must be have a float array as source
+                RW_ASSERT(_source->floatArray!=NULL);
+                _accessor = Accessor(source->accessor);
+                for(size_t i=0;i<params.size();i++){
+                    _param_offsets[i] = _accessor.getValIndex(params[i]);
+                }
+            }
+        }
+
+        const std::vector<double>& get(int i){
+            std::vector<double> &fdata = *_source->floatArray->data;
+            int offset = _accessor.getVal(i);
+            for(size_t j=0;j<_floats.size();j++)
+                _floats[j] = fdata[ offset+_param_offsets[j] ];
+            return _floats;
+        }
+
+        template<class ARRAY_TYPE>
+        void get(int i, ARRAY_TYPE& dst){
+            std::vector<double> &fdata = *_source->floatArray->data;
+            int offset = _accessor.getVal(i);
+            for(int j=0;j<_floats.size();j++)
+                dst[j] = fdata[ offset+_param_offsets[j] ];
+        }
+
+        size_t size(){
+            if(_source==NULL)
+                return 0;
+            return _accessor.size();
+        };
+
+        Dae::Source* _source;
+        Accessor _accessor;
+        std::vector<std::string> _params;
+        std::vector<int> _param_offsets;
+        std::vector<double> _floats;
+    };
+
+
+    /**
+     * @brief Acessor for position sources that is X, Y, Z coordinate sources
+     */
+    struct PosAccessor {
+        PosAccessor(Dae::Source* source): _source(source)
+        {
+            // the pos accessor must be have a float array as source
+            if(source!=NULL){
+                RW_ASSERT(_source->floatArray!=NULL);
+
+                _accessor = Accessor(source->accessor);
+                // we need to know the indexes of the X Y and Z coordinate
+                _X = _accessor.getValIndex("X");
+                _Y = _accessor.getValIndex("Y");
+                _Z = _accessor.getValIndex("Z");
+            }
+        }
+
+        Vector3D<> get(int i){
+            Vector3D<> res;
+            std::vector<double> &fdata = *_source->floatArray->data;
+            int offset = _accessor.getVal(i);
+            res[0] = fdata[ offset+_X ];
+            res[1] = fdata[ offset+_Y ];
+            res[2] = fdata[ offset+_Z ];
+            return res;
+        }
+
+        size_t size(){ return _accessor.size();};
+
+        Dae::Source* _source;
+        Accessor _accessor;
+        int _X, _Y, _Z;
+    };
+
+    /**
+     * @brief used to access specific elements in a vector of indices.
+     */
+    struct TriIndiciesAccessor {
+        TriIndiciesAccessor(std::vector<Dae::InputShared*>& inputs_tmp):inputs(inputs_tmp)
+        {
+            // we know that the stride is at least 3
+            offsets = std::vector<int>(10, 0);
+            stride_per_vertex = 0;
+            vertOffset = 0;
+            BOOST_FOREACH(Dae::InputShared* input, inputs){
+                if(input->semantic == "VERTEX"){
+                    vertOffset = input->offset;
+                    if(offsets[input->offset]<1){
+                        stride_per_vertex += 1;
+                        offsets[input->offset]=1;
+                    }
+                } else if(input->semantic == "TEXCOORD"){
+                    // two texcoords are represented in
+                    if(offsets[input->offset]<1){
+                        stride_per_vertex -= offsets[input->offset];
+                        stride_per_vertex += 1;
+                        offsets[input->offset]=1;
+                    }
+                } else {
+                    RW_WARN("unsupported semantic!");
+                }
+            }
+
+            std::cout << "STRIDE PER VERTEX: " << stride_per_vertex << "  " << vertOffset << std::endl;
+        }
+        int getIdx(int i){
+            return i*stride_per_vertex;
+        }
+        int getVertexIdx(int i){
+            return i*stride_per_vertex+vertOffset;
+        }
+
+        int getOffset(std::string semantic){
+            BOOST_FOREACH(Dae::InputShared* input, inputs){
+                if(input->semantic==semantic)
+                    return input->offset;
+            }
+            return -1;
+        }
+
+        std::vector<int> offsets;
+        size_t stride_per_vertex, vertOffset;
+        std::vector<Dae::InputShared*> inputs;
+    };
+
+
+    Dae::Source* getSource(const std::string& semantic, std::vector<Dae::Input*>& inputs, ColladaLoader::ParserState& state){
+        BOOST_FOREACH(Dae::Input* input,  inputs){
+            if(semantic==input->semantic)
+                return state.get<Dae::Source>(input->source);
+        }
+        return NULL;
+    }
+
+
+    bool has(const std::string& semantic, std::vector<Dae::Input*>& inputs){
+        BOOST_FOREACH(Dae::Input* input,  inputs){
+            if(semantic==input->semantic)
+                return true;
+        }
+        return false;
+    }
+
+
+    using namespace rw::graphics;
+    rw::graphics::Model3D::Ptr makeRWMesh(Dae::Mesh *mesh, ColladaLoader::ParserState& state){
+        std::cout << "makeRWMesh" << std::endl;
+        rw::graphics::Model3D::Ptr model = ownedPtr( new rw::graphics::Model3D() );
+
+        std::vector<TriMesh::Ptr> rwmeshes;
+
+        // for now only Triangle meshes are supported
+
+        // we ignore source because its merilly a data container
+
+        //
+        //Dae::Vertices *verts = mesh->vertices;
+
+
+        BOOST_FOREACH(Dae::Triangles* tri, mesh->tris){
+            std::string triname = tri->name;
+            if(triname=="")
+                triname = tri->id;
+            std::string material = tri->material;
+            Dae::Material* matdata = state.get<Dae::Material>(material);
+            //Dae::Effect* effect = state.get<Dae::Effect>(matdata->iEffect->url);
+
+            std::cout << triname << " " << material << std::endl;
+            // each vertice points to some source
+
+            Dae::Vertices *triVertex = NULL;
+            Dae::Source *posSource = NULL;
+            Dae::Source *normSource = NULL;
+            Dae::Source *texSource = NULL;
+            // the stride indicates how many inputs there are
+            int stride = tri->inputs.size();
+
+            BOOST_FOREACH(Dae::InputShared *ishared, tri->inputs){
+                // here we just check that we can find the source
+                if(ishared->semantic=="VERTEX"){
+                    triVertex = state.get<Dae::Vertices>(ishared->source);
+                    RW_ASSERT(triVertex);
+                } else if( ishared->semantic=="POSITION" ){
+                    posSource = state.get<Dae::Source>(ishared->source);
+                } else if( ishared->semantic=="NORMAL" ){
+                    normSource = state.get<Dae::Source>(ishared->source);
+                } else if( ishared->semantic=="TEXCOORD" ){
+                    texSource  = state.get<Dae::Source>(ishared->source);
+                } else {
+                    RW_THROW("type of source not impl");
+                    Dae::Source* source = state.get<Dae::Source>(ishared->source);
+                    RW_ASSERT(source);
+                }
+            }
+            if(stride == 0){
+                // there are no inputs... So we default to VERTEX input
+                RW_THROW("What to do, no inputs...");
+            }
+            if( triVertex!=NULL ){
+                posSource = getSource("POSITION", triVertex->inputs, state);
+                normSource = getSource("NORMAL", triVertex->inputs, state);
+            }
+            if(posSource)
+                std::cout << "POSITION SOURCE: " << posSource->id << std::endl;
+            if(normSource)
+                std::cout << "NORMAL SOURCE  : " << normSource->id << std::endl;
+            if(texSource)
+                std::cout << "TEXCOORD SOURCE  : " << texSource->id << std::endl;
+
+            // create accessor
+            AccessorFloat pacc( posSource, getPosParams() );
+            AccessorFloat nacc( normSource, getPosParams() );
+            AccessorFloat texacc( texSource, getTexParams() );
+
+            Dae::Asset* asset = state.getAsset( posSource );
+
+            // construct the containers for the triangles, TODO: use the most efficient container
+            std::vector<Vector3D<float> > *rwvertices = new std::vector<Vector3D<float> >( pacc.size() );
+            std::vector<Vector3D<float> > *rwnormals = new std::vector<Vector3D<float> >( nacc.size() );
+            std::vector<Vector2D<float> > *rwtex = new std::vector<Vector2D<float> >( texacc.size() );
+
+            IndexedTriMeshN0<float, uint16_t>::TriangleArray *rwtris = new IndexedTriMeshN0<float, uint16_t>::TriangleArray();
+
+            Vector2D<> pos2d;
+            Vector3D<> pos;
+            for(size_t i=0;i<pacc.size();i++){
+                pacc.get(i, pos);
+                (*rwvertices)[i] = cast<float>( (pos*asset->unit.meter) );
+            }
+
+            for(size_t i=0;i<nacc.size();i++){
+                 nacc.get(i, pos);
+                (*rwnormals)[i] = cast<float>( pos );
+            }
+
+            for(size_t i=0;i<texacc.size();i++){
+                 texacc.get(i, pos2d);
+                (*rwtex)[i] = cast<float>( pos2d );
+            }
+
+            TriIndiciesAccessor iacc( tri->inputs );
+            std::vector<unsigned int> &indices = *tri->p;
+            for(size_t i=0;i<tri->count*3;i+=3){
+                // three indicies compose one triangle
+                // we need to read Vertices and optionally, normals and textures
+                rwtris->push_back( IndexedTriangle<uint16_t>(indices[ iacc.getVertexIdx(i+0) ],
+                                                             indices[ iacc.getVertexIdx(i+1) ],
+                                                             indices[ iacc.getVertexIdx(i+2) ] ) );
+
+                //std::cout << "Tri: " << indices[i+0] << " " << indices[i+1] << " " <<  indices[i+2] << std::endl;
+            }
+
+            // add the parsed material to Model3D
+
+            //int matid = model->addMaterial();
+
+            // create the object
+            Model3D::Object3D::Ptr obj = ownedPtr(new Model3D::Object3D(triname));
+            //obj->setMaterial();
+
+            IndexedTriMeshN0<float, uint16_t>::Ptr mymesh = ownedPtr(new IndexedTriMeshN0<float, uint16_t>(rwvertices, rwnormals, rwtris));
+            rwmeshes.push_back( mymesh );
+        }
+
+        return model;
+    }
+
+    std::vector<Model3D::Ptr> makeRWGeometry(Dae::Geometry *geom, ColladaLoader::ParserState& state){
+        std::cout << "RWGEom" << std::endl;
+        std::vector<Model3D::Ptr> geoms;
+        RW_ASSERT(geom);
+        std::string name = geom->name;
+        std::cout << "Geom name: "<< name << std::endl;
+        BOOST_FOREACH(Dae::Mesh* mesh, geom->meshes){
+            std::cout << "mesh" << std::endl;
+            Model3D::Ptr rwmesh = makeRWMesh(mesh, state);
+            //for(size_t i=0;i<rwmesh.size();i++){
+            //    geoms.push_back( ownedPtr( new Geometry(rwmesh[i]) ));
+            //}
+            geoms.push_back( rwmesh );
+        }
+
+        std::cout << "RWGEom_end" << std::endl;
+        return geoms;
     }
 
 
@@ -914,7 +1358,7 @@ Dae::Geometry* ColladaLoader::readGeometry(DOMElement* element, ColladaLoader::P
             RW_WARN("NOT IMPLEMENTED YET!");
         } else if(isName(child, "mesh")){
             // TODO: do something with mesh
-            readMesh(child, state);
+            geom->meshes.push_back( readMesh(child, state) );
         } else if(isName(child, "spline")){
             RW_WARN("NOT IMPLEMENTED YET!");
         } else if(isName(child, "brep")){
@@ -993,6 +1437,26 @@ Dae::Library<Dae::VisualScene>* ColladaLoader::readLibraryVisualScenes(DOMElemen
     return visualSceneLib;
 }
 
+Dae::Library<Dae::Effect>* ColladaLoader::readLibraryEffects(DOMElement* element, ColladaLoader::ParserState& state) {
+    Dae::Library<Dae::Effect> *matLib = state.make<Dae::Library<Dae::Effect> >();
+    matLib->id = getAttrib(element, "id");
+    matLib->name = getAttrib(element, "name");
+    state.add(matLib, matLib->id, "");
+    ScopedPush p(matLib, state);
+
+    DOMElemChildVector domChildren(element);
+    BOOST_FOREACH(DOMElement* child, domChildren){
+        DEBUGL( XMLStr(child->getNodeName()).str() );
+        if (isName(child, "asset")) {
+            matLib->asset = readAsset(child, state);
+        } else if (isName(child, "effects")) {
+            matLib->elements.push_back( readEffect(child, state) );
+        } else if (isName(child, "extra")) {
+            matLib->extras.push_back( readExtra(child,state) );
+        }
+    }
+    return matLib;
+}
 
 
 Dae::Library<Dae::Material>* ColladaLoader::readLibraryMaterials(DOMElement* element, ColladaLoader::ParserState& state) {
@@ -1041,25 +1505,38 @@ Dae::InstanceVisualScene* ColladaLoader::readInstanceVisualScene(DOMElement* ele
         FixedFrame *frame = new FixedFrame(node->name, transform);
         state.wc->getStateStructure()->addFrame(frame, world);
 
+
         // if a node has geometry then we define it as an Object
         if(node->igeometries.size()>0){
-            std::vector<Geometry::Ptr> geoms;
+            std::vector<Model3D::Ptr> geoms;
             // now look for geometry and add it to the Object
             BOOST_FOREACH(Dae::InstanceGeometry* igeom, node->igeometries){
                 std::cout << "igeom: " << igeom->name << " : " << igeom->url << std::endl;
                 Dae::Geometry* geom = state.get<Dae::Geometry>(igeom->url);
                 std::cout << "Geom: " << geom->name << std::endl;
-                //geoms.push_back( makeRWGeometry(geom) );
+                std::vector<Model3D::Ptr> rwgeom = makeRWGeometry(geom, state);
+                BOOST_FOREACH(Model3D::Ptr g, rwgeom){
+                    geoms.push_back( g );
+                    if(getScene())
+                        getScene()->addModel3D(geom->name, g, frame); // TODO: which layers should it be visible on
+                }
             }
 
-            // create object
-            Object::Ptr object = ownedPtr( new Object(frame, geoms) );
-            state.wc->add( object );
+            if(geoms.size()>0){
+                // create object
+                std::cout << "Creating object" << std::endl;
+                //Object::Ptr object = ownedPtr( new Object(frame, geoms) );
+                //state.wc->add( object );
+            }
+
         }
         // sensors
 
         // follow child nodes
-        BOOST_FOREACH(Dae::InstanceNode* child, node->inodes){}
+        BOOST_FOREACH(Dae::InstanceNode* child, node->inodes){
+            RW_WARN("Not impl yet!");
+        }
+
     }
 
     DOMElemChildVector domChildren(element);
@@ -1115,8 +1592,7 @@ void ColladaLoader::readCollada(DOMElement* element, ColladaLoader::ParserState&
         } else if (isName(child, "library_materials")) {
             state.data.libMaterials.push_back( readLibraryMaterials(child, state) );
         } else if (isName(child, "library_effects")) {
-
-            RW_WARN("NOT IMPLEMENTED YET!");
+            state.data.libEffects.push_back( readLibraryEffects(child, state) );
         }
     }
 }
@@ -1128,7 +1604,9 @@ rw::models::WorkCell::Ptr ColladaLoader::getWorkCell(){
 void ColladaLoader::readColladaWorkCell(DOMElement* element) {
     DEBUGL("readColladaWorkCell");
     ParserState &collada = _pstate;
-    collada.wc = ownedPtr(new WorkCell(""));
+    collada.wc = ownedPtr(new WorkCell("nwc"));
+    if(getScene()!=NULL)
+        getScene()->setWorkCell( collada.wc );
     // potentially make a WorkCellScene such as to avoid
     //std::vector<PluginFactory<T>::Ptr> factories = SceneGraphRobWork::getInstance()->getPluginRepository().getPlugins<rw::graphics::SceneGraph>();
 
@@ -1136,5 +1614,6 @@ void ColladaLoader::readColladaWorkCell(DOMElement* element) {
         readCollada(element, collada);
     }
 
+    _workcell = collada.wc;
 }
 

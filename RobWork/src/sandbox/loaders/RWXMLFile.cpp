@@ -291,7 +291,7 @@ namespace {
             RW_THROW("unknown Frame type!");
         }
 	}
-
+/*
    void writeCollisionInfo(DummyWorkcell& dwc,CollisionModelInfo &info, Frame *frame, std::ostream &ostr){
         std::stringstream sstr;
         sstr << scopedName(dwc, frame) << "Geo";
@@ -308,7 +308,8 @@ namespace {
         clvl--;
         ostr << wlvl() << "</CollisionModel>\n";
     }
-
+*/
+	/*
 	void writeDrawableInfo(DummyWorkcell& dwc,DrawableModelInfo &info, Frame *frame, std::ostream &ostr){
         std::stringstream sstr;
         sstr << scopedName(dwc, frame) << "Geo";
@@ -325,7 +326,7 @@ namespace {
         }
         clvl--;
         ostr << wlvl() << "</Drawable>\n";
-	}
+	}*/
 
 	void writeDevice(DummyWorkcell& wc, Device &dev, std::ostream &ostr){
 		ostr << "\n";
@@ -350,6 +351,7 @@ namespace {
 	    }
 	    ostr << "\n";
 	    // write all drawables and collision models
+	    /*
 	    ostr << "<!-- drawables -->\n";
 	    BOOST_FOREACH(Frame* frame, flist){
 	        // first we insert the drawables
@@ -364,14 +366,15 @@ namespace {
         ostr << "<!-- Collision models -->\n";
         BOOST_FOREACH(Frame* frame, flist){
             // first we insert the drawables
+
             std::vector<CollisionModelInfo> infos = CollisionModelInfo::get(frame);
             BOOST_FOREACH(CollisionModelInfo info, infos){
                 writeCollisionInfo(wc, info, frame, ostr);
             }
         }
-
 		clvl--;
 		ostr << wlvl() << "</" << devType << ">\n";
+		*/
 	}
 
 	void writeWorkcell(DummyWorkcell& dwc, std::ostream &ostr){

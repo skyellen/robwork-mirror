@@ -26,12 +26,14 @@
 #include <rw/math/Transform3D.hpp>
 
 #include <rw/models/WorkCell.hpp>
-
+#include <rw/loaders/WorkCellLoader.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 #include <string>
 #include <stack>
 
 #include "Dae.hpp"
+
+#include <rw/plugin/PluginFactory.hpp>
 
 
 namespace rw {
@@ -45,20 +47,28 @@ namespace loaders {
      *
      * @note Not all features of Collada is supported in the WorkCell format and as such these are not parsed
      */
-    class ColladaLoader
+    class ColladaLoader: public rw::loaders::WorkCellLoader
     {
     public:
         /**
-         * @brief Constructs ColladaLoader and parser \b filename
-         *
-         * @param filename [in] The file to load
+         * @brief Constructor
          * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
          */
-        ColladaLoader(const std::string& filename, const std::string& schemaFileName = "");
-
+        ColladaLoader(const std::string& schemaFileName = "");
 
         /**
-         * @brief Constructs ColladaLoader and parser input from \b instream
+         * @brief Destructor
+         */
+        virtual ~ColladaLoader();
+
+        /**
+         * @brief parse \b filename
+         * @param filename [in] The file to load
+         */
+        rw::models::WorkCell::Ptr loadWorkCell(const std::string& filename);
+
+        /**
+         * @brief parse input from \b instream
          *
          * It is possible to specify whether to use the default schema which is the default behavior. If a
          * schema is specified in the XML-file or no schema should be used set \b useDefaultSchema to false.
@@ -66,13 +76,11 @@ namespace loaders {
          * Throw rw::common::Exception if reading the path fails
          *
          * @param instream [in] The input stream to read from
-         * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
          */
-        ColladaLoader(std::istream& instream, const std::string& schemaFileName = "");
-
+        rw::models::WorkCell::Ptr loadWorkCell(std::istream& instream);
 
         /**
-         * @brief Constructs ColladaLoader and load in path in \b element.
+         * @brief load in path in \b element.
          *
          * No validation is applied hence the syntax of the element is assumed correct.
          *
@@ -80,14 +88,12 @@ namespace loaders {
          *
          * @param element [in] DOMElement representing the path
          */
-        ColladaLoader(xercesc::DOMElement* element);
-
+        rw::models::WorkCell::Ptr loadWorkCell(xercesc::DOMElement* element);
 
         /**
-         * @brief Destructor
+         * @brief get the workcell that was previously loaded
+         * @return
          */
-        virtual ~ColladaLoader();
-
         rw::models::WorkCell::Ptr getWorkCell();
 
         struct ParserState {
@@ -97,7 +103,7 @@ namespace loaders {
             //rw::graphics::WorkCellScene::Ptr wcscene;
 
             ParserState(){
-                scope.push(&data);
+                scope.push_back(&data);
             }
             //std::vector<Dae::Data*>
 
@@ -116,27 +122,29 @@ namespace loaders {
             T* get(const std::string& url){
                 Dae::Data *d = getData(url);
                 T* res = dynamic_cast<T*>(d);
-                if(res==NULL)
+                if(res==NULL){
+                    data.printAllData();
                     RW_THROW("Data could not be found. Type:" << typeid(T).name() << " url:"<< url);
+                }
                 return res;
             }
 
             template <class T>
-            T* make(){ return new T(scope.top()); }
+            T* make(){ return new T(scope.back()); }
 
             template <class T>
             T* make(const std::string& id, const std::string& sid){
-                return new T(id, sid, scope.top());
+                return new T(id, sid, scope.back());
             }
 
             void push(Dae::Data *d){
-                scope.top()->scope.push_back(d);
-                scope.push(d);
+                scope.back()->scope.push_back(d);
+                scope.push_back(d);
             }
 
             Dae::Data* pop(){
-                Dae::Data* d = scope.top();
-                scope.pop();
+                Dae::Data* d = scope.back();
+                scope.pop_back();
                 return d;
             }
 
@@ -145,7 +153,29 @@ namespace loaders {
                 d->sid = sid;
                 data.addData(d);
             }
-            std::stack<Dae::Data*> scope;
+
+            Dae::Asset* getAsset(Dae::Data* p_tmp){
+                Dae::Data *p = p_tmp;
+                while(p!=NULL){
+                    if(p->asset!=NULL)
+                        return p->asset;
+                    p = p->parent;
+                }
+                return NULL;
+            }
+
+
+            Dae::Asset* getAsset(){
+                for(int i=(int)scope.size()-1;i>=0;i--){
+                    if(scope[i]->asset!=NULL){
+                        return scope[i]->asset;
+                    }
+                }
+                return NULL;
+            }
+
+        private:
+            std::vector<Dae::Data*> scope;
         };
 
     private:
@@ -158,6 +188,7 @@ namespace loaders {
         Dae::Library<Dae::ArticulatedSystem>* readLibraryArticulatedSystem(xercesc::DOMElement* element, ParserState& data);
         Dae::Library<Dae::Node>* readLibraryNodes(xercesc::DOMElement* element, ParserState& data);
         Dae::Library<Dae::Material>* readLibraryMaterials(xercesc::DOMElement* element, ParserState& state);
+        Dae::Library<Dae::Effect>* readLibraryEffects(xercesc::DOMElement* element, ColladaLoader::ParserState& state);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
         //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
@@ -177,7 +208,33 @@ namespace loaders {
         rw::models::WorkCell::Ptr _workcell;
 
         ParserState _pstate;
+
+        std::string _schemaFileName;
     };
+
+
+
+    class ColladaLoaderPlugin: public rw::plugin::PluginFactory<rw::loaders::WorkCellLoader> {
+    public:
+
+        ColladaLoaderPlugin():
+            rw::plugin::PluginFactory<rw::loaders::WorkCellLoader>("ColladaWorkCellPlugin")
+        {}
+
+        rw::loaders::WorkCellLoader::Ptr make(){
+            return rw::common::ownedPtr( new ColladaLoader() );
+        }
+
+        rw::loaders::WorkCellLoader::Ptr make(const std::string&){
+            return rw::common::ownedPtr( new ColladaLoader() );
+        }
+
+
+
+    private:
+
+    };
+
 
     /** @} */
 
