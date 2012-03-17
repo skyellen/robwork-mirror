@@ -23,6 +23,8 @@ SET(FILES_CPP
   Exception.cpp
   Event.cpp
   ProgramOptions.cpp
+  ThreadSafeQueue.cpp
+  ThreadSafeStack.cpp
 )
 
 SET(FILES_HPP
@@ -51,6 +53,9 @@ SET(FILES_HPP
   ScopedTimer.hpp
   Event.hpp
   ProgramOptions.hpp
+  ThreadSafeQueue.hpp
+  ThreadSafeStack.hpp
+  
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
