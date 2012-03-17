@@ -1712,8 +1712,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         MultiDistanceResult *res;
 
         if(onlyTestPenetration){
-
-            data.setCollisionQueryType(FirstContact);
+            data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
                 return true;
@@ -1769,7 +1768,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             softlayer = 0.001;
         }
 
-        data.setCollisionQueryType(AllContacts);
+        data.setCollisionQueryType(CollisionStrategy::AllContacts);
         res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
 
         // create all contacts

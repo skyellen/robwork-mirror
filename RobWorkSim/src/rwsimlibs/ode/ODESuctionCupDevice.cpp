@@ -145,7 +145,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         Transform3D<> wTobj = Kinematics::worldTframe(object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
         // test if the suction gripper is in "complete" contact with the object
-        _pdata.setCollisionQueryType(rw::proximity::AllContacts);
+        _pdata.setCollisionQueryType(rw::proximity::CollisionStrategy::AllContacts);
         ProximityModel::Ptr objModel = _narrowStrategy->getModel( object->getBodyFrame() );
         if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup, _pdata) ){
             CollisionResult& result = _pdata.getCollisionData();

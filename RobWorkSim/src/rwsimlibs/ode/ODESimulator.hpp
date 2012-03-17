@@ -457,7 +457,7 @@ namespace simulator {
 
 	};
 
-	//static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
+	static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
 
 }
 }
