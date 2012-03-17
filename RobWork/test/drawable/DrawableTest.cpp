@@ -30,14 +30,11 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 
-#include <rw/models/Accessor.hpp>
-
 #include <string>
 #include <fstream>
 
 using namespace boost::unit_test;
 
-using namespace rw::models;
 using namespace rw::graphics;
 using namespace rwlibs::opengl;
 using namespace rw::math;
@@ -100,7 +97,7 @@ BOOST_AUTO_TEST_CASE(testDrawableFactory)
     //p3dsObject->setHighlighted(true);
     ac3dObject->setHighlighted(true);
 }
-
+/*
 BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     BOOST_MESSAGE("- testing workcellGLDrawer");
 
@@ -123,3 +120,4 @@ BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     Drawable::Ptr drawable2 = DrawableFactory::loadDrawableFile(filename,"mydrawable2");
     BOOST_REQUIRE(drawable2 != NULL);
 }
+*/

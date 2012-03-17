@@ -48,7 +48,7 @@ struct CollisionTestSetup {
     std::vector<std::vector<Transform3D<> > > modelsConfigurations;
     std::string strategyName;
     std::vector< ModelPair > modelPairs;
-    CollisionQueryType qtype;
+    CollisionStrategy::QueryType qtype;
     std::string modelDetail, queryTypeStr;
 };
 
@@ -202,12 +202,12 @@ void loadModelsData(CollisionTestSetup& setup, int nrModels, const std::string& 
 }
 
 void setFirstContact(CollisionTestSetup& setup){
-    setup.qtype = FirstContact;
+    setup.qtype = CollisionStrategy::FirstContact;
     setup.queryTypeStr = "FirstContact";
 }
 
 void setAllContact(CollisionTestSetup& setup){
-    setup.qtype = AllContacts;
+    setup.qtype = CollisionStrategy::AllContacts;
     setup.queryTypeStr = "AllContacts";
 }
 

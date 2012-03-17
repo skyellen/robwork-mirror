@@ -26,10 +26,9 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/models/CollisionModelInfo.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
@@ -184,10 +183,9 @@ void testStrategy0(const CollisionStrategy::Ptr& strategy)
     tree.addFrame(o1, world);
     tree.addFrame(o2, world);
 
-    const CollisionModelInfo info("#Cylinder 0.12 0.2 8", "cylinder");
-    const std::vector<CollisionModelInfo> infos(1, info);
-    CollisionModelInfo::set(infos, o1);
-    CollisionModelInfo::set(infos, o2);
+    Geometry::Ptr geom = GeometryFactory::load( "#Cylinder 0.12 0.2 8" );
+    strategy->addModel(o1,geom);
+    strategy->addModel(o2,geom);
 
     const Transform3D<> a(Vector3D<>(0.1, 0.0, 0.0));
     BOOST_CHECK(strategy->inCollision(o1, a, o2, id));
@@ -216,10 +214,9 @@ void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
     cube1->setTransform(id, state);
     cube2->setTransform(id, state);
 
-    CollisionModelInfo info("#Box 0.2 0.2 0.2", "box02");
-    std::vector<CollisionModelInfo> infos(1,info);
-    CollisionModelInfo::set(infos, cube1);
-    CollisionModelInfo::set(infos, cube2);
+    Geometry::Ptr geom = GeometryFactory::load( "#Box 0.2 0.2 0.2" );
+    strategy->addModel(cube1,geom);
+    strategy->addModel(cube2,geom);
 
     bool result;
 

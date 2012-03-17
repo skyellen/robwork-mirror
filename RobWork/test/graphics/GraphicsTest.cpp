@@ -30,14 +30,12 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 
-#include <rw/models/Accessor.hpp>
 
 #include <string>
 #include <fstream>
 
 using namespace boost::unit_test;
 
-using namespace rw::models;
 using namespace rw::graphics;
 using namespace rw::math;
 using namespace rw::kinematics;

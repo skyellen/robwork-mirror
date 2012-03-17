@@ -21,7 +21,6 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Constants.hpp>
 
