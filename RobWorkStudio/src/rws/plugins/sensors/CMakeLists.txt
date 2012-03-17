@@ -6,12 +6,10 @@ SET(TargetName rws_plugin_sensors)
 # if we want to use ui files add them here
 SET(UIS_FILES SensorsPlugin.ui )
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
-
+MESSAGE("UI FILES: ${UIS_OUT_H}")
 # Standard cpp files to compile:
-SET(SrcFiles Sensors.cpp SensorView.cpp ${UIS_OUT_H})
-
-
-
+SET(SrcFiles Sensors.cpp SensorView.cpp)
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Header files to moc and compile:
 QT4_WRAP_CPP(MocSrcFiles Sensors.hpp SensorView.hpp)
