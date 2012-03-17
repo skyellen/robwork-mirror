@@ -28,8 +28,6 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
-#include <rw/models/CollisionModelInfo.hpp>
-#include "Proximity.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/common/macros.hpp>
@@ -63,20 +61,17 @@ BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,cons
 
 
 void BasicFilterStrategy::initialize() {
+    // run through all objects in workcell and collect the geometric information
     _frameToGeoIdMap.clear();
-	FrameList frames = _workcell->getFrames();
-	BOOST_FOREACH(Frame* frame, frames) {
-        if(frame==NULL)
-            continue;
-	    RW_ASSERT(frame);
-	    std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(frame);
-		if (cinfos.size() > 0) {
-			std::vector<std::string>& geoNames = _frameToGeoIdMap[*frame];
-			BOOST_FOREACH(CollisionModelInfo info, cinfos) {
-				geoNames.push_back(info.getName());
-			}
-		}
-	}
+    std::vector<Object::Ptr> objects = _workcell->getObjects();
+
+    BOOST_FOREACH(Object::Ptr object, objects) {
+        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry() ){
+            Frame* frame = geom->getFrame();
+            RW_ASSERT(frame);
+            _frameToGeoIdMap[*frame].push_back(geom->getName());
+        }
+    }
 }
 #ifdef RW_USE_DEPRECATED
 

@@ -9,7 +9,8 @@
 #define RW_PROXIMITY_PROXIMITYDATA_HPP_
 
 #include "ProximityCache.hpp"
-
+#include "ProximityStrategyData.hpp"
+#include "CollisionDetector.hpp"
 
 namespace rw {
 namespace proximity {
@@ -17,8 +18,13 @@ namespace proximity {
 	class ProximityData {
 	public:
 
+        void setCollisionQueryType(CollisionDetector::QueryType qtype){ _colQueryType = qtype; }
+        CollisionDetector::QueryType getCollisionQueryType(){ return _colQueryType; };
 
 
+
+	    CollisionDetector::QueryResult _collisionData;
+	    CollisionDetector::QueryType _colQueryType;
 
 		ProximityCache::Ptr _cache;
 	};

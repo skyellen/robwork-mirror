@@ -27,7 +27,6 @@
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
-#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -39,10 +38,40 @@ namespace rw { namespace proximity {
      * specific collision detection algorithms or strategies.
      */
     class DistanceStrategy : public virtual ProximityStrategy {
-
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<DistanceStrategy> Ptr;
+
+        /**
+         * @brief DistanceResult contains basic information about the distance
+         * result between two frames.
+         */
+        struct Result {
+             //! @brief reference to the first frame
+            const kinematics::Frame* f1;
+            ProximityModel::Ptr a;
+
+            //! @brief reference to the second frame
+            const kinematics::Frame* f2;
+            ProximityModel::Ptr b;
+
+            //! Closest point on f1 to f2, described in f1 reference frame
+            math::Vector3D<double> p1;
+
+            //! Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
+            math::Vector3D<double> p2;
+
+            //! @brief distance between frame f1 and frame f1
+            double distance;
+
+            //! @brief geometry index
+            int geoIdxA, geoIdxB;
+
+            //! @brief index to the two faces/triangles that is the closest feature
+            unsigned int idx1,idx2;
+
+            void clear(){ }
+        };
 
         /**
          * @brief Destroys object
@@ -60,7 +89,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual DistanceResult distance(const kinematics::Frame* a,
+        virtual Result distance(const kinematics::Frame* a,
         					  const math::Transform3D<>& wTa,
         		              const kinematics::Frame* b,
         		              const math::Transform3D<>& wTb);
@@ -76,12 +105,12 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual DistanceResult& distance(
+        virtual Result& distance(
                               const kinematics::Frame* a,
                               const math::Transform3D<>& wTa,
                               const kinematics::Frame* b,
                               const math::Transform3D<>& wTb,
-                              ProximityStrategyData& data);
+                              class ProximityStrategyData& data);
 
         /**
          * @brief Calculates the distance between two proximity models @f$ \mathcal{a} @f$ and
@@ -94,12 +123,12 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual DistanceResult& distance(
+        virtual Result& distance(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
 			const math::Transform3D<>& wTb,
-			ProximityStrategyData& data) = 0;
+			class ProximityStrategyData& data) = 0;
 
     private:
         DistanceStrategy(const DistanceStrategy&);

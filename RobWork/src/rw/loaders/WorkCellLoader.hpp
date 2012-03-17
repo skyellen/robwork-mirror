@@ -25,7 +25,7 @@
 
 #include <string>
 #include <memory>
-
+#include <rw/graphics/WorkCellScene.hpp>
 #include <rw/models/WorkCell.hpp>
 
 // Forward declarations
@@ -37,24 +37,61 @@ namespace rw { namespace loaders {
     /* @{*/
 
     /**
-     * @brief Loader for workcell files.
+     * @brief Defines an interface
      */
     class WorkCellLoader
     {
     public:
+
+        //! @brief smart pointer of WorkCellLoader
+        typedef rw::common::Ptr<WorkCellLoader> Ptr;
+
+        //! @brief destructor
+        virtual ~WorkCellLoader(){}
+
+        /**
+         * @brief load a workcell from file
+         * @param filename [in] path to workcell file
+         */
+        virtual models::WorkCell::Ptr loadWorkCell(const std::string& filename) = 0;
+
+        /**
+         * @brief set the scene that is used to create drawable models
+         * @param scene [in] scene factory
+         */
+        virtual void setScene( rw::graphics::WorkCellScene::Ptr scene ){_wcscene = scene;};
+
+        /**
+         * @brief get the scene used to create a drawable scene
+         * @return
+         */
+        virtual rw::graphics::WorkCellScene::Ptr getScene( ){return _wcscene;};
+
+        /////////// Factory methods for backwards compatibility, use WorkCellFactory instead
         /**
          * @brief Loads/imports a workcell from a file.
-         *
          * An exception is thrown if the file can't be loaded.
-         *
          * XML as well as TUL workcell formats are supported.
-         *
          * @param filename [in] name of workcell file.
          */
 		static models::WorkCell::Ptr load(const std::string& filename);
 
+        /**
+         * @brief Loads/imports a workcell from a file.
+         * An exception is thrown if the file can't be loaded.
+         * XML as well as TUL workcell formats are supported.
+         * @param filename [in] name of workcell file.
+         */
+		static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
+
+    protected:
+		WorkCellLoader() {}
+
+		WorkCellLoader(rw::graphics::WorkCellScene::Ptr scene):_wcscene(scene) {}
+
     private:
-        WorkCellLoader() {}
+		rw::graphics::WorkCellScene::Ptr _wcscene;
+
     };
 
     /**@}*/

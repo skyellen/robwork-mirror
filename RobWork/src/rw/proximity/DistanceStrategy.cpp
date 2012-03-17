@@ -18,12 +18,14 @@
 
 #include "DistanceStrategy.hpp"
 
+#include "ProximityStrategyData.hpp"
+
 namespace rw { namespace proximity {
 
 	DistanceStrategy::DistanceStrategy() {}
 	DistanceStrategy::~DistanceStrategy() {}
 
-	DistanceResult DistanceStrategy::distance(
+	DistanceStrategy::Result DistanceStrategy::distance(
                           const kinematics::Frame* a,
                           const math::Transform3D<>& wTa,
                           const kinematics::Frame* b,
@@ -39,7 +41,7 @@ namespace rw { namespace proximity {
 	    return distance(getModel(a), wTa, getModel(b), wTb, data);
     }
 
-    DistanceResult& DistanceStrategy::distance(
+    DistanceStrategy::Result& DistanceStrategy::distance(
                           const kinematics::Frame* a,
                           const math::Transform3D<>& wTa,
                           const kinematics::Frame* b,

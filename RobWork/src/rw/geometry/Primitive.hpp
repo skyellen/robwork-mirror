@@ -38,11 +38,14 @@ namespace geometry {
     class Primitive: public GeometryData {
     public:
 
+        //! @brief destructor
+        virtual ~Primitive(){};
+
     	/**
     	 * @copydoc GeometryData::getTriMesh
     	 * @note primitives allways return a new trimesh
     	 */
-		TriMesh::Ptr getTriMesh(bool forceCopy=true){
+		TriMesh::Ptr getTriMesh(bool forceCopy=true) {
     		return createMesh(20);
     	}
 
@@ -57,6 +60,9 @@ namespace geometry {
          * @brief the set of parameters that defines this primitive
          */
         virtual rw::math::Q getParameters() const = 0;
+
+    protected:
+        Primitive(){};
 
     };
     //! @}

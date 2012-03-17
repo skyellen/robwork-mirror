@@ -19,8 +19,6 @@
 #define RW_GRAPHICS_SCENEGRAPH_HPP_
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DrawableModelInfo.hpp>
-#include <rw/models/CollisionModelInfo.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/sensor/Image.hpp>
@@ -136,8 +134,8 @@ namespace graphics {
 
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, Model3D::Ptr model, int dmask=DrawableNode::Physical) = 0;
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask=DrawableNode::Physical)= 0;
-        virtual DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info) = 0;
-        virtual DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info) = 0;
+        //virtual DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info) = 0;
+        //virtual DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info) = 0;
         virtual DrawableNode::Ptr makeDrawable(const std::string& filename, int dmask=DrawableNode::Physical) = 0;
         virtual rw::common::Ptr<SceneCamera> makeCamera(const std::string& name) = 0;
 

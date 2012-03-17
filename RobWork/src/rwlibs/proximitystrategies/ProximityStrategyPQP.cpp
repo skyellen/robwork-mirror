@@ -29,7 +29,6 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
-#include <rw/models/Accessor.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -76,7 +75,6 @@ namespace
     {
     	Transform3D<> tr;
     	tr(0,0) = (double)R[0][0];
-    	tr(1,1) = (double)R[1][1];
     	tr(2,2) = (double)R[2][2];
     	tr(0,1) = (double)R[0][1];
     	tr(1,0) = (double)R[1][0];

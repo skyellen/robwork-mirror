@@ -18,11 +18,9 @@
 #ifndef RW_COLLISION_COLLISIONSETUP_HPP
 #define RW_COLLISION_COLLISIONSETUP_HPP
 
-#include "Proximity.hpp"
-
 #include <string>
 #include <vector>
-
+#include <rw/models/WorkCell.hpp>
 namespace rw {
 namespace proximity {
 
@@ -48,7 +46,7 @@ public:
 
      @param exclude [in] pairs to be excluded
      */
-    explicit CollisionSetup(const ProximityPairList& exclude);
+    explicit CollisionSetup(const std::vector<std::pair<std::string,std::string> >& exclude);
 
     /**
      @brief CollisionSetup for a list of pairs to exclude and a sequence
@@ -60,19 +58,20 @@ public:
 
      @param excludeStaticPairs [in] if true exclude statically related pairs.
      */
-    CollisionSetup(const ProximityPairList& exclude, const std::set<std::string>& volatileFrames,
+    CollisionSetup(const rw::common::StringPairList& exclude,
+                   const std::set<std::string>& volatileFrames,
                    bool excludeStaticPairs);
 
 
-	void addExcludePair(ProximityPair& pair);
+	void addExcludePair(rw::common::StringPair& pair);
 
-	void removeExcludePair(ProximityPair& pair);
+	void removeExcludePair(rw::common::StringPair& pair);
 
     /**
      * @brief Returns the exclude list
      * @return the exclude list
      */
-    const ProximityPairList& getExcludeList() const
+    const rw::common::StringPairList& getExcludeList() const
     {
         return _exclude;
     }
@@ -116,7 +115,7 @@ public:
 
 
 private:
-    ProximityPairList _exclude;
+    rw::common::StringPairList _exclude;
     std::set<std::string> _volatileFrames;
     bool _excludeStaticPairs;
 };

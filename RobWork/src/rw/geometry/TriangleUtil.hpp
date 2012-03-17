@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_GEOMETRY_TRIANGLEUTIL_HPP_
 #define RW_GEOMETRY_TRIANGLEUTIL_HPP_
 

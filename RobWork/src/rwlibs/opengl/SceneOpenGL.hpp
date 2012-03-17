@@ -109,8 +109,9 @@ namespace rwlibs { namespace opengl {
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const std::string& text);
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask);
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& filename, int dmask);
-        rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info);
-        rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info);
+        //rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info);
+        //rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info);
+        //rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::Object& info);
 
         rw::common::Ptr<rw::graphics::SceneCamera> makeCamera(const std::string& name);
         rw::common::Ptr<rw::graphics::CameraGroup> makeCameraGroup(const std::string& name);

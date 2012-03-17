@@ -22,6 +22,7 @@
 #include <rw/models/WorkCell.hpp>
 #include "ProximitySetup.hpp"
 #include <rw/kinematics/Frame.hpp>
+#include "CollisionStrategy.hpp"
 
 namespace rw { namespace proximity {
 

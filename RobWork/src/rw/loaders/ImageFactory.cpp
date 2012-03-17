@@ -60,7 +60,12 @@ rw::sensor::Image::Ptr ImageFactory::load(const std::string& file)
             ImageLoader::Ptr loader = factory->make();
             // TODO: an image loader or factory should be able to tell what formats it supports
             // perhaps a propertymap on the factory interface could be used
-            return loader->loadImage( file );
+            try {
+                Image::Ptr img = loader->loadImage( file );
+                return img;
+            } catch (...){
+                Log::debugLog() << "Tried loading image with plugin: " << StringUtil::quote(factory->identifier()) << " but failed!\n";
+            }
         }
     }
 	RW_THROW("Image file: " << file << " with extension " << ext << " is not supported!");

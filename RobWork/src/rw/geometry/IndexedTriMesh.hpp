@@ -123,6 +123,23 @@ namespace geometry {
         //! @brief return a vertice indexed into the vertice list
         rw::math::Vector3D<T>& getVertex(size_t i){ return _vertices->at(i);};
 
+        bool hasVertexNormals(){ return _normals->size() == _vertices->size(); };
+
+        bool hasFaceNormals(){ return _normals->size() == getNrTris(); };
+
+        const rw::math::Vector3D<T>& getVertexNormal(size_t i, VertexIdx vidx) const{
+            const uint32_t idx = _stride*i+vidx*_idxsize; // this is the unmasked idx
+            const uint32_t uidx =  *((uint32_t*)&(_triIdxArr[ idx ]))&_mask; // now we mask the idx
+            return (*_normals)[ uidx ];
+        }
+
+        rw::math::Vector3D<T>& getVertexNormal(size_t i, VertexIdx vidx){
+            const uint32_t idx = _stride*i+vidx*_idxsize; // this is the unmasked idx
+            const uint32_t uidx =  *((uint32_t*)&(_triIdxArr[ idx ]))&_mask; // now we mask the idx
+            return (*_normals)[ uidx ];
+        }
+
+
 		/**
 		 * @brief get vertex \b vidx of triangle at index \b i.
          * @param i [in] the index of the triangle
@@ -273,7 +290,7 @@ namespace geometry {
 
 	/**
 	 *
-	 * @brief an Indexed Triangle mesh
+	 * @brief an Indexed Triangle mesh with zero normals
 	 *
 	 */
 	template <class T=double, class S=uint16_t>
@@ -326,6 +343,7 @@ namespace geometry {
 		/**
 		 * @brief constructor - ownership of the vertice array is taken
 		 * @param vertices [in]
+		 * @param normals [in]
 		 */
 		IndexedTriMeshN0(
 				rw::common::Ptr<std::vector<rw::math::Vector3D<T> > > vertices,

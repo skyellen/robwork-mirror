@@ -64,7 +64,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual DistanceResult distance(const kinematics::Frame* a,
+        virtual DistanceStrategy::Result distance(const kinematics::Frame* a,
         					  const math::Transform3D<>& wTa,
         		              const kinematics::Frame* b,
         		              const math::Transform3D<>& wTb,
@@ -85,7 +85,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual DistanceResult& distance(const kinematics::Frame* a,
+        virtual DistanceStrategy::Result& distance(const kinematics::Frame* a,
                               const math::Transform3D<>& wTa,
                               const kinematics::Frame* b,
                               const math::Transform3D<>& wTb,
@@ -107,7 +107,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-		virtual DistanceResult& distance(
+		virtual DistanceStrategy::Result& distance(
                 ProximityModel::Ptr a,
                 const math::Transform3D<>& wTa,
                 ProximityModel::Ptr b,

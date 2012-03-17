@@ -20,6 +20,7 @@
 #define RW_LOADERS_XMLRWLOADER_HPP
 
 #include <rw/models/WorkCell.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/Device.hpp>
 
 namespace rw { namespace loaders {
@@ -30,9 +31,21 @@ namespace rw { namespace loaders {
 	 * @brief this class loads a workcell in xml format from a filename.
 	 *
 	 */
-    class XMLRWLoader
+    class XMLRWLoader: public WorkCellLoader
     {
     public:
+        //! @brief default constructor
+        XMLRWLoader(){};
+
+        //! @brief constructor
+        XMLRWLoader(rw::graphics::WorkCellScene::Ptr scene):WorkCellLoader(scene){};
+
+        //! @brief destructor
+        virtual ~XMLRWLoader(){}
+
+        //! @copydoc WorkCellLoader::loadWorkCell(const std::string&)
+        models::WorkCell::Ptr loadWorkCell(const std::string& filename);
+
         /**
          * @brief Loads/imports robwork workcell in XML file format
          *
@@ -40,7 +53,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] filename of XML file
          */
-		static rw::models::WorkCell::Ptr loadWorkCell(const std::string& filename);
+		static rw::models::WorkCell::Ptr load(const std::string& filename);
     };
 
 	/*@}*/

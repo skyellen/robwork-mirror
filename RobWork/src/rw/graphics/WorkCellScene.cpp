@@ -54,6 +54,9 @@ namespace
     //std::vector<Drawable::Ptr>
     void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap)
     {
+        /*
+        TODO: COLLISION MODEL STUFF
+
         if ( DrawableModelInfo::get(&frame).size()>0 ) {
             // Load the drawable:
             const std::vector<DrawableModelInfo> infos = DrawableModelInfo::get(&frame);
@@ -132,6 +135,7 @@ namespace
 
             }
         }
+        */
     }
 }
 
@@ -169,6 +173,9 @@ void WorkCellScene::workCellChangedListener(int){
 
 
 void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
+    if(_wc==wc)
+        return;
+
     // TODO: if the workcell name matches the old one then see if we can transfer states of frames to the next workcell
     std::map<std::string, FrameVisualState> fnameToStateMap;
     if(wc!=NULL && _wc!=NULL && wc->getName()==_wc->getName()){
@@ -321,7 +328,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
         */
 
         // now for each DrawableInfo on frame check that they are on the frame
-        addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap);
+        //addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap);
 
         Frame::iterator_pair iter = frame->getChildren(state);
         for(;iter.first!=iter.second; ++iter.first ){
@@ -460,10 +467,15 @@ void WorkCellScene::addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Fram
             p = p->getParent(state);
             RW_ASSERT(p!=NULL);
         }
-        while(!frames.empty()){
-            Frame *f = frames.top();
 
+        while(!frames.empty()){
+
+            Frame *f = frames.top();
             frames.pop();
+
+            // now f's parent is supposed to have a node allready
+            RW_ASSERT(_frameNodeMap.find( f->getParent(state) ) != _frameNodeMap.end());
+
             GroupNode::Ptr pnode = _frameNodeMap[f->getParent(state)];
             GroupNode::Ptr child = _scene->makeGroupNode(f->getName());
             GroupNode::addChild(child,pnode);

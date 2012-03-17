@@ -18,7 +18,6 @@
 
 #include "JointDeviceJacobianCalculator.hpp"
 #include "JacobianUtil.hpp"
-#include "Accessor.hpp"
 
 #include <rw/models/DependentJoint.hpp>
 #include <rw/kinematics/FKTable.hpp>

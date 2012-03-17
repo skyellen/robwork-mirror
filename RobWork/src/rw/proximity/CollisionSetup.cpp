@@ -26,13 +26,13 @@ CollisionSetup::CollisionSetup()
 {}
 
 CollisionSetup::CollisionSetup(
-    const ProximityPairList& exclude)
+    const std::vector<std::pair<std::string,std::string> >& exclude)
     :
     _exclude(exclude),
     _excludeStaticPairs(false)
 {}
 
-CollisionSetup::CollisionSetup(const ProximityPairList& exclude,
+CollisionSetup::CollisionSetup(const std::vector<std::pair<std::string,std::string> >& exclude,
                                const std::set<std::string>& volatileFrames,
                                bool excludeStaticPairs):
     _exclude(exclude),
@@ -42,13 +42,13 @@ CollisionSetup::CollisionSetup(const ProximityPairList& exclude,
 
 }
 
-void CollisionSetup::addExcludePair(ProximityPair& pair) {
+void CollisionSetup::addExcludePair(std::pair<std::string,std::string>& pair) {
 	_exclude.push_back(pair);
 }
 
-void CollisionSetup::removeExcludePair(ProximityPair& pair) {
-	ProximityPair pair2(pair.second, pair.first);
-	for (ProximityPairList::iterator it = _exclude.begin(); it != _exclude.end(); ++it) {
+void CollisionSetup::removeExcludePair(std::pair<std::string,std::string>& pair) {
+    std::pair<std::string,std::string> pair2(pair.second, pair.first);
+	for (std::vector<std::pair<std::string,std::string> >::iterator it = _exclude.begin(); it != _exclude.end(); ++it) {
 		if (*it == pair || *it == pair2) {
 			_exclude.erase(it);
 			break;

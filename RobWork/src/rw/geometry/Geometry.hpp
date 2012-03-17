@@ -98,6 +98,9 @@ namespace rw { namespace geometry {
 		//! @brief set identifier of this geometry
 		void setId(const std::string& id) { setName(id); };
 
+		void setFrame(kinematics::Frame* frame){ _refFrame = frame; };
+		kinematics::Frame* getFrame(){ return _refFrame; };
+
 		//! @brief util function for creating a Sphere geometry
 		static Geometry::Ptr makeSphere(double radi);
 		//! @brief util function for creating a Box geometry

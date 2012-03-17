@@ -30,6 +30,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/kinematics/FrameMap.hpp>
+#include <rw/models/Object.hpp>
 
 #include "ProximityModel.hpp"
 
@@ -64,7 +65,8 @@ namespace rw { namespace proximity {
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual bool addModel(const kinematics::Frame* frame);
+        //virtual bool addModel(const kinematics::Frame* frame);
+        virtual bool addModel(models::Object::Ptr object);
 
         /**
          * @brief Adds a Proximity model to a frame where the geometry is copied
@@ -107,7 +109,7 @@ namespace rw { namespace proximity {
          * To have a proximity model does not means that it is loaded. If a \b GeoID string from
          * which a model can be loaded it returns true as well
          *
-         * @param frame [in] the frame to check for
+         * @param frame [in] the frame to check for1.0/
          * @return true if a model exists or can be created
          */
         virtual bool hasModel(const rw::kinematics::Frame* frame);
@@ -123,7 +125,13 @@ namespace rw { namespace proximity {
         virtual void clearFrames();
 
         //// new functions added to support old interface
-		ProximityModel::Ptr getModel(const rw::kinematics::Frame* frame);
+
+        /**
+         * @brief get the proximitymodel associated to \b frame. If no model
+         * has been associated to frame then NULL is returned
+         * @param frame [in] frame for which an proximitymodel is associated
+         */
+        ProximityModel::Ptr getModel(const rw::kinematics::Frame* frame);
 
         rw::kinematics::Frame* getFrame(ProximityModel::Ptr);
 

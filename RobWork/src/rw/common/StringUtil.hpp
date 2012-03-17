@@ -189,6 +189,9 @@ namespace rw { namespace common {
 		static std::string patternToRegEx(const std::string& pattern);
 	};
 
+    typedef std::pair<std::string, std::string> StringPair;
+    typedef std::vector<StringPair> StringPairList;
+
 	/**@}*/
 
 

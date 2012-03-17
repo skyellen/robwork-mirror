@@ -21,130 +21,20 @@
 #include "ProximityModel.hpp"
 #include "ProximityCache.hpp"
 
+#include "CollisionStrategy.hpp"
+#include "DistanceStrategy.hpp"
+#include "DistanceToleranceStrategy.hpp"
+
 namespace rw {
 namespace proximity {
     //! @addtogroup proximity
     // @{
     //! @file rw/proximity/CollisionData.hpp
 
-
-    typedef enum{FirstContact, AllContacts} CollisionQueryType;
-
-    /**
-     * @brief result of a single collision pair
-     *
-     * A collision result is one or all colliding triangles between two objects which may have
-     * several geometries attached.
-     * The collision result does not have access to the actual triangle meshes of the geometries
-     * so to extract the actual contact location the user has to supply the triangles meshes of
-     * the geometries himself.
-     *
-     */
-    struct CollisionResult
-    {
-        ProximityModel::Ptr a;
-
-        //! @brief reference to the second model
-        ProximityModel::Ptr b;
-
-        //! @brief a collision pair of
-        struct CollisionPair {
-            //! @brief geometry index
-            int geoIdxA, geoIdxB;
-            /**
-             *  @brief indices into the geomPrimIds array, which means that inidicies [_geomPrimIds[startIdx];_geomPrimIds[startIdx+size]]
-             *  are the colliding primitives between geometries geoIdxA and geoIdxB
-             */
-            int startIdx, size;
-        };
-
-        rw::math::Transform3D<> _aTb;
-
-        std::vector<CollisionPair> _collisionPairs;
-
-        /**
-         * @brief indices of triangles/primitives in geometry a and b that are colliding
-         * all colliding triangle indices are in this array also those that are from different geometries
-         */
-        std::vector<std::pair<int, int> > _geomPrimIds;
-
-
-        void clear(){
-            _collisionPairs.clear();
-            _geomPrimIds.clear();
-        }
-    };
-
-    /**
-     * @brief DistanceResult contains basic information about the distance
-     * result between two frames.
-     */
-    struct DistanceResult {
-         //! @brief reference to the first frame
-        const kinematics::Frame* f1;
-        ProximityModel::Ptr a;
-
-        //! @brief reference to the second frame
-        const kinematics::Frame* f2;
-        ProximityModel::Ptr b;
-
-        //! Closest point on f1 to f2, described in f1 reference frame
-        math::Vector3D<double> p1;
-
-        //! Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
-        math::Vector3D<double> p2;
-
-        //! @brief distance between frame f1 and frame f1
-        double distance;
-
-        //! @brief geometry index
-        int geoIdxA, geoIdxB;
-
-        //! @brief index to the two faces/triangles that is the closest feature
-        unsigned int idx1,idx2;
-
-        void clear(){
-
-        }
-    };
-
-    /**
-     * @brief DistanceResult contains basic information about the distance
-     * result between two frames.
-     */
-    struct MultiDistanceResult {
-         //! @brief reference to the first frame
-        //const kinematics::Frame* f1;
-        ProximityModel::Ptr a;
-
-        //! @brief reference to the second frame
-        //const kinematics::Frame* f2;
-        ProximityModel::Ptr b;
-
-        //! Closest point on f1 to f2, described in f1 reference frame
-        math::Vector3D<double> p1;
-
-        //! Closest point on f2 to f1, described in f2 reference frame
-        math::Vector3D<double> p2;
-
-        //! @brief distance between frame f1 and frame f2
-        double distance;
-
-        //! Closest points on f1 to f2, described in f1 reference frame
-        std::vector< math::Vector3D<> > p1s;
-
-        //! IMPORTANT! NOTICE! VERY UGLY: Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
-        std::vector< math::Vector3D<> > p2s;
-
-        //! distances between contact points
-        std::vector< double > distances;
-
-        void clear(){
-            p1s.clear();
-            p2s.clear();
-            distances.clear();
-        }
-    };
+     // for backward compatability
+    typedef CollisionStrategy::Result CollisionResult;
+    typedef DistanceStrategy::Result DistanceResult;
+    typedef DistanceToleranceStrategy::Result MultiDistanceResult;
 
 
     /***
@@ -159,12 +49,14 @@ namespace proximity {
     class ProximityStrategyData
     {
     public:
+
+
         typedef enum{CollisionData=1, TolleranceData=2, DistanceData=4} DataType;
 
         ProximityStrategyData():
             rel_err(0),
             abs_err(0),
-            _colQueryType(FirstContact),
+            _colQueryType(CollisionStrategy::FirstContact),
             _collides(false)
         {}
 
@@ -176,22 +68,22 @@ namespace proximity {
 
 
         // CollisionData interface
-        CollisionResult& getCollisionData(){ return _collisionData;}
+        CollisionStrategy::Result& getCollisionData(){ return _collisionData;}
         bool inCollision(){ return _collides; }
-        void setCollisionQueryType(CollisionQueryType qtype){ _colQueryType = qtype; }
-        CollisionQueryType getCollisionQueryType(){ return _colQueryType; };
+        void setCollisionQueryType(CollisionStrategy::QueryType qtype){ _colQueryType = qtype; }
+        CollisionStrategy::QueryType getCollisionQueryType(){ return _colQueryType; };
 
         // Distance query interfaces
-        DistanceResult& getDistanceData(){ return _distanceData;}
+        DistanceStrategy::Result& getDistanceData(){ return _distanceData;}
         //double getDistance(){ return _distanceData.distance; }
 
         // For Multi distance interface
-        MultiDistanceResult& getMultiDistanceData(){ return _multiDistanceData;}
+        DistanceToleranceStrategy::Result& getMultiDistanceData(){ return _multiDistanceData;}
         //double getMultiDistance(){ return _multiDistanceData.distance; }
 
 
-        DistanceResult _distanceData;
-        MultiDistanceResult _multiDistanceData;
+        DistanceStrategy::Result _distanceData;
+        DistanceToleranceStrategy::Result _multiDistanceData;
 
         /*
         * @param rel_err [in] relative acceptable error
@@ -207,13 +99,13 @@ namespace proximity {
         //! @brief the two models that where tested
         ProximityModel::Ptr _a, _b;
 
-        CollisionQueryType _colQueryType;
+        CollisionStrategy::QueryType _colQueryType;
 
         // Following belongs to CollisionData interface
         //! true if the models are colliding
         bool _collides;
         //! @brief the features that where colliding
-        CollisionResult _collisionData;
+        CollisionStrategy::Result _collisionData;
 
         //! @brief proximity cache
         ProximityCache::Ptr _cache;

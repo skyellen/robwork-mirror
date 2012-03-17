@@ -20,6 +20,7 @@
 
 #include <list>
 #include <stack>
+#include "ProximityStrategyData.hpp"
 
 using namespace rw::proximity;
 using namespace rw::common;
@@ -120,7 +121,7 @@ CollisionStrategy::Ptr CollisionStrategy::make(
 bool CollisionStrategy::inCollision(
     const Frame* a, const Transform3D<>& wTa,
     const Frame *b, const Transform3D<>& wTb,
-    CollisionQueryType type)
+    QueryType type)
 {
     if( getModel(a)==NULL || getModel(b)==NULL)
         return false;
@@ -133,7 +134,7 @@ bool CollisionStrategy::inCollision(
     const Frame* a, const Transform3D<>& wTa,
     const Frame *b, const Transform3D<>& wTb,
     ProximityStrategyData& data,
-    CollisionQueryType type)
+    QueryType type)
 {
     if( getModel(a)==NULL || getModel(b)==NULL)
         return false;

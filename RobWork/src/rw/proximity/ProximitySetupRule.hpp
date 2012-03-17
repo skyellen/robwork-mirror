@@ -18,7 +18,6 @@
 #ifndef RW_COLLISION_PROXIMITYFILTERRULE_HPP
 #define RW_COLLISION_PROXIMITYFILTERRULE_HPP
 
-#include "Proximity.hpp"
 #include <rw/kinematics/Frame.hpp>
 #include <boost/regex.hpp>
 
@@ -83,7 +82,7 @@ namespace proximity {
 		 * Success is defined if the first pattern matches \b pair.first and the second
 		 * matches \b pair.second or the first matches \b pair.second and the second \b pair.first.
 		 */
-		bool match(ProximityPair& pair) const {
+		bool match(std::pair<std::string,std::string>& pair) const {
 			return match(pair.first, pair.second);
 		}
 

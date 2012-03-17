@@ -23,7 +23,7 @@
 */
 
 #include "Metric.hpp"
-#include "MetricImpl.hpp"
+#include "MetricUtil.hpp"
 
 namespace rw { namespace math {
 
@@ -46,9 +46,16 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class ManhattanMetric :
-        public internal::StandardMetric<T, internal::ManhattanOperator>
-    {};
+    class ManhattanMetric: public Metric<T> {
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::norm1(q);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::dist1(a,b);
+        }
+    };
 
     /**
        @brief Weighted Manhattan distance metric for vector types.
@@ -64,20 +71,28 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class WeightedManhattanMetric :
-        public internal::WeightedMetric<T, internal::ManhattanOperator>
+    class WeightedManhattanMetric: public Metric<T>
     {
-        typedef internal::WeightedMetric<T, internal::ManhattanOperator> Super;
-        typedef typename Super::value_type value_type;
-
     public:
         /**
            @brief Weighted metric.
            @param weights [in] Weights for the metric.
         */
-        WeightedManhattanMetric(const value_type& weights) :
-            Super(weights)
+        WeightedManhattanMetric(const typename Metric<T>::value_type& weights) :
+            _weights(weights)
         {}
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::norm1Weighted(q, _weights);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::dist1Weighted(a,b,_weights);
+        }
+
+        int doSize() const {return (int)_weights.size();}
+
+        const typename Metric<T>::value_type _weights;
     };
 
     /**
@@ -93,9 +108,17 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class EuclideanMetric :
-        public internal::StandardMetric<T, internal::EuclideanOperator>
-    {};
+    class EuclideanMetric: public Metric<T>
+    {
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::norm2(q);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::dist2(a,b);
+        }
+    };
 
     /**
        @brief Weighted Euclidean metric for vector types.
@@ -111,20 +134,28 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class WeightedEuclideanMetric :
-        public internal::WeightedMetric<T, internal::EuclideanOperator>
+    class WeightedEuclideanMetric : public Metric<T>
     {
-        typedef internal::WeightedMetric<T, internal::EuclideanOperator> Super;
-        typedef typename Super::value_type value_type;
-
     public:
         /**
            @brief Weighted metric.
            @param weights [in] Weights for the metric.
         */
-        WeightedEuclideanMetric(const value_type& weights) :
-            Super(weights)
+        WeightedEuclideanMetric(const typename Metric<T>::value_type& weights) :
+            _weights(weights)
         {}
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::norm2Weighted(q, _weights);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::dist2Weighted(a,b,_weights);
+        }
+
+        int doSize() const {return (int)_weights.size();}
+
+        const typename Metric<T>::value_type _weights;
     };
 
     /**
@@ -141,9 +172,17 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class InfinityMetric :
-        public internal::StandardMetric<T, internal::InfinityOperator>
-    {};
+    class InfinityMetric : public Metric<T>
+    {
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::normInf(q);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::distInf(a,b);
+        }
+    };
 
     /**
        @brief Weighted infinity norm metric for vector types.
@@ -159,20 +198,28 @@ namespace rw { namespace math {
        @relates Metric
     */
     template <class T>
-    class WeightedInfinityMetric :
-        public internal::WeightedMetric<T, internal::InfinityOperator>
+    class WeightedInfinityMetric : public Metric<T>
     {
-        typedef internal::WeightedMetric<T, internal::InfinityOperator> Super;
-        typedef typename Super::value_type value_type;
-
     public:
         /**
            @brief Weighted metric.
            @param weights [in] Weights for the metric.
         */
-        WeightedInfinityMetric(const value_type& weights) :
-            Super(weights)
+        WeightedInfinityMetric(const typename Metric<T>::value_type& weights) :
+            _weights(weights)
         {}
+    protected:
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& q) const{
+            return MetricUtil::normInfWeighted(q, _weights);
+        }
+
+        typename Metric<T>::scalar_type doDistance(const typename Metric<T>::value_type& a, const typename Metric<T>::value_type& b) const{
+            return MetricUtil::distInfWeighted(a,b,_weights);
+        }
+
+        int doSize() const {return (int)_weights.size();}
+
+        const typename Metric<T>::value_type _weights;
     };
 
     /**
@@ -216,7 +263,7 @@ namespace rw { namespace math {
             return norm(vec);
         }
 
-        scalar_type doDistance(const value_type& a, const value_type& b) const
+        typename Metric<T>::scalar_type doDistance(const value_type& a, const value_type& b) const
         {
 			boost::numeric::ublas::vector<scalar_type> vec(a.size());
             for (size_t i = 0; i < a.size(); i++) vec[i] = a[i] - b[i];
@@ -226,6 +273,56 @@ namespace rw { namespace math {
 
         int doSize() const { return _omega.size1(); }
     };
+
+    /**
+     * @brief a distance metric over rotations. The distance between two rotations
+     * is the smalles angle that rotates the one into the other.
+     */
+    template <class T>
+    class Rotation3DAngleMetric: public Metric<rw::math::Rotation3D<T> > {
+    protected:
+            T doDistance(const rw::math::Rotation3D<T>& r) const
+            {
+                EAA<T> eaa(r);
+                return eaa.angle();
+            }
+
+            T doDistance(const rw::math::Rotation3D<T>& a, const rw::math::Rotation3D<T>& b) const
+            {
+                return doDistance(a*inverse(b));
+            }
+    };
+
+    /**
+     * @brief distance metrics between points in SE3.
+     */
+    template <class T>
+    class Transform3DAngleMetric: public Metric<rw::math::Transform3D<T> > {
+    public:
+        Transform3DAngleMetric(T posWeight, T angWeight):
+          _posWeight(posWeight),
+          _angWeight(angWeight)
+        {}
+
+    protected:
+            T doDistance(const rw::math::Transform3D<T>& t) const
+            {
+                EAA<T> eaa(t.R());
+                const T ang = eaa.angle();
+                const T pos = t.P().norm2();
+                return pos*_posWeight + ang*_angWeight;
+
+            }
+
+            T doDistance(const rw::math::Transform3D<T>& a, const rw::math::Transform3D<T>& b) const
+            {
+                return doDistance(a*inverse(b));
+            }
+    private:
+        T _posWeight;
+        T _angWeight;
+    };
+
 
     /**
        @brief Metric constructor functions.

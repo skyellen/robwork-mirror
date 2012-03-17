@@ -27,6 +27,7 @@
 #include <omp.h>
 #include <float.h>
 #include <algorithm>
+#include "ProximityStrategyData.hpp"
 
 using namespace rw;
 using namespace rw::math;
@@ -133,9 +134,9 @@ void DistanceCalculator::initialize()
     // All pairs of frames to exclude.
     FramePairList exclude_pairs;
     const std::map<std::string,Frame*>& frameMap = Kinematics::buildFrameMap(_root, _state);
-    const ProximityPairList& exclude = _setup.getExcludeList();
+    const StringPairList& exclude = _setup.getExcludeList();
 
-    typedef ProximityPairList::const_iterator EI;
+    typedef StringPairList::const_iterator EI;
     for (EI p = exclude.begin(); p != exclude.end(); ++p) {
         Frame* first = lookupFrame(frameMap, p->first);
         Frame* second = lookupFrame(frameMap, p->second);
@@ -158,8 +159,8 @@ DistanceCalculator::~DistanceCalculator()
 {
 }
 
-DistanceResult DistanceCalculator::distance(const State& state,
-											std::vector<DistanceResult>* result) const
+DistanceStrategy::Result DistanceCalculator::distance(const State& state,
+											std::vector<DistanceStrategy::Result>* result) const
 {
 	_cnt++;
 	ScopedTimer stimer(_timer);
@@ -169,7 +170,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
     	result->clear();
 
     ProximityStrategyData data;
-    DistanceResult distance;
+    DistanceStrategy::Result distance;
     distance.distance = DBL_MAX;
 
 	typedef FramePairList::const_iterator I;
@@ -177,7 +178,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
         const Frame* a = p->first;
         const Frame* b = p->second;
 
-        DistanceResult *dist;
+        DistanceStrategy::Result *dist;
         if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
 	       dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
 		} else {
@@ -256,10 +257,9 @@ DistanceResult DistanceCalculator::distanceOMP(const State& state,
     return distance;
 }
 
-
-DistanceResult DistanceCalculator::distance(const State& state,
+DistanceStrategy::Result DistanceCalculator::distance(const State& state,
                                             const Frame* frame,
-                                            std::vector<DistanceResult>* result) const
+                                            std::vector<DistanceStrategy::Result>* result) const
 {
 	ScopedTimer stimer(_timer);
     FKTable fk(state);
@@ -268,7 +268,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
         result->clear();
 
     ProximityStrategyData data;
-    DistanceResult distance;
+    DistanceStrategy::Result distance;
     distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
@@ -277,7 +277,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
 
         if (a == frame || b == frame) {
 
-            DistanceResult *dist;
+            DistanceStrategy::Result *dist;
 			if (distance.distance == DBL_MAX) {
 				dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
 			} else {

@@ -24,11 +24,11 @@
  * \copydoc rw::proximity::CollisionDetector
  */
 
-#include "Proximity.hpp"
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
 #include "ProximityFilterStrategy.hpp"
 #include "ProximityFilter.hpp"
+#include "ProximityStrategyData.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Timer.hpp>
@@ -37,6 +37,7 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/FrameMap.hpp>
+
 
 #include <vector>
 
@@ -85,11 +86,11 @@ public:
     //! @brief types of collision query
     typedef enum
     {
-        AllContactsFullInfo, //! find all collisions and return full collision information
-        AllContactsNoInfo, //! find all collisions but without collision information
-        FirstContactFullInfo,//! return on first contact and include full collision information
-        FirstContactNoInfo //! return on first collision but without collision information
-    } CollisionQueryType;
+        AllContactsFullInfo, //! find all collisions and return full collision information eg. CollisionStrategy::AllContact
+        AllContactsNoInfo, //! find all collisions but without collision information eg. CollisionStrategy::FirstContact
+        FirstContactFullInfo,//! return on first contact and include full collision information eg. CollisionStrategy::AllContact
+        FirstContactNoInfo //! return on first collision but without collision information eg. CollisionStrategy::FirstContact
+    } QueryType;
 
 
 	/**
@@ -141,35 +142,25 @@ public:
 		ProximityFilterStrategy::Ptr filter);
 
     /**
-     * @brief set the query type to use as default
-     * @param type [in] query type
-     */
-    void setCollisionQueryType(CollisionQueryType type);
-
-    /**
      @brief Check the workcell for collisions.
-
      @param state [in] The state for which to check for collisions.
-
      @param result [out] If non-NULL, the pairs of colliding frames are
      inserted in \b result.
-
      @param stopAtFirstContact [in] If \b result is non-NULL and \b
      stopAtFirstContact is true, then only the first colliding pair is
      inserted in \b result. By default all colliding pairs are inserted.
-
      @return true if a collision is detected; false otherwise.
      */
     bool inCollision(const kinematics::State& state, QueryResult* result = 0, bool stopAtFirstContact = false) const;
 
     /**
-     @brief Set the primitive collision strategy to \b strategy.
-
-     \b strategy must be non-NULL.
-
-     @param strategy [in] - the primitive collision checker to use.
+     @brief Check the workcell for collisions.
+     @param state [in] The state for which to check for collisions.
+     @param data [in/out] Defines parameters for the collision check, the results and also
+     enables caching inbetween calls to incollision
+     @return true if a collision is detected; false otherwise.
      */
-    //void setCollisionStrategy(CollisionStrategyPtr strategy, ProximityType ptype);
+    bool inCollision(const kinematics::State& state, class ProximityData &data) const;
 
     /**
      * @brief The collision strategy of the collision checker.
@@ -244,7 +235,6 @@ public:
 	void addRule(const ProximitySetupRule& rule);
 	void removeRule(const ProximitySetupRule& rule);
 
-
 	double getComputationTime() {
 		return _timer.getTime();
 	}
@@ -257,11 +247,11 @@ public:
      */
     std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
 
-    //void reset(CollisionStrategyPtr strategy);
-
 private:
-	mutable rw::common::Timer _timer;
+    void initialize(rw::models::WorkCell::Ptr wc);
 
+    // the broad phase collision strategy
+	mutable rw::common::Timer _timer;
 	ProximityFilterStrategy::Ptr _bpfilter;
 
     // the narrow phase collision strategy

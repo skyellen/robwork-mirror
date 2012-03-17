@@ -41,6 +41,7 @@ namespace {
 }
 
 Geometry::Geometry(GeometryData::Ptr data, double scale):
+    _refFrame(NULL),
 	_data(data),
 	_transform(rw::math::Transform3D<>::identity() ),
 	_scale(scale),
@@ -52,7 +53,7 @@ Geometry::Geometry(GeometryData::Ptr data, double scale):
 Geometry::Geometry(GeometryData::Ptr data,
 		 const rw::math::Transform3D<>& t3d,
 		 double scale):
-
+	_refFrame(NULL),
 	_data(data),
 	_transform(t3d),
 	_scale(scale),

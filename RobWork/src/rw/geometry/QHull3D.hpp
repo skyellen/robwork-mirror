@@ -71,6 +71,7 @@ namespace geometry {
         //! @copydoc ConvexHull3D::toTriMesh
         rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >* toTriMesh();
 
+        const std::vector<rw::math::Vector3D<> >& getVertices() const {return _hullVertices;};
 	private:
         std::vector<rw::math::Vector3D<> > _hullVertices, _faceNormals;
         std::vector<double> _faceOffsets;

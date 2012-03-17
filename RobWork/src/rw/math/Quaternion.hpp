@@ -226,6 +226,30 @@ namespace rw { namespace math {
             }
         }
 
+
+        /**
+         * @brief THIS IS NOT A MULTIPLICATION, but a rotation.
+         * It calculates the vector bVc rotated by this quaternion
+         * @return \f$ q*bVc*q' \f$
+         */
+        /*
+        inline const Vector3D<T> operator*( const Vector3D<T>& bVc) const
+        {
+            const T& qx = this->a;
+            const T& qy = this->b;
+            const T& qz = this->c;
+            const T& qw = this->d;
+
+
+
+            //[ r1 r2 - a1 a2 - b1 b2 - c1 c2 ]  +
+            //[ r1 a2 + a1 r2 + b1 c2 - c1 b2 ] i +
+            //[ r1 b2 + b1 r2 + c1 a2 - a1 c2 ] j +
+            //[ r1 c2 + c1 r2 + a1 b2 - b1 a2 ] k
+            // return Vector3D<T>(prod(aRb.m(), bVc.m()));
+        }
+        */
+
         /**
          * @brief Calculates a slerp interpolation between \b this and \b v.
          *

@@ -47,6 +47,22 @@ void Model3D::removeObject(const std::string& name){
 
 }
 
+Model3D::Material* Model3D::getMaterial(const std::string& matid){
+    BOOST_FOREACH(Material& mat, _materials){
+        if( mat.name == matid )
+            return &mat;
+    }
+    return NULL;
+}
+
+bool Model3D::hasMaterial(const std::string& matid){
+    BOOST_FOREACH(Material& mat, _materials){
+        if( mat.name == matid )
+            return true;
+    }
+    return false;
+}
+
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
     const size_t maxMeshSize = 21845; // we use 16 bit indexing, so with normal array at size = 3*nrTriangles we get (2^16)/3 allowed
 

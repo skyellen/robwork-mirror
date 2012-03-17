@@ -285,6 +285,9 @@ namespace graphics {
          */
         int addMaterial(const Material& mat);
 
+        Material* getMaterial(const std::string& matid);
+        bool hasMaterial(const std::string& matid);
+
         void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
 
         void removeObject(const std::string& name);

@@ -1,5 +1,4 @@
 SET(FILES_CPP
-  Proximity.cpp
   ProximityCache.cpp
   ProximityData.cpp
   ProximityStrategyData.cpp
@@ -19,10 +18,21 @@ SET(FILES_CPP
   ProximitySetup.cpp
   ProximitySetupRule.cpp
   BasicFilterStrategy.cpp
+  Raycaster.cpp
+  
+  rwstrategy/BinaryBVTree.cpp
+  rwstrategy/BinaryIdxBVTree.cpp
+  
+  rwstrategy/BVTree.cpp
+  rwstrategy/BVTreeFactory.cpp
+  rwstrategy/ProximityStrategyRW.cpp
+  rwstrategy/BVTreeCollider.cpp
+  rwstrategy/BVTreeColliderFactory.cpp
+  rwstrategy/BVTreeToleranceCollider.cpp
+  rwstrategy/OBVTreeDFSCollider.cpp
 )
 
 SET(FILES_HPP
-  Proximity.hpp
   CollisionStrategy.hpp
   CollisionSetup.hpp
   CollisionToleranceStrategy.hpp
@@ -33,13 +43,21 @@ SET(FILES_HPP
   DistanceThresholdStrategy.hpp
   DistanceCalculator.hpp
   ProximityModel.hpp
-  
   ProximityFilterStrategy.hpp
   ProximitySetup.hpp
   ProximitySetupRule.hpp
-
   BasicFilterStrategy.hpp
+  Raycaster.hpp
   
+  rwstrategy/BinaryBVTree.hpp
+  rwstrategy/BinaryIdxBVTree.hpp
+  rwstrategy/BVTreeCollider.hpp
+  rwstrategy/BVTree.hpp
+  rwstrategy/BVTreeFactory.hpp
+  rwstrategy/ProximityStrategyRW.hpp
+  rwstrategy/BVTreeColliderFactory.hpp
+  rwstrategy/BVTreeToleranceCollider.hpp
+  rwstrategy/OBVTreeDFSCollider.hpp 
 )
 
 SOURCE_GROUP(proximity FILES ${FILES_CPP} ${FILES_HPP})

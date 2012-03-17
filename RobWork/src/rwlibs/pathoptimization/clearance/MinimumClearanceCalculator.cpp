@@ -19,7 +19,6 @@
 #include "MinimumClearanceCalculator.hpp"
 
 #include <rw/common/Timer.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
@@ -61,6 +60,6 @@ MinimumClearanceCalculator::~MinimumClearanceCalculator()
 
 double MinimumClearanceCalculator::clearance(State& state)
 {
-    DistanceResult result = _distancecalculator->distance(state);
+    DistanceStrategy::Result result = _distancecalculator->distance(state);
     return result.distance;
 }

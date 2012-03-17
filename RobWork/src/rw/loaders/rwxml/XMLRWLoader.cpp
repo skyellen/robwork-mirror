@@ -38,6 +38,7 @@
 #include <rw/models/ParallelLeg.hpp>
 #include <rw/models/DHParameterSet.hpp>
 
+#include <rw/geometry/GeometryFactory.hpp>
 
 #include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
@@ -49,8 +50,6 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/macros.hpp>
-
-#include <rw/models/Accessor.hpp>
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/loaders/xml/XMLProximitySetupLoader.hpp>
@@ -68,8 +67,10 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::graphics;
 using namespace rw::loaders;
 using namespace rw::proximity;
+using namespace rw::geometry;
 using namespace rw;
 
 namespace {
@@ -127,12 +128,15 @@ namespace {
 	    std::map<std::string, Frame*> frameMap;
 	    std::map<std::string, DummyFrame*> dummyFrameMap;
 	    std::map<std::string, std::vector<Frame*> > toChildMap;
+	    std::map<Frame*, Object::Ptr> objectMap;
 	    std::vector<InitialAction*> actions;
 	    boost::shared_ptr<DummyWorkcell> dwc;
 
 	    ColSetupList colsetups;
 		ProxSetupList proxsetups;
 		std::map<std::string,Device::Ptr> devMap;
+
+		rw::graphics::WorkCellScene::Ptr scene;
 	};
 
     // the parent frame must exist in tree allready
@@ -201,7 +205,7 @@ namespace {
 */
 
 
-    Frame* addModelToFrame( DummyModel& model, Frame *parent, StateStructure *tree){
+    Frame* addModelToFrame( DummyModel& model, Frame *parent, StateStructure *tree, DummySetup &setup){
         // test if identity
         Frame *modelframe = parent;
         std::vector<std::string> scope =  model._scope;
@@ -237,15 +241,40 @@ namespace {
                     break;
             }
 
-            if( model._isDrawable ){
-            	std::vector<DrawableModelInfo> info = DrawableModelInfo::get(modelframe);
-            	info.push_back(DrawableModelInfo(val.str(),model._name, model._transform));
-            	DrawableModelInfo::set( info , modelframe);
+
+            if( model._isDrawable && setup.scene!=NULL ){
+
+                //std::vector<DrawableModelInfo> info = DrawableModelInfo::get(modelframe);
+            	//info.push_back(DrawableModelInfo(val.str(),model._name, model._transform));
+            	//DrawableModelInfo::set( info , modelframe);
+            	DrawableNode::Ptr dnode = setup.scene->addDrawable( val.str(), modelframe );
+            	dnode->setName(model._name);
+            	dnode->setTransform(model._transform);
             }
             if( !model._isDrawable || model._colmodel ){
-                std::vector<CollisionModelInfo> info = CollisionModelInfo::get(modelframe);
-                info.push_back(CollisionModelInfo(val.str(),model._name, model._transform));
-                CollisionModelInfo::set( info, modelframe );
+                Geometry::Ptr geom;
+                try {
+                    geom = GeometryFactory::load( val.str(), true );
+                } catch (const std::exception& e){
+                    // the collison geometry is optional and if no stl files exist for it then we don't create
+                    // a model.
+                    //if( model._colmodel ){
+                        // if the colmodel is explicit then we need to throw an exception
+                        //RW_THROW("The collision model: \"" << val.str() << "\" could not be loaded. Please check that it exists with and has is valid collision model file!");
+                    //}
+                }
+                if(geom!=NULL){
+                    if( setup.objectMap.find(modelframe)==setup.objectMap.end() )
+                        setup.objectMap[modelframe] = ownedPtr( new Object(modelframe) );
+                    Object::Ptr object = setup.objectMap[modelframe];
+
+                    geom->setName(model._name);
+                    geom->setTransform(model._transform);
+                    object->addGeometry(geom);
+                    //std::vector<CollisionModelInfo> info = CollisionModelInfo::get(modelframe);
+                    //info.push_back(CollisionModelInfo(val.str(),model._name, model._transform));
+                    //CollisionModelInfo::set( info, modelframe );
+                }
             }
         }
         return modelframe;
@@ -387,7 +416,7 @@ namespace {
                 dprop._name, dprop._desc, dprop._val);
         }
         for(size_t i=0; i<dframe._models.size(); i++){
-            addModelToFrame( dframe._models[i], frame, setup.tree);
+            addModelToFrame( dframe._models[i], frame, setup.tree, setup);
         }
     }
 
@@ -423,7 +452,7 @@ namespace {
         std::vector<DummyModel> modellist = dev._modelMap[frame->getName()];
         //std::cout << "Nr of Models in list: " << modellist.size() << std::endl;
         for( size_t j=0; j<modellist.size(); j++ ){
-            addModelToFrame( modellist[j], frame , setup.tree);
+            addModelToFrame( modellist[j], frame , setup.tree, setup);
         }
 
         // add limits to frame
@@ -668,7 +697,7 @@ namespace {
         }
 
         // Add frames to exclude list
-        ProximityPairList excludeList;
+        std::vector<std::pair<std::string,std::string> > excludeList;
         std::list<Frame*>::reverse_iterator rit;
         std::list<Frame*>::iterator it;
         for(rit=frameList.rbegin(); rit!=frameList.rend();rit++ ){
@@ -682,14 +711,14 @@ namespace {
                 if(parent1 && parent2 && parent2->getParent()!=NULL){
                     if(parent2->getParent() == parent1){
                         excludeList.push_back(
-                            ProximityPair((*rit)->getName(), (*it)->getName()));
+                            std::make_pair((*rit)->getName(), (*it)->getName()));
                     }
                 }
 
                 // Do not check a child agains its parent
                 if((*it)->getParent() == (*rit) || (*rit)->getParent() == (*it) ){
                     excludeList.push_back(
-                        ProximityPair((*rit)->getName(), (*it)->getName()));
+                        std::make_pair((*rit)->getName(), (*it)->getName()));
                 }
             }
         }
@@ -697,8 +726,7 @@ namespace {
     }
 }
 
-rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
-    const std::string& fname)
+rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
 {
     std::string filename = IOUtil::getAbsoluteFileName(fname);
 
@@ -706,6 +734,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
 
     // container for actions to execute when all frames and devices has been loaded
     DummySetup setup;
+    setup.scene = getScene();
 
     // Start parsing workcell
     //boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
@@ -716,6 +745,11 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
     setup.world = setup.tree->getRoot();
     setup.frameMap[setup.world->getName()] = setup.world;
 
+    // Create WorkCell
+    WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
+    if(setup.scene)
+        setup.scene->setWorkCell(wc);
+
     // first create all frames defined in the workcell
     for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
         createFrame( setup.dwc->_framelist[i], setup);
@@ -723,6 +757,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
 
     // next add the frames to the StateStructure, starting with world
     addToStateStructure(setup.world,setup);
+
 
     // and lastly all properties can be added
     for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
@@ -743,7 +778,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
             RW_THROW("Model \"" << setup.dwc->_models[i]._name << "\" "
                      "will not be loaded since it refers to an non existing frame!!");
         }
-        addModelToFrame( setup.dwc->_models[i], (*parent).second, setup.tree);
+        addModelToFrame( setup.dwc->_models[i], (*parent).second, setup.tree, setup);
     }
     State defaultState = setup.tree->getDefaultState();
 
@@ -805,14 +840,24 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
 
     setup.tree->setDefaultState(defaultState);
 
-    // Create WorkCell
-	WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
 
     // add devices to workcell
-	std::map<std::string, Device::Ptr>::iterator first = setup.devMap.begin();
-    for(;first!=setup.devMap.end();++first){
-        wc->addDevice( (*first).second );
-    }
+	{
+        std::map<std::string, Device::Ptr>::iterator first = setup.devMap.begin();
+        for(;first!=setup.devMap.end();++first){
+            wc->addDevice( (*first).second );
+        }
+	}
+
+    // add all objects to scene
+	{
+        std::map<Frame*, Object::Ptr>::iterator first = setup.objectMap.begin();
+        for(;first!=setup.objectMap.end();++first){
+            wc->add( (*first).second );
+        }
+	}
+
+
 
     // add collision setup from files
     CollisionSetup collisionSetup;
@@ -866,4 +911,11 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
     wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);
 
     return wc;
+}
+
+rw::models::WorkCell::Ptr XMLRWLoader::load(const std::string& filename){
+    RW_WARN("1");
+    XMLRWLoader loader;
+    RW_WARN("1");
+    return loader.loadWorkCell(filename);
 }

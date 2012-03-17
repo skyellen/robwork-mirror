@@ -37,7 +37,6 @@
 #include <rw/kinematics/State.hpp>
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/Accessor.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Property.hpp>
@@ -651,7 +650,7 @@ void SceneOpenGL::update(){
     // calculate the transforms to the cameras
 }
 
-
+/*
 rw::graphics::DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::DrawableModelInfo& info){
     // forst check if the drawable is allready in the currentDrawables list
     rwlibs::opengl::Drawable::Ptr drawable = NULL;
@@ -704,7 +703,7 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo
      }
      return NULL;
 }
-
+*/
 
 
 SceneCamera::Ptr SceneOpenGL::makeCamera(const std::string& name){

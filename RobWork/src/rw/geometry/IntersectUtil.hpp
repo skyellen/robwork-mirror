@@ -75,6 +75,8 @@ namespace geometry {
 
 		/// intersection tests
 
+
+
 		/**
 		 * @brief calculates the intersection point between the ray and the plane.
 		 * If they intersect true is returned and intersection point is set in \b dst

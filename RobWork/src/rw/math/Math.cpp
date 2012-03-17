@@ -18,6 +18,7 @@
 
 #include "Math.hpp"
 #include "MetricUtil.hpp"
+#include "MetricFactory.hpp"
 #include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 

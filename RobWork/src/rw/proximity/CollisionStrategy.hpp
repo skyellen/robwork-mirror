@@ -33,7 +33,7 @@
 
 #include "ProximityStrategy.hpp"
 #include "CollisionToleranceStrategy.hpp"
-#include "ProximityStrategyData.hpp"
+//#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -53,6 +53,62 @@ namespace rw { namespace proximity {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<CollisionStrategy> Ptr;
+
+		//! the type of query that is to be performed
+        typedef enum{FirstContact, AllContacts} QueryType;
+
+
+        /**
+         * @brief result of a single collision pair
+         *
+         * A collision result is one or all colliding triangles between two objects which may have
+         * several geometries attached.
+         * The collision result does not have access to the actual triangle meshes of the geometries
+         * so to extract the actual contact location the user has to supply the triangles meshes of
+         * the geometries himself.
+         *
+         */
+        struct Result
+        {
+            //! @brief reference to the first model
+            ProximityModel::Ptr a;
+
+            //! @brief reference to the second model
+            ProximityModel::Ptr b;
+
+            //! @brief a collision pair of
+            struct CollisionPair {
+                //! @brief geometry index
+                int geoIdxA, geoIdxB;
+                /**
+                 *  @brief indices into the geomPrimIds array, which means that inidicies [_geomPrimIds[startIdx];_geomPrimIds[startIdx+size]]
+                 *  are the colliding primitives between geometries geoIdxA and geoIdxB
+                 */
+                int startIdx, size;
+            };
+
+            //! @breif transformation from a to b
+            rw::math::Transform3D<> _aTb;
+
+            //! @brief the collision pairs
+            std::vector<CollisionPair> _collisionPairs;
+
+            /**
+             * @brief indices of triangles/primitives in geometry a and b that are colliding
+             * all colliding triangle indices are in this array also those that are from different geometries
+             */
+            std::vector<std::pair<int, int> > _geomPrimIds;
+
+            /**
+             * @brief clear all result values
+             */
+            void clear(){
+                _collisionPairs.clear();
+                _geomPrimIds.clear();
+            }
+        };
+
+
 
         /**
          * @brief Destroys object
@@ -75,7 +131,7 @@ namespace rw { namespace proximity {
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
             const math::Transform3D<>& wTb,
-            CollisionQueryType type = FirstContact);
+            QueryType type = FirstContact);
 
         /**
          * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
@@ -94,8 +150,8 @@ namespace rw { namespace proximity {
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
             const math::Transform3D<>& wTb,
-            ProximityStrategyData& data,
-            CollisionQueryType type = FirstContact);
+            class ProximityStrategyData& data,
+            QueryType type = FirstContact);
 
         /**
          * @brief Checks to see if two proximity models are in collision

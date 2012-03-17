@@ -38,8 +38,8 @@
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 #include <rw/proximity/DistanceThresholdStrategy.hpp>
-
 #include <rw/proximity/ProximityCache.hpp>
+#include <rw/proximity/ProximityStrategyData.hpp>
 
 #include <PQP/PQP.h>
 
@@ -204,7 +204,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::DistanceStrategy::distance
          */
-        rw::proximity::DistanceResult& distance(
+        rw::proximity::DistanceStrategy::Result& distance(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -214,7 +214,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::DistanceThresholdStrategy::distance
          */
-        rw::proximity::DistanceResult& distance(
+        rw::proximity::DistanceStrategy::Result& distance(
             rw::proximity::ProximityModel::Ptr aModel,
             const rw::math::Transform3D<>& wTa,
             rw::proximity::ProximityModel::Ptr bModel,
@@ -225,7 +225,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
          */
-        rw::proximity::MultiDistanceResult& distances(
+        rw::proximity::DistanceToleranceStrategy::Result& distances(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,

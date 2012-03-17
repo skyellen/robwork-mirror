@@ -23,6 +23,7 @@
 #include <rw/math/EigenDecomposition.hpp>
 #include <rw/math/Math.hpp>
 
+#include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
 
@@ -40,6 +41,10 @@ namespace geometry {
 		Covariance()
 		{
 		}
+
+        Covariance(const boost::numeric::ublas::matrix<T>& matrix):_covar(matrix)
+        {
+        }
 
 		virtual ~Covariance(){};
 
@@ -86,58 +91,39 @@ namespace geometry {
 			//const size_t nrOfPoints = points.size();
 
 			_covar = ublas::zero_matrix<T>(DIM, DIM);
+			ublas::vector<T> centroid = ublas::zero_vector<T>(DIM);
 
-			T centroid[DIM];
-			T covarTmp[DIM][DIM];
-			for(size_t x=0;x<DIM;x++){
-				centroid[x] = 0;
-				for(size_t y=0;y<DIM;y++){
-					covarTmp[x][y] = 0;
+			// calculate centroid
+			size_t nrOfPoints = 0;
+			RandomAccessIterator first_tmp = first;
+			for( ;first_tmp!=last; ++first_tmp){
+                nrOfPoints++;
+                for(size_t j=0; j<DIM; j++)
+                    centroid[j] += (*first_tmp)[j];
+			}
+
+			// scale according to nr points
+            centroid = centroid*(1.0/nrOfPoints);
+
+
+			// next we compute the covariance elements
+			ublas::vector<T> p = ublas::zero_vector<T>(DIM);
+			for( ;first!=last; ++first){
+			    for(size_t k=0; k<DIM; k++){
+			        p[k] = (*first)[k]-centroid[k];
+			    }
+
+				for(size_t j=0; j<DIM; j++){
+					for(size_t k=j; k<DIM; k++){
+					    _covar(k,j) += (*first)[k] * (*first)[j];
+					}
 				}
 			}
-			// we only use triangle centers the vertices directly
-			size_t nrOfPoints = 0;
-			for( ;first!=last; ++first){
 
-				nrOfPoints++;
-
-				for(size_t j=0; j<DIM; j++)
-					centroid[j] += (*first)[j];
-
-				for(size_t j=0; j<DIM; j++)
-					for(size_t k=j; k<DIM; k++)
-						covarTmp[k][j] += (*first)[k] * (*first)[j];
-
-				/*covarTmp[0][0] += c[0]*c[0];
-				covarTmp[1][0] += c[1]*c[0];
-				covarTmp[2][0] += c[2]*c[0];
-				covarTmp[1][1] += c[1]*c[1];
-				covarTmp[2][1] += c[2]*c[1];
-				covarTmp[2][2] += c[2]*c[2];
-				*/
-			}
-
-			for(size_t j=0; j<DIM; j++)
-				for(size_t k=j; k<DIM; k++)
-					_covar(k,j) = covarTmp[k][j]-centroid[k]*centroid[j]/nrOfPoints;
-
-	/*
-			_covar(0,0) = covarTmp[0][0]-centroid[0]*centroid[0]/nrOfPoints;
-			_covar(1,0) = covarTmp[1][0]-centroid[1]*centroid[0]/nrOfPoints;
-			_covar(2,0) = covarTmp[2][0]-centroid[2]*centroid[0]/nrOfPoints;
-			_covar(1,1) = covarTmp[1][1]-centroid[1]*centroid[1]/nrOfPoints;
-			_covar(2,1) = covarTmp[2][1]-centroid[2]*centroid[1]/nrOfPoints;
-			_covar(2,2) = covarTmp[2][2]-centroid[2]*centroid[2]/nrOfPoints;
-	*/
-
+			// fill in all covariance elements
 			for(size_t j=1; j<DIM; j++)
 				for(size_t k=0; k<j; k++)
 					_covar(k,j) = _covar(j,k);
-	/*
-			_covar(0,1) = covar(1,0);
-			_covar(0,2) = covar(2,0);
-			_covar(1,2) = covar(2,1);
-	*/
 		}
 
 		//template<class POINT_LIST, class WEIGHT_LIST>

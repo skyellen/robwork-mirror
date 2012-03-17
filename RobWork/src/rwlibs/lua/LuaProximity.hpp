@@ -20,8 +20,6 @@ namespace rw {
      * @brief lua wrapper class for rw::proximity::CollisionSetup
      */
     typedef ::rw::proximity::CollisionSetup CollisionSetup;
-    typedef ::rw::proximity::ProximityPair ProximityPair;
-    typedef ::rw::proximity::ProximityPair ProximityPairList;
 
 	// @}
 }}

@@ -34,11 +34,8 @@
 //#include "./models/PassivePrismaticFrame.hpp"
 //#include "./models/TimeMetricUtil.hpp"
 
-#include "./models/Accessor.hpp"
-#include "./models/CollisionModelInfo.hpp"
 #include "./models/CompositeDevice.hpp"
 #include "./models/Device.hpp"
-#include "./models/DrawableModelInfo.hpp"
 #include "./models/VirtualJoint.hpp"
 #include "./models/JacobianUtil.hpp"
 #include "./models/JacobianCalculator.hpp"

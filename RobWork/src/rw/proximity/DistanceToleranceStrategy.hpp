@@ -26,7 +26,6 @@
 #include <rw/math/Transform3D.hpp>
 
 #include "ProximityStrategy.hpp"
-#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -42,6 +41,46 @@ namespace rw { namespace proximity {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<DistanceToleranceStrategy> Ptr;
+
+
+        /**
+         * @brief DistanceResult contains basic information about the distance
+         * result between two frames.
+         */
+        struct Result {
+             //! @brief reference to the first proximity model
+            ProximityModel::Ptr a;
+
+            //! @brief reference to the second proximity model
+            ProximityModel::Ptr b;
+
+            //! Closest point on f1 to f2, described in f1 reference frame
+            math::Vector3D<double> p1;
+
+            //! Closest point on f2 to f1, described in f2 reference frame
+            math::Vector3D<double> p2;
+
+            //! @brief distance between frame f1 and frame f2
+            double distance;
+
+            //! Closest points on f1 to f2, described in f1 reference frame
+            std::vector< math::Vector3D<> > p1s;
+
+            /**
+             * @brief Closest point on f2 to f1, IMPORTANT! NOTICE! described in
+             * >>>> \b f1 <<<<< reference frame
+             */
+            std::vector< math::Vector3D<> > p2s;
+
+            //! distances between contact points
+            std::vector< double > distances;
+
+            void clear(){
+                p1s.clear();
+                p2s.clear();
+                distances.clear();
+            }
+        };
 
         /**
          * @brief Destroys object
@@ -64,7 +103,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual MultiDistanceResult distances(
+        virtual Result distances(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
@@ -87,13 +126,13 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual MultiDistanceResult& distances(
+        virtual Result& distances(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            ProximityStrategyData& data);
+            class ProximityStrategyData& data);
 
         /**
          * @brief
@@ -105,13 +144,13 @@ namespace rw { namespace proximity {
          * @param tolerance
          * @return
          */
-        virtual MultiDistanceResult& distances(
+        virtual Result& distances(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            ProximityStrategyData& data) = 0;
+            class ProximityStrategyData& data) = 0;
 
     private:
         DistanceToleranceStrategy(const DistanceToleranceStrategy&);

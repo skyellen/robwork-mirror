@@ -31,6 +31,7 @@ namespace rw { namespace models {
        regarding drawable models. The drawable information in this class is
        regarded const.
     */
+#ifdef DEPRECATED
     class DrawableModelInfo {
     private:
         /**
@@ -125,6 +126,8 @@ namespace rw { namespace models {
         bool _wireMode;
         bool _highlighted;
     };
+
+#endif
 }} // end namespaces
 
 #endif // end include guard

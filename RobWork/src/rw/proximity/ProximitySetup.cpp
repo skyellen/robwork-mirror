@@ -35,7 +35,7 @@ ProximitySetup::ProximitySetup(const CollisionSetup& csetup):
 		_useIncludeAll(true),
 		_useExcludeStaticPairs(true)
 {
-	BOOST_FOREACH(ProximityPair pair, csetup.getExcludeList()) {
+	BOOST_FOREACH(rw::common::StringPair pair, csetup.getExcludeList()) {
 		addProximitySetupRule(ProximitySetupRule::makeExclude(pair.first, pair.second));
 	}
 	_useExcludeStaticPairs = csetup.excludeStaticPairs();

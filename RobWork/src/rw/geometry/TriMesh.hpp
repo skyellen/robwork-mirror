@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_GEOMETRY_TRIMESH_HPP_
 #define RW_GEOMETRY_TRIMESH_HPP_
 
@@ -77,6 +76,91 @@ namespace geometry {
 
 		//! @copydoc getTriMesh
 		rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
+
+
+	    /**
+	     * @brief struct for iterating over the centers of triangles in a mesh
+	     */
+	    struct TriCenterIterator {
+	        rw::math::Vector3D<> _pos;
+	        const rw::geometry::TriMesh& _mesh;
+	        size_t _first,_end;
+	        bool _useAreaWeight;
+	        TriCenterIterator(const rw::geometry::TriMesh& mesh, bool useAreaWeight=false):
+	            _mesh(mesh),_first(0),_end(mesh.getSize()),_useAreaWeight(useAreaWeight)
+	        {}
+
+	        rw::math::Vector3D<>& operator*() {
+	            return _pos;
+	        }
+
+	        rw::math::Vector3D<>* operator->() { return &_pos; }
+
+	        TriCenterIterator& operator++(){ inc(); return *this; }
+
+	        bool operator==(const TriCenterIterator& other) const{ return _first == other._end;}
+	        bool operator!=(const TriCenterIterator& other) const { return _first < other._end;}
+
+	        void inc(){
+	            using namespace rw::geometry;
+	            using namespace rw::math;
+	            using namespace rw::common;
+
+	            ++_first;
+	            if(_first!=_end){
+	                Triangle<> tri = _mesh.getTriangle(_first);
+	                if(_useAreaWeight){
+	                    double area = tri.calcArea();
+	                    _pos = area*(tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+	                } else {
+	                    _pos = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+	                }
+	            }
+	        }
+	    };
+
+        /**
+         * @brief struct for iterating over the centers of triangles in a mesh
+         */
+        struct VerticeIterator {
+            rw::math::Vector3D<> _pos;
+            const rw::geometry::TriMesh& _mesh;
+
+            size_t _first,_end,_subIdx;
+
+            VerticeIterator(const rw::geometry::TriMesh& mesh):
+                _mesh(mesh),_first(0),_end(mesh.getSize()),_subIdx(0)
+            {}
+
+            rw::math::Vector3D<>& operator*() {
+                return _pos;
+            }
+
+            rw::math::Vector3D<>* operator->() { return &_pos; }
+
+            VerticeIterator& operator++(){ inc(); return *this; }
+
+            bool operator==(const VerticeIterator& other) const{ return _first == other._end;}
+            bool operator!=(const VerticeIterator& other) const { return _first < other._end;}
+
+            void inc(){
+                using namespace rw::geometry;
+                using namespace rw::math;
+                using namespace rw::common;
+
+
+                if(_first!=_end){
+                    _pos = _mesh.getTriangle(_first).getVertex(_subIdx);
+                    _subIdx++;
+                    if(_subIdx==3){
+                        ++_first;
+                        _subIdx=0;
+                    }
+                }
+            }
+        };
+
+
 	};
 
 #ifdef RW_USE_DEPRECATED

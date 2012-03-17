@@ -31,7 +31,6 @@
 #include "./proximity/DistanceCalculator.hpp"
 #include "./proximity/DistanceStrategy.hpp"
 #include "./proximity/DistanceToleranceStrategy.hpp"
-#include "./proximity/Proximity.hpp"
 #include "./proximity/ProximityStrategy.hpp"
 
 #endif /* PROXIMITY_HPP_ */

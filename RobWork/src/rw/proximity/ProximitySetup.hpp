@@ -18,10 +18,9 @@
 #ifndef RW_COLLISION_PROXIMITYSETUP_HPP
 #define RW_COLLISION_PROXIMITYSETUP_HPP
 
-#include "Proximity.hpp"
 #include "CollisionSetup.hpp"
 #include "ProximitySetupRule.hpp"
-
+#include <rw/models/WorkCell.hpp>
 
 #include <string>
 #include <vector>

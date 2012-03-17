@@ -30,7 +30,6 @@
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/CompositeDevice.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/VirtualJoint.hpp>
@@ -738,7 +737,7 @@ namespace
     {
         const vector<Frame*>& frames = Models::findAllFrames(workcell);
 
-        const ProximityPairList empty_list;
+        const std::vector<std::pair<std::string,std::string> > empty_list;
         CollisionSetup result(empty_list);
 
         typedef vector<Frame*>::const_iterator I;
@@ -853,6 +852,8 @@ namespace
         const std::vector<std::string> ids =
             getGeoIDAndAccessorIDs(frame, tagPropDrawableID());
 
+        /*
+        TODO: add drawables to the scene graph
         if (!ids.empty()) {
             DrawableModelInfo::set(std::vector<DrawableModelInfo>(), &frame);
         }
@@ -869,11 +870,13 @@ namespace
                     wiremode));
         }
         DrawableModelInfo::set(infos, &frame);
-
+*/
     }
 
     void addCollisionModelInfo(Frame& frame)
     {
+        /*
+         * TODO:collisionMODEL
     	const double geoScale = getOptionalGeoScale(frame);
 
         const std::vector<std::string> ids =
@@ -893,6 +896,7 @@ namespace
                     geoScale));
         }
         CollisionModelInfo::set(infos, &frame);
+        */
     }
 
     void addFrameTypeProperty(Frame& frame)

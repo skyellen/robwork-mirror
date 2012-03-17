@@ -120,8 +120,8 @@ namespace rw { namespace proximity {
          *
          * @return the shortest distance between frame and frame tree
          */
-        DistanceResult distance(const kinematics::State& state,
-                                std::vector<DistanceResult>* result = 0) const;
+        DistanceStrategy::Result distance(const kinematics::State& state,
+                                std::vector<DistanceStrategy::Result>* result = 0) const;
 
 		DistanceResult distanceOMP(const kinematics::State& state,
 					  			   std::vector<DistanceResult>* result = 0) const;
@@ -138,9 +138,9 @@ namespace rw { namespace proximity {
          *
          * @return the shortest distance between frame and frame tree
          */
-        DistanceResult distance(const kinematics::State& state,
+        DistanceStrategy::Result distance(const kinematics::State& state,
                                 const kinematics::Frame* frame,
-                                std::vector<DistanceResult>* result = 0) const;
+                                std::vector<DistanceStrategy::Result>* result = 0) const;
 
         /**
          * @brief Set the primitive distance calculator to \b strategy.

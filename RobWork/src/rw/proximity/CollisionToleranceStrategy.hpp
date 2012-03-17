@@ -31,7 +31,7 @@
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
-#include "ProximityStrategyData.hpp"
+//#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -96,7 +96,7 @@ namespace rw { namespace proximity {
             const kinematics::Frame *b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            ProximityStrategyData& data);
+            class ProximityStrategyData& data);
 
         /**
          *
@@ -114,7 +114,7 @@ namespace rw { namespace proximity {
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            ProximityStrategyData& data) = 0;
+            class ProximityStrategyData& data) = 0;
 
     private:
         CollisionToleranceStrategy(const CollisionToleranceStrategy&);

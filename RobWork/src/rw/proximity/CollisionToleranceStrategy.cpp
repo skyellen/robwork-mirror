@@ -18,6 +18,8 @@
 
 #include "CollisionToleranceStrategy.hpp"
 
+#include "ProximityStrategyData.hpp"
+
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::math;

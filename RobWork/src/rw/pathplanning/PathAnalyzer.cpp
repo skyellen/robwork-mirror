@@ -110,7 +110,7 @@ PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path
 
     for (QPath::const_iterator it = path.begin()++; it != path.end()--; ++it) {
         _device->setQ(*it, _state);
-        DistanceResult result = distanceCalculator->distance(_state);
+        DistanceStrategy::Result result = distanceCalculator->distance(_state);
         analysis.average += result.distance;
         analysis.min = std::min(analysis.min, result.distance);
     }

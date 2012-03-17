@@ -20,7 +20,6 @@
 
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/math/Transform3D.hpp>
 #include "STLFile.hpp"
 #include "Box.hpp"
@@ -40,7 +39,6 @@
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::kinematics;
-using namespace rw::models;
 using namespace rw::math;
 
 namespace
@@ -109,6 +107,7 @@ namespace
 		return NULL;
 	}
 }
+/*
 
 Geometry::Ptr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
     std::string geofile = info.getGeoString();
@@ -140,7 +139,7 @@ std::vector<Geometry::Ptr> GeometryFactory::loadCollisionGeometry(const rw::kine
     return geoms;
 }
 
-
+*/
 Geometry::Ptr GeometryFactory::load(const std::string& raw_filename, bool useCache){
 	return getGeometry(raw_filename, useCache);
 }

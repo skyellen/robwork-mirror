@@ -19,6 +19,8 @@
 #ifndef RW_MODELS_WORKCELL_HPP
 #define RW_MODELS_WORKCELL_HPP
 
+
+
 /**
  * @file WorkCell.hpp
  */
@@ -33,6 +35,10 @@
 #include <map>
 #include <string>
 #include <ostream>
+
+namespace rw { namespace proximity {
+    class CollisionSetup;
+}}
 
 namespace rw { namespace models {
     
@@ -317,6 +323,9 @@ namespace rw { namespace models {
         }
 
 
+        std::vector<Object::Ptr> getObjects() const { return _objects; };
+
+
 
         // new overloaded add methods
         void add(rw::common::Ptr<Device> device){ addDevice(device); }
@@ -356,7 +365,7 @@ namespace rw { namespace models {
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
 
 
-
+        rw::proximity::CollisionSetup getCollisionSetup();
 
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);
@@ -371,6 +380,7 @@ namespace rw { namespace models {
         WorkCellChangedEvent _workCellChangedEvent;
         std::vector<rw::sensor::Sensor::Ptr> _sensors;
     private:
+        WorkCell();
         WorkCell(const WorkCell&);
         WorkCell& operator=(const WorkCell&);
     };

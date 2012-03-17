@@ -1,5 +1,4 @@
 SET(FILES_CPP
-  Accessor.cpp
   Models.cpp
   #BasicDevice.cpp
   #BasicDeviceJacobian.cpp
@@ -32,8 +31,6 @@ SET(FILES_CPP
   SerialDevice.cpp
   RigidBodyInfo.cpp  
   WorkCell.cpp
-  DrawableModelInfo.cpp
-  CollisionModelInfo.cpp
   DHParameterSet.cpp
   Object.cpp
   SE3Device.cpp
@@ -48,7 +45,6 @@ SET(FILES_HPP
   # ConveyorSegment.hpp
   # DeviceJacobian.hpp 
   #TimeMetricUtil.hpp
-  Accessor.hpp
   Models.hpp
   ConveyorItem.hpp
   Device.hpp
@@ -71,8 +67,6 @@ SET(FILES_HPP
   SerialDevice.hpp
   RigidBodyInfo.hpp  
   WorkCell.hpp
-  DrawableModelInfo.hpp
-  CollisionModelInfo.hpp
   DHParameterSet.hpp
   Object.hpp
   SE3Device.hpp

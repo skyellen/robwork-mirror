@@ -57,7 +57,7 @@ namespace geometry {
 
 	private:
 		double _radius;
-		int _levels;
+		double _levels;
 	};
 	//! @}
 

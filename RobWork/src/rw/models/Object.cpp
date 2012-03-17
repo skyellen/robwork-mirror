@@ -17,7 +17,8 @@ Object::Object(rw::kinematics::Frame* baseframe, Geometry::Ptr geom):
         _frames(std::vector<Frame*>(1,baseframe)),
         _geometry(std::vector<Geometry::Ptr>(1,geom))
 {
-
+    if(geom->getFrame()==NULL)
+        geom->setFrame( baseframe );
 }
 
 Object::Object(rw::kinematics::Frame* baseframe, std::vector<Geometry::Ptr> geoms):
@@ -25,7 +26,10 @@ Object::Object(rw::kinematics::Frame* baseframe, std::vector<Geometry::Ptr> geom
         _frames(std::vector<Frame*>(1,baseframe)),
         _geometry(geoms)
 {
-
+    BOOST_FOREACH(Geometry::Ptr geom, geoms){
+        if(geom->getFrame()==NULL)
+            geom->setFrame( baseframe );
+    }
 }
 
 Object::Object(std::vector<rw::kinematics::Frame*> frames):
@@ -40,15 +44,19 @@ Object::Object(std::vector<rw::kinematics::Frame*> frames, Geometry::Ptr geom):
         _frames(frames),
         _geometry(std::vector<Geometry::Ptr>(1,geom))
 {
-
+    if(geom->getFrame()==NULL)
+        geom->setFrame( _base );
 }
 
-Object::Object(std::vector<rw::kinematics::Frame*> frames, std::vector<Geometry::Ptr> geom):
+Object::Object(std::vector<rw::kinematics::Frame*> frames, std::vector<Geometry::Ptr> geoms):
         _base(frames[0]),
         _frames(frames),
-        _geometry(geom)
+        _geometry(geoms)
 {
-
+    BOOST_FOREACH(Geometry::Ptr geom, geoms){
+        if(geom->getFrame()==NULL)
+            geom->setFrame( _base );
+    }
 }
 
 Object::~Object(){
@@ -56,6 +64,8 @@ Object::~Object(){
 }
 
 void Object::addGeometry(Geometry::Ptr geom){
+    if(geom->getFrame()==NULL)
+        geom->setFrame(_base);
     _geometry.push_back(geom);
 }
 

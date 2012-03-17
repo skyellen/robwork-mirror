@@ -35,7 +35,6 @@ namespace rw { namespace geometry {
 	 * @brief an interface for geometry data.
 	 */
 	class GeometryData {
-
 	public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<GeometryData> Ptr;
@@ -47,8 +46,7 @@ namespace rw { namespace geometry {
 					  LinePrim, PointPrim, PyramidPrim, ConePrim,
 					  TrianglePrim, CylinderPrim, PlanePrim, RayPrim,
 					  UserType} GeometryType;
-
-	    //! @brief destructor
+	    //! @brief Destructor
 		virtual ~GeometryData(){};
 
 		/**
@@ -62,7 +60,7 @@ namespace rw { namespace geometry {
 		 * The trimesh that is returned is by default a copy, which means
 		 * ownership is transfered to the caller. Specifying \b forceCopy to false
 		 * will enable copy by reference and ownership is not necesarilly transfered.
-		 * This is more efficient, though pointer is only allive as long as this
+		 * This is more efficient, though pointer is only alive as long as this
 		 * GeometryData is alive.
 		 *
 		 * @return TriMesh representation of this GeometryData

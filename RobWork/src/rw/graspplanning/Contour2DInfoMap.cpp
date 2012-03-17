@@ -24,7 +24,6 @@
 #include <rw/math/Line2D.hpp>
 
 #include <rw/geometry/Contour2D.hpp>
-#include <rw/geometry/Contour2DUtil.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -113,7 +112,7 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
         int sampleIdx = idx;
         if(idx>=contourSize)
             sampleIdx = idx-contourSize;
-        double curvature = Contour2DUtil::getCurvature(sampleIdx, PIXEL_STEP_SIZE, contour);
+        double curvature = Contour2D::getCurvature(sampleIdx, PIXEL_STEP_SIZE, contour);
         RW_DEBUGS("pre Curvature: " << curvature);
         curvAvg1.addSample( fabs(curvature) );
         if(idx>=0)
@@ -123,13 +122,13 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
     for(int idx=0; idx<contourSize; idx++){
         // calculate normal and curvature info
         //const Vector2D<> normal = Contour2DUtil::calcNormal(idx, PIXEL_STEP_SIZE, contour);
-        const double curvature = Contour2DUtil::getCurvature(idx, PIXEL_STEP_SIZE, contour);
+        const double curvature = Contour2D::getCurvature(idx, PIXEL_STEP_SIZE, contour);
 
         // update the average filter values
         int sampleIdx = idx+_avgFilterLen;
         if(sampleIdx>=contourSize)
             sampleIdx = sampleIdx-contourSize;
-        double sampleCurv =  Contour2DUtil::getCurvature(sampleIdx, PIXEL_STEP_SIZE, contour);
+        double sampleCurv =  Contour2D::getCurvature(sampleIdx, PIXEL_STEP_SIZE, contour);
         curvAvg1.addSample( fabs(sampleCurv) );
         curvAvg2.addSample( curvAvg1.getAverage() );
 

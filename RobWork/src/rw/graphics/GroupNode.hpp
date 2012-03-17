@@ -70,6 +70,13 @@ namespace graphics {
         bool hasChild(SceneNode::Ptr node);
 
         /**
+         * @brief test if this group node has a child node with name \b nodename
+         * @param nodename [in] name of child node
+         * @return true if \b nodename is child of this, false otherwise
+         */
+        bool hasChild(const std::string& nodename);
+
+        /**
          * @brief remove \b node from the children list of this node AND removes this
          * node from the parent list of \b node.
          * @param node [in] child node that is to be removed

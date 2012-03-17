@@ -22,7 +22,6 @@
 #include <rw/models/Joint.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
 #include <boost/foreach.hpp>

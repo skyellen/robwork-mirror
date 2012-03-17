@@ -21,6 +21,7 @@
 #include "Device.hpp"
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/proximity/CollisionSetup.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -141,5 +142,9 @@ void WorkCell::stateDataAddedListener(const rw::kinematics::StateData* data){
 
 void WorkCell::stateDataRemovedListener(const rw::kinematics::StateData* data){
     _workCellChangedEvent.fire(STATE_DATA_REMOVED);
+}
+
+rw::proximity::CollisionSetup WorkCell::getCollisionSetup(){
+    return rw::proximity::CollisionSetup::get(this);
 }
 

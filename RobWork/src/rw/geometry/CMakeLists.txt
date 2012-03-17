@@ -24,13 +24,31 @@ SET(FILES_CPP
     #GiftWrapHull3D.cpp
     IncrementalHull3D.cpp
     Contour2D.cpp
-    Contour2DUtil.cpp
     IndexedPolygon.cpp 
     IntersectUtil.cpp
     Covariance.cpp
     ConvexHullND.cpp
     QHullND.cpp
     QHull3D.cpp
+    TriTriIntersectDeviller.cpp
+    TriTriIntersectMoller.cpp
+    AABB.cpp
+    BSphere.cpp
+    BV.cpp
+    BVCollider.cpp
+    OBB.cpp
+    OBBCollider.cpp
+    OBBFactory.cpp
+    OBBToleranceCollider.cpp
+    DistanceUtil.cpp
+    IndexedArray.cpp
+    IndexedTriArray.cpp
+    OBVDistanceCalc.cpp
+    RectDistanceCalc.cpp
+    RSSDistanceCalc.cpp
+    SphereDistanceCalc.cpp
+    TriDistanceCalc.cpp
+    TriTriToleranceIntersect.cpp
 )
 
 SET(FILES_HPP
@@ -58,12 +76,35 @@ SET(FILES_HPP
     ConvexHull2D.hpp
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
+    IndexedArray.hpp
     #GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
     QHullND.hpp
     QHull3D.hpp
+    BVCollider.hpp
+    
+    TriTriIntersectDeviller.hpp
+    TriTriIntersectMoller.hpp
+    AABB.hpp
+    BSphere.hpp
+    BV.hpp
+    OBB.hpp
+    OBBCollider.hpp
+    OBBToleranceCollider.hpp
+    OBBFactory.hpp
+    OBBToleranceCollider.hpp
+    DistanceUtil.hpp
+    IndexedTriArray.hpp
+    
+    OBVDistanceCalc.hpp
+    RectDistanceCalc.hpp
+    RSSDistanceCalc.hpp
+    SphereDistanceCalc.hpp
+    TriDistanceCalc.hpp
+    TriTriToleranceIntersect.hpp
+    
 )
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})

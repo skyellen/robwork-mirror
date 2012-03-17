@@ -17,7 +17,7 @@
 
 
 #include "DistanceThresholdStrategy.hpp"
-
+#include "ProximityStrategyData.hpp"
 using namespace rw::proximity;
 using namespace rw;
 
@@ -25,7 +25,7 @@ DistanceThresholdStrategy::DistanceThresholdStrategy() {}
 DistanceThresholdStrategy::~DistanceThresholdStrategy() {}
 
 
-DistanceResult DistanceThresholdStrategy::distance(
+DistanceStrategy::Result DistanceThresholdStrategy::distance(
                       const kinematics::Frame* a,
                       const math::Transform3D<>& wTa,
                       const kinematics::Frame* b,
@@ -38,7 +38,7 @@ DistanceResult DistanceThresholdStrategy::distance(
     return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
 }
 
-DistanceResult& DistanceThresholdStrategy::distance(
+DistanceStrategy::Result& DistanceThresholdStrategy::distance(
                       const kinematics::Frame* a,
                       const math::Transform3D<>& wTa,
                       const kinematics::Frame* b,

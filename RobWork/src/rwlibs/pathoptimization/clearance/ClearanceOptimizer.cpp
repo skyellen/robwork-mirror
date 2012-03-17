@@ -21,7 +21,6 @@
 #include <rw/common/Property.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
-#include <rw/models/Accessor.hpp>
 
 using namespace rw::math;
 using namespace rw::common;

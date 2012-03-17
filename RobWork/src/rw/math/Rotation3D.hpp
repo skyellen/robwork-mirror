@@ -298,7 +298,7 @@ namespace rw { namespace math {
          *
          * @return \f$ \robabx{a}{c}{\mathbf{R}} \f$
          */
-        const Rotation3D operator*( const Rotation3D& bRc ) const
+        inline const Rotation3D operator*( const Rotation3D& bRc ) const
         {
             return multiply(*this, bRc);
             // return Rotation3D(prod(aRb.m(), bRc.m()));
@@ -312,7 +312,7 @@ namespace rw { namespace math {
          * @param bVc [in] \f$ \robabx{b}{c}{\mathbf{v}} \f$
          * @return \f$ \robabx{a}{c}{\mathbf{v}} \f$
          */
-        const Vector3D<T> operator*( const Vector3D<T>& bVc) const
+        inline const Vector3D<T> operator*( const Vector3D<T>& bVc) const
         {
             return multiply(*this, bVc);
             // return Vector3D<T>(prod(aRb.m(), bVc.m()));

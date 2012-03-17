@@ -54,7 +54,6 @@
 //#include "./geometry/triangulate.hpp"
 #include "./geometry/Contour2D.hpp"
 //#include "./geometry/Contour2Dto3D.hpp"
-#include "./geometry/Contour2DUtil.hpp"
 #include "./geometry/IntersectUtil.hpp"
 
 #endif /* RW_GEOMETRY_HPP_ */

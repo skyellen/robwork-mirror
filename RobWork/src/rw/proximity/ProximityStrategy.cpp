@@ -43,16 +43,31 @@ ProximityStrategy::~ProximityStrategy()
 
 ProximityModel::Ptr ProximityStrategy::getModel(const rw::kinematics::Frame* frame)
 {
-	ProximityModel::Ptr model =  _frameToModel[*frame];
-    if(model==NULL){
-        if( hasModel(frame) ){
-            if( addModel(frame) )
-                model = _frameToModel[*frame];
-        }
-    }
+
+    ProximityModel::Ptr model =  _frameToModel[*frame];
+    //if(model==NULL){
+    //    if( hasModel(frame) ){
+    //        if( addModel(frame) )
+    //            model = _frameToModel[*frame];
+    //    }
+    //}
     return model;
 }
 
+bool ProximityStrategy::addModel(rw::models::Object::Ptr object)
+{
+    std::vector<Geometry::Ptr> geoms = object->getGeometry();
+    BOOST_FOREACH(Geometry::Ptr geom, geoms){
+        Frame* geoframe = geom->getFrame();
+        if(!hasModel(geoframe))
+            _frameToModel[*geoframe] = createModel();
+        ProximityModel::Ptr model = getModel(geoframe);
+        addGeometry(model.get(), geom);
+    }
+    return true;
+}
+
+/*
 bool ProximityStrategy::addModel(const Frame* frame)
 {
     std::vector<CollisionModelInfo> modelInfos = CollisionModelInfo::get(frame);
@@ -84,6 +99,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
     }
     return true;
 }
+*/
 
 bool ProximityStrategy::addModel(const Frame* frame, const rw::geometry::Geometry& geom)
 {
@@ -115,8 +131,8 @@ bool ProximityStrategy::addModel(const Frame* frame, rw::geometry::Geometry::Ptr
 
 bool ProximityStrategy::hasModel(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL){
-        if (CollisionModelInfo::get(frame).size()>0)
-            return true;
+        //if (CollisionModelInfo::get(frame).size()>0)
+        //    return true;
         return false;
     }
     return true;
