@@ -192,6 +192,7 @@ void testStrategy0(const CollisionStrategy::Ptr& strategy)
 
     const Transform3D<> b(Vector3D<>(10.0, 0.0, 0.0));
     BOOST_CHECK(!strategy->inCollision(o1, b, o2, id));
+
 }
 
 void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
@@ -242,14 +243,21 @@ void testCollisionDetector(const CollisionStrategy::Ptr& strategy)
 
 BOOST_AUTO_TEST_CASE( mainCollisionTest )
 {
+
 	std::vector<CollisionStrategy::Ptr> strategies = allCollisionStrategies();
+
 	int idx = 0;
+
     BOOST_FOREACH(const CollisionStrategy::Ptr& strategy, strategies) {
+
         testStrategy0(strategy);
-        testStrategy1(strategies[0], idx);
+
+        testStrategy1(strategy, idx);
+
         //testCollisionDetector(strategy);
         idx++;
     }
+
 
     if (strategies.empty()) {
         BOOST_MESSAGE("No collision strategies available!\n");
