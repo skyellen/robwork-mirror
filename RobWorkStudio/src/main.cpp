@@ -40,15 +40,15 @@
 #include <boost/foreach.hpp>
 
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
-    #include <rws/plugins/log/ShowLog.hpp>
-    #include <rws/plugins/jog/Jog.hpp>
-    #include <rws/plugins/treeview/TreeView.hpp>
-    #include <rws/plugins/playback/PlayBack.hpp>
-    #include <rws/plugins/planning/Planning.hpp>
-    #include <rws/plugins/propertyview/PropertyView.hpp>
-    #include <rws/plugins/sensors/Sensors.hpp>
+    #include <rwscl/log/ShowLog.hpp>
+    #include <rwscl/jog/Jog.hpp>
+    #include <rwscl/treeview/TreeView.hpp>
+    #include <rwscl/playback/PlayBack.hpp>
+    #include <rwscl/planning/Planning.hpp>
+    #include <rwscl/propertyview/PropertyView.hpp>
+    #include <rwscl/sensors/Sensors.hpp>
 #if RWS_HAVE_LUA
-    #include <rws/plugins/lua/Lua.hpp>
+    #include <rwscl/lua/Lua.hpp>
 #endif
 #endif
 
