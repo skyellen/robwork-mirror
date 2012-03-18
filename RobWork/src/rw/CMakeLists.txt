@@ -1,3 +1,13 @@
+SET(SUBSYS_NAME rw)
+set(SUBSYS_DESC "The core RobWork library!")
+SET(SUBSYS_DEPS )
+
+SET(build TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME})
+
+IF(build)
+
 FILE(GLOB SRC_FILES_HPP robwork.hpp)
 set(ENV{RW_LIB_FILES_CPP} "RobWork.cpp;${RW_USER_FILES}")
 set(ENV{RW_LIB_FILES_HPP} "${SRC_FILES_HPP};${RW_USER_FILES_HPP};")
@@ -23,20 +33,6 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
-	RobWork.hpp
-)
-
-FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
-FILE(GLOB SRC_FILES_HPP ${FILES_HPP})
-
-SET(ENV{RW_LIB_FILES_CPP} "$ENV{RW_LIB_FILES_CPP}${SRC_FILES_CPP};")
-SET(ENV{RW_LIB_FILES_HPP} "$ENV{RW_LIB_FILES_HPP}${SRC_FILES_HPP};")
-
-
-ADD_LIBRARY(rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
-
-INSTALL(TARGETS rw DESTINATION ${RW_LIB_INSTALL_DIR})
-INSTALL(FILES 
     rw.hpp 
     common.hpp
     geometry.hpp
@@ -49,5 +45,19 @@ INSTALL(FILES
     sensor.hpp
     trajectory.hpp
     proximity.hpp
-    DESTINATION "${RW_HPP_INSTALL_DIR}/rw")
+	RobWork.hpp
+)
 
+FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
+FILE(GLOB SRC_FILES_HPP ${FILES_HPP})
+
+SET(ENV{RW_LIB_FILES_CPP} "$ENV{RW_LIB_FILES_CPP}${SRC_FILES_CPP};")
+SET(ENV{RW_LIB_FILES_HPP} "$ENV{RW_LIB_FILES_HPP}${SRC_FILES_HPP};")
+
+RW_ADD_LIBRARY(rw rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
+RW_ADD_INCLUDES(rw "rw" ${FILES_HPP} )
+RW_ADD_INCLUDE_DIRS(rw "rw" 
+    common geometry invkin kinematics loaders math models pathplanning 
+    proximity sensor trajectory plugin graphics)
+
+ENDIF()
