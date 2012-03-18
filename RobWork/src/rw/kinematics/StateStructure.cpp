@@ -184,10 +184,8 @@ void StateStructure::remove(StateData *data){
     // update default state
     // the dynamicly attached frames will automaticly be attached to world
     updateDefaultState();
-
     // perform cleanup
     cleanup();
-
     _stateDataRemovedEvent.fire(data);
 }
 
@@ -268,6 +266,8 @@ void StateStructure::updateDefaultState(){
     newState.copy( _defaultState );
     // all caches that are null should be updated with their default cache
     BOOST_FOREACH(boost::shared_ptr<StateData>& data, _currDatas){
+        if(data==NULL)
+            continue;
         if(data->hasCache()){
             if( data->getCache(newState) == NULL )
                 data->setCache( data->getDefaultCache()->clone(), newState );
