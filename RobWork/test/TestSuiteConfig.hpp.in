@@ -3,7 +3,7 @@
 #include <string>
 #include <RobWorkConfig.hpp>
 
-#define RW_TEST_FILE_DIR "@CMAKE_CURRENT_SOURCE_DIR@/testfiles/"
+
 #cmakedefine RW_USE_BOOST_STATIC_TEST_LIBS
 
 
@@ -11,6 +11,5 @@
 
 #include <boost/test/floating_point_comparison.hpp>
 
-namespace {
-	std::string testFilePath() { return RW_TEST_FILE_DIR; }
-}
+
+std::string testFilePath();
