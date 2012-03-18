@@ -1,46 +1,59 @@
-set(Ext ${PROJECT_SOURCE_DIR}/ext)
+SET(SUBSYS_NAME rw_task)
+set(SUBSYS_DESC "Generic Task description")
+SET(SUBSYS_DEPS rw)
 
-# The camera file and include path to use.
-
-SET(SRC_FILES
-  ./Action.cpp
-  ./Entity.cpp
-  ./Motion.cpp
-  ./Target.cpp
-  ./Task.cpp
-  ./TaskUtils.cpp
-  ./TypeRepository.cpp
-  ./GraspTask.cpp
-)
+if( RW_HAVE_XERCES )
+    set(DEFAULT TRUE)
+    set(REASON)
+else()
+    set(DEFAULT FALSE)
+    set(REASON "Xerces not found.")
+endif()
 
 
-SET(SRC_FILES_HPP
-  ./Action.hpp
-  ./Entity.hpp
-  ./Motion.hpp
-  ./Target.hpp
-  ./Task.hpp
-  ./TaskUtils.hpp
-  ./TypeRepository.hpp
-  ./GraspTask.hpp
-)
+SET(build TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS xerces)
+RW_ADD_DOC(${SUBSYS_NAME})
 
-
-IF (RW_HAVE_XERCES) 
+IF(build)
+    # The camera file and include path to use.
+    SET(SRC_FILES
+      ./Action.cpp
+      ./Entity.cpp
+      ./Motion.cpp
+      ./Target.cpp
+      ./Task.cpp
+      ./TaskUtils.cpp
+      ./TypeRepository.cpp
+      ./GraspTask.cpp
+    )
+    
+    
+    SET(SRC_FILES_HPP
+      ./Action.hpp
+      ./Entity.hpp
+      ./Motion.hpp
+      ./Target.hpp
+      ./Task.hpp
+      ./TaskUtils.hpp
+      ./TypeRepository.hpp
+      ./GraspTask.hpp
+    )
+    
+    
 	set(SRC_FILES ${SRC_FILES}
 	  ./loader/XMLTaskFormat.cpp
   	  ./loader/XMLTaskLoader.cpp
   	  ./loader/XMLTaskSaver.cpp
 	)
-	set(SRC_FILES_HPP ${SRC_FILES_HPP}
+	set(LOADER_SRC_FILES_HPP 
 	  ./loader/XMLTaskFormat.hpp
   	  ./loader/XMLTaskLoader.hpp
   	  ./loader/XMLTaskSaver.hpp
    )
-ENDIF()   
-  	  
-
-ADD_LIBRARY(rw_task ${SRC_FILES} ${SRC_FILES_HPP})
-
-INSTALL(TARGETS rw_task DESTINATION ${RW_LIB_INSTALL_DIR})
-#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/task)
+      	  
+    RW_ADD_LIBRARY(${SUBSYS_NAME} task ${SRC_FILES} ${SRC_FILES_HPP} ${LOADER_SRC_FILES_HPP})
+    RW_ADD_INCLUDES(task "rwlibs/task" ${SRC_FILES_HPP})     
+    RW_ADD_INCLUDE_DIRS(task "rwlibs/task" loader)
+ENDIF()

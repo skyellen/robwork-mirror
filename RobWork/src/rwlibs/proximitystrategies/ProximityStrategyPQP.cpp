@@ -196,7 +196,6 @@ void ProximityStrategyPQP::destroyModel(rw::proximity::ProximityModel* model){
 bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
                                        const rw::geometry::Geometry& geom) {
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
-
 	PQPModelPtr pqpmodel;
 	GeometryData::Ptr gdata = geom.getGeometryData();
     // check if geomid is in model. remove it if it has
@@ -234,6 +233,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
         pqpmodel->EndModel();
         _modelCache.add(key, pqpmodel);
     }
+
     RWPQPModel rwpqpmodel(geom.getId(), geom.getTransform(), pqpmodel);
     rwpqpmodel.ckey = key;
     pmodel->models.push_back( rwpqpmodel );

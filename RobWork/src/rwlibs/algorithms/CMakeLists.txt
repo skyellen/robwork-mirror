@@ -1,35 +1,44 @@
+SET(SUBSYS_NAME rw_algorithms)
+SET(SUBSYS_DESC "A collection of varius algorithms!")
+SET(SUBSYS_DEPS rw)
 
-SET(SRC_FILES
-  ${RW_ALGORITHMS_USER_FILES}
-  ./kdtree/KDTree.cpp
-  ./kdtree/KDTreeQ.cpp
-  ./qpcontroller/IKQPSolver.cpp
-  ./qpcontroller/QPController.cpp
-  ./qpcontroller/QPSolver.cpp
-  ./xqpcontroller/XQPController.cpp
-  ./xqpcontroller/NullSpaceProjection.cpp
-  ./gpm/BasicGPM.cpp
-  
-  MovingAverage.cpp
-  StablePlanePose.cpp
-)
+set(build TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+RW_ADD_DOC(${SUBSYS_NAME})
 
-SET(SRC_FILES_HPP
-  ./kdtree/KDTree.hpp
-  ./kdtree/KDTreeQ.hpp
-  ./qpcontroller/IKQPSolver.hpp
-  ./qpcontroller/QPController.hpp
-  ./qpcontroller/QPSolver.hpp
-  ./xqpcontroller/XQPController.hpp
-  ./xqpcontroller/NullSpaceProjection.hpp
-  ./gpm/BasicGPM.hpp
-  
-  MovingAverage.hpp
-  StablePlanePose.hpp
-)
-
-ADD_LIBRARY(rw_algorithms ${SRC_FILES} ${SRC_FILES_HPP})
-
-INSTALL(TARGETS rw_algorithms DESTINATION ${RW_LIB_INSTALL_DIR})
-#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/algorithms)
-  
+IF(build)
+    SET(SRC_FILES
+      ${RW_ALGORITHMS_USER_FILES}
+      ./kdtree/KDTree.cpp
+      ./kdtree/KDTreeQ.cpp
+      ./qpcontroller/IKQPSolver.cpp
+      ./qpcontroller/QPController.cpp
+      ./qpcontroller/QPSolver.cpp
+      ./xqpcontroller/XQPController.cpp
+      ./xqpcontroller/NullSpaceProjection.cpp
+      ./gpm/BasicGPM.cpp
+      
+      MovingAverage.cpp
+      StablePlanePose.cpp
+    )
+    
+    SET(SRC_FILES_HPP
+      ./kdtree/KDTree.hpp
+      ./kdtree/KDTreeQ.hpp
+      ./qpcontroller/IKQPSolver.hpp
+      ./qpcontroller/QPController.hpp
+      ./qpcontroller/QPSolver.hpp
+      ./xqpcontroller/XQPController.hpp
+      ./xqpcontroller/NullSpaceProjection.hpp
+      ./gpm/BasicGPM.hpp
+      
+      MovingAverage.hpp
+      StablePlanePose.hpp
+    )
+    
+    RW_ADD_LIBRARY(${SUBSYS_NAME} algorithms ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_INCLUDES(algorithms "rwlibs/algorithms" MovingAverage.hpp StablePlanePose.hpp)
+    RW_ADD_INCLUDE_DIRS(algorithms "rwlibs/algorithms" kdtree qpcontroller xqpcontroller gpm) 
+    ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+ENDIF()

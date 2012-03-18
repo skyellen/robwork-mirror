@@ -1,31 +1,40 @@
+SET(SUBSYS_NAME rw_proximitystrategies)
+set(SUBSYS_DESC "Collection of proximity strategies!")
+SET(SUBSYS_DEPS rw)
 
-SET(OptionalFiles)
-IF (RW_HAVE_PQP)
-  LIST(APPEND OptionalFiles "./ProximityStrategyPQP.cpp")
-  LIST(APPEND OptionalFiles_hpp "./ProximityStrategyPQP.hpp")
-ELSE ()
-  MESSAGE(STATUS "rw_proximitystrategies: Not building PQP interface since PQP is disabled!")
-ENDIF ()
+SET(build TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS pqp yaobi)
+#RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} )
+RW_ADD_DOC(${SUBSYS_NAME})
 
-IF (RW_HAVE_YAOBI)
-  LIST(APPEND OptionalFiles "./ProximityStrategyYaobi.cpp")
-  LIST(APPEND OptionalFiles_hpp "./ProximityStrategyYaobi.hpp")
-ELSE ()
-  MESSAGE(STATUS "rw_proximitystrategies: Not building Yaobi interface since Yaobi is disabled!")
-ENDIF ()
-
-SET(SRC_FILES
-  ${RW_PROXIMITYSTRATEGIES_USER_FILES}
-  ProximityStrategyFactory.cpp
-  ${OptionalFiles}
-)
-
-SET(SRC_FILES_HPP
-  ProximityStrategyFactory.hpp
-  ${OptionalFiles_hpp}
-)
-
-ADD_LIBRARY(rw_proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
-
-INSTALL(TARGETS rw_proximitystrategies DESTINATION ${RW_LIB_INSTALL_DIR})
-#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/proximitystrategies)
+IF(build)
+    SET(OptionalFiles)
+    IF (RW_HAVE_PQP)
+      LIST(APPEND OptionalFiles "./ProximityStrategyPQP.cpp")
+      LIST(APPEND OptionalFiles_hpp "./ProximityStrategyPQP.hpp")
+    ELSE ()
+      MESSAGE(STATUS "rw_proximitystrategies: Not building PQP interface since PQP is disabled!")
+    ENDIF ()
+    
+    IF (RW_HAVE_YAOBI)
+      LIST(APPEND OptionalFiles "./ProximityStrategyYaobi.cpp")
+      LIST(APPEND OptionalFiles_hpp "./ProximityStrategyYaobi.hpp")
+    ELSE ()
+      MESSAGE(STATUS "rw_proximitystrategies: Not building Yaobi interface since Yaobi is disabled!")
+    ENDIF ()
+    
+    SET(SRC_FILES
+      ${RW_PROXIMITYSTRATEGIES_USER_FILES}
+      ${OptionalFiles}
+    )
+    
+    SET(SRC_FILES_HPP
+      ${OptionalFiles_hpp}
+    )
+    
+    RW_ADD_LIBRARY(${SUBSYS_NAME} proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_INCLUDES(proximitystrategies "rwlibs/proximitystrategies" ${SRC_FILES_HPP}) 
+    ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+    
+ENDIF()

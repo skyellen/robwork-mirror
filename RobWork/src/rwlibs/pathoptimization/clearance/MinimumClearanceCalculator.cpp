@@ -19,12 +19,10 @@
 #include "MinimumClearanceCalculator.hpp"
 
 #include <rw/common/Timer.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
 
 using namespace rwlibs::pathoptimization;
-using namespace rwlibs::proximitystrategies;
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::models;
@@ -35,9 +33,9 @@ namespace
 	DistanceCalculator::Ptr getDistanceCalculator(WorkCell::Ptr workcell,
                                                   const State& state)
     {
-		DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDistanceStrategy("PQP");
+		DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
         if(strat==NULL)
-            RW_THROW("Requires PQP!");
+            RW_THROW("Requires a valid distance strategy!");
         return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
                                                CollisionSetup::get(*workcell),
                                                strat,

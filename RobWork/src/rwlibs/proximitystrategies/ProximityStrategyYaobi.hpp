@@ -34,6 +34,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 
 namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */
@@ -125,6 +126,8 @@ namespace rwlibs { namespace proximitystrategies {
         */
 		static rw::proximity::CollisionStrategy::Ptr make();
     };
+
+    static const bool YaobiCollisionStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addCollisionStrategy<ProximityStrategyYaobi>("YAOBI");
 
 }} // end namespaces
 

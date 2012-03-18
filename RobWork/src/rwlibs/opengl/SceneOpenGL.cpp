@@ -269,9 +269,10 @@ namespace {
                          bool transparent,
                          bool pushNames=false):
                              _info(info),
+                             _stack(stack),
                              _drawAlpha(transparent),
-                             _pushNames(pushNames),
-                             _stack(stack)
+                             _pushNames(pushNames)
+
         {
             functor =  boost::ref(*this);
         }

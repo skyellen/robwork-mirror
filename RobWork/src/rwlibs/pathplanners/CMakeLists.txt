@@ -1,39 +1,50 @@
+SET(SUBSYS_NAME rw_pathplanners)
+set(SUBSYS_DESC "A collection of path planners!")
+SET(SUBSYS_DEPS rw)
 
-SET(SRC_FILES
-  ./z3/Z3QToQPlanner.cpp
-  ./z3/Z3Planner.cpp
-  ./prm/PartialIndexTable.cpp
-  ./prm/PRMPlanner.cpp
-  ./rrt/RRTQToQPlanner.cpp
-  ./rrt/RRTPlanner.cpp
-  ./arw/ARWExpand.cpp
-  ./arw/ARWPlanner.cpp
-  ./arw/ARWQToQPlanner.cpp
-  ./sbl/SBLExpand.cpp
-  ./sbl/SBLInternal.cpp
-  ./sbl/SBLSetup.cpp
-  ./sbl/SBLOptions.cpp
-  ./sbl/SBLPlanner.cpp
-)
+SET(build TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+RW_ADD_DOC(${SUBSYS_NAME})
 
-SET(SRC_FILES_HPP
-  ./z3/Z3QToQPlanner.hpp
-  ./z3/Z3Planner.hpp
-  ./prm/PartialIndexTable.hpp
-  ./prm/PRMPlanner.hpp
-  ./rrt/RRTQToQPlanner.hpp
-  ./rrt/RRTPlanner.hpp
-  ./arw/ARWExpand.hpp
-  ./arw/ARWPlanner.hpp
-  ./arw/ARWQToQPlanner.hpp
-  ./sbl/SBLExpand.hpp
-  ./sbl/SBLInternal.hpp
-  ./sbl/SBLSetup.hpp
-  ./sbl/SBLOptions.hpp
-  ./sbl/SBLPlanner.hpp
-)
+IF(build)
 
-ADD_LIBRARY(rw_pathplanners ${SRC_FILES} ${SRC_FILES_HPP})
+    SET(SRC_FILES
+      ./z3/Z3QToQPlanner.cpp
+      ./z3/Z3Planner.cpp
+      ./prm/PartialIndexTable.cpp
+      ./prm/PRMPlanner.cpp
+      ./rrt/RRTQToQPlanner.cpp
+      ./rrt/RRTPlanner.cpp
+      ./arw/ARWExpand.cpp
+      ./arw/ARWPlanner.cpp
+      ./arw/ARWQToQPlanner.cpp
+      ./sbl/SBLExpand.cpp
+      ./sbl/SBLInternal.cpp
+      ./sbl/SBLSetup.cpp
+      ./sbl/SBLOptions.cpp
+      ./sbl/SBLPlanner.cpp
+    )
+    
+    SET(SRC_FILES_HPP
+      ./z3/Z3QToQPlanner.hpp
+      ./z3/Z3Planner.hpp
+      ./prm/PartialIndexTable.hpp
+      ./prm/PRMPlanner.hpp
+      ./rrt/RRTQToQPlanner.hpp
+      ./rrt/RRTPlanner.hpp
+      ./arw/ARWExpand.hpp
+      ./arw/ARWPlanner.hpp
+      ./arw/ARWQToQPlanner.hpp
+      ./sbl/SBLExpand.hpp
+      ./sbl/SBLInternal.hpp
+      ./sbl/SBLSetup.hpp
+      ./sbl/SBLOptions.hpp
+      ./sbl/SBLPlanner.hpp
+    )
+    
+    RW_ADD_LIBRARY(${SUBSYS_NAME} pathplanners ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_INCLUDES(pathplanners "rwlibs/pathplanners" ${SRC_FILES_HPP}) 
+    ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
+endif()
 
-INSTALL(TARGETS rw_pathplanners DESTINATION ${RW_LIB_INSTALL_DIR})
-#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/pathplanners)
