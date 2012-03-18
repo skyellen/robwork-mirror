@@ -23,7 +23,7 @@
 #include <rw/math.hpp>
 #include <rw/geometry.hpp>
 
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/common/TimerUtil.hpp>
@@ -248,7 +248,7 @@ void testStrategy(CollisionStrategy::Ptr strategy, const std::string& strategyna
     testPerObjectPair( coarsesetup );
 
 
-    loadModelsData(finesetup, 20, "geoms/performance/FineModel.stl", "Fine");
+    loadModelsData(finesetup, 20, "geoms/performance/CoarseModel.stl", "Fine");
     setFirstContact(finesetup);
     intializeTestSetupData( finesetup, 1);
     intializeBuildingSetup( finesetup );
