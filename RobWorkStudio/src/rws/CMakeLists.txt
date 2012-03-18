@@ -18,6 +18,7 @@ SET(SRC_FILES_CPP
   RobWorkStudioPlugin.cpp
   AboutBox.cpp
   HelpAssistant.cpp
+  ImageView.cpp
   propertyview/PropertyViewEditor.cpp
   propertyview/PropertyViewDialog.cpp 
   propertyview/PropertyInspector.cpp
@@ -34,6 +35,7 @@ SET(SRC_FILES_HPP
   RWStudioView3D.hpp
   AboutBox.hpp
   HelpAssistant.hpp
+  ImageView.hpp
   propertyview/PropertyViewEditor.hpp
   propertyview/PropertyViewDialog.hpp 
   propertyview/PropertyInspector.hpp
@@ -47,6 +49,7 @@ SET(MocHeaderFiles
   SceneOpenGLViewer.hpp
   AboutBox.hpp
   RWStudioView3D.hpp
+  ImageView.hpp
   HelpAssistant.hpp
   propertyview/PropertyViewEditor.hpp 
   propertyview/PropertyViewDialog.hpp )
@@ -73,8 +76,6 @@ ADD_LIBRARY(rwstudio
 )
 
 # Install stuff
-INSTALL(TARGETS rwstudio DESTINATION ${RWS_LIB_INSTALL_DIR})
-#INSTALL(FILES ${SRC_FILES_CPP} DESTINATION ${RWS_CPP_INSTALL_DIR}/rws)
-INSTALL(FILES ${SRC_FILES_HPP} DESTINATION ${RWS_HPP_INSTALL_DIR}/rws)
+INSTALL(TARGETS rwstudio DESTINATION ${LIB_INSTALL_DIR})
+INSTALL(FILES ${SRC_FILES_HPP} DESTINATION ${INCLUDE_INSTALL_DIR}/rws)
 
-#ADD_SUBDIRECTORY(lua)

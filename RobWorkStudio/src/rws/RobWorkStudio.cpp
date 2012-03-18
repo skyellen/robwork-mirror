@@ -45,7 +45,7 @@
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/WorkCellFactory.hpp>
 
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 
 #include <RobWorkConfig.hpp>
 #include <boost/shared_ptr.hpp>
@@ -64,7 +64,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::trajectory;
-using namespace rwlibs::proximitystrategies;
+using namespace rw::proximity;
 
 using namespace rws;
 
