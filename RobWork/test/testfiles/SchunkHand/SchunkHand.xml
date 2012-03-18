@@ -15,11 +15,11 @@
   <!-- And geometry -->
   <Drawable name="Joint2Geo" refframe="Joint2">
    <RPY> 0 0 -90 </RPY> <Pos> -0.038105 -0.0417 0</Pos>
-   <Polytope file="Geometry/FingerMid" /></Drawable>
+   <Polytope file="Geometry/FingerMid_chull" /></Drawable>
 
   <Drawable name="Joint3Geo" refframe="Joint3">
    <RPY> 0 0 -90 </RPY> <Pos> -0.038105 -0.128201 0</Pos>
-   <Polytope file="Geometry/FingerTip" /></Drawable>
+   <Polytope file="Geometry/FingerTip_chull" /></Drawable>
   
   <CollisionSetup file="FingerCollisionSetup.xml" />
     
@@ -64,17 +64,17 @@
  
  <!-- And know we add the geometry -->
  <Drawable name="BaseGeo" refframe="Base">
-  <Polytope file="Geometry/Base" /></Drawable>
+  <Polytope file="Geometry/Base_chull" /></Drawable>
 
  <Drawable name="F1BaseGeo" refframe="F1Base">
   <RPY> 0 0 0 </RPY> <Pos> -0.038105 0 -0.0417</Pos>
-  <Polytope file="Geometry/FingerBase" /></Drawable>
+  <Polytope file="Geometry/FingerBase_chull" /></Drawable>
  <Drawable name="F2BaseGeo" refframe="F2Joint1">
   <RPY> 0 0 0 </RPY> <Pos> -0.038105 0 -0.0417</Pos>
-  <Polytope file="Geometry/FingerBase" /></Drawable>
+  <Polytope file="Geometry/FingerBase_chull" /></Drawable>
  <Drawable name="F3BaseGeo" refframe="F3Joint1">
   <RPY> 0 0 0 </RPY> <Pos> -0.038105 0 -0.0417</Pos>
-  <Polytope file="Geometry/FingerBase" /></Drawable>
+  <Polytope file="Geometry/FingerBase_chull" /></Drawable>
 
  <CollisionSetup file="HandCollisionSetup.xml" />
  
