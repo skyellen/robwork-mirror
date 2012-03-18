@@ -1,57 +1,38 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.6)
-IF( CMAKE_VERSION VERSION_LESS 2.6.4 )
-ELSE( CMAKE_VERSION VERSION_LESS 2.6.4)
-    CMAKE_POLICY(SET CMP0011 NEW)
-ENDIF( CMAKE_VERSION VERSION_LESS 2.6.4)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # The name of the project.
 PROJECT(RobWork)
-SET(ROBWORK_VERSION 0.5.1)
-STRING( REGEX MATCHALL "[0-9]+" ROBWORK_VERSIONS ${ROBWORK_VERSION} )
-LIST( GET ROBWORK_VERSIONS 0 ROBWORK_VERSION_MAJOR)
-LIST( GET ROBWORK_VERSIONS 1 ROBWORK_VERSION_MINOR)
-LIST( GET ROBWORK_VERSIONS 2 ROBWORK_VERSION_PATCH)
-
-MESSAGE(STATUS "RobWork version ${ROBWORK_VERSION}")
 
 IF (NOT RW_ROOT)
     SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF ()
+MESSAGE(" RW_ROOT: ${RW_ROOT} ")
 
-SET(ROOT ${RW_ROOT})
+# guard against in-source builds
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
+endif()
 
-# Get the compiler architecture
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(AMD64 1)
-ELSE()
-	SET(AMD64 0)
-ENDIF()
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/cmake/Modules ${CMAKE_MODULE_PATH})
+INCLUDE(${RW_ROOT}/cmake/RobWorkMacros.cmake)
 
-# setup a standard project 
-INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
+RW_INIT_PROJECT(${RW_ROOT} RobWork RW 0.5.1)
+RW_GET_OS_INFO()
+MESSAGE("${ROBWORK_MAJOR_VERION}")
+RW_SET_INSTALL_DIRS(RobWork RW)
+SET(RW_EXT_INSTALL_DIR ${INCLUDE_INSTALL_DIR}/ext/)
+RW_OPTIONS(RW)
 
-# setup the install dirs TODO should be cached to allow the use to change it
-IF(UNIX)
-	SET(RW_INSTALL_DIR "RobWork/")
-ELSE(UNIX)
-	SET(RW_INSTALL_DIR "./")
-ENDIF(UNIX)
-SET(RW_BIN_INSTALL_DIR "${RW_INSTALL_DIR}/bin/")
-SET(RW_LIB_INSTALL_DIR "${RW_INSTALL_DIR}/libs/")
-SET(RW_EXT_INSTALL_DIR "${RW_INSTALL_DIR}/ext/")
-SET(RW_HPP_INSTALL_DIR "${RW_INSTALL_DIR}/src/")
-SET(RW_RUNTIME runtime)
-SET(RW_DEVEL development)
+# Add an "uninstall" target
+configure_file("${RW_ROOT}/cmake/uninstall_target.cmake.in"
+               "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
 
-# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
-CONFIGURE_FILE(
-  ${RW_ROOT}/build/RobWorkConfig.cmake.in
-  "${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake"
-)
 
 # This sets up ROBWORK_INCLUDE_DIR and ROBWORK_LIBRARIES
-INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
+INCLUDE(${RW_ROOT}/cmake/RobWorkSetup.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
@@ -60,54 +41,14 @@ LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
-
+RW_SYS_INFO(INFO)
+MESSAGE("RobWork: ${INFO} ")
 
 OPTION(RW_BUILD_TESTS "Set when you want to build the tests" ${RW_BUILD_TESTS})
 IF( RW_BUILD_TESTS )
     MESSAGE(STATUS "RobWork tests ENABLED!")
     # TODO Specify SET(SITE "myname") to configure the site name to use when uploading 
-    
-    
-    # Before including tests we need to specify the BUILDNAME which will show up on the cdash
-    # CPU architecture
-    IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    	SET(ARCH "x86")
-    ELSE()
-    	SET(ARCH "amd64")
-    ENDIF()
-    # Compiler dependent suffix
-    IF(UNIX)
-        #EXECUTE_PROCESS(COMMAND cat /etc/issue OUTPUT_VARIABLE SUFFIX)
-        EXECUTE_PROCESS(COMMAND cat /etc/lsb-release OUTPUT_VARIABLE SUFFIX)
-        STRING( REGEX MATCHALL "\".+\"" SUFFIX ${SUFFIX} )
-        
-        # this will add kernel version eg Linux_3.0....
-        #EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE KERNEL_VERSION)
-        #SET(SUFFIX "${SUFFIX}_${KERNEL_VERSION}")
-        SET(SUFFIX "${SUFFIX}_${ARCH}_${CMAKE_BUILD_TYPE}")
-        STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
-        STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
-    
-        # this will make it lowercase        
-        #STRING(TOLOWER "${SUFFIX}" SUFFIX)
-        #MESSAGE("${SUFFIX}")
-    ELSEIF(MINGW)
-    	SET(SUFFIX "windows-mingw-${ARCH}")
-    ELSEIF(MSVC)
-    	IF(MSVC80)
-    		SET(SUFFIX "windows-msvc2005-${ARCH}")
-    	ELSEIF(MSVC90)
-    		SET(SUFFIX "windows-msvc2008-${ARCH}")
-    	ELSEIF(MSVC10)
-    		SET(SUFFIX "windows-msvc2010-${ARCH}")
-    	ENDIF()
-    ELSE()
-    	# Trouble
-    	
-    ENDIF()
-
-    SET(BUILDNAME "${SUFFIX}")
-    
+    SET(BUILDNAME "${INFO}")
     ENABLE_TESTING()
     INCLUDE(CTest)
     ADD_SUBDIRECTORY(test)
@@ -139,102 +80,48 @@ CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp.in
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
-# Configure build/RobWorkBuildConfig.cmake.in such that other projects might use robwork
-SET(INSTALLATION FALSE)
-
+# Configure cmake/RobWorkBuildConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
-  ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
-  "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  ${RW_ROOT}/cmake/RobWorkBuildConfig.cmake.in
+  "${RW_ROOT}/cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
   @ONLY
 )
 
-# Store the build paths in a temporary list
-SET(VARS_TMP "${TOLUA_CMD}" "${TOLUA_INCLUDE_DIR}" "${LUA_INCLUDE_DIR}" "${PQP_INCLUDE_DIR}" "${YAOBI_INCLUDE_DIR}"
-			 "${XERCESC_INCLUDE_DIR}" "${XERCESC_LIB_DIR}" "${BOOST_ROOT}" "${BOOST_INCLUDEDIR}" "${BOOST_LIBRARYDIR}"
-	)
-SET(ROBWORK_LIBRARIES_TMP "${ROBWORK_LIBRARIES}")
-SET(ROBWORK_LIBRARY_DIRS_TMP "${ROBWORK_LIBRARY_DIRS}")
-SET(ROBWORK_INCLUDE_DIR_TMP "${ROBWORK_INCLUDE_DIR}")
-# Make all build paths relative to install directory
-IF(WIN32)
-	SET(TOLUA_CMD "\${RW_ROOT}/${RW_BIN_INSTALL_DIR}/tolua")
-	SET(TOLUA_INCLUDE_DIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/tolua/include")
-	SET(LUA_INCLUDE_DIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/lua/src")
-	SET(PQP_INCLUDE_DIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/pqp")
-	SET(YAOBI_INCLUDE_DIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/yaobi")
-	SET(XERCESC_INCLUDE_DIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/xerces")
-	SET(XERCESC_LIB_DIR "\${RW_ROOT}/${RW_LIB_INSTALL_DIR}")
-	SET(BOOST_ROOT "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/boost/")
-	SET(BOOST_INCLUDEDIR "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}/boost/")
-	SET(BOOST_LIBRARYDIR "\${RW_ROOT}/${RW_LIB_INSTALL_DIR}")
-	SET(ROBWORK_LIBRARIES "")
-	FOREACH(lib ${ROBWORK_LIBRARIES_TMP})
-		GET_FILENAME_COMPONENT(lib_rel "${lib}" NAME)
-		LIST(APPEND ROBWORK_LIBRARIES "\${RW_ROOT}/libs/${lib_rel}")
-	ENDFOREACH(lib)
-	SET(ROBWORK_LIBRARY_DIRS "\${RW_ROOT}/${RW_LIB_INSTALL_DIR}")
-	SET(ROBWORK_INCLUDE_DIR "${TOLUA_INCLUDE_DIR}" "${LUA_INCLUDE_DIR}"
-							"${PQP_INCLUDE_DIR}" "${YAOBI_INCLUDE_DIR}"
-							"${XERCESC_INCLUDE_DIR}" "${BOOST_INCLUDEDIR}"
-							"\${RW_ROOT}/${RW_HPP_INSTALL_DIR}" "\${RW_ROOT}/${RW_EXT_INSTALL_DIR}"
-		)
-ELSEIF(UNIX)
-	SET(TOLUA_CMD "${CMAKE_INSTALL_PREFIX}/${RW_BIN_INSTALL_DIR}/tolua")
-	SET(TOLUA_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${RW_EXT_INSTALL_DIR}/tolua/include")
-	SET(LUA_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${RW_EXT_INSTALL_DIR}/lua/src")
-	SET(PQP_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${RW_EXT_INSTALL_DIR}/pqp")
-	SET(YAOBI_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${RW_EXT_INSTALL_DIR}/yaobi")
-	SET(ROBWORK_LIBRARIES "")
-	FOREACH(lib ${ROBWORK_LIBRARIES_TMP})
-		GET_FILENAME_COMPONENT(lib_rel "${lib}" NAME)
-		LIST(APPEND ROBWORK_LIBRARIES "${lib_rel}")
-	ENDFOREACH(lib)
-	SET(ROBWORK_LIBRARY_DIRS "/usr/lib" "/usr/local/lib" "${CMAKE_INSTALL_PREFIX}/${RW_LIB_INSTALL_DIR}")
-	SET(ROBWORK_INCLUDE_DIR "/usr/include" "/usr/local/include"
-                            "${TOLUA_INCLUDE_DIR}" "${LUA_INCLUDE_DIR}"
-							"${PQP_INCLUDE_DIR}" "${YAOBI_INCLUDE_DIR}"
-							"${CMAKE_INSTALL_PREFIX}/${RW_HPP_INSTALL_DIR}" "${CMAKE_INSTALL_PREFIX}/${RW_EXT_INSTALL_DIR}"
-		)
-ENDIF()
-# Configure build script for installer
-SET(INSTALLATION TRUE)
 CONFIGURE_FILE(
-  ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
-  "${RW_ROOT}/build/RobWorkBuildConfig.cmake"
+  ${RW_ROOT}/cmake/RobWorkConfigVersion.cmake.in
+  "${RW_ROOT}/cmake/RobWorkConfigVersion.cmake"
   @ONLY
 )
-# Restore the build paths
-LIST(GET VARS_TMP 0 TOLUA_CMD)
-LIST(GET VARS_TMP 1 TOLUA_INCLUDE_DIR)
-LIST(GET VARS_TMP 2 LUA_INCLUDE_DIR)
-LIST(GET VARS_TMP 3 PQP_INCLUDE_DIR)
-LIST(GET VARS_TMP 4 YAOBI_INCLUDE_DIR)
-LIST(GET VARS_TMP 5 XERCESC_INCLUDE_DIR)
-LIST(GET VARS_TMP 6 XERCESC_LIB_DIR)
-LIST(GET VARS_TMP 7 BOOST_ROOT)
-LIST(GET VARS_TMP 8 BOOST_INCLUDEDIR)
-LIST(GET VARS_TMP 9 BOOST_LIBRARYDIR)
-SET(ROBWORK_LIBRARIES "${ROBWORK_LIBRARIES_TMP}")
-SET(ROBWORK_LIBRARY_DIRS "${ROBWORK_LIBRARY_DIRS_TMP}")
-SET(ROBWORK_INCLUDE_DIR "${ROBWORK_INCLUDE_DIR_TMP}")
+CONFIGURE_FILE(
+  ${RW_ROOT}/cmake/RobWorkConfig.cmake.in
+  "${RW_ROOT}/cmake/RobWorkConfig.cmake"
+  @ONLY
+)
+INSTALL(FILES 
+    ${RW_ROOT}/cmake/RobWorkConfigVersion.cmake
+    ${RW_ROOT}/cmake/RobWorkConfig.cmake
+    DESTINATION ${RW_INSTALL_DIR} ) 
 
 # Install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RW_INSTALL_DIR}/")
 INSTALL(FILES 
-    build/FindBLASLAPACK.cmake
-    build/FindPQP.cmake
-    build/FindRobWork.cmake
-    build/RobWorkSetup.cmake
-    build/FindTolua++.cmake
-    build/FindXercesC.cmake
-    build/FindYaobi.cmake 
-    DESTINATION "${RW_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkBuildConfig.cmake"
-        DESTINATION "${RW_INSTALL_DIR}/build/")
+    cmake/Modules/FindBLASLAPACK.cmake
+    cmake/Modules/FindPQP.cmake
+    cmake/Modules/FindRobWork.cmake
+    cmake/Modules/FindTolua++.cmake
+    cmake/Modules/FindXercesC.cmake
+    cmake/Modules/FindYaobi.cmake 
+    DESTINATION ${CONFIG_INSTALL_DIR}/cmake/Modules)
+   
+INSTALL(FILES 
+        "cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+        "cmake/RobWorkMacros.cmake"
+        DESTINATION ${RW_INSTALL_DIR}/cmake)
+        
 INSTALL(FILES "${RW_ROOT}/src/RobWorkConfig.hpp"
-		DESTINATION "${RW_HPP_INSTALL_DIR}")
+		DESTINATION "${INCLUDE_INSTALL_DIR}")
 INSTALL(DIRECTORY "${RW_ROOT}/ext/boost/"
-		DESTINATION "${RW_EXT_INSTALL_DIR}/boost/"
+		DESTINATION "${INCLUDE_INSTALL_DIR}/ext/boost"
 		PATTERN ".svn" EXCLUDE)
 
 # Install dependencies on Windows
@@ -265,22 +152,22 @@ IF(WIN32)
 	# Install external libraries
 	INSTALL(FILES ${BOOST_LIBRARIES_INSTALL} DESTINATION ${RW_LIB_INSTALL_DIR})
 	INSTALL(DIRECTORY "${Boost_INCLUDE_DIR}/boost/"
-			DESTINATION "${RW_EXT_INSTALL_DIR}/boost/boost/")
+			DESTINATION "${RW_INSTALL_DIR}/ext/boost/")
 	INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 	INSTALL(DIRECTORY "${XERCESC_INCLUDE_DIR}/"
-			DESTINATION "${RW_EXT_INSTALL_DIR}/xerces/")
+			DESTINATION "${RW_INSTALL_DIR}/ext/xerces/")
 ENDIF()
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rw_executable_name loader-test LOCATION)
 CONFIGURE_FILE(
-   "${RW_ROOT}/build/dependencies.cmake.in"
-   "${RW_ROOT}/build/dependencies.cmake"
+   "${RW_ROOT}/cmake/dependencies.cmake.in"
+   "${RW_ROOT}/cmake/dependencies.cmake"
    @ONLY
 )
 
-INSTALL(SCRIPT "${RW_ROOT}/build/dependencies.cmake")
+INSTALL(SCRIPT "${RW_ROOT}/cmake/dependencies.cmake")
 
 # Install the example directories
 INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
@@ -298,18 +185,11 @@ INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
 # Documentation build target
 FIND_PROGRAM(doc_executable doxygen)
 IF(doc_executable)
-  ADD_CUSTOM_TARGET(doc doxygen
-                    WORKING_DIRECTORY ${RW_ROOT}
-  )
+  ADD_CUSTOM_TARGET(doc doxygen WORKING_DIRECTORY ${RW_ROOT} )
 ENDIF()
 
 # Packaging
-INCLUDE(build/packing.cmake)
-
-    # Dashboard
-#IF(DEFINED USE_CDASH)
-#ENDIF()
-
+INCLUDE(cmake/packing.cmake)
 
 # Check for supported MSVC compilers
 # TODO: relocate to test/CMakeLists.txt?

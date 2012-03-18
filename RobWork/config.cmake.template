@@ -49,6 +49,8 @@ ENDIF()
 #SET(RW_DISABLE_PQP ON)
 # set the swig executable to enable swig/lua/python
 #SET(SWIG_EXECUTABLE )
+#SET(RW_PYTHON_BINDINGS_ENABLED OFF)
+
 
 
 
