@@ -574,6 +574,8 @@ namespace {
     template <class T>
     XMLStr createStringFromArray(const T& v, size_t n) {
         std::ostringstream str;
+        str.unsetf(ios::floatfield);            // floatfield not set
+        str.precision(10);
         for (size_t i = 0; i<n; ++i) {
             str<<v(i);
             if (i != n-1)
@@ -590,6 +592,8 @@ namespace {
     template <class T>
     XMLStr createStringFromVector(const T& v, size_t n) {
         std::ostringstream str;
+        str.unsetf(ios::floatfield);            // floatfield not set
+        str.precision(10);
         for (size_t i = 0; i<n; ++i) {
             str<<v[i];
             if (i != n-1)
@@ -664,6 +668,8 @@ xercesc::DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<
 DOMElement* XMLBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, xercesc::DOMDocument* doc) {
     //DOMElement* element = doc->createElement(Rotation3DId);
     std::ostringstream str;
+    str.unsetf(ios::floatfield);            // floatfield not set
+    str.precision(10);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(0,2)<<" ";
     str<<r(1,0)<<" "<<r(1,1)<<" "<<r(1,2)<<" ";
     str<<r(2,0)<<" "<<r(2,1)<<" "<<r(2,2);
@@ -677,6 +683,8 @@ xercesc::DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<
 
     //DOMElement* element = doc->createElement(Rotation2DId);
     std::ostringstream str;
+    str.unsetf(ios::floatfield);            // floatfield not set
+    str.precision(10);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(1,0)<<" "<<r(1,1);
     return createElement(Rotation2DId, XMLStr(str.str()).uni(), doc);
     /*DOMText* txt = doc->createTextNode(XMLStr(str.str()).uni());
