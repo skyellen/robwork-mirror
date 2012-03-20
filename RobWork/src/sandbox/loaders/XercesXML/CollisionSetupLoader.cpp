@@ -5,11 +5,13 @@
  *      Author: lpe
  */
 
-#include <xercesc/validators/common/Grammar.hpp>
 
 #include "CollisionSetupLoader.hpp"
 #include <rw/loaders/xml/XercesErrorHandler.hpp>
-using namespace rw::proximity;
+#include <rw/common/macros.hpp>
+#include <xercesc/validators/common/Grammar.hpp>
+
+
 
 using namespace sandbox;
 using namespace xercesc;

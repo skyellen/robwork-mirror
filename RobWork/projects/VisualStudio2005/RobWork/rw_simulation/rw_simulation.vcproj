@@ -277,6 +277,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner1D.hpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner25D.cpp"
 			>
 		</File>

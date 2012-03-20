@@ -21,14 +21,18 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
-#include <rw/proximity/Proximity.hpp>
+#include <vector>
+#include <string>
 
 namespace sandbox {
+
+typedef std::pair<std::string, std::string> ProximityPair;
+typedef std::vector<ProximityPair > ProximityPairList;
 
 class CollisionSetupLoader
 {
 public:
-    static rw::proximity::ProximityPairList load(const std::string& filename);
+    static ProximityPairList load(const std::string& filename);
 
 private:
     CollisionSetupLoader() {};

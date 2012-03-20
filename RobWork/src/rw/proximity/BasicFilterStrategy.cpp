@@ -22,7 +22,6 @@
 #include <rw/models/JointDevice.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rw/models/ConveyorItem.hpp>
 #include <rw/models/VirtualJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/RevoluteJoint.hpp>

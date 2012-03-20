@@ -177,7 +177,9 @@ public:
         try {
             T entity = dynamic_cast<T>(this);
             return entity;
-        } catch (std::bad_cast &exp) {}
+        } catch (std::bad_cast &exp) {
+			RW_THROW("Unable to perform cast: "<<exp.what());
+		}
         RW_THROW("Unable to perform cast");
     }
 

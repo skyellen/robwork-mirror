@@ -19,11 +19,13 @@
 
 #include <rw/kinematics/Kinematics.hpp>
 
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rw::kinematics;
 using namespace rw::geometry;
 using namespace rw::math;
+using namespace rwlibs::opengl;
 
+/*
 RenderSmoothSkin::RenderSmoothSkin(rw::geometry::IndexedTriMesh<>::Ptr mesh,
                                    rw::kinematics::Frame* base,
                                    std::vector<rw::kinematics::Frame*>& bones,
@@ -127,3 +129,4 @@ void RenderSmoothSkin::draw(const DrawableNode::RenderInfo& info, DrawableNode::
 
 }
 
+*/

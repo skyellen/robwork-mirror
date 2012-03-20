@@ -64,7 +64,7 @@ namespace
 			}
 
 			T len = axis.norm2();
-			return axis / ((T)Pi/(len*(1+len)) );
+			return axis * ((T)Pi/(len*(1+len)) );
 		} 
 
 

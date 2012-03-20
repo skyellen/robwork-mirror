@@ -16,6 +16,8 @@
  ********************************************************************************/
 
 
+#ifdef DEPRECATED
+
 #include "DrawableModelInfo.hpp"
 
 using namespace rw::models;
@@ -77,3 +79,4 @@ void DrawableModelInfo::set(const std::vector<DrawableModelInfo>& data, rw::comm
 }
 
 
+#endif //#ifdef DEPRECATED

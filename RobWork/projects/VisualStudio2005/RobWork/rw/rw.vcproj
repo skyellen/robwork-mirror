@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="rw"
 	ProjectGUID="{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}"
 	RootNamespace="rw"
@@ -48,6 +48,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="true"
+				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -113,6 +114,7 @@
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
+				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -218,6 +220,14 @@
 			Name="geometry"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\AABB.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\AABB.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Box.cpp"
 				>
 			</File>
@@ -231,6 +241,38 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BSphere.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BSphere.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BV.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BV.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BVCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BVCollider.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BVDistanceCalc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\BVDistanceCalc.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cone.cpp"
@@ -254,28 +296,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Contour2D.hpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull2D.cpp"
@@ -308,6 +328,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHullND.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHullND.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Covariance.cpp"
 				>
 			</File>
@@ -329,6 +357,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\DistanceUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\DistanceUtil.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Geometry.cpp"
@@ -391,19 +427,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.cpp"
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedArray.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.hpp"
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedArray.hpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedPolygon.hpp"
@@ -430,6 +459,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriArray.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriArray.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriMesh.cpp"
@@ -475,6 +512,42 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBB.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBB.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBCollider.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBFactory.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBToleranceCollider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBBToleranceCollider.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\OBVDistanceCalc.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\PlainTriMesh.cpp"
@@ -537,6 +610,22 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\QHull3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\QHull3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\QHullND.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\QHullND.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Ray.hpp"
 				>
 				<FileConfiguration
@@ -546,6 +635,22 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\RectDistanceCalc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\RectDistanceCalc.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\RSSDistanceCalc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\RSSDistanceCalc.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Sphere.cpp"
@@ -561,6 +666,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\SphereDistanceCalc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\SphereDistanceCalc.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\STLFile.cpp"
@@ -616,6 +729,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriDistanceCalc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriDistanceCalc.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.cpp"
 				>
 			</File>
@@ -629,6 +750,30 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriIntersectDeviller.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriIntersectDeviller.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriIntersectMoller.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriIntersectMoller.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriToleranceIntersect.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriTriToleranceIntersect.hpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -865,6 +1010,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\FramePairMap.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FramePairMap.hpp"
 				>
 				<FileConfiguration
@@ -896,6 +1045,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\FrameType.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FrameType.hpp"
@@ -939,6 +1092,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\ObjectStateData.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\QState.cpp"
 				>
 			</File>
@@ -969,6 +1126,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\StateCache.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\StateCache.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateData.cpp"
 				>
 			</File>
@@ -982,6 +1147,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\StatelessObject.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateSetup.cpp"
@@ -1033,6 +1202,10 @@
 			Name="common"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\Cache.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\Cache.hpp"
 				>
 			</File>
@@ -1045,6 +1218,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\Event.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\Event.hpp"
 				>
 			</File>
@@ -1054,6 +1231,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\Exception.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\FileCache.cpp"
 				>
 			</File>
 			<File
@@ -1168,11 +1349,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\PairMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\PairMap.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\ProgramOptions.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\ProgramOptions.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\Property.cpp"
 				>
 			</File>
 			<File
@@ -1220,6 +1413,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\ThreadSafeQueue.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\ThreadSafeQueue.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\ThreadSafeStack.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\ThreadSafeStack.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\Timer.cpp"
 				>
 			</File>
@@ -1233,6 +1442,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\TimerUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\Traits.hpp"
 				>
 			</File>
 			<File
@@ -1265,6 +1478,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\loaders\WorkCellFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\loaders\WorkCellFactory.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\loaders\WorkCellLoader.cpp"
@@ -1840,6 +2061,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\math\Metric.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\math\Metric.hpp"
 				>
 				<FileConfiguration
@@ -1875,6 +2100,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\MetricUtil.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricUtil.hpp"
@@ -2038,6 +2267,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\math\Vector.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\Vector.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\math\Vector2D.cpp"
 				>
 			</File>
@@ -2068,6 +2305,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\math\VectorND.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\VectorND.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\math\VelocityScrew6D.cpp"
 				>
 			</File>
@@ -2087,36 +2332,6 @@
 			Name="models"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\models\Accessor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\Accessor.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\CollisionModelInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\CollisionModelInfo.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\models\CompositeDevice.cpp"
 				>
 			</File>
@@ -2130,6 +2345,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\CompositeJointDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\CompositeJointDevice.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentJoint.cpp"
@@ -2354,6 +2577,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\models\Object.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\Object.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\models\ParallelDevice.cpp"
 				>
 			</File>
@@ -2427,6 +2658,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\SE3Device.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\SE3Device.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\SerialDevice.cpp"
@@ -2842,19 +3081,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\Proximity.cpp"
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityCache.cpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\Proximity.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityCache.hpp"
@@ -2958,6 +3186,106 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyData.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyData.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\Raycaster.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\Raycaster.hpp"
+				>
+			</File>
+			<Filter
+				Name="rwstrategy"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BinaryBVTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BinaryBVTree.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BinaryIdxBVTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BinaryIdxBVTree.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTree.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeCollider.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeCollider.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeColliderFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeColliderFactory.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeFactory.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeToleranceCollider.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeToleranceCollider.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\OBVTreeDFSCollider.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\OBVTreeDFSCollider.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\ProximityStrategyRW.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\proximity\rwstrategy\ProximityStrategyRW.hpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="sensor"
@@ -3009,6 +3337,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Contact2D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\sensor\Contact2D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\sensor\Contact3D.cpp"
 				>
 			</File>
 			<File
@@ -3169,6 +3505,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\sensor\StereoCamera.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\sensor\StereoCamera.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileArray.cpp"
 				>
 			</File>
@@ -3182,6 +3526,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\sensor\TactileArrayUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\sensor\TactileArrayUtil.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.cpp"
@@ -3202,6 +3554,10 @@
 		<Filter
 			Name="trajectory"
 			>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\Blend.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Blend.hpp"
 				>
@@ -3229,6 +3585,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\CircularInterpolator.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CircularInterpolator.hpp"
 				>
 				<FileConfiguration
@@ -3253,6 +3613,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.hpp"
@@ -3296,6 +3660,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.hpp"
 				>
 				<FileConfiguration
@@ -3305,6 +3673,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectoryIterator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectoryIterator.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorUtil.cpp"
@@ -3322,6 +3698,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\LinearInterpolator.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LinearInterpolator.hpp"
 				>
 				<FileConfiguration
@@ -3331,6 +3711,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.hpp"
@@ -3344,6 +3728,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\ParabolicBlend.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\ParabolicBlend.hpp"
 				>
 				<FileConfiguration
@@ -3353,6 +3741,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\Path.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Path.hpp"
@@ -3419,6 +3811,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\Trajectory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Trajectory.hpp"
 				>
 				<FileConfiguration
@@ -3445,6 +3841,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp"
 				>
 				<FileConfiguration
@@ -3463,6 +3863,10 @@
 		<Filter
 			Name="plugin"
 			>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.hpp"
 				>
@@ -3499,6 +3903,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginFactory.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginFactory.hpp"
@@ -3658,6 +4066,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\graspplanning\GWSMeasure3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graspplanning\GWSMeasure3D.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\graspplanning\PlaneClearanceFilter.cpp"
 				>
 			</File>
@@ -3667,6 +4083,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\graspplanning\PoseGenerator.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graspplanning\QualityMeasure2D.cpp"
 				>
 			</File>
 			<File
@@ -3731,6 +4151,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\graphics\Model3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3DFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3DFactory.hpp"
 				>
 			</File>
 			<File

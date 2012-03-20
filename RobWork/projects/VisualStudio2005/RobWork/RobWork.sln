@@ -2,14 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw", "rw\rw.vcproj", "{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}"
-	ProjectSection(ProjectDependencies) = postProject
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32} = {0AA71909-BFE5-4A5C-BC30-88B63794EF32}
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B} = {39FB8748-618E-4BD7-8E42-549537AD2B4B}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_algorithms", "rw_algorithms\rw_algorithms.vcproj", "{8D63372C-A736-466F-89C5-D2CB06560820}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_dll", "rw_dll\rw_dll.vcproj", "{2EC16934-3CE8-41EE-AD09-8364EBAB3372}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_opengl", "rw_drawable\rw_drawable.vcproj", "{7626F501-49CD-419B-B421-E88007980994}"
 EndProject
@@ -31,15 +25,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_sandbox", "rw_sandbox\rw
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "..\..\..\ext\lua\VisualStudio2005\lua.vcproj", "{52A4D050-5888-451F-A062-72A902C1B9B3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tolualib", "..\..\..\ext\tolua\win32\vc8\tolualib\tolualib.vcproj", "{39FB8748-618E-4BD7-8E42-549537AD2B4B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisualStudioConsoleApp", "..\..\..\example\VisualStudioConsoleApp\VisualStudioConsoleApp.vcproj", "{6DD7BB2A-D883-44F0-881E-0B373AFC4952}"
 	ProjectSection(ProjectDependencies) = postProject
-		{52A4D050-5888-451F-A062-72A902C1B9B3} = {52A4D050-5888-451F-A062-72A902C1B9B3}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tolua", "..\..\..\ext\tolua\win32\vc8\toluaapp\toluaapp.vcproj", "{0AA71909-BFE5-4A5C-BC30-88B63794EF32}"
-	ProjectSection(ProjectDependencies) = postProject
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B} = {39FB8748-618E-4BD7-8E42-549537AD2B4B}
-		{52A4D050-5888-451F-A062-72A902C1B9B3} = {52A4D050-5888-451F-A062-72A902C1B9B3}
+		{471980C7-9535-408D-A77C-16909D2F5F14} = {471980C7-9535-408D-A77C-16909D2F5F14}
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108} = {CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}
 	EndProjectSection
 EndProject
 Global
@@ -61,12 +50,6 @@ Global
 		{8D63372C-A736-466F-89C5-D2CB06560820}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
 		{8D63372C-A736-466F-89C5-D2CB06560820}.Release|Win32.ActiveCfg = Release|Win32
 		{8D63372C-A736-466F-89C5-D2CB06560820}.Release|Win32.Build.0 = Release|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Debug|Win32.Build.0 = Debug|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Release No LTCG|Win32.ActiveCfg = Release No LTCG|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Release|Win32.ActiveCfg = Release|Win32
-		{2EC16934-3CE8-41EE-AD09-8364EBAB3372}.Release|Win32.Build.0 = Release|Win32
 		{7626F501-49CD-419B-B421-E88007980994}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7626F501-49CD-419B-B421-E88007980994}.Debug|Win32.Build.0 = Debug|Win32
 		{7626F501-49CD-419B-B421-E88007980994}.Release No LTCG|Win32.ActiveCfg = Release No LTCG|Win32
@@ -127,18 +110,12 @@ Global
 		{52A4D050-5888-451F-A062-72A902C1B9B3}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
 		{52A4D050-5888-451F-A062-72A902C1B9B3}.Release|Win32.ActiveCfg = Release|Win32
 		{52A4D050-5888-451F-A062-72A902C1B9B3}.Release|Win32.Build.0 = Release|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Debug|Win32.Build.0 = Debug|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Release No LTCG|Win32.ActiveCfg = Release No LTCG|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Release|Win32.ActiveCfg = Release|Win32
-		{39FB8748-618E-4BD7-8E42-549537AD2B4B}.Release|Win32.Build.0 = Release|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Debug|Win32.Build.0 = Debug|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Release No LTCG|Win32.ActiveCfg = Release No LTCG|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Release|Win32.ActiveCfg = Release|Win32
-		{0AA71909-BFE5-4A5C-BC30-88B63794EF32}.Release|Win32.Build.0 = Release|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Debug|Win32.Build.0 = Debug|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Release No LTCG|Win32.ActiveCfg = Release|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Release No LTCG|Win32.Build.0 = Release|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Release|Win32.ActiveCfg = Release|Win32
+		{6DD7BB2A-D883-44F0-881E-0B373AFC4952}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

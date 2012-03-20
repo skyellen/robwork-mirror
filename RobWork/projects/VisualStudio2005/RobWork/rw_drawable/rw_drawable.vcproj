@@ -267,6 +267,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderSmoothSkin.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp"
 				>
 			</File>
@@ -309,6 +313,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderArrow.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.hpp"
 				>
 			</File>
@@ -342,6 +350,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderSmoothSkin.hpp"
 				>
 			</File>
 			<File

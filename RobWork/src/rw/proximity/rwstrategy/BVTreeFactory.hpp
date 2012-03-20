@@ -369,7 +369,7 @@ namespace proximity {
 	    template<class BV>
 	    class OBVMeanSplitter: public BVTreeFactory::BVSplitterStrategy<BV> {
 	    public:
-	        BOOST_STATIC_ASSERT_MSG( (boost::is_base_of<rw::geometry::OBV<BV>, BV>::value) , "Bounding volume MUST inherit geometry::OBV");
+	        //BOOST_STATIC_ASSERT_MSG( (boost::is_base_of<rw::geometry::OBV<BV>, BV>::value) , "Bounding volume MUST inherit geometry::OBV");
 
 	        size_t partitionMesh(rw::geometry::IndexedTriArray<>& mesh, BV& obb){
 

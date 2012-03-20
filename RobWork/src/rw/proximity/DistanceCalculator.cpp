@@ -162,8 +162,8 @@ DistanceCalculator::~DistanceCalculator()
 DistanceStrategy::Result DistanceCalculator::distance(const State& state,
 											std::vector<DistanceStrategy::Result>* result) const
 {
-	_cnt++;
-	ScopedTimer stimer(_timer);
+	//_cnt++;
+	//ScopedTimer stimer(_timer);
     FKTable fk(state);
 
     if (result != NULL)
@@ -202,8 +202,8 @@ DistanceStrategy::Result DistanceCalculator::distance(const State& state,
 DistanceResult DistanceCalculator::distanceOMP(const State& state,
 											std::vector<DistanceResult>* result) const
 {
-	_cnt++;
-	ScopedTimer stimer(_timer);
+	//_cnt++;
+	//ScopedTimer stimer(_timer);
     FKTable fk(state);
 
     if (result != NULL)
@@ -261,7 +261,7 @@ DistanceStrategy::Result DistanceCalculator::distance(const State& state,
                                             const Frame* frame,
                                             std::vector<DistanceStrategy::Result>* result) const
 {
-	ScopedTimer stimer(_timer);
+	//ScopedTimer stimer(_timer);
     FKTable fk(state);
 
     if (result != NULL)

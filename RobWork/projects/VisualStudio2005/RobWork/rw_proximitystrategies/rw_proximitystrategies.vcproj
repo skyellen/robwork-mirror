@@ -211,14 +211,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\ProximityStrategyFactory.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\ProximityStrategyFactory.hpp"
-			>
-		</File>
-		<File
 			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\ProximityStrategyPQP.cpp"
 			>
 		</File>

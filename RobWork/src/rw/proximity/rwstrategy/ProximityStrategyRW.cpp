@@ -20,7 +20,6 @@
 
 #include <float.h>
 #include <vector>
-#define RW_DEBUG_ENABLE
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
