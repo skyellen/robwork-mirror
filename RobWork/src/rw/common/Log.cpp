@@ -118,6 +118,8 @@ void Log::setWriterForMask(int mask, LogWriter::Ptr writer)
 
 rw::common::LogWriter& Log::get(LogIndex id)
 {
+    if( !isLogEnabled(id) )
+        return *_defaultWriter;
 	if(isValidLogIndex(id))
 		return *_writers[id];
 	return *_defaultWriter;

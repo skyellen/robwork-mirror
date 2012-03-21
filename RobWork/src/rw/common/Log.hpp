@@ -89,6 +89,8 @@ namespace rw { namespace common {
 			AllMask = 0xFFFF
     	};
 
+
+
     	//! @brief Indices for different logs.
     	enum LogIndex {
     		Fatal=0, Critical=1,
@@ -100,6 +102,17 @@ namespace rw { namespace common {
     		User7=12, User8=13
     	};
 
+        static LogIndexMask toMask(LogIndex idx){
+                LogIndexMask toMaskArr[] = {FatalMask, CriticalMask,
+                                          ErrorMask, WarningMask,
+                                                    InfoMask, DebugMask,
+                                                    User1Mask, User2Mask,
+                                                    User3Mask, User4Mask,
+                                                    User5Mask, User6Mask,
+                                                    User7Mask, User8Mask,
+                                                    AllMask};
+                return toMaskArr[idx];
+            }
 
     	/**
     	 * @brief convenience function for getting the LogWriter
@@ -366,6 +379,9 @@ namespace rw { namespace common {
 			return (_logEnabledMask & mask) != 0;
 		}
 
+        bool isLogEnabled(LogIndex idx) {
+            return (_logEnabledMask & toMask(idx) ) != 0;
+        }
 
 		int _logEnabledMask;
 		int _tabLevel;
