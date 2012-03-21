@@ -257,19 +257,25 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
     Rotation3D<> rot(values[0], values[1], values[2],
                         values[3], values[4], values[5],
                         values[6], values[7], values[8]);
+
+    LinearAlgebra::Matrix<>::type u, v;
+    boost::numeric::ublas::vector<double> w;
+    LinearAlgebra::svd(rot.m(), u, w ,v);
+    LinearAlgebra::Matrix<>::type res = prod(u,trans(v));
+
+    rot = Rotation3D<>(res);
+
     using namespace boost::numeric::ublas;
     /*
     */
 
     while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+        std::cout.precision(16);
         std::cout << rot << std::endl;
         RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
                  "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
-        LinearAlgebra::Matrix<>::type u, v;
-        boost::numeric::ublas::vector<double> w;
         LinearAlgebra::svd(rot.m(), u, w ,v);
-        LinearAlgebra::Matrix<>::type res = prod(u,trans(v));
-
+        res = prod(u,trans(v));
         rot = Rotation3D<>(res);
 
     }
@@ -574,8 +580,8 @@ namespace {
     template <class T>
     XMLStr createStringFromArray(const T& v, size_t n) {
         std::ostringstream str;
-        str.unsetf(ios::floatfield);            // floatfield not set
-        str.precision(10);
+        str.unsetf(std::ios::floatfield);            // floatfield not set
+        str.precision(16);
         for (size_t i = 0; i<n; ++i) {
             str<<v(i);
             if (i != n-1)
@@ -592,8 +598,8 @@ namespace {
     template <class T>
     XMLStr createStringFromVector(const T& v, size_t n) {
         std::ostringstream str;
-        str.unsetf(ios::floatfield);            // floatfield not set
-        str.precision(10);
+        str.unsetf(std::ios::floatfield);            // floatfield not set
+        str.precision(16);
         for (size_t i = 0; i<n; ++i) {
             str<<v[i];
             if (i != n-1)
@@ -668,8 +674,8 @@ xercesc::DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<
 DOMElement* XMLBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, xercesc::DOMDocument* doc) {
     //DOMElement* element = doc->createElement(Rotation3DId);
     std::ostringstream str;
-    str.unsetf(ios::floatfield);            // floatfield not set
-    str.precision(10);
+    str.unsetf(std::ios::floatfield);            // floatfield not set
+    str.precision(16);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(0,2)<<" ";
     str<<r(1,0)<<" "<<r(1,1)<<" "<<r(1,2)<<" ";
     str<<r(2,0)<<" "<<r(2,1)<<" "<<r(2,2);
@@ -683,8 +689,8 @@ xercesc::DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<
 
     //DOMElement* element = doc->createElement(Rotation2DId);
     std::ostringstream str;
-    str.unsetf(ios::floatfield);            // floatfield not set
-    str.precision(10);
+    str.unsetf(std::ios::floatfield);            // floatfield not set
+    str.precision(16);
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(1,0)<<" "<<r(1,1);
     return createElement(Rotation2DId, XMLStr(str.str()).uni(), doc);
     /*DOMText* txt = doc->createTextNode(XMLStr(str.str()).uni());
