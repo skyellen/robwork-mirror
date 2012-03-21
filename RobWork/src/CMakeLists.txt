@@ -11,10 +11,10 @@ IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
 ENDIF ()
 
 # Install all headerfiles
-INSTALL(DIRECTORY rw rwlibs ${RW_SANDBOX_LIB} DESTINATION ${RW_HPP_INSTALL_DIR} 
-    FILES_MATCHING 
-        PATTERN "*.h" 
-        PATTERN "*.hpp"
-        PATTERN ".svn" EXCLUDE
-)
+#INSTALL(DIRECTORY rw rwlibs ${RW_SANDBOX_LIB} DESTINATION ${INCLUDE_INSTALL_DIR} 
+#    FILES_MATCHING 
+#        PATTERN "*.h" 
+#        PATTERN "*.hpp"
+#        PATTERN ".svn" EXCLUDE
+#)
 
