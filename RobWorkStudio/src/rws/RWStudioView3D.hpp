@@ -46,16 +46,16 @@
 #include <rw/graphics/SceneViewer.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
 #include <rwlibs/opengl/RenderCameraFrustum.hpp>
-#include <rws/RobWorkStudioPlugin.hpp>
-
 #include <rw/graphics/SceneViewer.hpp>
+
+#include "RobWorkStudioPlugin.hpp"
 #include "SceneViewerWidget.hpp"
 
 namespace rws {
 class RobWorkStudio;
 
     //! @addtogroup rws
-    //! @{
+    //! @{ 
 /**
  * @brief This class adds RobWorkStudio specific functionality to a WorkCellViewer.
  *

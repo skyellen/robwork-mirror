@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="runtolua.bat &quot;$(OutDir)&quot;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -88,7 +88,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="runtolua.bat &quot;$(OutDir)&quot;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -3753,30 +3753,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-		</Filter>
-		<Filter
-			Name="lua"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rws\lua\LuaRWStudio.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rws\lua\LuaRWStudio.hpp"
-				>
-			</File>
-			<Filter
-				Name="Generated"
-				>
-				<File
-					RelativePath="..\..\..\..\src\rws\lua\LuaRWStudioStub.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\..\src\rws\lua\LuaRWStudioStub.hpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -1,0 +1,9 @@
+# -*- cmake -*-
+
+# User defined plugins to build that are not part of the standard RobWorkStudio
+# distribution. Rename this file to UserPlugins.cmake to let it be included in
+# the build system.
+
+# If your plugin is placed in a subdirectory named myplugin, the plugin can be
+# added to the build by adding the line:
+add_subdirectory(myplugin)

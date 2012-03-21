@@ -101,7 +101,6 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
         }
     }
     _propMap.set("cmdline",map);
-
     PropertyMap *currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     if(currentSettings==NULL){
         _propMap.add("RobWorkStudioSettings", "Settings for RobWorkStudio", settings);
@@ -111,18 +110,15 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     }*/
 
     _assistant = new HelpAssistant();
-
     _settingsMap = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
 
     // set the drag and drop property to true
     setupFileActions();
     setupViewGL();
-
     _propEditor = new PropertyViewEditor( NULL );
     _propEditor->setPropertyMap( &_propMap  );
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
-
     setupHelpMenu();
 
     int width = _settingsMap->get<int>("WindowWidth", 1024);
@@ -137,7 +133,6 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
         }
         this->restoreState(mainAppState);
     }
-
 
     resize(width, height);
     this->move(x,y);
@@ -155,10 +150,9 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     //BOOST_FOREACH(const PluginSetup& plugin, plugins) {
     //    addPlugin(plugin.plugin, plugin.visible, plugin.area);
     //}
-
     newWorkCell();
 
-    setAcceptDrops(TRUE);
+    setAcceptDrops(true);
 }
 
 RobWorkStudio::~RobWorkStudio()
@@ -428,10 +422,10 @@ void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
         buf
             << "Exception in opening of plugin "
             << StringUtil::quote(plugin.name().toStdString());
-
-        QMessageBox::information(
+ 
+        QMessageBox::information( 
             NULL,
-            buf.str().c_str(),
+            buf.str().c_str(), 
             exc.getMessage().getText().c_str(),
             QMessageBox::Ok);
     }
@@ -463,6 +457,7 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
                               bool visible,
                               Qt::DockWidgetArea area)
 {
+
     plugin->setLog( _robwork->getLogPtr() );
     plugin->setRobWorkStudio(this);
     plugin->setRobWorkInstance(_robwork);
@@ -502,7 +497,6 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
 
 void RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
 {
-	
     QSettings settings(file.c_str(), QSettings::IniFormat);
     switch (settings.status()) {
     case QSettings::NoError:
@@ -531,6 +525,7 @@ void RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
 
 void RobWorkStudio::setupPlugins(QSettings& settings)
 {
+
     QStringList groups = settings.childGroups();
 
     settings.beginGroup("Plugins");
@@ -794,7 +789,7 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     WorkCell::Ptr wc = WorkCellFactory::load(filename.toStdString(), wcsene);
     if(wc==NULL || wcsene->getWorkCell()==NULL){
         RW_THROW("Loading of workcell failed!");
-    }
+}
 
     //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
     // don't set any variables before we know they are good

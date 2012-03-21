@@ -6,6 +6,10 @@
 	InheritedPropertySheets=".\rws_settings_global.vsprops"
 	>
 	<Tool
+		Name="VCCLCompilerTool"
+		TreatWChar_tAsBuiltInType="false"
+	/>
+	<Tool
 		Name="VCLinkerTool"
 		AdditionalDependencies="rwstudio.lib QtTreePropertyBrowser.lib"
 		AdditionalLibraryDirectories="&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\Debug&quot;"

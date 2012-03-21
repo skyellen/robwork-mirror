@@ -39,7 +39,6 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/Event.hpp>
 
-#include <rws/propertyview/PropertyInspector.hpp>
 #include <rws/propertyview/PropertyViewEditor.hpp>
 
 #include "RobWorkStudioPlugin.hpp"
