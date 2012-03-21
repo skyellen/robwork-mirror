@@ -53,7 +53,7 @@
 #include <sstream>
 #include "RWSImageLoaderPlugin.hpp"
 
-#include <sandbox/loaders/ColladaLoader.hpp>
+//#include <sandbox/loaders/ColladaLoader.hpp>
 
 using namespace rw;
 using namespace rw::common;
@@ -76,7 +76,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     _settingsMap(NULL)
 {
     _robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
-    _robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
+    //_robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
 
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
