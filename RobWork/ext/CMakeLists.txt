@@ -1,11 +1,11 @@
 
-INCLUDE(ExternalProject)
+#INCLUDE(ExternalProject)
 
 # A short alias for the current directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 
-SET(LIB_INSTALL_DIR ${RW_LIB_INSTALL_DIR})
-SET(SRC_INSTALL_DIR ${RW_EXT_INSTALL_DIR})
+#SET(LIB_INSTALL_DIR ${RW_LIB_INSTALL_DIR})
+#SET(SRC_INSTALL_DIR ${RW_EXT_INSTALL_DIR})
 
 # Subdirectories to process.
 IF(RW_ENABLE_INTERNAL_PQP_TARGET)
@@ -79,8 +79,8 @@ IF(WIN32)
     
     configure_file("${Root}/libs_mingw/glut32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/glut32.lib" COPYONLY)
     configure_file("${Root}/libs_mingw/glut32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/glut32.dll" COPYONLY)
-    INSTALL(FILES "${Root}/libs_mingw/glut32.lib" DESTINATION "${RW_LIB_INSTALL_DIR}")
-    INSTALL(FILES "${Root}/libs_mingw/glut32.dll" DESTINATION "${RW_BIN_INSTALL_DIR}")
+    INSTALL(FILES "${Root}/libs_mingw/glut32.lib" DESTINATION "${LIB_INSTALL_DIR}")
+    INSTALL(FILES "${Root}/libs_mingw/glut32.dll" DESTINATION "${BIN_INSTALL_DIR}")
     
     SET(BLAS_LAPACK_DEST "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
   ELSEIF(MSVC)
@@ -106,6 +106,6 @@ IF(WIN32)
   INSTALL(FILES "${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
                 "${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
                 "${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-          DESTINATION "${RW_LIB_INSTALL_DIR}")
+          DESTINATION "${LIB_INSTALL_DIR}")
 ENDIF()
 
