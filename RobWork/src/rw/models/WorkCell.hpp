@@ -327,7 +327,9 @@ namespace rw { namespace models {
 
 
 
-        // new overloaded add methods
+        rw::common::Ptr<Object> findObject(const std::string& name) const;
+
+            // new overloaded add methods
         void add(rw::common::Ptr<Device> device){ addDevice(device); }
         void add(rw::common::Ptr<Object> object);
         void add(rw::common::Ptr<rw::sensor::Sensor> sensor);

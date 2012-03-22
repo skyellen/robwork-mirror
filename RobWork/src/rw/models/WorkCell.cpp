@@ -116,6 +116,15 @@ rw::sensor::Sensor::Ptr WorkCell::findSensor(const std::string& name) const
     return NULL;
 }
 
+Object::Ptr WorkCell::findObject(const std::string& name) const
+{
+    BOOST_FOREACH(Object::Ptr obj, _objects){
+        if(name == obj->getName())
+            return obj;
+    }
+    return NULL;
+}
+
 Device::Ptr WorkCell::findDevice(const std::string& name) const
 {
 	typedef std::vector<Device::Ptr>::const_iterator I;
