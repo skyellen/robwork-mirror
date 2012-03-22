@@ -91,7 +91,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
             geom->setTransform( info.getTransform() );
             geom->setScale( info.getGeoScale() );
-
+            std::cout << model->getGeometryIDs().size() << std::endl;
             addGeometry(model.get(), *geom);
         } catch (const rw::common::Exception& exp) {
             RW_WARN("Unable to load geometry "<<info.getGeoString()<<" with message "<<exp);

@@ -24,5 +24,6 @@ IF(build)
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} pathoptimization ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(pathoptimization "rwlibs/pathoptimization" ${SRC_FILES_HPP}) 
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()

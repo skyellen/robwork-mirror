@@ -5,7 +5,7 @@ SET(SRC_FILES
     #opengl/RenderBeam.cpp
     #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
-    loaders/ColladaLoader.cpp
+    #loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
     #loaders/RWXMLFile.cpp
     #osg/SceneOSG.cpp
@@ -90,6 +90,6 @@ SET(SRC_FILES_HPP
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
-
+TARGET_LINK_LIBRARIES(rw_sandbox rw)
 INSTALL(TARGETS rw_sandbox DESTINATION ${LIB_INSTALL_DIR} )
 INSTALL(FILES ${SRC_FILES_HPP} DESTINATION ${INCLUDE_INSTALL_DIR}/sandbox )

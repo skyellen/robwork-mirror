@@ -43,7 +43,7 @@ namespace rwlibs { namespace opengl {
 	 *
 	 * @note The number of attached bones to a single vertice should not be too large <5.
 	 */
-/*	class RenderSmoothSkin: public rw::graphics::Render {
+	class RenderSmoothSkin: public rw::graphics::Render {
 	    typedef std::pair<int, float> VerticeWeight;
 	    typedef std::vector<VerticeWeight> BoneWeights;
 
@@ -86,7 +86,7 @@ namespace rwlibs { namespace opengl {
 
 
 	};
-*/
+
 
     /*@}*/
 }}

@@ -37,6 +37,7 @@ IF(build)
       RenderPointCloud.cpp
       RenderCameraFrustum.cpp
       DrawableGeometry.cpp
+      RenderSmoothSkin.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -58,9 +59,11 @@ IF(build)
       RenderPointCloud.hpp
       RenderCameraFrustum.hpp
       DrawableGeometry.hpp
+      RenderSmoothSkin.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} opengl ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(opengl "rwlibs/opengl" ${SRC_FILES_HPP}) 
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 endif()

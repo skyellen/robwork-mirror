@@ -25,7 +25,7 @@ using namespace rw::geometry;
 using namespace rw::math;
 using namespace rwlibs::opengl;
 
-/*
+
 RenderSmoothSkin::RenderSmoothSkin(rw::geometry::IndexedTriMesh<>::Ptr mesh,
                                    rw::kinematics::Frame* base,
                                    std::vector<rw::kinematics::Frame*>& bones,
@@ -55,7 +55,7 @@ void RenderSmoothSkin::init(IndexedTriMesh<>::Ptr mesh,
     // first run through the weights to estimate the size of the array
     size_t sum = 0;
     BOOST_FOREACH(BoneWeights& weight, weights){
-        sum += weigth.size();
+        sum += weight.size();
         BOOST_FOREACH(VerticeWeight& vw, weight){
             vertsRef[vw.first]++;
         }
@@ -79,7 +79,8 @@ void RenderSmoothSkin::init(IndexedTriMesh<>::Ptr mesh,
     RW_ASSERT( sum==idx );
 
     // now add the relevant entries to the array
-    uint32_t idx = 0, vidx = 0;
+    idx = 0;
+    vidx = 0;
 
     while( idx<_weights.size() ){
         uint8_t wcount = _weights[idx];
@@ -129,4 +130,3 @@ void RenderSmoothSkin::draw(const DrawableNode::RenderInfo& info, DrawableNode::
 
 }
 
-*/
