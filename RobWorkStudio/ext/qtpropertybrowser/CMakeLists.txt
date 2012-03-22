@@ -141,8 +141,9 @@ QT4_ADD_RESOURCES(ResourceFiles ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowse
 ADD_LIBRARY(${TargetName} ${SRC_FILES_CPP} ${ResourceFiles})
 
 # Install stuff
-INSTALL(TARGETS ${TargetName} DESTINATION "${RWS_LIB_INSTALL_DIR}")
-INSTALL(DIRECTORY "${RWSTUDIO_ROOT}/ext/qtpropertybrowser/"
-		DESTINATION "${RWS_EXT_INSTALL_DIR}/qtpropertybrowser/"
-		PATTERN ".svn" EXCLUDE
+INSTALL(TARGETS ${TargetName} DESTINATION "${LIB_INSTALL_DIR}")
+INSTALL(DIRECTORY "${RWS_ROOT}/ext/qtpropertybrowser/"
+		DESTINATION "${EXT_INSTALL_DIR}/qtpropertybrowser/"
+		PATTERN 
+		".svn,.cpp" EXCLUDE
 		)
