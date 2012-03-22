@@ -25,8 +25,8 @@
 #include <rw/common/Message.hpp>
 #include <rw/trajectory/Path.hpp>
 
-#include <rwscl/luaeditor/LuaEditorWindow.hpp>
-#include <rwscl/luaeditor/LuaConsoleWidget.hpp>
+#include <rwslibs/luaeditor/LuaEditorWindow.hpp>
+#include <rwslibs/luaeditor/LuaConsoleWidget.hpp>
 
 struct lua_State;
 

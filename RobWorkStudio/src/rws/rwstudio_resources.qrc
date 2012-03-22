@@ -32,25 +32,25 @@
         <file>../images/bottom_view_100.png</file>
         <file>../images/rear_view_100.png</file>
         
-        <file alias="jog.png" >../rwscl/jog/jog.png</file>
-        <file alias="log.png" >../rwscl/log/log.png</file>
-        <file alias="backward.png" >../rwscl/playback/backward.png</file>
-        <file alias="end.png" >../rwscl/playback/end.png</file>
-        <file alias="fileopen.png" >../rwscl/playback/fileopen.png</file>
-        <file alias="filesave.png" >../rwscl/playback/filesave.png</file>
-        <file alias="forward.png" >../rwscl/playback/forward.png</file>
-        <file alias="pause.png" >../rwscl/playback/pause.png</file>
-        <file alias="playback.png" >../rwscl/playback/playback.png</file>
-        <file alias="record_images.png" >../rwscl/playback/record_images.png</file>
-        <file alias="reload.png" >../rwscl/playback/reload.png</file>
-        <file alias="settings.png" >../rwscl/playback/settings.png</file>
-        <file alias="start.png" >../rwscl/playback/start.png</file>
-        <file alias="stop.png" >../rwscl/playback/stop.png</file>
-        <file alias="propertyview.png" >../rwscl/propertyview/propertyview.png</file>
-        <file alias="treeview.png" >../rwscl/treeview/treeview.png</file>
-        <file alias="planning.png" >../rwscl/planning/planning.png</file>
-        <file alias="lua.png">../rwscl/lua/lua.png</file>
-        <file alias="sensors.png" >../rwscl/sensors/sensors.png</file>
-		<file alias="wordlist.txt">../rwscl/luaeditor/wordlist.txt</file>
+        <file alias="jog.png" >../rwslibs/jog/jog.png</file>
+        <file alias="log.png" >../rwslibs/log/log.png</file>
+        <file alias="backward.png" >../rwslibs/playback/backward.png</file>
+        <file alias="end.png" >../rwslibs/playback/end.png</file>
+        <file alias="fileopen.png" >../rwslibs/playback/fileopen.png</file>
+        <file alias="filesave.png" >../rwslibs/playback/filesave.png</file>
+        <file alias="forward.png" >../rwslibs/playback/forward.png</file>
+        <file alias="pause.png" >../rwslibs/playback/pause.png</file>
+        <file alias="playback.png" >../rwslibs/playback/playback.png</file>
+        <file alias="record_images.png" >../rwslibs/playback/record_images.png</file>
+        <file alias="reload.png" >../rwslibs/playback/reload.png</file>
+        <file alias="settings.png" >../rwslibs/playback/settings.png</file>
+        <file alias="start.png" >../rwslibs/playback/start.png</file>
+        <file alias="stop.png" >../rwslibs/playback/stop.png</file>
+        <file alias="propertyview.png" >../rwslibs/propertyview/propertyview.png</file>
+        <file alias="treeview.png" >../rwslibs/treeview/treeview.png</file>
+        <file alias="planning.png" >../rwslibs/planning/planning.png</file>
+        <file alias="lua.png">../rwslibs/lua/lua.png</file>
+        <file alias="sensors.png" >../rwslibs/sensors/sensors.png</file>
+		<file alias="wordlist.txt">../rwslibs/luaeditor/wordlist.txt</file>
     </qresource>
 </RCC>

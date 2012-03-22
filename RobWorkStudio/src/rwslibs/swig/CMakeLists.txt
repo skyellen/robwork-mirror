@@ -15,7 +15,7 @@ IF( SWIG_FOUND )
     	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES SWIG_FLAGS "-includeall")
     
         SWIG_ADD_MODULE(rws_lua lua rws.i LuaState.cpp ScriptTypes.cpp)
-        SWIG_LINK_LIBRARIES(rws_lua rwstudio rwscl_rwstudioapp
+        SWIG_LINK_LIBRARIES(rws_lua rws rws_rwstudioapp
                     ${RWS_COMPONENT_LIBRARIES} 
                     ${RWS_PLUGIN_LIBRARIES} 
                     ${ROBWORKSTUDIO_LIBRARIES} 
@@ -52,8 +52,8 @@ IF( SWIG_FOUND )
         IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
             MESSAGE(STATUS "RobWorkStudio: Python bindings ENABLED!")
             INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-            SWIG_ADD_MODULE(rws python rws.i ScriptTypes.cpp)
-            SWIG_LINK_LIBRARIES(rws rwstudio rwscl_rwstudioapp 
+            SWIG_ADD_MODULE(rws_py python rws.i ScriptTypes.cpp)
+            SWIG_LINK_LIBRARIES(rws_py rwstudio rws_rwstudioapp 
                 ${RWS_COMPONENT_LIBRARIES} 
                 ${RWS_PLUGIN_LIBRARIES} 
                 ${ROBWORKSTUDIO_LIBRARIES} 

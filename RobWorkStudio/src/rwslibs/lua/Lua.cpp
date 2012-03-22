@@ -23,8 +23,8 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 
 #include <rws/RobWorkStudio.hpp>
-#include <rwscl/swig/ScriptTypes.hpp>
-#include <rwscl/swig/LuaState.hpp>
+#include <rwslibs/swig/ScriptTypes.hpp>
+#include <rwslibs/swig/LuaState.hpp>
 
 extern "C" {
     #include <lua.h>

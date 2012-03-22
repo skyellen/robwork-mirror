@@ -6,7 +6,7 @@ ADD_SUBDIRECTORY(rws)
 # compile the component libraries (plugins and other static libs) 
 SET(ENV{RWS_COMPONENT_LIBRARIES} "")
 SET(ENV{RWS_PLUGIN_LIBRARIES} "")
-ADD_SUBDIRECTORY(rwscl)
+ADD_SUBDIRECTORY(rwslibs)
 
 # Then sandbox if choosen
 OPTION(RWS_BUILD_SANDBOX "Set when you want to build the sandbox library" ${RWS_BUILD_SANDBOX})
@@ -20,11 +20,10 @@ SET(RWS_COMPONENT_LIBRARIES $ENV{RWS_COMPONENT_LIBRARIES} CACHE STRING "componen
 # now create the actual RobWorkStudio executable
 # Now the RobWorkStudio executable need to be build:
 ADD_EXECUTABLE(RobWorkStudio main.cpp )
-SET(LIBS_TMP ${RWS_PLUGIN_LIBRARIES} rwstudio ${RWS_COMPONENT_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
-TARGET_LINK_LIBRARIES(RobWorkStudio  ${LIBS_TMP} rwscl_rwstudioapp ${ROBWORK_LIBRARIES})
-MESSAGE(" ${LIBS_TMP} rwscl_rwstudioapp ${ROBWORK_LIBRARIES} ")
+SET(LIBS_TMP ${RWS_PLUGIN_LIBRARIES} rws ${RWS_COMPONENT_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
+TARGET_LINK_LIBRARIES(RobWorkStudio  ${LIBS_TMP} rws_rwstudioapp ${ROBWORK_LIBRARIES})
 IF (RWS_USE_STATIC_LINK_PLUGINS)
-    ADD_DEPENDENCIES(RobWorkStudio rwstudio ${RWS_COMPONENT_LIBRARIES} )
+    ADD_DEPENDENCIES(RobWorkStudio rws ${RWS_COMPONENT_LIBRARIES} )
 ENDIF()
 
 # Some install stuff

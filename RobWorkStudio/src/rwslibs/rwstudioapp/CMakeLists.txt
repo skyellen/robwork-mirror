@@ -1,9 +1,9 @@
-SET(SUBSYS_NAME rwscl_rwstudioapp)
+SET(SUBSYS_NAME rwslibs_rwstudioapp)
 set(SUBSYS_DESC "A rwstudio application that may be started in a thread.")
-SET(SUBSYS_DEPS rwstudio rwscl_jog rwscl_log rwscl_planning rwsc_playback rwscl_sensors rwsc_treeview)
+SET(SUBSYS_DEPS rws rws_jog rws_log rws_planning rws_playback rws_sensors rws_treeview)
 
 IF( RWS_HAVE_LUA )
-    LIST(APPEND SUBSYS_DEPS rwscl_luaeditor rwscl_lua rws_lua_s) 
+    LIST(APPEND SUBSYS_DEPS rws_luaeditor rws_lua rws_lua_s) 
 ENDIF()
 
 SET(build TRUE)
@@ -22,7 +22,7 @@ IF(build)
     QT4_ADD_RESOURCES(RccSrcFiles )
         
     RWS_ADD_COMPONENT(${SUBSYS_NAME} plugins ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-    RW_ADD_INCLUDES(plugins "rwscl/rwstudioapp" ${SRC_FILES_HPP}) 
+    RW_ADD_INCLUDES(plugins "rwslibs/rwstudioapp" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()
 

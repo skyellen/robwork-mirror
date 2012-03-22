@@ -1,6 +1,6 @@
-SET(SUBSYS_NAME rwscl_playback)
+SET(SUBSYS_NAME rws_playback)
 set(SUBSYS_DESC "A playback plugin")
-SET(SUBSYS_DEPS rwstudio)
+SET(SUBSYS_DEPS rws)
 
 SET(build TRUE)
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -18,6 +18,6 @@ IF(build)
     QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
         
     RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-    RW_ADD_INCLUDES(plugins "rwscl/playback" ${SRC_FILES_HPP}) 
+    RW_ADD_INCLUDES(plugins "rwslibs/playback" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()

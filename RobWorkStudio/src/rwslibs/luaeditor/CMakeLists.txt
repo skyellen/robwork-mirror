@@ -1,6 +1,6 @@
-SET(SUBSYS_NAME rwscl_luaeditor)
+SET(SUBSYS_NAME rws_luaeditor)
 set(SUBSYS_DESC "A jog plugin")
-SET(SUBSYS_DEPS rwstudio rws_lua_s)
+SET(SUBSYS_DEPS rws rws_lua_s)
 
 SET(build ${RWS_HAVE_LUA})
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -31,7 +31,7 @@ IF(build)
     QT4_ADD_RESOURCES(RccSrcFiles luaresources.qrc)
             
     RWS_ADD_COMPONENT(${SUBSYS_NAME} components ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-    RW_ADD_INCLUDES(components "rwscl/luaeditor" ${SRC_FILES_HPP}) 
+    RW_ADD_INCLUDES(components "rwslibs/luaeditor" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 ENDIF()

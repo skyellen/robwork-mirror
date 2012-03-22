@@ -1,6 +1,6 @@
-SET(SUBSYS_NAME rwscl_log)
+SET(SUBSYS_NAME rws_log)
 set(SUBSYS_DESC "A logging plugin")
-SET(SUBSYS_DEPS rwstudio)
+SET(SUBSYS_DEPS rws)
 
 SET(build TRUE)
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -19,6 +19,6 @@ IF(build)
             
     # Set extra linker flags for apple macos computers    
     RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-    RW_ADD_INCLUDES(plugins "rwscl/log" ${SRC_FILES_HPP}) 
+    RW_ADD_INCLUDES(plugins "rwslibs/log" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()

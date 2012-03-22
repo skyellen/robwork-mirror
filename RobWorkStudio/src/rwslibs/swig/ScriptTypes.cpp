@@ -2,7 +2,7 @@
 
 #include "ScriptTypes.hpp"
 
-#include <rwscl/rwstudioapp/RobWorkStudioApp.hpp>
+#include <rwslibs/rwstudioapp/RobWorkStudioApp.hpp>
 
 using namespace rws::swig;
 using namespace rwlibs::swig;

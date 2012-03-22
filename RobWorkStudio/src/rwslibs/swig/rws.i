@@ -2,7 +2,7 @@
 
 %{
 #include <rwlibs/swig/ScriptTypes.hpp>
-#include <rwscl/swig/ScriptTypes.hpp>
+#include <rwslibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::swig;
 using namespace rws::swig;

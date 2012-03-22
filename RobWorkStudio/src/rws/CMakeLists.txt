@@ -69,13 +69,13 @@ QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qr
 
 # We create a static library named rwstudio that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.
-ADD_LIBRARY(rwstudio
+ADD_LIBRARY(rws
             ${SRC_FILES_CPP}
             ${MocSrcFiles}
             ${ResourceFiles}
 )
 
 # Install stuff
-INSTALL(TARGETS rwstudio DESTINATION ${LIB_INSTALL_DIR})
+INSTALL(TARGETS rws DESTINATION ${LIB_INSTALL_DIR})
 INSTALL(FILES ${SRC_FILES_HPP} DESTINATION ${INCLUDE_INSTALL_DIR}/rws)
 

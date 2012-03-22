@@ -23,7 +23,7 @@
 #include <QObject>
 
 #include <rw/common/LogWriter.hpp>
-#include <rwscl/swig/LuaState.hpp>
+#include <rwslibs/swig/LuaState.hpp>
 #include "LuaExecutionThread.hpp"
 
 namespace rws {
