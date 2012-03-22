@@ -64,8 +64,8 @@ public:
     DHParameterSet(double alpha, double a, double beta, double b, bool parallel) :
         _alpha(alpha),
         _a(a),
-        _b(b),
         _beta(beta),
+        _b(b),
         _type("HGP")
     {}
 
