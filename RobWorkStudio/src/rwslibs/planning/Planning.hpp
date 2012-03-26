@@ -45,7 +45,9 @@ namespace rws {
 
 class Planning: public RobWorkStudioPlugin {
 Q_OBJECT
+#ifndef RWS_USE_STATIC_LINK_PLUGINS
 Q_INTERFACES( rws::RobWorkStudioPlugin )
+#endif
 public:
     Planning();
 

@@ -52,8 +52,8 @@
 //#include "RSSDistanceCalc.hpp"
 
 
-namespace rwlibs { namespace proximitystrategies {
-    /** @addtogroup proximitystrategies */
+namespace rw { namespace proximity {
+    /** @addtogroup proximity */
     /*@{*/
 /*
 	class CollisionCache: public rw::proximity::ProximityCache {

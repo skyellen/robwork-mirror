@@ -36,7 +36,7 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::models;
 
-using namespace rwlibs::proximitystrategies;
+using namespace rw::proximity;
 
 //----------------------------------------------------------------------
 // ProximityStrategyRW

@@ -76,7 +76,7 @@ public:
      * @brief returns the width of this image
      * @return image width
      */
-    unsigned int getMeasurementCount() const { return _width;};
+    size_t getMeasurementCount() const { return _width;};
 
 
 private:

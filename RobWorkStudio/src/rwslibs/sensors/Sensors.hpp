@@ -44,7 +44,9 @@ namespace rws {
 class Sensors : public RobWorkStudioPlugin, private Ui::SensorsPlugin
 {
     Q_OBJECT
+#ifndef RWS_USE_STATIC_LINK_PLUGINS
     Q_INTERFACES(rws::RobWorkStudioPlugin)
+#endif
 
 public:
     Sensors();

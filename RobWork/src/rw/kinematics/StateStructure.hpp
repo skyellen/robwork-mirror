@@ -74,7 +74,7 @@ namespace rw { namespace kinematics {
          * lower than this number (and greater than or equal to zero).
          *
          */
-        int getMaxID() const { return _allDatas.size(); }
+        int getMaxID() const { return (int)_allDatas.size(); }
 
         /**
          * @brief adds a statedata to the frame tree and allocates memory

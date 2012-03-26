@@ -17,6 +17,7 @@
 
 
 #include "ProximityStrategyFactory.hpp"
+#include "rwstrategy/ProximityStrategyRW.hpp"
 #include <RobWorkConfig.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
@@ -53,6 +54,9 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStr
 }
 
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultCollisionStrategy(){
+	
+	//The default strategy should always be the RW strategy right?
+	return ownedPtr(new ProximityStrategyRW());
     if(_collisionStrategies.empty())
         RW_THROW("There are no registered collision strategies!");
     return _collisionStrategies[0].second();
@@ -81,6 +85,10 @@ rw::proximity::DistanceStrategy::Ptr ProximityStrategyFactory::makeDistanceStrat
 }
 
 rw::proximity::DistanceStrategy::Ptr ProximityStrategyFactory::makeDefaultDistanceStrategy(){
+	//The default strategy should always be the RW strategy right?
+	//return ownedPtr(new ProximityStrategyRW());
+	
+
     if(_distanceStrategies.empty())
         RW_THROW("There are no registered distance strategies!");
     return _distanceStrategies[0].second();

@@ -623,21 +623,24 @@ namespace
 
 void RobWorkStudio::newWorkCell()
 {
-    closeWorkCell();
-    // Empty workcell constructed.
-    _workcell = emptyWorkCell();
-    _state = _workcell->getDefaultState();
-    _detector = makeCollisionDetector(_workcell);
+	try {
+		closeWorkCell();
+		// Empty workcell constructed.
+		_workcell = emptyWorkCell();
+		_state = _workcell->getDefaultState();
+		_detector = makeCollisionDetector(_workcell);
 
-    // Workcell given to view.
-    _view->getWorkCellScene()->setWorkCell( _workcell );
-    _view->setWorkCellScene( _view->getWorkCellScene() );
-    _view->setState(_state);
+		// Workcell given to view.
+		_view->getWorkCellScene()->setWorkCell( _workcell );
+		_view->setWorkCellScene( _view->getWorkCellScene() );
+		_view->setState(_state);
+	} catch (const Exception& exp) {
+		QMessageBox::critical(this, tr("RobWorkStudio"), tr("Caught exception while trying to create new work cell: %1").arg(exp.what()));
+	}
+	// Workcell sent to plugins.
+	openAllPlugins();
+	updateHandler();
 
-    // Workcell sent to plugins.
-    openAllPlugins();
-    updateHandler();
-	
 }
 
 void RobWorkStudio::dragMoveEvent(QDragMoveEvent *event)

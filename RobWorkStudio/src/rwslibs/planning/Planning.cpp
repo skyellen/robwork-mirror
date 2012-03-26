@@ -614,6 +614,6 @@ namespace {
 }
 
 
-#ifndef RW_STATIC_LINK_PLUGINS
+#ifndef RWS_USE_STATIC_LINK_PLUGINS
 Q_EXPORT_PLUGIN(Planning);
 #endif
