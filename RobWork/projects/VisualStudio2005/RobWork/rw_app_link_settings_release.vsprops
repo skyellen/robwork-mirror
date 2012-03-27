@@ -7,7 +7,7 @@
 	>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalDependencies="rw.lib rw_algorithms.lib rw_dll.lib rw_opengl.lib rw_lua.lib rw_pathoptimization.lib rw_pathplanners.lib rw_proximitystrategies.lib rw_sandbox.lib rw_simulation.lib rw_task.lib pqp.lib yaobi.lib"
+		AdditionalDependencies="rw.lib rw_algorithms.lib rw_dll.lib rw_opengl.lib rw_lua.lib rw_pathoptimization.lib rw_pathplanners.lib rw_proximitystrategies.lib rw_sandbox.lib rw_simulation.lib rw_task.lib pqp.lib yaobi.lib qhull.lib"
 		AdditionalLibraryDirectories="$(RW_ROOT)\projects\VisualStudio2005\RobWork\Release"
 	/>
 </VisualStudioPropertySheet>

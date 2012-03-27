@@ -7,7 +7,7 @@
 	>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalDependencies="rwstudio.lib QtTreePropertyBrowser.lib"
+		AdditionalDependencies="rws.lib QtTreePropertyBrowser.lib"
 		AdditionalLibraryDirectories="&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\Release&quot;"
 	/>
 </VisualStudioPropertySheet>
