@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="rws_settings_debug"
+	InheritedPropertySheets=".\rws_settings_global.vsprops;..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_settings_debug.vsprops"
+	>
+</VisualStudioPropertySheet>
