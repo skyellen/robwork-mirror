@@ -123,8 +123,31 @@ namespace rw { namespace models {
          */
         kinematics::Frame* getWorldFrame() const;
 
+		/**
+		 * @brief Adds \b frame with \b parent as parent.
+		 *
+		 * If parent == NULL, then \b world is used as parent
+		 *
+		 * @param frame [in] Frame to add
+		 * @param parent [in] Parent frame - uses World is parent == NULL
+		 */
         void addFrame(kinematics::Frame* frame, kinematics::Frame* parent=NULL);
+
+		/**
+		 * @brief Adds dynamically attachable frame (DAF) \b frame with \b parent as parent.
+		 *
+		 * If parent == NULL, then \b world is used as parent
+		 *
+		 * @param frame [in] Frame to add
+		 * @param parent [in] Parent frame - uses World is parent == NULL
+		 */
         void addDAF(kinematics::Frame* frame, kinematics::Frame* parent=NULL);
+
+		/**
+		 * @brief Removes \b frame from work cell
+		 * 
+		 * @parem frame [in] Frame to remove
+		 */
         void remove(kinematics::Frame* frame);
 
         /**
@@ -258,11 +281,6 @@ namespace rw { namespace models {
          */
         kinematics::State getDefaultState() const;
 
-
-
-
-
-
         /**
          * @brief Returns sensor with the specified name.
          *
@@ -344,8 +362,10 @@ namespace rw { namespace models {
          */
         rw::common::Ptr<Object> findObject(const std::string& name) const;
 
-            // new overloaded add methods
-        void add(rw::common::Ptr<Device> device){ addDevice(device); }
+        /**
+		 * @brief Adds de
+		 */
+      //  void add(rw::common::Ptr<Device> device){ addDevice(device); }
         void add(rw::common::Ptr<Object> object);
         void add(rw::common::Ptr<rw::sensor::Sensor> sensor);
 
@@ -381,7 +401,11 @@ namespace rw { namespace models {
          */
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
 
-
+		/**
+		 * @brief Returns collision setup associated to work cell
+		 *
+		 * @return Collision setup
+		 */
         rw::proximity::CollisionSetup getCollisionSetup();
 
     protected:
