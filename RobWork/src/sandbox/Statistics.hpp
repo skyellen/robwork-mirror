@@ -189,6 +189,7 @@ public:
 		std::pair<T, T> minAndMax = statistics.minAndMaxValue();
 		os <<"Mean: "<<meanAndVariance.first<<std::endl;
 		os <<"Variance: "<<meanAndVariance.second<<std::endl;
+		os <<"Std Dev: "<<std::sqrt(meanAndVariance.second)<<std::endl;
 		os <<"Min Value: "<<minAndMax.first<<std::endl;
 		return os <<"Max Value: "<<minAndMax.second<<std::endl;
 	}

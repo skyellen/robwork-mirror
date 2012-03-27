@@ -3,6 +3,6 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="rws_settings_debug"
-	InheritedPropertySheets=".\rws_settings_global.vsprops;..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_settings_debug.vsprops"
+	InheritedPropertySheets="..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_settings_debug.vsprops"
 	>
 </VisualStudioPropertySheet>
