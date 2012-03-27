@@ -719,7 +719,7 @@ rw::common::Ptr<CameraGroup> SceneOpenGL::makeCameraGroup(const std::string& nam
 DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& filename, int dmask){
     rwlibs::opengl::Drawable::Ptr drawable = NULL;
      try {
-         drawable = DrawableFactory::loadDrawableFile(filename, filename);
+         drawable = DrawableFactory::getDrawable(filename, filename);
          drawable->setMask(dmask);
      } catch (const rw::common::Exception& exp){
          RW_WARN(exp.getMessage());

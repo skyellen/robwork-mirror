@@ -205,12 +205,14 @@ namespace rw { namespace models {
 		    return frames;
 		}
 
+		
+
         /**
          * @brief The device named \b name of the workcell.
          *
          * NULL is returned if there is no such device.
          *
-         * @param name [in] The workcell name
+         * @param name [in] The device name
          *
          * @return The device named \b name or NULL if no such device.
          */
@@ -323,10 +325,23 @@ namespace rw { namespace models {
         }
 
 
+		/**
+		 * @brief Returns all object in the work cell
+		 *
+		 * @return All object in work cell
+		 */
         std::vector<Object::Ptr> getObjects() const { return _objects; };
 
 
-
+        /**
+         * @brief The object named \b name of the workcell.
+         *
+         * NULL is returned if there is no such object.
+         *
+         * @param name [in] The object name
+         *
+         * @return The object named \b name or NULL if no such object.
+         */
         rw::common::Ptr<Object> findObject(const std::string& name) const;
 
             // new overloaded add methods
