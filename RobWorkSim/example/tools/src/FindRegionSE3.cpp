@@ -55,8 +55,8 @@ variables_map init(int argc, char** argv){
     desc.add_options()
         ("help", "produce help message")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
-        ("angle", value<double>()->default_value(30.0), "Angle of cone in degree.")
-        ("samples", value<int>()->default_value(500), "Number of grasps to sample.")
+        ("angle", value<double>()->default_value(8.0), "Standard deviation of angle in input in degree.")
+        ("dist", value<double>()->default_value(0.003), "Standard deviation of distance in input.")
         ("input", value<string>(), "The input grasp task file that should be filtered.")
     ;
     positional_options_description optionDesc;
@@ -76,7 +76,6 @@ variables_map init(int argc, char** argv){
         cout << desc << "\n";
         abort();
     }
-
     return vm;
 }
 
@@ -86,9 +85,193 @@ KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnode
 int main_jaj(int argc, char** argv);
 int main_lpe(int argc, char** argv);
 
+
+
+rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::vector<Transform3D<> >& data, double dist, double angle){
+
+    // now build a kdtree with all end configurations
+    typedef boost::tuple<int,int> KDTreeValue; // (transform index, region index)
+    std::vector<KDTreeQ::KDNode> nodes;
+    for(size_t i=0;i<data.size();i++){
+        Transform3D<> k = data[i];
+        EAA<> r( k.R());
+        //Vector3D<> r = k.R()*Vector3D<>::z();
+        Q key(6, k.P()[0],k.P()[1],k.P()[2], r[0],r[1],r[2]);
+        nodes.push_back(KDTreeQ::KDNode(key, KDTreeValue(i, -1)));
+    }
+
+    std::cout << "Nodes created, building tree.. " << std::endl;
+    KDTreeQ* nntree = KDTreeQ::buildTree(nodes);
+    // todo estimate the average distance between neighbors
+    std::cout << "Tree build, finding regions" << std::endl;
+    std::map<int, bool > regions;
+    int freeRegion = 0;
+    std::list<const KDTreeQ::KDNode*> result;
+    Q diff(6, dist, dist, dist, angle, angle, angle);
+    // find neighbors and connect them
+    BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
+        KDTreeValue &val = n.valueAs<KDTreeValue&>();
+        // check if the node is allready part of a region
+        if(val.get<1>() >=0)
+            continue;
+
+        result.clear();
+        nntree->nnSearchRect(n.key-diff, n.key+diff, result);
+        int currentIndex = -1;
+        // first see if any has an id
+        BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
+            KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+            if(nnval.get<1>() >=0){
+                currentIndex = nnval.get<1>();
+                break;
+            }
+        }
+        if( currentIndex<0 ){
+            currentIndex=freeRegion;
+            //std::cout << "Adding " << freeRegion << std::endl;
+            regions[freeRegion] = true;
+            freeRegion++;
+        }
+        val.get<1>() = currentIndex;
+        BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
+            KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+            if(nnval.get<1>() >=0 && nnval.get<1>()!=currentIndex){
+
+                //std::cout << "Merging regions " << currentIndex << "<--" << nnval.get<1>() << std::endl;
+
+                // merge all previously defined nnval.get<1>() into freeRegion
+                regions[nnval.get<1>()] = false;
+                BOOST_FOREACH(KDTreeQ::KDNode &npro, nodes){
+                    KDTreeValue &npval = npro.valueAs<KDTreeValue&>();
+                    // check if the node is allready part of a region
+                    if(npval.get<1>() == nnval.get<1>())
+                        npval.get<1>()=currentIndex;
+                }
+            }
+        }
+
+    }
+
+    // now print region information
+    std::vector<int> validRegions;
+    typedef std::map<int,bool>::value_type mapType;
+    BOOST_FOREACH(mapType val , regions){
+        if(val.second==true){
+            validRegions.push_back(val.first);
+        }
+    }
+
+
+    std::cout << "Nr of detected regions: " << validRegions.size() << std::endl;
+    std::map<int,std::vector<int> >* statMap = new std::map<int,std::vector<int> >();
+
+    BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
+        KDTreeValue &val = n.valueAs<KDTreeValue&>();
+        // check if the node is allready part of a region
+        (*statMap)[val.get<1>()].push_back( val.get<0>() );
+    }
+    return ownedPtr( statMap );
+}
+
+
+
 int main(int argc, char** argv){
-    //return main_jaj(argc,argv);
-    return main_lpe(argc,argv);
+
+    Math::seed(time(NULL));
+    srand ( time(NULL) );
+    variables_map vm = init(argc, argv);
+
+
+    double angle = vm["angle"].as<double>()*Deg2Rad;
+    double dist = vm["dist"].as<double>();
+
+    std::string input = vm["input"].as<std::string>();
+    std::string output = vm["output"].as<std::string>();
+    char line[1000];
+    std::vector<Transform3D<> > inputStartCfgs, inputEndCfgs;
+    std::ifstream in(input.c_str());
+    in.getline(line,1000);
+    in.getline(line,1000);
+    char tmpc;
+    while(!in.eof() ){
+        in.getline(line,400);
+        std::istringstream istr(line);
+        Vector3D<float> pos_s, pos_e;
+        EAA<float> rot_s, rot_e;
+
+        sscanf(line,"%f %c %f %c %f %c %f %c %f %c %f %c %f %c %f %c %f %c %f %c %f %c %f",
+               &pos_s[0], &tmpc, &pos_s[1], &tmpc, &pos_s[2], &tmpc, &rot_s[0], &tmpc, &rot_s[1], &tmpc, &rot_s[2], &tmpc,
+               &pos_e[0], &tmpc, &pos_e[1], &tmpc, &pos_e[2], &tmpc, &rot_e[0], &tmpc, &rot_e[1], &tmpc, &rot_e[2]);
+
+        if(pos_e[2]<0)
+            continue;
+
+        //std::cout << pos_e << std::endl;
+        inputStartCfgs.push_back( cast<double>(Transform3D<float>(pos_s, rot_s)));
+        inputEndCfgs.push_back( cast<double>(Transform3D<float>(pos_e, rot_e)));
+        if( rot_e.angle() > 180*Deg2Rad )
+            std::cout << "larger" << std::endl;
+    }
+    std::cout << "Size of intput: " << inputStartCfgs.size() << std::endl;
+
+    Ptr< std::map<int, std::vector<int> > > statMap = calculateRegions(inputEndCfgs, dist, angle);
+
+    std::cout << "Map stats: " << std::endl;
+    std::ofstream fstr(output.c_str());
+    fstr.precision(16);
+    fstr << " added region, first int in each line represents the region in witch it belong\n";
+    fstr << " \n";
+    typedef std::map<int,std::vector<int> >::value_type mapType2;
+    BOOST_FOREACH(mapType2 val, *statMap){
+        if(val.second.size() > 4)
+            std::cout << "Region stat: " << val.first << ":" << val.second.size() ;
+        Vector3D<> dir(0,0,0);
+        double angle = 0;
+        int count = 0;
+
+        BOOST_FOREACH(int idx, val.second){
+            count ++;
+            Transform3D<> s = inputStartCfgs[ idx ];
+            EAA<> sr( s.R() );
+            Vector3D<> srz = s.R()*Vector3D<>::z();
+            Transform3D<> e = inputEndCfgs[ idx ];
+            EAA<> er( e.R() );
+            Vector3D<> erz = e.R()*Vector3D<>::z();
+            dir += er.axis();
+            angle += er.angle();
+
+            Transform3D<> aTb = inverse( s )*e;
+            Vector3D<> abp = aTb.P();
+            EAA<> abe(aTb.R() );
+            RPY<> abr(aTb.R() );
+            Vector3D<> aby = aTb.R()*Vector3D<>::z();
+
+            fstr << val.first << " ; "
+                    << s.P()[0] << " ; " << s.P()[1] << " ; " << s.P()[2] << ";"
+                    << sr[0] << " ; " << sr[1] << " ; " << sr[2] << " ; "
+                    //<< sr.axis()[0] << " ; " << sr.axis()[1] << " ; " << sr.axis()[2] << " ; " << sr.angle() << ";"
+
+                    //<< srz[0] << " ; " << srz[1] << " ; " << srz[2] << " ; " << sr.angle() << ";"
+                    << e.P()[0] << " ; " << e.P()[1] << " ; " << e.P()[2] << ";"
+                    << er[0] << " ; " << er[1] << " ; " << er[2] << ";"
+                    //<< er.axis()[0] << " ; " << er.axis()[1] << " ; " << er.axis()[2] << ";" << er.angle() << ";"
+                    << abp[0] << " ; " << abp[1] << " ; " << abp[2] << ";"
+                    << abe[0] << " ; " << abe[1] << " ; " << abe[2] << ";"
+                    << abr(0) << " ; " << abr(1) << " ; " << abr(2) << ";"
+                    << aby[0] << " ; " << aby[1] << " ; " << aby[2] << ";"
+                    << "\n";
+                    //<< erz[0] << " ; " << erz[1] << " ; " << erz[2] << ";" << er.angle() << "\n";
+        }
+        if(val.second.size() > 4){
+            EAA<> rot( normalize(dir), angle/count);
+
+            std::cout << "\t" << rot.toRotation3D()*Vector3D<>::z() << std::endl;
+
+        }
+    }
+    fstr.close();
+
+    return 0;
 }
 
 /**

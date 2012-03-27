@@ -139,6 +139,10 @@ int main(int argc, char** argv)
     Vector3D<> d(0,0,-0.02);
     Transform3D<> wTe_n(pos, rot);
     Transform3D<> wTe_home(pos+inverse(rot)*d, rot);
+
+    RW_ASSERT( fabs(LinearAlgebra::det( wTe_n.R().m() ))-1.0 < 0.0001 );
+    RW_ASSERT( fabs(LinearAlgebra::det( wTe_home.R().m() ))-1.0 < 0.0001 );
+
     //const double OPENQ = 0.035;
     const double OPENQ = 0.0055;
     const double CLOSEQ = 0.0005;
@@ -177,7 +181,7 @@ int main(int argc, char** argv)
     cstrategy->addGeometry(object.get(), geo);
     State state = wc->getDefaultState();
 
-    const int NR_OF_SAMPLES = 10000; int tries =0;
+    const int NR_OF_SAMPLES = 2000; int tries =0;
 
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
@@ -188,7 +192,9 @@ int main(int argc, char** argv)
         CollisionDetector::QueryResult result;
         std::cout << "Target: " << i << "  "  << tries <<"     \r" << std::flush;
         double graspW = 0;
-        Transform3D<> target = sampleParSurface(CLOSEQ,OPENQ*2.0, mesh, object, ray, cstrategy, graspW);
+        Transform3D<> target = sampleParSurface(CLOSEQ+0.03,OPENQ*2.0+0.03, mesh, object, ray, cstrategy, graspW);
+        RW_ASSERT( fabs(LinearAlgebra::det( target.R().m() ))-1.0 < 0.0001 );
+
         Q oq = openQ;
         oq(0) = (graspW+0.01)/2.0;
         gripper->setQ( oq, state);
@@ -238,8 +244,8 @@ int main(int argc, char** argv)
             nodes.push_back( KDTreeQ::KDNode(key, gtarget.result) );
             allnodes.push_back( KDTreeQ::KDNode(key, gtarget.result) );
 
-            //Q quality = calculateQuality(object, gripper,cdetect, cstrategy, state, openQ, closeQ);
-            //gtarget.result->qualityAfterLifting = quality;
+            //Q quality = calculateQuality(object, gripper, cdetect, cstrategy, state, openQ, closeQ);
+            //gtarget.result->qualityAfterLifting
 
         }
 

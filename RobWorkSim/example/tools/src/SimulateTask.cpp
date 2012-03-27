@@ -47,8 +47,37 @@ using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
 using namespace rwlibs::task;
 
+void addPertubations(GraspTask::Ptr grasptask, double sigma_p, double sigma_a, int pertubationsPerTarget);
+
+std::vector<GraspTask::Ptr> splitTask(GraspTask::Ptr grasptask, int split){
+    int count = 0;
+    std::vector<GraspTask::Ptr> gtasks = std::vector<GraspTask::Ptr>(1, grasptask->clone() );
+    BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
+        // also remove results
+        GraspSubTask nstask = stask.clone();
+        gtasks.back()->addSubTask( nstask );
+
+        BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
+            gtasks.back()->getSubTasks().back().addTarget( target );
+            count++;
+            if(count>=split){
+                count=0;
+                // create new grasp task
+                gtasks.push_back( grasptask->clone() );
+                GraspSubTask nstask = stask.clone();
+                gtasks.back()->addSubTask( nstask );
+            }
+        }
+    }
+    return gtasks;
+}
+
+
 int main(int argc, char** argv)
 {
+    Math::seed(time(NULL));
+    srand ( time(NULL) );
+    Log::log().setDisable(Log::DebugMask);
     // we need
     // Declare the supported options.
     options_description desc("Allowed options");
@@ -61,6 +90,10 @@ int main(int argc, char** argv)
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<vector<string> >(), "input Files to simulate.")
         ("align", value<bool>()->default_value(false), "Use aligned grasps from input.")
+        ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
+        ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
+        ("sigma_a", value<double>()->default_value(8), "Standard deviation in of angle in Degree.")
+        ("sigma_p", value<double>()->default_value(0.003), "Standard deviation of position in meters.")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -81,6 +114,10 @@ int main(int argc, char** argv)
     }
 
     using namespace boost::filesystem;
+
+    double sigma_p = vm["sigma_p"].as<double>();
+    double sigma_a = vm["sigma_a"].as<double>()*Deg2Rad;
+    int pertubationsPerTarget = vm["pertubations"].as<int>();
 
 
     std::map<int,bool> includeMap;
@@ -110,8 +147,8 @@ int main(int argc, char** argv)
     }
 
     // resolve output directory
-    //path outputfile( vm["output"].as<std::string>() );
-    std::string outputdir = vm["output"].as<std::string>();
+    path outputfile( vm["output"].as<std::string>() );
+    //std::string outputdir = vm["output"].as<std::string>();
 
     std::string outformat = vm["oformat"].as<std::string>();
     int iformat = 0;
@@ -135,22 +172,16 @@ int main(int argc, char** argv)
     // do the simulation
     int targets = 0, totaltargets = 0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
-
+    bool perturbe = vm["perturbe"].as<bool>();
     BOOST_FOREACH(std::string ifile, infiles){
-
-
-
         std::cout << "loading: " << path(ifile).filename() << " ";
 
         std::stringstream sstr;
         //sstr << outputfile.string() << "_" << totaltargets << "_";
-        sstr << outputdir << "/" << path(ifile).filename();
-        if(iformat==0){
-            sstr << ".task.xml";
-        } else if(iformat==1){
-            sstr << ".uibk.xml";
-        } else if(iformat==2){
-            sstr << ".txt";
+        if(perturbe){
+            sstr << outputfile.string() << "_" << sigma_p << "_" << sigma_a << "_" << pertubationsPerTarget;
+        } else {
+            sstr << outputfile.string();
         }
         if( boost::filesystem::exists( path( sstr.str() ) ) ){
             std::cout << "result already exists!" << std::endl;
@@ -159,7 +190,6 @@ int main(int argc, char** argv)
 
         GraspTask::Ptr grasptask = GraspTask::load( ifile );
         std::cout << "Starting simulation:" << std::endl;
-
 
         // temporarilly change refframe to Object change
         BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
@@ -175,34 +205,70 @@ int main(int argc, char** argv)
                 target.result = NULL;
             }
         }
-
-        graspSim->load(grasptask);
-        graspSim->startSimulation(initState);
-        TimerUtil::sleepMs(2000);
-        do{
-            TimerUtil::sleepMs(500);
-            std::vector<int> stat = graspSim->getStat();
-            std::cout << "\r";
-            BOOST_FOREACH(int i, stat){ std::cout << i << " "; }
-            std::cout << std::flush;
-        } while(graspSim->isRunning());
-
-        grasptask = graspSim->getResult();
-        // save the result
-        totaltargets++;
-
-        std::cout << "Saving to: " << sstr.str() << std::endl;
-        if(iformat==0){
-            GraspTask::saveRWTask(grasptask, sstr.str() );
-        } else if(iformat==1){
-            GraspTask::saveUIBK(grasptask, sstr.str() );
-        } else if(iformat==2){
-            GraspTask::saveText(grasptask, sstr.str() );
+        std::vector<GraspTask::Ptr> tasks;
+        if(perturbe){
+            addPertubations(grasptask, sigma_p, sigma_a, pertubationsPerTarget );
+            int nroftarg = 6000/(pertubationsPerTarget+1);
+            tasks = splitTask(grasptask,nroftarg*(pertubationsPerTarget+1));
+        } else {
+            tasks.push_back(grasptask);
         }
 
+        for(int i=1;i<tasks.size();i++){
+            graspSim->load(tasks[i]);
+            graspSim->startSimulation(initState);
+            TimerUtil::sleepMs(2000);
+            do{
+                TimerUtil::sleepMs(500);
+                std::vector<int> stat = graspSim->getStat();
+                std::cout << "\r";
+                BOOST_FOREACH(int i, stat){ std::cout << i << " "; }
+                std::cout << std::flush;
+            } while(graspSim->isRunning());
 
+            grasptask = graspSim->getResult();
+            // save the result
+            totaltargets++;
+
+            std::cout << "Saving to: " << sstr.str() << std::endl;
+            if(iformat==0){
+                GraspTask::saveRWTask(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml" );
+            } else if(iformat==1){
+                GraspTask::saveUIBK(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".uibk.xml" );
+            } else if(iformat==2){
+                GraspTask::saveText(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".txt" );
+            }
+        }
     }
     std::cout << "Done" << std::endl;
     return 0;
 }
+
+void addPertubations(GraspTask::Ptr grasptask, double sigma_p, double sigma_a, int pertubationsPerTarget){
+    //double sigma_p = 0.005;
+    //double sigma_a = 15*Deg2Rad;
+    //int pertubationsPerTarget = 100;
+    int count = 0;
+    // temporarilly change refframe to Object change
+    BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
+        std::vector<GraspTarget> ntargets;
+        // also remove results
+
+        BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
+            ntargets.push_back(target.pose);
+            for(int i=0;i<pertubationsPerTarget;i++){
+                Vector3D<> pos(Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p));
+                // we can do this only for small sigmas (approximation)
+                EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+
+                // TODO: we should truncate at 2*sigma sooo
+
+                Transform3D<> ntarget = target.pose*Transform3D<>(pos, rot);
+                ntargets.push_back(ntarget);
+            }
+        }
+        stask.getTargets() = ntargets;
+    }
+}
+
 

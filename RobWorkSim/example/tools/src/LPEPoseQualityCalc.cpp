@@ -112,12 +112,45 @@ int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubat
     }
     GraspTask::saveRWTask(ngtask, outfile);
     return 0;
+
+
 }
 
 KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes);
 KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes);
 
 Q calculateQuality(ProximityModel::Ptr object, Device::Ptr gripper, CollisionDetector& detector, CollisionStrategy::Ptr strat, State &state, Q openQ, Q closeQ);
+
+
+std::vector<std::pair<Transform3D<>, RPY<> > > readPoses(std::string file){
+
+    std::vector<std::pair<Transform3D<>, RPY<> > > data;
+    char line[1000];
+    std::ifstream in(file.c_str());
+    in.getline(line,1000);
+    in.getline(line,1000);
+    in.getline(line,1000);
+
+    char tmpc;
+    while(!in.eof() ){
+        in.getline(line,1000);
+        std::istringstream istr(line);
+        Vector3D<float> pos_s, pos_e;
+        EAA<float> rot_s, rot_e;
+        RPY<float> rpy;
+
+        sscanf(line,"%f %f %f %f %f %f %f  %f %f ",
+               &pos_s[0], &pos_s[1], &pos_s[2], &rpy(0), &rpy(1), &rpy(2), &rot_s[0], &rot_s[1], &rot_s[2]);
+
+
+        //std::cout << pos_e << std::endl;
+        data.push_back( std::make_pair(Transform3D<>(cast<double>(pos_s),cast<double>(rot_s)), cast<double>(rpy) ) );
+
+    }
+    std::cout << "Size of intput: " << data.size() << std::endl;
+    return data;
+}
+
 
 double sAreaSum;
 std::vector<double> surfaceArea;
@@ -131,12 +164,10 @@ int main(int argc, char** argv)
     desc.add_options()
         ("help", "produce help message")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
-        ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
-        ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
-        ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
-        ("input", value<string>(), "Name of grasp task file.")
-        ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
-        ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
+        ("stable", value<string>(), "Name of grasp task file.")
+        ("misses", value<string>(), "Add small random pertubations to all targets.")
+        ("angle", value<double>(), "angular standard deviation.")
+        //("dist", value<double>(), "distance standard deviation.")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -147,52 +178,111 @@ int main(int argc, char** argv)
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
 
-	std::string grasptask_file = vm["input"].as<std::string>();
-	std::string outfile = vm["output"].as<std::string>();
-	bool perturbe = vm["perturbe"].as<bool>();
-	int pertubations = vm["pertubations"].as<int>();
+	std::string stable_file = vm["stable"].as<std::string>();
+	std::string misses_file = vm["misses"].as<std::string>();
+    std::string output_file = vm["output"].as<std::string>();
+    double angle_sd = vm["angle"].as<double>()*Deg2Rad;
 
 
-	GraspTask::Ptr gtask = GraspTask::load( grasptask_file );
-
-	if(perturbe){
-	    return calcPerturbedQuality(gtask, outfile, pertubations );
-	}
-
+    std::vector<std::pair<Transform3D<>,RPY<> > > stable = readPoses(stable_file);
+    std::vector<std::pair<Transform3D<>,RPY<> > > misses = readPoses(misses_file);
+    std::vector<double> qualityestimates( stable.size() );
+    std::vector<double> qualityestimates_misses( misses.size() );
+    // build the nodes
+    typedef std::pair<int, bool> Value;
+    std::vector<KDTreeQ::KDNode> nodes;
+    for(int i=0;i<stable.size();i++){
+        Transform3D<> t3d = stable[i].first;
+        RPY<> rpy = stable[i].second;
+        Q key(2, rpy(1), rpy(2));
+        nodes.push_back( KDTreeQ::KDNode(key, Value(i, true)) );
+    }
+    for(int i=0;i<misses.size();i++){
+        Transform3D<> t3d = misses[i].first;
+        RPY<> rpy = misses[i].second;
+        Q key(2, rpy(1), rpy(2));
+        nodes.push_back( KDTreeQ::KDNode(key, Value(i, false)) );
+    }
 
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
-	typedef std::pair<GraspSubTask*, GraspTarget*> Value;
-    std::vector<KDTreeQ::KDNode> nodes;
-    KDTreeQ *nntree = buildKDTree(gtask, nodes);
+    KDTreeQ *nntree = KDTreeQ::buildTree( nodes );
 
-    // we need some kind of distance metric
-    Q diff(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 15*Deg2Rad);
+
+    // define the truncation
+    Q diff(2, 2*angle_sd, 2*angle_sd);
+
+    // now for each stable node predict its quality
     std::list<const KDTreeQ::KDNode*> result;
-    size_t nodeNr=0;
-    BOOST_FOREACH(KDTreeQ::KDNode& node, nodes){
+    result.clear();
+
+    BOOST_FOREACH(KDTreeQ::KDNode &nn, nodes){
+    //for(int i=0;i<stable.size();i++){
         result.clear();
-        Q key  = node.key;
+        Transform3D<> t3d;
+        RPY<> rpy ;
+        Value nv = nn.valueAs<Value>();
+        if(nv.second){
+            t3d = stable[nv.first].first;
+            rpy = stable[nv.first].second;
+        } else {
+            t3d = misses[nv.first].first;
+            rpy = misses[nv.first].second;
+        }
+        Q key(2, rpy(1), rpy(2));
         nntree->nnSearchRect(key-diff,key+diff, result);
-        size_t nrNeighbors = result.size();
+        double sum = 0;
+        double xo = rpy(1);
+        double yo = rpy(2);
 
-        GraspResult::Ptr gres = node.valueAs<GraspResult::Ptr>();
+        int N = result.size();
+        BOOST_FOREACH(const KDTreeQ::KDNode* n, result ){
+            Value v = n->valueAs<Value>();
+            if(!v.second)
+                continue;
+            RPY<> rpyo = stable[v.first].second;
+            double x = rpyo(1);
+            double y = rpyo(2);
 
-        gres->qualityAfterLifting = Q(1, nrNeighbors );
+            // calculate the
+            double tmp_x = Math::sqr(x-xo)/(2*Math::sqr(angle_sd));
+            double tmp_y = Math::sqr(y-yo)/(2*Math::sqr(angle_sd));
 
-        nodeNr++;
+            double val = std::pow(2.718281828, -(tmp_x+tmp_y));
+
+            sum += val;
+        }
+
+        double quality = sum/N;
+
+        if(nv.second){
+            qualityestimates[nv.first] = quality;
+        } else {
+            qualityestimates_misses[nv.first] = quality;
+        }
     }
 
+    std::ofstream outf(output_file.c_str());
 
-    std::cout << std::endl;
-
-
-    try {
-        GraspTask::saveRWTask( gtask, outfile );
-        //GraspTask::saveUIBK( &gtask, outfile );
-    } catch (const Exception& exp) {
-       RW_WARN("Task Execution Widget: Unable to save tasks");
+    for(int i=0;i<stable.size();i++){
+        Transform3D<> t3d = stable[i].first;
+        EAA<> eaa(t3d.R());
+        RPY<> rpy = stable[i].second;
+        outf << t3d.P()[0] << "\t" << t3d.P()[1] << "\t" << t3d.P()[2] << "\t";
+        outf << rpy(0)*Rad2Deg << "\t" << rpy(1)*Rad2Deg << "\t" << rpy(2)*Rad2Deg << "\t";
+        outf << qualityestimates[i] << "\n";
     }
+    RW_WARN("1");
+    for(int i=0;i<misses.size();i++){
+        Transform3D<> t3d = misses[i].first;
+        EAA<> eaa(t3d.R());
+        RPY<> rpy = misses[i].second;
+        outf << t3d.P()[0] << "\t" << t3d.P()[1] << "\t" << t3d.P()[2] << "\t";
+        outf << rpy(0)*Rad2Deg << "\t" << rpy(1)*Rad2Deg << "\t" << rpy(2)*Rad2Deg << "\t";
+        outf << qualityestimates_misses[i] << "\n";
+    }
+
+    outf.close();
 
 	return 0;
 }

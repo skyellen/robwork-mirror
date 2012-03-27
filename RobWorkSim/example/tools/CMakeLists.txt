@@ -69,8 +69,8 @@ target_link_libraries(ModelPropertyTest rwsim
 add_executable(RWSimTest src/RWSimTest.cpp)
 target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
 
-#add_executable(UniformSelectGrasps UniformSelectGrasps.cpp)
-#target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
+add_executable(UniformSelectGrasps src/UniformSelectGrasps.cpp)
+target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
 
 add_executable(ToGraspTaskHGP src/ToGraspTaskHGP.cpp)
 target_link_libraries(ToGraspTaskHGP rwsim ${ROBWORK_LIBRARIES})
@@ -84,8 +84,15 @@ target_link_libraries(GraspTableConvert rwsim ${ROBWORK_LIBRARIES})
 add_executable(LoadGraspTableKTH src/LoadGraspTableKTH.cpp)
 target_link_libraries(LoadGraspTableKTH rwsim ${ROBWORK_LIBRARIES})
 
-add_executable(ScaleWorkCell src/ScaleWorkCell.cpp)
-target_link_libraries(ScaleWorkCell rwsim ${ROBWORK_LIBRARIES})
+add_executable(LPEPoseQualityCalc src/LPEPoseQualityCalc.cpp)
+target_link_libraries(LPEPoseQualityCalc rwsim ${ROBWORK_LIBRARIES})
+
+#add_executable(ScaleWorkCell src/ScaleWorkCell.cpp)
+#target_link_libraries(ScaleWorkCell rwsim ${ROBWORK_LIBRARIES})
+
+
+add_executable(FindRegionSE3 src/FindRegionSE3.cpp)
+target_link_libraries(FindRegionSE3 rwsim ${ROBWORK_LIBRARIES})
 
 add_executable(PathFilter src/PathFilter.cpp)
 target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
@@ -93,8 +100,8 @@ target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
 add_executable(SimulateTask src/SimulateTask.cpp)
 target_link_libraries(SimulateTask rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
-add_executable(SimulateTaskLB src/SimulateTaskLB.cpp)
-target_link_libraries(SimulateTaskLB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+#add_executable(SimulateTaskLB src/SimulateTaskLB.cpp)
+#target_link_libraries(SimulateTaskLB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 add_executable(GTaskStats src/GTaskStats.cpp)
 target_link_libraries(GTaskStats rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
@@ -113,6 +120,9 @@ target_link_libraries(imageFeaturesToStl rwsim ${ROBWORK_LIBRARIES})
 
 add_executable(ExtendVisGrabTask src/ExtendVisGrabTask.cpp)
 target_link_libraries(ExtendVisGrabTask rwsim ${ROBWORK_LIBRARIES})
+
+add_executable(GraspTaskQualityCalc src/GraspTaskQualityCalc.cpp)
+target_link_libraries(GraspTaskQualityCalc rwsim ${ROBWORK_LIBRARIES})
 
 add_executable(gtmerge src/gtmerge.cpp)
 target_link_libraries(gtmerge rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
