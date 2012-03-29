@@ -21,7 +21,6 @@ SET(SRC_FILES_CPP
   ImageView.cpp
   propertyview/PropertyViewEditor.cpp
   propertyview/PropertyViewDialog.cpp 
-  propertyview/PropertyInspector.cpp
   propertyview/VariantManager.cpp)
 
 SET(SRC_FILES_HPP
@@ -38,7 +37,6 @@ SET(SRC_FILES_HPP
   ImageView.hpp
   propertyview/PropertyViewEditor.hpp
   propertyview/PropertyViewDialog.hpp 
-  propertyview/PropertyInspector.hpp
   propertyview/VariantManager.hpp
   )
 
