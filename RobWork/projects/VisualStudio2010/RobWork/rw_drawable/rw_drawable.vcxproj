@@ -5,80 +5,23 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release No LTCG|Win32">
       <Configuration>Release No LTCG</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release No LTCG|x64">
-      <Configuration>Release No LTCG</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\Drawable.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderImage.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderLines.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderScan.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\Drawable.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderImage.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderLines.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <ProjectName>rw_opengl</ProjectName>
     <ProjectGuid>{7626F501-49CD-419B-B421-E88007980994}</ProjectGuid>
     <RootNamespace>rw_drawable</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>rw_opengl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -88,16 +31,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -108,15 +42,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_release.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_release.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_release.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_release.props" />
   </ImportGroup>
@@ -124,25 +50,24 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_debug.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_debug.props" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,32 +83,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -207,18 +107,49 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">
-    <ClCompile>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\Drawable.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderImage.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderLines.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderScan.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderSmoothSkin.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\Drawable.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderArrow.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderImage.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderLines.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderSmoothSkin.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLFrameBuffer.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>rw.lib;rw_algorithms.lib;rw_dll.lib;rw_opengl.lib;rw_lua.lib;rw_pathoptimization.lib;rw_pathplanners.lib;rw_proximitystrategies.lib;rw_sandbox.lib;rw_simulation.lib;rw_task.lib;pqp.lib;yaobi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rw.lib;rw_algorithms.lib;rw_opengl.lib;rw_pathoptimization.lib;rw_pathplanners.lib;rw_proximitystrategies.lib;rw_sandbox.lib;rw_simulation.lib;rw_task.lib;pqp.lib;yaobi.lib;qhull.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RW_ROOT)\projects\VisualStudio2010\RobWork\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

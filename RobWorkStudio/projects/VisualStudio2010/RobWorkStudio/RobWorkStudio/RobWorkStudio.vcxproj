@@ -41,17 +41,17 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_settings_release.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_link_settings_release_no_ltcg.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_settings_debug.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_link_settings_debug.props" />
+    <Import Project="..\rws_settings_debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_settings_release.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_link_settings_release.props" />
+    <Import Project="..\rws_settings_release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -65,9 +65,18 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(Configuration)\</IntDir>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">false</EmbedManifest>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
-    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EmbedManifest>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
@@ -75,7 +84,7 @@
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>.\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -95,9 +104,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);.\..\rwstudio\generatedfiles;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);.\..\rwstudio\generatedfiles;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -122,7 +135,7 @@
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>.\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -418,38 +431,41 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\RobWork\ext\PQP\VS2010\pqp\pqp.vcxproj">
-      <Project>{9c656944-e067-45e5-8830-0486c1922290}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\ext\tolua\win32\vc10\tolualib\tolualib.vcxproj">
-      <Project>{39fb8748-618e-4bd7-8e42-549537ad2b4b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\ext\yaobi\VS_2010\yaobi\yaobi.vcxproj">
-      <Project>{572aee80-04a9-413c-83e0-5e4aa69430bf}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw\rw.vcxproj">
-      <Project>{cff5c0cc-cc06-4af0-9118-a4df15c46108}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_drawable\rw_drawable.vcxproj">
-      <Project>{7626f501-49cd-419b-b421-e88007980994}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathoptimization\rw_pathoptimization.vcxproj">
-      <Project>{119e5643-41a0-42c0-b663-536aa1c151b2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathplanners\rw_pathplanners.vcxproj">
-      <Project>{853d0c7b-4937-4916-a1dc-1a1631dd0261}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_proximitystrategies\rw_proximitystrategies.vcxproj">
-      <Project>{471980c7-9535-408d-a77c-16909d2f5f14}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_simulation\rw_simulation.vcxproj">
-      <Project>{9a88d49a-d65e-4b1f-92a5-57a4e0280cfb}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2010\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
+    <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2005\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
       <Project>{61b482de-a554-44a7-a2c9-ebd6e29c4085}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\rwstudio\rwstudio.vcxproj">
-      <Project>{70fce4cd-289f-4ba6-972b-5dd9f9174d47}</Project>
+    <ProjectReference Include="..\rws\rws.vcxproj">
+      <Project>{67743714-d431-4e5b-aaa5-abca3d423685}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_jog\rws_jog.vcxproj">
+      <Project>{4addb41b-b82a-4460-afc6-cad0fe0bed9b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_log\rws_log.vcxproj">
+      <Project>{a7b1e9a4-89e1-4406-bf83-290976666d37}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_planning\rws_planning.vcxproj">
+      <Project>{742d9f61-acc4-4b83-aae5-d9e1943ce33b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_playback\rws_playback.vcxproj">
+      <Project>{864868c7-c038-4e67-ada6-c55dffff20f1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_propertyview\rws_propertyview.vcxproj">
+      <Project>{48b89a65-457a-4d99-a979-890efe6902ae}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_sensors\rws_sensors.vcxproj">
+      <Project>{60a1b129-e4ba-425f-8f44-6577c883d6d1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\rws_treeview\rws_treeview.vcxproj">
+      <Project>{377c91aa-2b3b-46c9-a8fc-27b40235820b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -8,7 +8,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalLibraryDirectories>$(RWS_ROOT)\projects\VisualStudio2010\RobWorkStudio\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rwstudio.lib;QtTreePropertyBrowser.lib</AdditionalDependencies>
+      <AdditionalDependencies>rws.lib;QtTreePropertyBrowser.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

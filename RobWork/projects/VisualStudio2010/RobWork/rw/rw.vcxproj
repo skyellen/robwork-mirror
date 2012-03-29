@@ -5,25 +5,13 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release No LTCG|Win32">
       <Configuration>Release No LTCG</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release No LTCG|x64">
-      <Configuration>Release No LTCG</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -37,26 +25,12 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -67,15 +41,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_release.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_release.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_release.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_release.props" />
   </ImportGroup>
@@ -83,25 +49,24 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rw_settings_debug.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\rw_settings_debug.props" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -115,30 +80,11 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <OpenMPSupport>true</OpenMPSupport>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-    </ClCompile>
-    <Lib>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PreBuildEvent>
-      <Command>copy ..\..\..\..\src\RobWorkConfig.hpp.template ..\..\..\..\src\RobWorkConfig.hpp</Command>
-    </PreBuildEvent>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -153,21 +99,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PreBuildEvent>
-      <Command>copy ..\..\..\..\src\RobWorkConfig.hpp.template ..\..\..\..\src\RobWorkConfig.hpp</Command>
-    </PreBuildEvent>
-    <ClCompile>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -181,22 +113,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">
-    <PreBuildEvent>
-      <Command>copy ..\..\..\..\src\RobWorkConfig.hpp.template ..\..\..\..\src\RobWorkConfig.hpp</Command>
-    </PreBuildEvent>
-    <ClCompile>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN64;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -205,52 +122,53 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\rw\common\ProgramOptions.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\AABB.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Box.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\BSphere.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\BV.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\BVCollider.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\BVDistanceCalc.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Cone.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Contour2D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\geometry\Contour2DUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\ConvexHull2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\ConvexHull3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\ConvexHullND.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Covariance.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Cylinder.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\DistanceUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Geometry.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\GeometryData.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\GeometryFactory.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\GeometryUtil.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\geometry\GiftWrapHull3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\IndexedArray.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\IndexedTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\IndexedTriArray.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\IndexedTriMesh.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\IntersectUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Line.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\OBB.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\OBBCollider.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\OBBFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\OBBToleranceCollider.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\PlainTriMesh.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Plane.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Primitive.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Pyramid.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\QHull3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\QHullND.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\RectDistanceCalc.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\RSSDistanceCalc.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Sphere.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\SphereDistanceCalc.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\STLFile.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Triangle.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\TriangleUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\Triangulate.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\TriDistanceCalc.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\geometry\TriMesh.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\3ds\Loader3DS.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\3ds\Model3DS.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\GroupNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\Model3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\Model3DLoader.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\ProjectionMatrix.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\Render.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneCamera.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneGraph.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneViewer.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\TextureData.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\tri\LoaderTRI.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\graphics\WorkCellScene.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\TriTriIntersectDeviller.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\TriTriIntersectMoller.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\geometry\TriTriToleranceIntersect.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\invkin\AmbiguityResolver.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\invkin\CCDSolver.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\invkin\ClosedFormIK.cpp" />
@@ -267,16 +185,22 @@
     <ClCompile Include="..\..\..\..\src\rw\kinematics\FKTable.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\Frame.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\FrameMap.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\kinematics\FramePairMap.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\kinematics\FrameType.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\Kinematics.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\MovableFrame.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\QState.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\State.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\kinematics\StateCache.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\StateData.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\StateSetup.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\StateStructure.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\TreeState.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\Cache.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\ConcatVectorIterator.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\Event.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\Exception.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\FileCache.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\IOUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\Log.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\LogBufferedChar.cpp" />
@@ -285,14 +209,20 @@
     <ClCompile Include="..\..\..\..\src\rw\common\LogStreamWriter.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\LogWriter.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\Message.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\PairMap.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\ProgramOptions.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\Property.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\PropertyBase.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\PropertyMap.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\PropertyType.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\StringUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\ThreadSafeQueue.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\common\ThreadSafeStack.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\Timer.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\TimerUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\common\VectorIterator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\ImageFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\loaders\WorkCellFactory.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\WorkCellLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\colsetup\CollisionSetupLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\image\PGMLoader.cpp" />
@@ -329,7 +259,9 @@
     <ClCompile Include="..\..\..\..\src\rw\math\Line2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\LinearAlgebra.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Math.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\math\Metric.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\MetricFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\math\MetricUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\PerspectiveTransform2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Pose6D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Q.cpp" />
@@ -340,29 +272,24 @@
     <ClCompile Include="..\..\..\..\src\rw\math\RPY.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Transform2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Transform3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\math\Vector.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Vector2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\Vector3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\math\VectorND.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\math\VelocityScrew6D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\models\Accessor.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\models\CollisionModelInfo.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\CompositeDevice.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\models\CompositeJointDevice.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\DependentJoint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\DependentPrismaticJoint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\DependentRevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\Device.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\DHParameterSet.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\rw\models\DrawableModelInfo.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\JacobianCalculator.cpp" />
@@ -372,11 +299,13 @@
     <ClCompile Include="..\..\..\..\src\rw\models\JointDeviceJacobianCalculator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\MobileDevice.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\Models.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\models\Object.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\ParallelDevice.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\ParallelLeg.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\PrismaticJoint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\RevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\RigidBodyInfo.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\models\SE3Device.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\SerialDevice.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\TreeDevice.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\models\VirtualJoint.cpp" />
@@ -403,16 +332,31 @@
     <ClCompile Include="..\..\..\..\src\rw\proximity\DistanceStrategy.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\DistanceThresholdStrategy.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\proximity\Proximity.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityCache.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityData.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityFilter.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityFilterStrategy.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityModel.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\ProximitySetup.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\ProximitySetupRule.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityStrategy.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityStrategyData.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\Raycaster.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BinaryBVTree.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BinaryIdxBVTree.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTree.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeCollider.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeColliderFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeToleranceCollider.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\OBVTreeDFSCollider.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\proximity\rwstrategy\ProximityStrategyRW.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Camera.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\CameraFirewire.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\CameraListener.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Contact2D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\sensor\Contact3D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Image.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Image25D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\ImageUtil.cpp" />
@@ -422,18 +366,34 @@
     <ClCompile Include="..\..\..\..\src\rw\sensor\Scanner25D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Scanner2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\Sensor.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\sensor\StereoCamera.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\TactileArray.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\sensor\TactileArrayUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\Blend.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\BlendedTrajectory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\CircularInterpolator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\CubicSplineFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\FixedInterpolator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\Interpolator.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\InterpolatorTrajectoryIterator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\InterpolatorUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\LinearInterpolator.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\ParabolicBlend.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\Path.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\RampInterpolator.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\Timed.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\TimedUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\TimeMetricUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\Trajectory.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\trajectory\TrajectoryFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\trajectory\TrajectoryIterator.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\plugin\PluginFactory.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\plugin\PluginFactoryBase.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\plugin\PluginRepository.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\ApproachMeasure3D.cpp" />
@@ -450,42 +410,83 @@
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\GraspQualityMeasure3D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\GraspTable.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\GraspValidateFilter.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graspplanning\GWSMeasure3D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\PlaneClearanceFilter.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graspplanning\QualityMeasure2D.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\SemiForceClosureFilter.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\graspplanning\WrenchMeasure3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\DrawableNode.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\GroupNode.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\Model3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\Model3DFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\Model3DLoader.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\ProjectionMatrix.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\Render.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneCamera.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneGraph.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneNode.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\SceneViewer.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\TextureData.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\WorkCellScene.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\3ds\Loader3DS.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\3ds\Model3DS.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\graphics\tri\LoaderTRI.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\RobWork.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\rw\geometry\AABB.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Box.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\BSphere.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\BV.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\BVCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\BVDistanceCalc.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Cone.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Contour2D.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Contour2DUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\Contour2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\ConvexHull2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\ConvexHull3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\ConvexHullND.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\Covariance.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Cylinder.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\DistanceUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Geometry.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\GeometryData.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\GeometryFactory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\GeometryUtil.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\geometry\GiftWrapHull3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\IndexedArray.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\IndexedPolygon.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\IndexedTriangle.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\IndexedTriArray.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\IndexedTriMesh.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\IntersectUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Line.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\OBB.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\OBBCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\OBBFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\OBBToleranceCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\OBVDistanceCalc.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\PlainTriMesh.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Plane.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Primitive.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Pyramid.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\QHull3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\QHullND.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Ray.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\RectDistanceCalc.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\RSSDistanceCalc.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Sphere.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\SphereDistanceCalc.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\STLFile.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\Triangle.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\TriangleUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\common\ProgramOptions.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\geometry\Covariance.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\geometry\Triangulate.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\TriDistanceCalc.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\geometry\TriMesh.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\TriTriIntersectDeviller.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\TriTriIntersectMoller.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\geometry\TriTriToleranceIntersect.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\AmbiguityResolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\CCDSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\ClosedFormIK.hpp" />
@@ -493,6 +494,8 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\InvKinSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\IterativeIK.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\IterativeMultiIK.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\invkin\JacobianIKSolver.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\invkin\JacobianIKSolverM.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\ParallelIKSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\PieperSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\FixedFrame.hpp" />
@@ -506,14 +509,18 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\FrameType.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\Kinematics.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\MovableFrame.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\kinematics\ObjectStateData.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\QState.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\State.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\kinematics\StateCache.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\StateData.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\kinematics\StatelessObject.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\StateSetup.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\StateStructure.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\TreeState.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\Cache.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\ConcatVectorIterator.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\Event.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\Exception.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\FileCache.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\common\IOUtil.hpp" />
@@ -526,6 +533,8 @@
     <ClInclude Include="..\..\..\..\src\rw\common\macros.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\Message.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\os.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\PairMap.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\ProgramOptions.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\Property.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\PropertyBase.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\PropertyMap.hpp" />
@@ -533,36 +542,18 @@
     <ClInclude Include="..\..\..\..\src\rw\common\Ptr.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\ScopedTimer.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\StringUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\ThreadSafeQueue.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\ThreadSafeStack.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\Timer.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\TimerUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\common\Traits.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\types.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common\VectorIterator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\ImageFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\loaders\WorkCellFactory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\WorkCellLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\colsetup\CollisionSetupLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\image\PGMLoader.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\3ds\Loader3DS.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\3ds\Model3DS.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\GroupNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\Model3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\Model3DLoader.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\NodeFiler.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\NodeVisitor.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\ProjectionMatrix.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\Render.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneCamera.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneGraph.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneViewer.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\TextureData.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\tri\LoaderTRI.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\graphics\WorkCellScene.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\invkin\JacobianIKSolver.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\invkin\JacobianIKSolverM.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\loaders\image\PPMLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\image\RGBLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\rwxml\DependencyGraph.hpp" />
@@ -585,12 +576,15 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLPropertyFormat.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLPropertyLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLPropertySaver.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryFormat.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectorySaver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\loaders\path\PathLoader.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\math\CameraMatrix.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Constants.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\EAA.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\math\EigenDecomposition.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\InertiaMatrix.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Jacobian.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Line2D.hpp" />
@@ -601,7 +595,6 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\math\MetricImpl.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\MetricUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\PerspectiveTransform2D.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\math\PerspectiveTransform3D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Pose6D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Q.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Quaternion.hpp" />
@@ -611,12 +604,13 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\math\RPY.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Transform2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Transform3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\math\Vector.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Vector2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\Vector3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\math\VectorND.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\math\VelocityScrew6D.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\models\Accessor.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\models\CollisionModelInfo.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\CompositeDevice.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\models\CompositeJointDevice.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\DependentJoint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\DependentPrismaticJoint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\DependentRevoluteJoint.hpp" />
@@ -630,11 +624,13 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\models\JointDeviceJacobianCalculator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\MobileDevice.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\Models.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\models\Object.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\ParallelDevice.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\ParallelLeg.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\PrismaticJoint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\RevoluteJoint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\RigidBodyInfo.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\models\SE3Device.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\SerialDevice.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\TreeDevice.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\models\VirtualJoint.hpp" />
@@ -645,6 +641,7 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\PlannerUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\QConstraint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\QIKSampler.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\QNormalizer.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\QSampler.hpp" />
@@ -654,7 +651,6 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\StateConstraint.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\pathplanning\StopCriteria.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\BasicFilterStrategy.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\proximity\CollisionChecker.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\CollisionDetector.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\CollisionSetup.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\CollisionStrategy.hpp" />
@@ -663,16 +659,30 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\DistanceStrategy.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\distancethresholdstrategy.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\proximity\Proximity.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityCache.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityData.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityFilter.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityFilterStrategy.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityModel.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\ProximitySetup.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\ProximitySetupRule.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\proximity\ProximityStrategy.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\ProximityStrategyData.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\Raycaster.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BinaryBVTree.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BinaryIdxBVTree.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTree.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeColliderFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\BVTreeToleranceCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\OBVTreeDFSCollider.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\proximity\rwstrategy\ProximityStrategyRW.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Camera.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\CameraFirewire.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\CameraListener.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\sensor\Contact2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Contact3D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Image.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Image25D.hpp" />
@@ -684,7 +694,9 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Scanner2D.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\Sensor.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\SensorData.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\sensor\StereoCamera.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\TactileArray.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\sensor\TactileArrayUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Blend.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\BlendedTrajectory.hpp" />
@@ -694,21 +706,19 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\FixedInterpolator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Interpolator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\trajectory\InterpolatorTrajectoryIterator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\InterpolatorUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\LinearInterpolator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\ParabolicBlend.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Path.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\trajectory\RampInterpolator.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Timed.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TimedUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TimeMetricUtil.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Trajectory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TrajectoryFactory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\math\CameraMatrix.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\math\EigenDecomposition.hpp" />
-    <ClInclude Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\trajectory\TrajectorySequence.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.hpp" />
@@ -730,6 +740,7 @@
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\GraspQualityMeasure3D.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\GraspTable.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\GraspValidateFilter.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graspplanning\GWSMeasure3D.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\PlaneClearanceFilter.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\PoseGenerator.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\QualityMeasure2D.hpp" />
@@ -737,6 +748,27 @@
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\SemiForceClosureFilter.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\SimpleMeasure.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\graspplanning\WrenchMeasure3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableGeometryNode.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\DrawableNode.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\GroupNode.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\Model3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\Model3DFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\Model3DLoader.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\NodeFiler.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\NodeVisitor.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\ProjectionMatrix.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\Render.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneCamera.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneGraph.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneNode.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\SceneViewer.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\TextureData.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\WorkCellScene.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\3ds\Loader3DS.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\3ds\Model3DS.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\graphics\tri\LoaderTRI.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\common.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\geometry.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\invkin.hpp" />
