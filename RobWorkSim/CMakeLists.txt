@@ -26,7 +26,7 @@ ENDIF ()
 
 
 #Include default settings for constructing a robwork dependent project
-INCLUDE(${RWSIM_ROOT}/build/ProjectSetup.cmake)
+INCLUDE(${RWSIM_ROOT}/cmake/ProjectSetup.cmake)
 
 # setup the install dirs TODO should be cached to allow the use to change it
 IF(UNIX)
@@ -42,17 +42,17 @@ SET(RWSIM_RUNTIME runtime)
 SET(RWSIM_DEVEL development)
 
 
-SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/build/")
+SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/cmake/")
 
 # Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
-  ${RWSIM_ROOT}/build/RobWorkSimConfig.cmake.in
-  "${RWSIM_ROOT}/build/RobWorkSimConfig${CMAKE_BUILD_TYPE}.cmake"
+  ${RWSIM_ROOT}/cmake/RobWorkSimConfig.cmake.in
+  "${RWSIM_ROOT}/cmake/RobWorkSimConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
 # This sets up ROBWORKSTUDIO_INCLUDE_DIR and ROBWORKSTUDIO_LIBRARIES
 # RobWork dependencies are included in these vars
-INCLUDE(${RWSIM_ROOT}/build/RobWorkSimSetup.cmake)
+INCLUDE(${RWSIM_ROOT}/cmake/RobWorkSimSetup.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
@@ -72,13 +72,13 @@ add_subdirectory(src)
 
 OPTION(RWSIM_BUILD_TESTS "Set when you want to build the tests" TRUE)
 IF(RWSIM_BUILD_TESTS)
-  INCLUDE(CTest)
-  add_subdirectory(test)
+  #INCLUDE(CTest)
+  #add_subdirectory(test)
 ENDIF()
 
 CONFIGURE_FILE(
-  ${RWSIM_ROOT}/build/RobWorkSimBuildConfig.cmake.in
-  "${RWSIM_ROOT}/build/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake.in
+  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
 CONFIGURE_FILE("${RWSIM_ROOT}/CTestConfig.cmake.in" "${RWSIM_ROOT}/CTestConfig.cmake")
