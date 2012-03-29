@@ -65,7 +65,11 @@ void Math::seed() {
 
 double Math::ran(double from, double to)
 {
-    RW_ASSERT(from <= to);
+    if(from>to) {
+        RW_THROW("From must be smaller than to: " << from << ">" << to);
+    } else if(from==to){
+        return from;
+    }
 
 	double res = from;
 	do {
