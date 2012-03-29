@@ -164,7 +164,7 @@ public:
         rw::math::Transform3D<> _taskOffset;
         rw::math::Transform3D<> _approach;
         rw::math::Transform3D<> _retract;
-        rw::math::Q _openQ, _closeQ;
+        rw::math::Q _openQ, _closeQ, _tauMax;
 
         // explicit values of _target
         rw::math::Transform3D<> _wTtcp_initTarget,
@@ -219,7 +219,7 @@ private:
 	std::vector<rwsim::dynamics::RigidBody*> _objects;
 	rwsim::dynamics::DynamicDevice *_dhand;
 	rwsim::dynamics::RigidDevice *_rhand;
-    rw::models::Device* _hand;
+    rw::models::Device::Ptr _hand;
     rwsim::dynamics::KinematicBody *_hbase;
     rw::kinematics::MovableFrame *_mbase;
 

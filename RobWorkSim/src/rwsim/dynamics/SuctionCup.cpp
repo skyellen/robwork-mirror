@@ -63,7 +63,7 @@ SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
                        double height,
                        Q sc1,
                        Q sc2):
-    DynamicDevice(baseBody, new SuctionCupDevice(name, baseBody->getBodyFrame(), end->getBodyFrame()), NULL),
+    DynamicDevice(baseBody, ownedPtr(new SuctionCupDevice(name, baseBody->getBodyFrame(), end->getBodyFrame()) )),
     _baseBody(baseBody),
     _endBody(end),
     _radius(radi),
@@ -72,11 +72,13 @@ SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
     _springConstant1(sc1),
     _springConstant2(sc2)
 {
+    _links.push_back(_baseBody);
+    _links.push_back(_endBody);
     _kindev = getKinematicModel();
 }
 
 SuctionCup::~SuctionCup(){
-    delete _kindev;
+
 }
 
 void SuctionCup::addToWorkCell(DynamicWorkCell::Ptr dwc){

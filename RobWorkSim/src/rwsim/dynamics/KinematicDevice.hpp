@@ -18,6 +18,9 @@
 #ifndef RWSIM_DYNAMICS_KINEMATICDEVICE_HPP_
 #define RWSIM_DYNAMICS_KINEMATICDEVICE_HPP_
 
+#include <rw/models/JointDevice.hpp>
+#include <rw/models/Object.hpp>
+
 #include "DynamicDevice.hpp"
 #include "KinematicBody.hpp"
 
@@ -34,12 +37,10 @@ namespace dynamics {
 	 * simulated environment.
 	 */
 	class KinematicDevice: public DynamicDevice {
-
 	public:
 		KinematicDevice(dynamics::Body *base,
-						const std::vector<KinematicBody*> bodies,
-						rw::models::Device *dev,
-						rw::models::WorkCell* wc);
+	                    const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
+						rw::models::JointDevice::Ptr dev);
 
 		/**
 		 * @brief destructor
@@ -60,7 +61,7 @@ namespace dynamics {
 		 * bodies are ordered such that device joint \b i maps to kinematic body  \b i
 		 * @return all bodies that the device controls.
 		 */
-		const std::vector<KinematicBody*>& getBodies();
+		const std::vector<Body*>& getLinks(){ return _links; }
 
 		// parameters for velocity profile
 		void setMaxAcc(const rw::math::Q& acc);
@@ -72,10 +73,13 @@ namespace dynamics {
 		void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state){
 
 		}
+
+		rw::models::JointDevice::Ptr getJointDevice(){ return _jdev; }
 	private:
-		std::vector<dynamics::KinematicBody*> _bodies;
+		std::vector<Body*> _links;
 		rw::math::Q _maxVel, _maxAcc;
 		rw::math::Q _q, _velQ;
+		rw::models::JointDevice::Ptr _jdev;
 	};
 	//! @}
 }

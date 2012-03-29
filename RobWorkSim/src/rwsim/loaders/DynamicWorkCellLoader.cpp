@@ -69,20 +69,20 @@
 #include <rwsim/sensor/TactileMultiAxisSimSensor.hpp>
 
 #include <rwsim/control/SpringJointController.hpp>
-#include <rw/geometry/GeometryUtil.hpp>
 
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/StringUtil.hpp>
 
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
-#include <rwlibs/control/JointController.hpp>#include <rw/models/CollisionModelInfo.hpp>
-
+#include <rwlibs/control/JointController.hpp>
 
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
+
 #include <rwsim/control/PDController.hpp>
 #include <rwsim/control/SyncPDController.hpp>
 #include <rwsim/control/VelRampController.hpp>
@@ -178,7 +178,7 @@ namespace
     string quote(const string& str) { return StringUtil::quote(str); }
 
 
-
+/*
     std::vector<Geometry::Ptr> loadGeometrySingle(Frame &f, const State& rwstate){
         std::vector<Geometry::Ptr> geoms;
         Frame *frame = &f;
@@ -200,7 +200,8 @@ namespace
         geoms.push_back(geo);
         return geoms;
     }
-
+*/
+    /*
     std::vector<Geometry::Ptr> loadGeometry(Frame *bodyFrame, std::vector<Frame*> frames, const State& rwstate){
         std::vector<Geometry::Ptr> geoms;
         BOOST_FOREACH(const Frame *frame, frames){
@@ -222,7 +223,7 @@ namespace
         }
         return geoms;
     }
-
+*/
 //    std::vector<Geometry*> loadGeometry(Frame &parent, const State& rwstate){
 //        std::vector<Frame*> frames = DynamicUtil::getAnchoredFrames( parent, rwstate);
 //        return loadGeometry(&parent, frames,rwstate);
@@ -400,7 +401,44 @@ namespace
         }
     }
 
+    Body* getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr){
+        string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
+        BOOST_FOREACH(Body* b, state.allbodies){
+            if(b->getName()==refframeName)
+                return b;
+        }
+        RW_THROW("Body " << quote(refframeName) << " does not exist in workcell!");
+        return NULL;
+    }
 
+    Body* getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr, const std::string& prefix){
+        //Log::debugLog()<< "getFrameFromAttr" << std::endl;
+        string refframeName = prefix+tree.get_child("<xmlattr>").get<std::string>(attr);
+        BOOST_FOREACH(Body* b, state.allbodies){
+            if(b->getName()==refframeName)
+                return b;
+        }
+        RW_THROW("Body " << quote(refframeName) << " does not exist in workcell!");
+        return NULL;
+    }
+
+
+    Object::Ptr getObjectFromAttr(PTree& tree, ParserState &state, const std::string& attr){
+        string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
+        Object::Ptr obj = state.wc->findObject(refframeName);
+        if( !obj )
+            RW_THROW("Object " << quote(refframeName) << " does not exist in workcell!");
+        return obj;
+    }
+
+    Object::Ptr getObjectFromAttr(PTree& tree, ParserState &state, const std::string& attr, const std::string& prefix){
+        //Log::debugLog()<< "getFrameFromAttr" << std::endl;
+        string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
+        Object::Ptr obj = state.wc->findObject(prefix+refframeName);
+        if( !obj )
+            RW_THROW("Object " << quote(refframeName) << " does not exist in workcell!");
+        return obj;
+    }
 
     Frame *getFrameFromAttr(PTree& tree, ParserState &state, const std::string& attr){
         //Log::debugLog()<< "getFrameFromAttr" << std::endl;
@@ -423,11 +461,11 @@ namespace
 
     RigidBody* readRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
         //Log::debugLog()<< "ReadRigidBody" << std::endl;
-        Frame *refframe = getFrameFromAttr(tree, state, "frame", prefix);
+        Object::Ptr obj = getObjectFromAttr(tree, state, "frame", prefix);
         // check if frame is actually a moveable frame
-        MovableFrame *mframe = dynamic_cast<MovableFrame*>(refframe);
+        MovableFrame *mframe = dynamic_cast<MovableFrame*>( obj->getBase() );
         if( !mframe )
-            RW_THROW("Frame "<< quote(refframe->getName())<< " is not a movable frame!");
+            RW_THROW("Object "<< quote(obj->getName())<< " is not a movable frame!");
         BodyInfo info;
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
@@ -435,23 +473,23 @@ namespace
 
         // time to load the geometry
         //Log::debugLog()<< "load geom" << std::endl;
-        info.frames = GeometryUtil::getAnchoredFrames( *mframe, state.rwstate);
-        std::vector<Geometry::Ptr> geometry = loadGeometry(mframe, info.frames, state.rwstate);
+        //info.frames = GeometryUtil::getAnchoredFrames( *mframe, state.rwstate);
+        //std::vector<Geometry::Ptr> geometry = loadGeometry(mframe, info.frames, state.rwstate);
 
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(geometry.size()!=0){
+        	if(obj->getGeometry().size()!=0){
         	    if( tree.get_optional<string>("COG") ){
         	        // if COG specified then use it and calculate inertia
 
         	        info.masscenter = readVector3D( tree.get_child("COG") );
         	        Transform3D<> ref(info.masscenter);
-        	        info.inertia = GeometryUtil::estimateInertia(info.mass, geometry, ref);
+        	        info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(), ref);
         	    } else {
-        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry());
         	    }
         	} else {
         		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
@@ -465,7 +503,7 @@ namespace
 
         //info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
-        RigidBody *body = new RigidBody(info, mframe, geometry);
+        RigidBody *body = new RigidBody(info, obj);
         state.wc->getStateStructure()->addData(body);
         state.allbodies.push_back(body);
         return body;
@@ -477,13 +515,13 @@ namespace
 
     FixedBody* readFixedBody(PTree& tree, ParserState &state){
 
-        Frame *refframe = getFrameFromAttr(tree, state, "frame");
+        Object::Ptr bodyObj = getObjectFromAttr(tree, state, "frame");
 
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
-        info.frames = std::vector<Frame*>(1, refframe);
-        std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
-        FixedBody *body = new FixedBody(info, refframe, geoms);
+        //info.frames = std::vector<Frame*>(1, bodyObj->getName());
+        //std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
+        FixedBody *body = new FixedBody(info, bodyObj);
 
         state.allbodies.push_back(body);
         return body;
@@ -491,15 +529,13 @@ namespace
 
     FixedBody* readFixedBase(PTree& tree, ParserState &state, JointDevice *dev){
         // Log::infoLog() << "ReadFixedBase" << std::endl;
-        Frame *refframe = getFrameFromAttr(tree, state, "frame", dev->getName()+".");
+        Object::Ptr obj = getObjectFromAttr(tree, state, "frame", dev->getName()+".");
 
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
-        info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
-        std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
-
-        RW_DEBUGS("Nr of geoms loaded: " << geoms.size());
-        FixedBody *body = new FixedBody(info, refframe, geoms);
+        //info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
+        //std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
+        FixedBody *body = new FixedBody(info, obj);
         //Log::infoLog() << "ReadFixedBody end" << std::endl;
         state.allbodies.push_back(body);
         return body;
@@ -543,15 +579,17 @@ namespace
     		const std::string& prefix,
     		ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
-        Frame *refframe_tmp = getFrameFromAttr(tree, state, frameAttr, prefix);
-        MovableFrame *refframe = dynamic_cast<MovableFrame*>(refframe_tmp);
+        Object::Ptr obj = getObjectFromAttr(tree, state, frameAttr, prefix);
+
+        MovableFrame *refframe = dynamic_cast<MovableFrame*>( obj->getBase() );
         if(refframe==NULL) RW_THROW("The body frame of a Kinematic body must be a movable frame type!");
         string materialId = tree.get<string>("MaterialID");
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
-        info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
-        std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
-        KinematicBody *body = new KinematicBody(info, *refframe, geoms, state.rwstate);
+        //info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
+        //std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
+
+        KinematicBody *body = new KinematicBody(info, obj);
         state.wc->getStateStructure()->addData(body);
 
         state.allbodies.push_back(body);
@@ -565,46 +603,54 @@ namespace
     	return readKinematicBody(tree,frameAttr,"",state);
     }
 
-    RigidJoint* readRigidJoint(PTree& tree, ParserState &state, JointDevice *device ){
-
+    std::pair<BodyInfo, Object::Ptr> readRigidJoint(PTree& tree, ParserState &state, JointDevice *device ){
         //Log::debugLog()<< "ReadRigidJoint" << std::endl;
         string refjointName = tree.get_child("<xmlattr>").get<std::string>("joint");
-        Frame* frame = state.wc->findFrame(device->getName()+string(".")+refjointName);
-        if( !frame )
-            RW_THROW("Frame " << quote(refjointName) << " does not exist in workcell!");
-        Joint *joint = dynamic_cast<Joint*>(frame);
-        //Frame *joint = frame;
-        if( !joint )
-            RW_THROW("Frame " << quote(refjointName) << " is not a Joint type!");
+        Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
+        if( obj==NULL )
+            return std::pair<BodyInfo, Object::Ptr>(BodyInfo(), NULL);
 
         BodyInfo info;
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
-
-        //Log::debugLog()<< "load geom" << std::endl;
-        info.frames = DynamicUtil::getAnchoredFrames( *frame, state.rwstate);
-        //std::cout << "Nr frames:  " << info.frames.size() << std::endl;
-        std::vector<Geometry::Ptr> geometry = loadGeometry(frame, info.frames, state.rwstate);
-        if(geometry.size()==0)
-            RW_WARN("No geometry attached to RigidJoint!");
 
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(geometry.size()!=0){
-				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	if(obj->getGeometry().size()!=0){
+				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry() );
         	} else {
-        		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
-        		info.masscenter = Vector3D<>(0,0,0);
-        		info.inertia = InertiaMatrix<>::makeSolidSphereInertia(info.mass, 0.0001);
+        		RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
         	}
         }
-        RigidJoint *rjoint = new RigidJoint(info, joint, geometry, state.rwstate);
-        //state.rwstate.getStateStructure()->addData(rjoint)
-        state.allbodies.push_back(rjoint);
-        return rjoint;
+        return std::make_pair(info, obj);
+    }
+
+    std::pair<BodyInfo, Object::Ptr> readLink(PTree& tree, ParserState &state, JointDevice *device, bool kinematic=false){
+        //Log::debugLog()<< "ReadRigidJoint" << std::endl;
+        string refjointName = tree.get_child("<xmlattr>").get<std::string>("object");
+        Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
+        if( obj==NULL )
+            RW_THROW("Could not find object: \"" << refjointName << "\"");
+
+        BodyInfo info;
+        info.mass = tree.get<double>("Mass");
+        info.material = tree.get<string>("MaterialID");
+
+        boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
+        if(!def){
+            info.masscenter = readVector3D( tree.get_child("COG") );
+            info.inertia = readInertia( tree.get_child("Inertia") );
+        } else {
+            if(obj->getGeometry().size()!=0){
+                boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry());
+            } else {
+                RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
+            }
+        }
+        return std::make_pair(info, obj);
     }
 /*
     BeamJoint* readBeamJoint(PTree& tree, ParserState &state, JointDevice *device ){
@@ -690,18 +736,27 @@ namespace
         return scup;
     }
 
+
+
     KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
         JointDevice *device = getJointDeviceFromAttr(tree, state);
         std::vector<double> maxForce;
-        std::vector<KinematicBody*> bodies;
+        //std::vector<KinematicBody*> bodies;
+
+        std::vector<std::pair<BodyInfo,Object::Ptr> > bodies;
         Body *base = NULL;
         int jIdx = 0;
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if( p->first == "KinematicJoint" ){
-                KinematicBody *body = readKinematicBody(p->second, "joint", framePrefix, state);
-                bodies.push_back( body );
+                //KinematicBody *body = readBodyInfo(p->second, "joint", framePrefix, state);
+                //bodies.push_back( body );
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                bodies.push_back( part );
+            } else if( p->first == "Link" ){
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                bodies.push_back( part );
 			} else if( p->first == "FixedBase" ){
 				base = readFixedBase(p->second, state, device);
 			} else if( p->first == "KinematicBase" ){
@@ -711,13 +766,14 @@ namespace
             }
             jIdx++;
         }
-        if( bodies.size()!=device->getDOF() ){
-        	RW_THROW("Parser error - All joints of a RigidDevice must be specified!" << bodies.size() << "!=" << device->getDOF());
-        }
         if( !base ){
         	RW_THROW("Parser error - KinematicDevice must define a base (FixedBase or KinematicBase)");
         }
-        KinematicDevice *kdev = new KinematicDevice(base, bodies, device, state.wc.get() );
+        KinematicDevice *kdev = new KinematicDevice(base, bodies, device);
+        std::vector<Body*> links = kdev->getLinks();
+        BOOST_FOREACH(Body *l, links){
+            state.allbodies.push_back(l);
+        }
 
         return kdev;
     }
@@ -726,50 +782,68 @@ namespace
         //Log::debugLog()<< "ReadRigidDevice" << std::endl;
         JointDevice *device = getJointDeviceFromAttr(tree, state);
         //Q maxForce(device->getDOF());
+
+        // first we get the force limits of all joints/constraints
+        std::map<std::string, double> maxForceMap;
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if (p->first == "ForceLimit") {
+                string refjoint = device->getName() + "." + p->second.get_child("<xmlattr>").get<std::string>("joint");
+                maxForceMap[refjoint] = p->second.get_value<double>();
+            }
+        }
+        // we put them in an array so that they are sorted correctly
         std::vector<double> maxForce;
-        std::vector<RigidJoint*> bodies;
+        BOOST_FOREACH(Joint* joint, device->getJoints()){
+            if( maxForceMap.find( joint->getName() ) == maxForceMap.end() ){
+                RW_THROW("A force limit for the joint \"" << joint->getName()
+                         << "\" in device \"" << device->getName() << "\" has not been defined!" );
+            }
+            maxForce.push_back( maxForceMap[joint->getName()] );
+        }
+
+        // next we find the base and all links
+        std::vector<std::pair<BodyInfo,Object::Ptr> > bodies;
         Body* base = NULL;
         int jIdx = 0;
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
-            if (p->first == "ForceLimit") {
-                string refjoint = p->second.get_child("<xmlattr>").get<std::string>("joint");
-                //int jIdx = getJointIdx(refjoint,device);
-                maxForce.push_back( p->second.get_value<double>() );
-                //jointForceLimits.push_back(std::make_pair())
-            } else if( p->first == "FixedBase" ){
+            if( p->first == "FixedBase" ){
             	base = readFixedBase(p->second, state, device);
             } else if( p->first == "KinematicBase" ){
 				base = readKinematicBody(p->second, "frame", framePrefix, state);
             } else if( p->first == "RigidBase" ){
             	base = readRigidBody(p->second, framePrefix, state);
+            } else if( p->first == "Link" ){
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                bodies.push_back( part );
             } else if( p->first == "RigidJoint" ){
-                RigidJoint *body = readRigidJoint(p->second, state, device);
-                bodies.push_back( body );
+                // this can be both a link or a constraint or both. Here for backwards compatibility!!!!
+                std::pair<BodyInfo,Object::Ptr> part = readRigidJoint(p->second, state, device);
+                if(part.second!=NULL){
+                    bodies.push_back( part );
+                }
             } else if(p->first !="<xmlcomment>" && p->first != "<xmlattr>"){
                 RW_THROW("Unknown element");
             }
             jIdx++;
         }
-        if(bodies.size()!=device->getJoints().size()){
-        	RW_THROW("Parser error - All joints of a RigidDevice must be specified!");
-        }
         if( !base ){
         	RW_THROW("Parser error - RigidDevice must define a base (FixedBase or KinematicBase)");
         }
-        Q maxForceQ(maxForce.size());
-        for(size_t i=0;i<maxForceQ.size();i++)
-            maxForceQ(i) = maxForce[i];
-        RigidDevice *rigiddev = new RigidDevice(base, bodies, device, state.wc.get());
-        rigiddev->setForceLimit(maxForceQ);
+        RigidDevice *rigiddev = new RigidDevice(base, bodies, device);
+        rigiddev->setForceLimit( Q(maxForce) );
+        std::vector<Body*> links = rigiddev->getLinks();
+        BOOST_FOREACH(Body *l, links){
+            state.allbodies.push_back(l);
+        }
         return rigiddev;
     }
 
     void readTactileSensor(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadTactileData" << std::endl;
-        Frame *tactileFrame = getFrameFromAttr(tree, state, "frame");
+        Body *tactileFrame = getBodyFromAttr(tree, state, "frame");
         if(tactileFrame==NULL)
-            RW_THROW("No frame is referenced by the tactile sensor.");
+            RW_THROW("No Body is referenced by the tactile sensor.");
         //Log::debugLog()<< "TactileFrameName: " << tactileFrame->getName()<< std::endl;
         string name = tree.get<string>("Name");
         Vector3D<> pos = readVector3D(tree.get_child("Pos"));
@@ -784,9 +858,11 @@ namespace
         Vector2D<> texelSize = readVector2D(tree.get_child("TexelSize"));
         double maxForce = tree.get<double>("MaxForce");
         double minForce = tree.get<double>("MinForce");
-        string bodyFrame = tree.get<string>("Body");
+        //string bodyFrame = tree.get<string>("Body");
+
         TactileArraySensor *sensor =
             new TactileArraySensor(name, tactileFrame, transform, heightMap, texelSize);
+
 
         sensor->setPressureLimit(minForce, maxForce);
         state.sensors.push_back( ownedPtr( sensor ) );

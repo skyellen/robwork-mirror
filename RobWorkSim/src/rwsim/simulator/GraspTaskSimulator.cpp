@@ -4,7 +4,7 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <rwlibs/task.hpp>
 #include <fstream>
@@ -809,7 +809,7 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
         sstate._retract = _currentTask->getRetract();
         sstate._openQ = _currentTask->getOpenQ();
         sstate._closeQ = _currentTask->getCloseQ();
-        sstate._closeQ = _currentTask->getPropertyMap().get<Q>("MaxForce");
+        sstate._tauMax = _currentTask->getTauMax();
     }
 /*
     Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex

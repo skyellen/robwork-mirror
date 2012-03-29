@@ -25,6 +25,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/multi_array.hpp>
+#include <rw/models/Object.hpp>
 #include <rw/geometry.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
@@ -60,7 +61,7 @@ namespace sensor {
 		 * @param texelSize [in]
 		 */
 		TactileArraySensor(const std::string& name,
-							rw::kinematics::Frame* frame,
+		                    dynamics::Body* obj,
 							const rw::math::Transform3D<>& fThmap,
 							const ValueMatrix& heightMap,
 							const rw::math::Vector2D<double>& texelSize);
@@ -374,7 +375,7 @@ namespace sensor {
 
 
 		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
-
+		dynamics::Body* _body;
 
 
 	};

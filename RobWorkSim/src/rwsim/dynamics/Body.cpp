@@ -16,3 +16,31 @@
  ********************************************************************************/
 
 #include "Body.hpp"
+
+#include <boost/numeric/ublas/matrix.hpp>
+
+#include <rw/math/LinearAlgebra.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+
+using namespace boost::numeric;
+
+using namespace rw::math;
+using namespace rw::kinematics;
+using namespace rw::geometry;
+using namespace rwsim::dynamics;
+
+
+rw::math::Vector3D<> Body::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {
+    Transform3D<> wTp = Kinematics::worldTframe(getParentFrame(state), state);
+    Transform3D<> wTb = Kinematics::worldTframe(getBodyFrame(), state);
+
+    VelocityScrew6D<> vel = getVelocity(state);
+    // first transform point to body frame
+    rw::math::Vector3D<> posOnBody = inverse(wTp).R() * (p - wTb.P());
+    // then calculate the velocity of the point relative to the body frame
+    EAA<> e = vel.angular();
+    Vector3D<> tmp(e[0],e[1],e[2]);
+    rw::math::Vector3D<> pVelBody = vel.linear() + cross(tmp, posOnBody);
+    // adn last remember to transform velocity back to world frame
+    return wTp.R() * pVelBody;
+}

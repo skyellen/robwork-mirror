@@ -41,36 +41,19 @@ namespace {
 
 }
 
-RigidBody::RigidBody(
-    const BodyInfo& info,
-    MovableFrame* frame,
-    Geometry::Ptr geom
-    ):
-        Body(12, info, frame , std::vector<Geometry::Ptr>(1,geom)), // we use 6 dof in state data to hold ang and lin velocity
+RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
+        Body(12, info, obj), // we use 6 dof in state data to hold ang and lin velocity
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
-        _mframe( frame ),
+        _mframe( NULL ),
         _bodyType(0),
         _Ibody(info.inertia),
         _IbodyInv( inverse(info.inertia) )
 {
-
-};
-
-RigidBody::RigidBody(
-    const BodyInfo& info,
-    MovableFrame* frame,
-    const std::vector<Geometry::Ptr>& geoms
-    ):
-        Body(12, info, frame , geoms), // we use 6 dof in state data to hold ang and lin velocity
-        _mass( info.mass ),
-        _massInv( getInvMassImpl(info.mass) ),
-        _mframe( frame ),
-        _bodyType(0),
-        _Ibody(info.inertia),
-        _IbodyInv( inverse(info.inertia) )
-{
-
+    _mframe = dynamic_cast<MovableFrame*>(obj->getBase());
+    if(_mframe==NULL){
+        RW_THROW("Base frame of Object in a RigidBody must be a MovableFrame!");
+    }
 };
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensor(const rw::kinematics::State& state) const {
@@ -129,6 +112,12 @@ rw::math::Vector3D<> RigidBody::getPointVelW(const rw::math::Vector3D<>& p, cons
     rw::math::Vector3D<> pVelBody = getLinVel(state) + cross(getAngVel(state), posOnBody);
     // adn last remember to transform velocity back to world frame
     return wTp.R() * pVelBody;
+}
+
+rw::math::VelocityScrew6D<> RigidBody::getVelocity(const rw::kinematics::State &state) const{
+    Vector3D<> lv = getLinVel(state);
+    Vector3D<> av = getAngVel(state);
+    return VelocityScrew6D<>(lv[0],lv[1],lv[2],av[0],av[1],av[2]);
 }
 
 void RigidBody::reset(rw::kinematics::State &state){

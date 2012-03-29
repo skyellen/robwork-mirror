@@ -68,10 +68,16 @@ namespace dynamics {
         }
 
         rw::math::Transform3D<> getOffset(){ return _bTb2; }
+
+        const std::vector<rwsim::dynamics::Body*>& getLinks(){
+
+        }
+
     private:
-        rw::models::Device *_kindev;
+        rw::models::Device::Ptr _kindev;
         rwsim::dynamics::Body *_baseBody;
         rwsim::dynamics::RigidBody *_endBody;
+        std::vector<rwsim::dynamics::Body*> _links;
         double _radius, _height;
         rw::math::Q _springConstant1, _springConstant2;
         rw::math::Transform3D<> _bTb2;

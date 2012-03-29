@@ -26,6 +26,7 @@
 #include <rw/models/WorkCell.hpp>
 
 #include "Body.hpp"
+#include "Link.hpp"
 
 namespace rwsim {
 namespace dynamics {
@@ -60,7 +61,7 @@ namespace dynamics {
 			return *_dev;
 		}
 
-        rw::models::Device* getKinematicModel(){
+        rw::models::Device::Ptr getKinematicModel(){
             return _dev;
         }
 
@@ -83,17 +84,18 @@ namespace dynamics {
 		virtual void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state) = 0;
 
 		virtual void setForceLimit(const rw::math::Q& force){}
+
+        virtual const std::vector<Body*>& getLinks() = 0;
+
 	protected:
 
-		DynamicDevice(dynamics::Body* base, rw::models::Device* dev, rw::models::WorkCell* wc):
+		DynamicDevice(dynamics::Body* base, rw::models::Device::Ptr dev):
 			_dev(dev),
-			_wc(wc),
 			_base(base)
 		{}
 
 
-		rw::models::Device *_dev;
-		rw::models::WorkCell *_wc;
+		rw::models::Device::Ptr _dev;
 		dynamics::Body* _base;
 	private:
 		DynamicDevice();

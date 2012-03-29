@@ -27,7 +27,7 @@
 
 #include <rw/geometry.hpp>
 #include <rw/common.hpp>
-#include <rw/proximity/Proximity.hpp>
+//#include <rw/proximity/Proximity.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -113,7 +113,7 @@ namespace {
 }
 
 TactileArraySensor::TactileArraySensor(const std::string& name,
-    rw::kinematics::Frame* frame,
+    dynamics::Body* obj,
     const rw::math::Transform3D<>& fThmap,
     const ValueMatrix& heightMap,
     const rw::math::Vector2D<>& texelSize):
@@ -136,9 +136,10 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _narrowStrategy(new rwlibs::proximitystrategies::ProximityStrategyPQP()),
         _maxPenetration(0.0015),
         _elasticity(700),// KPa ~ 0.0008 GPa
-        _tau(0.1)
+        _tau(0.1),
+        _body(obj)
 {
-	this->attachTo(frame);
+	this->attachTo( obj->getBodyFrame() );
 
 
     // calculate the normals and centers of all texels
@@ -217,8 +218,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     _nmodel = _narrowStrategy->createModel();
 
     _narrowStrategy->addGeometry(_nmodel.get(), *_ngeom );
-    _narrowStrategy->addModel(this->getFrame());
-	_frameToGeoms[this->getFrame()] = Proximity::getGeometry(this->getFrame());
+	_frameToGeoms[this->getFrame()] = _body->getGeometry();
 	std::vector<Geometry::Ptr> &geoms = _frameToGeoms[this->getFrame()];
     _narrowStrategy->setFirstContact(false);
     //std::cout << "DMask: " << _dmask << std::endl;
@@ -632,7 +632,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 		//std::cout << "Yes it really collides!" << bframe->getName() << std::endl;
 
 		if(_tsensor->_frameToGeoms.find(bframe)==_tsensor->_frameToGeoms.end())
-		    _tsensor->_frameToGeoms[bframe] = Proximity::getGeometry(bframe);
+		    _tsensor->_frameToGeoms[bframe] = body->getGeometry();
 
 		std::vector<Geometry::Ptr> &geoms = _tsensor->_frameToGeoms[bframe];
 		// now we try to get the contact information

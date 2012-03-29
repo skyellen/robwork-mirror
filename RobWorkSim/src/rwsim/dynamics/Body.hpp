@@ -23,10 +23,12 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/models/Object.hpp>
 
 #include <rw/math/InertiaMatrix.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
 
 #include <boost/foreach.hpp>
 #include <rw/geometry/Geometry.hpp>
@@ -54,40 +56,40 @@ namespace dynamics {
         rw::math::Vector3D<> masscenter;
         rw::math::InertiaMatrix<> inertia;
         std::string integratorType;
-        std::vector<rw::kinematics::Frame*> frames;
+        //std::vector<rw::kinematics::Frame*> frames;
 
         void print() const{
         	std::cout << "Material: " << material << "\n";
         	std::cout << "Mass    : " << mass << "\n";
-        	std::cout << "Frames: \n";
-        	RW_ASSERT(frames.size()>0);
-        	std::cout << "- " << frames[0]->getName() << "\n";
-        	BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
-        		std::cout <<"-- "<< frame->getName() << "\n";
-        	}
+        	//std::cout << "Frames: \n";
+        	//RW_ASSERT(frames.size()>0);
+        	//std::cout << "- " << frames[0]->getName() << "\n";
+        	//BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
+        	//	std::cout <<"-- "<< frame->getName() << "\n";
+        	//}
         	std::cout << std::endl;
         }
 
         void print(std::ostream& ostr) const{
         	ostr << "Material: " << material << "\n";
         	ostr << "Mass    : " << mass << "\n";
-        	ostr << "Frames: \n";
-        	RW_ASSERT(frames.size()>0);
-        	ostr << "- " << frames[0]->getName() << "\n";
-        	BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
-        		ostr <<"-- "<< frame->getName() << "\n";
-        	}
+        	//ostr << "Frames: \n";
+        	//RW_ASSERT(frames.size()>0);
+        	//ostr << "- " << frames[0]->getName() << "\n";
+        	//BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
+        	//	ostr <<"-- "<< frame->getName() << "\n";
+        	//}
         	ostr << std::endl;
         }
     };
 
 	/**
 	 * @brief The body interface describe the basic interface of some physical entity
-	 * in the virtual world.
+	 * in the virtual world. That is as a minimum the body has a geometric description,
+	 * and a material identity.
 	 *
 	 * The body interface is used to add impulses, calculate basic velocity
 	 * stuff and saving/updating the velocity and position states.
-	 *
 	 */
     class Body: public rw::kinematics::StateData
     {
@@ -106,15 +108,11 @@ namespace dynamics {
          * @param info [in] general information of this body
          * @param bodyframe [in]
          */
-        Body(
-        	 int dof,
-             const BodyInfo& info,
-        	 rw::kinematics::Frame *bodyframe,
-             const std::vector<rw::geometry::Geometry::Ptr>& geometry):
-            	 rw::kinematics::StateData(dof, bodyframe->getName()),
-                _bodyframe(bodyframe),
-                _geometry(geometry),
-                _info(info)
+        Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj):
+            	 rw::kinematics::StateData(dof, obj->getBase()->getName()),
+            	 _bodyframe(_obj->getBase()),
+                 _info(info),
+                 _obj(obj)
         {
 
         };
@@ -133,14 +131,14 @@ namespace dynamics {
     	 * are described relative to.
     	 */
         rw::kinematics::Frame* getBodyFrame() const {
-            return _bodyframe;
+            return _obj->getBase();
         }
 
         /**
          * @brief get all geometry associated with this body
          */
         const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(){
-            return _geometry;
+            return _obj->getGeometry();
         }
 
         /**
@@ -148,7 +146,7 @@ namespace dynamics {
          * @return list of frames
          */
         const std::vector<rw::kinematics::Frame*>& getFrames(){
-            return _info.frames;
+            return _obj->getFrames();
         }
 
         /**
@@ -231,7 +229,14 @@ namespace dynamics {
          * described in world frames.
          */
         virtual rw::math::Vector3D<>
-        	getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const = 0;
+        	getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const;
+
+        /**
+         * @brief gets the velocity of this body relative to the parent frame
+         * @param state
+         * @return
+         */
+        virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const = 0;
 
         /**
          * @brief reset the state variables of this body
@@ -395,8 +400,9 @@ namespace dynamics {
 
     private:
         rw::kinematics::Frame *_bodyframe;
+        //std::vector<rw::geometry::Geometry::Ptr> _geometry;
 
-        std::vector<rw::geometry::Geometry::Ptr> _geometry;
+        rw::models::Object::Ptr _obj;
     protected:
     	BodyInfo _info;
 

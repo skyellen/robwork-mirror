@@ -20,7 +20,7 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Math.hpp>
-
+#include <rw/models/JointDevice.hpp>
 #include "DynamicDevice.hpp"
 #include "RigidJoint.hpp"
 
@@ -31,10 +31,15 @@ namespace dynamics {
 
 
 	/**
+	 * @brief the Rigid device is composed of a set of links where one or multiple
+	 * constraints connect the links. The RigidDevice extends a velocity interface which
+	 * may be used directly or through a controller.
 	 *
+	 * The Rigid device is created as a wrapper on top of a kinematic device from RobWork.
+	 * This makes all constraints hard and only constraints (that is joints) that robwork supports
+	 * in its device class is supported here.
 	 */
 	class RigidDevice : public DynamicDevice {
-
 	public:
 	    typedef rw::common::Ptr<RigidDevice> Ptr;
 		/**
@@ -45,17 +50,8 @@ namespace dynamics {
 		 * @return
 		 */
 		RigidDevice(dynamics::Body* base,
-					const std::vector<dynamics::RigidJoint*>& bodies,
-					rw::models::Device *dev,
-					rw::models::WorkCell* wc):
-			DynamicDevice(base,dev,wc),
-			_vel( rw::math::Q::zero(dev->getDOF()) ),
-			_actualVel( rw::math::Q::zero(dev->getDOF()) ),
-			_force( rw::math::Q::zero(dev->getDOF()) ),
-			_bodies(bodies)
-		{
-
-		}
+					const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
+					rw::models::JointDevice::Ptr dev);
 
 		/**
 		 *
@@ -85,10 +81,6 @@ namespace dynamics {
 
 		void setVelocity(const rw::math::Q& vel, const rw::kinematics::State& state);
 
-		const std::vector<dynamics::RigidJoint*>& getBodies(){
-			return _bodies;
-		}
-
 		void setActualVelocity(const rw::math::Q& vel, const rw::kinematics::State& state){
 			RW_ASSERT(vel.size()==_actualVel.size());
 			_actualVel = vel;
@@ -98,14 +90,23 @@ namespace dynamics {
 			return _actualVel;
 		}
 
-		std::vector<dynamics::RigidJoint*> getRigidJoints(){ return _bodies; }
+		//std::vector<dynamics::RigidJoint*> getRigidJoints(){ return _bodies; }
 
 		void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state);
+
+		rw::models::JointDevice::Ptr getJointDevice(){ return _jdev;} ;
+
+        const std::vector<Body*>& getLinks(){  return _links; }
+
 		rw::math::Q _torque;
 	private:
 		rw::math::Q _vel, _actualVel;
+
+		// these should all be part of the state...
 		rw::math::Q _force;
-		std::vector<dynamics::RigidJoint*> _bodies;
+		//std::vector<dynamics::RigidJoint*> _bodies;
+        std::vector<Body*> _links;
+        rw::models::JointDevice::Ptr _jdev;
 	};
 }
 }

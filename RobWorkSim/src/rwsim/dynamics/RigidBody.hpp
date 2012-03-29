@@ -55,20 +55,8 @@ namespace dynamics {
          * @param frame [in] body reference frame
          * @param geom [in] geometry
          */
-        RigidBody(
-            const BodyInfo& info,
-            rw::kinematics::MovableFrame* frame,
-            rw::geometry::Geometry::Ptr geom
-            );
+        RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj);
 
-        /**
-    	 * @brief constructor
-    	 */
-    	RigidBody(
-            const BodyInfo& info,
-            rw::kinematics::MovableFrame* frame,
-            const std::vector<rw::geometry::Geometry::Ptr>& geoms
-            );
 
     	//! @brief destructor
         virtual ~RigidBody(){};
@@ -80,6 +68,7 @@ namespace dynamics {
          */
         rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const;
 
+        rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const;
         /**
          * @copydoc Body::reset
          */

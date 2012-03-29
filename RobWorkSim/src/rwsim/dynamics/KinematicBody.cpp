@@ -37,13 +37,15 @@ using namespace rwsim::dynamics;
 
 KinematicBody::KinematicBody(
             const BodyInfo& info,
-            rw::kinematics::MovableFrame& frame,
-            const std::vector<Geometry::Ptr>& geoms,
-            rw::kinematics::State& state):
-			   Body(6, info, &frame, geoms),
-			   _base(&frame)
+            rw::models::Object::Ptr obj):
+			   Body(6, info, obj),
+			   _base(NULL)
 
 {
+    _base = dynamic_cast<MovableFrame*>(obj->getBase());
+    if(_base==NULL){
+        RW_THROW("Base frame of Object in a KinematicBody must be a MovableFrame!");
+    }
 }
 
 KinematicBody::~KinematicBody()
@@ -59,14 +61,6 @@ void KinematicBody::reset(rw::kinematics::State &state){
 	}
 }
 
-rw::math::Vector3D<> KinematicBody::getPointVelW(const rw::math::Vector3D<>& wPb, const rw::kinematics::State& state) const{
-	// we need a state to make this calculation
-	// TODO: velocity is expressed in parent coordinates and this should therefore also
-	Transform3D<> wTb = Kinematics::worldTframe(_base, state);
-    // first transform point to body frame
-    rw::math::Vector3D<> posOnBody = (wPb - wTb.P());
-    // then calculate the velocity of the point relative to the body frame
-    rw::math::Vector3D<> pVelBody = getLinVel(state) + cross(getAngVel(state), posOnBody);
-    // adn last remember to transform velocity back to world frame
-    return wTb.R() * pVelBody;
+rw::math::VelocityScrew6D<> KinematicBody::getVelocity(const rw::kinematics::State &state) const{
+    return rw::math::VelocityScrew6D<>();
 }

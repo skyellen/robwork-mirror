@@ -13,9 +13,6 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
-
-#include <rw/proximity/Proximity.hpp>
-
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rwsim/dynamics/Body.hpp>

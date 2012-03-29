@@ -19,30 +19,124 @@
 
 #include <rw/common/macros.hpp>
 
+using namespace rw::kinematics;
+using namespace rw::models;
+using namespace rw::math;
 using namespace rwsim::dynamics;
 using namespace rwsim;
 
+namespace {
+
+    template<class T>
+    T* findParentFrom(rw::kinematics::Frame* f){
+        Frame* parent = f;
+        while(parent!=NULL){
+            T* res = dynamic_cast<T*>(parent);
+            if(res!=NULL)
+                return res;
+            parent = parent->getParent();
+        }
+        return NULL;
+    }
+
+    class KinematicLink : public Body
+    {
+    public:
+        KinematicLink( const BodyInfo& info, rw::models::Object::Ptr obj, KinematicDevice *ddev, size_t id):
+            Body(6,info,obj),_ddev(ddev),_id(id)
+        {
+            // find the joint index for which this link is attached
+            Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
+            _jointFrame = firstParentJoint;
+            // check which index this joint has in the device
+            int idx=0;
+            BOOST_FOREACH(Joint* j, _ddev->getJointDevice()->getJoints()){
+                if(firstParentJoint==j){
+                    _jointIdx = idx;
+                    break;
+                }
+                idx++;
+            }
+        }
+
+        virtual ~KinematicLink(){}
+
+    public: // functions that need to be implemented by specialized class
+
+        //! @copydoc Body::getPointVelW
+        virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
+            // Todo: get joint velocity, and from that calculate the velocity of this body in
+            // the joint frame
+
+        }
+
+         virtual void reset(rw::kinematics::State &state){
+
+         }
+
+         virtual double calcEnergy(const rw::kinematics::State& state){
+             return 0;
+         }
+
+
+         //! @copydoc Body::setForce
+         void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
+         }
+
+         //! @copydoc Body::addForce
+         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
+         }
+
+         //! @copydoc Body::getForce
+         rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
+             return Vector3D<>(0,0,0);
+         }
+
+         //! @copydoc Body::setTorque
+         void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
+         }
+
+         //! @copydoc Body::addTorque
+         void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
+         }
+
+         //! @copydoc Body::getTorque
+         rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
+             return Vector3D<>(0,0,0);
+         }
+
+
+         KinematicDevice* getDynamicDevice(){ return _ddev; }
+
+         size_t getID(){ return _id; }
+    private:
+         rw::models::Object::Ptr _obj;
+         KinematicDevice *_ddev;
+        size_t _id;
+        int _jointIdx;
+        Joint *_jointFrame;
+    };
+
+
+}
+
 KinematicDevice::KinematicDevice(
 				dynamics::Body* base,
-				const std::vector<dynamics::KinematicBody*> bodies,
-                rw::models::Device *dev,
-                rw::models::WorkCell* wc):
-                    DynamicDevice(base,dev,wc),
-                    _bodies(bodies),
+				const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
+                rw::models::JointDevice::Ptr dev):
+                    DynamicDevice(base,dev),
                     _maxVel(dev->getVelocityLimits()),
                     _maxAcc(dev->getAccelerationLimits()),
                     _q( rw::math::Q::zero(dev->getDOF()) ),
-                    _velQ( rw::math::Q::zero(dev->getDOF()) )
+                    _velQ( rw::math::Q::zero(dev->getDOF()) ),
+                    _jdev(dev)
 {
+    for(size_t i=0;i<objects.size(); i++){
+        _links.push_back( new KinematicLink(objects[i].first, objects[i].second, this, i) );
+    }
 }
 
 KinematicDevice::~KinematicDevice(){
-}
-
-const std::vector<KinematicBody*>&
-    KinematicDevice::getBodies(){
-
-    return _bodies;
 }
 
 

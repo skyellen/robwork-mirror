@@ -3,7 +3,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <boost/foreach.hpp>

@@ -2,7 +2,6 @@
 #define RWSIM_SIMULATOR_CONTACTMODELFACTORY_HPP_
 
 #include <rw/kinematics/State.hpp>
-#include <rw/proximity/Proximity.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 

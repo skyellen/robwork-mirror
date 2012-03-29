@@ -343,16 +343,16 @@ std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
 
 bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State& state, double max_linjointvel, double max_angjointvel){
     if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev.get())){
-        std::vector<RigidJoint*> rjoints = rdev->getRigidJoints();
+        std::vector<Joint*> rjoints = rdev->getJointDevice()->getJoints();
         Q vel = rdev->getActualVelocity(state);
         //std::cout << vel << std::endl;
         RW_ASSERT_MSG(vel.size()<=rjoints.size(), vel.size() << "<=" << rjoints.size());
         int depOffset = 0;
         for(size_t i=0; i<rjoints.size();i++){
-            if( dynamic_cast<rw::models::RevoluteJoint*>(rjoints[i]->getJoint()) ){
+            if( dynamic_cast<rw::models::RevoluteJoint*>(rjoints[i]) ){
                 if(max_angjointvel<vel[i-depOffset])
                     return false;
-            } else if(dynamic_cast<rw::models::PrismaticJoint*>(rjoints[i]->getJoint())){
+            } else if(dynamic_cast<rw::models::PrismaticJoint*>(rjoints[i])){
                 if(max_linjointvel<vel[i-depOffset])
                     return false;
             } else {

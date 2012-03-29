@@ -42,10 +42,10 @@ namespace {
 RigidJoint::RigidJoint(
     const BodyInfo& info,
     rw::models::Joint* joint,
-    const std::vector<rw::geometry::Geometry::Ptr>& geoms,
+    rw::models::Object::Ptr obj,
     rw::kinematics::State& state
     ):
-        Body(joint->getDOF(), info, joint , geoms),
+        Body(joint->getDOF(), info, obj),
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
         _frame( joint ),

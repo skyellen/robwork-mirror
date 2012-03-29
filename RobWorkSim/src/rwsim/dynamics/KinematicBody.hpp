@@ -50,11 +50,7 @@ namespace dynamics {
     class KinematicBody : public Body
     {
     public:
-        KinematicBody(
-                   const BodyInfo& info,
-                   rw::kinematics::MovableFrame &j,
-                   const std::vector<rw::geometry::Geometry::Ptr>& geoms,
-                   rw::kinematics::State &state);
+        KinematicBody(const BodyInfo& info, rw::models::Object::Ptr obj);
 
     	virtual ~KinematicBody();
 
@@ -65,7 +61,9 @@ namespace dynamics {
         /**
          * @copydoc Body::getPointVelW
          */
-        rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& wPp, const rw::kinematics::State& state) const;
+        //rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& wPp, const rw::kinematics::State& state) const;
+
+        rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const;
 
         /**
          * @copydoc Body::getEffectiveMassW

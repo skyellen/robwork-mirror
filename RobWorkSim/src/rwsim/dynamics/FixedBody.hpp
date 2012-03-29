@@ -41,11 +41,8 @@ namespace dynamics {
          * @param bodyframe [in] the body frame
          * @param geoms [in] geometry
          */
-    	FixedBody(
-    	    const BodyInfo& info,
-    	    rw::kinematics::Frame *bodyframe,
-            const std::vector<rw::geometry::Geometry::Ptr>& geoms):
-    	    Body(0, info, bodyframe, geoms)
+    	FixedBody(const BodyInfo& info, rw::models::Object::Ptr obj):
+    	    Body(0, info, obj)
     	{
 
     	}
@@ -59,6 +56,10 @@ namespace dynamics {
         virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {
         	return rw::math::Vector3D<>(0,0,0);
         };
+
+        rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
+            return rw::math::VelocityScrew6D<>(0,0,0,0,0,0);
+        }
 
         //! @copydoc Body::reset
     	void reset(rw::kinematics::State &state){}
