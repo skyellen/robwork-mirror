@@ -443,7 +443,8 @@ void RWSimPlugin::btnPressed(){
         State state = getRobWorkStudio()->getState();
         rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
         GraspRestingPoseDialog *graspRestPoseDialog = new GraspRestingPoseDialog(state, _dwc.get(), colDect.get(),  this);
-        connect(graspRestPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+
+        connect(graspRestPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(setRobWorkStudioState(const rw::kinematics::State&)) );
         //connect(graspRestPoseDialog,SIGNAL(restingPoseEvent(const RestingConfig&)), this,SLOT(restConfigEvent(const RestingConfig&)) );
         // TODO: this should use the genericAnyEvent
         graspRestPoseDialog->show();
@@ -459,7 +460,8 @@ void RWSimPlugin::btnPressed(){
         State state = getRobWorkStudio()->getState();
         rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
         RestingPoseDialog *restPoseDialog = new RestingPoseDialog(state, _dwc.get(), colDect.get(),  this);
-        connect(restPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        connect(restPoseDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(setRobWorkStudioState(const rw::kinematics::State&)) );
+        connect(restPoseDialog,SIGNAL(restingPoseEvent(const rw::kinematics::State&)),this,SLOT(setRobWorkStudioState(const rw::kinematics::State&)) );
         restPoseDialog->show();
         restPoseDialog->raise();
         restPoseDialog->activateWindow();
@@ -472,7 +474,7 @@ void RWSimPlugin::btnPressed(){
         State state = getRobWorkStudio()->getState();
         rw::proximity::CollisionDetector::Ptr colDect = getRobWorkStudio()->getCollisionDetector();
         SupportPoseAnalyserDialog *poseAnalyserDialog = new SupportPoseAnalyserDialog(state, _dwc.get(), colDect.get(),  getRobWorkStudio(), this);
-        connect(poseAnalyserDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
+        connect(poseAnalyserDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(setRobWorkStudioState(const rw::kinematics::State&)) );
         poseAnalyserDialog->show();
         poseAnalyserDialog->raise();
         poseAnalyserDialog->activateWindow();

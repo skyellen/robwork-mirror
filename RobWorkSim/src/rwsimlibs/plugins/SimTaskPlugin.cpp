@@ -533,8 +533,8 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
     } else if( gripperName=="GS20"){
-        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.05));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.0));
+        subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.1));
     } else {
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,0.10));

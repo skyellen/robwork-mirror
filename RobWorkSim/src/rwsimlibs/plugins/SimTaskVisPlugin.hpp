@@ -53,19 +53,22 @@ public:
      * workcell
      */
     void genericEventListener(const std::string& event);
+    void genericAnyEventListener(const std::string& event, boost::any data);
 
 
     void loadTasks(bool automatic);
     void saveTasks(bool automatic);
     void loadConfig(bool automatic);
     void saveConfig();
-    void updateConfig();
+    //void updateConfig();
     rw::common::PropertyMap& settings();
+
 private slots:
-
+    void updateVis();
+    void loadTasks(QString taskFile);
     void btnPressed();
-
     void stateChangedListener(const rw::kinematics::State& state);
+    void selectGrasp(int i);
 
 private:
     rw::models::WorkCell* _wc;
