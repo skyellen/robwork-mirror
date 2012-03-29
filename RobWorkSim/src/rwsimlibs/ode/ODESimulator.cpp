@@ -677,43 +677,43 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             // TODO: register the objects that are penetrating such that we don't check them each time
             restoreODEState();
             // print all information available:
-            std::cout << "----------------------- TOO LARGE PENETRATIONS --------------------\n";
-            std::cout << "-- time    : " << _time << "\n";
-            std::cout << "-- dt orig : " << dt << "\n";
-            std::cout << "-- dt div  : " << dttmp << "\n";
-            std::cout << "-- step divisions: " << i << "\n";
-            std::cout << "-- bad lcp count : " << badLCPcount << "\n";
-            std::cout << "-- Bodies: \n";
+            Log::debugLog() << "----------------------- TOO LARGE PENETRATIONS --------------------\n";
+            Log::debugLog() << "-- time    : " << _time << "\n";
+            Log::debugLog() << "-- dt orig : " << dt << "\n";
+            Log::debugLog() << "-- dt div  : " << dttmp << "\n";
+            Log::debugLog() << "-- step divisions: " << i << "\n";
+            Log::debugLog() << "-- bad lcp count : " << badLCPcount << "\n";
+            Log::debugLog() << "-- Bodies: \n";
             BOOST_FOREACH(dBodyID body, _allbodies){
                 dReal vec[4];
                 ODEBody *data = (ODEBody*) dBodyGetData(body);
                 if(data!=NULL){
-                    std::cout << "--- Body: " << data->getRwBody()->getName();
+                    Log::debugLog() << "--- Body: " << data->getRwBody()->getName();
                 } else {
-                    std::cout << "--- Body: NoRWBODY";
+                    Log::debugLog() << "--- Body: NoRWBODY";
                 }
                 drealCopy( dBodyGetPosition(body), vec, 3);
-                std::cout << "\n---- pos   : " << printArray(vec, 3);
+                Log::debugLog() << "\n---- pos   : " << printArray(vec, 3);
                 drealCopy( dBodyGetQuaternion(body), vec, 4);
-                std::cout << "\n---- rot   : " << printArray(vec, 4);
+                Log::debugLog() << "\n---- rot   : " << printArray(vec, 4);
                 drealCopy( dBodyGetLinearVel  (body), vec, 3);
-                std::cout << "\n---- linvel: " << printArray(vec, 3);
+                Log::debugLog() << "\n---- linvel: " << printArray(vec, 3);
                 drealCopy( dBodyGetAngularVel (body), vec, 3);
-                std::cout << "\n---- angvel: " << printArray(vec, 3);
+                Log::debugLog() << "\n---- angvel: " << printArray(vec, 3);
                 drealCopy( dBodyGetForce  (body), vec, 3);
-                std::cout << "\n---- force : " << printArray(vec, 3);
+                Log::debugLog() << "\n---- force : " << printArray(vec, 3);
                 drealCopy( dBodyGetTorque (body), vec, 3);
-                std::cout << "\n---- torque: " << printArray(vec, 3);
-                std::cout << "\n";
+                Log::debugLog() << "\n---- torque: " << printArray(vec, 3);
+                Log::debugLog() << "\n";
             }
-            std::cout << "--\n-- contacts: \n";
+            Log::debugLog() << "--\n-- contacts: \n";
             BOOST_FOREACH(ContactPoint p, _allcontactsTmp){
-                std::cout << "-- pos: "<< p.p << "\n";
-                std::cout << "-- normal: "<< p.n << "\n";
-                std::cout << "-- depth: "<< p.penetration << "\n";
+                Log::debugLog() << "-- pos: "<< p.p << "\n";
+                Log::debugLog() << "-- normal: "<< p.n << "\n";
+                Log::debugLog() << "-- depth: "<< p.penetration << "\n";
             }
 
-            std::cout << "----------------------- TOO LARGE PENETRATIONS --------------------" << std::endl;
+            Log::debugLog() << "----------------------- TOO LARGE PENETRATIONS --------------------" << std::endl;
             RW_THROW("Too Large Penetrations!");
             break;
         }
@@ -1761,7 +1761,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
-        bool softcontact = true;
+        bool softcontact = false;
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
