@@ -56,12 +56,13 @@ void RenderPoints::draw(const DrawableNode::RenderInfo& info, DrawType type, dou
 	//glColor3fv(_color);
 	//glPointSize(100.0f);
 	//glBegin(GL_POINTS);
-
+    float a = alpha;
 	// Save and restore the color so that everything doesn't turn red.
     glPushAttrib(GL_CURRENT_BIT);
     {
         glPushMatrix();
-        glColor3fv(_color);
+        glColor4f(_color[0],_color[1],_color[2], a);
+        //glColor3fv(_color);
         BOOST_FOREACH(const Vector3D<> &p, _points){
         	glTranslatef((float)p(0), (float)p(1), (float)p(2));
         	gluSphere(_sphereObj, 0.01, 3, 3);
