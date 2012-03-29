@@ -8,7 +8,7 @@
 #include <time.h>
 #include <cstdio>
 
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rwlibs/opengl/SceneOpenGL.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -19,8 +19,9 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 
-#include <rwlibs/simulation/camera/VirtualCamera.hpp>
+#include <rwlibs/simulation/camera/SimulatedCamera.hpp>
 #include <rwlibs/simulation/camera/GLFrameGrabber.hpp>
 
 #include <map>
@@ -28,7 +29,7 @@
 #include "ArcBall.hpp"
 
 using namespace rwlibs::proximitystrategies;
-using namespace rwlibs::drawable;
+using namespace rwlibs::opengl;
 using namespace rwlibs::simulation;
 
 using namespace rw::proximity;
@@ -36,6 +37,7 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::sensor;
+using namespace rw::graphics;
 using namespace rw;
 
 // private prototypes
@@ -44,7 +46,7 @@ void myGlutReshape( int x, int y );
 /* constants for the right click menu */
 enum{QUIT=0};
 
-void GetFPS();
+//void GetFPS();
 
 /* The window upper left corner and height and width parameters */
 int _x=0, _y=0, _width=640,_height=480;
@@ -67,8 +69,8 @@ bool _collisionCheckEnabled = true;
 // the workcellModel
 WorkCell::Ptr _workcellModel = NULL;
 State *_state;
-WorkCellGLDrawer _workcellGLDrawer;
-std::vector<VirtualCamera*> _cameras;
+WorkCellScene *_workcellGLDrawer;
+std::vector<SimulatedCamera*> _cameras;
 
 // variables for the camera view
 int _curCameraView=0;
@@ -92,7 +94,7 @@ std::map<int,MenuItem*> _menuItemMap;
 
 EventListener *_keyListener = NULL;
 
-WorkCellGLDrawer* SimpleGLViewer::getWorkCellGLDrawer(){ return &_workcellGLDrawer; };
+WorkCellScene* SimpleGLViewer::getWorkCellGLDrawer(){ return &_workcellGLDrawer; };
 
 void SimpleGLViewer::setKeyListener(EventListener *listener){
     _keyListener = listener;
@@ -403,13 +405,37 @@ void myGlutDisplay( void )
 
         // Rotate and place camera/scene
         GLfloat data[16];
-        convertRotAndPosToArray(_viewRotation, _viewPos, data);
+        convertRotAndPosToArray(, data);
         glMultMatrixf(data);
         glTranslated(-_pivotPoint(0), -_pivotPoint(1), -_pivotPoint(2));
 
+        Transform3D<> vt3d(_viewPos,_viewRotation);
+
+        getViewCamera()->setTransform(_cameraCtrl->getTransform());
+
+        // update the position of the light
+    /*    Transform3D<> camTw = inverse(getViewCamera()->getTransform());
+        Transform3D<> wTlight = Transform3D<>(Vector3D<>(0,0,20));
+        Vector3D<> lightPos = (camTw*wTlight).P();// Vector3D<>(0,0,1);
+        //Vector3D<> lightPos = (camTw.R() * Vector3D<>(0,0,1) );
+
+        GLfloat lpos[] = {0.0f, 0.0f, 1.0f, 1.0f};
+        lpos[0] = lightPos[0];
+        lpos[1] = lightPos[1];
+        lpos[2] = lightPos[2];
+        glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+    */
+        //std::cout << _currentView->_name << std::endl;
+        _renderInfo._drawType = _currentView->_drawType;
+        _renderInfo._mask = _currentView->_drawMask;
+        _renderInfo.cams = _currentView->_camGroup;
+        _scene->draw( _renderInfo );
+
         // TODO: draw the ArcBall
-        if(_workcellModel!=NULL)
-            _workcellGLDrawer.draw(*_state, _workcellModel.get());
+        if(_workcellModel!=NULL){
+
+            _workcellGLDrawer->draw() draw(*_state, _workcellModel.get());
+        }
     }
     /* Disable lighting and set up ortho projection to render text */
     glDisable( GL_LIGHTING );
@@ -467,6 +493,7 @@ void initGlut(int,int,int,int);
 void initLights();
 void initMenu();
 
+
 bool SimpleGLViewer::start(){
     // TODO: start
     std::cout << "Init Glut" << std::endl;
@@ -477,6 +504,56 @@ bool SimpleGLViewer::start(){
     initMenu();
     std::cout << "Glut main loop" << std::endl;
     glutMainLoop();
+    std::cout << "Initializing WorkCellScene" << std::endl;
+    _workcellGLDrawer = new WorkCellScene( new SceneOpenGL() );
+
+    // initialize cameras
+    // add the default/main cameraview group
+    _mainCamGroup = _scene->makeCameraGroup("MainView");
+    _scene->addCameraGroup(_mainCamGroup);
+    _mainCamGroup->setEnabled(true);
+
+    // add a node to render background
+    rw::common::Ptr<RenderQuad> backgroundRender = ownedPtr(new RenderQuad());
+
+    _backgroundRender = backgroundRender;
+    _backgroundnode = _scene->makeDrawable("BackgroundRender", _backgroundRender, DrawableNode::ALL);
+    _scene->addChild(_backgroundnode, _scene->getRoot());
+
+    _worldNode = _scene->makeGroupNode("World");
+    _scene->addChild(_worldNode, _scene->getRoot());
+
+
+
+    _mainView = ownedPtr( new SceneViewer::View("MainView") );
+    _currentView = _mainView;
+    // add background camera
+    _backCam = scene->makeCamera("BackgroundCam");
+    _backCam->setEnabled(true);
+    _backCam->setRefNode(_backgroundnode);
+    _backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
+    _backCam->setClearBufferEnabled(true);
+    _backCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    _backCam->setDepthTestEnabled( false );
+    _backCam->setLightningEnabled( false );
+    _mainCamGroup->insertCamera(_backCam, 0);
+
+    // main camera
+    _mainCam = _scene->makeCamera("MainCam");
+    _mainCam->setDrawMask( dmask );
+    _mainCam->setEnabled(false);
+    _mainCam->setPerspective(45, 640, 480, 0.1, 30);
+    _mainCam->setClearBufferEnabled(false);
+    _mainCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    _mainCam->setDepthTestEnabled( true );
+    _mainCam->setLightningEnabled( true );
+    _mainCam->setRefNode(_scene->getRoot());
+    _mainCamGroup->insertCamera(_mainCam, 1);
+    // TODO: foreground camera
+    _mainView->_viewCamera = _mainCam;
+    _mainView->_camGroup = _mainCamGroup;
+
+
     return true;
 }
 

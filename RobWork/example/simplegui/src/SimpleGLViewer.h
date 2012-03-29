@@ -6,7 +6,7 @@
 #include "EventListener.hpp"
 
 #include <rw/models/WorkCell.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 
 class SimpleGLViewer {
     public:
@@ -24,7 +24,7 @@ class SimpleGLViewer {
 
         static const rw::kinematics::State& getState();
 
-        static rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+        static rw::graphics::WorkCellScene* getWorkCellGLDrawer();
 
         static void resize(int width, int height);
 
