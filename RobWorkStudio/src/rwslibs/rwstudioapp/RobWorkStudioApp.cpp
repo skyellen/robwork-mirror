@@ -4,14 +4,14 @@
 #include <rw/common/ProgramOptions.hpp>
 #include <RobWorkStudioConfig.hpp>
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
-    #include <rwscl/log/ShowLog.hpp>
-    #include <rwscl/jog/Jog.hpp>
-    #include <rwscl/treeview/TreeView.hpp>
-    #include <rwscl/playback/PlayBack.hpp>
-    #include <rwscl/planning/Planning.hpp>
-    #include <rwscl/propertyview/PropertyView.hpp>
-    #include <rwscl/sensors/Sensors.hpp>
-    #include <rwscl/lua/Lua.hpp>
+    #include <rwslibs/log/ShowLog.hpp>
+    #include <rwslibs/jog/Jog.hpp>
+    #include <rwslibs/treeview/TreeView.hpp>
+    #include <rwslibs/playback/PlayBack.hpp>
+    #include <rwslibs/planning/Planning.hpp>
+    #include <rwslibs/propertyview/PropertyView.hpp>
+    #include <rwslibs/sensors/Sensors.hpp>
+    #include <rwslibs/lua/Lua.hpp>
 
 #endif
 

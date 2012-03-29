@@ -1,9 +1,9 @@
-SET(SUBSYS_NAME rwslibs_rwstudioapp)
+SET(SUBSYS_NAME rws_rwstudioapp)
 set(SUBSYS_DESC "A rwstudio application that may be started in a thread.")
 SET(SUBSYS_DEPS rws rws_jog rws_log rws_planning rws_playback rws_sensors rws_treeview)
 
 IF( RWS_HAVE_LUA )
-    LIST(APPEND SUBSYS_DEPS rws_luaeditor rws_lua rws_lua_s) 
+    LIST(APPEND SUBSYS_DEPS rws_luaeditor rws_lua_s) 
 ENDIF()
 
 SET(build TRUE)
