@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>673</width>
-    <height>527</height>
+    <width>786</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -252,6 +252,52 @@ too few is found decrease it.</string>
                 </property>
                </widget>
               </item>
+              <item row="4" column="0">
+               <widget class="QDoubleSpinBox" name="_distSpin">
+                <property name="decimals">
+                 <number>3</number>
+                </property>
+                <property name="minimum">
+                 <double>0.001000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>99.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Dist standard div</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QDoubleSpinBox" name="_angleSpin">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="minimum">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>8.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Angle standard div</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -404,6 +450,13 @@ too few is found decrease it.</string>
                   </property>
                  </widget>
                 </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="_rpyBox">
+                  <property name="text">
+                   <string>RPY</string>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </item>
              </layout>
@@ -428,26 +481,7 @@ too few is found decrease it.</string>
           </layout>
          </item>
          <item>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="1">
-            <widget class="QDoubleSpinBox" name="ylowSpin"/>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="zlowSpin"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QDoubleSpinBox" name="xlowSpin"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QDoubleSpinBox" name="xhighSpin"/>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="yhighSpin"/>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="zhighSpin"/>
-           </item>
-          </layout>
+          <layout class="QGridLayout" name="gridLayout_2"/>
          </item>
          <item>
           <widget class="QFrame" name="_glframe">
@@ -469,7 +503,6 @@ too few is found decrease it.</string>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <zorder>groupBox_3</zorder>
           </widget>
          </item>
         </layout>

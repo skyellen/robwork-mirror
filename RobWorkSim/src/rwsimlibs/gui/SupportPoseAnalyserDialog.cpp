@@ -47,7 +47,16 @@
 
 #include <rw/geometry/Geometry.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
+#include <rw/rw.hpp>
+#include <rwlibs/task.hpp>
+#include <rwlibs/algorithms/kdtree/KDTree.hpp>
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
+USE_ROBWORK_NAMESPACE
+using namespace std;
+using namespace robwork;
+
+using namespace rwlibs::algorithms;
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
 using namespace rwsim::util;
@@ -556,25 +565,26 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	SupportPose &pose = _supportPoses[body][poseIdx];
     	State state = _wc->getDefaultState();
     	// calculate a transform that is part of the support pose
-    	Transform3D<> trans = body->getMovableFrame()->getTransform(state);
-    	//Transform3D<> trans = Kinematics::worldTframe( body , state );
-    	Vector3D<> p = pose._rotAxesTable[0];
-    	Vector3D<> v = /*trans.R()**/ -pose._rotAxes[0];
+    	//Transform3D<> trans = body->getMovableFrame()->getTransform(state);
+    	Transform3D<> wTb = Kinematics::worldTframe( body->getMovableFrame() , state );
 
-    	// we want to rotate v into p
-    	EAA<> eaa(v, p);
+    	Vector3D<> wTdir_current = wTb.R() * pose._rotAxes[0];
+        Vector3D<> wTdir_target = pose._rotAxesTable[0];
 
-    	double ang = angle(v, p, normalize( cross(v,p)));//acos( dot(v,p) );
+    	// we want to rotate into wTdir_target
+    	EAA<> eaa(wTdir_current, wTdir_target);
+
+    	double ang = angle(wTdir_current, wTdir_target, normalize( cross(wTdir_current, wTdir_target)));//acos( dot(v,p) );
     	std::cout << "- RotAxisTable:  " <<  pose._rotAxesTable[0] << "\n"
-    	          << "- RotAxisT    :  " <<  (trans.R()*pose._rotAxes[0]) << "\n"
+    	          << "- RotAxisT    :  " <<  (wTb.R()*pose._rotAxes[0]) << "\n"
     	           <<"- RotAxis     :  " <<  pose._rotAxes[0] << std::endl;
-    	std::cout << "- Angle       :  " << ang << v << p << std::endl;
+    	std::cout << "- Angle       :  " << ang << wTdir_current << wTdir_target << std::endl;
 
     	//EAA<> eaa( normalize( cross(v,p) ) , -ang );
 
     	// now we add this rotation to the object, such that its rotation axis gets aligned with the supporting axis
-    	trans.R() = eaa.toRotation3D() /*trans.R()*/;
-    	body->getMovableFrame()->setTransform(trans,state);
+    	wTb.R() = inverse( eaa.toRotation3D() )*wTb.R();
+    	body->getMovableFrame()->setTransform(wTb,state);
 
     	Rotation3D<> rot10 = EAA<>(normalize(pose._rotAxes[0]),10*Deg2Rad).toRotation3D();
     	_fDraw1->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot10));
@@ -589,27 +599,64 @@ void SupportPoseAnalyserDialog::changedEvent(){
         Rotation3D<> rot20i = EAA<>(normalize(pose._rotAxes[0]),-20*Deg2Rad).toRotation3D();
         _fDraw5->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot20i));
 
+        _fDraw1->setVisible( false );
+        _fDraw2->setVisible( false );
+        _fDraw3->setVisible( false );
+        _fDraw4->setVisible( false );
+        _fDraw5->setVisible( false );
     	// now we also need to show the starting points
 
     	int bodyIdx = _selectObjBox->currentIndex();
-    	std::vector<int> &poseIdxList = _supportToPose[std::make_pair(bodyIdx,poseIdx)];
+    	std::vector<int> poseIdxList = _supportToPose[std::make_pair(bodyIdx,poseIdx)];
+    	std::sort(poseIdxList.begin(), poseIdxList.end());
+
     	std::cout << "PoseIdxList: " << poseIdxList.size() << std::endl;
     	_selPosePntRenderX->clear();
     	_selPosePntRenderY->clear();
     	_selPosePntRenderZ->clear();
+
+    	_selPoseDrawX->setTransparency(0.3);
+
+
     	std::vector<Vector3D<> > &xaxis = _xaxisS[body];
     	std::vector<Vector3D<> > &yaxis = _yaxisS[body];
     	std::vector<Vector3D<> > &zaxis = _zaxisS[body];
     	std::cout << "xaxis.size()==_xaxis.size() " << xaxis.size() << "==" << _xaxis[bodyIdx].size()<< std::endl;
     	if(xaxis.size()==_xaxis[bodyIdx].size()){
 			BOOST_FOREACH(int idx, poseIdxList){
-				_selPosePntRenderX->addPoint( xaxis[idx] );
-				_selPosePntRenderY->addPoint( yaxis[idx] );
-				_selPosePntRenderZ->addPoint( zaxis[idx] );
+			    // visualize the EAA instead
+			    if(_rpyBox->isChecked() ){
+			        RPY<> eaa(_startTransforms[bodyIdx][idx].R() );
+                    _selPosePntRenderZ->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
+			    } else {
+                    EAA<> eaa(_startTransforms[bodyIdx][idx].R() );
+                    _selPosePntRenderZ->addPoint( Vector3D<>(eaa[0]/4,eaa[1]/4,eaa[2]/4 ) );
+			    }
+			    //_selPosePntRenderX->addPoint( xaxis[idx] );
+				//_selPosePntRenderY->addPoint( yaxis[idx] );
+				//_selPosePntRenderZ->addPoint( zaxis[idx] );
 			}
+
+			// now add everything else
+			int pidx = 0;
+			for(int i=0;i<_startTransforms[bodyIdx].size(); i++){
+			    if( pidx<poseIdxList.size() && i==poseIdxList[pidx] ){
+			        pidx++;
+			        continue;
+			    }
+			    if( _startTransforms[bodyIdx][i].P()[2]<0 )
+			        continue;
+			    if(_rpyBox->isChecked() ){
+                    RPY<> eaa(_startTransforms[bodyIdx][i].R() );
+                     _selPosePntRenderX->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
+                } else {
+                    EAA<> eaa(_startTransforms[bodyIdx][i].R() );
+                     _selPosePntRenderX->addPoint( Vector3D<>(eaa[0]/4,eaa[1]/4,eaa[2]/4 ) );
+                }
+            }
     	}
     	// signal to update the transform
-    	showPlanarDistribution();
+    	//showPlanarDistribution();
     	stateChanged(state);
     }
     _view->updateGL();
@@ -964,6 +1011,10 @@ void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath
 	_xaxisS.clear();
 	_yaxisS.clear();
 	_zaxisS.clear();
+	_startTransforms.clear();
+
+    _startTransforms.resize(_bodies.size(),std::vector<Transform3D<> >(path->size()) );
+
 	for(size_t j=0;j<_bodies.size();j++){
 		std::vector<Vector3D<> > &xaxis = _xaxisS[_bodies[j]];
 		std::vector<Vector3D<> > &yaxis = _yaxisS[_bodies[j]];
@@ -976,10 +1027,12 @@ void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath
 			RigidBody *body = _bodies[j];
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
-			Rotation3D<> rot = body->getMovableFrame()->getTransform(state).R();
+			Transform3D<> t3d = body->getMovableFrame()->getTransform(state);
+			Rotation3D<> rot = t3d.R();
 			xaxis[i] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
 			yaxis[i] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
 			zaxis[i] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
+			_startTransforms[j][i] = t3d;
 		}
 	}
 
@@ -992,15 +1045,18 @@ void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePath::Ptr
 	_xaxis.clear();
 	_yaxis.clear();
 	_zaxis.clear();
+	_endTransforms.clear();
 
 	_xaxis.resize(_bodies.size(),std::vector<Vector3D<> >(path->size()) );
 	_yaxis.resize(_bodies.size(),std::vector<Vector3D<> >(path->size()) );
 	_zaxis.resize(_bodies.size(),std::vector<Vector3D<> >(path->size()) );
-
+	_endTransforms.resize(_bodies.size(),std::vector<Transform3D<> >(path->size()) );
 
 	// copy all poses of all body/state sets into an array
 	std::cout << "Size of path is: " << path->size() << std::endl;
 	const State defState = (*path)[0].getValue();
+
+
 
 	for(size_t i=0; i<path->size();i++){
 		const State &state = (*path)[i].getValue();
@@ -1008,21 +1064,197 @@ void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePath::Ptr
 			RigidBody *body = _bodies[j];
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
-			Rotation3D<> rot = body->getMovableFrame()->getTransform(state).R();
+			Transform3D<> t3d = body->getMovableFrame()->getTransform(state);
+			Rotation3D<> rot = t3d.R();
+
 			_xaxis[j][i] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
 			_yaxis[j][i] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
 			_zaxis[j][i] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
+			_endTransforms[j][i] = t3d;
 		}
 	}
 	updateHoughThres();
 	updateRenderView();
 }
 
+
+namespace {
+
+    rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::vector<Transform3D<> >& data, double dist, double angle){
+        std::cout << "Dist : " << dist << std::endl;
+        std::cout << "Angle: " << angle*Rad2Deg << "deg" << std::endl;
+        // now build a kdtree with all end configurations
+        typedef boost::tuple<int,int> KDTreeValue; // (transform index, region index)
+        std::vector<KDTreeQ::KDNode> nodes;
+        for(size_t i=0;i<data.size();i++){
+            Transform3D<> k = data[i];
+            if(k.P()[2]<-2)
+                continue;
+            EAA<> r( k.R());
+            //Vector3D<> r = k.R()*Vector3D<>::z();
+            Q key(6, k.P()[0],k.P()[1],k.P()[2], r[0],r[1],r[2]);
+            nodes.push_back(KDTreeQ::KDNode(key, KDTreeValue(i, -1)));
+        }
+
+        std::cout << "Nodes created, building tree.. " << std::endl;
+        KDTreeQ* nntree = KDTreeQ::buildTree(nodes);
+        // todo estimate the average distance between neighbors
+        std::cout << "Tree build, finding regions" << std::endl;
+        std::map<int, bool > regions;
+        int freeRegion = 0;
+        std::list<const KDTreeQ::KDNode*> result;
+        Q diff(6, dist, dist, dist, angle, angle, angle);
+        // find neighbors and connect them
+        BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
+            KDTreeValue &val = n.valueAs<KDTreeValue&>();
+            // check if the node is allready part of a region
+            if(val.get<1>() >=0)
+                continue;
+
+            result.clear();
+            nntree->nnSearchRect(n.key-diff, n.key+diff, result);
+            int currentIndex = -1;
+            // first see if any has an id
+            BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
+                KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+                if(nnval.get<1>() >=0){
+                    currentIndex = nnval.get<1>();
+                    break;
+                }
+            }
+            if( currentIndex<0 ){
+                currentIndex=freeRegion;
+                //std::cout << "Adding " << freeRegion << std::endl;
+                regions[freeRegion] = true;
+                freeRegion++;
+            }
+            val.get<1>() = currentIndex;
+            BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
+                KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+                if(nnval.get<1>() >=0 && nnval.get<1>()!=currentIndex){
+
+                    //std::cout << "Merging regions " << currentIndex << "<--" << nnval.get<1>() << std::endl;
+
+                    // merge all previously defined nnval.get<1>() into freeRegion
+                    regions[nnval.get<1>()] = false;
+                    BOOST_FOREACH(KDTreeQ::KDNode &npro, nodes){
+                        KDTreeValue &npval = npro.valueAs<KDTreeValue&>();
+                        // check if the node is allready part of a region
+                        if(npval.get<1>() == nnval.get<1>())
+                            npval.get<1>()=currentIndex;
+                    }
+                }
+            }
+
+        }
+
+        // now print region information
+        std::vector<int> validRegions;
+        typedef std::map<int,bool>::value_type mapType;
+        BOOST_FOREACH(mapType val , regions){
+            if(val.second==true){
+                validRegions.push_back(val.first);
+            }
+        }
+
+
+        std::cout << "Nr of detected regions: " << validRegions.size() << std::endl;
+        std::map<int,std::vector<int> >* statMap = new std::map<int,std::vector<int> >();
+
+        BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
+            KDTreeValue &val = n.valueAs<KDTreeValue&>();
+            // check if the node is allready part of a region
+            (*statMap)[val.get<1>()].push_back( val.get<0>() );
+        }
+        std::cout << "found regions" << std::endl;
+        return ownedPtr( statMap );
+    }
+
+
+}
+
+
 void SupportPoseAnalyserDialog::process(){
 	// first we need to figure out what frames that are of interest
-
 	if( _bodies.size()==0 )
 		return;
+
+	_supportPoseDistributions.clear();
+
+    int houghThres = _thresholdSpin->value();
+    double epsilon = _epsilonSpin->value();
+
+    double dist = _distSpin->value();
+    double angle = _angleSpin->value() * Deg2Rad;
+
+    // map the points on the sphere to a plane of spherical coordinates
+    for(size_t j=0;j<_bodies.size();j++){
+        const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame()->getParent(), _defaultState);
+        const Transform3D<> wTb = Kinematics::worldTframe(_bodies[j]->getMovableFrame(), _defaultState);
+
+        // first we compute regions which should work as stable poses
+        Ptr< std::map<int, std::vector<int> > > regions = calculateRegions(_endTransforms[j], dist, angle);
+
+        std::vector<SupportPose> &sposes = _supportPoses[_bodies[j]];
+        sposes.clear();
+
+        typedef std::map<int,std::vector<int> >::value_type mapType2;
+        BOOST_FOREACH(mapType2 val, *regions){
+            if(val.second.size() > 4)
+                Log::infoLog() << "Region stat: " << val.first << ":" << val.second.size() ;
+
+            Vector3D<> dir(0,0,0);
+            double angle = 0;
+            int count = 0;
+            std::vector<Transform3D<> > transformations;
+            BOOST_FOREACH(int idx, val.second){
+                count ++;
+                std::cout << idx << std::endl;
+                RW_ASSERT(_startTransforms.size()>j);
+                RW_ASSERT(_endTransforms.size()>j);
+                RW_ASSERT(_startTransforms[j].size()>idx);
+                RW_ASSERT(_endTransforms[j].size()>idx);
+                Transform3D<> s = _startTransforms[j][ idx ];
+                EAA<> sr( s.R() );
+                Vector3D<> srz = s.R()*Vector3D<>::z();
+                Transform3D<> e = _endTransforms[j][ idx ];
+                EAA<> er( e.R() );
+                Vector3D<> erz = e.R()*Vector3D<>::z();
+
+                dir += erz;
+                //dir += er.axis();
+                angle += er.angle();
+
+                Transform3D<> aTb = inverse( s )*e;
+                Vector3D<> abp = aTb.P();
+                EAA<> abe(aTb.R() );
+                RPY<> abr(aTb.R() );
+                Vector3D<> aby = aTb.R()*Vector3D<>::z();
+                transformations.push_back( s );
+            }
+
+            //std::cout << "calculate stable poses " << std::endl;
+            double probability = (count*100.0)/(double)_endTransforms[j].size();
+            count = 0;
+            if(val.second.size() > 4){
+                // add the stable pose
+                sposes.push_back( SupportPose(1, probability) );
+                sposes.back()._rotAxesTable[0] = normalize(dir);
+                sposes.back()._rotAxes[0] = inverse(wTb).R() * normalize(dir);
+
+                _supportPoseDistributions[_bodies[j]].push_back( transformations );
+
+                _supportToPose[std::make_pair(j,sposes.size()-1)] = val.second;
+            }
+        }
+
+
+
+
+    }
+
+
+
 
 #ifdef USE_OPENCV
 
@@ -1209,11 +1441,12 @@ void SupportPoseAnalyserDialog::updateRenderView(){
 	_ycRender->clear();
 	_zcRender->clear();
 
-	_xRender->addPoints( _xaxis[objIdx] );
-	_yRender->addPoints( _yaxis[objIdx] );
-	_zRender->addPoints( _zaxis[objIdx] );
 
-	_xcRender->addCircles( _xcircBodyMap[body] );
-	_ycRender->addCircles( _ycircBodyMap[body] );
-	_zcRender->addCircles( _zcircBodyMap[body] );
+        _xRender->addPoints( _xaxis[objIdx] );
+        _yRender->addPoints( _yaxis[objIdx] );
+        _zRender->addPoints( _zaxis[objIdx] );
+
+        _xcRender->addCircles( _xcircBodyMap[body] );
+        _ycRender->addCircles( _ycircBodyMap[body] );
+        _zcRender->addCircles( _zcircBodyMap[body] );
 }

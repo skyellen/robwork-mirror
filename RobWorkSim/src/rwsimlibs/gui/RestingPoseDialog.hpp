@@ -66,7 +66,7 @@ class RestingPoseDialog : public QDialog, private Ui::RestingPoseDialog
         /**
          * @brief An event that is fired when a resting pose has been calculated.
          */
-        void restingPoseEvent(const rw::kinematics::State& state,const rw::kinematics::State&);
+        void restingPoseEvent(const rw::kinematics::State& state, const rw::kinematics::State&);
 
     private slots:
         void btnPressed();

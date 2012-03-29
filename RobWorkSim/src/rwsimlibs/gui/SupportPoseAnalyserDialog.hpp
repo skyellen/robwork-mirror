@@ -127,6 +127,9 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
 
         std::vector<rwsim::dynamics::RigidBody*> _bodies;
         std::vector< std::vector<rw::math::Vector3D<> > > _xaxis,_yaxis,_zaxis;
+        std::vector< std::vector<rw::math::Transform3D<> > > _endTransforms, _startTransforms;
+
+
         std::map<rwsim::dynamics::RigidBody*,std::vector<rw::math::Vector3D<> > >
 			_xaxisS,_yaxisS,_zaxisS;
 

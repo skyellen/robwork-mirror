@@ -21,7 +21,7 @@
 #include <rw/proximity/Proximity.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
-
+#include <fstream>
 #include <stdio.h>
 
 using namespace rwsim::dynamics;
@@ -116,16 +116,47 @@ void RestingPoseDialog::initializeStart(){
 void RestingPoseDialog::btnPressed(){
     QObject *obj = sender();
     if( obj == _saveBtn1 ){
+
     	QString str = _savePath->text();
     	std::string sstr( str.toStdString() );
         rw::models::WorkCell &wc = *_dwc->getWorkcell();
         // TODO: open file dialog and save
+        RW_ASSERT(_startPoses.size() == _resultPoses.size());
         TimedStatePath startPath, endPath;
         for(size_t i=0;i<_startPoses.size();i++){
             startPath.push_back(TimedState(i, _startPoses[i]));
         }
         for(size_t i=0;i<_resultPoses.size();i++){
             endPath.push_back(TimedState(i, _resultPoses[i]));
+        }
+
+        if( _asCommaBtn->isChecked() ){
+            std::string textFile = sstr + ".txt";
+            std::ofstream fout( textFile.c_str() );
+            std::vector<RigidBody*> bodies = _dwc->findBodies<RigidBody>();
+            fout << "Configuration of all rigid bodies, each line contain pos and orientation (EAA) for a simulation run."
+                    << "That is both start and end configuration eg. b1_start, b1_end, b2_start, b2_end, b3_start, b3_end.... first comes the body names \n";
+            BOOST_FOREACH(RigidBody* b, bodies){
+                fout << b->getName() << " ; ";
+            }
+            fout << "\n";
+            fout.precision(16);
+            for(size_t i=0;i<_startPoses.size();i++){
+                BOOST_FOREACH(RigidBody* b, bodies){
+                    Transform3D<> t3d = b->getWTBody( _startPoses[i] );
+                    EAA<> rot( t3d.R() );
+
+                    fout << t3d.P()[0] << " ; " << t3d.P()[1] << " ; " << t3d.P()[2] << " ; ";
+                    fout << rot[0] << " ; " << rot[1] << " ; " << rot[2] << " ; ";
+
+                    t3d = b->getWTBody( _resultPoses[i] );
+                    rot = EAA<>( t3d.R() );
+                    fout << t3d.P()[0] << " ; " << t3d.P()[1] << " ; " << t3d.P()[2] << " ; ";
+                    fout << rot[0] << " ; " << rot[1] << " ; " << rot[2] << " ; ";
+                }
+                fout << "\n";
+            }
+            fout.close();
         }
 
         rw::loaders::PathLoader::storeTimedStatePath( wc,
@@ -146,7 +177,7 @@ void RestingPoseDialog::btnPressed(){
         _timer->start();
 
         Log::infoLog() << "Resting pose calculation started: " << std::endl
-					<< "- Time         : " << TimerUtil::currentTime() << std::endl
+					<< "- Time         : " << QTime::currentTime().toString().toStdString() << std::endl
 					<< "- Nr of tests  : " << _nrOfTestsSpin->value() << std::endl
 					<< "- Nr of threads: " << _nrOfThreadsSpin->value() << std::endl;
 
@@ -161,7 +192,7 @@ void RestingPoseDialog::btnPressed(){
                 sim->stop();
         }
         Log::infoLog() << "Resting pose calculation stopped: " << std::endl
-					<< "- Time         : " << TimerUtil::currentTime() << std::endl
+					<< "- Time         : " << QTime::currentTime().toString().toStdString() << std::endl
 					<< "- # tests done : " << _nrOfTests << std::endl;
 
     } else if( obj == _resetBtn ) {
@@ -218,7 +249,6 @@ void RestingPoseDialog::changedEvent(){
 void RestingPoseDialog::updateStatus(){
     if( _simulators.size()<1 )
         return;
-    std::cout << "update" << std::endl;
     State state;
     int nrOfTestsOld = _nrOfTests;
     for(size_t i=0;i<_simulators.size(); i++){
@@ -233,16 +263,13 @@ void RestingPoseDialog::updateStatus(){
 
         // if simulator is in error then generate new configuration
         if(  sim->isInError() ){
-            std::cout << "Recalc conf" << std::endl;
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
-            sim->setState(state);
+            sim->reset(state);
             //sim->start();
             return;
         }
-
-        std::cout << "NOT Recalc conf" << std::endl;
 
         // get stop criterias
         double lVelThres = _linVelSpin->value();
@@ -293,7 +320,7 @@ void RestingPoseDialog::updateStatus(){
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
-            sim->setState(state);
+            sim->reset(state);
             _simStartTimes[i] = time;
 
             RW_DEBUGS(_nrOfTests<<">="<<_nrOfTestsSpin->value());
@@ -306,7 +333,7 @@ void RestingPoseDialog::updateStatus(){
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
-            sim->setState(state);
+            sim->reset(state);
             if( _nrOfTests>=_nrOfTestsSpin->value() )
                 continue;
             sim->start();
@@ -314,7 +341,7 @@ void RestingPoseDialog::updateStatus(){
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
-            sim->setState(state);
+            sim->reset(state);
             sim->start();
         }
     }
@@ -373,13 +400,14 @@ void RestingPoseDialog::updateStatus(){
         _stopBtn->click();
         return;
     }
-    std::cout << "return from update!" << std::endl;
 }
 void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     //std::cout << "-------- Col free collision: " << std::endl;
     // first calculate a random state
+
     calcRandomCfg(_bodies, state);
     int nrOfTries=0;
+
     CollisionDetector::QueryResult result;
     std::vector<RigidBody*> bodies;
     while( _colDect->inCollision(state, &result, false) ){
@@ -400,24 +428,86 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
 
 }
 
+namespace {
+
+    Rotation3D<> ranRotation3D(double maxAngle){
+        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        return rot.toRotation3D();
+    }
+
+    /**
+     * @brief generate a random rotation around the point \b point
+     * @param point [in] the point around which a random rotation is generated
+     * @param maxAngle [in] the bound in radians
+     * @return
+     */
+    Rotation3D<> ranRotation3D(const rw::math::Rotation3D<>& point, double maxAngle){
+        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        return point*rot.toRotation3D();
+    }
+
+    Rotation3D<> ranNormalDistRotation3D(double sigma_a){
+        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        return rot.toRotation3D();
+    }
+
+    Rotation3D<> ranNormalDistRotation3D(const rw::math::Rotation3D<>& point, double sigma_a){
+        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        return point*rot.toRotation3D();
+    }
+
+    Transform3D<> ranTransform3D(const rw::math::Transform3D<>& point, double maxPos,  double maxAngle){
+        Vector3D<> pos(Math::ran(-maxPos,maxPos), Math::ran(-maxPos,maxPos), Math::ran(-maxPos,maxPos));
+        EAA<> rot(Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle), Math::ran(-maxAngle, maxAngle));
+        return point*Transform3D<>(pos,rot);
+    }
+
+    Transform3D<> ranNormalDistTransform3D(const rw::math::Transform3D<>& point, double sigma_p,  double sigma_a){
+        Vector3D<> pos(Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p), Math::ranNormalDist(0,sigma_p));
+        EAA<> rot(Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a), Math::ranNormalDist(0,sigma_a));
+        return point*Transform3D<>(pos,rot);
+    }
+
+}
+
 void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::kinematics::State& state){
-    const double lowR = Deg2Rad * ( _lowRollSpin->value() );
-    const double highR = Deg2Rad * ( _highRollSpin->value() );
-    const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
-    const double highP = Deg2Rad * ( _highPitchSpin->value() );
-    const double lowY = Deg2Rad * ( _lowYawSpin->value() );
-    const double highY = Deg2Rad * ( _highYawSpin->value() );
+    Rotation3D<> rot;
+    Vector3D<> pos;
+    if( _rotationTabs->currentIndex()==0 ){
+        // calculate a random orientation in SO3
+        rot = Math::ranRotation3D<double>();
+    } else if( _rotationTabs->currentIndex()==1 ){
+        // get direction and angle
+        double angle = _angleSpin->value() * Deg2Rad;
+        if( _normalDistRot->isChecked() ){
+            rot = ranNormalDistRotation3D(angle);
+        } else {
+            rot = ranRotation3D(angle);
+        }
+    } else {
+        const double lowR = Deg2Rad * ( _lowRollSpin->value() );
+        const double highR = Deg2Rad * ( _highRollSpin->value() );
+        const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
+        const double highP = Deg2Rad * ( _highPitchSpin->value() );
+        const double lowY = Deg2Rad * ( _lowYawSpin->value() );
+        const double highY = Deg2Rad * ( _highYawSpin->value() );
 
-
-    BOOST_FOREACH(RigidBody *rbody, bodies){
         double roll = Math::ran(lowR, highR);
         double pitch = Math::ran(lowP, highP);
         double yaw = Math::ran(lowY, highY);
+        rot = RPY<>(roll,pitch,yaw).toRotation3D();
+    }
+
+    pos[0] = Math::ran(_xLimit->value(), std::max(_xLimit->value(), _xLimit_2->value()));
+    pos[1] = Math::ran(_yLimit->value(), std::max(_yLimit->value(), _yLimit_2->value()));
+    pos[2] = Math::ran(_zLimit->value(), std::max(_zLimit->value(), _zLimit_2->value()));
+
+    BOOST_FOREACH(RigidBody *rbody, bodies){
         Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);
-        Transform3D<> nt3d = t3d;
-        nt3d.R() = t3d.R()*Rotation3D<>( RPY<>(roll,pitch,yaw).toRotation3D() );
+        Transform3D<> nt3d = t3d * Transform3D<>(pos, rot);
         rbody->getMovableFrame()->setTransform(nt3d,state);
     }
+
 }
 
 void RestingPoseDialog::calcRandomCfg(rw::kinematics::State& state){
