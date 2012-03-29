@@ -126,7 +126,13 @@ public:
      */
     static GraspTask::Ptr load(const std::string& name);
 
-
+    GraspTask::Ptr clone(){
+        GraspTask::Ptr res = rw::common::ownedPtr( new GraspTask() );
+        res->_gripperID = _gripperID;
+        res->_tcpID = _tcpID;
+        res->_graspControllerID = _graspControllerID;
+        return res;
+    }
 private:
     std::vector<class GraspSubTask> _subtasks;
     //rwlibs::task::CartesianTask::Ptr _task;
@@ -221,6 +227,21 @@ public:
         if(refframe=="")
             return "WORLD";
         return refframe;
+    }
+
+    //! copy everything except targets
+    GraspSubTask clone(){
+        GraspSubTask res;
+        res.refframe = refframe;
+        res.objectID = objectID;
+        res.offset = offset;
+        res.approach = approach;
+        res.retract = retract;
+        res.openQ = openQ;
+        res.closeQ = closeQ;
+        res.tauMax = tauMax;
+        res.taskID = taskID;
+        return res;
     }
 
     std::vector<GraspTarget>& getTargets(){ return targets;};
