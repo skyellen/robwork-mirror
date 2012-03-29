@@ -7,6 +7,12 @@ int main(int argc, char** argv) {
 
     WorkCell::Ptr wc = WorkCellLoader::load("SimpleWorkCell.wc.xml");
 
+    // Simple JacobianIKSolver
+    State state = wc->getDefaultState();
+
+    JacobianIKSolver *sol = new JacobianIKSolver(device,state);
+
+
     Log::infoLog() << "Name of workcell: " << wc->getName() << std::endl;
     // get the default state
     State state = wc->getDefaultState();
@@ -49,6 +55,4 @@ int main(int argc, char** argv) {
     int dof = sdevice->getDOF();
     // set the configuration of the device to zero
     sdevice->setQ( Q::zero(dof) , state );
-
-    return 0;
 }
