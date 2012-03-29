@@ -2,7 +2,7 @@
 
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rws/RobWorkStudio.hpp>
 
 #include <rw/graspplanning/GWSMeasure3D.hpp>

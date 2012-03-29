@@ -111,7 +111,8 @@ namespace simulator {
         dWorldID _worldId;
         dBodyID _bTmp1, _bTmp2;
         dJointGroupID _contactGroupId;
-        dJointID _slider, _hinge1, _hinge2;
+        dJointID _slider, _hinge1, _hinge2, _fjoint;
+        dJointFeedback _feedback;
         ODEBody *_odeBase, *_odeEnd;
         double _lastX, _lastAng;
         std::vector<dContact> _contacts;

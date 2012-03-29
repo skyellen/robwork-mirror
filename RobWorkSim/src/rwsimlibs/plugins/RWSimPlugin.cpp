@@ -10,19 +10,7 @@
 
 #include <RobWorkStudio.hpp>
 
-#include <rw/math/RPY.hpp>
-#include <rw/math/Math.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-#include <rw/models/JointDevice.hpp>
-
-#include <rw/common/TimerUtil.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
-#include <rw/loaders/path/PathLoader.hpp>
-
+#include <rw/rw.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>

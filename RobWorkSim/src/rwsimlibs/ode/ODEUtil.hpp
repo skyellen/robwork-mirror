@@ -68,6 +68,28 @@ namespace simulator {
 
 	    static void setODEBodyMass(dBodyID body, double mass, const rw::math::Vector3D<>& c, const rw::math::InertiaMatrix<>& I);
 
+	    /**
+	     * @brief calculate the ERP to use in an elastic (spring-and-damper system)
+	     * contact with elastic
+	     * @param Kp [in] the spring coefficient
+	     * @param Kd [in] the damper coefficient
+	     * @param dt [in] the timestep
+	     * @return the ERP to use in an elastic contact
+	     *
+	     * @note this needs to be used together with a correctly calculated CFM constant
+	     */
+	    static double calcElasticERP(double Kp, double Kd, double dt);
+
+        /**
+         * @brief calculate the CFM to use in an elastic (spring-and-damper system)
+         * contact with elastic
+         * @param Kp [in] the spring coefficient
+         * @param Kd [in] the damper coefficient
+         * @param dt [in] the timestep
+         * @return the ERP to use in an elastic contact
+         */
+	    static double calcElasticCFM(double Kp, double Kd, double dt);
+
 	};
 }
 }

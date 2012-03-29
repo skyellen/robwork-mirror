@@ -119,18 +119,18 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     // if it is in sufficient contact then apply attracting forces to object
     Body *object = NULL;
 
-    bool inContact = false;
+    //bool inContact = false;
     std::vector<Body*> cbodies = _sensor->getBodies();
     std::vector<Contact3D> contacts = _sensor->getContacts();
 
     // test if the entire mouthpiece is in contact
     //std::cout <<  "Contacts: " << contacts.size() << std::endl;
-    int cidx = 0, contactIdx =0;
+    int cidx = 0; //, contactIdx =0;
     if(contacts.size()>0){
         BOOST_FOREACH(Body *b, cbodies ){
             if(b!=NULL){
                 object = b;
-                contactIdx = cidx;
+                //contactIdx = cidx;
             }
             cidx++;
         }
@@ -165,7 +165,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
                     for(int i=pair.startIdx;i<pair.startIdx+pair.size;i++){
                         size_t idx = result._geomPrimIds[i].second;
                         RW_ASSERT(idx>=0);
-                        RW_ASSERT(idx<NR_OF_SPIKES);
+                        RW_ASSERT((int)idx<NR_OF_SPIKES);
                         spikeContact[idx] = true;
                     }
                 }
@@ -186,6 +186,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
             }
         }
     } else if(_isInContact ){
+        /*
         Transform3D<> wTobj = Kinematics::worldTframe(_object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
 
@@ -203,7 +204,13 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
                 dJointGroupEmpty(_contactGroupId);
             }
         }
+        */
     }
+
+
+
+#ifdef CONTACT_BASED_SUC_CUP
+
     //if( _isInContact ){
     if( firstContact ) {
         // apply forces to object
@@ -213,8 +220,8 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         Transform3D<> t3d = _tcp->getTransformW( state );
         Vector3D<> normal = t3d.R() * Vector3D<>( 0, 0, 1 );
 
-        Vector3D<> objforce = t3d.R() * Vector3D<>( 0, 0, 1*forceFromVacuum);
-        Vector3D<> cupforce = t3d.R() * Vector3D<>( 0, 0, 1*forceCupFromVacuum);
+        //Vector3D<> objforce = t3d.R() * Vector3D<>( 0, 0, 1*forceFromVacuum);
+        //Vector3D<> cupforce = t3d.R() * Vector3D<>( 0, 0, 1*forceCupFromVacuum);
         /// std::cout <<  "Object: " << _object->getBodyFrame()->getName() << std::endl;
         /// std::cout <<  "objForce: "  << objforce << " " << t3d.P() << std::endl;
         /// std::cout <<  "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
@@ -312,6 +319,43 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     //_dev->setForceLimit(ql/10);
 
     //std::cout << "ODESuctionCupDevice END" << std::endl;
+#else
+
+    if( firstContact ) {
+        // we connect the two bodies using a 6DOF fixed constraint
+        // TODO: first move the bodies into a close position
+        //_odesim->attach(_odeEnd->getRwBody(), object);
+        _fjoint = dJointCreateFixed(_worldId, 0 );
+        dJointAttach(_fjoint, _odeEnd->getBodyID(),  _odesim->getODEBodyId(_object.get()));
+        dJointSetFixed(_fjoint);
+
+        // disable collision checking between the two bodies
+        _odesim->disableCollision( _odeEnd->getRwBody(), _object );
+
+        // now add a sensor for monitoring the torque and force
+        dJointSetFeedback(_fjoint, &_feedback);
+
+    } else if(_isInContact){
+        // todo: monitor the forces on the fixed joint
+        Vector3D<> force = ODEUtil::toVector3D( _feedback.f1 );
+        Vector3D<> torque = ODEUtil::toVector3D( _feedback.t1 );
+        std::cout << "Force;: " << force << " ... " << torque << std::endl;
+
+        bool forceToHigh = force(2)>50;
+        if(forceToHigh){
+            dJointDestroy(_fjoint);
+            _isInContact = false;
+            //std::cout << " Contact lost, only: " << _pdata.getCollisionData()._geomPrimIds.size() << " contacts" << std::endl;
+            _object = NULL;
+        }
+
+    } else {
+       // nothing to do here
+
+    }
+
+
+
     Q sp1;
     if( _isInContact ){
         sp1 = _dev->getSpringParamsClosed();
@@ -319,8 +363,8 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         sp1 = _dev->getSpringParamsOpen();
     }
     double pos = dJointGetSliderPosition(_slider);
-    double ang1 = dJointGetHingeAngle(_hinge1);
-    double ang2 = dJointGetHingeAngle(_hinge2);
+    //double ang1 = dJointGetHingeAngle(_hinge1);
+    //double ang2 = dJointGetHingeAngle(_hinge2);
     //std::cout << pos << "m " << ang1*Rad2Deg << "Deg " << ang2*Rad2Deg << "Deg"<< std::endl;
 
     Transform3D<> wTbase = _dev->getBaseBody()->getTransformW(state);
@@ -355,6 +399,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     //std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
     _lastX = x;
     _lastAng = ang;
+#endif
 
 }
 

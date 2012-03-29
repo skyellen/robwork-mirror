@@ -18,7 +18,6 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <QTabWidget>
 

@@ -27,7 +27,6 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rwlibs/opengl/Drawable.hpp>

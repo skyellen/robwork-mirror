@@ -11,7 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rw/common/macros.hpp>

@@ -324,6 +324,9 @@ namespace {
 	}
 }
 
+
+//const bool ODESimulator::ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
+
 bool isInErrorGlobal = false;
 bool badLCPSolution = false;
 
@@ -1702,6 +1705,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         const Transform3D<> aT = a_data->getTransform();
         const Transform3D<> bT = b_data->getTransform();
 
+        const Transform3D<> aT_prev = fk.get(pair.first);
+        const Transform3D<> bT_prev = fk.get(pair.second);
+
         // first make standard collision detection, if in collision then compute all contacts from dist query
         RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
         //std::cout << pair.first->getName() << " <--> " << pair.second->getName() << std::endl;
@@ -1721,10 +1727,27 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         }
 
         /*
-        // there is a collision and we need to find the correct contact points/normals.
         BodyBodyContact& bcon = _lastNonCollidingTransform[pair];
+
+        bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
+        if(!collides){
+            // reset contact history data
+            bcon.firstContact = true;
+            continue;
+        }
+        */
+
+        /*
+        // there is a collision and we need to find the correct contact points/normals.
         if( bcon.firstContact ){
+            // if this is a first contact then we use the previous "non-colliding" state to estimate the contact normal
+            // TODO: here we could do some interpolation to find the moment of contact
             std::cout << "First contact " << std::endl;
+            bool collides = _narrowStrategy->distance(a, aT_prev, b, bT_prev, data);
+
+
+
+
             data.setCollisionQueryType(FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
 
@@ -1752,12 +1775,22 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             RW_ASSERT(_narrowStrategy->inCollision(a, bcon.aT, b, bcon.bT, data)==false);
             std::cout << "after ASSERT if in collision" << std::endl;
         }
-
-
-
         // calculate the contacts
         data.setCollisionQueryType(AllContacts);
         res = &_narrowStrategy->distances(a, bcon.aT, b, bcon.bT, MAX_SEP_DISTANCE, data);
+
+    */
+
+
+        //BodyBodyContact& bcon = _lastNonCollidingTransform[pair];
+
+        /*
+        bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
+        if(!collides){
+            // reset contact history data
+            bcon.firstContact = true;
+            continue;
+        }
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
@@ -1767,6 +1800,19 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             // change MAX_SEP_DISTANCE
             softlayer = 0.001;
         }
+
+/*
+
+        if( bcon.firstContact ){
+            // here we know if
+            data.setCollisionQueryType(AllContacts);
+            res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
+
+        } else {
+            // the contact
+
+        }
+*/
 
         data.setCollisionQueryType(CollisionStrategy::AllContacts);
         res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
@@ -2326,6 +2372,16 @@ void ODESimulator::resetScene(rw::kinematics::State& state)
 	}
 	RW_DEBUGS("Finished reset!!");
 }
+
+void ODESimulator::disableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+    _bpstrategy->addRule( ProximitySetupRule::makeExclude(b1->getName(), b2->getName()) );
+}
+
+
+void ODESimulator::enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+    _bpstrategy->addRule( ProximitySetupRule::makeInclude(b1->getName(), b2->getName()) );
+}
+
 
 void ODESimulator::exitPhysics()
 {

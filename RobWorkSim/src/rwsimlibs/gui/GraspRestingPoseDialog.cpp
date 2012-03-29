@@ -2,32 +2,12 @@
 
 #include <boost/foreach.hpp>
 
-#include <rw/math/RPY.hpp>
-#include <rw/math/Math.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/math/Pose6D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Kinematics.hpp>
+#include <rw/rw.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rw/math/MetricUtil.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
-
-#include <rw/common/TimerUtil.hpp>
-#include <rw/common/Ptr.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
-#include <rw/loaders/path/PathLoader.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
-
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/graspplanning/WrenchMeasure3D.hpp>
-#include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
-
-#include <rw/geometry/QHull3D.hpp>
 
 #include <boost/filesystem/operations.hpp>
 #include <iostream>
@@ -434,13 +414,6 @@ void GraspRestingPoseDialog::initializeStart(){
                 _body = rbody;
                 _frameToBody[*rbody->getMovableFrame()] = rbody;
                 _object = rbody->getMovableFrame();
-
-                std::string geofilename = CollisionModelInfo::get(_object)[0].getGeoString();
-                file << "Object:\n"
-                	 << "- name: " << objName << "\n"
-                     << "- geometryfile: " << geofilename << "\n";
-
-                file << "Dynamic object:\n";
                 _body->getInfo().print(file);
                 break;
             }

@@ -205,6 +205,8 @@ namespace simulator {
 
 		void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 		void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+		void disableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+		void enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
 		bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
@@ -343,6 +345,7 @@ namespace simulator {
         dSpaceID getODESpace(){ return _spaceId; };
 
         void addContacts(std::vector<dContact>& contacts, size_t nr_con, ODEBody* dataB1, ODEBody* dataB2);
+
 	private:
 		void saveODEState();
 		void restoreODEState();
@@ -455,8 +458,8 @@ namespace simulator {
 
 		std::map< std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*>, dJointID > _attachConstraints;
 
-	};
 
+	};
 	static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
 
 }

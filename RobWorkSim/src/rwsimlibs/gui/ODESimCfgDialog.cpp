@@ -19,8 +19,6 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
-
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;

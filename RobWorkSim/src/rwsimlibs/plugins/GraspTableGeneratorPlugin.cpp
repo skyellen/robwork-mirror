@@ -7,18 +7,7 @@
 #include <boost/foreach.hpp>
 #include<boost/filesystem/operations.hpp>
 
-#include <rw/math.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/loaders.hpp>
-#include <rw/common.hpp>
-
-#include <rw/geometry/QHull3D.hpp>
-
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
-
-#include <rw/graspplanning/WrenchMeasure3D.hpp>
-#include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
+#include <rw/rw.hpp>
 
 #include <rws/RobWorkStudio.hpp>
 

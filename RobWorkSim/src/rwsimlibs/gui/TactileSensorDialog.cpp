@@ -5,24 +5,11 @@
 
 #include <boost/foreach.hpp>
 
-#include <rw/math/RPY.hpp>
-#include <rw/math/Math.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Kinematics.hpp>
+#include <rw/rw.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
-
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
-
-#include <rw/common/TimerUtil.hpp>
-#include <rw/common/Ptr.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/Proximity.hpp>
-#include <rw/loaders/path/PathLoader.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
-#include <rw/math/LinearAlgebra.hpp>
 
 
 using namespace rwsim::dynamics;

@@ -82,3 +82,13 @@ void ODEUtil::setODEBodyMass(dBodyID body, double mass, const Vector3D<>& c, con
 }
 
 
+double ODEUtil::calcElasticERP(double kp, double kd, double dt){
+    return (dt*kp)/(dt*kp+kd);
+}
+
+double ODEUtil::calcElasticCFM(double kp, double kd, double dt){
+    return 1.0/(dt*kp+kd);
+}
+
+
+
