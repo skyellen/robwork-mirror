@@ -18,28 +18,13 @@ using rw::trajectory::InterpolatorTrajectory;
 using rw::pathplanning::PathPlanner;
 %}
 
+
 %include <std_string.i>
 %include <std_vector.i>
+%include <shared_ptr.i>
 
 %include "carrays.i"
 %array_class(double, doubleArray);
-
-%constant double Pi = rw::math::Pi;
-%constant double Inch2Meter = rw::math::Inch2Meter;
-%constant double Meter2Inch = rw::math::Meter2Inch;
-%constant double Deg2Rad = rw::math::Deg2Rad;
-%constant double Rad2Deg = rw::math::Rad2Deg;
-
-%include <stl.i>
-
-namespace std {
-    %template(StringVector) std::vector <string>;
-    %template(DoubleVector) std::vector <double>;
-};
-
-/********************************************
- * COMMON
- */
 
 namespace rw { namespace common {
 template<class T> class Ptr {
@@ -59,6 +44,26 @@ public:
 };
 }}
 
+
+%constant double Pi = rw::math::Pi;
+%constant double Inch2Meter = rw::math::Inch2Meter;
+%constant double Meter2Inch = rw::math::Meter2Inch;
+%constant double Deg2Rad = rw::math::Deg2Rad;
+%constant double Rad2Deg = rw::math::Rad2Deg;
+
+%include <stl.i>
+
+namespace std {
+    %template(StringVector) std::vector <string>;
+    %template(DoubleVector) std::vector <double>;
+};
+
+/********************************************
+ * COMMON
+ */
+
+//%shared_ptr(Image)
+//%rwptr(Device);
 
 %template (WorkCellPtr) rw::common::Ptr<WorkCell>;
 %template (DevicePtr) rw::common::Ptr<Device>;
@@ -82,6 +87,7 @@ public:
 %template (ClosedFormIKPtr) rw::common::Ptr<ClosedFormIK>;
 %template (QPathPtr) rw::common::Ptr<Path<Q> >;
 %template (QToQPlannerPtr) rw::common::Ptr<QToQPlanner>;
+
 
 %template (QMetricPtr) rw::common::Ptr<Metric<Q> >;
 %template (Transform3DMetricPtr) rw::common::Ptr<Transform3DMetric>;
@@ -1194,7 +1200,7 @@ public:
      */
 };
 
-
+%nodefaultctor CollisionDetector;
 class CollisionDetector
 {
 public:
@@ -1206,8 +1212,17 @@ public:
         FirstContactNoInfo //! return on first collision but without collision information
     } QueryType;
 */
-    CollisionDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy);
+    //CollisionDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy);
 
+    %extend {
+        rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell){
+            return rw::common::ownedPtr( new CollisionDetector(workcell, rwlibs::proximitystrategies::ProximityStrategyFactory::makeDefaultCollisionStrategy()) );
+        }
+
+        rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy){
+            return rw::common::ownedPtr( new CollisionDetector(workcell, strategy) );
+        }
+    }
 
 };
 
@@ -1230,6 +1245,10 @@ public:
     static rw::common::Ptr<Image> load(const std::string& filename);
 private:
     ImageFactory();
+};
+
+class Image {
+public:
 };
 
 class XMLTrajectoryLoader
@@ -1572,6 +1591,139 @@ public:
     PropertyMap& getPropertyMap();
 
 };
+
+
+
+
+
+
+/******************************************************************************
+ *  Graphics
+ *
+ * *************************************************************************/
+%template (WorkCellScenePtr) rw::common::Ptr<WorkCellScene>;
+%template (DrawableNodePtr) rw::common::Ptr<DrawableNode>;
+%template (DrawableNodePtrVector) std::vector<rw::common::Ptr<DrawableNode> >;
+%constant int DNodePhysical = DrawableNode::Physical;
+%constant int DNodeVirtual = DrawableNode::Virtual;
+%constant int DNodeDrawableObject = DrawableNode::DrawableObject;
+%constant int DNodeCollisionObject = DrawableNode::CollisionObject;
+%nodefaultctor DrawableNode;
+%nodefaultctor WorkCellScene;
+
+class DrawableNode {
+public:
+
+    enum DrawType {
+        SOLID, //! Render in solid
+        WIRE, //! Render in wireframe
+        OUTLINE //! Render both solid and wireframe
+    };
+
+    virtual void setHighlighted(bool b) = 0;
+
+    virtual bool isHighlighted() const = 0;
+
+    virtual void setDrawType(DrawType drawType) = 0;
+
+    virtual void setTransparency(float alpha) = 0;
+
+    virtual float getTransparency() = 0;
+
+    bool isTransparent();
+
+    virtual void setScale(float scale) = 0;
+
+    virtual float getScale() const = 0;
+
+    virtual void setVisible(bool enable) = 0;
+
+    virtual bool isVisible() = 0;
+
+    virtual const rw::math::Transform3D<>& getTransform() const  = 0;
+
+    virtual void setTransform(const rw::math::Transform3D<>& t3d) = 0;
+
+    virtual void setMask(unsigned int mask) = 0;
+    virtual unsigned int getMask() const = 0;
+};
+
+class WorkCellScene {
+ public:
+
+     rw::common::Ptr<WorkCell> getWorkCell();
+
+     void setState(const State& state);
+
+     //rw::graphics::GroupNode::Ptr getWorldNode();
+     //void updateSceneGraph(rw::kinematics::State& state);
+     //void clearCache();
+
+     void setVisible(bool visible, Frame* f);
+
+     bool isVisible(Frame* f);
+
+     void setHighlighted( bool highlighted, Frame* f);
+     bool isHighlighted( rw::kinematics::Frame* f);
+     void setFrameAxisVisible( bool visible, rw::kinematics::Frame* f);
+     bool isFrameAxisVisible( Frame* f);
+     //void setDrawType( DrawableNode::DrawType type, rw::kinematics::Frame* f);
+     //DrawableNode::DrawType getDrawType( rw::kinematics::Frame* f );
+
+     void setDrawMask( unsigned int mask, Frame* f);
+     unsigned int getDrawMask( Frame* f );
+     void setTransparency(double alpha, Frame* f);
+
+     //DrawableGeometryNode::Ptr addLines( const std::string& name, const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+     //DrawableGeometryNode::Ptr addGeometry(const std::string& name, rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+     //DrawableNode::Ptr addFrameAxis(const std::string& name, double size, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+     //DrawableNode::Ptr addModel3D(const std::string& name, Model3D::Ptr model, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+     //DrawableNode::Ptr addImage(const std::string& name, const rw::sensor::Image& img, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+     //DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+     //DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+     //DrawableNode::Ptr addRender(const std::string& name, rw::graphics::Render::Ptr render, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+
+     rw::common::Ptr<DrawableNode> addDrawable(const std::string& filename, Frame* frame, int dmask);
+     void addDrawable(rw::common::Ptr<DrawableNode> drawable, Frame*);
+
+     //std::vector<rw::common::Ptr<DrawableNode> > getDrawables();
+     //std::vector<rw::common::Ptr<DrawableNode> > getDrawables(Frame* f);
+
+     //std::vector<DrawableNode::Ptr> getDrawablesRec(rw::kinematics::Frame* f, rw::kinematics::State& state);
+     rw::common::Ptr<DrawableNode> findDrawable(const std::string& name);
+
+     rw::common::Ptr<DrawableNode> findDrawable(const std::string& name, rw::kinematics::Frame* frame);
+
+     std::vector<rw::common::Ptr<DrawableNode> > findDrawables(const std::string& name);
+
+     bool removeDrawables(Frame* f);
+
+     bool removeDrawables(const std::string& name);
+
+     bool removeDrawable(rw::common::Ptr<DrawableNode> drawable);
+
+     bool removeDrawable(rw::common::Ptr<DrawableNode> drawable, Frame* f);
+
+     bool removeDrawable(const std::string& name);
+     bool removeDrawable(const std::string& name, Frame* f);
+     Frame* getFrame(rw::common::Ptr<DrawableNode>  d);
+
+     //rw::graphics::GroupNode::Ptr getNode(rw::kinematics::Frame* frame);
+ };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
