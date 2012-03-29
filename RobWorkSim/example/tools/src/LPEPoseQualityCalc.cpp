@@ -193,12 +193,14 @@ int main(int argc, char** argv)
     std::vector<KDTreeQ::KDNode> nodes;
     for(int i=0;i<stable.size();i++){
         Transform3D<> t3d = stable[i].first;
+        //stable[i].second(1) = stable[i].second(1)+13*Deg2Rad;
         RPY<> rpy = stable[i].second;
         Q key(2, rpy(1), rpy(2));
         nodes.push_back( KDTreeQ::KDNode(key, Value(i, true)) );
     }
     for(int i=0;i<misses.size();i++){
         Transform3D<> t3d = misses[i].first;
+        //misses[i].second(1) = misses[i].second(1)+13*Deg2Rad;
         RPY<> rpy = misses[i].second;
         Q key(2, rpy(1), rpy(2));
         nodes.push_back( KDTreeQ::KDNode(key, Value(i, false)) );
@@ -231,16 +233,20 @@ int main(int argc, char** argv)
         }
         Q key(2, rpy(1), rpy(2));
         nntree->nnSearchRect(key-diff,key+diff, result);
-        double sum = 0;
+
+        double sum = 0, sum1=0;
         double xo = rpy(1);
         double yo = rpy(2);
 
         int N = result.size();
         BOOST_FOREACH(const KDTreeQ::KDNode* n, result ){
             Value v = n->valueAs<Value>();
-            if(!v.second)
-                continue;
-            RPY<> rpyo = stable[v.first].second;
+            RPY<> rpyo;
+            if(v.second)
+                rpyo = stable[v.first].second;
+            else
+                rpyo = misses[v.first].second;
+
             double x = rpyo(1);
             double y = rpyo(2);
 
@@ -248,13 +254,19 @@ int main(int argc, char** argv)
             double tmp_x = Math::sqr(x-xo)/(2*Math::sqr(angle_sd));
             double tmp_y = Math::sqr(y-yo)/(2*Math::sqr(angle_sd));
 
-            double val = std::pow(2.718281828, -(tmp_x+tmp_y));
 
-            sum += val;
+            double val = std::pow(2.718281828, -(tmp_x+tmp_y));
+            //std::cout << val << " " <<  N << " y-yo" << y-yo << std::endl;
+            //std::cout << val << " " <<  N << " x-xo" << x-xo << std::endl;
+            if(v.second) // if o=1
+                sum += val;
+            sum1 += val;
         }
 
-        double quality = sum/N;
 
+        double quality = sum/sum1;
+
+        //std::cout << sum << " " << sum1 << " "<< quality <<  std::endl;
         if(nv.second){
             qualityestimates[nv.first] = quality;
         } else {

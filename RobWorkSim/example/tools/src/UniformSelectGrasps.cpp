@@ -53,9 +53,12 @@ using namespace boost::program_options;
 variables_map init(int argc, char** argv){
     options_description desc("Allowed options");
     desc.add_options()
-        ("help", "produce help message")
+        ("help", "This script filters a grasp list by iteratively selecting the best grasp "
+                 "and removing all neighboring grasps within a 6D cube arounf the selected "
+                 "grasp. The 6D cube is defined by angle and dist arguments.")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("angle", value<double>()->default_value(30.0), "Angle of cone in degree.")
+        ("dist", value<double>()->default_value(0.01), "Dist of square in meters.")
         ("samples", value<int>()->default_value(500), "Number of grasps to sample.")
         ("input", value<string>(), "The input grasp task file that should be filtered.")
     ;
@@ -102,6 +105,7 @@ int main_lpe(int argc, char** argv)
 
     std::string grasptask_file_out = vm["output"].as<std::string>();
     double angleThres = vm["angle"].as<double>()*Deg2Rad;
+    double distThres = vm["dist"].as<double>();
     std::string input = vm["input"].as<string>();
     std::string output = vm["output"].as<string>();
     int count = vm["samples"].as<int>();
@@ -112,7 +116,7 @@ int main_lpe(int argc, char** argv)
     KDTreeQ *nntree = buildKDTree(gtask,simnodes);
 
 
-    Q diff(7, 0.01, 0.01, 0.01, angleThres, angleThres, angleThres,angleThres);
+    Q diff(7, distThres, distThres, distThres, angleThres, angleThres, angleThres,angleThres);
     typedef std::pair<GraspSubTask*, GraspTarget*> Value;
     std::vector< Value > selGrasps;
     std::list<const KDTreeQ::KDNode*> result;

@@ -51,6 +51,7 @@ int main(int argc, char** argv)
         ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<vector<string> >(), "input Files to merge.")
+        ("useGraspTarget",value<bool>()->default_value(false),"Enable to copy ObjTTcpTarget to target.pose")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -73,7 +74,7 @@ int main(int argc, char** argv)
 
     using namespace boost::filesystem;
 
-
+    bool useGraspTarget = vm["useGraspTarget"].as<bool>();
     std::map<int,bool> includeMap;
     if(vm.count("include")){
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
@@ -132,6 +133,10 @@ int main(int argc, char** argv)
                         teststatus=0;
                     testStat[teststatus]++;
                     totaltargets++;
+                    if( useGraspTarget ){
+                        target.pose = target.result->objectTtcpGrasp;
+                    }
+
                     if( includeMap.find(teststatus)!=includeMap.end() ){
                         targets++;
                         filteredTargets.push_back(target);
