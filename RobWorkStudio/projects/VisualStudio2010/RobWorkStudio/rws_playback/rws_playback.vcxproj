@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{864868C7-C038-4E67-ADA6-C55DFFFF20F1}</ProjectGuid>
+    <RootNamespace>rws_playback</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\rws_settings_debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\rws_settings_release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\rws_playback\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\rws_playback\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;.\;..\..\..\..\src\rwslibs\playback;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;RWS_PLAYBACK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;.\;..\..\..\..\src\rwslibs\playback;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;RWS_PLAYBACK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\rwslibs\playback\PlayBack.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwslibs\playback\PlayBackSettings.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwslibs\playback\Player.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwslibs\playback\StateDraw.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_PlayBack.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PlayBackSettings.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Player.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PlayBack.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PlayBackSettings.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Player.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\src\rwslibs\playback\PlayBack.hpp">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\PlayBack.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\PlayBack.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\src\rwslibs\playback\PlayBackSettings.hpp">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\PlayBackSettings.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\PlayBackSettings.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\src\rwslibs\playback\Player.hpp">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\Player.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)%(Extension)...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -D -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DRWS_PLAYBACK_LIB -DRWS_USE_STATIC_LINK_PLUGINS  -I".\GeneratedFiles\." -I"$(QTDIR)\include\." -I".\GeneratedFiles\$(Configuration)\." -I"$(QTDIR)\include\qtmain\." -I"$(QTDIR)\include\QtCore\." -I"$(QTDIR)\include\QtGui\." -I".\." -I".\..\..\..\..\src\rwslibs\playback\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(RWS_ROOT)\src\." -I"$(RWS_ROOT)\ext\qtpropertybrowser\src\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\." -I"$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(Configuration)\." -I".\..\rwstudio\generatedfiles\." -I"$(XERCES_ROOT)\include\." -I"$(BOOST_ROOT)\." -I"$(BOOST_ROOT)\include\." "..\..\..\..\src\rwslibs\playback\Player.hpp" -o ".\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp"
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\..\src\rwslibs\playback\StateDraw.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties lreleaseOptions="" lupdateOnBuild="0" lupdateOptions="" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" QtVersion_x0020_Win32="$(DefaultQtVersion)" RccDir=".\GeneratedFiles" UicDir=".\GeneratedFiles" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
