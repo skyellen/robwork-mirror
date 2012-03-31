@@ -40,9 +40,8 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_link_settings_release_no_ltcg.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_link_settings_release_no_ltcg.props" />
     <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_link_settings_release.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -51,7 +50,6 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_settings_release.props" />
     <Import Project="..\rws_settings_global.props" />
     <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_link_settings_release.props" />
   </ImportGroup>
@@ -436,9 +434,8 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2005\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
+    <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2010\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
       <Project>{61b482de-a554-44a7-a2c9-ebd6e29c4085}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\rws\rws.vcxproj">
       <Project>{67743714-d431-4e5b-aaa5-abca3d423685}</Project>
