@@ -36,7 +36,7 @@ MACRO(RW_SYS_INFO INFO)
     ENDIF()
     
     IF(UNIX)
-        IF(MAC)
+        IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             SET(SUFFIX "mac-${ARCH}")
         ELSE()
             #EXECUTE_PROCESS(COMMAND cat /etc/issue OUTPUT_VARIABLE SUFFIX)
