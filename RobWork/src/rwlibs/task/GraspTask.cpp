@@ -730,6 +730,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
             CartesianTarget::Ptr ctarget = stask->getTargets()[j];
             _subtasks[i].targets[j].pose = ctarget->get();
             _subtasks[i].targets[j].result = ownedPtr( new GraspResult() );
+
             GraspResult::Ptr result = _subtasks[i].targets[j].result;
             // all results saved in the target should be transferred
             result->testStatus = ctarget->getPropertyMap().get<int>("TestStatus", GraspTask::UnInitialized);
