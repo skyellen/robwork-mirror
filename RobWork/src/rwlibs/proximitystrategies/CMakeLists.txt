@@ -27,10 +27,12 @@ IF(build)
     SET(SRC_FILES
       ${RW_PROXIMITYSTRATEGIES_USER_FILES}
       ${OptionalFiles}
+      ProximityStrategyFactory.cpp
     )
     
     SET(SRC_FILES_HPP
       ${OptionalFiles_hpp}
+      ProximityStrategyFactory.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
