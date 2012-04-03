@@ -34,7 +34,7 @@ namespace rw { namespace models {
 
     /**
      * @brief A Joint is a Frame with assignable values for
-     * position, velocity and acceleration limits.
+     * position, velocity limits and acceleration limits.
      *
      */
     class Joint : public kinematics::Frame
@@ -43,6 +43,7 @@ namespace rw { namespace models {
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<Joint> Ptr;
 
+    protected:
         /**
          * @brief Default constructor for the joint interface.
          *
@@ -51,15 +52,23 @@ namespace rw { namespace models {
          */
 
         Joint(const std::string& name, size_t dof);
-        
+
+        /**
+         * @brief constructor - with the possiblity of adding additional
+         * states than the dofs.
+         * @param name [in] The name of the joint frame.
+         * @param dof [in] degree of freedom of the joint
+         * @param stateSize [in] additional doubles to allocate space for in the state
+         */
         Joint(const std::string& name, size_t dof, size_t stateSize);
 
+    public:
         /**
          * @brief Virtual destructor
          */
         virtual ~Joint() {}
 
-        /**
+        /*
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
          *
          * @param q [in] configuration vector @f$ \mathbf{q} @f$
@@ -69,7 +78,7 @@ namespace rw { namespace models {
          */
         //virtual void setQ(const math::Q& q, kinematics::State& state) const = 0;
 
-        /**
+        /*
          * @brief Gets configuration vector @f$ \mathbf{q}\in \mathbb{R}^n @f$
          *
          * @param state [in] state from which which to get @f$ \mathbf{q} @f$
@@ -149,15 +158,32 @@ namespace rw { namespace models {
          */
         virtual rw::math::Transform3D<> getFixedTransform() const = 0;
 
+        /**
+         * @brief change the transform from parent to joint base.
+         * @param t3d [in] the new transform.
+         */
         virtual void setFixedTransform( const rw::math::Transform3D<>& t3d) = 0;
 
+        /**
+         * @brief get the isolated joint transformation which is purely dependent on
+         * q.
+         * @param state [in] the state from which to extract q
+         * @return the joint transformation
+         */
         virtual math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const = 0;
 
+        /**
+         * @brief set the active state of the joint
+         * @param isActive [in] true to enable control/motorization of joint, false otherwise
+         */
         void setActive(bool isActive){ _isActive=isActive; };
 
+        /**
+         * @brief a joint is active if its motorized/controlled in some
+         * fasion. passive or non-active joints are typically used in parrallel robots.
+         * @return
+         */
         bool isActive() const { return _isActive; };
-
-
 
     private:
         std::pair<math::Q, math::Q> _bounds;
