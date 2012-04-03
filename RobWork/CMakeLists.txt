@@ -38,10 +38,15 @@ ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
 RW_SYS_INFO(INFO)
-MESSAGE("RobWork: ${INFO} ")
+MESSAGE(STATUS "RobWork: system id=${INFO} ")
 
-OPTION(RW_BUILD_TESTS "Set when you want to build the tests" ${RW_BUILD_TESTS})
-IF( RW_BUILD_TESTS )
+#############################################################
+# setup testing
+#
+INCLUDE(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(RW_IS_TESTS_ENABLED "Set when you want to build the tests" 
+                   ON "${RW_BUILD_TESTS}" OFF)
+IF( RW_IS_TESTS_ENABLED )
     MESSAGE(STATUS "RobWork tests ENABLED!")
     # TODO Specify SET(SITE "myname") to configure the site name to use when uploading 
     SET(BUILDNAME "${INFO}")
@@ -52,12 +57,15 @@ ELSE ()
     MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
 
+# configure testing configuration
 CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
 INCLUDE(${RW_ROOT}/CTestConfig.cmake)
 
-
-OPTION(RW_BUILD_EXAMPLES "Set when you want to build the examples" ${RW_BUILD_EXAMPLES})
-IF( RW_BUILD_EXAMPLES )
+#############################################################
+# Test if we should compile the EXAMPLES
+# 
+CMAKE_DEPENDENT_OPTION(RW_IS_EXAMPLES_ENABLED "Set when you want to build the examples" ON "${RW_BUILD_EXAMPLES}" OFF)
+IF( RW_IS_EXAMPLES_ENABLED )
     MESSAGE(STATUS "RobWork examples ENABLED!")
     ADD_SUBDIRECTORY(example)
 ELSE ()
@@ -83,16 +91,24 @@ CONFIGURE_FILE(
   @ONLY
 )
 
+# confgure version information
 CONFIGURE_FILE(
   ${RW_ROOT}/cmake/RobWorkConfigVersion.cmake.in
   "${RW_ROOT}/cmake/RobWorkConfigVersion.cmake"
   @ONLY
 )
+
 CONFIGURE_FILE(
   ${RW_ROOT}/cmake/RobWorkConfig.cmake.in
   "${RW_ROOT}/cmake/RobWorkConfig.cmake"
   @ONLY
 )
+
+##################################################################
+# Installation stuff
+#
+
+# configuration
 INSTALL(FILES 
     ${RW_ROOT}/cmake/RobWorkConfigVersion.cmake
     ${RW_ROOT}/cmake/RobWorkConfig.cmake
