@@ -15,6 +15,7 @@ IF( RWS_USE_STATIC_LINK_PLUGINS )
 ENDIF()
 
 # The plugins:
+add_subdirectory(gtask)
 add_subdirectory(jog)
 add_subdirectory(log)
 add_subdirectory(playback)
