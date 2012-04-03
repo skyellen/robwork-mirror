@@ -32,9 +32,9 @@ MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
     #  TARGET_LINK_LIBRARIES(${TargetName} ${ROBWORKSTUDIO_LIBRARIES})
     #  INSTALL(TARGETS ${TargetName} DESTINATION ${BIN_INSTALL_DIR})
     #ENDIF ()
-    
+    IF( "${_lib_type}" STREQUAL "STATIC" )
     SET(ENV{RWS_PLUGIN_LIBRARIES} "$ENV{RWS_PLUGIN_LIBRARIES}${_name};")
-    
+    ENDIF()
     set_target_properties(${_name} PROPERTIES
         VERSION ${ROBWORKSTUDIO_VERSION}
         SOVERSION ${ROBWORKSTUDIO_VERSION_MAJOR}.${ROBWORKSTUDIO_VERSION_MINOR}
@@ -61,7 +61,7 @@ MACRO(RWS_ADD_COMPONENT _name _component)
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     
-    SET(ENV{RWS_PLUGIN_COMPONENTS} "$ENV{RWS_PLUGIN_COMPONENTS}${_name};")
+    SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}${_name};")
     
     # Only link if needed
     if(WIN32 AND MSVC)

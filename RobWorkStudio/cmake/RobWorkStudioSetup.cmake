@@ -84,7 +84,7 @@ INCLUDE(${QT_USE_FILE})
 # optional compilation of sandbox
 IF (RWS_BUILD_SANDBOX)
     MESSAGE(STATUS "RobWorkStudio: Sandbox ENABLED!")
-    SET(SANDBOX_LIB "rwstudio_sandbox")
+    SET(SANDBOX_LIB "rws_sandbox")
     SET(RWS_HAVE_SANDBOX true)
 ELSE ()
     MESSAGE(STATUS "RobWorkStudio: Sandbox DISABLED!")    
@@ -98,7 +98,7 @@ CMAKE_DEPENDENT_OPTION(RWS_DISABLE_LUA "Set when you want to disable lua!" OFF "
 IF( NOT RWS_DISABLE_LUA )
     IF (RW_BUILD_WITH_LUA)
         MESSAGE(STATUS "RobWorkStudio: Lua ENABLED!")
-        SET(RWS_LUA "rwscl_lua;rwscl_luaeditor;rws_lua_s")
+        SET(RWS_LUA "rws_lua_s;rws_luaeditor")
         SET(RWS_HAVE_LUA True)
     ELSE ()
         MESSAGE(STATUS "RobWorkStudio: Lua DISABLED! - RobWork is NOT compiled with Lua support!")
@@ -175,8 +175,7 @@ SET(ROBWORKSTUDIO_INCLUDE_DIR
 SET(ROBWORKSTUDIO_LIBRARY_DIRS
     ${Boost_LIBRARY_DIRS}
     ${ROBWORK_LIBRARY_DIRS}
-    ${RWS_LIBRARY_OUT_DIR} 
-    ${RWS_ARCHIVE_OUT_DIR}
+    ${RWS_ROOT}/libs/${CMAKE_BUILD_TYPE}
 )
 
 
