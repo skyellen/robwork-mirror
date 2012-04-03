@@ -38,6 +38,7 @@
 #include <rw/trajectory/Path.hpp>
 #include <rw/common/Log.hpp>
 #include <rw/common/Event.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <rws/propertyview/PropertyViewEditor.hpp>
 

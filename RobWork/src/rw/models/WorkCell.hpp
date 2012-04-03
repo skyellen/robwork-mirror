@@ -381,15 +381,18 @@ namespace rw { namespace models {
         }
 
 
+		 /**
+         * @brief Definition of work cell changed listener
+         */
         typedef boost::function<void(int)> WorkCellChangedListener;
 
         /**
-         * @brief
+         * @brief Definition of even for work cell changed
          */
         typedef rw::common::Event<WorkCellChangedListener, int>  WorkCellChangedEvent;
 
         /**
-         * @brief Returns
+         * @brief Returns the work cell changed event
          * @return
          */
         WorkCellChangedEvent& workCellChangedEvent() {

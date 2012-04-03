@@ -48,7 +48,7 @@
 #include <rwlibs/opengl/RenderCameraFrustum.hpp>
 #include <rw/graphics/SceneViewer.hpp>
 
-#include "RobWorkStudioPlugin.hpp"
+//#include "RobWorkStudioPlugin.hpp"
 #include "SceneViewerWidget.hpp"
 
 namespace rws {

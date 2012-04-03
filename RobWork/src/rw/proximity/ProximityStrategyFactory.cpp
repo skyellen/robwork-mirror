@@ -56,7 +56,7 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStr
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultCollisionStrategy(){
 	
 	//The default strategy should always be the RW strategy right?
-	return ownedPtr(new ProximityStrategyRW());
+	//return ownedPtr(new ProximityStrategyRW());
     if(_collisionStrategies.empty())
         RW_THROW("There are no registered collision strategies!");
     return _collisionStrategies[0].second();
