@@ -65,6 +65,7 @@ namespace rw { namespace proximity {
 
         template<class T>
         static bool addCollisionStrategy(const std::string& name){
+            std::cout << "ADDING COL STRATEGY: " << name << std::endl;
             ProximityStrategyFactory::makeCollisionStrategyFunctor cstrategy =
                     boost::lambda::bind( boost::lambda::new_ptr<T>());
 
