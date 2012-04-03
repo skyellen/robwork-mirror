@@ -21,7 +21,8 @@ ELSE()
     FIND_FILE(ROBWORKDEVEL_FOUND RobWorkSetup.cmake 
         ${RWS_ROOT}/../RobWork/cmake NO_DEFAULT_PATH)
     IF(ROBWORKDEVEL_FOUND)
-        SET(RobWork_DIR ${RWS_ROOT}/../RobWork/cmake)    
+        #SET(RW_ROOT ${RWS_ROOT}/../RobWork/)
+        SET(RobWork_DIR ${RW_ROOT}/cmake)
     ENDIF()
 ENDIF()
 FIND_PACKAGE(RobWork ${ROBWORKSTUDIO_VERSION} REQUIRED)
@@ -35,6 +36,12 @@ RW_GET_OS_INFO()
 RW_SET_INSTALL_DIRS(RobWorkStudio RWS)
 RW_OPTIONS(RWS)
 
+# Add an "uninstall" target
+configure_file("${RWS_ROOT}/cmake/uninstall_target.cmake.in"
+               "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
+
 # This sets up ROBWORKSTUDIO_INCLUDE_DIR and ROBWORKSTUDIO_LIBRARIES
 # RobWork dependencies are included in these vars
 INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioSetup.cmake)
@@ -47,17 +54,20 @@ SET(RW_STATIC_LINK_PLUGINS ${RWS_USE_STATIC_LINK_PLUGINS})
 # linking options
 OPTION(RWS_USE_STATIC_LINK_COMPONENTS "Set to false if dynamic link libraries of components is needed" ON)
 
-# Store the test results in a RobWorkConfig.hpp file.
-#CONFIGURE_FILE(
-#  ${RWS_ROOT}/src/RobWorkStudioConfig.hpp.in
-#  ${RWS_ROOT}/src/RobWorkStudioConfig.hpp)
-
 # sub directories to process
 ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
-OPTION(RWS_BUILD_TESTS "Set when you want to build the tests" ${RWS_BUILD_TESTS})
-IF( RWS_BUILD_TESTS )
+RW_SYS_INFO(INFO)
+MESSAGE("RobWork: ${INFO} ")
+
+#############################################################
+# setup testing
+#
+INCLUDE(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(RWS_IS_TESTS_ENABLED "Set when you want to build the tests" 
+                   ON "${RWS_BUILD_TESTS}" OFF)
+IF( RWS_IS_TESTS_ENABLED )
     MESSAGE(STATUS "RobWorkStudio tests ENABLED!")
     INCLUDE(CTest)
     #ADD_SUBDIRECTORY(test)
@@ -65,62 +75,65 @@ ELSE ()
     MESSAGE(STATUS "RobWorkStudio tests DISABLED!")
 ENDIF()
 
+CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
+INCLUDE(${RWS_ROOT}/CTestConfig.cmake)
+
+###############################################################
 # Try to find the current revision 
+#
 FIND_PACKAGE(Subversion QUIET)
 IF(Subversion_FOUND)
     Subversion_WC_INFO(${RWS_ROOT} RobWorkStudio)
     MESSAGE(STATUS "RobWorkStudio: Current revision is ${RobWorkStudio_WC_REVISION}")
-    #Subversion_WC_LOG(${PROJECT_SOURCE_DIR} RobWork) # not foundd in linux
-    #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)
 
-# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
-SET(INSTALLATION FALSE)
+###############################################################
+# CONFIGURATION
+# configure build/RobWorkStudioConfig.cmake.in 
+#
+
+# first configure the header file
 CONFIGURE_FILE(
-  ${RWS_ROOT}/cmake/RobWorkStudioConfig.cmake.in
-  "${RWS_ROOT}/cmake/RobWorkStudioConfig${CMAKE_BUILD_TYPE}.cmake"
+  ${RWS_ROOT}/src/RobWorkStudioConfig.hpp.in
+  "${RWS_ROOT}/src/RobWorkStudioConfig.hpp"
+  @ONLY
 )
 
-SET(QTDIR_TMP "${QTDIR}")
-SET(QT_HEADERS_DIR_TMP "${QT_HEADERS_DIR}")
-SET(QT_INCLUDE_DIR_TMP "${QT_INCLUDE_DIR}")
-SET(QT_LIBRARY_DIR_TMP "${QT_LIBRARY_DIR}")
-SET(QT_BINARY_DIR_TMP "${QT_BINARY_DIR}")
-IF(WIN32)
-	SET(QTDIR "\${RWS_ROOT}/${BIN_INSTALL_DIR}")
-	SET(QT_HEADERS_DIR "\${RWS_ROOT}/${EXT_INSTALL_DIR}/qt/include")
-	SET(QT_INCLUDE_DIR "\${RWS_ROOT}/${EXT_INSTALL_DIR}/qt/include")
-	SET(QT_LIBRARY_DIR "\${RWS_ROOT}/${LIB_INSTALL_DIR}")
-	SET(QT_BINARY_DIR "\${RWS_ROOT}/${BIN_INSTALL_DIR}")
-ENDIF()
-
-# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robworkstudio
+# next build information script
 CONFIGURE_FILE(
   ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
   @ONLY
 )
-# Configure build script for installer
-SET(INSTALLATION TRUE)
-CONFIGURE_FILE(
-  ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/cmake/RobWorkStudioBuildConfig.cmake"
-  @ONLY
-)
-SET(QT_HEADERS_DIR "${QT_HEADERS_DIR_TMP}")
-SET(QT_HEADERS_DIR "${QT_INCLUDE_DIR_TMP}")
-SET(QT_LIBRARY_DIR "${QT_LIBRARY_DIR_TMP}")
-SET(QT_BINARY_DIR "${QT_BINARY_DIR_TMP}")
 
-# Install stuff
-INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
-INSTALL(FILES
-	build/FindRobWorkStudio.cmake
-	build/RobWorkStudioSetup.cmake
-	DESTINATION "${RWS_INSTALL_DIR}/cmake/")
-INSTALL(FILES "cmake/RobWorkStudioBuildConfig.cmake"
-		DESTINATION "${RWS_INSTALL_DIR}/cmake/")
-INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${INCLUDE_INSTALL_DIR})
+# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robworkstudio
+CONFIGURE_FILE(
+  ${RWS_ROOT}/cmake/RobWorkStudioConfig.cmake.in
+  "${RWS_ROOT}/cmake/RobWorkStudioConfig.cmake" @ONLY)
+
+# and the version info
+CONFIGURE_FILE(
+  ${RWS_ROOT}/cmake/RobWorkStudioConfigVersion.cmake.in
+  "${RWS_ROOT}/cmake/RobWorkStudioConfigVersion.cmake" @ONLY)
+
+##################################################################
+# Installation stuff
+#
+
+# install configuration 
+INSTALL(FILES 
+    ${RWS_ROOT}/cmake/RobWorkStudioConfigVersion.cmake
+    ${RWS_ROOT}/cmake/RobWorkStudioConfig.cmake
+    DESTINATION ${RWS_INSTALL_DIR} ) 
+
+INSTALL(FILES 
+        "cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+        "cmake/RobWorkMacros.cmake"
+        DESTINATION ${RWS_INSTALL_DIR})
+
+# misc
+INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt 
+        DESTINATION "${RWS_INSTALL_DIR}/")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp
 			  ${RWS_ROOT}/src/RobWorkStudio.hpp
 			  ${RWS_ROOT}/src/RobWorkStudioPlugin.hpp
