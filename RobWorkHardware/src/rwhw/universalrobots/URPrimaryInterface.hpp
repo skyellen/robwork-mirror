@@ -48,7 +48,8 @@ public:
 	void start();
 	void stop();
 
-	bool sendScript(const std::string& filename);
+	bool sendScriptFile(const std::string& filename);
+	bool sendScript(const std::string& script);
 
 	bool isConnected() const;
 

@@ -23,7 +23,8 @@ public:
 
 	bool connect(const std::string& host, unsigned int port);
 
-	void startInterface(const std::string& script, unsigned int callbackPort);
+	void startInterface(unsigned int callbackPort);
+      void startInterface(unsigned int callbackPort, const std::string& filename);
 
 	void stopInterface();
 
@@ -62,7 +63,7 @@ private:
 	class URScriptCommand {
 	public:
 
-		enum CmdType { MOVEQ = 1, MOVET, SERVO };
+		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, DO_NOTHING = 9999 };
 
 		URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
 			_type(type),
@@ -94,7 +95,11 @@ private:
 
 	boost::mutex _mutex;
 
-	void handleCmdRequest(boost::asio::ip::tcp::socket& socket, const std::string& name);
+	void handleCmdRequest(boost::asio::ip::tcp::socket& socket);
+    void sendStop(boost::asio::ip::tcp::socket& socket);
+
+    void popAllServoCommands();
+
 
 	/** Stuff needed for the servoing */
 	rw::math::Q _qcurrent;

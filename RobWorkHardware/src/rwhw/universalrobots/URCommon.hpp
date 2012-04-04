@@ -131,6 +131,43 @@ public:
 		return res;
 	}
 
+    static inline void send(boost::asio::ip::tcp::socket* socket, const std::vector<int>& integers) {        
+        const int n = integers.size()*sizeof(int);
+        char buffer[n];
+        int ibuf[integers.size()];
+        for (size_t i = 0; i<integers.size(); i++) {
+            ibuf[i] = integers[i];
+        }
+        memcpy(buffer, ibuf, n);
+        
+  //      for (size_t i = 0; i<n; i++) {
+    //        std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
+      //  }
+
+        for (size_t i = 0; i<integers.size(); i++) {
+            for (size_t j = 0; j<sizeof(int); j++) {
+                buffer[4*i+j] = ((char*)(&integers.at(i)))[3-j];
+            }
+        }
+
+        /*for (size_t i = 0; i<integers.size(); ++i) {
+//            ibuf[i] = integers.at(i);
+            std::cout<<"Int = "<<integers.at(i)<<" = "<<(unsigned int)ibuf[4*i]<<" "<<(unsigned int)ibuf[4*i+1]<<" "<<(unsigned int)ibuf[4*i+2]<<" "<<(unsigned int)ibuf[4*i+3]<<std::endl;
+            std::cout<<"Int from buffer = "<<*(int*)(&buffer[4*i])<<std::endl;
+        }*/
+//        ibuf[0] = 254;
+        /*for (size_t i = 0; i<n; i+=4) {
+            buffer[i] = integers[i/4];
+        }
+        buffer[0] = 1;
+    	socket->send(boost::asio::buffer(buffer, n));*/
+    	socket->send(boost::asio::buffer(buffer, n));
+    }
+
+    static inline void send(boost::asio::ip::tcp::socket* socket, unsigned char ch) {
+    	socket->send(boost::asio::buffer(&ch, 1));
+    }
+
 	static inline void send(boost::asio::ip::tcp::socket* socket, const std::string& str) {
 		 socket->send(boost::asio::buffer(str.c_str(), str.size()));
 	}

@@ -96,7 +96,7 @@ bool URPrimaryInterface::connect(const std::string& ip, unsigned int port) {
 
 
 
-bool URPrimaryInterface::sendScript(const std::string& filename)
+bool URPrimaryInterface::sendScriptFile(const std::string& filename)
 {
 	std::cout<<"Ready to load"<<std::endl;
 	std::ifstream infile(filename.c_str());
@@ -107,26 +107,21 @@ bool URPrimaryInterface::sendScript(const std::string& filename)
 	infile.seekg (0, std::ios::beg);
 
 	// allocate memory:
-	char *buffer = new char [length];
+	char *buffer = new char [length+1];
 
 	// read data as a block:
 	infile.read (buffer,length);
-	std::cout<<"Send Script "<<buffer<<std::endl;
+    buffer[length] = 0;
+	
+    std::cout<<"Send Script "<<buffer<<std::endl;
 
+    return sendScript(buffer);
 
+}
 
-	std::ostringstream script;
-	script << std::setprecision (_commandNumberPrecision);
-	script << "def digio():\n";
-	script << "  socket_open(\"192.168.100.3\", 33333)"<<std::endl;
-	script << "\tsocket_send_string(\"STRING\")\n";
-	script << "end\n";
-	script << "run program\n";
-
-	std::string out(script.str());
-	//return sendCommand(_socketPrimary, out);
-
-	return sendCommand(std::string(buffer));
+bool URPrimaryInterface::sendScript(const std::string& script) 
+{
+	return sendCommand(script);
 }
 
 
