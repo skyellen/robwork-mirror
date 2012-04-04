@@ -1,4 +1,4 @@
-SET(component_name fanucdevice)
+SET(component_name fanucdriver)
 
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
