@@ -573,8 +573,12 @@ namespace {
                 target->getPropertyMap().set<int>("TestStatus", (int)status);
                 // TODO: convert from UIBK to RW format
             }
-            Q qqual(qualities.size(), &qualities[0]);
-            target->getPropertyMap().set<Q>("QualityAfterLifting", qqual);
+			if (qualities.size() > 0) {
+				Q qqual(qualities.size(), &qualities[0]);
+				target->getPropertyMap().set<Q>("QualityAfterLifting", qqual); 
+			} else {
+				target->getPropertyMap().set<Q>("QualityAfterLifting", Q(1, -1));
+			}
 
         }
         return target;

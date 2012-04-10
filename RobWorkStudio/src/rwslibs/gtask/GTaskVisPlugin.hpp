@@ -18,7 +18,7 @@
 
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
- * lifted to a home pose.
+ * lifted to a home pose. 
  *
  * The home and target poses are controlled through a task description file. Which is
  * allso used to write back all the results of the simulation.

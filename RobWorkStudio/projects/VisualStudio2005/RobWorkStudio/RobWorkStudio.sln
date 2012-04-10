@@ -8,6 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RobWorkStudio", "RobWorkStu
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{67743714-D431-4E5B-AAA5-ABCA3D423685} = {67743714-D431-4E5B-AAA5-ABCA3D423685}
+		{48B89A65-457A-4D99-A979-890EFE6902AE} = {48B89A65-457A-4D99-A979-890EFE6902AE}
 		{864868C7-C038-4E67-ADA6-C55DFFFF20F1} = {864868C7-C038-4E67-ADA6-C55DFFFF20F1}
 		{4ADDB41B-B82A-4460-AFC6-CAD0FE0BED9B} = {4ADDB41B-B82A-4460-AFC6-CAD0FE0BED9B}
 		{60A1B129-E4BA-425F-8F44-6577C883D6D1} = {60A1B129-E4BA-425F-8F44-6577C883D6D1}
@@ -15,7 +16,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RobWorkStudio", "RobWorkStu
 		{A7B1E9A4-89E1-4406-BF83-290976666D37} = {A7B1E9A4-89E1-4406-BF83-290976666D37}
 		{377C91AA-2B3B-46C9-A8FC-27B40235820B} = {377C91AA-2B3B-46C9-A8FC-27B40235820B}
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085} = {61B482DE-A554-44A7-A2C9-EBD6E29C4085}
-		{48B89A65-457A-4D99-A979-890EFE6902AE} = {48B89A65-457A-4D99-A979-890EFE6902AE}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtTreePropertyBrowser", "..\..\..\ext\qtpropertybrowser\projects\VisualStudio2005\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcproj", "{61B482DE-A554-44A7-A2C9-EBD6E29C4085}"
@@ -73,6 +73,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rws_playback", "rws_playbac
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtask", "gtask\gtask.vcproj", "{5E8D914C-F837-403E-AB36-63536241714E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{67743714-D431-4E5B-AAA5-ABCA3D423685} = {67743714-D431-4E5B-AAA5-ABCA3D423685}
+		{61B482DE-A554-44A7-A2C9-EBD6E29C4085} = {61B482DE-A554-44A7-A2C9-EBD6E29C4085}
 	EndProjectSection
 EndProject
 Global
@@ -142,6 +152,12 @@ Global
 		{864868C7-C038-4E67-ADA6-C55DFFFF20F1}.Release No LTCG|Win32.Build.0 = Release|Win32
 		{864868C7-C038-4E67-ADA6-C55DFFFF20F1}.Release|Win32.ActiveCfg = Release|Win32
 		{864868C7-C038-4E67-ADA6-C55DFFFF20F1}.Release|Win32.Build.0 = Release|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Debug|Win32.Build.0 = Debug|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Release No LTCG|Win32.ActiveCfg = Release|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Release No LTCG|Win32.Build.0 = Release|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Release|Win32.ActiveCfg = Release|Win32
+		{5E8D914C-F837-403E-AB36-63536241714E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -68,6 +68,8 @@ public:
     /** @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format  */
     static const XMLCh* TimeId;
 
+	static const int* myTestVar;
+
 private:
     XMLPathFormat() {};
 };

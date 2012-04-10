@@ -44,4 +44,13 @@ const XMLCh* XMLPathFormat::TimedStateId = XMLString::transcode("TimedState");
 const XMLCh* XMLPathFormat::TimedQId = XMLString::transcode("TimedQ");
 
 /** @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format  */
-const XMLCh* XMLPathFormat::TimeId = XMLString::transcode("Time");
+const XMLCh* XMLPathFormat::TimeId = XMLString::transcode("Time"); 
+
+const int* XMLPathFormat::myTestVar = NULL;
+
+namespace {
+	void test() {
+		std::cout<<XMLPathFormat::TimedQId<<std::endl;
+	}
+
+}

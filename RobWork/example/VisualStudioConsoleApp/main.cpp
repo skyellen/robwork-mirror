@@ -7,7 +7,7 @@
 #include <rw/pathplanning/QSampler.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <sandbox/loaders/XercesXML/CollisionSetupLoader.hpp>
-
+#include <rw/loaders/xml/XMLPathFormat.hpp>
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -30,6 +30,8 @@ int main(int argc, char** argv) {
 		std::cout<<"Unable to find device"<<std::endl;
 		return 0;
 	}
+
+	std::cout<<XMLPathFormat::TimedQId<<std::endl;
 
 
  /*   ProximityPairList strpairs = sandbox::CollisionSetupLoader::load("d:/workspace/PickPlacePlanner/data/WorkCell/ClearanceSetupPilot.xml");

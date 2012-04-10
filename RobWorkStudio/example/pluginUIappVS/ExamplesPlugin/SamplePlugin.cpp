@@ -9,7 +9,7 @@
 #include <rwlibs/task/loader/XMLTaskLoader.hpp>
 #include <rwlibs/task/loader/XMLTaskSaver.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
-
+#include <rw/loaders/xml/XMLPathFormat.hpp>
 #include <boost/regex.hpp>
 
 using namespace rw::math;
@@ -22,14 +22,14 @@ using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::task;
 
 using namespace rws;
-
-
+#include <rw/loaders/xml/XMLPathFormat.hpp>
+using namespace rw::loaders;
 
 SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png"))
 {
     setupUi(this);
-
+	std::cout<<XMLPathFormat::TimeId<<std::endl;
 
 }  
 
