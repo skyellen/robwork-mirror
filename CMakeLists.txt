@@ -9,11 +9,17 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(RW_ROOT ${ROOT}/RobWork/)
 SET(RWS_ROOT ${ROOT}/RobWorkStudio/)
 SET(RWSIM_ROOT ${ROOT}/RobWorkSim/)
+
 SET(RWHW_ROOT ${ROOT}/RobWorkHardware/)
 
 IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release) 
 ENDIF()
+
+
+
+
+
 
 #include(ExternalProject)
 #ExternalProject_Add(
