@@ -26,7 +26,9 @@ IF( SWIG_FOUND )
         
         ADD_LIBRARY(rws_lua_s STATIC ${swig_generated_sources} ${swig_other_sources})
         LINK_LIBRARIES(rws_lua_s rws ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
-        ADD_DEPENDENCIES(rws_lua_s LuaEditorWindow)
+        
+        ADD_DEPENDENCIES(rws_lua_s rws LuaEditorWindow)
+        
         SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}rws_lua_s;")
         #MESSAGE("${ROBWORKSTUDIO_LIBRARIES} \n ROBWORK ${ROBWORK_LIBRARIES}" )
         # this is used to indicate static linking to Visual Studio or mingw 
