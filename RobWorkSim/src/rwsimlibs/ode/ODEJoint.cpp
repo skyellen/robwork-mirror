@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 #include "ODEJoint.hpp"
-#include "ODEUtil.hpp"
 
+#include <rw/rw.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
@@ -25,10 +25,224 @@
 
 #include <ode/ode.h>
 
+#include "ODEUtil.hpp"
+#include "ODESimulator.hpp"
+
+
 using namespace rw::kinematics;
+using namespace rw::models;
 using namespace rw::math;
 using namespace rwsim;
 using namespace rwsim::simulator;
+
+namespace {
+
+    //! return joint and motor
+    std::pair<dJointID, dJointID> makeRevoluteJoint(RevoluteJoint* joint, ODEBody *parent, ODEBody *child, ODESimulator *sim, const State& state){
+        // everything in ODE is defined in world coordinates
+        Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+        Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+        Vector3D<> hpos = wTchild.P();
+
+        std::pair<Q, Q> posBounds = joint->getBounds();
+        const double qinit = joint->getData(state)[0];
+        dJointID hinge = dJointCreateHinge(sim->getODEWorldId(), 0);
+        dJointAttach(hinge, child->getBodyID(), parent->getBodyID());
+        dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
+        dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
+        dJointSetHingeParam(hinge, dParamCFM, 0.0001);
+
+        // set the position limits
+        // TODO: these stops can only handle in interval [-Pi, Pi]
+        dJointSetHingeParam(hinge, dParamLoStop, posBounds.first[0] );
+        dJointSetHingeParam(hinge, dParamHiStop, posBounds.second[0] );
+
+        dJointID motor = NULL;
+        if( joint->isActive() ){
+            motor = dJointCreateAMotor(sim->getODEWorldId(), 0);
+            dJointAttach(motor, child->getBodyID(), parent->getBodyID());
+            dJointSetAMotorNumAxes(motor, 1);
+            dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+            dJointSetAMotorAngle(motor,0, qinit);
+            dJointSetAMotorParam(motor,dParamFMax, 1 );
+            dJointSetAMotorParam(motor,dParamVel,0);
+        }
+        return std::make_pair(hinge, motor);
+    }
+
+    //! return joint and motor
+    boost::tuple<dJointID, dJointID, ODEJoint*> makeDependentRevoluteJoint(DependentRevoluteJoint* joint, ODEBody *parent, ODEBody *child, ODESimulator *sim, const State& state){
+        // everything in ODE is defined in world coordinates
+
+        Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+        Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+        Vector3D<> hpos = wTchild.P();
+
+        std::pair<Q, Q> posBounds = joint->getBounds();
+
+        Joint *owner = &joint->getOwner();
+        const double qinit = owner->getData(state)[0]*joint->getScale()+0;
+
+        dJointID hinge = dJointCreateHinge(sim->getODEWorldId(), 0);
+        dJointAttach(hinge, child->getBodyID(), parent->getBodyID());
+        dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
+        dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
+        dJointSetHingeParam(hinge, dParamCFM, 0.0001);
+
+        // set the position limits
+        // TODO: these stops can only handle in interval [-Pi, Pi]
+        //dJointSetHingeParam(hinge, dParamLoStop, posBounds.first[0] );
+        //dJointSetHingeParam(hinge, dParamHiStop, posBounds.second[0] );
+
+        dJointID motor = NULL;
+        if( joint->isActive() ){
+            motor = dJointCreateAMotor(sim->getODEWorldId(), 0);
+            dJointAttach(motor, child->getBodyID(), parent->getBodyID());
+            dJointSetAMotorNumAxes(motor, 1);
+            dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+            dJointSetAMotorAngle(motor,0, qinit);
+            dJointSetAMotorParam(motor,dParamFMax, 20 );
+            dJointSetAMotorParam(motor,dParamVel,0);
+        }
+
+        ODEJoint *odeOwner = sim->getODEJoint(owner);
+
+        return boost::make_tuple(hinge, motor, odeOwner);
+    }
+
+
+    std::pair<dJointID, dJointID> makePrismaticJoint(PrismaticJoint* joint, ODEBody *parent, ODEBody *child, ODESimulator *sim, const State& state){
+        // everything in ODE is defined in world coordinates
+        Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+        Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+        Vector3D<> hpos = wTchild.P();
+
+        std::pair<Q, Q> posBounds = joint->getBounds();
+        const double qinit = joint->getData(state)[0];
+
+        // test if another joint is dependent on this joint
+        //const double qinit = pjoint->getData(state)[0];
+        dJointID slider = dJointCreateSlider (sim->getODEWorldId(), 0);
+        dJointAttach(slider, child->getBodyID(), parent->getBodyID());
+        dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
+        //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
+        dJointSetSliderParam(slider, dParamLoStop, posBounds.first[0] );
+        dJointSetSliderParam(slider, dParamHiStop, posBounds.second[0] );
+
+        dJointID motor = NULL;
+        if( joint->isActive() ){
+            motor = dJointCreateLMotor (sim->getODEWorldId(), 0);
+            dJointAttach(motor, child->getBodyID(), parent->getBodyID());
+            dJointSetLMotorNumAxes(motor, 1);
+            dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+            //dJointSetLMotorAngle(motor,0, qinit);
+
+            dJointSetLMotorParam(motor,dParamFMax, 1 );
+            dJointSetLMotorParam(motor,dParamVel,0);
+        }
+
+        return std::make_pair(slider, motor);
+    }
+
+    boost::tuple<dJointID, dJointID, ODEJoint*, ODEJoint::ODEJointType>  makeDependentPrismaticJoint(DependentPrismaticJoint* joint, ODEBody *parent, ODEBody *child, ODESimulator *sim, const State& state){
+        // everything in ODE is defined in world coordinates
+        Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+        Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+        Vector3D<> hpos = wTchild.P();
+
+        Joint *owner = &joint->getOwner();
+        Transform3D<> wTowner = Kinematics::worldTframe(joint,state);
+        Vector3D<> haxis_owner = wTowner.R() * Vector3D<>(0,0,1);
+
+        std::pair<Q, Q> posBounds = joint->getBounds();
+        const double qinit = joint->getData(state)[0];
+        ODEJoint::ODEJointType type;
+        dJointID slider;
+        dJointID motor;
+        ODEJoint *odeOwner = sim->getODEJoint(owner);
+
+        // test if the axes of owner and joint is parallel
+        double ang = angle(haxis, haxis_owner );
+        if( fabs(ang-180*Deg2Rad)<0.001 && dynamic_cast<PrismaticJoint*>(owner) ) {
+            std::cout << "JOINTS ARE PARALLEL" << std::endl;
+            type = ODEJoint::DEPEND_PAR;
+
+            slider = dJointCreateSlider (sim->getODEWorldId(), 0);
+            //dJointAttach(slider, odeChild, odeParent);
+            dJointAttach(slider, child->getBodyID(), odeOwner->getChild()->getBodyID());
+            dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
+
+            motor = dJointCreateLMotor (sim->getODEWorldId(), 0);
+            //dJointAttach(motor, odeChild, odeParent);
+            dJointAttach(motor, child->getBodyID(), odeOwner->getChild()->getBodyID());
+            dJointSetLMotorNumAxes(motor, 1);
+            dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+
+           // std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
+            // TODO: should take the maxforce value of the owner joint
+            dJointSetLMotorParam(motor,dParamFMax, 1);
+            dJointSetLMotorParam(motor,dParamVel, 0);
+
+        } else {
+            // create ordinary
+            type = ODEJoint::DEPEND;
+
+            // test if another joint is dependent on this joint
+            //const double qinit = pjoint->getData(state)[0];
+            slider = dJointCreateSlider (sim->getODEWorldId(), 0);
+            dJointAttach(slider, child->getBodyID(), parent->getBodyID());
+            dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
+            //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
+            dJointSetSliderParam(slider, dParamLoStop, posBounds.first[0] );
+            dJointSetSliderParam(slider, dParamHiStop, posBounds.second[0] );
+
+            motor = dJointCreateLMotor (sim->getODEWorldId(), 0);
+            dJointAttach(motor, child->getBodyID(), parent->getBodyID());
+            dJointSetLMotorNumAxes(motor, 1);
+            dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+            //dJointSetLMotorAngle(motor,0, qinit);
+
+            dJointSetLMotorParam(motor,dParamFMax, 10 );
+            dJointSetLMotorParam(motor,dParamVel,0);
+
+        }
+
+        return boost::make_tuple(slider, motor, odeOwner ,type);
+    }
+
+
+}
+
+
+ODEJoint::ODEJoint(rw::models::Joint* rwjoint,
+                   ODEBody* parent,
+                   ODEBody* child,
+                   rwsim::simulator::ODESimulator *sim,
+                   const rw::kinematics::State& state):
+                   _rwJoint(rwjoint),
+                   _parent(parent),
+                   _child(child),
+                   _owner(NULL)
+{
+
+    if( RevoluteJoint *rjoint=dynamic_cast<RevoluteJoint*>(rwjoint) ){
+        boost::tie(_jointId,_motorId) = makeRevoluteJoint(rjoint, parent, child, sim, state);
+        _type = ODEJoint::RIGID;
+    } else if(DependentRevoluteJoint *drjoint=dynamic_cast<DependentRevoluteJoint*>(rwjoint)){
+        boost::tie(_jointId,_motorId,_owner) = makeDependentRevoluteJoint(drjoint, parent, child, sim, state);
+        _type = ODEJoint::DEPEND;
+    } else if(PrismaticJoint *pjoint=dynamic_cast<PrismaticJoint*>(rwjoint)){
+        boost::tie(_jointId,_motorId) = makePrismaticJoint(pjoint, parent, child, sim, state);
+        _type = ODEJoint::RIGID;
+    } else if(DependentPrismaticJoint *dpjoint=dynamic_cast<DependentPrismaticJoint*>(rwjoint)){
+        boost::tie(_jointId,_motorId,_owner,_type) = makeDependentPrismaticJoint(dpjoint, parent, child, sim, state);
+    } else {
+        RW_THROW("Unsupported joint type!");
+    }
+
+
+}
+/*
 
 ODEJoint::ODEJoint(
 		JointType jtype,
@@ -73,6 +287,7 @@ ODEJoint::ODEJoint(
 {
 
 }
+*/
 /*
 ODEJoint* ODEJoint::make(RevoluteJoint* joint, dBodyID parent, dWorldID worldId){
     const double qinit = rwjoint->getQ(initState)[0];
@@ -108,14 +323,14 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     State rstate = state;
     double zeroq[] = {0.0,0.0,0.0,0.0};
     if(_type!=ODEJoint::DEPEND){
-        _rwJoint->getJoint()->setData(rstate, zeroq);
-        bframe = &_rwJoint->getFrame();
+        _rwJoint->setData(rstate, zeroq);
+        bframe = _child->getFrame();
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, rstate);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
     } else {
         //_rwJoint->getJoint()->setData(rstate, zeroq);
-        _owner->getRigidJoint()->getJoint()->setData(rstate, zeroq);
+        _owner->getJoint()->setData(rstate, zeroq);
         bframe = _bodyFrame;
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, rstate);
         wTb.P() += wTb.R()*_offset;
@@ -137,7 +352,7 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     }
 
     if(_type!=ODEJoint::DEPEND){
-        bframe = &_rwJoint->getFrame();
+        bframe = _child->getFrame();
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );

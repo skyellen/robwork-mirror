@@ -24,26 +24,37 @@
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/RigidJoint.hpp>
 #include <rw/math/Vector3D.hpp>
+#include "ODEBody.hpp"
 
 namespace rwsim {
 namespace simulator {
-
+    class ODESimulator;
 
 	/**
-	 * @brief this class bridges ODE's joints with RobWork joints.
+	 * @brief this class bridges ODE's joints with RobWork joints. The joint is a
+	 * pure constraint type and hence does not have any geometry. It does however
+	 * constraint two geometrical bodies together.
 	 */
 	class ODEJoint {
 	public:
-		typedef enum{FIXED, RIGID, DEPEND} ODEJointType;
+		typedef enum{FIXED, RIGID, DEPEND, DEPEND_PAR} ODEJointType;
 		typedef enum{Revolute, Prismatic} JointType;
 
 		/**
-		 * @brief constructor
-		 * @param odeJoint
-		 * @param odeMotor
-		 * @param rwbody
-		 * @return
+		 * @brief constructs a ODE joint based on a robwork joint.
+		 * @param rwjoint
+		 * @param parent
+		 * @param child
+		 * @param sim
+		 * @param state
 		 */
+        ODEJoint(rw::models::Joint* rwjoint,
+                 ODEBody* parent,
+                 ODEBody* child,
+                 ODESimulator *sim,
+                 const rw::kinematics::State& state);
+
+        /*
 		ODEJoint(JointType jtype,
 				 dJointID odeJoint,
 				 dJointID odeMotor,
@@ -58,6 +69,7 @@ namespace simulator {
 				 rw::kinematics::Frame *bframe,
 				 double scale, double off,
 				 dynamics::RigidJoint* rwjoint);
+        */
 
 		virtual ~ODEJoint(){};
 
@@ -122,7 +134,12 @@ namespace simulator {
 		double getScale(){ return _scale; };
 		double getOffset(){ return _off; };
 
-		dynamics::RigidJoint* getRigidJoint(){
+
+		ODEBody* getParent(){ return _parent; }
+
+		ODEBody* getChild() { return _child; }
+
+		rw::models::Joint* getJoint(){
 		    return _rwJoint;
 		}
 
@@ -131,7 +148,8 @@ namespace simulator {
 	private:
 		dBodyID _bodyId;
 		dJointID _jointId, _motorId;
-		dynamics::RigidJoint *_rwJoint;
+		rw::models::Joint *_rwJoint;
+		//dynamics::RigidJoint *_rwJoint;
 
 		ODEJoint *_owner;
 		double _scale,_off;
@@ -140,7 +158,7 @@ namespace simulator {
 
 		rw::kinematics::Frame *_bodyFrame;
 		rw::math::Vector3D<> _offset;
-
+		ODEBody *_parent, *_child;
 
 	};
 }

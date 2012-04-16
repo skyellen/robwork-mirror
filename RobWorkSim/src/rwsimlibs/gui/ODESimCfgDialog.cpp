@@ -69,8 +69,10 @@ void ODESimCfgDialog::changedEvent(){
     	switch(body->getType()){
     	case(ODEBody::FIXED): _objectTypeName->setText( "FIXED" ); break;
     	case(ODEBody::RIGID):_objectTypeName->setText( "RIGID" ); break;
-    	case(ODEBody::RIGIDJOINT): _objectTypeName->setText( "RIGIDJOINT" ); break;
-    	case(ODEBody::KINJOINT): _objectTypeName->setText( "KINJOINT" ); break;
+    	//case(ODEBody::RIGIDJOINT): _objectTypeName->setText( "RIGIDJOINT" ); break;
+    	//case(ODEBody::KINJOINT): _objectTypeName->setText( "KINJOINT" ); break;
+    	case(ODEBody::KINEMATIC): _objectTypeName->setText( "KINEMATIC" ); break;
+    	case(ODEBody::LINK): _objectTypeName->setText( "LINK" ); break;
     	}
 
     	int matId = body->getMaterialID();

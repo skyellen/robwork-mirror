@@ -40,11 +40,14 @@ namespace simulator {
 	class ODESuctionCupDevice : public ODEDevice {
 	public:
 
-	    ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
+	    ODESuctionCupDevice(
+	                        ODEBody *base,
+	                        rwsim::dynamics::SuctionCup* dev,
 	                        ODESimulator *odesim,
 	                        rw::kinematics::State& state);
 
-	    void init(rwsim::dynamics::SuctionCup* dev,
+	    void init(ODEBody *base,
+	              rwsim::dynamics::SuctionCup* dev,
                             ODESimulator *odesim,
                             rw::kinematics::State& state);
 		/**

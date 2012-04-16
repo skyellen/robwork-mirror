@@ -698,7 +698,7 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	        std::cout << "KinematicDevice...." << std::endl;
 	        KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device );
 	        std::vector<FrameBodyPair> frameBodyList;
-	        BOOST_FOREACH(KinematicBody *body, kdev->getBodies() ){
+	        BOOST_FOREACH(KinematicBody *body, kdev->getLinks() ){
 	            Frame *frame = &body->getBodyFrame();
 	            btRigidBody *btBody = _rwFrameToBtBody[frame];
 

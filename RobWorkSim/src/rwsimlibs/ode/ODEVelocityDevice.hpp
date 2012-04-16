@@ -31,7 +31,17 @@
 
 namespace rwsim {
 namespace simulator {
-
+    class ODESimulator;
+    /**
+     * @brief A bridge between the RW RigidDevice and a set
+     * of connected joints and rigid bodies.
+     *
+     * ODE does not support simulation of
+     * devices using a reduced coordinate scheme. Only maximal coordinates
+     * are supported. This class maps an
+     * articulated body (Device) in reduced coordinates (RobWork) to a articulated body
+     * in maximal coordinates (ODE).
+     */
 	class ODEVelocityDevice: public ODEDevice {
 	public:
 
@@ -39,9 +49,11 @@ namespace simulator {
 		 * @brief constructor
 		 */
 		ODEVelocityDevice(
+		    ODEBody *base,
 			dynamics::RigidDevice *rdev,
-			std::vector<ODEJoint*> odejoints,
-			rw::math::Q maxForce);
+            const rw::kinematics::State &state,
+			ODESimulator *sim
+			);
 
 		/**
 		 * @brief destructor
@@ -73,13 +85,18 @@ namespace simulator {
 											dBodyID base,
 											dSpaceID space,
 											dWorldID worldId);
-
+	private:
+		void init(dynamics::RigidDevice *rdev,
+		          const rw::kinematics::State &state,
+		          dSpaceID spaceId,
+		          ODEBody* baseODEBody);
 	private:
 		dynamics::RigidDevice *_rdev;
 		std::vector<ODEJoint*> _odeJoints;
 		rw::math::Q _maxForce;
 		rw::math::Q _lastQ;
 		double _lastDt;
+		ODESimulator *_sim;
 	};
 }
 }

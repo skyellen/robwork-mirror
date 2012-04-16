@@ -21,8 +21,9 @@ namespace control {
 	 */
 	class PoseController: public rwlibs::control::Controller, public rwlibs::simulation::SimulatedController {
 	public:
-
+	    //! @brief smart pointer type
 	    typedef rw::common::Ptr<PoseController> Ptr;
+
 		/**
 		 * @brief constructor
 		 * @param rdev [in] device that is to be controlled
@@ -83,7 +84,15 @@ namespace control {
 
 		std::string getControllerName(){ return getName(); };
 
+		/**
+		 * @brief get the device that is controlled by this controller
+		 * @return
+		 */
 		rw::common::Ptr<rw::models::Device> getControlledDevice(){ return _device; }
+
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
 
 		////// inherited from JointController
 
@@ -111,6 +120,7 @@ namespace control {
         double _stime, _accTime; // sample time
 
 		rw::common::Ptr<rwlibs::algorithms::XQPController> _xqp;
+		bool _enabled;
 	};
 
 	//! @}

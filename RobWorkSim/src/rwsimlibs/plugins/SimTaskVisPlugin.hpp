@@ -1,19 +1,19 @@
 #ifndef SimTaskVisPlugin_HPP
 #define SimTaskVisPlugin_HPP
 
-
+#include <rw/common/Timer.hpp>
+#include <rw/graphics/Render.hpp>
 #include <rwlibs/task.hpp>
-#include <rwsim/rwsim.hpp>
-#include <rwsimlibs/ode/ODESimulator.hpp>
-#include <rws/RobWorkStudioPlugin.hpp>
-#include <rwsim/control/BodyController.hpp>
-#include "ui_SimTaskVisPlugin.h"
 #include <rwlibs/task/GraspTask.hpp>
+#include <rws/RobWorkStudioPlugin.hpp>
+
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
-#include <rw/common/Timer.hpp>
 
+#include <boost/any.hpp>
+
+#include "ui_SimTaskVisPlugin.h"
 
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
@@ -72,14 +72,11 @@ private slots:
 
 private:
     rw::models::WorkCell* _wc;
-    rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
-
     int _nrOfExperiments, _totalNrOfExperiments;
 
     QTimer *_timer;
     rwlibs::task::GraspTask::Ptr _graspTask;
     std::vector<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _ymtargets;
-
     rw::graphics::Render::Ptr _render;
 };
 

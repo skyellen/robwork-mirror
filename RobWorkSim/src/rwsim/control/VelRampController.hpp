@@ -65,12 +65,16 @@ namespace control {
 
 		Controller* getController(){ return this;};
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
 	private:
 		dynamics::KinematicDevice *_ddev;
 		double _time;
 		rw::control::SyncVelocityRamp _velramp;
 		rw::math::Q _target;
 		rw::math::Q _currentQ;
+		bool _enabled;
 
 	};
 

@@ -21,7 +21,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/InertiaMatrix.hpp>
-
+#include <rw/rw.hpp>
 #include <ode/ode.h>
 
 namespace rwsim {
@@ -89,6 +89,50 @@ namespace simulator {
          * @return the ERP to use in an elastic contact
          */
 	    static double calcElasticCFM(double Kp, double Kd, double dt);
+
+
+        struct TriMeshData {
+        public:
+            typedef rw::common::Ptr<TriMeshData> Ptr;
+
+            TriMeshData(int sizeI,int sizeV):
+                indices(sizeI*2,0),
+                vertices(sizeV*2,0)
+            {
+                indices.resize(sizeI);
+                vertices.resize(sizeV);
+            }
+
+            std::vector<dTriIndex> indices;
+            std::vector<float> vertices;
+            dTriMeshDataID triMeshID;
+        };
+
+        struct TriGeomData {
+        public:
+            TriGeomData(TriMeshData::Ptr triData):
+                tridata(triData), mBuffIdx(0)
+            {
+                for (int j=0; j<16; j++){
+                    mBuff[0][j] = 0.0f;
+                    mBuff[1][j] = 0.0f;
+                }
+            }
+
+            TriMeshData::Ptr tridata;
+            dMatrix4 mBuff[2];
+            dQuaternion rot;
+            rw::math::Transform3D<> t3d;
+            dVector3 p;
+            dGeomID geomId;
+            int mBuffIdx;
+            bool isGeomTriMesh;
+        };
+
+
+        static TriMeshData::Ptr buildTriMesh(rw::geometry::GeometryData::Ptr gdata,bool invert = false);
+
+        static std::vector<TriGeomData*> buildTriGeom(std::vector<rw::geometry::Geometry::Ptr> geoms, dSpaceID spaceid, bool invert = false);
 
 	};
 }

@@ -33,8 +33,11 @@
 #include "Body.hpp"
 #include <rw/geometry/Geometry.hpp>
 
+#ifdef zkdaslkdiasdn
 namespace rwsim {
 namespace dynamics {
+
+
 	//! @addtogroup dynamics
 	//! @{
     /**
@@ -359,5 +362,7 @@ namespace dynamics {
     //! @}
 } // namespace dynamics
 }
+
+#endif
 
 #endif /*DYNAMICS_RigidJoint_HPP_*/

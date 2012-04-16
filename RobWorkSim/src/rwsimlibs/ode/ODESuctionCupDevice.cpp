@@ -78,7 +78,8 @@ namespace {
 
 const int NR_OF_SPIKES = 10;
 
-ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
+ODESuctionCupDevice::ODESuctionCupDevice(ODEBody *base,
+                                         rwsim::dynamics::SuctionCup* dev,
                                          ODESimulator *odesim,
                                          State& state):
         _dev(dev), //_sensor(sensor),
@@ -90,7 +91,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
 {
     //std::vector<dynamics::RigidJoint*> joints = _dev->getRigidJoints();
     //_tcp = joints.back();
-    init(dev, odesim, state);
+    init(base, dev, odesim, state);
 
     // create the collision detector
     _narrowStrategy = ownedPtr( new rwlibs::proximitystrategies::ProximityStrategyPQP() );
@@ -434,20 +435,14 @@ void ODESuctionCupDevice::postUpdate(rw::kinematics::State& state){
 }
 
 
-void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state){
+void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state){
     // create base
 
     BodyInfo info = scup->getEndBody()->getInfo();
     Body* base = scup->getBase();
-    _odeBase = NULL;
-
-    if( Body *kbase = dynamic_cast<Body*>(base) ){
-        std::cout << "Creating odeBase " << std::endl;
-        _odeBase = sim->createBody( kbase, state , sim->getODESpace());
-    }
-
+    _odeBase = odebase;
     RW_ASSERT(_odeBase);
-    _odeEnd = sim->createRigidBody( scup->getEndBody(), state, sim->getODESpace() );
+    _odeEnd = ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);
     _tcp = _odeEnd->getRwBody();
     // we create a couple of kinematic bodies to lie in between the joints
     dBodyID bTmp1 = dBodyCreate( sim->getODEWorldId() );

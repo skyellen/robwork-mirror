@@ -1,32 +1,21 @@
 #include "SimTaskVisPlugin.hpp"
 
-#include <rwsim/rwsim.hpp>
-//#include <rw/rw.hpp>
-#include <QPushButton>
-#include <RobWorkStudio.hpp>
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rw/rw.hpp>
+#include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rw/graspplanning/Grasp3D.hpp>
+#include <rwlibs/task/GraspTask.hpp>
+
+#include <rws/RobWorkStudio.hpp>
+#include <QPushButton>
+#include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
-#include <boost/lexical_cast.hpp>
-#include <rw/proximity/ProximityStrategyFactory.hpp>
-#include <rw/graspplanning/GWSMeasure3D.hpp>
-#include <rwlibs/opengl/DrawableUtil.hpp>
-#include <rw/common/macros.hpp>
-#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 
 //#define PHOENIX_LIMIT 15
 
 USE_ROBWORK_NAMESPACE
-USE_ROBWORKSIM_NAMESPACE
 using namespace robwork;
-using namespace robworksim;
 using namespace rws;
-using namespace rwlibs::simulation;
 using namespace rwlibs::task;
 
 namespace {
@@ -609,22 +598,7 @@ void SimTaskVisPlugin::genericAnyEventListener(const std::string& event, boost::
 }
 
 void SimTaskVisPlugin::genericEventListener(const std::string& event){
-    if( event=="DynamicWorkcellLoadet" ){
-        // get the dynamic workcell from the propertymap
-        RW_DEBUG("Getting dynamic workcell from propertymap!");
 
-        DynamicWorkCell::Ptr dwc =
-            getRobWorkStudio()->getPropertyMap().get<DynamicWorkCell::Ptr>("DynamicWorkcell",NULL);
-
-        if( dwc==NULL){
-            log().error() << "Could not load dynamic workcell from propertymap!!" << std::endl;
-            return;
-        }
-        //std::cout << "dwc" << dwc->getWorkCell()->getName() << std::endl;
-        _dwc = dwc;
-    } else if( event=="ExecuteSimulationTask" ){
-
-    }
 }
 
 Q_EXPORT_PLUGIN(SimTaskVisPlugin);

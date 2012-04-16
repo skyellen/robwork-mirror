@@ -122,14 +122,14 @@ namespace dynamics {
         }
 
         /**
-         * @brief returns the linear velocity described in parent frame
+         * @brief returns the linear velocity described in world frame
          */
         rw::math::Vector3D<> getLinVelW(const rw::kinematics::State& state) const {
             return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getLinVel(state);
         }
 
         /**
-         * @brief returns the angular velocity described in parent frame
+         * @brief returns the angular velocity described in world frame
          */
         rw::math::Vector3D<> getAngVelW(const rw::kinematics::State& state) const {
             return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getAngVel(state);

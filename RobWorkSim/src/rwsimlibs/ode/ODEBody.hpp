@@ -30,6 +30,7 @@
 
 namespace rwsim {
 namespace simulator {
+    class ODESimulator;
 	/**
 	 * @brief a convienience class for bridging RWSim body states with ode body
 	 * states. Properties of the objects such as MaterialID, collision reduction
@@ -38,7 +39,14 @@ namespace simulator {
 	class ODEBody {
 
 	public:
-		typedef enum{FIXED, KINEMATIC, RIGID, RIGIDJOINT, KINJOINT} ODEBodyType;
+        /**
+         * this enum determines how and what the ODEBody maps from (ODE) and into (RW).
+         */
+		typedef enum{FIXED //! a fixed body
+		            , KINEMATIC //! a kinematic ode body and a kinematic RW body
+		            , RIGID //! a rigid ode body and a RigidBody RW
+		            , RIGIDODE //! a rigid ode body and a RW Body type (any other than RigidBody)
+		            , LINK} ODEBodyType;
 
 		/**
 		 * @brief constructor for rigid bodies
@@ -53,16 +61,20 @@ namespace simulator {
 				int matID, int conID);
 
 		/**
-		 * @brief constructor for rigid bodies
+		 * @brief constructor for user defined type, eg. body does not necesarilly need to by
+		 * of RigidBody to create an ODEBody::RIGID
 		 * @param odeBody
-		 * @param rwbody
-		 * @param offset [in] offset of the center of mass relative to \b rwbody
-		 * @return
+		 * @param body
+		 * @param offset
+		 * @param matID
+		 * @param conID
+		 * @param type
 		 */
-		ODEBody(dBodyID odeBody,
-				dynamics::RigidJoint* rwbody,
-				rw::math::Vector3D<> offset,
-				int matID, int conID);
+        ODEBody(dBodyID odeBody,
+                dynamics::Body* body,
+                rw::math::Vector3D<> offset,
+                int matID, int conID,
+                ODEBodyType type);
 
 		/**
 		 * @brief constructor for kinematic bodies
@@ -79,7 +91,7 @@ namespace simulator {
 		 * @param frame
 		 * @return
 		 */
-		ODEBody(std::vector<dGeomID> geomId, dynamics::Body* body,int matID, int conID);
+		ODEBody(std::vector<dGeomID> geomId, dynamics::Body* body, int matID, int conID);
 
 		/**
 		 * @brief destructor
@@ -106,73 +118,73 @@ namespace simulator {
 		 */
 		void reset(const rw::kinematics::State& state);
 
-		/**
-		 * @brief returns the
-		 * @return
-		 */
-		dynamics::Body* getRwBody(){
+		 //! returns the RobWork Body
+		dynamics::Body* getRwBody(){ return _body; }
 
-			return _body;
-		}
+		//! get the ODE bodyId
+		dBodyID getBodyID(){ return _bodyId; }
 
-		dBodyID getBodyID(){
-			return _bodyId;
-		}
+		//! get transform from world to bodyframe
+		rw::math::Transform3D<> getTransform();
 
-		rw::math::Transform3D<> getTransform(){
-			if( _bodyId == 0)
-				return ODEUtil::getODEGeomT3D(_geomId);
-			rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
-			wTb.P() -= wTb.R()*_offset;
-			return wTb;
-		}
+		//! get transform from world to COM
+		rw::math::Transform3D<> getTransformCOM();
 
-		ODEBodyType getType(){
-			return _type;
-		}
+        //! set transform of body, using bodyframe
+		void setTransform(const rw::math::Transform3D<>& wTbody);
 
-		int getMaterialID(){
-			return _materialID;
-		}
+		//! set transform of body, using COM
+		void setTransformCOM(const rw::math::Transform3D<>& wTcom);
 
-		int getContactID(){
-			return _contactID;
-		}
+		//! get type of ODEBody
+		ODEBodyType getType(){return _type; }
 
-		rw::kinematics::Frame* getFrame(){
-			return _rwframe;
-		}
+		//! get material id
+		int getMaterialID(){ return _materialID; }
 
-		void setCRTThres(double crtthres){
-			_contactReductionThreshold = crtthres;
-		}
+		//! get contact model id
+		int getContactID(){ return _contactID; }
 
-		double getCRThres(){
-			return _contactReductionThreshold;
-		}
+		//! get body frame
+		rw::kinematics::Frame* getFrame(){ return _rwframe; }
+
+		//! set contact reduction parameter
+		void setCRTThres(double crtthres){ _contactReductionThreshold = crtthres; }
+
+		//! get contact reduction parameter
+		double getCRThres(){ return _contactReductionThreshold; }
 
 		rw::math::Vector3D<> getLastForce(){ return _lastForce; }
 
-
 		void bodyChangedListener(dynamics::Body::BodyEventType eventtype);
+
+		void setTriGeomData(std::vector<ODEUtil::TriGeomData*>& data){ _triGeomDatas = data; }
+		std::vector<ODEUtil::TriGeomData*>& getTriGeomData(){ return _triGeomDatas; }
+
+		static ODEBody* makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESimulator *sim);
+		static ODEBody* makeKinematicBody(dynamics::Body* kbody, dSpaceID spaceid, ODESimulator *sim);
+		static ODEBody* makeFixedBody(dynamics::Body* kbody, dSpaceID spaceid, ODESimulator *sim);
 	private:
 
 		// for rigid body
-		dBodyID _bodyId;
-        dynamics::Body *_body;
-        dynamics::RigidBody *_rwBody;
-        dynamics::KinematicBody *_kBody;
         rw::kinematics::MovableFrame *_mframe;
-        rw::math::Vector3D<> _offset;
+
+        dBodyID _bodyId;
+        dynamics::Body *_body;
         rw::kinematics::Frame *_rwframe;
-        // the type of this body
         ODEBodyType _type;
+
         double _contactReductionThreshold;
         int _materialID, _contactID;
 
-		dGeomID _geomId;
-		std::vector<dGeomID> _geomIds;
+        dGeomID _geomId;
+        std::vector<dGeomID> _geomIds;
+        std::vector<ODEUtil::TriGeomData*> _triGeomDatas;
 
+        dynamics::RigidBody *_rwBody;
+        dynamics::KinematicBody *_kBody;
+
+        rw::math::Vector3D<> _offset;
 		rw::math::Vector3D<> _lastForce;
 	};
 }

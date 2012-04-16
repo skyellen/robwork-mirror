@@ -220,16 +220,23 @@ namespace simulator {
 
 		dWorldID getODEWorldId(){ return _worldId; }
 
+		ODEJoint* getODEJoint(rw::models::Joint* joint){
+            if( _jointToODEJoint.find(joint)== _jointToODEJoint.end()){
+                return NULL;
+            }
+            return _jointToODEJoint[joint];
+		}
+
 		ODEBody* getODEBody(rw::kinematics::Frame* frame){
             if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
-                return 0;
+                return NULL;
             }
             return _rwFrameToODEBody[frame];
 		}
 
 		dBodyID getODEBodyId(rw::kinematics::Frame* frame){
 		    if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
-		        return 0;
+		        return NULL;
 		    }
 		    return _rwFrameToODEBody[frame]->getBodyID();
 		}
@@ -244,47 +251,11 @@ namespace simulator {
 
 	public:
 
-		struct TriMeshData {
-		public:
-	        typedef rw::common::Ptr<TriMeshData> Ptr;
 
-		    TriMeshData(int sizeI,int sizeV):
-				indices(sizeI*2,0),
-				vertices(sizeV*2,0)
-			{
-				indices.resize(sizeI);
-				vertices.resize(sizeV);
-			}
-
-			std::vector<dTriIndex> indices;
-			std::vector<float> vertices;
-			dTriMeshDataID triMeshID;
-		};
-
-		struct TriGeomData {
-		public:
-			TriGeomData(TriMeshData::Ptr triData):
-				tridata(triData), mBuffIdx(0)
-			{
-				for (int j=0; j<16; j++){
-					mBuff[0][j] = 0.0f;
-					mBuff[1][j] = 0.0f;
-				}
-			}
-
-			TriMeshData::Ptr tridata;
-			dMatrix4 mBuff[2];
-			dQuaternion rot;
-			rw::math::Transform3D<> t3d;
-			dVector3 p;
-			dGeomID geomId;
-			int mBuffIdx;
-			bool isGeomTriMesh;
-		};
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);
 
-		const std::vector<TriGeomData*>& getTriMeshs(){
+		const std::vector<ODEUtil::TriGeomData*>& getTriMeshs(){
 			return _triGeomDatas;
 		}
 
@@ -318,7 +289,9 @@ namespace simulator {
 		};
 
 	public:
+		/*
 		ODEBody* createBody(dynamics::Body* bframe, const rw::kinematics::State& state, dSpaceID spaceid);
+
 
 		// create bodies that match rw bodies
 		ODEBody* createRigidBody(dynamics::Body* bframe,
@@ -326,13 +299,15 @@ namespace simulator {
                                 dSpaceID spaceid);
 
         ODEBody* createKinematicBody(
-                                dynamics::KinematicBody* kbody,
+                                dynamics::Body* kbody,
                                 const rw::kinematics::State& state,
                                 dSpaceID spaceid);
 
         ODEBody* createFixedBody(dynamics::Body* bframe,
                                 const rw::kinematics::State& state,
                                 dSpaceID spaceid);
+
+		*/
 
         //
         void addODEBody(dBodyID body){_allbodies.push_back(body);};
@@ -345,6 +320,11 @@ namespace simulator {
         dSpaceID getODESpace(){ return _spaceId; };
 
         void addContacts(std::vector<dContact>& contacts, size_t nr_con, ODEBody* dataB1, ODEBody* dataB2);
+
+
+        dynamics::MaterialDataMap& getMaterialMap(){ return _materialMap; }
+
+        dynamics::ContactDataMap& getContactMap(){ return _contactMap; }
 
 	private:
 		void saveODEState();
@@ -414,7 +394,7 @@ namespace simulator {
 
 		std::vector<ODEStateStuff> _odeStateStuff;
 
-		std::vector<TriGeomData*> _triGeomDatas;
+		std::vector<ODEUtil::TriGeomData*> _triGeomDatas;
 
 		rw::common::PropertyMap _propertyMap;
 

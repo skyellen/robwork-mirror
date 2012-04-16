@@ -60,37 +60,39 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
 {
 
     if (DRAW_COLLISION_GEOMETRY & _drawMask) {
-        const std::vector<ODESimulator::TriGeomData*>& trimeshs = _sim->getTriMeshs();
-        //std::vector<dContact> contacts = _sim->getContacts();
-        BOOST_FOREACH(ODESimulator::TriGeomData* trigeom, trimeshs){
-            ODESimulator::TriMeshData::Ptr trimesh = trigeom->tridata;
-            // multiply stack transform with geom transform
-            const dReal* pos = dGeomGetPosition(trigeom->geomId);
-            const dReal* rot = dGeomGetRotation(trigeom->geomId);
+        BOOST_FOREACH(ODEBody* b, _sim->getODEBodies() ){
+            std::vector<ODEUtil::TriGeomData*> trimeshs = _sim->getTriMeshs();
 
-            float gltrans[16];
-            odeToGLTransform(pos, rot, gltrans);
+            BOOST_FOREACH(ODEUtil::TriGeomData* trigeom, trimeshs){
+                ODEUtil::TriMeshData::Ptr trimesh = trigeom->tridata;
+                // multiply stack transform with geom transform
+                const dReal* pos = dGeomGetPosition(trigeom->geomId);
+                const dReal* rot = dGeomGetRotation(trigeom->geomId);
 
-            glPushMatrix();
-            glMultMatrixf(gltrans);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glBegin(GL_TRIANGLES);
+                float gltrans[16];
+                odeToGLTransform(pos, rot, gltrans);
 
-            for (size_t i = 0; i < trimesh->indices.size() / 3; i++) {
-                const float *p;
-                p = &trimesh->vertices[trimesh->indices[i * 3 + 0] * 3];
-                glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+                glPushMatrix();
+                glMultMatrixf(gltrans);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glBegin(GL_TRIANGLES);
 
-                p = &trimesh->vertices[trimesh->indices[i * 3 + 1] * 3];
-                glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+                for (size_t i = 0; i < trimesh->indices.size() / 3; i++) {
+                    const float *p;
+                    p = &trimesh->vertices[trimesh->indices[i * 3 + 0] * 3];
+                    glVertex3f((float)p[0],(float)p[1],(float)p[2]);
 
-                p = &trimesh->vertices[trimesh->indices[i * 3 + 2] * 3];
-                glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+                    p = &trimesh->vertices[trimesh->indices[i * 3 + 1] * 3];
+                    glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+
+                    p = &trimesh->vertices[trimesh->indices[i * 3 + 2] * 3];
+                    glVertex3f((float)p[0],(float)p[1],(float)p[2]);
+                }
+
+                // draw all contacts
+                glEnd();
+                glPopMatrix();
             }
-
-            // draw all contacts
-            glEnd();
-            glPopMatrix();
         }
     }
     //getContactManifoldMap

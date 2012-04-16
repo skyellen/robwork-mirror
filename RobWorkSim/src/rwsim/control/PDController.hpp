@@ -131,6 +131,9 @@ namespace control {
 		//! @copydoc JointController::getQd
 		rw::math::Q getQd(){ return _currentVel;}
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
 	private:
 		PDController();
 
@@ -143,6 +146,7 @@ namespace control {
 		ControlMode _mode;
 		double _stime, _accTime; // sample time
 		rw::math::Q  _P, _D;
+		bool _enabled;
 	};
 
 	typedef rw::common::Ptr<PDController> PDControllerPtr;

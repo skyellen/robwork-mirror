@@ -26,20 +26,30 @@
 #include <rw/math/Q.hpp>
 #include <rwsim/dynamics/KinematicDevice.hpp>
 
+#include "ODEBody.hpp"
 #include "ODEJoint.hpp"
 #include "ODEDevice.hpp"
 
 namespace rwsim {
 namespace simulator {
-	/**
+    class ODESimulator;
+    /**
 	 * @brief A bridge between the RW KinematicDevice and kinematicly controlled
 	 * ODE dBodies.
 	 */
 	class ODEKinematicDevice: public ODEDevice {
 	public:
+	    /**
+	     * @brief constructor
+	     * @param rdev
+	     * @param space
+	     * @param state
+	     */
+        ODEKinematicDevice(dynamics::KinematicDevice *rdev,
+                           const rw::kinematics::State& state,
+                           ODESimulator *sim);
 
-		ODEKinematicDevice(dynamics::KinematicDevice *rdev, const std::vector<dBodyID>& kbodies);
-
+        //! @brief destructor
 		virtual ~ODEKinematicDevice();
 
 		void reset(rw::kinematics::State& state);
@@ -53,10 +63,13 @@ namespace simulator {
 
 		void postUpdate(rw::kinematics::State& state);
 
+		// @brief get the kinematic bodies of this ODEKinematicDevice
+		std::vector<ODEBody*> getBodies(){ return _bodies; };
 	private:
 		dynamics::KinematicDevice *_kdev;
 		rw::math::Q _maxVel;
 		std::vector<dBodyID> _kbodies;
+		std::vector<ODEBody*> _bodies;
 	};
 }
 }

@@ -19,6 +19,7 @@
 
 using namespace rw::math;
 using namespace rwsim::simulator;
+using namespace rw::geometry;
 
 void ODEUtil::toODERotation(const rw::math::Rotation3D<>& rwR, dMatrix3 R){
     R[0] = rwR(0,0);
@@ -88,6 +89,159 @@ double ODEUtil::calcElasticERP(double kp, double kd, double dt){
 
 double ODEUtil::calcElasticCFM(double kp, double kd, double dt){
     return 1.0/(dt*kp+kd);
+}
+
+namespace {
+    rw::common::Cache<GeometryData*, ODEUtil::TriMeshData > _cache;
+}
+
+ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool invert){
+    // check if the geometry is allready in cache
+    if( _cache.isInCache(gdata.get()) ){
+        ODEUtil::TriMeshData::Ptr tridata = _cache.get(gdata.get());
+        return tridata;
+    }
+
+    //bool ownedData = false;
+    IndexedTriMesh<float>::Ptr imesh;
+
+    // if not in cache then we need to create a TriMeshData geom,
+    // but only if the geomdata is a trianglemesh
+    if( !dynamic_cast<TriMesh*>(gdata.get()) ){
+        TriMesh::Ptr mesh = gdata->getTriMesh();
+        imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*mesh,0.00001);
+        //ownedData = true;
+    } else if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
+        // convert the trimesh to an indexed trimesh
+        imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*((TriMesh*)gdata.get()),0.00001);
+        //ownedData = true;
+    } else {
+        imesh = static_cast< IndexedTriMesh<float>* >(gdata.get());
+    }
+    int nrOfVerts = imesh->getVertices().size();
+    int nrOfTris = imesh->getSize();
+    // std::cout  << "- NR of faces: " << nrOfTris << std::endl;
+    // std::cout  << "- NR of verts: " << nrOfVerts << std::endl;
+
+    ODEUtil::TriMeshData *data =
+        new ODEUtil::TriMeshData(nrOfTris*3, nrOfVerts*3);
+    dTriMeshDataID triMeshDataId = dGeomTriMeshDataCreate();
+
+    //const float myScale = 1.02;
+
+    data->triMeshID = triMeshDataId;
+    int vertIdx = 0;
+    BOOST_FOREACH(const Vector3D<float>& v, imesh->getVertices()){
+        data->vertices[vertIdx+0] = v(0);
+        data->vertices[vertIdx+1] = v(1);
+        data->vertices[vertIdx+2] = v(2);
+        vertIdx+=3;
+    }
+    int indiIdx = 0;
+    //BOOST_FOREACH(, imesh->getTriangles()){
+    for(size_t i=0;i<imesh->getSize();i++){
+        const IndexedTriangle<uint32_t> tri = imesh->getIndexedTriangle(i);
+        if(invert){
+            data->indices[indiIdx+0] = tri.getVertexIdx(2);
+            data->indices[indiIdx+1] = tri.getVertexIdx(1);
+            data->indices[indiIdx+2] = tri.getVertexIdx(0);
+        } else {
+            data->indices[indiIdx+0] = tri.getVertexIdx(0);
+            data->indices[indiIdx+1] = tri.getVertexIdx(1);
+            data->indices[indiIdx+2] = tri.getVertexIdx(2);
+        }
+        //if(data->indices[indiIdx+0]>=(size_t)nrOfVerts)
+        //  std::cout << indiIdx+0 << " " << data->indices[indiIdx+0] << "<" << nrOfVerts << std::endl;
+        RW_ASSERT( data->indices[indiIdx+0]< (size_t)nrOfVerts );
+        //if(data->indices[indiIdx+1]>=(size_t)nrOfVerts)
+        //  std::cout << data->indices[indiIdx+1] << "<" << nrOfVerts << std::endl;
+        RW_ASSERT( data->indices[indiIdx+1]<(size_t)nrOfVerts );
+        //if(data->indices[indiIdx+2]>=(size_t)nrOfVerts)
+        //  std::cout << data->indices[indiIdx+2] << "<" << nrOfVerts << std::endl;
+        RW_ASSERT( data->indices[indiIdx+2]<(size_t)nrOfVerts );
+
+        indiIdx+=3;
+    }
+
+    dGeomTriMeshDataBuildSingle(triMeshDataId,
+            &data->vertices[0], 3*sizeof(float), nrOfVerts,
+            (dTriIndex*)&data->indices[0], nrOfTris*3, 3*sizeof(dTriIndex));
+
+    // write all data to the disc
+    /*
+    std::ofstream fstr;
+    std::stringstream sstr;
+    sstr << "test_data_" << nrOfVerts << ".h";
+    fstr.open(sstr.str().c_str());
+    if(!fstr.is_open())
+        RW_THROW("fstr not open!");
+    fstr << "const int VertexCount = " << nrOfVerts << "\n"
+         << "const int IndexCount = " << nrOfTris << " * 3\n"
+         << "\n\n"
+         << "float Vertices[VertexCount * 3] = {";
+    for(int i=0;i<nrOfVerts-1;i++){
+        fstr << data->vertices[i*3+0] << ","
+             << data->vertices[i*3+1] << ","
+             << data->vertices[i*3+2] << ",\n";
+    }
+    fstr << data->vertices[(nrOfVerts-1)*3+0] << ","
+         << data->vertices[(nrOfVerts-1)*3+1] << ","
+         << data->vertices[(nrOfVerts-1)*3+2] << "\n };";
+
+    fstr << "\n\ndTriIndex Indices[IndexCount/3][3] = { \n";
+    for(int i=0;i<nrOfTris-1;i++){
+        fstr << "{" << data->indices[i*3+0] << ","
+             << data->indices[i*3+1] << ","
+             << data->indices[i*3+2] << "},\n";
+    }
+    fstr << "{" << data->indices[(nrOfTris-1)*3+0] << ","
+         << data->indices[(nrOfTris-1)*3+1] << ","
+         << data->indices[(nrOfTris-1)*3+2] << "}\n };";
+
+    fstr.close();
+*/
+    //triMeshDatas.push_back(boost::shared_ptr<ODESimulator::TriMeshData>(data) );
+
+//      if( ownedData )
+//          delete imesh;
+
+    return data;
+}
+
+std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::Ptr> geoms, dSpaceID spaceid, bool invert){
+    std::vector<ODEUtil::TriGeomData*> triGeomDatas;
+    for(size_t i=0; i<geoms.size(); i++){
+        GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
+        Transform3D<> transform = geoms[i]->getTransform();
+
+        ODEUtil::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,invert);
+        if(triMeshData==NULL){
+            continue;
+        }
+        dGeomID geoId;
+        bool isTriMesh=false;
+        if( Sphere* sphere_rw = dynamic_cast<Sphere*>(rwgdata.get()) ){
+            geoId = dCreateSphere(spaceid, (dReal)sphere_rw->getRadius());
+        } else if( Cylinder* cyl_rw = dynamic_cast<Cylinder*>(rwgdata.get()) ){
+            geoId = dCreateCylinder(spaceid, (dReal)cyl_rw->getRadius(), (dReal)cyl_rw->getHeight());
+        } else if( Plane* plane_rw = dynamic_cast<Plane*>(rwgdata.get()) ){
+            Vector3D<> n = plane_rw->normal();
+            geoId = dCreatePlane(spaceid, (dReal)n[0], (dReal)n[1], (dReal)n[2], (dReal)plane_rw->d());
+        } else {
+            geoId = dCreateTriMesh(spaceid, triMeshData->triMeshID, NULL, NULL, NULL);
+            isTriMesh = true;
+        }
+
+        dGeomSetData(geoId, triMeshData->triMeshID);
+        ODEUtil::TriGeomData *gdata = new ODEUtil::TriGeomData(triMeshData);
+        gdata->isGeomTriMesh = isTriMesh;
+        ODEUtil::toODETransform(transform, gdata->p, gdata->rot);
+        gdata->t3d = transform;
+        triGeomDatas.push_back(gdata);
+        gdata->geomId = geoId;
+    }
+    // create geo
+    return triGeomDatas;
 }
 
 

@@ -57,7 +57,6 @@
 
 #include <rwsim/dynamics/OBRManifold.hpp>
 
-#include <rw/proximity/Proximity.hpp>
 #include <rw/proximity/BasicFilterStrategy.hpp>
 
 #include <rwsim/dynamics/ContactPoint.hpp>
@@ -138,173 +137,6 @@ namespace {
 	    std::cout  << "-           " << printArray(&dmass.I[3], 3) <<  std::endl;
 	    std::cout  << "-           " << printArray(&dmass.I[6], 3) << std::endl;
 	    std::cout  << "----------------------------------------------------" << std::endl;
-	}
-
-	rw::common::Cache<GeometryData*, ODESimulator::TriMeshData > _cache;
-
-//	ODESimulator::TriMeshData* buildTriMesh(dTriMeshDataID triMeshDataId, const std::vector<Frame*>& frames,
-//			rw::kinematics::Frame* parent, const rw::kinematics::State &state, bool invert){
-
-	ODESimulator::TriMeshData::Ptr buildTriMesh(GeometryData::Ptr gdata, const State &state, bool invert = false){
-		// check if the geometry is allready in cache
-		if( _cache.isInCache(gdata.get()) ){
-			ODESimulator::TriMeshData::Ptr tridata = _cache.get(gdata.get());
-			return tridata;
-		}
-
-        //bool ownedData = false;
-        RW_DEBUGS("indexed stuff");
-        IndexedTriMesh<float>::Ptr imesh;
-
-		// if not in cache then we need to create a TriMeshData geom,
-		// but only if the geomdata is a trianglemesh
-		if( !dynamic_cast<TriMesh*>(gdata.get()) ){
-		    TriMesh::Ptr mesh = gdata->getTriMesh();
-		    imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*mesh,0.00001);
-		    //ownedData = true;
-		} else if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
-			// convert the trimesh to an indexed trimesh
-			RW_DEBUGS("to indexed tri mesh");
-			imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*((TriMesh*)gdata.get()),0.00001);
-			//ownedData = true;
-		} else {
-			imesh = static_cast< IndexedTriMesh<float>* >(gdata.get());
-		}
-		RW_DEBUGS("done casting");
-		int nrOfVerts = imesh->getVertices().size();
-		RW_DEBUGS("nr tris");
-		int nrOfTris = imesh->getSize();
-
-		// std::cout  << "- NR of faces: " << nrOfTris << std::endl;
-		// std::cout  << "- NR of verts: " << nrOfVerts << std::endl;
-		RW_DEBUGS("new ode trimesh");
-		ODESimulator::TriMeshData *data =
-			new ODESimulator::TriMeshData(nrOfTris*3, nrOfVerts*3);
-		RW_DEBUGS("trimeshid");
-		dTriMeshDataID triMeshDataId = dGeomTriMeshDataCreate();
-
-		//const float myScale = 1.02;
-
-		data->triMeshID = triMeshDataId;
-		int vertIdx = 0;
-		RW_DEBUGS("for each vertice");
-		BOOST_FOREACH(const Vector3D<float>& v, imesh->getVertices()){
-			data->vertices[vertIdx+0] = v(0);
-			data->vertices[vertIdx+1] = v(1);
-			data->vertices[vertIdx+2] = v(2);
-			vertIdx+=3;
-		}
-		RW_DEBUGS("for each triangle");
-		int indiIdx = 0;
-		//BOOST_FOREACH(, imesh->getTriangles()){
-		for(size_t i=0;i<imesh->getSize();i++){
-			const IndexedTriangle<uint32_t> tri = imesh->getIndexedTriangle(i);
-			if(invert){
-				data->indices[indiIdx+0] = tri.getVertexIdx(2);
-				data->indices[indiIdx+1] = tri.getVertexIdx(1);
-				data->indices[indiIdx+2] = tri.getVertexIdx(0);
-			} else {
-				data->indices[indiIdx+0] = tri.getVertexIdx(0);
-				data->indices[indiIdx+1] = tri.getVertexIdx(1);
-				data->indices[indiIdx+2] = tri.getVertexIdx(2);
-			}
-			//if(data->indices[indiIdx+0]>=(size_t)nrOfVerts)
-			//	std::cout << indiIdx+0 << " " << data->indices[indiIdx+0] << "<" << nrOfVerts << std::endl;
-			RW_ASSERT( data->indices[indiIdx+0]< (size_t)nrOfVerts );
-			//if(data->indices[indiIdx+1]>=(size_t)nrOfVerts)
-			//	std::cout << data->indices[indiIdx+1] << "<" << nrOfVerts << std::endl;
-			RW_ASSERT( data->indices[indiIdx+1]<(size_t)nrOfVerts );
-			//if(data->indices[indiIdx+2]>=(size_t)nrOfVerts)
-			//	std::cout << data->indices[indiIdx+2] << "<" << nrOfVerts << std::endl;
-			RW_ASSERT( data->indices[indiIdx+2]<(size_t)nrOfVerts );
-
-			indiIdx+=3;
-		}
-		RW_DEBUGS("build ode trimesh");
-		dGeomTriMeshDataBuildSingle(triMeshDataId,
-				&data->vertices[0], 3*sizeof(float), nrOfVerts,
-				(dTriIndex*)&data->indices[0], nrOfTris*3, 3*sizeof(dTriIndex));
-
-		RW_DEBUGS("DONE tristuff");
-		// write all data to the disc
-		/*
-		std::ofstream fstr;
-		std::stringstream sstr;
-		sstr << "test_data_" << nrOfVerts << ".h";
-		fstr.open(sstr.str().c_str());
-		if(!fstr.is_open())
-		    RW_THROW("fstr not open!");
-		fstr << "const int VertexCount = " << nrOfVerts << "\n"
-			 << "const int IndexCount = " << nrOfTris << " * 3\n"
-			 << "\n\n"
-			 << "float Vertices[VertexCount * 3] = {";
-		for(int i=0;i<nrOfVerts-1;i++){
-			fstr << data->vertices[i*3+0] << ","
-				 << data->vertices[i*3+1] << ","
-				 << data->vertices[i*3+2] << ",\n";
-		}
-		fstr << data->vertices[(nrOfVerts-1)*3+0] << ","
-			 << data->vertices[(nrOfVerts-1)*3+1] << ","
-			 << data->vertices[(nrOfVerts-1)*3+2] << "\n };";
-
-		fstr << "\n\ndTriIndex Indices[IndexCount/3][3] = { \n";
-		for(int i=0;i<nrOfTris-1;i++){
-			fstr << "{" << data->indices[i*3+0] << ","
-				 << data->indices[i*3+1] << ","
-				 << data->indices[i*3+2] << "},\n";
-		}
-		fstr << "{" << data->indices[(nrOfTris-1)*3+0] << ","
-			 << data->indices[(nrOfTris-1)*3+1] << ","
-			 << data->indices[(nrOfTris-1)*3+2] << "}\n };";
-
-		fstr.close();
-*/
-		//triMeshDatas.push_back(boost::shared_ptr<ODESimulator::TriMeshData>(data) );
-
-//		if( ownedData )
-//			delete imesh;
-
-		return data;
-	}
-
-	std::vector<ODESimulator::TriGeomData*> buildTriGeom(std::vector<Geometry::Ptr> geoms, const State &state, dSpaceID spaceid, bool invert = false){
-        RW_DEBUGS( "----- BEGIN buildTriGeom --------" );
-		RW_DEBUGS( "Nr of geoms: " << geoms.size() );
-        std::vector<ODESimulator::TriGeomData*> triGeomDatas;
-        for(size_t i=0; i<geoms.size(); i++){
-            GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
-            Transform3D<> transform = geoms[i]->getTransform();
-            RW_DEBUGS(" TRANSFORM: " << geoms[i]->getTransform());
-
-            ODESimulator::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,state,invert);
-            if(triMeshData==NULL){
-            	continue;
-            }
-            dGeomID geoId;
-            bool isTriMesh=false;
-            if( Sphere* sphere_rw = dynamic_cast<Sphere*>(rwgdata.get()) ){
-                geoId = dCreateSphere(spaceid, (dReal)sphere_rw->getRadius());
-            } else if( Cylinder* cyl_rw = dynamic_cast<Cylinder*>(rwgdata.get()) ){
-                geoId = dCreateCylinder(spaceid, (dReal)cyl_rw->getRadius(), (dReal)cyl_rw->getHeight());
-            } else if( Plane* plane_rw = dynamic_cast<Plane*>(rwgdata.get()) ){
-                Vector3D<> n = plane_rw->normal();
-                geoId = dCreatePlane(spaceid, (dReal)n[0], (dReal)n[1], (dReal)n[2], (dReal)plane_rw->d());
-            } else {
-                geoId = dCreateTriMesh(spaceid, triMeshData->triMeshID, NULL, NULL, NULL);
-                isTriMesh = true;
-            }
-
-    	    dGeomSetData(geoId, triMeshData->triMeshID);
-    	    ODESimulator::TriGeomData *gdata = new ODESimulator::TriGeomData(triMeshData);
-    	    gdata->isGeomTriMesh = isTriMesh;
-    	    ODEUtil::toODETransform(transform, gdata->p, gdata->rot);
-    	    gdata->t3d = transform;
-            triGeomDatas.push_back(gdata);
-            gdata->geomId = geoId;
-        }
-	    // create geo
-        RW_DEBUGS( "----- END buildTriGeom --------");
-		return triGeomDatas;
 	}
 
 	void nearCallback(void *data, dGeomID o1, dGeomID o2)
@@ -766,7 +598,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     _nextFeedbackIdx=0;
 
 	RW_DEBUGS("------------- Update trimesh prediction:");
-	BOOST_FOREACH(TriGeomData *data, _triGeomDatas){
+	BOOST_FOREACH(ODEUtil::TriGeomData *data, _triGeomDatas){
 	    if(!data->isGeomTriMesh)
 	        continue;
 	    dGeomID geom = data->geomId;
@@ -794,77 +626,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "e";
 	RW_DEBUGS("----------------------- END STEP --------------------------------");
 	//std::cout << "-------------------------- END STEP --------------------------------" << std::endl;
-}
-
-ODEBody* ODESimulator::createRigidBody(Body* rwbody,
-                                      const rw::kinematics::State& state,
-                                      dSpaceID spaceid)
-{
-    const BodyInfo& info = rwbody->getInfo();
-    // create a triangle mesh for all staticly connected nodes
-    // std::vector<Frame*> frames = DynamicUtil::getAnchoredFrames( *bframe, state);
-    RW_DEBUGS( "- Create Rigid body: " << rwbody->getBodyFrame()->getName());
-
-    std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
-	std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, spaceid, false);
-
-	if(gdatas.size()==0){
-		RW_WARN("Body: "<< rwbody->getBodyFrame()->getName() << " has no geometry!");
-	}
-
-    Vector3D<> mc = info.masscenter;
-    // create the body and initialize mass, inertia and stuff
-
-    dBodyID bodyId = dBodyCreate(_worldId);
-	ODEUtil::setODEBodyT3D(bodyId, rwbody->wTcom(state) );
-	ODEUtil::setODEBodyMass(bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
-
-    int mid = _materialMap.getDataID( info.material );
-    int oid = _contactMap.getDataID( info.objectType );
-
-	ODEBody *odeBody=0;
-    if(RigidBody *rbody = dynamic_cast<RigidBody*>(rwbody)){
-        odeBody = new ODEBody(bodyId, rbody, info.masscenter, mid, oid);
-        _odeBodies.push_back(odeBody);
-        _allbodies.push_back(bodyId);
-        dBodySetData (bodyId, (void*)odeBody);
-    } else if(RigidJoint *rjbody = dynamic_cast<RigidJoint*>(rwbody)){
-        odeBody = new ODEBody(bodyId, rjbody, info.masscenter, mid, oid);
-        dBodySetData (bodyId, (void*)odeBody);
-        //_odeBodies.push_back(odeBody);
-        _allbodies.push_back(bodyId);
-    }
-
-    // check if body frame has any properties that relate to ODE
-    if( rwbody->getBodyFrame()->getPropertyMap().has("LinearDamping") ){
-        dReal linDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("LinearDamping");
-        dBodySetLinearDamping(bodyId, linDamp);
-    }
-    if( rwbody->getBodyFrame()->getPropertyMap().has("AngularDamping") ){
-        dReal angDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("AngularDamping");
-        dBodySetAngularDamping(bodyId, angDamp);
-    }
-
-	// now associate all geometry with the body
-	BOOST_FOREACH(TriGeomData* gdata, gdatas){
-		_triGeomDatas.push_back(gdata);
-		//Vector3D<> mc = gdata->t3d.R() * bmc;
-		dGeomSetBody(gdata->geomId, bodyId);
-		dGeomSetData(gdata->geomId, odeBody);
-		_frameToOdeGeoms[rwbody->getBodyFrame()] = gdata->geomId;
-		// the geom must be attached to body before offset is possible
-		dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
-		dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
-	}
-	dBodySetMaxAngularSpeed(bodyId, 10);
-    _rwODEBodyToFrame[odeBody] = rwbody->getBodyFrame();
-    _rwFrameToODEBody[rwbody->getBodyFrame()] = odeBody;
-    BOOST_FOREACH(Frame* frame, rwbody->getFrames()){
-        //std::cout  << "--> Adding frame: " << frame->getName() << std::endl;
-        _rwFrameToODEBody[frame] = odeBody;
-    }
-
-    return odeBody;
 }
 
 rwsim::drawable::SimulatorDebugRender* ODESimulator::createDebugRender(){
@@ -936,111 +697,6 @@ void ODESimulator::emitPropertyChanged(){
 
 static bool isODEInitialized = false;
 
-ODEBody* ODESimulator::createKinematicBody(KinematicBody* kbody,
-        const rw::kinematics::State& state,
-        dSpaceID spaceid)
-{
-    BodyInfo info = kbody->getInfo();
-
-    RW_ASSERT(kbody!=NULL);
-    // create a triangle mesh for all statically connected nodes
-    std::vector<Geometry::Ptr> geoms = kbody->getGeometry();
-    std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, _spaceId, false);
-    // if no triangles was loaded then continue
-    if( gdatas.size()==0 ){
-        RW_WARN("No triangle mesh defined for this body: " << kbody->getBodyFrame()->getName());
-    }
-
-    Vector3D<> mc = info.masscenter;
-    Transform3D<> wTb = Kinematics::worldTframe(kbody->getBodyFrame(), state);
-    wTb.P() += wTb.R()*mc;
-
-    dBodyID bodyId = dBodyCreate(_worldId);
-    dBodySetKinematic(bodyId);
-    ODEUtil::setODEBodyT3D(bodyId, wTb);
-
-    int mid = _materialMap.getDataID( info.material );
-    int oid = _contactMap.getDataID( info.objectType );
-
-    ODEBody *odeBody = new ODEBody(bodyId, kbody, mid , oid);
-    _odeBodies.push_back(odeBody);
-    dBodySetData (bodyId, odeBody);
-    _allbodies.push_back(bodyId);
-    _rwODEBodyToFrame[odeBody] = kbody->getBodyFrame();
-    _rwFrameToODEBody[kbody->getBodyFrame()] = odeBody;
-
-
-    BOOST_FOREACH(TriGeomData* gdata, gdatas){
-        _triGeomDatas.push_back(gdata);
-
-        dGeomSetBody(gdata->geomId, bodyId);
-        dGeomSetData(gdata->geomId, odeBody);
-
-        _frameToOdeGeoms[kbody->getBodyFrame()] = gdata->geomId;
-
-        // set position and rotation offset of the geometry relative to the body
-        dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
-        dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
-    }
-
-
-    BOOST_FOREACH(Frame* frame, kbody->getFrames()){
-        RW_DEBUGS( "(KB) --> Adding frame: " << frame->getName() );
-        _rwFrameToODEBody[frame] = odeBody;
-    }
-    return odeBody;
-}
-
-
-ODEBody* ODESimulator::createFixedBody(Body* rwbody,
-        const rw::kinematics::State& state,
-        dSpaceID spaceid)
-{
-    const BodyInfo& info = rwbody->getInfo();
-	FixedBody *rbody = dynamic_cast<FixedBody*>( rwbody );
-	if(rbody==NULL)
-		RW_THROW("Not a fixed body!");
-	// create a triangle mesh for all statically connected nodes
-	std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
-	std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, _spaceId, false);
-	// if no triangles was loaded then continue
-	if( gdatas.size()==0 ){
-		RW_WARN("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
-	}
-
-    //Vector3D<> mc = info.masscenter;
-    Transform3D<> wTb = Kinematics::worldTframe(rbody->getBodyFrame(), state);
-
-    // create vector of geomids
-    std::vector<dGeomID> geomids(gdatas.size());
-    for(size_t i=0; i<gdatas.size(); i++ ){
-        geomids[i] = gdatas[i]->geomId;
-    }
-
-    int mid = _materialMap.getDataID( info.material );
-    int oid = _contactMap.getDataID( info.objectType );
-    ODEBody *odeBody = new ODEBody(geomids, rbody, mid , oid);
-    _rwODEBodyToFrame[odeBody] = rwbody->getBodyFrame();
-    _rwFrameToODEBody[rwbody->getBodyFrame()] = odeBody;
-
-	BOOST_FOREACH(TriGeomData* gdata, gdatas){
-		_triGeomDatas.push_back(gdata);
-		// set position and rotation of body
-		dGeomSetData(gdata->geomId, odeBody);
-		Transform3D<> gt3d = wTb*gdata->t3d;
-		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
-
-		_frameToOdeGeoms[rbody->getBodyFrame()] = gdata->geomId;
-	}
-
-    BOOST_FOREACH(Frame* frame, rwbody->getFrames()){
-        RW_DEBUGS( "(FB) --> Adding frame: " << frame->getName() );
-        _rwFrameToODEBody[frame] = odeBody;
-    }
-
-	_odeBodies.push_back(odeBody);
-	return odeBody;
-}
 
 namespace {
 
@@ -1083,6 +739,7 @@ namespace {
 
 
 }
+
 
 void ODESimulator::initPhysics(rw::kinematics::State& state)
 {
@@ -1205,6 +862,8 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     RW_DEBUGS( "- RESETTING SCENE " );
 	resetScene(state);
 }
+
+/*
 ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::State& state, dSpaceID spaceid)
 {
     ODEBody *odeBody = NULL;
@@ -1222,12 +881,61 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
     }
     return odeBody;
 }
+*/
 
 void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
-    createBody(body.get(), state, _spaceId );
-    //body->getInfo().print();
+
+    ODEBody *odeBody = NULL;
+    if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
+        odeBody = ODEBody::makeRigidBody(rbody, _spaceId, this);
+        _bodies.push_back(odeBody->getBodyID());
+        dBodySetAutoDisableFlag(odeBody->getBodyID(), 0);
+    } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body.get() ) ) {
+        odeBody = ODEBody::makeKinematicBody(kbody, _spaceId, this);
+        _bodies.push_back(odeBody->getBodyID());
+    } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body.get() ) ) {
+        odeBody = ODEBody::makeFixedBody(fbody, _spaceId, this);
+    } else {
+        RW_WARN("Unsupported body type, name: " << body->getName() );
+        return;
+    }
+    _odeBodies.push_back(odeBody);
 }
 
+void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
+
+    Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
+    rwsim::dynamics::DynamicDevice *device = dev.get();
+    State state = nstate;
+
+    // TODO: we need to find or create the base of the device
+
+    ODEBody* base;
+
+    JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
+    if(jdev!=NULL){
+        Q offsets = Q::zero( jdev->getQ(state).size() );
+        jdev->setQ( offsets , state );
+    }
+
+    if( RigidDevice* rdev = dynamic_cast<RigidDevice*>( device ) ){
+        RW_DEBUGS("RigidDevice");
+        ODEVelocityDevice* vdev = new ODEVelocityDevice(base, rdev, state, this);
+        _odeDevices.push_back(vdev);
+    } else  if( KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device ) ){
+        RW_DEBUGS("KinematicDevice");
+        ODEKinematicDevice *odekdev = new ODEKinematicDevice( kdev, state, this);
+        _odeDevices.push_back(odekdev);
+    } else if( SuctionCup* scup = dynamic_cast<SuctionCup*>( device ) ) {
+        // make ODE suction cup simulation
+        ODESuctionCupDevice *scup_ode = new ODESuctionCupDevice(base, scup , this, state);
+        _odeDevices.push_back(scup_ode);
+    } else {
+        RW_WARN("Controller not supported!");
+    }
+
+}
+#ifdef xdssdf
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
     Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
     rwsim::dynamics::DynamicDevice *device = dev.get();
@@ -1306,7 +1014,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
          RW_DEBUGS("BASE:" << base->getName() << "<--" << base->getParent()->getName() );
 
          size_t i =0;
-         BOOST_FOREACH(RigidJoint *rjoint, fDev->getBodies() ){
+         BOOST_FOREACH(RigidJoint *rjoint, fDev->getLinks() ){
              Joint *joint = rjoint->getJoint();
              Frame *parent = joint->getParent(state);
              RW_DEBUGS(parent->getName() << "<--" << joint->getName());
@@ -1396,8 +1104,6 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
                   dJointSetAMotorParam(motor,dParamFMax, 20/*maxForce(i)*/ );
                   dJointSetAMotorParam(motor,dParamVel,0);
 
-
-
                   ODEJoint *odeOwner = _jointToODEJoint[owner];
                   ODEJoint *odeJoint = new ODEJoint( ODEJoint::Revolute, hinge, motor,  odeChild->getBodyID(),
                                                      odeOwner, rframe ,
@@ -1476,18 +1182,9 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
          _odeDevices.push_back( new ODEVelocityDevice(fDev, odeJoints, maxForce) );
 
 
-     } else  if( dynamic_cast<KinematicDevice*>( device ) ){
+     } else  if( KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device ) ){
          RW_DEBUGS("KinematicDevice");
-         // TODO: create all joints and make them kinematic
-         KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device );
-         dSpaceID space = dHashSpaceCreate( _spaceId );
-         std::vector<dBodyID> kDevBodies;
-         BOOST_FOREACH(KinematicBody *kbody, kdev->getBodies() ){
-             dBodyID odeBodyID = createKinematicBody(kbody, state, space)->getBodyID();
-             kDevBodies.push_back(odeBodyID);
-         }
-
-         ODEKinematicDevice *odekdev = new ODEKinematicDevice( kdev, kDevBodies);
+         ODEKinematicDevice *odekdev = new ODEKinematicDevice( kdev, _spaceId);
          _odeDevices.push_back(odekdev);
      } else if( SuctionCup* scup = dynamic_cast<SuctionCup*>( device ) ) {
          RW_WARN("Creating suction cup!");
@@ -1502,7 +1199,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
          RW_WARN("Controller not supported!");
      }
 }
-
+#endif
 void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state){
 	_sensors.push_back(sensor);
 

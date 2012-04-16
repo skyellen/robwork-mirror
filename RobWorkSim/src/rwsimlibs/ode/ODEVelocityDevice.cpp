@@ -17,16 +17,20 @@
 
 #include "ODEVelocityDevice.hpp"
 
-#include "ODEJoint.hpp"
-#include <ode/ode.h>
 
 #include <rw/math/MetricUtil.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 #include <boost/foreach.hpp>
-#include <rw/models/DependentPrismaticJoint.hpp>
+
+#include "ODESimulator.hpp"
+#include "ODEJoint.hpp"
+
+#include <ode/ode.h>
 
 using namespace rw::math;
 using namespace rw::kinematics;
+using namespace rw::models;
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 
@@ -37,7 +41,7 @@ namespace {
     }
 
 }
-
+/*
 ODEVelocityDevice::ODEVelocityDevice(
             RigidDevice *rdev,
             std::vector<ODEJoint*> odeJoints,
@@ -48,7 +52,7 @@ ODEVelocityDevice::ODEVelocityDevice(
 {
 
 }
-
+*/
 ODEVelocityDevice::~ODEVelocityDevice(){};
 
 void ODEVelocityDevice::reset(rw::kinematics::State& state){
@@ -148,12 +152,9 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             double averr = aerr/dt; // velocity that will cancel the error
 
             RW_ASSERT(_odeJoints[i]);
-            RW_ASSERT(_odeJoints[i]->getRigidJoint());
-            //RW_ASSERT(_odeJoints[i]->getRigidJoint()->getJoint());
             rw::models::DependentPrismaticJoint* depJoint = NULL;
-
-            if(_odeJoints[i]->getRigidJoint()->getJoint()!=NULL)
-                depJoint = dynamic_cast<rw::models::DependentPrismaticJoint*>(_odeJoints[i]->getRigidJoint()->getJoint());
+            if(_odeJoints[i]->getJoint()!=NULL)
+                depJoint = dynamic_cast<rw::models::DependentPrismaticJoint*>(_odeJoints[i]->getJoint());
 
             if( depJoint!=NULL ){
                 // specific PG70 solution
@@ -220,6 +221,128 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
     //std::cout << "ActVel1: " << actualVel << std::endl;
     //std::cout << "ActVel2: " << myActVel << std::endl;
 }
+
+
+
+ODEVelocityDevice::ODEVelocityDevice(
+            ODEBody *base,
+            RigidDevice *rdev,
+            const rw::kinematics::State& state,
+            ODESimulator *sim
+        ):
+        _rdev(rdev),
+        _sim(sim)
+{
+
+     // we use hashspace here because devices typically have
+     // relatively few bodies
+     dSpaceID space = dHashSpaceCreate( sim->getODESpace() );
+
+
+/*
+     // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
+     Body *baseBody = _rdev->getBase();
+     Frame *base = baseBody->getBodyFrame();
+
+     // Check if the parent of base has been added to the ODE world,
+     // if not create a fixed body whereto the base can be attached
+
+     Frame *baseParent = base->getParent();
+     dBodyID baseParentBodyID = 0;
+     if(_rwFrameToODEBody.find(baseParent) == _rwFrameToODEBody.end()){
+         //RW_WARN("No parent data available, connecting base to world!");
+         dBodyID baseParentBodyId = dBodyCreate(_worldId);
+         ODEUtil::setODEBodyT3D(baseParentBodyId, Kinematics::worldTframe(baseParent,state));
+         baseParentBodyID = 0;
+         //_rwFrameToODEBody[baseParent] = baseParentBodyId;
+         _rwFrameToODEBody[baseParent] = 0;
+     } else {
+         baseParentBodyID = _rwFrameToODEBody[baseParent]->getBodyID();
+     }
+
+     // now create the base
+     ODEBody *baseODEBody = createBody(baseBody, state, space);
+
+     // and connect the base to the parent using a fixed joint if the base is rigid
+     // we only do this if the parent is another body, NOT if its the world
+     if( dynamic_cast<RigidBody*>(baseBody) ){
+         if(_rwFrameToODEBody[baseParent]!=0){
+             dJointID baseJoint = dJointCreateFixed(_worldId, 0);
+             dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
+             dJointSetFixed(baseJoint);
+             std::string name = _rwFrameToODEBody[baseParent]->getRwBody()->getBodyFrame()->getName();
+             RW_DEBUGS("BASE: connecting base to body: "<<name);
+         } else  {
+             RW_DEBUGS("BASE: connecting base to world");
+
+         }
+     }
+     */
+     init(rdev, state, space, base);
+}
+namespace {
+      void addToMap(ODEBody* b, std::map<Frame*, ODEBody*>& frameToODEBody){
+          std::vector<Frame*> frames = b->getRwBody()->getFrames();
+          BOOST_FOREACH(Frame* f, frames){
+              frameToODEBody[f] = b;
+          }
+      }
+
+}
+void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &state, dSpaceID spaceId, ODEBody* baseODEBody)
+{
+     dBodyID baseBodyID = baseODEBody->getBodyID();
+     std::map<Frame*, ODEBody*> frameToODEBody;
+
+     addToMap(baseODEBody, frameToODEBody);
+
+     // first we create rigid bodies from all of the links of the RigidDevice
+     std::vector<ODEBody*> ode_bodies;
+     BOOST_FOREACH(Body* body, rdev->getLinks()){
+         ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
+         ode_bodies.push_back(odebody);
+     }
+
+     std::vector<ODEJoint*> odeJoints;
+     Q maxForce = rdev->getForceLimit();
+     //RW_DEBUGS("BASE:" << base->getName() << "<--" << base->getParent()->getName() );
+
+     size_t i =0;
+     rw::models::JointDevice::Ptr jdev = rdev->getJointDevice();
+     BOOST_FOREACH(Joint *joint, jdev->getJoints() ){
+         Frame *parent = joint->getParent(state);
+         Frame *child = joint;
+         // find the body or joint belonging to parent
+         //std::cout << parent->getName() << "<--" << joint->getName() << std::endl;
+
+         ODEBody *odeParent = odeParent = frameToODEBody[parent];
+         ODEBody *odeChild = frameToODEBody[child];
+
+         if(odeParent==NULL ){
+             RW_THROW("ODEParent is NULL, " << child->getName() << "-->"<< parent->getName());
+         }
+         if(odeChild==NULL ){
+             RW_THROW("ODEChild is NULL, " << child->getName() << "-->" << parent->getName());
+         }
+
+         Transform3D<> wTchild = Kinematics::worldTframe(child,state);
+         Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+         Vector3D<> hpos = wTchild.P();
+         //Transform3D<> wTparent = Kinematics::WorldTframe(parentFrame,initState);
+
+         std::pair<Q, Q> posBounds = joint->getBounds();
+         ODEJoint *odeJoint = new ODEJoint(joint, odeParent, odeChild, _sim, state);
+         odeJoint->setMaxForce( maxForce(i) );
+         _odeJoints.push_back( odeJoint );
+          i++;
+     }
+}
+
+
+
+
+
+
 /*
 ODEVelocityDevice* ODEVelocityDevice::makeDevice(RigidDevice *rdev,
 												 dBodyID base,
@@ -230,13 +353,13 @@ ODEVelocityDevice* ODEVelocityDevice::makeDevice(RigidDevice *rdev,
     jdev->setQ( offsets , initState );
 
     std::vector<ODEJoint*> odeJoints;
-    Q maxForce = fDev->getForceLimit();
+    Q maxForce = rDev->getForceLimit();
     // std::cout  << "Max force: " << maxForce << std::endl;
     // std::cout  << "Nr of Joints " << jdev->getDOF()<< std::endl;
     Frame *rwBase = rDev->getModel().getBase();
 
     size_t i =0;
-    BOOST_FOREACH(RigidJoint *rjoint, fDev->getBodies() ){
+    BOOST_FOREACH(RigidJoint *rjoint, rDev->getBodies() ){
         Frame *joint = &rjoint->getFrame();
         Frame *parent = joint->getParent(initState);
         //std::cout  << parent->getName() << "-->" << joint->getName() << std::endl;

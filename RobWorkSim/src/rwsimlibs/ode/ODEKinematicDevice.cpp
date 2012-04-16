@@ -19,7 +19,7 @@
 
 #include "ODEJoint.hpp"
 #include "ODEUtil.hpp"
-
+#include "ODESimulator.hpp"
 #include <ode/ode.h>
 #include <boost/foreach.hpp>
 #include <rw/math/Math.hpp>
@@ -39,20 +39,24 @@ namespace {
 
 }
 
-ODEKinematicDevice::ODEKinematicDevice(KinematicDevice *kdev, const std::vector<dBodyID>& odeBodies):
-        _kdev(kdev),
-        _kbodies(odeBodies)
+ODEKinematicDevice::ODEKinematicDevice(dynamics::KinematicDevice *kdev,
+                                       const rw::kinematics::State& state,
+                                       ODESimulator *sim):
+                                       _kdev(kdev)
 {
-	// TODO: create the necesary bodies here
-    /*BOOST_FOREACH(KinematicBody *kbody, bodies ){
-        Frame &bframe = kbody->getBodyFrame();
-    }*/
+    // ODE does not support kinematic joints.. instead all bodies are kinematic
+    // and their velocity must be controlled based on the
+    dSpaceID space = dHashSpaceCreate( sim->getODESpace() );
+    BOOST_FOREACH(Body *kbody, kdev->getLinks() ){
+        _bodies.push_back( ODEBody::makeKinematicBody(kbody, space, sim) );
+        _kbodies.push_back( _bodies.back()->getBodyID() );
+    }
 }
 
 ODEKinematicDevice::~ODEKinematicDevice(){};
 
 void ODEKinematicDevice::reset(rw::kinematics::State& state){
-    std::vector<KinematicBody*> bodies = _kdev->getBodies();
+    std::vector<Body*> bodies = _kdev->getLinks();
     for(size_t i = 0; i<_kbodies.size(); i++){
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bodies[i]->getBodyFrame(), state);
         wTb.P() += wTb.R()*bodies[i]->getInfo().masscenter;
@@ -112,11 +116,11 @@ void ODEKinematicDevice::update(double dt, rw::kinematics::State& state){
     std::cout << "get velocity!" << std::endl;
     Q velQ = _kdev->getVelocity(state);
     std::cout << "= "<< velQ << std::endl;
-    std::cout << _kdev->getBodies().size()<< "==" << velQ.size() << std::endl;
-    std::cout << _kdev->getBodies().size()<< "==" <<_kbodies.size() << std::endl;
+    std::cout << _kdev->getLinks().size()<< "==" << velQ.size() << std::endl;
+    std::cout << _kdev->getLinks().size()<< "==" <<_kbodies.size() << std::endl;
 
-    RW_ASSERT(_kdev->getBodies().size()==velQ.size());
-    RW_ASSERT(_kdev->getBodies().size()==_kbodies.size());
+    RW_ASSERT(_kdev->getLinks().size()==velQ.size());
+    RW_ASSERT(_kdev->getLinks().size()==_kbodies.size());
     std::cout << "KinematicDevice update.." << std::endl;
 
     std::cout << "Update state!" << std::endl;
@@ -155,7 +159,7 @@ void ODEKinematicDevice::update(double dt, rw::kinematics::State& state){
 */
 
 
-	    KinematicBody *kbody = _kdev->getBodies()[i];
+	    Body *kbody = _kdev->getLinks()[i];
         // we calculate the difference between the current pose of the joint
 	    // and the destination of the joint
 	    Transform3D<> wTj = ODEUtil::getODEBodyT3D(_kbodies[i]);

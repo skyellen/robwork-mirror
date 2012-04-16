@@ -38,7 +38,7 @@ namespace {
     }
 
 }
-
+#ifdef zkdaslkdiasdn
 RigidJoint::RigidJoint(
     const BodyInfo& info,
     rw::models::Joint* joint,
@@ -111,3 +111,4 @@ void RigidJoint::reset(rw::kinematics::State &state){
 //    _wTp = rw::kinematics::Kinematics::WorldTframe( &_parent, state);
     _pTw = inverse( _wTp );
 }
+#endif

@@ -91,6 +91,9 @@ namespace control {
 		//! @copydoc JointController::getQd
 		rw::math::Q getQd(){ return _currentVel;}
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
 	private:
 		RigidDevice *_ddev;
 		double _time;
@@ -101,7 +104,7 @@ namespace control {
 		rw::math::Q _maxVel;
 		rw::math::Q _x;
 		int _mode;
-
+		bool _enabled;
 
 	};
 	//! @}

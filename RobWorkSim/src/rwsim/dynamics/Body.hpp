@@ -239,6 +239,37 @@ namespace dynamics {
         virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const = 0;
 
         /**
+         * @brief returns the linear velocity described in parent frame
+         */
+        virtual rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        }
+
+        /**
+         * @brief returns the angular velocity described in parent frame
+         */
+        virtual rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        }
+
+        /**
+         * @brief returns the linear velocity described in world frame
+         */
+        rw::math::Vector3D<> getLinVelW(const rw::kinematics::State& state) const {
+            return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getLinVel(state);
+        }
+
+        /**
+         * @brief returns the angular velocity described in world frame
+         */
+        rw::math::Vector3D<> getAngVelW(const rw::kinematics::State& state) const {
+            return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getAngVel(state);
+        }
+
+
+
+
+        /**
          * @brief reset the state variables of this body
          */
         virtual void reset(rw::kinematics::State &state) = 0;

@@ -1,3 +1,6 @@
+INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIRS} )
+LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS})
+
 ################################################################
 # first compile the general stuff into a static gui lib
 SET(FILES_UI 

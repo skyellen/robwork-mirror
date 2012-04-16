@@ -74,6 +74,10 @@ namespace control {
 
 		std::string getControllerName(){ return getName(); };
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
+
 		////// inherited from JointController
 
 		/**
@@ -115,6 +119,7 @@ namespace control {
 		double _stime, _accTime; // sample time
 		rw::math::Q  _P, _D, _qError;
 		std::vector<SpringParam> _springParams;
+		bool _enabled;
 	};
 
 	//! @}

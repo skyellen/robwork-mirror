@@ -17,47 +17,33 @@
 
 #include "ODEBody.hpp"
 
-#include "ODEUtil.hpp"
-
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
+
+#include "ODEUtil.hpp"
+#include "ODESimulator.hpp"
 
 #include <ode/ode.h>
 
 using namespace rw::kinematics;
 using namespace rw::math;
+using namespace rw::geometry;
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rwsim;
 
 
-ODEBody::ODEBody(dBodyID odeBody,
-            RigidBody* rwbody,
-            rw::math::Vector3D<> offset, int matID, int conID):
+ODEBody::ODEBody(dBodyID odeBody, RigidBody* rwbody,
+                 rw::math::Vector3D<> offset, int matID, int conID):
+                _mframe(rwbody->getMovableFrame()),
                 _bodyId(odeBody),
                 _body(rwbody),
                 _rwBody(rwbody),
-                _mframe(rwbody->getMovableFrame()),
+                _kBody(NULL),
                 _offset(offset),
                 _rwframe(_mframe),
                 _type(ODEBody::RIGID),
-                _contactReductionThreshold(0.005),// 1cm
-                _materialID(matID),
-                _contactID(conID)
-{
-    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
-}
-
-ODEBody::ODEBody(dBodyID odeBody,
-            RigidJoint* rwbody,
-            rw::math::Vector3D<> offset, int matID, int conID):
-                _bodyId(odeBody),
-                _body(rwbody),
-                _rwBody(NULL),
-                _offset(offset),
-                _type(ODEBody::RIGIDJOINT),
-                _rwframe(rwbody->getBodyFrame()),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
                 _contactID(conID)
@@ -70,10 +56,10 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 				_bodyId(odeBody),
 				_body(kbody),
 				_rwBody(NULL),
-                _offset(0,0,0),
 				_kBody(kbody),
-                _type(ODEBody::KINEMATIC),
+                _offset(0,0,0),
 				_rwframe(kbody->getBodyFrame()),
+				_type(ODEBody::KINEMATIC),
 				_contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
                 _contactID(conID)
@@ -85,6 +71,8 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, 
                 _mframe(NULL),
                 _bodyId(0), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
+                _rwBody(NULL),
+                _kBody(NULL),
                 _rwframe(body->getBodyFrame()),
                 _type(ODEBody::FIXED),
                 _contactReductionThreshold(0.005),// 1cm
@@ -92,6 +80,22 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, 
                 _contactID(conID),
                 _geomId(geomIds[0]),
                 _geomIds(geomIds)
+{
+    _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
+}
+
+ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> offset, int matID, int conID, ODEBodyType type):
+                _mframe(NULL),
+                _bodyId(0), // a fixed object in ODE is allways part of the 0 body
+                _body(body),
+                _rwBody(NULL),
+                _kBody(NULL),
+                _rwframe(body->getBodyFrame()),
+                _type( type ),
+                _contactReductionThreshold(0.005),// 1cm
+                _materialID(matID),
+                _contactID(conID),
+                _offset(offset)
 {
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
@@ -126,6 +130,7 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
 
     }
     break;
+    /*
     case(ODEBody::RIGIDJOINT): {
         Vector3D<> f = _body->getForceW( state );
         Vector3D<> t = _body->getTorqueW( state );
@@ -135,6 +140,7 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
         dBodySetTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
     }
     break;
+    */
     default:
         RW_WARN("UNSUPPORTED ODEBody type");
         break;
@@ -183,27 +189,71 @@ void ODEBody::postupdate(rw::kinematics::State& state){
 
     }
     break;
-    case(ODEBody::RIGIDJOINT): {
-        // reset force accumulation
-        _body->setForce( Vector3D<>::zero(), state );
-        _body->setTorque( Vector3D<>::zero(), state );
-    }
-    break;
     default:
         RW_WARN("UNSUPPORTED ODEBody type");
         break;
     }
 }
 
+void ODEBody::setTransform(const rw::math::Transform3D<>& wTbody){
+    if(_type==FIXED){
+        // fixed object only has geometries. These may be offset individually
+        BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
+            Transform3D<> gt3d = wTbody * gdata->t3d;
+            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        }
+    } else {
+        Transform3D<> wTcom = wTbody;
+        wTcom.P() += wTbody.R()*_offset;
+        ODEUtil::setODEBodyT3D( _bodyId, wTcom );
+    }
+}
+
+void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
+    if(_type==FIXED){
+        // fixed object only has geometries. These may be offset individually
+        BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
+            Transform3D<> gt3d = wTcom * gdata->t3d;
+            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        }
+    } else {
+        ODEUtil::setODEBodyT3D( _bodyId, wTcom );
+    }
+}
+
+rw::math::Transform3D<> ODEBody::getTransform(){
+    if(_type==FIXED){
+        if(_triGeomDatas.size()>0){
+            Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
+            return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
+        }
+        return ODEUtil::getODEGeomT3D(_geomId);
+    } else {
+        rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
+        wTb.P() -= wTb.R()*_offset;
+        return wTb;
+    }
+}
+
+rw::math::Transform3D<> ODEBody::getTransformCOM(){
+    if(_type==FIXED){
+        if(_triGeomDatas.size()>0){
+            Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
+            return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
+        }
+        return ODEUtil::getODEGeomT3D(_geomId);
+    } else {
+        rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
+        return wTb;
+    }
+}
+
+
+
 void ODEBody::bodyChangedListener(dynamics::Body::BodyEventType eventtype){
     std::cout << "BODY Changed event"  << std::endl;
     switch(_type){
     case(ODEBody::RIGID): {
-        BodyInfo info = _rwBody->getInfo();
-        ODEUtil::setODEBodyMass(_bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
-    }
-    break;
-    case(ODEBody::RIGIDJOINT): {
         BodyInfo info = _rwBody->getInfo();
         ODEUtil::setODEBodyMass(_bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
     }
@@ -230,13 +280,6 @@ void ODEBody::reset(const rw::kinematics::State& state){
     	Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _mframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
-    }
-    break;
-    case(ODEBody::RIGIDJOINT): {
-    	//std::cout << "Reset rigid joint" << std::endl;
-    	//Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
-        //wTb.P() += wTb.R()*_offset;
-        //ODEUtil::setODEBodyT3D( _bodyId, wTb );
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -266,4 +309,168 @@ void ODEBody::reset(const rw::kinematics::State& state){
         dBodySetAngularVel( _bodyId, 0, 0, 0 );
         dBodySetLinearVel( _bodyId, 0, 0, 0 );
 	}
+}
+
+
+ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESimulator* sim){
+
+    const BodyInfo& info = rwbody->getInfo();
+    std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceId, false);
+
+    if(gdatas.size()==0){
+        RW_WARN("Body: "<< rwbody->getBodyFrame()->getName() << " has no geometry!");
+    }
+
+    Vector3D<> mc = info.masscenter;
+    // create the body and initialize mass, inertia and stuff
+
+    dBodyID bodyId = dBodyCreate( sim->getODEWorldId() );
+    //ODEUtil::setODEBodyT3D(bodyId, rwbody->wTcom(state) );
+    ODEUtil::setODEBodyMass(bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
+
+    int mid = sim->getMaterialMap().getDataID( info.material );
+    int oid = sim->getContactMap().getDataID( info.objectType );
+
+    ODEBody *odeBody=0;
+
+    // now if the rwbody is of type RigidBody then use this
+    if(RigidBody *rbody = dynamic_cast<RigidBody*>(rwbody)){
+        odeBody = new ODEBody(bodyId, rbody, info.masscenter, mid, oid);
+        dBodySetData (bodyId, (void*)odeBody);
+
+    // } else if( ) {  // add more body types here
+
+    } else {
+        odeBody = new ODEBody(bodyId, rwbody, info.masscenter, mid, oid, ODEBody::RIGIDODE);
+        dBodySetData (bodyId, (void*)odeBody);
+    }
+
+    // check if body frame has any properties that relate to ODE
+    if( rwbody->getBodyFrame()->getPropertyMap().has("LinearDamping") ){
+        dReal linDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("LinearDamping");
+        dBodySetLinearDamping(bodyId, linDamp);
+    }
+    if( rwbody->getBodyFrame()->getPropertyMap().has("AngularDamping") ){
+        dReal angDamp = rwbody->getBodyFrame()->getPropertyMap().get<double>("AngularDamping");
+        dBodySetAngularDamping(bodyId, angDamp);
+    }
+
+    // now associate all geometry with the body
+    BOOST_FOREACH(ODEUtil::TriGeomData* gdata, gdatas){
+        odeBody->getTriGeomData().push_back(gdata);
+        //Vector3D<> mc = gdata->t3d.R() * bmc;
+        dGeomSetBody(gdata->geomId, bodyId);
+        dGeomSetData(gdata->geomId, odeBody);
+        //_frameToOdeGeoms[rwbody->getBodyFrame()] = gdata->geomId;
+        // the geom must be attached to body before offset is possible
+        dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
+        dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
+    }
+    dBodySetMaxAngularSpeed(bodyId, 10);
+
+    //_rwODEBodyToFrame[odeBody] = rwbody->getBodyFrame();
+    //_rwFrameToODEBody[rwbody->getBodyFrame()] = odeBody;
+    //BOOST_FOREACH(Frame* frame, rwbody->getFrames()){
+        //std::cout  << "--> Adding frame: " << frame->getName() << std::endl;
+    //    _rwFrameToODEBody[frame] = odeBody;
+    //}
+
+    return odeBody;
+}
+
+
+ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator *sim)
+{
+    RW_ASSERT(kbody!=NULL);
+
+    BodyInfo info = kbody->getInfo();
+
+    // create a triangle mesh for all statically connected nodes
+    std::vector<Geometry::Ptr> geoms = kbody->getGeometry();
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceid, false);
+    // if no triangles was loaded then continue
+    if( gdatas.size()==0 ){
+        RW_WARN("No triangle mesh defined for this body: " << kbody->getBodyFrame()->getName());
+    }
+
+    Vector3D<> mc = info.masscenter;
+    //Transform3D<> wTb = Kinematics::worldTframe(kbody->getBodyFrame(), state);
+    //wTb.P() += wTb.R()*mc;
+
+    dBodyID bodyId = dBodyCreate( sim->getODEWorldId() );
+    dBodySetKinematic(bodyId);
+    //ODEUtil::setODEBodyT3D(bodyId, wTb);
+
+    int mid = sim->getMaterialMap().getDataID( info.material );
+    int oid = sim->getContactMap().getDataID( info.objectType );
+    ODEBody *odeBody;
+    if( KinematicBody* rwkbody = dynamic_cast<KinematicBody*>(kbody) ){
+        odeBody = new ODEBody(bodyId, rwkbody, mid , oid);
+    } else {
+        odeBody = new ODEBody(bodyId, kbody, mc,  mid , oid, ODEBody::KINEMATIC);
+    }
+
+    //_odeBodies.push_back(odeBody);
+    dBodySetData (bodyId, odeBody);
+    //_allbodies.push_back(bodyId);
+    //_rwODEBodyToFrame[odeBody] = kbody->getBodyFrame();
+    //_rwFrameToODEBody[kbody->getBodyFrame()] = odeBody;
+
+    BOOST_FOREACH(ODEUtil::TriGeomData* gdata, gdatas){
+        odeBody->getTriGeomData().push_back(gdata);
+
+        dGeomSetBody(gdata->geomId, bodyId);
+        dGeomSetData(gdata->geomId, odeBody);
+
+        //_frameToOdeGeoms[kbody->getBodyFrame()] = gdata->geomId;
+
+        // set position and rotation offset of the geometry relative to the body
+        dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
+        dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
+    }
+
+    //BOOST_FOREACH(Frame* frame, kbody->getFrames()){
+    //    RW_DEBUGS( "(KB) --> Adding frame: " << frame->getName() );
+    //    _rwFrameToODEBody[frame] = odeBody;
+    //}
+    return odeBody;
+}
+
+ODEBody* ODEBody::makeFixedBody(Body* rwbody, dSpaceID spaceid, ODESimulator *sim)
+{
+    const BodyInfo& info = rwbody->getInfo();
+    //FixedBody *rbody = dynamic_cast<FixedBody*>( rwbody );
+    //if(rbody==NULL)
+    //    RW_THROW("Not a fixed body!");
+    // create a triangle mesh for all statically connected nodes
+    std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, sim->getODESpace(), false);
+    // if no triangles was loaded then continue
+    if( gdatas.size()==0 ){
+        RW_WARN("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
+    }
+
+    //Vector3D<> mc = info.masscenter;
+    //Transform3D<> wTb = Kinematics::worldTframe(rbody->getBodyFrame(), state);
+
+    // create vector of geomids
+    std::vector<dGeomID> geomids(gdatas.size());
+    for(size_t i=0; i<gdatas.size(); i++ ){
+        geomids[i] = gdatas[i]->geomId;
+    }
+
+    int mid = sim->getMaterialMap().getDataID( info.material );
+    int oid = sim->getContactMap().getDataID( info.objectType );
+    ODEBody *odeBody = new ODEBody(geomids, rwbody, mid , oid);
+
+    BOOST_FOREACH(ODEUtil::TriGeomData* gdata, gdatas){
+        odeBody->getTriGeomData().push_back(gdata);
+        // set position and rotation of body
+        dGeomSetData(gdata->geomId, odeBody);
+        Transform3D<> gt3d = /*wTb* */ gdata->t3d;
+        ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+    }
+
+    return odeBody;
 }

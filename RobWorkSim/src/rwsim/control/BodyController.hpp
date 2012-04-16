@@ -73,6 +73,9 @@ namespace control {
 
 		std::string getControllerName(){ return getName(); };
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
 
         typedef enum {Pose6DController, TrajectoryController} ControlType;
         struct TargetData {
@@ -99,6 +102,7 @@ namespace control {
 		std::map<rwsim::dynamics::Body*, TargetData> _bodyMap;
 		//std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
 		std::list<rwsim::dynamics::Body*> _bodies;
+		bool _enabled;
 	};
 
 	//! @}

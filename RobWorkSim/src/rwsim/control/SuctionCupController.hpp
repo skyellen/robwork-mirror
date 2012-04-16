@@ -50,6 +50,10 @@ namespace control1 {
         //! @copydoc SimulatedController::getController
         rwlibs::control::Controller* getController();
 
+        void setEnabled(bool enabled){ _enabled = enabled; };
+
+        bool isEnabled(){ return _enabled; } ;
+
     private:
         rwsim::dynamics::SuctionCup::Ptr _dev;
 
@@ -57,7 +61,7 @@ namespace control1 {
         std::vector<Spring> _springs;
         std::vector<std::pair<rwsim::dynamics::Body*,rwsim::dynamics::Body*> > _bodyPairs;
         std::vector<rw::math::Transform3D<> > _bodyTransforms;
-
+        bool _enabled;
 
 
         std::string _name;
