@@ -185,7 +185,7 @@ SET(IS_GNUCXX3 FALSE)
 SET(IS_GNUCXX4 FALSE)
 IF    (${CMAKE_COMPILER_IS_GNUCXX})
 
-  MESSAGE(STATUS "Checking GNUCXX version 3/4 to determine  OpenCV /opt/net/ path")
+  #MESSAGE(STATUS "OpenCV: Checking GNUCXX version 3/4 to determine  OpenCV /opt/net/ path")
   EXEC_PROGRAM(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE CXX_COMPILER_VERSION)
   
   IF   (CXX_COMPILER_VERSION MATCHES ".*3\\.[0-9].*")
