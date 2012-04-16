@@ -21,7 +21,7 @@ ELSE()
     FIND_FILE(ROBWORKDEVEL_FOUND RobWorkSetup.cmake 
         ${RWS_ROOT}/../RobWork/cmake NO_DEFAULT_PATH)
     IF(ROBWORKDEVEL_FOUND)
-        #SET(RW_ROOT ${RWS_ROOT}/../RobWork/)
+        SET(RW_ROOT ${RWS_ROOT}/../RobWork/)
         SET(RobWork_DIR ${RW_ROOT}/cmake)
     ENDIF()
 ENDIF()
