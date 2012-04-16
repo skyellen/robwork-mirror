@@ -89,13 +89,14 @@ QT4_WRAP_CPP(MocSrcFiles RWSimPlugin.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
 IF(RWSIM_HAVE_LUA)
-    SET(RWSIM_LUA_LIB rwsim_lua)
+    SET(RWSIM_LUA_LIB rwsim_lua_s)
 ENDIF()
 
 ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 #ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode ode rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
-Message(" LIBS :  ${ROBWORKSIM_LIBRARIES} ")
+ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode rwsim_gui)
+#Message(" LIBS :  ${ROBWORKSIM_LIBRARIES} ")
 
 
 
