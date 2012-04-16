@@ -18,25 +18,15 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rwsim/rwsim.hpp>
-#include <rwsimlibs/ode/ODESimulator.hpp>
-using namespace rwsim::dynamics;
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
+
 using namespace rwsim::loaders;
-using namespace rwsim::simulator;
 
 BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
 {
     // add loading tests here
     DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load("bumbum");
+
+    loader.load("bumbum");
+
 }
-
-
-BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
-{
-    // add loading tests here
-    DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load("bumbum");
-    ODESimulator *sim = new ODESimulator(dwc);
-}
-

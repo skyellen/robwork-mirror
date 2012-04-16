@@ -1,10 +1,9 @@
 #
 #Set RobWork, RobWorkStudio and RobWorkApp ROOTs
 # 
-set(RW_ROOT ${ROOT}/../RobWork/)
-set(RWS_ROOT ${ROOT}/../RobWorkStudio)
 
-set(RWSIM_USE_RWPHYS ON)
+SET(RWSIM_USE_RWPHYS ON)
+SET(RWSIM_BUILD_TESTS ON)
 #SET(ODE_DIR "C:/local/opende")
 
 #SET(RWSIM_DISABLE_ODE ON)
