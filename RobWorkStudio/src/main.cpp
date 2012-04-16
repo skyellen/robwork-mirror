@@ -48,7 +48,7 @@
     #include <rwslibs/planning/Planning.hpp>
     #include <rwslibs/propertyview/PropertyView.hpp>
     #include <rwslibs/sensors/Sensors.hpp>
-	#include <rwslibs/gtask/GTaskVisPlugin.hpp>
+	//#include <rwslibs/gtask/GTaskVisPlugin.hpp>
 #if RWS_HAVE_LUA
     #include <rwslibs/lua/Lua.hpp>
 #endif
@@ -125,7 +125,7 @@ int main(int argc, char** argv)
                     rwstudio.addPlugin(new rws::PropertyView(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::Planning(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::Sensors(), false, Qt::RightDockWidgetArea);
-					rwstudio.addPlugin(new GTaskVisPlugin(), false, Qt::RightDockWidgetArea);
+					//rwstudio.addPlugin(new GTaskVisPlugin(), false, Qt::RightDockWidgetArea);
 
 
                     #if RWS_HAVE_LUA
