@@ -2,8 +2,7 @@
 
 %{
 #include <rwlibs/swig/ScriptTypes.hpp>
-#include <rws/swig/ScriptTypes.hpp>
-
+//#include <rwslibs/swig/ScriptTypes.hpp>
 #include <rwsimlibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::swig;
@@ -26,7 +25,7 @@ public:
     Vector3D masscenter;
     InertiaMatrix inertia;
     std::string integratorType;
-    std::vector<Frame*> frames;
+    //std::vector<Frame*> frames;
 
     void print() const;
     void print(std::ostream& ostr) const;
