@@ -3,10 +3,6 @@
 # ROBWORKSTUDIO SPECIFIC
 #
 
-
-# We need the location of RobWork
-SET(RW_ROOT ${ROOT}/../RobWork/)
-
 # Enable RWS sandbox
 SET(RWS_BUILD_SANDBOX ON)
 
