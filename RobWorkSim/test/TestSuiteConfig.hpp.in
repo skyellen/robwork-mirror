@@ -1,5 +1,6 @@
 // -*- c++ -*-
 
+#include <cassert>
 #include <string>
 #include <RobWorkConfig.hpp>
 #include <RobWorkSimConfig.hpp>
