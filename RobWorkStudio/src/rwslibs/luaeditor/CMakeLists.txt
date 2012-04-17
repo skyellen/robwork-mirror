@@ -3,7 +3,7 @@ set(SUBSYS_DESC "A jog plugin")
 SET(SUBSYS_DEPS rws rws_lua_s)
 
 SET(build ${RWS_HAVE_LUA})
-RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${RWS_HAVE_LUA})
 RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 RW_ADD_DOC(${SUBSYS_NAME})
 
@@ -17,13 +17,14 @@ IF(build)
         CodeEditor.cpp
         TreeModelCompleter.cpp
         LuaExecutionThread.cpp
-        LuaConsoleWidget.cpp ${UIS_FILES})
+        LuaConsoleWidget.cpp)
     SET(SRC_FILES_HPP LuaEditorWindow.hpp 
         LuaHighlighter.hpp 
         CodeEditor.hpp 
         TreeModelCompleter.hpp
         LuaExecutionThread.hpp
         LuaConsoleWidget.hpp)
+    
     set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
     QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
