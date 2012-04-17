@@ -55,8 +55,9 @@ SET(SrcFiles
 	#SensorOutputGui.cpp
 	#TactilePadItem.cpp
 	TactileSensorDialog.cpp
-    ${UIS_OUT_H}
 )
+
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # The static library to build:
 ADD_LIBRARY(rwsim_gui ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})

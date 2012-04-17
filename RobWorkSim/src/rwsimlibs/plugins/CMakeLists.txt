@@ -61,7 +61,8 @@ TARGET_LINK_LIBRARIES(SimUtilityPlugin ${ROBWORKSIM_LIBRARIES})
 # next compile GraspTableGeneratorPlugin 
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
-SET(SrcFiles GraspTableGeneratorPlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles GraspTableGeneratorPlugin.cpp)
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
 QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp)
@@ -80,7 +81,8 @@ TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${ROBWORKSIM_LIBRARIES})
 # The RW Simulation 
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
-SET(SrcFiles RWSimPlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles RWSimPlugin.cpp)
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
@@ -104,7 +106,8 @@ ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode rwsim_gui)
 # The SimTaskPlugin
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
-SET(SrcFiles SimTaskPlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles SimTaskPlugin.cpp)
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
@@ -124,7 +127,8 @@ TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM
 # The SimTaskVisPlugin
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
-SET(SrcFiles SimTaskVisPlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles SimTaskVisPlugin.cpp)
+set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
