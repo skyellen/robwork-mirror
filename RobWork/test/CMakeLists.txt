@@ -22,6 +22,8 @@ SET(TEST_LIBRARIES
   ${ROBWORK_LIBRARIES}
 )
 
+MESSAGE("TEST libs:  ${TEST_LIBRARIES} ")
+
 SET(MATH_TEST_SRC 
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
