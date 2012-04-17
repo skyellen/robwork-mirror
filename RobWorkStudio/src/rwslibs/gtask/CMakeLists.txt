@@ -13,8 +13,10 @@ IF(build)
     RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     
     # Standard cpp files to compile:
-    SET(SrcFiles GTaskVisPlugin.cpp ${UIS_OUT_H})
-    SET(SRC_FILES_HPP GTaskVisPlugin.hpp ${UIS_OUT_H})
+    SET(SrcFiles GTaskVisPlugin.cpp)
+    SET(SRC_FILES_HPP GTaskVisPlugin.hpp)
+    
+    set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
     # Header files to moc and compile:
     QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
