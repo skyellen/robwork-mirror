@@ -24,7 +24,9 @@ file(GLOB qhull_hdr *.h)
 
 add_library(qhullstatic STATIC ${qhull_src})
 set_property(TARGET qhullstatic PROPERTY OUTPUT_NAME "rw_qhull")
-set_property(TARGET qhullstatic PROPERTY COMPILE_FLAGS "-Wunused-but-set-variable")
+
+# this does not compile on some versions of gcc
+#set_property(TARGET qhullstatic PROPERTY COMPILE_FLAGS "-Wunused-but-set-variable")
  
 INSTALL(TARGETS #qhull 
     qhullstatic 
