@@ -11,8 +11,9 @@
     #include <rwslibs/planning/Planning.hpp>
     #include <rwslibs/propertyview/PropertyView.hpp>
     #include <rwslibs/sensors/Sensors.hpp>
+#ifdef RWS_HAVE_LUA
     #include <rwslibs/lua/Lua.hpp>
-
+#endif
 #endif
 
 #include <rw/rw.hpp>
