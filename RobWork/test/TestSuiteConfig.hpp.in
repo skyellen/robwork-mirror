@@ -1,5 +1,8 @@
 // -*- c++ -*-
 
+// this include is necesary because of missing includes in some version of boost 1.45 (at least)
+#include <cassert>
+
 #include <string>
 #include <RobWorkConfig.hpp>
 
