@@ -14,7 +14,7 @@ IF(build)
     
     # Standard cpp files to compile:
     SET(SrcFiles Sensors.cpp SensorView.cpp)
-    SET(SRC_FILES_HPP Sensors.hpp SensorView.hpp ${UIS_OUT_H})
+    SET(SRC_FILES_HPP Sensors.hpp SensorView.hpp)
     
     set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
