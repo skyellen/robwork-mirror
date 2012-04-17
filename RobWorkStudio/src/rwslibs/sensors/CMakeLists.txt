@@ -13,8 +13,10 @@ IF(build)
     RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     
     # Standard cpp files to compile:
-    SET(SrcFiles Sensors.cpp SensorView.cpp ${UIS_OUT_H})
+    SET(SrcFiles Sensors.cpp SensorView.cpp)
     SET(SRC_FILES_HPP Sensors.hpp SensorView.hpp ${UIS_OUT_H})
+    
+    set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
     # Header files to moc and compile:
     QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
