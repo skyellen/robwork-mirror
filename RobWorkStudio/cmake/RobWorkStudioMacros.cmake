@@ -36,11 +36,13 @@ MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
         #MESSAGE("STATIC:  ${_name} ${_lib_type}")  
         SET(ENV{RWS_PLUGIN_LIBRARIES} "$ENV{RWS_PLUGIN_LIBRARIES}${_name};")
     ENDIF()
-    set_target_properties(${_name} PROPERTIES
-        VERSION ${ROBWORKSTUDIO_VERSION}
-        SOVERSION ${ROBWORKSTUDIO_VERSION_MAJOR}.${ROBWORKSTUDIO_VERSION_MINOR}
-        #DEFINE_SYMBOL "RWAPI_EXPORTS"
-        )
+    IF( NOT( "${_lib_type}" STREQUAL "MODULE" AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) )
+    	set_target_properties(${_name} PROPERTIES
+        	VERSION ${ROBWORKSTUDIO_VERSION}
+        	SOVERSION ${ROBWORKSTUDIO_VERSION_MAJOR}.${ROBWORKSTUDIO_VERSION_MINOR}
+        	#DEFINE_SYMBOL "RWAPI_EXPORTS"
+        	)
+    ENDIF( NOT( "${_lib_type}" STREQUAL "MODULE" AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) )
     #if(USE_PROJECT_FOLDERS)
     #  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
     #endif(USE_PROJECT_FOLDERS)
@@ -49,6 +51,7 @@ MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
+        
 
 endmacro()
 
