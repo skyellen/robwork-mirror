@@ -23,7 +23,7 @@ IF(build)
     # Rcc the files:
     QT4_ADD_RESOURCES(RccSrcFiles gtask_resources.qrc)
 
-    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_FILES})
+    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_FILES})
     RW_ADD_INCLUDES(plugins "rwslibs/gtask" ${SRC_FILES_HPP})
     TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${ROBWORKSTUDIO_LIBRARIES} rw_task rw_proximitystrategies ${ROBWORK_LIBRARIES})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
