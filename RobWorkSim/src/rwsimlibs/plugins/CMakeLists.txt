@@ -14,7 +14,7 @@ QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 # The shared library to build:
 ADD_LIBRARY(RWSimulatorPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(RWSimulatorPlugin ${ROBWORKSIM_LIBRARIES})
+TARGET_LINK_LIBRARIES(RWSimulatorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
 
 
@@ -52,7 +52,7 @@ QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 # The shared library to build:
 ADD_LIBRARY(SimUtilityPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SimUtilityPlugin ${ROBWORKSIM_LIBRARIES})
+TARGET_LINK_LIBRARIES(SimUtilityPlugin rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
 
 
@@ -71,8 +71,8 @@ SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 # The shared library to build:
-ADD_LIBRARY(GraspTableGeneratorPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${ROBWORKSIM_LIBRARIES})
+ADD_LIBRARY(GraspTableGeneratorPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
+TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 
 
 
@@ -94,9 +94,9 @@ IF(RWSIM_HAVE_LUA)
     SET(RWSIM_LUA_LIB rwsim_lua_s)
 ENDIF()
 
-ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
 #ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode ode rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RWSimPlugin rws_luapl rws_sensors rws_planning rws_propertyview rws_playback rws_treeview rws_jog rws_log rws_rwstudioapp rwsim_gui ${RWSIM_LUA_LIB} ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode rwsim_gui)
 #Message(" LIBS :  ${ROBWORKSIM_LIBRARIES} ")
 
@@ -116,7 +116,7 @@ QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
 
-ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
 #ADD_LIBRARY(SimTaskPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 
@@ -137,6 +137,6 @@ QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskVisPlugin.qrc)
 
-ADD_LIBRARY(SimTaskVisPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(SimTaskVisPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
 #ADD_LIBRARY(SimTaskVisPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(SimTaskVisPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})

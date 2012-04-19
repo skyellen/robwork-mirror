@@ -23,7 +23,7 @@ IF(build)
     # Rcc the files:
     QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
         
-    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(plugins "rwslibs/sensors" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()

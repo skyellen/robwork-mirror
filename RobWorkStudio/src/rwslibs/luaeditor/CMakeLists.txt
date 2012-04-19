@@ -31,7 +31,7 @@ IF(build)
     # Rcc the files:
     QT4_ADD_RESOURCES(RccSrcFiles luaresources.qrc)
             
-    RWS_ADD_COMPONENT(${SUBSYS_NAME} components ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+    RWS_ADD_COMPONENT(${SUBSYS_NAME} components ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(components "rwslibs/luaeditor" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 

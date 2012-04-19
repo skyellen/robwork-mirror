@@ -60,4 +60,4 @@ SET(SrcFiles
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # The static library to build:
-ADD_LIBRARY(rwsim_gui ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+ADD_LIBRARY(rwsim_gui ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
