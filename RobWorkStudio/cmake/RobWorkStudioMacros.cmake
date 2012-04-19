@@ -36,6 +36,8 @@ MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
         #MESSAGE("STATIC:  ${_name} ${_lib_type}")  
         SET(ENV{RWS_PLUGIN_LIBRARIES} "$ENV{RWS_PLUGIN_LIBRARIES}${_name};")
     ENDIF()
+    # Set the VERSION and SOVERSION of the library to the RobWorkStudio major and minor versions
+    # On MAC OS we can not do this if we are building a Module (where it does not make much sense anyway)
     IF( NOT( "${_lib_type}" STREQUAL "MODULE" AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) )
     	set_target_properties(${_name} PROPERTIES
         	VERSION ${ROBWORKSTUDIO_VERSION}
