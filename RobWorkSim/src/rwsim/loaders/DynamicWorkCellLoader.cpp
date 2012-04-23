@@ -542,23 +542,23 @@ namespace
     }
 
 
-    JointDevice* getJointDeviceFromAttr(PTree& tree, ParserState &state){
+    JointDevice::Ptr getJointDeviceFromAttr(PTree& tree, ParserState &state){
         //Log::debugLog()<< "Device from attr" << std::endl;
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
-        Device* device = state.wc->findDevice(deviceName).get();
-        if( !device )
+        Device::Ptr device = state.wc->findDevice(deviceName).get();
+        if( device==NULL )
             RW_THROW("Device " << quote(deviceName) << " does not exist in workcell!");
-        JointDevice *jdev = dynamic_cast<JointDevice*>(device);
-        if(!jdev)
+        JointDevice::Ptr jdev = device.cast<JointDevice>();
+        if(jdev==NULL)
             RW_THROW("Device " << quote(deviceName) << " is not a JointDevice!");
         return jdev;
     }
 
-    Device* getDeviceFromAttr(PTree& tree, ParserState &state){
+    Device::Ptr getDeviceFromAttr(PTree& tree, ParserState &state){
         //Log::debugLog()<< "Device from attr" << std::endl;
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
-        Device* device = state.wc->findDevice(deviceName).get();
-        if( !device )
+        Device::Ptr device = state.wc->findDevice(deviceName);
+        if( device==NULL )
             RW_THROW("Device " << quote(deviceName) << " does not exist in workcell!");
         return device;
     }
@@ -662,7 +662,7 @@ namespace
         //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
         std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
-        Device* dev = getDeviceFromAttr(tree, state);
+        Device::Ptr dev = getDeviceFromAttr(tree, state);
 
         if(dev==NULL)
             RW_THROW("No valid is referenced by the SpringJointController.");
@@ -682,7 +682,7 @@ namespace
             params.push_back( sparam );
         }
 
-        DynamicDevice *ddev = findDynamicDevice(state, dev);
+        DynamicDevice *ddev = findDynamicDevice(state, dev.get());
         SpringJointController::Ptr controller = ownedPtr(new SpringJointController(controllername, ddev, params, dt) );
         state.controllers.push_back( controller );
     }
@@ -740,7 +740,7 @@ namespace
 
     KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
-        JointDevice *device = getJointDeviceFromAttr(tree, state);
+        JointDevice::Ptr device = getJointDeviceFromAttr(tree, state);
         std::vector<double> maxForce;
         //std::vector<KinematicBody*> bodies;
 
@@ -752,13 +752,13 @@ namespace
             if( p->first == "KinematicJoint" ){
                 //KinematicBody *body = readBodyInfo(p->second, "joint", framePrefix, state);
                 //bodies.push_back( body );
-                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device.get());
                 bodies.push_back( part );
             } else if( p->first == "Link" ){
-                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device.get());
                 bodies.push_back( part );
 			} else if( p->first == "FixedBase" ){
-				base = readFixedBase(p->second, state, device);
+				base = readFixedBase(p->second, state, device.get());
 			} else if( p->first == "KinematicBase" ){
 				base = readKinematicBody(p->second, "frame", framePrefix, state);
 			} else if(p->first !="<xmlcomment>" && p->first != "<xmlattr>"){
@@ -780,7 +780,7 @@ namespace
 
     RigidDevice* readRigidDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadRigidDevice" << std::endl;
-        JointDevice *device = getJointDeviceFromAttr(tree, state);
+        JointDevice::Ptr device = getJointDeviceFromAttr(tree, state);
         //Q maxForce(device->getDOF());
 
         // first we get the force limits of all joints/constraints
@@ -808,34 +808,43 @@ namespace
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if( p->first == "FixedBase" ){
-            	base = readFixedBase(p->second, state, device);
+            	base = readFixedBase(p->second, state, device.get());
             } else if( p->first == "KinematicBase" ){
 				base = readKinematicBody(p->second, "frame", framePrefix, state);
             } else if( p->first == "RigidBase" ){
             	base = readRigidBody(p->second, framePrefix, state);
             } else if( p->first == "Link" ){
-                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device);
+                std::pair<BodyInfo,Object::Ptr> part = readLink(p->second, state, device.get());
                 bodies.push_back( part );
             } else if( p->first == "RigidJoint" ){
                 // this can be both a link or a constraint or both. Here for backwards compatibility!!!!
-                std::pair<BodyInfo,Object::Ptr> part = readRigidJoint(p->second, state, device);
+                std::pair<BodyInfo,Object::Ptr> part = readRigidJoint(p->second, state, device.get());
                 if(part.second!=NULL){
                     bodies.push_back( part );
                 }
+            } else if( p->first == "ForceLimit" ){
+                // we allready processed this one
             } else if(p->first !="<xmlcomment>" && p->first != "<xmlattr>"){
-                RW_THROW("Unknown element");
+                RW_THROW("Unknown element" << StringUtil::quote(p->first) );
             }
             jIdx++;
         }
         if( !base ){
         	RW_THROW("Parser error - RigidDevice must define a base (FixedBase or KinematicBase)");
         }
+        RW_ASSERT(base!=NULL);
+
+        RW_WARN("1");
         RigidDevice *rigiddev = new RigidDevice(base, bodies, device);
+        RW_WARN("1");
         rigiddev->setForceLimit( Q(maxForce) );
+        RW_WARN("1");
         std::vector<Body*> links = rigiddev->getLinks();
+        RW_WARN("1");
         BOOST_FOREACH(Body *l, links){
             state.allbodies.push_back(l);
         }
+        RW_WARN("1");
         return rigiddev;
     }
 
@@ -929,7 +938,7 @@ namespace
         //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
         std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
-        Device* dev = getDeviceFromAttr(tree, state);
+        Device::Ptr dev = getDeviceFromAttr(tree, state);
 
         if(dev==NULL)
             RW_THROW("No valid is referenced by the PDDeviceController.");
@@ -945,7 +954,7 @@ namespace
             params.push_back( PDParam(params_tmp[2*i],params_tmp[2*i+1]));
         }
 
-        DynamicDevice *ddev = findDynamicDevice(state, dev);
+        DynamicDevice *ddev = findDynamicDevice(state, dev.get());
         if(useSyncPD){
             RW_THROW("Not currently supported!");
             //SyncPDController *controller = new SyncPDController();
@@ -959,7 +968,7 @@ namespace
             //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
             std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
-            Device* dev = getDeviceFromAttr(tree, state);
+            Device::Ptr dev = getDeviceFromAttr(tree, state);
 
             if(dev==NULL)
                 RW_THROW("No valid is referenced by the PoseDeviceController.");
@@ -968,7 +977,7 @@ namespace
 
             double dt = tree.get<double>("TimeStep");
 
-            DynamicDevice *ddev = findDynamicDevice(state, dev);
+            DynamicDevice *ddev = findDynamicDevice(state, dev.get());
             PoseController::Ptr controller = ownedPtr( new PoseController(controllername, ddev, state.wc->getDefaultState(), dt) );
             state.controllers.push_back( controller );
         }

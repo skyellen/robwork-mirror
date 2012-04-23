@@ -4,7 +4,8 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rw/proximity/ProximityStrategyFactory.hpp>
+//#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
 #include <rwlibs/task.hpp>
 #include <fstream>

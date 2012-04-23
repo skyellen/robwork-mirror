@@ -46,16 +46,22 @@ namespace {
         RigidLink( const BodyInfo& info, rw::models::Object::Ptr obj, RigidDevice *ddev, size_t id):
             Body(6,info,obj),_ddev(ddev),_id(id)
         {
+            RW_WARN("2");
             // find the joint index for which this link is attached
             Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
+            RW_WARN("2");
             _jointFrame = firstParentJoint;
+            RW_WARN("2");
             // check which index this joint has in the device
             int idx=0;
+            RW_WARN("2");
             BOOST_FOREACH(Joint* j, _ddev->getJointDevice()->getJoints()){
+                RW_WARN("3");
                 if(firstParentJoint==j){
                     _jointIdx = idx;
                     break;
                 }
+                RW_WARN("3");
                 idx++;
             }
         }
@@ -68,7 +74,7 @@ namespace {
         virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
             // Todo: get joint velocity, and from that calculate the velocity of this body in
             // the joint frame
-
+            return rw::math::VelocityScrew6D<>();
         }
 
          virtual void reset(rw::kinematics::State &state){
@@ -145,7 +151,8 @@ RigidDevice::RigidDevice(dynamics::Body* base,
      DynamicDevice(base,dev),
     _vel( rw::math::Q::zero(dev->getDOF()) ),
     _actualVel( rw::math::Q::zero(dev->getDOF()) ),
-    _force( rw::math::Q::zero(dev->getDOF()) )
+    _force( rw::math::Q::zero(dev->getDOF()) ),
+    _jdev(dev)
 {
     for(size_t i=0;i<objects.size(); i++){
         _links.push_back( new RigidLink(objects[i].first, objects[i].second, this, i) );

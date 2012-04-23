@@ -96,7 +96,7 @@ ENDIF()
 
 ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
 #ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(RWSimPlugin rws_luapl rws_sensors rws_planning rws_propertyview rws_playback rws_treeview rws_jog rws_log rws_rwstudioapp rwsim_gui ${RWSIM_LUA_LIB} ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RWSimPlugin rws_luapl rws_sensors rws_planning rws_propertyview rws_playback rws_treeview rws_jog rws_log rws_rwstudioapp rwsim_ode rwsim_gui ${RWSIM_LUA_LIB} ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
 ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_ode rwsim_gui)
 #Message(" LIBS :  ${ROBWORKSIM_LIBRARIES} ")
 

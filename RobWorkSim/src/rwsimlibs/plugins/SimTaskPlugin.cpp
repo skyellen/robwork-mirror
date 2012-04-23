@@ -2,7 +2,7 @@
 
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
-#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rws/RobWorkStudio.hpp>
 
 #include <rw/graspplanning/GWSMeasure3D.hpp>
@@ -23,6 +23,7 @@ USE_ROBWORKSIM_NAMESPACE
 using namespace robworksim;
 
 using namespace rws;
+using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::simulation;
 using namespace rwlibs::task;
 
