@@ -73,7 +73,9 @@ namespace
 Model3D::Ptr Model3DFactory::getModel(const std::string& str, const std::string& name)
 {
     if (getCache().isInCache(str,"")) {
-    	return getCache().get(str);
+        Model3D::Ptr res = ownedPtr( new Model3D( *getCache().get(str) ) );
+        res->setName( name );
+        return res;
     }
     if (str[0] == '#') {
         return constructFromGeometry(str, name);
@@ -86,11 +88,14 @@ Model3D::Ptr Model3DFactory::getModel(const std::string& str, const std::string&
 Model3D::Ptr Model3DFactory::constructFromGeometry(const std::string& str, const std::string& name, bool useCache)
 {
     if( useCache ){
-    	if (getCache().isInCache(str,""))
-    		return getCache().get(str);
+    	if (getCache().isInCache(str,"")){
+            Model3D::Ptr res = ownedPtr( new Model3D( *getCache().get(str) ) );
+            res->setName( name );
+            return res;
+    	}
     }
 	Geometry::Ptr geometry = GeometryFactory::getGeometry(str);
-	Model3D *model = new Model3D();
+	Model3D *model = new Model3D(name);
 	model->addTriMesh( Model3D::Material("stlmat",0.6f,0.6f,0.6f), *geometry->getGeometryData()->getTriMesh() );
 
     return ownedPtr( model );
@@ -118,7 +123,9 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
 
     std::string moddate = getLastModifiedStr(filename);
     if ( getCache().isInCache(filename, moddate) ) {
-    	return getCache().get(filename);
+        Model3D::Ptr res = ownedPtr( new Model3D( *getCache().get(filename) ) );
+        res->setName( name );
+        return res;
     }
 
     // if not in cache then create new render
@@ -130,7 +137,7 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         PlainTriMeshN1F::Ptr data = STLFile::load(filename);
         //STLFile::save(*data,"test_badstl_stuff.stl");
 
-        Model3D *model = new Model3D();
+        Model3D *model = new Model3D(name);
 
         model->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *data);
         model->optimize(45*rw::math::Deg2Rad);

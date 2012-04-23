@@ -40,7 +40,9 @@ namespace rw { namespace geometry {
         typedef rw::common::Ptr<GeometryData> Ptr;
 
 		//! @brief geometry data types
-		typedef enum {PlainTriMesh,
+		typedef enum {PointCloud,
+		              LineMesh,
+		              PlainTriMesh,
 					  IdxTriMesh,
 					  SpherePrim, BoxPrim, OBBPrim, AABBPrim,
 					  LinePrim, PointPrim, PyramidPrim, ConePrim,

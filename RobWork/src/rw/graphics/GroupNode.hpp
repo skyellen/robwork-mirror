@@ -83,6 +83,13 @@ namespace graphics {
          */
         void removeChild(SceneNode::Ptr node);
 
+        /**
+         * @brief remove node with name \b name from the children list of this node AND removes this
+         * node from the parent list of \b node.
+         * @param node [in] child node that is to be removed
+         */
+        void removeChild(const std::string& name);
+
         //! transform is relative to parent node
         void setTransform(const rw::math::Transform3D<>& t3d);
 

@@ -48,7 +48,7 @@ namespace graphics {
         typedef rw::common::Ptr<Model3D> Ptr;
 
         //! @brief constructor
-        Model3D();
+        Model3D(const std::string& name);
 
         //! @brief destructor
         virtual ~Model3D();
@@ -298,12 +298,20 @@ namespace graphics {
 
         const rw::math::Transform3D<>& getTransform(){ return _transform;};
         void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;};
+
+        const std::string& getName(){ return _name; };
+        void setName(const std::string& name){ _name = name; };
+
+        int getMask(){ return _mask; }
+        void setMask(int mask){ _mask = mask; }
+
     //private:
         rw::math::Transform3D<> _transform;
         std::vector<Material> _materials; // The array of materials
         std::vector<Object3D::Ptr> _objects; // The array of objects in the model
         std::vector<TextureData> _textures;
-
+        std::string _name;
+        int _mask;
         int totalVerts;			// Total number of vertices in the model
         int totalFaces;			// Total number of faces in the model
     };

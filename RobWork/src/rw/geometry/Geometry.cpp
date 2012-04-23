@@ -45,7 +45,8 @@ Geometry::Geometry(GeometryData::Ptr data, double scale):
 	_data(data),
 	_transform(rw::math::Transform3D<>::identity() ),
 	_scale(scale),
-	_name(makeName(data->getType()))
+	_name(makeName(data->getType())),
+	_mask(Geometry::CollisionGroup)
 {
 
 };
@@ -57,7 +58,8 @@ Geometry::Geometry(GeometryData::Ptr data,
 	_data(data),
 	_transform(t3d),
 	_scale(scale),
-	_name(makeName(data->getType()))
+	_name(makeName(data->getType())),
+	_mask(Geometry::CollisionGroup)
 {
 };
 

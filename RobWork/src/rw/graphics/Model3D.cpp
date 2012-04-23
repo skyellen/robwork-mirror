@@ -21,6 +21,7 @@
 #include <boost/foreach.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
+#include <rw/geometry/Geometry.hpp>
 #include <list>
 #include <stack>
 
@@ -29,7 +30,10 @@ using namespace rw::graphics;
 using namespace rw::math;
 using namespace rw::geometry;
 
-Model3D::Model3D(){}
+Model3D::Model3D(const std::string& name):
+        _name(name),
+        _mask(rw::geometry::Geometry::PhysicalGroup)
+{}
 
 Model3D::~Model3D(){}
 

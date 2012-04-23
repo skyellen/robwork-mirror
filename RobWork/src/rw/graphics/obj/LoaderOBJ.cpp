@@ -796,7 +796,7 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
 	//Restore the old locale
 	setlocale(LC_ALL, locale.c_str());
 
-	Model3D::Ptr model( ownedPtr( new Model3D() ) );
+	Model3D::Ptr model( ownedPtr( new Model3D(name) ) );
     Model3D::Object3D *obj = new Model3D::Object3D("OBJModel");
 	int currentMatIdx = model->addMaterial(Model3D::Material("defcol",0.5,0.5,0.5));
     Model3D::MaterialFaces *mface = new Model3D::MaterialFaces();

@@ -56,7 +56,7 @@ namespace rw { namespace loaders {
          * XML as well as TUL workcell formats are supported.
          * @param filename [in] name of workcell file.
          */
-        static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
+        //static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
 
 
     private:

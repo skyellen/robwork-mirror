@@ -15,12 +15,14 @@ SET(FILES_CPP
   SceneGraph.cpp
   SceneNode.cpp
   DrawableNode.cpp
+  DrawableNodeClone.cpp
   GroupNode.cpp
   SceneCamera.cpp
   WorkCellScene.cpp
   SceneViewer.cpp
   ProjectionMatrix.cpp
   Render.cpp  
+  SceneDescriptor.cpp
 )
 
 SET(FILES_HPP
@@ -37,6 +39,7 @@ SET(FILES_HPP
   SceneViewer.hpp
   ProjectionMatrix.hpp
   Render.hpp   
+  DrawableNodeClone.hpp
 )
 
 SOURCE_GROUP(graphics FILES ${FILES_CPP} ${FILES_HPP})

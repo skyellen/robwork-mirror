@@ -26,6 +26,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 #include <rw/graphics/DrawableNode.hpp>
+#include <rw/graphics/DrawableNodeClone.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -52,10 +53,37 @@ namespace
     }
 
     //std::vector<Drawable::Ptr>
-    void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap)
+    void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap, WorkCell::Ptr wc)
     {
-        /*
-        TODO: COLLISION MODEL STUFF
+        // The information of drawables is located in SceneDescriptor and "model::Object"s
+        // first check if there is any object with a frame "frame" in it
+        std::vector<Object::Ptr> objs = wc->getObjects();
+
+        BOOST_FOREACH(Object::Ptr obj, objs){
+            // the collision info is the geometry and visualization is Model3D
+            // in case no models are available the collision geometry will be used
+            std::vector<Geometry::Ptr> geoms = obj->getGeometry();
+            BOOST_FOREACH(Geometry::Ptr geom, geoms){
+                if(geom->getFrame()!=&frame)
+                    continue;
+
+                DrawableGeometryNode::Ptr dnode = scene->makeDrawable(geom->getName(), geom, geom->getMask() );
+                scene->addChild(dnode, node);
+                frameDrawableMap[&frame].push_back( dnode );
+            }
+
+            if(obj->getBase()!=&frame)
+                continue;
+
+            BOOST_FOREACH(Model3D::Ptr model, obj->getModels()){
+                DrawableNode::Ptr dnode = scene->makeDrawable(model->getName(), model, model->getMask() );
+                scene->addChild(dnode, node);
+                frameDrawableMap[&frame].push_back( dnode );
+            }
+
+        }
+/*
+        SceneDescriptor::Ptr scdesc = wc->getSceneDescriptor();
 
         if ( DrawableModelInfo::get(&frame).size()>0 ) {
             // Load the drawable:
@@ -260,15 +288,8 @@ GroupNode::Ptr WorkCellScene::getWorldNode(){
 
 void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
     // here we find all drawables that belong to frames and order them according to translucency
-    //std::cout << "Update scene graph" << std::endl;
-
     _fk.reset(state);
     // first check that the WORLD frame is in the scene, if its not add it
-    /*if( _frameNodeMap.find( _wc->getWorldFrame() )!=_frameNodeMap.end() ){
-        SceneNode::Ptr node = _scene->makeNode();
-        _scene->addNode( node, _scene->getRoot() );
-        _frameNodeMap[_wc->getWorldFrame()] = node;
-    }*/
     _frameNodeMap[ NULL ] = _scene->getRoot(); // for world frame parent
     _nodeFrameMap[_scene->getRoot()] = NULL;
     RW_ASSERT(_scene->getRoot()!=NULL);
@@ -278,6 +299,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
     while(!frames.empty()){
         Frame *frame = frames.top();
         frames.pop();
+        //std::cout << "Frame: " << frame->getName() << std::endl;
         // make sure that the frame is in the scene
         if( _frameNodeMap.find(frame)==_frameNodeMap.end() ){
             GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
@@ -328,7 +350,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
         */
 
         // now for each DrawableInfo on frame check that they are on the frame
-        //addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap);
+        addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap, _wc);
 
         Frame::iterator_pair iter = frame->getChildren(state);
         for(;iter.first!=iter.second; ++iter.first ){
@@ -360,8 +382,10 @@ bool WorkCellScene::isVisible(rw::kinematics::Frame* f){
 }
 
 void WorkCellScene::setHighlighted( bool highlighted, rw::kinematics::Frame* f){
-    if(_frameDrawableMap.find(f)==_frameDrawableMap.end())
+    if(_frameDrawableMap.find(f)==_frameDrawableMap.end()){
+        //std::cout << "frame not found!" << std::endl;
         return;
+    }
 
     _frameStateMap[f].highlighted = highlighted;
 
@@ -381,16 +405,23 @@ void WorkCellScene::setFrameAxisVisible( bool visible, rw::kinematics::Frame* f)
     _frameStateMap[f].frameAxisVisible = visible;
     GroupNode::Ptr node = _frameNodeMap[f];
     if( visible ){
-        if( node->hasChild( _frameAxis ) ){
+        if( node->hasChild( "FrameAxis" ) ){
+            // the frame axis is allready there
             return;
         }
         // if the frame axis is allready on a node, then do nothing, else add it
-        node->addChild(_frameAxis);
+
+        DrawableNodeClone::Ptr dnode = ownedPtr( new DrawableNodeClone("FrameAxis",_frameAxis) );
+        addDrawable(dnode, f);
+        //_frameDrawableMap[f].push_back(dnode);
+        //node->addChild( dnode );
         _scene->update();
-    } else if( !visible && node->hasChild( _frameAxis ) ){
+    } else if( !visible && node->hasChild( "FrameAxis" ) ){
         // remove leaf
-        node->removeChild(_frameAxis);
+        //node->removeChild( "FrameAxis" );
+        removeDrawable("FrameAxis", f);
         _scene->update();
+
     }
 
 }

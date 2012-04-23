@@ -58,6 +58,22 @@ void GroupNode::removeChild(SceneNode::Ptr child){
     }
 }
 
+void GroupNode::removeChild(const std::string& name){
+
+    std::list<SceneNode::Ptr >::iterator iter =_childNodes.begin();
+    for(;iter!=_childNodes.end(); ++iter){
+        if( (*iter)->getName()==name ){
+            break;
+        }
+    }
+    if(iter!=_childNodes.end()){
+        // 1. remove this from the childs parent list
+        removeParent( *iter, this );
+        // 2. erase the child from the child list
+        _childNodes.erase(iter);
+    }
+}
+
 void GroupNode::addChild(SceneNode::Ptr node, AddPolicy policy){
     if(!hasChild(node)){
         if(policy==Back){

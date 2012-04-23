@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,26 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#include "WorkCellLoader.hpp"
-
-#include <rw/loaders/tul/TULLoader.hpp>
-#include <rw/loaders/rwxml/XMLRWLoader.hpp>
-#include <rw/common/StringUtil.hpp>
-#include "WorkCellFactory.hpp"
-
-using namespace rw::loaders;
-using namespace rw::models;
-using namespace rw::common;
-
-WorkCell::Ptr WorkCellLoader::load(const std::string& file)
-{
-    return WorkCellFactory::load(file);
-}
-
-/*
-WorkCell::Ptr WorkCellLoader::load(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene)
-{
-    return WorkCellFactory::load(file, wcscene);
-}
-*/
+#include "DrawableNodeClone.hpp"

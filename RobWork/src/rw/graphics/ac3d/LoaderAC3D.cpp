@@ -94,7 +94,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         AC3DObject *object = load_object(in, NULL, model);
 
         // now convert object to a Model3D
-        Model3D *rwmodel = new Model3D();
+        Model3D *rwmodel = new Model3D(filename);
 
         // first we add all materials
         std::vector<Model3D::Material>& materials = rwmodel->getMaterials();

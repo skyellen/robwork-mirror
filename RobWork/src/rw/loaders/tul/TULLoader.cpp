@@ -839,15 +839,15 @@ namespace
     // model identifiers also.
     void addDrawableModelInfo(Frame& frame)
     {
-    	bool high = false;
-        if (tagPropDrawableHighlight().has(frame))
-            high = true;
+    	//bool high = false;
+        //if (tagPropDrawableHighlight().has(frame))
+        //    high = true;
 
-        bool wiremode = false;
-        if (tagPropDrawableWireMode().has(frame))
-            wiremode = true;
+        //bool wiremode = false;
+        //if (tagPropDrawableWireMode().has(frame))
+        //    wiremode = true;
 
-    	const double geoScale = getOptionalGeoScale(frame);
+    	//const double geoScale = getOptionalGeoScale(frame);
 
         const std::vector<std::string> ids =
             getGeoIDAndAccessorIDs(frame, tagPropDrawableID());

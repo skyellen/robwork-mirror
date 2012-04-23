@@ -34,7 +34,7 @@ using namespace rw::plugin;
 
 namespace {
 
-    WorkCell::Ptr loadFromPlugin(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene){
+    WorkCell::Ptr loadFromPlugin(const std::string& file){
         PluginRepository &prep = rw::RobWork::getInstance()->getPluginRepository();
         std::vector<PluginFactory<WorkCellLoader>::Ptr> loaderPlugins = prep.getPlugins<WorkCellLoader>();
         BOOST_FOREACH(PluginFactory<WorkCellLoader>::Ptr factory, loaderPlugins){
@@ -43,12 +43,6 @@ namespace {
             // TODO: an image loader or factory should be able to tell what formats it supports
             // perhaps a propertymap on the factory interface could be used
             try {
-                RW_WARN("1");
-                if(wcscene!=NULL){
-                    RW_WARN("1");
-                    loader->setScene(wcscene);
-                }
-                RW_WARN("1");
                 WorkCell::Ptr wc = loader->loadWorkCell( file );
                 return wc;
             } catch (...){
@@ -72,9 +66,10 @@ WorkCell::Ptr WorkCellFactory::load(const std::string& file)
     } catch (const std::exception& e){
         std::cout << "Exception: " << e.what() << std::endl;
     }
-    return loadFromPlugin(file, NULL);
+    return loadFromPlugin(file);
 }
 
+/*
 WorkCell::Ptr WorkCellFactory::load(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene)
 {
     const std::string ext = StringUtil::getFileExtension(file);
@@ -91,3 +86,4 @@ WorkCell::Ptr WorkCellFactory::load(const std::string& file, rw::graphics::WorkC
     }
     return loadFromPlugin(file, wcscene);
 }
+*/

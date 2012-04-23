@@ -38,7 +38,7 @@ namespace rw { namespace loaders {
         XMLRWLoader(){};
 
         //! @brief constructor
-        XMLRWLoader(rw::graphics::WorkCellScene::Ptr scene):WorkCellLoader(scene){};
+        //XMLRWLoader(rw::graphics::WorkCellScene::Ptr scene):WorkCellLoader(scene){};
 
         //! @brief destructor
         virtual ~XMLRWLoader(){}

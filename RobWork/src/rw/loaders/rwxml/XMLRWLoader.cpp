@@ -58,7 +58,8 @@
 
 #include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
-
+#include <rw/graphics/SceneDescriptor.hpp>
+#include <rw/graphics/Model3DFactory.hpp>
 #include <stack>
 
 #include <boost/foreach.hpp>
@@ -136,7 +137,7 @@ namespace {
 		ProxSetupList proxsetups;
 		std::map<std::string,Device::Ptr> devMap;
 
-		rw::graphics::WorkCellScene::Ptr scene;
+		rw::graphics::SceneDescriptor::Ptr scene;
 	};
 
     // the parent frame must exist in tree allready
@@ -241,41 +242,52 @@ namespace {
                     break;
             }
 
-
-            if( model._isDrawable && setup.scene!=NULL ){
-
-                //std::vector<DrawableModelInfo> info = DrawableModelInfo::get(modelframe);
-            	//info.push_back(DrawableModelInfo(val.str(),model._name, model._transform));
-            	//DrawableModelInfo::set( info , modelframe);
-            	DrawableNode::Ptr dnode = setup.scene->addDrawable( val.str(), modelframe );
-            	dnode->setName(model._name);
-            	dnode->setTransform(model._transform);
+            Object::Ptr object;
+            if( model._isDrawable || model._colmodel  ){
+                if( setup.objectMap.find(modelframe)==setup.objectMap.end() )
+                    setup.objectMap[modelframe] = ownedPtr( new Object(modelframe) );
+                object = setup.objectMap[modelframe];
             }
-            if( !model._isDrawable || model._colmodel ){
-                Geometry::Ptr geom;
-                try {
-                    geom = GeometryFactory::load( val.str(), true );
-                } catch (const std::exception& e){
-                    // the collison geometry is optional and if no stl files exist for it then we don't create
-                    // a model.
-                    //if( model._colmodel ){
-                        // if the colmodel is explicit then we need to throw an exception
-                        //RW_THROW("The collision model: \"" << val.str() << "\" could not be loaded. Please check that it exists with and has is valid collision model file!");
-                    //}
-                }
-                if(geom!=NULL){
-                    if( setup.objectMap.find(modelframe)==setup.objectMap.end() )
-                        setup.objectMap[modelframe] = ownedPtr( new Object(modelframe) );
-                    Object::Ptr object = setup.objectMap[modelframe];
 
+            //try {
+
+                if( model._colmodel && model._isDrawable ){
+                    // the geom is to be used as both collision geometry and visualization model
+                    // TODO: this could be optimized, share data and such.
+                    Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), model._name);
+                    model3d->setTransform(model._transform);
+                    model3d->setName(model._name);
+                    //model->setFrame(modelframe);
+
+                    Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
                     geom->setName(model._name);
                     geom->setTransform(model._transform);
-                    object->addGeometry(geom);
-                    //std::vector<CollisionModelInfo> info = CollisionModelInfo::get(modelframe);
-                    //info.push_back(CollisionModelInfo(val.str(),model._name, model._transform));
-                    //CollisionModelInfo::set( info, modelframe );
+                    geom->setFrame(modelframe);
+
+                    if(object!=NULL){
+                        object->addModel( model3d );
+                        object->addGeometry( geom );
+                    }
+                } else if( model._colmodel ){
+                    // its only a collision geometry
+                    Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
+                    geom->setName(model._name);
+                    geom->setTransform(model._transform);
+                    geom->setFrame(modelframe);
+                    if(object!=NULL){
+                        object->addGeometry( geom );
+                    }
+                } else if( model._isDrawable ){
+                    // its only a drawable
+                    Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), val.str());
+                    model3d->setName(model._name);
+                    model3d->setTransform(model._transform);
+                    if(object!=NULL){
+                        object->addModel( model3d );
+                    }
                 }
-            }
+            //} catch (const std::exception& e){
+            //}
         }
         return modelframe;
     }
@@ -728,194 +740,195 @@ namespace {
 
 rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
 {
-    std::string filename = IOUtil::getAbsoluteFileName(fname);
+    try{
+        std::string filename = IOUtil::getAbsoluteFileName(fname);
 
-    RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
+        RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
 
-    // container for actions to execute when all frames and devices has been loaded
-    DummySetup setup;
-    setup.scene = getScene();
+        // container for actions to execute when all frames and devices has been loaded
+        DummySetup setup;
+        setup.scene = ownedPtr( new SceneDescriptor() );
 
-    // Start parsing workcell
-    //boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
-    setup.dwc =  XMLRWParser::parseWorkcell(filename);
+        // Start parsing workcell
+        //boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
+        setup.dwc =  XMLRWParser::parseWorkcell(filename);
 
-    // Now build a workcell from the parsed results
-    setup.tree = new StateStructure();
-    setup.world = setup.tree->getRoot();
-    setup.frameMap[setup.world->getName()] = setup.world;
+        // Now build a workcell from the parsed results
+        setup.tree = new StateStructure();
+        setup.world = setup.tree->getRoot();
+        setup.frameMap[setup.world->getName()] = setup.world;
 
-    // Create WorkCell
-    WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
-    if(setup.scene)
-        setup.scene->setWorkCell(wc);
+        // Create WorkCell
+        WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
+        wc->setSceneDescriptor( setup.scene );
+        //if(setup.scene)
+        //    setup.scene->setWorkCell(wc);
 
-    // first create all frames defined in the workcell
-    for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
-        createFrame( setup.dwc->_framelist[i], setup);
-    }
-
-    // next add the frames to the StateStructure, starting with world
-    addToStateStructure(setup.world,setup);
-
-
-    // and lastly all properties can be added
-    for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
-        addFrameProps( setup.dwc->_framelist[i], setup );
-    }
-
-
-    // Now create all devices
-    for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
-        createDevice( setup.dwc->_devlist[i] , setup);
-    }
-
-    // remember to add all models defined in the workcell to the frames
-    for(size_t i=0; i<setup.dwc->_models.size(); i++){
-        std::map<std::string, Frame*>::iterator parent =
-            setup.frameMap.find( setup.dwc->_models[i]._refframe );
-        if( parent == setup.frameMap.end() ){
-            RW_THROW("Model \"" << setup.dwc->_models[i]._name << "\" "
-                     "will not be loaded since it refers to an non existing frame!!");
+        // first create all frames defined in the workcell
+        for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
+            createFrame( setup.dwc->_framelist[i], setup);
         }
-        addModelToFrame( setup.dwc->_models[i], (*parent).second, setup.tree, setup);
-    }
-    State defaultState = setup.tree->getDefaultState();
 
-    // now add any daf frames to their respectfull parent frames
-    for(size_t i=0; i<setup.dwc->_framelist.size(); i++){
-        DummyFrame &dframe = setup.dwc->_framelist[i];
-        if( !dframe._isDaf )
-            continue;
-        std::map<std::string, Frame*>::iterator parent =
-            setup.frameMap.find(dframe.getRefFrame());
-        if( parent == setup.frameMap.end() ){
-            RW_THROW("Frame \"" << dframe.getName() << "\" "
-                      << "will not be loaded since it refers to an non existing frame!!"
-                      << " refframe: \"" << dframe.getRefFrame()<< "\"");
+        // next add the frames to the StateStructure, starting with world
+        addToStateStructure(setup.world,setup);
+
+
+        // and lastly all properties can be added
+        for(size_t i=0; i< setup.dwc->_framelist.size(); i++){
+            addFrameProps( setup.dwc->_framelist[i], setup );
         }
-        Frame *frame = setup.frameMap[dframe.getName()];
-        frame->attachTo((*parent).second, defaultState);
-    }
 
-    // and then add devices to their respectfull parent frames
-/*    for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
-        std::map<std::string, Frame*>::iterator parent =
-            frameMap.find( workcell->_devlist[i].getRefFrame() );
-        if( parent == frameMap.end() ){
-            std::cout << "Warning: Device \"" << workcell->_devlist[i].getName() << "\" "
-                         "will not be loaded since it refers to an non existing frame!!" << std::endl;
-            continue;
+
+        // Now create all devices
+        for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
+            createDevice( setup.dwc->_devlist[i] , setup);
         }
-        std::map<std::string, Device*>::iterator dev =
-            devMap.find( workcell->_devlist[i].getName() );
-        //tree->setDafParent( *((*dev).second->getBase()), *(*parent).second );
-        (*dev).second->getBase()->attachTo((*parent).second, defaultState);
-    }
-*/
 
-    // add collision models from workcell
-    for(size_t i=0; i<setup.dwc->_colmodels.size(); i++){
-        setup.colsetups.push_back( setup.dwc->_colmodels[i] );
-    }
-
-    // add collision models from workcell
-    for(size_t i=0; i<setup.dwc->_proxmodels.size(); i++){
-        setup.proxsetups.push_back( setup.dwc->_proxmodels[i] );
-    }
-
-
-
-
-    // now initialize state with init actions and remember to add all devices
-    //State state( tree );
-    //State state = tree->getDefaultState();
-
-    // now initialize state with initial actions
-    std::vector<InitialAction*>::iterator action = setup.actions.begin();
-    for(;action!=setup.actions.end();++action){
-    	(*action)->setInitialState(defaultState);
-    	delete (*action);
-    }
-
-    setup.tree->setDefaultState(defaultState);
-
-
-    // add devices to workcell
-	{
-        std::map<std::string, Device::Ptr>::iterator first = setup.devMap.begin();
-        for(;first!=setup.devMap.end();++first){
-            wc->addDevice( (*first).second );
+        // remember to add all models defined in the workcell to the frames
+        for(size_t i=0; i<setup.dwc->_models.size(); i++){
+            std::map<std::string, Frame*>::iterator parent =
+                setup.frameMap.find( setup.dwc->_models[i]._refframe );
+            if( parent == setup.frameMap.end() ){
+                RW_THROW("Model \"" << setup.dwc->_models[i]._name << "\" "
+                         "will not be loaded since it refers to an non existing frame!!");
+            }
+            addModelToFrame( setup.dwc->_models[i], (*parent).second, setup.tree, setup);
         }
-	}
+        State defaultState = setup.tree->getDefaultState();
 
-    // add all objects to scene
-	{
-        std::map<Frame*, Object::Ptr>::iterator first = setup.objectMap.begin();
-        for(;first!=setup.objectMap.end();++first){
-            wc->add( (*first).second );
+        // now add any daf frames to their respectfull parent frames
+        for(size_t i=0; i<setup.dwc->_framelist.size(); i++){
+            DummyFrame &dframe = setup.dwc->_framelist[i];
+            if( !dframe._isDaf )
+                continue;
+            std::map<std::string, Frame*>::iterator parent =
+                setup.frameMap.find(dframe.getRefFrame());
+            if( parent == setup.frameMap.end() ){
+                RW_THROW("Frame \"" << dframe.getName() << "\" "
+                          << "will not be loaded since it refers to an non existing frame!!"
+                          << " refframe: \"" << dframe.getRefFrame()<< "\"");
+            }
+            Frame *frame = setup.frameMap[dframe.getName()];
+            frame->attachTo((*parent).second, defaultState);
         }
-	}
+
+        // and then add devices to their respectfull parent frames
+    /*    for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
+            std::map<std::string, Frame*>::iterator parent =
+                frameMap.find( workcell->_devlist[i].getRefFrame() );
+            if( parent == frameMap.end() ){
+                std::cout << "Warning: Device \"" << workcell->_devlist[i].getName() << "\" "
+                             "will not be loaded since it refers to an non existing frame!!" << std::endl;
+                continue;
+            }
+            std::map<std::string, Device*>::iterator dev =
+                devMap.find( workcell->_devlist[i].getName() );
+            //tree->setDafParent( *((*dev).second->getBase()), *(*parent).second );
+            (*dev).second->getBase()->attachTo((*parent).second, defaultState);
+        }
+    */
+
+        // add collision models from workcell
+        for(size_t i=0; i<setup.dwc->_colmodels.size(); i++){
+            setup.colsetups.push_back( setup.dwc->_colmodels[i] );
+        }
+
+        // add collision models from workcell
+        for(size_t i=0; i<setup.dwc->_proxmodels.size(); i++){
+            setup.proxsetups.push_back( setup.dwc->_proxmodels[i] );
+        }
 
 
 
-    // add collision setup from files
-    CollisionSetup collisionSetup;
-    ColSetupList::iterator colsetupIter = setup.colsetups.begin();
-    for(; colsetupIter!=setup.colsetups.end(); ++colsetupIter ){
-        std::string prefix = createScopedName("", (*colsetupIter )._scope);
-        std::string filename = StringUtil::getDirectoryName( (*colsetupIter )._pos.file );
-        filename += "/" + (*colsetupIter)._filename;
-        //std::cout << "Colsetup prefix: " << prefix << std::endl;
-        //std::cout << "Colsetup file  : " << filename << std::endl;
-        CollisionSetup s = CollisionSetupLoader::load(prefix, filename );
-        collisionSetup.merge(s);
+
+        // now initialize state with init actions and remember to add all devices
+        //State state( tree );
+        //State state = tree->getDefaultState();
+
+        // now initialize state with initial actions
+        std::vector<InitialAction*>::iterator action = setup.actions.begin();
+        for(;action!=setup.actions.end();++action){
+            (*action)->setInitialState(defaultState);
+            delete (*action);
+        }
+
+        setup.tree->setDefaultState(defaultState);
+
+
+        // add devices to workcell
+        {
+            std::map<std::string, Device::Ptr>::iterator first = setup.devMap.begin();
+            for(;first!=setup.devMap.end();++first){
+                wc->addDevice( (*first).second );
+            }
+        }
+
+        // add all objects to scene
+        {
+            std::map<Frame*, Object::Ptr>::iterator first = setup.objectMap.begin();
+            for(;first!=setup.objectMap.end();++first){
+                wc->add( (*first).second );
+            }
+        }
+
+        // add collision setup from files
+        CollisionSetup collisionSetup;
+        ColSetupList::iterator colsetupIter = setup.colsetups.begin();
+        for(; colsetupIter!=setup.colsetups.end(); ++colsetupIter ){
+            std::string prefix = createScopedName("", (*colsetupIter )._scope);
+            std::string filename = StringUtil::getDirectoryName( (*colsetupIter )._pos.file );
+            filename += "/" + (*colsetupIter)._filename;
+            //std::cout << "Colsetup prefix: " << prefix << std::endl;
+            //std::cout << "Colsetup file  : " << filename << std::endl;
+            CollisionSetup s = CollisionSetupLoader::load(prefix, filename );
+            collisionSetup.merge(s);
+        }
+
+        // in case no collisionsetup info or proximitysetup info is supplied
+        if( setup.colsetups.size()==0 && setup.proxsetups.size() == 0){
+            collisionSetup = defaultCollisionSetup(*wc);
+        }
+
+        CollisionSetup::set( collisionSetup, wc );
+
+        // add proximity setup from files
+        ProximitySetup proximitySetup;
+
+        //Merge in old collision setups
+        proximitySetup.merge(ProximitySetup(collisionSetup), "");
+
+        ProxSetupList::iterator proxsetupIter = setup.proxsetups.begin();
+        for(; proxsetupIter!=setup.proxsetups.end(); ++proxsetupIter ){
+            std::string prefix = createScopedName("", (*proxsetupIter )._scope);
+            std::string filename = StringUtil::getDirectoryName( (*proxsetupIter )._pos.file );
+            filename += "/" + (*proxsetupIter)._filename;
+            //std::cout << "Colsetup prefix: " << prefix << std::endl;
+            //std::cout << "Colsetup file  : " << filename << std::endl;
+            ProximitySetup s = XMLProximitySetupLoader::load(filename );
+            proximitySetup.merge(s, prefix);
+        }
+
+        // in case no collisionsetup info is supplied we use the collisionSetup
+        //if( setup.proxsetups.size()==0 ){
+        //    proximitySetup = ProximitySetup(collisionSetup);
+        //}
+
+        ProximitySetup::set( proximitySetup, wc );
+
+        BOOST_FOREACH( DummyProperty dprop, setup.dwc->_properties ){
+            wc->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+        }
+
+        // make sure to add the name of the workcell file to the workcell propertymap
+        wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);
+        return wc;
+    } catch (const std::exception& e){
+        RW_THROW("Could not load WorkCell: " << fname << ". An error occoured:\n " << std::string(e.what()) );
     }
-
-    // in case no collisionsetup info or proximitysetup info is supplied
-	if( setup.colsetups.size()==0 && setup.proxsetups.size() == 0){
-        collisionSetup = defaultCollisionSetup(*wc);
-    }
-
-    CollisionSetup::set( collisionSetup, wc );
-
-	// add proximity setup from files
-	ProximitySetup proximitySetup;
-
-	//Merge in old collision setups
-	proximitySetup.merge(ProximitySetup(collisionSetup), "");
-
-    ProxSetupList::iterator proxsetupIter = setup.proxsetups.begin();
-    for(; proxsetupIter!=setup.proxsetups.end(); ++proxsetupIter ){
-        std::string prefix = createScopedName("", (*proxsetupIter )._scope);
-        std::string filename = StringUtil::getDirectoryName( (*proxsetupIter )._pos.file );
-        filename += "/" + (*proxsetupIter)._filename;
-        //std::cout << "Colsetup prefix: " << prefix << std::endl;
-        //std::cout << "Colsetup file  : " << filename << std::endl;
-        ProximitySetup s = XMLProximitySetupLoader::load(filename );
-        proximitySetup.merge(s, prefix);
-    }
-    
-	// in case no collisionsetup info is supplied we use the collisionSetup
-    //if( setup.proxsetups.size()==0 ){
-    //    proximitySetup = ProximitySetup(collisionSetup);
-    //}
-
-	ProximitySetup::set( proximitySetup, wc );
-
-	BOOST_FOREACH( DummyProperty dprop, setup.dwc->_properties ){
-	    wc->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
-	}
-
-    // make sure to add the name of the workcell file to the workcell propertymap
-    wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);
-
-    return wc;
+    return NULL;
 }
 
 rw::models::WorkCell::Ptr XMLRWLoader::load(const std::string& filename){
-    RW_WARN("1");
     XMLRWLoader loader;
-    RW_WARN("1");
     return loader.loadWorkCell(filename);
 }
