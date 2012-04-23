@@ -45,7 +45,7 @@
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/WorkCellFactory.hpp>
 
-//#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 #include <RobWorkConfig.hpp>
 #include <boost/shared_ptr.hpp>
@@ -64,7 +64,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::trajectory;
-//using namespace rwlibs::proximitystrategies;
+using namespace rwlibs::proximitystrategies;
 
 using namespace rws;
 
@@ -631,8 +631,7 @@ void RobWorkStudio::newWorkCell()
 		_detector = makeCollisionDetector(_workcell);
 
 		// Workcell given to view.
-		_view->getWorkCellScene()->setWorkCell( _workcell );
-		_view->setWorkCellScene( _view->getWorkCellScene() );
+		_view->setWorkCell( _workcell );
 		_view->setState(_state);
 	} catch (const Exception& exp) {
 		QMessageBox::critical(this, tr("RobWorkStudio"), tr("Caught exception while trying to create new work cell: %1").arg(exp.what()));
@@ -788,11 +787,21 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
 
     // Always close the workcell.
     closeWorkCell();
-    rw::graphics::WorkCellScene::Ptr wcsene = _view->makeWorkCellScene();
-    WorkCell::Ptr wc = WorkCellFactory::load(filename.toStdString(), wcsene);
-    if(wc==NULL || wcsene->getWorkCell()==NULL){
-        RW_THROW("Loading of workcell failed!");
-}
+    //rw::graphics::WorkCellScene::Ptr wcsene = _view->makeWorkCellScene();
+
+    WorkCell::Ptr wc;
+
+    try{
+        wc = WorkCellFactory::load(filename.toStdString());
+        if(wc==NULL){
+            RW_THROW("Loading of workcell failed!");
+        }
+    } catch( const std::exception& e){
+        const std::string msg =
+            "Failed to load workcell: " + filename.toStdString() + ".";
+        QMessageBox::information(this, "Error", msg.c_str(), QMessageBox::Ok);
+        wc = emptyWorkCell();
+    }
 
     //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
     // don't set any variables before we know they are good
@@ -801,7 +810,7 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     _workcell = wc;
     _state = _workcell->getDefaultState();
     _detector = detector;
-    _view->setWorkCellScene(wcsene);
+    _view->setWorkCell(wc);
     _view->setState(_state);
 
 
@@ -825,9 +834,7 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
         _workcell = workcell;
         _state = _workcell->getDefaultState();
         _detector = detector;
-
-        //_view->getWorkCellScene()->setWorkCell( _workcell );
-        //_view->setWorkCellScene( _view->getWorkCellScene() );
+        _view->setWorkCell(_workcell);
         _view->setState(_state);
 
         openAllPlugins();

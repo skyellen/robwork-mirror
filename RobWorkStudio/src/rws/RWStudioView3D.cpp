@@ -130,6 +130,50 @@ void RWStudioView3D::setupActions(){
     _selectMainViewAction = new QAction(tr("Main View..."), this); // owned
      connect(_selectMainViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
+
+
+     int mask = getDrawMask();
+
+     _physicalMaskEnabled = new QAction(tr("Physical group"), this); // owned
+     connect(_physicalMaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _physicalMaskEnabled->setCheckable(true);
+     _physicalMaskEnabled->setChecked( DrawableNode::Physical & mask);
+
+     _virtualMaskEnabled = new QAction(tr("Virtual group"), this); // owned
+     connect(_virtualMaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _virtualMaskEnabled->setCheckable(true);
+     _virtualMaskEnabled->setChecked( DrawableNode::Virtual & mask);
+
+     _drawableMaskEnabled = new QAction(tr("Drawable group"), this); // owned
+     connect(_drawableMaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _drawableMaskEnabled->setCheckable(true);
+     _drawableMaskEnabled->setChecked( DrawableNode::DrawableObject & mask);
+
+     _collisionMaskEnabled = new QAction(tr("Collision group"), this); // owned
+     connect(_collisionMaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _collisionMaskEnabled->setCheckable(true);
+     _collisionMaskEnabled->setChecked( DrawableNode::CollisionObject & mask);
+
+     _user1MaskEnabled = new QAction(tr("User1 group"), this); // owned
+     connect(_user1MaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _user1MaskEnabled->setCheckable(true);
+     _user1MaskEnabled->setChecked( DrawableNode::User1 & mask);
+
+     _user2MaskEnabled = new QAction(tr("User2 group"), this); // owned
+     connect(_user2MaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _user2MaskEnabled->setCheckable(true);
+     _user2MaskEnabled->setChecked( DrawableNode::User2 & mask);
+
+     _user3MaskEnabled = new QAction(tr("User3 group"), this); // owned
+     connect(_user3MaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _user3MaskEnabled->setCheckable(true);
+     _user3MaskEnabled->setChecked( DrawableNode::User3 & mask);
+
+     _user4MaskEnabled = new QAction(tr("User4 group"), this); // owned
+     connect(_user4MaskEnabled, SIGNAL(triggered()), this, SLOT(setMaskCheckAction()));
+     _user4MaskEnabled->setCheckable(true);
+     _user4MaskEnabled->setChecked( DrawableNode::User4 & mask);
+
 }
 
 
@@ -142,14 +186,15 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     _viewLogo("RobWork")
 {
     _pmap = _rws->getPropertyMap().add<PropertyMap>("StudioView3D","",PropertyMap());
-    setupActions();
+
     SceneOpenGLViewer *sceneview = new SceneOpenGLViewer(_rws->getPropertyMap(), this);
-    //setSceneViewerWidget(sceneview);
 
     _viewWidget = sceneview;
     _view = sceneview;
     _wcscene = ownedPtr( new WorkCellScene(_view->getScene()) );
     _view->setWorldNode( _wcscene->getWorldNode() );
+
+    setupActions();
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget( sceneview->getWidget() );
@@ -212,6 +257,10 @@ void RWStudioView3D::setupGUI(QMainWindow* mainwindow){
     setupToolBarAndMenu(mainwindow);
 }
 
+int RWStudioView3D::getDrawMask(){
+    return _view->getMainView()->_drawMask;
+}
+
 void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
     _viewWidget = viewer;
     _view = viewer;
@@ -224,26 +273,24 @@ void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
     setLayout(layout);
 }
 
-rw::graphics::WorkCellScene::Ptr RWStudioView3D::makeWorkCellScene(){
-    return ownedPtr( new WorkCellScene(_view->getScene()) );
-}
 
-
-void RWStudioView3D::setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene){
+void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
+    std::cout << "set workcell" << std::endl;
     _sensorCameraViews.clear();
-    _wc = wcscene->getWorkCell();
+    _wc = wc;
     if(_wc==NULL){
         RW_THROW("Workcell is null!");
     }
 	resetCameraViewMenu();
 
-    _view->setWorldNode( wcscene->getWorldNode() );
+	_wcscene->setWorkCell( _wc );
+    _view->setWorldNode( _wcscene->getWorldNode() );
 
-
-    _wcscene = wcscene;
     // if the grid is allready there then don't add it again
     if( !_wcscene->getWorldNode()->hasChild( "FloorGrid" ) ){
+        std::cout << "No floor grid" << std::endl;
         // add a floor grid drawable to the scene
+
         std::vector<Line> lines;
         lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
         lines.push_back(Line(Vector3D<>(0,5,0),Vector3D<>(0,-5,0)));
@@ -309,14 +356,9 @@ void RWStudioView3D::setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene){
 
 rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
     DrawableNode::Ptr d = _view->pickDrawable( x, y);
-    RW_WARN("1");
     if(d==NULL)
         return NULL;
-    RW_WARN("2");
     Frame *res = _wcscene->getFrame(d);
-    if(res==NULL)
-        RW_WARN("3");
-
     return res;
 }
 
@@ -424,7 +466,9 @@ void RWStudioView3D::setState(const rw::kinematics::State& state){
         }
 
         _qryResult.collidingFrames.clear();
+        //std::cout << "incollision?" << std::endl;
         if( _rws->getCollisionDetector()->inCollision(state, &_qryResult) ){
+            //std::cout << "\t true" << std::endl;
             BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
                 _wcscene->setHighlighted(true, pair.first);
                 _wcscene->setHighlighted(true, pair.second);
@@ -509,6 +553,17 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     /// --------------------------------------------------------------------------
 	_cameraViewMenu = menu->addMenu(tr("Camera views"));
 	resetCameraViewMenu();
+	menu->addSeparator();
+
+    _drawMaskMenu = menu->addMenu(tr("Render groups..."));
+	_drawMaskMenu->addAction( _physicalMaskEnabled );
+    _drawMaskMenu->addAction( _virtualMaskEnabled );
+    _drawMaskMenu->addAction( _drawableMaskEnabled );
+    _drawMaskMenu->addAction( _collisionMaskEnabled );
+    _drawMaskMenu->addAction( _user1MaskEnabled );
+    _drawMaskMenu->addAction( _user2MaskEnabled );
+    _drawMaskMenu->addAction( _user3MaskEnabled );
+    _drawMaskMenu->addAction( _user4MaskEnabled );
 
 
     /// --------------------------------------------------------------------------
@@ -545,6 +600,29 @@ void RWStudioView3D::setDrawType(Render::DrawType drawType)
     _view->getCurrentView()->_drawType = drawType;
 }
 
+void RWStudioView3D::setMaskCheckAction(){
+    int mask = 0;
+
+    if( _physicalMaskEnabled->isChecked() )
+        mask = mask | DrawableNode::Physical;
+    if( _virtualMaskEnabled->isChecked() )
+        mask = mask | DrawableNode::Virtual;
+    if( _drawableMaskEnabled->isChecked() )
+        mask = mask | DrawableNode::DrawableObject;
+    if( _collisionMaskEnabled->isChecked() )
+        mask = mask | DrawableNode::CollisionObject;
+    if( _user1MaskEnabled->isChecked() )
+        mask = mask | DrawableNode::User1;
+    if( _user2MaskEnabled->isChecked() )
+        mask = mask | DrawableNode::User2;
+    if( _user3MaskEnabled->isChecked() )
+        mask = mask | DrawableNode::User3;
+    if( _user4MaskEnabled->isChecked() )
+        mask = mask | DrawableNode::User4;
+
+    std::cout << "Mask action: " << mask << std::endl;
+    _view->getMainView()->_viewCamera->setDrawMask( mask );
+}
 
 void RWStudioView3D::setCheckAction(){
     QObject *obj = sender();

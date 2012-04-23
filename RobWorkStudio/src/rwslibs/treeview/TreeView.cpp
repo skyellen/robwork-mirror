@@ -103,8 +103,6 @@ TreeView::TreeView() :
 	_showFrameStructureAction->setChecked(true);
     connect(_showFrameStructureAction, SIGNAL(triggered()), this, SLOT(showFrameStructure()));
 
-
-
     toolbar->addAction(collapseAllAction);
     toolbar->addAction(expandAllAction);
     toolbar->addAction(forceUpdateAction);
@@ -248,18 +246,27 @@ void TreeView::setupDrawables(Frame* frame, QTreeWidgetItem* parent)
 {
     WorkCellScene::Ptr scene = getRobWorkStudio()->getView()->getWorkCellScene();
 
+    int drawMask = getRobWorkStudio()->getView()->getDrawMask();
+
     const std::vector<DrawableNode::Ptr>& drawables =
         scene->getDrawables(frame);
 
     typedef std::vector<DrawableNode::Ptr>::const_iterator DI;
     for (DI p = drawables.begin(); p != drawables.end(); ++p) {
         DrawableNode::Ptr drawable = *p;
+        if( !(drawable->getMask() & drawMask) )
+            continue;
+
         RW_ASSERT(drawable);
         QTreeWidgetItem* item = new QTreeWidgetItem(parent); // owned.
 
         item->setText(0, drawable->getName().c_str());
         _drawableMap[item] = drawable;
-        item->setIcon(0, QIcon(":/images/drawable.png"));
+        if( drawable->getMask() & DrawableNode::CollisionObject ){
+            item->setIcon(0, QIcon(":/images/collision.png"));
+        } else {
+            item->setIcon(0, QIcon(":/images/drawable.png"));
+        }
     }
 }
 
@@ -449,7 +456,7 @@ void TreeView::customContextMenuRequestSlot(const QPoint& pos)
     _contextMenu->addAction(_showTransparentAction);
     _contextMenu->addAction(_highlightAction);
     _contextMenu->addAction(_poseAction);
-    //_contextMenu->addAction(_scaleAction);
+    _contextMenu->addAction(_scaleAction);
 
     _contextMenu->addSeparator();
 
@@ -514,11 +521,6 @@ void TreeView::toggleFrameSlot()
     getRobWorkStudio()->updateAndRepaint();
 }
 
-void TreeView::scaleSlot()
-{
-	// create the gui to change the scale of all drawables of a frame
-
-}
 
 void TreeView::constructDrawableList(std::vector<DrawableNode::Ptr>& drawables)
 {
@@ -608,6 +610,26 @@ void TreeView::showTransparentSlot()
 
         BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
             node->setTransparency(alpha);
+    }
+
+    getRobWorkStudio()->updateAndRepaint();
+}
+
+void TreeView::scaleSlot()
+{
+    // create the gui to change the scale of all drawables of a frame
+    std::vector<DrawableNode::Ptr> drawables;
+    constructDrawableList(drawables);
+    if(drawables.size()==0)
+        return;
+
+    bool ok = false;
+    const float scale = (float)QInputDialog::getDouble(
+        this, "Select Scale", "Scale:", drawables[0]->getScale(), 0, 1000, 1, &ok);
+
+    if (ok) {
+        BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+            node->setScale(scale);
     }
 
     getRobWorkStudio()->updateAndRepaint();

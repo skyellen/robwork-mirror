@@ -146,9 +146,7 @@ public:
 
     rw::graphics::SceneViewer::Ptr getSceneViewer(){ return _view; }
 
-    void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene);
-
-    rw::graphics::WorkCellScene::Ptr makeWorkCellScene();
+    void setWorkCell(rw::models::WorkCell::Ptr workcell);
 
     void clear();
 
@@ -163,12 +161,16 @@ public:
     void saveSettings();
     void restoreSettings();
 
+    //! get current draw mask
+    int getDrawMask();
+
 private slots:
     void setDrawTypeSlot();
     void setTransparentSlot();
     void showPivotPointSlot();
     void setCheckForCollision(bool);
     void setCheckAction();
+    void setMaskCheckAction();
     // Save buffer dialog.
     void saveBufferToFileDialog();
 
@@ -196,8 +198,11 @@ private:
     void setupActions();
 
     virtual void setupToolBarAndMenu(QMainWindow *mwindow);
-	void resetCameraViewMenu();
+
+    void resetCameraViewMenu();
+
     SensorCameraView makeCameraView(const std::string& name,double fovy, double w, double h, double n, double f, rw::kinematics::Frame* frame);
+
 protected:
 
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -229,7 +234,18 @@ protected:
     QAction *_addCameraViewAction, *_clearCameraViewsAction, *_selectMainViewAction;
 
     QAction *_setPerspectiveViewAction, *_setOrthographicViewAction;
-    QMenu *_customViewMenu, *_cameraViewMenu;
+
+    QAction *_physicalMaskEnabled,
+            *_virtualMaskEnabled,
+            *_drawableMaskEnabled,
+            *_collisionMaskEnabled,
+            *_user1MaskEnabled,
+            *_user2MaskEnabled,
+            *_user3MaskEnabled,
+            *_user4MaskEnabled;
+
+
+    QMenu *_customViewMenu, *_cameraViewMenu, *_drawMaskMenu;
 
     std::vector<std::pair<QAction*,rw::math::Transform3D<> > > _customViews;
     rw::proximity::CollisionDetector::QueryResult _qryResult;

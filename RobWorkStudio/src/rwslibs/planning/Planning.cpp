@@ -38,7 +38,8 @@
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
 
-#include <rw/proximity/ProximityStrategyFactory.hpp>
+//#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rwlibs/pathplanners/prm/PRMPlanner.hpp>
@@ -74,6 +75,7 @@ using namespace rw::common;
 using namespace rw::trajectory;
 
 using namespace rw::proximity;
+using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::pathplanners;
 using namespace rwlibs::pathoptimization;
 
