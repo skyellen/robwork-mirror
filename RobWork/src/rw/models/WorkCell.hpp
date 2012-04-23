@@ -24,17 +24,20 @@
 /**
  * @file WorkCell.hpp
  */
-
+#include <rw/graphics/SceneDescriptor.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
+
 #include "Device.hpp"
 #include "Object.hpp"
 #include <vector>
 #include <map>
 #include <string>
 #include <ostream>
+
+
 
 namespace rw { namespace proximity {
     class CollisionSetup;
@@ -411,6 +414,8 @@ namespace rw { namespace models {
 		 */
         rw::proximity::CollisionSetup getCollisionSetup();
 
+        rw::graphics::SceneDescriptor::Ptr getSceneDescriptor(){ return _sceneDescriptor;}
+        void setSceneDescriptor(rw::graphics::SceneDescriptor::Ptr scene){ _sceneDescriptor = scene;}
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);
         void stateDataRemovedListener(const rw::kinematics::StateData* data);
@@ -423,6 +428,7 @@ namespace rw { namespace models {
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
         std::vector<rw::sensor::Sensor::Ptr> _sensors;
+        rw::common::Ptr<rw::graphics::SceneDescriptor> _sceneDescriptor;
     private:
         WorkCell();
         WorkCell(const WorkCell&);

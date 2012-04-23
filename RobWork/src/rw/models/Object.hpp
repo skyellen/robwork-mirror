@@ -23,6 +23,8 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/geometry/Geometry.hpp>
+#include <rw/graphics/Model3D.hpp>
+
 #include <vector>
 
 namespace rw { namespace models {
@@ -51,11 +53,14 @@ namespace rw { namespace models {
 
         void addGeometry(rw::geometry::Geometry::Ptr geom);
 
+        void addModel(rw::graphics::Model3D::Ptr model);
+
         void addFrame(rw::kinematics::Frame* frame);
 
         void removeGeometry(rw::geometry::Geometry::Ptr geom);
 
         const std::vector<rw::geometry::Geometry::Ptr>& getGeometry();
+        const std::vector<rw::graphics::Model3D::Ptr>& getModels();
 
         rw::kinematics::Frame* getBase();
 
@@ -74,6 +79,7 @@ namespace rw { namespace models {
         rw::kinematics::Frame *_base;
         std::vector<rw::kinematics::Frame*> _frames;
         std::vector<rw::geometry::Geometry::Ptr> _geometry;
+        std::vector<rw::graphics::Model3D::Ptr> _models;
 
 
     };

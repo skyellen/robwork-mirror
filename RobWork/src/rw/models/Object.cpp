@@ -3,6 +3,7 @@
 
 using namespace rw::kinematics;
 using namespace rw::geometry;
+using namespace rw::graphics;
 using namespace rw::models;
 
 Object::Object(rw::kinematics::Frame* baseframe):
@@ -69,6 +70,10 @@ void Object::addGeometry(Geometry::Ptr geom){
     _geometry.push_back(geom);
 }
 
+void Object::addModel(Model3D::Ptr model){
+    _models.push_back(model);
+}
+
 void Object::addFrame(rw::kinematics::Frame* frame){
     _frames.push_back(frame);
 }
@@ -81,6 +86,11 @@ void Object::removeGeometry(Geometry::Ptr geom){
 const std::vector<Geometry::Ptr>& Object::getGeometry(){
     return _geometry;
 }
+
+const std::vector<Model3D::Ptr>& Object::getModels(){
+    return _models;
+}
+
 rw::kinematics::Frame* Object::getBase(){
     return _base;
 }

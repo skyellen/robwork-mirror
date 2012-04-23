@@ -25,11 +25,14 @@
 
 using namespace rw::models;
 using namespace rw::kinematics;
+using namespace rw::graphics;
+using namespace rw::common;
 
 WorkCell::WorkCell(const std::string& name)
     :
     _tree(rw::common::ownedPtr(new StateStructure())),
-    _name(name)
+    _name(name),
+    _sceneDescriptor( ownedPtr(new SceneDescriptor()) )
 {
     // Because we want the assertion, we initialize _frameMap here.
     RW_ASSERT( _tree );
@@ -42,7 +45,8 @@ WorkCell::WorkCell(const std::string& name)
 WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
     :
     _tree(tree),
-    _name(name)
+    _name(name),
+    _sceneDescriptor( ownedPtr(new SceneDescriptor()) )
 {
     // Because we want the assertion, we initialize _frameMap here.
     RW_ASSERT( _tree );
