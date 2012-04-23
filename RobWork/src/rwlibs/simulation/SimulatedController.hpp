@@ -38,7 +38,6 @@ namespace simulation {
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedController> Ptr;
 
-
         /**
          *  @brief get the name of this controller
          *  @return name of this controller
@@ -65,6 +64,17 @@ namespace simulation {
          */
         virtual rwlibs::control::Controller* getController() = 0;
 
+        /**
+         * @brief disable or enable this controller
+         * @param enabled
+         */
+        virtual void setEnabled(bool enabled) = 0;
+
+        /**
+         * @brief true if this controller is enabled
+         * @return
+         */
+        virtual bool isEnabled() = 0;
 
     };
     //! @}

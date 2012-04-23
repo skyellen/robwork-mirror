@@ -142,7 +142,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
         PlainTriMeshN1F::Ptr data = STLFile::load(filename);
         //STLFile::save(*data,"test_badstl_stuff.stl");
 
-        Model3D::Ptr model = ownedPtr(new Model3D());
+        Model3D::Ptr model = ownedPtr(new Model3D(name));
 
         model->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *data);
 

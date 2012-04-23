@@ -39,7 +39,6 @@
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 #include <rw/proximity/DistanceThresholdStrategy.hpp>
 #include <rw/proximity/ProximityCache.hpp>
-#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 
 #include <PQP/PQP.h>
@@ -281,8 +280,8 @@ namespace rwlibs { namespace proximitystrategies {
 
 	};
 
-    static const bool PQPCollisionStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addCollisionStrategy<ProximityStrategyPQP>("PQP");
-    static const bool PQPDistanceStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addDistanceStrategy<ProximityStrategyPQP>("PQP");
+    //static const bool PQPCollisionStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addCollisionStrategy<ProximityStrategyPQP>("PQP");
+    //static const bool PQPDistanceStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addDistanceStrategy<ProximityStrategyPQP>("PQP");
 
 }} // end namespaces
 

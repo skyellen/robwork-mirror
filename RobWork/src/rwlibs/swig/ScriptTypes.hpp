@@ -33,7 +33,7 @@
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
-#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 #include <rw/pathplanning.hpp>
 
