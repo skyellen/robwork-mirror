@@ -18,7 +18,7 @@ SET(FILES_CPP
   ProximitySetup.cpp
   ProximitySetupRule.cpp
   BasicFilterStrategy.cpp
-  ProximityStrategyFactory.cpp
+  #ProximityStrategyFactory.cpp
   Raycaster.cpp
   
   rwstrategy/BinaryBVTree.cpp
@@ -48,7 +48,7 @@ SET(FILES_HPP
   ProximitySetup.hpp
   ProximitySetupRule.hpp
   BasicFilterStrategy.hpp
-  ProximityStrategyFactory.hpp  
+  #ProximityStrategyFactory.hpp  
   Raycaster.hpp
   rwstrategy/BinaryBVTree.hpp
   rwstrategy/BinaryIdxBVTree.hpp
