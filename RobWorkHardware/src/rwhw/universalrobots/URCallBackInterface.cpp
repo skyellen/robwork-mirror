@@ -178,6 +178,7 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 	if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
         integers[0] = URScriptCommand::DO_NOTHING;
         URCommon::send(&socket, integers);
+     //   std::cout<<"Do Nothing"<<std::endl;
 		return;
 	}
 
@@ -213,7 +214,8 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
-		_commands.pop();
+      _commands.pop();
+        std::cout<<"Pops commands"<<std::endl;
     }
 }
 
@@ -232,7 +234,7 @@ void URCallBackInterface::run() {
       Timer timer;
       timer.resetAndResume();  
 	  while (!_stopServer) {
-		  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
+		//  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
 //          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl;
 		  boost::system::error_code error;
 		  size_t available = socket.available(error);
@@ -245,13 +247,13 @@ void URCallBackInterface::run() {
 			  if (!URCommon::getChar(&socket, &ch))
                 continue;
                 
-            if (_robotStopped) {
+            if (_robotStopped) { 
                 sendStop(socket);
             } else {
               if (ch == 0) {
                 _isMoving = false;
               } 
-              std::cout<<"Time = "<<timer.getTime()<<std::endl;        
+              //std::cout<<"Time = "<<timer.getTime()<<std::endl;        
               timer.resetAndResume();
               handleCmdRequest(socket);
             }
@@ -358,7 +360,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
     popAllServoCommands();
 
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
-//    std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
+    std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
 //    _isMoving = true;
 }
@@ -378,7 +380,9 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 //	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
 
+    size_t n = _commands.size();
     popAllServoCommands();
+    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
     _commands.push(URScriptCommand(URScriptCommand::SERVOQ, q, 1));
     _robotStopped = false;

@@ -70,13 +70,14 @@ def myprog():
     def moveQ():
         textmsg("MoveQ")
         cnt = 0           
-        enter_critical        
+        enter_critical  
+        motionFinished = 0      
         while cnt < 6:
-            textmsg(cnt)
             qtarget[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
             cnt = cnt + 1
         end
         exit_critical
+        textmsg(qtarget)
         textmsg("Get Speed")
         speed = receive_buffer[7]*FLOAT_SCALE
       	textmsg("speed ")
@@ -95,6 +96,7 @@ def myprog():
 
     def moveT():
         #Reads in x,y,z,ax,ay,az,speed
+        motionFinished = 0
         #pose = socket_read_ascii_float(7)
         #textmsg(pose)
         #cnt = 0
