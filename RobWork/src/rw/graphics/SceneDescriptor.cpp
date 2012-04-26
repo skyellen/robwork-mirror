@@ -135,7 +135,7 @@ void SceneDescriptor::setTransparency( double alpha, rw::kinematics::Frame* f){
     }
 }
 
-SceneDescriptor::SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* frame){
+SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* frame){
     // add frame to frame map
     DrawableProxy::Ptr proxy = ownedPtr( new DrawableProxy());
     proxy->name = drawable->getName();
@@ -146,7 +146,7 @@ SceneDescriptor::SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addDrawabl
     return proxy;
 }
 
-SceneDescriptor::SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addDrawable(const std::string& filename, rw::kinematics::Frame* frame, int dmask){
+SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addDrawable(const std::string& filename, rw::kinematics::Frame* frame, int dmask){
     DrawableProxy::Ptr proxy = ownedPtr( new DrawableProxy());
     proxy->name = filename;
     proxy->dmask = dmask;

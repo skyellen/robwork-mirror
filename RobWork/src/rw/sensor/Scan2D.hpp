@@ -21,6 +21,7 @@
 
 #include "SensorData.hpp"
 #include <rw/math/Vector3D.hpp>
+#include <rw/common/Ptr.hpp>
 #include <vector>
 
 namespace rw {
@@ -34,6 +35,10 @@ namespace sensor {
  */
 class Scan2D: public SensorData {
 public:
+	/**
+	 * @brief Ptr to Scan2D
+	 */
+	typedef rw::common::Ptr<Scan2D> Ptr;
 	/**
 	 * @brief Constructs empty scan.
 	 *

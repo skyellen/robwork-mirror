@@ -3195,14 +3195,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategyFactory.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\proximity\Raycaster.cpp"
 				>
 			</File>
@@ -4199,6 +4191,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\graphics\SceneCamera.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneDescriptor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneDescriptor.hpp"
 				>
 			</File>
 			<File
