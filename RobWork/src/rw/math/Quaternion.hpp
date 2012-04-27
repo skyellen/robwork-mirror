@@ -26,6 +26,7 @@
 #include "Rotation3D.hpp"
 #include "Rotation3DVector.hpp"
 
+
 #include <ostream>
 #include <boost/math/quaternion.hpp>
 #include <boost/math/special_functions/sign.hpp>
@@ -394,9 +395,9 @@ namespace rw { namespace math {
             this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
             this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
 
-            this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
-            this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
-            this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
+			this->a = copySign0( this->a, rot(2,1) - rot(1,2) );
+			this->b = copySign0( this->b, rot(0,2) - rot(2,0) );
+			this->c = copySign0( this->c, rot(1,0) - rot(0,1) );
 //#endif
 
         }
@@ -417,6 +418,18 @@ namespace rw { namespace math {
                 static_cast<Q>(quaternion(2)),
                 static_cast<Q>(quaternion(3)));
         }
+
+private:
+		template<class T>
+		static T copySign0(const T x, const T y) {
+			if (y == 0)
+				return 0;
+			if (y < 0)
+				return -fabs(x);
+			else
+				return fabs(x);
+		}
+
     };
 
     /**

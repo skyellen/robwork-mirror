@@ -19,21 +19,20 @@
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
+//#include <rwsim/dynamics/ContactPoint.hpp>
+//#include <rwsim/dynamics/ContactCluster.hpp>
 #include <rw/loaders/WorkCellFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
+//#include <rwsim/dynamics/ContactManifold.hpp>
+//#include <rwsim/dynamics/ContactPoint.hpp>
+//#include <rwsim/dynamics/ContactCluster.hpp>
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
-#include <rwsim/dynamics/DynamicUtil.hpp>
+//#include <rwsim/dynamics/DynamicUtil.hpp>
 
-#include <rwsim/dynamics/ContactManifold.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <boost/program_options/options_description.hpp>

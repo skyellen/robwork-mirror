@@ -18,6 +18,20 @@ using namespace rw::pathplanning;
 using namespace rwlibs::proximitystrategies;
 
 int main(int argc, char** argv) {
+    Rotation3D<> r3d(-0.99999669678603531, -0.0020716226013274717, -0.001521445633434071,
+    				 -0.001521761408544605, 0.00015086113440790838, 0.99999883072019702,
+    				 0.0018535970374102858, 0.99999827110886175, -0.00014804031424759767);
+    Vector3D<> v3d(-0.00046301776312795973,-0.63014974943015156,0.09990255421621469);
+    Transform3D<> t3d(v3d,r3d);
+	
+    Quaternion<> q(r3d);
+	std::cout<<"Rot Before = "<<r3d<<std::endl;
+	std::cout<<"Rot After  = "<<q.toRotation3D()<<std::endl;
+	Quaternion<> q2(q.toRotation3D());
+	std::cout<<"q: "<<q<<std::endl;
+	std::cout<<"q2:"<<q2<<std::endl;
+	return 0;
+
 	std::cout<<"Clearance Performance Test"<<std::endl;
 	
 	WorkCell::Ptr workcell = WorkCellLoader::load("D:/workspace/PickPlacePlanner/data/WorkCell/WorkCellRoboLab/PilotCellSimple.xml");
@@ -79,6 +93,8 @@ int main(int argc, char** argv) {
 	std::cout<<"Number of collisions = "<<collisions<<std::endl;
 	std::cout<<"Total Clearance Dist = "<<sum<<std::endl;
 */
+    
+
 
 	return 0;
 }

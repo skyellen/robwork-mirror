@@ -590,6 +590,9 @@ namespace rw { namespace math {
          */
         static double sign(double s) { return s >= 0 ? 1 : -1; }
 
+
+
+
         /**
          * @brief Returns the sign of each element
          *
