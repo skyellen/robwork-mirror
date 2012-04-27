@@ -420,8 +420,8 @@ namespace rw { namespace math {
         }
 
 private:
-		template<class T>
-		static T copySign0(const T x, const T y) {
+		template<class A>
+		static A copySign0(const A x, const A y) {
 			if (y == 0)
 				return 0;
 			if (y < 0)
