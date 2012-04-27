@@ -23,7 +23,7 @@
 #include <rw/math.hpp>
 #include <rw/geometry.hpp>
 
-#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/common/TimerUtil.hpp>

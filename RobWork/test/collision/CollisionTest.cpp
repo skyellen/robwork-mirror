@@ -18,9 +18,6 @@
 
 #include "../TestSuiteConfig.hpp"
 
-// this include is necesary because of missing includes in some version of boost 1.45 (at least)
-#include <cassert>
-
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
