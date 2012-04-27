@@ -121,9 +121,10 @@ namespace simulator {
 			return _owner;
 		}
 
-		dBodyID getODEBody(){
-			return _bodyId;
-		}
+		// renamed to getChild
+		//dBodyID getODEBody(){
+		//	return _bodyId;
+		//}
 
 		ODEJointType getType(){
 			return _type;
@@ -146,7 +147,7 @@ namespace simulator {
 		//static ODEJoint* make(RevoluteJoint* joint, dBodyID parent);
 
 	private:
-		dBodyID _bodyId;
+		//dBodyID _bodyId;
 		dJointID _jointId, _motorId;
 		rw::models::Joint *_rwJoint;
 		//dynamics::RigidJoint *_rwJoint;
@@ -156,7 +157,7 @@ namespace simulator {
 		ODEJointType _type;
 		JointType _jtype;
 
-		rw::kinematics::Frame *_bodyFrame;
+		//rw::kinematics::Frame *_bodyFrame;
 		rw::math::Vector3D<> _offset;
 		ODEBody *_parent, *_child;
 

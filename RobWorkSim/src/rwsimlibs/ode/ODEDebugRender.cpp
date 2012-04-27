@@ -58,12 +58,14 @@ namespace {
 
 void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, DrawType draw, double alpha) const
 {
-
+    //std::cout << "render" << std::endl;
     if (DRAW_COLLISION_GEOMETRY & _drawMask) {
         BOOST_FOREACH(ODEBody* b, _sim->getODEBodies() ){
-            std::vector<ODEUtil::TriGeomData*> trimeshs = _sim->getTriMeshs();
+            //std::cout << b->getFrame()->getName() << std::endl;
+            std::vector<ODEUtil::TriGeomData*> trimeshs = b->getTriGeomData();
 
             BOOST_FOREACH(ODEUtil::TriGeomData* trigeom, trimeshs){
+                //std::cout << "- tri" << std::endl;
                 ODEUtil::TriMeshData::Ptr trimesh = trigeom->tridata;
                 // multiply stack transform with geom transform
                 const dReal* pos = dGeomGetPosition(trigeom->geomId);

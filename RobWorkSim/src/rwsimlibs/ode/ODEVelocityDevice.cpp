@@ -56,26 +56,37 @@ ODEVelocityDevice::ODEVelocityDevice(
 ODEVelocityDevice::~ODEVelocityDevice(){};
 
 void ODEVelocityDevice::reset(rw::kinematics::State& state){
+    RW_WARN("1");
     rw::math::Q q = _rdev->getModel().getQ(state);
+    RW_WARN("1");
     rw::math::Q flim = _rdev->getForceLimit();
     int qi = 0;
-
+    RW_WARN("1");
     for(size_t i = 0; i<_odeJoints.size(); i++){
+        RW_WARN("1");
         _odeJoints[i]->setVelocity( 0 );
         if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
             continue;
         }
+        RW_WARN("1");
         _odeJoints[i]->setAngle( q(qi) );
         _odeJoints[i]->setMaxForce( flim(qi) );
+        RW_WARN("1");
         qi++;
     }
     for(size_t i = 0; i<_odeJoints.size(); i++){
+        RW_WARN("1");
         if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+            RW_WARN("1");
             double angle = _odeJoints[i]->getOwner()->getAngle();
+            RW_WARN("1");
             _odeJoints[i]->setAngle(angle);
         }
+        RW_WARN("1");
         _odeJoints[i]->reset(state);
+        RW_WARN("1");
     }
+    RW_WARN("1");
 }
 namespace {
 	int sign(double val){
@@ -297,10 +308,11 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
      addToMap(baseODEBody, frameToODEBody);
 
      // first we create rigid bodies from all of the links of the RigidDevice
-     std::vector<ODEBody*> ode_bodies;
      BOOST_FOREACH(Body* body, rdev->getLinks()){
          ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
-         ode_bodies.push_back(odebody);
+         _sim->addODEBody(odebody);
+         _ode_bodies.push_back(odebody);
+         addToMap(odebody, frameToODEBody);
      }
 
      std::vector<ODEJoint*> odeJoints;
@@ -315,27 +327,34 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
          // find the body or joint belonging to parent
          //std::cout << parent->getName() << "<--" << joint->getName() << std::endl;
 
-         ODEBody *odeParent = odeParent = frameToODEBody[parent];
+         ODEBody *odeParent = frameToODEBody[parent];
          ODEBody *odeChild = frameToODEBody[child];
 
          if(odeParent==NULL ){
              RW_THROW("ODEParent is NULL, " << child->getName() << "-->"<< parent->getName());
          }
+
          if(odeChild==NULL ){
              RW_THROW("ODEChild is NULL, " << child->getName() << "-->" << parent->getName());
          }
 
-         Transform3D<> wTchild = Kinematics::worldTframe(child,state);
-         Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-         Vector3D<> hpos = wTchild.P();
+         //Transform3D<> wTchild = Kinematics::worldTframe(child,state);
+         //Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+         //Vector3D<> hpos = wTchild.P();
          //Transform3D<> wTparent = Kinematics::WorldTframe(parentFrame,initState);
 
          std::pair<Q, Q> posBounds = joint->getBounds();
+
          ODEJoint *odeJoint = new ODEJoint(joint, odeParent, odeChild, _sim, state);
+         _sim->addODEJoint(odeJoint);
+
          odeJoint->setMaxForce( maxForce(i) );
+
          _odeJoints.push_back( odeJoint );
+
           i++;
      }
+
 }
 
 

@@ -23,6 +23,8 @@
 namespace rwsim {
 namespace simulator {
 
+    class ODEBody;
+
 	/**
 	 * @brief interface for classes (ODEDevices) that control a set of ode bodies
 	 * that map to a RWSim dynamic device type.
@@ -56,6 +58,8 @@ namespace simulator {
 		 * @param state
 		 */
 		virtual void postUpdate(rw::kinematics::State& state) = 0;
+
+		virtual std::vector<ODEBody*> getBodies() = 0;
 
 	protected:
 		ODEDevice(){};

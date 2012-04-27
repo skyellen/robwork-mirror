@@ -75,6 +75,7 @@ namespace simulator {
 		 */
 		void postUpdate(rw::kinematics::State& state);
 
+        std::vector<ODEBody*> getBodies(){ return _ode_bodies; };
 		/**
 		 *
 		 * @param rdev
@@ -93,6 +94,7 @@ namespace simulator {
 	private:
 		dynamics::RigidDevice *_rdev;
 		std::vector<ODEJoint*> _odeJoints;
+		std::vector<ODEBody*> _ode_bodies;
 		rw::math::Q _maxForce;
 		rw::math::Q _lastQ;
 		double _lastDt;

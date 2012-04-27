@@ -85,6 +85,8 @@ namespace simulator {
 
 		ODEBody* getEndBody(){ return _odeEnd; }
 
+        std::vector<ODEBody*> getBodies(){ return _ode_bodies; };
+
 	protected:
 		//ODESuctionCupDevice(){};
 
@@ -119,6 +121,7 @@ namespace simulator {
         ODEBody *_odeBase, *_odeEnd;
         double _lastX, _lastAng;
         std::vector<dContact> _contacts;
+        std::vector<ODEBody*> _ode_bodies;
 	};
 }
 }

@@ -34,6 +34,7 @@ void ODEUtil::toODERotation(const rw::math::Rotation3D<>& rwR, dMatrix3 R){
 }
 
 void ODEUtil::setODEBodyT3D(dBodyID bodyId, const rw::math::Transform3D<>& t3d){
+    //std::cout << bodyId << " " << t3d.P()[0] << " " << t3d.P()[1] << " " << t3d.P()[2] << std::endl;
     dBodySetPosition(bodyId, t3d.P()[0], t3d.P()[1], t3d.P()[2] );
     rw::math::Quaternion<> rwQuat( t3d.R() );
     dMatrix3 R;
@@ -210,12 +211,14 @@ ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool in
 
 std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::Ptr> geoms, dSpaceID spaceid, bool invert){
     std::vector<ODEUtil::TriGeomData*> triGeomDatas;
+    std::cout << "buildTriGeom: " << geoms.size() << std::endl;
     for(size_t i=0; i<geoms.size(); i++){
         GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
         Transform3D<> transform = geoms[i]->getTransform();
 
         ODEUtil::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,invert);
         if(triMeshData==NULL){
+            std::cout << "TriMeshNull" << std::endl;
             continue;
         }
         dGeomID geoId;

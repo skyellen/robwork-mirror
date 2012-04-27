@@ -443,6 +443,9 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     _odeBase = odebase;
     RW_ASSERT(_odeBase);
     _odeEnd = ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);
+    _ode_bodies.push_back(_odeBase);
+    _ode_bodies.push_back(_odeEnd);
+
     _tcp = _odeEnd->getRwBody();
     // we create a couple of kinematic bodies to lie in between the joints
     dBodyID bTmp1 = dBodyCreate( sim->getODEWorldId() );

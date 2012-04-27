@@ -48,14 +48,11 @@ namespace simulator {
 	 * Foreach sensor=_sensors
 	 *  sensor->update(dt,state)
 	 *
-	 *
-	 *
-	 *
 	 */
 	class PhysicsEngine
 	{
 	public:
-
+	    //! smart pointer type of PhysicsEngine
 	    typedef rw::common::Ptr<PhysicsEngine> Ptr;
 
 		/**
@@ -111,12 +108,13 @@ namespace simulator {
 		virtual drawable::SimulatorDebugRender* createDebugRender() = 0;
 
 		/**
-		 * @brief
+		 * @brief properties of the physics engine
 		 */
 		virtual rw::common::PropertyMap& getPropertyMap() = 0;
 
 		/**
-		 * @brief
+		 * @brief should be called when properties have been changed and one wants the physics engine
+		 * to reflect the new properties.
 		 */
 		virtual void emitPropertyChanged() = 0;
 
@@ -131,8 +129,19 @@ namespace simulator {
 		 */
 		virtual void removeController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
 
+		/**
+		 * @brief add a body to the physics engine
+		 * @param body [in] body to add
+		 * @param state [in] current state
+		 */
 		virtual void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state) = 0;
-		virtual void addDevice(rwsim::dynamics::DynamicDevice::Ptr body, rw::kinematics::State &state) = 0;
+
+        /**
+         * @brief add a dynamic device to the physics engine
+         * @param dev [in] device to add
+         * @param state [in] current state
+         */
+		virtual void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state) = 0;
 
 		/**
 		 * @brief add a simulated sensor to this simulator
@@ -150,7 +159,14 @@ namespace simulator {
 		 * @param b2
 		 */
 		virtual void attach(dynamics::Body::Ptr b1, dynamics::Body::Ptr b2) = 0;
+
+		/**
+		 * @brief removes the 6dof constraint between bodies \b b1 and \b b2 if there is any
+		 * @param b1
+		 * @param b2
+		 */
 		virtual void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2) = 0;
+
 		// this should be a flexible version of the above
 		//virtual void addConstraint( );
 

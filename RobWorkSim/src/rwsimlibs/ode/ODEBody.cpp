@@ -86,7 +86,7 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, 
 
 ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> offset, int matID, int conID, ODEBodyType type):
                 _mframe(NULL),
-                _bodyId(0), // a fixed object in ODE is allways part of the 0 body
+                _bodyId(odeBody), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
                 _rwBody(NULL),
                 _kBody(NULL),
@@ -186,7 +186,7 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     }
     break;
     case(ODEBody::FIXED): {
-
+        // the fixed bodies are not allowed to move during simulation so we don't expect any changes here
     }
     break;
     default:
@@ -223,10 +223,12 @@ void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
 
 rw::math::Transform3D<> ODEBody::getTransform(){
     if(_type==FIXED){
+        /*
         if(_triGeomDatas.size()>0){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
             return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
         }
+        */
         return ODEUtil::getODEGeomT3D(_geomId);
     } else {
         rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
@@ -296,7 +298,13 @@ void ODEBody::reset(const rw::kinematics::State& state){
     break;
     case(ODEBody::FIXED): {
         // TODO: run through all fixed objects and set their configuration
+        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
+        wTb.P() += wTb.R()*_offset;
 
+        BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
+            Transform3D<> gt3d = wTb * gdata->t3d;
+            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        }
     }
     break;
     default:

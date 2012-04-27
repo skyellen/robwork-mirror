@@ -18,6 +18,8 @@
 #ifndef RWSIM_SIMULATOR_ODESIMULATOR_HPP_
 #define RWSIM_SIMULATOR_ODESIMULATOR_HPP_
 
+#define dDOUBLE 1
+
 #include <ode/ode.h>
 
 #include <rw/sensor/Sensor.hpp>
@@ -151,28 +153,19 @@ namespace simulator {
 
 		void DWCChangedListener(dynamics::DynamicWorkCell::DWCEventType type, boost::any data);
 
-
-		/**
-		 * @copydoc Simulator::setEnabled
-		 */
+		//! @copydoc Simulator::setEnabled
 		void setEnabled(dynamics::Body* body, bool enabled);
 
 		//! @copydoc Simulator::setEnabled
 		void setDynamicsEnabled(dynamics::Body* body, bool enabled);
 
-		/**
-		 * @copydoc Simulator::createDebugRender
-		 */
+		//! @copydoc Simulator::createDebugRender
 		drawable::SimulatorDebugRender* createDebugRender();
 
-		/**
-		 * @copydoc Simulator::getPropertyMap
-		 */
+		//! @copydoc Simulator::getPropertyMap
 		virtual rw::common::PropertyMap& getPropertyMap(){ return _propertyMap;};
 
-		/**
-		 * @copydoc Simulator::emitPropertyChanged
-		 */
+		//! @copydoc Simulator::emitPropertyChanged
 		void emitPropertyChanged();
 
 		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
@@ -205,11 +198,12 @@ namespace simulator {
 
 		void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 		void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+
 		void disableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+
 		void enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
-		bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
-
+		//! get current gravity
 		rw::math::Vector3D<> getGravity(){ return _dwc->getGravity(); }
 
 
@@ -220,12 +214,25 @@ namespace simulator {
 
 		dWorldID getODEWorldId(){ return _worldId; }
 
+		void addODEJoint(ODEJoint* odejoint){
+		    _jointToODEJoint[odejoint->getJoint()] = odejoint;
+		}
+
 		ODEJoint* getODEJoint(rw::models::Joint* joint){
             if( _jointToODEJoint.find(joint)== _jointToODEJoint.end()){
                 return NULL;
             }
             return _jointToODEJoint[joint];
 		}
+
+        void addODEBody(ODEBody* odebody){
+            BOOST_FOREACH(rw::kinematics::Frame *f, odebody->getRwBody()->getFrames()){
+                _rwFrameToODEBody[f] = odebody;
+            }
+            BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odebody->getTriGeomData()){
+                _frameToOdeGeoms[odebody->getFrame()] = tgeom->geomId;
+            }
+        }
 
 		ODEBody* getODEBody(rw::kinematics::Frame* frame){
             if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
@@ -246,8 +253,9 @@ namespace simulator {
 
         std::vector<ODEDevice*> getODEDevices() { return _odeDevices;}
 
-	public:
+	protected:
 		//ODEBody* createKinematicBody(KinematicBody* kbody, rw::kinematics::State &state, dSpaceID spaceid);
+        bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
 	public:
 
@@ -359,8 +367,8 @@ namespace simulator {
         dWorldID _worldId;
         dSpaceID _spaceId;
         dJointGroupID _contactGroupId;
-        std::vector<dBodyID> _bodies;
-        std::vector<dBodyID> _allbodies;
+        //std::vector<dBodyID> _bodies;
+        //std::vector<dBodyID> _allbodies;
         std::vector<dJointID> _alljoints;
 
         // RWODE bodies

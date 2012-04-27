@@ -91,8 +91,8 @@ using namespace rwlibs::proximitystrategies;
 
 #define INITIAL_MAX_CONTACTS 1000
 
-//#define RW_DEBUGS( str ) std::cout << str  << std::endl;
-#define RW_DEBUGS( str )
+#define RW_DEBUGS( str ) std::cout << str  << std::endl;
+//#define RW_DEBUGS( str )
 /*
 #define TIMING( str, func ) \
     { long start = rw::common::TimerUtil::currentTimeMs(); \
@@ -299,7 +299,14 @@ void ODESimulator::saveODEState(){
     _odeStateStuff.clear();
 	// first run through all rigid bodies and set the velocity and force to zero
 	// std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
-	BOOST_FOREACH(dBodyID odebody, _allbodies){
+
+
+    //BOOST_FOREACH(dBodyID odebody, _allbodies){
+    BOOST_FOREACH(ODEBody *ob, _odeBodies){
+        if(ob->getType()==ODEBody::FIXED)
+            continue;
+
+        dBodyID odebody = ob->getBodyID();
 		ODEStateStuff res;
 		res.body = odebody;
 		dBodyID body = odebody;
@@ -753,6 +760,15 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 
     _bpstrategy = ownedPtr( new BasicFilterStrategy( _dwc->getWorkcell() ) );
     // build the frame map
+
+
+    //std::vector<Object::Ptr> objects = _dwc->getWorkcell()->getObjects();
+    BOOST_FOREACH(Body::Ptr body , _dwc->getBodies()){
+        Object::Ptr obj = body->getObject();
+        std::cout << "objects: " << obj->getName() << std::endl;
+        _narrowStrategy->addModel(obj);
+    }
+
     std::vector<Frame*> frames = Kinematics::findAllFrames(_dwc->getWorkcell()->getWorldFrame(), state);
     BOOST_FOREACH(Frame *frame, frames){
         _frameToModels[*frame] = _narrowStrategy->getModel(frame);
@@ -884,7 +900,7 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
 */
 
 void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
-
+    std::cout << "Add body: " << body->getName() << std::endl;
     ODEBody *odeBody = NULL;
     if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
         odeBody = ODEBody::makeRigidBody(rbody, _spaceId, this);
@@ -899,7 +915,14 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
         RW_WARN("Unsupported body type, name: " << body->getName() );
         return;
     }
+    BOOST_FOREACH(Frame* f, odeBody->getRwBody()->getFrames() ){
+        _rwFrameToODEBody[f] = odeBody;
+    }
+    BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odeBody->getTriGeomData()){
+        _frameToOdeGeoms[odeBody->getFrame()] = tgeom->geomId;
+    }
     _odeBodies.push_back(odeBody);
+
 }
 
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
@@ -909,8 +932,17 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
     State state = nstate;
 
     // TODO: we need to find or create the base of the device
+    ODEBody* base = _rwFrameToODEBody[ device->getModel().getBase() ];
+    if( base==NULL ){
+        RW_DEBUGS("Creating base of device " << device->getKinematicModel()->getName());
+        // the base has not yet been created, do it here
+        Body *rwbase = device->getBase();
+        addBody(rwbase, state);
 
-    ODEBody* base;
+        base = _rwFrameToODEBody[ device->getModel().getBase() ];
+        if(base==NULL)
+            RW_THROW("Invalid base of Device: " << device->getModel().getName());
+    }
 
     JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
     if(jdev!=NULL){
@@ -1337,7 +1369,7 @@ using namespace rw::proximity;
 
 bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration){
     //
-    //std::cout << "detectCollisionsRW" << onlyTestPenetration << std::endl;
+    std::cout << "detectCollisionsRW" << onlyTestPenetration << std::endl;
     ProximityFilter::Ptr filter = _bpstrategy->update(state);
     FKTable fk(state);
     ProximityStrategyData data;
@@ -1351,17 +1383,19 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         // is required to compute the narrowphase collision
         const ProximityModel::Ptr &a = _frameToModels[*pair.first];
         const ProximityModel::Ptr &b = _frameToModels[*pair.second];
-        if(a==NULL || b==NULL)
+        if(a==NULL || b==NULL){
+            std::cout << "No rwmodels:" << std::endl;
             continue;
+        }
 
         // now find the "body" frame belonging to the frames
-        //std::cout << "bodies" << std::endl;
+        std::cout << "bodies" << std::endl;
         ODEBody *a_data = _rwFrameToODEBody[pair.first];
         ODEBody *b_data = _rwFrameToODEBody[pair.second];
         if(a_data==NULL || b_data==NULL)
             continue;
 
-        //std::cout << "geoms" << std::endl;
+        std::cout << "geoms" << std::endl;
         dGeomID a_geom = _frameToOdeGeoms[pair.first];
         dGeomID b_geom = _frameToOdeGeoms[pair.second];
         if(a_geom==NULL || b_geom==NULL)
@@ -1401,7 +1435,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         //const Transform3D<> bT = ODEUtil::getODEGeomT3D(b_geom);
         const Transform3D<> aT = a_data->getTransform();
         const Transform3D<> bT = b_data->getTransform();
-
+        std::cout << aT.P() << " " << bT.P() << std::endl;
         const Transform3D<> aT_prev = fk.get(pair.first);
         const Transform3D<> bT_prev = fk.get(pair.second);
 
@@ -1418,6 +1452,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
+                std::cout << "IN COLLISION!!!!" << std::endl;
                 return true;
             }
             continue;
@@ -1521,11 +1556,11 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             _contacts.resize(numc);
         }
         int ni = 0;
-        //std::cout << "--- {";
-        //for(int i=0;i<numc;i++){
-        //    std::cout << res.distances[i] << ", ";
-        //}
-        //std::cout << "}"<< std::endl;
+        std::cout << "--- {";
+        for(int i=0;i<numc;i++){
+            std::cout << res->distances[i] << ", ";
+        }
+        std::cout << "}"<< std::endl;
 
         for(size_t i=0;i<numc;i++){
 

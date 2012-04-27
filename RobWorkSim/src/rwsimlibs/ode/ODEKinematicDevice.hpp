@@ -65,6 +65,7 @@ namespace simulator {
 
 		// @brief get the kinematic bodies of this ODEKinematicDevice
 		std::vector<ODEBody*> getBodies(){ return _bodies; };
+
 	private:
 		dynamics::KinematicDevice *_kdev;
 		rw::math::Q _maxVel;

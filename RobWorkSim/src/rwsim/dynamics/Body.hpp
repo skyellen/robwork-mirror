@@ -110,9 +110,10 @@ namespace dynamics {
          */
         Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj):
             	 rw::kinematics::StateData(dof, obj->getBase()->getName()),
-            	 _bodyframe(_obj->getBase()),
-                 _info(info),
-                 _obj(obj)
+            	 _bodyframe(obj->getBase()),
+            	 _obj(obj),
+            	 _info(info)
+
         {
 
         };
@@ -428,6 +429,8 @@ namespace dynamics {
             rw::math::Transform3D<> t3d = rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
             return rw::math::Transform3D<>( t3d.P() + t3d.R()*_info.masscenter , t3d.R() );
         }
+
+        rw::models::Object::Ptr getObject(){ return _obj; };
 
     private:
         rw::kinematics::Frame *_bodyframe;
