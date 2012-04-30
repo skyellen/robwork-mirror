@@ -111,14 +111,15 @@ namespace simulator {
         struct TriGeomData {
         public:
             TriGeomData(TriMeshData::Ptr triData):
-                tridata(triData), mBuffIdx(0)
+                tridata(triData), mBuffIdx(0), refframe(NULL)
             {
                 for (int j=0; j<16; j++){
                     mBuff[0][j] = 0.0f;
                     mBuff[1][j] = 0.0f;
                 }
             }
-
+            // the original ref frame.
+            rw::kinematics::Frame *refframe;
             TriMeshData::Ptr tridata;
             dMatrix4 mBuff[2];
             dQuaternion rot;
@@ -132,7 +133,11 @@ namespace simulator {
 
         static TriMeshData::Ptr buildTriMesh(rw::geometry::GeometryData::Ptr gdata,bool invert = false);
 
-        static std::vector<TriGeomData*> buildTriGeom(std::vector<rw::geometry::Geometry::Ptr> geoms, dSpaceID spaceid, bool invert = false);
+        static std::vector<TriGeomData*> buildTriGeom(std::vector<rw::geometry::Geometry::Ptr> geoms,
+                                                      dSpaceID spaceid,
+                                                      rw::kinematics::Frame* ref,
+                                                      const rw::kinematics::State& state,
+                                                      bool invert = false);
 
 	};
 }

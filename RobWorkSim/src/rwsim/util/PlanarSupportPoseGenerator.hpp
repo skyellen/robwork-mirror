@@ -51,7 +51,9 @@ namespace util {
 		void analyze(const rw::geometry::TriMesh& mesh);
 
 
-		void analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies);
+		void analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies,
+		             rw::kinematics::Frame* ref,
+		             const rw::kinematics::State& state);
 
 
 		void calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses, std::vector<rw::math::Transform3D<> >& posesMises);

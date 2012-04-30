@@ -55,8 +55,9 @@ namespace dynamics {
          * @param frame [in] body reference frame
          * @param geom [in] geometry
          */
-        RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj);
+        RigidBody(const BodyInfo& info, rw::models::Object::Ptr obj);
 
+        //RigidBody(std::vector<std::pair<BodyInfo, rw::models::Object::Ptr> > infos );
 
     	//! @brief destructor
         virtual ~RigidBody(){};

@@ -27,7 +27,29 @@ using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::geometry;
+using namespace rw::models;
 using namespace rwsim::dynamics;
+
+Body::Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj):
+         rw::kinematics::StateData(dof, obj->getBase()->getName()),
+         _bodyframe(obj->getBase()),
+         _obj(obj),
+         _info(info)
+
+{
+    if(_info.objects.size()==0)
+        _info.objects.push_back(obj);
+    BOOST_FOREACH(Object::Ptr iobj, _info.objects){
+        BOOST_FOREACH(Geometry::Ptr geom, iobj->getGeometry() ){
+            _geometry.push_back(geom);
+        }
+        BOOST_FOREACH(Frame* f, iobj->getFrames() ){
+            _frames.push_back(f);
+        }
+
+    }
+
+};
 
 
 rw::math::Vector3D<> Body::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {

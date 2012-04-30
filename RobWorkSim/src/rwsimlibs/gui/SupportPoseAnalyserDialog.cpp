@@ -320,7 +320,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
 
     	// add it to the planar support pose analyzer
     	PlanarSupportPoseGenerator gen;
-    	gen.analyze(geoms);
+    	gen.analyze(geoms, selectedObj->getBodyFrame(), _defaultState);
     	_supportPoses[selectedObj] = gen.getSupportPoses();
 
         std::string locale = setlocale(LC_ALL, NULL);

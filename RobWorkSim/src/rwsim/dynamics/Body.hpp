@@ -56,7 +56,8 @@ namespace dynamics {
         rw::math::Vector3D<> masscenter;
         rw::math::InertiaMatrix<> inertia;
         std::string integratorType;
-        //std::vector<rw::kinematics::Frame*> frames;
+
+        std::vector<rw::models::Object::Ptr> objects;
 
         void print() const{
         	std::cout << "Material: " << material << "\n";
@@ -108,15 +109,8 @@ namespace dynamics {
          * @param info [in] general information of this body
          * @param bodyframe [in]
          */
-        Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj):
-            	 rw::kinematics::StateData(dof, obj->getBase()->getName()),
-            	 _bodyframe(obj->getBase()),
-            	 _obj(obj),
-            	 _info(info)
+        Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj);
 
-        {
-
-        };
 
     public:
 
@@ -139,7 +133,7 @@ namespace dynamics {
          * @brief get all geometry associated with this body
          */
         const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(){
-            return _obj->getGeometry();
+            return _geometry;
         }
 
         /**
@@ -147,7 +141,7 @@ namespace dynamics {
          * @return list of frames
          */
         const std::vector<rw::kinematics::Frame*>& getFrames(){
-            return _obj->getFrames();
+            return _frames;
         }
 
         /**
@@ -434,7 +428,9 @@ namespace dynamics {
 
     private:
         rw::kinematics::Frame *_bodyframe;
-        //std::vector<rw::geometry::Geometry::Ptr> _geometry;
+        std::vector<rw::geometry::Geometry::Ptr> _geometry;
+        std::vector<rw::kinematics::Frame*> _frames;
+
 
         rw::models::Object::Ptr _obj;
     protected:

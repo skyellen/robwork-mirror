@@ -471,6 +471,28 @@ namespace
         info.material = tree.get<string>("MaterialID");
         info.integratorType = tree.get<string>("Integrator");
 
+        info.objects.push_back(obj);
+        // check if the body has multiple objects associated
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if( p->first == "Associate" ){
+                std::string objname = p->second.get_child("<xmlattr>").get<std::string>("object");
+                Object::Ptr assobj = state.wc->findObject(prefix+objname);
+                if(assobj==NULL)
+                    assobj = state.wc->findObject(objname);
+                if(assobj==NULL)
+                    RW_THROW("Associated Object does not exist: \"" << objname << "\"");
+                info.objects.push_back(assobj);
+            }
+        }
+
+        std::vector<Geometry::Ptr> geoms;
+        BOOST_FOREACH(Object::Ptr assobj, info.objects){
+            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry()){
+                geoms.push_back(g);
+            }
+        }
+
+
         // time to load the geometry
         Log::debugLog()<< "load geom" << std::endl;
         //info.frames = GeometryUtil::getAnchoredFrames( *mframe, state.rwstate);
@@ -487,9 +509,9 @@ namespace
 
         	        info.masscenter = readVector3D( tree.get_child("COG") );
         	        Transform3D<> ref(info.masscenter);
-        	        info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(), ref);
+        	        info.inertia = GeometryUtil::estimateInertia(info.mass, geoms, mframe,state.rwstate, ref);
         	    } else {
-        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry());
+        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), mframe,state.rwstate);
         	    }
         	} else {
         		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
@@ -501,7 +523,7 @@ namespace
 
         readProperties(tree, mframe->getPropertyMap());
 
-        //info.print();1½
+        //info.print();
         Log::debugLog()<< "Creating rigid body" << std::endl;
         RigidBody *body = new RigidBody(info, obj);
         state.wc->getStateStructure()->addData(body);
@@ -628,13 +650,15 @@ namespace
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
 
+
+
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
         	if(obj->getGeometry().size()!=0){
-				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry() );
+				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), obj->getBase(),state.rwstate);
         	} else {
         		RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
         	}
@@ -643,7 +667,7 @@ namespace
     }
 
     std::pair<BodyInfo, Object::Ptr> readLink(PTree& tree, ParserState &state, JointDevice *device, bool kinematic=false){
-        Log::debugLog()<< "ReadRigidJoint" << std::endl;
+        Log::debugLog()<< "ReadLink" << std::endl;
         string refjointName = tree.get_child("<xmlattr>").get<std::string>("object");
         Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
         if( obj==NULL )
@@ -653,13 +677,34 @@ namespace
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
 
+        info.objects.push_back(obj);
+        // check if the body has multiple objects associated
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if( p->first == "Associate" ){
+                std::string objname = p->second.get_child("<xmlattr>").get<std::string>("object");
+                Object::Ptr assobj = state.wc->findObject(device->getName()+string(".")+objname);
+                if(assobj==NULL)
+                    assobj = state.wc->findObject(objname);
+                if(assobj==NULL)
+                    RW_THROW("Associated Object does not exist: \"" << objname << "\"");
+                info.objects.push_back(assobj);
+            }
+        }
+
+        std::vector<Geometry::Ptr> geoms;
+        BOOST_FOREACH(Object::Ptr assobj, info.objects){
+            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry()){
+                geoms.push_back(g);
+            }
+        }
+
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
             if(obj->getGeometry().size()!=0){
-                boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry());
+                boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geoms, obj->getBase(),state.rwstate);
             } else {
                 RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
             }
@@ -778,6 +823,8 @@ namespace
             } else if( p->first == "RefBase" ){
                 // base reference to a frame in a body in which it is attached
                 base = readRefBody(p->second, state);
+                //
+
 			} else if(p->first !="<xmlcomment>" && p->first != "<xmlattr>"){
                 RW_THROW("Unknown element");
             }
@@ -790,6 +837,7 @@ namespace
         std::vector<Body*> links = kdev->getLinks();
         BOOST_FOREACH(Body *l, links){
             state.allbodies.push_back(l);
+            state.wc->getStateStructure()->addData(l);
         }
 
         return kdev;
@@ -858,6 +906,7 @@ namespace
         std::vector<Body*> links = rigiddev->getLinks();
         BOOST_FOREACH(Body *l, links){
             state.allbodies.push_back(l);
+            state.wc->getStateStructure()->addData(l);
         }
         return rigiddev;
     }

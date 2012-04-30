@@ -18,6 +18,7 @@
 #include "ODEUtil.hpp"
 
 using namespace rw::math;
+using namespace rw::kinematics;
 using namespace rwsim::simulator;
 using namespace rw::geometry;
 
@@ -209,18 +210,22 @@ ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool in
     return data;
 }
 
-std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::Ptr> geoms, dSpaceID spaceid, bool invert){
+std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::Ptr> geoms, dSpaceID spaceid, Frame* ref, const State& state, bool invert){
     std::vector<ODEUtil::TriGeomData*> triGeomDatas;
     std::cout << "buildTriGeom: " << geoms.size() << std::endl;
     for(size_t i=0; i<geoms.size(); i++){
         GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
-        Transform3D<> transform = geoms[i]->getTransform();
+        Transform3D<> transform;
+        if(geoms[i]->getFrame()!=NULL)
+            transform = Kinematics::frameTframe(ref,geoms[i]->getFrame(),state );
+        transform =transform* geoms[i]->getTransform();
 
         ODEUtil::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,invert);
         if(triMeshData==NULL){
             std::cout << "TriMeshNull" << std::endl;
             continue;
         }
+
         dGeomID geoId;
         bool isTriMesh=false;
         if( Sphere* sphere_rw = dynamic_cast<Sphere*>(rwgdata.get()) ){
@@ -237,6 +242,7 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
 
         dGeomSetData(geoId, triMeshData->triMeshID);
         ODEUtil::TriGeomData *gdata = new ODEUtil::TriGeomData(triMeshData);
+        gdata->refframe = geoms[i]->getFrame();
         gdata->isGeomTriMesh = isTriMesh;
         ODEUtil::toODETransform(transform, gdata->p, gdata->rot);
         gdata->t3d = transform;
@@ -246,6 +252,8 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
     // create geo
     return triGeomDatas;
 }
+
+
 
 
 

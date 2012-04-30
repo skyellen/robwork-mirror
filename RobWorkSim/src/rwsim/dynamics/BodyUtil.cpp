@@ -49,3 +49,23 @@ Transform3D<> BodyUtil::placeBody( rwsim::dynamics::Body::Ptr body,
     return ftrans;
 }
 
+
+
+Body* BodyUtil::getParentBody(dynamics::Body* child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state){
+    return getParentBody(child->getBodyFrame(),dwc,state);
+}
+
+Body* BodyUtil::getParentBody(rw::kinematics::Frame* child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state ){
+    Frame *f = child;
+    Body *pbody = NULL;
+    while(pbody==NULL){
+        f = f->getParent(state);
+        if(f==NULL)
+            return NULL;
+        pbody = dwc->getBody(f);
+    }
+    return pbody;
+}
+
+
+

@@ -155,7 +155,10 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
             Vector3D<> grav = gravity*rwbody->getInfo().mass; // gravity is handled inside ODE
             Vector3D<> force = (body->getLastForce()+grav)/20;
             //std::cout << "FORCE:" << force << std::endl;
+
             Transform3D<> pos = Kinematics::worldTframe(rwbody->getBodyFrame(), *info._state);
+            // make sure to visualize in COM
+            pos.P() += pos.R()*rwbody->getInfo().masscenter;
 
             glLineWidth(2.5);
             glBegin(GL_LINES);

@@ -11,6 +11,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include "Body.hpp"
+#include "DynamicWorkCell.hpp"
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/kinematics/State.hpp>
 
@@ -34,6 +35,11 @@ namespace dynamics {
                                         rw::proximity::CollisionDetector::Ptr coldect,
                                         const rw::kinematics::State& state,
                                         const rw::math::Vector3D<>& dir = -rw::math::Vector3D<>::z());
+
+        static Body* getParentBody(Body* child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state);
+
+        static Body* getParentBody(rw::kinematics::Frame* child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state );
+
 
     };
 

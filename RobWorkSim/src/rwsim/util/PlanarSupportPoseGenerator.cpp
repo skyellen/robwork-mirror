@@ -153,10 +153,10 @@ PlanarSupportPoseGenerator::PlanarSupportPoseGenerator():_hullGenerator(ownedPtr
 PlanarSupportPoseGenerator::PlanarSupportPoseGenerator(ConvexHull3D::Ptr hullGenerator):_hullGenerator(hullGenerator){}
 
 
-void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies){
+void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies, rw::kinematics::Frame* ref, const rw::kinematics::State& state){
     // first the center of mass
     cleanup();
-    Vector3D<> masscenter = GeometryUtil::estimateCOG(bodies);
+    Vector3D<> masscenter = GeometryUtil::estimateCOG(bodies, ref, state);
     _com = masscenter;
     // then we find the convex hull of all vertexes of all geoms
     std::vector<Vector3D<> > vertices;

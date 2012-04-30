@@ -46,22 +46,16 @@ namespace {
         RigidLink( const BodyInfo& info, rw::models::Object::Ptr obj, RigidDevice *ddev, size_t id):
             Body(6,info,obj),_ddev(ddev),_id(id)
         {
-            RW_WARN("2");
             // find the joint index for which this link is attached
             Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
-            RW_WARN("2");
             _jointFrame = firstParentJoint;
-            RW_WARN("2");
             // check which index this joint has in the device
             int idx=0;
-            RW_WARN("2");
             BOOST_FOREACH(Joint* j, _ddev->getJointDevice()->getJoints()){
-                RW_WARN("3");
                 if(firstParentJoint==j){
                     _jointIdx = idx;
                     break;
                 }
-                RW_WARN("3");
                 idx++;
             }
         }

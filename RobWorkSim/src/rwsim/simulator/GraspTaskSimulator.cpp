@@ -755,7 +755,7 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
     */
 
     Vector3D<> cm = object->getInfo().masscenter;
-    double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm);
+    double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm, object->getBodyFrame(), state);
     //std::cout << "cm    : " << cm << std::endl;
     //std::cout << "Radius: " << r<< std::endl;
 

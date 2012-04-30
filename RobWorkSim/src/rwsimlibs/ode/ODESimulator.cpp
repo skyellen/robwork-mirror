@@ -301,12 +301,11 @@ void ODESimulator::saveODEState(){
 	// std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
 
 
-    //BOOST_FOREACH(dBodyID odebody, _allbodies){
-    BOOST_FOREACH(ODEBody *ob, _odeBodies){
-        if(ob->getType()==ODEBody::FIXED)
-            continue;
-
-        dBodyID odebody = ob->getBodyID();
+    BOOST_FOREACH(dBodyID odebody, _allbodies){
+    //BOOST_FOREACH(ODEBody *ob, _odeBodies){
+        //if(ob->getType()==ODEBody::FIXED)
+        //    continue;
+        //dBodyID odebody = ob->getBodyID();
 		ODEStateStuff res;
 		res.body = odebody;
 		dBodyID body = odebody;
@@ -585,11 +584,29 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	BOOST_FOREACH(ODEDevice *dev, _odeDevices){
 	    dev->postUpdate(state);
 	}
+    for(size_t i=0; i<_odeBodies.size(); i++){
+        if(_odeBodies[i]->getFrame()->getName()=="object")
+            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
+        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
+    }
+
 	RW_DEBUGS("------------- Update robwork bodies:");
 	//std::cout << "Update robwork bodies:" << std::endl;
     // now copy all state info into state/bodies (transform,vel,force)
     for(size_t i=0; i<_odeBodies.size(); i++){
+        std::cout << "POST Update: " << _odeBodies[i]->getFrame()->getName() << std::endl;
         _odeBodies[i]->postupdate(state);
+        for(size_t i=0; i<_odeBodies.size(); i++){
+            if(_odeBodies[i]->getFrame()->getName()=="object")
+                std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
+            //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
+        }
+    }
+
+    for(size_t i=0; i<_odeBodies.size(); i++){
+        if(_odeBodies[i]->getFrame()->getName()=="object")
+            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
+        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
     }
 
     RW_DEBUGS("------------- Sensor update :");
@@ -603,6 +620,12 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     dJointGroupEmpty(_contactGroupId);
     // and the joint feedbacks that where used is also destroyed
     _nextFeedbackIdx=0;
+
+    for(size_t i=0; i<_odeBodies.size(); i++){
+        if(_odeBodies[i]->getFrame()->getName()=="object")
+            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
+        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
+    }
 
 	RW_DEBUGS("------------- Update trimesh prediction:");
 	BOOST_FOREACH(ODEUtil::TriGeomData *data, _triGeomDatas){
@@ -633,6 +656,14 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "e";
 	RW_DEBUGS("----------------------- END STEP --------------------------------");
 	//std::cout << "-------------------------- END STEP --------------------------------" << std::endl;
+
+    for(size_t i=0; i<_odeBodies.size(); i++){
+        if(_odeBodies[i]->getFrame()->getName()=="object")
+            std::cout << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
+        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
+    }
+
+
 }
 
 rwsim::drawable::SimulatorDebugRender* ODESimulator::createDebugRender(){
@@ -904,11 +935,11 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
     ODEBody *odeBody = NULL;
     if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
         odeBody = ODEBody::makeRigidBody(rbody, _spaceId, this);
-        _bodies.push_back(odeBody->getBodyID());
+        _allbodies.push_back(odeBody->getBodyID());
         dBodySetAutoDisableFlag(odeBody->getBodyID(), 0);
     } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body.get() ) ) {
         odeBody = ODEBody::makeKinematicBody(kbody, _spaceId, this);
-        _bodies.push_back(odeBody->getBodyID());
+        _allbodies.push_back(odeBody->getBodyID());
     } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body.get() ) ) {
         odeBody = ODEBody::makeFixedBody(fbody, _spaceId, this);
     } else {
@@ -923,6 +954,7 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
     }
     _odeBodies.push_back(odeBody);
 
+
 }
 
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
@@ -931,7 +963,13 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
     rwsim::dynamics::DynamicDevice *device = dev.get();
     State state = nstate;
 
-    // TODO: we need to find or create the base of the device
+    // in case the base of one device is fixed onto another device
+    // we need to reference the actual base frame with the body base frame
+    // TODO: this feature should be replaced by composite body feature...
+    if(dev->getBase()->getBodyFrame() != device->getModel().getBase() ){
+        _rwFrameToODEBody[ device->getModel().getBase() ] = _rwFrameToODEBody[ dev->getBase()->getBodyFrame() ];
+    }
+
     ODEBody* base = _rwFrameToODEBody[ device->getModel().getBase() ];
     if( base==NULL ){
         RW_DEBUGS("Creating base of device " << device->getKinematicModel()->getName());
@@ -1264,14 +1302,43 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         //_odeBodyToSensor[odeBody->getBodyID()].push_back( odesensor );
         _odeSensors.push_back(odesensor);
 
-	    // we find any permanent constraints between the two bodies and add permanent feedbacks
+        //attach(parentOdeBody->getRwBody(), sensorOdeBody->getRwBody());
+
+        // we find any permanent constraints between sensor frame and other bodies that are not the parent frame
+        int nrJoints = dBodyGetNumJoints(sensorOdeBody->getBodyID());
+
+        for(int i=0;i<nrJoints;i++){
+            dJointID joint = dBodyGetJoint(sensorOdeBody->getBodyID(), i);
+
+            dBodyID cbody1 = dJointGetBody(joint,0);
+            dBodyID cbody2 = dJointGetBody(joint,1);
+
+            if(cbody1==parentOdeBody->getBodyID() ||  cbody2==parentOdeBody->getBodyID())
+                continue;
+
+            if(cbody1==sensorOdeBody->getBodyID()){
+                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+                _nextFeedbackGlobalIdx++;
+                dJointSetFeedback( joint, feedback );
+                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 0);
+            } else if( cbody2==sensorOdeBody->getBodyID() ) {
+                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+                _nextFeedbackGlobalIdx++;
+                dJointSetFeedback( joint, feedback );
+                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 1);
+            }
+        }
+
+
+        /*
+        // we find any permanent constraints between the two bodies and add permanent feedbacks
         int nrJoints = dBodyGetNumJoints(parentOdeBody->getBodyID());
+
         for(int i=0;i<nrJoints;i++){
             dJointID joint = dBodyGetJoint(parentOdeBody->getBodyID(), i);
 
             dBodyID cbody1 = dJointGetBody(joint,0);
             dBodyID cbody2 = dJointGetBody(joint,1);
-
 
             if(cbody1==sensorOdeBody->getBodyID()){
                 dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
@@ -1287,8 +1354,8 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
                 // the constraint is not shared between both bodies
                 continue;
             }
-
         }
+        */
 
 	} else if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
 	    // this is a general tactile sensor, only contact joints will be monitored.
@@ -2078,7 +2145,7 @@ void ODESimulator::resetScene(rw::kinematics::State& state)
 	_time = 0.0;
 
 	// first run through all rigid bodies and set the velocity and force to zero
-	RW_DEBUGS("- Resetting bodies: " << _bodies.size());
+	RW_DEBUGS("- Resetting bodies: " << _allbodies.size());
 	BOOST_FOREACH(dBodyID body, _allbodies){
 	    dBodySetLinearVel  (body, 0, 0, 0);
 	    dBodySetAngularVel (body, 0, 0, 0);

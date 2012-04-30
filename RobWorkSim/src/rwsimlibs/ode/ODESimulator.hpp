@@ -232,6 +232,9 @@ namespace simulator {
             BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odebody->getTriGeomData()){
                 _frameToOdeGeoms[odebody->getFrame()] = tgeom->geomId;
             }
+            _odeBodies.push_back(odebody);
+            if(odebody->getType()!=ODEBody::FIXED)
+                _allbodies.push_back(odebody->getBodyID());
         }
 
 		ODEBody* getODEBody(rw::kinematics::Frame* frame){
@@ -368,7 +371,7 @@ namespace simulator {
         dSpaceID _spaceId;
         dJointGroupID _contactGroupId;
         //std::vector<dBodyID> _bodies;
-        //std::vector<dBodyID> _allbodies;
+        std::vector<dBodyID> _allbodies;
         std::vector<dJointID> _alljoints;
 
         // RWODE bodies

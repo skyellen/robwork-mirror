@@ -131,6 +131,9 @@ namespace simulator {
 		rw::math::Transform3D<> getTransformCOM();
 
         //! set transform of body, using bodyframe
+        void setTransform(const rw::kinematics::State& state);
+
+        //! set transform of body, using bodyframe
 		void setTransform(const rw::math::Transform3D<>& wTbody);
 
 		//! set transform of body, using COM

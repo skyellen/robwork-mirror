@@ -344,35 +344,20 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     Frame *bframe = NULL;
     State rstate = state;
     double zeroq[] = {0.0,0.0,0.0,0.0};
-    RW_WARN("1");
     if(_type!=ODEJoint::DEPEND){
-        RW_WARN("1");
         _rwJoint->setData(rstate, zeroq);
-        RW_WARN("1");
-        bframe = _child->getFrame();
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, rstate);
-        RW_WARN("1");
-        wTb.P() += wTb.R()*_offset;
-        ODEUtil::setODEBodyT3D( _child->getBodyID(), wTb );
     } else {
-        RW_WARN("1");
         //_rwJoint->getJoint()->setData(rstate, zeroq);
         _owner->getJoint()->setData(rstate, zeroq);
-        bframe = _child->getFrame();
-        RW_WARN("1");
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, rstate);
-        wTb.P() += wTb.R()*_offset;
-        RW_WARN("1");
-        ODEUtil::setODEBodyT3D( _child->getBodyID(), wTb );
     }
-    RW_WARN("1");
-    Transform3D<> wTchild = Kinematics::worldTframe(bframe, rstate);
+    _child->setTransform(rstate);
+
+    Transform3D<> wTchild = Kinematics::worldTframe(_rwJoint, rstate);
     Vector3D<> hpos = wTchild.P();
     Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-    RW_WARN("1");
+
     if(_jtype==Revolute){
         //dJointGetBody()
-        RW_WARN("1");
         dJointSetHingeAxis(_jointId, haxis(0) , haxis(1), haxis(2));
         dJointSetHingeAnchor(_jointId, hpos(0), hpos(1), hpos(2));
     } else if(_jtype==Prismatic){
@@ -380,24 +365,10 @@ void ODEJoint::reset(const rw::kinematics::State& state){
         //dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
         //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
     }
-    RW_WARN("1");
-    if(_type!=ODEJoint::DEPEND){
-        RW_WARN("1");
-        bframe = _child->getFrame();
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, state);
-        RW_WARN("1");
-        wTb.P() += wTb.R()*_offset;
-        ODEUtil::setODEBodyT3D( _child->getBodyID(), wTb );
-    } else {
-        RW_WARN("1");
-        bframe = _child->getFrame();
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, state);
-        wTb.P() += wTb.R()*_offset;
-        ODEUtil::setODEBodyT3D( _child->getBodyID(), wTb );
-    }
-    RW_WARN("1");
+
+    _child->setTransform(state);
     dBodyEnable( _child->getBodyID() );
-    RW_WARN("1");
+
     //! TODO: these should be set to the correct velocities defined in state
     Vector3D<> avel = _child->getRwBody()->getAngVelW(state);
     Vector3D<> lvel = _child->getRwBody()->getLinVelW(state);

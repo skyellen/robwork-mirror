@@ -97,6 +97,7 @@ ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> off
                 _contactID(conID),
                 _offset(offset)
 {
+    _rwBody = dynamic_cast<RigidBody*>(body);
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
@@ -105,6 +106,14 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
     case(ODEBody::RIGID): {
         Vector3D<> f = _rwBody->getForceW( state );
         Vector3D<> t = _rwBody->getTorqueW( state );
+        _lastForce = f;
+        dBodyAddForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
+        dBodyAddTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
+    }
+    break;
+    case(ODEBody::RIGIDODE): {
+        Vector3D<> f = _body->getForceW( state );
+        Vector3D<> t = _body->getTorqueW( state );
         _lastForce = f;
         dBodyAddForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
         dBodyAddTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
@@ -151,24 +160,35 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
 void ODEBody::postupdate(rw::kinematics::State& state){
     switch(_type){
     case(ODEBody::RIGID): {
-
+        std::cout << _mframe->getName() << std::endl;
         Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
+        std::cout << "wTp    : " << wTp << std::endl;
+        std::cout << "wTb_ode: " << ODEUtil::getODEBodyT3D(_bodyId) << std::endl;
+
         Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
         pTb.P() -= pTb.R()*_offset;
+        std::cout << "pTb" << pTb << std::endl;
         _mframe->setTransform( pTb , state );
+        std::cout << "pTb" << _mframe->getTransform( state ) << std::endl;
+
 
         //_rwBody->setWorldTcom(ODEUtil::getODEBodyT3D(_bodyId), state);
         Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
         Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
         // angular velocity is defined in world coordinates and around center of mass
-
+        if(_rwBody==NULL)
+            std::cout << "BODY is null" << std::endl;
         //_rwBody->setAngVelW( ang , state);
         //_rwBody->setLinVelW( lin , state);
 
-        // reset force accumulation
-        _rwBody->setForce( Vector3D<>::zero(), state );
-        _rwBody->setTorque( Vector3D<>::zero(), state );
+
+        //_rwBody->setForce( Vector3D<>::zero(), state );
+        //_rwBody->setTorque( Vector3D<>::zero(), state );
+    }
+    break;
+    case(ODEBody::RIGIDODE): {
+        // nothing can really be done here, since we don't know anything about the
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -193,6 +213,14 @@ void ODEBody::postupdate(rw::kinematics::State& state){
         RW_WARN("UNSUPPORTED ODEBody type");
         break;
     }
+    // reset force accumulation
+    _body->setForce( Vector3D<>::zero(), state );
+    _body->setTorque( Vector3D<>::zero(), state );
+}
+
+void ODEBody::setTransform(const rw::kinematics::State& state){
+    Transform3D<> wtb = Kinematics::worldTframe(_rwframe, state);
+    setTransform( wtb );
 }
 
 void ODEBody::setTransform(const rw::math::Transform3D<>& wTbody){
@@ -282,6 +310,25 @@ void ODEBody::reset(const rw::kinematics::State& state){
     	Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _mframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
+        Vector3D<> avel = _body->getAngVelW(state);
+        Vector3D<> lvel = _body->getLinVelW(state);
+        //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
+        dBodyEnable( _bodyId );
+        dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
+        dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
+    }
+    break;
+    case(ODEBody::RIGIDODE): {
+        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
+        wTb.P() += wTb.R()*_offset;
+        ODEUtil::setODEBodyT3D( _bodyId, wTb );
+
+        Vector3D<> avel = _body->getAngVelW(state);
+        Vector3D<> lvel = _body->getLinVelW(state);
+        //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
+        dBodyEnable( _bodyId );
+        dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
+        dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -289,8 +336,8 @@ void ODEBody::reset(const rw::kinematics::State& state){
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
 
-        Vector3D<> avel = _kBody->getAngVel(state);
-        Vector3D<> lvel = _kBody->getLinVel(state);
+        Vector3D<> avel = _kBody->getAngVelW(state);
+        Vector3D<> lvel = _kBody->getLinVelW(state);
         //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
@@ -311,20 +358,15 @@ void ODEBody::reset(const rw::kinematics::State& state){
     	RW_WARN("UNSUPPORTED ODEBody type");
     	break;
 	}
-
-	if(_bodyId!=0){
-        dBodyEnable( _bodyId );
-        dBodySetAngularVel( _bodyId, 0, 0, 0 );
-        dBodySetLinearVel( _bodyId, 0, 0, 0 );
-	}
 }
 
 
 ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESimulator* sim){
+    State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
 
     const BodyInfo& info = rwbody->getInfo();
     std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
-    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceId, false);
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceId, rwbody->getBodyFrame(), state, false);
 
     if(gdatas.size()==0){
         RW_WARN("Body: "<< rwbody->getBodyFrame()->getName() << " has no geometry!");
@@ -391,12 +433,12 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESi
 ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator *sim)
 {
     RW_ASSERT(kbody!=NULL);
-
+    State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
     BodyInfo info = kbody->getInfo();
 
     // create a triangle mesh for all statically connected nodes
     std::vector<Geometry::Ptr> geoms = kbody->getGeometry();
-    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceid, false);
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, spaceid, kbody->getBodyFrame(), state,false);
     // if no triangles was loaded then continue
     if( gdatas.size()==0 ){
         RW_WARN("No triangle mesh defined for this body: " << kbody->getBodyFrame()->getName());
@@ -447,13 +489,14 @@ ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator 
 
 ODEBody* ODEBody::makeFixedBody(Body* rwbody, dSpaceID spaceid, ODESimulator *sim)
 {
+    State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
     const BodyInfo& info = rwbody->getInfo();
     //FixedBody *rbody = dynamic_cast<FixedBody*>( rwbody );
     //if(rbody==NULL)
     //    RW_THROW("Not a fixed body!");
     // create a triangle mesh for all statically connected nodes
     std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
-    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, sim->getODESpace(), false);
+    std::vector<ODEUtil::TriGeomData*> gdatas = ODEUtil::buildTriGeom(geoms, sim->getODESpace(), rwbody->getBodyFrame(), state, false);
     // if no triangles was loaded then continue
     if( gdatas.size()==0 ){
         RW_WARN("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
