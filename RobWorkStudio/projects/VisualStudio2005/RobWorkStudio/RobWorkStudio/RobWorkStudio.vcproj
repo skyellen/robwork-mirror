@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".\rwstudio\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest;D:\rw\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\gtask\GeneratedFiles"
+				AdditionalIncludeDirectories="..\rws_sensors\generatedfiles;..\rws\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest;D:\rw\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\gtask\GeneratedFiles"
 				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE;QT_DLL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;.\..\rwstudio\generatedfiles;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest"
+				AdditionalIncludeDirectories="..\rws_sensors\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;.\..\rwstudio\generatedfiles;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest"
 				PreprocessorDefinitions="WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS;QT_DLL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="true"
@@ -623,7 +623,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
+				RelativePath="..\..\..\..\src\images\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -651,7 +651,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\images\jog.png"
+				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -931,7 +931,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
+				RelativePath=".\Resources\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -959,7 +959,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Resources\planning.png"
+				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

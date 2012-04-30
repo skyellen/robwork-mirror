@@ -45,7 +45,7 @@
 #include "RobWorkStudioPlugin.hpp"
 #include "RWStudioView3D.hpp"
 #include "HelpAssistant.hpp"
-#include "AboutBox.hpp"
+
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -56,6 +56,8 @@ class QDragDropEvent;
 class QDragMoveEvent;
 
 namespace rws {
+
+	class AboutBox;
 
     /** @addtogroup rws
         @{ */

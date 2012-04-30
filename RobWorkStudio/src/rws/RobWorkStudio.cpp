@@ -29,7 +29,7 @@
 #include <QObject>
 
 #include "RobWorkStudio.hpp"
-
+#include "AboutBox.hpp"
 #include "SceneOpenGLViewer.hpp"
 
 #include <rw/common/os.hpp>

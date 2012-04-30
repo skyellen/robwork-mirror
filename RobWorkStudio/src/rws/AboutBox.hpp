@@ -4,7 +4,9 @@
 #include <QDialog>
 #include "ui_AboutBox.h"
 
+
 namespace rws {
+
 
 /**
  * @brief AboutBox in RobWorkStudio.
