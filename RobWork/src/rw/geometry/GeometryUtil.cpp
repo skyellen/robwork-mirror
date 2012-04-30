@@ -137,7 +137,7 @@ GeometryUtil::estimateInertia(
 }
 #endif
 
-rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms)
+rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms, rw::kinematics::Frame* ref, const rw::kinematics::State& state)
 {
 	if(geoms.size()==0)
 		RW_THROW("At least one geometry is required!");
@@ -149,7 +149,11 @@ rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> 
         // check if type of geom is really a trimesh
 		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
-        Transform3D<> t3d = geom->getTransform();
+		Transform3D<> t3d;
+		if(geom->getFrame()!=NULL)
+		    t3d = Kinematics::frameTframe(ref,geom->getFrame(), state);
+		t3d = t3d*geom->getTransform();
+
         for(size_t i=0; i<trimesh->getSize(); i++){
             Triangle<double> tri = trimesh->getTriangle(i);
             const Vector3D<>& p = t3d* (tri[0]);
@@ -217,7 +221,8 @@ rw::math::Vector3D<> GeometryUtil::estimateCOG(const TriMesh& trimesh){
 }
 
 double GeometryUtil::calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
-                                 const rw::math::Vector3D<> center)
+                                 const rw::math::Vector3D<> center,
+                                 rw::kinematics::Frame* ref, const rw::kinematics::State& state)
 {
     double maxDist = 0;
 
@@ -227,7 +232,11 @@ double GeometryUtil::calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
         // check if type of geom is really a trimesh
 		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
-        Transform3D<> t3d = geom->getTransform();
+        Transform3D<> t3d;
+        if(geom->getFrame()!=NULL)
+            t3d = Kinematics::frameTframe(ref,geom->getFrame(), state);
+        t3d = t3d*geom->getTransform();
+
         for(size_t i=0; i<trimesh->getSize(); i++){
             Triangle<double> tri = trimesh->getTriangle(i);
             const Vector3D<>& p = t3d* (tri[0]);
@@ -244,20 +253,22 @@ double GeometryUtil::calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
 
 std::pair<Vector3D<>, InertiaMatrix<> > GeometryUtil::estimateInertiaCOG(double mass,
 	const std::vector<Geometry::Ptr>& geoms,
+	rw::kinematics::Frame* refframe, const rw::kinematics::State& state,
     const Transform3D<>& ref)
 {
 	if(geoms.size()==0)
 		RW_THROW("At least one geometry is required!");
-    Vector3D<float> center = cast<float>( ref * estimateCOG( geoms ) );
+    Vector3D<float> center = cast<float>( ref * estimateCOG( geoms, refframe, state ) );
     Transform3D<> nref = ref;
     nref.P() -= cast<double>(center);
-    InertiaMatrix<> inertia = estimateInertia(mass, geoms, nref);
+    InertiaMatrix<> inertia = estimateInertia(mass, geoms, refframe, state, nref);
     return std::make_pair(cast<double>(center),inertia);
 }
 
 rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
     double mass,
 	const std::vector<Geometry::Ptr>& geoms,
+	rw::kinematics::Frame* refframe, const rw::kinematics::State& state,
     const Transform3D<>& ref)
 {
 	if(geoms.size()==0)
@@ -271,7 +282,11 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
         // check if type of geom is really a trimesh
 		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
-        Transform3D<> t3d = ref*geom->getTransform();
+        Transform3D<> t3d = ref;
+        if(geom->getFrame()!=NULL)
+            t3d = Kinematics::frameTframe(refframe,geom->getFrame(), state);
+        t3d = t3d*geom->getTransform();
+
 
         triCnt += trimesh->getSize();
         for(size_t i=0; i<trimesh->getSize(); i++){

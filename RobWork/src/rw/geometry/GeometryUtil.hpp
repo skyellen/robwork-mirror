@@ -56,7 +56,8 @@ public:
      * @note the inertia is NOT described around center of gravity, but around ref
      */
 	static rw::math::InertiaMatrix<> estimateInertia(double mass, const std::vector<Geometry::Ptr> &geoms,
-                                                     const rw::math::Transform3D<>& ref =
+	                                                 rw::kinematics::Frame* ref, const rw::kinematics::State& state,
+                                                     const rw::math::Transform3D<>& reftrans =
                                                              rw::math::Transform3D<>::identity());
 
     /**
@@ -68,14 +69,16 @@ public:
     static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(
     		double mass,
     		const std::vector<Geometry::Ptr> &geoms,
-    		const rw::math::Transform3D<>& ref = rw::math::Transform3D<>::identity());
+    		rw::kinematics::Frame* ref,
+    		const rw::kinematics::State& state,
+    		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
 
     /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
      * @param geoms [in] the geometries
      * @return the center of gravity of the geometries
      */
-	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
+	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms, rw::kinematics::Frame* ref, const rw::kinematics::State& state);
 
     /**
      * @brief estimates the center of gravity (COG) of a triangle mesh \b trimesh
@@ -90,7 +93,7 @@ public:
       * @param center [in] the point to calculate the distance from
       * @return the maximum distance to any triangle in the geometries
       */
-    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms, const rw::math::Vector3D<> center);
+    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms, const rw::math::Vector3D<> center, rw::kinematics::Frame* ref, const rw::kinematics::State& state);
 
     /**
      * @brief estimates center of gravity (COG) of a single tirangle mesh
