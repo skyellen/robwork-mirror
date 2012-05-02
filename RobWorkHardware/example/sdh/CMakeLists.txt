@@ -3,7 +3,7 @@
 FIND_PACKAGE(SDH)
 FIND_PACKAGE(PEAKCAN)
 
-IF(COMPONENT_sdh_ENABLE AND SDH_FOUND)
+IF(COMPONENT_sdh_ENABLE AND SDH_FOUND AND PEAKCAN_FOUND)
     INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} )
 
     set(LibraryList
@@ -18,4 +18,4 @@ IF(COMPONENT_sdh_ENABLE AND SDH_FOUND)
     
     add_executable(demo-simple2 demo-simple2.cpp sdhoptions.cpp)
     target_link_libraries(demo-simple2 ${LibraryList})
-ENDIF(COMPONENT_sdh_ENABLE AND SDH_FOUND)
+ENDIF(COMPONENT_sdh_ENABLE AND SDH_FOUND AND PEAKCAN_FOUND)
