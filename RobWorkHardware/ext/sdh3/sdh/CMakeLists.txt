@@ -27,6 +27,7 @@ add_library(
   dsa.cpp
   sdh.cpp
   sdhbase.cpp
+  sdh_codes.cpp
   sdhexception.cpp
   sdhserial.cpp
   serialbase.cpp
@@ -34,6 +35,7 @@ add_library(
   simplevector.cpp
   unit_converter.cpp
   util.cpp
+  tcpserial.cpp
 )
   		
 

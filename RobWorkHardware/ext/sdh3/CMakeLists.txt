@@ -30,7 +30,7 @@ endif ()
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
 if (DEFINED CYGWIN)
-
+	SET(OSNAME_CYGWIN ON)
 elseif(DEFINED MSVC)
     add_definitions(-DSDH_USE_VCC)
     SET(SDH_USE_VCC on)
@@ -39,8 +39,8 @@ elseif(DEFINED WIN32)
     MESSAGE(STATUS "MINGW")
     SET(SDH_USE_VCC on)
     add_definitions(-DSDH_USE_VCC)
-else ()
-
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	SET(OSNAME_LINUX ON)
 endif () 
 
 LIST(APPEND CMAKE_MODULE_PATH ${ROOT}/build)
@@ -49,12 +49,10 @@ FIND_PACKAGE(PEAKCAN)
 
 IF(ESDCAN_FOUND)
     SET(WITH_ESD_CAN on)
-    add_definitions(-DWITH_ESD_CAN)
 ENDIF()
 
 IF(PEAKCAN_FOUND)
     SET(WITH_PEAK_CAN on)
-    add_definitions(-DWITH_PEAK_CAN)
 ENDIF()
 
 # make sure to setup include and lib directories
