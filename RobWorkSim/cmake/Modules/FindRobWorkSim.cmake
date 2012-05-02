@@ -24,7 +24,7 @@ ENDIF()
 
 # Check if RW_ROOT path are setup correctly
 FIND_FILE(ROBWORKSIM_FOUND RobWorkSimSetup.cmake 
-    ${RWSIM_ROOT}/build 
+    ${RWSIM_ROOT}/cmake 
 	"../build/"
 	"../RobWorkSim/build/"
 	"../../RobWorkSim/build/"
@@ -38,10 +38,10 @@ ENDIF()
 MESSAGE(STATUS "RobWorkSim path: ${RWSIM_ROOT}")
 
 # get the build configuration of the requested built type
-IF(EXISTS ${RWSIM_ROOT}/build/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-	INCLUDE(${RWSIM_ROOT}/build/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+IF(EXISTS ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+	INCLUDE(${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 ELSE()
-	INCLUDE(${RWSIM_ROOT}/build/RobWorkSimBuildConfig.cmake)
+	INCLUDE(${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake)
 ENDIF()
 
 SET(ROBWORKSIM_VERSION ${RWSIM_BUILD_WITH_VERSION})
@@ -50,7 +50,7 @@ MESSAGE(STATUS "RobWorkSim VERSION: ${ROBWORKSIM_VERSION}")
 
 #Include default settings for constructing a robwork dependent project
 SET(ROBWORK_ROOT ${RW_ROOT})
-SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/cmake ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(RobWork REQUIRED)
 
 STRING(COMPARE EQUAL "${ROBWORKSIM_VERSION}" "${ROBWORK_VERSION}" COMPATIBLE_VERSION)
@@ -62,7 +62,7 @@ ENDIF()
 SET(ROBWORKSTUDIO_ROOT ${RWS_ROOT})
 SET(RWSTUDIO_ROOT ${RWS_ROOT})
 
-SET(CMAKE_MODULE_PATH ${RWS_ROOT}/build ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH ${RWS_ROOT}/cmake ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(RobWorkStudio REQUIRED)
 
 STRING(COMPARE EQUAL "${ROBWORKSTUDIO_VERSION}" "${ROBWORKSIM_VERSION}" COMPATIBLE_VERSION)

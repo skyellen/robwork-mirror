@@ -54,13 +54,13 @@ ENDIF()
 
 # Try and find the robwork root path by checking the standard paths
 FIND_FILE(RW_ROOT_PATH_TEST RobWorkSetup.cmake 
-	"${ROBWORK_ROOT}/build/"
-	"${RW_ROOT}/build/"
-	"../build/"
-	"../RobWork/build/"
-	"../../RobWork/build/"
-	"c:/program files/RobWork/build/"
-	"c:/programmer/RobWork/build/"
+	"${ROBWORK_ROOT}/cmake/"
+	"${RW_ROOT}/cmake/"
+	"../cmake/"
+	"../RobWork/cmake/"
+	"../../RobWork/cmake/"
+	"c:/program files/RobWork/cmake/"
+	"c:/programmer/RobWork/cmake/"
 )
 
 IF(NOT RW_ROOT_PATH_TEST)
@@ -87,10 +87,10 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 # get the build configuration of the requested built type
-IF(EXISTS ${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-	INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+IF(EXISTS ${RW_ROOT}/cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+	INCLUDE(${RW_ROOT}/cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 ELSE()
-	INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig.cmake)
+	INCLUDE(${RW_ROOT}/cmake/RobWorkBuildConfig.cmake)
 ENDIF()
 
 

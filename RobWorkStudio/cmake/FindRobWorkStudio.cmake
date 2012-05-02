@@ -38,14 +38,14 @@ ENDIF()
 
 # Check if RW_ROOT path are setup correctly
 FIND_FILE(ROBWORKSTUDIO_FOUND RobWorkStudioSetup.cmake 
-    "${RWSTUDIO_ROOT}/build" 
-  	"${ROBWORKSTUDIO_ROOT}/build/"
-	"${RWS_ROOT}/build/"
-	"../build/"
-	"../RobWorkStudio/build/"
-	"../../RobWorkStudio/build/"
-	"c:/program files/RobWork/build/"
-	"c:/programmer/RobWork/build/"
+    "${RWSTUDIO_ROOT}/cmake/" 
+  	"${ROBWORKSTUDIO_ROOT}/cmake/"
+	"${RWS_ROOT}/cmake/"
+	"../cmake/"
+	"../RobWorkStudio/cmake/"
+	"../../RobWorkStudio/cmake/"
+	"c:/program files/RobWork/cmake/"
+	"c:/programmer/RobWork/cmake/"
 )
 
 IF(NOT ROBWORKSTUDIO_FOUND)
