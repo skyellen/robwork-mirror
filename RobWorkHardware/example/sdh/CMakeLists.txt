@@ -1,12 +1,15 @@
 # check compiler/operating system
 
-IF(COMPONENT_sdh_ENABLE)
+FIND_PACKAGE(SDH)
+FIND_PACKAGE(PEAKCAN)
+
+IF(COMPONENT_sdh_ENABLE AND SDH_FOUND)
+    INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} )
+
     set(LibraryList
       rwhw_sdh
-      #rwhw_can 
-      #rwhw_serialport
-      sdh
-      ntcan.lib # needed by rwhw_can
+      ${SDH_LIBRARY}
+      ${PEAKCAN_LIBRARIES}
       ${ROBWORK_LIBRARIES}
     )
     
@@ -14,5 +17,5 @@ IF(COMPONENT_sdh_ENABLE)
     target_link_libraries(SDHExample1 ${LibraryList})
     
     add_executable(demo-simple2 demo-simple2.cpp sdhoptions.cpp)
-    target_link_libraries(demo-simple2 sdh ntcan.lib)
-ENDIF(COMPONENT_sdh_ENABLE)
+    target_link_libraries(demo-simple2 ${LibraryList})
+ENDIF(COMPONENT_sdh_ENABLE AND SDH_FOUND)

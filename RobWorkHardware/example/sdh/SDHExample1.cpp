@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 	std::cout << "* creating SDH " << std::endl;
 	SDHDriver *sdh = new SDHDriver();
 	std::cout << "* connecting SDH " << std::endl;
-	sdh->connect(0);
+	sdh->connect( 0, 1000000 );
 	if(!sdh->isConnected())
 		RW_THROW("SDH could not connect to hardware!");
 	std::cout << "* sdh connected! " << std::endl
