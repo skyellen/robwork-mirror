@@ -98,10 +98,13 @@ namespace rw { namespace models {
          * @param name [in] The name of the workcell. A good name for the
          * workcell would be the (eventual) file that the workcell was loaded
          * from.
+		 * 
+		 * @param filename [in] The filename from which the workcell is loaded.
          */
         WorkCell(
             kinematics::StateStructure::Ptr tree,
-            const std::string& name = "");
+            const std::string& name = "",
+			const std::string& filename = "");
 
         /**
          * Destroys a work cell including the devices that have been added.
@@ -416,6 +419,14 @@ namespace rw { namespace models {
 
         rw::graphics::SceneDescriptor::Ptr getSceneDescriptor(){ return _sceneDescriptor;}
         void setSceneDescriptor(rw::graphics::SceneDescriptor::Ptr scene){ _sceneDescriptor = scene;}
+
+		/**
+		 * @brief Returns the full path and filename of the workcell.
+		 *
+		 * If the workcell is loaded from file, then this method returns the full filename. Otherwise
+		 * it returns an empty string.
+		 */
+		std::string getFilename() const;
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);
         void stateDataRemovedListener(const rw::kinematics::StateData* data);
@@ -425,6 +436,7 @@ namespace rw { namespace models {
 		std::vector<rw::common::Ptr<Device> > _devices;
 		std::vector<rw::common::Ptr<Object> > _objects;
         std::string _name;
+		std::string _filename;
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
         std::vector<rw::sensor::Sensor::Ptr> _sensors;

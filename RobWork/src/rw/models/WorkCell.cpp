@@ -42,10 +42,11 @@ WorkCell::WorkCell(const std::string& name)
     _tree->stateDataRemovedEvent().add( boost::bind(&WorkCell::stateDataRemovedListener, this, _1), this );
 }
 
-WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
+	WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name, const std::string& filename)
     :
     _tree(tree),
     _name(name),
+	_filename(filename),
     _sceneDescriptor( ownedPtr(new SceneDescriptor()) )
 {
     // Because we want the assertion, we initialize _frameMap here.
@@ -58,6 +59,10 @@ WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
 
 WorkCell::~WorkCell()
 {
+}
+
+std::string WorkCell::getFilename() const {
+	return _filename;
 }
 
 Frame* WorkCell::getWorldFrame() const

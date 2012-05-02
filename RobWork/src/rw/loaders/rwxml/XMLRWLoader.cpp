@@ -759,7 +759,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
         setup.frameMap[setup.world->getName()] = setup.world;
 
         // Create WorkCell
-        WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
+        WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name, fname));
         wc->setSceneDescriptor( setup.scene );
         //if(setup.scene)
         //    setup.scene->setWorkCell(wc);
