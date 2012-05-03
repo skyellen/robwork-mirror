@@ -28,6 +28,9 @@
 #
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+MESSAGE(STATUS "")
+MESSAGE(STATUS "DEPRECATION NOTICE: \nThis is the deprecated FindRobWork script. Please instead use \n SET(RobWork_DIR RWPATH/cmake) \n FIND_PACKAGE(RobWork ... ) ")
+MESSAGE(STATUS "")
 # Get the compiler architecture
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	SET(AMD64 1)
@@ -47,5 +50,5 @@ ENDIF()
 
 # now include the correct setup stuff
 SET(RobWork_DIR ${CMAKE_CURRENT_LIST_DIR}/../cmake)
-MESSAGE("RobWork_DIR ${RobWork_DIR}")
+#MESSAGE("RobWork_DIR ${RobWork_DIR}")
 FIND_PACKAGE(RobWork ${RobWork_FIND_VERSION} REQUIRED NO_MODULE)
