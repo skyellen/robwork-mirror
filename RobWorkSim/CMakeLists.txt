@@ -101,4 +101,6 @@ CONFIGURE_FILE(
   "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
+# configure testing configuration
 CONFIGURE_FILE("${RWSIM_ROOT}/CTestConfig.cmake.in" "${RWSIM_ROOT}/CTestConfig.cmake")
+CONFIGURE_FILE("${RWSIM_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")

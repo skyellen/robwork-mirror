@@ -75,8 +75,9 @@ ELSE ()
     MESSAGE(STATUS "RobWorkStudio tests DISABLED!")
 ENDIF()
 
+# configure testing configuration
 CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
-INCLUDE(${RWS_ROOT}/CTestConfig.cmake)
+CONFIGURE_FILE("${RWS_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 
 ###############################################################
 # Try to find the current revision 
