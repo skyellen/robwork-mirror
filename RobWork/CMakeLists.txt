@@ -59,8 +59,7 @@ ENDIF()
 
 # configure testing configuration
 CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
-CONFIGURE_FILE("${RW_ROOT}/CTestCustom.cmake.in" "${RW_ROOT}/CTestCustom.cmake")
-INCLUDE(${RW_ROOT}/CTestConfig.cmake)
+CONFIGURE_FILE("${RW_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 
 #############################################################
 # Test if we should compile the EXAMPLES
