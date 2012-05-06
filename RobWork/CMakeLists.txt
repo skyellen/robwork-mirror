@@ -43,6 +43,7 @@ MESSAGE(STATUS "RobWork: system id=${INFO} ")
 #############################################################
 # setup testing
 #
+CONFIGURE_FILE("${RW_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RW_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RW_BUILD_TESTS}" OFF)
@@ -59,7 +60,6 @@ ENDIF()
 
 # configure testing configuration
 CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
-CONFIGURE_FILE("${RW_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 
 #############################################################
 # Test if we should compile the EXAMPLES

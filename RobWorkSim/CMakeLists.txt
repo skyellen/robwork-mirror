@@ -82,6 +82,7 @@ add_subdirectory(src)
 #############################################################
 # setup testing
 #
+CONFIGURE_FILE("${RWSIM_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RWSIM_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RWSIM_BUILD_TESTS}" OFF)
@@ -103,4 +104,3 @@ CONFIGURE_FILE(
 
 # configure testing configuration
 CONFIGURE_FILE("${RWSIM_ROOT}/CTestConfig.cmake.in" "${RWSIM_ROOT}/CTestConfig.cmake")
-CONFIGURE_FILE("${RWSIM_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")

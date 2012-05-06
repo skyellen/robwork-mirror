@@ -64,6 +64,7 @@ MESSAGE("RobWork: ${INFO} ")
 #############################################################
 # setup testing
 #
+CONFIGURE_FILE("${RWS_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RWS_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RWS_BUILD_TESTS}" OFF)
@@ -77,7 +78,6 @@ ENDIF()
 
 # configure testing configuration
 CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
-CONFIGURE_FILE("${RWS_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
 
 ###############################################################
 # Try to find the current revision 
