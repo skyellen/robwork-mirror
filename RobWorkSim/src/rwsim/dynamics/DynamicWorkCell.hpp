@@ -186,8 +186,10 @@ namespace dynamics {
         template<class T>
         rw::common::Ptr<T> findSensor(const std::string& name){
             rwlibs::simulation::SimulatedSensor::Ptr sensor = findSensor(name);
-              if(sensor==NULL) return NULL;
-              return sensor.cast<T>();
+            if(sensor==NULL) 
+		        return NULL;
+			std::cout<<"Sensor not NULL"<<std::endl;
+        	return sensor.cast<T>();
         }
 
         /**
