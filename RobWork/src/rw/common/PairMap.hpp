@@ -203,7 +203,7 @@ namespace rw { namespace common {
 		   @brief Return the map size.
 		   @return the number of elements in the map.
 		*/
-        const unsigned int size() const
+		unsigned int size() const
 		{
 			return _map.size();
 		}
@@ -212,7 +212,7 @@ namespace rw { namespace common {
 		   @brief Return maximum size.
 		   @return the maximum number of elements that the map object can hold.
 		*/
-		const unsigned int max_size() const
+		unsigned int max_size() const
 		{
 			return _map.max_size();
 		}
@@ -221,7 +221,7 @@ namespace rw { namespace common {
 		   @brief Test whether map is empty.
 		   @return whether the map container is empty, i.e. whether its size is 0.
 		*/
-		const bool empty() const
+		bool empty() const
 		{
 			return _map.empty();
 		}

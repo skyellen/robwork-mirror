@@ -69,6 +69,8 @@ namespace simulation {
          * NULL when the simulatedsensor does not implement the Sensor interface.
          */
         virtual rw::sensor::Sensor* getSensor() = 0;
+
+
     };
 
     //! @}

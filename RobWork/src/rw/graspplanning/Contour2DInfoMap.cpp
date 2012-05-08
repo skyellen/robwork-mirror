@@ -34,8 +34,8 @@ using namespace rw::sensor;
 
 #define PIXEL_STEP_SIZE 8
 
-//#define RW_DEBUGS(str)
-#define RW_DEBUGS(str) std::cout << str << std::endl
+#define RW_DEBUGS(str)
+//#define RW_DEBUGS(str) std::cout << str << std::endl
 
 namespace {
 
