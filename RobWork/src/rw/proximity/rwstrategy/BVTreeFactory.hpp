@@ -140,7 +140,7 @@ namespace proximity {
          */
 		template<class T>
 		rw::common::Ptr<geometry::BVFactory<rw::geometry::OBB<T> > > makeOBBCovarFactory(){
-		    return rw::common::ownedPtr( new geometry::OBBFactory<T>(geometry::OBBFactory<T>::PCAHull) );
+		    return rw::common::ownedPtr( new geometry::OBBFactory<T>(geometry::OBBFactory<T>::PCA) );
 		}
 
 		/**
@@ -204,6 +204,7 @@ namespace proximity {
 		    typedef typename Traits<BVTREE>::NodeIterator NodeIterator;
 			using namespace rw::math;
 			using namespace rw::geometry;
+			using namespace rw::common;
 
 			// we create the binary tree
 			BVTREE* tree = new BVTREE( new TriMeshAccessor<value_type>(mesh) );
@@ -211,9 +212,11 @@ namespace proximity {
 			// create a proxy for the triangle mesh
 			IndexedTriArray<> idxArray(mesh);
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
+			//Timer t;
 			NodeIterator root = tree->createRoot();
+			//std::cout << "recursiveTopDownTree: " << std::flush;
 			recursiveTopDownTree<BVTREE>(tree, root, idxArray, bvFactory, splitter, maxTrisInLeaf);
-
+			//std::cout << t.toString() << std::endl;
 			//std::cout << "IDX MAP ARRAY" << std::endl;
 			//BOOST_FOREACH(int idx, idxArray.getIndexes()){
 			//    std::cout << idx << "\n";
@@ -255,13 +258,16 @@ namespace proximity {
 			    tree->setBV(bv, node);
 			} else {
 				// create a bounding volume of the mesh and split it
+
 				BVType bv = bvFactory.makeBV( mesh );
 				tree->setBV( bv , node);
 				//std::cout << "Range: "<< mesh.getGlobalIndex(0) << ";" << mesh.getGlobalIndex(mesh.getSize()) << std::endl;
 				// were to split the mesh (the order in the mesh might be changed in this function)
+                //rw::common::Timer t;
 				size_t k = splitter.partitionMesh(mesh, bv );
-
+				//std::cout << "split, " << mesh.getSize()<<" : " << t.toString("ss:zz") << "\n";
 				// left child
+
 				if(k>0){
                     NodeIterator leftnode = tree->createLeft( node );
                     recursiveTopDownTree(tree, leftnode, mesh.getSubRange(0,k), bvFactory, splitter, maxTrisInLeaf);
@@ -331,13 +337,15 @@ namespace proximity {
 	            do{
 	                // calculate median
 	                // sort all indexes in trisIdx
+	                rw::common::Timer t;
 	                mesh.sortAxis(splitAxis, t3d );
-
+	                //std::cout << "sort   " << t.toString("ss:zz") << "\n";
 	                // now make sure that the choosen split axis is not a bad one
 	                Triangle<> tri = mesh.getTriangle(median);
 	                Vector3D<> center = t3d*((tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0);
+	                //t.reset();
 	                int score = evaluateSplitAxis(mesh, splitAxis, center[splitAxis], t3d);
-
+                    //std::cout << "eval   " << t.toString("ss:zz") << "\n";
 	                if(score>bestSplitScore){
 	                    bestSplitScore = score;
 	                    bestSplitAxis = splitAxis;
@@ -376,6 +384,7 @@ namespace proximity {
                 using namespace rw::geometry;
                 using namespace rw::math;
                 using namespace rw::common;
+                RW_ASSERT(mesh.getSize()>0);
 
 	            Transform3D<> t3d = inverse( cast<double>(obb.getTransform()) );
 
@@ -383,6 +392,8 @@ namespace proximity {
 	            int bestSplitScore =0;
 	            double mean = 0;
 	            do{
+	                RW_ASSERT(splitAxis>=0);
+	                RW_ASSERT(splitAxis<3);
 	                // We need to calculate the mean for a splitting axis
 	                mean=0;
 	                for(size_t i=0; i<mesh.getSize(); i++ ){
@@ -402,9 +413,9 @@ namespace proximity {
 	                // criteria for an okay splitting point
 	                if( score + mesh.getSize()/8 >= mesh.getSize() ){
 	                    break;
-	                } else {
-	                    splitAxis++;
 	                }
+
+                    splitAxis++;
 
 	            } while( splitAxis<3 );
 
@@ -450,7 +461,7 @@ namespace proximity {
 	            Transform3D<> t3d = inverse( cast<double>(obb.getTransform()) );
 
 	            size_t splitAxis = 0, bestSplitAxis = 0; // choose longest (x-axis) for splitting the Box
-	            size_t bestSplitScore =0;
+	            size_t bestSplitScore = 0;
 
 	            do{
 	                unsigned int score = evaluateSplitAxis(mesh, splitAxis, 0, t3d);

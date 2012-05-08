@@ -58,8 +58,8 @@ void ProximityStrategyRW::destroyModel(rw::proximity::ProximityModel* model){
 
 }
 
-bool ProximityStrategyRW::addGeometry(rw::proximity::ProximityModel*, rw::geometry::Geometry::Ptr, bool){
-    return false;
+bool ProximityStrategyRW::addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy){
+    return addGeometry(model, *geom);
 }
 
 bool ProximityStrategyRW::addGeometry(ProximityModel* model, const Geometry& geom) {
@@ -94,8 +94,11 @@ bool ProximityStrategyRW::addGeometry(ProximityModel* model, const Geometry& geo
         const double scale = geom.getScale();
 
         BVTreeFactory treefactory;
-        BinaryOBBPtrTreeD::Ptr tree = treefactory.makeTopDownOBBTreeCovarMedian<BinaryOBBPtrTreeD>(mesh,1);
 
+        //Timer t;
+        //std::cout << "Mesh size: " << mesh->getSize() << std::endl;
+        BinaryOBBPtrTreeD::Ptr tree = treefactory.makeTopDownOBBTreeCovarMedian<BinaryOBBPtrTreeD>(mesh,1);
+        //std::cout << "Time to create OBB tree: " << t.toString("ss:zzz") << std::endl;
         rwmodel = ownedPtr( new Model(geom.getId(), geom.getTransform(), tree) );
         rwmodel->ckey = key;
         rwmodel->scale = scale;
@@ -175,7 +178,7 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
             int startIdx = data._geomPrimIds.size();
-            bool res = qdata.cache->tcollider->collides(wTa, *ma->tree, wTb, *mb->tree, &data._geomPrimIds);
+            bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
             _numBVTests += qdata.cache->tcollider->getNrOfTestedBVs();
@@ -227,7 +230,7 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
             int startIdx = data._geomPrimIds.size();
-            bool res = qdata.cache->tcollider->collides(wTa, *ma->tree, wTb, *mb->tree, &data._geomPrimIds);
+            bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
             _numBVTests += qdata.cache->tcollider->getNrOfTestedBVs();

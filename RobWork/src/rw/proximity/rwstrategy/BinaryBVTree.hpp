@@ -144,7 +144,7 @@ namespace proximity {
 		    BVTree<BinaryBVTree<BV,PRIM> >(paccessor),
 		    _root(NULL)
 		{
-		    std::cout << "SIZE OF NODE: " << sizeof(Node) << std::endl;
+		    //std::cout << "SIZE OF NODE: " << sizeof(Node) << std::endl;
 		}
 
 		NodeIterator getIterator() const { return getRootIterator(); };
