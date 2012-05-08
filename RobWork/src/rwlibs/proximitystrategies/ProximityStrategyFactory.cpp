@@ -20,6 +20,7 @@
 #include <RobWorkConfig.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
+#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
 
 #ifdef RW_HAVE_PQP
 #include "ProximityStrategyPQP.hpp"
@@ -29,16 +30,19 @@
 #include "ProximityStrategyYaobi.hpp"
 #endif
 namespace {
+    const std::string RWStr("RWPROX");
     const std::string PQPStr("PQP");
     const std::string YAOBIStr("YAOBI");
 }
 
 using namespace rwlibs::proximitystrategies;
+using namespace rw::proximity;
 using namespace rw;
 using namespace rw::common;
 
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultCollisionStrategy() {
-
+    return rw::common::ownedPtr<>(new ProximityStrategyRW());
+/*
 #ifdef RW_HAVE_PQP
 	return rw::common::ownedPtr<>(new ProximityStrategyPQP());
 #endif
@@ -46,10 +50,13 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultColli
 #ifdef RW_HAVE_YAOBI
 	return rw::common::ownedPtr( new ProximityStrategyYaobi() );
 #endif
-
+*/
 }
 
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStrategy(const std::string& id){
+    if(id==RWStr){
+        return rw::common::ownedPtr<>(new ProximityStrategyRW());
+    }
 #ifdef RW_HAVE_PQP
     if(id==PQPStr){
         return rw::common::ownedPtr<>(new ProximityStrategyPQP());
@@ -68,6 +75,7 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStr
 
 std::vector<std::string> ProximityStrategyFactory::getCollisionStrategyIDs(){
     std::vector<std::string> IDs;
+    IDs.push_back(RWStr);
 
 #ifdef RW_HAVE_PQP
     IDs.push_back(PQPStr);
