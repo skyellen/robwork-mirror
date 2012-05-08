@@ -31,6 +31,7 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
+using namespace rwlibs::simulation;
 
 using namespace rwsim::dynamics;
 
@@ -80,10 +81,23 @@ rwlibs::simulation::SimulatedController::Ptr DynamicWorkCell::findController(con
     }
     return NULL;
 }
+
 Body* DynamicWorkCell::findBody(const std::string& name) const {
     BOOST_FOREACH(Body *body, _bodies){
         if(body->getName()==name)
             return body;
+    }
+    return NULL;
+}
+
+SimulatedSensor::Ptr DynamicWorkCell::findSensor(const std::string& name) {
+	std::cout<<"Find Sensor = "<<name<<std::endl;
+	std::cout<<"Number of sensors = "<<_sensors.size()<<std::endl;
+    BOOST_FOREACH(SimulatedSensor::Ptr sensor, _sensors){
+		std::cout<<" Sensor: "<<sensor->getSensor()->getName()<<std::endl;
+		if (sensor->getSensor()->getName() == name)
+//        if(sensor->getName()==name)
+            return sensor;
     }
     return NULL;
 }
