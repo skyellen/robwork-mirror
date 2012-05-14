@@ -90,7 +90,7 @@ namespace rwhw {
          * @brief connects to the SDH hardware using the RS232 interface. The SDH can be connected both through CAN and SerialPort
          * depending on the configuration of the SDH.
          */
-        bool connect(int port, unsigned long baudrate=115000, double timeout=0.5 );
+        bool connect(int port, unsigned long baudrate=115200, double timeout=0.5, char const* device_format_string = NULL );
 
         /**
          * @brief tests if the SDHDriver is connected to the hardware
@@ -184,6 +184,11 @@ namespace rwhw {
 		 * @brief queries the hand for its current power use.
 		 */
         rw::math::Q getQCurrent();
+
+        /**
+		 * @brief gets the current hand temperature
+		 */
+        std::vector<double> getTemperature();
 
         /**
          * @brief stops the movement of all joints

@@ -147,11 +147,15 @@ bool SDHDriver::connect( CanPort::Ptr canport, double canTimeOut, int id_read, i
     #endif
 }
 
-bool SDHDriver::connect(int port, unsigned long baudrate, double timeout ){
+bool SDHDriver::connect(int port, unsigned long baudrate, double timeout, char const* device_format_string ){
     // Open communication to the SDH device via default serial port 0 == "COM1"
     //
     try {
-        _hand->OpenRS232( port, baudrate, timeout );
+    	if (device_format_string) {
+    		_hand->OpenRS232( port, baudrate, timeout, device_format_string);
+    	} else {
+    		_hand->OpenRS232( port, baudrate, timeout);
+    	}
     } catch (cSDHLibraryException* e){
         rw::common::Log::errorLog() << e->what();
         delete e;
@@ -448,6 +452,19 @@ rw::math::Q SDHDriver::getCurrentLimits(){
 		RW_THROW(ex);
 	}
 	return toQ(current);
+}
+
+std::vector<double> SDHDriver::getTemperature() {
+    //std::cout << "getting current limits" << std::endl;
+	std::vector<double> temp;
+	try{
+		temp = _hand->GetTemperature( _hand->all_temperature_sensors );
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
+	return temp;
 }
 
 void SDHDriver::setJointEnabled(bool enabled){
