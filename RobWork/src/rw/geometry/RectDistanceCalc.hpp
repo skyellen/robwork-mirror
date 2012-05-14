@@ -8,7 +8,7 @@
 #ifndef RW_PROXIMITY_RSSDISTANCECALC_HPP_
 #define RW_PROXIMITY_RSSDISTANCECALC_HPP_
 
-#include <sandbox/geometry/OBB.hpp>
+#include "OBB.hpp"
 #include "BVDistanceCalc.hpp"
 #include <rw/math/Vector3D.hpp>
 #include "DistanceUtil.hpp"

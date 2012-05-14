@@ -102,6 +102,7 @@ namespace geometry {
     template<class T>
     rw::geometry::OBB<T> OBBFactory<T>::makePCA(rw::geometry::TriMesh& mesh){
         //return rw::geometry::OBB<T>::buildTightOBB(mesh);
+
         using namespace rw::math;
         //std::cout << "\nMesh size: " << mesh.size() << "\n";
         Covariance<> covar;
@@ -122,8 +123,9 @@ namespace geometry {
         Triangle<> t = mesh.getTriangle(0);
         Vector3D<> p = rotInv * cast<T>(t[0]);
         Vector3D<> max=p, min=p;
+        Triangle<> tri;
         for(size_t i=0;i<mesh.getSize();i++){
-            Triangle<> tri = mesh.getTriangle(i);
+            mesh.getTriangle(i, tri);
             for(int pidx=0;pidx<3; pidx++){
                 Vector3D<> p = rotInv * cast<T>(tri[pidx]);
                 for(int j=0; j<3; j++){
@@ -146,7 +148,7 @@ namespace geometry {
 
         IndexedTriMeshN0D::Ptr mesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0D>(meshInput);
         TriMesh::Ptr pmesh;
-        if(mesh->size()<4){
+        if(mesh->size()<5){
             pmesh = mesh;
         } else {
             // build the convex hull

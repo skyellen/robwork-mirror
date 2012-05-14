@@ -3,6 +3,7 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace rw {
 namespace geometry {
@@ -21,6 +22,11 @@ namespace geometry {
 	private:
 		rw::geometry::TriMesh::Ptr _objArr;
 		rw::common::Ptr< std::vector<T> > _idxArr;
+		rw::common::Ptr< std::vector< rw::math::Vector3D<float> > > _centerArr;
+		rw::common::Ptr< std::vector< float > > _valArr;
+
+		typedef boost::tuple<T,float,rw::math::Vector3D<float> > ValueType;
+		rw::common::Ptr< std::vector<ValueType> > _valCenterArr;
 		size_t _first,_last;
 
 	public:
@@ -33,11 +39,24 @@ namespace geometry {
 		IndexedTriArray(TriMesh::Ptr objArr):
 			_objArr(objArr),
 			_idxArr(rw::common::ownedPtr(new std::vector<T>(objArr->getSize()))),
+			_centerArr(rw::common::ownedPtr(new std::vector< rw::math::Vector3D<float> >(objArr->getSize()))),
+			_valArr(rw::common::ownedPtr(new std::vector<float>(objArr->getSize()))),
+			_valCenterArr( rw::common::ownedPtr( new std::vector<ValueType>( objArr->getSize() ) ) ),
 			_first(0),
 			_last(objArr->getSize())
 		{
-			for(size_t i=0;i<_idxArr->size();i++)
+			for(size_t i=0;i<_idxArr->size();i++){
 				(*_idxArr)[i] = i;
+			}
+			// calculate triangle center points
+
+			Triangle<float> tri;
+            for(size_t i=0;i<_objArr->getSize();i++){
+                objArr->getTriangle(i, tri);
+                boost::tuples::get<0>( (*_valCenterArr)[i] ) = i;
+                boost::tuples::get<2>( (*_valCenterArr)[i] ) = ((tri[0]+tri[1]+tri[2])/3);
+            }
+
 		}
 
 		/**
@@ -53,9 +72,19 @@ namespace geometry {
 						rw::common::Ptr< std::vector<T> > idxArr):
 			_objArr(objArr),
 			_idxArr(idxArr),
+			_centerArr(rw::common::ownedPtr(new std::vector< rw::math::Vector3D<float> >(objArr->getSize()))),
+			_valArr(rw::common::ownedPtr(new std::vector<float>(objArr->getSize()))),
+			_valCenterArr( rw::common::ownedPtr( new std::vector<ValueType>( objArr->getSize() ) ) ),
 			_first(0),
 			_last(idxArr->size())
 		{
+            // calculate triangle center points
+            Triangle<float> tri;
+            for(size_t i=0;i<_objArr->getSize();i++){
+                objArr->getTriangle(i, tri);
+                boost::tuples::get<0>( (*_valCenterArr)[i] ) = i;
+                boost::tuples::get<2>( (*_valCenterArr)[i] ) = ((tri[0]+tri[1]+tri[2])/3);
+            }
 		}
 
 		/**
@@ -68,10 +97,16 @@ namespace geometry {
 		 */
 		IndexedTriArray(TriMesh::Ptr objArr,
 						rw::common::Ptr< std::vector<T> > idxArr,
+						rw::common::Ptr< std::vector< rw::math::Vector3D<float> > > centerArr,
+						rw::common::Ptr< std::vector< float > > valArr,
+						rw::common::Ptr< std::vector< boost::tuple<T,float,rw::math::Vector3D<float> > > > valCenterArr,
 						size_t first,
 						size_t last):
 			_objArr(objArr),
 			_idxArr(idxArr),
+			_centerArr(centerArr),
+			_valArr(valArr),
+			_valCenterArr(valCenterArr),
 			_first(first),
 			_last(last)
 		{
@@ -92,29 +127,75 @@ namespace geometry {
 			TrisIdxSort(
 				 const int splitAxis,
 				 const rw::math::Transform3D<>& t3d,
-				 const TriMesh& mesh):
+				 const std::vector< rw::math::Vector3D<float> >& centerArr
+				 ):
 				_splitAxis(splitAxis),
 				_t3d(t3d),
-				_mesh(mesh)
-			{}
+				_centers(centerArr)
+			{
+			    R_s0 = _t3d.R()(splitAxis,0);
+			    R_s1 = _t3d.R()(splitAxis,1);
+			    R_s2 = _t3d.R()(splitAxis,2);
+			    P_s = _t3d.P()(splitAxis);
+			}
 
 			bool operator()(const size_t& i0, const size_t& i1) {
 				using namespace rw::math;
 				using namespace rw::geometry;
 				//std::cout << i0 << "  -- --- - " << i1 << "\n";
+/*
 				RW_ASSERT(0<=i0 && i0<_mesh.getSize());
 				RW_ASSERT(0<=i1 && i1<_mesh.getSize());
 				const Triangle<> &tri = _mesh.getTriangle(i0);
-				Vector3D<> c0 = _t3d*((tri[0]+tri[1]+tri[2])/3.0);
 				const Triangle<> &t1 = _mesh.getTriangle(i1);
-				Vector3D<> c1 = _t3d*((t1[0]+t1[1]+t1[2])/3.0);
+				Vector3D<> c0 = _t3d* ((tri[0]+tri[1]+tri[2])/3);
+				Vector3D<> c1 = _t3d* ((t1[0]+t1[1]+t1[2])/3);
 
-				return  c0(_splitAxis)<c1(_splitAxis);
+
+*/
+				// this basiacally takes one column of the rotation matrix and performs only the relevant multiplications in v = T*center
+				const rw::math::Vector3D<float>& ic0 = _centers[i0];
+                const rw::math::Vector3D<float>& ic1 = _centers[i1];
+				float val1 = ic0[0]*R_s0 + ic0[1]*R_s1 + ic0[2]*R_s2 + P_s;
+				float val2 = ic1[0]*R_s0 + ic1[1]*R_s1 + ic1[2]*R_s2 + P_s;
+				return  val1<val2;
+
+				//return i0<i1;
 			}
 			const int _splitAxis;
 			const rw::math::Transform3D<> _t3d;
-			const TriMesh& _mesh;
+			const std::vector< rw::math::Vector3D<float> >& _centers;
+			float R_s0,R_s1,R_s2,P_s;
 		};
+
+        struct TrisIdxSort2
+        {
+            TrisIdxSort2(const std::vector< float >& valArr ):
+                _valArr(valArr)
+            {
+            }
+
+            bool operator()(const size_t& i0, const size_t& i1) {
+                using namespace rw::math;
+                using namespace rw::geometry;
+                //std::cout << i0 << "  -- --- - " << i1 << "\n";
+                return  _valArr[i0]<_valArr[i1];
+            }
+
+            const std::vector< float >& _valArr;
+        };
+
+
+        struct IdxValSort
+        {
+            IdxValSort()
+            {}
+
+            bool operator()(const boost::tuple<T,float,rw::math::Vector3D<float> >& i0, const boost::tuple<T,float,rw::math::Vector3D<float> >& i1) {
+                return boost::tuples::get<1>( i0 ) < boost::tuples::get<1>( i1 );
+            }
+        };
+
 
 	public:
 
@@ -130,6 +211,19 @@ namespace geometry {
 		}
 
 		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
+		    using namespace rw::math;
+            float R_s0 = t3d.R()(0,axis);
+            float R_s1 = t3d.R()(1,axis);
+            float R_s2 = t3d.R()(2,axis);
+            float P_s = t3d.P()(axis);
+            rw::math::Transform3D<float> t3df = cast<float>(t3d);
+            // first transform the requested splitaxis values
+            for(size_t i=_first;i<_first+size(); i++){
+                boost::tuple<T,float,rw::math::Vector3D<float> >& elem = (*_valCenterArr)[i];
+                const rw::math::Vector3D<float>& ic0 = boost::tuples::get<2>(elem);
+                boost::tuples::get<1>(elem) =  ic0[0]*R_s0 + ic0[1]*R_s1 + ic0[2]*R_s2 + P_s; //(t3df*ic0)(axis);
+            }
+
 			//std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *_objArr));
 	        /*if(size()<10){
 	            std::cout << "PRE" << _first << ";" << _last << "\n-- ";
@@ -137,7 +231,11 @@ namespace geometry {
 	                std::cout << ", " << (*_idxArr)[i];
 	            std::cout << "\n";
 	        }*/
-		    std::sort( &((*_idxArr)[_first]), &((*_idxArr)[_first])+ size(), TrisIdxSort(axis, t3d, *_objArr));
+		    // TODO: should try sorting directly on the tri centers to get better speed/performance
+		    //std::sort( &((*_idxArr)[_first]), &((*_idxArr)[_first])+ size(), TrisIdxSort2(axis, t3d, *_centerArr));
+            //std::sort( &((*_idxArr)[_first]), &((*_idxArr)[_first])+ size(), TrisIdxSort2(*_valArr));
+            std::sort( &((*_valCenterArr)[_first]), &((*_valCenterArr)[_first])+ size(), IdxValSort());
+
             /*if(size()<10){
                 std::cout << "POST\n-- ";
                 for(int i=0;i<size();i++)
@@ -150,33 +248,34 @@ namespace geometry {
 		IndexedTriArray<T> getSubRange(size_t first, size_t last){
 			RW_ASSERT(first<last);
 
-			return IndexedTriArray<T>(_objArr,_idxArr,_first+first, _first+last);
+			return IndexedTriArray<T>(_objArr,_idxArr,_centerArr, _valArr, _valCenterArr, _first+first, _first+last);
 		}
 
 		rw::common::Ptr<TriMesh> clone() const{
-			return rw::common::ownedPtr( new IndexedTriArray<T>(_objArr,_idxArr,_first, _last) );
+			return rw::common::ownedPtr( new IndexedTriArray<T>(_objArr,_idxArr,_centerArr, _valArr, _valCenterArr, _first, _last) );
 		}
 
-		size_t getGlobalIndex(int idx){ return (*_idxArr)[_first+idx]; }
+		//size_t getGlobalIndex(int idx){ return (*_idxArr)[_first+idx]; }
+		inline size_t getGlobalIndex(int idx) const { return boost::tuples::get<0>( (*_valCenterArr)[_first+idx] ); }
 
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
-		rw::geometry::Triangle<> operator[](size_t i) const {
-			return _objArr->getTriangle( (*_idxArr)[_first + i] );
+		inline rw::geometry::Triangle<> operator[](size_t i) const {
+			return _objArr->getTriangle( getGlobalIndex(i) );
 		}
 
 		//! @copydoc TriMesh::getTriangle
-		rw::geometry::Triangle<> getTriangle(size_t idx) const{
+		inline rw::geometry::Triangle<> getTriangle(size_t idx) const{
 			return (*this)[idx];
 		}
 
-        void getTriangle(size_t i, Triangle<double>& dst) const {
-            _objArr->getTriangle((*_idxArr)[_first + i], dst);
+        inline void getTriangle(size_t i, Triangle<double>& dst) const {
+            _objArr->getTriangle(  getGlobalIndex(i) , dst);
         }
 
         //! @copydoc TriMesh::getTriangle
-        void getTriangle(size_t i, Triangle<float>& dst) const {
-            _objArr->getTriangle((*_idxArr)[_first + i], dst);
+        inline void getTriangle(size_t i, Triangle<float>& dst) const {
+            _objArr->getTriangle( getGlobalIndex(i) , dst);
         }
 
 
