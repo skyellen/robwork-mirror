@@ -52,7 +52,7 @@ wc = rwstudio.getWorkCell()
 print wc.getName()
 \endcode
 
-\subsection sec_robwork_python_communicate_plugins
+\subsection sec_robwork_python_communicate_plugins Communicating with plugins
 It is often necessary to send messages or data to one or more plugins. For this the
 generic event methods on RobWorkStudio is used. These are wrapped in utils such that
 the current send methods can be used in python
@@ -65,5 +65,33 @@ rwstudio.send("msgId", somePropertyMap )
 \endcode
 
 The first send method use RobWorkStudio::genericEvent the next 4 use RobWorkStudio::genericAnyEvent.
+Please take a look in rws/RobWorkStudio.hpp to get an example on using these events in your plugin.
+
+\subsection sec_robwork_python_planning Using path planners in python
+RobWork has several path planners which might be used from python. If we assume that a workcell with a
+6 DOF robot named ``UR1'' has been loaded then a planner can be executed as follows:
+\code
+// we need the workcell to get a handle to the robot
+wc = rwstudio.getWorkCell()
+dev = wc.findDevice("UR1")
+state = rwstudio.getState()
+cd = rwstudio.getCollisionDetector()
+planner = rw.QToQPlanner_makeRRT(cd,dev,state)
+
+// now the planner is ready to be used. We define the configurations
+// in which the robot should start and end
+q_from = rw.Q(6,0,-1,0,0,0,0)
+q_to = rw.Q(6, 3,0.2,1,-1,0,0)
+result = planner.query(q_from,q_to) 
+\endcode
+
+We could also chose a query with a timeout or with some other rw::pathplanning::StopCriteria
+\code
+result = planner.query(q_from,q_to, 10.0) 
+stopCriteria = rw.StopCriteria_stopCnt(100)
+result = planner.query(q_from,q_to,stopCriteria) 
+\endcode
+
+
 
 */
