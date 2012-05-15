@@ -14,7 +14,7 @@ IF(build)
       ./clearance/MinimumClearanceCalculator.cpp
       ./pathlength/PathLengthOptimizer.cpp
     )
-    
+     
     SET(SRC_FILES_HPP
       ./clearance/ClearanceOptimizer.hpp
       ./clearance/ClearanceCalculator.hpp
