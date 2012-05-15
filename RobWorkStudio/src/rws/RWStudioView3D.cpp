@@ -275,7 +275,6 @@ void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
 
 
 void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
-    std::cout << "set workcell" << std::endl;
     _sensorCameraViews.clear();
     _wc = wc;
     if(_wc==NULL){
@@ -288,7 +287,7 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
 
     // if the grid is allready there then don't add it again
     if( !_wcscene->getWorldNode()->hasChild( "FloorGrid" ) ){
-        std::cout << "No floor grid" << std::endl;
+        // std::cout << "No floor grid" << std::endl;
         // add a floor grid drawable to the scene
 
         std::vector<Line> lines;
@@ -376,14 +375,13 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
         Frame *frame = pickFrame(winx,winy);
         if( frame != NULL){
             _rws->frameSelectedEvent().fire( frame );
-            std::cout << "Fraem: " << frame->getName() << std::endl;
+            Log::debugLog() << "Frame: " << frame->getName() << std::endl;
         }
     }
 }
 
 void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
     //std::cout << "Menu event ;)" << std::endl;
-
 
 }
 
@@ -620,7 +618,7 @@ void RWStudioView3D::setMaskCheckAction(){
     if( _user4MaskEnabled->isChecked() )
         mask = mask | DrawableNode::User4;
 
-    std::cout << "Mask action: " << mask << std::endl;
+    //std::cout << "Mask action: " << mask << std::endl;
     _view->getMainView()->_viewCamera->setDrawMask( mask );
 }
 
@@ -765,8 +763,8 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
     view._view = _view->createView(name, enableBackground);
     // setup the view camera
     GroupNode::Ptr fnode = _wcscene->getNode(frame);
-    if(fnode == NULL)
-        std::cout << "FNODE is NULL" << std::endl;
+    //if(fnode == NULL)
+    //    std::cout << "FNODE is NULL" << std::endl;
     view._view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
     view._view->_viewCamera->setEnabled(true);
 
@@ -788,7 +786,6 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
 
 void RWStudioView3D::setCheckForCollision(bool){
     // set check for collision
-    std::cout << "check for collision" << std::endl;
     setState( _rws->getState() );
 }
 

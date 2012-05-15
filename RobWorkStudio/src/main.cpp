@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     poptions.parse(argc, argv);
 
     PropertyMap map = poptions.getPropertyMap();
-    bool showSplash = !map.has("nosplash");
+    bool showSplash = false; //!map.has("nosplash");
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
 
@@ -114,8 +114,8 @@ int main(int argc, char** argv)
             std::string pluginFolder = "./plugins/";
 
             {
+                Timer t;
                 rws::RobWorkStudio rwstudio(map);
-
                 #ifdef RWS_USE_STATIC_LINK_PLUGINS
                     rwstudio.addPlugin(new rws::ShowLog(), false, Qt::BottomDockWidgetArea);
                     rwstudio.addPlugin(new rws::Jog(), false, Qt::LeftDockWidgetArea);
@@ -135,10 +135,11 @@ int main(int argc, char** argv)
                 #endif
                 if(showSplash)
                     splash->showMessage("Loading static plugins");
+
                 rwstudio.loadSettingsSetupPlugins( inifile );
 
-				std::cout<<XMLPathFormat::QPathId<<std::endl;
-				std::cout<<XMLPropertyFormat::PropertyMapId<<std::endl;
+				//std::cout<<XMLPathFormat::QPathId<<std::endl;
+				//std::cout<<XMLPropertyFormat::PropertyMapId<<std::endl;
 
                 if(!inputfile.empty()){
                     if(showSplash)
@@ -151,6 +152,7 @@ int main(int argc, char** argv)
                     splash->showMessage("Loading settings");
                     splash->finish(&rwstudio);
                 }
+
                 rwstudio.show();
                 app.exec();
             }

@@ -747,7 +747,7 @@ void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
     } else {
         event->ignore();
     }
-    std::cout << "forward double click" << std::endl;
+    //std::cout << "forward double click" << std::endl;
     QGLWidget::mouseDoubleClickEvent(event);
 }
 
@@ -832,7 +832,7 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename,
 
 void SceneOpenGLViewer::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();
-    std::cout << "Property Changed Listerner SceneOpenGLViewer: " << id << std::endl;
+    //std::cout << "Property Changed Listerner SceneOpenGLViewer: " << id << std::endl;
     if(id=="ShowCollisionModels"){
         Property<bool> *p = toProperty<bool>(base);
         int dmask = getViewCamera()->getDrawMask();

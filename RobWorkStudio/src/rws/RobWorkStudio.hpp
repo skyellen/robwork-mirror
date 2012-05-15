@@ -479,6 +479,7 @@ namespace rws {
 		void dropEvent(QDropEvent* event);
 		void showDocumentation();
 
+		void showAboutBox();
 	protected:
 		//! Close Event inherited from QT
 		void closeEvent( QCloseEvent * e );
@@ -501,7 +502,7 @@ namespace rws {
 
 		RWStudioView3D* _view;
 		AboutBox* _aboutBox;
-		
+		QMenuBar * _winMenuBar;
 		rw::models::WorkCell::Ptr _workcell;
 		rw::kinematics::State _state;
 		rw::proximity::CollisionDetector::Ptr _detector;

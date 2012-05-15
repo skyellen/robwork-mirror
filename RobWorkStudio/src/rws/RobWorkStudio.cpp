@@ -68,31 +68,51 @@ using namespace rwlibs::proximitystrategies;
 
 using namespace rws;
 
+namespace
+{
+    WorkCell::Ptr emptyWorkCell()
+    {
+        WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(ownedPtr(new StateStructure())));
+        CollisionSetup::set(CollisionSetup(), workcell);
+        return workcell;
+    }
+
+    CollisionDetector::Ptr makeCollisionDetector(WorkCell::Ptr workcell)
+    {
+        return rw::common::ownedPtr(
+            new CollisionDetector(
+                workcell,
+                ProximityStrategyFactory::makeDefaultCollisionStrategy()
+        ));
+    }
+}
+
+
 RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     :
     QMainWindow(NULL),
     _robwork(RobWork::getInstance()),
     _inStateUpdate(false),
-    _settingsMap(NULL)
+    _settingsMap(NULL),
+    _aboutBox(NULL)
 {
     _robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
     //_robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
-
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
     QString qstr(sstr.str().c_str());
     setWindowTitle( qstr );
-    setWindowIcon( QIcon(":/images/rw_logo_64x64.png") );
 
-    _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
+    // time 50ms
+    setWindowIcon( QIcon(":/images/rw_logo_64x64.png") );
     boost::filesystem::path settingsPath("rwsettings.xml");
+
     PropertyMap settings;
     if( exists(settingsPath) ){
         try {
             //settings = XMLPropertyLoader::load("rwsettings.xml");
             //_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
             _propMap = XMLPropertyLoader::load("rwsettings.xml");
-
         } catch(rw::common::Exception &e){
             RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
         } catch(std::exception &e){
@@ -120,7 +140,6 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
     setupHelpMenu();
-
     int width = _settingsMap->get<int>("WindowWidth", 1024);
     int height = _settingsMap->get<int>("WindowHeight", 800);
     int x = _settingsMap->get<int>("WindowPosX", this->pos().x());
@@ -133,7 +152,6 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
         }
         this->restoreState(mainAppState);
     }
-
     resize(width, height);
     this->move(x,y);
 
@@ -150,7 +168,18 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     //BOOST_FOREACH(const PluginSetup& plugin, plugins) {
     //    addPlugin(plugin.plugin, plugin.visible, plugin.area);
     //}
-    newWorkCell();
+
+
+    _workcell = emptyWorkCell();
+    _state = _workcell->getDefaultState();
+    _detector = makeCollisionDetector(_workcell);
+    // Workcell given to view.
+    _view->setWorkCell( _workcell );
+    _view->setState(_state);
+
+    // Workcell sent to plugins.
+    openAllPlugins();
+    //updateHandler();
 
     setAcceptDrops(true);
 }
@@ -179,7 +208,7 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
     //settings.setValue("size", size());
     //settings.setValue("state", saveState());
     QByteArray mainAppState = saveState();
-    std::cout << mainAppState.data() << std::endl;
+    //std::cout << mainAppState.data() << std::endl;
     std::vector<int> state_vector( mainAppState.size() );
     for(int i=0;i<mainAppState.size();i++){
         state_vector[i] = mainAppState[i];
@@ -318,7 +347,7 @@ void RobWorkStudio::setupFileActions()
     fileToolBar->addAction(newAction);
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(closeAction);
-
+    ////
     _fileMenu = menuBar()->addMenu(tr("&File"));
     _fileMenu->addAction(newAction);
     _fileMenu->addAction(openAction);
@@ -336,9 +365,7 @@ void RobWorkStudio::setupFileActions()
 	_fileMenu->addAction(exitAction);
 
 	_fileMenu->addSeparator();
-
     updateLastFiles();
-
 }
 
 void RobWorkStudio::setCheckAction(){
@@ -366,12 +393,18 @@ void RobWorkStudio::setupHelpMenu() {
     connect(assistantAct, SIGNAL(triggered()), this, SLOT(showDocumentation()));
 
     QAction* showAboutBox = new QAction("About",this);
-    connect(showAboutBox, SIGNAL(triggered()), _aboutBox, SLOT(exec()));
+    connect(showAboutBox, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
     QMenu* pHelpMenu = menuBar()->addMenu(tr("Help"));
     pHelpMenu->addAction(assistantAct);
     pHelpMenu->addAction(showAboutBox);
 
+}
+
+void RobWorkStudio::showAboutBox(){
+    if(_aboutBox==NULL)
+        _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
+    _aboutBox->exec();
 }
 
 void RobWorkStudio::showDocumentation()
@@ -600,46 +633,26 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
 	
 }
 
-
-
-namespace
-{
-	WorkCell::Ptr emptyWorkCell()
-    {
-		WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(ownedPtr(new StateStructure())));
-        CollisionSetup::set(CollisionSetup(), workcell);
-        return workcell;
-    }
-
-	CollisionDetector::Ptr makeCollisionDetector(WorkCell::Ptr workcell)
-    {
-        return rw::common::ownedPtr(
-            new CollisionDetector(
-                workcell,
-                ProximityStrategyFactory::makeDefaultCollisionStrategy()
-        ));
-    }
-}
-
 void RobWorkStudio::newWorkCell()
 {
 	try {
+
 		closeWorkCell();
 		// Empty workcell constructed.
 		_workcell = emptyWorkCell();
 		_state = _workcell->getDefaultState();
 		_detector = makeCollisionDetector(_workcell);
-
 		// Workcell given to view.
 		_view->setWorkCell( _workcell );
 		_view->setState(_state);
+
 	} catch (const Exception& exp) {
 		QMessageBox::critical(this, tr("RobWorkStudio"), tr("Caught exception while trying to create new work cell: %1").arg(exp.what()));
 	}
+
 	// Workcell sent to plugins.
 	openAllPlugins();
 	updateHandler();
-
 }
 
 void RobWorkStudio::dragMoveEvent(QDragMoveEvent *event)
