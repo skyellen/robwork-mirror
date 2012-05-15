@@ -20,23 +20,16 @@ SET(RWSIM_ROOT "${ROOT}/../../../RobWorkSim")
 IF( NOT DEFINED CMAKE_BUILD_TYPE )
     SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
-#Include default settings for constructing a robwork dependent project
-#INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
-#INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
-#LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-
-#Include default settings for constructing a robworkstudio dependent project
-#INCLUDE(${RWSTUDIO_ROOT}/build/FindRobWorkStudio.cmake)
-#INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
-#LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} )
 
 #Include RobWorkSim settings
 
 MESSAGE(" ${RWSIM_ROOT} --")
-SET(CMAKE_MODULE_PATH ${RWSIM_ROOT}/build ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${RWSIM_ROOT}/build ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(RobWork REQUIRED)
+
 FIND_PACKAGE(RobWorkSim REQUIRED)
-INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIR} )
-LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} ${ROBWORKSIM_INCLUDE_DIRS} )
+LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} ${ROBWORK_LIBRARY_DIRS})
 
 
 # Set the output dir for generated libraries and binaries
@@ -68,7 +61,7 @@ target_link_libraries(ModelPropertyTest rwsim
 
 add_executable(RWSimTest src/RWSimTest.cpp)
 target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
-
+MESSAGE("LIBS AVAIL: ${ROBWORK_LIBRARIES}")
 add_executable(UniformSelectGrasps src/UniformSelectGrasps.cpp)
 target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
 
@@ -132,6 +125,12 @@ target_link_libraries(ParJawGripperPoseSampler rwsim ${ROBWORK_LIBRARIES} ${ROBW
 
 add_executable(ToComma src/ToComma.cpp)
 target_link_libraries(ToComma rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+#add_executable(ObjFeatureGen src/ObjFeatureGen.cpp)
+#target_link_libraries(ObjFeatureGen rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+add_executable(danniToGtable src/danniToGtable.cpp)
+target_link_libraries(danniToGtable rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 #add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
 #target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
