@@ -230,17 +230,6 @@ KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnode
     return KDTreeQ::buildTree(simnodes);
 }
 
-std::vector<Frame*> withColModels(std::vector<Frame*> frames){
-    std::vector<Frame*> res;
-    BOOST_FOREACH(Frame* frame, frames){
-        // TODO change to objects, find them in workcell....
-        //if(CollisionModelInfo::get(frame).size()>0)
-        //    res.push_back(frame);
-    }
-    return res;
-}
-
-
 const Q normalize(const Q& v)
 {
     double length = v.norm2();
@@ -260,8 +249,8 @@ Q calculateQuality(ProximityModel::Ptr object, Device::Ptr grip, CollisionDetect
     TreeDevice* gripper = dynamic_cast<TreeDevice*>(grip.get());
     std::vector<Frame*> ends = gripper->getEnds();
     RW_ASSERT(ends.size()==2);
-    std::vector<Frame*> jaw1 = withColModels( GeometryUtil::getAnchoredFrames(*ends[0], state) );
-    std::vector<Frame*> jaw2 = withColModels( GeometryUtil::getAnchoredFrames(*ends[1], state) );
+    std::vector<Frame*> jaw1 = GeometryUtil::getAnchoredFrames(*ends[0], state);
+    std::vector<Frame*> jaw2 = GeometryUtil::getAnchoredFrames(*ends[1], state);
 
     gripper->setQ( openQ, state);
     // reduce openQ until a collision is found
