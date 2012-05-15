@@ -91,7 +91,7 @@ Body* DynamicWorkCell::findBody(const std::string& name) const {
 }
 
 SimulatedSensor::Ptr DynamicWorkCell::findSensor(const std::string& name) {
-	std::cout<<"Find Sensor = "<<name<<std::endl;
+	//std::cout<<"Find Sensor = "<<name<<std::endl;
 	BOOST_FOREACH(SimulatedSensor::Ptr sensor, _sensors){
 		if (sensor->getSensor()->getName() == name)
             return sensor;

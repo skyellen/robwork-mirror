@@ -19,6 +19,7 @@
 #define RWSIM_SIMULATOR_ODEDEVICE_HPP_
 
 #include <rw/kinematics/State.hpp>
+#include <rwlibs/simulation/Simulator.hpp>
 
 namespace rwsim {
 namespace simulator {
@@ -49,7 +50,7 @@ namespace simulator {
 		 * @param dt
 		 * @param state [out] ODEDevice state values are copied to \b state
 		 */
-		virtual void update(double dt, rw::kinematics::State& state) = 0;
+		virtual void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state) = 0;
 
 		/**
 		 * @brief The post update is called after a simulation step has

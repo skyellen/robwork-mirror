@@ -115,7 +115,7 @@ namespace sensor {
 		double _maxForce,_maxTorque;
 
 		//! aux variables updated through \b update
-		rw::math::Transform3D<> _wTf, _fTw;
+		rw::math::Transform3D<> _fTb, _wTb, _bTw;
 
 		rwsim::dynamics::Body *_body,*_body1;
 	};

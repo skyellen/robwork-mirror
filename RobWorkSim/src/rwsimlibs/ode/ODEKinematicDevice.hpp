@@ -59,7 +59,7 @@ namespace simulator {
 		 * @param dt
 		 * @param state
 		 */
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
 		void postUpdate(rw::kinematics::State& state);
 

@@ -68,7 +68,7 @@ namespace simulator {
 		 * @param dt
 		 * @param state [out] ODEDevice state values are copied to \b state
 		 */
-		virtual void update(double dt, rw::kinematics::State& state);
+		virtual void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
 		/**
 		 * @brief The post update is called after a simulation step has

@@ -25,6 +25,7 @@
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/RigidJoint.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwlibs/simulation/Simulator.hpp>
 #include <rw/math/Vector3D.hpp>
 #include "ODEUtil.hpp"
 
@@ -103,7 +104,7 @@ namespace simulator {
 		 * @brief Called before collision checking and time stepping
 		 * @param state
 		 */
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
 		/**
 		 * @brief This method updates the \b state with state info of this ode object.

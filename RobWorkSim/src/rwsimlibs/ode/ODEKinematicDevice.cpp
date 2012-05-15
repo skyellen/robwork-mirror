@@ -111,7 +111,8 @@ namespace {
 
 }
 
-void ODEKinematicDevice::update(double dt, rw::kinematics::State& state){
+void ODEKinematicDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+    double dt = info.dt;
 	// Update velocity of the ode kinematic bodies
     std::cout << "get velocity!" << std::endl;
     Q velQ = _kdev->getVelocity(state);

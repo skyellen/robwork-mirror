@@ -114,7 +114,8 @@ ODESuctionCupDevice::~ODESuctionCupDevice(){
 }
 
 
-void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
+void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+    double dt = info.dt;
     // test if tcp is in contact with object
     /// std::cout <<  "ODESuctionCupDevice" << std::endl;
     // if it is in sufficient contact then apply attracting forces to object

@@ -166,7 +166,7 @@ void ThreadSimulator::stepperLoop(){
     	    nextTime = time+_period;
         if(_stepcb!=NULL)
         	_stepcb(this, _state);
-
+        time = TimerUtil::currentTimeMs();
         if( nextTime>time ){
             waitUntil(nextTime);
         } else {

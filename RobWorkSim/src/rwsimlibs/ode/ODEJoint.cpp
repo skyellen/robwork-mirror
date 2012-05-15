@@ -167,7 +167,8 @@ namespace {
 
         // test if the axes of owner and joint is parallel
         double ang = angle(haxis, haxis_owner );
-        if( fabs(ang-180*Deg2Rad)<0.001 && dynamic_cast<PrismaticJoint*>(owner)!=NULL ) {
+        std::cout << "THE ANGLE: " << ang << std::endl;
+        if( (fabs(ang-180*Deg2Rad)<0.0001 || fabs(ang)<0.0001)&& dynamic_cast<PrismaticJoint*>(owner)!=NULL ) {
             std::cout << "JOINTS ARE PARALLEL" << std::endl;
             type = ODEJoint::DEPEND_PAR;
 
@@ -184,10 +185,11 @@ namespace {
 
            // std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
             // TODO: should take the maxforce value of the owner joint
-            dJointSetLMotorParam(motor,dParamFMax, 1);
+            dJointSetLMotorParam(motor,dParamFMax, 20);
             dJointSetLMotorParam(motor,dParamVel, 0);
 
         } else {
+            std::cout << "JOINTS ARE NOT PARALLEL" << std::endl;
             // create ordinary
             type = ODEJoint::DEPEND;
 
@@ -249,6 +251,8 @@ ODEJoint::ODEJoint(rw::models::Joint* rwjoint,
         boost::tie(_jointId,_motorId,_owner) = makeDependentRevoluteJoint(drjoint, parent, child, sim, state);
         _type = ODEJoint::DEPEND;
         _jtype = ODEJoint::Revolute;
+        _scale = drjoint->getScale();
+        _off = drjoint->getOffset();
     } else if(PrismaticJoint *pjoint=dynamic_cast<PrismaticJoint*>(rwjoint)){
 
         boost::tie(_jointId,_motorId) = makePrismaticJoint(pjoint, parent, child, sim, state);
@@ -258,6 +262,8 @@ ODEJoint::ODEJoint(rw::models::Joint* rwjoint,
 
         boost::tie(_jointId,_motorId,_owner,_type) = makeDependentPrismaticJoint(dpjoint, parent, child, sim, state);
         _jtype = ODEJoint::Prismatic;
+        _scale = dpjoint->getScale();
+        _off = dpjoint->getOffset();
     } else {
         RW_THROW("Unsupported joint type!");
     }
@@ -351,6 +357,7 @@ void ODEJoint::reset(const rw::kinematics::State& state){
         _owner->getJoint()->setData(rstate, zeroq);
     }
     _child->setTransform(rstate);
+    _parent->setTransform(rstate);
 
     Transform3D<> wTchild = Kinematics::worldTframe(_rwJoint, rstate);
     Vector3D<> hpos = wTchild.P();
@@ -363,16 +370,20 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     } else if(_jtype==Prismatic){
         //dJointAttach(slider, odeChild->getBodyID(), odeParent->getBodyID());
         //dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
-        //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
+        //dJointSetSliderAnchor(_jointId, hpos(0), hpos(1), hpos(2));
     }
 
     _child->setTransform(state);
+    _parent->setTransform(state);
     dBodyEnable( _child->getBodyID() );
 
     //! TODO: these should be set to the correct velocities defined in state
     Vector3D<> avel = _child->getRwBody()->getAngVelW(state);
     Vector3D<> lvel = _child->getRwBody()->getLinVelW(state);
-    dBodySetAngularVel( _child->getBodyID(), avel[0], avel[1], avel[2] );
-    dBodySetLinearVel( _child->getBodyID(), lvel[0], lvel[1], lvel[2] );
+    //dBodySetAngularVel( _child->getBodyID(), avel[0], avel[1], avel[2] );
+    //dBodySetLinearVel( _child->getBodyID(), lvel[0], lvel[1], lvel[2] );
+    dBodySetAngularVel( _child->getBodyID(), 0,0,0 );
+    dBodySetLinearVel( _child->getBodyID(), 0,0,0 );
+
 }
 

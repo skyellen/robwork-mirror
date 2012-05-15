@@ -68,7 +68,7 @@ namespace simulator {
 		/**
 		 * @copydoc ODEDevice::update
 		 */
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
 		/**
 		 * @copydoc ODEDevice::postUpdate

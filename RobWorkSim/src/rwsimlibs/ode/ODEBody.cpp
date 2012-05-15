@@ -101,7 +101,8 @@ ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> off
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
-void ODEBody::update(double dt, rw::kinematics::State& state){
+void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+    double dt = info.dt;
     switch(_type){
     case(ODEBody::RIGID): {
         Vector3D<> f = _rwBody->getForceW( state );
@@ -160,16 +161,16 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
 void ODEBody::postupdate(rw::kinematics::State& state){
     switch(_type){
     case(ODEBody::RIGID): {
-        std::cout << _mframe->getName() << std::endl;
+        //std::cout << _mframe->getName() << std::endl;
         Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
-        std::cout << "wTp    : " << wTp << std::endl;
-        std::cout << "wTb_ode: " << ODEUtil::getODEBodyT3D(_bodyId) << std::endl;
+        //std::cout << "wTp    : " << wTp << std::endl;
+        //std::cout << "wTb_ode: " << ODEUtil::getODEBodyT3D(_bodyId) << std::endl;
 
         Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
         pTb.P() -= pTb.R()*_offset;
-        std::cout << "pTb" << pTb << std::endl;
+        //std::cout << "pTb" << pTb << std::endl;
         _mframe->setTransform( pTb , state );
-        std::cout << "pTb" << _mframe->getTransform( state ) << std::endl;
+        //std::cout << "pTb" << _mframe->getTransform( state ) << std::endl;
 
 
         //_rwBody->setWorldTcom(ODEUtil::getODEBodyT3D(_bodyId), state);
@@ -177,8 +178,8 @@ void ODEBody::postupdate(rw::kinematics::State& state){
         Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
         // angular velocity is defined in world coordinates and around center of mass
-        if(_rwBody==NULL)
-            std::cout << "BODY is null" << std::endl;
+        //if(_rwBody==NULL)
+        //    std::cout << "BODY is null" << std::endl;
         //_rwBody->setAngVelW( ang , state);
         //_rwBody->setLinVelW( lin , state);
 

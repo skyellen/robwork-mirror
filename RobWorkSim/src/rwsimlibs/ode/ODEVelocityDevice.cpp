@@ -62,7 +62,10 @@ void ODEVelocityDevice::reset(rw::kinematics::State& state){
     for(size_t i = 0; i<_odeJoints.size(); i++){
 
         _odeJoints[i]->setVelocity( 0 );
-        if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+
+        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
+                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+        if(depends){
             continue;
         }
 
@@ -72,7 +75,11 @@ void ODEVelocityDevice::reset(rw::kinematics::State& state){
         qi++;
     }
     for(size_t i = 0; i<_odeJoints.size(); i++){
-        if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+
+        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
+                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+
+        if(depends){
             double angle = _odeJoints[i]->getOwner()->getAngle();
             _odeJoints[i]->setAngle(angle);
         }
@@ -89,44 +96,40 @@ namespace {
 }
 
 
-void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
-    RW_WARN("1");
-    _lastDt = dt;
+void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+    double dt = info.dt;
+    _lastDt = info.dt_prev;
 	rw::math::Q flim = _rdev->getForceLimit();
 	rw::math::Q testtorque = _rdev->_torque;
-	std::cout << "force lim: " << flim << std::endl;
-	std::cout << "force lim: " << _maxForce << std::endl;
-	RW_WARN("1");
+	//std::cout << "force lim: " << flim << std::endl;
+	//std::cout << "force lim: " << _maxForce << std::endl;
+
 	bool fmaxChanged = false;
-	RW_WARN("1");
+
 	if( MetricUtil::dist2(flim,_maxForce)>0.0001 ){
-	    RW_WARN("1");
 		fmaxChanged = true;
-		RW_WARN("1");
 		_maxForce = flim;
-		RW_WARN("1");
 	}
-	RW_WARN("1");
+
 	_lastQ = _rdev->getModel().getQ(state);
 
     rw::math::Q velQ = _rdev->getVelocity(state);
     rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
     //std::cout << velQ << "\n";
-    RW_WARN("1");
+
     int qi=0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately
-        if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
+                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+
+        if(depends){
             continue;
         }
-        RW_WARN("1");
         //TODO: make sure to stay within the actual acceleration limits
         double vel = velQ(qi);
-
         double avel = _odeJoints[i]->getActualVelocity();
         //double acc = (vel-avel)/dt;
-
-
         //std::cout << avel << ",";
         //if( fabs(acc)>accLim(qi) )
         //	acc = sign(acc)*accLim(qi);
@@ -138,22 +141,24 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             _odeJoints[i]->setForce( testtorque[qi] );
         if(fmaxChanged)
         	_odeJoints[i]->setMaxForce( _maxForce(qi) );
-        RW_WARN("1");
         qi++;
     }
-    RW_WARN("1");
+
 
     // we now handle the dependent joints
     for(size_t i = 0; i<_odeJoints.size(); i++){
-        RW_WARN("1");
+
+        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
+                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+
         // dependend joints need to be handled separately
-        if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+        if(depends){
             double oa = _odeJoints[i]->getOwner()->getAngle();
             double ov = _odeJoints[i]->getOwner()->getVelocity();
             double s = _odeJoints[i]->getScale();
             double off = _odeJoints[i]->getOffset();
 
-            RW_WARN("1");
+
             //double v = _odeJoints[i]->getVelocity();
             double a = _odeJoints[i]->getAngle();
 
@@ -180,13 +185,17 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
                 double oaerr_n  = ((a/2)-off)/s-oa;
                 _odeJoints[i]->getOwner()->setVelocity( 0.5*oaerr_n/dt );
 
-                RW_WARN("1");
+                //std::cout << "Setting velocity og PG70 : " << 2*ov*s << std::endl;
+                //std::cout << "Setting velocity og PG70 owner: " << 0.5*oaerr_n/dt << std::endl;
+                //std::cout << "dt " << dt << std::endl;
+                //std::cout << "s " << s << std::endl;
+
                 //_odeJoints[i]->getOwner()->setVelocity( 2*aerr_n/dt );
                 //_odeJoints[i]->getOwner()->setVelocity( 0 );
                 //_odeJoints[i]->setVelocity( /*2*ov*s +*/ aerr_pg70/dt );
                 //std::cout << oa << " " << a << " " << aerr_pg70 << " " << averr << std::endl;
             } else {
-                RW_WARN("1");
+
                 //_odeJoints[i]->setAngle(oa*s+off);
                 //double averr = ov*s;
                 // now we add the velocity that we expect the joint to have
@@ -198,7 +207,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             }
         }
     }
-    RW_WARN("1");
+
 
 }
 

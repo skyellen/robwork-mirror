@@ -188,7 +188,6 @@ namespace dynamics {
             rwlibs::simulation::SimulatedSensor::Ptr sensor = findSensor(name);
             if(sensor==NULL) 
 		        return NULL;
-			std::cout<<"Sensor not NULL"<<std::endl;
         	return sensor.cast<T>();
         }
 

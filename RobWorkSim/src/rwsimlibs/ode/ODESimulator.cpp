@@ -91,8 +91,8 @@ using namespace rwlibs::proximitystrategies;
 
 #define INITIAL_MAX_CONTACTS 1000
 
-#define RW_DEBUGS( str ) std::cout << str  << std::endl;
-//#define RW_DEBUGS( str )
+//#define RW_DEBUGS( str ) std::cout << str  << std::endl;
+#define RW_DEBUGS( str )
 /*
 #define TIMING( str, func ) \
     { long start = rw::common::TimerUtil::currentTimeMs(); \
@@ -427,12 +427,12 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 
         RW_DEBUGS("------------- Device pre-update:");
         BOOST_FOREACH(ODEDevice *dev, _odeDevices){
-            dev->update(dttmp, tmpState);
+            dev->update(conStepInfo, tmpState);
         }
 
         RW_DEBUGS("------------- Body pre-update:");
         BOOST_FOREACH(ODEBody *body, _odeBodies){
-            body->update(dttmp, tmpState);
+            body->update(conStepInfo, tmpState);
         }
 
         // Step world
@@ -584,29 +584,13 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	BOOST_FOREACH(ODEDevice *dev, _odeDevices){
 	    dev->postUpdate(state);
 	}
-    for(size_t i=0; i<_odeBodies.size(); i++){
-        if(_odeBodies[i]->getFrame()->getName()=="object")
-            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
-        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
-    }
 
 	RW_DEBUGS("------------- Update robwork bodies:");
 	//std::cout << "Update robwork bodies:" << std::endl;
     // now copy all state info into state/bodies (transform,vel,force)
     for(size_t i=0; i<_odeBodies.size(); i++){
-        std::cout << "POST Update: " << _odeBodies[i]->getFrame()->getName() << std::endl;
+        //std::cout << "POST Update: " << _odeBodies[i]->getFrame()->getName() << std::endl;
         _odeBodies[i]->postupdate(state);
-        for(size_t i=0; i<_odeBodies.size(); i++){
-            if(_odeBodies[i]->getFrame()->getName()=="object")
-                std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
-            //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
-        }
-    }
-
-    for(size_t i=0; i<_odeBodies.size(); i++){
-        if(_odeBodies[i]->getFrame()->getName()=="object")
-            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
-        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
     }
 
     RW_DEBUGS("------------- Sensor update :");
@@ -620,12 +604,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     dJointGroupEmpty(_contactGroupId);
     // and the joint feedbacks that where used is also destroyed
     _nextFeedbackIdx=0;
-
-    for(size_t i=0; i<_odeBodies.size(); i++){
-        if(_odeBodies[i]->getFrame()->getName()=="object")
-            std::cout << "OBJ:" << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
-        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
-    }
 
 	RW_DEBUGS("------------- Update trimesh prediction:");
 	BOOST_FOREACH(ODEUtil::TriGeomData *data, _triGeomDatas){
@@ -656,13 +634,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "e";
 	RW_DEBUGS("----------------------- END STEP --------------------------------");
 	//std::cout << "-------------------------- END STEP --------------------------------" << std::endl;
-
-    for(size_t i=0; i<_odeBodies.size(); i++){
-        if(_odeBodies[i]->getFrame()->getName()=="object")
-            std::cout << _odeBodies[i]->getFrame()->getTransform(state) << std::endl;
-        //std::cout << _odeBodies[i]->getFrame()->getName()<< std::endl;
-    }
-
 
 }
 
@@ -1436,7 +1407,7 @@ using namespace rw::proximity;
 
 bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration){
     //
-    std::cout << "detectCollisionsRW" << onlyTestPenetration << std::endl;
+    //std::cout << "detectCollisionsRW" << onlyTestPenetration << std::endl;
     ProximityFilter::Ptr filter = _bpstrategy->update(state);
     FKTable fk(state);
     ProximityStrategyData data;
@@ -1451,22 +1422,32 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         const ProximityModel::Ptr &a = _frameToModels[*pair.first];
         const ProximityModel::Ptr &b = _frameToModels[*pair.second];
         if(a==NULL || b==NULL){
-            std::cout << "No rwmodels:" << std::endl;
+            std::cout << "No rwmodels:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+            //std::cout << "No rwmodels:" << std::endl;
             continue;
         }
 
         // now find the "body" frame belonging to the frames
-        std::cout << "bodies" << std::endl;
         ODEBody *a_data = _rwFrameToODEBody[pair.first];
         ODEBody *b_data = _rwFrameToODEBody[pair.second];
-        if(a_data==NULL || b_data==NULL)
+        if(a_data==NULL || b_data==NULL){
+            //std::cout << "No ode bodies:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
             continue;
+        }
 
-        std::cout << "geoms" << std::endl;
-        dGeomID a_geom = _frameToOdeGeoms[pair.first];
-        dGeomID b_geom = _frameToOdeGeoms[pair.second];
-        if(a_geom==NULL || b_geom==NULL)
+        dGeomID a_geom = _frameToOdeGeoms[a_data->getFrame()];
+        dGeomID b_geom = _frameToOdeGeoms[b_data->getFrame()];
+        if(a_geom==NULL || b_geom==NULL){
+            //std::cout << "No ode geoms:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
             continue;
+        }
+
+        if( a_geom == b_geom ){
+            //std::cout << "Same geoms:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+            continue;
+        }
+
+
         /*
         if(a_geom == b_geom)
             continue;
@@ -1500,11 +1481,15 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
         //const Transform3D<> aT = ODEUtil::getODEGeomT3D(a_geom);
         //const Transform3D<> bT = ODEUtil::getODEGeomT3D(b_geom);
-        const Transform3D<> aT = a_data->getTransform();
-        const Transform3D<> bT = b_data->getTransform();
-        std::cout << aT.P() << " " << bT.P() << std::endl;
+        Transform3D<> aT = a_data->getTransform();
+        Transform3D<> bT = b_data->getTransform();
+        //std::cout << aT.P() << " " << bT.P() << std::endl;
         const Transform3D<> aT_prev = fk.get(pair.first);
         const Transform3D<> bT_prev = fk.get(pair.second);
+        if(a_data->getFrame()!=pair.first)
+            aT = aT * Kinematics::frameTframe(a_data->getFrame(),pair.first, state);
+        if(b_data->getFrame()!=pair.second)
+            bT = bT * Kinematics::frameTframe(b_data->getFrame(),pair.second, state);
 
         // first make standard collision detection, if in collision then compute all contacts from dist query
         RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
@@ -1519,7 +1504,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
-                std::cout << "IN COLLISION!!!!" << std::endl;
+                //std::cout << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
                 return true;
             }
             continue;
@@ -1623,11 +1608,11 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             _contacts.resize(numc);
         }
         int ni = 0;
-        std::cout << "--- {";
-        for(int i=0;i<numc;i++){
-            std::cout << res->distances[i] << ", ";
-        }
-        std::cout << "}"<< std::endl;
+        //std::cout << "--- {";
+        //for(int i=0;i<numc;i++){
+        //    std::cout << res->distances[i] << ", ";
+        //}
+        //std::cout << "}"<< std::endl;
 
         for(size_t i=0;i<numc;i++){
 
