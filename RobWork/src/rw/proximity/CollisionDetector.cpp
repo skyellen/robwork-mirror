@@ -88,7 +88,6 @@ void CollisionDetector::initialize(WorkCell::Ptr wc) {
 
 bool CollisionDetector::inCollision(const kinematics::State& state, ProximityData &proxdata) const
 {
-    std::cout << "Check collision, in col" << std::endl;
     ProximityFilter::Ptr filter = _bpfilter->update(state);
     FKTable fk(state);
     ProximityStrategyData data;
@@ -112,7 +111,7 @@ bool CollisionDetector::inCollision(const kinematics::State& state, ProximityDat
     while( !filter->isEmpty() ){
         const FramePair& pair = filter->frontAndPop();
 
-        std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
+        //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
 
         // and lastly we use the dispatcher to find the strategy the
         // is required to compute the narrowphase collision
