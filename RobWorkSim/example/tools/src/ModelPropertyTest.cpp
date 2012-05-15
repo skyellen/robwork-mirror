@@ -16,7 +16,7 @@
 
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <boost/tuple/tuple.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
@@ -50,8 +50,8 @@ int main(int argc, char** argv)
 	std::vector<Geometry::Ptr> geoms;
 	geoms.push_back(geo);
 
-	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
-	InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
+    Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
+    InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
 
 	typedef std::pair<matrix<double>, vector<double> > Result;
 	Result res = LinearAlgebra::eigenDecompositionSymmetric( inertia.m() );

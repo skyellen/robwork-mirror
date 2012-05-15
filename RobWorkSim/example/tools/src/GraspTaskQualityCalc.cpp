@@ -233,8 +233,9 @@ KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnode
 std::vector<Frame*> withColModels(std::vector<Frame*> frames){
     std::vector<Frame*> res;
     BOOST_FOREACH(Frame* frame, frames){
-        if(CollisionModelInfo::get(frame).size()>0)
-            res.push_back(frame);
+        // TODO change to objects, find them in workcell....
+        //if(CollisionModelInfo::get(frame).size()>0)
+        //    res.push_back(frame);
     }
     return res;
 }
@@ -289,7 +290,7 @@ Q calculateQuality(ProximityModel::Ptr object, Device::Ptr grip, CollisionDetect
 Transform3D<> sampleParSurface(double minDist, double maxDist, TriMesh::Ptr mesh, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW){
     // now we choose a random number in the total area
     ProximityStrategyData data;
-    data.setCollisionQueryType( AllContacts );
+    data.setCollisionQueryType( CollisionStrategy::AllContacts );
     bool targetFound = false;
     Transform3D<> target;
     do {

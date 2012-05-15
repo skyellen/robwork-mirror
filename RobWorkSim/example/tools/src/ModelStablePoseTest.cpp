@@ -28,6 +28,7 @@
 #include <rw/geometry/QHull3D.hpp>
 
 #include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
 
 using namespace rw::math;
 using namespace boost::numeric;
@@ -53,8 +54,9 @@ int main(int argc, char** argv)
 	std::vector<Geometry::Ptr> geoms;
 	geoms.push_back(geo);
 
-	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
-	InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
+    Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
+    InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
+
 
 	typedef std::pair<matrix<double>, vector<double> > Result;
 	Result res = LinearAlgebra::eigenDecompositionSymmetric( inertia.m() );

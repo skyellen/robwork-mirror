@@ -119,8 +119,6 @@ int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubat
 KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes);
 KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes);
 
-Q calculateQuality(ProximityModel::Ptr object, Device::Ptr gripper, CollisionDetector& detector, CollisionStrategy::Ptr strat, State &state, Q openQ, Q closeQ);
-
 
 std::vector<std::pair<Transform3D<>, RPY<> > > readPoses(std::string file){
 
@@ -332,14 +330,6 @@ KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnode
     return KDTreeQ::buildTree(simnodes);
 }
 
-std::vector<Frame*> withColModels(std::vector<Frame*> frames){
-    std::vector<Frame*> res;
-    BOOST_FOREACH(Frame* frame, frames){
-        if(CollisionModelInfo::get(frame).size()>0)
-            res.push_back(frame);
-    }
-    return res;
-}
 
 
 const Q normalize(const Q& v)
@@ -349,42 +339,6 @@ const Q normalize(const Q& v)
         return v/length;
     else
         return Q::zero(v.size());
-}
-
-// we need to estimate the quality of a kinematically generated grasp
-// here we try closing the grippers until penetration of SOFT_LAYER_SIZE is reached.
-// when that is done then the area of a box fitted to the contacts is used as the quality estimate.
-Q calculateQuality(ProximityModel::Ptr object, Device::Ptr grip, CollisionDetector& detector, CollisionStrategy::Ptr strat, State &state, Q openQ, Q closeQ){
-    Q result(1,0.0);
-
-    // find the jaws of the gripper
-    TreeDevice* gripper = dynamic_cast<TreeDevice*>(grip.get());
-    std::vector<Frame*> ends = gripper->getEnds();
-    RW_ASSERT(ends.size()==2);
-    std::vector<Frame*> jaw1 = withColModels( GeometryUtil::getAnchoredFrames(*ends[0], state) );
-    std::vector<Frame*> jaw2 = withColModels( GeometryUtil::getAnchoredFrames(*ends[1], state) );
-
-    gripper->setQ( openQ, state);
-    // reduce openQ until a collision is found
-    Q stepQ = closeQ - openQ;
-    Q ustepQ = normalize( stepQ );
-    for(int i=1; i<10; i++){
-        gripper->setQ( openQ+stepQ/(2*i), state );
-        if( !detector.inCollision(state,NULL, true)){
-            openQ = openQ+stepQ/(2*i);
-        }
-    }
-    std::cout << "CQ:" << openQ << std::endl;
-
-    // now one of the jaws should be
-    gripper->setQ( openQ+ustepQ*SOFT_LAYER_SIZE, state );
-    // we should be in collision now
-
-    // calculate the contacts with jaw1 and jaw2
-    //calcContacts( );
-
-
-    return result;
 }
 
 
