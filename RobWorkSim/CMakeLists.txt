@@ -33,6 +33,12 @@ RW_GET_OS_INFO()
 RW_SET_INSTALL_DIRS(RobWorkSim RWSIM)
 RW_OPTIONS(RWSIM)
 
+# Add an "uninstall" target
+#configure_file("${RWSIM_ROOT}/cmake/uninstall_target.cmake.in"
+#               "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+#add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+#                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
+
 # add the RWSIM modeules to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/cmake/Modules/")
 
@@ -55,11 +61,36 @@ ENDIF()
 MESSAGE("RWS_ROOT ${RobWorkStudio_DIR}")
 FIND_PACKAGE(RobWorkStudio ${ROBWORKSIM_VERSION} REQUIRED)
 
-# Configure build/RobWorkSimConfig.cmake.in such that other projects might use robwork
+
+
+###############################################################
+# CONFIGURATION
+# configure build/RobWorkStudioConfig.cmake.in 
+#
+
+# first configure the header file
+CONFIGURE_FILE(
+  ${RWSIM_ROOT}/src/RobWorkSimConfig.hpp.in
+  "${RWSIM_ROOT}/src/RobWorkSimConfig.hpp"
+  @ONLY
+)
+
+# next build information script
+CONFIGURE_FILE(
+  ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake.in
+  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  @ONLY
+)
+
+# Configure build/RobWorkSimConfig.cmake.in such that other projects might use robworkstudio
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/cmake/RobWorkSimConfig.cmake.in
-  "${RWSIM_ROOT}/cmake/RobWorkSimConfig${CMAKE_BUILD_TYPE}.cmake"
-)
+  "${RWSIM_ROOT}/cmake/RobWorkSimConfig.cmake" @ONLY)
+
+# and the version info
+CONFIGURE_FILE(
+  ${RWSIM_ROOT}/cmake/RobWorkSimConfigVersion.cmake.in
+  "${RWSIM_ROOT}/cmake/RobWorkSimConfigVersion.cmake" @ONLY)
 
 
 INCLUDE_DIRECTORIES( ${ROBWORKSIM_INCLUDE_DIR} )
