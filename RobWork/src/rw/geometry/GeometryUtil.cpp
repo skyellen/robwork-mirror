@@ -137,6 +137,43 @@ GeometryUtil::estimateInertia(
 }
 #endif
 
+rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms)
+{
+    if(geoms.size()==0)
+        RW_THROW("At least one geometry is required!");
+    // first find center mass
+    double totalArea(0.0);
+    Vector3D<> center(0.f,0.f,0.f);
+    BOOST_FOREACH(Geometry::Ptr geom, geoms){
+        GeometryData::Ptr gdata = geom->getGeometryData();
+        // check if type of geom is really a trimesh
+        TriMesh::Ptr trimesh = gdata->getTriMesh(false);
+
+        Transform3D<> t3d = geom->getTransform();
+
+        for(size_t i=0; i<trimesh->getSize(); i++){
+            Triangle<double> tri = trimesh->getTriangle(i);
+            const Vector3D<>& p = t3d* (tri[0]);
+            const Vector3D<>& q = t3d* (tri[1]);
+            const Vector3D<>& r = t3d* (tri[2]);
+
+            // calc triangle area
+            double a = (cross( p-q , p-r )).norm2()/2;
+
+            // calc triangle centroid
+            Vector3D<> c = (p+q+r)/3;
+
+            center += c*a;
+            totalArea += a;
+        }
+    }
+    if(totalArea==0.0)
+        RW_THROW("There are no valid geoemtries!");
+    center /= totalArea;
+    return cast<double>(center);
+}
+
+
 rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms, rw::kinematics::Frame* ref, const rw::kinematics::State& state)
 {
 	if(geoms.size()==0)
@@ -197,6 +234,7 @@ rw::math::Vector3D<> GeometryUtil::estimateCOG(const TriMesh& trimesh, const rw:
     center /= totalArea;
     return center;
 }
+
 
 rw::math::Vector3D<> GeometryUtil::estimateCOG(const TriMesh& trimesh){
 	Vector3D<> center(0.f,0.f,0.f);
@@ -331,6 +369,71 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
                             Izx, Izy, Izz);
     return inertia;
 }
+
+
+rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
+    double mass,
+    const std::vector<Geometry::Ptr>& geoms,
+    const Transform3D<>& ref)
+{
+    if(geoms.size()==0)
+        RW_THROW("At least one geometry is required!");
+
+    double Ixx = 0, Iyy=0, Izz = 0; // the diagonal elements
+    double Ixy = 0, Ixz=0, Iyz = 0; // the off diagonal elements
+    int triCnt = 0;
+    BOOST_FOREACH(Geometry::Ptr geom, geoms){
+        GeometryData::Ptr gdata = geom->getGeometryData();
+        // check if type of geom is really a trimesh
+        TriMesh::Ptr trimesh = gdata->getTriMesh(false);
+
+        Transform3D<> t3d = geom->getTransform();
+
+
+        triCnt += trimesh->getSize();
+        for(size_t i=0; i<trimesh->getSize(); i++){
+            Triangle<double> tri = trimesh->getTriangle(i);
+            const Vector3D<>& p = t3d* (tri[0]);
+            const Vector3D<>& q = t3d* (tri[1]);
+            const Vector3D<>& r = t3d* (tri[2]);
+
+            // calc triangle area
+            //double a = (cross( p-q , p-r )).norm2()/2;
+
+            // calc triangle centroid
+            Vector3D<> c = (p+q+r)/3;
+            //Vector3D<float> pos = c*a;
+            Vector3D<> pos = c;
+            double x = pos(0), y = pos(1), z = pos(2);
+            Ixx += y*y + z*z;
+            Iyy += x*x + z*z;
+            Izz += x*x + y*y;
+            Ixy += fabs(x*y);
+            Ixz += fabs(x*z);
+            Iyz += fabs(y*z);
+        }
+    }
+    //std::cout << "Total Area: " << totalArea << " mass: " << mass << std::endl;
+    //std::cout << "Center: " << center <<  std::endl;
+    //double ptMass = mass/totalArea;
+    if(triCnt==0)
+        RW_THROW("There are no valid triangles in geometry!");
+
+    double ptMass = mass/triCnt;
+    Ixx *= ptMass;
+    Iyy *= ptMass;
+    Izz *= ptMass;
+
+    double Iyx = Ixy = -ptMass*Ixy;
+    double Izx = Ixz = -ptMass*Ixz;
+    double Izy = Iyz = -ptMass*Iyz;
+
+    InertiaMatrix<> inertia( Ixx, Ixy, Ixz,
+                            Iyx, Iyy, Iyz,
+                            Izx, Izy, Izz);
+    return inertia;
+}
+
 
 #ifdef OLD_FACE_STUFF
 InertiaMatrix<>

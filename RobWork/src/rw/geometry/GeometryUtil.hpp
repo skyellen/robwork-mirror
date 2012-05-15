@@ -74,6 +74,25 @@ public:
     		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
 
     /**
+      * @brief estimates the inertia and center of gravity (COG) of a list of geometries.
+      * The inertia is described relative
+      * to the ref coordinate system translated to COG. Each geometry is assumed to
+      * be described relative to ref.
+      */
+     static rw::math::InertiaMatrix<> estimateInertia(
+             double mass,
+             const std::vector<Geometry::Ptr> &geoms,
+             const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
+
+
+    /**
+     * @brief estimates the center of gravity (COG) of a list of geometries.
+     * @param geoms [in] the geometries
+     * @return the center of gravity of the geometries
+     */
+    static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
+
+    /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
      * @param geoms [in] the geometries
      * @return the center of gravity of the geometries
