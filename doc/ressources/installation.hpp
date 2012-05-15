@@ -62,17 +62,17 @@ Password: anonymous
 
 For svn use the complete project:
 
-Complete SVN repository: https://svn.mip.sdu.dk/RobWork/trunk
+Complete SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk
 
 or one of the specific project folders:
 
-Project specific SVN repository: https://svn.mip.sdu.dk/RobWork/trunk/RobWork
+Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWork
 
-Project specific SVN repository: https://svn.mip.sdu.dk/RobWork/trunk/RobWorkStudio
+Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkStudio
 
-Project specific SVN repository: https://svn.mip.sdu.dk/RobWork/trunk/RobWorkSim
+Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkSim
 
-Project specific SVN repository: https://svn.mip.sdu.dk/RobWork/trunk/RobWorkHardware
+Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkHardware
 
 Since the trunk is actively developed there might be bugs or compile issues in the source. Therefore
 check out the nightly builds on our cdash servers, these should indicate any problems there might be on
