@@ -44,6 +44,7 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #endif
 
+#include <rw/proximity/rwstrategy/ProximityStrategyRW.hpp>
 #include <string>
 
 USE_ROBWORK_NAMESPACE
@@ -57,6 +58,7 @@ namespace
     std::vector<CollisionStrategy::Ptr> allCollisionStrategies()
     {
         std::vector<CollisionStrategy::Ptr> result;
+        result.push_back( ownedPtr( new ProximityStrategyRW() ) );
 #if RW_HAVE_PQP == 1
         result.push_back(ProximityStrategyPQP::make());
 #endif
@@ -221,9 +223,10 @@ void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
 
     bool result;
 
-    BasicFilterStrategy::Ptr filterstrat = ownedPtr( new BasicFilterStrategy(&workcell) );
-    filterstrat->addRule( ProximitySetupRule::makeInclude(cube1->getName(), cube2->getName() ) );
-    CollisionDetector detector(&workcell, strategy, filterstrat );
+    CollisionDetector detector(&workcell, strategy);
+    detector.addGeometry( cube1,geom );
+    detector.addGeometry( cube2,geom );
+    detector.addRule( ProximitySetupRule::makeInclude(cube1->getName(), cube2->getName()) );
 
     result = detector.inCollision(state);
     BOOST_CHECK_MESSAGE(result, "Collision result is not correct! Strategy, " << i << " is faulty!");
