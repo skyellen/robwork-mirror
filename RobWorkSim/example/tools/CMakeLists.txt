@@ -93,8 +93,8 @@ target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
 add_executable(SimulateTask src/SimulateTask.cpp)
 target_link_libraries(SimulateTask rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
-#add_executable(SimulateTaskLB src/SimulateTaskLB.cpp)
-#target_link_libraries(SimulateTaskLB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+add_executable(SimulateTaskLB src/SimulateTaskLB.cpp)
+target_link_libraries(SimulateTaskLB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 add_executable(GTaskStats src/GTaskStats.cpp)
 target_link_libraries(GTaskStats rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
