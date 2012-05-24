@@ -32,6 +32,12 @@ namespace geometry {
      */
 	class Plane: public Primitive {
 	public:
+		/**
+		 * @brief Smart pointer to Plane
+		 */
+		typedef rw::common::Ptr<Plane> Ptr;
+
+
 	    /**
 	     * @brief constructor
 	     * @param q
@@ -84,7 +90,11 @@ namespace geometry {
 		inline double d() const {return _d;};
 
 		/**
-		 * @brief calculates the shortest distance from point to plane
+		 * @brief calculates the shortest distance from point to plane. 
+		 *
+		 * The distance includes the sign s.t. a negative distance corresponds to \b point
+		 * being behind the plane and a positive distance in front of the plane.
+		 *
 		 * @param point
 		 * @return
 		 */
@@ -98,6 +108,23 @@ namespace geometry {
 		 * @return
 		 */
 		double refit( std::vector<rw::math::Vector3D<> >& data ){ return 0;}
+
+		/**
+		 * @brief Calculates the intersection between the line and plane.
+		 *
+		 * The defined by \b p1 and \p2 is considered infinitely long.
+		 * Throws a rw::common::Exception if the line is parallel to the plane.
+		 *
+		 * @param p1 [in] point 1 on the line
+		 * @param p2 [in] point 2 on the line
+		 */
+		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) {
+			double denominator = dot(_normal, p2-p1);
+			if (denominator < 1e-16)
+				RW_THROW("The specified line is parallel to the plane");
+			double t = (-_d-dot(_normal, p1))/denominator;
+			return p1+t*(p2-p1);
+		}
 
 		//static Plane fitFrom(const std::vector<rw::math::Vector3D<> >& data){ return };
 
