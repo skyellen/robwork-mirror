@@ -13,7 +13,7 @@ IF(build)
     SET(SRC_FILES_HPP Lua.hpp)
     
     # Header files to moc and compile:
-    QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
+    QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     # Rcc the files:
     QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
         

@@ -13,7 +13,7 @@ IF(build)
     SET(SRC_FILES_HPP ShowLog.cpp)
     
     # Header files to moc and compile:
-    QT4_WRAP_CPP(MocSrcFiles ShowLog.hpp)
+    QT4_WRAP_CPP(MocSrcFiles ShowLog.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     # Rcc the files:
     QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
             
