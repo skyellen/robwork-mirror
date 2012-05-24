@@ -56,7 +56,7 @@ SET(MocHeaderFiles
 set_source_files_properties(${SRC_FILES_CPP} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 SET(MocSrcFiles)
-QT4_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} ${UIS_OUT_H})
+QT4_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} ${UIS_OUT_H} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 #MESSAGE( ${UIS_OUT_H} )
 # Resource files to rcc and compile:
 IF(RWS_BUILD_SANDBOX)
