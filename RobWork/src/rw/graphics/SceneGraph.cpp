@@ -326,9 +326,10 @@ bool SceneGraph::removeChild(const std::string& name, GroupNode::Ptr node){
     BOOST_FOREACH(SceneNode::Ptr child, node->_childNodes){
         if(child->getName()==name){
             node->removeChild(child);
+			return true;
         }
     }
-    return true;
+    return false;
 }
 
 namespace {

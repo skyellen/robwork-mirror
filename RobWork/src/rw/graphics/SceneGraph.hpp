@@ -189,6 +189,13 @@ namespace graphics {
         virtual bool removeDrawable(DrawableNode::Ptr drawable);
         virtual bool removeDrawable(DrawableNode::Ptr drawable, SceneNode::Ptr node);
         virtual bool removeDrawable(const std::string& name);
+		/**
+		 * @brief Removes child with the specified name from the \b node.
+		 *
+		 * @param name [in] Name of child to remove
+		 * @param node [in] Node to remove from
+		 * @return true if found and successfully removed.
+		 */
         virtual bool removeChild(const std::string& name, GroupNode::Ptr node);
 
         //! returns true if visit is done

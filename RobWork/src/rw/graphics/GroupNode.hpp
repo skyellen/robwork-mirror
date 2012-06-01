@@ -79,6 +79,7 @@ namespace graphics {
         /**
          * @brief remove \b node from the children list of this node AND removes this
          * node from the parent list of \b node.
+		 *
          * @param node [in] child node that is to be removed
          */
         void removeChild(SceneNode::Ptr node);
@@ -86,7 +87,8 @@ namespace graphics {
         /**
          * @brief remove node with name \b name from the children list of this node AND removes this
          * node from the parent list of \b node.
-         * @param node [in] child node that is to be removed
+		 *
+		 * @param node [in] child node that is to be removed
          */
         void removeChild(const std::string& name);
 
