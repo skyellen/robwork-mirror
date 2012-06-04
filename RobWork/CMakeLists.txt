@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 PROJECT(RobWork)
 SET(ROBWORK_VERSION 0.5.1)
 SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
+INCLUDE(CMakeParseArguments)
 # guard against in-source builds
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
