@@ -28,6 +28,7 @@ include(ExternalProject)
 MESSAGE(STATUS "RobWork ENABLED!")
 ExternalProject_Add(
    RobWork
+   DOWNLOAD_COMMAND "" 
    SOURCE_DIR ${RW_ROOT}
    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
    INSTALL_COMMAND "")
@@ -50,6 +51,7 @@ IF( WITH_RWS )
     ExternalProject_Add(
        RobWorkStudio
        DEPENDS RobWork
+       DOWNLOAD_COMMAND "" 
        SOURCE_DIR ${RWS_ROOT}
        CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
                   -DRW_ROOT=${RW_ROOT}
@@ -75,6 +77,7 @@ IF( WITH_RWSIM )
     ExternalProject_Add(
        RobWorkSim
        DEPENDS RobWork ${RWSTUDIO_TARGET}
+       DOWNLOAD_COMMAND "" 
        SOURCE_DIR ${RWSIM_ROOT}
        CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                   -DRW_ROOT=${RW_ROOT}
@@ -102,6 +105,7 @@ IF( WITH_RWHW )
     ExternalProject_Add(
        RobWorkHardware
        DEPENDS RobWork ${RWSTUDIO_TARGET}
+       DOWNLOAD_COMMAND "" 
        SOURCE_DIR ${RWHW_ROOT}
        CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                   -DRW_ROOT=${RW_ROOT}
