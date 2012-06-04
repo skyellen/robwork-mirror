@@ -32,11 +32,13 @@ Q Plane::getParameters() const {
     return q;
 }
 
-TriMesh::Ptr Plane::createMesh(int resolution) const {
-    // we find 4 points on the plane and create 2 triangles that represent the plane
+TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
+    size *= 0.5; //Scale s.t. the real size becomes size.
+
+	// we find 4 points on the plane and create 2 triangles that represent the plane
 
     //Vector3D<> point = normalize(_normal) * _d/_normal.norm2();
-
+	
     Vector3D<> otho;
     // find the orthogonal basis of the plane, eg xy-axis
     // use an axis to generate one orthogonal vector
@@ -56,13 +58,19 @@ TriMesh::Ptr Plane::createMesh(int resolution) const {
 
     // now we generate the points in the two triangles
     rw::geometry::PlainTriMesh<>::Ptr mesh = ownedPtr( new rw::geometry::PlainTriMesh<>(2) );
-    (*mesh)[0][0] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()* 100);
-    (*mesh)[0][1] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()* 100);
-    (*mesh)[0][2] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()*-100);
+    (*mesh)[0][0] = trans * (Vector3D<>::x()* size + Vector3D<>::y()* size);
+    (*mesh)[0][1] = trans * (Vector3D<>::x()*-size + Vector3D<>::y()* size);
+    (*mesh)[0][2] = trans * (Vector3D<>::x()*-size + Vector3D<>::y()*-size);
 
-    (*mesh)[1][0] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()*-100);
-    (*mesh)[1][1] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()*-100);
-    (*mesh)[1][2] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()* 100);
+    (*mesh)[1][0] = trans * (Vector3D<>::x()*-size + Vector3D<>::y()*-size);
+    (*mesh)[1][1] = trans * (Vector3D<>::x()* size + Vector3D<>::y()*-size);
+    (*mesh)[1][2] = trans * (Vector3D<>::x()* size + Vector3D<>::y()* size);
 
     return mesh;
+
+}
+
+
+TriMesh::Ptr Plane::createMesh(int resolution) const {
+	return createMesh(resolution, 100 /* Default plane size */);
 }

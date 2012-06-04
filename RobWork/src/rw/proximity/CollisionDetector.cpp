@@ -255,7 +255,7 @@ void CollisionDetector::removeRule(const ProximitySetupRule& rule) {
 
 
 
-std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame *frame){
+std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame *frame) {
 	if(!_frameToModels.has(*frame))
 		return std::vector<std::string>();
 	ProximityModel::Ptr model = _frameToModels[*frame];
@@ -265,3 +265,11 @@ std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame
 }
 
 
+bool CollisionDetector::hasGeometry(rw::kinematics::Frame* frame, const std::string& geometryId) {
+	std::vector<std::string> names = getGeometryIDs(frame);
+	BOOST_FOREACH(const std::string& name, names) {
+		if (name == geometryId)
+			return true;
+	}
+	return false;
+}

@@ -29,7 +29,7 @@ SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png"))
 {
     setupUi(this);
-	std::cout<<XMLPathFormat::TimeId<<std::endl;
+//	std::cout<<XMLPathFormat::TimeId<<std::endl;
 
 }  
 

@@ -51,6 +51,19 @@ Geometry::Geometry(GeometryData::Ptr data, double scale):
 
 };
 
+
+Geometry::Geometry(GeometryData::Ptr data, std::string& name, double scale):
+    _refFrame(NULL),
+	_data(data),
+	_transform(rw::math::Transform3D<>::identity() ),
+	_scale(scale),
+	_name(name),
+	_mask(Geometry::CollisionGroup)
+{
+
+};
+	
+
 Geometry::Geometry(GeometryData::Ptr data,
 		 const rw::math::Transform3D<>& t3d,
 		 double scale):

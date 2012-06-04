@@ -96,6 +96,9 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     _settingsMap(NULL),
     _aboutBox(NULL)
 {
+	//Always create the about box.
+	_aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
+
     _robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
     //_robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
     std::stringstream sstr;
@@ -134,6 +137,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
 
     // set the drag and drop property to true
     setupFileActions();
+	setupToolActions();
     setupViewGL();
     _propEditor = new PropertyViewEditor( NULL );
     _propEditor->setPropertyMap( &_propMap  );
@@ -179,7 +183,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
 
     // Workcell sent to plugins.
     openAllPlugins();
-    //updateHandler();
+    //updateHandler(); 
 
     setAcceptDrops(true);
 }
@@ -368,6 +372,30 @@ void RobWorkStudio::setupFileActions()
     updateLastFiles();
 }
 
+
+void RobWorkStudio::setupToolActions() {
+    QAction* printCollisionsAction =
+        new QAction(QIcon(""), tr("Print Colliding Frames"), this); // owned
+    connect(printCollisionsAction, SIGNAL(triggered()), this, SLOT(printCollisions()));
+
+    _toolMenu = menuBar()->addMenu(tr("&Tools"));
+    _toolMenu->addAction(printCollisionsAction);
+}
+
+
+
+void RobWorkStudio::printCollisions() {
+	CollisionDetector::Ptr cd = getCollisionDetector();
+	CollisionDetector::QueryResult res;
+	cd->inCollision(getState(), &res);
+	if (res.collidingFrames.size() > 0) {
+		BOOST_FOREACH(const FramePair& pair, res.collidingFrames) {
+			std::cout<<"Colliding: "<<pair.first->getName()<<" -- "<<pair.second->getName()<<std::endl;
+			Log::infoLog()<<"Colliding: "<<pair.first->getName()<<" -- "<<pair.second->getName()<<std::endl;
+		}
+	}
+}
+
 void RobWorkStudio::setCheckAction(){
     QObject *obj = sender();
 
@@ -402,8 +430,6 @@ void RobWorkStudio::setupHelpMenu() {
 }
 
 void RobWorkStudio::showAboutBox(){
-    if(_aboutBox==NULL)
-        _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
     _aboutBox->exec();
 }
 

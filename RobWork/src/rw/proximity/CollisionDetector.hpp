@@ -247,6 +247,13 @@ public:
      */
     std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
 
+	/**
+	 * @brief Returns whether frame has an associated geometry with \b geometryId.
+	 * @param frame [in] Frame in question
+	 * @param geometryId [in] Id of the geometry
+	 */
+	bool hasGeometry(rw::kinematics::Frame* frame, const std::string& geometryId);
+
 private:
     void initialize(rw::models::WorkCell::Ptr wc);
 

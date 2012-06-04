@@ -121,14 +121,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\rws_sensors\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;.\..\rwstudio\generatedfiles;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest"
+				AdditionalIncludeDirectories="..\rws_sensors\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;.\..\rws\generatedfiles;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;..\..\..\..\..\..\workspace\PickPlacePlanner\PickPlacePlannerScapeInterface\PickPlacePlannerScapeInterfaceTest"
 				PreprocessorDefinitions="WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS;QT_DLL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

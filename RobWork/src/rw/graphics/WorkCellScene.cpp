@@ -176,7 +176,7 @@ WorkCellScene::WorkCellScene(SceneGraph::Ptr scene):
         _worldNode( scene->makeGroupNode("World"))
 {
     _scene->addChild(_worldNode, _scene->getRoot());
-    _frameAxis = _scene->makeDrawableFrameAxis("FrameAxis", 0.05, DrawableNode::Virtual);
+    _frameAxis = _scene->makeDrawableFrameAxis("FrameAxis", 0.25, DrawableNode::Virtual);
     setWorkCell(NULL);
 }
 

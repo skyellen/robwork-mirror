@@ -480,6 +480,7 @@ namespace rws {
 		void showDocumentation();
 
 		void showAboutBox();
+		void printCollisions();
 	protected:
 		//! Close Event inherited from QT
 		void closeEvent( QCloseEvent * e );
@@ -488,6 +489,7 @@ namespace rws {
 	    void updateLastFiles();
 
 		void setupFileActions();
+		void setupToolActions();
 		void setupViewGL();
 		void setupHelpMenu();
 
@@ -509,7 +511,7 @@ namespace rws {
 		
 		std::vector<RobWorkStudioPlugin*> _plugins;
 
-		QMenu* _pluginsMenu, *_fileMenu, *_viewMenu;
+		QMenu* _pluginsMenu, *_fileMenu, *_viewMenu, *_toolMenu;
 		QToolBar* _pluginsToolBar, _viewToolBar;
 
 		PropertyViewEditor *_propEditor;
