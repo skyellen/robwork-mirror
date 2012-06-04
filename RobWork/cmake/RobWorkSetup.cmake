@@ -424,6 +424,7 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_pathoptimization
   rw_simulation
   rw_opengl
+  rw_task
   ${RW_LUA_LIBS}
   ${LUA_LIBRARIES}
   rw_proximitystrategies
