@@ -708,6 +708,44 @@ GraspTask::Ptr GraspTask::load(const std::string& filename){
     return gtask;
 }
 
+GraspTask::Ptr GraspTask::load(std::istringstream& inputStream){
+
+	std::istringstream streamCopy;
+	streamCopy.str(inputStream.str());
+
+    std::string firstelem = IOUtil::getFirstXMLElement( streamCopy );
+
+    rwlibs::task::CartesianTask::Ptr grasptask;
+
+    if(firstelem=="CartesianTask"){
+        XMLTaskLoader loader;
+        loader.load( inputStream );
+        grasptask = loader.getCartesianTask();
+    } else {
+
+        try {
+        	ParserState state("");
+
+            PTree tree;
+            read_xml( inputStream, tree);
+
+            for (CI p = tree.begin(); p != tree.end(); ++p) {
+                if ( isName(p->first, "experiments") ) {
+                    grasptask = readExperiments(p->second, state);
+                }
+            }
+        } catch (const ptree_error& e) {
+            // Convert from parse errors to RobWork errors.
+            RW_THROW(e.what());
+        }
+
+    }
+
+    GraspTask::Ptr gtask = ownedPtr( new GraspTask(grasptask) );
+    return gtask;
+}
+
+
 
 GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task){
     // convert from the Carteasean format

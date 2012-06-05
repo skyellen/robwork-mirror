@@ -126,6 +126,13 @@ public:
      */
     static GraspTask::Ptr load(const std::string& name);
 
+    /**
+     * @brief load a GraspTask from istream
+     * @param inputStream
+     * @return
+     */
+    static GraspTask::Ptr load(std::istringstream& inputStream);
+
     GraspTask::Ptr clone(){
         GraspTask::Ptr res = rw::common::ownedPtr( new GraspTask() );
         res->_gripperID = _gripperID;

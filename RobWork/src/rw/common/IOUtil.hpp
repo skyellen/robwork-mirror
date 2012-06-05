@@ -160,6 +160,15 @@ namespace rw { namespace common {
          * @return name of first xml element
          */
         static std::string getFirstXMLElement(const std::string& filename);
+
+        /**
+         * @brief extracts the first element tag in any xml document.
+         *
+         * throws if not xml document
+         * @param inputStream [in] ifstream containing the xml document
+         * @return name of first xml element
+         */
+        static std::string getFirstXMLElement(std::istream & inputStream);
     };
 
     /**@}*/
