@@ -487,17 +487,14 @@ void GTaskVisPlugin::loadTasks(QString taskFile_tmp){
         QMessageBox::information(this, "GTaskVisPlugin", "Unable to load tasks from file");
         return;
     }
-	QMessageBox::information(this, "", "Tasks loaded");
     _graspTask = gtask;
     std::string tcpID = gtask->getTCPID();
     std::string gripperID = gtask->getGripperID();
 
-	QMessageBox::information(this, "", "Tasks loaded 2");
     int tcpIdx = _tcpSelectBox->findText(tcpID.c_str());
     if(tcpIdx!=-1)
         _tcpSelectBox->setCurrentIndex(tcpIdx);
 
-	QMessageBox::information(this, "", "Tasks loaded 3");
     int gripperIdx = _deviceSelectBox->findText(gripperID.c_str());
     if(gripperIdx!=-1){
         _deviceSelectBox->setCurrentIndex(gripperIdx);
@@ -506,12 +503,10 @@ void GTaskVisPlugin::loadTasks(QString taskFile_tmp){
         int baseIdx = _baseSelectBox->findText(basename.c_str());
         _baseSelectBox->setCurrentIndex(baseIdx);
     }
-	QMessageBox::information(this, "", "Tasks loaded 4");
     _ymtargets = gtask->getAllTargets();
 
     _totalNrOfExperiments = _ymtargets.size();
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _ymtargets.size() << "\n";
-	QMessageBox::information(this, "", "Tasks loaded 5");
     _updateBtn->setEnabled(true);
 }
 
