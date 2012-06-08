@@ -346,6 +346,9 @@ namespace rw { namespace math {
          *    \end{array}
          *  \right]
          * @f$
+		 *
+		 * The conversion method is based on: 
+		 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm
          *
          */
         template <class R>
