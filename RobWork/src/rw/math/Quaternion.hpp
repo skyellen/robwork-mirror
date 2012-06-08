@@ -348,23 +348,37 @@ namespace rw { namespace math {
          * @f$
 		 *
 		 * The conversion method is based on: 
+		 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+		 * with the more robust conversion suggested in
 		 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm
          *
          */
         template <class R>
         void setRotation(const Rotation3D<R>& rot)
         {
-/*
-            #define USE_OLD_CONVERSION
-#ifdef USE_OLD_CONVERSION
-            const T tr = static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1);
 
-            if (tr > 1e-5) {
-                const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr));
+//          #define USE_OLD_CONVERSION
+//			#ifdef USE_OLD_CONVERSION
+			const T tr = std::max(static_cast<T>(0.0), static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1));
+
+            if (tr > 1e-12) {
+
+				this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+				this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
+				this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
+				this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
+
+			
+				this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
+				this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
+				this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
+
+                /*const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr));
                 this->d = static_cast<T>(0.25) / s;
                 this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
                 this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
                 this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+				*/
             } else {
                 if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
                     const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
@@ -393,9 +407,9 @@ namespace rw { namespace math {
                     this->d = static_cast<T>(rot(0, 1) - rot(1, 0)) * s;
                 }
             }
-#else
-*/
-        this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+//#else
+
+/*        this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
         this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
         this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
         this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
@@ -404,7 +418,7 @@ namespace rw { namespace math {
         this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
         this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
         this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
-
+*/
 //#endif
 
         }
