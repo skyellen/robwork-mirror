@@ -392,19 +392,15 @@ namespace rw { namespace math {
             }
 #else
 */
-            this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
-            this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
-            this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
-            this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
+        this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+        this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
+        this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
+        this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
 
-            /*
-			this->a = copySign0( this->a, rot(2,1) - rot(1,2) );
-			this->b = copySign0( this->b, rot(0,2) - rot(2,0) );
-			this->c = copySign0( this->c, rot(1,0) - rot(0,1) );
-			*/
-            this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
-            this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
-            this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
+	
+        this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
+        this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
+        this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
 
 //#endif
 
@@ -428,15 +424,6 @@ namespace rw { namespace math {
         }
 
 private:
-		template<class A>
-		static A copySign0(const A x, const A y) {
-			if (y == 0)
-				return 0;
-			if (y < 0)
-				return -fabs(x);
-			else
-				return fabs(x);
-		}
 
     };
 
