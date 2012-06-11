@@ -41,16 +41,16 @@ using namespace rw;
 using namespace rw::common;
 
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultCollisionStrategy() {
-    return rw::common::ownedPtr<>(new ProximityStrategyRW());
-/*
-#ifdef RW_HAVE_PQP
-	return rw::common::ownedPtr<>(new ProximityStrategyPQP());
-#endif
 
-#ifdef RW_HAVE_YAOBI
-	return rw::common::ownedPtr( new ProximityStrategyYaobi() );
-#endif
-*/
+    #ifdef RW_HAVE_PQP
+        return rw::common::ownedPtr<>(new ProximityStrategyPQP());
+    #endif
+
+    #ifdef RW_HAVE_YAOBI
+        return rw::common::ownedPtr( new ProximityStrategyYaobi() );
+    #endif
+
+    return rw::common::ownedPtr<>(new ProximityStrategyRW());
 }
 
 rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStrategy(const std::string& id){
@@ -75,7 +75,6 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStr
 
 std::vector<std::string> ProximityStrategyFactory::getCollisionStrategyIDs(){
     std::vector<std::string> IDs;
-    IDs.push_back(RWStr);
 
 #ifdef RW_HAVE_PQP
     IDs.push_back(PQPStr);
@@ -84,6 +83,8 @@ std::vector<std::string> ProximityStrategyFactory::getCollisionStrategyIDs(){
 #ifdef RW_HAVE_YAOBI
     IDs.push_back(YAOBIStr);
 #endif
+
+    IDs.push_back(RWStr);
 
     return IDs;
 }
