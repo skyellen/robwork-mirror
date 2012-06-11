@@ -74,6 +74,9 @@ using namespace rw::proximity;
 using namespace rw::geometry;
 using namespace rw;
 
+//#define RW_DEBUGS(str) std::cout << str << std::endl
+#define RW_DEBUGS(str)
+
 namespace {
 
 
@@ -145,7 +148,7 @@ namespace {
         std::vector<Frame*> children = setup.toChildMap[parent->getName()];
         BOOST_FOREACH(Frame* child, children){
             DummyFrame *dframe = setup.dummyFrameMap[child->getName()];
-            RW_DEBUG("Adding: " << parent->getName() << "<--" << dframe->getName());
+            RW_DEBUGS("Adding: " << parent->getName() << "<--" << dframe->getName());
             if( dframe->_isDaf ) setup.tree->addDAF(child, parent);
             else setup.tree->addFrame(child, parent);
             addToStateStructure(child, setup);
@@ -155,7 +158,7 @@ namespace {
     // the parent to name must exist in tree
     void addToStateStructure(const std::string& name, DummySetup &setup){
         DummyFrame *dframe = setup.dummyFrameMap[name];
-        RW_DEBUG("RefFrame : " << dframe->getRefFrame());
+        RW_DEBUGS("RefFrame : " << dframe->getRefFrame());
         Frame *parent = setup.frameMap[dframe->getRefFrame()];
         if(parent == NULL) RW_THROW("PARENT IS NULL");
 
@@ -250,41 +253,52 @@ namespace {
             }
 
             //try {
-
+            RW_DEBUGS("Loading Model....");
                 if( model._colmodel && model._isDrawable ){
+                    RW_WARN("1");
                     // the geom is to be used as both collision geometry and visualization model
                     // TODO: this could be optimized, share data and such.
                     Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), model._name);
                     model3d->setTransform(model._transform);
                     model3d->setName(model._name);
                     //model->setFrame(modelframe);
-
+                    RW_WARN("1");
                     Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
                     geom->setName(model._name);
                     geom->setTransform(model._transform);
                     geom->setFrame(modelframe);
-
+                    RW_WARN("1");
                     if(object!=NULL){
                         object->addModel( model3d );
                         object->addGeometry( geom );
                     }
+                    RW_WARN("1");
                 } else if( model._colmodel ){
                     // its only a collision geometry
+                    RW_WARN("1");
                     Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
                     geom->setName(model._name);
+                    RW_WARN("1");
                     geom->setTransform(model._transform);
                     geom->setFrame(modelframe);
+                    RW_WARN("1");
                     if(object!=NULL){
                         object->addGeometry( geom );
                     }
+                    RW_WARN("1");
                 } else if( model._isDrawable ){
                     // its only a drawable
+                    RW_WARN("1");
                     Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), val.str());
+                    RW_WARN("1");
                     model3d->setName(model._name);
+                    RW_WARN("1");
                     model3d->setTransform(model._transform);
+                    RW_WARN("1");
                     if(object!=NULL){
                         object->addModel( model3d );
                     }
+                    RW_WARN("1");
                 }
             //} catch (const std::exception& e){
             //}
@@ -415,7 +429,7 @@ namespace {
         setup.dummyFrameMap[dframe.getName()] = &dframe;
         setup.frameMap[frame->getName()] = frame;
         setup.toChildMap[dframe.getRefFrame()].push_back(frame);
-        RW_DEBUG("Frame created: " << frame->getName() << " --> " << dframe.getRefFrame());
+        RW_DEBUGS("Frame created: " << frame->getName() << " --> " << dframe.getRefFrame());
         return frame;
     }
 
@@ -593,7 +607,7 @@ namespace {
             addToStateStructure( base->getName(), setup);
             BOOST_FOREACH(DummyFrame& dframe, dev._frames){
                 // Add properties defined in device context
-                RW_DEBUG("Add props to : " << dframe.getName());
+                RW_DEBUGS("Add props to : " << dframe.getName());
                 addFrameProps(dframe, setup);
                 addDevicePropsToFrame(dev, dframe.getName(), setup);
             }
@@ -743,7 +757,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
     try{
         std::string filename = IOUtil::getAbsoluteFileName(fname);
 
-        RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
+        RW_DEBUGS(" ******* Loading workcell from \"" << filename << "\" ");
 
         // container for actions to execute when all frames and devices has been loaded
         DummySetup setup;
@@ -752,6 +766,27 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
         // Start parsing workcell
         //boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
         setup.dwc =  XMLRWParser::parseWorkcell(filename);
+
+        // do sanity check on the workcell,
+        // 1. check that all parent frames are valid frames
+        std::map<std::string, DummyFrame*> strToFrame;
+        BOOST_FOREACH(DummyFrame &df, setup.dwc->_framelist){
+            strToFrame[df.getName()] = &df;
+        }
+        BOOST_FOREACH(DummyDevice &dd, setup.dwc->_devlist){
+            BOOST_FOREACH(DummyFrame &df, dd._frames){
+                strToFrame[df.getName()] = &df;
+            }
+        }
+
+        BOOST_FOREACH(DummyFrame &df, setup.dwc->_framelist){
+            if( strToFrame.find( df.getRefFrame() ) == strToFrame.end() ){
+                if( df.getRefFrame() != "WORLD")
+                    RW_THROW( "Frame " << df.getName() << " refers to a frame \"" <<  df.getRefFrame()
+                              << "\" which has not been declared!" );
+            }
+        }
+
 
         // Now build a workcell from the parsed results
         setup.tree = new StateStructure();
