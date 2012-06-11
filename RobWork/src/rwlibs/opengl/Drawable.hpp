@@ -93,7 +93,7 @@ namespace rwlibs { namespace opengl {
         Drawable(
             rw::common::Ptr<rw::graphics::Render> render,
             const std::string& name = "",
-            unsigned int dmask = Physical);
+			unsigned int dmask = DrawableObject);
 
         /**
          * @brief Virtual destructor

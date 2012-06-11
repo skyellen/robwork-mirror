@@ -88,7 +88,7 @@ bool QHull3D::isInside(const rw::math::Vector3D<>& vertex){
 
 
 double QHull3D::getMinDistOutside(const rw::math::Vector3D<>& vertex){
-    return 0;
+    return -getMinDistInside(vertex);
 }
 
 

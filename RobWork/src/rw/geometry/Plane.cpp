@@ -41,12 +41,12 @@ TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
 	
     Vector3D<> otho;
     // find the orthogonal basis of the plane, eg xy-axis
-    // use an axis to generate one orthogonal vector
-    if( angle(_normal, Vector3D<>::x()) > 0.001){
+    // use an axis to generate one orthogonal vector 
+    if(fabs(angle(_normal, Vector3D<>::x())) > 0.001 && fabs(angle(_normal, Vector3D<>::x())) < Pi-0.001) {
         otho = cross(_normal, Vector3D<>::x());
-    } else if( angle(_normal, Vector3D<>::y()) > 0.001 ){
+    } else if( fabs(angle(_normal, Vector3D<>::y())) > 0.001 && fabs(angle(_normal, Vector3D<>::y())) < Pi-0.001) {
         otho = cross(_normal, Vector3D<>::y());
-    } else if( angle(_normal, Vector3D<>::z()) > 0.001 ){
+    } else if( fabs(angle(_normal, Vector3D<>::z())) > 0.001 && fabs(angle(_normal, Vector3D<>::z())) < Pi-0.001){
         otho = cross(_normal, Vector3D<>::z());
     }
     otho = normalize(otho);
