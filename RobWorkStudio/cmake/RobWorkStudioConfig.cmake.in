@@ -39,6 +39,13 @@ if(DEFINED RobWorkStudio_DIR)
   endif()
 endif()
 
+
+# first make sure the build type is setup
+IF (NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+ENDIF ()
+
+
 # check whether RobWorkConfig.cmake is found into a RobWork installation or in a build tree
 if(EXISTS "${RWSCFG_ROOT}/../src/RobWorkStudioConfig.hpp")
   # Found RobWorkConfig.cmake in a build tree of RobWork
@@ -76,11 +83,6 @@ INCLUDE(${RWSCFG_ROOT}/RobWorkStudioMacros.cmake)
 
 #############################################################
 # now RWS_ROOT and RWSCFG_ROOT is set. Lets extract the stuff needed to run a project
-
-# first make sure the build type is setup
-IF (NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
-ENDIF ()
 
 # next get the build configuration of the requested built type
 IF(EXISTS ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake)
@@ -155,7 +157,7 @@ STRING(REPLACE "${ROBWORKSTUDIO_BUILD_PATH}/libs/${CMAKE_BUILD_TYPE}" "${RWS_LIB
 list(REMOVE_DUPLICATES ROBWORKSTUDIO_LIBRARY_DIRS)
 #MESSAGE("INCLUDES: ${ROBWORKSTUDIO_LIBRARY_DIRS}")
 
-STRING(REPLACE "${ROBWORKSTUDIO_BUILD_PATH}/libs/${CMAKE_BUILD_TYPE}" "${RWS_LIBS}" ROBWORKSTUDIO_LIBRARIES "${RWS_BUILD_WITH_LIBRARIES}")
+STRING(REPLACE "${ROBWORKSTUDIO_BUILD_PATH}/libs/${CMAKE_BUILD_TYPE}" "${RWS_LIBS}" ROBWORKSTUDIO_LIBRARIES "${ROBWORKSTUDIO_LIBRARIES_TMP}")
 #list(REMOVE_DUPLICATES ROBWORKSTUDIO_LIBRARIES)
 #MESSAGE("INCLUDES: ${ROBWORKSTUDIO_LIBRARIES}")
 
