@@ -15,6 +15,8 @@ PROJECT(ConsoleApp)
 
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+SET(RW_ROOT "${ROOT}/../../../RobWork")
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 
 # set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)
 SET(CMAKE_BUILD_TYPE Release)
@@ -22,8 +24,6 @@ SET(CMAKE_BUILD_TYPE Release)
 FIND_PACKAGE(RobWork)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-
-MESSAGE( "${ROBWORK_INCLUDE_DIR}" )
 
 # Set the output dir for generated libraries and binaries
 IF(MSVC)
