@@ -15,10 +15,19 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Message.hpp"
 
+#include <boost/filesystem.hpp>
+
 using namespace rw::common;
+
+Message::Message(const std::string& file, int line, const std::string& message):
+    _file( boost::filesystem::path(file.c_str()).filename().c_str() ),
+    _line(line),
+    _message(message)
+{}
+
+
 
 std::ostream&
 rw::common::operator<<(std::ostream& out, const Message& msg)

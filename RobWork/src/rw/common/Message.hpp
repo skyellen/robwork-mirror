@@ -66,11 +66,7 @@ namespace rw { namespace common {
          */
         Message(const std::string& file,
                 int line,
-                const std::string& message = ""):
-            _file(file),
-            _line(line),
-            _message(message)
-        {}
+                const std::string& message = "");
 
         /**
          * @brief The name of source file within which the message was
