@@ -70,8 +70,17 @@ namespace dynamics {
         rw::math::Transform3D<> getOffset(){ return _bTb2; }
 
         const std::vector<rwsim::dynamics::Body*>& getLinks(){
-
+            return _links;
         }
+
+        bool isClosed(const rw::kinematics::State& state){ return _closedState; }
+        void setClosed(bool closed, rw::kinematics::State& state){ _closedState = closed; }
+
+        rwsim::dynamics::Body* getContactBody(rw::kinematics::State& state){ return _contactBodyState; }
+        void setContactBody(rwsim::dynamics::Body* b, rw::kinematics::State& state){ _contactBodyState = b; }
+
+        double getPressure(const rw::kinematics::State& state){ return _kindev->getQ(state)[0]; }
+        void setPressure(double pressure, rw::kinematics::State& state){ return _kindev->setQ(rw::math::Q(1,pressure), state); }
 
     private:
         rw::models::Device::Ptr _kindev;
@@ -82,7 +91,9 @@ namespace dynamics {
         rw::math::Q _springConstant1, _springConstant2;
         rw::math::Transform3D<> _bTb2;
 
-
+        // TODO: variables that should be put into the state
+        bool _closedState;
+        rwsim::dynamics::Body *_contactBodyState;
     };
 }
 }

@@ -114,8 +114,8 @@ using namespace rwlibs::simulation;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 
-//#define RW_DEBUGS(str) std::cout << str << std::endl
-#define RW_DEBUGS(str)
+#define RW_DEBUGS(str) std::cout << str << std::endl
+//#define RW_DEBUGS(str)
 
 namespace
 {
@@ -601,7 +601,17 @@ namespace
     		const std::string& prefix,
     		ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
-        Object::Ptr obj = getObjectFromAttr(tree, state, frameAttr, prefix);
+        Frame *frame = getFrameFromAttr(tree, state, frameAttr, prefix);
+
+        Object::Ptr obj = state.wc->findObject( frame->getName() );
+        if(obj==NULL){
+            // TODO: unfortunately the robwork kinematic loader does not fully support the
+            // Object loading yet. So we need to create an object for this particular frame
+            obj = ownedPtr( new Object(frame) );
+            state.wc->add(obj);
+        }
+
+        //Object::Ptr obj = getObjectFromAttr(tree, state, frameAttr, prefix);
 
         MovableFrame *refframe = dynamic_cast<MovableFrame*>( obj->getBase() );
         if(refframe==NULL) RW_THROW("The body frame of a Kinematic body must be a movable frame type!");
@@ -641,16 +651,25 @@ namespace
 
     std::pair<BodyInfo, Object::Ptr> readRigidJoint(PTree& tree, ParserState &state, JointDevice *device ){
         //Log::debugLog()<< "ReadRigidJoint" << std::endl;
-        string refjointName = tree.get_child("<xmlattr>").get<std::string>("joint");
-        Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
+        //string refjointName = tree.get_child("<xmlattr>").get<std::string>("joint");
+        //Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
+
+        Frame *frame = getFrameFromAttr(tree, state, "joint", device->getName()+".");
+        Object::Ptr obj = state.wc->findObject( frame->getName() );
+        if(obj==NULL){
+            // TODO: unfortunately the robwork kinematic loader does not fully support the
+            // Object loading yet. So we need to create an object for this particular frame
+            obj = ownedPtr( new Object(frame) );
+            state.wc->add(obj);
+        }
+
+
         if( obj==NULL )
             return std::pair<BodyInfo, Object::Ptr>(BodyInfo(), NULL);
 
         BodyInfo info;
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
-
-
 
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
@@ -1229,6 +1248,7 @@ namespace
         }
         const PTree &child = tree.get_child("<xmlattr>");
         const string workcell_name =  child.get<string>("workcell");
+
         if(StringUtil::isAbsoluteFileName(workcell_name)){
             state.wc = WorkCellLoader::load(workcell_name);
         } else {
@@ -1375,7 +1395,7 @@ rw::common::Ptr<DynamicWorkCell> DynamicWorkCellLoader::load(const string& filen
 {
 	std::string file = IOUtil::getAbsoluteFileName(filename);
 
-    DynamicWorkCell *dwc;
+    DynamicWorkCell *dwc = NULL;
     try {
         ParserState state(file);
 

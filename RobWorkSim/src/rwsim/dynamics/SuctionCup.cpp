@@ -70,7 +70,9 @@ SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
     _height(height),
     _bTb2(bTb2),
     _springConstant1(sc1),
-    _springConstant2(sc2)
+    _springConstant2(sc2),
+    _closedState(false),
+    _contactBodyState(NULL)
 {
     _links.push_back(_baseBody);
     _links.push_back(_endBody);

@@ -19,6 +19,7 @@
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
+#include <rwsim/dynamics/SuctionCup.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -356,12 +357,12 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     if(sstate._currentState ==APPROACH){
         Transform3D<> ct3d = Kinematics::worldTframe(_mbase, state);
-        bool isLifted = MetricUtil::dist2( ct3d.P(), sstate._wTmbase_approachTarget.P() )<0.002;
+        bool isApproachReached = MetricUtil::dist2( ct3d.P(), sstate._wTmbase_approachTarget.P() )<0.002;
         //std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
         //if(sim->getTime()>1.2){
 
         //std::cout << "APPROACH: " << std::endl;
-        if(isLifted){
+        if(isApproachReached){
             //std::cout << "GRASPING" << std::endl;
             _graspController->setTargetPos(sstate._closeQ);
             sstate._currentState=GRASPING;
@@ -380,10 +381,19 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         if(sim->getTime()> sstate._approachedTime+0.5){
             // test if the grasp is in rest
             //Log::infoLog() << _alwaysResting;
+
             if(DynamicUtil::isResting(_dhand, state, 0.0001, 0.1) /*|| _alwaysResting*/)
                 sstate._restCount++;
 
             bool isResting = sstate._restCount > 15;
+
+            // if the device is a suction cup then the isResting must be done in another way.
+            // we simply test if there is pressure
+            SuctionCup *scup = dynamic_cast<SuctionCup*>(_dhand);
+            if( scup!=NULL ){
+                isResting = scup->isClosed(state);
+            }
+
             //std::cout << isResting << "&& (" << sim->getTime() << "-" << sstate._restingTime << ">0.4) || " << sim->getTime() << ">" << 10 << std::endl;
             // if it is in rest then lift object
             if( (isResting && ( (sim->getTime()-sstate._restingTime)>1.5)) || sim->getTime()>8 ){
@@ -402,7 +412,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 //                                                      _objects[i]->getTransformW(state));
                 //}
                 GraspedObject gobj = getObjectContacts(state, sstate);
-                if( gobj.object == NULL ){
+
+                if( gobj.object == NULL && scup==NULL ){
                     _failed++;
                     //std::cout << "NEW_GRASP" << std::endl;
                     //std::cout << "ObjectMissed" << std::endl;
@@ -411,13 +422,14 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._target->getResult()->qualityBeforeLifting = Q();
                     sstate._currentState = NEW_GRASP;
                 } else {
-                    //std::cout << "LIFTING" << std::endl;
+                    std::cout << "LIFTING" << std::endl;
                     State nstate = state;
                     Q qualities = calcGraspQuality(state, sstate);
                     sstate._target->getResult()->qualityBeforeLifting = qualities;
                     sstate._target->getResult()->contactsGrasp = gobj.contacts;
                     sim->getSimulator()->setTarget(_dhand->getBase(), sstate._wTmbase_retractTarget, nstate);
-                    sim->reset(nstate);
+                    sim->setState(nstate);
+                    // sim->reset(nstate);
                     sstate._currentState = LIFTING;
                     sstate._restCount = 0;
                 }
@@ -437,20 +449,33 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         bool isLifted = true;
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.001;
+
+        SuctionCup *scup = dynamic_cast<SuctionCup*>(_dhand);
+        if( scup!=NULL ){
+            isLifted = scup->isClosed(state);
+        }
+
         if(isLifted)
             sstate._restCount++;
+
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
         //std::cout << MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
         if (isLifted && sstate._restCount>50) {
+
             GraspedObject gobj = getObjectContacts(state, sstate);
             //getTarget()->getPropertyMap().set<Transform3D<> > ("GripperTObject", t3d);
-            if( gobj.object == NULL ){
+            if( (gobj.object == NULL && scup==NULL) || (scup!=NULL && !scup->isClosed(state)) ){
                 //std::cout << "No contacts!" << std::endl;
                 _failed++;
                 sstate._target->getResult()->testStatus =  GraspTask::ObjectDropped;
                 _stat[GraspTask::ObjectDropped]++;
                 sstate._target->getResult()->qualityAfterLifting = Q();
+            } else if(scup!=NULL){
+                _success++;
+                sstate._target->getResult()->testStatus = GraspTask::Success;
+                _stat[GraspTask::Success]++;
+
             } else {
 
                 Q qualities = calcGraspQuality(state, sstate);
