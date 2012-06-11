@@ -837,7 +837,7 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
         }
     } catch( const std::exception& e){
         const std::string msg =
-            "Failed to load workcell: " + filename.toStdString() + ".";
+            "Failed to load workcell: " + filename.toStdString() + ". \n " + std::string(e.what());
         QMessageBox::information(this, "Error", msg.c_str(), QMessageBox::Ok);
         wc = emptyWorkCell();
     }
