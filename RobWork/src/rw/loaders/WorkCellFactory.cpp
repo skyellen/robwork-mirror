@@ -66,7 +66,13 @@ WorkCell::Ptr WorkCellFactory::load(const std::string& file)
     } catch (const std::exception& e){
         std::cout << "Exception: " << e.what() << std::endl;
     }
-    return loadFromPlugin(file);
+    // TODO: there should be a better way to make sure what plugin is used to load a workcell. This way
+    // the correct error message cannot be determined
+
+    WorkCell::Ptr result = loadFromPlugin(file);
+    if(result==NULL)
+        RW_THROW( "Could not load workcell: " << file );
+    return NULL;
 }
 
 /*
