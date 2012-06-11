@@ -389,6 +389,7 @@ endmacro(RW_ADD_SUBSYSTEM)
 # ARGV5 The reason for disabling if the default is FALSE.
 macro(RW_SUBSYS_OPTION _var _name _desc _default)
     set(_opt_name "BUILD_${_name}")
+    MESSAGE(STATUS "${_opt_name}  ${BUILD_${_name}}")
     RW_GET_SUBSYS_HYPERSTATUS(subsys_status ${_name})
     if(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
       option(${_opt_name} ${_desc} ${_default})
