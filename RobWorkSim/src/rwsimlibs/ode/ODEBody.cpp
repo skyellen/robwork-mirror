@@ -101,6 +101,22 @@ ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> off
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
+ODEBody::ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame):
+    _mframe(dynamic_cast<MovableFrame*>(frame)),
+    _bodyId(odeBody),
+    _body(NULL),
+    _rwBody(NULL),
+    _kBody(NULL),
+
+    _rwframe(frame),
+    _type(ODEBody::RigidDummy),
+    _contactReductionThreshold(0.005),// 1cm
+    _materialID(-1),
+    _contactID(-1)
+{
+
+}
+
 void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
     double dt = info.dt;
     switch(_type){
@@ -118,6 +134,10 @@ void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::
         _lastForce = f;
         dBodyAddForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
         dBodyAddTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
+    }
+    break;
+    case(ODEBody::RigidDummy): {
+        return;
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -180,8 +200,8 @@ void ODEBody::postupdate(rw::kinematics::State& state){
         // angular velocity is defined in world coordinates and around center of mass
         //if(_rwBody==NULL)
         //    std::cout << "BODY is null" << std::endl;
-        //_rwBody->setAngVelW( ang , state);
-        //_rwBody->setLinVelW( lin , state);
+        _rwBody->setAngVelW( ang , state);
+        _rwBody->setLinVelW( lin , state);
 
 
         //_rwBody->setForce( Vector3D<>::zero(), state );
@@ -204,6 +224,10 @@ void ODEBody::postupdate(rw::kinematics::State& state){
 
         //_kBody->setAngVel( ang );
         //_kBody->setLinVel( lin );
+    }
+    break;
+    case(ODEBody::RigidDummy): {
+        return;
     }
     break;
     case(ODEBody::FIXED): {
@@ -297,6 +321,10 @@ void ODEBody::bodyChangedListener(dynamics::Body::BodyEventType eventtype){
         // TODO: run through all fixed objects and set their configuration
     }
     break;
+    case(ODEBody::RigidDummy): {
+        return;
+    }
+    break;
     default:
         RW_WARN("UNSUPPORTED ODEBody type");
         break;
@@ -317,6 +345,17 @@ void ODEBody::reset(const rw::kinematics::State& state){
         dBodyEnable( _bodyId );
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
+    }
+    break;
+    case(ODEBody::RigidDummy): {
+        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
+        wTb.P() += wTb.R()*_offset;
+        ODEUtil::setODEBodyT3D( _bodyId, wTb );
+
+        dBodyEnable( _bodyId );
+        dBodySetAngularVel(_bodyId, 0, 0, 0);
+        dBodySetLinearVel(_bodyId, 0, 0, 0);
+        return;
     }
     break;
     case(ODEBody::RIGIDODE): {
@@ -426,7 +465,7 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESi
         //std::cout  << "--> Adding frame: " << frame->getName() << std::endl;
     //    _rwFrameToODEBody[frame] = odeBody;
     //}
-
+    sim->addODEBody(odeBody);
     return odeBody;
 }
 

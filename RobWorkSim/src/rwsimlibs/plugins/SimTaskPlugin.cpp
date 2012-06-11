@@ -299,6 +299,12 @@ void SimTaskPlugin::btnPressed() {
         _timePerGraspLbl->setText( Timer((int)avgGraspTime).toString("ss:zzz").c_str() );
         _timeToFinishLbl->setText( Timer((int)(avgGraspTime* (_graspSim->getNrTargetsDone()-nrgrasps))).toString("hh:mm").c_str() );
 
+        std::vector<int> stats = _graspSim->getStat();
+
+
+        log().info() << stats[0] << ":" << stats[1] << ":" << stats[2] << ":" << stats[3] << ":" << stats[4] << ":" << stats[5] << ":" << stats[6]
+                << stats[7] << ":" << stats[8] << ":" << stats[9] << ":" << stats[10] << ":" << stats[11] << ":" << stats[12] << ":" << stats[13] << std::endl;
+
         if( _graspSim->isFinished() && !_genTasksBox->isChecked()){
 
             _saveResultBtn->setEnabled(true);
@@ -560,7 +566,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     if( type=="GS20" || type=="GS20_WIDE"){
         ssurf.setBoundsD(-0.02,0.02);
     } else if( type=="SCUP" ){
-        ssurf.setBoundsD(-0.05,0.05);
+        ssurf.setBoundsD(-0.02,0.005);
     } else {
         ssurf.setBoundsD(-0.04,0.04);
     }

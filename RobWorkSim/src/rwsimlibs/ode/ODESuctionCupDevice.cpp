@@ -87,7 +87,8 @@ ODESuctionCupDevice::ODESuctionCupDevice(ODEBody *base,
         _odesim(odesim),
         _worldId(odesim->getODEWorldId() ),
         _lastX(0),
-        _lastAng(0)
+        _lastAng(0),
+        _fjoint(NULL)
 {
     //std::vector<dynamics::RigidJoint*> joints = _dev->getRigidJoints();
     //_tcp = joints.back();
@@ -138,19 +139,31 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
         }
     }
 
+    double pressure = _dev->getPressure(state);
+    bool isVacuumOn = pressure>0.001;
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
     //std::cout << (!_isInContact) <<  "&&"  << (object!=NULL) << std::endl;
     if( !_isInContact && object!=NULL){
-    	std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
+    	//std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
         Transform3D<> wTobj = Kinematics::worldTframe(object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
         // test if the suction gripper is in "complete" contact with the object
+
         _pdata.setCollisionQueryType(rw::proximity::CollisionStrategy::AllContacts);
+
         ProximityModel::Ptr objModel = _narrowStrategy->getModel( object->getBodyFrame() );
+        if(objModel==NULL){
+            _narrowStrategy->addModel( object->getObject() );
+            objModel = _narrowStrategy->getModel( object->getBodyFrame() );
+        }
+
+
         if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup, _pdata) ){
+
             CollisionResult& result = _pdata.getCollisionData();
+
             //std::cout << result._geomPrimIds.size() << ">" << NR_OF_SPIKES-1 << std::endl;
             if( result._geomPrimIds.size()>NR_OF_SPIKES-1 ){
                 // tjek that all contacts are within a certain distance
@@ -183,6 +196,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
                         _object = NULL;
                     }
                 }
+
                 //std::cout << "_isInContact: " << _isInContact << std::endl;
 
             }
@@ -208,8 +222,6 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
         }
         */
     }
-
-
 
 #ifdef CONTACT_BASED_SUC_CUP
 
@@ -324,6 +336,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
 #else
 
     if( firstContact ) {
+
         // we connect the two bodies using a 6DOF fixed constraint
         // TODO: first move the bodies into a close position
         //_odesim->attach(_odeEnd->getRwBody(), object);
@@ -336,27 +349,52 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
 
         // now add a sensor for monitoring the torque and force
         dJointSetFeedback(_fjoint, &_feedback);
-
+        _dev->setClosed(true, state);
+        _dev->setContactBody( _object.get(), state );
     } else if(_isInContact){
         // todo: monitor the forces on the fixed joint
         Vector3D<> force = ODEUtil::toVector3D( _feedback.f1 );
         Vector3D<> torque = ODEUtil::toVector3D( _feedback.t1 );
         std::cout << "Force;: " << force << " ... " << torque << std::endl;
 
-        bool forceToHigh = force(2)>50;
+
+
+        // since we simulate the contact using a rigid joint the user will not be
+        // able to detect any contacts, therefore we have to add emulated contacts.
+        // These will not be used in the physics engine but will apear as contacts
+        // for the user if he requires it.
+        double forceFromVacuum = 10; // normal
+        Transform3D<> t3d = _tcp->getTransformW( state );
+        Vector3D<> normal = t3d.R() * Vector3D<>( 0, 0, 1 );
+        Vector3D<> maxforce = normal*forceFromVacuum;
+
+        // the attracting joint
+        //dJointID c;
+        Vector3D<> xaxis = t3d.R()*Vector3D<>::x()*_dev->getRadius();
+        Vector3D<> yaxis = t3d.R()*Vector3D<>::y()*_dev->getRadius();
+
+        _odesim->addEmulatedContact(t3d.P()+xaxis, maxforce/4 , normal, _object.get());
+        _odesim->addEmulatedContact(t3d.P()-xaxis, maxforce/4 , normal, _object.get());
+        _odesim->addEmulatedContact(t3d.P()+yaxis, maxforce/4 , normal, _object.get());
+        _odesim->addEmulatedContact(t3d.P()-yaxis, maxforce/4 , normal, _object.get());
+
+        bool forceToHigh = force(2)>500;
         if(forceToHigh){
+            std::cout << " Contact lost, only: " << _pdata.getCollisionData()._geomPrimIds.size() << " contacts" << std::endl;
+            _dev->setClosed(false, state);
+            _dev->setContactBody( NULL, state );
+            _odesim->enableCollision( _odeEnd->getRwBody(), _object );
+
             dJointDestroy(_fjoint);
             _isInContact = false;
-            //std::cout << " Contact lost, only: " << _pdata.getCollisionData()._geomPrimIds.size() << " contacts" << std::endl;
             _object = NULL;
         }
+
 
     } else {
        // nothing to do here
 
     }
-
-
 
     Q sp1;
     if( _isInContact ){
@@ -407,6 +445,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
 
 void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     // reset the suction cup to the current state
+
     Transform3D<> wTbase = Kinematics::worldTframe(_dev->getBase()->getBodyFrame(), state);
     Transform3D<> wToff = wTbase * _dev->getOffset();
     Transform3D<> wTend = Transform3D<>(wToff.P() + wToff.R()*( Vector3D<>::z()*_dev->getSpringParamsOpen()(4) ), wToff.R() );
@@ -416,6 +455,12 @@ void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     ODEUtil::setODEBodyT3D(_bTmp2, wTend);
     _odeEnd->reset(state);
     //ODEUtil::setODEBodyT3D(_odeEnd->getODEBody(), wTend);
+    _dev->setClosed(false, state);
+    _dev->setContactBody( NULL, state );
+    if(_isInContact){
+        _odesim->enableCollision( _odeEnd->getRwBody(), _object );
+        dJointDestroy(_fjoint);
+    }
 
     _isInContact = false;
     _object = NULL;
@@ -427,8 +472,6 @@ void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     //double ang2 = dJointGetHingeAngle(_hinge2);
     _lastAng = 0;
     _lastX = _dev->getSpringParamsOpen()(4)-pos;
-
-
 }
 
 void ODESuctionCupDevice::postUpdate(rw::kinematics::State& state){

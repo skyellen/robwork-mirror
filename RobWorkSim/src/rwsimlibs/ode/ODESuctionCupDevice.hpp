@@ -106,7 +106,7 @@ namespace simulator {
         bool _isInContact;
         rwsim::dynamics::Body::Ptr _object;
 
-        rw::geometry::PlainTriMesh<>::Ptr _spikedCupMesh;
+        rw::geometry::PlainTriMesh<>::Ptr  _spikedCupMesh;
         rw::geometry::Geometry::Ptr _spikedCup;
         rw::proximity::ProximityModel::Ptr _spikedCupModel;
 

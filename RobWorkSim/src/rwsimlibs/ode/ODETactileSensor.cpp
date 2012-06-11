@@ -61,6 +61,11 @@ void ODETactileSensor::clear()
     _wTa.clear();
     _wTb.clear();
     _rwBody.clear();
+    _directContacts.clear();
+}
+
+void ODETactileSensor::addContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b){
+    _directContacts.push_back( DirectContact(pos,force,normal,b));
 }
 
 void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state)
@@ -106,9 +111,15 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
              force = ODEUtil::toVector3D( _feedbackGlobal[i]->f2 );
              torque = ODEUtil::toVector3D( _feedbackGlobal[i]->t2 );
          }
-        std::cout << force << torque << std::endl;
+        //std::cout << force << torque << std::endl;
         _rwsensor->addWrenchWToCOM(force, torque, state, _bodyGlobal[i] );
     }
+
+    // add all direct contacts
+    BOOST_FOREACH(DirectContact& dc, _directContacts){
+        _rwsensor->addForceW( dc.p, dc.f, dc.n, state, dc.b);
+    }
+
 
     clear();
     _rwsensor->update(info, state);

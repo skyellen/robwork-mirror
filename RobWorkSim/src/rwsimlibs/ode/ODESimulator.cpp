@@ -194,7 +194,8 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _nextFeedbackGlobalIdx(0),
     _excludeMap(0,100),
     _oldTime(0),
-    _useRobWorkContactGeneration(true)
+    _useRobWorkContactGeneration(true),
+    _prevStepEndedInCollision(false)
 {
 
     // verify that the linked ode library has the correct
@@ -500,6 +501,12 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             if(!inCollision){
                 //std::cout << "THERE IS NO PENETRATION" << std::endl;
                 break;
+            } else {
+                if(i>3){
+                    // if we allready tried reducing the timestep then set the inCollisionFlag
+                    // and let the contact resolution use the cached contacts
+                    _prevStepEndedInCollision = true;
+                }
             }
 	    } else {
 	        badLCPcount++;
@@ -634,7 +641,18 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "e";
 	RW_DEBUGS("----------------------- END STEP --------------------------------");
 	//std::cout << "-------------------------- END STEP --------------------------------" << std::endl;
+}
 
+void ODESimulator::addEmulatedContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b){
+    std::vector<ODETactileSensor*> odesensors = getODESensors(getODEBodyId(b));
+    BOOST_FOREACH(ODETactileSensor* sensor, odesensors){
+        sensor->addContact(pos, force , normal, b);
+    }
+    ContactPoint point;
+    point.p = pos;
+    point.n = normal;
+    point.nForce = dot(force, normal);
+    _allcontacts.push_back(point);
 }
 
 rwsim::drawable::SimulatorDebugRender* ODESimulator::createDebugRender(){
@@ -1616,16 +1634,22 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         for(size_t i=0;i<numc;i++){
 
-            if(res->distances[i]<0.00000001)
+            if(res->distances[i]<0.00000001){
+                // the contact is penetrating and we therefore need to signal the use the previous contact
+                // normal, if there where any
                 continue;
+            }
 
             dContact &con = _contacts[ni];
             Vector3D<> p1 = aT * res->p1s[i];
             Vector3D<> p2 = aT * res->p2s[i];
+
+
             double len = (p2-p1).norm2();
             Vector3D<> n = (p2-p1)/(-len);
             //std::cout << "n: " << n << "\n";
             Vector3D<> p = n*(res->distances[i]/2) + p1;
+
 
             ODEUtil::toODEVector(n, con.geom.normal);
             ODEUtil::toODEVector(p, con.geom.pos);
@@ -1648,6 +1672,35 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             // Not necesary to calculate, unless we need explicit control
             ni++;
         }
+
+        // next we need to take care of all penetrating contacts.
+        // Our primary concern is to calculate a contact normal that makes sense...
+        // secondarily we want to calculate an approximate penetration depth.
+
+        // assumption: Penetration will allways cause multiple penetrations in the same contact area
+        // for now we use the normal of one of the object surfaces and use the max pentration as approximation
+        /*
+        for(size_t i=0;i<numc;i++){
+            if(res->distances[i]>0.00000001){
+                continue;
+            }
+
+            Vector3D<> p1 = aT * res->p1s[i];
+            Vector3D<> p2 = aT * res->p2s[i];
+
+            double len = (p2-p1).norm2();
+            Vector3D<> n = (p2-p1)/(-len);
+            //std::cout << "n: " << n << "\n";
+            Vector3D<> p = n*(res->distances[i]/2) + p1;
+
+        }
+        */
+
+
+
+
+
+
         numc = ni;
 
         //bcon.cnormal =

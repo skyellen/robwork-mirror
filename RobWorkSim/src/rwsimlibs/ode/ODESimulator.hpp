@@ -226,8 +226,12 @@ namespace simulator {
 		}
 
         void addODEBody(ODEBody* odebody){
-            BOOST_FOREACH(rw::kinematics::Frame *f, odebody->getRwBody()->getFrames()){
-                _rwFrameToODEBody[f] = odebody;
+            if(odebody->getRwBody()!=NULL){
+                BOOST_FOREACH(rw::kinematics::Frame *f, odebody->getRwBody()->getFrames()){
+                    _rwFrameToODEBody[f] = odebody;
+                }
+            } else {
+                _rwFrameToODEBody[odebody->getFrame()] = odebody;
             }
             BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odebody->getTriGeomData()){
                 _frameToOdeGeoms[odebody->getFrame()] = tgeom->geomId;
@@ -255,6 +259,8 @@ namespace simulator {
 
 
         std::vector<ODEDevice*> getODEDevices() { return _odeDevices;}
+
+        void addEmulatedContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b);
 
 	protected:
 		//ODEBody* createKinematicBody(KinematicBody* kbody, rw::kinematics::State &state, dSpaceID spaceid);
@@ -332,6 +338,7 @@ namespace simulator {
 
         void addContacts(std::vector<dContact>& contacts, size_t nr_con, ODEBody* dataB1, ODEBody* dataB2);
 
+        std::vector<ODETactileSensor*> getODESensors(dBodyID odebody){ return _odeBodyToSensor[odebody]; }
 
         dynamics::MaterialDataMap& getMaterialMap(){ return _materialMap; }
 
@@ -422,7 +429,7 @@ namespace simulator {
 		double _maxAllowedPenetration;
 
 		bool _useRobWorkContactGeneration;
-
+		bool _prevStepEndedInCollision;
 		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 

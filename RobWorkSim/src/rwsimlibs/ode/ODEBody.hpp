@@ -47,7 +47,18 @@ namespace simulator {
 		            , KINEMATIC //! a kinematic ode body and a kinematic RW body
 		            , RIGID //! a rigid ode body and a RigidBody RW
 		            , RIGIDODE //! a rigid ode body and a RW Body type (any other than RigidBody)
-		            , LINK} ODEBodyType;
+		            , LINK
+		            , RigidDummy} ODEBodyType;
+
+
+        /**
+         * @brief constructor for rigid bodies
+         * @param odeBody
+         * @param rwbody
+         * @param offset [in] offset of the center of mass relative to \b rwbody
+         * @return
+         */
+        ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame);
 
 		/**
 		 * @brief constructor for rigid bodies

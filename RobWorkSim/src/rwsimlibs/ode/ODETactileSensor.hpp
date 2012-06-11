@@ -45,6 +45,9 @@ namespace simulator {
 
 		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
+		// this is for contacts that are not directly specified by the physics solver, eg. if you emulate
+		// multiple contacts with a more complex constraint.
+		void addContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b);
 
 	//    void setContacts(const rw::proximity::MultiDistanceResult& res,
 	//                     rw::math::Transform3D<> wTa,
@@ -64,6 +67,17 @@ namespace simulator {
 		//rw::math::Vector3D<> point;
 		std::vector<int> _bodyIdx, _bodyGlobalIdx;
 		std::vector<dynamics::Body*> _bodyGlobal;
+
+		struct DirectContact {
+		    DirectContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* body):
+		        p(pos),f(force),n(normal),b(body){}
+		    rw::math::Vector3D<> p;
+		    rw::math::Vector3D<> f;
+		    rw::math::Vector3D<> n;
+		    dynamics::Body* b;
+		};
+
+		std::vector< DirectContact > _directContacts;
 
 	};
 }

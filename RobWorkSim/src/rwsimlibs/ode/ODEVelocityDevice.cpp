@@ -335,32 +335,94 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
      std::map< Joint*, Body*> jointChildMap;
      std::map< Joint*, Body*> jointParentMap;
 
+     std::map< Body*, Body*> childToParentMap;
+     std::vector< std::pair<Body*, Body*> > childToParentList;
      // first we create rigid bodies from all of the links of the RigidDevice
      BOOST_FOREACH(Body* body, rdev->getLinks()){
+         std::cout << body->getName() << std::endl;
          ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
          odebody->setTransform( state );
          _sim->addODEBody(odebody);
          _ode_bodies.push_back(odebody);
          addToMap(odebody, frameToODEBody);
-         if(body->getBodyFrame()==rdev->getKinematicModel()->getBase())
+         if(body->getBodyFrame()==rdev->getKinematicModel()->getBase()){
+             childToParentMap[body] = NULL; // base
              continue;
+         }
+         // locate the parent body
+         Body *jparent = BodyUtil::getParentBody(body, _sim->getDynamicWorkCell(), state );
+         if(jparent==NULL)
+             RW_THROW("The body \"" << body->getName() << "\" does not seem to have any parent body!");
+         childToParentMap[body] = jparent; // base
+         childToParentList.push_back(std::make_pair(body,jparent));
+
+         /*
          // locate any parent joints and any child joints
          Joint *j = getParentJoint(body->getBodyFrame(), state);
          jointChildMap[j] = body;
 
          Body *jparent = BodyUtil::getParentBody(j, _sim->getDynamicWorkCell(), state );
+         if(jparent==NULL)
+             std::cout << "Parent is NULL" << std::endl;
+         else
+             std::cout << "Parent: " << jparent->getName() << std::endl;
          jointParentMap[j] = jparent;
+         */
      }
 
+     std::map<Joint*,ODEJoint*> jointMap;
+     // now locate all joints connecting the child-parent body pairs
+     typedef std::pair<Body*,Body*> FramePair;
+     BOOST_FOREACH( FramePair bodyPair, childToParentList){
+         std::vector<Frame*> chain = Kinematics::parentToChildChain(bodyPair.second->getBodyFrame(), bodyPair.first->getBodyFrame(), state);
+         chain.push_back(bodyPair.first->getBodyFrame());
+         std::vector<Joint*> joints;
+         for(int i=1;i<chain.size();i++){
+             Joint *joint= dynamic_cast<Joint*>(chain[i]);
+             if( joint!=NULL){
+                 // connect this joint to the parent body and if
+                 joints.push_back(joint);
+             }
+         }
+
+         ODEBody *parent = frameToODEBody[bodyPair.second->getBodyFrame()];
+         for(int i=0;i<joints.size();i++){
+             // the child of the joint is either bodyPair.first or another joint in which case we need to make an ODEBody
+             ODEBody *child = NULL;
+             if(i+1 == joints.size()){
+                 // this is the last joint so connect it to bodyPair.first
+                 child = frameToODEBody[bodyPair.first->getBodyFrame()];
+             } else {
+                 // create a virtual body
+                 dBodyID bTmp = dBodyCreate( _sim->getODEWorldId() );
+                 ODEUtil::setODEBodyMass(bTmp,0.00001, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.00001,0.001) );
+                 child = new ODEBody(bTmp, joints[i]);
+                 _sim->addODEBody(child);
+             }
+             ODEJoint *odeJoint = new ODEJoint(joints[i], parent, child, _sim, state);
+             _sim->addODEJoint(odeJoint);
+             jointMap[joints[i]] = odeJoint;
+         }
+     }
+
+     // in the end we fix the force limits
      std::vector<ODEJoint*> odeJoints;
      Q maxForce = rdev->getForceLimit();
+     size_t i =0;
+     rw::models::JointDevice::Ptr jdev = rdev->getJointDevice();
+     BOOST_FOREACH(Joint *joint, jdev->getJoints() ){
+         ODEJoint *odeJoint = jointMap[joint];
+         RW_ASSERT(odeJoint!=NULL);
+         odeJoint->setMaxForce( maxForce(i) );
+         i++;
+     }
+
      //RW_DEBUGS("BASE:" << base->getName() << "<--" << base->getParent()->getName() );
 
      // build a parent-child relation map between joints and links
-
+     /*
      size_t i =0;
      rw::models::JointDevice::Ptr jdev = rdev->getJointDevice();
-
      BOOST_FOREACH(Joint *joint, jdev->getJoints() ){
          Body *parentb = jointParentMap[joint];
          Body *childb = jointChildMap[joint];
@@ -396,7 +458,7 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
 
           i++;
      }
-
+    */
 
 }
 
