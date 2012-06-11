@@ -122,7 +122,9 @@ void State::copy(const State &from){
         // now its secure to attach the frame in this state
         _tree_state.attachFrame(daf, parent);
     }
-    _stateUniqueId = from.getUniqueId();
+    // the state id is unique in regard to the static content, eg. adding a new frame would change the id
+    // so only upgrade should change the id
+    //_stateUniqueId = from.getUniqueId();
 }
 
 State State::clone(){
