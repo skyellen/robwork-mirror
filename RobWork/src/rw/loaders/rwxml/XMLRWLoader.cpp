@@ -255,50 +255,50 @@ namespace {
             //try {
             RW_DEBUGS("Loading Model....");
                 if( model._colmodel && model._isDrawable ){
-                    RW_WARN("1");
+
                     // the geom is to be used as both collision geometry and visualization model
                     // TODO: this could be optimized, share data and such.
                     Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), model._name);
                     model3d->setTransform(model._transform);
                     model3d->setName(model._name);
                     //model->setFrame(modelframe);
-                    RW_WARN("1");
+
                     Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
                     geom->setName(model._name);
                     geom->setTransform(model._transform);
                     geom->setFrame(modelframe);
-                    RW_WARN("1");
+
                     if(object!=NULL){
                         object->addModel( model3d );
                         object->addGeometry( geom );
                     }
-                    RW_WARN("1");
+
                 } else if( model._colmodel ){
                     // its only a collision geometry
-                    RW_WARN("1");
+
                     Geometry::Ptr geom = GeometryFactory::load( val.str(), true );
                     geom->setName(model._name);
-                    RW_WARN("1");
+
                     geom->setTransform(model._transform);
                     geom->setFrame(modelframe);
-                    RW_WARN("1");
+
                     if(object!=NULL){
                         object->addGeometry( geom );
                     }
-                    RW_WARN("1");
+
                 } else if( model._isDrawable ){
                     // its only a drawable
-                    RW_WARN("1");
+
                     Model3D::Ptr model3d = Model3DFactory::getModel(val.str(), val.str());
-                    RW_WARN("1");
+
                     model3d->setName(model._name);
-                    RW_WARN("1");
+
                     model3d->setTransform(model._transform);
-                    RW_WARN("1");
+
                     if(object!=NULL){
                         object->addModel( model3d );
                     }
-                    RW_WARN("1");
+
                 }
             //} catch (const std::exception& e){
             //}
