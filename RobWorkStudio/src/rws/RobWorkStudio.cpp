@@ -207,7 +207,7 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
     // save main window settings
-
+    std::cout << "closeEvent" << std::endl;
     //settings.setValue("pos", pos());
     //settings.setValue("size", size());
     //settings.setValue("state", saveState());
