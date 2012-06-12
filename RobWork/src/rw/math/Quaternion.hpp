@@ -347,66 +347,104 @@ namespace rw { namespace math {
          *  \right]
          * @f$
 		 *
-		 * The conversion method is based on: 
-		 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-		 * with the more robust conversion suggested in
-		 * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm
+		 * The conversion method is proposed by Henrik Gordon Petersen. The switching between different
+		 * cases occur well before numerical instabilities, hence the solution should be more robust,
+		 * than many of the methods proposed elsewhere.
          *
          */
         template <class R>
         void setRotation(const Rotation3D<R>& rot)
         {
 
+			//The method
+			const T min = -0.9;
+			const T min1 = min/3.0;
+
+			const T tr = rot(0, 0) + rot(1, 1) + rot(2, 2);
+
+			if (tr > min) {
+				const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr+1.0));
+				this->d = static_cast<T>(0.25) / s;
+				this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
+				this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+				this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+			} else {
+				if (rot(0,0) > min1) {
+						  const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
+						  this->a = static_cast<T>(0.5)  *  sa;
+						  const T s = static_cast<T>(0.25) / this->a;
+						  this->b = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+						  this->c = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+						  this->d = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;                                              
+				} else if (rot(1,1) > min1) {
+						  const T sb = static_cast<T>(sqrt(rot(1, 1) - rot(2, 2) - rot(0, 0)  + 1));
+						  this->b = static_cast<T>(0.5) * sb;
+
+						  const T s = static_cast<T>(0.25) / this->b;
+						  this->a = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+						  this->c = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+						  this->d = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+				} else {
+						  const T sc = static_cast<T>(sqrt(rot(2, 2) - rot(0, 0) - rot(1, 1)  + 1));
+						  this->c = static_cast<T>(0.5) * sc;
+
+						  const T s = static_cast<T>(0.25) / this->c;
+						  this->a = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+						  this->b = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+						  this->d = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+				}
+			}
+
 //          #define USE_OLD_CONVERSION
 //			#ifdef USE_OLD_CONVERSION
-			const T tr = std::max(static_cast<T>(0.0), static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1));
+			//const T tr = std::max(static_cast<T>(0.0), static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1));
 
-            if (tr > 1e-12) {
+   //         if (tr > 1e-12) {
 
-				this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
-				this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
-				this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
-				this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
+			//	this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+			//	this->a = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
+			//	this->b = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
+			//	this->c = sqrt( std::max( static_cast<R>(0.0), 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
 
-			
-				this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
-				this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
-				this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
+			//
+			//	this->a = boost::math::copysign( this->a, rot(2,1) - rot(1,2) );
+			//	this->b = boost::math::copysign( this->b, rot(0,2) - rot(2,0) );
+			//	this->c = boost::math::copysign( this->c, rot(1,0) - rot(0,1) );
 
-                /*const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr));
-                this->d = static_cast<T>(0.25) / s;
-                this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
-                this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
-                this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
-				*/
-            } else {
-                if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
-                    const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
-                    this->a = static_cast<T>(0.5)  *  sa;
+   //             /*const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr));
+   //             this->d = static_cast<T>(0.25) / s;
+   //             this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
+   //             this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+   //             this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+			//	*/
+   //         } else {
+   //             if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
+   //                 const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
+   //                 this->a = static_cast<T>(0.5)  *  sa;
 
-                    // s == 1 / (2.0  *  sa) == 0.25 / (0.5  *  sa)
-                    const T s = static_cast<T>(0.25) / this->a;
-                    this->b = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
-                    this->c = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
-                    this->d = static_cast<T>(rot(1, 2) - rot(2, 1)) * s;
-                } else if (rot(1, 1) > rot(2, 2)) {
-                    const T sb = static_cast<T>(sqrt(rot(1, 1) - rot(2, 2) - rot(0, 0)  + 1));
-                    this->b = static_cast<T>(0.5) * sb;
+   //                 // s == 1 / (2.0  *  sa) == 0.25 / (0.5  *  sa)
+   //                 const T s = static_cast<T>(0.25) / this->a;
+   //                 this->b = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+   //                 this->c = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+   //                 this->d = static_cast<T>(rot(1, 2) - rot(2, 1)) * s;
+   //             } else if (rot(1, 1) > rot(2, 2)) {
+   //                 const T sb = static_cast<T>(sqrt(rot(1, 1) - rot(2, 2) - rot(0, 0)  + 1));
+   //                 this->b = static_cast<T>(0.5) * sb;
 
-                    const T s = static_cast<T>(0.25) / this->b;
-                    this->a = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
-                    this->c = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
-                    this->d = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
-                } else {
-                    const T sc = static_cast<T>(sqrt(rot(2, 2) - rot(0, 0) - rot(1, 1)  + 1));
-                    this->c = static_cast<T>(0.5) * sc;
+   //                 const T s = static_cast<T>(0.25) / this->b;
+   //                 this->a = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+   //                 this->c = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+   //                 this->d = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+   //             } else {
+   //                 const T sc = static_cast<T>(sqrt(rot(2, 2) - rot(0, 0) - rot(1, 1)  + 1));
+   //                 this->c = static_cast<T>(0.5) * sc;
 
-                    const T s = static_cast<T>(0.25) / this->c;
-                    this->a = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
-                    this->b = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
-                    this->d = static_cast<T>(rot(0, 1) - rot(1, 0)) * s;
-                }
-            }
+   //                 const T s = static_cast<T>(0.25) / this->c;
+   //                 this->a = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+   //                 this->b = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+   //                 this->d = static_cast<T>(rot(0, 1) - rot(1, 0)) * s;
+   //             }
+   //         }
 //#else
 
 /*        this->d = sqrt( std::max( static_cast<R>(0.0), 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
