@@ -225,21 +225,10 @@ namespace simulator {
             return _jointToODEJoint[joint];
 		}
 
-        void addODEBody(ODEBody* odebody){
-            if(odebody->getRwBody()!=NULL){
-                BOOST_FOREACH(rw::kinematics::Frame *f, odebody->getRwBody()->getFrames()){
-                    _rwFrameToODEBody[f] = odebody;
-                }
-            } else {
-                _rwFrameToODEBody[odebody->getFrame()] = odebody;
-            }
-            BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odebody->getTriGeomData()){
-                _frameToOdeGeoms[odebody->getFrame()] = tgeom->geomId;
-            }
-            _odeBodies.push_back(odebody);
-            if(odebody->getType()!=ODEBody::FIXED)
-                _allbodies.push_back(odebody->getBodyID());
-        }
+        void addODEBody(ODEBody* odebody);
+        void addODEBody(dBodyID body);
+        void addODEJoint(dJointID joint);
+
 
 		ODEBody* getODEBody(rw::kinematics::Frame* frame){
             if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
@@ -327,8 +316,6 @@ namespace simulator {
 		*/
 
         //
-        void addODEBody(dBodyID body){_allbodies.push_back(body);};
-        void addODEJoint(dJointID joint){_alljoints.push_back(joint);};
 
 
         double getMaxSeperatingDistance();

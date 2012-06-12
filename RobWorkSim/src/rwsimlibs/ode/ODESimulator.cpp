@@ -919,22 +919,57 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
 }
 */
 
+void ODESimulator::addODEJoint(dJointID joint){
+    _alljoints.push_back(joint);
+}
+
+
+void ODESimulator::addODEBody(dBodyID body){
+    //std::cout << "addODEBody: " << std::endl;
+    _allbodies.push_back(body);
+}
+
+
+void ODESimulator::addODEBody(ODEBody* odebody){
+    //std::cout << "Add ode body: " << odebody->getFrame()->getName() << std::endl;
+    if( _rwFrameToODEBody.find( odebody->getFrame() )!=_rwFrameToODEBody.end() )
+        RW_THROW("Body with name \"" << odebody->getFrame()->getName() << "\" allready exists in the simulator! " );
+
+   if(odebody->getRwBody()!=NULL){
+       BOOST_FOREACH(rw::kinematics::Frame *f, odebody->getRwBody()->getFrames()){
+           _rwFrameToODEBody[f] = odebody;
+       }
+   } else {
+       _rwFrameToODEBody[odebody->getFrame()] = odebody;
+   }
+   BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odebody->getTriGeomData()){
+       _frameToOdeGeoms[odebody->getFrame()] = tgeom->geomId;
+   }
+   _odeBodies.push_back(odebody);
+   if(odebody->getType()!=ODEBody::FIXED)
+       _allbodies.push_back(odebody->getBodyID());
+}
+
 void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
-    std::cout << "Add body: " << body->getName() << std::endl;
+    //std::cout << "Add body: " << body->getName() << std::endl;
+    if( _rwFrameToODEBody.find( body->getBodyFrame() )!=_rwFrameToODEBody.end() )
+        RW_THROW("Body with name \"" << body->getName() << "\" allready exists in the simulator! " );
+
     ODEBody *odeBody = NULL;
     if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
         odeBody = ODEBody::makeRigidBody(rbody, _spaceId, this);
-        _allbodies.push_back(odeBody->getBodyID());
+        //_allbodies.push_back(odeBody->getBodyID());
         dBodySetAutoDisableFlag(odeBody->getBodyID(), 0);
     } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body.get() ) ) {
         odeBody = ODEBody::makeKinematicBody(kbody, _spaceId, this);
-        _allbodies.push_back(odeBody->getBodyID());
+        //_allbodies.push_back(odeBody->getBodyID());
     } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body.get() ) ) {
         odeBody = ODEBody::makeFixedBody(fbody, _spaceId, this);
     } else {
         RW_WARN("Unsupported body type, name: " << body->getName() );
         return;
     }
+
     BOOST_FOREACH(Frame* f, odeBody->getRwBody()->getFrames() ){
         _rwFrameToODEBody[f] = odeBody;
     }
@@ -959,17 +994,18 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
         _rwFrameToODEBody[ device->getModel().getBase() ] = _rwFrameToODEBody[ dev->getBase()->getBodyFrame() ];
     }
 
-    ODEBody* base = _rwFrameToODEBody[ device->getModel().getBase() ];
-    if( base==NULL ){
+    ODEBody* base = NULL;
+    if( _rwFrameToODEBody.find( dev->getBase()->getBodyFrame() )==_rwFrameToODEBody.end() ){
         RW_DEBUGS("Creating base of device " << device->getKinematicModel()->getName());
         // the base has not yet been created, do it here
         Body *rwbase = device->getBase();
         addBody(rwbase, state);
-
-        base = _rwFrameToODEBody[ device->getModel().getBase() ];
-        if(base==NULL)
-            RW_THROW("Invalid base of Device: " << device->getModel().getName());
+        //_rwFrameToODEBody[ device->getModel().getBase() ] =
     }
+
+    base = _rwFrameToODEBody[ device->getModel().getBase() ];
+    if(base==NULL)
+        RW_THROW("Invalid base of Device: " << device->getModel().getName());
 
     JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
     if(jdev!=NULL){
@@ -1433,14 +1469,14 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
     // next we query the BP filter for framepairs that are possibly in collision
     while( !filter->isEmpty() ){
         const FramePair& pair = filter->frontAndPop();
-        RW_DEBUGS(pair.first->getName() << " -- " << pair.second->getName());
+        //RW_DEBUGS(pair.first->getName() << " -- " << pair.second->getName());
 
         // and lastly we use the dispatcher to find the strategy the
         // is required to compute the narrowphase collision
         const ProximityModel::Ptr &a = _frameToModels[*pair.first];
         const ProximityModel::Ptr &b = _frameToModels[*pair.second];
         if(a==NULL || b==NULL){
-            std::cout << "No rwmodels:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+            //std::cout << "No rwmodels:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
             //std::cout << "No rwmodels:" << std::endl;
             continue;
         }
@@ -1522,7 +1558,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
-                //std::cout << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+                std::cout << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
                 return true;
             }
             continue;
@@ -1716,6 +1752,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 }
 
 void ODESimulator::attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+    std::cout << "attach " << b1->getName() << " -- " << b2->getName() << std::endl;
     ODEBody *ob1 = _rwFrameToODEBody[ b1->getBodyFrame() ];
     ODEBody *ob2 = _rwFrameToODEBody[ b2->getBodyFrame() ];
 

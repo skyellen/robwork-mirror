@@ -200,8 +200,8 @@ void ODEBody::postupdate(rw::kinematics::State& state){
         // angular velocity is defined in world coordinates and around center of mass
         //if(_rwBody==NULL)
         //    std::cout << "BODY is null" << std::endl;
-        _rwBody->setAngVelW( ang , state);
-        _rwBody->setLinVelW( lin , state);
+        //_rwBody->setAngVelW( ang , state);
+        //_rwBody->setLinVelW( lin , state);
 
 
         //_rwBody->setForce( Vector3D<>::zero(), state );

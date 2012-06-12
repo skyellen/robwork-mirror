@@ -378,8 +378,9 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     dBodyEnable( _child->getBodyID() );
 
     //! TODO: these should be set to the correct velocities defined in state
-    Vector3D<> avel = _child->getRwBody()->getAngVelW(state);
-    Vector3D<> lvel = _child->getRwBody()->getLinVelW(state);
+
+    //Vector3D<> avel = _child->getRwBody()->getAngVelW(state);
+    //Vector3D<> lvel = _child->getRwBody()->getLinVelW(state);
     //dBodySetAngularVel( _child->getBodyID(), avel[0], avel[1], avel[2] );
     //dBodySetLinearVel( _child->getBodyID(), lvel[0], lvel[1], lvel[2] );
     dBodySetAngularVel( _child->getBodyID(), 0,0,0 );

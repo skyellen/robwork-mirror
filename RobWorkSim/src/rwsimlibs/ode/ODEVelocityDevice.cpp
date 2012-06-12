@@ -236,7 +236,7 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
         q(qi) = _odeJoints[i]->getAngle();
         qi++;
     }
-    //std::cout  << "q without offset: " << q << std::endl;
+    std::cout  << "q without offset: " << q << std::endl;
     //std::cout  << "Actual vel: " << actualVel << std::endl;
     _rdev->getModel().setQ(q, state);
     _rdev->setActualVelocity(actualVel, state);
@@ -337,12 +337,13 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
 
      std::map< Body*, Body*> childToParentMap;
      std::vector< std::pair<Body*, Body*> > childToParentList;
+     baseODEBody->setTransform(state);
      // first we create rigid bodies from all of the links of the RigidDevice
      BOOST_FOREACH(Body* body, rdev->getLinks()){
-         std::cout << body->getName() << std::endl;
+         std::cout << "LINK: " << body->getName() << std::endl;
          ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
          odebody->setTransform( state );
-         _sim->addODEBody(odebody);
+         //_sim->addODEBody(odebody);
          _ode_bodies.push_back(odebody);
          addToMap(odebody, frameToODEBody);
          if(body->getBodyFrame()==rdev->getKinematicModel()->getBase()){
@@ -397,11 +398,13 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
                  dBodyID bTmp = dBodyCreate( _sim->getODEWorldId() );
                  ODEUtil::setODEBodyMass(bTmp,0.00001, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.00001,0.001) );
                  child = new ODEBody(bTmp, joints[i]);
+                 child->setTransform( state );
                  _sim->addODEBody(child);
              }
              ODEJoint *odeJoint = new ODEJoint(joints[i], parent, child, _sim, state);
              _sim->addODEJoint(odeJoint);
              jointMap[joints[i]] = odeJoint;
+
          }
      }
 
@@ -413,6 +416,7 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
      BOOST_FOREACH(Joint *joint, jdev->getJoints() ){
          ODEJoint *odeJoint = jointMap[joint];
          RW_ASSERT(odeJoint!=NULL);
+         _odeJoints.push_back(odeJoint);
          odeJoint->setMaxForce( maxForce(i) );
          i++;
      }

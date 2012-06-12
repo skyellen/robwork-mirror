@@ -212,7 +212,7 @@ ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool in
 
 std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::Ptr> geoms, dSpaceID spaceid, Frame* ref, const State& state, bool invert){
     std::vector<ODEUtil::TriGeomData*> triGeomDatas;
-    std::cout << "buildTriGeom: " << geoms.size() << std::endl;
+    //std::cout << "buildTriGeom: " << geoms.size() << std::endl;
     for(size_t i=0; i<geoms.size(); i++){
         GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
         Transform3D<> transform;
@@ -222,7 +222,7 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
 
         ODEUtil::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,invert);
         if(triMeshData==NULL){
-            std::cout << "TriMeshNull" << std::endl;
+            //std::cout << "TriMeshNull" << std::endl;
             continue;
         }
 
