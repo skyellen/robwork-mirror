@@ -4,20 +4,6 @@
 #  SDH_INCLUDE_DIRS - The SDH include directories
 #  SDH_LIBRARY - The library needed to use SDH
 
-SET(SDH_INCLUDE_DIR_HINT "${SDH_INCLUDE_DIR}")
-UNSET(SDH_INCLUDE_DIR)
-
-FIND_PATH(SDH_INCLUDE_DIR
-   NAMES
-      sdh/sdh.h
-   # TODO paths?
-   HINTS
-      "${SDH_INCLUDE_DIR_HINT}"
-      "${RWHW_ROOT}/ext/sdh2/"
-      /usr/include
-      /include
-)
-
 SET(SDH_LIB_DIR_HINT ${SDH_LIB_DIR})
 UNSET(SDH_LIB_DIR)
 
@@ -27,7 +13,24 @@ FIND_LIBRARY(SDH_LIBRARY
    HINTS
       "${SDH_LIB_DIR_HINT}"
       "${RWHW_ROOT}/ext/sdh2/libs/"
+      "${RWHW_ROOT}/ext/sdh3/libs/"
 )
+
+STRING(REGEX REPLACE "/libs/lib.*$" "" SDH_BASE_PATH_GUESS "${SDH_LIBRARY}")
+
+SET(SDH_INCLUDE_DIR_HINT "${SDH_INCLUDE_DIR}")
+UNSET(SDH_INCLUDE_DIR)
+
+FIND_PATH(SDH_INCLUDE_DIR
+   NAMES
+      sdh/sdh.h
+   HINTS
+      "${SDH_INCLUDE_DIR_HINT}"
+      "${SDH_BASE_PATH_GUESS}"
+      /usr/include
+      /include
+)
+
 
 #MESSAGE("SDH LIB ${SDH_LIBRARY}")
 #MESSAGE("SDH INCLUDE ${SDH_INCLUDE_DIR}")
