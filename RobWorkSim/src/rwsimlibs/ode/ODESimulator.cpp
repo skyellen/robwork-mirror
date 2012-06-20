@@ -526,12 +526,13 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             restoreODEState();
             // print all information available:
             Log::debugLog() << "----------------------- TOO LARGE PENETRATIONS --------------------\n";
+            Log::debugLog() << "-- objects : " << _collidingObjectsMsg << "\n";
             Log::debugLog() << "-- time    : " << _time << "\n";
             Log::debugLog() << "-- dt orig : " << dt << "\n";
             Log::debugLog() << "-- dt div  : " << dttmp << "\n";
             Log::debugLog() << "-- step divisions: " << i << "\n";
             Log::debugLog() << "-- bad lcp count : " << badLCPcount << "\n";
-            Log::debugLog() << "-- Bodies: \n";
+            Log::debugLog() << "-- Bodies state  : \n";
             BOOST_FOREACH(dBodyID body, _allbodies){
                 dReal vec[4];
                 ODEBody *data = (ODEBody*) dBodyGetData(body);
@@ -1558,7 +1559,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
-                std::cout << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+                std::stringstream sstr;
+                sstr << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
+                _collidingObjectsMsg = sstr.str();
                 return true;
             }
             continue;

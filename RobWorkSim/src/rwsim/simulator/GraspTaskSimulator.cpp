@@ -422,7 +422,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._target->getResult()->qualityBeforeLifting = Q();
                     sstate._currentState = NEW_GRASP;
                 } else {
-                    std::cout << "LIFTING" << std::endl;
+                    //std::cout << "LIFTING" << std::endl;
                     State nstate = state;
                     Q qualities = calcGraspQuality(state, sstate);
                     sstate._target->getResult()->qualityBeforeLifting = qualities;

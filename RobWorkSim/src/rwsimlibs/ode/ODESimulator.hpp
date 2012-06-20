@@ -411,6 +411,8 @@ namespace simulator {
 		double _worldCFM, _worldERP, _oldTime;
 		std::string _clusteringAlgStr;
 
+		std::string _collidingObjectsMsg;
+
 		double _contactSurfaceLayer;
 		double _maxSepDistance;
 		double _maxAllowedPenetration;

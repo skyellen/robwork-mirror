@@ -355,7 +355,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
         // todo: monitor the forces on the fixed joint
         Vector3D<> force = ODEUtil::toVector3D( _feedback.f1 );
         Vector3D<> torque = ODEUtil::toVector3D( _feedback.t1 );
-        std::cout << "Force;: " << force << " ... " << torque << std::endl;
+        //std::cout << "Force;: " << force << " ... " << torque << std::endl;
 
 
 
