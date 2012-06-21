@@ -414,7 +414,7 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     if( type=="GS20" || type=="GS20_WIDE"){
         ssurf.setBoundsD(-0.02,0.02);
     } else if( type=="SCUP" ){
-        ssurf.setBoundsD(-0.05,0.05);
+        ssurf.setBoundsD(-0.02,0.005);
     } else {
         ssurf.setBoundsD(-0.04,0.04);
     }
