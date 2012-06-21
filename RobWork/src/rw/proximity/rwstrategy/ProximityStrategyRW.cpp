@@ -154,7 +154,16 @@ ProximityStrategyRW::QueryData ProximityStrategyRW::initQuery(ProximityModel::Pt
 
 
 std::vector<std::string> ProximityStrategyRW::getGeometryIDs(rw::proximity::ProximityModel* model){
-    return model->getGeometryIDs();
+	std::vector<std::string> res;
+	RWProximityModel *pmodel = (RWProximityModel*) model;
+    BOOST_FOREACH(Model::Ptr &m, pmodel->models) {
+		res.push_back(m->geoid);
+    }
+	return res;
+
+
+
+	//return model->getGeometryIDs();
 }
 
 bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
