@@ -200,7 +200,7 @@ void ProximityStrategyYaobi::clear()
 
 
 std::vector<std::string> ProximityStrategyYaobi::getGeometryIDs(rw::proximity::ProximityModel* model){
-	return std::vector<std::string>();
+	RW_THROW("ProximityStrategyYaobi::getGeometryIDs(rw::proximity::ProximityModel* model): Not Implemented");
 }
 
 CollisionStrategy::Ptr ProximityStrategyYaobi::make()

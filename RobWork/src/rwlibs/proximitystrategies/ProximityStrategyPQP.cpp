@@ -536,11 +536,21 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
         }
     }
     return rwresult;
-}
+} 
+ 
 
 
 std::vector<std::string> ProximityStrategyPQP::getGeometryIDs(rw::proximity::ProximityModel* model){
-	return std::vector<std::string>();
+	std::vector<std::string> res;
+	PQPProximityModel *pmodel = (PQPProximityModel*) model;
+    BOOST_FOREACH(RWPQPModel &m, pmodel->models){
+		res.push_back(m.geoid);
+        /*if( m.geoid==geom.getId() ){
+            removeGeometry( model, geom.getId() );
+            break;
+        }*/
+    }
+	return res;
 }
 
 DistanceResult& ProximityStrategyPQP::distance(
