@@ -35,7 +35,7 @@
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-
+#include <rw/common/LogFileWriter.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -70,6 +70,10 @@ int main(int argc, char** argv)
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
 
+    // initialize RobWork log. We put debug into rwdebug.log and warning into rwwarn.log
+    Log::log().setWriter(Log::Debug, ownedPtr( new LogFileWriter("rwdebug.log") ) );
+    Log::log().setWriter(Log::Warning, ownedPtr( new LogFileWriter("rwwarn.log") ) );
+
     variables_map vm;
     //store(parse_command_line(argc, argv, desc), vm);
     store(command_line_parser(argc, argv).
@@ -88,7 +92,6 @@ int main(int argc, char** argv)
 
     using namespace boost::filesystem;
 
-
     std::map<int,bool> includeMap;
     if(vm.count("include")){
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
@@ -102,7 +105,6 @@ int main(int argc, char** argv)
         for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
             includeMap[i] = true;
     }
-
 
     // extract all task files that should be simulated
     std::vector<std::string> infiles;
@@ -139,6 +141,7 @@ int main(int argc, char** argv)
     // load workcell
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
+
     // create GraspTaskSimulator
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
@@ -396,7 +399,7 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     subtask.offset = wTe_n;
     if( type== "SCUP"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,-0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
     } else if( gripperName=="GS20"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
