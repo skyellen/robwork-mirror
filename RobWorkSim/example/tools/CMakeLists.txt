@@ -61,7 +61,7 @@ target_link_libraries(ModelPropertyTest rwsim
 
 add_executable(RWSimTest src/RWSimTest.cpp)
 target_link_libraries(RWSimTest rwsim ${ROBWORK_LIBRARIES})
-MESSAGE("LIBS AVAIL: ${ROBWORK_LIBRARIES}")
+MESSAGE("LIBS AVAIL: ${ROBWORKSIM_LIBRARIES}")
 add_executable(UniformSelectGrasps src/UniformSelectGrasps.cpp)
 target_link_libraries(UniformSelectGrasps rwsim ${ROBWORK_LIBRARIES})
 
