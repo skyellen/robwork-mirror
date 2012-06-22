@@ -8,6 +8,7 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <sandbox/loaders/XercesXML/CollisionSetupLoader.hpp>
 #include <rw/loaders/xml/XMLPathFormat.hpp>
+#include <rw/trajectory/LinearInterpolator.hpp>
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -15,9 +16,61 @@ using namespace rw::models;
 using namespace rw::loaders;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
+using namespace rw::trajectory;
 using namespace rwlibs::proximitystrategies;
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) { 
+	{
+	Rotation3D<> r3d(0.80596, 0, -0.59197, 0, -1, 0, -0.59197, 0, -0.80596);
+	std::cout<<"r3d start = "<<r3d<<std::endl;
+	std::cout<<"Det = "<<LinearAlgebra::det(r3d.m())<<std::endl;
+	Quaternion<> q(r3d);
+	std::cout<<"Q = "<<q<<std::endl;
+	std::cout<<"r3d new = "<<q.toRotation3D()<<std::endl;
+	Quaternion<> q2(q.toRotation3D());
+	std::cout<<"Q 2 = "<<q2<<std::endl;
+	
+	}
+
+    Transform3D<> Told(rw::math::Vector3D<>(-0.675637, -0.0022987, 0.44), rw::math::Rotation3D<>(1, 0, 0, 0, -1, 0, 0, 0, -1));
+    Transform3D<> Tnew(Vector3D<>(-0.594613, -0.140229, 0.44), Rotation3D<>(0.80596, 0, -0.59197, 0, -1 , 0, -0.59197, 0, -0.80596));
+    std::cout <<"start " << Told << std::endl;
+    std::cout <<"end   " << Tnew << std::endl;
+
+
+    rw::trajectory::LinearInterpolator<rw::math::Transform3D<> > interpolator(Told, Tnew, 1.0);
+
+    for (double i = 0; i < 1.0; i += 0.1) {
+                    Transform3D<> T = interpolator.x(i * 1.0); //værdi fra interpolator
+                    std::cout <<"inter " << T.P() << std::endl;
+                    std::cout <<T.R() << std::endl;
+    }
+
+    Transform3D<> Told1(Vector3D<>(-0.597573, -0.13795, 0.415675), Rotation3D<>(0.80596, 0, -0.59197, 0, -1, 0, -0.59197, 0, -0.80596));
+    Transform3D<> Tnew1(Vector3D<>(-0.597573, -0.23567, 0.415675), Rotation3D<>(0.80596, 0, -0.59197, 0, -1, 0, -0.59197, 0, -0.80596));
+
+    std::cout <<"\nstart1 " << Told1 << std::endl;
+    std::cout <<"end1   " << Tnew1 << std::endl;
+
+    rw::trajectory::LinearInterpolator<rw::math::Transform3D<> > interpolator1(Told1, Tnew1, 1.0);
+
+    for (double i = 0; i < 1.0; i += 0.1) {
+                    Transform3D<> T = interpolator1.x(i * 1.0); //værdi fra interpolator
+                    std::cout <<"inter " << T.P() << std::endl;
+                    std::cout <<T.R() << std::endl;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     Rotation3D<> r3d(-0.99999669678603531, -0.0020716226013274717, -0.001521445633434071,
     				 -0.001521761408544605, 0.00015086113440790838, 0.99999883072019702,
     				 0.0018535970374102858, 0.99999827110886175, -0.00014804031424759767);
@@ -26,10 +79,18 @@ int main(int argc, char** argv) {
 	
     Quaternion<> q(r3d);
 	std::cout<<"Rot Before = "<<r3d<<std::endl;
+	
+	std::cout<<"R Det = "<<LinearAlgebra::det(r3d.m())<<std::endl;
+	r3d.normalize();
+	Quaternion<> qn(r3d);
+	std::cout<<"Rot Normalized= "<<r3d<<std::endl;
 	std::cout<<"Rot After  = "<<q.toRotation3D()<<std::endl;
+	std::cout<<"Rot Normalized After  = "<<qn.toRotation3D()<<std::endl;
+	std::cout<<"R Det = "<<LinearAlgebra::det(r3d.m())<<std::endl;
 	Quaternion<> q2(q.toRotation3D());
 	std::cout<<"q: "<<q<<std::endl;
 	std::cout<<"q2:"<<q2<<std::endl;
+	std::cout<<"qn: "<<qn<<std::endl;
 	return 0;
 
 	std::cout<<"Clearance Performance Test"<<std::endl;

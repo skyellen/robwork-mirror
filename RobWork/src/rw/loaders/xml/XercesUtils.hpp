@@ -71,7 +71,7 @@ public :
      * are then converted to unicode.
      */
     XMLStr(double value) {
-        char buffer[128];
+        char buffer[512];
         sprintf(buffer, "%f", value );
         _uniCodeForm = xercesc::XMLString::transcode(buffer);
     }
