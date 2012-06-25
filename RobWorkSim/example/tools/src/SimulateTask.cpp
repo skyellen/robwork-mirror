@@ -215,6 +215,20 @@ int main(int argc, char** argv)
         }
 
         for(int i=0;i<tasks.size();i++){
+            std::stringstream outputfile;
+            if(iformat==0){
+                outputfile << sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml";
+            } else if(iformat==1){
+                outputfile <<  sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".uibk.xml";
+            } else if(iformat==2){
+                outputfile <<  sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".txt";
+            }
+            if( boost::filesystem::exists( path( outputfile.str() ) ) ){
+                std::cout << "result already exists!\n\t" << outputfile.str() << std::endl;
+                totaltargets++;
+                continue;
+            }
+
             graspSim->load(tasks[i]);
             graspSim->startSimulation(initState);
             TimerUtil::sleepMs(2000);
