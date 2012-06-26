@@ -49,7 +49,7 @@ using namespace robwork;
 using namespace rwsim::dynamics;
 using namespace boost::program_options;
 using namespace boost::numeric::ublas;
-
+using namespace boost::filesystem;
 
 const double SOFT_LAYER_SIZE = 0.0005;
 
@@ -147,18 +147,31 @@ int main(int argc, char** argv)
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
 
-	std::string grasptask_file = vm["input"].as<std::string>();
+	std::string input = vm["input"].as<std::string>();
 	std::string outfile = vm["output"].as<std::string>();
 	bool perturbe = vm["perturbe"].as<bool>();
 	int pertubations = vm["pertubations"].as<int>();
 
-
-	GraspTask::Ptr gtask = GraspTask::load( grasptask_file );
+    path ip(input);
+    std::vector<std::string> infiles;
+    if( is_directory(ip) ){
+        infiles = IOUtil::getFilesInFolder( ip.string(), false, true);
+    } else {
+        infiles.push_back( ip.string() );
+    }
 
 	if(perturbe){
-	    return calcPerturbedQuality(gtask, outfile, pertubations );
+	    BOOST_FOREACH(std::string file, infiles){
+	        std::stringstream sstr;
+	        GraspTask::Ptr gtask = GraspTask::load( file );
+	        std::cout << "Processing: " << path(file).filename() << std::endl;
+	        sstr << outfile << "/" << path(file).filename();
+	        calcPerturbedQuality(gtask, sstr.str(), pertubations );
+	    }
+	    return 0;
 	}
 
+    GraspTask::Ptr gtask = GraspTask::load( input );
 
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
