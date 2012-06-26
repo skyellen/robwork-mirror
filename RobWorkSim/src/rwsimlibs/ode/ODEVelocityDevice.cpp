@@ -236,7 +236,7 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
         q(qi) = _odeJoints[i]->getAngle();
         qi++;
     }
-    std::cout  << "q without offset: " << q << std::endl;
+    //std::cout  << "q without offset: " << q << std::endl;
     //std::cout  << "Actual vel: " << actualVel << std::endl;
     _rdev->getModel().setQ(q, state);
     _rdev->setActualVelocity(actualVel, state);
