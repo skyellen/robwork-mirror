@@ -93,17 +93,26 @@ int main(int argc, char** argv)
     using namespace boost::filesystem;
 
     std::map<int,bool> includeMap;
+    std::vector<GraspTask::TestStatus> taskincludefilter;
     if(vm.count("include")){
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
         BOOST_FOREACH(std::string include, includes){
-            if(include=="Success"){ includeMap[GraspTask::Success] = true; }
-            else if(include=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = true; }
+            if(include=="Success"){
+                includeMap[GraspTask::Success] = true;
+                taskincludefilter.push_back(GraspTask::Success);
+            }
+            else if(include=="ObjectSlipped"){
+                includeMap[GraspTask::ObjectSlipped] = true;
+                taskincludefilter.push_back(GraspTask::ObjectSlipped);
+            }
             else { RW_THROW("Unsupported include tag!"); }
         }
     } else {
         // include all
-        for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
+        for(int i=0;i<GraspTask::SizeOfStatusArray;i++){
+            taskincludefilter.push_back( (GraspTask::TestStatus)i );
             includeMap[i] = true;
+        }
     }
 
     // extract all task files that should be simulated
@@ -188,7 +197,7 @@ int main(int argc, char** argv)
 
             grasptask = graspSim->getResult();
             // save the result
-
+            grasptask->filterTasks( taskincludefilter );
 
             //sstr << outputfile.string() << "_" << totaltargets << "_";
             std::cout << "Saving to: " << sstr.str() << std::endl;
