@@ -152,6 +152,9 @@ int main(int argc, char** argv)
 	bool perturbe = vm["perturbe"].as<bool>();
 	int pertubations = vm["pertubations"].as<int>();
 
+	path outp(outfile);
+	create_directory(outp);
+
     path ip(input);
     std::vector<std::string> infiles;
     if( is_directory(ip) ){
@@ -164,8 +167,8 @@ int main(int argc, char** argv)
 	    BOOST_FOREACH(std::string file, infiles){
 	        std::stringstream sstr;
 	        GraspTask::Ptr gtask = GraspTask::load( file );
-	        std::cout << "Processing: " << path(file).filename() << std::endl;
-	        sstr << outfile << "/" << path(file).filename();
+	        std::cout << "Processing: " << path(file).filename().string() << std::endl;
+	        sstr << outfile << "/" << path(file).filename().string();
 	        calcPerturbedQuality(gtask, sstr.str(), pertubations );
 	    }
 	    return 0;
