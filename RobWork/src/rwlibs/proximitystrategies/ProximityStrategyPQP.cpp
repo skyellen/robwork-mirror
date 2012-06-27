@@ -251,7 +251,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model, rw:
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
     // remove from model
-    size_t idx=-1;
+    int idx=-1;
     for(size_t i=0;i<pmodel->models.size();i++)
         if(pmodel->models[i].geoid==geomId){
             idx = i;
