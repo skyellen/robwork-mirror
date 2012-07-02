@@ -98,7 +98,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(ODEBody *base,
     _narrowStrategy = ownedPtr( new rwlibs::proximitystrategies::ProximityStrategyPQP() );
 
     // create the spiked cup geometry
-    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.003, dev->getRadius(), 1, NR_OF_SPIKES);
+    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.002, dev->getRadius(), 1, NR_OF_SPIKES);
 
     _spikedCup = new Geometry(_spikedCupMesh);
 
