@@ -474,8 +474,32 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             } else if(scup!=NULL){
                 _success++;
                 sstate._target->getResult()->testStatus = GraspTask::Success;
-                _stat[GraspTask::Success]++;
 
+                Q qualities = calcGraspQuality(state, sstate);
+                sstate._target->getResult()->qualityAfterLifting = qualities;
+
+
+                // Test the success of lifting the object.
+                // We need to look at the objects that are actually touching
+                Body* object = gobj.object;
+                Body* gripperBody = gobj.bodies[0];
+
+                sstate._target->getResult()->contactsLift = gobj.contacts;
+                Vector3D<> contactAvg(0,0,0);
+                BOOST_FOREACH(Contact3D& c, sstate._target->getResult()->contactsLift){
+                    contactAvg += c.p;
+                }
+                contactAvg = contactAvg/sstate._target->getResult()->contactsLift.size();
+
+                Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), sstate._postLiftObjState);
+                Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
+                sstate._target->getResult()->objectTtcpGrasp = inverse(tcpTo_before);
+                sstate._target->getResult()->objectTtcpLift = inverse(tcpTo_after);
+
+                _stat[GraspTask::Success]++;
+                sstate._target->getResult()->testStatus = GraspTask::Success;
+                sstate._target->getResult()->liftresult = 1.0;
+                sstate._restCount = 0;
             } else {
 
                 Q qualities = calcGraspQuality(state, sstate);
