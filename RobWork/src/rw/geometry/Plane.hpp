@@ -28,7 +28,7 @@ namespace geometry {
 	// @{
 
     /**
-     * @brief plane primitive represented in Hessian normal-form
+     * @brief plane primitive represented in Hessian normal-form: a*nx+b*ny+c*nz+d=0
      */
 	class Plane: public Primitive {
 	public:

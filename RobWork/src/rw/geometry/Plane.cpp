@@ -54,7 +54,7 @@ TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
     Vector3D<> ortho2 = normalize(cross(_normal, otho));
 
 
-    Transform3D<> trans(_normal*_d, Rotation3D<>(otho, ortho2, _normal));
+    Transform3D<> trans(-_normal*_d, Rotation3D<>(otho, ortho2, _normal));
 
     // now we generate the points in the two triangles
     rw::geometry::PlainTriMesh<>::Ptr mesh = ownedPtr( new rw::geometry::PlainTriMesh<>(2) );
