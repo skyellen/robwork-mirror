@@ -76,7 +76,7 @@ namespace dynamics {
         bool isClosed(const rw::kinematics::State& state){ return _closedState; }
         void setClosed(bool closed, rw::kinematics::State& state){ _closedState = closed; }
 
-        rwsim::dynamics::Body* getContactBody(rw::kinematics::State& state){ return _contactBodyState; }
+        rwsim::dynamics::Body* getContactBody(const rw::kinematics::State& state){ return _contactBodyState; }
         void setContactBody(rwsim::dynamics::Body* b, rw::kinematics::State& state){ _contactBodyState = b; }
 
         double getPressure(const rw::kinematics::State& state){ return _kindev->getQ(state)[0]; }
