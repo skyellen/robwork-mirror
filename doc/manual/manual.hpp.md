@@ -1,55 +1,11 @@
-/**
+# User Manual (C++)	# {#page_rw_manual}
 
-\page page_rw_manual Manual
+[TOC]
 
-- \ref sec_rw_manual_intro
-	- \ref sec_rw_manual_notation
-	- \ref sec_namespaces
-	- \ref sec_libraries
-- \ref sec_rw_manual_installation
-- \ref sec_rw_manual_concept
-- \ref sec_rw_manual_workcells
-    - \ref sec_rw_manual_load_workcell
-    - \ref sec_rw_manual_traverse_devices
-    .
-- \ref sec_rw_manual_states
-    - \ref sec_rw_manual_FKTable
-    - \ref sec_rw_manual_FKRange
-    - \ref sec_rw_manual_dafs
-    .
-- \ref sec_rw_manual_device_configurations
-- \ref sec_rw_manual_metrics
-- \ref sec_rw_manual_proximity
-- \ref sec_rw_manual_constraints
-- \ref sec_rw_manual_sampling
-- \ref sec_rw_manual_pathplanning
-- \ref sec_rw_manual_invkin
-- \ref sec_rw_manual_pointer_conventions
-- \ref sec_rw_manual_task
-- \ref sec_rws_manual_intro
-- \ref sec_rws_plugins
-    - \ref sec_rws_plugins_jog
-    - \ref sec_rws_plugins_log The Log plugin
-    - \ref sec_rws_plugins_treeview The TreeView plugin
-    - \ref sec_rws_plugins_lua The Lua plugin
-    - \ref sec_rws_plugins_planning The planning plugin
-    - \ref sec_rws_plugins_propertyview The propertyview plugin
-    - \ref sec_rws_plugins_playback The playback plugin
-    - \ref sec_rws_plugins_sensor The sensors plugin
-- \ref sec_rws_user_plugins
-- \ref sec_rws_user_tips
-- \ref sec_rws_properties
-- \ref sec_rws_examples
-    - \ref subsec_rws_examples_adding_collision
-    - \ref subsec_rws_examples_getting_drawables_of_a_frame
-- \subpage page_xml_workcell_format
-- \subpage page_task
-- \subpage page_lua
-- \subpage page_rw_installation
-- \subpage page_tul
+This manual introduce the reader to the C++ api of RobWork, how to use it, extend it and 
+how it is designed.
 
-
-\section sec_rw_manual_intro Introduction
+# Introduction #	{#sec_rw_intro}
 The main focus during the initial development of RobWork, was to provide a c++ toolbox of basic mathematics, kinematics, visualization
 and motion planning for robotic research and applications. After several years the goals of RobWork expanded to include
 more functionality with task description, script interface, plugin interfaces, dynamic simulation, simple vision and a
@@ -65,10 +21,10 @@ has been to limit the number of external dependencies and to keep a clean "self 
 the project has been split in several packages allowing the use of toolbox functionality without depressingly many
 external dependencies.
 
-- RobWork - the core package with only two mandatory dependencies: \b Boost and \b Xerces
-- RobWorkStudio - the visualization package which adds one additional dependency on \b Qt
-- RobWorkSim - the dynamic simulation package which only adds additional optional dependencies such as \b ODE,
- \b Bullet and \b Moby
+ - RobWork - the core package with only two mandatory dependencies: *Boost* and *Xerces* 
+ - RobWorkStudio - the visualization package which adds one additional dependency on *Qt*
+ - RobWorkSim - the dynamic simulation package which only adds additional optional dependencies such as *ODE*,
+ *Bullet* and *Moby* 
 - RobWorkHardware - the hardware interface package which only adds additional optional dependencies which is dictated
  by the actual hardware requirements.
 
@@ -98,116 +54,77 @@ stateless design, the workcell, robot devices, inverse kinematics, collision det
  including the WorkCell XML format, the dynamic workcell format, proximity setup format, state list format,
  grasp table format, (TODO: get all formats and their loaders eg. image, ...)
 
-\subsection sec_rw_manual_notation Notation
+ 
+## Notation ## {#sec_rw_manual_notation}
 
 In general a diagonal notation form will be used to describe the relation
 of vectors, rotation matrixes, homogenous transform, velocity screw,
 and so on.
 
-<table>
-<tr>
-<td>@f$ \robax{a}{\mathbf{P}} @f$ </td>
-<td>Vector P seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{P}} @f$ </td>
-<td>Translation of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{R}} @f$ </td>
-<td>Rotation of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{T}} @f$ </td>
-<td>Homogenous transform of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_v} @f$ </td>
-<td>Velocity transform that transforms the reference frame from
-\b b to \b a and the velocity reference point from \b c to \b d</td>
-</tr>
-<tr>
-<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_f} @f$ </td>
-<td>Force transform that transforms the reference frame from
-\b b to \b a and the force reference point from \b c to \b d</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{J}} @f$ </td>
-<td>A jacobian matrix defined from reference frame \b a to frame \b b</td>
-</tr>
 
-</table>
+Expression                                  | Description
+----------                                  | -----------
+\f$ \robax{a}{\mathbf{P}} \f$               | Vector P seen in frame *a*
+\f$ \robabx{a}{b}{\mathbf{P}} \f$           | Translation of frame *b* seen in frame *a*
+\f$ \robabx{a}{b}{\mathbf{R}} \f$           | Rotation of frame \b b seen in frame *a*
+\f$ \robabx{a}{b}{\mathbf{T}} \f$           | Homogenous transform of frame *b* seen in frame *a*
+\f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_v} \f$ | Velocity transform that transforms the reference frame from *b* to *a* and the velocity reference point from *c* to *d*
+\f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_f} \f$ | Force transform that transforms the reference frame from *b* to *a* and the force reference point from \b c to \b d
+\f$ \robabx{a}{b}{\mathbf{J}} \f$           | A jacobian matrix defined from reference frame *a* to frame *b*
+
 
 When coordinate frames are visualized the axes are illustrated with the colors RGB, such that 
 Red(x-axis), Green(y-axis) and Blue(z-axis).
 
-\subsection sec_namespaces Namespaces
+## Namespaces ## {#sec_namespaces}
 
 The header files of RobWork are distributed across a number of
 directories each having its own namespace. The structure of namespaces reflects the directory containing the code. For example
 
-\code
-// Include header files:
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/Frame.hpp>
-
-using namespace rw::models; //Namespace for WorkCell included by #include<rw/models/WorkCell.hpp>
-using namespace rw::kinematics; //Namespace for Frame included by #include <rw/kinematics/Frame.hpp>
-
-\endcode
+~~~~~~~~~~~~{.cpp}
+ // Include header files:
+ #include <rw/models/WorkCell.hpp>
+ #include <rw/kinematics/Frame.hpp>
+ using namespace rw::models; //Namespace for WorkCell included by #include<rw/models/WorkCell.hpp>
+ using namespace rw::kinematics; //Namespace for Frame included by #include <rw/kinematics/Frame.hpp>
+~~~~~~~~~~~~
 
 All classes related to the RobWorkStudio package are placed in a namespace rws. All classes related to RobWorkHardware are in the namespace rwhw;
 
-\subsection sec_libraries Libraries
+## Libraries ## {#sec_libraries}
 
-All classes of the \b rw directory are provided in a single library
-named \b rw.
+All classes of the *rw* directory are provided in a single library named *rw*.
 
-The subdirectories of the \b rwlibs directory each correspond to a
-different library. The subdirectory \b rwlibs/xyz corresponds to the
-library named \b rw_xyz and contains the objects in the namespace rwlibs::xyz. For example, suppose your program contains
+The subdirectories of the *rwlibs* directory each correspond to a
+different library. The subdirectory *rwlibs/xyz* corresponds to the
+library named *rw_xyz* and contains the objects in the namespace rwlibs::xyz. For example, suppose your program contains
 the following include statement:
 
-\code
-#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
-\endcode
+~~~~~~~~~~~~{.cpp}
+ #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+~~~~~~~~~~~~
 
-To build this program, you should link with \b rw_pathplanners.
+To build this program, you should link with *rw_pathplanners*.
 
+# Installation and Use # {#sec_rw_manual_installation}
 
+# Concept # {#sec_rw_manual_concept}
+- Smart Pointer
+- WorkCell, StateLess structure, Frame, Device, forward kinematics
+- Collision Detection, Scene Graph Rendering
+- Inverse Kinematics, Motion Planning, Grasp Planning, Task Planning
+- Plugin structure, Lua Script interface
 
-
-
-\section sec_rw_manual_installation Installation and Use
-
-
-
-
-
-\section sec_rw_manual_concept Concept
-
-Smart Pointer
-
-WorkCell, StateLess structure, Frame, Device, forward kinematics
-
-Collision Detection, Scene Graph Rendering
-
-Inverse Kinematics, Motion Planning, Grasp Planning, Task Planning
-
-Plugin structure, Lua Script interface
-
-\section sec_rw_manual_workcells Workcells
+# Workcells # {#sec_rw_manual_workcells}
 The WorkCell is one of the primary containers in RobWork. A WorkCell should gather all stateless 
 elemenst/models of a scene. These are primarilly:
- * Kinematic structure of frames
- * All devices 
- * All sensors  
- * All controllers
+- Kinematic structure of frames
+- All devices 
+- All sensors  
+- All controllers
 
 
- 
-\subsection sec_rw_manual_load_workcell Loading a workcell
-
+## Loading a WorkCell ## {#sec_rw_manual_load_workcell}
 RobWork support workcells described in an XML format.
 
 The below program loads a workcell from the file named on the command
@@ -234,7 +151,7 @@ rw::models::WorkCell::findDevice<type>(name)
 A very important aspect when working with RobWork is the understanding of its use of Stateless models.
 To illustrate state full and state less we give two small code examples:
 
-\code
+~~~~~~{.cpp}
 struct StateFull {
  double getQ(){ return _q; }
  void setQ(double q){ _q=q; }
@@ -245,7 +162,7 @@ struct StateLess {
  double getQ(State& state){ return state.getDouble(this); }
  void setQ(double q, State& state){ state.setDouble(q, this); }
 }
-\endcode
+~~~~~~
 
 Now in the first struct: StateFull, the Q value is stored local as a member value. In the StateLess struct
 the Q value is stored in a seperate class \b State. How the state stores this value is currently not important
@@ -1008,6 +925,20 @@ into the vector \b drawables.
 \endcode
 
 
-*/
+# XML WorkCell File Format #
+\subpage page_xml_workcell_format
+
+# TUL file format (deprecated) # 
+\subpage page_tul
+
+# Tasks #
+\subpage page_task
+
+# Scene Graph #
+\subpage md_scenegraph
+
+# Lua #
+\subpage md_lua
+
 
 

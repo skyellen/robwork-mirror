@@ -1,26 +1,24 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
-<tab type="mainpage" visible="yes" title="Home"/>    
-    <tab type="modules" visible="yes" title="Modules"/>    
-    <tab type="pages" visible="yes" title="Pages"/>
-    
+    <tab type="mainpage" visible="yes" title=""/>
+    <tab type="pages" visible="yes" title="" intro=""/>
+    <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
-      <tab type="namespaces" visible="yes" title=""/>
-      <tab type="namespacemembers" visible="yes" title=""/>
+      <tab type="namespacelist" visible="yes" title="" intro=""/>
+      <tab type="namespacemembers" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="classindex" visible="yes" title="">
-	  <tab type="classindex" visible="yes" title="Class Index"/>
-      <tab type="classes" visible="yes" title="Class list"/> 
-      <tab type="hierarchy" visible="yes" title=""/>
-      <tab type="classmembers" visible="no" title=""/>
+    <tab type="classes" visible="yes" title="">
+      <tab type="classlist" visible="yes" title="" intro=""/>
+      <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 
+      <tab type="hierarchy" visible="yes" title="" intro=""/>
+      <tab type="classmembers" visible="yes" title="" intro=""/>
     </tab>
     <tab type="files" visible="yes" title="">
-      <tab type="files" visible="no" title=""/>
-      <tab type="globals" visible="no" title=""/>
+      <tab type="filelist" visible="yes" title="" intro=""/>
+      <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="dirs" visible="no" title=""/>
-    <tab type="examples" visible="yes" title=""/>  
+    <tab type="examples" visible="yes" title="" intro=""/>  
   </navindex>
 
   <!-- Layout definition for a class page -->
@@ -64,6 +62,7 @@
     </memberdecl>
     <detaileddescription title=""/>
     <memberdef>
+      <inlineclasses title=""/>
       <typedefs title=""/>
       <enums title=""/>
       <constructors title=""/>
@@ -91,6 +90,7 @@
     </memberdecl>
     <detaileddescription title=""/>
     <memberdef>
+      <inlineclasses title=""/>
       <typedefs title=""/>
       <enums title=""/>
       <functions title=""/>
@@ -118,6 +118,7 @@
     </memberdecl>
     <detaileddescription title=""/>
     <memberdef>
+      <inlineclasses title=""/>
       <defines title=""/>
       <typedefs title=""/>
       <enums title=""/>
@@ -132,11 +133,11 @@
     <briefdescription visible="yes"/>
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
-      <classes visible="yes" title=""/>
-      <namespaces visible="yes" title=""/>
-      <dirs visible="yes" title=""/>
       <nestedgroups visible="yes" title=""/>
+      <dirs visible="yes" title=""/>
       <files visible="yes" title=""/>
+      <namespaces visible="yes" title=""/>
+      <classes visible="yes" title=""/>
       <defines title=""/>
       <typedefs title=""/>
       <enums title=""/>
@@ -155,6 +156,7 @@
     <detaileddescription title=""/>
     <memberdef>
       <pagedocs/>
+      <inlineclasses title=""/>
       <defines title=""/>
       <typedefs title=""/>
       <enums title=""/>

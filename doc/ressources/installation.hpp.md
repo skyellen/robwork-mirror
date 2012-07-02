@@ -1,20 +1,8 @@
-// -*- latex -*-
+# Installation # {#page_rw_installation}
 
-/**
+[TOC]
 
-\page page_rw_installation Installation
-- \ref sec_rw_install_intro
-- \ref sec_rw_install_SDK
-- \ref sec_rw_install_compile
- - \ref sec_rw_install_download
- - \ref sec_rw_install_complete
- - \ref sec_rw_install_specific
-- \ref sec_rw_dependencies
- - \ref subsec_rw_dependencies_linux
- - \ref subsec_rw_dependencies_winvc
- - \ref subsec_rw_dependencies_winmingw
-
-\section sec_rw_install_intro Introduction
+# Introduction # {#sec_rw_install_intro}
 RobWork uses several external libraries such as
 Boost, Xerces and for RobWorkStudio also Qt. Furthermore, RobWork is developed
 for multiple platforms (Linux, Win7/xp MinGW, Mac, and Win7/xp Visual Studio) which
@@ -24,55 +12,49 @@ Here you find articles that describe how to install RobWork or compile RobWork
 and the dependencies on several different platforms.
 
 
-\section sec_rw_install_SDK Installing RobWork SDK
- The quickest installation obtained through the provided SDK packages for Ubuntu (Debian packages)
- and Windows (NSIS installers). The Debian packages automatically install all dependencies and
- the NSIS installers contain headers and precompiled libraries for all dependencies.
- These SDKs are suitable for users who want to get started quickly with the development of
- RobWork and RobWorkStudio plugins.
+# Installing RobWork SDK # {#sec_rw_install_SDK}
+The quickest installation obtained through the provided SDK packages for Ubuntu (Debian packages)
+and Windows (NSIS installers). The Debian packages automatically install all dependencies and
+the NSIS installers contain headers and precompiled libraries for all dependencies.
+These SDKs are suitable for users who want to get started quickly with the development of
+RobWork and RobWorkStudio plugins.
 
-Please look at the <a href="http://www.robwork.dk/jrobwork/index.php?option=com_jdownloads&view=viewcategory&catid=8&Itemid=83">download</a>
-section on the homepage for downloading the SDK packages.
+Please look at the [download](http://www.robwork.dk/jrobwork/index.php?option=com_jdownloads&view=viewcategory&catid=8&Itemid=83)_ section on the homepage for downloading the SDK packages.
 
-
-\section sec_rw_install_compile Installing RobWork from source
+# Installing RobWork from source # 		{#sec-rw-install-compile}
 This section will explain how to install RobWork from source. Several platforms and compilers
 are supported and one should look for the description including he's platform.
 
 RobWork is basically multiple projects
-* RobWork : is the core part including math, kinematics, planning and so on.
-* RobWorkStudio : is the GUI which enable visualization and more userfriendly interfaces through gui plugins
-* RobWorkSim : is an extension to the RobWork core functionality which adds dynamic simulation of bodies, devices and several tactile sensors.
-* RobWorkHardware : is mostly drivers (with RobWork datatypes) for common hardware, or hardware on which RobWork platforms have been built
-eg. SDH, cameras, CAN-devices, the Universal robot arm, serial port...
+- RobWork : is the core part including math, kinematics, planning and so on.
+- RobWorkStudio : is the GUI which enable visualization and more userfriendly interfaces through gui plugins
+- RobWorkSim : is an extension to the RobWork core functionality which adds dynamic simulation of bodies, devices and several tactile sensors.
+- RobWorkHardware : is mostly drivers (with RobWork datatypes) for common hardware, or hardware on which RobWork platforms have been built eg. SDH, cameras, CAN-devices, the Universal robot arm, serial port...
 
 Naturally all projects depend on the core functionality of RobWork, however if functioanlity in RobWorkSim or RobWorkStudio is not necesary
 then one does not need to install/compile it. So one can download project sources individually and compile them or download all of it and
 compile it all together. The latter is the easiest approach.
 
-\subsection sec_rw_install_download Downloading the source
+## Downloading the source ## {#sec-rw-install-download}
 RobWork source is made available through half year releases and SVN. The source releases can be downloaded
 from the RobWork homepage.
 
 You can get the latest developer snapshot of the RobWork source code from SVN using this account:
-\verbatim
-Username: RO-RobWork
-Password: anonymous
-\endverbatim
+
+	Username: Guest
+	Password: 
 
 For svn use the complete project:
 
-Complete SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk
+Complete SVN repository: 
+	https://svnsrv.sdu.dk/svn/RobWork/trunk
 
 or one of the specific project folders:
-
-Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWork
-
-Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkStudio
-
-Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkSim
-
-Project specific SVN repository: https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkHardware
+ 
+	https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWork
+	https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkStudio
+	https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkSim
+	https://svnsrv.sdu.dk/svn/RobWork/trunk/RobWorkHardware
 
 Since the trunk is actively developed there might be bugs or compile issues in the source. Therefore
 check out the nightly builds on our cdash servers, these should indicate any problems there might be on
@@ -81,57 +63,55 @@ the different supported platforms.
 The trunk is compiled nightly with several different compilers on both 32 and 64 bit platforms (Ubuntu Linux, Windows XP and Windows 7).
 The status of these builds is submitted to the following dashboards which enable users to keep track of broken builds:
 
-http://www.robwork.dk/cdash/index.php?project=RobWork
+	http://www.robwork.dk/cdash/index.php?project=RobWork
+	http://www.robwork.dk/cdash/index.php?project=RobWorkStudio
+	http://www.robwork.dk/cdash/index.php?project=RobWorkSim
 
-http://www.robwork.dk/cdash/index.php?project=RobWorkStudio
-
-http://www.robwork.dk/cdash/index.php?project=RobWorkSim
-
-\subsection sec_rw_install_complete Installation instructions for the complete project
+## Installation instructions for the complete project ## {#sec-rw-install-complete}
 
 Download (from homepage or svn) the complete RobWork-project and place it in a directory of your choice.
-Lets call this directory RWPROJECT_ROOT.
+Lets call this directory RWPROJECTROOT.
 
 The build system in RobWork is based on cmake which enables the support for several platforms and compilers.
 Pleace download and install cmake from <a href="http://www.cmake.org">CMake</a>. The
-top cmake file is placed at "RWPROJECT_ROOT/CMakeLists.txt" and a common approach to compiling the project is:
+top cmake file is placed at "RWPROJECTROOT/CMakeLists.txt" and a common approach to compiling the project is:
 
-\verbatim
-cd RWPROJECT_ROOT
+~~~~
+cd RWPROJECTROOT
 cmake -DCMAKE_BUILD_TYPE=Relase -G"MinGW Makefiles" .
-\endverbatim
+~~~~
 
-This will make an \b in-source build which is fine if you only need the project for a specific build type or compiler.
+This will make an *in-source* build which is fine if you only need the project for a specific build type or compiler.
 A slightly nicer approach is to create a subdirectory say "buildrelease" in which you compile the project
 
-\verbatim
-cd RWPROJECT_ROOT
+~~~
+cd RWPROJECTROOT
 mkdir buildrelease
 cd buildrelease
 cmake -DCMAKE_BUILD_TYPE=Relase -G"MinGW Makefiles" ..
-\endverbatim
+~~~
 
 now all files generated in the compilation will be contained in "buildrelease" directory.
 
 You can customize the build using -DCMAKE_BUILD_TYPE=Relase or -DCMAKE_BUILD_TYPE=Debug, changing options in the gui with ccmake (linux) or
 CMakeSetup.exe (windows), and you can edit the build configuration files
 
-- RWPROJECT_ROOT/RobWork/RobWork.cmake
-- RWPROJECT_ROOT/RobWorkStudio/RobWorkStudio.cmake
-- RWPROJECT_ROOT/RobWorkSim/RobWorkSim.cmake
-- RWPROJECT_ROOT/RobWorkHardware/RobWorkHardware.cmake
+- RWPROJECTROOT/RobWork/RobWork.cmake
+- RWPROJECTROOT/RobWorkStudio/RobWorkStudio.cmake
+- RWPROJECTROOT/RobWorkSim/RobWorkSim.cmake
+- RWPROJECTROOT/RobWorkHardware/RobWorkHardware.cmake
 
 This however should not be necessary unless you want to specifically force disabling a component such as LUA or if you
 need to specify a variable explicitly such as BOOST_ROOT.
 
 
-\subsection sec_rw_install_specific Installation instructions for specific projects
+## Installation instructions for specific projects ## {#sec_rw_install_specific}
 
-Download and install the \b RobWork and \b RobWorkStudio packages and
+Download and install the *RobWork* and *RobWorkStudio* packages and
 place them both in single directory of your choice. Uncompress the
 packages.
 
-Building of \b RobWork and \b RobWorkStudio is supported on multiple
+Building of *RobWork* and *RobWorkStudio* is supported on multiple
 platforms thanks to the <a href="http://www.cmake.org">CMake</a> build
 system which you should install.
 
@@ -150,9 +130,9 @@ To construct a build setup for the compiler of your choice, you must
 run CMake from the root of the \c RobWork and \c RobWorkStudio
 directories. The CMake command will be of the form
 
-\code
+~~~~{.cmake}
 cmake -G <generator name>
-\endcode
+~~~~
 
 where \c <generator \c name> is the name of the compilation system for
 which the build setup should be constructed. Examples of generated
@@ -179,7 +159,7 @@ for the \c RobWorkStudio.ini file. Start the \b RobWorkStudio program
 and try opening a workcell file like for example \c
 RobWork/docs/workcell.wu.
 
-\section sec_rw_dependencies Dependencies of RobWork
+# Dependencies of RobWork # {#sec_rw_dependencies}
 RobWork uses several external libraries such as Boost, Xerces and for RobWorkStudio Qt.
 Furthermore, RobWork is developed for multiple platforms (GCC, MinGW and Visual Studio)
 which sometimes complicates the installation.

@@ -2,27 +2,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>$title</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<!--BEGIN PROJECT_NAME--><title>$projectname: $title</title><!--END PROJECT_NAME-->
+<!--BEGIN !PROJECT_NAME--><title>$title</title><!--END !PROJECT_NAME-->
 <link href="$relpath$tabs.css" rel="stylesheet" type="text/css"/>
-<link href="$relpath$rwdocstyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$relpath$jquery.js"></script>
+<script type="text/javascript" src="$relpath$dynsections.js"></script>
 $treeview
 $search
 $mathjax
+<link href="$relpath$rwdocstyle.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<div id="top"><!-- do not remove this div! -->
 
-  <div id="globalWrapper">
-	 <div id="column-content">
-		<div id="content">
-		  <div id="bodyContent">
-			<!--BEGIN TITLEAREA-->
+<div class="mymenu">
+<h3>Resources</h3>
+<ul><ul>
+<li class="level1"><a href="md_gettingstarted.html">Getting started</a> </li>
+<li class="level1"><a href="md_installation.html">Installation</a> </li>
+<li class="level1"><a href="md_manual.html">RobWork Manual</a> </li>
+<li class="level1"><a href="page_rw_scriptinterface.html">Script interface</a> </li>
+<li class="level1"><a href="md_fileformats.html">File Formats</a> </li>
+<li class="level1"><a href="page_rw_robotdatabase.html">Robot Database</a> </li>
+<!-- li class="level1"><a href="tutorial.html">Examples</a> </li -->
+<li class="level1"><a href="page_rw_tutorials.html">Tutorials</a> </li>
+<li class="level1"><a href="page_rw_demos.html">Demos</a> </li>
+</ul>
+</ul>
+
+<h3>Topics</h3>
+<ul><ul>
+<li class="level1"><a href="#page_rw_usermanual.html">User Manual</a> </li>
+<li class="level1"><a href="#page_rw_plugins.html">Plugins</a> </li>
+<li class="level1"><a href="#page_rw_motionplanning.html">Motion Planning</a> </li>
+<li class="level1"><a href="#page_rw_onlinecontrol.html">Online Control</a> </li>
+<li class="level1"><a href="#page_rw_graspsimulation.html">Grasp Simulation</a> </li>
+<li class="level1"><a href="#page_lua.html">Lua scripting</a> </li>
+<li class="level1"><a href="#page_coding_guidelines.html">Coding Guidelines</a> </li>
+</ul></ul>
+</div>
+
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+
+<!--BEGIN TITLEAREA-->
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
   <!--BEGIN PROJECT_LOGO-->
-  <td id="projectlogo"><img alt="Logo" src="$relpath$$projectlogo"></td>
+  <td id="projectlogo"><img alt="Logo" src="$relpath$$projectlogo"/></td>
   <!--END PROJECT_LOGO-->
   <!--BEGIN PROJECT_NAME-->
   <td style="padding-left: 0.5em;">
@@ -49,36 +77,4 @@ $mathjax
 </table>
 </div>
 <!--END TITLEAREA-->
-			
-<div class="ownlinks">
-<div class="ownlinks2">
-  <h2>Topics</h2>
-  <ul>
-	<li><a href="page_rw_usermanual.html">User Manual</a> </li>
- 	<li><a href="page_rw_plugins.html">Plugins</a> </li>
-	<li><a href="page_rw_motionplanning.html">Motion Planning</a> </li>
-	<li><a href="page_rw_onlinecontrol.html">Online Control</a> </li>
-	<li><a href="page_rw_graspsimulation.html">Grasp Simulation</a> </li>
-	<li><a href="page_lua.html">Lua scripting</a> </li>
-	<li><a href="page_coding_guidelines.html">Coding Guidelines</a> </li>
-</ul>
-</div>
-<br>
-<div class="ownlinks2">
-  <h2>Resources</h2>
-  <ul>
-	<li><a href="page_rw_gettingstarted.html">Getting started</a> </li>
-	<li><a href="page_rw_installation.html">Installation</a> </li>
-	<li><a href="page_rw_manual.html">RobWork Manual</a> </li>
-	<li><a href="page_rw_scriptinterface.html">Script interface</a> </li>
-	<li><a href="page_rw_fileformats.html">File Formats</a> </li>
-	<li><a href="page_rw_robotdatabase.html">Robot Database</a> </li>
-	<!-- li><a href="tutorial.html">Examples</a> </li -->
-	<li><a href="page_rw_tutorials.html">Tutorials</a> </li>
-	<li><a href="page_rw_demos.html">Demos</a> </li>
-  </ul>
-
-</div>
-
-</div>
-
+<!-- end header part -->

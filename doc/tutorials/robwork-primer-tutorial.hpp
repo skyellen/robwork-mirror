@@ -7,11 +7,7 @@
  This collection of basic tutorials and exercises are provided to ease and aid the
  introduction to programming applications using RobWork.
 
- Contents
- - \ref sec_rw_fformats_intro
- - \ref sec_rw_tut_first_cmake_proj
- - \ref sec_rw_tut_math_jogling
- - \ref rw_tut_workcell_device
+ [TOC]
 
  \section sec_rw_fformats_intro Introduction
 
