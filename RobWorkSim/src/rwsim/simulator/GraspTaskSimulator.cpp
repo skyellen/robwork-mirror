@@ -482,7 +482,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 // Test the success of lifting the object.
                 // We need to look at the objects that are actually touching
                 Body* object = gobj.object;
-                Body* gripperBody = gobj.bodies[0];
+                RW_ASSERT(object!=NULL);
+                //Body* gripperBody = gobj.bodies[0];
 
                 sstate._target->getResult()->contactsLift = gobj.contacts;
                 Vector3D<> contactAvg(0,0,0);
