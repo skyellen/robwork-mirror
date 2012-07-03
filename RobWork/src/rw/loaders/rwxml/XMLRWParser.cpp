@@ -635,21 +635,20 @@ namespace {
                             )
                           | (XMLAtt_p("beta", real_p
                                       [ var( _dhparam._dhtype ) = Prismatic ]
-                                      [ var( _frame._type ) = "Revolute" ]
+                                      [ var( _frame._type ) = "Prismatic" ]
                                       [ var( _dhparam._hgptype ) = "parallel" ]
                                       [ var( _dhparam._beta ) = arg1*Deg2Rad ])
-
                                   >> (XMLAtt_p("offset", real_p
                                           [ var( _dhparam._offset ) = arg1 ])
                                       )
                                   )
                           | (XMLAtt_p("b", real_p
                                       [ var( _dhparam._dhtype ) = Revolute ]
-                                      [ var( _frame._type ) = "Prismatic" ]
+                                      [ var( _frame._type ) = "Revolute" ]
                                       [ var( _dhparam._hgptype ) = "parallel" ]
-                                      [ var( _dhparam._b ) = arg1*Deg2Rad ])
+                                      [ var( _dhparam._b ) = arg1 ])
                                   >> (XMLAtt_p("offset", real_p
-                                          [ var( _dhparam._offset ) = arg1 ])
+                                          [ var( _dhparam._offset ) = arg1*Deg2Rad ])
                                       )
                                   )
 

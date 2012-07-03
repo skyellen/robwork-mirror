@@ -30,11 +30,11 @@ std::vector<DHParameterSet> DHParameterSet::getDHParameters(SerialDevice::Ptr de
 	return dhset;
 }
 
-const DHParameterSet* DHParameterSet::get(const rw::models::Joint* joint){
+const DHParameterSet* DHParameterSet::get(const rw::models::Joint* joint) {
     return get(joint->getPropertyMap());
 }
 
-const DHParameterSet* DHParameterSet::get(const rw::common::PropertyMap& pmap){
+const DHParameterSet* DHParameterSet::get(const rw::common::PropertyMap& pmap) {
     return pmap.getPtr<DHParameterSet>("DHSet");
 }
 

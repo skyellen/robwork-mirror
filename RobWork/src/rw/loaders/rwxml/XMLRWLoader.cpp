@@ -413,15 +413,29 @@ namespace {
             DHParam &param = dframe._dhparam;
 
             if( param._dhtype == Revolute ) {
-                rw::models::DHParameterSet dhset(
-                        param._alpha,param._a,
-                        param._d,param._offset,param._type);
-                DHParameterSet::set(dhset, frame);
+            	if ( param._type == "HGP" && param._hgptype == "parallel" ) {
+					rw::models::DHParameterSet dhset(
+							param._alpha,param._a,
+							param._offset,param._b,true);
+					DHParameterSet::set(dhset, frame);
+            	} else {
+					rw::models::DHParameterSet dhset(
+							param._alpha,param._a,
+							param._d,param._offset,param._type);
+					DHParameterSet::set(dhset, frame);
+            	}
             } else if( param._dhtype == Prismatic ) {
-                rw::models::DHParameterSet dhset(
-                        param._alpha,param._a,
-                        param._offset,param._theta,param._type);
-                DHParameterSet::set(dhset, frame);
+            	if ( param._type == "HGP" && param._hgptype == "parallel" ) {
+					rw::models::DHParameterSet dhset(
+							param._alpha,param._a,
+							param._beta,param._offset,true);
+					DHParameterSet::set(dhset, frame);
+            	} else {
+					rw::models::DHParameterSet dhset(
+							param._alpha,param._a,
+							param._offset,param._theta,param._type);
+					DHParameterSet::set(dhset, frame);
+            	}
             }
         }
 

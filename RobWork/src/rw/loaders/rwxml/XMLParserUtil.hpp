@@ -495,7 +495,7 @@ struct SetTransform3D {
             	    if(_param->_hgptype=="parallel"){
                         _t3d = rw::math::Transform3D<>::DHHGP(
                             _param->_alpha,_param->_a,
-                            _param->_beta,_param->_offset);
+                            _param->_offset,_param->_b);
             	    } else {
                         _t3d = rw::math::Transform3D<>::DH(
                             _param->_alpha,_param->_a,
@@ -518,7 +518,7 @@ struct SetTransform3D {
                     if(_param->_hgptype=="parallel"){
                         _t3d = rw::math::Transform3D<>::DHHGP(
                             _param->_alpha,_param->_a,
-                            _param->_offset, _param->_b);
+                            _param->_b, _param->_offset);
                     } else {
                         _t3d = rw::math::Transform3D<>::DH(
                             _param->_alpha,_param->_a,

@@ -42,7 +42,8 @@ public:
         _alpha(alpha),
         _a(a),
         _d(d),
-        _theta(theta)
+        _theta(theta),
+	_isParallel(false)
     {}
 
     /**
@@ -58,6 +59,7 @@ public:
         _a(a),
         _d(d),
         _theta(theta),
+	_isParallel(false),
         _type(type)
     {}
 
@@ -66,6 +68,7 @@ public:
         _a(a),
         _beta(beta),
         _b(b),
+	_isParallel(parallel),
         _type("HGP")
     {}
 
@@ -100,7 +103,7 @@ public:
         return _beta;
     }
 
-    bool isParallel(){ return _isParallel; }
+    bool isParallel() const { return _isParallel; }
 
     /**
      * @brief the DH-convention type
