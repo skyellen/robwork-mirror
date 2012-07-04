@@ -198,7 +198,7 @@ int main(int argc, char** argv)
                 if(target.result!=NULL){
                     if(useAlignedGrasp){
                         if( target.result->testStatus==GraspTask::Success || target.result->testStatus==GraspTask::ObjectSlipped){
-                            target.pose = target.result->objectTtcpGrasp;
+                            target.pose = target.result->objectTtcpLift;
                         }
                     }
                 }
