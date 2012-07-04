@@ -51,6 +51,7 @@ int main(int argc, char** argv)
         ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<vector<string> >(), "input Files to merge.")
+        ("batchsize", value<int>()->default_value(5000), "The max nr grasp of output, files will be split into multiple files.")
         ("useGraspTarget",value<bool>()->default_value(false),"Enable to copy ObjTTcpTarget to target.pose")
     ;
     positional_options_description optionDesc;
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
 
+
     // write standard welcome, status
     if (vm.count("help")) {
         cout << "Usage:\n\n"
@@ -72,6 +74,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    int batchsize = vm["batchsize"].as<int>();
     using namespace boost::filesystem;
 
     bool useGraspTarget = vm["useGraspTarget"].as<bool>();
@@ -89,6 +92,22 @@ int main(int argc, char** argv)
             includeMap[i] = true;
     }
 
+    if(vm.count("exclude")){
+        const std::vector<std::string> &excludes = vm["exclude"].as<vector<string> >();
+        BOOST_FOREACH(std::string exclude, excludes){
+            if(exclude=="Success"){ includeMap[GraspTask::Success] = false; }
+            else if(exclude=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = false; }
+            else if(exclude=="Collision"){
+                includeMap[GraspTask::CollisionFiltered] = false;
+                includeMap[GraspTask::CollisionObjectInitially] = false;
+                includeMap[GraspTask::CollisionEnvironmentInitially] = false;
+                includeMap[GraspTask::CollisionInitially] = false;
+            }
+
+            else { RW_THROW("Unsupported exclude tag!"); }
+        }
+    }
+
     // resolve output directory
     path outputfile( vm["output"].as<std::string>() );
     std::string outformat = vm["oformat"].as<std::string>();
@@ -100,7 +119,7 @@ int main(int argc, char** argv)
 
     GraspTask::Ptr gtask;
     const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
-    int targets = 0, totaltargets = 0;
+    int targets = 0, totaltargets = 0, localNrTargets=0,nrBatches=0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
     BOOST_FOREACH(std::string input, inputs){
         path ip(input);
@@ -137,14 +156,32 @@ int main(int argc, char** argv)
                         target.pose = target.result->objectTtcpGrasp;
                     }
 
-                    if( includeMap.find(teststatus)!=includeMap.end() ){
+                    if( includeMap[teststatus] ){
                         targets++;
+                        localNrTargets++;
                         filteredTargets.push_back(target);
                     }
                 }
                 stask.targets = filteredTargets;
                 if(filteredTargets.size()>0)
                     gtask->getSubTasks().push_back( stask );
+            }
+            if(localNrTargets>batchsize){
+                localNrTargets=0;
+                //TODO save gtask
+                std::stringstream sstr;
+                if(iformat==0){
+                    sstr << outputfile << "_" << nrBatches << ".rwtask.xml";
+                    GraspTask::saveRWTask(gtask, sstr.str());
+                } else if(iformat==1){
+                    sstr << outputfile << "_" << nrBatches << ".uibk.xml";
+                    GraspTask::saveUIBK(gtask, sstr.str() );
+                } else if(iformat==2){
+                    sstr << outputfile << "_" << nrBatches << ".txt";
+                    GraspTask::saveText(gtask, sstr.str() );
+                }
+                nrBatches++;
+
             }
             std::cout << totaltargets << "," << targets << std::endl;
         }
