@@ -194,11 +194,11 @@ int main(int argc, char** argv)
 
     std::cout << "Saving to: " << outputfile.string() << std::endl;
     if(iformat==0){
-        GraspTask::saveRWTask(gtask, outputfile.string() );
+        GraspTask::saveRWTask(gtask, outputfile.string()+".rwtask.xml" );
     } else if(iformat==1){
-        GraspTask::saveUIBK(gtask, outputfile.string() );
+        GraspTask::saveUIBK(gtask, outputfile.string()+".uibk.xml" );
     } else if(iformat==2){
-        GraspTask::saveText(gtask, outputfile.string() );
+        GraspTask::saveText(gtask, outputfile.string()+".txt" );
     }
     std::cout << "Done" << std::endl;
     return 0;
