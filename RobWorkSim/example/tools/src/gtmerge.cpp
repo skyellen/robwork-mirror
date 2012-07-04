@@ -171,13 +171,13 @@ int main(int argc, char** argv)
                 //TODO save gtask
                 std::stringstream sstr;
                 if(iformat==0){
-                    sstr << outputfile << "_" << nrBatches << ".rwtask.xml";
+                    sstr << outputfile.string() << "_" << nrBatches << ".rwtask.xml";
                     GraspTask::saveRWTask(gtask, sstr.str());
                 } else if(iformat==1){
-                    sstr << outputfile << "_" << nrBatches << ".uibk.xml";
+                    sstr << outputfile.string() << "_" << nrBatches << ".uibk.xml";
                     GraspTask::saveUIBK(gtask, sstr.str() );
                 } else if(iformat==2){
-                    sstr << outputfile << "_" << nrBatches << ".txt";
+                    sstr << outputfile.string() << "_" << nrBatches << ".txt";
                     GraspTask::saveText(gtask, sstr.str() );
                 }
                 nrBatches++;
