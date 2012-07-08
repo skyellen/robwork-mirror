@@ -1,5 +1,6 @@
 #include "AboutBox.hpp"
- 
+#include <RobWorkConfig.hpp>
+#include <RobWorkStudioConfig.hpp>
 using namespace rws;
 
 AboutBox::AboutBox(const QString& version, const QString& revision, QWidget *parent)
@@ -10,7 +11,8 @@ AboutBox::AboutBox(const QString& version, const QString& revision, QWidget *par
     if(!logo.isNull())
         ui.lblLogo->setPixmap( logo );
     ui.lblVersion->setText(version);
-    ui.lblRevision->setText(revision);
+    ui.lblRevision->setText(RW_REVISION);
+    ui.lblRWSRevision->setText(RWS_REVISION);
     ui.tabWidget->clear();
     ui.grpAddons->setVisible(false);
 }
