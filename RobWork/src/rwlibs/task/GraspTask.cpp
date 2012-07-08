@@ -590,7 +590,7 @@ namespace {
         rwlibs::task::CartesianTask::Ptr ctask = ownedPtr( new rwlibs::task::CartesianTask() );
         std::vector<double> qualities;
 
-        GraspTask::Status status = GraspTask::UnInitialized;
+        //GraspTask::Status status = GraspTask::UnInitialized;
         //for (OCI p = tree.ordered_begin(); p != tree.not_found(); ++p) {
         for (CI p = tree.begin(); p != tree.end(); ++p) {
 
