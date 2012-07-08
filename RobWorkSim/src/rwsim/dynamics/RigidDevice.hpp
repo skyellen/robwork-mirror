@@ -79,6 +79,13 @@ namespace dynamics {
 			return _vel;
 		}
 
+		typedef enum{Force, Velocity} MotorType;
+		std::vector<MotorType> getMotorCfg();
+
+
+		void setJointTarget(const rw::math::Q& vel, const rw::kinematics::State& state);
+		void setTargetForce(const rw::math::Q& force, const rw::kinematics::State& state);
+
 		void setVelocity(const rw::math::Q& vel, const rw::kinematics::State& state);
 
 		void setActualVelocity(const rw::math::Q& vel, const rw::kinematics::State& state){
