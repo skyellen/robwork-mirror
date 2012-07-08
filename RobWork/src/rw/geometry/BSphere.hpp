@@ -69,7 +69,7 @@ namespace geometry {
         }
 
         /**
-         * @brief Ouputs OBB to stream
+         * @brief Ouputs BSphere to stream
          * @param os [in/out] stream to use
          * @param obb [in] oriented bounding box
          * @return the resulting stream
