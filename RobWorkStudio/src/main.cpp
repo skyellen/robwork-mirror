@@ -83,6 +83,7 @@ int main(int argc, char** argv)
 {
 
     Q_INIT_RESOURCE(rwstudio_resources);
+
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);
     poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
     poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
@@ -95,6 +96,10 @@ int main(int argc, char** argv)
     bool showSplash = false; //!map.has("nosplash");
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
+
+    if(inifile.size()<1){
+        // try load an inifile
+    }
 
     {
         MyQApplication app(argc, argv);
