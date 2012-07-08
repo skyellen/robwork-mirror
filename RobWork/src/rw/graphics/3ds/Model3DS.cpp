@@ -1144,7 +1144,7 @@ void Model3DS::FacesMaterialsListChunkProcessor(
     for (i = 0; i < numEntries * 3; i+=3)
     {
         // read the face
-        fread(&Face,sizeof(Face),1,bin3ds);
+        _retval = fread(&Face,sizeof(Face),1,bin3ds);
         // Add the face's vertices to the list
         Objects.at(objindex).MatFaces.at(subfacesindex).subFaces.at(i) =
             Objects.at(objindex).Faces.at(Face * 3);
