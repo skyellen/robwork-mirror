@@ -50,7 +50,7 @@ namespace rw { namespace trajectory {
         /**
            Default constructor
         */
-        Timed() : _time(), _value() {}
+        Timed() : _time(0.0), _value() {}
 
         /**
            @brief The time

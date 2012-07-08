@@ -191,6 +191,9 @@ namespace rw { namespace math {
          */
         explicit EAA(Vector3D<T> eaa) : _eaa(eaa) {}
 
+        //! @brief destructor
+        virtual ~EAA(){}
+
         /**
          * @copydoc Rotation3DVector::toRotation3D()
          *

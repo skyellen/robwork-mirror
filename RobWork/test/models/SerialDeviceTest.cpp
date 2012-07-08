@@ -400,9 +400,9 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
 
     Transform3D<double> t_bTe = kr16t.baseTend(state);
     Transform3D<double> t_bTf = kr16t.baseTframe(tool,state);
-    //std::cout << "BTE " << t_bTe << "\n";
-    //std::cout << "BTF " << t_bTf << "\n";
-    return;
+    std::cout << "BTE " << t_bTe << "\n";
+    std::cout << "BTF " << t_bTf << "\n";
+
 
     // TODO: somethings wrong here under
     std::cout << (eVe-eVe2) << "\n";

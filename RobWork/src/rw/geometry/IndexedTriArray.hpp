@@ -212,11 +212,12 @@ namespace geometry {
 
 		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
 		    using namespace rw::math;
-            float R_s0 = t3d.R()(0,axis);
-            float R_s1 = t3d.R()(1,axis);
-            float R_s2 = t3d.R()(2,axis);
-            float P_s = t3d.P()(axis);
-            rw::math::Transform3D<float> t3df = cast<float>(t3d);
+		    rw::math::Transform3D<float> t3df = cast<float>(t3d);
+		    float R_s0 = t3df.R()(0,axis);
+            float R_s1 = t3df.R()(1,axis);
+            float R_s2 = t3df.R()(2,axis);
+            float P_s = t3df.P()(axis);
+
             // first transform the requested splitaxis values
             for(size_t i=_first;i<_first+size(); i++){
                 boost::tuple<T,float,rw::math::Vector3D<float> >& elem = (*_valCenterArr)[i];

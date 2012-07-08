@@ -92,7 +92,7 @@ namespace {
         BOOST_FOREACH(GraspSubTask &task, gtask->getSubTasks() ){
 
             Transform3D<> wTe_n = task.offset; //->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-            Transform3D<> approachDef = task.approach; //task->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
+            //Transform3D<> approachDef = task.approach; //task->getPropertyMap().get<Transform3D<> >("Approach", Transform3D<>::identity());
             Q openQ = task.openQ; //task->getPropertyMap().get<Q>("OpenQ");
             Q closeQ = task.closeQ; //task->getPropertyMap().get<Q>("CloseQ");
             std::string objectId = task.objectID; //task->getPropertyMap().get<std::string>("Object",std::string("Undefined"));
@@ -276,7 +276,7 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name ){
    if(!outfile.is_open())
        RW_THROW("Could not open file: " << name);
    outfile << setprecision(16);
-   int gripperDim = 0;
+   //int gripperDim = 0;
    std::string sep(";");
   // outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<gripperDim<<"), "
   //         "GripperTObject.pos, GripperTObject.rpy, ObjectTtcpBefore.pos, ObjectTtcpBefore.rpy, ObjectTtcpAfter.pos, ObjectTtcpAfter.rpy}\n";

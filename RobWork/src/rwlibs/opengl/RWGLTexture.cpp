@@ -123,8 +123,9 @@ void RWGLTexture::init(const rw::sensor::Image& img){
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+    /*
     bool wrap = false;
-/*
+
     // select modulate to mix texture with color for shading
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 

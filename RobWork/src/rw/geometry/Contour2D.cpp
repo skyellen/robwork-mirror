@@ -509,7 +509,7 @@ namespace
         std::vector<int> triangulation;
         Triangulate::processPoints(pnts, triangulation);
 
-        for(int i=0; i<triangulation.size();i+=3){
+        for(size_t i=0; i<triangulation.size();i+=3){
             const Vector2D<>& p1 = pnts[ triangulation[i * 3 + 0] ];
             const Vector2D<>& p2 = pnts[ triangulation[i * 3 + 1] ];
             const Vector2D<>& p3 = pnts[ triangulation[i * 3 + 2] ];

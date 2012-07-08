@@ -294,9 +294,9 @@ int ProgramOptions::parse(const std::string& str){
     } catch (std::exception &e){
         rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
         rw::common::Log::infoLog() << "Specify --help for usage. \n";
-        return -1;
-    }
 
+    }
+    return -1;
 }
 
 int ProgramOptions::parse(int argc, char** argv){
@@ -309,8 +309,8 @@ int ProgramOptions::parse(int argc, char** argv){
     } catch (std::exception &e){
     	rw::common::Log::infoLog() << "Command line input error:\n\t " << e.what() << "\n";
     	rw::common::Log::infoLog() << "Specify --help for usage. \n";
-    	return -1;
     }
+    return -1;
 }
 
 

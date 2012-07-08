@@ -128,7 +128,7 @@ namespace {
     }
 
     template<> TimedQ ElementReader<TimedQ>::readElement(xercesc::DOMElement* element) {
-        double time;
+        double time = 0.0;
         Q q;
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
@@ -146,7 +146,7 @@ namespace {
     }
 
     template<> TimedState ElementReader<TimedState>::readElement(xercesc::DOMElement* element) {
-        double time;
+        double time = 0.0;
         State state;
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();

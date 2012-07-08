@@ -95,7 +95,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 
 	std::cout<<"Path subdivided into "<<path.size()<<" in "<<timer.getTime()<<std::endl;
 
-	double newClearance = calcAvgClearance(path);
+	//double newClearance = calcAvgClearance(path);
 	//double oldClearance = 0;
 	size_t cnt = 0;
 	std::cout<<"Ready to while loop "<<timer.getTime()<<std::endl;
@@ -119,7 +119,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 		path = validatePath(newPath, path);
 		removeBranches(path);
 
-		newClearance = calcAvgClearance(path);
+		//newClearance = calcAvgClearance(path);
 		cnt++;
 	}
 	std::cout<<"Finished While Loop"<<std::endl;
@@ -129,8 +129,7 @@ QPath ClearanceOptimizer::optimize(const QPath& inputPath, double stepsize, size
 	for (AugmentedPath::iterator it = path.begin(); it != path.end(); ++it) {
 	    result.push_back((*it).first);
 	}
-	return result;;
-
+	return result;
 }
 
 //Implements the ValidatePath from [1]

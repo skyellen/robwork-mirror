@@ -226,6 +226,8 @@ private:
     // Calculates the normals of the vertices by averaging
     // the normals of the faces that use that vertex
     void CalculateNormals();
+
+    size_t _retval;
 };
 }
 }

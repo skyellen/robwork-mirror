@@ -54,7 +54,7 @@ namespace {
         std::vector<Vector3D<> > coneVerts;
         // rotate the vector around the normal in some fixed steps
         Vector3D<> P = tdirScaled; // vector to rotate
-        Vector3D<> A = unormal; // vector to rotate about
+        //Vector3D<> A = unormal; // vector to rotate about
 
         EAA<> eaa(unormal, 2*Pi/resolution );
         Rotation3D<> rot( eaa.toRotation3D() );

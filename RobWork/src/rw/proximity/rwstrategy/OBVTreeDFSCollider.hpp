@@ -176,7 +176,7 @@ namespace proximity {
         //std::cout << fTB << std::endl;
         initVars();
 
-        typename Traits<DESCENTSTRATEGY>::StateType descendState;
+        typename Traits<DESCENTSTRATEGY>::StateType descendState = typename Traits<DESCENTSTRATEGY>::StateType ();
         NodeIterator nodeA = treeA.getRootIterator();
         NodeIterator nodeB = treeB.getRootIterator();
 
@@ -237,8 +237,8 @@ namespace proximity {
                         _nrOfPrimTests++;
                         if( _primCollider->inCollision(tria, trib, tATtB) ){
                             incollision = true;
-                            //if(collidingPrimitives)
-                            //    collidingPrimitives->push_back( std::make_pair(triaidx, tribidx) );
+                            if(collidingPrimitives)
+                                collidingPrimitives->push_back( std::make_pair(triaidx, tribidx) );
 
                             // add triangle indicies to result
                             if(_firstContact)

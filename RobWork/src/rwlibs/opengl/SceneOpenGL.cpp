@@ -108,6 +108,7 @@ namespace {
             _fbId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
             {}
 
+        virtual ~SimpleCameraGroup(){};
         std::string getName(){ return _name; }
         bool isEnabled(){ return _enabled;}
         void setEnabled(bool enabled){ _enabled = true;}
@@ -127,27 +128,28 @@ namespace {
         }
 
         void init(){
+            GLuint maxGLuintSize = (GLuint) -1;
             if( (_offscreenRender==false && _fbId>=0) ){
                 // offsreenrendering has been disabled so relase all allocated storage
                 // deallocate the framebuffer
-                if(_fbId!=-1)
+                if(_fbId!=maxGLuintSize)
                     RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
-                if(_renderId!=-1)
+                if(_renderId!=maxGLuintSize)
                     RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
-                if(_renderDepthId!=-1)
+                if(_renderDepthId!=maxGLuintSize)
                     RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
-                _fbId = -1;
-                _renderId = -1;
-                _renderDepthId = -1;
+                _fbId = maxGLuintSize;
+                _renderId = maxGLuintSize;
+                _renderDepthId = maxGLuintSize;
             } else if(_offscreenRender==true){
                 RWGLFrameBuffer::initialize();
                 if(_fbId>=0){
                     // the parameters of the frame buffer should be changed so we create a new
-                    if(_fbId!=-1)
+                    if(_fbId!=maxGLuintSize)
                         RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
-                    if(_renderId!=-1)
+                    if(_renderId!=maxGLuintSize)
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
-                    if(_renderDepthId!=-1)
+                    if(_renderDepthId!=maxGLuintSize)
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
                 }
                 _fbId = 0;

@@ -178,6 +178,8 @@ namespace graphics {
     public:
         typedef rw::common::Ptr<CameraGroup> Ptr;
 
+        virtual ~CameraGroup(){};
+
         virtual std::string getName() = 0;
         virtual bool isEnabled() = 0;
         virtual void setEnabled(bool enabled) = 0;
@@ -192,6 +194,8 @@ namespace graphics {
 
         virtual void setCopyToImage( rw::sensor::Image::Ptr img ) = 0;
         virtual void setCopyToScan25D( rw::sensor::Image25D::Ptr img ) = 0;
+
+
 
     };
 

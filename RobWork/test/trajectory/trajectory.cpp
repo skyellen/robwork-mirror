@@ -63,7 +63,7 @@ namespace {
 }
 
 BOOST_AUTO_TEST_CASE( RampInterpolatorTest ) {
-    int n=5;
+    size_t n=5;
     Q dqlimit(n);
     Q ddqlimit(n);
     for (size_t i = 0; i<n; i++) {
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( RampInterpolatorTest ) {
         EAA<> eaa(rot);
         Vector3D<> axis = eaa.axis();
         double angle = eaa.angle();
-        //std::cout << t << ";" << angle << ";" << axis(0) << ";" << axis(1) << ";" << axis(2) << std::endl;
+        std::cout << t << ";" << angle << ";" << axis(0) << ";" << axis(1) << ";" << axis(2) << std::endl;
     }
     //std::cout << "duration: " << rampR.duration() << std::endl;
     //std::cout << RPY<>( rampR.x(0) ) << std::endl;

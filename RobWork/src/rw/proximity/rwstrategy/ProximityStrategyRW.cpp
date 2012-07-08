@@ -186,7 +186,7 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
 
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
-            int startIdx = data._geomPrimIds.size();
+            //int startIdx = data._geomPrimIds.size();
             bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
@@ -238,7 +238,7 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
 
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
-            int startIdx = data._geomPrimIds.size();
+            //int startIdx = data._geomPrimIds.size();
             bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
