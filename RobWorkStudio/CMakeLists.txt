@@ -48,7 +48,7 @@ INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioSetup.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-
+MESSAGE(" ${ROBWORKSTUDIO_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} ")
 # linking options
 SET(RW_STATIC_LINK_PLUGINS ${RWS_USE_STATIC_LINK_PLUGINS})
 # linking options
@@ -86,6 +86,7 @@ FIND_PACKAGE(Subversion QUIET)
 IF(Subversion_FOUND)
     Subversion_WC_INFO(${RWS_ROOT} RobWorkStudio)
     MESSAGE(STATUS "RobWorkStudio: Current revision is ${RobWorkStudio_WC_REVISION}")
+    SET(ROBWORKSTUDIO_REVISION ${RobWork_WC_REVISION})
 ENDIF(Subversion_FOUND)
 
 ###############################################################
