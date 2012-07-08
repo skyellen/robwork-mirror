@@ -476,7 +476,7 @@ void Model3DS::EditChunkProcessor(long length, long findex)
         while (ftell(bin3ds) < (findex + length - 6))
         {
             _retval = fread(&h.id,sizeof(h.id),1,bin3ds);
-            _retval = fr_retval = fread(.len,sizeof(h.len),1,bin3ds);
+            _retval = fread(&h.len,sizeof(h.len),1,bin3ds);
 
             switch (h.id)
             {
