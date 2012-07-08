@@ -156,7 +156,7 @@ namespace graphics {
 
             void addTriangles(const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
                 //TODO Is it safe to assume that we don't have more than 65536 faces? 
-				uint16_t startIdx = _faces.size();
+				uint16_t startIdx = (uint16_t) _faces.size();
                 _faces.resize(_faces.size()+tris.size());
                 for(size_t i=0;i<tris.size();i++){
                     _faces[startIdx+i] = tris[i];
