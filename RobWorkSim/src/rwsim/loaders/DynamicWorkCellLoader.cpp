@@ -1050,12 +1050,15 @@ namespace
 
         DynamicDevice *ddev = findDynamicDevice(state, dev.get());
         if(useSyncPD){
+
             RW_THROW("Not currently supported!");
             //SyncPDController *controller = new SyncPDController();
         } else {
+
             PDController::Ptr controller = ownedPtr( new PDController(controllername, ddev, controlType, params, dt) );
             state.controllers.push_back( controller );
         }
+
     }
 
     void readPoseDeviceController(PTree& tree, ParserState &state){
@@ -1338,7 +1341,7 @@ namespace
                     << quote(p->first) );
             }
         }
-
+        
         // add all friction data too the materialdatamap
         BOOST_FOREACH(FrictionDataTmp &fdata, state.fdatas){
             try{
@@ -1347,11 +1350,11 @@ namespace
 
             }
         }
-
+        
         BOOST_FOREACH(ContactDataTmp &cdata, state.cdatas){
             state.contactData.addNewtonData(cdata.objA, cdata.objB, cdata.data);
         }
-
+        
         // TODO: now check if all bodies has a correct material and objectId. If they has not then
         // we use the default
         BOOST_FOREACH(Body *body, state.allbodies){
@@ -1369,24 +1372,24 @@ namespace
                 body->getInfo().objectType = state.defaultObjectType;
             }
         }
-
+        
         //std::cout << "------------ nr controllers:  " <<  state.controllers.size() << std::endl;
         //  create the dynamic workcell
         DynamicWorkCell *dynWorkcell =
             //new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
 			new DynamicWorkCell(state.wc, state.bodies, state.allbodies, state.devices, state.controllers);
-
+        
         dynWorkcell->setGravity(state.gravity);
         dynWorkcell->getMaterialData() = state.materialData;
         dynWorkcell->getContactData() = state.contactData;
         dynWorkcell->getEngineSettings() = state.engineProps;
-
+        
 
         BOOST_FOREACH(SimulatedSensor::Ptr sensor, state.sensors){
             dynWorkcell->addSensor(sensor);
         }
         //
-
+        
         return dynWorkcell;
     }
 }
@@ -1411,6 +1414,6 @@ rw::common::Ptr<DynamicWorkCell> DynamicWorkCellLoader::load(const string& filen
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
     }
-
+    
     return rw::common::ownedPtr(dwc);
 }
