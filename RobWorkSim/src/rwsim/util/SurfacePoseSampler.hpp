@@ -47,6 +47,7 @@ public:
         init(geoms[0]);
     }
 
+    virtual ~SurfacePoseSampler(){}
 
     void init(rw::geometry::Geometry::Ptr geom){
         _mesh = geom->getGeometryData()->getTriMesh();
