@@ -73,7 +73,7 @@ BlendedTrajectory<T>::BlendedTrajectory(rw::models::Device::Ptr deviceIn,
     device = deviceIn;
     // Get the other parameters
     path = pathIn;
-    Npath = path.size();
+    Npath = (unsigned int) path.size();
     betas = betaIn;
     vscale = vscaleIn;
     ascale = ascaleIn;
@@ -269,7 +269,7 @@ template<class T>
 bool BlendedTrajectory<T>::init() {
     if(verbose) std::cout << "Initializing..." << std::endl;
     // Get DOF
-    K = device->getDOF();
+    K = (unsigned int) device->getDOF();
     // Initialize all vectors
     aSMax.m().resize(K);
     aSMin.m().resize(K);
