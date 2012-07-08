@@ -33,7 +33,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
-#define BOOST_FILESYSTEM_VERSION 2
+#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <rwlibs/task/GraspTask.hpp>
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("output,o", value<string>()->default_value("out.xml"), "the output file.")
+        ("output,o", value<string>()->default_value("out"), "the output folder.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
         ("baseline,l", value<string>(), "The base line experiments (Folder).")
         ("silent", value<bool>()->default_value(false), "suppress everything exept results.")
@@ -88,6 +88,12 @@ int main(int argc, char** argv)
         return 10;
     }
     bool silent = vm["silent"].as<bool>();
+
+
+    path output_dir(vm["output"].as<std::string>());
+    if( !is_directory(output_dir) ){
+        create_directory(output_dir);
+    }
 
     // extract base line gasps
     std::vector<std::string> baselinefiles;
@@ -161,9 +167,9 @@ int main(int argc, char** argv)
         // the criteria is that the first part of the filename of input must match that of baseline
         std::vector<std::pair<std::string, std::string> > matches;
         BOOST_FOREACH(std::string inputl, infiles){
-            std::string namein = path(inputl).filename();
+            std::string namein = path(inputl).filename().string();
             BOOST_FOREACH(std::string basel, baselinefiles){
-                std::string name = path(basel).filename();
+                std::string name = path(basel).filename().string();
                 if(name == namein.substr(0,name.size())){
                     matches.push_back(make_pair(basel,inputl));
                     break;
@@ -180,8 +186,8 @@ int main(int argc, char** argv)
         typedef std::pair<std::string,std::string> StrPair;
         BOOST_FOREACH(StrPair data, matches){
             if(!silent){
-                std::cout << "processing: \n-" << data.first.substr(data.first.size()-61,60);
-                std::cout << "\n-" << data.second.substr(data.second.size()-61,60) << std::endl;
+                std::cout << "processing: \n-" << path(data.first).filename().string();
+                std::cout << "\n-" << path(data.second).filename().string() << std::endl;
             }
             GraspTask::Ptr baselinetask = GraspTask::load( data.first );
             GraspTask::Ptr inputtask = GraspTask::load( data.second );
@@ -217,10 +223,52 @@ int main(int argc, char** argv)
                 else { stat2 = 6;}
 
                 confMat(stat1,stat2)++;
+
+                double outcomeQual = -1;
+
+                // now we want to save the false positives and the false negatives in seperate task files
+                // so that we can investigate them later on
+                GraspResult::Ptr result = baselinetargets[i].second->getResult();
+                if(stat1 == 0 && stat2 == 0){
+                    // true positive
+                    outcomeQual = 0;
+                } else if(stat1 == 1 && stat2==1 ) {
+                    outcomeQual = 1;
+                } else if(stat1 == 0 && stat2==1 ) {
+                    outcomeQual = 2;
+                } else if(stat1 == 0 && stat2==2 ) {
+                    outcomeQual = 3;
+                } else if(stat1 == 1 && stat2==0 ) {
+                    outcomeQual = 4;
+                } else if(stat1 == 2 && stat2==0 ) {
+                    outcomeQual = 5;
+                } else if(stat1 == 2 && stat2==1 ) {
+                    outcomeQual = 6;
+                } else if(stat1 == 1 && stat2==2 ) {
+                    outcomeQual = 7;
+                } else {
+                    outcomeQual = 8;
+                }
+
+                EAA<> diff( result->objectTtcpTarget.R()* inverse(result->objectTtcpGrasp.R()) );
+                Vector3D<> diffp = result->objectTtcpTarget.P() - result->objectTtcpGrasp.P();
+
+                result->qualityAfterLifting = concat(Q(2,outcomeQual, 0.1), result->qualityAfterLifting);
+                result->qualityBeforeLifting = concat(Q(2,outcomeQual, 0.1), result->qualityBeforeLifting);
+                std::cout << stat1 << "\t" << stat2
+                        << "\t" << diffp[0] << "\t" << diffp[1] << "\t" << diffp[2]
+                        << "\t" << diff[0] << "\t" << diff[1] << "\t" << diff[2] << "\n";
             }
             confMatTotal = confMatTotal+confMat;
             if(!silent)
                 printConfMatrix( confMatTotal);
+
+            // save the baseline in an outputfolder
+            std::stringstream sstr;
+            path baseline_path(data.first);
+            sstr << output_dir.string() << "/" << baseline_path.stem().string() << "_comp.task.xml";
+            std::cout << "saving output to: \n\t" << sstr.str() << std::endl;
+            GraspTask::saveRWTask( baselinetask, sstr.str() );
         }
         printConfMatrix( confMatTotal);
     }
