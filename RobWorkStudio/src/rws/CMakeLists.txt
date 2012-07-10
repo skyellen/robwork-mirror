@@ -48,7 +48,6 @@ SET(MocHeaderFiles
   AboutBox.hpp
   RWStudioView3D.hpp
   ImageView.hpp
-  HelpAssistant.hpp
   propertyview/PropertyViewEditor.hpp 
   propertyview/PropertyViewDialog.hpp )
 
