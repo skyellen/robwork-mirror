@@ -106,7 +106,13 @@ public:
      */
     Image::Ptr asImage() const;
 
-
+    /**
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    Image::Ptr asImage(float min, float max) const;
 private:
     unsigned int _width, _height;
 

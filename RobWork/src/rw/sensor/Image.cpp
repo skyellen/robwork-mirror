@@ -22,7 +22,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-
+#include <cmath>
 using namespace rw::sensor;
 using namespace rw::common;
 
@@ -40,7 +40,9 @@ namespace {
             return 4;
         default:
             RW_THROW(0);
+            break;
         }
+        return 0;
     }
 
     size_t getStride(Image::PixelDepth depth){
@@ -59,8 +61,9 @@ namespace {
         break;
         default:
             RW_THROW("Unsupported pixel depth!");
+            break;
         }
-        
+        return 0;
     }
 
     unsigned int calcMask(Image::PixelDepth depth){
@@ -79,8 +82,35 @@ namespace {
         break;
         default:
             RW_THROW("Unsupported pixel depth!");
-        }        
+            break;
+        }
+        return 0;
     }
+
+}
+void Image::initFloatConversion(){
+    switch(_depth){
+    case(Depth8U):
+    case(Depth16U):{
+        _toFloat = 1.0f/std::pow(2.0f,(float)getBitsPerPixel());
+        _fromFloat = std::pow(2.0f,(float)getBitsPerPixel());
+    }
+    break;
+    case(Depth8S):
+    case(Depth16S):{
+        _toFloat = 1.0f/std::pow(2.0f,(float)(getBitsPerPixel()-1));
+        _fromFloat = std::pow(2.0f,(float)(getBitsPerPixel()-1));
+    }
+    break;
+    case(Depth32S):
+    case(Depth32F):
+    default:
+        _toFloat = 1.0f;
+        _fromFloat = 1.0f;
+    }
+
+    //std::cout << "toFloat   " << _toFloat << std::endl;
+    //std::cout << "fromFloat " << _fromFloat << std::endl;
 }
 
 Image::Image():
@@ -96,6 +126,8 @@ Image::Image():
     _valueMask(calcMask(Depth8U))
 {
     _widthStepByte = _widthStep*getBitsPerPixel()/8;
+    initFloatConversion();
+
 };
 
 
@@ -117,6 +149,7 @@ Image::Image(
     _valueMask(calcMask(depth))
 {
     _widthStepByte = _widthStep*getBitsPerPixel()/8;
+    initFloatConversion();
 }
 
 Image::Image(
@@ -138,6 +171,7 @@ Image::Image(
     _valueMask(calcMask(depth))
 {
     _widthStepByte = _widthStep*getBitsPerPixel()/8;
+    initFloatConversion();
 }
 
 size_t Image::getDataSize() const
@@ -154,15 +188,15 @@ Pixel4f Image::getPixel(size_t x, size_t y) const {
 
 	// now if representation is float then we can set it directly
 	if(_depth == Image::Depth32F){
-		Pixel4f p((float)_imageData[cidx], 0, 0, 0);
+		Pixel4f p(_imageData[cidx]*_toFloat, 0, 0, 0);
 		for(size_t i=1;i<_nrChannels;i++)
-			p.ch[i] = (float)_imageData[cidx+i*_stride];
+			p.ch[i] = _imageData[cidx+i*_stride]*_toFloat;
 		return p;
 	}
 	// is an int so we need to convert it to float
-	Pixel4f p((float)(_imageData[cidx]&_valueMask), 0, 0, 0);
+	Pixel4f p(( *((int*)&_imageData[cidx]) &_valueMask)*_toFloat, 0, 0, 0);
 	for(size_t i=1;i<_nrChannels;i++)
-		p.ch[i] = (float)(_imageData[cidx+i*_stride]&_valueMask);
+		p.ch[i] = (  *((int*)&_imageData[cidx+i*_stride]) &_valueMask)*_toFloat;
 	return p;
 }
 
@@ -180,10 +214,10 @@ void Image::setPixel(size_t x, size_t y, const Pixel4f& value) {
             ((float*)&_imageData[cidx])[i] = value.ch[i];
     } else if( _depth == Image::Depth16S || _depth == Image::Depth16U) {
         for(size_t i=0;i<_nrChannels;i++)
-            ((int16_t*)&_imageData[cidx])[i] = (int16_t)value.ch[i];
+            ((int16_t*)&_imageData[cidx])[i] = (int16_t)(value.ch[i]*_fromFloat);
     } else if( _depth == Image::Depth8S || _depth == Image::Depth8U) {
         for(size_t i=0;i<_nrChannels;i++)
-            ((int8_t*)&_imageData[cidx])[i] = (int8_t)value.ch[i];
+            ((int8_t*)&_imageData[cidx])[i] = (int8_t)(value.ch[i]*_fromFloat);
     }
 }
 
@@ -198,7 +232,8 @@ float Image::getPixelValue(size_t x, size_t y, size_t channel) const {
 		return (float)_imageData[cidx+channel*_stride];
 	} else {
 		// is in int so we need to convert it to float
-		return (float)(_imageData[cidx+channel*_stride]&_valueMask);
+	    char *valuePtr = &_imageData[cidx+channel*_stride];
+		return ( *((unsigned int*)valuePtr)&_valueMask)*_toFloat;
 	}
 }
 

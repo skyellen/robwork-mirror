@@ -56,7 +56,7 @@ struct Pixel4f
         ch[3] = v3;
     }
 
-    float ch[4]; //! up to for channels
+    float ch[4]; //! up to four channels
 };
 
 /**
@@ -520,6 +520,7 @@ public:
 
 private:
     void safeDeleteData();
+    void initFloatConversion();
 private:
 
     unsigned int _width, _height;
@@ -540,6 +541,7 @@ protected:
 
     size_t _stride; //! the stride of a pixel value
     unsigned int _valueMask; //! true if float representation is used
+    float _toFloat, _fromFloat;
     //bool _isFloat; //! true if float representation is used
 
 };
