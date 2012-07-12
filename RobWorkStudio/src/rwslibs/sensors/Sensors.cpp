@@ -214,6 +214,8 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         simscan25->attachTo(frame);
         simscan25->open();
 
+        getRobWorkStudio()->getWorkCellScene()->addRender("scanrender", ownedPtr(new RenderScan(simscan25)),frame);
+
         scanview->initialize(simscan25);
         view = scanview;
         view->resize(512,512);

@@ -77,7 +77,7 @@ void Scan25DView::makeCurrent() {
 void Scan25DView::update() {
 
     if(_scanner != NULL && _scanner->isScanReady() ){
-        Image::Ptr img = _scanner->getImage().asImage();
+        Image::Ptr img = _scanner->getImage().asImage(_scanner->getRange().first, _scanner->getRange().second);
 
         //_scanRender->setScan(img);
         // convert to depth image

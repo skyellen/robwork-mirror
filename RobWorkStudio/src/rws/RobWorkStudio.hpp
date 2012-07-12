@@ -296,6 +296,13 @@ namespace rws {
          */
         GenericAnyEvent& genericAnyEvent() { return _genericAnyEvent; }
 
+        /**
+         * @brief this will block until an anyevent with id \b id is emitted or timeout
+         * is reached.
+         * @param id [in] string id of the event that is expected
+         * @param timeout [in] timeout in seconds
+         * @return
+         */
         boost::any waitForAnyEvent(const std::string& id, double timeout = -1.0);
 
 		/**
