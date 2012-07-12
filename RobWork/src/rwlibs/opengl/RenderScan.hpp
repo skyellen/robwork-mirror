@@ -23,6 +23,8 @@
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/sensor/Image25D.hpp>
 #include <rw/sensor/Scan2D.hpp>
+#include <rw/sensor/Scanner25D.hpp>
+
 #include "RWGLTexture.hpp"
 #include <rw/graphics/Render.hpp>
 
@@ -49,6 +51,13 @@ namespace opengl {
 
         //! @brief constructor
         RenderScan(const rw::sensor::Scan2D& img);
+
+        /**
+         * @brief the renderer will pull the scanner for
+         * @param scanner
+         * @return
+         */
+        RenderScan(const rw::sensor::Scanner25D::Ptr scanner);
 
         //! @brief destructor
 		virtual ~RenderScan();
@@ -91,6 +100,7 @@ namespace opengl {
                   double alpha) const;
 
 	private:
+        rw::sensor::Scanner25D::Ptr _scanner;
         rw::sensor::Image25D _img;
         float _minDepth,_maxDepth;
 	};

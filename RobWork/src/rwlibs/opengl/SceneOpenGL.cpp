@@ -539,7 +539,7 @@ namespace {
                             q(0) = (float)posX;
                             q(1) = (float)posY;
                             q(2) = (float)posZ;
-                            std::cout << q << "\n";
+                            //std::cout << q << "\n";
                         }
                     }
                 }

@@ -31,6 +31,15 @@ RenderScan::RenderScan():
         _maxDepth(10)
 {}
 
+RenderScan::RenderScan(const rw::sensor::Scanner25D::Ptr scanner)
+{
+    _scanner = scanner;
+    _minDepth = scanner->getRange().first;
+    _maxDepth = scanner->getRange().second;
+
+}
+
+
 RenderScan::~RenderScan(){}
 
 void RenderScan::setScan(const rw::sensor::Image25D& img){
@@ -49,6 +58,11 @@ void RenderScan::setScan(float dist){
 
 void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
+
+    const rw::sensor::Image25D *img = &_img;
+    if(_scanner!=NULL)
+        img = &_scanner->getImage();
+
 	// ignores drawstate
 	glPushMatrix();
 	float dist = _maxDepth-_minDepth;
