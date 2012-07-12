@@ -50,7 +50,7 @@ GLFrameGrabber25D::~GLFrameGrabber25D() {
 
 void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
-    std::cout << "initialize GLFrameGrabber25D";
+    //std::cout << "initialize GLFrameGrabber25D";
     SceneViewer::View::Ptr view = _drawer->createView("Camera25DSensorView");
 
     view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);

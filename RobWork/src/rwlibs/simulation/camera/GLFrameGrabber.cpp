@@ -42,9 +42,10 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) {
 
     rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(frame, state);
-    // TODO: we need to transform the image such that the camera looks in  the positive z-direction
     _view->_viewCamera->setTransform( wTf );
+    // the image is grabbed in the negative z-axis
     _drawer->renderView(_view);
+
 }
 
 void GLFrameGrabber::resize(int width, int height) {
