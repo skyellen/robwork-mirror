@@ -32,8 +32,8 @@ Image::Ptr Image25D::asImage() const {
     float min = 10000000;
     float max = -100000000;
     BOOST_FOREACH(const Vector3D<float>& p, _data){
-        min = std::min(min, p(2));
-        max = std::max(max, p(2));
+        min = std::min(min, -p(2));
+        max = std::max(max, -p(2));
     }
     if(min>max-0.001)
         max+=0.001;
@@ -48,7 +48,7 @@ Image::Ptr Image25D::asImage(float min, float max) const {
     float scale = 1.0/(max - offset);
     for(unsigned int i = 0; i < _width; i++) {
         for(unsigned int j = 0; j < _height; j++) {
-            outImg->setPixel16U(i,j, (uint16_t)((1.0-((_data[j*_width+i](2))-offset)*scale)*65400) );
+            outImg->setPixel16U(i,j, (uint16_t)((1.0-((-_data[j*_width+i](2))-offset)*scale)*65400) );
             //std::cout << (uint16_t)((1.0-((_data[j*_width+i](2))-offset)*scale)*65400) << " --- "
             //        << _data[j*_width+i](2) << "\n";
 
