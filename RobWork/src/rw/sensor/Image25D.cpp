@@ -18,9 +18,32 @@
 
 #include "Image25D.hpp"
 
+#include <boost/foreach.hpp>
 
 using namespace rw::sensor;
+using namespace rw::common;
+using namespace rw::math;
 
 Image25D::~Image25D(){
 
+}
+
+Image::Ptr Image25D::asImage() const {
+    float min = 0;
+    float max = 0.01;
+    BOOST_FOREACH(const Vector3D<float>& p, _data){
+        min = std::min(min, p(2));
+        max = std::max(max, p(2));
+    }
+    std::cout << min << " " << max << std::endl;
+
+    Image::Ptr outImg = ownedPtr( new Image(_width,_height, Image::GRAY, Image::Depth16U));
+    float offset = min;
+    float scale = 1.0/max - offset;
+    for(unsigned int i = 0; i < _width; i++) {
+        for(unsigned int j = 0; j < _height; j++) {
+            outImg->setPixel16U(i,j, (uint16_t)((1.0-(_data[j*_width+i](2)-offset)*scale)*65400) );
+        }
+    }
+    return outImg;
 }

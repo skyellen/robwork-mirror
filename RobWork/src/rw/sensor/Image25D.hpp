@@ -23,6 +23,8 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/common/Ptr.hpp>
+#include "Image.hpp"
+
 namespace rw {
 namespace sensor {
 
@@ -97,6 +99,13 @@ public:
      * @return image height
      */
     unsigned int getHeight() const { return _height;};
+
+    /**
+     * @brief returns the
+     * @return
+     */
+    Image::Ptr asImage() const;
+
 
 private:
     unsigned int _width, _height;
