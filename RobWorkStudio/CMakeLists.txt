@@ -130,7 +130,7 @@ INSTALL(FILES
 
 INSTALL(FILES 
         "cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
-        "cmake/RobWorkMacros.cmake"
+        "cmake/RobWorkStudioMacros.cmake"
         DESTINATION ${RWS_INSTALL_DIR})
 
 # misc
