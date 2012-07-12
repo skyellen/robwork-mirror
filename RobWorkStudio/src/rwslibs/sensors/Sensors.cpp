@@ -33,6 +33,7 @@
 #include <rwlibs/simulation/camera/SimulatedCamera.hpp>
 #include <rwlibs/simulation/SimulatedScanner25D.hpp>
 #include <rwlibs/simulation/SimulatedScanner2D.hpp>
+#include <rwlibs/opengl/RenderScan.hpp>
 //#include <rwlibs/simulation/SimulatedScanner1D.hpp>
 
 
@@ -49,10 +50,11 @@ using namespace rw::models;
 using namespace rwlibs::simulation;
 using namespace rw::graphics;
 using namespace rws;
+using namespace rwlibs::opengl;
 
 
 
-Sensors::Sensors()    :
+Sensors::Sensors():
     RobWorkStudioPlugin("Sensors", QIcon(":/sensors.png"))
 {
 
@@ -204,7 +206,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         iss >> fovy >> width >> height;
 
         Scan25DView* scanview = new Scan25DView();
-        scanview->makeCurrent();
+        //scanview->makeCurrent();
         GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(width, height,fovy) );
         framegrabber25d->init(gldrawer);
         SimulatedScanner25D* simscan25 = new SimulatedScanner25D("SimulatedScanner25D", framegrabber25d);
@@ -234,6 +236,9 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         sensor = simscan2D;
         simscan2D->attachTo(frame);
         simscan2D->open();
+
+        RenderScan::Ptr scanRender = ownedPtr( new RenderScan() );
+        DrawableNode::Ptr node = getRobWorkStudio()->getWorkCellScene()->addRender("Scan25DView", scanRender, frame);
 
         scanview->initialize(simscan2D);
         view = scanview;

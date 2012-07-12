@@ -45,11 +45,7 @@ CameraView::CameraView(Camera::Ptr camera, QWidget* parent):
     setLayout(layout);
     //layout->addWidget(new QLabel("Test Label"));
     layout->addWidget(_pImageView);
-
-
 }
-
-
 
 void CameraView::update() {
     //_camera->acquire();
@@ -63,18 +59,12 @@ Scan25DView::Scan25DView(QWidget* parent):
     SensorView(parent),
     _scanner(NULL)
 {
-    _pGLView = new SceneOpenGLViewer(this);
+    _pImageView = new ImageView();
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
     //layout->addWidget(new QLabel("Test Label"));
-    layout->addWidget(_pGLView.get());
-
-    _scanRender = ownedPtr( new RenderScan() );
-    DrawableNode::Ptr node = _pGLView->getScene()->makeDrawable("Scan25DView",_scanRender);
-    _pGLView->getMainView()->_drawMask = DrawableNode::ALL;
-    _pGLView->getScene()->addChild(node, _pGLView->getWorldNode());
-
+    layout->addWidget(_pImageView);
 }
 
 void Scan25DView::initialize(rw::sensor::Scanner25D::Ptr scanner) {
@@ -87,12 +77,16 @@ void Scan25DView::makeCurrent() {
 void Scan25DView::update() {
 
     if(_scanner != NULL && _scanner->isScanReady() ){
-        const Image25D& img = _scanner->getImage();
-        _scanRender->setScan(img);
+        Image::Ptr img = _scanner->getImage().asImage();
+
+        //_scanRender->setScan(img);
+        // convert to depth image
+        _pImageView->display(*img);
+
     }
 
     _scanner->acquire();
-    _pGLView->update();
+    //_pGLView->update();
 }
 
 

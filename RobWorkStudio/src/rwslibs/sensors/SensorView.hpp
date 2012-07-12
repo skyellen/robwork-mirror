@@ -49,7 +49,7 @@ public:
 
     }
 
-    ~SensorView() {
+    virtual ~SensorView() {
         
     }
 
@@ -63,9 +63,12 @@ signals:
     void viewClosed(SensorView* widget);
 };
 
-typedef rw::common::Ptr<SensorView> SensorViewPtr;
 
 
+
+/**
+ * @brief a view to visualize output of a camera
+ */
 class CameraView: public SensorView {
 public:
 	CameraView(rw::sensor::Camera::Ptr camera, QWidget* parent = NULL);
@@ -93,7 +96,7 @@ public:
 private:
 	rw::sensor::Scanner25D::Ptr _scanner;
 	rwlibs::opengl::RenderScan::Ptr _scanRender;
-    SceneOpenGLViewer::Ptr _pGLView;
+	ImageView* _pImageView;
 
 };
 
