@@ -41,6 +41,8 @@
 #include <rw/proximity/ProximityCache.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 
+#include <rw/geometry/GeometryData.hpp>
+
 #include <PQP/PQP.h>
 
 namespace PQP { class PQP_Model; }
@@ -86,7 +88,7 @@ namespace rwlibs { namespace proximitystrategies {
 
         typedef rw::common::Ptr<ProximityStrategyPQP> Ptr;
         //! @brief cache key
-        typedef std::pair<std::string,double> CacheKey;
+        typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
         //! @brief smart pointer to PQP model
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
 

@@ -195,6 +195,8 @@ void ProximityStrategyPQP::destroyModel(rw::proximity::ProximityModel* model){
 
 bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
                                        const rw::geometry::Geometry& geom) {
+
+    //std::cout << "add geometry: " << geom.getId() << std::endl;
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
 	PQPModelPtr pqpmodel;
 	GeometryData::Ptr gdata = geom.getGeometryData();
@@ -207,8 +209,9 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     }
 
     // check if model is in
-    CacheKey key(geom.getId(),geom.getScale());
+    CacheKey key(geom.getGeometryData().get(),geom.getScale());
     if( _modelCache.has(key) ){
+        //std::cout << "Cached" << std::endl;
         pqpmodel = _modelCache.get(key);
     } else {
 		TriMesh::Ptr mesh = gdata->getTriMesh(false);
@@ -249,6 +252,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model, rw:
 }
 
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
+    std::cout << "Remove geometry: " << geomId << std::endl;
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
     // remove from model
     int idx=-1;
