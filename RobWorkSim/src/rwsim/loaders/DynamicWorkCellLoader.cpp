@@ -458,15 +458,33 @@ namespace
         return frame;
 
     }
+/*
+    CompositeRigidBody* readCompositeRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
 
+
+    }
+  */
     RigidBody* readRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
         //Log::debugLog()<< "ReadRigidBody" << std::endl;
-        Object::Ptr obj = getObjectFromAttr(tree, state, "frame", prefix);
+
+        string refframeName = tree.get_child("<xmlattr>").get<std::string>("frame");
+        Object::Ptr obj = state.wc->findObject(prefix+refframeName);
+        if( !obj ){
+            // create one without any geometry
+            MovableFrame* baseframe = state.wc->findFrame<MovableFrame>(prefix+refframeName);
+            if(baseframe==NULL)
+                RW_THROW("no frame with name " << prefix+refframeName);
+            obj = ownedPtr(new Object(baseframe));
+            state.wc->add( obj );
+        }
+
+        //Object::Ptr obj = getObjectFromAttr(tree, state, "frame", prefix);
         // check if frame is actually a moveable frame
         MovableFrame *mframe = dynamic_cast<MovableFrame*>( obj->getBase() );
         if( !mframe )
             RW_THROW("Object "<< quote(obj->getName())<< " is not a movable frame!");
         BodyInfo info;
+
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
         info.integratorType = tree.get<string>("Integrator");
@@ -686,11 +704,18 @@ namespace
     }
 
     std::pair<BodyInfo, Object::Ptr> readLink(PTree& tree, ParserState &state, JointDevice *device, bool kinematic=false){
-        //Log::debugLog()<< "ReadLink" << std::endl;
-        string refjointName = tree.get_child("<xmlattr>").get<std::string>("object");
-        Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
-        if( obj==NULL )
-            RW_THROW("Could not find object: \"" << refjointName << "\"");
+        Log::debugLog()<< "ReadLink" << std::endl;
+
+        string refframeName = tree.get_child("<xmlattr>").get<std::string>("object");
+        Object::Ptr obj = state.wc->findObject(device->getName()+"."+refframeName);
+        if( !obj ){
+            // create one without any geometry
+            Frame* baseframe = state.wc->findFrame(device->getName()+"."+refframeName);
+            if(baseframe==NULL)
+                RW_THROW("no frame with name " << device->getName()+"." + refframeName);
+            obj = ownedPtr(new Object(baseframe));
+            state.wc->add( obj );
+        }
 
         BodyInfo info;
         info.mass = tree.get<double>("Mass");
