@@ -376,11 +376,17 @@ SerialDeviceCalibration::Ptr SerialDeviceCalibration::load(rw::models::SerialDev
 
 
 SerialDeviceCalibration::Ptr SerialDeviceCalibration::getCalibration(rw::models::SerialDevice::Ptr serialDevice) {
-	SerialDeviceCalibration::Ptr serialDeviceCalibration = rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice));
+	SerialDeviceCalibration::Ptr serialDeviceCalibration;
+	rw::common::PropertyMap propertyMap = serialDevice->getPropertyMap();
+	if (propertyMap.has("Device calibration"))
+		serialDeviceCalibration = propertyMap.get<SerialDeviceCalibration::Ptr>("Device calibration");
+	return serialDeviceCalibration;
 }
 
-void SerialDeviceCalibration::setCalibration(SerialDeviceCalibration::Ptr serialDeviceCalibration) {
-
+void SerialDeviceCalibration::setCalibration(SerialDeviceCalibration::Ptr serialDeviceCalibration, rw::models::SerialDevice::Ptr serialDevice) {
+	rw::common::PropertyMap propertyMap = serialDevice->getPropertyMap();
+	propertyMap.add<SerialDeviceCalibration::Ptr>("Device calibration", "", serialDeviceCalibration);
+	// What if it is not empty?
 }
 
 }

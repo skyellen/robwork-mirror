@@ -533,7 +533,8 @@ namespace {
             	deviceCalibration = rwlibs::calibration::SerialDeviceCalibration::load(model.cast<SerialDevice>(), filename);
             	deviceCalibration->apply();
 
-                Property<rwlibs::calibration::SerialDeviceCalibration::Ptr> calibrationProperty(calibration._filename, "Device calibration", deviceCalibration);
+                Property<rwlibs::calibration::SerialDeviceCalibration::Ptr>::Ptr calibrationProperty = ownedPtr(new Property<rwlibs::calibration::SerialDeviceCalibration::Ptr>("Device calibration", "", deviceCalibration));
+                model->getPropertyMap().add(calibrationProperty);
             }
 #endif
 

@@ -374,8 +374,32 @@ namespace rw { namespace models {
         */
         virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
 
+        /**
+         * @brief Miscellaneous properties of the device.
+         *
+         * The property map of the device is provided to let the user store
+         * various settings for the device. The settings are typically loaded
+         * from setup files.
+         *
+         * The low-level manipulations of the property map can be cumbersome. To
+         * ease these manipulations, the PropertyAccessor utility class has been
+         * provided. Instances of this class are provided for a number of common
+         * settings, however it is undecided if these properties are a public
+         * part of RobWork.
+         *
+         * @return The property map of the device.
+         */
+        const common::PropertyMap& getPropertyMap() const { return _propertyMap; }
+
+        /**
+         * @copydoc getPropertyMap
+         */
+        common::PropertyMap& getPropertyMap() { return _propertyMap; }
+
     private:
         std::string _name;
+
+        common::PropertyMap _propertyMap;
 
     private:
         Device(const Device&);

@@ -265,12 +265,14 @@ ELSE ()
     MESSAGE(STATUS "RobWork Sandbox DISABLED!")    
 ENDIF ()
 
-# EIGEN + QT (for calibration)
+#
+# If the user wants to use the calibration package, Eigen3 and Qt4 must be installed. Otherwise the package will be disabled.
+#
 FIND_PACKAGE(Eigen3 QUIET)
-SET(RW_HAVE_EIGEN ${EIGEN3_FOUND})
 FIND_PACKAGE( Qt4 COMPONENTS QtCore QtGui QtXml QUIET)
-SET(RW_HAVE_QT ${QT4_FOUND})
-IF( RW_HAVE_EIGEN AND RW_HAVE_QT)
+IF( EIGEN3_FOUND AND QT4_FOUND)
+	SET(RW_HAVE_EIGEN ${EIGEN3_FOUND})
+	SET(RW_HAVE_QT ${QT4_FOUND})	
 	include( ${QT_USE_FILE} )
 	set(CALIBRATION_LIB rw_calibration ${QT_LIBRARIES})
 	set(CALIBRATION_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR} ${QT_INCLUDES})
