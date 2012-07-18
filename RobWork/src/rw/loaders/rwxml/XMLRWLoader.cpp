@@ -64,7 +64,7 @@
 #include <boost/foreach.hpp>
 
 #ifdef RW_HAVE_EIGEN
-#include <rwlibs/calibration/Calibration.hpp>
+#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
 #endif
 
 using namespace rw::math;
