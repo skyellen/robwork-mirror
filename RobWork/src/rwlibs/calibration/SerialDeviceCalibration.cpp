@@ -14,7 +14,7 @@ namespace calibration {
 
 SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr serialDevice) :
 		_serialDevice(serialDevice), _baseCorrection(Eigen::Affine3d::Identity()), _endCorrection(Eigen::Affine3d::Identity()), _baseEnabled(true), _endEnabled(
-				true), _dhEnabled(true) {
+				true), _dhEnabled(true), _isApplied(false) {
 	_baseFrame = serialDevice->getBase();
 	_endFrame = serialDevice->getEnd();
 
@@ -117,6 +117,8 @@ void SerialDeviceCalibration::apply() {
 			}
 		}
 	}
+
+	_isApplied = true;
 }
 
 void SerialDeviceCalibration::revert() {
@@ -159,6 +161,7 @@ void SerialDeviceCalibration::revert() {
 		}
 	}
 
+	_isApplied = false;
 }
 
 void SerialDeviceCalibration::save(QString fileName) {
@@ -374,6 +377,10 @@ SerialDeviceCalibration::Ptr SerialDeviceCalibration::load(rw::models::SerialDev
 	return serialDeviceCalibration;
 }
 
+bool SerialDeviceCalibration::isApplied() {
+	return _isApplied;
+}
+
 
 SerialDeviceCalibration::Ptr SerialDeviceCalibration::getCalibration(rw::models::SerialDevice::Ptr serialDevice) {
 	SerialDeviceCalibration::Ptr serialDeviceCalibration;
@@ -385,8 +392,12 @@ SerialDeviceCalibration::Ptr SerialDeviceCalibration::getCalibration(rw::models:
 
 void SerialDeviceCalibration::setCalibration(SerialDeviceCalibration::Ptr serialDeviceCalibration, rw::models::SerialDevice::Ptr serialDevice) {
 	rw::common::PropertyMap propertyMap = serialDevice->getPropertyMap();
+	if (propertyMap.has("Device calibration")) {
+		if (serialDeviceCalibration->isApplied())
+			serialDeviceCalibration->revert();
+		propertyMap.erase("Device calibration");
+	}
 	propertyMap.add<SerialDeviceCalibration::Ptr>("Device calibration", "", serialDeviceCalibration);
-	// What if it is not empty?
 }
 
 }

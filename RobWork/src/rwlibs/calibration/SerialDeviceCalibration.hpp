@@ -58,6 +58,8 @@ public:
 
 	void revert();
 
+	bool isApplied();
+
 	static SerialDeviceCalibration::Ptr getCalibration(rw::models::SerialDevice::Ptr serialDevice);
 
 	static void setCalibration(SerialDeviceCalibration::Ptr serialDeviceCalibration, rw::models::SerialDevice::Ptr serialDevice);
@@ -77,7 +79,7 @@ private:
 	rw::kinematics::Frame* _baseFrame;
 	rw::kinematics::Frame* _endFrame;
 
-	bool _isCalibrated;
+	bool _isApplied;
 };
 
 }
