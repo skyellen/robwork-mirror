@@ -100,6 +100,12 @@ struct DummyProximitySetup {
     std::vector<std::string> _scope;
 };
 
+struct DummySerialDeviceCalibration {
+    boost::spirit::classic::file_position _pos;
+    std::string _filename;
+    std::vector<std::string> _scope;
+};
+
 struct DummyGeometry {
     DummyGeometry():
         _radius(1.0),_x(1.0),_y(1.0),_z(1.0),
@@ -242,6 +248,8 @@ public:
 
     std::vector< DummyCollisionSetup > _colsetups; // collision setups
 	std::vector< DummyProximitySetup > _proxsetups; // collision setups
+
+	std::vector<DummySerialDeviceCalibration> _calibration; // device calibration
 
     std::map<std::string,
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > > _propMap;
@@ -731,6 +739,5 @@ struct AppendToOutputFromMap{
     std::map<std::string, std::string> &_map;
     std::vector<char> &_output;
 };
-
 
 #endif /*XMLPARSERUTIL_HPP_*/

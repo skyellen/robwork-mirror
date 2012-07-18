@@ -15,12 +15,11 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "XMLRWLoader.hpp"
 
 #include "XMLRWParser.hpp"
 #include "XMLParserUtil.hpp"
-
+#include <RobWorkConfig.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
@@ -63,6 +62,10 @@
 #include <stack>
 
 #include <boost/foreach.hpp>
+
+#ifdef RW_HAVE_EIGEN
+#include <rwlibs/calibration/Calibration.hpp>
+#endif
 
 using namespace rw::math;
 using namespace rw::common;
@@ -519,6 +522,18 @@ namespace {
             //State state( tree );
             State state = setup.tree->getDefaultState();
             model = ownedPtr(new SerialDevice( chain.front(), chain.back(), dev.getName(), state));
+
+#ifdef RW_HAVE_EIGEN
+            if (dev._calibration.size() > 0) {
+            	DummySerialDeviceCalibration calibration = dev._calibration.front();
+                std::string prefix = createScopedName("", calibration._scope);
+                std::string filename = StringUtil::getDirectoryName(calibration._pos.file);
+                filename += "/" + calibration._filename;
+            	rwlibs::calibration::SerialDeviceCalibration::Ptr deviceCalibration = rwlibs::calibration::SerialDeviceCalibration::load(model.cast<SerialDevice>(), filename);
+            	deviceCalibration->apply();
+            }
+#endif
+
             //std::cout << "serial device created!!" << std::endl;
         } else if( dev._type==ParallelType){
             // a parallel device is composed of a number of serial chains
@@ -827,7 +842,6 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
             addFrameProps( setup.dwc->_framelist[i], setup );
         }
 
-
         // Now create all devices
         for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
             createDevice( setup.dwc->_devlist[i] , setup);
@@ -886,9 +900,6 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
         for(size_t i=0; i<setup.dwc->_proxmodels.size(); i++){
             setup.proxsetups.push_back( setup.dwc->_proxmodels[i] );
         }
-
-
-
 
         // now initialize state with init actions and remember to add all devices
         //State state( tree );
@@ -970,6 +981,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname)
 
         // make sure to add the name of the workcell file to the workcell propertymap
         wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);
+
         return wc;
     } catch (const std::exception& e){
         RW_THROW("Could not load WorkCell: " << fname << ". An error occoured:\n " << std::string(e.what()) );

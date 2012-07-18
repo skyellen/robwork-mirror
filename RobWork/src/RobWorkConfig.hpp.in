@@ -12,4 +12,5 @@
 
 #cmakedefine RW_HAVE_PQP 1
 #cmakedefine RW_HAVE_YAOBI 1
+#cmakedefine RW_HAVE_EIGEN 1
 
