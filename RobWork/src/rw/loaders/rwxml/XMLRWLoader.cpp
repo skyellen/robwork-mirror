@@ -524,13 +524,16 @@ namespace {
             model = ownedPtr(new SerialDevice( chain.front(), chain.back(), dev.getName(), state));
 
 #ifdef RW_HAVE_EIGEN
+            rwlibs::calibration::SerialDeviceCalibration::Ptr deviceCalibration;
             if (dev._calibration.size() > 0) {
             	DummySerialDeviceCalibration calibration = dev._calibration.front();
                 std::string prefix = createScopedName("", calibration._scope);
                 std::string filename = StringUtil::getDirectoryName(calibration._pos.file);
                 filename += "/" + calibration._filename;
-            	rwlibs::calibration::SerialDeviceCalibration::Ptr deviceCalibration = rwlibs::calibration::SerialDeviceCalibration::load(model.cast<SerialDevice>(), filename);
+            	deviceCalibration = rwlibs::calibration::SerialDeviceCalibration::load(model.cast<SerialDevice>(), filename);
             	deviceCalibration->apply();
+
+                Property<rwlibs::calibration::SerialDeviceCalibration::Ptr> calibrationProperty(calibration._filename, "Device calibration", deviceCalibration);
             }
 #endif
 
