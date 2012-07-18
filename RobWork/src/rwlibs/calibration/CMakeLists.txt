@@ -12,7 +12,7 @@ RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 RW_ADD_DOC(${SUBSYS_NAME})
 
-IF(build)
+IF(build=TRUE)
     SET(SRC_FILES
 		Pose6D.cpp
 		SerialDeviceCalibration.cpp
