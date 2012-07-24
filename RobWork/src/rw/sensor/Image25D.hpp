@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/common/Ptr.hpp>
 #include "Image.hpp"
@@ -113,6 +114,11 @@ public:
      * @return
      */
     Image::Ptr asImage(float min, float max) const;
+
+    static void save(const Image25D& img, const std::string& filename,
+                     const rw::math::Transform3D<float>& t3d = rw::math::Transform3D<float>::identity());
+    static Image25D::Ptr load(const std::string& filename );
+
 private:
     unsigned int _width, _height;
 
