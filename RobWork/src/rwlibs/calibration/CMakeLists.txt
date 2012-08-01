@@ -1,5 +1,5 @@
 SET(SUBSYS_NAME rw_calibration)
-set(SUBSYS_DESC "Serial device calibration")
+SET(SUBSYS_DESC "Calibration of devices")
 SET(SUBSYS_DEPS rw ${QT_LIBRARIES})
 
 IF (RW_HAVE_EIGEN AND RW_HAVE_QT)

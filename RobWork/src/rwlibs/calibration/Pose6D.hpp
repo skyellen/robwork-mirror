@@ -14,7 +14,7 @@
 #include "RPY.hpp"
 
 #include <Eigen/Core>
-
+#include <rw/math.hpp>
 #include <iostream>
 
 namespace rwlibs {

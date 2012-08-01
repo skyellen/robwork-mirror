@@ -10,8 +10,8 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <Eigen/Geometry>
 
+#include <Eigen/Geometry>
 #include <rw/common.hpp>
 
 // http://stackoverflow.com/questions/652155/invalid-use-of-incomplete-type
