@@ -16,9 +16,8 @@ You can
 dette script benytter den semi-uniforme sampling og kan bruges til de gribere vi har i learnbip.  Du kan evt. 
 kigge i scriptet og ændre parametre sådan som approach, åbne og lukke konfiguration.
 
-~~~{.cpp}
-./SimulateTaskLB --dwc=<dwc_file> --output=<out_dir> --gripper=<GS20|GS20_WIDE> --object=object --gentask=true
-~~~
+
+> ./SimulateTaskLB --dwc=<dwc_file> --output=<out_dir> --gripper=<GS20|GS20_WIDE> --object=object --gentask=true
 
 Denne bliver ved med at simulere indtil 100000 greb er simuleret (inklusive kolisioner). grebne ligger i filer af 5000 greb i hver.
 hvis du vil filtrere grebne og kun havde de successfulde ud så kan du filtrere og merge filerne således:
