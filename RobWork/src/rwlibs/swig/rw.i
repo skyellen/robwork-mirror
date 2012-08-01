@@ -1215,11 +1215,11 @@ public:
     //CollisionDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy);
 
     %extend {
-        rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell){
+        static rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell){
             return rw::common::ownedPtr( new CollisionDetector(workcell, rwlibs::proximitystrategies::ProximityStrategyFactory::makeDefaultCollisionStrategy()) );
         }
 
-        rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy){
+        static rw::common::Ptr<CollisionDetector> make(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<CollisionStrategy> strategy){
             return rw::common::ownedPtr( new CollisionDetector(workcell, strategy) );
         }
     }
