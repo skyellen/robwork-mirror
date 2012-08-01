@@ -1,5 +1,4 @@
-/**
-
+/** \mainpage
 # RobWork # {#index}
 
 [TOC]
