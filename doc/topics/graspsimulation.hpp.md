@@ -4,34 +4,31 @@
 
 # Grasp Database Generation #
 
+## Using GUI program ##
+
 ## Using console program ##
+Console programs enable easy remote execution of large simulation batches. This is especially usefull
+when one wants to do simulation on several computers in parallel.
 
-
-### Script med integreret sampling ###
+### Script with integrated generic sampling ###
 This script use the semi-uniform sampling (TODO: insert ref) and can be used for typical grippers. 
-Take a look in the script 
-You can 
-
-
-dette script benytter den semi-uniforme sampling og kan bruges til de gribere vi har i learnbip.  Du kan evt. 
-kigge i scriptet og ændre parametre sådan som approach, åbne og lukke konfiguration.
-
+Take a look in the script and change parameters such as approach, retract and opening and closing of gripper.
 
 > ./SimulateTaskLB --dwc=<dwc_file> --output=<out_dir> --gripper=<GS20|GS20_WIDE> --object=object --gentask=true
 
-Denne bliver ved med at simulere indtil 100000 greb er simuleret (inklusive kolisioner). grebne ligger i filer af 5000 greb i hver.
-hvis du vil filtrere grebne og kun havde de successfulde ud så kan du filtrere og merge filerne således:
+The above command line will continue sampling and simulating grasps until a 100000 grasps has been generated. This include
+grasps that fails or are in collisions. The grasps will be located in multiple files and each file will have up to 5000 
+grasps. If you want to filter and only keep the successfull grasps then it can be done with gtmerge:
 
 > ./gtmerge --output=<out_file> --oformat=<RWTASK|UIBK|Text> --include=Success --include=ObjectSlipped --input=<input_dir>
 
-hvor <input_dir> er der samme som <out_dir> i førse script eksekvering.
+where <input_dir> is the same as <out_dir> in the first script eksecution.  
 
-
-******************** Script til eksekvering af allerede genereret tasks
-
-dette script vil eksekvere greb beskrevet i rwtask formatet
+### Script without sampling ###
+This script simulates all grasps that has been specified in a grasp task file.
 
 > ./SimulateTask --dwc=<dwc_file> --output=<output_task_result> --input=<input_task>
+
 
 
 # Grasp Quality Computations #
