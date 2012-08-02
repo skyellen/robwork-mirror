@@ -54,8 +54,8 @@ IF( SWIG_FOUND )
         IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
             MESSAGE(STATUS "RobWorkStudio: Python bindings ENABLED!")
             INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-            SWIG_ADD_MODULE(rws_py python rws.i ScriptTypes.cpp)
-            SWIG_LINK_LIBRARIES(rws_py rws rws_rwstudioapp 
+            SWIG_ADD_MODULE(rws python rws.i ScriptTypes.cpp)
+            SWIG_LINK_LIBRARIES(rws rws rws_rwstudioapp 
                 ${RWS_COMPONENT_LIBRARIES} 
                 ${RWS_PLUGIN_LIBRARIES} 
                 ${ROBWORKSTUDIO_LIBRARIES} 
