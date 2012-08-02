@@ -77,13 +77,14 @@ IF( build )
     INCLUDE(CMakeDependentOption)
     CMAKE_DEPENDENT_OPTION(RW_PYTHON_BINDINGS_ENABLED "Enable python bindings." 
                        ON "PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND" OFF)
-    IF( RWS_PYTHON_BINDINGS_ENABLED )
+    IF( RW_PYTHON_BINDINGS_ENABLED )
+
         IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
             MESSAGE(STATUS "RobWorkStudio: Python bindings ENABLED!")
             INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-            SWIG_ADD_MODULE(rw_py python rw.i)
-	        SWIG_LINK_LIBRARIES(rw_py ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
-	        #ADD_DEPENDENCIES(rw_py rw_algorithms
+            SWIG_ADD_MODULE(rw python rw.i)
+	        SWIG_LINK_LIBRARIES(rw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+	        #ADD_DEPENDENCIES(rw rw_algorithms
             #              rw_pathplanners
             #              rw_pathoptimization
             #              rw_simulation
