@@ -49,6 +49,7 @@ SET(FILES_CPP
     SphereDistanceCalc.cpp
     TriDistanceCalc.cpp
     TriTriToleranceIntersect.cpp
+    TriMeshSurfaceSampler.cpp
 )
 
 SET(FILES_HPP
@@ -104,6 +105,7 @@ SET(FILES_HPP
     SphereDistanceCalc.hpp
     TriDistanceCalc.hpp
     TriTriToleranceIntersect.hpp
+    TriMeshSurfaceSampler.hpp
     
 )
 
