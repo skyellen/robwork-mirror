@@ -144,7 +144,7 @@ int main(int argc, char** argv)
     RW_ASSERT( fabs(LinearAlgebra::det( wTe_home.R().m() ))-1.0 < 0.0001 );
 
     //const double OPENQ = 0.035;
-    const double OPENQ = 0.0055;
+    const double OPENQ = 0.005;
     const double CLOSEQ = 0.0005;
 
 
