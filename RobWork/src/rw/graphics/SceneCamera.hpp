@@ -186,6 +186,8 @@ namespace graphics {
         virtual void insertCamera(SceneCamera::Ptr cam, int index) = 0;
         virtual void removeCamera(int index) = 0;
         virtual std::list<SceneCamera::Ptr> getCameras() = 0;
+        virtual void setMainCamera(SceneCamera::Ptr cam) = 0;
+        virtual SceneCamera::Ptr getMainCamera() = 0;
 
         virtual void setOffscreenRenderEnabled( bool enable ) = 0;
         virtual bool isOffscreenRenderEnabled() = 0;

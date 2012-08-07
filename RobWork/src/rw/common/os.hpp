@@ -31,6 +31,13 @@
     #define RW_LINUX
 #endif
 
+#ifdef RW_WIN32
+#define DLL_EXPORT extern "C" __declspec(dllexport)
+#else
+#define DLL_EXPORT extern "C"
+#endif
+
+
 /**
  * @brief encapsulates os dependent functionality
  */

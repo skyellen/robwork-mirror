@@ -376,7 +376,19 @@ namespace {
         }
         void setCopyToImage(rw::sensor::Image::Ptr img){}
         void setCopyToScan25D(rw::sensor::Image25D::Ptr img){}
+
+        void setMainCamera(SceneCamera::Ptr cam){
+            _maincam = cam;
+        }
+        SceneCamera::Ptr getMainCamera(){
+            if(_maincam==NULL)
+                if(_cameras.size()>0)
+                    return _cameras.front();
+            return _maincam;
+        }
+
         std::list<SceneCamera::Ptr> _cameras;
+        SceneCamera::Ptr _maincam;
         bool _enabled;
         std::string _name;
 

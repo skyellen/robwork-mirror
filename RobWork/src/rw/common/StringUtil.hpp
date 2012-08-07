@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <rw/math/Math.hpp>
 
 namespace rw { namespace common {
 
@@ -187,6 +188,21 @@ namespace rw { namespace common {
 		 * @return patterns expressed as regular expression.
 		 */
 		static std::string patternToRegEx(const std::string& pattern);
+
+
+		/**
+		 * @brief creates a name based on a prefix and a random integer between
+		 * 0xFF and 0xFFFFFF
+		 * @param prefix
+		 * @return
+		 */
+        static std::string ranName(const std::string& prefix){
+            int ri = rw::math::Math::ranI(0xFF,0xFFFFFF);
+            std::stringstream sstr;
+            sstr << prefix << "_" << ri;
+            return sstr.str();
+        }
+
 	};
 
     typedef std::pair<std::string, std::string> StringPair;
