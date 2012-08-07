@@ -67,6 +67,14 @@ void StateStructure::addData(StateData *data){
     _stateDataAddedEvent.fire(data);
 }
 
+void StateStructure::addData(boost::shared_ptr<StateData> data){
+    addDataInternal(data);
+
+    updateDefaultState();
+
+    _stateDataAddedEvent.fire(data.get());
+}
+
 void StateStructure::addDataInternal(StateData *data){
     // frame must not be in tree allready
     if(has(data))
@@ -85,6 +93,25 @@ void StateStructure::addDataInternal(StateData *data){
     RW_ASSERT(has(data));
     // lastly update the default state
 }
+
+void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
+    // frame must not be in tree allready
+    if(has(data.get()))
+        RW_THROW("The StateData has allready been added! State data can only be added once.");
+
+    _version++;
+    const int id = allocateDataID();
+    data->setID(id);
+
+    boost::shared_ptr<StateData> sharedData = data;
+    _allDatas.at(id) = sharedData;
+    _currDatas.at(id) = sharedData;
+    // make room in the initial state data array
+    // now frame must be in the tree
+    RW_ASSERT(has(data.get()));
+    // lastly update the default state
+}
+
 
 void StateStructure::addFrame(Frame *frame, Frame *parent_arg){
     // both frame and parent must be well defined

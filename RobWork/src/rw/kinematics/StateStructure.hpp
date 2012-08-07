@@ -87,6 +87,16 @@ namespace rw { namespace kinematics {
         void addData(StateData *data);
 
         /**
+         * @brief adds a statedata to the frame tree and allocates memory
+         * for its states. This method updates the default
+         * state.
+         *
+         * @note Ownership is not taken, the data object may not have been added to
+         * any StateStructure before.
+         */
+        void addData(boost::shared_ptr<StateData> data);
+
+        /**
          * @brief adds a frame to the frame tree and statically associates
          * the frame with the parent frame. This method updates the default
          * state.
@@ -237,7 +247,7 @@ namespace rw { namespace kinematics {
         int allocateDataID();
 
         void addDataInternal(StateData *data);
-
+        void addDataInternal(boost::shared_ptr<StateData> data);
     private:
         // this specify the version of the initial/default data/setup
         int _version;

@@ -18,20 +18,73 @@
 #ifndef RW_KINEMATICS_STATELESSOBJECT_HPP_
 #define RW_KINEMATICS_STATELESSOBJECT_HPP_
 
-#include <rw/kinematics/StateStructure.hpp>
-#include "ObjectStateData.hpp"
+#include <rw/common/StringUtil.hpp>
+
+#include "StateData.hpp"
+#include "StateStructure.hpp"
 
 namespace rw {
 namespace kinematics {
 
+    /**
+     * @brief class for enabling statelessness in classes
+     */
     class StatelessObject {
     public:
+        //! destructor
+        virtual ~StatelessObject(){}
 
-        virtual void addStateData(rw::kinematics::StateStructure::Ptr statestructure){
-            for(size_t i=0;i<_stateDatas.size();i++){
-                statestructure->addData(_stateDatas[i]);
+        /**
+         * @brief register all states of this StatelessObject in the statestructure
+         * @param statestructure [in] state to register statedata
+         */
+        virtual void registerStateData(rw::kinematics::StateStructure::Ptr statestructure);
+
+        /**
+         * @brief remove all statedata from
+         */
+        virtual void resetStateData();
+
+    protected:
+        /**
+         * @brief when inheriting from StatelessObject one can use this Data class for
+         * constructing stateless member variables.
+         *
+         * @example
+         * When declaring a double as a stateless variable one would write:
+         *
+         * StatelessObject::Data<double> _myDouble;
+         *
+         */
+        template<class dataType>
+        class Data {
+        public:
+            Data(rw::kinematics::StatelessObject* obj, int dN=1):
+                _N(dN),
+                _obj(obj),
+                _sdata(NULL)
+
+            {
+                StateData *sdata = new StateData((sizeof(dataType)*dN)/sizeof(double)+1, rw::common::StringUtil::ranName("sdata"));
+                _sdata = sdata;
+                obj->addStateData(sdata);
             }
-        }
+
+            dataType* get(const rw::kinematics::State& state){
+                return (dataType*)_sdata->getData(state);
+            }
+
+            const dataType* get(const rw::kinematics::State& state) const {
+                return (dataType*)_sdata->getData(state);
+            }
+
+            int getN() const {return _N;}
+        private:
+            int _N;
+            rw::kinematics::StatelessObject* _obj;
+            StateData *_sdata;
+        };
+
 
     protected:
         void addStateData(StateData* objStateData){
@@ -39,6 +92,7 @@ namespace kinematics {
         }
 
         std::vector<StateData*> _stateDatas;
+        rw::kinematics::StateStructure::Ptr _statestructure;
     };
 
 }

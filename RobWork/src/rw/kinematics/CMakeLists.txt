@@ -14,6 +14,7 @@ SET(FILES_CPP
   StateData.cpp
   StateSetup.cpp
   FramePairMap.cpp
+  StatelessObject.cpp
 )
 
 SET(FILES_HPP
@@ -32,6 +33,7 @@ SET(FILES_HPP
   StateData.hpp
   StateSetup.hpp
   FramePairMap.hpp
+  StatelessObject.hpp
 )
 
 SOURCE_GROUP(kinematics FILES ${FILES_CPP} ${FILES_HPP})
