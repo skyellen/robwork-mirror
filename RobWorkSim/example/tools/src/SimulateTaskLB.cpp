@@ -408,7 +408,7 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     subtask.offset = wTe_n;
     if( type== "SCUP"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.0));
     } else if( gripperName=="GS20"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.0));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
