@@ -25,6 +25,8 @@
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 
+#include <rw/kinematics/StatelessObject.hpp>
+
 #include "Body.hpp"
 #include "Link.hpp"
 
@@ -36,7 +38,7 @@ namespace dynamics {
 	 * @brief base class for dynamic devices that has dynamic state values
 	 * such as velocity and acceleration.
 	 */
-	class DynamicDevice {
+	class DynamicDevice: public rw::kinematics::StatelessObject {
 
 	public:
 	    typedef rw::common::Ptr<DynamicDevice> Ptr;
@@ -50,9 +52,13 @@ namespace dynamics {
 		/**
 		 * @brief gets the position
 		 */
-		rw::math::Q getQ(const rw::kinematics::State& state){
+		virtual rw::math::Q getQ(const rw::kinematics::State& state){
 			return _dev->getQ(state);
 		}
+
+		virtual void setQ(const rw::math::Q &q, rw::kinematics::State& state){
+            _dev->setQ(q, state);
+        };
 
 		/**
 		 * @brief gets the kinematic model of the DynamicDevice.
@@ -69,34 +75,37 @@ namespace dynamics {
 		//void setQdd(const rw::kinematics::Q& qdd, const rw::kinematics::State& state);
 		//rw::math::Q getQdd(const rw::kinematics::State& state);
 
-		dynamics::Body* getBase(){ return _base;};
+		dynamics::Body::Ptr getBase(){ return _base;};
 
-		virtual rw::math::Q getVelocity(const rw::kinematics::State& state) = 0;
-
-		virtual void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state) = 0;
 
 		/**
-		 * @brief add force or torque (depending on joint type) to the joints of this
-		 * device.
-		 * @param forceTorque [in]
-		 * @param state [in]
+		 * @brief get the current velocities of all joints
+		 * @param state [in] the state
+		 * @return velocites of all joints
 		 */
-		virtual void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state) = 0;
+		virtual rw::math::Q getJointVelocities(const rw::kinematics::State& state) = 0;
+		virtual void setJointVelocities(const rw::math::Q &vel, rw::kinematics::State& state) = 0;
+
+
+		/// deprecated
+		virtual rw::math::Q getVelocity(const rw::kinematics::State& state){ return getJointVelocities(state); };
+		virtual void setVelocity(const rw::math::Q &vel, rw::kinematics::State& state)
+		    { setJointVelocities(vel, state); };
 
 		virtual void setForceLimit(const rw::math::Q& force){}
 
-        virtual const std::vector<Body*>& getLinks() = 0;
+        virtual const std::vector<Body::Ptr>& getLinks() = 0;
 
 	protected:
 
-		DynamicDevice(dynamics::Body* base, rw::models::Device::Ptr dev):
+		DynamicDevice(dynamics::Body::Ptr base, rw::models::Device::Ptr dev):
 			_dev(dev),
 			_base(base)
 		{}
 
 
 		rw::models::Device::Ptr _dev;
-		dynamics::Body* _base;
+		dynamics::Body::Ptr _base;
 	private:
 		DynamicDevice();
 

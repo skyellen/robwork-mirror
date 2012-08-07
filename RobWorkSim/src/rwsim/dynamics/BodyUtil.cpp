@@ -51,13 +51,13 @@ Transform3D<> BodyUtil::placeBody( rwsim::dynamics::Body::Ptr body,
 
 
 
-Body* BodyUtil::getParentBody(dynamics::Body* child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state){
+Body::Ptr BodyUtil::getParentBody(dynamics::Body::Ptr child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state){
     return getParentBody(child->getBodyFrame(),dwc,state);
 }
 
-Body* BodyUtil::getParentBody(rw::kinematics::Frame* child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state ){
+Body::Ptr BodyUtil::getParentBody(rw::kinematics::Frame* child, dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state ){
     Frame *f = child;
-    Body *pbody = NULL;
+    Body::Ptr pbody = NULL;
     while(pbody==NULL){
         f = f->getParent(state);
         if(f==NULL)

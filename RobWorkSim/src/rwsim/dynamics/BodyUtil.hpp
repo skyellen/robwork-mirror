@@ -36,9 +36,9 @@ namespace dynamics {
                                         const rw::kinematics::State& state,
                                         const rw::math::Vector3D<>& dir = -rw::math::Vector3D<>::z());
 
-        static Body* getParentBody(Body* child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state);
+        static Body::Ptr getParentBody(Body::Ptr child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state);
 
-        static Body* getParentBody(rw::kinematics::Frame* child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state );
+        static Body::Ptr getParentBody(rw::kinematics::Frame* child, DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state );
 
 
     };

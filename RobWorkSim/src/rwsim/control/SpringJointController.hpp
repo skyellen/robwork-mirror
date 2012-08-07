@@ -6,7 +6,7 @@
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 
-#include <rwsim/dynamics/DynamicDevice.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
 namespace rwsim {
 namespace control {
@@ -39,7 +39,7 @@ namespace control {
 		 */
 		SpringJointController(
 		        const std::string& name,
-		        dynamics::DynamicDevice* rdev,
+		        dynamics::RigidDevice::Ptr rdev,
 				const std::vector<SpringParam>& springParam,
 				double dt
 				);
@@ -111,7 +111,7 @@ namespace control {
 	private:
 		//std::vector<rw::models::BeamJoint*> _beamJoints;
 
-		dynamics::DynamicDevice *_ddev;
+		dynamics::RigidDevice::Ptr _ddev;
 		rw::math::Q _maxVel;
 		rw::math::Q _lastError, _target, _currentQ, _currentVel;
 		rw::math::Q _targetVel;

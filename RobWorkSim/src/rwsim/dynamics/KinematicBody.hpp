@@ -50,6 +50,8 @@ namespace dynamics {
     class KinematicBody : public Body
     {
     public:
+        typedef rw::common::Ptr<KinematicBody> Ptr;
+
         KinematicBody(const BodyInfo& info, rw::models::Object::Ptr obj);
 
     	virtual ~KinematicBody();
@@ -108,17 +110,14 @@ namespace dynamics {
          * @brief returns the linear velocity described in parent frame
          */
         rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
-        	const double *q = this->getData(state);
-            return rw::math::Vector3D<>(q[0],q[1],q[2]);
+            return _kstate.get(state)->linvel;
         }
 
         /**
          * @brief returns the angular velocity described in parent frame
          */
         rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
-            const double *q = this->getData(state);
-        	rw::math::Vector3D<> v(q[3],q[4],q[5]);
-        	return v;
+            return _kstate.get(state)->angvel;
         }
 
         /**
@@ -139,10 +138,7 @@ namespace dynamics {
          * @brief sets the linear velocity described in parent frame
          */
         void setLinVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
-            double *q = this->getData(state);
-            q[0] = vel[0];
-            q[1] = vel[1];
-            q[2] = vel[2];
+            _kstate.get(state)->linvel = vel;
         }
 
         void setLinVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
@@ -153,20 +149,25 @@ namespace dynamics {
          * @brief sets the angular velocity described in parent frame
          */
         void setAngVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
-            double *q = this->getData(state);
-            q[3] = vel[0];
-            q[4] = vel[1];
-            q[5] = vel[2];
+            _kstate.get(state)->angvel = vel;
         }
 
         void setAngVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
             setAngVel( rw::math::inverse(rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state)).R() * vel, state);
         }
 
+    protected:
+        struct KinematicBodyState {
+            rw::math::Vector3D<> linvel;
+            rw::math::Vector3D<> angvel;
+        };
+
+
 
     private:
-
         rw::kinematics::MovableFrame *_base;
+        rw::kinematics::StatelessObject::Data<KinematicBodyState> _kstate;
+
     };
     //! @}
 }

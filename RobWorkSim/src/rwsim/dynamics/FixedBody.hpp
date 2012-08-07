@@ -35,6 +35,8 @@ namespace dynamics {
     class FixedBody : public Body
     {
     public:
+        typedef rw::common::Ptr<FixedBody> Ptr;
+
         /**
          * @brief constructor
          * @param info [in] body information
@@ -42,7 +44,7 @@ namespace dynamics {
          * @param geoms [in] geometry
          */
     	FixedBody(const BodyInfo& info, rw::models::Object::Ptr obj):
-    	    Body(0, info, obj)
+    	    Body(info, obj)
     	{
 
     	}

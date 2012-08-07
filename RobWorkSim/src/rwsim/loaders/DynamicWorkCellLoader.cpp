@@ -66,7 +66,7 @@
 
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
-#include <rwsim/sensor/TactileMultiAxisSimSensor.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 #include <rwsim/control/SpringJointController.hpp>
 
@@ -152,9 +152,9 @@ namespace
 
         PropertyMap engineProps;
 
-        std::vector<Body*> bodies;
-        std::vector<Body*> allbodies;
-        std::vector<DynamicDevice*> devices;
+        std::vector<Body::Ptr> bodies;
+        std::vector<Body::Ptr> allbodies;
+        std::vector<DynamicDevice::Ptr> devices;
         std::vector<SimulatedController::Ptr> controllers;
         std::vector<SimulatedSensor::Ptr> sensors;
         Vector3D<> gravity;
@@ -237,8 +237,8 @@ namespace
         //std::vector<Face<float> > faces;
 //    }
 
-    DynamicDevice* findDynamicDevice(ParserState& state, Device* dev){
-        BOOST_FOREACH(DynamicDevice *ddev, state.devices){
+    DynamicDevice::Ptr findDynamicDevice(ParserState& state, Device* dev){
+        BOOST_FOREACH(DynamicDevice::Ptr ddev, state.devices){
             if(ddev->getKinematicModel() == dev){
                 return ddev;
             }
@@ -401,9 +401,9 @@ namespace
         }
     }
 
-    Body* getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr){
+    Body::Ptr getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr){
         string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
-        BOOST_FOREACH(Body* b, state.allbodies){
+        BOOST_FOREACH(Body::Ptr b, state.allbodies){
             if(b->getName()==refframeName)
                 return b;
         }
@@ -411,10 +411,10 @@ namespace
         return NULL;
     }
 
-    Body* getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr, const std::string& prefix){
+    Body::Ptr getBodyFromAttr(PTree& tree, ParserState &state, const std::string& attr, const std::string& prefix){
         //Log::debugLog()<< "getFrameFromAttr" << std::endl;
         string refframeName = prefix+tree.get_child("<xmlattr>").get<std::string>(attr);
-        BOOST_FOREACH(Body* b, state.allbodies){
+        BOOST_FOREACH(Body::Ptr b, state.allbodies){
             if(b->getName()==refframeName)
                 return b;
         }
@@ -464,7 +464,7 @@ namespace
 
     }
   */
-    RigidBody* readRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
+    RigidBody::Ptr readRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
         //Log::debugLog()<< "ReadRigidBody" << std::endl;
 
         string refframeName = tree.get_child("<xmlattr>").get<std::string>("frame");
@@ -543,17 +543,18 @@ namespace
 
         //info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
-        RigidBody *body = new RigidBody(info, obj);
-        state.wc->getStateStructure()->addData(body);
+        RigidBody::Ptr body = ownedPtr( new RigidBody(info, obj) );
+        body->registerStateData(state.wc->getStateStructure());
+
         state.allbodies.push_back(body);
         return body;
     }
 
-    RigidBody* readRigidBody(PTree& tree, ParserState &state){
+    RigidBody::Ptr readRigidBody(PTree& tree, ParserState &state){
     	return readRigidBody(tree,"",state);
     }
 
-    FixedBody* readFixedBody(PTree& tree, ParserState &state){
+    FixedBody::Ptr readFixedBody(PTree& tree, ParserState &state){
 
         Object::Ptr bodyObj = getObjectFromAttr(tree, state, "frame");
 
@@ -561,13 +562,13 @@ namespace
         info.material = tree.get<string>("MaterialID");
         //info.frames = std::vector<Frame*>(1, bodyObj->getName());
         //std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
-        FixedBody *body = new FixedBody(info, bodyObj);
+        FixedBody::Ptr body = ownedPtr( new FixedBody(info, bodyObj) );
 
         state.allbodies.push_back(body);
         return body;
     }
 
-    FixedBody* readFixedBase(PTree& tree, ParserState &state, JointDevice *dev){
+    FixedBody::Ptr readFixedBase(PTree& tree, ParserState &state, JointDevice *dev){
         // Log::infoLog() << "ReadFixedBase" << std::endl;
         Object::Ptr obj = getObjectFromAttr(tree, state, "frame", dev->getName()+".");
 
@@ -575,7 +576,7 @@ namespace
         info.material = tree.get<string>("MaterialID");
         //info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
         //std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
-        FixedBody *body = new FixedBody(info, obj);
+        FixedBody::Ptr body = ownedPtr( new FixedBody(info, obj) );
         //Log::infoLog() << "ReadFixedBody end" << std::endl;
         state.allbodies.push_back(body);
         return body;
@@ -640,7 +641,7 @@ namespace
         //std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
 
         KinematicBody *body = new KinematicBody(info, obj);
-        state.wc->getStateStructure()->addData(body);
+        body->registerStateData(state.wc->getStateStructure());
 
         state.allbodies.push_back(body);
         //info.print();
@@ -655,10 +656,10 @@ namespace
     }
 
 
-    Body* readRefBody(PTree& tree, ParserState &state)
+    Body::Ptr readRefBody(PTree& tree, ParserState &state)
     {
         string refbodyName = tree.get_child("<xmlattr>").get<std::string>("body");
-        BOOST_FOREACH(Body* b, state.allbodies){
+        BOOST_FOREACH(Body::Ptr b, state.allbodies){
             if(b->getName() == refbodyName)
                 return b;
         }
@@ -785,14 +786,17 @@ namespace
             params.push_back( sparam );
         }
 
-        DynamicDevice *ddev = findDynamicDevice(state, dev.get());
-        SpringJointController::Ptr controller = ownedPtr(new SpringJointController(controllername, ddev, params, dt) );
+        DynamicDevice::Ptr ddev = findDynamicDevice(state, dev.get());
+        RigidDevice::Ptr rdev = ddev.cast<RigidDevice>();
+        if(rdev==NULL)
+            RW_THROW("Spring controller can only control RigidDevice's!");
+        SpringJointController::Ptr controller = ownedPtr(new SpringJointController(controllername, rdev, params, dt) );
         state.controllers.push_back( controller );
     }
 
 
 
-    SuctionCup* readSuctionCup(PTree& tree, ParserState &state){
+    SuctionCup::Ptr readSuctionCup(PTree& tree, ParserState &state){
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("name");
         double radius = tree.get<double>("Radius");
         double height = tree.get<double>("Height");
@@ -805,8 +809,8 @@ namespace
         if( sc2.size()!=5 )
             RW_THROW("There must be 5 parametes in SpringConstant2");
 
-        Body *base = NULL;
-        RigidBody *end = NULL;
+        Body::Ptr base = NULL;
+        RigidBody::Ptr end = NULL;
         Transform3D<> offset;
         std::string framePrefix("");
         for (CI p = tree.begin(); p != tree.end(); ++p) {
@@ -834,21 +838,21 @@ namespace
         state.allbodies.push_back(end);
         //state.bodies.push_back(base);
         //state.bodies.push_back(end);
-        SuctionCup *scup = new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2) ;
+        SuctionCup::Ptr scup = ownedPtr( new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2) ) ;
         state.wc->addDevice(scup->getKinematicModel());
         return scup;
     }
 
 
 
-    KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
+    KinematicDevice::Ptr readKinematicDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
         JointDevice::Ptr device = getJointDeviceFromAttr(tree, state);
         std::vector<double> maxForce;
         //std::vector<KinematicBody*> bodies;
 
         std::vector<std::pair<BodyInfo,Object::Ptr> > bodies;
-        Body *base = NULL;
+        Body::Ptr base = NULL;
         int jIdx = 0;
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
@@ -877,17 +881,16 @@ namespace
         if( !base ){
         	RW_THROW("Parser error - KinematicDevice must define a base (FixedBase or KinematicBase)");
         }
-        KinematicDevice *kdev = new KinematicDevice(base, bodies, device);
-        std::vector<Body*> links = kdev->getLinks();
-        BOOST_FOREACH(Body *l, links){
+        KinematicDevice::Ptr kdev = ownedPtr(new KinematicDevice(base, bodies, device));
+        std::vector<Body::Ptr> links = kdev->getLinks();
+        BOOST_FOREACH(Body::Ptr l, links){
             state.allbodies.push_back(l);
-            state.wc->getStateStructure()->addData(l);
         }
 
         return kdev;
     }
 
-    RigidDevice* readRigidDevice(PTree& tree, ParserState &state){
+    RigidDevice::Ptr readRigidDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadRigidDevice" << std::endl;
         JointDevice::Ptr device = getJointDeviceFromAttr(tree, state);
         //Q maxForce(device->getDOF());
@@ -912,7 +915,7 @@ namespace
 
         // next we find the base and all links
         std::vector<std::pair<BodyInfo,Object::Ptr> > bodies;
-        Body* base = NULL;
+        Body::Ptr base = NULL;
         int jIdx = 0;
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
@@ -945,19 +948,18 @@ namespace
         	RW_THROW("Parser error - RigidDevice must define a base (FixedBase or KinematicBase)");
         }
         RW_ASSERT(base!=NULL);
-        RigidDevice *rigiddev = new RigidDevice(base, bodies, device);
+        RigidDevice::Ptr rigiddev = ownedPtr(new RigidDevice(base, bodies, device));
         rigiddev->setForceLimit( Q(maxForce) );
-        std::vector<Body*> links = rigiddev->getLinks();
-        BOOST_FOREACH(Body *l, links){
+        std::vector<Body::Ptr> links = rigiddev->getLinks();
+        BOOST_FOREACH(Body::Ptr l, links){
             state.allbodies.push_back(l);
-            state.wc->getStateStructure()->addData(l);
         }
         return rigiddev;
     }
 
     void readTactileSensor(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadTactileData" << std::endl;
-        Body *tactileFrame = getBodyFromAttr(tree, state, "frame");
+        Body::Ptr tactileFrame = getBodyFromAttr(tree, state, "frame");
         if(tactileFrame==NULL)
             RW_THROW("No Body is referenced by the tactile sensor.");
         //Log::debugLog()<< "TactileFrameName: " << tactileFrame->getName()<< std::endl;
@@ -976,12 +978,11 @@ namespace
         double minForce = tree.get<double>("MinForce");
         //string bodyFrame = tree.get<string>("Body");
 
-        TactileArraySensor *sensor =
-            new TactileArraySensor(name, tactileFrame, transform, heightMap, texelSize);
-
+        TactileArraySensor::Ptr sensor =
+            ownedPtr( new TactileArraySensor(name, tactileFrame, transform, heightMap, texelSize) );
 
         sensor->setPressureLimit(minForce, maxForce);
-        state.sensors.push_back( ownedPtr( sensor ) );
+        state.sensors.push_back( sensor );
     }
 
     void readBodySensor(PTree& tree, ParserState &state){
@@ -992,11 +993,11 @@ namespace
         if(bodyFrame==NULL)
             RW_THROW("No frame is referenced by the body contact sensor.");
 
-        BOOST_FOREACH(Body *b, state.allbodies){
+        BOOST_FOREACH(Body::Ptr b, state.allbodies){
             if(b->getBodyFrame()!=bodyFrame)
                 continue;
-            BodyContactSensor *bsensor = new BodyContactSensor(bsname, bodyFrame);
-            state.sensors.push_back( ownedPtr( bsensor ) );
+            BodyContactSensor::Ptr bsensor = ownedPtr( new BodyContactSensor(bsname, bodyFrame) );
+            state.sensors.push_back( bsensor );
             return;
         }
     }
@@ -1014,8 +1015,8 @@ namespace
         if(body1Frame==NULL)
             RW_THROW("No frame is referenced by the body contact sensor.");
 
-        Body *b1=NULL,*b2=NULL;
-        BOOST_FOREACH(Body *b, state.allbodies){
+        Body::Ptr b1=NULL,b2=NULL;
+        BOOST_FOREACH(Body::Ptr b, state.allbodies){
             if(b->getBodyFrame()==bodyFrame)
                 b1=b;
             if(b->getBodyFrame()==body1Frame)
@@ -1035,10 +1036,10 @@ namespace
             }
         }
 
-        TactileMultiAxisSimSensor *bsensor = new TactileMultiAxisSimSensor(bsname, b1, b2);
-        if(refframe!=NULL)
-            bsensor->attachTo( refframe );
-        state.sensors.push_back( ownedPtr( bsensor ) );
+        SimulatedFTSensor::Ptr bsensor = ownedPtr( new SimulatedFTSensor(bsname, b1, b2, refframe) );
+        //if(refframe!=NULL)
+        //    bsensor->attachTo( refframe );
+        state.sensors.push_back(  bsensor  );
     }
 
     JointController::ControlMode readControlMode(PTree& tree, const std::string& tname ){
@@ -1073,7 +1074,7 @@ namespace
             params.push_back( PDParam(params_tmp[2*i],params_tmp[2*i+1]));
         }
 
-        DynamicDevice *ddev = findDynamicDevice(state, dev.get());
+        DynamicDevice::Ptr ddev = findDynamicDevice(state, dev.get());
         if(useSyncPD){
 
             RW_THROW("Not currently supported!");
@@ -1099,7 +1100,7 @@ namespace
 
             double dt = tree.get<double>("TimeStep");
 
-            DynamicDevice *ddev = findDynamicDevice(state, dev.get());
+            DynamicDevice::Ptr ddev = findDynamicDevice(state, dev.get());
             PoseController::Ptr controller = ownedPtr( new PoseController(controllername, ddev, state.wc->getDefaultState(), dt) );
             state.controllers.push_back( controller );
         }
@@ -1308,29 +1309,29 @@ namespace
                 readFrictionMap(p->second, state);
             } else if (p->first == "RigidBody") {
                 //Log::debugLog()<< p->first << std::endl;
-                RigidBody* body = readRigidBody(p->second, state);
+                RigidBody::Ptr body = readRigidBody(p->second, state);
                 state.bodies.push_back(body);
             } else if (p->first == "FixedBody") {
                 //Log::debugLog()<< p->first << std::endl;
-                FixedBody* body = readFixedBody(p->second, state);
+                FixedBody::Ptr body = readFixedBody(p->second, state);
                 state.bodies.push_back(body);
             } else if (p->first == "KinematicBody") {
                 //Log::debugLog()<< p->first << std::endl;
-                KinematicBody* body = readKinematicBody(p->second, "frame", state);
+                KinematicBody::Ptr body = readKinematicBody(p->second, "frame", state);
                 state.bodies.push_back(body);
             } else if (p->first == "Gravity") {
                 //Log::debugLog()<< p->first << std::endl;
                 state.gravity = readVector3D( p->second );
             } else if (p->first == "SuctionCup") {
-                SuctionCup *sdev = readSuctionCup(p->second, state);
+                SuctionCup::Ptr sdev = readSuctionCup(p->second, state);
                 state.devices.push_back(sdev);
             } else if (p->first == "KinematicDevice") {
                 //Log::debugLog()<< p->first << std::endl;
-                KinematicDevice *kdev = readKinematicDevice(p->second, state);
+                KinematicDevice::Ptr kdev = readKinematicDevice(p->second, state);
                 state.devices.push_back(kdev);
             } else if (p->first == "RigidDevice") {
                 //Log::debugLog()<< p->first << std::endl;
-                RigidDevice *rdev = readRigidDevice(p->second, state);
+                RigidDevice::Ptr rdev = readRigidDevice(p->second, state);
                 state.devices.push_back(rdev);
             } else if (p->first == "ObjectTypeData") {
                 readContactDataList(p->second,state);
@@ -1382,7 +1383,7 @@ namespace
         
         // TODO: now check if all bodies has a correct material and objectId. If they has not then
         // we use the default
-        BOOST_FOREACH(Body *body, state.allbodies){
+        BOOST_FOREACH(Body::Ptr body, state.allbodies){
             if( body->getInfo().material == ""){
                 if(state.defaultMaterial=="")
                     RW_THROW("No default material defined! Either define one "

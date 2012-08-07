@@ -35,7 +35,7 @@ namespace control {
 		 */
 		PoseController(
 		        const std::string& name,
-		        dynamics::DynamicDevice* rdev,
+		        dynamics::DynamicDevice::Ptr rdev,
 		        const rw::kinematics::State& state,
 				double dt
 				);
@@ -50,7 +50,7 @@ namespace control {
 		 */
 		PoseController(
 		        const std::string& name,
-		        dynamics::DynamicDevice* rdev,
+		        dynamics::DynamicDevice::Ptr rdev,
 		        const rw::kinematics::State& state,
 				double dt,
 				rw::kinematics::Frame* endframe
@@ -110,7 +110,7 @@ namespace control {
 		PoseController();
 
 	private:
-		dynamics::DynamicDevice *_ddev;
+		dynamics::DynamicDevice::Ptr _ddev;
 		rw::common::Ptr<rw::models::Device> _device;
         rw::kinematics::Frame *_endframe;
 

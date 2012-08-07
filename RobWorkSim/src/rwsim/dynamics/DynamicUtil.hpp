@@ -77,7 +77,7 @@ namespace dynamics {
 		 * @param dwc
 		 * @return all rigid bodies in a dynamic workcell
 		 */
-		static std::vector<RigidBody*> getRigidBodies(DynamicWorkCell& dwc);
+		static std::vector<RigidBody::Ptr> getRigidBodies(DynamicWorkCell& dwc);
 
 
 		static bool isResting(DynamicWorkCell::Ptr dwc,

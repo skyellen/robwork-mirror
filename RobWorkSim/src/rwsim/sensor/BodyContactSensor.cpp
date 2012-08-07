@@ -28,9 +28,10 @@ using namespace rwsim::sensor;
 using namespace rwsim;
 
 BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Frame* frame):
-    Sensor(name,"BodyContactSensor")
+        SimulatedTactileSensor(name),
+        _sframe(frame)
 {
-	this->attachTo(frame);
+    attachTo(frame);
 }
 
 BodyContactSensor::~BodyContactSensor(){}
@@ -51,7 +52,7 @@ void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
      //}
 
      // update aux variables
-     _wTf = Kinematics::worldTframe( getFrame(), state);
+     _wTf = Kinematics::worldTframe( getSensorFrame(), state);
      _fTw = inverse(_wTf);
 }
 
@@ -59,19 +60,19 @@ void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
 void BodyContactSensor::reset(const rw::kinematics::State& state){
     _contacts.clear();
     _bodies.clear();
-    _wTf = Kinematics::worldTframe( getFrame(), state);
+    _wTf = Kinematics::worldTframe( getSensorFrame(), state);
     _fTw = inverse(_wTf);
 }
 
-rw::sensor::Sensor* BodyContactSensor::getSensor(){
-    return this;
+rw::sensor::Sensor::Ptr BodyContactSensor::getSensor(){
+    return NULL;
 }
 
 void BodyContactSensor::addForceW(const rw::math::Vector3D<>& point,
                const rw::math::Vector3D<>& force,
                const rw::math::Vector3D<>& snormal,
                rw::kinematics::State& state,
-               dynamics::Body *body)
+               dynamics::Body::Ptr body)
 {
     addForce(_fTw*point, _fTw.R()*force, _fTw.R()*snormal, state, body);
 }
@@ -80,7 +81,7 @@ void BodyContactSensor::addForce(const rw::math::Vector3D<>& point,
                   const rw::math::Vector3D<>& force,
                   const rw::math::Vector3D<>& snormal,
                   rw::kinematics::State& state,
-                  dynamics::Body *body)
+                  dynamics::Body::Ptr body)
 {
     //if(body!=NULL)
     //std::cout << "addForce("<< point << force << snormal << std::endl;

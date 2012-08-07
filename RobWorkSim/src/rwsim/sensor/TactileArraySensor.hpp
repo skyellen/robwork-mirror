@@ -48,8 +48,13 @@ namespace sensor {
 	 * normal is defined by sequence of the vertices and that the normal defines
 	 * the direction of tactile sensing.
 	 */
-	class TactileArraySensor: public rw::sensor::TactileArray, public SimulatedTactileSensor {
+	class TactileArraySensor: public SimulatedTactileSensor {
 	public:
+
+	    typedef rw::common::Ptr<TactileArraySensor> Ptr;
+
+	    typedef rw::sensor::TactileArray::ValueMatrix ValueMatrix;
+	    typedef rw::sensor::TactileArray::VertexMatrix VertexMatrix;
 
 		/**
 		 * @brief Creates a TactileSensor with a geometry specified by a height map and
@@ -61,7 +66,7 @@ namespace sensor {
 		 * @param texelSize [in]
 		 */
 		TactileArraySensor(const std::string& name,
-		                    dynamics::Body* obj,
+		                    dynamics::Body::Ptr obj,
 							const rw::math::Transform3D<>& fThmap,
 							const ValueMatrix& heightMap,
 							const rw::math::Vector2D<double>& texelSize);
@@ -106,7 +111,7 @@ namespace sensor {
                        const rw::math::Vector3D<>& force,
                        const rw::math::Vector3D<>& snormal,
                        rw::kinematics::State& state,
-                       dynamics::Body *body = NULL){
+                       dynamics::Body::Ptr body = NULL){
             getClassState(state)->addForceW(point, force, snormal, body);
         }
 
@@ -117,7 +122,7 @@ namespace sensor {
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& snormal,
                       rw::kinematics::State& state,
-                      dynamics::Body *body = NULL){
+                      dynamics::Body::Ptr body = NULL){
             getClassState(state)->addForce(point, force, snormal, body);
         }
 
@@ -125,13 +130,13 @@ namespace sensor {
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL){ };
+                      dynamics::Body::Ptr body=NULL){ };
 
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL){};
+                      dynamics::Body::Ptr body=NULL){};
 
         /**
          * @copydoc rwlibs::simulation::SimulatedSensor::update
@@ -197,8 +202,8 @@ namespace sensor {
 			return _fThmap;
 		}
 
-
-		rw::sensor::Sensor* getSensor(){ return this;};
+		rw::sensor::Sensor::Ptr getSensor();
+		rw::sensor::TactileArray::Ptr getTactileArraySensor();
 
 		/**
 		 * @brief set the upper and lower pressure bound that the sensors can measure
@@ -227,7 +232,7 @@ namespace sensor {
 			_maxPenetration = penetration;
 		}
 
-		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
+		rw::kinematics::Frame * getSensorFrame(){ return _body->getBodyFrame(); }
 
 	public:
 
@@ -269,13 +274,13 @@ namespace sensor {
 	        virtual void addForceW(const rw::math::Vector3D<>& point,
 	                       const rw::math::Vector3D<>& force,
 	                       const rw::math::Vector3D<>& snormal,
-	                       dynamics::Body *body = NULL);
+	                       dynamics::Body::Ptr body = NULL);
 
 	        //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
 	        virtual void addForce(const rw::math::Vector3D<>& point,
 	                      const rw::math::Vector3D<>& force,
 	                      const rw::math::Vector3D<>& snormal,
-	                      dynamics::Body *body = NULL);
+	                      dynamics::Body::Ptr body = NULL);
 
             //! @copydoc rwlibs::simulation::SimulatedSensor::update
             virtual void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -301,7 +306,7 @@ namespace sensor {
             ValueMatrix _accForces,_pressure;
             rw::math::Transform3D<> _wTf, _fTw;
             std::vector<rw::sensor::Contact3D> _allAccForces,_allForces;
-            std::map<dynamics::Body*, std::vector<rw::sensor::Contact3D> > _forces;
+            std::map<dynamics::Body::Ptr, std::vector<rw::sensor::Contact3D> > _forces;
             double _accTime, _stime;
             rw::proximity::ProximityStrategyData _pdata;
             boost::numeric::ublas::matrix<float> _distMatrix;
@@ -375,7 +380,10 @@ namespace sensor {
 
 
 		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
-		dynamics::Body* _body;
+		dynamics::Body::Ptr _body;
+
+
+        rw::sensor::TactileArray::Ptr _tactileArraySensorWrapper;
 
 
 	};

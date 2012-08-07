@@ -14,7 +14,7 @@ namespace dynamics {
      */
     class Constraint: public rw::kinematics::StateData {
     public:
-        typedef enum {Revolute, Prismatic, Fixed, Contact} ConstraintType;
+        typedef enum {Revolute, Prismatic, Spherical, Fixed, Contact} ConstraintType;
 
         typedef rw::common::Ptr<Constraint> Ptr;
 

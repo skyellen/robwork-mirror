@@ -27,6 +27,10 @@ namespace {
 
 
     void updateKinematicBody(KinematicBody* body, BodyController::TargetData& tdata, const rwlibs::simulation::Simulator::UpdateInfo& info, State& state){
+        // the forcecontroller does not work for kinematic devices
+        if(tdata._type==BodyController::ForceController)
+            return;
+
         // for a kinematic body we allways follow a trajectory
         // basically we just need the current time to be calculate
         if(!info.rollback){
@@ -64,35 +68,80 @@ namespace {
         body->setAngVelW(angVelW/info.dt, state);
     }
 
-    void updateBody(Body* body, BodyController::TargetData& tdata, const rwlibs::simulation::Simulator::UpdateInfo& info, State& state){
+    void updateBody(Body* body, BodyController::TargetData& tdata,
+                    const rwlibs::simulation::Simulator::UpdateInfo& info,
+                    State& state)
+    {
+        // for a kinematic body we allways follow a trajectory
+        // basically we just need the current time to be calculate
+        if(!info.rollback){
+            // then we need to update the _lastTime
+            tdata._lastTime += info.dt_prev;
+        }
+        double t = tdata._lastTime;
 
+        if(tdata._type==BodyController::ForceController){
+            body->setForceW( info.dt*tdata._force, state);
+            body->setTorqueW( info.dt*tdata._torque, state);
+        } else {
+
+            // test if the trajectory is finished
+            if(tdata._traj->duration()<t+info.dt){
+                tdata._enabled = false;
+                return;
+            }
+
+            // the target position for next step.
+            Transform3D<> nextPose = tdata._traj->x(t+info.dt);
+
+            // TODO: apply a wrench to the body such that is will move toward nextPose in time info.dt
+            // for now we just create simple penalty based on the velocity
+            Transform3D<> wTt = nextPose;
+            Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
+
+            const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
+            const VelocityScrew6D<> vel( bTt );
+            const VelocityScrew6D<> velW = (wTb.R() * vel);
+
+            Vector3D<> vErrW = velW.linear()/info.dt;
+            // and now control the angular velocity
+            Vector3D<> aErrW = Vector3D<>(velW(3),velW(4),velW(5))/info.dt;
+
+            // get the current velocities
+            Vector3D<> vCurW = body->getLinVelW(state);
+            Vector3D<> aCurW = body->getAngVelW(state);
+
+            double mass = body->getInfo().mass;
+
+            body->setForceW( (vErrW-vCurW)*mass*10 , state);
+            body->setTorqueW( (aErrW-aCurW)*mass*10 , state);
+
+        }
     }
 }
 
 void BodyController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
     //std::cout << "B" << std::endl;
     //Log::infoLog() << "update";
-    BOOST_FOREACH(Body* body, _bodies){
-        BodyController::TargetData& tdata = _bodyMap[body];
+    BOOST_FOREACH(Body::Ptr body, _bodies){
+        BodyController::TargetData& tdata = _bodyMap[body.get()];
         if(!tdata._enabled)
             continue;
-        if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body) ){
+        if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body.get()) ){
             updateKinematicBody(kbody, tdata, info, state );
         } else {
-
-            //updateBody(rbody, tdata, info, state );
-
+            updateBody(body.get(), tdata, info, state );
         }
 
     }
 
 }
 
-void BodyController::disableBodyControl(rwsim::dynamics::Body *body){
-    if(_bodyMap.find(body)==_bodyMap.end())
+void BodyController::disableBodyControl(rwsim::dynamics::Body::Ptr body){
+    if(_bodyMap.find(body.get())==_bodyMap.end())
         return;
 
-    _bodyMap[body]._enabled = false;
+    _bodyMap[body.get()]._enabled = false;
 }
 
 void BodyController::disableBodyControl(){
@@ -105,7 +154,7 @@ void BodyController::reset(const rw::kinematics::State& state){
     //_time = 0;
 }
 
-void BodyController::setTarget(rwsim::dynamics::Body *body,
+void BodyController::setTarget(rwsim::dynamics::Body::Ptr body,
                                const rw::math::Transform3D<>& target,
                                rw::kinematics::State& state)
 {
@@ -116,7 +165,7 @@ void BodyController::setTarget(rwsim::dynamics::Body *body,
         return;
     }
 
-    TargetData& data = _bodyMap[body];
+    TargetData& data = _bodyMap[body.get()];
     data.reset();
     data._type = Pose6DController;
 
@@ -131,29 +180,44 @@ void BodyController::setTarget(rwsim::dynamics::Body *body,
     //Log::infoLog() << "traj duration: " << traj->duration() << " \n";
     data._traj = traj;
     data._target = target;
-    _bodyMap[body]._enabled = true;
+    _bodyMap[body.get()]._enabled = true;
     _bodies.push_back(body);
 
 }
 
-void BodyController::setTarget(Body* body, rw::trajectory::Trajectory<Transform3D<> >::Ptr traj, State& state){
-    TargetData& data = _bodyMap[body];
+void BodyController::setTarget(Body::Ptr body, rw::trajectory::Trajectory<Transform3D<> >::Ptr traj, State& state){
+    TargetData& data = _bodyMap[body.get()];
     data.reset();
     data._type = TrajectoryController;
     data._traj = traj;
     data._target = traj->x( traj->endTime() );
-    _bodyMap[body]._enabled = true;
+    _bodyMap[body.get()]._enabled = true;
     _bodies.push_back(body);
 }
 
-rw::math::Transform3D<> BodyController::getTarget(rwsim::dynamics::Body *body){
-    if( _bodyMap.find(body)!=_bodyMap.end() ){
+void BodyController::setForceTarget(rwsim::dynamics::Body::Ptr body,
+                    rw::math::Vector3D<> force,
+                    rw::math::Vector3D<> torque,
+                    rw::kinematics::State& state)
+{
+    TargetData& data = _bodyMap[body.get()];
+    data.reset();
+    data._type = ForceController;
+    data._force = force;
+    data._torque = torque;
+    _bodyMap[body.get()]._enabled = true;
+    _bodies.push_back(body);
+}
+
+
+rw::math::Transform3D<> BodyController::getTarget(rwsim::dynamics::Body::Ptr body){
+    if( _bodyMap.find(body.get())!=_bodyMap.end() ){
         // add body to control
-        return _bodyMap[body]._target;
+        return _bodyMap[body.get()]._target;
     }
     return Transform3D<>::identity();
 }
 
-Trajectory<Transform3D<> >::Ptr BodyController::getTargetTrajectory(Body *body){
-    return _bodyMap[body]._traj;
+Trajectory<Transform3D<> >::Ptr BodyController::getTargetTrajectory(Body::Ptr body){
+    return _bodyMap[body.get()]._traj;
 }

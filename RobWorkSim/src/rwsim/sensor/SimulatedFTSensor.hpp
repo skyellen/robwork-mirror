@@ -15,11 +15,11 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef TRWSIM_SENSOR_TACTILEMULTIAXISSIMSENSOR_HPP_
-#define TRWSIM_SENSOR_TACTILEMULTIAXISSIMSENSOR_HPP_
+#ifndef TRWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
+#define TRWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
 
 #include "SimulatedTactileSensor.hpp"
-#include <rw/sensor/TactileMultiAxisSensor.hpp>
+#include <rw/sensor/FTSensor.hpp>
 
 namespace rwsim {
 namespace sensor {
@@ -27,24 +27,26 @@ namespace sensor {
 	//! @{
 
 	/**
-	 * @brief A sensor that measures force and torque around some reference frame
+	 * @brief A sensor that measures force and torque between two bodies around
+	 * some reference frame.
 	 */
-	class TactileMultiAxisSimSensor: public rw::sensor::TactileMultiAxisSensor, public SimulatedTactileSensor {
+	class SimulatedFTSensor: public SimulatedTactileSensor {
 	public:
 
 		/**
-		 * @brief constructor
+		 * @brief constructor - the forces will be described relative to body \b body1
 		 * @param name [in] identifier
-		 * @param body [in] the body that this sensor is attached to
+		 * @param body [in] the first body
+		 * @param body1 [in] the second body
 		 */
-		//TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body);
+        SimulatedFTSensor(const std::string& name,
+                          dynamics::Body::Ptr body,
+                          dynamics::Body::Ptr body1,
+                          rw::kinematics::Frame* frame=NULL);
 
-        TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body, dynamics::Body *body1);
 
-		/**
-		 * @brief destructor
-		 */
-		virtual ~TactileMultiAxisSimSensor(){};
+		//! @brief destructor
+		virtual ~SimulatedFTSensor(){};
 
 		//// Interface inherited from SimulatedSensor
 		//! @copydoc SimulatedSensor::update
@@ -59,26 +61,26 @@ namespace sensor {
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body *body = NULL);
+					   dynamics::Body::Ptr body = NULL);
 
 		//! @copydoc SimulatedTactileSensor::addForce
 		void addForce(const rw::math::Vector3D<>& point,
 					  const rw::math::Vector3D<>& force,
 					  const rw::math::Vector3D<>& cnormal,
 					  rw::kinematics::State& state,
-					  dynamics::Body *body=NULL);
+					  dynamics::Body::Ptr body=NULL);
 
         void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL);
+                      dynamics::Body::Ptr body=NULL);
 
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL);
+                      dynamics::Body::Ptr body=NULL);
 
 		//! @copydoc TactileMultiAxisSensor::getTransform
 		rw::math::Transform3D<> getTransform();
@@ -97,16 +99,16 @@ namespace sensor {
 		//! @copydoc TactileMultiAxisSensor::getMaxForce
 		double getMaxForce(){return _maxForce;};
 
-		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
+		rw::kinematics::Frame * getSensorFrame(){ return _sframe; }
 
-		void acquire(){}
+ 		void acquire(){}
 
-		 rw::sensor::Sensor* getSensor(){ return this;};
+		 rw::sensor::FTSensor::Ptr getSensor(){ return _ftsensorWrapper;};
 
-		 rwsim::dynamics::Body * getBody1(){ return _body;};
-		 rwsim::dynamics::Body * getBody2(){ return _body1;};
+		 rwsim::dynamics::Body::Ptr getBody1(){ return _body;};
+		 rwsim::dynamics::Body::Ptr getBody2(){ return _body1;};
 	private:
-		TactileMultiAxisSimSensor();
+		SimulatedFTSensor();
 
 	private:
 		// the frame that the force and torque is described in relation to
@@ -117,7 +119,10 @@ namespace sensor {
 		//! aux variables updated through \b update
 		rw::math::Transform3D<> _fTb, _wTb, _bTw;
 
-		rwsim::dynamics::Body *_body,*_body1;
+		rwsim::dynamics::Body::Ptr _body, _body1;
+
+		 rw::sensor::FTSensor::Ptr _ftsensorWrapper;
+		 rw::kinematics::Frame *_sframe;
 	};
 	//! @}
 }

@@ -39,7 +39,7 @@ namespace control {
 		 * @param target
 		 * @param state
 		 */
-		void setTarget(rwsim::dynamics::Body *body, const rw::math::Transform3D<>& target, rw::kinematics::State& state);
+		void setTarget(rwsim::dynamics::Body::Ptr body, const rw::math::Transform3D<>& target, rw::kinematics::State& state);
 
 		/**
 		 * @brief set a target trajectory of a body. The initial configuration of the trajectory must match
@@ -52,13 +52,42 @@ namespace control {
 		 * @param traj
 		 * @param state
 		 */
-		void setTarget(rwsim::dynamics::Body* body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
+		void setTarget(rwsim::dynamics::Body::Ptr body,
+		               rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj,
+		               rw::kinematics::State& state);
 
-		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body *body);
+		/**
+		 * @brief set the force target of a body, the forces will be added such that the force
+		 * on the body in each timestep will be timestep/[force;torque]. In other words the wrench
+		 * [force;torque] is stretched over one second.
+		 *
+		 * The wrench is defined in world coordinates.
+		 * @param body
+		 * @param force
+		 * @param torque
+		 * @param state
+		 */
+		void setForceTarget(rwsim::dynamics::Body::Ptr body,
+		                    rw::math::Vector3D<> force,
+		                    rw::math::Vector3D<> torque,
+		                    rw::kinematics::State& state);
 
-		rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr getTargetTrajectory(rwsim::dynamics::Body *body);
+		/**
+		 * @brief get the current Cartesian target
+		 * @param body [in] the body for which to get the target
+		 * @return 6D Cartesian target
+		 */
+		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body::Ptr body);
 
-		void disableBodyControl(rwsim::dynamics::Body *body);
+		/**
+		 * @brief get the current target trajectory for body \b body
+		 * @param body [in] body for which to get the target
+		 * @return target trajectory
+		 */
+		rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr getTargetTrajectory(rwsim::dynamics::Body::Ptr body);
+
+
+		void disableBodyControl(rwsim::dynamics::Body::Ptr body);
 
 		void disableBodyControl();
 
@@ -77,7 +106,7 @@ namespace control {
 
         bool isEnabled(){ return _enabled; } ;
 
-        typedef enum {Pose6DController, TrajectoryController} ControlType;
+        typedef enum {Pose6DController, TrajectoryController, ForceController} ControlType;
         struct TargetData {
             TargetData():_type(Pose6DController),_enabled(false){ reset();}
             TargetData(ControlType type):_type(type),_enabled(true){ reset(); }
@@ -89,6 +118,7 @@ namespace control {
             ControlType _type;
             rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr _traj;
             rw::math::Transform3D<> _target;
+            rw::math::Vector3D<> _force, _torque;
             double _time, // current time on the trajectory
                    _lastTime, // the time on the trajectory taken at the last non-rollback step
                    _lastDt; // the simulated starting time
@@ -101,7 +131,7 @@ namespace control {
 	private:
 		std::map<rwsim::dynamics::Body*, TargetData> _bodyMap;
 		//std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
-		std::list<rwsim::dynamics::Body*> _bodies;
+		std::list<rwsim::dynamics::Body::Ptr> _bodies;
 		bool _enabled;
 	};
 

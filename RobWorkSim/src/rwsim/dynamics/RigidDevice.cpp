@@ -44,7 +44,7 @@ namespace {
     {
     public:
         RigidLink( const BodyInfo& info, rw::models::Object::Ptr obj, RigidDevice *ddev, size_t id):
-            Body(6,info,obj),_ddev(ddev),_id(id)
+            Body(info,obj),_ddev(ddev),_id(id), _rstate(this)
         {
             // find the joint index for which this link is attached
             Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
@@ -66,14 +66,13 @@ namespace {
 
         //! @copydoc Body::getPointVelW
         virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
-            // Todo: get joint velocity, and from that calculate the velocity of this body in
-            // the joint frame
-            return rw::math::VelocityScrew6D<>();
+            Transform3D<> bTf = _ddev->getModel().baseTframe(getBodyFrame(), state);
+            Q vel = _ddev->getJointVelocities(state);
+            Jacobian bJf = _ddev->getModel().baseJframe(getBodyFrame(), state);
+            return inverse(bTf) * (bJf*vel.getSubPart(0, _jointIdx+1));
         }
 
-         virtual void reset(rw::kinematics::State &state){
-
-         }
+         virtual void reset(rw::kinematics::State &state){}
 
          virtual double calcEnergy(const rw::kinematics::State& state){
              return 0;
@@ -82,46 +81,32 @@ namespace {
 
          //! @copydoc Body::setForce
          void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-             double *q = this->getData(state);
-             q[0] = f[0];
-             q[1] = f[1];
-             q[2] = f[2];
+             _rstate.get(state)->force = f;
          }
 
          //! @copydoc Body::addForce
-         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
-             double *q = this->getData(state);
-             q[0] += force[0];
-             q[1] += force[1];
-             q[2] += force[2];
+         void addForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
+             _rstate.get(state)->force += f;
          }
 
          //! @copydoc Body::getForce
          rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
-             const double *q = this->getData(state);
-             return rw::math::Vector3D<>(q[0],q[1],q[2]);
+             return _rstate.get(state)->force;
          }
 
          //! @copydoc Body::setTorque
          void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-             double *q = this->getData(state);
-             q[3]  = t[0];
-             q[4] = t[1];
-             q[5] = t[2];
+             _rstate.get(state)->torque = t;
          }
 
          //! @copydoc Body::addTorque
          void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-             double *q = this->getData(state);
-             q[3]  += t[0];
-             q[4] += t[1];
-             q[5] += t[2];
+             _rstate.get(state)->torque += t;
          }
 
          //! @copydoc Body::getTorque
          rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
-             const double *q = this->getData(state);
-             return rw::math::Vector3D<>(q[3],q[4],q[5]);
+             return _rstate.get(state)->torque;
          }
 
          RigidDevice* getDynamicDevice(){ return _ddev; }
@@ -133,26 +118,189 @@ namespace {
         size_t _id;
         int _jointIdx;
         Joint *_jointFrame;
+        struct RigidLinkState {
+            rw::math::Vector3D<> force;
+            rw::math::Vector3D<> torque;
+        };
+
+        rw::kinematics::StatelessObject::Data<RigidLinkState> _rstate;
     };
 
 
 }
 
 
-RigidDevice::RigidDevice(dynamics::Body* base,
+RigidDevice::RigidDevice(dynamics::Body::Ptr base,
                          const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
                          rw::models::JointDevice::Ptr dev):
      DynamicDevice(base,dev),
-    _vel( rw::math::Q::zero(dev->getDOF()) ),
-    _actualVel( rw::math::Q::zero(dev->getDOF()) ),
-    _force( rw::math::Q::zero(dev->getDOF()) ),
+     _velocity(this,dev->getDOF()),
+     _target(this,dev->getDOF()),
+     _mode(this,dev->getDOF()),
+     //_torque(this,dev->getDOF()),
+     //_vel( rw::math::Q::zero(dev->getDOF()) ),
+     //_actualVel( rw::math::Q::zero(dev->getDOF()) ),
+    _forceLimits( rw::math::Q::zero(dev->getDOF()) ),
     _jdev(dev)
 {
     for(size_t i=0;i<objects.size(); i++){
-        _links.push_back( new RigidLink(objects[i].first, objects[i].second, this, i) );
+        _links.push_back( rw::common::ownedPtr( new RigidLink(objects[i].first, objects[i].second, this, i) ) );
     }
 }
 
+
+void RigidDevice::setMotorForceLimits(const rw::math::Q& force){
+    _forceLimits = force;
+}
+
+rw::math::Q RigidDevice::getMotorForceLimits(){
+    return _forceLimits;
+}
+
+rw::math::Q RigidDevice::getJointVelocities(const rw::kinematics::State& state){
+    const double *vals = _velocity.get(state);
+    return rw::math::Q(_velocity.getN(), vals);
+}
+
+double RigidDevice::getJointVelocity(int i, const rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_velocity.getN());
+    return _velocity.get(state)[i];
+}
+
+std::vector<RigidDevice::MotorControlMode> RigidDevice::getMotorModes(const rw::kinematics::State& state){
+    std::vector<RigidDevice::MotorControlMode> res(_mode.getN(), RigidDevice::Velocity);
+    char *arr = _mode.get(state);
+    for(int i=0;i<_mode.getN();i++){
+        if(arr[i]==0){
+            res[i] = RigidDevice::Velocity;
+        } else {
+            res[i] = RigidDevice::Force;
+        }
+    }
+    return res;
+}
+
+RigidDevice::MotorControlMode RigidDevice::getMotorMode(int i, const rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_mode.getN());
+    if(_mode.get(state)[i]==0){
+        return RigidDevice::Velocity;
+    }
+    return RigidDevice::Force;
+}
+
+rw::math::Q RigidDevice::getMotorTargets(const rw::kinematics::State& state){
+    const double *vals = _target.get(state);
+    return rw::math::Q(_target.getN(), vals);
+}
+
+double RigidDevice::getMotorTarget(int i, const rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_target.getN());
+    return _target.get(state)[i];
+}
+
+void RigidDevice::setMotorTargets(const rw::math::Q& q, rw::kinematics::State& state){
+    double *vals = _target.get(state);
+    for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
+        vals[i] = q[i];
+    }
+}
+
+void RigidDevice::setMotorForceTargets(const rw::math::Q& q, rw::kinematics::State& state){
+    double *vals = _target.get(state);
+    char *modes = _mode.get(state);
+
+    for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
+        vals[i] = q[i];
+        modes[i] = 1;
+    }
+}
+
+void RigidDevice::setMotorVelocityTargets(const rw::math::Q& q, rw::kinematics::State& state){
+    double *vals = _target.get(state);
+    char *modes = _mode.get(state);
+
+    for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
+        vals[i] = q[i];
+        modes[i] = 0;
+    }
+}
+
+
+void RigidDevice::setJointVelocities(const rw::math::Q& q, rw::kinematics::State& state){
+    double *vals = _velocity.get(state);
+    for(int i=0;i<std::min(_velocity.getN(),(int)q.size());i++){
+        vals[i] = q[i];
+    }
+}
+
+void RigidDevice::setJointVelocity(double vel, int i, rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_velocity.getN());
+    double *vals = _velocity.get(state);
+    vals[i] = vel;
+}
+
+
+void RigidDevice::setMotorTarget(double q, int i, rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_target.getN());
+    double *vals = _target.get(state);
+    vals[i] = q;
+}
+
+void RigidDevice::setMotorForceTarget(double force, int i, rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_target.getN());
+    double *vals = _target.get(state);
+    char *modes = _mode.get(state);
+    vals[i] = force;
+    modes[i] = 1;
+}
+
+void RigidDevice::setMotorVelocityTarget(double vel, int i, rw::kinematics::State& state){
+    RW_ASSERT(i>=0);
+    RW_ASSERT(i<_target.getN());
+    double *vals = _target.get(state);
+    char *modes = _mode.get(state);
+    vals[i] = vel;
+    modes[i] = 0;
+}
+
+
+void RigidDevice::registerStateData(rw::kinematics::StateStructure::Ptr statestructure){
+    DynamicDevice::registerStateData(statestructure);
+
+    // add all links to the register
+    BOOST_FOREACH(Body::Ptr link, getLinks()){
+        link->registerStateData(statestructure);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef wedfmdfmd
 
 void RigidDevice::setVelocity(const rw::math::Q& vel, const rw::kinematics::State& state){
     rw::math::Q velLimit = getModel().getVelocityLimits();
@@ -183,3 +331,6 @@ void RigidDevice::addForceTorque(const rw::math::Q &forceTorque, rw::kinematics:
     }
     */
 }
+
+#endif
+

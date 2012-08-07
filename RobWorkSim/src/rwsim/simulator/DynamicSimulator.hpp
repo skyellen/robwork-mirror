@@ -94,7 +94,7 @@ namespace simulator {
 		 * @param body
 		 * @param enabled
 		 */
-		void setEnabled(dynamics::Body* body, bool enabled);
+		void setEnabled(dynamics::Body::Ptr body, bool enabled);
 
 		/**
 		 * @brief create a debug render for the specific implementation
@@ -165,7 +165,7 @@ namespace simulator {
 		  */
 		 void setEnabled(rw::kinematics::Frame* f, bool);
 
-		 void setDynamicsEnabled(rwsim::dynamics::Body* body, bool enabled);
+		 void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
 		 // interfaces for manipulating/controlling bodies
 
 		 /**
@@ -175,15 +175,15 @@ namespace simulator {
 		  * @param t3d [in] the target pose
 		  * @param state [in] current state
 		  */
-		 void setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
+		 void setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
 
-		 void setTarget(dynamics::Body* body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
+		 void setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
 
 		 /**
 		  * @brief disables the target control of body \b body.
 		  * @param body
 		  */
-		 void disableBodyControl( dynamics::Body* body );
+		 void disableBodyControl( dynamics::Body::Ptr body );
 
 		 void disableBodyControl( );
 

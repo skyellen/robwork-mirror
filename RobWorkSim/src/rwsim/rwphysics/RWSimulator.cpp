@@ -84,7 +84,8 @@ void RWSimulator::initPhysics(State& state){
     // create ContactGraph from the dwc
     RW_DEBUG("- Creating constraint nodes for free bodies");
     std::vector<ConstraintNode*> node;
-    BOOST_FOREACH(Body *body, _dwc->getBodies() ){
+    BOOST_FOREACH(Body::Ptr b, _dwc->getBodies() ){
+        Body *body = b.get();
         if( dynamic_cast<RigidBody*>(body) ){
             ConstraintNode *node = _pool->createCNode( ConstraintNode::Rigid );
             if(node==NULL)
@@ -122,10 +123,10 @@ void RWSimulator::initPhysics(State& state){
 
     RW_DEBUG("- Creating constraint nodes and edges from devices!");
     // construct nodes from
-    BOOST_FOREACH(DynamicDevice *dev, _dwc->getDynamicDevices()){
-        if( dynamic_cast<RigidDevice*>(dev) ){
+    BOOST_FOREACH(DynamicDevice::Ptr dev, _dwc->getDynamicDevices()){
+        if( dynamic_cast<RigidDevice*>(dev.get()) ){
             std::cout << "NO SUPPORT FOR RIGID DEVICES!" << std::endl;
-        } else if( dynamic_cast<KinematicDevice*>(dev) ){
+        } else if( dynamic_cast<KinematicDevice*>(dev.get()) ){
             std::cout << "NO SUPPORT FOR KINEMATIC DEVICES!" << std::endl;
         }
     }

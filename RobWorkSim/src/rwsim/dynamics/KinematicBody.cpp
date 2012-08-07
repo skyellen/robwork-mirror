@@ -38,8 +38,9 @@ using namespace rwsim::dynamics;
 KinematicBody::KinematicBody(
             const BodyInfo& info,
             rw::models::Object::Ptr obj):
-			   Body(6, info, obj),
-			   _base(NULL)
+			   Body(info, obj),
+			   _base(NULL),
+			   _kstate(this)
 
 {
     _base = dynamic_cast<MovableFrame*>(obj->getBase());
@@ -54,13 +55,13 @@ KinematicBody::~KinematicBody()
 
 void KinematicBody::reset(rw::kinematics::State &state){
 	// set variables in state to 0
-	Q zeroVec = Q::zero(6);
-	double *vel = this->getData(state);
-	for(size_t i=0;i<6;i++){
-		vel[i] = 0;
-	}
+    KinematicBodyState &ks = *_kstate.get(state);
+    ks.linvel = Vector3D<>(0,0,0);
+    ks.angvel = Vector3D<>(0,0,0);
 }
 
 rw::math::VelocityScrew6D<> KinematicBody::getVelocity(const rw::kinematics::State &state) const{
-    return rw::math::VelocityScrew6D<>();
+    const KinematicBodyState &ks = *_kstate.get(state);
+    return rw::math::VelocityScrew6D<>(ks.linvel[0], ks.linvel[1], ks.linvel[2],
+                                        ks.angvel[0], ks.angvel[1], ks.angvel[2]);
 }

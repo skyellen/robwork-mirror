@@ -12,7 +12,7 @@ namespace {
 
 SpringJointController::SpringJointController(
         const std::string& name,
-        DynamicDevice* rdev,
+        RigidDevice::Ptr rdev,
 		const std::vector<SpringParam>& springParam,
 		double dt):
 	JointController(name, &rdev->getModel()),
@@ -48,9 +48,6 @@ void SpringJointController::setSampleTime(double stime){
 }
 
 void SpringJointController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
-
-
-
     // all joints in the device are dependent on a single input
 
     // the pressure indicate the size of the torques that are applied on the beam joints.
@@ -85,7 +82,10 @@ void SpringJointController::update(const rwlibs::simulation::Simulator::UpdateIn
     //    std::cout << torque(i) << "; ";
     //}
     //std::cout << std::endl;
-    _ddev->addForceTorque(torque, state);
+
+    _ddev->setMotorForceTargets(torque, state);
+
+
     //_ddev->setForceLimit(torque);
     //_ddev->setVelocity(q_error, state);
 

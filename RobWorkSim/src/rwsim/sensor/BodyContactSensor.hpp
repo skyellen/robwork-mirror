@@ -36,7 +36,7 @@ namespace sensor {
 	 * positions where the forces act.
 	 *
 	 */
-	class BodyContactSensor: public SimulatedTactileSensor, public rw::sensor::Sensor {
+	class BodyContactSensor: public SimulatedTactileSensor {
 	public:
 
 	    typedef rw::common::Ptr<BodyContactSensor> Ptr;
@@ -60,7 +60,7 @@ namespace sensor {
 
 		void reset(const rw::kinematics::State& state);
 
-		rw::sensor::Sensor* getSensor();
+		rw::sensor::Sensor::Ptr getSensor();
 
 
 		//// Inherited from SimulatedTactileSensor
@@ -68,26 +68,26 @@ namespace sensor {
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body *body = NULL);
+					   dynamics::Body::Ptr body = NULL);
 
 		void addForce(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body *body = NULL);
+					   dynamics::Body::Ptr body = NULL);
 
 
         void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL){ };
+                      dynamics::Body::Ptr body=NULL){ };
 
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL){};
+                      dynamics::Body::Ptr body=NULL){};
 
 
 		// now for the functions belonging to this class
@@ -102,9 +102,9 @@ namespace sensor {
 			return _contacts;
 		}
 
-		std::vector<rwsim::dynamics::Body*> getBodies(){ return _bodies; }
+		std::vector<rwsim::dynamics::Body::Ptr> getBodies(){ return _bodies; }
 
-		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
+		rw::kinematics::Frame * getSensorFrame(){ return _sframe; }
 
 	public: // stateless stuff
 		/*
@@ -118,8 +118,9 @@ namespace sensor {
 	private:
 		// hmm,
 		std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
-		std::vector<rwsim::dynamics::Body*> _bodiesTmp, _bodies;
+		std::vector<rwsim::dynamics::Body::Ptr> _bodiesTmp, _bodies;
 		rw::math::Transform3D<> _wTf, _fTw;
+		rw::kinematics::Frame *_sframe;
 	};
 
 	typedef rw::common::Ptr<BodyContactSensor> BodyContactSensorPtr;

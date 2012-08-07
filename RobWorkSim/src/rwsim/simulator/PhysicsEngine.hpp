@@ -92,20 +92,20 @@ namespace simulator {
 		 * @param body [in] the body to enable/disable
 		 * @param enabled [in]
 		 */
-		virtual void setEnabled(dynamics::Body* body, bool enabled) = 0;
+		virtual void setEnabled(dynamics::Body::Ptr body, bool enabled) = 0;
 
 		/**
 		 * @brief disables the dynamics of a body.
 		 * @param body
 		 * @param enabled
 		 */
-		virtual void setDynamicsEnabled(dynamics::Body* body, bool enabled) = 0;
+		virtual void setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled) = 0;
 
 		/**
 		 * @brief create a debug render for the specific implementation
 		 * @return NULL if no render is available else a valid render
 		 */
-		virtual drawable::SimulatorDebugRender* createDebugRender() = 0;
+		virtual drawable::SimulatorDebugRender::Ptr createDebugRender() = 0;
 
 		/**
 		 * @brief properties of the physics engine

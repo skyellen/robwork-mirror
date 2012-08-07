@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "TactileMultiAxisSimSensor.hpp"
+#include "SimulatedFTSensor.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
 
@@ -24,75 +24,110 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsim::sensor;
 using namespace rwsim;
+
+
+namespace {
+
+    class FTSensorWrapper: public rw::sensor::FTSensor {
+    private:
+        SimulatedFTSensor* _sensor;
+    public:
+        FTSensorWrapper(SimulatedFTSensor* sensor, Frame* bframe, const std::string& name):
+            FTSensor(name),
+            _sensor(sensor)
+        {
+            this->attachTo(bframe);
+        }
+
+        double getMaxForce(){ return _sensor->getMaxForce(); };
+        double getMaxTorque(){ return _sensor->getMaxTorque(); };
+        rw::math::Transform3D<> getTransform(){ return _sensor->getTransform(); };
+
+        void acquire(){ _sensor->acquire(); }
+        rw::math::Vector3D<> getForce(){ return _sensor->getForce(); };
+        rw::math::Vector3D<> getTorque(){ return _sensor->getTorque(); };
+    };
+
+
+}
+
 /*
-TactileMultiAxisSimSensor::TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body):
+SimulatedFTSensor::SimulatedFTSensor(const std::string& name, dynamics::Body *body):
     TactileMultiAxisSensor(name, "TactileMultiAxisSensor"),_body(body)
 {
 	this->attachTo( body->getBodyFrame() );
 }
 */
-TactileMultiAxisSimSensor::TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body, dynamics::Body *body1):
-    TactileMultiAxisSensor(name, "TactileMultiAxisSensor"),_body(body),_body1(body1)
+SimulatedFTSensor::SimulatedFTSensor(const std::string& name,
+                                     dynamics::Body::Ptr body,
+                                     dynamics::Body::Ptr body1,
+                                     rw::kinematics::Frame* frame):
+        SimulatedTactileSensor(name),
+    _body(body),_body1(body1)
 {
-    this->attachTo( body1->getBodyFrame() );
+    _sframe = _body1->getBodyFrame();
+    if(frame!=NULL){
+        _sframe = frame;
+    }
+    _ftsensorWrapper = rw::common::ownedPtr( new FTSensorWrapper(this, _sframe, "SimulatedFTSensor") );
 }
 
-rw::math::Transform3D<> TactileMultiAxisSimSensor::getTransform(){
+rw::math::Transform3D<> SimulatedFTSensor::getTransform(){
 	return _transform;
 }
 
-rw::math::Vector3D<> TactileMultiAxisSimSensor::getForce(){
+rw::math::Vector3D<> SimulatedFTSensor::getForce(){
 	return _force;
 }
 
-rw::math::Vector3D<> TactileMultiAxisSimSensor::getTorque(){
+rw::math::Vector3D<> SimulatedFTSensor::getTorque(){
 	return _force;
 }
 
-void TactileMultiAxisSimSensor::addForceW(const rw::math::Vector3D<>& point,
+void SimulatedFTSensor::addForceW(const rw::math::Vector3D<>& point,
                const rw::math::Vector3D<>& force,
                const rw::math::Vector3D<>& cnormal,
                rw::kinematics::State& state,
-               dynamics::Body *body)
+               dynamics::Body::Ptr body)
 {
 	addForce(_bTw*point, _bTw.R()*force, _bTw.R()*cnormal, state, body);
 }
 
-void TactileMultiAxisSimSensor::addForce(const rw::math::Vector3D<>& point,
+void SimulatedFTSensor::addForce(const rw::math::Vector3D<>& point,
               const rw::math::Vector3D<>& force,
               const rw::math::Vector3D<>& cnormal,
               rw::kinematics::State& state,
-              dynamics::Body *body)
+              dynamics::Body::Ptr body)
 {
     _forceTmp += force;
     _torqueTmp += cross(point, force);
 }
 
-void TactileMultiAxisSimSensor::addWrenchToCOM(
+void SimulatedFTSensor::addWrenchToCOM(
               const rw::math::Vector3D<>& force,
               const rw::math::Vector3D<>& torque,
               rw::kinematics::State& state,
-              dynamics::Body *body)
+              dynamics::Body::Ptr body)
 {
     _forceTmp += force;
     _torqueTmp += torque;
 };
 
-void TactileMultiAxisSimSensor::addWrenchWToCOM(
+void SimulatedFTSensor::addWrenchWToCOM(
               const rw::math::Vector3D<>& force,
               const rw::math::Vector3D<>& torque,
               rw::kinematics::State& state,
-              dynamics::Body *body)
+              dynamics::Body::Ptr body)
 {
     _forceTmp += _bTw.R() * force;
     _torqueTmp += _bTw.R() * torque;
 };
 
 
-void TactileMultiAxisSimSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+void SimulatedFTSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
 	// update aux variables
 	_wTb = Kinematics::worldTframe( _body1->getBodyFrame(), state);
-	_fTb = Kinematics::frameTframe( getFrame(), _body1->getBodyFrame(), state);
+	_fTb = Kinematics::frameTframe( getSensorFrame(), _body1->getBodyFrame(), state);
 	_bTw = inverse(_wTb);
 	_force = -  (_fTb.R() * _forceTmp );
     _torque = - (_fTb.R() * (_torqueTmp - cross(_fTb.P(), _forceTmp)) );
@@ -103,15 +138,16 @@ void TactileMultiAxisSimSensor::update(const rwlibs::simulation::Simulator::Upda
     Vector3D<> wTtorque = _wTb.R()*_torque;
 
     // testing the output:
-    std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
-            << wTtorque[0] << "\t" << wTtorque[1] << "\t" << wTtorque[2] << "\n";
+    //std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
+    //        << wTtorque[0] << "\t" << wTtorque[1] << "\t" << wTtorque[2] << "\n";
+
     //std::cout << "Force : " << _wTb.R()*_force << std::endl;
     //std::cout << "Torque: " << _wTb.R()*_force << std::endl;
 }
 
-void TactileMultiAxisSimSensor::reset(const rw::kinematics::State& state){
+void SimulatedFTSensor::reset(const rw::kinematics::State& state){
 	_wTb = Kinematics::worldTframe( _body1->getBodyFrame(), state);
-    _fTb = Kinematics::frameTframe( getFrame(), _body1->getBodyFrame(), state);
+    _fTb = Kinematics::frameTframe( getSensorFrame(), _body1->getBodyFrame(), state);
 	_bTw = inverse(_wTb);
 
 	_forceTmp = Vector3D<>();
@@ -119,5 +155,7 @@ void TactileMultiAxisSimSensor::reset(const rw::kinematics::State& state){
 	_force = Vector3D<>();
 	_torque = Vector3D<>();
 }
+
+
 
 

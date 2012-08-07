@@ -43,7 +43,7 @@ namespace {
     {
     public:
         KinematicLink( const BodyInfo& info, rw::models::Object::Ptr obj, KinematicDevice *ddev, size_t id):
-            Body(6,info,obj),_ddev(ddev),_id(id)
+            Body(info,obj),_ddev(ddev),_id(id)
         {
             // find the joint index for which this link is attached
             Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
@@ -65,14 +65,13 @@ namespace {
 
         //! @copydoc Body::getPointVelW
         virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const{
-            // Todo: get joint velocity, and from that calculate the velocity of this body in
-            // the joint frame
-
+            Transform3D<> bTf = _ddev->getModel().baseTframe(getBodyFrame(), state);
+            Q vel = _ddev->getJointVelocities(state);
+            Jacobian bJf = _ddev->getModel().baseJframe(getBodyFrame(), state);
+            return inverse(bTf) * (bJf*vel.getSubPart(0, _jointIdx+1));
         }
 
-         virtual void reset(rw::kinematics::State &state){
-
-         }
+         virtual void reset(rw::kinematics::State &state){}
 
          virtual double calcEnergy(const rw::kinematics::State& state){
              return 0;
@@ -80,12 +79,10 @@ namespace {
 
 
          //! @copydoc Body::setForce
-         void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-         }
+         void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){}
 
          //! @copydoc Body::addForce
-         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
-         }
+         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){}
 
          //! @copydoc Body::getForce
          rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
@@ -93,12 +90,10 @@ namespace {
          }
 
          //! @copydoc Body::setTorque
-         void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-         }
+         void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){}
 
          //! @copydoc Body::addTorque
-         void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-         }
+         void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){}
 
          //! @copydoc Body::getTorque
          rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
@@ -115,24 +110,24 @@ namespace {
         size_t _id;
         int _jointIdx;
         Joint *_jointFrame;
+
     };
 
 
 }
 
 KinematicDevice::KinematicDevice(
-				dynamics::Body* base,
+				dynamics::Body::Ptr base,
 				const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
                 rw::models::JointDevice::Ptr dev):
                     DynamicDevice(base,dev),
                     _maxVel(dev->getVelocityLimits()),
                     _maxAcc(dev->getAccelerationLimits()),
-                    _q( rw::math::Q::zero(dev->getDOF()) ),
-                    _velQ( rw::math::Q::zero(dev->getDOF()) ),
-                    _jdev(dev)
+                    _jdev(dev),
+                    _velocity(this, dev->getDOF())
 {
     for(size_t i=0;i<objects.size(); i++){
-        _links.push_back( new KinematicLink(objects[i].first, objects[i].second, this, i) );
+        _links.push_back( rw::common::ownedPtr( new KinematicLink(objects[i].first, objects[i].second, this, i) ) );
     }
 }
 

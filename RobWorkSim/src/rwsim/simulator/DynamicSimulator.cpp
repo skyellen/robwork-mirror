@@ -42,7 +42,7 @@ double DynamicSimulator::getTime(){
     return _pengine->getTime();
 }
 
-void DynamicSimulator::setEnabled(dynamics::Body* body, bool enabled){
+void DynamicSimulator::setEnabled(dynamics::Body::Ptr body, bool enabled){
     _pengine->setEnabled(body, enabled);
 }
 
@@ -84,24 +84,24 @@ std::vector<rwlibs::simulation::SimulatedSensor::Ptr> DynamicSimulator::getSenso
 }
 
 void DynamicSimulator::setEnabled(rw::kinematics::Frame* f, bool enabled){
-    rwsim::dynamics::Body *b =_dwc->getBody(f);
+    rwsim::dynamics::Body::Ptr b =_dwc->getBody(f);
     if(b!=NULL)
         setEnabled(b, enabled);
 }
 
-void DynamicSimulator::setDynamicsEnabled(dynamics::Body* body, bool enabled){
+void DynamicSimulator::setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled){
     _pengine->setDynamicsEnabled(body, enabled);
 }
 
-void DynamicSimulator::setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state){
+void DynamicSimulator::setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state){
     _bodyController->setTarget(body, t3d, state);
 }
 
-void DynamicSimulator::setTarget(dynamics::Body* body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state){
+void DynamicSimulator::setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state){
     _bodyController->setTarget(body, traj, state);
 }
 
-void DynamicSimulator::disableBodyControl( dynamics::Body* body ){
+void DynamicSimulator::disableBodyControl( dynamics::Body::Ptr body ){
     _bodyController->disableBodyControl( body );
 }
 

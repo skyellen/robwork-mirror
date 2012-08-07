@@ -20,7 +20,7 @@ namespace {
 
 PDController::PDController(
         const std::string& name,
-		DynamicDevice* rdev,
+		DynamicDevice::Ptr rdev,
 		ControlMode cmode,
 		const std::vector<PDParam>& pdparams,
 		double dt):
@@ -44,7 +44,7 @@ PDController::PDController(
 
 PDController::PDController(
         const std::string& name,
-		DynamicDevice* rdev,
+		DynamicDevice::Ptr rdev,
 		ControlMode cmode,
 		const PDParam& pdparam,
 		double dt):

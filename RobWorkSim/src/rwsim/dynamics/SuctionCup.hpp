@@ -27,12 +27,12 @@ namespace dynamics {
     public:
 
     public:
-
+        //! smart pointer type of SuctionCup
         typedef rw::common::Ptr<SuctionCup> Ptr;
 
         SuctionCup(const std::string& name,
-                   rwsim::dynamics::Body* base,
-                   rwsim::dynamics::RigidBody* end,
+                   rwsim::dynamics::Body::Ptr base,
+                   rwsim::dynamics::RigidBody::Ptr end,
                    const rw::math::Transform3D<>& bTb2,
                    double radi,
                    double height,
@@ -41,9 +41,9 @@ namespace dynamics {
 
         virtual ~SuctionCup();
 
-        rwsim::dynamics::Body* getBaseBody(){ return _baseBody; }
+        rwsim::dynamics::Body::Ptr getBaseBody(){ return _baseBody; }
 
-        rwsim::dynamics::Body* getEndBody(){ return _endBody; };
+        rwsim::dynamics::Body::Ptr getEndBody(){ return _endBody; };
 
         void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
@@ -55,45 +55,42 @@ namespace dynamics {
 
         rw::math::Q getSpringParamsClosed(){ return _springConstant2; }
 
-        rw::math::Q getVelocity(const rw::kinematics::State& state){
+        rw::math::Q getJointVelocities(const rw::kinematics::State& state){
             return rw::math::Q::zero(6);
         }
 
-        void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state){
-
-        }
+        void setJointVelocities(const rw::math::Q &vel, rw::kinematics::State& state){ }
 
         void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state){
-
         }
 
         rw::math::Transform3D<> getOffset(){ return _bTb2; }
 
-        const std::vector<rwsim::dynamics::Body*>& getLinks(){
+        const std::vector<rwsim::dynamics::Body::Ptr>& getLinks(){
             return _links;
         }
 
         bool isClosed(const rw::kinematics::State& state){ return _closedState; }
         void setClosed(bool closed, rw::kinematics::State& state){ _closedState = closed; }
 
-        rwsim::dynamics::Body* getContactBody(const rw::kinematics::State& state){ return _contactBodyState; }
-        void setContactBody(rwsim::dynamics::Body* b, rw::kinematics::State& state){ _contactBodyState = b; }
+        rwsim::dynamics::Body::Ptr getContactBody(const rw::kinematics::State& state){ return _contactBodyState; }
+        void setContactBody(rwsim::dynamics::Body::Ptr b, rw::kinematics::State& state){ _contactBodyState = b; }
 
         double getPressure(const rw::kinematics::State& state){ return _kindev->getQ(state)[0]; }
         void setPressure(double pressure, rw::kinematics::State& state){ return _kindev->setQ(rw::math::Q(1,pressure), state); }
 
     private:
         rw::models::Device::Ptr _kindev;
-        rwsim::dynamics::Body *_baseBody;
-        rwsim::dynamics::RigidBody *_endBody;
-        std::vector<rwsim::dynamics::Body*> _links;
+        rwsim::dynamics::Body::Ptr _baseBody;
+        rwsim::dynamics::RigidBody::Ptr _endBody;
+        std::vector<rwsim::dynamics::Body::Ptr> _links;
         double _radius, _height;
         rw::math::Q _springConstant1, _springConstant2;
         rw::math::Transform3D<> _bTb2;
 
         // TODO: variables that should be put into the state
         bool _closedState;
-        rwsim::dynamics::Body *_contactBodyState;
+        rwsim::dynamics::Body::Ptr _contactBodyState;
     };
 }
 }

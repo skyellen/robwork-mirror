@@ -41,7 +41,7 @@ namespace control {
 		 */
 		PDController(
 		        const std::string& name,
-		        dynamics::DynamicDevice* rdev,
+		        dynamics::DynamicDevice::Ptr rdev,
 				ControlMode cmode,
 				const std::vector<PDParam>& pdparams,
 				double dt
@@ -57,7 +57,7 @@ namespace control {
 		 */
 		PDController(
 		        const std::string& name,
-		        dynamics::DynamicDevice* rdev,
+		        dynamics::DynamicDevice::Ptr rdev,
 				ControlMode cmode,
 				const PDParam& pdparam,
 				double dt
@@ -138,7 +138,7 @@ namespace control {
 		PDController();
 
 	private:
-		dynamics::DynamicDevice *_ddev;
+		dynamics::DynamicDevice::Ptr _ddev;
 		rw::math::Q _maxVel;
 		rw::math::Q _lastError, _currentError, _target, _currentQ, _currentVel;
 		rw::math::Q _targetVel;

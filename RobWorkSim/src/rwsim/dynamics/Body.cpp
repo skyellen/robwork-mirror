@@ -30,8 +30,8 @@ using namespace rw::geometry;
 using namespace rw::models;
 using namespace rwsim::dynamics;
 
-Body::Body(int dof, const BodyInfo& info, rw::models::Object::Ptr obj):
-         rw::kinematics::StateData(dof, obj->getBase()->getName()),
+Body::Body(const BodyInfo& info, rw::models::Object::Ptr obj):
+         //rw::kinematics::StateData(obj->getBase()->getName()),
          _bodyframe(obj->getBase()),
          _obj(obj),
          _info(info)

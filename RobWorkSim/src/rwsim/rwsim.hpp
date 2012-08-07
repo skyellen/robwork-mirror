@@ -32,7 +32,7 @@
 #include "./sensor/SimulatedTactileSensor.hpp"
 #include "./sensor/TactileArraySensor.hpp"
 #include "./sensor/BodyContactSensor.hpp"
-#include "./sensor/TactileMultiAxisSimSensor.hpp"
+#include "./sensor/SimulatedFTSensor.hpp"
 
 #include "./loaders/DynamicWorkCellLoader.hpp"
 #include "./loaders/ScapePoseFormat.hpp"

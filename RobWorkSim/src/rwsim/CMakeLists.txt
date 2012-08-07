@@ -29,7 +29,7 @@ add_library(rwsim
 	sensor/SimulatedTactileSensor.cpp 	 
 	sensor/TactileArraySensor.cpp 
 	sensor/BodyContactSensor.cpp 
-    sensor/TactileMultiAxisSimSensor.cpp 
+    sensor/SimulatedFTSensor.cpp 
 	
 	loaders/DynamicWorkCellLoader.cpp
 	loaders/ScapePoseFormat.cpp

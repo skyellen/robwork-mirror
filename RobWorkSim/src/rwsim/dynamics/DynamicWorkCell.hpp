@@ -63,8 +63,8 @@ namespace dynamics {
     class DynamicWorkCell
     {
     public:
-        typedef std::vector<Body*> BodyList;
-        typedef std::vector<DynamicDevice*> DeviceList;
+        typedef std::vector<Body::Ptr> BodyList;
+        typedef std::vector<DynamicDevice::Ptr> DeviceList;
         typedef std::vector<rwlibs::simulation::SimulatedController::Ptr> ControllerList;
         typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
         typedef rw::common::Ptr<DynamicWorkCell> Ptr;
@@ -94,7 +94,7 @@ namespace dynamics {
          * @param name [in] name of body
          * @return body if found, NULL otherwise
          */
-    	Body* findBody(const std::string& name) const;
+    	Body::Ptr findBody(const std::string& name) const;
 
     	/**
     	 * @brief find a specific body with name \b name and type \b T
@@ -102,10 +102,10 @@ namespace dynamics {
     	 * @return body if found, NULL otherwise
     	 */
         template<class T>
-        T* findBody(const std::string& name) const{
-            Body *body = findBody(name);
+        rw::common::Ptr<T> findBody(const std::string& name) const{
+            Body::Ptr body = findBody(name);
             if(body==NULL) return NULL;
-            return dynamic_cast<T*>(body);
+            return body.cast<T>();
         }
 
         /**
@@ -113,10 +113,10 @@ namespace dynamics {
          * @return list of all bodies of type \b T
          */
         template<class T>
-        std::vector<T*> findBodies() const{
-            std::vector<T*> bodies;
-            BOOST_FOREACH(Body* b, _allbodies ){
-                if(T* tb = dynamic_cast<T*>(b)){
+        std::vector<rw::common::Ptr<T> > findBodies() const{
+            std::vector<rw::common::Ptr<T> > bodies;
+            BOOST_FOREACH(Body::Ptr b, _allbodies ){
+                if(rw::common::Ptr<T> tb = b.cast<T>()){
                     bodies.push_back(tb);
                 }
             }
@@ -128,12 +128,22 @@ namespace dynamics {
     	 */
     	const DeviceList& getDynamicDevices(){ return _devices; };
 
+        /**
+         * @brief add a sensor to the dynamic workcell
+         * @param sensor [in] a simulated sensor
+         */
+        void addDevice(DynamicDevice::Ptr device){
+            device->registerStateData( _workcell->getStateStructure() );
+            _devices.push_back(device);
+            _changedEvent.fire(DeviceAddedEvent, boost::any(device) );
+        };
+
     	/**
     	 * @brief find a dynamic device of name \b name
     	 * @param name [in] name of device
     	 * @return a device with name \b name or null
     	 */
-    	DynamicDevice* findDevice(const std::string& name);
+    	DynamicDevice::Ptr findDevice(const std::string& name) const;
 
         /**
          * @brief find a specific device with name \b name and type \b T
@@ -141,10 +151,10 @@ namespace dynamics {
          * @return body if found, NULL otherwise
          */
         template<class T>
-        T* findDevice(const std::string& name) const{
-            DynamicDevice *body = findDevice(name);
-            if(body==NULL) return NULL;
-            return dynamic_cast<T*>(body);
+        rw::common::Ptr<T> findDevice(const std::string& name) const{
+            DynamicDevice::Ptr dev = findDevice(name);
+            if(dev==NULL) return NULL;
+            return dev.cast<T>();
         }
 
     	/**
@@ -166,9 +176,9 @@ namespace dynamics {
          * @param sensor [in] a simulated sensor
          */
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
-            sensor->addStateData( _workcell->getStateStructure() );
+            sensor->registerStateData( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
-            _changedEvent.fire(GravityChangedEvent, boost::any(sensor) );
+            _changedEvent.fire(SensorAddedEvent, boost::any(sensor) );
         };
 
         /**
@@ -202,7 +212,7 @@ namespace dynamics {
          * Notice that this will change the length of the default
          * State.
          */
-        void addBody(Body* body);
+        void addBody(Body::Ptr body);
 
     	/**
     	 * @brief adds a body controller to the dynamic workcell.
@@ -212,7 +222,7 @@ namespace dynamics {
     	 */
     	void addController(rwlibs::simulation::SimulatedController::Ptr manipulator){
     	    //TODO: change STATE and WorkCell accordingly
-    	    manipulator->addStateData( _workcell->getStateStructure() );
+    	    manipulator->registerStateData( _workcell->getStateStructure() );
     		_controllers.push_back(manipulator);
     		_changedEvent.fire(ControllerAddedEvent, boost::any(manipulator) );
     	}
@@ -244,7 +254,7 @@ namespace dynamics {
         /**
           * @brief gets the body associated with frame f if any.
           */
-        Body* getBody(rw::kinematics::Frame *f);
+        Body::Ptr getBody(rw::kinematics::Frame *f);
 
     	/**
     	 * @brief gets the default kinematic workcell
@@ -271,7 +281,7 @@ namespace dynamics {
          * @param
          * @return
          */
-        bool inDevice(Body* body);
+        bool inDevice(Body::Ptr body);
 
         /**
          * @brief Set the gravity in this dynamic workcell
@@ -336,7 +346,7 @@ namespace dynamics {
         SensorList _sensors;
 
         // deprecated
-        std::map<rw::kinematics::Frame*,Body*> _frameToBody;
+        std::map<rw::kinematics::Frame*, Body::Ptr> _frameToBody;
 
         MaterialDataMap _matDataMap;
         ContactDataMap _contactDataMap;

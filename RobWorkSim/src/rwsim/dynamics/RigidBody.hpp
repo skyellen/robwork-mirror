@@ -48,7 +48,7 @@ namespace dynamics {
     class RigidBody : public Body
     {
     public:
-
+        typedef rw::common::Ptr<RigidBody> Ptr;
         /**
          * @brief constructor
          * @param info [in] body description
@@ -83,46 +83,32 @@ namespace dynamics {
 
         //! @copydoc Body::setForce
         void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-            double *q = this->getData(state);
-            q[6] = f[0];
-            q[7] = f[1];
-            q[8] = f[2];
+            _rstate.get(state)->force = f;
         }
 
         //! @copydoc Body::addForce
         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
-            double *q = this->getData(state);
-            q[6] += force[0];
-            q[7] += force[1];
-            q[8] += force[2];
+            _rstate.get(state)->force += force;
         }
 
         //! @copydoc Body::getForce
         rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
-            const double *q = this->getData(state);
-            return rw::math::Vector3D<>(q[6],q[7],q[8]);
+            return _rstate.get(state)->force;
         }
 
         //! @copydoc Body::setTorque
         void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-            double *q = this->getData(state);
-            q[9]  = t[0];
-            q[10] = t[1];
-            q[11] = t[2];
+            _rstate.get(state)->torque = t;
         }
 
         //! @copydoc Body::addTorque
         void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-            double *q = this->getData(state);
-            q[9]  += t[0];
-            q[10] += t[1];
-            q[11] += t[2];
+            _rstate.get(state)->torque += t;
         }
 
         //! @copydoc Body::getTorque
         rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
-            const double *q = this->getData(state);
-            return rw::math::Vector3D<>(q[9],q[10],q[11]);
+            return _rstate.get(state)->torque;
         }
 
     public:
@@ -176,8 +162,9 @@ namespace dynamics {
          * @brief return the linear velocity described in parent frame
          */
         rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
-        	const double *q = this->getData(state);
-            return rw::math::Vector3D<>(q[0],q[1],q[2]);
+            return _rstate.get(state)->linvel;
+        	//const double *q = this->getData(state);
+            //return rw::math::Vector3D<>(q[0],q[1],q[2]);
         }
 
         /**
@@ -191,22 +178,20 @@ namespace dynamics {
          * @brief set the linear velocity.
          */
         void setLinVel(const rw::math::Vector3D<> &lvel, rw::kinematics::State& state){
-        	double *q = this->getData(state);
-        	q[0] = lvel[0];
-        	q[1] = lvel[1];
-        	q[2] = lvel[2];
+            _rstate.get(state)->linvel = lvel;
         }
 
         void setLinVelW(const rw::math::Vector3D<> &lvel, rw::kinematics::State& state){
-            setLinVelW( inverse(getWTParent(state).R()) * lvel, state);
+            setLinVel( inverse(getWTParent(state).R()) * lvel, state);
         }
 
         /**
          * @brief returns the angular velocity described in parent frame
          */
         rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
-            const double *q = this->getData(state);
-        	return rw::math::Vector3D<>(q[3],q[4],q[5]);
+            return _rstate.get(state)->angvel;
+            //const double *q = this->getData(state);
+        	//return rw::math::Vector3D<>(q[3],q[4],q[5]);
         }
 
         /**
@@ -305,6 +290,16 @@ namespace dynamics {
         // const variables
         const double _mass, _massInv;
 
+        struct RigidBodyState {
+            rw::math::Vector3D<> linvel;
+            rw::math::Vector3D<> angvel;
+            rw::math::Vector3D<> force;
+            rw::math::Vector3D<> torque;
+        };
+
+
+
+
         rw::kinematics::MovableFrame *_mframe;
         rw::kinematics::Frame *_parent;
 
@@ -317,6 +312,7 @@ namespace dynamics {
         // state variables
         rw::math::InertiaMatrix<> _ITensorInv,_ITensor; // inverse inertia tensor in parent frame
 
+        rw::kinematics::StatelessObject::Data<RigidBodyState> _rstate;
     };
     //! @}
 } // namespace dynamics

@@ -33,35 +33,41 @@ namespace dynamics {
 	 * @brief a kinematic device is able to influence the simulated environment
 	 * but the device is not influenced by any external force as is the RigidDevice.
 	 *
+	 * The kinematic device is velocity controlled and if the acceleration limits permit
+	 * then the velocity of the kinematic device will be equal to the target velocity in
+	 * the next step of the simulator.
+	 *
 	 * This class is especially usefull for animating robot devices in a
 	 * simulated environment.
 	 */
 	class KinematicDevice: public DynamicDevice {
 	public:
-		KinematicDevice(dynamics::Body *base,
+		KinematicDevice(dynamics::Body::Ptr base,
 	                    const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
 						rw::models::JointDevice::Ptr dev);
 
-		/**
-		 * @brief destructor
-		 * @return
-		 */
+		//! @brief destructor
 		virtual ~KinematicDevice();
 
-		virtual void setQ(const rw::math::Q &q, const rw::kinematics::State& state){_q = q;};
+		//! @copydoc DynamicDevice::getJointVelocities
+		rw::math::Q getJointVelocities(const rw::kinematics::State& state){
+		    return rw::math::Q(_velocity.getN(), _velocity.get(state) );
+		};
 
-		virtual rw::math::Q getQ(const rw::kinematics::State& state){return _q;}
-
-		rw::math::Q getVelocity(const rw::kinematics::State& state){return _velQ;};
-
-		void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state){ _velQ = vel;};
+        //! @copydoc DynamicDevice::setJointVelocities
+		void setJointVelocities(const rw::math::Q &vel, rw::kinematics::State& state){
+		    double *vals = _velocity.get(state);
+		    for(int i=0; i< std::min(_velocity.getN(), (int)vel.size()); i++ ){
+		        vals[i] = vel[i];
+		    }
+		};
 
 		/**
 		 * @brief get the kinematic bodies that this KinematicDevice controls. The
 		 * bodies are ordered such that device joint \b i maps to kinematic body  \b i
 		 * @return all bodies that the device controls.
 		 */
-		const std::vector<Body*>& getLinks(){ return _links; }
+		const std::vector<Body::Ptr>& getLinks(){ return _links; }
 
 		// parameters for velocity profile
 		void setMaxAcc(const rw::math::Q& acc);
@@ -70,16 +76,13 @@ namespace dynamics {
 		void setMaxVel(const rw::math::Q& vel);
 		rw::math::Q getMaxVel();
 
-		void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state){
-
-		}
-
 		rw::models::JointDevice::Ptr getJointDevice(){ return _jdev; }
 	private:
-		std::vector<Body*> _links;
+		std::vector<Body::Ptr> _links;
 		rw::math::Q _maxVel, _maxAcc;
-		rw::math::Q _q, _velQ;
+		//rw::math::Q _q, _velQ;
 		rw::models::JointDevice::Ptr _jdev;
+		rw::kinematics::StatelessObject::Data<double> _velocity;
 	};
 	//! @}
 }

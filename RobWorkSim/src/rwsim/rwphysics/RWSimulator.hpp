@@ -74,11 +74,11 @@ namespace simulator {
 		/**
 		 * @copydoc Simulator::createDebugRender
 		 */
-		drawable::SimulatorDebugRender* createDebugRender(){
-			return new RWDebugRender(*_dwc);
+		drawable::SimulatorDebugRender::Ptr createDebugRender(){
+			return rw::common::ownedPtr( new RWDebugRender(*_dwc) );
 		}
 
-		virtual void setEnabled(dynamics::Body* body, bool enabled){}
+		virtual void setEnabled(dynamics::Body::Ptr body, bool enabled){}
 
 		rw::common::PropertyMap& getPropertyMap()
 		{ return _propertyMap; };
@@ -104,7 +104,7 @@ namespace simulator {
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
 		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
-		void setDynamicsEnabled(rwsim::dynamics::Body* body, bool enabled){}
+		void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled){}
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){ return _sensors;};
 
 	private:

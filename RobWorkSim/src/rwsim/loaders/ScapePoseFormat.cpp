@@ -32,7 +32,7 @@ using namespace rw::math;
 
 // saving poses to SCAPE file
 void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
-								const std::vector<RigidBody*>& bodies,
+								const std::vector<RigidBody::Ptr>& bodies,
 								const rw::kinematics::State state,
 								const std::string& ObjectName,
 								const std::string& SimulationDescription)
@@ -50,7 +50,7 @@ void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
       fout << "  IsPosesInitialized: 1" << endl;
       for(size_t i=0;i<bodies.size(); i++){
         rw::kinematics::Frame *frame = bodies[i]->getBodyFrame();
-        if((frame!=NULL) && (dynamic_cast<RigidBody*>(bodies[i]) )) {
+        if((frame!=NULL) && (bodies[i].cast<RigidBody>()) ) {
             Vector3D<double>& P = frame->getTransform(state).P();
             Rotation3D<double>& R = frame->getTransform(state).R();
             fout.precision(10);
@@ -66,7 +66,7 @@ void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
 }
 
 void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
-		const std::vector<dynamics::RigidBody*>& bodies,
+		const std::vector<dynamics::RigidBody::Ptr>& bodies,
 		const std::vector< rw::kinematics::State> states,
 		const std::string& ObjectName,
 		const std::string& SimulationDescription)
@@ -86,7 +86,7 @@ void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
     	const State &state = states[j];
 		for(size_t i=0;i<bodies.size(); i++){
 		  rw::kinematics::Frame *frame = bodies[i]->getBodyFrame();
-		  if((frame!=NULL) && (dynamic_cast<RigidBody*>(bodies[i]) )) {
+		  if((frame!=NULL) && (bodies[i].cast<RigidBody>()) ) {
 			  Vector3D<double>& P = frame->getTransform(state).P();
 			  Rotation3D<double>& R = frame->getTransform(state).R();
 			  fout.precision(10);

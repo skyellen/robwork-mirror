@@ -131,7 +131,7 @@ public:
         GraspedObject():object(NULL){}
         rwsim::dynamics::RigidBody* object;
         std::vector<rw::sensor::Contact3D> contacts;
-        std::vector<rwsim::dynamics::Body*> bodies;
+        std::vector<rwsim::dynamics::Body::Ptr> bodies;
     };
 
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} StepState;
@@ -181,9 +181,9 @@ private:
 
     GraspedObject getObjectContacts(const rw::kinematics::State& state, SimState &sstate);
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
-                                                         rwsim::dynamics::RigidBody *object,
+                                                         rwsim::dynamics::RigidBody::Ptr object,
                                                          rwsim::sensor::BodyContactSensor::Ptr sensor,
-                                                         std::vector<rwsim::dynamics::Body*>& bodies);
+                                                         std::vector<rwsim::dynamics::Body::Ptr>& bodies);
 
 
     rw::math::Q calcGraspQuality(const rw::kinematics::State& state, SimState &sstate);
@@ -216,11 +216,11 @@ private:
 	    _nrOfExperiments, _lastSaveTaskIndex;
 	int _totalNrOfExperiments;
 
-	std::vector<rwsim::dynamics::RigidBody*> _objects;
-	rwsim::dynamics::DynamicDevice *_dhand;
-	rwsim::dynamics::RigidDevice *_rhand;
+	std::vector<rwsim::dynamics::RigidBody::Ptr> _objects;
+	rwsim::dynamics::DynamicDevice::Ptr _dhand;
+	rwsim::dynamics::RigidDevice::Ptr _rhand;
     rw::models::Device::Ptr _hand;
-    rwsim::dynamics::KinematicBody *_hbase;
+    rwsim::dynamics::KinematicBody::Ptr _hbase;
     rw::kinematics::MovableFrame *_mbase;
 
     rwlibs::control::JointController *_graspController;

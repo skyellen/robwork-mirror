@@ -330,21 +330,16 @@ InertiaMatrix<>
 							Izx, Izy, Izz);
 }
 #endif
-std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
+std::vector<RigidBody::Ptr> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
 	using namespace dynamics;
-	std::vector<RigidBody*> bodies;
-    BOOST_FOREACH(Body* body, dwc.getBodies()){
-        if(RigidBody* rbody = dynamic_cast<RigidBody*>(body)){
-            bodies.push_back(rbody);
-        }
-    }
+	std::vector<RigidBody::Ptr> bodies = dwc.findBodies<RigidBody>();
     return bodies;
 }
 
 bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State& state, double max_linjointvel, double max_angjointvel){
     if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev.get())){
         std::vector<Joint*> rjoints = rdev->getJointDevice()->getJoints();
-        Q vel = rdev->getActualVelocity(state);
+        Q vel = rdev->getJointVelocities(state);
         //std::cout << vel << std::endl;
         RW_ASSERT_MSG(vel.size()<=rjoints.size(), vel.size() << "<=" << rjoints.size());
         int depOffset = 0;
@@ -367,21 +362,18 @@ bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State&
 
 bool DynamicUtil::isResting(DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state, double max_lin, double max_ang, double max_jointvel){
     // first check all rigid bodies
-    std::vector<Body*> bodies = dwc->getBodies();
-    BOOST_FOREACH(Body* b, bodies){
-        if(RigidBody *rbody = dynamic_cast<RigidBody*>(b)){
-            Vector3D<> avel = rbody->getAngVel(state);
-            if(MetricUtil::norm2(avel)>max_ang)
-                return false;
-            Vector3D<> lvel = rbody->getLinVel(state);
-            if(MetricUtil::norm2(lvel)>max_lin)
-                return false;
-        }
+    std::vector<RigidBody::Ptr> bodies = dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
+        Vector3D<> avel = rbody->getAngVel(state);
+        if(MetricUtil::norm2(avel)>max_ang)
+            return false;
+        Vector3D<> lvel = rbody->getLinVel(state);
+        if(MetricUtil::norm2(lvel)>max_lin)
+            return false;
     }
 
-    std::vector<DynamicDevice*> devices = dwc->getDynamicDevices();
-    BOOST_FOREACH(DynamicDevice* dev, devices){
-
+    std::vector<DynamicDevice::Ptr> devices = dwc->getDynamicDevices();
+    BOOST_FOREACH(DynamicDevice::Ptr dev, devices){
         if(!DynamicUtil::isResting(dev, state, max_lin, max_jointvel) )
             return false;
     }

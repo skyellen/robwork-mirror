@@ -11,7 +11,7 @@ using namespace rwlibs::algorithms;
 
 PoseController::PoseController(
         const std::string& name,
-		DynamicDevice* rdev,
+		DynamicDevice::Ptr rdev,
 		const rw::kinematics::State& state,
 		double dt):
 	Controller(name),
@@ -28,7 +28,7 @@ PoseController::PoseController(
 
 PoseController::PoseController(
         const std::string& name,
-		DynamicDevice* rdev,
+		DynamicDevice::Ptr rdev,
 		const rw::kinematics::State& state,
 		double dt,
 		rw::kinematics::Frame* endframe):

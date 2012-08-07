@@ -42,13 +42,14 @@ namespace {
 }
 
 RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
-        Body(12, info, obj), // we use 6 dof in state data to hold ang and lin velocity
+        Body(info, obj), // we use 6 dof in state data to hold ang and lin velocity
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
         _mframe( NULL ),
         _bodyType(0),
         _Ibody(info.inertia),
-        _IbodyInv( inverse(info.inertia) )
+        _IbodyInv( inverse(info.inertia) ),
+        _rstate(this)
 {
     _mframe = dynamic_cast<MovableFrame*>(obj->getBase());
     if(_mframe==NULL){
@@ -129,9 +130,6 @@ void RigidBody::reset(rw::kinematics::State &state){
 }
 
 void RigidBody::setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::State& state){
-    double *q = this->getData(state);
-    q[3] = avel[0];
-    q[4] = avel[1];
-    q[5] = avel[2];
+    _rstate.get(state)->angvel = avel;
 }
 

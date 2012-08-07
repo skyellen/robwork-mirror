@@ -110,14 +110,48 @@ namespace {
     }
     */
 
+    class TactileArrayWrapper: public rw::sensor::TactileArray {
+    private:
+        TactileArraySensor* _sensor;
+    public:
+
+        TactileArrayWrapper(TactileArraySensor* sensor, Frame* bframe, const std::string& name):
+            TactileArray(name),
+            _sensor(sensor)
+        {
+            this->attachTo( bframe );
+        }
+
+        rw::math::Vector2D<> getTexelSize(int x, int y) const{ return _sensor->getTexelSize(x,y); }
+        std::pair<double,double> getPressureLimit() const{ return _sensor->getPressureLimit(); }
+        const TactileArray::VertexMatrix& getVertexGrid() const{ return _sensor->getVertexGrid();}
+        const rw::math::Transform3D<>& getTransform() const{ return _sensor->getTransform(); }
+        const TactileArray::VertexMatrix& getCenters() const{ return _sensor->getCenters(); }
+        const TactileArray::VertexMatrix& getNormals()  const{ return _sensor->getNormals(); }
+        int getWidth() const{ return _sensor->getWidth(); }
+        int getHeight() const{ return _sensor->getHeight(); }
+
+        void acquire(rw::kinematics::State& state){ _sensor->acquire(state); }
+        TactileArray::ValueMatrix getTexelData(const rw::kinematics::State& state) const{ _sensor->getTexelData(state); };
+    };
+
+}
+
+
+
+rw::sensor::TactileArray::Ptr TactileArraySensor::getTactileArraySensor(){
+    return _tactileArraySensorWrapper;
+}
+rw::sensor::Sensor::Ptr TactileArraySensor::getSensor(){
+    return _tactileArraySensorWrapper;
 }
 
 TactileArraySensor::TactileArraySensor(const std::string& name,
-    dynamics::Body* obj,
+    dynamics::Body::Ptr obj,
     const rw::math::Transform3D<>& fThmap,
     const ValueMatrix& heightMap,
     const rw::math::Vector2D<>& texelSize):
-        TactileArray(name),
+        SimulatedTactileSensor(name),
         _centerMatrix(getShape(heightMap,-1,-1)),
         _normalMatrix(getShape(heightMap,-1,-1)),
         _contactMatrix(getShape(heightMap,-1,-1)),
@@ -139,8 +173,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _tau(0.1),
         _body(obj)
 {
-	this->attachTo( obj->getBodyFrame() );
-
+	_tactileArraySensorWrapper = ownedPtr( new TactileArrayWrapper( this, _body->getBodyFrame(), name ) );
 
     // calculate the normals and centers of all texels
     // first calculate the 3D vertexes of the grid from the heightmap specification
@@ -218,8 +251,8 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     _nmodel = _narrowStrategy->createModel();
 
     _narrowStrategy->addGeometry(_nmodel.get(), *_ngeom );
-	_frameToGeoms[this->getFrame()] = _body->getGeometry();
-	std::vector<Geometry::Ptr> &geoms = _frameToGeoms[this->getFrame()];
+	_frameToGeoms[_body->getBodyFrame()] = _body->getGeometry();
+	std::vector<Geometry::Ptr> &geoms = _frameToGeoms[_body->getBodyFrame()];
     _narrowStrategy->setFirstContact(false);
     //std::cout << "DMask: " << _dmask << std::endl;
     //std::cout << "Finger pad dimensions: (" << _texelSize(0)*(_w+1) << "," << (_h+1)*_texelSize(1) <<")" <<  std::endl;
@@ -228,7 +261,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 
 	Transform3D<> wTb = Transform3D<>::identity();
 	//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-	ProximityModel::Ptr model = _narrowStrategy->getModel(this->getFrame());
+	ProximityModel::Ptr model = _narrowStrategy->getModel(_body->getBodyFrame());
 	ProximityStrategyData pdata;
 	_narrowStrategy->inCollision(_nmodel, _fThmap, model, wTb, pdata);
 	CollisionResult &data = pdata.getCollisionData();
@@ -282,8 +315,6 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     // create state object and add it to
     _mystate = new StateData(0, name, ownedPtr(new ClassState(this, _w, _h) ) );
     addStateData( _mystate );
-
-
 }
 /*
 TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):
@@ -412,7 +443,7 @@ ublas::matrix<float> TactileArraySensor::ClassState::getTexelData()  const {
 void TactileArraySensor::ClassState::addForceW(const Vector3D<>& point,
                                     const Vector3D<>& force,
                                     const Vector3D<>& snormal,
-                                    dynamics::Body *body)
+                                    dynamics::Body::Ptr body)
 {
     addForce(_fTw*point, _fTw.R()*force, _fTw.R()*snormal, body);
 }
@@ -421,7 +452,7 @@ void TactileArraySensor::ClassState::addForceW(const Vector3D<>& point,
 void TactileArraySensor::ClassState::addForce(const Vector3D<>& point,
                                    const Vector3D<>& force,
                                    const Vector3D<>& snormal,
-                                   dynamics::Body *body)
+                                   dynamics::Body::Ptr body)
 {
     //std::cout << "ADDING FORCE.... " << snormal << force << std::endl;
     //std::cout << "ADDING FORCE dot.... " << dot(snormal,force) << std::endl;
@@ -486,7 +517,7 @@ void TactileArraySensor::ClassState::addForce(const Vector3D<>& point,
 // contact normal in a's coordinates. describe the contact normal from a to b
 
 std::vector<TactileArraySensor::DistPoint> TactileArraySensor::ClassState::generateContacts(dynamics::Body *body, const Vector3D<>& cnormal, const State& state){
-    Frame *tframe = _tsensor->getFrame();
+    Frame *tframe = _tsensor->getSensorFrame();
     Frame *bframe = body->getBodyFrame();
     RW_ASSERT(tframe);
     RW_ASSERT(bframe);
@@ -585,7 +616,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	// make sure not to sample more often than absolutely necessary
 	_accTime+=info.dt;
 	if(_accTime<_stime){
-	    _wTf = Kinematics::worldTframe( _tsensor->getFrame(), state);
+	    _wTf = Kinematics::worldTframe( _tsensor->getSensorFrame(), state);
 	    _fTw = inverse(_wTf);
 	    _forces.clear();
 	    _allAccForces.clear();
@@ -602,14 +633,14 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 
 	bool hasCollision = false;
 	double totalNormalForce = 0;
-    typedef std::map<dynamics::Body*, std::vector<Contact3D> > BodyForceMap;
+    typedef std::map<dynamics::Body::Ptr, std::vector<Contact3D> > BodyForceMap;
     BodyForceMap::iterator iter = _forces.begin();
     for(;iter!=_forces.end();++iter){
     	//std::cout << "BODY" << std::endl;
-    	Body *body = (*iter).first;
+    	Body::Ptr body = (*iter).first;
 
 
-		Frame *tframe = _tsensor->getFrame();
+		Frame *tframe = _tsensor->getSensorFrame();
 		Frame *bframe = body->getBodyFrame();
 		RW_ASSERT(tframe);
 		RW_ASSERT(bframe);
@@ -861,7 +892,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
     //std::cout << _pressure << std::endl;
 
     // update aux variables
-    _wTf = Kinematics::worldTframe( _tsensor->getFrame(), state);
+    _wTf = Kinematics::worldTframe( _tsensor->getSensorFrame(), state);
     _fTw = inverse(_wTf);
 }
 

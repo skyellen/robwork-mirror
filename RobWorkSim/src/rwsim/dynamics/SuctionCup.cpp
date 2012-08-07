@@ -57,7 +57,7 @@ namespace {
 }
 
 
-SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
+SuctionCup::SuctionCup(const std::string& name, Body::Ptr baseBody, RigidBody::Ptr end,
                        const rw::math::Transform3D<>& bTb2,
                        double radi,
                        double height,

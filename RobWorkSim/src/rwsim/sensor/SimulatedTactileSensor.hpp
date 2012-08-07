@@ -29,6 +29,9 @@ namespace sensor {
 	 * @brief interface for simulated tactile sensors
 	 */
 	class SimulatedTactileSensor: public rwlibs::simulation::SimulatedSensor {
+	protected:
+	    SimulatedTactileSensor(const std::string& name):rwlibs::simulation::SimulatedSensor(name){}
+
 	public:
 
 	    //! destructor
@@ -48,7 +51,7 @@ namespace sensor {
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body *body = NULL) = 0;
+					   dynamics::Body::Ptr body = NULL) = 0;
 
 		/**
 		 * @brief add a force to a point on the sensor geometry. The force is described
@@ -64,7 +67,7 @@ namespace sensor {
 					  const rw::math::Vector3D<>& force,
 					  const rw::math::Vector3D<>& cnormal,
 					  rw::kinematics::State& state,
-					  dynamics::Body *body=NULL) = 0;
+					  dynamics::Body::Ptr body=NULL) = 0;
 
 		/**
 		 * @brief add a wrench to the center of mass of this object
@@ -77,7 +80,7 @@ namespace sensor {
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL) = 0;
+                      dynamics::Body::Ptr body=NULL) = 0;
 
         /**
          * @brief add a wrench described in World frame to the center of mass of this object
@@ -89,7 +92,7 @@ namespace sensor {
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body *body=NULL) = 0;
+                      dynamics::Body::Ptr body=NULL) = 0;
 
 	};
 	//! @}

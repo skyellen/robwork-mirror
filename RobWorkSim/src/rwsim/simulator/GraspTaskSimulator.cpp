@@ -40,9 +40,9 @@ using rwlibs::simulation::SimulatedController;
 const int NR_OF_QUALITY_MEASURES = 3;
 
 namespace {
-    double getMaxObjectDistance(std::vector<RigidBody*> objects, const State& s1, const State& s2){
+    double getMaxObjectDistance(std::vector<RigidBody::Ptr> objects, const State& s1, const State& s2){
         double max = 0;
-        BOOST_FOREACH(RigidBody *object, objects){
+        BOOST_FOREACH(RigidBody::Ptr &object, objects){
             Transform3D<> t1 = object->getTransformW(s1);
             Transform3D<> t2 = object->getTransformW(s2);
             if(MetricUtil::dist2(t1.P(),t2.P())>max)
@@ -157,12 +157,12 @@ void GraspTaskSimulator::load(GraspTask::Ptr graspTasks){
     _dhand = _dwc->findDevice( handName);
     if(_dhand==NULL)
         RW_THROW("No such gripper in dynamic workcell: " << handName);
-    _rhand = dynamic_cast<RigidDevice*>(_dhand);
+    _rhand = _dhand.cast<RigidDevice>();
     _hand = _dhand->getKinematicModel();
     _gripperDim = _hand->getDOF();
 
     // hbase is the
-    _hbase = dynamic_cast<KinematicBody*>( _dhand->getBase() );
+    _hbase = _dhand->getBase().cast<KinematicBody>();
     if(_hbase==NULL)
         RW_THROW("The gripper base must be a KinematicBody: " << handName);
     _mbase = _hbase->getMovableFrame();
@@ -389,7 +389,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
             // if the device is a suction cup then the isResting must be done in another way.
             // we simply test if there is pressure
-            SuctionCup *scup = dynamic_cast<SuctionCup*>(_dhand);
+            SuctionCup::Ptr scup = _dhand.cast<SuctionCup>();
             if( scup!=NULL ){
                 isResting = scup->isClosed(state);
             }
@@ -450,7 +450,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.001;
 
-        SuctionCup *scup = dynamic_cast<SuctionCup*>(_dhand);
+        SuctionCup::Ptr scup = _dhand.cast<SuctionCup>();
         if( scup!=NULL ){
             isLifted = scup->isClosed(state);
         }
@@ -481,7 +481,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
                 // Test the success of lifting the object.
                 // We need to look at the objects that are actually touching
-                Body* object = scup->getContactBody( state );
+                Body* object = scup->getContactBody( state ).get();
                 RW_ASSERT(object!=NULL);
                 //Body* gripperBody = gobj.bodies[0];
 
@@ -511,7 +511,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 // Test the success of lifting the object.
                 // We need to look at the objects that are actually touching
                 Body* object = gobj.object;
-                Body* gripperBody = gobj.bodies[0];
+                Body* gripperBody = gobj.bodies[0].get();
 
                 sstate._target->getResult()->contactsLift = gobj.contacts;
                 Vector3D<> contactAvg(0,0,0);
@@ -626,7 +626,10 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             sstate._wTmbase_approachTarget = sstate._wTtcp_initTarget * sstate._approach * inverse(mbaseTtcp);
             //sstate._wTmbase_retractTarget  = sstate._wTtcp_initTarget * sstate._approach * sstate._retract * inverse(mbaseTtcp);
             Transform3D<> wTretract =  /*wTref * refToffset * */ sstate._retract;
-            sstate._wTmbase_retractTarget  = wTretract * sstate._wTmbase_approachTarget;
+            sstate._wTmbase_retractTarget  = sstate._wTmbase_approachTarget ;
+            sstate._wTmbase_retractTarget.P() += wTretract.P();
+
+
             //RW_WARN("1");
             // we initialize the transform
             //std::cout << "inverse(wTmparent)" << inverse(wTmparent) << std::endl;
@@ -635,6 +638,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //std::cout << "inverse(wTmparent)" << sstate._wTmbase_initTarget << std::endl;
             _mbase->setTransform( inverse(wTmparent) * sstate._wTmbase_initTarget, nstate);
             //RW_WARN("1");
+            std::cout << sstate._wTtcp_initTarget << std::endl;
+            std::cout << Kinematics::worldTframe(_tcp, nstate) << std::endl;
 
             _hand->setQ(sstate._openQ, nstate);
             for(size_t i=0;i<_objects.size();i++){
@@ -712,12 +717,12 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
 
 std::vector<rw::sensor::Contact3D> GraspTaskSimulator::getObjectContacts(const rw::kinematics::State& state,
-		RigidBody *object,
+		RigidBody::Ptr object,
 		BodyContactSensor::Ptr sensor,
-		std::vector<Body*>& gripperbodies )
+		std::vector<Body::Ptr>& gripperbodies )
 {
     const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts();
-    const std::vector<Body*>& bodies = sensor->getBodies();
+    const std::vector<Body::Ptr>& bodies = sensor->getBodies();
 
     RW_ASSERT(bodies.size() == contacts.size() );
     //std::cout << "nr contacts: " << contacts.size() << " body: " << object->getName() << std::endl;
@@ -754,7 +759,7 @@ GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(const rw
     std::vector<GraspedObject> result;
     for(size_t i=0; i<_objects.size();i++){
         GraspedObject obj;
-        obj.object = _objects[i];
+        obj.object = _objects[i].get();
         obj.contacts = getObjectContacts(state, _objects[i], sstate._bsensors[i], obj.bodies);
         if(obj.contacts.size()>0)
             result.push_back(obj);
