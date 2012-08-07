@@ -52,7 +52,7 @@ struct CollisionTestSetup {
     std::string modelDetail, queryTypeStr;
 };
 
-void testPerConfiguration( CollisionTestSetup& setup ){
+void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std::string, double> > &timings){
     // This function iterates over all configurations and for each configuration
     // it tests collision between all model pairs
     int nrOfQueries = setup.modelsConfigurations.size()*setup.modelPairs.size();
@@ -82,9 +82,13 @@ void testPerConfiguration( CollisionTestSetup& setup ){
     std::cout << " - time: " << time.getTime() << "s" << std::endl;
     std::cout << " - avg time per query: " << time.getTime()/nrOfQueries << "s" << std::endl;
     std::cout << "-------------------------------------------------------------" << std::endl;
+
+    timings.push_back(std::make_pair(std::string("PerQ_check_t;")+setup.modelDetail+";"+setup.queryTypeStr, time.getTime()));
+    timings.push_back(std::make_pair(std::string("PerQ_check_%;")+setup.modelDetail+";"+setup.queryTypeStr, nrCollisions/((double)nrOfQueries)));
+
 }
 
-void testPerObjectPair(CollisionTestSetup& setup ){
+void testPerObjectPair(CollisionTestSetup& setup, std::vector<std::pair<std::string, double> > &timings){
     // This function iterates over all configurations and for each configuration
     // it tests collision between all model pairs
     int nrOfQueries = setup.modelsConfigurations.size()*setup.modelPairs.size();
@@ -114,6 +118,9 @@ void testPerObjectPair(CollisionTestSetup& setup ){
     std::cout << " - time: " << time.getTime() << "s" << std::endl;
     std::cout << " - avg time per query: " << time.getTime()/nrOfQueries << "s" << std::endl;
     std::cout << "-------------------------------------------------------------" << std::endl;
+
+    timings.push_back(std::make_pair(std::string("PerO_check_t;")+setup.modelDetail+";"+setup.queryTypeStr, time.getTime()));
+    timings.push_back(std::make_pair(std::string("PerO_check_%;")+setup.modelDetail+";"+setup.queryTypeStr, nrCollisions/((double)nrOfQueries)));
 }
 
 void intializeTestSetupData(CollisionTestSetup& setup, int nrConfigurations){
@@ -133,7 +140,7 @@ void intializeTestSetupData(CollisionTestSetup& setup, int nrConfigurations){
 
 
 
-void intializeBuildingSetup(CollisionTestSetup& setup ){
+void intializeBuildingSetup(CollisionTestSetup& setup, std::vector<std::pair<std::string, double> > &timings){
     std::cout << "--------- Performancetest - Building/initializing ----------" << std::endl;
     std::cout << "- Collision Strategy ID: " << setup.strategyName << std::endl;
     std::cout << "- Performing " << setup.modelPairs.size() << " collision tests" << std::endl;
@@ -153,10 +160,9 @@ void intializeBuildingSetup(CollisionTestSetup& setup ){
     }
     time.pause();
     std::cout << " - time: " << time.getTime() << "s" << std::endl;
-
     std::cout << "-------------------------------------------------------------" << std::endl;
 
-
+    timings.push_back(std::make_pair(std::string("build;")+setup.modelDetail+";"+setup.queryTypeStr, time.getTime()));
 }
 
 void loadModelsData(CollisionTestSetup& setup, int nrModels, const std::string& filename, const std::string& geomDetail){
@@ -211,7 +217,8 @@ void setAllContact(CollisionTestSetup& setup){
     setup.queryTypeStr = "AllContacts";
 }
 
-void testStrategy(CollisionStrategy::Ptr strategy, const std::string& strategyname){
+std::vector<std::pair<std::string, double> > testStrategy(CollisionStrategy::Ptr strategy, const std::string& strategyname){
+    std::vector<std::pair<std::string, double> > timings;
     /* TODO:
      * Motion Planning (First Contact) Scene - Coarse Geometry
      * Motion Planning (First Contact) Scene - Fine Geometry
@@ -242,20 +249,21 @@ void testStrategy(CollisionStrategy::Ptr strategy, const std::string& strategyna
     //setFirstContact(coarsesetup);
     setAllContact(coarsesetup);
     intializeTestSetupData( coarsesetup, 1);
-    intializeBuildingSetup( coarsesetup );
-    intializeTestSetupData( coarsesetup, 1000);
-    testPerConfiguration( coarsesetup );
-    testPerObjectPair( coarsesetup );
+    intializeBuildingSetup( coarsesetup , timings);
+    intializeTestSetupData( coarsesetup, 200);
+
+    testPerConfiguration( coarsesetup , timings);
+    testPerObjectPair( coarsesetup , timings);
 
 
     loadModelsData(finesetup, 20, "geoms/performance/CoarseModel.stl", "Fine");
     setFirstContact(finesetup);
     intializeTestSetupData( finesetup, 1);
-    intializeBuildingSetup( finesetup );
-    intializeTestSetupData( finesetup, 1000);
-    testPerConfiguration( finesetup );
-    testPerObjectPair( finesetup );
-
+    intializeBuildingSetup( finesetup , timings);
+    intializeTestSetupData( finesetup, 200);
+    testPerConfiguration( finesetup, timings );
+    testPerObjectPair( finesetup , timings);
+    return timings;
 }
 
 BOOST_AUTO_TEST_CASE( testCollisionQueryPerformance )
@@ -263,14 +271,39 @@ BOOST_AUTO_TEST_CASE( testCollisionQueryPerformance )
     BOOST_MESSAGE("Collission Query Performance Tests.");
     // We seed the random number generator so that we get reproducible results.
     Math::seed(0);
+    std::vector<std::string> colids;
+    std::vector<std::vector<std::pair<std::string, double> > > timings;
 
     // now for each strategy we perform the series of tests
     BOOST_FOREACH(std::string strategyname, ProximityStrategyFactory::getCollisionStrategyIDs()){
         //if(strategyname=="PQP")
         //    continue;
+        colids.push_back(strategyname);
         CollisionStrategy::Ptr strategy = ProximityStrategyFactory::makeCollisionStrategy(strategyname);
-        testStrategy(strategy, strategyname);
+        timings.push_back( testStrategy(strategy, strategyname) );
     }
+
+    // print results
+    // first find the longest of the strings
+    size_t length = 0;
+    for(size_t i=0;i<timings[0].size();i++){
+        length = std::max(timings[0][i].first.size(), length);
+    }
+
+    std::cout << std::setw(length) <<"." << "\t";
+    for(size_t j=0;j<colids.size();j++){
+        std::cout << colids[j] << "\t";
+    }
+    std::cout << std::endl;
+
+    for(size_t i=0;i<timings[0].size();i++){
+        std::cout << std::setw(length) << timings[0][i].first << "\t";
+        for(size_t j=0;j<colids.size();j++){
+            std::cout << std::setprecision(5) << timings[j][i].second << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
 
 }
