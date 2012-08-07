@@ -15,15 +15,18 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_SIMULATION_SIMULATEDSCANNER25D_HPP_
-#define RWLIBS_SIMULATION_SIMULATEDSCANNER25D_HPP_
+#ifndef RWLIBS_SIMULATION_SimulatedKinnect_HPP_
+#define RWLIBS_SIMULATION_SimulatedKinnect_HPP_
 
-//! @file SimulatedScanner25D.hpp
+//! @file SimulatedKinnect.hpp
 
 #include <rw/common/Ptr.hpp>
 #include <rw/sensor/Scanner25D.hpp>
-#include "FrameGrabber25D.hpp"
 #include "SimulatedSensor.hpp"
+#include "FrameGrabber25D.hpp"
+#include "SimulatedScanner25D.hpp"
+#include <rw/graphics/SceneViewer.hpp>
+
 
 namespace rwlibs { namespace simulation {
     //! @addtogroup simulation
@@ -32,33 +35,32 @@ namespace rwlibs { namespace simulation {
     /**
      * @brief
      */
-    class SimulatedScanner25D : public SimulatedSensor
+    class SimulatedKinnect : public SimulatedSensor
     {
     public:
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
-         * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
-    	SimulatedScanner25D(const std::string& name,
-    	                    rw::kinematics::Frame *frame,
-    	                    FrameGrabber25D::Ptr framegrabber);
+    	SimulatedKinnect(const std::string& name,
+    	                 rw::kinematics::Frame *frame);
 
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
          * @param desc [in] description of this scanner
-         * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
-    	SimulatedScanner25D(const std::string& name,
-                            const std::string& desc,
-                            rw::kinematics::Frame *frame,
-                            FrameGrabber25D::Ptr framegrabber);
+    	SimulatedKinnect(const std::string& name,
+                         const std::string& desc,
+                         rw::kinematics::Frame *frame);
 
     	/**
     	 * @brief destructor
     	 */
-    	virtual ~SimulatedScanner25D();
+    	virtual ~SimulatedKinnect();
+
+
+    	void init(rw::graphics::SceneViewer::Ptr drawer);
 
     	/**
     	 * @brief set the framerate in frames per sec.
@@ -81,7 +83,7 @@ namespace rwlibs { namespace simulation {
         void acquire();
 
         //! @copydoc Scanner25D::isScanReady
-        bool isScanReady();
+        bool isDataReady();
 
         //! @copydoc Scanner25D::getRange
         std::pair<double,double> getRange();
@@ -92,6 +94,8 @@ namespace rwlibs { namespace simulation {
         //! @copydoc Scanner25D::getImage
     	const rw::sensor::Image25D& getScan();
 
+    	const rw::sensor::Image& getImage();
+
     	//! @copydoc SimulatedSensor::update
         void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
@@ -101,21 +105,34 @@ namespace rwlibs { namespace simulation {
     	//! @copydoc SimulatedSensor::getSensor
         rw::sensor::Sensor::Ptr getSensor(){ return _rsensor;}
 
-        rw::sensor::Scanner25D::Ptr getScanner25DSensor(){ return _rsensor;}
-    private:
-        FrameGrabber25DPtr _framegrabber;
-        double _frameRate, _dtsum;
-        bool _isAcquired,_isOpenned;
-        rw::sensor::Scanner25D::Ptr _rsensor;
-    };
+        /**
+         * @brief set to true to enable realistic noise on the scan.
+         * @param enabled [in]
+         */
+        void setNoiseEnabled(bool enabled){ _noiseEnabled = enabled; };
 
-    /**
-     * @brief Definition of pointer to SimulatedScanner25D
-     */
-    typedef rw::common::Ptr<SimulatedScanner25D> SimulatedScanner25DPtr;
+    private:
+        double _frameRate, _dtsum;
+        bool _isAcquired,_isOpenned, _noiseEnabled;
+        rw::sensor::Scanner25D::Ptr _rsensor;
+
+        rw::graphics::SceneViewer::Ptr _drawer;
+        rw::graphics::SceneViewer::View::Ptr _view;
+
+        double _near, _far;
+
+        double _fieldOfView; // in the y-axis
+        bool _grabSingleFrame;
+        int _width, _height;
+
+        rw::sensor::Image::Ptr _img;
+        rw::sensor::Image25D::Ptr _scan;
+
+
+    };
 
     //! @}
 }
 }
 
-#endif /* SIMULATEDSCANNER25D_HPP_ */
+#endif /* SimulatedKinnect_HPP_ */

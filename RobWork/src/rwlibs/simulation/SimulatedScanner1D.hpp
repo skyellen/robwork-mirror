@@ -117,7 +117,7 @@ namespace rwlibs { namespace simulation {
 
 
     private:
-        FrameGrabber25DPtr _framegrabber;
+        FrameGrabber25D::Ptr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
         rw::sensor::Scan2D _scan;

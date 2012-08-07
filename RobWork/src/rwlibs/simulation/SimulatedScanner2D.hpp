@@ -33,7 +33,7 @@ namespace rwlibs { namespace simulation {
     /**
      * @brief
      */
-    class SimulatedScanner2D : public rw::sensor::Scanner2D, public virtual SimulatedSensor
+    class SimulatedScanner2D : public SimulatedSensor
     {
     public:
         //! @brief smart pointer of this class
@@ -44,8 +44,8 @@ namespace rwlibs { namespace simulation {
          * @param name [in] name of this simulated scanner
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
-        SimulatedScanner2D(const std::string& name,
-                FrameGrabber25DPtr framegrabber);
+        SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame,
+                FrameGrabber25D::Ptr framegrabber);
 
         /**
          * @brief constructor
@@ -55,7 +55,8 @@ namespace rwlibs { namespace simulation {
          */
         SimulatedScanner2D(const std::string& name,
                 const std::string& desc,
-                FrameGrabber25DPtr framegrabber);
+                rw::kinematics::Frame* frame,
+                FrameGrabber25D::Ptr framegrabber);
 
         /**
          * @brief destructor
@@ -101,7 +102,9 @@ namespace rwlibs { namespace simulation {
         void reset(const rw::kinematics::State& state);
 
         //! @copydoc SimulatedSensor::getSensor
-        rw::sensor::Sensor* getSensor();
+        rw::sensor::Sensor::Ptr getSensor(){ return _rsensor;}
+
+        rw::sensor::Scanner2D::Ptr getScanner2DSensor();
 
         //! @copydoc SimulatedSensor::getAngularRange
         virtual double getAngularRange() {
@@ -112,12 +115,11 @@ namespace rwlibs { namespace simulation {
         virtual size_t getMeasurementCount() const {
             return _framegrabber->getWidth()*_framegrabber->getHeight();
         }
-
-        rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
     private:
-        FrameGrabber25DPtr _framegrabber;
+        FrameGrabber25D::Ptr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
+        rw::sensor::Scanner2D::Ptr _rsensor;
     };
 
 

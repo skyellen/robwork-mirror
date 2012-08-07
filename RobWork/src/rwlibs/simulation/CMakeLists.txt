@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME rw_simulation)
 set(SUBSYS_DESC "Simulated sensors and controllers")
-SET(SUBSYS_DEPS rw rw_opengl rw_control)
+SET(SUBSYS_DEPS rw rw_control)
 
 SET(build TRUE)
 RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -8,15 +8,14 @@ RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS glu opengl)
 RW_ADD_DOC(${SUBSYS_NAME})
 
 IF(build)
-    # The camera file and include path to use.
     
     SET(SRC_FILES
       ${RW_SENSORS_USER_FILES}
-      ${CameraFile}
-      ./camera/FrameGrabber.cpp
-      ./camera/GLFrameGrabber.cpp
-      ./camera/SimulatedCamera.cpp
+      FrameGrabber.cpp
       FrameGrabber25D.cpp
+      GLFrameGrabber.cpp
+      SimulatedCamera.cpp
+      SimulatedKinnect.cpp
       GLFrameGrabber25D.cpp
       KinematicSimulator.cpp
       SimulatedController.cpp
@@ -27,9 +26,9 @@ IF(build)
     )
 
     SET(CAM_SRC_FILES_HPP
-      ./camera/FrameGrabber.hpp
-      ./camera/GLFrameGrabber.hpp
-      ./camera/SimulatedCamera.hpp
+      FrameGrabber.hpp
+      GLFrameGrabber.hpp
+      SimulatedCamera.hpp
     )
         
     SET(SRC_FILES_HPP
@@ -41,6 +40,7 @@ IF(build)
       Simulator.hpp
       SimulatedScanner25D.hpp
       SimulatedScanner2D.hpp
+      SimulatedKinnect.hpp
     )
         
     RW_ADD_LIBRARY(${SUBSYS_NAME} simulation ${SRC_FILES} ${CAM_SRC_FILES_HPP} ${SRC_FILES_HPP})

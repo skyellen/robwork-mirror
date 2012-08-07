@@ -26,6 +26,7 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/StatelessObject.hpp>
 #include "Simulator.hpp"
+#include <rw/kinematics/Frame.hpp>
 
 namespace rwlibs {
 namespace simulation {
@@ -35,12 +36,21 @@ namespace simulation {
     /**
      * @brief simulated sensor interface
      */
-    class SimulatedSensor: public rw::kinematics::StatelessObject {
+    class SimulatedSensor: public rw::sensor::Sensor {
     public:
-
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedSensor> Ptr;
 
+    protected:
+        //! constructor
+        SimulatedSensor(const std::string& name):Sensor(name){};
+
+        //! constructor
+        SimulatedSensor(const std::string& name, const std::string& desc):Sensor(name,desc){};
+
+    public:
+
+        //! @brief destructor
         virtual ~SimulatedSensor(){};
 
         /**
@@ -58,17 +68,22 @@ namespace simulation {
         virtual void reset(const rw::kinematics::State& state) = 0;
 
         /**
-         * @brief Returns the rw::kinematics::Frame associated to the sensor. The frame may be NULL
-         *
-         * @return the rw::kinematics::Frame associated to the sensor
+         * @brief get the "real" sensor interface of this simulated sensor. This might be
+         * NULL if the simulatedsensor does not implement a specific Sensor interface.
          */
-        virtual rw::kinematics::Frame* getSensorFrame() = 0;
+        virtual rw::sensor::Sensor::Ptr getSensor() = 0;
 
         /**
-         * @brief get the sensor interface of this simulated sensor. This might be
-         * NULL when the simulatedsensor does not implement the Sensor interface.
+         * @copydoc rw::sensor::Sensor::attachTo
+         *
+         * @note we want to make sure that the frame is also changed on the "real" sensor
          */
-        virtual rw::sensor::Sensor* getSensor() = 0;
+        void attachTo(rw::kinematics::Frame* frame) {
+            rw::sensor::Sensor::attachTo(frame);
+            if(getSensor())
+                getSensor()->attachTo( frame );
+        }
+
     };
     //! @}
 }

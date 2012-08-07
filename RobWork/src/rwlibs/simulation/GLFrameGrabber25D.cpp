@@ -19,9 +19,7 @@
 #include "GLFrameGrabber25D.hpp"
 
 #include <rw/common/Log.hpp>
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/math/Math.hpp>
-#include <rwlibs/opengl/RWGLFrameBuffer.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <cmath>
 
@@ -29,7 +27,6 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::graphics;
 using namespace rwlibs::simulation;
-using namespace rwlibs::opengl;
 
 
 GLFrameGrabber25D::GLFrameGrabber25D(int width,
@@ -67,6 +64,7 @@ void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
     view->_viewCamera->setDrawMask(DrawableNode::Physical);
     // render offscreen
+
     view->_camGroup->setOffscreenRenderEnabled(true);
     view->_camGroup->setOffscreenRenderColor(rw::sensor::Image::RGB);
     view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());

@@ -20,24 +20,59 @@
 using namespace rwlibs::simulation;
 using namespace rw::sensor;
 
-SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
-                                       FrameGrabber25DPtr framegrabber):
-   Scanner2D(name),
+namespace {
+
+    class Sensor2DWrapper: public rw::sensor::Scanner2D {
+    public:
+        SimulatedScanner2D *_simscanner;
+
+        Sensor2DWrapper(SimulatedScanner2D *scanner,rw::kinematics::Frame *sframe, const std::string& name):
+            Scanner2D(name),
+            _simscanner(scanner)
+        {
+            attachTo(sframe);
+        }
+
+        const Image25D& getScan() const{ return _simscanner->getScan(); };
+        double getAngularRange() { return _simscanner->getAngularRange(); };
+        size_t getMeasurementCount() const { return _simscanner->getMeasurementCount(); };
+
+
+        void open(){ _simscanner->open(); }
+        bool isOpen(){ return  _simscanner->isOpen(); }
+        void close() {_simscanner->close(); }
+        void acquire(){  _simscanner->acquire(); }
+        bool isScanReady() { return _simscanner->isScanReady(); }
+        std::pair<double,double> getRange() { return _simscanner->getRange(); }
+        double getFrameRate(){ return  _simscanner->getFrameRate(); }
+
+    };
+
+
+}
+
+
+SimulatedScanner2D::SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame, FrameGrabber25D::Ptr framegrabber):
+   SimulatedSensor(name),
    _framegrabber(framegrabber),
     _frameRate(30),
     _dtsum(0)
 {
+    _rsensor = rw::common::ownedPtr( new Sensor2DWrapper(this, frame, name) );
+    attachTo(frame);
 }
 
 SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
                                        const std::string& desc,
-                                       FrameGrabber25DPtr framegrabber):
-		Scanner2D(name),
+                                       rw::kinematics::Frame* frame,
+                                       FrameGrabber25D::Ptr framegrabber):
+        SimulatedSensor(name),
 		_framegrabber(framegrabber),
 		_frameRate(30),
         _dtsum(0)
 {
-
+    _rsensor = rw::common::ownedPtr( new Sensor2DWrapper(this, frame, name) );
+    attachTo(frame);
 }
 
 SimulatedScanner2D::~SimulatedScanner2D(){}
@@ -102,4 +137,9 @@ void SimulatedScanner2D::reset(const rw::kinematics::State& state){
 
 }
 
-rw::sensor::Sensor* SimulatedScanner2D::getSensor(){return this;};
+rw::sensor::Scanner2D::Ptr SimulatedScanner2D::getScanner2DSensor(){
+    return _rsensor;
+
+};
+
+

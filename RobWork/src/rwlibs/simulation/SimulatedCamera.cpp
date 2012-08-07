@@ -28,18 +28,48 @@ using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rwlibs::simulation;
 
+namespace {
+
+class CameraWrapper: public rw::sensor::Camera {
+public:
+    SimulatedCamera *_simscanner;
+
+    CameraWrapper(SimulatedCamera *scanner,rw::kinematics::Frame *sframe, const std::string& name):
+        Camera(name, "Simulated Camera"),
+        _simscanner(scanner)
+    {
+        attachTo(sframe);
+    }
+
+    bool initialize(){ return _simscanner->initialize(); }
+    bool start(){ return _simscanner->start(); }
+    void stop(){ return _simscanner->stop(); }
+    void acquire(){ return _simscanner->acquire(); }
+    bool isImageReady(){ return _simscanner->isImageReady(); }
+    const rw::sensor::Image* getImage(){ return _simscanner->getImage(); }
+    double getFrameRate(){ return _simscanner->getFrameRate(); }
+    void setFrameRate(double framerate){ return _simscanner->setFrameRate(framerate); }
+    unsigned int getWidth(){ return _simscanner->getWidth(); }
+    unsigned int getHeight(){ return _simscanner->getHeight(); }
+
+};
+
+}
+
+
 SimulatedCamera::SimulatedCamera(
     const std::string& name,
+    rw::kinematics::Frame *frame,
     FrameGrabber::Ptr frameGrabber)
     :
-    Camera(name,"Simulated Camera"),
+    SimulatedSensor(name),
     _frameRate(30),
     _dtSum(0.0),
     _frameGrabber(frameGrabber),
     _isAcquired(false)
-
 {
-
+    _csensor = rw::common::ownedPtr( new CameraWrapper(this, frame,  name) );
+    attachTo(frame);
 }
 
 SimulatedCamera::~SimulatedCamera()

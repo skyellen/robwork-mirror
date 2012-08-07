@@ -20,22 +20,59 @@
 using namespace rwlibs::simulation;
 using namespace rw::sensor;
 
+namespace {
+
+class Scanner25DWrapper: public rw::sensor::Scanner25D {
+public:
+    SimulatedScanner25D *_simscanner;
+
+    Scanner25DWrapper(SimulatedScanner25D *scanner,rw::kinematics::Frame *sframe, const std::string& name):
+        Scanner25D(name),
+        _simscanner(scanner)
+    {
+        attachTo(sframe);
+    }
+
+    //const Image25D& getImage() const{ return _simscanner->getScan(); };
+    virtual const Image25D& getScan(){ return _simscanner->getScan();} ;
+
+    void open(){ _simscanner->open(); }
+    bool isOpen(){ return  _simscanner->isOpen(); }
+    void close() {_simscanner->close(); }
+    void acquire(){  _simscanner->acquire(); }
+    bool isScanReady() { return _simscanner->isScanReady(); }
+    std::pair<double,double> getRange() { return _simscanner->getRange(); }
+    double getFrameRate(){ return  _simscanner->getFrameRate(); }
+
+};
+
+
+}
+
 SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
-                                         FrameGrabber25DPtr framegrabber):
-		Scanner25D(name, "Simulated Scanner25D"),
+                                         rw::kinematics::Frame *frame,
+                                         FrameGrabber25D::Ptr framegrabber):
+		SimulatedSensor(name),
 		_framegrabber(framegrabber),
 		_frameRate(30),
         _dtsum(0)
-{}
+{
+    _rsensor = rw::common::ownedPtr( new Scanner25DWrapper(this, frame,  name) );
+    attachTo(frame);
+}
 
 SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
 		const std::string& desc,
-		FrameGrabber25DPtr framegrabber):
-		Scanner25D(name,desc),
+		rw::kinematics::Frame *frame,
+		FrameGrabber25D::Ptr framegrabber):
+        SimulatedSensor(name),
 		_framegrabber(framegrabber),
 		_frameRate(30),
 		_dtsum(0)
-{}
+{
+    _rsensor = rw::common::ownedPtr( new Scanner25DWrapper(this, frame,  name) );
+    attachTo(frame);
+}
 
 SimulatedScanner25D::~SimulatedScanner25D(){}
 
@@ -71,7 +108,7 @@ double SimulatedScanner25D::getFrameRate(){
 	return _frameRate;
 }
 
-const Image25D& SimulatedScanner25D::getImage(){
+const Image25D& SimulatedScanner25D::getScan(){
     return _framegrabber->getImage();
 }
 
@@ -95,4 +132,4 @@ void SimulatedScanner25D::reset(const rw::kinematics::State& state){
 
 }
 
-rw::sensor::Sensor* SimulatedScanner25D::getSensor(){return this;};
+

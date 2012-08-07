@@ -46,9 +46,11 @@ namespace rwlibs { namespace simulation {
        framerate has no meaning to the virtual camera since no timing is done in
        this implementation.
     */
-    class SimulatedCamera : public rw::sensor::Camera, public virtual SimulatedSensor
+    class SimulatedCamera : public SimulatedSensor
     {
     public:
+        typedef rw::common::Ptr<SimulatedCamera> Ptr;
+
         /**
          * @brief constructor
          * @param name [in] name and model info of camera
@@ -56,7 +58,7 @@ namespace rwlibs { namespace simulation {
          * @param frame [in] frame associated with the camera
          * images.
          */
-        SimulatedCamera(const std::string& name, FrameGrabber::Ptr frameGrabber);
+        SimulatedCamera(const std::string& name, rw::kinematics::Frame *frame, FrameGrabber::Ptr frameGrabber);
 
         /**
          * @brief destructor
@@ -126,9 +128,9 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc SimulatedSensor::getSensor
          */
-        rw::sensor::Sensor* getSensor(){return this;};
+        rw::sensor::Sensor::Ptr getSensor(){ return _csensor; };
+        rw::sensor::Camera::Ptr getCameraSensor(){ return _csensor; };
 
-        rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
     private:
         void acquire(char *imgData);
 
@@ -138,6 +140,10 @@ namespace rwlibs { namespace simulation {
         double _dtSum;
         FrameGrabber::Ptr _frameGrabber;
         bool _isAcquired;
+        bool _started;
+        bool _initialized;
+
+        rw::sensor::Camera::Ptr _csensor;
     };
 
     /**
