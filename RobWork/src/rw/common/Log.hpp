@@ -288,6 +288,11 @@ namespace rw { namespace common {
          */
         void remove(LogIndex id);
 
+		/**
+		 * @brief Removes all log writers
+		 */
+		void removeAll();
+
 
 		void increaseTabLevel();
 

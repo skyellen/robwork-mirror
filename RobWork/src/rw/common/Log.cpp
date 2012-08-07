@@ -156,6 +156,10 @@ void Log::remove(LogIndex id)
 	_writers[id] = NULL;
 }
 
+void Log::removeAll() {
+	_writers.clear();
+	_defaultWriter = ownedPtr(new EmptyLogWriter());
+}
 
 void Log::increaseTabLevel() {
 	_tabLevel++;

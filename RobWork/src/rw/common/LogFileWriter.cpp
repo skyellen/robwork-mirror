@@ -44,6 +44,7 @@ LogFileWriter::~LogFileWriter()
     _stream.close();
 }
 
+
 void LogFileWriter::write(const std::string& str)
 {
 	_stream << std::setw(4*_tabLevel)<<std::setfill(' ')<<"";

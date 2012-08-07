@@ -62,6 +62,7 @@ namespace rw { namespace common {
 		 */
 		void setTabLevel(int tabLevel);
 
+
     private:
         std::ofstream _stream;
 		int _tabLevel;
