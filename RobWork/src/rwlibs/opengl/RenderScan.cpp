@@ -60,8 +60,11 @@ void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawTy
 {
 
     const rw::sensor::Image25D *img = &_img;
-    if(_scanner!=NULL)
-        img = &_scanner->getImage();
+    if(_scanner!=NULL){
+        //std::cout << "using scanner " ;
+        img = &_scanner->getScan();
+        //std::cout << img->getHeight() << " " << img->getWidth() << " \n";
+    }
 
 	// ignores drawstate
 	glPushMatrix();
@@ -72,17 +75,17 @@ void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawTy
 		glBegin(GL_LINE_STRIP);
         for(size_t x=0; x<_img.getWidth(); x++){
         	const Vector3D<float> &v1 = _img.getData()[x+y*_img.getWidth()];
-        	if(fabs(v1[2])>_maxDepth || fabs(v1[2])<_minDepth)
-        		continue;
+        	//if(fabs(v1[2])>_maxDepth || fabs(v1[2])<_minDepth)
+        	//	continue;
             
           //  for(size_t j=x; j<_img.getWidth(); j++){
         	const Vector3D<float> &v = _img.getData()[x+y*_img.getWidth()];
 //        	x = j;
-        	if(fabs(v[2])>_maxDepth || fabs(v[2])<_minDepth)
-        		break;
+        	//if(fabs(v[2])>_maxDepth || fabs(v[2])<_minDepth)
+        	//	break;
         	float col = (float)Math::clamp( (fabs(v[2])-_minDepth)/dist, 0.0f, 1.0f);
 			glColor3f(col, 0.0, 1.0f-col);
-			glVertex3d(v(0), v(1), v(2));    // Bottom Left
+			glVertex3d(v(0), v(1), Math::clamp( (double)v(2) , -2, 0 ));    // Bottom Left
 	//        }
             
         }

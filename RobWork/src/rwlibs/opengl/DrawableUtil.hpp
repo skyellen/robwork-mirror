@@ -50,20 +50,7 @@ namespace rwlibs { namespace opengl {
     	 */
         static void transform3DToGLTransform(
             const rw::math::Transform3D<float>& transform,
-            GLfloat* gltrans)
-        {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++)
-                    gltrans[j + 4 * k] =
-                        transform(j,k);
-
-                gltrans[12 + j] =
-                    transform(j, 3);
-            }
-
-            gltrans[3] = gltrans[7] = gltrans[11] = 0;
-            gltrans[15] = 1;
-        }
+            GLfloat* gltrans);
 
         /**
          * @brief copy a RW Transform3D to a GL transform representation
@@ -72,20 +59,16 @@ namespace rwlibs { namespace opengl {
          */
         static void transform3DToGLTransform(
             const rw::math::Transform3D<double>& transform,
-            GLfloat* gltrans)
-        {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++)
-                    gltrans[j + 4 * k] =
-                        (float)transform(j,k);
+            GLfloat* gltrans);
 
-                gltrans[12 + j] =
-                    (float)transform(j, 3);
-            }
-
-            gltrans[3] = gltrans[7] = gltrans[11] = 0;
-            gltrans[15] = 1;
-        }
+        /**
+         * @brief copy a RW Transform3D to a GL transform representation
+         * @param transform [in] the Transform3D object
+         * @param gltrans [in] a GLfloat array of size 16
+         */
+        static void transform3DToGLTransform(
+            const rw::math::Transform3D<double>& transform,
+            GLdouble* gltrans);
 
         /**
          * @brief multiplies the transform on the gl stack with the rw transform b transform

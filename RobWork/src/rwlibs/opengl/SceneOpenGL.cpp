@@ -195,6 +195,17 @@ namespace {
             _initialized = true;
         }
 
+        void setMainCamera(SceneCamera::Ptr cam){
+            _mainCam = cam;
+        }
+
+        SceneCamera::Ptr getMainCamera() {
+            if(_mainCam==NULL)
+                if(_cameras.size()>0)
+                    return _cameras.front();
+            return _mainCam;
+        }
+
         void setOffscreenRenderEnabled( bool enable ){
             // if both are same then do nothing
             if( enable == _offscreenRender )
@@ -244,6 +255,7 @@ namespace {
 
 
         std::list<SceneCamera::Ptr> _cameras;
+        SceneCamera::Ptr _mainCam;
         bool _enabled;
         std::string _name;
 
@@ -346,17 +358,67 @@ namespace {
         bool _retvalue;
     };
 
+    namespace {
+
+
+        typedef
+          union {
+            struct{
+                int x,y,w,h;
+            };
+            int viewport[4];
+        } ViewPort;
+
+
+
+        ViewPort getViewPort(SceneCamera::Ptr cam){
+            ViewPort vp;
+            cam->getViewport(vp.x,vp.y,vp.w,vp.h);
+            switch( cam->getAspectRatioControl() ){
+            case(SceneCamera::Auto):{
+                //return vp;
+                //glViewport( vp.x, vp.y, vp.w, vp.h);
+                break;
+            }
+            case(SceneCamera::ScaleX):
+            case(SceneCamera::ScaleY):
+            case(SceneCamera::Scale):{
+                // choose scale axis
+                //std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
+                if( vp.w/(double)vp.h<cam->getAspectRatio() ){
+                    double h = vp.w/cam->getAspectRatio();
+                    vp.y = (vp.y + (vp.h-h)/2.0);
+                    vp.h = h;
+                    //glViewport( vp.x, (GLint) (vp.y + (vp.h-h)/2.0), vp.w, (GLsizei)h);
+                } else {
+                    double w = vp.h*cam->getAspectRatio();
+                    vp.x = (vp.x+ (vp.w-w)/2.0);
+                    vp.w = w;
+                    //glViewport( (GLint)(vp.x+ (vp.w-w)/2.0), vp.y, (GLsizei)w, vp.h);
+                }
+                break;
+            }
+            case(SceneCamera::Fixed):{
+                //glViewport( vp.x, vp.y, vp.w, vp.h);
+                break;
+            }
+            default:
+                //glViewport( vp.x, vp.y, vp.w, vp.h);
+                break;
+            }
+            return vp;
+        }
+
+    }
+
+
     void drawScene(SceneGraph* graph, CameraGroup::Ptr camGroup, SceneGraph::RenderInfo& info, SceneNode::Ptr node, RenderPreVisitor &previsitor, RenderPostVisitor &postvisitor, bool usePickMatrix = false, int pickx=0, int picky =0){
         if(node.get() == NULL)
             return;
 
         GLfloat matrix[16];
-        union {
-            struct{
-                int x,y,w,h;
-            };
-            int viewport[4];
-        } vp;
+
+
         // for each camera draw the scene starting from the node specified by the camera
 
         if(camGroup==NULL)
@@ -391,35 +453,9 @@ namespace {
             SceneNode::Ptr subRootNode = cam->getRefNode();
             if(subRootNode==NULL)
                 continue;
-            cam->getViewport(vp.x,vp.y,vp.w,vp.h);
-            switch( cam->getAspectRatioControl() ){
-            case(SceneCamera::Auto):{
-                glViewport( vp.x, vp.y, vp.w, vp.h);
-                break;
-            }
-            case(SceneCamera::ScaleX):
-            case(SceneCamera::ScaleY):
-            case(SceneCamera::Scale):{
-                // choose scale axis
-                //std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
-                if( vp.w/(double)vp.h<cam->getAspectRatio() ){
-                    double h = vp.w/cam->getAspectRatio();
-                    glViewport( vp.x, (GLint) (vp.y + (vp.h-h)/2.0), vp.w, (GLsizei)h);
-                } else {
-                    double w = vp.h*cam->getAspectRatio();
-                    glViewport( (GLint)(vp.x+ (vp.w-w)/2.0), vp.y, (GLsizei)w, vp.h);
-                }
-                break;
-            }
-            case(SceneCamera::Fixed):{
-                glViewport( vp.x, vp.y, vp.w, vp.h);
 
-                break;
-            }
-            default:
-                glViewport( vp.x, vp.y, vp.w, vp.h);
-                break;
-            }
+            ViewPort vp = getViewPort(cam);
+            glViewport( vp.x, vp.y, vp.w, vp.h);
 
 
             //std::cout << x << " " << y << " " << w << " " << h << " " << "\n";
@@ -505,9 +541,12 @@ namespace {
                     GL_RGB, GL_UNSIGNED_BYTE, imgData);
             }
             if( (scam->_renderToDepth) && scam->_scan25!=NULL){
-                std::cout << "render to depth" << std::endl;
+                //std::cout << "render to depth" << std::endl;
                 if(scam->_depthData.size() != scam->_scan25->getWidth()*scam->_scan25->getHeight() )
                     scam->_depthData.resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
+
+                SceneCamera::Ptr maincam = scam->getMainCamera();
+
                 // copy rendered depth scene to image
                 glReadPixels(
                      0, 0,
@@ -516,11 +555,34 @@ namespace {
 
                 GLdouble modelview[16];
                 GLdouble projection[16];
-                GLint viewport[4];
+                //GLint viewport[4];
 
-                glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-                glGetDoublev( GL_PROJECTION_MATRIX, projection );
-                glGetIntegerv( GL_VIEWPORT, viewport );
+
+                ProjectionMatrix projectionMatrix = maincam->getProjectionMatrix();
+                projectionMatrix.toOpenGLMatrix(projection);
+
+                Transform3D<> camtransform = maincam->getTransform();
+                if( maincam->getAttachedNode().get() != NULL ){
+                    // calculate kinematics from attached node to
+                    SceneNode::Ptr parent = maincam->getAttachedNode();
+                    //std::cout << parent->getName() << std::endl;
+                    do{
+                        if(parent->asGroupNode()!=NULL)
+                            camtransform = parent->asGroupNode()->getTransform()*camtransform;
+                        parent = parent->_parentNodes.front();
+                    } while( parent!=maincam->getRefNode() );
+                }
+
+                //Transform3D<> viewMatrix = inverse( camtransform );
+                Transform3D<> viewMatrix = Transform3D<>::identity(); //inverse( camtransform );
+                DrawableUtil::transform3DToGLTransform(viewMatrix, modelview);
+
+                ViewPort vp = getViewPort(maincam);
+                //glViewport( vp.x, vp.y, vp.w, vp.h);
+
+                //glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+                //glGetDoublev( GL_PROJECTION_MATRIX, projection );
+                //glGetIntegerv( GL_VIEWPORT, viewport );
 
                 std::vector<rw::math::Vector3D<float> >* result = &scam->_scan25->getData();
                 // now unproject all pixel values
@@ -532,7 +594,7 @@ namespace {
                         double winX=x,winY=y,winZ=scam->_depthData[x+y*scam->_scan25->getWidth()];
                         double posX, posY, posZ;
                         gluUnProject( winX, winY, winZ,
-                                modelview, projection, viewport,
+                                modelview, projection, vp.viewport,
                                 &posX, &posY, &posZ);
                         if (result != NULL) {
                             Vector3D<float>& q = (*result)[x+y*scam->_scan25->getWidth()];
