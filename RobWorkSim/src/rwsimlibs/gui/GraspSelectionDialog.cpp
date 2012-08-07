@@ -119,11 +119,9 @@ void GraspSelectionDialog::initializeStart(){
     _simStartTimes.resize(threads, 0);
     RW_DEBUGS("threads: " << threads);
 
-    BOOST_FOREACH(Body* body, _dwc->getBodies()){
-        if(RigidBody* rbody = dynamic_cast<RigidBody*>(body)){
-            _bodies.push_back(rbody);
-            _frameToBody[*rbody->getMovableFrame()] = rbody;
-        }
+    _bodies = _dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody::Ptr rbody, _bodies){
+        _frameToBody[*rbody->getMovableFrame()] = rbody;
     }
 
     for(int i=0;i<threads;i++){
@@ -206,7 +204,7 @@ void GraspSelectionDialog::btnPressed(){
 
     	Q q(6);
     	q(0) = 1;q(1) = 1;q(2) = 1;q(3) = -180*Deg2Rad; q(4) = 0;q(5) = 0;
-    	GraspTable::GraspData *data = _kdtree->nnSearch(q).valueAs<GraspTable::GraspData*>();
+    	GraspTable::GraspData *data = _kdtree->nnSearch(q).value;
     	setGraspState(*data,_state);
     	stateChanged(_state);
 
@@ -322,7 +320,7 @@ void GraspSelectionDialog::updateStatus(){
         // check the velocity of all the bodies
         bool allBelowThres = true;
         Vector3D<> avgLVel, avgAVel;
-        BOOST_FOREACH(RigidBody *rbody, _bodies){
+        BOOST_FOREACH(RigidBody::Ptr rbody, _bodies){
             //RW_DEBUGS("rbody: " << rbody->getMovableFrame().getName() );
             // get velocity of rbody
             // if above threshold then break and continue
@@ -453,13 +451,13 @@ void GraspSelectionDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     calcRandomCfg(_bodies, state);
     int nrOfTries=0;
     CollisionDetector::QueryResult result;
-    std::vector<RigidBody*> bodies;
+    std::vector<RigidBody::Ptr> bodies;
     while( _colDect->inCollision(state, &result, false) ){
         nrOfTries++;
         BOOST_FOREACH(rw::kinematics::FramePair pair, result.collidingFrames){
             // generate new collision free configuration between
-            RigidBody *body1 = _frameToBody[*pair.first];
-            RigidBody *body2 = _frameToBody[*pair.second];
+            RigidBody::Ptr body1 = _frameToBody[*pair.first];
+            RigidBody::Ptr body2 = _frameToBody[*pair.second];
             // calc new configuration
             bodies.push_back(body1);
             //bodies.push_back(body2);
@@ -472,7 +470,7 @@ void GraspSelectionDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
 
 }
 
-void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::kinematics::State& state){
+void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::kinematics::State& state){
     const double lowR = Deg2Rad * ( _lowRollSpin->value() );
     const double highR = Deg2Rad * ( _highRollSpin->value() );
     const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
@@ -481,7 +479,7 @@ void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::ki
     const double highY = Deg2Rad * ( _highYawSpin->value() );
 
 
-    BOOST_FOREACH(RigidBody *rbody, bodies){
+    BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
         double roll = Math::ran(lowR, highR);
         double pitch = Math::ran(lowP, highP);
         double yaw = Math::ran(lowY, highY);

@@ -28,15 +28,17 @@
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/control/BodyController.hpp>
+#include <rwsim/control/PoseController.hpp>
 
-
+/**
 #ifdef __cplusplus
 extern "C" {
 #endif
-    int luaopen_rws(struct lua_State* L); // declare the wrapped module
+    int luaopen_rwsim(struct lua_State* L); // declare the wrapped module
 #ifdef __cplusplus
 }
 #endif
+*/
 
 namespace rwsim {
 namespace swig {
@@ -56,7 +58,8 @@ namespace swig {
     typedef rwsim::dynamics::KinematicBody KinematicBody;
     typedef rwsim::dynamics::BodyInfo BodyInfo;
     typedef rwsim::dynamics::DynamicDevice DynamicDevice;
-
+    typedef rwsim::dynamics::RigidDevice RigidDevice;
+    typedef rwsim::control::PoseController PoseController;
 
     // for now we add all static functions here
     DynamicWorkCell* getDynamicWorkCell();

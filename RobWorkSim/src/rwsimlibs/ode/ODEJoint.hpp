@@ -73,14 +73,52 @@ namespace simulator {
 
 		virtual ~ODEJoint(){};
 
-		void setVelocity(double vel){
-			if(_jtype==Revolute) dJointSetAMotorParam(_motorId, dParamVel, vel);
-			else dJointSetLMotorParam(_motorId, dParamVel, vel);
-		}
-
         void setForce(double vel){
             if(_jtype==Revolute) dJointAddHingeTorque(_jointId, vel);
             else dJointAddSliderForce(_jointId, vel);
+        }
+
+        double getActualVelocity(){
+            if(_jtype==Revolute)  return dJointGetHingeAngleRate( _jointId );
+            return dJointGetSliderPositionRate ( _jointId );
+        }
+
+        double getAngle(){
+            double val;
+            if(_jtype==Revolute) val = dJointGetHingeAngle( _jointId );
+            else val = dJointGetSliderPosition ( _jointId );
+            return val;
+        }
+
+        ODEJoint* getOwner(){
+            return _owner;
+        }
+
+        ODEJointType getType(){
+            return _type;
+        }
+
+        void reset(const rw::kinematics::State& state);
+
+        double getScale(){ return _scale; };
+        double getOffset(){ return _off; };
+
+
+        ODEBody* getParent(){ return _parent; }
+
+        ODEBody* getChild() { return _child; }
+
+        rw::models::Joint* getJoint(){
+            return _rwJoint;
+        }
+
+
+
+        /// Functions that require a MOTOR
+
+        void setVelocity(double vel){
+            if(_jtype==Revolute) dJointSetAMotorParam(_motorId, dParamVel, vel);
+            else dJointSetLMotorParam(_motorId, dParamVel, vel);
         }
 
 		double getVelocity(){
@@ -88,23 +126,6 @@ namespace simulator {
 			if(_jtype==Revolute) vel = dJointGetAMotorParam(_motorId, dParamVel);
 			else vel = dJointGetLMotorParam(_motorId, dParamVel);
 			return vel;
-		}
-
-		void setAngle(double pos){
-			if(_jtype==Revolute) dJointSetAMotorAngle(_motorId, 0, pos);
-			//else dJointSetLMotorAngle(_motorId, 0, pos);
-		}
-
-		double getAngle(){
-			double val;
-			if(_jtype==Revolute) val = dJointGetHingeAngle( _jointId );
-			else val = dJointGetSliderPosition ( _jointId );
-			return val;
-		}
-
-		double getActualVelocity(){
-			if(_jtype==Revolute)  return dJointGetHingeAngleRate( _jointId );
-			return dJointGetSliderPositionRate ( _jointId );
 		}
 
 		void setMaxForce(double force){
@@ -117,34 +138,28 @@ namespace simulator {
 			return dJointGetLMotorParam(_motorId,dParamFMax);
 		}
 
-		ODEJoint* getOwner(){
-			return _owner;
-		}
+        void setAngle(double pos){
+          if(_jtype==Revolute) dJointSetAMotorAngle(_motorId, 0, pos);
+            //else dJointSetLMotorAngle(_motorId, 0, pos);
+        }
+
+        void setMotorEnabled(bool enabled){
+            if(enabled)
+                dJointEnable(_motorId);
+            else
+                dJointDisable(_motorId);
+        }
+
+        bool isMotorEnabled(){
+            if(dJointIsEnabled (_motorId))
+                return true;
+            return false;
+        }
 
 		// renamed to getChild
 		//dBodyID getODEBody(){
 		//	return _bodyId;
 		//}
-
-		ODEJointType getType(){
-			return _type;
-		}
-
-		void reset(const rw::kinematics::State& state);
-
-		double getScale(){ return _scale; };
-		double getOffset(){ return _off; };
-
-
-		ODEBody* getParent(){ return _parent; }
-
-		ODEBody* getChild() { return _child; }
-
-		rw::models::Joint* getJoint(){
-		    return _rwJoint;
-		}
-
-		//static ODEJoint* make(RevoluteJoint* joint, dBodyID parent);
 
 	private:
 		//dBodyID _bodyId;

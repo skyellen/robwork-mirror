@@ -91,7 +91,7 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         	_thresholdSpin->setValue((int)thres);
         }
 
-        rwsim::dynamics::RigidBody* getSelectedBody(){
+        rwsim::dynamics::RigidBody::Ptr getSelectedBody(){
         	int i = _selectObjBox->currentIndex();
         	return _bodies[i];
         }
@@ -125,7 +125,7 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         rw::common::Ptr<rwsim::drawable::RenderCircles> _xcRender,_ycRender,_zcRender;
         rwlibs::opengl::Drawable *_xcDraw,*_ycDraw,*_zcDraw;
 
-        std::vector<rwsim::dynamics::RigidBody*> _bodies;
+        std::vector<rwsim::dynamics::RigidBody::Ptr> _bodies;
         std::vector< std::vector<rw::math::Vector3D<> > > _xaxis,_yaxis,_zaxis;
         std::vector< std::vector<rw::math::Transform3D<> > > _endTransforms, _startTransforms;
 

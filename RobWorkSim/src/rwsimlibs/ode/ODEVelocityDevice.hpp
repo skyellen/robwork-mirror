@@ -95,6 +95,8 @@ namespace simulator {
 		dynamics::RigidDevice *_rdev;
 		std::vector<ODEJoint*> _odeJoints;
 		std::vector<ODEBody*> _ode_bodies;
+		std::vector<rwsim::dynamics::RigidDevice::MotorControlMode> _modes;
+
 		rw::math::Q _maxForce;
 		rw::math::Q _lastQ;
 		double _lastDt;

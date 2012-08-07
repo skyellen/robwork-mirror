@@ -64,7 +64,7 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
 
         const rw::kinematics::State& getState(){ return _state; };
 
-        std::vector<rwsim::dynamics::RigidBody*>& getBodies(){ return _bodies; };
+        std::vector<rwsim::dynamics::RigidBody::Ptr>& getBodies(){ return _bodies; };
 
         std::vector<rw::kinematics::State>& getStartPoses(){return _startPoses;};
 
@@ -122,7 +122,7 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
          * @param bodies
          * @param state
          */
-        void calcRandomCfg(std::vector<rwsim::dynamics::RigidBody*> &bodies,
+        void calcRandomCfg(std::vector<rwsim::dynamics::RigidBody::Ptr> &bodies,
                            rw::kinematics::State& state);
 
         /**
@@ -159,14 +159,14 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         std::vector<double> _simStartTimes;
         int _nrOfTests;
         double _totalSimTime;
-        std::vector<rwsim::dynamics::RigidBody*> _bodies;
+        std::vector<rwsim::dynamics::RigidBody::Ptr> _bodies;
 
         long _startTime;
         std::string _id;
         std::vector<rw::kinematics::State> _startPoses;
         std::vector<rw::kinematics::State> _resultPoses;
 
-        rw::kinematics::FrameMap<rwsim::dynamics::RigidBody*> _frameToBody;
+        rw::kinematics::FrameMap<rwsim::dynamics::RigidBody::Ptr> _frameToBody;
         rwsim::dynamics::DynamicWorkCell *_dwc;
         rw::proximity::CollisionDetector *_colDect;
         double _lastTime,_lastBelowThresUpdate;
@@ -176,8 +176,8 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         std::vector<rwsim::control::PDControllerPtr> _controllers;
         std::vector<rw::math::Q> _preshapes;
         std::vector<rw::math::Q> _targetQ;
-        rwsim::dynamics::RigidBody *_body;
-        rwsim::dynamics::RigidDevice *_hand;
+        rwsim::dynamics::RigidBody::Ptr _body;
+        rwsim::dynamics::RigidDevice::Ptr _hand;
         rw::kinematics::MovableFrame *_handBase,*_object;
 
         rwsim::sensor::BodyContactSensorPtr _bodySensor;

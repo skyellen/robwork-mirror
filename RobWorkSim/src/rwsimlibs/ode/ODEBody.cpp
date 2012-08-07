@@ -34,7 +34,7 @@ using namespace rwsim::simulator;
 using namespace rwsim;
 
 
-ODEBody::ODEBody(dBodyID odeBody, RigidBody* rwbody,
+ODEBody::ODEBody(dBodyID odeBody, RigidBody::Ptr rwbody,
                  rw::math::Vector3D<> offset, int matID, int conID):
                 _mframe(rwbody->getMovableFrame()),
                 _bodyId(odeBody),
@@ -51,7 +51,7 @@ ODEBody::ODEBody(dBodyID odeBody, RigidBody* rwbody,
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
-ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
+ODEBody::ODEBody(dBodyID odeBody, KinematicBody::Ptr kbody, int matID, int conID):
 				_mframe(kbody->getMovableFrame()),
 				_bodyId(odeBody),
 				_body(kbody),
@@ -67,7 +67,7 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
-ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, int conID):
+ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body::Ptr body, int matID, int conID):
                 _mframe(NULL),
                 _bodyId(0), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
@@ -84,7 +84,7 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, 
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
-ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> offset, int matID, int conID, ODEBodyType type):
+ODEBody::ODEBody(dBodyID odeBody, dynamics::Body::Ptr body, rw::math::Vector3D<> offset, int matID, int conID, ODEBodyType type):
                 _mframe(NULL),
                 _bodyId(odeBody), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
@@ -97,7 +97,7 @@ ODEBody::ODEBody(dBodyID odeBody, dynamics::Body* body, rw::math::Vector3D<> off
                 _contactID(conID),
                 _offset(offset)
 {
-    _rwBody = dynamic_cast<RigidBody*>(body);
+    _rwBody = body.cast<RigidBody>();
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
@@ -401,7 +401,7 @@ void ODEBody::reset(const rw::kinematics::State& state){
 }
 
 
-ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESimulator* sim){
+ODEBody* ODEBody::makeRigidBody(dynamics::Body::Ptr rwbody,  dSpaceID spaceId, ODESimulator* sim){
     State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
 
     const BodyInfo& info = rwbody->getInfo();
@@ -425,7 +425,7 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESi
     ODEBody *odeBody=0;
 
     // now if the rwbody is of type RigidBody then use this
-    if(RigidBody *rbody = dynamic_cast<RigidBody*>(rwbody)){
+    if( RigidBody::Ptr rbody = rwbody.cast<RigidBody>() ){
         odeBody = new ODEBody(bodyId, rbody, info.masscenter, mid, oid);
         dBodySetData (bodyId, (void*)odeBody);
 
@@ -470,7 +470,7 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESi
 }
 
 
-ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator *sim)
+ODEBody* ODEBody::makeKinematicBody(Body::Ptr kbody, dSpaceID spaceid, ODESimulator *sim)
 {
     RW_ASSERT(kbody!=NULL);
     State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
@@ -495,7 +495,7 @@ ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator 
     int mid = sim->getMaterialMap().getDataID( info.material );
     int oid = sim->getContactMap().getDataID( info.objectType );
     ODEBody *odeBody;
-    if( KinematicBody* rwkbody = dynamic_cast<KinematicBody*>(kbody) ){
+    if( KinematicBody::Ptr rwkbody = kbody.cast<KinematicBody>() ){
         odeBody = new ODEBody(bodyId, rwkbody, mid , oid);
     } else {
         odeBody = new ODEBody(bodyId, kbody, mc,  mid , oid, ODEBody::KINEMATIC);
@@ -527,7 +527,7 @@ ODEBody* ODEBody::makeKinematicBody(Body* kbody, dSpaceID spaceid, ODESimulator 
     return odeBody;
 }
 
-ODEBody* ODEBody::makeFixedBody(Body* rwbody, dSpaceID spaceid, ODESimulator *sim)
+ODEBody* ODEBody::makeFixedBody(Body::Ptr rwbody, dSpaceID spaceid, ODESimulator *sim)
 {
     State state = sim->getDynamicWorkCell()->getWorkcell()->getDefaultState();
     const BodyInfo& info = rwbody->getInfo();

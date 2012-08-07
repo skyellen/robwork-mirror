@@ -123,16 +123,16 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
     Body *object = NULL;
 
     //bool inContact = false;
-    std::vector<Body*> cbodies = _sensor->getBodies();
+    std::vector<Body::Ptr> cbodies = _sensor->getBodies();
     std::vector<Contact3D> contacts = _sensor->getContacts();
 
     // test if the entire mouthpiece is in contact
     //std::cout <<  "Contacts: " << contacts.size() << std::endl;
     int cidx = 0; //, contactIdx =0;
     if(contacts.size()>0){
-        BOOST_FOREACH(Body *b, cbodies ){
+        BOOST_FOREACH(Body::Ptr b, cbodies ){
             if(b!=NULL){
-                object = b;
+                object = b.get();
                 //contactIdx = cidx;
             }
             cidx++;
@@ -483,7 +483,7 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     // create base
 
     BodyInfo info = scup->getEndBody()->getInfo();
-    Body* base = scup->getBase();
+    Body::Ptr base = scup->getBase();
     _odeBase = odebase;
     RW_ASSERT(_odeBase);
     _odeEnd = ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);

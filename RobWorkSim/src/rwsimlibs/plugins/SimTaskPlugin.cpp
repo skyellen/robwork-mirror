@@ -127,8 +127,8 @@ void SimTaskPlugin::open(WorkCell* workcell)
     _graspSim = ownedPtr( new GraspTaskSimulator(_dwc) );
 
     _objectComboBox->clear();
-    std::vector<RigidBody*> bodies = _dwc->findBodies<RigidBody>();
-    BOOST_FOREACH(RigidBody* body, bodies){
+    std::vector<RigidBody::Ptr> bodies = _dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody::Ptr body, bodies){
         _objectComboBox->addItem(body->getName().c_str());
     }
 
@@ -436,7 +436,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     std::string type = _typeComboBox->currentText().toStdString();
     std::string gripperName = type;
     GraspTask::Ptr gtask = ownedPtr(new GraspTask());
-    Body* body = _dwc->findBody(objectName);
+    Body* body = _dwc->findBody(objectName).get();
     if(body==NULL){
         RW_THROW("OBJECT DOES NOT EXIST: " << objectName);
     }
@@ -538,7 +538,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     subtask.offset = wTe_n;
     if( type== "SCUP"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
-        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.04));
+        subtask.retract = Transform3D<>(Vector3D<>(0,0,0.0));
     } else if( gripperName=="GS20"){
         subtask.approach = Transform3D<>(Vector3D<>(0,0,0.04));
         subtask.retract = Transform3D<>(Vector3D<>(0,0,0.1));

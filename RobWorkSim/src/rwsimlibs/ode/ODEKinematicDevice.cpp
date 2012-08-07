@@ -47,7 +47,7 @@ ODEKinematicDevice::ODEKinematicDevice(dynamics::KinematicDevice *kdev,
     // ODE does not support kinematic joints.. instead all bodies are kinematic
     // and their velocity must be controlled based on the
     dSpaceID space = dHashSpaceCreate( sim->getODESpace() );
-    BOOST_FOREACH(Body *kbody, kdev->getLinks() ){
+    BOOST_FOREACH(Body::Ptr kbody, kdev->getLinks() ){
         _bodies.push_back( ODEBody::makeKinematicBody(kbody, space, sim) );
         _kbodies.push_back( _bodies.back()->getBodyID() );
     }
@@ -56,7 +56,7 @@ ODEKinematicDevice::ODEKinematicDevice(dynamics::KinematicDevice *kdev,
 ODEKinematicDevice::~ODEKinematicDevice(){};
 
 void ODEKinematicDevice::reset(rw::kinematics::State& state){
-    std::vector<Body*> bodies = _kdev->getLinks();
+    std::vector<Body::Ptr> bodies = _kdev->getLinks();
     for(size_t i = 0; i<_kbodies.size(); i++){
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bodies[i]->getBodyFrame(), state);
         wTb.P() += wTb.R()*bodies[i]->getInfo().masscenter;
@@ -160,7 +160,7 @@ void ODEKinematicDevice::update(const rwlibs::simulation::Simulator::UpdateInfo&
 */
 
 
-	    Body *kbody = _kdev->getLinks()[i];
+	    Body::Ptr kbody = _kdev->getLinks()[i];
         // we calculate the difference between the current pose of the joint
 	    // and the destination of the joint
 	    Transform3D<> wTj = ODEUtil::getODEBodyT3D(_kbodies[i]);

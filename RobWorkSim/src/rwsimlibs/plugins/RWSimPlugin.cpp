@@ -354,7 +354,7 @@ void RWSimPlugin::btnPressed(){
         std::string ctrlname = _deviceControlBox->currentText().toStdString();
         State state = getRobWorkStudio()->getState();
 
-        DynamicDevice *ddev = _dwc->findDevice(ctrlname);
+        DynamicDevice *ddev = _dwc->findDevice(ctrlname).get();
         if( ddev !=NULL){
             // use a device control interface
 
@@ -620,7 +620,7 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
     }
 
     _deviceControlBox->clear();
-    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices()){
+    BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices()){
         rw::models::Device *dev = &device->getModel();
         if( dynamic_cast<JointDevice*>(dev) == NULL )
             continue;
@@ -683,17 +683,6 @@ void RWSimPlugin::openDwc(const std::string& file){
     	RW_THROW("Dynamic workcell is null");
 
     _dwc = dwc;
-    // TEST: we add the beamjointcontroller here
-    DynamicDevice* ddev = _dwc->findDevice("HybridGriber");
-
-    if(ddev!=NULL ){
-        RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
-        if(rdev!=NULL){
-            BeamJointController *bjointctrl = new BeamJointController("HybridControl", rdev, JointController::POSITION, 0.01);
-            _dwc->addController(bjointctrl);
-        }
-    }
-
     // adding the DynamicWorkcell to the propertymap such that others can use it
 
     getRobWorkStudio()->getPropertyMap().add<DynamicWorkCell::Ptr>(

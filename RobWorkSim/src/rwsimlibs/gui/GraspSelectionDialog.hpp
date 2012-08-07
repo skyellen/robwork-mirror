@@ -50,7 +50,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
 
         const rw::kinematics::State& getState(){ return _state; };
 
-        std::vector<rwsim::dynamics::RigidBody*>& getBodies(){ return _bodies; };
+        std::vector<rwsim::dynamics::RigidBody::Ptr>& getBodies(){ return _bodies; };
 
         std::vector<rw::kinematics::State>& getStartPoses(){return _startPoses;};
 
@@ -92,7 +92,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
          * @param bodies
          * @param state
          */
-        void calcRandomCfg(std::vector<rwsim::dynamics::RigidBody*> &bodies,
+        void calcRandomCfg(std::vector<rwsim::dynamics::RigidBody::Ptr> &bodies,
                            rw::kinematics::State& state);
 
         /**
@@ -113,7 +113,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
         std::vector<double> _simStartTimes;
         int _nrOfTests;
         double _totalSimTime;
-        std::vector<rwsim::dynamics::RigidBody*> _bodies;
+        std::vector<rwsim::dynamics::RigidBody::Ptr> _bodies;
 
         rw::models::Device *_dev;
         rw::kinematics::MovableFrame* _object, *_handBase;
@@ -123,7 +123,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
         std::vector<rw::kinematics::State> _startPoses;
         std::vector<rw::kinematics::State> _resultPoses;
 
-        rw::kinematics::FrameMap<rwsim::dynamics::RigidBody*> _frameToBody;
+        rw::kinematics::FrameMap<rwsim::dynamics::RigidBody::Ptr> _frameToBody;
         rwsim::dynamics::DynamicWorkCell *_dwc;
         rw::proximity::CollisionDetector *_colDect;
         double _lastTime,_lastBelowThresUpdate;
@@ -131,7 +131,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
         rwsim::util::MovingAverage _avgTime;
 
         rw::common::Ptr<rw::graspplanning::GraspTable> _gtable;
-        typedef rwlibs::algorithms::KDTreeQ SearchTree;
+        typedef rwlibs::algorithms::KDTreeQ<rw::graspplanning::GraspTable::GraspData*> SearchTree;
         SearchTree *_kdtree;
         std::vector<SearchTree::KDNode> _nodes;
 };

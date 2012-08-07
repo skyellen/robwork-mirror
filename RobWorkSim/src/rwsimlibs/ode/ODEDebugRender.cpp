@@ -149,7 +149,7 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
         Vector3D<> gravity = _sim->getGravity();
         std::vector<ODEBody*> bodies = _sim->getODEBodies();
         BOOST_FOREACH(ODEBody *body, bodies){
-            Body *rwbody = body->getRwBody();
+            Body *rwbody = body->getRwBody().get();
             if(rwbody==NULL)
                 continue;
             Vector3D<> grav = gravity*rwbody->getInfo().mass; // gravity is handled inside ODE

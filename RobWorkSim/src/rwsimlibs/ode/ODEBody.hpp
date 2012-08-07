@@ -68,7 +68,7 @@ namespace simulator {
 		 * @return
 		 */
 		ODEBody(dBodyID odeBody,
-				dynamics::RigidBody* rwbody,
+				dynamics::RigidBody::Ptr rwbody,
 				rw::math::Vector3D<> offset,
 				int matID, int conID);
 
@@ -83,7 +83,7 @@ namespace simulator {
 		 * @param type
 		 */
         ODEBody(dBodyID odeBody,
-                dynamics::Body* body,
+                dynamics::Body::Ptr body,
                 rw::math::Vector3D<> offset,
                 int matID, int conID,
                 ODEBodyType type);
@@ -95,7 +95,7 @@ namespace simulator {
 		 * @param offset [in] offset of the center of mass relative to \b rwbody
 		 * @return
 		 */
-		ODEBody(dBodyID odeBody, dynamics::KinematicBody* rwbody,int matID, int conID);
+		ODEBody(dBodyID odeBody, dynamics::KinematicBody::Ptr rwbody,int matID, int conID);
 
 		/**
 		 * @brief constructor for fixed bodies
@@ -103,7 +103,7 @@ namespace simulator {
 		 * @param frame
 		 * @return
 		 */
-		ODEBody(std::vector<dGeomID> geomId, dynamics::Body* body, int matID, int conID);
+		ODEBody(std::vector<dGeomID> geomId, dynamics::Body::Ptr body, int matID, int conID);
 
 		/**
 		 * @brief destructor
@@ -131,7 +131,7 @@ namespace simulator {
 		void reset(const rw::kinematics::State& state);
 
 		 //! returns the RobWork Body
-		dynamics::Body* getRwBody(){ return _body; }
+		dynamics::Body::Ptr getRwBody(){ return _body; }
 
 		//! get the ODE bodyId
 		dBodyID getBodyID(){ return _bodyId; }
@@ -176,16 +176,16 @@ namespace simulator {
 		void setTriGeomData(std::vector<ODEUtil::TriGeomData*>& data){ _triGeomDatas = data; }
 		std::vector<ODEUtil::TriGeomData*>& getTriGeomData(){ return _triGeomDatas; }
 
-		static ODEBody* makeRigidBody(dynamics::Body* rwbody,  dSpaceID spaceId, ODESimulator *sim);
-		static ODEBody* makeKinematicBody(dynamics::Body* kbody, dSpaceID spaceid, ODESimulator *sim);
-		static ODEBody* makeFixedBody(dynamics::Body* kbody, dSpaceID spaceid, ODESimulator *sim);
+		static ODEBody* makeRigidBody(dynamics::Body::Ptr rwbody,  dSpaceID spaceId, ODESimulator *sim);
+		static ODEBody* makeKinematicBody(dynamics::Body::Ptr kbody, dSpaceID spaceid, ODESimulator *sim);
+		static ODEBody* makeFixedBody(dynamics::Body::Ptr kbody, dSpaceID spaceid, ODESimulator *sim);
 	private:
 
 		// for rigid body
         rw::kinematics::MovableFrame *_mframe;
 
         dBodyID _bodyId;
-        dynamics::Body *_body;
+        dynamics::Body::Ptr _body;
         rw::kinematics::Frame *_rwframe;
         ODEBodyType _type;
 
@@ -196,8 +196,8 @@ namespace simulator {
         std::vector<dGeomID> _geomIds;
         std::vector<ODEUtil::TriGeomData*> _triGeomDatas;
 
-        dynamics::RigidBody *_rwBody;
-        dynamics::KinematicBody *_kBody;
+        dynamics::RigidBody::Ptr _rwBody;
+        dynamics::KinematicBody::Ptr _kBody;
 
         rw::math::Vector3D<> _offset;
 		rw::math::Vector3D<> _lastForce;

@@ -154,13 +154,13 @@ namespace simulator {
 		void DWCChangedListener(dynamics::DynamicWorkCell::DWCEventType type, boost::any data);
 
 		//! @copydoc Simulator::setEnabled
-		void setEnabled(dynamics::Body* body, bool enabled);
+		void setEnabled(dynamics::Body::Ptr body, bool enabled);
 
 		//! @copydoc Simulator::setEnabled
-		void setDynamicsEnabled(dynamics::Body* body, bool enabled);
+		void setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled);
 
 		//! @copydoc Simulator::createDebugRender
-		drawable::SimulatorDebugRender* createDebugRender();
+		drawable::SimulatorDebugRender::Ptr createDebugRender();
 
 		//! @copydoc Simulator::getPropertyMap
 		virtual rw::common::PropertyMap& getPropertyMap(){ return _propertyMap;};
@@ -343,7 +343,7 @@ namespace simulator {
 
 		dynamics::DynamicWorkCell::Ptr _dwc;
 		double _time;
-        ODEDebugRender *_render;
+        rw::common::Ptr<ODEDebugRender> _render;
         std::vector<dContact> _contacts;
         std::vector<dContact> _filteredContacts;
         std::vector<dynamics::ContactPoint> _rwcontacts;
@@ -448,6 +448,8 @@ namespace simulator {
 
 	};
 	static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
+
+
 
 }
 }

@@ -4,12 +4,38 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 //#include <rwslibs/swig/ScriptTypes.hpp>
 #include <rwsimlibs/swig/ScriptTypes.hpp>
+#if defined (SWIGLUA)
+    #include <rwsimlibs/swig/Lua.hpp>
+#endif
+
 #include <rw/common/Ptr.hpp>
 using namespace rwlibs::swig;
 using namespace rwsim::swig;
+
 %}
 
+%include <std_string.i>
+%include <std_vector.i>
+%include <shared_ptr.i>
+
 %import <rwlibs/swig/rw.i>
+
+%include <stl.i>
+
+%template (BodyPtr) rw::common::Ptr<Body>;
+%template (BodyPtrVector) std::vector<rw::common::Ptr<Body> >;
+%template (DynamicDevicePtr) rw::common::Ptr<DynamicDevice>;
+%template (DynamicDevicePtrVector) std::vector<rw::common::Ptr<DynamicDevice> >;
+%template (RigidDevicePtr) rw::common::Ptr<RigidDevice>;
+%template (RigidDevicePtrVector) std::vector<rw::common::Ptr<RigidDevice> >;
+
+
+%template (RigidBodyPtr) rw::common::Ptr<RigidBody>;
+%template (RigidBodyPtrVector) std::vector<rw::common::Ptr<RigidBody> >;
+%template (KinematicBodyPtr) rw::common::Ptr<KinematicBody>;
+%template (KinematicBodyPtrVector) std::vector<rw::common::Ptr<KinematicBody> >;
+%template (FixedBodyPtr) rw::common::Ptr<FixedBody>;
+%template (FixedBodyPtrVector) std::vector<rw::common::Ptr<FixedBody> >;
 
 
 DynamicWorkCell* getDynamicWorkCell();
@@ -153,6 +179,101 @@ public:
     //InertiaMatrix calcEffectiveInertiaInv(const State& state) const;
 };
 
+%nodefaultctor PoseController;
+class PoseController //: public SimulatedController
+{
+public:
+
+    double getSampleTime();
+
+    void setSampleTime(double stime);
+
+    //void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
+
+    //void reset(const rw::kinematics::State& state);
+
+    //Controller* getController(){ return this; };
+
+    std::string getControllerName();
+
+    //rw::common::Ptr<rw::models::Device> getControlledDevice(){ return _device; }
+
+    void setEnabled(bool enabled);
+
+    bool isEnabled();
+
+    void setTarget(const Transform3D& target);
+
+    //void setTarget(const Transform3D& target, const VelocityScrew6D& vals);
+
+};
+
+%nodefaultctor DynamicDevice;
+class DynamicDevice {
+
+public:
+    virtual Q getQ(const State& state);
+
+    virtual void setQ(const Q &q, State& state);
+
+    rw::common::Ptr<Device> getKinematicModel();
+    rw::common::Ptr<Body> getBase();
+
+    virtual Q getJointVelocities(const State& state);
+    virtual void setJointVelocities(const Q &vel, State& state);
+
+    //deprecated
+    virtual Q getVelocity(const State& state);
+    virtual void setVelocity(const Q& vel, State& state);
+
+    virtual void setForceLimit(const Q& force);
+
+    virtual std::vector<rw::common::Ptr<Body> > getLinks();
+
+};
+
+
+%nodefaultctor RigidDevice;
+class RigidDevice : public DynamicDevice {
+    public:
+        void setMotorForceLimits(const Q& force);
+
+        Q getMotorForceLimits();
+
+        Q getJointVelocities(const State& state);
+        double getJointVelocity(int i, const State& state);
+
+        void setJointVelocities(const Q& q, State& state);
+        void setJointVelocity(double vel, int i, State& state);
+
+        typedef enum{Force, Velocity} MotorControlMode;
+
+        //std::vector<MotorControlMode> getMotorModes(const State& state);
+        MotorControlMode getMotorMode(int i, const State& state);
+
+        Q getMotorTargets(const State& state);
+        double getMotorTarget(int i, const State& state);
+
+        void setMotorTargets(const Q& q, State& state);
+        void setMotorForceTargets(const Q& force, State& state);
+        void setMotorVelocityTargets(const Q& vel, State& state);
+
+        void setMotorTarget(double q, int i, State& state);
+        void setMotorForceTarget(double force, int i, State& state);
+        void setMotorVelocityTarget(double vel, int i, State& state);
+
+        rw::common::Ptr<JointDevice> getJointDevice();
+        std::vector<rw::common::Ptr<Body> > getLinks();
+
+        //virtual void registerStateData(StateStructure::Ptr statestructure);
+
+    public: ///// DEPRECATED FUNCTIONS
+        //Q getForceLimit() { return getMotorForceLimits(); }
+        // void setVelocity(Q& vel, rw::kinematics::State& state){ setJointVelocities(vel, state);}
+    };
+
+
+
 class DynamicWorkCell
 {
 public:
@@ -161,13 +282,15 @@ public:
     /**
      * @brief Constructor
      */
+    
     DynamicWorkCell(rw::common::Ptr<WorkCell> workcell,
-                    const std::vector<Body*>& bodies,
-                    const std::vector<Body*>& allbodies,
-                    const std::vector<DynamicDevice*>& devices,
+                    const std::vector<rw::common::Ptr<Body> >& bodies,
+                    const std::vector<rw::common::Ptr<Body> >& allbodies,
+                    const std::vector<rw::common::Ptr<DynamicDevice> >& devices,
                     const std::vector<rw::common::Ptr<SimulatedController> >& controllers);
-
-    Body* findBody(const std::string& name) const;
+	
+	
+    rw::common::Ptr<Body> findBody(const std::string& name) const;
 
     //template<class T> T* findBody(const std::string& name) const;
     //template<class T> std::vector<T*> findBodies() const;
@@ -179,14 +302,16 @@ public:
     //const SensorList& getSensors();
     //void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
     //const std::vector<Constraint>& getConstraints();
-    //void addController(rwlibs::simulation::SimulatedController::Ptr manipulator)
-    //rwlibs::simulation::SimulatedController::Ptr findController(const std::string& name);
+    void addController(rw::common::Ptr<SimulatedController> manipulator);
+    rw::common::Ptr<SimulatedController> findController(const std::string& name);
+
+    rw::common::Ptr<DynamicDevice> findDevice(const std::string& name) const;
 
     //ContactDataMap& getContactData();
     //MaterialDataMap& getMaterialData();
 
-    void addBody(Body* body);
-    Body* getBody(Frame *f);
+    void addBody(rw::common::Ptr<Body> body);
+    rw::common::Ptr<Body> getBody(Frame *f);
 
     rw::common::Ptr<WorkCell> getWorkcell();
 
@@ -195,7 +320,7 @@ public:
 
     //WorkCellDimension getWorldDimension();
 
-    bool inDevice(Body* body);
+    bool inDevice(rw::common::Ptr<Body> body);
     void setGravity(const Vector3D& grav);
     const Vector3D& getGravity();
     PropertyMap& getEngineSettings();
@@ -215,12 +340,18 @@ public:
     //DWCChangedEvent& changedEvent() { return _changedEvent; }
 
     %extend {
-        RigidBody* findRigidBody(const std::string& name)
+        rw::common::Ptr<RigidBody> findRigidBody(const std::string& name)
         { return $self->DynamicWorkCell::findBody<RigidBody>(name); }
-        KinematicBody* findKinematicBody(const std::string& name)
+        rw::common::Ptr<KinematicBody> findKinematicBody(const std::string& name)
         { return $self->DynamicWorkCell::findBody<KinematicBody>(name); }
-        FixedBody* findFixedBody(const std::string& name)
+        rw::common::Ptr<FixedBody> findFixedBody(const std::string& name)
         { return $self->DynamicWorkCell::findBody<FixedBody>(name); }
+
+        rw::common::Ptr<RigidDevice> findRigidDevice(const std::string& name)
+        { return $self->DynamicWorkCell::findDevice<RigidDevice>(name); }
+        //KinematicBody* findKinematicBody(const std::string& name)
+        //{ return $self->DynamicWorkCell::findBody<KinematicBody>(name).get(); }
+
 
     };
 

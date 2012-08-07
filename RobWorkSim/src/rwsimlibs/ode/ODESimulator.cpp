@@ -62,7 +62,7 @@
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
-#include <rwsim/sensor/TactileMultiAxisSimSensor.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rw/common/Log.hpp>
 
@@ -176,7 +176,9 @@ double ODESimulator::getMaxSeperatingDistance(){
 }
 
 ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
-	_dwc(dwc),_time(0.0),_render(new ODEDebugRender(this)),
+	_dwc(dwc),
+	_time(0.0),
+	_render(ownedPtr( new ODEDebugRender(this) ) ),
     _contacts(INITIAL_MAX_CONTACTS),
     _filteredContacts(INITIAL_MAX_CONTACTS+10),
     _rwcontacts(INITIAL_MAX_CONTACTS),
@@ -227,7 +229,7 @@ void ODESimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost:
 }
 
 
-void ODESimulator::setEnabled(Body* body, bool enabled){
+void ODESimulator::setEnabled(Body::Ptr body, bool enabled){
     if(!body)
         RW_THROW("Body is NULL!");
     ODEBody *odebody = _rwFrameToODEBody[ body->getBodyFrame() ];
@@ -242,7 +244,7 @@ void ODESimulator::setEnabled(Body* body, bool enabled){
 
 }
 
-void ODESimulator::setDynamicsEnabled(dynamics::Body* body, bool enabled){
+void ODESimulator::setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled){
     ODEBody *odebody = _rwFrameToODEBody[ body->getBodyFrame() ];
 	//std::cout << "1" << std::endl;
     if(odebody==NULL)
@@ -656,7 +658,7 @@ void ODESimulator::addEmulatedContact(const rw::math::Vector3D<>& pos, const rw:
     _allcontacts.push_back(point);
 }
 
-rwsim::drawable::SimulatorDebugRender* ODESimulator::createDebugRender(){
+rwsim::drawable::SimulatorDebugRender::Ptr ODESimulator::createDebugRender(){
     return _render;
 }
 // worlddimension -
@@ -849,7 +851,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
-    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
+    BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices() ){
         JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
         if(jdev==NULL)
             continue;
@@ -860,7 +862,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     //dCreatePlane(_spaceId,0,0,1,0);
 
     RW_DEBUGS( "- ADDING BODIES " );
-    BOOST_FOREACH(Body* body, _dwc->getBodies() ){
+    BOOST_FOREACH(Body::Ptr body, _dwc->getBodies() ){
         // check if a body is part
         if(!_dwc->inDevice(body) )
             addBody(body, state);
@@ -879,7 +881,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
             jdev->setQ( offsets , initState );
         }
     }*/
-    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
+    BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices() ){
         addDevice(device, initState);
     }
 
@@ -999,7 +1001,7 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
     if( _rwFrameToODEBody.find( dev->getBase()->getBodyFrame() )==_rwFrameToODEBody.end() ){
         RW_DEBUGS("Creating base of device " << device->getKinematicModel()->getName());
         // the base has not yet been created, do it here
-        Body *rwbase = device->getBase();
+        Body::Ptr rwbase = device->getBase();
         addBody(rwbase, state);
         //_rwFrameToODEBody[ device->getModel().getBase() ] =
     }
@@ -1300,9 +1302,9 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 	_sensors.push_back(sensor);
 
 	SimulatedSensor *ssensor = sensor.get();
-	if( dynamic_cast<TactileMultiAxisSimSensor*>(ssensor) ){
+	if( dynamic_cast<SimulatedFTSensor*>(ssensor) ){
 	    // this sensor only monitores the forces acting on a specific constraint.
-	    TactileMultiAxisSimSensor* tsensor = dynamic_cast<TactileMultiAxisSimSensor*>(sensor.get());
+	    SimulatedFTSensor* tsensor = dynamic_cast<SimulatedFTSensor*>(sensor.get());
         Frame *parentFrame = tsensor->getBody1()->getBodyFrame();
         Frame *sensorFrame = tsensor->getBody2()->getBodyFrame();
 
@@ -1386,12 +1388,14 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 	} else if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
 	    // this is a general tactile sensor, only contact joints will be monitored.
         SimulatedTactileSensor *tsensor = dynamic_cast<SimulatedTactileSensor*>(sensor.get());
-        Frame *bframe = tsensor->getSensorFrame();
+        Frame *bframe = tsensor->getFrame();
+
+        RW_ASSERT(bframe!=NULL);
 
         //std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
         //std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
         if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
-            RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!");
+            RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!" << bframe->getName());
         }
 
         ODETactileSensor *odesensor = new ODETactileSensor(tsensor);
@@ -1418,7 +1422,7 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
             newsensors.push_back(oldsen);
     }
     _sensors = newsensors;
-    Frame *bframe = sensor->getSensorFrame();
+    Frame *bframe = sensor->getFrame();
     if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
         return;
     }

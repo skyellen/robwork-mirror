@@ -271,9 +271,9 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     Math::seed( TimerUtil::currentTimeMs() );
 
     RW_DEBUGS("- Setting devices ");
-    std::vector<DynamicDevice*> devices = _dwc->getDynamicDevices();
-    BOOST_FOREACH(DynamicDevice* device, devices){
-        if(dynamic_cast<RigidDevice*>(device)){
+    std::vector<DynamicDevice::Ptr> devices = _dwc->getDynamicDevices();
+    BOOST_FOREACH(DynamicDevice::Ptr device, devices){
+        if( device.cast<RigidDevice>() ){
             rw::models::Device *dev = &device->getModel();
             RW_ASSERT(dev);
             RW_DEBUGS("-- Dev name: " << dev->getName() );
@@ -282,7 +282,7 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     }
 
     RW_DEBUGS("- Setting objects ");
-    BOOST_FOREACH(Body *body, _dwc->getBodies() ){
+    BOOST_FOREACH(Body::Ptr body, _dwc->getBodies() ){
         Frame *obj = body->getBodyFrame();
         if(obj==NULL)
             continue;
@@ -407,8 +407,8 @@ void GraspRestingPoseDialog::initializeStart(){
 
     RW_DEBUGS("- Getting object!");
     std::string objName = _objectBox->currentText().toStdString();
-    BOOST_FOREACH(Body* body, _dwc->getBodies()){
-        if(RigidBody* rbody = dynamic_cast<RigidBody*>(body)){
+    BOOST_FOREACH(Body::Ptr body, _dwc->getBodies()){
+        if(RigidBody::Ptr rbody = body.cast<RigidBody>() ){
             if(rbody->getBodyFrame()->getName()==objName){
                 _bodies.push_back(rbody);
                 _body = rbody;
@@ -425,11 +425,11 @@ void GraspRestingPoseDialog::initializeStart(){
 
     RW_DEBUGS("- Getting device!");
     std::string devName = _deviceBox->currentText().toStdString();
-    DynamicDevice *dev = _dwc->findDevice(devName);
-    _hand = dynamic_cast<RigidDevice*>(dev);
+    DynamicDevice::Ptr dev = _dwc->findDevice(devName);
+    _hand = dev.cast<RigidDevice>();
     file << "Hand device name: " << devName << std::endl;
     RW_ASSERT(_hand);
-    _handForceLimitsDefault = _hand->getForceLimit();
+    _handForceLimitsDefault = _hand->getMotorForceLimits();
     // Now discover the movable handbase...
     Frame *parent = _hand->getModel().getBase();
     while(parent!=NULL){
@@ -1094,7 +1094,7 @@ bool GraspRestingPoseDialog::isSimulationFinished( DynamicSimulator::Ptr sim , c
     // test if the hand has stopped moving
     double lVelThres = _linVelSpin->value();
 
-    Q vel = _hand->getActualVelocity(state);
+    Q vel = _hand->getJointVelocities(state);
     //std::cout << vel << std::endl;
     if( MetricUtil::normInf( vel ) < lVelThres ){
         return true;
@@ -1404,7 +1404,7 @@ void GraspRestingPoseDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::
 #else
 
 
-void GraspRestingPoseDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::kinematics::State& state){
+void GraspRestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::kinematics::State& state){
 	//if( _ui->_inGroupsCheck->)
 
 		// TODO: pick a stable object pose.

@@ -31,23 +31,32 @@
 namespace rwsim {
 namespace simulator {
 
+    /**
+     * @brief
+     */
 	class ODETactileSensor {
 	public:
 		ODETactileSensor(sensor::SimulatedTactileSensor *sens);
 
 		virtual ~ODETactileSensor(){};
 
-        void addFeedbackGlobal(dJointFeedback*, dynamics::Body* b, int body);
+        void clear();
 
-		void addFeedback(const std::vector<dJointFeedback*>& fback, const std::vector<dContactGeom> &g, dynamics::Body* b, int body);
+        void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
-		void clear();
+        void addFeedbackGlobal(dJointFeedback*, dynamics::Body::Ptr b, int body);
 
-		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
+		void addFeedback(const std::vector<dJointFeedback*>& fback,
+		                 const std::vector<dContactGeom> &g,
+		                 dynamics::Body::Ptr b,
+		                 int body);
 
 		// this is for contacts that are not directly specified by the physics solver, eg. if you emulate
 		// multiple contacts with a more complex constraint.
-		void addContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b);
+		void addContact(const rw::math::Vector3D<>& pos,
+		                const rw::math::Vector3D<>& force,
+		                const rw::math::Vector3D<>& normal,
+		                dynamics::Body::Ptr b);
 
 	//    void setContacts(const rw::proximity::MultiDistanceResult& res,
 	//                     rw::math::Transform3D<> wTa,
@@ -62,19 +71,23 @@ namespace simulator {
 		std::vector<std::vector<dContactGeom> > _geoms;
 		//std::vector<rw::proximity::MultiDistanceResult> _contacts;
 
-		std::vector<dynamics::Body*> _rwBody;
+		std::vector<dynamics::Body::Ptr> _rwBody;
 		sensor::SimulatedTactileSensor *_rwsensor;
 		//rw::math::Vector3D<> point;
 		std::vector<int> _bodyIdx, _bodyGlobalIdx;
-		std::vector<dynamics::Body*> _bodyGlobal;
+		std::vector<dynamics::Body::Ptr> _bodyGlobal;
 
 		struct DirectContact {
-		    DirectContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* body):
-		        p(pos),f(force),n(normal),b(body){}
+		    DirectContact(const rw::math::Vector3D<>& pos,
+		                  const rw::math::Vector3D<>& force,
+		                  const rw::math::Vector3D<>& normal,
+		                  dynamics::Body::Ptr body):
+		        p(pos),f(force),n(normal),b(body)
+		    {}
 		    rw::math::Vector3D<> p;
 		    rw::math::Vector3D<> f;
 		    rw::math::Vector3D<> n;
-		    dynamics::Body* b;
+		    dynamics::Body::Ptr b;
 		};
 
 		std::vector< DirectContact > _directContacts;

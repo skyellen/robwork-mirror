@@ -57,7 +57,7 @@ ODEVelocityDevice::~ODEVelocityDevice(){};
 
 void ODEVelocityDevice::reset(rw::kinematics::State& state){
     rw::math::Q q = _rdev->getModel().getQ(state);
-    rw::math::Q flim = _rdev->getForceLimit();
+    rw::math::Q flim = _rdev->getMotorForceLimits();
     int qi = 0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
 
@@ -99,22 +99,32 @@ namespace {
 void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
     double dt = info.dt;
     _lastDt = info.dt_prev;
-	rw::math::Q flim = _rdev->getForceLimit();
-	rw::math::Q testtorque = _rdev->_torque;
-	//std::cout << "force lim: " << flim << std::endl;
-	//std::cout << "force lim: " << _maxForce << std::endl;
 
-	bool fmaxChanged = false;
+    bool fmaxChanged = false;
+    bool motormodesChanged = false;
+    if(!info.rollback){
+        // check if any control modes have been changed
+        std::vector<RigidDevice::MotorControlMode> mstate = _rdev->getMotorModes( state );
+        for(size_t i=0;i<mstate.size();i++){
+            motormodesChanged |= mstate[i]!=_modes[i];
+            _modes[i] = mstate[i];
+        }
 
-	if( MetricUtil::dist2(flim,_maxForce)>0.0001 ){
-		fmaxChanged = true;
-		_maxForce = flim;
-	}
+        // check if force limits have changed
+        rw::math::Q flim = _rdev->getMotorForceLimits();
+        if( MetricUtil::dist1(flim,_maxForce)>0.0001 ){
+            fmaxChanged = true;
+            _maxForce = flim;
+        }
+
+
+    }
 
 	_lastQ = _rdev->getModel().getQ(state);
 
-    rw::math::Q velQ = _rdev->getVelocity(state);
-    rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
+	rw::math::Q targets = _rdev->getMotorTargets(state);
+    //rw::math::Q velQ = _rdev->getVelocity(state);
+    //rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
     //std::cout << velQ << "\n";
 
     int qi=0;
@@ -127,8 +137,8 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
             continue;
         }
         //TODO: make sure to stay within the actual acceleration limits
-        double vel = velQ(qi);
-        double avel = _odeJoints[i]->getActualVelocity();
+        //double vel = velQ(qi);
+        //double avel = _odeJoints[i]->getActualVelocity();
         //double acc = (vel-avel)/dt;
         //std::cout << avel << ",";
         //if( fabs(acc)>accLim(qi) )
@@ -136,11 +146,20 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
         //vel = acc*dt+avel;
         //std::cout << accLim(qi) << ",";
 
-        _odeJoints[i]->setVelocity( vel );
-        if(qi<testtorque.size())
-            _odeJoints[i]->setForce( testtorque[qi] );
         if(fmaxChanged)
-        	_odeJoints[i]->setMaxForce( _maxForce(qi) );
+            _odeJoints[i]->setMaxForce( _maxForce(qi) );
+
+        if( _modes[qi]==RigidDevice::Velocity ){
+            if(motormodesChanged)
+                _odeJoints[i]->setMotorEnabled(true);
+            _odeJoints[i]->setVelocity( targets[qi] );
+        } else {
+            // mode is force mode
+            if(motormodesChanged)
+                _odeJoints[i]->setMotorEnabled(false);
+            _odeJoints[i]->setForce( targets[qi] );
+        }
+
         qi++;
     }
 
@@ -179,7 +198,7 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
             if( depJoint!=NULL ){
                 // specific PG70 solution
 
-                double aerr_pg70 = (oa*s+off)*2-a;
+                //double aerr_pg70 = (oa*s+off)*2-a;
                 _odeJoints[i]->setVelocity( 2*ov*s /*+ aerr_pg70/dt*/ );
 
                 double oaerr_n  = ((a/2)-off)/s-oa;
@@ -239,7 +258,7 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
     //std::cout  << "q without offset: " << q << std::endl;
     //std::cout  << "Actual vel: " << actualVel << std::endl;
     _rdev->getModel().setQ(q, state);
-    _rdev->setActualVelocity(actualVel, state);
+    _rdev->setJointVelocities(actualVel, state);
 
     //Q currentQ = _rdev->getModel().getQ(state);
     //Q myActVel = (_lastQ-currentQ)/_lastDt;
@@ -256,14 +275,16 @@ ODEVelocityDevice::ODEVelocityDevice(
             ODESimulator *sim
         ):
         _rdev(rdev),
-        _sim(sim)
+        _sim(sim),
+        _modes(rdev->getMotorForceLimits().size())
 {
 
      // we use hashspace here because devices typically have
      // relatively few bodies
      dSpaceID space = dHashSpaceCreate( sim->getODESpace() );
 
-     _maxForce = rdev->getForceLimit();
+     _maxForce = rdev->getMotorForceLimits();
+
 
 /*
      // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
@@ -332,14 +353,14 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
 
      addToMap(baseODEBody, frameToODEBody);
 
-     std::map< Joint*, Body*> jointChildMap;
-     std::map< Joint*, Body*> jointParentMap;
+     std::map< Joint*, Body::Ptr> jointChildMap;
+     std::map< Joint*, Body::Ptr> jointParentMap;
 
-     std::map< Body*, Body*> childToParentMap;
-     std::vector< std::pair<Body*, Body*> > childToParentList;
+     std::map< Body::Ptr, Body::Ptr> childToParentMap;
+     std::vector< std::pair<Body::Ptr, Body::Ptr> > childToParentList;
      baseODEBody->setTransform(state);
      // first we create rigid bodies from all of the links of the RigidDevice
-     BOOST_FOREACH(Body* body, rdev->getLinks()){
+     BOOST_FOREACH(Body::Ptr body, rdev->getLinks()){
          std::cout << "LINK: " << body->getName() << std::endl;
          ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
          odebody->setTransform( state );
@@ -351,7 +372,7 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
              continue;
          }
          // locate the parent body
-         Body *jparent = BodyUtil::getParentBody(body, _sim->getDynamicWorkCell(), state );
+         Body::Ptr jparent = BodyUtil::getParentBody(body, _sim->getDynamicWorkCell(), state );
          if(jparent==NULL)
              RW_THROW("The body \"" << body->getName() << "\" does not seem to have any parent body!");
          childToParentMap[body] = jparent; // base
@@ -373,12 +394,12 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
 
      std::map<Joint*,ODEJoint*> jointMap;
      // now locate all joints connecting the child-parent body pairs
-     typedef std::pair<Body*,Body*> FramePair;
-     BOOST_FOREACH( FramePair bodyPair, childToParentList){
+     typedef std::pair<Body::Ptr,Body::Ptr> BodyPair;
+     BOOST_FOREACH( BodyPair bodyPair, childToParentList){
          std::vector<Frame*> chain = Kinematics::parentToChildChain(bodyPair.second->getBodyFrame(), bodyPair.first->getBodyFrame(), state);
          chain.push_back(bodyPair.first->getBodyFrame());
          std::vector<Joint*> joints;
-         for(int i=1;i<chain.size();i++){
+         for(int i=1;i<(int)chain.size();i++){
              Joint *joint= dynamic_cast<Joint*>(chain[i]);
              if( joint!=NULL){
                  // connect this joint to the parent body and if
@@ -387,16 +408,16 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
          }
 
          ODEBody *parent = frameToODEBody[bodyPair.second->getBodyFrame()];
-         for(int i=0;i<joints.size();i++){
+         for(int i=0;i<(int)joints.size();i++){
              // the child of the joint is either bodyPair.first or another joint in which case we need to make an ODEBody
              ODEBody *child = NULL;
-             if(i+1 == joints.size()){
+             if(i+1 == (int)joints.size()){
                  // this is the last joint so connect it to bodyPair.first
                  child = frameToODEBody[bodyPair.first->getBodyFrame()];
              } else {
                  // create a virtual body
                  dBodyID bTmp = dBodyCreate( _sim->getODEWorldId() );
-                 ODEUtil::setODEBodyMass(bTmp,0.00001, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.00001,0.001) );
+                 ODEUtil::setODEBodyMass(bTmp,0.01, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.01,1) );
                  child = new ODEBody(bTmp, joints[i]);
                  child->setTransform( state );
                  _sim->addODEBody(child);
@@ -410,7 +431,7 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
 
      // in the end we fix the force limits
      std::vector<ODEJoint*> odeJoints;
-     Q maxForce = rdev->getForceLimit();
+     Q maxForce = rdev->getMotorForceLimits();
      size_t i =0;
      rw::models::JointDevice::Ptr jdev = rdev->getJointDevice();
      BOOST_FOREACH(Joint *joint, jdev->getJoints() ){

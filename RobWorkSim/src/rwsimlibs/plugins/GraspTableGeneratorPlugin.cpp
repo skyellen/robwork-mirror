@@ -158,9 +158,9 @@ void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
 	}
 
 	RW_DEBUGS("- Setting devices ");
-	std::vector<DynamicDevice*> devices = _dwc->getDynamicDevices();
-	BOOST_FOREACH(DynamicDevice* device, devices){
-		if(dynamic_cast<RigidDevice*>(device)){
+	std::vector<DynamicDevice::Ptr> devices = _dwc->getDynamicDevices();
+	BOOST_FOREACH(DynamicDevice::Ptr device, devices){
+		if(dynamic_cast<RigidDevice*>(device.get())){
 			rw::models::Device *dev = &device->getModel();
 			RW_ASSERT(dev);
 			RW_DEBUGS("-- Dev name: " << dev->getName() );
@@ -169,7 +169,7 @@ void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
 	}
 
 	RW_DEBUGS("- Setting objects ");
-	BOOST_FOREACH(Body *body, _dwc->getBodies() ){
+	BOOST_FOREACH(Body::Ptr body, _dwc->getBodies() ){
 		Frame *obj = body->getBodyFrame();
 		if(obj==NULL)
 			continue;
@@ -407,7 +407,7 @@ void GraspTableGeneratorPlugin::startTableGeneration(){
 	//JointDevice *hand = _dwc->getWorkcell()->findDevice<JointDevice>( _deviceBox->currentText().toStdString() );
 	MovableFrame *object = _dwc->getWorkcell()->findFrame<MovableFrame>( _objectBox->currentText().toStdString() );
 
-	DynamicDevice *hand = _dwc->findDevice(_deviceBox->currentText().toStdString());
+	DynamicDevice *hand = _dwc->findDevice(_deviceBox->currentText().toStdString()).get();
 
 	if( (hand==NULL) | (object==NULL) ){
 		log().error() << "hand or object not found!" << std::endl;

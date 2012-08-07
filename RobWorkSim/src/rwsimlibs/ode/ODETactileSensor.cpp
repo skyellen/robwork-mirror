@@ -34,7 +34,7 @@ ODETactileSensor::ODETactileSensor(sensor::SimulatedTactileSensor *sens) :
 
 void ODETactileSensor::addFeedback(const std::vector<dJointFeedback*>& fback,
                                    const std::vector<dContactGeom> &g,
-                                   Body* body,
+                                   Body::Ptr body,
                                    int bodyIdx)
 {
     _feedback.push_back(fback);
@@ -45,7 +45,7 @@ void ODETactileSensor::addFeedback(const std::vector<dJointFeedback*>& fback,
     _rwBody.push_back(body);
 }
 
-void ODETactileSensor::addFeedbackGlobal(dJointFeedback* joint, dynamics::Body* b, int body){
+void ODETactileSensor::addFeedbackGlobal(dJointFeedback* joint, dynamics::Body::Ptr b, int body){
     _feedbackGlobal.push_back(joint);
     _bodyGlobalIdx.push_back(body);
     _bodyGlobal.push_back(b);
@@ -64,7 +64,10 @@ void ODETactileSensor::clear()
     _directContacts.clear();
 }
 
-void ODETactileSensor::addContact(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& force, const rw::math::Vector3D<>& normal, dynamics::Body* b){
+void ODETactileSensor::addContact(const rw::math::Vector3D<>& pos,
+                                  const rw::math::Vector3D<>& force,
+                                  const rw::math::Vector3D<>& normal,
+                                  dynamics::Body::Ptr b){
     _directContacts.push_back( DirectContact(pos,force,normal,b));
 }
 

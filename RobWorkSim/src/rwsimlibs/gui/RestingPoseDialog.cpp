@@ -80,11 +80,9 @@ void RestingPoseDialog::initializeStart(){
     _simStartTimes.resize(threads, 0);
     RW_DEBUGS("threads: " << threads);
 
-    BOOST_FOREACH(Body* body, _dwc->getBodies()){
-        if(RigidBody* rbody = dynamic_cast<RigidBody*>(body)){
-            _bodies.push_back(rbody);
-            _frameToBody[*rbody->getMovableFrame()] = rbody;
-        }
+    _bodies = _dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody::Ptr rbody, _bodies){
+        _frameToBody[*rbody->getMovableFrame()] = rbody;
     }
 
     std::string engineId = _dwc->getEngineSettings().get<std::string>("Engine","ODE");
@@ -132,16 +130,16 @@ void RestingPoseDialog::btnPressed(){
         if( _asCommaBtn->isChecked() ){
             std::string textFile = sstr + ".txt";
             std::ofstream fout( textFile.c_str() );
-            std::vector<RigidBody*> bodies = _dwc->findBodies<RigidBody>();
+            std::vector<RigidBody::Ptr> bodies = _dwc->findBodies<RigidBody>();
             fout << "Configuration of all rigid bodies, each line contain pos and orientation (EAA) for a simulation run."
                     << "That is both start and end configuration eg. b1_start, b1_end, b2_start, b2_end, b3_start, b3_end.... first comes the body names \n";
-            BOOST_FOREACH(RigidBody* b, bodies){
+            BOOST_FOREACH(RigidBody::Ptr b, bodies){
                 fout << b->getName() << " ; ";
             }
             fout << "\n";
             fout.precision(16);
             for(size_t i=0;i<_startPoses.size();i++){
-                BOOST_FOREACH(RigidBody* b, bodies){
+                BOOST_FOREACH(RigidBody::Ptr b, bodies){
                     Transform3D<> t3d = b->getWTBody( _startPoses[i] );
                     EAA<> rot( t3d.R() );
 
@@ -277,7 +275,7 @@ void RestingPoseDialog::updateStatus(){
         // check the velocity of all the bodies
         bool allBelowThres = true;
         Vector3D<> avgLVel, avgAVel;
-        BOOST_FOREACH(RigidBody *rbody, _bodies){
+        BOOST_FOREACH(RigidBody::Ptr rbody, _bodies){
             //RW_DEBUGS("rbody: " << rbody->getMovableFrame().getName() );
             // get velocity of rbody
             // if above threshold then break and continue
@@ -408,13 +406,13 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     int nrOfTries=0;
 
     CollisionDetector::QueryResult result;
-    std::vector<RigidBody*> bodies;
+    std::vector<RigidBody::Ptr> bodies;
     while( _colDect->inCollision(state, &result, false) ){
         nrOfTries++;
         BOOST_FOREACH(rw::kinematics::FramePair pair, result.collidingFrames){
             // generate new collision free configuration between
-            RigidBody *body1 = _frameToBody[*pair.first];
-            RigidBody *body2 = _frameToBody[*pair.second];
+            RigidBody::Ptr body1 = _frameToBody[*pair.first];
+            RigidBody::Ptr body2 = _frameToBody[*pair.second];
             // calc new configuration
             bodies.push_back(body1);
             bodies.push_back(body2);
@@ -469,7 +467,7 @@ namespace {
 
 }
 
-void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::kinematics::State& state){
+void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::kinematics::State& state){
     Rotation3D<> rot;
     Vector3D<> pos;
     if( _rotationTabs->currentIndex()==0 ){
@@ -501,7 +499,7 @@ void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::kinem
     pos[1] = Math::ran(_yLimit->value(), std::max(_yLimit->value(), _yLimit_2->value()));
     pos[2] = Math::ran(_zLimit->value(), std::max(_zLimit->value(), _zLimit_2->value()));
 
-    BOOST_FOREACH(RigidBody *rbody, bodies){
+    BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
         Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);
         Transform3D<> nt3d = t3d * Transform3D<>(pos, rot);
         rbody->getMovableFrame()->setTransform(nt3d,state);

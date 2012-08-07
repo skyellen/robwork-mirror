@@ -122,7 +122,7 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 	_zaxis.resize( _bodies.size() );
 
     // load combobox
-    BOOST_FOREACH(RigidBody* body, _bodies){
+    BOOST_FOREACH(RigidBody::Ptr  body, _bodies){
     	_selectObjBox->addItem( body->getBodyFrame()->getName().c_str() );
     }
     _frameRender = ownedPtr(new RenderFrame());
@@ -220,7 +220,7 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 
     _bodies = DynamicUtil::getRigidBodies(*_dwc);
     // load combobox
-    BOOST_FOREACH(RigidBody* body, _bodies){
+    BOOST_FOREACH(RigidBody::Ptr body, _bodies){
         _planarObjectBox->addItem( body->getBodyFrame()->getName().c_str() );
     }
 
@@ -307,9 +307,9 @@ void SupportPoseAnalyserDialog::btnPressed(){
 
     	RigidBody* selectedObj=NULL;
     	std::string selectedName = _planarObjectBox->currentText().toStdString();
-    	BOOST_FOREACH(RigidBody* obj, _bodies){
+    	BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
     	    if( obj->getBodyFrame()->getName()==selectedName ){
-    	        selectedObj = obj;
+    	        selectedObj = obj.get();
     	        break;
     	    }
     	}
@@ -374,9 +374,9 @@ void SupportPoseAnalyserDialog::btnPressed(){
 
         RigidBody* selectedObj=NULL;
         std::string selectedName = _planarObjectBox->currentText().toStdString();
-        BOOST_FOREACH(RigidBody* obj, _bodies){
+        BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
             if( obj->getBodyFrame()->getName()==selectedName ){
-                selectedObj = obj;
+                selectedObj = obj.get();
                 break;
             }
         }
@@ -426,7 +426,7 @@ namespace {
 }
 
 void SupportPoseAnalyserDialog::saveDistribution(){
-    RigidBody *body = getSelectedBody();
+    RigidBody *body = getSelectedBody().get();
     int poseIdx = _resultView->currentRow();
 
     std::vector<Transform3D<> > &poses = _supportPoseDistributions[body][poseIdx];
@@ -447,9 +447,9 @@ void SupportPoseAnalyserDialog::saveDistribution(){
 void SupportPoseAnalyserDialog::showPlanarDistribution(){
     RigidBody* body=NULL;
     std::string selectedName = _planarObjectBox->currentText().toStdString();
-    BOOST_FOREACH(RigidBody* obj, _bodies){
+    BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
         if( obj->getBodyFrame()->getName()==selectedName ){
-            body = obj;
+            body = obj.get();
             break;
         }
     }
@@ -507,7 +507,7 @@ void SupportPoseAnalyserDialog::addRestingPose(
 		const rw::kinematics::State& restPose)
 {
 	for(size_t j=0;j<_bodies.size();j++){
-		RigidBody *body = _bodies[j];
+		RigidBody* body = _bodies[j].get();
 		//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
 		Rotation3D<> rot = body->getMovableFrame()->getTransform(restPose).R();
 		_xaxis[j].push_back(Vector3D<>(rot(0,0),rot(1,0),rot(2,0)));
@@ -520,7 +520,7 @@ void SupportPoseAnalyserDialog::addRestingPose(
 		_zaxisS[body].push_back(Vector3D<>(rot(0,2),rot(1,2),rot(2,2)));
 	}
 	int objIdx = _selectObjBox->currentIndex();
-	RigidBody *body = getSelectedBody();
+	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;
 	_xRender->addPoint( _xaxis[objIdx].back() );
@@ -557,7 +557,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	updateRenderView();
     	updateResultView();
     } else if( obj == _resultView ){
-    	RigidBody *body = getSelectedBody();
+    	RigidBody *body = getSelectedBody().get();
     	int poseIdx = _resultView->currentRow();
     	std::cout << "Pose: " << poseIdx << std::endl;
     	// get the support pose and the default state
@@ -1015,15 +1015,15 @@ void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath
     _startTransforms.resize(_bodies.size(),std::vector<Transform3D<> >(path->size()) );
 
 	for(size_t j=0;j<_bodies.size();j++){
-		std::vector<Vector3D<> > &xaxis = _xaxisS[_bodies[j]];
-		std::vector<Vector3D<> > &yaxis = _yaxisS[_bodies[j]];
-		std::vector<Vector3D<> > &zaxis = _zaxisS[_bodies[j]];
+		std::vector<Vector3D<> > &xaxis = _xaxisS[_bodies[j].get() ];
+		std::vector<Vector3D<> > &yaxis = _yaxisS[_bodies[j].get() ];
+		std::vector<Vector3D<> > &zaxis = _zaxisS[_bodies[j].get() ];
 		xaxis.resize(path->size());
 		yaxis.resize(path->size());
 		zaxis.resize(path->size());
 		for(size_t i=0; i<path->size();i++){
 			const State &state = (*path)[i].getValue();
-			RigidBody *body = _bodies[j];
+			RigidBody *body = _bodies[j].get();
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
 			Transform3D<> t3d = body->getMovableFrame()->getTransform(state);
@@ -1060,7 +1060,7 @@ void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePath::Ptr
 	for(size_t i=0; i<path->size();i++){
 		const State &state = (*path)[i].getValue();
 		for(size_t j=0;j<_bodies.size();j++){
-			RigidBody *body = _bodies[j];
+			RigidBody *body = _bodies[j].get();
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
 			Transform3D<> t3d = body->getMovableFrame()->getTransform(state);
@@ -1084,7 +1084,7 @@ namespace {
         std::cout << "Angle: " << angle*Rad2Deg << "deg" << std::endl;
         // now build a kdtree with all end configurations
         typedef boost::tuple<int,int> KDTreeValue; // (transform index, region index)
-        std::vector<KDTreeQ::KDNode> nodes;
+        std::vector<KDTreeQ<KDTreeValue>::KDNode> nodes;
         for(size_t i=0;i<data.size();i++){
             Transform3D<> k = data[i];
             if(k.P()[2]<-2)
@@ -1092,20 +1092,20 @@ namespace {
             EAA<> r( k.R());
             //Vector3D<> r = k.R()*Vector3D<>::z();
             Q key(6, k.P()[0],k.P()[1],k.P()[2], r[0],r[1],r[2]);
-            nodes.push_back(KDTreeQ::KDNode(key, KDTreeValue(i, -1)));
+            nodes.push_back(KDTreeQ<KDTreeValue>::KDNode(key, KDTreeValue(i, -1)));
         }
 
         std::cout << "Nodes created, building tree.. " << std::endl;
-        KDTreeQ* nntree = KDTreeQ::buildTree(nodes);
+        KDTreeQ<KDTreeValue>* nntree = KDTreeQ<KDTreeValue>::buildTree(nodes);
         // todo estimate the average distance between neighbors
         std::cout << "Tree build, finding regions" << std::endl;
         std::map<int, bool > regions;
         int freeRegion = 0;
-        std::list<const KDTreeQ::KDNode*> result;
+        std::list<const KDTreeQ<KDTreeValue>::KDNode*> result;
         Q diff(6, dist, dist, dist, angle, angle, angle);
         // find neighbors and connect them
-        BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
-            KDTreeValue &val = n.valueAs<KDTreeValue&>();
+        BOOST_FOREACH(KDTreeQ<KDTreeValue>::KDNode &n, nodes){
+            KDTreeValue &val = n.value;
             // check if the node is allready part of a region
             if(val.get<1>() >=0)
                 continue;
@@ -1114,8 +1114,8 @@ namespace {
             nntree->nnSearchRect(n.key-diff, n.key+diff, result);
             int currentIndex = -1;
             // first see if any has an id
-            BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
-                KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+            BOOST_FOREACH(const KDTreeQ<KDTreeValue>::KDNode* nn, result){
+                KDTreeValue nnval = nn->value;
                 if(nnval.get<1>() >=0){
                     currentIndex = nnval.get<1>();
                     break;
@@ -1128,16 +1128,16 @@ namespace {
                 freeRegion++;
             }
             val.get<1>() = currentIndex;
-            BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
-                KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+            BOOST_FOREACH(const KDTreeQ<KDTreeValue>::KDNode* nn, result){
+                KDTreeValue nnval = nn->value;
                 if(nnval.get<1>() >=0 && nnval.get<1>()!=currentIndex){
 
                     //std::cout << "Merging regions " << currentIndex << "<--" << nnval.get<1>() << std::endl;
 
                     // merge all previously defined nnval.get<1>() into freeRegion
                     regions[nnval.get<1>()] = false;
-                    BOOST_FOREACH(KDTreeQ::KDNode &npro, nodes){
-                        KDTreeValue &npval = npro.valueAs<KDTreeValue&>();
+                    BOOST_FOREACH(KDTreeQ<KDTreeValue>::KDNode &npro, nodes){
+                        KDTreeValue &npval = npro.value;
                         // check if the node is allready part of a region
                         if(npval.get<1>() == nnval.get<1>())
                             npval.get<1>()=currentIndex;
@@ -1160,8 +1160,8 @@ namespace {
         std::cout << "Nr of detected regions: " << validRegions.size() << std::endl;
         std::map<int,std::vector<int> >* statMap = new std::map<int,std::vector<int> >();
 
-        BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
-            KDTreeValue &val = n.valueAs<KDTreeValue&>();
+        BOOST_FOREACH(KDTreeQ<KDTreeValue>::KDNode &n, nodes){
+            KDTreeValue &val = n.value;
             // check if the node is allready part of a region
             (*statMap)[val.get<1>()].push_back( val.get<0>() );
         }
@@ -1194,7 +1194,7 @@ void SupportPoseAnalyserDialog::process(){
         // first we compute regions which should work as stable poses
         Ptr< std::map<int, std::vector<int> > > regions = calculateRegions(_endTransforms[j], dist, angle);
 
-        std::vector<SupportPose> &sposes = _supportPoses[_bodies[j]];
+        std::vector<SupportPose> &sposes = _supportPoses[_bodies[j].get()];
         sposes.clear();
 
         typedef std::map<int,std::vector<int> >::value_type mapType2;
@@ -1241,7 +1241,7 @@ void SupportPoseAnalyserDialog::process(){
                 sposes.back()._rotAxesTable[0] = normalize(dir);
                 sposes.back()._rotAxes[0] = inverse(wTb).R() * normalize(dir);
 
-                _supportPoseDistributions[_bodies[j]].push_back( transformations );
+                _supportPoseDistributions[_bodies[j].get()].push_back( transformations );
 
                 _supportToPose[std::make_pair(j,sposes.size()-1)] = val.second;
             }
@@ -1411,7 +1411,7 @@ void SupportPoseAnalyserDialog::process(){
 }
 
 void SupportPoseAnalyserDialog::updateResultView(){
-	RigidBody *body = getSelectedBody();
+	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;
 	_resultView->clear();
@@ -1428,7 +1428,7 @@ void SupportPoseAnalyserDialog::updateResultView(){
 
 void SupportPoseAnalyserDialog::updateRenderView(){
 	int objIdx = _selectObjBox->currentIndex();
-	RigidBody *body = getSelectedBody();
+	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;
 
