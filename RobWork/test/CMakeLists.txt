@@ -22,8 +22,6 @@ SET(TEST_LIBRARIES
   ${ROBWORK_LIBRARIES}
 )
 
-MESSAGE("TEST libs:  ${TEST_LIBRARIES} ")
-
 SET(MATH_TEST_SRC 
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
@@ -100,7 +98,7 @@ TARGET_LINK_LIBRARIES( rw_trajectory-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_trajectory-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_trajectory-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_trajectory-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_collision-test ${DO_EXCLUDE} test-main.cpp collision/CollisionTest.cpp)       
+ADD_EXECUTABLE( rw_collision-test ${DO_EXCLUDE} test-main.cpp collision/CollisionTest.cpp collision/DistanceTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_collision-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_collision-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_collision-test ${TEST_DEPENDENCIES})
