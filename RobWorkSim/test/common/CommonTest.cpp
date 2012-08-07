@@ -27,8 +27,14 @@ using namespace rwsim::simulator;
 BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
 {
     // add loading tests here
-    DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load("bumbum");
+    DynamicWorkCell::Ptr dwc1 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device1.dwc.xml");
+
+    DynamicWorkCell::Ptr dwc2 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device2.dwc.xml");
+
+    DynamicWorkCell::Ptr dwc3 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device3.dwc.xml");
+
+    DynamicWorkCell::Ptr dwcM1 = DynamicWorkCellLoader::load(testFilePath() + "/simple/deviceMulti1.dwc.xml");
+
 }
 
 
@@ -37,6 +43,15 @@ BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
     // add loading tests here
     DynamicWorkCellLoader loader;
     DynamicWorkCell::Ptr dwc = loader.load("bumbum");
+    ODESimulator *sim = new ODESimulator(dwc);
+}
+
+
+BOOST_AUTO_TEST_CASE( ODESimulatorResetTest )
+{
+    // Test if the simulator can handle to be reset
+    DynamicWorkCellLoader loader;
+    DynamicWorkCell::Ptr dwc = loader.load(testFilePath() + "/simple/device1.dwc.xml");
     ODESimulator *sim = new ODESimulator(dwc);
 }
 
