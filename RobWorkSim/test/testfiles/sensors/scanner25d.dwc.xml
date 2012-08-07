@@ -1,0 +1,102 @@
+<DynamicWorkcell workcell="cup_pg70_table.wc.xml">
+  <PhysicsEngine>
+   <!--CollisionMargin>0.001</CollisionMargin-->
+   <RestitutionModel>Newton</RestitutionModel>
+   <ContactModel>Guendel</ContactModel>
+   <AutoDisable>true</AutoDisable>
+   <Property name="StepMethod">WorldStep</Property>
+   <Property name="ContactSurfaceLayer" type="float">0.005</Property>
+   <Property name="MaxSepDistance" type="float">0.005</Property>
+   <Property name="WorldCFM" type="float">0.0001</Property>
+
+   
+ </PhysicsEngine>
+
+ <Gravity>0 0 -9.8</Gravity>
+ 
+ <Include file="DynamicMaterialDataBase.xml"/>
+ 
+ <!-- Now define all the rigid bodies that exist in the workcell, remember to
+      reference the RigidBody to a movableframe -->
+ <RigidBody frame="object">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+  <!--Property name="LinearDamping" type="float">0.5</Property>
+  <Property name="AngularDamping" type="float">0.5</Property-->  
+ </RigidBody>
+
+<FixedBody frame="Floor">
+  <MaterialID>Plastic</MaterialID> </FixedBody>
+  
+ <RigidDevice device="UR-6-85-5-A">
+  <ForceLimit joint="Joint0">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint1">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint2">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint3">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint4">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint5">1000.0</ForceLimit>	
+
+    <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+	<!-- if a kinematic base, use this -->
+  <KinematicBase frame="Base">
+	<MaterialID>Plastic</MaterialID>
+  </KinematicBase> 
+
+<!-- if a rigidbase is created then make sure it references a movable frame-->
+  <Link object="Joint0">
+   <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint1">
+  <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint2">
+  <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+  <Link object="Joint3">
+  <Mass>0.5</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint4">
+  <Mass>0.3</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint5">
+   <Mass>0.1</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+   <Associate object="PG70.Base" />
+  </Link>
+
+ </RigidDevice>
+
+
+ <!--PDDeviceController name="URJointController" device="UR-6-85-5-A" type="Position">
+  <Sync>False</Sync>
+  <PDParams>10 0.003 10 0.003 10 0.003 10 0.003 10 0.003 10 0.003</PDParam>
+  <TimeStep> 0.01 </TimeStep>
+ </PDDeviceController -->
+
+ <PoseDeviceController name="URPoseController" device="UR-6-85-5-A" tcp="UR-6-85-5-A.TCP">
+  <TimeStep> 0.01 </TimeStep>
+ </PoseDeviceController>
+
+ <Include file="PG70/PG70.dwc.xml"/>
+ <TactileMultiAxisSensor name="FTSensor" body="UR-6-85-5-A.Joint5" body1="PG70.Base">
+ </TactileMultiAxisSensor>
+ 
+</DynamicWorkcell>
