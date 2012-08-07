@@ -30,8 +30,6 @@
 #include "./kinematics/FramePairMap.hpp"
 #include "./kinematics/FKRange.hpp"
 #include "./kinematics/FKTable.hpp"
-#include "./kinematics/FrameProperty.hpp"
-#include "./kinematics/FramePropertyImpl.hpp"
 #include "./kinematics/FrameType.hpp"
 #include "./kinematics/Kinematics.hpp"
 #include "./kinematics/QState.hpp"
@@ -40,5 +38,6 @@
 #include "./kinematics/StateSetup.hpp"
 #include "./kinematics/StateStructure.hpp"
 #include "./kinematics/TreeState.hpp"
+#include "./kinematics/StatelessObject.hpp"
 
 #endif /* KINEMATICS_HPP_ */
