@@ -47,11 +47,14 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FrameType.hpp>
-#include <rw/kinematics/FramePropertyImpl.hpp>
+
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/common/Property.hpp>
+#include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
@@ -74,6 +77,289 @@ using namespace rw::kinematics;
 using namespace rw::loaders;
 
 using namespace std;
+
+
+
+namespace rw { namespace kinematics {
+
+
+
+/** @addtogroup kinematics */
+/*@{*/
+
+/**
+ * @brief Interface for utilities for accessing a named property of a frame.
+ *
+ * FrameProperty is a utility for accessing the property of a frame as
+ * painlessly as possible. The class may therefore happen to have a few
+ * superflous methods that are abbreviations for combinations of the other
+ * methods.
+ *
+ * FrameProperty hides the low-level manipulations of PropertyMap values
+ * of frames.
+ *
+ * FrameProperty throws an exception to give good defaults for the common
+ * case where your program has no option but to crash if some option is not
+ * present.
+ */
+template <typename T>
+class FrameProperty
+{
+public:
+    /**
+     * @brief The name of the property that is being accessed.
+     *
+     * @return The name of the property.
+     */
+    virtual const std::string& key() const = 0;
+
+    /**
+     * @brief The value of the property of a frame.
+     *
+     * @param frame [in] A frame containing properties.
+     *
+     * @return A pointer to the value of the property of the frame or NULL
+     * if the property does not exist or if the value of the property is of
+     * a wrong type.
+     */
+    virtual T* getPtr(Frame& frame) const = 0;
+
+    /**
+     * @copydoc getPtr
+     */
+    virtual const T* getPtr(const Frame& frame) const = 0;
+
+    /**
+     * @brief True iff the frame has the property.
+     *
+     * A call of the method is equivalent to
+\code
+getPtr(frame) != 0
+\endcode
+     *
+     * @param frame [in] A frame containing properties.
+     *
+     * @return \b true iff the property exists in \b frame.
+     */
+    virtual bool has(const Frame& frame) const = 0;
+
+    /**
+     * @brief The value of the property of a frame.
+     *
+     * The method is superflous as it can be easily implemented in terms of
+     * getPtr().
+     *
+     * @param frame [in] A frame containing properties.
+     *
+     * @return The value of the property of the frame.
+     *
+     * The property must be present in the frame or the program will throw. If
+     * you don't like that policy you should use getPtr().
+     */
+    virtual const T& get(const Frame& frame) const = 0;
+
+    /**
+     * @brief The value of the property of a frame.
+     *
+     * The method is superflous as it can be easily implemented in terms of
+     * getPtr().
+     *
+     * @param frame [in] A frame containing properties.
+     *
+     * @return The value of the property of the frame.
+     *
+     * The property must be present in the frame or the program will throw. If
+     * you don't like that policy you should use getPtr().
+     */
+    virtual T& get(Frame& frame) const = 0;
+
+    /**
+     * @brief Assign a value to the property of the frame.
+     *
+     * @param frame [in] A frame containing properties.
+     *
+     * @param value [in] The value to assign to the property.
+     *
+     * [NB: We haven't quite decided yet what to do if a value is already
+     * present (we could have single-assignment) or if the value present is
+     * of a wrong type.]
+     */
+    virtual void set(Frame& frame, const T& value) const = 0;
+
+    /**
+     * @brief Remove a property of a frame.
+     *
+     * Following a call of erase() the has() will return false.
+     *
+     * If erase() is called on a frame that does not have the property, then
+     * nothing is done.
+     *
+     * The property is removed also if its type does not match.
+     *
+     * @param frame [in] the frame from which to remove the property.
+     */
+    virtual void erase(Frame& frame) const = 0;
+
+    /**
+     * @brief Virtual destructor.
+     */
+    virtual ~FrameProperty() {}
+
+protected:
+    FrameProperty() {}
+
+private:
+    FrameProperty(const FrameProperty&);
+    FrameProperty& operator=(const FrameProperty&);
+};
+
+
+    /**
+     * @brief An implementation of the FrameProperty class.
+     */
+    template <typename T>
+    class FramePropertyImpl : public FrameProperty<T>
+    {
+    public:
+        /**
+         * @brief An accessor for a named property of a frame.
+         *
+         * @param key [in] The name of property to access.
+         *
+         * @param description [in] The description of the property.
+         */
+        FramePropertyImpl(const std::string& key, const std::string& description) :
+            _key(key),
+            _description(description)
+        {}
+
+        /**
+         * @brief The name of the property that is being accessed.
+         *
+         * @return The name of the property.
+         */
+        const std::string& key() const { return _key; }
+
+        /**
+         * @brief The value of the property of a frame.
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return A pointer to the value of the property of the frame or NULL
+         * if the property does not exist or if the value of the property is of
+         * a wrong type.
+         */
+        T* getPtr(Frame& frame) const
+        {
+            return frame.getPropertyMap().template getPtr<T>(_key);
+        }
+
+        /**
+         * @brief The value of the property of a frame.
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return A pointer to the value of the property of the frame or NULL
+         * if the property does not exist or if the value of the property is of
+         * a wrong type.
+         */
+        const T* getPtr(const Frame& frame) const
+        {
+            // Forward to non-const version.
+            return getPtr(const_cast<Frame&>(frame));
+        }
+
+        /**
+         * @brief True iff the frame has the property.
+         *
+         * A call of the method is equivalent to
+         \code
+         getPtr(frame) != 0
+         \endcode
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return \b true iff the property exists in \b frame.
+         */
+        bool has(const Frame& frame) const
+        {
+            return this->getPtr(frame) != NULL;
+        }
+
+        /**
+         * @brief The value of the property of a frame.
+         *
+         * The method is superflous as it can be easily implemented in terms of
+         * getPtr().
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return The value of the property of the frame.
+         *
+         * The property must be present in the frame or the program will throw.
+         * If you don't like that policy you should use getPtr().
+         */
+        const T& get(const Frame& frame) const
+        {
+            // Forward to the non-const version
+            return get(const_cast<Frame&>(frame));
+        }
+
+        /**
+         * @brief The value of the property of a frame.
+         *
+         * The method is superflous as it can be easily implemented in terms of
+         * getPtr().
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return The value of the property of the frame.
+         *
+         * The property must be present in the frame or the program will throw.
+         * If you don't like that policy you should use getPtr().
+         */
+        T& get(Frame& frame) const
+        {
+            T* value = this->getPtr(frame);
+            if (!value) {
+                // Perhaps this error message should include the description of
+                // the property also.
+                RW_THROW(
+                    "No key (of some type T) named "
+                    << rw::common::StringUtil::quote(key())
+                    << " in frame "
+                    << rw::common::StringUtil::quote(frame.getName()));
+            }
+            return *value;
+        }
+
+        /**
+         * @brief Assign a value to the property of the frame.
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @param value [in] The value to assign to the property.
+         */
+        void set(Frame& frame, const T& value) const
+        {
+            frame.getPropertyMap().set(_key, value);
+        }
+
+        /**
+           @brief Erase the property of the frame.
+         */
+        void erase(Frame& frame) const
+        {
+            frame.getPropertyMap().erase(_key);
+        }
+
+    private:
+        std::string _key;
+        std::string _description;
+    };
+
+    /*@}*/
+}} // end namespaces
 
 //----------------------------------------------------------------------
 // Tag properties
