@@ -558,8 +558,8 @@ void GTaskVisPlugin::selectGrasp(int index){
         std::cout << "TARGET:" << wTtcp << std::endl;
         */
         Transform3D<> baseTtcp = Kinematics::frameTframe(base, tcp ,state);
-        Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
-        base->setTransform( wTbase, state );
+        //Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
+        //base->setTransform( wTbase, state );
         //Transform3D<> wTtcp = Kinematics::frameTframe(base, tcp ,state);
         base->moveTo(wTtcp * inverse(baseTtcp), state);
 

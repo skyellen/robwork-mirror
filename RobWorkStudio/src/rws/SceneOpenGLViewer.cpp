@@ -111,11 +111,12 @@ namespace
     class RenderFonts : public Render
     {
     private:
+        double _x, _y, _z;
         QFont _font;
         QString _text;
         QGLWidget *_qglwidget;
 
-        double _x, _y, _z;
+
         bool _renderInWindowCoord;
 
     public:
@@ -128,7 +129,7 @@ namespace
         }
 
         RenderFonts(double x, double y, QString text, QFont font, QGLWidget* glwidget):
-            _x(x),_y(y),_text(text),_font(font),_qglwidget(glwidget){
+            _x(x),_y(y),_z(0.0),_text(text),_font(font),_qglwidget(glwidget){
             _renderInWindowCoord = true;
         }
 

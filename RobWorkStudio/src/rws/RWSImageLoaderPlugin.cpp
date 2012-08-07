@@ -2,6 +2,8 @@
 #include "RWSImageLoaderPlugin.hpp"
 #include "ImageUtil.hpp"
 #include <QImage>
+#include <QImageReader>
+#include <boost/foreach.hpp>
 #include <rw/common/Ptr.hpp>
 
 using namespace rws;
@@ -31,6 +33,16 @@ namespace {
 
     };
 
+}
+
+RWSImageLoaderPlugin::RWSImageLoaderPlugin():
+    rw::plugin::PluginFactory<rw::loaders::ImageLoader>("RWSImageLoaderPlugin")
+{
+    // add all extension that is supported by this imageloader
+    //QList<QByteArray> formats = QImageReader::supportedImageFormats();
+    //BOOST_FOREACH(QByteArray& format, formats){
+    //    getProperties().set(std::string(".")+format.toUpper().data(), true);
+    //}
 }
 
 

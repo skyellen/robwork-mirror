@@ -25,6 +25,7 @@ class ImageView: public QLabel
 {
     Q_OBJECT
 public:
+
     ImageView(QWidget* parent = NULL);
     virtual ~ImageView();
 

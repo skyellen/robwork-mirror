@@ -278,7 +278,7 @@ namespace rws {
 		/**
 		 * @brief Returns GenericEvent needed for subscription and firing of events
 		 * @return Reference to the GenericEvent
-		 */		
+		 */
 		GenericEvent& genericEvent() { return _genericEvent; }
 
 

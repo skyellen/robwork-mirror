@@ -34,7 +34,7 @@
 
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 
-#include <rwlibs/simulation/camera/GLFrameGrabber.hpp>
+#include <rwlibs/simulation/GLFrameGrabber.hpp>
 #include <rwlibs/simulation/GLFrameGrabber25D.hpp>
 
 #include "ui_SensorsPlugin.h"

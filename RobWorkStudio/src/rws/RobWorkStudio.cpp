@@ -580,6 +580,14 @@ void RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
     // TODO: make error reply if necesarry
     //return settings.status();
 }
+/*
+void RobWorkStudio::locatePlugins(QSettings& settings){
+    rw::plugin::PluginRepository &prep = RobWork::getInstance()->getPluginRepository();
+    prep.getPlugins<rws::MenuExtension>();
+    prep.getPlugins<rws::RobWorkStudioPlugin>();
+
+}
+*/
 
 
 void RobWorkStudio::setupPlugins(QSettings& settings)
@@ -617,6 +625,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
             pfilename = pathname+ "/" + filename + ".dylib";
             e1 = boost::filesystem::exists( pfilename.toStdString() );
         }
+
 
 
 

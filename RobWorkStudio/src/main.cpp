@@ -81,7 +81,6 @@ public:
 
 int main(int argc, char** argv)
 {
-
     Q_INIT_RESOURCE(rwstudio_resources);
 
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);
@@ -100,6 +99,9 @@ int main(int argc, char** argv)
     if(inifile.size()<1){
         // try load an inifile
     }
+
+    // now initialize robwork, such that plugins ad stuff might work
+    //RobWork::getInstance()->initialize();
 
     {
         MyQApplication app(argc, argv);

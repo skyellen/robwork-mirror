@@ -13,9 +13,7 @@ namespace rws {
 class RWSImageLoaderPlugin: public rw::plugin::PluginFactory<rw::loaders::ImageLoader> {
 public:
 
-    RWSImageLoaderPlugin():
-        rw::plugin::PluginFactory<rw::loaders::ImageLoader>("RWSImageLoaderPlugin")
-    {}
+    RWSImageLoaderPlugin();
 
     rw::loaders::ImageLoader::Ptr make();
 
