@@ -22,14 +22,17 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Log.hpp>
 #include <rw/plugin/PluginRepository.hpp>
+#include <rw/common/PropertyMap.hpp>
 
 namespace rw {
 
 /**
  * @brief RobWork instance which holds objects to be shared among multiple plugins
  *
- * A RobWork instance contains common objects which may be used by multiple plugins
- * which may originate from different shared libraries.
+ * A RobWork instance contains common objects and configuration which may be used
+ * by multiple plugins which may originate from different shared libraries.
+ *
+ *
  */
 class RobWork
 {
@@ -83,6 +86,19 @@ public:
     }
 
     /**
+     * @brief initialize robwork
+     *
+     * Reads in its configuration file which specify plugins and so on.
+     */
+    void initialize();
+
+    /**
+     * @brief get settings of RobWork instance
+     * @return
+     */
+    rw::common::PropertyMap& getSettings();
+
+    /**
      * @brief returns an RobWork instance
      */
     static RobWork::Ptr getInstance();
@@ -96,8 +112,9 @@ public:
 
 private:
     rw::plugin::PluginRepository _pluginRepository;
-
+    rw::common::PropertyMap _settings;
     rw::common::Log _log;
+    std::string _settingsFile;
 };
 
 #ifdef RW_USE_DEPRECATED
