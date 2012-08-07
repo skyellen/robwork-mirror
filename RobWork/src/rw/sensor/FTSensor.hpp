@@ -35,16 +35,16 @@ namespace rw {
 namespace sensor {
 
 /**
- * @brief Interface of a N-axis force torque sensor
+ * @brief Interface of a N-axis Force Torque sensor
  */
-class TactileMultiAxisSensor : public Sensor {
+class FTSensor : public Sensor {
 public:
     /**
      * @param name
      * @param frame
      * @return
      */
-    TactileMultiAxisSensor(const std::string& name, const std::string& desc=""):
+    FTSensor(const std::string& name, const std::string& desc=""):
         Sensor(name,desc)
     {
 
@@ -54,7 +54,7 @@ public:
      * @brief destructor
      * @return
      */
-    virtual ~TactileMultiAxisSensor(){};
+    virtual ~FTSensor(){};
 
     /**
      * @brief acquires force data from the tactile cells

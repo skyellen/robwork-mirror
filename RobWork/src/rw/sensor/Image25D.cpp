@@ -110,8 +110,8 @@ Image25D::Ptr Image25D::load(const std::string& filename ){
     for(int i=0;i<nr_points;i++){
         Vector3D<float> p;
         input.getline(line, 500);
-        scanf(line, "%f %f %f", p[0], p[1], p[2]);
-        img->getData().push_back( p );
+        sscanf(line, "%f %f %f", &p[0], &p[1], &p[2]);
+        img->getData()[i] = p;
     }
     return img;
 }

@@ -64,16 +64,10 @@ public:
      * @brief gets the last acquired image
      * @return the image that was last acquired.
      */
-    virtual const Image25D& getImage() = 0;
+    virtual const Image25D& getScan() = 0;
 
 };
 
-#ifdef RW_USE_DEPRECATED
-/**
- * @brief Smart pointer to Scanner25D
- */
-typedef rw::common::Ptr<Scanner25D> Scanner25DPtr;
-#endif
 /*@}*/
 
 }

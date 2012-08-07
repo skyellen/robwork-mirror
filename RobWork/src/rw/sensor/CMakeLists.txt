@@ -9,8 +9,8 @@ SET(FILES_CPP
   ImageUtil.cpp
   
   TactileArray.cpp
-  TactileMultiAxisSensor.cpp
   TactileArrayUtil.cpp
+  FTSensor.cpp
   
   Scanner.cpp
   Scanner1D.cpp
@@ -24,17 +24,28 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
+  Sensor.hpp
+  
   Camera.hpp
   StereoCamera.hpp
   CameraFirewire.hpp
   CameraListener.hpp
   Image.hpp
-  Sensor.hpp
-  TactileArray.hpp
   ImageUtil.hpp
+  
+  TactileArray.hpp
+  TactileArrayUtil.hpp
+  FTSensor.hpp
+
+  Scanner.hpp
+  Scanner1D.hpp
+  Scanner2D.hpp
+  Scan2D.hpp
+  Scanner25D.hpp
+  Image25D.hpp
+
   Contact2D.hpp
   Contact3D.hpp
-  TactileArrayUtil.hpp
 )
 
 SOURCE_GROUP(sensor FILES ${FILES_CPP} ${FILES_HPP})

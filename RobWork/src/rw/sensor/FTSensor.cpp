@@ -16,4 +16,4 @@
  ********************************************************************************/
 
 
-#include "TactileMultiAxisSensor.hpp"
+#include "FTSensor.hpp"

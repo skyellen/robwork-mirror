@@ -26,6 +26,7 @@
 #include <string>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/StateStructure.hpp>
+#include <rw/kinematics/StatelessObject.hpp>
 
 namespace rw {
     namespace kinematics { class Frame;}
@@ -40,7 +41,7 @@ namespace rw { namespace sensor {
     /**
      * @brief a generel sensor interface.
      */
-    class Sensor
+    class Sensor: public rw::kinematics::StatelessObject
     {
     protected:
         /**
@@ -98,7 +99,7 @@ namespace rw { namespace sensor {
          *
          * @param frame The frame, which can be NULL
          */
-        void attachTo(kinematics::Frame* frame) { _frame = frame; }
+        virtual void attachTo(kinematics::Frame* frame) { _frame = frame; }
 
         /**
          * @brief gets the propertymap of this sensor
@@ -106,11 +107,6 @@ namespace rw { namespace sensor {
         rw::common::PropertyMap& getPropertyMap(){
             return _propertyMap;
         }
-
-    protected:
-        friend class models::WorkCell;
-        virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
-        virtual void removeStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
     private:
         Sensor(){};
