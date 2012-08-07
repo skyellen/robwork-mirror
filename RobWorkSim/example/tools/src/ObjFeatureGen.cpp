@@ -57,15 +57,41 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
 
 class InputArchive {
 public:
+    virtual InputArchive(){};
     virtual void open(const std::string& filename) = 0;
     virtual void open(std::istream& ifs) = 0;
+
+    //
+    template<class T>
+    T load(const std::string& id);
+
+    load()
+protected:
+    doLoad(boost::any)
 
 };
 
 class OutputArchive {
 public:
+    virtual OutputArchive(){};
     virtual void open(const std::string& filename) = 0;
     virtual void open(std::ostream& ifs) = 0;
+
+
+    // writing primitives to archive
+    virtual void write(int val, const std::string& id) = 0;
+    virtual void write(double val, const std::string& id) = 0;
+
+    template<class T>
+    void write(T data, const std::string& id){
+        // the data method must have an implementation of load/save and it must be friends with
+    }
+
+    //
+    void write(boost::any& anydata, const std::string& id);
+
+
+
 
 };
 
@@ -76,6 +102,7 @@ public:
 
 class ClassFactory {
 public:
+    virtual ~ClassFactory(){};
     virtual std::vector<std::string> supportedClassTypes() = 0;
     virtual boost::any load(Archive& archive, const std::string& type, int version) = 0;
 
@@ -89,13 +116,18 @@ public:
 
 class Serializable {
 public:
+    virtual ~Serializable(){};
     virtual void serialize(Archive& archive) = 0;
     rw::common::Ptr<Deserializer> makeDeserializerFactory();
 };
 
 
-void saveKDTree(KDTreeQ* tree){
-    std::vector<KDTreeQ::Node>
+struct Serializer {
+    void serialize(boost::any& nodedata);
+};
+
+void saveKDTree(KDTreeQ* tree, ){
+    //std::vector<KDTreeQ::Node>
 }
 
 KDTreeQ* loadTree(const std::string& filename){
@@ -317,4 +349,3 @@ int main(int argc, char** argv)
     std::cout << "Done" << std::endl;
     return 0;
 }
-

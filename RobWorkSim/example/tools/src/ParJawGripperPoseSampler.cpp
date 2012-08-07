@@ -80,6 +80,49 @@ int main(int argc, char** argv)
     Math::seed(time(NULL));
     srand ( time(NULL) );
 
+    // we need
+    // Declare the supported options.
+    options_description desc("Allowed options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("output,o", value<string>()->default_value("out.xml"), "the output file.")
+        ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
+        ("wc", value<string>()->default_value(""), "The workcell.")
+        ("object", value<string>()->default_value(""), "if gentask enabled then object need be defined.")
+        ("gripper", value<string>()->default_value(""), "if gentask enabled then gripper need be defined.")
+        ("gentask", value<bool>()->default_value(false), "if gentask enabled then gripper need be defined.")
+        ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
+        ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
+        ("input", value<vector<string> >(), "input Files to simulate.")
+    ;
+    positional_options_description optionDesc;
+    optionDesc.add("input",-1);
+
+    // initialize RobWork log. We put debug into rwdebug.log and warning into rwwarn.log
+    Log::log().setWriter(Log::Debug, ownedPtr( new LogFileWriter("rwdebug.log") ) );
+    Log::log().setWriter(Log::Warning, ownedPtr( new LogFileWriter("rwwarn.log") ) );
+
+    variables_map vm;
+    //store(parse_command_line(argc, argv, desc), vm);
+    store(command_line_parser(argc, argv).
+              options(desc).positional(optionDesc).run(), vm);
+    notify(vm);
+
+    rw::math::Math::seed( TimerUtil::currentTimeMs() );
+    // write standard welcome, status
+    if (vm.count("help")) {
+        cout << "Usage:\n\n"
+                  << "\t" << argv[0] <<" [options] -o<outfile> <expFile1> <expFile2> <...> <expFileN> \n"
+                  << "\n";
+        cout << desc << "\n";
+        return 1;
+    }
+
+    using namespace boost::filesystem;
+
+
+
+
     if( argc < 5 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of stl file" << std::endl;
