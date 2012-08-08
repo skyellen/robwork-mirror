@@ -191,7 +191,7 @@ namespace {
         for(int y=0;y<scan->getHeight();y++){
             for(int x=0;x<scan->getWidth();x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
-                double r = Math::sqr(x - center_x) + Math::sqr(y - center_y);
+                double r = std::sqrt( Math::sqr(x - center_x) + Math::sqr(y - center_y) );
                 double d = (double)fabs(v[2])*1000.0;
                 double variance = calcVariance(r, d);
                 // this will produce the error in m
