@@ -40,8 +40,6 @@ namespace {
         BOOST_FOREACH(PluginFactory<WorkCellLoader>::Ptr factory, loaderPlugins){
             //std::cout << "PLUGIN: " << factory->identifier() << std::endl;
             WorkCellLoader::Ptr loader = factory->make();
-            // TODO: an image loader or factory should be able to tell what formats it supports
-            // perhaps a propertymap on the factory interface could be used
             try {
                 WorkCell::Ptr wc = loader->loadWorkCell( file );
                 return wc;

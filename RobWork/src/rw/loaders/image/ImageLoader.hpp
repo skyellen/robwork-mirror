@@ -48,6 +48,20 @@ namespace rw { namespace loaders {
          */
 		//void save(rw::sensor::Image::Ptr img, const std::string& filename);
 
+		/**
+		 * @brief
+		 */
+/*
+		class Plugin: public rw::plugin::PluginFactory<ImageLoader> {
+		public:
+
+		    std::vector<std::string> getSupportedExtensions();
+
+		protected:
+		    void addSupportedExtension(const std::string& ext);
+		};
+		*/
+
 	};
 	/*@}*/
 }}

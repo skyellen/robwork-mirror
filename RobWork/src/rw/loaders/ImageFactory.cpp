@@ -56,16 +56,20 @@ rw::sensor::Image::Ptr ImageFactory::load(const std::string& file)
         PluginRepository &prep = RobWork::getInstance()->getPluginRepository();
         std::vector<PluginFactory<ImageLoader>::Ptr> loaderPlugins = prep.getPlugins<ImageLoader>();
         BOOST_FOREACH(PluginFactory<ImageLoader>::Ptr factory, loaderPlugins){
-            //std::cout << "PLUGIN: " << factory->identifier() << std::endl;
-            ImageLoader::Ptr loader = factory->make();
-            // TODO: an image loader or factory should be able to tell what formats it supports
-            // perhaps a propertymap on the factory interface could be used
-            try {
-                Image::Ptr img = loader->loadImage( file );
-                return img;
-            } catch (...){
-                Log::debugLog() << "Tried loading image with plugin: " << StringUtil::quote(factory->identifier()) << " but failed!\n";
-            }
+            //const PropertyMap &map = factory->getProperties();
+
+            //if( map.has(ext) ){
+                //std::cout << "PLUGIN: " << factory->identifier() << std::endl;
+                ImageLoader::Ptr loader = factory->make();
+                // TODO: an image loader or factory should be able to tell what formats it supports
+                // perhaps a propertymap on the factory interface could be used
+                try {
+                    Image::Ptr img = loader->loadImage( file );
+                    return img;
+                } catch (...){
+                    Log::debugLog() << "Tried loading image with plugin: " << StringUtil::quote(factory->identifier()) << " but failed!\n";
+                }
+            //}
         }
     }
 	RW_THROW("Image file: " << file << " with extension " << ext << " is not supported!");
