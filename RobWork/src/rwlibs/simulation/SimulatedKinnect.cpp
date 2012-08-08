@@ -62,7 +62,7 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name, rw::kinematics::Fram
         _dtsum(0),
         _near(0.7),
         _far(6),
-        _fieldOfView(43*rw::math::Deg2Rad),
+        _fieldOfView(43),
         _grabSingleFrame(false),
         _width(640),
         _height(480),
@@ -82,7 +82,7 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name,
 		_dtsum(0),
         _near(0.7),
         _far(6),
-		_fieldOfView(43*rw::math::Deg2Rad),
+		_fieldOfView(43),
 		_grabSingleFrame(false),
         _width(640),
         _height(480),
@@ -171,12 +171,12 @@ const Image25D& SimulatedKinnect::getScan(){
 namespace {
 
     double calcVariance( double r, double d ){
-        const double p00 = 2.344/1000.0;
-        const double p10 = -1.202E-2/1000.0;
-        const double p01 = -1.734E-3/1000.0;
-        const double p20 =  1.818E-5/1000.0;
-        const double p11 =  6.516E-6/1000.0;
-        const double p02 =  1.233E-6/1000.0;
+        const double p00 = 2.344;
+        const double p10 = -1.202E-2;
+        const double p01 = -1.734E-3;
+        const double p20 =  1.818E-5;
+        const double p11 =  6.516E-6;
+        const double p02 =  1.233E-6;
         return p00 + p10*r + p01*d + p20*r*r + p11*r*d + p02*d*d;
     }
 
@@ -192,10 +192,10 @@ namespace {
             for(int x=0;x<scan->getWidth();x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
                 double r = Math::sqr(x - center_x) + Math::sqr(y - center_y);
-                double d = (double)fabs(v[2]);
+                double d = (double)fabs(v[2])*1000.0;
                 double variance = calcVariance(r, d);
                 // this will produce the error in m
-                double noise_err = Math::ranNormalDist( 0 , std::sqrt(variance) );
+                double noise_err = Math::ranNormalDist( 0 , std::sqrt(variance) )/1000.0;
                 v[2] += noise_err;
             }
         }
