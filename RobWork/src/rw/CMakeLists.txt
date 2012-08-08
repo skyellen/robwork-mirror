@@ -26,6 +26,7 @@ ADD_SUBDIRECTORY(sensor)
 ADD_SUBDIRECTORY(trajectory)
 ADD_SUBDIRECTORY(plugin)
 ADD_SUBDIRECTORY(graphics)
+ADD_SUBDIRECTORY(serialization)
 
 #Add the RobWork files
 SET(FILES_CPP
