@@ -25,7 +25,7 @@
 #include <rw/models/WorkCell.hpp>
 
 #include "Body.hpp"
-#include "Accessor.hpp"
+
 
 using namespace rw::math;
 using namespace rw::models;

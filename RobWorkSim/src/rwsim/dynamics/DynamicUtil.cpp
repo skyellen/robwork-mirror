@@ -24,7 +24,6 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
-#include "Accessor.hpp"
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
