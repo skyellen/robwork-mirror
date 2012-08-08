@@ -32,6 +32,11 @@
 #include <rw/math/Math.hpp>
 #include <boost/any.hpp>
 
+#include <rw/serialization/InputArchive.hpp>
+#include <rw/serialization/OutputArchive.hpp>
+
+#include <boost/tuple/tuple.hpp>
+
 namespace rwlibs { namespace algorithms {
 
     /** \addtogroup algorithms */
@@ -45,30 +50,26 @@ namespace rwlibs { namespace algorithms {
      * This KDTree implementation takes any value type but the key is constrained to a
      * rw::math::Q
      */
+    template<class VALUE_TYPE>
     class KDTreeQ
     {
     private:
 
         struct TreeNode;
 
-        size_t _dim;
-        size_t _nrOfNodes;
-        TreeNode *_root;
-        std::vector<TreeNode>* _nodes;
-
     public:
         typedef rw::math::Q KEY;
 
         //! a struct for the node in the tree
         struct KDNode {
-            KDNode(rw::math::Q k, boost::any val):key(k),value(val){}
+            KDNode(rw::math::Q k, VALUE_TYPE val):key(k),value(val){}
             rw::math::Q key;
-            boost::any value;
+            VALUE_TYPE value;
 
-            template<class T>
-            T valueAs() { return boost::any_cast<T>(value); }
-            template<class T>
-            T valueAs() const { return boost::any_cast<T>(value); }
+            //template<class T>
+            //T valueAs() { return boost::any_cast<T>(value); }
+            //template<class T>
+            //T valueAs() const { return boost::any_cast<T>(value); }
         };
 
         struct KDResult {
@@ -105,26 +106,7 @@ namespace rwlibs { namespace algorithms {
         * @param nodes [in] a list of KDNode's
         * @return if build succesfull then a pointer to a KD-tree is returned else NULL
         */
-        static KDTreeQ* buildTree(std::vector<KDNode>& nodes){
-            if(nodes.size()==0)
-                return NULL;
-
-            // create all tree nodes in a list
-            std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
-
-            // copy the KDNodes into the tree nodes
-            int i=0;
-            BOOST_FOREACH(KDNode& n, nodes){
-                (*tNodes)[i]._kdnode = &n;
-                i++;
-            }
-
-            // create a simple median balanced tree
-            size_t nrOfDims = nodes.front().key.size();
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
-
-            return new KDTreeQ(*root, tNodes);
-        }
+        static KDTreeQ* buildTree(std::vector<KDNode>& nodes);
 
         /**
         * @brief Builds a KDTreeQ from a list of key values and nodes. This method is more efficient
@@ -132,87 +114,34 @@ namespace rwlibs { namespace algorithms {
         * @param nodes [in] a list of KDNode's
         * @return if build succesfull then a pointer to a KD-tree is returned else NULL
         */
-        static KDTreeQ* buildTree(const std::vector<KDNode*>& nodes){
-            if(nodes.size()==0)
-                return NULL;
-
-            // create all tree nodes in a list
-            std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
-
-            // copy the KDNodes into the tree nodes
-            int i=0;
-            BOOST_FOREACH(KDNode* n, nodes){
-                (*tNodes)[i]._kdnode = n;
-                i++;
-            }
-
-            // create a simple median balanced tree
-            size_t nrOfDims = nodes.front()->key.size();
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
-
-            return new KDTreeQ(*root, tNodes);
-        }
+        static KDTreeQ* buildTree(const std::vector<KDNode*>& nodes);
 
         /**
         * @brief gets the number of dimensions that this KDTreeQ supports
         * @return the nr of dimensions of this KD-Tree
         */
-        size_t getDimensions() const{
-            return _dim;
-        };
+        size_t getDimensions() const { return _dim; };
 
         /**
         * @brief adds a key value pair to the KDTreeQ.
         * @param key [in] must be the same length as the dimensionality of the KDTreeQ
         * @param val [in] value that is to be stored at the keys position
         */
-        void addNode(const rw::math::Q& key, boost::any val);
+        void addNode(const rw::math::Q& key, VALUE_TYPE val);
 
         /**
         * @brief finds the KDNode with key equal to nnkey
         * @param nnkey [in] the key that is to be found
         * @return KDNode with key equal to nnkey if existing, else NULL
         */
-        KDNode* search(const rw::math::Q& nnkey){
-            TreeNode *tmpNode = _root;
-            for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%_dim ){
-                rw::math::Q& key = tmpNode->_kdnode->key;
-                if( nnkey(lev)==key(lev) && !(tmpNode->_deleted) && (nnkey == key) ) {
-                    return tmpNode->_kdnode;
-                } else if( nnkey(lev) > key(lev) ){
-                    tmpNode = tmpNode->_right;
-                } else {
-                    tmpNode = tmpNode->_left;
-                }
-            }
-            return NULL;
-        };
+        KDNode* search(const rw::math::Q& nnkey);
 
         /**
         * @brief finds the KDNode with the key closest too nnkey
         * @param nnkey [in] the key to which the nearest neighbor is found
         * @return the nearest neighbor to nnkey
         */
-        KDNode& nnSearch(const rw::math::Q& nnkey){
-            //std::cout << "nnSearch " << _dim << std::endl;
-
-            RW_ASSERT(nnkey.size()==_dim);
-            if (_root==NULL)
-                RW_THROW("KDTreeQ has no data!");
-
-            rw::math::Q min(_dim), max(_dim);
-            KDResult result(NULL, DBL_MAX);
-            for(size_t i=0;i<_dim;i++){
-
-                min(i) = -DBL_MAX;
-                max(i) =  DBL_MAX;
-            }
-            //std::cout << "nnSearchRec" << std::endl;
-            nnSearchRec(nnkey, _root, min, max, result);
-            if( result.n == NULL )
-                RW_THROW("KDTreeQ has no data!");
-            return *result.n;
-        }
+        KDNode& nnSearch(const rw::math::Q& nnkey);
 
         /**
         * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
@@ -222,22 +151,7 @@ namespace rwlibs { namespace algorithms {
         */
         void nnSearchElipse(const rw::math::Q& nnkey,
                             const rw::math::Q& radi,
-                            std::list<const KDNode*>& nodes)
-        {
-            //typedef std::pair<TreeNode*,size_t> QElem;
-            using namespace rw::math;
-            std::queue<TreeNode*> unhandled;
-            unhandled.push( _root );
-            double distSqr = MetricUtil::norm2Sqr(radi);
-            double distRadi = sqrt(distSqr);
-            Q low( _dim ),upp( _dim );
-            for(size_t i=0;i<_dim;i++){
-                low(i) = nnkey(i)-distRadi;
-                upp(i) = nnkey(i)+distRadi;
-            }
-
-            nnSearchElipseRec(nnkey, _root, low, upp, distSqr, nodes);
-        }
+                            std::list<const KDNode*>& nodes);
 
         /**
         * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
@@ -247,92 +161,100 @@ namespace rwlibs { namespace algorithms {
         */
         void nnSearchElipseRect(const rw::math::Q& nnkey,
                                 const rw::math::Q& radi,
-                                std::list<const KDNode*>& nodes )
-        {
-            //typedef std::pair<TreeNode*,size_t> QElem;
-            using namespace rw::math;
-            std::queue<TreeNode*> unhandled;
-            unhandled.push( _root );
-            double distSqr = MetricUtil::norm2Sqr( radi );
-            double distRadi = sqrt(distSqr);
-            Q low( _dim ),upp( _dim );
-            for(size_t i=0;i<_dim;i++){
-                low(i) = nnkey(i)-distRadi;
-                upp(i) = nnkey(i)+distRadi;
-            }
-
-            while( !unhandled.empty() ){
-                //std::cout << "unhandled size: " << unhandled.size() << std::endl;
-                TreeNode *n = unhandled.front();
-                unhandled.pop();
-
-                unsigned char axis = n->_axis;
-                rw::math::Q &key = n->_kdnode->key;
-
-                //std::cout << "Axis: " << axis << std::endl;
-
-                // if the key is in range then add it to the result
-                size_t j;
-                for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
-                //std::cout << j << "==" << _dim << " k:" << key << std::endl;
-                if( j==_dim ) {// this is in range if
-                    double dist = MetricUtil::dist2Sqr(nnkey,key);
-                    //std::cout << "Dist: " << dist << " < " << distSqr << std::endl;
-                    if( dist<distSqr )
-                        nodes.push_back( n->_kdnode );
-                }
-
-                // add the children to the unhandled queue if the current dimension
-                if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
-                    unhandled.push( n->_left );
-                if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
-                    unhandled.push( n->_right );
-            }
-        }
+                                std::list<const KDNode*>& nodes );
 
         /**
         * @brief finds all neighbors in the hyperrectangle defined by the lower bound and the
         * upper bound
         */
         void nnSearchRect(const rw::math::Q& low, const rw::math::Q& upp,
-                          std::list<const KDNode*>& nodes ){
-            //typedef std::pair<TreeNode*,size_t> QElem;
-            std::queue<TreeNode*> unhandled;
-            unhandled.push( _root );
-
-            //std::cout << "nnSearchRect: "<< std::endl;
-            //std::cout << "- low bound: "<< low << std::endl;
-            //std::cout << "- upp bound: "<< upp << std::endl;
-
-            while( !unhandled.empty() ){
-                //std::cout << "unhandled size: " << unhandled.size() << std::endl;
-                TreeNode *n = unhandled.front();
-                unhandled.pop();
-
-                unsigned char axis = n->_axis;
-                rw::math::Q &key = n->_kdnode->key;
-
-                //std::cout << "Axis: " << axis << std::endl;
-
-                // if the key   is in range then add it to the result
-                size_t j;
-                for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
-                //std::cout << j << "==" << _dim << " k:" << key << std::endl;
-                if( j==_dim ) // this is in range
-                    nodes.push_back( n->_kdnode );
-
-                // add the children to the unhandled queue if the current dimension
-                if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
-                    unhandled.push( n->_left );
-                if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
-                    unhandled.push( n->_right );
-            }
-        };
+                          std::list<const KDNode*>& nodes );
 
     private:
 
+        size_t _dim;
+        size_t _nrOfNodes;
+        TreeNode *_root;
+        std::vector<TreeNode>* _nodes;
+
+    private:
+        friend class Archive::Access;
+        static KDTreeQ<VALUE_TYPE>* load(InputArchive& iarchive){
+            std::string name, data;
+            int dim, nrNodes;
+            boost::uint64_t rootId;
+            iarchive.read(dim, "dim");
+            iarchive.read(nrNodes, "nrNodes");
+            rootId = iarchive.readUInt64("rootId");
+
+            std::vector<TreeNode>* nodes = new std::vector<TreeNode>(nrNodes);
+            std::vector<int> idToNodeIdx(nrNodes);
+            std::map<boost::uint64_t, boost::tuple<TreeNode*,boost::uint64_t,boost::uint64_t> > toNode;
+            for(int i=0;i<nrNodes;i++){
+                TreeNode &node = (*nodes)[i];
+
+                boost::uint64_t id = iarchive.readUInt64("id");
+                node._axis = iarchive.readInt("axis");
+                node._deleted = iarchive.readBool("del");
+
+                boost::uint64_t leftId = iarchive.readUInt64("left");
+                boost::uint64_t rightId = iarchive.readUInt64("right");
+
+                iarchive.read(node._kdnode->key, "Q");
+                iarchive.read(node._kdnode->value, "value");
+
+                toNode[id] = boost::make_tuple(&node,leftId,rightId);
+                idToNodeIdx[i] = id;
+            }
+            toNode[0] = boost::make_tuple(NULL,0,0);
+
+            // finally travel through nodes and set the correct left/right values
+            for(int i=0;i<nrNodes;i++){
+                TreeNode &node = (*nodes)[i];
+
+                boost::tuple<TreeNode*,boost::uint64_t,boost::uint64_t> val = toNode[ idToNodeIdx[i] ];
+                int leftIdx = boost::get<1>(val);
+                node._left = boost::get<0>( toNode[leftIdx] );
+                node._right = boost::get<0>( toNode[boost::get<2>(val)]);
+            }
+            TreeNode *root = boost::get<0>(toNode[rootId]);
+            return new KDTreeQ<VALUE_TYPE>(root,nodes);
+        }
+        static void save(const KDTreeQ<VALUE_TYPE>& out, OutputArchive& oarchive) {
+            oarchive.write(out._dim, "dim");
+            oarchive.write((int)out._nodes->size(), "nrNodes");
+            oarchive.write((boost::uint64_t)out._root, "rootId");
+            RW_ASSERT(out._nrOfNodes==out._nodes->size());
+            for(int i=0;i<out._nodes->size();i++){
+                const TreeNode &node = (*out._nodes)[i];
+                oarchive.write((boost::uint64_t)&node, "id");
+                oarchive.write((int)node._axis, "axis");
+                oarchive.write(node._deleted, "del");
+                oarchive.write((boost::uint64_t)node._left, "left");
+                oarchive.write((boost::uint64_t)node._right, "right");
+
+                oarchive.write( node._kdnode->key, "Q");
+                oarchive.write( node._kdnode->value, "value");
+            }
+        }
+
+/*
+        static void save(RWOutputArchive& archive);
+        static KDTreeQ* load(RWInputArchive& archive){
+
+        }
+
+        static void save(KDTreeQ* tree, ValueSerializer& serializer, const std::string& filename);
+        static KDTreeQ* load(ValueSerializer& serializer, const std::string& filename);
+        */
+
+
+
+    private:
+        //! default constructor
         KDTreeQ(){};
 
+        //! constructor
         KDTreeQ(TreeNode &root, std::vector<TreeNode> *nodes):
             _dim(root._kdnode->key.size()),
             _root(&root),_nodes(nodes)
@@ -537,6 +459,193 @@ namespace rwlibs { namespace algorithms {
             }
         };
     };
+
+
+    template<class T>
+    KDTreeQ<T>* KDTreeQ<T>::buildTree(std::vector<KDTreeQ<T>::KDNode>& nodes){
+        if(nodes.size()==0)
+            return NULL;
+
+        // create all tree nodes in a list
+        std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
+
+        // copy the KDNodes into the tree nodes
+        int i=0;
+        BOOST_FOREACH(KDNode& n, nodes){
+            (*tNodes)[i]._kdnode = &n;
+            i++;
+        }
+
+        // create a simple median balanced tree
+        size_t nrOfDims = nodes.front().key.size();
+        TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
+
+        return new KDTreeQ<T>(*root, tNodes);
+    }
+
+    template<class T>
+    KDTreeQ<T>* KDTreeQ<T>::buildTree(const std::vector<KDTreeQ<T>::KDNode*>& nodes){
+        if(nodes.size()==0)
+            return NULL;
+
+        // create all tree nodes in a list
+        std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
+
+        // copy the KDNodes into the tree nodes
+        int i=0;
+        BOOST_FOREACH(KDNode* n, nodes){
+            (*tNodes)[i]._kdnode = n;
+            i++;
+        }
+
+        // create a simple median balanced tree
+        size_t nrOfDims = nodes.front()->key.size();
+        TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
+
+        return new KDTreeQ<T>(*root, tNodes);
+    }
+
+    template<class T>
+    typename KDTreeQ<T>::KDNode* KDTreeQ<T>::search(const rw::math::Q& nnkey){
+        TreeNode *tmpNode = _root;
+        for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%_dim ){
+            rw::math::Q& key = tmpNode->_kdnode->key;
+            if( nnkey(lev)==key(lev) && !(tmpNode->_deleted) && (nnkey == key) ) {
+                return tmpNode->_kdnode;
+            } else if( nnkey(lev) > key(lev) ){
+                tmpNode = tmpNode->_right;
+            } else {
+                tmpNode = tmpNode->_left;
+            }
+        }
+        return NULL;
+    };
+
+    template<class T>
+    typename KDTreeQ<T>::KDNode& KDTreeQ<T>::nnSearch(const rw::math::Q& nnkey){
+        //std::cout << "nnSearch " << _dim << std::endl;
+
+        RW_ASSERT(nnkey.size()==_dim);
+        if (_root==NULL)
+            RW_THROW("KDTreeQ has no data!");
+
+        rw::math::Q min(_dim), max(_dim);
+        KDResult result(NULL, DBL_MAX);
+        for(size_t i=0;i<_dim;i++){
+
+            min(i) = -DBL_MAX;
+            max(i) =  DBL_MAX;
+        }
+        //std::cout << "nnSearchRec" << std::endl;
+        nnSearchRec(nnkey, _root, min, max, result);
+        if( result.n == NULL )
+            RW_THROW("KDTreeQ has no data!");
+        return *result.n;
+    }
+
+    template<class T>
+    void KDTreeQ<T>::nnSearchElipse(const rw::math::Q& nnkey,
+                        const rw::math::Q& radi,
+                        std::list<const KDNode*>& nodes)
+    {
+        //typedef std::pair<TreeNode*,size_t> QElem;
+        using namespace rw::math;
+        std::queue<TreeNode*> unhandled;
+        unhandled.push( _root );
+        double distSqr = MetricUtil::norm2Sqr(radi);
+        double distRadi = sqrt(distSqr);
+        Q low( _dim ),upp( _dim );
+        for(size_t i=0;i<_dim;i++){
+            low(i) = nnkey(i)-distRadi;
+            upp(i) = nnkey(i)+distRadi;
+        }
+
+        nnSearchElipseRec(nnkey, _root, low, upp, distSqr, nodes);
+    }
+
+    template<class T>
+    void KDTreeQ<T>::nnSearchElipseRect(const rw::math::Q& nnkey,
+                            const rw::math::Q& radi,
+                            std::list<const KDNode*>& nodes )
+    {
+        //typedef std::pair<TreeNode*,size_t> QElem;
+        using namespace rw::math;
+        std::queue<TreeNode*> unhandled;
+        unhandled.push( _root );
+        double distSqr = MetricUtil::norm2Sqr( radi );
+        double distRadi = sqrt(distSqr);
+        Q low( _dim ),upp( _dim );
+        for(size_t i=0;i<_dim;i++){
+            low(i) = nnkey(i)-distRadi;
+            upp(i) = nnkey(i)+distRadi;
+        }
+
+        while( !unhandled.empty() ){
+            //std::cout << "unhandled size: " << unhandled.size() << std::endl;
+            TreeNode *n = unhandled.front();
+            unhandled.pop();
+
+            unsigned char axis = n->_axis;
+            rw::math::Q &key = n->_kdnode->key;
+
+            //std::cout << "Axis: " << axis << std::endl;
+
+            // if the key is in range then add it to the result
+            size_t j;
+            for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
+            //std::cout << j << "==" << _dim << " k:" << key << std::endl;
+            if( j==_dim ) {// this is in range if
+                double dist = MetricUtil::dist2Sqr(nnkey,key);
+                //std::cout << "Dist: " << dist << " < " << distSqr << std::endl;
+                if( dist<distSqr )
+                    nodes.push_back( n->_kdnode );
+            }
+
+            // add the children to the unhandled queue if the current dimension
+            if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
+                unhandled.push( n->_left );
+            if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
+                unhandled.push( n->_right );
+        }
+    }
+
+    template<class T>
+    void KDTreeQ<T>::nnSearchRect(const rw::math::Q& low, const rw::math::Q& upp,
+                      std::list<const KDNode*>& nodes ){
+        //typedef std::pair<TreeNode*,size_t> QElem;
+        std::queue<TreeNode*> unhandled;
+        unhandled.push( _root );
+
+        //std::cout << "nnSearchRect: "<< std::endl;
+        //std::cout << "- low bound: "<< low << std::endl;
+        //std::cout << "- upp bound: "<< upp << std::endl;
+
+        while( !unhandled.empty() ){
+            //std::cout << "unhandled size: " << unhandled.size() << std::endl;
+            TreeNode *n = unhandled.front();
+            unhandled.pop();
+
+            unsigned char axis = n->_axis;
+            rw::math::Q &key = n->_kdnode->key;
+
+            //std::cout << "Axis: " << axis << std::endl;
+
+            // if the key   is in range then add it to the result
+            size_t j;
+            for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
+            //std::cout << j << "==" << _dim << " k:" << key << std::endl;
+            if( j==_dim ) // this is in range
+                nodes.push_back( n->_kdnode );
+
+            // add the children to the unhandled queue if the current dimension
+            if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
+                unhandled.push( n->_left );
+            if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
+                unhandled.push( n->_right );
+        }
+    };
+
+
 
 
 
