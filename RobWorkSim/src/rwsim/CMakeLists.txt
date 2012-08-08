@@ -17,7 +17,6 @@ add_library(rwsim
 	dynamics/ContactPoint.cpp 
 	dynamics/ContactCluster.cpp
 	dynamics/ContactManifold.cpp
-	dynamics/Accessor.cpp 
 	dynamics/ContactDataMap.cpp  
 	dynamics/MaterialDataMap.cpp 
 	dynamics/DynamicUtil.cpp

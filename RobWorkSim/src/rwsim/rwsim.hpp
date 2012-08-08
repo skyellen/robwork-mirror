@@ -22,7 +22,7 @@
 #include "./dynamics/ContactPoint.hpp"
 #include "./dynamics/ContactCluster.hpp"
 #include "./dynamics/ContactManifold.hpp"
-#include "./dynamics/Accessor.hpp"
+
 #include "./dynamics/ContactDataMap.hpp"
 #include "./dynamics/MaterialDataMap.hpp"
 #include "./dynamics/DynamicUtil.hpp"
