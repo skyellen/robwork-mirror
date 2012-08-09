@@ -853,7 +853,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
                 } else {
                 	handForceLimits(0) = 2*cos(alpha)*handForceLimits(3);
                 }
-                _hand->setForceLimit(handForceLimits);
+                _hand->setMotorForceLimits(handForceLimits);
                 _hand->getModel().setQ(preshape, nstate);
 
                 calcRandomCfg(nstate);
@@ -943,7 +943,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             } else {
             	handForceLimits(0) = 2*cos(alpha)*handForceLimits(3);
             }
-            _hand->setForceLimit(handForceLimits);
+            _hand->setMotorForceLimits(handForceLimits);
 
             _hand->getModel().setQ(preshape, nstate);
             calcRandomCfg(nstate);

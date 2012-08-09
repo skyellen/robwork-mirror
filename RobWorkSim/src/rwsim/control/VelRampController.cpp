@@ -14,7 +14,7 @@ void VelRampController::update(const rwlibs::simulation::Simulator::UpdateInfo& 
     rw::math::Q qvel = _velramp.dx(_time);
 
     std::cout << "Setting Qvelocity: "<< qvel << std::endl;
-    _ddev->setVelocity(qvel, state);
+    _ddev->setMotorVelocityTargets(qvel, state);
     _currentQ = qvel;
 }
 

@@ -131,7 +131,7 @@ void PDController::update(const rwlibs::simulation::Simulator::UpdateInfo& info,
 
 	// std::cout  << "PD ERROR: " << error << std::endl;
 
-	_ddev->setVelocity( (_targetVel + nvel), state);
+	_ddev->setMotorVelocityTargets( (_targetVel + nvel), state);
 	//2std::cout  << "T " << _target[0]<< " " << error[0]<< " "<< nvel[0] << " "<< _targetVel[0] << std::endl;
 	_currentQ = q;
 

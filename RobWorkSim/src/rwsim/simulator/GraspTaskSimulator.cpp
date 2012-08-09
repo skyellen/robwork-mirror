@@ -651,7 +651,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if(_rhand ){
                 Q forceLim = sstate._task->tauMax;
                 if(forceLim.size()>0)
-                    _rhand->setForceLimit(forceLim);
+                    _rhand->setMotorForceLimits(forceLim);
             }
 
             Transform3D<> t3d  = Kinematics::frameTframe(_tcp, _objects[0]->getBodyFrame(), nstate);

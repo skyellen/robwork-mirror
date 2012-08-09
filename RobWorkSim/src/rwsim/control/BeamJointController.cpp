@@ -62,8 +62,8 @@ void BeamJointController::update(const rwlibs::simulation::Simulator::UpdateInfo
 
 	for(size_t i=0;i<q.size();i++){ torque[i] = 2; }
 
-	_ddev->setForceLimit(torque);
-	_ddev->setVelocity(q_error, state);
+	_ddev->setMotorForceLimits(torque);
+	_ddev->setMotorVelocityTargets(q_error, state);
 	_currentQ = q;
 }
 

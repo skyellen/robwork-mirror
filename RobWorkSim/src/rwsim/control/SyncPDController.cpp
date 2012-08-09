@@ -36,7 +36,7 @@ void SyncPDController::update(const rwlibs::simulation::Simulator::UpdateInfo& i
     rw::math::Q error = q-_currentQ;
     rw::math::Q nvel = P*error + (error-_lastError)*D;
     _lastError = error;
-    _ddev->setVelocity(nvel + dq, state);
+    _ddev->setMotorVelocityTargets(nvel + dq, state);
     _x = q;
 
     std::cout  << "------ Debug SyncPDController: " << std::endl;

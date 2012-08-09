@@ -226,8 +226,6 @@ public:
     virtual Q getVelocity(const State& state);
     virtual void setVelocity(const Q& vel, State& state);
 
-    virtual void setForceLimit(const Q& force);
-
     virtual std::vector<rw::common::Ptr<Body> > getLinks();
 
 };

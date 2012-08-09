@@ -98,7 +98,7 @@ void PoseController::update(const rwlibs::simulation::Simulator::UpdateInfo& inf
     dq = dqtarget;
     //q += _dt*_dq;
 
-    _ddev->setVelocity( dq, state);
+    _ddev->setMotorVelocityTargets( dq, state);
 
 }
 

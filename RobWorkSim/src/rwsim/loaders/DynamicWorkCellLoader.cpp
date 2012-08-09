@@ -949,7 +949,7 @@ namespace
         }
         RW_ASSERT(base!=NULL);
         RigidDevice::Ptr rigiddev = ownedPtr(new RigidDevice(base, bodies, device));
-        rigiddev->setForceLimit( Q(maxForce) );
+        rigiddev->setMotorForceLimits( Q(maxForce) );
         std::vector<Body::Ptr> links = rigiddev->getLinks();
         BOOST_FOREACH(Body::Ptr l, links){
             state.allbodies.push_back(l);
