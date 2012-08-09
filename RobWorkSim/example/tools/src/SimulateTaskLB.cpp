@@ -289,7 +289,7 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     WorkCell::Ptr _wc = dwc->getWorkcell();
     int nrOfCollisions = 0;
     GraspTask::Ptr gtask = ownedPtr(new GraspTask());
-    Body* body = dwc->findBody(objectName);
+    Body::Ptr body = dwc->findBody(objectName);
     if(body==NULL){
         RW_THROW("OBJECT DOES NOT EXIST: " << objectName);
     }

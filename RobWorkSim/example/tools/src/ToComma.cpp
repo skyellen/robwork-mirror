@@ -102,7 +102,11 @@ int main(int argc, char** argv)
 	//Q scale(7,1.0/0.1,1.0/0.1,1.0/0.1,1.0/2.0,1.0/2.0,1.0/2.0,1.0/Pi);
 	Q scale(7,1.0,1.0,1.0,1.0,1.0,1.0,1.0);
 
-    std::vector<KDTreeQ::KDNode> simnodes, posnodes;
+	typedef KDTreeQ<GraspResult::Ptr> NNSearchRes;
+	typedef KDTreeQ<NNSearchRes::Node*> NNSearchPos;
+    std::vector<NNSearchRes::Node> simnodes;
+    std::vector<NNSearchPos::Node> posnodes;
+
     BOOST_FOREACH(GraspSubTask& stask, gtask_sim->getSubTasks()){
         BOOST_FOREACH(GraspTarget& target,stask.targets ){
             if(target.result==NULL)
@@ -126,18 +130,18 @@ int main(int argc, char** argv)
             //for(size_t i=0;i<key.size(); i++)
             //    key[i] = key[i] * scale[i];
 
-            simnodes.push_back( KDTreeQ::KDNode(key, target.result) );
+            simnodes.push_back( NNSearchRes::Node(key, target.result) );
             Q pos(3);
             pos[0] = t3d.P()[0];
             pos[1] = t3d.P()[1];
             pos[2] = t3d.P()[2];
 
-            posnodes.push_back( KDTreeQ::KDNode(pos, &simnodes.back()) );
+            posnodes.push_back( NNSearchPos::Node(pos, &simnodes.back()) );
         }
     }
 
-    KDTreeQ *nntree = KDTreeQ::buildTree(simnodes);
-    KDTreeQ *nntree_pos = KDTreeQ::buildTree(posnodes);
+    NNSearchRes *nntree = NNSearchRes::buildTree(simnodes);
+    NNSearchPos *nntree_pos = NNSearchPos::buildTree(posnodes);
 
     //Q diff(7, 0.015, 0.015, 0.015, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad);
     Q diff(6, 0.005, 0.005, 0.005, 8*Deg2Rad, 8*Deg2Rad, 8*Deg2Rad);
@@ -145,12 +149,12 @@ int main(int argc, char** argv)
     //for(size_t i=0;i<diff.size(); i++)
     //    diff[i] = diff[i] * scale[i];
 
-    std::list<const KDTreeQ::KDNode*> result;
+    std::list<const NNSearchRes::KDNode*> result;
     size_t maxNeigh = 0;
     // for each simulated node calculate an extra quality based on nr of close successes
-    BOOST_FOREACH(KDTreeQ::KDNode& node, simnodes){
+    BOOST_FOREACH(NNSearchRes::KDNode& node, simnodes){
         result.clear();
-        GraspResult::Ptr res = node.valueAs<GraspResult::Ptr>();
+        GraspResult::Ptr res = node.value;
         Q key = node.key;
         nntree->nnSearchRect(key-diff,key+diff, result);
         size_t nrNeighbors = result.size();
@@ -167,8 +171,8 @@ int main(int argc, char** argv)
 
     // normalize to [0;1]
     RW_WARN("2");
-    BOOST_FOREACH(KDTreeQ::KDNode& node, simnodes){
-        GraspResult::Ptr res = node.valueAs<GraspResult::Ptr>();
+    BOOST_FOREACH(NNSearchRes::KDNode& node, simnodes){
+        GraspResult::Ptr res = node.value;
         res->qualityAfterLifting[res->qualityAfterLifting.size()-1] *= (1.0/maxNeigh);
     }
 
@@ -225,7 +229,7 @@ int main(int argc, char** argv)
             //KDTreeQ::KDNode& node =  nntree->nnSearch(key);
 
             double closest_dist = 1000.0;
-            KDTreeQ::KDNode* closest_node = NULL;
+            NNSearchRes::Node* closest_node = NULL;
             // make bruteforce search on position alone
 
             /*
@@ -262,7 +266,7 @@ int main(int argc, char** argv)
             */
 
 
-            GraspResult::Ptr gressim = closest_node->valueAs<GraspResult::Ptr>();
+            GraspResult::Ptr gressim = closest_node->value;
             double dist = MetricUtil::dist2(closest_node->key,key);
             std::cout << (closest_node->key-key) << std::endl;
             Q qual = gressim->qualityAfterLifting;

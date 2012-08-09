@@ -7,11 +7,7 @@
 #include <sys/stat.h>
 
 #include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-#include <rwlibs/algorithms/kdtree/KDTree.hpp>
-#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
-#include <vector>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rw/geometry/STLFile.hpp>
 #include <rw/geometry/Triangle.hpp>
@@ -43,6 +39,8 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
+#include "util.hpp"
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
@@ -50,31 +48,8 @@ using namespace robwork;
 using namespace boost::program_options;
 using namespace boost::numeric::ublas;
 
-
 const double SOFT_LAYER_SIZE = 0.0005;
 
-int binSearchRec(const double value, std::vector<double>& surfaceArea, size_t start, size_t end){
-    if(start==end)
-        return start;
-    // choose a int between start and end
-    size_t split = (end-start)/2+start;
-
-    if(value<surfaceArea[split])
-        return binSearchRec(value, surfaceArea, start, split);
-    else
-        return binSearchRec(value, surfaceArea, split+1, end);
-}
-
-Transform3D<> sampleParSurface(double minDist, double maxDist, TriMesh::Ptr mesh, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW);
-
-void moveFrameW(const Transform3D<>& wTtcp, Frame *tcp, MovableFrame* base, State& state){
-    Transform3D<> tcpTbase = Kinematics::frameTframe(tcp, base, state);
-    Transform3D<> wTbase_target = wTtcp * tcpTbase;
-    //base->setTransform(wTbase_target, state);
-    base->moveTo(wTbase_target, state);
-    //std::cout << wTbase_target << std::endl;
-    //std::cout << Kinematics::worldTframe(base, state) << std::endl;
-}
 
 int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubations ){
     int count = 0, succCnt=0, failCnt=0;
@@ -116,10 +91,6 @@ int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubat
 
 }
 
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes);
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes);
-
-
 std::vector<std::pair<Transform3D<>, RPY<> > > readPoses(std::string file){
 
     std::vector<std::pair<Transform3D<>, RPY<> > > data;
@@ -148,10 +119,6 @@ std::vector<std::pair<Transform3D<>, RPY<> > > readPoses(std::string file){
     std::cout << "Size of intput: " << data.size() << std::endl;
     return data;
 }
-
-
-double sAreaSum;
-std::vector<double> surfaceArea;
 
 int main(int argc, char** argv)
 {
@@ -188,40 +155,41 @@ int main(int argc, char** argv)
     std::vector<double> qualityestimates_misses( misses.size() );
     // build the nodes
     typedef std::pair<int, bool> Value;
-    std::vector<KDTreeQ::KDNode> nodes;
+    typedef KDTreeQ<Value> NNSearch;
+    std::vector<NNSearch::KDNode> nodes;
     for(int i=0;i<stable.size();i++){
         Transform3D<> t3d = stable[i].first;
         //stable[i].second(1) = stable[i].second(1)+13*Deg2Rad;
         RPY<> rpy = stable[i].second;
         Q key(2, rpy(1), rpy(2));
-        nodes.push_back( KDTreeQ::KDNode(key, Value(i, true)) );
+        nodes.push_back( NNSearch::KDNode(key, Value(i, true)) );
     }
     for(int i=0;i<misses.size();i++){
         Transform3D<> t3d = misses[i].first;
         //misses[i].second(1) = misses[i].second(1)+13*Deg2Rad;
         RPY<> rpy = misses[i].second;
         Q key(2, rpy(1), rpy(2));
-        nodes.push_back( KDTreeQ::KDNode(key, Value(i, false)) );
+        nodes.push_back( NNSearch::KDNode(key, Value(i, false)) );
     }
 
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
-    KDTreeQ *nntree = KDTreeQ::buildTree( nodes );
+    NNSearch *nntree = NNSearch::buildTree( nodes );
 
 
     // define the truncation
     Q diff(2, 2*angle_sd, 2*angle_sd);
 
     // now for each stable node predict its quality
-    std::list<const KDTreeQ::KDNode*> result;
+    std::list<const NNSearch::KDNode*> result;
     result.clear();
 
-    BOOST_FOREACH(KDTreeQ::KDNode &nn, nodes){
+    BOOST_FOREACH(NNSearch::KDNode &nn, nodes){
     //for(int i=0;i<stable.size();i++){
         result.clear();
         Transform3D<> t3d;
         RPY<> rpy ;
-        Value nv = nn.valueAs<Value>();
+        Value nv = nn.value;
         if(nv.second){
             t3d = stable[nv.first].first;
             rpy = stable[nv.first].second;
@@ -237,8 +205,8 @@ int main(int argc, char** argv)
         double yo = rpy(2);
 
         int N = result.size();
-        BOOST_FOREACH(const KDTreeQ::KDNode* n, result ){
-            Value v = n->valueAs<Value>();
+        BOOST_FOREACH(const NNSearch::KDNode* n, result ){
+            Value v = n->value;
             RPY<> rpyo;
             if(v.second)
                 rpyo = stable[v.first].second;
@@ -297,122 +265,4 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.pose;
-            Vector3D<> n = t3d.R()*Vector3D<>::z();
-            Q key(3, n[0], n[1], n[2]);
-            simnodes.push_back( KDTreeQ::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
-        }
-    }
-    return KDTreeQ::buildTree(simnodes);
-}
-
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.getResult()->objectTtcpLift;
-            //Transform3D<> t3d = target.pose;
-            Vector3D<> p = t3d.P();
-            Vector3D<> n = t3d.R()*Vector3D<>::z();
-            Q key(6, p[0], p[1], p[2], n[0], n[1], n[2]);
-
-            simnodes.push_back( KDTreeQ::KDNode(key, target.getResult()) );
-        }
-    }
-    return KDTreeQ::buildTree(simnodes);
-}
-
-
-
-const Q normalize(const Q& v)
-{
-    double length = v.norm2();
-    if (length != 0)
-        return v/length;
-    else
-        return Q::zero(v.size());
-}
-
-
-Transform3D<> sampleParSurface(double minDist, double maxDist, TriMesh::Ptr mesh, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW){
-    // now we choose a random number in the total area
-    ProximityStrategyData data;
-	data.setCollisionQueryType( CollisionStrategy::AllContacts );
-    bool targetFound = false;
-    Transform3D<> target;
-    do {
-        double rnum = Math::ran(0.0, sAreaSum);
-        int triIds = binSearchRec(rnum, surfaceArea, 0, mesh->size()-1);
-        Triangle<> tri = mesh->getTriangle(triIds);
-
-        // random sample the triangle
-        double b0 = Math::ran();
-        double b1 = ( 1.0f - b0 ) * Math::ran();
-        double b2 = 1 - b0 - b1;
-        Vector3D<> pos = tri[0] * b0 + tri[1] * b1 + tri[2] * b2;
-
-        //double r1 = Math::ran(), r2 = Math::ran();
-        //Vector3D<> pos = (1 - sqrt(r1)) * tri[0] + (sqrt(r1) * (1 - r2)) * tri[1] + (sqrt(r1) * r2) * tri[2];
-
-        Vector3D<> faceNormal = tri.calcFaceNormal();
-        // create orientation that point in the -z-axis direction
-        Vector3D<> tanV = pos-tri[0];
-        if(tanV.norm2()<0.000001)
-            tanV = pos-tri[1];
-        if(tanV.norm2()<0.000001)
-            tanV = pos-tri[2];
-        if(tanV.norm2()<0.000001)
-            continue;
-
-        tanV = normalize(tanV);
-        faceNormal(0) += Math::ran(-0.1,0.1);
-        faceNormal(1) += Math::ran(-0.1,0.1);
-        faceNormal(2) += Math::ran(-0.1,0.1);
-        faceNormal = normalize( faceNormal );
-        Rotation3D<> rot(cross(tanV,-faceNormal), tanV, -faceNormal);
-        Transform3D<> rayTrans( pos+faceNormal, rot );
-        // now we want to find
-        cstrategy->inCollision(object,Transform3D<>::identity(), ray, rayTrans, data);
-        typedef std::pair<int,int> PrimID;
-        BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds){
-            // search for a triangle that has a normal
-            Triangle<> tri = mesh->getTriangle( pid.first );
-            Vector3D<> normal = tri.calcFaceNormal();
-            bool closeAngle = angle(-faceNormal,normal)<20*Deg2Rad;
-            double dist = fabs( dot(faceNormal, tri[0]-pos) );
-            bool closeDist = minDist<dist && dist<maxDist;
-            if(closeAngle && closeDist){
-                targetFound = true;
-                // calculate target
-
-                //target.R() = rot*RPY<>(Math::ran(0.0,Pi), 0, 0).toRotation3D();
-                //target.R() = rot;
-                // the target transform needs to have the z-axis pointing into the x-y-plane
-                // soooo, we first generate some randomness
-                Vector3D<> avgNormal = (-faceNormal+normal)/2.0;
-                Rotation3D<> rot2(cross(tanV,-avgNormal), tanV, -avgNormal);
-                Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
-                // next we rotate z-axis into place
-                trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
-                target.R() = trot;
-
-                graspW = dist;
-                if(dot(tri[0]-pos, -faceNormal)>0)
-                    target.P() = pos-faceNormal*(dist/2.0);
-                else
-                    target.P() = pos+faceNormal*(dist/2.0);
-                break;
-            }
-        }
-    } while( !targetFound );
-    return target;
-}
 

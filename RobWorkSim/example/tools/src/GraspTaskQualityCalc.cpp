@@ -8,8 +8,6 @@
 
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
-#include <rwlibs/algorithms/kdtree/KDTree.hpp>
-#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
 #include <vector>
 #include <rwlibs/task/GraspTask.hpp>
@@ -40,8 +38,12 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
+
+
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
+
+#include "util.hpp"
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -67,14 +69,6 @@ int binSearchRec(const double value, std::vector<double>& surfaceArea, size_t st
 
 Transform3D<> sampleParSurface(double minDist, double maxDist, TriMesh::Ptr mesh, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW);
 
-void moveFrameW(const Transform3D<>& wTtcp, Frame *tcp, MovableFrame* base, State& state){
-    Transform3D<> tcpTbase = Kinematics::frameTframe(tcp, base, state);
-    Transform3D<> wTbase_target = wTtcp * tcpTbase;
-    //base->setTransform(wTbase_target, state);
-    base->moveTo(wTbase_target, state);
-    //std::cout << wTbase_target << std::endl;
-    //std::cout << Kinematics::worldTframe(base, state) << std::endl;
-}
 
 int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubations ){
     int count = 0, succCnt=0, failCnt=0;
@@ -113,9 +107,6 @@ int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubat
     GraspTask::saveRWTask(ngtask, outfile);
     return 0;
 }
-
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes);
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes);
 
 Q calculateQuality(ProximityModel::Ptr object, Device::Ptr gripper, CollisionDetector& detector, CollisionStrategy::Ptr strat, State &state, Q openQ, Q closeQ);
 
@@ -179,21 +170,20 @@ int main(int argc, char** argv)
     // create nodes for all successes
     //std::vector<KDTree<Pose6D<>, 6 >::KDNode> nodes;
 	typedef std::pair<GraspSubTask*, GraspTarget*> Value;
-    std::vector<KDTreeQ::KDNode> nodes;
-    KDTreeQ *nntree = buildKDTree(gtask, nodes);
+    std::vector<GTaskNNSearch::KDNode> nodes;
+    GTaskNNSearch *nntree = buildKDTree_pos_zaxis(gtask, nodes);
 
     // we need some kind of distance metric
     Q diff(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 15*Deg2Rad);
-    std::list<const KDTreeQ::KDNode*> result;
+    std::list<const GTaskNNSearch::KDNode*> result;
     size_t nodeNr=0;
-    BOOST_FOREACH(KDTreeQ::KDNode& node, nodes){
+    BOOST_FOREACH(GTaskNNSearch::KDNode& node, nodes){
         result.clear();
         Q key  = node.key;
         nntree->nnSearchRect(key-diff,key+diff, result);
         size_t nrNeighbors = result.size();
 
-        GraspResult::Ptr gres = node.valueAs<GraspResult::Ptr>();
-
+        GraspResult::Ptr gres = node.value.second->getResult();
         gres->qualityAfterLifting = Q(1, nrNeighbors );
 
         nodeNr++;
@@ -214,46 +204,6 @@ int main(int argc, char** argv)
 }
 
 
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask,  std::vector<KDTreeQ::KDNode>& simnodes) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.pose;
-            Vector3D<> n = t3d.R()*Vector3D<>::z();
-            Q key(3, n[0], n[1], n[2]);
-            simnodes.push_back( KDTreeQ::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
-        }
-    }
-    return KDTreeQ::buildTree(simnodes);
-}
-
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.getResult()->objectTtcpLift;
-            //Transform3D<> t3d = target.pose;
-            Vector3D<> p = t3d.P();
-            Vector3D<> n = t3d.R()*Vector3D<>::z();
-            Q key(6, p[0], p[1], p[2], n[0], n[1], n[2]);
-
-            simnodes.push_back( KDTreeQ::KDNode(key, target.getResult()) );
-        }
-    }
-    return KDTreeQ::buildTree(simnodes);
-}
-
-const Q normalize(const Q& v)
-{
-    double length = v.norm2();
-    if (length != 0)
-        return v/length;
-    else
-        return Q::zero(v.size());
-}
 
 // we need to estimate the quality of a kinematically generated grasp
 // here we try closing the grippers until penetration of SOFT_LAYER_SIZE is reached.

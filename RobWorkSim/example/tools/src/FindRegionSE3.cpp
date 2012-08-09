@@ -45,6 +45,8 @@
 #include <rwlibs/task/GraspTask.hpp>
 #include <iterator>
 
+#include "util.hpp"
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
@@ -79,38 +81,36 @@ variables_map init(int argc, char** argv){
     return vm;
 }
 
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask);
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes);
 
 int main_jaj(int argc, char** argv);
 int main_lpe(int argc, char** argv);
 
-
-
 rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::vector<Transform3D<> >& data, double dist, double angle){
+    typedef boost::tuple<int,int> KDTreeValue; // (transform index, region index)
+    typedef KDTreeQ<KDTreeValue> NNSearch;
 
     // now build a kdtree with all end configurations
-    typedef boost::tuple<int,int> KDTreeValue; // (transform index, region index)
-    std::vector<KDTreeQ::KDNode> nodes;
+
+    std::vector<NNSearch::KDNode> nodes;
     for(size_t i=0;i<data.size();i++){
         Transform3D<> k = data[i];
         EAA<> r( k.R());
         //Vector3D<> r = k.R()*Vector3D<>::z();
         Q key(6, k.P()[0],k.P()[1],k.P()[2], r[0],r[1],r[2]);
-        nodes.push_back(KDTreeQ::KDNode(key, KDTreeValue(i, -1)));
+        nodes.push_back(NNSearch::KDNode(key, KDTreeValue(i, -1)));
     }
 
     std::cout << "Nodes created, building tree.. " << std::endl;
-    KDTreeQ* nntree = KDTreeQ::buildTree(nodes);
+    NNSearch* nntree = NNSearch::buildTree(nodes);
     // todo estimate the average distance between neighbors
     std::cout << "Tree build, finding regions" << std::endl;
     std::map<int, bool > regions;
     int freeRegion = 0;
-    std::list<const KDTreeQ::KDNode*> result;
+    std::list<const NNSearch::KDNode*> result;
     Q diff(6, dist, dist, dist, angle, angle, angle);
     // find neighbors and connect them
-    BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
-        KDTreeValue &val = n.valueAs<KDTreeValue&>();
+    BOOST_FOREACH(NNSearch::KDNode &n, nodes){
+        KDTreeValue &val = n.value;
         // check if the node is allready part of a region
         if(val.get<1>() >=0)
             continue;
@@ -119,8 +119,8 @@ rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::v
         nntree->nnSearchRect(n.key-diff, n.key+diff, result);
         int currentIndex = -1;
         // first see if any has an id
-        BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
-            KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+        BOOST_FOREACH(const NNSearch::KDNode* nn, result){
+            KDTreeValue nnval = nn->value;
             if(nnval.get<1>() >=0){
                 currentIndex = nnval.get<1>();
                 break;
@@ -133,16 +133,16 @@ rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::v
             freeRegion++;
         }
         val.get<1>() = currentIndex;
-        BOOST_FOREACH(const KDTreeQ::KDNode* nn, result){
-            KDTreeValue nnval = nn->valueAs<KDTreeValue>();
+        BOOST_FOREACH(const NNSearch::KDNode* nn, result){
+            KDTreeValue nnval = nn->value;
             if(nnval.get<1>() >=0 && nnval.get<1>()!=currentIndex){
 
                 //std::cout << "Merging regions " << currentIndex << "<--" << nnval.get<1>() << std::endl;
 
                 // merge all previously defined nnval.get<1>() into freeRegion
                 regions[nnval.get<1>()] = false;
-                BOOST_FOREACH(KDTreeQ::KDNode &npro, nodes){
-                    KDTreeValue &npval = npro.valueAs<KDTreeValue&>();
+                BOOST_FOREACH(NNSearch::KDNode &npro, nodes){
+                    KDTreeValue &npval = npro.value;
                     // check if the node is allready part of a region
                     if(npval.get<1>() == nnval.get<1>())
                         npval.get<1>()=currentIndex;
@@ -165,8 +165,8 @@ rw::common::Ptr< std::map<int,std::vector<int> > > calculateRegions(const std::v
     std::cout << "Nr of detected regions: " << validRegions.size() << std::endl;
     std::map<int,std::vector<int> >* statMap = new std::map<int,std::vector<int> >();
 
-    BOOST_FOREACH(KDTreeQ::KDNode &n, nodes){
-        KDTreeValue &val = n.valueAs<KDTreeValue&>();
+    BOOST_FOREACH(NNSearch::KDNode &n, nodes){
+        KDTreeValue &val = n.value;
         // check if the node is allready part of a region
         (*statMap)[val.get<1>()].push_back( val.get<0>() );
     }
@@ -279,6 +279,9 @@ int main(int argc, char** argv){
  */
 int main_lpe(int argc, char** argv)
 {
+    typedef std::pair<GraspSubTask*, GraspTarget*> Value;
+    typedef KDTreeQ<Value> NNSearch;
+
     Math::seed(time(NULL));
     srand ( time(NULL) );
     variables_map vm = init(argc, argv);
@@ -291,21 +294,21 @@ int main_lpe(int argc, char** argv)
     GraspTask::Ptr gtask = GraspTask::load( input );
 
     // first we build a search tree to efficiently search for targets in 6d
-    std::vector<KDTreeQ::KDNode> simnodes;
-    KDTreeQ *nntree = buildKDTree(gtask,simnodes);
+    std::vector<NNSearch::KDNode> simnodes;
+    NNSearch *nntree = buildKDTree_pos_eaa(gtask,simnodes);
 
 
     Q diff(7, 0.01, 0.01, 0.01, angleThres, angleThres, angleThres,angleThres);
-    typedef std::pair<GraspSubTask*, GraspTarget*> Value;
+
     std::vector< Value > selGrasps;
-    std::list<const KDTreeQ::KDNode*> result;
+    std::list<const NNSearch::KDNode*> result;
 
     for(int i=0;i<simnodes.size(); i++){
         // find the node with the highest quality
         double q_max = -100;
-        KDTreeQ::KDNode *n_max = &simnodes[0];
-        BOOST_FOREACH(KDTreeQ::KDNode& n, simnodes){
-            Value &val = n.valueAs<Value&>();
+        NNSearch::KDNode *n_max = &simnodes[0];
+        BOOST_FOREACH(NNSearch::KDNode& n, simnodes){
+            Value &val = n.value;
             if(val.second==NULL)
                 continue;
             if(val.second->getResult()==NULL)
@@ -325,16 +328,16 @@ int main_lpe(int argc, char** argv)
             break;
 
         // add the max node
-        Value &v = n_max->valueAs<Value&>();
+        Value &v = n_max->value;
         selGrasps.push_back( v );
         v.second = NULL;
 
         // use the max node as a sample point and remove all neighboring nodes
         result.clear();
         nntree->nnSearchRect( n_max->key-diff, n_max->key+diff, result);
-        BOOST_FOREACH(const KDTreeQ::KDNode* res_n, result){
-            KDTreeQ::KDNode* r_n = (KDTreeQ::KDNode*) res_n;
-            r_n->valueAs<Value&>().second = NULL;
+        BOOST_FOREACH(const NNSearch::KDNode* res_n, result){
+            NNSearch::KDNode* r_n = (NNSearch::KDNode*) res_n;
+            r_n->value.second = NULL;
         }
     }
     std::cout << "GENRATED: "<< selGrasps.size() << " from " << simnodes.size() << std::endl;
@@ -359,6 +362,9 @@ int main_lpe(int argc, char** argv)
  */
 int main_jaj(int argc, char** argv)
 {
+    typedef std::pair<GraspSubTask*, GraspTarget*> Value;
+    typedef KDTreeQ<Value> NNSearch;
+
     Math::seed(time(NULL));
     srand ( time(NULL) );
     variables_map vm = init(argc, argv);
@@ -371,14 +377,14 @@ int main_jaj(int argc, char** argv)
 	GraspTask::Ptr gtask = GraspTask::load( input );
 
 	// first we build a search tree to efficiently search for targets orientet in a certain direction
-	KDTreeQ *nntree_normal = buildKDTree_normal(gtask);
+	NNSearch *nntree_normal = buildKDTree_eaa(gtask);
 
 	// now we sample the normals with random orientations
 	Q diff(4, angleThres, angleThres, angleThres, angleThres);
 	typedef std::pair<GraspSubTask*, GraspTarget*> Value;
 
 	std::vector< Value > selGrasps;
-	std::list<const KDTreeQ::KDNode*> result;
+	std::list<const NNSearch::KDNode*> result;
 	int samples_f = 0, samples_t = 0;
 	while(selGrasps.size()<count){
         result.clear();
@@ -394,12 +400,12 @@ int main_jaj(int argc, char** argv)
         int idx = Math::ranI(0,result.size());
         if(idx == result.size())
             idx--;
-        std::list<const KDTreeQ::KDNode*>::iterator i = result.begin();
+        std::list<const NNSearch::KDNode*>::iterator i = result.begin();
         //std::cout << idx << "==" <<  result.size() << std::endl;
         if(idx>0)
             std::advance(i, idx);
-        const KDTreeQ::KDNode* node = *i;
-        Value v = node->valueAs<Value>();
+        const NNSearch::KDNode* node = *i;
+        Value v = node->value;
         selGrasps.push_back( v );
         std::cout << result.size() << "    \r" << std::flush;
 	}
@@ -420,39 +426,4 @@ int main_jaj(int argc, char** argv)
 	return 0;
 }
 
-
-KDTreeQ* buildKDTree_normal(GraspTask::Ptr gtask) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-    std::vector<KDTreeQ::KDNode> *simnodes = new std::vector<KDTreeQ::KDNode>();
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.pose;
-            //Vector3D<> n = t3d.R()*Vector3D<>::z();
-            EAA<> eaa( t3d.R() );
-            Vector3D<> n = eaa.axis();
-            Q key(4, n[0], n[1], n[2], eaa.angle());
-            simnodes->push_back( KDTreeQ::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
-        }
-    }
-    return KDTreeQ::buildTree(*simnodes);
-}
-
-KDTreeQ* buildKDTree(GraspTask::Ptr gtask, std::vector<KDTreeQ::KDNode>& simnodes) {
-    // we need the simulated grasps to attach a quality to the experiments
-    // first we build a NN-structure for efficient nearest neighbor search
-    BOOST_FOREACH(GraspSubTask& stask, gtask->getSubTasks()){
-        BOOST_FOREACH(GraspTarget& target,stask.targets ){
-            Transform3D<> t3d = target.pose;
-            Vector3D<> p = t3d.P();
-            //Vector3D<> n = t3d.R()*Vector3D<>::z();
-            EAA<> eaa( t3d.R() );
-            Vector3D<> n = eaa.axis();
-
-            Q key(7, p[0], p[1], p[2], n[0], n[1], n[2], eaa.angle() );
-            simnodes.push_back( KDTreeQ::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
-        }
-    }
-    return KDTreeQ::buildTree(simnodes);
-}
 
