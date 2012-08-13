@@ -62,7 +62,7 @@ namespace rwlibs { namespace simulation {
 
         /**
          * @brief returns the width of the image
-         * @return the height of the image
+         * @return the width of the image
          */
         int getWidth() { return _img->getWidth(); }
 

@@ -111,6 +111,24 @@ namespace rwlibs { namespace simulation {
          */
         void setNoiseEnabled(bool enabled){ _noiseEnabled = enabled; };
 
+        /**
+         * @brief returns the vertical field of view
+         * @return the vertical field of view
+         */
+        double getVerticalFieldOfView() { return _fieldOfView;}
+
+        /**
+         * @brief returns the width of the image
+         * @return the width of the image
+         */
+        int getWidth() { return _width; }
+
+        /**
+         * @brief returns the height of the image
+         * @return the height of the image
+         */
+        int getHeight() { return _height; }
+
     private:
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned, _noiseEnabled;
