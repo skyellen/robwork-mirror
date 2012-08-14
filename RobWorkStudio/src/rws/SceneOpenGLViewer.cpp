@@ -64,6 +64,8 @@ namespace
          */
         void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
 
+            //glDisable(GL_TEXTURE_2D);
+
             glPushMatrix();
             glLoadIdentity();
 
@@ -74,8 +76,7 @@ namespace
             //glMaterialfv(matRendering, GL_EMISSION, matEmission);
             //glMateriali(matRendering, GL_SHININESS, 128);
 
-
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glPolygonMode(GL_FRONT, GL_FILL);
             glBegin(GL_QUADS);
             glColor4fv(_colorBottom);
             glVertex2f(_x, _y);
@@ -86,6 +87,7 @@ namespace
             glEnd();
 
             glPopMatrix();
+            //glEnable(GL_TEXTURE_2D);
         }
 
         void setTopColor(const Vector3D<>& color){
@@ -444,7 +446,7 @@ void SceneOpenGLViewer::initializeGL()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
 
     if( _pmap->getValue().add<bool>("GL_LIGHTING","",true)->getValue() )
         glEnable( GL_LIGHTING );
