@@ -155,7 +155,7 @@ void RWGLTexture::init(const rw::sensor::Image& img){
 
      Image::Ptr flippedImg = img.copyFlip(true,false);
      const char *flippedData = flippedImg->getImageData();
-     std::cout << "loading texture!!!!!! " << std::endl;
+     //std::cout << "loading texture!!!!!! " << std::endl;
      // Generate the mipmaps
      gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels,
                       _width, _height,

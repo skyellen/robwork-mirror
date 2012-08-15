@@ -114,6 +114,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
             useMaterial( _model->_materials[data.matId], type, alpha);
 
             if (obj.hasTexture()){
+                glEnable(GL_TEXTURE_2D);
                 
                 if(obj._mappedToFaces){
                     glBegin(GL_TRIANGLES);
@@ -156,7 +157,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
 
 
                 }
-                
+                glDisable(GL_TEXTURE_2D);
             } else {
                 glBegin(GL_TRIANGLES);
                 for(int i=data.startIdx; i<data.startIdx+data.size; i++){
@@ -199,7 +200,6 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
     //if (obj.hasTexture()){
         //glBindTexture(GL_TEXTURE_2D, 0 );
         //glDisable(GL_TEXTURE_2D);
-
     //}
     glPopMatrix();
 }
@@ -214,6 +214,7 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 
 		// Enable texture coordiantes, ngetormals, and vertices arrays
 		if (obj.hasTexture()){
+		    glEnable(GL_TEXTURE_2D);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		//if (lit)
@@ -248,6 +249,10 @@ void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const 
 				GL_UNSIGNED_SHORT,
 				&(obj._faces.at(data.startIdx)));
 
+		}
+
+		if (obj.hasTexture()){
+		    glDisable(GL_TEXTURE_2D);
 		}
 	}
 	// TODO: make sure polygons are allso drawn
@@ -309,7 +314,7 @@ void RenderModel3D::useMaterial(const Model3D::Material& mat, DrawType type, dou
 
     //std::cout << mat.name << std::endl;
 	if(mat.simplergb){
-		glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
+		//glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
 	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat.specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, &mat.shininess);
