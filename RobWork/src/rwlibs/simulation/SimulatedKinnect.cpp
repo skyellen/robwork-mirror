@@ -60,7 +60,7 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name, rw::kinematics::Fram
 		_noiseEnabled(true),
 		_frameRate(1),
         _dtsum(0),
-        _near(0.7),
+        _near(0.01),
         _far(6),
         _fieldOfView(43),
         _grabSingleFrame(false),
