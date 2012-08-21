@@ -18,7 +18,10 @@ public:
 
     // writing primitives to archive
     virtual void write(bool val, const std::string& id) = 0;
+
     virtual void write(int val, const std::string& id) = 0;
+    virtual void write(unsigned int val, const std::string& id){ write((int)val,id); }
+
     virtual void write(boost::uint64_t val, const std::string& id) = 0;
     virtual void write(double val, const std::string& id) = 0;
     virtual void write(const std::string&  val, const std::string& id) = 0;
