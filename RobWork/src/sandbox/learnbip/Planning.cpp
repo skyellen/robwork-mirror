@@ -34,7 +34,8 @@ Planning::Planning(WorkCell::Ptr wc, Device::Ptr device, Device::Ptr gripper, Fr
 	_gripper(gripper),
 	_gripperBase(wc->findFrame<MovableFrame>(gripper->getBase()->getName())),
 	_objectFrame(objectFrame),
-	_targetTtcp(inverse(tcpTgoal))
+	_targetTtcp(inverse(tcpTgoal)),
+	_strategy(RANDOM)
 {
 	_detector = ownedPtr(new CollisionDetector(wc,ProximityStrategyFactory::makeDefaultCollisionStrategy()));
 	_metric = MetricFactory::makeEuclidean<Q>();
@@ -42,6 +43,10 @@ Planning::Planning(WorkCell::Ptr wc, Device::Ptr device, Device::Ptr gripper, Fr
 }
 
 Planning::~Planning() {
+}
+
+void Planning::setStrategy(Strategy strategy) {
+	_strategy = strategy;
 }
 
 bool Planning::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, const State &state) const {
@@ -75,6 +80,10 @@ bool Planning::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, cons
 		return false;
 }
 
+bool Planning::compFct(std::pair<unsigned int,double> i,std::pair<unsigned int,double> j) {
+	return i.second > j.second;
+}
+
 bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state) const {
 	if (_detector->inCollision(state))
 		return false;
@@ -84,7 +93,47 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state) 
 	std::vector<unsigned int> ind;
 	for (unsigned int i = 0; i < tasks.size(); i++)
 		ind.push_back(i);
-	std::random_shuffle(ind.begin(),ind.end());
+	if (_strategy == RANDOM) {
+		std::random_shuffle(ind.begin(),ind.end());
+	} else if (_strategy == BEST) {
+		// Order after quality descending
+		std::vector<std::pair<unsigned int,double> > sortList;
+		for (unsigned int i = 0; i < ind.size(); i++) {
+			std::pair<unsigned int,double> pair;
+			pair.first = ind[i];
+			pair.second = tasks[i].targets[0].result->qualityAfterLifting[0];
+			sortList.push_back(pair);
+		}
+		std::sort(sortList.begin(),sortList.end(),Planning::compFct);
+		// Create vector of ids for each different quality
+		std::vector<std::pair<double,std::vector<unsigned int> > > list;
+		double lastQual = -100;
+		for (unsigned int i = 0; i < sortList.size(); i++) {
+			unsigned int id = sortList[i].first;
+			double qual = sortList[i].second;
+			if (qual!=lastQual) {
+				std::pair<double,std::vector<unsigned int> > pair;
+				pair.first = qual;
+				std::vector<unsigned int> vec;
+				pair.second = vec;
+				list.push_back(pair);
+				lastQual = qual;
+			}
+			list[list.size()-1].second.push_back(id);
+		}
+		// Randomize ids
+		for (unsigned int i = 0; i < list.size(); i++) {
+			std::random_shuffle(list[i].second.begin(),list[i].second.end());
+		}
+		// Linearize list
+		ind.clear();
+		for (unsigned int i = 0; i < list.size(); i++) {
+			std::vector<unsigned int> ids = list[i].second;
+			for (unsigned int j = 0; j < ids.size(); j++) {
+				ind.push_back(ids[j]);
+			}
+		}
+	}
 
 	Transform3D<> baseTobject = Kinematics::frameTframe(_device->getBase(),_objectFrame,state);
 	for (std::vector<unsigned int>::iterator it = ind.begin(); it != ind.end(); it++) {
@@ -114,6 +163,31 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, con
 	res.first = id;
 	res.second = path;
 	return path.size() > 0;
+}
+
+QPath Planning::getPath(const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const {
+	QPath res;
+
+	State fromState = state;
+	_device->setQ(qTo,fromState);
+	State toState = state;
+	_device->setQ(qTo,toState);
+	if (_detector->inCollision(fromState))
+		return res;
+	if (_detector->inCollision(toState))
+		return res;
+
+	QPath path;
+	PlannerConstraint constraint = PlannerConstraint::make(_detector,_device,state);
+	QSampler::Ptr sampler = QSampler::makeConstrained(QSampler::makeUniform(_device),constraint.getQConstraintPtr());
+	QToQPlanner::Ptr planner = RRTQToQPlanner::makeConnect(constraint,sampler,_metric,0.1);
+
+	if (planner->query(qFrom,qTo,path,10.)) {
+		PathLengthOptimizer optimizer(constraint, _metric);
+		res = optimizer.pathPruning(path);
+	}
+
+	return res;
 }
 
 QPath Planning::getPath(const Transform3D<> pose, const Q gripper, const State &state) const {
