@@ -24,27 +24,33 @@
 
 class Planning {
 public:
+	static const double APPROACH_LENGTH = 0.1;
+
 	Planning(rw::models::WorkCell::Ptr wc, rw::models::Device::Ptr device, rw::models::Device::Ptr gripper, rw::kinematics::Frame* objectFrame, const rw::math::Transform3D<> tcpTtarget, GraspDB::Ptr db);
 	virtual ~Planning();
 
 	// Plan path from current state to given pose and gripper-configuration
 	rw::trajectory::QPath getPath(const rw::math::Transform3D<> pose, const rw::math::Q gripper, const rw::kinematics::State &state) const;
-	// Plan path between two configurations.,Gripper configuration remains the same.
+	// Plan path between two configurations. Gripper configuration remains the same.
 	rw::trajectory::QPath getPath(const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const;
-	// Given current state plan path to most suitable grasp in database
-	bool getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, const rw::kinematics::State &state) const;
-	// Given current state plan path to specific grasp in database
-	bool getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, unsigned int id, const rw::kinematics::State &state) const;
+	// Given current state plan path to most suitable grasp in database. Uses via point if approach is larger than 0.
+	bool getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, const rw::kinematics::State &state, double approach = -1.) const;
+	// Given current state plan path to specific grasp in database. Uses via point if approach is larger than 0.
+	bool getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, unsigned int id, const rw::kinematics::State &state, double approach = -1.) const;
+
+	/*
+	 * Inverse Kinematics. Multiple solutions are ordered from low to higher distance from current state.
+	 */
+	bool inverseKin(std::vector<rw::math::Q>& sol, const rw::math::Transform3D<> &target, const rw::kinematics::State &state) const;
 
 	enum Strategy {
 		RANDOM,
-		BEST
+		BEST_QUALITY
 	};
 
 	void setStrategy(Strategy strategy);
 
 private:
-	bool inverseKin(std::vector<rw::math::Q>& sol, const rw::math::Transform3D<> &target, const rw::kinematics::State &state) const;
 	static bool compFct(std::pair<unsigned int,double> i,std::pair<unsigned int,double> j);
 
 	GraspDB::Ptr _db;

@@ -84,7 +84,7 @@ bool Planning::compFct(std::pair<unsigned int,double> i,std::pair<unsigned int,d
 	return i.second > j.second;
 }
 
-bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state) const {
+bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, double approach) const {
 	if (_detector->inCollision(state))
 		return false;
 
@@ -95,7 +95,7 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state) 
 		ind.push_back(i);
 	if (_strategy == RANDOM) {
 		std::random_shuffle(ind.begin(),ind.end());
-	} else if (_strategy == BEST) {
+	} else if (_strategy == BEST_QUALITY) {
 		// Order after quality descending
 		std::vector<std::pair<unsigned int,double> > sortList;
 		for (unsigned int i = 0; i < ind.size(); i++) {
@@ -139,18 +139,44 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state) 
 	for (std::vector<unsigned int>::iterator it = ind.begin(); it != ind.end(); it++) {
 		GraspSubTask task = tasks[*it];
 		Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
-		QPath path = getPath(target, task.getOpenQ(), state);
-		if (path.size() > 0) {
-			res.first = *it;
-			res.second = path;
-			return true;
+
+		if (approach > 0.) {
+			Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
+			Transform3D<> approachTarget(approachPos,target.R());
+			QPath pathA = getPath(approachTarget, task.getOpenQ(), state);
+			if (pathA.size() > 0) {
+				State approachState = state;
+				_device->setQ(pathA[pathA.size()-1],approachState);
+				QPath pathB = getPath(target, task.getOpenQ(), approachState);
+				if (pathB.size() > 0) {
+					res.first = *it;
+					QPath comb;
+					for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
+						comb.push_back(*itA);
+					bool first = true;
+					for (QPath::iterator itB = pathB.begin(); itB != pathB.end(); itB++) {
+						if (!first)
+							comb.push_back(*itB);
+						first = false;
+					}
+					res.second = comb;
+					return true;
+				}
+			}
+		} else {
+			QPath path = getPath(target, task.getOpenQ(), state);
+			if (path.size() > 0) {
+				res.first = *it;
+				res.second = path;
+				return true;
+			}
 		}
 	}
 
 	return false;
 }
 
-bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, const State &state) const {
+bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, const State &state, double approach) const {
 	if (_detector->inCollision(state))
 		return false;
 
@@ -159,10 +185,36 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, con
 	Transform3D<> baseTobject = Kinematics::frameTframe(_device->getBase(),_objectFrame,state);
 	Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
 
-	QPath path = getPath(target,task.getOpenQ(),state);
-	res.first = id;
-	res.second = path;
-	return path.size() > 0;
+	if (approach > 0.) {
+		Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
+		Transform3D<> approachTarget(approachPos,target.R());
+		QPath pathA = getPath(approachTarget, task.getOpenQ(), state);
+		if (pathA.size() > 0) {
+			State approachState = state;
+			_device->setQ(pathA[pathA.size()-1],approachState);
+			QPath pathB = getPath(target, task.getOpenQ(), approachState);
+			if (pathB.size() > 0) {
+				res.first = id;
+				QPath comb;
+				for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
+					comb.push_back(*itA);
+				bool first = true;
+				for (QPath::iterator itB = pathB.begin(); itB != pathB.end(); itB++) {
+					if (!first)
+						comb.push_back(*itB);
+					first = false;
+				}
+				res.second = comb;
+				return true;
+			}
+		}
+		return false;
+	} else {
+		QPath path = getPath(target,task.getOpenQ(),state);
+		res.first = id;
+		res.second = path;
+		return path.size() > 0;
+	}
 }
 
 QPath Planning::getPath(const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const {
