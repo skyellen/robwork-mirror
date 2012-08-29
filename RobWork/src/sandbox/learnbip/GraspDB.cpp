@@ -224,12 +224,12 @@ GraspTask::Ptr GraspDB::loadSymmetricTasks(const std::string &filename) {
 			sym = true;
 		}
 	}
-	GraspTask gtask = *task;
-	gtask.getSubTasks().clear();
+	GraspTask::Ptr gtask = ownedPtr( new GraspTask(*task) );
+	gtask->getSubTasks().clear();
 	BOOST_FOREACH (GraspSubTask stask, task->getSubTasks()) {
 		int status = stask.getTargets()[0].result->testStatus;
 		if (status == GraspTask::Success || status == GraspTask::ObjectSlipped) {
-			gtask.addSubTask(stask);
+			gtask->addSubTask(stask);
 			if (sym) {
 				GraspSubTask stask2 = stask;
 				stask2.targets.clear();
@@ -239,11 +239,11 @@ GraspTask::Ptr GraspDB::loadSymmetricTasks(const std::string &filename) {
 				gtarget.pose = opTarget;
 				stask2.targets.push_back( gtarget );
 				stask2 = switchFingers(stask2);
-				gtask.addSubTask(stask2);
+				gtask->addSubTask(stask2);
 			}
 		}
 	}
-	return task;
+	return gtask;
 }
 
 GraspSubTask GraspDB::switchFingers(const GraspSubTask &task) {
