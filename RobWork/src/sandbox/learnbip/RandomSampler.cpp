@@ -18,9 +18,10 @@ using namespace rw::pathplanning;
 using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
-RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device):
+RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, const Transform3D<> endTtcp):
 	_wc(wc),
-	_device(device)
+	_device(device),
+	_tcpTend(inverse(endTtcp))
 {
 	_iksolver = new ClosedFormURSolver(_device,wc->getDefaultState());
 	_detector = new CollisionDetector(wc,ProximityStrategyFactory::makeDefaultCollisionStrategy());
@@ -51,7 +52,7 @@ Q RandomSampler::doSample() {
 			rot = Math::ranRotation3D<double>();
 			resample &= dot(rot*Vector3D<>::z(),wTbase.R()*Vector3D<>::z()) > -0.5;
 		}
-		Transform3D<> t = wTbase*Transform3D<>(pos,rot);
+		Transform3D<> t = wTbase*Transform3D<>(pos,rot)*_tcpTend;
 		inverseOK = inverseKin(res,t,_wc->getDefaultState());
 	}
 	return res[0];
