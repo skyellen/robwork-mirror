@@ -46,6 +46,15 @@ rwlibs::task::CartesianTask::Ptr Experiments::toCartesianTask(){
         	experiment->getPropertyMap().set<Transform3D<> >("ObjectTtcpLift",		exp.objectTtcpLift);
         if(!(exp.objectTtcpRelease.equal( Transform3D<>::identity() ) ) )
         	experiment->getPropertyMap().set<Transform3D<> >("ObjectTtcpRelease",	exp.objectTtcpRelease);
+
+        if(exp.mark!=-1)
+        	experiment->getPropertyMap().set<int>("Mark", exp.mark);
+        if(exp.poseEstimateError!=-1)
+        	experiment->getPropertyMap().set<double>("PoseEstimateError", exp.poseEstimateError);
+        if(exp.inlierFraction!=-1)
+        	experiment->getPropertyMap().set<double>("InlierFraction", exp.inlierFraction);
+        if(exp.temperature.size() > 0)
+        	experiment->getPropertyMap().set<std::vector<int> >("Temperature", exp.temperature);
     }
 
     return root;
@@ -100,5 +109,10 @@ Experiments::Experiments(rwlibs::task::CartesianTask::Ptr experiments){
         _experiments[i].objectTtcpGrasp		= experiment->getPropertyMap().get<Transform3D<> >("ObjectTtcpGrasp",Transform3D<>::identity());
         _experiments[i].objectTtcpLift		= experiment->getPropertyMap().get<Transform3D<> >("ObjectTtcpLift",Transform3D<>::identity());
         _experiments[i].objectTtcpRelease	= experiment->getPropertyMap().get<Transform3D<> >("ObjectTtcpRelease",Transform3D<>::identity());
+
+        _experiments[i].mark				= experiment->getPropertyMap().get<int>("Mark",-1);
+        _experiments[i].poseEstimateError	= experiment->getPropertyMap().get<double>("PoseEstimateError",-1);
+        _experiments[i].inlierFraction		= experiment->getPropertyMap().get<double>("InlierFraction",-1);
+        _experiments[i].temperature			= experiment->getPropertyMap().get<std::vector<int> >("Temperature",std::vector<int>());
     }
 }

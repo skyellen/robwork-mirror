@@ -49,11 +49,13 @@ void Planning::setStrategy(Strategy strategy) {
 	_strategy = strategy;
 }
 
-bool Planning::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, const State &state) const {
+Planning::Status Planning::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, const State &state) const {
 	PlannerConstraint constraint = PlannerConstraint::make(_detector,_device,state);
 
 	Q curQ = _device->getQ(state);
 	std::vector<Q> solutions = _iksolver->solve(target,state);
+	if (solutions.size() <= 0)
+		return INVKIN_FAIL;
 	while(solutions.size() > 0) {
 		std::vector<Q>::iterator bestSolution;
 		double bestDist = -1;
@@ -75,20 +77,22 @@ bool Planning::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, cons
 		solutions.erase(bestSolution);
 	}
 	if (sol.size()>0)
-		return true;
+		return SUCCESS;
 	else
-		return false;
+		return COLLISION;
 }
 
 bool Planning::compFct(std::pair<unsigned int,double> i,std::pair<unsigned int,double> j) {
 	return i.second > j.second;
 }
 
-bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, double approach) const {
+Planning::Status Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, double approach) const {
 	if (_detector->inCollision(state))
-		return false;
+		return COLLISION_INITIALLY;
 
 	const std::vector<GraspSubTask> tasks = _db->getTasks();
+	if (tasks.size() <= 0)
+		return NO_TASK;
 
 	std::vector<unsigned int> ind;
 	for (unsigned int i = 0; i < tasks.size(); i++)
@@ -140,15 +144,18 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, 
 		GraspSubTask task = tasks[*it];
 		Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
 
+		Planning::Status status;
 		if (approach > 0.) {
 			Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
 			Transform3D<> approachTarget(approachPos,target.R());
-			QPath pathA = getPath(approachTarget, task.getOpenQ(), state);
-			if (pathA.size() > 0) {
+			QPath pathA;
+			status = getPath(pathA, approachTarget, task.getOpenQ(), state);
+			if (status == SUCCESS) {
 				State approachState = state;
 				_device->setQ(pathA[pathA.size()-1],approachState);
-				QPath pathB = getPath(target, task.getOpenQ(), approachState);
-				if (pathB.size() > 0) {
+				QPath pathB;
+				status = getPath(pathB, target, task.getOpenQ(), approachState);
+				if (status == SUCCESS) {
 					res.first = *it;
 					QPath comb;
 					for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
@@ -160,40 +167,47 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, 
 						first = false;
 					}
 					res.second = comb;
-					return true;
+					return SUCCESS;
 				}
 			}
 		} else {
-			QPath path = getPath(target, task.getOpenQ(), state);
-			if (path.size() > 0) {
+			QPath path;
+			status = getPath(path, target, task.getOpenQ(), state);
+			if (status == SUCCESS) {
 				res.first = *it;
 				res.second = path;
-				return true;
+				return SUCCESS;
 			}
 		}
 	}
 
-	return false;
+	return NO_PATH_FOUND;
 }
 
-bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, const State &state, double approach) const {
+Planning::Status Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, const State &state, double approach) const {
 	if (_detector->inCollision(state))
-		return false;
+		return COLLISION_INITIALLY;
 
-	GraspSubTask task = _db->getTasks()[id];
+	std::vector<GraspSubTask> tasks = _db->getTasks();
+	if (id >= tasks.size())
+		return NO_TASK;
+	GraspSubTask task = tasks[id];
 
 	Transform3D<> baseTobject = Kinematics::frameTframe(_device->getBase(),_objectFrame,state);
 	Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
 
+	Planning::Status status;
 	if (approach > 0.) {
 		Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
 		Transform3D<> approachTarget(approachPos,target.R());
-		QPath pathA = getPath(approachTarget, task.getOpenQ(), state);
-		if (pathA.size() > 0) {
+		QPath pathA;
+		status = getPath(pathA, approachTarget, task.getOpenQ(), state);
+		if (status == SUCCESS) {
 			State approachState = state;
 			_device->setQ(pathA[pathA.size()-1],approachState);
-			QPath pathB = getPath(target, task.getOpenQ(), approachState);
-			if (pathB.size() > 0) {
+			QPath pathB;
+			status = getPath(pathB, target, task.getOpenQ(), approachState);
+			if (status == SUCCESS) {
 				res.first = id;
 				QPath comb;
 				for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
@@ -205,29 +219,31 @@ bool Planning::getPath(std::pair<unsigned int, QPath> &res, unsigned int id, con
 					first = false;
 				}
 				res.second = comb;
-				return true;
+				return SUCCESS;
 			}
 		}
-		return false;
 	} else {
-		QPath path = getPath(target,task.getOpenQ(),state);
-		res.first = id;
-		res.second = path;
-		return path.size() > 0;
+		QPath path;
+		status = getPath(path, target,task.getOpenQ(),state);
+		if (status == SUCCESS) {
+			res.first = id;
+			res.second = path;
+			return SUCCESS;
+		}
 	}
+
+	return NO_PATH_FOUND;
 }
 
-QPath Planning::getPath(const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const {
-	QPath res;
-
+Planning::Status Planning::getPath(QPath &res, const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const {
 	State fromState = state;
 	_device->setQ(qTo,fromState);
 	State toState = state;
 	_device->setQ(qTo,toState);
 	if (_detector->inCollision(fromState))
-		return res;
+		return COLLISION_INITIALLY;
 	if (_detector->inCollision(toState))
-		return res;
+		return COLLISION_END;
 
 	QPath path;
 	PlannerConstraint constraint = PlannerConstraint::make(_detector,_device,state);
@@ -236,19 +252,23 @@ QPath Planning::getPath(const rw::math::Q qTo, const rw::math::Q qFrom, const rw
 
 	if (planner->query(qFrom,qTo,path,10.)) {
 		PathLengthOptimizer optimizer(constraint, _metric);
-		res = optimizer.pathPruning(path);
+		path = optimizer.pathPruning(path);
+		res.clear();
+		for (unsigned int i = 0; i < path.size(); i++) {
+			res.push_back(path[i]);
+		}
+		return SUCCESS;
+	} else {
+		return NO_PATH_FOUND;
 	}
-
-	return res;
 }
 
-QPath Planning::getPath(const Transform3D<> pose, const Q gripper, const State &state) const {
-	QPath res;
+Planning::Status Planning::getPath(QPath &res, const Transform3D<> pose, const Q gripper, const State &state) const {
 	std::string deviceName = _device->getName();
 	std::string gripperName = _gripper->getName();
 
 	if (_detector->inCollision(state))
-		return res;
+		return COLLISION_INITIALLY;
 
 	State gripState(state);
 	_gripperBase->moveTo(pose,gripState);
@@ -266,12 +286,16 @@ QPath Planning::getPath(const Transform3D<> pose, const Q gripper, const State &
 			handColl = true;
 	}
 	delete query;
-	if (!handColl) {
+	if (handColl) {
+		return COLLISION_END;
+	} else {
 		std::vector<Q> qs;
 		State invState = state;
 		_gripper->setQ(gripper,invState);
-		bool invKinSuc = inverseKin(qs,pose,invState);
-		if (invKinSuc) {
+		Planning::Status invKinSuc = inverseKin(qs,pose,invState);
+		if (invKinSuc != SUCCESS)
+			return INVKIN_FAIL;
+		else {
 			for (unsigned int i = 0; i < qs.size(); i++) {
 				State tempState(state);
 				_gripper->setQ(gripper,tempState);
@@ -287,13 +311,16 @@ QPath Planning::getPath(const Transform3D<> pose, const Q gripper, const State &
 					if (planner->query(start,end,path,10.)) {
 						PathLengthOptimizer optimizer(constraint, _metric);
 						path = optimizer.pathPruning(path);
-						res = path;
-						return res;
+						res.clear();
+						for (unsigned int i = 0; i < path.size(); i++) {
+							res.push_back(path[i]);
+						}
+						return SUCCESS;
 					}
 				}
 			}
 		}
 	}
 
-	return res;
+	return NO_PATH_FOUND;
 }

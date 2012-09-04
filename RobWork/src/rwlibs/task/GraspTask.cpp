@@ -48,6 +48,7 @@ namespace {
             case(GraspTask::SimulationFailure): out << "SIMULATIONFAILURE"; break;
             case(GraspTask::CollisionObjectInitially): out << "COLLISIONOBJECT"; break;
             case(GraspTask::CollisionEnvironmentInitially): out << "COLLISIONENV"; break;
+            case(GraspTask::CollisionDuringExecution): out << "COLLISIONEXE"; break;
             default:
                 RW_THROW("Not supposed to go here!");
                 break;
@@ -558,6 +559,8 @@ namespace {
                         status = GraspTask::PoseEstimateFailure;
                     } else if(cause=="INVKINFAILURE"){
                         status = GraspTask::InvKinFailure;
+                    } else if(cause=="COLLISIONEXE"){
+                        status = GraspTask::CollisionDuringExecution;
                     }
                 } else {
                     qualities.push_back(0.0);

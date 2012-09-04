@@ -45,6 +45,7 @@ public:
         CollisionFiltered,
         CollisionObjectInitially,
         CollisionEnvironmentInitially,
+        CollisionDuringExecution,
         SizeOfStatusArray
      } TestStatus;
 
@@ -93,6 +94,7 @@ public:
                                         "CollisionFiltered",
                                         "CollisionObjectInitially",
                                         "CollisionEnvironmentInitially",
+                                        "CollisionDuringExecution",
                                         "SizeOfStatusArray"};
         return strArr[status];
     }

@@ -53,6 +53,11 @@ struct Experiment {
     rw::math::Transform3D<> objectTtcpGrasp;
     rw::math::Transform3D<> objectTtcpLift;
     rw::math::Transform3D<> objectTtcpRelease;
+
+    int mark;
+    double poseEstimateError;
+    double inlierFraction;
+    std::vector<int> temperature;
 };
 
 #endif /* EXPERIMENTS_HPP_ */
