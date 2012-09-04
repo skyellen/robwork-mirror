@@ -66,6 +66,6 @@ target_link_libraries(lua lua51)
 add_executable(luac src/luac.cpp)
 target_link_libraries(luac lua51)
 
-INSTALL(TARGETS lua luac DESTINATION ${BIN_INSTALL_DIR})
+INSTALL(TARGETS lua luac DESTINATION ${RW_INSTALL_DIR}/bin)
 INSTALL(TARGETS lua51 DESTINATION ${LIB_INSTALL_DIR})
 INSTALL(FILES ${LUA_HPP_FILES} DESTINATION "${INCLUDE_INSTALL_DIR}/ext/lua/")
