@@ -57,7 +57,7 @@ struct Experiment {
     int mark;
     double poseEstimateError;
     double inlierFraction;
-    std::vector<int> temperature;
+    std::vector<double> temperature;
 };
 
 #endif /* EXPERIMENTS_HPP_ */

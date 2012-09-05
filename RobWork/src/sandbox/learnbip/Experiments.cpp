@@ -54,7 +54,7 @@ rwlibs::task::CartesianTask::Ptr Experiments::toCartesianTask(){
         if(exp.inlierFraction!=-1)
         	experiment->getPropertyMap().set<double>("InlierFraction", exp.inlierFraction);
         if(exp.temperature.size() > 0)
-        	experiment->getPropertyMap().set<std::vector<int> >("Temperature", exp.temperature);
+        	experiment->getPropertyMap().set<std::vector<double> >("Temperature", exp.temperature);
     }
 
     return root;
@@ -113,6 +113,6 @@ Experiments::Experiments(rwlibs::task::CartesianTask::Ptr experiments){
         _experiments[i].mark				= experiment->getPropertyMap().get<int>("Mark",-1);
         _experiments[i].poseEstimateError	= experiment->getPropertyMap().get<double>("PoseEstimateError",-1);
         _experiments[i].inlierFraction		= experiment->getPropertyMap().get<double>("InlierFraction",-1);
-        _experiments[i].temperature			= experiment->getPropertyMap().get<std::vector<int> >("Temperature",std::vector<int>());
+        _experiments[i].temperature			= experiment->getPropertyMap().get<std::vector<double> >("Temperature",std::vector<int>());
     }
 }
