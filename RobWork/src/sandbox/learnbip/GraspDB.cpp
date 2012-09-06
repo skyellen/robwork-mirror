@@ -78,7 +78,9 @@ void GraspDB::addResult(const Experiment result) {
 	boost::mutex::scoped_lock lock(_mutex);
 	_result[ind/2][status]++;
 	_counter[status]++;
-	_experiments->addExperiment(result);
+	Experiment fixIDExp = result;
+	fixIDExp.id = ind/2;
+	_experiments->addExperiment(fixIDExp);
 }
 
 void GraspDB::addGeneralResult(const Experiment result) {
