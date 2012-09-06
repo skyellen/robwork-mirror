@@ -18,13 +18,19 @@ using namespace rw::pathplanning;
 using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
-RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, const Transform3D<> endTtcp):
+RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, const Transform3D<> endTtcp, Pair radius, Pair x, Pair y, double height, double angle, double maxangleZ):
 	_wc(wc),
 	_device(device),
 	_tcpTend(inverse(endTtcp))
 {
 	_iksolver = new ClosedFormURSolver(_device,wc->getDefaultState());
 	_detector = new CollisionDetector(wc,ProximityStrategyFactory::makeDefaultCollisionStrategy());
+	_radius = radius;
+	_x = x;
+	_y = y;
+	_height = height;
+	_angle = angle;
+	_cosanglez = cos(maxangleZ);
 }
 
 RandomSampler::~RandomSampler() {
@@ -39,18 +45,19 @@ Q RandomSampler::doSample() {
 		Frame* base = _device->getBase();
 		Transform3D<> wTbase = Kinematics::worldTframe(base,_wc->getDefaultState());
 		bool resample = true;
+		Rotation3D<> rota = RPY<>(_angle,0,0).toRotation3D();
 		Vector3D<> pos;
 		while(resample) {
-			pos = Vector3D<>(Math::ran(-0.35,0.3)+0.5,Math::ran(-0.55,0.55),0.45);
-			bool test1 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) > 0.7;
-			bool test2 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) < 0.3;
+			pos = rota*Vector3D<>(Math::ran(_x.first,_x.second),Math::ran(_y.first,_y.second),_height);
+			bool test1 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) > _radius.second;
+			bool test2 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) < _radius.first;
 			resample &= (test1 || test2);
 		}
 		resample = true;
 		Rotation3D<> rot;
 		while(resample) {
 			rot = Math::ranRotation3D<double>();
-			resample &= dot(rot*Vector3D<>::z(),wTbase.R()*Vector3D<>::z()) > -0.5;
+			resample &= dot(rot*Vector3D<>::z(),wTbase.R()*Vector3D<>::z()) > -_cosanglez;
 		}
 		Transform3D<> t = wTbase*Transform3D<>(pos,rot)*_tcpTend;
 		inverseOK = inverseKin(res,t,_wc->getDefaultState());
