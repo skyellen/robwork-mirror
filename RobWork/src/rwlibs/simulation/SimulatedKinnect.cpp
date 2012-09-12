@@ -170,7 +170,7 @@ const Image25D& SimulatedKinnect::getScan(){
 
 namespace {
 
-    double calcVariance( double r, double d ){
+    double calcSigma( double r, double d ){
         const double p00 = 2.344;
         const double p10 = -1.202E-2;
         const double p01 = -1.734E-3;
@@ -192,10 +192,11 @@ namespace {
             for(int x=0;x<scan->getWidth();x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
                 double r = std::sqrt( Math::sqr(x - center_x) + Math::sqr(y - center_y) );
+                // we convert to mm
                 double d = (double)fabs(v[2])*1000.0;
-                double variance = calcVariance(r, d);
+                double sigma = calcSigma(r, d);
                 // this will produce the error in m
-                double noise_err = Math::ranNormalDist( 0 , std::sqrt(variance) )/1000.0;
+                double noise_err = Math::ranNormalDist( 0 , sigma )/1000.0;
                 v[2] += noise_err;
             }
         }
