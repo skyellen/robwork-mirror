@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'GTaskVisPlugin.ui'
 **
-** Created: Mon 30. Apr 09:14:32 2012
-**      by: Qt User Interface Compiler version 4.8.0
+** Created: Fri 10. Aug 09:10:26 2012
+**      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -80,12 +80,13 @@ public:
     QCheckBox *_otherBox;
     QCheckBox *_collisionsBox;
     QSpacerItem *verticalSpacer;
+    QPushButton *btnRecordVideo;
 
     void setupUi(QDockWidget *GTaskVisPlugin)
     {
         if (GTaskVisPlugin->objectName().isEmpty())
             GTaskVisPlugin->setObjectName(QString::fromUtf8("GTaskVisPlugin"));
-        GTaskVisPlugin->resize(288, 733);
+        GTaskVisPlugin->resize(511, 733);
         dockWidgetContents = new QWidget();
         dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
         verticalLayout_2 = new QVBoxLayout(dockWidgetContents);
@@ -343,7 +344,12 @@ public:
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout_4->addItem(verticalSpacer, 4, 0, 1, 1);
+        gridLayout_4->addItem(verticalSpacer, 5, 0, 1, 1);
+
+        btnRecordVideo = new QPushButton(dockWidgetContents);
+        btnRecordVideo->setObjectName(QString::fromUtf8("btnRecordVideo"));
+
+        gridLayout_4->addWidget(btnRecordVideo, 4, 0, 1, 1);
 
 
         verticalLayout_2->addLayout(gridLayout_4);
@@ -383,6 +389,7 @@ public:
         _missedBox->setText(QApplication::translate("GTaskVisPlugin", "Missed", 0, QApplication::UnicodeUTF8));
         _otherBox->setText(QApplication::translate("GTaskVisPlugin", "Other", 0, QApplication::UnicodeUTF8));
         _collisionsBox->setText(QApplication::translate("GTaskVisPlugin", "Collisions", 0, QApplication::UnicodeUTF8));
+        btnRecordVideo->setText(QApplication::translate("GTaskVisPlugin", "Record Video", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
