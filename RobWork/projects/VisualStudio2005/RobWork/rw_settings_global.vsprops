@@ -13,11 +13,11 @@
 	/>
 	<UserMacro
 		Name="RW_ROOT"
-		Value="$(ROBWORK_DIR)\RobWork"
+		Value="d:\RobWork_0_6\RobWork"
 	/>
 	<UserMacro
 		Name="XERCES_ROOT"
-		Value="$(RW_XERCES_VS_ROOT)"
+		Value="D:\RobWork_0_6\RobWork\ext\xerces-c-3.1.0-x86-windows-vc-8.0"
 	/>
 	<UserMacro
 		Name="XERCES_VS_ROOT"
@@ -25,6 +25,6 @@
 	/>
 	<UserMacro
 		Name="BOOST_ROOT"
-		Value="$(RW_BOOST_ROOT)"
+		Value="d:\boost_1_44_0"
 	/>
 </VisualStudioPropertySheet>

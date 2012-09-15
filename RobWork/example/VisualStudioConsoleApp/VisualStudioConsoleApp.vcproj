@@ -95,7 +95,7 @@
 			ConfigurationType="1"
 			InheritedPropertySheets="..\..\projects\VisualStudio2005\RobWork\rw_app_link_settings_release.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"

@@ -90,7 +90,7 @@
 			ConfigurationType="4"
 			InheritedPropertySheets="..\rw_settings_release.vsprops"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -110,7 +110,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				WholeProgramOptimization="true"
+				InlineFunctionExpansion="0"
+				FavorSizeOrSpeed="0"
+				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
@@ -1083,6 +1085,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\kinematics\StatelessObject.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StatelessObject.hpp"
@@ -3452,10 +3458,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileArrayUtil.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.cpp"
 				>
 			</File>
 			<File

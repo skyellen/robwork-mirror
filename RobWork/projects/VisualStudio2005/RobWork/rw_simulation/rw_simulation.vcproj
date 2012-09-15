@@ -86,7 +86,7 @@
 			ConfigurationType="4"
 			InheritedPropertySheets="..\rw_settings_release.vsprops"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -149,27 +149,23 @@
 			Name="camera"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\FrameGrabber.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\FrameGrabber.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\GLFrameGrabber.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\GLFrameGrabber.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\SimulatedCamera.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedCamera.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\SimulatedCamera.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedCamera.hpp"
 				>
 			</File>
 		</Filter>
@@ -179,14 +175,6 @@
 		</File>
 		<File
 			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber25D.hpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.hpp"
 			>
 		</File>
 		<File

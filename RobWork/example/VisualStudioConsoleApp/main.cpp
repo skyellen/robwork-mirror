@@ -19,8 +19,74 @@ using namespace rw::pathplanning;
 using namespace rw::trajectory;
 using namespace rwlibs::proximitystrategies;
 
+
+	struct BinContentData {
+		int m_PickZoneNumber;
+		const std::string m_BinName;
+		int m_N;
+		BinContentData(const std::string& BinName, int PickZoneNumber, int n):
+			m_PickZoneNumber(PickZoneNumber),
+			m_BinName(BinName),
+			m_N(n)
+		{
+		
+		}
+
+		//BinContentData();
+		bool operator< (const BinContentData& rhs) const
+		{	
+			if (m_BinName == rhs.m_BinName)
+				return m_PickZoneNumber > rhs.m_PickZoneNumber;
+			return m_BinName>rhs.m_BinName;// && m_PickZoneNumber <= rhs.m_PickZoneNumber;
+		}
+	};
+
+
+
 int main(int argc, char** argv) { 
 	{
+
+		std::set<BinContentData> m_BinContentQueue;
+		m_BinContentQueue.insert(BinContentData("Bin1", 0, 0));
+		m_BinContentQueue.insert(BinContentData("Bin1", 1,0));
+		m_BinContentQueue.insert(BinContentData("Bin1", 3,0));
+		m_BinContentQueue.insert(BinContentData("Bin1", 4,0));
+		m_BinContentQueue.insert(BinContentData("Bin1", 0,1));
+		m_BinContentQueue.insert(BinContentData("Bin1", 1,1));
+		m_BinContentQueue.insert(BinContentData("Bin1", 3,1));
+		m_BinContentQueue.insert(BinContentData("Bin1", 5,0));
+		m_BinContentQueue.insert(BinContentData("Bin1", 7,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 0,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 1,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 3,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 4,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 0,1));
+		m_BinContentQueue.insert(BinContentData("Bin2", 1,2));
+		m_BinContentQueue.insert(BinContentData("Bin2", 3,1));
+		m_BinContentQueue.insert(BinContentData("Bin2", 5,0));
+		m_BinContentQueue.insert(BinContentData("Bin2", 7,0));
+
+		BOOST_FOREACH(const BinContentData& data, m_BinContentQueue) {
+			std::cout<<"Content = "<<data.m_BinName<<" "<<data.m_PickZoneNumber<<" "<<data.m_N<<std::endl;
+		}
+
+
+		return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	Rotation3D<> r3d(0.80596, 0, -0.59197, 0, -1, 0, -0.59197, 0, -0.80596);
 	std::cout<<"r3d start = "<<r3d<<std::endl;
 	std::cout<<"Det = "<<LinearAlgebra::det(r3d.m())<<std::endl;

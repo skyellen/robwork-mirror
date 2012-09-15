@@ -86,7 +86,7 @@
 			ConfigurationType="4"
 			InheritedPropertySheets="..\rw_settings_release.vsprops"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
