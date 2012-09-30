@@ -22,10 +22,12 @@
 using namespace rw::common;
 
 Message::Message(const std::string& file, int line, const std::string& message):
-    _file( boost::filesystem::path(file.c_str()).filename().c_str() ),
+    _file( boost::filesystem::path(file.c_str()).filename().string() ),
     _line(line),
     _message(message)
-{}
+{
+		
+}
 
 
 
