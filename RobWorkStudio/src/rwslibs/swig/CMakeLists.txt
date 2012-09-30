@@ -14,7 +14,7 @@ IF( SWIG_FOUND )
     	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES CPLUSPLUS ON)
     	SET_SOURCE_FILES_PROPERTIES(rws.i PROPERTIES SWIG_FLAGS "-includeall")
         MESSAGE(STATUS "RobWorkStudio: Lua bindings ENABLED!")
-        SWIG_ADD_MODULE(rws_lua lua rws.i LuaState.cpp ScriptTypes.cpp)
+        SWIG_ADD_MODULE(rws_lua lua rws.i Lua.cpp LuaState.cpp ScriptTypes.cpp)
         SWIG_LINK_LIBRARIES(rws_lua rws rws_rwstudioapp
                     ${RWS_COMPONENT_LIBRARIES} 
                     ${RWS_PLUGIN_LIBRARIES} 

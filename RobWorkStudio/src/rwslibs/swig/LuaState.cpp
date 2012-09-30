@@ -20,6 +20,7 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rwlibs/swig/Lua.hpp>
 #include "ScriptTypes.hpp"
+#include "Lua.hpp"
 
 using namespace rws;
 
@@ -55,7 +56,7 @@ void LuaState::reset(){
 
     rwlibs::swig::openLuaLibRW( _lua );
 
-    luaopen_rws(_lua);
+    rwslibs::swig::openLuaLibRWS( _lua );
 
     rws::swig::setRobWorkStudio( _rws );
 

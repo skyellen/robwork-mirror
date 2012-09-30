@@ -21,7 +21,7 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
-
+/*
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,7 +29,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
+*/
 namespace rws {
 namespace swig {
 
