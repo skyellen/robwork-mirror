@@ -1,6 +1,9 @@
 #include "GTaskVisPlugin.hpp"
 
-#include <rw/rw.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+
+#include <rw/models/WorkCell.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/task/GraspTask.hpp>
