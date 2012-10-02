@@ -287,13 +287,13 @@ std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool 
 
 size_t IOUtil::getFileSize(const std::string& filename){
     namespace fs = boost::filesystem;
-    fs::path p( filename, fs::native );
+    fs::path p( filename );
     return (size_t)fs::file_size( p );
 }
 
 std::time_t IOUtil::getLastFileWrite(const std::string& filename){
     namespace fs = boost::filesystem;
-    fs::path p( filename, fs::native );
+    fs::path p( filename );
     std::time_t ft = fs::last_write_time( p );
     return ft;
 }
