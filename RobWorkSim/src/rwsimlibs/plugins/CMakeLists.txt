@@ -7,7 +7,7 @@ LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS})
 SET(SrcFiles RWSimulatorPlugin.cpp )
 
 # Call the create_plugin macro for creating the plugin
-QT4_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
@@ -45,7 +45,7 @@ SET(SrcFiles SimUtilityPlugin.cpp )
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
@@ -65,7 +65,7 @@ SET(SrcFiles GraspTableGeneratorPlugin.cpp)
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
@@ -86,7 +86,7 @@ set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}"
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles RWSimPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles RWSimPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/RWSimPlugin.qrc)
@@ -111,7 +111,7 @@ set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}"
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskPlugin.qrc)
@@ -132,7 +132,7 @@ set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}"
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskVisPlugin.qrc)
