@@ -34,6 +34,7 @@ QT4_WRAP_CPP(MocSrcFiles
 	BodyControllerWidget.hpp
 	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
+	OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
 )
 
 # Rcc the files:
