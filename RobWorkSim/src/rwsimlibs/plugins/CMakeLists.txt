@@ -124,19 +124,19 @@ TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM
 
 
 ################################################################
-# The SimTaskVisPlugin
+# The SimTaskVisPlugin -- has been moved to RobWorkStudio now named gtaskplugin
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
-SET(SrcFiles SimTaskVisPlugin.cpp)
-set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
+#SET(SrcFiles SimTaskVisPlugin.cpp)
+#set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Call the create_plugin macro for creating the plugin
-SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+#SET(MocSrcFiles )
+#QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 # Rcc the files:
-SET(RccSrcFiles )
-QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskVisPlugin.qrc)
+#SET(RccSrcFiles )
+#QT4_ADD_RESOURCES(RccSrcFiles ${RWSIM_ROOT}/src/gfx/SimTaskVisPlugin.qrc)
 
-ADD_LIBRARY(SimTaskVisPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
+#ADD_LIBRARY(SimTaskVisPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles} ${UIS_OUT_H})
 #ADD_LIBRARY(SimTaskVisPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SimTaskVisPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+#TARGET_LINK_LIBRARIES(SimTaskVisPlugin rwsim_ode ode rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
