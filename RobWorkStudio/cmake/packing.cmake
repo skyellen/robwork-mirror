@@ -48,8 +48,8 @@ ENDIF()
 
 SET(PROJECT_NAME "RobWorkStudio")
 SET(IGNORE_PQP "/PQP/")
-SET(RW_ICON "${RW_ROOT}\\\\build\\\\rw_logo_48x48.ico")
-SET(RW_IMAGE "${RW_ROOT}\\\\build\\\\rw_logo_128x64.bmp")
+SET(RW_ICON "${RW_ROOT}\\\\cmake\\\\images\\\\rw_logo_48x48.ico")
+SET(RW_IMAGE "${RW_ROOT}\\\\cmake\\\\images\\\\rw_logo_128x64.bmp")
 
 
 # The CPack settings, one by one (see http://www.cmake.org/Wiki/CMake:CPackConfiguration)
