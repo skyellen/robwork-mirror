@@ -39,7 +39,7 @@ namespace {
 
 }
 
-ODEKinematicDevice::ODEKinematicDevice(dynamics::KinematicDevice *kdev,
+ODEKinematicDevice::ODEKinematicDevice(rwsim::dynamics::KinematicDevice *kdev,
                                        const rw::kinematics::State& state,
                                        ODESimulator *sim):
                                        _kdev(kdev)
