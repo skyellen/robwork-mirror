@@ -21,7 +21,7 @@
 
 #include "TriMesh.hpp"
 
-#include <boost/type_traits.hpp>
+//#include <boost/type_traits.hpp>
 
 
 namespace rw {
