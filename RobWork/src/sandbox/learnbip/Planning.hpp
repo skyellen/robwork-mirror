@@ -47,7 +47,7 @@ public:
 	Planning::Status getPath(rw::trajectory::QPath &res, const rw::math::Q qTo, const rw::math::Q qFrom, const rw::kinematics::State &state) const;
 	// Given current state plan path to most suitable grasp in database. Uses via point if approach is larger than 0.
 	// Return values: COLLISION_INITIALLY, NO_TASK, NO_PATH_FOUND, SUCCESS
-	Planning::Status getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, const rw::kinematics::State &state, double approach = -1.) const;
+	Planning::Status getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, const rw::kinematics::State &state, double approach = -1., std::vector<unsigned int> blacklist = std::vector<unsigned int>()) const;
 	// Given current state plan path to specific grasp in database. Uses via point if approach is larger than 0.
 	// Return values: COLLISION_INITIALLY, NO_TASK, NO_PATH_FOUND, SUCCESS
 	Planning::Status getPath(std::pair<unsigned int, rw::trajectory::QPath>& res, unsigned int id, const rw::kinematics::State &state, double approach = -1.) const;

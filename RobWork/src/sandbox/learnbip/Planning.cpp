@@ -86,7 +86,7 @@ bool Planning::compFct(std::pair<unsigned int,double> i,std::pair<unsigned int,d
 	return i.second > j.second;
 }
 
-Planning::Status Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, double approach) const {
+Planning::Status Planning::getPath(std::pair<unsigned int, QPath> &res, const State &state, double approach, std::vector<unsigned int> blacklist) const {
 	if (_detector->inCollision(state))
 		return COLLISION_INITIALLY;
 
@@ -141,42 +141,49 @@ Planning::Status Planning::getPath(std::pair<unsigned int, QPath> &res, const St
 
 	Transform3D<> baseTobject = Kinematics::frameTframe(_device->getBase(),_objectFrame,state);
 	for (std::vector<unsigned int>::iterator it = ind.begin(); it != ind.end(); it++) {
-		GraspSubTask task = tasks[*it];
-		Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
+		bool blacklisted = false;
+		for (std::vector<unsigned int>::iterator bit = blacklist.begin(); bit != blacklist.end(); bit++) {
+			if ((*bit) == (*it))
+				blacklisted = true;
+		}
+		if (!blacklisted) {
+			GraspSubTask task = tasks[*it];
+			Transform3D<> target = baseTobject*task.getTargets()[0].pose*_targetTtcp;
 
-		Planning::Status status;
-		if (approach > 0.) {
-			Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
-			Transform3D<> approachTarget(approachPos,target.R());
-			QPath pathA;
-			status = getPath(pathA, approachTarget, task.getOpenQ(), state);
-			if (status == SUCCESS) {
-				State approachState = state;
-				_device->setQ(pathA[pathA.size()-1],approachState);
-				QPath pathB;
-				status = getPath(pathB, target, task.getOpenQ(), approachState);
+			Planning::Status status;
+			if (approach > 0.) {
+				Vector3D<> approachPos = target.P()-target.R()*Vector3D<>::z()*approach;
+				Transform3D<> approachTarget(approachPos,target.R());
+				QPath pathA;
+				status = getPath(pathA, approachTarget, task.getOpenQ(), state);
+				if (status == SUCCESS) {
+					State approachState = state;
+					_device->setQ(pathA[pathA.size()-1],approachState);
+					QPath pathB;
+					status = getPath(pathB, target, task.getOpenQ(), approachState);
+					if (status == SUCCESS) {
+						res.first = *it;
+						QPath comb;
+						for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
+							comb.push_back(*itA);
+						bool first = true;
+						for (QPath::iterator itB = pathB.begin(); itB != pathB.end(); itB++) {
+							if (!first)
+								comb.push_back(*itB);
+							first = false;
+						}
+						res.second = comb;
+						return SUCCESS;
+					}
+				}
+			} else {
+				QPath path;
+				status = getPath(path, target, task.getOpenQ(), state);
 				if (status == SUCCESS) {
 					res.first = *it;
-					QPath comb;
-					for (QPath::iterator itA = pathA.begin(); itA != pathA.end(); itA++)
-						comb.push_back(*itA);
-					bool first = true;
-					for (QPath::iterator itB = pathB.begin(); itB != pathB.end(); itB++) {
-						if (!first)
-							comb.push_back(*itB);
-						first = false;
-					}
-					res.second = comb;
+					res.second = path;
 					return SUCCESS;
 				}
-			}
-		} else {
-			QPath path;
-			status = getPath(path, target, task.getOpenQ(), state);
-			if (status == SUCCESS) {
-				res.first = *it;
-				res.second = path;
-				return SUCCESS;
 			}
 		}
 	}
