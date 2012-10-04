@@ -24,7 +24,7 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/geometry/TriMesh.hpp>
 
-#include <omp.h>
+//#include <omp.h>
 #include <float.h>
 #include <algorithm>
 #include "ProximityStrategyData.hpp"
