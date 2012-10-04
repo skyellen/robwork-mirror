@@ -310,21 +310,6 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Casts Vector2D<T> to Vector2D<Q>
-         *
-         * @param v [in] Vector2D with type T
-         *
-         * @return Vector2D with type Q
-         */
-        template<class Q>
-        friend const Vector2D<Q> cast(const Vector2D<T>& v)
-        {
-            return Vector2D<Q>(
-                static_cast<Q>(v(0)),
-                static_cast<Q>(v(1)));
-        }
-
-        /**
            @brief Streaming operator.
          */
         friend std::ostream& operator<<(std::ostream& out, const Vector2D<T>& v)
@@ -357,6 +342,21 @@ namespace rw { namespace math {
 
     	Base _vec;
     };
+
+    /**
+     * @brief Casts Vector2D<T> to Vector2D<Q>
+     *
+     * @param v [in] Vector2D with type T
+     *
+     * @return Vector2D with type Q
+     */
+    template<class Q, class T>
+    const Vector2D<Q> cast(const Vector2D<T>& v)
+    {
+        return Vector2D<Q>(
+            static_cast<Q>(v(0)),
+            static_cast<Q>(v(1)));
+    }
 
     /**
        @brief Compares \b a and \b b for equality.

@@ -43,7 +43,7 @@ namespace {
         RW_ASSERT(src.getNrOfChannels()==dst.getNrOfChannels());
 
         unsigned int nrChannels = src.getNrOfChannels();
-        const unsigned char *srcData = src.getImageData();
+        const char *srcData = src.getImageData();
         unsigned int srcWidthStep = src.getWidthStep();
 
         DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
@@ -78,7 +78,7 @@ namespace {
             RW_ASSERT(src.getNrOfChannels()==dst.getNrOfChannels());
 
             unsigned int nrChannels = src.getNrOfChannels();
-            const unsigned char *srcData = src.getImageData();
+            const char *srcData = src.getImageData();
             unsigned int srcWidthStep = src.getWidthStep();
 
             DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();

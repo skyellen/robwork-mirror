@@ -175,7 +175,7 @@ void XMLTaskSaver::writeMotion(typename Motion<T>::Ptr motion, xercesc::DOMEleme
 	if (motion->motionType() == MotionType::Circular) {
 		targetElement = doc->createElement(XMLTaskFormat::MotionMidId);
 		motionElement->appendChild(targetElement);
-		targetElement->appendChild(doc->createTextNode(XMLStr(_targetMap[motion.cast<CircularMotion<T> >()->midTarget()]).uni()));
+		targetElement->appendChild(doc->createTextNode(XMLStr(_targetMap[motion.template cast<CircularMotion<T> >()->midTarget()]).uni()));
 	}
 
 	targetElement = doc->createElement(XMLTaskFormat::MotionEndId);

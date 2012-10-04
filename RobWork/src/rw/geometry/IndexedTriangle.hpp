@@ -197,7 +197,7 @@ namespace geometry {
          */
         template<class R>
         bool isInside(const rw::math::Vector3D<R>& x, const std::vector<rw::math::Vector3D<R> >& verts){
-            return _triN0.isInside<R>(x,verts);
+            return _triN0.template isInside<R>(x,verts);
         }
 
         /**
@@ -294,7 +294,7 @@ namespace geometry {
           */
          template<class R>
          bool isInside(const rw::math::Vector3D<R>& x, const std::vector<rw::math::Vector3D<R> >& verts){
-             return _triN0.isInside<R>(x,verts);
+             return _triN0.template isInside<R>(x,verts);
          }
 
          /**
