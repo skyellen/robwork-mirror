@@ -73,7 +73,7 @@ namespace {
 
 std::vector<Line2D > HughLineExtractor::extractLines(Image& image){
 	Point center(image.getWidth()/2,image.getHeight()/2);
-	int max_dist = MetricUtil::norm2(center);
+	int max_dist = MetricUtil::norm2(cast<double>(center));
 	std::cout << "max_dist: " << max_dist << std::endl;
 	std::cout << "center: " << center << std::endl;
 	int h_space[steps*h_ysteps];

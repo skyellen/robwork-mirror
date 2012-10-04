@@ -132,7 +132,7 @@ namespace {
         int getHeight() const{ return _sensor->getHeight(); }
 
         void acquire(rw::kinematics::State& state){ _sensor->acquire(state); }
-        TactileArray::ValueMatrix getTexelData(const rw::kinematics::State& state) const{ _sensor->getTexelData(state); };
+        TactileArray::ValueMatrix getTexelData(const rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
     };
 
 }

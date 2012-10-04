@@ -130,7 +130,7 @@ namespace {
 }
 
 
-RigidDevice::RigidDevice(dynamics::Body::Ptr base,
+RigidDevice::RigidDevice(rwsim::dynamics::Body::Ptr base,
                          const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
                          rw::models::JointDevice::Ptr dev):
      DynamicDevice(base,dev),
