@@ -391,6 +391,12 @@ IF(${Boost_MINOR_VERSION} VERSION_LESS 41 )
     MESSAGE(STATUS "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Adding from ext!")   
 ENDIF()
 
+IF(${Boost_MINOR_VERSION} VERSION_LESS 44 ) 
+    ADD_DEFINITIONS("-DBOOST_FILESYSTEM_VERSION=2")
+ELSE()
+    ADD_DEFINITIONS("-DBOOST_FILESYSTEM_VERSION=3")
+ENDIF()
+
 ###########################################################################
 # SETTING UP VARS
 # here we setup the output variables

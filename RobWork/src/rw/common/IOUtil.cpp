@@ -23,8 +23,6 @@
 #include "Log.hpp"
 #include "Message.hpp"
 
-#define BOOST_FILESYSTEM_VERSION 3
-
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
@@ -258,15 +256,23 @@ void IOUtil::getFilesInFolder(const std::string& path, const std::string& fileMa
 
 	        if (!boost::filesystem::is_regular_file(it->status())) //If not a regular file
                 continue;
-
-            std::string filename = it->path().filename().string();
+#if(BOOST_FILESYSTEM_VERSION==2)
+	        std::string filename = it->path().filename();
+#else
+	        std::string filename = it->path().filename().string();
+#endif
             if (!boost::regex_match(filename.c_str(), match, regex)) 
                 continue;
 
 	        if (addPath)
 		        result.push_back(it->path().string());
-	        else
-                result.push_back(it->path().filename().string());		        
+	        else{
+#if(BOOST_FILESYSTEM_VERSION==2)
+                result.push_back(it->path().filename());
+#else
+                result.push_back(it->path().filename().string());
+#endif
+	        }
         }
     }
     catch (const std::exception& e)
