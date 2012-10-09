@@ -18,7 +18,7 @@ using namespace rw::pathplanning;
 using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
-RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, const Transform3D<> endTtcp, Pair radius, Pair x, Pair y, double height, double angle, double maxangleZ):
+RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, const Transform3D<> endTtcp, Pair radius, Pair x, Pair y, double height, double maxangleZ):
 	_wc(wc),
 	_device(device),
 	_tcpTend(inverse(endTtcp))
@@ -29,7 +29,6 @@ RandomSampler::RandomSampler(const WorkCell::Ptr wc, const Device::Ptr device, c
 	_x = x;
 	_y = y;
 	_height = height;
-	_angle = angle;
 	_cosanglez = cos(maxangleZ);
 }
 
@@ -45,19 +44,18 @@ Q RandomSampler::doSample() {
 		Frame* base = _device->getBase();
 		Transform3D<> wTbase = Kinematics::worldTframe(base,_wc->getDefaultState());
 		bool resample = true;
-		Rotation3D<> rota = RPY<>(_angle,0,0).toRotation3D();
 		Vector3D<> pos;
 		while(resample) {
-			pos = rota*Vector3D<>(Math::ran(_x.first,_x.second),Math::ran(_y.first,_y.second),_height);
-			bool test1 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) > _radius.second;
-			bool test2 = MetricUtil::dist2(wTbase.P(),pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()) < _radius.first;
+			pos = Vector3D<>(Math::ran(_x.first,_x.second),Math::ran(_y.first,_y.second),_height);
+			bool test1 = (pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()).norm2() > _radius.second;
+			bool test2 = (pos-dot(pos,Vector3D<>::z())*Vector3D<>::z()).norm2() < _radius.first;
 			resample &= (test1 || test2);
 		}
 		resample = true;
 		Rotation3D<> rot;
 		while(resample) {
 			rot = Math::ranRotation3D<double>();
-			resample &= dot(rot*Vector3D<>::z(),wTbase.R()*Vector3D<>::z()) > -_cosanglez;
+			resample &= dot(rot*Vector3D<>::z(),Vector3D<>::z()) > -_cosanglez;
 		}
 		Transform3D<> t = wTbase*Transform3D<>(pos,rot)*_tcpTend;
 		inverseOK = inverseKin(res,t,_wc->getDefaultState());
@@ -65,8 +63,9 @@ Q RandomSampler::doSample() {
 	return res[0];
 }
 
-bool RandomSampler::inverseKin(std::vector<Q>& sol, const Transform3D<> &target, const State &state) const {
+bool RandomSampler::inverseKin(std::vector<Q>& sol, const Transform3D<> &wTtarget, const State &state) const {
 	PlannerConstraint constraint = PlannerConstraint::make(_detector,_device,state);
+	const Transform3D<> &target = inverse(Kinematics::worldTframe(_device->getBase(),state))*wTtarget;
 
 	Q curQ = _device->getQ(state);
 	std::vector<Q> solutions = _iksolver->solve(target,state);

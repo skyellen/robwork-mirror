@@ -281,7 +281,7 @@ Planning::Status Planning::getPath(QPath &res, const Transform3D<> pose, const Q
 		return COLLISION_INITIALLY;
 
 	State gripState(state);
-	_gripperBase->moveTo(pose,gripState);
+	_gripperBase->moveTo(Kinematics::worldTframe(_device->getBase(),state)*pose,gripState);
 	CollisionDetector::QueryResult* query = new CollisionDetector::QueryResult();
 	bool handColl = _detector->inCollision(gripState,query);
 	FramePairSet fps = query->collidingFrames;
