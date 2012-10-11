@@ -133,5 +133,9 @@ CONFIGURE_FILE(
   "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
-# configure testing configuration
+# Packaging
+INCLUDE(cmake/packing.cmake)
+
+# configure testing configuration Dashboard
 CONFIGURE_FILE("${RWSIM_ROOT}/CTestConfig.cmake.in" "${RWSIM_ROOT}/CTestConfig.cmake")
+
