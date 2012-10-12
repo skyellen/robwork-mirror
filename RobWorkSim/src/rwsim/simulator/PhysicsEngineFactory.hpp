@@ -33,17 +33,12 @@
 
 #include <vector>
 
-#ifdef RWSIM_HAVE_ODE
-//#include <rwsimlibs/ode/ODESimulator.hpp>
-#endif
-
-#ifdef RWSIM_HAVE_BULLET
-#include <rwsimlibs/bullet/BtSimulator.hpp>
-#endif
-
 namespace rwsim {
 namespace simulator {
 
+	/**
+	 * @brief Factory for creating physics engines
+	 */
 	class PhysicsEngineFactory {
 	public:
 		static std::vector<std::string> getEngineIDs();
