@@ -36,6 +36,7 @@
 #include <rw/math/RPY.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/MetricFactory.hpp>
 
 using namespace rw;
 using namespace rw::math;
@@ -387,28 +388,24 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     VelocityScrew6D<> bVt = kr16t.baseJend(state) * dq;
 
     // Velocity of end-effector seen from end-effector
-    VelocityScrew6D<> eVe = inverse(kr16t.baseTframe(tool,state).R()) * bVe;
-
+    Rotation3D<> toolRbase = inverse(kr16t.baseTframe(tool,state).R());
+    VelocityScrew6D<> eVe =  toolRbase * bVe;
     // Velocity of tool seen from tool
     VelocityScrew6D<> tVt = inverse(kr16t.baseTend(state).R()) * bVt;
 
+    BOOST_CHECK(norm_inf(eVe - tVt) < 1e-6);
+
     // Velocity of end-effector seen from end-effector (calculated from tool velocity)
     VelocityScrew6D<> eVe2 = tool->getTransform(state) * tVt;
-
     // Velocity of tool seen from tool (calculated from end-effector velocity)
-    VelocityScrew6D<> tVt2 = inverse(tool->getTransform(state)) * eVe;
+    VelocityScrew6D<> tVt2 = tool->getTransform(state) * eVe;
+
+    BOOST_CHECK(norm_inf(eVe2 - tVt2) < 1e-6);
 
     Transform3D<double> t_bTe = kr16t.baseTend(state);
     Transform3D<double> t_bTf = kr16t.baseTframe(tool,state);
-    std::cout << "BTE " << t_bTe << "\n";
-    std::cout << "BTF " << t_bTf << "\n";
-
-
-    // TODO: somethings wrong here under
-    std::cout << (eVe-eVe2) << "\n";
-    std::cout << (tVt-tVt2) << "\n";
-    BOOST_CHECK(norm_inf(eVe - eVe2) < 1e-6);
-    BOOST_CHECK(norm_inf(tVt - tVt2) < 1e-6);
+    Metric<Transform3D<> >::Ptr t3dmetric = MetricFactory::makeTransform3DMetric<double>(1.0,1.0);
+    BOOST_CHECK(t3dmetric->distance(t_bTe,t_bTf)<1e-6);
 
     Jacobian b_eJq = kr16t.baseJframe(kr16_j6,state);
     Jacobian e_eJb_e(inverse(kr16t.baseTframe(kr16_j6,state).R()));
