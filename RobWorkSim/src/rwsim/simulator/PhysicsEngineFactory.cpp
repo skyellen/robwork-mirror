@@ -44,9 +44,6 @@ namespace {
     struct InitStruct {
         InitStruct(){
             using namespace boost::lambda;
-            //rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> bum;
-            PhysicsEngineFactory::makePhysicsEngineFunctor rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::RWSimulator>(), boost::lambda::_1);
-            _physicsEngines.push_back(std::make_pair(RWPhysicsStr,rwphysics));
 
             #ifdef RWSIM_HAVE_ODE
                 rwphysics =  boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
@@ -57,6 +54,11 @@ namespace {
                 rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::BulletSimulator>(), boost::lambda::_1);
                 _physicsEngines.push_back(std::make_pair(ODEPhysicsStr,rwphysics));
             #endif
+
+			//rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> bum;
+			PhysicsEngineFactory::makePhysicsEngineFunctor rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::RWSimulator>(), boost::lambda::_1);
+			_physicsEngines.push_back(std::make_pair(RWPhysicsStr,rwphysics));
+
         }
     };
 

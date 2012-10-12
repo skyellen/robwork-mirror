@@ -16,7 +16,6 @@
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
-#include <rwsimlibs/ode/ODESimulator.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
@@ -85,7 +84,8 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
 
     for(int i=0;i<_nrOfThreads;i++){
         //Log::debugLog() << "Making physics engine";
-        ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
+        PhysicsEngine::Ptr engine = PhysicsEngineFactory::makePhysicsEngine(_dwc);
+
         //Log::debugLog() << "Making simulator";
         DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
         //Log::debugLog() << "Initializing simulator";
