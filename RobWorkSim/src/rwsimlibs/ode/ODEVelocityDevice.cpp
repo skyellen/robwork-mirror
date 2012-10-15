@@ -275,8 +275,8 @@ ODEVelocityDevice::ODEVelocityDevice(
             ODESimulator *sim
         ):
         _rdev(rdev),
-        _sim(sim),
-        _modes(rdev->getMotorForceLimits().size())
+        _modes(rdev->getMotorForceLimits().size()),
+        _sim(sim)
 {
 
      // we use hashspace here because devices typically have
@@ -348,7 +348,7 @@ namespace {
 }
 void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &state, dSpaceID spaceId, ODEBody* baseODEBody)
 {
-     dBodyID baseBodyID = baseODEBody->getBodyID();
+     //dBodyID baseBodyID = baseODEBody->getBodyID();
      std::map<Frame*, ODEBody*> frameToODEBody;
 
      addToMap(baseODEBody, frameToODEBody);

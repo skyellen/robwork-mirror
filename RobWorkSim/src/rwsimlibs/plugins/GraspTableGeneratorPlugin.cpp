@@ -58,11 +58,12 @@ namespace {
 		void setTimeInMin(long val){ ms=val*1000*60;};;
 
 		std::string toString(){
-			long sec, min, hours, days;
+			//long sec;
+			long min, hours, days;
 			days = ms%1000*60*24;
 			hours = (ms-days*1000*60*24)%1000*60;
 			min = (ms-days*(hours*1000*60)*24)%60;
-			sec = (ms-days*24*(hours*60*(min*60)))%1000;
+			//sec = (ms-days*24*(hours*60*(min*60)))%1000;
 
 			std::stringstream sstr;
 			if(days>0)
@@ -82,9 +83,9 @@ namespace {
 
 GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
     RobWorkStudioPlugin("GTableGen", QIcon(":/SimulationIcon.png")),
+    _dwc(NULL),
     _avgSimTime(10),
-    _avgTime(10),
-    _dwc(NULL)
+    _avgTime(10)
 {
     setupUi( this );
 

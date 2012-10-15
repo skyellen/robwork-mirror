@@ -401,10 +401,10 @@ void RWSimulatorPlugin::printContactGraph(){
 }
 
 void RWSimulatorPlugin::startSimulation(){
-	bool saveToLog = false;
-	if( _checkBox->isChecked() ){
+	//bool saveToLog = false;
+	/*if( _checkBox->isChecked() ){
 		saveToLog = true;
-	}
+	}*/
 
     //_btnStart->setDisabled(true);
     //_btnUpdate->setDisabled(true);

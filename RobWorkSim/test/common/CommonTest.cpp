@@ -44,6 +44,7 @@ BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
     DynamicWorkCellLoader loader;
     DynamicWorkCell::Ptr dwc = loader.load("bumbum");
     ODESimulator *sim = new ODESimulator(dwc);
+    sim->getGravity(); // Dummy
 }
 
 
@@ -53,5 +54,6 @@ BOOST_AUTO_TEST_CASE( ODESimulatorResetTest )
     DynamicWorkCellLoader loader;
     DynamicWorkCell::Ptr dwc = loader.load(testFilePath() + "/simple/device1.dwc.xml");
     ODESimulator *sim = new ODESimulator(dwc);
+    sim->getGravity(); // Dummy
 }
 

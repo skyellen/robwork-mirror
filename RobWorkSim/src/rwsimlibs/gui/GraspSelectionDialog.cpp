@@ -214,7 +214,7 @@ void GraspSelectionDialog::btnPressed(){
     	Q key(6);
     	SearchTree::KDNode node(key, NULL);
     	_nodes.resize(_gtable->size(), node);
-    	for(int i=0;i<_gtable->size();i++){
+    	for(std::size_t i=0;i<_gtable->size();i++){
     		GraspTable::GraspData &data = _gtable->getData()[i];
 
     		Transform3D<> oTh = inverse(data.op.toTransform3D())*data.hp.toTransform3D();
@@ -246,8 +246,8 @@ void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinema
 	    _handBase->setTransform( wTo*inverse(hbTo), state);
 
 	TactileArraySensor *tsensor;
-	int j=0;
-	for(int i=0;i<_dwc->getSensors().size();i++){
+	std::size_t j=0;
+	for(std::size_t i=0;i<_dwc->getSensors().size();i++){
 		if( tsensor = dynamic_cast<TactileArraySensor*>(_dwc->getSensors()[i].get() ) ){
 			if(j>=data._tactiledata.size())
 				continue;

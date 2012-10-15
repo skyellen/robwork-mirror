@@ -71,7 +71,7 @@ namespace {
 
     Jacobian subJacobian(const Jacobian& jac, int toCol){
         int m = jac.size1();
-        int n = jac.size2();
+        //int n = jac.size2();
         RW_ASSERT(toCol<=n);
         Jacobian jsub(m,toCol);
         for(int x=0;x<m;x++)
@@ -91,7 +91,7 @@ namespace {
     {
         using namespace boost::numeric::ublas;
         int m = Jq.size1();
-        int n = Jq.size2();
+        //int n = Jq.size2();
         RW_ASSERT(column<n);
 
         matrix<double> subjac(m,column+1);
@@ -132,13 +132,13 @@ void ODEKinematicDevice::update(const rwlibs::simulation::Simulator::UpdateInfo&
 	std::cout << "-set" << std::endl;
 
 	Jacobian djac = _kdev->getModel().baseJend(state);
-	const Frame *baseFrame = _kdev->getModel().getBase();
-	Transform3D<> wTb = Kinematics::worldTframe(baseFrame,state);
+	//const Frame *baseFrame = _kdev->getModel().getBase();
+	//Transform3D<> wTb = Kinematics::worldTframe(baseFrame,state);
 
 	_kdev->getModel().setQ(q1, state);
 
 	std::cout << "Update vel of ode bodies" << std::endl;
-	int qi = 0;
+	//int qi = 0;
 	for(size_t i = 0; i<_kbodies.size(); i++){
 	    std::cout << "- Body " << i << std::endl;
 /*

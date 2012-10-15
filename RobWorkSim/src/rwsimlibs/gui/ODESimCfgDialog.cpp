@@ -73,6 +73,7 @@ void ODESimCfgDialog::changedEvent(){
     	//case(ODEBody::KINJOINT): _objectTypeName->setText( "KINJOINT" ); break;
     	case(ODEBody::KINEMATIC): _objectTypeName->setText( "KINEMATIC" ); break;
     	case(ODEBody::LINK): _objectTypeName->setText( "LINK" ); break;
+    	default: break;
     	}
 
     	int matId = body->getMaterialID();
@@ -103,7 +104,7 @@ void ODESimCfgDialog::applyChanges(){
 	std::string space(_spaceMethodBox->currentText().toStdString());
 	double cfm = _cfmSpin->value();
 	double erp = _erpSpin->value();
-	double colMargin = _marginSpin->value();
+	//double colMargin = _marginSpin->value();
 	std::string clusterAlg(_clusterAlgBox->currentText().toStdString());
 
 	PropertyMap& map = _sim->getPropertyMap();

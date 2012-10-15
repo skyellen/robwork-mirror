@@ -115,10 +115,10 @@ namespace {
         // everything in ODE is defined in world coordinates
         Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
         Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-        Vector3D<> hpos = wTchild.P();
+        //Vector3D<> hpos = wTchild.P();
 
         std::pair<Q, Q> posBounds = joint->getBounds();
-        const double qinit = joint->getData(state)[0];
+        //const double qinit = joint->getData(state)[0];
 
         // test if another joint is dependent on this joint
         //const double qinit = pjoint->getData(state)[0];
@@ -148,7 +148,7 @@ namespace {
         // everything in ODE is defined in world coordinates
         Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
         Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-        Vector3D<> hpos = wTchild.P();
+        //Vector3D<> hpos = wTchild.P();
         Joint *owner = &joint->getOwner();
 
         Transform3D<> wTowner = Kinematics::worldTframe(joint,state);
@@ -156,7 +156,7 @@ namespace {
         Vector3D<> haxis_owner = wTowner.R() * Vector3D<>(0,0,1);
 
         std::pair<Q, Q> posBounds = joint->getBounds();
-        const double qinit = joint->getData(state)[0];
+        //const double qinit = joint->getData(state)[0];
 
         ODEJoint::ODEJointType type;
 
@@ -236,9 +236,9 @@ ODEJoint::ODEJoint(rw::models::Joint* rwjoint,
                    rwsim::simulator::ODESimulator *sim,
                    const rw::kinematics::State& state):
                    _rwJoint(rwjoint),
+                   _owner(NULL),
                    _parent(parent),
-                   _child(child),
-                   _owner(NULL)
+                   _child(child)
 {
 
     if( RevoluteJoint *rjoint=dynamic_cast<RevoluteJoint*>(rwjoint) ){
@@ -347,7 +347,7 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     // if the fixed transform between two bodies is changed
     // then any constraint between these need to be reset
     // so we need to reattach the constraint
-    Frame *bframe = NULL;
+    //Frame *bframe = NULL;
     State rstate = state;
     double zeroq[] = {0.0,0.0,0.0,0.0};
     if(_type!=ODEJoint::DEPEND){

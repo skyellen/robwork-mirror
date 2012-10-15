@@ -111,7 +111,7 @@ namespace simulator {
         struct TriGeomData {
         public:
             TriGeomData(TriMeshData::Ptr triData):
-                tridata(triData), mBuffIdx(0), refframe(NULL)
+            	refframe(NULL), tridata(triData), mBuffIdx(0)
             {
                 for (int j=0; j<16; j++){
                     mBuff[0][j] = 0.0f;

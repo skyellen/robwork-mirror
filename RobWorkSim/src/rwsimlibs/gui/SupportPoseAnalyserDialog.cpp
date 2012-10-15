@@ -618,8 +618,8 @@ void SupportPoseAnalyserDialog::changedEvent(){
 
 
     	std::vector<Vector3D<> > &xaxis = _xaxisS[body];
-    	std::vector<Vector3D<> > &yaxis = _yaxisS[body];
-    	std::vector<Vector3D<> > &zaxis = _zaxisS[body];
+    	//std::vector<Vector3D<> > &yaxis = _yaxisS[body];
+    	//std::vector<Vector3D<> > &zaxis = _zaxisS[body];
     	std::cout << "xaxis.size()==_xaxis.size() " << xaxis.size() << "==" << _xaxis[bodyIdx].size()<< std::endl;
     	if(xaxis.size()==_xaxis[bodyIdx].size()){
 			BOOST_FOREACH(int idx, poseIdxList){
@@ -1180,15 +1180,15 @@ void SupportPoseAnalyserDialog::process(){
 
 	_supportPoseDistributions.clear();
 
-    int houghThres = _thresholdSpin->value();
-    double epsilon = _epsilonSpin->value();
+    //int houghThres = _thresholdSpin->value();
+    //double epsilon = _epsilonSpin->value();
 
     double dist = _distSpin->value();
     double angle = _angleSpin->value() * Deg2Rad;
 
     // map the points on the sphere to a plane of spherical coordinates
     for(size_t j=0;j<_bodies.size();j++){
-        const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame()->getParent(), _defaultState);
+        //const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame()->getParent(), _defaultState);
         const Transform3D<> wTb = Kinematics::worldTframe(_bodies[j]->getMovableFrame(), _defaultState);
 
         // first we compute regions which should work as stable poses
@@ -1215,7 +1215,7 @@ void SupportPoseAnalyserDialog::process(){
                 RW_ASSERT(_endTransforms[j].size()>idx);
                 Transform3D<> s = _startTransforms[j][ idx ];
                 EAA<> sr( s.R() );
-                Vector3D<> srz = s.R()*Vector3D<>::z();
+                //Vector3D<> srz = s.R()*Vector3D<>::z();
                 Transform3D<> e = _endTransforms[j][ idx ];
                 EAA<> er( e.R() );
                 Vector3D<> erz = e.R()*Vector3D<>::z();
@@ -1225,10 +1225,10 @@ void SupportPoseAnalyserDialog::process(){
                 angle += er.angle();
 
                 Transform3D<> aTb = inverse( s )*e;
-                Vector3D<> abp = aTb.P();
+                //Vector3D<> abp = aTb.P();
                 EAA<> abe(aTb.R() );
                 RPY<> abr(aTb.R() );
-                Vector3D<> aby = aTb.R()*Vector3D<>::z();
+                //Vector3D<> aby = aTb.R()*Vector3D<>::z();
                 transformations.push_back( s );
             }
 

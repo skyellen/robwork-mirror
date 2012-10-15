@@ -39,14 +39,14 @@ ODEBody::ODEBody(dBodyID odeBody, RigidBody::Ptr rwbody,
                 _mframe(rwbody->getMovableFrame()),
                 _bodyId(odeBody),
                 _body(rwbody),
-                _rwBody(rwbody),
-                _kBody(NULL),
-                _offset(offset),
                 _rwframe(_mframe),
                 _type(ODEBody::RIGID),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
-                _contactID(conID)
+                _contactID(conID),
+                _rwBody(rwbody),
+                _kBody(NULL),
+                _offset(offset)
 {
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
@@ -55,14 +55,14 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody::Ptr kbody, int matID, int conID
 				_mframe(kbody->getMovableFrame()),
 				_bodyId(odeBody),
 				_body(kbody),
-				_rwBody(NULL),
-				_kBody(kbody),
-                _offset(0,0,0),
 				_rwframe(kbody->getBodyFrame()),
 				_type(ODEBody::KINEMATIC),
 				_contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
-                _contactID(conID)
+                _contactID(conID),
+				_rwBody(NULL),
+				_kBody(kbody),
+                _offset(0,0,0)
 {
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
@@ -71,15 +71,15 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body::Ptr body, int mat
                 _mframe(NULL),
                 _bodyId(0), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
-                _rwBody(NULL),
-                _kBody(NULL),
                 _rwframe(body->getBodyFrame()),
                 _type(ODEBody::FIXED),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
                 _contactID(conID),
                 _geomId(geomIds[0]),
-                _geomIds(geomIds)
+                _geomIds(geomIds),
+                _rwBody(NULL),
+                _kBody(NULL)
 {
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
@@ -88,13 +88,13 @@ ODEBody::ODEBody(dBodyID odeBody, dynamics::Body::Ptr body, rw::math::Vector3D<>
                 _mframe(NULL),
                 _bodyId(odeBody), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
-                _rwBody(NULL),
-                _kBody(NULL),
                 _rwframe(body->getBodyFrame()),
                 _type( type ),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),
                 _contactID(conID),
+                _rwBody(NULL),
+                _kBody(NULL),
                 _offset(offset)
 {
     _rwBody = body.cast<RigidBody>();
@@ -105,20 +105,19 @@ ODEBody::ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame):
     _mframe(dynamic_cast<MovableFrame*>(frame)),
     _bodyId(odeBody),
     _body(NULL),
-    _rwBody(NULL),
-    _kBody(NULL),
-
     _rwframe(frame),
     _type(ODEBody::RigidDummy),
     _contactReductionThreshold(0.005),// 1cm
     _materialID(-1),
-    _contactID(-1)
+    _contactID(-1),
+    _rwBody(NULL),
+    _kBody(NULL)
 {
 
 }
 
 void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
-    double dt = info.dt;
+    //double dt = info.dt;
     switch(_type){
     case(ODEBody::RIGID): {
         Vector3D<> f = _rwBody->getForceW( state );
@@ -194,8 +193,8 @@ void ODEBody::postupdate(rw::kinematics::State& state){
 
 
         //_rwBody->setWorldTcom(ODEUtil::getODEBodyT3D(_bodyId), state);
-        Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
-        Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
+        //Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
+        //Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
         // angular velocity is defined in world coordinates and around center of mass
         //if(_rwBody==NULL)

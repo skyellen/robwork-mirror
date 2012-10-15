@@ -73,9 +73,9 @@ RWSimPlugin::RWSimPlugin():
 	_dwc(NULL),
 	_sim(NULL),
 	_debugRender(NULL),
+	_openCalled(false),
 	_tactileSensorDialog(NULL),
-	_gtable("SchunkHand","Object"),
-	_openCalled(false)
+	_gtable("SchunkHand","Object")
 {
     setupUi(this);
 

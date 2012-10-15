@@ -17,6 +17,7 @@
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
 

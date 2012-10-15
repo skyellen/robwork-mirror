@@ -986,7 +986,7 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
 
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
 
-    Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
+    //Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
     rwsim::dynamics::DynamicDevice *device = dev.get();
     State state = nstate;
 
@@ -1543,8 +1543,8 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         Transform3D<> aT = a_data->getTransform();
         Transform3D<> bT = b_data->getTransform();
         //std::cout << aT.P() << " " << bT.P() << std::endl;
-        const Transform3D<> aT_prev = fk.get(pair.first);
-        const Transform3D<> bT_prev = fk.get(pair.second);
+        //const Transform3D<> aT_prev = fk.get(pair.first);
+        //const Transform3D<> bT_prev = fk.get(pair.second);
         if(a_data->getFrame()!=pair.first)
             aT = aT * Kinematics::frameTframe(a_data->getFrame(),pair.first, state);
         if(b_data->getFrame()!=pair.second)

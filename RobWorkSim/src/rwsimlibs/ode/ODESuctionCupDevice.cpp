@@ -86,9 +86,9 @@ ODESuctionCupDevice::ODESuctionCupDevice(ODEBody *base,
         _isInContact(false),
         _odesim(odesim),
         _worldId(odesim->getODEWorldId() ),
+        _fjoint(NULL),
         _lastX(0),
-        _lastAng(0),
-        _fjoint(NULL)
+        _lastAng(0)
 {
     //std::vector<dynamics::RigidJoint*> joints = _dev->getRigidJoints();
     //_tcp = joints.back();
@@ -139,8 +139,8 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
         }
     }
 
-    double pressure = _dev->getPressure(state);
-    bool isVacuumOn = pressure>0.001;
+    //double pressure = _dev->getPressure(state);
+    //bool isVacuumOn = pressure>0.001;
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
@@ -354,7 +354,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
     } else if(_isInContact){
         // todo: monitor the forces on the fixed joint
         Vector3D<> force = ODEUtil::toVector3D( _feedback.f1 );
-        Vector3D<> torque = ODEUtil::toVector3D( _feedback.t1 );
+        //Vector3D<> torque = ODEUtil::toVector3D( _feedback.t1 );
         //std::cout << "Force;: " << force << " ... " << torque << std::endl;
 
 
@@ -416,7 +416,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
     double ang = angle(saxis, wTend.R()*Vector3D<>::z() );
 
     // apply spring constants for linier spring
-    double h = 0;//_dev->getHeight();
+    //double h = 0;//_dev->getHeight();
 
     double x = sp1(4)-pos;
     double xd = _lastX-x;

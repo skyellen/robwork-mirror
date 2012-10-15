@@ -254,6 +254,7 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     QDialog(parent),
     _defstate(state),
     _state(state),
+    _id("0"),
     _dwc(dwc),
     _colDect(detector),
     _avgSimTime(4),
@@ -262,7 +263,6 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     _exitHard(false),
     _graspNotStable(false),
     _gtable("",""),
-    _id("0"),
     		_nrOfGraspsInGroup(0)
 {
 	RW_ASSERT( _dwc );
@@ -715,7 +715,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     if(i==0)
         _state = state;
-    bool dataValid = false;
+    //bool dataValid = false;
     if( time-_lastBelowThresUpdate >  _minRestTimeSpin->value() || _tactileDataOnAllCnt>50){
         // one simulation has finished...
     	_tactileDataOnAllCnt = 0;
@@ -725,7 +725,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             rw::math::Q qualities( Q::zero(3) );
             Grasp3D g3d( _bodySensor->getContacts() );
 
-            Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
+            //Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
             RW_DEBUGS("***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size());
             std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
 
@@ -799,9 +799,9 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             if( _inGroupsCheck->isChecked()){
 				if( _nrOfGraspsInGroup==1 && ( qualities(0)<0.1 || qualities(1)<=0 || qualities(2)<=0.1 || fingersWithData<3) ){
 					_nrOfGraspsInGroup = 0;
-					dataValid = false;
+					//dataValid = false;
 				} else if(_nrOfGraspsInGroup>0){
-					dataValid = true;
+					//dataValid = true;
 					_gtable.addGrasp(data);
 					_nrOfTests++;
 
@@ -1141,7 +1141,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
         _handconfigs[simidx].clear();
         return false;
     }
-    Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
+    //Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
     BOOST_FOREACH(Contact3D &c, g3d.contacts){
         sstr << c.p << "  " << c.n << " ";
     }
@@ -1431,7 +1431,7 @@ void GraspRestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, 
 		// r and center c
 		Transform3D<> bTo = Kinematics::frameTframe(_handBase, _object, state);
 		Transform3D<> wTo = Kinematics::worldTframe(_object, state);
-		double r = MetricUtil::norm2(bTo.P());
+		//double r = MetricUtil::norm2(bTo.P());
 
 
 		// we calculate the center of the object

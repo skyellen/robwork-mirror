@@ -100,9 +100,9 @@ TactileSensorDialog::TactileSensorDialog(
                                     QWidget *parent):
     QDialog(parent),
     _dwc(dwc),
-    _nrOfPadsH(3),
+    _renderingToImage(false),
     _saveCnt(0),
-_renderingToImage(false)
+    _nrOfPadsH(3)
 {
 
 	RW_ASSERT( _dwc );
@@ -249,7 +249,7 @@ void TactileSensorDialog::drawTactileInput(){
     // if features is enabled then we draw them as well
     if( _centerOfMassBtn->isChecked() ){
 
-    	for(int i=0;i<_centers.size();i++){
+    	for(std::size_t i=0;i<_centers.size();i++){
     		//std::cout << "center : " << _centers[i] << std::endl;
     		// we need to map the coordinates into graphics view coordinates
 
@@ -264,7 +264,7 @@ void TactileSensorDialog::drawTactileInput(){
     }
 
     if( _momentsBtn->isChecked() ){
-    	for(int i=0;i<_moments.size();i++){
+    	for(std::size_t i=0;i<_moments.size();i++){
 
     		qreal offsetx = _rectItems[i][0]->rect().x();
     		qreal offsety = _rectItems[i][0]->rect().y();
@@ -400,9 +400,9 @@ void TactileSensorDialog::setState(const rw::kinematics::State& state){
         QPainter painter(&img);
         painter.setBackground( QBrush(QColor(Qt::white)));
         _gview->render(&painter);
-        double time = TimerUtil::currentTime();
+        //double time = TimerUtil::currentTime();
         std::stringstream sstr;
-        int s = (int)(time);
+        //int s = (int)(time);
         sstr << "TactileImageSave_"<< _saveCnt << ".png";
         _saveCnt++;
         img.save(sstr.str().c_str());
@@ -445,8 +445,8 @@ void TactileSensorDialog::detectCenterMass(){
         double nrOfVals = 0;
         double totalValue = 0;
         double x=0,y=0;
-        for(int i=0;i<w;i++){
-            for(int j=0;j<h;j++){
+        for(std::size_t i=0;i<w;i++){
+            for(std::size_t j=0;j<h;j++){
             	if(low_thres<=mat(i,j) && mat(i,j)<=upp_thres){
             		nrOfVals++;
             		totalValue += mat(i,j);

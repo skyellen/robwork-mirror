@@ -48,10 +48,10 @@ SimCfgDialog::SimCfgDialog(rw::common::Ptr<DynamicSimulator> sim, QWidget *paren
 	//_tabPane->addItem(id);
 	ODESimCfgDialog *dialog = new ODESimCfgDialog(sim, this);
 	_tabPane->addTab(dialog, "ODE");
-	BOOST_FOREACH(const std::string& engineID, engineIDs){
+	//BOOST_FOREACH(const std::string& engineID, engineIDs){
 		//_tabPane->addTab(this, engineID.c_str() );
 		//_spaceMethodBox->addItem(engineID.c_str());
-	}
+	//}
 
     //if(engineIDs.size()==0)
     //	_createBtn->setDisabled(true);
@@ -69,7 +69,7 @@ void SimCfgDialog::btnPressed(){
 }
 
 void SimCfgDialog::changedEvent(){
-    QObject *obj = sender();
+    //QObject *obj = sender();
     /*
     if( obj == _timer ){
 
