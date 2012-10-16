@@ -71,8 +71,7 @@ namespace {
 
     Jacobian subJacobian(const Jacobian& jac, int toCol){
         int m = jac.size1();
-        //int n = jac.size2();
-        RW_ASSERT(toCol<=n);
+        RW_ASSERT(toCol<=jac.size2());
         Jacobian jsub(m,toCol);
         for(int x=0;x<m;x++)
             for(int y=0;y<m;y++)
@@ -91,8 +90,7 @@ namespace {
     {
         using namespace boost::numeric::ublas;
         int m = Jq.size1();
-        //int n = Jq.size2();
-        RW_ASSERT(column<n);
+        RW_ASSERT(column<Jq.size2());
 
         matrix<double> subjac(m,column+1);
         matrix_range<matrix<double> > mr (subjac, range (0, m), range (0, column+1));
