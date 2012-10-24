@@ -746,7 +746,11 @@ xercesc::DOMElement* XMLBasisTypes::createBoolean(bool value, xercesc::DOMDocume
 }
 
 xercesc::DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocument* doc) {
-    return createElement(DoubleId, XMLStr(value).uni(), doc);
+	std::ostringstream str;
+	str.unsetf(std::ios::floatfield);            // floatfield not set
+	str.precision(16);
+	str << value;
+    return createElement(DoubleId, XMLStr(str.str()).uni(), doc);
 }
 
 xercesc::DOMElement* XMLBasisTypes::createFloat(float value, xercesc::DOMDocument* doc) {
