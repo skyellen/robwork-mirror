@@ -314,7 +314,7 @@ void RenderModel3D::useMaterial(const Model3D::Material& mat, DrawType type, dou
 
     //std::cout << mat.name << std::endl;
 	if(mat.simplergb){
-		//glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
+		glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
 	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat.specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, &mat.shininess);
