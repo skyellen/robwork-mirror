@@ -1,7 +1,6 @@
 #ifndef SAMPLEPLUGIN_HPP
 #define SAMPLEPLUGIN_HPP
 
-#include <rw/rw.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
 class SamplePlugin: public rws::RobWorkStudioPlugin

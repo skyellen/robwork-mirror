@@ -51,4 +51,4 @@ void SamplePlugin::clickEvent() {
     }
 }
 
-Q_EXPORT_PLUGIN(SamplePlugin);
+Q_EXPORT_PLUGIN2(SamplePlugin, SamplePlugin);
