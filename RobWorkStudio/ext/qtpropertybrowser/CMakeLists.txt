@@ -144,6 +144,11 @@ ADD_LIBRARY(${TargetName} ${SRC_FILES_CPP} ${ResourceFiles})
 INSTALL(TARGETS ${TargetName} DESTINATION "${LIB_INSTALL_DIR}")
 INSTALL(DIRECTORY "${RWS_ROOT}/ext/qtpropertybrowser/"
 		DESTINATION "${EXT_INSTALL_DIR}/qtpropertybrowser/"
-		PATTERN 
-		".svn,.cpp" EXCLUDE
+		FILES_MATCHING
+		PATTERN ".svn" EXCLUDE
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "projects" EXCLUDE
+		PATTERN "examples" EXCLUDE
+		PATTERN "doc" EXCLUDE
+		PATTERN "buildlib" EXCLUDE
 		)
