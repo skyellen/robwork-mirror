@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # The name of the project.
 PROJECT(RobWork)
-SET(ROBWORK_VERSION 0.6.0)
+SET(ROBWORK_VERSION 0.7.0)
 SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # guard against in-source builds
