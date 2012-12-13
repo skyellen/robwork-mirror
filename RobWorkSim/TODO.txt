@@ -1,6 +1,0 @@
-
-
-Sensor simulation
-- add support for ir proximity sensors
-- add support for acceleratormeter and gyro
-- 

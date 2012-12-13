@@ -3,11 +3,14 @@
    ==  Version 2.0, in this case for the Apache Xerces Java distribution. ==
    =========================================================================
 
-   RobWork
+   RobWorkSim
    Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
    Faculty of Engineering, University of Southern Denmark
 
-   RobWork depends on
+   RobWorkSim depends on
+   
+   RobWork: The Robotics Group, The Maersk Mc-Kinney Moller Institute, Faculty of Engineering, University of Southern Denmark
+ 
    
    Boost: www.boost.org
    
@@ -25,5 +28,5 @@
    
    XercesC: The Apache Software Foundation (http://www.apache.org/).
    
-   
+   ODE: The Open Dynamics Engine 
    

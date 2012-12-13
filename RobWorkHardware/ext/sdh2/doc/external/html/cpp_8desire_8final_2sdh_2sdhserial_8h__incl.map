@@ -1,7 +1,0 @@
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="117,379,261,406">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="475,304,531,331">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="592,304,704,331">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2simplevector_8h.html" title="Interface of class SDH::cSimpleVector." alt="" coords="301,230,408,256">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2simplestringlist_8h.html" title="Interface of class SDH::cSimpleStringList." alt="" coords="56,230,176,256">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhbase_8h.html" title="Interface of class SDH::cSDHBase." alt="" coords="455,155,537,182">
-<area shape="rect" href="$cpp_8desire_8final_2sdh_2serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="505,80,599,107">

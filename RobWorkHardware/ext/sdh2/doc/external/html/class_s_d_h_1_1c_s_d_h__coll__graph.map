@@ -1,7 +1,0 @@
-<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_base.html" title="The base class to control the SCHUNK Dexterous Hand." alt="" coords="341,486,640,1318">
-<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_serial.html" title="The class to communicate with a SDH via RS232." alt="" coords="271,1382,441,4678">
-<area shape="rect" href="$class_s_d_h_1_1c_d_b_g.html" title="A class to print colored debug messages." alt="" coords="216,6,328,390">
-<area shape="rect" href="$class_s_d_h_1_1c_serial_base.html" title="Low&#45;level communication class to access a serial port." alt="" coords="5,686,133,1118">
-<area shape="rect" href="$class_s_d_h_1_1c_simple_vector.html" title="A simple vector implementation." alt="" coords="419,14,563,382">
-<area shape="rect" href="$class_s_d_h_1_1c_simple_string_list.html" title="A simple string list. (Fixed maximum number of strings of fixed maximum length)." alt="" coords="157,750,317,1054">
-<area shape="rect" href="$class_s_d_h_1_1c_unit_converter.html" title="Unit conversion class to convert values between physical unit systems." alt="" coords="540,2726,692,3334">
