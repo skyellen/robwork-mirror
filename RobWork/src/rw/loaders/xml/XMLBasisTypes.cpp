@@ -258,10 +258,10 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
                         values[3], values[4], values[5],
                         values[6], values[7], values[8]);
 
-    LinearAlgebra::Matrix<>::type u, v;
-    boost::numeric::ublas::vector<double> w;
-    LinearAlgebra::svd(rot.m(), u, w ,v);
-    LinearAlgebra::Matrix<>::type res = prod(u,trans(v));
+    Eigen::MatrixXd u, v;
+	Eigen::VectorXd w;
+    LinearAlgebra::svd(rot.e(), u, w ,v);
+	Eigen::MatrixXd res = u * v.transpose();
 
     rot = Rotation3D<>(res);
 
@@ -274,8 +274,8 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
         std::cout << rot << std::endl;
         RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
                  "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
-        LinearAlgebra::svd(rot.m(), u, w ,v);
-        res = prod(u,trans(v));
+        LinearAlgebra::svd(rot.e(), u, w ,v);
+        res = u*v.transpose();
         rot = Rotation3D<>(res);
 
     }

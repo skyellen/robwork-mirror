@@ -27,6 +27,8 @@
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
 

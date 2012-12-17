@@ -32,6 +32,8 @@
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -45,7 +47,9 @@ namespace rw { namespace math {
     {
     public:
         //! The type of the internal Boost matrix implementation.
-        typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
+        typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> BoostBase;
+
+		typedef Eigen::Matrix<T, 3, 3> Base;
 
         /**
          * @brief Constructs an initialized 3x3 rotation matrix
@@ -75,17 +79,17 @@ namespace rw { namespace math {
             T r11, T r12, T r13,
             T r21, T r22, T r23,
             T r31, T r32, T r33
-            ):_matrix(3,3)
+            )
         {
-            m()(0, 0) = r11;
-            m()(0, 1) = r12;
-            m()(0, 2) = r13;
-            m()(1, 0) = r21;
-            m()(1, 1) = r22;
-            m()(1, 2) = r23;
-            m()(2, 0) = r31;
-            m()(2, 1) = r32;
-            m()(2, 2) = r33;
+            _matrix(0, 0) = r11;
+            _matrix(0, 1) = r12;
+            _matrix(0, 2) = r13;
+            _matrix(1, 0) = r21;
+            _matrix(1, 1) = r22;
+            _matrix(1, 2) = r23;
+            _matrix(2, 0) = r31;
+            _matrix(2, 1) = r32;
+            _matrix(2, 2) = r33;
         }
 
         /**
@@ -105,17 +109,17 @@ namespace rw { namespace math {
         InertiaMatrix(
             const Vector3D<T>& i,
             const Vector3D<T>& j,
-            const Vector3D<T>& k) : _matrix(3,3)
+            const Vector3D<T>& k)
         {
-            m()(0,0) = i[0];
-            m()(0,1) = j[0];
-            m()(0,2) = k[0];
-            m()(1,0) = i[1];
-            m()(1,1) = j[1];
-            m()(1,2) = k[1];
-            m()(2,0) = i[2];
-            m()(2,1) = j[2];
-            m()(2,2) = k[2];
+            _matrix(0,0) = i[0];
+            _matrix(0,1) = j[0];
+            _matrix(0,2) = k[0];
+            _matrix(1,0) = i[1];
+            _matrix(1,1) = j[1];
+            _matrix(1,2) = k[1];
+            _matrix(2,0) = i[2];
+            _matrix(2,1) = j[2];
+            _matrix(2,2) = k[2];
         }
 
         /**
@@ -127,18 +131,49 @@ namespace rw { namespace math {
         InertiaMatrix(
             T i = 0.0,
             T j = 0.0,
-            T k = 0.0) : _matrix(3,3)
+            T k = 0.0) 
         {
-            m()(0,0) = i;
-            m()(0,1) = 0;
-            m()(0,2) = 0;
-            m()(1,0) = 0;
-            m()(1,1) = j;
-            m()(1,2) = 0;
-            m()(2,0) = 0;
-            m()(2,1) = 0;
-            m()(2,2) = k;
+            _matrix(0,0) = i;
+            _matrix(0,1) = 0;
+            _matrix(0,2) = 0;
+            _matrix(1,0) = 0;
+            _matrix(1,1) = j;
+            _matrix(1,2) = 0;
+            _matrix(2,0) = 0;
+            _matrix(2,1) = 0;
+            _matrix(2,2) = k;
         }
+
+
+        /**
+           @brief Construct a rotation matrix from a Boost matrix expression.
+
+           The matrix expression must be convertible to a 3x3 bounded matrix.
+
+           It is the responsibility of the user that 3x3 matrix is indeed an
+           inertia matrix.
+         */
+        template <class R>
+        explicit InertiaMatrix(
+            const boost::numeric::ublas::matrix_expression<R>& r) 
+        {
+			BoostBase b(r);
+			for (size_t i = 0; i<3;i++)
+				for (size_t j = 0; j<3; j++)
+					_matrix(i,j) = b(i,j);		
+		}
+
+
+        /**
+           @brief Construct an internal matrix from a Eigen::MatrixBase
+
+           It is the responsibility of the user that 3x3 matrix is indeed an 
+		   inertia matrix.
+         */        
+        explicit InertiaMatrix(const Base& r) : _matrix(r)
+        {
+		}
+
 
         /**
          * @brief Returns reference to matrix element
@@ -148,7 +183,7 @@ namespace rw { namespace math {
          */
         T& operator()(size_t row, size_t column)
         {
-            return m()(row, column);
+            return _matrix(row, column);
         }
 
         /**
@@ -159,30 +194,39 @@ namespace rw { namespace math {
          */
         const T& operator()(size_t row, size_t column) const
         {
-            return m()(row, column);
+            return _matrix(row, column);
         }
 
         /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
-         * @f$ that represents this rotation
-         *
-         * @return @f$ \mathbf{M}\in SO(3) @f$
+         * @brief Returns reference to the internal 3x3 matrix 
          */
-        const Base& m() const
+        const Base& e() const
         {
             return _matrix;
         }
 
         /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
-         * @f$ that represents this rotation
-         *
-         * @return @f$ \mathbf{M}\in SO(3) @f$
+         * @brief Returns reference to the internal 3x3 matrix 
          */
-        Base& m()
+        Base& e()
         {
             return _matrix;
         }
+
+        /**
+         * @brief Returns boost matrix  
+         *
+         * @return @f$ \mathbf{M}\in SO(3) @f$
+         */
+        BoostBase m()
+        {
+			BoostBase b(3,3);
+			for (size_t i = 0; i<3;i++)
+				for (size_t j = 0; j<3; j++)
+					b(i,j) = _matrix(i,j);
+            return b;
+        }
+
 
         /**
          * @brief Calculates \f$ \robabx{a}{c}{\mathbf{R}} =
@@ -196,7 +240,7 @@ namespace rw { namespace math {
          */
         friend InertiaMatrix operator*(const Rotation3D<T>& aRb, const InertiaMatrix& bRc)
         {
-            return InertiaMatrix(prod(aRb.m(), bRc.m()));
+            return InertiaMatrix(aRb.e()*bRc.e());
         }
 
         /**
@@ -211,7 +255,7 @@ namespace rw { namespace math {
          */
         friend InertiaMatrix operator*(const InertiaMatrix& aRb, const Rotation3D<T>& bRc)
         {
-            return InertiaMatrix(prod(aRb.m(), bRc.m()));
+            return InertiaMatrix(aRb.e()* bRc.e());
         }
 
         /**
@@ -219,7 +263,7 @@ namespace rw { namespace math {
          */
         friend InertiaMatrix operator+(const InertiaMatrix& I1, const InertiaMatrix& I2)
         {
-            return InertiaMatrix( I1.m()+I2.m());
+            return InertiaMatrix( I1.e()+I2.e());
         }
 
         /**
@@ -232,7 +276,7 @@ namespace rw { namespace math {
          */
         friend Vector3D<T> operator*(const InertiaMatrix& aRb, const Vector3D<T>& bVc)
         {
-            return Vector3D<T>(prod(aRb.m(), bVc.m()));
+            return Vector3D<T>(aRb.e() * bVc.e());
         }
 
         /**
@@ -248,10 +292,8 @@ namespace rw { namespace math {
          * \robabx{a}{b}{\mathbf{R}}^T @f$
          */
         friend InertiaMatrix inverse(const InertiaMatrix& aRb)
-        {
-            boost::numeric::ublas::matrix<T> res(3,3);
-            LinearAlgebra::invertMatrix(aRb.m(),res);
-            return InertiaMatrix(res);
+        {            
+            return InertiaMatrix(aRb.e().inverse());
         }
 
         /**
@@ -262,7 +304,7 @@ namespace rw { namespace math {
          */
         friend std::ostream& operator<<(std::ostream &os, const InertiaMatrix& r)
         {
-            return os << r.m();
+            return os << r.e();
         }
 
         /**
@@ -321,18 +363,7 @@ namespace rw { namespace math {
 
 
 
-        /**
-           @brief Construct a rotation matrix from a Boost matrix expression.
 
-           The matrix expression must be convertible to a 3x3 bounded matrix.
-
-           It is the responsibility of the user that 3x3 matrix is indeed a
-           rotation matrix.
-         */
-        template <class R>
-        explicit InertiaMatrix(
-            const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
-        {}
 
     private:
         Base _matrix;

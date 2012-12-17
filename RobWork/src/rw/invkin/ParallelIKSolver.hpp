@@ -66,6 +66,8 @@ namespace rw { namespace invkin {
     private:
         typedef std::pair<rw::math::Vector3D<double>, rw::math::Quaternion<double> > QPose;
 
+		typedef rw::math::Q::BoostVector BoostVector;
+
         const models::ParallelDevice* _device;
         rw::common::PropertyMap _properties;
     };

@@ -397,6 +397,11 @@ ELSE()
     ADD_DEFINITIONS("-DBOOST_FILESYSTEM_VERSION=3")
 ENDIF()
 
+IF(MSVC)
+	ADD_DEFINITIONS("-DEIGEN_DONT_ALIGN_STATICALLY=1")
+ENDIF()
+
+
 ###########################################################################
 # SETTING UP VARS
 # here we setup the output variables

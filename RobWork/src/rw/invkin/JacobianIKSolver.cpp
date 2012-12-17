@@ -103,7 +103,7 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
     Q q = _device->getQ(state);
     const int maxIterations = maxIter;
     Device::QBox bounds = _device->getBounds();
-    LinearAlgebra::Matrix<double>::type Jp;
+    LinearAlgebra::BoostMatrix<double>::type Jp;
 
 
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
@@ -115,7 +115,7 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
         const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
         const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
 
-        if (norm_inf(b_eXed) <= maxError) {
+        if (normInf(b_eXed) <= maxError) {
             return true;
         }
 

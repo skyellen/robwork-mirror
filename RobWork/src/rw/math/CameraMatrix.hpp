@@ -41,7 +41,9 @@ namespace math {
 	class CameraMatrix
 	{
 	private:
-		typedef boost::numeric::ublas::bounded_matrix<T, 4, 4> Base;
+		typedef boost::numeric::ublas::bounded_matrix<T, 4, 4> BoostBase;
+
+		typedef Eigen::Matrix<T, 4, 4> Base;
 
 	public:
 		//! A pair of Vector3D
@@ -54,7 +56,7 @@ namespace math {
 		            T r11, T r12, T r13,
 		            T r21, T r22, T r23,
 		            T r31, T r32, T r33
-		            ):_matrix(3,3)
+		            )
         {
             _matrix(0, 0) = r11;
             _matrix(0, 1) = r12;
@@ -115,12 +117,11 @@ namespace math {
 	    };
 
         /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
-         * @f$ that represents this rotation
+         * @brief Returns reference to the internal camera matrix
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        Base& m()
+        Base& e()
         {
             return _matrix;
         };

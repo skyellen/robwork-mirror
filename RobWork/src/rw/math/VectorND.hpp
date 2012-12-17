@@ -23,9 +23,15 @@
  * @file VectorND.hpp
  */
 
+
+
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
+
+#include <Eigen/Eigen>
+
+#include <rw/common/macros.hpp>
 
 namespace rw { namespace math {
 
@@ -33,7 +39,7 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief A ND VectorND
+     * @brief A N-Dimensional Vector
      *
      */
     template<size_t N, class T = double>
@@ -41,7 +47,10 @@ namespace rw { namespace math {
     {
     public:
         //! The type of the internal Boost VectorND implementation.
-        typedef boost::numeric::ublas::bounded_vector<T, N> BoostBoundedVector;
+        //typedef boost::numeric::ublas::bounded_vector<T, N> BoostBoundedVector;
+
+		//! The type of the internal Eigen Vector
+		typedef Eigen::Matrix<T, N, 1> EigenVectorND;
 		
 
         //! Value type.
@@ -52,7 +61,7 @@ namespace rw { namespace math {
          */
         VectorND()
         {
-            _vec = boost::numeric::ublas::zero_vector<T>(N);
+			_vec = EigenVectorND();
         }
 
         /**
@@ -60,27 +69,65 @@ namespace rw { namespace math {
          *
          * @param r [in] an ublas VectorND_expression
          */
+        /*template <class R>
+		VectorND(const Eigen::Matrix<R, N, 1>& v)
+        {
+			_vec = v;
+		}*/
+
+
+		/**
+         * @brief Creates a 3D VectorND from VectorND_expression
+         *
+         * @param r [in] an ublas VectorND_expression
+         */
+		template <class R>
+		VectorND(const Eigen::MatrixBase<R>& v)
+        {
+			if (v.cols() != 1 || v.rows() != N)
+				RW_THROW("Unable to initialize VectorND with "<<v.rows()<<" x "<<v.cols()<< " matrix");
+			_vec = v;
+		}
+
         template <class R>
         explicit VectorND(const boost::numeric::ublas::vector_expression<R>& r)
         {
-			_vec = r;
+			boost::numeric::ublas::bounded_vector<T, N> m(r);
+			for (size_t i = 0; i<N; i++) {
+				_vec(i) = m(i);
+			}
 		}
 
+  //      const BoostBoundedVector& m() const {
+		//	return _vec;
+		//}
+
         /**
-           @brief Accessor for the internal Boost VectorND state.
+           @brief Converts to Boost ublas::bounded_vector.
          */
-        const BoostBoundedVector& m() const {
+        boost::numeric::ublas::bounded_vector<T, N> m() {
+			boost::numeric::ublas::bounded_vector<T, N> m;
+			for (size_t i = 0; i<_vec.size(); i++)
+				m(i) = _vec(i);
+
+			return m;
+        }
+
+        /**
+           @brief Accessor for the internal Eigen VectorND.
+         */
+		Eigen::Matrix<T, N, 1>& e() {
 			return _vec;
 		}
 
         /**
-           @brief Accessor for the internal Boost VectorND state.
+           @brief Accessor for the internal Eigen VectorND.
          */
-        BoostBoundedVector& m() {
-            return _vec;
-        }
+		const Eigen::Matrix<T, N, 1>& e() const {
+			return _vec;
+		}
 
-        /**
+		/**
            @brief The dimension of the VectorND (i.e. 3).
 
            This method is provided to help support generic algorithms using
@@ -126,7 +173,7 @@ namespace rw { namespace math {
          */
         const VectorND<N,T> operator/( T s) const
         {
-            return VectorND<N,T>( _vec / s );
+			return VectorND<N,T>( _vec / s );
         }
 
         /**
@@ -226,7 +273,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T norm2() const {
-            return norm_2(_vec);
+            return _vec.norm();
         }
 
         /**
@@ -234,7 +281,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T norm1() const {
-            return norm_1(_vec);
+			return _vec.lpNorm<1>();
         }
 
         /**
@@ -242,7 +289,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T normInf() const {
-            return norm_inf(_vec);
+            return _vec.lpNorm< Eigen::Infinity>();
         }
 
         /**
@@ -262,9 +309,11 @@ namespace rw { namespace math {
             return true;
         }
 
-        static VectorND<N,T> zero(){ return VectorND<N,T>( boost::numeric::ublas::zero_vector<T>(N) ); }
+		static VectorND<N,T> zero(){ return Eigen::Matrix<T,N,1>::Zero(); }
     private:
-        BoostBoundedVector _vec;
+        //BoostBoundedVector _vec;
+		EigenVectorND _vec;
+
     };
 
     /**
@@ -288,13 +337,15 @@ namespace rw { namespace math {
     template <size_t ND, class T>
     const VectorND<ND,T> cross(const VectorND<ND,T>& v1, const VectorND<ND,T>& v2)
     {
-        return cross(v1.m(),v2.m());
+		return v1.e().cross(v2.e());
+        //return cross(v1.e(),v2.e());
     }
 
     template <size_t ND, class T>
     void cross(const VectorND<ND,T>& v1, const VectorND<ND,T>& v2, VectorND<ND,T>& dst)
     {
-        dst = cross(v1.m(),v2.m());
+		dst = v1.e().cross(v2.e());
+        //dst = cross(v1.m(),v2.m());
     }
 
 
@@ -325,11 +376,17 @@ namespace rw { namespace math {
     template <size_t ND, class T>
     const VectorND<ND,T> normalize(const VectorND<ND,T>& v)
     {
-        T length = v.norm2();
-        if (length != 0)
-            return VectorND<ND,T>(v(0)/length, v(1)/length, v(2)/length);
-        else
-            return VectorND<ND,T>(0,0,0);
+		//Create a copy
+		VectorND<ND, T> res(v);
+		//Normalize it
+		res.e().normalize();
+		//Return it
+		return res;
+        //T length = v.norm2();
+        //if (length != 0)
+        //    return VectorND<ND,T>(v(0)/length, v(1)/length, v(2)/length);
+        //else
+        //    return VectorND<ND,T>(0,0,0);
     }
 
     /**
@@ -380,8 +437,6 @@ namespace rw { namespace math {
     template<size_t ND, class Q, class T>
     const VectorND<ND, Q> cast(const VectorND<ND,T>& v)
     {
-
-
         return VectorND<ND, Q>(
             static_cast<Q>(v(0)),
             static_cast<Q>(v(1)),

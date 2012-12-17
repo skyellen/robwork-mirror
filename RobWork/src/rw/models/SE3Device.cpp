@@ -66,7 +66,7 @@ std::pair<Q, Q> SE3Device::getBounds() const
 
 Jacobian SE3Device::baseJend(const State& state) const
 {
-    return Jacobian(Jacobian::IdentityBase(6, 6));
+	return Jacobian(Jacobian::Base::Identity(6, 6));
 }
 
 rw::math::Q SE3Device::getVelocityLimits() const{

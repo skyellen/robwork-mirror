@@ -148,6 +148,34 @@ namespace rw { namespace math {
         }
 
         /**
+         * \brief Constructs a 3x3 skew-symmetric matrix \f$ S\in so(3)\f$
+         * \param s [in] the \f$ s_x \f$, \f$ s_y \f$ and \f$ s_z \f$ of the matrix
+         * \return The 3x3 skew-symmetric matrix \f$S\f$
+         *
+         * \f$
+         * S =
+         * \left[
+         * \begin{array}{ccc}
+         *    0 & -s_z &  s_y\\
+         *  s_z &    0 & -s_x\\
+         * -s_y &  s_x &    0
+         * \end{array}
+         * \right]
+         * \f$
+         */
+        template<class R>
+		static inline Eigen::Matrix<R, 3, 3> skew(const Vector3D<R>& s)
+        {
+			Eigen::Matrix<R, 3, 3> S;
+            S(0,0) =   0.0; S(0,1) = -s[2]; S(0,2) =  s[1];
+            S(1,0) =  s[2]; S(1,1) =   0.0; S(1,2) = -s[0];
+            S(2,0) = -s[1]; S(2,1) =  s[0]; S(2,2) =   0.0;
+
+            assert(LinearAlgebra::isSkewSymmetric(S));
+            return S;
+        }
+
+        /**
          * @brief clamp val to either min or max
          *
          * @param val [in] the value that is to be clamped

@@ -124,7 +124,7 @@ JointDeviceJacobianCalculator::~JointDeviceJacobianCalculator()
 //Jacobian JointDeviceJacobianCalculator::get(const FKTable& fk) const {
 Jacobian JointDeviceJacobianCalculator::get(const rw::kinematics::State& state) const {
     const rw::kinematics::FKTable fk(state);
-    Jacobian jacobian(Jacobian::ZeroBase(6 * _tcps.size(), _dof));
+    Jacobian jacobian(Jacobian::zero(6 * _tcps.size(), _dof));
     for (size_t i = 0; i<_tcps.size(); i++) {
         const Frame* tcpFrame = _tcps[i];
         const JacobianSetup& setup = _jacobianSetups[i];        

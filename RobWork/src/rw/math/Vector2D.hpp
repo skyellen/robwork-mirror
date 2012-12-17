@@ -26,6 +26,8 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
+
+#include <Eigen/Eigen>
 #include "Constants.hpp"
 
 namespace rw { namespace math {
@@ -59,9 +61,15 @@ namespace rw { namespace math {
     template<class T = double>
     class Vector2D
     {
-        typedef boost::numeric::ublas::bounded_vector<T, 2> Base;
 
-    public:
+	public:
+		//! Boost based Vector2D
+        typedef boost::numeric::ublas::bounded_vector<T, 2> BoostVector2D;
+	
+		//! Eigen based Vector2D
+		typedef Eigen::Matrix<T, 2, 1> EigenVector2D;
+
+    
         //! Value type.
         typedef T value_type;
 
@@ -70,8 +78,8 @@ namespace rw { namespace math {
          */
         Vector2D()
         {
-        	m()[0] = 0;
-        	m()[1] = 0;
+        	_vec[0] = 0;
+        	_vec[1] = 0;
         }
 
         /**
@@ -83,8 +91,8 @@ namespace rw { namespace math {
          */
         Vector2D(T x, T y)
         {
-        	m()[0] = x;
-        	m()[1] = y;
+        	_vec[0] = x;
+        	_vec[1] = y;
         }
 
         /**
@@ -92,19 +100,33 @@ namespace rw { namespace math {
          * @param r [in] an ublas vector_expression
          */
         template <class R>
-        Vector2D(const boost::numeric::ublas::vector_expression<R>& r) :
-            _vec(r)
-        {}
+        Vector2D(const boost::numeric::ublas::vector_expression<R>& r)
+        {
+			BoostVector2D v(r);
+			_vec[0] = v(0);
+			_vec[1] = v(1);
+		}
 
         /**
-           @brief Accessor for the internal Boost vector state.
+           @brief Returns Boost vector equivalent to *this.
          */
-        const Base& m() const { return _vec; }
+        BoostVector2D m() const { 
+			BoostVector2D v;
+			v(0) = _vec[0];
+			v(1) = _vec[1];
+			return v; 
+		}
 
         /**
-           @brief Accessor for the internal Boost vector state.
+           @brief Returns Eigen vector equivalent to *this.
          */
-        Base& m() { return _vec; }
+        EigenVector2D e() const { 
+			EigenVector2D v;
+			v(0) = _vec[0];
+			v(1) = _vec[1];
+			return v; 
+		}
+
 
         /**
            @brief The dimension of the vector (i.e. 2).
@@ -126,7 +148,7 @@ namespace rw { namespace math {
          */
         const T& operator()(size_t i) const
         {
-            return m()[i];
+            return _vec[i];
         }
 
         /**
@@ -138,7 +160,7 @@ namespace rw { namespace math {
          */
         T& operator()(size_t i)
         {
-            return m()[i];
+            return _vec[i];
         }
 
         /**
@@ -146,21 +168,21 @@ namespace rw { namespace math {
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return const reference to element
          */
-        const T& operator[](size_t i) const { return m()(i); }
+		const T& operator[](size_t i) const { return _vec[i]; }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return reference to element
          */
-        T& operator[](size_t i) { return m()(i); }
+		T& operator[](size_t i) { return _vec[i]; }
 
         /**
            @brief Scalar division.
          */
         friend const Vector2D<T> operator/(const Vector2D<T>& v, T s)
         {
-            return Vector2D<T>(v.m() / s);
+            return Vector2D<T>(v[0] / s, v[1] / s);
         }
 
         /**
@@ -168,7 +190,7 @@ namespace rw { namespace math {
          */
         friend const Vector2D<T> operator*(const Vector2D<T>& v, T s)
         {
-            return Vector2D<T>(v.m() * s);
+            return Vector2D<T>(v[0] * s, v[1] * s);
         }
 
         /**
@@ -176,7 +198,7 @@ namespace rw { namespace math {
          */
         friend const Vector2D<T> operator*(T s, const Vector2D<T>& v)
         {
-            return Vector2D<T>(s * v.m());
+            return Vector2D<T>(s * v[0], s * v[1]);
         }
 
         /**
@@ -184,7 +206,7 @@ namespace rw { namespace math {
          */
         friend const Vector2D<T> operator-(const Vector2D<T>& a, const Vector2D<T>& b)
         {
-            return Vector2D<T>(a.m() - b.m());
+            return Vector2D<T>(a(0) - b(0), a(1) - b(1));
         }
 
         /**
@@ -192,7 +214,7 @@ namespace rw { namespace math {
          */
         friend const Vector2D<T> operator+(const Vector2D<T>& a, const Vector2D<T>& b)
         {
-            return Vector2D<T>(a.m() + b.m());
+            return Vector2D<T>(a(0) + b(0), a(1) + b(1));
         }
 
         /**
@@ -200,7 +222,8 @@ namespace rw { namespace math {
          */
         Vector2D<T>& operator*=(T s)
         {
-            m() *= s;
+            _vec[0] *= s;
+			_vec[1] *= s;
             return *this;
         }
 
@@ -209,7 +232,8 @@ namespace rw { namespace math {
          */
         Vector2D<T>& operator/=(T s)
         {
-            m() /= s;
+            _vec[0] /= s;
+			_vec[1] /= s;
             return *this;
         }
 
@@ -218,7 +242,8 @@ namespace rw { namespace math {
          */
         Vector2D<T>& operator+=(const Vector2D<T>& v)
         {
-            m() += v.m();
+			_vec[0] += v(0);
+			_vec[1] += v(1);
             return *this;
         }
 
@@ -227,7 +252,8 @@ namespace rw { namespace math {
          */
         Vector2D<T>& operator-=(const Vector2D<T>& v)
         {
-            m() -= v.m();
+			_vec[0] -= v(0);
+			_vec[1] -= v(1);
             return *this;
         }
 
@@ -236,7 +262,7 @@ namespace rw { namespace math {
          */
         const Vector2D<T> operator-() const
         {
-            return Vector2D<T>(-m());
+			return Vector2D<T>(-_vec[0], -_vec[1]);
         }
 
         /**
@@ -268,7 +294,7 @@ namespace rw { namespace math {
          */
         friend double dot(const Vector2D<T>& v1, const Vector2D<T>& v2)
         {
-            return inner_prod(v1.m(), v2.m());
+            return v1(0)*v2(0) + v1(1)*v2(0);
         }
 
         /**
@@ -278,7 +304,7 @@ namespace rw { namespace math {
          */
         double angle()
         {
-            return atan2(m()[1],m()[0]);
+            return atan2(_vec[1],_vec[0]);
         }
 
         /**
@@ -324,23 +350,32 @@ namespace rw { namespace math {
          * @brief Returns the Euclidean norm (2-norm) of the vector
          * @return the norm
          */
-        T norm2() const { return norm_2(m()); }
+        T norm2() const { 
+			return sqrt(_vec[0]*_vec[0] + _vec[1]*_vec[1]);
+		}
 
         /**
          * @brief Returns the Manhatten norm (1-norm) of the vector
          * @return the norm
          */
-        T norm1() const { return norm_1(m()); }
+        T norm1() const { 
+			return fabs(_vec[0])+fabs(_vec[1]);
+		}
 
         /**
          * @brief Returns the infinte norm (\f$\inf\f$-norm) of the vector
          * @return the norm
          */
-        T normInf() const { return norm_inf(m()); }
+        T normInf() const { 
+			T res = fabs(_vec[0]);
+			const T f1 = fabs(_vec[1]);
+			if (f1 > res)
+				res = f1;
+			return res;
+		}
 
     private:
-
-    	Base _vec;
+		T _vec[2];
     };
 
     /**

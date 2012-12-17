@@ -118,7 +118,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 
                 if(obj._mappedToFaces){
                     glBegin(GL_TRIANGLES);
-                    for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+                    for(int i=data.startIdx; i<data.startIdx+data.size; i++){
                         // draw faces
                         const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
                         glTexCoord2fv(&obj._texCoords[i*3](0) );
@@ -138,7 +138,7 @@ void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const 
                 } else {
                     RW_ASSERT(obj._texCoords.size()==obj._normals.size());
                     glBegin(GL_TRIANGLES);
-                    for(size_t i=data.startIdx; i<data.startIdx+data.size; i++){
+                    for(int i=data.startIdx; i<data.startIdx+data.size; i++){
                         // draw faces
                         const rw::geometry::IndexedTriangle<uint16_t> &tri = obj._faces[i];
                         glTexCoord2fv(&obj._texCoords[tri[0]](0) );

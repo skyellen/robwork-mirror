@@ -238,8 +238,14 @@ public:
 	double getComputationTime() {
 		return _timer.getTime();
 	}
-	void resetComputationTime() {
+
+	int getNoOfCalls() {
+		return _numberOfCalls;
+	}
+
+	void resetComputationTimeAndCount() {
 		_timer.resetAndPause();
+		_numberOfCalls = 0;
 	}
 
     /**
@@ -259,6 +265,7 @@ private:
 
     // the broad phase collision strategy
 	mutable rw::common::Timer _timer;
+	mutable int _numberOfCalls;
 	ProximityFilterStrategy::Ptr _bpfilter;
 
     // the narrow phase collision strategy

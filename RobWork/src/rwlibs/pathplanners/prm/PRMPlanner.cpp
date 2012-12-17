@@ -297,6 +297,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
         Node node = addNode(q, _collisionCheckingStrategy != LAZY);
         addEdges(node);
         cnt++;
+		std::cout<<"cnt = "<<cnt<<std::endl;
     }
     roadmapBuildTimer.pause();
     printTimeStats();

@@ -31,6 +31,8 @@
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -64,7 +66,9 @@ namespace rw { namespace math {
         typedef T value_type;
 
         //! The type of the internal Boost matrix implementation.
-        typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
+        typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> BoostMatrix3x3;
+
+		typedef Eigen::Matrix<T, 3, 3> EigenMatrix3x3;
 
         /**
            @brief A rotation matrix with uninitialized storage.
@@ -170,8 +174,8 @@ namespace rw { namespace math {
          */
         static const Rotation3D& identity()
         {
-            static Rotation3D id(
-                boost::numeric::ublas::identity_matrix<T>(3));
+            //static Rotation3D id(boost::numeric::ublas::identity_matrix<T>(3));
+			static Rotation3D id(1,0,0,0,1,0,0,0,1);
             return id;
         }
 
@@ -272,14 +276,31 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
+         * @brief Returns a Boost 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        Base m() const
+        BoostMatrix3x3 m() const
         {
-            Base matrix;
+            BoostMatrix3x3 matrix;
+            for(size_t i=0;i<3;i++){
+                matrix(i,0) = _m[i][0];
+                matrix(i,1) = _m[i][1];
+                matrix(i,2) = _m[i][2];
+            }
+            return matrix;
+        }
+
+		/**
+         * @brief Returns a Eigen 3x3 matrix @f$ \mathbf{M}\in SO(3)
+         * @f$ that represents this rotation
+         *
+         * @return @f$ \mathbf{M}\in SO(3) @f$
+         */
+        EigenMatrix3x3 e() const
+        {
+            EigenMatrix3x3 matrix;
             for(size_t i=0;i<3;i++){
                 matrix(i,0) = _m[i][0];
                 matrix(i,1) = _m[i][1];
@@ -330,7 +351,7 @@ namespace rw { namespace math {
         template <class R>
         explicit Rotation3D(const boost::numeric::ublas::matrix_expression<R>& r)
         {
-            Base m(r);
+            BoostMatrix3x3 m(r);
             _m[0][0] = m(0,0);
             _m[0][1] = m(0,1);
             _m[0][2] = m(0,2);
@@ -342,6 +363,48 @@ namespace rw { namespace math {
             _m[2][2] = m(2,2);
 
         }
+
+		  /**
+           @brief Construct a rotation matrix from a 3x3 Eigen matrix
+
+           It is the responsibility of the user that 3x3 matrix is indeed a
+           rotation matrix.
+         */
+		template <class R>
+		explicit Rotation3D(const EigenMatrix3x3& r) {
+            _m[0][0] = m(0,0);
+            _m[0][1] = m(0,1);
+            _m[0][2] = m(0,2);
+            _m[1][0] = m(1,0);
+            _m[1][1] = m(1,1);
+            _m[1][2] = m(1,2);
+            _m[2][0] = m(2,0);
+            _m[2][1] = m(2,1);
+            _m[2][2] = m(2,2);
+		}
+
+		  /**
+           @brief Construct a rotation matrix from a 3x3 Eigen matrix
+
+           It is the responsibility of the user that 3x3 matrix is indeed a
+           rotation matrix.
+         */
+		template <class R>
+		explicit Rotation3D(const Eigen::MatrixBase<R>& m) {
+			RW_ASSERT(m.cols() == 3);
+			RW_ASSERT(m.rows() == 3);
+            _m[0][0] = m(0,0);
+            _m[0][1] = m(0,1);
+            _m[0][2] = m(0,2);
+            _m[1][0] = m(1,0);
+            _m[1][1] = m(1,1);
+            _m[1][2] = m(1,2);
+            _m[2][0] = m(2,0);
+            _m[2][1] = m(2,1);
+            _m[2][2] = m(2,2);
+		}
+
+
 
         /**
          * @brief Creates a skew symmetric matrix from a Vector3D. Also

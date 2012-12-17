@@ -184,7 +184,7 @@ void PieperSolver::solveTheta456(
     Transform3D<>& T06,
     std::vector<Q>& result) const
 {
-    Q q(Q::ZeroBase(6));
+    Q q(Q::zero(6));
     q(0) = theta1;
     q(1) = theta2;
     q(2) = theta3;

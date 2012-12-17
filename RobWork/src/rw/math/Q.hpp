@@ -25,7 +25,7 @@
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
-
+#include <Eigen/Eigen>
 #include <rw/common/macros.hpp>
 #include <cstdarg>
 namespace rw { namespace math {
@@ -36,32 +36,37 @@ namespace rw { namespace math {
     class Q
     {
     public:
-        //! The type of the internal Boost vector implementation.
-        typedef boost::numeric::ublas::vector<double> Base;
+        //! Boost vector type
+        typedef boost::numeric::ublas::vector<double> BoostVector;
 
-        //! The Boost vector expression for initialization to zero.
-        typedef boost::numeric::ublas::zero_vector<double> ZeroBase;
+		//! Eigen vector used as internal datastructure.
+		typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Base;
 
-        //! Const forward iterator.
-        typedef Base::const_iterator const_iterator;
+		
 
-        //! Forward iterator.
-        typedef Base::iterator iterator;
+        ////! The Boost vector expression for initialization to zero.
+        //typedef boost::numeric::ublas::zero_vector<double> ZeroBase;
+
+        ////! Const forward iterator.
+        //typedef Base::const_iterator const_iterator;
+
+        ////! Forward iterator.
+        //typedef Base::iterator iterator;
 
         //! Value type.
-        typedef Base::value_type value_type;
+        typedef double value_type;
 
-        //! Reference type.
-        typedef Base::reference reference;
+        ////! Reference type.
+        //typedef Base::reference reference;
 
-        //! Pointer type.
-        typedef Base::pointer pointer;
+        ////! Pointer type.
+        //typedef Base::pointer pointer;
 
-        //! Const pointer type.
-        typedef Base::const_pointer const_pointer;
+        ////! Const pointer type.
+        //typedef Base::const_pointer const_pointer;
 
-        //! Difference type.
-        typedef Base::difference_type difference_type;
+        ////! Difference type.
+        //typedef Base::difference_type difference_type;
 
         /**
          * @brief A configuration of vector of length \b dim.
@@ -140,19 +145,29 @@ namespace rw { namespace math {
                 _vec(i) = r[i];
         }
 
+		Q(const Base& q):
+		_vec(q.rows())
+		{
+            for (int i = 0; i<q.size(); i++)
+                _vec(i) = q(i,0);
+		}
+
 
         /**
          * @brief Returns Q of length \b n initialized with 0's
          */
         static Q zero(int n)
         {
-            return Q(ZeroBase(n));
+			return Q(Eigen::Matrix<double, Eigen::Dynamic, 1>::Zero(n));
         }
 
         /**
          * @brief The dimension of the configuration vector.
          */
-        size_t size() const { return m().size(); }
+        size_t size() const { 
+			return _vec.rows(); 
+		}
+
 
         /**
            @brief True if the configuration is of dimension zero.
@@ -166,39 +181,60 @@ namespace rw { namespace math {
          * @param r [in] An expression for a vector of doubles
          */
         template <class R>
-        explicit Q(const boost::numeric::ublas::vector_expression<R>& r) :
-            _vec(r)
-        {}
+        explicit Q(const boost::numeric::ublas::vector_expression<R>& r) /*:
+		_vec(r.size())*/
+        {
+			const BoostVector v(r);
+			_vec.resize(v.size());
+			for (size_t i = 0; i<size(); i++)
+				_vec(i) = v(i);
+		}
 
         /**
          * @brief Accessor for the internal Boost vector state.
          */
-        const Base& m() const { return _vec; }
+        BoostVector m() const { 
+			BoostVector v(size());
+			for (size_t i = 0; i<size(); i++)
+				v(i) = _vec(i);
+			return v; 
+		}
+
 
         /**
          * @brief Accessor for the internal Boost vector state.
          */
-        Base& m() { return _vec; }
+        const Base& e() const { 
+			return _vec; 
+		}
+
+        /**
+         * @brief Accessor for the internal Boost vector state.
+         */
+        Base& e() { 
+			return _vec; 
+		}
+
 
         /**
            @brief Start of sequence iterator.
         */
-        const_iterator begin() const { return m().begin(); }
+        //const_iterator begin() const { return m().begin(); }
 
         /**
            @brief End of sequence iterator.
         */
-        const_iterator end() const { return m().end(); }
+        //const_iterator end() const { return m().end(); }
 
         /**
            @brief Start of sequence iterator.
         */
-        iterator begin() { return m().begin(); }
+        //iterator begin() { return m().begin(); }
 
         /**
            @brief End of sequence iterator.
         */
-        iterator end() { return m().end(); }
+        //iterator end() { return m().end(); }
 
         /**
          * @brief Extracts a sub part (range) of this Q.
@@ -231,7 +267,8 @@ namespace rw { namespace math {
          * @return the norm
          */
         double norm2() const {
-            return norm_2(m());
+			return _vec.norm();
+            //return norm_2(m());
         }
 
         /**
@@ -239,7 +276,8 @@ namespace rw { namespace math {
          * @return the norm
          */
         double norm1() const {
-            return norm_1(m());
+			return _vec.lpNorm<1>();
+            //return norm_1(m());
         }
 
         /**
@@ -247,7 +285,8 @@ namespace rw { namespace math {
          * @return the norm
          */
         double normInf() const {
-            return norm_inf(m());
+			return _vec.lpNorm<Eigen::Infinity>();
+            //return norm_inf(m());
         }
 
         //----------------------------------------------------------------------
@@ -258,35 +297,35 @@ namespace rw { namespace math {
          * @param i [in] index in the vector
          * @return const reference to element
          */
-        const double& operator()(size_t i) const { return m()(i); }
+        const double& operator()(size_t i) const { return _vec(i); }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector
          * @return reference to element
          */
-        double& operator()(size_t i) { return m()(i); }
+        double& operator()(size_t i) { return _vec(i); }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector
          * @return const reference to element
          */
-        const double& operator[](size_t i) const { return m()(i); }
+        const double& operator[](size_t i) const { return _vec(i); }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector
          * @return reference to element
          */
-        double& operator[](size_t i) { return m()(i); }
+        double& operator[](size_t i) { return _vec(i); }
 
         /**
            @brief Scalar division.
          */
         const Q operator/(double s) const
         {
-            return Q(m() / s);
+            return Q(_vec / s);
         }
 
         /**
@@ -294,7 +333,7 @@ namespace rw { namespace math {
          */
         const Q operator*(double s) const
         {
-            return Q(m() * s);
+            return Q(_vec * s);
         }
 
         /**
@@ -302,7 +341,7 @@ namespace rw { namespace math {
          */
         friend const Q operator*(double s, const Q& v)
         {
-            return Q(s * v.m());
+            return Q(s * v.e());
         }
 
         /**
@@ -310,7 +349,7 @@ namespace rw { namespace math {
          */
         const Q operator-(const Q& b) const
         {
-            return Q(m() - b.m());
+            return Q(_vec - b.e());
         }
 
         /**
@@ -318,7 +357,7 @@ namespace rw { namespace math {
          */
         const Q operator+(const Q& b) const
         {
-            return Q(m() + b.m());
+            return Q(_vec + b.e());
         }
 
         /**
@@ -326,7 +365,7 @@ namespace rw { namespace math {
          */
         Q& operator*=(double s)
         {
-            m() *= s;
+            _vec *= s;
             return *this;
         }
 
@@ -335,7 +374,7 @@ namespace rw { namespace math {
          */
         Q& operator/=(double s)
         {
-            m() /= s;
+            _vec /= s;
             return *this;
         }
 
@@ -344,7 +383,7 @@ namespace rw { namespace math {
          */
         Q& operator+=(const Q& v)
         {
-            m() += v.m();
+            _vec += v.e();
             return *this;
         }
 
@@ -353,7 +392,7 @@ namespace rw { namespace math {
          */
         Q& operator-=(const Q& v)
         {
-            m() -= v.m();
+            _vec -= v.e();
             return *this;
         }
 
@@ -362,7 +401,7 @@ namespace rw { namespace math {
          */
         Q operator-() const
         {
-            return Q(-m());
+            return Q(-_vec);
         }
 
 		/**

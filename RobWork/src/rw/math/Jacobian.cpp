@@ -24,51 +24,59 @@
 
 using namespace rw::math;
 using namespace boost::numeric::ublas;
+using namespace Eigen;
 
 typedef matrix_range<Jacobian::Base> Range;
 typedef zero_matrix<double> ZeroMatrix;
 
 Jacobian::Jacobian(const Rotation3D<>& aRb) : _jac(6, 6)
 {
-    Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
-    Range(_jac, range(0, 3), range(3, 6)) = ZeroMatrix(3, 3);
-    Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
-    Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
+	_jac.block<3,3>(0,0) = aRb.e();
+	_jac.block<3,3>(0,3) = Matrix<double, 3, 3>::Zero();
+	_jac.block<3,3>(3,0) = Matrix<double, 3, 3>::Zero();
+	_jac.block<3,3>(3,3) = aRb.e();
+    //Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
+    //Range(_jac, range(0, 3), range(3, 6)) = ZeroMatrix(3, 3);
+    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
+    //Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
 Jacobian::Jacobian(const Vector3D<>& aPb) : _jac(6, 6)
 {
-    Range(_jac, range(0, 3), range(0, 3)) = Rotation3D<>::identity().m();
-    Range(_jac, range(0, 3), range(3, 6)) = Math::skew(aPb.m());
-    Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
-    Range(_jac, range(3, 6), range(3, 6)) = Rotation3D<>::identity().m();
+	_jac.block<3,3>(0,0) = Matrix<double, 3, 3>::Identity();
+	_jac.block<3,3>(0,3) = Math::skew(aPb);
+	_jac.block<3,3>(3,0) = Matrix<double, 3, 3>::Zero();
+	_jac.block<3,3>(3,3) = Matrix<double, 3, 3>::Identity();
+    //Range(_jac, range(0, 3), range(0, 3)) = Rotation3D<>::identity().m();
+    //Range(_jac, range(0, 3), range(3, 6)) = Math::skew(aPb.m());
+    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
+    //Range(_jac, range(3, 6), range(3, 6)) = Rotation3D<>::identity().m();
 }
 
 Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
 {
     const Rotation3D<>& aRb = aTb.R();
     const Vector3D<>& aPb = aTb.P();
-    Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
-    Range(_jac, range(0, 3), range(3, 6)) = prod(Math::skew(aPb.m()), aRb.m());
-    Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
-    Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
+
+	_jac.block<3,3>(0,0) = aRb.e();
+	_jac.block<3,3>(0,3) = Math::skew(aPb) * aRb.e();
+	_jac.block<3,3>(3,0) = Matrix<double,3,3>::Zero();
+	_jac.block<3,3>(3,3) = aRb.e();
+
+    //Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
+    //Range(_jac, range(0, 3), range(3, 6)) = prod(Math::skew(aPb.m()), aRb.m());
+    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
+    //Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
 const Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
 {
-    Jacobian::Base v(jacobian.m());
-    Jacobian::Base rv(v.size1(), v.size2());
-
-    for(size_t row = 0; row < v.size1()-1; row += 6 ){
-        for (size_t i = 0; i < v.size2(); i++) {
-
-            range col(i, i + 1);
-
-            range first(row + 0, row + 3);
-            Range(rv, first, col) = prod(r.m(), Range(v, first, col));
-
-            range second(row + 3, row + 6);
-            Range(rv, second, col) = prod(r.m(), Range(v, second, col));
+    Jacobian::Base v(jacobian.e());
+    Jacobian::Base rv(v.rows(), v.cols());
+	Rotation3D<>::EigenMatrix3x3 rm = r.e();
+    for(size_t row = 0; row < v.rows()-1; row += 3 ){
+        for (size_t col = 0; col < v.cols(); col++) {
+			rv.block<3,1>(row, col) = rm*v.block<3,1>(row, col);
         }
     }
     return Jacobian(rv);

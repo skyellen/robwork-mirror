@@ -27,6 +27,8 @@
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -58,8 +60,11 @@ namespace rw { namespace math {
     class Vector3D
     {
     public:
-        //! The type of the internal Boost vector implementation.
+        //! Boost type equivalent to Vector3D.
         typedef boost::numeric::ublas::bounded_vector<T, 3> BoostBoundedVector;
+
+		//! Eigen type equivalent to Vector3D
+		typedef Eigen::Matrix<T, 3, 1> EigenVector3D;
 		
 
         //! Value type.
@@ -102,8 +107,21 @@ namespace rw { namespace math {
 			_vec[2] = v[2];
 		}
 
+		/**
+         * @brief Creates a 3D vector from vector_expression
+         *
+         * @param r [in] an ublas vector_expression
+         */
+        template <class R>
+		explicit Vector3D(const Eigen::MatrixBase<R>& r)             
+        {			
+			_vec[0] = r(0);
+			_vec[1] = r(1);
+			_vec[2] = r(2);
+		}
+
         /**
-           @brief Accessor for the internal Boost vector state.
+           @brief Returns Boost vector with the values of *this
          */
         const BoostBoundedVector m() const { 
 			BoostBoundedVector v;
@@ -114,10 +132,16 @@ namespace rw { namespace math {
 			return v;
 		}
 
-        /**
-           @brief Accessor for the internal Boost vector state.
-         */
-        //Base& m() { return _vec; }
+		/** 
+		 * @brief Returns Eigen vector with the values of *this
+		 */
+		const EigenVector3D e() const {
+			EigenVector3D v;
+			v(0) = _vec[0];
+			v(1) = _vec[1];
+			v(2) = _vec[2];
+			return v;
+		}
 
         /**
            @brief The dimension of the vector (i.e. 3).

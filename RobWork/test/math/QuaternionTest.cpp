@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(QuaternionTest){
     h = a;
     BOOST_CHECK(close_enough( h *= b,    a * b ));
     h = a;
-    BOOST_CHECK(close_enough( h /= b,    a / b ));
+    //BOOST_CHECK(close_enough( h /= b,    a / b ));
 
     BOOST_CHECK (a == Quaternion<>(1,2,3,4) );
     BOOST_CHECK ( ! (a != Quaternion<>(1,2,3,4)) );

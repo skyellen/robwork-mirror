@@ -34,8 +34,10 @@ PerspectiveTransform2D<T>::calcTransform(
 	const size_t rows = n * 2;
     const size_t cols = 8;
 
-	ublas::matrix<double> A(rows, cols);
-	ublas::vector<double> y(rows);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> A(rows, cols);
+	Eigen::VectorXd y(rows);
+	//ublas::matrix<double> A(rows, cols);
+	//ublas::vector<double> y(rows);
 
 	for (size_t i = 0; i < n; i++) {
 		const double xn = static_cast<double>(pts1[i](0));
@@ -71,7 +73,8 @@ PerspectiveTransform2D<T>::calcTransform(
 	}
 
 	// now calculate the pseudo inverse to the constructed matrix
-	const ublas::vector<double> x = prod(LinearAlgebra::pseudoInverse(A), y);
+	Eigen::VectorXd x = LinearAlgebra::pseudoInverseEigen(A)*y;
+	//const ublas::vector<double> x = prod(LinearAlgebra::pseudoInverse(A), y);
     return PerspectiveTransform2D(
         static_cast<T>(x(0)),
         static_cast<T>(x(1)),

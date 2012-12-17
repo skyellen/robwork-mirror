@@ -139,6 +139,7 @@ bool CollisionDetector::inCollision(const State& state,
 									bool stopAtFirstContact) const
 {
 	ScopedTimer stimer(_timer);
+	_numberOfCalls++;
 
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state

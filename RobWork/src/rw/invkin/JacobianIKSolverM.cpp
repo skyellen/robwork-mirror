@@ -108,7 +108,7 @@ bool JacobianIKSolverM::solveLocal(
     RW_ASSERT(bTed.size()==_fkranges.size());
     //std::cout << "Create vector " << std::endl;
     boost::numeric::ublas::vector<double> b_eXed_vec(_fkranges.size()*6);
-    LinearAlgebra::Matrix<double>::type Jp;
+    LinearAlgebra::BoostMatrix<double>::type Jp;
     Device::QBox bounds = _device->getBounds();
 
     double lastError = 10000;

@@ -64,7 +64,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
     std::vector< ParallelLeg* > legs = _device->getLegs();
 
     // initialize currQ
-    Q currQ(Q::ZeroBase(legs.size() * 6));
+    Q currQ(Q::zero(legs.size() * 6));
 
     size_t columns=0, qIndex;
     std::vector<ParallelLeg*>::iterator leg_iter = legs.begin();
@@ -81,10 +81,10 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
     }
 
     // initialize deltaQ
-    Q deltaQ(Q::ZeroBase(legs.size()*6));
+    Q deltaQ(Q::zero(legs.size()*6));
 
     // initialize deltaX vector
-    Q deltaX(Q::ZeroBase(legs.size()*6));
+    Q deltaX(Q::zero(legs.size()*6));
 
     // calculate the difference from current pose to dest pose
     Transform3D<double> curr = legs.front()->baseTend(state);
@@ -177,7 +177,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
                 LinearAlgebra::pseudoInverse(
                     prod(trans(jacobian.m()), jacobian.m()));
 
-            const Q::Base& rightside =
+            const BoostVector& rightside =
                 prod(trans(jacobian.m()), deltaX.m());
 
             deltaQ = Q(prod(leftside , rightside));

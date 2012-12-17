@@ -29,10 +29,10 @@ using namespace rw::math;
 namespace lapack = boost::numeric::bindings::lapack;
 using namespace boost::numeric::ublas;
 
-typedef LinearAlgebra::Matrix<double>::type MatrixType;
-typedef zero_matrix<double> ZeroMatrixType;
-typedef matrix<double, column_major> ColumnMatrixType;
-typedef matrix_range<ColumnMatrixType> ColumnMatrixTypeRange;
+typedef LinearAlgebra::BoostMatrix<double>::type BoostMatrixType;
+typedef zero_matrix<double> BoostZeroMatrixType;
+typedef matrix<double, column_major> BoostColumnMatrixType;
+typedef matrix_range<BoostColumnMatrixType> BoostColumnMatrixTypeRange;
 
 
 extern "C" {
@@ -44,11 +44,13 @@ extern "C" {
 
 }
 
+#ifdef RW_USE_UBLAS_LAPACK
+
 void LinearAlgebra::svd(
-    const MatrixType& M,
-    MatrixType& U,
-    vector<double>& sigma,
-    MatrixType& V)
+    const BoostMatrixType& M,
+    BoostMatrixType& U,
+	BoostVector<double>::type& sigma,
+    BoostMatrixType& V)
 {
     // rows
     const size_t m = M.size1();
@@ -57,11 +59,11 @@ void LinearAlgebra::svd(
     const size_t n = M.size2();
 
     // Define the U, Sigma and V^t
-    ColumnMatrixType u(m, n);
+    BoostColumnMatrixType u(m, n);
     vector<double> s(n);
-    ColumnMatrixType vt(n, n);
+    BoostColumnMatrixType vt(n, n);
 
-    ColumnMatrixType Mc(M);
+    BoostColumnMatrixType Mc(M);
     // Calculate Singular Value Decomposition of A
     lapack::gesvd(Mc, s, u, vt);
 
@@ -70,7 +72,12 @@ void LinearAlgebra::svd(
     V = trans(vt);
 }
 
-MatrixType LinearAlgebra::pseudoInverse(const MatrixType& am, double precision)
+#endif
+
+#define RW_USE_UBLAS_LAPACK	
+#ifdef RW_USE_UBLAS_LAPACK
+
+BoostMatrixType LinearAlgebra::pseudoInverse(const BoostMatrixType& am, double precision)
 {
     // rows
     const size_t m = am.size1();
@@ -80,17 +87,18 @@ MatrixType LinearAlgebra::pseudoInverse(const MatrixType& am, double precision)
 
     // If matrix is empty return an empty matrix
     if (m == 0 || n == 0)
-        return MatrixType();
+        return BoostMatrixType();
 
-    if (n > m) return trans(pseudoInverse(trans(am), precision));
+    if (n > m) 
+		return trans(pseudoInverse(trans(am), precision));
 
     // convert am to column_major form
-    ColumnMatrixType a(am);
+    BoostColumnMatrixType a(am);
 
     // Define the U, Sigma and V^t
-    ColumnMatrixType u(m, n);
+    BoostColumnMatrixType u(m, n);
     vector<double> s(n);
-    ColumnMatrixType vt(n, n);
+    BoostColumnMatrixType vt(n, n);
 
     // Calculate Singular Value Decomposition of A
     lapack::gesvd(a, s, u, vt);
@@ -101,25 +109,41 @@ MatrixType LinearAlgebra::pseudoInverse(const MatrixType& am, double precision)
         rank++;
     }
 
-    if (rank == 0) return ZeroMatrixType(n, m);
+    if (rank == 0) return BoostZeroMatrixType(n, m);
 
-    MatrixType s_ = ZeroMatrixType(rank, rank);
+    BoostMatrixType s_ = BoostZeroMatrixType(rank, rank);
     for (size_t count = 0; count < rank; count++)
         s_(count, count) = 1.0 / s(count);
 
     // Calculate: V * S * Ut
-    MatrixType t1(prod(trans(ColumnMatrixTypeRange(vt,range(0, rank),range(0, n))), s_));
+    BoostMatrixType t1(prod(trans(BoostColumnMatrixTypeRange(vt,range(0, rank),range(0, n))), s_));
 
-    return prod(t1, trans(ColumnMatrixTypeRange(u, range(0, m), range(0, rank))));
+    return prod(t1, trans(BoostColumnMatrixTypeRange(u, range(0, m), range(0, rank))));
+}
+
+#endif
+
+Eigen::MatrixXd LinearAlgebra::pseudoInverseEigen(const Eigen::MatrixXd& am, double precision) {
+	const Eigen::JacobiSVD<Eigen::MatrixXd> svd = am.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+	Eigen::JacobiSVD<Eigen::MatrixXd>::SingularValuesType sigma= svd.singularValues();
+	for ( long i=0; i<sigma.cols(); ++i) {
+		if ( sigma(i) > precision )
+			sigma(i)=1.0/sigma(i);
+		else 
+			sigma(i)=0;
+	}
+
+	return svd.matrixV() * sigma.asDiagonal()* svd.matrixU().transpose();
+
 }
 
 bool LinearAlgebra::checkPenroseConditions(
-    const MatrixType& A,
-    const MatrixType& X,
+    const BoostMatrixType& A,
+    const BoostMatrixType& X,
     double prec)
 {
-    MatrixType AX = prod(A, X);
-    MatrixType XA = prod(X, A);
+    BoostMatrixType AX = prod(A, X);
+    BoostMatrixType XA = prod(X, A);
 
     if (norm_inf(prod(AX, A) - A) > prec)
         return false;
@@ -132,6 +156,26 @@ bool LinearAlgebra::checkPenroseConditions(
 
     return true;
 }
+
+bool LinearAlgebra::checkPenroseConditions(
+	const Eigen::MatrixXd& A,
+	const Eigen::MatrixXd& X,
+    double prec)
+{
+	const Eigen::MatrixXd AX = A*X;
+	const Eigen::MatrixXd XA = X*A;
+
+	if (((AX*A)-A).lpNorm<Eigen::Infinity>() > prec)
+		return false;
+	if (((XA*X)-X).lpNorm<Eigen::Infinity>() > prec)
+		return false;
+	if ((AX.transpose() - AX).lpNorm<Eigen::Infinity>() > prec)
+		return false;
+	if ((XA.transpose() - XA).lpNorm<Eigen::Infinity>() > prec)
+		return false;
+	return true;
+}
+
 
 void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, float *D, float *e, float *b, int *ldb, int *info){
     LAPACK_SPTSV(N, NRHS, D, e, b, ldb, info);

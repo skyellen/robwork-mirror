@@ -77,9 +77,9 @@ BOOST_AUTO_TEST_CASE(VelocityScrew6DTest) {
     Vector3D<> linear1(1, 2, 3);
     EAA<> angular1(4, 5, 6);
     VelocityScrew6D<> screw(linear1, angular1);
-    BOOST_CHECK(fabs(norm_1(screw)-(1+2+3+4+5+6))<1e-15);
-    BOOST_CHECK(fabs(norm_2(screw)-sqrt(1.0*1+2*2+3*3+4*4+5*5+6*6))<1e-15);
-    BOOST_CHECK(fabs(norm_inf(screw)-6)<1e-15);
+    BOOST_CHECK(fabs(norm1(screw)-(1+2+3+4+5+6))<1e-15);
+    BOOST_CHECK(fabs(norm2(screw)-sqrt(1.0*1+2*2+3*3+4*4+5*5+6*6))<1e-15);
+    BOOST_CHECK(fabs(normInf(screw)-6)<1e-15);
   }
 
 

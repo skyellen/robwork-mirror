@@ -53,13 +53,15 @@ namespace rw { namespace math {
     {
     public:
         //! The type of the internal Boost matrix implementation.
-        typedef boost::numeric::ublas::matrix<double> Base;
+        typedef boost::numeric::ublas::matrix<double> BoostBase;
+
+		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Base;
 
         //! The Boost matrix expression for initialization to zero.
-        typedef boost::numeric::ublas::zero_matrix<double> ZeroBase;
+        typedef boost::numeric::ublas::zero_matrix<double> BoostZeroBase;
 
         //! The Boost matrix expression for initialization to the identity matrix.
-        typedef boost::numeric::ublas::zero_matrix<double> IdentityBase;
+        typedef boost::numeric::ublas::zero_matrix<double> BoostIdentityBase;
 
         /**
          * @brief Creates an empty @f$ m\times n @f$ (uninitialized) Jacobian matrix
@@ -73,12 +75,16 @@ namespace rw { namespace math {
         /**
            @brief The number of rows.
          */
-        size_t size1() const { return m().size1(); }
+        size_t size1() const { 
+			return _jac.rows(); 
+		}
 
         /**
            @brief The number of columns.
          */
-        size_t size2() const { return m().size2(); }
+		size_t size2() const { 
+			return _jac.cols(); 
+		}
 
         /**
          * @brief Creates an empty @f$ 6\times n @f$ (uninitialized) Jacobian matrix
@@ -94,28 +100,63 @@ namespace rw { namespace math {
          */
         template <class R>
         explicit
-        Jacobian(const boost::numeric::ublas::matrix_expression<R>& r) :
+        Jacobian(const boost::numeric::ublas::matrix_expression<R>& r)
+        {
+			BoostBase m(r);
+			_jac.resize(m.size1(), m.size2());
+			for (size_t i = 0; i<size1(); i++)
+				for (size_t j = 0; j<size1(); j++)
+					_jac(i,j) = m(i,j);	
+		}
+
+        /**
+         * @brief Creates a Jacobian from a Eigen::MatrixBase
+         *
+         * @param r [in] an Eigen Matrix
+         */
+        template <class R>
+        explicit
+		Jacobian(const Eigen::MatrixBase<R>& r) :
             _jac(r)
         {}
 
-        /**
-           @brief Accessor for the internal Boost matrix state.
-         */
-        const Base& m() const { return _jac; }
+
+		static Jacobian zero(size_t size1, size_t size2) {
+			return Jacobian(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Zero(size1, size2));
+		}
 
         /**
-           @brief Accessor for the internal Boost matrix state.
+           @brief Returns Boost matrix.
          */
-        Base& m() { return _jac; }
+        BoostBase m() const { 
+			BoostBase m(size1(), size2());
+			for (size_t i = 0; i<size1(); i++)
+				for (size_t j = 0; j<size1(); j++)
+					m(i,j) = _jac(i,j);
+			return m; 
+		}
 
         /**
+           @brief Accessor for the internal Eigen matrix state.
+         */
+        Base& e() { return _jac; }
+
+
+        /**
+           @brief Accessor for the internal Eigen matrix state.
+         */
+        const Base& e() const { return _jac; }
+
+		/**
          * @brief Returns reference to matrix element
          * @param row [in] row
          * @param column [in] column
          * @return reference to the element
          */
         double& operator()(size_t row, size_t column)
-        { return m()(row, column); }
+        { 
+			return _jac(row, column); 
+		}
 
         /**
          * @brief Returns reference to matrix element
@@ -124,10 +165,12 @@ namespace rw { namespace math {
          * @return reference to the element
          */
         const double& operator()(size_t row, size_t column) const
-        { return m()(row, column); }
+        { 
+			return _jac(row, column); 
+		}
 
-        double& elem(size_t row, size_t col){
-            return m()(row, col);
+        double& elem(size_t row, size_t col) {
+            return _jac(row, col);
         }
 
         /**
@@ -237,7 +280,7 @@ namespace rw { namespace math {
      */
     inline const VelocityScrew6D<> operator*(const Jacobian& Jq, const Q& dq)
     {
-        return VelocityScrew6D<>(prod(Jq.m(), dq.m()));
+        return VelocityScrew6D<>(Jq.e()*dq.e());
     }
 
 
@@ -254,7 +297,8 @@ namespace rw { namespace math {
      */
     inline const Q operator*(const Jacobian& JqInv, const VelocityScrew6D<>& v)
     {
-        return Q(prod(JqInv.m(), v.m()));
+        return Q(JqInv.e() * v.e());
+			//prod(JqInv.m(), v.m()));
     }
 
     /**
@@ -271,7 +315,8 @@ namespace rw { namespace math {
      */
     inline const Jacobian operator*(const Jacobian& j1, const Jacobian& j2)
     {
-        return Jacobian(prod(j1.m(), j2.m()));
+        return Jacobian(j1.e() * j2.e());
+		//return Jacobian(prod(j1.m(), j2.m()));
     }
 
     /**
@@ -281,7 +326,7 @@ namespace rw { namespace math {
     */
     inline std::ostream& operator<<(std::ostream& out, const Jacobian& v)
     {
-        return out << v.m();
+        return out << v.e();
     }
 
     /**

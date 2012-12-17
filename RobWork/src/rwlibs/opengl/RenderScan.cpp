@@ -34,8 +34,8 @@ RenderScan::RenderScan():
 RenderScan::RenderScan(const rw::sensor::Scanner25D::Ptr scanner)
 {
     _scanner = scanner;
-    _minDepth = scanner->getRange().first;
-    _maxDepth = scanner->getRange().second;
+    _minDepth = (float)scanner->getRange().first;
+    _maxDepth = (float)scanner->getRange().second;
 
 }
 

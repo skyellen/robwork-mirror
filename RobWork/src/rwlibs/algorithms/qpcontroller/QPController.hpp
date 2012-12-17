@@ -85,17 +85,17 @@ namespace rwlibs { namespace algorithms {
                           const rw::math::VelocityScrew6D<>& tcpscrew);
 
     private:
-        typedef rw::math::Q::Base QBase;
+        typedef rw::math::Q::BoostVector VectorBase;
 
-        QBase inequalitySolve(const boost::numeric::ublas::matrix<double>& G,
-        				      const QBase& b,
-        				      const QBase& lower,
-        				      const QBase& upper);
+        VectorBase inequalitySolve(const boost::numeric::ublas::matrix<double>& G,
+        				      const VectorBase& b,
+        				      const VectorBase& lower,
+        				      const VectorBase& upper);
 
-        void calculateVelocityLimits(QBase& lower,
-        							 QBase& upper,
-        							 const QBase& q,
-        							 const QBase& dq);
+        void calculateVelocityLimits(VectorBase& lower,
+        							 VectorBase& upper,
+        							 const VectorBase& q,
+        							 const VectorBase& dq);
 
         double _h;
         size_t _n;
@@ -103,14 +103,14 @@ namespace rwlibs { namespace algorithms {
         rw::models::Device* _device;
         rw::kinematics::State _state;
 
-        QBase _qmin;
-        QBase _qmax;
+        VectorBase _qmin;
+        VectorBase _qmax;
 
-        QBase _vmin;
-        QBase _vmax;
+        VectorBase _vmin;
+        VectorBase _vmax;
 
-        QBase _amin;
-        QBase _amax;
+        VectorBase _amin;
+        VectorBase _amax;
 
         //Stuff for stats
         char* _lowerLimitType;

@@ -111,7 +111,8 @@ bool rw::math::operator==(const Q& q1, const Q& q2)
 
 double rw::math::dot(const Q& a, const Q& b)
 {
-    return inner_prod(a.m(), b.m());
+	return a.e().dot(b.e());
+    //return inner_prod(a.m(), b.m());
 }
 
 rw::math::Q rw::math::concat(const Q& q1, const Q& q2){

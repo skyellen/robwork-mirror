@@ -160,7 +160,7 @@ Jacobian MobileDevice::baseJend(const State& state) const
     double dtheta1 = -1/_width;
     double dtheta2 = 1/_width;
 
-    Jacobian jac(Jacobian::ZeroBase(6,2));
+    Jacobian jac(Jacobian::zero(6,2));
     jac(0,0) = 0.5;
     jac(1,0) = 0.5;
     jac(5,0) = dtheta1;
@@ -174,7 +174,7 @@ Jacobian MobileDevice::baseJframe(
     const State& state) const
 {
     RW_THROW("Not implemented.");
-    return Jacobian(Jacobian::ZeroBase(6,2));
+    return Jacobian(Jacobian::zero(6,2));
 }
 
 Jacobian MobileDevice::baseJframes(
@@ -182,7 +182,7 @@ Jacobian MobileDevice::baseJframes(
     const State& state) const
 {
     RW_THROW("Not implemented.");
-    return Jacobian(Jacobian::ZeroBase(6,2));
+    return Jacobian(Jacobian::zero(6,2));
 }
 
 JacobianCalculatorPtr MobileDevice::baseJCframes(const std::vector<Frame*>& frames,

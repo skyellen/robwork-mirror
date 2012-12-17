@@ -5,4 +5,8 @@
 	Name="rw_settings_release"
 	InheritedPropertySheets=".\rw_settings_global.vsprops"
 	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="EIGEN_DONT_ALIGN_STATICALLY=1"
+	/>
 </VisualStudioPropertySheet>

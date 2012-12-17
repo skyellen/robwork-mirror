@@ -81,7 +81,7 @@ Q QPController::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcp_scre
         RW_THROW("Length of input configuration does not match the Device");
     }
 
-    Q::Base tcp_vel(6);
+    VectorBase tcp_vel(6);
     Vector3D<> linvel = tcp_screw.linear();
     EAA<> angvel = tcp_screw.angular();
 
@@ -103,24 +103,24 @@ Q QPController::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcp_scre
     //    matrix_range<matrix<double> > jac(jac6, range(0,6), range(0, jac6.size2()));
 
     matrix<double> A = prod(trans(jac),jac);
-    Q::Base b = prod(trans(jac),tcp_vel);
+    VectorBase b = prod(trans(jac),tcp_vel);
 
-    Q::Base lower(_n);
-    Q::Base upper(_n);
+    VectorBase lower(_n);
+    VectorBase upper(_n);
     calculateVelocityLimits(lower, upper, q.m(), dq.m());
-    Q::Base sol1 = inequalitySolve(A, b, lower, upper);
+    VectorBase sol1 = inequalitySolve(A, b, lower, upper);
 
     return Q(sol1);
 }
 
 void QPController::calculateVelocityLimits(
-    Q::Base& lower,
-    Q::Base& upper,
-    const Q::Base& q,
-    const Q::Base& dq)
+    VectorBase& lower,
+    VectorBase& upper,
+    const VectorBase& q,
+    const VectorBase& dq)
 {
-    Q::Base joint_pos = q;
-    Q::Base joint_vel = dq;
+    VectorBase joint_pos = q;
+    VectorBase joint_vel = dq;
     double accmin, accmax, velmin, velmax, posmin, posmax;
     double x;
     for (size_t i = 0; i<_n; i++) {
@@ -196,14 +196,14 @@ void QPController::calculateVelocityLimits(
     }
 }
 
-Q::Base QPController::inequalitySolve(
+QPController::VectorBase QPController::inequalitySolve(
     const matrix<double>& G,
-    const Q::Base& b,
-    const Q::Base& lower,
-    const Q::Base& upper)
+    const VectorBase& b,
+    const VectorBase& lower,
+    const VectorBase& upper)
 {
     matrix<double> cmat = zero_matrix<double>(2*lower.size(), lower.size());
-    Q::Base limits(2*lower.size());
+    VectorBase limits(2*lower.size());
     for (size_t i = 0; i<lower.size(); i++) {
         cmat(2*i,i) = 1;
         cmat(2*i+1,i) = -1;
@@ -212,13 +212,13 @@ Q::Base QPController::inequalitySolve(
     }
 
     QPSolver::Status status;
-    Q::Base qstart = (lower + upper) / 2.0;
-    Q::Base res = QPSolver::inequalitySolve(
+    VectorBase qstart = (lower + upper) / 2.0;
+    VectorBase res = QPSolver::inequalitySolve(
         G, b * (-1), cmat, limits, qstart, status);
 
     if (status == QPSolver::FAILURE) {
         RW_WARN("Error QPSolver could not solve with a valid solution");
-        return Q::ZeroBase(lower.size());
+        return Q::zero(lower.size()).m();
     }
     /*    for (size_t i = 0; i<res.size(); i++) {
         if (res(i) > upper(i)) {

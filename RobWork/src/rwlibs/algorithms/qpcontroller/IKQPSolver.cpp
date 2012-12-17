@@ -49,7 +49,7 @@ bool IKQPSolver::performLocalSearch(const SerialDevice *device,
                         			unsigned int maxIter) const {
 	QPController* qpcontroller = const_cast<QPController*>(&_qpcontroller);
     int maxIterations = maxIter;
-    Q dq(Q::ZeroBase(device->getDOF()));
+    Q dq(Q::zero(device->getDOF()));
     while (maxIterations--) {
 
         const Transform3D<>& Tcurrent = _device->baseTend(state);
@@ -57,12 +57,12 @@ bool IKQPSolver::performLocalSearch(const SerialDevice *device,
         VelocityScrew6D<> vs(inverse(Tcurrent)*bTed);
         VelocityScrew6D<> diff = Tcurrent.R()*vs;
         //std::cout<<"diff = "<<norm_inf(diff)<<std::endl;
-        if (norm_inf(diff) <= maxError) {
+        if (normInf(diff) <= maxError) {
         	return true;
         }
 
-        if (norm_2(diff) > 1)
-            diff *= 1/norm_2(diff);
+        if (norm2(diff) > 1)
+            diff *= 1/norm2(diff);
 
         dq = qpcontroller->solve(device->getQ(state), dq, diff);
         const Q q = device->getQ(state) + DT*dq;

@@ -19,10 +19,12 @@
 #ifndef RW_MATH_PERSPECTIVETRANSFORM2D_HPP
 #define RW_MATH_PERSPECTIVETRANSFORM2D_HPP
 
-#include <boost/numeric/ublas/matrix.hpp>
 
+#include <boost/numeric/ublas/matrix.hpp>
+#include <Eigen/Eigen>
 #include "Vector3D.hpp"
 #include "Vector2D.hpp"
+#include <rw/common/macros.hpp>
 
 namespace rw { namespace math {
 
@@ -36,13 +38,17 @@ namespace rw { namespace math {
 	class PerspectiveTransform2D
 	{
 	private:
-		typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
+		//! Eigen 3x3 matrix used as internal data structure.
+		typedef Eigen::Matrix<T, 3, 3> EigenMatrix3x3;
+		
+		//! Boost bounded 3x3 matrix
+		typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> BoostMatrix3x3;
 
 	public:
 		/**
 		 * @brief constructor
 		 */
-		PerspectiveTransform2D() : _matrix(3,3)
+		PerspectiveTransform2D() //: _matrix(3,3)
         {
             _matrix(0, 0) = 1;
             _matrix(0, 1) = 0;
@@ -61,7 +67,7 @@ namespace rw { namespace math {
 		PerspectiveTransform2D(
             T r11, T r12, T r13,
             T r21, T r22, T r23,
-            T r31, T r32, T r33) : _matrix(3,3)
+            T r31, T r32, T r33) //: _matrix(3,3)
         {
             _matrix(0, 0) = r11;
             _matrix(0, 1) = r12;
@@ -80,9 +86,48 @@ namespace rw { namespace math {
 		 * @return
 		 */
         template <class R>
-        explicit PerspectiveTransform2D(
-            const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
-        {}
+        explicit PerspectiveTransform2D(const boost::numeric::ublas::matrix_expression<R>& r) 
+			//: _matrix(r)
+        {
+			BoostMatrix3x3 rm(r);
+			for (size_t i = 0; i<3; i++) 
+				for (size_t j = 0; j<3; j++) 
+					_matrix(i,j) = rm(i,j);
+				
+		}
+
+		/**
+		 * @brief constructor
+		 * @param r
+		 * @return
+		 */
+        template <class R>
+		explicit PerspectiveTransform2D(const Eigen::Matrix<R, 3, 3>& r) 
+			//: _matrix(r)
+        {			
+			for (size_t i = 0; i<3; i++) 
+				for (size_t j = 0; j<3; j++) 
+					_matrix(i,j) = r(i,j);
+				
+		}
+
+		/**
+		 * @brief constructor
+		 * @param r
+		 * @return
+		 */
+        template <class R>
+		explicit PerspectiveTransform2D(const Eigen::MatrixBase<R>& r) 
+			//: _matrix(r)
+        {			
+			RW_ASSERT(r.rows() == 3);
+			RW_ASSERT(r.cols() == 3);
+			for (size_t i = 0; i<3; i++) 
+				for (size_t j = 0; j<3; j++) 
+					_matrix(i,j) = r(i,j);
+				
+		}
+
 
 		/**
 		 * @brief calculates a PerspectiveTransform2D that maps points from point
@@ -93,6 +138,13 @@ namespace rw { namespace math {
 		static PerspectiveTransform2D<T> calcTransform(
             std::vector<Vector2D<T> > pts1,
             std::vector<Vector2D<T> > pts2);
+
+		/** 
+		 * @brief Returns the inverse of the PerspectiveTransform
+		 */
+		PerspectiveTransform2D<T> inverse() {
+			return PerspectiveTransform2D<T>(_matrix.transpose());
+		}
 
 		/**
 		 * @brief Returns matrix element reference
@@ -184,12 +236,18 @@ namespace rw { namespace math {
 
 
         /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
+         * @brief Returns Boost matrix representing the 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        Base& m() { return _matrix; }
+        BoostMatrix3x3 m() { 
+			BoostMatrix3x3 rm;
+			for (size_t i = 0; i<3; i++) 
+				for (size_t j = 0; j<3; j++) 
+					rm(i,j) = _matrix(i,j);
+			return rm; 
+		}
 
         /**
          * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
@@ -197,16 +255,25 @@ namespace rw { namespace math {
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        const Base& m() const { return _matrix; }
+        const EigenMatrix3x3& e() const { return _matrix; }
+
+        /**
+         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
+         * @f$ that represents this rotation
+         *
+         * @return @f$ \mathbf{M}\in SO(3) @f$
+         */
+        EigenMatrix3x3& e() { return _matrix; }
 
 	private:
-		Base _matrix;
+		EigenMatrix3x3 _matrix;
 	};
 
 	template <class T>
     PerspectiveTransform2D<T> inverse(const PerspectiveTransform2D<T>& aRb)
     {
-        return PerspectiveTransform2D<T>(trans(aRb.m()));
+		return aRb.inverse();
+        //return PerspectiveTransform2D<T>(trans(aRb.m()));
     }
 
 

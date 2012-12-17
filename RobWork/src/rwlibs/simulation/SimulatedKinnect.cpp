@@ -188,8 +188,8 @@ namespace {
         double center_x = scan->getWidth()/2.0;
         double center_y = scan->getHeight()/2.0;
 
-        for(int y=0;y<scan->getHeight();y++){
-            for(int x=0;x<scan->getWidth();x++){
+        for(size_t y=0;y<scan->getHeight();y++){
+            for(size_t x=0;x<scan->getWidth();x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
                 double r = std::sqrt( Math::sqr(x - center_x) + Math::sqr(y - center_y) );
                 // we convert to mm
@@ -197,7 +197,7 @@ namespace {
                 double sigma = calcSigma(r, d);
                 // this will produce the error in m
                 double noise_err = Math::ranNormalDist( 0 , sigma )/1000.0;
-                v[2] += noise_err;
+                v[2] += (float)noise_err;
             }
         }
     }

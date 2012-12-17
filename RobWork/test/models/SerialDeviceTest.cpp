@@ -48,32 +48,38 @@ namespace
 {
     double norm_inf(const Vector3D<>& v)
     {
-        return norm_inf(v.m());
+		return v.normInf();
+        //return norm_inf(v.m());
     }
 
     double norm_1(const Vector3D<>& v)
     {
-        return norm_1(v.m());
+		return v.norm1();
+        //return norm_1(v.m());
     }
 
     double norm_2(const Vector3D<>& v)
     {
-        return norm_2(v.m());
+		return v.norm2();
+        //return norm_2(v.m());
     }
 
     double norm_inf(const Q& v)
     {
-        return norm_inf(v.m());
+        return v.normInf();
+		//return norm_inf(v.m());
     }
 
     double norm_1(const Q& v)
     {
-        return norm_1(v.m());
+		return v.norm1();
+        //return norm_1(v.m());
     }
 
     double norm_2(const Q& v)
     {
-        return norm_2(v.m());
+		return v.norm2();
+        //return norm_2(v.m());
     }
 }
 
@@ -393,14 +399,14 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     // Velocity of tool seen from tool
     VelocityScrew6D<> tVt = inverse(kr16t.baseTend(state).R()) * bVt;
 
-    BOOST_CHECK(norm_inf(eVe - tVt) < 1e-6);
+    BOOST_CHECK(normInf(eVe - tVt) < 1e-6);
 
     // Velocity of end-effector seen from end-effector (calculated from tool velocity)
     VelocityScrew6D<> eVe2 = tool->getTransform(state) * tVt;
     // Velocity of tool seen from tool (calculated from end-effector velocity)
     VelocityScrew6D<> tVt2 = tool->getTransform(state) * eVe;
 
-    BOOST_CHECK(norm_inf(eVe2 - tVt2) < 1e-6);
+    BOOST_CHECK(normInf(eVe2 - tVt2) < 1e-6);
 
     Transform3D<double> t_bTe = kr16t.baseTend(state);
     Transform3D<double> t_bTf = kr16t.baseTframe(tool,state);
@@ -414,7 +420,7 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     Jacobian t_tJq = t_tJe_e * e_eJb_e * b_eJq;
     VelocityScrew6D<> tVt3 = t_tJq * dq;
 
-    BOOST_CHECK(norm_inf(tVt - tVt3) < 1e-6);
+    BOOST_CHECK(normInf(tVt - tVt3) < 1e-6);
 
     Jacobian b_tJe_t(kr16t.baseTframe(kr16_j6,state).R());
     Jacobian e_tJt_t(tool->getTransform(state).R());

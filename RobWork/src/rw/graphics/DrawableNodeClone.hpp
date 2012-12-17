@@ -200,9 +200,9 @@ namespace rw { namespace graphics {
         mutable bool _highlightedState, _highlighted,
                      _visibleState, _visible;
         mutable rw::math::Transform3D<> _transformState, _transform;
-        mutable double _scaleState, _scale;
+        mutable float _scaleState, _scale;
         mutable int _maskState, _mask;
-        mutable double _alphaState, _alpha;
+        mutable float _alphaState, _alpha;
 
 
     };

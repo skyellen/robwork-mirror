@@ -29,6 +29,8 @@
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace math {
 
     template<class T> class Rotation2DVector;
@@ -63,12 +65,16 @@ namespace rw { namespace math {
         typedef T value_type;
 
         //! The type of the internal Boost matrix implementation.
-        typedef boost::numeric::ublas::bounded_matrix<T, 2, 2> Base;
+        typedef boost::numeric::ublas::bounded_matrix<T, 2, 2> BoostMatrix2x2;
+
+        //! The type of the internal Boost matrix implementation.
+		typedef Eigen::Matrix<T, 2, 2> EigenMatrix2x2;
+
 
         /**
            @brief A rotation matrix with uninitialized storage.
          */
-        Rotation2D() : _matrix(2, 2)
+        Rotation2D()
         {}
 
         /**
@@ -90,12 +96,11 @@ namespace rw { namespace math {
          * @f$
          */
         Rotation2D(T r11, T r12, T r21, T r22)
-            : _matrix(2, 2)
         {
-            m()(0, 0) = r11;
-            m()(0, 1) = r12;
-            m()(1, 0) = r21;
-            m()(1, 1) = r22;
+            _m[0][0] = r11;
+            _m[0][1] = r12;
+            _m[1][0] = r21;
+            _m[1][1] = r22;
         }
 
         /**
@@ -112,12 +117,11 @@ namespace rw { namespace math {
          * @param j @f$ \robabx{a}{b}{\mathbf{j}} @f$
          */
         Rotation2D(const Vector2D<T>& i, const Vector2D<T>& j)
-            : _matrix(2, 2)
         {
-            m()(0, 0) = i[0];
-            m()(0, 1) = j[0];
-            m()(1, 0) = i[1];
-            m()(1, 1) = j[1];
+            _m[0][0] = i[0];
+            _m[0][1] = j[0];
+            _m[1][0] = i[1];
+            _m[1][1] = j[1];
         }
 
         /**
@@ -133,12 +137,11 @@ namespace rw { namespace math {
          * @param theta
          */
         Rotation2D(const T theta)
-            : _matrix(2, 2)
         {
-            m()(0, 0) = cos(theta);
-            m()(0, 1) = -sin(theta);
-            m()(1, 0) = sin(theta);
-            m()(1, 1) = cos(theta);
+            _m[0][0] = cos(theta);
+            _m[0][1] = -sin(theta);
+            _m[1][0] = sin(theta);
+            _m[1][1] = cos(theta);
         }
 
         /**
@@ -149,11 +152,48 @@ namespace rw { namespace math {
            @param i [in] The first column of the rotation matrix.
         */
         Rotation2D(const Vector2D<T>& i)
-            : _matrix(2, 2)
         {
-            m()(0, 0) = i[0]; m()(0, 1) = -i[1];
-            m()(1, 0) = i[1]; m()(1, 1) = i[0];
+            _m[0][0] = i[0]; 
+			_m[0][1] = -i[1];
+            _m[1][0] = i[1]; 
+			_m[1][1] = i[0];
         }
+
+
+
+
+        /**
+           @brief Construct a rotation matrix from a Boost matrix expression.
+
+           The matrix expression must be convertible to a 2x2 bounded matrix.
+
+           It is the responsibility of the user that 2x2 matrix is indeed a
+           rotation matrix.
+         */
+        template <class R>
+        explicit Rotation2D(
+            const boost::numeric::ublas::matrix_expression<R>& r) 
+        {
+			BoostMatrix2x2 b(r);
+			_m[0][0] = b(0,0);
+			_m[0][1] = b(0,1);
+			_m[1][0] = b(1,0);
+			_m[1][1] = b(1,1);
+		}
+
+
+		
+        /**
+           @brief Construct a rotation matrix from an Eigen matrix.
+         */
+        template <class R>
+		explicit Rotation2D(const EigenMatrix2x2& m) 
+        {
+			_m[0][0] = m(0,0);
+			_m[0][1] = m(0,1);
+			_m[1][0] = m(1,0);
+			_m[1][1] = m(1,1);
+		}
 
         /**
          * @brief Constructs a 2x2 rotation matrix set to identity
@@ -171,8 +211,7 @@ namespace rw { namespace math {
          */
         static const Rotation2D& identity()
         {
-            static Rotation2D id(
-                boost::numeric::ublas::identity_matrix<T>(2));
+            static Rotation2D id(1,0,1,0);
             return id;
         }
 
@@ -185,7 +224,7 @@ namespace rw { namespace math {
          */
         T& operator()(size_t row, size_t column)
         {
-            return m()(row, column);
+			return _m[row][column];
         }
 
         /**
@@ -196,29 +235,41 @@ namespace rw { namespace math {
          */
         const T& operator()(size_t row, size_t column) const
         {
-            return m()(row, column);
+            return _m[row][column];
         }
 
         /**
-         * @brief Returns reference to the 2x2 matrix @f$ \mathbf{M}\in SO(2)
+         * @brief Returns a boost 2x2 matrix @f$ \mathbf{M}\in SO(2)
          * @f$ that represents this rotation
          *
          * @return @f$ \mathbf{M}\in SO(2) @f$
          */
-        const Base& m() const
+        BoostMatrix2x2 m2()
         {
-            return _matrix;
+			BoostMatrix2x2 matrix;
+			matrix(0,0) = _m[0][0];
+			matrix(0,1) = _m[0][1];			
+			matrix(1,0) = _m[1][0];			
+			matrix(1,1) = _m[1][1];
+			return matrix;
         }
 
+
+		
         /**
-         * @brief Returns reference to the 2x2 matrix @f$ \mathbf{M}\in SO(2)
+         * @brief Returns a boost 2x2 matrix @f$ \mathbf{M}\in SO(2)
          * @f$ that represents this rotation
          *
          * @return @f$ \mathbf{M}\in SO(2) @f$
          */
-        Base& m()
+        EigenMatrix2x2 e()
         {
-            return _matrix;
+			EigenMatrix2x2 matrix;
+			matrix(0,0) = _m[0][0];
+			matrix(0,1) = _m[0][1];			
+			matrix(1,0) = _m[1][0];			
+			matrix(1,1) = _m[1][1];
+			return matrix;
         }
 
         /**
@@ -233,7 +284,12 @@ namespace rw { namespace math {
          */
         friend const Rotation2D operator*(const Rotation2D& aRb, const Rotation2D& bRc)
         {
-            return Rotation2D(prod(aRb.m(), bRc.m()));
+            return Rotation2D(
+				aRb(0,0)*bRc(0,0) + aRb(0,1)*bRc(1,0),
+				aRb(0,0)*bRc(0,1) + aRb(0,1)*bRc(1,1),
+				aRb(1,0)*bRc(0,0) + aRb(1,1)*bRc(1,0),
+				aRb(1,0)*bRc(0,1) + aRb(1,1)*bRc(1,1)
+				);
         }
 
         /**
@@ -245,8 +301,11 @@ namespace rw { namespace math {
          * @return \f$ \robabx{a}{c}{\mathbf{v}} \f$
          */
         friend const Vector2D<T> operator*(const Rotation2D& aRb, const Vector2D<T>& bVc)
-        {
-            return Vector2D<T>(prod(aRb.m(), bVc.m()));
+        {			
+			return Vector2D<T>(
+				aRb(0,0)*bVc(0) + aRb(0,1)*bVc(1), 
+				aRb(1,0)*bVc(0) + aRb(1,1)*bVc(1)
+				);
         }
 
         /**
@@ -267,33 +326,23 @@ namespace rw { namespace math {
         /**
          * @brief Casts Rotation2D<T> to Rotation2D<Q>
          * @param rot [in] Rotation2D with type T
-         * @return Rotation2D with type Q
+         * @return Rotation2D with type R
          */
-        template<class Q>
-        friend const Rotation2D<Q> cast(const Rotation2D<T>& rot)
+        template<class R>
+        friend const Rotation2D<R> cast(const Rotation2D<T>& rot)
         {
-            Rotation2D<Q> res(Rotation2D<Q>::identity());
+            Rotation2D<R> res(Rotation2D<R>::identity());
             for (size_t i = 0; i < 2; i++)
                 for (size_t j = 0; j < 2; j++)
-                    res(i, j) = static_cast<Q>(rot(i, j));
+                    res(i, j) = static_cast<R>(rot(i, j));
             return res;
         }
 
-        /**
-           @brief Construct a rotation matrix from a Boost matrix expression.
 
-           The matrix expression must be convertible to a 2x2 bounded matrix.
-
-           It is the responsibility of the user that 2x2 matrix is indeed a
-           rotation matrix.
-         */
-        template <class R>
-        explicit Rotation2D(
-            const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
-        {}
 
     private:
-        Base _matrix;
+		T _m[2][2];
+        //Base _atrix;
     };
 
     /**
@@ -313,7 +362,18 @@ namespace rw { namespace math {
     template <class T>
     const Rotation2D<T> inverse(const Rotation2D<T>& aRb)
     {
-        return Rotation2D<T>(trans(aRb.m()));
+        return Rotation2D<T>(aRb(0,0), aRb(1,0), aRb(0,1), aRb(1,1));
+    }
+
+	/**
+	 * @brief Find the transpose of \b aRb.
+	 *
+	 * The transpose of a rotation matrix is the same as the inverse.
+	 */
+    template <class T>
+    const Rotation2D<T> transpose(const Rotation2D<T>& aRb)
+    {
+        return Rotation2D<T>(aRb(0,0), aRb(1,0), aRb(0,1), aRb(1,1));
     }
 
     /**@}*/

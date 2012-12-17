@@ -49,15 +49,15 @@ namespace rw { namespace math {
      * @f$Q\cdot P \neq P\cdot Q @f$
      */
     template<class T = double>
-    class Quaternion :
-        public boost::math::quaternion<T>,
+    class Quaternion:		
         public Rotation3DVector<T>
     {
     private:
-        typedef boost::math::quaternion<T> Base_quaternion;
+        //typedef boost::math::quaternion<T> Base_quaternion;
+		typedef Eigen::Quaternion<T> EigenQuaternion;
 
     public:
-        Quaternion() : Base_quaternion(0, 0, 0, 1) {}
+        Quaternion() : _q(0, 0, 0, 1) {}
 
         /**
          * @brief Creates a Quaternion
@@ -66,13 +66,13 @@ namespace rw { namespace math {
          * @param qz [in] @f$ q_z @f$
          * @param qw  [in] @f$ q_w @f$
          */
-        Quaternion(T qx, T qy, T qz, T qw) : Base_quaternion(qx, qy, qz, qw) {}
+        Quaternion(T qx, T qy, T qz, T qw) : _q(qw, qx, qy, qz) {}
 
         /**
          * @brief Creates a Quaternion from another Quaternion
          * @param quat [in] Quaternion
          */
-        Quaternion(const Quaternion<T>& quat) : Base_quaternion(quat) {}
+        Quaternion(const Quaternion<T>& quat) : _q(quat._q) {}
 
         /**
          * @brief Extracts a Quaternion from Rotation matrix using
@@ -80,49 +80,62 @@ namespace rw { namespace math {
          * @param rot [in] A 3x3 rotation matrix @f$ \mathbf{rot} @f$
          *
          */
-        Quaternion(const Rotation3D<T>& rot) : Base_quaternion()
+        Quaternion(const Rotation3D<T>& rot)
         {
             setRotation(rot);
         }
 
         /**
-         * @brief Creates a Quaternion from a boost quaternion
+         * @brief Creates a Quaternion from a Eigen quaternion
          * @param r [in] a boost quaternion
          */
-        Quaternion(const Base_quaternion& r) : Base_quaternion(r) {}
+        Quaternion(const EigenQuaternion& r) {}
 
         /**
          * @brief copy a boost quaternion to this Quaternion
          * @param r [in] - boost quaternion
          */
-        inline void operator=(const Base_quaternion& r)
+        inline void operator=(const EigenQuaternion& r)
         {
-            Base_quaternion::operator=(r);
+            _q = r;
+			//EigenQuaternion::operator=(r);
         }
 
         /**
          * @brief get method for the x component
          * @return the x component of the quaternion
          */
-        inline T getQx() const { return Base_quaternion::R_component_1(); }
+        inline T getQx() const { 
+			return _q.x();		
+			//return EigenQuaternion::R_component_1(); 
+		}
 
         /**
          * @brief get method for the y component
          * @return the y component of the quaternion
          */
-        inline T getQy() const { return Base_quaternion::R_component_2(); }
+        inline T getQy() const { 
+			return _q.y();		
+			//return EigenQuaternion::R_component_2(); 
+		}
 
         /**
          * @brief get method for the z component
          * @return the z component of the quaternion
          */
-        inline T getQz() const { return Base_quaternion::R_component_3(); }
+        inline T getQz() const { 
+			return _q.z();		
+			//return EigenQuaternion::R_component_3(); 
+		}
 
         /**
          * @brief get method for the w component
          * @return the w component of the quaternion
          */
-        inline T getQw() const { return Base_quaternion::R_component_4(); }
+        inline T getQw() const { 
+			return _q.w();
+			//return EigenQuaternion::R_component_4(); 
+		}
 
         /**
          * @brief get length of quaternion
@@ -131,7 +144,8 @@ namespace rw { namespace math {
          */
         inline T getLength() const
         {
-            return static_cast<T>(sqrt(getLengthSquared()));
+			return _q.norm();
+            //return static_cast<T>(sqrt(getLengthSquared()));
         }
 
         /**
@@ -141,11 +155,12 @@ namespace rw { namespace math {
          */
         inline T getLengthSquared() const
         {
-            return static_cast<T>(
-                this->a * this->a +
-                this->b * this->b +
-                this->c * this->c +
-                this->d * this->d);
+			return _q.squaredNorm();
+            //return static_cast<T>(_q.norm());
+            //    this->a * this->a +
+            //    this->b * this->b +
+            //    this->c * this->c +
+            //    this->d * this->d);
         }
 
         /**
@@ -154,13 +169,14 @@ namespace rw { namespace math {
          */
         inline void normalize()
         {
-            const T mag = getLengthSquared();
-            const T n = ((T)1.0)/sqrt(mag);
+			_q.normalize();
+            //const T mag = getLengthSquared();
+            //const T n = ((T)1.0)/sqrt(mag);
 
-            this->a *= n;
-            this->b *= n;
-            this->c *= n;
-            this->d *= n;
+            //this->a *= n;
+            //this->b *= n;
+            //this->c *= n;
+            //this->d *= n;
         };
 
         /**
@@ -181,10 +197,10 @@ namespace rw { namespace math {
          */
         inline const Rotation3D<T> toRotation3D() const
         {
-            T qx = this->a;
-            T qy = this->b;
-            T qz = this->c;
-            T qw = this->d;
+            const T qx = _q.x();
+            const T qy = _q.y();
+            const T qz = _q.z();
+            const T qw = _q.w();
 
             return
                 Rotation3D<T>(
@@ -198,16 +214,16 @@ namespace rw { namespace math {
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return const reference to element
          */
-        inline const T& operator()(size_t i) const
+        inline T operator()(size_t i) const
         {
             switch(i){
-            case 0: return this->a;
-            case 1: return this->b;
-            case 2: return this->c;
-            case 3: return this->d;
+            case 0: return _q.x();
+            case 1: return _q.y();
+            case 2: return _q.z();
+            case 3: return _q.w();
             default:
                 assert(0);
-                return this->a;
+                return _q.x();
             }
         }
 
@@ -219,39 +235,17 @@ namespace rw { namespace math {
         inline T& operator()(size_t i)
         {
             switch(i){
-            case 0: return this->a;
-            case 1: return this->b;
-            case 2: return this->c;
-            case 3: return this->d;
+            case 0: return _q.x();
+            case 1: return _q.y();
+            case 2: return _q.z();
+            case 3: return _q.w();
             default:
                 assert(0);
-                return this->a;
+                return _q.x();
             }
         }
 
 
-        /**
-         * @brief THIS IS NOT A MULTIPLICATION, but a rotation.
-         * It calculates the vector bVc rotated by this quaternion
-         * @return \f$ q*bVc*q' \f$
-         */
-        /*
-        inline const Vector3D<T> operator*( const Vector3D<T>& bVc) const
-        {
-            const T& qx = this->a;
-            const T& qy = this->b;
-            const T& qz = this->c;
-            const T& qw = this->d;
-
-
-
-            //[ r1 r2 - a1 a2 - b1 b2 - c1 c2 ]  +
-            //[ r1 a2 + a1 r2 + b1 c2 - c1 b2 ] i +
-            //[ r1 b2 + b1 r2 + c1 a2 - a1 c2 ] j +
-            //[ r1 c2 + c1 r2 + a1 b2 - b1 a2 ] k
-            // return Vector3D<T>(prod(aRb.m(), bVc.m()));
-        }
-        */
 
         /**
          * @brief Calculates a slerp interpolation between \b this and \b v.
@@ -262,59 +256,63 @@ namespace rw { namespace math {
          * @note Algorithm and implementation is thanks to euclideanspace.com
          */
         inline const Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
-        {
-            const T qax = this->a;
-            const T qay = this->b;
-            const T qaz = this->c;
-            const T qaw = this->d;
-            const T qbx = v(0);
-            const T qby = v(1);
-            const T qbz = v(2);
-            const T qbw = v(3);
+        {			
+			return Quaternion(_q.slerp(t, v.e()));
 
-            // Calculate angle between them.
-            const T cosHalfTheta = qaw * qbw + qax * qbx + qay * qby + qaz * qbz;
+			//Below is our own implementation of slerp.
+            //const T qax = this->a;
+            //const T qay = this->b;
+            //const T qaz = this->c;
+            //const T qaw = this->d;
+            //const T qbx = v(0);
+            //const T qby = v(1);
+            //const T qbz = v(2);
+            //const T qbw = v(3);
 
-            // if qa=qb or qa=-qb then theta = 0 and we can return qa
-            if (fabs(cosHalfTheta) >= 1.0) {
-                return Quaternion<T>(qax, qay, qaz, qaw);
-                //qmw = qaw;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
-            }
+            //// Calculate angle between them.
+            //const T cosHalfTheta = qaw * qbw + qax * qbx + qay * qby + qaz * qbz;
 
-            // Calculate temporary values.
-            const T halfTheta = acos(cosHalfTheta);
-            const T sinHalfTheta = (T)sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+            //// if qa=qb or qa=-qb then theta = 0 and we can return qa
+            //if (fabs(cosHalfTheta) >= 1.0) {
+            //    return Quaternion<T>(qax, qay, qaz, qaw);
+            //    //qmw = qaw;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
+            //}
 
-            // if theta = 180 degrees then result is not fully defined
-            // we could rotate around any axis normal to qa or qb
-            if (fabs(sinHalfTheta) < static_cast<T>(0.001)){
-                const T t05 = static_cast<T>(0.5);
-                T qmw = (qaw * t05 + qbw * t05);
-                T qmx = (qax * t05 + qbx * t05);
-                T qmy = (qay * t05 + qby * t05);
-                T qmz = (qaz * t05 + qbz * t05);
-                return Quaternion<T>(qmx,qmy,qmz,qmw);
-            }
+            //// Calculate temporary values.
+            //const T halfTheta = acos(cosHalfTheta);
+            //const T sinHalfTheta = (T)sqrt(1.0 - cosHalfTheta * cosHalfTheta);
 
-            const T ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
-            const T ratioB = sin(t * halfTheta) / sinHalfTheta;
+            //// if theta = 180 degrees then result is not fully defined
+            //// we could rotate around any axis normal to qa or qb
+            //if (fabs(sinHalfTheta) < static_cast<T>(0.001)){
+            //    const T t05 = static_cast<T>(0.5);
+            //    T qmw = (qaw * t05 + qbw * t05);
+            //    T qmx = (qax * t05 + qbx * t05);
+            //    T qmy = (qay * t05 + qby * t05);
+            //    T qmz = (qaz * t05 + qbz * t05);
+            //    return Quaternion<T>(qmx,qmy,qmz,qmw);
+            //}
 
-            // calculate Quaternion.
-            const T qmw = (qaw * ratioA + qbw * ratioB);
-            const T qmx = (qax * ratioA + qbx * ratioB);
-            const T qmy = (qay * ratioA + qby * ratioB);
-            const T qmz = (qaz * ratioA + qbz * ratioB);
-            return Quaternion<T>(qmx,qmy,qmz,qmw);
+            //const T ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+            //const T ratioB = sin(t * halfTheta) / sinHalfTheta;
+
+            //// calculate Quaternion.
+            //const T qmw = (qaw * ratioA + qbw * ratioB);
+            //const T qmx = (qax * ratioA + qbx * ratioB);
+            //const T qmy = (qay * ratioA + qby * ratioB);
+            //const T qmz = (qaz * ratioA + qbz * ratioB);
+            //return Quaternion<T>(qmx,qmy,qmz,qmw);
         }
 
         /**
            @brief Scalar multiplication.
          */
         inline const Quaternion<T> operator*( T s) const
-        {
-            Quaternion<T> q( *this );
-            q *= s;
-            return q;
+        {			
+			return Quaternion<T>(_q.x()*s, _q.y()*s, _q.z()*s, _q.w()*s);
+            //Quaternion<T> q( *this );
+            //q *= s;
+            //return q;
         }
 
         /**
@@ -322,12 +320,122 @@ namespace rw { namespace math {
          */
         inline friend const Quaternion<T> operator*(T s, const Quaternion<T>& v)
         {
-            Quaternion<T> q(v);
-            q *= s;
-            return q;
+			return v*s;
+            //Quaternion<T> q(v);
+            //q *= s;
+            //return q;
         }
 
+        /**
+           @brief Scalar multiplication.
+         */
+        inline const Quaternion<T> operator*=(T s)
+        {			
+			_q.x() *= s;
+			_q.y() *= s;
+			_q.z() *= s;
+			_q.w() *= s;
+			return *this;
+        }
 
+		/**
+           @brief Multiply with operator
+         */
+        inline const Quaternion<T> operator*=(const Quaternion<T>& r)
+        {			
+			*this = (*this) * r;
+			return *this;
+        }
+
+		/**
+           @brief Multiply-from operator
+         */
+        inline const Quaternion<T> operator*(const Quaternion<T>& r)
+        {			
+			Quaternion q = Quaternion(_q * r.e());;
+			return q;
+        }
+		
+		
+        /**
+           @brief Addition of two quaternions
+         */
+        inline friend const Quaternion<T> operator+(const Quaternion<T>& s, const Quaternion<T>& v)
+        {
+			return Quaternion<T>(s(0)+v(0), s(1)+v(1), s(2)+v(2), s(3)+v(3));			
+        }
+
+		/**
+           @brief Add-to operator
+         */
+        inline const Quaternion<T> operator+=(const Quaternion<T>& r)
+        {			
+			_q.x() += r(0);
+			_q.y() += r(1);
+			_q.z() += r(2);
+			_q.w() += r(3);
+			return *this;
+        }
+
+        /**
+           @brief Scalar multiplication.
+         */
+        inline friend const Quaternion<T> operator-(Quaternion<T> s, const Quaternion<T>& v)
+        {
+			return Quaternion<T>(s(0)-v(0), s(1)-v(1), s(2)-v(2), s(3)-v(3));			
+            //Quaternion<T> q(v);
+            //q *= s;
+            //return q;
+        }
+
+		/**
+           @brief Subtract-from operator
+         */
+        inline const Quaternion<T> operator-=(const Quaternion<T>& r)
+        {			
+			_q.x() -= r(0);
+			_q.y() -= r(1);
+			_q.z() -= r(2);
+			_q.w() -= r(3);
+			return *this;
+        }
+
+		
+		
+
+	    /**
+         * @brief Unary minus.
+         */
+        Quaternion<T> operator-() const
+        {
+            return Quaternion(-_q.x(), -_q.y(), -_q.z(), -_q.w());
+        }
+		
+		/**
+         * @brief Unary minus.
+         */
+        Quaternion<T> operator+() const
+        {
+            return Quaternion(*this);
+        }
+		
+		
+		/**
+           @brief Comparison (equals) operator
+         */
+        inline bool operator==(const Quaternion<T>& r) const
+        {			
+			return (*this)(0) == r(0) && (*this)(1) == r(1) && (*this)(2) == r(2) && (*this)(3) == r(3);
+        }
+		
+		/**
+           @brief Comparison (not equals) operator
+         */
+        inline bool operator!=(const Quaternion<T>& r) const
+        {			
+			return !((*this)== r);
+        }
+		
         /** @brief Converts a Rotation3D to a Quaternion and saves the Quaternion
          * in this.
          *
@@ -364,34 +472,34 @@ namespace rw { namespace math {
 
 			if (tr > min) {
 				const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr+1.0));
-				this->d = static_cast<T>(0.25) / s;
-				this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
-				this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
-				this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+				_q.w() = static_cast<T>(0.25) / s;
+				_q.x() = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
+				_q.y() = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+				_q.z() = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
 			} else {
 				if (rot(0,0) > min1) {
 						  const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
-						  this->a = static_cast<T>(0.5)  *  sa;
-						  const T s = static_cast<T>(0.25) / this->a;
-						  this->b = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
-						  this->c = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
-						  this->d = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;                                              
+						  _q.x() = static_cast<T>(0.5)  *  sa;
+						  const T s = static_cast<T>(0.25) / _q.x();
+						  _q.y() = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+						  _q.z() = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+						  _q.w() = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;                                              
 				} else if (rot(1,1) > min1) {
 						  const T sb = static_cast<T>(sqrt(rot(1, 1) - rot(2, 2) - rot(0, 0)  + 1));
-						  this->b = static_cast<T>(0.5) * sb;
+						  _q.y() = static_cast<T>(0.5) * sb;
 
-						  const T s = static_cast<T>(0.25) / this->b;
-						  this->a = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
-						  this->c = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
-						  this->d = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+						  const T s = static_cast<T>(0.25) / _q.y();
+						  _q.x() = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+						  _q.z() = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+						  _q.w() = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
 				} else {
 						  const T sc = static_cast<T>(sqrt(rot(2, 2) - rot(0, 0) - rot(1, 1)  + 1));
-						  this->c = static_cast<T>(0.5) * sc;
+						  _q.z() = static_cast<T>(0.5) * sc;
 
-						  const T s = static_cast<T>(0.25) / this->c;
-						  this->a = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
-						  this->b = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
-						  this->d = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
+						  const T s = static_cast<T>(0.25) / _q.z();
+						  _q.x() = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+						  _q.y() = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+						  _q.w() = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
 				}
 			}
 
@@ -478,8 +586,17 @@ namespace rw { namespace math {
                 static_cast<Q>(quaternion(3)));
         }
 
-private:
+		Eigen::Quaternion<T>& e() {
+			return _q;
+		}
 
+		const Eigen::Quaternion<T>& e() const {
+			return _q;
+		}
+
+
+private:
+	Eigen::Quaternion<T> _q;
     };
 
     /**
