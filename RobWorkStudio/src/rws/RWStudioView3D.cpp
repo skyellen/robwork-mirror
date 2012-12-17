@@ -702,7 +702,7 @@ void RWStudioView3D::setCheckAction(){
                                             map.get<double>("Far"),
                                             frame);
 
-                    // set params
+                    // set params 
                     RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
                     camFrustum->setPerspective(view._width/view._height, view._fovy, view._near, view._far);
                     _wcscene->addRender(name, camFrustum , frame,  DrawableNode::Virtual);
@@ -721,8 +721,7 @@ void RWStudioView3D::setCheckAction(){
         _view->updateView();
     }
 
-
-
+ 
     else if(obj == _setOrthographicViewAction){
         int x,y,w,h;
         _view->getViewCamera()->getViewport(x,y,w,h);

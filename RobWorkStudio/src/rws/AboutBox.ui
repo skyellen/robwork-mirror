@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
+<ui version="4.0" >
  <class>AboutBoxClass</class>
- <widget class="QDialog" name="AboutBoxClass">
-  <property name="geometry">
+ <widget class="QDialog" name="AboutBoxClass" >
+  <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
@@ -10,20 +9,20 @@
     <height>377</height>
    </rect>
   </property>
-  <property name="windowTitle">
+  <property name="windowTitle" >
    <string>AboutBox</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
-    <widget class="QLabel" name="lblLogo">
-     <property name="alignment">
+    <widget class="QLabel" name="lblLogo" >
+     <property name="alignment" >
       <set>Qt::AlignCenter|Qt::AlignHCenter|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
-     <property name="font">
+    <widget class="QLabel" name="label" >
+     <property name="font" >
       <font>
        <family>MS Shell Dlg 2</family>
        <pointsize>15</pointsize>
@@ -34,20 +33,20 @@
        <strikeout>false</strikeout>
       </font>
      </property>
-     <property name="text">
+     <property name="text" >
       <string>RobWork</string>
      </property>
-     <property name="alignment">
+     <property name="alignment" >
       <set>Qt::AlignCenter|Qt::AlignHCenter|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget_2" native="true">
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblVersionText">
-        <property name="font">
+    <widget class="QWidget" native="1" name="widget_2" >
+     <layout class="QGridLayout" name="gridLayout" >
+      <item row="1" column="0" >
+       <widget class="QLabel" name="lblVersionText" >
+        <property name="font" >
          <font>
           <family>MS Shell Dlg 2</family>
           <pointsize>10</pointsize>
@@ -58,17 +57,17 @@
           <strikeout>false</strikeout>
          </font>
         </property>
-        <property name="text">
+        <property name="text" >
          <string>Version</string>
         </property>
-        <property name="alignment">
+        <property name="alignment" >
          <set>Qt::AlignCenter|Qt::AlignHCenter|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="lblVersion">
-        <property name="font">
+      <item row="1" column="1" >
+       <widget class="QLabel" name="lblVersion" >
+        <property name="font" >
          <font>
           <family>MS Shell Dlg 2</family>
           <pointsize>10</pointsize>
@@ -79,14 +78,14 @@
           <strikeout>false</strikeout>
          </font>
         </property>
-        <property name="text">
+        <property name="text" >
          <string>TextLabel</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="Revision">
-        <property name="font">
+      <item row="2" column="0" >
+       <widget class="QLabel" name="Revision" >
+        <property name="font" >
          <font>
           <family>MS Shell Dlg 2</family>
           <pointsize>10</pointsize>
@@ -97,17 +96,17 @@
           <strikeout>false</strikeout>
          </font>
         </property>
-        <property name="text">
-         <string>RW Revision</string>
+        <property name="text" >
+         <string>Revision</string>
         </property>
-        <property name="alignment">
+        <property name="alignment" >
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="lblRevision">
-        <property name="font">
+      <item row="2" column="1" >
+       <widget class="QLabel" name="lblRevision" >
+        <property name="font" >
          <font>
           <family>MS Shell Dlg 2</family>
           <pointsize>10</pointsize>
@@ -118,22 +117,8 @@
           <strikeout>false</strikeout>
          </font>
         </property>
-        <property name="text">
+        <property name="text" >
          <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="lblRWSRevision">
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>RWS Revision</string>
         </property>
        </widget>
       </item>
@@ -141,43 +126,43 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>© 2009  The Robotics Group&lt;br&gt;The Maersk Mc-Kinney Moller Institute&lt;br&gt;Faculty of Engineering, University of Southern Denmark</string>
+    <widget class="QLabel" name="label_2" >
+     <property name="text" >
+      <string>© 2009  The Robotics Group&lt;br>The Maersk Mc-Kinney Moller Institute&lt;br>Faculty of Engineering, University of Southern Denmark</string>
      </property>
-     <property name="alignment">
+     <property name="alignment" >
       <set>Qt::AlignCenter|Qt::AlignHCenter|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Licensed under the Apache License, Version 2.0&lt;br&gt;http://www.apache.org/licenses/LICENSE-2.0</string>
+    <widget class="QLabel" name="label_3" >
+     <property name="text" >
+      <string>Licensed under the Apache License, Version 2.0&lt;br>http://www.apache.org/licenses/LICENSE-2.0</string>
      </property>
-     <property name="alignment">
+     <property name="alignment" >
       <set>Qt::AlignCenter|Qt::AlignHCenter|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpAddons">
-     <property name="title">
+    <widget class="QGroupBox" name="grpAddons" >
+     <property name="title" >
       <string>Addons</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout_2" >
       <item>
-       <widget class="QTabWidget" name="tabWidget">
-        <property name="currentIndex">
+       <widget class="QTabWidget" name="tabWidget" >
+        <property name="currentIndex" >
          <number>0</number>
         </property>
-        <widget class="QWidget" name="tab">
-         <attribute name="title">
+        <widget class="QWidget" name="tab" >
+         <attribute name="title" >
           <string>Tab 1</string>
          </attribute>
         </widget>
-        <widget class="QWidget" name="tab_2">
-         <attribute name="title">
+        <widget class="QWidget" name="tab_2" >
+         <attribute name="title" >
           <string>Tab 2</string>
          </attribute>
         </widget>
@@ -187,14 +172,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <widget class="QWidget" native="1" name="widget" >
+     <layout class="QHBoxLayout" name="horizontalLayout" >
       <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
+       <spacer name="horizontalSpacer_2" >
+        <property name="orientation" >
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0">
+        <property name="sizeHint" stdset="0" >
          <size>
           <width>40</width>
           <height>20</height>
@@ -203,18 +188,18 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="btnOk">
-        <property name="text">
+       <widget class="QPushButton" name="btnOk" >
+        <property name="text" >
          <string>Ok</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
+       <spacer name="horizontalSpacer" >
+        <property name="orientation" >
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0">
+        <property name="sizeHint" stdset="0" >
          <size>
           <width>40</width>
           <height>20</height>
@@ -227,7 +212,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
+ <layoutdefault spacing="6" margin="11" />
  <resources/>
  <connections/>
 </ui>

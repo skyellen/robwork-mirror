@@ -606,4 +606,33 @@ void GTaskVisPlugin::genericEventListener(const std::string& event){
 
 }
 
+
+void GTaskVisPlugin::on_btnRecordVideo_clicked() {
+	for (size_t i = 0; i<63; i++) {
+		Transform3D<> Tcam = getRobWorkStudio()->getView()->getSceneViewer()->getTransform();	
+
+		Transform3D<> preTransform(Vector3D<>(0,0,0), RPY<>(0,0,0.1));
+		getRobWorkStudio()->getView()->getSceneViewer()->setTransform(preTransform*Tcam);
+		getRobWorkStudio()->updateAndRepaint();
+		QApplication::processEvents();
+		std::stringstream ss;
+		ss<<"d:\\temp\\Img"<<i<<".png";
+		getRobWorkStudio()->saveViewGL(ss.str().c_str());
+	}
+	for (size_t i = 63; i<63*2; i++) {
+		Transform3D<> Tcam = getRobWorkStudio()->getView()->getSceneViewer()->getTransform();	
+	
+		Transform3D<> preTransform(Vector3D<>(0,0,0), RPY<>(0.1,0,0));
+		getRobWorkStudio()->getView()->getSceneViewer()->setTransform(preTransform*Tcam);
+		getRobWorkStudio()->updateAndRepaint();
+		QApplication::processEvents();
+		std::stringstream ss;
+		ss<<"d:\\temp\\Img"<<i<<".png";
+		getRobWorkStudio()->saveViewGL(ss.str().c_str());
+	}
+
+
+
+}
+
 Q_EXPORT_PLUGIN(GTaskVisPlugin);

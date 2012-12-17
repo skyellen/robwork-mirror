@@ -17,11 +17,11 @@
 	/>
 	<UserMacro
 		Name="RWS_ROOT"
-		Value="d:\RobWork_0_6\RobWorkStudio"
+		Value="d:\RobWork_0_7\RobWorkStudio"
 	/>
 	<UserMacro
 		Name="XERCES_ROOT"
-		Value="D:\RobWork_0_6\RobWork\ext\xerces-c-3.1.0-x86-windows-vc-8.0"
+		Value="D:\RobWork_0_7\RobWork\ext\xerces-c-3.1.0-x86-windows-vc-8.0"
 	/>
 	<UserMacro
 		Name="XERCES_VS_ROOT"

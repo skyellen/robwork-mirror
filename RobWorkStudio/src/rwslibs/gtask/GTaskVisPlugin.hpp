@@ -70,7 +70,7 @@ private slots:
     void btnPressed();
     void stateChangedListener(const rw::kinematics::State& state);
     void selectGrasp(int i);
-
+	void on_btnRecordVideo_clicked();
 private:
     rw::models::WorkCell* _wc;
     int _nrOfExperiments, _totalNrOfExperiments;

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'GTaskVisPlugin.ui'
 **
-** Created: Fri 10. Aug 09:10:26 2012
+** Created: Fri 14. Dec 15:11:32 2012
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

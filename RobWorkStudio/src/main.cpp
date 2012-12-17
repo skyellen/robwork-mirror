@@ -20,7 +20,7 @@
 #ifdef __WIN32
 #include <windows.h>
 #endif //#ifdef __WIN32
-#include <QApplication> 
+#include <QApplication>
 #include <QMainWindow>
 
 #include "RobWorkStudio.hpp"
@@ -52,6 +52,8 @@
     #include <rwslibs/lua/Lua.hpp>
 #endif
 #endif
+
+#include <omp.h> //Needed because otherwise Visual Studio results in run-time linking problems.
 
 
 using namespace rw;

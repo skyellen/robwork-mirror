@@ -12,7 +12,7 @@ AboutBox::AboutBox(const QString& version, const QString& revision, QWidget *par
         ui.lblLogo->setPixmap( logo );
     ui.lblVersion->setText(version);
     ui.lblRevision->setText(RW_REVISION);
-    ui.lblRWSRevision->setText(RWS_REVISION);
+//    ui.lblRWSRevision->setText(RWS_REVISION);
     ui.tabWidget->clear();
     ui.grpAddons->setVisible(false);
 }
