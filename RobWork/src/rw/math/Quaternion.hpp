@@ -89,7 +89,9 @@ namespace rw { namespace math {
          * @brief Creates a Quaternion from a Eigen quaternion
          * @param r [in] a boost quaternion
          */
-        Quaternion(const EigenQuaternion& r) {}
+		Quaternion(const EigenQuaternion& r):
+			_q(r)
+		{}
 
         /**
          * @brief copy a boost quaternion to this Quaternion
