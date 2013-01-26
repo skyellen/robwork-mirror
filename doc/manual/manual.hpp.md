@@ -1,4 +1,4 @@
-# User Manual (C++)	# {#page_rw_manual}
+# User Manual (C++) # {#page_rw_manual}
 
 [TOC]
 
@@ -115,6 +115,86 @@ To build this program, you should link with *rw_pathplanners*.
 - Inverse Kinematics, Motion Planning, Grasp Planning, Task Planning
 - Plugin structure, Lua Script interface
 
+
+
+
+# Serialization # {#sec_rw_manual_serialization}
+There are two main structures for performing serialization in RobWork. 
+
+Firstly, there is a XML DOM
+parser interface that lets you easily read and write XML data. This interface is 
+used throughout RobWork for reading and writing well defined data exchange formats. The XML DOM
+parser should not be used as a class serialization structure but rather in properly defined 
+loader and saver factories. The XML DOM parser is especially useful as an extension mechanism 
+for current parsing formats, eg. the user can write a plugin that plugs into an existing parsing 
+implementation such as the workcell format. 
+
+Secondly, there is 
+a generic serialization framework which enables serialization of classes. This framework enables 
+serialization to different archive types and can be used for serializing many different formats, including
+binary and user defined formats.  
+
+## XML DOM parsing ##
+The backend to the XML DOM parser is 
+pluginable and the full features such as validation is therefore depending on the backend. 
+Both boost property tree and xercess backends are supported.     
+
+Here is a small example on creating a DOM parser which parses from an input stream (instream)  
+~~~~~~{.cpp}
+    DOMParser::Ptr parser = DOMParser::make();
+    parser->setSchema(schemaFileName);
+    parser->load(instream);
+    DOMElem::Ptr root = parser->getRootElement();
+~~~~~~
+
+The \b root class can now be used for parsing the xml data. Lets assum we have a xml file that looks like:
+
+~~~~~~{.xml}
+	<group someboolproperty="true" someintproperty="10">
+	 <elem-string> </elem-string>
+	 <elem-int> </elem-int>
+	 <elem-double-list>0.1 0.2 0.1</elem-double-list> 
+	</group>
+~~~~~~
+
+~~~~~~{.cpp}
+	DOMELem::Ptr gelem = root->getElement("group"); // throws an error if "group" is not there
+	bool boolprop = gelem->getAttributeValueAsBool("someboolproperty", true); // defaults to true
+	int intprop = element->getAttributeValueAsInt("someintproperty", 2); // defaults to 2
+	// iterate over all elements in group
+	BOOST_FOREACH(DOMElem::Ptr child, gelem->getChildren()){
+		if(child->isName("elem-string")){
+			std::string str-value = child->getValue();
+		} else if (child->isName("elem-int")) {
+			int int-val = child->getValueAsInt();
+		} else if (child->isName("elem-double-list")) {
+			std::vector<double> double-val-list = child->getValueAsDoubleList(); // default seperator is space ' '			
+		}
+	}
+~~~~~~
+
+
+
+## Generic serialization  ##
+~~~~~~{.cpp}
+	static void save(const KDTreeQ<VALUE_TYPE>& out, OutputArchive& oarchive) {
+	    oarchive.write(out._dim, "dim");
+	    oarchive.write((int)out._nodes->size(), "nrNodes");
+	    oarchive.write((boost::uint64_t)out._root, "rootId");
+	    RW_ASSERT(out._nrOfNodes==out._nodes->size());
+	    for(int i=0;i<out._nodes->size();i++){
+	        const TreeNode &node = (*out._nodes)[i];
+	        oarchive.write((boost::uint64_t)&node, "id");
+	        oarchive.write( node._axis, "axis");
+	        oarchive.write( node._deleted, "del");
+	        oarchive.write( node._left, "left");
+	        oarchive.write( node._right, "right");
+	        oarchive.write( node._kdnode->key, "Q");
+	        oarchive.write( node._kdnode->value, "value");
+	    }
+	}
+~~~~~~
+
 # Workcells # {#sec_rw_manual_workcells}
 The WorkCell is one of the primary containers in RobWork. A WorkCell should gather all stateless 
 elemenst/models of a scene. These are primarilly:
@@ -134,7 +214,7 @@ and the program will abort with an error message.
 
 \include ex-load-workcell.cpp
 
-\subsection sec_rw_manual_traverse_devices Traversing the devices of a workcell
+## Traversing the devices of a workcell ## {#sec_rw_manual_traverse_devices}
 
 A workcell contains a number of devices (rw::models::Device). You can
 for example traverse the devices stored in a workcell and print their
@@ -147,7 +227,7 @@ rw::models::WorkCell::findDevice(). You can add a device type to the search
 such that only a device of name \b name and type \b type will be found:
 rw::models::WorkCell::findDevice<type>(name)
 
-\subsection sec_rw_manual_stateless Stateless models
+##  Stateless models ## {#sec_rw_manual_stateless}
 A very important aspect when working with RobWork is the understanding of its use of Stateless models.
 To illustrate state full and state less we give two small code examples:
 
@@ -179,9 +259,7 @@ The variables that are saved in the state are the dynamically changing states su
 
 
 
-
-
-\section sec_rw_manual_states Kinematics trees and states
+# Kinematics trees and states # {#sec_rw_manual_states}
 
 The kinematic structure of the work cell is represented by a tree of
 frames (see rw::kinematics::Frame). The root of the kinematic tree is
@@ -228,7 +306,7 @@ compute the transform of every single frame in the workcell. RobWork
 has some utilities to make calculation of forward kinematics
 convenient in the day to day work, such a rw::kinematics::FKTable and rw::kinematics::FKRange described below.
 
-\subsection sec_rw_manual_FKTable World transforms for a set of frames
+## World transforms for a set of frames ## {#sec_rw_manual_FKTable}
 
 rw::kinematics::FKTable computes the forward kinematics for a number
 of frames for a common state. The results of the forward kinematics
@@ -238,7 +316,7 @@ for a sequence of frames can be efficiently computed:
 
 \include ex-world-transforms.cpp
 
-\subsection sec_rw_manual_FKRange Relative transforms for a pair of frames
+## Relative transforms for a pair of frames ## {#sec_rw_manual_FKRange} 
 
 rw::kinematics::FKRange computes the relative transform for a pair of
 frames. To efficiently compute the relative transform for a pair of
@@ -262,7 +340,7 @@ be computed efficiently as follows:
 The frameToFrameTransform() utility function is available as
 rw::kinematics::Kinematics::frameTframe().
 
-\subsection sec_rw_manual_dafs Dynamically attachable frames and movable frames
+## Dynamically attachable frames and movable frames ## {#sec_rw_manual_dafs}
 
 A \e dynamically \e attachable \e frame (DAF) is a frame for which the
 parent frame can be changed. We say that the frame is attached to a
@@ -305,13 +383,7 @@ rw::kinematics::Kinematics::gripMovableFrame() collection of
 functions.
 
 
-
-
-
-
-
-
-\section sec_rw_manual_device_configurations Devices and configurations
+# Devices and configurations # {#sec_rw_manual_device_configurations}
 
 Algorithms for workcells often do not operate on the level of frames
 and the values for frames. Instead they operate on \e devices
@@ -360,7 +432,7 @@ from and written to a state value. The device itself is stateless.
 
 
 
-\section sec_rw_manual_metrics Configuration space metrics and other metrics
+# Configuration space metrics and other metrics # {#sec_rw_manual_metrics}
 
 rw::math::Metric<\e X> is the general interface for measuring a
 distance between a pair of values of type \e X. Path planning
@@ -391,7 +463,7 @@ std::vector<double>. This program shows instantiation and expected output for
 
 
 
-\section sec_rw_manual_proximity Collision checking
+# sec_rw_manual_proximity Collision checking # {#sec_rw_manual_metrics}
 The rw::proximity package provides functionality for collision checking. When using a WorkCell and Frames the primary interface will be the rw::proximity::CollisionDetector. To each frames there can be zero or more geometries associated. When stating the two frames are checked against each other, it is in reality the geometries of these which are tested. Notice, that two geometries associated to the same frame are never tested against each other.
 
 Inside the CollisionDetector the checking is divided into two phases:
@@ -403,13 +475,13 @@ The default broad phase filter is the rw::proximity::BasicFilterStrategy which c
 The narrow phase is implemented through a rw::proximity::CollisionStrategy, which may wrap external libraries such as Yaobi or PQP. These wrappers for external libraries are placed in the rwlibs::proximitystrategies package. The CollisionStrategy buffers collision models and maintains a map of relations between frames and models. 
 	
 
-\subsection sec_rw_manual_collisions_global Collision Checking - Workcells
+## Collision Checking - Workcells ## {#sec_rw_manual_collisions_global}
 This program shows how to construct a collision detector for the default collision setup of a workcell. The example program then calls the collision detector to see if the workcell is in collision in its initial state:
 
 \include ex-collisions.cpp
 
 
-\subsection sec_rw_manual_collisions_adding_geometry Adding/Removing Geometries 
+## Adding/Removing Geometries ## {#sec_rw_manual_collisions_adding_geometry} 
 The content of the collision detector can be modified online by using the addModel and removeModel methods on rw::proximity::CollisionDetector. If for instance a new object is detected in a frame it can added and remove it by:
 
 \code
@@ -428,7 +500,7 @@ void removeGeometryFromDetector(CollisionDetector::Ptr cd, Frame* myframe, Geome
 }
 \endcode
 
-\subsection sec_rw_manual_collisions_modifying_broadphase Modifying Broad Phase Filter
+## Modifying Broad Phase Filter ## {#sec_rw_manual_collisions_modifying_broadphase}
 When simulating a robot picking up an objects from a table it is necessary to modify the broad phase filter such that collision detection is disable between the object and the robot tool and enables between object and table.
 
 To do this we can modify the broad phase filter as follows
@@ -455,7 +527,7 @@ To do this we can modify the broad phase filter as follows
 
 
 
-\section sec_rw_manual_constraints Workcell and configuration space constraints
+# Workcell and configuration space constraints # {#sec_rw_manual_constraints}
 
 A collision detector (rw::proximity::CollisionDetector) is an example
 of a constraint on the states of a workcell. Collision checking is but
@@ -512,7 +584,7 @@ upper corner of the configuration space can be traversed:
 
 \include ex-constraints.cpp
 
-\section sec_rw_manual_sampling Configuration space sampling
+# Configuration space sampling # {#sec_rw_manual_sampling}
 
 Configuration space sampling is a useful tool for path planners and
 various other planning algorithms.
@@ -544,7 +616,7 @@ the constraint that the configurations should be collision free.
 
 
 
-\section sec_rw_manual_pathplanning Path planning
+# Path planning # {#sec_rw_manual_pathplanning}
 
 rw::pathplanning::PathPlanner<\e From, \e To, \e Path> is the general
 interface for finding a path of type \e Path connecting a start
@@ -604,7 +676,7 @@ controlling the configuration space exploration of the planner.
 
 
 
-\section sec_rw_manual_invkin Inverse kinematics
+# Inverse kinematics # {#sec_rw_manual_invkin}
 
 Module rw::invkin contains inverse kinematics (IK) solvers. The
 primary types of IK solvers are:
@@ -651,7 +723,7 @@ solutions for only a subset of the target transforms are found.
 
 
 
-\section sec_rw_manual_pointer_conventions C++ shared pointer conventions
+# C++ shared pointer conventions # {#sec_rw_manual_pointer_conventions}
 
 The \b RobWork libraries make extensive use of non-copyable objects
 (such as object referred to by interface) shared by pointer between
@@ -705,7 +777,7 @@ need to explicitly call rw::common::ownedPtr().
 
 
 
-\section sec_rw_manual_task RobWork Task Format
+# RobWork Task Format # {#sec_rw_manual_task}
 RobWork includes an abstract task format which can be used to represent, save and 
 load tasks. The basic rwlibs::task::Task is templated and can either store 
 rw::math::Q or rw::math::Transform3D as targets. 
@@ -728,46 +800,44 @@ The example below illustrated how to construct a small task, prints out the task
 
 
 
-\section sec_rws_manual_intro RobWorkStudio
+# RobWorkStudio # {#sec_rws_manual_intro}
 The main goal of RobWorkStudio is to implement functionality for vizualising
 a RobWork workcell and to implement a plugin infrastructure that enables easy
 installation of user functionality.
 
-\section sec_rws_manual_visualization RobWorkStudio visualization
 
-
-\section sec_rws_plugins Default RobWorkStudio plugins
+##  Default RobWorkStudio plugins ## {#sec_rws_plugins}
 Plugins in RobWorkStudio define the functionallity wether it be native plugins
 or user defined plugins.
 
 
-\subsection sec_rws_plugins_jog The Jog plugin
+### The Jog plugin ### {#sec_rws_plugins_jog}
 Provides functionality for jogging around the robots in a workcell.
 
-\subsection sec_rws_plugins_log The Log plugin
+### sec_rws_plugins_log The Log plugin ###
 Displayes the default log in RobWorkStudio
 
-\subsection sec_rws_plugins_treeview The TreeView plugin
+### sec_rws_plugins_treeview The TreeView plugin ###
 Shows the frame structure of the workcell.
 
-\subsection sec_rws_plugins_lua The Lua plugin
+### sec_rws_plugins_lua The Lua plugin ###
 Provides a simple editor for writing and executing lua scripts.
 
-\subsection sec_rws_plugins_planning The planning plugin
+### sec_rws_plugins_planning The planning plugin ###
 Enables the user call motion planners and plan paths.
 
-\subsection sec_rws_plugins_propertyview The propertyview plugin
+### sec_rws_plugins_propertyview The propertyview plugin ###
 The propertyview can be used to display and edit properties associated to frames in the workcell.
 
-\subsection sec_rws_plugins_playback The playback plugin
+### sec_rws_plugins_playback The playback plugin ###
 This plugin enables recording and playback of TimedStatePaths.
 
-\subsection sec_rws_plugins_sensor The Sensors plugin
+### sec_rws_plugins_sensor The Sensors plugin ###
 This plugin can display output from simulated camera and range scanners in the workcell.
 
 
 
-\section sec_rws_user_plugins Creating your own plugin
+##  Creating your own plugin ## {#sec_rws_user_plugins}
 To create your own plugin copy one of the example plugins which can be found within the example
 directory under RobWorkStudio. The pluginUIapp provides an example in which QT designer (GUI editor)
 is used to design the user interface. The pluginapp provides a simple example without the dependency
@@ -793,7 +863,7 @@ Be sure that the MyPlugin\Path points to where your library has been generated a
 When you start RobWorkStudio it will load your plugin.
 
 
-\section sec_rws_user_tips Tips
+## Tips ## {#sec_rws_user_tips}
 
 Here are some small usefull examples that can be used from a plugin
 
@@ -804,7 +874,7 @@ CollisionDetector *detector = getRobWorkStudio()->getCollisionDetector();
 \endcode
 
 
-\subsection sec_rws_plugin_communication Communicating between plugins
+### Communicating between plugins ### {#sec_rws_plugin_communication}
 RobWorkStudio has a number of event which can be used by the plugins. A plugin can register for an event, for example by
 
 \code
@@ -815,14 +885,14 @@ which binds the stateChangedListener method of MyPlugin to listen for state chan
 To see more information about the different event please consult the RobWorkStudio api-doc.
 
 
-\section sec_rws_properties RobWorkStudio specific frame properties
+## RobWorkStudio specific frame properties ## {#sec_rws_properties}
 
 Through generic properties in the XML and TUL workcell file format, RobWork allows
 for adding user specific information to frames. In this section RobWorkStudio specific
 properties will be listed. Meaning properties that only makes sence for RobWorkStudio and
 not RobWork.
 
-\subsection sec_rwstudio_camera_property Camera property
+### Camera property ### {#sec_rwstudio_camera_property}
 A property describing a camera pinhole model can be added to a frame. The camera view can
 then be visualized in RobWorkStudio. The property string looks like this:
 \verbatim
@@ -842,9 +912,9 @@ You can currently only change views between cameras using the key [1-9], were 1 
 - The camera looks in the negative Z-axis direction of the frame
 - Field of view is in degree and is defined in the Y-axis
 
-\section sec_rws_examples Usefull examples
+## Usefull examples ## {#sec_rws_examples}
 
-\subsection subsec_rws_examples_adding_new_frames Adding new frames to the workcell from a plugin
+### Adding new frames to the workcell from a plugin ### {#subsec_rws_examples_adding_new_frames}
  This example describe how one can add his own frames to the workcell through
  a user plugin.
 
@@ -878,7 +948,7 @@ Following is an example of how to add a new frame to the workcell from your own 
 \endcode
 
 
-\subsection subsec_rws_examples_adding_drawable Adding drawables from a plugin
+### Adding drawables from a plugin ### {#subsec_rws_examples_adding_drawable}
 This example describe how one can add his own drawable to the robwork scene graph, from
 his own robworkstudio plugin.
 First we need to create the drawable, next we need to find the frame we want to
@@ -897,7 +967,7 @@ the user drawable is created in the WorkCellGLDrawer (SceneGraph).
         getRobWorkStudio()->getWorkCellGLDrawer()->addDrawableToFrame(myFrame, drawableObj);
 \endcode
 
-\subsection subsec_rws_examples_adding_collision Adding collision models from a plugin
+### Adding collision models from a plugin ### {#subsec_rws_examples_adding_collision}
 
 \code
     double scale = 1.0; // set a scale, actually not used in RobWork yet
@@ -907,7 +977,7 @@ the user drawable is created in the WorkCellGLDrawer (SceneGraph).
     Accessor::collisionModelInfo().get(*myFrame).push_back(info);
 \endcode
 
-\subsection subsec_rws_examples_getting_drawables_of_a_frame Getting drawables from a frame
+### Getting drawables from a frame ### {#subsec_rws_examples_getting_drawables_of_a_frame}
 
 This code snippet will copy all drawables associated with the frame \b frameWithDrawables
 into the vector \b drawables.

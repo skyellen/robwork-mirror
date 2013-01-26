@@ -5,7 +5,7 @@
 /**
    @brief RobWork library.
 
-   All classes and interfaces in this group only have dependencies on boost and
+   All classes and interfaces in this group only have dependencies on boost, xerces and
    STL. It is considered the core of the RobWork project.
  */
 namespace rw {
@@ -61,10 +61,21 @@ namespace rw {
 	 */
 	namespace trajectory {}
 
+    /**
+     * @brief Generic scene graph related stuff.
+     */
+    namespace graphics {}
+
+    /**
+     * @brief The plugin infrastructure, including extension and extension point mechanism
+     */
+    namespace plugin {}
+
 	/**
 	 * @brief Task descriptions
 	 */
 	namespace task {}
+
 }
 
 /**
@@ -120,59 +131,115 @@ namespace rwlibs {
 }
 
 /**
+ * @brief RobWorkStudio is the visualization framework of RobWork. It depends on Qt and the core RobWork
+ */
+namespace rws {
 
-@defgroup rw rw
+
+
+}
+
+/**
+ * @brief RobWorkStudio extension libraries.
+ *
+ * A collection of extensions to RobWorkStudio which enables the use of RobWork functionality
+ * through a GUI.
+ */
+namespace rwslibs {
+
+
+
+}
+
+
+/**
+   @brief RobWorkSim is the dynamic simulation framework of RobWork.
+
+   It adds no extra dependencies
+   beside RobWork and RobWorkStudio. However, for dynamic simulation, it is strongly recommended to use the ode extension
+   from rwsiml, which depend on the Open Dynamics Engine (ODE).
+*/
+namespace rwsim {
+
+
+
+}
+
+/**
+ * @brief RobWorkHardware is a collection of extensions to RobWork which allow RobWork to
+ * connect to real hardware.
+ *
+ * As such each extension may have several dependencies.
+ */
+namespace rwhw {
+
+
+
+}
+
+/**
+@defgroup rw RobWork
 @{
     @copydoc rw
 
-    @defgroup math math
-    @{
-        @copydoc rw::math
-    @}
-
-    @defgroup common common
+    @defgroup common Common utils
     @{
         @copydoc rw::common
     @}
 
-    @defgroup models models
+    @defgroup math Math
     @{
-        @copydoc rw::models
+        @copydoc rw::math
     @}
 
-    @defgroup kinematics kinematics
+    @defgroup kinematics Kinematics
     @{
         @copydoc rw::kinematics
     @}
 
-    @defgroup invkin invkin
+    @defgroup models Models
+    @{
+        @copydoc rw::models
+    @}
+
+    @defgroup invkin Inverse Kinematics
     @{
         @copydoc rw::invkin
     @}
 
-    @defgroup pathplanning pathplanning
+    @defgroup pathplanning Pathplanning
     @{
         @copydoc rw::pathplanning
     @}
 
-    @defgroup proximity proximity
-    @{
-        @copydoc rw::proximity
-    @}
-
-    @defgroup geometry geometry
+    @defgroup geometry Geometry
     @{
         @copydoc rw::geometry
     @}
 
-    @defgroup loaders loaders
+    @defgroup proximity Proximity
+    @{
+        @copydoc rw::proximity
+    @}
+
+    @defgroup graphics Graphics
+    @{
+        @copydoc rw::graphics
+    @}
+
+    @defgroup loaders Loaders
     @{
         @copydoc rw::loaders
     @}
 
-    @defgroup sensor sensor
+    @defgroup sensor Sensors
     @{
         @copydoc rw::sensor
+    @}
+
+    @defgroup plugin Plugin
+    @{
+        @copydoc rw::plugin
     @}
 
     @defgroup trajectory trajectory
@@ -185,14 +252,20 @@ namespace rwlibs {
         @copydoc rw::task
     @}
 
+    @defgroup serialization Serialization
+    @{
+        @brief serialization framework
+    @}
+
     @defgroup
     @{
         @brief Ignore this group. The group has been added to fix a glitch in
         the Doxygen output.
     @}
+
 @}
 
-@defgroup rwlibs rwlibs
+@defgroup rwlibs RobWork Extension Libraries
 @{
     @copydoc rwlibs
 
@@ -247,5 +320,63 @@ namespace rwlibs {
         the Doxygen output.
     @}
 @}
+
+@defgroup rws RobWorkStudio
+@{
+    @copydoc rws
+@}
+
+@defgroup rwsl RobWorkStudio Extension Libraries
+@{
+    @copydoc rws
+@}
+
+
+@defgroup rwsim RobWorkSim
+@{
+    @brief Physics based Simulation and Control of robots and sensors.
+
+    @defgroup rwsim_control Controllers
+    @{
+        @copydoc rwsim::control
+    @}
+
+    @defgroup rwsim_dynamics Dynamics
+    @{
+        @copydoc rwsim::dynamics
+    @}
+
+    @defgroup rwsim_simulator Simulator
+    @{
+        @copydoc rwsim::simulator
+    @}
+
+    @defgroup rwsim_sensor Sensors
+    @{
+        @copydoc rwsim::sensor
+    @}
+
+    @defgroup rwsim_drawable Drawable
+    @{
+        @copydoc rwsim::drawable
+    @}
+
+    @defgroup rwsim_rwphysics rwphysics
+    @{
+        @copydoc rwsim::drawable
+    @}
+
+@}
+
+@defgroup rwsiml RobWorkSim Extension Libraries
+@{
+    @brief This group should contain all extension points of RobWork.
+@}
+
+@defgroup extensionpoints Extension Points
+@{
+    @brief This group should contain all extension points of RobWork.
+@}
+
 
 */

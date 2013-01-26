@@ -88,6 +88,3 @@ stopCriteria = rw.StopCriteria_stopCnt(100)
 result = planner.query(q_from,q_to,stopCriteria) 
 ~~~~
 
-
-
-*/

@@ -2,7 +2,8 @@
 
 [TOC]
 
-#  Major Changes 0.6 # {#sec_release_notes_06}
+
+# Major Changes 0.6 # {#sec_release_notes_05}
 
 - rwlibs::drawable refactored into rwlibs::graphics and rwlibs::opengl
 - swig is now used for generating script interfaces, lua and python are supported
@@ -20,11 +21,11 @@
 - Introduction of rwlibs::simulation for simulation sensors
 - Plugin structure for RobWork.
 
-##  Dependencies ## 
+## Dependencies ## {#sec_release_notes_05_dependencies}
 
 - XercesC are now required.
 
-#  Major Changes 0.4 # 
+# Major Changes 0.4 # {#sec_release_notes_04}
 
 - Distributed under the Apache License Version 2.0
 - New Task Format in rwlibs/task. The new task format has XML save and load functionality
@@ -39,12 +40,14 @@ replaced by JacobianCalculator which combines the contributions of the individua
 - Support for textures in the AC3D file format
 - OBJ files can be used as drawables
 
-##  Dependencies ## 
+
+
+## Dependencies ## {#sec_release_notes_04_dependencies}
 
 - XercesC to enable save/load of XML files. Can be downloaded from http://xerces.apache.org/xerces-c/
 - Boost in no longer included in ext.
 
-#  Major Changes 0.3 # 
+# Major Changes 0.3 # {#sec_release_notes_03_major}
 
 - All static methods start with lower-case. Most of the old methods are still available but are
 deprecated and will be removed in later releases.

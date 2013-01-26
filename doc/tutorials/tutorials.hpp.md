@@ -1,12 +1,8 @@
-// -*- latex -*-
+# Tutorials # {#page_rw_tutorials}
 
-/**
+[TOC]
 
-\page page_rw_tutorials Tutorials
-- \ref sec_rw_fformats_intro
-
-
-\section sec_rw_fformats_intro Introduction
+# Introduction #
 All tutorials go into this page
 
 - \subpage page_rw_robwork_primer
@@ -16,4 +12,4 @@ All tutorials go into this page
 - \subpage page_rw_robworkstudio_plugins
 
 
-*/
+

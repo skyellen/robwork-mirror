@@ -1,8 +1,4 @@
-// -*- latex -*-
+# User Manual # {#page_rw_usermanual}
 
-/**
+# User manual # 
 
-\page page_rw_usermanual User manual
-
-
-*/

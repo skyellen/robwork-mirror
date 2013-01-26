@@ -1,10 +1,7 @@
-// -*- latex -*-
+# Robot Definition Database # {#page_rw_robot_database}
 
-/**
+[TOC]
 
-\page page_rw_robotdatabase Robot Database
-- \ref sec_rw_rdatabase_intro
+#  Introduction # {#sec_rw_rdatabase_intro}
 
-\section sec_rw_rdatabase_intro Introduction
 
-*/

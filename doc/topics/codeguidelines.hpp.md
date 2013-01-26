@@ -1,9 +1,8 @@
+# Code guide lines # {#page_coding_guidelines}
 
-/**
+[TOC]
 
-\page page_coding_guidelines Code guide lines
-
-@{
+# Introduction #
 
 This section will present the coding guidelines that are used in RobWork. <br>
 
@@ -20,7 +19,7 @@ With the following exceptions:
 </UL>
 In-depth explanations:
 
-a) Naming of source files:
+# a) Naming of source files: #
 
 Source files are named in UpperCamelCase (Java style) the following suffixes should be used:<br>
 C++ header files: .hpp<br>
@@ -30,7 +29,7 @@ As a rule of thumb: There should be one .hpp and one .cpp file for each class. T
 file should have the same name as the class
 
 
-b) Include guards
+# b) Include guards #
 Use the following includeguards:
 \code
 #ifndef RW_PACKAGENAME_CLASSNAME_HPP
@@ -46,7 +45,8 @@ example:
 
 #endif // RW_VWORKCELL_SERIALDEVICE_HPP
 \endcode
-c) Use of namespaces
+
+# c) Use of namespaces # 
 \code
 namespace rw{
     namespace packagename{
@@ -59,7 +59,7 @@ do not use: "using namespace" in .hpp files. This violates the principle of name
 "using namespace" must only be used in .cpp files.
 
 
-d) Class definitions
+# d) Class definitions #
 place public members before protected members, place protected members before private members
 \code
 class SerialDevice{
@@ -74,7 +74,8 @@ class SerialDevice{
      ...
 };
 \endcode
-e) Documentation<br>
+
+# e) Documentation #
 We use doxygen for documentations, doxygen tags should start with a "\@" (JavaDoc style). Brief member
 descriptions should be prefixed by \@brief
 
@@ -114,10 +115,11 @@ class Test{
     void test2();
 };
 \endcode
-f) Indentation<br>
+
+# f) Indentation #
 We use indentation level 4
 
-g) Notation for math<br>
+# g) Notation for math #
 When possible use the following notation for code and documentation:<br>
 <TABLE>
 <TR> <TD>Documentation</TD> <TD>doxygen</TD> <TD>code </TD> <TD>description</TD></TR>
@@ -131,7 +133,7 @@ When possible use the following notation for code and documentation:<br>
 <TR> <TD>\f$\bf{q}\f$</TD> <TD>\\f$\\bf{q}\\f$</TD> <TD>q</TD> <TD>Joint configuration</TD></TR>
 </TABLE>
 
-h) Include files<br>
+# h) Include files #
 .hpp files should be included in the follwing order:
 <OL>
 <LI> (for .cpp files only) ClassName.hpp
@@ -158,15 +160,15 @@ For source files in test, example and demo use the above rules but include the
 RobWork files as library files instead of local files (use <file.hpp> instead of "file.hpp")
 
 
-i) Try to reduce .hpp dependencies<br>
+# i) Try to reduce .hpp dependencies #
 Try to reduce .hpp dependencies by not including more .hpp files than absolutely necessary.
 Use forward declarations when possible
 
-j) Use tests<br>
+# j) Use tests #
 Do not remove or comment-out tests from the test directory
 Write tests
 
-k) Use the RobWork smart pointer<br>
+# k) Use the RobWork smart pointer #
 All classes which are expected to be passed as pointers should declare a pointer typedef using the
 RobWork smart pointer rw::common::Ptr.
 \code
@@ -201,5 +203,5 @@ Wrong:
 \verbatim
 svn commit -m ""
 \endverbatim
-@}
-*/
+
+
