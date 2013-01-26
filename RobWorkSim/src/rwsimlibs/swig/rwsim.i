@@ -37,9 +37,22 @@ using namespace rwsim::swig;
 %template (FixedBodyPtr) rw::common::Ptr<FixedBody>;
 %template (FixedBodyPtrVector) std::vector<rw::common::Ptr<FixedBody> >;
 
+%template (ThreadSimulatorPtr) rw::common::Ptr<ThreadSimulator>;
+%template (DynamicSimulatorPtr) rw::common::Ptr<DynamicSimulator>;
+
+%template (SimulatedFTSensorPtr) rw::common::Ptr<SimulatedFTSensor>;
+
 
 DynamicWorkCell* getDynamicWorkCell();
 void setDynamicWorkCell(DynamicWorkCell* dwc);
+
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
+void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance();
+void removeSimulatorInstance(const std::string& id);
+std::vector<std::string> getSimulatorInstances();
+
 
 struct BodyInfo {
 public:
@@ -69,6 +82,8 @@ public:
 
     const BodyInfo& getInfo() const;
     BodyInfo& getInfo();
+
+    const std::string& getName() const;
     const std::string& getMaterialID() const;
     const InertiaMatrix& getInertia() const;
 
@@ -126,7 +141,7 @@ public:
         Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state){
             return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, -Vector3D::z());
         }
-
+        
     };
 };
 
@@ -147,7 +162,7 @@ public:
         );
 
     //InertiaMatrix getEffectiveMassW(const Vector3D& wPc);
-    rw::kinematics::Frame* getParent(State& state) const;
+    Frame* getParent(State& state) const;
     Transform3D getPTBody(const State& state) const;
     void setPTBody(const Transform3D& pTb, State& state);
     Transform3D getWTBody(const State& state) const;
@@ -188,9 +203,9 @@ public:
 
     void setSampleTime(double stime);
 
-    //void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
+    //void update(const rwlibs::simulation::Simulator::UpdateInfo& info, State& state);
 
-    //void reset(const rw::kinematics::State& state);
+    //void reset(const State& state);
 
     //Controller* getController(){ return this; };
 
@@ -204,7 +219,7 @@ public:
 
     void setTarget(const Transform3D& target);
 
-    //void setTarget(const Transform3D& target, const VelocityScrew6D& vals);
+    void setTarget(const Transform3D& target, const VelocityScrew6D& vals);
 
 };
 
@@ -267,10 +282,47 @@ class RigidDevice : public DynamicDevice {
 
     public: ///// DEPRECATED FUNCTIONS
         //Q getForceLimit() { return getMotorForceLimits(); }
-        // void setVelocity(Q& vel, rw::kinematics::State& state){ setJointVelocities(vel, state);}
+        // void setVelocity(Q& vel, State& state){ setJointVelocities(vel, state);}
     };
 
+%nodefaultctor SuctionCup;
+class SuctionCup : public DynamicDevice {
+public:
 
+    rw::common::Ptr<Body> getBaseBody();
+
+    rw::common::Ptr<Body> getEndBody();
+
+    //void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+
+    double getRadius();
+
+    double getHeight();
+
+    Q getSpringParamsOpen();
+
+    Q getSpringParamsClosed();
+
+    Q getJointVelocities(const State& state);
+
+    void setJointVelocities(const Q &vel, State& state);
+
+    void addForceTorque(const Q &forceTorque, State& state);
+
+    Transform3D getOffset();
+
+    std::vector<rw::common::Ptr<Body> > getLinks();
+
+    bool isClosed(const State& state);
+    void setClosed(bool closed, State& state);
+
+    rw::common::Ptr<Body> getContactBody(const State& state);
+    void setContactBody(rw::common::Ptr<Body> b, State& state);
+
+    double getPressure(const State& state);
+    void setPressure(double pressure, State& state);
+
+};
 
 class DynamicWorkCell
 {
@@ -287,7 +339,6 @@ public:
                     const std::vector<rw::common::Ptr<DynamicDevice> >& devices,
                     const std::vector<rw::common::Ptr<SimulatedController> >& controllers);
 	
-	
     rw::common::Ptr<Body> findBody(const std::string& name) const;
 
     //template<class T> T* findBody(const std::string& name) const;
@@ -302,8 +353,8 @@ public:
     //const std::vector<Constraint>& getConstraints();
     void addController(rw::common::Ptr<SimulatedController> manipulator);
     rw::common::Ptr<SimulatedController> findController(const std::string& name);
-
     rw::common::Ptr<DynamicDevice> findDevice(const std::string& name) const;
+    rw::common::Ptr<SimulatedSensor> findSensor(const std::string& name);
 
     //ContactDataMap& getContactData();
     //MaterialDataMap& getMaterialData();
@@ -347,13 +398,167 @@ public:
 
         rw::common::Ptr<RigidDevice> findRigidDevice(const std::string& name)
         { return $self->DynamicWorkCell::findDevice<RigidDevice>(name); }
-        //KinematicBody* findKinematicBody(const std::string& name)
-        //{ return $self->DynamicWorkCell::findBody<KinematicBody>(name).get(); }
+        rw::common::Ptr<SuctionCup> findSuctionCup(const std::string& name)
+        { return $self->DynamicWorkCell::findDevice<SuctionCup>(name); }
+
+        rw::common::Ptr<SimulatedFTSensor> findFTSensor(const std::string& name)
+        { return $self->DynamicWorkCell::findSensor<SimulatedFTSensor>(name); }
+
+        
+        void setGravity(double x, double y, double z){
+            $self->DynamicWorkCell::setGravity( rw::math::Vector3D<>(x,y,z) );
+        }
+        
+		rw::common::Ptr<Body> getBody(const std::string& name) const{
+			rw::common::Ptr<Body> body = $self->findBody(name);
+			if(body==NULL)
+				RW_THROW("Could not find body: \"" << name << "\"" );
+			return body;
+		}
 
 
     };
 
 };
 
+
+///////////////////////////// rwsim::simulator
+
+
+class DynamicSimulator: public Simulator
+{
+public:
+    DynamicSimulator(rw::common::Ptr<DynamicWorkCell> dworkcell, rw::common::Ptr<PhysicsEngine> pengine);
+
+    DynamicSimulator(rw::common::Ptr<DynamicWorkCell> dworkcell);
+
+    virtual ~DynamicSimulator();
+
+    void exitPhysics();
+	double getTime();
+	void setEnabled(rw::common::Ptr<Body> body, bool enabled);
+
+	//drawable::SimulatorDebugRender::Ptr createDebugRender();
+	PropertyMap& getPropertyMap();
+	
+	void addController(rw::common::Ptr<SimulatedController> controller);
+	void removeController(rw::common::Ptr<SimulatedController> controller);
+
+	void addBody(rw::common::Ptr<Body> body, State &state);
+	void addDevice(rw::common::Ptr<DynamicDevice> dev, State &state);
+	void addSensor(rw::common::Ptr<SimulatedSensor> sensor, State &state);
+	void removeSensor(rw::common::Ptr<SimulatedSensor> sensor);
+	std::vector<rw::common::Ptr<SimulatedSensor> > getSensors();
+
+	 // Simulator interface
+     void step(double dt, State& state);
+     void reset(State& state);
+	 void init(State& state);
+	 void setEnabled(Frame* f, bool enabled);
+	 void setDynamicsEnabled(rw::common::Ptr<Body> body, bool enabled);
+	 // interfaces for manipulating/controlling bodies
+	 void setTarget(rw::common::Ptr<Body> body, const Transform3D& t3d, State& state);
+
+	 //void setTarget(rw::common::Ptr<Body> body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, State& state);
+
+	 void disableBodyControl( rw::common::Ptr<Body> body );
+	 void disableBodyControl( );
+
+	 rw::common::Ptr<BodyController> getBodyController();
+
+	 void attach(rw::common::Ptr<Body> b1, rw::common::Ptr<Body> b2);
+
+	 void detach(rw::common::Ptr<Body> b1, rw::common::Ptr<Body> b2);
+
+};
+
+
+
+class ThreadSimulator {
+	public:
+		ThreadSimulator(rw::common::Ptr<DynamicSimulator> simulator, const State &state);
+		virtual ~ThreadSimulator();
+		//void setPeriodMs(long period);
+		void setRealTimeScale(double scale);
+		void setTimeStep(double dt);
+		void start();
+		void stop();
+		void postStop();
+		void step();
+		State getState();
+		void setState(const State& state);
+		void reset(const State& state);
+		bool isRunning();
+		double getTime();
+		rw::common::Ptr<DynamicSimulator> getSimulator();
+
+		//! The callback type for a hook into the step call
+		//typedef boost::function<void(ThreadSimulator* sim, State&)> StepCallback;
+		// void setStepCallBack(StepCallback cb);
+
+		bool isInError();
+		void setInError(bool inError);
+	};
+
+
+
+////////////////// SENSORS 
+
+class SimulatedFTSensor //: public SimulatedTactileSensor 
+{
+public:
+    SimulatedFTSensor(const std::string& name,
+                      rw::common::Ptr<Body> body,
+                      rw::common::Ptr<Body> body1,
+                      Frame* frame=NULL);
+
+	virtual ~SimulatedFTSensor();
+
+	void update(const rwlibs::simulation::Simulator::UpdateInfo& info, State& state);
+	void reset(const State& state);
+
+	void addForceW(const Vector3D& point,
+				   const Vector3D& force,
+				   const Vector3D& cnormal,
+				   State& state,
+				   rw::common::Ptr<Body> body = NULL);
+
+	void addForce(const Vector3D& point,
+				  const Vector3D& force,
+				  const Vector3D& cnormal,
+				  State& state,
+				  rw::common::Ptr<Body> body=NULL);
+
+    void addWrenchToCOM(
+                  const Vector3D& force,
+                  const Vector3D& torque,
+                  State& state,
+                  rw::common::Ptr<Body> body=NULL);
+
+    void addWrenchWToCOM(
+                  const Vector3D& force,
+                  const Vector3D& torque,
+                  State& state,
+                  rw::common::Ptr<Body> body=NULL);
+
+    Transform3D getTransform();
+
+    Vector3D getForce();
+    
+	Vector3D getTorque();
+
+	double getMaxTorque();
+
+	double getMaxForce();
+
+	Frame* getSensorFrame();
+
+	void acquire();
+
+	//rw::common::Ptr<FTSensor> getSensor();
+
+	rw::common::Ptr<Body> getBody1();
+	rw::common::Ptr<Body> getBody2();
+};
 
 

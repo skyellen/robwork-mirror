@@ -50,6 +50,7 @@ ODEKinematicDevice::ODEKinematicDevice(rwsim::dynamics::KinematicDevice *kdev,
     BOOST_FOREACH(Body::Ptr kbody, kdev->getLinks() ){
         _bodies.push_back( ODEBody::makeKinematicBody(kbody, space, sim) );
         _kbodies.push_back( _bodies.back()->getBodyID() );
+        sim->addODEBody( _bodies.back() );
     }
 }
 

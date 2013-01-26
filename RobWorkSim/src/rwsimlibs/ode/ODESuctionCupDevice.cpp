@@ -114,8 +114,7 @@ ODESuctionCupDevice::~ODESuctionCupDevice(){
 
 }
 
-
-void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+void ODESuctionCupDevice::updateNoRollBack(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
     double dt = info.dt;
     // test if tcp is in contact with object
     /// std::cout <<  "ODESuctionCupDevice" << std::endl;
@@ -146,7 +145,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
     // then we use our own collision stuff to determine contact.
     //std::cout << (!_isInContact) <<  "&&"  << (object!=NULL) << std::endl;
     if( !_isInContact && object!=NULL){
-    	//std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
+        //std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
         Transform3D<> wTobj = Kinematics::worldTframe(object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
         // test if the suction gripper is in "complete" contact with the object
@@ -223,118 +222,6 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
         */
     }
 
-#ifdef CONTACT_BASED_SUC_CUP
-
-    //if( _isInContact ){
-    if( firstContact ) {
-        // apply forces to object
-        std::cout << " first contact " << std::endl;
-        double forceFromVacuum = 10; // normal
-        double forceCupFromVacuum = -1; // normal
-        Transform3D<> t3d = _tcp->getTransformW( state );
-        Vector3D<> normal = t3d.R() * Vector3D<>( 0, 0, 1 );
-
-        //Vector3D<> objforce = t3d.R() * Vector3D<>( 0, 0, 1*forceFromVacuum);
-        //Vector3D<> cupforce = t3d.R() * Vector3D<>( 0, 0, 1*forceCupFromVacuum);
-        /// std::cout <<  "Object: " << _object->getBodyFrame()->getName() << std::endl;
-        /// std::cout <<  "objForce: "  << objforce << " " << t3d.P() << std::endl;
-        /// std::cout <<  "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
-
-        // create the contact point list
-        _contacts.clear();
-        dContact con;
-        con.geom.depth = 0.0001;
-        ODEUtil::toODEVector(t3d.P(),con.geom.pos);
-        ODEUtil::toODEVector(normal,con.geom.normal);
-        con.surface.mode =
-                dContactBounce
-                | dContactSoftCFM
-                | dContactSoftERP;
-
-        con.surface.bounce = 0;
-        con.surface.bounce_vel = 0.0001;
-        con.surface.mu = 0.5;
-        con.surface.soft_cfm = 0.0001;
-        con.surface.soft_erp = 0.2;
-
-
-        // the attracting joint
-        //dJointID c;
-        Vector3D<> xaxis = t3d.R()*Vector3D<>::x()*_dev->getRadius();
-        Vector3D<> yaxis = t3d.R()*Vector3D<>::y()*_dev->getRadius();
-
-        ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        // the real contact joints
-        ODEUtil::toODEVector(-normal,con.geom.normal);
-
-        ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
-        _contacts.push_back(con);
-        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-        //Vector3D<> force = Vector3D<>( 0, 0, 1*forceFromVacuum );
-        //std::cout << force << std::endl;
-        //_object->addForceWToPosW(objforce, t3d.P(), state);
-        //_tcp->addForceWToPosW(cupforce, t3d.P(), state);
-    }
-
-    //ODEBody *odeobject = _odesim->getODEBody(object->getBodyFrame());
-    //RW_ASSERT()
-    if(_contacts.size()>0 && _object!=NULL){
-        std::cout << "adding contacts: " << _contacts.size() << std::endl;
-        _odesim->addContacts(_contacts, _contacts.size(), _odeEnd, _odesim->getODEBody(_object->getBodyFrame()));
-    }
-    //Q _elasticity(3);
-    //_elasticity(0) = 100/0.017; // total compression is 0.017 where a maximum force of 50 should be resisted, so
-    //_elasticity(1) = 0.5/(40*Deg2Rad); // total compression is 40 degree where a maximum torque of X should be resisted
-    //_elasticity(2) = 0.5/(40*Deg2Rad); // total compression is 40 degree where a maximum torque of Y should be resisted
-    // now update the elastic forces of the gripper
-    //Q q = _dev->getQ(state);
-    //Q ql = _dev->getForceLimit();
-
-    //for(size_t i=0;i<q.size();i++){
-    //    ql(i) = fabs( q(i)*_elasticity(i) );
-    //}
-    //std::cout << "Force lim: " << ql << std::endl;
-    //_dev->setForceLimit(ql/10);
-
-    //std::cout << "ODESuctionCupDevice END" << std::endl;
-#else
-
     if( firstContact ) {
 
         // we connect the two bodies using a 6DOF fixed constraint
@@ -396,6 +283,17 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
 
     }
 
+}
+
+
+void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+    double dt = info.dt;
+
+    if( !info.rollback ){
+        updateNoRollBack(info, state);
+    }
+
+    // if we are in a rollback then no state changes should happen
     Q sp1;
     if( _isInContact ){
         sp1 = _dev->getSpringParamsClosed();
@@ -439,8 +337,6 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
     //std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
     _lastX = x;
     _lastAng = ang;
-#endif
-
 }
 
 void ODESuctionCupDevice::reset(rw::kinematics::State& state){
@@ -582,8 +478,118 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     odeJoints.push_back(odeJoint);
     _allODEJoints.push_back(odeJoint);
      */
-
-
-
-
 }
+
+
+
+#ifdef CONTACT_BASED_SUC_CUP
+
+    //if( _isInContact ){
+    if( firstContact ) {
+        // apply forces to object
+        std::cout << " first contact " << std::endl;
+        double forceFromVacuum = 10; // normal
+        double forceCupFromVacuum = -1; // normal
+        Transform3D<> t3d = _tcp->getTransformW( state );
+        Vector3D<> normal = t3d.R() * Vector3D<>( 0, 0, 1 );
+
+        //Vector3D<> objforce = t3d.R() * Vector3D<>( 0, 0, 1*forceFromVacuum);
+        //Vector3D<> cupforce = t3d.R() * Vector3D<>( 0, 0, 1*forceCupFromVacuum);
+        /// std::cout <<  "Object: " << _object->getBodyFrame()->getName() << std::endl;
+        /// std::cout <<  "objForce: "  << objforce << " " << t3d.P() << std::endl;
+        /// std::cout <<  "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
+
+        // create the contact point list
+        _contacts.clear();
+        dContact con;
+        con.geom.depth = 0.0001;
+        ODEUtil::toODEVector(t3d.P(),con.geom.pos);
+        ODEUtil::toODEVector(normal,con.geom.normal);
+        con.surface.mode =
+                dContactBounce
+                | dContactSoftCFM
+                | dContactSoftERP;
+
+        con.surface.bounce = 0;
+        con.surface.bounce_vel = 0.0001;
+        con.surface.mu = 0.5;
+        con.surface.soft_cfm = 0.0001;
+        con.surface.soft_erp = 0.2;
+
+
+        // the attracting joint
+        //dJointID c;
+        Vector3D<> xaxis = t3d.R()*Vector3D<>::x()*_dev->getRadius();
+        Vector3D<> yaxis = t3d.R()*Vector3D<>::y()*_dev->getRadius();
+
+        ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        // the real contact joints
+        ODEUtil::toODEVector(-normal,con.geom.normal);
+
+        ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+
+        //Vector3D<> force = Vector3D<>( 0, 0, 1*forceFromVacuum );
+        //std::cout << force << std::endl;
+        //_object->addForceWToPosW(objforce, t3d.P(), state);
+        //_tcp->addForceWToPosW(cupforce, t3d.P(), state);
+    }
+
+    //ODEBody *odeobject = _odesim->getODEBody(object->getBodyFrame());
+    //RW_ASSERT()
+    if(_contacts.size()>0 && _object!=NULL){
+        std::cout << "adding contacts: " << _contacts.size() << std::endl;
+        _odesim->addContacts(_contacts, _contacts.size(), _odeEnd, _odesim->getODEBody(_object->getBodyFrame()));
+    }
+    //Q _elasticity(3);
+    //_elasticity(0) = 100/0.017; // total compression is 0.017 where a maximum force of 50 should be resisted, so
+    //_elasticity(1) = 0.5/(40*Deg2Rad); // total compression is 40 degree where a maximum torque of X should be resisted
+    //_elasticity(2) = 0.5/(40*Deg2Rad); // total compression is 40 degree where a maximum torque of Y should be resisted
+    // now update the elastic forces of the gripper
+    //Q q = _dev->getQ(state);
+    //Q ql = _dev->getForceLimit();
+
+    //for(size_t i=0;i<q.size();i++){
+    //    ql(i) = fabs( q(i)*_elasticity(i) );
+    //}
+    //std::cout << "Force lim: " << ql << std::endl;
+    //_dev->setForceLimit(ql/10);
+
+    //std::cout << "ODESuctionCupDevice END" << std::endl;
+#endif

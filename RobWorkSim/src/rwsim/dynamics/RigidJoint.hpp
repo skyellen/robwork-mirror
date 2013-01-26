@@ -38,7 +38,7 @@ namespace rwsim {
 namespace dynamics {
 
 
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
     /**
      * @brief A body is an abstraction over some physical object in the scene.

@@ -11,7 +11,7 @@
 
 namespace rwsim {
 namespace dynamics {
-    //! @addtogroup dynamics
+    //! @addtogroup rwsim_dynamics
     //! @{
 
     /**

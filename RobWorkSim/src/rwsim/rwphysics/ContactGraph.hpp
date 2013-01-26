@@ -118,16 +118,14 @@ namespace simulator {
         // maps containing edges and nodes
     	//std::map<rw::kinematics::Frame*, ConstraintNode*> _frameToNode;
     	//std::map< NodePair, ConstraintEdge* > _nodeToEdge;
+       	ContactModelFactory &_factory;
+    	CNodePool *_pool;
     	CNodePairMap<ConstraintEdge*> _pairToEdge;
     	rw::kinematics::FrameMap<ConstraintNode*> _frameToNode;
 
-    	CNodePool *_pool;
-
-    	//
     	//std::vector<ConstraintNode*> _nodes;
     	rw::kinematics::FramePairSet _oFrames;
 
-    	ContactModelFactory &_factory;
     public:
     	std::vector<ConstraintEdge*> _fEdges; // filtered edges
 

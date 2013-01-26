@@ -32,7 +32,7 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
     /**
      * @brief The composite body allow multiple objects to be grouped together in

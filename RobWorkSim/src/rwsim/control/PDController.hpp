@@ -10,7 +10,7 @@
 
 namespace rwsim {
 namespace control {
-	//! @addtogroup control
+	//! @addtogroup rwsim_control
 	//! @{
 
 	//! @brief struct for holding PD parameters

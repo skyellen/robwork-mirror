@@ -102,7 +102,7 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
         ThreadSimulator::StepCallback cb( boost::bind(&GraspTaskSimulator::stepCB, this, _1, _2) );
 
         tsim->setStepCallBack( cb );
-        tsim->setPeriodMs(-1);
+        tsim->setRealTimeScale(0);
         tsim->setTimeStep(0.005);
 
         _simulators.push_back(tsim);
@@ -233,7 +233,7 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
             sim->addSensor( sstate._bsensors.back() , sstate._state);
         }
 
-        _simulators[i]->setPeriodMs(-1);
+        _simulators[i]->setRealTimeScale(0);
         _simulators[i]->setTimeStep(0.005);
         _simStates[_simulators[i]] = sstate;
     }

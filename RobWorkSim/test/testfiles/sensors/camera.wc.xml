@@ -1,0 +1,30 @@
+<WorkCell name="cup_pg70_table">
+
+  <Frame name="Floor" refframe="WORLD">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+	
+  <Drawable name="PlaneGeo" refframe="Floor">
+	<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	<Polytope file="../objects/plane_5x5"/>
+  </Drawable>  
+
+ <Frame name="OrangeMarmelade" refframe="WORLD" type="Movable">
+  <Transform>
+    1.0 0.0 0.0 0.075
+    0.0 1.0 0.0 -0.375
+    0.0 0.0 1.0 0.012
+  </Transform>
+</Frame>
+
+<Drawable name="OrangeMarmeladeGeo" refframe="OrangeMarmelade">
+  <Polytope file="../objects/OrangeMarmelade"/>
+</Drawable>
+
+ <Frame name="scanner" refframe="WORLD" type="Movable">
+   <RPY>0 0 0</RPY><Pos>0 0 2</Pos>
+   <Property name="Camera"> 45 640 480 </Property>
+ </Frame>
+
+ </WorkCell>
+ 

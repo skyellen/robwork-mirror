@@ -27,8 +27,9 @@
 #include "RigidBody.hpp"
 
 namespace rwsim {
+namespace sandbox {
 namespace dynamics {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_sandbox
 	//! @{
 
 	/**
@@ -92,6 +93,7 @@ namespace dynamics {
 		std::vector<double > tau;
 	};
 	//! @}
+}
 }
 }
 #endif /*NEWTONEULERDYNAMICS_HPP_*/

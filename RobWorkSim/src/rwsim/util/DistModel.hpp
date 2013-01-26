@@ -29,7 +29,7 @@
 
 namespace rwsim {
 namespace util {
-	//! @addtogroup util
+	//! @addtogroup rwsim_util
 	//! @{
 	class DistModel {
 	public:

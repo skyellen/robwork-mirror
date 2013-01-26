@@ -19,16 +19,25 @@
 #define RWSIM_SWIG_REMOTETYPES_HPP_
 
 #include <rwlibs/swig/ScriptTypes.hpp>
+
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
+#include <rwsim/dynamics/SuctionCup.hpp>
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/BodyUtil.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
-#include <rwsim/dynamics/FixedBody.hpp>
+
 #include <rwsim/control/BodyController.hpp>
 #include <rwsim/control/PoseController.hpp>
+#include <rwsim/control/PDController.hpp>
+
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
+
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 /**
 #ifdef __cplusplus
@@ -59,17 +68,36 @@ namespace swig {
     typedef rwsim::dynamics::BodyInfo BodyInfo;
     typedef rwsim::dynamics::DynamicDevice DynamicDevice;
     typedef rwsim::dynamics::RigidDevice RigidDevice;
+    typedef rwsim::dynamics::SuctionCup SuctionCup;
+
     typedef rwsim::control::PoseController PoseController;
+    typedef rwsim::control::PDController PDController;
+    typedef rwsim::control::BodyController BodyController;
+
+    typedef rwsim::simulator::DynamicSimulator DynamicSimulator;
+    typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
+    typedef rwsim::simulator::PhysicsEngine PhysicsEngine;
+
+    typedef rwsim::sensor::SimulatedFTSensor SimulatedFTSensor;
 
     // for now we add all static functions here
     DynamicWorkCell* getDynamicWorkCell();
 
     /**
-     * @brief set current robworkstudio instance
+     * @brief set current dynamic workcell instance
      */
     void setDynamicWorkCell(DynamicWorkCell* dwc);
 
-    /// These functions all work on the current robworkstudio state
+    void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);
+
+    //! @brief get first available simulator instance
+    rw::common::Ptr<ThreadSimulator> getSimulatorInstance();
+
+    rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
+
+    void removeSimulatorInstance(const std::string& id);
+
+    std::vector<std::string> getSimulatorInstances();
 
 }
 }

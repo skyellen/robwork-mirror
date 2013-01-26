@@ -37,7 +37,7 @@
 
 namespace rwsim {
 namespace sensor {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
 
 	/**
@@ -303,13 +303,14 @@ namespace sensor {
             }
 
             TactileArraySensor* _tsensor;
+
+            boost::numeric::ublas::matrix<float> _distMatrix;
             ValueMatrix _accForces,_pressure;
+            double _accTime, _stime;
             rw::math::Transform3D<> _wTf, _fTw;
             std::vector<rw::sensor::Contact3D> _allAccForces,_allForces;
             std::map<dynamics::Body::Ptr, std::vector<rw::sensor::Contact3D> > _forces;
-            double _accTime, _stime;
             rw::proximity::ProximityStrategyData _pdata;
-            boost::numeric::ublas::matrix<float> _distMatrix;
 
         };
 
@@ -344,48 +345,44 @@ namespace sensor {
 		//rw::common::Ptr<StateModel> _model;
 
 		boost::numeric::ublas::matrix<float> _distDefMatrix;
-
 		const rw::math::Vector2D<> _texelSize;
+		double _texelArea;
 		const rw::math::Transform3D<> _fThmap,_hmapTf;
 
 		// width and height of matrix
 		const int _w,_h;
-		// lowpass filter time constant
-		double _tau;
-		double _texelArea;
 
 		// matrix containing the center position of each tactil. Calculated from VertexShape
 		VertexMatrix _vMatrix;
 
+		double _minPressure,_maxPressure;
+
 		// distribution mask, a mask where the sum of all elements is 1.
 		// it describes the deformation around a point force.
 		boost::numeric::ublas::matrix<float> _dmask;
+
+		rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
+
+		// max penetration in meter
+		double _maxPenetration,_elasticity;
+		// lowpass filter time constant
+		double _tau;
+
+		dynamics::Body::Ptr _body;
+
 		double _maskWidth, _maskHeight;
-		double _minPressure,_maxPressure;
 
 		// the
 		//const VertexMatrix& _vMatrix;
 		//std::vector<Contact3D> _forces;
 
-		rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
 
 		rw::proximity::ProximityModel *model;
-
-		// max penetration in meter
-		double _maxPenetration,_elasticity;
-
 		rw::geometry::Geometry::Ptr _ngeom;
 		rw::common::Ptr<rw::geometry::PlainTriMesh<rw::geometry::Triangle<> > > _ntrimesh;
 		rw::proximity::ProximityModel::Ptr _nmodel;
-
-
 		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
-		dynamics::Body::Ptr _body;
-
-
         rw::sensor::TactileArray::Ptr _tactileArraySensorWrapper;
-
-
 	};
 	//! @}
 }

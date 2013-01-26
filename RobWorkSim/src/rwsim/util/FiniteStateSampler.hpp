@@ -24,7 +24,7 @@
 
 namespace rwsim {
 namespace util {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
 	/**
 	 * @brief a state sampler that will sample a finite set of states. The nr

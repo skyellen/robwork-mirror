@@ -3,7 +3,7 @@
 
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 
-#include <OpenGl/GLDebugDrawer.h>
+//#include <OpenGl/GLDebugDrawer.h>
 
 
 
@@ -14,7 +14,7 @@ namespace simulator {
     class BtDebugRender: public rwsim::drawable::SimulatorDebugRender
     {
         BtSimulator *_sim;
-        GLDebugDrawer *_debugDrawer;
+        //GLDebugDrawer *_debugDrawer;
         unsigned int _drawMask;
     public:
 

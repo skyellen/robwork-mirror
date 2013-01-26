@@ -49,9 +49,9 @@ namespace {
             return NULL;
         };
 
-        mutable Q _pressure;
         QBox _bounds;
         Frame *_base, *_end;
+        mutable Q _pressure;
     };
 
 }

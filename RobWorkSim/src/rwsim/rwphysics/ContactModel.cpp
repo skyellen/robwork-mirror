@@ -200,11 +200,11 @@ namespace {
         contact.KInv = inverse( K );*/
 
         // Calculate baumgarten stabilization, linear position error feedback
-        double kBiasFactor = 0.2;
+        //double kBiasFactor = 0.2;
         std::cout << "4" << std::endl;
         double slopSize = (fact->getTouchDist() - fact->getPenetrationDist())/2.0;
         std::cout << "5" << std::endl;
-        double biasLayer = fact->getTouchDist()-slopSize;
+        //double biasLayer = fact->getTouchDist()-slopSize;
         std::cout << "6" << std::endl;
         //contact.bias = kBiasFactor * dtInv * std::max(0.0, biasLayer-contact.dist );
         contact.bias = 0;

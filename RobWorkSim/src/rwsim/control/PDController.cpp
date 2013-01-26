@@ -10,7 +10,7 @@ namespace {
 	void setPDParams(const std::vector<PDParam>& pdparams, Q& qp, Q qd){
 		qp = Q::zero(pdparams.size());
 		qd = Q::zero(pdparams.size());
-		for(int i=0;i<pdparams.size();i++){
+		for(size_t i=0;i<pdparams.size();i++){
 			qp[i] = pdparams[i].P;
 			qd[i] = pdparams[i].D;
 		}
@@ -95,6 +95,10 @@ void PDController::setSampleTime(double stime){
 }
 
 void PDController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
+	if(!_enabled){
+		return;
+	}
+
 	//_accTime+=dt;
 	//if(_accTime<_stime)
 	//	return;
@@ -109,7 +113,7 @@ void PDController::update(const rwlibs::simulation::Simulator::UpdateInfo& info,
         }
     }
 
-	double rdt = _accTime;
+	//double rdt = _accTime;
 	_accTime -= _stime;
 
 

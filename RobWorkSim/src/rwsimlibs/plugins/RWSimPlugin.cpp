@@ -257,12 +257,17 @@ void RWSimPlugin::btnPressed(){
 
     	if(sim==NULL)
     		return;
+
     	_createSimulatorBtn->setDisabled(true);
     	_destroySimulatorBtn->setDisabled(false);
     	_simConfigBtn->setDisabled(false);
     	State state = getRobWorkStudio()->getState();
     	sim->init(state);
     	_sim = ownedPtr(new ThreadSimulator(sim, getRobWorkStudio()->getState()));
+
+#ifdef RWSIM_HAVE_LUA
+    	rwsim::swig::addSimulatorInstance(_sim, "rwsimplugin");
+#endif
 
     	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack, this, _2) );
 
@@ -542,7 +547,8 @@ void RWSimPlugin::changedEvent(){
     	//_timer->setInterval( settings().get<double>("RWSimUpdateInterval",0.01)*1000 );
     } else if( obj == _timeScaleSpin ){
         settings().set<double>("RWSimTimeScale",_timeScaleSpin->value());
-        _sim->setPeriodMs( (int)(_timeScaleSpin->value()*_timeStepSpin->value()*1000) );
+        std::cout << "Setting time scale: " << _timeScaleSpin->value() << std::endl;
+        _sim->setRealTimeScale( _timeScaleSpin->value() );
     } else if( obj == _debugLevelSpin ){
         settings().set<int>("RWSimDebugLevelMask",_debugLevelSpin->value());
 

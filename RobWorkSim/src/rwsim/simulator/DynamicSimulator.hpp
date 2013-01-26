@@ -35,7 +35,7 @@
 
 namespace rwsim {
 namespace simulator {
-	//! @addtogroup simulator
+	//! @addtogroup rwsim_simulator
 	//! @{
 
 	/**

@@ -16,7 +16,7 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable
+	//! @addtogroup rwsim_drawable
 	//! @{
 
 	/**

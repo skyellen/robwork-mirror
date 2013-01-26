@@ -70,6 +70,10 @@ namespace simulator {
 		 */
 		virtual void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
+
+
+
+
 		/**
 		 * @brief The post update is called after a simulation step has
 		 * been performed. Here the modified states (force,velocity,position)
@@ -87,8 +91,8 @@ namespace simulator {
 
         std::vector<ODEBody*> getBodies(){ return _ode_bodies; };
 
-	protected:
-		//ODESuctionCupDevice(){};
+	private:
+        void updateNoRollBack(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
     private:
         //rwsim::dynamics::SuctionCup::Ptr _dev;

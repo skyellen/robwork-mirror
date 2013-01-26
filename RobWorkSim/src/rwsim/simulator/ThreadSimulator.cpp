@@ -39,8 +39,9 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
                                  const rw::kinematics::State &state):
     _simulator(simulator),
     _thread(NULL),
-    _period(-1),
+    //_period(-1),
     _dt(0.001),
+    _timescale(0.0),
     _state(state),
     _tmpState(state),
     _running(false),
@@ -55,11 +56,12 @@ ThreadSimulator::~ThreadSimulator(){
         stop();
 };
 
-
+/*
 void ThreadSimulator::setPeriodMs(long period){
     boost::mutex::scoped_lock lock(_simMutex);
     _period = period;
 }
+*/
 
 void ThreadSimulator::setTimeStep(double dt){
     boost::mutex::scoped_lock lock(_simMutex);
@@ -76,14 +78,18 @@ void ThreadSimulator::start(){
 }
 
 void ThreadSimulator::stop(){
-   {
+    if(!_running || _postStop)
+    	return;
+
+	{
         boost::mutex::scoped_lock lock(_simMutex);
-        _running = false;
+        if(!_running || _postStop)
+        	return;
+        _postStop = true;
         if( _thread==NULL ){
         	return;
         }
     }
-
     _thread->join();
     delete _thread;
     _thread = NULL;
@@ -131,7 +137,8 @@ double ThreadSimulator::getTime(){
 
 void ThreadSimulator::stepperLoop(){
     long time = TimerUtil::currentTimeMs();
-    long nextTime = -1;
+    long nextTime = time;
+    double simTime = 0;
     bool running = true;
     // we call the callback once before starting
     if(_stepcb!=NULL)
@@ -151,28 +158,48 @@ void ThreadSimulator::stepperLoop(){
 
     	if(!_inError){
             boost::mutex::scoped_lock lock(_simMutex);
-            nextTime = time+_period;
+            //nextTime = time+_period;
             try {
             	_simulator->step(_dt, _state);
             } catch (...){
             	_inError = true;
             }
+            // get the actual timestep taken
+            double sTime = _simulator->getTime();
+            // calculate the time in real time that this should correspond to
+            //std::cout << sTime << " " << simTime << _timescale << std::endl;
+
+            if(sTime-simTime<0){
+            	// somebody reset the time...
+            	simTime = 0;
+            	nextTime = 0;
+            }
+            nextTime += std::min( (sTime-simTime), _dt) * _timescale * 1000;
+            //std::cout << "step: " << std::min( (sTime-simTime), _dt) << std::endl;
+            simTime = sTime;
         }
         {
             boost::mutex::scoped_lock lock(_stateMutex);
             _tmpState = _state;
         }
     	if(_inError)
-    	    nextTime = time+_period;
+    	    nextTime = time+_dt*_timescale;
+
+    	// this is necesary, since callback should not be called if user signalled stop
+    	if(_postStop)
+    		boost::thread::yield();
+
         if(_stepcb!=NULL)
         	_stepcb(this, _state);
         time = TimerUtil::currentTimeMs();
+        //std::cout << time << " --> " << nextTime << std::endl;
         if( nextTime>time ){
             waitUntil(nextTime);
         } else {
+        	// if the delay is larger than one second then reset nextTime
+        	if(time-nextTime>1.0)
+        		nextTime = time;
             boost::thread::yield();
         }
-        time = nextTime;
     }
-    //_thread = NULL;
 }

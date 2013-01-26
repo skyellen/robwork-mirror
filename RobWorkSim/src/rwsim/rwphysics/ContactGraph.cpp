@@ -379,6 +379,7 @@ namespace {
             break;
         default:
             out << "black\" ";
+            break;
         }
 
         switch(edge.getState()){
@@ -402,6 +403,7 @@ namespace {
             break;
         default:
             out << "]" << std::endl;
+            break;
         }
         out << "\t";
         std::cout << "Get node A" << std::endl;

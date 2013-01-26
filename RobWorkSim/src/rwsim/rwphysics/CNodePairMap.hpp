@@ -95,8 +95,8 @@ namespace simulator {
 
 
 		// the max id of any node in map
-		mutable int _n;
 		mutable std::vector<T> _map;
+		mutable int _n;
 		const T _defaultVal;
 	};
 

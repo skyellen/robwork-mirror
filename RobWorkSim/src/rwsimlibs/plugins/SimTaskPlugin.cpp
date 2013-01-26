@@ -225,7 +225,7 @@ void SimTaskPlugin::btnPressed() {
     } else if( obj == _delaySpin ){
         int delay = _delaySpin->value();
         if(_graspSim->getSimulator()!=NULL)
-            _graspSim->getSimulator()->setPeriodMs(delay);
+            _graspSim->getSimulator()->setRealTimeScale(delay);
     } else if(obj==_showTaskSpinBox){
 
 /*

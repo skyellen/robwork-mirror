@@ -39,7 +39,6 @@ Transform3D<> BodyUtil::placeBody( rwsim::dynamics::Body::Ptr body,
 
     State state = fstate;
     // basically we step the body in the direction of dir
-    Transform3D<> wTb = Kinematics::worldTframe(mframe, state);
 
     // first we transform dir to the parent frame
     Vector3D<> step = inverse(Kinematics::worldTframe(mframe->getParent(state), state))*dir;

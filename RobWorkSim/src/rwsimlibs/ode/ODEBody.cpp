@@ -84,7 +84,8 @@ ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body::Ptr body, int mat
     _body->changedEvent().add( boost::bind(&ODEBody::bodyChangedListener, this, _1), this);
 }
 
-ODEBody::ODEBody(dBodyID odeBody, dynamics::Body::Ptr body, rw::math::Vector3D<> offset, int matID, int conID, ODEBodyType type):
+ODEBody::ODEBody(dBodyID odeBody, dynamics::Body::Ptr body, rw::math::Vector3D<> offset,
+		int matID, int conID, ODEBodyType type):
                 _mframe(NULL),
                 _bodyId(odeBody), // a fixed object in ODE is allways part of the 0 body
                 _body(body),
@@ -105,13 +106,13 @@ ODEBody::ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame):
     _mframe(dynamic_cast<MovableFrame*>(frame)),
     _bodyId(odeBody),
     _body(NULL),
+    _rwBody(NULL),
+    _kBody(NULL),
     _rwframe(frame),
     _type(ODEBody::RigidDummy),
     _contactReductionThreshold(0.005),// 1cm
     _materialID(-1),
-    _contactID(-1),
-    _rwBody(NULL),
-    _kBody(NULL)
+    _contactID(-1)
 {
 
 }
@@ -146,8 +147,8 @@ void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::
         //wTb.P() += wTb.R()*_offset;
         //ODEUtil::setODEBodyT3D( _bodyId, wTb );
 
-        Vector3D<> avel = _kBody->getAngVelW(state);
-        Vector3D<> lvel = _kBody->getLinVelW(state);
+        Vector3D<> avel = _body->getAngVelW(state);
+        Vector3D<> lvel = _body->getLinVelW(state);
         //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
@@ -178,10 +179,12 @@ void ODEBody::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::
 
 
 void ODEBody::postupdate(rw::kinematics::State& state){
-    switch(_type){
+	//std::cout << _body->getName() << std::endl;
+
+	switch(_type){
     case(ODEBody::RIGID): {
         //std::cout << _mframe->getName() << std::endl;
-        Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
+        Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(state), state);
         //std::cout << "wTp    : " << wTp << std::endl;
         //std::cout << "wTb_ode: " << ODEUtil::getODEBodyT3D(_bodyId) << std::endl;
 
@@ -212,17 +215,17 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     }
     break;
     case(ODEBody::KINEMATIC): {
+    	if(_mframe!=NULL){
+			Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(state), state);
+			Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
+			pTb.P() -= pTb.R()*_offset;
+			_mframe->setTransform( pTb , state );
+			//Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
+			//Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
-        Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
-        Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
-        pTb.P() -= pTb.R()*_offset;
-        _mframe->setTransform( pTb , state );
-
-        //Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
-        //Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
-
-        //_kBody->setAngVel( ang );
-        //_kBody->setLinVel( lin );
+			//_kBody->setAngVel( ang );
+			//_kBody->setLinVel( lin );
+    	}
     }
     break;
     case(ODEBody::RigidDummy): {
@@ -275,12 +278,10 @@ void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
 
 rw::math::Transform3D<> ODEBody::getTransform(){
     if(_type==FIXED){
-        /*
         if(_triGeomDatas.size()>0){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
             return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
         }
-        */
         return ODEUtil::getODEGeomT3D(_geomId);
     } else {
         rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
@@ -305,7 +306,7 @@ rw::math::Transform3D<> ODEBody::getTransformCOM(){
 
 
 void ODEBody::bodyChangedListener(dynamics::Body::BodyEventType eventtype){
-    std::cout << "BODY Changed event"  << std::endl;
+    //std::cout << "BODY Changed event"  << std::endl;
     switch(_type){
     case(ODEBody::RIGID): {
         BodyInfo info = _rwBody->getInfo();
@@ -374,9 +375,11 @@ void ODEBody::reset(const rw::kinematics::State& state){
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
+        //std::cout << _rwframe->getName() << std::endl;
+        //std::cout << _kBody->getName() << std::endl;
 
-        Vector3D<> avel = _kBody->getAngVelW(state);
-        Vector3D<> lvel = _kBody->getLinVelW(state);
+        Vector3D<> avel = _body->getAngVelW(state);
+        Vector3D<> lvel = _body->getLinVelW(state);
         //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);

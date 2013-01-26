@@ -85,8 +85,8 @@ namespace dynamics {
         rwsim::dynamics::RigidBody::Ptr _endBody;
         std::vector<rwsim::dynamics::Body::Ptr> _links;
         double _radius, _height;
-        rw::math::Q _springConstant1, _springConstant2;
         rw::math::Transform3D<> _bTb2;
+        rw::math::Q _springConstant1, _springConstant2;
 
         // TODO: variables that should be put into the state
         bool _closedState;

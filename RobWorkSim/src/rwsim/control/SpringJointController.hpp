@@ -10,7 +10,7 @@
 
 namespace rwsim {
 namespace control {
-	//! @addtogroup control
+	//! @addtogroup rwsim_control
 	//! @{
 
 	/**

@@ -92,7 +92,7 @@ CircleModel::CircleModel(Vector3D<>& p1, Vector3D<>& p2, Vector3D<>& p3){
 
 namespace {
 
-	double f(const ublas::vector<double> &u, const Vector2D<> &x){
+	double f(const Eigen::VectorXd &u, const Vector2D<> &x){
 		return MetricUtil::dist2(Vector2D<>(u(0),u(1)),x)-u(2);
 	}
 
@@ -173,13 +173,14 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
     // next we iterate over the estimated center and radius using a non-linear least
     // square method, to obtain a better fit
 
-    ublas::vector<double> u(n),h(n);
+    Eigen::VectorXd u(n),h(n);
     u(0) = center2d(0);
     u(1) = center2d(1);
     u(2) = _r;
-    LinearAlgebra::Matrix<>::type J(m,n);
-    LinearAlgebra::Matrix<>::type Jinv(n,m);
-    ublas::vector<double> b(m);
+    Eigen::MatrixXd J(m,n);
+    Eigen::MatrixXd Jinv(n,m);
+    Eigen::VectorXd b(m);
+
     // do the necesary newton steps
     do {
 		for(int i=0;i<m;i++){
@@ -190,11 +191,11 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
 			J(i,2) = -1;
 			b(i) = -f(u, x);
 		}
-		Jinv = LinearAlgebra::pseudoInverse(J);
-		h = prod(Jinv,b);
+		Jinv = LinearAlgebra::pseudoInverseEigen(J);
+		h = Jinv * b;
 		u = u+h;
 		//std::cout << "H: " << h << std::endl;
-    } while(norm_inf(h)>0.0001);
+    } while(h.lpNorm<Eigen::Infinity>()<0.0001);
     // save the result
     _center(0) = u(0);
     _center(1) = u(1);

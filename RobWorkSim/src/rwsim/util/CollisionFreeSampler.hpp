@@ -24,7 +24,7 @@
 
 namespace rwsim {
 namespace util {
-	//! @addtogroup util
+	//! @addtogroup rwsim_util
 	//! @{
 
 	/**

@@ -65,7 +65,9 @@ void PoseController::setSampleTime(double stime){
 }
 
 void PoseController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
-    // there might be two situations, rollback or not.
+	if( !_enabled )
+		return;
+	// there might be two situations, rollback or not.
 
     //_device->setQ(_q, _state);
     Frame* tcpFrame = _endframe;

@@ -214,7 +214,7 @@ void GraspSelectionDialog::btnPressed(){
     	Q key(6);
     	SearchTree::KDNode node(key, NULL);
     	_nodes.resize(_gtable->size(), node);
-    	for(std::size_t i=0;i<_gtable->size();i++){
+    	for(size_t i=0;i<_gtable->size();i++){
     		GraspTable::GraspData &data = _gtable->getData()[i];
 
     		Transform3D<> oTh = inverse(data.op.toTransform3D())*data.hp.toTransform3D();

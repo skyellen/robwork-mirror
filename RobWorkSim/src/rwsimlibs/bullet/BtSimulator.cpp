@@ -16,8 +16,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
@@ -542,58 +541,54 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	//discreteWorld->getSolverInfo().m_erp2 = 0.3f;
 	m_dynamicsWorld->setGravity(btVector3(0,0,-10));
 
-	{
-		// create collision shapes for all bodies in dynamic workcell
-		std::vector<Body*> bodies = _dwc->getBodies();
-		for(size_t i=0; i<bodies.size(); i++){
-			std::string fname = bodies[i]->getBodyFrame().getName();
-			std::cout << "Body: " << fname << std::endl;
-			if( dynamic_cast<RigidBody*>( bodies[i] ) ){
-				RigidBody *rbody = dynamic_cast<RigidBody*>( bodies[i] );
-				std::cout << "RigidBody: " << rbody->getBodyFrame().getName() << std::endl;
-				// create a triangle mesh for all staticly connected nodes
-				// TODO: check if colinfo for rigid body frame
+	std::vector<RigidBody::Ptr> rbodies = _dwc->findBodies<RigidBody>();
+	for(size_t i=0; i<rbodies.size(); i++){
+		std::string fname = rbodies[i]->getBodyFrame().getName();
+		std::cout << "Body: " << fname << std::endl;
+		std::cout << "RigidBody: " << rbodies[i]->getBodyFrame().getName() << std::endl;
+		// create a triangle mesh for all staticly connected nodes
+		btRigidBody *btbody = createRigidBody(rbodies[i], state, 0.01);
+		_btBodies.push_back(btbody);
+		_rwBodies.push_back(rbody);
+		nrRigidBody++;
+	}
 
-				btRigidBody *btbody = createRigidBody(&rbody->getBodyFrame(), rbody->getMass(), state, 0.01);
+	std::vector<FixedBody::Ptr> fbodies = _dwc->findBodies<FixedBody>();
+	for(size_t i=0; i<fbodies.size(); i++){
+		std::string fname = fbodies[i]->getBodyFrame().getName();
+		std::cout << "Body: " << fname << std::endl;
 
-				_btBodies.push_back(btbody);
-                _rwBodies.push_back(rbody);
-				nrRigidBody++;
+		std::cout << "FixedBody: " << fbodies[i]->getBodyFrame().getName() << std::endl;
 
-			} else if( dynamic_cast<FixedBody*>( bodies[i] ) ) {
-				if(nrFixedBody>0)
-				    continue;
-				FixedBody *fbody = dynamic_cast<FixedBody*>( bodies[i] );
-				std::cout << "FixedBody: " << fbody->getBodyFrame().getName() << std::endl;
+		btRigidBody *btbody = createRigidBody(fbodies[i],0.f, state,0.01);
+		btbody->setCollisionFlags( btbody->getCollisionFlags() |
+								   btCollisionObject::CF_STATIC_OBJECT);
 
-				btRigidBody *btbody = createRigidBody(&fbody->getBodyFrame(),
-				                                      0.f, state,0.01);
-                btbody->setCollisionFlags( btbody->getCollisionFlags() |
-                                           btCollisionObject::CF_STATIC_OBJECT);
+		nrFixedBody++;
+	}
 
-				nrFixedBody++;
-			} else if( dynamic_cast<KinematicBody*>(bodies[i]) ){
-				// use kinematic objects for visualising
-				KinematicBody *fbody = dynamic_cast<KinematicBody*>( bodies[i] );
-				std::cout << "KinematicBody: " << fbody->getBodyFrame().getName() << std::endl;
+	std::vector<KinematicBody::Ptr> kbodies = _dwc->findBodies<KinematicBody>();
+	for(size_t i=0; i<kbodies.size(); i++){
+			// use kinematic objects for visualising
+			std::cout << "KinematicBody: " << kbodies[i]->getBodyFrame().getName() << std::endl;
 
-                btRigidBody *btbody = createRigidBody(&fbody->getBodyFrame(),
-                                                      0.f, state, 0.01);
-                btbody->setCollisionFlags( btbody->getCollisionFlags() |
-                                           btCollisionObject::CF_KINEMATIC_OBJECT );
-                btbody->setActivationState(DISABLE_DEACTIVATION);
+            btRigidBody *btbody = createRigidBody(kbodies[i], 0.f, state, 0.01);
+            btbody->setCollisionFlags( btbody->getCollisionFlags() |
+                                       btCollisionObject::CF_KINEMATIC_OBJECT );
+            btbody->setActivationState(DISABLE_DEACTIVATION);
 
-				nrLinkBody++;
-			}
+			nrLinkBody++;
 		}
 	}
 
+
+
 	// ok, now add constraints
-	BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
-	   if( dynamic_cast<RigidDevice*>( device ) ){
+	BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices() ){
+	   if( device.cast<RigidDevice>()!=NULL ){
 	        std::cout << "RigidDevice...." << std::endl;
 	        // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
-	        RigidDevice *fDev = dynamic_cast<RigidDevice*>( device );
+	        RigidDevice::Ptr fDev = device.cast<RigidDevice>()
 	        JointDevice *jdev = dynamic_cast<JointDevice*>( &(fDev->getModel()) );
 	        std::vector<btTypedConstraint*> constraints;
 	        std::cout << "Nr of Joints " << jdev->getDOF()<< std::endl;

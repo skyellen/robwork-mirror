@@ -11,13 +11,14 @@
 #include <rw/math/Math.hpp>
 #include <rw/geometry/Plane.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
-#include <rw/geometry/STLFile.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
 #include <rw/common/Timer.hpp>
 
 using namespace rwsim::util;
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::geometry;
+using namespace rw::loaders;
 
 namespace {
 

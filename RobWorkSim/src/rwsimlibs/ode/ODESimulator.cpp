@@ -93,14 +93,14 @@ using namespace rwlibs::proximitystrategies;
 
 //#define RW_DEBUGS( str ) std::cout << str  << std::endl;
 #define RW_DEBUGS( str )
-/*
+
 #define TIMING( str, func ) \
     { long start = rw::common::TimerUtil::currentTimeMs(); \
     func; \
      long end = rw::common::TimerUtil::currentTimeMs(); \
     std::cout << str <<":" << (end-start) <<"ms"<<std::endl;  }
-*/
-#define TIMING( str, func ) {func;}
+
+//#define TIMING( str, func ) {func;}
 
 namespace {
 
@@ -234,6 +234,8 @@ void ODESimulator::setEnabled(Body::Ptr body, bool enabled){
         RW_THROW("Body is NULL!");
     ODEBody *odebody = _rwFrameToODEBody[ body->getBodyFrame() ];
     Frame *frame = _rwODEBodyToFrame[ odebody ];
+
+
     if( enabled ) {
         dBodyEnable(odebody->getBodyID());
         _enabledMap[*frame] = 1;
@@ -385,7 +387,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     // Detect collision
     _allcontacts.clear();
     if( _useRobWorkContactGeneration ){
-        TIMING("Collision: ", detectCollisionsRW(state) );
+        TIMING("Collision: ", detectCollisionsRW(state, false) );
         {
             boost::mutex::scoped_lock lock(_contactMutex);
             _allcontactsTmp = _allcontacts;
@@ -504,11 +506,14 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
                 //std::cout << "THERE IS NO PENETRATION" << std::endl;
                 break;
             } else {
-                if(i>3){
+
+            	if(i>5){
                     // if we allready tried reducing the timestep then set the inCollisionFlag
                     // and let the contact resolution use the cached contacts
                     _prevStepEndedInCollision = true;
+                    break;
                 }
+
             }
 	    } else {
 	        badLCPcount++;
@@ -788,7 +793,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     //std::vector<Object::Ptr> objects = _dwc->getWorkcell()->getObjects();
     BOOST_FOREACH(Body::Ptr body , _dwc->getBodies()){
         Object::Ptr obj = body->getObject();
-        std::cout << "objects: " << obj->getName() << std::endl;
+        //std::cout << "objects: " << obj->getName() << std::endl;
         _narrowStrategy->addModel(obj);
     }
 
@@ -1474,7 +1479,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
     // next we query the BP filter for framepairs that are possibly in collision
     while( !filter->isEmpty() ){
         const FramePair& pair = filter->frontAndPop();
-        //RW_DEBUGS(pair.first->getName() << " -- " << pair.second->getName());
+        RW_DEBUGS(pair.first->getName() << " -- " << pair.second->getName());
 
         // and lastly we use the dispatcher to find the strategy the
         // is required to compute the narrowphase collision
@@ -1493,6 +1498,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             //std::cout << "No ode bodies:" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
             continue;
         }
+
+        if( _enabledMap[*a_data->getFrame()]==0 || _enabledMap[*b_data->getFrame()]==0 )
+            continue;
 
         dGeomID a_geom = _frameToOdeGeoms[a_data->getFrame()];
         dGeomID b_geom = _frameToOdeGeoms[b_data->getFrame()];
@@ -1550,6 +1558,60 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         if(b_data->getFrame()!=pair.second)
             bT = bT * Kinematics::frameTframe(b_data->getFrame(),pair.second, state);
 
+        // test if we have cuttable object and if we have knife
+
+        bool isknifeandcuttable = false;
+        bool aIsKnife = pair.first->getPropertyMap().has("Knife");
+        bool bIsKnife = pair.second->getPropertyMap().has("Knife");
+        Frame *knifeF, *cuttableF;
+        ProximityModel::Ptr knife, cuttable;
+        Transform3D<> knifeT3d, cuttableT3d;
+        if(aIsKnife && pair.second->getPropertyMap().has("Cuttable")){
+        	// test if object is cuttable
+        	isknifeandcuttable = true;
+        	knife = a;
+        	knifeT3d = aT;
+        	cuttable = b;
+        	cuttableT3d = bT;
+        	knifeF = pair.first;
+        	cuttableF = pair.second;
+        }
+        else if(bIsKnife && pair.first->getPropertyMap().has("Cuttable") ){
+        	isknifeandcuttable = true;
+        	knife = b;
+        	knifeT3d = bT;
+        	cuttable = a;
+        	cuttableT3d = aT;
+        	knifeF = pair.second;
+        	cuttableF = pair.first;
+        }
+
+        if( isknifeandcuttable ){
+        	std::cout << "KNIFE and CUTTABLE detected" << std::endl;
+        	CollisionResult *res;
+
+            data.setCollisionQueryType(CollisionStrategy::AllContacts);
+            if( _narrowStrategy->inCollision(a, aT, b, bT, data) ){
+            	std::cout << " ---- In collision...." << std::endl;
+            	res = &data.getCollisionData();
+            	Vector3D<> cutPlaneNormal = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlaneNormal");
+            	Vector3D<> cutPlanePos = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlanePos");
+            	Vector3D<> cutDir = knifeF->getPropertyMap().get<Vector3D<> >("CuttingDir");
+
+            	// now generate contacts such that the knife is constrained to the
+            	// cutting plane
+
+
+
+
+            	//addContacts(numc, a_data, b_data, pair.first, pair.second);
+            }
+
+
+
+        	continue;
+        }
+
         // first make standard collision detection, if in collision then compute all contacts from dist query
         RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
         //std::cout << pair.first->getName() << " <--> " << pair.second->getName() << std::endl;
@@ -1560,6 +1622,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         MultiDistanceResult *res;
 
         if(onlyTestPenetration){
+        	//std::cout << "ONLY TEST COL" << std::endl;
             data.setCollisionQueryType(CollisionStrategy::FirstContact);
             bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
             if(collides){
@@ -1669,6 +1732,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             _contacts.resize(numc);
         }
         int ni = 0;
+
         //std::cout << "--- {";
         //for(int i=0;i<numc;i++){
         //    std::cout << res->distances[i] << ", ";
@@ -1677,22 +1741,28 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         for(size_t i=0;i<numc;i++){
 
-            if(res->distances[i]<0.00000001){
-                // the contact is penetrating and we therefore need to signal the use the previous contact
-                // normal, if there where any
-                continue;
-            }
-
             dContact &con = _contacts[ni];
             Vector3D<> p1 = aT * res->p1s[i];
             Vector3D<> p2 = aT * res->p2s[i];
+            Vector3D<> n, p;
 
+            if(res->distances[i]<0.00000001){
+            	std::cout << " penetrating " << std::endl;
+                // the contact is penetrating and we therefore need compute the
+            	// contact normal differently
+            	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
+            	// the second is described in b's refframe so convert both to world and combine them
+            	Vector3D<> a_normal = aT.R() * normals.first;
+            	Vector3D<> b_normal = bT.R() * normals.second;
 
-            double len = (p2-p1).norm2();
-            Vector3D<> n = (p2-p1)/(-len);
-            //std::cout << "n: " << n << "\n";
-            Vector3D<> p = n*(res->distances[i]/2) + p1;
-
+            	n = -normalize( a_normal - b_normal );
+            	p = p1;
+            } else {
+                double len = (p2-p1).norm2();
+                n = (p2-p1)/(-len);
+                //std::cout << "n: " << n << "\n";
+                p = n*(res->distances[i]/2) + p1;
+            }
 
             ODEUtil::toODEVector(n, con.geom.normal);
             ODEUtil::toODEVector(p, con.geom.pos);
@@ -1708,7 +1778,6 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             con.geom.depth = penDepth;
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
-
             //std::cout << "Collision: " << p << n << penDepth << " " << res->distances[i]<< std::endl;
 
             // friction direction between the bodies ...
@@ -2044,6 +2113,29 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     }
     */
 
+    // test if frame is conveyor
+    Vector3D<> dir1; // in world coordinates
+    bool hasConv = false;
+    if( f1->getPropertyMap().has("Conveyor") ){
+    	Q cdata = f1->getPropertyMap().get<Q>("Conveyor");
+    	dir1[0] = cdata(0);
+    	dir1[1] = cdata(1);
+    	dir1[2] = cdata(2);
+    	Transform3D<> wTf1 = Kinematics::worldTframe(f1,*_stepState);
+    	dir1 = wTf1.R() * dir1;
+    	hasConv = true;
+    }
+
+    if( f2->getPropertyMap().has("Conveyor") ){
+    	Q cdata = f2->getPropertyMap().get<Q>("Conveyor");
+    	dir1[0] = cdata(0);
+    	dir1[1] = cdata(1);
+    	dir1[2] = cdata(2);
+    	Transform3D<> wTf2 = Kinematics::worldTframe(f2,*_stepState);
+    	dir1 = wTf2.R() * dir1;
+    	hasConv = true;
+    }
+
     for (int i = 0; i < num; i++) {
         ContactPoint *point = &contactPointList[i];
         point->n = normalize(point->n);
@@ -2081,6 +2173,25 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 
         // currently we use the best possible ode approximation to Coloumb friction
         con.surface = conSettings.surface;
+
+        if( hasConv ){
+        	RW_DEBUGS("IS Conveour dir: " << dir1);
+
+        	// change friction direction to point in direction of dir1
+        	con.surface.mode |= dContactFDir1;
+        	con.surface.mode |= dContactMotion1;
+        	con.surface.motion1 = MetricUtil::norm2( dir1 );
+
+        	// friction dir1 will point in direction of conveyor movement
+        	Vector3D<> dir2 = cross(dir1, point->n);
+        	Vector3D<> moddir1 = cross(point->n, dir2);
+        	double len = dot( normalize(moddir1), dir1 );
+        	moddir1 = normalize( moddir1 );
+            ODEUtil::toODEVector(moddir1, con.fdir1);
+        	//std::cout << "--> " << moddir1 << std::endl;
+
+        }
+        //con.surface.motion1 =
 
         RW_DEBUGS("-- create contact ");
         dJointID c = dJointCreateContact (_worldId,_contactGroupId,&con);

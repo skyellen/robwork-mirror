@@ -68,7 +68,7 @@ namespace {
 				std::list<FilteredPoint>& blobs,
 				double sepDist)
 	{
-		for(int i=0; i<dists.p1s.size(); i++){
+		for(size_t i=0; i<dists.p1s.size(); i++){
 			const Vector3D<> &v = dists.p1s[i];
 			bool inBlob = false;
 			BOOST_FOREACH(FilteredPoint& p, blobs){

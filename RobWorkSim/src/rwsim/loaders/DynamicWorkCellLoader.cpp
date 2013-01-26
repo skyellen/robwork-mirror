@@ -25,7 +25,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
-
+#include <boost/lexical_cast.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -79,7 +79,7 @@
 #include <rwlibs/control/JointController.hpp>
 
 #include <rw/geometry/Geometry.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 
@@ -292,6 +292,19 @@ namespace
         return values;
     }
 
+    rw::math::Q getValueAsQ(const std::string& strlist ){
+        std::istringstream buf(strlist);
+        std::vector<double> values;
+        std::string str;
+        while( buf >> str ){
+        	double val = boost::lexical_cast<double>(str);
+            values.push_back(val);
+        }
+
+        return rw::math::Q(values.size(), &values[0]);
+    }
+
+
     Q readQ(PTree& tree){
         //Log::debugLog()<< "ReadQ" << std::endl;
         std::vector<double> arr = readArray(tree);
@@ -393,6 +406,9 @@ namespace
                 } else if( type=="float" ){
                     double value = p->second.get_value<double>();
                     map.add<double>(name, "", value);
+        		} else if( type=="Q" ){
+        			rw::math::Q value = getValueAsQ(p->second.get_value<std::string>());
+        			map.add<rw::math::Q>(name, "", value);
                 } else {
                     RW_THROW("DynamicWorkCellLoader: Unknown engine property type: " << StringUtil::quote(type) );
                 }
@@ -564,6 +580,9 @@ namespace
         //std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
         FixedBody::Ptr body = ownedPtr( new FixedBody(info, bodyObj) );
 
+        readProperties(tree, bodyObj->getBase()->getPropertyMap());
+
+
         state.allbodies.push_back(body);
         return body;
     }
@@ -721,6 +740,8 @@ namespace
         BodyInfo info;
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
+
+        readProperties(tree, obj->getBase()->getPropertyMap());
 
         info.objects.push_back(obj);
         // check if the body has multiple objects associated
@@ -1096,7 +1117,7 @@ namespace
             if(dev==NULL)
                 RW_THROW("No valid is referenced by the PoseDeviceController.");
 
-            Frame* tcp = getFrameFromAttr(tree, state, "tcp");
+            //Frame* tcp = getFrameFromAttr(tree, state, "tcp");
 
             double dt = tree.get<double>("TimeStep");
 
@@ -1207,6 +1228,8 @@ namespace
         }
     }
 
+
+
     void readInclude(PTree& tree, PTree &parent, CI &iter, ParserState& state){
     	CI lastIter = iter;
     	--lastIter;
@@ -1258,6 +1281,10 @@ namespace
         		} else if( type=="float" ){
         			double value = p->second.get_value<double>();
         			state.engineProps.add<double>(name, "", value);
+        		} else if( type=="Q" ){
+        			rw::math::Q value = getValueAsQ(p->second.get_value<std::string>());
+
+        			state.engineProps.add<rw::math::Q>(name, "", value);
         		} else {
         			RW_THROW("DynamicWorkCellLoader: Unknown engine property type: " << StringUtil::quote(type) );
         		}
@@ -1279,10 +1306,10 @@ namespace
         const string workcell_name =  child.get<string>("workcell");
 
         if(StringUtil::isAbsoluteFileName(workcell_name)){
-            state.wc = WorkCellLoader::load(workcell_name);
+            state.wc = WorkCellFactory::load(workcell_name);
         } else {
             std::string directory = StringUtil::getDirectoryName(state.dwcfile);
-            state.wc = WorkCellLoader::load(directory+workcell_name);
+            state.wc = WorkCellFactory::load(directory+workcell_name);
         }
     }
 

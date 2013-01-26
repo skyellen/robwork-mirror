@@ -48,7 +48,8 @@ namespace simulator {
 		            , RIGID //! a rigid ode body and a RigidBody RW
 		            , RIGIDODE //! a rigid ode body and a RW Body type (any other than RigidBody)
 		            , LINK
-		            , RigidDummy} ODEBodyType;
+		            , RigidDummy
+		} ODEBodyType;
 
 
         /**

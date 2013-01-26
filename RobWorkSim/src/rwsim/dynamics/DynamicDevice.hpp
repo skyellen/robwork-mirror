@@ -32,7 +32,7 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
 	/**
 	 * @brief base class for dynamic devices that has dynamic state values

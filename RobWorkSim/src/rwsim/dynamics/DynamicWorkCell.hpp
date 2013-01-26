@@ -34,7 +34,7 @@
 #include <boost/any.hpp>
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
     /**
      * @brief the WorkCellDimension describe a center and the box halflengths of

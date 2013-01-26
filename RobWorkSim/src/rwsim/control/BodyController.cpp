@@ -170,7 +170,7 @@ void BodyController::setTarget(rwsim::dynamics::Body::Ptr body,
     data._type = Pose6DController;
 
     RampInterpolator<Transform3D<> >::Ptr ramp =
-            rw::common::ownedPtr( new RampInterpolator<Transform3D<> >( from , target, 0.5, 0.03, 0.4, 0.1));
+            rw::common::ownedPtr( new RampInterpolator<Transform3D<> >( from , target, 0.5, 1, 0.4, 1));
     InterpolatorTrajectory<Transform3D<> >::Ptr traj =
             rw::common::ownedPtr( new InterpolatorTrajectory<Transform3D<> >() );
     traj->add(ramp);

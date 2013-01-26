@@ -38,7 +38,7 @@ namespace dynamics {
 
     class DynamicDevice;
 
-	//! @addtogroup dynamics
+	//! @addtogroup rwsim_dynamics
 	//! @{
 	/**
 	 * @brief The Link is a body that is part of a dynamic device where joints are used to

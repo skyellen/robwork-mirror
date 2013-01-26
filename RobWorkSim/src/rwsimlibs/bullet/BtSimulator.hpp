@@ -6,7 +6,7 @@
 #include <rw/math/Math.hpp>
 
 // dynamic includes
-#include <rwsim/simulator/Simulator.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
@@ -37,7 +37,7 @@ class btDefaultCollisionConfiguration;
 namespace rwsim {
 namespace simulator {
 
-    class BtSimulator: public simulator::Simulator
+    class BtSimulator: public PhysicsEngine
     {
     public:
         typedef rw::common::Cache<std::string, btCollisionShape> ColCache;
@@ -81,12 +81,12 @@ namespace simulator {
         dynamics::DynamicWorkCell *_dwc;
 
         std::vector<btRigidBody*> _btBodies;
-        std::vector<dynamics::RigidBody*> _rwBodies;
+        std::vector<dynamics::RigidBody::Ptr> _rwBodies;
 
         std::vector<btRigidBody*> _btLinks;
-        std::vector<dynamics::KinematicBody*> _rwLinks;
+        std::vector<dynamics::KinematicBody::Ptr> _rwLinks;
 
-        std::vector<dynamics::DynamicDevice*> _devices;
+        std::vector<dynamics::DynamicDevice::Ptr> _devices;
 
         std::vector<btDevice*> _btDevices;
 
@@ -136,7 +136,7 @@ namespace simulator {
         btRigidBody* createRigidBody(rw::kinematics::Frame* bframe, double mass, const rw::kinematics::State& state,
                                      double margin);
 
-        drawable::SimulatorDebugRender* createDebugRender()
+        drawable::SimulatorDebugRender::Ptr createDebugRender()
         {
             return NULL;
         }

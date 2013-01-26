@@ -26,7 +26,7 @@
 
 namespace rwsim {
 namespace simulator {
-	//! @addtogroup simulator
+	//! @addtogroup rwsim_simulator
 	//! @{
 	/**
 	 * @brief Wraps a simulator in a thread safe interface, and creates a
@@ -51,7 +51,18 @@ namespace simulator {
 		 * @brief Sets the time between
 		 * @param period
 		 */
-		void setPeriodMs(long period);
+		//void setPeriodMs(long period);
+
+		/**
+		 * @brief This can be used to scale simulation time relative to Real World time. A scale
+		 * of 1.0 makes the simulation run real time (if possible). A scale of 0.5 makes the simulation
+		 * run twice as fast as real time, where a scale of 2 makes the simulation twice as slow.
+		 *
+		 * 1 simTime -> max( realtime * scale , simDelayInRealTime )
+		 *
+		 * @param scale [in]
+		 */
+		void setRealTimeScale(double scale){ _timescale = scale; }
 
 		/**
 		 * @brief sets the timestep that will be used for the calls to
@@ -144,10 +155,10 @@ namespace simulator {
 		}
 
 		/**
-		 * @brief this can be used to force the resetting of an error state.
+		 *  @brief this can be used to force the resetting of an error  state.
 		 * @param inError
 		 */
-		void setInError(bool inError){_inError = inError;}
+ 		void setInError(bool inError){_inError = inError;}
 
 	private:
 		//! @brief the stepper loop
@@ -156,8 +167,8 @@ namespace simulator {
 	private:
 		DynamicSimulator::Ptr _simulator;
 		boost::thread *_thread;
-		long _period;
-		double _dt;
+		//long _period;
+		double _dt, _timescale;
 		rw::kinematics::State _state, _tmpState;
 		bool _running;
 		StepCallback _stepcb;

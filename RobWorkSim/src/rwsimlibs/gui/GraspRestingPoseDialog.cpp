@@ -544,7 +544,7 @@ void GraspRestingPoseDialog::initializeStart(){
 
         tsim->setStepCallBack( cb );
         _simulators.push_back( ownedPtr( tsim ) );
-        tsim->setPeriodMs(0);
+        tsim->setRealTimeScale(0);
         tsim->setTimeStep(0.001);
         RW_DEBUGS("-- Calc random cfg " << i);
 
