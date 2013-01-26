@@ -2,6 +2,11 @@
 // Below we have descriptions for the different namespaces. We basically have a
 // namespace for each module.
 
+//-------------------------------------------------------------------------------------------------------
+//											 ROBWORK
+//-------------------------------------------------------------------------------------------------------
+
+
 /**
    @brief RobWork library.
 
@@ -128,53 +133,6 @@ namespace rwlibs {
        @brief Simulation of cameras and other I/O units.
     */
 	namespace simulation {}
-}
-
-/**
- * @brief RobWorkStudio is the visualization framework of RobWork. It depends on Qt and the core RobWork
- */
-namespace rws {
-
-
-
-}
-
-/**
- * @brief RobWorkStudio extension libraries.
- *
- * A collection of extensions to RobWorkStudio which enables the use of RobWork functionality
- * through a GUI.
- */
-namespace rwslibs {
-
-
-
-}
-
-
-/**
-   @brief RobWorkSim is the dynamic simulation framework of RobWork.
-
-   It adds no extra dependencies
-   beside RobWork and RobWorkStudio. However, for dynamic simulation, it is strongly recommended to use the ode extension
-   from rwsiml, which depend on the Open Dynamics Engine (ODE).
-*/
-namespace rwsim {
-
-
-
-}
-
-/**
- * @brief RobWorkHardware is a collection of extensions to RobWork which allow RobWork to
- * connect to real hardware.
- *
- * As such each extension may have several dependencies.
- */
-namespace rwhw {
-
-
-
 }
 
 /**
@@ -320,7 +278,36 @@ namespace rwhw {
         the Doxygen output.
     @}
 @}
+*/
 
+//-------------------------------------------------------------------------------------------------------
+//											 ROBWORKSTUDIO
+//-------------------------------------------------------------------------------------------------------
+
+
+/**
+ * @brief RobWorkStudio is the visualization framework of RobWork. It depends on Qt and the core RobWork
+ */
+namespace rws {
+
+
+
+}
+
+/**
+ * @brief RobWorkStudio extension libraries.
+ *
+ * A collection of extensions to RobWorkStudio which enables the use of RobWork functionality
+ * through a GUI.
+ */
+namespace rwslibs {
+
+
+
+}
+
+
+/**
 @defgroup rws RobWorkStudio
 @{
     @copydoc rws
@@ -330,7 +317,29 @@ namespace rwhw {
 @{
     @copydoc rws
 @}
+*/
 
+
+
+//-------------------------------------------------------------------------------------------------------
+//											 ROBWORKSIM
+//-------------------------------------------------------------------------------------------------------
+
+
+/**
+   @brief RobWorkSim is the dynamic simulation framework of RobWork.
+
+   It adds no extra dependencies
+   beside RobWork and RobWorkStudio. However, for dynamic simulation, it is strongly recommended to use the ode extension
+   from rwsiml, which depend on the Open Dynamics Engine (ODE).
+*/
+namespace rwsim {
+
+
+
+}
+
+/**
 
 @defgroup rwsim RobWorkSim
 @{
@@ -372,11 +381,115 @@ namespace rwhw {
 @{
     @brief This group should contain all extension points of RobWork.
 @}
+*/
+
+//-------------------------------------------------------------------------------------------------------
+//											 ROBWORKHARDWARE
+//-------------------------------------------------------------------------------------------------------
+
+
+/**
+ * @brief RobWorkHardware is a collection of extensions to RobWork which allow RobWork to
+ * connect to real hardware.
+ *
+ * As such each extension may have several dependencies.
+ */
+namespace rwhw {
+    /**
+     * @brief Camera drivers
+     */
+    namespace camera {}
+}
+
+/**
+
+@defgroup rwhw rwhw
+@{
+    @copydoc rwhw
+
+    @defgroup camera camera
+    @{
+        @brief Camera driver wrappers.
+    @}
+
+    @defgroup can can
+    @{
+        @brief CAN bus driver wrappers.
+    @}
+
+    @defgroup crsA465 crsA465
+    @{
+        @brief driver wrapper for the crsA465 robot.
+    @}
+
+    @defgroup Fanuc Fanuc
+    @{
+        @brief Interface for communicating with Fanuc controller through proprietary software
+        from Gibotech A/S.
+    @}
+
+    @defgroup katana katana
+    @{
+        @brief driver wrapper for katana robot.
+    @}
+
+    @defgroup MotomanIA20 MotomanIA20
+    @{
+        @brief Driver for motoman IA20
+    @}
+
+    @defgroup dockwelder dockwelder
+    @{
+        @brief Driver interface for the dockwelder robot based on ethernet.
+    @}
+
+    @defgroup PowerCube PowerCube
+    @{
+        @brief Driver interface through RS232 and CAN bus. Works for eqrlier versions of the
+        PowerCube interface.
+    @}
+
+    @defgroup sdh sdh
+    @{
+        @brief Wrapper for SDH the 3-finger dextrous hand from schunk.
+    @}
+
+    @defgroup serialport serialport
+    @{
+        @brief multi platform serial port interface. Rather simplistic but usefull for most stuff.
+    @}
+
+    @defgroup sick sick
+    @{
+        @brief driver interface for sick scanner
+    @}
+
+    @defgroup swissranger swissranger
+    @{
+        @brief Driver wrapper for SwissRanger (early version)
+    @}
+
+    @defgroup tactile tactile
+    @{
+        @brief Driver wrapper for Weiss tactile array sensors (early version only)
+    @}
+
+    @defgroup
+    @{
+        @brief Ignore this group. The group has been added to fix a glitch in
+        the Doxygen output.
+    @}
+@}
+
+*/
+
+
+
+/**
 
 @defgroup extensionpoints Extension Points
 @{
     @brief This group should contain all extension points of RobWork.
 @}
-
 
 */

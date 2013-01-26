@@ -18,6 +18,7 @@ Besides the core part RobWork has a number of add-ons including
 
 - RobWorkStudio which provides a graphical user interface
 - RobWorkSim which is a simulator suited for grasping.
+- RobWorkHardware which is a collection of hardware drivers that connect into RobWork
 
 Target audience of RobWork is:
 - Researchers who needs a common framework for experimental robotics
