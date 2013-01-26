@@ -15,43 +15,56 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef AABB_HPP_
-#define AABB_HPP_
+#ifndef RW_GEOMETRY_AABB_HPP_
+#define RW_GEOMETRY_AABB_HPP_
 
 #include "BV.hpp"
 
 namespace rw {
 namespace geometry {
 
+    /**
+     * @brief Axis Aligned Bounding Box class
+     */
+    template<class T>
+    class AABB: public BV<AABB<T> > {
+    public:
+        //! constructor
+        AABB():_position(0,0,0),_halfLng(0,0,0){}
 
-template<class T>
-class AABB: public BV<AABB<T> > {
-public:
-	AABB():_position(0,0,0),_halfLng(0,0,0){}
+        //! destructor
+        virtual ~AABB(){}
 
-	virtual ~AABB(){}
+        //! set half lengths
+        inline void setHalfLengths(const rw::math::Vector3D<T>& pos) { _halfLng = pos; }
 
-	inline void setPosition(const rw::math::Vector3D<T>& pos) { _position = pos; }
+        //! get halflengths of this box
+        inline const rw::math::Vector3D<T>& getHalfLengths() const { return _halfLng; }
 
-	inline const rw::math::Vector3D<T>& getPosition() const { return _position; }
 
-    //! @brief calculate the volume of this OBB
-    inline T calcVolumne() const {
-        return _halfLng(0)*2 * _halfLng(1)*2 * _halfLng(2)*2;
-    }
+        //! set position
+        inline void setPosition(const rw::math::Vector3D<T>& pos) { _position = pos; }
 
-    //! @brief calculates the total area of the box
-    inline T calcArea() const {
-        const T &h = _halfLng(0);
-        const T &w = _halfLng(1);
-        const T &l = _halfLng(2);
-        return 2*(h*2*w*2) + 2*(h*2*l*2) + 2*(w*2*l*2);
-    }
+        //! position of this AABB
+        inline const rw::math::Vector3D<T>& getPosition() const { return _position; }
 
-private:
-	rw::math::Vector3D<T> _position, _halfLng;
+        //! @brief calculate the volume of this OBB
+        inline T calcVolumne() const {
+            return _halfLng(0)*2 * _halfLng(1)*2 * _halfLng(2)*2;
+        }
 
-};
+        //! @brief calculates the total area of the box
+        inline T calcArea() const {
+            const T &h = _halfLng(0);
+            const T &w = _halfLng(1);
+            const T &l = _halfLng(2);
+            return 2*(h*2*w*2) + 2*(h*2*l*2) + 2*(w*2*l*2);
+        }
+
+    private:
+        rw::math::Vector3D<T> _position, _halfLng;
+
+    };
 
 } // geometry
 //! define traits of the AABB

@@ -26,6 +26,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Jacobian.hpp>
+#include <rw/math/Function.hpp>
 
 namespace rw { namespace models {
 
@@ -185,6 +186,18 @@ namespace rw { namespace models {
          */
         bool isActive() const { return _isActive; };
 
+		/**
+		 * @brief set the function to be used in transforming from the state q to the actual q needed.
+		 *
+		 * This function can be used e.g. by a calibration.
+		 * @param function [in] function with first order derivative.
+		 */
+		virtual void setJointMapping(rw::math::Function1Diff<>::Ptr function) = 0;
+
+		/**
+		 * @brief removes mapping of joint values
+		 */
+		virtual void removeJointMapping() = 0;
     private:
         std::pair<math::Q, math::Q> _bounds;
         math::Q _maxVelocity;

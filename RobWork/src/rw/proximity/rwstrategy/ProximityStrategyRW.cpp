@@ -21,8 +21,6 @@
 #include <float.h>
 #include <vector>
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
@@ -267,6 +265,70 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
     }
     return col_res;
 }
+/*
+namespace {
+
+    void RWTestDistance(Model::Ptr &ma, rw::math::Transform3D<>& aT,
+                                             Model::Ptr &mb, rw::math::Transform3D<>& bT,
+                                             ProximityStrategyData& data)
+    {
+
+        // traverse the tree here
+
+
+    }
+
+}
+*/
+
+DistanceStrategy::Result& ProximityStrategyRW::distance(
+    ProximityModel::Ptr a,
+    const Transform3D<>& wTa,
+    ProximityModel::Ptr b,
+    const Transform3D<>& wTb,
+    ProximityStrategyData& pdata)
+{
+    QueryData qdata = initQuery(a,b,pdata);
+
+    DistanceResult &data = pdata.getDistanceData();
+
+    data.clear();
+
+    size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
+    //bool col_res = false;
+    //bool firstContact = pdata.getCollisionQueryType() == FirstContact;
+
+    qdata.cache->tcollider->setQueryType( pdata.getCollisionQueryType() );
+
+    BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
+        BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
+            //bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
+            //RWTestDistance(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, data);
+
+
+            //std::cout << res << std::endl;
+            //_numBVTests += qdata.cache->tcollider->getNrOfTestedBVs();
+            //_numTriTests += qdata.cache->tcollider->getNrOfTestedPrimitives();
+
+            /*
+            if(res==true){
+                data.a = aModel;
+                data.b = bModel;
+                data._aTb = inverse(wTa)*wTb;
+                nrOfCollidingGeoms++;
+
+                if(firstContact)
+                    return true;
+                col_res = true;
+            }
+            */
+            geoIdxB++;
+        }
+        geoIdxA++;
+    }
+    return data;
+}
+
 
 void ProximityStrategyRW::clear()
 {

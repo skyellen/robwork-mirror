@@ -1,0 +1,21 @@
+<WorkCell name="SomeScene">
+
+<Frame name="ArmBase" refframe="WORLD" type="Movable">
+	<Transform>
+	 -0.92925397422569789 0.36943043931393504 0.0028638949106960668 0.7
+	 -0.36940967983631984 -0.9292477226753626 0.0059294473503825286 -0.1
+	 0.004851786163286546 0.0044520120132598984 0.99997831964501094 0.02
+	</Transform>
+</Frame>
+
+<SerialDevice name="SomeDevice">
+<Include file="SomeDevice.xml" />
+<Calibration file="SomeCalibration.xml" />
+</SerialDevice>
+
+<Frame name="SomeSensorFrame" refframe="ArmBase" type="Movable">
+	<RPY>0 0 180</RPY>
+	<Pos>-0.06 0 0</Pos>
+</Frame>
+
+</WorkCell>

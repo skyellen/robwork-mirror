@@ -23,9 +23,6 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
-
-#include <rw/geometry/GeometryFactory.hpp>
-
 #include <boost/foreach.hpp>
 
 using namespace rw::proximity;

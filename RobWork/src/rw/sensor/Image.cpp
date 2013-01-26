@@ -179,7 +179,7 @@ size_t Image::getDataSize() const
     return _arrSize;
 }
 
-Pixel4f Image::getPixel(size_t x, size_t y) const {
+Pixel4f Image::getPixelf(size_t x, size_t y) const {
 	const size_t idx = y*_widthStep + x*_nrChannels;
 
 	// convert idx to point into char array
@@ -188,9 +188,9 @@ Pixel4f Image::getPixel(size_t x, size_t y) const {
 
 	// now if representation is float then we can set it directly
 	if(_depth == Image::Depth32F){
-		Pixel4f p(_imageData[cidx]*_toFloat, 0, 0, 0);
+		Pixel4f p(_imageData[cidx], 0, 0, 0);
 		for(size_t i=1;i<_nrChannels;i++)
-			p.ch[i] = _imageData[cidx+i*_stride]*_toFloat;
+			p.ch[i] = _imageData[cidx+i*_stride];
 		return p;
 	}
 	// is an int so we need to convert it to float
@@ -199,6 +199,68 @@ Pixel4f Image::getPixel(size_t x, size_t y) const {
 		p.ch[i] = (  *((int*)&_imageData[cidx+i*_stride]) &_valueMask)*_toFloat;
 	return p;
 }
+
+void Image::getPixel(size_t x, size_t y, Pixel4f& dst) const {
+    const size_t idx = y*_widthStep + x*_nrChannels;
+
+    // convert idx to point into char array
+    const size_t cidx = idx*_stride;
+    RW_ASSERT(cidx<_arrSize);
+
+    // now if representation is float then we can set it directly
+    if(_depth == Image::Depth32F){
+        dst.ch[0] = _imageData[cidx];
+        for(size_t i=1;i<_nrChannels;i++)
+            dst.ch[i] = _imageData[cidx+i*_stride];
+    }
+    // is an int so we need to convert it to float
+    dst.ch[0] = ( *((int*)&_imageData[cidx]) &_valueMask)*_toFloat;
+    for(size_t i=1;i<_nrChannels;i++)
+        dst.ch[i] = (  *((int*)&_imageData[cidx+i*_stride]) &_valueMask)*_toFloat;
+}
+
+
+Image::Pixel4i Image::getPixeli(size_t x, size_t y) const {
+    const size_t idx = y*_widthStep + x*_nrChannels;
+
+    // convert idx to point into char array
+    const size_t cidx = idx*_stride;
+    RW_ASSERT(cidx<_arrSize);
+
+    // now if representation is float then we can set it directly
+    if(_depth == Image::Depth32F){
+        Pixel4i p(_imageData[cidx]*_fromFloat, 0, 0, 0);
+        for(size_t i=1;i<_nrChannels;i++)
+            p.ch[i] = _imageData[cidx+i*_stride]*_fromFloat;
+        return p;
+    }
+    // is an int so we need to convert it to float
+    Pixel4i p(( *((int*)&_imageData[cidx]) &_valueMask), 0, 0, 0);
+    for(size_t i=1;i<_nrChannels;i++)
+        p.ch[i] = (  *((int*)&_imageData[cidx+i*_stride]) &_valueMask);
+    return p;
+}
+
+void Image::getPixel(size_t x, size_t y, Pixel4i& dst) const {
+    const size_t idx = y*_widthStep + x*_nrChannels;
+
+    // convert idx to point into char array
+    const size_t cidx = idx*_stride;
+    RW_ASSERT(cidx<_arrSize);
+
+    // now if representation is float then we can set it directly
+    if(_depth == Image::Depth32F){
+        dst.ch[0] = _imageData[cidx]*_fromFloat;
+        for(size_t i=1;i<_nrChannels;i++)
+            dst.ch[i] = _imageData[cidx+i*_stride] *_fromFloat;
+    }
+    // is an int so we need to convert it to float
+    dst.ch[0] = ( *((int*)&_imageData[cidx]) &_valueMask);
+    for(size_t i=1;i<_nrChannels;i++)
+        dst.ch[i] = (  *((int*)&_imageData[cidx+i*_stride]) &_valueMask);
+}
+
+
 
 void Image::setPixel(size_t x, size_t y, const Pixel4f& value) {
     const size_t idx = y*_widthStep + x*_nrChannels;
@@ -221,7 +283,7 @@ void Image::setPixel(size_t x, size_t y, const Pixel4f& value) {
     }
 }
 
-float Image::getPixelValue(size_t x, size_t y, size_t channel) const {
+float Image::getPixelValuef(size_t x, size_t y, size_t channel) const {
 	const size_t idx = y*_widthStep + x*_nrChannels;
 
 	// convert idx to point into char array
@@ -229,13 +291,32 @@ float Image::getPixelValue(size_t x, size_t y, size_t channel) const {
 	RW_ASSERT(cidx<_arrSize);
 
 	if(_depth == Image::Depth32F){
-		return (float)_imageData[cidx+channel*_stride];
+        char *valuePtr = &_imageData[cidx+channel*_stride];
+        return ( *((int*)valuePtr)&_valueMask)*_toFloat;
 	} else {
 		// is in int so we need to convert it to float
 	    char *valuePtr = &_imageData[cidx+channel*_stride];
 		return ( *((unsigned int*)valuePtr)&_valueMask)*_toFloat;
 	}
 }
+
+int Image::getPixelValuei(size_t x, size_t y, size_t channel) const{
+    const size_t idx = y*_widthStep + x*_nrChannels;
+
+    // convert idx to point into char array
+    const size_t cidx = idx*_stride;
+    RW_ASSERT(cidx<_arrSize);
+
+    if(_depth == Image::Depth32F){
+        char *valuePtr = &_imageData[cidx+channel*_stride];
+        return ( *((float*)valuePtr))*_fromFloat;
+    } else {
+        // is in int so we need to convert it to float
+        char *valuePtr = &_imageData[cidx+channel*_stride];
+        return ( *((int*)valuePtr)&_valueMask);
+    }
+}
+
 
 void Image::safeDeleteData(){
     if(_imageData==NULL )

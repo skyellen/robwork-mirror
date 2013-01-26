@@ -21,7 +21,6 @@
 #include <RobWorkConfig.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Log.hpp>
-#include <rw/plugin/PluginRepository.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 namespace rw {
@@ -55,10 +54,12 @@ public:
      * @brief Returns the PluginRepository 
      * @return PluginRepository
      */
+    /*
     rw::plugin::PluginRepository& getPluginRepository()
     {
         return _pluginRepository;
     }
+    */
 
     /**
      * @brief Returns the common log
@@ -111,7 +112,7 @@ public:
 
 
 private:
-    rw::plugin::PluginRepository _pluginRepository;
+    //rw::plugin::PluginRepository _pluginRepository;
     rw::common::PropertyMap _settings;
     rw::common::Log _log;
     std::string _settingsFile;

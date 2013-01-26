@@ -101,7 +101,11 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
     /* allocate and initialize list of Vertices in polygon */
 
     int n = contour.size();
-    if ( n < 3 ) return false;
+
+    if ( n < 3 ){
+    	rw::common::Log::debugLog() << "bad poly size" << std::endl;
+    	return false;
+    }
 
     int *V = new int[n];
 
@@ -124,6 +128,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
         {
             //** Triangulate: ERROR - probable bad polygon!
         	delete[] V;
+        	rw::common::Log::debugLog() << "bad poly" << std::endl;
             return false;
         }
 

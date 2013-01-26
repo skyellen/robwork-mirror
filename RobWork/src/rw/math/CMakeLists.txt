@@ -23,6 +23,9 @@ SET(FILES_CPP
   VelocityScrew6D.cpp
   PerspectiveTransform2D.cpp
   EigenDecomposition.cpp
+  Line2DPolar.cpp
+  Pose2D.cpp
+  Pose3D.cpp
 )
 
 SET(FILES_HPP

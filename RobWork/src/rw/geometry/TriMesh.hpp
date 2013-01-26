@@ -33,6 +33,9 @@ namespace geometry {
 	 * triangles from a triangle array/mesh.
 	 */
 	class TriMesh: public GeometryData {
+	protected:
+		TriMesh():_isConvex(false){}
+
 	public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<TriMesh> Ptr;
@@ -77,6 +80,10 @@ namespace geometry {
 		//! @copydoc getTriMesh
 		rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
 
+        //! @copydoc GeometryData::isConvex
+        virtual bool isConvex() { return _isConvex; }
+
+        void setConvexEnabled(bool isConvex){ _isConvex = isConvex; }
 
 	    /**
 	     * @brief struct for iterating over the centers of triangles in a mesh
@@ -160,6 +167,8 @@ namespace geometry {
             }
         };
 
+	private:
+        bool _isConvex;
 
 	};
 

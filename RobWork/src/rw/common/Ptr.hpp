@@ -27,6 +27,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_base_of.hpp>
+//#include "Any.hpp"
 
 namespace rw { namespace common {
 
@@ -101,10 +102,32 @@ namespace rw { namespace common {
 
         template <class S>
         Ptr<S> cast() {
-            if (_owned_ptr)
-                return Ptr<S>(boost::dynamic_pointer_cast<S>(_owned_ptr));
-            else
-                return Ptr<S>(dynamic_cast<S*>(_ptr));
+        	// this should test if we cast FROM an Any type
+        	/*
+        	if( ::boost::is_same<Any, T>::value ){
+        		// The any type needs to be handled specially, get the real content of Any
+        		if (_ptr!=NULL)
+                    return Ptr<S>(boost::dynamic_pointer_cast<S>( ((Any*)_ptr)->content ));
+                return Ptr<S>();
+        	}
+
+        	// this should test if we cast TO an Any type
+        	if( ::boost::is_same<Any, S>::value ){
+        		// The any type needs to be handled specially, get the real content of Any
+
+        		//if (_owned_ptr)
+                //    return ownedPtr<S>( new Any(_owned_ptr) );
+                //if (_ptr!=NULL)
+                //	return ownedPtr<S>( new Any(_ptr) );
+
+                return Ptr<S>();
+        	}
+			*/
+
+			if (_owned_ptr)
+				return Ptr<S>(boost::dynamic_pointer_cast<S>(_owned_ptr));
+			else
+				return Ptr<S>(dynamic_cast<S*>(_ptr));
         }
 
 		template <class S>
@@ -190,7 +213,7 @@ namespace rw { namespace common {
 		/**
 		 * @brief Returns true is the smart pointer is null
 		 */
-		bool isNull() {
+		bool isNull() const {
 			return get() == NULL;
 		}
 

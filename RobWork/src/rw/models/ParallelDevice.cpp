@@ -277,20 +277,22 @@ Jacobian ParallelDevice::baseJend(const State& state) const
         columns += (*leg_iter)->nrOfJoints();
     }
 
-    Jacobian jacobian(Jacobian::BoostZeroBase(rows, columns));
+
+    Jacobian::BoostBase m = Jacobian::BoostZeroBase(rows, columns);
 
     // initialize configuration vector
     int row=0,column=0;
     for(size_t i=0;i<_legs.size();i++){
         // copy the base to endeffector jacobian of leg i to the jacobian matrix at index (row,column)
+
         MatrixRange(
-            jacobian.m(),
+            m,
             range(row, row+6),
             range(column, column+_legs[i]->nrOfJoints())) = _legs[i]->baseJend(state).m();
 
         if(i!=0){ // for all legs except the first copy -bTe jacobian of leg into (row-6,column)
             MatrixRange(
-                jacobian.m(),
+                m,
                 range(row-6, row),
                 range(column, column + _legs[i]->nrOfJoints())) =
                 -_legs[i]->baseJend(state).m();
@@ -300,7 +302,8 @@ Jacobian ParallelDevice::baseJend(const State& state) const
         row += 6; // allways for robots in 3d
         column += _legs[i]->nrOfJoints();
     }
-    return jacobian;
+
+    return Jacobian( m );
 }
 
 Jacobian ParallelDevice::baseJframe(const Frame* frame, const State& state) const

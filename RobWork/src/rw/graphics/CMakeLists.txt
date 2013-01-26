@@ -1,15 +1,7 @@
 
 SET(FILES_CPP
   ${RW_DRAWABLE_USER_FILES}
-  ./ac3d/LoaderAC3D.cpp
-  ./3ds/Loader3DS.cpp
-  ./3ds/Model3DS.cpp
-  #./ivg/LoaderIVG.cpp
-  ./obj/LoaderOBJ.cpp
-  ./tri/LoaderTRI.cpp
-
   Model3D.cpp
-  Model3DFactory.cpp
   DrawableGeometryNode.cpp
   ProjectionMatrix.cpp
   SceneGraph.cpp

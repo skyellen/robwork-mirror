@@ -44,6 +44,7 @@
 #include <boost/numeric/bindings/lapack/gesvd.hpp>
 #include <boost/numeric/bindings/lapack/ptsv.hpp>
 
+#include <Eigen/Eigen>
 #include <Eigen/SVD>
 
 namespace rw { namespace math {
@@ -232,10 +233,11 @@ namespace rw { namespace math {
          * (XA)^T = XA
          * @f$
          */
-		static bool LinearAlgebra::checkPenroseConditions(
+		static bool checkPenroseConditions(
 			const Eigen::MatrixXd& A,
 			const Eigen::MatrixXd& X,
 			double prec);
+
 
         /**
          * \brief Calculates matrix determinant
@@ -412,7 +414,7 @@ namespace rw { namespace math {
         template<class R>
 		static inline bool isSkewSymmetric(const Eigen::MatrixBase<R>& M)
         {
-			return (M+M.transpose()).lpNorm<Eigen::Infinity>() == 0.0;
+			return (M+M.transpose()).template lpNorm<Eigen::Infinity>() == 0.0;
         }
 
 
@@ -482,8 +484,8 @@ namespace rw { namespace math {
         template<class R>
 		static inline bool isOrthonormal(const Eigen::MatrixBase<R>& r)
         {
-			const Eigen::MatrixBase<R> m = r*r.transpose() - Eigen::Matrix<T,3,3>::Identity();
-			return m.lpNorm<Eigen::Infinity>() == 0.0;
+			const Eigen::MatrixBase<R> m = r*r.transpose() - Eigen::Matrix<R,3,3>::Identity();
+			return m.template lpNorm<Eigen::Infinity>() == 0.0;
         }
 
         /**

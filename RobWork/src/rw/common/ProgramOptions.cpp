@@ -9,6 +9,10 @@
 #include <boost/spirit/include/phoenix1.hpp>
 #include <boost/foreach.hpp>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
+
 using namespace phoenix;
 using namespace boost::program_options;
 using namespace boost::spirit::classic;
@@ -272,8 +276,6 @@ int ProgramOptions::checkVariablesMap(po::variables_map &vm){
     return 0;
 }
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
 
 int ProgramOptions::parse(const std::string& str){
     try {

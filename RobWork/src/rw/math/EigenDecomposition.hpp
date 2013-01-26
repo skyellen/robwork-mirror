@@ -40,8 +40,8 @@ namespace math {
          * @brief returns the i'th eigenvector
          */
         boost::numeric::ublas::vector<T> getEigenVector(size_t i){
-            using namespace boost::numeric::ublas;
-            vector<T> v = matrix_column<matrix<T> >(_vectors, i);
+            boost::numeric::ublas::vector<T> v =
+            		boost::numeric::ublas::matrix_column<boost::numeric::ublas::matrix<T> >(_vectors, i);
             return v;
         }
 
@@ -84,16 +84,16 @@ namespace math {
          */
         void sort(){
 
-            using namespace boost::numeric::ublas;
+            using namespace boost::numeric;
             std::vector<int> map(_values.size());
             for(size_t i=0;i<map.size();i++) map[i] = i;
 
             std::sort( map.begin(), map.end(), MapSort(_values, map));
             // now the mapping determines how the new vectors are to be layed out
-            matrix<T> vectors = _vectors;
-            vector<T> values = _values;
+            ublas::matrix<T> vectors = _vectors;
+            ublas::vector<T> values = _values;
             for(size_t i=0;i<map.size();i++){
-                matrix_column<matrix<T> >(_vectors,i) = matrix_column<matrix<T> >(vectors, map[i]);
+            	ublas::matrix_column<ublas::matrix<T> >(_vectors,i) = ublas::matrix_column<ublas::matrix<T> >(vectors, map[i]);
                 _values(i) = values(map[i]);
             }
         }

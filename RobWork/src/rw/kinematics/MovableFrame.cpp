@@ -55,8 +55,8 @@ Transform3D<> MovableFrame::doGetTransform(const State& state) const {
 void MovableFrame::setTransform(const Transform3D<>& transform, State& state)
 {
     //const Quaternion<> quat(transform.R());
-    const Vector3D<> pos(transform.P());
-    const Rotation3D<> rot(transform.R());
+    const Vector3D<> &pos = transform.P();
+    const Rotation3D<> &rot = transform.R();
 
     double q[12];
 

@@ -20,7 +20,7 @@
 #define RW_LOADERS_IMAGE_RGBLOADER_HPP
 
 #include <rw/sensor/Image.hpp>
-//#include "ImageLoader.hpp"
+#include "../ImageLoader.hpp"
 
 namespace rw { namespace loaders {
 
@@ -31,9 +31,14 @@ namespace rw { namespace loaders {
      * @brief Loads images in Silicon Graphics RGB format.
      *
      */
-	class RGBLoader //: public ImageLoader
+	class RGBLoader : public ImageLoader
 	{
 	public:
+
+		RGBLoader(){};
+
+		virtual ~RGBLoader(){};
+
 
         rw::sensor::Image::Ptr loadImage(const std::string& filename);
 

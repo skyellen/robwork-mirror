@@ -48,7 +48,7 @@
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::errorLog().write(RW__message);        \
+    rw::common::Log::debugLog().write(RW__message);        \
     throw rw::common::Exception(RW__message);                               \
 } while (0)
 // We use the weird RW__ names to (hopefully) avoid name crashes.

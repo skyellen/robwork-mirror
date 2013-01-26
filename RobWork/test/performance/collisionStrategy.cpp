@@ -25,7 +25,7 @@
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
-#include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/loaders.hpp>
 #include <rw/common/TimerUtil.hpp>
 
 #include <stdio.h>
@@ -52,6 +52,22 @@ struct CollisionTestSetup {
     std::string modelDetail, queryTypeStr;
 };
 
+struct TestResult {
+    std::string testid;
+    std::string strategyID;
+    std::string modelDetail;
+    std::string queryType;
+
+    int nrOfQueries;
+    long nrOfBVTests;
+    long nrOfPrimTests;
+
+    double time;
+    double timePerQuery;
+
+
+};
+
 void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std::string, double> > &timings){
     // This function iterates over all configurations and for each configuration
     // it tests collision between all model pairs
@@ -66,6 +82,8 @@ void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std
     data.setCollisionQueryType(setup.qtype);
     Timer time;
     int nrCollisions = 0;
+    long nrOfBVTests = 0;
+    long nrOfPrimTests = 0;
     BOOST_FOREACH(std::vector<Transform3D<> >& config, setup.modelsConfigurations){
         BOOST_FOREACH( ModelPair mpair, setup.modelPairs){
             ProximityModel::Ptr& modelA = setup.models[mpair.first];
@@ -75,8 +93,14 @@ void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std
 
             if(setup.strategy->inCollision(modelA, Ta, modelB, Tb, data))
                 nrCollisions++;
+
+            nrOfBVTests += data.getCollisionData().getNrBVTests();
+            nrOfPrimTests += data.getCollisionData().getNrPrimTests();
         }
     }
+    double bvTestsPerCollision = nrOfBVTests/(1.0*nrCollisions);
+    double primTestsPerCollision = nrOfPrimTests/(1.0*nrCollisions);
+
     time.pause();
     std::cout << " - nrCollissions: " << nrCollisions/((double)nrOfQueries) << std::endl;
     std::cout << " - time: " << time.getTime() << "s" << std::endl;
@@ -85,7 +109,6 @@ void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std
 
     timings.push_back(std::make_pair(std::string("PerQ_check_t;")+setup.modelDetail+";"+setup.queryTypeStr, time.getTime()));
     timings.push_back(std::make_pair(std::string("PerQ_check_%;")+setup.modelDetail+";"+setup.queryTypeStr, nrCollisions/((double)nrOfQueries)));
-
 }
 
 void testPerObjectPair(CollisionTestSetup& setup, std::vector<std::pair<std::string, double> > &timings){
@@ -175,6 +198,7 @@ void loadModelsData(CollisionTestSetup& setup, int nrModels, const std::string& 
 
     setup.modelDetail = geomDetail;
     Geometry::Ptr geom = GeometryFactory::load( testFilePath().append( filename ) );
+    //Geometry::Ptr geom = Geometry::makeCylinder(0.1, 0.3);
     //char istr[20];
     std::string istr;
     Timer time;
@@ -246,15 +270,15 @@ std::vector<std::pair<std::string, double> > testStrategy(CollisionStrategy::Ptr
     finesetup.strategyName = strategyname;
 
     loadModelsData(coarsesetup, 20, "geoms/performance/CoarseModel.stl", "Coarse");
-    //setFirstContact(coarsesetup);
     setAllContact(coarsesetup);
     intializeTestSetupData( coarsesetup, 1);
     intializeBuildingSetup( coarsesetup , timings);
-    intializeTestSetupData( coarsesetup, 200);
+    intializeTestSetupData( coarsesetup, 100);
 
     testPerConfiguration( coarsesetup , timings);
     testPerObjectPair( coarsesetup , timings);
 
+    //setFirstContact(coarsesetup);
 
     loadModelsData(finesetup, 20, "geoms/performance/CoarseModel.stl", "Fine");
     setFirstContact(finesetup);

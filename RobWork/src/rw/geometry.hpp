@@ -23,10 +23,8 @@
 #ifndef RW_GEOMETRY_HPP_
 #define RW_GEOMETRY_HPP_
 
-#include "./geometry/STLFile.hpp"
 #include "./geometry/Geometry.hpp"
 #include "./geometry/GeometryData.hpp"
-#include "./geometry/GeometryFactory.hpp"
 #include "./geometry/IndexedTriangle.hpp"
 #include "./geometry/IndexedTriMesh.hpp"
 #include "./geometry/PlainTriMesh.hpp"

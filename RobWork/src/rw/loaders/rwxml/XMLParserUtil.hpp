@@ -100,7 +100,7 @@ struct DummyProximitySetup {
     std::vector<std::string> _scope;
 };
 
-struct DummySerialDeviceCalibration {
+struct DummyCalibration {
     boost::spirit::classic::file_position _pos;
     std::string _filename;
     std::vector<std::string> _scope;
@@ -249,7 +249,7 @@ public:
     std::vector< DummyCollisionSetup > _colsetups; // collision setups
 	std::vector< DummyProximitySetup > _proxsetups; // collision setups
 
-	std::vector<DummySerialDeviceCalibration> _calibration; // device calibration
+	std::vector<DummyCalibration> _calibration; // device calibration
 
     std::map<std::string,
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > > _propMap;

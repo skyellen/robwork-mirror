@@ -123,6 +123,13 @@ namespace rw { namespace models {
                          const kinematics::State& state,
                          math::Jacobian& jacobian) const;
 
+
+		//! @copydoc Joint::setJointMapping()
+		virtual void setJointMapping(rw::math::Function1Diff<>::Ptr function);
+
+		//! @copydoc Joint::removeJointMapping()
+		virtual void removeJointMapping();
+
     protected:
         /**
          * @copydoc rw::kinematics::Frame::doMultiplyTransform
@@ -153,6 +160,14 @@ namespace rw { namespace models {
             virtual rw::math::Transform3D<> getTransform(double q)  = 0;
 
             virtual rw::math::Transform3D<> getFixedTransform() const = 0;
+
+			virtual void getJacobian(size_t row,
+									 size_t col,
+									 const math::Transform3D<>& joint,
+									 const math::Transform3D<>& tcp,
+									 double q,
+									 math::Jacobian& jacobian) const;
+
         };
 
 
@@ -270,6 +285,36 @@ namespace rw { namespace models {
         private:
             rw::math::Vector3D<> _translation;
         };
+
+		/** 
+		 * @brief a revolute joint with a mapping of the joint value.
+		 */
+		class PrismaticJointWithQMapping: public PrismaticJointImpl
+		{		
+			public:
+				PrismaticJointWithQMapping(const rw::math::Transform3D<>& transform, const rw::math::Function1Diff<>::Ptr mapping);
+				~PrismaticJointWithQMapping();
+
+			private:
+				void multiplyTransform(const rw::math::Transform3D<>& parent,
+									   double q,
+									   rw::math::Transform3D<>& result) const;
+
+				rw::math::Transform3D<> getTransform(double q);
+				rw::math::Transform3D<> getFixedTransform() const;
+
+				virtual void getJacobian(size_t row,
+										 size_t col,
+										 const math::Transform3D<>& joint,
+										 const math::Transform3D<>& tcp,
+										 double q,
+										 math::Jacobian& jacobian) const;
+
+			private:
+				PrismaticJointImpl* _impl;
+				rw::math::Function1Diff<>::Ptr _mapping;
+		};
+
 
 
         PrismaticJointImpl* _impl;

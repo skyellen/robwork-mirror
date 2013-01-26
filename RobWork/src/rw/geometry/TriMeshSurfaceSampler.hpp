@@ -113,6 +113,11 @@ public:
 
     void setZAxisDirection(const rw::math::Vector3D<>& dir){_direction = dir;}
 
+    /**
+     * @brief return the mesh that is being sampled
+     * @return mesh
+     */
+    rw::geometry::TriMesh::Ptr getMesh(){ return _mesh; }
 
 private:
     int binSearchRec(const double value, size_t start, size_t end){

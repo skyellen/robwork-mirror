@@ -396,7 +396,7 @@ namespace {
             DummyModel _model;
             DHParam _dhparam;
             DummyCollisionSetup _setup;
-            DummySerialDeviceCalibration _calibration;
+            DummyCalibration _calibration;
 			DummyProximitySetup _psetup;
             QConfig _config;
             const QConfig emptyConfig;
@@ -413,7 +413,7 @@ namespace {
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
 			rule<ScannerT, result_closure<DummyProximitySetup>::context_t> proxsetup_r;
 
-			rule<ScannerT, result_closure<DummySerialDeviceCalibration>::context_t> serialdevicecalibration_r;
+			rule<ScannerT, result_closure<DummyCalibration>::context_t> calibration_r;
 
             ModelParser model_p;
             FrameParser frame_p;
@@ -461,7 +461,7 @@ namespace {
                            | serialchain_r
                            | colsetup_r[ push_back_a( _dev._colsetups ) ]
 						   | proxsetup_r[ push_back_a( _dev._proxsetups ) ]
-						   | serialdevicecalibration_r[ push_back_a( _dev._calibration ) ]
+						   | calibration_r[ push_back_a( _dev._calibration ) ]
                          );
 
                 colsetup_r =
@@ -473,14 +473,14 @@ namespace {
                         eps_p
                     )[ colsetup_r.result_ = var(_setup) ];
 
-                serialdevicecalibration_r =
+                calibration_r =
                 		XMLAttElem_p("Calibration",
                 				XMLAtt_p("file", attrstr_p[ var(_calibration._filename) = arg1 ]
                                                             [ var( _calibration._scope ) = var( _scope ) ] >>
                                   filepos_p[ var(_calibration._pos) = arg1 ]
                                   ),
                                   eps_p
-                              )[ serialdevicecalibration_r.result_ = var(_calibration) ];
+                              )[ calibration_r.result_ = var(_calibration) ];
 
                 proxsetup_r =
                     XMLAttElem_p("ProximitySetup",

@@ -32,8 +32,8 @@
 #include <rw/math/Math.hpp>
 #include <boost/any.hpp>
 
-#include <rw/serialization/InputArchive.hpp>
-#include <rw/serialization/OutputArchive.hpp>
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
 
 #include <boost/tuple/tuple.hpp>
 
@@ -51,7 +51,7 @@ namespace rwlibs { namespace algorithms {
      * rw::math::Q
      */
     template<class VALUE_TYPE>
-    class KDTreeQ
+    class KDTreeQ: public rw::common::Serializable
     {
     private:
 
@@ -181,9 +181,9 @@ namespace rwlibs { namespace algorithms {
         TreeNode *_root;
         std::vector<TreeNode>* _nodes;
 
-    private:
-        friend class Archive::Access;
-        static KDTreeQ<VALUE_TYPE>* load(InputArchive& iarchive){
+    public:
+
+        void read(rw::common::InputArchive& iarchive, const std::string& id){
             std::string name, data;
             int dim, nrNodes;
             boost::uint64_t rootId;
@@ -210,7 +210,7 @@ namespace rwlibs { namespace algorithms {
                 toNode[id] = boost::make_tuple(&node,leftId,rightId);
                 idToNodeIdx[i] = id;
             }
-            toNode[0] = boost::make_tuple(NULL,0,0);
+            toNode[0] = boost::make_tuple((TreeNode*)NULL,(boost::uint64_t)0,(boost::uint64_t)0);
 
             // finally travel through nodes and set the correct left/right values
             for(int i=0;i<nrNodes;i++){
@@ -222,15 +222,18 @@ namespace rwlibs { namespace algorithms {
                 node._right = boost::get<0>( toNode[boost::get<2>(val)]);
             }
             TreeNode *root = boost::get<0>(toNode[rootId]);
-            return new KDTreeQ<VALUE_TYPE>(root,nodes);
+            _dim = root->_kdnode->key.size();
+            _root = root;
+            _nodes = nodes;
         }
-        static void save(const KDTreeQ<VALUE_TYPE>& out, OutputArchive& oarchive) {
-            oarchive.write(out._dim, "dim");
-            oarchive.write((int)out._nodes->size(), "nrNodes");
-            oarchive.write((boost::uint64_t)out._root, "rootId");
-            RW_ASSERT(out._nrOfNodes==out._nodes->size());
-            for(int i=0;i<out._nodes->size();i++){
-                const TreeNode &node = (*out._nodes)[i];
+
+        void write(rw::common::OutputArchive& oarchive, const std::string& id) const {
+            oarchive.write(_dim, "dim");
+            oarchive.write((int)_nodes->size(), "nrNodes");
+            oarchive.write(_root, "rootId");
+            RW_ASSERT(_nrOfNodes==_nodes->size());
+            for(int i=0;i<_nodes->size();i++){
+                const TreeNode &node = (*_nodes)[i];
                 oarchive.write((boost::uint64_t)&node, "id");
                 oarchive.write((int)node._axis, "axis");
                 oarchive.write(node._deleted, "del");

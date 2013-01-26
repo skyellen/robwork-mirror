@@ -19,40 +19,6 @@
 #ifndef RW_LOADERS_IMAGEFACTORY_HPP
 #define RW_LOADERS_IMAGEFACTORY_HPP
 
-/**
- * @file ImageFactory.hpp
- */
-
-#include <string>
-#include <memory>
-
-#include <rw/sensor/Image.hpp>
-
-namespace rw { namespace loaders {
-
-    /** @addtogroup loaders */
-    /* @{*/
-
-    /**
-     * @brief Loader factory for image files.
-     */
-    class ImageFactory
-    {
-    public:
-        /**
-         * @brief Loads/imports an image from a file.
-         *
-         * An exception is thrown if the file can't be loaded.
-         *
-         * @param filename [in] name of image file.
-         */
-		static rw::sensor::Image::Ptr load(const std::string& filename);
-
-    private:
-        ImageFactory() {}
-    };
-
-    /**@}*/
-}} // end namespaces
+#include "ImageLoader.hpp"
 
 #endif // end include guard

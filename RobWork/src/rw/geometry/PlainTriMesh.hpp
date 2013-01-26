@@ -61,7 +61,7 @@ namespace geometry {
 
 	public:
 		//! smart pointer type of this class
-		typedef rw::common::Ptr<PlainTriMesh> Ptr;
+		typedef rw::common::Ptr<PlainTriMesh<TRI> > Ptr;
 
 	    //! the triangle type
 	    typedef typename TRI::value_type value_type;

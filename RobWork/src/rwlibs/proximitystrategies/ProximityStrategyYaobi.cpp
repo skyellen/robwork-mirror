@@ -28,6 +28,8 @@
 
 #include <boost/foreach.hpp>
 
+#include <rw/proximity/ProximityStrategyData.hpp>
+
 #include <yaobi/yaobi_mesh_interface.h>
 #include <yaobi/yaobi_tree_builder.h>
 
@@ -100,7 +102,7 @@ namespace
     void collide(
         const yaobi::CollModel& ma, const Transform3D<>& wTa,
         const yaobi::CollModel& mb, const Transform3D<>& wTb,
-        yaobi::CollideResult& result)
+        yaobi::CollideResult& result, yaobi::QueryType type)
     {
         yaobi::Real ta[3][4];
         yaobi::Real tb[3][4];
@@ -108,7 +110,7 @@ namespace
         toTransform(wTa, ta);
         toTransform(wTb, tb);
 
-        Collide(result, ta, ma, tb, mb, yaobi::FIRST_CONTACT_ONLY);
+        Collide(result, ta, ma, tb, mb, type);
     }
 }
 
@@ -169,22 +171,31 @@ bool ProximityStrategyYaobi::inCollision(ProximityModel::Ptr aModel,
     const Transform3D<>& wTb,
     ProximityStrategyData& data)
 {
+	bool firstContact = data.getCollisionQueryType() == CollisionStrategy::FirstContact;
+	bool isColliding = false;
     YaobiProximityModel *a = (YaobiProximityModel*)aModel.get();
     YaobiProximityModel *b = (YaobiProximityModel*)bModel.get();
 
+    yaobi::QueryType qtype = yaobi::FIRST_CONTACT_ONLY;
+    if(!firstContact)
+    	qtype = yaobi::ALL_CONTACTS;
+    yaobi::CollideResult result;
     BOOST_FOREACH(const RWYaobiModel& ma, a->models) {
         BOOST_FOREACH(const RWYaobiModel& mb, b->models) {
-            yaobi::CollideResult result;
+            //! Search for all contacting triangles
             collide(
                 *ma.second, wTa * ma.first,
                 *mb.second, wTb * mb.first,
-                result);
+                result, qtype);
 
-            if (result.IsColliding()) return true;
+            // TODO: copy all colliding triangles into data
+            if (firstContact && result.IsColliding())
+            	return true;
+            isColliding |= result.IsColliding();
         }
     }
 
-    return false;
+    return isColliding;
 }
 
 void ProximityStrategyYaobi::clear()

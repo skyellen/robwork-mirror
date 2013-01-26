@@ -99,12 +99,19 @@ namespace rw { namespace proximity {
              */
             std::vector<std::pair<int, int> > _geomPrimIds;
 
+            int _nrBVTests, _nrPrimTests;
+
+            int getNrPrimTests(){ return _nrPrimTests; }
+            int getNrBVTests(){ return _nrBVTests; }
+
             /**
              * @brief clear all result values
              */
             void clear(){
                 _collisionPairs.clear();
                 _geomPrimIds.clear();
+                _nrBVTests = 0;
+                _nrPrimTests = 0;
             }
         };
 

@@ -514,11 +514,20 @@ namespace geometry {
 	        return normalize(n);
 		}
 
+		void resize(size_t nsize){
+			if(_triangles!=NULL)
+				_triangles->resize(nsize);
+			if(_triangles!=NULL && _triangles->size()>0)
+				this->setTriArray((uint8_t*)&((*_triangles)[0].getVertexIdx(0)));
+		}
+
 		// inherited from IndexedTriMesh
 		//! @copydoc IndexedTriMesh::getNrTris
         int getNrTris() const{ return _triangles->size(); };
 
 		// Inherited from TriMesh
+
+
 
 
 		//! @copydoc TriMesh::getSize

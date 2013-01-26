@@ -305,6 +305,8 @@ namespace graphics {
         int getMask(){ return _mask; }
         void setMask(int mask){ _mask = mask; }
 
+        rw::geometry::GeometryData::Ptr toGeometryData();
+
     //private:
         rw::math::Transform3D<> _transform;
         std::vector<Material> _materials; // The array of materials

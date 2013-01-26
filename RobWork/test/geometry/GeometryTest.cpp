@@ -19,6 +19,7 @@
 
 #include "../TestSuiteConfig.hpp"
 
+#include <rw/loaders.hpp>
 #include <rw/geometry.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
@@ -33,6 +34,7 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::geometry;
+using namespace rw::loaders;
 
 const int TRI_MESH_SIZE=10000;
 

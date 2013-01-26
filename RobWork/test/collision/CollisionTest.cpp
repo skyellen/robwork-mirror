@@ -26,7 +26,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/StateStructure.hpp>

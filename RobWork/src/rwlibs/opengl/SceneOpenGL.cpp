@@ -20,7 +20,7 @@
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/graphics/Render.hpp>
 
 #include <rwlibs/opengl/RenderGeometry.hpp>

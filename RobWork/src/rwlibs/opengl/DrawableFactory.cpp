@@ -24,11 +24,10 @@
 
 #include <rw/math/Constants.hpp>
 
-#include <rw/graphics/3ds/Loader3DS.hpp>
-#include <rw/graphics/ac3d/LoaderAC3D.hpp>
-//#include <rw/graphics/ivg/LoaderIVG.hpp>
-#include <rw/graphics/obj/LoaderOBJ.hpp>
-#include <rw/graphics/tri/LoaderTRI.hpp>
+#include <rw/loaders/model3d/Loader3DS.hpp>
+#include <rw/loaders/model3d/LoaderAC3D.hpp>
+#include <rw/loaders/model3d/LoaderOBJ.hpp>
+#include <rw/loaders/model3d/LoaderTRI.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -36,8 +35,8 @@
 #include <rw/common/Ptr.hpp>
 
 #include <rw/geometry/Geometry.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/STLFile.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
 
 #include <string>
 #include <istream>
@@ -48,6 +47,7 @@
 
 using namespace rw;
 using namespace rwlibs::opengl;
+using namespace rw::loaders;
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::graphics;

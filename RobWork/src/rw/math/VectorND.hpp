@@ -281,7 +281,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T norm1() const {
-			return _vec.lpNorm<1>();
+			return _vec.template lpNorm<1>();
         }
 
         /**
@@ -289,7 +289,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T normInf() const {
-            return _vec.lpNorm< Eigen::Infinity>();
+            return _vec.template lpNorm< Eigen::Infinity>();
         }
 
         /**

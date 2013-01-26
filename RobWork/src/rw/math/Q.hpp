@@ -78,7 +78,7 @@ namespace rw { namespace math {
          *
          * The vector will be of dimension zero.
          */
-        Q() : _vec(0) {}
+        Q() : _vec( (Base::Index) 0) {}
 
         /**
          * @brief Creates a Q of length \b n and initialized with values from \b values

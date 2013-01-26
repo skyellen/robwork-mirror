@@ -166,6 +166,26 @@ namespace geometry {
         inline const Triangle<T>& getTriangle() const { return *this; }
         inline Triangle<T>& getTriangle() { return *this; }
 
+        /**
+         * @brief Outputs transform to stream
+         * @param os [in/out] an output stream
+         * @param t [in] the transform that is to be sent to the output stream
+         * @return os
+         */
+        friend std::ostream& operator<<(std::ostream &os, const Triangle<T>& t)
+        {
+            // This format matches the Lua notation.
+            return os
+                << "Triangle("
+                << t._vertices[0]
+                << ", "
+                << t._vertices[1]
+				 << ", "
+				 << t._vertices[2]
+				<< ")";
+        }
+
+
 	};
 
 	/**

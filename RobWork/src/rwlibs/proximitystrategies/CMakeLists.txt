@@ -8,6 +8,7 @@ RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS pqp yaobi)
 #RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} )
 RW_ADD_DOC(${SUBSYS_NAME})
 
+
 IF(build)
     SET(OptionalFiles)
     IF (RW_HAVE_PQP)
@@ -23,6 +24,14 @@ IF(build)
     ELSE ()
       MESSAGE(STATUS "rw_proximitystrategies: Not building Yaobi interface since Yaobi is disabled!")
     ENDIF ()
+
+    IF (RW_HAVE_BULLET)
+      LIST(APPEND OptionalFiles "./ProximityStrategyBullet.cpp")
+      LIST(APPEND OptionalFiles_hpp "./ProximityStrategyBullet.hpp")
+    ELSE ()
+      MESSAGE(STATUS "rw_proximitystrategies: Not building Yaobi interface since Yaobi is disabled!")
+    ENDIF ()
+
     
     SET(SRC_FILES
       ${RW_PROXIMITYSTRATEGIES_USER_FILES}

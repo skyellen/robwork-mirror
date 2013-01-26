@@ -21,6 +21,9 @@
 #include <boost/filesystem.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/common/ExtensionRegistry.hpp>
+#include <rw/common/Plugin.hpp>
+
 #include <cstdlib>
 using namespace rw;
 using namespace rw::common;
@@ -29,13 +32,13 @@ using namespace boost::filesystem;
 
 
 #if defined(RW_CYGWIN)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork.cfg.xml"
+    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_VERSION + ".cfg.xml"
 #elif defined(RW_WIN32)
-    #define HOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/robwork.cfg.xml"
+    #define HOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/robwork-" + RW_VERSION + ".cfg.xml"
 #elif defined(RW_MACOS)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/Library/Preferences/com.robwork.cfg.xml"
+    #define HOMEDIR std::string(std::getenv("HOME")) + "/Library/Preferences/com.robwork-" + RW_VERSION + ".cfg.xml"
 #elif defined(RW_LINUX)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork.cfg.xml"
+    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_VERSION + ".cfg.xml"
 #endif
 
 
@@ -52,25 +55,73 @@ RobWork::~RobWork(void)
 
 void RobWork::initialize(){
     // we need to find the settings of robwork so we start searching for rwsettings.xml
+
+	// this is the search priority
+	// 1. search from execution directory
+	// 2. search from user home directory (OS specific)
+
     path ipath = initial_path();
-    std::string rwsettingsPath = ipath.string() + "/robwork.cfg.xml";
+    std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_VERSION + ".cfg.xml";
     if( exists(rwsettingsPath) ){
+    	//std::cout << "FOUND CFG FILE IN EXE DIR..." << std::endl;
         _settings = XMLPropertyLoader::load( rwsettingsPath );
-        std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
+        _settings.add("cfgfile", "", rwsettingsPath );
+        //std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
     } else if( exists( HOMEDIR ) ){
-        _settings = HOMEDIR;
+    	rwsettingsPath = std::string(HOMEDIR);
+        _settings = XMLPropertyLoader::load( rwsettingsPath );
+    	_settings.add("cfgfile", "", rwsettingsPath );
     } else {
         // create the file in current location
-        PropertyMap plugins;
+    	PropertyMap plugins;
         plugins.add("location","default plugin location",std::string("plugins/"));
-
         _settings.add("plugins","List of plugins or plugin locations",plugins);
-
-        //XMLPropertySaver::save( _settings, rwsettingsPath );
+        XMLPropertySaver::save( _settings, rwsettingsPath );
     }
     _settingsFile = rwsettingsPath;
 
-    // now initialize plugin repository
+    // get all plugin directories and files
+    std::vector<std::string> cfgDirs;
+    PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
+
+    BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
+    	// check if its a
+    	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
+    	if(propstr==NULL)
+    		continue;
+
+    	cfgDirs.push_back( propstr->getValue() );
+    	//std::cout << propstr->getValue() << std::endl;
+    }
+
+    BOOST_FOREACH(std::string dir, cfgDirs){
+
+    	path file( dir );
+    	if( file.is_relative() ){
+    		file = path( ipath.string() + "/" + dir );
+    	}
+    	if( !exists(file) )
+    		continue;
+
+        // now initialize plugin repository
+        ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
+
+
+    	// first check if its a directory or a file
+    	if( is_directory(file) ){
+    		// find all files in the directory *.rwplugin.xml *.rwplugin.(dll,so)
+    		std::vector<std::string> pl_files =
+    				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
+    		BOOST_FOREACH(std::string pl_file, pl_files){
+                rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
+                reg->registerExtensions(plugin);
+    		}
+    	} else {
+            rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
+            reg->registerExtensions(plugin);
+    	}
+
+    }
 
 }
 

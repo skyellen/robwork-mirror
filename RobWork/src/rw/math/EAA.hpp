@@ -278,6 +278,8 @@ namespace rw { namespace math {
             return _eaa[i];
         }
 
+        size_t size() const { return 3; }
+
         /**
          * @brief Calculates \f$ \robabx{a}{c}{\thetak} =
          * \robabx{a}{b}{\mathbf{R}} \robabx{b}{c}{\mathbf{\thetak}} \f$

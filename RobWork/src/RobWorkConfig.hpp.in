@@ -12,5 +12,7 @@
 
 #cmakedefine RW_HAVE_PQP 1
 #cmakedefine RW_HAVE_YAOBI 1
-#cmakedefine RW_HAVE_EIGEN
+#cmakedefine RW_HAVE_BULLET 1
+#cmakedefine RW_HAVE_EIGEN 1
+#cmakedefine RW_BUILD_CALIBRATION 1
 

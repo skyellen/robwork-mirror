@@ -213,6 +213,14 @@ ELSE ()
 ENDIF()
 
 
+Find_Package(Bullet)
+SET(RW_HAVE_BULLET FALSE)
+IF( BULLET_FOUND )
+  SET(RW_HAVE_BULLET TRUE)
+  #INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIRS} )
+ENDIF()
+
+
 #
 # If the user wants to use LUA then search for it or use the default
 #
@@ -259,28 +267,29 @@ ELSE ()
 ENDIF()
   
 IF (RW_BUILD_SANDBOX)
-    MESSAGE(STATUS "RobWork: RobWork Sandbox ENABLED!")
+    MESSAGE(STATUS "RobWork: Sandbox ENABLED!")
     SET(SANDBOX_LIB "rw_sandbox")
 ELSE ()
-    MESSAGE(STATUS "RobWork Sandbox DISABLED!")    
+    MESSAGE(STATUS "RobWork: Sandbox DISABLED!")    
 ENDIF ()
 
 #
 # If the user wants to use the calibration package, Eigen3 and Qt4 must be installed. Otherwise the package will be disabled.
 #
-FIND_PACKAGE(Eigen3 QUIET)
-FIND_PACKAGE( Qt4 COMPONENTS QtCore QtGui QtXml QUIET)
-IF( EIGEN3_FOUND AND QT4_FOUND AND ENABLE_CALIBRATION_PACKAGE)
-	SET(RW_HAVE_EIGEN ${EIGEN3_FOUND})
-	SET(RW_HAVE_QT ${QT4_FOUND})	
-	include( ${QT_USE_FILE} )
-	set(CALIBRATION_LIB rw_calibration ${QT_LIBRARIES})
-	set(CALIBRATION_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR} ${QT_INCLUDES})
-	message(STATUS "Found QT and Eigen: Building calibration package.")
-ELSE ()
-	message(STATUS "Did not find QT and Eigen: Calibration package disabled.")
-ENDIF ()
 
+OPTION( RW_BUILD_CALIBRATION "Set when you want to build calibration module" OFF )
+IF ( RW_BUILD_CALIBRATION )
+    MESSAGE( STATUS "RobWork: Calibration ENABLED!" )
+    FIND_PACKAGE( Eigen3 REQUIRED )
+    FIND_PACKAGE( Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED )
+    SET( RW_HAVE_EIGEN ${EIGEN3_FOUND} )
+    SET( RW_HAVE_QT ${QT4_FOUND} )
+    INCLUDE( ${QT_USE_FILE} )
+    SET( CALIBRATION_LIB rw_calibration ${QT_LIBRARIES} )
+    SET( CALIBRATION_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR} ${QT_INCLUDES} )
+ELSE ()
+    MESSAGE( STATUS "RobWork: Calibration DISABLED!" )    
+ENDIF()
 
 #######################################################################
 # COMPILER FLAGS AND MACRO SETUP
@@ -422,6 +431,7 @@ SET(ROBWORK_INCLUDE_DIR
     ${PQP_INCLUDE_DIR}
     ${LUA_INCLUDE_DIR}
     ${TOLUA_INCLUDE_DIR}
+    ${BULLET_INCLUDE_DIRS}
 )
 
 #
@@ -435,6 +445,7 @@ SET(ROBWORK_LIBRARY_DIRS
     ${YAOBI_LIBRARY_DIRS}
     ${PQP_LIBRARY_DIRS}
     ${LUA_LIBRARY_DIRS}
+    ${BULLET_LIBRARY_DIRS}
     ${TOLUA_LIBRARY_DIRS}
     ${LAPACK_BLAS_LIBRARY_DIRS}
 )
@@ -462,6 +473,7 @@ SET(ROBWORK_LIBRARIES_TMP
   ${CALIBRATION_LIB}
   ${OPENGL_LIBRARIES}
   ${XERCESC_LIBRARIES}
+  ${BULLET_LIBRARIES}
   ${Boost_LIBRARIES}
   ${LAPACK_LIBRARIES} 
   ${BLAS_LIBRARIES}

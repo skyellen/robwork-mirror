@@ -198,6 +198,7 @@ namespace {
                 // this will produce the error in m
                 double noise_err = Math::ranNormalDist( 0 , sigma )/1000.0;
                 v[2] += (float)noise_err;
+
             }
         }
     }

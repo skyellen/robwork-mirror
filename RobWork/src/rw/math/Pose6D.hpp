@@ -52,7 +52,7 @@ namespace rw { namespace math {
      * \theta k_z)@f$ describes the orientation in equal angle axis (EAA)
      * format.
      */
-    template<class T = double>
+	template<class T = double>
     class Pose6D {
     private:
         Vector3D<T> _position;
@@ -155,7 +155,7 @@ namespace rw { namespace math {
          * @brief Converts the Pose6D into the corresponding Transform3D
          * @return the corresponding Transform3D
          */
-        const Transform3D<T> toTransform3D() {
+        const Transform3D<T> toTransform3D() const {
             return Transform3D<T>(_position, _orientation);
         }
 

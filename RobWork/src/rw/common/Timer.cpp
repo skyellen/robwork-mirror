@@ -92,11 +92,21 @@ void Timer::resume()
 
 double Timer::getTime() const
 {
-    if (_isPaused)
-        return _totalTime * 0.001; // convert to sec
-    else
-        return (_totalTime + TimerUtil::currentTimeMs() - _relativeTime)* 0.001;
+	return getTimeMs()*0.001;
 }
+
+long Timer::getTimeSec() const{
+	return getTimeMs()/1000;
+}
+
+long Timer::getTimeMs() const
+{
+    if (_isPaused)
+        return _totalTime; // convert to sec
+    else
+        return _totalTime + TimerUtil::currentTimeMs() - _relativeTime;
+}
+
 
 std::string Timer::toString(const std::string& format){
     char line[64];

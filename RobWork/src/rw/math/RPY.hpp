@@ -95,6 +95,31 @@ namespace rw { namespace math {
             return _rpy(index);
         }
 
+
+        /**
+         * @brief Returns a const reference the an element
+         *
+         * @param index [in] index of element
+         *
+         * @return const reference to the element
+         */
+        const T& operator[](size_t i) const { return (*this)(i); }
+
+        /**
+          * @brief Returns reference to the element
+          *
+          * @param index [in] index of element
+          *
+          * @return reference to the element
+          */
+        T& operator[](size_t i) { return (*this)(i); }
+
+        /**
+         * @brief size of this RPY.
+         * @return the value 3
+         */
+        size_t size() const { return 3; }
+
         /**
          * @brief Ouputs RPY to stream
          *

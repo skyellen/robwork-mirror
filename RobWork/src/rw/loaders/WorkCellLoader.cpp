@@ -27,14 +27,45 @@ using namespace rw::loaders;
 using namespace rw::models;
 using namespace rw::common;
 
-WorkCell::Ptr WorkCellLoader::load(const std::string& file)
-{
-    return WorkCellFactory::load(file);
+rw::common::Ptr<WorkCellLoader> WorkCellLoader::Factory::getWorkCellLoader(const std::string& format){
+	using namespace rw::common;
+	WorkCellLoader::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr ext, exts){
+		if(!ext->getProperties().has(format))
+			continue;
+		// else try casting to ImageLoader
+		WorkCellLoader::Ptr loader = ext->getObject().cast<WorkCellLoader>();
+		return loader;
+	}
+	RW_THROW("No loader using that format exists...");
+	return NULL;
+
 }
 
-/*
-WorkCell::Ptr WorkCellLoader::load(const std::string& file, rw::graphics::WorkCellScene::Ptr wcscene)
+WorkCell::Ptr WorkCellLoader::Factory::load(const std::string& file)
 {
-    return WorkCellFactory::load(file, wcscene);
+    const std::string ext2 = StringUtil::getFileExtension(file);
+    const std::string ext = StringUtil::toUpper(ext2);
+    try{
+        if (ext == ".WU" || ext == ".WC" || ext == ".TAG" || ext == ".DEV") {
+            return TULLoader::load(file);
+        } else {
+            return XMLRWLoader::load(file);
+        }
+    } catch (const std::exception& e){
+        std::cout << "Exception: " << e.what() << std::endl;
+    }
+
+    // tjeck if any plugins support the file format
+	WorkCellLoader::Ptr loader = WorkCellLoader::Factory::getWorkCellLoader(ext);
+	if(loader!=NULL){
+		try {
+			WorkCell::Ptr wc = loader->loadWorkCell( file );
+			return wc;
+		} catch (...){
+			Log::debugLog() << "Tried loading workcell with extension, but failed!\n";
+		}
+	}
+    return NULL;
 }
-*/

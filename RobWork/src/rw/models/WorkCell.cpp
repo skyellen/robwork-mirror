@@ -113,6 +113,8 @@ const std::vector<Device::Ptr>& WorkCell::getDevices() const
 
 Frame* WorkCell::findFrame(const std::string& name) const
 {
+	if(name=="WORLD")
+		return _tree->getRoot();
     return _tree->findFrame(name);
 }
 

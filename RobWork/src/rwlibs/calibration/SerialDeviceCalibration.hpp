@@ -1,5 +1,5 @@
 /*
- * CalibratedSerialDevice.hpp
+ * SerialDeviceCalibration.hpp
  *
  *  Created on: Jul 4, 2012
  *      Author: bing
@@ -8,78 +8,53 @@
 #ifndef RWLIBS_CALIBRATION_SERIALDEVICECALIBRATION_HPP
 #define RWLIBS_CALIBRATION_SERIALDEVICECALIBRATION_HPP
 
-#include "Pose6D.hpp"
-
+#include "CompositeCalibration.hpp"
+#include "DHLinkCalibration.hpp"
+#include "JointEncoderCalibration.hpp"
+#include "FixedFrameCalibration.hpp"
 #include <rw/models.hpp>
-#include <rw/models/DHParameterSet.hpp>
 #include <rw/kinematics.hpp>
-#include <rw/math.hpp>
-
-#include <QtCore>
 
 namespace rwlibs {
 namespace calibration {
 
-class SerialDeviceCalibration {
+class SerialDeviceCalibration: public CompositeCalibration<Calibration> {
 public:
 	typedef rw::common::Ptr<SerialDeviceCalibration> Ptr;
 
-	SerialDeviceCalibration(rw::models::SerialDevice::Ptr serialDevice);
+	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
+
+	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, FixedFrameCalibration::Ptr baseCalibration, FixedFrameCalibration::Ptr endCalibration,
+			const CompositeCalibration<DHLinkCalibration>::Ptr& compositeLinkCalibration, const CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration);
 
 	virtual ~SerialDeviceCalibration();
 
-	void setEnabled(bool baseEnabled, bool endEnabled, bool dhEnabled);
+	rw::models::SerialDevice::Ptr getDevice() const;
 
-	Eigen::Affine3d getBaseCorrection() const;
+	FixedFrameCalibration::Ptr getBaseCalibration() const;
 
-	void setBaseCorrection(const Eigen::Affine3d& correction);
+	FixedFrameCalibration::Ptr getEndCalibration() const;
 
-	Eigen::Affine3d getEndCorrection() const;
+	CompositeCalibration<DHLinkCalibration>::Ptr getCompositeLinkCalibration() const;
 
-	void setEndCorrection(const Eigen::Affine3d& correction);
+	CompositeCalibration<JointEncoderCalibration>::Ptr getCompositeJointCalibration() const;
 
-	std::vector<rw::models::DHParameterSet> getDHCorrections() const;
+	static SerialDeviceCalibration::Ptr make(rw::models::SerialDevice::Ptr device);
 
-	void setDHCorrections(const std::vector<rw::models::DHParameterSet>& corrections);
+	static SerialDeviceCalibration::Ptr get(rw::models::SerialDevice::Ptr device);
 
-	rw::kinematics::Frame* getBaseFrame();
+	static SerialDeviceCalibration::Ptr get(const rw::common::PropertyMap& propertyMap);
 
-	void setBaseFrame(rw::kinematics::Frame* baseFrame);
+	static void set(SerialDeviceCalibration::Ptr calibration, rw::models::SerialDevice::Ptr device);
 
-	rw::kinematics::Frame* getEndFrame();
-
-	void setEndFrame(rw::kinematics::Frame* endFrame);
-
-	void save(QString fileName);
-
-	static SerialDeviceCalibration::Ptr load(rw::models::SerialDevice::Ptr serialDevice, const std::string& fileName);
-
-	void apply();
-
-	void revert();
-
-	bool isApplied();
-
-	static SerialDeviceCalibration::Ptr getCalibration(rw::models::SerialDevice::Ptr serialDevice);
-
-	static void setCalibration(SerialDeviceCalibration::Ptr serialDeviceCalibration, rw::models::SerialDevice::Ptr serialDevice);
+	static void set(SerialDeviceCalibration::Ptr calibration, rw::common::PropertyMap& propertyMap);
 
 private:
-
-	rw::models::SerialDevice::Ptr _serialDevice;
-
-	Eigen::Affine3d _baseCorrection;
-	Eigen::Affine3d _endCorrection;
-	std::vector<rw::models::DHParameterSet> _dhCorrections;
-
-	bool _baseEnabled;
-	bool _endEnabled;
-	bool _dhEnabled;
-
-	rw::kinematics::Frame* _baseFrame;
-	rw::kinematics::Frame* _endFrame;
-
-	bool _isApplied;
+	rw::models::SerialDevice::Ptr _device;
+	FixedFrameCalibration::Ptr _baseCalibration;
+	FixedFrameCalibration::Ptr _endCalibration;
+	CompositeCalibration<DHLinkCalibration>::Ptr _compositeLinkCalibration;
+	CompositeCalibration<JointEncoderCalibration>::Ptr _compositeJointCalibration;
 };
 
 }

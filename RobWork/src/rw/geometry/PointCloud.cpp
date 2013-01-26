@@ -15,163 +15,97 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_GEOMETRY_TRIMESH_HPP_
-#define RW_GEOMETRY_TRIMESH_HPP_
+#include "PointCloud.hpp"
 
-#include <rw/common/Ptr.hpp>
+#include "PlainTriMesh.hpp"
 
-#include "GeometryData.hpp"
-#include "Triangle.hpp"
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
 
-namespace rw {
-namespace geometry {
-	//! @addtogroup geometry
-	// @{
+using namespace rw::geometry;
+using namespace rw::common;
 
-	/**
-	 * @brief interface of a triangle mesh. The interface defines a way to get
-	 * triangles from a triangle array/mesh.
-	 */
-	class TriMesh: public GeometryData {
-	public:
-        //! @brief smart pointer type to this class
-        typedef rw::common::Ptr<TriMesh> Ptr;
+rw::common::Ptr<TriMesh> PointCloud::getTriMesh(bool forceCopy){
+    // we create a trimesh with points of size 1mm
+    //std::cout << "Creating mesh... " << _data.size() << std::endl;
+    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF(_data.size()) );
+    for(size_t i=0;i<_data.size();i++){
+        Triangle<float> tri = (*mesh)[i];
+        tri[0] = _data[i];
+        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005,0, 0);
+        tri[2] = _data[i]+rw::math::Vector3D<float>(0, 0.005,0);
+        (*mesh)[i] = tri;
+    }
+    return mesh;
+}
 
-		/**
-		 * @brief destructor
-		 */
-		virtual ~TriMesh(){};
-
-		/**
-		 * @brief gets the triangle at index idx.
-		 */
-		virtual Triangle<double> getTriangle(size_t idx) const = 0;
-
-
-		virtual void getTriangle(size_t idx, Triangle<double>& dst) const = 0;
-        /**
-         * @brief gets the triangle at index idx, but with floating precision
-         */
-		virtual void getTriangle(size_t idx, Triangle<float>& dst) const = 0;
-
-
-		/**
-		 * @brief gets the number of triangles in the triangle array.
-		 */
-		virtual size_t getSize() const = 0;
-
-		/**
-		 * @brief gets the number of triangles in the triangle array.
-		 */
-		virtual size_t size() const = 0;
-
-		/**
-		 * @brief make a clone of this triangle mesh
-		 * @return clone of this trimesh
-		 */
-		virtual rw::common::Ptr<TriMesh> clone() const = 0;
-
-		//! @copydoc GeometryData::getTriMesh
-		rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true);
-
-		//! @copydoc getTriMesh
-		rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
+rw::common::Ptr<const TriMesh> PointCloud::getTriMesh(bool forceCopy) const{
+    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF(_data.size()) );
+    //std::cout << "Creating mesh... " << _data.size() << std::endl;
+    for(size_t i=0;i<_data.size();i++){
+        Triangle<float> tri = (*mesh)[i];
+        tri[0] = _data[i];
+        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005,0, 0);
+        tri[2] = _data[i]+rw::math::Vector3D<float>(0,0.005,0);
+        (*mesh)[i] = tri;
+    }
+    return mesh;
+}
 
 
-	    /**
-	     * @brief struct for iterating over the centers of triangles in a mesh
-	     */
-	    struct TriCenterIterator {
-	        rw::math::Vector3D<> _pos;
-	        const rw::geometry::TriMesh& _mesh;
-	        size_t _first,_end;
-	        bool _useAreaWeight;
-	        TriCenterIterator(const rw::geometry::TriMesh& mesh, bool useAreaWeight=false):
-	            _mesh(mesh),_first(0),_end(mesh.getSize()),_useAreaWeight(useAreaWeight)
-	        {}
+void PointCloud::savePCD(const PointCloud& img, const std::string& filename, const rw::math::Transform3D<float>& t3d){
+    std::ofstream output(filename.c_str());
+    output << "# .PCD v.5 - Point Cloud Data file format\n";
+    output << "FIELDS x y z\n";
+    output << "SIZE 4 4 4\n";
+    output << "TYPE F F F\n";
+    output << "WIDTH " << img.getWidth() << "\n";
+    output << "HEIGHT " << img.getHeight() << "\n";
+    output << "POINTS " << img.getData().size() << "\n";
+    output << "DATA ascii\n";
+    BOOST_FOREACH(const rw::math::Vector3D<float>& p_tmp, img.getData()){
+        rw::math::Vector3D<float> p = t3d*p_tmp;
+        output << p(0) << " " << p(1) << " " << p(2) << "\n";
+    }
+    output.close();
+}
 
-	        rw::math::Vector3D<>& operator*() {
-	            return _pos;
-	        }
+PointCloud::Ptr PointCloud::loadPCD(const std::string& filename ){
+    char line[500];
+    int width, height, nr_points;
+    float version;
+    std::ifstream input(filename.c_str());
+    input.getline(line, 500); // output << "# .PCD v.5 - Point Cloud Data file format\n";
+    input.getline(line, 500); // output << "FIELDS x y z\n";
+    input.getline(line, 500); // output << "SIZE 4 4 4\n";
+    input.getline(line, 500); //output << "TYPE F F F\n";
+    std::string tmp;
+    input >> tmp;
+    while(tmp!="DATA"){
+        if(tmp=="WIDTH"){ input >> width;}
+        else if(tmp=="HEIGHT"){input >> height;}
+        else if(tmp=="VERSION"){input >> version;}
+        else if(tmp=="FIELDS"){}
+        else if(tmp=="HEIGHT"){}
+        else if(tmp=="SIZE"){}
+        else if(tmp=="TYPE"){}
+        else if(tmp=="COUNT"){}
+        else if(tmp=="VIEWPOINT"){}
+        else if(tmp=="POINTS"){input >> nr_points;}
+        input.getline(line, 500);
+        input >> tmp;
+    }
+    input.getline(line, 500);
+    //std::cout << "w:" << width << " h:" << height << " p:" << nr_points << std::endl;
+    PointCloud::Ptr img = rw::common::ownedPtr( new PointCloud(width,height) );
+    input.getline(line, 500); // output << "DATA ascii\n";
 
-	        rw::math::Vector3D<>* operator->() { return &_pos; }
-
-	        TriCenterIterator& operator++(){ inc(); return *this; }
-
-	        bool operator==(const TriCenterIterator& other) const{ return _first == other._end;}
-	        bool operator!=(const TriCenterIterator& other) const { return _first < other._end;}
-
-	        void inc(){
-	            using namespace rw::geometry;
-	            using namespace rw::math;
-	            using namespace rw::common;
-
-	            ++_first;
-	            if(_first!=_end){
-	                Triangle<> tri = _mesh.getTriangle(_first);
-	                if(_useAreaWeight){
-	                    double area = tri.calcArea();
-	                    _pos = area*(tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
-	                } else {
-	                    _pos = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
-	                }
-	            }
-	        }
-	    };
-
-        /**
-         * @brief struct for iterating over the centers of triangles in a mesh
-         */
-        struct VerticeIterator {
-            rw::math::Vector3D<> _pos;
-            const rw::geometry::TriMesh& _mesh;
-
-            size_t _first,_end,_subIdx;
-
-            VerticeIterator(const rw::geometry::TriMesh& mesh):
-                _mesh(mesh),_first(0),_end(mesh.getSize()),_subIdx(0)
-            {}
-
-            rw::math::Vector3D<>& operator*() {
-                return _pos;
-            }
-
-            rw::math::Vector3D<>* operator->() { return &_pos; }
-
-            VerticeIterator& operator++(){ inc(); return *this; }
-
-            bool operator==(const VerticeIterator& other) const{ return _first == other._end;}
-            bool operator!=(const VerticeIterator& other) const { return _first < other._end;}
-
-            void inc(){
-                using namespace rw::geometry;
-                using namespace rw::math;
-                using namespace rw::common;
-
-
-                if(_first!=_end){
-                    _pos = _mesh.getTriangle(_first).getVertex(_subIdx);
-                    _subIdx++;
-                    if(_subIdx==3){
-                        ++_first;
-                        _subIdx=0;
-                    }
-                }
-            }
-        };
-
-
-	};
-
-#ifdef RW_USE_DEPRECATED
-	//! @brief Ptr to TriMesh
-	typedef rw::common::Ptr<TriMesh> TriMeshPtr;
-#endif
-
-	//! @}
-} // geometry
-} // rw
-
-
-
-#endif /*TRIMESH_HPP_*/
+    for(int i=0;i<nr_points;i++){
+        rw::math::Vector3D<float> p;
+        input.getline(line, 500);
+        sscanf(line, "%f %f %f", &p[0], &p[1], &p[2]);
+        img->getData()[i] = p;
+    }
+    return img;
+}

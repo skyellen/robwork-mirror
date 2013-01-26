@@ -34,6 +34,8 @@
 #include "./loaders/rwxml/XMLRWLoader.hpp"
 #include "./loaders/rwxml/XMLRWParser.hpp"
 #include "./loaders/rwxml/XMLRWPreParser.hpp"
+#include "loaders/model3d/STLFile.hpp"
+#include "loaders/GeometryFactory.hpp"
 //#include "./loaders/TaskLoader.hpp"
 #include "./loaders/tul/Tag.hpp"
 #include "./loaders/tul/TULLoader.hpp"

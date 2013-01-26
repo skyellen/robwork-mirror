@@ -70,6 +70,12 @@ namespace rw { namespace geometry {
 		virtual rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true) = 0;
 
 		/**
+		 * @brief test if this geometry data is convex
+		 * @return
+		 */
+		virtual bool isConvex(){ return false;};
+
+		/**
 		 * @brief format GeometryType to string
 		 * @param type
 		 */

@@ -86,7 +86,6 @@ typedef rw::geometry::Cone Cone;
 typedef rw::geometry::Sphere Sphere;
 typedef rw::geometry::Plane Plane;
 typedef rw::geometry::Cylinder Cylinder;
-typedef rw::geometry::STLFile STLFile;
 typedef rw::geometry::Triangle<double> Triangle;
 typedef rw::geometry::Triangle<float> Trianglef;
 typedef rw::geometry::TriangleN1<double> TriangleN1;
@@ -158,8 +157,11 @@ typedef rw::invkin::PieperSolver PieperSolver;
 
 typedef rw::loaders::ImageFactory ImageFactory;
 typedef rw::loaders::WorkCellLoader WorkCellLoader;
+typedef rw::loaders::WorkCellFactory WorkCellFactory;
 typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
 typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
+
+typedef rw::loaders::STLFile STLFile;
 
 typedef rw::RobWork RobWork;
 
@@ -179,7 +181,7 @@ typedef rwlibs::pathoptimization::ClearanceOptimizer ClearanceOptimizer;
 // not added yet
 typedef rwlibs::simulation::SimulatedController SimulatedController;
 typedef rwlibs::simulation::SimulatedSensor SimulatedSensor;
-
+typedef rwlibs::simulation::Simulator Simulator;
 
 void writelog(const std::string& msg);
 

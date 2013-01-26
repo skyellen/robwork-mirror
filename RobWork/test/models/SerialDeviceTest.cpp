@@ -405,8 +405,8 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     VelocityScrew6D<> eVe2 = tool->getTransform(state) * tVt;
     // Velocity of tool seen from tool (calculated from end-effector velocity)
     VelocityScrew6D<> tVt2 = tool->getTransform(state) * eVe;
-
     BOOST_CHECK(normInf(eVe2 - tVt2) < 1e-6);
+
 
     Transform3D<double> t_bTe = kr16t.baseTend(state);
     Transform3D<double> t_bTf = kr16t.baseTframe(tool,state);

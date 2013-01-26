@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
     {
         // Using plain stringstream did not work with Visual Studio.
         std::ostringstream outstream;
-        const Log::LogLevel ID = Log::User1;
+        const Log::LogIndex ID = Log::User1;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedMsg(&outstream)) );
         RW_LOG(ID, "Message");
         RW_LOG(ID, "A"<<std::endl);
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
     {
         std::stringstream ooutstream;
         std::stringstream *outstream = &ooutstream;
-        const Log::LogLevel ID = Log::User2;
+        const Log::LogIndex ID = Log::User2;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_FIRST)) );
         RW_LOG(ID, "0123");
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
      */
     {
         std::stringstream outstream;
-        const Log::LogLevel ID = Log::User1;
+        const Log::LogIndex ID = Log::User1;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, &outstream, LogBufferedChar::REMOVE_LAST)) );
         RW_LOG(ID, "0123");
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
      */
     {
         std::stringstream outstream;
-        const Log::LogLevel ID = Log::User1;
+        const Log::LogIndex ID = Log::User1;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, &outstream, LogBufferedChar::AUTO_FLUSH)) );
         RW_LOG(ID, "0123");

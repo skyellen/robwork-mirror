@@ -24,6 +24,7 @@ using namespace rw::geometry;
 
 std::string GeometryData::toString(GeometryData::GeometryType type){
 	switch(type){
+    case(PointCloud): return "PointCloud";
 	case(PlainTriMesh): return "PlainTriMesh";
 	case(IdxTriMesh): return "IdxTriMesh";
 	case(SpherePrim): return "SpherePrim";

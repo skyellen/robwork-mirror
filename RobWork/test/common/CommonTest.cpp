@@ -20,7 +20,7 @@
 #include <rw/common/StringUtil.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
-
+#include <rw/common/Timer.hpp>
 #include <rw/common/Ptr.hpp>
 
 using namespace rw::common;
@@ -42,7 +42,7 @@ public:
 };
 typedef rw::common::Ptr<B> BPtr;
 
-BOOST_AUTO_TEST_CASE( CommonTest )
+BOOST_AUTO_TEST_CASE( PtrTest )
 {
     std::vector<APtr> aptrs;
     B *b = new B();
@@ -53,4 +53,21 @@ BOOST_AUTO_TEST_CASE( CommonTest )
     A* a  = aptr.get();
     B* bcast = dynamic_cast<B*>(a);
     BOOST_CHECK(bcast != NULL);
+}
+
+BOOST_AUTO_TEST_CASE( TimerTest )
+{
+	Timer t1(3030);
+	BOOST_CHECK(t1.getTimeMs()==3030);
+	BOOST_CHECK(t1.getTimeSec()==3);
+
+	std::string tstr1 = Timer(1,2,30,10).toString("hh:mm:ss");
+	BOOST_CHECK_MESSAGE(tstr1 == "01:02:30", "Should be: " << tstr1);
+	std::string tstr2 = Timer(1,2,2,10).toString("hh:mm");
+	BOOST_CHECK_MESSAGE(tstr2 == "01:02", "Should be: " << tstr2);
+	std::string tstr3 = Timer(1,2,30,10).toString("h:m:s");
+	BOOST_CHECK_MESSAGE(tstr3 == "1:2:30", "Should be: " << tstr3);
+	std::string tstr4 = Timer(1,2,2,10).toString("h:m");
+	BOOST_CHECK_MESSAGE(tstr4 == "1:2", "Should be: " << tstr4);
+
 }

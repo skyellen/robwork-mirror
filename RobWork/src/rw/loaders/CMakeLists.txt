@@ -2,6 +2,17 @@ SET(FILES_CPP
   WorkCellLoader.cpp
   WorkCellFactory.cpp
 
+  model3d/LoaderAC3D.cpp
+  model3d/Loader3DS.cpp
+  model3d/Model3DS.cpp
+  model3d/LoaderOBJ.cpp
+  model3d/LoaderTRI.cpp
+  model3d/STLFile.cpp
+  Model3DFactory.cpp
+  Model3DLoader.cpp
+  GeometryFactory.cpp
+  GeometryLoader.cpp
+
   path/PathLoader.cpp
   tul/Tag.cpp
   tul/TULLoader.cpp
@@ -22,6 +33,7 @@ SET(FILES_CPP
   image/PPMLoader.cpp
   image/RGBLoader.cpp
   ImageFactory.cpp
+  ImageLoader.cpp
 )
 
 SET(FILES_HPP
@@ -47,6 +59,7 @@ SET(FILES_HPP
   image/PPMLoader.hpp
   image/RGBLoader.hpp
   ImageFactory.hpp
+  ImageLoader.hpp
 )
 
 IF (RW_HAVE_XERCES) 

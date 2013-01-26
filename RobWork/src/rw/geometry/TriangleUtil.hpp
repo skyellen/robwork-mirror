@@ -158,6 +158,14 @@ namespace rw { namespace geometry {
 
 	public:
 		/**
+		 * @brief offsets the surface in the direction of the normal.
+
+		 * @param triMesh [in] the tri mesh that is to be converted
+		 * @param dist [in] offset distance in direction of normal
+		 */
+		//static rw::common::Ptr<TriMesh> offsetSurface(const TriMesh& triMesh, double dist);
+
+		/**
 		 * @brief takes a general triangle mesh and creates an indexed
 		 * triangle mesh. All data is copied.
 		 *

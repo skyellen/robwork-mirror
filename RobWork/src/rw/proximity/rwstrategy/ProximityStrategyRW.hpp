@@ -78,9 +78,11 @@ namespace rw { namespace proximity {
      */
     class ProximityStrategyRW :
         public rw::proximity::CollisionStrategy,
-        public rw::proximity::CollisionToleranceStrategy
-        //public rw::proximity::DistanceStrategy,
+        public rw::proximity::CollisionToleranceStrategy,
+        public rw::proximity::DistanceStrategy
         //public rw::proximity::DistanceToleranceStrategy
+        //public rw::proximity::DistanceThresholdStrategy
+
     {
     public:
         typedef rw::common::Ptr<ProximityStrategyRW> Ptr;
@@ -189,6 +191,15 @@ namespace rw { namespace proximity {
             const rw::math::Transform3D<>& wTb,
             double tolerance,
             rw::proximity::ProximityStrategyData &data);
+
+
+        DistanceStrategy::Result& distance(
+            rw::proximity::ProximityModel::Ptr a,
+            const math::Transform3D<>& wTa,
+            rw::proximity::ProximityModel::Ptr b,
+            const math::Transform3D<>& wTb,
+            rw::proximity::ProximityStrategyData& data);
+
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear

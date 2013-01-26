@@ -31,6 +31,8 @@ SET(FILES_CPP
   rwstrategy/BVTreeColliderFactory.cpp
   rwstrategy/BVTreeToleranceCollider.cpp
   rwstrategy/OBVTreeDFSCollider.cpp
+  
+  rwstrategy/TreeDistanceCalc.cpp
 )
 
 SET(FILES_HPP

@@ -29,10 +29,16 @@
 #ifdef RW_HAVE_YAOBI
 #include "ProximityStrategyYaobi.hpp"
 #endif
+
+#ifdef RW_HAVE_BULLET
+#include "ProximityStrategyBullet.hpp"
+#endif
+
 namespace {
     const std::string RWStr("RWPROX");
     const std::string PQPStr("PQP");
     const std::string YAOBIStr("YAOBI");
+    const std::string BulletStr("BULLET");
 }
 
 using namespace rwlibs::proximitystrategies;
@@ -49,6 +55,10 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultColli
     #ifdef RW_HAVE_YAOBI
         return rw::common::ownedPtr( new ProximityStrategyYaobi() );
     #endif
+
+	#ifdef RW_HAVE_BULLET
+        return rw::common::ownedPtr( new ProximityStrategyBullet() );
+	#endif
 
     return rw::common::ownedPtr<>(new ProximityStrategyRW());
 }
@@ -69,6 +79,12 @@ rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStr
     }
 #endif
 
+#ifdef RW_HAVE_BULLET
+    if(id==BulletStr){
+    	return rw::common::ownedPtr( new ProximityStrategyBullet() );
+    }
+#endif
+
     RW_THROW("No support for collision strategy with ID=" << StringUtil::quote(id));
     return NULL;
 }
@@ -82,6 +98,10 @@ std::vector<std::string> ProximityStrategyFactory::getCollisionStrategyIDs(){
 
 #ifdef RW_HAVE_YAOBI
     IDs.push_back(YAOBIStr);
+#endif
+
+#ifdef RW_HAVE_BULLET
+    IDs.push_back(BulletStr);
 #endif
 
     IDs.push_back(RWStr);

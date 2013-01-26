@@ -24,7 +24,6 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 #include <rw/graphics/DrawableNode.hpp>
 
 #include <boost/foreach.hpp>

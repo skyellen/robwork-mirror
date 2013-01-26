@@ -1233,11 +1233,11 @@ public:
  *
  * *************************************************************************/
 
-class WorkCellLoader{
+class WorkCellFactory{
 public:
     static rw::common::Ptr<WorkCell> load(const std::string& filename);
 private:
-    WorkCellLoader();
+    WorkCellFactory();
 };
 
 
@@ -1716,6 +1716,32 @@ class WorkCellScene {
 
 
 
+class Simulator {
+public:
+
+	/*
+	 * Nested structs not supported
+	 * 
+   struct UpdateInfo {
+	   UpdateInfo();
+	   UpdateInfo(double dt_step);
+
+	   double dt;
+	   double dt_prev;
+	   double time;
+	   bool rollback;
+   };
+   */
+   
+   virtual ~Simulator();
+   virtual void step(double dt, State& state) = 0;
+   virtual void reset(State& state) = 0;
+   virtual void init(State& state) = 0;
+   virtual double getTime() = 0;
+   virtual void setEnabled(Frame* frame, bool enabled) = 0;
+   virtual PropertyMap& getPropertyMap() = 0;
+
+};
 
 
 

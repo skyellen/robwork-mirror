@@ -61,6 +61,9 @@ namespace geometry {
          */
         virtual rw::math::Q getParameters() const = 0;
 
+        //! @copydoc GeometryData::isConvex
+        virtual bool isConvex() { return true; }
+
     protected:
         Primitive(){};
 

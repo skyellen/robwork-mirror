@@ -28,7 +28,7 @@
 #include "./graphics/DrawableNode.hpp"
 #include "./graphics/GroupNode.hpp"
 #include "./graphics/Model3D.hpp"
-#include "./graphics/Model3DLoader.hpp"
+//#include "./graphics/Model3DLoader.hpp"
 //#include "./graphics/NodeVisitor.hpp"
 #include "./graphics/ProjectionMatrix.hpp"
 #include "./graphics/Render.hpp"

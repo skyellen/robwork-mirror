@@ -126,6 +126,14 @@ namespace rw { namespace models {
         math::Transform3D<> getJointTransform(const rw::kinematics::State& state) const;
 
 
+		//! @copydoc Joint::setJointMapping()
+		virtual void setJointMapping(rw::math::Function1Diff<>::Ptr function) 
+		{
+			RW_THROW("setJointMapping is not supported on VirtualJoint");
+		}
+
+		//! @copydoc Joint::removeJointMapping()
+		virtual void removeJointMapping() {}
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,

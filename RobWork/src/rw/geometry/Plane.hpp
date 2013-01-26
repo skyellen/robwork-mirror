@@ -37,6 +37,7 @@ namespace geometry {
 		 */
 		typedef rw::common::Ptr<Plane> Ptr;
 
+		typedef double value_type;
 
 	    /**
 	     * @brief constructor
@@ -103,11 +104,26 @@ namespace geometry {
 		}
 
 		/**
+		 * @brief default metric for computing the difference between 2 planes
+		 * @param point
+		 * @return
+		 */
+		double distance(const Plane& plane){
+			double ang = angle(_normal, plane.normal());
+			return (ang+fabs(_d-plane.d()))/2.0;
+		}
+
+		/**
 		 * @brief fit this plane to a set of points
+		 *
+		 * A PCA analysis of the points are made and the two axes with
+		 * largest extends are used for defining the plane. The error is the
+		 * sum of the squared mean of the points to the plane.
+		 *
 		 * @param data [in] a set of points
 		 * @return
 		 */
-		double refit( std::vector<rw::math::Vector3D<> >& data ){ return 0;}
+		double refit( std::vector<rw::math::Vector3D<> >& data );
 
 		/**
 		 * @brief Calculates the intersection between the line and plane.
@@ -148,6 +164,26 @@ namespace geometry {
 
 		//! @copydoc Primitive::getType()
 		GeometryType getType() const{ return PlanePrim; };
+
+		/**
+		 * @brief computes the distance from point to plane
+		 * @param p [in]
+		 * @return
+		 */
+		double distance( const rw::math::Vector3D<>& p ) const {
+			return fabs( _normal(0)*p(0)+_normal(1)*p(1)+_normal(2)*p(2) + _d );
+		}
+
+
+		/**
+		 * @brief create a metric that can be used to compare distance between
+		 * two planes. The distance between two planes is computed as follows:
+		 *
+		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);
+		 *
+		 * @return
+		 */
+		static rw::math::Metric<Plane>::Ptr makeMetric(double angToDistWeight=1.0);
 
 	private:
 		rw::math::Vector3D<> _normal;

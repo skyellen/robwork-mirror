@@ -28,6 +28,7 @@
 #include <boost/numeric/ublas/matrix_expression.hpp>
 
 #include <Eigen/Eigen>
+#include <Eigen/Core>
 
 #include "Transform3D.hpp"
 #include "EAA.hpp"
@@ -150,6 +151,13 @@ namespace rw { namespace math {
             assert(index < 6);
             return _screw(index);
         }
+
+        //! @copydoc operator()
+        const T& operator[](size_t i) const { return (*this)(i); }
+
+        //! @copydoc operator()
+        T& operator[](size_t i) { return (*this)(i); }
+
 
         /**
          * @brief Adds the velocity screw given as a parameter to the velocity screw.
@@ -439,7 +447,7 @@ namespace rw { namespace math {
          * @return the 1-norm
          */
         T norm1() const {
-            return _screw.lpNorm<1>();
+            return _screw.template lpNorm<1>();
         }
 
 
@@ -486,7 +494,7 @@ namespace rw { namespace math {
          * @return the infinite norm
          */
         T normInf() const {
-			return _screw.lpNorm<Eigen::Infinity>();
+			return _screw.template lpNorm<Eigen::Infinity>();
         }
 
         /**

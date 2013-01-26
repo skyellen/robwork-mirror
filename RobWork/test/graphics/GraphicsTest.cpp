@@ -19,10 +19,8 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/graphics/Model3DLoader.hpp>
-#include <rw/graphics/Model3DFactory.hpp>
-//#include <rwlibs/drawable/RenderSTL.hpp>
-#include <rw/graphics/ac3d/LoaderAC3D.hpp>
+#include <rw/loaders/Model3DLoader.hpp>
+#include <rw/loaders/Model3DFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 
@@ -39,6 +37,7 @@ using namespace boost::unit_test;
 using namespace rw::graphics;
 using namespace rw::math;
 using namespace rw::kinematics;
+using namespace rw::loaders;
 
 BOOST_AUTO_TEST_CASE( testSTLLoading ){
     BOOST_MESSAGE("- testing loading");

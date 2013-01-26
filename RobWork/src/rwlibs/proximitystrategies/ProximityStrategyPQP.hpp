@@ -126,7 +126,7 @@ namespace rwlibs { namespace proximitystrategies {
         };
 
     private:
-        bool _firstContact;
+        //bool _firstContact;
         rw::common::Cache<CacheKey, PQP::PQP_Model> _modelCache;
 
     public:
@@ -263,6 +263,10 @@ namespace rwlibs { namespace proximitystrategies {
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
 
 		void setThreshold(double threshold);
+
+		std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> >
+			getSurfaceNormals( rw::proximity::MultiDistanceResult& res, int idx);
+
     private:
 
         struct QueryData {

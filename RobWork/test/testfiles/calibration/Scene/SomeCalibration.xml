@@ -1,0 +1,28 @@
+<!DOCTYPE SerialDeviceCalibration>
+<SerialDeviceCalibration>
+ <BaseCalibration>
+  <FixedFrameCalibration frame="SomeDevice.Base">
+   <Transform isPostCorrection="1">0.9989570475927334 -0.03407191240761676 -0.03039608280185454 0.06999999999999999 0.03313881830942812 0.99897942274661 -0.03069090500302238 -0.08 0.03141075907812827 0.02965160558447929 0.9990666376675773 0.09</Transform>
+  </FixedFrameCalibration>
+ </BaseCalibration>
+ <EndCalibration>
+  <FixedFrameCalibration frame="SomeDevice.Marker">
+   <Transform isPostCorrection="0">0.9999801999887294 0.005242048106010993 0.003481459773548079 0.01000000000000002 -0.005235931932136213 0.9999847372823576 -0.001763581338089735 0.02000000000000001 -0.003490651415223701 0.001745317732760596 0.9999923845803572 -0.02999999999999998</Transform>
+  </FixedFrameCalibration>
+ </EndCalibration>
+ <LinkCalibrations>
+  <DHLinkCalibration joint="SomeDevice.Joint2" alpha="-0.01047197551196592" a="0.003000000000000012"/>
+  <DHLinkCalibration beta="0.008726646259971632" joint="SomeDevice.Joint3" alpha="-0.010471975511966" a="0.003000000000000004" b="-0.001999999999999981"/>
+  <DHLinkCalibration beta="0.008726646259971643" joint="SomeDevice.Joint4" alpha="-0.01047197551196596" a="0.003000000000000001" b="-0.001999999999999975"/>
+  <DHLinkCalibration joint="SomeDevice.Joint5" alpha="-0.01047197551196598" theta="0.00698131700797726" a="0.002999999999999989" d="-0.000999999999999995"/>
+  <DHLinkCalibration joint="SomeDevice.Joint6" alpha="-0.010471975511966" theta="0.006981317007977341" a="0.00299999999999998" d="-0.001000000000000005"/>
+ </LinkCalibrations>
+ <JointCalibrations>
+  <DHLinkCalibration joint="SomeDevice.Joint1" a="0.003000000000000004" b="-0.001999999999999994"/>
+  <DHLinkCalibration joint="SomeDevice.Joint2" a="0.003000000000000043" b="-0.002000000000000087"/>
+  <DHLinkCalibration joint="SomeDevice.Joint3" a="0.002999999999999983" b="-0.001999999999999982"/>
+  <DHLinkCalibration joint="SomeDevice.Joint4" a="0.002999999999999945" b="-0.00200000000000002"/>
+  <DHLinkCalibration joint="SomeDevice.Joint5" a="0.002999999999999998" b="-0.001999999999999994"/>
+  <DHLinkCalibration joint="SomeDevice.Joint6" a="0.003000000000000001" b="-0.002000000000000106"/>
+ </JointCalibrations>
+</SerialDeviceCalibration>

@@ -3,7 +3,6 @@
 add_subdirectory(algorithms)
 add_subdirectory(calibration)
 add_subdirectory(control)
-#add_subdirectory(lua)
 add_subdirectory(opengl)
 add_subdirectory(proximitystrategies)
 add_subdirectory(pathoptimization)

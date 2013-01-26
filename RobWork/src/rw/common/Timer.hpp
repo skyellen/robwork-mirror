@@ -20,6 +20,7 @@
 #define RW_COMMON_TIMER_HPP
 
 #include <string>
+#include "TimerUtil.hpp"
 
 /**
  * @file Timer.hpp
@@ -144,6 +145,25 @@ namespace rw { namespace common {
         double getTime() const;
 
         /**
+         * @brief The time the timer has been running in hole seconds.
+         *
+         * see getTime
+         *
+         * \return Time in hole seconds
+         */
+        long getTimeSec() const;
+
+        /**
+         * @brief The time the timer has been running in mili seconds.
+         *
+         * see getTime
+         *
+         * \return Time in mili seconds
+         */
+        long getTimeMs() const;
+
+
+        /**
          * @brief returns a string describing the time. The format of the time is described using \b format
          * @param format [in] the format is on the form:
          *  hh:mm:ss --> 05:06:08
@@ -151,6 +171,63 @@ namespace rw { namespace common {
          * @return a formated time string
          */
         std::string toString(const std::string& format="hh:mm:ss");
+
+
+        /**
+         * @brief Returns system clock in hole seconds
+		 *
+		 * \warning The date/time at which this timer counts from is platform-specific, so
+		 * you should \b not use it for getting the calendar time. It's really only meant for
+		 * calculating wall time differences.
+		 */
+        static long currentTimeSec(){ return TimerUtil::currentTimeMs()/1000; }
+
+
+        /**
+         * @brief Returns system clock in milli-seconds
+		 *
+		 * \warning The date/time at which this timer counts from is platform-specific, so
+		 * you should \b not use it for getting the calendar time. It's really only meant for
+		 * calculating wall time differences.
+		 */
+        static long currentTimeMs(){ return TimerUtil::currentTimeMs(); }
+
+
+		/**
+		 * @brief Returns system clock in micro-seconds.
+         *
+		 * \warning The date/time at which this timer counts from is platform-specific, so
+		 * you should \b not use it for getting the calendar time. It's really only meant for
+		 * calculating wall time differences.
+         *
+         * Notice: The timer cannot hold times longer than approx. 2100second.
+		 */
+        static long currentTimeUs(){ return TimerUtil::currentTimeUs(); }
+
+        /**
+         * @brief Returns system clock in seconds
+		 *
+		 * \warning The date/time at which this timer counts from is platform-specific, so
+		 * you should \b not use it for getting the calendar time. It's really only meant for
+		 * calculating wall time differences.
+		 */
+        static double currentTime(){ return TimerUtil::currentTime(); }
+
+
+        /**
+         * @brief Sleeps for a period of time
+         *
+         * @param period [in] the time in miliseconds to sleep
+         */
+        static void sleepMs(int period){ TimerUtil::sleepMs(period); }
+
+        /**
+         * @brief Sleeps for a period of time
+         *
+         * @param period [in] the time in microseconds to sleep
+         */
+        static void sleepUs(int period){ TimerUtil::sleepUs(period); }
+
 
     private:
         // Total time (in mili seconds).

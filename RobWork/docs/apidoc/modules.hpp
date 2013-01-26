@@ -79,6 +79,11 @@ namespace rwlibs {
 	namespace algorithms {}
 
 	/**
+	 * @brief Calibration of devices
+	 */
+	namespace calibration {}
+
+	/**
 	 * @brief Dynamic library loading
 	 */
 	namespace dll {}
@@ -199,6 +204,11 @@ namespace rwlibs {
     @defgroup algorithms algorithms
     @{
         @copydoc rwlibs::algorithms
+    @}
+
+    @defgroup calibration calibration
+    @{
+        @copydoc rwlibs::calibration
     @}
 
     @defgroup proximitystrategies proximitystrategies

@@ -9,8 +9,6 @@
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
 
-//#include <rw/geometry/GiftWrapHull3D.hpp>
-
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>

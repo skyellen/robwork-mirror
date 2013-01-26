@@ -24,7 +24,6 @@
 #include <vector>
 
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
@@ -175,7 +174,7 @@ namespace
 // ProximityStrategyPQP
 
 ProximityStrategyPQP::ProximityStrategyPQP() :
-    _firstContact(true),
+    //_firstContact(true),
 	_threshold(DBL_MAX)
 {
 	clearStats();
@@ -279,7 +278,8 @@ bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, 
 
 void ProximityStrategyPQP::setFirstContact(bool b)
 {
-    _firstContact = b;
+    RW_WARN("THIS METHOD ProximityStrategyPQP::setFirstContact IS DEPRECATED AND WILL HAVE NO EFFECT!");
+	//_firstContact = b;
 }
 
 ProximityStrategyPQP::QueryData ProximityStrategyPQP::initQuery(ProximityModel::Ptr& aModel, ProximityModel::Ptr& bModel, ProximityStrategyData &data){
@@ -312,6 +312,9 @@ bool ProximityStrategyPQP::inCollision(
                 *mb.pqpmodel, wTb * mb.t3d,
                 tolerance,
                 qdata.cache->_toleranceResult);
+
+            data.getCollisionData()._nrBVTests += qdata.cache->_toleranceResult.NumBVTests();
+            data.getCollisionData()._nrPrimTests += qdata.cache->_toleranceResult.NumTriTests();
 
             if (qdata.cache->_toleranceResult.CloserThanTolerance() != 0){
                 return true;
@@ -368,7 +371,7 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
 
     size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
     bool col_res = false;
-    bool firstContact = pdata.getCollisionQueryType() == FirstContact;
+    bool firstContact = pdata.getCollisionQueryType() == CollisionStrategy::FirstContact;
 
     BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
         BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
@@ -378,8 +381,12 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
                 qdata.cache->_collideResult,
                 firstContact);
 
+            data._nrBVTests += qdata.cache->_collideResult.NumBVTests();
+            data._nrPrimTests += qdata.cache->_collideResult.NumTriTests();
+
             _numBVTests += qdata.cache->_collideResult.NumBVTests();
             _numTriTests += qdata.cache->_collideResult.NumTriTests();
+
             if (qdata.cache->_collideResult.Colliding() != 0){
             	data.a = aModel;
             	data.b = bModel;
@@ -514,33 +521,71 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
                 }
             }
 
-
-
             size_t prevSize = rwresult.p1s.size();
 
             size_t vsize = idMap.size() + idMap1.size();
             rwresult.p1s.resize(prevSize+vsize);
             rwresult.p2s.resize(prevSize+vsize);
             rwresult.distances.resize(prevSize+vsize);
-
+            rwresult.p1prims.resize(prevSize+vsize);
+            rwresult.p2prims.resize(prevSize+vsize);
 
             size_t k = prevSize;
             for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,k++){
-                int idx = (*it).second;
+            	int idx = (*it).second;
                 rwresult.distances[k] = result.distances[idx];
                 rwresult.p1s[k] = ma.t3d*fromRapidVector(result.p1s[idx]);
                 rwresult.p2s[k] = ma.t3d*fromRapidVector(result.p2s[idx]);
+                rwresult.p1prims[k] = result.id1s[idx];
+                rwresult.p2prims[k] = result.id2s[idx];
             }
             for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,k++){
                 int idx = (*it).second;
                 rwresult.distances[k] = result.distances[idx];
                 rwresult.p1s[k] = ma.t3d*fromRapidVector(result.p1s[idx]);
                 rwresult.p2s[k] = ma.t3d*fromRapidVector(result.p2s[idx]);
+                rwresult.p1prims[k] = result.id1s[idx];
+                rwresult.p2prims[k] = result.id2s[idx];
             }
         }
     }
     return rwresult;
 } 
+
+
+std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> >
+	ProximityStrategyPQP::getSurfaceNormals(MultiDistanceResult& res, int idx)
+{
+	// get tris from pqp_models and compute triangle normal
+
+	PQPProximityModel* a = (PQPProximityModel*)res.a.get();
+	PQPProximityModel* b = (PQPProximityModel*)res.b.get();
+
+	if(a->getGeometryIDs().size()>1 || b->getGeometryIDs().size()>1){
+		RW_THROW(" multiple geoms on one frame is not supported for normal extraction yet!");
+	}
+
+	int p1id = res.p1prims[idx];
+	int p2id = res.p2prims[idx];
+
+	PQP::Tri* atri = &a->models[0].pqpmodel->tris[p1id];
+	PQP::Tri* btri = &b->models[0].pqpmodel->tris[p2id];
+
+	rw::math::Vector3D<> atri_p1 = fromRapidVector(atri->p1);
+	rw::math::Vector3D<> atri_p2 = fromRapidVector(atri->p2);
+	rw::math::Vector3D<> atri_p3 = fromRapidVector(atri->p3);
+
+	rw::math::Vector3D<> btri_p1 = fromRapidVector(btri->p1);
+	rw::math::Vector3D<> btri_p2 = fromRapidVector(btri->p2);
+	rw::math::Vector3D<> btri_p3 = fromRapidVector(btri->p3);
+
+	rw::math::Vector3D<> n_p1 = a->models[0].t3d.R() * cross(atri_p2-atri_p1, atri_p3-atri_p1);
+	rw::math::Vector3D<> n_p2 = b->models[0].t3d.R() * cross(btri_p2-btri_p1, btri_p3-btri_p1);
+
+	return std::make_pair(n_p1, n_p2);
+
+}
+
  
 
 

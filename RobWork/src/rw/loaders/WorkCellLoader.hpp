@@ -27,6 +27,7 @@
 #include <memory>
 #include <rw/graphics/WorkCellScene.hpp>
 #include <rw/models/WorkCell.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 
 // Forward declarations
 //namespace rw { namespace models { class WorkCell; }}
@@ -67,22 +68,42 @@ namespace rw { namespace loaders {
          */
         virtual rw::graphics::WorkCellScene::Ptr getScene( ){return _wcscene;};
 
-        /////////// Factory methods for backwards compatibility, use WorkCellFactory instead
-        /**
-         * @brief Loads/imports a workcell from a file.
-         * An exception is thrown if the file can't be loaded.
-         * XML as well as TUL workcell formats are supported.
-         * @param filename [in] name of workcell file.
-         */
-		static models::WorkCell::Ptr load(const std::string& filename);
 
-        /**
-         * @brief Loads/imports a workcell from a file.
-         * An exception is thrown if the file can't be loaded.
-         * XML as well as TUL workcell formats are supported.
-         * @param filename [in] name of workcell file.
-         */
-		static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
+
+		/**
+		 * @addtogroup extensionpoints
+		 *
+		 * @brief a factory for ImageLoader. This factory also defines an
+		 * extension point for image loaders.
+		 *
+		 * @extensionpoint
+		 *
+		 */
+	    class Factory: public rw::common::ExtensionPoint<WorkCellLoader> {
+	    public:
+	    	//! constructor
+	        Factory():rw::common::ExtensionPoint<WorkCellLoader>("rw.loaders.WorkCellLoader", "Example extension point"){};
+
+	        static rw::common::Ptr<WorkCellLoader> getWorkCellLoader(const std::string& format);
+
+			/////////// Factory methods for backwards compatibility, use WorkCellFactory instead
+			/**
+			 * @brief Loads/imports a workcell from a file.
+			 * An exception is thrown if the file can't be loaded.
+			 * XML as well as TUL workcell formats are supported.
+			 * @param filename [in] name of workcell file.
+			 */
+			static models::WorkCell::Ptr load(const std::string& filename);
+
+			/**
+			 * @brief Loads/imports a workcell from a file.
+			 * An exception is thrown if the file can't be loaded.
+			 * XML as well as TUL workcell formats are supported.
+			 * @param filename [in] name of workcell file.
+			 */
+			static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
+
+	    };
 
     protected:
 		WorkCellLoader() {}
@@ -94,6 +115,7 @@ namespace rw { namespace loaders {
 
     };
 
+    typedef WorkCellLoader::Factory WorkCellFactory;
     /**@}*/
 }} // end namespaces
 

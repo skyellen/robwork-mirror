@@ -77,6 +77,20 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<Image> Ptr;
 
+	//! @brief
+	struct Pixel4i
+	{
+	    Pixel4i(int v0, int v1, int v2, int v3)
+	    {
+	        ch[0] = v0;
+	        ch[1] = v1;
+	        ch[2] = v2;
+	        ch[3] = v3;
+	    }
+
+	    int ch[4]; //! up to four channels
+	};
+
     /**
      * @brief The color encodings that the image can use. This also defines the number
      * channels that an image has.
@@ -143,23 +157,6 @@ public:
         safeDeleteData();
     }
     ;
-
-    /**
-     * @brief generic but inefficient access to pixel information
-     * @param x [in]
-     * @param y
-     * @return
-     */
-    Pixel4f getPixel(size_t x, size_t y) const;
-
-    /**
-     * @brief generic but inefficient access to a specific channel of
-     * a pixel.
-     * @param x [in]
-     * @param y [in]
-     * @return
-     */
-    float getPixelValue(size_t x, size_t y, size_t channel) const;
 
     /**
      * @brief resizes the current image.
@@ -286,8 +283,72 @@ public:
     }
     ;
 
-    // Here comes all the setPixel operations
+    // Here comes all the getPixel operations
 
+    /**
+     * @brief generic but inefficient access to pixel information. The float
+     * value is between [0;1] which means non float images are scaled according to
+     * their pixel depth (bits per pixel).
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @return up to 4 pixels (depends on nr of channels) in a float format
+     */
+    Pixel4f getPixel(size_t x, size_t y) const{ return getPixelf(x,y); };
+    Pixel4f getPixelf(size_t x, size_t y) const;
+
+    /**
+     * @brief generic but inefficient access to pixel information. The float
+     * value is between [0;1] which means non float images are scaled according to
+     * their pixel depth (bits per pixel).
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @param dst [out] up to 4 pixels (depends on nr of channels) in a float format
+     */
+    void getPixel(size_t x, size_t y, Pixel4f& dst) const;
+
+    /**
+     * @brief generic access to pixel information, however user must take care of the pixel
+     * depth himself. If image is a Depth8U then the maximum value is 254. Also float images
+     * are scaled accordingly.
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @return up to 4 pixels (depends on nr of channels) as ints
+     */
+    Pixel4i getPixeli(size_t x, size_t y) const;
+
+    /**
+     * @brief generic access to pixel information, however user must take care of the pixel
+     * depth himself. If image is a Depth8U then the maximum value is 254. Also float images
+     * are scaled accordingly.
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @param dst [out] up to 4 pixels (depends on nr of channels) in a float format
+     */
+    void getPixel(size_t x, size_t y, Pixel4i& dst) const;
+
+    /**
+     * @brief generic but inefficient access to a specific channel of
+     * a pixel.
+     * @param x [in]
+     * @param y [in]
+     * @return
+     */
+    float getPixelValue(size_t x, size_t y, size_t channel) const{ return getPixelValuef(x,y,channel); };
+    float getPixelValuef(size_t x, size_t y, size_t channel) const;
+
+    int getPixelValuei(size_t x, size_t y, size_t channel) const;
+    template<typename T>
+    void getPixelValue(size_t x, size_t y, size_t channel, T &dst) const{
+        const size_t idx = y*_widthStep + x*_nrChannels;
+
+        // convert idx to point into char array
+        const size_t cidx = idx*_stride;
+
+        dst = *((T*) &_imageData[cidx+channel*_stride] );
+    }
+
+
+    // Here comes all the setPixel operations
     void setPixel(size_t x, size_t y, const Pixel4f& value);
 
 
@@ -432,8 +493,6 @@ public:
 
     template <PixelDepth DT>
     inline void setPixel(const int x, const int y, int value){
-		
-		
 		if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8U> >::value ){
             setPixel8U(x, y, (uint8_t)value);
         } else if( boost::mpl::equal_to<mpl::int_<DT>, boost::mpl::int_<Depth8S> >::value ){

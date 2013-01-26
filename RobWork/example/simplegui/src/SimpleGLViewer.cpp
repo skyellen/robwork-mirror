@@ -21,8 +21,8 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
 
-#include <rwlibs/simulation/camera/SimulatedCamera.hpp>
-#include <rwlibs/simulation/camera/GLFrameGrabber.hpp>
+#include <rwlibs/simulation/SimulatedCamera.hpp>
+#include <rwlibs/simulation/GLFrameGrabber.hpp>
 
 #include <map>
 

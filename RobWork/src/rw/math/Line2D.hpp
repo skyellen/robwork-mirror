@@ -113,16 +113,14 @@ public:
 	/**
 	 * @brief first point on the line
 	 */
-	rw::math::Vector2D<>& p1(){
-		return _p1;
-	};
+	rw::math::Vector2D<>& p1(){return _p1;};
+	const rw::math::Vector2D<>& p1() const {return _p1;};
 
 	/**
 	 * @brief second point on the line
 	 */
-	rw::math::Vector2D<>& p2(){
-		return _p2;
-	};
+	rw::math::Vector2D<>& p2(){ return _p2; };
+	const rw::math::Vector2D<>& p2() const {return _p2;};
 
 	/**
 	 * @brief calculates the unit normal of the line

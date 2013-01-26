@@ -66,11 +66,15 @@ namespace rw { namespace proximity {
             //! Closest points on f1 to f2, described in f1 reference frame
             std::vector< math::Vector3D<> > p1s;
 
+            std::vector< int > p1prims;
+
             /**
              * @brief Closest point on f2 to f1, IMPORTANT! NOTICE! described in
              * >>>> \b f1 <<<<< reference frame
              */
             std::vector< math::Vector3D<> > p2s;
+
+            std::vector< int > p2prims;
 
             //! distances between contact points
             std::vector< double > distances;
@@ -78,6 +82,8 @@ namespace rw { namespace proximity {
             void clear(){
                 p1s.clear();
                 p2s.clear();
+                p1prims.clear();
+                p2prims.clear();
                 distances.clear();
             }
         };

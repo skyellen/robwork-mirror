@@ -26,7 +26,7 @@
 #include <rw/sensor/Image.hpp>
 #include <rw/common/macros.hpp>
 
-#include "ImageLoader.hpp"
+#include "../ImageLoader.hpp"
 
 namespace rw { namespace loaders {
 

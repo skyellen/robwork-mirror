@@ -16,11 +16,19 @@
  ********************************************************************************/
 
 #include "../TestSuiteConfig.hpp"
+
+#include <rw/math/Q.hpp>
+
+#include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/Rotation2D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/EAA.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Constants.hpp>
+
+#include <rw/math/MetricUtil.hpp>
+#include <rw/math/MetricFactory.hpp>
 
 #include <iostream>
 #include <string>
@@ -28,12 +36,109 @@
 
 using namespace rw::math;
 
-namespace
+BOOST_AUTO_TEST_CASE(MetricTest)
 {
-    double norm_inf(const Vector3D<>& v)
-    {
-        return norm_inf(v.m());
-    }
+	BOOST_MESSAGE("- Testing MetricFactory");
+	Vector2D<> v21(0.1, 0.2);
+	Vector3D<> v31(0.1, 0.2, 0.3);
+	Q q1(3, 0.1, 0.2, 0.3);
+	Q q2(3, 0.1, 0.2, 0.3);
+
+	{
+		ManhattanMetric<Vector2D<> > mh1;
+		ManhattanMetric<Vector3D<> > mh2;
+		ManhattanMetric<Q> mh3;
+
+		BOOST_CHECK_CLOSE( 0.1+0.2, mh1.distance(v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0.1+0.2+0.3, mh2.distance(v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0.1+0.2+0.3, mh3.distance(q1), 0.00001);
+
+		BOOST_CHECK_CLOSE( 0, mh1.distance(v21, v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh2.distance(v31,v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh3.distance(q1,q1), 0.00001);
+
+	}
+
+	{
+		WeightedManhattanMetric<Vector2D<> > mh1(Vector2D<>(1.0,1.0));
+		WeightedManhattanMetric<Vector3D<> > mh2(Vector3D<>(1.0,1.0,1.0));
+		WeightedManhattanMetric<Q> mh3( Q(3,1.0,1.0,1.0) );
+
+		BOOST_CHECK_CLOSE( 0.1+0.2, mh1.distance(v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0.1+0.2+0.3, mh2.distance(v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0.1+0.2+0.3, mh3.distance(q1), 0.00001);
+
+		BOOST_CHECK_CLOSE( 0, mh1.distance(v21, v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh2.distance(v31,v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh3.distance(q1,q1), 0.00001);
+	}
+
+
+	{
+		EuclideanMetric<Vector2D<> > mh1;
+		EuclideanMetric<Vector3D<> > mh2;
+		EuclideanMetric<Q> mh3;
+
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2), mh1.distance(v21), 0.00001);
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2+0.3*0.3), mh2.distance(v31), 0.00001);
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2+0.3*0.3), mh3.distance(q1), 0.00001);
+
+		BOOST_CHECK_CLOSE( 0, mh1.distance(v21, v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh2.distance(v31,v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh3.distance(q1,q1), 0.00001);
+
+	}
+
+	{
+		WeightedEuclideanMetric<Vector2D<> > mh1(Vector2D<>(1.0,1.0));
+		WeightedEuclideanMetric<Vector3D<> > mh2(Vector3D<>(1.0,1.0,1.0));
+		WeightedEuclideanMetric<Q> mh3( Q(3,1.0,1.0,1.0) );
+
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2), mh1.distance(v21), 0.00001);
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2+0.3*0.3), mh2.distance(v31), 0.00001);
+		BOOST_CHECK_CLOSE( std::sqrt(0.1*0.1+0.2*0.2+0.3*0.3), mh3.distance(q1), 0.00001);
+
+		BOOST_CHECK_CLOSE( 0, mh1.distance(v21, v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh2.distance(v31,v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh3.distance(q1,q1), 0.00001);
+
+	}
+
+	{
+		InfinityMetric<Vector2D<> > mh1;
+		InfinityMetric<Vector3D<> > mh2;
+		InfinityMetric<Q> mh3;
+
+		BOOST_CHECK_CLOSE( 0.2, mh1.distance(v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0.3, mh2.distance(v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0.3, mh3.distance(q1), 0.00001);
+
+		BOOST_CHECK_CLOSE( 0, mh1.distance(v21, v21), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh2.distance(v31,v31), 0.00001);
+		BOOST_CHECK_CLOSE( 0, mh3.distance(q1,q1), 0.00001);
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(Rotation2DTest)
+{
+    BOOST_MESSAGE("- Testing Rotation2D");
+
+    const Vector2D<std::string> i("i1", "i2");
+    const Vector2D<std::string> j("j1", "j2");
+    const Rotation2D<std::string> r4(i, j);
+
+    BOOST_CHECK(r4(1,0) == "i2");
+    BOOST_CHECK(inverse(r4)(1, 0) == "j1");
+
+    const Rotation2D<> r1 = Rotation2D<>::identity();
+    const Vector2D<> v1(1, 2);
+    BOOST_CHECK(MetricUtil::normInf(v1 - r1 * v1) == 0);
+
+    const Rotation2D<int> ri = cast<int>(r1);
+    for (size_t i = 0; i < 2; i++)
+        for (size_t j = 0; j < 2; j++)
+            BOOST_CHECK((int)r1(i, j) == ri(i, j));
 }
 
 BOOST_AUTO_TEST_CASE(Rotation3DTest)
@@ -50,7 +155,7 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
 
     const Rotation3D<> r1 = Rotation3D<>::identity();
     const Vector3D<> v1(1, 2, 3);
-    BOOST_CHECK(norm_inf(v1 - r1 * v1) == 0);
+    BOOST_CHECK(MetricUtil::normInf(v1 - r1 * v1) == 0);
 
     const EAA<> eaa(Vector3D<>(1, 0, 0), Pi / 2);
     const Rotation3D<> r3 = eaa.toRotation3D();
@@ -63,3 +168,53 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
         for (size_t j = 0; j < 3; j++)
             BOOST_CHECK((int)r3(i, j) == ri(i, j));
 }
+
+
+BOOST_AUTO_TEST_CASE(QTest)
+{
+	BOOST_MESSAGE("- Testing Q");
+	{
+		double arr[] = {0.1, 0.2, 0.3};
+		Q q1(3,arr);
+		BOOST_CHECK(q1.size()==3);
+		BOOST_CHECK(q1(2)==0.3);
+		BOOST_CHECK(q1[1]==0.2);
+
+		std::stringstream sstr;
+		sstr << std::setprecision(16) << q1;
+		BOOST_CHECK(sstr.str()!="");
+		Q q2;
+		sstr >> q2;
+		BOOST_CHECK(q2.size()==3);
+		BOOST_CHECK_CLOSE(q1(1),q2(1),0.00001);
+
+		Q q3(4,0.1,0.2,0.3,0.4);
+		BOOST_CHECK(!(q3==q1));
+		Q q4(3,0.1,0.2,0.4);
+		BOOST_CHECK(!(q4==q1));
+
+		Q q34 = concat(q3,q4);
+		BOOST_CHECK(q34.size()==q3.size()+q4.size());
+		BOOST_CHECK(q34(1)==q3(1));
+		BOOST_CHECK(q34(q3.size()+1)==q4(1));
+
+		double dprod = dot(q1,q1);
+		BOOST_CHECK_CLOSE(dprod, q1(0)*q1(0)+q1(1)*q1(1)+q1(2)*q1(2),0.0001);
+
+		// testing constructors
+		Q qc1(1,0.1);
+		Q qc2(2,0.1,0.2);
+		Q qc3(3,0.1,0.2,0.2);
+		Q qc4(4,0.1,0.2,0.2,0.2);
+		Q qc5(5,0.1,0.2,0.2,0.2,0.2);
+		Q qc6(6,0.1,0.2,0.2,0.2,0.2,0.2);
+		Q qc7(7,0.1,0.2,0.2,0.2,0.2,0.2,0.2);
+		Q qc8(8,0.1,0.2,0.2,0.2,0.2,0.2,0.2,0.2);
+		Q qc9(9,0.1,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2);
+		Q qc10(10,0.1,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2);
+
+		BOOST_CHECK_THROW( Q qthrow(1,0.1,0.3), std::exception);
+	}
+}
+
+

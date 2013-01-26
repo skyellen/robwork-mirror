@@ -124,8 +124,8 @@ namespace {
                     if(dist[i]>sdistance)
                         continue;
                     if( child.isLeaf() && job.treeA->isLeaf() ){
-                        // test primitives against each other
-                        _triDistCalc
+                        // TODO: test primitives against each other
+
                     } else if( job.treeA->isLeaf() ){
                         push( BVJob(job.treeA, &child, job.isAfromA) );
                     } else {

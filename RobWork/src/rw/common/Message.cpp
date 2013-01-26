@@ -28,7 +28,6 @@ Message::Message(const std::string& file, int line, const std::string& message):
 #else
     _file( boost::filesystem::path(file.c_str()).filename().string() ),
 #endif
-
     _line(line),
     _message(message)
 {
