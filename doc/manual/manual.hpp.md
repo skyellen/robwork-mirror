@@ -25,7 +25,7 @@ external dependencies.
  - RobWorkStudio - the visualization package which adds one additional dependency on *Qt*
  - RobWorkSim - the dynamic simulation package which only adds additional optional dependencies such as *ODE*,
  *Bullet* and *Moby* 
-- RobWorkHardware - the hardware interface package which only adds additional optional dependencies which is dictated
+ - RobWorkHardware - the hardware interface package which only adds additional optional dependencies which is dictated
  by the actual hardware requirements.
 
 Figure 2 shows a structural overview of RobWork and how
@@ -484,7 +484,7 @@ This program shows how to construct a collision detector for the default collisi
 ## Adding/Removing Geometries ## {#sec_rw_manual_collisions_adding_geometry} 
 The content of the collision detector can be modified online by using the addModel and removeModel methods on rw::proximity::CollisionDetector. If for instance a new object is detected in a frame it can added and remove it by:
 
-\code
+~~~~~{.cpp}
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::geometry;
@@ -498,14 +498,14 @@ void removeGeometryFromDetector(CollisionDetector::Ptr cd, Frame* myframe, Geome
 {		
 	cd->removeModel(myframe, mygeometry->getId())
 }
-\endcode
+~~~~~
 
 ## Modifying Broad Phase Filter ## {#sec_rw_manual_collisions_modifying_broadphase}
 When simulating a robot picking up an objects from a table it is necessary to modify the broad phase filter such that collision detection is disable between the object and the robot tool and enables between object and table.
 
 To do this we can modify the broad phase filter as follows
 
-\code
+~~~~~{.cpp}
 	BasicFilterStrategy::Ptr broadphase = ownedPtr(new BasicFilterStrategy(workcell));
 	CollisionDetector::Ptr collisionDetector = ownedPtr(new CollisionDetector(workcell, ProximityStrategyYaobi::make(), broadphase));
 
@@ -523,7 +523,7 @@ To do this we can modify the broad phase filter as follows
 	//Add checking between the objectFrame and the tableFrame
 	broadphase->include(rw::kinematics::FramePair(objectFrame, tableFrame);
 		
-\endcode
+~~~~~
 
 
 
@@ -783,15 +783,15 @@ load tasks. The basic rwlibs::task::Task is templated and can either store
 rw::math::Q or rw::math::Transform3D as targets. 
 
 A task in RobWork is basically a 2-tuple which can be described as
-\code
+~~~~~{.cpp}
 Task={(Target)*, (Motion|Action|Task)*}
-\endcode
+~~~~~
 
 The elements in a task are
-- \b Target: Typically representing either a Cartesian pose or a robot configuration using rw::math::Transform3D and rw::math::Q, respectively.
-- \b Motion: Describes a motion/transition between targets. A target may be shared among any number of motions.
-- \b Action: Has no fixed interpretation and can be used to specify events such as open/close gripper, acquire image or as synchronization point.
-- \b Task: Tasks are recursive. Subtasks may be shared among multiple tasks.
+- *Target*: Typically representing either a Cartesian pose or a robot configuration using rw::math::Transform3D and rw::math::Q, respectively.
+- *Motion*: Describes a motion/transition between targets. A target may be shared among any number of motions.
+- *Action*: Has no fixed interpretation and can be used to specify events such as open/close gripper, acquire image or as synchronization point.
+- *Task*: Tasks are recursive. Subtasks may be shared among multiple tasks.
 
 
 The example below illustrated how to construct a small task, prints out the task, saves it to file, reloads it and prints it once again.
@@ -804,6 +804,16 @@ The example below illustrated how to construct a small task, prints out the task
 The main goal of RobWorkStudio is to implement functionality for vizualising
 a RobWork workcell and to implement a plugin infrastructure that enables easy
 installation of user functionality.
+ 
+*RobWorkStudio* is simple and convinient front-end for visualizing
+RobWork Workcells and their operation.
+
+RobWorkStudio is developed at the <a
+href="http://www.mip.sdu.dk/robotics">robotics department</a> of the
+<a href="http://www.sdu.dk/mmmi">Maersk McKinney Moller Institute</a>
+at the <a href="http://www.sdu.dk">University of Southern
+Denmark</a>. The focus of the department is on industrial robots and
+their applications.
 
 
 ##  Default RobWorkStudio plugins ## {#sec_rws_plugins}
@@ -869,17 +879,17 @@ Here are some small usefull examples that can be used from a plugin
 
 Get the collision detector that is currently used in your robwork studio
 instance
-\code
+~~~~~{.cpp}
 CollisionDetector *detector = getRobWorkStudio()->getCollisionDetector();
-\endcode
+~~~~~
 
 
 ### Communicating between plugins ### {#sec_rws_plugin_communication}
 RobWorkStudio has a number of event which can be used by the plugins. A plugin can register for an event, for example by
 
-\code
+~~~~~{.cpp}
 getRobWorkStudio()->stateChangedEvent().add(boost::bind(&MyPlugin::stateChangedListener, this,_1), this);
-\endcode
+~~~~~
 which binds the stateChangedListener method of MyPlugin to listen for state changed event.
 
 To see more information about the different event please consult the RobWorkStudio api-doc.
@@ -929,15 +939,15 @@ You can currently only change views between cameras using the key [1-9], were 1 
  in the old state and still make it valid for newly added frames you would need to upgrade it. You
  can upgrade a state \b oldstate using either StateStructure instance \b stateStruct or another
  state \b newstate. Following is an example of how:
-\code
+~~~~~{.cpp}
     // using another state to upgrade
     oldstate.upgradeTo(newstate); // oldstate is upgraded to the structure of the newstate
     // using state structure to upgrade
     oldstate = stateStruct.upgrade( oldstate );
-\endcode
+~~~~~
 
 Following is an example of how to add a new frame to the workcell from your own plugin
-\code
+~~~~~{.cpp}
     State oldState; // this is your old state
     Frame *newFrame = make_new_frame(); // create your frame
     getRobWorkStudio()->getWorkcell()->getStructure()->addFrame(newFrame,parentFrame);
@@ -945,7 +955,7 @@ Following is an example of how to add a new frame to the workcell from your own 
     oldState = getRobWorkStudio()->getWorkCell()->getStructure()->upgradeState(oldState);
     // now this is VERY important, remember to update the RobWorkStudio state
     getRobWorkStudio()->setState(oldState);
-\endcode
+~~~~~
 
 
 ### Adding drawables from a plugin ### {#subsec_rws_examples_adding_drawable}
@@ -959,40 +969,189 @@ file or a primitive string (Cube,Box,Cylinder etc.). Next a frame called "myFram
 searched for in the workcell. If the frame is found then a mapping from myFrame to
 the user drawable is created in the WorkCellGLDrawer (SceneGraph).
 
-\code
+~~~~~{.cpp}
     MyRender *renderObj = new MyRender( .. );
     Drawable *drawableObj = new Drawable(boost::shared_ptr<Render>(renderObj));
     Frame *myFrame = getRobWorkStudio()->getWorkCell()->findFrame("myFrame");
     if(drawableFrame != NULL)
         getRobWorkStudio()->getWorkCellGLDrawer()->addDrawableToFrame(myFrame, drawableObj);
-\endcode
+~~~~~
 
 ### Adding collision models from a plugin ### {#subsec_rws_examples_adding_collision}
 
-\code
+~~~~~{.cpp}
     double scale = 1.0; // set a scale, actually not used in RobWork yet
     Transform3D<> transform = makeMyTransform();
     CollisionModelInfo info("myname", transform, scale);
 
     Accessor::collisionModelInfo().get(*myFrame).push_back(info);
-\endcode
+~~~~~
 
 ### Getting drawables from a frame ### {#subsec_rws_examples_getting_drawables_of_a_frame}
 
 This code snippet will copy all drawables associated with the frame \b frameWithDrawables
 into the vector \b drawables.
-\code
+~~~~
     std::vector<Drawable*> drawables;
     Frame *frameWithDrawables; // specify the frame where your drawables are placed
     getWorkCellGLDrawer()->getAllDrawables(state, frameWithDrawables, drawables);
-\endcode
+~~~~
 
 The next code snippet will copy all drawables associated to any frame in the workcell
 into the vector \b drawables.
-\code
+~~~~~{.cpp}
     std::vector<Drawable*> drawables;
     getWorkCellGLDrawer()->getAllDrawables(state, getWorkCell(), drawables);
-\endcode
+~~~~~
+
+# RobWorkSim #
+
+## Introduction ##
+\b RobWorkSim is a dynamic simulation framework in C++ developed as an add-on for RobWork and RobWorkStudio.
+RobWorkSim is used for research and education as well
+as for practical robot applications. Features of the library include:
+
+- Dynamic modeling of various types of industrial manipulators.
+- Grasp table generation for grasp planning applications.
+- Simulation of tactile sensors as well as all sensors supported by RobWork (Vision and Range scanners)
+- Resting pose calculations
+- Stable configuration calculations
+.
+
+Target audience of RobWorkSim is:
+- Implementers who needs a framework for process simulation or validation of algorithms
+
+RobWorkSim is developed at the <a
+href="http://www.mip.sdu.dk/robotics">robotics department</a> of the
+<a href="http://www.sdu.dk/mmmi">Maersk McKinney Moller Institute</a>
+at the <a href="http://www.sdu.dk">University of Southern
+Denmark</a>. The focus of the department is on industrial robots and
+their applications.
+
+
+### Namespaces ### {#sec_rwsim_namespaces}
+
+The header files of RobWorkSim are distributed across a number of
+directories each having its own namespace. The structure of namespaces
+reflects the directory containing the code. For example
+
+~~~~~{.cpp}
+// Include header files:
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/control/PDController.hpp>
+
+using namespace rwsim::dynamics;
+using namespace rwsim::PDController;
+~~~~~
+
+This structure is the same as RobWork and RobWorkStudio.
+
+### Libraries ### {#sec_rwsim_libraries}
+
+
+### Install and Use ### {#sec_rwsim_install_and_use}
+
+Functionality in RobWorkSim depends heavilly on RobWork and RobworkStudio for GUI and specific plugins.
+As such, it is recommended to install these before installing RobWorkSim.
+
+## Concepts and Overview ## {#sec_rwsim_consepts}
+
+The primary use of RobWorkSim evolves around specifying a DynamicWorkCell (scene with
+dynamic information) from which a Simulator instance is created which then is used
+to do the actual simulation.
+
+The DynamicWorkCell is conceptually the same as the RobWork WorkCell class and extends
+the WorkCell description
+with focus on describing the dynamic properties of the scene. It is basically a container
+that includes a hierarchy description of the scene including: bodies, obstacles, frames,
+devices, controllers, sensors and their mutual attachment to each other.
+
+The DynamicWorkCell is "stateless" in the same sense that the WorkCell is stateless, which
+means that typical state values such as force of a rigid body are saved in a state structure
+and not in the actual object. The following code snippet exemplifies this:
+
+~~~~~{.cpp}
+RigidBody *b1 = getBody1(); // illustrative function "getBody1()"
+State stateA = getState();
+State stateB = getState();
+b1->setForce( Vector3D<>(0,0,1), stateA );
+b1->setForce( Vector3D<>(2,2,2), stateB );
+std::cout << b1->getForce(stateA); // prints (0,0,1)
+std::cout << b1->getForce(stateB); // prints (2,2,2)
+~~~~~
+
+Not all variables of our "stateless" objects are saved in the state structure since
+they are considered to change infrequently. An example of this is getMass() on RigidBody.
+As such a rule of thumb is that frequently changing variables such as position, velocity
+and force will allways be saved in the state structure. Infrequently changing variables
+will be saved in the object instance, e.g. mass, material info, geometry, nr of joints,
+position limits, force limits and so on.
+
+The stateless nature of DynamicWorkCell makes it possible to use it in multiple threads
+or methods at the same time and without bothering with cloning and copying of the
+DynamicWorkCell. However, one should be carefull to change the "static" variables when
+using multiple threads since these changes will influence all uses of the variable. For
+more indepth description of the StateStructure the reader is directed to the RobWork manual.
+
+Now the DynamicWorkCell can be constructed in c++ or as is done more often through the
+XML based DynamicWorkCell file format described in section \ref sec_rwsim_xml_fileformat.
+A Simulator is created with an instance of the DynamicWorkCell and is then ready for use.
+A typical use is exemplified below:
+
+~~~~~{.cpp}
+// create and initialize simulator
+DynamicWorkCell::Ptr dwc = getDynamicWorkCell();
+DynamicSimulator *sim = makeSimulator( );
+sim->initPhysics( dwc );
+// set the current state
+sim->resetState( initState );
+// now do a simulation
+while( someStopCriteria ){
+  // apply forces/velocities to bodies and devices using controllers
+  sim->step( 0.01, state);
+  // monitor contacts and states using sensors or the State
+}
+// do something usefull with "resting" state
+~~~~~
+
+The Simulator is not stateless and to do simulations in parallel you should create
+multiple instances of the simulator.
+
+The simulation is run one step at the time using relatively small timesteps e.g.
+[0.001s;0.01s]. The "best" timestep depends on the underlying physics engine,
+the current scene, and the application. Please look at section \ref sec_rwsim_simulator
+for more information.
+
+There are two constructs designed for getting feedback and influencing the simulation.
+These are the SimulatedSensor and the SimulatedController. The controller enables
+"control" of bodies and devices or other states in the simulation, where as the sensor
+enables getting appropriate feedback, e.g. tactile, visual or other states. Typically
+used methods such as applying forces to bodies or setting the velocity of a device
+are available on the Body/Device interface and does not require controllers or sensors.
+
+## DynamicWorkCell ## {#sec_rwsim_dynamic_workcell}
+
+## The DynamicSimulator ## {#sec_rwsim_simulator}
+Timestep, ThreadSimulator, PhysicsEngine, PhysicsEngineFactory, EnableBody,
+
+The simulation loop
+
+## Body ## {#sec_rwsim_body}
+
+
+## Devices and controllers ## {#sec_rwsim_dynamic_device}
+
+## DynamicWorkcell Scene File ## {#sec_rwsim_xml_fileformat}
+
+### Material identifier ###
+Per body/object
+
+### Friction data specification ###
+
+### Contact data specification ###
+
+## Plugins ## {#sec_rwsim_plugins}
+
 
 # RobWorkHardware #
 RobWorkHardware is a sub package of RobWork. Its main function is to provide an interface/driver
