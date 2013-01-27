@@ -6,8 +6,13 @@
 #include <boost/foreach.hpp>
 #include <rw/common/Ptr.hpp>
 
+
+
 using namespace rws;
 using namespace rw::sensor;
+using namespace rw::common;
+
+RW_ADD_PLUGIN(RWSImageLoaderPlugin)
 
 namespace {
 
@@ -15,6 +20,16 @@ namespace {
     public:
 
         virtual ~QImageLoader(){}
+
+    	std::vector<std::string> getImageFormats(){
+    	    QList<QByteArray> formats = QImageReader::supportedImageFormats();
+    	    std::vector<std::string> subformats;
+    	    BOOST_FOREACH(QByteArray& format, formats){
+    	        std::string str = format.toUpper().data();
+    	        subformats.push_back(str);
+    	    }
+    	    return subformats;
+    	}
 
         rw::sensor::Image::Ptr loadImage(const std::string& filename){
             // load the image
@@ -35,22 +50,28 @@ namespace {
 
 }
 
-RWSImageLoaderPlugin::RWSImageLoaderPlugin():
-    rw::plugin::PluginFactory<rw::loaders::ImageLoader>("RWSImageLoaderPlugin")
-{
-    // add all extension that is supported by this imageloader
-    //QList<QByteArray> formats = QImageReader::supportedImageFormats();
-    //BOOST_FOREACH(QByteArray& format, formats){
-    //    getProperties().set(std::string(".")+format.toUpper().data(), true);
-    //}
+RWSImageLoaderPlugin::RWSImageLoaderPlugin():Plugin("RWSImageLoaderPlugin", "RWSImageLoaderPlugin", "0.1"){};
+RWSImageLoaderPlugin::~RWSImageLoaderPlugin(){}
+
+std::vector<Extension::Descriptor> RWSImageLoaderPlugin::getExtensionDescriptors(){
+    std::vector<Extension::Descriptor> exts;
+    exts.push_back(Extension::Descriptor("QImageLoader","rw.loaders.ImageLoader"));
+
+    QList<QByteArray> formats = QImageReader::supportedImageFormats();
+    BOOST_FOREACH(QByteArray& format, formats){
+    	exts.back().getProperties().set(format.toUpper().data(), true);
+    }
+
+    return exts;
+}
+
+rw::common::Ptr<Extension> RWSImageLoaderPlugin::makeExtension(const std::string& str){
+	if(str=="QImageLoader"){
+		return rw::common::ownedPtr( new Extension("QImageLoader","rw.loaders.printstuff",
+				this, ownedPtr(new QImageLoader()) ) );
+	}
+	return NULL;
 }
 
 
-rw::loaders::ImageLoader::Ptr RWSImageLoaderPlugin::make(){
-    return rw::common::ownedPtr( new QImageLoader() );
-}
-
-rw::loaders::ImageLoader::Ptr RWSImageLoaderPlugin::make(const std::string&){
-    return make();
-}
 

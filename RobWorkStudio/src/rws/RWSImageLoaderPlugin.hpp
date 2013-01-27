@@ -1,8 +1,8 @@
-#ifndef RWSIMAGELOADERPLUGIN_HPP_
-#define RWSIMAGELOADERPLUGIN_HPP_
+#ifndef RWS_RWSIMAGELOADERPLUGIN_HPP_
+#define RWS_RWSIMAGELOADERPLUGIN_HPP_
 
-#include <rw/loaders/image/ImageLoader.hpp>
-#include <rw/plugin/PluginFactory.hpp>
+#include <rw/loaders/ImageLoader.hpp>
+#include <rw/common/Plugin.hpp>
 
 namespace rws {
 
@@ -10,17 +10,19 @@ namespace rws {
  * @brief A RobWork image loader factory plugin. It adds additional image loader functionality
  * to the rw::loaders::ImageFactory through RobWork plugin structure.
  */
-class RWSImageLoaderPlugin: public rw::plugin::PluginFactory<rw::loaders::ImageLoader> {
+class RWSImageLoaderPlugin: public rw::common::Plugin {
 public:
 
     RWSImageLoaderPlugin();
 
-    rw::loaders::ImageLoader::Ptr make();
+    virtual ~RWSImageLoaderPlugin();
 
-    rw::loaders::ImageLoader::Ptr make(const std::string&);
+    std::vector<rw::common::Extension::Descriptor> getExtensionDescriptors();
 
+    rw::common::Ptr<rw::common::Extension> makeExtension(const std::string& str);
 
 private:
+    rw::common::PropertyMap _map;
 
 };
 

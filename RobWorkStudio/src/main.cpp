@@ -22,16 +22,13 @@
 #endif //#ifdef __WIN32
 #include <QApplication>
 #include <QMainWindow>
-
+#include <rw/common/ProgramOptions.hpp>
 #include "RobWorkStudio.hpp"
-
 #include <rw/RobWork.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/ProgramOptions.hpp>
-
 #include <RobWorkStudioConfig.hpp>
 #include <RobWorkConfig.hpp>
- 
 #include <fstream>
 
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
@@ -40,6 +37,10 @@
 #include <rw/loaders/xml/XMLPathFormat.hpp>
 #include <boost/foreach.hpp>
 
+#ifdef __WIN32
+#include <omp.h> //Needed because otherwise Visual Studio results in run-time linking problems.
+#endif
+
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
     #include <rwslibs/log/ShowLog.hpp>
     #include <rwslibs/jog/Jog.hpp>
@@ -47,7 +48,10 @@
     #include <rwslibs/playback/PlayBack.hpp>
     #include <rwslibs/planning/Planning.hpp>
     #include <rwslibs/propertyview/PropertyView.hpp>
-    #include <rwslibs/sensors/Sensors.hpp>	
+    #include <rwslibs/sensors/Sensors.hpp>
+#ifdef RW_HAVE_EIGEN
+    #include <rwslibs/calibration/Calibration.hpp>
+#endif
 #if RWS_HAVE_LUA
     #include <rwslibs/lua/Lua.hpp>
 #endif
@@ -133,6 +137,10 @@ int main(int argc, char** argv)
                     rwstudio.addPlugin(new rws::PropertyView(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::Planning(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::Sensors(), false, Qt::RightDockWidgetArea);
+
+					#ifdef RW_HAVE_EIGEN
+                    rwstudio.addPlugin(new rws::Calibration(), false, Qt::RightDockWidgetArea);
+					#endif
 
                     #if RWS_HAVE_LUA
                     rwstudio.addPlugin(new rws::Lua(), false, Qt::LeftDockWidgetArea);

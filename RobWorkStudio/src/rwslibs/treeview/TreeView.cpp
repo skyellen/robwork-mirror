@@ -28,12 +28,16 @@
 #include <QTreeWidgetItem>
 #include <QInputDialog>
 
+#include <rw/loaders/GeometryFactory.hpp>
+
 using namespace rw::graphics;
 using namespace rws;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::common;
+using namespace rw::geometry;
+using namespace rw::loaders;
 
 using std::make_pair;
 
@@ -155,6 +159,7 @@ TreeView::TreeView() :
 
     _toggleAction = new QAction("Toggle enabled", this);
     connect(_toggleAction, SIGNAL(triggered()), this, SLOT(toggleSlot()));
+
 
     _addFrameAction = new QAction("Add frame", this);
     connect(_addFrameAction, SIGNAL(triggered()), this, SLOT(addFrameSlot()));
@@ -432,6 +437,40 @@ void TreeView::showFrameStructure()
     _treewidget->update();
 }
 
+void TreeView::addFromFileSlot(){
+    QString selectedFilter;
+
+    std::string previousOpenDirectory = getRobWorkStudio()->getSettings().get<std::string>("PreviousOpenDirectory","");
+    const QString dir(previousOpenDirectory.c_str());
+
+    QString filename = QFileDialog::getOpenFileName(
+        this,
+        "Open geometry", // Title
+        dir, // Directory
+        "All supported ( *.stl *.stla *.stlb *.pcd )"
+        "\n All ( *.* )",
+        &selectedFilter);
+
+    std::string str = filename.toStdString();
+
+    QTreeWidgetItem* item = _treewidget->currentItem();
+    FrameMap::iterator frameIt = _frameMap.find(item);
+    if (frameIt != _frameMap.end()) {
+        Frame* frame = frameIt->second;
+        //getRobWorkStudio()->frameSelectedEvent().fire(frame);
+
+        Geometry::Ptr gdata = GeometryFactory::load( str );
+        std::cout << "Geom loaded" << std::endl;
+        // create and add a render to the frame
+        getRobWorkStudio()->getWorkCellScene()->addGeometry("geo", gdata, frame);
+
+    } else {
+        std::cout << "could not find frame..... " << std::endl;
+    }
+
+
+}
+
 void TreeView::customContextMenuRequestSlot(const QPoint& pos)
 {
     _contextMenu->clear();
@@ -445,7 +484,20 @@ void TreeView::customContextMenuRequestSlot(const QPoint& pos)
     if (frameIt != _frameMap.end()) {
         _contextMenu->addAction(_toggleFrameAction);
         _contextMenu->addAction(_selectFrameAction);
-        _contextMenu->addAction(_addFrameAction);
+        //_contextMenu->addAction(_addFrameAction);
+
+        QMenu *addgeomMenu = _contextMenu->addMenu( "add " );
+
+        addgeomMenu->addAction(_addFrameAction);
+        connect(addgeomMenu->addAction("geometry file"), SIGNAL(triggered()),this, SLOT(addFromFileSlot()));
+        connect(addgeomMenu->addAction("model file"), SIGNAL(triggered()),this, SLOT(addFromFileSlot()));
+        connect(addgeomMenu->addAction("primitive"), SIGNAL(triggered()),this, SLOT(addFromFileSlot()));
+
+        //addgeomMenu->addAction("from file")->connect( );
+
+        //_showSolidAction = new QAction(QIcon(":images/solid.png"), "Solid", this); // owned
+        //connect(_showSolidAction, SIGNAL(triggered()), this, SLOT(showSolidSlot()));
+
         _contextMenu->addSeparator();
     }
 

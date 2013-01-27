@@ -122,6 +122,13 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>RWS Revision</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

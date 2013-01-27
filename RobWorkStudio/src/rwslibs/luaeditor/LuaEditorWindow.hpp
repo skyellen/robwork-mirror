@@ -87,6 +87,7 @@ namespace rws {
         void on_actionNew_triggered(bool);
         void on_actionOpen_triggered(bool);
         void on_actionSave_triggered(bool);
+        void on_actionSave_As_triggered(bool);
         void on_actionRun_triggered(bool);
         void on_actionStop_triggered(bool);
         void on_actionReload_triggered(bool);

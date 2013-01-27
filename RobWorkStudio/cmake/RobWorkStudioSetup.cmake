@@ -90,7 +90,6 @@ ELSE ()
     MESSAGE(STATUS "RobWorkStudio: Sandbox DISABLED!")    
 ENDIF ()
 
-
 # optional compilation of sandbox
 include(CMakeDependentOption)
 SET(RWS_HAVE_LUA False)

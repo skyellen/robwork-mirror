@@ -363,7 +363,6 @@ void SceneOpenGLViewer::setWorldNode(rw::graphics::GroupNode::Ptr wnode){
         //_pivotDrawable = _scene->makeDrawableFrameAxis("Pivot", 1.0, DrawableNode::Virtual );
         _scene->addChild(_pivotDrawable, _scene->getRoot());
         _pivotDrawable->setColor( Vector3D<>(1.0f, 0.0f, 0.0f) );
-
     }
 
     if(wnode == NULL){

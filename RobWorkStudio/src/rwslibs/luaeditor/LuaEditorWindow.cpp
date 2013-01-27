@@ -90,12 +90,29 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
         connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
         QAction *action = devMenu->addAction( "Get Q" );
         devMenu->addAction(action);
+        devMenu->addAction( "Get Pos Limits" );
+        devMenu->addAction( "Get Vel Limits" );
+        devMenu->addAction( "Get Acc Limits" );
+
+        deviceMenu.addMenu(devMenu);
+    }
+    QMenu objectMenu("Objects");
+    std::vector<rw::models::Object::Ptr> objects = _rws->getWorkcell()->getObjects();
+    BOOST_FOREACH(rw::models::Object::Ptr dev, objects){
+        QMenu *devMenu = new QMenu(dev->getName().c_str());
+        //connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
+        QAction *action = devMenu->addAction( "Get Transform" );
+        devMenu->addAction( action );
+        action = devMenu->addAction( "Get Transform" );
+        devMenu->addAction( action );
         //devMenu->addAction( "Get Pos Limits" );
         //devMenu->addAction( "Get Vel Limits" );
         //devMenu->addAction( "Get Acc Limits" );
 
-        deviceMenu.addMenu(devMenu);
+        objectMenu.addMenu(devMenu);
     }
+
+
 
     myMenu.addMenu(&deviceMenu);
     myMenu.addMenu(menu);
@@ -220,6 +237,11 @@ void LuaEditorWindow::on_actionOpen_triggered(bool) {
 
 void LuaEditorWindow::on_actionSave_triggered(bool) {
     save();
+}
+
+void LuaEditorWindow::on_actionSave_As_triggered(bool){
+	std::cout << "SAVE AS" << std::endl;
+	saveAs();
 }
 
 bool LuaEditorWindow::save() {

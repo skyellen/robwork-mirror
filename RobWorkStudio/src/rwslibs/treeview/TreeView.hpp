@@ -85,6 +85,8 @@ private slots:
     void addFrameSlot();
     void scaleSlot();
 
+    void addFromFileSlot();
+
     // Slots for ToolBar Items
     void collapseAll();
     void expandAll();

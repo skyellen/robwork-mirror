@@ -193,40 +193,18 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 	PATTERN "example/CMakeLists.txt" EXCLUDE
 )
 
-# Install the API doc if doxygen has been run
-#IF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
-#	INSTALL(DIRECTORY "${RWS_ROOT}/apidocs/html" DESTINATION "${RWS_INSTALL_DIR}/apidocs/"
-#			PATTERN ".svn" EXCLUDE
-#	)
-#ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
-
 # Documentation build target
-IF(DEFINED USE_DOC AND USE_DOC)
-  FIND_PROGRAM(doc_executable doxygen)
-  IF(doc_executable)
-    ADD_CUSTOM_TARGET(apidoc_rw doxygen WORKING_DIRECTORY ${RW_ROOT} )
-    ADD_CUSTOM_TARGET(apidoc_rws doxygen WORKING_DIRECTORY ${RWS_ROOT} ) 
-  ENDIF()
+FIND_PROGRAM(doc_executable doxygen)
+IF(doc_executable)
+  ADD_CUSTOM_TARGET(apidoc doxygen WORKING_DIRECTORY ${RW_ROOT}/.. )
 
-  IF( EXISTS "${RW_ROOT}/apidocs/html/index.qhp" )
-    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
+  IF( EXISTS "${RW_ROOT}/../apidocs/html/index.qhp" )
+    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
   ELSEIF(doc_executable)  
-    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
+    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
     ADD_DEPENDENCIES(qtrwdoc apidoc_rw)
   ENDIF()
-
-  IF( EXISTS "${RWS_ROOT}/apidocs/html/index.qhp" )
-    ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
-  ELSEIF(doc_executable)  
-    ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
-    ADD_DEPENDENCIES(qtrwsdoc apidoc_rws)
-  ENDIF()
-
-  IF( TARGET qtrwdoc AND TARGET qtrwsdoc )
-    CONFIGURE_FILE(${RWS_ROOT}/docs/robwork_help.qhcp.in ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp)
-    ADD_CUSTOM_TARGET(robwork_help qcollectiongenerator ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp -o ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhc )
-    ADD_DEPENDENCIES(robwork_help qtrwdoc qtrwsdoc) 
-  ENDIF()
+  
 ENDIF()
 
 # Packaging

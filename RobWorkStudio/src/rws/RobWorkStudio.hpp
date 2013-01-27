@@ -454,6 +454,8 @@ namespace rws {
 
         void loadSettingsSetupPlugins(const std::string& file);
 
+        rw::common::PropertyMap& getSettings(){ return *_settingsMap; }
+
 	private:
 		// all events are defined here
 		StateChangedEvent _stateChangedEvent;
