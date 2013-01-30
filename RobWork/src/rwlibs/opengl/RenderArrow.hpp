@@ -84,9 +84,9 @@ namespace rwlibs { namespace opengl {
             // Nice frame
             // Draw z-axis
             glColor4f(0.0f, 0.0f, 1.0f, alpha); // Blue color
-            gluCylinder(quad, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
+            gluCylinder(_quadratic, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
             glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
-            gluCylinder(quad,widthHead,0.0f,lenHead,32,32); // A Cone
+            gluCylinder(_quadratic,widthHead,0.0f,lenHead,32,32); // A Cone
         }
 
     };
