@@ -20,6 +20,7 @@ IF(build)
     SET(SRC_FILES
       ${RW_DRAWABLE_USER_FILES}
       Drawable.cpp
+      RenderArrow.cpp
       RWGLFrameBuffer.cpp
       DrawableFactory.cpp
       DrawableUtil.cpp
