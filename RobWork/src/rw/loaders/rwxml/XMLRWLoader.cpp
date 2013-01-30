@@ -695,6 +695,16 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 		setup.proxsetups.push_back(*proxsetup);
 	}
 
+	// add all device properties to device propertymap
+	//std::map<std::string, std::vector<DummyProperty> > proplist = dev._propertyMap;
+	typedef std::pair<std::string, std::vector<DummyProperty> > DPropValType;
+	BOOST_FOREACH( DPropValType val, dev._propertyMap){
+		//std::string name = val.first;
+		BOOST_FOREACH( DummyProperty dprop, val.second ) {
+			model->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+		}
+	}
+
 	// add all configurations, add home configs to default state
 	BOOST_FOREACH(QConfig& config, dev._qconfig) {
 		if (config.name == "Home") {
@@ -705,6 +715,7 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 			setup.actions.push_back(initDevState);
 		}
 		model->getBase()->getPropertyMap().add<Q>(config.name, "", Q(config.q.size(), &config.q[0]));
+		model->getPropertyMap().add<Q>(config.name, "", Q(config.q.size(), &config.q[0]));
 	}
 
 	return model;
