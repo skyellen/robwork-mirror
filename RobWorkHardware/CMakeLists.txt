@@ -18,6 +18,12 @@ LIST( GET ROBWORKHARDWARE_VERSIONS 2 ROBWORKHARDWARE_VERSION_PATCH)
 STRING( REGEX REPLACE "[/][^/]*([/]$|$)" "/RobWork" output ${CMAKE_INSTALL_PREFIX})
 SET(CMAKE_INSTALL_PREFIX ${output})
 
+# Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
+IF (NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+ENDIF ()
+
+
 set( ENV{ROBWORKHARDWARE_LIBRARIES} "")
 
 # Used to resolve absolute path names
