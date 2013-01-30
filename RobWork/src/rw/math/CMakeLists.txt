@@ -25,7 +25,7 @@ SET(FILES_CPP
   EigenDecomposition.cpp
   Line2DPolar.cpp
   Pose2D.cpp
-  Pose3D.cpp
+  Wrench6D.cpp
 )
 
 SET(FILES_HPP
