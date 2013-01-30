@@ -8,6 +8,11 @@ SET(ROBWORKSIM_VERSION 0.7.0)
 SET(RWSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 MESSAGE(STATUS "RobWorkSim version ${ROBWORKSIM_VERSION}")
 
+# Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
+IF (NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+ENDIF ()
+
 # lets start by finding RobWork since this is the primary dependency and because we
 # want to use the macros available in RobWork
 # if RW_ROOT is defined then we use that, else we try finding it the traditional way
