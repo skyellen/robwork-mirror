@@ -96,7 +96,7 @@ WARN_LOGFILE =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT = docs RobWork/src RobWorkStudio/src RobWorkSim/src
+INPUT = doc RobWork/src RobWorkStudio/src RobWorkSim/src
 INPUT_ENCODING = UTF-8
 FILE_PATTERNS = *.hpp *.h *.md
 RECURSIVE = YES
