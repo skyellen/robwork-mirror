@@ -80,7 +80,7 @@ namespace simulator {
 		virtual ~DynamicSimulator(){};
 
 		/**
-		 * @brief cleans up the allocated storage fo bullet physics
+		 * @brief cleans up the allocated storage
 		 */
 		void exitPhysics();
 
