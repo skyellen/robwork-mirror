@@ -47,6 +47,7 @@
 #include "./math/Vector2D.hpp"
 #include "./math/Vector3D.hpp"
 #include "./math/VelocityScrew6D.hpp"
+#include "./math/Wrench6D.hpp"
 #include "./math/Constants.hpp"
 
 #endif /* MATH_HPP_ */

@@ -30,6 +30,7 @@
 #include "./trajectory/CubicSplineFactory.hpp"
 #include "./trajectory/CubicSplineInterpolator.hpp"
 #include "./trajectory/Interpolator.hpp"
+#include "./trajectory/InterpolatorTrajectory.hpp"
 #include "./trajectory/InterpolatorUtil.hpp"
 #include "./trajectory/LinearInterpolator.hpp"
 #include "./trajectory/LloydHaywardBlend.hpp"

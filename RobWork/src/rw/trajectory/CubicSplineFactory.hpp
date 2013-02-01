@@ -91,7 +91,7 @@ public:
 	 * @param dqEnd [in] the velocity in the last point.
 	 * @return a trajectory of CubicSplineInterpolators
 	 */
-	static InterpolatorTrajectory<rw::math::Q>::Ptr	makeClampedSpline(TimedQPath::Ptr tqpath,
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSpline(TimedQPath::Ptr tqpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd);
 

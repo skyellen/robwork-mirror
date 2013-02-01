@@ -34,9 +34,11 @@ namespace simulation {
      * @brief interface of a kinematic simulator
      */
     class KinematicSimulator: public Simulator {
-    private:
+    public:
+    	//! smart pointer type of KinematicSimulator
+    	typedef rw::common::Ptr<KinematicSimulator> Ptr;
 
-        /**
+    	/**
          * @brief add a simulated controller to the simulator
          * @param controller [in] the controller to be simulated
          */
