@@ -63,6 +63,10 @@ def myprog():
             #textmsg("Calls ServoJ")
             servoj(q, 3, 0.75, 0.008)            
         end
+        enter_critical
+        thrd = -1
+        motionFinished = 1
+        exit_critical
     end
 
 
@@ -82,10 +86,15 @@ def myprog():
         speed = receive_buffer[7]*FLOAT_SCALE
       	textmsg("speed ")
         textmsg(speed)
-        if thrd != -1:
+        enter_critical
+        if thrd != -1:			
             textmsg("Kills old thread")
             kill thrd
+            textmsg("Continues after kill")
+            thrd = -1
         end
+        exit_critical
+        
         enter_critical
         #We only wish to start a new thread if our previous motion is finished
         if thrd == -1:
@@ -161,6 +170,7 @@ def myprog():
     textmsg("Socket opened")
     errcnt = 0
     while errcnt < 1:
+    	textmsg("running")
         if motionFinished == 1:
             textmsg("Sends finished")
             socket_send_byte(0)
