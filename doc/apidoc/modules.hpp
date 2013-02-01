@@ -215,12 +215,6 @@ namespace rwlibs {
         @brief serialization framework
     @}
 
-    @defgroup
-    @{
-        @brief Ignore this group. The group has been added to fix a glitch in
-        the Doxygen output.
-    @}
-
 @}
 
 @defgroup rwlibs RobWork Extension Libraries
@@ -242,9 +236,9 @@ namespace rwlibs {
         @copydoc rwlibs::dll
     @}
 
-    @defgroup drawable drawable
+    @defgroup opengl OpenGL
     @{
-        @copydoc rwlibs::drawable
+        @copydoc rwlibs::opengl
     @}
 
     @defgroup pathplanners pathplanners
@@ -272,11 +266,6 @@ namespace rwlibs {
         @copydoc rwlibs::simulation
     @}
 
-    @defgroup
-    @{
-        @brief Ignore this group. The group has been added to fix a glitch in
-        the Doxygen output.
-    @}
 @}
 */
 
@@ -310,12 +299,12 @@ namespace rwslibs {
 /**
 @defgroup rws RobWorkStudio
 @{
-    @copydoc rws
+    @copydoc ::rws
 @}
 
-@defgroup rwsl RobWorkStudio Extension Libraries
+@defgroup rwslibs RobWorkStudio Extension Libraries
 @{
-    @copydoc rws
+    @copydoc ::rwslibs
 @}
 */
 

@@ -1,6 +1,6 @@
-/** \mainpage
-# RobWork # {#index}
-
+RobWork   {#mainpage}
+========
+		
 [TOC]
 
 # Introduction # {#sec_index_intro}
@@ -61,5 +61,3 @@ RobWork license does not apply to these libraries.
 # Mailing lists # {#sec_index_mailinglists}
 - <a href="http://www.mip.sdu.dk/robwork/joomla/index.php?option=com_content&view=article&id=54&Itemid=57">RobWork mailing list</a>
 
-
-*/
