@@ -310,7 +310,7 @@ namespace rw { namespace math {
          */
         Vector& operator+=(const Vector& v)
         {
-            m() += v.m();
+            _vec += v.m();
             return *this;
         }
 
@@ -319,7 +319,7 @@ namespace rw { namespace math {
          */
         Vector& operator-=(const Vector& v)
         {
-            m() -= v.m();
+        	_vec -= v.m();
             return *this;
         }
 

@@ -211,7 +211,7 @@ namespace rw { namespace math {
          */
         static const Rotation2D& identity()
         {
-            static Rotation2D id(1,0,1,0);
+            static Rotation2D id(1,0,0,1);
             return id;
         }
 
