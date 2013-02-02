@@ -46,6 +46,7 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, Frame *foi, const State& 
     _fkrange( device->getBase(), foi, state),
     _devJac( device->baseJCframe(foi,state) ),
     _useJointClamping(false),
+    _checkJointLimits(false),
 	_solverType(SVD)
 {
     setMaxIterations(15);
@@ -57,6 +58,7 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, const State& state):
     _fkrange( device->getBase(), device->getEnd(), state),
     _devJac( device->baseJCend(state) ),
     _useJointClamping(false),
+    _checkJointLimits(false),
     _solverType(SVD)
 {
     setMaxIterations(15);
@@ -85,10 +87,16 @@ std::vector<Q> JacobianIKSolver::solve(const Transform3D<>& bTed,
     // the end result
     if (solveLocal(bTed, maxError, state, maxIterations ) )
     {
+    	std::cout << "FOUND A SOLUTION" << std::endl;
         std::vector<Q> result;
         Q q = _device->getQ(state);
         if (!_checkJointLimits || Models::inBounds(q, *_device))
-            result.push_back(q); 
+            result.push_back(q);
+        std::cout << "FOUND A SOLUTION - something wrong though" << std::endl;
+        std::cout << q << std::endl;
+        std::cout << _device->getBounds().first << std::endl;
+        std::cout << _device->getBounds().second << std::endl;
+
         return result;
     }
 
@@ -115,12 +123,17 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
         const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
         const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
 
+        std::cout << "Error: " << normInf(b_eXed) << std::endl;
         if (normInf(b_eXed) <= maxError) {
             return true;
         }
 
         const ublas::vector<double> dS = b_eXed.m();
         Jacobian J = _devJac->get( state );
+
+        //std::cout << dS << std::endl;
+        //std::cout << J << std::endl;
+
         switch(_solverType){
         case(Transpose):
         {
