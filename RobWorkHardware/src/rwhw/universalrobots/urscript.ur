@@ -7,6 +7,7 @@ def myprog():
     global thrd  = -1
     global motionFinished = 0
     global isServoing = 0
+    global isStopped = 1
     global receive_buffer = [8, 0, 0, 0, 0, 0, 0, 0, 0]
     global FLOAT_SCALE = 0.0001
 
@@ -20,6 +21,7 @@ def myprog():
         textmsg("Stop Robot")
         stopj(10)
         isServoing = 0
+        isStopped = 1
     end
 
 
@@ -36,10 +38,11 @@ def myprog():
         thrd = -1
         motionFinished = 1
         exit_critical
+        textmsg("MoveJ done")
     end
 
     #Thread for running the movel command
-        thread moveLthread():
+	thread moveLthread():
         textmsg("Calls moveT")
         movel(posetarget)
 
@@ -128,7 +131,7 @@ def myprog():
         #exit_critical
     end
 
-    def servoQ():     
+    def servoQ():
         cnt = 0           
         enter_critical        
         while cnt < 6:
@@ -137,7 +140,7 @@ def myprog():
         end
         exit_critical
 
-  #      textmsg(isServoing)
+  		#textmsg(isServoing)
 
         enter_critical
         if isServoing == 0:
@@ -170,9 +173,9 @@ def myprog():
     textmsg("Socket opened")
     errcnt = 0
     while errcnt < 1:
-    	textmsg("running")
+    	#textmsg("running")
         if motionFinished == 1:
-            textmsg("Sends finished")
+            #textmsg("Sends finished")
             socket_send_byte(0)
         else:
             socket_send_byte(1)
@@ -184,14 +187,20 @@ def myprog():
             stopRobot()
             errcnt = errcnt + 1
         elif receive_buffer[1] == 0: #0: Stop Robot
-            stopRobot()            
+        	if isStopped == 0:
+            	stopRobot()
+            end            
         elif receive_buffer[1] == 1: #1: Move to Q
+        	isStopped = 0
             moveQ()
         elif receive_buffer[1] == 2: #2: Move to T
+        	isStopped = 0
             moveT()
         elif receive_buffer[1] == 3: #3: Servo to T
+        	isStopped = 0
             servoQ()
         elif receive_buffer[1] == 9999: #1: Do nothing
+        	isStopped = 0
             #Right motion already taken
         end
     

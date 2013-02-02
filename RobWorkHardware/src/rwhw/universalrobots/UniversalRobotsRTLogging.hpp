@@ -65,7 +65,8 @@ class UniversalRobotsRTLogging {
     	URRTData getLastData();
 
     	double driverTime();
-
+    	bool _lostConnection;
+    	long _lastPackageTime;
 	private:
 		boost::asio::ip::tcp::socket* _socket;
 		boost::asio::io_service _ioService;
@@ -76,6 +77,7 @@ class UniversalRobotsRTLogging {
 		void run();
 
 		URRTData _data;
+
 
 };
 

@@ -46,6 +46,19 @@ void UniversalRobotsRTLogging::stop() {
 void UniversalRobotsRTLogging::run() {
 	while (!_stop) {
 		readRTInterfacePacket();
+
+		// TODO: check when last package was recieved. If this is more than 100 miliseconds then
+		// something bad probably happened
+		if(_connected){
+			long time = TimerUtil::currentTimeMs();
+			if(time-_lastPackageTime>1000){
+				_lostConnection = true;
+			} else {
+				_lostConnection = false;
+			}
+
+		}
+
 		//_thread->yield();
 		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 	}
@@ -62,6 +75,7 @@ void UniversalRobotsRTLogging::connect(const std::string& host, unsigned int por
 		_socket = new boost::asio::ip::tcp::socket(_ioService);
 		_socket->connect(ep);
 		_connected = true;
+		_lastPackageTime = TimerUtil::currentTimeMs();
 	} catch(boost::system::system_error& e) {
 		RW_THROW("Unable to connect to command port with message: "<<e.what());
 	}
@@ -142,24 +156,28 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     char* buffer = new char[msgSize];
     _socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
 
-    boost::mutex::scoped_lock lock(_mutex);
-    _data.driverTimeStamp = timestamp;
-    _data.controllerTimeStamp = time;
-    _data.qTarget = q_target;
-    _data.dqTarget = dq_target;
-    _data.ddqTarget = ddq_target;
-    _data.iTarget = i_target;
-    _data.torqueTarget = m_target;
+    {
+		boost::mutex::scoped_lock lock(_mutex);
+		_data.driverTimeStamp = timestamp;
+		_data.controllerTimeStamp = time;
+		_data.qTarget = q_target;
+		_data.dqTarget = dq_target;
+		_data.ddqTarget = ddq_target;
+		_data.iTarget = i_target;
+		_data.torqueTarget = m_target;
 
-    _data.qActual = q_actual;
-    _data.dqActual = dq_actual;
-    _data.iActual = i_actual;
+		_data.qActual = q_actual;
+		_data.dqActual = dq_actual;
+		_data.iActual = i_actual;
 
-    _data.accValues = acc_values;
-    _data.tcpForce = tcp_force;
-    _data.toolPose = tool_pose;
-    _data.tcpSpeed = tcp_speed;
-    _data.digIn = digin;
+		_data.accValues = acc_values;
+		_data.tcpForce = tcp_force;
+		_data.toolPose = tool_pose;
+		_data.tcpSpeed = tcp_speed;
+		_data.digIn = digin;
+    }
+
+    _lastPackageTime = TimerUtil::currentTimeMs();
     return true;
 
 

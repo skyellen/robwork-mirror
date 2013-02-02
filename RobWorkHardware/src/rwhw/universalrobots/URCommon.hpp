@@ -14,6 +14,16 @@ public:
 		return socket->read_some(boost::asio::buffer(output, 1));
 	}
 
+
+	static inline int getData(boost::asio::ip::tcp::socket* socket, int cnt, std::vector<char>& data) {
+		if(data.size()<cnt)
+			data.resize(cnt);
+		socket->read_some(boost::asio::buffer(&data[0], cnt));
+
+		return cnt;
+	}
+
+
 	static inline std::string getString(boost::asio::ip::tcp::socket* socket, int cnt, uint32_t& messageOffset) {
 		char* ch = new char[cnt+1];
 		ch[cnt] = 0;
@@ -42,6 +52,12 @@ public:
 		return output;
 	}
 
+	static inline unsigned char getUChar(std::vector<char>& data, uint32_t &messageOffset) {
+		unsigned char output = data[messageOffset];
+		messageOffset += 1;
+		return output;
+	}
+
 	//Extract a 16 bit unsigned int
 	static inline uint16_t getUInt16(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
 		uint16_t output = 0;
@@ -50,6 +66,25 @@ public:
 		messageOffset += 2;
 		return output;
 	}
+
+	static inline uint16_t getUInt16(std::vector<char>& data, uint32_t &messageOffset) {
+		uint16_t output = *((uint16_t*)&data[messageOffset]);
+		messageOffset += 2;
+		return output;
+	}
+
+	static inline uint32_t getUInt32(std::vector<char>& data, uint32_t &messageOffset) {
+		uint16_t output = *((uint32_t*)&data[messageOffset]);
+		messageOffset += 4;
+		return output;
+	}
+
+	static inline uint64_t getUInt64(std::vector<char>& data, uint32_t &messageOffset) {
+		uint64_t output = *((uint64_t*)&data[messageOffset]);
+		messageOffset += 8;
+		return output;
+	}
+
 
 	//Extract a 32 bit unsigned int
 	static inline uint32_t getUInt32(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
@@ -77,6 +112,19 @@ public:
 	}
 
 	//Extract a double
+
+	static inline double getDouble(std::vector<char>& data, uint32_t &messageOffset) {
+		double output = *((double*)&data[messageOffset]);
+		messageOffset += 8;
+		return output;
+	}
+
+	static inline double getFloat(std::vector<char>& data, uint32_t &messageOffset) {
+		float output = *((float*)&data[messageOffset]);
+		messageOffset += 4;
+		return output;
+	}
+
 	static inline double getDouble(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
 		double output = 0;
 		getChar(socket, (char*)&output+7);
@@ -104,6 +152,13 @@ public:
 
 
 	//Extract a one boolean
+	static inline bool getBoolean(std::vector<char>& data, uint32_t &messageOffset) {
+		unsigned char tmp = getUChar(data,messageOffset);
+		bool output = (tmp & 1)>0;
+		return output;
+	}
+
+
 	static inline bool getBoolean(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
 		char tmp = 0;
 		getChar(socket, (char*)&tmp);
@@ -120,6 +175,14 @@ public:
 		output[0] = getDouble(socket, messageOffset);
 		output[1] = getDouble(socket, messageOffset);
 		output[2] = getDouble(socket, messageOffset);
+		return output;
+	}
+
+	static inline rw::math::Vector3D<double> getVector3D(std::vector<char>& data, uint32_t &messageOffset) {
+		rw::math::Vector3D<double> output;
+		output[0] = getDouble(data, messageOffset);
+		output[1] = getDouble(data, messageOffset);
+		output[2] = getDouble(data, messageOffset);
 		return output;
 	}
 

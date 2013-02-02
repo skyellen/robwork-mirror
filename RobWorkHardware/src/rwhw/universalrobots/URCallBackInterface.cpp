@@ -71,6 +71,7 @@ void URCallBackInterface::startInterface(unsigned int callbackPort) {
     //std::cout<<"Send Script "<<sstr.str()<<std::endl;
 
       _urPrimary.sendScript(sstr.str());
+      //_urPrimary.start(); // why is this not called?
 }
 
 void URCallBackInterface::startInterface(unsigned int callbackPort, const std::string& filename) {
@@ -126,6 +127,7 @@ void URCallBackInterface::startInterface(unsigned int callbackPort, const std::s
 //      std::cout<<"Send Script "<<sstr.str()<<std::endl;
 
       _urPrimary.sendScript(sstr.str());
+      //_urPrimary.start(); // why is this not called?
 }
 
 

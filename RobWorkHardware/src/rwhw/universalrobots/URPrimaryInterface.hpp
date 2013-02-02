@@ -58,7 +58,8 @@ public:
 	UniversalRobotsData getLastData() const;
 
 	double driverTime() const;
-
+	bool _lostConnection;
+	long _lastPackageTime;
 private:
 	rw::common::Ptr<boost::thread> _thread;
 	boost::mutex _mutex;
@@ -67,7 +68,7 @@ private:
 
 
 	bool readPrimaryInterfacePacket();
-	void readRobotsState(uint32_t& messageOffset, uint32_t& messageLength);
+	void readRobotsState(std::vector<char>& data);
 
 	bool extractBoolean(uint16_t input, unsigned int bitNumber);
 	bool sendCommand(const std::string &str);
@@ -89,6 +90,8 @@ private:
 	UniversalRobotsData _data;
 
 	bool _lastTimeRunningProgram;
+
+	std::vector<char> _dataStorage;
 
 	static const unsigned char ROBOT_STATE = 16, ROBOT_MESSAGE = 20, HMC_MESSAGE = 22;
 	static const unsigned char ROBOT_MODE_DATA = 0, JOINT_DATA = 1, TOOL_DATA = 2, MASTERBOARD_DATA = 3, CARTESIAN_INFO = 4, LASER_POINTER_POSITION = 5;
