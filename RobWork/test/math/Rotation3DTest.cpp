@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(Rotation2DTest)
 
     const Rotation2D<> r1 = Rotation2D<>::identity();
     const Vector2D<> v1(1, 2);
-    BOOST_CHECK(MetricUtil::normInf(v1 - r1 * v1) == 0);
+    BOOST_CHECK_SMALL( MetricUtil::normInf(v1 - r1 * v1), 0.0000001);
 
     const Rotation2D<int> ri = cast<int>(r1);
     for (size_t i = 0; i < 2; i++)
