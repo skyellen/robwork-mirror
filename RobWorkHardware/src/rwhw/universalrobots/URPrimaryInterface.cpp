@@ -226,18 +226,22 @@ bool URPrimaryInterface::readPrimaryInterfacePacket() {
 
 	URCommon::getData(_socket,  messageLength-messageOffset,_dataStorage);
 
-	switch(messageType)
-	{
-		//Analyse the robot state
-		case ROBOT_STATE:
-			readRobotsState( _dataStorage );
-			break;
+	while(messageOffset<messageLength){
+		switch(messageType)
+		{
+			//Analyse the robot state
+			case ROBOT_STATE:
+				readRobotsState( _dataStorage );
+				break;
 
-		//Flush the other messages types, as they not yet have any interest for this protocol
-		case ROBOT_MESSAGE:
-		case HMC_MESSAGE:
-		default:
-		break;
+			//Flush the other messages types, as they not yet have any interest for this protocol
+			case ROBOT_MESSAGE:
+			case HMC_MESSAGE:
+			default:
+				uint32_t msglength =  URCommon::getUInt32(_dataStorage, messageOffset);
+				messageOffset += msglength;
+			break;
+		}
 	}
 
 	_haveReceivedSize=false;
@@ -259,7 +263,7 @@ void URPrimaryInterface::readRobotsState(std::vector<char>& data) {
 	//Get the packet length
 
 	uint32_t messageOffset=0;
-	uint16_t packetLength =  URCommon::getUInt16(data, messageOffset);
+	uint32_t packetLength =  URCommon::getUInt32(data, messageOffset);
 
 	//Get the packet type
 	unsigned char packetType= URCommon::getUChar(data, messageOffset);
@@ -391,20 +395,28 @@ void URPrimaryInterface::readRobotsState(std::vector<char>& data) {
 
 		// float masterIOCurrent;
 		_data.masterIOCurrent = URCommon::getFloat(data, messageOffset);
+
+		// secret stuff, masterSafetyState, master
+		messageOffset+=2;
+
+		unsigned char euroMap = URCommon::getUChar(data, messageOffset);
+		if(euroMap==1){
+            uint32_t it1 = euromapInputBits=getUINT32(messageOffset);
+            uint32_t it2 = data.euromapOutputBits=getUINT32(messageOffset);
+            uint16_t it3 = data.euromap24Voltage=getUINT16(messageOffset);
+            uint16_t it4 = data.euromap24Current=getUINT16(messageOffset);
+		}
 		break;
 
 	case CARTESIAN_INFO:
 		_data.toolPosition = URCommon::getVector3D(data, messageOffset);
 		_data.toolAxixAngle = URCommon::getVector3D(data, messageOffset);
 		break;
-
 	case LASER_POINTER_POSITION:
 		_data.laserPointerPosition = URCommon::getVector3D(data, messageOffset);
 		break;
 	default:
-		for(unsigned int i = 5; i<packetLength; i++)
-			URCommon::getUChar(data, messageOffset);
-		break;
+		RW_WARN("Unknown package type!");
 	}
 }
 
