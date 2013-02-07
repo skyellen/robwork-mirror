@@ -97,9 +97,16 @@ void RobWork::initialize(){
     BOOST_FOREACH(std::string dir, cfgDirs){
 
     	path file( dir );
+
+#if(BOOST_FILESYSTEM_VERSION==2)
+    	if( file.has_root_path() ){
+    		file = path( ipath.string() + "/" + dir );
+    	}
+#else
     	if( file.is_relative() ){
     		file = path( ipath.string() + "/" + dir );
     	}
+#endif
     	if( !exists(file) )
     		continue;
 
