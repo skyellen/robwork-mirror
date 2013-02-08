@@ -192,10 +192,18 @@ rw::common::Ptr<Plugin> Plugin::loadLazy(const std::string& filename){
 
     std::string runtimelib = plugin.get_child("runtime").get_child("<xmlattr>").get<std::string>("library");
     boost::filesystem::path libfile(runtimelib);
+
+#if(BOOST_FILESYSTEM_VERSION==2)
+	if( !libfile.has_root_path() ){
+		std::string fname = boost::filesystem::path(filename).parent_path().string() + "/" + runtimelib;
+		libfile = boost::filesystem::path(fname);
+	}
+#else
     if(!libfile.is_absolute()){
         std::string fname = boost::filesystem::path(filename).parent_path().string() + "/" + runtimelib;
         libfile = boost::filesystem::path(fname);
     }
+#endif
 
     if(!exists(libfile))
         RW_THROW("The plugin file specified in \n" << filename << "\n does not exist.");
