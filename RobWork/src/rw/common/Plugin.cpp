@@ -23,8 +23,13 @@ rw::common::Ptr<Plugin> Plugin::load(const std::string& filename){
     if(!exists(file))
         RW_THROW("The file does not exist: "<< filename );
     //std::cout << rw::common::StringUtil::toUpper(file.extension().string()) << std::endl;
+#if(BOOST_FILESYSTEM_VERSION==2)
+    if( rw::common::StringUtil::toUpper(file.extension())==".XML"){
+#else
     if( rw::common::StringUtil::toUpper(file.extension().string())==".XML"){
-        return loadLazy(filename);
+#endif
+
+    	return loadLazy(filename);
     }
     return loadDirect(filename);
 }
