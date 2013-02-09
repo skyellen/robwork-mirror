@@ -17,6 +17,7 @@
 
 #include "BoostXMLParser.hpp"
 
+#include <assert.h>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 
