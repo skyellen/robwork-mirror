@@ -33,8 +33,7 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-       @brief An object is an element in the scene with a geometric representation. The Object
-       has a base frame and may have additional frames attached.
+       @brief Nothing descriptive yet.
     */
     class Object
     {

@@ -24,6 +24,8 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/graphics/Model3D.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 
 #include "Object.hpp"
 
@@ -41,15 +43,18 @@ namespace rw { namespace models {
     class SoftBeamObject: public Object
     {
     public:
-        typedef rw::common::Ptr<Object> Ptr;
+        typedef rw::common::Ptr<SoftBeamObject> Ptr;
 
-        SoftBeamObject(rw::kinematics::Frame* baseframe);
+	
+        SoftBeamObject(rw::models::WorkCell *workcell, rw::kinematics::Frame* baseframe, const int nFrames);
+	/*
         SoftBeamObject(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
         SoftBeamObject(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
 
         SoftBeamObject(std::vector<rw::kinematics::Frame*> frames);
         SoftBeamObject(std::vector<rw::kinematics::Frame*> frames, rw::geometry::Geometry::Ptr geom);
         SoftBeamObject(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
+        */
 
         virtual ~SoftBeamObject();
 
@@ -57,16 +62,19 @@ namespace rw { namespace models {
         	//
         };
 
-        void setConstraints( const std::vector<Constraint>& constraints , rw::kinematics::State& state );
-        void update(rw::kinematics::State& state);
+        void setConstraints( const std::vector<Constraint>& constraints);
+        void update();
 
-        void setQ(rw::math::Q , rw::kinematics::State& state );
-        rw::math::Q getQ( rw::kinematics::State& state );
 
     protected:
         friend class WorkCell;
-
+        
+        
     private:
+      //std::vector< rw::math::Transform3D<>  >
+      rw::models::WorkCell *_wc;
+	int _nFrames;
+	rw::kinematics::State _state;
     };
 
     /*@}*/
