@@ -17,6 +17,8 @@
 
 #include "FdUtil.hpp"
 
+using namespace rwlibs::softbody;
+
 void FdUtil::vectorDerivative(const boost::numeric::ublas::vector< double >& f, boost::numeric::ublas::vector< double >& df, const double h)
 {
     assert(f.size() > 1);

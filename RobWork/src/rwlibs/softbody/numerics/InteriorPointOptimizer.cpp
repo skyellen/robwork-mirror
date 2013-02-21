@@ -24,8 +24,10 @@
 
 #include "InteriorPointOptimizer.hpp"
 
-using namespace rw::math;
 using namespace boost::numeric::ublas;
+using namespace rw::math;
+using namespace rwlibs::softbody;
+
 
 namespace internal {
     void compute_f_info_EXT(const vector<double>& x, double &f, boost::numeric::ublas::vector<double> &df, boost::numeric::ublas::matrix<double> &ddf) {
@@ -273,7 +275,10 @@ void InteriorPointOptimizer::update(vector<double> &x, vector<double> &dx, vecto
     double phi0,phi,Dphi;
     vector<double> x0(N);
     vector<double> s0(M),ds(M);
-    double tmax,t,oldt,fval,oldfval,eps;
+    double tmax,t;
+    double fval,eps;
+    //double oldfval;
+    //double oldt;
     size_t i,jj;
 
 
@@ -306,8 +311,8 @@ void InteriorPointOptimizer::update(vector<double> &x, vector<double> &dx, vecto
     fval=(phi-phi0-0.8*t*Dphi)/(phi0-phi);
     if (fval>0) {
         while (fval>0) {
-            oldt=t;
-            oldfval=fval;
+            //oldt=t;
+            //oldfval=fval;
             t*=0.8;
             x=x0+t*dx;
             s=s0+t*ds;
@@ -337,7 +342,7 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
     zero_vector<double> RHS0(N);
     vector<double> oldx(N),diffx(N);
     int n_eq_solves=0;
-    int bw=N;
+    //int bw=N;
     double testval;
     //_mu=0.01;
 	_mu=0.01;

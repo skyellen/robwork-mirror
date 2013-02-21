@@ -15,60 +15,73 @@ limitations under the License.
 
 */
 
-#ifndef GEOMETRY_HPP
-#define GEOMETRY_HPP
+#ifndef BEAMGEOMETRY_HPP
+#define BEAMGEOMETRY_HPP
 
 #include <vector>
 
-class Geometry
+namespace rwlibs {
+namespace softbody {
+
+class BeamGeometry
 {
-	public:
-		Geometry(double L, 
-				const std::vector<double> &Exvec,
-			 const std::vector<double> &vxvec,
-				const std::vector<double> &rhovec
-				);
+public:
+    BeamGeometry(double L,
+                 const std::vector<double> &Exvec,
+                 const std::vector<double> &vxvec,
+                 const std::vector<double> &rhovec
+                );
 
-	public:
-		// stuff implemented here
-		double Ex(const int i) const;
-		double vx(const int i) const;
-		double rho(const int i) const;
-		
-		double kappa(const int i) const;
-		
-    public:
-	    // stuff implemented by derived classes,  specific to ModRussel beam
-	    // the idea is that the derived classes may perform the integration as they'd like
-	    virtual double b0(const int i) const = 0;
-	    virtual double b1(const int i) const = 0;
-	    
-	    virtual double c2(const int i) const = 0;
-	    virtual double c3(const int i) const = 0;
-	    virtual double c4(const int i) const = 0;
-	    
-	    virtual double B0(const int i) const = 0;
-	    
-    public:
-	double get_a(void) const { return _a; };
-	double get_b(void) const { return _b; };
-	double get_h(void) const { return _h; };
-	
-	double getL(void) const { return _L;};
+public:
+    // stuff implemented here
+    double Ex(const int i) const;
+    double vx(const int i) const;
+    double rho(const int i) const;
 
-    protected:
-		double _L;
-		
-		int _NSlices;
-		
-		double _a, _b;
-		double _h;
-    private:
-		std::vector<double> _Exvec;
-		std::vector<double> _vxvec;
-		std::vector<double> _rhovec;
+    double kappa(const int i) const;
 
-		
+public:
+    // stuff implemented by derived classes,  specific to ModRussel beam
+    // the idea is that the derived classes may perform the integration as they'd like
+    virtual double b0(const int i) const = 0;
+    virtual double b1(const int i) const = 0;
+
+    virtual double c2(const int i) const = 0;
+    virtual double c3(const int i) const = 0;
+    virtual double c4(const int i) const = 0;
+
+    virtual double B0(const int i) const = 0;
+
+public:
+    double get_a(void) const {
+        return _a;
+    };
+    double get_b(void) const {
+        return _b;
+    };
+    double get_h(void) const {
+        return _h;
+    };
+
+    double getL(void) const {
+        return _L;
+    };
+
+protected:
+    double _L;
+
+    int _NSlices;
+
+    double _a, _b;
+    double _h;
+private:
+    std::vector<double> _Exvec;
+    std::vector<double> _vxvec;
+    std::vector<double> _rhovec;
+
+
 };
+}
+}
 
-#endif // GEOMETRY_HPP
+#endif // BEAMGEOMETRY_HPP

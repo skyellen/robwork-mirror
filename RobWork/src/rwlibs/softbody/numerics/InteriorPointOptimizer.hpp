@@ -31,8 +31,8 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-namespace rw {
-namespace math {
+namespace rwlibs {
+namespace softbody {
 
 
 class InteriorPointOptimizer
@@ -140,7 +140,7 @@ private:
 
 };
 
-} //end namespace math
-} //end namespace rw
+} 
+} 
 
 #endif //end include guard

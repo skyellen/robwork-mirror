@@ -29,14 +29,17 @@
 #include "rw/math/Rotation2D.hpp"
 
 // using namespace boost::numeric::ublas;
-#include "Geometry.hpp"
+#include "BeamGeometry.hpp"
 
-class BendOptimizer
+namespace rwlibs {
+namespace softbody {
+
+class ModRusselBeam
 {
     public:
 	
-	BendOptimizer(
-	const Geometry &geom,
+	ModRusselBeam(
+	const BeamGeometry &geom,
 	int M,
 		      double yTCP,
 		      double thetaTCP,
@@ -44,7 +47,7 @@ class BendOptimizer
 		      bool useNoUpwardConstraint
 	);
 	
-	~BendOptimizer() {};
+	~ModRusselBeam() {};
 	
 	// 	rw::trajectory::Vector3DPath solve(rw::trajectory::Vector3DTrajectory::Ptr trajectory, int cnt, double minBendSeperation);
 	
@@ -116,7 +119,7 @@ class BendOptimizer
 	const rw::math::Rotation2D<double> & getRot() { return _rot; };
 	
     private:
-	const Geometry &_geom;
+	const BeamGeometry &_geom;
 	int _M;
 	double _yTCP;
 	double _thetaTCP;
@@ -135,5 +138,6 @@ class BendOptimizer
 	bool _useNoUpwardConstraint;
 	
 };
+}}
 
 #endif // BENDOPTIMIZER_HPP

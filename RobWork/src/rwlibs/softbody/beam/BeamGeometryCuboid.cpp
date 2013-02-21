@@ -15,25 +15,27 @@
 
 */
 
-#include "CuboidGeometry.hpp"
+#include "BeamGeometryCuboid.hpp"
 
 #include <math.h>
 #include <iostream>
 #include <assert.h>
 
-#include "TrapMethod.hpp"
+//#include "../numerics/TrapMethod.hpp"
+#include "rwlibs/softbody/numerics/TrapMethod.hpp"
 
 
 
 
 using namespace std;
+using namespace rwlibs::softbody;
 
 
-CuboidGeometry::CuboidGeometry(double dx, double dy, double dz, const std::vector< double >& Exvec, const std::vector< double >& vxvec, const std::vector< double >& rhovec)
+BeamGeometryCuboid::BeamGeometryCuboid(double dx, double dy, double dz, const std::vector< double >& Exvec, const std::vector< double >& vxvec, const std::vector< double >& rhovec)
 : 
-Geometry(dx, Exvec, vxvec, rhovec), 
-_K(dy),
+BeamGeometry(dx, Exvec, vxvec, rhovec), 
 _H(dz),
+_K(dy),
 _B0vec(_NSlices)
 {
 //     const int M = _NSlices;
@@ -55,37 +57,37 @@ _B0vec(_NSlices)
 
 
 
-double CuboidGeometry::b0(const int i) const
+double BeamGeometryCuboid::b0(const int i) const
 {
     return _H * _K * rho(i);
 }
 
 
 
-double CuboidGeometry::b1(const int i) const
+double BeamGeometryCuboid::b1(const int i) const
 {
     return 0.0;
 }
 
 
 struct B0mfunc {
-    B0mfunc(const CuboidGeometry &geom) : _geom(geom) {}; // must set function somehoW? FEELS dirty
+    B0mfunc(const BeamGeometryCuboid &geom) : _geom(geom) {}; // must set function somehoW? FEELS dirty
     
     double operator() (const int i) const {
 	return _geom.b0(i);
     };
 	private:
-	    const CuboidGeometry &_geom;
+	    const BeamGeometryCuboid &_geom;
     };
 
 
 
-double CuboidGeometry::B0m(const int i) const
+double BeamGeometryCuboid::B0m(const int i) const
 {
 
     
     B0mfunc func(*this);
-    const int M = _NSlices;
+    //const int M = _NSlices;
     const double h = _h;
     
     //double i = (xi - 0) / h;
@@ -117,14 +119,14 @@ double CuboidGeometry::B0m(const int i) const
 
 
 
-double CuboidGeometry::B0_fnc(const int i) const
+double BeamGeometryCuboid::B0_fnc(const int i) const
 {
     return B0m(_NSlices-1) -B0m(i);
 }
 
 
 
-double CuboidGeometry::B0(const int i) const
+double BeamGeometryCuboid::B0(const int i) const
 {
 //     std::cout << "(xi - 0) / _h: " << (xi - 0) / _h << std::endl;
     //int i = (xi - 0) / _h;
@@ -136,18 +138,18 @@ double CuboidGeometry::B0(const int i) const
 
 
 
-double CuboidGeometry::c2(const int i) const
+double BeamGeometryCuboid::c2(const int i) const
 {
     return (1.0/96.0) * _H * pow(_K, 3.0) * kappa(i);
 }
 
-double CuboidGeometry::c3(const int i) const
+double BeamGeometryCuboid::c3(const int i) const
 {
     return 0.0;
 }
 
 
-double CuboidGeometry::c4(const int i) const
+double BeamGeometryCuboid::c4(const int i) const
 {
    return  (1.0/640.0) * _H * pow(_K, 5.0) * kappa(i);
 }

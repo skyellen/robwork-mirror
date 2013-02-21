@@ -18,12 +18,15 @@
 #ifndef CUBOIDGEOMETRY_HPP
 #define CUBOIDGEOMETRY_HPP
 
-#include "Geometry.hpp"
+#include "BeamGeometry.hpp"
 
-class CuboidGeometry : public Geometry
+namespace rwlibs {
+namespace softbody {
+
+class BeamGeometryCuboid : public BeamGeometry
 {
     public:
-    CuboidGeometry(double dx, 
+    BeamGeometryCuboid(double dx, 
 			       double dy, 
 			       double dz, 
 			       const std::vector<double> &Exvec,
@@ -54,5 +57,6 @@ class CuboidGeometry : public Geometry
 	const double _H, _K;
 	std::vector<double> _B0vec;
 };
+}}
 
 #endif // CUBOIDGEOMETRY_HPP

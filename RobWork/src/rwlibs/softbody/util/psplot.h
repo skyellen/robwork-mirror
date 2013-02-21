@@ -4,6 +4,8 @@
 #include <cstring>
 #include <cstdio>
 
+namespace rwlibs {
+namespace softbody {
 
 template<class T>
 
@@ -264,4 +266,6 @@ void psplot(T &x1, T &y1, const std::string &filename, const double xl = -0.0, c
     
     
 };
+
+}}
 

@@ -15,31 +15,32 @@ limitations under the License.
 
 */
 
-#include "BendOptimizer.hpp"
+#include "ModRusselBeam.hpp"
 
 #include "rw/math/Math.hpp"
 
 
-#include "TrapMethod.hpp"
-#include "FdUtil.hpp"
+#include "rwlibs/softbody/numerics/TrapMethod.hpp"
+#include "rwlibs/softbody/numerics/FdUtil.hpp"
 
 using namespace std;
 using namespace rw::math;
 using namespace boost::numeric::ublas;
+using namespace rwlibs::softbody;
 
-// TODO: this pulls in
-#include "InteriorPointOptimizer.hpp"
-#include "Geometry.hpp"
-#include "Interpolation.hpp"
-#include "psplot.h"
+
+#include "rwlibs/softbody/numerics/InteriorPointOptimizer.hpp"
+#include "BeamGeometry.hpp"
+#include "rwlibs/softbody/numerics/Interpolation.hpp"
+#include "rwlibs/softbody/util/psplot.h"
 
 static int NFCALLS = 0;
 
 
 const char DIVIDER[] = "--------------------------------------------------------------------------------";
 
-BendOptimizer::BendOptimizer(
-const Geometry& geom, 
+ModRusselBeam::ModRusselBeam(
+const BeamGeometry& geom, 
 			     int M,
 			     double yTCP,
 			     double thetaTCP,
@@ -73,7 +74,7 @@ const Geometry& geom,
 
 
 
-double BendOptimizer::get_h(void )
+double ModRusselBeam::get_h(void )
 {
     // TODO calculate once and set var
     double a = _geom.get_a();
@@ -83,13 +84,13 @@ double BendOptimizer::get_h(void )
 }
 
 
-int BendOptimizer::getM(void )
+int ModRusselBeam::getM(void )
 {
     return _M;
 }
 
 
-int BendOptimizer::getN(void )
+int ModRusselBeam::getN(void )
 {
     return getM() -1;
 }
@@ -97,7 +98,7 @@ int BendOptimizer::getN(void )
 
 struct RusselIntegrand {
     RusselIntegrand(
-    const Geometry &geom,
+    const BeamGeometry &geom,
     const boost::numeric::ublas::vector<double>& a,
     const boost::numeric::ublas::vector<double>& da,
 		    double g1,
@@ -141,7 +142,7 @@ struct RusselIntegrand {
     }
     
     private:
-	const Geometry &_geom;
+	const BeamGeometry &_geom;
 	const boost::numeric::ublas::vector<double>& _a;
 	const boost::numeric::ublas::vector<double>& _da;
 	
@@ -151,7 +152,7 @@ struct RusselIntegrand {
 
 
 //This is the object function
-double BendOptimizer::f(const boost::numeric::ublas::vector<double>& x) {
+double ModRusselBeam::f(const boost::numeric::ublas::vector<double>& x) {
 	const int N = getN();
 	const int M = getM();
 	const double h = get_h();
@@ -187,7 +188,7 @@ double BendOptimizer::f(const boost::numeric::ublas::vector<double>& x) {
 }
 
 //Computing gradient for object function
-boost::numeric::ublas::vector<double> BendOptimizer::df(const boost::numeric::ublas::vector<double>& x) {
+boost::numeric::ublas::vector<double> ModRusselBeam::df(const boost::numeric::ublas::vector<double>& x) {
     static boost::numeric::ublas::vector<double> res(x.size());	
     
 	const double eps = 1e-6;
@@ -213,7 +214,7 @@ boost::numeric::ublas::vector<double> BendOptimizer::df(const boost::numeric::ub
 }
 
 //Computing hessian for object function
-boost::numeric::ublas::matrix<double> BendOptimizer::ddf(const boost::numeric::ublas::vector<double>& x) {
+boost::numeric::ublas::matrix<double> ModRusselBeam::ddf(const boost::numeric::ublas::vector<double>& x) {
 	 boost::numeric::ublas::matrix<double> res(x.size(), x.size());	
 	const double eps = 1e-6;
 	//const double eps = _geom.get_h();
@@ -275,7 +276,7 @@ boost::numeric::ublas::matrix<double> BendOptimizer::ddf(const boost::numeric::u
 	return res;	
 }
 
-double BendOptimizer::diff_i(const boost::numeric::ublas::vector< double >& x, const int i) {
+double ModRusselBeam::diff_i(const boost::numeric::ublas::vector< double >& x, const int i) {
     const double eps = 1e-6;
 
     boost::numeric::ublas::vector<double> xt = x;
@@ -289,7 +290,7 @@ double BendOptimizer::diff_i(const boost::numeric::ublas::vector< double >& x, c
     return (d2-d1)/(2*eps);   
 }
 
-boost::numeric::ublas::matrix< double > BendOptimizer::ddf_banded(const boost::numeric::ublas::vector< double >& x)
+boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded(const boost::numeric::ublas::vector< double >& x)
 {
     boost::numeric::ublas::matrix<double> res(x.size(), x.size());	
     
@@ -372,7 +373,7 @@ boost::numeric::ublas::matrix< double > BendOptimizer::ddf_banded(const boost::n
 
 
 
-boost::numeric::ublas::matrix< double > BendOptimizer::ddf_banded2(const boost::numeric::ublas::vector< double >& x)
+boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2(const boost::numeric::ublas::vector< double >& x)
 {
     static boost::numeric::ublas::matrix<double> res(x.size(), x.size());	
     
@@ -465,7 +466,7 @@ boost::numeric::ublas::matrix< double > BendOptimizer::ddf_banded2(const boost::
 
 
 
-void BendOptimizer::objective(const boost::numeric::ublas::vector< double >& x, double& f, boost::numeric::ublas::vector< double >& df, boost::numeric::ublas::matrix< double >& ddf)
+void ModRusselBeam::objective(const boost::numeric::ublas::vector< double >& x, double& f, boost::numeric::ublas::vector< double >& df, boost::numeric::ublas::matrix< double >& ddf)
 {
 	//Implement the objective function here. 
 	//Input:	x: parameters
@@ -482,13 +483,13 @@ void BendOptimizer::objective(const boost::numeric::ublas::vector< double >& x, 
 /**
 * The equality constraints. Require g(x)=0
 */
-void BendOptimizer::equalityConstraints(const boost::numeric::ublas::vector< double >& x, size_t idx, double& g, boost::numeric::ublas::vector< double >& dg, boost::numeric::ublas::matrix< double >& ddg)
+void ModRusselBeam::equalityConstraints(const boost::numeric::ublas::vector< double >& x, size_t idx, double& g, boost::numeric::ublas::vector< double >& dg, boost::numeric::ublas::matrix< double >& ddg)
 {
 
 }
 
 
-void BendOptimizer:: setInEqualityVIntegralConstraint(
+void ModRusselBeam:: setInEqualityVIntegralConstraint(
 				    const boost::numeric::ublas::vector< double >& x,
 				   size_t idx, 
 				   boost::numeric::ublas::vector< double >& h, 
@@ -559,7 +560,7 @@ void BendOptimizer:: setInEqualityVIntegralConstraint(
 };
 
 
-void BendOptimizer::setInEqualityNoUpwardsEtaConstraint(
+void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint(
 const boost::numeric::ublas::vector< double >& x,
 					 size_t idx, 
 					 boost::numeric::ublas::vector< double >& h, 
@@ -635,7 +636,7 @@ const boost::numeric::ublas::vector< double >& x,
 //			dh: constraint gradient
 //			ddh: constraint Hessian
 */
-void BendOptimizer::inEqualityConstraints(
+void ModRusselBeam::inEqualityConstraints(
 					    const boost::numeric::ublas::vector< double >& x,
 					    size_t idx, 
 					    boost::numeric::ublas::vector< double >& h, 
@@ -675,7 +676,7 @@ void BendOptimizer::inEqualityConstraints(
 */
 //TODO: strong impact of discretization step on the U and V integrated constraint...Extrapolate?
 //TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
-void BendOptimizer::solve(boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V)
+void ModRusselBeam::solve(boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V)
 {
 	const size_t N = getN(); //Dimensions of parameter space
 	
@@ -703,8 +704,8 @@ void BendOptimizer::solve(boost::numeric::ublas::vector< double >& xinituser, bo
 	std::cout << "DIVIDER: " << DIVIDER << std::endl;
 
 	InteriorPointOptimizer iop(N, L, 
-			boost::bind(&BendOptimizer::objective, this, _1, _2, _3, _4),
-			boost::bind(&BendOptimizer::inEqualityConstraints, this, _1, _2, _3, _4, _5)
+			boost::bind(&ModRusselBeam::objective, this, _1, _2, _3, _4),
+			boost::bind(&ModRusselBeam::inEqualityConstraints, this, _1, _2, _3, _4, _5)
 			
 			);
 	iop.setAccuracy(_accuracy);

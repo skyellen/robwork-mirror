@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace rwlibs {
+namespace softbody {
 class TrapMethod
 {
     public:
@@ -38,5 +40,6 @@ class TrapMethod
 	return (h / 2.0) * (f0 + fL) + h * sum;
     }
 };
+}}
 
 #endif // TRAPMETHOD_HPP

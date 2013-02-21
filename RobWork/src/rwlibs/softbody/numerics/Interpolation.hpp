@@ -26,6 +26,9 @@
 #include <assert.h>
 #include <iostream>
 
+namespace rwlibs {
+namespace softbody {
+
 class Interpolation {
     public:
     
@@ -85,5 +88,6 @@ class Interpolation {
 	}
 	
 };
+}}
 
 #endif // INTERPOLATION_HPP

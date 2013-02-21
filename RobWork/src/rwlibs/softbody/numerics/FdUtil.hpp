@@ -21,6 +21,9 @@
 // #include <vector>
 #include <boost/numeric/ublas/vector.hpp>
 
+namespace rwlibs {
+namespace softbody {
+
 class FdUtil
 {
     public:
@@ -43,5 +46,6 @@ class FdUtil
 	double ddFx(const double xi, FdUtilMemFn f) ;
 	*/
 };
+}}
 
 #endif // FDUTIL_HPP

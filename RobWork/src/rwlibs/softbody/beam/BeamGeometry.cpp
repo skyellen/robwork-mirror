@@ -15,19 +15,19 @@ limitations under the License.
 
 */
 
-#include "Geometry.hpp"
+#include "BeamGeometry.hpp"
 
 #include <assert.h>
 
 #include <math.h>
 #include <iostream>
 
-#include "Interpolation.hpp"
+//#include "Interpolation.hpp"
 
 using namespace std;
-//using namespace Interpolation;
+using namespace rwlibs::softbody;
 
-Geometry::Geometry(
+BeamGeometry::BeamGeometry(
 		double L, 
 		const std::vector<double> &Exvec,
 		   const std::vector<double> &vxvec,
@@ -45,7 +45,7 @@ Geometry::Geometry(
 }
 
 
- double Geometry::Ex(const int i) const
+ double BeamGeometry::Ex(const int i) const
 {
     /*
 	double y = Interpolation::interpolateVector< std::vector<double> >(_Exvec, xi, _a, _b, _h);
@@ -58,7 +58,7 @@ Geometry::Geometry(
 }
 
 
- double Geometry::vx(const int i) const
+ double BeamGeometry::vx(const int i) const
 {
     
 //     double y =  Interpolation::interpolateVector< std::vector<double> >(_vxvec, xi, _a, _b, _h);
@@ -74,7 +74,7 @@ Geometry::Geometry(
 
 
 
- double Geometry::rho(const int i) const
+ double BeamGeometry::rho(const int i) const
 {
 //     double y =  Interpolation::interpolateVector< std::vector<double> >(_rhovec, xi, _a, _b, _h);
 // 	return y;
@@ -85,7 +85,7 @@ Geometry::Geometry(
 }
 
 
- double Geometry::kappa(const int i) const
+ double BeamGeometry::kappa(const int i) const
 {
     return Ex(i) / (1.0 - pow(vx(i), 2.0) );
 }
