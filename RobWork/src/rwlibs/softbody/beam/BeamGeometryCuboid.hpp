@@ -18,6 +18,9 @@
 #ifndef CUBOIDGEOMETRY_HPP
 #define CUBOIDGEOMETRY_HPP
 
+#include <ostream>
+#include <sstream>
+
 #include "BeamGeometry.hpp"
 
 namespace rwlibs {
@@ -51,6 +54,17 @@ class BeamGeometryCuboid : public BeamGeometry
     public:
 	double getH(void) const { return _H;};
 	double getK(void) const { return _K;};
+	
+	friend std::ostream& operator<<(std::ostream& out, const BeamGeometryCuboid& obj) {
+	    std::stringstream str;
+	    
+	    const BeamGeometry &base(obj);
+	    // embed base class?
+	        
+	    str << "BeamGeometryCuboid {" << base << "  this: " << &obj << ", H:" << obj.getH() << ", K:" << obj.getK() << "}";
+	    
+	    return out << str.str();
+	};
 	
 	
     private:

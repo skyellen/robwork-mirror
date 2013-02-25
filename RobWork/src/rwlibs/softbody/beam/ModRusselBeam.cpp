@@ -46,7 +46,7 @@ const BeamGeometry& geom,
 			     double thetaTCP,
 			     double accuracy,
 			     bool useNoUpwardConstraint
-			     ) : _geom(geom), _M(M), _yTCP(yTCP), _thetaTCP(thetaTCP), _accuracy(accuracy), _useNoUpwardConstraint(useNoUpwardConstraint),  _a(M), _da(M) 
+			     ) : _geom(geom), _M(M), _yTCP(yTCP), _thetaTCP(thetaTCP), _accuracy(accuracy), _a(M), _da(M), _useNoUpwardConstraint(useNoUpwardConstraint) 
 {
     assert(_M >= 2);
     
@@ -65,8 +65,8 @@ const BeamGeometry& geom,
     _g1 = _G * _uxTCPy;
     _g2 = _G * _uyTCPy;
     
-    std::cout << "_g1: " << _g1 << std::endl;
-    std::cout << "_g2: " << _g2 << std::endl;
+//     std::cout << "_g1: " << _g1 << std::endl;
+//     std::cout << "_g2: " << _g2 << std::endl;
 }
     
 
@@ -74,7 +74,7 @@ const BeamGeometry& geom,
 
 
 
-double ModRusselBeam::get_h(void )
+double ModRusselBeam::get_h(void )  const
 {
     // TODO calculate once and set var
     double a = _geom.get_a();
@@ -84,13 +84,13 @@ double ModRusselBeam::get_h(void )
 }
 
 
-int ModRusselBeam::getM(void )
+int ModRusselBeam::getM(void )  const
 {
     return _M;
 }
 
 
-int ModRusselBeam::getN(void )
+int ModRusselBeam::getN(void )  const
 {
     return getM() -1;
 }
@@ -153,7 +153,7 @@ struct RusselIntegrand {
 
 //This is the object function
 double ModRusselBeam::f(const boost::numeric::ublas::vector<double>& x) {
-	const int N = getN();
+	//const int N = getN();
 	const int M = getM();
 	const double h = get_h();
 	
@@ -298,8 +298,8 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded(const boost::n
     
     const double eps = 1e-6;
     
-    for (int i = 0; i<x.size(); i++) {	    
-	for (int j = 0; j<x.size(); j++) {
+    for (unsigned i = 0; i<x.size(); i++) {	    
+	for (unsigned j = 0; j<x.size(); j++) {
 	    if ( ((i - j) > 2) || ((j - i) > 2)) {
 		res(i, j) = 0.0;
 	    }
@@ -381,8 +381,8 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2(const boost::
     
     const double eps = 1e-6;
     
-    for (int i = 0; i<x.size(); i++) {	    
-	for (int j = i; j<x.size(); j++) {
+    for (unsigned i = 0; i<x.size(); i++) {	    
+	for (unsigned j = i; j<x.size(); j++) {
 	    if ( ((i - j) > 2) || ((j - i) > 2)) {
 		res(i, j) = 0.0;
 	    }
@@ -505,7 +505,7 @@ void ModRusselBeam:: setInEqualityVIntegralConstraint(
     const double fLV = sin( x[x.size() - 1] );
     
     double sumV = 0.0;
-    for (int i = 0; i < x.size() -1; i++) {
+    for (unsigned i = 0; i < x.size() -1; i++) {
 	sumV += sin( x[i] );
     }
     double resV = (hx / 2.0) * (f0V + fLV) + hx * sumV; 
@@ -515,7 +515,7 @@ void ModRusselBeam:: setInEqualityVIntegralConstraint(
     const double fLU = cos( x[x.size() - 1] );
     
     double sumU = 0.0;
-    for (int i = 0; i < x.size() -1; i++) {
+    for (unsigned i = 0; i < x.size() -1; i++) {
 	sumU += cos( x[i] );
     }
     double resU = (hx / 2.0) * (f0U + fLU) + hx * sumU; 
@@ -529,7 +529,7 @@ void ModRusselBeam:: setInEqualityVIntegralConstraint(
     // tip constraint dh
     //dh(0, 0) = 0.5 * hx * cos( x[0] );
     dh(0, 0) = 0.5 * hx * _uyTCPy * cos( x[0] ) - 0.5 * hx * _uxTCPy * sin( x[0] );
-    for (int i = 1; i < x.size() - 1; i++) {
+    for (unsigned i = 1; i < x.size() - 1; i++) {
 	//dh(0, i) = hx * cos( x[i] );
 	dh(0, i) = hx * _uyTCPy * cos( x[i] ) - hx * _uxTCPy * sin( x[i] );
     }
@@ -541,8 +541,8 @@ void ModRusselBeam:: setInEqualityVIntegralConstraint(
     if (0 == idx) {
 	ddh.clear(); 
 	
-	for (int i = 0; i < x.size(); i++) {
-	    for (int j = 0; j < x.size(); j++) {
+	for (unsigned i = 0; i < x.size(); i++) {
+	    for (unsigned j = 0; j < x.size(); j++) {
 		// only entries in the diagonal, i.e. d^2 f/ dx^2
 		if (i == j) {
 		    if (0 == i || (x.size() -1) == i) {
@@ -568,11 +568,11 @@ const boost::numeric::ublas::vector< double >& x,
 					 boost::numeric::ublas::matrix< double >& ddh
 					 )
 {
-    const double hx = (_geom.get_b() - _geom.get_a()) / (x.size() );
+    //const double hx = (_geom.get_b() - _geom.get_a()) / (x.size() );
     //const int L = h.size();
     
     // run through all points and formulate the 'no-pointing-upwards' constraint
-    for (int i = 0; i < x.size(); i++) {
+    for (unsigned i = 0; i < x.size(); i++) {
 	// h
 	// Ucon = Table[Cos[Subscript[y, k]], {k, 1, M}];
 	// Vcon = Table[Sin[Subscript[y, k]], {k, 1, M}];
@@ -593,7 +593,7 @@ const boost::numeric::ublas::vector< double >& x,
 	h( i+1) = - _uyTCPy * sin( x[i] ) - _uxTCPy * cos( x[i] ); 
 	
 	// dh
-	for (int j = 0; j < x.size(); j++)
+	for (unsigned j = 0; j < x.size(); j++)
 	{
 	    if (j == i) {
 		// - _uyTCPy * sin( x[i] ) - _uxTCPy * cos( x[i] )
@@ -605,7 +605,7 @@ const boost::numeric::ublas::vector< double >& x,
 	}
     }
     
-    for (int i = 0; i < x.size(); i++) {
+    for (unsigned i = 0; i < x.size(); i++) {
 	// ddh
 	if (i + 1 == idx) {
 	    // the 'no-pointing-upwards' constraint for point at xi = i*h, has idx=i+1
@@ -694,7 +694,7 @@ void ModRusselBeam::solve(boost::numeric::ublas::vector< double >& xinituser, bo
  	std::cout << "N: " << N << std::endl;
 
 	boost::numeric::ublas::vector<double> xinit(N);
-	for (int i = 0; i < N; i++) {
+	for (unsigned i = 0; i < N; i++) {
 	    xinit[i] = xinituser[i+1];
 	}
 	
@@ -718,24 +718,24 @@ void ModRusselBeam::solve(boost::numeric::ublas::vector< double >& xinituser, bo
 	const double h = (_geom.get_b() - _geom.get_a()) / res.size();
 
 	U[0] = 0.0;
-	for (int end = 0; end < res.size(); end++) {
+	for (unsigned end = 0; end < res.size(); end++) {
 	    const double f0 = cos( 0.0 );
 	    const double fL = cos( res[end] );
 	    
 	    double sum = 0.0;
-	    for (int i = 0; i < end; i++)
+	    for (unsigned i = 0; i < end; i++)
 		sum += cos( res[i] );
 	    
 	    U[end+1] =  (h / 2.0) * (f0 + fL) + h * sum; 
 	}
 	
 	V[0] = 0.0;
-	for (int end = 0; end < res.size(); end++) {
+	for (unsigned end = 0; end < res.size(); end++) {
 	    const double f0 = sin( 0.0 );
 	    const double fL = sin( res[end] );
 	    
 	    double sum = 0.0;
-	    for (int i = 0; i < end; i++)
+	    for (unsigned i = 0; i < end; i++)
 		sum += sin( res[i] );
 	    
 	    V[end+1] =  (h / 2.0) * (f0 + fL) + h * sum; 
@@ -745,7 +745,7 @@ void ModRusselBeam::solve(boost::numeric::ublas::vector< double >& xinituser, bo
 	boost::numeric::ublas::vector<double> Urot(U.size());
 	boost::numeric::ublas::vector<double> Vrot(V.size());
 	
-	for (int i = 0; i < U.size(); i++) {
+	for (unsigned i = 0; i < U.size(); i++) {
 		Urot[i] = _rot(0,0) * U[i] + _rot(0, 1) * V[i];
 		Vrot[i] = _rot(1,0) * U[i] + _rot(1, 1) * V[i];
 	}

@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_MATH_INTERIORPOINTOPTIMIZER_HPP
-#define RW_MATH_INTERIORPOINTOPTIMIZER_HPP
+#ifndef RWLIBS_SOFTBODY_INTERIORPOINTOPTIMIZER_HPP
+#define RWLIBS_SOFTBODY_INTERIORPOINTOPTIMIZER_HPP
 
 #include <rw/math/Math.hpp>
 #include <rw/math/Q.hpp>

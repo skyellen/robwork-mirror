@@ -15,8 +15,8 @@
 
 */
 
-#ifndef BENDOPTIMIZER_HPP
-#define BENDOPTIMIZER_HPP
+#ifndef MODRUSSELBEAM_HPP
+#define MODRUSSELBEAM_HPP
 
 #include <cstddef>
 
@@ -91,11 +91,11 @@ class ModRusselBeam
 	boost::numeric::ublas::matrix<double>& dh,
 	boost::numeric::ublas::matrix<double>& ddh);
 
-	int getN(void);
+	int getN(void) const;
 	
-	int getM(void);
+	int getM(void) const;
 	
-	double get_h(void);
+	double get_h(void) const;
 	
 	double f(const boost::numeric::ublas::vector< double >& x);
 
@@ -118,8 +118,16 @@ class ModRusselBeam
 	
 	const rw::math::Rotation2D<double> & getRot() { return _rot; };
 	
+	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
+	    std::stringstream str;
+	        
+	    str << "ModRusselBeam {M:" << obj.getM() << ", yTCP: " << obj._yTCP << ", thetaTCP: " << obj._thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
+	    
+	    return out << str.str();
+	};
+	
     private:
-	const BeamGeometry &_geom;
+	const BeamGeometry &_geom; // hvornår bliver denne ref. fucket up?
 	int _M;
 	double _yTCP;
 	double _thetaTCP;
@@ -140,4 +148,4 @@ class ModRusselBeam
 };
 }}
 
-#endif // BENDOPTIMIZER_HPP
+#endif // MODRUSSELBEAM_HPP

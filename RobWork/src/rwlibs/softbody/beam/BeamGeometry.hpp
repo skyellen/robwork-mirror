@@ -19,6 +19,8 @@ limitations under the License.
 #define BEAMGEOMETRY_HPP
 
 #include <vector>
+#include <ostream>
+#include <sstream>
 
 namespace rwlibs {
 namespace softbody {
@@ -66,6 +68,15 @@ public:
     double getL(void) const {
         return _L;
     };
+    
+public:
+	friend std::ostream& operator<<(std::ostream& out, const BeamGeometry& obj) {
+	    std::stringstream str;
+	        
+	    str << "BeamGeometry {a: " << obj.get_a() << ", b: " << obj.get_b() << ", h: " << obj.get_h() << ", L: " << obj.getL() << "}";
+	    
+	    return out << str.str();
+	};
 
 protected:
     double _L;

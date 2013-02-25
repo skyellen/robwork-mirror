@@ -49,7 +49,7 @@ _B0vec(_NSlices)
 	else
 	    _B0vec[i] = B0_fnc(i);
 	
- 	std::cout << "_B0vec[i]: " << _B0vec[i] << std::endl;
+//  	std::cout << "_B0vec[i]: " << _B0vec[i] << std::endl;
     }
 //     assert(false);
 };
@@ -155,3 +155,4 @@ double BeamGeometryCuboid::c4(const int i) const
 }
 
 
+// std::ostream& BeamGeometryCuboid::operator<<(std::ostream& out, const BeamGeometryCuboid& obj)
