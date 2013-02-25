@@ -20,6 +20,7 @@
 
 #include <cstddef>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/vector.hpp>
@@ -39,7 +40,7 @@ class ModRusselBeam
     public:
 	
 	ModRusselBeam(
-	const BeamGeometry &geom,
+	boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
 	int M,
 		      double yTCP,
 		      double thetaTCP,
@@ -127,7 +128,7 @@ class ModRusselBeam
 	};
 	
     private:
-	const BeamGeometry &_geom; // hvornår bliver denne ref. fucket up?
+	boost::shared_ptr< BeamGeometry > _geomPtr; // hvornår bliver denne ref. fucket up?
 	int _M;
 	double _yTCP;
 	double _thetaTCP;

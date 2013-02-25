@@ -33,6 +33,8 @@ public:
                  const std::vector<double> &vxvec,
                  const std::vector<double> &rhovec
                 );
+    
+    virtual ~BeamGeometry();
 
 public:
     // stuff implemented here

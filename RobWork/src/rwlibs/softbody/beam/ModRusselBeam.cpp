@@ -40,13 +40,13 @@ static int NFCALLS = 0;
 const char DIVIDER[] = "--------------------------------------------------------------------------------";
 
 ModRusselBeam::ModRusselBeam(
-const BeamGeometry& geom, 
+boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr, 
 			     int M,
 			     double yTCP,
 			     double thetaTCP,
 			     double accuracy,
 			     bool useNoUpwardConstraint
-			     ) : _geom(geom), _M(M), _yTCP(yTCP), _thetaTCP(thetaTCP), _accuracy(accuracy), _a(M), _da(M), _useNoUpwardConstraint(useNoUpwardConstraint) 
+			     ) : _geomPtr(geomPtr), _M(M), _yTCP(yTCP), _thetaTCP(thetaTCP), _accuracy(accuracy), _a(M), _da(M), _useNoUpwardConstraint(useNoUpwardConstraint) 
 {
     assert(_M >= 2);
     
@@ -77,8 +77,8 @@ const BeamGeometry& geom,
 double ModRusselBeam::get_h(void )  const
 {
     // TODO calculate once and set var
-    double a = _geom.get_a();
-    double b = _geom.get_b();
+    double a = _geomPtr->get_a();
+    double b = _geomPtr->get_b();
     
     return (b-a) / (getM()-1);
 }
@@ -179,7 +179,7 @@ double ModRusselBeam::f(const boost::numeric::ublas::vector<double>& x) {
 //  	std::cout << "a: " << a << std::endl;
 //  	std::cout << "da: " << da << std::endl;
 	
-	RusselIntegrand intgr(_geom, _a, _da, _g1, _g2);
+	RusselIntegrand intgr(*_geomPtr, _a, _da, _g1, _g2);
 	double val = TrapMethod::trapezMethod<RusselIntegrand>(intgr, M, h);
 	
 	NFCALLS++;
@@ -189,12 +189,12 @@ double ModRusselBeam::f(const boost::numeric::ublas::vector<double>& x) {
 
 //Computing gradient for object function
 boost::numeric::ublas::vector<double> ModRusselBeam::df(const boost::numeric::ublas::vector<double>& x) {
-    static boost::numeric::ublas::vector<double> res(x.size());	
+    boost::numeric::ublas::vector<double> res(x.size());	
     
 	const double eps = 1e-6;
 	//const double eps = _geom.get_h();
 
-	static boost::numeric::ublas::vector<double> xt;
+	boost::numeric::ublas::vector<double> xt;
 	
 	xt= x;
 	
@@ -375,7 +375,7 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded(const boost::n
 
 boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2(const boost::numeric::ublas::vector< double >& x)
 {
-    static boost::numeric::ublas::matrix<double> res(x.size(), x.size());	
+    boost::numeric::ublas::matrix<double> res(x.size(), x.size());	
     
     
     
@@ -398,7 +398,7 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2(const boost::
 	    
 	    }
 	    else if (i == j) {
-		static boost::numeric::ublas::vector<double> xt;
+		boost::numeric::ublas::vector<double> xt;
 		
 		xt= x;
 		
@@ -413,7 +413,7 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2(const boost::
 		res(i, j) = (ip - 2 * ic + im) / (eps * eps);
 	    }
 	    else {
-		static boost::numeric::ublas::vector<double> xt;
+		boost::numeric::ublas::vector<double> xt;
 		
 		xt= x;
 		
@@ -497,7 +497,7 @@ void ModRusselBeam:: setInEqualityVIntegralConstraint(
 				   boost::numeric::ublas::matrix< double >& ddh
 				   )
 {
-    const double hx = (_geom.get_b() - _geom.get_a()) / (x.size() );
+    const double hx = (_geomPtr->get_b() - _geomPtr->get_a()) / (x.size() );
     //const int L = h.size();
     
     // V component 
@@ -715,7 +715,7 @@ void ModRusselBeam::solve(boost::numeric::ublas::vector< double >& xinituser, bo
 
 	std::cout << "res: " << res << std::endl;
 	
-	const double h = (_geom.get_b() - _geom.get_a()) / res.size();
+	const double h = (_geomPtr->get_b() - _geomPtr->get_a()) / res.size();
 
 	U[0] = 0.0;
 	for (unsigned end = 0; end < res.size(); end++) {

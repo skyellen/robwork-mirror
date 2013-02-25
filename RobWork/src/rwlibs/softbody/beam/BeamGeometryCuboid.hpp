@@ -37,6 +37,8 @@ class BeamGeometryCuboid : public BeamGeometry
 			       const std::vector<double> &rhovec
 			       );
     
+    virtual ~BeamGeometryCuboid();
+    
     public:
 	virtual double b0(const int i) const;
 	virtual double b1(const int i) const;

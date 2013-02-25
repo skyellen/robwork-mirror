@@ -56,6 +56,13 @@ _B0vec(_NSlices)
 
 
 
+BeamGeometryCuboid::~BeamGeometryCuboid() {
+
+}
+
+
+
+
 
 double BeamGeometryCuboid::b0(const int i) const
 {

@@ -45,6 +45,14 @@ BeamGeometry::BeamGeometry(
 }
 
 
+
+
+BeamGeometry::~BeamGeometry() {
+
+}
+
+
+
  double BeamGeometry::Ex(const int i) const
 {
     /*
