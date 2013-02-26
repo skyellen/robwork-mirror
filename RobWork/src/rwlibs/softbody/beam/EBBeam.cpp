@@ -17,3 +17,43 @@
 
 #include "EBBeam.hpp"
 
+#include <math.h>
+
+using namespace rwlibs::softbody;
+
+EBBeam::EBBeam(const double H, const double K, const double L, const double E, const double rho, const double h)
+:
+			_H(H),
+			_K(K),
+			_L(L),
+			_E(E),
+			_rho(rho),
+			_h(h)
+		   {
+			_J = (_H * pow(_K, 3.0) ) / 12.0;
+			_q = -9.82 * _rho * _K * _H;
+		};
+
+
+		
+		
+double EBBeam::operator()(const int i) const
+ {
+		const double x = i * _h;
+		
+		
+		
+		return (_q * pow(x, 2.0) * (6.0 * pow(_L, 2.0) - 4.0 * _L * x + pow(x, 2.0))) / (24.0 * _E * _J);
+		
+		};
+		
+		
+		
+double EBBeam::d(const int i) const
+ {
+		const double x = i * _h;
+		
+		return (_q * x * (3 * pow(_L, 2.0) - 3 *  _L * x + pow(x, 2.0)))/(6 *  _E * _J);
+		
+		};
+		

@@ -123,6 +123,14 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
     matrix<double> ddaold(N,N);
     matrix<double> daold(M,N);
     vector<double> aold(M);
+/*    
+    xtest.clear();
+    dxtest.clear();
+    ddfold.clear();
+    dfold.clear();
+    ddaold.clear();
+    daold.clear();
+    aold.clear();*/
 
 	std::cout<<"X = "<<_x<<std::endl;
     for(size_t j=0; j<M; j++) {
@@ -135,6 +143,11 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
     }
     delta=0.0;
     h=0.00001;
+    
+    // TODO remove seed
+    unsigned seed = 42;
+    srand(seed);
+    
     for(size_t i=0; i<N; i++) {
         xtest(i) = delta*rand()/32768.0;
         dxtest(i) = h*rand()/32768.0;
@@ -389,7 +402,7 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
 			//std::cout<<"RHS = "<<RHS<<std::endl;
             //choleskySolve(N,bw,A,RHS,dx);
 			//std::cout<<"Det = "<<LinearAlgebra::det(A)<<std::endl;
-			if (fabs(LinearAlgebra::det(A))<1e-6) {
+			if (fabs(LinearAlgebra::det(A))< 1.0e-6) {
 				std::cout<<"A = "<<A<<std::endl;
 				std::cout<<std::endl;
 				std::cout<<"DDF = "<<_ddf<<std::endl;
@@ -408,7 +421,8 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
 	    
 	    double change = fabs(testval - testvalold) ;
 // 	    std::cout << "change: " << change << std::endl;
-	    if (change < 1e-5) {
+	    
+	    if (change < 1.0e-5) {
 		std::cout << "Breaking inner loop because of small change in testval!\n";
 		break;
 	    }

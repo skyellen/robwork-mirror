@@ -122,7 +122,7 @@ class ModRusselBeam
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
 	        
-	    str << "ModRusselBeam {M:" << obj.getM() << ", yTCP: " << obj._yTCP << ", thetaTCP: " << obj._thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
+	    str << "ModRusselBeam {M:" << obj.getM() << ", N:" << obj.getN() << ", yTCP: " << obj._yTCP << ", thetaTCP: " << obj._thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
 	    
 	    return out << str.str();
 	};
