@@ -64,11 +64,17 @@ namespace rw { namespace proximity {
             //! @brief distance between frame f1 and frame f1
             double distance;
 
-            //! @brief geometry index
-            int geoIdxA, geoIdxB;
+            //! @brief geometry index to triangle mesh A
+            int geoIdxA;
+            
+            //! @brief geometry index to triangle mesh B
+            int geoIdxB;
 
-            //! @brief index to the two faces/triangles that is the closest feature
-            unsigned int idx1,idx2;
+            //! @brief index to the first face/triangle that is the closest feature
+            unsigned int idx1;
+            
+            //! @brief index to the second face/triangle that is the closest feature
+            unsigned int idx2;
 
             void clear(){ }
         };
