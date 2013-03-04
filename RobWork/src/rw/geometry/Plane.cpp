@@ -172,9 +172,7 @@ namespace {
 	};
 }
 
-rw::math::Metric<Plane>::Ptr Plane::makeMetric(double angToDistWeight){
 
-}
 
 TriMesh::Ptr Plane::createMesh(int resolution) const {
 	return createMesh(resolution, 100 /* Default plane size */);

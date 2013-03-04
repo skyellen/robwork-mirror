@@ -180,10 +180,26 @@ namespace geometry {
 		 * two planes. The distance between two planes is computed as follows:
 		 *
 		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);
+         * 
+         * \bug This function is not implemented!
+         * 
+         * \warning This function is not implemented 
 		 *
 		 * @return
 		 */
 		static rw::math::Metric<Plane>::Ptr makeMetric(double angToDistWeight=1.0);
+        
+        
+        /**
+           @brief Streaming operator.
+         */
+        friend std::ostream& operator<<(std::ostream& out, const Plane& p)
+        {
+            return out
+                << "Plane("
+                << "n: " << p.normal() << ", d: " << p.d()
+                << ")";
+        };
 
 	private:
 		rw::math::Vector3D<> _normal;
