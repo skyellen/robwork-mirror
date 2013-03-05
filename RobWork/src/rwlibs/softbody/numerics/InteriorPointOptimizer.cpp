@@ -371,7 +371,7 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
     }
 
     // verification of user defined routines
-    verify_user_defined_objective_and_constraints();
+//     verify_user_defined_objective_and_constraints();
     
     const int MAXITERATIONS = 30;
 
@@ -402,12 +402,17 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
 			//std::cout<<"RHS = "<<RHS<<std::endl;
             //choleskySolve(N,bw,A,RHS,dx);
 			//std::cout<<"Det = "<<LinearAlgebra::det(A)<<std::endl;
+	    
+	    
+	    /*
 			if (fabs(LinearAlgebra::det(A))< 1.0e-6) {
 				std::cout<<"A = "<<A<<std::endl;
 				std::cout<<std::endl;
 				std::cout<<"DDF = "<<_ddf<<std::endl;
 				std::cout<<"DF = "<<_df<<std::endl;
 			}
+			*/
+			
 
 			dx = prod(LinearAlgebra::inverse(A), RHS);
 // 			std::cout<<"dx = "<<dx<<std::endl;

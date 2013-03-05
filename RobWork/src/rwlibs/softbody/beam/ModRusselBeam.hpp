@@ -70,7 +70,7 @@ class ModRusselBeam
 	boost::numeric::ublas::vector<double>& dg,
 	boost::numeric::ublas::matrix<double>& ddg); 
 	
-	void setInEqualityVIntegralConstraint(
+	void setInEqualityIntegralConstraint(
 	const boost::numeric::ublas::vector< double >& x,
 					   size_t idx, 
 					   boost::numeric::ublas::vector< double >& h, 
