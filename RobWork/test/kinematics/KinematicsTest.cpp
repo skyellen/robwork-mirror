@@ -273,6 +273,22 @@ BOOST_AUTO_TEST_CASE( removeFramesTest )
     }
 }
 
+BOOST_AUTO_TEST_CASE( removeMovableFramesTest )
+{
+    BOOST_MESSAGE("- remove movable frames test");
+
+	MovableFrame *l1 = new MovableFrame("l1");     
+    boost::shared_ptr<StateStructure> tree(new StateStructure());
+    Frame* world = tree->getRoot();
+    tree->addFrame(l1, world);
+    
+    State state = tree->getDefaultState();   
+    l1->setTransform(Transform3D<>::identity(), state);
+    
+    tree->remove(l1);  
+    BOOST_REQUIRE( NULL == tree->findFrame("l1") );
+}
+
 BOOST_AUTO_TEST_CASE( singleChainTest )
 {
     BOOST_MESSAGE("- testing single chain");
