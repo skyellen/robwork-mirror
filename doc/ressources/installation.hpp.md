@@ -169,13 +169,13 @@ In this section you find guides to install these dependencies on your specific p
 \subsection subsec_rw_dependencies_linux Installing dependencies on linux (Ubuntu)
 For RobWork core, the following is needed:
 
-- gcc (version 4.1 or above), cmake, blas-atlas, lapack-atlas, libxerces-c3.1, libboost-dev,
+- gcc (version 4.1 or above), g++, cmake, blas-atlas, lapack-atlas, libxerces-c3.1, libboost-dev,
 libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, libboost-regex-dev,
 libboost-serialization-dev, libboost-system-dev, libboost-test-dev, libboost-thread-dev, swig (optional)
 
 using apt-get this is:
 \verbatim
-sudo apt-get install gcc cmake libatlas-base-dev libxerces-c3.1 libxerces-c-dev libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev libboost-thread-dev swig
+sudo apt-get install gcc g++ cmake libatlas-base-dev libxerces-c3.1 libxerces-c-dev libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev libboost-thread-dev swig
 \endverbatim
 
 For RobWorkStudio additional libraries are needed
