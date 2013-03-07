@@ -1,3 +1,4 @@
+# Look for install manifest
 if(NOT EXISTS "@PROJECT_BINARY_DIR@/install_manifest.txt")
     message(FATAL_ERROR "Cannot find install manifest: \"@PROJECT_BINARY_DIR@/install_manifest.txt\"")
 endif(NOT EXISTS "@PROJECT_BINARY_DIR@/install_manifest.txt")
@@ -18,7 +19,7 @@ foreach(file ${files})
     endif(EXISTS "$ENV{DESTDIR}${file}" OR IS_SYMLINK "$ENV{DESTDIR}${file}")
 endforeach(file)
 
-# remove pcl directory in include (removes all files in it!)
+# Remove RobWork directory in include (removes all files in it!)
 message(STATUS "Uninstalling \"@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@\"")
 if(EXISTS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
     exec_program("@CMAKE_COMMAND@"
@@ -33,7 +34,7 @@ else(EXISTS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
         "Directory \"@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@\" does not exist.")
 endif(EXISTS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
 
-# remove pcl directory in share (removes all files in it!)
+# Remove RobWork directory in share (removes all files in it!)
 # created by CMakeLists.txt for RobWorkConfig.cmake
 message(STATUS "Uninstalling \"@CMAKE_INSTALL_PREFIX@/@RW_INSTALL_DIR@\"")
 if(EXISTS "@CMAKE_INSTALL_PREFIX@/@RW_INSTALL_DIR@")
