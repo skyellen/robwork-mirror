@@ -24,7 +24,6 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/StatelessObject.hpp>
 #include "Simulator.hpp"
 #include <rw/kinematics/Frame.hpp>
 
