@@ -93,9 +93,7 @@ void write(const rw::math::Transform3D<>& tmp, OutputArchive& oar, const std::st
 void write(const rw::math::Pose2D<>& tmp, OutputArchive& oar, const std::string& id){
 	oar.write( toStdVector(tmp, 3), id );
 }
-void write(const rw::math::Pose3D<>& tmp, OutputArchive& oar, const std::string& id){
-	oar.write( toStdVector(tmp, 6), id );
-}
+
 void write(const rw::math::Jacobian& tmp, OutputArchive& oar, const std::string& id){
 	oar.write( toStdVector(tmp, tmp.size1(), tmp.size2()), id );
 }
@@ -136,11 +134,7 @@ void read(rw::math::Pose2D<>& tmp, InputArchive& iar, const std::string& id){
 	iar.read(arr, id);
 	fromStdVector(arr, tmp);
 }
-void read(rw::math::Pose3D<>& tmp, InputArchive& iar, const std::string& id){
-	std::vector<double> arr;
-	iar.read(arr, id);
-	fromStdVector(arr, tmp);
-}
+
 void read(rw::math::VelocityScrew6D<>& tmp, InputArchive& iar, const std::string& id){
 	std::vector<double> arr;
 	iar.read(arr, id);

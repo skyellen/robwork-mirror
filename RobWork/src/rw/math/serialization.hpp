@@ -50,9 +50,6 @@ namespace serialization {
     void write(const rw::math::Pose2D<>& tmp, OutputArchive& oar, const std::string& id);
     void read(rw::math::Pose2D<>& tmp, InputArchive& iar, const std::string& id);
 
-    void write(const rw::math::Pose3D<>& tmp, OutputArchive& oar, const std::string& id);
-    void read(rw::math::Pose3D<>& tmp, InputArchive& iar, const std::string& id);
-
     void write(const rw::math::VelocityScrew6D<>& tmp, OutputArchive& oar, const std::string& id);
     void read(rw::math::VelocityScrew6D<>& tmp, InputArchive& iar, const std::string& id);
 
