@@ -64,8 +64,8 @@
 #include <boost/foreach.hpp>
 
 #ifdef RW_BUILD_CALIBRATION
-#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
-#include <rwlibs/calibration/xml/XmlCalibrationLoader.hpp>
+//#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
+//#include <rwlibs/calibration/xml/XmlCalibrationLoader.hpp>
 #endif
 
 using namespace rw::math;
@@ -503,6 +503,7 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 		model = ownedPtr(new SerialDevice(chain.front(), chain.back(), dev.getName(), state));
 
 #ifdef RW_BUILD_CALIBRATION
+		/*
 		if (dev._calibration.size() > 0) {
 			// get filename
 			DummyCalibration dummyCalibration = dev._calibration.front();
@@ -514,6 +515,7 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 			rwlibs::calibration::SerialDeviceCalibration::set(calibration, model.cast<SerialDevice>());
 			calibration->apply();
 		}
+		*/
 #endif
 
 		//std::cout << "serial device created!!" << std::endl;
