@@ -64,7 +64,7 @@ namespace common {
 		 * @param elemname [in] string name to test with
 		 * @return true if elemname equals name of this DOMElem, false otherwise
 		 */
-		virtual bool isName(const std::string& elemname) = 0;
+		virtual bool isName(const std::string& elemname) const = 0;
 
 		/**
 		 * @brief get name of this DOMElem
@@ -83,35 +83,35 @@ namespace common {
 		 * int value.
 		 * @return the int value
 		 */
-		virtual int getValueAsInt() = 0;
+		virtual int getValueAsInt() const = 0;
 
 		/**
 		 * @brief get value as an double floating point, throws an exception if this is not an
 		 * double value.
 		 * @return the double value
 		 */
-		virtual double getValueAsDouble() = 0;
+		virtual double getValueAsDouble() const = 0;
 
 		/**
 		 * @brief get value as a list of strings, throws an exception if this is not a
 		 * list of strings. The default string seperator is semicolon (;).
 		 * @return list of strings
 		 */
-		virtual std::vector<std::string> getValueAsStringList(char stringseperator = ';') = 0;
+		virtual std::vector<std::string> getValueAsStringList(char stringseperator = ';') const = 0;
 
 		/**
 		 * @brief get value as a list of doubles, throws an exception if this is not a
 		 * list of doubles. The default string seperator is space ( ).
 		 * @return list of doubles
 		 */
-		virtual std::vector<double> getValueAsDoubleList() = 0;
+		virtual std::vector<double> getValueAsDoubleList() const = 0;
 
 		/**
 		 * @brief get value as a list of \b N doubles, throws an exception if this is not a
 		 * list of \b N doubles. The default string seperator is space ( ).
 		 * @return list of N doubles
 		 */
-		virtual std::vector<double> getValueAsDoubleList(int N) = 0;
+		virtual std::vector<double> getValueAsDoubleList(int N) const = 0;
 
 		// get data as specific type. The funtion will try and parse the string into T
 		//template<class T>
@@ -143,14 +143,16 @@ namespace common {
 		 * @param name [in] name of the child DOMElem
 		 * @return true if this DOMElem has a child with name \b name
 		 */
-		virtual bool hasChild(const std::string& name) = 0;
+		virtual bool hasChild(const std::string& name) const = 0;
+
+		virtual bool hasChildren() const = 0;
 
 		/**
 		 * @brief test if this DOMElem has an attribute by name \b name.
 		 * @param name [in] name of the attribute DOMElem
 		 * @return true if this DOMElem has an attribute with name \b name
 		 */
-		virtual bool hasAttribute(const std::string& name) = 0;
+		virtual bool hasAttribute(const std::string& name) const = 0;
 
 
 		std::string getAttributeValue(const std::string& name){ return getAttribute(name)->getValue(); }
@@ -200,10 +202,15 @@ namespace common {
 
 
 		// now comes the construction stuff.. so this should enable one to add elements and attributes
+		virtual rw::common::Ptr<DOMElem> addChild(){ return addChild(""); };
 		virtual rw::common::Ptr<DOMElem> addChild(const std::string& name) = 0;
 		virtual rw::common::Ptr<DOMElem> addAttribute(const std::string& name) = 0;
 		virtual void setValue(const std::string& val) = 0;
+		virtual void setName(const std::string& val) = 0;
 
+		virtual void setValue(bool val);
+		virtual void setValue(int val);
+		virtual void setValue(double val);
 
 	protected:
 

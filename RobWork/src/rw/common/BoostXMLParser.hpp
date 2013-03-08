@@ -22,6 +22,8 @@
 #include <vector>
 #include <list>
 
+#include <assert.h>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -61,23 +63,32 @@ namespace common {
 
 	public:
 
-		// get data and check name
-		bool isName(const std::string& name){ return _name == name; }
-		virtual const std::string& getName() const { return _name; }
+		//! @copydoc DOMElem::isName
+		bool isName(const std::string& name) const { return _name == name; }
+		//! @copydoc DOMElem::setName
+		void setName(const std::string& name){ _name = name; }
+		//! @copydoc DOMElem::getName
+		const std::string& getName() const { return _name; }
+		//! @copydoc DOMElem::getValue
 		std::string getValue() const { return _node->get_value<std::string>(); }
 
-		int getValueAsInt(){ return _node->get_value<int>(); }
-		double getValueAsDouble(){ return _node->get_value<double>(); }
-		std::vector<std::string> getValueAsStringList(char stringseperator = ';');
-		std::vector<double> getValueAsDoubleList();
-		std::vector<double> getValueAsDoubleList(int size);
+		//! @copydoc DOMElem::getValueAsInt
+		int getValueAsInt() const { return _node->get_value<int>(); }
+		//! @copydoc DOMElem::getValueAsDouble
+		double getValueAsDouble() const { return _node->get_value<double>(); }
+		//! @copydoc DOMElem::getValueAsStringList
+		std::vector<std::string> getValueAsStringList(char stringseperator = ';') const ;
+		std::vector<double> getValueAsDoubleList() const ;
+		std::vector<double> getValueAsDoubleList(int size) const ;
 
 		// get elements that searches a specific key
 		DOMElem::Ptr getChild(const std::string& name, bool optional=false);
 		DOMElem::Ptr getAttribute(const std::string& name, bool optional=false);
 
-		bool hasChild(const std::string& name);
-		bool hasAttribute(const std::string& name);
+
+		bool hasChildren() const;
+		bool hasChild(const std::string& name) const ;
+		bool hasAttribute(const std::string& name) const ;
 
 		rw::common::Ptr<DOMElem> addChild(const std::string& name);
 		rw::common::Ptr<DOMElem> addAttribute(const std::string& name);

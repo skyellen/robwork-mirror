@@ -17,7 +17,7 @@
 
 #include "BoostXMLParser.hpp"
 
-#include <assert.h>
+
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 
@@ -75,11 +75,11 @@ void BoostXMLParser::save(std::ostream& output){
 
 
 
-std::vector<std::string> BoostDOMElem::getValueAsStringList(char stringseperator){
+std::vector<std::string> BoostDOMElem::getValueAsStringList(char stringseperator) const {
 	return std::vector<std::string>();
 }
 
-std::vector<double> BoostDOMElem::getValueAsDoubleList(){
+std::vector<double> BoostDOMElem::getValueAsDoubleList() const {
     std::istringstream buf(_node->get_value<std::string>());
     std::vector<double> values;
     std::string str;
@@ -90,7 +90,7 @@ std::vector<double> BoostDOMElem::getValueAsDoubleList(){
     return values;
 }
 
-std::vector<double> BoostDOMElem::getValueAsDoubleList(int size){
+std::vector<double> BoostDOMElem::getValueAsDoubleList(int size) const {
     std::istringstream buf(_node->get_value<std::string>());
     std::vector<double> values;
     std::string str;
@@ -103,14 +103,14 @@ std::vector<double> BoostDOMElem::getValueAsDoubleList(int size){
     return values;
 }
 
-bool BoostDOMElem::hasChild(const std::string& name){
+bool BoostDOMElem::hasChild(const std::string& name) const {
 	boost::optional<boost::property_tree::ptree&> child = _node->get_child_optional(name);
 	if(child)
 		return true;
 	return false;
 }
 
-bool BoostDOMElem::hasAttribute(const std::string& name){
+bool BoostDOMElem::hasAttribute(const std::string& name) const {
 	boost::optional<boost::property_tree::ptree&> attr = _node->get_child_optional("<xmlattr>");
 	if(attr){
 		boost::optional<boost::property_tree::ptree&> child = _node->get_child("<xmlattr>").get_child_optional(name);
@@ -185,4 +185,7 @@ DOMElem::Iterator BoostDOMElem::end(){
 }
 
 
+bool BoostDOMElem::hasChildren() const{
+	return !_node->empty();
+}
 

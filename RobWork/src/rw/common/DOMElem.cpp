@@ -16,3 +16,18 @@
  ********************************************************************************/
 
 #include "DOMElem.hpp"
+
+using namespace rw::common;
+
+void DOMElem::setValue(bool val){
+	setValue( boost::lexical_cast<std::string>(val) );
+}
+
+void DOMElem::setValue(int val){
+	setValue( boost::lexical_cast<std::string>(val) );
+}
+
+void DOMElem::setValue(double val){
+	setValue( boost::lexical_cast<std::string>(val) );
+}
+
