@@ -257,8 +257,6 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         q(0) = 4;
         path->push_back(q);
 
-        Q qzerovel = Q::zero(7);
-
         QTrajectory::Ptr traj = CubicSplineFactory::makeNaturalSpline(path);
         BOOST_CHECK(traj!=NULL);
         BOOST_CHECK_CLOSE( traj->duration(), (double)path->size()-1, 0.0001 );
@@ -285,8 +283,11 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
+        BOOST_CHECK_CLOSE( traj->dx(0)[0], 1, 0.0001 );
+        BOOST_CHECK_CLOSE( traj->dx( traj->duration() )[0], -1, 0.0001 );
+
         //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
-        //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        //    std::cout << t << "\n\t" << traj->x(t) << "\n\t" << traj->dx(t) << "\n\t" << traj->ddx(t)<< std::endl;
         //}
 
     }
@@ -306,8 +307,6 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         path->push_back(Timed<Q>(4,q));
         q(0) = 4;
         path->push_back(Timed<Q>(6,q));
-
-        Q qzerovel = Q::zero(7);
 
         QTrajectory::Ptr traj = CubicSplineFactory::makeNaturalSpline(  path );
 
