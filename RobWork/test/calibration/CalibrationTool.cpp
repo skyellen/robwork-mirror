@@ -128,6 +128,9 @@ std::ostream& operator<<(std::ostream& out, const SerialDeviceCalibration::Ptr c
 void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, SerialDeviceCalibration::Ptr serialDeviceCalibration);
 void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, SerialDeviceCalibration::Ptr serialDeviceCalibration);
 
+class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
+class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
+
 int main(int argumentCount, char** argumentArray) {
 	std::cout << "Parsing arguments.. ";
 	std::cout.flush();
@@ -196,7 +199,7 @@ int main(int argumentCount, char** argumentArray) {
 	std::string measurementFilePath = optionParser.getMeasurementFilePath();
 	std::cout << "Loading measurements [ " << measurementFilePath << " ].. ";
 	std::cout.flush();
-	std::vector<SerialDevicePoseMeasurement> measurements = XmlMeasurementFile::load(measurementFilePath);
+	std::vector<SerialDevicePoseMeasurement> measurements; // = XmlMeasurementFile::load(measurementFilePath);
 	const int measurementCount = measurements.size();
 	const int validationMeasurementCount = std::floor((double) measurementCount * optionParser.getValidationMeasurementPercentage());
 	const int calibrationMeasurementCount = measurementCount - validationMeasurementCount;
@@ -235,9 +238,8 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout << "Initializing calibration.. ";
 	std::cout.flush();
 	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-	class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
-	class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
+
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
 	SerialDeviceCalibration::Ptr serialDeviceCalibration = rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice, encoderCorrectionFunctions));
 	std::cout << "Initialized." << std::endl;
@@ -276,7 +278,7 @@ int main(int argumentCount, char** argumentArray) {
 		if (!calibrationFilePath.empty()) {
 			std::cout << "Saving calibration [" << calibrationFilePath << "].. ";
 			std::cout.flush();
-			XmlCalibrationSaver::save(serialDeviceCalibration, calibrationFilePath);
+			//XmlCalibrationSaver::save(serialDeviceCalibration, calibrationFilePath);
 			std::cout << "Saved." << std::endl;
 		}
 

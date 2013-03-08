@@ -23,6 +23,15 @@ std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::Serial
 	bool addNoise);
 void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, SerialDeviceCalibration::Ptr serialDeviceCalibration);
 
+class EncoderTauFunction: public rw::math::Function<> {
+	public: virtual double x(double q) { return -sin(q); };
+};
+
+class EncoderSigmaFunction: public rw::math::Function<> {
+	public: virtual double x(double q) { return -cos(q); };
+};
+
+
 int main(int argumentCount, char** arguments) {
 	if (int parseResult = parseArguments(argumentCount, arguments) < 1)
 		return parseResult;
@@ -73,9 +82,8 @@ int main(int argumentCount, char** arguments) {
 	std::cout.flush();
 	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1;
 	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-	class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
-	class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
+	encoderCorrectionFunctions.push_back( rw::common::ownedPtr( new EncoderTauFunction() ) );
+
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
 	SerialDeviceCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice, encoderCorrectionFunctions)));
 	artificialCalibration->getBaseCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
@@ -128,7 +136,7 @@ int main(int argumentCount, char** arguments) {
 
 	std::cout << "Saving measurement file [ " << measurementFilePath << " ]..";
 	std::cout.flush();
-	XmlMeasurementFile::save(measurements, measurementFilePath);
+	//XmlMeasurementFile::save(measurements, measurementFilePath);
 	std::cout << " Saved." << std::endl;
 
 	std::cout << "Residual summary:" << std::endl;
