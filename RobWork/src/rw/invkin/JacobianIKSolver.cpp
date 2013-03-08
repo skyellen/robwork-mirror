@@ -123,7 +123,7 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
         const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
         const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
 
-        std::cout << "Error: " << normInf(b_eXed) << std::endl;
+        //std::cout << "Error: " << normInf(b_eXed) << std::endl;
         if (normInf(b_eXed) <= maxError) {
             return true;
         }
