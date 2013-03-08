@@ -41,6 +41,10 @@ Q::Q(size_t n, double value):
         _vec(i) = value;
 }
 
+Q::~Q(){
+
+}
+
 std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 {
     if (v.size() == 0)

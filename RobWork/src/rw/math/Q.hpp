@@ -39,6 +39,7 @@ namespace rw { namespace math {
         //! Boost vector type
         typedef boost::numeric::ublas::vector<double> BoostVector;
 
+
 		//! Eigen vector used as internal datastructure.
 		typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Base;
 
@@ -152,6 +153,7 @@ namespace rw { namespace math {
                 _vec(i) = q(i,0);
 		}
 
+		virtual ~Q();
 
         /**
          * @brief Returns Q of length \b n initialized with 0's
@@ -342,6 +344,17 @@ namespace rw { namespace math {
         friend const Q operator*(double s, const Q& v)
         {
             return Q(s * v.e());
+        }
+
+        /**
+         * @brief Scalar division.
+         */
+        friend const Q operator/(double s, const Q& v)
+        {
+            Q res = v;
+        	for(size_t i=0; i<v.size();i++)
+        		res(i) = s/v(i);
+        	return res;
         }
 
         /**
