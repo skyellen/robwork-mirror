@@ -13,9 +13,6 @@ IF( build )
 		nlls/NLLSIterationLog.cpp
 		nlls/NLLSNewtonSolver.cpp
 		nlls/NLLSSystem.cpp
-		xml/XmlCalibrationLoader.cpp
-		xml/XmlCalibrationSaver.cpp
-		xml/XmlMeasurementFile.cpp
 		JacobianBase.cpp
 		Calibration.cpp
 		CalibrationBase.cpp
@@ -38,9 +35,6 @@ IF( build )
 		nlls/NLLSNewtonSolver.hpp
 		nlls/NLLSSolver.hpp
 		nlls/NLLSSystem.hpp
-		xml/XmlCalibrationLoader.hpp
-		xml/XmlCalibrationSaver.hpp
-		xml/XmlMeasurementFile.hpp
 		JacobianBase.hpp
 		Calibration.hpp
 		CalibrationBase.hpp

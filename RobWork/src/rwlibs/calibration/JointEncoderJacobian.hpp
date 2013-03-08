@@ -9,8 +9,9 @@
 #define RWLIBS_CALIBRATION_JOINTENCODERJACOBIAN_HPP_
 
 #include <rw/math.hpp>
-#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
+//#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
+#include "DHLinkJacobian.hpp"
 #include "JointEncoderCalibration.hpp"
 #include "JacobianBase.hpp"
 #include <Eigen/Geometry>

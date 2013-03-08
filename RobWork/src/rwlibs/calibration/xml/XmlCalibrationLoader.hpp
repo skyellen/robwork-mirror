@@ -13,10 +13,15 @@
 namespace rwlibs {
 namespace calibration {
 
-class XmlCalibrationLoader {
-public:
-	static SerialDeviceCalibration::Ptr load(rw::kinematics::StateStructure::Ptr stateStructure, rw::models::SerialDevice::Ptr device, std::string fileName);
-};
+	/**
+	 * @brief loads a calibration file for a serialdevice
+	 */
+	class XmlCalibrationLoader {
+	public:
+		static SerialDeviceCalibration::Ptr load(rw::kinematics::StateStructure::Ptr stateStructure,
+												  rw::models::SerialDevice::Ptr device,
+												  std::string fileName);
+	};
 
 }
 }

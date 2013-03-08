@@ -9,6 +9,20 @@
 
 namespace rwlibs {
 	namespace calibration {
+
+		Eigen::Affine3d toEigen(const rw::math::Transform3D<>& t3d) {
+			rw::math::Vector3D<> vector3d = t3d.P();
+			rw::math::Rotation3D<> rotation3d = t3d.R();
+			Eigen::Affine3d dst;
+			dst.setIdentity();
+			dst.translation() << vector3d(0), vector3d(1), vector3d(2);
+			for (int rowIndex = 0; rowIndex < 3; rowIndex++)
+				for (int colIndex = 0; colIndex < 3; colIndex++)
+					dst.linear()(rowIndex, colIndex) = rotation3d(rowIndex, colIndex);
+			return dst;
+		}
+
+
 		DHLinkJacobian::DHLinkJacobian(DHLinkCalibration::Ptr calibration) : JacobianBase(calibration), _calibration(calibration), _joint(calibration->getJoint()) {
 		}
 
@@ -20,11 +34,11 @@ namespace rwlibs {
 			const rw::kinematics::State& state) {
 				const CalibrationParameterSet parameterSet = _calibration->getParameterSet();
 
-				const Eigen::Affine3d tfmToPreLink = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), _joint->getParent(state), state);
-				const Eigen::Affine3d tfmLink = _joint->getFixedTransform();
+				const Eigen::Affine3d tfmToPreLink = toEigen(rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), _joint->getParent(state), state));
+				const Eigen::Affine3d tfmLink = toEigen(_joint->getFixedTransform());
 				const Eigen::Affine3d tfmToPostLink = tfmToPreLink * tfmLink;
-				const Eigen::Affine3d tfmJoint = _joint->getJointTransform(state);
-				const Eigen::Affine3d tfmPostJoint = rw::kinematics::Kinematics::frameTframe(_joint.get(), targetFrame.get(), state);
+				const Eigen::Affine3d tfmJoint = toEigen(_joint->getJointTransform(state));
+				const Eigen::Affine3d tfmPostJoint = toEigen(rw::kinematics::Kinematics::frameTframe(_joint.get(), targetFrame.get(), state) );
 				const Eigen::Affine3d tfmToEnd = tfmToPostLink * tfmJoint * tfmPostJoint;
 
 				const unsigned int columnCount = getColumnCount();

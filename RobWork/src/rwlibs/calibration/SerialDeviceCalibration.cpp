@@ -48,19 +48,19 @@ SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr d
 		_compositeJointCalibration->addCalibration(jointCalibration);
 	}
 	
-	addCalibration(_baseCalibration.cast<Calibration>());
-	addCalibration(_endCalibration.cast<Calibration>());
-	addCalibration(_compositeLinkCalibration.cast<Calibration>());
-	addCalibration(_compositeJointCalibration.cast<Calibration>());
+	((CompositeCalibration<Calibration>*) this)->addCalibration(_baseCalibration.cast<Calibration>());
+	((CompositeCalibration<Calibration>*) this)->addCalibration(_endCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_compositeLinkCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_compositeJointCalibration.cast<Calibration>());
 }
 
 SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, FixedFrameCalibration::Ptr baseCalibration, FixedFrameCalibration::Ptr endCalibration,
 			const CompositeCalibration<DHLinkCalibration>::Ptr& compositeLinkCalibration, const CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration) :
 		_device(device), _baseCalibration(baseCalibration), _endCalibration(endCalibration), _compositeLinkCalibration(compositeLinkCalibration) {
-	addCalibration(_baseCalibration.cast<Calibration>());
-	addCalibration(_endCalibration.cast<Calibration>());
-	addCalibration(_compositeLinkCalibration.cast<Calibration>());
-	addCalibration(_compositeJointCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_baseCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_endCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_compositeLinkCalibration.cast<Calibration>());
+	CompositeCalibration<Calibration>::addCalibration(_compositeJointCalibration.cast<Calibration>());
 }
 
 SerialDeviceCalibration::~SerialDeviceCalibration() {

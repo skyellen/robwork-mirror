@@ -12,6 +12,7 @@
 #include "DHLinkCalibration.hpp"
 #include "JointEncoderCalibration.hpp"
 #include "FixedFrameCalibration.hpp"
+
 #include <rw/models.hpp>
 #include <rw/kinematics.hpp>
 

@@ -10,8 +10,11 @@
 #include <rw/kinematics.hpp>
 #include <QtCore>
 
+#include "DHLinkJacobian.hpp"
+
 namespace rwlibs {
 	namespace calibration {
+
 
 		FixedFrameJacobian::FixedFrameJacobian(FixedFrameCalibration::Ptr calibration) :
 			JacobianBase(calibration), _calibration(calibration), _fixedFrame(calibration->getFrame()), _isPostCorrection(_calibration->isPostCorrection()) {
@@ -25,13 +28,13 @@ namespace rwlibs {
 		Eigen::MatrixXd FixedFrameJacobian::doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame,
 			const rw::kinematics::State& state) {
 				const CalibrationParameterSet parameterSet = _calibration->getParameterSet();
-				const Eigen::Affine3d correctionTransform = _calibration->getCorrectionTransform();
+				const Eigen::Affine3d correctionTransform = toEigen( _calibration->getCorrectionTransform() );
 
 				const rw::kinematics::Frame* preCorrectionFrame = _isPostCorrection ? _fixedFrame.get() : _fixedFrame->getParent(state);
-				Eigen::Affine3d toPreCorrectionTransform = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), preCorrectionFrame, state);
+				Eigen::Affine3d toPreCorrectionTransform = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), preCorrectionFrame, state) );
 				if (_isPostCorrection)
 					toPreCorrectionTransform = toPreCorrectionTransform * correctionTransform.inverse();
-				Eigen::Affine3d postCorrectionTransform = rw::kinematics::Kinematics::frameTframe(preCorrectionFrame, targetFrame.get(), state);
+				Eigen::Affine3d postCorrectionTransform = toEigen( rw::kinematics::Kinematics::frameTframe(preCorrectionFrame, targetFrame.get(), state));
 				if (!_isPostCorrection)
 					postCorrectionTransform = correctionTransform.inverse() * postCorrectionTransform;
 				const Eigen::Matrix3d toPreCorrectionRotation = toPreCorrectionTransform.linear();

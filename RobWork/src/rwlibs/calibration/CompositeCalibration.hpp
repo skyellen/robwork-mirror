@@ -47,7 +47,7 @@ public:
 
 	const rw::common::Ptr<C>& getCalibration(int index) const;
 
-	void addCalibration(rw::common::Ptr<C>& calibration);
+	void addCalibration(rw::common::Ptr<C> calibration);
 	
 	virtual bool isEnabled() const;
 
@@ -95,7 +95,7 @@ const rw::common::Ptr<C>& CompositeCalibration<C>::getCalibration(int index) con
 }
 
 template<class C>
-void CompositeCalibration<C>::addCalibration(rw::common::Ptr<C>& calibration) {
+void CompositeCalibration<C>::addCalibration(rw::common::Ptr<C> calibration) {
 	RW_ASSERT(!calibration->isApplied());
 	_calibrations.push_back(calibration);
 }
@@ -204,7 +204,6 @@ void CompositeCalibration<C>::revert() {
 
 template<class C>
 rw::common::Ptr<C> CompositeCalibration<C>::findParameter(int parameterIndex, int& localParameterIndex) const {
-	RW_ASSERT(parameterIndex < getParameterCount());
 
 	rw::common::Ptr<C> calibration;
 	int minParameterIndex = 0, maxParameterIndex = 0;

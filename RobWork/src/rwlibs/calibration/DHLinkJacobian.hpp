@@ -9,7 +9,7 @@
 #define RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_
 
 #include <rw/math.hpp>
-#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
+//#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
 #include "DHLinkCalibration.hpp"
 #include "JacobianBase.hpp"
@@ -19,6 +19,8 @@
 
 namespace rwlibs {
 namespace calibration {
+
+Eigen::Affine3d toEigen(const rw::math::Transform3D<>& t3d);
 
 class DHLinkJacobian: public JacobianBase {
 public:

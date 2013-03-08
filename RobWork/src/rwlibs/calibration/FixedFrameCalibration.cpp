@@ -48,14 +48,14 @@ namespace rwlibs {
 			CalibrationParameterSet parameterSet = getParameterSet();
 			return rw::math::Transform3D<>(
 				rw::math::Vector3D<>(
-				parameterSet(PARAMETER_X).isEnabled() ? parameterSet(PARAMETER_X) : 0.0,
-				parameterSet(PARAMETER_Y).isEnabled() ? parameterSet(PARAMETER_Y) : 0.0,
-				parameterSet(PARAMETER_Z).isEnabled() ? parameterSet(PARAMETER_Z) : 0.0
+				parameterSet(PARAMETER_X).isEnabled() ? parameterSet(PARAMETER_X).getValue() : 0.0,
+				parameterSet(PARAMETER_Y).isEnabled() ? parameterSet(PARAMETER_Y).getValue() : 0.0,
+				parameterSet(PARAMETER_Z).isEnabled() ? parameterSet(PARAMETER_Z).getValue() : 0.0
 				),
 				rw::math::RPY<>(
-				parameterSet(PARAMETER_ROLL).isEnabled() ? parameterSet(PARAMETER_ROLL) : 0.0,
-				parameterSet(PARAMETER_PITCH).isEnabled() ? parameterSet(PARAMETER_PITCH) : 0.0,
-				parameterSet(PARAMETER_YAW).isEnabled() ? parameterSet(PARAMETER_YAW) : 0.0
+				parameterSet(PARAMETER_ROLL).isEnabled() ? parameterSet(PARAMETER_ROLL).getValue() : 0.0,
+				parameterSet(PARAMETER_PITCH).isEnabled() ? parameterSet(PARAMETER_PITCH).getValue() : 0.0,
+				parameterSet(PARAMETER_YAW).isEnabled() ? parameterSet(PARAMETER_YAW).getValue() : 0.0
 				).toRotation3D()
 				);
 		}
