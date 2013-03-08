@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RW_SENSOR_SENSOR_HPP
-#define RW_SENSOR_SENSOR_HPP
+#ifndef RW_SENSOR_SENSORMODEL_HPP
+#define RW_SENSOR_SENSORMODEL_HPP
 
 /**
  * @file Sensor.hpp
@@ -42,21 +42,28 @@ namespace rw { namespace sensor {
     /**
      * @brief a generel kinematic sensor interface. The sensor
      */
-    class Sensor: public rw::kinematics::Stateless
+    class SensorModel: public rw::kinematics::Stateless
     {
-    protected:
-        /**
+    public:
+
+        //! smart pointer type
+        typedef rw::common::Ptr<SensorModel> Ptr;
+
+    	/**
          * @brief constructor
          * @param name [in] the name of this sensor
          */
-    	Sensor(const std::string& name);
+    	SensorModel(const std::string& name);
 
         /**
          * @brief constructor
          * @param name [in] the name of this sensor
          * @param description [in] description of the sensor
          */
-        Sensor(const std::string& name, const std::string& description);
+        SensorModel(const std::string& name, const std::string& description);
+
+        //! destructor
+        virtual ~SensorModel(){}
 
         /**
          * @brief sets the name of this sensor
@@ -70,14 +77,6 @@ namespace rw { namespace sensor {
          */
         void setDescription(const std::string& description)
         { _description = description; }
-
-    public:
-
-        //! smart pointer type
-        typedef rw::common::Ptr<Sensor> Ptr;
-
-        //! destructor
-        virtual ~Sensor(){}
 
         /**
          * @brief returns the name of this sensor
@@ -113,7 +112,6 @@ namespace rw { namespace sensor {
         }
 
     private:
-        Sensor(){};
         std::string _name;
         std::string _description;
         kinematics::Frame* _frame;

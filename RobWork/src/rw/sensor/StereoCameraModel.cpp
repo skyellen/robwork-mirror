@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-#include "StereoCamera.hpp"
+#include "StereoCameraModel.hpp"
 
 #include <algorithm>
 #include <fstream>
