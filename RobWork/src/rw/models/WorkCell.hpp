@@ -27,7 +27,7 @@
 #include <rw/graphics/SceneDescriptor.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/sensor/Sensor.hpp>
+#include <rw/sensor/SensorModel.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include "Device.hpp"
@@ -297,7 +297,7 @@ namespace rw { namespace models {
          *
          * @return The sensor with name \b name or NULL if no such sensor.
          */
-        rw::sensor::Sensor::Ptr findSensor(const std::string& name) const;
+        rw::sensor::SensorModel::Ptr findSensor(const std::string& name) const;
 
         /**
          * @brief Returns sensor with the specified name and type \b T.
@@ -312,7 +312,7 @@ namespace rw { namespace models {
          */
         template<class T>
         rw::common::Ptr<T> findSensor(const std::string& name) const{
-            rw::sensor::Sensor::Ptr sensor = findSensor(name);
+            rw::sensor::SensorModel::Ptr sensor = findSensor(name);
             if(sensor==NULL)
                 return NULL;
             return sensor.cast<T>();
@@ -324,9 +324,9 @@ namespace rw { namespace models {
          */
         template<class T>
         std::vector<rw::common::Ptr<T> > findSensors() const{
-            const std::vector<rw::sensor::Sensor::Ptr> sensors = _sensors;
+            const std::vector<rw::sensor::SensorModel::Ptr> sensors = _sensors;
             std::vector<rw::common::Ptr<T> > result;
-            BOOST_FOREACH(rw::sensor::Sensor::Ptr f, sensors){
+            BOOST_FOREACH(rw::sensor::SensorModel::Ptr f, sensors){
                 rw::common::Ptr<T> res = f.cast<T>();
                 if(res!=NULL)
                     result.push_back(res);
@@ -338,9 +338,9 @@ namespace rw { namespace models {
          * @brief Returns all frames in workcell
          * @return List of all frames
          */
-        std::vector<rw::sensor::Sensor::Ptr> getSensors() const {
-            std::vector<rw::sensor::Sensor::Ptr> sensors;
-            BOOST_FOREACH(rw::sensor::Sensor::Ptr sensor, _sensors){
+        std::vector<rw::sensor::SensorModel::Ptr> getSensors() const {
+            std::vector<rw::sensor::SensorModel::Ptr> sensors;
+            BOOST_FOREACH(rw::sensor::SensorModel::Ptr sensor, _sensors){
                 if(sensor!=NULL)
                     sensors.push_back(sensor);
             }
@@ -373,7 +373,7 @@ namespace rw { namespace models {
 		 */
       //  void add(rw::common::Ptr<Device> device){ addDevice(device); }
         void add(rw::common::Ptr<Object> object);
-        void add(rw::common::Ptr<rw::sensor::Sensor> sensor);
+        void add(rw::common::Ptr<rw::sensor::SensorModel> sensor);
 
 
 
@@ -439,7 +439,7 @@ namespace rw { namespace models {
 		std::string _filename;
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
-        std::vector<rw::sensor::Sensor::Ptr> _sensors;
+        std::vector<rw::sensor::SensorModel::Ptr> _sensors;
         rw::common::Ptr<rw::graphics::SceneDescriptor> _sceneDescriptor;
     private:
         WorkCell();

@@ -101,8 +101,8 @@ void WorkCell::add(rw::common::Ptr<Object> object){
     //TODO: notify changed
 }
 
-void WorkCell::add(rw::common::Ptr<rw::sensor::Sensor> sensor){
-    sensor->registerStateData(_tree);
+void WorkCell::add(rw::common::Ptr<rw::sensor::SensorModel> sensor){
+    sensor->registerIn(_tree);
     _sensors.push_back(sensor);
 }
 
@@ -118,9 +118,9 @@ Frame* WorkCell::findFrame(const std::string& name) const
     return _tree->findFrame(name);
 }
 
-rw::sensor::Sensor::Ptr WorkCell::findSensor(const std::string& name) const
+rw::sensor::SensorModel::Ptr WorkCell::findSensor(const std::string& name) const
 {
-    BOOST_FOREACH(rw::sensor::Sensor::Ptr sensor, _sensors){
+    BOOST_FOREACH(rw::sensor::SensorModel::Ptr sensor, _sensors){
         if(name == sensor->getName())
             return sensor;
     }
