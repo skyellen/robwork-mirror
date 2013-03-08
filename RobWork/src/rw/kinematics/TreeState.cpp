@@ -55,6 +55,16 @@ TreeState::TreeState()
 TreeState::~TreeState()
 {}
 
+TreeState::TreeState(const TreeState &src){
+    _setup = src._setup;
+
+    _parentIdxToChildList = src._parentIdxToChildList;
+
+    _childLists = src._childLists;
+
+    _dafIdxToParentIdx = src._dafIdxToParentIdx;
+}
+
 boost::shared_ptr<StateSetup> TreeState::getStateSetup() const{
     return _setup;
 }

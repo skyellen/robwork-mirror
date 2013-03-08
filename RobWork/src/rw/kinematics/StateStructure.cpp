@@ -300,6 +300,7 @@ void StateStructure::updateDefaultState(){
                 data->setCache( data->getDefaultCache()->clone(), newState );
         }
     }
+
     _defaultState = newState;
 }
 

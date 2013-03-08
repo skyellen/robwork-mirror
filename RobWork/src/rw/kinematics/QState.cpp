@@ -36,6 +36,8 @@ QState::QState(boost::shared_ptr<StateSetup> setup) :
         _contents[i] = 0;
 }
 
+QState::~QState(){ }
+
 const double* QState::getQ(const StateData& data) const
 {
     const int pos = _setup->getOffset(data);

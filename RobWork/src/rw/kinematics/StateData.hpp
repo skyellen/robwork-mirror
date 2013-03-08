@@ -48,7 +48,7 @@ namespace rw { namespace kinematics {
         /**
          * @brief destructor
          */
-        virtual ~StateData(){ };
+        virtual ~StateData();
 
         /**
          * @brief An integer ID for the StateData.

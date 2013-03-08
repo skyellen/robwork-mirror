@@ -42,6 +42,8 @@ StateData::StateData(int size, const std::string& name, rw::common::Ptr<StateCac
     RW_ASSERT(0 <= size);
 }
 
+StateData::~StateData(){}
+
 rw::common::Ptr<StateCache> StateData::getCache(const State& state) const{
     if( _hasCache==false )
         return NULL; // stop early if we know size is 0

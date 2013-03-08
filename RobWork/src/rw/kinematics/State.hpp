@@ -37,12 +37,7 @@ namespace rw { namespace kinematics {
 
     class Frame;
     class StateSetup;
-
 	class StateStructure;
-	
-
-//    typedef rw::common::Ptr<StateStructure> StateStructurePtr;
-//#endif
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -81,6 +76,9 @@ namespace rw { namespace kinematics {
          * to a procedure will typically cause a program crash.
          */
         State();
+
+        //! destructor
+        virtual ~State();
 
         /**
          * @brief Assign to a state the tree state of this state.
@@ -273,7 +271,11 @@ namespace rw { namespace kinematics {
          */
 		rw::common::Ptr<StateStructure> getStateStructure() const;
 
-
+		/**
+		 * @brief
+		 * @param obj
+		 */
+		//void add(Stateless& obj);
 
     private:
         friend class StateData;

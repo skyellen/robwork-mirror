@@ -62,6 +62,8 @@ namespace rw { namespace kinematics {
          */
         explicit TreeState(boost::shared_ptr<StateSetup> setup);
 
+        explicit TreeState(const TreeState &);
+
         /**
          * @brief destructor
          */

@@ -26,7 +26,7 @@
 using namespace rw::common;
 using namespace rw::kinematics;
 
-State::State() {}
+State::State() { }
 
 State::State(const QState& q_state,
       const TreeState& tree_state,
@@ -37,6 +37,9 @@ State::State(const QState& q_state,
 {
     _cache_state.resize( _tree_state.getStateSetup()->getMaxCacheIdx() );
 }
+
+
+State::~State(){ }
 
 Frame* State::getFrame(int id){
     return _q_state.getStateSetup()->getFrame(id);
@@ -74,12 +77,20 @@ void State::copy(const State &from){
     const std::vector<boost::shared_ptr<StateData> >& fromStateDatas =
         fromQState.getStateSetup()->getStateData();
 
+    const std::vector<boost::shared_ptr<StateData> >& toStateDatas =
+    		getQState().getStateSetup()->getStateData();
+
     // for each StateData in from.StateSetup copy its Q values to
     // to this.qstate
-    BOOST_FOREACH(const boost::shared_ptr<StateData>& f, fromStateDatas){
+    for(size_t i=0; i<fromStateDatas.size(); i++){
+    //BOOST_FOREACH(const boost::shared_ptr<StateData>& f, fromStateDatas){
+    	const boost::shared_ptr<StateData>& f = fromStateDatas[i];
         // check if frame exist in state
         if( f==NULL )
             continue;
+        // make sure the statedata is also available in this qstate
+        if(i>=toStateDatas.size() || toStateDatas[i]==NULL)
+        	continue;
 
         const StateData& data = *f;
 
@@ -160,3 +171,9 @@ void State::upgrade(){
         upgradeTo(_tree_state.getStateSetup()->getTree()->getDefaultState());
     }
 }
+
+/*
+void State::add(Stateless& obj){
+	obj.registerIn( getStateStructure() );
+}
+*/
