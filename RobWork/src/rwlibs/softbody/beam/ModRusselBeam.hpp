@@ -40,24 +40,18 @@ class ModRusselBeam
     public:
 	
 	ModRusselBeam(
-	boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
-	int M,
-		      double yTCP,
-		      double thetaTCP,
-		      double accuracy,
-		      bool useNoUpwardConstraint
+        boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
+        int M,
+		double yTCP,
+		double thetaTCP,
+        double accuracy,
+		bool useNoUpwardConstraint
 	);
 	
 	~ModRusselBeam() {};
 	
-	// 	rw::trajectory::Vector3DPath solve(rw::trajectory::Vector3DTrajectory::Ptr trajectory, int cnt, double minBendSeperation);
-	
 	
     public:
-	// 	rw::trajectory::Vector3DTrajectory::Ptr _trajectory;
-	// 	double _mbs; //Minimum Bend Seperation
-	// 	rw::math::Vector3D<> r(double s);
-	
 	
 	void objective(const boost::numeric::ublas::vector<double>& x,
 		       double& f,
@@ -113,11 +107,9 @@ class ModRusselBeam
 	
 	boost::numeric::ublas::vector<double> integrateAngleU(const boost::numeric::ublas::vector<double> a)  ;
 	boost::numeric::ublas::vector<double> integrateAngleV(const boost::numeric::ublas::vector<double> a)  ;
+
 	
-	double get_uxTCPy() { return _uxTCPy; };
-	double get_uyTCPy() { return _uyTCPy; };
-	
-	const rw::math::Rotation2D<double> & getRot() { return _rot; };
+	//const rw::math::Rotation2D<double> & getRot() { return _rot; };
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
@@ -136,13 +128,16 @@ class ModRusselBeam
 	boost::numeric::ublas::vector<double> 	_a;
 	boost::numeric::ublas::vector<double> 	_da; 
 	
-	rw::math::Rotation2D<double> 	_rot;
-	double _uxTCPy;
-	double _uyTCPy;
+// 	rw::math::Rotation2D<double> 	_rot;
 	
+    //double _uxTCPy;
+	//double _uyTCPy;
+	
+    /*
 	double _G;
 	double 	_g1;
 	double _g2;
+    */
 	
 	bool _useNoUpwardConstraint;
 	

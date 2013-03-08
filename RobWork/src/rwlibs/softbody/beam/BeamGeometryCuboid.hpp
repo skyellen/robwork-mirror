@@ -32,9 +32,11 @@ class BeamGeometryCuboid : public BeamGeometry
     BeamGeometryCuboid(double dx, 
 			       double dy, 
 			       double dz, 
-			       const std::vector<double> &Exvec,
-		   const std::vector<double> &vxvec,
-			       const std::vector<double> &rhovec
+                 const std::vector<double> &Exvec,
+                 const std::vector<double> &vxvec,
+                 const std::vector<double> &rhovec,
+                 const rw::math::Transform3D<> &wTb,
+                 const rw::math::Vector3D<> &G
 			       );
     
     virtual ~BeamGeometryCuboid();

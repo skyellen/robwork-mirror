@@ -31,9 +31,18 @@ using namespace std;
 using namespace rwlibs::softbody;
 
 
-BeamGeometryCuboid::BeamGeometryCuboid(double dx, double dy, double dz, const std::vector< double >& Exvec, const std::vector< double >& vxvec, const std::vector< double >& rhovec)
+BeamGeometryCuboid::BeamGeometryCuboid(
+    double dx,
+    double dy, 
+    double dz, 
+                 const std::vector<double> &Exvec,
+                 const std::vector<double> &vxvec,
+                 const std::vector<double> &rhovec,
+                 const rw::math::Transform3D<> &wTb,
+                 const rw::math::Vector3D<> &G    
+)
 : 
-BeamGeometry(dx, Exvec, vxvec, rhovec), 
+BeamGeometry(dx, Exvec, vxvec, rhovec, wTb, G), 
 _H(dz),
 _K(dy),
 _B0vec(_NSlices)

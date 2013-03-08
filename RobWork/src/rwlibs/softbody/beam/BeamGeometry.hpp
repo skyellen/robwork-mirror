@@ -22,6 +22,8 @@ limitations under the License.
 #include <ostream>
 #include <sstream>
 
+#include <rw/math/Transform3D.hpp>
+
 namespace rwlibs {
 namespace softbody {
 
@@ -31,10 +33,19 @@ public:
     BeamGeometry(double L,
                  const std::vector<double> &Exvec,
                  const std::vector<double> &vxvec,
-                 const std::vector<double> &rhovec
+                 const std::vector<double> &rhovec,
+                 const rw::math::Transform3D<> &wTb,
+                 const rw::math::Vector3D<> &G
                 );
     
     virtual ~BeamGeometry();
+    
+public:
+    void setTransform(const rw::math::Transform3D<> &T);
+    rw::math::Transform3D<> getTransform(void) const;
+    
+    void setG(const rw::math::Vector3D<> &G);
+    rw::math::Vector3D<> getG(void) const;
 
 public:
     // stuff implemented here
@@ -43,6 +54,13 @@ public:
     double rho(const int i) const;
 
     double kappa(const int i) const;
+    
+    double g1 ( void ) const;
+    double g2 ( void ) const;
+    
+        
+    double get_uxTCPy();
+    double get_uyTCPy();
 
 public:
     // stuff implemented by derived classes,  specific to ModRussel beam
@@ -92,7 +110,8 @@ private:
     std::vector<double> _vxvec;
     std::vector<double> _rhovec;
 
-
+    rw::math::Transform3D<> _wTb; // world to beam transform
+    rw::math::Vector3D<> _G; 
 };
 }
 }

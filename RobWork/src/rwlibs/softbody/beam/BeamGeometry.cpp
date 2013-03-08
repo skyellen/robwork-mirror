@@ -22,18 +22,23 @@ limitations under the License.
 #include <math.h>
 #include <iostream>
 
+
+
 //#include "Interpolation.hpp"
 
 using namespace std;
+using namespace rw::math;
 using namespace rwlibs::softbody;
 
 BeamGeometry::BeamGeometry(
 		double L, 
 		const std::vector<double> &Exvec,
 		   const std::vector<double> &vxvec,
-		const std::vector<double> &rhovec
+		const std::vector<double> &rhovec,
+        const rw::math::Transform3D<> &wTb,
+                 const rw::math::Vector3D<> &G
 		)  
-		: _L(L), _a(0.0), _b(L), _Exvec(Exvec), _vxvec(vxvec), _rhovec(rhovec)
+		: _L(L), _a(0.0), _b(L), _Exvec(Exvec), _vxvec(vxvec), _rhovec(rhovec), _wTb(wTb), _G(G)
 {
 	assert (Exvec.size() == rhovec.size() );
 	assert (vxvec.size() == Exvec.size() );
@@ -50,6 +55,61 @@ BeamGeometry::BeamGeometry(
 BeamGeometry::~BeamGeometry() {
 
 }
+
+
+
+
+
+void BeamGeometry::setTransform ( const rw::math::Transform3D< double >& T ) {
+    _wTb = T;
+}
+
+
+rw::math::Transform3D< double > BeamGeometry::getTransform ( void ) const {
+    return _wTb;
+}
+
+
+
+rw::math::Vector3D< double > BeamGeometry::getG ( void ) const {
+    return _G;
+}
+
+
+void BeamGeometry::setG ( const rw::math::Vector3D< double >& G ) {
+    _G = G;
+}
+
+
+
+
+double BeamGeometry::g1 ( void ) const  {
+    //const double uxTCPy = getTransform().R() ( 1,0 );
+    // -G {uxTCPy, uyTCPy}
+    Vector3D<> g =getTransform().R() * getG();
+    
+    return g[0];
+
+}
+
+
+double BeamGeometry::g2 ( void ) const  {
+    //const double uyTCPy = _T _rot ( 1,1 );
+    //_g2 = _G * _uyTCPy;
+    Vector3D<> g =getTransform().R() * getG();
+    
+    return g[1];
+}
+
+double BeamGeometry::get_uxTCPy() {
+    return getTransform().R() (1, 0);
+}
+
+
+double BeamGeometry::get_uyTCPy() {
+    return getTransform().R() (1, 1);
+}
+
 
 
 
