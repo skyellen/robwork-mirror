@@ -26,7 +26,7 @@
 #include "./sensor/Sensor.hpp"
 
 #include "./sensor/Camera.hpp"
-#include "./sensor/StereoCamera.hpp"
+#include "./sensor/StereoCameraModel.hpp"
 #include "./sensor/CameraFirewire.hpp"
 #include "./sensor/CameraListener.hpp"
 #include "./sensor/ImageUtil.hpp"

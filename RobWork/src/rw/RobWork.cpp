@@ -99,7 +99,7 @@ void RobWork::initialize(){
     	path file( dir );
 
 #if(BOOST_FILESYSTEM_VERSION==2)
-    	if( file.has_root_path() ){
+    	if( !file.has_root_path() ){
     		file = path( ipath.string() + "/" + dir );
     	}
 #else

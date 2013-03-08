@@ -38,6 +38,6 @@
 #include "./kinematics/StateSetup.hpp"
 #include "./kinematics/StateStructure.hpp"
 #include "./kinematics/TreeState.hpp"
-#include "./kinematics/StatelessObject.hpp"
+#include "./kinematics/StatelessData.hpp"
 
 #endif /* KINEMATICS_HPP_ */
