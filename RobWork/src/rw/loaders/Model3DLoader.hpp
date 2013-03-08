@@ -20,25 +20,21 @@
 
 //! @file Model3DLoader.hpp
 
-
 #include <rw/common/ExtensionPoint.hpp>
 #include <rw/graphics/Model3D.hpp>
 #include <rw/common/FileCache.hpp>
 
-
 namespace rw {
 namespace loaders {
-
-	//! @addtogroup graphics
-	// @{
-
+	/** @addtogroup loaders */
+	/*@{*/
 
 	/**
 	 * @brief interface for classes that are able to load 3d models
 	 */
     class Model3DLoader {
     public:
-
+    	//! smart pointer type
     	typedef rw::common::Ptr<Model3DLoader> Ptr;
 
         //! destructor
@@ -52,14 +48,12 @@ namespace loaders {
 
         //virtual void save(Model3DPtr model, const std::string& filename) = 0;
 
+	    /** @addtogroup extensionpoints */
+	    /*@{*/
+
 		/**
-		 * @addtogroup extensionpoints
-		 *
-		 * @brief a factory for ImageLoader. This factory also defines an
-		 * extension point for image loaders.
-		 *
-		 * @extensionpoint
-		 *
+		 * @brief a factory for Model3DLoaders. This factory defines an
+		 * extension point for Model3DLoaders.
 		 */
 	    class Factory: public rw::common::ExtensionPoint<Model3DLoader> {
 	    public:
@@ -137,6 +131,7 @@ namespace loaders {
 	    	//static FactoryCache& getCache();
 
 	    };
+	    //! @}
 
 
     };

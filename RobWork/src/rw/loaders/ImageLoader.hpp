@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_LOADERS_IMAGE_IMAGELOADER_HPP
 #define RW_LOADERS_IMAGE_IMAGELOADER_HPP
 
@@ -25,7 +24,7 @@
 namespace rw { namespace loaders {
 
     /** @addtogroup loaders */
-    /*@{*/
+	//! @{
 
     /**
      * @brief Image loader interface
@@ -34,7 +33,11 @@ namespace rw { namespace loaders {
 	class ImageLoader
 	{
 	public:
+		//! smart pointer type
 	    typedef rw::common::Ptr<ImageLoader> Ptr;
+
+	    //! destructor
+	    virtual ~ImageLoader(){}
 
         /**
          * @param filename [in] name of the file that is to be loaded.
@@ -57,26 +60,30 @@ namespace rw { namespace loaders {
 		virtual bool isImageSupported(const std::string& format);
 
 
+	    /** @addtogroup extensionpoints */
+	    /*@{*/
+
 		/**
-		 * @addtogroup extensionpoints
-		 *
 		 * @brief a factory for ImageLoader. This factory also defines an
 		 * extension point for image loaders.
-		 *
-		 * @extensionpoint
-		 *
 		 */
 	    class Factory: public rw::common::ExtensionPoint<ImageLoader> {
 	    public:
+	    	//! constructor
 	        Factory():rw::common::ExtensionPoint<ImageLoader>("rw.loaders.ImageLoader", "Example extension point"){};
 
 	        /**
 	         * @brief get an image loader for a specific file format
-	         * @param
+	         * @param format [in] image format eg. png, jpeg, ...
 	         * @return
 	         */
 	        static rw::common::Ptr<ImageLoader> getImageLoader(const std::string& format);
 
+	        /**
+	         * @brief test if a imageloader for a specific fileformat exists.
+	         * @param format [in] image format eg. png, jpeg ...
+	         * @return
+	         */
 	        static bool hasImageLoader(const std::string& format);
 
 	        /**
@@ -97,7 +104,7 @@ namespace rw { namespace loaders {
 			static rw::sensor::Image::Ptr load(const std::string& filename);
 
 	    };
-
+	    /*@}*/
 	};
 
 	// for backwards compatibility
