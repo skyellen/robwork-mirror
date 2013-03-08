@@ -212,6 +212,14 @@ namespace rw { namespace math {
         }
 
         /**
+			@brief The dimension of the quaternion (i.e. 4).
+
+			This method is provided to help support generic algorithms using
+			size() and operator[].
+		 */
+        size_t size() const { return 4; }
+
+        /**
          * @brief Returns reference to Quaternion element
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return const reference to element
