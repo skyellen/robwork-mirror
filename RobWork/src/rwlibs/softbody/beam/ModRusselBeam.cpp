@@ -515,9 +515,14 @@ void ModRusselBeam::inEqualityConstraints (
 //TODO: strong impact of discretization step on the U and V integrated constraint...Extrapolate?
 //TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
 void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
+    cout << "ModRusselBeam::solve()" << endl;
+    
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP(planeTbeam);
     double thetaTCP = _obstaclePtr->get_thetaTCP(planeTbeam);
+    
+    std::cout << "yTCP: " << yTCP << std::endl;
+    std::cout << "thetaTCP: " << thetaTCP << std::endl;
     
     
     const size_t N = getN(); //Dimensions of parameter space
