@@ -80,9 +80,12 @@ struct RusselIntegrand {
         const BeamGeometry &geom,
         const boost::numeric::ublas::vector<double>& a,
         const boost::numeric::ublas::vector<double>& da
-    ) : _geom ( geom ), _a ( a ), _da ( da )  {
-        //
-
+    ) : 
+    _geom ( geom ), 
+    _a ( a ), 
+    _da ( da )  
+    {
+    
     };
 
 
@@ -94,11 +97,9 @@ struct RusselIntegrand {
         const double &ax = _a[i];
         const double &dax = _da[i];
 
+        // BUG: something is wrong with the equations regarding gravity as we need to hack the signs
         const double &g1 = _geom.g1()  * (-1.0);
-        const double &g2 = _geom.g2() * (-1.0); // BUG: something is wrong with the equations as we need to hack the signs
-        
-//         std::cout << "g1: " << g1 << std::endl;
-//         std::cout << "g2: " << g2 << std::endl;
+        const double &g2 = _geom.g2() * (-1.0); 
 
         const double b0 = _geom.b0 ( i );
         const double b1 = _geom.b1 ( i );
@@ -122,8 +123,6 @@ private:
     const BeamGeometry &_geom;
     const boost::numeric::ublas::vector<double>& _a;
     const boost::numeric::ublas::vector<double>& _da;
-
-    double _g1, _g2;
 };
 
 
