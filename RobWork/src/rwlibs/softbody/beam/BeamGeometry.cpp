@@ -101,15 +101,14 @@ double BeamGeometry::g2 ( void ) const  {
     return g[1];
 }
 
-double BeamGeometry::get_uxTCPy() {
+double BeamGeometry::get_uxTCPy() const {
     return getTransform().R() (1, 0);
 }
 
 
-double BeamGeometry::get_uyTCPy() {
+double BeamGeometry::get_uyTCPy() const {
     return getTransform().R() (1, 1);
 }
-
 
 
 

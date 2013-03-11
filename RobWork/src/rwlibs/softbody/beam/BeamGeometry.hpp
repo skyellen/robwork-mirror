@@ -59,8 +59,11 @@ public:
     double g2 ( void ) const;
     
         
-    double get_uxTCPy();
-    double get_uyTCPy();
+    double get_uxTCPy() const;
+    double get_uyTCPy() const;
+    
+//     double get_yTCP() const;
+//     double get_thetaTCP() const;
 
 public:
     // stuff implemented by derived classes,  specific to ModRussel beam

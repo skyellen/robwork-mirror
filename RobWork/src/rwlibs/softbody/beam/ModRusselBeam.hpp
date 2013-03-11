@@ -31,6 +31,7 @@
 
 // using namespace boost::numeric::ublas;
 #include "BeamGeometry.hpp"
+#include "BeamObstaclePlane.hpp"
 
 namespace rwlibs {
 namespace softbody {
@@ -41,9 +42,10 @@ class ModRusselBeam
 	
 	ModRusselBeam(
         boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
+        boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
         int M,
-		double yTCP,
-		double thetaTCP,
+// 		double yTCP,
+// 		double thetaTCP,
         double accuracy,
 		bool useNoUpwardConstraint
 	);
@@ -110,37 +112,31 @@ class ModRusselBeam
 
 	
 	//const rw::math::Rotation2D<double> & getRot() { return _rot; };
+    
+    rw::math::Transform3D<> get_planeTbeam(void) const;
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
+        
+        const rw::math::Transform3D<> planeTbeam = obj.get_planeTbeam();
+            
+        double yTCP = obj._obstaclePtr->get_yTCP(planeTbeam);
+        double thetaTCP = obj._obstaclePtr->get_thetaTCP(planeTbeam);
 	        
-	    str << "ModRusselBeam {M:" << obj.getM() << ", N:" << obj.getN() << ", yTCP: " << obj._yTCP << ", thetaTCP: " << obj._thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
+	    str << "ModRusselBeam {M:" << obj.getM() << ", N:" << obj.getN() << ", yTCP: " << yTCP << ", thetaTCP: " << thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
 	    
 	    return out << str.str();
 	};
 	
     private:
-	boost::shared_ptr< BeamGeometry > _geomPtr; // hvornår bliver denne ref. fucket up?
+	boost::shared_ptr< BeamGeometry > _geomPtr; 
+	boost::shared_ptr< BeamObstaclePlane > _obstaclePtr; 
 	int _M;
-	double _yTCP;
-	double _thetaTCP;
 	double _accuracy;
 	boost::numeric::ublas::vector<double> 	_a;
 	boost::numeric::ublas::vector<double> 	_da; 
 	
-// 	rw::math::Rotation2D<double> 	_rot;
-	
-    //double _uxTCPy;
-	//double _uyTCPy;
-	
-    /*
-	double _G;
-	double 	_g1;
-	double _g2;
-    */
-	
-	bool _useNoUpwardConstraint;
-	
+	bool _useNoUpwardConstraint;	
 };
 }}
 

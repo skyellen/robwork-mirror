@@ -41,16 +41,21 @@ const char DIVIDER[] = "--------------------------------------------------------
 
 ModRusselBeam::ModRusselBeam (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
+    boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
     int M,
-    double yTCP,
-    double thetaTCP,
     double accuracy,
     bool useNoUpwardConstraint
-) : _geomPtr ( geomPtr ), _M ( M ), _yTCP ( yTCP ), _thetaTCP ( thetaTCP ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ) 
+) : _geomPtr ( geomPtr ), _obstaclePtr(obstaclePtr), _M ( M ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ) 
 {
     assert ( _M >= 2 );
 }
 
+Transform3D< double > ModRusselBeam::get_planeTbeam ( void) const {
+    const rw::math::Transform3D<> &Tbeam = _geomPtr->getTransform();
+    rw::math::Transform3D<> planeTbeam = _obstaclePtr->compute_planeTbeam(Tbeam);
+    
+    return planeTbeam;
+}
 
 
 
@@ -353,6 +358,10 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    double yTCP = _obstaclePtr->get_yTCP(planeTbeam);
+    double thetaTCP = _obstaclePtr->get_thetaTCP(planeTbeam);
+    
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
     //const int L = h.size();
 
@@ -380,7 +389,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     const double uyTCPy = _geomPtr->get_uyTCPy();
 
     // endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
-    h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + _yTCP; // require h(x) > 0
+    h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
     // tip constraint dh
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
@@ -506,6 +515,11 @@ void ModRusselBeam::inEqualityConstraints (
 //TODO: strong impact of discretization step on the U and V integrated constraint...Extrapolate?
 //TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
 void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    double yTCP = _obstaclePtr->get_yTCP(planeTbeam);
+    double thetaTCP = _obstaclePtr->get_thetaTCP(planeTbeam);
+    
+    
     const size_t N = getN(); //Dimensions of parameter space
 
     //const size_t M = 0; // Number of equality constraints
@@ -584,9 +598,9 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     V = Vrot;
 
     // return
-    xinituser[0] = _thetaTCP;
+    xinituser[0] = thetaTCP;
     for ( int i = 0; i < ( int ) res.size(); i++ )
-        xinituser[i+1] = res[i] + _thetaTCP;
+        xinituser[i+1] = res[i] + thetaTCP;
 
 
     std::cout << "NFCALLS: " << NFCALLS << std::endl;
