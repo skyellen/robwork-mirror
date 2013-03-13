@@ -26,6 +26,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/concept_check.hpp>
 
 #include "rw/math/Rotation2D.hpp"
 
@@ -114,6 +115,8 @@ class ModRusselBeam
 	//const rw::math::Rotation2D<double> & getRot() { return _rot; };
     
     rw::math::Transform3D<> get_planeTbeam(void) const;
+    double get_yTCP(void) const;
+    double get_thetaTCP(void) const;
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;

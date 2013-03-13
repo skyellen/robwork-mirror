@@ -45,16 +45,32 @@ ModRusselBeam::ModRusselBeam (
     int M,
     double accuracy,
     bool useNoUpwardConstraint
-) : _geomPtr ( geomPtr ), _obstaclePtr(obstaclePtr), _M ( M ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ) 
-{
+) : _geomPtr ( geomPtr ), _obstaclePtr ( obstaclePtr ), _M ( M ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ) {
     assert ( _M >= 2 );
 }
 
-Transform3D< double > ModRusselBeam::get_planeTbeam ( void) const {
+Transform3D< double > ModRusselBeam::get_planeTbeam ( void ) const {
     const rw::math::Transform3D<> &Tbeam = _geomPtr->getTransform();
-    rw::math::Transform3D<> planeTbeam = _obstaclePtr->compute_planeTbeam(Tbeam);
-    
+    rw::math::Transform3D<> planeTbeam = _obstaclePtr->compute_planeTbeam ( Tbeam );
+
     return planeTbeam;
+}
+
+
+double ModRusselBeam::get_thetaTCP ( void ) const {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
+
+    return thetaTCP;
+}
+
+
+
+double ModRusselBeam::get_yTCP ( void ) const {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
+
+    return yTCP;
 }
 
 
@@ -85,12 +101,11 @@ struct RusselIntegrand {
         const BeamGeometry &geom,
         const boost::numeric::ublas::vector<double>& a,
         const boost::numeric::ublas::vector<double>& da
-    ) : 
-    _geom ( geom ), 
-    _a ( a ), 
-    _da ( da )  
-    {
-    
+    ) :
+        _geom ( geom ),
+        _a ( a ),
+        _da ( da ) {
+
     };
 
 
@@ -103,8 +118,8 @@ struct RusselIntegrand {
         const double &dax = _da[i];
 
         // BUG: something is wrong with the equations regarding gravity as we need to hack the signs
-        const double &g1 = _geom.g1()  * (-1.0);
-        const double &g2 = _geom.g2() * (-1.0); 
+        const double &g1 = _geom.g1()  * ( -1.0 );
+        const double &g2 = _geom.g2() * ( -1.0 );
 
         const double b0 = _geom.b0 ( i );
         const double b1 = _geom.b1 ( i );
@@ -152,7 +167,7 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
     FdUtil::vectorDerivative ( _a, _da, get_h() ) ;
 
 
-    RusselIntegrand intgr ( *_geomPtr, _a, _da);
+    RusselIntegrand intgr ( *_geomPtr, _a, _da );
     double val = TrapMethod::trapezMethod<RusselIntegrand> ( intgr, M, h );
 
     NFCALLS++;
@@ -359,9 +374,9 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     boost::numeric::ublas::matrix< double >& ddh
 ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP(planeTbeam);
-    double thetaTCP = _obstaclePtr->get_thetaTCP(planeTbeam);
-    
+    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
+    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
+
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
     //const int L = h.size();
 
@@ -427,7 +442,7 @@ void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
-        const double uxTCPy =  _geomPtr->get_uxTCPy();
+    const double uxTCPy =  _geomPtr->get_uxTCPy();
     const double uyTCPy = _geomPtr->get_uyTCPy();
     // run through all points and formulate the 'no-pointing-upwards' constraint
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
@@ -516,15 +531,25 @@ void ModRusselBeam::inEqualityConstraints (
 //TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
 void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
     cout << "ModRusselBeam::solve()" << endl;
-    
+
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP(planeTbeam);
-    double thetaTCP = _obstaclePtr->get_thetaTCP(planeTbeam);
+    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
+    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
     
+    Vector3D<> G = _geomPtr->getG();
+    
+    double g1 = _geomPtr->g1();
+    double g2 = _geomPtr->g2();
+    
+    std::cout << "G: " << G << std::endl;
+    
+    std::cout << "g1: " << g1 << std::endl;
+    std::cout << "g2: " << g2 << std::endl;
+
     std::cout << "yTCP: " << yTCP << std::endl;
     std::cout << "thetaTCP: " << thetaTCP << std::endl;
-    
-    
+
+
     const size_t N = getN(); //Dimensions of parameter space
 
     //const size_t M = 0; // Number of equality constraints
@@ -589,9 +614,10 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     }
 
     // rotate curve according to thetaTCP
+    /*
     boost::numeric::ublas::vector<double> Urot ( U.size() );
     boost::numeric::ublas::vector<double> Vrot ( V.size() );
-    
+
     const Rotation3D<> &rot = _geomPtr->getTransform().R();
 
     for ( int i = 0; i < ( int ) U.size(); i++ ) {
@@ -601,11 +627,18 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     // return the rotated version to the user
     U = Urot;
     V = Vrot;
-
-    // return
+    
     xinituser[0] = thetaTCP;
     for ( int i = 0; i < ( int ) res.size(); i++ )
         xinituser[i+1] = res[i] + thetaTCP;
+    */
+
+    
+    
+    
+    xinituser[0] = 0.0;
+    for ( int i = 0; i < ( int ) res.size(); i++ )
+        xinituser[i+1] = res[i];
 
 
     std::cout << "NFCALLS: " << NFCALLS << std::endl;
@@ -733,3 +766,4 @@ for(int i=0;i<N;i++) {
 		ddh(0, 0) = 0;
 		}
 		*/
+

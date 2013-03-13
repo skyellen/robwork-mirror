@@ -137,7 +137,7 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
         compute_con_info_i_EXT(_x, j, _a, _da, _dda);
 		std::cout << "Constraint " << j << " has value " << _a(j)<<std::endl;
         if (_a(j)<=0)
-            RW_THROW("Initial value: Violation of constraint ");
+            RW_WARN("Initial value: Violation of constraint ");
         
             
     }
@@ -145,8 +145,8 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
     h=0.00001;
     
     // TODO remove seed
-    unsigned seed = 42;
-    srand(seed);
+//     unsigned seed = 42;
+//     srand(seed);
     
     for(size_t i=0; i<N; i++) {
         xtest(i) = delta*rand()/32768.0;
@@ -371,7 +371,7 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
     }
 
     // verification of user defined routines
-//     verify_user_defined_objective_and_constraints();
+    verify_user_defined_objective_and_constraints();
     
     const int MAXITERATIONS = 30;
 
