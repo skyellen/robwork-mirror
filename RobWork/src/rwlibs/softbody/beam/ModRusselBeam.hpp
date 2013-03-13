@@ -108,10 +108,13 @@ class ModRusselBeam
 									   
 	void solve(boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V);
 	
-	boost::numeric::ublas::vector<double> integrateAngleU(const boost::numeric::ublas::vector<double> a)  ;
-	boost::numeric::ublas::vector<double> integrateAngleV(const boost::numeric::ublas::vector<double> a)  ;
+// 	boost::numeric::ublas::vector<double> integrateAngleU(const boost::numeric::ublas::vector<double> a)  ;
+// 	boost::numeric::ublas::vector<double> integrateAngleV(const boost::numeric::ublas::vector<double> a)  ;
 
-	
+	void integrateAngleU(boost::numeric::ublas::vector<double> &U, const boost::numeric::ublas::vector<double> &avec);
+    void integrateAngleV(boost::numeric::ublas::vector<double> &V, const boost::numeric::ublas::vector<double> &avec);
+    
+    
 	//const rw::math::Rotation2D<double> & getRot() { return _rot; };
     
     rw::math::Transform3D<> get_planeTbeam(void) const;

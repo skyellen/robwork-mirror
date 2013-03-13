@@ -598,55 +598,10 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
 
 // 	std::cout << "res: " << res << std::endl;
 
-    const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / res.size();
+    integrateAngleU(U, res);
+    integrateAngleV(V, res);
 
-    U[0] = 0.0;
-    for ( int end = 0; end < ( int )  res.size(); end++ ) {
-        const double f0 = cos ( 0.0 );
-        const double fL = cos ( res[end] );
 
-        double sum = 0.0;
-        for ( int i = 0; i < ( int ) end; i++ )
-            sum += cos ( res[i] );
-
-        U[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
-    }
-
-    V[0] = 0.0;
-    for ( int end = 0; end < ( int ) res.size(); end++ ) {
-        const double f0 = sin ( 0.0 );
-        const double fL = sin ( res[end] );
-
-        double sum = 0.0;
-        for ( int i = 0; i < ( int ) end; i++ )
-            sum += sin ( res[i] );
-
-        V[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
-    }
-
-    // rotate curve according to thetaTCP
-    /*
-    boost::numeric::ublas::vector<double> Urot ( U.size() );
-    boost::numeric::ublas::vector<double> Vrot ( V.size() );
-
-    const Rotation3D<> &rot = _geomPtr->getTransform().R();
-
-    for ( int i = 0; i < ( int ) U.size(); i++ ) {
-        Urot[i] = rot ( 0,0 ) * U[i] + rot ( 0, 1 ) * V[i];
-        Vrot[i] = rot ( 1,0 ) * U[i] + rot ( 1, 1 ) * V[i];
-    }
-    // return the rotated version to the user
-    U = Urot;
-    V = Vrot;
-    
-    xinituser[0] = thetaTCP;
-    for ( int i = 0; i < ( int ) res.size(); i++ )
-        xinituser[i+1] = res[i] + thetaTCP;
-    */
-
-    
-    
-    
     xinituser[0] = 0.0;
     for ( int i = 0; i < ( int ) res.size(); i++ )
         xinituser[i+1] = res[i];
@@ -655,6 +610,38 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     std::cout << "NFCALLS: " << NFCALLS << std::endl;
 }
 
+void ModRusselBeam::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
+    const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / avec.size();
+
+    U[0] = 0.0;
+    for ( int end = 0; end < ( int )  avec.size(); end++ ) {
+        const double f0 = cos ( 0.0 );
+        const double fL = cos ( avec[end] );
+
+        double sum = 0.0;
+        for ( int i = 0; i < ( int ) end; i++ )
+            sum += cos ( avec[i] );
+
+        U[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
+    }
+}
+
+
+void ModRusselBeam::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
+    const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / avec.size();
+    
+    V[0] = 0.0;
+    for ( int end = 0; end < ( int ) avec.size(); end++ ) {
+        const double f0 = sin ( 0.0 );
+        const double fL = sin ( avec[end] );
+
+        double sum = 0.0;
+        for ( int i = 0; i < ( int ) end; i++ )
+            sum += sin ( avec[i] );
+
+        V[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
+    }
+}
 
 
 
