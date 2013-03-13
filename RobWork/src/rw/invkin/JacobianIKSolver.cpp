@@ -87,15 +87,10 @@ std::vector<Q> JacobianIKSolver::solve(const Transform3D<>& bTed,
     // the end result
     if (solveLocal(bTed, maxError, state, maxIterations ) )
     {
-    	std::cout << "FOUND A SOLUTION" << std::endl;
         std::vector<Q> result;
         Q q = _device->getQ(state);
         if (!_checkJointLimits || Models::inBounds(q, *_device))
             result.push_back(q);
-        std::cout << "FOUND A SOLUTION - something wrong though" << std::endl;
-        std::cout << q << std::endl;
-        std::cout << _device->getBounds().first << std::endl;
-        std::cout << _device->getBounds().second << std::endl;
 
         return result;
     }
