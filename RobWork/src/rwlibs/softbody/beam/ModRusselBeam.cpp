@@ -74,6 +74,17 @@ double ModRusselBeam::get_yTCP ( void ) const {
 }
 
 
+double ModRusselBeam::get_uxTCPy ( void ) const {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    return planeTbeam.R() (1, 0);
+}
+
+
+double ModRusselBeam::get_uyTCPy ( void ) const {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    return planeTbeam.R() (1, 1);
+}
+
 
 
 
@@ -400,10 +411,11 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     }
     double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
 
-    const double uxTCPy =  _geomPtr->get_uxTCPy();
-    const double uyTCPy = _geomPtr->get_uyTCPy();
+    const double uxTCPy =  get_uxTCPy(); // u2
+    const double uyTCPy = get_uyTCPy(); // v2
 
-    // endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
+    // tip constraint h
+    //  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
     h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
     // tip constraint dh
@@ -412,7 +424,6 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
     }
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
-
 
     // tip constraint, ddh
     if ( 0 == idx ) {
@@ -442,8 +453,8 @@ void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
-    const double uxTCPy =  _geomPtr->get_uxTCPy();
-    const double uyTCPy = _geomPtr->get_uyTCPy();
+    const double uxTCPy =  get_uxTCPy();
+    const double uyTCPy = get_uyTCPy();
     // run through all points and formulate the 'no-pointing-upwards' constraint
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
         h ( i+1 ) = - uyTCPy * sin ( x[i] ) - uxTCPy * cos ( x[i] );
@@ -531,7 +542,7 @@ void ModRusselBeam::inEqualityConstraints (
 //TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
 void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
     cout << "ModRusselBeam::solve()" << endl;
-
+/*
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
     double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
@@ -547,7 +558,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     std::cout << "g2: " << g2 << std::endl;
 
     std::cout << "yTCP: " << yTCP << std::endl;
-    std::cout << "thetaTCP: " << thetaTCP << std::endl;
+    std::cout << "thetaTCP: " << thetaTCP << std::endl;*/
 
 
     const size_t N = getN(); //Dimensions of parameter space

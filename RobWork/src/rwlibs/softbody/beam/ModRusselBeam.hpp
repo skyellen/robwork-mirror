@@ -117,6 +117,8 @@ class ModRusselBeam
     rw::math::Transform3D<> get_planeTbeam(void) const;
     double get_yTCP(void) const;
     double get_thetaTCP(void) const;
+    double get_uxTCPy(void) const;
+    double get_uyTCPy(void) const;
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
@@ -125,8 +127,12 @@ class ModRusselBeam
             
         double yTCP = obj._obstaclePtr->get_yTCP(planeTbeam);
         double thetaTCP = obj._obstaclePtr->get_thetaTCP(planeTbeam);
+        double g1 = obj._geomPtr->g1();
+        double g2 = obj._geomPtr->g2();
+        const double uxTCPy =  obj.get_uxTCPy();
+        const double uyTCPy = obj.get_uyTCPy();
 	        
-	    str << "ModRusselBeam {M:" << obj.getM() << ", N:" << obj.getN() << ", yTCP: " << yTCP << ", thetaTCP: " << thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
+	    str << "ModRusselBeam {M:" << obj.getM() << ", g1: " << g1 << ", g2:" << g2 << ", uxTCPy: " << uxTCPy << ", uyTCPy: " << uyTCPy << ", yTCP: " << yTCP << ", thetaTCP: " << thetaTCP << ", accuracy: " << obj._accuracy << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
 	    
 	    return out << str.str();
 	};

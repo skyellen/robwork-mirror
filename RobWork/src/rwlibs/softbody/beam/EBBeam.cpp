@@ -21,7 +21,7 @@
 
 using namespace rwlibs::softbody;
 
-EBBeam::EBBeam(const double H, const double K, const double L, const double E, const double rho, const double h)
+EBBeam::EBBeam(const double H, const double K, const double L, const double E, const double rho, const double h, const double g2)
 :
 			_H(H),
 			_K(K),
@@ -31,7 +31,7 @@ EBBeam::EBBeam(const double H, const double K, const double L, const double E, c
 			_h(h)
 		   {
 			_J = (_H * pow(_K, 3.0) ) / 12.0;
-			_q = -9.82 * _rho * _K * _H;
+			_q = g2 * _rho * _K * _H;
 		};
 
 

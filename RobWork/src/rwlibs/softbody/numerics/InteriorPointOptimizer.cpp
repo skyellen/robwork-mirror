@@ -132,15 +132,18 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
     daold.clear();
     aold.clear();*/
 
-	std::cout<<"X = "<<_x<<std::endl;
+// 	std::cout<<"X = "<<_x<<std::endl;
     for(size_t j=0; j<M; j++) {
         compute_con_info_i_EXT(_x, j, _a, _da, _dda);
 		std::cout << "Constraint " << j << " has value " << _a(j)<<std::endl;
         if (_a(j)<=0)
-            RW_WARN("Initial value: Violation of constraint ");
+            RW_WARN("Initial value: Violation of constraint!");
         
             
     }
+    
+    return;
+    
     delta=0.0;
     h=0.00001;
     
@@ -440,7 +443,8 @@ vector<double> InteriorPointOptimizer::solve(const vector<double>& x_init) {
         _mu*=0.1;
 	std::cout << "_mu: " << _mu << std::endl;
     }
-    std::cout <<"Search finished. Result is "<< _x << "\nThe accuracy is at least "<< sqrt(diff) <<". The number of LE solves was "<<n_eq_solves<<std::endl;
+//     std::cout <<"Search finished. Result is "<< _x << "\nThe accuracy is at least "<< sqrt(diff) <<". The number of LE solves was "<<n_eq_solves<<std::endl;
+    std::cout <<"Search finished. The accuracy is at least "<< sqrt(diff) <<". The number of LE solves was "<<n_eq_solves<<std::endl;
 	compute_f_info_EXT(_x,  _f, _df, _ddf);
 	std::cout<<"Objective = "<<_f<<std::endl;
 

@@ -88,7 +88,8 @@ double BeamGeometry::g1 ( void ) const  {
     // -G {uxTCPy, uyTCPy}
     Vector3D<> g =getTransform().R() * getG();
     
-    return g[0];
+    // TODO hack with signs - due to post-multiplication?
+    return -g[0];
 
 }
 
@@ -101,14 +102,15 @@ double BeamGeometry::g2 ( void ) const  {
     return g[1];
 }
 
-double BeamGeometry::get_uxTCPy() const {
+/*
+double BeamGeometry::get_uxTCPy() const { 
     return getTransform().R() (1, 0);
 }
 
 
 double BeamGeometry::get_uyTCPy() const {
     return getTransform().R() (1, 1);
-}
+}*/
 
 
 

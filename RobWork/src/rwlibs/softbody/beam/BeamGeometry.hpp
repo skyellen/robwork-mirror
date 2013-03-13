@@ -59,8 +59,8 @@ public:
     double g2 ( void ) const;
     
         
-    double get_uxTCPy() const;
-    double get_uyTCPy() const;
+//     double get_uxTCPy() const;
+//     double get_uyTCPy() const;
     
 //     double get_yTCP() const;
 //     double get_thetaTCP() const;

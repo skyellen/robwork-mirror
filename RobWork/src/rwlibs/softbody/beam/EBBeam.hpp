@@ -29,7 +29,8 @@ class EBBeam {
 		   const double L, 
 		   const double E, 
 		   const double rho,
-		   const double h
+		   const double h,
+         const double g2
 		   );
 		
 		double operator() (const int i) const;
