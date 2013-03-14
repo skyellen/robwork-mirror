@@ -49,7 +49,7 @@ double BeamStartGuess::curveDX ( const double t ) {
 rw::math::Vector2D< double > BeamStartGuess::Dcurve ( const double t ) {
     rw::math::Vector2D<double> vec ( curveDX ( t ), curveDY ( t ) );
     
-    return vec;
+    return -vec;
 
     //return rw::math::inverse< double > ( _rot ) * vec;
 }
