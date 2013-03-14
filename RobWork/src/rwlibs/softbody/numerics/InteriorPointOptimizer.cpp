@@ -133,7 +133,7 @@ void InteriorPointOptimizer::verify_user_defined_objective_and_constraints() {
         compute_con_info_i_EXT ( _x, j, _a, _da, _dda );
         std::cout << "Constraint " << j << " has value " << _a ( j ) <<std::endl;
         if ( _a ( j ) <=0 )
-            RW_WARN ( "Initial value: Violation of constraint!" );
+            RW_THROW ( "Initial value: Violation of constraint!" );
 
 
     }
