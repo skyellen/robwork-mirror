@@ -34,7 +34,7 @@ using namespace rwlibs::softbody;
 #include "rwlibs/softbody/numerics/Interpolation.hpp"
 #include "rwlibs/softbody/util/psplot.h"
 
-static int NFCALLS = 0;
+static int NFCALLS;
 
 
 const char DIVIDER[] = "--------------------------------------------------------------------------------";
@@ -48,6 +48,18 @@ ModRusselBeam::ModRusselBeam (
 ) : _geomPtr ( geomPtr ), _obstaclePtr ( obstaclePtr ), _M ( M ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ) {
     assert ( _M >= 2 );
 }
+
+
+void ModRusselBeam::setUseNoUpwardConstraint ( bool val ) {
+    _useNoUpwardConstraint = val;
+}
+
+void ModRusselBeam::setAccuracy ( double acc ) {
+    _accuracy = acc;
+}
+
+
+
 
 Transform3D< double > ModRusselBeam::get_planeTbeam ( void ) const {
     const rw::math::Transform3D<> &Tbeam = _geomPtr->getTransform();
@@ -187,8 +199,8 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
 }
 
 //Computing gradient for object function
-boost::numeric::ublas::vector<double> ModRusselBeam::df ( const boost::numeric::ublas::vector<double>& x ) {
-    boost::numeric::ublas::vector<double> res ( x.size() );
+void ModRusselBeam::df ( boost::numeric::ublas::vector<double> &res, const boost::numeric::ublas::vector<double>& x ) {
+//     boost::numeric::ublas::vector<double> res ( x.size() );
 
 
     const double eps = 1e-6;
@@ -210,61 +222,13 @@ boost::numeric::ublas::vector<double> ModRusselBeam::df ( const boost::numeric::
         xt ( i ) = x ( i );
     }
     //std::cout<<"df = "<<res<<std::endl;
-    return res;
-}
-/*
-//Computing hessian for object function
-boost::numeric::ublas::matrix<double> ModRusselBeam::ddf(const boost::numeric::ublas::vector<double>& x) {
-	 boost::numeric::ublas::matrix<double> res(x.size(), x.size());
-
-	const double eps = 1e-6;
-	//const double eps = _geom.get_h();
-// 	std::cout << "_geom.get_h(): " << _geom.get_h() << std::endl;
-
-	boost::numeric::ublas::vector<double> xt = x;
-
-
-	for (size_t i = 0; i<x.size(); i++) {
-		xt(i) = x(i)-eps;
-		boost::numeric::ublas::vector<double> g1 = df(xt);
-		xt(i) = x(i)+eps;
-		boost::numeric::ublas::vector<double> g2 = df(xt);
-
-
-		const boost::numeric::ublas::vector<double> tmp = (g2-g1)/(2*eps);
-
-		for (size_t j = 0; j<x.size(); j++) {
-			res(i,j) = tmp(j);
-		}
-		xt(i) = x(i);
-	}
-
-	std::cout<<"DDF org = "<<res<<std::endl;
-
-
-
-	return res;
-}
-*/
-
-double ModRusselBeam::diff_i ( const boost::numeric::ublas::vector< double >& x, const int i ) {
-    const double eps = 1e-6;
-
-    boost::numeric::ublas::vector<double> xt = x;
-
-    xt ( i ) = x ( i )-eps;
-    double d1 = f ( xt );
-
-    xt ( i ) = x ( i ) +eps;
-    double d2 = f ( xt );
-
-    return ( d2-d1 ) / ( 2*eps );
+//     return res;
 }
 
 
 
-boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2 ( const boost::numeric::ublas::vector< double >& x ) {
-    boost::numeric::ublas::matrix<double> res ( x.size(), x.size() );
+void ModRusselBeam::ddf_banded2 (boost::numeric::ublas::matrix<double> &res, const boost::numeric::ublas::vector< double >& x ) {
+//     boost::numeric::ublas::matrix<double> res ( x.size(), x.size() );
     res.clear();
 
 
@@ -326,27 +290,7 @@ boost::numeric::ublas::matrix< double > ModRusselBeam::ddf_banded2 ( const boost
         }
     }
 
-    //std::cout << "res: " << res << std::endl;
-
-    /*
-    std::cout<<"DDF banded = "<<res<<std::endl;
-
-    std::cout << "res.size(): " << res.size1() << std::endl;
-    for (int i = 0; i < res.size1(); i++) {
-    for (int j = 0; j < res.size2(); j++) {
-        if ( abs( res(i,j) ) > 0.001 ) {
-    	std::cout << 1 << " ";
-        }
-        else {
-    	std::cout << 0  << " ";
-        }
-    }
-    std::cout << std::endl;
-    }
-
-    assert(false);
-    */
-    return res;
+//     return res;
 }
 
 
@@ -360,13 +304,10 @@ void ModRusselBeam::objective ( const boost::numeric::ublas::vector< double >& x
     //			ddf: Hessian
 
     f = this->f ( x );
-    df = this->df ( x );
-    ddf = this->ddf_banded2 ( x );
-    //ddf = this->ddf(x);
-
-// 	std::cout << "f: " << f << std::endl;
-// 	std::cout << "df: " << df << std::endl;
-// 	std::cout << "ddf: " << ddf << std::endl;
+//     df = this->df ( x );
+    this->df(df, x);
+//     ddf = this->ddf_banded2 ( x );
+    this->ddf_banded2(ddf, x);
 }
 
 /**
@@ -386,7 +327,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
+//     double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
 
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
     //const int L = h.size();
@@ -513,68 +454,21 @@ void ModRusselBeam::inEqualityConstraints (
 
     if ( _useNoUpwardConstraint )
         setInEqualityNoUpwardsEtaConstraint ( x, idx, h, dh, ddh ); // h[1] : h[x.size() + 1]
-
-// 	std::cout << "idx: " << idx << std::endl;
-// 	std::cout << "x: " << x << std::endl;
-//   	std::cout << "h: " << h << std::endl;
-//   	std::cout << "dh: " << dh << std::endl;
-//   	std::cout << "ddh: " << ddh << std::endl;
-// 	std::cout << "DIVIDER: " << DIVIDER << std::endl;
 }
 
 
 
-/*TODO: how can we detect if we need the constraints?
-    For LD we need the no-upwards-constraint to keep it stable when in flat contact with the table
-
-
-    user or automatic choice of constraints?
-
-
-
-
-
-
-
-
-*/
-//TODO: strong impact of discretization step on the U and V integrated constraint...Extrapolate?
-//TODO: better adaptive optimazation, can we trust our error estimate? seems accurate tho...
 void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
     cout << "ModRusselBeam::solve()" << endl;
-/*
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
-    
-    Vector3D<> G = _geomPtr->getG();
-    
-    double g1 = _geomPtr->g1();
-    double g2 = _geomPtr->g2();
-    
-    std::cout << "G: " << G << std::endl;
-    
-    std::cout << "g1: " << g1 << std::endl;
-    std::cout << "g2: " << g2 << std::endl;
-
-    std::cout << "yTCP: " << yTCP << std::endl;
-    std::cout << "thetaTCP: " << thetaTCP << std::endl;*/
-
 
     const size_t N = getN(); //Dimensions of parameter space
 
     //const size_t M = 0; // Number of equality constraints
 
     const size_t L = 	_useNoUpwardConstraint == true 		?	 1 + N : 1;
+    
+    NFCALLS = 0;
 
-    // all constraints
-    //const size_t L = 1 + N; //Number of inequality constraints
-
-    // disable no-upwards constraint
-    //const size_t L = 1 ; //Number of inequality constraints
-
-
-//  	std::cout << "N: " << N << std::endl;
 
     boost::numeric::ublas::vector<double> xinit ( N );
     for ( int i = 0; i < ( int ) N; i++ ) {
@@ -593,10 +487,6 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
                                );
     iop.setAccuracy ( _accuracy );
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
-
-// 	std::cout << "DIVIDER: " << DIVIDER << std::endl;
-
-// 	std::cout << "res: " << res << std::endl;
 
     integrateAngleU(U, res);
     integrateAngleV(V, res);
@@ -642,126 +532,3 @@ void ModRusselBeam::integrateAngleV ( boost::numeric::ublas::vector< double >& V
         V[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
     }
 }
-
-
-
-/*
-struct AngleIntegrandU {
-    AngleIntegrandU(
-    const boost::numeric::ublas::vector<double> &a,
-    const Geometry &geom
-    ) :
-    _a(a),
-    _geom(geom)
-    {};
-
-    double operator() (const int i) const {
-	return cos(_a[i]);
-	//return _a[i];
-	}
-
-	private:
-	    const boost::numeric::ublas::vector<double> &_a;
-	    const Geometry &_geom;
-	    };
-	    */
-
-/*
-struct AngleIntegrandV {
-    AngleIntegrandV(
-    const boost::numeric::ublas::vector<double> &a,
-    const Geometry &geom
-    ) :
-    _a(a),
-    _geom(geom)
-    {};
-
-    double operator() (const int i) const {
-	return sin(_a[i]);
-    }
-
-    private:
-	const boost::numeric::ublas::vector<double> &_a;
-	const Geometry &_geom;
-	};
-	*/
-
-
-/*
-boost::numeric::ublas::vector<double> BendOptimizer::integrateAngleU(const boost::numeric::ublas::vector<double> a)  {
-    const int M = a.size();
-    const double h =  (_geom.get_b() - _geom.get_a() ) / (M -1.0);
-
-    std::cout << "M: " << M << std::endl;
-    std::cout << "h: " << h << std::endl;
-
-    std::cout << "a: " << a << std::endl;
-
-    const double b = 110;
-    const double aa = 0.0;
-    std::cout << "(b-aa)/M: " << (b-aa)/M << std::endl;
-
-    AngleIntegrandU intgr( a, _geom);
-
-
-    boost::numeric::ublas::vector<double> res(M +1);
-
-    //assert(res.size() == a.size()); // TODO FIXME, using wrong vector length
-
-    res[0] = 0.0;
-    for (int k = 1; k < M +1; k++) {
-	res[k] = TrapMethod::trapezMethod<AngleIntegrandU>(intgr, k, h);
-	}
-
-
-	return res;
-	};
-	*/
-/*
-boost::numeric::ublas::vector<double> BendOptimizer::integrateAngleV(const boost::numeric::ublas::vector<double> a)  {
-    const int M = a.size();
-    const double h = (_geom.get_b() - _geom.get_a() ) / (M -1.0);
-
-    AngleIntegrandV intgr( a, _geom);
-
-
-    boost::numeric::ublas::vector<double> res(M+1);
-
-    //assert(res.size() == a.size()); // TODO FIXME, using wrong vector length
-
-    res[0] = 0.0;
-    for (int k = 1; k < M +1; k++) {
-	res[k] = TrapMethod::trapezMethod<AngleIntegrandV>(intgr, k, h);
-	}
-
-
-	return res;
-	};
-	*/
-
-
-/*
-size_t N = x.size();
-
-for(int i=0;i<N;i++) {
-    dh(idx, i)=0.0;
-    for(int j=0;j<N;j++) {
-	ddh(i, j)=0.0;
-	}
-	}
-
-	h(0) = 10 - x[0];
-	h(1) =  x[0];
-
-	// only 1 variable here
-	if (0 == idx) { // 1st constraint
-	    dh(idx, 0) = -1;
-	    ddh(idx, 0) = 0;
-	    }
-
-	    if (1 == idx) { // 2nd constraint
-		dh(idx, 0) = 1;
-		ddh(0, 0) = 0;
-		}
-		*/
-

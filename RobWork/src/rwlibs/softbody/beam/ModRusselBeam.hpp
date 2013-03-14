@@ -97,14 +97,16 @@ class ModRusselBeam
 	
 	double f(const boost::numeric::ublas::vector< double >& x);
 
-	boost::numeric::ublas::vector<double> df(const boost::numeric::ublas::vector<double>& x);
+// 	boost::numeric::ublas::vector<double> df(const boost::numeric::ublas::vector<double>& x);
+    void df(boost::numeric::ublas::vector<double> &res, const boost::numeric::ublas::vector<double>& x);
 
-	boost::numeric::ublas::matrix<double> ddf(const boost::numeric::ublas::vector<double>& x); 	
+// 	boost::numeric::ublas::matrix<double> ddf(const boost::numeric::ublas::vector<double>& x); 	
 	
-	double diff_i(const boost::numeric::ublas::vector< double >& x, const int i);
+// 	double diff_i(const boost::numeric::ublas::vector< double >& x, const int i);
 	
-	boost::numeric::ublas::matrix<double> ddf_banded(const boost::numeric::ublas::vector<double>& x); 	
-	boost::numeric::ublas::matrix<double> ddf_banded2(const boost::numeric::ublas::vector<double>& x); 	
+// 	boost::numeric::ublas::matrix<double> ddf_banded(const boost::numeric::ublas::vector<double>& x); 	
+// 	boost::numeric::ublas::matrix<double> ddf_banded2(const boost::numeric::ublas::vector<double>& x);
+    void ddf_banded2(boost::numeric::ublas::matrix<double> &res, const boost::numeric::ublas::vector<double>& x);  
 									   
 	void solve(boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V);
 	
@@ -122,6 +124,9 @@ class ModRusselBeam
     double get_thetaTCP(void) const;
     double get_uxTCPy(void) const;
     double get_uyTCPy(void) const;
+    
+    void setUseNoUpwardConstraint(bool val);
+    void setAccuracy(double acc);
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
