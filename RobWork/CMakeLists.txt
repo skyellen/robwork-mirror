@@ -51,7 +51,7 @@ IF( RW_IS_TESTS_ENABLED )
     MESSAGE(STATUS "RobWork tests ENABLED!")
     # TODO Specify SET(SITE "myname") to configure the site name to use when uploading 
     SET(BUILDNAME "${INFO}")
-    ENABLE_TESTING()
+    ENABLE_TESTING() # Should be unnecessary due to the CMake module CTest also calls this command
     INCLUDE(CTest)
     ADD_SUBDIRECTORY(test)
 ELSE ()
@@ -85,14 +85,14 @@ CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp.in
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
-# Configure cmake/RobWorkBuildConfig.cmake.in such that other projects might use robwork
+# Configure cmake/RobWorkBuildConfig.cmake.in such that other projects might use RobWork
 CONFIGURE_FILE(
   ${RW_ROOT}/cmake/RobWorkBuildConfig.cmake.in
   "${RW_ROOT}/cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
   @ONLY
 )
 
-# confgure version information
+# configure version information
 CONFIGURE_FILE(
   ${RW_ROOT}/cmake/RobWorkConfigVersion.cmake.in
   "${RW_ROOT}/cmake/RobWorkConfigVersion.cmake"

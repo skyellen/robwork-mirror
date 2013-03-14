@@ -9,23 +9,23 @@ how it is designed.
 The main focus during the initial development of RobWork, was to provide a c++ toolbox of basic mathematics, kinematics, visualization
 and motion planning for robotic research and applications. After several years the goals of RobWork expanded to include
 more functionality with task description, script interface, plugin interfaces, dynamic simulation, simple vision and a
-more general and extendible visualization tool. This made RobWork appear to be more of a framework than a toolbox, and in simple
+more general and extensible visualization tool. This made RobWork appear to be more of a framework than a toolbox, and in simple
 applications this was true. However, the goal of RobWork has never been and probably never will be to include or become
 a component/communications framework such as e.g. Orocos, Orca or ROS. In fact for large projects
-we (RobWork developers) use and also encurange others to use these frameworks in conjunction with RobWork. In that
+we (RobWork developers) use and also encourage others to use these frameworks in conjunction with RobWork. In that
 case RobWork is best viewed as a C++ toolbox and not a complete framework.
 
-It is important to understand this development of RobWork and also its dual usage of both framework and toolbox since
+It is important to understand this development of RobWork and also its dual usage as both framework and toolbox since
 this is somewhat reflected in the software structure of RobWork. One of the main concerns in the development process
-has been to limit the number of external dependencies and to keep a clean "self explaining" java style API. As such
-the project has been split in several packages allowing the use of toolbox functionality without depressingly many
+has been to limit the number of external dependencies and to keep a clean "self explaining" Java style API. As such
+the project has been split in several packages allowing the use of toolbox functionality without too many
 external dependencies.
 
  - RobWork - the core package with only two mandatory dependencies: *Boost* and *Xerces* 
  - RobWorkStudio - the visualization package which adds one additional dependency on *Qt*
  - RobWorkSim - the dynamic simulation package which only adds additional optional dependencies such as *ODE*,
  *Bullet* and *Moby* 
- - RobWorkHardware - the hardware interface package which only adds additional optional dependencies which is dictated
+ - RobWorkHardware - the hardware interface package which only adds additional optional dependencies which are dictated
  by the actual hardware requirements.
 
 Figure 2 shows a structural overview of RobWork and how
@@ -58,7 +58,7 @@ stateless design, the workcell, robot devices, inverse kinematics, collision det
 ## Notation ## {#sec_rw_manual_notation}
 
 In general a diagonal notation form will be used to describe the relation
-of vectors, rotation matrixes, homogenous transform, velocity screw,
+of vectors, rotation matrices, homogeneous transform, velocity screw,
 and so on.
 
 
@@ -67,10 +67,10 @@ Expression                                  | Description
 \f$ \robax{a}{\mathbf{P}} \f$               | Vector P seen in frame *a*
 \f$ \robabx{a}{b}{\mathbf{P}} \f$           | Translation of frame *b* seen in frame *a*
 \f$ \robabx{a}{b}{\mathbf{R}} \f$           | Rotation of frame \b b seen in frame *a*
-\f$ \robabx{a}{b}{\mathbf{T}} \f$           | Homogenous transform of frame *b* seen in frame *a*
+\f$ \robabx{a}{b}{\mathbf{T}} \f$           | Homogeneous transform of frame *b* seen in frame *a*
 \f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_v} \f$ | Velocity transform that transforms the reference frame from *b* to *a* and the velocity reference point from *c* to *d*
 \f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_f} \f$ | Force transform that transforms the reference frame from *b* to *a* and the force reference point from \b c to \b d
-\f$ \robabx{a}{b}{\mathbf{J}} \f$           | A jacobian matrix defined from reference frame *a* to frame *b*
+\f$ \robabx{a}{b}{\mathbf{J}} \f$           | A Jacobian matrix defined from reference frame *a* to frame *b*
 
 
 When coordinate frames are visualized the axes are illustrated with the colors RGB, such that 
@@ -121,7 +121,7 @@ To build this program, you should link with *rw_pathplanners*.
 # Serialization # {#sec_rw_manual_serialization}
 There are two main structures for performing serialization in RobWork. 
 
-Firstly, there is a XML DOM
+First, there is a XML DOM
 parser interface that lets you easily read and write XML data. This interface is 
 used throughout RobWork for reading and writing well defined data exchange formats. The XML DOM
 parser should not be used as a class serialization structure but rather in properly defined 
@@ -147,7 +147,7 @@ Here is a small example on creating a DOM parser which parses from an input stre
     DOMElem::Ptr root = parser->getRootElement();
 ~~~~~~
 
-The \b root class can now be used for parsing the xml data. Lets assum we have a xml file that looks like:
+The \b root class can now be used for parsing the xml data. Lets assume we have a xml file that looks like:
 
 ~~~~~~{.xml}
 	<group someboolproperty="true" someintproperty="10">
@@ -197,7 +197,7 @@ The \b root class can now be used for parsing the xml data. Lets assum we have a
 
 # Workcells # {#sec_rw_manual_workcells}
 The WorkCell is one of the primary containers in RobWork. A WorkCell should gather all stateless 
-elemenst/models of a scene. These are primarilly:
+elements/models of a scene. These are primarily:
 - Kinematic structure of frames
 - All devices 
 - All sensors  
@@ -205,7 +205,7 @@ elemenst/models of a scene. These are primarilly:
 
 
 ## Loading a WorkCell ## {#sec_rw_manual_load_workcell}
-RobWork support workcells described in an XML format.
+RobWork supports workcells described in an XML format.
 
 The below program loads a workcell from the file named on the command
 line. If the loading of the workcell fails, the

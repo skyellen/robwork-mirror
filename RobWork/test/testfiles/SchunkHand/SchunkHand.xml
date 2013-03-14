@@ -62,7 +62,7 @@
  </SerialChain>
  
  
- <!-- And know we add the geometry -->
+ <!-- And now we add the geometry -->
  <Drawable name="BaseGeo" refframe="Base">
   <Polytope file="Geometry/Base_chull" /></Drawable>
 

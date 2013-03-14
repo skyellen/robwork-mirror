@@ -23,7 +23,7 @@ Compilation, Linux GCC example
 	cd release
 - call cmake in Release mode and disable RobWorkSim and enable RobWorkHardware: 
 	cmake -DWITH_RWSIM=0 -DWITH_RWHW=1 -DCMAKE_BUILD_TYPE.. 
-- call make using several threads (unly if you have more than 3G ram, else use 1):
+- call make using several threads (only if you have more than 3G ram, else use 1):
 	make -j3  
 - if you want to install:
 	sudo make install

@@ -1,4 +1,4 @@
-configure_file(
+CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp
 )

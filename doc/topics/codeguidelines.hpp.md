@@ -111,7 +111,7 @@ class Test{
     // @brief Performs the first test
     void test1();
 
-    // @brief Performs the first test
+    // @brief Performs the second test
     void test2();
 };
 \endcode
@@ -184,11 +184,11 @@ and avoid memory leaks.
 Commit guidelines:
 
 Before you commit:<br>
-make (verify that there is no build errors)
-make test (verify that there is no build errors and that the changes does not break any of the unit tests)
-doxygen (verify that there is no doxygen warnings)
-if you added any files make sure that you have "cvs add"'ed them
-verify that example, demo and RobWorkStudio still compiles
+make (verify that there is no build errors)<br>
+make test (verify that there is no build errors and that the changes does not break any of the unit tests)<br>
+doxygen (verify that there is no doxygen warnings)<br>
+If you added any files make sure that you have made subversion aware of them with "svn add path/to/file"<br>
+Verify that example, demo and RobWorkStudio still compiles
 
 When you commit:<br>
 Always specify a commit message stating what was changed (this makes it possible for other people to see
