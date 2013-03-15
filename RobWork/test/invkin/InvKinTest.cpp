@@ -15,11 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-/*
- * This is mband adding a test change [FSFS]
- * Oh one more change [FSFS]
- */
-
 #include "../TestSuiteConfig.hpp"
 
 #include <rw/rw.hpp>
