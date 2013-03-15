@@ -46,7 +46,7 @@ namespace rw { namespace invkin {
     /*@{*/
 
     /**
-     * \brief A jacobian based iterative inverse kinematics algorithm for devices with
+     * \brief A Jacobian based iterative inverse kinematics algorithm for devices with
      * multiple end effectors.
      *
      * This algorithm does not implicitly handle joint limits,
@@ -91,13 +91,13 @@ namespace rw { namespace invkin {
     class JacobianIKSolverM : public IterativeMultiIK
     {
     public:
-        //! @brief the type of jacobian solver
+        //! @brief the type of Jacobian solver
         typedef enum{Transpose, SVD, DLS, SDLS} JacobianSolverType;
 
 
         /**
          * @brief Constructs JacobianIKSolverM for TreeDevice. Uses the default
-         * end effectors of the treedevice
+         * end effectors of the TreeDevice
          */
         JacobianIKSolverM(const models::TreeDevice* device,
                           const kinematics::State& state);
@@ -117,7 +117,7 @@ namespace rw { namespace invkin {
 
         /**
          * @brief configures the iterative solver to return the best fit
-         * found, even though error criterias was not met.
+         * found, even though error criteria was not met.
          * @param returnBestFit [in] set to true if you want best fit returned.
          */
         void setReturnBestFit(bool returnBestFit){
@@ -125,7 +125,7 @@ namespace rw { namespace invkin {
         }
 
         /**
-         * @brief enables clamping of the solution such that solution always is within joint limits
+         * @brief enables clamping of the solution such that solution always is within joint limits.
          * @param enableClamping [in] true to enable clamping, false otherwise
          */
         void setClampToBounds(bool enableClamping){_useJointClamping=enableClamping;};
@@ -140,7 +140,7 @@ namespace rw { namespace invkin {
 
         /**
          * @brief set the type of solver to use for stepping toward a solution
-         * @param type [in] the type of jacobian solver
+         * @param type [in] the type of Jacobian solver
          */
         void setSolverType(JacobianSolverType type){ _solverType = type; };
 
@@ -159,7 +159,7 @@ namespace rw { namespace invkin {
          * also be saved in this state.
          * @param maxIter [in] max number of iterations
          * @param untilSmallChange [in] if true the error difference between two
-         * succesive iterations need to be smaller than \b maxError. If false then the
+         * successive iterations need to be smaller than \b maxError. If false then the
          * error of a iteration need to be smaller than \b maxError.
          * @return true if error is below max error
          * @note the result will be saved in state
@@ -187,7 +187,7 @@ namespace rw { namespace invkin {
         std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;
         double _interpolationStep;
         bool _returnBestFit;
-        bool _useJointClamping, _useTranspose, _useInterpolation;
+        bool _useJointClamping, _useInterpolation;
         JacobianSolverType _solverType;
     };
 

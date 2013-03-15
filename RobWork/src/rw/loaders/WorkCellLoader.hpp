@@ -73,8 +73,8 @@ namespace rw { namespace loaders {
 		/**
 		 * @addtogroup extensionpoints
 		 *
-		 * @brief a factory for ImageLoader. This factory also defines an
-		 * extension point for image loaders.
+		 * @brief a factory for WorkCellLoader. This factory also defines an
+		 * extension point for workcell loaders.
 		 *
 		 * @extensionpoint
 		 *

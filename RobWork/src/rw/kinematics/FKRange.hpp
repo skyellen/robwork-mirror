@@ -42,7 +42,7 @@ namespace rw { namespace kinematics {
      * FKRange finds the relative transform between a pair of frames. FKRange
      * finds the path connecting the pair of frames and computes the total
      * transform of this path. Following initialization, FKRange assumes that
-     * the path does not change structure because of uses of the atttachFrame()
+     * the path does not change structure because of uses of the attachFrame()
      * feature. If the structure of the path has changed, the FKRange will
      * produce wrong results.
      *

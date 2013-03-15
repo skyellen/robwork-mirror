@@ -151,7 +151,7 @@ public:
 	rw::graphics::SceneDescriptor::Ptr scene;
 };
 
-// the parent frame must exist in tree allready
+// the parent frame must exist in tree already
 void addToStateStructure(Frame *parent, DummySetup &setup) {
 	std::vector<Frame*> children = setup.toChildMap[parent->getName()];
 	BOOST_FOREACH(Frame* child, children) {

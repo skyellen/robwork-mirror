@@ -128,7 +128,7 @@ namespace rw { namespace invkin {
 
 
         /**
-          * @brief performs a local search toward the the target bTed. No via points
+          * @brief performs a local search toward the target bTed. No via points
           * are generated to support the convergence and robustness.
           * @param bTed [in] the target end pose
           * @param maxError [in] the maximal allowed error
@@ -166,7 +166,7 @@ namespace rw { namespace invkin {
         double _interpolationStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;
-        bool _useJointClamping, _useTranspose, _useInterpolation, _checkJointLimits;
+        bool _useJointClamping, _useInterpolation, _checkJointLimits;
         JacobianSolverType _solverType;
 
     };

@@ -34,7 +34,7 @@ rw::common::Ptr<WorkCellLoader> WorkCellLoader::Factory::getWorkCellLoader(const
 	BOOST_FOREACH(Extension::Ptr ext, exts){
 		if(!ext->getProperties().has(format))
 			continue;
-		// else try casting to ImageLoader
+		// else try casting to WorkCellLoader
 		WorkCellLoader::Ptr loader = ext->getObject().cast<WorkCellLoader>();
 		return loader;
 	}
@@ -57,7 +57,7 @@ WorkCell::Ptr WorkCellLoader::Factory::load(const std::string& file)
         std::cout << "Exception: " << e.what() << std::endl;
     }
 
-    // tjeck if any plugins support the file format
+    // check if any plugins support the file format
 	WorkCellLoader::Ptr loader = WorkCellLoader::Factory::getWorkCellLoader(ext);
 	if(loader!=NULL){
 		try {

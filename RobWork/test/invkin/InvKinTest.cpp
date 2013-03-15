@@ -32,7 +32,7 @@ using namespace rw::loaders;
 typedef std::auto_ptr<IterativeIK> (* MakeIKSolver)(SerialDevice*, State&);
 typedef std::auto_ptr<IterativeMultiIK> (* MakeMultiIKSolver)(TreeDevice*, State&);
 
-void testIKSolver(
+int testIKSolver(
     const std::string& solverName,
     MakeIKSolver maker,
     double relativeDisplacement)
@@ -92,10 +92,10 @@ void testIKSolver(
         }
     }
 
-    BOOST_CHECK(errcnt <= 2);
+    return errcnt;
 }
 
-void testMultiIKSolver(
+int testMultiIKSolver(
     const std::string& solverName,
     MakeMultiIKSolver maker,
     double relativeDisplacement)
@@ -163,7 +163,7 @@ void testMultiIKSolver(
         }
     }
 
-    BOOST_CHECK(errcnt <= 2);
+    return errcnt;
 }
 
 
@@ -173,9 +173,29 @@ std::auto_ptr<IterativeIK> makeCCD(SerialDevice* device, State& state)
     return result;
 }
 
-std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
+std::auto_ptr<IterativeIK> makeJacobianIKSolverSVD(SerialDevice* device, State& state)
 {
     JacobianIKSolver *sol = new JacobianIKSolver(device,state);
+    // Should use SVD as default though
+    sol->setSolverType(JacobianIKSolver::SVD);
+    std::auto_ptr<IterativeIK> result(sol);
+    return result;
+}
+
+std::auto_ptr<IterativeIK> makeJacobianIKSolverTranspose(SerialDevice* device, State& state)
+{
+    JacobianIKSolver *sol = new JacobianIKSolver(device,state);
+    sol->setSolverType(JacobianIKSolver::Transpose);
+    sol->setMaxIterations(16);
+    std::auto_ptr<IterativeIK> result(sol);
+    return result;
+}
+
+std::auto_ptr<IterativeIK> makeJacobianIKSolverDLS(SerialDevice* device, State& state)
+{
+    JacobianIKSolver *sol = new JacobianIKSolver(device,state);
+    sol->setSolverType(JacobianIKSolver::DLS);
+    sol->setMaxIterations(50);
     std::auto_ptr<IterativeIK> result(sol);
     return result;
 }
@@ -186,16 +206,39 @@ std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
 }
 */
 
-std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State& state)
+std::auto_ptr<IterativeMultiIK> makeJacobianIKSolverMSVD(TreeDevice* device, State& state)
 {
     JacobianIKSolverM *sol = new JacobianIKSolverM(device, state);
+    // Should use SVD as default though
+    sol->setSolverType(JacobianIKSolverM::SVD);
     //sol->setMaxLocalStep(0.4,5.0);
+    std::auto_ptr<IterativeMultiIK> result(sol);
+    return result;
+}
+
+std::auto_ptr<IterativeMultiIK> makeJacobianIKSolverMTranspose(TreeDevice* device, State& state)
+{
+    JacobianIKSolverM *sol = new JacobianIKSolverM(device, state);
+    // Should use SVD as default though
+    sol->setSolverType(JacobianIKSolverM::Transpose);
+    sol->setMaxIterations(350);
+    std::auto_ptr<IterativeMultiIK> result(sol);
+    return result;
+}
+
+std::auto_ptr<IterativeMultiIK> makeJacobianIKSolverMDLS(TreeDevice* device, State& state)
+{
+    JacobianIKSolverM *sol = new JacobianIKSolverM(device, state);
+    // Should use SVD as default though
+    sol->setSolverType(JacobianIKSolverM::DLS);
+    sol->setMaxIterations(155);
     std::auto_ptr<IterativeMultiIK> result(sol);
     return result;
 }
 
 BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
 {
+    int errcnt = 0;
     BOOST_MESSAGE("InverseKinematicsTestSuite");
     // We seed the random number generator so that we get reproducible results.
     Math::seed(0);
@@ -205,12 +248,27 @@ BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
     // Also perhaps the testIKSolver() should just verify that a _reasonably_
     // large percentage of the IK calculations succeed.
 
-    // Too slow to be considered correct.
-    testIKSolver("CCD", makeCCD, 0.002);
+    // The relative displacement has been set to a small enough number to ensure that only a few iterations are needed to find a solution for the Transpose and DLS solvers
+    // Increase the number of allowed iterations accordingly to the chosen relative displacement
+ 
 
+    // Too slow to be considered correct.
+    errcnt = testIKSolver("CCD", makeCCD, 0.002);
+    BOOST_CHECK_EQUAL(errcnt, 0);
     //testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
-    testIKSolver("JacobianIKSolver", makeSimpleSolver, 0.2);
-    testMultiIKSolver("JacobianIKSolver",makeSimpleMultiSolver, 0.2);
+    errcnt = testIKSolver("JacobianIKSolver using SVD", makeJacobianIKSolverSVD, 0.2);
+    BOOST_CHECK_EQUAL(errcnt, 0);
+    errcnt = testIKSolver("JacobianIKSolver using Transpose", makeJacobianIKSolverTranspose, 0.00002);
+    BOOST_CHECK_LE(errcnt, 2); // maxIteration is set low enough to not find a solution for up to 2 of the tests
+    errcnt = testIKSolver("JacobianIKSolver using DLS", makeJacobianIKSolverDLS, 0.00002);
+    BOOST_CHECK_EQUAL(errcnt, 0);
+
+    errcnt = testMultiIKSolver("JacobianIKSolverM using SVD", makeJacobianIKSolverMSVD, 0.2);
+    BOOST_CHECK_EQUAL(errcnt, 0);
+    errcnt = testMultiIKSolver("JacobianIKSolverM using Transpose", makeJacobianIKSolverMTranspose, 0.00002);
+    BOOST_CHECK_EQUAL(errcnt, 0);
+    errcnt = testMultiIKSolver("JacobianIKSolverM using DLS", makeJacobianIKSolverMDLS, 0.00002);
+    BOOST_CHECK_LE(errcnt, 2); // maxIteration is set low enough to not find a solution for up to 2 of the tests
 }
 
 int testClosedFormWithQ(const Q& q, std::vector<DHParameterSet>& dhparams) {
@@ -321,4 +379,3 @@ BOOST_AUTO_TEST_CASE( testClosedFormInverseKinematics ) {
     BOOST_CHECK(cnt == 4);
     // std::cout<<"PieperSolver Tested"<<std::endl;
 }
-

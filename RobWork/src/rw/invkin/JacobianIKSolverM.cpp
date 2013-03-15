@@ -72,7 +72,7 @@ JacobianIKSolverM::JacobianIKSolverM(const TreeDevice* device,
     _fkranges( createFKRanges(device->getBase(),_foi,state) ),
     _interpolationStep(0.2),
     _returnBestFit(false),
-    _useJointClamping(true), _useTranspose(true), _useInterpolation(true),
+    _useJointClamping(true), _useInterpolation(true),
     _solverType(JacobianIKSolverM::SVD)
 {
     setMaxIterations(40);
@@ -88,7 +88,7 @@ JacobianIKSolverM::JacobianIKSolverM(const JointDevice* device,
      _fkranges(createFKRanges(device->getBase(),_foi,state)),
      _interpolationStep(0.2),
      _returnBestFit(false),
-     _useJointClamping(true), _useTranspose(true),_useInterpolation(true),
+     _useJointClamping(true), _useInterpolation(true),
      _solverType(JacobianIKSolverM::SVD)
  {
      setMaxIterations(40);
@@ -202,22 +202,14 @@ bool JacobianIKSolverM::solveLocal(
         case(DLS):{
             //std::cout << "Error: " << cnt << " : "<< error << std::endl;
             double lambda = 0.4; // dampening factor, for now a fixed value
-            //std::cout << "1";
             ublas::matrix<double> U = prod( J.m(), trans(J.m()) ); // U = J * (J^T)
-            //std::cout << "2";
             ublas::identity_matrix<double> I ( U.size2() );
-            //std::cout << "3";
             U = U + I*lambda;
-            //std::cout << "4";
             ublas::matrix<double> Uinv(U.size1(),U.size2());
-            //std::cout << "5";
             LinearAlgebra::invertMatrix(U, Uinv);
-            //std::cout << "6";
             ublas::vector<double> dT = prod(Uinv, dS);
-            //std::cout << "7";
             // Use these two lines for the traditional DLS method
             ublas::vector<double> dTheta = prod( trans(J.m()), dT );
-            //std::cout << "8";
             // Scale back to not exceed maximum angle changes
             double maxChange = norm_inf( dTheta );
             if ( maxChange>45.0*Deg2Rad) {
