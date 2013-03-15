@@ -453,7 +453,10 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
                 std::cout << "Breaking inner loop because of small change in testval!\n";
                 break;
             }
-
+            if (change > 1.0e10 ) {
+                std::cout << "change was " << change << " indicating something is horribly wrong\n";
+                RW_THROW("too large change in testval!");
+            }
 
         }
         diffx = _x-oldx;

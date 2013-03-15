@@ -304,11 +304,11 @@ void ModRusselBeam::objective ( const boost::numeric::ublas::vector< double >& x
     //			ddf: Hessian
 
     f = this->f ( x );
-//     df = this->df ( x );
     this->df(df, x);
-//     ddf = this->ddf_banded2 ( x );
     this->ddf_banded2(ddf, x);
 }
+
+
 
 /**
 * The equality constraints. Require g(x)=0
@@ -316,6 +316,7 @@ void ModRusselBeam::objective ( const boost::numeric::ublas::vector< double >& x
 void ModRusselBeam::equalityConstraints ( const boost::numeric::ublas::vector< double >& x, size_t idx, double& g, boost::numeric::ublas::vector< double >& dg, boost::numeric::ublas::matrix< double >& ddg ) {
 
 }
+
 
 
 void ModRusselBeam:: setInEqualityIntegralConstraint (
@@ -327,10 +328,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-//     double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
-
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
-    //const int L = h.size();
 
     // V component
     const double f0V = sin ( 0.0 );
@@ -354,18 +352,22 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 
     const double uxTCPy =  get_uxTCPy(); // u2
     const double uyTCPy = get_uyTCPy(); // v2
-
+      
     // tip constraint h
     //  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
     h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
+    
+    
     // tip constraint dh
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
     for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
     }
-    dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
+    dh ( 0, x.size() - 1 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
 
+    
+    
     // tip constraint, ddh
     if ( 0 == idx ) {
         ddh.clear();
