@@ -173,6 +173,26 @@ private:
 
 
 
+    
+    
+struct RusselIntegrandEonly : public RusselIntegrand {
+        RusselIntegrandEonly (
+        const BeamGeometry &geom,
+        const boost::numeric::ublas::vector<double>& a,
+        const boost::numeric::ublas::vector<double>& da
+    ) : 
+        RusselIntegrand(geom, a, da) {
+    };
+    
+    // only elastic energy
+    double operator() ( const int i ) const {
+        return ee(i);
+    };   
+};
+
+
+
+
 //This is the object function
 double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
     //const int N = getN();
@@ -180,18 +200,13 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
     const double h = get_h();
 
     assert ( ( int ) x.size() == getN() );
-
     assert ( ( int ) _a.size() == getM() );
-
-
 
     _a[0] = 0.0;
     for ( int i = 1; i < M; i++ )
         _a[i] = x[i-1];
 
-
     FdUtil::vectorDerivative ( _a, _da, get_h() ) ;
-
 
     RusselIntegrand intgr ( *_geomPtr, _a, _da );
     double val = TrapMethod::trapezMethod<RusselIntegrand> ( intgr, M, h );
@@ -200,6 +215,30 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
 
     return val;
 }
+
+
+double ModRusselBeam::f_elastic ( const boost::numeric::ublas::vector< double >& x ) {
+    const int M = getM();
+    const double h = get_h();
+
+    assert ( ( int ) x.size() == getN() );
+    assert ( ( int ) _a.size() == getM() );
+
+    _a[0] = 0.0;
+    for ( int i = 1; i < M; i++ )
+        _a[i] = x[i-1];
+
+    FdUtil::vectorDerivative ( _a, _da, get_h() ) ;
+
+    RusselIntegrandEonly intgr ( *_geomPtr, _a, _da );
+    double val = TrapMethod::trapezMethod<RusselIntegrandEonly> ( intgr, M, h );
+
+    NFCALLS++;
+
+    return val;
+}
+
+
 
 //Computing gradient for object function
 void ModRusselBeam::df ( boost::numeric::ublas::vector<double> &res, const boost::numeric::ublas::vector<double>& x ) {
@@ -492,6 +531,9 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
                                );
     iop.setAccuracy ( _accuracy );
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
+    
+    const double Ee = f_elastic(res);
+    std::cout << "Ee: " << Ee << std::endl;
 
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );

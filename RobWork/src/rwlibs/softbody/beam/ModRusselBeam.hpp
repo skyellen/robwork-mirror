@@ -96,6 +96,8 @@ class ModRusselBeam
 	double get_h(void) const;
 	
 	double f(const boost::numeric::ublas::vector< double >& x);
+    
+    double f_elastic(const boost::numeric::ublas::vector< double >& x);
 
 // 	boost::numeric::ublas::vector<double> df(const boost::numeric::ublas::vector<double>& x);
     void df(boost::numeric::ublas::vector<double> &res, const boost::numeric::ublas::vector<double>& x);
