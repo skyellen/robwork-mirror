@@ -88,13 +88,13 @@ double ModRusselBeam::get_yTCP ( void ) const {
 
 double ModRusselBeam::get_uxTCPy ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    return planeTbeam.R() (1, 0);
+    return planeTbeam.R() ( 1, 0 );
 }
 
 
 double ModRusselBeam::get_uyTCPy ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    return planeTbeam.R() (1, 1);
+    return planeTbeam.R() ( 1, 1 );
 }
 
 
@@ -131,36 +131,39 @@ struct RusselIntegrand {
 
     };
 
-
-
-    double operator() ( const int i ) const {
+    // gravitational energy per unit volume
+    double eg ( const int i ) const {
         assert ( i < ( int ) _a.size() );
-        assert ( i < ( int ) _da.size() );
-
         const double &ax = _a[i];
-        const double &dax = _da[i];
 
-        // BUG: something is wrong with the equations regarding gravity as we need to hack the signs
         const double &g1 = _geom.g1()  * ( -1.0 );
         const double &g2 = _geom.g2() * ( -1.0 );
-
         const double b0 = _geom.b0 ( i );
         const double b1 = _geom.b1 ( i );
-
         const double B0 = _geom.B0 ( i );
+        const double x = i * _geom.get_h();
+
+        const double Eg = ( g1 * B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) - g1*b0 * x - g2*b1;
+        return Eg;
+    };
+
+    // elastic energy per unit volume
+    double ee ( const int i ) const {
+        assert ( i < ( int ) _da.size() );
+        const double &dax = _da[i];
 
         const double c2 = _geom.c2 ( i );
         const double c3 = _geom.c3 ( i );
         const double c4 = _geom.c4 ( i );
 
-        const double x = i * _geom.get_h();
+        const double Ee = 4 * c2 * pow ( dax, 2.0 ) + 4 * c3 * pow ( dax, 3.0 ) + c4 * pow ( dax, 4.0 );
+        return Ee;
+    };
 
-
-        const double val = ( g1 * B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) +
-                           4 * c2 * pow ( dax, 2.0 ) + 4 * c3 * pow ( dax, 3.0 ) + c4 * pow ( dax, 4.0 ) - g1*b0 * x - g2*b1;
-
-        return val;
-    }
+    // total energy per unit volume
+    double operator() ( const int i ) const {
+        return eg(i) + ee(i);
+    };
 
 private:
     const BeamGeometry &_geom;
@@ -227,7 +230,7 @@ void ModRusselBeam::df ( boost::numeric::ublas::vector<double> &res, const boost
 
 
 
-void ModRusselBeam::ddf_banded2 (boost::numeric::ublas::matrix<double> &res, const boost::numeric::ublas::vector< double >& x ) {
+void ModRusselBeam::ddf_banded2 ( boost::numeric::ublas::matrix<double> &res, const boost::numeric::ublas::vector< double >& x ) {
 //     boost::numeric::ublas::matrix<double> res ( x.size(), x.size() );
     res.clear();
 
@@ -304,8 +307,8 @@ void ModRusselBeam::objective ( const boost::numeric::ublas::vector< double >& x
     //			ddf: Hessian
 
     f = this->f ( x );
-    this->df(df, x);
-    this->ddf_banded2(ddf, x);
+    this->df ( df, x );
+    this->ddf_banded2 ( ddf, x );
 }
 
 
@@ -352,13 +355,13 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 
     const double uxTCPy =  get_uxTCPy(); // u2
     const double uyTCPy = get_uyTCPy(); // v2
-      
+
     // tip constraint h
     //  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
     h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
-    
-    
+
+
     // tip constraint dh
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
     for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
@@ -366,8 +369,8 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     }
     dh ( 0, x.size() - 1 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
 
-    
-    
+
+
     // tip constraint, ddh
     if ( 0 == idx ) {
         ddh.clear();
@@ -468,7 +471,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     //const size_t M = 0; // Number of equality constraints
 
     const size_t L = 	_useNoUpwardConstraint == true 		?	 1 + N : 1;
-    
+
     NFCALLS = 0;
 
 
@@ -490,8 +493,8 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     iop.setAccuracy ( _accuracy );
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
 
-    integrateAngleU(U, res);
-    integrateAngleV(V, res);
+    integrateAngleU ( U, res );
+    integrateAngleV ( V, res );
 
 
     xinituser[0] = 0.0;
@@ -521,7 +524,7 @@ void ModRusselBeam::integrateAngleU ( boost::numeric::ublas::vector< double >& U
 
 void ModRusselBeam::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
     const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / avec.size();
-    
+
     V[0] = 0.0;
     for ( int end = 0; end < ( int ) avec.size(); end++ ) {
         const double f0 = sin ( 0.0 );
