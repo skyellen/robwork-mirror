@@ -360,6 +360,88 @@ void ModRusselBeam::equalityConstraints ( const boost::numeric::ublas::vector< d
 }
 
 
+void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx ) {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
+    const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
+
+    // V component
+    const double f0V = sin ( 0.0 );
+    const double fLV = sin ( x[pIdx] ); // TODO change last index
+
+    double sumV = 0.0;
+    for ( int i = 0; i < ( int ) pIdx; i++ ) { // TODO change last index
+        sumV += sin ( x[i] );
+    }
+    double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
+
+    // U component
+    const double f0U = cos ( 0.0 );
+    const double fLU = cos ( x[pIdx] ); // TODO change last index
+
+    double sumU = 0.0;
+    for ( int i = 0; i < ( int ) pIdx; i++ ) { // TODO change last index
+        sumU += cos ( x[i] );
+    }
+    double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
+
+    const double uxTCPy =  get_uxTCPy(); // u2
+    const double uyTCPy = get_uyTCPy(); // v2
+
+    /* tip constraint h
+     *  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
+     */
+    h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
+
+
+    // TODO make b limit in integration, variable.
+    // for dh and ddh we must remember that although we only integrate to a b <= L, we still must fill out the derivatives for the remaining interior points
+    //  but they're just zero!
+
+    // tip constraint dh
+//     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
+//     for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
+//         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );    
+//     }
+//     dh ( 0, x.size() - 1 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
+    
+    for ( int i = 0; i < ( int ) x.size(); i++ ) {
+        if ( 0 == i || pIdx == i ) {
+            dh ( 0, i ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );        
+        }
+        else if ( i < pIdx ) {
+            dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
+        }
+        else
+            dh (0, i ) = 0.0;
+    }
+
+
+
+    // tip constraint, ddh
+    if ( 0 == idx ) {
+        ddh.clear();
+        for ( int i = 0; i < ( int ) x.size(); i++ ) {
+            for ( int j = 0; j < ( int ) x.size(); j++ ) {
+                // only entries in the diagonal, i.e. d^2 f/ dx^2
+                if ( i == j ) {
+                    if ( 0 == i || pIdx == i ) {
+                        // ddh(i, j) = -0.5 * hx * sin( x[i] );
+                        ddh ( i, j ) = -0.5 * hx * uxTCPy * cos ( x[i] ) - 0.5 * hx * uyTCPy * sin ( x[i] );
+                    } else if ( i < pIdx ) {
+                        //ddh(i, j) = -1.0 * hx * sin( x[i] );
+                        ddh ( i, j ) = -1.0 * hx * uxTCPy * cos ( x[i] ) - 1.0 * hx * uyTCPy * sin ( x[i] );
+                    }
+                    else
+                        ddh ( i, j) = 0.0;
+                }
+            }
+        }
+    }
+};
+
+
+
 
 void ModRusselBeam:: setInEqualityIntegralConstraint (
     const boost::numeric::ublas::vector< double >& x,
@@ -374,20 +456,20 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 
     // V component
     const double f0V = sin ( 0.0 );
-    const double fLV = sin ( x[x.size() - 1] );
+    const double fLV = sin ( x[x.size() - 1] ); 
 
     double sumV = 0.0;
-    for ( int i = 0; i < ( int ) x.size() -1; i++ ) {
+    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { 
         sumV += sin ( x[i] );
     }
     double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
 
     // U component
     const double f0U = cos ( 0.0 );
-    const double fLU = cos ( x[x.size() - 1] );
+    const double fLU = cos ( x[x.size() - 1] ); 
 
     double sumU = 0.0;
-    for ( int i = 0; i < ( int ) x.size() -1; i++ ) {
+    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { 
         sumU += cos ( x[i] );
     }
     double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
@@ -395,16 +477,25 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     const double uxTCPy =  get_uxTCPy(); // u2
     const double uyTCPy = get_uyTCPy(); // v2
 
-    // tip constraint h
-    //  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
+    /* tip constraint h
+     *  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
+     */
     h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
 
+    // TODO make b limit in integration, variable.
+    // for dh and ddh we must remember that although we only integrate to a b <= L, we still must fill out the derivatives for the remaining interior points
+    //  but they're just zero!
 
     // tip constraint dh
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
     for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
+        
+        // if <= limitIdx
+            // dh(0, i) = expr... 
+        // else
+            // dh(0, i) = 0;
     }
     dh ( 0, x.size() - 1 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
 
@@ -493,8 +584,29 @@ void ModRusselBeam::inEqualityConstraints (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
+    h.clear();
+    dh.clear();
+    ddh.clear();
 
+    cout << DIVIDER << endl;
+    cout << "old\n";
     setInEqualityIntegralConstraint ( x, idx, h, dh, ddh ); // h[0]
+    std::cout << "h: " << h << std::endl;
+    std::cout << "dh: " << dh << std::endl;
+    std::cout << "ddh: " << ddh << std::endl;
+    
+    h.clear();
+    dh.clear();
+    ddh.clear();
+    
+    int pIdx =x.size() ;
+    cout << "new: " << pIdx << endl;
+    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx );
+    std::cout << "h: " << h << std::endl;
+    std::cout << "dh: " << dh << std::endl;
+    std::cout << "ddh: " << ddh << std::endl;
+    cout << DIVIDER << endl;
+    
 
     if ( _useNoUpwardConstraint )
         setInEqualityNoUpwardsEtaConstraint ( x, idx, h, dh, ddh ); // h[1] : h[x.size() + 1]
@@ -506,13 +618,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     cout << "ModRusselBeam::solve()" << endl;
 
     const size_t N = getN(); //Dimensions of parameter space
-
-    //const size_t M = 0; // Number of equality constraints
-
     const size_t L = 	_useNoUpwardConstraint == true 		?	 1 + N : 1;
-
-    NFCALLS = 0;
-
 
     boost::numeric::ublas::vector<double> xinit ( N );
     for ( int i = 0; i < ( int ) N; i++ ) {
@@ -520,17 +626,16 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     }
 
     std::cout << "xinituser: " << xinituser << std::endl;
-// 	std::cout << "xinit: " << xinit << std::endl;
-
     std::cout << "DIVIDER: " << DIVIDER << std::endl;
 
+    NFCALLS = 0;
     InteriorPointOptimizer iop ( N, L,
                                  boost::bind ( &ModRusselBeam::objective, this, _1, _2, _3, _4 ),
                                  boost::bind ( &ModRusselBeam::inEqualityConstraints, this, _1, _2, _3, _4, _5 )
-
                                );
     iop.setAccuracy ( _accuracy );
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
+    std::cout << "NFCALLS: " << NFCALLS << std::endl;
     
     const double Ee = f_elastic(res);
     std::cout << "Ee: " << Ee << " [kg mm^2/s^2] = " << Ee * 1.0e-6 << " [J]" << std::endl;
@@ -538,13 +643,9 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );
 
-
     xinituser[0] = 0.0;
     for ( int i = 0; i < ( int ) res.size(); i++ )
         xinituser[i+1] = res[i];
-
-
-    std::cout << "NFCALLS: " << NFCALLS << std::endl;
 }
 
 void ModRusselBeam::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
