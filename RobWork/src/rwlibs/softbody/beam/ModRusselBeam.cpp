@@ -407,6 +407,8 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
     
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
         if ( 0 == i || pIdx == i ) {
+			// BUG: wrong coefficient for i = 0,
+			// also, we here use x[0] in both cases where it should be x[i]
             dh ( 0, i ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );        
         }
         else if ( i < pIdx ) {
@@ -427,6 +429,7 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
                 if ( i == j ) {
                     if ( 0 == i || pIdx == i ) {
                         // ddh(i, j) = -0.5 * hx * sin( x[i] );
+                        // BUG: wrong coefficient for i = 0
                         ddh ( i, j ) = -0.5 * hx * uxTCPy * cos ( x[i] ) - 0.5 * hx * uyTCPy * sin ( x[i] );
                     } else if ( i < pIdx ) {
                         //ddh(i, j) = -1.0 * hx * sin( x[i] );
@@ -455,21 +458,21 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
 
     // V component
-    const double f0V = sin ( 0.0 );
+    const double f0V = sin ( 0.0 ); // angle at x=0 is implictly 0.0
     const double fLV = sin ( x[x.size() - 1] ); 
 
     double sumV = 0.0;
-    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { 
+    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { // loop intentionally starts at i = 0
         sumV += sin ( x[i] );
     }
     double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
 
     // U component
-    const double f0U = cos ( 0.0 );
+    const double f0U = cos ( 0.0 ); // angle at x=0 is implictly 0.0
     const double fLU = cos ( x[x.size() - 1] ); 
 
     double sumU = 0.0;
-    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { 
+    for ( int i = 0; i < ( int ) x.size() -1; i++ ) { // loop intentionally starts at i = 0
         sumU += cos ( x[i] );
     }
     double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
@@ -488,6 +491,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     //  but they're just zero!
 
     // tip constraint dh
+    // BUG: dh (0, 0) should have 1.0 coefficient! - as x[0] corresponds to interior point in integrand interval [a:b]
     dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
     for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
@@ -508,11 +512,9 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
             for ( int j = 0; j < ( int ) x.size(); j++ ) {
                 // only entries in the diagonal, i.e. d^2 f/ dx^2
                 if ( i == j ) {
-                    if ( 0 == i || ( x.size() -1 ) == i ) {
-                        // ddh(i, j) = -0.5 * hx * sin( x[i] );
+                    if ( 0 == i || ( x.size() -1 ) == i ) { //  BUG: 0 == i should have 1.0 coefficient!
                         ddh ( i, j ) = -0.5 * hx * uxTCPy * cos ( x[i] ) - 0.5 * hx * uyTCPy * sin ( x[i] );
                     } else {
-                        //ddh(i, j) = -1.0 * hx * sin( x[i] );
                         ddh ( i, j ) = -1.0 * hx * uxTCPy * cos ( x[i] ) - 1.0 * hx * uyTCPy * sin ( x[i] );
                     }
                 }
