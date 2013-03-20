@@ -30,7 +30,6 @@
 
 #include "rw/math/Rotation2D.hpp"
 
-// using namespace boost::numeric::ublas;
 #include "BeamGeometry.hpp"
 #include "BeamObstaclePlane.hpp"
 
@@ -45,8 +44,6 @@ class ModRusselBeam
         boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
         boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
         int M,
-// 		double yTCP,
-// 		double thetaTCP,
         double accuracy,
 		bool useNoUpwardConstraint
 	);
@@ -99,27 +96,16 @@ class ModRusselBeam
     
     double f_elastic(const boost::numeric::ublas::vector< double >& x);
 
-// 	boost::numeric::ublas::vector<double> df(const boost::numeric::ublas::vector<double>& x);
     void df(boost::numeric::ublas::vector<double> &res, const boost::numeric::ublas::vector<double>& x);
 
-// 	boost::numeric::ublas::matrix<double> ddf(const boost::numeric::ublas::vector<double>& x); 	
-	
-// 	double diff_i(const boost::numeric::ublas::vector< double >& x, const int i);
-	
-// 	boost::numeric::ublas::matrix<double> ddf_banded(const boost::numeric::ublas::vector<double>& x); 	
-// 	boost::numeric::ublas::matrix<double> ddf_banded2(const boost::numeric::ublas::vector<double>& x);
     void ddf_banded2(boost::numeric::ublas::matrix<double> &res, const boost::numeric::ublas::vector<double>& x);  
 									   
 	void solve(boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V);
-	
-// 	boost::numeric::ublas::vector<double> integrateAngleU(const boost::numeric::ublas::vector<double> a)  ;
-// 	boost::numeric::ublas::vector<double> integrateAngleV(const boost::numeric::ublas::vector<double> a)  ;
+
 
 	void integrateAngleU(boost::numeric::ublas::vector<double> &U, const boost::numeric::ublas::vector<double> &avec);
     void integrateAngleV(boost::numeric::ublas::vector<double> &V, const boost::numeric::ublas::vector<double> &avec);
-    
-    
-	//const rw::math::Rotation2D<double> & getRot() { return _rot; };
+
     
     rw::math::Transform3D<> get_planeTbeam(void) const;
     double get_yTCP(void) const;

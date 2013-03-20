@@ -533,7 +533,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
     
     const double Ee = f_elastic(res);
-    std::cout << "Ee: " << Ee << std::endl;
+    std::cout << "Ee: " << Ee << " [kg mm^2/s^2] = " << Ee * 1.0e-6 << " [J]" << std::endl;
 
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );
