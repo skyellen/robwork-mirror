@@ -360,7 +360,7 @@ void ModRusselBeam::equalityConstraints ( const boost::numeric::ublas::vector< d
 }
 
 
-void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx ) {
+void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx, int hBase ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
     const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
@@ -391,7 +391,7 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
     /* tip constraint h
      *  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
      */
-    h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
+    h ( hBase ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
 
     // TODO make b limit in integration, variable.
@@ -406,28 +406,28 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
 //     dh ( 0, x.size() - 1 ) = 0.5 * hx * uyTCPy * cos ( x[x.size() -1] ) - 0.5 * hx * uxTCPy * sin ( x[x.size() -1] );
     
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
-        if ( 0 == i || pIdx == i ) {
+        if ( pIdx == i ) {
 			// BUG: wrong coefficient for i = 0,
 			// also, we here use x[0] in both cases where it should be x[i]
-            dh ( 0, i ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );        
+            dh ( hBase, i ) = 0.5 * hx * uyTCPy * cos ( x[i] ) - 0.5 * hx * uxTCPy * sin ( x[i] );        
         }
         else if ( i < pIdx ) {
-            dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
+            dh ( hBase, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
         }
         else
-            dh (0, i ) = 0.0;
+            dh (hBase, i ) = 0.0;
     }
 
 
 
     // tip constraint, ddh
-    if ( 0 == idx ) {
+    if ( hBase == (int) idx ) {
         ddh.clear();
         for ( int i = 0; i < ( int ) x.size(); i++ ) {
             for ( int j = 0; j < ( int ) x.size(); j++ ) {
                 // only entries in the diagonal, i.e. d^2 f/ dx^2
                 if ( i == j ) {
-                    if ( 0 == i || pIdx == i ) {
+                    if ( pIdx == i ) {
                         // ddh(i, j) = -0.5 * hx * sin( x[i] );
                         // BUG: wrong coefficient for i = 0
                         ddh ( i, j ) = -0.5 * hx * uxTCPy * cos ( x[i] ) - 0.5 * hx * uyTCPy * sin ( x[i] );
@@ -445,7 +445,7 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
 
 
 
-
+/*
 void ModRusselBeam:: setInEqualityIntegralConstraint (
     const boost::numeric::ublas::vector< double >& x,
     size_t idx,
@@ -480,9 +480,9 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
     const double uxTCPy =  get_uxTCPy(); // u2
     const double uyTCPy = get_uyTCPy(); // v2
 
-    /* tip constraint h
-     *  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
-     */
+    // tip constraint h
+    // *  endCon = UconEnd uxTCPy + VconEnd uyTCPy >= -yTCP;
+    ///
     h ( 0 ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
 
 
@@ -492,8 +492,8 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
 
     // tip constraint dh
     // BUG: dh (0, 0) should have 1.0 coefficient! - as x[0] corresponds to interior point in integrand interval [a:b]
-    dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
-    for ( int i = 1; i < ( int )  x.size() - 1; i++ ) {
+    //dh ( 0, 0 ) = 0.5 * hx * uyTCPy * cos ( x[0] ) - 0.5 * hx * uxTCPy * sin ( x[0] );
+    for ( int i = 0; i < ( int )  x.size() - 1; i++ ) {
         dh ( 0, i ) = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
         
         // if <= limitIdx
@@ -512,7 +512,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
             for ( int j = 0; j < ( int ) x.size(); j++ ) {
                 // only entries in the diagonal, i.e. d^2 f/ dx^2
                 if ( i == j ) {
-                    if ( 0 == i || ( x.size() -1 ) == i ) { //  BUG: 0 == i should have 1.0 coefficient!
+                    if (( x.size() -1 ) == i ) { //  BUG: 0 == i should have 1.0 coefficient!
                         ddh ( i, j ) = -0.5 * hx * uxTCPy * cos ( x[i] ) - 0.5 * hx * uyTCPy * sin ( x[i] );
                     } else {
                         ddh ( i, j ) = -1.0 * hx * uxTCPy * cos ( x[i] ) - 1.0 * hx * uyTCPy * sin ( x[i] );
@@ -521,7 +521,7 @@ void ModRusselBeam:: setInEqualityIntegralConstraint (
             }
         }
     }
-};
+};*/
 
 
 void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint (
@@ -529,28 +529,29 @@ void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint (
     size_t idx,
     boost::numeric::ublas::vector< double >& h,
     boost::numeric::ublas::matrix< double >& dh,
-    boost::numeric::ublas::matrix< double >& ddh
+    boost::numeric::ublas::matrix< double >& ddh,
+    int hBase
 ) {
     const double uxTCPy =  get_uxTCPy();
     const double uyTCPy = get_uyTCPy();
     // run through all points and formulate the 'no-pointing-upwards' constraint
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
-        h ( i+1 ) = - uyTCPy * sin ( x[i] ) - uxTCPy * cos ( x[i] );
+        h ( hBase + i ) = - uyTCPy * sin ( x[i] ) - uxTCPy * cos ( x[i] );
 
         // dh
         for ( int j = 0; j < ( int ) x.size(); j++ ) {
             if ( j == i ) {
                 // - _uyTCPy * sin( x[i] ) - _uxTCPy * cos( x[i] )
                 //dh( i+1, j) = -cos ( x[i] );
-                dh ( i+1, j ) = -uyTCPy * cos ( x[i] ) + uxTCPy * sin ( x[i] );
+                dh ( hBase + i, j ) = -uyTCPy * cos ( x[i] ) + uxTCPy * sin ( x[i] );
             } else
-                dh ( i+1, j ) = 0.0;
+                dh ( hBase + i, j ) = 0.0;
         }
     }
 
     for ( int i = 0; i < ( int ) x.size(); i++ ) {
         // ddh
-        if ( i + 1 == ( int ) idx ) {
+        if ( hBase + i == ( int ) idx ) {
             // the 'no-pointing-upwards' constraint for point at xi = i*h, has idx=i+1
 
             // if idx=1 then we are dealing with the point at i=0
@@ -586,32 +587,45 @@ void ModRusselBeam::inEqualityConstraints (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
-    h.clear();
-    dh.clear();
-    ddh.clear();
+//     h.clear();
+//     dh.clear();
+//     ddh.clear();
+// 
+//     cout << DIVIDER << endl;
+//     cout << "old\n";
+//     setInEqualityIntegralConstraint ( x, idx, h, dh, ddh ); // h[0]
+//     std::cout << "h: " << h << std::endl;
+//     std::cout << "dh: " << dh << std::endl;
+//     std::cout << "ddh: " << ddh << std::endl;
+//     
+//     h.clear();
+//     dh.clear();
+//     ddh.clear();
+    
+    
+    
+    int pIdx = 1 * (x.size() -1) / 3 ;
+    int hBase = 0;
+    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
+    
+    pIdx = (x.size() -1) / 2 ;
+    hBase++;
+    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
+    
+    pIdx = 2 * (x.size() -1) / 3 ;
+    hBase++;
+    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
+    
+    pIdx = (x.size() -1) ;
+    hBase++;
+    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
+    
 
-    cout << DIVIDER << endl;
-    cout << "old\n";
-    setInEqualityIntegralConstraint ( x, idx, h, dh, ddh ); // h[0]
-    std::cout << "h: " << h << std::endl;
-    std::cout << "dh: " << dh << std::endl;
-    std::cout << "ddh: " << ddh << std::endl;
     
-    h.clear();
-    dh.clear();
-    ddh.clear();
-    
-    int pIdx =x.size() ;
-    cout << "new: " << pIdx << endl;
-    setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx );
-    std::cout << "h: " << h << std::endl;
-    std::cout << "dh: " << dh << std::endl;
-    std::cout << "ddh: " << ddh << std::endl;
-    cout << DIVIDER << endl;
-    
-
-    if ( _useNoUpwardConstraint )
-        setInEqualityNoUpwardsEtaConstraint ( x, idx, h, dh, ddh ); // h[1] : h[x.size() + 1]
+    if ( _useNoUpwardConstraint ) {
+        hBase++;
+        setInEqualityNoUpwardsEtaConstraint ( x, idx, h, dh, ddh, hBase ); // h[1] : h[x.size() + 1]
+    }
 }
 
 
@@ -620,7 +634,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
     cout << "ModRusselBeam::solve()" << endl;
 
     const size_t N = getN(); //Dimensions of parameter space
-    const size_t L = 	_useNoUpwardConstraint == true 		?	 1 + N : 1;
+    const size_t L = 	_useNoUpwardConstraint == true 		?	 4 + N : 4;
 
     boost::numeric::ublas::vector<double> xinit ( N );
     for ( int i = 0; i < ( int ) N; i++ ) {

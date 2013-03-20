@@ -64,21 +64,22 @@ class ModRusselBeam
 	boost::numeric::ublas::vector<double>& dg,
 	boost::numeric::ublas::matrix<double>& ddg); 
 	
-	void setInEqualityIntegralConstraint(
-	const boost::numeric::ublas::vector< double >& x,
-					   size_t idx, 
-					   boost::numeric::ublas::vector< double >& h, 
-					   boost::numeric::ublas::matrix< double >& dh,
-					   boost::numeric::ublas::matrix< double >& ddh
-					   );
+// 	void setInEqualityIntegralConstraint(
+// 	const boost::numeric::ublas::vector< double >& x,
+// 					   size_t idx, 
+// 					   boost::numeric::ublas::vector< double >& h, 
+// 					   boost::numeric::ublas::matrix< double >& dh,
+// 					   boost::numeric::ublas::matrix< double >& ddh
+// 					   );
     
     void setInEqualityIntegralConstraintPoint(
-    const boost::numeric::ublas::vector< double >& x,
+                        const boost::numeric::ublas::vector< double >& x,
                        size_t idx, 
                        boost::numeric::ublas::vector< double >& h, 
                        boost::numeric::ublas::matrix< double >& dh,
                        boost::numeric::ublas::matrix< double >& ddh,
-                       int pIdx
+                       int pIdx,
+                       int hBase
                        );
 					   
 	void setInEqualityNoUpwardsEtaConstraint(
@@ -86,7 +87,8 @@ class ModRusselBeam
 						size_t idx, 
 						boost::numeric::ublas::vector< double >& h, 
 						boost::numeric::ublas::matrix< double >& dh,
-						boost::numeric::ublas::matrix< double >& ddh
+						boost::numeric::ublas::matrix< double >& ddh,
+                        int hBase
 						);					   
 
 	void inEqualityConstraints(const boost::numeric::ublas::vector<double>& x,

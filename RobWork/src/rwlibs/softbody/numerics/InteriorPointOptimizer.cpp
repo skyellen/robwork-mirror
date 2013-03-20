@@ -418,14 +418,14 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
             //std::cout<<"Det = "<<LinearAlgebra::det(A)<<std::endl;
 
 
-            /*
-            	if (fabs(LinearAlgebra::det(A))< 1.0e-6) {
-            		std::cout<<"A = "<<A<<std::endl;
-            		std::cout<<std::endl;
-            		std::cout<<"DDF = "<<_ddf<<std::endl;
-            		std::cout<<"DF = "<<_df<<std::endl;
-            	}
-            	*/
+            
+//             if (fabs(LinearAlgebra::det(A))< 1.0e-6) {
+//             std::cout<<"A = "<<A<<std::endl;
+//             std::cout<<std::endl;
+//             std::cout<<"DDF = "<<_ddf<<std::endl;
+//             std::cout<<"DF = "<<_df<<std::endl;
+//             }
+            
 
 //             std::cout << "3 start\n";
             dx = prod ( LinearAlgebra::inverse ( A ), RHS );
@@ -446,10 +446,10 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
             double change = fabs ( testval - testvalold ) ;
 // 	    std::cout << "change: " << change << std::endl;
 
-            if ( change < 1.0e-5 ) {
-                std::cout << "Breaking inner loop because of small change in testval!\n";
-                break;
-            }
+//             if ( change < 1.0e-5 ) {
+//                 std::cout << "Breaking inner loop because of small change in testval!\n";
+//                 break;
+//             }
             if ( change > 1.0e10 ) {
                 std::cout << "change was " << change << " indicating something is horribly wrong\n";
                 RW_THROW ( "too large change in testval!" );
