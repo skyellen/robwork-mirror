@@ -45,7 +45,8 @@ class ModRusselBeam
         boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
         int M,
         double accuracy,
-		bool useNoUpwardConstraint
+		bool useNoUpwardConstraint, 
+        int nIntegralConstraints
 	);
 	
 	~ModRusselBeam() {};
@@ -126,6 +127,8 @@ class ModRusselBeam
     
     void setUseNoUpwardConstraint(bool val);
     void setAccuracy(double acc);
+    void set_nIntegralConstraints(int nIntegralConstraints);
+    int get_nIntegralConstraints(void) const;
 	
 	friend std::ostream& operator<<(std::ostream& out, const ModRusselBeam& obj) {
 	    std::stringstream str;
@@ -153,6 +156,9 @@ class ModRusselBeam
 	boost::numeric::ublas::vector<double> 	_da; 
 	
 	bool _useNoUpwardConstraint;	
+    
+    int _nIntegralConstraints;
+    std::vector<int> _integralConstraintIdxList;
 };
 }}
 
