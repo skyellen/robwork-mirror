@@ -57,7 +57,7 @@ namespace rw { namespace math {
         typedef T value_type;
 
         /**
-         * @brief Creates a 3D VectorND initialized with 0's
+         * @brief Creates a N-dimensional VectorND
          */
         VectorND()
         {

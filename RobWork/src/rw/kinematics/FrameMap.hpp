@@ -114,7 +114,7 @@ namespace rw { namespace kinematics {
         }
 
         /**
-         * @brief erase an element from the map
+         * @brief Erase an element from the map
          */
         void erase( const rw::kinematics::Frame& frame ){
         	const int idx = frame.getID();

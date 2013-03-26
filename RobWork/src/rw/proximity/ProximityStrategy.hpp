@@ -55,7 +55,7 @@ namespace rw { namespace proximity {
         virtual ~ProximityStrategy();
 
         /**
-         * @brief Adds a Proximity model of a frame to this strategy.'
+         * @brief Adds a Proximity model of a frame to this strategy.
          *
          * The Proximity model is the one specified in the frames property
          *
@@ -85,7 +85,7 @@ namespace rw { namespace proximity {
             );
 
         /**
-         * @brief Adds a Proximity model to a frame
+         * @brief Adds a Proximity model to a frame.
          *
          * The Proximity model is constructed from the list of faces
          *
@@ -128,7 +128,7 @@ namespace rw { namespace proximity {
 
         /**
          * @brief get the proximitymodel associated to \b frame. If no model
-         * has been associated to frame then NULL is returned
+         * has been associated to frame then NULL is returned.
          * @param frame [in] frame for which an proximitymodel is associated
          */
         ProximityModel::Ptr getModel(const rw::kinematics::Frame* frame);
