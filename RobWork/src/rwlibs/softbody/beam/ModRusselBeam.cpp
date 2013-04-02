@@ -625,54 +625,6 @@ void ModRusselBeam::inEqualityConstraints (
     boost::numeric::ublas::matrix< double >& dh,
     boost::numeric::ublas::matrix< double >& ddh
 ) {
-//     h.clear();
-//     dh.clear();
-//     ddh.clear();
-//
-//     cout << DIVIDER << endl;
-//     cout << "old\n";
-//     setInEqualityIntegralConstraint ( x, idx, h, dh, ddh ); // h[0]
-
-//
-//     h.clear();
-//     dh.clear();
-//     ddh.clear();
-
-
-
-//     int pIdx = 1 * (x.size() -1) / 3 ;
-//     int hBase = 0;
-//     setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
-// //
-//     pIdx = (x.size() -1) / 2 ;
-//     hBase++;
-//     setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
-// //
-//     pIdx = 2 * (x.size() -1) / 3 ;
-//     hBase++;
-//     setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
-
-//      pIdx = (x.size() -1) ;
-//      hBase++;
-//     setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
-//      int pIdx = (x.size() -1) ;
-
-//     setInEqualityIntegralConstraintPoint( x, idx, h, dh, ddh, pIdx, hBase );
-
-//     const int hi = x.size() / get_nIntegralConstraints();
-
-//     std::cout << "hi: " << hi << std::endl;
-//     std::cout << "get_nIntegralConstraints: " << get_nIntegralConstraints() << std::endl;
-
-//     for (int i = x.size() -1; i > 2; i -= hi) {
-//         cout << "setting integral constraint at i = " << i << endl;
-//         std::cout << "\thBase: " << hBase << std::endl;
-
-//     }
-
-//     std::cout << "x: " << x << std::endl;
-//     std::cout << "idx: " << idx << std::endl;
-
     int hBase = 0;
     for ( int i = 0; i < ( int ) _integralConstraintIdxList.size(); i++ ) {
         int pIdx = _integralConstraintIdxList[i];
