@@ -46,7 +46,8 @@ class ModRusselBeam
         int M,
         double accuracy,
 		bool useNoUpwardConstraint, 
-        int nIntegralConstraints
+        int nIntegralConstraints,
+        bool useHingeConstraint
 	);
 	
 	~ModRusselBeam() {};
@@ -74,6 +75,16 @@ class ModRusselBeam
 // 					   );
     
     void setInEqualityIntegralConstraintPoint(
+                        const boost::numeric::ublas::vector< double >& x,
+                       size_t idx, 
+                       boost::numeric::ublas::vector< double >& h, 
+                       boost::numeric::ublas::matrix< double >& dh,
+                       boost::numeric::ublas::matrix< double >& ddh,
+                       int pIdx,
+                       int hBase
+                       );
+    
+    void setHingeConstraintPointY(
                         const boost::numeric::ublas::vector< double >& x,
                        size_t idx, 
                        boost::numeric::ublas::vector< double >& h, 
@@ -126,6 +137,7 @@ class ModRusselBeam
     double get_uyTCPy(void) const;
     
     void setUseNoUpwardConstraint(bool val);
+    void setUseHingeConstraint(bool val);
     void setAccuracy(double acc);
     void set_nIntegralConstraints(int nIntegralConstraints);
     int get_nIntegralConstraints(void) const;
@@ -158,6 +170,8 @@ class ModRusselBeam
 	bool _useNoUpwardConstraint;	
     
     int _nIntegralConstraints;
+    
+    bool _useHingeConstraint;
     std::vector<int> _integralConstraintIdxList;
 };
 }}

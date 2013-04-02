@@ -290,8 +290,8 @@ void InteriorPointOptimizer::update ( vector<double> &x, vector<double> &dx, vec
     double phi0,phi,Dphi;
     vector<double> x0 ( N );
     vector<double> s0 ( M ),ds ( M );
-    double tmax,t;
-    double fval,eps;
+     double tmax,t;
+     double fval,eps;
     //double oldfval;
     //double oldt;
     size_t i,jj;
@@ -328,11 +328,13 @@ void InteriorPointOptimizer::update ( vector<double> &x, vector<double> &dx, vec
 //     std::cout << "update 1 start\n";
     if ( fval>0 ) {
         while ( fval>0 ) {
-//             std::cout << "t: " << t << std::endl;
-//             std::cout << "fval: " << fval << std::endl;
+//              std::cout << "t: " << t << std::endl;
+//              std::cout << "fval: " << fval << std::endl;
 
             //oldt=t;
             //oldfval=fval;
+           
+             
             t*=0.8;
             x=x0+t*dx;
             s=s0+t*ds;
@@ -340,7 +342,7 @@ void InteriorPointOptimizer::update ( vector<double> &x, vector<double> &dx, vec
             for ( size_t j = 0; j < M; ++j )
                 compute_con_info_i_EXT ( x, j, _a, _da, _dda );
             merit_info ( x,s,phi,_eta );
-            fval= ( phi-phi0-0.8*t*Dphi ) / ( phi0-phi );
+            fval= ( phi-phi0-0.8*t*Dphi ) / ( phi0-phi );        
         }
     }
 //     std::cout << "fval on loop termination: " << fval << std::endl;
@@ -446,10 +448,10 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
             double change = fabs ( testval - testvalold ) ;
 // 	    std::cout << "change: " << change << std::endl;
 
-//             if ( change < 1.0e-5 ) {
-//                 std::cout << "Breaking inner loop because of small change in testval!\n";
-//                 break;
-//             }
+            if ( change < 0.01 ) {
+                std::cout << "Breaking inner loop because of small change in testval!\n";
+                break;
+            }
             if ( change > 1.0e10 ) {
                 std::cout << "change was " << change << " indicating something is horribly wrong\n";
                 RW_THROW ( "too large change in testval!" );

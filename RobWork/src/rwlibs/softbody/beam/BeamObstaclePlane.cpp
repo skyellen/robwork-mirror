@@ -63,6 +63,8 @@ rw::math::Transform3D< double > BeamObstaclePlane::compute_planeTbeam ( const rw
     // compute beam to plane transform    
     Transform3D<>::invMult(planeTbeam, Tbeam);
     
+    planeTbeam.R().normalize();
+    
     return planeTbeam;
 }
 
