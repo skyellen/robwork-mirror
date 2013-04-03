@@ -1,0 +1,45 @@
+<WorkCell name="cup_pg70_table">
+
+ <Frame name="devoffset" refframe="WORLD" >
+    <RPY>0 0 0</RPY> <Pos>0 0 0.03</Pos>
+</Frame>
+ <Include file="../devices/UR-6-85-5-A/UR6855A.wc.xml" />
+  
+ <Frame name="handoffset" refframe="UR-6-85-5-A.TCP">
+	<RPY >0 0 0</RPY> <Pos>0 0 0.005</Pos> </Frame>
+ <Include file="PG70/PG70.wc.xml" />
+
+ <!--Frame name="ObjectCup1" refframe="WORLD" type="Movable">           
+    <RPY>-180 8.564 166</RPY> <Pos>0.32819 -0.31348 0.044</Pos>                                                          
+    <Drawable name="ObjectCup1Geo">
+	 <Polytope file="cup/GreenCup_5k_tex.stl"/>
+    </Drawable>
+ </Frame-->
+ 
+ <!--Frame name="ObjectCup2" refframe="WORLD" type="Movable">
+    <RPY>90 0 90</RPY> <Pos>0.3 0.3 0.1360</Pos>
+    <Drawable name="ObjectGeo">
+	 <Polytope file="cup/GreenCup_5k_tex.stl"/>
+    </Drawable>
+ </Frame-->
+
+ <!--Frame name="ObjectBox1" refframe="WORLD" type="Movable">
+    <RPY>-180 74 180</RPY> <Pos>0.53227 -0.26455 0.24</Pos>                                      
+    <Drawable name="ObjectBox1Geo">
+	 <Polytope file="../xperience/objects/corny/MuesliBars_800_tex.stl"/>
+    </Drawable>
+ </Frame-->
+
+ 
+  <Frame name="Floor" refframe="WORLD">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+	
+  <Drawable name="PlaneGeo" refframe="Floor">
+	<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	<Polytope file="geometry/plane_5x5"/>
+  </Drawable>  
+
+ <!--CollisionSetup file="../CollisionSetup.xml" /-->
+ </WorkCell>
+ 

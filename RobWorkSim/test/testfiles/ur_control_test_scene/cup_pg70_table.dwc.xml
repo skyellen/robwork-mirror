@@ -1,0 +1,62 @@
+<DynamicWorkcell workcell="cup_pg70_table.wc.xml">
+  <PhysicsEngine>
+   <!--CollisionMargin>0.001</CollisionMargin-->
+   <RestitutionModel>Newton</RestitutionModel>
+   <ContactModel>Guendel</ContactModel>
+   <AutoDisable>true</AutoDisable>
+   <Property name="StepMethod">WorldStep</Property>
+   <Property name="ContactSurfaceLayer" type="float">0.0004</Property>
+   <Property name="MaxSepDistance" type="float">0.001</Property>
+ </PhysicsEngine>
+
+ <Gravity>0 0 -9.8</Gravity>
+ 
+ <Include file="DynamicMaterialDataBase.xml"/>
+ 
+ <!-- Now define all the rigid bodies that exist in the workcell, remember to
+      reference the RigidBody to a movableframe -->
+ <!--RigidBody frame="ObjectCup1">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID-->
+  <!--Property name="LinearDamping" type="float">0.5</Property>
+  <Property name="AngularDamping" type="float">0.5</Property-->  
+ <!--/RigidBody-->
+ 
+ <!--RigidBody frame="ObjectCup2">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID> 
+ </RigidBody-->
+
+ <!--RigidBody frame="ObjectBox1">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID> 
+ </RigidBody-->
+
+
+<FixedBody frame="Floor">
+  <MaterialID>Plastic</MaterialID> </FixedBody>
+
+ <Include file="../devices/UR-6-85-5-A/UR6855A.dwc.xml"/>
+  
+
+
+ <!--PDDeviceController name="URJointController" device="UR-6-85-5-A" type="Position">
+  <Sync>False</Sync>
+  <PDParams>10 0.003 10 0.003 10 0.003 10 0.003 10 0.003 10 0.003</PDParam>
+  <TimeStep> 0.01 </TimeStep>
+ </PDDeviceController -->
+
+ <SerialDeviceController name="URController" device="UR-6-85-5-A">
+ </SerialDeviceController>
+
+ <!-- Include file="PG70/PG70.dwc.xml"/>
+ <TactileMultiAxisSensor name="FTSensor" body="UR-6-85-5-A.Joint4" body1="UR-6-85-5-A.Joint5">
+ </TactileMultiAxisSensor -->
+ 
+</DynamicWorkcell>
