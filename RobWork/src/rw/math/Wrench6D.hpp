@@ -80,6 +80,9 @@ namespace rw { namespace math {
          */
         Wrench6D(T fx, T fy, T fz, T tx, T ty, T tz);
 
+		/**
+		 * @brief Constructs based on Eigen data type
+		 */
 		template <class R>
 		Wrench6D(const Eigen::MatrixBase<R>& v) {
 			if (v.cols() != 1 || v.rows() != 6)
@@ -88,7 +91,7 @@ namespace rw { namespace math {
 		}
 
         /**
-         * @brief Default Constructor. Initialized the velocity to 0
+         * @brief Default Constructor. Initialized the wrench to 0
          */
 		Wrench6D() : _wrench(EigenVector6D::Zero(6))
         {}
@@ -96,14 +99,14 @@ namespace rw { namespace math {
         /**
          * @brief Constructs a wrench from a force and torque
          *
-         * @param force [in] linear velocity
-         * @param torque [in] angular velocity
+         * @param force [in] linear force
+         * @param torque [in] angular torque
          */
         Wrench6D(const Vector3D<T>& force, const Vector3D<T>& torque);
 
 
         /**
-           @brief Construct a velocity screw from a Boost vector expression.
+           @brief Construct a wrench from a Boost vector expression.
         */
         template <class R>
         explicit Wrench6D(const boost::numeric::ublas::vector_expression<R>& r)
@@ -115,30 +118,29 @@ namespace rw { namespace math {
 		}
 
         /**
-         * @brief Extracts the linear velocity
+         * @brief Extracts the force
          *
-         * @return the linear velocity
+         * @return the force
          */
         const Vector3D<T> force() const {
             return Vector3D<T>(_wrench(0), _wrench(1), _wrench(2));
         }
 
         /**
-         * @brief Extracts the angular velocity and represents it using an
-         * equivalent-angle-axis as @f$ \dot{\Theta}\mathbf{k} @f$
+         * @brief Extracts the torque and represents it using an Vector3D<T>         
          *
-         * @return the angular velocity
+         * @return the torque
          */
         const Vector3D<T> torque() const {
             return Vector3D<T>(_wrench(3), _wrench(4), _wrench(5));
         }
 
         /**
-         * @brief Returns reference to velocity screw element
+         * @brief Returns reference to wrench element
          *
-         * @param index [in] index in the screw, index must be @f$ < 6 @f$.
+         * @param index [in] index in the wrench, index must be @f$ < 6 @f$.
          *
-         * @return reference to velocity screw element
+         * @return reference to wrench element
          */
         T& operator()(std::size_t index) {
             assert(index < 6);
@@ -146,11 +148,11 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Returns const reference to velocity screw element
+         * @brief Returns const reference to wrench element
          *
-         * @param index [in] index in the screw, index must be @f$ < 6 @f$.
+         * @param index [in] index in the wrench, index must be @f$ < 6 @f$.
          *
-         * @return const reference to velocity screw element
+         * @return const reference to wrench element
          */
         const T& operator()(std::size_t index) const {
             assert(index < 6);
@@ -165,34 +167,36 @@ namespace rw { namespace math {
 
 
         /**
-         * @brief Adds the velocity screw given as a parameter to the velocity screw.
+         * @brief Adds the wrench given as a parameter to the wrench. 
+		 *
+		 * Assumes the wrenches are represented in the same coordinate system.
          *
-         * @param screw [in] Velocity screw to add
+         * @param screw [in] Wrench to add
          *
-         * @return reference to the Wrench6D to support additional
-         * assignments.
+         * @return reference to the Wrench6D to support additional assignments.
          */
-        Wrench6D<T>& operator+=(const Wrench6D<T>& screw) {
-            _wrench += screw.e();
+        Wrench6D<T>& operator+=(const Wrench6D<T>& wrench) {
+            _wrench += wrench.e();
             return *this;
         }
 
         /**
-         * @brief Subtracts the velocity screw given as a parameter from the
-         * velocity screw.
+         * @brief Subtracts the wrench given as a parameter from the wrench.
          *
+		 * Assumes the wrenches are represented in the same coordinate system.
+		 *
          * @param screw [in] Velocity screw to subtract
          *
          * @return reference to the Wrench6D to support additional
          * assignments.
          */
-        Wrench6D<T>& operator-=(const Wrench6D<T>& screw) {
-            _wrench -= screw.e();
+        Wrench6D<T>& operator-=(const Wrench6D<T>& wrench) {
+            _wrench -= wrench.e();
             return *this;
         }
 
         /**
-         * @brief Scales velocity screw with s
+         * @brief Scales wrench with s
          *
          * @param s [in] scaling value
          *
@@ -207,11 +211,11 @@ namespace rw { namespace math {
 
 
         /**
-         * @brief Scales velocity screw and returns scaled version
+         * @brief Scales wrenchw and returns scaled version
          *
-         * @param screw [in] Screw to scale
+         * @param wrench [in] Wrench to scale
          * @param s [in] scaling value
-         * @return Scales screw
+         * @return Scaled wrench
          */
         const Wrench6D<T> operator*( T s) const {
             Wrench6D result = *this;
@@ -220,9 +224,9 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Changes frame of reference and velocity referencepoint of
-         * velocityscrew: @f$ \robabx{b}{b}{\mathbf{\nu}}\to
-         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         * @brief Changes frame of reference and referencepoint of
+         * wrench: @f$ \robabx{b}{b}{\mathbf{w}}\to
+         * \robabx{a}{a}{\mathbf{w}} @f$
          *
          * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * rigidly connected.
@@ -230,21 +234,21 @@ namespace rw { namespace math {
          * @param aTb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
          * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
          *
-         * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$
+         * @param bV [in] wrench wrt. frame @f$ \mathcal{F}_b @f$: @f$
          * \robabx{b}{b}{\mathbf{\nu}} @f$
          *
-         * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
+         * @return the wrench wrt. frame @f$ \mathcal{F}_a @f$: @f$
          * \robabx{a}{a}{\mathbf{\nu}} @f$
          *
-         * Transformation of both the velocity reference point and of the base to
-         * which the VelocityScrew is expressed
+         * Transformation of both the wrench reference point and of the base to
+         * which the wrench is expressed
          *
          * \f[
-         * \robabx{a}{a}{\mathbf{\nu}} =
+         * \robabx{a}{a}{\mathbf{w}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabx{a}{a}{\mathbf{v}} \\
-         *  \robabx{a}{a}{\mathbf{\omega}}
+         *  \robabx{a}{a}{\mathbf{force}} \\
+         *  \robabx{a}{a}{\mathbf{torque}}
          *  \end{array}
          * \right] =
          * \left[
@@ -269,17 +273,17 @@ namespace rw { namespace math {
         friend const Wrench6D<T> operator*(const Transform3D<T>& aTb,
                                                   const Wrench6D<T>& bV)
         {
-            const Vector3D<T>& bv = bV.linear();
-            const EAA<T>& bw = bV.angular();
-            const EAA<T>& aw = aTb.R() * bw;
+            const Vector3D<T>& bv = bV.force();
+            const Vector3D<T>& bw = bV.torque();
+            const Vector3D<T>& aw = aTb.R() * bw;
             const Vector3D<T>& av = aTb.R() * bv + cross(aTb.P(), aw);
             return Wrench6D<T>(av, aw);
         }
 
         /**
-         * @brief Changes velocity referencepoint of
-         * velocityscrew: @f$ \robabx{b}{b}{\mathbf{\nu}}\to
-         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         * @brief Changes wrench referencepoint of
+         * wrench: @f$ \robabx{b}{b}{\mathbf{w}}\to
+         * \robabx{a}{a}{\mathbf{w}} @f$
          *
          * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * rigidly connected.
@@ -287,21 +291,21 @@ namespace rw { namespace math {
          * @param aPb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
          * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
          *
-         * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$
+         * @param bV [in] wrench wrt. frame @f$ \mathcal{F}_b @f$: @f$
          * \robabx{b}{b}{\mathbf{\nu}} @f$
          *
-         * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
+         * @return the wrench wrt. frame @f$ \mathcal{F}_a @f$: @f$
          * \robabx{a}{a}{\mathbf{\nu}} @f$
          *
          * Transformation of both the velocity reference point and of the base to
-         * which the VelocityScrew is expressed
+         * which the wrench is expressed
          *
          * \f[
-         * \robabx{a}{a}{\mathbf{\nu}} =
+         * \robabx{a}{a}{\mathbf{w}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabx{a}{a}{\mathbf{v}} \\
-         *  \robabx{a}{a}{\mathbf{\omega}}
+         *  \robabx{a}{a}{\mathbf{force}} \\
+         *  \robabx{a}{a}{\mathbf{torque}}
          *  \end{array}
          * \right] =
          * \left[
@@ -324,17 +328,17 @@ namespace rw { namespace math {
          *
          */
         friend const Wrench6D<T> operator*(const Vector3D<T>& aPb,
-                                                  const Wrench6D<T>& bV)
+                                           const Wrench6D<T>& bV)
         {
-            const Vector3D<T>& bv = bV.linear();
-            const EAA<T>& bw = bV.angular();
+            const Vector3D<T>& bv = bV.force();
+            const Vector3D<T>& bw = bV.torque();
             const Vector3D<T>& av = bv + cross(aPb, bw);
             return Wrench6D<T>(av, bw);
         }
 
         /**
-         * @brief Changes frame of reference for velocityscrew: @f$
-         * \robabx{b}{i}{\mathbf{\nu}}\to \robabx{a}{i}{\mathbf{\nu}}
+         * @brief Changes frame of reference for wrench: @f$
+         * \robabx{b}{i}{\mathbf{w}}\to \robabx{a}{i}{\mathbf{w}}
          * @f$
          *
          * @param aRb [in] the change in orientation between frame
@@ -344,18 +348,18 @@ namespace rw { namespace math {
          * @param bV [in] velocity screw wrt. frame
          * @f$ \mathcal{F}_b @f$: @f$ \robabx{b}{i}{\mathbf{\nu}} @f$
          *
-         * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$:
-         * @f$ \robabx{a}{i}{\mathbf{\nu}} @f$
+         * @return the wrench wrt. frame @f$ \mathcal{F}_a @f$:
+         * @f$ \robabx{a}{i}{\mathbf{w}} @f$
          *
-         * Transformation of the base to which the VelocityScrew is expressed. The velocity
+         * Transformation of the base to which the wrench is expressed. The wrench
          * reference point is left intact
          *
          * \f[
-         * \robabx{a}{i}{\mathbf{\nu}} =
+         * \robabx{a}{i}{\mathbf{w}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabx{a}{i}{\mathbf{v}} \\
-         *  \robabx{a}{i}{\mathbf{\omega}}
+         *  \robabx{a}{i}{\mathbf{force}} \\
+         *  \robabx{a}{i}{\mathbf{torque}}
          *  \end{array}
          * \right] =
          * \left[
@@ -375,69 +379,66 @@ namespace rw { namespace math {
          */
         friend const Wrench6D<T> operator*(const Rotation3D<T>& aRb, const Wrench6D<T>& bV)
         {
-            Vector3D<T> bv = bV.linear();
-            EAA<T> bw = bV.angular();
+            Vector3D<T> bv = bV.force();
+            Vector3D<T> bw = bV.torque();
 
             return Wrench6D<T>(aRb*bv, aRb*bw);
         }
 
         /**
-         * @brief Adds two velocity screws together @f$
-         * \mathbf{\nu}_{12}=\mathbf{\nu}_1+\mathbf{\nu}_2 @f$
+         * @brief Adds two wrenches together @f$
+         * \mathbf{w}_{12}=\mathbf{w}_1+\mathbf{w}_2 @f$
          *
-         * @param screw1 [in] @f$ \mathbf{\nu}_1 @f$
+         * @param wrench [in] @f$ \mathbf{\nu}_1 @f$
          *
-         * @param screw2 [in] @f$ \mathbf{\nu}_2 @f$
-         *
-         * @return the velocity screw @f$ \mathbf{\nu}_{12} @f$
+         * @return the wrench @f$ \mathbf{w}_{12} @f$
          */
-        const Wrench6D<T> operator+(const Wrench6D<T>& screw2) const
+        const Wrench6D<T> operator+(const Wrench6D<T>& wrench) const
         {
-            return Wrench6D<T>(_wrench+screw2.e());
+            return Wrench6D<T>(_wrench+wrench.e());
         }
 
         /**
          * @brief Subtracts two velocity screws
          * \f$\mathbf{\nu}_{12}=\mathbf{\nu}_1-\mathbf{\nu}_2\f$
          *
-         * \param screw1 [in] \f$\mathbf{\nu}_1\f$
-         * \param screw2 [in] \f$\mathbf{\nu}_2\f$
-         * \return the velocity screw \f$\mathbf{\nu}_{12} \f$
+         * \param wrench [in] \f$\mathbf{w}_1\f$
+         * \return the wrench \f$\mathbf{w}_{12} \f$
          */
-        const Wrench6D<T> operator-(const Wrench6D<T>& screw2) const
+        const Wrench6D<T> operator-(const Wrench6D<T>& wrench) const
         {
-            return Wrench6D<T>(_wrench-screw2.e());
+            return Wrench6D<T>(_wrench-wrench.e());
         }
 
         /**
-         * @brief Ouputs velocity screw to stream
+         * @brief Ouputs wrench to stream
          *
          * @param os [in/out] stream to use
-         * @param screw [in] velocity screw
+         * @param wrench [in] the wrench
          * @return the resulting stream
          */
-        friend std::ostream& operator<<(std::ostream& os, const Wrench6D<T>& screw)
+        friend std::ostream& operator<<(std::ostream& os, const Wrench6D<T>& wrench)
         {
-            return os << screw.e();
+            return os << wrench.e();
         }
 
         /**
-         * @brief Takes the 1-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight.
+         * @brief Takes the 1-norm of the wrench. All elements both
+         * force and torque are given the same weight.
          *
-         * @param screw [in] the velocity screw
+         * @param wrench [in] the wrench
          * @return the 1-norm
          */
-        friend T norm1(const Wrench6D& screw)
+        friend T norm1(const Wrench6D& wrench)
         {
-            return screw.norm1();
+            return wrench.norm1();
         }
 
         /**
-         * @brief Takes the 1-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight.
+         * @brief Takes the 1-norm of the wrench. All elements both
+         * force and torque are given the same weight.
          *
-         * @param screw [in] the velocity screw
+         * @param wrench [in] the wrench
          * @return the 1-norm
          */
         T norm1() const {
@@ -446,22 +447,22 @@ namespace rw { namespace math {
 
 
         /**
-         * @brief Takes the 2-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight
+         * @brief Takes the 2-norm of the wrench. All elements both
+         * force and tporque are given the same weight
          *
-         * @param screw [in] the velocity screw
+         * @param wrench [in] the wrench
          * @return the 2-norm
          */
-        friend T norm2(const Wrench6D& screw)
+        friend T norm2(const Wrench6D& wrench)
         {
-            return screw.norm2();
+            return wrench.norm2();
         }
 
         /**
-         * @brief Takes the 2-norm of the velocity screw. All elements both
-         * angular and linear are given the same weight
+         * @brief Takes the 2-norm of the wrench. All elements both
+         * force and torque are given the same weight
          *
-         * @param screw [in] the velocity screw
+         * @param wrench [in] the wrench
          * @return the 2-norm
          */
         T norm2() const {
@@ -469,21 +470,21 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Takes the infinite norm of the velocity screw. All elements
-         * both angular and linear are given the same weight.
+         * @brief Takes the infinite norm of the wrench. All elements
+         * both force and torque are given the same weight.
          *
-         * @param screw [in] the velocity screw
+         * @param wrench [in] the wrench
          *
          * @return the infinite norm
          */
-        friend T normInf(const Wrench6D& screw)
+        friend T normInf(const Wrench6D& wrench)
         {
-            return screw.normInf();
+            return wrench.normInf();
         }
 
         /**
-         * @brief Takes the infinite norm of the velocity screw. All elements
-         * both angular and linear are given the same weight.
+         * @brief Takes the infinite norm of the wrench. All elements
+         * both force and torque are given the same weight.
          *
          * @return the infinite norm
          */
@@ -513,7 +514,7 @@ namespace rw { namespace math {
 
 
         /**
-           @brief Converter to Boost velocity screw state.
+           @brief Converter to Boost type.
          */
         boost::numeric::ublas::bounded_vector<T, 6> m() const { 
 			boost::numeric::ublas::bounded_vector<T, 6> m;
