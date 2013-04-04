@@ -38,78 +38,6 @@ rw::common::Ptr<Plugin> Plugin::load(const std::string& filename){
 #ifdef RW_WIN32
 
 
-
-DynamicLibraryLoaderBase::DynamicLibraryLoaderBase(const std::string& fname)
-{
-    // Try to open the library now and get any error message.
-    //h = LoadLibraryA((fname + getFileExtension()).c_str());
-    h = LoadLibraryA((fname).c_str());
-
-    //h = LoadLibraryA((fname).c_str());
-    if (h == NULL)
-    {
-        LPTSTR buffer = NULL;
-        std::cout<<"Ready to generate error message "<<GetLastError()<<std::endl;
-        if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                      FORMAT_MESSAGE_FROM_SYSTEM,
-                      NULL,             // Instance
-                      GetLastError(),   // Message Number
-                      0,                // Language
-                      buffer,              // Buffer
-                      0,                // Min/Max Buffer size
-                      NULL))            // Arguments
-        {
-            RW_THROW(buffer);
-        } else {
-            RW_THROW("Unknown Error: Could not open library");
-        }
-    }
-    else
-    {
-        _err = NULL;
-    }
-}
-
-
-DynamicLibraryLoaderBase::~DynamicLibraryLoaderBase() {
-    if (h != NULL)
-        FreeLibrary(h);
-}
-
-bool DynamicLibraryLoaderBase::getSymbol(void** v,
-                                         const char *sym_name) {
-    // try extract a symbol from the library
-    // get any error message is there is any
-
-    if( h!=0 )
-    {
-        *v = (void*)GetProcAddress(h, sym_name);
-        if (v != NULL)
-          return true;
-        else
-        {
-            LPTSTR buffer = NULL;
-            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                      FORMAT_MESSAGE_FROM_SYSTEM |
-                      FORMAT_MESSAGE_IGNORE_INSERTS,
-                      NULL,             // Instance
-                      GetLastError(),   // Message Number
-                      0,                // Language
-                      buffer,           // Buffer
-                      0,                // Min/Max Buffer size
-                      NULL);            // Arguments
-            RW_WARN(buffer);
-            return false;
-        }
-    }
-    else
-    {
-        return false;
-    }
-}
-
-typedef void (*FunctionFunc)();
-
 rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 	HINSTANCE h = LoadLibraryA((filename).c_str());
     if (h == NULL)
@@ -154,7 +82,10 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 	// call factory function and create plugin
     Plugin *lplugin = (Plugin*)factory_func();
     // TODO set a handle on Plugin so that it is able to close the dll
-    // dlclose(_handle);
+    //FreeLibrary(h);
+
+
+
     return rw::common::ownedPtr(lplugin);
 }
 
