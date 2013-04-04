@@ -108,6 +108,56 @@ bool DynamicLibraryLoaderBase::getSymbol(void** v,
     }
 }
 
+typedef void (*FunctionFunc)();
+
+rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
+	HINSTANCE h = LoadLibraryA((filename).c_str());
+    if (h == NULL)
+    {
+        LPTSTR buffer = NULL;
+        std::cout<<"Ready to generate error message "<<GetLastError()<<std::endl;
+        if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                      FORMAT_MESSAGE_FROM_SYSTEM,
+                      NULL,             // Instance
+                      GetLastError(),   // Message Number
+                      0,                // Language
+                      buffer,              // Buffer
+                      0,                // Min/Max Buffer size
+                      NULL))            // Arguments
+        {
+            RW_THROW(buffer);
+        } else {
+            RW_THROW("Unknown Error: Could not open library");
+        }
+    }
+
+    // try extract a symbol from the library
+    // get any error message if there is any
+    void* (*factory_func)(void) = NULL;
+    void **tmp = (void**)&factory_func;
+    *tmp = (void*)GetProcAddress(h, sym_name);
+	if (*tmp == NULL){
+		LPTSTR buffer = NULL;
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				  FORMAT_MESSAGE_FROM_SYSTEM |
+				  FORMAT_MESSAGE_IGNORE_INSERTS,
+				  NULL,             // Instance
+				  GetLastError(),   // Message Number
+				  0,                // Language
+				  buffer,           // Buffer
+				  0,                // Min/Max Buffer size
+				  NULL);            // Arguments
+		RW_WARN(buffer);
+		return false;
+	}
+
+	// call factory function and create plugin
+    Plugin *lplugin = (Plugin*)factory_func();
+    // TODO set a handle on Plugin so that it is able to close the dll
+    // dlclose(_handle);
+    return rw::common::ownedPtr(lplugin);
+}
+
 
 #else //#ifdef RW_WIN32
 
@@ -132,7 +182,7 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
     err = dlerror();
     if( err == 0 ){
         Plugin *lplugin = (Plugin*)factory_func();
-        // TODO set a handle on Plugin so that i is able to close the dll
+        // TODO set a handle on Plugin so that it is able to close the dll
         // dlclose(_handle);
         return rw::common::ownedPtr(lplugin);
     } else {
