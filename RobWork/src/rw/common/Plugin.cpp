@@ -37,6 +37,8 @@ rw::common::Ptr<Plugin> Plugin::load(const std::string& filename){
 
 #ifdef RW_WIN32
 
+#include <windows.h>
+#include <winbase.h>
 
 rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
 	HINSTANCE h = LoadLibraryA((filename).c_str());
@@ -63,6 +65,7 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
     // get any error message if there is any
     void* (*factory_func)(void) = NULL;
     void **tmp = (void**)&factory_func;
+	const char* sym_name = "createplugin";
     *tmp = (void*)GetProcAddress(h, sym_name);
 	if (*tmp == NULL){
 		LPTSTR buffer = NULL;
