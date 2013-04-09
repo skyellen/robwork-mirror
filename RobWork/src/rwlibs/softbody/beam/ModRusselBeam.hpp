@@ -138,7 +138,11 @@ class ModRusselBeam
     
     void setUseNoUpwardConstraint(bool val);
     void setUseHingeConstraint(bool val);
+    
     void setAccuracy(double acc);
+    void setMuStart(double muStart);
+    void setMuDecrementFactor(double decFactor);
+    
     void set_nIntegralConstraints(int nIntegralConstraints);
     int get_nIntegralConstraints(void) const;
 	
@@ -173,6 +177,9 @@ class ModRusselBeam
     
     bool _useHingeConstraint;
     std::vector<int> _integralConstraintIdxList;
+    
+    double _muStart;
+    double _muDec;
 };
 }}
 

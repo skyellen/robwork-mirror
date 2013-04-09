@@ -68,6 +68,16 @@ void ModRusselBeam::setAccuracy ( double acc ) {
     _accuracy = acc;
 }
 
+void ModRusselBeam::setMuDecrementFactor ( double decFactor ) {
+    _muDec = decFactor;
+}
+
+
+void ModRusselBeam::setMuStart ( double muStart ) {
+    _muStart = muStart;
+}
+
+
 
 void ModRusselBeam::set_nIntegralConstraints ( int nIntegralConstraints ) {
     _nIntegralConstraints = nIntegralConstraints;
@@ -156,14 +166,14 @@ struct RusselIntegrand {
         RW_ASSERT ( i < ( int ) _a.size() );
         const double &ax = _a[i];
 
-        const double &g1 = _geom.g1()  * ( -1.0 );
-        const double &g2 = _geom.g2() * ( -1.0 );
+        const double &g1 = _geom.g1();
+        const double &g2 = _geom.g2();
         const double b0 = _geom.b0 ( i );
         const double b1 = _geom.b1 ( i );
         const double B0 = _geom.B0 ( i );
         const double x = i * _geom.get_h();
 
-        const double Eg = ( g1 * B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) - g1*b0 * x - g2*b1;
+        const double Eg = ( g1*B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) - g1*b0 * x - g2*b1;
         return Eg;
     };
 
@@ -213,7 +223,7 @@ struct RusselIntegrandEonly : public RusselIntegrand {
 
 
 
-//This is the object function
+// total energy integrated for the beam: Int (eg + ee) dV
 double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
     //const int N = getN();
     const int M = getM();
@@ -237,6 +247,7 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
 }
 
 
+// total elastic energy integrated for the beam: Int (ee) dV
 double ModRusselBeam::f_elastic ( const boost::numeric::ublas::vector< double >& x ) {
     const int M = getM();
     const double h = get_h();
@@ -265,7 +276,7 @@ void ModRusselBeam::df ( boost::numeric::ublas::vector<double> &res, const boost
 //     boost::numeric::ublas::vector<double> res ( x.size() );
 
 
-    const double eps = 1e-6;
+    const double eps = 1.0e-6;
     //const double eps = _geom.get_h();
 
     boost::numeric::ublas::vector<double> xt;
@@ -419,8 +430,8 @@ void ModRusselBeam::setHingeConstraintPointY ( const boost::numeric::ublas::vect
 //     std::cout << "uxTCPy: " << uxTCPy << std::endl;
 //     std::cout << "uyTCPy: " << uyTCPy << std::endl;
 
-    const double &Ix = resU;
-    const double &Iy = resV;
+//     const double &Ix = resU;
+//     const double &Iy = resV;
     
     // h ( hBase ) = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
     
@@ -500,9 +511,28 @@ void ModRusselBeam::setHingeConstraintPointY ( const boost::numeric::ublas::vect
 void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx, int hBase ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-    const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
+    const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );   
+    const double uxTCPy =  get_uxTCPy(); // u2
+    const double uyTCPy = get_uyTCPy(); // v2
 
     RW_ASSERT ( pIdx < ( int ) x.size() );
+    
+    
+    
+    
+    
+    
+    // U component
+    const double f0U = cos ( 0.0 );
+    const double fLU = cos ( x[pIdx] );
+
+    double sumU = 0.0;
+    for ( int i = 0; i < ( int ) pIdx; i++ ) {
+        sumU += cos ( x[i] );
+    }
+    double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
+    
+    
 
     // V component
     const double f0V = sin ( 0.0 );
@@ -514,18 +544,12 @@ void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric:
     }
     double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
 
-    // U component
-    const double f0U = cos ( 0.0 );
-    const double fLU = cos ( x[pIdx] );
+    
+    
 
-    double sumU = 0.0;
-    for ( int i = 0; i < ( int ) pIdx; i++ ) {
-        sumU += cos ( x[i] );
-    }
-    double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
 
-    const double uxTCPy =  get_uxTCPy(); // u2
-    const double uyTCPy = get_uyTCPy(); // v2
+    
+    
 
     /* tip constraint h: 
      *  endCon = resU uxTCPy + resV uyTCPy >= -yTCP;
@@ -728,6 +752,8 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
                                  boost::bind ( &ModRusselBeam::inEqualityConstraints, this, _1, _2, _3, _4, _5 )
                                );
     iop.setAccuracy ( _accuracy );
+    iop.setMuDecrementFactor(_muDec);
+    iop.setMuStart(_muStart);
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
     std::cout << "NFCALLS: " << NFCALLS << std::endl;
 

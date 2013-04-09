@@ -54,6 +54,8 @@ void InteriorPointOptimizer::initialize() {
     _da = matrix<double> ( M,N );
     _dda = matrix<double> ( N,N );
     _accuracy = 1e-6;
+    _muStart = 0.1;
+    _muDecrementFactor = 0.1;
 }
 
 InteriorPointOptimizer::InteriorPointOptimizer ( size_t n,
@@ -107,6 +109,17 @@ void InteriorPointOptimizer::setAccuracy ( double accuracy ) {
 double InteriorPointOptimizer::getAccuracy() {
     return _accuracy;
 }
+
+void InteriorPointOptimizer::setMuStart ( double muStart ) {
+    _muStart = muStart;
+}
+
+
+
+void InteriorPointOptimizer::setMuDecrementFactor ( double decFactor ) {
+    _muDecrementFactor = decFactor;
+}
+
 
 
 
@@ -371,7 +384,7 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
     //int bw=N;
     double testval;
     //_mu=0.01;
-    _mu=0.01;
+    _mu=_muStart;
 
 
 
@@ -448,10 +461,10 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
             double change = fabs ( testval - testvalold ) ;
 // 	    std::cout << "change: " << change << std::endl;
 
-            if ( change < 0.01 ) {
-                std::cout << "Breaking inner loop because of small change in testval!\n";
-                break;
-            }
+//             if ( change < 0.001 ) {
+//                 std::cout << "Breaking inner loop because of small change in testval!\n";
+//                 break;
+//             }
             if ( change > 1.0e10 ) {
                 std::cout << "change was " << change << " indicating something is horribly wrong\n";
                 RW_THROW ( "too large change in testval!" );
@@ -466,7 +479,7 @@ vector<double> InteriorPointOptimizer::solve ( const vector<double>& x_init ) {
         diff=inner_prod ( diffx,diffx );
 //         std::cout << "6 end\n";
         // update of mu. NOTICE: Should be made adaptive for efficiency
-        _mu*=0.1;
+        _mu*=_muDecrementFactor;
         std::cout << "_mu: " << _mu << std::endl;
     }
 //     std::cout <<"Search finished. Result is "<< _x << "\nThe accuracy is at least "<< sqrt(diff) <<". The number of LE solves was "<<n_eq_solves<<std::endl;

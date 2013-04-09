@@ -86,10 +86,12 @@ void BeamGeometry::setG ( const rw::math::Vector3D< double >& G ) {
 double BeamGeometry::g1 ( void ) const  {
     //const double uxTCPy = getTransform().R() ( 1,0 );
     // -G {uxTCPy, uyTCPy}
-    Vector3D<> g =getTransform().R() * getG();
+    
+    Rotation3D<double > beamRTranspose =  getTransform().R().inverse();
+    Vector3D<> g =beamRTranspose * getG();
     
     // TODO hack with signs - due to post-multiplication?
-    return -g[0];
+    return g[0];
 
 }
 
@@ -97,7 +99,8 @@ double BeamGeometry::g1 ( void ) const  {
 double BeamGeometry::g2 ( void ) const  {
     //const double uyTCPy = _T _rot ( 1,1 );
     //_g2 = _G * _uyTCPy;
-    Vector3D<> g =getTransform().R() * getG();
+    Rotation3D<double > beamRTranspose = getTransform().R().inverse();
+    Vector3D<> g =beamRTranspose * getG();
     
     return g[1];
 }

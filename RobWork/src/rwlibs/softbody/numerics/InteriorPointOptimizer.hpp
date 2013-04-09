@@ -30,6 +30,7 @@
 #include <iostream>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 namespace rwlibs {
 namespace softbody {
@@ -64,6 +65,10 @@ public:
 
     void setAccuracy(double accuracy);
     double getAccuracy();
+    
+    void setMuStart(double muStart);
+    
+    void setMuDecrementFactor(double decFactor);
 
     void verify_user_defined_objective_and_constraints();
 
@@ -137,7 +142,8 @@ private:
     boost::numeric::ublas::matrix<double> _da;
     boost::numeric::ublas::matrix<double> _dda;
 
-
+    double _muStart;
+    double _muDecrementFactor;
 };
 
 } 
