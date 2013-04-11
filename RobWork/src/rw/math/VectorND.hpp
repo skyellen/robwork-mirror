@@ -361,8 +361,7 @@ namespace rw { namespace math {
     template <size_t ND, class T>
     T dot(const VectorND<ND,T>& v1, const VectorND<ND,T>& v2)
     {
-		return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-        //return inner_prod(v1.m(), v2.m());
+		return v1.e().dot(v2.e());
     }
 
     /**
