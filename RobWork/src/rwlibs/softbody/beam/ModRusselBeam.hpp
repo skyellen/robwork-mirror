@@ -33,21 +33,19 @@
 #include "BeamGeometry.hpp"
 #include "BeamObstaclePlane.hpp"
 
+#include "ModRusselBeamBase.hpp"
+
 namespace rwlibs {
 namespace softbody {
 
-class ModRusselBeam
+class ModRusselBeam : public ModRusselBeamBase
 {
     public:
 	
 	ModRusselBeam(
         boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
         boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
-        int M,
-        double accuracy,
-		bool useNoUpwardConstraint, 
-        int nIntegralConstraints,
-        bool useHingeConstraint
+        int M
 	);
 	
 	~ModRusselBeam() {};

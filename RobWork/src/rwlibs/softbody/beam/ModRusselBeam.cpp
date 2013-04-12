@@ -44,12 +44,18 @@ const char DIVIDER[] = "--------------------------------------------------------
 ModRusselBeam::ModRusselBeam (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
     boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
-    int M,
-    double accuracy,
-    bool useNoUpwardConstraint,
-    int nIntegralConstraints,
-    bool useHingeConstraint
-) : _geomPtr ( geomPtr ), _obstaclePtr ( obstaclePtr ), _M ( M ), _accuracy ( accuracy ), _a ( M ), _da ( M ), _useNoUpwardConstraint ( useNoUpwardConstraint ), _nIntegralConstraints ( nIntegralConstraints ), _useHingeConstraint(useHingeConstraint) {
+    int M
+) : 
+_geomPtr ( geomPtr ), 
+_obstaclePtr ( obstaclePtr ),
+_M ( M ),
+_accuracy ( 1.0e-6 ),
+_a ( M ), 
+_da ( M ), 
+_useNoUpwardConstraint ( false ), 
+_nIntegralConstraints ( 1 ),
+_useHingeConstraint( false ) 
+{
     RW_ASSERT ( _M >= 2 );
 }
 
