@@ -46,17 +46,14 @@ ModRusselBeam::ModRusselBeam (
     boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
     int M
 ) : 
-_geomPtr ( geomPtr ), 
-_obstaclePtr ( obstaclePtr ),
-_M ( M ),
-_accuracy ( 1.0e-6 ),
+ModRusselBeamBase(geomPtr, obstaclePtr, M),
 _a ( M ), 
 _da ( M ), 
 _useNoUpwardConstraint ( false ), 
 _nIntegralConstraints ( 1 ),
 _useHingeConstraint( false ) 
 {
-    RW_ASSERT ( _M >= 2 );
+    RW_ASSERT ( getM() >= 2 );
 }
 
 
@@ -70,9 +67,7 @@ void ModRusselBeam::setUseHingeConstraint ( bool val ) {
 }
 
 
-void ModRusselBeam::setAccuracy ( double acc ) {
-    _accuracy = acc;
-}
+
 
 void ModRusselBeam::setMuDecrementFactor ( double decFactor ) {
     _muDec = decFactor;
@@ -97,57 +92,14 @@ int ModRusselBeam::get_nIntegralConstraints ( void ) const {
 
 
 
-Transform3D< double > ModRusselBeam::get_planeTbeam ( void ) const {
-    const rw::math::Transform3D<> &Tbeam = _geomPtr->getTransform();
-    rw::math::Transform3D<> planeTbeam = _obstaclePtr->compute_planeTbeam ( Tbeam );
-
-    return planeTbeam;
-}
-
-
-double ModRusselBeam::get_thetaTCP ( void ) const {
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double thetaTCP = _obstaclePtr->get_thetaTCP ( planeTbeam );
-
-    return thetaTCP;
-}
-
-
-
-double ModRusselBeam::get_yTCP ( void ) const {
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-
-    return yTCP;
-}
-
-
-double ModRusselBeam::get_uxTCPy ( void ) const {
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    return planeTbeam.R() ( 1, 0 );
-}
-
-
-double ModRusselBeam::get_uyTCPy ( void ) const {
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    return planeTbeam.R() ( 1, 1 );
-}
 
 
 
 
-double ModRusselBeam::get_h ( void )  const {
-    // TODO calculate once and set var
-    double a = _geomPtr->get_a();
-    double b = _geomPtr->get_b();
-
-    return ( b-a ) / ( getM()-1 );
-}
 
 
-int ModRusselBeam::getM ( void )  const {
-    return _M;
-}
+
+
 
 
 int ModRusselBeam::getN ( void )  const {
@@ -244,7 +196,7 @@ double ModRusselBeam::f ( const boost::numeric::ublas::vector<double>& x ) {
 
     FdUtil::vectorDerivative ( _a, _da, get_h() ) ;
 
-    RusselIntegrand intgr ( *_geomPtr, _a, _da );
+    RusselIntegrand intgr ( *getGeometry(), _a, _da );
     double val = TrapMethod::trapezMethod<RusselIntegrand> ( intgr, M, h );
 
     NFCALLS++;
@@ -267,7 +219,7 @@ double ModRusselBeam::f_elastic ( const boost::numeric::ublas::vector< double >&
 
     FdUtil::vectorDerivative ( _a, _da, get_h() ) ;
 
-    RusselIntegrandEonly intgr ( *_geomPtr, _a, _da );
+    RusselIntegrandEonly intgr ( *getGeometry(), _a, _da );
     double val = TrapMethod::trapezMethod<RusselIntegrandEonly> ( intgr, M, h );
 
     NFCALLS++;
@@ -401,8 +353,8 @@ void ModRusselBeam::equalityConstraints ( const boost::numeric::ublas::vector< d
 
 void ModRusselBeam::setHingeConstraintPointY ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx, int hBase ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-    const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );
+    double yTCP = getObstacle()->get_yTCP ( planeTbeam );
+    const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( x.size() );
     const double EPS = 10.0; // TODO problems if this is too small
 
     RW_ASSERT ( pIdx < ( int ) x.size() );
@@ -516,8 +468,8 @@ void ModRusselBeam::setHingeConstraintPointY ( const boost::numeric::ublas::vect
 
 void ModRusselBeam::setInEqualityIntegralConstraintPoint ( const boost::numeric::ublas::vector< double >& x, std::size_t idx, boost::numeric::ublas::vector< double >& h, boost::numeric::ublas::matrix< double >& dh, boost::numeric::ublas::matrix< double >& ddh, int pIdx, int hBase ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    double yTCP = _obstaclePtr->get_yTCP ( planeTbeam );
-    const double hx = ( _geomPtr->get_b() - _geomPtr->get_a() ) / ( x.size() );   
+    double yTCP = getObstacle()->get_yTCP ( planeTbeam );
+    const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( x.size() );   
     const double uxTCPy =  get_uxTCPy(); // u2
     const double uyTCPy = get_uyTCPy(); // v2
 
@@ -757,7 +709,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
                                  boost::bind ( &ModRusselBeam::objective, this, _1, _2, _3, _4 ),
                                  boost::bind ( &ModRusselBeam::inEqualityConstraints, this, _1, _2, _3, _4, _5 )
                                );
-    iop.setAccuracy ( _accuracy );
+    iop.setAccuracy ( getAccuracy() );
     iop.setMuDecrementFactor(_muDec);
     iop.setMuStart(_muStart);
     boost::numeric::ublas::vector<double> res = iop.solve ( xinit );
@@ -777,7 +729,7 @@ void ModRusselBeam::solve ( boost::numeric::ublas::vector< double >& xinituser, 
 
 // integrates x-component of angle, assuming implictly a(0) = 0;
 void ModRusselBeam::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
-    const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / avec.size();
+    const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
     std::cout << "h: " << h << std::endl;
     std::cout << "avec.size(): " << avec.size() << std::endl;
 
@@ -794,9 +746,9 @@ void ModRusselBeam::integrateAngleU ( boost::numeric::ublas::vector< double >& U
     }
 }
 
-
+// integrates y-component of angle, assuming implictly a(0) = 0;
 void ModRusselBeam::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
-    const double h = ( _geomPtr->get_b() - _geomPtr->get_a() ) / avec.size();
+    const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
     std::cout << "h: " << h << std::endl;
     std::cout << "avec.size(): " << avec.size() << std::endl;
 
