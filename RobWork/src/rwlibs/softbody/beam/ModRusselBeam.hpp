@@ -123,8 +123,7 @@ public:
     void solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V );
 
 
-    void integrateAngleU ( boost::numeric::ublas::vector<double> &U, const boost::numeric::ublas::vector<double> &avec );
-    void integrateAngleV ( boost::numeric::ublas::vector<double> &V, const boost::numeric::ublas::vector<double> &avec );
+
 
 
 //     rw::math::Transform3D<> get_planeTbeam(void) const;
@@ -133,46 +132,14 @@ public:
 //     double get_uxTCPy(void) const;
 //     double get_uyTCPy(void) const;
 
-    void setUseNoUpwardConstraint ( bool val );
-    void setUseHingeConstraint ( bool val );
 
 
-    void setMuStart ( double muStart );
-    void setMuDecrementFactor ( double decFactor );
-
-    void set_nIntegralConstraints ( int nIntegralConstraints );
-    int get_nIntegralConstraints ( void ) const;
-
-    friend std::ostream& operator<< ( std::ostream& out, const ModRusselBeam& obj ) {
-        std::stringstream str;
-
-        const rw::math::Transform3D<> planeTbeam = obj.get_planeTbeam();
-
-        double yTCP = obj.getObstacle()->get_yTCP ( planeTbeam );
-        double thetaTCP = obj.getObstacle()->get_thetaTCP ( planeTbeam );
-        double g1 = obj.getGeometry()->g1();
-        double g2 = obj.getGeometry()->g2();
-        const double uxTCPy =  obj.get_uxTCPy();
-        const double uyTCPy = obj.get_uyTCPy();
-
-        str << "ModRusselBeam {M:" << obj.getM() << ", g1: " << g1 << ", g2:" << g2 << ", uxTCPy: " << uxTCPy << ", uyTCPy: " << uyTCPy << ", yTCP: " << yTCP << ", thetaTCP: " << thetaTCP << ", accuracy: " << obj.getAccuracy() << ", useNoUpwardConstraint: " << obj._useNoUpwardConstraint << "}";
-
-        return out << str.str();
-    };
 
 private:
     boost::numeric::ublas::vector<double> 	_a;
     boost::numeric::ublas::vector<double> 	_da;
 
-    bool _useNoUpwardConstraint;
 
-    int _nIntegralConstraints;
-
-    bool _useHingeConstraint;
-    std::vector<int> _integralConstraintIdxList;
-
-    double _muStart;
-    double _muDec;
 };
 }
 }

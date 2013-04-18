@@ -26,7 +26,10 @@ int M )
 :
 _geomPtr ( geomPtr ), 
 _obstaclePtr ( obstaclePtr ),
-_M ( M )
+_M ( M ),
+_useNoUpwardConstraint ( false ), 
+_nIntegralConstraints ( 1 ),
+_useHingeConstraint( false )
 {
 
 }
@@ -37,6 +40,63 @@ _M ( M )
 ModRusselBeamBase::~ModRusselBeamBase() {
 
 }
+
+
+
+// integrates x-component of angle, assuming implictly a(0) = 0;
+void ModRusselBeamBase::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
+    const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
+    std::cout << "h: " << h << std::endl;
+    std::cout << "avec.size(): " << avec.size() << std::endl;
+
+    U[0] = 0.0;
+    for ( int end = 0; end < ( int )  avec.size(); end++ ) {
+        const double f0 = cos ( 0.0 );
+        const double fL = cos ( avec[end] );
+
+        double sum = 0.0;
+        for ( int i = 0; i < ( int ) end; i++ )
+            sum += cos ( avec[i] );
+
+        U[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
+    }
+}
+
+// integrates y-component of angle, assuming implictly a(0) = 0;
+void ModRusselBeamBase::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
+    const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
+    std::cout << "h: " << h << std::endl;
+    std::cout << "avec.size(): " << avec.size() << std::endl;
+
+    V[0] = 0.0;
+    for ( int end = 0; end < ( int ) avec.size(); end++ ) {
+        const double f0 = sin ( 0.0 );
+        const double fL = sin ( avec[end] );
+
+        double sum = 0.0;
+        for ( int i = 0; i < ( int ) end; i++ )
+            sum += sin ( avec[i] );
+
+        V[end+1] = ( h / 2.0 ) * ( f0 + fL ) + h * sum;
+    }
+}
+
+
+void ModRusselBeamBase::computeIntegralIndicies ( void ) {
+    std::cout << "get_nIntegralConstraints(): " << get_nIntegralConstraints() << std::endl;
+    _integralConstraintIdxList.clear();
+    int N = getM() -1;
+    if ( get_nIntegralConstraints() > 0 ) {
+        const double hi = N / get_nIntegralConstraints();
+        for ( int i = 1; i < get_nIntegralConstraints() + 1; i++ ) {
+            int idx = ( int ) ceil ( double ( i ) * hi ) - 1;
+            _integralConstraintIdxList.push_back ( idx );
+            std::cout << "idx: " << idx << std::endl;
+        }
+    }
+    std::cout << "_integralConstraintIdxList.size(): " << _integralConstraintIdxList.size() << std::endl;
+}
+
 
 
 
@@ -123,6 +183,39 @@ double ModRusselBeamBase::get_h ( void ) const {
     return ( b-a ) / ( getM()-1 );
 }
 
+
+
+
+void ModRusselBeamBase::setUseNoUpwardConstraint ( bool val ) {
+    _useNoUpwardConstraint = val;
+}
+
+
+void ModRusselBeamBase::setUseHingeConstraint ( bool val ) {
+    _useHingeConstraint = val;
+}
+
+
+
+
+void ModRusselBeamBase::setMuDecrementFactor ( double decFactor ) {
+    _muDec = decFactor;
+}
+
+
+void ModRusselBeamBase::setMuStart ( double muStart ) {
+    _muStart = muStart;
+}
+
+
+
+void ModRusselBeamBase::set_nIntegralConstraints ( int nIntegralConstraints ) {
+    _nIntegralConstraints = nIntegralConstraints;
+}
+
+int ModRusselBeamBase::get_nIntegralConstraints ( void ) const {
+    return _nIntegralConstraints;
+}
 
 
 

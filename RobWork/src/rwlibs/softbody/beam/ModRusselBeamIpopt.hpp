@@ -36,7 +36,9 @@ public:
     
     virtual ~ModRusselBeamIpopt();
     
-    void solve(void);
+//     void solve(void);
+    
+    void solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V );
     
 public:
     

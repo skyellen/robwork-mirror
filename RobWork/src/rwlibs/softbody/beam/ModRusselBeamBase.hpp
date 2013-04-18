@@ -39,6 +39,15 @@ public:
     virtual ~ModRusselBeamBase();
     
 public:
+    virtual void solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V ) = 0;
+    
+public:
+    void integrateAngleU ( boost::numeric::ublas::vector<double> &U, const boost::numeric::ublas::vector<double> &avec );
+    void integrateAngleV ( boost::numeric::ublas::vector<double> &V, const boost::numeric::ublas::vector<double> &avec );
+    
+    void computeIntegralIndicies(void);
+    std::vector<int> getIntegralIndices(void) const { return _integralConstraintIdxList; };
+    
     boost::shared_ptr< BeamGeometry > getGeometry ( void ) const;
     boost::shared_ptr< BeamObstaclePlane > getObstacle ( void ) const;
 
@@ -46,6 +55,40 @@ public:
     
     double getAccuracy ( void ) const;
     void setAccuracy ( double acc );
+    
+    friend std::ostream& operator<< ( std::ostream& out, const ModRusselBeamBase& obj ) {
+        std::stringstream str;
+
+        const rw::math::Transform3D<> planeTbeam = obj.get_planeTbeam();
+
+        double yTCP = obj.getObstacle()->get_yTCP ( planeTbeam );
+        double thetaTCP = obj.getObstacle()->get_thetaTCP ( planeTbeam );
+        double g1 = obj.getGeometry()->g1();
+        double g2 = obj.getGeometry()->g2();
+        const double uxTCPy =  obj.get_uxTCPy();
+        const double uyTCPy = obj.get_uyTCPy();
+
+        str << "ModRusselBeam {M:" << obj.getM() << ", g1: " << g1 << ", g2:" << g2 << ", uxTCPy: " << uxTCPy << ", uyTCPy: " << uyTCPy << ", yTCP: " << yTCP << ", thetaTCP: " << thetaTCP << ", accuracy: " << obj.getAccuracy() << "}";
+
+        return out << str.str();
+    };
+    
+    
+    void setUseNoUpwardConstraint ( bool val );
+    bool getUseNoUpwardConstraint(void) const { return _useNoUpwardConstraint; };
+    
+    void setUseHingeConstraint ( bool val );
+    bool getUseHingeConstraint(void) const { return _useHingeConstraint; };
+
+
+    void setMuStart ( double muStart );
+    double getMuStart(void) const { return _muStart; };
+    
+    void setMuDecrementFactor ( double decFactor );
+    double getMuDecrementFactor(void) const { return _muDec; };
+
+    void set_nIntegralConstraints ( int nIntegralConstraints );
+    int get_nIntegralConstraints ( void ) const;
 
 public:
     rw::math::Transform3D< double > get_planeTbeam ( void ) const ;
@@ -67,6 +110,17 @@ private:
     int _M;
 
     double _accuracy;
+    
+private: // TODO: get methods for these
+    bool _useNoUpwardConstraint;
+
+    int _nIntegralConstraints;
+
+    bool _useHingeConstraint;
+    std::vector<int> _integralConstraintIdxList;
+
+    double _muStart;
+    double _muDec;
 };
 }
 };

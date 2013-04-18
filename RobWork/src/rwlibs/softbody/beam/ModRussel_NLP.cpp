@@ -42,6 +42,7 @@ ModRussel_NLP::ModRussel_NLP (
     const int M = getGeometry()->getM();
     _a.resize ( M );
     _da.resize ( M );
+    _x.resize( M - 1 );
 }
 
 ModRussel_NLP::~ModRussel_NLP() {
@@ -342,6 +343,9 @@ bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
     // here is where we would store the solution to variables, or write to a file, etc
     // so we could use the solution.
+    
+    for (int i = 0; i < n; i++) 
+        _x[i] = x[i];
 
     // For this example, we write the solution to the console
     std::cout << std::endl << std::endl << "Solution of the primal variables, x" << std::endl;
@@ -378,4 +382,8 @@ boost::shared_ptr< BeamObstaclePlane > ModRussel_NLP::getObstacle ( void ) const
 
 rw::math::Transform3D< double > ModRussel_NLP::get_planeTbeam ( void ) const {
     return _planeTbeam;
+}
+
+const boost::numeric::ublas::vector< double >& ModRussel_NLP::getSolution ( void ) const {
+    return _x;
 }

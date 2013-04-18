@@ -99,6 +99,7 @@ public:
     boost::shared_ptr< BeamGeometry > getGeometry(void) const;
     boost::shared_ptr< BeamObstaclePlane > getObstacle(void) const;
     rw::math::Transform3D<> get_planeTbeam(void) const;
+    const boost::numeric::ublas::vector<double> &getSolution(void) const;
     
 private:
     boost::shared_ptr< BeamGeometry > _geomPtr;
@@ -107,6 +108,8 @@ private:
     
     boost::numeric::ublas::vector<double>   _a;
     boost::numeric::ublas::vector<double>   _da;
+    
+    boost::numeric::ublas::vector<double>   _x;
 };
 }}
 
