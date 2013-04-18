@@ -22,14 +22,6 @@
 
 #include "IpIpoptApplication.hpp"
 
-/*
-namespace Ipopt {
-    template <class T>
-    class SmartPtr;
-    
-    class TNLP;
-};*/
-
 
 
 namespace rwlibs {

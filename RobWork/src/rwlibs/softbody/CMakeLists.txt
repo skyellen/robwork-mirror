@@ -16,6 +16,7 @@ IF(build)
       ./beam/BeamGeometry.cpp
       ./beam/BeamGeometryCuboid.cpp
       ./beam/ModRusselBeamBase.cpp
+      ./beam/RusselIntegrand.cpp
       ./beam/ModRusselBeam.cpp
       ./beam/EBBeam.cpp
       ./beam/BeamObstaclePlane.cpp 
@@ -32,6 +33,7 @@ IF(build)
       ./beam/BeamGeometry.hpp
       ./beam/BeamGeometryCuboid.hpp
       ./beam/ModRusselBeamBase.hpp
+      ./beam/RusselIntegrand.hpp
       ./beam/ModRusselBeam.hpp
       ./beam/EBBeam.hpp
       ./beam/BeamObstaclePlane.hpp 
@@ -40,7 +42,7 @@ IF(build)
       ./beam/ModRusselBeamIpopt.hpp
     )
     
-    RW_ADD_LIBRARY(${SUBSYS_NAME}   ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_LIBRARY(${SUBSYS_NAME} ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(softbody "rwlibs/softbody" ${SRC_FILES_HPP}) 
     TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})

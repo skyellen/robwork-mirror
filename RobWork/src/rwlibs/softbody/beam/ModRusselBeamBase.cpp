@@ -92,16 +92,27 @@ double ModRusselBeamBase::get_yTCP ( void ) const {
 
 
 
-double ModRusselBeamBase::get_uxTCPy ( void ) const {
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+double ModRusselBeamBase::get_uxTCPy ( const rw::math::Transform3D< double > planeTbeam )  {
     return planeTbeam.R() ( 1, 0 );
 }
 
 
+double ModRusselBeamBase::get_uxTCPy ( void ) const {
+    const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
+    
+    return get_uxTCPy(planeTbeam);
+}
+
+
+
+double ModRusselBeamBase::get_uyTCPy ( const rw::math::Transform3D< double > planeTbeam )  {
+    return planeTbeam.R() ( 1, 1 );
+}
+
 
 double ModRusselBeamBase::get_uyTCPy ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
-    return planeTbeam.R() ( 1, 1 );
+    return get_uyTCPy(planeTbeam);
 }
 
 double ModRusselBeamBase::get_h ( void ) const {

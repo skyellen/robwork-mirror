@@ -44,17 +44,17 @@ BeamGeometryCuboid::BeamGeometryCuboid(
 : 
 BeamGeometry(dx, Exvec, vxvec, rhovec, wTb, G), 
 _H(dz),
-_K(dy),
-_B0vec(_NSlices)
+_K(dy)
 {
 //     const int M = _NSlices;
 //     const double h = _h;
+    _B0vec.resize(getM());
     
-    for (int i = 0; i < _NSlices; i++) {
+    for (int i = 0; i < getM(); i++) {
 	//const double xi = i * h;
 	
 	if (0 == i)
-	    _B0vec[i] = B0m(_NSlices-1);    
+	    _B0vec[i] = B0m(getM()-1);    
 	else
 	    _B0vec[i] = B0_fnc(i);
 	
@@ -104,7 +104,7 @@ double BeamGeometryCuboid::B0m(const int i) const
     
     B0mfunc func(*this);
     //const int M = _NSlices;
-    const double h = _h;
+    const double h = get_h();
     
     //double i = (xi - 0) / h;
     
@@ -137,7 +137,7 @@ double BeamGeometryCuboid::B0m(const int i) const
 
 double BeamGeometryCuboid::B0_fnc(const int i) const
 {
-    return B0m(_NSlices-1) -B0m(i);
+    return B0m(getM()-1) -B0m(i);
 }
 
 

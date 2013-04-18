@@ -46,7 +46,7 @@ ModRusselBeamIpopt::~ModRusselBeamIpopt() {
 
 
 void ModRusselBeamIpopt::solve ( void ) {
-    _nlp = new ModRussel_NLP();
+    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam() );
 
     _app = IpoptApplicationFactory();
 
@@ -57,16 +57,17 @@ void ModRusselBeamIpopt::solve ( void ) {
         RW_THROW("Error during initialization");
     }
 
-    _app->Options()->SetNumericValue ( "tol", 1.0e-7 );
+    _app->Options()->SetNumericValue ( "tol", 1.0e-6 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
-    _app->Options()->SetStringValue ( "output_file", "ipopt.out" );
+//     _app->Options()->SetStringValue ( "output_file", "ipopt.out" );
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-    _app->Options()->SetStringValue ( "derivative_test", "second-order" );
+    _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {
         std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
-    } else {
+    } 
+    else {
         std::cout << std::endl << std::endl << "*** The problem FAILED!" << std::endl;
     }
 

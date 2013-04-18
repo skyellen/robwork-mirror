@@ -52,8 +52,12 @@ public:
     double get_thetaTCP ( void ) const ;
 
     double get_yTCP ( void ) const ;
+    
     double get_uxTCPy ( void ) const ;
     double get_uyTCPy ( void ) const ;
+    
+    static double get_uxTCPy ( const rw::math::Transform3D<> planeTbeam )  ;
+    static double get_uyTCPy ( const rw::math::Transform3D<> planeTbeam )  ;
     
     double get_h ( void )  const ;
 

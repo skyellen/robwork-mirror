@@ -34,6 +34,8 @@ using namespace rwlibs::softbody;
 #include "rwlibs/softbody/numerics/Interpolation.hpp"
 #include "rwlibs/softbody/util/psplot.h"
 
+#include "rwlibs/softbody/beam/RusselIntegrand.hpp"
+
 static int NFCALLS;
 
 
@@ -107,76 +109,6 @@ int ModRusselBeam::getN ( void )  const {
 }
 
 
-struct RusselIntegrand {
-    RusselIntegrand (
-        const BeamGeometry &geom,
-        const boost::numeric::ublas::vector<double>& a,
-        const boost::numeric::ublas::vector<double>& da
-    ) :
-        _geom ( geom ),
-        _a ( a ),
-        _da ( da ) {
-
-    };
-
-    // gravitational energy per unit volume
-    double eg ( const int i ) const {
-        RW_ASSERT ( i < ( int ) _a.size() );
-        const double &ax = _a[i];
-
-        const double &g1 = _geom.g1();
-        const double &g2 = _geom.g2();
-        const double b0 = _geom.b0 ( i );
-        const double b1 = _geom.b1 ( i );
-        const double B0 = _geom.B0 ( i );
-        const double x = i * _geom.get_h();
-
-        const double Eg = ( g1*B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) - g1*b0 * x - g2*b1;
-        return Eg;
-    };
-
-    // elastic energy per unit volume
-    double ee ( const int i ) const {
-        RW_ASSERT ( i < ( int ) _da.size() );
-        const double &dax = _da[i];
-
-        const double c2 = _geom.c2 ( i );
-        const double c3 = _geom.c3 ( i );
-        const double c4 = _geom.c4 ( i );
-
-        const double Ee = 4 * c2 * pow ( dax, 2.0 ) + 4 * c3 * pow ( dax, 3.0 ) + c4 * pow ( dax, 4.0 );
-        return Ee;
-    };
-
-    // total energy per unit volume
-    double operator() ( const int i ) const {
-        return eg ( i ) + ee ( i );
-    };
-
-private:
-    const BeamGeometry &_geom;
-    const boost::numeric::ublas::vector<double>& _a;
-    const boost::numeric::ublas::vector<double>& _da;
-};
-
-
-
-
-
-struct RusselIntegrandEonly : public RusselIntegrand {
-    RusselIntegrandEonly (
-        const BeamGeometry &geom,
-        const boost::numeric::ublas::vector<double>& a,
-        const boost::numeric::ublas::vector<double>& da
-    ) :
-        RusselIntegrand ( geom, a, da ) {
-    };
-
-    // only elastic energy
-    double operator() ( const int i ) const {
-        return ee ( i );
-    };
-};
 
 
 

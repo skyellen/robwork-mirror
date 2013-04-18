@@ -92,6 +92,10 @@ public:
         return _L;
     };
     
+    int getM(void) const {
+        return _M;
+    };
+    
 public:
 	friend std::ostream& operator<<(std::ostream& out, const BeamGeometry& obj) {
 	    std::stringstream str;
@@ -101,10 +105,10 @@ public:
 	    return out << str.str();
 	};
 
-protected:
+private:
     double _L;
 
-    int _NSlices;
+    int _M;
 
     double _a, _b;
     double _h;

@@ -42,9 +42,9 @@ BeamGeometry::BeamGeometry(
 {
 	assert (Exvec.size() == rhovec.size() );
 	assert (vxvec.size() == Exvec.size() );
-	_NSlices = _Exvec.size();
+	_M = _Exvec.size();
 
-	const int Nintervals = _NSlices -1;
+	const int Nintervals = _M -1;
 
 	_h = (_b - _a) / Nintervals;
 }

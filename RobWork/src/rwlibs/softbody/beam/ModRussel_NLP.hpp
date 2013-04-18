@@ -11,12 +11,20 @@
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
-    limitations under the License.
+        limitations under the License.
 */
 
 
 #ifndef MODRUSSEL_NLP_HPP
 #define MODRUSSEL_NLP_HPP
+
+#include <boost/shared_ptr.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+
+
+#include "BeamGeometry.hpp"
+#include "BeamObstaclePlane.hpp"
+
 
 #include "IpTNLP.hpp"
 
@@ -25,7 +33,11 @@ namespace softbody {
 class ModRussel_NLP : public Ipopt::TNLP {
 
 public:
-    ModRussel_NLP();
+    ModRussel_NLP(
+        boost::shared_ptr< BeamGeometry > geomPtr,
+        boost::shared_ptr< BeamObstaclePlane > obstaclePtr,
+        rw::math::Transform3D<> planeTbeam
+    );
     virtual ~ModRussel_NLP();
 
     /**@name Overloaded from TNLP */
@@ -82,6 +94,19 @@ public:
 private:
     ModRussel_NLP ( const ModRussel_NLP& );
     ModRussel_NLP& operator= ( const ModRussel_NLP& );
+    
+public:
+    boost::shared_ptr< BeamGeometry > getGeometry(void) const;
+    boost::shared_ptr< BeamObstaclePlane > getObstacle(void) const;
+    rw::math::Transform3D<> get_planeTbeam(void) const;
+    
+private:
+    boost::shared_ptr< BeamGeometry > _geomPtr;
+    boost::shared_ptr< BeamObstaclePlane > _obstaclePtr;
+    rw::math::Transform3D<> _planeTbeam;
+    
+    boost::numeric::ublas::vector<double>   _a;
+    boost::numeric::ublas::vector<double>   _da;
 };
 }}
 
