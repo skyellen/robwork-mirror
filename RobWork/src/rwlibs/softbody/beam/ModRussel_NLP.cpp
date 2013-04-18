@@ -92,7 +92,8 @@ bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt:
     }
 
     g_l[0] = -yTCP;
-    g_u[0] = 2e19; // no upper bound
+    
+    g_u[0] = 2.0e19; // no upper bound
 
     /*
     // the first constraint g1 has a lower bound of 25
@@ -233,28 +234,12 @@ bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool ne
     
     if ( values == NULL ) {
         // return the structure of the jacobian
-
-        // this particular jacobian is dense
+        // see http://www.coin-or.org/Ipopt/documentation/node57.html#app.triplet
+        // TODO include sparsity
         for (int i = 0; i < n; i++) {
                 iRow[i] = 0;
                 jCol[i] = i;            
         }
-//         iRow[0] = 0;
-//         jCol[0] = 0;
-//         iRow[1] = 0;
-//         jCol[1] = 1;
-//         iRow[2] = 0;
-//         jCol[2] = 2;
-//         iRow[3] = 0;
-//         jCol[3] = 3;
-//         iRow[4] = 1;
-//         jCol[4] = 0;
-//         iRow[5] = 1;
-//         jCol[5] = 1;
-//         iRow[6] = 1;
-//         jCol[6] = 2;
-//         iRow[7] = 1;
-//         jCol[7] = 3;
     } else {
         // return the values of the jacobian of the constraints
         for ( int i = 0; i < n; i++ ) {
@@ -282,6 +267,7 @@ bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool ne
 
 
 bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number obj_factor, Ipopt::Index m, const Ipopt::Number* lambda, bool new_lambda, Ipopt::Index nele_hess, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
+    RW_ASSERT(false);
     if ( values == NULL ) {
         // return the structure. This is a symmetric matrix, fill the lower left
         // triangle only.
@@ -341,17 +327,14 @@ bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 }
 
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
-    // here is where we would store the solution to variables, or write to a file, etc
-    // so we could use the solution.
-    
     for (int i = 0; i < n; i++) 
         _x[i] = x[i];
 
     // For this example, we write the solution to the console
-    std::cout << std::endl << std::endl << "Solution of the primal variables, x" << std::endl;
-    for ( Index i=0; i<n; i++ ) {
-        std::cout << "x[" << i << "] = " << x[i] << std::endl;
-    }
+//     std::cout << std::endl << std::endl << "Solution of the primal variables, x" << std::endl;
+//     for ( Index i=0; i<n; i++ ) {
+//         std::cout << "x[" << i << "] = " << x[i] << std::endl;
+//     }
 
 //     std::cout << std::endl << std::endl << "Solution of the bound multipliers, z_L and z_U" << std::endl;
 //     for ( Index i=0; i<n; i++ ) {

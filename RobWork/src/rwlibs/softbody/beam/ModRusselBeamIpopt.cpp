@@ -88,10 +88,11 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     }
 
     _app->Options()->SetNumericValue ( "tol", 1.0e-6 );
+    _app->Options()->SetIntegerValue ( "print_level", 4 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
-//     _app->Options()->SetStringValue ( "output_file", "ipopt.out" );
+
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-    _app->Options()->SetStringValue ( "derivative_test", "first-order" );
+//     _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {

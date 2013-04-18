@@ -46,8 +46,8 @@ ModRusselBeamBase::~ModRusselBeamBase() {
 // integrates x-component of angle, assuming implictly a(0) = 0;
 void ModRusselBeamBase::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
     const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
-    std::cout << "h: " << h << std::endl;
-    std::cout << "avec.size(): " << avec.size() << std::endl;
+//     std::cout << "h: " << h << std::endl;
+//     std::cout << "avec.size(): " << avec.size() << std::endl;
 
     U[0] = 0.0;
     for ( int end = 0; end < ( int )  avec.size(); end++ ) {
@@ -65,8 +65,8 @@ void ModRusselBeamBase::integrateAngleU ( boost::numeric::ublas::vector< double 
 // integrates y-component of angle, assuming implictly a(0) = 0;
 void ModRusselBeamBase::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
     const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
-    std::cout << "h: " << h << std::endl;
-    std::cout << "avec.size(): " << avec.size() << std::endl;
+//     std::cout << "h: " << h << std::endl;
+//     std::cout << "avec.size(): " << avec.size() << std::endl;
 
     V[0] = 0.0;
     for ( int end = 0; end < ( int ) avec.size(); end++ ) {
