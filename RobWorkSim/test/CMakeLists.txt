@@ -2,6 +2,27 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp)
 
+
+# setup the test file configuration
+SET(TEST_RUN_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+IF(MSVC)
+	SET(TEST_RUN_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE} )
+ENDIF()
+
+SET(ROBWORKSIM_TESTFILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/testfiles)
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.in
+  ${TEST_RUN_OUTPUT_DIR}/TestSuiteConfig.xml
+)
+
+SET(ROBWORKSIM_TESTFILES_DIR ${RWSIM_INSTALL_DIR}/test/testfiles)
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.install
+)
+
+
+
 SET(TEST_LIBRARIES
   rwsim_ode
   ode
@@ -28,12 +49,18 @@ TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
 ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
 
+ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp)       
+TARGET_LINK_LIBRARIES( rwsim_ode-test ${TEST_LIBRARIES} )
+ADD_TEST( rwsim_ode-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_ode-test )
+ADD_DEPENDENCIES(rwsim_ode-test ${TEST_DEPENDENCIES})
+
 ADD_CUSTOM_TARGET(tests ctest -V 
   DEPENDS rwsim_common-test ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 INSTALL(TARGETS 
             rwsim_common-test 
+            rwsim_ode-test
         DESTINATION ${RWSIM_INSTALL_DIR}/test)
 
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.install
@@ -44,3 +71,4 @@ INSTALL(DIRECTORY
         FILES_MATCHING 
             PATTERN ".svn" EXCLUDE        
         )
+       
