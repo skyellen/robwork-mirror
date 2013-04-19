@@ -112,7 +112,7 @@ namespace simulator {
             return _rwJoint;
         }
 
-
+        bool isDepend(){ return getType()==DEPEND || getType()==DEPEND_PAR;}
 
         /// Functions that require a MOTOR
 

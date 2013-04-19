@@ -35,7 +35,7 @@
 #include <rw/kinematics/State.hpp>
 
 #include <rw/kinematics/StateData.hpp>
-#include <rw/kinematics/StatelessObject.hpp>
+#include <rw/kinematics/Stateless.hpp>
 
 namespace rwsim {
 namespace dynamics {
@@ -93,7 +93,7 @@ namespace dynamics {
 	 * The body interface is used to add impulses, calculate basic velocity
 	 * stuff and saving/updating the velocity and position states.
 	 */
-    class Body: public rw::kinematics::StatelessObject
+    class Body: public rw::kinematics::Stateless
     {
     protected:
         /**

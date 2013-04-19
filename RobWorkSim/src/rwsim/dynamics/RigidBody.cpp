@@ -48,13 +48,15 @@ RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
         _mframe( NULL ),
         _bodyType(0),
         _Ibody(info.inertia),
-        _IbodyInv( inverse(info.inertia) ),
-        _rstate(this)
+        _IbodyInv( inverse(info.inertia) )
+        //_rstate(this)
 {
     _mframe = dynamic_cast<MovableFrame*>(obj->getBase());
     if(_mframe==NULL){
         RW_THROW("Base frame of Object in a RigidBody must be a MovableFrame!");
     }
+
+    add(_rstate);
 };
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensor(const rw::kinematics::State& state) const {
@@ -130,6 +132,6 @@ void RigidBody::reset(rw::kinematics::State &state){
 }
 
 void RigidBody::setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::State& state){
-    _rstate.get(state)->angvel = avel;
+    _rstate.get(state).angvel = avel;
 }
 

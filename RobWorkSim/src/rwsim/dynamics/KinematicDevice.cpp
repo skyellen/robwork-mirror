@@ -124,7 +124,7 @@ KinematicDevice::KinematicDevice(
                     _maxVel(dev->getVelocityLimits()),
                     _maxAcc(dev->getAccelerationLimits()),
                     _jdev(dev),
-                    _velocity(this, dev->getDOF())
+                    _velocity(dev->getDOF())
 {
     for(size_t i=0;i<objects.size(); i++){
         _links.push_back( rw::common::ownedPtr( new KinematicLink(objects[i].first, objects[i].second, this, i) ) );

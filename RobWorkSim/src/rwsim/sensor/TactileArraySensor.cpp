@@ -314,7 +314,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 
     // create state object and add it to
     _mystate = new StateData(0, name, ownedPtr(new ClassState(this, _w, _h) ) );
-    addStateData( _mystate );
+    add( _mystate );
 }
 /*
 TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):

@@ -35,6 +35,16 @@ using namespace rwlibs::simulation;
 
 using namespace rwsim::dynamics;
 
+
+DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell):
+    	    _workcell(workcell),
+    	    _collisionMargin(0.001),
+    	    _worldDimension(Vector3D<>(0,0,0), Vector3D<>(20,20,20)),
+    	    _gravity(0,0,-9.82)
+{
+
+}
+
 DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
                                  const DynamicWorkCell::BodyList& bodies,
                                  const DynamicWorkCell::BodyList& allbodies,
@@ -50,16 +60,16 @@ DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
     _gravity(0,0,-9.82)
 {
     BOOST_FOREACH(SimulatedController::Ptr b, _controllers){
-        b->registerStateData( workcell->getStateStructure() );
+        b->registerIn( workcell->getStateStructure() );
     }
 
     BOOST_FOREACH(DynamicDevice::Ptr b, _devices){
-        b->registerStateData( workcell->getStateStructure() );
+        b->registerIn( workcell->getStateStructure() );
     }
 
     BOOST_FOREACH(Body::Ptr b, _allbodies){
         _frameToBody[b->getBodyFrame()] = b;
-        b->registerStateData( workcell->getStateStructure() );
+        b->registerIn( workcell->getStateStructure() );
     }
 }
 
@@ -76,11 +86,20 @@ DynamicDevice::Ptr DynamicWorkCell::findDevice(const std::string& name) const {
 }
 
 bool DynamicWorkCell::inDevice(Body::Ptr body){
-    BOOST_FOREACH(Body::Ptr b, _bodies){
-        if(body==b)
-            return false;
+	// inspect name scope, if its the same as any device then
+	const std::string& bname = body->getName();
+    BOOST_FOREACH(DynamicDevice::Ptr dev, _devices){
+    	const std::string& devname = dev->getName();
+        bool isInDev = true;
+    	for(int i=0; i<devname.length(); i++ )
+        	if(devname[i]!=bname[i]){
+        		isInDev = false;
+        		break;
+    		}
+    	if(isInDev)
+    		return true;
     }
-    return true;
+    return false;
 }
 
 rwlibs::simulation::SimulatedController::Ptr DynamicWorkCell::findController(const std::string& name){
@@ -115,7 +134,7 @@ Body::Ptr DynamicWorkCell::getBody(rw::kinematics::Frame *f){
 }
 
 void DynamicWorkCell::addBody(Body::Ptr body){
-    body->registerStateData( _workcell->getStateStructure() );
+    body->registerIn( _workcell->getStateStructure() );
     _frameToBody[body->getBodyFrame()] = body;
     _allbodies.push_back(body);
     _bodies.push_back(body);

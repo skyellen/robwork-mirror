@@ -161,9 +161,11 @@ void ThreadSimulator::stepperLoop(){
             //nextTime = time+_period;
             try {
             	_simulator->step(_dt, _state);
+
             } catch (...){
             	_inError = true;
             }
+
             // get the actual timestep taken
             double sTime = _simulator->getTime();
             // calculate the time in real time that this should correspond to
@@ -174,10 +176,12 @@ void ThreadSimulator::stepperLoop(){
             	simTime = 0;
             	nextTime = 0;
             }
+
             nextTime += std::min( (sTime-simTime), _dt) * _timescale * 1000;
             //std::cout << "step: " << std::min( (sTime-simTime), _dt) << std::endl;
             simTime = sTime;
         }
+
         {
             boost::mutex::scoped_lock lock(_stateMutex);
             _tmpState = _state;
@@ -191,6 +195,7 @@ void ThreadSimulator::stepperLoop(){
 
         if(_stepcb!=NULL)
         	_stepcb(this, _state);
+
         time = TimerUtil::currentTimeMs();
         //std::cout << time << " --> " << nextTime << std::endl;
         if( nextTime>time ){
@@ -201,5 +206,6 @@ void ThreadSimulator::stepperLoop(){
         		nextTime = time;
             boost::thread::yield();
         }
+
     }
 }

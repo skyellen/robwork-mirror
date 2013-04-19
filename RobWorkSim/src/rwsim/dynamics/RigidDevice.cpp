@@ -44,8 +44,9 @@ namespace {
     {
     public:
         RigidLink( const BodyInfo& info, rw::models::Object::Ptr obj, RigidDevice *ddev, size_t id):
-            Body(info,obj),_ddev(ddev),_id(id), _rstate(this)
+            Body(info,obj),_ddev(ddev),_id(id)
         {
+        	add(_rstate);
             // find the joint index for which this link is attached
             Joint *firstParentJoint = findParentFrom<Joint>(obj->getBase());
             _jointFrame = firstParentJoint;
@@ -81,32 +82,32 @@ namespace {
 
          //! @copydoc Body::setForce
          void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-             _rstate.get(state)->force = f;
+             _rstate.get(state).force = f;
          }
 
          //! @copydoc Body::addForce
          void addForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-             _rstate.get(state)->force += f;
+             _rstate.get(state).force += f;
          }
 
          //! @copydoc Body::getForce
          rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
-             return _rstate.get(state)->force;
+             return _rstate.get(state).force;
          }
 
          //! @copydoc Body::setTorque
          void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-             _rstate.get(state)->torque = t;
+             _rstate.get(state).torque = t;
          }
 
          //! @copydoc Body::addTorque
          void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-             _rstate.get(state)->torque += t;
+             _rstate.get(state).torque += t;
          }
 
          //! @copydoc Body::getTorque
          rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
-             return _rstate.get(state)->torque;
+             return _rstate.get(state).torque;
          }
 
          RigidDevice* getDynamicDevice(){ return _ddev; }
@@ -123,7 +124,7 @@ namespace {
             rw::math::Vector3D<> torque;
         };
 
-        rw::kinematics::StatelessObject::Data<RigidLinkState> _rstate;
+        rw::kinematics::StatelessData<RigidLinkState> _rstate;
     };
 
 
@@ -134,9 +135,9 @@ RigidDevice::RigidDevice(rwsim::dynamics::Body::Ptr base,
                          const std::vector<std::pair<BodyInfo,rw::models::Object::Ptr> >& objects,
                          rw::models::JointDevice::Ptr dev):
      DynamicDevice(base,dev),
-     _velocity(this,dev->getDOF()),
-     _target(this,dev->getDOF()),
-     _mode(this,dev->getDOF()),
+     _velocity(dev->getDOF()),
+     _target(dev->getDOF()),
+     _mode(dev->getDOF()),
      //_torque(this,dev->getDOF()),
      //_vel( rw::math::Q::zero(dev->getDOF()) ),
      //_actualVel( rw::math::Q::zero(dev->getDOF()) ),
@@ -145,7 +146,13 @@ RigidDevice::RigidDevice(rwsim::dynamics::Body::Ptr base,
 {
     for(size_t i=0;i<objects.size(); i++){
         _links.push_back( rw::common::ownedPtr( new RigidLink(objects[i].first, objects[i].second, this, i) ) );
+        //this->add( *_links.back() );
     }
+
+	add( _velocity );
+	add( _target );
+    add( _mode );
+
 }
 
 
@@ -158,19 +165,19 @@ rw::math::Q RigidDevice::getMotorForceLimits(){
 }
 
 rw::math::Q RigidDevice::getJointVelocities(const rw::kinematics::State& state){
-    const double *vals = _velocity.get(state);
+    const double *vals = _velocity.getArray(state);
     return rw::math::Q(_velocity.getN(), vals);
 }
 
 double RigidDevice::getJointVelocity(int i, const rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_velocity.getN());
-    return _velocity.get(state)[i];
+    return _velocity.getArray(state)[i];
 }
 
 std::vector<RigidDevice::MotorControlMode> RigidDevice::getMotorModes(const rw::kinematics::State& state){
     std::vector<RigidDevice::MotorControlMode> res(_mode.getN(), RigidDevice::Velocity);
-    char *arr = _mode.get(state);
+    char *arr = _mode.getArray(state);
     for(int i=0;i<_mode.getN();i++){
         if(arr[i]==0){
             res[i] = RigidDevice::Velocity;
@@ -184,33 +191,33 @@ std::vector<RigidDevice::MotorControlMode> RigidDevice::getMotorModes(const rw::
 RigidDevice::MotorControlMode RigidDevice::getMotorMode(int i, const rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_mode.getN());
-    if(_mode.get(state)[i]==0){
+    if(_mode.getArray(state)[i]==0){
         return RigidDevice::Velocity;
     }
     return RigidDevice::Force;
 }
 
 rw::math::Q RigidDevice::getMotorTargets(const rw::kinematics::State& state){
-    const double *vals = _target.get(state);
+    const double *vals = _target.getArray(state);
     return rw::math::Q(_target.getN(), vals);
 }
 
 double RigidDevice::getMotorTarget(int i, const rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_target.getN());
-    return _target.get(state)[i];
+    return _target.getArray(state)[i];
 }
 
 void RigidDevice::setMotorTargets(const rw::math::Q& q, rw::kinematics::State& state){
-    double *vals = _target.get(state);
+    double *vals = _target.getArray(state);
     for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
         vals[i] = q[i];
     }
 }
 
 void RigidDevice::setMotorForceTargets(const rw::math::Q& q, rw::kinematics::State& state){
-    double *vals = _target.get(state);
-    char *modes = _mode.get(state);
+    double *vals = _target.getArray(state);
+    char *modes = _mode.getArray(state);
 
     for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
         vals[i] = q[i];
@@ -219,8 +226,8 @@ void RigidDevice::setMotorForceTargets(const rw::math::Q& q, rw::kinematics::Sta
 }
 
 void RigidDevice::setMotorVelocityTargets(const rw::math::Q& q, rw::kinematics::State& state){
-    double *vals = _target.get(state);
-    char *modes = _mode.get(state);
+    double *vals = _target.getArray(state);
+    char *modes = _mode.getArray(state);
 
     for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
         vals[i] = q[i];
@@ -230,7 +237,7 @@ void RigidDevice::setMotorVelocityTargets(const rw::math::Q& q, rw::kinematics::
 
 
 void RigidDevice::setJointVelocities(const rw::math::Q& q, rw::kinematics::State& state){
-    double *vals = _velocity.get(state);
+    double *vals = _velocity.getArray(state);
     for(int i=0;i<std::min(_velocity.getN(),(int)q.size());i++){
         vals[i] = q[i];
     }
@@ -239,7 +246,7 @@ void RigidDevice::setJointVelocities(const rw::math::Q& q, rw::kinematics::State
 void RigidDevice::setJointVelocity(double vel, int i, rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_velocity.getN());
-    double *vals = _velocity.get(state);
+    double *vals = _velocity.getArray(state);
     vals[i] = vel;
 }
 
@@ -247,15 +254,15 @@ void RigidDevice::setJointVelocity(double vel, int i, rw::kinematics::State& sta
 void RigidDevice::setMotorTarget(double q, int i, rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_target.getN());
-    double *vals = _target.get(state);
+    double *vals = _target.getArray(state);
     vals[i] = q;
 }
 
 void RigidDevice::setMotorForceTarget(double force, int i, rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_target.getN());
-    double *vals = _target.get(state);
-    char *modes = _mode.get(state);
+    double *vals = _target.getArray(state);
+    char *modes = _mode.getArray(state);
     vals[i] = force;
     modes[i] = 1;
 }
@@ -263,23 +270,23 @@ void RigidDevice::setMotorForceTarget(double force, int i, rw::kinematics::State
 void RigidDevice::setMotorVelocityTarget(double vel, int i, rw::kinematics::State& state){
     RW_ASSERT(i>=0);
     RW_ASSERT(i<_target.getN());
-    double *vals = _target.get(state);
-    char *modes = _mode.get(state);
+    double *vals = _target.getArray(state);
+    char *modes = _mode.getArray(state);
     vals[i] = vel;
     modes[i] = 0;
 }
 
-
-void RigidDevice::registerStateData(rw::kinematics::StateStructure::Ptr statestructure){
-    DynamicDevice::registerStateData(statestructure);
+/*
+void RigidDevice::registerIn(rw::kinematics::StateStructure::Ptr statestructure){
+    DynamicDevice::registerIn(statestructure);
 
     // add all links to the register
     BOOST_FOREACH(Body::Ptr link, getLinks()){
-        link->registerStateData(statestructure);
+        link->registerIn(statestructure);
     }
 
 }
-
+*/
 
 
 

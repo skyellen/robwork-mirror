@@ -110,14 +110,14 @@ namespace dynamics {
          * @brief returns the linear velocity described in parent frame
          */
         rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
-            return _kstate.get(state)->linvel;
+            return _kstate.get(state).linvel;
         }
 
         /**
          * @brief returns the angular velocity described in parent frame
          */
         rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
-            return _kstate.get(state)->angvel;
+            return _kstate.get(state).angvel;
         }
 
         /**
@@ -138,7 +138,7 @@ namespace dynamics {
          * @brief sets the linear velocity described in parent frame
          */
         void setLinVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
-            _kstate.get(state)->linvel = vel;
+            _kstate.get(state).linvel = vel;
         }
 
         void setLinVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
@@ -149,7 +149,7 @@ namespace dynamics {
          * @brief sets the angular velocity described in parent frame
          */
         void setAngVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
-            _kstate.get(state)->angvel = vel;
+            _kstate.get(state).angvel = vel;
         }
 
         void setAngVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
@@ -166,7 +166,7 @@ namespace dynamics {
 
     private:
         rw::kinematics::MovableFrame *_base;
-        rw::kinematics::StatelessObject::Data<KinematicBodyState> _kstate;
+        rw::kinematics::StatelessData<KinematicBodyState> _kstate;
 
     };
     //! @}

@@ -52,7 +52,7 @@ namespace {
             #endif
 
             #ifdef RWSIM_HAVE_BULLET
-                rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::BulletSimulator>(), boost::lambda::_1);
+                rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::BtSimulator>(), boost::lambda::_1);
                 _physicsEngines.push_back(std::make_pair(ODEPhysicsStr,rwphysics));
             #endif
 

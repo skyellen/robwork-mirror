@@ -51,12 +51,12 @@ namespace dynamics {
 
 		//! @copydoc DynamicDevice::getJointVelocities
 		rw::math::Q getJointVelocities(const rw::kinematics::State& state){
-		    return rw::math::Q(_velocity.getN(), _velocity.get(state) );
+		    return rw::math::Q(_velocity.getN(), &_velocity.get(state) );
 		};
 
         //! @copydoc DynamicDevice::setJointVelocities
 		void setJointVelocities(const rw::math::Q &vel, rw::kinematics::State& state){
-		    double *vals = _velocity.get(state);
+		    double *vals = &_velocity.get(state);
 		    for(int i=0; i< std::min(_velocity.getN(), (int)vel.size()); i++ ){
 		        vals[i] = vel[i];
 		    }
@@ -82,7 +82,7 @@ namespace dynamics {
 		rw::math::Q _maxVel, _maxAcc;
 		//rw::math::Q _q, _velQ;
 		rw::models::JointDevice::Ptr _jdev;
-		rw::kinematics::StatelessObject::Data<double> _velocity;
+		rw::kinematics::StatelessData<double> _velocity;
 	};
 	//! @}
 }

@@ -25,7 +25,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 
-#include <rw/kinematics/StatelessObject.hpp>
+#include <rw/kinematics/Stateless.hpp>
 
 #include "Body.hpp"
 #include "Link.hpp"
@@ -38,7 +38,7 @@ namespace dynamics {
 	 * @brief base class for dynamic devices that has dynamic state values
 	 * such as velocity and acceleration.
 	 */
-	class DynamicDevice: public rw::kinematics::StatelessObject {
+	class DynamicDevice: public rw::kinematics::Stateless{
 
 	public:
 	    typedef rw::common::Ptr<DynamicDevice> Ptr;
@@ -95,6 +95,8 @@ namespace dynamics {
 		virtual void setMotorVelocityTargets(const rw::math::Q& vel, rw::kinematics::State& state){ }
 
         virtual const std::vector<Body::Ptr>& getLinks() = 0;
+
+        const std::string& getName() const { return _dev->getName(); };
 
 	protected:
 

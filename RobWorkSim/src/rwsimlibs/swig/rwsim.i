@@ -41,6 +41,7 @@ using namespace rwsim::swig;
 %template (DynamicSimulatorPtr) rw::common::Ptr<DynamicSimulator>;
 
 %template (SimulatedFTSensorPtr) rw::common::Ptr<SimulatedFTSensor>;
+%template (SerialDeviceControllerPtr) rw::common::Ptr<SerialDeviceController>;
 
 
 DynamicWorkCell* getDynamicWorkCell();
@@ -223,6 +224,79 @@ public:
 
 };
 
+%nodefaultctor SerialDeviceController;
+class SerialDeviceController //: public rwlibs::simulation::SimulatedController 
+{
+public:
+
+	/**
+	 *
+	 * @param name [in] controller name
+	 * @param ddev [in]
+	 */
+	// SerialDeviceController(const std::string& name, dynamics::DynamicDevice::Ptr ddev);
+
+	//! destructor
+	virtual ~SerialDeviceController();
+
+	//! @brief move robot in a linear Cartesian path
+	bool moveLin(const Transform3D& target, float speed=100, float blend=0);
+
+	//! @brief move robot from point to point
+	bool movePTP(const Q& target, float speed=100, float blend=0);
+
+	//! @brief move robot from point to point but using a pose as target (require invkin)
+	virtual bool movePTP_T(const Transform3D& target, float speed=100, float blend=0);
+
+	//! @brief move robot in a servoing fasion
+	virtual bool moveVelQ(const Q& target_joint_velocity);
+
+	virtual bool moveVelT(const VelocityScrew6D& vel);
+
+	//! move robot with a hybrid position/force control
+/*
+	virtual bool moveLinFC(const Transform3D<>& target,
+							  Wrench6D<>& wtarget,
+							  float selection[6],
+							  std::string refframe,
+							  rw::math::Transform3D<> offset,
+							  float speed = 100,
+							  float blend = 0);
+*/
+	//! hard stop the robot,
+	bool stop();
+
+	//! pause the robot, should be able to continue trajectory
+	bool pause();
+
+	//! enable safe mode, so that robot stops when collisions are detected
+	bool setSafeModeEnabled(bool enable);
+
+	Q getQ();
+	Q getQd();
+
+	bool isMoving();
+
+	// simulated controller stuff
+
+	//void update(const rwlibs::simulation::Simulator::UpdateInfo& info, State& state);
+
+
+    std::string getControllerName();
+
+    void reset(const rw::kinematics::State& state);
+
+    //rwlibs::control::Controller* getController();
+
+    void setEnabled(bool enabled);
+
+    bool isEnabled();
+
+};
+
+
+
+
 %nodefaultctor DynamicDevice;
 class DynamicDevice {
 
@@ -404,6 +478,8 @@ public:
         rw::common::Ptr<SimulatedFTSensor> findFTSensor(const std::string& name)
         { return $self->DynamicWorkCell::findSensor<SimulatedFTSensor>(name); }
 
+        rw::common::Ptr<SerialDeviceController> findSerialDeviceController(const std::string& name)
+        { return $self->DynamicWorkCell::findController<SerialDeviceController>(name); }
         
         void setGravity(double x, double y, double z){
             $self->DynamicWorkCell::setGravity( rw::math::Vector3D<>(x,y,z) );

@@ -94,13 +94,13 @@ using namespace rwlibs::proximitystrategies;
 //#define RW_DEBUGS( str ) std::cout << str  << std::endl;
 #define RW_DEBUGS( str )
 
-#define TIMING( str, func ) \
-    { long start = rw::common::TimerUtil::currentTimeMs(); \
-    func; \
-     long end = rw::common::TimerUtil::currentTimeMs(); \
-    std::cout << str <<":" << (end-start) <<"ms"<<std::endl;  }
+//#define TIMING( str, func ) \
+//    { long start = rw::common::TimerUtil::currentTimeMs(); \
+//    func; \
+//     long end = rw::common::TimerUtil::currentTimeMs(); \
+//    std::cout << str <<":" << (end-start) <<"ms"<<std::endl;  }
 
-//#define TIMING( str, func ) {func;}
+#define TIMING( str, func ) {func;}
 
 namespace {
 
@@ -933,13 +933,13 @@ void ODESimulator::addODEJoint(dJointID joint){
 
 
 void ODESimulator::addODEBody(dBodyID body){
-    //std::cout << "addODEBody: " << std::endl;
+    RW_DEBUGS("addODEBody: ");
     _allbodies.push_back(body);
 }
 
 
 void ODESimulator::addODEBody(ODEBody* odebody){
-    //std::cout << "Add ode body: " << odebody->getFrame()->getName() << std::endl;
+    RW_DEBUGS("Add ode body: " << odebody->getFrame()->getName() );
     if( _rwFrameToODEBody.find( odebody->getFrame() )!=_rwFrameToODEBody.end() )
         RW_THROW("Body with name \"" << odebody->getFrame()->getName() << "\" allready exists in the simulator! " );
 
@@ -959,7 +959,8 @@ void ODESimulator::addODEBody(ODEBody* odebody){
 }
 
 void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
-    //std::cout << "Add body: " << body->getName() << std::endl;
+    RW_DEBUGS( "Add body: " << body->getName() );
+
     if( _rwFrameToODEBody.find( body->getBodyFrame() )!=_rwFrameToODEBody.end() )
         RW_THROW("Body with name \"" << body->getName() << "\" allready exists in the simulator! " );
 
@@ -2377,5 +2378,16 @@ void ODESimulator::enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamic
 
 void ODESimulator::exitPhysics()
 {
+	// only if init physics have been called
+	dJointGroupDestroy( _contactGroupId );
+	dWorldDestroy(_worldId);
+	dSpaceDestroy(_spaceId);
+
+	delete _odeMaterialMap;
+	BOOST_FOREACH(ODEDevice* vdev, _odeDevices){
+		delete vdev;
+	}
+	_frameToModels.clear();
+	_bpstrategy = NULL;
 
 }

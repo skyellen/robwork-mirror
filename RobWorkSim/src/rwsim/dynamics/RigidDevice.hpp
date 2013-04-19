@@ -150,7 +150,7 @@ namespace dynamics {
         /**
          * @copydoc rw::kinematics::StatelessObject::registerStateData
          */
-        virtual void registerStateData(rw::kinematics::StateStructure::Ptr statestructure);
+        //virtual void registerStateData(rw::kinematics::StateStructure::Ptr statestructure);
 
 	public: ///// DEPRECATED FUNCTIONS
         //rw::math::Q getForceLimit() { return getMotorForceLimits(); }
@@ -161,9 +161,9 @@ namespace dynamics {
 		//rw::math::Q _vel, _actualVel;
 		//rw::math::Q _torque;
         // all state variables are declared here
-		rw::kinematics::StatelessObject::Data<double> _velocity;
-		rw::kinematics::StatelessObject::Data<double> _target;
-        rw::kinematics::StatelessObject::Data<char> _mode;
+		rw::kinematics::StatelessData<double> _velocity;
+		rw::kinematics::StatelessData<double> _target;
+        rw::kinematics::StatelessData<char> _mode;
 
 
 		// these should all be part of the state...

@@ -69,6 +69,10 @@ namespace dynamics {
         typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
         typedef rw::common::Ptr<DynamicWorkCell> Ptr;
 
+        /**
+         * @brief Constructor
+         */
+    	DynamicWorkCell(rw::models::WorkCell::Ptr workcell);
 
         /**
          * @brief Constructor
@@ -133,7 +137,7 @@ namespace dynamics {
          * @param sensor [in] a simulated sensor
          */
         void addDevice(DynamicDevice::Ptr device){
-            device->registerStateData( _workcell->getStateStructure() );
+        	device->registerIn( _workcell->getStateStructure() );
             _devices.push_back(device);
             _changedEvent.fire(DeviceAddedEvent, boost::any(device) );
         };
@@ -176,7 +180,7 @@ namespace dynamics {
          * @param sensor [in] a simulated sensor
          */
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
-            sensor->registerStateData( _workcell->getStateStructure() );
+            sensor->registerIn( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
             _changedEvent.fire(SensorAddedEvent, boost::any(sensor) );
         };
@@ -222,7 +226,7 @@ namespace dynamics {
     	 */
     	void addController(rwlibs::simulation::SimulatedController::Ptr manipulator){
     	    //TODO: change STATE and WorkCell accordingly
-    	    manipulator->registerStateData( _workcell->getStateStructure() );
+    	    manipulator->registerIn( _workcell->getStateStructure() );
     		_controllers.push_back(manipulator);
     		_changedEvent.fire(ControllerAddedEvent, boost::any(manipulator) );
     	}

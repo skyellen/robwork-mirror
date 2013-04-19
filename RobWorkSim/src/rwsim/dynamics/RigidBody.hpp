@@ -83,32 +83,32 @@ namespace dynamics {
 
         //! @copydoc Body::setForce
         void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
-            _rstate.get(state)->force = f;
+            _rstate.get(state).force = f;
         }
 
         //! @copydoc Body::addForce
         void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
-            _rstate.get(state)->force += force;
+            _rstate.get(state).force += force;
         }
 
         //! @copydoc Body::getForce
         rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const {
-            return _rstate.get(state)->force;
+            return _rstate.get(state).force;
         }
 
         //! @copydoc Body::setTorque
         void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-            _rstate.get(state)->torque = t;
+            _rstate.get(state).torque = t;
         }
 
         //! @copydoc Body::addTorque
         void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
-            _rstate.get(state)->torque += t;
+            _rstate.get(state).torque += t;
         }
 
         //! @copydoc Body::getTorque
         rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
-            return _rstate.get(state)->torque;
+            return _rstate.get(state).torque;
         }
 
     public:
@@ -162,7 +162,7 @@ namespace dynamics {
          * @brief return the linear velocity described in parent frame
          */
         rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
-            return _rstate.get(state)->linvel;
+            return _rstate.get(state).linvel;
         	//const double *q = this->getData(state);
             //return rw::math::Vector3D<>(q[0],q[1],q[2]);
         }
@@ -178,7 +178,7 @@ namespace dynamics {
          * @brief set the linear velocity.
          */
         void setLinVel(const rw::math::Vector3D<> &lvel, rw::kinematics::State& state){
-            _rstate.get(state)->linvel = lvel;
+            _rstate.get(state).linvel = lvel;
         }
 
         void setLinVelW(const rw::math::Vector3D<> &lvel, rw::kinematics::State& state){
@@ -189,7 +189,7 @@ namespace dynamics {
          * @brief returns the angular velocity described in parent frame
          */
         rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
-            return _rstate.get(state)->angvel;
+            return _rstate.get(state).angvel;
             //const double *q = this->getData(state);
         	//return rw::math::Vector3D<>(q[3],q[4],q[5]);
         }
@@ -312,7 +312,7 @@ namespace dynamics {
         // state variables
         rw::math::InertiaMatrix<> _ITensorInv,_ITensor; // inverse inertia tensor in parent frame
 
-        rw::kinematics::StatelessObject::Data<RigidBodyState> _rstate;
+        rw::kinematics::StatelessData<RigidBodyState> _rstate;
     };
     //! @}
 } // namespace dynamics

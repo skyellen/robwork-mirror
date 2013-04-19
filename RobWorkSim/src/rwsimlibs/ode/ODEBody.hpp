@@ -110,7 +110,11 @@ namespace simulator {
 		 * @brief destructor
 		 * @return
 		 */
-		virtual ~ODEBody(){};
+		virtual ~ODEBody(){
+			BOOST_FOREACH(ODEUtil::TriGeomData* data ,_triGeomDatas){
+				delete data;
+			}
+		};
 
 		/**
 		 * @brief Called before collision checking and time stepping

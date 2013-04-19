@@ -53,7 +53,16 @@ ODEVelocityDevice::ODEVelocityDevice(
 
 }
 */
-ODEVelocityDevice::~ODEVelocityDevice(){};
+ODEVelocityDevice::~ODEVelocityDevice(){
+	BOOST_FOREACH(ODEJoint* joint, _odeJoints){
+		delete joint;
+	}
+
+	BOOST_FOREACH(ODEBody* body, _ode_bodies){
+		delete body;
+	}
+
+};
 
 void ODEVelocityDevice::reset(rw::kinematics::State& state){
     rw::math::Q q = _rdev->getModel().getQ(state);
@@ -63,8 +72,7 @@ void ODEVelocityDevice::reset(rw::kinematics::State& state){
 
         _odeJoints[i]->setVelocity( 0 );
 
-        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
-                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+        bool depends = _odeJoints[i]->isDepend();
         if(depends){
             continue;
         }
@@ -76,8 +84,7 @@ void ODEVelocityDevice::reset(rw::kinematics::State& state){
     }
     for(size_t i = 0; i<_odeJoints.size(); i++){
 
-        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
-                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+        bool depends = _odeJoints[i]->isDepend();
 
         if(depends){
             double angle = _odeJoints[i]->getOwner()->getAngle();
@@ -130,8 +137,7 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
     int qi=0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately
-        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
-                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+        bool depends = _odeJoints[i]->isDepend();
 
         if(depends){
             continue;
@@ -167,8 +173,7 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
     // we now handle the dependent joints
     for(size_t i = 0; i<_odeJoints.size(); i++){
 
-        bool depends = _odeJoints[i]->getType()==ODEJoint::DEPEND ||
-                _odeJoints[i]->getType()==ODEJoint::DEPEND_PAR;
+        bool depends = _odeJoints[i]->isDepend();
 
         // dependend joints need to be handled separately
         if(depends){
@@ -236,8 +241,7 @@ void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){
     rw::math::Q actualVel = velQ;
     int qi = 0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
-
-        if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
+        if(_odeJoints[i]->isDepend()){
             continue;
         }
         actualVel(qi) = _odeJoints[i]->getActualVelocity();
@@ -410,18 +414,35 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
          ODEBody *parent = frameToODEBody[bodyPair.second->getBodyFrame()];
          for(int i=0;i<(int)joints.size();i++){
              // the child of the joint is either bodyPair.first or another joint in which case we need to make an ODEBody
-             ODEBody *child = NULL;
-             if(i+1 == (int)joints.size()){
-                 // this is the last joint so connect it to bodyPair.first
-                 child = frameToODEBody[bodyPair.first->getBodyFrame()];
-             } else {
-                 // create a virtual body
+             ODEBody *child = frameToODEBody[bodyPair.first->getBodyFrame()];
+
+             if(child==NULL){
+            	 // in case not bodies are placed between two joints then add a virtual body...
+            	 // TODO: this is somewhat of a hack please remove/change/fix
+            	 // the user should specify links in the DWC
+            	 std::cout << "creating virtual body" << std::endl;
                  dBodyID bTmp = dBodyCreate( _sim->getODEWorldId() );
                  ODEUtil::setODEBodyMass(bTmp,0.01, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.01,1) );
                  child = new ODEBody(bTmp, joints[i]);
                  child->setTransform( state );
                  _sim->addODEBody(child);
              }
+
+             /*
+             if(i+1 == (int)joints.size()){
+                 // this is the last joint so connect it to bodyPair.first
+            	 child = frameToODEBody[bodyPair.first->getBodyFrame()];
+             }
+             else {
+                 // create a virtual body
+            	 std::cout << "creating virtual body" << std::endl;
+                 dBodyID bTmp = dBodyCreate( _sim->getODEWorldId() );
+                 ODEUtil::setODEBodyMass(bTmp,0.01, Vector3D<>(0,0,0), InertiaMatrix<>::makeSolidSphereInertia(0.01,1) );
+                 child = new ODEBody(bTmp, joints[i]);
+                 child->setTransform( state );
+                 _sim->addODEBody(child);
+             }
+             */
              ODEJoint *odeJoint = new ODEJoint(joints[i], parent, child, _sim, state);
              _sim->addODEJoint(odeJoint);
              jointMap[joints[i]] = odeJoint;

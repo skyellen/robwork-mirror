@@ -32,6 +32,7 @@
 #include <rwsim/control/BodyController.hpp>
 #include <rwsim/control/PoseController.hpp>
 #include <rwsim/control/PDController.hpp>
+#include <rwsim/control/SerialDeviceController.hpp>
 
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
@@ -73,6 +74,7 @@ namespace swig {
     typedef rwsim::control::PoseController PoseController;
     typedef rwsim::control::PDController PDController;
     typedef rwsim::control::BodyController BodyController;
+    typedef rwsim::control::SerialDeviceController SerialDeviceController;
 
     typedef rwsim::simulator::DynamicSimulator DynamicSimulator;
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
@@ -88,6 +90,11 @@ namespace swig {
      */
     void setDynamicWorkCell(DynamicWorkCell* dwc);
 
+    /**
+     * @brief add instance of simulator
+     * @param sim [in]
+     * @param id [in] id of simulator
+     */
     void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);
 
     //! @brief get first available simulator instance

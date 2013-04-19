@@ -104,8 +104,16 @@ namespace simulator {
 	class ODESimulator : public PhysicsEngine
 	{
 	public:
+		/**
+		 * type of step method, worldStep is direct solver, worldquickstep is faster iterative solver.
+		 * When dynamically simulating robot arms use worldstep, else simulate chains as kinematic bodies.
+		 */
 		typedef enum{WorldStep, WorldQuickStep, WorldFast1} StepMethod;
+		//! type of broad phase collision detection to use
 		typedef enum{Simple, HashTable, QuadTree} SpaceType;
+		//! smart pointer type
+		typedef rw::common::Ptr<ODESimulator> Ptr;
+
 		/**
 		 * @brief constructor
 		 * @param dwc [in] the dynamic workcell for which the simulator should work
@@ -115,7 +123,9 @@ namespace simulator {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~ODESimulator(){}
+		virtual ~ODESimulator(){
+			delete _narrowStrategy;
+		}
 
 		/**
 		 * @brief sets the ODE step method that should be used for stepping
