@@ -1,6 +1,17 @@
 # Test CMake version
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+IF(DEFINED CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of
+build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
+Release RelWithDebInfo MinSizeRel.")
+ELSE()
+   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
+RelWithDebInfo MinSizeRel.")
+ENDIF()
+
+
 # The name of the project.
 PROJECT(RobWork)
 SET(ROBWORK_VERSION 0.7.0)
@@ -88,7 +99,7 @@ CONFIGURE_FILE(
 # Configure cmake/RobWorkBuildConfig.cmake.in such that other projects might use RobWork
 CONFIGURE_FILE(
   ${RW_ROOT}/cmake/RobWorkBuildConfig.cmake.in
-  "${RW_ROOT}/cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  "${RW_ROOT}/cmake/RobWorkBuildConfig_${RW_BUILD_TYPE}.cmake"
   @ONLY
 )
 
@@ -127,7 +138,7 @@ INSTALL(FILES
     DESTINATION ${CONFIG_INSTALL_DIR}/cmake/Modules)
    
 INSTALL(FILES 
-        "cmake/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+        "cmake/RobWorkBuildConfig_${RW_BUILD_TYPE}.cmake"
         "cmake/RobWorkMacros.cmake"
         DESTINATION ${RW_INSTALL_DIR}/cmake)
         
@@ -144,13 +155,13 @@ IF(WIN32)
   SET(copy_lib TRUE)
   FOREACH(s ${Boost_LIBRARIES})
     IF("${s}" STREQUAL "optimized")
-      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+      IF("${RW_BUILD_TYPE}" STREQUAL "Release")
         SET(copy_lib TRUE)
       ELSE()
         SET(copy_lib FALSE)
       ENDIF()
     ELSEIF("${s}" STREQUAL "debug")
-      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      IF("${RW_BUILD_TYPE}" STREQUAL "Debug")
         SET(copy_lib TRUE)
       ELSE()
         SET(copy_lib FALSE)
