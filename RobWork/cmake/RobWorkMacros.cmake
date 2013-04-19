@@ -46,7 +46,7 @@ MACRO(RW_SYS_INFO INFO)
             # this will add kernel version eg Linux_3.0....
             #EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE KERNEL_VERSION)
             #SET(SUFFIX "${SUFFIX}_${KERNEL_VERSION}")
-            SET(SUFFIX "${SUFFIX}_${ARCH}_${CMAKE_BUILD_TYPE}")
+            SET(SUFFIX "${SUFFIX}_${ARCH}_${RW_BUILD_TYPE}")
             STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
             STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
         
@@ -102,9 +102,12 @@ MACRO(RW_INIT_PROJECT ROOT PROJECT_NAME PREFIX VERSION)
         
     # Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
     IF (NOT CMAKE_BUILD_TYPE)
-        SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+        SET(${PREFIX}_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+    else ()
+        SET(${PREFIX}_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
     ENDIF ()
-    MESSAGE(STATUS "${PROJECT_NAME}: Build configuration: ${CMAKE_BUILD_TYPE}")
+    STRING(TOLOWER ${${PREFIX}_BUILD_TYPE} ${PREFIX}_BUILD_TYPE)
+    MESSAGE(STATUS "${PROJECT_NAME}: Build configuration: ${RW_BUILD_TYPE}")
     
     # Load the optional Default.cmake file.
     INCLUDE(${ROOT}/config.cmake OPTIONAL)
@@ -116,9 +119,9 @@ MACRO(RW_INIT_PROJECT ROOT PROJECT_NAME PREFIX VERSION)
       ENDIF()
     ENDIF ()
     
-    SET(${PREFIX}_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory"  FORCE )
-    SET(${PREFIX}_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory"  FORCE )
-    SET(${PREFIX}_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory"  FORCE )
+    SET(${PREFIX}_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${RW_BUILD_TYPE}" CACHE PATH "Runtime directory"  FORCE )
+    SET(${PREFIX}_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Library directory"  FORCE )
+    SET(${PREFIX}_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Archive directory"  FORCE )
     
     # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
     IF (DEFINED MSVC)
@@ -126,9 +129,9 @@ MACRO(RW_INIT_PROJECT ROOT PROJECT_NAME PREFIX VERSION)
         SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Library directory" FORCE)
         SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory" FORCE)
     ELSE ()
-        SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
-        SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
-        SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
+        SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${RW_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
+        SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
+        SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
     ENDIF ()
     
     STRING(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
@@ -187,7 +190,7 @@ macro(RW_SET_INSTALL_DIRS PROJECT_NAME PREFIX)
 ENDMACRO(RW_SET_INSTALL_DIRS)
 
 MACRO(RW_IS_RELEASE IS_RELEASE)
-    IF(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    IF(${RW_BUILD_TYPE} STREQUAL "release" OR ${RW_BUILD_TYPE} STREQUAL "relwithdebinfo" OR ${RW_BUILD_TYPE} STREQUAL "minsizerel")
         SET(${IS_RELEASE} TRUE)
     ELSE()
         SET(${IS_RELEASE} FALSE)

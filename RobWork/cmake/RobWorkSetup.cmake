@@ -279,7 +279,7 @@ ENDIF ()
 # If the user wants to use the calibration package, Eigen3 and Qt4 must be installed. Otherwise the package will be disabled.
 #
 
-OPTION( RW_BUILD_CALIBRATION "Set when you want to build calibration module" OFF )
+OPTION( RW_BUILD_CALIBRATION "Set when you want to build calibration module" ON )
 IF ( RW_BUILD_CALIBRATION )
     MESSAGE( STATUS "RobWork: Calibration ENABLED!" )
     FIND_PACKAGE( Eigen3 REQUIRED )
