@@ -463,11 +463,6 @@ namespace rwhw {
         @brief Driver wrapper for Weiss tactile array sensors (early version only)
     @}
 
-    @defgroup
-    @{
-        @brief Ignore this group. The group has been added to fix a glitch in
-        the Doxygen output.
-    @}
 @}
 
 */
