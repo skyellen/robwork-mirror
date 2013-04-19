@@ -50,7 +50,7 @@
     #include <rwslibs/propertyview/PropertyView.hpp>
     #include <rwslibs/sensors/Sensors.hpp>
 #ifdef RW_HAVE_EIGEN
-    #include <rwslibs/calibration/Calibration.hpp>
+    //#include <rwlibs/calibration/Calibration.hpp>
 #endif
 #if RWS_HAVE_LUA
     #include <rwslibs/lua/Lua.hpp>
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
                     rwstudio.addPlugin(new rws::Sensors(), false, Qt::RightDockWidgetArea);
 
 					#ifdef RW_HAVE_EIGEN
-                    rwstudio.addPlugin(new rws::Calibration(), false, Qt::RightDockWidgetArea);
+                    //rwstudio.addPlugin(new rws::Calibration(), false, Qt::RightDockWidgetArea);
 					#endif
 
                     #if RWS_HAVE_LUA

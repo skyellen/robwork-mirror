@@ -61,8 +61,8 @@ if (DEFINED APPLE)
 endif ()
 
 # get the build configuration of the requested built type
-IF(EXISTS ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-	INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+IF(EXISTS ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig_${CMAKE_BUILD_TYPE}.cmake)
+	INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioBuildConfig_${CMAKE_BUILD_TYPE}.cmake)
 ELSE()
 	#INCLUDE(${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake)
 	MESSAGE(FATAL_ERROR "Could not find ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake")

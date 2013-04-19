@@ -1,20 +1,21 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-CMAKE_POLICY(SET CMP0011 NEW)
-CMAKE_POLICY(SET CMP0012 NEW) 
-
+IF(DEFINED CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of
+build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
+Release RelWithDebInfo MinSizeRel.")
+ELSE()
+   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
+RelWithDebInfo MinSizeRel.")
+ENDIF()
 
 # The name of the project.
-project(RobWorkStudio)
+PROJECT(RobWorkStudio)
 SET(ROBWORKSTUDIO_VERSION 0.7.0)
 SET(RWS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 MESSAGE(STATUS "RobWorkStudio version ${ROBWORKSTUDIO_VERSION}")
-
-# Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
-IF (NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
-ENDIF ()
 
 # lets start by finding RobWork since this is the primary dependency and because we
 # want to use the macros available in RobWork
@@ -53,7 +54,7 @@ INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioSetup.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-MESSAGE(" ${ROBWORKSTUDIO_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} ")
+#MESSAGE(" ${ROBWORKSTUDIO_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} ")
 # linking options
 SET(RW_STATIC_LINK_PLUGINS ${RWS_USE_STATIC_LINK_PLUGINS})
 # linking options
@@ -64,7 +65,7 @@ ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
 RW_SYS_INFO(INFO)
-MESSAGE("RobWork: ${INFO} ")
+MESSAGE(STATUS "RobWorkStudio: platform ${INFO} ")
 
 #############################################################
 # setup testing
@@ -74,11 +75,11 @@ INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RWS_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RWS_BUILD_TESTS}" OFF)
 IF( RWS_IS_TESTS_ENABLED )
-    MESSAGE(STATUS "RobWorkStudio tests ENABLED!")
+    MESSAGE(STATUS "RobWorkStudio: tests ENABLED!")
     INCLUDE(CTest)
     #ADD_SUBDIRECTORY(test)
 ELSE ()
-    MESSAGE(STATUS "RobWorkStudio tests DISABLED!")
+    MESSAGE(STATUS "RobWorkStudio: tests DISABLED!")
 ENDIF()
 
 # configure testing configuration
@@ -109,7 +110,7 @@ CONFIGURE_FILE(
 # next build information script
 CONFIGURE_FILE(
   ${RWS_ROOT}/cmake/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  "${RWS_ROOT}/cmake/RobWorkStudioBuildConfig_${RW_BUILD_TYPE}.cmake"
   @ONLY
 )
 
@@ -134,7 +135,7 @@ INSTALL(FILES
     DESTINATION ${RWS_INSTALL_DIR} ) 
 
 INSTALL(FILES 
-        "cmake/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+        "cmake/RobWorkStudioBuildConfig_${RWS_BUILD_TYPE}.cmake"
         "cmake/RobWorkStudioMacros.cmake"
         DESTINATION ${RWS_INSTALL_DIR})
 
@@ -152,15 +153,16 @@ IF(WIN32)
 	# Trim the Qt library lists and take only the libraries corresponding to the build type  
   SET(QT_LIBRARIES_INSTALL "")
   SET(copy_lib TRUE)
+  RW_IS_RELEASE(IS_RELEASE)
   FOREACH(s ${QT_LIBRARIES})
     IF("${s}" STREQUAL "optimized")
-      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+      IF( ${IS_RELEASE} )
         SET(copy_lib TRUE)
       ELSE()
         SET(copy_lib FALSE)
       ENDIF()
     ELSEIF("${s}" STREQUAL "debug")
-      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      IF(NOT ${IS_RELEASE})
         SET(copy_lib TRUE)
       ELSE()
         SET(copy_lib FALSE)

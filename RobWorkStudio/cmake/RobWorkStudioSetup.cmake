@@ -115,11 +115,12 @@ ENDIF()
 # Set extra compiler flags. The user should be able to change this. 
 # The compiler flags from RobWork are automatically set 
 #
+RW_IS_RELEASE(IS_RELEASE)
 IF(NOT DEFINED RWS_CXX_FLAGS)
-	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
-		SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
-	ELSE ()
+	IF( ${IS_RELEASE} )
 		SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
+	ELSE ()
+		SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
 	ENDIF()
   
 	SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
@@ -174,7 +175,7 @@ SET(ROBWORKSTUDIO_INCLUDE_DIR
 SET(ROBWORKSTUDIO_LIBRARY_DIRS
     ${Boost_LIBRARY_DIRS}
     ${ROBWORK_LIBRARY_DIRS}
-    ${RWS_ROOT}/libs/${CMAKE_BUILD_TYPE}
+    ${RWS_ROOT}/libs/${RWS_BUILD_TYPE}
 )
 
 
