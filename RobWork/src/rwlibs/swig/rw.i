@@ -847,6 +847,26 @@ public:
 
 };
 
+class CompositeDevice: public Device
+{
+public:
+    CompositeDevice(
+        Frame* base,
+		const std::vector<rw::common::Ptr<Device> >& devices,
+        Frame* end,
+        const std::string& name,
+        const State& state);
+
+    CompositeDevice(
+        Frame *base,
+		const std::vector<rw::common::Ptr<Device> >& devices,
+        const std::vector<Frame*>& ends,
+        const std::string& name,
+        const State& state);
+
+    
+};
+
 
 /******************************************************************************
  *  TRAJECTORY

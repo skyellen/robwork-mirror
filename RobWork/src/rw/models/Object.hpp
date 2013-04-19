@@ -22,6 +22,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/StateStructure.hpp>
+#include <rw/kinematics/Stateless.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/graphics/Model3D.hpp>
 
@@ -35,16 +36,20 @@ namespace rw { namespace models {
     /**
        @brief Nothing descriptive yet.
     */
-    class Object
+    class Object: public rw::kinematics::Stateless
     {
     public:
         typedef rw::common::Ptr<Object> Ptr;
 
+        //! constructor
         Object(rw::kinematics::Frame* baseframe);
+        //! constructor
         Object(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
+        //! constructor
         Object(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
-
+        //! constructor - first frame is base
         Object(std::vector<rw::kinematics::Frame*> frames);
+        //! constructor - first frame is base
         Object(std::vector<rw::kinematics::Frame*> frames, rw::geometry::Geometry::Ptr geom);
         Object(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
 
@@ -71,8 +76,6 @@ namespace rw { namespace models {
 
     protected:
         friend class WorkCell;
-        virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
-        virtual void removeStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
     private:
         rw::kinematics::Frame *_base;

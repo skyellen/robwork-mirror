@@ -148,6 +148,10 @@ namespace common {
 		}
 
 
+		template<class T>
+		void write(const T& object, const std::string& id){
+			((OutputArchive*)this)->write<T>(object, id);
+		}
 		///////////////// READING
 
 		std::pair<std::string, std::string> getNameValue(){

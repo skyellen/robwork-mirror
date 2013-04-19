@@ -31,7 +31,7 @@ FKTable::FKTable(const State* state) :
 
 FKTable::FKTable(const State& state) :
     _state(state),
-    _transforms(150)
+    _transforms(Transform3D<>::identity(), 150)
 {
     _sp = &_state;
 }

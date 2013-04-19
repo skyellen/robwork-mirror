@@ -41,7 +41,7 @@ namespace rw { namespace kinematics {
         FrameMap(int s = 20) :
             _initialSize(s),
             _defaultVal(false, T()),
-            _map(_initialSize, _defaultVal)
+            _map(s, _defaultVal)
         {}
 
         /**
@@ -52,7 +52,7 @@ namespace rw { namespace kinematics {
         FrameMap(const T& defaultVal, int s = 20) :
             _initialSize(s),
             _defaultVal(false, defaultVal),
-            _map(_initialSize, _defaultVal)
+            _map(s, _defaultVal)
         {}
 
         /**

@@ -69,6 +69,7 @@ namespace common {
 		virtual void write(const std::vector<double>& val, const std::string& id) = 0;
 		virtual void write(const std::vector<std::string>& val, const std::string& id) = 0;
 
+
 		// now for the complex types, these needs to implement save/load functionality
 		/**
 		 * @brief generic write method. This method will write any objects that are either derived

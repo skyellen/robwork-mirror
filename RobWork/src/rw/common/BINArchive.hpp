@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_COMMON_BINArchive_HPP
-#define RW_COMMON_BINArchive_HPP
+#ifndef RW_COMMON_BINARCHIVE_HPP
+#define RW_COMMON_BINARCHIVE_HPP
 
 #include <cstdlib>
 #include <cmath>
@@ -27,6 +27,9 @@
 #include <fstream>
 #include <rw/common/macros.hpp>
 #include <boost/any.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "InputArchive.hpp"
 #include "OutputArchive.hpp"
@@ -39,7 +42,7 @@ namespace common {
 	 */
 	class BINArchive: public InputArchive, public virtual OutputArchive {
 	public:
-		BINArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false){}
+		BINArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_iostr(NULL),_isopen(false){}
 
 		void close(){
 			if(_fstr!=NULL)
@@ -52,15 +55,25 @@ namespace common {
 
 		virtual void open(const std::string& filename);
 
+		virtual void open(std::iostream& stream);
+
+		virtual void flush();
+
 		virtual void open(std::ostream& ofs){
+			_fstr = NULL;
+			_iostr = NULL;
 			_ofs = &ofs;
 			_isopen = true;
 		}
 
 		virtual void open(std::istream& ifs){
+			_fstr = NULL;
+			_iostr = NULL;
 			_ifs = &ifs;
 			_isopen = true;
 		}
+
+
 
 		virtual bool isOpen(){ return _isopen; };
 
@@ -135,6 +148,11 @@ namespace common {
 		template<class T>
 		void writeValue( const T&  val, const std::string& id ){
 			(*_ofs) << id << "=" << val << "\n";
+		}
+
+		template<class T>
+		void write(const T& object, const std::string& id){
+			((OutputArchive*)this)->write<T>(object, id);
 		}
 
 
@@ -224,6 +242,8 @@ namespace common {
 		std::ostream *_ofs;
 		std::istream *_ifs;
 		std::fstream *_fstr;
+		std::iostream *_iostr;
+
 		char _line[500];
 		bool _isopen;
 		std::vector<std::string> _scope;

@@ -33,6 +33,7 @@ SET(FILES_CPP
   InputArchive.cpp
   OutputArchive.cpp
   INIArchive.cpp
+  BINArchive.cpp
   Serializable.cpp
   
   Extension.cpp
@@ -77,6 +78,7 @@ SET(FILES_HPP
   InputArchive.hpp
   OutputArchive.hpp
   INIArchive.hpp
+  BINArchive.hpp
   Serializable.hpp
 
   Extension.hpp

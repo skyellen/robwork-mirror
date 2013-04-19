@@ -93,6 +93,8 @@ namespace rw { namespace kinematics {
          */
         inline const double* getData(const State& state) const {
             if( _size==0 ) return NULL; // stop early if we know size is 0
+            if( _id<0 )
+            	RW_THROW("StateData \"" << _name << "\" NOT initialized!");
             return state.getQState().getQ(*this);
         }
 
@@ -108,6 +110,8 @@ namespace rw { namespace kinematics {
          */
         inline double* getData(State& state) {
             if( _size==0 ) return NULL; // stop early if we know size is 0
+            if( _id<0 )
+            	RW_THROW("StateData \"" << _name << "\" NOT initialized!");
             return state.getQState().getQ(*this);
         }
 
@@ -131,6 +135,7 @@ namespace rw { namespace kinematics {
          */
         inline void setData(State& state, const double* vals) const{
             if( _size==0 ) return; // stop early if we know size is 0
+            if( _id<0 ) RW_THROW("StateData \"" << _name << "\" NOT initialized!");
             state.getQState().setQ(*this, vals);
         }
 

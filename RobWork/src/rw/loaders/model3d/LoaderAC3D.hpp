@@ -248,6 +248,9 @@ namespace rw { namespace loaders {
         };
 
         struct ModelAC3D {
+        	virtual ~ModelAC3D(){
+        		delete _object;
+        	}
             std::vector<rw::graphics::TextureData> _textures;
             std::map<int, rw::graphics::TextureData*> _textureMap;
             AC3DObject* _object;

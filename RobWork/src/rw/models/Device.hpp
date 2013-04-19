@@ -28,6 +28,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/kinematics/StateStructure.hpp>
+#include <rw/kinematics/Stateless.hpp>
 #include "JacobianCalculator.hpp"
 
 
@@ -60,7 +61,7 @@ namespace rw { namespace models {
      *
      * @todo document this
      */
-    class Device
+    class Device: public rw::kinematics::Stateless
     {
     public:
 		//! @brief smart pointer type to this class
@@ -82,14 +83,6 @@ namespace rw { namespace models {
          * @brief Virtual destructor
          */
         virtual ~Device(){}
-
-        /**
-         * @brief this is used to register any state data that may be in the
-         * device
-         */
-        virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
-
-        virtual void removeStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
         /**
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
@@ -180,7 +173,7 @@ namespace rw { namespace models {
          * @brief Returns the name of the device
          * @return name of the device
          */
-        std::string getName() const { return _name; }
+        const std::string& getName() const { return _name; }
 
         /**
          * @brief Sets the name of the Device

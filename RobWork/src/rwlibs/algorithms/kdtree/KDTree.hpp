@@ -49,6 +49,8 @@ namespace rwlibs { namespace algorithms {
      * KEY must implement:
      * copyable
      * operator[]
+     * operator()
+     * TODO: remove one of the operators (change code in KDTREE)
      *
      */
     template<class KEY, size_t DIM>

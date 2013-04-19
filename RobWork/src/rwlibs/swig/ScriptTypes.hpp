@@ -138,6 +138,7 @@ typedef rw::models::Device Device;
 typedef rw::models::JointDevice JointDevice;
 typedef rw::models::SerialDevice SerialDevice;
 typedef rw::models::TreeDevice TreeDevice;
+typedef rw::models::CompositeDevice CompositeDevice;
 typedef rw::models::ParallelDevice ParallelDevice;
 typedef rw::models::DHParameterSet DHParameterSet;
 

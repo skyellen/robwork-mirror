@@ -50,6 +50,12 @@ namespace rw { namespace loaders {
     class PathLoader
     {
     public:
+
+    	/**
+    	 * @brief store a QPath to file
+    	 * @param path
+    	 * @param file
+    	 */
         static void storePath(
             const rw::trajectory::QPath& path,
             const std::string& file);

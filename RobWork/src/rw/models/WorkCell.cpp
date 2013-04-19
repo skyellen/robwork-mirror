@@ -72,7 +72,8 @@ Frame* WorkCell::getWorldFrame() const
 
 void WorkCell::addDevice(Device::Ptr device)
 {
-    device->registerStateData(_tree);
+
+	device->registerIn( _tree );
     _devices.push_back(device);
     //TODO: notify changed
 }
@@ -96,7 +97,7 @@ void WorkCell::remove(Frame* frame){
 
 void WorkCell::add(rw::common::Ptr<Object> object){
 
-    object->registerStateData(_tree);
+    object->registerIn( _tree );
     _objects.push_back(object);
     //TODO: notify changed
 }
