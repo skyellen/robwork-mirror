@@ -167,11 +167,6 @@ ENDIF()
 # The compiler flags from RobWork are automatically set 
 #
 IF(NOT DEFINED RWSIM_CXX_FLAGS)
-	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
-		SET(RWSIM_CXX_FLAGS_TMP ) 
-	ELSE ()
-		SET(RWSIM_CXX_FLAGS_TMP )
-	ENDIF()
   
 	SET(RWSIM_CXX_FLAGS ${RWSIM_CXX_FLAGS_TMP} 
 		CACHE STRING "Change this to force using your own flags and not those of RobWorkSim"
