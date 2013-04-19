@@ -1,0 +1,51 @@
+ <!-- THIS FILE NEED TO BE INCLUDED IN A GENERAL DYNAMICS SCENE -->
+<IncludeData> 
+ <RigidDevice device="nowy">
+  <ForceLimit joint="RightFinger">50.0</ForceLimit>	
+  <ForceLimit joint="LeftFinger">50.0</ForceLimit>
+  <ForceLimit joint="TopFinger">50.0</ForceLimit>	
+  <ForceLimit joint="BottomFinger">50.0</ForceLimit>
+
+    <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+	<!-- if a kinematic base, use this -->
+	<KinematicBase frame="Base">
+	  <MaterialID>Rubber</MaterialID>
+	</KinematicBase> 
+
+	<!-- if a rigidbase is created then make sure it references a movable frame-->
+	<RigidJoint joint="RightFinger">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="LeftFinger">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidBody>
+	
+	<RigidJoint joint="TopFinger">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="BottomFinger">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Rubber</MaterialID>
+	</RigidBody>
+ </RigidDevice>
+
+ <PDDeviceController name="GraspController" device="nowy" type="Position">
+  <Sync>False</Sync>
+  <PDParams>
+    10 0.003
+    10 0.003 
+  </PDParams>
+  <TimeStep> 0.01 </TimeStep>
+ </PDDeviceController>
+ 
+ </IncludeData>

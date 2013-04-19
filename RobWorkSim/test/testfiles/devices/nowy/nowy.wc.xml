@@ -1,0 +1,69 @@
+<TreeDevice name="nowy">
+  <Frame name="Base" type="Movable">
+    <RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+  </Frame>
+ <!-- We create this as a virtual joint, only used to control the two dependent joints -->
+ 
+ <Joint name="RightFinger" type="Prismatic">
+  <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
+ </Joint>
+ <Frame name="TCPRight" refframe="RightFinger" type="EndEffector">
+ </Frame>
+
+ <Joint name="LeftFinger" refframe="Base" type="Prismatic">
+  <RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos> 
+  <Depend on="RightFinger" gain="-1" offset="0" />
+ </Joint>
+ <Frame name="TCPLeft" refframe="LeftFinger" type="EndEffector">
+ </Frame>
+ 
+<!-- Define limits -->
+ <PosLimit refjoint="RightFinger" min="0" max="0.06" />
+ <VelLimit refjoint="RightFinger" max="0.06" />
+
+<!-- And now we add the geometry -->
+ <Drawable name="BaseGeo" refframe="Base">
+  <Polytope file="obudowa" /></Drawable>
+
+ <Drawable name="RightGeo" refframe="RightFinger" >
+  <RPY> 0 -90 0 </RPY> <Pos> 0 -0.055 -0.085</Pos>
+  <Polytope file="p1" /></Drawable>
+  
+ <Drawable name="LeftGeo" refframe="LeftFinger" >
+  <RPY> 0 90 0 </RPY> <Pos> 0 -0.055 0.085</Pos>
+  <Polytope file="p1" /></Drawable>
+ 
+<!-- two others fingers -->
+  
+ <Joint name="TopFinger" refframe="Base" type="Prismatic">
+  <RPY> 0 90 0 </RPY> <Pos> 0 0 0 </Pos>
+ </Joint>
+ <Frame name="TCPTop" refframe="TopFinger" type="EndEffector">
+ </Frame>
+
+ <Joint name="BottomFinger" refframe="Base" type="Prismatic">
+  <RPY> 0 90 0 </RPY> <Pos> 0 0 0</Pos> 
+  <Depend on="TopFinger" gain="-1" offset="0" />
+ </Joint>
+ <Frame name="TCPBottom" refframe="BottomFinger" type="EndEffector">
+ </Frame>
+
+ <PosLimit refjoint="TopFinger" min="0" max="0.06" />
+ <VelLimit refjoint="TopFinger" max="0.06" />
+
+ <Drawable name="TopGeo" refframe="TopFinger" >
+  <RPY> 0 -90 0 </RPY> <Pos> 0 -0.055 -0.085</Pos>
+  <Polytope file="p1" /></Drawable>
+  
+ <Drawable name="BottomGeo" refframe="BottomFinger" >
+  <RPY> 0 90 0 </RPY> <Pos> 0 -0.055 0.085</Pos>
+  <Polytope file="p1" /></Drawable>     
+
+  <Frame name="TCPnowy" refframe="Base">
+	<RPY>0 0 0</RPY><Pos>0 0 0.14</Pos>
+  </Frame>
+  
+  <CollisionSetup file="CollisionSetup.prox.xml" />
+  
+</TreeDevice>
