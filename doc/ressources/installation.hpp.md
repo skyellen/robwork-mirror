@@ -215,8 +215,8 @@ To make life easier, we have created precompiled versions of Boost for Visual St
 The compressed files contain precompiled libraries for both debug and release variants for all
 supported Visual Studio compilers (2005, 2008 and 2010).
 
-- <a href="http://www.robwork.dk/data/boost-1.45.0-msvc-x86.zip"> boost-1.45.0-msvc-x86.zip </a>
-- <a href="http://www.robwork.dk/data/boost-1.45.0-msvc-amd64.zip"> boost-1.45.0-msvc-amd64.zip </a>
+- <a href="http://www.robwork.dk/data/ext/boost-1.45.0-msvc-x86.zip"> boost-1.45.0-msvc-x86.zip </a>
+- <a href="http://www.robwork.dk/data/ext/boost-1.45.0-msvc-amd64.zip"> boost-1.45.0-msvc-amd64.zip </a>
 
 You may install Boost wherever you like. Create a new environment variable BOOST_ROOT containing the path to
 the Boost installation and Boost should be ready to use.
