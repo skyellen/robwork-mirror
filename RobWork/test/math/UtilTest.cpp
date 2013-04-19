@@ -20,6 +20,7 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
+#include <rw/math/Wrench6D.hpp>
 
 
 using namespace rw::math;
@@ -80,4 +81,15 @@ BOOST_AUTO_TEST_CASE(testRotation3D_inverse){
             BOOST_CHECK(rot(r,c) == rotInv(c,r));
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE(testWrench6D){
+	rw::math::Wrench6D<> wrench(1,2,3,4,5,6);
+	BOOST_CHECK(wrench.force()[0] == 1 );
+	BOOST_CHECK(wrench.force()[1] == 2 );
+	BOOST_CHECK(wrench.force()[2] == 3 );
+	BOOST_CHECK(wrench.torque()[0] == 4 );
+	BOOST_CHECK(wrench.torque()[1] == 5 );
+	BOOST_CHECK(wrench.torque()[2] == 6 );
+
 }

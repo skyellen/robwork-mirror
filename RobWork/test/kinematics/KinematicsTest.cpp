@@ -25,7 +25,8 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/Vector3D.hpp>
-
+#include <rw/kinematics/Stateless.hpp>
+#include <rw/kinematics/StatelessData.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -117,6 +118,35 @@ public:
 
 };
 
+BOOST_AUTO_TEST_CASE( StatelessObjectTest )
+{
+	struct MyObj: public Stateless {
+		MyObj()
+		{
+			add(_ival);
+			add(_v3d);
+		}
+
+		StatelessData<int> _ival;
+		StatelessData<Vector3D<> > _v3d;
+	};
+	boost::shared_ptr<StateStructure> tree( new StateStructure() );
+	State state = tree->getDefaultState();
+
+	// create stateless object
+	MyObj obj;
+	// test adding object to state
+	obj.registerIn( state );
+
+
+	obj._ival.get(state) = 25;
+	obj._v3d.get(state) = Vector3D<>(0,1,2);
+
+	BOOST_MESSAGE("-- Testing QState func");
+	BOOST_CHECK_EQUAL(25, obj._ival.get(state));
+
+
+}
 
 BOOST_AUTO_TEST_CASE( StateStructureTest )
 {
@@ -286,6 +316,7 @@ BOOST_AUTO_TEST_CASE( removeMovableFramesTest )
     l1->setTransform(Transform3D<>::identity(), state);
     
     tree->remove(l1);  
+
     BOOST_REQUIRE( NULL == tree->findFrame("l1") );
 }
 

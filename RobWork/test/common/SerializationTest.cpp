@@ -27,34 +27,67 @@
 #include <rw/common/BINArchive.hpp>
 
 using namespace rw::common;
+using namespace rw::math;
 
-BOOST_AUTO_TEST_CASE( SerializationTest )
+struct SerializationData: public rw::common::Serializable {
+	SerializationData(){
+		data1.push_back(0.3);
+		data1.push_back(0.5);
+		data1.push_back(0.6);
+		data1.push_back(0.7);
+		data2 = Q(3,0.1,0.2,0.3);
+	}
+
+	void read(InputArchive& iarchive, const std::string& id){
+
+	}
+	void write(OutputArchive& oarchive, const std::string& id) const{
+
+		oarchive.write(data1,"data1");
+		oarchive.write(data2,"data2");
+
+		oarchive.writeEnterScope("primitives");
+		oarchive.write(data3,"data3");
+		oarchive.write(data4,"data4");
+		oarchive.write(data5,"data5");
+		oarchive.write(data6,"data6");
+		oarchive.writeLeaveScope("primitives");
+
+	}
+
+
+	std::vector<double> data1;
+	rw::math::Q data2;
+
+	double data3;
+	uint32_t data4;
+	uint16_t data5;
+	uint8_t data6;
+
+
+};
+
+
+BOOST_AUTO_TEST_CASE( INIArchiveTest )
 {
+	SerializationData sdata;
+
 	INIArchive iniarchive;
 	iniarchive.open("testfile.ini");
-	std::vector<double> dataarr,dataarrres;
-	dataarr.push_back(0.3);
-	dataarr.push_back(0.5);
-	dataarr.push_back(0.6);
-	dataarr.push_back(0.7);
-	iniarchive.write(dataarr,"arr1");
-	iniarchive.write(0.2,"d1");
-	iniarchive.writeEnterScope("stuff");
-	iniarchive.write(0.2,"data1");
-	iniarchive.write(0.6,"data2");
-	iniarchive.write(0.3,"data3");
-	iniarchive.writeLeaveScope("stuff");
 
+	iniarchive.write( sdata, "sdata" );
 	iniarchive.close();
 
-	iniarchive.open("testfile.ini");
-	iniarchive.read(dataarrres,"arr1");
-	BOOST_CHECK_CLOSE(iniarchive.readDouble("d1"), 0.2, 0.001);
-	iniarchive.readEnterScope("stuff");
-	BOOST_CHECK_CLOSE(iniarchive.readDouble("data1"), 0.2, 0.001);
-	BOOST_CHECK_CLOSE(iniarchive.readDouble("data2"), 0.6, 0.001);
-	BOOST_CHECK_CLOSE(iniarchive.readDouble("data3"), 0.3, 0.001);
-	iniarchive.readLeaveScope("stuff");
+}
 
+BOOST_AUTO_TEST_CASE( BINArchiveTest )
+{
+	SerializationData sdata;
+
+	BINArchive iniarchive;
+	iniarchive.open("testfile.ini");
+
+	iniarchive.write( sdata, "sdata" );
+	iniarchive.close();
 
 }
