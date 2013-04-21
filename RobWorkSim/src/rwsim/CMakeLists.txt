@@ -3,6 +3,14 @@
 # Standard cpp files to compile into library
 #
 add_library(rwsim
+	contacts/BallBallStrategy.cpp
+	contacts/Contact.cpp
+	contacts/ContactDetector.cpp
+	contacts/ContactDetectorData.cpp
+	contacts/ContactModel.cpp
+	contacts/ContactStrategy.cpp
+	contacts/ContactStrategyData.cpp
+
 	dynamics/Body.cpp
 	dynamics/RigidBody.cpp
 	dynamics/BeamBody.cpp
