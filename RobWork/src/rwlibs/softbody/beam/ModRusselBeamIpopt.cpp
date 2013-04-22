@@ -44,39 +44,11 @@ ModRusselBeamIpopt::~ModRusselBeamIpopt() {
 }
 
 
-/*
-void ModRusselBeamIpopt::solve ( void ) {
-    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam() );
-
-    _app = IpoptApplicationFactory();
-
-    ApplicationReturnStatus status;
-    status = _app->Initialize();
-    if ( status != Solve_Succeeded ) {
-        std::cout << std::endl << std::endl << "*** Error during initialization!" << std::endl;
-        RW_THROW("Error during initialization");
-    }
-
-    _app->Options()->SetNumericValue ( "tol", 1.0e-6 );
-    _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
-//     _app->Options()->SetStringValue ( "output_file", "ipopt.out" );
-    _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-    _app->Options()->SetStringValue ( "derivative_test", "first-order" );
-
-    status = _app->OptimizeTNLP ( _nlp );
-    if ( status == Solve_Succeeded ) {
-        std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
-    } 
-    else {
-        std::cout << std::endl << std::endl << "*** The problem FAILED!" << std::endl;
-    }
-
-}*/
 
 void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
     computeIntegralIndicies();
     
-    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam() );
+    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), getIntegralIndices() ); // TODO pass along idxList and number of constraints here?
 
     _app = IpoptApplicationFactory();
 
@@ -87,13 +59,13 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
         RW_THROW("Error during initialization");
     }
 
-    _app->Options()->SetNumericValue ( "tol", 1.0e-6 );
+    _app->Options()->SetNumericValue ( "tol", getAccuracy() );
     _app->Options()->SetNumericValue ( "max_cpu_time", 10.0 );
     _app->Options()->SetIntegerValue ( "print_level", 4 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
 
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-//      _app->Options()->SetStringValue ( "derivative_test", "first-order" );
+    _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {

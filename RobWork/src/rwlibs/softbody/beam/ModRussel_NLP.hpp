@@ -36,7 +36,8 @@ public:
     ModRussel_NLP(
         boost::shared_ptr< BeamGeometry > geomPtr,
         boost::shared_ptr< BeamObstaclePlane > obstaclePtr,
-        rw::math::Transform3D<> planeTbeam
+        rw::math::Transform3D<> planeTbeam,
+        const std::vector<int> & integralIndices
     );
     virtual ~ModRussel_NLP();
 
@@ -64,12 +65,18 @@ public:
 
     /** Method to return the constraint residuals */
     virtual bool eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g );
+    void eval_g_point ( int pIdx, int gBase, Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g );
 
     /** Method to return:
      *   1) The structure of the jacobian (if "values" is NULL)
      *   2) The values of the jacobian (if "values" is not NULL)
      */
     virtual bool eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
+                              Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index *jCol,
+                              Ipopt::Number* values );
+    
+    void eval_jac_g_point ( int pIdx, int gBase,
+                            Ipopt::Index n, const Ipopt::Number* x, bool new_x,
                               Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index *jCol,
                               Ipopt::Number* values );
 
@@ -110,6 +117,8 @@ private:
     boost::numeric::ublas::vector<double>   _da;
     
     boost::numeric::ublas::vector<double>   _x;
+    
+    std::vector<int> _integralIndices;
 };
 }}
 

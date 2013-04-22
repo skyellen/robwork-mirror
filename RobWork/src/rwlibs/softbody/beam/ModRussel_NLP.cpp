@@ -33,12 +33,15 @@ using namespace rwlibs::softbody;
 ModRussel_NLP::ModRussel_NLP (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
     boost::shared_ptr< BeamObstaclePlane > obstaclePtr      ,
-    rw::math::Transform3D<> planeTbeam
+    rw::math::Transform3D<> planeTbeam,
+    const std::vector<int> & integralIndices
 )
     :
     _geomPtr ( geomPtr ),
     _obstaclePtr ( obstaclePtr ),
-    _planeTbeam ( planeTbeam ) {
+    _planeTbeam ( planeTbeam ), 
+    _integralIndices( integralIndices )
+    {
     const int M = getGeometry()->getM();
     _a.resize ( M );
     _da.resize ( M );
@@ -56,11 +59,10 @@ bool ModRussel_NLP::get_nlp_info ( Ipopt::Index& n, Ipopt::Index& m, Ipopt::Inde
     n = getGeometry()->getM() - 1;
 
     // total number of constraints
-    m = 1;
+    m = _integralIndices.size();
 
     // number of nonzero entries in the Jacobian.
-    nnz_jac_g = n;
-
+    nnz_jac_g = m * n;
 
     // number of nonzero entries in the Hessian.
     nnz_h_lag = n * n;
@@ -76,10 +78,10 @@ bool ModRussel_NLP::get_nlp_info ( Ipopt::Index& n, Ipopt::Index& m, Ipopt::Inde
 
 bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt::Number* x_u, Ipopt::Index m, Ipopt::Number* g_l, Ipopt::Number* g_u ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
-    double yTCP = getObstacle()->get_yTCP ( planeTbeam );
+    const double yTCP = getObstacle()->get_yTCP ( planeTbeam );
 
     RW_ASSERT ( n == getGeometry()->getM() - 1 );
-    RW_ASSERT ( m == 1 );
+//     RW_ASSERT ( m == 1 );
 
     // lower bounds of variables
     for ( Index i=0; i<n; i++ ) {
@@ -91,23 +93,10 @@ bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt:
         x_u[i] = rw::math::Pi;
     }
 
-    g_l[0] = -yTCP;
-    
-    g_u[0] = 2.0e19; // no upper bound
-
-    /*
-    // the first constraint g1 has a lower bound of 25
-    g_l[0] = 25;
-    // the first constraint g1 has NO upper bound, here we set it to 2e19.
-    // Ipopt interprets any number greater than nlp_upper_bound_inf as
-    // infinity. The default value of nlp_upper_bound_inf and nlp_lower_bound_inf
-    // is 1e19 and can be changed through ipopt options.
-    g_u[0] = 2e19;
-
-    // the second constraint g2 is an equality constraint, so we set the
-    // upper and lower bound to the same value
-    g_l[1] = g_u[1] = 40.0;
-    */
+    for (int i = 0; i < m; i++) {
+        g_l[i] = -yTCP;
+        g_u[i] = 2.0e19; // no upper bound
+    }
 
     return true;
 }
@@ -152,6 +141,7 @@ bool ModRussel_NLP::eval_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 }
 
 
+
 bool ModRussel_NLP::eval_grad_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number* grad_f ) {
     const double eps = 1.0e-6;
     double xt[n];
@@ -180,15 +170,50 @@ bool ModRussel_NLP::eval_grad_f ( Ipopt::Index n, const Ipopt::Number* x, bool n
 
 
 bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g ) {
-    RW_ASSERT ( m == 1 );
+//     RW_ASSERT ( m == 1 );
 
+//     int pIdx = n - 1;
+    int gBase = 0;
+    for (int i = 0; i < (int) _integralIndices.size(); i++) {
+        int pIdx = _integralIndices[i];
+        eval_g_point(pIdx, gBase++, n, x, new_x, m, g);    
+    }
+    
+    
+
+
+    return true;
+}
+
+
+
+bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
+//     RW_ASSERT ( m == 1 );
+    
+//     int pIdx = n - 1; // TODO make according to idxList
+//     int gBase = 0;
+    
+//     eval_jac_g_point(pIdx, gBase++, n, x, new_x, m, nele_jac, iRow, jCol, values);
+    
+    int gBase = 0;
+    for (int i = 0; i < (int) _integralIndices.size(); i++) {
+        int pIdx = _integralIndices[i];
+//         eval_g_point(pIdx, gBase++, n, x, new_x, m, g);    
+        eval_jac_g_point(pIdx, gBase++, n, x, new_x, m, nele_jac, iRow, jCol, values);
+    }
+
+    return true;
+}
+
+
+
+
+
+void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x, bool new_x, Index m, Number* g ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
-//     double yTCP = getObstacle()->get_yTCP ( planeTbeam );
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
     const double uxTCPy =  ModRusselBeamBase::get_uxTCPy ( planeTbeam ); // u2
     const double uyTCPy =  ModRusselBeamBase::get_uyTCPy ( planeTbeam ); // v2
-
-    int pIdx = n - 1;
 
     // U component
     const double f0U = cos ( 0.0 );
@@ -212,58 +237,50 @@ bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
     }
     double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
 
-
-//     g[0] = resU * uxTCPy        + resV * uyTCPy        + yTCP; // require h(x) > 0
-    g[0] = resU * uxTCPy        + resV * uyTCPy; // require h(x) > 0
-
-    return true;
+    
+    g[gBase] = resU * uxTCPy        + resV * uyTCPy; // require h(x) > 0
 }
 
 
 
-bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
-    RW_ASSERT ( m == 1 );
-    
-    int pIdx = n - 1;
-    
-    const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
-//     double yTCP = getObstacle()->get_yTCP ( planeTbeam );
+
+
+void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Number* x, bool new_x, Index m, Index nele_jac, Index* iRow, Index* jCol, Number* values ) {
+  const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
     const double uxTCPy =  ModRusselBeamBase::get_uxTCPy ( planeTbeam ); // u2
     const double uyTCPy =  ModRusselBeamBase::get_uyTCPy ( planeTbeam ); // v2
+    
+    
+    // populate the mxn jacobian of the constraint functions (eg. 1x31 with one integral constraint and 32 slices)
     
     if ( values == NULL ) {
         // return the structure of the jacobian
         // see http://www.coin-or.org/Ipopt/documentation/node57.html#app.triplet
         // TODO include sparsity
-        for (int i = 0; i < n; i++) {
-                iRow[i] = 0;
-                jCol[i] = i;            
+        
+        // gBase - index of the point to constrain
+        
+        for (int j = 0; j < n; j++) { // loop through all the columns (refering to each x[j]            
+            iRow[gBase*n + j] = gBase; // the constraint index (e.g. g[0]) is gBase and is the row in which to place it
+            jCol[gBase*n + j] = j; // the x index            
         }
-    } else {
+    } 
+    else {
         // return the values of the jacobian of the constraints
-        for ( int i = 0; i < n; i++ ) {
-            if ( pIdx == i ) {
-                values[i] = 0.5 * hx * uyTCPy * cos ( x[i] ) - 0.5 * hx * uxTCPy * sin ( x[i] );
-            } else if ( i < pIdx ) {
-                values[i] = hx * uyTCPy * cos ( x[i] ) - hx * uxTCPy * sin ( x[i] );
-            } else
-                values[i] = 0.0;
+        for ( int j = 0; j < n; j++ ) {
+            if ( pIdx == j ) {
+                values[gBase*n + j] = 0.5 * hx * uyTCPy * cos ( x[j] ) - 0.5 * hx * uxTCPy * sin ( x[j] );
+            } 
+            else if ( j < pIdx ) {
+                values[gBase*n + j] = hx * uyTCPy * cos ( x[j] ) - hx * uxTCPy * sin ( x[j] );
+            } 
+            else
+                values[gBase*n + j] = 0.0;
         }
-
-//         values[0] = x[1]*x[2]*x[3]; // 0,0
-//         values[1] = x[0]*x[2]*x[3]; // 0,1
-//         values[2] = x[0]*x[1]*x[3]; // 0,2
-//         values[3] = x[0]*x[1]*x[2]; // 0,3
-//
-//         values[4] = 2*x[0]; // 1,0
-//         values[5] = 2*x[1]; // 1,1
-//         values[6] = 2*x[2]; // 1,2
-//         values[7] = 2*x[3]; // 1,3
     }
-
-    return true;
 }
+
 
 
 bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number obj_factor, Ipopt::Index m, const Ipopt::Number* lambda, bool new_lambda, Ipopt::Index nele_hess, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {

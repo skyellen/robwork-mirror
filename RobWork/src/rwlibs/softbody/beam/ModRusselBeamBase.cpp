@@ -86,12 +86,26 @@ void ModRusselBeamBase::computeIntegralIndicies ( void ) {
     std::cout << "get_nIntegralConstraints(): " << get_nIntegralConstraints() << std::endl;
     _integralConstraintIdxList.clear();
     int N = getM() -1;
-    if ( get_nIntegralConstraints() > 0 ) {
+    
+    if ( get_nIntegralConstraints() == 1) {
+        int idx = N - 1;
+        _integralConstraintIdxList.push_back ( idx );
+        std::cout << "idx: " << idx << std::endl;
+    }   
+    else if ( get_nIntegralConstraints() > 0 ) {
         const double hi = N / get_nIntegralConstraints();
-        for ( int i = 1; i < get_nIntegralConstraints() + 1; i++ ) {
-            int idx = ( int ) ceil ( double ( i ) * hi ) - 1;
-            _integralConstraintIdxList.push_back ( idx );
-            std::cout << "idx: " << idx << std::endl;
+        
+        std::cout << "hi: " << hi << std::endl;
+        
+        if (hi < 2) {
+            RW_THROW("Number of integral constraints must be less than M/2");
+        }
+        else {        
+            for ( int i = 1; i < get_nIntegralConstraints() + 1; i++ ) {
+                int idx = ( int ) ceil ( double ( i ) * hi ) ;
+                _integralConstraintIdxList.push_back ( idx );
+                std::cout << "idx: " << idx << std::endl;
+            }
         }
     }
     std::cout << "_integralConstraintIdxList.size(): " << _integralConstraintIdxList.size() << std::endl;
