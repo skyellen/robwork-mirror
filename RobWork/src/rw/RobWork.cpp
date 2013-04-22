@@ -28,7 +28,11 @@
 using namespace rw;
 using namespace rw::common;
 using namespace rw::loaders;
-using namespace boost::filesystem;
+//Using the below does not work with MSVS 2010 and MSVS 2012
+//using namespace boost::filesystem;
+using boost::filesystem::path;
+using boost::filesystem::exists;
+using boost::filesystem::initial_path;
 
 
 #if defined(RW_CYGWIN)
