@@ -358,6 +358,7 @@ void URPrimaryInterface::readRobotsState(std::vector<char>& data) {
 		break;
 
 	case MASTERBOARD_DATA:
+	{
 		// unsigned short digitalInputBits;
 		tmp16 = URCommon::getUInt16(data, messageOffset);
 		for(unsigned int i=0; i<10; ++i) // Tool bits are actually included here
@@ -400,11 +401,12 @@ void URPrimaryInterface::readRobotsState(std::vector<char>& data) {
 		messageOffset+=2;
 
 		unsigned char euroMap = URCommon::getUChar(data, messageOffset);
-		if(euroMap==1){
+	/*	if(euroMap==1){
             uint32_t it1 = euromapInputBits=getUINT32(messageOffset);
             uint32_t it2 = data.euromapOutputBits=getUINT32(messageOffset);
             uint16_t it3 = data.euromap24Voltage=getUINT16(messageOffset);
             uint16_t it4 = data.euromap24Current=getUINT16(messageOffset);
+		}*/
 		}
 		break;
 
