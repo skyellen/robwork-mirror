@@ -48,7 +48,7 @@ ModRusselBeamIpopt::~ModRusselBeamIpopt() {
 void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
     computeIntegralIndicies();
     
-    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), getIntegralIndices() ); // TODO pass along idxList and number of constraints here?
+    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), getIntegralIndices() ); 
 
     _app = IpoptApplicationFactory();
 
@@ -65,7 +65,7 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
 
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-    _app->Options()->SetStringValue ( "derivative_test", "first-order" );
+//     _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {

@@ -111,9 +111,11 @@ bool ModRussel_NLP::get_starting_point ( Ipopt::Index n, bool init_x, Ipopt::Num
     RW_ASSERT ( init_z == false );
     RW_ASSERT ( init_lambda == false );
 
+    
     // initialize to the given starting point
     for ( int i = 0; i < n; i++ )
         x[i] = 0.0;
+    
 
     return true;
 }
