@@ -83,7 +83,7 @@ CONFIGURE_FILE(
 # next build information script
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake.in
-  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig_${RWS_BUILD_TYPE}.cmake"
   @ONLY
 )
 
