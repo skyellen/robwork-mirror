@@ -108,6 +108,8 @@ public:
     rw::math::Transform3D<> get_planeTbeam(void) const;
     const boost::numeric::ublas::vector<double> &getSolution(void) const;
     
+    void setStartingGuess( const boost::numeric::ublas::vector< double >& xinituser );
+    
 private:
     boost::shared_ptr< BeamGeometry > _geomPtr;
     boost::shared_ptr< BeamObstaclePlane > _obstaclePtr;
@@ -119,6 +121,8 @@ private:
     boost::numeric::ublas::vector<double>   _x;
     
     std::vector<int> _integralIndices;
+    
+    boost::numeric::ublas::vector<double>   _xinit;
 };
 }}
 

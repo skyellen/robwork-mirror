@@ -46,6 +46,11 @@ ModRussel_NLP::ModRussel_NLP (
     _a.resize ( M );
     _da.resize ( M );
     _x.resize( M - 1 );
+    _xinit.resize( M - 1);
+    
+    // default starting guess is zero
+    _xinit.clear();
+    
 }
 
 ModRussel_NLP::~ModRussel_NLP() {
@@ -114,7 +119,7 @@ bool ModRussel_NLP::get_starting_point ( Ipopt::Index n, bool init_x, Ipopt::Num
     
     // initialize to the given starting point
     for ( int i = 0; i < n; i++ )
-        x[i] = 0.0;
+        x[i] = _xinit[i];
     
 
     return true;
@@ -388,4 +393,11 @@ rw::math::Transform3D< double > ModRussel_NLP::get_planeTbeam ( void ) const {
 
 const boost::numeric::ublas::vector< double >& ModRussel_NLP::getSolution ( void ) const {
     return _x;
+}
+
+void ModRussel_NLP::setStartingGuess ( const boost::numeric::ublas::vector< double >& xinituser ) {
+    RW_ASSERT(xinituser.size() == _xinit.size() + 1);
+    
+    for (int i = 0; i < (int) _xinit.size(); i++)
+        _xinit[i] = xinituser[i+1];
 }

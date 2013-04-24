@@ -49,6 +49,9 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     computeIntegralIndicies();
     
     _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), getIntegralIndices() ); 
+    ModRussel_NLP *nlp = static_cast<ModRussel_NLP *> ( GetRawPtr<TNLP>(_nlp) );
+    
+    
 
     _app = IpoptApplicationFactory();
 
@@ -63,10 +66,11 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     _app->Options()->SetNumericValue ( "max_cpu_time", 10.0 );
     _app->Options()->SetIntegerValue ( "print_level", 4 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
-
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
 //     _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
+    nlp->setStartingGuess(xinituser);
+    
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {
         std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
@@ -75,7 +79,7 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
         std::cout << std::endl << std::endl << "*** The problem FAILED!" << std::endl;
     }
     
-    ModRussel_NLP *nlp = static_cast<ModRussel_NLP *> ( GetRawPtr<TNLP>(_nlp) );
+    
     boost::numeric::ublas::vector< double > res = nlp->getSolution();
     int N =  res.size();
     
