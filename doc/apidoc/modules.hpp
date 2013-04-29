@@ -324,7 +324,10 @@ namespace rwslibs {
 */
 namespace rwsim {
 
-
+/**
+   @brief Contact Detection
+ */
+namespace contacts {}
 
 }
 
@@ -333,6 +336,11 @@ namespace rwsim {
 @defgroup rwsim RobWorkSim
 @{
     @brief Physics based Simulation and Control of robots and sensors.
+
+    @defgroup rwsim_contacts Contacts
+    @{
+        @copydoc rwsim::contacts
+    @}
 
     @defgroup rwsim_control Controllers
     @{

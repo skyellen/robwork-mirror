@@ -9,6 +9,14 @@
 #define RWSIM_RWSIM_HPP_
 
 
+#include "./contacts/BallBallStrategy.hpp"
+#include "./contacts/Contact.hpp"
+#include "./contacts/ContactDetector.hpp"
+#include "./contacts/ContactDetectorData.hpp"
+#include "./contacts/ContactModel.hpp"
+#include "./contacts/ContactStrategy.hpp"
+#include "./contacts/ContactStrategyData.hpp"
+
 #include "./dynamics/Body.hpp"
 #include "./dynamics/RigidBody.hpp"
 #include "./dynamics/RigidJoint.hpp"
@@ -99,6 +107,7 @@
 //#include "./#rwphysics/ConstraintSolver.hpp"
 
 #define USE_ROBWORKSIM_NAMESPACE \
+    namespace rwsim { namespace contacts {}} \
     namespace rwsim { namespace control {}} \
     namespace rwsim { namespace drawable {}} \
     namespace rwsim { namespace dynamics {}} \
@@ -115,6 +124,7 @@
     namespace robworksim \
     { \
         using namespace rwsim; \
+        using namespace rwsim::contacts; \
         using namespace rwsim::control; \
         using namespace rwsim::drawable; \
         using namespace rwsim::dynamics; \

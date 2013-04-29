@@ -1,9 +1,19 @@
-/*
- * ContactDetector.cpp
+/********************************************************************************
+ * Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: 18/04/2013
- *      Author: thomas
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "ContactDetector.hpp"
 #include "BallBallStrategy.hpp"
@@ -22,12 +32,14 @@ ContactDetector::ContactDetector(WorkCell::Ptr workcell):
 	_wc(workcell),
 	_bpfilter(ownedPtr( new BasicFilterStrategy(workcell) ))
 {
+	initializeGeometryMap();
 }
 
 ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr filter):
 	_wc(wc),
 	_bpfilter(filter)
 {
+	initializeGeometryMap();
 }
 
 ContactDetector::~ContactDetector()
@@ -35,7 +47,7 @@ ContactDetector::~ContactDetector()
 	clearStrategies();
 }
 
-void ContactDetector::initializeMap() {
+void ContactDetector::initializeGeometryMap() {
 	// run through all objects in workcell and collect the geometric information
 	std::vector<Object::Ptr> objects = _wc->getObjects();
 	BOOST_FOREACH(Object::Ptr object, objects) {
@@ -46,11 +58,39 @@ void ContactDetector::initializeMap() {
 	}
 }
 
+void ContactDetector::initializeModels(StrategyTableRow &strategy) {
+	// run through all objects in workcell and collect the geometric information
+	std::vector<Object::Ptr> objects = _wc->getObjects();
+	std::vector<Object::Ptr>::iterator itA;
+	for (itA = objects.begin(); itA < objects.end(); itA++) {
+		std::vector<Object::Ptr>::iterator itB = itA;
+		itB++;
+		for (; itB < objects.end(); itB++) {
+			Object::Ptr oA = *itA;
+			Object::Ptr oB = *itB;
+			BOOST_FOREACH(Geometry::Ptr geoA, oA->getGeometry() ){
+				BOOST_FOREACH(Geometry::Ptr geoB, oB->getGeometry() ){
+					if (strategy.strategy->match(geoA->getGeometryData(),geoB->getGeometryData())) {
+						ProximityModel::Ptr modelA = strategy.strategy->createModel();
+						ProximityModel::Ptr modelB = strategy.strategy->createModel();
+						strategy.strategy->addGeometry(modelA.get(),geoA);
+						strategy.strategy->addGeometry(modelB.get(),geoB);
+						std::pair<std::string,ContactModel::Ptr> pairA = std::pair<std::string,ContactModel::Ptr>(geoA->getId(),modelA.cast<ContactModel>());
+						std::pair<std::string,ContactModel::Ptr> pairB = std::pair<std::string,ContactModel::Ptr>(geoB->getId(),modelB.cast<ContactModel>());
+						strategy.models[*(geoA->getFrame())].insert(pairA);
+						strategy.models[*(geoB->getFrame())].insert(pairB);
+					}
+				}
+			}
+		}
+	}
+}
+
 ProximityFilterStrategy::Ptr ContactDetector::getProximityFilterStrategy() const {
 	return _bpfilter;
 }
 
-std::list<ContactDetector::StrategyTable> ContactDetector::getContactStategies() const {
+std::list<ContactDetector::StrategyTableRow> ContactDetector::getContactStategies() const {
 	return _strategies;
 }
 
@@ -67,33 +107,35 @@ void ContactDetector::addContactStrategy(ProximitySetupRule rule, ContactStrateg
 }
 
 void ContactDetector::addContactStrategy(ProximitySetup rules, ContactStrategy::Ptr strategy, std::size_t pri) {
-	std::list<StrategyTable>::iterator it = _strategies.begin();
+	std::list<StrategyTableRow>::iterator it = _strategies.begin();
 	if (pri > _strategies.size()-1)
 		pri = _strategies.size()-1;
 	for (std::size_t i = 0; i < pri; i++)
 		it++;
-	StrategyTable matcher;
+	StrategyTableRow matcher;
 	matcher.priority = pri;
 	matcher.rules = rules;
 	matcher.strategy = strategy;
+	initializeModels(matcher);
 	it = _strategies.insert(it,matcher);
 	for (it++; it != _strategies.end(); it++)
 		(*it).priority++;
 }
 
-void ContactDetector::addContactStrategy(StrategyTable strategy, std::size_t pri) {
-	std::list<StrategyTable>::iterator it = _strategies.begin();
+void ContactDetector::addContactStrategy(StrategyTableRow &strategy, std::size_t pri) {
+	std::list<StrategyTableRow>::iterator it = _strategies.begin();
 	if (pri > _strategies.size()-1)
 		pri = _strategies.size()-1;
 	for (std::size_t i = 0; i < pri; i++)
 		it++;
+	initializeModels(strategy);
 	it = _strategies.insert(it,strategy);
 	for (it++; it != _strategies.end(); it++)
 		(*it).priority++;
 }
 
 void ContactDetector::removeContactStrategy(std::size_t pri) {
-	std::list<StrategyTable>::iterator it = _strategies.begin();
+	std::list<StrategyTableRow>::iterator it = _strategies.begin();
 	if (pri > _strategies.size()-1)
 		return;
 	it = _strategies.erase(it);
@@ -105,7 +147,7 @@ void ContactDetector::clearStrategies() {
 	_strategies.clear();
 }
 
-void ContactDetector::setContactStrategies(std::list<StrategyTable> strategies) {
+void ContactDetector::setContactStrategies(std::list<StrategyTableRow> strategies) {
 	clearStrategies();
 	_strategies = strategies;
 }
@@ -143,7 +185,6 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 		const Transform3D<> aT = fk.get(*pair.first);
 		const Transform3D<> bT = fk.get(*pair.second);
 
-		ContactStrategyData stratData(data.getStrategyData());
 		bool matched = false;
 		std::vector<Contact> contacts;
 
@@ -159,9 +200,9 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 			}
 		}
 
-		std::list<StrategyTable>::const_iterator it;
+		std::list<StrategyTableRow>::const_iterator it;
 		for (it = _strategies.begin(); (it != _strategies.end()) && !matched; it++) {
-			StrategyTable stratMatch = *it;
+			StrategyTableRow stratMatch = *it;
 			BasicFilterStrategy filterStrat(_wc,stratMatch.rules);
 			ProximityFilter::Ptr filterTest = filterStrat.update(state);
 			bool match = false;
@@ -173,6 +214,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 					match = true;
 			}
 			if (match) {
+				ContactStrategyData stratData(data.getStrategyData(stratMatch.priority));
 				std::vector<std::pair<Geometry::Ptr,Geometry::Ptr> >::iterator pairIt;
 				for (pairIt = geoPairs.begin(); pairIt < geoPairs.end(); pairIt++) {
 					Geometry::Ptr geoA = (*pairIt).first;
@@ -191,7 +233,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						ContactModel::Ptr modelA = mapA[geoA->getId()];
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
 						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData);
-						data.setStrategyData(stratData);
+						data.setStrategyData(stratMatch.priority,stratData);
 						pairIt = geoPairs.erase(pairIt);
 				        if( contacts.size() > 0 ){
 							res.insert(res.end(),contacts.begin(),contacts.end());
@@ -203,7 +245,6 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 		}
 	}
 
-	data.setContacts(res);
 	return res;
 }
 
@@ -222,10 +263,10 @@ void ContactDetector::printStrategyTable() const {
 	header.push_back(Cell("Model Type"));
 	table.push_back(header);
 
-	std::list<StrategyTable>::const_iterator it;
+	std::list<StrategyTableRow>::const_iterator it;
 	for (it = _strategies.begin(); it != _strategies.end(); it++) {
 		std::vector<Cell> row(7, Cell());
-		StrategyTable strategy = *it;
+		const StrategyTableRow &strategy = *it;
 
 		std::stringstream str;
 		str << strategy.priority;
