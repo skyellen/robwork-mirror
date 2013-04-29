@@ -23,7 +23,7 @@ BallBallStrategy::~BallBallStrategy()
 {
 }
 
-bool match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
+bool BallBallStrategy::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
 	if (geoA->getType() == GeometryData::SpherePrim && geoB->getType() == GeometryData::SpherePrim)
 		return true;
 	return false;
@@ -55,6 +55,10 @@ std::vector<Contact> BallBallStrategy::findContacts(ProximityModel* a, const Tra
 		}
 	}
 	return res;
+}
+
+std::string BallBallStrategy::getName() {
+	return "BallBallStrategy";
 }
 
 ProximityModel::Ptr BallBallStrategy::createModel() {

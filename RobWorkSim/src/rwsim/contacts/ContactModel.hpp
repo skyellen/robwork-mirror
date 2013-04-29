@@ -15,8 +15,13 @@ namespace contacts {
 
 class ContactModel: public rw::proximity::ProximityModel {
 public:
-	ContactModel(rw::proximity::ProximityStrategy* pOwner);
-	virtual ~ContactModel();
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<ContactModel> Ptr;
+
+	ContactModel(rw::proximity::ProximityStrategy* pOwner): ProximityModel(pOwner) {};
+	virtual ~ContactModel() {};
+
+	virtual std::string getName() = 0;
 };
 
 } /* namespace contacts */

@@ -16,42 +16,36 @@ namespace contacts {
 
 class Contact {
 public:
-	//! @brief reference to the first model
-	ContactModel::Ptr a;
+	Contact();
+	virtual ~Contact();
 
-	//! @brief reference to the second model
-	ContactModel::Ptr b;
+	ContactModel::Ptr getModelA() const;
+	ContactModel::Ptr getModelB() const;
+	rw::math::Transform3D<> aTb() const;
+	rw::math::Vector3D<> getPointA() const;
+	rw::math::Vector3D<> getPointB() const;
+	rw::math::Vector3D<> getNormal() const;
+	double getDepth() const;
 
-	//! @brief a collision pair of
-	struct CollisionPair {
-		//! @brief geometry index
-		int geoIdxA, geoIdxB;
-		/**
-		 *  @brief indices into the geomPrimIds array, which means that inidicies [_geomPrimIds[startIdx];_geomPrimIds[startIdx+size]]
-		 *  are the colliding primitives between geometries geoIdxA and geoIdxB
-		 */
-		int startIdx, size;
-	};
-
-	//! @brief transformation from a to b
-	rw::math::Transform3D<> _aTb;
-
-	//! @brief the collision pairs
-	std::vector<CollisionPair> _collisionPairs;
-
-	/**
-	 * @brief indices of triangles/primitives in geometry a and b that are colliding
-	 * all colliding triangle indices are in this array also those that are from different geometries
-	 */
-	std::vector<std::pair<int, int> > _geomPrimIds;
+	void setModelA(ContactModel::Ptr modelA);
+	void setModelB(ContactModel::Ptr modelB);
+	void setTransform(rw::math::Transform3D<> aTb);
+	void setPointA(rw::math::Vector3D<> pointA);
+	void getPointB(rw::math::Vector3D<> pointB);
+	void getNormal(rw::math::Vector3D<> normal);
+	void getDepth(double depth);
 
 	/**
 	 * @brief clear all result values
 	 */
-	void clear(){
-		_collisionPairs.clear();
-		_geomPrimIds.clear();
-	}
+	virtual void clear();
+
+private:
+	ContactModel::Ptr _a, _b;
+	rw::math::Transform3D<> _aTb;
+	rw::math::Vector3D<> _pointA, _pointB;
+	rw::math::Vector3D<> _normal;
+	double _depth;
 };
 
 } /* namespace contacts */

@@ -34,6 +34,8 @@ public:
 			const rw::math::Transform3D<>& wTb,
 			ContactStrategyData &data);
 
+	virtual std::string getName();
+
 	virtual rw::proximity::ProximityModel::Ptr createModel();
     virtual void destroyModel(rw::proximity::ProximityModel* model);
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
@@ -55,6 +57,8 @@ private:
 			ContactModel(owner)
 		{
 		}
+
+		virtual std::string getName() { return "BallModel";	};
 
 		std::vector<Model> models;
 	};

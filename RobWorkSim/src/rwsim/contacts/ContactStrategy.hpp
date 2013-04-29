@@ -27,8 +27,8 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<ContactStrategy> Ptr;
 
-	ContactStrategy();
-	virtual ~ContactStrategy();
+	ContactStrategy() {};
+	virtual ~ContactStrategy() {};
 
 	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB) = 0;
 
@@ -44,6 +44,16 @@ public:
 			rw::proximity::ProximityModel* b,
 			const rw::math::Transform3D<>& wTb,
 			ContactStrategyData &data) = 0;
+
+	virtual std::string getName() = 0;
+
+	virtual rw::proximity::ProximityModel::Ptr createModel() = 0;
+	virtual void destroyModel(rw::proximity::ProximityModel* model) = 0;
+	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom) = 0;
+	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false) = 0;
+	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId) = 0;
+	virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model) = 0;
+	virtual void clear() = 0;
 };
 
 } /* namespace contacts */

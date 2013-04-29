@@ -54,7 +54,20 @@ public:
     std::vector<Contact> findContacts(const rw::kinematics::State& state) const;
     std::vector<Contact> findContacts(const rw::kinematics::State& state, ContactDetectorData &data) const;
 
+    void printStrategyTable() const;
+
 private:
+    struct Cell {
+    	enum ALIGNMENT {
+    		LEFT,
+    		RIGHT
+    	};
+    	Cell(): alignment(LEFT) {}
+    	Cell(std::string string): alignment(LEFT) { strings.push_back(string); }
+    	std::vector<std::string> strings;
+    	ALIGNMENT alignment;
+    };
+    static void printTable(const std::vector<std::vector<Cell> > &table, bool header = false);
     void initializeMap();
 
 	rw::models::WorkCell::Ptr _wc;
