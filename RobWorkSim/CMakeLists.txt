@@ -1,17 +1,20 @@
-cmake_minimum_required(VERSION 2.6)
+# Test CMake version
+cmake_minimum_required(VERSION 2.8)
 
-CMAKE_POLICY(SET CMP0011 NEW)
-CMAKE_POLICY(SET CMP0012 NEW) 
+IF(DEFINED CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of
+build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
+Release RelWithDebInfo MinSizeRel.")
+ELSE()
+   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
+RelWithDebInfo MinSizeRel.")
+ENDIF()
 
 PROJECT(RobWorkSim)
 SET(ROBWORKSIM_VERSION 0.7.0)
 SET(RWSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 MESSAGE(STATUS "RobWorkSim version ${ROBWORKSIM_VERSION}")
-
-# Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
-IF (NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
-ENDIF ()
 
 # lets start by finding RobWork since this is the primary dependency and because we
 # want to use the macros available in RobWork
@@ -26,11 +29,11 @@ ELSE()
         SET(RobWork_DIR ${RWSIM_ROOT}/../RobWork/cmake)    
     ENDIF()
 ENDIF()
-FIND_PACKAGE(RobWork ${ROBWORK_VERSION} REQUIRED)
+FIND_PACKAGE(RobWork ${ROBWORKSIM_VERSION} REQUIRED)
 
 # include the macros from robwork
 INCLUDE(${RW_ROOT}/cmake/RobWorkMacros.cmake)
-#INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioMacros.cmake)
+
 # for backward compatibility
 SET(ROOT RWSIM_ROOT)
 RW_INIT_PROJECT(${RWSIM_ROOT} RobWorkSim RWSIM ${ROBWORKSIM_VERSION})
@@ -63,7 +66,7 @@ ELSE()
         SET(RobWorkStudio_DIR ${RWSIM_ROOT}/../RobWorkStudio/cmake)    
     ENDIF()
 ENDIF()
-MESSAGE("RWS_ROOT ${RobWorkStudio_DIR}")
+#MESSAGE("RWS_ROOT ${RobWorkStudio_DIR}")
 FIND_PACKAGE(RobWorkStudio ${ROBWORKSIM_VERSION} REQUIRED)
 
 
@@ -83,7 +86,7 @@ CONFIGURE_FILE(
 # next build information script
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake.in
-  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig_${RWS_BUILD_TYPE}.cmake"
+  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig_${RWSIM_BUILD_TYPE}.cmake"
   @ONLY
 )
 
@@ -135,7 +138,7 @@ ENDIF()
 
 CONFIGURE_FILE(
   ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig.cmake.in
-  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  "${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig_${RWSIM_BUILD_TYPE}.cmake"
 )
 
 # Packaging
