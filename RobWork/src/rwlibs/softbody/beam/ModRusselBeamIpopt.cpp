@@ -24,6 +24,9 @@
 #include "ModRusselBeamIpopt.hpp"
 #include "ModRussel_NLP.hpp"
 
+#include <fstream>
+
+using namespace std;
 using namespace Ipopt;
 using namespace rwlibs::softbody;
 
@@ -64,7 +67,7 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
 
     _app->Options()->SetNumericValue ( "tol", getAccuracy() );
     _app->Options()->SetNumericValue ( "max_cpu_time", 10.0 );
-    _app->Options()->SetIntegerValue ( "print_level", 4 );
+    _app->Options()->SetIntegerValue ( "print_level", 1 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
 //     _app->Options()->SetStringValue ( "derivative_test", "first-order" );
@@ -73,18 +76,42 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {
-        std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
+//         std::cout << "*** The problem solved!" << std::endl;
     } 
     else {
-        std::cout << std::endl << std::endl << "*** The problem FAILED!" << std::endl;
+        std::cout << "*** The problem FAILED!" << std::endl;
     }
     
+    ofstream myfile;
+    myfile.open("thin.dat", ios::app);
     
     boost::numeric::ublas::vector< double > res = nlp->getSolution();
+    double Ee = nlp->getEnergyElastic();
+    myfile << "  " << Ee;
     int N =  res.size();
     
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );
+    
+    myfile << "  ";
+    
+//     std::cout << "get_uxTCPy(): " << get_uxTCPy() << std::endl; // 0
+//     std::cout << "get_uyTCPy(): " << get_uyTCPy() << std::endl; // 1
+    
+//     myfile << "  " << 0.0 << "  ";
+//     myfile << get_yTCP() << "  ";
+    
+    for (int i = 0; i < (int) U.size(); i++) {
+//         myfile << (U[i] - i * getGeometry()->get_h()) << "  ";
+//         myfile << (V[i] + get_yTCP())<< "  ";
+        
+//         myfile << (U[i]) - i * getGeometry()->get_h() * get_uxTCPy()   << "  ";
+//         myfile << (V[i]) << "  ";
+        
+    }
+//     myfile << std::endl;
+    
+    myfile.close();
 
     xinituser[0] = 0.0;
     for ( int i = 0; i < N; i++ )

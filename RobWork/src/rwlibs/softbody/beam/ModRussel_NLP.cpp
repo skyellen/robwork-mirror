@@ -40,7 +40,8 @@ ModRussel_NLP::ModRussel_NLP (
     _geomPtr ( geomPtr ),
     _obstaclePtr ( obstaclePtr ),
     _planeTbeam ( planeTbeam ), 
-    _integralIndices( integralIndices )
+    _integralIndices( integralIndices ),
+    _Ee(0.0)
     {
     const int M = getGeometry()->getM();
     _a.resize ( M );
@@ -146,6 +147,28 @@ bool ModRussel_NLP::eval_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 
     return true;
 }
+
+
+bool ModRussel_NLP::eval_f_elastic ( Index n, const Number* x, Number& obj_value ) {
+    //const int N = getN();
+    const int M = getGeometry()->getM();
+    const double h = getGeometry()->get_h();
+
+    RW_ASSERT ( ( int ) _a.size() == M );
+    RW_ASSERT ( n == M - 1 );
+
+    _a[0] = 0.0;
+    for ( int i = 1; i < M; i++ )
+        _a[i] = x[i-1];
+
+    FdUtil::vectorDerivative ( _a, _da, h ) ;
+
+    RusselIntegrandEonly intgr ( *getGeometry(), _a, _da );
+    obj_value = TrapMethod::trapezMethod<RusselIntegrandEonly> ( intgr, M, h );
+
+    return true;
+}
+
 
 
 
@@ -353,6 +376,9 @@ bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
     for (int i = 0; i < n; i++) 
         _x[i] = x[i];
+    
+    // calculate the elastic energy
+    eval_f_elastic(n, x, _Ee);
 
     // For this example, we write the solution to the console
 //     std::cout << std::endl << std::endl << "Solution of the primal variables, x" << std::endl;
@@ -368,13 +394,13 @@ void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index
 //         std::cout << "z_U[" << i << "] = " << z_U[i] << std::endl;
 //     }
 
-    std::cout << std::endl << std::endl << "Objective value" << std::endl;
-    std::cout << "f(x*) = " << obj_value << std::endl;
+//     std::cout << std::endl << std::endl << "Objective value" << std::endl;
+//     std::cout << "f(x*) = " << obj_value << std::endl;
 
-    std::cout << std::endl << "Final value of the constraints:" << std::endl;
-    for ( Index i=0; i<m ; i++ ) {
-        std::cout << "g(" << i << ") = " << g[i] << std::endl;
-    }
+//     std::cout << std::endl << "Final value of the constraints:" << std::endl;
+//     for ( Index i=0; i<m ; i++ ) {
+//         std::cout << "g(" << i << ") = " << g[i] << std::endl;
+//     }
 }
 
 
@@ -394,6 +420,11 @@ rw::math::Transform3D< double > ModRussel_NLP::get_planeTbeam ( void ) const {
 const boost::numeric::ublas::vector< double >& ModRussel_NLP::getSolution ( void ) const {
     return _x;
 }
+
+double ModRussel_NLP::getEnergyElastic ( void ) const {
+    return _Ee;
+}
+
 
 void ModRussel_NLP::setStartingGuess ( const boost::numeric::ublas::vector< double >& xinituser ) {
     RW_ASSERT(xinituser.size() == _xinit.size() + 1);

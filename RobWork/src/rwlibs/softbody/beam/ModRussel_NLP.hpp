@@ -107,8 +107,11 @@ public:
     boost::shared_ptr< BeamObstaclePlane > getObstacle(void) const;
     rw::math::Transform3D<> get_planeTbeam(void) const;
     const boost::numeric::ublas::vector<double> &getSolution(void) const;
+    double getEnergyElastic(void) const;
     
     void setStartingGuess( const boost::numeric::ublas::vector< double >& xinituser );
+    
+    bool eval_f_elastic ( Ipopt::Index n, const Ipopt::Number* x, Ipopt::Number& obj_value );
     
 private:
     boost::shared_ptr< BeamGeometry > _geomPtr;
@@ -123,6 +126,8 @@ private:
     std::vector<int> _integralIndices;
     
     boost::numeric::ublas::vector<double>   _xinit;
+    
+    double _Ee;
 };
 }}
 

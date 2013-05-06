@@ -18,35 +18,29 @@
 #ifndef BEAMSTARTGUESS_HPP
 #define BEAMSTARTGUESS_HPP
 
+#include <boost/shared_ptr.hpp>
+#include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector2D.hpp>
+
+#include "BeamGeometryCuboid.hpp"
+#include "ModRusselBeamBase.hpp"
+
+
 
 namespace rwlibs {
 namespace softbody {
 
-struct BeamStartGuess {
-    BeamStartGuess ( const double uxTCPy,
-                     const double len,
-                     const double yTCP,
-                     const double epsSafe,
-                     const rw::math::Rotation3D<double> &rot
-                   ) ;
-
-    double operator() ( const double gam ) ;
-
-    double curveY ( const double t ) ;
-
-    double curveDY ( const double t ) ;
-
-    double curveDX ( const double t ) ;
-
-    rw::math::Vector2D<double> Dcurve ( const double t ) ;
-
-    boost::numeric::ublas::vector<double> curve ( const int M ) ;
+class BeamStartGuess {
+public:
+    //BeamStartGuess(boost::shared_ptr< ModRusselBeamBase > beamPtr);
+    
+public:
+    static void setZeroStartingGuess( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< ModRusselBeamBase > beamPtr );
+    static void setEulerStartingGuess ( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr );
 
 private:
-    double _uxTCPy, _len, _yTCP, _epsSafe;
-    const rw::math::Rotation3D<double> &_rot;
+//     boost::shared_ptr< ModRusselBeamBase > _beamPtr;
 };
 }}
 /*
