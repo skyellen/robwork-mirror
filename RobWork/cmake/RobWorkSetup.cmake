@@ -301,17 +301,13 @@ ENDIF()
 OPTION( RW_BUILD_SOFTBODY "Set when you want to build softbody module" OFF )
 IF ( RW_BUILD_SOFTBODY )
     MESSAGE( STATUS "RobWork: Softbody ENABLED!" )
-    
-#    FIND_PACKAGE( MPI REQUIRED )
+    # Make sure to have set environment variable, e.g. in .bashrc
+    # export IPOPT_HOME=/home/arf/Documents/Ipopt-3.10.3
     FIND_PACKAGE( MUMPS REQUIRED )
     FIND_PACKAGE( IPOPT REQUIRED )
-    
     SET( SOFTBODY_LIBRARY_DIRS ${IPOPT_LIBRARY_DIRS} ${MUMPS_LIBRARY_DIRS})
-   # SET( SOFTBODY_LIB rw_softbody  ${MPI_LIBRARIES} ${MUMPS_LIBRARIES} ${IPOPT_LIBRARIES})
     SET( SOFTBODY_LIB rw_softbody  ${MUMPS_LIBRARIES} ${IPOPT_LIBRARIES})
     SET( SOFTBODY_INCLUDE_DIRS  ${MUMPS_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS})
-
-#     SET( SOFTBODY_LIB rw_softbody)
 ELSE ()
     MESSAGE( STATUS "RobWork: Softbody DISABLED!" )    
 ENDIF()
