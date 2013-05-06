@@ -31,23 +31,24 @@
 
 #include <vector>
 
-namespace rw { namespace models {
+namespace rw {
+namespace models {
 
-    /** @addtogroup models */
-    /*@{*/
+/** @addtogroup models */
+/*@{*/
 
-    /**
-       @brief An object is an element in the scene with a geometric representation. The Object
-       has a base frame and may have additional frames attached.
-    */
-    class SoftBeamObject: public Object
-    {
-    public:
-        typedef rw::common::Ptr<SoftBeamObject> Ptr;
+/**
+   @brief An object is an element in the scene with a geometric representation. The Object
+   has a base frame and may have additional frames attached.
+*/
+class SoftBeamObject: public Object
+{
+public:
+    typedef rw::common::Ptr<SoftBeamObject> Ptr;
 
-	
-        SoftBeamObject(rw::models::WorkCell *workcell, rw::kinematics::Frame* baseframe, const int nFrames);
-	/*
+
+    SoftBeamObject(rw::models::WorkCell *workcell, rw::kinematics::Frame* baseframe, const int nFrames);
+    /*
         SoftBeamObject(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
         SoftBeamObject(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
 
@@ -56,28 +57,36 @@ namespace rw { namespace models {
         SoftBeamObject(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
         */
 
-        virtual ~SoftBeamObject();
+    virtual ~SoftBeamObject();
 
-        struct Constraint {
-        	//
-        };
-
-        void setConstraints( const std::vector<Constraint>& constraints);
-        void update();
-
-
-    protected:
-        friend class WorkCell;
-        
-        
-    private:
-      //std::vector< rw::math::Transform3D<>  >
-      rw::models::WorkCell *_wc;
-	int _nFrames;
-	rw::kinematics::State _state;
+    struct Constraint {
+        //
     };
 
-    /*@}*/
-}}
+    void setConstraints( const std::vector<Constraint>& constraints);
+    void update();
+    
+   
+    //void initialize();
+    
+    
+
+    rw::kinematics::State getState(void);
+
+
+protected:
+    friend class WorkCell;
+
+
+private:
+    //std::vector< rw::math::Transform3D<>  >
+    rw::models::WorkCell *_wc;
+    int _nFrames;
+    rw::kinematics::State _state;
+};
+
+/*@}*/
+}
+}
 
 #endif /* OBJECT_HPP_ */

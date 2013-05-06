@@ -56,5 +56,6 @@
 #include "./models/WorkCell.hpp"
 #include "./models/VirtualJoint.hpp"
 #include "./models/Object.hpp"
+#include "./models/SoftBeamObject.hpp"
 
 #endif /* MODELS_HPP_ */
