@@ -23,68 +23,14 @@ void FdUtil::vectorDerivative(const boost::numeric::ublas::vector< double >& f, 
 {
     assert(f.size() > 1);
     
-    for (int i = 0; i < f.size(); i++) {
-// 	std::cout << "f.size(): " << f.size() << std::endl;
-// 	std::cout << "df.size(): " << df.size() << std::endl;
-// 	std::cout << "i: " << i << std::endl;
-// 	
-	if (0 == i) // forward difference
-	    df[i] = ( f[i+1] - f[i] ) / h;
-	else if (i == (f.size() -1))   { // bwd difference
-	    df[i] = ( f[i] - f[i-1] ) / h;
-	}
-	else
-	    df[i] = ( -f[i-1] + f[i+1] ) / (2 * h);
+    for (int i = 0; i < (int) f.size(); i++) {
+        if (0 == i) // forward difference
+            df[i] = ( f[i+1] - f[i] ) / h;
+        else if (i == (f.size() -1))   { // bwd difference
+            df[i] = ( f[i] - f[i-1] ) / h;
+        }
+        else {
+            df[i] = ( -f[i-1] + f[i+1] ) / (2 * h);
+        }
     }
 }
-
-/*
-double FdUtil::dFx(const double xi, FdUtil::FdUtilMemFn f) {	    
-    const double h = 1.0e-3;
-    
-    bool buseCentered = useCentered(xi, h, 1);
-    bool buseForward = useForward(xi, h, 1);
-    bool buseBackward = useBackward(xi, h, 1);
-    
-    if (buseCentered)
-	return ( -CALL_MEMBER_FN(*this, f)(xi-h) + CALL_MEMBER_FN(*this, f)(xi+h) ) / (2 * h);
-    if (buseForward)
-	return ( CALL_MEMBER_FN(*this, f)(xi+h) - CALL_MEMBER_FN(*this, f)(xi) ) / h;
-    if (buseBackward)
-	return ( CALL_MEMBER_FN(*this, f)(xi) - CALL_MEMBER_FN(*this, f)(xi-h) ) / h;
-    
-    eassert(false);
-    return 42.0;
-}
-
-
-
-double FdUtil::ddFx(const double xi, FdUtil::FdUtilMemFn f) {	    
-    const double h = 1.0e-3;
-    
-    bool buseCentered = useCentered(xi, h, 2);
-    bool buseForward = useForward(xi, h, 2);
-    bool buseBackward = useBackward(xi, h, 2);
-    
-    if (buseCentered)
-	return (CALL_MEMBER_FN(*this, f)(xi-h) - 2 * CALL_MEMBER_FN(*this, f)(xi) + CALL_MEMBER_FN(*this, f)(xi+h)) / (h * h);
-    if (buseForward)
-	return (CALL_MEMBER_FN(*this, f)(xi) - 2*CALL_MEMBER_FN(*this, f)(xi+h) + CALL_MEMBER_FN(*this, f)(xi+2*h)) / (h * h);
-    if (buseBackward)
-	return ( CALL_MEMBER_FN(*this, f)(xi-2*h) - 2*CALL_MEMBER_FN(*this, f)(xi-h) + CALL_MEMBER_FN(*this, f)(xi) ) / (h*h);
-    
-    eassert(false);
-    return 42.0;
-}
-
-
-bool FdUtil::useCentered(const double xi, const double h, const int w) {
-    return ( (xi - h*w) > _a ) && ( (xi + h*w) < _b );
-}
-bool FdUtil::useForward(const double xi, const double h, const int w) {
-    return ( (xi + h*w) < _b ) && ( xi >= _a );
-}
-bool FdUtil::useBackward(const double xi, const double h, const int w) {
-    return ( (xi - h*w) > _a ) && ( xi <= _b );
-}
-*/
