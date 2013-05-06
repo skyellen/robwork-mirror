@@ -10,6 +10,7 @@ add_subdirectory(pathplanners)
 add_subdirectory(task)
 add_subdirectory(simulation)
 add_subdirectory(swig)
+add_subdirectory(softbody)
 
 foreach (dir ${RWLIBS_USER_DIRECTORIES})
   add_subdirectory(${dir})
