@@ -28,7 +28,7 @@ void Stateless::registerIn(State& state){
 void Stateless::registerIn(StateStructure::Ptr state){
 	if(_registered)
 		RW_THROW("Stateless Object hass allready been initialized to another state!");
-	for(int i=0;i<_datas.size(); i++){
+	for(int i=0;i< (int) _datas.size(); i++){
 		state->addData( _datas[i] );
 	}
 	_stateStruct = state;
