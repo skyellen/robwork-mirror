@@ -130,9 +130,17 @@ namespace rwlibs {
 	namespace proximitystrategies {}
 
 	/**
-       @brief Simulation of cameras and other I/O units.
-    */
+    	*   @brief Simulation of cameras and other I/O units.
+        */
 	namespace simulation {}
+
+	/**
+         *@brief Simulation of beam models and other soft bodies
+	 * 
+	 * A collection of various soft body simulations, in particular beam models.
+	 * This package depends on the optimization package IPOPT (https://projects.coin-or.org/Ipopt)
+   	 */
+	namespace softbody {}
 }
 
 /**
@@ -264,6 +272,11 @@ namespace rwlibs {
     @defgroup simulation simulation
     @{
         @copydoc rwlibs::simulation
+    @}
+
+    @defgroup softbody softbody
+    @{
+        @copydoc rwlibs::softbody
     @}
 
 @}
