@@ -119,7 +119,7 @@ namespace geometry {
 	    void resize(int w, int h){
 	        _width = w;
 	        _height=h;
-	        if(_width*_height>_data.size())
+	        if(_width*_height> (int) _data.size())
 	            _data.resize(_width*_height);
 	    };
 
