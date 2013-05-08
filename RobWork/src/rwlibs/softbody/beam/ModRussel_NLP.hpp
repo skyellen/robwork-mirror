@@ -18,6 +18,10 @@
 #ifndef MODRUSSEL_NLP_HPP
 #define MODRUSSEL_NLP_HPP
 
+/**
+ * @file ModRussel_NLP.hpp
+ */
+
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
@@ -28,12 +32,17 @@
 
 #include "IpTNLP.hpp"
 
-namespace rwlibs {
-namespace softbody {
+namespace rwlibs { namespace softbody {
+/** @addtogroup softbody */
+/*@{*/
+    
+/**
+* @brief Implementation of the Modified Russel beam problem, using the IPOPT TNLP structure
+**/
 class ModRussel_NLP : public Ipopt::TNLP {
 
 public:
-    ModRussel_NLP(
+    ModRussel_NLP (
         boost::shared_ptr< BeamGeometry > geomPtr,
         boost::shared_ptr< BeamObstaclePlane > obstaclePtr,
         rw::math::Transform3D<> planeTbeam,
@@ -65,7 +74,7 @@ public:
 
     /** Method to return the constraint residuals */
     virtual bool eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g );
-    void eval_g_point ( int pIdx, int gBase, Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g );
+
 
     /** Method to return:
      *   1) The structure of the jacobian (if "values" is NULL)
@@ -74,11 +83,8 @@ public:
     virtual bool eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
                               Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index *jCol,
                               Ipopt::Number* values );
-    
-    void eval_jac_g_point ( int pIdx, int gBase,
-                            Ipopt::Index n, const Ipopt::Number* x, bool new_x,
-                              Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index *jCol,
-                              Ipopt::Number* values );
+
+
 
     /** Method to return:
      *   1) The structure of the hessian of the lagrangian (if "values" is NULL)
@@ -97,38 +103,72 @@ public:
                                      Ipopt::Number obj_value,
                                      const Ipopt::IpoptData* ip_data,
                                      Ipopt::IpoptCalculatedQuantities* ip_cq );
+    
+    //@}
+
+private:
+    void eval_g_point ( int pIdx, int gBase, Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g );
+    void eval_jac_g_point ( int pIdx, int gBase,
+                            Ipopt::Index n, const Ipopt::Number* x, bool new_x,
+                            Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index *jCol,
+                            Ipopt::Number* values );
+
+    bool eval_f_elastic ( Ipopt::Index n, const Ipopt::Number* x, Ipopt::Number& obj_value );    
 
 private:
     ModRussel_NLP ( const ModRussel_NLP& );
     ModRussel_NLP& operator= ( const ModRussel_NLP& );
-    
+
 public:
-    boost::shared_ptr< BeamGeometry > getGeometry(void) const;
-    boost::shared_ptr< BeamObstaclePlane > getObstacle(void) const;
-    rw::math::Transform3D<> get_planeTbeam(void) const;
-    const boost::numeric::ublas::vector<double> &getSolution(void) const;
-    double getEnergyElastic(void) const;
+    boost::shared_ptr< BeamGeometry > getGeometry ( void ) const;
+    boost::shared_ptr< BeamObstaclePlane > getObstacle ( void ) const;
+    rw::math::Transform3D<> get_planeTbeam ( void ) const;
     
-    void setStartingGuess( const boost::numeric::ublas::vector< double >& xinituser );
     
-    bool eval_f_elastic ( Ipopt::Index n, const Ipopt::Number* x, Ipopt::Number& obj_value );
+    /**
+     * @brief returns the solution vector
+     *
+     * @return solution vector
+     **/
+    const boost::numeric::ublas::vector<double> &getSolution ( void ) const;
     
+    
+    /**
+     * @brief returns the total elastic energy for the last solution
+     * 
+     * returns the total elastic energy for the last solution. The energy returned is in units of [kg mm^ 2 / s^2]
+     *
+     * @return total elastic energy 
+     **/
+    double getEnergyElastic ( void ) const;
+
+    /**
+     * @brief sets the starting guess for the optimization
+     *
+     * @param xinituser vector of deformation angles to be used as starting guess
+     **/    
+    void setStartingGuess ( const boost::numeric::ublas::vector< double >& xinituser );
+
+
 private:
     boost::shared_ptr< BeamGeometry > _geomPtr;
     boost::shared_ptr< BeamObstaclePlane > _obstaclePtr;
     rw::math::Transform3D<> _planeTbeam;
-    
+
     boost::numeric::ublas::vector<double>   _a;
     boost::numeric::ublas::vector<double>   _da;
-    
+
     boost::numeric::ublas::vector<double>   _x;
-    
+
     std::vector<int> _integralIndices;
-    
+
     boost::numeric::ublas::vector<double>   _xinit;
-    
+
     double _Ee;
 };
-}}
+
+    /* @} */
+}
+}
 
 #endif // MODRUSSEL_NLP_HPP

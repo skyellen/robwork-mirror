@@ -31,23 +31,32 @@
 namespace rwlibs {
 namespace softbody {
 
-class BeamStartGuess {
+    /**
+     * @brief Utility functions for setting starting guesses for a beam model
+     * 
+     * @note These functions only set the angle of the deformation (contained in avec). Be sure to integrate this yourself should you need the deformation vector!.
+     **/
+    class BeamStartGuess {
 public:
-    //BeamStartGuess(boost::shared_ptr< ModRusselBeamBase > beamPtr);
-    
-public:
+    /**
+     * @brief sets a starting guess with all elements of avec initialized to zero
+     *
+     * @param avec reference to starting guess vector to be set 
+     * @param beamPtr pointer to the beam
+     **/
     static void setZeroStartingGuess( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< ModRusselBeamBase > beamPtr );
+    
+    
+    
+    /**
+     * @brief sets a starting guess for a cuboid beam initialized to that of an analytical Euler-Bernoulli beam model
+     *
+     * @param avec reference to starting guess vector to be set 
+     * @param beamPtr pointer to the beam geometry
+     **/
     static void setEulerStartingGuess ( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr );
-
-private:
-//     boost::shared_ptr< ModRusselBeamBase > _beamPtr;
 };
 }}
-/*
- *
-    StartGuessFunc func(uxTCPy, LEN, yTCP, EPSSAFE, optm.getRot());
- *
- *
- */
+
 
 #endif // BEAMSTARTGUESS_HPP

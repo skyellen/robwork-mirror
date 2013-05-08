@@ -200,17 +200,12 @@ bool ModRussel_NLP::eval_grad_f ( Ipopt::Index n, const Ipopt::Number* x, bool n
 
 
 bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g ) {
-//     RW_ASSERT ( m == 1 );
-
-//     int pIdx = n - 1;
     int gBase = 0;
+    
     for (int i = 0; i < (int) _integralIndices.size(); i++) {
         int pIdx = _integralIndices[i];
         eval_g_point(pIdx, gBase++, n, x, new_x, m, g);    
     }
-    
-    
-
 
     return true;
 }
@@ -218,17 +213,10 @@ bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 
 
 bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
-//     RW_ASSERT ( m == 1 );
-    
-//     int pIdx = n - 1; // TODO make according to idxList
-//     int gBase = 0;
-    
-//     eval_jac_g_point(pIdx, gBase++, n, x, new_x, m, nele_jac, iRow, jCol, values);
-    
     int gBase = 0;
+    
     for (int i = 0; i < (int) _integralIndices.size(); i++) {
         int pIdx = _integralIndices[i];
-//         eval_g_point(pIdx, gBase++, n, x, new_x, m, g);    
         eval_jac_g_point(pIdx, gBase++, n, x, new_x, m, nele_jac, iRow, jCol, values);
     }
 
@@ -270,6 +258,7 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     
     g[gBase] = resU * uxTCPy        + resV * uyTCPy; // require h(x) > 0
 }
+
 
 
 
@@ -379,28 +368,6 @@ void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index
     
     // calculate the elastic energy
     eval_f_elastic(n, x, _Ee);
-
-    // For this example, we write the solution to the console
-//     std::cout << std::endl << std::endl << "Solution of the primal variables, x" << std::endl;
-//     for ( Index i=0; i<n; i++ ) {
-//         std::cout << "x[" << i << "] = " << x[i] << std::endl;
-//     }
-
-//     std::cout << std::endl << std::endl << "Solution of the bound multipliers, z_L and z_U" << std::endl;
-//     for ( Index i=0; i<n; i++ ) {
-//         std::cout << "z_L[" << i << "] = " << z_L[i] << std::endl;
-//     }
-//     for ( Index i=0; i<n; i++ ) {
-//         std::cout << "z_U[" << i << "] = " << z_U[i] << std::endl;
-//     }
-
-//     std::cout << std::endl << std::endl << "Objective value" << std::endl;
-//     std::cout << "f(x*) = " << obj_value << std::endl;
-
-//     std::cout << std::endl << "Final value of the constraints:" << std::endl;
-//     for ( Index i=0; i<m ; i++ ) {
-//         std::cout << "g(" << i << ") = " << g[i] << std::endl;
-//     }
 }
 
 

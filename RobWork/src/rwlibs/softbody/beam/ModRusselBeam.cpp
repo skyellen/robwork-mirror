@@ -29,10 +29,10 @@ using namespace boost::numeric::ublas;
 using namespace rwlibs::softbody;
 
 
-#include "rwlibs/softbody/numerics/InteriorPointOptimizer.hpp"
+// #include "rwlibs/softbody/numerics/InteriorPointOptimizer.hpp"
 #include "BeamGeometry.hpp"
 #include "rwlibs/softbody/numerics/Interpolation.hpp"
-#include "rwlibs/softbody/util/psplot.h"
+// #include "rwlibs/softbody/util/psplot.h"
 
 #include "rwlibs/softbody/beam/RusselIntegrand.hpp"
 
@@ -487,29 +487,6 @@ void ModRusselBeam::setInEqualityNoUpwardsEtaConstraint (
             ddh ( i, i ) =  uxTCPy * cos ( x[i] ) + uyTCPy * sin ( x[i] );
         }
     }
-        
-    
-/*    
-    if ( hBase + i == ( int ) idx ) {
-        ddh.clear();
-        for ( int i = 0; i < ( int ) x.size(); i++ ) {
-        // ddh
-     
-            // the 'no-pointing-upwards' constraint for point at xi = i*h, has idx=i+1
-
-            // if idx=1 then we are dealing with the point at i=0
-
-            // the constraint is there
-            // -sin( x[0] )
-
-            // only non-zero entry in the hessian is at i=j=0
-            
-            //ddh(i, i) =  sin ( x[i] );
-            // _uxTCPy Cos[x] + _uyTCPy Sin[x]
-            ddh ( i, i ) =  uxTCPy * cos ( x[i] ) + uyTCPy * sin ( x[i] );
-        }
-    }*/
-
 }
 
 

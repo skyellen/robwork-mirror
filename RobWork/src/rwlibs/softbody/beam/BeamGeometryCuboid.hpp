@@ -25,19 +25,38 @@
 
 namespace rwlibs {
 namespace softbody {
+	/** @addtogroup softbody */
+	/*@{*/
 
+/**
+* @brief A cuboid beam
+*/
 class BeamGeometryCuboid : public BeamGeometry
 {
     public:
-    BeamGeometryCuboid(double dx, 
-			       double dy, 
-			       double dz, 
-                 const std::vector<double> &Exvec,
-                 const std::vector<double> &vxvec,
-                 const std::vector<double> &rhovec,
-                 const rw::math::Transform3D<> &wTb,
-                 const rw::math::Vector3D<> &G
-			       );
+        
+    /**
+    * @brief Constructor for cuboid deformation geometry
+    *
+    * @param dx length in x (L)
+    * @param dy length in y
+    * @param dz length in z
+    * @param Exvec vector of Young's modulus for each cross beam cros section, in MPa
+    * @param vxvce vector of Poisson's ratio for each cross beam cros section
+    * @param rhovec vector of mass density for each cross beam cros section, in kg/mm^3
+    * @param wTb world to base of beam transform
+    * @param G vector of gravity, m/s^2
+    */
+    BeamGeometryCuboid(
+        double dx, 
+	double dy, 
+	double dz, 
+	const std::vector<double> &Exvec,
+	const std::vector<double> &vxvec,
+	const std::vector<double> &rhovec,
+	const rw::math::Transform3D<> &wTb,
+	const rw::math::Vector3D<> &G
+	);
     
     virtual ~BeamGeometryCuboid();
     
@@ -50,15 +69,42 @@ class BeamGeometryCuboid : public BeamGeometry
 	virtual double c4(const int i) const;
 	
 	virtual double B0(const int i) const;
-    private:
 
+
+
+    private:
 	double B0_fnc(const int i) const;
 	double B0m(const int i) const;
 	
+
+
     public:
+	/**
+	* @brief Returns the thickness of the beam in the z-direction
+	*
+	* @return thickness in z
+	*/
 	double getH(void) const { return _H;};
+
+
+
+	/**
+	* @brief Returns the thickness of the beam in the y-direction
+	*
+	* @return thickness in y
+	*/
 	double getK(void) const { return _K;};
 	
+
+
+	/**
+	* @brief Outputs cuboid beam to stream
+	*
+	* @param out
+	* @param obj
+	*
+	* @return 
+	*/
 	friend std::ostream& operator<<(std::ostream& out, const BeamGeometryCuboid& obj) {
 	    std::stringstream str;
 	    
@@ -75,6 +121,7 @@ class BeamGeometryCuboid : public BeamGeometry
 	const double _H, _K;
 	std::vector<double> _B0vec;
 };
+/*@}*/
 }}
 
 #endif // CUBOIDGEOMETRY_HPP

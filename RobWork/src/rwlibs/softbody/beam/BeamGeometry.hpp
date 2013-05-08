@@ -26,22 +26,50 @@ limitations under the License.
 
 namespace rwlibs {
 namespace softbody {
+	/** @addtogroup softbody */
+	/*@{*/
 
+/**
+* @brief Base class for discrete beam geometries
+*/
 class BeamGeometry
 {
 public:
+    /**
+    * @brief Constructor for the BeamGeometry class
+    *
+    * @param L length of object
+    * @param Exvec vector of Young's modulus for each cross beam cros section, in MPa
+    * @param vxvce vector of Poisson's ratio for each cross beam cros section
+    * @param rhovec vector of mass density for each cross beam cros section, in kg/mm^3
+    * @param wTb world to base of beam transform
+    * @param G vector of gravity, m/s^2
+    */
     BeamGeometry(double L,
                  const std::vector<double> &Exvec,
                  const std::vector<double> &vxvec,
                  const std::vector<double> &rhovec,
                  const rw::math::Transform3D<> &wTb,
                  const rw::math::Vector3D<> &G
+
                 );
     
     virtual ~BeamGeometry();
     
 public:
+    /**
+    * @brief Sets the homogeneous transform of the beam
+    *
+    * @param T world to beam base transform
+    */
     void setTransform(const rw::math::Transform3D<> &T);
+
+
+    /**
+    * @brief Retrieves the world to beam base transform of the beam
+    *
+    * @return world to beam base transform
+    */
     rw::math::Transform3D<> getTransform(void) const;
     
     void setG(const rw::math::Vector3D<> &G);
@@ -57,13 +85,6 @@ public:
     
     double g1 ( void ) const;
     double g2 ( void ) const;
-    
-        
-//     double get_uxTCPy() const;
-//     double get_uyTCPy() const;
-    
-//     double get_yTCP() const;
-//     double get_thetaTCP() const;
 
 public:
     // stuff implemented by derived classes,  specific to ModRussel beam
@@ -120,6 +141,7 @@ private:
     rw::math::Transform3D<> _wTb; // world to beam transform
     rw::math::Vector3D<> _G; 
 };
+/*@}*/
 }
 }
 
