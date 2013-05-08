@@ -20,8 +20,12 @@
 
 namespace rwlibs {
 namespace softbody {
-
-class EBBeam {
+        /** @addtogroup softbody */
+/*@{*/
+    /**
+     * @brief Class for calculating the analytical solution to the Euler-Bernoulli beam model in fixed-free configuration
+     **/
+    class EBBeam {
 	public:
 		EBBeam(
 		const double H, 
@@ -43,6 +47,7 @@ class EBBeam {
 		double _J;
 		double _q;
 };
+/*@{*/
 }};
 
 #endif // EBBEAM_HPP

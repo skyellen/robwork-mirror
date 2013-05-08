@@ -26,10 +26,21 @@
 #include "BeamObstaclePlane.hpp"
 
 
-namespace rwlibs {
-namespace softbody {
+namespace rwlibs { namespace softbody {
+    /** @addtogroup softbody */
+/*@{*/
+    /**
+     * @brief Base class for implementing Modified Russel beam problems
+     **/
 class ModRusselBeamBase {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param geomPtr pointer to the beam geometry
+     * @param obstaclePtr pointer to the obstacle 
+     * @param M number of slices in the beam
+     **/
     ModRusselBeamBase (
         boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
         boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr,
@@ -42,10 +53,41 @@ public:
     virtual void solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V ) = 0;
     
 public:
+    /**
+     * @brief given a vector of angles, calculates the x-part of the corresponding curve
+     *
+     * @param U reference to the vector to store the x-component in 
+     * @param avec reference to the vector of angles
+     **/
     void integrateAngleU ( boost::numeric::ublas::vector<double> &U, const boost::numeric::ublas::vector<double> &avec );
+    
+    /**
+     * @brief given a vector of angles, calculates the y-part of the corresponding curve
+     *
+     * @param V reference to the vector to store the x-component in 
+     * @param avec reference to the vector of angles
+     **/
     void integrateAngleV ( boost::numeric::ublas::vector<double> &V, const boost::numeric::ublas::vector<double> &avec );
     
+    /**
+     * @brief precomputes the indices on the beam at which to place integral constraints
+     * 
+     * This function will precompute indices on the beam at which integral constraints are present to check for penetration with the plane. 
+     * For nIntegralConstraints equal to 1, only the tip at x=L will be tested. 
+     * For 2 integral constraints, indices equivalent to x=L and x=L/2 will be tested and so forth.
+     * 
+     * The number of integral constraints is set by the method set_nIntegralConstraints 
+     *
+     * @bug Does not support more than M/2 integral constraints
+     * 
+     **/   
     void computeIntegralIndicies(void);
+    
+    /**
+     * @brief returns the indices on the beam at which to place integral constraints
+     *
+     * @return indices on the beam
+     **/   
     std::vector<int> getIntegralIndices(void) const { return _integralConstraintIdxList; };
     
     boost::shared_ptr< BeamGeometry > getGeometry ( void ) const;
@@ -122,6 +164,7 @@ private: // TODO: get methods for these
     double _muStart;
     double _muDec;
 };
+/*@}*/
 }
 };
 

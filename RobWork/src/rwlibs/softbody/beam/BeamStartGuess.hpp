@@ -30,7 +30,8 @@
 
 namespace rwlibs {
 namespace softbody {
-
+        /** @addtogroup softbody */
+/*@{*/
     /**
      * @brief Utility functions for setting starting guesses for a beam model
      * 
@@ -56,6 +57,7 @@ public:
      **/
     static void setEulerStartingGuess ( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr );
 };
+/*@}*/
 }}
 
 

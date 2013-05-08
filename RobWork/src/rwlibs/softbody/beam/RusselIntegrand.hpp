@@ -26,7 +26,8 @@
 
 namespace rwlibs {
 namespace softbody {
-
+  /** @addtogroup softbody */
+/*@{*/
 struct RusselIntegrand {
     RusselIntegrand (
         const BeamGeometry &geom,
@@ -63,7 +64,7 @@ struct RusselIntegrandEonly : public RusselIntegrand {
     // only elastic energy
     double operator() ( const int i ) const ;;
 };
-
+/*@}*/
 }}
 
 

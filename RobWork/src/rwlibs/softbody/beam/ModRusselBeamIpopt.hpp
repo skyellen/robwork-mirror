@@ -26,6 +26,8 @@
 
 namespace rwlibs {
 namespace softbody {
+      /** @addtogroup softbody */
+/*@{*/
 class ModRusselBeamIpopt : public ModRusselBeamBase
 {
 public:
@@ -48,6 +50,7 @@ private:
     Ipopt::SmartPtr< Ipopt::TNLP > _nlp;
     Ipopt::SmartPtr< Ipopt::IpoptApplication > _app;
 };
+/*@}*/
 }}
 
 #endif // MODRUSSELBEAMIPOPT_HPP

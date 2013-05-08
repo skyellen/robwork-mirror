@@ -25,6 +25,8 @@
 
 namespace rwlibs {
 namespace softbody {
+        /** @addtogroup softbody */
+/*@{*/
     /**
      * @brief A plane obstacle for a beam
      **/
@@ -99,6 +101,7 @@ namespace softbody {
         rw::geometry::Plane _plane;
         rw::math::Transform3D<> _trans;
     };
+    /*@}*/
 }}
 
 #endif // BEAMOBSTACLEPLANE_HPP

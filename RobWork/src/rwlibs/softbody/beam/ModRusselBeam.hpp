@@ -37,8 +37,14 @@
 
 namespace rwlibs {
 namespace softbody {
-
-class ModRusselBeam : public ModRusselBeamBase {
+  /** @addtogroup softbody */
+/*@{*/
+    /**
+     * @brief Implementation of the Modified Russel beam problem (Deprecated!)
+     * 
+     * @deprecated 
+     **/
+    class ModRusselBeam : public ModRusselBeamBase {
 public:
 
     ModRusselBeam (
@@ -141,6 +147,7 @@ private:
 
 
 };
+/*@}*/
 }
 }
 
