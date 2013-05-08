@@ -133,21 +133,21 @@ public:
 	 *
 	 * @param pointB [in] contact point.
 	 */
-	void getPointB(rw::math::Vector3D<> pointB);
+	void setPointB(rw::math::Vector3D<> pointB);
 
 	/**
 	 * @brief Set the normal from the first object to the second.
 	 *
 	 * @param normal [in] contact normal.
 	 */
-	void getNormal(rw::math::Vector3D<> normal);
+	void setNormal(rw::math::Vector3D<> normal);
 
 	/**
 	 * @brief Set the penetation depth.
 	 *
 	 * @param depth [in] penetration depth. Positive if penetrating, negative if separated.
 	 */
-	void getDepth(double depth);
+	void setDepth(double depth);
 
 	/**
 	 * @brief Clear all result values

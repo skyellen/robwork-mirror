@@ -17,6 +17,7 @@
 
 #include "ContactDetector.hpp"
 #include "BallBallStrategy.hpp"
+#include "ContactStrategyPQP.hpp"
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
 
@@ -108,8 +109,8 @@ void ContactDetector::addContactStrategy(ProximitySetupRule rule, ContactStrateg
 
 void ContactDetector::addContactStrategy(ProximitySetup rules, ContactStrategy::Ptr strategy, std::size_t pri) {
 	std::list<StrategyTableRow>::iterator it = _strategies.begin();
-	if (pri > _strategies.size()-1)
-		pri = _strategies.size()-1;
+	if (pri > _strategies.size())
+		pri = _strategies.size();
 	for (std::size_t i = 0; i < pri; i++)
 		it++;
 	StrategyTableRow matcher;
@@ -167,6 +168,7 @@ void ContactDetector::setDefaultStrategies() {
     	addContactStrategy(ownedPtr(new BallBallStrategy()), pri);
     	pri++;
     }
+    addContactStrategy(ownedPtr(new ContactStrategyPQP()),pri);
 }
 
 std::vector<Contact> ContactDetector::findContacts(const State& state) const {
@@ -185,7 +187,6 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 		const Transform3D<> aT = fk.get(*pair.first);
 		const Transform3D<> bT = fk.get(*pair.second);
 
-		bool matched = false;
 		std::vector<Contact> contacts;
 
 		std::vector<Geometry::Ptr> unmatchedA = _frameToGeo[*pair.first];
@@ -201,7 +202,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 		}
 
 		std::list<StrategyTableRow>::const_iterator it;
-		for (it = _strategies.begin(); (it != _strategies.end()) && !matched; it++) {
+		for (it = _strategies.begin(); (it != _strategies.end()); it++) {
 			StrategyTableRow stratMatch = *it;
 			BasicFilterStrategy filterStrat(_wc,stratMatch.rules);
 			ProximityFilter::Ptr filterTest = filterStrat.update(state);
@@ -214,7 +215,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 					match = true;
 			}
 			if (match) {
-				ContactStrategyData stratData(data.getStrategyData(stratMatch.priority));
+				ContactStrategyData stratData;//(data.getStrategyData(stratMatch.priority));
 				std::vector<std::pair<Geometry::Ptr,Geometry::Ptr> >::iterator pairIt;
 				for (pairIt = geoPairs.begin(); pairIt < geoPairs.end(); pairIt++) {
 					Geometry::Ptr geoA = (*pairIt).first;
@@ -233,14 +234,14 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						ContactModel::Ptr modelA = mapA[geoA->getId()];
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
 						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData);
-						data.setStrategyData(stratMatch.priority,stratData);
+						//data.setStrategyData(stratMatch.priority,stratData);
 						pairIt = geoPairs.erase(pairIt);
+						pairIt--;
 				        if( contacts.size() > 0 ){
 							res.insert(res.end(),contacts.begin(),contacts.end());
 				        }
 					}
 				}
-				matched = true;
 			}
 		}
 	}

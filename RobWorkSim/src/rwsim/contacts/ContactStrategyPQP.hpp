@@ -15,17 +15,17 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIM_CONTACTS_BALLBALLSTRATEGY_HPP_
-#define RWSIM_CONTACTS_BALLBALLSTRATEGY_HPP_
+#ifndef RWSIM_CONTACTS_CONTACTSTRATEGYPQP_HPP_
+#define RWSIM_CONTACTS_CONTACTSTRATEGYPQP_HPP_
+
+#include "ContactStrategy.hpp"
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 /**
- * @file BallBallStrategy.hpp
+ * @file ContactStrategyPQP.hpp
  *
- * \copydoc rwsim::contacts::BallBallStrategy
+ * \copydoc rwsim::contacts::ContactStrategyPQP
  */
-
-#include "ContactModel.hpp"
-#include "ContactStrategy.hpp"
 
 namespace rwsim {
 namespace contacts {
@@ -33,19 +33,27 @@ namespace contacts {
 
 //! @{
 /**
- * @brief Detection of contacts between balls. Each model can consist of multiple balls.
+ * @brief Detection of contacts between triangle meshes.
  */
-class BallBallStrategy: public rwsim::contacts::ContactStrategy {
+class ContactStrategyPQP: public rwsim::contacts::ContactStrategy {
 public:
+	/**
+	 * @brief Strategy used for condensing contacts.
+	 */
+	enum ContactFilter {
+		NONE,//!< No filtering.
+		MANIFOLD//!< Filtering with manifold.
+	};
+
 	/**
 	 * @brief Create new strategy.
 	 */
-	BallBallStrategy();
+	ContactStrategyPQP();
 
 	/**
 	 * @brief Destructor
 	 */
-	virtual ~BallBallStrategy();
+	virtual ~ContactStrategyPQP();
 
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::match
@@ -84,7 +92,7 @@ public:
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::destroyModel
 	 */
-    virtual void destroyModel(rw::proximity::ProximityModel* model);
+	virtual void destroyModel(rw::proximity::ProximityModel* model);
 
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
@@ -94,48 +102,62 @@ public:
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
 	 */
-    virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
+	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
 
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::removeGeometry
 	 */
-    virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
+	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
 
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::getGeometryIDs
 	 */
-    virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
+	virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
 	/**
 	 * @copydoc rwsim::contacts::ContactStrategy::clear
 	 */
-    virtual void clear();
+	virtual void clear();
+
+	/**
+	 * @brief If strategy should convert all geometry to meshes, or only work on geometry that is already meshes.
+	 *
+	 * @param matchAll [in] true if strategy should match all geometries (default), false otherwise.
+	 */
+	virtual void setMatchAll(bool matchAll = true);
+
+	/**
+	 * @brief Set the method used to filter contacts (condenses many contacts into fewer contacts).
+	 *
+	 * @param filter [in] the strategy to use - default is the OBRManifold-strategy.
+	 */
+	virtual void setContactFilter(ContactFilter filter = MANIFOLD);
 
     /**
-     * @brief For modelling of a single ball.
+     * @brief For modelling of a trimesh.
      */
 	struct Model {
-    	//! The geometry id of the ball.
+    	//! The geometry id of the mesh.
 		std::string geoId;
 
-		//! Radius of the ball.
-		double radius;
+		//! Pointer to the trimesh.
+		rw::geometry::TriMesh::Ptr mesh;
 
-		//! The center of the ball.
-		rw::math::Vector3D<> center;
+		//! The location of the mesh.
+		rw::math::Transform3D<> transform;
 	};
 
 	/**
-	 * @brief The contact model used by this strategy. One model can consist of multiple balls if desired.
+	 * @brief The contact model used by this strategy.
 	 */
-	class BallModel: public ContactModel {
+	class TriMeshModel: public ContactModel {
 	public:
 		/**
-		 * @brief Construct new model for object consisting of one or more balls.
+		 * @brief Construct new model for object consisting of a trimesh.
 		 *
 		 * @param owner [in] the strategy that owns this model.
 		 */
-		BallModel(ContactStrategy *owner):
+		TriMeshModel(ContactStrategy *owner):
 			ContactModel(owner)
 		{
 		}
@@ -143,15 +165,28 @@ public:
 		/**
 		 * @copydoc rwsim::contacts::ContactModel::getName
 		 */
-		virtual std::string getName() const { return "BallModel"; };
+		virtual std::string getName() const { return "TriMeshModel"; };
 
 		/**
-		 * @brief List of ball models belonging to this model.
+		 * @brief List of trimesh models belonging to this model.
 		 */
 		std::vector<Model> models;
+
+		/**
+		 * @brief Proximity Model for use with collision detector.
+		 */
+		ProximityModel::Ptr pmodel;
 	};
+
+private:
+	std::vector<Contact> manifoldFilter(const std::vector<Contact> &contacts);
+
+	bool _matchAll;
+	rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
+	double _threshold;
+	ContactFilter _filtering;
 };
 //! @}
 } /* namespace contacts */
 } /* namespace rwsim */
-#endif /* RWSIM_CONTACTS_BALLBALLSTRATEGY_HPP_ */
+#endif /* RWSIM_CONTACTS_CONTACTSTRATEGYPQP_HPP_ */

@@ -73,15 +73,15 @@ void Contact::setPointA(Vector3D<> pointA) {
 	_pointA = pointA;
 }
 
-void Contact::getPointB(Vector3D<> pointB) {
+void Contact::setPointB(Vector3D<> pointB) {
 	_pointB = pointB;
 }
 
-void Contact::getNormal(Vector3D<> normal) {
+void Contact::setNormal(Vector3D<> normal) {
 	_normal = normal;
 }
 
-void Contact::getDepth(double depth) {
+void Contact::setDepth(double depth) {
 	_depth = depth;
 }
 

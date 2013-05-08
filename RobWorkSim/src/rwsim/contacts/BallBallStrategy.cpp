@@ -54,12 +54,20 @@ std::vector<Contact> BallBallStrategy::findContacts(ProximityModel* a, const Tra
 		for (std::vector<Model>::iterator itB = mB->models.begin(); itB < mB->models.end(); itB++) {
 			Model modelA = *itA;
 			Model modelB = *itB;
-			Vector3D<> cVec = wTa.R()*modelA.center+wTa.P()-(wTb.R()*modelB.center+wTb.P());
+			Vector3D<> cA = wTa.R()*modelA.center+wTa.P();
+			Vector3D<> cB = wTb.R()*modelB.center+wTb.P();
+			Vector3D<> cVec = cB-cA;
 			double cVecLen = cVec.norm2();
 			if (cVecLen <= modelA.radius + modelB.radius) {
+				Vector3D<> cVecNorm = cVec/cVecLen;
 				Contact c;
 				c.setModelA(mA);
 				c.setModelB(mB);
+				c.setPointA(cA+modelA.radius*cVecNorm);
+				c.setPointB(cB-modelB.radius*cVecNorm);
+				c.setNormal(cVecNorm);
+				c.setDepth(modelA.radius + modelB.radius - cVecLen);
+				c.setTransform(inverse(wTa)*wTb);
 				res.push_back(c);
 			}
 		}

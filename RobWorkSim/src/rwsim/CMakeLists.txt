@@ -10,6 +10,8 @@ add_library(rwsim
 	contacts/ContactModel.cpp
 	contacts/ContactStrategy.cpp
 	contacts/ContactStrategyData.cpp
+	contacts/ContactStrategyPQP.cpp
+	contacts/RenderContacts.cpp
 
 	dynamics/Body.cpp
 	dynamics/RigidBody.cpp
