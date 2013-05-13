@@ -65,7 +65,8 @@ bool ModRussel_NLP::get_nlp_info ( Ipopt::Index& n, Ipopt::Index& m, Ipopt::Inde
     n = getGeometry()->getM() - 1;
 
     // total number of constraints
-    m = _integralIndices.size();
+    m = _integralIndices.size(); 
+    // m = _integralIndices.size() + NnoUpwardsConstraints + Nhingeconstraints; 
 
     // number of nonzero entries in the Jacobian.
     nnz_jac_g = m * n;
