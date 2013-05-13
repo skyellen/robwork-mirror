@@ -15,8 +15,8 @@
 */
 
 
-#ifndef BEAMSTARTGUESS_HPP
-#define BEAMSTARTGUESS_HPP
+#ifndef RWLIBS_SOFTBODY_BEAMSTARTGUESS_HPP
+#define RWLIBS_SOFTBODY_BEAMSTARTGUESS_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/ublas/vector.hpp>

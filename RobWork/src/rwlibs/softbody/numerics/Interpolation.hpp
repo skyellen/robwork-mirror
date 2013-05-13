@@ -15,8 +15,8 @@
 
 */
 
-#ifndef INTERPOLATION_HPP
-#define INTERPOLATION_HPP
+#ifndef RWLIBS_SOFTBODY_INTERPOLATION_HPP
+#define RWLIBS_SOFTBODY_INTERPOLATION_HPP
 
 // #include <boost/numeric/ublas/vector.hpp>
 // #include <vector>

@@ -15,8 +15,8 @@
 
 */
 
-#ifndef CUBOIDGEOMETRY_HPP
-#define CUBOIDGEOMETRY_HPP
+#ifndef RWLIBS_SOFTBODY_CUBOIDGEOMETRY_HPP
+#define RWLIBS_SOFTBODY_CUBOIDGEOMETRY_HPP
 
 #include <ostream>
 #include <sstream>

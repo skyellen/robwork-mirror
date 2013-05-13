@@ -15,8 +15,8 @@
 */
 
 
-#ifndef MODRUSSEL_NLP_HPP
-#define MODRUSSEL_NLP_HPP
+#ifndef RWLIBS_SOFTBODY_MODRUSSEL_NLP_HPP
+#define RWLIBS_SOFTBODY_MODRUSSEL_NLP_HPP
 
 /**
  * @file ModRussel_NLP.hpp

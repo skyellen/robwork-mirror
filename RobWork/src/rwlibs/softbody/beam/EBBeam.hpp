@@ -15,8 +15,8 @@
 */
 
 
-#ifndef EBBEAM_HPP
-#define EBBEAM_HPP
+#ifndef RWLIBS_SOFTBODY_EBBEAM_HPP
+#define RWLIBS_SOFTBODY_EBBEAM_HPP
 
 namespace rwlibs {
 namespace softbody {

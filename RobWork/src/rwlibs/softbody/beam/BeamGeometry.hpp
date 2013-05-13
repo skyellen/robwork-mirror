@@ -15,8 +15,8 @@ limitations under the License.
 
 */
 
-#ifndef BEAMGEOMETRY_HPP
-#define BEAMGEOMETRY_HPP
+#ifndef RWLIBS_SOFTBODY_BEAMGEOMETRY_HPP
+#define RWLIBS_SOFTBODY_BEAMGEOMETRY_HPP
 
 #include <vector>
 #include <ostream>

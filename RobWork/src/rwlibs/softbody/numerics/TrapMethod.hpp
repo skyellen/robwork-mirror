@@ -15,8 +15,8 @@
 
 */
 
-#ifndef TRAPMETHOD_HPP
-#define TRAPMETHOD_HPP
+#ifndef RWLIBS_SOFTBODY_TRAPMETHOD_HPP
+#define RWLIBS_SOFTBODY_TRAPMETHOD_HPP
 
 #include <iostream>
 

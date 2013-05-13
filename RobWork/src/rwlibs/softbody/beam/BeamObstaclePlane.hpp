@@ -15,8 +15,8 @@
 */
 
 
-#ifndef BEAMOBSTACLEPLANE_HPP
-#define BEAMOBSTACLEPLANE_HPP
+#ifndef RWLIBS_SOFTBODY_BEAMOBSTACLEPLANE_HPP
+#define RWLIBS_SOFTBODY_BEAMOBSTACLEPLANE_HPP
 
 #include <rw/geometry/Plane.hpp>
 #include <rw/math/Transform3D.hpp>

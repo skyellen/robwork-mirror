@@ -15,8 +15,8 @@
 */
 
 
-#ifndef RUSSELINTEGRAND_HPP
-#define RUSSELINTEGRAND_HPP
+#ifndef RWLIBS_SOFTBODY_RUSSELINTEGRAND_HPP
+#define RWLIBS_SOFTBODY_RUSSELINTEGRAND_HPP
 
 #include <boost/numeric/ublas/vector.hpp>
 

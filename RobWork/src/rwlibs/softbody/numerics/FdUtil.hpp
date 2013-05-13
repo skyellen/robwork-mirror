@@ -15,8 +15,8 @@
 
 */
 
-#ifndef FDUTIL_HPP
-#define FDUTIL_HPP
+#ifndef RWLIBS_SOFTBODY_FDUTIL_HPP
+#define RWLIBS_SOFTBODY_FDUTIL_HPP
 
 // #include <vector>
 #include <boost/numeric/ublas/vector.hpp>
