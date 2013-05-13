@@ -199,7 +199,7 @@ double ModRusselBeamBase::get_h ( void ) const {
 
 
 
-
+/*
 void ModRusselBeamBase::setUseNoUpwardConstraint ( bool val ) {
     _useNoUpwardConstraint = val;
 }
@@ -208,9 +208,9 @@ void ModRusselBeamBase::setUseNoUpwardConstraint ( bool val ) {
 void ModRusselBeamBase::setUseHingeConstraint ( bool val ) {
     _useHingeConstraint = val;
 }
+*/
 
-
-
+/*
 
 void ModRusselBeamBase::setMuDecrementFactor ( double decFactor ) {
     _muDec = decFactor;
@@ -220,7 +220,7 @@ void ModRusselBeamBase::setMuDecrementFactor ( double decFactor ) {
 void ModRusselBeamBase::setMuStart ( double muStart ) {
     _muStart = muStart;
 }
-
+*/
 
 
 void ModRusselBeamBase::set_nIntegralConstraints ( int nIntegralConstraints ) {

@@ -28,20 +28,48 @@ namespace rwlibs {
 namespace softbody {
   /** @addtogroup softbody */
 /*@{*/
+
+/**
+ * @brief Implementation of the Modified Russel energy density functions
+ **/
 struct RusselIntegrand {
+    /**
+     * @brief Constructor
+     *
+     * @param geom the geometry of the beam
+     * @param a vector containing the angle of the deformation
+     * @param da vector containing the deriatives of the angle of deformation
+     **/
     RusselIntegrand (
         const BeamGeometry &geom,
         const boost::numeric::ublas::vector<double>& a,
         const boost::numeric::ublas::vector<double>& da
     ) ;;
 
-    // gravitational energy per unit volume
+
+    /**
+     * @brief returns the gravitional energy per cross section
+     *
+     * @param i index of cross section
+     * @return gravitional energy
+     **/
     double eg ( const int i ) const ;;
 
-    // elastic energy per unit volume
+    /**
+     * @brief returns the elastic energy per cross section
+     *
+     * @param i index of cross section
+     * @return elastic energy
+     **/
     double ee ( const int i ) const ;;
 
-    // total energy per unit volume
+    
+    /**
+     * @brief returns the total elastic energy per cross section eg+ee
+     *
+     * @param i index of cross section
+     * @return total elastic energy per cross section
+     **/
     double operator() ( const int i ) const ;;
 
 private:
@@ -54,14 +82,30 @@ private:
 
 
 
+/**
+ * @brief Implementation of the Modified Russel elastic energy density function
+ * 
+ **/
 struct RusselIntegrandEonly : public RusselIntegrand {
+    /**
+     * @brief Constructor
+     *
+     * @param geom the geometry of the beam
+     * @param a vector containing the angle of the deformation
+     * @param da vector containing the deriatives of the angle of deformation
+     **/
     RusselIntegrandEonly (
         const BeamGeometry &geom,
         const boost::numeric::ublas::vector<double>& a,
         const boost::numeric::ublas::vector<double>& da
     ) ;;
 
-    // only elastic energy
+    /**
+     * @brief returns the elastic energy per cross section
+     *
+     * @param i index of cross section
+     * @return elastic energy
+     **/
     double operator() ( const int i ) const ;;
 };
 /*@}*/

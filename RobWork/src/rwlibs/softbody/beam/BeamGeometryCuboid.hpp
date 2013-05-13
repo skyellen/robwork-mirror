@@ -25,16 +25,17 @@
 
 namespace rwlibs {
 namespace softbody {
-	/** @addtogroup softbody */
-	/*@{*/
+/** @addtogroup softbody */
+/*@{*/
 
 /**
 * @brief A cuboid beam
+*
+* Implements the BeamGeometry class by the means of analytical integration of a cuboid geometry
 */
-class BeamGeometryCuboid : public BeamGeometry
-{
-    public:
-        
+class BeamGeometryCuboid : public BeamGeometry {
+public:
+
     /**
     * @brief Constructor for cuboid deformation geometry
     *
@@ -47,81 +48,87 @@ class BeamGeometryCuboid : public BeamGeometry
     * @param wTb world to base of beam transform
     * @param G vector of gravity, m/s^2
     */
-    BeamGeometryCuboid(
-        double dx, 
-	double dy, 
-	double dz, 
-	const std::vector<double> &Exvec,
-	const std::vector<double> &vxvec,
-	const std::vector<double> &rhovec,
-	const rw::math::Transform3D<> &wTb,
-	const rw::math::Vector3D<> &G
-	);
-    
+    BeamGeometryCuboid (
+        double dx,
+        double dy,
+        double dz,
+        const std::vector<double> &Exvec,
+        const std::vector<double> &vxvec,
+        const std::vector<double> &rhovec,
+        const rw::math::Transform3D<> &wTb,
+        const rw::math::Vector3D<> &G
+    );
+
     virtual ~BeamGeometryCuboid();
-    
-    public:
-	virtual double b0(const int i) const;
-	virtual double b1(const int i) const;
-	
-	virtual double c2(const int i) const;
-	virtual double c3(const int i) const;
-	virtual double c4(const int i) const;
-	
-	virtual double B0(const int i) const;
+
+public:
+    virtual double b0 ( const int i ) const;
+    virtual double b1 ( const int i ) const;
+
+    virtual double c2 ( const int i ) const;
+    virtual double c3 ( const int i ) const;
+    virtual double c4 ( const int i ) const;
+
+    virtual double B0 ( const int i ) const;
 
 
 
-    private:
-	double B0_fnc(const int i) const;
-	double B0m(const int i) const;
-	
 
-
-    public:
-	/**
-	* @brief Returns the thickness of the beam in the z-direction
-	*
-	* @return thickness in z
-	*/
-	double getH(void) const { return _H;};
+public:
+    /**
+    * @brief Returns the thickness of the beam in the z-direction
+    *
+    * @return thickness in z
+    */
+    double getH ( void ) const {
+        return _H;
+    };
 
 
 
-	/**
-	* @brief Returns the thickness of the beam in the y-direction
-	*
-	* @return thickness in y
-	*/
-	double getK(void) const { return _K;};
-	
+    /**
+    * @brief Returns the thickness of the beam in the y-direction
+    *
+    * @return thickness in y
+    */
+    double getK ( void ) const {
+        return _K;
+    };
 
 
-	/**
-	* @brief Outputs cuboid beam to stream
-	*
-	* @param out
-	* @param obj
-	*
-	* @return 
-	*/
-	friend std::ostream& operator<<(std::ostream& out, const BeamGeometryCuboid& obj) {
-	    std::stringstream str;
-	    
-	    const BeamGeometry &base(obj);
-	    // embed base class?
-	        
-	    str << "BeamGeometryCuboid {" << base << "  this: " << &obj << ", H:" << obj.getH() << ", K:" << obj.getK() << "}";
-	    
-	    return out << str.str();
-	};
-	
-	
-    private:
-	const double _H, _K;
-	std::vector<double> _B0vec;
+
+    /**
+    * @brief Outputs cuboid beam to stream
+    *
+    * @param out
+    * @param obj
+    *
+    * @return
+    */
+    friend std::ostream& operator<< ( std::ostream& out, const BeamGeometryCuboid& obj ) {
+        std::stringstream str;
+
+        const BeamGeometry &base ( obj );
+        // embed base class?
+
+        str << "BeamGeometryCuboid {" << base << "  this: " << &obj << ", H:" << obj.getH() << ", K:" << obj.getK() << "}";
+
+        return out << str.str();
+    };
+
+
+
+private:
+    double B0_fnc ( const int i ) const;
+    double B0m ( const int i ) const;
+
+
+private:
+    const double _H, _K;
+    std::vector<double> _B0vec;
 };
 /*@}*/
-}}
+}
+}
 
 #endif // CUBOIDGEOMETRY_HPP

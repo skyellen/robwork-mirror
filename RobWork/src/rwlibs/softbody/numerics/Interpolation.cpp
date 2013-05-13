@@ -16,27 +16,3 @@
 */
 
 #include "Interpolation.hpp"
-
-
-
-// #include "eassert.h"
-
-
-
-
-
-
-
-/*
-double xiFnc(int i) const
-{
-    _h = (_b - _a) / Nintervals;
-    
-    eassert(_h != 0.0);
-    eassert( _b-_a >= 0.0);
-    
-    return _a + i * _h;
-}
-*/
-
-

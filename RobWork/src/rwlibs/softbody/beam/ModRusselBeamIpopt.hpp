@@ -28,9 +28,20 @@ namespace rwlibs {
 namespace softbody {
       /** @addtogroup softbody */
 /*@{*/
+
+/**
+ * @brief Implementation of the Modified Russel Beam Problem using IPOPT
+ **/
 class ModRusselBeamIpopt : public ModRusselBeamBase
 {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param geomPtr pointer to the beam geometry
+     * @param obstaclePtr pointer to the plane obstacle
+     * @param M number of discretization points
+     **/
     ModRusselBeamIpopt ( 
         boost::shared_ptr< BeamGeometry > geomPtr,
         boost::shared_ptr< BeamObstaclePlane > obstaclePtr,
@@ -38,14 +49,16 @@ public:
     
     virtual ~ModRusselBeamIpopt();
     
-//     void solve(void);
     
+    /**
+     * @brief solve the minimization problem
+     *
+     * @param xinituser starting guess, will be overwritten by solution
+     * @param U vector to put the x-component of the curve in
+     * @param V vector to put the x-component of the curve in
+     **/
     void solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector<double> &U, boost::numeric::ublas::vector<double> &V );
-    
-public:
-    
-    
-    
+
 private:
     Ipopt::SmartPtr< Ipopt::TNLP > _nlp;
     Ipopt::SmartPtr< Ipopt::IpoptApplication > _app;

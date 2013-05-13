@@ -23,29 +23,30 @@
 
 namespace rwlibs {
 namespace softbody {
+  /** @addtogroup softbody */
+/*@{*/
 
+/**
+ * @brief Various numerical methods using finite-differences
+ **/
 class FdUtil
 {
+    
     public:
+        /**
+     * @brief calculates the derivatives of a vector
+     * 
+     * calculates the derivatives of a vector using second-order accurate, centered FD expressions at the interior points and first-order accurate forward/backward differences
+     * at the endpoints
+     *
+     * @param f vector of function values
+     * @param df vector to put the derivatives in
+     * @param h stepsize    
+     **/
 	static void vectorDerivative(const boost::numeric::ublas::vector<double> &f, boost::numeric::ublas::vector<double> &df, const double h);
-    
-    
-    
-    private:
-	/*
-	typedef  double (FdUtil::*FdUtilMemFn)(double xi); 
-	
-	// caller macro, see http://www.parashift.com/c++-faq-lite/pointers-to-members.html
-	#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember)) 
-	
-	bool useCentered(const double xi, const double h, const int w) ;
-	bool useForward(const double xi, const double h, const int w) ;
-	bool useBackward(const double xi, const double h, const int w) ;
-	
-	double dFx(const double xi, FdUtilMemFn f) ;
-	double ddFx(const double xi, FdUtilMemFn f) ;
-	*/
+
 };
+/*@}*/
 }}
 
 #endif // FDUTIL_HPP

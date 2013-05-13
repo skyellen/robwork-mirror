@@ -28,17 +28,17 @@
 
 namespace rwlibs {
 namespace softbody {
-
+  /** @addtogroup softbody */
+/*@{*/
+/**
+ * @brief Various routines related to interpolation
+ **/
 class Interpolation {
     public:
     
     template <class T>
     static double interpolateVector(const T &vec,  const double xi, const double a, const double b __attribute__((unused)), const double h) {
-	//std::cout << "xi: " << xi << std::endl;
-	
-	//eassert(xi >= a);
-	//eassert(xi <= b);
-	
+
 	// given xi, find closest i
 	double i = (xi - a) / h;
 	
@@ -47,17 +47,11 @@ class Interpolation {
 	int i0 = floor(i);
 	int i1 = i0 + 1;
 	
-	//std::cout << "i0: " << i0 << std::endl;
-	//std::cout << "i1: " << i1 << std::endl;
-	
 	assert(i0 >= 0);
 	assert(i1 >= 0);
 	
 	double x0 = a + i0 * h;
 	double x1 = a + i1 * h;
-	
-	//std::cout << "x0: " << x0 << std::endl;
-	//std::cout << "x1: " << x1 << std::endl;
 	
 	assert(i0 <= (int)vec.size() -1);
 	
@@ -70,12 +64,7 @@ class Interpolation {
 	double y0 = vec[i0];
 	double y1 = vec[i1];
 	
-	//std::cout << "y0: " << y0 << std::endl;
-	//std::cout << "y1: " << y1 << std::endl;
-	
 	double y = linearInterpolation(xi, x0, x1, y0, y1);
-	
-	//std::cout << "y: " << y << std::endl;
 	
 	return y;    
     };
@@ -86,7 +75,7 @@ class Interpolation {
 	    
 	    return y;    
 	}
-	
+	/*@}*/
 };
 }}
 

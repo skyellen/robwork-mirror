@@ -86,40 +86,167 @@ public:
     double g1 ( void ) const;
     double g2 ( void ) const;
 
+    
 public:
-    // stuff implemented by derived classes,  specific to ModRussel beam
-    // the idea is that the derived classes may perform the integration as they'd like
+    /**@name Integrals to be evaluate by derived classes */
+    //@{
+    
+    
+    /**
+     * @brief Evaluate the \f$b_0\f$ integral
+     * 
+     * Evaluate the \f$b_0\f$ integral, defined as
+     * 
+     * \f[
+     *     b_0 = \int \int_{A(x)} \rho (x, y, z) y^0 dz dy
+     * \f]
+     * 
+     * at \f$x = i h\f$
+     *
+     * @param i index at which to evaluate the integral
+     * @return the integral value
+     **/    
     virtual double b0(const int i) const = 0;
+    
+    /**
+     * @brief Evaluate the \f$b_1\f$ integral
+     * 
+     * Evaluate the \f$b_1\f$ integral, defined as
+     * 
+     * \f[
+     *     b_1 = \int \int_{A(x)} \rho (x, y, z) y^1 dz dy
+     * \f]
+     * 
+     * at \f$x = i h\f$
+     *
+     * @param i index at which to evaluate the integral
+     * @return the integral value
+     **/    
     virtual double b1(const int i) const = 0;
-
+    
+    /**
+     * @brief Evaluate the \f$ c_2 \f$ integral
+     * 
+     * Evaluate the \f$ c_2 \f$ integral, defined as
+     * 
+     * \f[
+     *     c_2 = \int \int_{A(x)} \frac{K(x,y,z)}{8} y^2 dz dy
+     * \f]
+     * 
+     * at \f$ x = i h \f$
+     *
+     * @param i index at which to evaluate the integral
+     * @return the integral value
+     **/    
     virtual double c2(const int i) const = 0;
+    
+    /**
+     * @brief Evaluate the \f$ c_3 \f$ integral
+     * 
+     * Evaluate the \f$ c_3 \f$ integral, defined as
+     * 
+     * \f[
+     *     c_3 = \int \int_{A(x)} \frac{K(x,y,z)}{8} y^3 dz dy
+     * \f]
+     * 
+     * at \f$ x = i h \f$
+     *
+     * @param i index at which to evaluate the integral
+     * @return the integral value
+     **/   
     virtual double c3(const int i) const = 0;
+    
+    /**
+     * @brief Evaluate the \f$ c_4 \f$ integral
+     * 
+     * Evaluate the \f$ c_4 \f$ integral, defined as
+     * 
+     * \f[
+     *     c_4 = \int \int_{A(x)} \frac{K(x,y,z)}{8} y^4 dz dy
+     * \f]
+     * 
+     * at \f$ x = i h \f$
+     *
+     * @param i index at which to evaluate the integral
+     * @return the integral value
+     **/   
     virtual double c4(const int i) const = 0;
 
+    /**
+     * @brief evaluate the \f$ B_0 \f$ constant
+     * 
+     * \f[
+     *    B_0(x) = B_0^*(L) - B_0^*(x)
+     * \f]
+     * 
+     * with
+     * 
+     * \f[
+     *    B_0^*(x) = \int_0^x b_0(s) ds
+     * \f]
+     *
+     * @param i index at which to evaluate the integral
+     * @return the constant value
+     **/
     virtual double B0(const int i) const = 0;
 
+    //@}
 public:
+    /**
+     * @brief return left boundary of domain
+     *
+     * @return left boundary
+     **/
     double get_a(void) const {
         return _a;
     };
+    
+    /**
+     * @brief return right boundary of domain
+     *
+     * @return right boundary
+     **/
     double get_b(void) const {
         return _b;
     };
+    
+    /**
+     * @brief return stepsize
+     *
+     * @return stepsize
+     **/   
     double get_h(void) const {
         return _h;
     };
 
-    double getL(void) const {
+    /**
+         * @brief return length of beam
+         *
+         * @return double
+     **/
+    double getL(void) const {        
         return _L;
     };
     
+    /**
+     * @brief return number of cross sections in beam
+     *
+     * @return number of cross sections
+     **/
     int getM(void) const {
         return _M;
     };
     
 public:
 	friend std::ostream& operator<<(std::ostream& out, const BeamGeometry& obj) {
-	    std::stringstream str;
+        /**
+         * @brief outputs the geometry to stream
+         *
+         * @param out the stream
+         * @param obj the geometry
+         * @return the geometry as a stream
+         **/
+        std::stringstream str;
 	        
 	    str << "BeamGeometry {a: " << obj.get_a() << ", b: " << obj.get_b() << ", h: " << obj.get_h() << ", L: " << obj.getL() << "}";
 	    

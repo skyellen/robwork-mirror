@@ -22,24 +22,27 @@
 
 namespace rwlibs {
 namespace softbody {
-class TrapMethod
-{
-    public:
+/** @addtogroup softbody */
+/*@{*/
+/**
+ * @brief Implementation of the trapezoidal rule for integration
+ **/
+class TrapMethod {
+public:
     template <class T>
-    static double inline trapezMethod(T &func, const int M, const double h) {
-	const double f0 = func( 0 );
-	const double fL = func( (M-1) );
-	
-	//std::cout << "M: " << M << std::endl;
-	//std::cout << "h: " << h << std::endl;
-	
-	double sum = 0.0;
-	for (int i = 1; i < M - 1; i++)
-	    sum += func(i);
-	
-	return (h / 2.0) * (f0 + fL) + h * sum;
+    static double inline trapezMethod ( T &func, const int M, const double h ) {
+        const double f0 = func ( 0 );
+        const double fL = func ( ( M-1 ) );
+
+        double sum = 0.0;
+        for ( int i = 1; i < M - 1; i++ )
+            sum += func ( i );
+
+        return ( h / 2.0 ) * ( f0 + fL ) + h * sum;
     }
 };
-}}
+/*@}*/
+}
+}
 
 #endif // TRAPMETHOD_HPP

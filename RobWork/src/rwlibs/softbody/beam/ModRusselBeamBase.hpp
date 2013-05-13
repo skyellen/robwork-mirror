@@ -90,15 +90,50 @@ public:
      **/   
     std::vector<int> getIntegralIndices(void) const { return _integralConstraintIdxList; };
     
+    /**
+     * @brief returns the BeamGeometry used by the beam
+     *
+     * @return the BeamGeometry used by the beam
+     **/
     boost::shared_ptr< BeamGeometry > getGeometry ( void ) const;
+    
+    
+    /**
+     * @brief returns the BeamObstaclePlane used by the beam
+     *
+     * @return the BeamObstaclePlane used by the beam
+     **/
     boost::shared_ptr< BeamObstaclePlane > getObstacle ( void ) const;
 
+    /**
+     * @brief returns number of cross sections in beam
+     *
+     * @return number of cross sections in beam
+     **/
     int getM ( void )  const;
     
+    /**
+     * @brief returns accuracy goal of underlying numerical methods
+     *     
+     * @return accuracy goal
+     **/
     double getAccuracy ( void ) const;
+    
+    /**
+     * @brief sets accuracy goal of underlying numerical methods
+     *
+     * @param acc accuracy goal
+     **/
     void setAccuracy ( double acc );
     
     friend std::ostream& operator<< ( std::ostream& out, const ModRusselBeamBase& obj ) {
+        /**
+         * @brief outputs a ModRusselBeamBase to stream
+         *
+         * @param out the stream
+         * @param obj the beam
+         * @return a stream
+         **/
         std::stringstream str;
 
         const rw::math::Transform3D<> planeTbeam = obj.get_planeTbeam();
@@ -115,35 +150,93 @@ public:
         return out << str.str();
     };
     
-    
+    /*
     void setUseNoUpwardConstraint ( bool val );
     bool getUseNoUpwardConstraint(void) const { return _useNoUpwardConstraint; };
     
     void setUseHingeConstraint ( bool val );
     bool getUseHingeConstraint(void) const { return _useHingeConstraint; };
+    */
 
-
+    /*
     void setMuStart ( double muStart );
     double getMuStart(void) const { return _muStart; };
     
     void setMuDecrementFactor ( double decFactor );
     double getMuDecrementFactor(void) const { return _muDec; };
+    */
 
+    /**
+     * @brief sets the number of integral constraints on the beam
+     *
+     * @param nIntegralConstraints number of integral constraints
+     **/
     void set_nIntegralConstraints ( int nIntegralConstraints );
+    
+    /**
+     * @brief returns the number of integral constraints on the beam
+     *
+     * @return number of integral constraints on the beam
+     **/
     int get_nIntegralConstraints ( void ) const;
 
 public:
+    /**
+     * @brief returns the plane to beam transform
+     *
+     * @return plane to beam transform
+     **/
     rw::math::Transform3D< double > get_planeTbeam ( void ) const ;
+    
+    /**
+     * @brief returns the angle of the beam base frame wrt. the associated obstacle plane
+     *
+     * @return angle of beam base in radians
+     **/    
     double get_thetaTCP ( void ) const ;
 
+    /**
+     * @brief returns the height of the beam baseframe over the associated obstacle plane
+     *
+     * @return height above the obstacle in millimeters
+     **/    
     double get_yTCP ( void ) const ;
     
+    /**
+     * @brief return the x-component of the y-axis of the beam baseframe, for the current plane to beam transform
+     *
+     * @return x-component of the y-axis of the beam baseframe
+     **/
     double get_uxTCPy ( void ) const ;
+    
+    /**
+     * @brief return the y-component of the y-axis of the beam baseframe, for the current plane to beam transform
+     *
+     * @return x-component of the y-axis of the beam baseframe
+     **/
     double get_uyTCPy ( void ) const ;
     
+    /**
+     * @brief return the x-component of the y-axis of the beam baseframe
+     * 
+     * @param planeTbeam the plane to beam transform to use
+     * @return x-component of the y-axis of the beam baseframe
+     **/
     static double get_uxTCPy ( const rw::math::Transform3D<> planeTbeam )  ;
+    
+    /**
+     * @brief return the y-component of the y-axis of the beam baseframe
+     *
+     * @param planeTbeam the plane to beam transform to use
+     * @return x-component of the y-axis of the beam baseframe
+     **/
     static double get_uyTCPy ( const rw::math::Transform3D<> planeTbeam )  ;
     
+    /**
+     * @brief return the discretization step for the beam cross sections
+     *
+     * @return discretization step
+     **/
     double get_h ( void )  const ;
 
 private:
@@ -153,7 +246,7 @@ private:
 
     double _accuracy;
     
-private: // TODO: get methods for these
+private: 
     bool _useNoUpwardConstraint;
 
     int _nIntegralConstraints;
