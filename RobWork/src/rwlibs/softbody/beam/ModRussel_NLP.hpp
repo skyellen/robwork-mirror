@@ -120,8 +120,25 @@ private:
     ModRussel_NLP& operator= ( const ModRussel_NLP& );
 
 public:
+    /**
+     * @brief returns the geometry used
+     *
+     * @return the geometry used
+     **/
     boost::shared_ptr< BeamGeometry > getGeometry ( void ) const;
+    
+    /**
+     * @brief returns the obstacle used
+     *
+     * @return the obstacle used
+     **/
     boost::shared_ptr< BeamObstaclePlane > getObstacle ( void ) const;
+    
+    /**
+     * @brief get the plane to beam transform
+     *
+     * @return the plane to beam transform
+     **/
     rw::math::Transform3D<> get_planeTbeam ( void ) const;
     
     

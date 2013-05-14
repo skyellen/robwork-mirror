@@ -29,7 +29,15 @@ namespace softbody {
  **/
 class TrapMethod {
 public:
-    template <class T>
+    /**
+     * @brief routine for calculating a definite integral using the trapezoidal rule
+     *
+     * @param func the integrand as a function object
+     * @param M the limit in the integration
+     * @param h the stepsize
+     * @return the evaluated integral
+     **/
+    template <class T>   
     static double inline trapezMethod ( T &func, const int M, const double h ) {
         const double f0 = func ( 0 );
         const double fL = func ( ( M-1 ) );
