@@ -137,8 +137,11 @@ namespace rwlibs {
 	/**
          *@brief Simulation of beam models and other soft bodies
 	 * 
+	 * 
 	 * A collection of various soft body simulations, in particular beam models.
-	 * This package depends on the optimization package IPOPT (https://projects.coin-or.org/Ipopt)
+	 * This package depends on the optimization package IPOPT (https://projects.coin-or.org/Ipopt).
+	 * 
+	 * Currently it implements the non-linear 'Modified Russel' beam model, described in the Ph.D. dissertation 'Modeling and Simulation of Grasping of Deformable Objects' by Andreas Rune Fugl (2012).
    	 */
 	namespace softbody {}
 }
