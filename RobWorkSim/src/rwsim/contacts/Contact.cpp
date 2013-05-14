@@ -81,6 +81,10 @@ void Contact::setNormal(Vector3D<> normal) {
 	_normal = normal;
 }
 
+void Contact::setDepth() {
+	_depth = dot(_pointA-_pointB,_normal);
+}
+
 void Contact::setDepth(double depth) {
 	_depth = depth;
 }

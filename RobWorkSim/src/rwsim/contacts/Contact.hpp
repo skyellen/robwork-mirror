@@ -143,6 +143,13 @@ public:
 	void setNormal(rw::math::Vector3D<> normal);
 
 	/**
+	 * @brief Calculate penetration depth automatically.
+	 *
+	 * Will calculate the penetration depth from the contact points and the normal.
+	 */
+	void setDepth();
+
+	/**
 	 * @brief Set the penetation depth.
 	 *
 	 * @param depth [in] penetration depth. Positive if penetrating, negative if separated.

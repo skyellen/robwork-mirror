@@ -204,14 +204,10 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 		std::list<StrategyTableRow>::const_iterator it;
 		for (it = _strategies.begin(); (it != _strategies.end()); it++) {
 			StrategyTableRow stratMatch = *it;
-			BasicFilterStrategy filterStrat(_wc,stratMatch.rules);
-			ProximityFilter::Ptr filterTest = filterStrat.update(state);
+			std::vector<ProximitySetupRule> rules = stratMatch.rules.getProximitySetupRules();
 			bool match = false;
-			while (!filterTest->isEmpty()) {
-				const FramePair& frames = filterTest->frontAndPop();
-				if (frames.first == pair.first && frames.second == pair.second)
-					match = true;
-				if (frames.second == pair.first && frames.first == pair.second)
+			BOOST_FOREACH(ProximitySetupRule &rule, rules) {
+				if (rule.match(pair.first->getName(),pair.second->getName()))
 					match = true;
 			}
 			if (match) {
