@@ -25,7 +25,7 @@
 
 namespace rwlibs {
 namespace softbody {
-        /** @addtogroup softbody */
+/** @addtogroup softbody */
 /*@{*/
     /**
      * @brief A plane obstacle for a beam

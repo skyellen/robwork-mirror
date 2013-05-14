@@ -26,8 +26,8 @@ limitations under the License.
 
 namespace rwlibs {
 namespace softbody {
-	/** @addtogroup softbody */
-	/*@{*/
+/** @addtogroup softbody */
+/*@{*/
 
 /**
 * @brief Base class for discrete beam geometries
@@ -76,14 +76,62 @@ public:
     rw::math::Vector3D<> getG(void) const;
 
 public:
-    // stuff implemented here
+    /**@name Methods for retrieving material parameters */
+    //@{
+    /**
+     * @brief returns the value of Young's modulus at x = i * h
+     *
+    * @param i index at which to return the value
+     * @return Young's modulus at x = i * h
+     **/
     double Ex(const int i) const;
+    
+    /**
+     * @brief returns the value of Poisson's ratio at x = i * h
+     *
+    * @param i index at which to return the value
+     * @return Poisson's ratio at x = i * h
+     **/
     double vx(const int i) const;
+    
+    /**
+     * @brief returns the value of the mass density at x = i * h
+     *
+    * @param i index at which to return the value
+     * @return mass density at x = i * h
+     **/
     double rho(const int i) const;
 
+    /**
+     * @brief returns the kappa coefficient at x = i * h
+     * 
+     * Kappa is the coefficient relating the i,k = (1,1) coefficients of strain to stress in a plane stress situation, i.e.
+     * 
+     * \f[
+     *  \sigma_{11} = \frac{E}{1 - \nu^2} u_{11}
+     * \f]
+     * 
+     * with \f$ \kappa = \frac{E}{1 - \nu^2} \f$
+     *
+     * @param i index at which to return the value
+     * @return kappa at x = i * h
+     **/
     double kappa(const int i) const;
     
+    //@}
+    
+    /**
+     * @brief returns the x-component of vector of gravity for the current configuration of the beam
+     *
+     * @return x-component of gravity
+     **/
     double g1 ( void ) const;
+    
+    /**
+     * @brief returns the y-component of vector of gravity for the current configuration of the beam
+     *
+     * @return y-component of gravity
+     **/
     double g2 ( void ) const;
 
     

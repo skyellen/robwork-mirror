@@ -41,16 +41,16 @@ BeamGeometryCuboid::BeamGeometryCuboid (
     :
     BeamGeometry ( dx, Exvec, vxvec, rhovec, wTb, G ),
     _H ( dz ),
-    _K ( dy ) {
+    _K ( dy ) 
+{
     _B0vec.resize ( getM() );
 
+    // cache the values of B0 for all points on the beam
     for ( int i = 0; i < getM(); i++ ) {
-
         if ( 0 == i )
             _B0vec[i] = B0m ( getM()-1 );
         else
             _B0vec[i] = B0_fnc ( i );
-
     }
 };
 
@@ -65,12 +65,18 @@ BeamGeometryCuboid::~BeamGeometryCuboid() {
 
 
 double BeamGeometryCuboid::b0 ( const int i ) const {
+    // b0 integral evaluated for cuboid cross section, e.g. in Mathematica:
+    // 
+    // Integrate[rho[x]*y^0, {z, -H/2, H/2}, {y, -K/2, K/2}]
     return _H * _K * rho ( i );
 }
 
 
 
 double BeamGeometryCuboid::b1 ( const int i ) const {
+    // b0 integral evaluated for cuboid cross section, e.g. in Mathematica:
+    // 
+    // Integrate[rho[x]*y^1, {z, -H/2, H/2}, {y, -K/2, K/2}]
     return 0.0;
 }
 
@@ -92,6 +98,7 @@ double BeamGeometryCuboid::B0m ( const int i ) const {
 
     const double h = get_h();
 
+    // integrate over the length of the beam from 0 to i
     double val= TrapMethod::trapezMethod< B0mfunc> ( func, i+1, h );
 
     return val;
@@ -107,7 +114,7 @@ double BeamGeometryCuboid::B0_fnc ( const int i ) const {
 
 
 double BeamGeometryCuboid::B0 ( const int i ) const {
-
+    // the values of B0 have been calculated in the constructor, so we just return it here
     return _B0vec[i];
 }
 
@@ -115,17 +122,26 @@ double BeamGeometryCuboid::B0 ( const int i ) const {
 
 
 double BeamGeometryCuboid::c2 ( const int i ) const {
+    // c2 integral evaluated for cuboid cross section, e.g. in Mathematica:
+    // 
+    // Integrate[(\[Kappa][x]/8)*y^2, {z, -H/2, H/2}, {y, -K/2, K/2}]
     return ( 1.0/96.0 ) * _H * pow ( _K, 3.0 ) * kappa ( i );
 }
 
 
 
 double BeamGeometryCuboid::c3 ( const int i ) const {
+    // c3 integral evaluated for cuboid cross section, e.g. in Mathematica:
+    // 
+    // Integrate[(\[Kappa][x]/8)*y^3, {z, -H/2, H/2}, {y, -K/2, K/2}]
     return 0.0;
 }
 
 
 
 double BeamGeometryCuboid::c4 ( const int i ) const {
+    // c4 integral evaluated for cuboid cross section, e.g. in Mathematica:
+    // 
+    // Integrate[(\[Kappa][x]/8)*y^4, {z, -H/2, H/2}, {y, -K/2, K/2}]    
     return ( 1.0/640.0 ) * _H * pow ( _K, 5.0 ) * kappa ( i );
 }

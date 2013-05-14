@@ -27,7 +27,7 @@
 
 
 namespace rwlibs { namespace softbody {
-    /** @addtogroup softbody */
+/** @addtogroup softbody */
 /*@{*/
     /**
      * @brief Base class for implementing Modified Russel beam problems

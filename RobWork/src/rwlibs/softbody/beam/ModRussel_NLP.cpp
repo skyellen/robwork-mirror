@@ -102,7 +102,7 @@ bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt:
 
     for (int i = 0; i < m; i++) {
         g_l[i] = -yTCP;
-        g_u[i] = 2.0e19; // no upper bound
+        g_u[i] = 2.0e19; // magic number for IPOPT indicating no upper bound
     }
 
     return true;

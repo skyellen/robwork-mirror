@@ -30,7 +30,7 @@
 
 namespace rwlibs {
 namespace softbody {
-        /** @addtogroup softbody */
+/** @addtogroup softbody */
 /*@{*/
     /**
      * @brief Utility functions for setting starting guesses for a beam model

@@ -20,7 +20,7 @@
 
 namespace rwlibs {
 namespace softbody {
-        /** @addtogroup softbody */
+/** @addtogroup softbody */
 /*@{*/
     /**
      * @brief Class for calculating the analytical solution to the Euler-Bernoulli beam model in fixed-free configuration

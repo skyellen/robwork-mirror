@@ -26,7 +26,7 @@
 
 namespace rwlibs {
 namespace softbody {
-      /** @addtogroup softbody */
+/** @addtogroup softbody */
 /*@{*/
 
 /**
