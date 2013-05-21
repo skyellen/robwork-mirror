@@ -80,7 +80,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
     in >> line;
 
     if (line != "AC3Db") {
-        RW_THROW("Data stream does not contain a valid AC3D file.");
+        RW_THROW("Data stream: '"<<filename<<"' does not contain a valid AC3D file.");
     }
 
    	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
@@ -288,9 +288,14 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         rwmodel->optimize(45*Deg2Rad);
         return ownedPtr(rwmodel);
 
-    } catch (...) {} 
+    } 
+	catch (const std::exception& exp) {
+		setlocale(LC_ALL, locale.c_str());        
+		RW_THROW("Failed to load AC3D file: '"<<filename<<"': "<<exp.what());
+	}
+	catch (...) {} 
     setlocale(LC_ALL, locale.c_str());        
-    RW_THROW("Failed to load AC3D file. Unknown Exception.");
+    RW_THROW("Failed to load AC3D file: '"<<filename<<"'. Unknown Exception.");
 
 }
 
