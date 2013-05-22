@@ -1,5 +1,5 @@
 /*
-   Copyright [yyyy] [name of copyright owner]
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -37,6 +37,9 @@ class BeamGeometry
 public:
     /**
     * @brief Constructor for the BeamGeometry class
+    * 
+    * @note For a Mod Russel beam in a typical coordinate frame, the vector of gravitiy \em G should be defined as to make the gravitational potential energy
+    * \em increase for increased values of y, e.g. \f$ G=(0.0, 9.82, 0.0) \f$
     *
     * @param L length of object
     * @param Exvec vector of Young's modulus for each cross beam cros section, in MPa
@@ -51,7 +54,6 @@ public:
                  const std::vector<double> &rhovec,
                  const rw::math::Transform3D<> &wTb,
                  const rw::math::Vector3D<> &G
-
                 );
     
     virtual ~BeamGeometry();
@@ -72,7 +74,18 @@ public:
     */
     rw::math::Transform3D<> getTransform(void) const;
     
+    /**
+     * @brief sets the directional vector of gravity
+     *
+     * @param G directional vector of gravity
+     **/
+    
     void setG(const rw::math::Vector3D<> &G);
+    /**
+     * @brief retrieves the directional vector of gravity
+     *
+     * @return directional vector of gravity
+     **/
     rw::math::Vector3D<> getG(void) const;
 
 public:
@@ -302,19 +315,18 @@ public:
 	};
 
 private:
-    double _L;
+    double _L; // Length of beam in the x-direction 
 
-    int _M;
-
-    double _a, _b;
-    double _h;
+    int _M; // number of slices
+    double _a, _b; // domain endpoints, see constructor initilization list
+    double _h; // stepsize
 private:
-    std::vector<double> _Exvec;
-    std::vector<double> _vxvec;
-    std::vector<double> _rhovec;
+    std::vector<double> _Exvec; // vector holding the values of Young's modulus for each slice
+    std::vector<double> _vxvec; // vector holding the values of Poisson's ratio for each slice
+    std::vector<double> _rhovec; // vector holding the values of the mass density for each slice
 
     rw::math::Transform3D<> _wTb; // world to beam transform
-    rw::math::Vector3D<> _G; 
+    rw::math::Vector3D<> _G; // directional vector of gravity
 };
 /*@}*/
 }

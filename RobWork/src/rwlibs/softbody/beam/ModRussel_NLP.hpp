@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -172,16 +172,16 @@ private:
     boost::shared_ptr< BeamObstaclePlane > _obstaclePtr;
     rw::math::Transform3D<> _planeTbeam;
 
-    boost::numeric::ublas::vector<double>   _a;
-    boost::numeric::ublas::vector<double>   _da;
+    boost::numeric::ublas::vector<double>   _a; // vector of M angles
+    boost::numeric::ublas::vector<double>   _da; // vector of M angle derivatives
 
-    boost::numeric::ublas::vector<double>   _x;
+    boost::numeric::ublas::vector<double>   _x; // solution vector, M-1
 
-    std::vector<int> _integralIndices;
+    std::vector<int> _integralIndices; // vector of indices at which to check for penetration
 
-    boost::numeric::ublas::vector<double>   _xinit;
+    boost::numeric::ublas::vector<double>   _xinit; // starting guess
 
-    double _Ee;
+    double _Ee; // total elastic energy for last valid solution
 };
 
     /* @} */

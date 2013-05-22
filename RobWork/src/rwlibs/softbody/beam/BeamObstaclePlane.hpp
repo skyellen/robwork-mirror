@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,17 +40,17 @@ namespace softbody {
          **/
         BeamObstaclePlane(const rw::geometry::Plane &plane, const rw::math::Transform3D<> &trans);
         
-        
+
         
         /**
          * @brief returns the world to plane transformation
          *
          * @return world to plane transformation
          **/
-        
-        
-        
         rw::math::Transform3D<> getTransform(void) const;
+        
+        
+        
         /**
          * @brief sets the world to plane transformation
          *

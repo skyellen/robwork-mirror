@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -80,8 +80,8 @@ namespace softbody {
     private:   
 		const double _H, _K, _L, _E, _rho, _h;
 		
-		double _J;
-		double _q;
+		double _J; // second moment of area
+		double _q; // force per unit length
 };
 /*@}*/
 }};

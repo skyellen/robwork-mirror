@@ -1,5 +1,5 @@
 /*
-    Copyright [yyyy] [name of copyright owner]
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -24,12 +24,16 @@ void FdUtil::vectorDerivative(const boost::numeric::ublas::vector< double >& f, 
     assert(f.size() > 1);
     
     for (int i = 0; i < (int) f.size(); i++) {
-        if (0 == i) // forward difference
+        if (0 == i) {
+            // forward difference
             df[i] = ( f[i+1] - f[i] ) / h;
-        else if (i == (f.size() -1))   { // bwd difference
+        }
+        else if (i == (f.size() -1))   { 
+            // backward difference
             df[i] = ( f[i] - f[i-1] ) / h;
         }
         else {
+            // central difference
             df[i] = ( -f[i-1] + f[i+1] ) / (2 * h);
         }
     }

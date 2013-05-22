@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,15 +40,12 @@ using namespace rwlibs::softbody;
 
 
  void BeamStartGuess::setEulerStartingGuess ( boost::numeric::ublas::vector< double >& avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr )  {
-    
-    // Problem: method on beamPtr returns base class, and we need the cuboid specialization for out parameters to the EB beam
-    // could pass reference here in order to access it....this methdo ONLY works for EB
-    //const BeamGeometry &geom = _beamPtr->getGeometry();
     const double g2 = -beamGeomPtr->g2();
     const int M = beamGeomPtr->getM();
 
     EBBeam beam ( beamGeomPtr->getH(), beamGeomPtr->getK(), beamGeomPtr->getL(), 0.5, 1.155e-6, beamGeomPtr->get_h(), g2 );
     for ( int i = 0; i < M; i++ ) {
+        // calculate the deformation angles from the first derivative of the shape
         avec[i] = atan ( beam.d ( i ) );
     }
 }

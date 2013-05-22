@@ -1,5 +1,5 @@
 /*
-    Copyright [yyyy] [name of copyright owner]
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -71,9 +71,6 @@ public:
 
     virtual double B0 ( const int i ) const;
 
-
-
-
 public:
     /**
     * @brief Returns the thickness of the beam in the z-direction
@@ -124,8 +121,9 @@ private:
 
 
 private:
-    const double _H, _K;
-    std::vector<double> _B0vec;
+    const double _H; // thickness in z
+    const double _K; // thickness in y
+    std::vector<double> _B0vec; // vector holding the cached values of B0
 };
 /*@}*/
 }

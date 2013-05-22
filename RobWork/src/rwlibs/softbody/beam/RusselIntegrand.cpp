@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ RusselIntegrand::RusselIntegrand ( const BeamGeometry& geom, const boost::numeri
     _da ( da ) {
 
 }
+
+
+
 double RusselIntegrand::eg ( const int i ) const {
     RW_ASSERT ( i < ( int ) _a.size() );
     const double &ax = _a[i];
@@ -39,6 +42,9 @@ double RusselIntegrand::eg ( const int i ) const {
     const double Eg = ( g1*B0 + g2*b1 ) * cos ( ax ) + ( g2*B0 - g1*b1 ) * sin ( ax ) - g1*b0 * x - g2*b1;
     return Eg;
 }
+
+
+
 double RusselIntegrand::ee ( const int i ) const {
     RW_ASSERT ( i < ( int ) _da.size() );
     const double &dax = _da[i];
@@ -50,12 +56,21 @@ double RusselIntegrand::ee ( const int i ) const {
     const double Ee = 4 * c2 * pow ( dax, 2.0 ) + 4 * c3 * pow ( dax, 3.0 ) + c4 * pow ( dax, 4.0 );
     return Ee;
 }
+
+
+
 double RusselIntegrand::operator() ( const int i ) const {
     return eg ( i ) + ee ( i );
 }
+
+
+
 RusselIntegrandEonly::RusselIntegrandEonly ( const BeamGeometry& geom, const boost::numeric::ublas::vector< double >& a, const boost::numeric::ublas::vector< double >& da ) :
     RusselIntegrand ( geom, a, da ) {
 }
+
+
+
 double RusselIntegrandEonly::operator() ( const int i ) const {
     return ee ( i );
 }

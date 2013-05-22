@@ -1,5 +1,5 @@
 /*
-   Copyright [yyyy] [name of copyright owner]
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -29,10 +29,8 @@ using namespace boost::numeric::ublas;
 using namespace rwlibs::softbody;
 
 
-// #include "rwlibs/softbody/numerics/InteriorPointOptimizer.hpp"
 #include "BeamGeometry.hpp"
 #include "rwlibs/softbody/numerics/Interpolation.hpp"
-// #include "rwlibs/softbody/util/psplot.h"
 
 #include "rwlibs/softbody/beam/RusselIntegrand.hpp"
 
@@ -41,7 +39,6 @@ static int NFCALLS;
 
 const char DIVIDER[] = "--------------------------------------------------------------------------------";
 
-// #define RW_ENABLE_ASSERT
 
 ModRusselBeam::ModRusselBeam (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,

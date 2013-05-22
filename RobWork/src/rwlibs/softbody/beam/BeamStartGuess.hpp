@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ public:
     
     
     /**
-     * @brief sets a starting guess for a cuboid beam initialized to that of an analytical Euler-Bernoulli beam model
+     * @brief sets starting guess angles for a cuboid beam initialized to that of an analytical Euler-Bernoulli beam model
      *
-     * @param avec reference to starting guess vector to be set 
+     * @param avec reference to starting guess vector containing angles to be set 
      * @param beamPtr pointer to the beam geometry
      **/
     static void setEulerStartingGuess ( boost::numeric::ublas::vector<double> &avec, boost::shared_ptr< rwlibs::softbody::BeamGeometryCuboid > beamGeomPtr );

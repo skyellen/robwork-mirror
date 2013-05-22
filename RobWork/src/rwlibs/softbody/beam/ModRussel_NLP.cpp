@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 <copyright holder> <email>
+Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ using namespace rwlibs::softbody;
 
 ModRussel_NLP::ModRussel_NLP (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
-    boost::shared_ptr< BeamObstaclePlane > obstaclePtr      ,
+    boost::shared_ptr< BeamObstaclePlane > obstaclePtr,
     rw::math::Transform3D<> planeTbeam,
     const std::vector<int> & integralIndices
 )
@@ -44,8 +44,12 @@ ModRussel_NLP::ModRussel_NLP (
     _Ee(0.0)
     {
     const int M = getGeometry()->getM();
+    
+    
     _a.resize ( M );
     _da.resize ( M );
+    
+    // angle at x=0 is always assumed zero, so solution vector is of size M-1
     _x.resize( M - 1 );
     _xinit.resize( M - 1);
     
@@ -88,7 +92,6 @@ bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt:
     const double yTCP = getObstacle()->get_yTCP ( planeTbeam );
 
     RW_ASSERT ( n == getGeometry()->getM() - 1 );
-//     RW_ASSERT ( m == 1 );
 
     // lower bounds of variables
     for ( Index i=0; i<n; i++ ) {
@@ -118,19 +121,16 @@ bool ModRussel_NLP::get_starting_point ( Ipopt::Index n, bool init_x, Ipopt::Num
     RW_ASSERT ( init_z == false );
     RW_ASSERT ( init_lambda == false );
 
-    
     // initialize to the given starting point
     for ( int i = 0; i < n; i++ )
         x[i] = _xinit[i];
     
-
     return true;
 }
 
 
 
 bool ModRussel_NLP::eval_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number& obj_value ) {
-    //const int N = getN();
     const int M = getGeometry()->getM();
     const double h = getGeometry()->get_h();
 
@@ -151,7 +151,6 @@ bool ModRussel_NLP::eval_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 
 
 bool ModRussel_NLP::eval_f_elastic ( Index n, const Number* x, Number& obj_value ) {
-    //const int N = getN();
     const int M = getGeometry()->getM();
     const double h = getGeometry()->get_h();
 
@@ -377,21 +376,30 @@ boost::shared_ptr< BeamGeometry > ModRussel_NLP::getGeometry ( void ) const {
     return _geomPtr;
 }
 
+
+
 boost::shared_ptr< BeamObstaclePlane > ModRussel_NLP::getObstacle ( void ) const {
     return _obstaclePtr;
 }
+
+
 
 rw::math::Transform3D< double > ModRussel_NLP::get_planeTbeam ( void ) const {
     return _planeTbeam;
 }
 
+
+
 const boost::numeric::ublas::vector< double >& ModRussel_NLP::getSolution ( void ) const {
     return _x;
 }
 
+
+
 double ModRussel_NLP::getEnergyElastic ( void ) const {
     return _Ee;
 }
+
 
 
 void ModRussel_NLP::setStartingGuess ( const boost::numeric::ublas::vector< double >& xinituser ) {
