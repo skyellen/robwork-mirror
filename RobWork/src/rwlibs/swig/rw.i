@@ -441,6 +441,54 @@ public:
 };
 
 
+class Wrench6D
+{
+public:		
+    Wrench6D(double fx, double fy, double fz, double tx, double ty, double tz);
+
+    // TODO: add constructor on vector
+
+    Wrench6D();
+
+    Wrench6D(const Vector3D& force, const Vector3D& torque);
+
+    const Vector3D force() const;
+    const Vector3D torque() const;
+
+    %rename(elem) operator[];
+
+    %extend {
+        char *__str__() {
+             static char tmp[256];
+             sprintf(tmp,"%s", toString(*$self).c_str());
+             return tmp;
+        }
+        double __getitem__(int i)const {return (*$self)[i]; }
+        void __setitem__(int i,double d){ (*$self)[i] = d; }
+    };
+
+    const Wrench6D operator*( double s) const;
+    /*
+    friend const Wrench6D<T> operator*(const Transform3D& aTb,
+                                              const Wrench6D& bV);
+    
+    friend const Wrench6D operator*(const Vector3D& aPb,
+                                       const Wrench6D& bV);
+
+
+    friend const Wrench6D operator*(const Rotation3D& aRb, const Wrench6D& bV);
+*/
+    const Wrench6D operator+(const Wrench6D& wrench) const;
+
+    
+    const Wrench6D operator-(const Wrench6D& wrench) const;
+
+    double norm1() const;
+    
+    double norm2() const ;
+    double normInf() const ;
+};
+
 
 class InertiaMatrix{
 public:

@@ -49,12 +49,12 @@ std::vector<Line> Line::makeGrid(int dim_x, int dim_y, double size_x, double siz
     for(int dx=0;dx<=dim_x;dx++){
        Vector3D<> p1 = xdir_n*(dx*size_x-halfsize_x) + ydir_n*halfsize_y;
        Vector3D<> p2 = xdir_n*(dx*size_x-halfsize_x) + ydir_n* -halfsize_y;
-       lines.push_back(Line(p1, p2));
+       lines.push_back(Line(p2, p1));
     }
     for(int dy=0;dy<=dim_y;dy++){
         Vector3D<> p1 = xdir_n*halfsize_x + ydir_n*(dy*size_y-halfsize_y);
         Vector3D<> p2 = xdir_n*-halfsize_x + ydir_n*(dy*size_y-halfsize_y);
-        lines.push_back(Line(p1,p2));
+        lines.push_back(Line(p2,p1));
     }
     return lines;
 }

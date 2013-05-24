@@ -46,8 +46,14 @@ public:
 
 	void addMeasurement(const SerialDevicePoseMeasurement& measurement);
 
-	void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::Matrix<double, 6, 6>& covarianceMatrix =
+	void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform,
+			const Eigen::Matrix<double, 6, 6>& covarianceMatrix =
 			Eigen::Matrix<double, 6, 6>::Identity());
+
+	inline void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform){
+			const Eigen::Matrix<double, 6, 6>& covarianceMatrix = Eigen::Matrix<double, 6, 6>::Identity();
+			addMeasurement(q,transform,covarianceMatrix);
+	}
 
 	void setMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements);
 

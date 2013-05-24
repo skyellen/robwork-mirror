@@ -326,12 +326,19 @@ namespace rw { namespace trajectory {
                 RW_THROW("Cannot request values from an empty Trajectory");
             }
 
+            if(t<0) {
+            	t=0.0;
+            } else if(_segments.back().t2 < t){
+            	t=_segments.back().t2;
+            }
+            /*
             if (t < 0 || _segments.back().t2 < t){
                 RW_THROW(
                     "The requested time is outside the interval of the trajectory.\n"
                     "t: " << t << " end: " << duration() << " cnt: " << (int)_segments.size()
                     );
             }
+            */
 
             return segmentSearch(t, n/2.0, n/2.0);
         }

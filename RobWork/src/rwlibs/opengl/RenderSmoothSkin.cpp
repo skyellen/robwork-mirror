@@ -127,6 +127,8 @@ void RenderSmoothSkin::update(const rw::kinematics::State& state){
 
 void RenderSmoothSkin::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
     // render the mesh
-
+	// TODO: not finished implementation
+	RW_THROW("RenderSmoothSkin: NOT IMPLEMENTED!");
+	//_meshRender->render(info,type,alpha);
 }
 

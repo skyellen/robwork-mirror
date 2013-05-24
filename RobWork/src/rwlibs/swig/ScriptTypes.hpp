@@ -72,6 +72,7 @@ typedef rw::math::Quaternion<double> Quaternion;
 typedef rw::math::Transform3D<double> Transform3D;
 typedef rw::math::Pose6D<double> Pose6D;
 typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
+typedef rw::math::Wrench6D<double> Wrench6D;
 typedef rw::math::InertiaMatrix<double> InertiaMatrix;
 typedef rw::math::Jacobian Jacobian;
 typedef rw::math::QMetric QMetric;

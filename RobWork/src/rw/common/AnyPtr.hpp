@@ -81,7 +81,7 @@ class AnyPtr {
 				return Ptr<S>();
 			}
 
-			return ((holder<S>*)content)->_ptr.cast<S>();
+			return ((holder<S>*)content)->_ptr.template cast<S>();
         }
 
 

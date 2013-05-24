@@ -30,6 +30,16 @@ Wrench6D<T>::Wrench6D(T vx, T vy, T vz, T wx, T wy, T wz) : _wrench(6){
     _wrench[5] = wz;
 }
 
+template<class T>
+Wrench6D<T>::Wrench6D(const Vector3D<T>& force, const Vector3D<T>& torque) : _wrench(6){
+    _wrench[0] = force(0);
+    _wrench[1] = force(1);
+    _wrench[2] = force(2);
+    _wrench[3] = torque(0);
+    _wrench[4] = torque(1);
+    _wrench[5] = torque(2);
+}
+
 
 template class Wrench6D<double>;
 template class Wrench6D<float>;
