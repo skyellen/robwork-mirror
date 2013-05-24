@@ -39,6 +39,8 @@
 
 #include <RobWorkStudioConfig.hpp>
 
+#include <boost/tuple/tuple.hpp>
+
 #include <rw/common/Log.hpp>
 
 namespace rws {
@@ -143,6 +145,12 @@ namespace rws {
 		 * @brief toggles the visibility of the plugin
 		 */
 		void showPlugin();
+	protected:
+
+		// utils for finding menu items in the menu
+	    boost::tuple<QWidget*, QAction*, int> getAction(QWidget* widget, const std::string& actionName);
+	    boost::tuple<QWidget*, QMenu*,int> getMenu(QWidget* widget, const std::string& menuName);
+	    boost::tuple<QMenu*, QAction*,int> getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2);
 
 	private:
 

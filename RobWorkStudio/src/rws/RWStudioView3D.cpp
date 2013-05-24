@@ -489,6 +489,7 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
 {
     /// --------------------------------------------------------------------------
     QToolBar* toolbar = mwindow->addToolBar(tr("View3D"));
+    toolbar->setObjectName("View3D");
     toolbar->addAction(_showSolidAction);
     toolbar->addAction(_showWireAction);
     toolbar->addAction(_showOutlineAction);
@@ -501,6 +502,7 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
 
     /// --------------------------------------------------------------------------
     QToolBar* stdviewtoolbar = mwindow->addToolBar(tr("Standard views"));
+    stdviewtoolbar->setObjectName("StandardViewsView3D");
     stdviewtoolbar->addAction(_axometricViewAction);
     stdviewtoolbar->addSeparator();
     stdviewtoolbar->addAction(_frontViewAction);

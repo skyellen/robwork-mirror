@@ -60,7 +60,7 @@ public:
      * @param output
      * @param parent
      */
-    LuaExecutionThread(const std::string& cmd, LuaState *lstate, rw::common::LogWriter::Ptr output, QWidget *parent =
+    LuaExecutionThread(const std::string& cmd, LuaState::Ptr lstate, rw::common::LogWriter::Ptr output, QWidget *parent =
                                NULL) :
             QThread(parent), _cmd(cmd), _lua(lstate), _output(output)
     {
@@ -73,10 +73,13 @@ public:
      * @param lstate [in] the current lua state
      * @param output [in] the log in which to print result
      */
-    void set(const std::string& cmd, LuaState *lstate, rw::common::LogWriter::Ptr output);
+    void set(const std::string& cmd, LuaState::Ptr lstate, rw::common::LogWriter::Ptr output);
 
     //! @brief executes the command
     void run();
+
+    //! @brief stop a running script
+    void stop();
 
     /**
      * @brief on error this returns the error message reported by the lua interpreter
@@ -111,7 +114,7 @@ public:
 private:
     std::string _cmd, _resstring;
     int _resVal;
-    LuaState *_lua;
+    LuaState::Ptr _lua;
     rw::common::LogWriter::Ptr _output;
 };
 

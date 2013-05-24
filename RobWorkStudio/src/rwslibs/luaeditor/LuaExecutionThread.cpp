@@ -45,7 +45,7 @@ namespace {
 }
 
 void LuaExecutionThread::set(const std::string& cmd,
-             LuaState *lstate,
+             LuaState::Ptr lstate,
              rw::common::LogWriter::Ptr output)
 {
     _cmd = cmd;
@@ -77,4 +77,8 @@ void LuaExecutionThread::set(const std::string& cmd,
      } catch (std::exception& e) {
          QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(e.what()));
      } 
+ }
+
+ void LuaExecutionThread::stop(){
+	 luaL_error(_lua->get(), "User interupt!");
  }

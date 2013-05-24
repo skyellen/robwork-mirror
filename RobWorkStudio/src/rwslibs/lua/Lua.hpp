@@ -57,7 +57,8 @@ namespace rws {
         //! @copydoc RobWorkStudioPlugin::close
         void close();
 
-        //void setupToolBar(QToolBar* toolbar);
+        //! @copydoc RobWorkStudioPlugin::setupMenu
+        void setupMenu(QMenu* pluginmenu);
     private:
         // This listens for changes to the state of RobWorkStudio.
         void stateChangedListener(const rw::kinematics::State& state);
@@ -73,10 +74,11 @@ namespace rws {
         void resetLua();
 
     private:
-        LuaState* _lua;
+        LuaState::Ptr _lua;
         rw::kinematics::State _state;
         std::string _previousOpenDirectory;
 
+        QAction *_openEditorAction;
         LuaEditorWindow *_editor;
 
         LuaConsoleWidget *_console;

@@ -19,6 +19,8 @@
 
 #include <QtGui>
 #include <QMessageBox>
+#include <QTabWidget>
+#include <boost/filesystem.hpp>
 
 extern "C" {
 	#include <lua.h>
@@ -46,26 +48,23 @@ namespace {
 
 }
 
-LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent):
+LuaEditorWindow::LuaEditorWindow(LuaState::Ptr lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent):
 	QMainWindow(parent),
 	_lua(lua),
 	_output(output),
 	_rws(rwstudio)
 {
 	setupUi(this);
-    setupEditor();
 
-//    _modified = false;
-
+	_luaRunner =  new LuaExecutionThread("", _lua, _output->getWriter(Log::Info), this);
     lua_sethook(_lua->get(), luaLineHook, LUA_MASKLINE, 0);
+    _tabPane = new QTabWidget();
 
-	this->setCentralWidget(_editor);
+    connect(_luaRunner, SIGNAL(finished()), this, SLOT(runFinished()));
 
-	// myWidget is any QWidget-derived class
-	_editor->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(_editor, SIGNAL(customContextMenuRequested(const QPoint&)),
-	    this, SLOT(ShowContextMenu(const QPoint&)));
-
+	this->setWindowTitle("Lua Teachpad");
+    this->setCentralWidget(_tabPane);
+    makeEditor();
   //  _modified = false;
 }
 
@@ -73,9 +72,8 @@ LuaEditorWindow::~LuaEditorWindow(){
 
 }
 
-
 void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
-    QMenu *menu = _editor->createStandardContextMenu();
+    QMenu *menu = getCurrentTab()->_editor->createStandardContextMenu();
     menu->setTitle("Edit");
     // for most widgets
     QPoint globalPos = this->mapToGlobal(pos);
@@ -96,15 +94,20 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
 
         deviceMenu.addMenu(devMenu);
     }
+
     QMenu objectMenu("Objects");
     std::vector<rw::models::Object::Ptr> objects = _rws->getWorkcell()->getObjects();
     BOOST_FOREACH(rw::models::Object::Ptr dev, objects){
         QMenu *devMenu = new QMenu(dev->getName().c_str());
-        //connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
+        connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
+
         QAction *action = devMenu->addAction( "Get Transform" );
         devMenu->addAction( action );
-        action = devMenu->addAction( "Get Transform" );
+
+        action = devMenu->addAction( "Get Transform W" );
         devMenu->addAction( action );
+
+
         //devMenu->addAction( "Get Pos Limits" );
         //devMenu->addAction( "Get Vel Limits" );
         //devMenu->addAction( "Get Acc Limits" );
@@ -112,9 +115,20 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
         objectMenu.addMenu(devMenu);
     }
 
+    QMenu rwsMenu("RWStudio");
+    connect(rwsMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
+    QAction *action;
+    action = rwsMenu->addAction( "View Transform" );
+    rwsMenu->addAction( action );
+    action = rwsMenu->addAction( "View Transform (RPY)" );
+    rwsMenu->addAction( action );
+    action = rwsMenu->addAction( "View Transform (Quat)" );
+    rwsMenu->addAction( action );
 
 
     myMenu.addMenu(&deviceMenu);
+    myMenu.addMenu(&objectMenu);
+    myMenu.addMenu(&rwsMenu);
     myMenu.addMenu(menu);
     // ...
 
@@ -142,57 +156,81 @@ void LuaEditorWindow::setCheckAction(QAction * action){
         for(size_t i=0;i<q.size()-1;i++)
             sstr << q[i] << ",";
         sstr << q[q.size()-1] << "})";
-        _editor->insertCompletion(sstr.str().c_str());
+        getCurrentTab()->_editor->insertCompletion(sstr.str().c_str());
+    } else if( actionStr=="View Transform (RPY)"){
+        Transform3D<> t3d = _rws->getView()->getSceneViewer()->getTransform();
+        RPY<> rpy(t3d.R());
+        std::stringstream sstr;
+        sstr << "rw.Transform3D( rw.Vector3D(" << t3d.P()[0] << "," << t3d.P()[1] << "," << t3d.P()[2] << "),"
+             << "rw.RPY("<<rpy[0]<<","<<rpy[1]<<","<<rpy[2]<<"))";
+        getCurrentTab()->_editor->insertCompletion(sstr.str().c_str());
     }
-    //    std::cout << menu->title().toStdString() << std::endl;
+    //std::cout << menu->title().toStdString() << std::endl;
     //std::cout <<  << std::endl;
 
 }
 
-void LuaEditorWindow::setupEditor(){
+LuaEditorWindow::EditorTab::Ptr LuaEditorWindow::makeEditor(){
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-    //_editor = new QTextEdit;
-    _editor = new CodeEditor(this);
-    _editor->setFont(font);
+    EditorTab::Ptr etab = ownedPtr(new EditorTab());
+    etab->_editor = new CodeEditor(this);
+    etab->_editor->setFont(font);
 
-    //_completer = new QCompleter(this);
-    _completer = new TreeModelCompleter(this);
-    _completer->setSeparator(QLatin1String("."));
+    const int tabStop = 4;  // 4 characters
+    QFontMetrics metrics(font);
+    etab->_editor->setTabStopWidth(tabStop * metrics.width(' '));
 
-    _completer->setModel( modelFromFile(":/wordlist.txt") );
-    _completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    _completer->setCaseSensitivity(Qt::CaseInsensitive);
-    _completer->setWrapAround(false);
-
-    _editor->setCompleter(_completer);
-
-    _highlighter = new LuaHighlighter(_editor->document());
-
-    _luaRunner =  new LuaExecutionThread("", _lua, _output->getWriter(Log::Info), this);
-
-    connect(_editor, SIGNAL(modificationChanged(bool)), this, SLOT(textChanged()));
-
-    connect(_luaRunner, SIGNAL(finished()), this, SLOT(runFinished()));
-
+    etab->_completer = new TreeModelCompleter( etab->_editor );
+    etab->_completer->setSeparator(QLatin1String("."));
+    etab->_completer->setModel( modelFromFile(":/wordlist.txt", etab->_completer) );
+    etab->_completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    etab->_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    etab->_completer->setWrapAround(false);
+    etab->_editor->setCompleter(etab->_completer);
+    etab->_highlighter = new LuaHighlighter(etab->_editor->document());
+    connect(etab->_editor, SIGNAL(modificationChanged(bool)), this, SLOT(textChanged()));
+    etab->_editor->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(etab->_editor, SIGNAL(customContextMenuRequested(const QPoint&)),
+			this, SLOT(ShowContextMenu(const QPoint&)));
+	_tabPane->addTab(etab->_editor, "New");
+    _editors[etab->_editor] =  etab ;
+    return etab;
 }
-
 
 void LuaEditorWindow::runFinished() {
     //std::cout << "FINISHED" << std::endl;
-    _editor->setEnabled(true);
+	_tabPane->setEnabled(true);
+	//_editor->setEnabled(true);
 }
+
 void LuaEditorWindow::textChanged() {
     //_modified = _editor->document()->isModified();
 }
 
+void LuaEditorWindow::on_actionClose_triggered(bool) {
+	// todo: if last tab then don't remove it.
+	if(_tabPane->count()==1)
+		return;
+	EditorTab::Ptr tab = getCurrentTab();
+	if(tab->_editor->document()->isModified())
+		save();
+	_tabPane->removeTab( _tabPane->indexOf( tab->_editor ) );
+	_editors[tab->_editor] = NULL;
 
+}
 
 void LuaEditorWindow::on_actionNew_triggered(bool) {
-    if (_editor->document()->isModified()) {
+    // create a new tab
+	EditorTab::Ptr tab = makeEditor();
+    _tabPane->setCurrentIndex( _tabPane->indexOf(tab->_editor));
+	tab->_editor->document()->setModified(false);
+
+/*
+	if (_editor->document()->isModified()) {
     //if (_modified) {
         int result = QMessageBox::warning(this, "Lua Editor", tr("Content has been modified. Do you wish to save changes?"), QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
         switch (result) {
@@ -208,10 +246,13 @@ void LuaEditorWindow::on_actionNew_triggered(bool) {
     }
     _editor->clear();
     _editor->document()->setModified(false);
+ */
 }
 
+
+
 void LuaEditorWindow::on_actionOpen_triggered(bool) {
-    on_actionNew_triggered(true);
+    //on_actionNew_triggered(true);
     QString path = _pmap.get<std::string>("PreviousOpenDirectory", ".").c_str();
 
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -225,11 +266,16 @@ void LuaEditorWindow::on_actionOpen_triggered(bool) {
         _pmap.set<std::string>("LuaFile", fileName.toStdString());
         QFile file;
         file.setFileName(fileName);
+        EditorTab::Ptr tab = makeEditor();
+        tab->_filename = file.fileName().toStdString();
+        _tabPane->setTabText( _tabPane->indexOf(tab->_editor), boost::filesystem3::path(fileName.toStdString()).filename().string().c_str());
+
         if (file.open(QFile::ReadWrite | QFile::Text)) {
-            _editor->setPlainText(file.readAll());
+        	tab->_editor->setPlainText(file.readAll());
         }
         file.close();
-        _editor->document()->setModified(false);
+        tab->_editor->document()->setModified(false);
+        _tabPane->setCurrentIndex(_tabPane->indexOf(tab->_editor) );
     }
 
 }
@@ -240,12 +286,13 @@ void LuaEditorWindow::on_actionSave_triggered(bool) {
 }
 
 void LuaEditorWindow::on_actionSave_As_triggered(bool){
-	std::cout << "SAVE AS" << std::endl;
 	saveAs();
 }
 
 bool LuaEditorWindow::save() {
-    std::string filename = _pmap.get<std::string>("LuaFile","");
+	// save the current viable
+	std::string filename = getCurrentTab()->_filename;
+    //std::string filename = _pmap.get<std::string>("LuaFile","");
     if (filename == "") {
         return saveAs();
     } else {
@@ -269,86 +316,77 @@ bool LuaEditorWindow::saveAs() {
 bool LuaEditorWindow::save(const std::string& filename) {
     QFile file;
     file.setFileName(filename.c_str());
-    if (file.open(QFile::ReadWrite | QFile::Text)) {
-        file.write(_editor->toPlainText().toAscii());
-        file.close();
-        _pmap.set<std::string>("LuaFile", filename);
-        _editor->document()->setModified(false);
+    if (file.open(QFile::WriteOnly | QFile::Text)) {
+    	{
+			QTextStream out(&file);
+			out << getCurrentTab()->_editor->toPlainText();
+			_pmap.set<std::string>("LuaFile", filename);
+			getCurrentTab()->_editor->document()->setModified(false);
+			getCurrentTab()->_filename = filename;
+
+		    _tabPane->setTabText( _tabPane->indexOf(getCurrentTab()->_editor), boost::filesystem3::path(filename).filename().string().c_str());
+
+    	}
+    	file.close();
         return true;
     } else {
         file.close();
         return false;
     }
+
+}
+
+LuaEditorWindow::EditorTab::Ptr LuaEditorWindow::getCurrentTab(){
+	return _editors[_tabPane->currentWidget()];
 }
 
 void LuaEditorWindow::on_actionRun_triggered(bool) {
-    _lua->reset();
-    rwlibs::swig::setlog( &Log::infoLog() );
 
-    const std::string cmd = _editor->toPlainText().toStdString();
-    _editor->setEnabled(false);
+	//_lua->reset();
+    rwlibs::swig::setlog( &Log::infoLog() );
+    const std::string cmd = getCurrentTab()->_editor->toPlainText().toStdString();
+    //getCurrentTab()->_editor->setEnabled(false);
     _luaRunner->set(cmd,_lua,_output->getWriter(Log::Info));
     _luaRunner->start();
     //_luaRunner->run(); // TODO: some lua code will not work in separate threads
+
+}
+
+void LuaEditorWindow::on_actionReset_triggered(bool) {
+	_lua->reset();
+    rwlibs::swig::setlog( &Log::infoLog() );
 }
 
 void LuaEditorWindow::on_actionReload_triggered(bool) {
-    std::string fileName = _pmap.get<std::string>("LuaFile","");
+    std::string fileName = getCurrentTab()->_filename;
     if (fileName == "")
         return;
 
     QFile file;
     file.setFileName(fileName.c_str());
     if (file.open(QFile::ReadWrite | QFile::Text)) {
-        _editor->setPlainText(file.readAll());
+    	getCurrentTab()->_editor->setPlainText(file.readAll());
     }
     file.close();
 
 }
 
 void LuaEditorWindow::on_actionStop_triggered(bool) {
-
+	_luaRunner->stop();
 }
 
-
-/*
-void LuaEditorWindow::runChunk()
-{
-
-
-    const std::string cmd = _editor->textCursor().block().text().toStdString();
-    int number = _editor->textCursor().blockNumber();
-
-    _output->info() << "--\n";
-    // The string "" is part of the error message.
-    int error = luaL_loadbuffer(_lua, cmd.data(), cmd.size(), "");
-    if (!error)
-        error = lua_pcall(_lua, 0, 0, 0);
-
-    if(error){
-    	_editor->setLineState(number, CodeEditor::ExecutedError);
-    	processError(error, _lua, _output);
-    } else {
-    	_editor->setLineState(number, CodeEditor::Executed);
-    }
-
-
-    _editor->moveCursor(QTextCursor::Down);
-}
-*/
-
-QAbstractItemModel *LuaEditorWindow::modelFromFile(const QString& fileName)
+QAbstractItemModel *LuaEditorWindow::modelFromFile(const QString& fileName, TreeModelCompleter* completer)
  {
      QFile file(fileName);
      if (!file.open(QFile::ReadOnly))
-         return new QStringListModel(_completer);
+         return new QStringListModel(completer);
 
  #ifndef QT_NO_CURSOR
      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
  #endif
      QStringList words;
 
-     QStandardItemModel *model = new QStandardItemModel(_completer);
+     QStandardItemModel *model = new QStandardItemModel(completer);
      QVector<QStandardItem *> parents(10);
      parents[0] = model->invisibleRootItem();
 
@@ -386,31 +424,3 @@ QAbstractItemModel *LuaEditorWindow::modelFromFile(const QString& fileName)
 
      return model;
  }
-
-#ifdef NOT_TREE_MODEL
-QAbstractItemModel *LuaEditorWindow::modelFromFile(const QString& fileName)
- {
-     QFile file(fileName);
-     if (!file.open(QFile::ReadOnly)){
-         std::cout << "COULD NOT OPEN RESOURCE FILE!!" << std::endl;
-         return new QStringListModel(_completer);
-     }
-
- #ifndef QT_NO_CURSOR
-     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
- #endif
-     QStringList words;
-
-     while (!file.atEnd()) {
-         QByteArray line = file.readLine();
-         if (!line.isEmpty())
-             words << line.trimmed();
-     }
-
- #ifndef QT_NO_CURSOR
-     QApplication::restoreOverrideCursor();
- #endif
-     return new QStringListModel(words, _completer);
- }
-#endif
-

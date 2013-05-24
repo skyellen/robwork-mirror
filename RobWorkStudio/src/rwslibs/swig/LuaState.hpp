@@ -33,6 +33,8 @@ namespace rws {
  */
 class LuaState {
 public:
+	typedef rw::common::Ptr<LuaState> Ptr;
+
     //! @brief constructor
     LuaState();
 
@@ -54,13 +56,20 @@ public:
     }
 
     //! type of the addlibrary callback function
-    typedef boost::function<void(lua_State*)> AddLibraryCB;
+    //typedef boost::function<int(lua_State*)> AddLibraryCB;
+
+    struct LuaLibrary {
+    	typedef rw::common::Ptr<LuaLibrary> Ptr;
+    	virtual const std::string getId() = 0;
+    	virtual bool initLibrary(LuaState& state) = 0;
+    };
 
     /**
      * @brief when the LuaState is reset all library constributers will be asked
      * to add their libraries to the state again.
      */
-    void addLibrary(AddLibraryCB cb);
+    void addLibrary(LuaLibrary::Ptr lib);
+    void removeLibrary(const std::string& id);
 
     //! @brief get the lua_State
     lua_State* get() { return _lua;}
@@ -68,7 +77,7 @@ public:
 private:
     struct lua_State *_lua;
     rws::RobWorkStudio* _rws;
-    std::vector<AddLibraryCB> _libraryCBs;
+    std::vector< LuaLibrary::Ptr > _libraryCBs;
 };
 
 }

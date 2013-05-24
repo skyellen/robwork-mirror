@@ -142,6 +142,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     _propEditor->setPropertyMap( &_propMap  );
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
+    _pluginsToolBar->setObjectName("PluginsBar");
     setupHelpMenu();
     int width = _settingsMap->get<int>("WindowWidth", 1024);
     int height = _settingsMap->get<int>("WindowHeight", 800);
@@ -192,11 +193,19 @@ RobWorkStudio::~RobWorkStudio()
     delete _assistant;
     delete _propEditor;
 
-    //typedef std::vector<RobWorkStudioPlugin*>::iterator I;
+    /*
+    _propMap = PropertyMap();
+    _lastFilesActions.clear();
+    _state = State();
+    _workcell = NULL;
+
+    typedef std::vector<RobWorkStudioPlugin*>::iterator I;
+    for(int i=_plugins.size()-1;i>=0;i--){
     //for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
-        //std::cout << (*it)->name().toStdString() << std::endl;
-        //delete *it;
-    //}
+        std::cout << _plugins[i]->name().toStdString() << std::endl;
+        delete _plugins[i];
+    }
+	*/
 }
 
 void RobWorkStudio::propertyChangedListener(PropertyBase* base){
@@ -206,7 +215,7 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
     // save main window settings
-    std::cout << "closeEvent" << std::endl;
+    //std::cout << "closeEvent" << std::endl;
     //settings.setValue("pos", pos());
     //settings.setValue("size", size());
     //settings.setValue("state", saveState());
@@ -347,6 +356,7 @@ void RobWorkStudio::setupFileActions()
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     QToolBar* fileToolBar = addToolBar(tr("File"));
+    fileToolBar->setObjectName("FileToolBar");
     fileToolBar->addAction(newAction);
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(closeAction);
@@ -712,10 +722,10 @@ void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
 void RobWorkStudio::dropEvent(QDropEvent* event)
 {
     if (event->mimeData()->hasUrls()) {
-            QList<QUrl> urls = event->mimeData()->urls();
-            if (urls.size() == 1) {
-                openFile(urls[0].toLocalFile().toStdString());
-            }
+		QList<QUrl> urls = event->mimeData()->urls();
+		if (urls.size() == 1) {
+			openFile(urls[0].toLocalFile().toStdString());
+		}
     } else if (event->mimeData()->hasHtml()) {
         std::cout << "html dropped: "  << std::endl;
 

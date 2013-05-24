@@ -113,3 +113,34 @@ void RobWorkStudioPlugin::setLog(rw::common::Log::Ptr log){
     _log = log;
     Log::setLog(_log);
 }
+
+boost::tuple<QWidget*, QAction*, int> RobWorkStudioPlugin::getAction(QWidget* widget, const std::string& actionName){
+    QList<QAction*> list = widget->actions();
+    for (int i = 0; i < list.size(); ++i) {
+        //std::cout << list.at(i)->text().toStdString() << "==" <<  actionName << std::endl;
+        if (list.at(i)->text().toStdString() == actionName){
+            //std::cout << "Found File at position " << i << std::endl;
+            return boost::make_tuple(widget,list.at(i), i);
+        }
+    }
+    return boost::make_tuple(widget,(QAction*)NULL, -1);
+}
+
+boost::tuple<QWidget*, QMenu*,int> RobWorkStudioPlugin::getMenu(QWidget* widget, const std::string& menuName){
+    boost::tuple<QWidget*, QAction*,int> res = getAction(widget, menuName);
+    if( (res.get<1>()!=NULL) && (res.get<1>()->menu()!=NULL) ){
+        return boost::make_tuple(widget, res.get<1>()->menu(), res.get<2>());
+    }
+    return boost::make_tuple(widget,(QMenu*)NULL, -1);
+}
+
+boost::tuple<QMenu*, QAction*,int> RobWorkStudioPlugin::getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2){
+    QWidget *wid; QMenu *pmenu; QAction* action; int index;
+    boost::tie(wid, pmenu,index) = getMenu(widget,actionName);
+    if(pmenu==NULL)
+        return boost::make_tuple((QMenu*)NULL,(QAction*)NULL, -1);
+    boost::tie(wid, action, index) = getAction(pmenu, actionName2);
+    if(action==NULL)
+        return boost::make_tuple((QMenu*)NULL, (QAction*)NULL, -1);
+    return boost::make_tuple(pmenu, action, index);
+}

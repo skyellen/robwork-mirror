@@ -24,8 +24,6 @@
 
 using namespace rws;
 
-//extern int luaopen_rws(lua_State* L); // declare the wrapped module
-
 LuaState::LuaState():_lua(NULL),_rws(NULL)
 {}
 
@@ -42,9 +40,24 @@ int LuaState::runCmd(const std::string& cmd){
     return error;
 }
 
-void LuaState::addLibrary(AddLibraryCB cb){
-    _libraryCBs.push_back(cb);
+void LuaState::addLibrary(LuaLibrary::Ptr lib){
+    _libraryCBs.push_back( lib );
 }
+
+void LuaState::removeLibrary(const std::string& id){
+    int idx=-1;
+	for(int i=0;i<_libraryCBs.size();i++){
+		if(_libraryCBs[i]->getId()==id){
+			idx = i;
+		}
+	}
+	if(idx<0){
+		return;
+	}
+	_libraryCBs.erase(_libraryCBs.begin()+idx);
+	reset();
+}
+
 
 void LuaState::reset(){
     if (_lua!=NULL)
@@ -60,10 +73,9 @@ void LuaState::reset(){
 
     rws::swig::setRobWorkStudio( _rws );
 
-    BOOST_FOREACH(AddLibraryCB &cb, _libraryCBs){
-        cb(_lua);
+    BOOST_FOREACH(LuaLibrary::Ptr cb, _libraryCBs){
+        cb->initLibrary( *this );
     }
-
 
     // add rw and rws namespaces
     runCmd("rw = rwlua.rw");

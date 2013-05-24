@@ -99,7 +99,7 @@ Lua::Lua()
 
     //this->setWidget(vwidget);  // Sets the widget on the QDockWidget
 
-    _lua = new LuaState();
+    _lua = rw::common::ownedPtr( new LuaState() );
     _lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
 }
@@ -107,14 +107,14 @@ Lua::Lua()
 Lua::~Lua()
 {
     // Close the Lua state.
-    delete _lua;
+    //delete _lua;
 }
 
 void Lua::initialize()
 {
     _lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
-    _console->setLuaState(_lua);
+    _console->setLuaState(_lua.get());
 
     getRobWorkStudio()->stateChangedEvent().add(
         boost::bind(
@@ -123,7 +123,7 @@ void Lua::initialize()
             _1), this);
 
     // register the lua state in the propertymap
-    getRobWorkStudio()->getPropertyMap().add<LuaState*>(
+    getRobWorkStudio()->getPropertyMap().add<LuaState::Ptr>(
             "LuaState",
             "A lua state handle",
             _lua );
@@ -179,6 +179,22 @@ void Lua::startEditor(){
 
 }
 
+
+
+void Lua::setupMenu(QMenu* pluginmenu){
+    QMenuBar *menu = getRobWorkStudio()->menuBar();
+
+    _openEditorAction = new QAction(tr("Lua Teachpad"), this); // owned
+    connect(_openEditorAction, SIGNAL(triggered()), this, SLOT(startEditor()));
+
+    boost::tuple<QWidget*, QMenu*, int> action = getMenu(menu, "&Tools");
+    if(action.get<1>()!=NULL){
+        action.get<1>()->addAction( _openEditorAction );
+    } else {
+
+    }
+
+}
 
 
 
