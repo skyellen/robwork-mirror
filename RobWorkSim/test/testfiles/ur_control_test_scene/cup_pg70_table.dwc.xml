@@ -42,7 +42,7 @@
 <FixedBody frame="Floor">
   <MaterialID>Plastic</MaterialID> </FixedBody>
 
- <Include file="../devices/UR-6-85-5-A/UR6855A.dwc.xml"/>
+ <Include file="../devices/UR6855A/UR6855A.dwc.xml"/>
   
 
 
@@ -55,8 +55,8 @@
  <SerialDeviceController name="URController" device="UR-6-85-5-A">
  </SerialDeviceController>
 
- <!-- Include file="PG70/PG70.dwc.xml"/>
+ <Include file="../devices/PG70/PG70.dwc.xml"/>
  <TactileMultiAxisSensor name="FTSensor" body="UR-6-85-5-A.Joint4" body1="UR-6-85-5-A.Joint5">
- </TactileMultiAxisSensor -->
+ </TactileMultiAxisSensor>
  
 </DynamicWorkcell>

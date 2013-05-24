@@ -1,0 +1,43 @@
+<TreeDevice name="PG70">
+  <Frame name="Base" type="Movable">
+    <RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+  </Frame>
+
+ <!-- We create this as a virtual joint, only used to control the two dependent joints -->
+ 
+ <Joint name="RightFinger" type="Prismatic">
+  <!--<RPY> 0 0 90 </RPY> <Pos> 0 -0.0045 0.093 </Pos>-->
+  <RPY> 0 0 90 </RPY> <Pos> 0 -0.017 0.093 </Pos>
+ </Joint>
+ <Frame name="TCPRight" refframe="RightFinger" type="EndEffector">
+ </Frame>
+
+ <Joint name="LeftFinger" refframe="Base" type="Prismatic">
+  <!--<RPY> 0 0 90 </RPY> <Pos> 0 0.0045 0.093</Pos>-->
+  <RPY> 0 0 90 </RPY> <Pos> 0 0.017 0.093</Pos> 
+  <Depend on="RightFinger" gain="-1" offset="0" />
+ </Joint>
+ <Frame name="TCPLeft" refframe="LeftFinger" type="EndEffector">
+ </Frame>
+
+
+<!-- Define limits -->
+ <PosLimit refjoint="RightFinger" min="0" max="0.035" />
+ <VelLimit refjoint="RightFinger" max="0.06" />
+
+<!-- And now we add the geometry -->
+ <Drawable name="BaseGeo" refframe="Base">
+  <Polytope file="geometry/cube" /></Drawable>
+
+ <Drawable name="LeftGeo" refframe="LeftFinger">
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0 -0.0055</Pos>
+  <Polytope file="../../objects/Finger_slim_m_v10" /></Drawable>
+
+ <Drawable name="RightGeo" refframe="RightFinger">
+  <RPY> 0 180 -90 </RPY> <Pos> 0 0 0.0055</Pos>
+  <Polytope file="../../objects/Finger_slim_m_v10" /></Drawable>
+  
+ <CollisionSetup file="CollisionSetup.prox.xml" />
+
+</TreeDevice>
