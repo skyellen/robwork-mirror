@@ -27,8 +27,10 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 #include <rw/math/Constants.hpp>
 
 using namespace Ipopt;
-
 using namespace rwlibs::softbody;
+
+
+
 
 ModRussel_NLP::ModRussel_NLP (
     boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
@@ -45,21 +47,18 @@ ModRussel_NLP::ModRussel_NLP (
     {
     const int M = getGeometry()->getM();
     
-    
     _a.resize ( M );
     _da.resize ( M );
     
     // angle at x=0 is always assumed zero, so solution vector is of size M-1
     _x.resize( M - 1 );
-    _xinit.resize( M - 1);
-    
+  
     // default starting guess is zero
+    _xinit.resize( M - 1);
     _xinit.clear();
-    
 }
 
 ModRussel_NLP::~ModRussel_NLP() {
-
 }
 
 
@@ -83,7 +82,6 @@ bool ModRussel_NLP::get_nlp_info ( Ipopt::Index& n, Ipopt::Index& m, Ipopt::Inde
 
     return true;
 }
-
 
 
 
@@ -150,6 +148,8 @@ bool ModRussel_NLP::eval_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 }
 
 
+
+// for calculating the total elastic potential energy, given a vector of angles for the beam
 bool ModRussel_NLP::eval_f_elastic ( Index n, const Number* x, Number& obj_value ) {
     const int M = getGeometry()->getM();
     const double h = getGeometry()->get_h();
@@ -173,25 +173,25 @@ bool ModRussel_NLP::eval_f_elastic ( Index n, const Number* x, Number& obj_value
 
 
 bool ModRussel_NLP::eval_grad_f ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number* grad_f ) {
-    const double eps = 1.0e-6;
+    const double eps = 1.0e-6; // some small value suited for finite-difference
     double xt[n];
 
-    // aanoying to copy manually!
+    // first make an unpertubed copy of the variables
     for ( int i = 0; i < n; i++ )
         xt[i] = x[i];
 
     for ( int i = 0; i< n; i++ ) {
-        xt[i] = x[i]-eps;
+        xt[i] = x[i]-eps; // make small negative pertubation for the i'th variable
         double d1;
-        eval_f ( n, xt, new_x, d1 );
+        eval_f ( n, xt, new_x, d1 ); // evaluate function value for negative pertubation of the i'th variable
 
-        xt[i] = x[i] +eps;
+        xt[i] = x[i] +eps; // make small positive pertubation for the i'th variable
         double d2;
-        eval_f ( n, xt, new_x, d2 );
+        eval_f ( n, xt, new_x, d2 );  // evaluate function value for positive pertubation of the i'th variable
 
-        grad_f[i] = ( d2-d1 ) / ( 2*eps );
+        grad_f[i] = ( d2-d1 ) / ( 2*eps ); // centered finite-difference calculation of the first partial derivative with respect to the i'th variable
 
-        xt[i] = x[i]; // making sure to copy back original value
+        xt[i] = x[i]; // restore the i'th variable
     }
 
     return true;
@@ -200,10 +200,13 @@ bool ModRussel_NLP::eval_grad_f ( Ipopt::Index n, const Ipopt::Number* x, bool n
 
 
 bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Number* g ) {
-    int gBase = 0;
+    int gBase = 0; // the base offset into the vector of constraints passed to IPOPT
     
+    // go through the list of indices into the beam at which to set a no-penetration constraint value
     for (int i = 0; i < (int) _integralIndices.size(); i++) {
         int pIdx = _integralIndices[i];
+        
+        // set the gBase'th constraint
         eval_g_point(pIdx, gBase++, n, x, new_x, m, g);    
     }
 
@@ -213,10 +216,13 @@ bool ModRussel_NLP::eval_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 
 
 bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Index m, Ipopt::Index nele_jac, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
-    int gBase = 0;
+    int gBase = 0;  // the base offset into the vector of constraints passed to IPOPT
     
+    // go through the list of indices into the beam at which to set a no-penetration constraint derivative value
     for (int i = 0; i < (int) _integralIndices.size(); i++) {
         int pIdx = _integralIndices[i];
+        
+        // set the gBase'th row in the constraint jacobian
         eval_jac_g_point(pIdx, gBase++, n, x, new_x, m, nele_jac, iRow, jCol, values);
     }
 
@@ -226,7 +232,7 @@ bool ModRussel_NLP::eval_jac_g ( Ipopt::Index n, const Ipopt::Number* x, bool ne
 
 
 
-
+// evaluates the constraint value of the point at index pIdx on the beam, placing it in the vector g[gBase]
 void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x, bool new_x, Index m, Number* g ) {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
@@ -263,16 +269,14 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
 
 
 
-
+// evaluates the value of constraint jacobian of the point at index pIdx on the beam, placing it in the constraint jacobian with row gBase
 void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Number* x, bool new_x, Index m, Index nele_jac, Index* iRow, Index* jCol, Number* values ) {
   const rw::math::Transform3D<> planeTbeam = get_planeTbeam(); //
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
     const double uxTCPy =  ModRusselBeamBase::get_uxTCPy ( planeTbeam ); // u2
     const double uyTCPy =  ModRusselBeamBase::get_uyTCPy ( planeTbeam ); // v2
     
-    
     // populate the mxn jacobian of the constraint functions (eg. 1x31 with one integral constraint and 32 slices)
-    
     if ( values == NULL ) {
         // return the structure of the jacobian
         // see http://www.coin-or.org/Ipopt/documentation/node57.html#app.triplet
@@ -302,65 +306,21 @@ void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Numbe
 
 
 
+// evaluate the problem hessian 
+//
+// currently we just let IPOPT calculate this numerically by having set the options to ( "hessian_approximation", "limited-memory" )
 bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number obj_factor, Ipopt::Index m, const Ipopt::Number* lambda, bool new_lambda, Ipopt::Index nele_hess, Ipopt::Index* iRow, Ipopt::Index* jCol, Ipopt::Number* values ) {
     RW_ASSERT(false);
     if ( values == NULL ) {
-        // return the structure. This is a symmetric matrix, fill the lower left
-        // triangle only.
-
-        // the hessian for this problem is actually dense
-//         Index idx=0;
-//         for ( Index row = 0; row < 4; row++ ) {
-//             for ( Index col = 0; col <= row; col++ ) {
-//                 iRow[idx] = row;
-//                 jCol[idx] = col;
-//                 idx++;
-//             }
-//         }
-//
-//         assert ( idx == nele_hess );
+        // return the structure. 
     } else {
-        // return the values. This is a symmetric matrix, fill the lower left
-        // triangle only
-
-        // fill the objective portion
-//         values[0] = obj_factor * ( 2*x[3] ); // 0,0
-//
-//         values[1] = obj_factor * ( x[3] ); // 1,0
-//         values[2] = 0.;                    // 1,1
-//
-//         values[3] = obj_factor * ( x[3] ); // 2,0
-//         values[4] = 0.;                    // 2,1
-//         values[5] = 0.;                    // 2,2
-//
-//         values[6] = obj_factor * ( 2*x[0] + x[1] + x[2] ); // 3,0
-//         values[7] = obj_factor * ( x[0] );               // 3,1
-//         values[8] = obj_factor * ( x[0] );               // 3,2
-//         values[9] = 0.;                                  // 3,3
-//
-//
-//         // add the portion for the first constraint
-//         values[1] += lambda[0] * ( x[2] * x[3] ); // 1,0
-//
-//         values[3] += lambda[0] * ( x[1] * x[3] ); // 2,0
-//         values[4] += lambda[0] * ( x[0] * x[3] ); // 2,1
-//
-//         values[6] += lambda[0] * ( x[1] * x[2] ); // 3,0
-//         values[7] += lambda[0] * ( x[0] * x[2] ); // 3,1
-//         values[8] += lambda[0] * ( x[0] * x[1] ); // 3,2
-//
-//         // add the portion for the second constraint
-//         values[0] += lambda[1] * 2; // 0,0
-//
-//         values[2] += lambda[1] * 2; // 1,1
-//
-//         values[5] += lambda[1] * 2; // 2,2
-//
-//         values[9] += lambda[1] * 2; // 3,3
+        // return the values. 
     }
 
     return true;
 }
+
+
 
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
     for (int i = 0; i < n; i++) 
