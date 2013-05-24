@@ -74,8 +74,13 @@ namespace simulator {
 		virtual ~ODEJoint(){};
 
         void setForce(double vel){
-            if(_jtype==Revolute) dJointAddHingeTorque(_jointId, vel);
-            else dJointAddSliderForce(_jointId, vel);
+        	//if(isMotorEnabled())
+        	//	RW_WARN("PLEASE DISABLE MOTOR!");
+
+            //if(_jtype==Revolute) dJointAddHingeTorque(_jointId, vel);
+            //else dJointAddSliderForce(_jointId, vel);
+        	if(_jtype==Revolute)
+        		dJointAddAMotorTorques(_motorId, vel,vel,vel);
         }
 
         double getActualVelocity(){
@@ -129,6 +134,8 @@ namespace simulator {
 		}
 
 		void setMaxForce(double force){
+			if(force>0.0)
+				_disableForceTmp = force;
 			if(_jtype==Revolute) dJointSetAMotorParam(_motorId,dParamFMax, force );
 			else dJointSetLMotorParam(_motorId,dParamFMax, force );
 		}
@@ -144,10 +151,15 @@ namespace simulator {
         }
 
         void setMotorEnabled(bool enabled){
-            if(enabled)
-                dJointEnable(_motorId);
-            else
-                dJointDisable(_motorId);
+        	std::cout << "set motor " << enabled << " " << _rwJoint->getName() << " id: "<<_motorId << "\n";
+            if(enabled){
+            	//dJointEnable(_motorId);
+            	setMaxForce(_disableForceTmp);
+            } else {
+            	_disableForceTmp = getMaxForce();
+            	setMaxForce(0.0);
+            	//dJointDisable(_motorId);
+            }
         }
 
         bool isMotorEnabled(){
@@ -175,6 +187,7 @@ namespace simulator {
 		//rw::kinematics::Frame *_bodyFrame;
 		rw::math::Vector3D<> _offset;
 		ODEBody *_parent, *_child;
+		double _disableForceTmp;
 
 	};
 }

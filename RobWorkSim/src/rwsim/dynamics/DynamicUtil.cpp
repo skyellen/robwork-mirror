@@ -379,4 +379,29 @@ bool DynamicUtil::isResting(DynamicWorkCell::Ptr dwc, const rw::kinematics::Stat
     return true;
 }
 
+/*
+rw::math::Q DynamicUtil::computeTorques(
+		const State& defstate,
+		const rw::math::Q& q,
+		const rw::math::Q& dq,
+		const rw::math::Q& ddq,
+		dynamics::RigidDevice::Ptr dev, const rw::math::Vector3D<>& gravity=rw::math::Vector3D<>(0,0,-9.82))
+{
+	State state = defstate;
+	std::vector<Body::Ptr> links = dev->getLinks();
+	std::vector<Joint*> joints = dev->getJointDevice()->getJoints();
+	// outward iterations
+	//std::vector<Transform3D<> >
 
+	for(int i=0;i<links.size();i++){
+
+		R // rotation from joint i to i+1
+		w = R*wi +
+
+
+	}
+
+
+}
+
+*/

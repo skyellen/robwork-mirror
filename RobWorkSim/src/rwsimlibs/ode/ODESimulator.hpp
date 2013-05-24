@@ -438,6 +438,12 @@ namespace simulator {
 		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
 		boost::mutex _contactMutex;
 
+		struct CutState {
+
+
+		};
+
+
 		struct BodyBodyContact {
 		    BodyBodyContact():
 		        firstContact(true)

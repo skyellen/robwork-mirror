@@ -123,9 +123,9 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
             fmaxChanged = true;
             _maxForce = flim;
         }
-
-
     }
+    //if(motormodesChanged)
+    //	std::cout << "MOTOR MODE CHANGED: " << _rdev->getKinematicModel()->getName()<< "\n";
 
 	_lastQ = _rdev->getModel().getQ(state);
 
@@ -164,11 +164,11 @@ void ODEVelocityDevice::update(const rwlibs::simulation::Simulator::UpdateInfo& 
             if(motormodesChanged)
                 _odeJoints[i]->setMotorEnabled(false);
             _odeJoints[i]->setForce( targets[qi] );
+            //std::cout << targets[qi] << " ; ";
         }
-
         qi++;
     }
-
+    //std::cout  << " \n ";
 
     // we now handle the dependent joints
     for(size_t i = 0; i<_odeJoints.size(); i++){
@@ -279,7 +279,7 @@ ODEVelocityDevice::ODEVelocityDevice(
             ODESimulator *sim
         ):
         _rdev(rdev),
-        _modes(rdev->getMotorForceLimits().size()),
+        _modes(rdev->getMotorForceLimits().size(), RigidDevice::Velocity),
         _sim(sim)
 {
 

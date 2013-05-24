@@ -1559,6 +1559,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         if(b_data->getFrame()!=pair.second)
             bT = bT * Kinematics::frameTframe(b_data->getFrame(),pair.second, state);
 
+
+        MultiDistanceResult *res;
+
         // test if we have cuttable object and if we have knife
 
         bool isknifeandcuttable = false;
@@ -1586,22 +1589,89 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         	knifeF = pair.second;
         	cuttableF = pair.first;
         }
-
+/*
         if( isknifeandcuttable ){
-        	std::cout << "KNIFE and CUTTABLE detected" << std::endl;
-        	CollisionResult *res;
+            if(onlyTestPenetration){
+            	return false;
+            }
 
-            data.setCollisionQueryType(CollisionStrategy::AllContacts);
+        	std::cout << "KNIFE and CUTTABLE detected" << std::endl;
+        	//CollisionResult *res;
+            data.setCollisionQueryType(CollisionStrategy::FirstContact);
             if( _narrowStrategy->inCollision(a, aT, b, bT, data) ){
             	std::cout << " ---- In collision...." << std::endl;
-            	res = &data.getCollisionData();
             	Vector3D<> cutPlaneNormal = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlaneNormal");
             	Vector3D<> cutPlanePos = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlanePos");
             	Vector3D<> cutDir = knifeF->getPropertyMap().get<Vector3D<> >("CuttingDir");
 
+
+
             	// now generate contacts such that the knife is constrained to the
             	// cutting plane
+            	CutState state;
 
+            	// do collision checking
+                data.setCollisionQueryType(CollisionStrategy::AllContacts);
+                res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance, data);
+
+                // create all contacts
+                size_t numc = res->distances.size();
+                if(_rwcontacts.size()<numc){
+                    _rwcontacts.resize(numc);
+                    _contacts.resize(numc);
+                }
+                int ni = 0;
+
+                //std::cout << "--- {";
+                //for(int i=0;i<numc;i++){
+                //    std::cout << res->distances[i] << ", ";
+                //}
+                //std::cout << "}"<< std::endl;
+
+                for(size_t i=0;i<numc;i++){
+
+                    dContact &con = _contacts[ni];
+                    Vector3D<> p1 = aT * res->p1s[i];
+                    Vector3D<> p2 = aT * res->p2s[i];
+                    Vector3D<> n, p;
+
+                    if(res->distances[i]<0.00000001){
+                    	std::cout << " penetrating " << std::endl;
+                    	// in a contact we apply contact constraints in the knife plane
+
+                    	// also we add force
+
+                    	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
+                    	// the second is described in b's refframe so convert both to world and combine them
+                    	Vector3D<> a_normal = aT.R() * normals.first;
+                    	Vector3D<> b_normal = bT.R() * normals.second;
+
+                    	n = -normalize( a_normal - b_normal );
+                    	p = p1;
+                    } else {
+                    	continue;
+                    }
+
+                    ODEUtil::toODEVector(n, con.geom.normal);
+                    ODEUtil::toODEVector(p, con.geom.pos);
+
+                    double penDepth = 0.0001;
+                    con.geom.depth = penDepth;
+                    con.geom.g1 = a_geom;
+                    con.geom.g2 = b_geom;
+                    ni++;
+                }
+
+
+
+
+            	// we can be either in initialCutPhase or deep in the cutting. In the initial phase
+            	// no contacts on the cutting plane will be generated
+            	if(initialCutPhase){
+
+            	} else {
+
+            	}
 
 
 
@@ -1612,6 +1682,8 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         	continue;
         }
+*/
+
 
         // first make standard collision detection, if in collision then compute all contacts from dist query
         RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
@@ -1620,7 +1692,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         //const double MAX_PENETRATION  = 0.0002;
         //const double MAX_SEP_DISTANCE = 0.0002;
 
-        MultiDistanceResult *res;
+
 
         if(onlyTestPenetration){
         	//std::cout << "ONLY TEST COL" << std::endl;
@@ -2211,14 +2283,14 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     }
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
     if(enableFeedback && odeSensorb1.size()>0){
-    	//std::cout << "----------- ADD FEEDBACK\n";
+    	std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
             sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
         }
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
     if(enableFeedback && odeSensorb2.size()>0){
-    	//std::cout << "----------- ADD FEEDBACK\n";
+    	std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
     	        sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
         }

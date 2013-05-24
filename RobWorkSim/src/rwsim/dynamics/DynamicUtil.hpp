@@ -91,6 +91,20 @@ namespace dynamics {
                               double max_linjointvel = 0.02,
                               double max_jointvel = 0.05);
 
+
+        /**
+         * @brief compute torques on a robot arm as a concequence of gravity, position, velocity and acceleration.
+         * @param q [in] joint position
+         * @param dq [in] joint velocity
+         * @param ddq [in] joint acceleration
+         * @param dev [in] device
+         * @param gravity [in] gravity vector
+         * @return
+         */
+        /*
+        static rw::math::Q computeTorques(const rw::kinematics::State& defstate,const rw::math::Q& q, const rw::math::Q& dq, const rw::math::Q& ddq,
+        								  dynamics::RigidDevice::Ptr dev, const rw::math::Vector3D<>& gravity=rw::math::Vector3D<>(0,0,-9.82));
+	*/
 	};
 	//! @}
 }

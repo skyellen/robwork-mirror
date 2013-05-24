@@ -254,15 +254,26 @@ public:
 	virtual bool moveVelT(const VelocityScrew6D& vel);
 
 	//! move robot with a hybrid position/force control
-/*
-	virtual bool moveLinFC(const Transform3D<>& target,
-							  Wrench6D<>& wtarget,
-							  float selection[6],
-							  std::string refframe,
-							  rw::math::Transform3D<> offset,
-							  float speed = 100,
-							  float blend = 0);
-*/
+
+    %extend {
+
+    	bool moveLinFC(const Transform3D& target,
+    							  const Wrench6D& wtarget,
+    							  Q selection,
+    							  std::string refframe,
+    							  Transform3D offset,
+    							  double speed=100,
+    							  double blend=0)
+    	{
+    		float arr[6];
+    		for(int i=0;i<6;i++)
+    			arr[i] = selection[i];
+    		return $self->SerialDeviceController::moveLinFC(target,wtarget,arr,refframe,offset,speed,blend);
+    	}
+
+        
+    };
+	
 	//! hard stop the robot,
 	bool stop();
 
@@ -476,7 +487,13 @@ public:
         { return $self->DynamicWorkCell::findDevice<SuctionCup>(name); }
 
         rw::common::Ptr<SimulatedFTSensor> findFTSensor(const std::string& name)
-        { return $self->DynamicWorkCell::findSensor<SimulatedFTSensor>(name); }
+        { 
+        	rw::common::Ptr<SimulatedFTSensor> sensor = $self->DynamicWorkCell::findSensor<SimulatedFTSensor>(name);
+        	if(sensor==NULL)
+        		RW_THROW("No such sensor!");
+        	return sensor; 
+        
+        }
 
         rw::common::Ptr<SerialDeviceController> findSerialDeviceController(const std::string& name)
         { return $self->DynamicWorkCell::findController<SerialDeviceController>(name); }

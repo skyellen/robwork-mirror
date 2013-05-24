@@ -74,8 +74,7 @@ RWSimPlugin::RWSimPlugin():
 	_sim(NULL),
 	_debugRender(NULL),
 	_openCalled(false),
-	_tactileSensorDialog(NULL),
-	_gtable("SchunkHand","Object")
+	_tactileSensorDialog(NULL)
 {
     setupUi(this);
 
@@ -120,42 +119,12 @@ RWSimPlugin::RWSimPlugin():
 }
 
 RWSimPlugin::~RWSimPlugin(){
-    if(_timerShot!=NULL)
+	if(_timerShot!=NULL)
         _timerShot->stop();
     _timer->stop();
 };
 
 namespace {
-    boost::tuple<QWidget*, QAction*, int> getAction(QWidget* widget, const std::string& actionName){
-        QList<QAction*> list = widget->actions();
-        for (int i = 0; i < list.size(); ++i) {
-            //std::cout << list.at(i)->text().toStdString() << "==" <<  actionName << std::endl;
-            if (list.at(i)->text().toStdString() == actionName){
-                //std::cout << "Found File at position " << i << std::endl;
-                return boost::make_tuple(widget,list.at(i), i);
-            }
-        }
-        return boost::make_tuple(widget,(QAction*)NULL, -1);
-    }
-
-    boost::tuple<QWidget*, QMenu*,int> getMenu(QWidget* widget, const std::string& menuName){
-        boost::tuple<QWidget*, QAction*,int> res = getAction(widget, menuName);
-        if( (res.get<1>()!=NULL) && (res.get<1>()->menu()!=NULL) ){
-            return boost::make_tuple(widget, res.get<1>()->menu(), res.get<2>());
-        }
-        return boost::make_tuple(widget,(QMenu*)NULL, -1);
-    }
-
-    boost::tuple<QMenu*, QAction*,int> getAction(QWidget* widget, const std::string& actionName, const std::string& actionName2){
-        QWidget *wid; QMenu *pmenu; QAction* action; int index;
-        boost::tie(wid, pmenu,index) = getMenu(widget,actionName);
-        if(pmenu==NULL)
-            return boost::make_tuple((QMenu*)NULL,(QAction*)NULL, -1);
-        boost::tie(wid, action, index) = getAction(pmenu, actionName2);
-        if(action==NULL)
-            return boost::make_tuple((QMenu*)NULL, (QAction*)NULL, -1);
-        return boost::make_tuple(pmenu, action, index);
-    }
 }
 
 
@@ -349,7 +318,6 @@ void RWSimPlugin::btnPressed(){
 
     	_sim->reset( getRobWorkStudio()->getState() );
     } else if( obj == _saveStatePathBtn )  {
-    	//_gtable.save("GraspTableSchunkSim.rwplay");
         getRobWorkStudio()->setTimedStatePath(_path);
     } else if( obj == _openDeviceCtrlBtn ){
         if(_sim==NULL){
@@ -497,39 +465,7 @@ void RWSimPlugin::stepCallBack(const rw::kinematics::State& state){
     _state = state;
 	if( _recordStatePathBox->isChecked()){
 	    _path.push_back( TimedState( _sim->getTime() , state) );
-
 	}
-
-	/*
-	if(_recordGraspTable ){
-
-        Frame *world = _dwc->getWorkcell()->getWorldFrame();
-        //Transform3D<> wThb = Kinematics::worldTframe(_handBase, state);
-        //Transform3D<> hbTw = inverse(wThb);
-        //Transform3D<> wTo = Kinematics::worldTframe(_object, state);
-
-        //Transform3D<> hpTo = inverse(wThb)*wTo;
-
-        //Vector3D<> approach = hpTo * Vector3D<>(0,0,1);
-        GraspTable::GraspData data;
-
-        //data.tactileContacts = tactileContacts;
-
-        //data.hp = Pose6D<>( hpTo );
-        //data.op = Pose6D<>( wTo );
-        //data.approach = approach;
-        DynamicDevice *hand = _dwc->findDevice("SchunkHand");
-        data.cq = hand->getModel().getQ(state);
-        data.pq = data.cq;//preshapes[_currentPreshapeIDX[simidx]];
-
-        data._tactiledata = getTactileData( _sim->getSimulator()->getSensors(), state );
-
-        //data.quality = qualities;
-
-        _gtable.addGrasp(data);
-
-	}
-	*/
 }
 
 
@@ -592,12 +528,22 @@ void RWSimPlugin::updateStatus(){
 }
 
 void RWSimPlugin::open(rw::models::WorkCell* workcell){
+
 #ifdef RWSIM_HAVE_LUA
+	struct RWSimLuaLibrary: public LuaState::LuaLibrary {
+		const std::string getId(){ return "RWSimLuaLibrary"; }
+		bool initLibrary(LuaState& lstate){
+			std::cout << "CALLING INIT" << std::endl;
+			return rwsim::swig::openLuaLibRWSim(lstate.get())==0;}
+	};
     // check if the lua state is there and if RobWorkSim libraries has been added
-    LuaState *lstate = getRobWorkStudio()->getPropertyMap().get<LuaState*>("LuaState", NULL);
+    LuaState::Ptr lstate = getRobWorkStudio()->getPropertyMap().get<LuaState::Ptr>("LuaState", NULL);
     if(lstate!=NULL && lstate!=_luastate){
         _luastate = lstate;
-        _luastate->addLibrary( LuaState::AddLibraryCB( rwsim::swig::openLuaLibRWSim ) );
+        rwsim::swig::openLuaLibRWSim(_luastate->get() );
+        _luastate->addLibrary( rw::common::Ptr<LuaState::LuaLibrary>(new RWSimLuaLibrary()) );
+
+        //_luastate->removeLibrary( "LuaLibRWSim" );
     }
     if(_luastate!=NULL && _dwc!=NULL){
         rwsim::swig::setDynamicWorkCell( _dwc.get() );

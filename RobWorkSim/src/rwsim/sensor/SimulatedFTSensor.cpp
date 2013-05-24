@@ -81,7 +81,7 @@ rw::math::Vector3D<> SimulatedFTSensor::getForce(){
 }
 
 rw::math::Vector3D<> SimulatedFTSensor::getTorque(){
-	return _force;
+	return _torque;
 }
 
 void SimulatedFTSensor::addForceW(const rw::math::Vector3D<>& point,
@@ -138,8 +138,8 @@ void SimulatedFTSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
     Vector3D<> wTtorque = _wTb.R()*_torque;
 
     // testing the output:
-    //std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
-    //        << wTtorque[0] << "\t" << wTtorque[1] << "\t" << wTtorque[2] << "\n";
+    std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
+            << wTtorque[0] << "\t" << wTtorque[1] << "\t" << wTtorque[2] << "\n";
 
     //std::cout << "Force : " << _wTb.R()*_force << std::endl;
     //std::cout << "Torque: " << _wTb.R()*_force << std::endl;

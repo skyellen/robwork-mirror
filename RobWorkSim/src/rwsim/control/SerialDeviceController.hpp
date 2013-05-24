@@ -8,6 +8,7 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
 #include <rw/trajectory/Trajectory.hpp>
 
@@ -31,13 +32,16 @@ namespace control {
 	class SerialDeviceController: public rwlibs::simulation::SimulatedController {
 
 	public:
-
+		typedef rw::common::Ptr<SerialDeviceController> Ptr;
 		/**
 		 *
 		 * @param name [in] controller name
 		 * @param ddev [in]
 		 */
 		SerialDeviceController(const std::string& name, dynamics::DynamicDevice::Ptr ddev);
+
+		SerialDeviceController(const std::string& name, dynamics::RigidDevice::Ptr ddev);
+
 
 		//! destructor
 		virtual ~SerialDeviceController();
@@ -64,7 +68,7 @@ namespace control {
 
 		//! move robot with a hybrid position/force control
 		virtual bool moveLinFC(const rw::math::Transform3D<>& target,
-								  rw::math::Wrench6D<>& wtarget,
+								  const rw::math::Wrench6D<>& wtarget,
 								  float selection[6],
 								  std::string refframe,
 								  rw::math::Transform3D<> offset,
@@ -90,6 +94,9 @@ namespace control {
 		void update(const rwlibs::simulation::Simulator::UpdateInfo& info,
 					 rw::kinematics::State& state);
 
+		void updateFTcontrolWrist(const rwlibs::simulation::Simulator::UpdateInfo& info,
+					 rw::kinematics::State& state);
+
 
         std::string getControllerName(){ return _name; };
 
@@ -102,24 +109,30 @@ namespace control {
         bool isEnabled(){ return _enabled; };
 
 	protected:
+        /**
+         * A compiled target may be a series of targets such as PTP that has been compiled into
+         * one target.
+         */
 		struct CompiledTarget {
+			CompiledTarget():ftcontrol(false),fttime(0.01){}
 			rw::trajectory::QTrajectory::Ptr qtraj;
 			rw::trajectory::Transform3DTrajectory::Ptr t3dtraj;
+			rw::math::Wrench6D<> _wrenchTarget;
+			bool ftcontrol;
+			double fttime;
+			// the id of the last target defining this CompiledTarget
 			int toId;
+
+			bool isFinished(double time){
+				if( (qtraj!=NULL) && time<qtraj->endTime())
+					return false;
+				if( (t3dtraj!=NULL) && time<t3dtraj->endTime())
+					return false;
+				if( (ftcontrol) && time<fttime )
+					return false;
+				return true;
+			}
 		};
-
-        //! create trajectory from current joint position and joint velocity
-        CompiledTarget makeTrajectory(int from, rw::kinematics::State& state);
-
-	private:
-		dynamics::DynamicDevice::Ptr _ddev;
-		double _time;
-		rw::math::Q _target;
-		rw::math::Q _currentQ, _currentQd;
-		bool _enabled, _stop, _pause;
-		rw::invkin::JacobianIKSolver::Ptr _solver;
-
-		bool _targetAdded;
 
 		typedef enum{PTP, PTP_T, Lin, VelQ, VelT, LinFC} TargetType;
 		struct Target {
@@ -137,6 +150,22 @@ namespace control {
 			int id;
 		};
 
+        //! create trajectory from current joint position and joint velocity
+        CompiledTarget makeTrajectory(const std::vector<Target>& targets, rw::kinematics::State& state);
+
+	private:
+		dynamics::DynamicDevice::Ptr _ddev;
+		dynamics::RigidDevice::Ptr _rdev;
+		double _time;
+		rw::math::Q _target;
+		rw::math::Q _currentQ, _currentQd;
+		bool _enabled, _stop, _pause;
+		rw::invkin::JacobianIKSolver::Ptr _solver;
+
+		bool _targetAdded;
+
+
+
 
 		void addTarget(const Target& target);
 		std::vector<Target> _targetQueue;
@@ -150,8 +179,22 @@ namespace control {
 		double _linVelMax, _angVelMax;
 
 		int _currentCompiledTarget;
-		std::vector<CompiledTarget> _compiledTargets;
+		std::deque<CompiledTarget> _compiledTargets;
+		CompiledTarget _executingTarget;
 		unsigned int _idCnt;
+
+		bool _isRunning;
+
+
+		// Hybrid/Force torque control
+		Eigen::VectorXd _q_error, _q_error_last;
+		Eigen::Matrix<double,6,1> _S;
+		rw::kinematics::Frame *_taskFrame;
+		rw::math::Transform3D<> _bXd;
+		rw::math::Wrench6D<> _bFd;
+
+		std::ofstream _out;
+
 	};
 
 	//! @}

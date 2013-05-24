@@ -1,5 +1,6 @@
 set(Ext ${PROJECT_SOURCE_DIR}/ext)
 
+MESSAGE(" have bullet: ${RWSIM_HAVE_BULLET}")
 IF (RWSIM_HAVE_BULLET)
 
 SET(SRC_FILES
