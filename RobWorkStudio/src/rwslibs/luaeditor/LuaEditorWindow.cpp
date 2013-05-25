@@ -33,6 +33,7 @@ extern "C" {
 #include <rwlibs/swig/ScriptTypes.hpp>
 
 using namespace rw::common;
+using namespace rw::math;
 using namespace rws;
 
 namespace {
@@ -115,7 +116,7 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
         objectMenu.addMenu(devMenu);
     }
 
-    QMenu rwsMenu("RWStudio");
+    QMenu *rwsMenu = new QMenu("RWStudio");
     connect(rwsMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
     QAction *action;
     action = rwsMenu->addAction( "View Transform" );
@@ -128,7 +129,7 @@ void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
 
     myMenu.addMenu(&deviceMenu);
     myMenu.addMenu(&objectMenu);
-    myMenu.addMenu(&rwsMenu);
+    myMenu.addMenu(rwsMenu);
     myMenu.addMenu(menu);
     // ...
 
