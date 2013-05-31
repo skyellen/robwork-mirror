@@ -7,6 +7,7 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/Wrench6D.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include <boost/thread.hpp>
@@ -46,6 +47,12 @@ public:
 
 	bool isMoving() const;
 
+	void forceModeStart(const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits);
+
+	void forceModeUpdate(const rw::math::Wrench6D<>& wrench);
+
+	void forceModeEnd();
+
 private:
 	URPrimaryInterface _urPrimary;
 
@@ -63,7 +70,7 @@ private:
 	class URScriptCommand {
 	public:
 
-		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, DO_NOTHING = 9999 };
+		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, DO_NOTHING = 9999 };
 
 		URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
 			_type(type),
@@ -71,6 +78,12 @@ private:
 			_speed(speed)
 		{
 		}
+
+		URScriptCommand(CmdType type):
+			_type(type)
+		{
+		}
+
 
 		URScriptCommand(CmdType type, const rw::math::Transform3D<>& transform):
 			_type(type),
@@ -84,10 +97,34 @@ private:
 			_velocity(velocity)
 		{}
 
+		URScriptCommand(CmdType type, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
+			_type(type),
+			_selection(selection),
+			_wrench(wrench),
+			_limits(limits)
+		{}
+
+		URScriptCommand(CmdType type, const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits):
+			_type(type),
+			_transform(base2ref),
+			_selection(selection),
+			_wrench(wrench),
+			_limits(limits)
+		{}
+
+		URScriptCommand(CmdType type, const rw::math::Wrench6D<>& wrench):
+			_type(type),
+			_wrench(wrench)
+		{}
+
+
 		CmdType _type;
 		rw::math::Q _q;
 		rw::math::Transform3D<> _transform;
 		rw::math::VelocityScrew6D<> _velocity;
+		rw::math::Q _selection;
+		rw::math::Wrench6D<> _wrench;
+		rw::math::Q _limits;
 		float _speed;
 	};
 
@@ -98,7 +135,7 @@ private:
 	void handleCmdRequest(boost::asio::ip::tcp::socket& socket);
     void sendStop(boost::asio::ip::tcp::socket& socket);
 
-    void popAllServoCommands();
+    void popAllUpdateCommands();
 
 
 	/** Stuff needed for the servoing */

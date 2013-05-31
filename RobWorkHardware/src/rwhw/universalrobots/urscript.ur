@@ -9,7 +9,12 @@ def myprog():
     global isServoing = 0
     global isStopped = 1
     global receive_buffer = [8, 0, 0, 0, 0, 0, 0, 0, 0]
-    global FLOAT_SCALE = 0.0001
+    global receive_buffer18 = [18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    global FLOAT_SCALE = 0.0001  
+    global force_selection = [ 0,0,0,0,0,0]
+    global wrench = [ 0,0,0,0,0,0]
+    global force_limits = [ 0,0,0,0,0,0]
+    global force_frame = p[0,0,0,0,0,0]
 
     def stopRobot():
         enter_critical	  
@@ -154,6 +159,57 @@ def myprog():
         exit_critical
     end
 
+    def force_mode_start():
+        cnt = 0           
+        #enter_critical        
+        while cnt < 6:
+            force_frame[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
+            cnt = cnt + 1
+        end
+
+		receive_buffer18 = socket_read_binary_integer(18)
+
+        cnt = 0           
+        while cnt < 6:
+        	force_selection[cnt] = receive_buffer18[cnt+1]*FLOAT_SCALE;
+            wrench[cnt] = receive_buffer18[cnt+1+6]*FLOAT_SCALE
+            force_limits[cnt] = receive_buffer18[cnt+1+12]*FLOAT_SCALE
+            cnt = cnt + 1
+        end
+
+        textmsg("Force Frame: ")
+        textmsg(force_frame)
+        textmsg("Force Selection: ")
+        textmsg(force_selection)
+        textmsg("Wrench:")
+        textmsg(wrench)
+        textmsg("Force Limits:")
+        textmsg(force_limits)
+        force_mode(force_frame, force_selection, wrench, 2, force_limits)
+
+        #exit_critical
+    end
+
+	
+    def force_mode_update():
+        cnt = 0           
+        #enter_critical        
+        while cnt < 6:
+            wrench[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
+            cnt = cnt + 1
+        end
+        textmsg("Wrench Update:")
+        textmsg(wrench)
+
+        force_mode(force_frame, force_selection, wrench, 2, force_limits)
+
+        #exit_critical
+    end
+	
+	
+	def force_mode_end():
+        force_mode_end()
+	end
 
 #
 # The main loop is running below
@@ -168,12 +224,12 @@ def myprog():
 
     while opened == False:
         opened = socket_open(host, port)
-    end
+    end 
 
-    textmsg("Socket opened")
+    textmsg("Socket opened !!")
     errcnt = 0
     while errcnt < 1:
-    	#textmsg("running")
+ 		#textmsg("running")
         if motionFinished == 1:
             #textmsg("Sends finished")
             socket_send_byte(0)
@@ -199,6 +255,15 @@ def myprog():
         elif receive_buffer[1] == 3: #3: Servo to T
         	isStopped = 0
             servoQ()
+        elif receive_buffer[1] == 4: #4: Start Force Mode Base
+        	textmsg("Force Mode Start")
+            isStopped = 0
+            force_mode_start()
+        elif receive_buffer[1] == 5: #5: Force Mode Update
+            isStopped = 0
+            force_mode_update()
+        elif receive_buffer[1] == 6: #6: End Force Mode
+            force_mode_end()
         elif receive_buffer[1] == 9999: #1: Do nothing
         	isStopped = 0
             #Right motion already taken

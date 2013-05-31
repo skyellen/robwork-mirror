@@ -8,6 +8,7 @@
  */
 
 #include "UniversalRobotsData.hpp"
+#include "URMessage.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/common/Ptr.hpp>
@@ -20,7 +21,7 @@
 #include <boost/system/error_code.hpp>
 #include <boost/thread.hpp>
 
-
+#include <queue>
 #include <fstream>
 
 
@@ -55,20 +56,32 @@ public:
 
 	void disconnect();
 
+	bool hasData() const;
 	UniversalRobotsData getLastData() const;
 
 	double driverTime() const;
 	bool _lostConnection;
 	long _lastPackageTime;
+
+	std::queue<URMessage> getMessages() {
+		return _messages;
+	}
+
+	void clearMessages() {
+		while (_messages.empty() == false)
+			_messages.pop();
+	}
+
 private:
 	rw::common::Ptr<boost::thread> _thread;
-	boost::mutex _mutex;
+	mutable boost::mutex _mutex;
 	bool _stop;
 	void run();
 
 
 	bool readPrimaryInterfacePacket();
-	void readRobotsState(std::vector<char>& data);
+	void readRobotsState(const std::vector<char>& data);
+	void readRobotMessage(const std::vector<char>& data, unsigned int messageLength);
 
 	bool extractBoolean(uint16_t input, unsigned int bitNumber);
 	bool sendCommand(const std::string &str);
@@ -87,6 +100,7 @@ private:
 	char buf[max_buf_len];
 
 	//Data
+	bool _hasURData;
 	UniversalRobotsData _data;
 
 	bool _lastTimeRunningProgram;
@@ -96,6 +110,9 @@ private:
 	static const unsigned char ROBOT_STATE = 16, ROBOT_MESSAGE = 20, HMC_MESSAGE = 22;
 	static const unsigned char ROBOT_MODE_DATA = 0, JOINT_DATA = 1, TOOL_DATA = 2, MASTERBOARD_DATA = 3, CARTESIAN_INFO = 4, LASER_POINTER_POSITION = 5;
 	static const unsigned char _commandNumberPrecision = 14;
+
+	std::queue<URMessage> _messages;
+
 };
 
 

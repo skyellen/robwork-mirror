@@ -10,7 +10,8 @@ using namespace rw::common;
 UniversalRobotsRTLogging::UniversalRobotsRTLogging():
 	_socket(NULL),
    _thread(NULL),
-	_connected(false)
+	_connected(false),
+	_hasData(false)
 {
 
 }
@@ -45,7 +46,8 @@ void UniversalRobotsRTLogging::stop() {
 
 void UniversalRobotsRTLogging::run() {
 	while (!_stop) {
-		readRTInterfacePacket();
+		if (readRTInterfacePacket())
+			_hasData = true;
 
 		// TODO: check when last package was recieved. If this is more than 100 miliseconds then
 		// something bad probably happened
@@ -97,6 +99,10 @@ URRTData UniversalRobotsRTLogging::getLastData() {
 	return _data;
 }
 
+bool UniversalRobotsRTLogging::hasData() const {
+	return _hasData;
+}
+
 bool UniversalRobotsRTLogging::readRTInterfacePacket() {
 	if(!_connected) {
 		return false;
@@ -120,7 +126,6 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
 
 	} while (bytesReady < msgSize-4);
 
-   // std::cout<<"Other message size = "<<msgSize<<std::endl;
 
 
     double timestamp = driverTime();

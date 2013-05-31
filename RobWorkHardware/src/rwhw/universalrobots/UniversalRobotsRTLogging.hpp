@@ -62,6 +62,7 @@ class UniversalRobotsRTLogging {
 
     	bool readRTInterfacePacket();
 
+    	bool hasData() const;
     	URRTData getLastData();
 
     	double driverTime();
@@ -76,6 +77,7 @@ class UniversalRobotsRTLogging {
 		bool _stop;
 		void run();
 
+		bool _hasData;
 		URRTData _data;
 
 

@@ -36,7 +36,7 @@ UniversalRobotsData::UniversalRobotsData()
 	jointPosition = rw::math::Q::zero(6);
 	jointSpeed = rw::math::Q::zero(6);
 	toolPosition = tmp;
-	toolAxixAngle = tmp;
+	toolAxisAngle = tmp;
 	targetJointPosition = rw::math::Q::zero(6);
 	laserPointerPosition = tmp;
 

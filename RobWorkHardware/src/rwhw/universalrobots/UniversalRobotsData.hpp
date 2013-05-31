@@ -48,7 +48,7 @@ class UniversalRobotsData {
 	rw::math::Q jointPosition;
 	rw::math::Q jointSpeed;
 	rw::math::Vector3D<double> toolPosition;
-	rw::math::Vector3D<double> toolAxixAngle;
+	rw::math::Vector3D<double> toolAxisAngle;
 
 	rw::math::Q targetJointPosition;
 
@@ -81,5 +81,7 @@ class UniversalRobotsData {
 
   private:
 };
+
+
 
 #endif //end include guard

@@ -21,6 +21,7 @@ _stopServer(false),
 _robotStopped(true),
 _isMoving(false)
 {
+
 }
 
 bool URCallBackInterface::isMoving() const {
@@ -71,7 +72,7 @@ void URCallBackInterface::startInterface(unsigned int callbackPort) {
     //std::cout<<"Send Script "<<sstr.str()<<std::endl;
 
       _urPrimary.sendScript(sstr.str());
-      //_urPrimary.start(); // why is this not called?
+      _urPrimary.start(); // why is this not called?
 }
 
 void URCallBackInterface::startInterface(unsigned int callbackPort, const std::string& filename) {
@@ -146,7 +147,7 @@ namespace {
 
 void q2intVector(const Q& q, std::vector<int>& integers, int offset) {
     for (size_t i = 0; i<q.size(); i++) {
-        integers[i+1] = (int)(q(i)*10000);
+        integers[offset+i] = (int)(q(i)*10000);
     }
 }
 
@@ -163,7 +164,17 @@ void t2intVector(const Transform3D<>& transform, std::vector<int>& integers, int
 
 }
 
+void wrench2intVector(const Wrench6D<>& wrench, std::vector<int>& integers, int offset) {
+	integers[offset] = wrench.force()(0)*10000;
+	integers[offset+1] = wrench.force()(1)*10000;
+	integers[offset+2] = wrench.force()(2)*10000;
+	integers[offset+3] = wrench.torque()(0)*10000;
+	integers[offset+4] = wrench.torque()(1)*10000;
+	integers[offset+5] = wrench.torque()(2)*10000;
 }
+
+}
+
 
 void URCallBackInterface::sendStop(tcp::socket& socket) {
     std::vector<int> integers(8);
@@ -174,13 +185,13 @@ void URCallBackInterface::sendStop(tcp::socket& socket) {
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 	boost::mutex::scoped_lock lock(_mutex);
 
-//	std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
+	//std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
     std::vector<int> integers(8);
 
 	if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
         integers[0] = URScriptCommand::DO_NOTHING;
         URCommon::send(&socket, integers);
-     //   std::cout<<"Do Nothing"<<std::endl;
+        //std::cout<<"Do Nothing"<<std::endl;
 		return;
 	}
 
@@ -208,12 +219,33 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 		_isMoving = true;
         _isServoing = true;
 		break;	
+	case URScriptCommand::FORCE_MODE_START:
+		std::cout<<"Force Mode Start"<<std::endl;
+		integers.resize(26);
+		t2intVector(cmd._transform, integers, 1);
+		integers[7] = 0;
+		q2intVector(cmd._selection, integers, 8);
+		wrench2intVector(cmd._wrench, integers, 14);
+		q2intVector(cmd._limits, integers, 20);
+		//_isMoving = true;
+		break;
+	case URScriptCommand::FORCE_MODE_UPDATE:
+		std::cout<<"FORCE_MODE_UPDATE"<<std::endl;
+		wrench2intVector(cmd._wrench, integers, 1);
+		integers[7] = 0;
+		//_isMoving = true;
+		break;
+	case URScriptCommand::FORCE_MODE_END:
+		break;
     default:
         RW_THROW("Unsupported command type: "<<cmd._type);
         break;
 	}
 	URCommon::send(&socket, integers);
-
+	std::cout<<"Sends: "<<std::endl;
+	BOOST_FOREACH(int i, integers) {
+		std::cout<<i<<" "<<std::endl;
+	}
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
       _commands.pop();
@@ -259,31 +291,6 @@ void URCallBackInterface::run() {
               timer.resetAndResume();
               handleCmdRequest(socket);
             }
-//else if (ch == 1) {
-                //Only handle something if we are using servoing
-  //              handleServoUpdate(socket);                  
-    //          }
-/*			  if (str == "GET") {
-				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
-				//  std::cout<<"Data Recieved = "<<var<<std::endl;
-				  if (var == "STOP") {
-					  if (_robotStopped) {
-						  URCommon::send(&socket, "STOP 1\n");
-					  }
-					  else {
-						  URCommon::send(&socket, "STOP 0\n");
-					  }
-
-				  } else if (var == "CMD") {
-					  handleCmdRequest(socket, var);
-				  }
-			  }
-			  else if (str == "SET") {
-				  std::string var = StringUtil::removeWhiteSpace(URCommon::readUntil(&socket, '\n', offset));
-				  if (var.substr(0,3) == "FIN" && var.substr(3,1)=="1") {
-					  _isMoving = false;
-				  }
-			  }*/
 		  }
 		  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 	  }
@@ -296,46 +303,7 @@ void URCallBackInterface::run() {
 
 
 
-/*  try
-  {
-	boost::asio::io_service io_service;
 
-	tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _callbackPort));
-
-    char buffer[256];
-
-	while(!_stopServer)
-	{
-	  tcp::socket socket(io_service);
-	  std::cout<<"Ready to accept incoming connections "<<std::endl;
-	  acceptor.accept(socket);
-	  std::cout<<"Incoming accepted"<<std::endl;
-      Timer timer1;
-      timer1.resetAndResume();      
-	  while (!_stopServer) {
- 		  boost::system::error_code error;
-		  size_t available = socket.available(error);
-		  if (error == boost::asio::error::eof) {
-			  std::cout<<"Reached EOF"<<std::endl;
-			  break;
-		  }
-         if (available >= 1) {
-    		if (socket.read_some(boost::asio::buffer(buffer, 1))) {
-              std::cout<<"Time = "<<timer1.getTime()<<" "<<(int)buffer[0]<<std::endl;
-              timer1.reset();
-              socket.send(boost::asio::buffer(buffer, 2));
-//                socket.send(boost::asio::buffer(buffer, 1));
-            }
-        	
-
-        }
-	  }
-	}
-  }
-  catch (std::exception& e)
-  {
-	std::cerr << e.what() << std::endl;
-  }*/
 }
 
 
@@ -349,8 +317,10 @@ void URCallBackInterface::stopRobot() {
         _commands.pop();
 }
 
-void URCallBackInterface::popAllServoCommands() {
-    while ((_commands.size() > 0) && (_commands.front()._type == URScriptCommand::SERVOQ)) {
+void URCallBackInterface::popAllUpdateCommands() {
+    while ((_commands.size() > 0) &&
+    		((_commands.front()._type == URScriptCommand::SERVOQ) || (_commands.front()._type == URScriptCommand::FORCE_MODE_UPDATE)))
+    {
         _commands.pop();
     }
 }
@@ -359,7 +329,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
 	std::cout<<"Received a moveQ to "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
     
-    popAllServoCommands();
+    popAllUpdateCommands();
 
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
     std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
@@ -371,7 +341,7 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
 	std::cout<<"Received a moveT to "<<transform<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
 
-    popAllServoCommands();
+    popAllUpdateCommands();
 
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
@@ -383,11 +353,46 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
     boost::mutex::scoped_lock lock(_mutex);
 
     size_t n = _commands.size();
-    popAllServoCommands();
+    popAllUpdateCommands();
     std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
     _commands.push(URScriptCommand(URScriptCommand::SERVOQ, q, 1));
     _robotStopped = false;
+
+}
+
+
+void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits) {
+	boost::mutex::scoped_lock lock(_mutex);
+
+	size_t n = _commands.size();
+    popAllUpdateCommands();
+    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+
+    _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_START, base2ref, selection, wrench, limits));
+    _robotStopped = false;
+}
+
+void URCallBackInterface::forceModeUpdate(const rw::math::Wrench6D<>& wrench) {
+	boost::mutex::scoped_lock lock(_mutex);
+
+	size_t n = _commands.size();
+    popAllUpdateCommands();
+    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+
+    _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_UPDATE, wrench));
+
+}
+
+
+void URCallBackInterface::forceModeEnd() {
+	boost::mutex::scoped_lock lock(_mutex);
+
+	size_t n = _commands.size();
+    popAllUpdateCommands();
+    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+
+    _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_END));
 
 }
 

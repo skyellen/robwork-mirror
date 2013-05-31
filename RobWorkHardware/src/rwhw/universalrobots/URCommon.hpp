@@ -15,7 +15,7 @@ public:
 	}
 
 
-	static inline int getData(boost::asio::ip::tcp::socket* socket, int cnt, std::vector<char>& data) {
+	static inline int getData(boost::asio::ip::tcp::socket* socket, size_t cnt, std::vector<char>& data) {
 		if(data.size()<cnt)
 			data.resize(cnt);
 		socket->read_some(boost::asio::buffer(&data[0], cnt));
@@ -52,7 +52,7 @@ public:
 		return output;
 	}
 
-	static inline unsigned char getUChar(std::vector<char>& data, uint32_t &messageOffset) {
+	static inline unsigned char getUChar(const std::vector<char>& data, uint32_t &messageOffset) {
 		unsigned char output = data[messageOffset];
 		messageOffset += 1;
 		return output;
@@ -67,20 +67,36 @@ public:
 		return output;
 	}
 
-	static inline uint16_t getUInt16(std::vector<char>& data, uint32_t &messageOffset) {
+	static inline uint16_t getUInt16(const std::vector<char>& data, uint32_t &messageOffset) {
 		uint16_t output = *((uint16_t*)&data[messageOffset]);
 		messageOffset += 2;
 		return output;
 	}
 
-	static inline uint32_t getUInt32(std::vector<char>& data, uint32_t &messageOffset) {
-		uint16_t output = *((uint32_t*)&data[messageOffset]);
+	static inline uint32_t getUInt32(const std::vector<char>& data, uint32_t &messageOffset) {
+		uint32_t output = 0;
+		((char*)(&output))[3] = data[messageOffset];
+		((char*)(&output))[2] = data[messageOffset+1];
+		((char*)(&output))[1] = data[messageOffset+2];
+		((char*)(&output))[0] = data[messageOffset+3];
 		messageOffset += 4;
+
 		return output;
 	}
 
-	static inline uint64_t getUInt64(std::vector<char>& data, uint32_t &messageOffset) {
-		uint64_t output = *((uint64_t*)&data[messageOffset]);
+	static inline uint64_t getUInt64(const std::vector<char>& data, uint32_t &messageOffset) {
+		uint64_t output;// = *((uint64_t*)&data[messageOffset]);
+
+		((char*)(&output))[7] = data[messageOffset];
+		((char*)(&output))[6] = data[messageOffset+1];
+		((char*)(&output))[5] = data[messageOffset+2];
+		((char*)(&output))[4] = data[messageOffset+3];
+		((char*)(&output))[3] = data[messageOffset+4];
+		((char*)(&output))[2] = data[messageOffset+5];
+		((char*)(&output))[1] = data[messageOffset+6];
+		((char*)(&output))[0] = data[messageOffset+7];
+
+
 		messageOffset += 8;
 		return output;
 	}
@@ -113,14 +129,29 @@ public:
 
 	//Extract a double
 
-	static inline double getDouble(std::vector<char>& data, uint32_t &messageOffset) {
-		double output = *((double*)&data[messageOffset]);
+	static inline double getDouble(const std::vector<char>& data, uint32_t &messageOffset) {
+		double output; //= *((double*)&data[messageOffset]);
+
+		((char*)(&output))[7] = data[messageOffset];
+		((char*)(&output))[6] = data[messageOffset+1];
+		((char*)(&output))[5] = data[messageOffset+2];
+		((char*)(&output))[4] = data[messageOffset+3];
+		((char*)(&output))[3] = data[messageOffset+4];
+		((char*)(&output))[2] = data[messageOffset+5];
+		((char*)(&output))[1] = data[messageOffset+6];
+		((char*)(&output))[0] = data[messageOffset+7];
+
 		messageOffset += 8;
 		return output;
 	}
 
-	static inline double getFloat(std::vector<char>& data, uint32_t &messageOffset) {
-		float output = *((float*)&data[messageOffset]);
+	static inline double getFloat(const std::vector<char>& data, uint32_t &messageOffset) {
+		float output;// = *((float*)&data[messageOffset]);
+		((char*)(&output))[3] = data[messageOffset];
+		((char*)(&output))[2] = data[messageOffset+1];
+		((char*)(&output))[1] = data[messageOffset+2];
+		((char*)(&output))[0] = data[messageOffset+3];
+
 		messageOffset += 4;
 		return output;
 	}
@@ -152,7 +183,7 @@ public:
 
 
 	//Extract a one boolean
-	static inline bool getBoolean(std::vector<char>& data, uint32_t &messageOffset) {
+	static inline bool getBoolean(const std::vector<char>& data, uint32_t &messageOffset) {
 		unsigned char tmp = getUChar(data,messageOffset);
 		bool output = (tmp & 1)>0;
 		return output;
@@ -178,7 +209,7 @@ public:
 		return output;
 	}
 
-	static inline rw::math::Vector3D<double> getVector3D(std::vector<char>& data, uint32_t &messageOffset) {
+	static inline rw::math::Vector3D<double> getVector3D(const std::vector<char>& data, uint32_t &messageOffset) {
 		rw::math::Vector3D<double> output;
 		output[0] = getDouble(data, messageOffset);
 		output[1] = getDouble(data, messageOffset);
