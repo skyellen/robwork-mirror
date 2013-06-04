@@ -8,7 +8,7 @@
 #include "FixedFrameCalibration.hpp"
 
 #include <rw/kinematics.hpp>
-#include <QtCore>
+
 
 namespace rwlibs {
 	namespace calibration {

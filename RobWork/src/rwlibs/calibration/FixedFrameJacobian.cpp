@@ -8,7 +8,7 @@
 #include "FixedFrameJacobian.hpp"
 
 #include <rw/kinematics.hpp>
-#include <QtCore>
+
 
 #include "DHLinkJacobian.hpp"
 

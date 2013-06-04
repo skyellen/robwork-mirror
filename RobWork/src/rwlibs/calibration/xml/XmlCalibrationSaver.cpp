@@ -1,125 +1,134 @@
-/*
- * XmlCalibrationSaver.cpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: Sep 19, 2012
- *      Author: bing
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "XmlCalibrationSaver.hpp"
 
-#include <QtCore>
-#include <QtXml/qdom.h>
+#include <rw/common/DOMElem.hpp>
+#include <rw/common/DOMParser.hpp>
 
-namespace rwlibs {
-namespace calibration {
+#include <rw/loaders/dom/DOMBasisTypes.hpp>
+
+using namespace rwlibs::calibration;
+using namespace rw::common;
+using namespace rw::loaders;
+using namespace rw;
 
 class ElementCreator {
 public:
-	ElementCreator(QDomDocument* document) :
-			_document(document) {
+	ElementCreator(DOMElem::Ptr root) :
+		_root(root) {
 
 	}
 
 	template<class T>
-	QDomElement createElement(T object);
+	DOMElem::Ptr createElement(T object, DOMElem::Ptr parent);
 
 private:
-	QDomDocument* _document;
+	DOMElem::Ptr _root;
 };
 
 template<>
-QDomElement ElementCreator::createElement<FixedFrameCalibration::Ptr>(FixedFrameCalibration::Ptr calibration) {
-	QDomElement element = _document->createElement("FixedFrameCalibration");
-
-	element.setAttribute("frame", QString::fromStdString(calibration->getFrame()->getName()));
-
-	QDomElement transformElement = _document->createElement("Transform");
-
-	transformElement.setAttribute("isPostCorrection", QString::number(calibration->isPostCorrection()));
-
-	QString transformString;
+DOMElem::Ptr ElementCreator::createElement<FixedFrameCalibration::Ptr>(
+		FixedFrameCalibration::Ptr calibration,
+		DOMElem::Ptr parent)
+{
+	DOMElem::Ptr element = parent->addChild("FixedFrameCalibration");
+	element->addAttribute("frame")->setValue(calibration->getFrame()->getName());
+	DOMElem::Ptr transformElement = element->addChild("Transform");
+	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );
 	rw::math::Transform3D<> correction = calibration->getCorrectionTransform();
-	for (int rowIndex = 0; rowIndex < 3; rowIndex++)
-		for (int colIndex = 0; colIndex < 4; colIndex++)
-			transformString.append(QString(" %1").arg(correction(rowIndex, colIndex), 0, 'g', 16));
-	transformElement.appendChild(_document->createTextNode(transformString.trimmed()));
-	element.appendChild(transformElement);
+	DOMBasisTypes::write(correction, transformElement);
 
 	return element;
 }
 
 template<>
-QDomElement ElementCreator::createElement<DHLinkCalibration::Ptr>(DHLinkCalibration::Ptr calibration) {
-	QDomElement element = _document->createElement("DHLinkCalibration");
+DOMElem::Ptr ElementCreator::createElement<DHLinkCalibration::Ptr>(
+		DHLinkCalibration::Ptr calibration,
+		DOMElem::Ptr parent)
+{
+	DOMElem::Ptr element = parent->addChild("DHLinkCalibration");
 
-	element.setAttribute("joint", QString::fromStdString(calibration->getJoint()->getName()));
+	element->addAttribute("joint")->setValue( calibration->getJoint()->getName() );
 
 	const CalibrationParameterSet parameterSet = calibration->getParameterSet();
 	if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
-		element.setAttribute("a", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_A), 0, 'g', 16));
+		element->addAttribute("a")->setValue( parameterSet(DHLinkCalibration::PARAMETER_A) );
 	if (parameterSet(DHLinkCalibration::PARAMETER_B).isEnabled())
-		element.setAttribute("b", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_B), 0, 'g', 16));
+		element->addAttribute("b")->setValue( parameterSet(DHLinkCalibration::PARAMETER_B) );
 	if (parameterSet(DHLinkCalibration::PARAMETER_D).isEnabled())
-		element.setAttribute("d", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_D), 0, 'g', 16));
+		element->addAttribute("d")->setValue( parameterSet(DHLinkCalibration::PARAMETER_D) );
 	if (parameterSet(DHLinkCalibration::PARAMETER_ALPHA).isEnabled())
-		element.setAttribute("alpha", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_ALPHA), 0, 'g', 16));
+		element->addAttribute("alpha")->setValue( parameterSet(DHLinkCalibration::PARAMETER_ALPHA) );
 	if (parameterSet(DHLinkCalibration::PARAMETER_BETA).isEnabled())
-		element.setAttribute("beta", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_BETA), 0, 'g', 16));
+		element->addAttribute("beta")->setValue( parameterSet(DHLinkCalibration::PARAMETER_BETA) );
 	if (parameterSet(DHLinkCalibration::PARAMETER_THETA).isEnabled())
-		element.setAttribute("theta", QString("%1").arg(parameterSet(DHLinkCalibration::PARAMETER_THETA), 0, 'g', 16));
+		element->addAttribute("theta")->setValue(parameterSet(DHLinkCalibration::PARAMETER_THETA) );
 
 	return element;
 }
 
-QDomDocument createDOMDocument(SerialDeviceCalibration::Ptr calibration) {
-	QDomDocument document("SerialDeviceCalibration");
+void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibration) {
+	//rootElement->setName("SerialDeviceCalibration");
+	DOMElem::Ptr rootElement = rootDoc->addChild("SerialDeviceCalibration");
 
-	QDomElement rootElement = document.createElement("SerialDeviceCalibration");
-
-	ElementCreator creator(&document);
+	ElementCreator creator(rootElement);
 
 	if (!calibration->getBaseCalibration().isNull()) {
-		QDomElement baseElement = document.createElement("BaseCalibration");
-		baseElement.appendChild(creator.createElement<FixedFrameCalibration::Ptr>(calibration->getBaseCalibration()));
-		rootElement.appendChild(baseElement);
+		DOMElem::Ptr baseElement = rootElement->addChild("BaseCalibration");
+		creator.createElement<FixedFrameCalibration::Ptr>(calibration->getBaseCalibration(), baseElement);
 	}
 
 	if (!calibration->getEndCalibration().isNull()) {
-		QDomElement endElement = document.createElement("EndCalibration");
-		endElement.appendChild(creator.createElement<FixedFrameCalibration::Ptr>(calibration->getEndCalibration()));
-		rootElement.appendChild(endElement);
+		DOMElem::Ptr endElement = rootElement->addChild("EndCalibration");
+		creator.createElement<FixedFrameCalibration::Ptr>(calibration->getEndCalibration(), endElement);
 	}
 
 	CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	const int linkCalibrationCount = compositeLinkCalibration->getCalibrationCount();
 	if (linkCalibrationCount > 0) {
-		QDomElement linkCalibrationElement = document.createElement("LinkCalibrations");
+		DOMElem::Ptr linkCalibrationElement = rootElement->addChild( "LinkCalibrations" );
 		for (int calibrationIndex = 0; calibrationIndex < linkCalibrationCount; calibrationIndex++) {
 			DHLinkCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
-			linkCalibrationElement.appendChild(creator.createElement<DHLinkCalibration::Ptr>(linkCalibration));
+			//linkCalibrationElement->addChild("DHLinkCalibration");
+
+			creator.createElement<DHLinkCalibration::Ptr>(linkCalibration, linkCalibrationElement);
 		}
-		rootElement.appendChild(linkCalibrationElement);
 	}
-
-	document.appendChild(rootElement);
-
-	return document;
 }
 
 void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::string fileName) {
-	QFile file(QString::fromStdString(fileName));
-	file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
+	DOMParser::Ptr doc = DOMParser::make();
+	DOMElem::Ptr root = doc->getRootElement();
 
-	QTextStream textStream(&file);
-	textStream.setRealNumberPrecision(16);
-	textStream << createDOMDocument(calibration).toString();
+	createDOMDocument(root, calibration);
 
-	file.close();
+	// save to file
+	doc->save( fileName );
 }
 
 void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::ostream& ostream) {
-	ostream << createDOMDocument(calibration).toString().toStdString();
+	DOMParser::Ptr doc = DOMParser::make();
+	DOMElem::Ptr root = doc->getRootElement();
+
+	createDOMDocument(root, calibration);
+
+	// save to stream
+	doc->save( ostream );
 }
 
-}
-}
+

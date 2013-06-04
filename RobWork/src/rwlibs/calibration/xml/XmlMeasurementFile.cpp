@@ -1,134 +1,103 @@
-/*
- * XmlMeasurementFile.cpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: May 22, 2012
- *      Author: bing
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "XmlMeasurementFile.hpp"
 
+#include <rw/loaders/dom/DOMBasisTypes.hpp>
+
 #include <rw/common.hpp>
+#include <rw/common/DOMParser.hpp>
+#include <rw/common/DOMElem.hpp>
 
-#include <QtCore>
-#include <QtXml/qdom.h>
+using namespace rwlibs::calibration;
+using namespace rw::common;
+using namespace rw::loaders;
+using namespace rw;
 
-namespace rwlibs {
-namespace calibration {
+namespace {
 
-QDomElement convertMeasurementToDomElement(QDomDocument& document, const SerialDevicePoseMeasurement& measurement) {
-	QDomElement elmMeasurement = document.createElement("SerialDevicePoseMeasurement");
+	/**
+	 * adds measurement xml description as child to parent node
+	 */
+	void addMeasurementToDomElement(const SerialDevicePoseMeasurement& measurement, DOMElem::Ptr parent) {
+		DOMElem::Ptr elmMeasurement = parent->addChild("SerialDevicePoseMeasurement");
 
-	QDomElement elmState = document.createElement("Q");
-	QString stateTxt;
-	rw::math::Q q = measurement.getQ();
-	for (unsigned int variableNo = 0; variableNo < q.size(); variableNo++)
-		stateTxt.append(QString(" %1").arg(q[variableNo], 0, 'g', 16));
-	elmState.appendChild(document.createTextNode(stateTxt.simplified()));
-	elmMeasurement.appendChild(elmState);
+		rw::math::Q q = measurement.getQ();
+		DOMElem::Ptr elmState = DOMBasisTypes::write(q, parent->addChild() );
 
-	QDomElement elmTransform = document.createElement("Transform");
-	QString transformTxt;
-	rw::math::Transform3D<> transform = measurement.getTransform();
-	for (int rowIndex = 0; rowIndex < 3; rowIndex++)
-		for (int columnIndex = 0; columnIndex < 4; columnIndex++)
-				transformTxt.append(QString(" %1").arg(transform(rowIndex, columnIndex), 0, 'g', 16));
-	elmTransform.appendChild(document.createTextNode(transformTxt.simplified()));
-	elmMeasurement.appendChild(elmTransform);
+		rw::math::Transform3D<> transform = measurement.getTransform();
+		DOMElem::Ptr elmTransform = DOMBasisTypes::write(transform, parent->addChild() );
 
-	if (measurement.hasCovarianceMatrix()) {
-		QDomElement elmCovarianceMatrix = document.createElement("CovarianceMatrix");
-		QString txtCovarianceMatrix;
-		Eigen::Matrix<double, 6, 6> covarianceMatrix = measurement.getCovarianceMatrix();
-		for (int rowIndex = 0; rowIndex < covarianceMatrix.rows(); rowIndex++)
-			for (int columnIndex = 0; columnIndex < covarianceMatrix.cols(); columnIndex++)
-				txtCovarianceMatrix.append(QString(" %1").arg(covarianceMatrix(rowIndex, columnIndex), 0, 'g', 16));
-		elmCovarianceMatrix.appendChild(document.createTextNode(txtCovarianceMatrix.simplified()));
-		elmMeasurement.appendChild(elmCovarianceMatrix);
+		if (measurement.hasCovarianceMatrix()) {
+			DOMElem::Ptr elmCovarianceMatrix = elmMeasurement->addChild("CovarianceMatrix");
+			Eigen::Matrix<double, 6, 6> covarianceMatrix = measurement.getCovarianceMatrix();
+			DOMBasisTypes::write( covarianceMatrix, elmMeasurement, false);
+		}
 	}
 
-	return elmMeasurement;
-}
+	/// get mesurement from dom node
+	SerialDevicePoseMeasurement convertDomElementToMeasurement(DOMElem::Ptr element) {
+		if ( !element->isName("SerialDevicePoseMeasurement") )
+			RW_THROW("Element not parsed correctly.");
 
-SerialDevicePoseMeasurement convertDomElementToMeasurement(const QDomElement& element) {
-	if (element.tagName() != "SerialDevicePoseMeasurement")
-		RW_THROW("Element not parsed correctly.");
+		DOMElem::Ptr elmState = element->getChild( DOMBasisTypes::QId );
+		rw::math::Q q = DOMBasisTypes::readQ(elmState, false);
 
-	QDomElement elmState = element.namedItem("Q").toElement();
-	QStringList txtStateSplitted = elmState.text().simplified().split(" ");
-	int stateSize = txtStateSplitted.count();
-	if (stateSize <= 0)
-		RW_THROW("Q not parsed correctly.");
-	rw::math::Q q = rw::math::Q(stateSize);
-	for (int variableNo = 0; variableNo < stateSize; variableNo++)
-		q[variableNo] = txtStateSplitted[variableNo].toDouble();
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Transform3DId );
+		rw::math::Transform3D<> transform = DOMBasisTypes::readTransform3D(elmTransform, false);
 
-	QDomElement elmTransform = element.namedItem("Transform").toElement();
-	QStringList txtTransformSplitted = elmTransform.text().simplified().split(" ");
-	if (txtTransformSplitted.size() != 3 * 4)
-		RW_THROW("Transform not parsed correctly.");
-	rw::math::Transform3D<> transform;
-	for (int rowIndex = 0; rowIndex < 3; rowIndex++)
-		for (int columnIndex = 0; columnIndex < 4; columnIndex++)
-			transform(rowIndex, columnIndex) = txtTransformSplitted[rowIndex * 4 + columnIndex].toDouble();
+		Eigen::Matrix<double, 6, 6> covariance = Eigen::Matrix<double, 6, 6>::Identity();
+		if( element->hasChild("CovarianceMatrix") ){
+			DOMElem::Ptr elmMatrix = element->getChild("CovarianceMatrix");
+			covariance = DOMBasisTypes::readMatrix(elmMatrix);
+		}
 
-	Eigen::Matrix<double, 6, 6> covariance = Eigen::Matrix<double, 6, 6>::Identity();
-	if (!element.namedItem("CovarianceMatrix").isNull()) {
-		QDomElement elmCovarianceMatrix = element.namedItem("CovarianceMatrix").toElement();
-		QStringList txtCovarianceMatrixSplitted = elmCovarianceMatrix.text().simplified().split(" ");
-		if (txtCovarianceMatrixSplitted.size() != 6 * 6)
-			RW_THROW("Covariance matrix not parsed correctly.");
-		for (int rowIndex = 0; rowIndex < 6; rowIndex++)
-			for (int columnIndex = 0; columnIndex < 6; columnIndex++)
-				covariance(rowIndex, columnIndex) = txtCovarianceMatrixSplitted[rowIndex * 6 + columnIndex].toDouble();
+		return SerialDevicePoseMeasurement(q, transform, covariance);
 	}
-
-	return SerialDevicePoseMeasurement(q, transform, covariance);
 }
-
 void XmlMeasurementFile::save(const std::vector<SerialDevicePoseMeasurement>& measurements, std::string fileName) {
-	QDomDocument document("SerialDevicePoseMeasurements");
+	DOMParser::Ptr parser = DOMParser::make();
 
-	QDomElement elmRoot = document.createElement("SerialDevicePoseMeasurements");
-	document.appendChild(elmRoot);
+	DOMElem::Ptr elmRoot = parser->getRootElement();
+	elmRoot->setName("SerialDevicePoseMeasurements");
 
 	for (std::vector<SerialDevicePoseMeasurement>::const_iterator it = measurements.begin(); it != measurements.end(); ++it) {
 		const SerialDevicePoseMeasurement measurement = (*it);
-		QDomElement elmMeasurement = convertMeasurementToDomElement(document, measurement);
-		elmRoot.appendChild(elmMeasurement);
+		addMeasurementToDomElement(measurement, elmRoot);
 	}
 
-	QFile file(QString::fromStdString(fileName));
-	file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-	QTextStream textStream(&file);
-	textStream.setRealNumberPrecision(16);
-	textStream << document.toString();
+	parser->save( fileName );
 }
 
 std::vector<SerialDevicePoseMeasurement> XmlMeasurementFile::load(std::string fileName) {
-	QFile file(QString::fromStdString(fileName));
-	file.open(QIODevice::ReadOnly | QIODevice::Text | QIODevice::Truncate);
+	DOMParser::Ptr parser = DOMParser::make();
 
-	QDomDocument document("SerialDevicePoseMeasurements");
-	if (!document.setContent(&file))
-		RW_THROW("Parsing of measurement file failed.");
+	parser->load(fileName);
 
-	QDomElement elmRoot = document.documentElement();
-	if (elmRoot.tagName() != "SerialDevicePoseMeasurements")
+	DOMElem::Ptr elmRoot = parser->getRootElement();
+
+	if ( !elmRoot->isName("SerialDevicePoseMeasurements") )
 		RW_THROW("No measurements found in measurement file.");
 
-	QDomNode node = elmRoot.firstChild();
 	std::vector<SerialDevicePoseMeasurement> measurements;
-	while (!node.isNull()) {
-		QDomElement domElement = node.toElement();
-		if (!domElement.isNull()) {
-			SerialDevicePoseMeasurement measurement = convertDomElementToMeasurement(domElement);
-			measurements.push_back(measurement);
-		}
-		node = node.nextSibling();
+	BOOST_FOREACH(DOMElem::Ptr child, elmRoot->getChildren() ){
+		SerialDevicePoseMeasurement measurement = convertDomElementToMeasurement(child);
+		measurements.push_back(measurement);
 	}
 
 	return measurements;
-}
-
-}
 }
