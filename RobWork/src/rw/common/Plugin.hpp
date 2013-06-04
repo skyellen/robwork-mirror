@@ -20,7 +20,7 @@ namespace common {
  * being created. Simply add this in the bottom of the .cpp file which defines you plugin.
  * RW_ADD_PLUGIN(MyPluginName)
  *
- * where MyPluginName is the name of your plugin including namespace. So if you plugin is
+ * where MyPluginName is the name of your plugin including namespace. So if your plugin is
  * named: "rw::example::MyExamplePlugin" then you should use the complete name.
  */
 #define RW_ADD_PLUGIN(name) \
