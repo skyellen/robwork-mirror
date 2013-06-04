@@ -29,11 +29,16 @@ using namespace rw::common;
 
 //////////////// stuff for loader
 
+BoostXMLParser::BoostXMLParser(){
+	_tree = ownedPtr( new boost::property_tree::ptree() );
+	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
+}
+
 void BoostXMLParser::load(const std::string& filename){
 	std::string file = IOUtil::getAbsoluteFileName(filename);
 	_tree = ownedPtr( new boost::property_tree::ptree() );
     try {
-        read_xml(file, *_tree);
+        read_xml(file, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
         _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
     } catch (const boost::property_tree::ptree_error& e) {
@@ -45,7 +50,7 @@ void BoostXMLParser::load(const std::string& filename){
 void BoostXMLParser::load(std::istream& input){
 	_tree = ownedPtr( new boost::property_tree::ptree() );
 	try {
-        read_xml(input, *_tree);
+        read_xml(input, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
         _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
     } catch (const boost::property_tree::ptree_error& e) {
@@ -56,7 +61,8 @@ void BoostXMLParser::load(std::istream& input){
 
 void BoostXMLParser::save(const std::string& filename){
     try {
-        write_xml(filename, *_tree);
+    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
+    	write_xml(filename, *_tree, std::locale(), settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -65,7 +71,8 @@ void BoostXMLParser::save(const std::string& filename){
 
 void BoostXMLParser::save(std::ostream& output){
     try {
-        write_xml(output, *_tree);
+    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
+        write_xml(output, *_tree, settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -161,12 +168,13 @@ DOMElem::IteratorPair BoostDOMElem::getAttributes(){
 }
 
 rw::common::Ptr<DOMElem> BoostDOMElem::addChild(const std::string& name){
-	_node->add_child(name, boost::property_tree::ptree() );
-	return this->getChild(name);
+	boost::property_tree::ptree &child = _node->add_child(name, boost::property_tree::ptree() );
+	return rw::common::ownedPtr(new BoostDOMElem(name, &child, this->getRoot()) );
+	//return this->getChild(name);
 }
 
 rw::common::Ptr<DOMElem> BoostDOMElem::addAttribute(const std::string& name){
-	std::string namePath = std::string("<xmlattr>") + name;
+	std::string namePath = std::string("<xmlattr>.") + name;
 	_node->add_child(namePath, boost::property_tree::ptree() );
 	return this->getAttribute(name);
 }

@@ -37,7 +37,8 @@ namespace common {
 	 */
 	class BoostXMLParser: public DOMParser {
 	public:
-
+		//! constructor
+		BoostXMLParser();
 		// loading and saving
 		void load(const std::string& filename);
 		void load(std::istream& input);

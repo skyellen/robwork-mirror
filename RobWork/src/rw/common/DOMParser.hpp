@@ -95,8 +95,11 @@ namespace common {
 		 */
 		static rw::common::Ptr<DOMParser> make();
 
-	    /** @addtogroup extensionpoints */
-	    /*@{*/
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::common::DOMParser::Factory,rw::common::DOMParser,rw.common.DOMParser}
+    	 * \class DOMParser
+ 	 	 */
 
 		/**
 		 * @brief a factory for DOMParsers. This factory defines an
@@ -130,7 +133,7 @@ namespace common {
 	        static std::vector<std::string> getSupportedFormats();
 
 	    };
-	    /*@}*/
+
 
 	protected:
 		std::string _schemaFile;
