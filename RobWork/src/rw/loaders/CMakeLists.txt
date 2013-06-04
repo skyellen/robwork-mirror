@@ -27,6 +27,8 @@ SET(FILES_CPP
   rwxml/XMLParser.cpp
   rwxml/XML.cpp
   
+  dom/DOMBasisTypes.cpp
+  
   colsetup/CollisionSetupLoader.cpp
   
   image/PGMLoader.cpp

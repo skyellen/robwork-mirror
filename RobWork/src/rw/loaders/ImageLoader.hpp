@@ -60,8 +60,10 @@ namespace rw { namespace loaders {
 		virtual bool isImageSupported(const std::string& format);
 
 
-	    /** @addtogroup extensionpoints */
-	    /*@{*/
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::loaders::ImageLoader::Factory,rw::loaders::ImageLoader,rw.loaders.ImageLoader}
+ 	 	 */
 
 		/**
 		 * @brief a factory for ImageLoader. This factory also defines an
@@ -104,7 +106,7 @@ namespace rw { namespace loaders {
 			static rw::sensor::Image::Ptr load(const std::string& filename);
 
 	    };
-	    /*@}*/
+
 	};
 
 	// for backwards compatibility

@@ -74,20 +74,21 @@ bool ImageLoader::Factory::hasImageLoader(const std::string& format){
 rw::sensor::Image::Ptr ImageLoader::Factory::load(const std::string& file)
 {
     const std::string ext2 = StringUtil::getFileExtension( file);
-    const std::string ext = StringUtil::toUpper(ext2);
-	if (ext == ".PGM" ){
+    if(ext2.empty())
+    	RW_THROW("Image file: " << file << " has no readable file extension!");
+    const std::string ext = StringUtil::toUpper(ext2.substr(1,ext2.length()-1));
+	if (ext == "PGM" ){
         return PGMLoader::load( file );
-	} else if (ext == ".PPM" ){
+	} else if (ext == "PPM" ){
 	    return PPMLoader::load( file );
-	} else if (ext == ".RGB" ){
+	} else if (ext == "RGB" ){
 	    return RGBLoader::load( file );
-	//} else if (ext == ".TGA" ){
+	//} else if (ext == "TGA" ){
 	    //return TGALoader::load( file );
-    //} else if (ext == ".BMP" ){
+    //} else if (ext == "BMP" ){
         //return BMPLoader::load( file );
     } else {
         // tjeck if any plugins support the file format
-        //std::cout << "CHECKING PLUGINS" << std::endl;
     	ImageLoader::Ptr loader = getImageLoader(ext);
     	if(loader!=NULL){
 			try {

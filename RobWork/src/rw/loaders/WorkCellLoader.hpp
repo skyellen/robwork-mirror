@@ -68,16 +68,15 @@ namespace rw { namespace loaders {
          */
         virtual rw::graphics::WorkCellScene::Ptr getScene( ){return _wcscene;};
 
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::loaders::WorkCellLoader::Factory, rw::loaders::WorkCellLoader, rw.loaders.WorkCellLoader}
+ 	 	 */
 
 
 		/**
-		 * @addtogroup extensionpoints
-		 *
 		 * @brief a factory for WorkCellLoader. This factory also defines an
 		 * extension point for workcell loaders.
-		 *
-		 * @extensionpoint
-		 *
 		 */
 	    class Factory: public rw::common::ExtensionPoint<WorkCellLoader> {
 	    public:

@@ -48,8 +48,11 @@ namespace loaders {
 
         //virtual void save(Model3DPtr model, const std::string& filename) = 0;
 
-	    /** @addtogroup extensionpoints */
-	    /*@{*/
+
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::loaders::Model3DLoader::Factory,rw::loaders::Model3DLoader,rw.loaders.Model3DLoader}
+ 	 	 */
 
 		/**
 		 * @brief a factory for Model3DLoaders. This factory defines an
@@ -131,14 +134,14 @@ namespace loaders {
 	    	//static FactoryCache& getCache();
 
 	    };
-	    //! @}
-
 
     };
 
     //typedef Model3DLoader::Factory Model3DFactory;
 
     //! @}
+
+
 }
 }
 #endif /* RW_GRAPHICS_MODEL3DLOADER_HPP_ */
