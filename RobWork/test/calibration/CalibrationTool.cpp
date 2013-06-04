@@ -2,7 +2,6 @@
 #include <rw/common.hpp>
 #include <rw/loaders.hpp>
 #include <rwlibs/calibration.hpp>
-#include <QtCore>
 
 using namespace rwlibs::calibration;
 

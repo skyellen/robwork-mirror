@@ -180,39 +180,45 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 
 	calibration->revert();
-
+	RW_WARN("");
 	//XmlCalibrationSaver::save(calibration, calibrationFilePath);
-
-	/*SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(
-	workCell->getStateStructure(), serialDevice, calibrationFilePath);
-
+	XmlCalibrationSaver::save(calibration, "SomeCalibration.xml");
+	RW_WARN("");
+	SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell->getStateStructure(), serialDevice, "SomeCalibration.xml");
+	RW_WARN("");
 	calibrationLoaded->apply();
-
+	RW_WARN("");
 	// Verify that the loaded calibration match the artificial calibration.
-	BOOST_CHECK(Eigen::Affine3d(calibrationLoaded->getBaseCalibration()->getCorrectionTransform()).isApprox(Eigen::Affine3d(artificialCalibration->getBaseCalibration()->getCorrectionTransform()), 10e-5));
-	BOOST_CHECK(Eigen::Affine3d(calibrationLoaded->getEndCalibration()->getCorrectionTransform()).isApprox(Eigen::Affine3d(artificialCalibration->getEndCalibration()->getCorrectionTransform()), 10e-5));
-	std::vector<DHLinkCalibration::Ptr> internalLinkCalibrationsLoaded =
-	calibrationLoaded->getInternalLinkCalibration()->getCalibrations();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < internalLinkCalibrationsLoaded.size(); calibrationIndex++)
-	for (int parameterIndex = 0; parameterIndex < 4; parameterIndex++)
-	if (artificialInternalLinkCalibrations[calibrationIndex]->isParameterEnabled(parameterIndex)) {
-	double diff = abs(abs(internalLinkCalibrationsLoaded[calibrationIndex]->getParameterValue(parameterIndex)) - abs(artificialInternalLinkCalibrations[calibrationIndex]->getParameterValue(parameterIndex)));
-	BOOST_CHECK_CLOSE(diff, 0.0, 10e-5);
+	BOOST_CHECK(toEigen(calibrationLoaded->getBaseCalibration()->getCorrectionTransform()).isApprox(
+			toEigen(artificialCalibration->getBaseCalibration()->getCorrectionTransform()), 10e-5));
+	BOOST_CHECK(toEigen(calibrationLoaded->getEndCalibration()->getCorrectionTransform()).isApprox(
+			toEigen(artificialCalibration->getEndCalibration()->getCorrectionTransform()), 10e-5));
+	CompositeCalibration<DHLinkCalibration>::Ptr internalLinkCalibrationsLoaded =
+			calibrationLoaded->getCompositeLinkCalibration();
+	for (unsigned int calibrationIndex = 0; calibrationIndex < internalLinkCalibrationsLoaded->getCalibrationCount(); calibrationIndex++){
+		for (int parameterIndex = 0; parameterIndex < 4; parameterIndex++){
+			/*
+			if (artificialInternalLinkCalibrations[calibrationIndex]->isParameterEnabled(parameterIndex)) {
+				double diff = abs(abs(internalLinkCalibrationsLoaded[calibrationIndex]->getParameterValue(parameterIndex)) - abs(artificialInternalLinkCalibrations[calibrationIndex]->getParameterValue(parameterIndex)));
+				BOOST_CHECK_CLOSE(diff, 0.0, 10e-5);
+			}
+			*/
+		}
 	}
 
 	// Verify that loaded calibration fits measurements.
 	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-	serialDevice->setQ(measurements[measurementIndex].getQ(), state);
+		serialDevice->setQ(measurements[measurementIndex].getQ(), state);
 
-	const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex].getTransform();
-	const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-	const rw::math::Transform3D<> tfmError(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
+		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex].getTransform();
+		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
+		const rw::math::Transform3D<> tfmError(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
 
-	double measurementDistanceError = (tfmModel.P() - tfmMeasurement.P()).norm2();
-	BOOST_CHECK_SMALL(measurementDistanceError, 10e-5);
-	double measurementAngleError = rw::math::EAA<>(tfmModel.R() * rw::math::inverse(tfmMeasurement.R())).angle();
-	BOOST_CHECK_SMALL(measurementAngleError, 10e-5);
-	}*/
+		double measurementDistanceError = (tfmModel.P() - tfmMeasurement.P()).norm2();
+		BOOST_CHECK_SMALL(measurementDistanceError, 10e-5);
+		double measurementAngleError = rw::math::EAA<>(tfmModel.R() * rw::math::inverse(tfmMeasurement.R())).angle();
+		BOOST_CHECK_SMALL(measurementAngleError, 10e-5);
+	}
 }
 
 std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise) {
