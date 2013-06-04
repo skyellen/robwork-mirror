@@ -275,24 +275,6 @@ ELSE ()
     MESSAGE(STATUS "RobWork: Sandbox DISABLED!")    
 ENDIF ()
 
-#
-# If the user wants to use the calibration package, Eigen3 and Qt4 must be installed. Otherwise the package will be disabled.
-#
-
-OPTION( RW_BUILD_CALIBRATION "Set when you want to build calibration module" ON )
-IF ( RW_BUILD_CALIBRATION )
-    MESSAGE( STATUS "RobWork: Calibration ENABLED!" )
-    FIND_PACKAGE( Eigen3 REQUIRED )
-    FIND_PACKAGE( Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED )
-    SET( RW_HAVE_EIGEN ${EIGEN3_FOUND} )
-    SET( RW_HAVE_QT ${QT4_FOUND} )
-    INCLUDE( ${QT_USE_FILE} )
-    SET( CALIBRATION_LIB rw_calibration ${QT_LIBRARIES} )
-    SET( CALIBRATION_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR} ${QT_INCLUDES} )
-ELSE ()
-    MESSAGE( STATUS "RobWork: Calibration DISABLED!" )    
-ENDIF()
-
 
 #
 # If the user wants to use the softbody package
@@ -487,13 +469,13 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_simulation
   rw_opengl
   rw_task
+  rw_calibration
   ${RW_LUA_LIBS}
   ${LUA_LIBRARIES}
   rw_proximitystrategies
   ${YAOBI_LIBRARIES}
   ${PQP_LIBRARIES}  
   rw
-  ${CALIBRATION_LIB}
   ${SOFTBODY_LIB}
   ${OPENGL_LIBRARIES}
   ${XERCESC_LIBRARIES}
