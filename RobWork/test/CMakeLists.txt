@@ -148,21 +148,21 @@ IF ( RW_ENABLE_PERFORMANCE_TESTS )
     SET(PERFORMANCE_TEST rw_performance-test)     
 ENDIF()
 
-IF ( RW_BUILD_CALIBRATION )
-	ADD_EXECUTABLE( rw_calibration-test ${DO_EXCLUDE} test-main.cpp calibration/CalibrationTest.cpp )
-	TARGET_LINK_LIBRARIES( rw_calibration-test ${TEST_LIBRARIES} )
-	ADD_TEST( rw_calibration-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_calibration-test ${DEFAULT_TEST_ARGS} )
-	ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
-	SET( CALIBRATION_TEST rw_calibration-test )
-	
-	ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
-	TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
-	ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
-	
-	ADD_EXECUTABLE( rw_calibration-mtool calibration/MeasurementTool.cpp )
-	TARGET_LINK_LIBRARIES( rw_calibration-mtool ${TEST_LIBRARIES} )
-	ADD_DEPENDENCIES( rw_calibration-mtool ${TEST_DEPENDENCIES} )
-ENDIF()
+# calibration stuff
+ADD_EXECUTABLE( rw_calibration-test ${DO_EXCLUDE} test-main.cpp calibration/CalibrationTest.cpp )
+TARGET_LINK_LIBRARIES( rw_calibration-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_calibration-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_calibration-test ${DEFAULT_TEST_ARGS} )
+ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
+SET( CALIBRATION_TEST rw_calibration-test )
+
+ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
+TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
+ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
+
+ADD_EXECUTABLE( rw_calibration-mtool calibration/MeasurementTool.cpp )
+TARGET_LINK_LIBRARIES( rw_calibration-mtool ${TEST_LIBRARIES} )
+ADD_DEPENDENCIES( rw_calibration-mtool ${TEST_DEPENDENCIES} )
+
 
 ADD_CUSTOM_TARGET(rw_all-tests ctest -V 
   DEPENDS rw_math-test rw_common-test rw_geometry-test rw_models-test rw_invkin-test 
