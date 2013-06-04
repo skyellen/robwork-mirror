@@ -16,6 +16,9 @@ class Plugin;
 /**
  * @brief The Extension class is used to provide additonal functionality from a
  * Plugin to other extension points of either the system or other plugins.
+ *
+ * extension points in RobWork
+ * @copydoc extensionpoints
  */
 class Extension {
 public:
@@ -61,10 +64,12 @@ public:
     const std::string& getName(){ return _desc.name; }
 
     //! @brief a unique global identifier of the extension point that this extension is attached to
-    const std::string& getPoint(){ return _desc.point; }
+    const std::string& getPoint() const { return _desc.point; }
 
     //! @brief the properties/configuration of this extension
-    const rw::common::PropertyMap& getProperties(){ return _desc.props; }
+    const rw::common::PropertyMap& getProperties() const { return _desc.props; }
+
+    rw::common::PropertyMap& getProperties(){ return _desc.props; }
 
     virtual rw::common::AnyPtr getObject(){ return _obj; }
 
