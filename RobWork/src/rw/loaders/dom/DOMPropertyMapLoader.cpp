@@ -15,12 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "PropertyMapLoader.hpp"
+#include "DOMPropertyMapLoader.hpp"
 
-#include <rw/loaders/xml/XercesErrorHandler.hpp>
-#include "XMLBasisTypes.hpp"
-#include "PathLoader.hpp"
-#include <rw/loaders/xml/XMLPathFormat.hpp>
+#include "DOMBasisTypes.hpp"
+#include "DOMPathLoader.hpp"
 
 #include <rw/common/DOMParser.hpp>
 
@@ -30,16 +28,16 @@ using namespace rw::common;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 
-PropertyMapLoader::PropertyMapLoader()
+DOMPropertyMapLoader::DOMPropertyMapLoader()
 {
 
 }
 
-PropertyMapLoader::~PropertyMapLoader()
+DOMPropertyMapLoader::~DOMPropertyMapLoader()
 {
 }
 
-PropertyBase::Ptr PropertyMapLoader::readProperty(DOMElem::Ptr element, bool checkHeader) {
+PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool checkHeader) {
     //std::cout<<"Read Property"<<std::endl;
 
     if (checkHeader)
@@ -53,48 +51,48 @@ PropertyBase::Ptr PropertyMapLoader::readProperty(DOMElem::Ptr element, bool che
 		} else if (child->isName("Description")) {
 			description = child->getValue();
 		} else if (child->isName("PropertyMap")) {
-			return ownedPtr(new Property<PropertyMap>(name, description, PropertyMapLoader::readProperties(child, true)));
+			return ownedPtr(new Property<PropertyMap>(name, description, DOMPropertyMapLoader::readProperties(child, true)));
 		} else if (child->isName("String")) {
-			return ownedPtr(new Property<std::string>(name, description, XMLBasisTypes::readString(child)));
+			return ownedPtr(new Property<std::string>(name, description, DOMBasisTypes::readString(child)));
 		} else if (child->isName("StringList")) {
-			return ownedPtr(new Property<std::vector<std::string> >(name, description, XMLBasisTypes::readStringList(child)));
+			return ownedPtr(new Property<std::vector<std::string> >(name, description, DOMBasisTypes::readStringList(child)));
 		} else if (child->isName("IntList")) {
-			return ownedPtr(new Property<std::vector<int> >(name, description, XMLBasisTypes::readIntList(child)));
+			return ownedPtr(new Property<std::vector<int> >(name, description, DOMBasisTypes::readIntList(child)));
 		} else if (child->isName("DoubleList")) {
-			return ownedPtr(new Property<std::vector<double> >(name, description, XMLBasisTypes::readDoubleList(child)));
+			return ownedPtr(new Property<std::vector<double> >(name, description, DOMBasisTypes::readDoubleList(child)));
 		} else if (child->isName("Double")) {
-			return ownedPtr(new Property<double>(name, description, XMLBasisTypes::readDouble(child)));
+			return ownedPtr(new Property<double>(name, description, DOMBasisTypes::readDouble(child)));
 		} else if (child->isName("Float")) {
-			return ownedPtr(new Property<float>(name, description, XMLBasisTypes::readFloat(child)));
+			return ownedPtr(new Property<float>(name, description, DOMBasisTypes::readFloat(child)));
 		} else if (child->isName("Integer")) {
-			return ownedPtr(new Property<int>(name, description, XMLBasisTypes::readInt(child)));
+			return ownedPtr(new Property<int>(name, description, DOMBasisTypes::readInt(child)));
 		} else if (child->isName("Boolean")) {
-			return ownedPtr(new Property<bool>(name, description, XMLBasisTypes::readBool(child)));
+			return ownedPtr(new Property<bool>(name, description, DOMBasisTypes::readBool(child)));
 		} else if (child->isName("Vector3D")){
-			return ownedPtr(new Property<Vector3D<> >(name, description, XMLBasisTypes::readVector3D(child)));
+			return ownedPtr(new Property<Vector3D<> >(name, description, DOMBasisTypes::readVector3D(child)));
 		} else if (child->isName("Vector2D")) {
-			return ownedPtr(new Property<Vector2D<> >(name, description, XMLBasisTypes::readVector2D(child)));
+			return ownedPtr(new Property<Vector2D<> >(name, description, DOMBasisTypes::readVector2D(child)));
 		} else if (child->isName("Q")) {
-			return ownedPtr(new Property<Q>(name, description, XMLBasisTypes::readQ(child)));
+			return ownedPtr(new Property<Q>(name, description, DOMBasisTypes::readQ(child)));
 		} else if (child->isName("Transform3D")) {
-			return ownedPtr(new Property<Transform3D<> >(name, description, XMLBasisTypes::readTransform3D(child)));
+			return ownedPtr(new Property<Transform3D<> >(name, description, DOMBasisTypes::readTransform3D(child)));
 		} else if (child->isName("Rotation3D")) {
-			return ownedPtr(new Property<Rotation3D<> >(name, description, XMLBasisTypes::readRotation3D(child)));
+			return ownedPtr(new Property<Rotation3D<> >(name, description, DOMBasisTypes::readRotation3D(child)));
 		} else if (child->isName("EAA")) {
-			return ownedPtr(new Property<EAA<> >(name, description, XMLBasisTypes::readEAA(child)));
+			return ownedPtr(new Property<EAA<> >(name, description, DOMBasisTypes::readEAA(child)));
 		} else if (child->isName("RPY")) {
-			return ownedPtr(new Property<RPY<> >(name, description, XMLBasisTypes::readRPY(child)));
+			return ownedPtr(new Property<RPY<> >(name, description, DOMBasisTypes::readRPY(child)));
 		} else if (child->isName("Quaternion")) {
-			return ownedPtr(new Property<Quaternion<> >(name, description, XMLBasisTypes::readQuaternion(child)));
+			return ownedPtr(new Property<Quaternion<> >(name, description, DOMBasisTypes::readQuaternion(child)));
 		} else if (child->isName("Rotation2D")) {
-			return ownedPtr(new Property<Rotation2D<> >(name, description, XMLBasisTypes::readRotation2D(child)));
+			return ownedPtr(new Property<Rotation2D<> >(name, description, DOMBasisTypes::readRotation2D(child)));
 		} else if (child->isName("VelocityScrew6D")) {
-			return ownedPtr(new Property<VelocityScrew6D<> >(name, description, XMLBasisTypes::readVelocityScrew6D(child)));
+			return ownedPtr(new Property<VelocityScrew6D<> >(name, description, DOMBasisTypes::readVelocityScrew6D(child)));
 		} else if (child->isName("QPath")){
-			PathLoader loader(child);
+			DOMPathLoader loader(child);
 			return ownedPtr(new Property<QPath>(name, description,*loader.getQPath()));
 		} else if (child->isName("T3DPath")){
-			PathLoader loader(child);
+			DOMPathLoader loader(child);
 			return ownedPtr(new Property<Transform3DPath >(name, description, *loader.getTransform3DPath()));
 	    } else {
 	    	RW_THROW("Parse Error: data value not reqognized in property with id \""<< name << "\"!");
@@ -107,7 +105,7 @@ PropertyBase::Ptr PropertyMapLoader::readProperty(DOMElem::Ptr element, bool che
 }
 
 
-PropertyMap PropertyMapLoader::readProperties(DOMElem::Ptr element, bool checkHeader) {
+PropertyMap DOMPropertyMapLoader::readProperties(DOMElem::Ptr element, bool checkHeader) {
 
     if (checkHeader)
     	if(!element->isName("PropertyMap"))
@@ -127,7 +125,7 @@ PropertyMap PropertyMapLoader::readProperties(DOMElem::Ptr element, bool checkHe
 
 
 
-PropertyMap PropertyMapLoader::load(std::istream& instream, const std::string& schemaFileName) {
+PropertyMap DOMPropertyMapLoader::load(std::istream& instream, const std::string& schemaFileName) {
 	DOMParser::Ptr parser = DOMParser::make();
     // todo: add schema load to interface
     parser->load(instream);
@@ -137,7 +135,7 @@ PropertyMap PropertyMapLoader::load(std::istream& instream, const std::string& s
     return map;
 }
 
-PropertyMap PropertyMapLoader::load(const std::string& filename, const std::string& schemaFileName) {
+PropertyMap DOMPropertyMapLoader::load(const std::string& filename, const std::string& schemaFileName) {
 	DOMParser::Ptr parser = DOMParser::make();
     // todo: add schema load to interface
     parser->load(filename);

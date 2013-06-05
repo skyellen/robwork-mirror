@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_LOADERS_PROPERTYMAPLOADER_HPP
-#define RW_LOADERS_PROPERTYMAPLOADER_HPP
+#ifndef RW_LOADERS_DOMPROPERTYMAPLOADER_HPP
+#define RW_LOADERS_DOMPROPERTYMAPLOADER_HPP
 
 
 #include <rw/common/PropertyMap.hpp>
@@ -37,7 +37,7 @@ namespace loaders {
  *
  * Implemented using RobWork DOM parser abstraction.
  */
-class PropertyMapLoader
+class DOMPropertyMapLoader
 {
 public:
 
@@ -87,8 +87,8 @@ public:
     static rw::common::PropertyMap load(std::istream& instream, const std::string& schemaFileName = "");
 
 private:
-    PropertyMapLoader();
-    virtual ~PropertyMapLoader();
+    DOMPropertyMapLoader();
+    virtual ~DOMPropertyMapLoader();
 
 };
 
