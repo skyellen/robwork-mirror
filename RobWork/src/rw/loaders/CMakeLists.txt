@@ -28,6 +28,9 @@ SET(FILES_CPP
   rwxml/XML.cpp
   
   dom/DOMBasisTypes.cpp
+  dom/DOMPropertyMapLoader.cpp
+  dom/DOMPathLoader.cpp
+  dom/DOMProximitySetupLoader.cpp
   
   colsetup/CollisionSetupLoader.cpp
   
