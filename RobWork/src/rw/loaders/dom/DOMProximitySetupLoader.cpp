@@ -62,7 +62,7 @@ ProximitySetup DOMProximitySetupLoader::readProximitySetup(DOMElem::Ptr element)
 			RW_THROW("Unknown element \"" << child->getName() << "\" in ProximitySetup, should be Include or Exclude!");
 		}
 	}
-	return setup;
+	return setup ;
 }
 
 std::pair<std::string, std::string> DOMProximitySetupLoader::readFramePatternAttributes(DOMElem::Ptr element) {
