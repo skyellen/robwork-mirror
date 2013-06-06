@@ -774,7 +774,7 @@ void TreeView::open(WorkCell* workcell)
 void TreeView::workcellChangedListener(int){
     // we need to call the update slot, but since this is possibly from a non qt thread, we need to separate
     // it through Qt::queue
-    std::cout << "TreeView: WORKCELL CHANGED" << std::endl;
+//     std::cout << "TreeView: WORKCELL CHANGED" << std::endl;
 
     QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
 
