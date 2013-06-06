@@ -30,6 +30,9 @@ SET(FILES_CPP
   dom/DOMBasisTypes.cpp
   dom/DOMPropertyMapLoader.cpp
   dom/DOMPathLoader.cpp
+  dom/DOMPathSaver.cpp
+  dom/DOMTrajectoryLoader.cpp
+  dom/DOMTrajectorySaver.cpp
   dom/DOMProximitySetupLoader.cpp
   
   colsetup/CollisionSetupLoader.cpp
