@@ -55,6 +55,7 @@ add_library(rwsim
 	
 	util/HughLineExtractor.cpp
 	
+	util/RecursiveNewtonEuler.cpp
 	util/RestingPoseGenerator.cpp
 	
 	util/CollisionFreeSampler.cpp
