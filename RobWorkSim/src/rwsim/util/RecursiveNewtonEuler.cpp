@@ -68,6 +68,14 @@ void RecursiveNewtonEuler::setPayload(const Vector3D<> &com, double payload, con
 	_payloadInertia = inertia;
 }
 
+Wrench6D<> RecursiveNewtonEuler::getEnvironment() const {
+	return _environment;
+}
+
+void RecursiveNewtonEuler::setEnvironment(const Wrench6D<> &wrench) {
+	_environment = wrench;
+}
+
 std::vector<RecursiveNewtonEuler::Motion> RecursiveNewtonEuler::getBodyMotion(const State &state, const Q &dq, const Q &ddq) const {
 	if (!_valid)
 		RW_THROW(invalidMsg());
@@ -169,24 +177,25 @@ std::vector<Wrench6D<> > RecursiveNewtonEuler::getJointForces(const std::vector<
 	Transform3D<> baseTlink = Kinematics::frameTframe(_jdev->getBase(),_jdev->getEnd(),state);
 	{
 		std::size_t k = _jdev->getDOF();
-		Vector3D<> force = forces[k].force();
-		Vector3D<> torque = forces[k].torque() - cross(baseTlink.R()*_payloadCOM,force);
+		Vector3D<> force = forces[k].force() + _environment.force();
+		Vector3D<> torque = forces[k].torque() - cross(baseTlink.R()*_payloadCOM,force) + _environment.torque();
 		res[k] = Wrench6D<>(force,torque);
 	}
 	Vector3D<> pNext;
 	// Backward step
 	for (std::size_t k = _jdev->getDOF(); k >= 1; k--) {
-		Joint* joint = _jdev->getJoints()[k-1];
 		Body::Ptr link = _rdev->getLinks()[k-1];
 		pNext = baseTlink.P();
 		if (k == _jdev->getDOF())
 			baseTlink = Kinematics::frameTframe(_jdev->getBase(),_jdev->getJoints().back(),state);
-		else
-			baseTlink = baseTlink*inverse(joint->getTransform(state));
+		else {
+			Joint* jointNext = _jdev->getJoints()[k];
+			baseTlink = baseTlink*inverse(jointNext->getTransform(state));
+		}
 		Vector3D<> com = baseTlink.R()*link->getInfo().masscenter;
-		Vector3D<> dr = baseTlink.P()-pNext;
+		Vector3D<> dr = pNext-baseTlink.P();
 		Vector3D<> force = forces[k-1].force() + res[k].force();
-		Vector3D<> torque = forces[k-1].torque() + res[k].torque()+cross(com,res[k-1].force()) + cross(dr-com,res[k].force());
+		Vector3D<> torque = forces[k-1].torque() + res[k].torque()+cross(com,force) + cross(dr-com,res[k].force());
 		res[k-1] = Wrench6D<>(force,torque);
 	}
 	return res;

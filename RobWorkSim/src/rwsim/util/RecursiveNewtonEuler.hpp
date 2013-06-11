@@ -96,6 +96,18 @@ public:
 	void setPayload(const rw::math::Vector3D<> &com, double payload, const rw::math::InertiaMatrix<> &inertia);
 
 	/**
+	 * @brief Get the force and torque that the robot exerts on the environment at the TCP frame in base coordinates.
+	 * @return a 6D wrench
+	 */
+	rw::math::Wrench6D<> getEnvironment() const;
+
+	/**
+	 * @brief Set the force and torque that the robot exerts on the environment at the TCP frame in base coordinates.
+	 * @param wrench [in] the wrench the robot exerts on the environment
+	 */
+	void setEnvironment(const rw::math::Wrench6D<> &wrench);
+
+	/**
 	 * @brief Motion of a body defined as velocity and acceleration.
 	 */
 	struct Motion {
@@ -162,6 +174,7 @@ private:
 	rw::math::Vector3D<> _payloadCOM;
 	double _payloadMass;
 	rw::math::InertiaMatrix<> _payloadInertia;
+	rw::math::Wrench6D<> _environment;
 	bool _valid;
 };
 //! @}
