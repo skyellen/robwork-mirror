@@ -55,7 +55,7 @@
  <SerialDeviceController name="URController" device="UR-6-85-5-A">
  </SerialDeviceController>
 
- <Include file="../devices/PG70/PG70.dwc.xml"/>
+ <!--Include file="../devices/PG70/PG70.dwc.xml"/ -->
  <TactileMultiAxisSensor name="FTSensor" body="UR-6-85-5-A.Joint4" body1="UR-6-85-5-A.Joint5">
  </TactileMultiAxisSensor>
  
