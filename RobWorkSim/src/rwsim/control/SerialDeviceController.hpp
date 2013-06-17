@@ -193,6 +193,8 @@ namespace control {
 		rw::math::Transform3D<> _bXd;
 		rw::math::Wrench6D<> _bFd;
 
+		rw::math::Transform3D<> _bXe_last;
+		rw::math::VelocityScrew6D<> _bXde_last;
 		std::ofstream _out;
 
 	};

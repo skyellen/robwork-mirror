@@ -4,15 +4,18 @@
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/math/MetricFactory.hpp>
+#include <rwsim/util/RecursiveNewtonEuler.hpp>
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Wrench6D.hpp>
 
 using namespace rwsim::control;
+using namespace rwsim::dynamics;
 
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::trajectory;
+using namespace rw::kinematics;
 
 SerialDeviceController::SerialDeviceController(
 		const std::string& name, dynamics::DynamicDevice::Ptr ddev):
@@ -393,6 +396,47 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 	*/
 }
 
+namespace {
+/*
+	Eigen::MatrixXd calcJointSpaceInertiaMatrix( rwsim::dynamics::RigidDevice::Ptr ddev, const rw::kinematics::State& state){
+	    Eigen::MatrixXd Mq(ddev->getKinematicModel()->getDOF(), ddev->getKinematicModel()->getDOF() );
+
+		// compute torques imposed by gravity
+		std::vector<Body::Ptr> links = ddev->getLinks();
+		std::vector<rw::models::Joint*> joints = ddev->getJointDevice()->getJoints();
+		//std::cout << links.size() << ">" << joints.size() << std::endl;
+		rw::math::Q tauCompensate(joints.size());
+		rw::kinematics::Frame* base = ddev->getKinematicModel()->getBase();
+		// go through all links and compute their contribution to the torque
+		for(int i=0;i<joints.size();i++){
+			// go through all links and compute their contribution to the torque
+			Transform3D<> bTj = rw::kinematics::Kinematics::frameTframe(base,joints[i], state);
+			double jT = 0;
+			for(int j=i;j<links.size();j++){
+				const double& mass = links[j]->getInfo().mass;
+				const double& cm = links[j]->getInfo().masscenter;
+
+				Transform3D<> bTl = rw::kinematics::Kinematics::frameTframe(base, links[j]->getBodyFrame(), state);
+				Transform3D<> jTl_cm = rw::kinematics::Kinematics::frameTframe(joints[i],links[j]->getBodyFrame(), state);
+				jTl_cm.P() += jTl_cm.R() * cm;
+
+				Mq(i,i) += inertia_tensor*dir + mass*Math::sqr(jTl_cm.P().norm2());
+
+				Vector3D<> jF = inverse(bTj) * (links[j]->getInfo().mass*Vector3D<>(0,0,-9.82) );
+				jT += cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF)[2]; // only take the z component
+				//std::cout << cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF) << std::endl;
+			}
+			tauCompensate[i] = jT;
+		}
+
+
+
+
+		return Mq;
+	}
+*/
+}
+
 void SerialDeviceController::updateFTcontrolWrist(
 		const rwlibs::simulation::Simulator::UpdateInfo& info,
 			 rw::kinematics::State& state)
@@ -400,58 +444,87 @@ void SerialDeviceController::updateFTcontrolWrist(
 	// This is the hybrid force torque controller with Wrist based FT feedback
     if(!info.rollback){
     	_q_error_last = _q_error;
-        //if(info.dt_prev>0.0){
-        //    _currentVel = (q - _currentQ)/info.dt_prev;
-        //} else {
-        //    _currentVel = Q::zero(q.size());
-        //}
     }
 
-	// todo: specify task frame, current position target pose and force target
-	rw::kinematics::Frame *taskFrame = _taskFrame;
-	//Transform3D<> bXd = _executingTarget.t3dtraj->x( _executingTarget.t3dtraj->endTime() );
-	Transform3D<> bXd = _executingTarget.t3dtraj->x( _currentTrajTime );
-	Wrench6D<> bFd = _executingTarget._wrenchTarget;
-
-
-	// selection matrix for position and for force
-	Eigen::Matrix<double,6,6> S = Eigen::Matrix<double,6,6>::Identity();
+    // define gain matrixes
+	// selection matrix for position and for force, if 0 then force control is used.
+    // Else S will be the positional gain. S is  selection matrix for position, Sf for force
+	Eigen::Matrix<double,6,6> Kp = Eigen::Matrix<double,6,6>::Identity(); // positional error gain
+	Eigen::Matrix<double,6,6> Kv = Eigen::Matrix<double,6,6>::Identity(); // velocity error gain
 	Eigen::Matrix<double,6,6> Sf = Eigen::Matrix<double,6,6>::Identity();
 
 	for(int i=0;i<6;i++){
-		Sf(i,i) = _S[i];
+		Sf(i,i) = 0;
+		Kp(i,i) = _S[i];
+		Kv(i,i) = 0.0; // TODO: select good damping parameter
 		if(_S[i]==0){
-			S(i,i) = 1;
-		} else {
-			S(i,i) = 0;
+			Kp(i,i) = 0;
+			Sf(i,i) = 1.0;
 		}
 	}
 
-	// actual pose of the taskFrame in the current state
-	Transform3D<> bXa = rw::kinematics::Kinematics::frameTframe(_ddev->getKinematicModel()->getBase(), taskFrame, state );
-
-	// actual wrench in base frame
-	Wrench6D<> bFa;
-
-	// calculate the positional error
-	//VelocityScrew6D<> eXe( inverse(bXa)*bXd );
-    const Transform3D<>& eTed = inverse(bXa) * bXd;
-
-    const EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
-    const Vector3D<>& e_eVed = eTed.P();
-    const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
-
-	VelocityScrew6D<> bXe = bXa.R() * e_eXed;
 
 
+
+	// todo: specify task frame, current position target pose and force target
+	rw::kinematics::Frame *taskFrame = _taskFrame;
+
+    // compute the jacobian
 	Jacobian J = _ddev->getKinematicModel()->baseJframe( taskFrame , state );
+	Q q = _ddev->getKinematicModel()->getQ(state);
+	Q dq = _ddev->getJointVelocities(state);
+
+	// targets
+	const Transform3D<> bX_t = _executingTarget.t3dtraj->x( _currentTrajTime );
+	const Transform3D<> bXd_t = _executingTarget.t3dtraj->dx( _currentTrajTime );
+	const VelocityScrew6D<> bXdd_t = VelocityScrew6D<>(_executingTarget.t3dtraj->ddx( _currentTrajTime ) );
+	const Wrench6D<> bF_t = _executingTarget._wrenchTarget;
+
+	// current configuration
+	const Transform3D<> bX_e = rw::kinematics::Kinematics::frameTframe(_ddev->getKinematicModel()->getBase(), taskFrame, state );
+	const VelocityScrew6D<> bXd_e = J*dq;
+	// todo: get wrist force/torque sensor data
+	const Wrench6D<> bF_e;
+
+	// calculate the pose error
+    VelocityScrew6D<> bXe_err = bX_e.R() * VelocityScrew6D<>( inverse(bX_e) * bX_t );
+    VelocityScrew6D<> bXde_err = bXd_e - _bXde_last;
+
+    // update the state variables
+    if(!info.rollback){
+    	_bXe_last = bX_e;
+    	_bXde_last = bXd_e;
+    }
+
+    // we add the gain to the cartesean velocity and pose error
+    Eigen::Matrix<double, 6, 1> E = bXe_err.e();
+    Eigen::Matrix<double, 6, 1> Ed = bXde_err.e();
+    // Kp is the positional error gain, and Kv is the volocity error gain matrix
+    Eigen::Matrix<double, 6, 1> Edd = bXdd_t.e() + Kp*E + Kv*Ed;
+
+
+    // now compute the mass matrix
+
+    // mass matrix
+    //Eigen::MatrixXd Mq(_ddev->getKinematicModel()->getDOF(), _ddev->getKinematicModel()->getDOF() );
+
+
+    // the cartesean mass matrix is defined by
+    //Eigen::MatrixXd Jt = J.e().transpose();
+    //Eigen::Matrix<double, 6, 6> Mx = LinearAlgebra::pseudoInverseEigen(Jt) * Mq * LinearAlgebra::pseudoInverseEigen(J.e());
+
+
+
+
+
 
 	//Eigen::VectorXd q_error = LinearAlgebra::pseudoInverseEigen( S*J.e() ) * Xe.e();
-	Q b_error( prod( LinearAlgebra::pseudoInverse( J.m() ), bXe.m()) );
+    /*
+    Q b_error( prod( LinearAlgebra::pseudoInverse( J.m() ), bXde.m()) );
     double dq_len = b_error.normInf();
     if( dq_len > 0.8 )
     	b_error *= 0.8/dq_len;
-
+	*/
 	/*
 	Jp = LinearAlgebra::pseudoInverse(J.m());
     Q dq ( prod( Jp , dS ) );
@@ -460,17 +533,16 @@ void SerialDeviceController::updateFTcontrolWrist(
         dq *= 0.8/dq_len;
     q += dq;
     */
-	Eigen::VectorXd q_error = b_error.e();
-
-
+	//Eigen::VectorXd q_error = b_error.e();
 
 	// now the force part
-	Wrench6D<> bFe = bFd-bFa;
+	//Wrench6D<> bFe = bFd-bFa;
 
-	Eigen::VectorXd tau_error =(Sf*J.e()).transpose()*bFe.e();
+	//Eigen::VectorXd tau_error =(Sf*J.e()).transpose()*bFe.e();
 
 
 	// compute torques imposed by gravity
+
 	std::vector<dynamics::Body::Ptr> links = _rdev->getLinks();
 	std::vector<rw::models::Joint*> joints = _rdev->getJointDevice()->getJoints();
 	//std::cout << links.size() << ">" << joints.size() << std::endl;
@@ -482,24 +554,51 @@ void SerialDeviceController::updateFTcontrolWrist(
 		double jT = 0;
 		for(int j=i;j<links.size();j++){
 			Transform3D<> wTl = rw::kinematics::Kinematics::worldTframe(links[j]->getBodyFrame(), state);
-
 			Transform3D<> jTl = rw::kinematics::Kinematics::frameTframe(joints[i],links[j]->getBodyFrame(), state);
-			Vector3D<> jF = inverse(wTj) * (links[j]->getInfo().mass*Vector3D<>(0,0,-9.82) );
+
+			//jTl.P() += jTl.R()*( -links[j]->getInfo().masscenter );
+
+			Vector3D<> jF = inverse(wTj.R()) * (links[j]->getInfo().mass*Vector3D<>(0,0,-9.8) );
 			jT += cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF)[2]; // only take the z component
 			//std::cout << cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF) << std::endl;
 		}
-		tauCompensate[i] = jT;
+		tauCompensate[i] = -jT;
 	}
+
 	//tauCompensate[5] = 0;
 	//tauCompensate[4] = 0;
 	//std::cout << "TAU COMPENSATE: " << -tauCompensate << std::endl;
 
+    // calculate compensation of robot
+
+	rwsim::util::RecursiveNewtonEuler dsolver(_rdev);
+
+    dsolver.setGravity( inverse(Kinematics::worldTframe(_rdev->getKinematicModel()->getBase(),state).R())*Vector3D<>(0,0,-9.82) );
+
+    rw::math::Q ddq = rw::math::Q::zero(q.size());
+
+    std::vector<Vector3D<> > torques = dsolver.solveMotorTorques(state, ddq, ddq);
+    for(int i=0;i<torques.size();i++){
+    	tauCompensate(i)  = torques[i].norm2();
+    }
+
+    std::cout << "COMPENSATE: " << tauCompensate << std::endl;
+	_rdev->setMotorForceTargets(tauCompensate, state);
 
 //#define STIFFNESS_CONTROL
 #ifdef STIFFNESS_CONTROL
 
 
-#else
+
+	// position and velocity is transformed into acceleration error
+
+
+
+
+
+//#else
+
+
 	const double KP = 60.0;
 	const double KD = 0;
 
@@ -509,17 +608,21 @@ void SerialDeviceController::updateFTcontrolWrist(
 	if(info.dt_prev>0.00000001)
 		dt_prev_inv = 1.0/info.dt_prev;
 
+
 	// scale with konstant, the smaller the link the smaller the konstant
+	/*
 	for(int i=0;i<q_error.size();i++){
 		q_error*KP*(q_error.size()-i)/(1.0*q_error.size());
 	}
-
-	Q tau( q_error /*+ ( (_q_error_last-q_error)*KD )*dt_prev_inv*/ );
+*/
+	//Q tau( q_error /*+ ( (_q_error_last-q_error)*KD )*dt_prev_inv*/ );
+	/*
 	_out << info.time
 			<< "\t" << bXe[0] << "\t" << bXe[1] << "\t" << bXe[2] << "\t" << bXe[3] << "\t" << bXe[4] << "\t" << bXe[5]
 			<< "\t" << tau[0] << "\t" << tau[1] << "\t" << tau[2] << "\t" << tau[3] << "\t" << tau[4]<< "\t" << tau[5] <<std::endl;
-
+	*/
 	_q_error = q_error;
+
 	//_q_error_last = q_error;
 
 	// force part is controlled using simple P controller
