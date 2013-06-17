@@ -66,14 +66,20 @@ namespace rw { namespace proximity {
             //! Closest points on f1 to f2, described in f1 reference frame
             std::vector< math::Vector3D<> > p1s;
 
-            std::vector< int > p1prims;
-
             /**
              * @brief Closest point on f2 to f1, IMPORTANT! NOTICE! described in
              * >>>> \b f1 <<<<< reference frame
              */
             std::vector< math::Vector3D<> > p2s;
+            
+            /**
+             * @brief indices to the primitives which are the closest points on the first proximity model
+             **/
+            std::vector< int > p1prims;
 
+            /**
+             * @brief indices to the primitives which are the closest points on the second proximity model
+             **/
             std::vector< int > p2prims;
 
             //! distances between contact points

@@ -26,18 +26,30 @@ namespace proximity {
 
     class ProximityStrategy;
 
+    /**
+     * @brief Class for managing the collision geometries associated to a frame
+     **/
     class ProximityModel {
     public:
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<ProximityModel> Ptr;
 
 		//ProximityModel(rw::common::Ptr<ProximityStrategy> pOwner):
-    ProximityModel(ProximityStrategy* pOwner):
+        /**
+         * @brief Constructor
+         *
+         * @param pOwner the ProximityStrategy owning this ProximityModel
+         **/
+        ProximityModel(ProximityStrategy* pOwner):
             owner(pOwner)
         {}
 
         virtual ~ProximityModel();
 
+        /**
+         * @brief return vector of names for the geometries added to this ProximityModel
+         *
+         **/
         std::vector<std::string> getGeometryIDs();
 
         //void addModel(const CollisionModelInfo& model){
@@ -47,12 +59,34 @@ namespace proximity {
         //std::vector<CollisionModelInfo> _collisionModels;
 
 
+        /**
+         * @brief adds geometry 
+         *
+         * @param geom the geometry to add
+         **/
         bool addGeometry(const rw::geometry::Geometry& geom);
+        
+        /**
+         * @brief removes a geometry from the ProximityModel
+         *
+         * @param geoid name of geometry to remove
+         * @return bool
+         **/       
         bool removeGeometry(const std::string& geoid);
 
+        /**
+         * @brief return pointer to the associated frame
+         *
+         **/
         rw::kinematics::Frame* getFrame(){ return _frame;};
+                
         void setFrame(rw::kinematics::Frame* frame){ _frame = frame; }
-
+        /**
+         * @brief sets the associated frame
+         *
+         * @param frame frame to set
+         **/     
+        
 		ProximityStrategy* owner;
     private:
 		rw::kinematics::Frame* _frame;

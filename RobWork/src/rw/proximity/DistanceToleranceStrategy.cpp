@@ -34,6 +34,7 @@ namespace rw { namespace proximity {
         if(getModel(a)==NULL || getModel(b)==NULL)
             RW_THROW("Frame must have a Proximity model attached!");
         ProximityStrategyData data;
+        
         return distances(getModel(a),wTa,getModel(b),wTb,tolerance,data);
     }
 
@@ -47,7 +48,7 @@ namespace rw { namespace proximity {
     {
         if(getModel(a)==NULL || getModel(b)==NULL)
             RW_THROW("Frame must have a Proximity model attached!");
-
+        
         return distances(getModel(a),wTa,getModel(b),wTb,tolerance,data);
     }
 

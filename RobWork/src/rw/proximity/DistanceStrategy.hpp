@@ -49,10 +49,18 @@ namespace rw { namespace proximity {
         struct Result {
              //! @brief reference to the first frame
             const kinematics::Frame* f1;
-            ProximityModel::Ptr a;
 
             //! @brief reference to the second frame
             const kinematics::Frame* f2;
+            
+            /**
+             * @brief pointer to the ProximityModel containing the geometries for the first frame
+             **/
+            ProximityModel::Ptr a;
+            
+            /**
+             * @brief pointer to the ProximityModel containing the geometries for the second frame
+             **/
             ProximityModel::Ptr b;
 
             //! Closest point on f1 to f2, described in f1 reference frame
@@ -76,7 +84,28 @@ namespace rw { namespace proximity {
             //! @brief index to the second face/triangle that is the closest feature
             unsigned int idx2;
 
-            void clear(){ }
+            void clear(){ };
+            
+           /**
+           @brief Streaming operator.
+            */
+            friend std::ostream& operator<<(std::ostream& out, const DistanceStrategy::Result& o)
+            {
+                return out
+                    << "DistanceStrategy::Result("
+                    << "o.f1: " << o.f1
+                    << ", o.f2: " << o.f2 
+                    << ", o.a: " << o.a 
+                    << ", o.b: " << o.b
+                    << ", o.p1: " << o.p1
+                    << ", o.p2: " << o.p2
+                    << ", o.distance: " << o.distance 
+                    << ", o.geoIdxA: " << o.geoIdxA
+                    << ", o.geoIdxB: " << o.geoIdxB 
+                    << ", o.idx1: " << o.idx1 
+                    << ", o.idx2: " << o.idx2 
+                    << ")";
+            }
         };
 
         /**
