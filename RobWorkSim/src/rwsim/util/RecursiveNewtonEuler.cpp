@@ -209,22 +209,23 @@ std::vector<Wrench6D<> > RecursiveNewtonEuler::solve(const State &state, const Q
 	return getJointForces(forces,state);
 }
 
-std::vector<Vector3D<> > RecursiveNewtonEuler::solveMotorTorques(const State &state, const Q &dq, const Q &ddq) const {
+std::vector<double> RecursiveNewtonEuler::solveMotorTorques(const State &state, const Q &dq, const Q &ddq) const {
 	if (!_valid)
 		RW_THROW(invalidMsg());
 	std::vector<Motion> motions = getBodyMotion(state,dq,ddq);
 	std::vector<Wrench6D<> > forces = getBodyNetForces(motions,state);
 	std::vector<Wrench6D<> > jointForces = getJointForces(forces,state);
-	std::vector<Vector3D<> > res(_jdev->getDOF()+1);
+	std::vector<double> res(_jdev->getDOF()+1);
 	Transform3D<> baseTlink = Kinematics::frameTframe(_jdev->getBase(),_jdev->getJoints()[0]->getParent(),state);
 	Vector3D<> z;
 	for (std::size_t k = 0; k < res.size()-1; k++) {
 		Joint* joint = _jdev->getJoints()[k];
 		baseTlink = baseTlink*joint->getTransform(state);
 		z = baseTlink.R().getCol(2);
-		res[k] = dot(jointForces[k].torque(),z)*z;
+		res[k] = dot(jointForces[k].torque(),z);
 	}
-	res[res.size()-1] = dot(jointForces[res.size()-1].torque(),z)*z;
+	res[res.size()-1] = dot(jointForces[res.size()-1].torque(),z);
+	std::cout << "asd: " << res << std::endl;
 	return res;
 }
 

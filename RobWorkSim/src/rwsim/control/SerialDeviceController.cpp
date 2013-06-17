@@ -175,7 +175,7 @@ rw::math::Q SerialDeviceController::getQd(){
 }
 
 bool SerialDeviceController::isMoving(){
-	return _currentQd.normInf()<0.001 && _targetQueue.size()==0;
+	return _currentQd.normInf()>0.001 || _targetQueue.size()>0;
 }
 
 void SerialDeviceController::addTarget(const Target& target){
@@ -272,6 +272,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 
 				if(ntarget.type==PTP){
 					sequence.push_back( ntarget );
+					lastQ = sequence.back().q_target;
 				} else {
 					// only PTP and PTP_T targets can be in this sequence. So start a new if this is not compatible.
 					break;
@@ -288,14 +289,18 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 				double timeGuess = metric->distance(sequence[k].q_start, sequence[k].q_target );
 				std::cout << "timeguess: " << timeGuess << std::endl;
 
-				time+=timeGuess*std::min(target.speed, 1.0f); // scale time such that speed is taken into account
+				time+=timeGuess/std::min(target.speed, 1.0f); // scale time such that speed is taken into account
+				if (timeGuess < 1e-9)
+					continue;
 				path->push_back( TimedQ( time, sequence[k].q_target ) );
 			}
 
 			CompiledTarget ttarget;
 			ttarget.toId = sequence.back().id;
 
-			//std::cout << "Make trajectory from-to: "<< (*path)[0] << " to " << (*path)[1] << std::endl;
+			std::cout << "path size: " << path->size() << std::endl;
+			std::cout << "Make trajectory from-to: "<< path->at(0).getValue() << " to " << path->at(1).getValue() << " time " << path->at(0).getTime() << " to " << path->at(1).getTime() << std::endl;
+			std::cout << "last: "<< path->at(0).getValue() << " to " << path->back().getValue() << " time " << path->at(0).getTime() << " to " << path->back().getTime() << std::endl;
 			ttarget.qtraj = CubicSplineFactory::makeClampedSpline(path, lastQd, Q::zero( lastQd.size() ));
 			// finally reset the velocity in the end point
 			lastQ = path->back().getValue();
@@ -577,9 +582,9 @@ void SerialDeviceController::updateFTcontrolWrist(
 
     rw::math::Q ddq = rw::math::Q::zero(q.size());
 
-    std::vector<Vector3D<> > torques = dsolver.solveMotorTorques(state, ddq, ddq);
-    for(int i=0;i<torques.size();i++){
-    	tauCompensate(i)  = torques[i].norm2();
+    std::vector<double> torques = dsolver.solveMotorTorques(state, ddq, ddq);
+    for(int i=0;i<torques.size()-1;i++){
+    	tauCompensate(i)  = torques[i];
     }
 
     std::cout << "COMPENSATE: " << tauCompensate << std::endl;
@@ -695,14 +700,14 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			std::cout << "Currtime: " << _currentTrajTime << std::endl;
 			std::cout << "Start: " << traj.qtraj->x(traj.qtraj->startTime()) << std::endl;
 			std::cout << "End: " << traj.qtraj->x(traj.qtraj->endTime())<< std::endl;
-			for(int i=0;i<100;i++){
+			/*for(int i=0;i<100;i++){
 
 				std::cout << traj.qtraj->x( i*traj.qtraj->endTime()/100 ) << std::endl;
 			}
 			std::cout << std::endl;
 			for(int i=0;i<100;i++){
 				std::cout << traj.qtraj->dx( i*traj.qtraj->endTime()/100 ) << std::endl;
-			}
+			}*/
 
 		} else if(traj.t3dtraj!=NULL ){
 			std::cout << "t3dtraj: " << traj.t3dtraj->startTime() << " --> " << traj.t3dtraj->endTime() << std::endl;
@@ -733,7 +738,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		// the trajectory is finished.
 		// check if we should start another compiled target
 		if(_compiledTargets.empty()){
-			RW_WARN("Finished and no compiled in queue! " << _currentTrajTime << "s");
+			//RW_WARN("Finished and no compiled in queue! " << _currentTrajTime << "s");
 			// if no targets are ready then Keep setting the velocity to zero.
 			// TODO: we might need to make sure that the robot does not drift...
 			_currentQ = _ddev->getQ(state);
@@ -741,7 +746,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			_ddev->setMotorVelocityTargets(Q::zero(_ddev->getKinematicModel()->getDOF()), state);
 			return;
 		} else {
-			RW_WARN("Target avail!");
+			//RW_WARN("Target avail!");
 			_executingTarget = _compiledTargets.front();
 			_currentTrajTime = 0;
 			_compiledTargets.pop_front();
@@ -762,7 +767,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 
 		// now calculate the velocity of the robot such that we reach next_target_q in the next timestep
 		Q target_vel = (next_target_q - _currentQ)/info.dt - _currentQd;
-		std::cout << _currentTrajTime << ", "<< next_target_vel << std::endl;
+		//std::cout << _currentTrajTime << ", "<< next_target_vel << std::endl;
 		//_ddev->setMotorVelocityTargets( target_vel, state);
 		_ddev->setMotorVelocityTargets( next_target_vel, state);
 	} else if(_executingTarget.ftcontrol ){

@@ -150,13 +150,13 @@ public:
 	std::vector<rw::math::Wrench6D<> > solve(const rw::kinematics::State &state, const rw::math::Q dq = rw::math::Q(), const rw::math::Q ddq = rw::math::Q()) const;
 
 	/**
-	 * @brief Get the torque provided by each motor in base coordinates.
+	 * @brief Get the torque provided by each motor.
 	 * @param state [in] state (position) of the robot
 	 * @param dq [in] the joint velocities
 	 * @param ddq [in] the joint accelerations
-	 * @return the torques provided by each motor in base coordinates
+	 * @return the torques provided by each motor
 	 */
-	std::vector<rw::math::Vector3D<> > solveMotorTorques(const rw::kinematics::State &state, const rw::math::Q &dq, const rw::math::Q &ddq) const;
+	std::vector<double> solveMotorTorques(const rw::kinematics::State &state, const rw::math::Q &dq, const rw::math::Q &ddq) const;
 
 	/**
 	 * @brief Check if solver will work for the given device - if not an exception will be thrown when trying to solve.

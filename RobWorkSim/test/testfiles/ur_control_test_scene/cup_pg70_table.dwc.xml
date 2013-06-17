@@ -9,7 +9,7 @@
    <Property name="MaxSepDistance" type="float">0.001</Property>
  </PhysicsEngine>
 
- <Gravity>0 0 -9.8</Gravity>
+ <Gravity>0 0 -9.82</Gravity>
  
  <Include file="DynamicMaterialDataBase.xml"/>
  
@@ -42,7 +42,7 @@
 <FixedBody frame="Floor">
   <MaterialID>Plastic</MaterialID> </FixedBody>
 
- <Include file="../devices/UR6855A/UR6855A.dwc.xml"/>
+ <Include file="../devices/UR6855A/UR6855A_PG70.dwc.xml"/>
   
 
 
