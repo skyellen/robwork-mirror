@@ -225,7 +225,6 @@ std::vector<double> RecursiveNewtonEuler::solveMotorTorques(const State &state, 
 		res[k] = dot(jointForces[k].torque(),z);
 	}
 	res[res.size()-1] = dot(jointForces[res.size()-1].torque(),z);
-	std::cout << "asd: " << res << std::endl;
 	return res;
 }
 
