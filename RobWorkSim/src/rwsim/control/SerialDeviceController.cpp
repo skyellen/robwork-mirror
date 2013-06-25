@@ -141,6 +141,7 @@ bool SerialDeviceController::moveLinFC(const rw::math::Transform3D<>& target,
 	// todo: set the refframe and offset
 	_taskFrame = _ddev->getKinematicModel()->getEnd();
 
+
 	cmd_target.lin_target = target;
 	cmd_target.speed = speed * 1.0/100.0;
 	cmd_target.blend = blend;
@@ -217,8 +218,12 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 		ctarget.ftcontrol = true;
 
 		// todo: here we need to use cubic splines or something like it. Currently the "start" velocity will not be taken into account
-	    LinearInterpolator<Transform3D<> >::Ptr ramp =
-	            rw::common::ownedPtr( new LinearInterpolator<Transform3D<> >( lastT , targets.back().lin_target,10.0));
+
+		Metric<Transform3D<> >::Ptr t3d_metric = MetricFactory::makeTransform3DMetric<double>(1.2/_linVelMax, 1.2/_angVelMax  );
+		double timeGuess = t3d_metric->distance(lastT, targets.back().lin_target);
+		std::cout << "TIMEGUESS: " << timeGuess << std::endl;
+		LinearInterpolator<Transform3D<> >::Ptr ramp =
+	            rw::common::ownedPtr( new LinearInterpolator<Transform3D<> >( lastT , targets.back().lin_target,timeGuess /* *(100.0/targets.back().speed )*/ ));
 	    InterpolatorTrajectory<Transform3D<> >::Ptr  ttraj = rw::common::ownedPtr( new InterpolatorTrajectory<Transform3D<> >() );
 	    ttraj->add(ramp);
 	    ctarget.t3dtraj = ttraj;
@@ -505,74 +510,18 @@ void SerialDeviceController::updateFTcontrolWrist(
     Eigen::Matrix<double, 6, 1> E = bXe_err.e();
     Eigen::Matrix<double, 6, 1> Ed = bXde_err.e();
     // Kp is the positional error gain, and Kv is the volocity error gain matrix
-    Eigen::Matrix<double, 6, 1> Edd = bXdd_t.e() + Kp*E + Kv*Ed;
+    //Eigen::Matrix<double, 6, 1> Edd = bXdd_t.e() + Kp*E + Kv*Ed;
 
 
-    // now compute the mass matrix
-
-    // mass matrix
-    //Eigen::MatrixXd Mq(_ddev->getKinematicModel()->getDOF(), _ddev->getKinematicModel()->getDOF() );
-
-
-    // the cartesean mass matrix is defined by
-    //Eigen::MatrixXd Jt = J.e().transpose();
-    //Eigen::Matrix<double, 6, 6> Mx = LinearAlgebra::pseudoInverseEigen(Jt) * Mq * LinearAlgebra::pseudoInverseEigen(J.e());
+	Wrench6D<> env_w;
+	env_w(0) = E[0] * 10/0.01;// 10N per 0.01m
+	env_w(1) = E[1] * 10/0.01; ;// 10N per 0.01m
+	env_w(2) = E[2] * 10/0.01; ;// 10N per 0.01m
+	env_w(3) = E[3] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
+	env_w(4) = E[4] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
+	env_w(5) = E[5] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
 
 
-
-
-
-
-	//Eigen::VectorXd q_error = LinearAlgebra::pseudoInverseEigen( S*J.e() ) * Xe.e();
-    /*
-    Q b_error( prod( LinearAlgebra::pseudoInverse( J.m() ), bXde.m()) );
-    double dq_len = b_error.normInf();
-    if( dq_len > 0.8 )
-    	b_error *= 0.8/dq_len;
-	*/
-	/*
-	Jp = LinearAlgebra::pseudoInverse(J.m());
-    Q dq ( prod( Jp , dS ) );
-    double dq_len = dq.normInf();
-    if( dq_len > 0.8 )
-        dq *= 0.8/dq_len;
-    q += dq;
-    */
-	//Eigen::VectorXd q_error = b_error.e();
-
-	// now the force part
-	//Wrench6D<> bFe = bFd-bFa;
-
-	//Eigen::VectorXd tau_error =(Sf*J.e()).transpose()*bFe.e();
-
-
-	// compute torques imposed by gravity
-
-	std::vector<dynamics::Body::Ptr> links = _rdev->getLinks();
-	std::vector<rw::models::Joint*> joints = _rdev->getJointDevice()->getJoints();
-	//std::cout << links.size() << ">" << joints.size() << std::endl;
-	rw::math::Q tauCompensate(joints.size());
-
-	for(int i=0;i<joints.size();i++){
-		// go through all links and compute their contribution to the torque
-		Transform3D<> wTj = rw::kinematics::Kinematics::worldTframe(joints[i], state);
-		double jT = 0;
-		for(int j=i;j<links.size();j++){
-			Transform3D<> wTl = rw::kinematics::Kinematics::worldTframe(links[j]->getBodyFrame(), state);
-			Transform3D<> jTl = rw::kinematics::Kinematics::frameTframe(joints[i],links[j]->getBodyFrame(), state);
-
-			//jTl.P() += jTl.R()*( -links[j]->getInfo().masscenter );
-
-			Vector3D<> jF = inverse(wTj.R()) * (links[j]->getInfo().mass*Vector3D<>(0,0,-9.8) );
-			jT += cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF)[2]; // only take the z component
-			//std::cout << cross( jTl.P()+ jTl.R()*links[j]->getInfo().masscenter, jF) << std::endl;
-		}
-		tauCompensate[i] = -jT;
-	}
-
-	//tauCompensate[5] = 0;
-	//tauCompensate[4] = 0;
-	//std::cout << "TAU COMPENSATE: " << -tauCompensate << std::endl;
 
     // calculate compensation of robot
 
@@ -582,10 +531,12 @@ void SerialDeviceController::updateFTcontrolWrist(
 
     rw::math::Q ddq = rw::math::Q::zero(q.size());
 
-    std::vector<double> torques = dsolver.solveMotorTorques(state, ddq, ddq);
-    for(int i=0;i<torques.size()-1;i++){
-    	tauCompensate(i)  = torques[i];
-    }
+    // compute a wrench to apply to the end effector
+    // this is spring based
+    dsolver.setEnvironment( env_w );
+
+    // solve for the torques of the robot
+    rw::math::Q tauCompensate = dsolver.solveMotorTorques(state, ddq, ddq);
 
     std::cout << "COMPENSATE: " << tauCompensate << std::endl;
 	_rdev->setMotorForceTargets(tauCompensate, state);
