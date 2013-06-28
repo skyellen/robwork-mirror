@@ -84,7 +84,7 @@ void SimTemplatePlugin::startSimulation() {
         _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
         ThreadSimulator::StepCallback cb( boost::bind(&SimTemplatePlugin::step, this, _1, _2) );
         _tsim->setStepCallBack( cb );
-        _tsim->setPeriodMs(100);
+        _tsim->setRealTimeScale(1.0);
         _tsim->setTimeStep(0.01);
 
         // if we want some debug information visualized then we add a render
@@ -105,7 +105,7 @@ void SimTemplatePlugin::startSimulation() {
     }
 
     _delaySpin->setValue(100);
-    _tsim->setPeriodMs(100);
+    _tsim->setRealTimeScale(1.0);
     _wallTimer.resetAndResume();
     _wallTotalTimer.resetAndResume();
 
@@ -143,7 +143,7 @@ void SimTemplatePlugin::btnPressed() {
     } else if(obj==_delaySpin){
         int val = _delaySpin->value();
         if(_tsim!=NULL)
-            _tsim->setPeriodMs(val);
+            _tsim->setRealTimeScale(val/100.0);
     } else if(obj==_timer){
         // update the RobWorkStudio state
         // we poll the simulator state and updates the visualization state
@@ -157,36 +157,7 @@ void SimTemplatePlugin::stateChangedListener(const State& state) {
 
 void SimTemplatePlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
     State tmpState = state;
-    // in here we are able to perform stuff on the simulation control
-    KinematicBody *body = _dwc->findBody<KinematicBody>("PG70.Base");
-    PDController::Ptr jc = _dwc->findController<PDController>("GraspController");
-    PoseController::Ptr jp = _dwc->findController<PoseController>("URPoseController");
-    if (body != NULL) {
-        //body->setForce( Vector3D<>(0,1,0), tmpState );
-
-        _sim->setTarget(body, Transform3D<>(Vector3D<>(0, 0, 2)), tmpState);
-
-    }
-
-    if(jc!=NULL){
-        std::cout << ((int)sim->getTime()) % 2 << std::endl;
-        Q q = jc->getModel().getQ(state);
-        if( ((int)sim->getTime()) % 2 ){
-            jc->setTargetPos( jc->getModel().getBounds().first );
-        } else {
-            jc->setTargetPos( jc->getModel().getBounds().second );
-        }
-    }
-
-    if(jp!=NULL){
-        std::cout << ((int)sim->getTime()) % 2 << std::endl;
-        if( ((int)sim->getTime()) % 2 ){
-            jp->setTarget( Transform3D<>( Vector3D<>(0,0.5,0.7) ) );
-        } else {
-            jp->setTarget( Transform3D<>( Vector3D<>(0,-0.5,0.7) ) );
-        }
-    }
-
+    // TODO: in here we are able to perform stuff on the simulation control
     sim->setState(tmpState);
 }
 
