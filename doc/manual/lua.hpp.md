@@ -1,4 +1,5 @@
-# Lua scripting language interface # {#page_lua}
+Lua scripting language interface {#page_lua}
+===============================
 
 [TOC]
 

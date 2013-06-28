@@ -1,4 +1,5 @@
-# Release Notes of RobWork #	  {#pagereleasenotes}
+Release Notes of RobWork  {#pagereleasenotes}
+========================
 
 [TOC]
 

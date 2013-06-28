@@ -7,9 +7,10 @@ All tutorials go into this page
 
 - \subpage page_rw_robwork_primer
 
-- \subpage page_rw_robwork_plugins
+- \subpage robworkplugins
 
-- \subpage page_rw_robworkstudio_plugins
+- \subpage page-rw-robworkstudio-plugins
 
+- \subpage page_rw_robwork_primer
 
 

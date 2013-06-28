@@ -1,5 +1,5 @@
-# Installation # {#page_rw_installation}
-
+Installation {#page_rw_installation}
+============ 
 [TOC]
 
 # Introduction # {#sec_rw_install_intro}
@@ -76,7 +76,7 @@ The build system in RobWork is based on cmake which enables the support for seve
 Pleace download and install cmake from <a href="http://www.cmake.org">CMake</a>. The
 top cmake file is placed at "RWPROJECTROOT/CMakeLists.txt" and a common approach to compiling the project is:
 
-~~~~
+~~~~{.bash}
 cd RWPROJECTROOT
 cmake -DCMAKE_BUILD_TYPE=Relase -G"MinGW Makefiles" .
 ~~~~
@@ -166,7 +166,7 @@ which sometimes complicates the installation.
 
 In this section you find guides to install these dependencies on your specific platform.
 
-\subsection subsec_rw_dependencies_linux Installing dependencies on linux (Ubuntu)
+## Installing dependencies on linux (Ubuntu) ## {#subsec_rw_dependencies_linux}
 For RobWork core, the following is needed:
 
 - gcc (version 4.1 or above), g++, cmake, blas-atlas, lapack-atlas, libxerces-c3.1, libboost-dev,
@@ -174,33 +174,24 @@ libboost-date-time-dev, libboost-filesystem-dev, libboost-program-options-dev, l
 libboost-serialization-dev, libboost-system-dev, libboost-test-dev, libboost-thread-dev, swig (optional)
 
 using apt-get this is:
-\verbatim
-sudo apt-get install gcc g++ cmake libatlas-base-dev libxerces-c3.1 libxerces-c-dev libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev libboost-thread-dev swig
-\endverbatim
 
-For RobWorkStudio additional libraries are needed
+	sudo apt-get install gcc g++ cmake libatlas-base-dev libxerces-c3.1 libxerces-c-dev libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev libboost-thread-dev swig
 
-- qt4-dev-tools, libqt4-dev, qt4-designer (optional)
+For RobWorkStudio additional libraries are needed: qt4-dev-tools, libqt4-dev, qt4-designer (optional)
 
-\verbatim
-sudo apt-get install qt4-dev-tools libqt4-dev qt4-designer
-\endverbatim
+	sudo apt-get install qt4-dev-tools libqt4-dev qt4-designer
 
 And if RobWorkSim is required then installing the Open Dynamics Engine is strongly recommended.
 
 - libode-dev, libode1
 
-\verbatim
-sudo apt-get install libode-dev libode1
-\endverbatim
+	sudo apt-get install libode-dev libode1
 
 RobWorkHardware is a bit more difficult because more or less all packages depend on some specific driver,
 software library or platform.
 
 
-
-
-\subsection subsec_rw_dependencies_winvc Installing dependencies on windows with Visual Studio
+## Installing dependencies on windows with Visual Studio ## {#subsec_rw_dependencies_winvc}
 For \b RobWork core functionality the following is needed:
 
 - cmake, xerces 3.1, boost, swig (optional)
@@ -227,10 +218,9 @@ http://www.boostpro.com/download . Make sure to choose the MultiThreaded libs on
 Alternatively download Boost from http://www.boost.org/users/download/ and compile it your self. When
 configuring make sure to enable all packages, something like:
 
-\verbatim
-bjam --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization
---with-system --with-test --with-thread --prefix=.\ --layout=tagged toolset=YOUR_TOOLSET install
-\endverbatim
+
+	bjam --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization
+	--with-system --with-test --with-thread --prefix=.\ --layout=tagged toolset=YOUR_TOOLSET install
 
 SWIG can be downloaded and installed from <a href="http://www.swig.org/">SWIG</a>. Please specify the path to
 SWIG in the RobWork.cmake eg. SET(SWIG_EXECUTABLE path_to_swig_exe_including_file)
@@ -244,25 +234,28 @@ Download Qt libraries for Windows (VS 2008) from http://qt.nokia.com/downloads u
  The Visual Studio Add-in can be found on the same page under Other Downloads.
 
 First install the Qt libraries and then the Visual Studio Add-in. When installed, create an environment variable
-QTDIR with the value c:\qt\VERSION and add c:\qt\VERSION\bin to the PATH environment variable where c:\qt\VERSION is
+QTDIR with the value c:/qt/VERSION and add c:/qt/VERSION/bin to the PATH environment variable where c:/qt/VERSION is
 the installation directory.
 
 \b Visual Studio 2005-2010 x86|amd64 <br>
 Unfortunately Qt does not have a binary distribution for Visual Studio 2005 and 2010. You therefore need to download the source and compile Qt yourself.
-Go to the Qt download page at http://qt.nokia.com/downloads. Choose the open source LGPL version and download the source code (zip or tar.gz) under the Framework Only section and extract the archive. Assuming you have extracted the Qt source into c:\Qt\VERSION, follow these steps:
+Go to the Qt download page at http://qt.nokia.com/downloads. 
+Choose the open source LGPL version and download the source code (zip or tar.gz) under the 
+Framework Only section and extract the archive. 
+Assuming you have extracted the Qt source into c:/Qt/VERSION, follow these steps:
 - Open a Visual Studio terminal one of the following ways:
     - In the Visual Studio start menu folder, go to "Visual Studio Tools" and open "Visual Studion 2005|2008|2010 Command Prompt".
-    - Open a command promt and run vcvarsall.bat x86|amd64 (found in e.g. c:\Program Files (x86)\Microsoft Visual Studio 8|9|10.0\VC) to setup the Visual Studio toolset
-- In the command prompt cd to the c:\Qt\VERSION folder
+    - Open a command promt and run vcvarsall.bat x86|amd64 (found in e.g. c:/Program Files (x86)/Microsoft Visual Studio 8|9|10.0\VC) to setup the Visual Studio toolset
+- In the command prompt cd to the c:/Qt/VERSION folder
 - Visual Studio 10 amd64 users only: due to a bug reported here, Qt will produce a runtime error with the default compiler settings. Therefore, you need to modify the compiler flags for this platform:
-    - Open c:\Qt\VERSION\mkspecs\win32-msvc2010\qmake.conf in a text editor
+    - Open c:/Qt/VERSION/mkspecs/win32-msvc2010/qmake.conf in a text editor
     - Change the optimization flag in "QMAKE_CFLAGS_RELEASE" from "-O2" to "-O1"
 - Run (VERSION dependent):
     - 2010.04 (4.6) and higher: configure -opensource -no-sql-sqlite -no-qt3support -no-webkit -no-scripttools -fast -platform win32-msvc2005|win32-msvc2008|win32-msvc2010
     - 2009.04: configure -opensource -no-sql-sqlite -no-qt3support -no-webkit -fast -platform win32-msvc2005|win32-msvc2008|win32-msvc2010
 - It is important to specify -platform to tell which toolset to use. The remaining options might be choosen differently. If asked, accept the license
 - Call nmake to build Qt for Visual Studio (this step requires the patience of a saint)
-- Create an environment variable QTDIR with the value c:\Qt\VERSION and add c:\Qt\VERSION\bin to the PATH environment variable
+- Create an environment variable QTDIR with the value c:/Qt/VERSION and add c:/Qt/VERSION/bin to the PATH environment variable
 
 Qt Visual Studio Add-in:
 - Download and install the Qt Visual Studio Add-in
@@ -277,9 +270,5 @@ If you have problems compiling, please visit: http://dcsoft.com/community\_serve
 software library or platform.
 
 
-\subsection subsec_rw_dependencies_winmingw Installing dependencies on windows with MinGW
-TODO: add mingw installation description.
-
-
-
-*/
+## Installing dependencies on windows with MinGW ## {#subsec_rw_dependencies_winmingw}
+TODO: add mingw installation description. NOT CURRENTLY SUPPORTED

@@ -1,4 +1,5 @@
-# RobWork SceneGraph design # {#page_scenegraph}
+RobWork SceneGraph design  {#page_scenegraph}
+=========================
 
 [TOC]
 

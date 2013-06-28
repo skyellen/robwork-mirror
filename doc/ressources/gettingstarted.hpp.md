@@ -1,8 +1,9 @@
-# Getting Started # {#page_rw_gettingstarted}
+Getting Started  {#page_rw_gettingstarted}
+================
 
 [TOC]
 
-# Getting started with Lua #
+## Getting started with Lua ##
 TODO: describe how to use lua (embedded vs external) together with RobWork and present some 
 usefull scripts
 

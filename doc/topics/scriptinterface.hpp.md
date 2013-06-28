@@ -1,4 +1,7 @@
-# Script interface # 	{#page_rw_scriptinterface}
+Script interface  	{#page_rw_scriptinterface}
+=================
+
+[TOC]
 
 # Introduction # 	{#sec_rw_sinterface_intro}
 

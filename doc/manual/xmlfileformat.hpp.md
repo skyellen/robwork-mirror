@@ -1,4 +1,5 @@
-# RW XML File Format # {#page_xml_workcell_format}
+RW XML File Format  {#page_xml_workcell_format}
+==================
 
 [TOC]
 
@@ -107,7 +108,7 @@ workcell
 
 \section sec_rwxml_elements XML Elements
 
-\subsection sec_rwxml_workcell WorkCell
+## WorkCell ## {#sec_rwxml_workcell}
 
 \b Element WorkCell
 
@@ -129,7 +130,7 @@ rule := *( DeviceType | Frame | Joint | DHJoint | CollisionModel | Drawable | Co
 </WorkCell>
 \endverbatim
 
-\subsection sec_rwxml_device Device
+## Device ## {#sec_rwxml_device}
  The different device types are much alike when considering the child elements
 that they allow. Though they vary somehow in the implicit rules of frame
 attachment.
@@ -139,7 +140,7 @@ attachment.
  name appended. Ex. given a device "dev" and a frame "base" in the device
  the complete frame name becomes: "dev.base"
 
-\subsubsection sec_rwxml_serialdevice SerialDevice
+### SerialDevice ###
 The serial device only allows joints to be connected in a serial chain. And
 it also only allows one single endeffector.
 
@@ -169,7 +170,7 @@ it also only allows one single endeffector.
 </SerialDevice>
 \endverbatim
 
-\subsubsection sec_rwxml_treedevice TreeDevice
+### TreeDevice ###
 The tree device allows joints to be connected in a tree like structure. And
 it also allows for multiple endeffectors.
 
@@ -199,7 +200,7 @@ it also allows for multiple endeffectors.
 </TreeDevice>
 \endverbatim
 
-\subsubsection sec_rwxml_paralleldevice ParallelDevice
+### ParallelDevice ###
 The parallel device is like a number of serial devices (with same base) with all endeffectors
 rigidly connected together. The initial configuration of the robot is required
 to make all endeffectors align in the same pose.
@@ -228,7 +229,7 @@ to make all endeffectors align in the same pose.
 </ParallelDevice>
 \endverbatim
 
-\subsubsection sec_rwxml_mobiledevice MobileDevice
+### MobileDevice ###
 The mobile device defines a two wheeled mobile robot where the two
 wheels are on the same axel displaced from the center of the axel with
 some width \b AxelWidth.
@@ -262,7 +263,7 @@ some width \b AxelWidth.
 </MobileDevice>
 \endverbatim
 
-\subsection sec_rwxml_frame Frame
+## Frame ##
 
 \b Attributes
 - \b name: a string identifying the frame.
@@ -281,7 +282,7 @@ some width \b AxelWidth.
 </Frame>
 \endverbatim
 
-\subsubsection sec_rwxml_joint Joint
+### Joint ###
 
 \b Attributes
 - \b name: a string identifying the frame.
@@ -298,7 +299,7 @@ some width \b AxelWidth.
 
 \b Example
 
-\subsubsection sec_rwxml_dhjoint DHJoint
+### DHJoint ###
 A joint that is defined from the Denavit Hartenberg notation.
 The Craig DH variant is used. This can only specify Revolute
 or Prismatic joints
@@ -515,6 +516,3 @@ x >> y >> z
 \verbatim
 <AccLimit refjoint="joint1" max="180" />
 \endverbatim
-
-
-*/

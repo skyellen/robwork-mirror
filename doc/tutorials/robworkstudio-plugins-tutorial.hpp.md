@@ -1,19 +1,19 @@
-/**
-\page page_rw_robworkstudio_plugins RobWorkStudio/GUI plugins
+RobWorkStudio/GUI plugins	 {#page-rw-robworkstudio-plugins} 
+=========================
 
+[TOC]
+
+# Introduction #
 These tutorials will walk through the creation and possibillities of a RobWorkStudio plugin. The topics will
 include creation, basic RobWorkStudio event usage,
 
-\section sec_rws_plugin_content Content
-
-
-
-\section sec_rws_first_plugin Tutorial 1 – Your first RobWorkStudio plugin
+# Tutorial 1 – Your first RobWorkStudio plugin # {#sec_rws_first_plugin}
  This tutorial will go through the creation of a RobWorkStudio plugin using cmake. The plugin is very simple
  and for illustrative purposes includes two buttons with event handling.
  Compared to tutorial 1, we need a bit more work. Specifically we need to create a class that implements
  the RobWorkStudioPlugin class interface. Let us start by defining the CMakeLists.txt file
- \code
+ 
+ ~~~
  CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
  # The name of the project.
  PROJECT(SamplePluginApp)
@@ -37,23 +37,23 @@ include creation, basic RobWorkStudio event usage,
  # The shared library to build:
  ADD_LIBRARY(SamplePlugin MODULE SamplePlugin.cpp ${MocSrcFiles} ${RccSrcFiles})
  TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
- \endcode
+ ~~~
 
  As can be seen we need to make three files.
  resources.qrc: Is a QT resource file. We will not use this right now but later it will be used for embedding
  images/icons in your plugins and exefiles.
- \code
+~~~{.xml}
  <!DOCTYPE RCC><RCC version="1.0">
  <qresource>
  <!--file>pa_icon.png</file -->
  </qresource>
  </RCC>
- \endcode
+~~~
 
  SamplePlugin.hpp: The plugin header file declares the basic functionalities that we inherit from the
  RobWorkStudioPlugin interface. Beside the inherited interface we add two QPushButton pointers.
 
- \code
+ ~~~{.cpp}
  #ifndef SAMPLEPLUGIN_HPP
  #define SAMPLEPLUGIN_HPP
  #include <rw/rw.hpp>
@@ -76,11 +76,11 @@ include creation, basic RobWorkStudio event usage,
  QPushButton* _btn0,*_btn1;
  };
  #endif // SAMPLEPLUGIN_HPP
- \endcode
+ ~~~
 
  SamplePlugin.cpp: The plugin source file implements the basic functionality.
 
- \code
+~~~{.cpp}
  #include "SamplePlugin.hpp"
  #include <QPushButton>
  #include <RobWorkStudio.hpp>
@@ -127,16 +127,15 @@ include creation, basic RobWorkStudio event usage,
  }
  }
  Q_EXPORT_PLUGIN(SamplePlugin);
- \endcode
+~~~
 
- \subsection rw_updating_states Excercise 1 - Updating the states
+## Excercise 1 - Updating the states ## {#rw_updating_states}
  Extend the plugin such that any device in scene will add 0.01 to all its joints when _btn0 is pushed and
  substract 0.01 each time _btn1 is pushed. Remember to update the RobWorkStudio state after changing it.
  In this exercise you should look at setState/getState on the RobWorkStudio interface and
  getRobWorkStudio() on RobWorkStudioPlugin interface.
 
- \subsection rw_saving_states Exercise 2 – Saving the state
+## Exercise 2 – Saving the state ## {#rw_saving_states}
  Extend the plugin example with two new buttons. One that saves the current state in a member variable of
- the plugin, and a second button tha
+ the plugin, and a second button that
 
- */

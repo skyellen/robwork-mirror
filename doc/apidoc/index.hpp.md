@@ -35,15 +35,17 @@ their applications.
 
 
 # Release Notes # {#sec_release_notes}
-Changelog and release notes can be found here [Release Notes](@ref page_release_notes)
+Changelog and release notes can be found here [Release Notes](@ref pagereleasenotes)
 
 # Manuals and tutorials # {#sec_index_manual}
 
-- [Getting Started](@ref md_gettingstarted), [Installation](@ref md_installation), [Manual (C++)](@ref md_manual), 
+- [Getting Started](@ref page_rw_gettingstarted), [Installation](@ref page_rw_installation), 
+[Manual (C++)](@ref page_rw_manual), 
 
 Other topics include
-- [Motion Planning](@ref md_motionplanning), [Online Control](@ref md_onlinecontrol), [Grasp Simulation](@ref md_graspsimulation), 
-[Plugins](@ref md_pugins), [Scrip Interface](@ref md_scriptinterface), [Codeguidelines](@ref md_codeguidelines)  
+- [Motion Planning](@ref md_motionplanning), [Online Control](@ref page_rw_onlinecontrol), 
+[Grasp Simulation](@ref page_rw_graspsimulation), [Plugins](@ref page_rw_plugins), 
+[Scrip Interface](@ref page_rw_scriptinterface), [Codeguidelines](@ref page_coding_guidelines)  
 
 
 # Download # {#sec_index_download}
@@ -54,7 +56,7 @@ Other topics include
 instructions are typically more up to date and these can be found at the <a href="http://www.robwork.dk">RobWork homepage</a>.
 
 # License # {#sec_index_license}
-RobWork is distributed under the "Apache License, Version 2.0", [See here](@ref md_license). For convenience, a number of
+RobWork is distributed under the "Apache License, Version 2.0", [See here](@ref rw_license). For convenience, a number of
 open-source libraries are distributed together with RobWork; the
 RobWork license does not apply to these libraries.
 

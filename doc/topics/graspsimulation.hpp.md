@@ -1,4 +1,7 @@
-# Grasp Simulation # {#page_rw_graspsimulation}
+Grasp Simulation {#page_rw_graspsimulation}
+================
+
+[TOC]
 
 # Introduction # {#sec_rw_gsim_intro}
 
@@ -14,20 +17,20 @@ when one wants to do simulation on several computers in parallel.
 This script use the semi-uniform sampling (TODO: insert ref) and can be used for typical grippers. 
 Take a look in the script and change parameters such as approach, retract and opening and closing of gripper.
 
-> ./SimulateTaskLB --dwc=<dwc_file> --output=<out_dir> --gripper=<GS20|GS20_WIDE> --object=object --gentask=true
+> ./SimulateTaskLB --dwc=[dwc_file] --output=[out_dir] --gripper=[GS20|GS20_WIDE] --object=object --gentask=true
 
 The above command line will continue sampling and simulating grasps until a 100000 grasps has been generated. This include
 grasps that fails or are in collisions. The grasps will be located in multiple files and each file will have up to 5000 
 grasps. If you want to filter and only keep the successfull grasps then it can be done with gtmerge:
 
-> ./gtmerge --output=<out_file> --oformat=<RWTASK|UIBK|Text> --include=Success --include=ObjectSlipped --input=<input_dir>
+> ./gtmerge --output=[out_file] --oformat=[RWTASK|UIBK|Text] --include=Success --include=ObjectSlipped --input=[input_dir]
 
-where <input_dir> is the same as <out_dir> in the first script eksecution.  
+where [input_dir] is the same as [out_dir] in the first script execution.  
 
 ### Script without sampling ###
 This script simulates all grasps that has been specified in a grasp task file.
 
-> ./SimulateTask --dwc=<dwc_file> --output=<output_task_result> --input=<input_task>
+> ./SimulateTask --dwc=[dwc_file] --output=[output_task_result] --input=[input_task]
 
 
 

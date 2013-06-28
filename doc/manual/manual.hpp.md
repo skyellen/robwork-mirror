@@ -1,5 +1,5 @@
-# User Manual (C++) # {#page_rw_manual}
-
+User Manual (C++)  {#page_rw_manual}
+=================
 [TOC]
 
 This manual introduce the reader to the C++ api of RobWork, how to use it, extend it and 
@@ -861,12 +861,10 @@ To compile the plugin you need to perform the following steps
 
 Once the plugin is build you need to tell RobWorkStudio to load it. This is done by editing the RobWorkStudio.ini file. If the RobWorkStudio.ini file does not exist you can copy the RobWorkStudio.ini.template from the bin directory. Within the template file you may have to remove the existing plugins and add the following
 
-\verbatim
-MyPlugin\DockArea=1
-MyPlugin\Filename=libmyplugin
-MyPlugin\Path=../../MyPlugin/
-MyPlugin\Visible=false
-\endverbatim
+	MyPlugin\DockArea=1
+	MyPlugin\Filename=libmyplugin
+	MyPlugin\Path=../../MyPlugin/
+	MyPlugin\Visible=false
 
 Be sure that the MyPlugin\Path points to where your library has been generated and that MyPlugin\Filename is correct. You should not add any file extension (this is resolved automatically).
 
@@ -1180,10 +1178,11 @@ weiss tactile sensors, swissranger and various robots such as the SDH, PA10 and 
 \subpage page_task
 
 # Scene Graph #
-\subpage md_scenegraph
+\subpage page_scenegraph
 
 # Lua #
-\subpage md_lua
+\subpage page_lua
 
 
-
+# Code Guidelines # 
+\subpage page_coding_guidelines

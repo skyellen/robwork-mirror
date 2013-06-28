@@ -1,4 +1,7 @@
-# Task descriptions # {#page_task}
+Task descriptions {#page_task}
+=================
+
+[TOC]
 
 ## Task description format ## {#sec_task_format}
 In RobWork tasks are described in a structured format with multiple layers. 

@@ -1,4 +1,5 @@
-# RobWork File Formats #	  {#pagerwfileformats}
+RobWork File Formats	  {#page-rw-file-formats}
+====================
 
 [TOC]
 
@@ -8,7 +9,7 @@ These formats will be described in the following.
 # WorkCell file format #
 
 ## XML WorkCell File Format ##
-\subpage page_xml_workcell_format _
+\subpage page_xml_workcell_format
 
 ## TUL file format (deprecated) ## 
 \subpage page_tul
@@ -28,7 +29,7 @@ These formats will be described in the following.
 
 # Path file format #
 
-# Propertty file format #
+# Property file format #
 
 
 

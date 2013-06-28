@@ -1,4 +1,5 @@
-# Code guide lines # {#page_coding_guidelines}
+Code guide lines	 {#page_coding_guidelines}
+================
 
 [TOC]
 
@@ -39,21 +40,21 @@ Use the following includeguards:
 \endcode
 
 example:
-\code
+~~~{.cpp}
 #ifndef RW_VWORKCELL_SERIALDEVICE_HPP
 #define RW_VWORKCELL_SERIALDEVICE_HPP
 
 #endif // RW_VWORKCELL_SERIALDEVICE_HPP
-\endcode
+~~~
 
 # c) Use of namespaces # 
-\code
+~~~{.cpp}
 namespace rw{
     namespace packagename{
 
     }
 }
-\endcode
+~~~
 
 do not use: "using namespace" in .hpp files. This violates the principle of namespaces
 "using namespace" must only be used in .cpp files.
@@ -61,7 +62,7 @@ do not use: "using namespace" in .hpp files. This violates the principle of name
 
 # d) Class definitions #
 place public members before protected members, place protected members before private members
-\code
+~~~{.cpp}
 class SerialDevice{
     public:
      ...
@@ -73,7 +74,7 @@ class SerialDevice{
     private:
      ...
 };
-\endcode
+~~~
 
 # e) Documentation #
 We use doxygen for documentations, doxygen tags should start with a "\@" (JavaDoc style). Brief member
@@ -92,7 +93,7 @@ Example of bad brief member descriptions:<br>
 There should be a space between class members and the next documentation block
 
 Right:
-\code
+~~~{.cpp}
 class Test{
     public:
     // @brief Performs the first test
@@ -101,10 +102,10 @@ class Test{
     // @brief Performs the second test
     void test2();
 };
-\endcode
+~~~
 
 Wrong:
-\code
+~~~{.cpp}
 class Test{
     public:
 
@@ -114,7 +115,7 @@ class Test{
     // @brief Performs the second test
     void test2();
 };
-\endcode
+~~~
 
 # f) Indentation #
 We use indentation level 4
@@ -146,7 +147,7 @@ When possible use the following notation for code and documentation:<br>
 </OL>
 
 Example.: (SerialDevice.cpp)
-\code
+~~~{.cpp}
 #include "SerialDevice.hpp"
 
 #include "Joint.hpp"
@@ -154,7 +155,7 @@ Example.: (SerialDevice.cpp)
 #include "math/Vector.hpp"
 
 #include <stdlib.h>
-\endcode
+~~~
 
 For source files in test, example and demo use the above rules but include the
 RobWork files as library files instead of local files (use <file.hpp> instead of "file.hpp")
@@ -195,13 +196,11 @@ Always specify a commit message stating what was changed (this makes it possible
 why you have changes and, more importantly, why you changed it)
 
 Right:
-\verbatim
-svn commit -m "fixed bug in SerialDevice causing a crash when there was only one frame in the serial chain"
-\endverbatim
+
+> svn commit -m "fixed bug in SerialDevice causing a crash when there was only one frame in the serial chain"
 
 Wrong:
-\verbatim
-svn commit -m ""
-\endverbatim
+
+> svn commit -m ""
 
 
