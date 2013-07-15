@@ -130,7 +130,7 @@ namespace {
         void init(){
             GLuint maxGLuintSize = (GLuint) -1;
             if( (_offscreenRender==false && _fbId>=0) ){
-                // offsreenrendering has been disabled so relase all allocated storage
+                // offsreenrendering has been disabled so release all allocated storage
                 // deallocate the framebuffer
                 if(_fbId!=maxGLuintSize)
                     RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
