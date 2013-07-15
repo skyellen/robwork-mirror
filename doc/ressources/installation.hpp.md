@@ -78,7 +78,7 @@ top cmake file is placed at "RWPROJECTROOT/CMakeLists.txt" and a common approach
 
 ~~~~{.bash}
 cd RWPROJECTROOT
-cmake -DCMAKE_BUILD_TYPE=Relase -G"MinGW Makefiles" .
+cmake -DCMAKE_BUILD_TYPE=Release -G"MinGW Makefiles" .
 ~~~~
 
 This will make an *in-source* build which is fine if you only need the project for a specific build type or compiler.
@@ -88,12 +88,12 @@ A slightly nicer approach is to create a subdirectory say "buildrelease" in whic
 cd RWPROJECTROOT
 mkdir buildrelease
 cd buildrelease
-cmake -DCMAKE_BUILD_TYPE=Relase -G"MinGW Makefiles" ..
+cmake -DCMAKE_BUILD_TYPE=Release -G"MinGW Makefiles" ..
 ~~~
 
 now all files generated in the compilation will be contained in "buildrelease" directory.
 
-You can customize the build using -DCMAKE_BUILD_TYPE=Relase or -DCMAKE_BUILD_TYPE=Debug, changing options in the gui with ccmake (linux) or
+You can customize the build using -DCMAKE_BUILD_TYPE=Release or -DCMAKE_BUILD_TYPE=Debug, changing options in the gui with ccmake (linux) or
 CMakeSetup.exe (windows), and you can edit the build configuration files
 
 - RWPROJECTROOT/RobWork/RobWork.cmake
