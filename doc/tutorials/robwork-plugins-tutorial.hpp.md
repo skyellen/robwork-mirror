@@ -1,5 +1,5 @@
-RobWork Plugins and Extensions 		{#robworkplugins} 
-==============================
+RobWork Plugins and Extensions   {#robworkplugins} 
+===============================
 
 This tutorial will cover the creation and usage of RobWork plugins. This should not be confused with
 the QT based GUI plugins which are discussed in another tutorial \ref page-rw-robworkstudio-plugins.

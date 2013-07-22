@@ -1,5 +1,5 @@
-RobWorkStudio/GUI plugins 	{#page_rw_robworkstudio_plugins} 
-=========================
+RobWorkStudio/GUI plugins     {#page-rw-robworkstudio-plugins} 
+===========================
 
 [TOC]
 
