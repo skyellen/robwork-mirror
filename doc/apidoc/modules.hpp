@@ -130,12 +130,12 @@ namespace rwlibs {
 	namespace proximitystrategies {}
 
 	/**
-    	*   @brief Simulation of cameras and other I/O units.
-        */
+	 *   @brief Simulation of cameras and other I/O units.
+     */
 	namespace simulation {}
 
 	/**
-         *@brief Simulation of beam models and other soft bodies
+     * @brief Simulation of beam models and other soft bodies
 	 * 
 	 * 
 	 * A collection of various soft body simulations, in particular beam models.
@@ -144,6 +144,8 @@ namespace rwlibs {
 	 * Currently it implements the non-linear 'Modified Russel' beam model, described in the Ph.D. dissertation 'Modeling and Simulation of Grasping of Deformable Objects' by Andreas Rune Fugl (2012).
    	 */
 	namespace softbody {}
+
+	namespace swig {}
 }
 
 /**
@@ -282,6 +284,11 @@ namespace rwlibs {
         @copydoc rwlibs::softbody
     @}
 
+    @defgroup swig swig
+    @{
+        @copydoc rwlibs::swig
+    @}
+
 @}
 */
 
@@ -291,7 +298,10 @@ namespace rwlibs {
 
 
 /**
- * @brief RobWorkStudio is the visualization framework of RobWork. It depends on Qt and the core RobWork
+ * @brief RobWorkStudio is the visualization framework of RobWork.
+ *
+ * It depends on Qt and the core RobWork.
+ *
  */
 namespace rws {
 
@@ -315,12 +325,12 @@ namespace rwslibs {
 /**
 @defgroup rws RobWorkStudio
 @{
-    @copydoc ::rws
+    @copydoc rws
 @}
 
 @defgroup rwslibs RobWorkStudio Extension Libraries
 @{
-    @copydoc ::rwslibs
+    @copydoc rwslibs
 @}
 */
 
@@ -416,7 +426,7 @@ namespace rwhw {
 
 /**
 
-@defgroup rwhw rwhw
+@defgroup rwhw RobWorkHardware
 @{
     @copydoc rwhw
 
@@ -499,5 +509,11 @@ namespace rwhw {
 @{
     @brief This group should contain all extension points of RobWork.
 @}
+
+@defgroup sandbox Sandbox
+@{
+    @brief compilable stuff under development should go into the sandbox group.
+@}
+
 
 */
