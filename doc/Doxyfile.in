@@ -7,7 +7,7 @@ DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = RobWorkProject
 PROJECT_NUMBER         = @ROBWORK_VERSION@
 PROJECT_BRIEF          =
-PROJECT_LOGO           = rw_logo_64x64.png
+PROJECT_LOGO           = gfx/rw_logo_64x64.png
 OUTPUT_DIRECTORY       = ../apidocs
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
@@ -43,7 +43,6 @@ SUBGROUPING            = YES
 INLINE_GROUPED_CLASSES = NO
 INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
-SYMBOL_CACHE_SIZE      = 0
 LOOKUP_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
 # Build related configuration options
