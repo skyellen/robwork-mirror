@@ -3,7 +3,7 @@ Task descriptions {#page_task}
 
 [TOC]
 
-## Task description format ## {#sec_task_format}
+# Task description format # {#sec_task_format}
 In RobWork tasks are described in a structured format with multiple layers. 
 RobWork is amongst other things a system for geometric modelling and task descriptions 
 in robwork is designed primarilly with respect to solving geometric planning problems.  
@@ -11,9 +11,9 @@ in robwork is designed primarilly with respect to solving geometric planning pro
 In the following the syntax of the task description fileformat is presented.
 It is focussed at describing movements of devices and their tools. 
 In the notation a typename *Name* corresponds to am XML-element in the form
-'<Name> ... </Name>'. An unstructured text string is denoted '<leaf>'.
+`<Name> ... </Name>`. An unstructured text string is denoted `<leaf>`.
 
-###  Primitive types ### {#sec_task_primitive_types}
+##  Primitive types ## {#sec_task_primitive_types}
 
 The primitive robwork types *Vector3D*, *Rotation3D*,
 *Transform3D* and *Q* use the notation presented below. Frames
@@ -39,7 +39,7 @@ element *Use* is inserted where the alias value is needed.
 	<name> ::= Name <string>
 
 
-### Properties ### {#sec_task_properties}
+## Properties ## {#sec_task_properties}
 
 Properties are in the task format described using a list of *(key,value)*
 pairs. 
@@ -63,7 +63,7 @@ a task planner. The standard built in motion planner will therefore
 stop its planning with an error if the special type is in the property list.
 
 
-### Task ### {#sec_task_task}
+## Task ## {#sec_task_task}
 In the construction of a task it is convienient to add 
 application specifik information. These informations are named
 *properties* and are seldom used by the inbuilt RobWork rutines.
@@ -75,14 +75,14 @@ the RobWork planning is done and then edit the plan.
 	<action> ::= <trajectory> | <attach-frame>
 
 
-### AttachFrame ### {#sec_task_action}
+## AttachFrame ## {#sec_task_action}
 
 	<attach-frame> ::= AttachFrame <name>? <properties>? <item> <tcp>
 	<item> ::= Item <string>
 	<tcp> ::= TCP <string>
 
 
-### Trajectory ### {#sec_task_trajectory}
+## Trajectory ## {#sec_task_trajectory}
 A trajectory describe a desired movement for a device and its tool.
 The description does not hold any information on the context in 
 which the movement is to be executed and neither does it hold commands for 
@@ -102,7 +102,7 @@ group in which it was defined.
 		Trajectory <name>? <properties>? <device> <tool> <trajectory-element>*
 
 
-### Target ### {#sec_task_targets}
+## Target ## {#sec_task_targets}
 A target describe the configuration of a device or
 the transformation of its tool. You can only store the configuration 
 of the current device and no configuration of the other parts of the workcell.
@@ -125,7 +125,7 @@ the target, but only reach inside a specific area of the target.
 solution, e.g. IK solution closest to some stored joint configuration
 
 
-### Link ### {#sec_task_links}
+## Link ## {#sec_task_links}
 A link denote the movement between two targets. The movement
 can be constrained. For example: the tool can be set to follow a line
 or a circle curve with constant speed, or joints can be set to follow a
@@ -145,7 +145,7 @@ using an extra point (in a certain frame) which lie between start and end target
 
 Properties of a link can be used to define extra constraints on the movement.
 
-## Task description for pick-and-place task ## {#sec_task_example}
+# Task description for pick-and-place task # {#sec_task_example}
 
 The robot of this example is a 6 DOF Fanuc manipulator equipped with a
 9 DOF 3-fingered Schunk hand.
@@ -318,7 +318,7 @@ and the pick and place positions for the item.
 </Task>
 ~~~~
 
-## Loading a task description ## {#sec_task_loading}
+# Loading a task description # {#sec_task_loading}
 
 To load a task file you must either explicitly provide the workcell
 for which the task is meant, or your task description must name the
@@ -326,7 +326,7 @@ workcell file in the \c WorkCell tag. The facility to load a task
 description is rw::loaders::TaskLoader::load(). The program below
 shows the two ways of loading a task description.
 
-\include ex-load-task.cpp
+\include snippets/ex-load-task.cpp
 
 Running the program can for example look as follows:
 
@@ -351,7 +351,7 @@ No device named 'Gripper.Composite' in workcell
 WorkCell[d:/src/RobWorkData/TULScenes/FanucCatcher/scene.wu]
 ~~~~
 
-## Traversing a task description ## {#sec_task_traversal}
+# Traversing a task description # {#sec_task_traversal}
 
 The contents of a task description file are stored in a task object
 (rw::task::Task). The details of execution of a task object are

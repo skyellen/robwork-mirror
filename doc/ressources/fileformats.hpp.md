@@ -1,4 +1,4 @@
-RobWork File Formats	  {#page-rw-file-formats}
+RobWork File Formats	  {#page_rw_file_formats}
 ====================
 
 [TOC]

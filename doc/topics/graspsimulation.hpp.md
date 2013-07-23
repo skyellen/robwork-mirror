@@ -52,7 +52,7 @@ The input to the quality calculation is a set of grasps in the GraspTask rw form
 generated using random sampling and dynamic simulation then it might be good to set the target pose
 to the pose after grasping. This can be done using gtmerge
 
-> ./gtmerge --input=<input_file> --output=<output_file> --oformat=RWTASK --include=Success --include=ObjectSlipped --useGraspTarget=true
+> ./gtmerge --input=[input_file] --output=[output_file] --oformat=RWTASK --include=Success --include=ObjectSlipped --useGraspTarget=true
 	
 The include argument makes sure that only successes and objectslipped (which are also successes) are
 copied. The useGraspTarget make sure that the target pose is set to the objectTgrasp pose eg. The pose
@@ -62,10 +62,10 @@ after grasping.
 The quality estimate is based on sampling new grasps normally distributed around each grasp that
 needs to be evaluated. This is done with SimulateTask.
 
-> ./SimulateTask --perturbe=true --pertubations=100 --dwc=<dynamic_workcell_file> --input=<task_input> --output=<out_prefix> --sigma_a=8 –sigma_p=0.003
+> ./SimulateTask --perturbe=true --pertubations=100 --dwc=[dynamic_workcell_file] --input=[task_input] --output=[out_prefix] --sigma_a=8 –sigma_p=0.003
 
-This will start 100 new simulations for each grasp in <task_input>. The output will be several files
-which are prefixed with <out_prefix> and with up to 6000 grasp in each. The normal distribution in 6D
+This will start 100 new simulations for each grasp in [task_input]. The output will be several files
+which are prefixed with [out_prefix] and with up to 6000 grasp in each. The normal distribution in 6D
 is controlled with two standard deviations, one for the angular part sigma_a in degree and one for the
 positional part sigma_p in meters. Hence the example will create a normal distribution with 8 degree
 angular standard deviation and 3mm positional standard deviation.
@@ -74,7 +74,7 @@ angular standard deviation and 3mm positional standard deviation.
 The files generated in the previos section are used to calculate the final quality estimate. For this
 GraspTaskQualityCalcis used.
 
-> ./GraspTaskQualityCalc --input=<input_task_file> --output=<odir>/<out_task_file> --perturbe=true --pertubations=100
+> ./GraspTaskQualityCalc --input=[input_task_file] --output=[odir]/[out_task_file] --perturbe=true --pertubations=100
 
 The input is one of the files generated in “Quality sampling”. The nr of grasps in the output should be
 1/100 of the input.
@@ -83,7 +83,7 @@ The input is one of the files generated in “Quality sampling”. The nr of gra
 In the end we merge all results generated in “Quality calculation” using gtmerge and the directory were
 the results are located.
 
-> ./gtmerge --input=<input_dir> --output=<output_file> --oformat=RWTASK
+> ./gtmerge --input=[input_dir] --output=[output_file] --oformat=RWTASK
 
 ## Other Grasp Metrics ##
  

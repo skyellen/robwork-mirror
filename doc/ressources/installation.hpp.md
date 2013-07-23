@@ -245,7 +245,7 @@ Framework Only section and extract the archive.
 Assuming you have extracted the Qt source into c:/Qt/VERSION, follow these steps:
 - Open a Visual Studio terminal one of the following ways:
     - In the Visual Studio start menu folder, go to "Visual Studio Tools" and open "Visual Studion 2005|2008|2010 Command Prompt".
-    - Open a command promt and run vcvarsall.bat x86|amd64 (found in e.g. c:/Program Files (x86)/Microsoft Visual Studio 8|9|10.0\VC) to setup the Visual Studio toolset
+    - Open a command promt and run vcvarsall.bat x86|amd64 (found in e.g. c:/Program Files (x86)/Microsoft Visual Studio 8|9|10.0/VC) to setup the Visual Studio toolset
 - In the command prompt cd to the c:/Qt/VERSION folder
 - Visual Studio 10 amd64 users only: due to a bug reported here, Qt will produce a runtime error with the default compiler settings. Therefore, you need to modify the compiler flags for this platform:
     - Open c:/Qt/VERSION/mkspecs/win32-msvc2010/qmake.conf in a text editor

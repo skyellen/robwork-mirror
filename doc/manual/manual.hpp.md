@@ -79,7 +79,8 @@ Red(x-axis), Green(y-axis) and Blue(z-axis).
 ## Namespaces ## {#sec_namespaces}
 
 The header files of RobWork are distributed across a number of
-directories each having its own namespace. The structure of namespaces reflects the directory containing the code. For example
+directories each having its own namespace. The structure of namespaces 
+reflects the directory containing the code. For example
 
 ~~~~~~~~~~~~{.cpp}
  // Include header files:
@@ -582,7 +583,7 @@ planner constraint for the first device of the workcell. The program
 calls the planner constraint to check if the edge from the lower to
 upper corner of the configuration space can be traversed:
 
-\include ex-constraints.cpp
+\include snippets/ex-constraints.cpp
 
 # Configuration space sampling # {#sec_rw_manual_sampling}
 
@@ -855,9 +856,9 @@ of a GUI building tool.
 
 To compile the plugin you need to perform the following steps
 
-- Edit the CMakeLists.txt file to ensure that the variables \verb"RW_ROOT" and \verb"RWSTUDIO_ROOT" points to you RobWork and RobWorkStudio directories.
-- call \verb"cmake ." to generate build files
-- call \verb"make" to build the plugin.
+- Edit the CMakeLists.txt file to ensure that the variables "RW_ROOT" and "RWSTUDIO_ROOT" points to you RobWork and RobWorkStudio directories.
+- call "cmake ." to generate build files
+- call "make" to build the plugin.
 
 Once the plugin is build you need to tell RobWorkStudio to load it. This is done by editing the RobWorkStudio.ini file. If the RobWorkStudio.ini file does not exist you can copy the RobWorkStudio.ini.template from the bin directory. Within the template file you may have to remove the existing plugins and add the following
 
@@ -866,7 +867,8 @@ Once the plugin is build you need to tell RobWorkStudio to load it. This is done
 	MyPlugin\Path=../../MyPlugin/
 	MyPlugin\Visible=false
 
-Be sure that the MyPlugin\Path points to where your library has been generated and that MyPlugin\Filename is correct. You should not add any file extension (this is resolved automatically).
+Be sure that the MyPlugin\\Path points to where your library has been generated and that
+MyPlugin\\Filename is correct. You should not add any file extension (this is resolved automatically).
 
 When you start RobWorkStudio it will load your plugin.
 

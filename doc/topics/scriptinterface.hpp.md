@@ -1,10 +1,17 @@
-Script interface  	{#page_rw_scriptinterface}
+Script interface	{#page_rw_scriptinterface}
 ================
 
 [TOC]
 
 # Introduction # 	{#sec_rw_sinterface_intro}
+The script interface is generated using [SWIG](http://www.swig.org/) which makes it possible to
+interface using multiple different languages including python, lua and java. See http://www.swig.org 
+for a complete list of supported languages. 
 
+By default only Lua and Python interfaces are generated for RobWork. In this document the use of 
+these two interfaces will be introduced. 
+
+# Lua interface # 	{#sec_robwork_lua}
 
 # Python interface # 	{#sec_robwork_python}
 
