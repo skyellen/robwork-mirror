@@ -20,7 +20,7 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include <rw/geometry/Plane.hpp>
 #include <rw/math/Transform3D.hpp>
-
+#include <rw/geometry/Geometry.hpp>
 
 
 namespace rwlibs {
@@ -95,11 +95,26 @@ namespace softbody {
          *
          * @return the plane
          **/        
-        const rw::geometry::Plane &getPlane(void) const;
+        rw::geometry::Plane::Ptr getPlane(void) const;
+        
+        
+        /**
+         * @brief returns the geometry of the plane
+         *
+         * @return geometry of plane
+         **/
+        rw::geometry::Geometry::Ptr getPlaneGeometry(void) const;
+        
+        
+        
+//         void setDistance(double distance);
         
     private:
-        rw::geometry::Plane _plane;
+        rw::geometry::Plane::Ptr _planePtr;
         rw::math::Transform3D<> _trans;
+        rw::geometry::Geometry::Ptr _geomPtr;
+        
+//         double _distance;
     };
     /*@}*/
 }}

@@ -245,7 +245,7 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
 
     double sumU = 0.0;
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
-        sumU += cos ( x[i] );
+        sumU += cos ( x[i] ); 
     }
     double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
 
@@ -257,7 +257,7 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
 
     double sumV = 0.0;
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
-        sumV += sin ( x[i] );
+        sumV += sin ( x[i] ); // TODO the thickness of the beam requires something to be added
     }
     double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
 

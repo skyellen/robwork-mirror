@@ -49,9 +49,24 @@ ModRusselBeamIpopt::~ModRusselBeamIpopt() {
 
 
 void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
-    computeIntegralIndicies();
+    cout << "ModRusselBeamIpopt::solve" << endl;
+//     computeIntegralIndicies();
     
-    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), getIntegralIndices() ); 
+    vector<int> integralIndices  = getIntegralIndices();
+/*    
+    if (integralIndices.size() == 0) {
+        RW_THROW("List of constraint indices empty!");
+    }
+    */
+
+    cout << "start of integral list: " << endl;
+    
+    for (int i = 0; i < integralIndices.size(); i++) 
+        cout << integralIndices[i] << endl;
+    
+    cout << "end of integral list: " << endl;
+
+    _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), integralIndices ); 
     ModRussel_NLP *nlp = static_cast<ModRussel_NLP *> ( GetRawPtr<TNLP>(_nlp) );
     
     

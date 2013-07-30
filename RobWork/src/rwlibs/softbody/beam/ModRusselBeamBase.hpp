@@ -81,14 +81,16 @@ public:
      * @bug Does not support more than M/2 integral constraints
      * 
      **/   
-    void computeIntegralIndicies(void);
+     static std::vector<int> computeIntegralIndicies( const int nIntegralConstraints, const int N );
     
     /**
      * @brief returns the indices on the beam at which to place integral constraints
      *
      * @return indices on the beam
      **/   
-    std::vector<int> getIntegralIndices(void) const { return _integralConstraintIdxList; };
+    std::vector<int> getIntegralIndices(void) const;;
+    
+    void setIntegralIndices(const std::vector<int> &indices);
     
     /**
      * @brief returns the BeamGeometry used by the beam
@@ -171,14 +173,14 @@ public:
      *
      * @param nIntegralConstraints number of integral constraints
      **/
-    void set_nIntegralConstraints ( int nIntegralConstraints );
+//     void set_nIntegralConstraints ( int nIntegralConstraints );
     
     /**
      * @brief returns the number of integral constraints on the beam
      *
      * @return number of integral constraints on the beam
      **/
-    int get_nIntegralConstraints ( void ) const;
+//     int get_nIntegralConstraints ( void ) const;
 
 public:
     /**
@@ -249,13 +251,14 @@ private:
 private: 
     bool _useNoUpwardConstraint;
 
-    int _nIntegralConstraints;
+//     int _nIntegralConstraints;
 
     bool _useHingeConstraint;
+    
     std::vector<int> _integralConstraintIdxList;
 
-    double _muStart;
-    double _muDec;
+//     double _muStart;
+//     double _muDec;
 };
 /*@}*/
 }

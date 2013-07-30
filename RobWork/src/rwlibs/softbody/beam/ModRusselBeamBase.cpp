@@ -28,10 +28,10 @@ _geomPtr ( geomPtr ),
 _obstaclePtr ( obstaclePtr ),
 _M ( M ),
 _useNoUpwardConstraint ( false ), 
-_nIntegralConstraints ( 1 ),
+// _nIntegralConstraints ( 1 ),
 _useHingeConstraint( false )
 {
-
+    _integralConstraintIdxList.clear();
 }
 
 
@@ -80,27 +80,30 @@ void ModRusselBeamBase::integrateAngleV ( boost::numeric::ublas::vector< double 
 }
 
 
-void ModRusselBeamBase::computeIntegralIndicies ( void ) {
-    _integralConstraintIdxList.clear();
-    int N = getM() -1;
+std::vector< int > ModRusselBeamBase::computeIntegralIndicies ( const int nIntegralConstraints , const int N) {
+     std::cout << "ModRusselBeamBase::computeIntegralIndicies" << std::endl;
+    std::vector<int> integralConstraintIdxList;
+//     int N = getM() -1;
     
-    if ( get_nIntegralConstraints() == 1) {
+    if ( nIntegralConstraints == 1) {
         int idx = N - 1;
-        _integralConstraintIdxList.push_back ( idx );
+        integralConstraintIdxList.push_back ( idx );
     }   
-    else if ( get_nIntegralConstraints() > 0 ) {
-        const double hi = N / get_nIntegralConstraints();
+    else if ( nIntegralConstraints > 0 ) {
+        const double hi = N / nIntegralConstraints;
                
         if (hi < 2) {
             RW_THROW("Number of integral constraints must be less than M/2");
         }
         else {        
-            for ( int i = 1; i < get_nIntegralConstraints() + 1; i++ ) {
+            for ( int i = 1; i < nIntegralConstraints + 1; i++ ) {
                 int idx = ( int ) ceil ( double ( i ) * hi ) ;
-                _integralConstraintIdxList.push_back ( idx );
+                integralConstraintIdxList.push_back ( idx );
             }
         }
     }
+    
+    return integralConstraintIdxList;
 }
 
 
@@ -153,6 +156,8 @@ double ModRusselBeamBase::get_yTCP ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = getObstacle()->get_yTCP ( planeTbeam );
 
+    // yTCP set here by CD or inside Obstacle?
+    
     return yTCP;
 }
 
@@ -192,36 +197,24 @@ double ModRusselBeamBase::get_h ( void ) const {
 
 
 /*
-void ModRusselBeamBase::setUseNoUpwardConstraint ( bool val ) {
-    _useNoUpwardConstraint = val;
-}
-
-
-void ModRusselBeamBase::setUseHingeConstraint ( bool val ) {
-    _useHingeConstraint = val;
-}
-*/
-
-/*
-
-void ModRusselBeamBase::setMuDecrementFactor ( double decFactor ) {
-    _muDec = decFactor;
-}
-
-
-void ModRusselBeamBase::setMuStart ( double muStart ) {
-    _muStart = muStart;
-}
-*/
-
-
 void ModRusselBeamBase::set_nIntegralConstraints ( int nIntegralConstraints ) {
     _nIntegralConstraints = nIntegralConstraints;
 }
-
+*/
+/*
 int ModRusselBeamBase::get_nIntegralConstraints ( void ) const {
     return _nIntegralConstraints;
 }
+*/
+std::vector< int > ModRusselBeamBase::getIntegralIndices ( void ) const {
+    return _integralConstraintIdxList;
+}
+
+void ModRusselBeamBase::setIntegralIndices ( const std::vector< int >& indices ) {
+    std::cout << "ModRusselBeamBase::setIntegralIndices" << std::endl;
+    _integralConstraintIdxList = indices;
+}
+
 
 
 
