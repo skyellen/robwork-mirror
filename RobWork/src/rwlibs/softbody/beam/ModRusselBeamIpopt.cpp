@@ -59,12 +59,14 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     }
     */
 
+
     cout << "start of integral list: " << endl;
     
-    for (int i = 0; i < integralIndices.size(); i++) 
+    for (int i = 0; i < (int) integralIndices.size(); i++) 
         cout << integralIndices[i] << endl;
     
     cout << "end of integral list: " << endl;
+
 
     _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), integralIndices ); 
     ModRussel_NLP *nlp = static_cast<ModRussel_NLP *> ( GetRawPtr<TNLP>(_nlp) );
@@ -85,7 +87,7 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     _app->Options()->SetIntegerValue ( "print_level", 1 );
     _app->Options()->SetStringValue ( "mu_strategy", "adaptive" );
     _app->Options()->SetStringValue ( "hessian_approximation", "limited-memory" );
-//     _app->Options()->SetStringValue ( "derivative_test", "first-order" );
+//      _app->Options()->SetStringValue ( "derivative_test", "first-order" );
 
     nlp->setStartingGuess(xinituser);
     
@@ -97,18 +99,19 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
         std::cout << "*** The problem FAILED!" << std::endl;
     }
     
-    ofstream myfile;
-    myfile.open("thin.dat", ios::app);
+//     ofstream myfile;
+//     myfile.open("thin.dat", ios::app);
     
     boost::numeric::ublas::vector< double > res = nlp->getSolution();
     double Ee = nlp->getEnergyElastic();
-    myfile << "  " << Ee;
+    std::cout << "Ee: " << Ee << std::endl;
+//     myfile << "  " << Ee;
     int N =  res.size();
     
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );
     
-    myfile << "  ";
+//     myfile << "  ";
     
 //     std::cout << "get_uxTCPy(): " << get_uxTCPy() << std::endl; // 0
 //     std::cout << "get_uyTCPy(): " << get_uyTCPy() << std::endl; // 1
@@ -126,7 +129,7 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     }
 //     myfile << std::endl;
     
-    myfile.close();
+//     myfile.close();
 
     xinituser[0] = 0.0;
     for ( int i = 0; i < N; i++ )

@@ -101,10 +101,14 @@ bool ModRussel_NLP::get_bounds_info ( Ipopt::Index n, Ipopt::Number* x_l, Ipopt:
         x_u[i] = rw::math::Pi;
     }
 
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < m; i++) {        
         g_l[i] = -yTCP;
         g_u[i] = 2.0e19; // magic number for IPOPT indicating no upper bound
+        
+//         std::cout << "g_l[i]: " << g_l[i] << std::endl;
     }
+    
+    
 
     return true;
 }
@@ -247,7 +251,8 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
         sumU += cos ( x[i] ); 
     }
-    double resU = ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU;
+    double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU)     +          0.5 * 7.0 * sin( x[pIdx] ); // HACK beam thickness hardcoded
+//     double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU);
 
 
 
@@ -259,7 +264,8 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
         sumV += sin ( x[i] ); // TODO the thickness of the beam requires something to be added
     }
-    double resV = ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV;
+    double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV )     -          0.5 * 7.0 * cos( x[pIdx] ); // HACK beam thickness hardcoded
+//     double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV );
 
     
     g[gBase] = resU * uxTCPy        + resV * uyTCPy; // require h(x) > 0
@@ -279,11 +285,7 @@ void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Numbe
     // populate the mxn jacobian of the constraint functions (eg. 1x31 with one integral constraint and 32 slices)
     if ( values == NULL ) {
         // return the structure of the jacobian
-        // see http://www.coin-or.org/Ipopt/documentation/node57.html#app.triplet
-        // TODO include sparsity
-        
-        // gBase - index of the point to constrain
-        
+        // see http://www.coin-or.org/Ipopt/documentation/node57.html#app.triplet        
         for (int j = 0; j < n; j++) { // loop through all the columns (refering to each x[j]            
             iRow[gBase*n + j] = gBase; // the constraint index (e.g. g[0]) is gBase and is the row in which to place it
             jCol[gBase*n + j] = j; // the x index            
@@ -293,7 +295,13 @@ void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Numbe
         // return the values of the jacobian of the constraints
         for ( int j = 0; j < n; j++ ) {
             if ( pIdx == j ) {
-                values[gBase*n + j] = 0.5 * hx * uyTCPy * cos ( x[j] ) - 0.5 * hx * uxTCPy * sin ( x[j] );
+//                 values[gBase*n + j] = 0.5 * hx * uyTCPy * cos ( x[j] ) - 0.5 * hx * uxTCPy * sin ( x[j] );
+                // HACK beam thickness hardcoded
+                values[gBase*n + j] = 
+                (  (0.5 * hx * cos (x[j]) )  +  (0.5 * 7.0 * sin(x[j]))  ) * uyTCPy +
+                (  (-0.5 * hx * sin (x[j]) ) +  (0.5 * 7.0 * cos(x[j]))   ) * uxTCPy;        // U part
+                
+                //
             } 
             else if ( j < pIdx ) {
                 values[gBase*n + j] = hx * uyTCPy * cos ( x[j] ) - hx * uxTCPy * sin ( x[j] );
@@ -325,6 +333,12 @@ bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
     for (int i = 0; i < n; i++) 
         _x[i] = x[i];
+    
+    std::cout << "start constraints\n";
+    for (int i = 0; i < m; i++) {
+            std::cout << g[i] << std::endl;
+    }
+    std::cout << "end constraints\n";
     
     // calculate the elastic energy
     eval_f_elastic(n, x, _Ee);
