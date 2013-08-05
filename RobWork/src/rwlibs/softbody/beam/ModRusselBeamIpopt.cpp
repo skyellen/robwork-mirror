@@ -59,13 +59,13 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     }
     */
 
-
+/*
     cout << "start of integral list: " << endl;
     
     for (int i = 0; i < (int) integralIndices.size(); i++) 
         cout << integralIndices[i] << endl;
     
-    cout << "end of integral list: " << endl;
+    cout << "end of integral list: " << endl;*/
 
 
     _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), integralIndices ); 

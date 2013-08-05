@@ -242,6 +242,8 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
     const double uxTCPy =  ModRusselBeamBase::get_uxTCPy ( planeTbeam ); // u2
     const double uyTCPy =  ModRusselBeamBase::get_uyTCPy ( planeTbeam ); // v2
+    const double dy = 7.0;
+    const double dx = 0.0;
 
     // U component
     const double f0U = cos ( 0.0 );
@@ -251,8 +253,9 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
         sumU += cos ( x[i] ); 
     }
-    double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU)     +          0.5 * 7.0 * sin( x[pIdx] ); // HACK beam thickness hardcoded
-//     double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU);
+//     double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU)     +          0.5 * 7.0 * sin( x[pIdx] ); // HACK beam thickness hardcoded
+//     double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU)     +          (0.5 * dx * cos( x[pIdx] ) - 0.5 *dy * sin(x[pIdx])); 
+    double resU = ( ( hx / 2.0 ) * ( f0U + fLU ) + hx * sumU);
 
 
 
@@ -264,7 +267,8 @@ void ModRussel_NLP::eval_g_point ( int pIdx, int gBase, Index n, const Number* x
     for ( int i = 0; i < ( int ) pIdx; i++ ) {
         sumV += sin ( x[i] ); // TODO the thickness of the beam requires something to be added
     }
-    double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV )     -          0.5 * 7.0 * cos( x[pIdx] ); // HACK beam thickness hardcoded
+//     double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV )     -          0.5 * 7.0 * cos( x[pIdx] ); // HACK beam thickness hardcoded
+    double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV )     +          (-0.5 * dy * cos( x[pIdx] ) - 0.5*dx*sin(x[pIdx]) ); // HACK beam thickness hardcoded
 //     double resV = ( ( hx / 2.0 ) * ( f0V + fLV ) + hx * sumV );
 
     
@@ -281,6 +285,8 @@ void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Numbe
     const double hx = ( getGeometry()->get_b() - getGeometry()->get_a() ) / ( n );
     const double uxTCPy =  ModRusselBeamBase::get_uxTCPy ( planeTbeam ); // u2
     const double uyTCPy =  ModRusselBeamBase::get_uyTCPy ( planeTbeam ); // v2
+    const double dy = 7.0;
+    const double dx = 0.0;
     
     // populate the mxn jacobian of the constraint functions (eg. 1x31 with one integral constraint and 32 slices)
     if ( values == NULL ) {
@@ -298,10 +304,11 @@ void ModRussel_NLP::eval_jac_g_point ( int pIdx, int gBase, Index n, const Numbe
 //                 values[gBase*n + j] = 0.5 * hx * uyTCPy * cos ( x[j] ) - 0.5 * hx * uxTCPy * sin ( x[j] );
                 // HACK beam thickness hardcoded
                 values[gBase*n + j] = 
-                (  (0.5 * hx * cos (x[j]) )  +  (0.5 * 7.0 * sin(x[j]))  ) * uyTCPy +
-                (  (-0.5 * hx * sin (x[j]) ) +  (0.5 * 7.0 * cos(x[j]))   ) * uxTCPy;        // U part
+                (  (-0.5 * hx * sin (x[j]) )  ) * uxTCPy +        // U part
+                (  (0.5 * hx * cos (x[j]) ) +  (-0.5*dx*cos(x[j]) + 0.5*dy*sin(x[j]))  ) * uyTCPy;
+
                 
-                //
+                //(  (-0.5 * hx * sin (x[j]) )  +  (-0.5*dy*cos(x[j]) - 0.5*dx*sin(x[j]))   ) * uxTCPy +        // U part
             } 
             else if ( j < pIdx ) {
                 values[gBase*n + j] = hx * uyTCPy * cos ( x[j] ) - hx * uxTCPy * sin ( x[j] );
@@ -333,13 +340,13 @@ bool ModRussel_NLP::eval_h ( Ipopt::Index n, const Ipopt::Number* x, bool new_x,
 void ModRussel_NLP::finalize_solution ( Ipopt::SolverReturn status, Ipopt::Index n, const Ipopt::Number* x, const Ipopt::Number* z_L, const Ipopt::Number* z_U, Ipopt::Index m, const Ipopt::Number* g, const Ipopt::Number* lambda, Ipopt::Number obj_value, const Ipopt::IpoptData* ip_data, Ipopt::IpoptCalculatedQuantities* ip_cq ) {
     for (int i = 0; i < n; i++) 
         _x[i] = x[i];
-    
+/*    
     std::cout << "start constraints\n";
     for (int i = 0; i < m; i++) {
             std::cout << g[i] << std::endl;
     }
     std::cout << "end constraints\n";
-    
+    */
     // calculate the elastic energy
     eval_f_elastic(n, x, _Ee);
 }
