@@ -27,8 +27,10 @@ namespace rwlibs {
 			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(isPostCorrection) {
 		}
 
-		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection, const rw::math::Transform3D<>& correctionTransform) :
-			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(isPostCorrection) {
+		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection,
+				const rw::math::Transform3D<>& correctionTransform) :
+			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(isPostCorrection)
+		{
 			setCorrectionTransform(correctionTransform);
 		}
 

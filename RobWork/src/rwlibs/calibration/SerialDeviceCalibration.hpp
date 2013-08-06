@@ -23,10 +23,14 @@ class SerialDeviceCalibration: public CompositeCalibration<Calibration> {
 public:
 	typedef rw::common::Ptr<SerialDeviceCalibration> Ptr;
 
-	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
+	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device,
+			const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
 
-	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, FixedFrameCalibration::Ptr baseCalibration, FixedFrameCalibration::Ptr endCalibration,
-			const CompositeCalibration<DHLinkCalibration>::Ptr& compositeLinkCalibration, const CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration);
+	SerialDeviceCalibration(rw::models::SerialDevice::Ptr device,
+			FixedFrameCalibration::Ptr baseCalibration,
+			FixedFrameCalibration::Ptr endCalibration,
+			CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration,
+			CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration);
 
 	virtual ~SerialDeviceCalibration();
 

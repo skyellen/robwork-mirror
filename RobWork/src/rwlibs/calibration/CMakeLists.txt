@@ -1,4 +1,3 @@
-
 SET(SUBSYS_NAME rw_calibration )
 SET(SUBSYS_DESC "Calibration of devices" )
 SET(SUBSYS_DEPS rw )

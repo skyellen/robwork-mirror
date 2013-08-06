@@ -14,8 +14,10 @@ namespace calibration {
 
 using namespace rwlibs::calibration;
 
-SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions) :
-		_device(device) {
+SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr device,
+		const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions) :
+		_device(device)
+{
 	_baseCalibration = rw::common::ownedPtr(
 			new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getBase()).cast<rw::kinematics::FixedFrame>(), true));
 
@@ -54,9 +56,17 @@ SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr d
 	CompositeCalibration<Calibration>::addCalibration(_compositeJointCalibration.cast<Calibration>());
 }
 
-SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr device, FixedFrameCalibration::Ptr baseCalibration, FixedFrameCalibration::Ptr endCalibration,
-			const CompositeCalibration<DHLinkCalibration>::Ptr& compositeLinkCalibration, const CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration) :
-		_device(device), _baseCalibration(baseCalibration), _endCalibration(endCalibration), _compositeLinkCalibration(compositeLinkCalibration) {
+SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr device,
+		FixedFrameCalibration::Ptr baseCalibration,
+		FixedFrameCalibration::Ptr endCalibration,
+		CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration,
+		CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration) :
+			_device(device),
+			_baseCalibration(baseCalibration),
+			_endCalibration(endCalibration),
+			_compositeLinkCalibration(compositeLinkCalibration),
+			_compositeJointCalibration(compositeJointCalibration)
+{
 	CompositeCalibration<Calibration>::addCalibration(_baseCalibration.cast<Calibration>());
 	CompositeCalibration<Calibration>::addCalibration(_endCalibration.cast<Calibration>());
 	CompositeCalibration<Calibration>::addCalibration(_compositeLinkCalibration.cast<Calibration>());
