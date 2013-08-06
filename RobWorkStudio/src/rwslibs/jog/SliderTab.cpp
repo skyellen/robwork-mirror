@@ -15,6 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <iomanip>
 
 #include <QVBoxLayout>
 #include <QGridLayout>

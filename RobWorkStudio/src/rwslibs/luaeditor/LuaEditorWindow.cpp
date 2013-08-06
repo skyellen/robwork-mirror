@@ -269,7 +269,7 @@ void LuaEditorWindow::on_actionOpen_triggered(bool) {
         file.setFileName(fileName);
         EditorTab::Ptr tab = makeEditor();
         tab->_filename = file.fileName().toStdString();
-        _tabPane->setTabText( _tabPane->indexOf(tab->_editor), boost::filesystem3::path(fileName.toStdString()).filename().string().c_str());
+        _tabPane->setTabText( _tabPane->indexOf(tab->_editor), boost::filesystem::path(fileName.toStdString()).filename().string().c_str());
 
         if (file.open(QFile::ReadWrite | QFile::Text)) {
         	tab->_editor->setPlainText(file.readAll());
@@ -325,7 +325,7 @@ bool LuaEditorWindow::save(const std::string& filename) {
 			getCurrentTab()->_editor->document()->setModified(false);
 			getCurrentTab()->_filename = filename;
 
-		    _tabPane->setTabText( _tabPane->indexOf(getCurrentTab()->_editor), boost::filesystem3::path(filename).filename().string().c_str());
+		    _tabPane->setTabText( _tabPane->indexOf(getCurrentTab()->_editor), boost::filesystem::path(filename).filename().string().c_str());
 
     	}
     	file.close();

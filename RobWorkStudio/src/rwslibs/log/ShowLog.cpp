@@ -17,6 +17,8 @@
 
 #include "ShowLog.hpp"
 
+#include <iomanip>
+
 #include <rws/RobWorkStudio.hpp>
 #include <sstream>
 #include <QEvent>

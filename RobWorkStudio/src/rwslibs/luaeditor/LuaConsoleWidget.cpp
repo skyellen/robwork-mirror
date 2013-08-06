@@ -19,6 +19,7 @@
 
 #include <QtGui>
 #include <iostream>
+#include <iomanip>
 
 extern "C" {
     #include <lua.h>
