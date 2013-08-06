@@ -180,14 +180,12 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 
 	calibration->revert();
-	RW_WARN("");
+
 	//XmlCalibrationSaver::save(calibration, calibrationFilePath);
 	XmlCalibrationSaver::save(calibration, "SomeCalibration.xml");
-	RW_WARN("");
 	SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell->getStateStructure(), serialDevice, "SomeCalibration.xml");
-	RW_WARN("");
 	calibrationLoaded->apply();
-	RW_WARN("");
+
 	// Verify that the loaded calibration match the artificial calibration.
 	BOOST_CHECK(toEigen(calibrationLoaded->getBaseCalibration()->getCorrectionTransform()).isApprox(
 			toEigen(artificialCalibration->getBaseCalibration()->getCorrectionTransform()), 10e-5));
