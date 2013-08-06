@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 
 USE_ROBWORK_NAMESPACE

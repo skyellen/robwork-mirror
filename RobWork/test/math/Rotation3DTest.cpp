@@ -31,6 +31,7 @@
 #include <rw/math/MetricFactory.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 
