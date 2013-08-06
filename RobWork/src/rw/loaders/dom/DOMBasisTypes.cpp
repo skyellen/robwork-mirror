@@ -282,6 +282,26 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
 
     Vector3D<> position(0,0,0);
     Rotation3D<> rotation(Rotation3D<>::identity());
+
+    {
+    	std::vector<double> values = element->getValueAsDoubleList();
+		if (values.size() == 12) {
+			rotation(0,0) = values[0];
+			rotation(0,1) = values[1];
+			rotation(0,2) = values[2];
+			rotation(1,0) = values[4];
+			rotation(1,1) = values[5];
+			rotation(1,2) = values[6];
+			rotation(2,0) = values[8];
+			rotation(2,1) = values[9];
+			rotation(2,2) = values[10];
+
+			position(0) = values[3];
+			position(1) = values[7];
+			position(2) = values[11];
+		}
+    }
+
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
 		if (child->isName( MatrixId)) {
 			std::vector<double> values = child->getValueAsDoubleList();
