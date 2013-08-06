@@ -48,7 +48,7 @@ public:
 
 	void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform,
 			const Eigen::Matrix<double, 6, 6>& covarianceMatrix =
-			Eigen::Matrix<double, 6, 6>::Identity());
+			(Eigen::Matrix<double, 6, 6>::Identity()));
 
 	inline void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform){
 			const Eigen::Matrix<double, 6, 6>& covarianceMatrix = Eigen::Matrix<double, 6, 6>::Identity();
