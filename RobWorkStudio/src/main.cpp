@@ -57,9 +57,6 @@
 #endif
 #endif
 
-#include <omp.h> //Needed because otherwise Visual Studio results in run-time linking problems.
-
-
 using namespace rw;
 using namespace rw::common;
 using namespace rw::loaders;
