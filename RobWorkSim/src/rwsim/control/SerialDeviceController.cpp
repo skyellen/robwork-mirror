@@ -149,6 +149,9 @@ bool SerialDeviceController::moveLinFC(const rw::math::Transform3D<>& target,
 	return true;
 }
 
+void SerialDeviceController::flushQueue(){
+
+}
 
 bool SerialDeviceController::stop(){
 	_stop = true;
@@ -488,6 +491,7 @@ void SerialDeviceController::updateFTcontrolWrist(
 	const Transform3D<> bX_t = _executingTarget.t3dtraj->x( _currentTrajTime );
 	const Transform3D<> bXd_t = _executingTarget.t3dtraj->dx( _currentTrajTime );
 	const VelocityScrew6D<> bXdd_t = VelocityScrew6D<>(_executingTarget.t3dtraj->ddx( _currentTrajTime ) );
+
 	const Wrench6D<> bF_t = _executingTarget._wrenchTarget;
 
 	// current configuration
@@ -521,6 +525,8 @@ void SerialDeviceController::updateFTcontrolWrist(
 	env_w(4) = E[4] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
 	env_w(5) = E[5] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
 
+
+	//Wrench6D<> comb_w = Sf*bF_t + Sfinv*env_w;
 
 
     // calculate compensation of robot

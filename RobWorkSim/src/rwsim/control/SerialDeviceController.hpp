@@ -40,17 +40,18 @@ namespace control {
 		 */
 		SerialDeviceController(const std::string& name, dynamics::DynamicDevice::Ptr ddev);
 
+		/**
+		 * @brief construct using RigidDevice.
+		 * @param name [in] name of controller
+		 * @param ddev [in] the RigidDevice that should be controlled
+		 */
 		SerialDeviceController(const std::string& name, dynamics::RigidDevice::Ptr ddev);
-
 
 		//! destructor
 		virtual ~SerialDeviceController();
 
-		//! the max linear/translational velocity in m/s
-		void setMaxLinearVelocity( double maxVel );
 
-		//! the max angular velocity in rad/s
-		void setMaxAngularVelocity( double maxVel );
+		/////////////////// Move commandoes. The move commandoes are queued
 
 		//! @brief move robot in a linear Cartesian path
 		bool moveLin(const rw::math::Transform3D<>& target, float speed=100, float blend=0);
@@ -59,7 +60,20 @@ namespace control {
 		bool movePTP(const rw::math::Q& target, float speed=100, float blend=0);
 
 		//! @brief move robot from point to point but using a pose as target (require invkin)
-		virtual bool movePTP_T(const rw::math::Transform3D<>& target, float speed=100, float blend=0);
+		bool movePTP_T(const rw::math::Transform3D<>& target, float speed=100, float blend=0);
+
+		//! @brief
+		bool moveTraj(const rw::trajectory::QTrajectory::Ptr traj, float speed=100);
+
+		/**
+		 *  @brief flushes the move command queue. This is usefull for braking the current trajectory without
+		 *  stopping the robot. However, if no commands are placed on the queue after calling flush then the
+		 *  robot will stop.
+		 */
+		void flushQueue();
+
+
+		//////////////////// Servo commandoes. The servo commandoes does not get queued
 
 		//! @brief move robot in a servoing fasion
 		virtual bool moveVelQ(const rw::math::Q& target_joint_velocity);
@@ -75,21 +89,41 @@ namespace control {
 								  float speed = 100,
 								  float blend = 0);
 
+		/////////////////// Other control commands that effects the robot movements.
 		//! hard stop the robot,
 		bool stop();
 
-		//! pause the robot, should be able to continue trajectory
+		/**
+		 * @brief stops the robot but without flushing the command queue. Please notice that
+		 * the trajectories will
+		 */
 		bool pause();
+
+		bool isStopped();
+
+		bool start();
 
 		//! enable safe mode, so that robot stops when collisions are detected
 		bool setSafeModeEnabled(bool enable);
 
+		//! the max linear/translational velocity in m/s
+		void setMaxLinearVelocity( double maxVel );
+
+		//! the max angular velocity in rad/s
+		void setMaxAngularVelocity( double maxVel );
+
+
+		//////////////////   get state information
+
 		rw::math::Q getQ();
+
 		rw::math::Q getQd();
 
 		bool isMoving();
 
-		// simulated controller stuff
+
+
+		//////////////////////////   simulated controller stuff
 
 		void update(const rwlibs::simulation::Simulator::UpdateInfo& info,
 					 rw::kinematics::State& state);
