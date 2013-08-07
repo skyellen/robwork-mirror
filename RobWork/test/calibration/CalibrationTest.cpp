@@ -184,6 +184,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//XmlCalibrationSaver::save(calibration, calibrationFilePath);
 	XmlCalibrationSaver::save(calibration, "SomeCalibration.xml");
 	SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell->getStateStructure(), serialDevice, "SomeCalibration.xml");
+	//SerialDeviceCalibration::Ptr calibrationLoaded = calibration;
 	calibrationLoaded->apply();
 
 	// Verify that the loaded calibration match the artificial calibration.
