@@ -22,6 +22,8 @@
 
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
 
+#include "../JointEncoderCalibration.hpp"
+
 using namespace rwlibs::calibration;
 using namespace rw::common;
 using namespace rw::loaders;
@@ -82,6 +84,25 @@ DOMElem::Ptr ElementCreator::createElement<DHLinkCalibration::Ptr>(
 	return element;
 }
 
+template<>
+DOMElem::Ptr ElementCreator::createElement<JointEncoderCalibration::Ptr>(
+		JointEncoderCalibration::Ptr calibration,
+		DOMElem::Ptr parent)
+{
+	DOMElem::Ptr element = parent->addChild("DHLinkCalibration");
+
+	element->addAttribute("joint")->setValue( calibration->getJoint()->getName() );
+
+	const CalibrationParameterSet parameterSet = calibration->getParameterSet();
+	if (parameterSet(JointEncoderCalibration::PARAMETER_TAU).isEnabled())
+		element->addAttribute("tau")->setValue( parameterSet(JointEncoderCalibration::PARAMETER_TAU) );
+	if (parameterSet(JointEncoderCalibration::PARAMETER_SIGMA).isEnabled())
+		element->addAttribute("sigma")->setValue( parameterSet(JointEncoderCalibration::PARAMETER_SIGMA) );
+
+	return element;
+}
+
+
 void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibration) {
 	//rootElement->setName("SerialDeviceCalibration");
 	DOMElem::Ptr rootElement = rootDoc->addChild("SerialDeviceCalibration");
@@ -105,10 +126,22 @@ void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibr
 		for (int calibrationIndex = 0; calibrationIndex < linkCalibrationCount; calibrationIndex++) {
 			DHLinkCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			//linkCalibrationElement->addChild("DHLinkCalibration");
-
 			creator.createElement<DHLinkCalibration::Ptr>(linkCalibration, linkCalibrationElement);
 		}
 	}
+
+
+	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
+	const int jointCalibrationCount = compositeJointCalibration->getCalibrationCount();
+	if (jointCalibrationCount > 0) {
+
+		DOMElem::Ptr jointCalibrationElement = rootElement->addChild( "JointCalibrations" );
+		for (int calibrationIndex = 0; calibrationIndex < jointCalibrationCount; calibrationIndex++) {
+			JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);
+			creator.createElement<JointEncoderCalibration::Ptr>(jointCalibration, jointCalibrationElement);
+		}
+	}
+
 }
 
 void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::string fileName) {
