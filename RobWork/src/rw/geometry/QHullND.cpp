@@ -23,16 +23,17 @@ extern "C"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <qhull/src/qhull.h>
-#include <qhull/src/mem.h>
-#include <qhull/src/qset.h>
-#include <qhull/src/geom.h>
-#include <qhull/src/merge.h>
-#include <qhull/src/poly.h>
-#include <qhull/src/io.h>
-#include <qhull/src/stat.h>
+#include <qhull/qhull.h>
+#include <qhull/mem.h>
+#include <qhull/qset.h>
+#include <qhull/geom.h>
+#include <qhull/merge.h>
+#include <qhull/poly.h>
+#include <qhull/io.h>
+#include <qhull/stat.h>
 
-#include <qhull/src/libqhull.h>
+//#include <qhull/libqhull.h>
+
 #if defined(__cplusplus)
 }
 #endif
