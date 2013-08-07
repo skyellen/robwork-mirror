@@ -13,6 +13,7 @@
 #include <rwlibs/calibration.hpp>
 
 using namespace rwlibs::calibration;
+using namespace rw::math;
 
 std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise);
 
@@ -219,6 +220,62 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		BOOST_CHECK_SMALL(measurementAngleError, 10e-5);
 	}
 }
+
+
+BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
+	const std::string testFilesPath = testFilePath();
+	BOOST_REQUIRE(!testFilesPath.empty());
+
+	const std::string workCellFilePath(testFilesPath + "calibration/Scene/SomeScene.wc.xml");
+	const std::string deviceName("SomeDevice");
+	const std::string referenceFrameName("SomeSensorFrame");
+	const std::string measurementFrameName("SomeDevice.Marker");
+	const std::string measurementFilePath(testFilesPath + "calibration/TestMeasurements.xml");
+	const int measurementCount = 40;
+
+	// Load workcell.
+	rw::models::WorkCell::Ptr workCell = rw::loaders::XMLRWLoader::load(workCellFilePath);
+	BOOST_REQUIRE(!workCell.isNull());
+	rw::kinematics::State state = workCell->getDefaultState();
+
+	// Find device and frames.
+	rw::models::Device::Ptr device = workCell->findDevice(deviceName);
+	BOOST_REQUIRE(!device.isNull());
+	rw::models::SerialDevice::Ptr serialDevice = device.cast<rw::models::SerialDevice>();
+	rw::kinematics::Frame::Ptr referenceFrame = workCell->findFrame(referenceFrameName);
+	BOOST_REQUIRE(!referenceFrame.isNull());
+	rw::kinematics::Frame::Ptr measurementFrame = workCell->findFrame(measurementFrameName);
+	BOOST_REQUIRE(!measurementFrame.isNull());
+
+
+	
+	const std::vector<SerialDevicePoseMeasurement> measurements = generateMeasurements(serialDevice, referenceFrame, measurementFrame, state, measurementCount, false);
+	BOOST_CHECK_EQUAL(measurements.size(), measurementCount);
+
+	XmlMeasurementFile::save(measurements, measurementFilePath);
+
+	std::vector<SerialDevicePoseMeasurement> loadedMeasurements = XmlMeasurementFile::load(measurementFilePath);
+
+	BOOST_CHECK_EQUAL(measurements.size(), loadedMeasurements.size());
+
+	for (size_t i = 0; i<measurements.size(); i++) 
+	{
+		//Check the configuration
+		BOOST_CHECK_SMALL((measurements[i].getQ() - loadedMeasurements[i].getQ()).normInf(), 1e-9);
+		
+		//Check the transform
+		Transform3D<> t3d1 = measurements[i].getTransform();
+		Transform3D<> t3d2 = loadedMeasurements[i].getTransform();
+		BOOST_CHECK_SMALL((t3d1.P() - t3d2.P()).normInf(), 1e-9);
+
+		Rotation3D<> r3d = t3d1.R() * inverse(t3d2.R());
+		BOOST_CHECK_SMALL(EAA<>(r3d).angle(), 1e-9);
+
+	}
+
+
+}
+
 
 std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise) {
 	MultivariateNormalDistribution<double, 6> mvnd(time(0));

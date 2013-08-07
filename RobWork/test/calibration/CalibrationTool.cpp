@@ -198,7 +198,7 @@ int main(int argumentCount, char** argumentArray) {
 	std::string measurementFilePath = optionParser.getMeasurementFilePath();
 	std::cout << "Loading measurements [ " << measurementFilePath << " ].. ";
 	std::cout.flush();
-	std::vector<SerialDevicePoseMeasurement> measurements; // = XmlMeasurementFile::load(measurementFilePath);
+	std::vector<SerialDevicePoseMeasurement> measurements = XmlMeasurementFile::load(measurementFilePath);
 	const int measurementCount = measurements.size();
 	const int validationMeasurementCount = std::floor((double) measurementCount * optionParser.getValidationMeasurementPercentage());
 	const int calibrationMeasurementCount = measurementCount - validationMeasurementCount;

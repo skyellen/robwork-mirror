@@ -136,7 +136,7 @@ int main(int argumentCount, char** arguments) {
 
 	std::cout << "Saving measurement file [ " << measurementFilePath << " ]..";
 	std::cout.flush();
-	//XmlMeasurementFile::save(measurements, measurementFilePath);
+	XmlMeasurementFile::save(measurements, measurementFilePath);
 	std::cout << " Saved." << std::endl;
 
 	std::cout << "Residual summary:" << std::endl;
