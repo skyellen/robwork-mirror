@@ -179,7 +179,7 @@ IF(RW_USE_YAOBI)
     ELSE ()
         SET(RW_ENABLE_INTERNAL_YAOBI_TARGET ON)
         MESSAGE(STATUS "RobWork: Yaobi ENABLED! NOT FOUND! Using RobWork native Yaobi.")
-        SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
+        SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/rwyaobi")
         SET(YAOBI_LIBRARIES "yaobi")
         SET(YAOBI_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
         SET(RW_HAVE_YAOBI True)
@@ -195,29 +195,42 @@ ENDIF()
 #
 SET(RW_HAVE_PQP False)
 CMAKE_DEPENDENT_OPTION(RW_USE_PQP "Set to ON to include PQP support.
-                Set PQP_INCLUDE_DIR and PQP_LIB_DIR 
-                to specify your own PQP else RobWork PQP will 
-                be used!" 
+                    RobWork PQP will allways be used!" 
     ON "NOT RW_DISABLE_PQP" OFF
 )
 IF(RW_USE_PQP)
-    FIND_PACKAGE(PQP QUIET)
-    IF( PQP_FOUND )
-        MESSAGE(STATUS "RobWork: PQP ENABLED! FOUND!")
-        SET(RW_HAVE_PQP True)
-    ELSE ()
-        SET(RW_ENABLE_INTERNAL_PQP_TARGET ON)
-        MESSAGE(STATUS "RobWork: PQP ENABLED! NOT FOUND! Using RobWork native PQP.")
-        SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
-        SET(PQP_LIBRARIES "pqp")
-        SET(PQP_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
-        SET(RW_HAVE_PQP True)
-    ENDIF ()
+    SET(RW_ENABLE_INTERNAL_PQP_TARGET ON)
+    MESSAGE(STATUS "RobWork: PQP ENABLED! Using RobWork native PQP.")
+    SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/rwpqp")
+    SET(PQP_LIBRARIES "pqp")
+    SET(PQP_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+    SET(RW_HAVE_PQP True)
 ELSE ()
     MESSAGE(STATUS "RobWork: PQP DISABLED!")   
     SET(PQP_INCLUDE_DIR "")
 ENDIF()
 
+FIND_PACKAGE(Eigen3 QUIET)
+IF( EIGEN3_FOUND )
+    MESSAGE(STATUS "RobWork: EIGEN3 installation FOUND!")
+ELSE ()
+    SET(RW_ENABLE_INTERNAL_EIGEN_TARGET ON)
+    MESSAGE(STATUS "RobWork: EIGEN3 installation NOT FOUND! Using RobWork ext EIGEN3.")
+    SET(EIGEN3_INCLUDE_DIR "${RW_ROOT}/ext/eigen3")
+ENDIF ()
+
+FIND_PACKAGE(Qhull QUIET)
+IF( QHULL_FOUND )
+    MESSAGE(STATUS "RobWork: QHULL installation FOUND!")
+ELSE ()
+    SET(RW_ENABLE_INTERNAL_QHULL_TARGET ON)
+    MESSAGE(STATUS "RobWork: QHULL installation NOT FOUND! Using RobWork ext QHULL.")
+    
+    SET(QHULL_INCLUDE_DIRS "${RW_ROOT}/ext/qhull/src")
+    SET(QHULL_LIBRARIES "rw_qhull")
+    SET(QHULL_DEFINITIONS "")
+    
+ENDIF ()
 
 Find_Package(Bullet)
 SET(RW_HAVE_BULLET FALSE)
@@ -429,12 +442,13 @@ ENDIF()
 # The include dirs
 #
 SET(ROBWORK_INCLUDE_DIR
-    ${RW_ROOT}/ext
-    ${CALIBRATION_INCLUDE_DIRS}
+    # todo: we should actually search for an installation of boostbinding.. instead of allways using the one in RobWork
+    ${RW_ROOT}/ext/boostbindings
+    ${EIGEN3_INCLUDE_DIR}
     ${SOFTBODY_INCLUDE_DIRS}
     ${ADDITIONAL_BOOST_BINDINGS}
     ${RW_ROOT}/src
-    ${OPENGL_INCLUDE_DIR}   
+    ${OPENGL_INCLUDE_DIR}
     ${Boost_INCLUDE_DIR}
     ${XERCESC_INCLUDE_DIR}
     ${YAOBI_INCLUDE_DIR}
@@ -489,7 +503,7 @@ SET(ROBWORK_LIBRARIES_TMP
   ${Boost_LIBRARIES}
   ${LAPACK_LIBRARIES} 
   ${BLAS_LIBRARIES}
-  rw_qhull
+  ${QHULL_LIBRARIES}
   ${CMAKE_DL_LIBS}
 )
 
