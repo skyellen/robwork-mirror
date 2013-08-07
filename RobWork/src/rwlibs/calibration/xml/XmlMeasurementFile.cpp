@@ -37,10 +37,10 @@ namespace {
 		DOMElem::Ptr elmMeasurement = parent->addChild("SerialDevicePoseMeasurement");
 
 		rw::math::Q q = measurement.getQ();
-		DOMElem::Ptr elmState = DOMBasisTypes::write(q, parent->addChild("dummy") );
+		DOMElem::Ptr elmState = DOMBasisTypes::write(q, parent->addChild("dummy"), true);
 
 		rw::math::Transform3D<> transform = measurement.getTransform();
-		DOMElem::Ptr elmTransform = DOMBasisTypes::write(transform, parent->addChild("dummy") );
+		DOMElem::Ptr elmTransform = DOMBasisTypes::write(transform, parent->addChild("dummy"), true);
 
 		if (measurement.hasCovarianceMatrix()) {
 			DOMElem::Ptr elmCovarianceMatrix = elmMeasurement->addChild("CovarianceMatrix");
