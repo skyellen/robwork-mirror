@@ -17,7 +17,14 @@ namespace calibration {
 
 class DHLinkCalibration: public CalibrationBase {
 public:
-	static int PARAMETER_A, PARAMETER_B, PARAMETER_D, PARAMETER_ALPHA, PARAMETER_BETA, PARAMETER_THETA;
+
+	enum{PARAMETER_A = 0,
+		 PARAMETER_B,
+		 PARAMETER_D,
+		 PARAMETER_ALPHA,
+		 PARAMETER_BETA,
+		 PARAMETER_THETA
+	};
 
 	typedef rw::common::Ptr<DHLinkCalibration> Ptr;
 

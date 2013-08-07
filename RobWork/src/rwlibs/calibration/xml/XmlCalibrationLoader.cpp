@@ -115,18 +115,18 @@ namespace {
 		return calibration;
 	}
 
-/*
+
 	JointEncoderCalibration::Ptr readDHJointCalibration(DOMElem::Ptr element, ElementReader& reader) {
 			if (!element->hasAttribute("joint"))
 				RW_THROW("\"joint\" attribute missing.");
 			std::string jointName = element->getAttributeValue("joint");
 
 
-			rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint>( reader._stateStructure->findFrame(jointName) );
+			rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint*>( reader._stateStructure->findFrame(jointName) );
 			if (joint.isNull())
 				RW_THROW("Joint \"" << jointName << "\" not found.");
 
-			JointEncoderCalibration::Ptr calibration = rw::common::ownedPtr(new JointEncoderCalibration(joint));
+			JointEncoderCalibration::Ptr calibration = rw::common::ownedPtr(new JointEncoderCalibration(reader._serialDevice, joint));
 			CalibrationParameterSet parameterSet = calibration->getParameterSet();
 
 			if (!element->hasAttribute("tau"))
@@ -139,13 +139,11 @@ namespace {
 			else
 				parameterSet(JointEncoderCalibration::PARAMETER_SIGMA) = element->getAttributeValueAsDouble("sigma");
 
-
-			JointEncoderCalibration
 			calibration->setParameterSet(parameterSet);
 
 			return calibration;
 		}
-*/
+
 }
 
 SerialDeviceCalibration::Ptr XmlCalibrationLoader::load(
@@ -186,16 +184,14 @@ SerialDeviceCalibration::Ptr XmlCalibrationLoader::load(
 	}
 
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
-	// Load joi
-	/*
 	DOMElem::Ptr nodeJoints = elmRoot->getChild("JointCalibrations");
 	if (nodeJoints!=NULL) {
 		BOOST_FOREACH(DOMElem::Ptr child, nodeJoints->getChildren() ){
-			DHJointCalibration::Ptr jointCalibration = readDHJointCalibration( child, elementReader );
+			JointEncoderCalibration::Ptr jointCalibration = readDHJointCalibration( child, elementReader );
 			compositeJointCalibration->addCalibration(jointCalibration);
 		}
 	}
-	*/
+
 
 	SerialDeviceCalibration::Ptr calibration = rw::common::ownedPtr(new SerialDeviceCalibration(device, baseCalibration, endCalibration, compositeLinkCalibration, compositeJointCalibration));
 	return calibration;

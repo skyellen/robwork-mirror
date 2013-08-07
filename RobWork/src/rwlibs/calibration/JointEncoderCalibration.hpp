@@ -16,11 +16,20 @@
 namespace rwlibs {
 namespace calibration {
 
+
+/**
+ * @brief
+ *
+ *
+ *
+ */
 class JointEncoderCalibration: public CalibrationBase {
 public:
 	typedef rw::common::Ptr<JointEncoderCalibration> Ptr;
 
-	JointEncoderCalibration(rw::models::JointDevice::Ptr device, rw::models::Joint::Ptr joint, const std::vector<rw::math::Function<>::Ptr>& correctionFunctions);
+	enum {PARAMETER_TAU=0, PARAMETER_SIGMA=1};
+
+	JointEncoderCalibration(rw::models::JointDevice::Ptr device, rw::models::Joint::Ptr joint);
 
 	virtual ~JointEncoderCalibration();
 

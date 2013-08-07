@@ -73,11 +73,12 @@ void XmlMeasurementFile::save(const std::vector<SerialDevicePoseMeasurement>& me
 	DOMParser::Ptr parser = DOMParser::make();
 
 	DOMElem::Ptr elmRoot = parser->getRootElement();
-	elmRoot->setName("SerialDevicePoseMeasurements");
+
+	DOMElem::Ptr element = elmRoot->addChild("SerialDevicePoseMeasurements");
 
 	for (std::vector<SerialDevicePoseMeasurement>::const_iterator it = measurements.begin(); it != measurements.end(); ++it) {
 		const SerialDevicePoseMeasurement measurement = (*it);
-		addMeasurementToDomElement(measurement, elmRoot);
+		addMeasurementToDomElement(measurement, element);
 	}
 
 	parser->save( fileName );
@@ -90,11 +91,14 @@ std::vector<SerialDevicePoseMeasurement> XmlMeasurementFile::load(std::string fi
 
 	DOMElem::Ptr elmRoot = parser->getRootElement();
 
-	if ( !elmRoot->isName("SerialDevicePoseMeasurements") )
-		RW_THROW("No measurements found in measurement file.");
+	if( !elmRoot->hasChild("SerialDevicePoseMeasurements") ){
+		RW_THROW("No SerialDevicePoseMeasurements tag found in measurement file... aborting");
+	}
+
+	DOMElem::Ptr element = elmRoot->getChild("SerialDevicePoseMeasurements");
 
 	std::vector<SerialDevicePoseMeasurement> measurements;
-	BOOST_FOREACH(DOMElem::Ptr child, elmRoot->getChildren() ){
+	BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
 		SerialDevicePoseMeasurement measurement = convertDomElementToMeasurement(child);
 		measurements.push_back(measurement);
 	}

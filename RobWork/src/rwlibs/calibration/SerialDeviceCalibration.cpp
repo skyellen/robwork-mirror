@@ -46,7 +46,7 @@ SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr d
 		}
 
 		// Add joint calibrations.
-		JointEncoderCalibration::Ptr jointCalibration = rw::common::ownedPtr(new JointEncoderCalibration(device.cast<rw::models::JointDevice>(), joint, encoderCorrectionFunctions));
+		JointEncoderCalibration::Ptr jointCalibration = rw::common::ownedPtr(new JointEncoderCalibration(device.cast<rw::models::JointDevice>(), joint));
 		_compositeJointCalibration->addCalibration(jointCalibration);
 	}
 	

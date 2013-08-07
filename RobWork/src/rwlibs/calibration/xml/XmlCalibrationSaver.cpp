@@ -89,7 +89,7 @@ DOMElem::Ptr ElementCreator::createElement<JointEncoderCalibration::Ptr>(
 		JointEncoderCalibration::Ptr calibration,
 		DOMElem::Ptr parent)
 {
-	DOMElem::Ptr element = parent->addChild("DHLinkCalibration");
+	DOMElem::Ptr element = parent->addChild("JointEncoderCalibration");
 
 	element->addAttribute("joint")->setValue( calibration->getJoint()->getName() );
 

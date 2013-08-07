@@ -9,12 +9,6 @@
 
 namespace rwlibs {
 	namespace calibration {
-		int DHLinkCalibration::PARAMETER_A = 0;
-		int DHLinkCalibration::PARAMETER_B = 1;
-		int DHLinkCalibration::PARAMETER_D = 2;
-		int DHLinkCalibration::PARAMETER_ALPHA = 3;
-		int DHLinkCalibration::PARAMETER_BETA = 4;
-		int DHLinkCalibration::PARAMETER_THETA = 5;
 
 		DHLinkCalibration::DHLinkCalibration(rw::models::Joint::Ptr joint) : CalibrationBase(CalibrationParameterSet(6)), _joint(joint), _originalSet(*rw::models::DHParameterSet::get(joint.get())), _isParallel(_originalSet.isParallel()) {
 			CalibrationParameterSet parameterSet = getParameterSet();
