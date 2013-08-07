@@ -45,7 +45,7 @@ namespace {
 		if (measurement.hasCovarianceMatrix()) {
 			DOMElem::Ptr elmCovarianceMatrix = elmMeasurement->addChild("CovarianceMatrix");
 			Eigen::Matrix<double, 6, 6> covarianceMatrix = measurement.getCovarianceMatrix();
-			DOMBasisTypes::write( covarianceMatrix, elmMeasurement, false);
+			DOMBasisTypes::write( covarianceMatrix, elmCovarianceMatrix, false);
 		}
 	}
 
