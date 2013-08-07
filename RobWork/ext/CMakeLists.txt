@@ -17,7 +17,7 @@ IF(RW_ENABLE_INTERNAL_PQP_TARGET)
     #              -DSRC_INSTALL_DIR=${RW_EXT_INSTALL_DIR}
     #   INSTALL_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     #)
-    add_subdirectory(PQP)
+    add_subdirectory(rwpqp)
 ENDIF()
 
 IF(RW_ENABLE_INTERNAL_YAOBI_TARGET)
@@ -31,7 +31,7 @@ IF(RW_ENABLE_INTERNAL_YAOBI_TARGET)
     #   INSTALL_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     #)
 
-    add_subdirectory(yaobi)
+    add_subdirectory(rwyaobi)
 ENDIF()
 IF(RW_ENABLE_INTERNAL_LUA_TARGET)
     #ExternalProject_Add(
