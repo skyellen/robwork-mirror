@@ -37,6 +37,7 @@ std::string GeometryData::toString(GeometryData::GeometryType type){
 	case(ConePrim): return "ConePrim";
 	case(TrianglePrim): return "TrianglePrim";
 	case(CylinderPrim): return "CylinderPrim";
+	case(TubePrim): return "TubePrim";
 	case(PlanePrim): return "PlanePrim";
 	case(RayPrim): return "RayPrim";
 	case(UserType): return "UserType";

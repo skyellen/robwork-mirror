@@ -12,6 +12,7 @@ SET(FILES_CPP
     Primitive.cpp
     Box.cpp
     Cylinder.cpp
+    Tube.cpp
     Sphere.cpp
     Pyramid.cpp
     Cone.cpp
@@ -64,6 +65,7 @@ SET(FILES_HPP
     Primitive.hpp
     Box.hpp
     Cylinder.hpp
+    Tube.hpp
     Sphere.hpp
     Pyramid.hpp
     Cone.hpp

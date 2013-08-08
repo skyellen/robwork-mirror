@@ -46,7 +46,7 @@ namespace rw { namespace geometry {
 					  IdxTriMesh,
 					  SpherePrim, BoxPrim, OBBPrim, AABBPrim,
 					  LinePrim, PointPrim, PyramidPrim, ConePrim,
-					  TrianglePrim, CylinderPrim, PlanePrim, RayPrim,
+					  TrianglePrim, CylinderPrim, TubePrim, PlanePrim, RayPrim,
 					  UserType} GeometryType;
 	    //! @brief Destructor
 		virtual ~GeometryData(){};

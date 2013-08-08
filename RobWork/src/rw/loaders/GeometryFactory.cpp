@@ -27,6 +27,7 @@
 #include "model3d/STLFile.hpp"
 #include <rw/geometry/Box.hpp>
 #include <rw/geometry/Cylinder.hpp>
+#include <rw/geometry/Tube.hpp>
 #include <rw/geometry/Sphere.hpp>
 #include <rw/geometry/PointCloud.hpp>
 
@@ -77,6 +78,23 @@ namespace
 					<< divisions);
 
 			return ownedPtr(new Geometry(ownedPtr(new Cylinder(radius, height))));
+		} else {
+			RW_THROW("Could not read (radius, height, divisions).");
+			return NULL;
+		}
+	}
+
+	Geometry::Ptr constructTube(std::stringstream& sstr)
+	{
+		float radius, height;
+		int divisions;
+		if (sstr >> radius >> height >> divisions) {
+			if (divisions < 0)
+				RW_THROW(
+					"Negative discretization level "
+					<< divisions);
+
+			return ownedPtr(new Geometry(ownedPtr(new Tube(radius, height))));
 		} else {
 			RW_THROW("Could not read (radius, height, divisions).");
 			return NULL;
@@ -220,6 +238,8 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
         return constructBox(sstr);
     if (type == "#Cylinder")
         return constructCylinder(sstr);
+    if (type == "#Tube")
+        return constructTube(sstr);
     if (type == "#Cone")
         return constructCone(sstr);
     if (type == "#Line")

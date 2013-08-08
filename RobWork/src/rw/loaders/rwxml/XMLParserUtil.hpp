@@ -52,7 +52,7 @@ typedef enum{Fixed=0,Movable,Prismatic,Revolute,DependRevolute,
 typedef enum{SerialType,ParallelType,TreeType,MobileType,
              CompositeType,ConveyorType} DeviceType;
 typedef enum{AccLimitType,VelLimitType,PosLimitType} LimitType;
-typedef enum{PolyType,CubeType,SphereType,ConeType, CylinderType} GeoType;
+typedef enum{PolyType,CubeType,SphereType,ConeType, CylinderType, TubeType} GeoType;
 typedef enum{ActiveState, PassiveState} FrameState;
 typedef enum{MatrixType, LambdaType} InertiaType;
 
@@ -159,6 +159,8 @@ struct DummyFrame {
         _transform(rw::math::Transform3D<>::identity()),
         _isDaf(false),
         _isDepend(false),
+        _gain(0),
+        _offset(0),
         _hasDHparam(false)
     {}
 
