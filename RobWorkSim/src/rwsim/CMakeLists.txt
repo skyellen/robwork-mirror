@@ -8,8 +8,10 @@ add_library(rwsim
 	contacts/ContactDetector.cpp
 	contacts/ContactDetectorData.cpp
 	contacts/ContactModel.cpp
+	contacts/ContactModelGeometry.cpp
 	contacts/ContactStrategy.cpp
 	contacts/ContactStrategyData.cpp
+	contacts/ContactStrategyGeometry.cpp
 	contacts/ContactStrategyPQP.cpp
 	contacts/RenderContacts.cpp
 
