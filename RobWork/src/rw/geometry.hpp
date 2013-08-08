@@ -36,6 +36,7 @@
 #include "./geometry/Primitive.hpp"
 #include "./geometry/Box.hpp"
 #include "./geometry/Cylinder.hpp"
+#include "./geometry/Tube.hpp"
 #include "./geometry/Sphere.hpp"
 #include "./geometry/Pyramid.hpp"
 #include "./geometry/Cone.hpp"
