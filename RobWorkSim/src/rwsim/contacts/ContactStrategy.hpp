@@ -146,6 +146,30 @@ public:
 	 * @copydoc rw::proximity::ProximityStrategy::clear
 	 */
 	virtual void clear() = 0;
+
+	/**
+	 * @brief Get the properties used by the contact strategy.
+	 *
+	 * @return reference to the property map.
+	 */
+	virtual rw::common::PropertyMap& getPropertyMap();
+
+	/**
+	 * @brief Get the properties used by the contact strategy.
+	 *
+	 * @return the property map.
+	 */
+	virtual const rw::common::PropertyMap& getPropertyMap() const;
+
+	/**
+	 * @brief Set which properties the contact strategy should use.
+	 *
+	 * @param map [in] the property map to get properties from.
+	 */
+	virtual void setPropertyMap(const rw::common::PropertyMap& map);
+
+protected:
+	rw::common::PropertyMap _propertyMap;
 };
 //! @}
 } /* namespace contacts */

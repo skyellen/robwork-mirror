@@ -127,6 +127,7 @@ namespace rw { namespace geometry {
 
 		void setFrame(kinematics::Frame* frame){ _refFrame = frame; };
 		kinematics::Frame* getFrame(){ return _refFrame; };
+		const kinematics::Frame* getFrame() const { return _refFrame; };
 
 		void setMask(int mask){_mask=mask;};
 		int getMask(){ return _mask; }

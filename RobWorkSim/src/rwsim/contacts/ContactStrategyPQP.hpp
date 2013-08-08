@@ -133,6 +133,17 @@ public:
 	 */
 	virtual void setContactFilter(ContactFilter filter = MANIFOLD);
 
+	/**
+	 * @brief The current distance threshold used by the simulator.
+	 *
+	 * The default threshold is 0.5 mm.
+	 * This can be changed by setting the ContactStrategyPQPThreshold property in the PropertyMap.
+	 * If this is not set, the MaxSepDistance property can also be used.
+	 *
+	 * @return the threshold (positive).
+	 */
+	virtual double getThreshold() const;
+
     /**
      * @brief For modelling of a trimesh.
      */
@@ -145,6 +156,9 @@ public:
 
 		//! The location of the mesh.
 		rw::math::Transform3D<> transform;
+
+		//! The frame
+		const rw::kinematics::Frame* frame;
 	};
 
 	/**
@@ -183,7 +197,6 @@ private:
 
 	bool _matchAll;
 	rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
-	double _threshold;
 	ContactFilter _filtering;
 };
 //! @}

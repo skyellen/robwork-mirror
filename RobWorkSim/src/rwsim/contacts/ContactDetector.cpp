@@ -31,14 +31,16 @@ using namespace rwsim::contacts;
 
 ContactDetector::ContactDetector(WorkCell::Ptr workcell):
 	_wc(workcell),
-	_bpfilter(ownedPtr( new BasicFilterStrategy(workcell) ))
+	_bpfilter(ownedPtr( new BasicFilterStrategy(workcell) )),
+	_timer(0)
 {
 	initializeGeometryMap();
 }
 
 ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr filter):
 	_wc(wc),
-	_bpfilter(filter)
+	_bpfilter(filter),
+	_timer(0)
 {
 	initializeGeometryMap();
 }
@@ -46,6 +48,14 @@ ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr 
 ContactDetector::~ContactDetector()
 {
 	clearStrategies();
+}
+
+double ContactDetector::getTimer() const {
+	return _timer;
+}
+
+void ContactDetector::setTimer(double value) {
+	_timer = value;
 }
 
 void ContactDetector::initializeGeometryMap() {
@@ -154,6 +164,11 @@ void ContactDetector::setContactStrategies(std::list<StrategyTableRow> strategie
 }
 
 void ContactDetector::setDefaultStrategies() {
+	PropertyMap emptyMap;
+    setDefaultStrategies(emptyMap);
+}
+
+void ContactDetector::setDefaultStrategies(const PropertyMap& map) {
     std::vector<Object::Ptr> objects = _wc->getObjects();
     std::size_t spheres = 0;
     BOOST_FOREACH(Object::Ptr object, objects) {
@@ -165,18 +180,25 @@ void ContactDetector::setDefaultStrategies() {
     }
     std::size_t pri = 0;
     if (spheres > 1) {
-    	addContactStrategy(ownedPtr(new BallBallStrategy()), pri);
+    	ContactStrategy* strat = new BallBallStrategy();
+    	strat->setPropertyMap(map);
+    	addContactStrategy(ownedPtr(strat), pri);
     	pri++;
     }
-    addContactStrategy(ownedPtr(new ContactStrategyPQP()),pri);
+	ContactStrategy* strat = new ContactStrategyPQP();
+	strat->setPropertyMap(map);
+    addContactStrategy(ownedPtr(strat),pri);
 }
 
-std::vector<Contact> ContactDetector::findContacts(const State& state) const {
+std::vector<Contact> ContactDetector::findContacts(const State& state) {
 	ContactDetectorData data;
 	return findContacts(state,data);
 }
 
-std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data) const {
+std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data) {
+	timespec tstart, tend, diff;
+	clock_gettime(CLOCK_REALTIME, &tstart);
+
 	std::vector<Contact> res;
 
 	ProximityFilter::Ptr filter = _bpfilter->update(state);
@@ -241,7 +263,17 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 			}
 		}
 	}
+	clock_gettime(CLOCK_REALTIME, &tend);
+	if ((tend.tv_nsec-tstart.tv_nsec)<0) {
+		diff.tv_sec = tend.tv_sec-tstart.tv_sec-1;
+		diff.tv_nsec = 1000000000+tend.tv_nsec-tstart.tv_nsec;
+	} else {
+		diff.tv_sec = tend.tv_sec-tstart.tv_sec;
+		diff.tv_nsec = tend.tv_nsec-tstart.tv_nsec;
+	}
+	double used = (double)diff.tv_sec + (double)diff.tv_nsec/1000000000.;
 
+	_timer += used;
 	return res;
 }
 

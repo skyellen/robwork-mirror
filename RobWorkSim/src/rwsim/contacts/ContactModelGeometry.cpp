@@ -15,19 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "ContactStrategy.hpp"
-
-using namespace rw::common;
-using namespace rwsim::contacts;
-
-PropertyMap& ContactStrategy::getPropertyMap() {
-	return _propertyMap;
-}
-
-const PropertyMap& ContactStrategy::getPropertyMap() const {
-	return _propertyMap;
-}
-
-void ContactStrategy::setPropertyMap(const PropertyMap &map) {
-	_propertyMap = map;
-}
+#include "ContactModelGeometry.hpp"

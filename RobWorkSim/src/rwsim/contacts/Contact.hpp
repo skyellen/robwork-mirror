@@ -25,6 +25,7 @@
  */
 
 #include "ContactModel.hpp"
+#include <rw/kinematics/Frame.hpp>
 #include <rw/math/Transform3D.hpp>
 
 namespace rwsim {
@@ -64,6 +65,20 @@ public:
 	 * @return contact model specific to the strategy that created the contact.
 	 */
 	ContactModel::Ptr getModelB() const;
+
+	/**
+	 * @brief Get the frame for the first object.
+	 *
+	 * @return pointer to the frame.
+	 */
+	const rw::kinematics::Frame* getFrameA() const;
+
+	/**
+	 * @brief Get the frame for the second object.
+	 *
+	 * @return pointer to the frame.
+	 */
+	const rw::kinematics::Frame* getFrameB() const;
 
 	/**
 	 * @brief The relative transform between the two contact models.
@@ -115,6 +130,20 @@ public:
 	void setModelB(ContactModel::Ptr modelB);
 
 	/**
+	 * @brief Set the frame for the first object.
+	 *
+	 * @param frame [in] a pointer to the frame.
+	 */
+	void setFrameA(const rw::kinematics::Frame* frame);
+
+	/**
+	 * @brief Set the frame for the second object.
+	 *
+	 * @param frame [in] a pointer to the frame.
+	 */
+	void setFrameB(const rw::kinematics::Frame* frame);
+
+	/**
 	 * @brief Set the relative transform from the first object to the second object.
 	 *
 	 * @param aTb [in] the relative transform.
@@ -134,6 +163,14 @@ public:
 	 * @param pointB [in] contact point.
 	 */
 	void setPointB(rw::math::Vector3D<> pointB);
+
+	/**
+	 * @brief Set the contact points on both objects at the same time.
+	 *
+	 * @param pointA [in] contact point on A.
+	 * @param pointB [in] contact point on B.
+	 */
+	void setPoints(rw::math::Vector3D<> pointA, rw::math::Vector3D<> pointB);
 
 	/**
 	 * @brief Set the normal from the first object to the second.
@@ -163,6 +200,8 @@ public:
 
 private:
 	ContactModel::Ptr _a, _b;
+	const rw::kinematics::Frame * _frameA;
+	const rw::kinematics::Frame * _frameB;
 	rw::math::Transform3D<> _aTb;
 	rw::math::Vector3D<> _pointA, _pointB;
 	rw::math::Vector3D<> _normal;

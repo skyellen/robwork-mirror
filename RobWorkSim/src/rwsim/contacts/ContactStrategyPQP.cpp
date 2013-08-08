@@ -32,7 +32,6 @@ using namespace rwsim::dynamics;
 ContactStrategyPQP::ContactStrategyPQP():
 	_matchAll(true),
 	_narrowStrategy(new ProximityStrategyPQP()),
-	_threshold(0.0005),
 	_filtering(MANIFOLD)
 {
 }
@@ -79,14 +78,17 @@ std::vector<Contact> ContactStrategyPQP::findContacts(ProximityModel* a, const T
 		    ProximityStrategyData data;
 
 			data.setCollisionQueryType(CollisionStrategy::AllContacts);
-			res = &_narrowStrategy->distances(mA->pmodel, wTa, mB->pmodel, wTb, _threshold, data);
+			res = &_narrowStrategy->distances(mA->pmodel, wTa, mB->pmodel, wTb, getThreshold(), data);
 
 			for(size_t i=0;i<res->distances.size();i++){
 				Contact c;
-				Vector3D<> p1 = wTa*res->p1s[i];
-				Vector3D<> p2 = wTa*res->p2s[i];
+				Vector3D<> p1 = wTa*modelA.transform*res->p1s[i];
+				Vector3D<> p2 = wTa*modelA.transform*res->p2s[i];
 				c.setPointA(p1);
 				c.setPointB(p2);
+
+				c.setFrameA(modelA.frame);
+				c.setFrameB(modelB.frame);
 
 				if(res->distances[i]<0.00000001){
 					std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
@@ -98,7 +100,7 @@ std::vector<Contact> ContactStrategyPQP::findContacts(ProximityModel* a, const T
 				} else {
 					c.setNormal(normalize(p2-p1));
 				}
-				c.setDepth(res->distances[i]);
+				c.setDepth(-res->distances[i]);
 				c.setModelA(mA);
 				c.setModelB(mB);
 				c.setTransform(Transform3D<>::identity()); // Should be set correctly!
@@ -146,6 +148,7 @@ bool ContactStrategyPQP::addGeometry(ProximityModel* model, const Geometry& geom
 	newModel.geoId = geom.getId();
 	newModel.transform = geom.getTransform();
 	newModel.mesh = sData->getTriMesh();
+	newModel.frame = geom.getFrame();
 	bmodel->models.push_back(newModel);
 
 	_narrowStrategy->addGeometry(bmodel->pmodel.get(),geom);
@@ -278,4 +281,11 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 	}
 
 	return res;
+}
+
+double ContactStrategyPQP::getThreshold() const {
+	double threshold = _propertyMap.get<double>("ContactStrategyPQPThreshold", -0.1);
+	if (threshold == -0.1)
+		threshold = _propertyMap.get<double>("MaxSepDistance", 0.0005);
+    return threshold;
 }

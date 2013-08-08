@@ -63,6 +63,8 @@ std::vector<Contact> BallBallStrategy::findContacts(ProximityModel* a, const Tra
 				Contact c;
 				c.setModelA(mA);
 				c.setModelB(mB);
+				c.setFrameA(modelA.frame);
+				c.setFrameB(modelB.frame);
 				c.setPointA(cA+modelA.radius*cVecNorm);
 				c.setPointB(cB-modelB.radius*cVecNorm);
 				c.setNormal(cVecNorm);
@@ -98,6 +100,7 @@ bool BallBallStrategy::addGeometry(ProximityModel* model, const Geometry& geom) 
 	newModel.geoId = geom.getId();
 	newModel.center = geom.getTransform().P();
 	newModel.radius = sData->getRadius()*geom.getScale();
+	newModel.frame = geom.getFrame();
 	bmodel->models.push_back(newModel);
 	return true;
 }

@@ -119,7 +119,7 @@ public:
 	 * @param state [in] The state for which to check for contacts.
 	 * @return a vector of contacts, some might be subclasses of the Contact class.
 	 */
-	std::vector<Contact> findContacts(const rw::kinematics::State& state) const;
+	virtual std::vector<Contact> findContacts(const rw::kinematics::State& state);
 
 	/**
 	 * @brief Find contacts in workcell.
@@ -132,13 +132,25 @@ public:
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @return a vector of contacts, some might be subclasses of the Contact class.
 	 */
-	std::vector<Contact> findContacts(const rw::kinematics::State& state,
-			ContactDetectorData &data) const;
+	virtual std::vector<Contact> findContacts(const rw::kinematics::State& state,
+			ContactDetectorData &data);
 
 	/**
 	 * @brief The broad-phase filter strategy used by the contact detector.
 	 */
-	rw::proximity::ProximityFilterStrategy::Ptr getProximityFilterStrategy() const;
+	virtual rw::proximity::ProximityFilterStrategy::Ptr getProximityFilterStrategy() const;
+
+	/**
+	 * @brief The number of seconds measured used in contact detection.
+	 * @return the value of the timer in seconds.
+	 */
+	virtual double getTimer() const;
+
+	/**
+	 * @brief Set the value of a timer that will measure time used during contact detection.
+	 * @param value [in] the value to set the time to (seconds)
+	 */
+	virtual void setTimer(double value = 0);
 
 	/**
 	 * @name Strategy table functions.
@@ -150,7 +162,7 @@ public:
 	 *
 	 * @return The strategy table used.
 	 */
-	StrategyTable getContactStategies() const;
+	virtual StrategyTable getContactStategies() const;
 
 	/**
 	 * @brief Add a strategy to the strategy table that matches all frames.
@@ -158,7 +170,7 @@ public:
 	 * @param strategy [in/out] The strategy to add. Relevant ContactModels are automatically created.
 	 * @param priority [in] the priority of the new strategy (default is maximum priority - 0).
 	 */
-	void addContactStrategy(ContactStrategy::Ptr strategy, std::size_t priority = 0);
+	virtual void addContactStrategy(ContactStrategy::Ptr strategy, std::size_t priority = 0);
 
 	/**
 	 * @brief Add a strategy that is only used for frames matching one rule.
@@ -167,7 +179,7 @@ public:
 	 * @param strategy [in/out] The strategy to add. Relevant ContactModels are automatically created.
 	 * @param priority [in] the priority of the new strategy (default is maximum priority - 0).
 	 */
-	void addContactStrategy(rw::proximity::ProximitySetupRule rule,
+	virtual void addContactStrategy(rw::proximity::ProximitySetupRule rule,
 			ContactStrategy::Ptr strategy, std::size_t priority = 0);
 
 	/**
@@ -177,7 +189,7 @@ public:
 	 * @param strategy [in/out] The strategy to add. Relevant ContactModels are automatically created.
 	 * @param priority [in] the priority of the new strategy (default is maximum priority - 0).
 	 */
-	void addContactStrategy(rw::proximity::ProximitySetup rules,
+	virtual void addContactStrategy(rw::proximity::ProximitySetup rules,
 			ContactStrategy::Ptr strategy, std::size_t priority = 0);
 
 	/**
@@ -187,7 +199,7 @@ public:
 	 * and relevant ContactModels are created automatically if not already present.
 	 * @param priority [in] the priority of the new strategy (default is maximum priority - 0).
 	 */
-	void addContactStrategy(StrategyTableRow &strategy, std::size_t priority = 0);
+	virtual void addContactStrategy(StrategyTableRow &strategy, std::size_t priority = 0);
 
 	/**
 	 * @brief Remove the strategy with a certain priority in the table.
@@ -196,31 +208,40 @@ public:
 	 *
 	 * @param priority the priority to remove.
 	 */
-	void removeContactStrategy(std::size_t priority = 0);
+	virtual void removeContactStrategy(std::size_t priority = 0);
 
 	/**
 	 * @brief Remove all strategies and contact models in the table.
 	 */
-	void clearStrategies();
+	virtual void clearStrategies();
 
 	/**
 	 * @brief Set a complete strategy table.
 	 *
 	 * @param strategies [in] the strategy table.
 	 */
-	void setContactStrategies(StrategyTable strategies);
+	virtual void setContactStrategies(StrategyTable strategies);
 
 	/**
 	 * @brief Auto-generate a suitable general-purpose strategy table.
 	 *
 	 * This function will generate the most suitable default contact strategy for the workcell.
 	 */
-	void setDefaultStrategies();
+	virtual void setDefaultStrategies();
+
+	/**
+	 * @brief Auto-generate a suitable general-purpose strategy table with strategies using the given properties.
+	 *
+	 * This function will generate the most suitable default contact strategy for the workcell.
+	 *
+	 * @param map [in] the PropertyMap to use by all the strategies.
+	 */
+	virtual void setDefaultStrategies(const rw::common::PropertyMap& map);
 
 	/**
 	 * @brief Print the current strategy table to standard output.
 	 */
-	void printStrategyTable() const;
+	virtual void printStrategyTable() const;
 	///@}
 
 private:
@@ -248,6 +269,8 @@ private:
 	StrategyTable _strategies;
 
 	rw::kinematics::FrameMap<std::vector<rw::geometry::Geometry::Ptr> > _frameToGeo;
+
+	double _timer;
 };
 //! @}
 } /* namespace contacts */

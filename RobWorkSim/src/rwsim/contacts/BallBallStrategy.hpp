@@ -123,6 +123,9 @@ public:
 
 		//! The center of the ball.
 		rw::math::Vector3D<> center;
+
+		//! The frame
+		const rw::kinematics::Frame* frame;
 	};
 
 	/**

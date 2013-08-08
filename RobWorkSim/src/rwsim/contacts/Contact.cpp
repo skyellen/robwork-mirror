@@ -17,10 +17,13 @@
 
 #include "Contact.hpp"
 
+using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsim::contacts;
 
 Contact::Contact():
+	_frameA(NULL),
+	_frameB(NULL),
 	_depth(0)
 {
 }
@@ -35,6 +38,14 @@ ContactModel::Ptr Contact::getModelA() const {
 
 ContactModel::Ptr Contact::getModelB() const {
 	return _b;
+}
+
+const Frame* Contact::getFrameA() const {
+	return _frameA;
+}
+
+const Frame* Contact::getFrameB() const {
+	return _frameB;
 }
 
 Transform3D<> Contact::aTb() const {
@@ -65,6 +76,14 @@ void Contact::setModelB(ContactModel::Ptr modelB) {
 	_b = modelB;
 }
 
+void Contact::setFrameA(const Frame* frame) {
+	_frameA = frame;
+}
+
+void Contact::setFrameB(const Frame* frame) {
+	_frameB = frame;
+}
+
 void Contact::setTransform(Transform3D<> aTb) {
 	_aTb = aTb;
 }
@@ -77,12 +96,21 @@ void Contact::setPointB(Vector3D<> pointB) {
 	_pointB = pointB;
 }
 
+void Contact::setPoints(rw::math::Vector3D<> pointA, rw::math::Vector3D<> pointB) {
+	_pointA = pointA;
+	_pointB = pointB;
+}
+
 void Contact::setNormal(Vector3D<> normal) {
 	_normal = normal;
 }
 
 void Contact::setDepth() {
-	_depth = dot(_pointA-_pointB,_normal);
+	double dist = (_pointA-_pointB).norm2();
+	if (dot(_pointA-_pointB,_normal) < 0)
+		_depth = -dist;
+	else
+		_depth = dist;
 }
 
 void Contact::setDepth(double depth) {
