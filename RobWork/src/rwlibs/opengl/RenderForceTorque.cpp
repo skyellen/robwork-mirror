@@ -22,7 +22,11 @@ using namespace rw::math;
 using namespace rwlibs::opengl;
 
 RenderForceTorque::RenderForceTorque():
-  _quadratic(NULL)
+	_scaleForce(1.0f),
+	_scaleTorque(1.0f),
+	_colorForce(Vector3D<float>(0.0f,0.0f,1.0f)),
+	_colorTorque(Vector3D<float>(1.0f,0.0f,0.0f)),
+	_quadratic(NULL)
 {
 }
 
@@ -30,6 +34,22 @@ RenderForceTorque::~RenderForceTorque()
 {
   if (_quadratic != NULL)
     gluDeleteQuadric(_quadratic);
+}
+
+rw::math::Vector3D<> RenderForceTorque::getForce() const {
+	return _force;
+}
+
+rw::math::Vector3D<> RenderForceTorque::getTorque() const {
+	return _torque;
+}
+
+float RenderForceTorque::getScaleForce() const {
+	return _scaleForce;
+}
+
+float RenderForceTorque::getScaleTorque() const {
+	return _scaleTorque;
 }
 
 void RenderForceTorque::setForce(Vector3D<> force)
@@ -42,12 +62,41 @@ void RenderForceTorque::setTorque(Vector3D<> torque)
   _torque = torque;
 }
 
+void RenderForceTorque::setScaleForce(float scale) {
+	_scaleForce = scale;
+}
+
+void RenderForceTorque::setScaleTorque(float scale) {
+	_scaleTorque = scale;
+}
+
+void RenderForceTorque::setScales(float scaleForce, float scaleTorque) {
+	_scaleForce = scaleForce;
+	_scaleTorque = scaleTorque;
+}
+
+Vector3D<float> RenderForceTorque::getColorForce() const {
+	return _colorForce;
+}
+
+Vector3D<float> RenderForceTorque::getColorTorque() const {
+	return _colorTorque;
+}
+
+void RenderForceTorque::setColorForce(float r, float g, float b) {
+	_colorForce = Vector3D<float>(r,g,b);
+}
+
+void RenderForceTorque::setColorTorque(float r, float g, float b) {
+	_colorTorque = Vector3D<float>(r,g,b);
+}
+
 void RenderForceTorque::draw(const DrawableNode::RenderInfo& info,
     DrawableNode::DrawType type,
     double alpha) const
 {
   static const float WIDTH = 0.3f;
-  static const float SIZE = 0.2;
+  const float SIZE = 1.0f;
 
   if(_quadratic==NULL)
     _quadratic = gluNewQuadric();
@@ -61,22 +110,22 @@ void RenderForceTorque::draw(const DrawableNode::RenderInfo& info,
   EAA<> rot;
   if (_force.norm2() > 1e-4)
   {
-    double forceLen = _force.norm2()/20*lenBody;
-    glColor4f(0.0f, 0.0f, 1.0f, alpha); // Blue color
+    double forceLen = _force.norm2()*_scaleForce*lenBody;
+    glColor4f(_colorForce[0], _colorForce[1], _colorForce[2], alpha); // Blue color
     rot = EAA<>(Vector3D<>::z(),normalize(_force));
     glRotated(rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
     gluCylinder(_quadratic, widthBody, widthBody, forceLen, 32, 32);    // Draw Our Cylinder
     glTranslatef(0.0f,0.0f,forceLen);// Center The Cone
     gluCylinder(_quadratic,widthHead,0.0f,lenHead,32,32); // A Cone
 
-    glTranslatef(0.0f,0.0f,-lenBody); // Center The Cylinder
+    glTranslatef(0.0f,0.0f,-forceLen); // Center The Cylinder
     glRotated(-rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
   }
 
   if (_torque.norm2() > 1e-4)
   {
-    double torqueLen = _torque.norm2()/20*lenBody;
-    glColor4f(1.0f, 0.0f, 0.0f, alpha); // Red color
+    double torqueLen = _torque.norm2()*_scaleTorque*lenBody;
+    glColor4f(_colorTorque[0], _colorTorque[1], _colorTorque[2], alpha); // Red color
     rot = EAA<>(Vector3D<>::z(),normalize(_torque));
     glRotated(rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
     gluCylinder(_quadratic, widthBody, widthBody, torqueLen, 32, 32);    // Draw Our Cylinder
