@@ -175,7 +175,7 @@ double ODESimulator::getMaxSeperatingDistance(){
     return _maxSepDistance;
 }
 
-ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
+ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDetector::Ptr detector):
 	_dwc(dwc),
 	_time(0.0),
 	_render(ownedPtr( new ODEDebugRender(this) ) ),
@@ -197,7 +197,8 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _excludeMap(0,100),
     _oldTime(0),
     _useRobWorkContactGeneration(true),
-    _prevStepEndedInCollision(false)
+    _prevStepEndedInCollision(false),
+    _detector(detector)
 {
 
     // verify that the linked ode library has the correct
@@ -387,7 +388,11 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     // Detect collision
     _allcontacts.clear();
     if( _useRobWorkContactGeneration ){
-        TIMING("Collision: ", detectCollisionsRW(state, false) );
+    	if (_detector == NULL) {
+    		TIMING("Collision: ", detectCollisionsRW(state, false) );
+    	} else {
+    		TIMING("Collision: ", detectCollisionsContactDetector(state) );
+    	}
         {
             boost::mutex::scoped_lock lock(_contactMutex);
             _allcontactsTmp = _allcontacts;
@@ -1469,6 +1474,110 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
 
 
 using namespace rw::proximity;
+
+void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& state) {
+	std::vector<rwsim::contacts::Contact> contacts = _detector->findContacts(state);
+    size_t numc = contacts.size();
+    /*BOOST_FOREACH(rwsim::contacts::Contact &c, contacts) {
+    	std::cout << "ModelA: " << c.getModelA()->getName() << " ModelB: " << c.getModelB()->getName() << " FrameA: " << c.getFrameA()->getName() << " FrameB: " << c.getFrameB()->getName() << " " << c.getNormal() << std::endl;
+    }*/
+    if(_rwcontacts.size()<numc){
+        _rwcontacts.resize(numc);
+        _contacts.resize(numc);
+        _allcontacts.resize(numc);
+	    _nrOfCon = numc;
+    }
+    int ni = 0;
+	BOOST_FOREACH(rwsim::contacts::Contact &contact, contacts) {
+		dContact &con = _contacts[ni];
+
+        ODEBody *a_data = _rwFrameToODEBody[contact.getFrameA()];
+        ODEBody *b_data = _rwFrameToODEBody[contact.getFrameB()];
+        if(a_data==NULL || b_data==NULL){
+        	std::cout << "ODE Bodies not found" << std::endl;
+        	std::cout << "Frame A: " << contact.getFrameA()->getName() << std::endl;
+        	std::cout << "Frame B: " << contact.getFrameB()->getName() << std::endl;
+            continue;
+        }
+
+		Vector3D<> n = -contact.getNormal();
+		Vector3D<> p = contact.getPointA() - n*contact.getDepth()/2.; // In global coordinates
+
+		ODEUtil::toODEVector(n, con.geom.normal);
+		ODEUtil::toODEVector(p, con.geom.pos);
+
+		if (contact.getDepth() < -_maxSepDistance)
+			continue;
+
+		double penDepth = _maxAllowedPenetration + contact.getDepth();
+		con.geom.depth = penDepth;
+
+        if( _enabledMap[*a_data->getFrame()]==0 || _enabledMap[*b_data->getFrame()]==0 ) {
+        	std::cout << "disabled" << std::endl;
+            continue;
+        }
+
+        dGeomID a_geom = _frameToOdeGeoms[a_data->getFrame()];
+        dGeomID b_geom = _frameToOdeGeoms[b_data->getFrame()];
+        if(a_geom==NULL || b_geom==NULL){
+        	std::cout << "Geoms not found" << std::endl;
+            continue;
+        }
+
+		con.geom.g1 = a_geom;
+		con.geom.g2 = b_geom;
+
+		ContactPoint &point = _rwcontacts[ni];
+
+		point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
+		point.p = ODEUtil::toVector3D(con.geom.pos);
+		point.penetration = con.geom.depth;
+		point.userdata = (void*) &(_contacts[ni]);
+
+		_allcontacts.push_back(point);
+
+		std::vector<ODETactileSensor*>& odeSensorb1 = _odeBodyToSensor[a_data->getBodyID()];
+	    std::vector<ODETactileSensor*>& odeSensorb2 = _odeBodyToSensor[b_data->getBodyID()];
+
+	    dContact conSettings;
+	    _odeMaterialMap->setContactProperties(conSettings, a_data, b_data);
+	    con.surface = conSettings.surface;
+
+	    _maxPenetration = std::max(point.penetration, _maxPenetration);
+
+	    std::vector<dJointFeedback*> feedbacks;
+	    std::vector<dContactGeom> feedbackContacts;
+	    bool enableFeedback = false;
+	    if(odeSensorb1.size()>0 || odeSensorb2.size()>0){
+	    	enableFeedback = true;
+	    }
+
+	    dJointID c = dJointCreateContact (_worldId,_contactGroupId,&con);
+	    dJointAttach (c, a_data->getBodyID(), b_data->getBodyID() );
+	    if( enableFeedback ){
+	    	RW_ASSERT( ((size_t)_nextFeedbackIdx)<_sensorFeedbacks.size());
+	    	dJointFeedback *feedback = &_sensorFeedbacks[_nextFeedbackIdx];
+	    	_nextFeedbackIdx++;
+	    	feedbacks.push_back(feedback);
+	    	feedbackContacts.push_back(con.geom);
+	    	dJointSetFeedback( c, feedback );
+	    }
+
+
+	    if(enableFeedback && odeSensorb1.size()>0){
+	    	BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
+	    		sen->addFeedback(feedbacks, feedbackContacts, a_data->getRwBody(), 0);
+	    	}
+	    }
+	    if(enableFeedback && odeSensorb2.size()>0){
+	    	BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
+	    		sen->addFeedback(feedbacks, feedbackContacts, b_data->getRwBody(), 1);
+	    	}
+	    }
+
+		ni++;
+	}
+}
 
 bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration){
     //

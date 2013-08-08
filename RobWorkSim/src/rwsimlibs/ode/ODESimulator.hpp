@@ -29,6 +29,7 @@
 #include <rw/proximity/BasicFilterStrategy.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
+#include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -117,8 +118,9 @@ namespace simulator {
 		/**
 		 * @brief constructor
 		 * @param dwc [in] the dynamic workcell for which the simulator should work
+		 * @param detector [in] the contact detector to use
 		 */
-		ODESimulator(dynamics::DynamicWorkCell::Ptr dwc);
+		ODESimulator(dynamics::DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDetector::Ptr detector = NULL);
 
 		/**
 		 * @brief destructor
@@ -263,6 +265,7 @@ namespace simulator {
 
 	protected:
 		//ODEBody* createKinematicBody(KinematicBody* kbody, rw::kinematics::State &state, dSpaceID spaceid);
+        void detectCollisionsContactDetector(const rw::kinematics::State& state);
         bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
 	public:
@@ -385,7 +388,7 @@ namespace simulator {
         std::vector<dynamics::RigidBody*> _rwBodies;
         //FrameMap<dBodyID> _rwFrameToODEBody;
 
-        std::map<rw::kinematics::Frame*, ODEBody*> _rwFrameToODEBody;
+        std::map<const rw::kinematics::Frame*, ODEBody*> _rwFrameToODEBody;
         std::map< ODEBody*, rw::kinematics::Frame*> _rwODEBodyToFrame;
         std::map<rw::kinematics::Frame*, ODEJoint*> _jointToODEJoint;
         std::map<rw::kinematics::Frame*, dGeomID> _frameToOdeGeoms;
@@ -437,6 +440,8 @@ namespace simulator {
 		rw::proximity::BasicFilterStrategy::Ptr _bpstrategy;
 		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
 		boost::mutex _contactMutex;
+
+		rwsim::contacts::ContactDetector::Ptr _detector;
 
 		struct CutState {
 
