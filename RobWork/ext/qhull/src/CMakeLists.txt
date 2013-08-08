@@ -2,22 +2,22 @@
 # Order object files by frequency of execution.  Small files at end.
 set(
     qhull_src
-        qhull/rboxlib.c
-        qhull/user.c
-        qhull/global.c
-        qhull/stat.c
-        qhull/io.c
-        qhull/geom2.c
-        qhull/poly2.c
-        qhull/merge.c
-        qhull/libqhull.c
-        qhull/geom.c
-        qhull/poly.c
-        qhull/qset.c
-        qhull/mem.c
-        qhull/usermem.c
-        qhull/userprintf.c
-        qhull/random.c
+        libqhull/rboxlib.c
+        libqhull/user.c
+        libqhull/global.c
+        libqhull/stat.c
+        libqhull/io.c
+        libqhull/geom2.c
+        libqhull/poly2.c
+        libqhull/merge.c
+        libqhull/libqhull.c
+        libqhull/geom.c
+        libqhull/poly.c
+        libqhull/qset.c
+        libqhull/mem.c
+        libqhull/usermem.c
+        libqhull/userprintf.c
+        libqhull/random.c
 )
 
 file(GLOB qhull_hdr *.h)
