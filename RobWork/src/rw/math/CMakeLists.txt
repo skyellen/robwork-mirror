@@ -8,6 +8,7 @@ SET(FILES_CPP
   Metric.cpp
   MetricFactory.cpp
   MetricUtil.cpp
+  Polynomial.cpp
   Pose6D.cpp
   Q.cpp
   Quaternion.cpp
@@ -38,6 +39,7 @@ SET(FILES_HPP
   Metric.hpp
   MetricFactory.hpp
   MetricUtil.hpp
+  Polynomial.hpp
   Pose6D.hpp
   Q.hpp
   Quaternion.hpp
