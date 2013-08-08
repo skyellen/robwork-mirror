@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "QHullND.hpp"
+#include <RobWorkConfig.hpp>
 
 #if defined(__cplusplus)
 extern "C"
@@ -23,6 +24,18 @@ extern "C"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+
+// This distinction is necessary because qhull changed structure at some point
+#ifdef HAVE_QHULL_2011
+#include <libqhull/libqhull.h>
+#include <libqhull/mem.h>
+#include <libqhull/qset.h>
+#include <libqhull/geom.h>
+#include <libqhull/merge.h>
+#include <libqhull/poly.h>
+#include <libqhull/io.h>
+#include <libqhull/stat.h>
+#else
 #include <qhull/qhull.h>
 #include <qhull/mem.h>
 #include <qhull/qset.h>
@@ -31,6 +44,7 @@ extern "C"
 #include <qhull/poly.h>
 #include <qhull/io.h>
 #include <qhull/stat.h>
+#endif
 
 //#include <qhull/libqhull.h>
 

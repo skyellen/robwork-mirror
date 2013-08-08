@@ -229,6 +229,8 @@ ELSE ()
     SET(QHULL_INCLUDE_DIRS "${RW_ROOT}/ext/qhull/src")
     SET(QHULL_LIBRARIES "rw_qhull")
     SET(QHULL_DEFINITIONS "")
+
+    SET(HAVE_QHULL_2011 ON)
     
 ENDIF ()
 
