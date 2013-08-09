@@ -196,8 +196,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state) {
 }
 
 std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data) {
-	timespec tstart, tend, diff;
-	clock_gettime(CLOCK_REALTIME, &tstart);
+	long tstart = TimerUtil::currentTimeUs();
 
 	std::vector<Contact> res;
 
@@ -263,15 +262,9 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 			}
 		}
 	}
-	clock_gettime(CLOCK_REALTIME, &tend);
-	if ((tend.tv_nsec-tstart.tv_nsec)<0) {
-		diff.tv_sec = tend.tv_sec-tstart.tv_sec-1;
-		diff.tv_nsec = 1000000000+tend.tv_nsec-tstart.tv_nsec;
-	} else {
-		diff.tv_sec = tend.tv_sec-tstart.tv_sec;
-		diff.tv_nsec = tend.tv_nsec-tstart.tv_nsec;
-	}
-	double used = (double)diff.tv_sec + (double)diff.tv_nsec/1000000000.;
+	long tend = TimerUtil::currentTimeUs();
+
+	double used = ((double)(tend-tstart))/1000000.;
 
 	_timer += used;
 	return res;
