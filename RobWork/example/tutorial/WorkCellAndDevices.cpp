@@ -5,7 +5,7 @@ using namespace robwork;
 
 int main(int argc, char** argv) {
 
-    WorkCell::Ptr wc = WorkCellLoader::load("SimpleWorkCell.wc.xml");
+    WorkCell::Ptr wc = WorkCellFactory::load("SimpleWorkCell.wc.xml");
 
     Log::infoLog() << "Name of workcell: " << wc->getName() << std::endl;
     // get the default state
@@ -29,9 +29,9 @@ int main(int argc, char** argv) {
     // we can find the world to frame transform by a little jogling
     Transform3D<> wTf = wTmf * inverse(fTmf);
     // test if frame is a dynamic attachable frame
-    if( Kinematics::isDAF( *mframe ) ){
+    if( Kinematics::isDAF( mframe ) ){
         // attach mframe to end of serial device
-        Kinematics::gripFrame(state, *mframe, *sdevice->getEnd() );
+        Kinematics::gripFrame(mframe, sdevice->getEnd(), state);
     }
 
 
