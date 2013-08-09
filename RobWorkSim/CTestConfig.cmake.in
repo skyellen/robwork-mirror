@@ -16,3 +16,4 @@ set(CTEST_DROP_SITE "www.robwork.dk/cdash")
 set(CTEST_DROP_LOCATION "/submit.php?project=RobWorkSim")
 set(CTEST_DROP_SITE_CDASH TRUE)
 
+SET (UPDATE_TYPE "svn")
