@@ -21,6 +21,8 @@
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
 
+#include <iomanip>
+
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::kinematics;
