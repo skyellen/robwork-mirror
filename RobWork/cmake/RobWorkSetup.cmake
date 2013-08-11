@@ -59,13 +59,11 @@ IF(DEFINED UNIX)
   FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)  
   # Test libraries are optional
   SET(Boost_FIND_QUIETLY TRUE)
-  
-  # This construction saving the old Boost libraries and then appending them to the new
-  # ones is necessary (at least on Mac OS using cmake 2.8.11.2)
-  SET(BOOST_LIB_DUMMY ${Boost_LIBRARIES})
-  FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
-  list(APPEND Boost_LIBRARIES ${BOOST_LIB_DUMMY})
-  list(REMOVE_DUPLICATES Boost_LIBRARIES)
+
+  # On Mac OS only the header only version of boost unit test seems to work for now, needs further investigation
+  IF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+  ENDIF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   
   IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
     # header only
