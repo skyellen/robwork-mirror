@@ -3,9 +3,9 @@
 # ROBWORKHARDWARE SPECIFIC
 #
 
-# specify any of these options to force the exclusion or inclusion of the specific component 
+# specify any of these options to force the inclusion of the specific component 
 SET(COMPONENT_camera_ENABLE ON)
-SET(COMPONENT_CAN_ENABLE ON)
+SET(COMPONENT_CAN_ENABLE OFF)
 SET(COMPONENT_CRSA465_ENABLE OFF)
 SET(COMPONENT_DOCKWELDER_ENABLE OFF)
 SET(COMPONENT_fanucdevice_ENABLE OFF)
@@ -40,6 +40,6 @@ INCLUDE(${RW_ROOT}/config.cmake OPTIONAL)
 #SET(KATANA_LIB_DIR "${ROOT}/ext/katana/lib/")
 
 # Enable SDH driver
-SET(SDH_INCLUDE_DIR "${ROOT}/ext/sdh2/")
-SET(SDH_LIB_DIR "${ROOT}/ext/sdh2/libs/")
+#SET(SDH_INCLUDE_DIR "${ROOT}/ext/sdh2/")
+#SET(SDH_LIB_DIR "${ROOT}/ext/sdh2/libs/")
 
