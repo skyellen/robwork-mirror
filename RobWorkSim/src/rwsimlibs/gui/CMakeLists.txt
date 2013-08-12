@@ -35,6 +35,7 @@ QT4_WRAP_CPP(MocSrcFiles
 	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
 	OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+        OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED
 )
 
 # Rcc the files:
