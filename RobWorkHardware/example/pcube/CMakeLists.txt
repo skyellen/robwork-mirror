@@ -1,6 +1,6 @@
 # check compiler/operating system
 
-IF(COMPONENT_pcube_ENABLE)
+IF(COMPONENT_pcube_ENABLE AND COMPONENT_CAN_ENABLE)
     set(LibraryList
       rwhw_pcube 
       rwhw_can 
@@ -13,4 +13,4 @@ IF(COMPONENT_pcube_ENABLE)
     
     add_executable(PCubeExample PCubeExample.cpp )
     target_link_libraries(PCubeExample ${LibraryList})
-ENDIF(COMPONENT_pcube_ENABLE)
+ENDIF(COMPONENT_pcube_ENABLE AND COMPONENT_CAN_ENABLE)
