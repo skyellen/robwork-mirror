@@ -36,7 +36,7 @@ IF(RWS_USE_STATIC_LINK_PLUGINS)
             RENAME "RobWorkStudio.ini.template" 
     )
     CONFIGURE_FILE("${RWS_ROOT}/bin/RobWorkStudio.ini.template.static"
-                   "${RWS_ROOT}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.ini.template"
+                   "${RWS_ROOT}/bin/${RWS_BUILD_TYPE}/RobWorkStudio.ini.template"
                    COPYONLY
     )    
 ELSE()
@@ -45,7 +45,7 @@ ELSE()
 	        RENAME "RobWorkStudio.ini"
     )
     CONFIGURE_FILE("${RWS_ROOT}/bin/RobWorkStudio.ini.shared"
-                   "${RWS_ROOT}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.ini"
+                   "${RWS_ROOT}/bin/${RWS_BUILD_TYPE}/RobWorkStudio.ini"
                    COPYONLY
     )    
 ENDIF()
