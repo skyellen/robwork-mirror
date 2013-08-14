@@ -17,6 +17,11 @@
 #include <rws/propertyview/PropertyViewEditor.hpp>
 #include <rw/common/Timer.hpp>
 
+#include <RobWorkSimConfig.hpp>
+#ifdef RWSIM_HAVE_ODE
+#include <rwsimlibs/ode/ODESimulator.hpp>
+#endif
+
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
  * lifted to a home pose.
