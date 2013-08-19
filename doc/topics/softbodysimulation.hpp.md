@@ -3,15 +3,21 @@ Softbody Simulation {#page_rw_softbodysimulation}
 
 This page describes the \a rwlibs/softbody RobWork module. 
 
+(Please note that this module is not enabled by default as it requires 3rd party libraries.)
+
 [TOC]
 
 # Introduction #
 
-The softbody module implements a non-linear beam model supporting very large deformations and Laying-Down placement operations. The beam has been described in 
+The softbody module implements a non-linear beam model supporting large deformations and Laying-Down placement operations. The beam has been described in 
 
 -Modeling and Simulation of Grasping of Deformable Objects (2012)
 
 -An Adaptable Robot Vision System Performing Manipulation Actions with Flexible Objects (2013)
+
+## Features ##
+
+The current implementation supports cuboid geometries and non-homogeneous materials under non-penetration constraints.
 
 ## Supplementary material ##
 
@@ -40,4 +46,32 @@ After this, enable the flags \b BUILD_rw_softbody and \b RW_BUILD_SOFTBODY.
 
 The relevant FIND_PACKAGE CMake commands are located in \a RobWork/cmake/RobWorkSetup.cmake
 
+# Usage #
 
+Here is a code example
+
+	myObject.invokeMethod();
+
+# Future work #
+
+## Performance ##
+
+-Improvement of the hessian approximation. 
+
+Currently we use IPOPT's built-in numerical approximation which does not fully exploit sparsity.
+
+-Evaluation of other linear algebra solver routines. HSL MA57 should provide a higher theoretical performance than MUMPS for moderately-sized problems, but has stricter licensing.
+
+## Supported constraints ##
+
+-Add support for more types of constraints
+
+The beam implements non-penetration constraints by the means of IPOPT inequality constraints. These are enabled/disabled for each cross section of the beam by the user passing a list of active constraints. A more flexible interface supporting different types of constraints, e.g. ones fixing the beam in space should be made. 
+
+## Supported geometry types ##
+
+-Add support for more geometry types
+
+The abstract base class \a BeamGeometry defines the integrals that should be evaluated upon geometry cross sections. This is implemented for cuboid cross
+sections in \a BeamGeomtryCuboid. If for instance it should be wished to support spherical cross-sections, it is a matter of evaluating the same integrals but on
+spherical domains.
