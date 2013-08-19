@@ -45,7 +45,8 @@ Changelog and release notes can be found here [Release Notes](@ref pagereleaseno
 Other topics include
 - [Motion Planning](@ref page_rw_motionplanning), [Online Control](@ref page_rw_onlinecontrol), 
 [Grasp Simulation](@ref page_rw_graspsimulation), [Plugins](@ref page_rw_plugins), 
-[Scrip Interface](@ref page_rw_scriptinterface), [Codeguidelines](@ref page_coding_guidelines)  
+[Script Interface](@ref page_rw_scriptinterface), [Codeguidelines](@ref page_coding_guidelines),
+[Softbody Simulation](@ref page_rw_softbodysimulation)  
 
 
 # Download # {#sec_index_download}
