@@ -20,10 +20,13 @@ A short presentation and some videos of an application using the softbody module
 # Compiling #
 ## Dependencies ##
 
-The softbody module is currently configured to use the IPOPT https://projects.coin-or.org/Ipopt non-linear optimization library. As a linear algebra solver MUMPS is also required. These are linked 
+The softbody module is currently configured to use the IPOPT https://projects.coin-or.org/Ipopt non-linear optimization library. It is currently linked 
 statically and must be present at compile time.
 
-IPOPT and MUMPS should be compiled separately and either placed in the system-wide include/library folders or pointed to by setting IPOPT_HOME accordingly.
+IPOPT should be compiled separately and either placed in the system-wide include/library folders or pointed to by setting IPOPT_HOME accordingly.
+
+IPOPT requires a compatible linear algebra solver library. It supports a variety of routines, e.g. Harwell routines, Pardiso, WSMP and MUMPS (see the options reference at http://www.coin-or.org/Ipopt/documentation/node50.html ).
+Currently the build system in RobWork is configured to use MUMPS due to it having the most permissive license.
 
 ## CMake settings ##
 
