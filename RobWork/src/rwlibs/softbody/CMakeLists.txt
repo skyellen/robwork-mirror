@@ -10,14 +10,11 @@ RW_ADD_DOC(${SUBSYS_NAME})
 IF(build)
     SET(SRC_FILES
       ./numerics/TrapMethod.cpp
-      ./numerics/Interpolation.cpp
       ./numerics/FdUtil.cpp
-#       ./numerics/InteriorPointOptimizer.cpp
       ./beam/BeamGeometry.cpp
       ./beam/BeamGeometryCuboid.cpp
       ./beam/ModRusselBeamBase.cpp
       ./beam/RusselIntegrand.cpp
-#       ./beam/ModRusselBeam.cpp
       ./beam/EBBeam.cpp
       ./beam/BeamObstaclePlane.cpp 
       ./beam/BeamStartGuess.cpp 
@@ -27,14 +24,11 @@ IF(build)
     
     SET(SRC_FILES_HPP
       ./numerics/TrapMethod.hpp
-      ./numerics/Interpolation.hpp
       ./numerics/FdUtil.hpp
-#       ./numerics/InteriorPointOptimizer.hpp
       ./beam/BeamGeometry.hpp
       ./beam/BeamGeometryCuboid.hpp
       ./beam/ModRusselBeamBase.hpp
       ./beam/RusselIntegrand.hpp
-#       ./beam/ModRusselBeam.hpp
       ./beam/EBBeam.hpp
       ./beam/BeamObstaclePlane.hpp 
       ./beam/BeamStartGuess.hpp
