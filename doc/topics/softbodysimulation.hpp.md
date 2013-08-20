@@ -50,7 +50,29 @@ The relevant FIND_PACKAGE CMake commands are located in \a RobWork/cmake/RobWork
 
 Here is a code example
 
-	myObject.invokeMethod();
+        new BeamGeometryCuboid (
+            get_dx(),
+            get_dy(),
+            get_dz(),
+            getExvec(),
+            getvxvec(),
+            getRhovec(),
+            Transform3D<>::identity(),
+            Vector3D<> ( 0.0, 9.82, 0.0 )
+        )
+
+        new BeamObstaclePlane (
+            Plane (
+                Vector3D<> ( 0.0, 1.0, 0.0 ), 0.0
+            ),
+            Transform3D<>::identity()
+        )
+
+        new ModRusselBeamIpopt (
+            _sBeamGeomPtr,
+            _sBeamObstaclePtr,
+            get_m()
+        )
 
 # Future work #
 
