@@ -4,6 +4,11 @@
 
 #include <list>
 #include <boost/foreach.hpp>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <math.h>
+
 namespace rw {
 namespace math {
 
