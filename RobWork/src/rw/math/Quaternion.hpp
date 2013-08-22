@@ -475,8 +475,8 @@ namespace rw { namespace math {
         {
 
 			//The method
-			const T min = -0.9;
-			const T min1 = min/3.0;
+			const T min = (T)(-0.9);
+			const T min1 = (T)(min/3.0);
 
 			const T tr = rot(0, 0) + rot(1, 1) + rot(2, 2);
 

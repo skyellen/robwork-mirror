@@ -74,8 +74,8 @@ const Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobi
     Jacobian::Base v(jacobian.e());
     Jacobian::Base rv(v.rows(), v.cols());
 	Rotation3D<>::EigenMatrix3x3 rm = r.e();
-    for(size_t row = 0; row < v.rows()-1; row += 3 ){
-        for (size_t col = 0; col < v.cols(); col++) {
+    for(int row = 0; row < v.rows()-1; row += 3 ){
+        for (int col = 0; col < v.cols(); col++) {
 			rv.block<3,1>(row, col) = rm*v.block<3,1>(row, col);
         }
     }

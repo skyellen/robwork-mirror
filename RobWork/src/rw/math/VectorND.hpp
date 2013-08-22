@@ -107,7 +107,7 @@ namespace rw { namespace math {
          */
         boost::numeric::ublas::bounded_vector<T, N> m() {
 			boost::numeric::ublas::bounded_vector<T, N> m;
-			for (size_t i = 0; i<_vec.size(); i++)
+			for (int i = 0; i<_vec.size(); i++)
 				m(i) = _vec(i);
 
 			return m;
