@@ -29,5 +29,8 @@
 #include "./calibration/SerialDeviceCalibrator.hpp"
 #include "./calibration/SerialDeviceJacobian.hpp"
 #include "./calibration/SerialDevicePoseMeasurement.hpp"
+#include "./calibration/WorkCellCalibrator.hpp"
+#include "./calibration/WorkCellCalibration.hpp"
+#include "./calibration/WorkCellJacobian.hpp"
 
 #endif /* RWLIBS_CALIBRATION_HPP_ */
