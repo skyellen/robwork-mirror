@@ -294,6 +294,7 @@ public:
     std::vector< DummyCollisionSetup > _colmodels;
 	std::vector< DummyProximitySetup > _proxmodels;
 	std::vector< DummyProperty > _properties;
+	std::vector<DummyCalibration> _calibration; // workcell calibration
 };
 
 /**********    Useful functors for the parsing proces    **********/

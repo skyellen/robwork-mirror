@@ -418,8 +418,6 @@ namespace {
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
 			rule<ScannerT, result_closure<DummyProximitySetup>::context_t> proxsetup_r;
 
-			rule<ScannerT, result_closure<DummyCalibration>::context_t> calibration_r;
-
             ModelParser model_p;
             FrameParser frame_p;
         public:
@@ -466,7 +464,6 @@ namespace {
                            | serialchain_r
                            | colsetup_r[ push_back_a( _dev._colsetups ) ]
 						   | proxsetup_r[ push_back_a( _dev._proxsetups ) ]
-						   | calibration_r[ push_back_a( _dev._calibration ) ]
                          );
 
                 colsetup_r =
@@ -478,7 +475,7 @@ namespace {
                         eps_p
                     )[ colsetup_r.result_ = var(_setup) ];
 
-                calibration_r =
+                /*calibration_r =
                 		XMLAttElem_p("Calibration",
                 				XMLAtt_p("file", attrstr_p[ var(_calibration._filename) = arg1 ]
                                                             [ var( _calibration._scope ) = var( _scope ) ] >>
@@ -487,6 +484,7 @@ namespace {
                                   eps_p
                               )[ calibration_r.result_ = var(_calibration) ];
 
+				*/
                 proxsetup_r =
                     XMLAttElem_p("ProximitySetup",
                         XMLAtt_p("file", attrstr_p[ var(_psetup._filename) = arg1 ]
@@ -743,11 +741,13 @@ namespace {
             rule<ScannerT> workcelldev_r, wc_r, camera_r, guardwrapper_r;
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
 			rule<ScannerT, result_closure<DummyProximitySetup>::context_t> proxsetup_r;
+			rule<ScannerT, result_closure<DummyCalibration>::context_t> calibration_r;
             XMLDeviceParser device_p;
             ModelParser model_p;
             FrameParser frame_p;
             DummyCollisionSetup _setup;
 			DummyProximitySetup _psetup;
+			DummyCalibration _calibration;
 
         public:
             rule<ScannerT> const start() const { return guardwrapper_r; }
@@ -777,6 +777,7 @@ namespace {
                            | colsetup_r[ push_back_a(_wc._colmodels)]
 						   | proxsetup_r[ push_back_a(_wc._proxmodels)]
 				           | property_p[push_back_a( _wc._properties ) ]
+						   | calibration_r[ push_back_a( _wc._calibration ) ]
 
                         )
                     );
@@ -804,6 +805,15 @@ namespace {
                         XMLAtt_p("name",attrstr_p),
                         !transform3d_p
                     );
+				calibration_r =
+                		XMLAttElem_p("Calibration",
+                				XMLAtt_p("file", attrstr_p[ var(_calibration._filename) = arg1 ]
+                                                            [ var( _calibration._scope ) = var( _scope ) ] >>
+                                  filepos_p[ var(_calibration._pos) = arg1 ]
+                                  ),
+                                  eps_p
+                              )[ calibration_r.result_ = var(_calibration) ];
+
             }
         };
     };

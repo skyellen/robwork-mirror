@@ -80,7 +80,8 @@ namespace {
     }
 
     template<> const std::string& Identifiers<Q>::circularInterpolatorId() {
-        return "";
+		const static std::string str = "";
+        return str;
     }
 
 
@@ -108,7 +109,8 @@ namespace {
     }
 
     template<> const std::string& Identifiers<Rotation3D<> >::circularInterpolatorId() {
-        return "";
+		const static std::string str = "";
+		return str;
     }
 
     template<> const std::string& Identifiers<Transform3D<> >::linearInterpolatorId() {
@@ -121,7 +123,8 @@ namespace {
     }
 
     template<> const std::string& Identifiers<Transform3D<> >::circularInterpolatorId() {
-        return "";
+		const static std::string str = "";
+        return str;
     }
 
 

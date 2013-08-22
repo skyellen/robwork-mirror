@@ -882,6 +882,10 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 			setup.proxsetups.push_back(setup.dwc->_proxmodels[i]);
 		}
 
+		if (setup.dwc->_calibration.size() > 0) {
+			wc->setCalibrationFilename(setup.dwc->_calibration.front()._filename);
+		}
+
 		// now initialize state with init actions and remember to add all devices
 		//State state( tree );
 		//State state = tree->getDefaultState();

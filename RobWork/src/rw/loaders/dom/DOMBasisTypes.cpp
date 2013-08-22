@@ -425,7 +425,7 @@ std::vector<std::string> DOMBasisTypes::readStringList(DOMElem::Ptr element) {
     return result;
 }
 
-typedef std::pair<std::string,std::string> StringPair;
+//typedef std::pair<std::string,std::string> StringPair;
 
 StringPair DOMBasisTypes::readStringPair(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
@@ -602,8 +602,8 @@ rw::common::DOMElem::Ptr DOMBasisTypes::write(const Eigen::MatrixXd& val, rw::co
 
 Eigen::MatrixXd DOMBasisTypes::readMatrix( rw::common::DOMElem::Ptr elem ){
 	std::vector<double> res = elem->getValueAsDoubleList();
-	int cols = res[0];
-	int rows = res[1];
+	int cols = (int)res[0];
+	int rows = (int)res[1];
 	Eigen::MatrixXd m(cols, rows);
 	for(int y=0;y<rows;y++)
 		for(int x=0;x<cols;x++)

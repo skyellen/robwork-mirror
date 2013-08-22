@@ -214,7 +214,8 @@ namespace {
         }
 
         virtual const std::string& circularInterpolatorId() {
-            return "";
+			const static std::string str = "";
+            return str;
         }
     };
 
@@ -241,7 +242,8 @@ namespace {
         }
 
         virtual const std::string& circularInterpolatorId() {
-            return "";
+			const static std::string str = "";
+            return str;
         }
     };
 
@@ -255,7 +257,8 @@ namespace {
         }
 
         virtual const std::string& circularInterpolatorId() {
-            return "";
+			const static std::string str = "";
+            return str;
         }
     };
 
