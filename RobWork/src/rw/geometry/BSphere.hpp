@@ -34,12 +34,12 @@ namespace geometry {
         /**
          * @brief constructor
          */
-        BSphere(double radius=1.0):
+        BSphere(T radius=1.0):
             _p3d( rw::math::Vector3D<T>(0,0,0) ),
             _radius(radius)
         {}
 
-        BSphere(const rw::math::Vector3D<T>& pos,double radius=1.0):
+        BSphere(const rw::math::Vector3D<T>& pos, T radius=1.0):
             _p3d( rw::math::Vector3D<T>(0,0,0) ),
             _radius(radius)
         {}
@@ -48,7 +48,7 @@ namespace geometry {
             return _p3d;
         }
 
-        inline void setPosition(rw::math::Vector3D<T> p3d) { _p3d = p3d; }
+        inline void setPosition(const rw::math::Vector3D<T>& p3d) { _p3d = p3d; }
 
         inline const T& getRadius() const {
             return _radius;
@@ -59,11 +59,11 @@ namespace geometry {
         }
 
         inline T calcArea() const {
-            return 4.0*rw::math::Pi*_radius*_radius;
+            return (T)(4.0*rw::math::Pi*_radius*_radius);
         }
 
         inline T calcVolumne() const {
-            return 4.0/3.0*rw::math::Pi*_radius*_radius*_radius;
+            return (T)(4.0/3.0*rw::math::Pi*_radius*_radius*_radius);
         }
 
         /**

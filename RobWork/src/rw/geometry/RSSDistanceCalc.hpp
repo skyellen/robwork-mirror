@@ -363,7 +363,7 @@ namespace proximity {
     {
       using namespace rw::math;
 
-      T t, s;
+//      T t, s;
 
       const Vector3D<T> &a = obbA.getHalfLengths();
       const Vector3D<T> &b = obbB.getHalfLengths();

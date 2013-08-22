@@ -88,9 +88,9 @@ namespace geometry {
         //! TO BE DOCUMENTED
         #define EDGE_AGAINST_TRI_EDGES(V0, V1, U0, U1, U2)      \
         {                                                       \
-            float Bx,By,Cx,Cy,d,f;                              \
-            const float Ax = V1[i0] - V0[i0];                   \
-            const float Ay = V1[i1] - V0[i1];                   \
+            T Bx,By,Cx,Cy,d,f;                              \
+            const T Ax = V1[i0] - V0[i0];                   \
+            const T Ay = V1[i1] - V0[i1];                   \
             /* test edge U0,U1 against V0,V1 */                 \
             EDGE_EDGE_TEST(V0, U0, U1);                         \
             /* test edge U1,U2 against V0,V1 */                 \
@@ -104,20 +104,20 @@ namespace geometry {
         {                                                       \
             /* is T1 completly inside T2? */                    \
             /* check if V0 is inside tri(U0,U1,U2) */           \
-            float a  = U1[i1] - U0[i1];                         \
-            float b  = -(U1[i0] - U0[i0]);                      \
-            float c  = -a*U0[i0] - b*U0[i1];                    \
-            float d0 = a*V0[i0] + b*V0[i1] + c;                 \
+            T a  = U1[i1] - U0[i1];                         \
+            T b  = -(U1[i0] - U0[i0]);                      \
+            T c  = -a*U0[i0] - b*U0[i1];                    \
+            T d0 = a*V0[i0] + b*V0[i1] + c;                 \
                                                                 \
             a  = U2[i1] - U1[i1];                               \
             b  = -(U2[i0] - U1[i0]);                            \
             c  = -a*U1[i0] - b*U1[i1];                          \
-            const float d1 = a*V0[i0] + b*V0[i1] + c;           \
+            const T d1 = a*V0[i0] + b*V0[i1] + c;           \
                                                                 \
             a  = U0[i1] - U2[i1];                               \
             b  = -(U0[i0] - U2[i0]);                            \
             c  = -a*U2[i0] - b*U2[i1];                          \
-            const float d2 = a*V0[i0] + b*V0[i1] + c;           \
+            const T d2 = a*V0[i0] + b*V0[i1] + c;           \
             if(d0*d1>0.0f)                                      \
             {                                                   \
                 if(d0*d2>0.0f) return true;                     \
@@ -141,9 +141,9 @@ namespace geometry {
             short i0,i1;
             /* first project onto an axis-aligned plane, that maximizes the area */
             /* of the triangles, compute indices: i0,i1. */
-            A[0] = fabsf(n[0]);
-            A[1] = fabsf(n[1]);
-            A[2] = fabsf(n[2]);
+            A[0] = fabsf((float)n[0]);
+            A[1] = fabsf((float)n[1]);
+            A[2] = fabsf((float)n[2]);
             if(A[0]>A[1])
             {
                 if(A[0]>A[2])

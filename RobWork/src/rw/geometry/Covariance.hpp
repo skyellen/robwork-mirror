@@ -103,7 +103,7 @@ namespace geometry {
 			}
 
 			// scale according to nr points
-            centroid = centroid*(1.0/nrOfPoints);
+            centroid = centroid*((T)1.0/nrOfPoints);
 
 
 			// next we compute the covariance elements

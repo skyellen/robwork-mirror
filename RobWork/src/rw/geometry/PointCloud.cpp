@@ -33,8 +33,8 @@ rw::common::Ptr<TriMesh> PointCloud::getTriMesh(bool forceCopy){
     for(size_t i=0;i<_data.size();i++){
         Triangle<float> tri = (*mesh)[i];
         tri[0] = _data[i];
-        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005,0, 0);
-        tri[2] = _data[i]+rw::math::Vector3D<float>(0, 0.005,0);
+        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005f,0, 0);
+        tri[2] = _data[i]+rw::math::Vector3D<float>(0, 0.005f,0);
         (*mesh)[i] = tri;
     }
     return mesh;
@@ -46,8 +46,8 @@ rw::common::Ptr<const TriMesh> PointCloud::getTriMesh(bool forceCopy) const{
     for(size_t i=0;i<_data.size();i++){
         Triangle<float> tri = (*mesh)[i];
         tri[0] = _data[i];
-        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005,0, 0);
-        tri[2] = _data[i]+rw::math::Vector3D<float>(0,0.005,0);
+        tri[1] = _data[i]+rw::math::Vector3D<float>(0.005f,0, 0);
+        tri[2] = _data[i]+rw::math::Vector3D<float>(0,0.005f,0);
         (*mesh)[i] = tri;
     }
     return mesh;

@@ -536,8 +536,8 @@ namespace
 
             const Vector3D<float> a1((float)p(0), (float)p(1), 0);
             const Vector3D<float> a2((float)q(0), (float)q(1), 0);
-            const Vector3D<float> b1((float)p(0), (float)p(1), height);
-            const Vector3D<float> b2((float)q(0), (float)q(1), height);
+            const Vector3D<float> b1((float)p(0), (float)p(1), (float)height);
+            const Vector3D<float> b2((float)q(0), (float)q(1), (float)height);
 
             const Vector3D<float> normal = normalize(cross(a2 - a1, b1 - a1));
 

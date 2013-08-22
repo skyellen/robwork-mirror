@@ -31,7 +31,7 @@ Tube::Tube(float radius, float height):
 }
 
 Tube::Tube(const rw::math::Q& initQ):
-	_radius(initQ[0]),_height(initQ[1])
+	_radius((float)initQ[0]),_height((float)initQ[1])
 {
 }
 
