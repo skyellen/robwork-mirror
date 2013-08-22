@@ -82,7 +82,8 @@ void IOUtil::readFile(
 
     // The file length.
     inp.seekg(0, std::ios::end);
-    const int len = inp.tellg();
+    const int len = (int)inp.tellg();
+	
     inp.seekg(0, std::ios::beg);
 
     // The buffer.

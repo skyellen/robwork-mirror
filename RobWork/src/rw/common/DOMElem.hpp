@@ -145,6 +145,10 @@ namespace common {
 		 */
 		virtual bool hasChild(const std::string& name) const = 0;
 
+		/**
+		 * @brief test if this DOMElem has any children
+		 * @return true if this DOMElem has any children
+		 */
 		virtual bool hasChildren() const = 0;
 
 		/**
@@ -187,7 +191,7 @@ namespace common {
 		bool getAttributeValueAsBool(const std::string& name){
 			return getAttribute(name)->getValueAsBool();
 		}
-		bool getAttributeValueAsBool(const std::string& name, double default_value){
+		bool getAttributeValueAsBool(const std::string& name, bool default_value){
 			if( DOMElem::Ptr attrib = getAttribute(name,true) )
 				return attrib->getValueAsBool();
 			return default_value;
