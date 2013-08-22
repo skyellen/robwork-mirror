@@ -30,6 +30,7 @@ namespace graphics {
 	 */
 	class TextureData {
 	public:
+		rw::common::Ptr<TextureData> Ptr;
 
 		//! constructor
 		TextureData():_name(""),_imageData(NULL){};
