@@ -33,8 +33,7 @@ protected:
 
 private:
 	FixedFrameCalibration::Ptr _calibration;
-	rw::kinematics::FixedFrame::Ptr _fixedFrame;
-	bool _isPostCorrection;
+	rw::kinematics::FixedFrame::Ptr _fixedFrame;	
 };
 
 }

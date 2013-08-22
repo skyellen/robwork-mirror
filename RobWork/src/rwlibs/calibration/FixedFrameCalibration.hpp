@@ -23,16 +23,12 @@ public:
 
 	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame);
 
-	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection);
-
-	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection, const rw::math::Transform3D<>& correctionTransform);
+	FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, const rw::math::Transform3D<>& correctionTransform);
 
 	virtual ~FixedFrameCalibration();
 
 	rw::kinematics::FixedFrame::Ptr getFrame() const;
-
-	bool isPostCorrection() const;
-
+	
 	rw::math::Transform3D<> getCorrectionTransform() const;
 
 	void setCorrectionTransform(const rw::math::Transform3D<>& transform);
@@ -44,7 +40,6 @@ private:
 
 private:
 	rw::kinematics::FixedFrame::Ptr _frame;
-	bool _isPostCorrection;
 	rw::math::Transform3D<> _originalTransform;
 };
 

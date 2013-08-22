@@ -29,6 +29,7 @@ using namespace rw::common;
 using namespace rw::loaders;
 using namespace rw;
 
+namespace { 
 class ElementCreator {
 public:
 	ElementCreator(DOMElem::Ptr root) :
@@ -51,7 +52,7 @@ DOMElem::Ptr ElementCreator::createElement<FixedFrameCalibration::Ptr>(
 	DOMElem::Ptr element = parent->addChild("FixedFrameCalibration");
 	element->addAttribute("frame")->setValue(calibration->getFrame()->getName());
 	DOMElem::Ptr transformElement = element->addChild("Transform");
-	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );
+//	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );
 	rw::math::Transform3D<> correction = calibration->getCorrectionTransform();
 	DOMBasisTypes::write(correction, transformElement);
 
@@ -59,27 +60,27 @@ DOMElem::Ptr ElementCreator::createElement<FixedFrameCalibration::Ptr>(
 }
 
 template<>
-DOMElem::Ptr ElementCreator::createElement<DHLinkCalibration::Ptr>(
-		DHLinkCalibration::Ptr calibration,
+DOMElem::Ptr ElementCreator::createElement<ParallelAxisDHCalibration::Ptr>(
+		ParallelAxisDHCalibration::Ptr calibration,
 		DOMElem::Ptr parent)
 {
-	DOMElem::Ptr element = parent->addChild("DHLinkCalibration");
+	DOMElem::Ptr element = parent->addChild("ParallelAxisCalibration");
 
 	element->addAttribute("joint")->setValue( calibration->getJoint()->getName() );
 
 	const CalibrationParameterSet parameterSet = calibration->getParameterSet();
-	if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
-		element->addAttribute("a")->setValue( parameterSet(DHLinkCalibration::PARAMETER_A) );
-	if (parameterSet(DHLinkCalibration::PARAMETER_B).isEnabled())
-		element->addAttribute("b")->setValue( parameterSet(DHLinkCalibration::PARAMETER_B) );
-	if (parameterSet(DHLinkCalibration::PARAMETER_D).isEnabled())
-		element->addAttribute("d")->setValue( parameterSet(DHLinkCalibration::PARAMETER_D) );
-	if (parameterSet(DHLinkCalibration::PARAMETER_ALPHA).isEnabled())
-		element->addAttribute("alpha")->setValue( parameterSet(DHLinkCalibration::PARAMETER_ALPHA) );
-	if (parameterSet(DHLinkCalibration::PARAMETER_BETA).isEnabled())
-		element->addAttribute("beta")->setValue( parameterSet(DHLinkCalibration::PARAMETER_BETA) );
-	if (parameterSet(DHLinkCalibration::PARAMETER_THETA).isEnabled())
-		element->addAttribute("theta")->setValue(parameterSet(DHLinkCalibration::PARAMETER_THETA) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_A).isEnabled())
+		element->addAttribute("a")->setValue( parameterSet(ParallelAxisDHCalibration::PARAMETER_A) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_B).isEnabled())
+		element->addAttribute("b")->setValue( parameterSet(ParallelAxisDHCalibration::PARAMETER_B) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled())
+		element->addAttribute("d")->setValue( parameterSet(ParallelAxisDHCalibration::PARAMETER_D) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).isEnabled())
+		element->addAttribute("alpha")->setValue( parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).isEnabled())
+		element->addAttribute("beta")->setValue( parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) );
+	if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled())
+		element->addAttribute("theta")->setValue(parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) );
 
 	return element;
 }
@@ -90,7 +91,7 @@ DOMElem::Ptr ElementCreator::createElement<JointEncoderCalibration::Ptr>(
 		DOMElem::Ptr parent)
 {
 	DOMElem::Ptr element = parent->addChild("JointEncoderCalibration");
-
+	
 	element->addAttribute("joint")->setValue( calibration->getJoint()->getName() );
 
 	const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -103,30 +104,38 @@ DOMElem::Ptr ElementCreator::createElement<JointEncoderCalibration::Ptr>(
 }
 
 
-void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibration) {
+void createDOMDocument(DOMElem::Ptr rootDoc, WorkCellCalibration::Ptr calibration) {
 	//rootElement->setName("SerialDeviceCalibration");
-	DOMElem::Ptr rootElement = rootDoc->addChild("SerialDeviceCalibration");
+	DOMElem::Ptr rootElement = rootDoc->addChild("WorkCellCalibration");
 
 	ElementCreator creator(rootElement);
 
-	if (!calibration->getBaseCalibration().isNull()) {
-		DOMElem::Ptr baseElement = rootElement->addChild("BaseCalibration");
-		creator.createElement<FixedFrameCalibration::Ptr>(calibration->getBaseCalibration(), baseElement);
+	CompositeCalibration<FixedFrameCalibration>::Ptr fixedFrameCalibrations = calibration->getFixedFrameCalibrations();
+	for (size_t i = 0; i<fixedFrameCalibrations->getCalibrationCount(); i++) {
+		FixedFrameCalibration::Ptr ffc = fixedFrameCalibrations->getCalibration(i);
+		DOMElem::Ptr element = rootElement->addChild("FixedFrameCalibration");
+		creator.createElement<FixedFrameCalibration::Ptr>(ffc, element);
+
+	}
+
+	/*if (!calibration->getBaseCalibration().isNull()) {
+		DOMElem::Ptr element = rootElement->addChild("FixedFrameCalibration");
+		creator.createElement<FixedFrameCalibration::Ptr>(calibration->getBaseCalibration(), element);
 	}
 
 	if (!calibration->getEndCalibration().isNull()) {
-		DOMElem::Ptr endElement = rootElement->addChild("EndCalibration");
+		DOMElem::Ptr endElement = rootElement->addChild("FixedFrameCalibration");
 		creator.createElement<FixedFrameCalibration::Ptr>(calibration->getEndCalibration(), endElement);
-	}
+	}*/
 
-	CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	const int linkCalibrationCount = compositeLinkCalibration->getCalibrationCount();
 	if (linkCalibrationCount > 0) {
 		DOMElem::Ptr linkCalibrationElement = rootElement->addChild( "LinkCalibrations" );
 		for (int calibrationIndex = 0; calibrationIndex < linkCalibrationCount; calibrationIndex++) {
-			DHLinkCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
+			ParallelAxisDHCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			//linkCalibrationElement->addChild("DHLinkCalibration");
-			creator.createElement<DHLinkCalibration::Ptr>(linkCalibration, linkCalibrationElement);
+			creator.createElement<ParallelAxisDHCalibration::Ptr>(linkCalibration, linkCalibrationElement);
 		}
 	}
 
@@ -134,8 +143,8 @@ void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibr
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
 	const int jointCalibrationCount = compositeJointCalibration->getCalibrationCount();
 	if (jointCalibrationCount > 0) {
-
 		DOMElem::Ptr jointCalibrationElement = rootElement->addChild( "JointCalibrations" );
+		jointCalibrationElement->addAttribute("device")->setValue(compositeJointCalibration->getCalibration(0)->getDevice()->getName());
 		for (int calibrationIndex = 0; calibrationIndex < jointCalibrationCount; calibrationIndex++) {
 			JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			creator.createElement<JointEncoderCalibration::Ptr>(jointCalibration, jointCalibrationElement);
@@ -144,7 +153,10 @@ void createDOMDocument(DOMElem::Ptr rootDoc, SerialDeviceCalibration::Ptr calibr
 
 }
 
-void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::string fileName) {
+} //End anonymous namespace
+
+
+void XmlCalibrationSaver::save(WorkCellCalibration::Ptr calibration, std::string fileName) {
 	DOMParser::Ptr doc = DOMParser::make();
 	DOMElem::Ptr root = doc->getRootElement();
 
@@ -154,7 +166,7 @@ void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::st
 	doc->save( fileName );
 }
 
-void XmlCalibrationSaver::save(SerialDeviceCalibration::Ptr calibration, std::ostream& ostream) {
+void XmlCalibrationSaver::save(WorkCellCalibration::Ptr calibration, std::ostream& ostream) {
 	DOMParser::Ptr doc = DOMParser::make();
 	DOMElem::Ptr root = doc->getRootElement();
 

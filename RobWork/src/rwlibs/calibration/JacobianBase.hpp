@@ -8,13 +8,15 @@
 #ifndef RWLIBS_CALIBRATION_JACOBIANBASE_HPP_
 #define RWLIBS_CALIBRATION_JACOBIANBASE_HPP_
 
-#include "Calibration.hpp"
+#include "CalibrationBase.hpp"
 #include "Jacobian.hpp"
 
 namespace rwlibs {
 namespace calibration {
 /** @addtogroup calibration */
 /*@{*/
+
+Eigen::Affine3d toEigen(const rw::math::Transform3D<>& t3d);
 
 class JacobianBase: public Jacobian {
 public:
@@ -37,7 +39,7 @@ public:
 	
 	/**
 	 * @copydoc Jacobian::takeStep()
-	 */
+	 */ 
 	virtual void takeStep(const Eigen::VectorXd& step);
 
 protected:

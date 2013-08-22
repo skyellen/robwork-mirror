@@ -10,6 +10,19 @@
 namespace rwlibs {
 	namespace calibration {
 
+
+		Eigen::Affine3d toEigen(const rw::math::Transform3D<>& t3d) {
+			rw::math::Vector3D<> vector3d = t3d.P();
+			rw::math::Rotation3D<> rotation3d = t3d.R();
+			Eigen::Affine3d dst;
+			dst.setIdentity();
+			dst.translation() << vector3d(0), vector3d(1), vector3d(2);
+			for (int rowIndex = 0; rowIndex < 3; rowIndex++)
+				for (int colIndex = 0; colIndex < 3; colIndex++)
+					dst.linear()(rowIndex, colIndex) = rotation3d(rowIndex, colIndex);
+			return dst;
+		} 
+
 		JacobianBase::~JacobianBase() {
 
 		}

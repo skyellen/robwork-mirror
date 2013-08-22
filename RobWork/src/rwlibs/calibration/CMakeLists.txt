@@ -4,12 +4,13 @@ SET(SUBSYS_DEPS rw )
 
 SET(build TRUE)
 set(DEFAULT TRUE)
-set(REASON)
+set(REASON) 
 RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
 RW_ADD_DOC( ${SUBSYS_NAME} )
 
 IF( build )
+MESSAGE("CALIBRATION SET FILES")
 	SET(SRC_FILES
 		nlls/NLLSIterationLog.cpp
 		nlls/NLLSNewtonSolver.cpp
@@ -25,13 +26,18 @@ IF( build )
 		DHLinkCalibration.cpp
 		DHLinkJacobian.cpp
 		JointEncoderCalibration.cpp
-		JointEncoderJacobian.cpp
+		JointEncoderJacobian.cpp 
 		FixedFrameCalibration.cpp
 		FixedFrameJacobian.cpp
 		SerialDeviceCalibration.cpp
 		SerialDeviceCalibrator.cpp
 		SerialDeviceJacobian.cpp
 		SerialDevicePoseMeasurement.cpp
+		WorkCellCalibration.cpp
+		WorkCellCalibrator.cpp
+		WorkCellJacobian.cpp
+		ParallelAxisDHCalibration.cpp
+		ParallelAxisDHJacobian.cpp
 	)
     
 	SET(SRC_FILES_HPP
@@ -61,6 +67,12 @@ IF( build )
 		SerialDeviceCalibrator.hpp
 		SerialDeviceJacobian.hpp
 		SerialDevicePoseMeasurement.hpp
+		WorkCellCalibration.hpp
+		WorkCellCalibrator.hpp
+		WorkCellJacobian.hpp
+		ParallelAxisDHCalibration.hpp
+		ParallelAxisDHJacobian.hpp
+
 	)
     
 	RW_ADD_LIBRARY( ${SUBSYS_NAME} calibration ${SRC_FILES} ${SRC_FILES_HPP} )

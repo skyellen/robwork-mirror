@@ -25,31 +25,21 @@
 using namespace rwlibs::calibration;
 using namespace rw::common;
 using namespace rw::math;
+using namespace rw::models;
 using namespace rw::loaders;
 using namespace rw;
 
 namespace {
 
-	class ElementReader {
-	public:
-		ElementReader(rw::kinematics::StateStructure::Ptr stateStructure, rw::models::SerialDevice::Ptr serialDevice) :
-				_stateStructure(stateStructure), _serialDevice(serialDevice) {
-
-		}
-
-	public:
-		rw::kinematics::StateStructure::Ptr _stateStructure;
-		rw::models::SerialDevice::Ptr _serialDevice;
-	};
 
 
-	FixedFrameCalibration::Ptr readFixedFrameCalibration(DOMElem::Ptr felement, ElementReader& reader) {
+	FixedFrameCalibration::Ptr readFixedFrameCalibration(DOMElem::Ptr felement, WorkCell::Ptr workcell) {
 		DOMElem::Ptr element = felement->getChild("FixedFrameCalibration");
 
 		if (!element->hasAttribute("frame"))
 			RW_THROW("\"frame\" attribute missing.");
 		std::string frameName = element->getAttributeValue("frame");
-		rw::kinematics::Frame* frame = reader._stateStructure->findFrame(frameName);
+		rw::kinematics::Frame* frame = workcell->findFrame(frameName);
 		rw::kinematics::FixedFrame::Ptr fixedFrame = rw::kinematics::Frame::Ptr(frame).cast<rw::kinematics::FixedFrame>();
 		if (fixedFrame.isNull())
 			RW_THROW("Frame \"" << frameName << "\" not found.");
@@ -60,55 +50,55 @@ namespace {
 
 		Transform3D<> t3d = DOMBasisTypes::readTransform3D(transformElement, false);
 
-		if (!transformElement->hasAttribute("isPostCorrection"))
-			RW_THROW("\"isPostCorrection\" attribute missing.");
-		bool isPostCorrection = transformElement->getAttributeValueAsBool("isPostCorrection");
+		//if (!transformElement->hasAttribute("isPostCorrection"))
+		//	RW_THROW("\"isPostCorrection\" attribute missing.");
+		//bool isPostCorrection = transformElement->getAttributeValueAsBool("isPostCorrection");
 
-		return rw::common::ownedPtr(new FixedFrameCalibration(fixedFrame, isPostCorrection, t3d));
+		return rw::common::ownedPtr(new FixedFrameCalibration(fixedFrame, t3d));
 	}
 	
 
-	DHLinkCalibration::Ptr readDHLinkCalibration(DOMElem::Ptr element, ElementReader& reader) {
+	ParallelAxisDHCalibration::Ptr readDHLinkCalibration(DOMElem::Ptr element, WorkCell::Ptr workcell) {
 		if (!element->hasAttribute("joint"))
 			RW_THROW("\"joint\" attribute missing.");
 		std::string jointName = element->getAttributeValue("joint");
 
-		rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint*>( reader._stateStructure->findFrame(jointName) );
+		rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint*>( workcell->findFrame(jointName) );
 		if (joint.isNull())
 			RW_THROW("Joint \"" << jointName << "\" not found.");
 
-		DHLinkCalibration::Ptr calibration = rw::common::ownedPtr(new DHLinkCalibration(joint));
+		ParallelAxisDHCalibration::Ptr calibration = rw::common::ownedPtr(new ParallelAxisDHCalibration(joint));
 		CalibrationParameterSet parameterSet = calibration->getParameterSet();
 
 		if (!element->hasAttribute("a"))
-			parameterSet(DHLinkCalibration::PARAMETER_A).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_A).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_A) = element->getAttributeValueAsDouble("a");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_A) = element->getAttributeValueAsDouble("a");
 
 		if (!element->hasAttribute("b"))
-			parameterSet(DHLinkCalibration::PARAMETER_B).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_B).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_B) = element->getAttributeValueAsDouble("b");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_B) = element->getAttributeValueAsDouble("b");
 
 		if (!element->hasAttribute("d"))
-			parameterSet(DHLinkCalibration::PARAMETER_D).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_D).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_D) = element->getAttributeValueAsDouble("d");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_D) = element->getAttributeValueAsDouble("d");
 
 		if (!element->hasAttribute("alpha"))
-			parameterSet(DHLinkCalibration::PARAMETER_ALPHA).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_ALPHA) = element->getAttributeValueAsDouble("alpha");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) = element->getAttributeValueAsDouble("alpha");
 
 		if (!element->hasAttribute("beta"))
-			parameterSet(DHLinkCalibration::PARAMETER_BETA).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_BETA) = element->getAttributeValueAsDouble("beta");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) = element->getAttributeValueAsDouble("beta");
 
 		if (!element->hasAttribute("theta"))
-			parameterSet(DHLinkCalibration::PARAMETER_THETA).setEnabled(false);
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).setEnabled(false);
 		else
-			parameterSet(DHLinkCalibration::PARAMETER_THETA) = element->getAttributeValueAsDouble("theta");
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = element->getAttributeValueAsDouble("theta");
 
 		calibration->setParameterSet(parameterSet);
 
@@ -116,17 +106,17 @@ namespace {
 	}
 
 
-	JointEncoderCalibration::Ptr readDHJointCalibration(DOMElem::Ptr element, ElementReader& reader) {
+	JointEncoderCalibration::Ptr readDHJointCalibration(DOMElem::Ptr element, WorkCell::Ptr workcell, SerialDevice::Ptr device) {
 			if (!element->hasAttribute("joint"))
 				RW_THROW("\"joint\" attribute missing.");
 			std::string jointName = element->getAttributeValue("joint");
 
 
-			rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint*>( reader._stateStructure->findFrame(jointName) );
+			rw::models::Joint::Ptr joint = dynamic_cast<rw::models::Joint*>( workcell->findFrame(jointName) );
 			if (joint.isNull())
 				RW_THROW("Joint \"" << jointName << "\" not found.");
 
-			JointEncoderCalibration::Ptr calibration = rw::common::ownedPtr(new JointEncoderCalibration(reader._serialDevice, joint));
+			JointEncoderCalibration::Ptr calibration = rw::common::ownedPtr(new JointEncoderCalibration(device, joint));
 			CalibrationParameterSet parameterSet = calibration->getParameterSet();
 
 			if (!element->hasAttribute("tau"))
@@ -146,10 +136,8 @@ namespace {
 
 }
 
-SerialDeviceCalibration::Ptr XmlCalibrationLoader::load(
-		rw::kinematics::StateStructure::Ptr stateStructure,
-		rw::models::SerialDevice::Ptr device,
-		std::string fileName)
+WorkCellCalibration::Ptr XmlCalibrationLoader::load(rw::models::WorkCell::Ptr workcell,
+													std::string fileName)
 {
 	DOMParser::Ptr parser = DOMParser::make();
 
@@ -157,42 +145,63 @@ SerialDeviceCalibration::Ptr XmlCalibrationLoader::load(
 
 	DOMElem::Ptr elmRoot = parser->getRootElement();
 
-	if ( !elmRoot->hasChild("SerialDeviceCalibration") )
+	if ( !elmRoot->hasChild("WorkCellCalibration") )
 		RW_THROW("Element not found.");
-	elmRoot = elmRoot->getChild("SerialDeviceCalibration");
-
-	ElementReader elementReader(stateStructure, device);
-	// Load base calibration.
-	FixedFrameCalibration::Ptr baseCalibration;
-	DOMElem::Ptr nodeBase = elmRoot->getChild("BaseCalibration");
-	if (nodeBase!=NULL && nodeBase->hasChildren())
-		baseCalibration = readFixedFrameCalibration( nodeBase, elementReader );
-	// Load end calibration.
-	FixedFrameCalibration::Ptr endCalibration;
-	DOMElem::Ptr nodeEnd = elmRoot->getChild("EndCalibration");
-	if (nodeEnd!=NULL && nodeEnd->hasChildren() )
-		endCalibration = readFixedFrameCalibration( nodeEnd, elementReader );
-
-	// Load link calibrations.
-	CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<DHLinkCalibration>());
-	DOMElem::Ptr nodeLinks = elmRoot->getChild("LinkCalibrations");
-	if (nodeLinks!=NULL) {
-		BOOST_FOREACH(DOMElem::Ptr child, nodeLinks->getChildren() ){
-			DHLinkCalibration::Ptr linkCalibration = readDHLinkCalibration( child, elementReader );
-			compositeLinkCalibration->addCalibration(linkCalibration);
-		}
-	}
-
+	elmRoot = elmRoot->getChild("WorkCellCalibration");
+	//FixedFrameCalibration::Ptr baseCalibration;
+	//FixedFrameCalibration::Ptr endCalibration;
+	CompositeCalibration<FixedFrameCalibration>::Ptr compositeFixedFrameCalibration = rw::common::ownedPtr(new CompositeCalibration<FixedFrameCalibration>());
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
-	DOMElem::Ptr nodeJoints = elmRoot->getChild("JointCalibrations");
-	if (nodeJoints!=NULL) {
-		BOOST_FOREACH(DOMElem::Ptr child, nodeJoints->getChildren() ){
-			JointEncoderCalibration::Ptr jointCalibration = readDHJointCalibration( child, elementReader );
-			compositeJointCalibration->addCalibration(jointCalibration);
+	BOOST_FOREACH(DOMElem::Ptr child, elmRoot->getChildren()) 
+	{
+		if (child->getName() == "FixedFrameCalibration") {
+			FixedFrameCalibration::Ptr ffCalibration = readFixedFrameCalibration( child, workcell );
+			compositeFixedFrameCalibration->addCalibration(ffCalibration);
 		}
-	}
+		//ElementReader elementReader(, device);
+		// Load base calibration.
+		
+		/*DOMElem::Ptr nodeBase = elmRoot->getChild("FixedFrameCalibration");
+		if (nodeBase!=NULL && nodeBase->hasChildren())
+			baseCalibration = readFixedFrameCalibration( nodeBase, workcell );
+		// Load end calibration.
+		
+		DOMElem::Ptr nodeEnd = elmRoot->getChild("FixedFrameCalibration");
+		if (nodeEnd!=NULL && nodeEnd->hasChildren() )
+			endCalibration = readFixedFrameCalibration( nodeEnd, workcell );
+			*/
+		// Load link calibrations.
+		
+		DOMElem::Ptr nodeLinks = elmRoot->getChild("LinkCalibrations");
+
+		if (nodeLinks!=NULL) {
+			BOOST_FOREACH(DOMElem::Ptr child, nodeLinks->getChildren() ){
+				ParallelAxisDHCalibration::Ptr linkCalibration = readDHLinkCalibration( child, workcell );
+				compositeLinkCalibration->addCalibration(linkCalibration);
+			}
+		}
+
+		
+		DOMElem::Ptr nodeJoints = elmRoot->getChild("JointCalibrations");
+
+		if (!nodeJoints->hasAttribute("device"))
+			RW_THROW("\"device\" attribute missing.");
+		const std::string deviceName = nodeJoints->getAttributeValue("device");
+		SerialDevice::Ptr device  = workcell->findDevice<SerialDevice>(deviceName);
+		if (device.isNull())
+			RW_THROW("Unable to find device '"<<deviceName<<"' in work cell");
 
 
-	SerialDeviceCalibration::Ptr calibration = rw::common::ownedPtr(new SerialDeviceCalibration(device, baseCalibration, endCalibration, compositeLinkCalibration, compositeJointCalibration));
+		if (nodeJoints!=NULL) {
+			BOOST_FOREACH(DOMElem::Ptr child, nodeJoints->getChildren() ){
+				JointEncoderCalibration::Ptr jointCalibration = readDHJointCalibration( child, workcell, device);
+				compositeJointCalibration->addCalibration(jointCalibration);
+			}
+		}
+	} //End BOOST_FOREACH
+
+
+	WorkCellCalibration::Ptr calibration = rw::common::ownedPtr(new WorkCellCalibration(compositeFixedFrameCalibration, /*baseCalibration, endCalibration, */compositeLinkCalibration, compositeJointCalibration));
 	return calibration;
 }

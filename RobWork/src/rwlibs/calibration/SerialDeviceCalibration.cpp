@@ -19,10 +19,10 @@ SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr d
 		_device(device)
 {
 	_baseCalibration = rw::common::ownedPtr(
-			new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getBase()).cast<rw::kinematics::FixedFrame>(), true));
+			new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getBase()).cast<rw::kinematics::FixedFrame>()));
 
 	_endCalibration = rw::common::ownedPtr(
-		new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getEnd()).cast<rw::kinematics::FixedFrame>(), false));
+		new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getEnd()).cast<rw::kinematics::FixedFrame>()));
 	
 	_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<DHLinkCalibration>());
 	_compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());

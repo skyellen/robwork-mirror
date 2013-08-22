@@ -17,7 +17,8 @@ namespace rwlibs {
 
 
 		FixedFrameJacobian::FixedFrameJacobian(FixedFrameCalibration::Ptr calibration) :
-			JacobianBase(calibration), _calibration(calibration), _fixedFrame(calibration->getFrame()), _isPostCorrection(_calibration->isPostCorrection()) {
+			JacobianBase(calibration), _calibration(calibration), _fixedFrame(calibration->getFrame()) 
+		{
 
 		}
 
@@ -29,37 +30,42 @@ namespace rwlibs {
 			const rw::kinematics::State& state) {
 				const CalibrationParameterSet parameterSet = _calibration->getParameterSet();
 				const Eigen::Affine3d correctionTransform = toEigen( _calibration->getCorrectionTransform() );
-
-				const rw::kinematics::Frame* preCorrectionFrame = _isPostCorrection ? _fixedFrame.get() : _fixedFrame->getParent(state);
-				Eigen::Affine3d toPreCorrectionTransform = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), preCorrectionFrame, state) );
-				if (_isPostCorrection)
-					toPreCorrectionTransform = toPreCorrectionTransform * correctionTransform.inverse();
-				Eigen::Affine3d postCorrectionTransform = toEigen( rw::kinematics::Kinematics::frameTframe(preCorrectionFrame, targetFrame.get(), state));
-				if (!_isPostCorrection)
-					postCorrectionTransform = correctionTransform.inverse() * postCorrectionTransform;
-				const Eigen::Matrix3d toPreCorrectionRotation = toPreCorrectionTransform.linear();
-				const Eigen::Vector3d preToEndTranslation = (toPreCorrectionTransform * correctionTransform * postCorrectionTransform).translation() - toPreCorrectionTransform.translation();
-
+				
+				const rw::kinematics::Frame* correctionFrame = _fixedFrame.get();
+				std::cout<<"Correction Frame = "<<_fixedFrame->getName()<<std::endl;
+				std::cout<<"Ref = "<<referenceFrame->getName()<<std::endl;
+				Eigen::Affine3d refTcorrection = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), correctionFrame, state) );
+				refTcorrection = refTcorrection * correctionTransform.inverse();
+				Eigen::Affine3d correction2target = toEigen( rw::kinematics::Kinematics::frameTframe(correctionFrame, targetFrame.get(), state));
+				Eigen::Matrix3d refRcorrection = refTcorrection.linear();
+				Eigen::Vector3d preToEndTranslation = (refTcorrection * correctionTransform * correction2target).translation() - refTcorrection.translation();
+				
+				if (_fixedFrame == referenceFrame) {
+					preToEndTranslation = -preToEndTranslation;
+					refRcorrection *= -1;
+				}
+				
 				const int columnCount = getColumnCount();
 				Eigen::MatrixXd jacobianMatrix(6, columnCount);
 				int columnIndex = 0;
 				if (parameterSet(FixedFrameCalibration::PARAMETER_X).isEnabled()) {
-					jacobianMatrix.block<3, 1>(0, columnIndex) = toPreCorrectionRotation.col(0);
+					jacobianMatrix.block<3, 1>(0, columnIndex) = refRcorrection.col(0);
 					jacobianMatrix.block<3, 1>(3, columnIndex) = Eigen::Vector3d::Zero();
 					columnIndex++;
 				}
 				if (parameterSet(FixedFrameCalibration::PARAMETER_Y).isEnabled()) {
-					jacobianMatrix.block<3, 1>(0, columnIndex) = toPreCorrectionRotation.col(1);
+					jacobianMatrix.block<3, 1>(0, columnIndex) = refRcorrection.col(1);
 					jacobianMatrix.block<3, 1>(3, columnIndex) = Eigen::Vector3d::Zero();
 					columnIndex++;
 				}
 				if (parameterSet(FixedFrameCalibration::PARAMETER_Z).isEnabled()) {
-					jacobianMatrix.block<3, 1>(0, columnIndex) = toPreCorrectionRotation.col(2);
+					jacobianMatrix.block<3, 1>(0, columnIndex) = refRcorrection.col(2);
 					jacobianMatrix.block<3, 1>(3, columnIndex) = Eigen::Vector3d::Zero();
 					columnIndex++;
 				}
+				
 				double rollAngle = parameterSet(FixedFrameCalibration::PARAMETER_ROLL);
-				Eigen::Matrix3d localRotation = toPreCorrectionRotation * Eigen::AngleAxisd(rollAngle, Eigen::Vector3d::UnitZ());
+				Eigen::Matrix3d localRotation = refRcorrection * Eigen::AngleAxisd(rollAngle, Eigen::Vector3d::UnitZ());
 				if (parameterSet(FixedFrameCalibration::PARAMETER_ROLL).isEnabled()) {
 					jacobianMatrix.block<3, 1>(0, columnIndex) = localRotation.col(2).cross(preToEndTranslation);
 					jacobianMatrix.block<3, 1>(3, columnIndex) = localRotation.col(2);

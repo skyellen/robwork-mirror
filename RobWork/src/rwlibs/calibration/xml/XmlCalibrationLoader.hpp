@@ -18,7 +18,8 @@
 #ifndef RWLIBS_CALIBRATION_XMLCALIBRATIONLOADER_HPP_
 #define RWLIBS_CALIBRATION_XMLCALIBRATIONLOADER_HPP_
 
-#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
+
+#include <rwlibs/calibration/WorkCellCalibration.hpp>
 
 namespace rwlibs {
 namespace calibration {
@@ -28,7 +29,7 @@ namespace calibration {
 	 */
 	class XmlCalibrationLoader {
 	public:
-		static SerialDeviceCalibration::Ptr load(rw::kinematics::StateStructure::Ptr stateStructure, rw::models::SerialDevice::Ptr device, std::string fileName);
+		static WorkCellCalibration::Ptr load(rw::models::WorkCell::Ptr workcell, std::string fileName);
 	};
 
 }

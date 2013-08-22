@@ -1,17 +1,14 @@
 /*
  * DHLinkJacobian.hpp
- *
- *  Created on: Nov 20, 2012
- *      Author: bing
  */
 
-#ifndef RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_
-#define RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_
+#ifndef RWLIBS_CALIBRATION_PARALLELAXISDHJACOBIAN_HPP_
+#define RWLIBS_CALIBRATION_PARALLELAXISDHJACOBIAN_HPP_
 
 #include <rw/math.hpp>
 //#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
-#include "DHLinkCalibration.hpp"
+#include "ParallelAxisDHCalibration.hpp"
 #include "JacobianBase.hpp"
 #include <Eigen/Geometry>
 #include <rw/models.hpp>
@@ -21,26 +18,25 @@ namespace rwlibs {
 namespace calibration {
 
 
-
-class DHLinkJacobian: public JacobianBase {
+class ParallelAxisDHJacobian: public JacobianBase {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	typedef rw::common::Ptr<DHLinkJacobian> Ptr;
+	typedef rw::common::Ptr<ParallelAxisDHJacobian> Ptr;
 
-	DHLinkJacobian(DHLinkCalibration::Ptr calibration);
+	ParallelAxisDHJacobian(ParallelAxisDHCalibration::Ptr calibration);
 
-	virtual ~DHLinkJacobian();
+	virtual ~ParallelAxisDHJacobian();
 
 protected:
 	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
 
 private:
-	DHLinkCalibration::Ptr _calibration;
+	ParallelAxisDHCalibration::Ptr _calibration;
 	rw::models::Joint::Ptr _joint;
 };
 
 }
 }
 
-#endif /* RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_ */
+#endif /* RWLIBS_CALIBRATION_PARALLELAXISDHJACOBIAN_HPP_ */

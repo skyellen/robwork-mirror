@@ -18,16 +18,16 @@
 #ifndef RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP_
 #define RWLIBS_CALIBRATION_XMLCALIBRATIONSAVER_HPP_
 
-#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
+#include <rwlibs/calibration/WorkCellCalibration.hpp>
 
 namespace rwlibs {
 namespace calibration {
 
 class XmlCalibrationSaver {
 public:
-	static void save(SerialDeviceCalibration::Ptr serialDeviceCalibration, std::string fileName);
+	static void save(WorkCellCalibration::Ptr workcellCalibration, std::string fileName);
 
-	static void save(SerialDeviceCalibration::Ptr serialDeviceCalibration, std::ostream& ostream);
+	static void save(WorkCellCalibration::Ptr workcellCalibration, std::ostream& ostream);
 };
 
 }

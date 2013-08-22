@@ -1,8 +1,5 @@
 /*
 * FixedFrameCalibration.cpp
-*
-*  Created on: Aug 28, 2012
-*      Author: bing
 */
 
 #include "FixedFrameCalibration.hpp"
@@ -20,17 +17,17 @@ namespace rwlibs {
 		int FixedFrameCalibration::PARAMETER_YAW = 5;
 
 		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame) :
-			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(false) {
+			CalibrationBase(CalibrationParameterSet(6)), _frame(frame)		{
+			if (frame.isNull())
+				RW_THROW("Unable to construct FixedFrameCalibration for a frame which is NULL");
 		}
 
-		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection) :
-			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(isPostCorrection) {
-		}
-
-		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, bool isPostCorrection,
-				const rw::math::Transform3D<>& correctionTransform) :
-			CalibrationBase(CalibrationParameterSet(6)), _frame(frame), _isPostCorrection(isPostCorrection)
+		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame, const rw::math::Transform3D<>& correctionTransform) :
+			CalibrationBase(CalibrationParameterSet(6)), _frame(frame)
 		{
+			if (frame.isNull())
+				RW_THROW("Unable to construct FixedFrameCalibration for a frame which is NULL");
+
 			setCorrectionTransform(correctionTransform);
 		}
 
@@ -42,9 +39,7 @@ namespace rwlibs {
 			return _frame;
 		}
 
-		bool FixedFrameCalibration::isPostCorrection() const {
-			return _isPostCorrection;
-		}
+
 
 		rw::math::Transform3D<> FixedFrameCalibration::getCorrectionTransform() const {
 			CalibrationParameterSet parameterSet = getParameterSet();
@@ -79,7 +74,7 @@ namespace rwlibs {
 			RW_ASSERT(!_frame.isNull());
 			_originalTransform = _frame->getFixedTransform();
 			const rw::math::Transform3D<> correctionTransform = getCorrectionTransform();
-			const rw::math::Transform3D<> correctedTransform = _isPostCorrection ? (_originalTransform * correctionTransform) : (correctionTransform * _originalTransform);
+			const rw::math::Transform3D<> correctedTransform = _originalTransform * correctionTransform;
 			_frame->setTransform(correctedTransform);
 		}
 
