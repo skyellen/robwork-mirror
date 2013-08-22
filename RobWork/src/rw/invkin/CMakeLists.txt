@@ -1,4 +1,5 @@
 SET(FILES_CPP
+  AmbiguityResolver.cpp
   ClosedFormIK.cpp
   IterativeIK.cpp
   IterativeMultiIK.cpp
@@ -12,6 +13,7 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
+  AmbiguityResolver.hpp
   ClosedFormIK.hpp
   IterativeIK.hpp
   IterativeMultiIK.hpp
