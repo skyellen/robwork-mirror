@@ -60,7 +60,7 @@ namespace rwlibs { namespace opengl {
                 gluDeleteQuadric(_quadratic);
         }
 
-        void setSize(double size){
+        void setSize(float size){
             _size = size;
         }
 
@@ -83,7 +83,7 @@ namespace rwlibs { namespace opengl {
 
             // Nice frame
             // Draw z-axis
-            glColor4f(0.0f, 0.0f, 1.0f, alpha); // Blue color
+            glColor4f(0.0f, 0.0f, 1.0f, (float)alpha); // Blue color
             gluCylinder(_quadratic, widthBody, widthBody, lenBody, 32, 32);    // Draw Our Cylinder
             glTranslatef(0.0f,0.0f,lenBody);// Center The Cone
             gluCylinder(_quadratic,widthHead,0.0f,lenHead,32,32); // A Cone
