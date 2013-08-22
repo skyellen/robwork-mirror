@@ -16,7 +16,7 @@ SET(FILES_CPP
   Rotation3D.cpp
   Rotation3DVector.cpp
   RPY.cpp
-  Statistics.cpp
+  #Statistics.cpp
   Transform3D.cpp
   Vector2D.cpp
   Vector3D.cpp
@@ -48,7 +48,7 @@ SET(FILES_HPP
   Rotation3D.hpp
   Rotation3DVector.hpp
   RPY.hpp
-  Statistics.hpp
+  #Statistics.hpp
   Transform3D.hpp
   Vector2D.hpp
   Vector3D.hpp
