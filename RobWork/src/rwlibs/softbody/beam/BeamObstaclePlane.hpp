@@ -98,23 +98,19 @@ namespace softbody {
         rw::geometry::Plane::Ptr getPlane(void) const;
         
         
+        
         /**
          * @brief returns the geometry of the plane
          *
          * @return geometry of plane
          **/
         rw::geometry::Geometry::Ptr getPlaneGeometry(void) const;
-        
-        
-        
-//         void setDistance(double distance);
+
         
     private:
         rw::geometry::Plane::Ptr _planePtr;
         rw::math::Transform3D<> _trans;
-        rw::geometry::Geometry::Ptr _geomPtr;
-        
-//         double _distance;
+        rw::geometry::Geometry::Ptr _geomPtr;        
     };
     /*@}*/
 }}

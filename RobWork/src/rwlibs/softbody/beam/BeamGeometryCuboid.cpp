@@ -19,7 +19,6 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include <math.h>
 #include <iostream>
-#include <assert.h>
 
 #include "rwlibs/softbody/numerics/TrapMethod.hpp"
 

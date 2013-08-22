@@ -106,7 +106,6 @@ public:
         std::stringstream str;
 
         const BeamGeometry &base ( obj );
-        // embed base class?
 
         str << "BeamGeometryCuboid {" << base << "  this: " << &obj << ", H:" << obj.getH() << ", K:" << obj.getK() << "}";
 

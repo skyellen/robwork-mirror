@@ -24,7 +24,6 @@ BeamObstaclePlane::BeamObstaclePlane ( const rw::geometry::Plane& plane, const r
     _planePtr(new rw::geometry::Plane(plane)),
     _trans(trans),
     _geomPtr(new rw::geometry::Geometry(_planePtr) )
-//     ,_distance(0.0)
 {
 
 }
@@ -53,11 +52,11 @@ double BeamObstaclePlane::get_thetaTCP ( const rw::math::Transform3D< double >& 
 }
 
 
-// returns yTCP in millimeters
+
 double BeamObstaclePlane::get_yTCP ( const rw::math::Transform3D< double >& planeTbeam ) const {
     return planeTbeam.P()[1] * 1.0e3;
-//     return _distance * 1.0e3;
 }
+
 
 
 rw::math::Transform3D< double > BeamObstaclePlane::compute_planeTbeam ( const rw::math::Transform3D< double >& Tbeam ) {
@@ -72,16 +71,13 @@ rw::math::Transform3D< double > BeamObstaclePlane::compute_planeTbeam ( const rw
 }
 
 
+
 rw::geometry::Plane::Ptr BeamObstaclePlane::getPlane ( void ) const {
     return _planePtr;
 }
 
 
+
 rw::geometry::Geometry::Ptr BeamObstaclePlane::getPlaneGeometry ( void ) const {
     return _geomPtr;
 }
-
-/*
-void BeamObstaclePlane::setDistance ( double distance ) {
-    _distance= distance;
-}*/

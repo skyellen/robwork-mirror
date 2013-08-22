@@ -15,36 +15,39 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 */
 
 
+
 #include "ModRusselBeamBase.hpp"
 
+
+
 using namespace rwlibs::softbody;
+
+
 
 ModRusselBeamBase::ModRusselBeamBase ( 
 boost::shared_ptr< rwlibs::softbody::BeamGeometry > geomPtr,
 boost::shared_ptr< rwlibs::softbody::BeamObstaclePlane > obstaclePtr, 
 int M ) 
 :
-_geomPtr ( geomPtr ), 
-_obstaclePtr ( obstaclePtr ),
-_M ( M ),
-_useNoUpwardConstraint ( false ), 
-// _nIntegralConstraints ( 1 ),
-_useHingeConstraint( false )
+    _geomPtr ( geomPtr ), 
+    _obstaclePtr ( obstaclePtr ),
+    _M ( M ),
+    _useNoUpwardConstraint ( false ), 
+    _useHingeConstraint( false )
 {
     _integralConstraintIdxList.clear();
 }
 
 
 
-
 ModRusselBeamBase::~ModRusselBeamBase() {
-
 }
 
 
 
-// integrates x-component of angle, assuming implictly a(0) = 0;
 void ModRusselBeamBase::integrateAngleU ( boost::numeric::ublas::vector< double >& U, const boost::numeric::ublas::vector< double >& avec ) {
+    // integrates x-component of angle, assuming implictly a(0) = 0;
+    
     const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
 
     U[0] = 0.0;
@@ -60,11 +63,12 @@ void ModRusselBeamBase::integrateAngleU ( boost::numeric::ublas::vector< double 
     }
 }
 
-// integrates y-component of angle, assuming implictly a(0) = 0;
+
+
 void ModRusselBeamBase::integrateAngleV ( boost::numeric::ublas::vector< double >& V, const boost::numeric::ublas::vector< double >& avec ) {
+    // integrates y-component of angle, assuming implictly a(0) = 0;
+    
     const double h = ( getGeometry()->get_b() - getGeometry()->get_a() ) / avec.size();
-//     std::cout << "h: " << h << std::endl;
-//     std::cout << "avec.size(): " << avec.size() << std::endl;
 
     V[0] = 0.0;
     for ( int end = 0; end < ( int ) avec.size(); end++ ) {
@@ -80,10 +84,9 @@ void ModRusselBeamBase::integrateAngleV ( boost::numeric::ublas::vector< double 
 }
 
 
+
 std::vector< int > ModRusselBeamBase::computeIntegralIndicies ( const int nIntegralConstraints , const int N) {
-     std::cout << "ModRusselBeamBase::computeIntegralIndicies" << std::endl;
     std::vector<int> integralConstraintIdxList;
-//     int N = getM() -1;
     
     if ( nIntegralConstraints == 1) {
         int idx = N - 1;
@@ -108,7 +111,6 @@ std::vector< int > ModRusselBeamBase::computeIntegralIndicies ( const int nInteg
 
 
 
-
 double ModRusselBeamBase::getAccuracy ( void ) const {
     return _accuracy;
 }
@@ -119,14 +121,19 @@ void ModRusselBeamBase::setAccuracy ( double acc ) {
     _accuracy = acc;
 }
 
+
+
 boost::shared_ptr< BeamGeometry > ModRusselBeamBase::getGeometry ( void ) const {
     return _geomPtr;
 }
 
 
+
 boost::shared_ptr< BeamObstaclePlane > ModRusselBeamBase::getObstacle ( void ) const {
     return _obstaclePtr;
 }
+
+
 
 int ModRusselBeamBase::getM ( void ) const {
     return _M;
@@ -155,8 +162,6 @@ double ModRusselBeamBase::get_thetaTCP ( void ) const {
 double ModRusselBeamBase::get_yTCP ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     double yTCP = getObstacle()->get_yTCP ( planeTbeam );
-
-    // yTCP set here by CD or inside Obstacle?
     
     return yTCP;
 }
@@ -166,6 +171,7 @@ double ModRusselBeamBase::get_yTCP ( void ) const {
 double ModRusselBeamBase::get_uxTCPy ( const rw::math::Transform3D< double > planeTbeam )  {
     return planeTbeam.R() ( 1, 0 );
 }
+
 
 
 double ModRusselBeamBase::get_uxTCPy ( void ) const {
@@ -181,13 +187,15 @@ double ModRusselBeamBase::get_uyTCPy ( const rw::math::Transform3D< double > pla
 }
 
 
+
 double ModRusselBeamBase::get_uyTCPy ( void ) const {
     const rw::math::Transform3D<> planeTbeam = get_planeTbeam();
     return get_uyTCPy(planeTbeam);
 }
 
+
+
 double ModRusselBeamBase::get_h ( void ) const {
-    // TODO calculate once and set var
     double a = getGeometry()->get_a();
     double b = getGeometry()->get_b();
 
@@ -196,26 +204,13 @@ double ModRusselBeamBase::get_h ( void ) const {
 
 
 
-/*
-void ModRusselBeamBase::set_nIntegralConstraints ( int nIntegralConstraints ) {
-    _nIntegralConstraints = nIntegralConstraints;
-}
-*/
-/*
-int ModRusselBeamBase::get_nIntegralConstraints ( void ) const {
-    return _nIntegralConstraints;
-}
-*/
 std::vector< int > ModRusselBeamBase::getIntegralIndices ( void ) const {
     return _integralConstraintIdxList;
 }
+
+
 
 void ModRusselBeamBase::setIntegralIndices ( const std::vector< int >& indices ) {
     std::cout << "ModRusselBeamBase::setIntegralIndices" << std::endl;
     _integralConstraintIdxList = indices;
 }
-
-
-
-
-

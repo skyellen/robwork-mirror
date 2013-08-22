@@ -32,10 +32,14 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include "IpTNLP.hpp"
 
+
+
 namespace rwlibs { namespace softbody {
 /** @addtogroup softbody */
 /*@{*/
     
+
+
 /**
 * @brief Implementation of the Modified Russel beam problem, using the IPOPT TNLP structure
 **/

@@ -90,6 +90,11 @@ public:
      **/   
     std::vector<int> getIntegralIndices(void) const;;
     
+    /**
+     * @brief sets the integral indices for the beam
+     * 
+     * @param indices vector of indices
+     */
     void setIntegralIndices(const std::vector<int> &indices);
     
     /**
@@ -128,14 +133,14 @@ public:
      **/
     void setAccuracy ( double acc );
     
-    friend std::ostream& operator<< ( std::ostream& out, const ModRusselBeamBase& obj ) {
-        /**
+    /**
          * @brief outputs a ModRusselBeamBase to stream
          *
          * @param out the stream
          * @param obj the beam
          * @return a stream
          **/
+    friend std::ostream& operator<< ( std::ostream& out, const ModRusselBeamBase& obj ) {        
         std::stringstream str;
 
         const rw::math::Transform3D<> planeTbeam = obj.get_planeTbeam();
@@ -151,36 +156,7 @@ public:
 
         return out << str.str();
     };
-    
-    /*
-    void setUseNoUpwardConstraint ( bool val );
-    bool getUseNoUpwardConstraint(void) const { return _useNoUpwardConstraint; };
-    
-    void setUseHingeConstraint ( bool val );
-    bool getUseHingeConstraint(void) const { return _useHingeConstraint; };
-    */
 
-    /*
-    void setMuStart ( double muStart );
-    double getMuStart(void) const { return _muStart; };
-    
-    void setMuDecrementFactor ( double decFactor );
-    double getMuDecrementFactor(void) const { return _muDec; };
-    */
-
-    /**
-     * @brief sets the number of integral constraints on the beam
-     *
-     * @param nIntegralConstraints number of integral constraints
-     **/
-//     void set_nIntegralConstraints ( int nIntegralConstraints );
-    
-    /**
-     * @brief returns the number of integral constraints on the beam
-     *
-     * @return number of integral constraints on the beam
-     **/
-//     int get_nIntegralConstraints ( void ) const;
 
 public:
     /**
@@ -251,14 +227,9 @@ private:
 private: 
     bool _useNoUpwardConstraint;
 
-//     int _nIntegralConstraints;
-
     bool _useHingeConstraint;
     
     std::vector<int> _integralConstraintIdxList;
-
-//     double _muStart;
-//     double _muDec;
 };
 /*@}*/
 }

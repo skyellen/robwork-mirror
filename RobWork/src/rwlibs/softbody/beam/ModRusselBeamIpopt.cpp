@@ -48,24 +48,8 @@ ModRusselBeamIpopt::~ModRusselBeamIpopt() {
 
 
 
-void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {
-    cout << "ModRusselBeamIpopt::solve" << endl;
-//     computeIntegralIndicies();
-    
+void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinituser, boost::numeric::ublas::vector< double >& U, boost::numeric::ublas::vector< double >& V ) {    
     vector<int> integralIndices  = getIntegralIndices();
-/*    
-    if (integralIndices.size() == 0) {
-        RW_THROW("List of constraint indices empty!");
-    }
-    */
-
-/*
-    cout << "start of integral list: " << endl;
-    
-    for (int i = 0; i < (int) integralIndices.size(); i++) 
-        cout << integralIndices[i] << endl;
-    
-    cout << "end of integral list: " << endl;*/
 
 
     _nlp = new ModRussel_NLP( getGeometry(), getObstacle(), get_planeTbeam(), integralIndices ); 
@@ -93,43 +77,20 @@ void ModRusselBeamIpopt::solve ( boost::numeric::ublas::vector< double >& xinitu
     
     status = _app->OptimizeTNLP ( _nlp );
     if ( status == Solve_Succeeded ) {
-//         std::cout << "*** The problem solved!" << std::endl;
     } 
     else {
         std::cout << "*** The problem FAILED!" << std::endl;
     }
-    
-//     ofstream myfile;
-//     myfile.open("thin.dat", ios::app);
+
     
     boost::numeric::ublas::vector< double > res = nlp->getSolution();
     double Ee = nlp->getEnergyElastic();
     std::cout << "Ee: " << Ee << std::endl;
-//     myfile << "  " << Ee;
+
     int N =  res.size();
     
     integrateAngleU ( U, res );
     integrateAngleV ( V, res );
-    
-//     myfile << "  ";
-    
-//     std::cout << "get_uxTCPy(): " << get_uxTCPy() << std::endl; // 0
-//     std::cout << "get_uyTCPy(): " << get_uyTCPy() << std::endl; // 1
-    
-//     myfile << "  " << 0.0 << "  ";
-//     myfile << get_yTCP() << "  ";
-    
-    for (int i = 0; i < (int) U.size(); i++) {
-//         myfile << (U[i] - i * getGeometry()->get_h()) << "  ";
-//         myfile << (V[i] + get_yTCP())<< "  ";
-        
-//         myfile << (U[i]) - i * getGeometry()->get_h() * get_uxTCPy()   << "  ";
-//         myfile << (V[i]) << "  ";
-        
-    }
-//     myfile << std::endl;
-    
-//     myfile.close();
 
     xinituser[0] = 0.0;
     for ( int i = 0; i < N; i++ )
