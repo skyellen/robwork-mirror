@@ -32,6 +32,7 @@ WorkCell::WorkCell(const std::string& name)
     :
     _tree(rw::common::ownedPtr(new StateStructure())),
     _name(name),
+	_calibrationFilename(""),
     _sceneDescriptor( ownedPtr(new SceneDescriptor()) )
 {
     // Because we want the assertion, we initialize _frameMap here.
@@ -47,6 +48,7 @@ WorkCell::WorkCell(const std::string& name)
     _tree(tree),
     _name(name),
 	_filename(filename),
+	_calibrationFilename(""),
     _sceneDescriptor( ownedPtr(new SceneDescriptor()) )
 {
     // Because we want the assertion, we initialize _frameMap here.
@@ -64,6 +66,19 @@ WorkCell::~WorkCell()
 std::string WorkCell::getFilename() const {
 	return _filename;
 }
+
+std::string WorkCell::getFilePath() const {
+	return StringUtil::getDirectoryName(_filename);
+}
+
+const std::string& WorkCell::getCalibrationFilename() const {
+	return _calibrationFilename;
+}
+
+void WorkCell::setCalibrationFilename(const std::string& calibrationFilename) {
+	_calibrationFilename = calibrationFilename;
+}
+
 
 Frame* WorkCell::getWorldFrame() const
 {

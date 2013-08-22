@@ -427,6 +427,31 @@ namespace rw { namespace models {
 		 * it returns an empty string.
 		 */
 		std::string getFilename() const;
+
+
+		/** 
+		 * @brief Returns the path of where the work cell is located
+		 *
+		 * If the workcell is not loaded from file, it returns an empty string
+		 */
+		 std::string getFilePath() const;
+
+		/**
+		 * @brief Returns the filename of the calibration associated to the work cell.
+		 *
+		 * Returns an empty string in case no calibration is associated. 	
+		 *
+		 * To load the file use the getFilePath()+getCalibrationFilename() to get the absolute location		 
+		 */
+		const std::string& getCalibrationFilename() const;
+
+		/**
+		 * @brief Sets the filename of the calibration file
+		 *
+		 * @param calibrationFilename [in] Filename of calibration file with path relative to the work cell path.
+		 */
+		void setCalibrationFilename(const std::string& calibrationFilename); 
+
     protected:
         void stateDataAddedListener(const rw::kinematics::StateData* data);
         void stateDataRemovedListener(const rw::kinematics::StateData* data);
@@ -437,6 +462,8 @@ namespace rw { namespace models {
 		std::vector<rw::common::Ptr<Object> > _objects;
         std::string _name;
 		std::string _filename;
+		std::string _calibrationFilename;
+		
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
         std::vector<rw::sensor::SensorModel::Ptr> _sensors;
