@@ -159,6 +159,10 @@ ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
 TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
 ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
 
+ADD_EXECUTABLE( rw_calibration-tool2 calibration/CalibrationTool2.cpp )
+TARGET_LINK_LIBRARIES( rw_calibration-tool2 ${TEST_LIBRARIES} )
+ADD_DEPENDENCIES( rw_calibration-tool2 ${TEST_DEPENDENCIES} )
+
 ADD_EXECUTABLE( rw_calibration-mtool calibration/MeasurementTool.cpp )
 TARGET_LINK_LIBRARIES( rw_calibration-mtool ${TEST_LIBRARIES} )
 ADD_DEPENDENCIES( rw_calibration-mtool ${TEST_DEPENDENCIES} )
