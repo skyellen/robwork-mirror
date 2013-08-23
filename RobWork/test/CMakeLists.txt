@@ -155,9 +155,10 @@ ADD_TEST( rw_calibration-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_calibration-t
 ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
 SET( CALIBRATION_TEST rw_calibration-test )
 
-ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
-TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
-ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
+
+#ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
+#TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
+#ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
 
 ADD_EXECUTABLE( rw_calibration-tool2 calibration/CalibrationTool2.cpp )
 TARGET_LINK_LIBRARIES( rw_calibration-tool2 ${TEST_LIBRARIES} )
