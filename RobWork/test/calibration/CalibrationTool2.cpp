@@ -125,7 +125,7 @@ private:
 std::ostream& operator<<(std::ostream& out, const NLLSSolver::Ptr solver);
 std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calibration);
 void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration);
-void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration);
+void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration, bool printUncalibratedOnly);
 
 class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
 class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
@@ -278,8 +278,9 @@ int main(int argumentCount, char** argumentArray) {
 		workcellCalibration->getCompositeLinkCalibration()->setEnabled(false && isLinkCalibrationEnabled);
 		workcellCalibration->getCompositeJointCalibration()->setEnabled(false && isJointCalibrationEnabled);
 
-		printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
+		printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, true);
 		
+		std::cout<<"Check that the errors are in the range that are expected."<<std::endl;
 		std::cout<<"Press enter to continue..."<<std::endl;
 		char ch[4];
 		std::cin.getline(ch, 1); 
@@ -317,24 +318,24 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout << "Residual summary:" << std::endl;
 	if (optionParser.isDetailPrintingEnabled())
 		printMeasurements(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
-	printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
+	printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, false);
 
 	// Print differences between model and validation measurements.
 	if (validationMeasurementCount > 0) {
 		std::cout << "Residual summary (validation):" << std::endl;
 		if (optionParser.isDetailPrintingEnabled())
 			printMeasurements(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
-		printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
+		printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, false);
 	}
 
-	std::cout<<"Calibration before loading: "<<std::endl<<workcellCalibration<<std::endl;
+	/*std::cout<<"Calibration before loading: "<<std::endl<<workcellCalibration<<std::endl;
 	std::string calibrationFilePath = optionParser.getCalibrationFilePath();
 	workcellCalibration = XmlCalibrationLoader::load(workCell, calibrationFilePath);
 	std::cout<<std::endl<<std::endl;
 	std::cout<<"Loaded Calibration: "<<std::endl<<workcellCalibration<<std::endl;
 
 	printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
-
+	*/
 	return 0;
 }
 
@@ -562,7 +563,7 @@ void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measureme
 	}
 }
 
-void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration) {
+void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration, bool printOnlyUncalibrated) {
 	const unsigned int measurementCount = measurements.size();
 
 	Eigen::VectorXd distances(measurementCount), angles(measurementCount);
@@ -582,10 +583,14 @@ void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& mea
 		distances(measurementIndex) = tfmError.P().norm2(), calibratedDistances(measurementIndex) = tfmCalibratedError.P().norm2();
 		angles(measurementIndex) = rw::math::EAA<>(tfmError.R()).angle(), calibratedAngles(measurementIndex) = rw::math::EAA<>(tfmCalibratedError.R()).angle();
 	}
-	std::cout << "\tSummary - Uncalibrated: [ Avg: " << distances.mean() * 1000.0 << " mm / " << angles.mean() * rw::math::Rad2Deg << " \u00B0 - Min: "
-		<< distances.minCoeff() * 1000.0 << " mm / " << angles.minCoeff() * rw::math::Rad2Deg << " \u00B0 - Max: " << distances.maxCoeff() * 1000.0 << " mm / "
-		<< angles.maxCoeff() * rw::math::Rad2Deg << " \u00B0 ]" << std::endl;
-	std::cout << "\tSummary - Calibrated: [ Avg: " << calibratedDistances.mean() * 1000.0 << " mm / " << calibratedAngles.mean() * rw::math::Rad2Deg << " \u00B0 - Min: "
-		<< calibratedDistances.minCoeff() * 1000.0 << " mm / " << calibratedAngles.minCoeff() * rw::math::Rad2Deg << " \u00B0 - Max: "
-		<< calibratedDistances.maxCoeff() * 1000.0 << " mm / " << calibratedAngles.maxCoeff() * rw::math::Rad2Deg << " \u00B0 ]" << std::endl;
+	std::cout << "\tSummary - Uncalibrated: [ Avg: " << distances.mean() * 1000.0 << " mm / " << angles.mean() * rw::math::Rad2Deg << " deg - Min: "
+		<< distances.minCoeff() * 1000.0 << " mm / " << angles.minCoeff() * rw::math::Rad2Deg << " deg - Max: " << distances.maxCoeff() * 1000.0 << " mm / "
+		<< angles.maxCoeff() * rw::math::Rad2Deg << " deg ]" << std::endl;
+
+	if (printOnlyUncalibrated)
+		return;
+
+	std::cout << "\tSummary - Calibrated: [ Avg: " << calibratedDistances.mean() * 1000.0 << " mm / " << calibratedAngles.mean() * rw::math::Rad2Deg << " deg - Min: "
+		<< calibratedDistances.minCoeff() * 1000.0 << " mm / " << calibratedAngles.minCoeff() * rw::math::Rad2Deg << " deg - Max: "
+		<< calibratedDistances.maxCoeff() * 1000.0 << " mm / " << calibratedAngles.maxCoeff() * rw::math::Rad2Deg << " deg ]" << std::endl;
 }
