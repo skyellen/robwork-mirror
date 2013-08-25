@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	artificialCalibration->getBaseCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
 	artificialCalibration->getEndCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
 	CompositeCalibration<DHLinkCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 		DHLinkCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
 		if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
 		if (parameterSet(ENCODER_PARAMETER_TAU).isEnabled())
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 	CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
-		for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 			DHLinkCalibration::Ptr calibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
 	if (compositeJointCalibration->isEnabled()) {
-		for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 			JointEncoderCalibration::Ptr calibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	calibration->apply();
 
 	// Verify that calibration fits measurements.
-	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+	for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
 		serialDevice->setQ(measurements[measurementIndex].getQ(), state);
 
 		const rw::math::Transform3D<> measurementTransform = measurements[measurementIndex].getTransform();
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	calibration->revert();
 
 	//XmlCalibrationSaver::save(calibration, calibrationFilePath);
-	XmlCalibrationSaver::save(calibration, "SomeCalibration.xml");
+	XmlCalibrationSaver::save(*calibration, std::string("SomeCalibration.xml"));
 	SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell->getStateStructure(), serialDevice, "SomeCalibration.xml");
 	//SerialDeviceCalibration::Ptr calibrationLoaded = calibration;
 	calibrationLoaded->apply();

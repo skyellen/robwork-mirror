@@ -11,7 +11,6 @@
 #include "CalibrationParameterSet.hpp"
 #include <Eigen/Core>
 #include <rw/kinematics.hpp>
-#include <rw/models/CalibrationFactory.hpp>
 
 namespace rwlibs {
 	namespace calibration {
@@ -23,7 +22,7 @@ namespace rwlibs {
 		*
 		* Calibrations can be applied or reverted. When applied the kinematics of the workcell will be modified according to the calibration model.
 		*/
-		class Calibration: public rw::models::Calibration {
+		class Calibration {
 		public:
 			typedef rw::common::Ptr<Calibration> Ptr;
 

@@ -46,10 +46,10 @@ namespace rwlibs {
 
 		void ParallelAxisDHCalibration::doApply() {
 			CalibrationParameterSet parameterSet = getParameterSet();
-			const double a = parameterSet(PARAMETER_A).isEnabled() ? (parameterSet(PARAMETER_A)): 0;
-			const double alpha = parameterSet(PARAMETER_ALPHA).isEnabled() ? (parameterSet(PARAMETER_ALPHA)) : 0;
-			const double b = parameterSet(PARAMETER_B).isEnabled() ? (parameterSet(PARAMETER_B)) : 0;
-			const double beta = parameterSet(PARAMETER_BETA).isEnabled() ? (parameterSet(PARAMETER_BETA)) : 0;
+			const double a = parameterSet(PARAMETER_A).isEnabled() ? parameterSet(PARAMETER_A).getValue(): 0;
+			const double alpha = parameterSet(PARAMETER_ALPHA).isEnabled() ? parameterSet(PARAMETER_ALPHA).getValue() : 0;
+			const double b = parameterSet(PARAMETER_B).isEnabled() ? parameterSet(PARAMETER_B).getValue() : 0;
+			const double beta = parameterSet(PARAMETER_BETA).isEnabled() ? parameterSet(PARAMETER_BETA).getValue() : 0;
 			const rw::models::DHParameterSet correctedSet(alpha, a, beta, b, true);
 			rw::models::DHParameterSet::set(correctedSet, _joint.get());
 			const rw::math::Transform3D<> correctedTransform = computeTransform(correctedSet);
