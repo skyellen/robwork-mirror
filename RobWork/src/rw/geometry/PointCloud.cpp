@@ -72,6 +72,10 @@ void PointCloud::savePCD(const PointCloud& img, const std::string& filename, con
 }
 
 PointCloud::Ptr PointCloud::loadPCD(const std::string& filename ){
+    //Start by storing the current locale. This is retrieved by passing NULL to setlocale
+    std::string locale = setlocale(LC_ALL, NULL);
+    setlocale( LC_ALL, "C" );
+
     char line[500];
     int width, height, nr_points;
     float version;
@@ -107,5 +111,7 @@ PointCloud::Ptr PointCloud::loadPCD(const std::string& filename ){
         sscanf(line, "%f %f %f", &p[0], &p[1], &p[2]);
         img->getData()[i] = p;
     }
+
+    setlocale( LC_ALL, locale.c_str());
     return img;
 }
