@@ -214,17 +214,20 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         integers[7] = cmd._speed*10000;
 		_isMoving = true;
 		break;
-	case URScriptCommand::SERVOQ: 
+	case URScriptCommand::SERVOQ:
+	{
 		// make sure that q is not too big... eg. it should be reachable within 0.008 seconds
 		const double vel_limit = 100*Deg2Rad;
 		double fastest_joint = cmd._q.normInf()/0.008; // in radians per second
+		rw::math::Q q = cmd._q;
 		if(fastest_joint>vel_limit)
-			cmd._q = cmd._q*(vel_limit/fastest_joint);
+			q = cmd._q*(vel_limit/fastest_joint);
 
-        q2intVector(cmd._q, integers, 1);
+        q2intVector(q, integers, 1);
 		_isMoving = true;
         _isServoing = true;
-		break;	
+	}
+	break;
 	case URScriptCommand::FORCE_MODE_START:
 		std::cout<<"Force Mode Start"<<std::endl;
 		integers.resize(26);
