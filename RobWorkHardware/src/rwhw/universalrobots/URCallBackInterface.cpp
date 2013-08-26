@@ -218,12 +218,12 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 	{
 		// make sure that q is not too big... eg. it should be reachable within 0.008 seconds
 		const double vel_limit = 100*Deg2Rad;
-		double fastest_joint = cmd._q.normInf()/0.008; // in radians per second
-		rw::math::Q q = cmd._q;
+		rw::math::Q currentQ = _urPrimary.getLastData().jointPosition;
+		rw::math::Q q_diff = cmd._q-currentQ;
+		double fastest_joint = q_diff.normInf()/0.008; // in radians per second
 		if(fastest_joint>vel_limit)
-			q = cmd._q*(vel_limit/fastest_joint);
-
-        q2intVector(q, integers, 1);
+			q_diff = q_diff*(vel_limit/fastest_joint);
+        q2intVector(currentQ+q_diff, integers, 1);
 		_isMoving = true;
         _isServoing = true;
 	}
