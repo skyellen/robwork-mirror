@@ -162,6 +162,8 @@ int main(int argumentCount, char** argumentArray) {
 	if (workCell->getCalibrationFilename() != "") {
 		WorkCellCalibration::Ptr workcellCalibration = XmlCalibrationLoader::load(workCell, workCell->getFilePath() + workCell->getCalibrationFilename());
 		workcellCalibration->apply();
+
+		
 	}
 
 
@@ -190,6 +192,8 @@ int main(int argumentCount, char** argumentArray) {
 	}
 	std::cout << "Found [ " << referenceFrame->getName() << " ]." << std::endl;
 
+	
+
 	// Find measurement frame.
 	std::string measurementFrameName = optionParser.getMeasurementFrameName();
 	std::cout << "Finding measurement frame [ " << measurementFrameName << " ].. ";
@@ -200,6 +204,9 @@ int main(int argumentCount, char** argumentArray) {
 		return -1;
 	}
 	std::cout << "Found [ " << measurementFrame->getName() << " ]." << std::endl;
+
+
+	std::cout<<device->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(device->getBase(), referenceFrame.get(), workCell->getDefaultState())<<std::endl;
 
 	// Load robot pose measurements from file.
 	std::string measurementFilePath = optionParser.getMeasurementFilePath();
@@ -327,6 +334,8 @@ int main(int argumentCount, char** argumentArray) {
 			printMeasurements(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration);
 		printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, false);
 	}
+
+
 
 	/*std::cout<<"Calibration before loading: "<<std::endl<<workcellCalibration<<std::endl;
 	std::string calibrationFilePath = optionParser.getCalibrationFilePath();
@@ -576,10 +585,11 @@ void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& mea
 		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
 		workcellCalibration->apply();
 		const rw::math::Transform3D<> tfmCalibratedModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
+	//	std::cout<<"Calibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
 		workcellCalibration->revert();
 		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
 		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
-
+//		std::cout<<"UnCalibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
 		distances(measurementIndex) = tfmError.P().norm2(), calibratedDistances(measurementIndex) = tfmCalibratedError.P().norm2();
 		angles(measurementIndex) = rw::math::EAA<>(tfmError.R()).angle(), calibratedAngles(measurementIndex) = rw::math::EAA<>(tfmCalibratedError.R()).angle();
 	}
