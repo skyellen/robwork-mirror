@@ -23,7 +23,7 @@ class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double
 BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//_CrtSetDbgFlag(0);
 
-	const std::string testFilesPath = testFilePath();
+	const std::string testFilesPath = testFilePath(); 
 	BOOST_REQUIRE(!testFilesPath.empty());
 
 	const std::string workCellFilePath(testFilesPath + "calibration/Scene/SomeScene.wc.xml");
@@ -48,10 +48,10 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	BOOST_REQUIRE(!measurementFrame.isNull());
 
 	// Find existing calibration.
-	SerialDeviceCalibration::Ptr serialDeviceCalibrationExisting = SerialDeviceCalibration::get(serialDevice);
+	WorkCellCalibration::Ptr workCellCalibrationExisting = WorkCellCalibration::get(serialDevice);
 	//BOOST_CHECK(!serialDeviceCalibrationExisting.isNull());
-	if (!serialDeviceCalibrationExisting.isNull())
-		serialDeviceCalibrationExisting->revert();
+	if (!workCellCalibrationExisting.isNull())
+		workCellCalibrationExisting->revert();
 
 	// Setup artificial calibration.
 	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1;
@@ -59,25 +59,25 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
-	SerialDeviceCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice, encoderCorrectionFunctions)));
-	artificialCalibration->getBaseCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
-	artificialCalibration->getEndCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
-	CompositeCalibration<DHLinkCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
+	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, referenceFrame.get(), encoderCorrectionFunctions)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
 	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
-		DHLinkCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
+		ParallelAxisDHCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
-		if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_A) = 0.3 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_B).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_B) = -0.2 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_D).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_D) = -0.1 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_ALPHA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad;
-		if (parameterSet(DHLinkCalibration::PARAMETER_BETA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
-		if (parameterSet(DHLinkCalibration::PARAMETER_THETA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_A).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_A) = 0.3 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_B).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_B) = -0.2 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_D) = -0.1 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	artificialCalibration->revert();
 
 	// Initialize calibration, jacobian and calibrator.
-	SerialDeviceCalibration::Ptr calibration(rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice, encoderCorrectionFunctions)));
-	SerialDeviceJacobian::Ptr jacobian(rw::common::ownedPtr(new SerialDeviceJacobian(calibration)));
-	SerialDeviceCalibrator::Ptr calibrator(rw::common::ownedPtr(new SerialDeviceCalibrator(serialDevice, referenceFrame, measurementFrame, calibration, jacobian)));
+	WorkCellCalibration::Ptr calibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, referenceFrame.get(), encoderCorrectionFunctions)));
+	WorkCellJacobian::Ptr jacobian(rw::common::ownedPtr(new WorkCellJacobian(calibration)));
+	WorkCellCalibrator::Ptr calibrator(rw::common::ownedPtr(new WorkCellCalibrator(serialDevice, referenceFrame, measurementFrame, calibration, jacobian)));
 	calibrator->setMeasurements(measurements);
 
 	try {
@@ -116,28 +116,28 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	BOOST_CHECK_EQUAL(iterationCount, 6);
 
 	// Verify that the calibration match the artificial calibration.
-	FixedFrameCalibration::Ptr baseCalibration = calibration->getBaseCalibration();
+	FixedFrameCalibration::Ptr baseCalibration = calibration->getFixedFrameCalibrations()->getCalibration(0);
 	if (baseCalibration->isEnabled()) {
-		const rw::math::Transform3D<> artificialBaseCorrectionTransform = artificialCalibration->getBaseCalibration()->getCorrectionTransform();
+		const rw::math::Transform3D<> artificialBaseCorrectionTransform = artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->getCorrectionTransform();
 		const rw::math::Transform3D<> baseCorrectionTransform = baseCalibration->getCorrectionTransform();
 		double baseDistanceError = (artificialBaseCorrectionTransform.P() - baseCorrectionTransform.P()).norm2();
 		BOOST_CHECK_SMALL(baseDistanceError, 10e-5);
 		double baseAngleError = rw::math::EAA<>(artificialBaseCorrectionTransform.R() * rw::math::inverse(baseCorrectionTransform.R())).angle();
 		BOOST_CHECK_SMALL(baseAngleError, 10e-5);
 	}
-	FixedFrameCalibration::Ptr endCalibration = calibration->getEndCalibration();
+	FixedFrameCalibration::Ptr endCalibration = calibration->getFixedFrameCalibrations()->getCalibration(1);
 	if (endCalibration->isEnabled()) {
-		const rw::math::Transform3D<> artificialEndCorrectionTransform = artificialCalibration->getEndCalibration()->getCorrectionTransform();
+		const rw::math::Transform3D<> artificialEndCorrectionTransform = endCalibration->getCorrectionTransform();
 		const rw::math::Transform3D<> endCorrectionTransform = endCalibration->getCorrectionTransform();
 		double endDistanceError = (artificialEndCorrectionTransform.P() - endCorrectionTransform.P()).norm2();
 		BOOST_CHECK_SMALL(endDistanceError, 10e-5);
 		double endAngleError = rw::math::EAA<>(artificialEndCorrectionTransform.R() * rw::math::inverse(endCorrectionTransform.R())).angle();
 		BOOST_CHECK_SMALL(endAngleError, 10e-5);
 	}
-	CompositeCalibration<DHLinkCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
 		for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
-			DHLinkCalibration::Ptr calibration = compositeLinkCalibration->getCalibration(calibrationIndex);
+			ParallelAxisDHCalibration::Ptr calibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
 				const CalibrationParameterSet artificialParameterSet = artificialCompositeLinkCalibration->getCalibration(calibrationIndex)->getParameterSet();
@@ -183,17 +183,17 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	calibration->revert();
 
 	//XmlCalibrationSaver::save(calibration, calibrationFilePath);
-	XmlCalibrationSaver::save(*calibration, std::string("SomeCalibration.xml"));
-	SerialDeviceCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell->getStateStructure(), serialDevice, "SomeCalibration.xml");
+	XmlCalibrationSaver::save(calibration, std::string("SomeCalibration.xml"));
+	WorkCellCalibration::Ptr calibrationLoaded = XmlCalibrationLoader::load(workCell, "SomeCalibration.xml");
 	//SerialDeviceCalibration::Ptr calibrationLoaded = calibration;
 	calibrationLoaded->apply();
 
 	// Verify that the loaded calibration match the artificial calibration.
-	BOOST_CHECK(toEigen(calibrationLoaded->getBaseCalibration()->getCorrectionTransform()).isApprox(
-			toEigen(artificialCalibration->getBaseCalibration()->getCorrectionTransform()), 10e-5));
-	BOOST_CHECK(toEigen(calibrationLoaded->getEndCalibration()->getCorrectionTransform()).isApprox(
-			toEigen(artificialCalibration->getEndCalibration()->getCorrectionTransform()), 10e-5));
-	CompositeCalibration<DHLinkCalibration>::Ptr internalLinkCalibrationsLoaded =
+	BOOST_CHECK(toEigen(calibrationLoaded->getFixedFrameCalibrations()->getCalibration(0)->getCorrectionTransform()).isApprox(
+			toEigen(artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->getCorrectionTransform()), 10e-5));
+	BOOST_CHECK(toEigen(calibrationLoaded->getFixedFrameCalibrations()->getCalibration(1)->getCorrectionTransform()).isApprox(
+			toEigen(artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->getCorrectionTransform()), 10e-5));
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr internalLinkCalibrationsLoaded =
 			calibrationLoaded->getCompositeLinkCalibration();
 	for (unsigned int calibrationIndex = 0; calibrationIndex < internalLinkCalibrationsLoaded->getCalibrationCount(); calibrationIndex++){
 		for (int parameterIndex = 0; parameterIndex < 4; parameterIndex++){
