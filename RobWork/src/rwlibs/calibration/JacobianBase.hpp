@@ -22,7 +22,7 @@ class JacobianBase: public Jacobian {
 public:
 	typedef rw::common::Ptr<JacobianBase> Ptr;
 
-	/**
+	/** 
 	 * @brief Destructor.
 	 */
 	virtual ~JacobianBase();

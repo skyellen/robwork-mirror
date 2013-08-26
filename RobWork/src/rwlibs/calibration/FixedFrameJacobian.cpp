@@ -32,8 +32,8 @@ namespace rwlibs {
 				const Eigen::Affine3d correctionTransform = toEigen( _calibration->getCorrectionTransform() );
 				
 				const rw::kinematics::Frame* correctionFrame = _fixedFrame.get();
-				std::cout<<"Correction Frame = "<<_fixedFrame->getName()<<std::endl;
-				std::cout<<"Ref = "<<referenceFrame->getName()<<std::endl;
+				//std::cout<<"Correction Frame = "<<_fixedFrame->getName()<<std::endl;
+				//std::cout<<"Ref = "<<referenceFrame->getName()<<std::endl;
 				Eigen::Affine3d refTcorrection = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), correctionFrame, state) );
 				refTcorrection = refTcorrection * correctionTransform.inverse();
 				Eigen::Affine3d correction2target = toEigen( rw::kinematics::Kinematics::frameTframe(correctionFrame, targetFrame.get(), state));

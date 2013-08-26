@@ -28,7 +28,7 @@ namespace rwlibs {
 
 			/**
 			* @brief Destructor.
-			*/
+			*/ 
 			virtual ~Calibration();
 
 			virtual bool isEnabled() const = 0;

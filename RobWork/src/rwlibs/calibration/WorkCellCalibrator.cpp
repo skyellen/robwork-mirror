@@ -105,7 +105,7 @@ namespace rwlibs {
 					}
 				}
 				//std::cout<<"Residuals: "<<stackedResiduals.norm()<<std::endl;
-				std::cout<<"Residuals Vector Length = "<<stackedResiduals.size()<<std::endl;
+				//std::cout<<"Residuals Vector Length = "<<stackedResiduals.size()<<std::endl;
 				//std::cout<<"Residuals: "<<stackedResiduals<<std::endl;
 				//std::cout<<"Press enter to continue..."<<std::endl;
 				//char ch[4];

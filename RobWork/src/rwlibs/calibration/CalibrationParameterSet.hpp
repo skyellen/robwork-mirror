@@ -33,9 +33,13 @@ namespace rwlibs {
 
 			const CalibrationParameter& operator ()(int parameterIndex) const;
 
+			friend std::ostream& operator<<(std::ostream& out, const CalibrationParameterSet& set);	
+
 		private:
 			Eigen::Matrix<CalibrationParameter, Eigen::Dynamic, 1> _parameters;
 		};
+
+		
 
 		/*@}*/
 	}

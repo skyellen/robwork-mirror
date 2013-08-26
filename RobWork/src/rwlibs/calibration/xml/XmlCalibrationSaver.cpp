@@ -111,7 +111,7 @@ void createDOMDocument(DOMElem::Ptr rootDoc, WorkCellCalibration::Ptr calibratio
 	ElementCreator creator(rootElement);
 
 	CompositeCalibration<FixedFrameCalibration>::Ptr fixedFrameCalibrations = calibration->getFixedFrameCalibrations();
-	for (size_t i = 0; i<fixedFrameCalibrations->getCalibrationCount(); i++) {
+	for (int i = 0; i<fixedFrameCalibrations->getCalibrationCount(); i++) {
 		FixedFrameCalibration::Ptr ffc = fixedFrameCalibrations->getCalibration(i);
 		DOMElem::Ptr element = rootElement->addChild("FixedFrameCalibration");
 		creator.createElement<FixedFrameCalibration::Ptr>(ffc, element);

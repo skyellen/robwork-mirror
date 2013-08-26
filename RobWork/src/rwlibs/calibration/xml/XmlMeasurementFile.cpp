@@ -64,7 +64,7 @@ namespace {
 		if( element->hasChild("CovarianceMatrix") ){
 			DOMElem::Ptr elmMatrix = element->getChild("CovarianceMatrix");
 			covariance = DOMBasisTypes::readMatrix(elmMatrix);
-		}
+		} 
 
 		return SerialDevicePoseMeasurement(q, transform, covariance);
 	}

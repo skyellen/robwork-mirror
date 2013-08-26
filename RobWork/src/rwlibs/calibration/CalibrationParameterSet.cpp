@@ -47,5 +47,16 @@ namespace rwlibs {
 			return getParameter(parameterIndex);
 		}
 
+		std::ostream& operator<<(std::ostream& out, const CalibrationParameterSet& set) {
+			out<<"Calibration Parameter Set: "<<std::endl;
+			for (int i = 0; i<set.getCount(); i++) {
+				out<<"\t"<<set.getParameter(i).getValue()<<" enabled: "<<set.getParameter(i).isEnabled();
+				if (i != set.getCount()-1)
+					out<<std::endl;
+			}
+			return out;
+		}
+
+
 	}
 }

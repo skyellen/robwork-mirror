@@ -68,7 +68,7 @@ namespace rwlibs {
 			parameterSet(PARAMETER_PITCH) = rpy(1);
 			parameterSet(PARAMETER_YAW) = rpy(2);
 			setParameterSet(parameterSet);
-		}
+		} 
 
 		void FixedFrameCalibration::doApply() {
 			RW_ASSERT(!_frame.isNull());
@@ -84,3 +84,4 @@ namespace rwlibs {
 		}
 	}
 }
+  

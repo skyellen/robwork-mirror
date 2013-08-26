@@ -53,6 +53,7 @@ namespace rwlibs {
 			const rw::models::DHParameterSet correctedSet(alpha, a, beta, b, true);
 			rw::models::DHParameterSet::set(correctedSet, _joint.get());
 			const rw::math::Transform3D<> correctedTransform = computeTransform(correctedSet);
+			std::cout<<"OriginalTransform = "<<_originalTransform<<std::endl;
 			_joint->setFixedTransform(_originalTransform*correctedTransform);			 
 		}
 

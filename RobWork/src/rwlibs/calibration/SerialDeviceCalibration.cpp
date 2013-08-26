@@ -35,7 +35,7 @@ SerialDeviceCalibration::SerialDeviceCalibration(rw::models::SerialDevice::Ptr d
 		if (jointIterator != joints.begin()) {
 			DHLinkCalibration::Ptr linkCalibration = rw::common::ownedPtr(new DHLinkCalibration(joint));
 			_compositeLinkCalibration->addCalibration(linkCalibration);
-
+			 
 			// Disable d and theta for first link.
 			if (jointIterator == ++(joints.begin())) {
 				CalibrationParameterSet parameterSet = linkCalibration->getParameterSet();

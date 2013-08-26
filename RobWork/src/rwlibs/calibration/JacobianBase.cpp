@@ -79,6 +79,7 @@ namespace rwlibs {
 					parameterSet(parameterIndex) += step(parameterIndex);
 				}
 			}
+			std::cout<<"New Parameter Ste = "<<parameterSet<<std::endl;
 			_calibration->setParameterSet(parameterSet);
 		}
 
