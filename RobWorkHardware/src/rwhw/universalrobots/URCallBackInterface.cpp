@@ -215,6 +215,12 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
 		_isMoving = true;
 		break;
 	case URScriptCommand::SERVOQ: 
+		// make sure that q is not too big... eg. it should be reachable within 0.008 seconds
+		const double vel_limit = 100*Deg2Rad;
+		double fastest_joint = cmd._q.normInf()/0.008; // in radians per second
+		if(fastest_joint>vel_limit)
+			cmd._q = cmd._q*(vel_limit/fastest_joint);
+
         q2intVector(cmd._q, integers, 1);
 		_isMoving = true;
         _isServoing = true;
@@ -242,14 +248,14 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         break;
 	}
 	URCommon::send(&socket, integers);
-	std::cout<<"Sends: "<<std::endl;
-	BOOST_FOREACH(int i, integers) {
-		std::cout<<i<<" "<<std::endl;
-	}
+	//std::cout<<"Sends: "<<std::endl;
+	//BOOST_FOREACH(int i, integers) {
+	//	std::cout<<i<<" "<<std::endl;
+	//}
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
       _commands.pop();
-        std::cout<<"Pops commands"<<std::endl;
+      //std::cout<<"Pops commands"<<std::endl;
     }
 }
 
@@ -326,7 +332,7 @@ void URCallBackInterface::popAllUpdateCommands() {
 }
 
 void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
-	std::cout<<"Received a moveQ to "<<q<<std::endl;
+	//std::cout<<"Received a moveQ to "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
     
     popAllUpdateCommands();
@@ -338,7 +344,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
 }
 
 void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float speed) {
-	std::cout<<"Received a moveT to "<<transform<<std::endl;
+	//std::cout<<"Received a moveT to "<<transform<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
 
     popAllUpdateCommands();
@@ -354,7 +360,7 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 
     size_t n = _commands.size();
     popAllUpdateCommands();
-    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+    //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
     _commands.push(URScriptCommand(URScriptCommand::SERVOQ, q, 1));
     _robotStopped = false;
@@ -367,7 +373,7 @@ void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref
 
 	size_t n = _commands.size();
     popAllUpdateCommands();
-    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+    //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
     _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_START, base2ref, selection, wrench, limits));
     _robotStopped = false;
