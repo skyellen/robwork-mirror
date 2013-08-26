@@ -54,6 +54,17 @@ public:
      */
     void update();
 
+	/**
+	* @brief sets the number of decimal places used for displaying properties of 
+	*	 floats and double
+	* @param decimals
+	*
+	* Note that the update() must be called in order for the changes to take effect
+	*/
+	void setDecimals(const int decimals) {
+		_decimals = decimals;
+	};
+
 signals:
     /**
      * @brief if a property is changed then its identifier is signalled.
@@ -76,6 +87,8 @@ private:
     rw::common::PropertyMap::Ptr _map;
 	std::map<QtProperty*, rw::common::PropertyBase::Ptr > _qtPropToRwProp;
     std::map<QtProperty*, rw::common::Ptr< rw::common::PropertyMap > > _qtPropToRwPropMap;
+
+	int _decimals;
 };
 
 #endif /* PROPERTYVIEWDIALOG_HPP_ */

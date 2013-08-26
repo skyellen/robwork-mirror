@@ -40,6 +40,8 @@ PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(p
     this->setPropertiesWithoutValueMarked(true);
     this->setRootIsDecorated(false);
 
+	_decimals = 3;
+
 }
 
 PropertyViewEditor::~PropertyViewEditor(){
@@ -119,7 +121,7 @@ QtProperty* PropertyViewEditor::update(PropertyMap::Ptr map, std::string propnam
             item->setValue(value);
 
             item->setAttribute(QLatin1String("singleStep"), 0.1);
-            item->setAttribute(QLatin1String("decimals"), 3);
+            item->setAttribute(QLatin1String("decimals"), _decimals);
             topItem->addSubProperty(item);
             break;
         }
@@ -128,7 +130,7 @@ QtProperty* PropertyViewEditor::update(PropertyMap::Ptr map, std::string propnam
             item = _variantManager->addProperty(QVariant::Double, QLatin1String(identifier.c_str()));
             item->setValue(value);
             item->setAttribute(QLatin1String("singleStep"), 0.1);
-            item->setAttribute(QLatin1String("decimals"), 3);
+            item->setAttribute(QLatin1String("decimals"), _decimals);
             topItem->addSubProperty(item);
             break;
         }
