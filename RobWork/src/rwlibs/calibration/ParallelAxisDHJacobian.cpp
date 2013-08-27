@@ -22,8 +22,8 @@ namespace rwlibs {
 		Eigen::MatrixXd ParallelAxisDHJacobian::doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame,
 			const rw::kinematics::State& state) {
 				const CalibrationParameterSet parameterSet = _calibration->getParameterSet();
-				std::cout<<"Reference Frame = "<<referenceFrame->getName()<<" Joint Parent = "<<_joint->getParent(state)->getName()<<std::endl;
-				std::cout<<"Joint = "<<_joint->getName()<<std::endl;
+				//std::cout<<"Reference Frame = "<<referenceFrame->getName()<<" Joint Parent = "<<_joint->getParent(state)->getName()<<std::endl;
+				//std::cout<<"Joint = "<<_joint->getName()<<std::endl;
 				const Eigen::Affine3d tfmToPreLink = toEigen(rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), _joint->getParent(state), state));
 				const Eigen::Affine3d tfmLink = toEigen(_joint->getFixedTransform());
 				const Eigen::Affine3d tfmToPostLink = tfmToPreLink * tfmLink;
@@ -45,9 +45,7 @@ namespace rwlibs {
 					columnIndex++;
 				}
 				if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled()) {
-					std::cout<<"Should not use this case 1"<<std::endl;
-					RW_THROW("THIS CASE IS NOT FIXED WITH RESPECT TO USING PRE OR POST LINK TRANSFORMS");
-					jacobian.block<3, 1>(0, columnIndex) = tfmToPreLink.linear().col(2);
+					jacobian.block<3, 1>(0, columnIndex) = tfmToPostLink.linear().col(2);
 					jacobian.block<3, 1>(3, columnIndex) = Eigen::Vector3d::Zero();
 					columnIndex++;
 				}
@@ -60,16 +58,12 @@ namespace rwlibs {
 				}
 				if (parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).isEnabled()) {
 					const Eigen::Vector3d yAxisToPost = tfmToPostLink.linear().col(1);
-					//const Eigen::Vector3d tlPreToEnd = tfmToEnd.translation() - tfmToPreLink.translation();
 					const Eigen::Vector3d tlPostToEnd = tfmToEnd.translation() - tfmToPostLink.translation();
-					//jacobian.block<3, 1>(0, columnIndex) = yAxisToPre.cross(tlPreToEnd);
 					jacobian.block<3, 1>(0, columnIndex) = yAxisToPost.cross(tlPostToEnd);
 					jacobian.block<3, 1>(3, columnIndex) = yAxisToPost;
 					columnIndex++;
 				}
 				if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled()) {
-					std::cout<<"Should not use this case 2"<<std::endl;
-					RW_THROW("THIS CASE IS NOT CHECKED FOR CORRECT USAGE");
 					const Eigen::Vector3d zAxisToPost = tfmToPostLink.linear().col(2);
 					const Eigen::Vector3d tlPostToEnd = tfmToEnd.translation() - tfmToPostLink.translation();
 					jacobian.block<3, 1>(0, columnIndex) = zAxisToPost.cross(tlPostToEnd);

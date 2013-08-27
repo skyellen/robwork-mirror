@@ -79,6 +79,7 @@ namespace rwlibs {
 					const int rowIndex = 6 * measurementIndex;
 					const rw::math::Transform3D<> tfmMeasurement = measurement.getTransform();
 					//std::cout<<"Measurement = "<<tfmMeasurement<<std::endl;
+					//std::cout<<"Error Reference Frame = "<<_referenceFrame->getName()<<std::endl;
 					const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(_referenceFrame.get(), _measurementFrame.get(), workCellState);
 					//std::cout<<"Model Transform = "<<tfmModel<<std::endl;
 						

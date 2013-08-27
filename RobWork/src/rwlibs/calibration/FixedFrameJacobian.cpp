@@ -34,12 +34,22 @@ namespace rwlibs {
 				const rw::kinematics::Frame* correctionFrame = _fixedFrame.get();
 				//std::cout<<"Correction Frame = "<<_fixedFrame->getName()<<std::endl;
 				//std::cout<<"Ref = "<<referenceFrame->getName()<<std::endl;
+				//Original Equations
 				Eigen::Affine3d refTcorrection = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), correctionFrame, state) );
 				refTcorrection = refTcorrection * correctionTransform.inverse();
 				Eigen::Affine3d correction2target = toEigen( rw::kinematics::Kinematics::frameTframe(correctionFrame, targetFrame.get(), state));
 				Eigen::Matrix3d refRcorrection = refTcorrection.linear();
 				Eigen::Vector3d preToEndTranslation = (refTcorrection * correctionTransform * correction2target).translation() - refTcorrection.translation();
-				
+
+
+				//Updated
+				//Eigen::Affine3d refTcorrection = toEigen( rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), correctionFrame, state) );
+				////refTcorrection = refTcorrection * correctionTransform.inverse();
+				//Eigen::Affine3d correction2target = toEigen( rw::kinematics::Kinematics::frameTframe(correctionFrame, targetFrame.get(), state));
+				//Eigen::Matrix3d refRcorrection = refTcorrection.linear();
+				//Eigen::Vector3d preToEndTranslation = (refTcorrection * correction2target).translation() - refTcorrection.translation();
+
+
 				if (_fixedFrame == referenceFrame) {
 					preToEndTranslation = -preToEndTranslation;
 					refRcorrection *= -1;

@@ -43,7 +43,7 @@ WorkCellCalibration::WorkCellCalibration(rw::models::SerialDevice::Ptr device,
 		rw::models::Joint::Ptr joint = (*jointIterator);
 
 		// Add link calibrations for intermediate links.
-		if (jointIterator != joints.begin()) {
+		if (jointIterator != joints.begin() ) {
 			ParallelAxisDHCalibration::Ptr linkCalibration = rw::common::ownedPtr(new ParallelAxisDHCalibration(joint));
 			_compositeLinkCalibration->addCalibration(linkCalibration);
 
@@ -52,11 +52,11 @@ WorkCellCalibration::WorkCellCalibration(rw::models::SerialDevice::Ptr device,
 				CalibrationParameterSet parameterSet = linkCalibration->getParameterSet();
 				parameterSet(ParallelAxisDHCalibration::PARAMETER_D).setEnabled(false);
 				parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).setEnabled(false);
-				/*parameterSet(ParallelAxisDHCalibration::PARAMETER_A).setEnabled(true);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).setEnabled(false);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_B).setEnabled(true);
+				parameterSet(ParallelAxisDHCalibration::PARAMETER_A).setEnabled(true);
+				parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).setEnabled(true);
+				parameterSet(ParallelAxisDHCalibration::PARAMETER_B).setEnabled(false);
 				parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).setEnabled(false);
-				*/
+				
 				linkCalibration->setParameterSet(parameterSet);
 				//break;
 			}

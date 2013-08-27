@@ -14,14 +14,14 @@
 namespace rwlibs {
 namespace calibration {
 
-const double stepConvergenceTolerance = 1e-14;
+const double stepConvergenceTolerance = 1e-10;
 const int maxIterationCount = 100;
 
 NLLSNewtonSolver::NLLSNewtonSolver(NLLSSystem::Ptr system) :
 		_system(system) {
 
 }
-
+ 
 NLLSNewtonSolver::~NLLSNewtonSolver() {
 
 }
@@ -52,7 +52,7 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 
 	//std::cout<<"Jacobian = "<<_jacobian.rows()<<" "<<_jacobian.cols()<<std::endl;
 	//std::cout<<_jacobian<<std::endl;
-	std::cout<<"Residuals = "<<_residuals<<std::endl;
+	//std::cout<<"Residuals = "<<_residuals<<std::endl;
 	std::cout<<"||Redisuals|| = "<<_residuals.norm()<<std::endl;
 
 	// Compute step (solve Jacobian * step = residuals).
@@ -64,28 +64,31 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 	// Log iteration.	
 	const int iterationNumber = _iterationLogs.size() + 1;
 	const Eigen::VectorXd singularValues = _jacobianSvd.singularValues();
-	const double conditionNumber = singularValues(0) / singularValues(singularValues.rows() - 1);
-	std::cout<<"conditionNumber = "<<conditionNumber<<std::endl;
+	const double conditionNumber = singularValues(singularValues.rows() - 1) / singularValues(0);
+	std::cout<<"ConditionNumber = "<<conditionNumber<<std::endl;
 	const bool isSingular = (singularValues.rows() != _jacobianSvd.nonzeroSingularValues());
 	const double residualNorm = _residuals.norm();
 	const double stepNorm = _step.norm();
-	std::cout<<"Step = "<<_step<<std::endl;
+	//std::cout<<"Step = "<<_step<<std::endl;
 	std::cout<<"Step Size= "<<stepNorm<<std::endl;
 	const bool isConverged = _step.norm() <= stepConvergenceTolerance;
 	NLLSIterationLog iterationLog(iterationNumber, conditionNumber, isSingular, residualNorm, stepNorm, isConverged);
 	_iterationLogs.push_back(iterationLog);
 
-	std::cout<<"Press enter to continue..."<<std::endl;
-	char ch[4];
-	std::cin.getline(ch, 1);
+	//std::cout<<"Press enter to continue..."<<std::endl;
+	//char ch[4];
+	//std::cin.getline(ch, 1);
 
 	// Verify iteration.
 	if (isSingular)
 		RW_THROW("Singular Jacobian.");
+	if (conditionNumber < 1e-9) 
+		RW_THROW("Condition number of "<<conditionNumber<<" indicates a singular set of equations.");
 	if (boost::math::isnan(stepNorm))
 		RW_THROW("NaN step.");
 	if (boost::math::isinf(stepNorm))
 		RW_THROW("Infinite step.");
+	
 
 	return iterationLog;
 }
