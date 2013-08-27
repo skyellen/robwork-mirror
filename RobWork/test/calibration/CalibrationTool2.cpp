@@ -557,8 +557,7 @@ void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measureme
 		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex].getTransform();
 		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
 		workcellCalibration->apply();
-		const rw::math::Transform3D<> tfmCalibratedModel =
-			rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
+		const rw::math::Transform3D<> tfmCalibratedModel =rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
 		workcellCalibration->revert();
 		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
 		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
@@ -566,7 +565,7 @@ void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measureme
 		double distance = tfmError.P().norm2(), calibratedDistance = tfmCalibratedError.P().norm2();
 		double angle = rw::math::EAA<>(tfmError.R()).angle(), calibratedAngle = rw::math::EAA<>(tfmCalibratedError.R()).angle();
 
-		std::cout << "\tMeasurement " << measurementIndex + 1 << ": [ Uncalibrated: " << distance * 1000.0 << " mm / "
+		std::cout << "\tMeasurement " << measurementIndex + 1 <<"Q = "<<measurements[measurementIndex].getQ()<<": [ Uncalibrated: " << distance * 1000.0 << " mm / "
 			<< angle * rw::math::Rad2Deg << " \u00B0 - Calibrated: " << calibratedDistance * 1000.0 << " mm / "
 			<< calibratedAngle * rw::math::Rad2Deg << " \u00B0 ]" << std::endl;
 	}
@@ -584,8 +583,8 @@ void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& mea
 		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex].getTransform();
 		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
 		workcellCalibration->apply();
-		const rw::math::Transform3D<> tfmCalibratedModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-	//	std::cout<<"Calibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
+		const rw::math::Transform3D<> tfmCalibratedModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);		
+		std::cout<<"Calibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
 		workcellCalibration->revert();
 		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
 		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
@@ -603,4 +602,6 @@ void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& mea
 	std::cout << "\tSummary - Calibrated: [ Avg: " << calibratedDistances.mean() * 1000.0 << " mm / " << calibratedAngles.mean() * rw::math::Rad2Deg << " deg - Min: "
 		<< calibratedDistances.minCoeff() * 1000.0 << " mm / " << calibratedAngles.minCoeff() * rw::math::Rad2Deg << " deg - Max: "
 		<< calibratedDistances.maxCoeff() * 1000.0 << " mm / " << calibratedAngles.maxCoeff() * rw::math::Rad2Deg << " deg ]" << std::endl;
+
+	
 }
