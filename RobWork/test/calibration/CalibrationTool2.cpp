@@ -282,8 +282,8 @@ int main(int argumentCount, char** argumentArray) {
 		workcellCalibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(true && isEndCalibrationEnabled);
 		//workcellCalibration->getBaseCalibration()->setEnabled(true && isBaseCalibrationEnabled);
 		///workcellCalibration->getEndCalibration()->setEnabled(true && isEndCalibrationEnabled);
-		workcellCalibration->getCompositeLinkCalibration()->setEnabled(false && isLinkCalibrationEnabled);
-		workcellCalibration->getCompositeJointCalibration()->setEnabled(false && isJointCalibrationEnabled);
+		workcellCalibration->getCompositeLinkCalibration()->setEnabled(true && isLinkCalibrationEnabled);
+		workcellCalibration->getCompositeJointCalibration()->setEnabled(true && isJointCalibrationEnabled);
 
 		printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, true);
 		

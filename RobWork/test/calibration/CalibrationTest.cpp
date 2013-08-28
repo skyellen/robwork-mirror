@@ -21,7 +21,7 @@ class EncoderTauFunction: public rw::math::Function<> { public: virtual double x
 class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
 
 BOOST_AUTO_TEST_CASE( CalibratorTest ) {
-	_CrtSetDbgFlag(0);
+	//_CrtSetDbgFlag(0);
 
 	const std::string testFilesPath = testFilePath(); 
 	BOOST_REQUIRE(!testFilesPath.empty());
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
 	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, referenceFrame.get(), encoderCorrectionFunctions)));
-	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
-	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 1000.0, -8.0 / 1000.0, 9.0 / 1000.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 1000.0, 2.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
 	for (int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 		ParallelAxisDHCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
