@@ -25,20 +25,20 @@ class WorkCellCalibrator {
 public:
 	typedef rw::common::Ptr<WorkCellCalibrator> Ptr;
 
-	WorkCellCalibrator(rw::models::SerialDevice::Ptr device, rw::kinematics::Frame::Ptr referenceFrame,
-			rw::kinematics::Frame::Ptr measurementFrame, Calibration::Ptr calibration, Jacobian::Ptr jacobian);
+	WorkCellCalibrator(rw::models::WorkCell::Ptr workcell,/* rw::kinematics::Frame::Ptr referenceFrame,
+			rw::kinematics::Frame::Ptr measurementFrame, */Calibration::Ptr calibration, Jacobian::Ptr jacobian);
 
 	virtual ~WorkCellCalibrator();
 
-	rw::models::SerialDevice::Ptr getDevice() const;
+	rw::models::WorkCell::Ptr getWorkCell() const;
 
-	rw::kinematics::Frame::Ptr getReferenceFrame() const;
+	//rw::kinematics::Frame::Ptr getReferenceFrame() const;
 
-	void setReferenceFrame(rw::kinematics::Frame::Ptr referenceFrame);
+	//void setReferenceFrame(rw::kinematics::Frame::Ptr referenceFrame);
 
-	rw::kinematics::Frame::Ptr getMeasurementFrame() const;
+	//rw::kinematics::Frame::Ptr getMeasurementFrame() const;
 
-	void setMeasurementFrame(rw::kinematics::Frame::Ptr measurementFrame);
+	//void setMeasurementFrame(rw::kinematics::Frame::Ptr measurementFrame);
 
 	unsigned int getMinimumMeasurementCount() const;
 
@@ -66,9 +66,9 @@ public:
 	NLLSSolver::Ptr getSolver() const;
 
 private:
-	rw::models::SerialDevice::Ptr _device;
-	rw::kinematics::Frame::Ptr _referenceFrame;
-	rw::kinematics::Frame::Ptr _measurementFrame;
+	rw::models::WorkCell::Ptr _workcell;
+	//rw::kinematics::Frame::Ptr _referenceFrame;
+	//rw::kinematics::Frame::Ptr _measurementFrame;
 	std::vector<SerialDevicePoseMeasurement> _measurements;
 	Calibration::Ptr _calibration;
 	Jacobian::Ptr _jacobian;

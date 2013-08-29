@@ -12,23 +12,29 @@
 namespace rwlibs {
 namespace calibration {
 
+
+using namespace rw::math;
 using namespace rw::common;
+using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rwlibs::calibration;
 
 
-WorkCellCalibration::WorkCellCalibration(rw::models::SerialDevice::Ptr device,
-										 rw::kinematics::Frame* sensorFrame,
-										 const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions) 
+WorkCellCalibration::WorkCellCalibration(SerialDevice::Ptr device,
+										 const std::vector<Frame*>& sensorFrames,
+										 const std::vector<Function<>::Ptr>& encoderCorrectionFunctions) 
 										 //:	_device(device)
 {
 	//The calibration of the moving frame. Typically the camera frame, but could also be other frames.
-	if (dynamic_cast<FixedFrame*>(sensorFrame) == NULL) {
-		RW_THROW("The frame '"<<sensorFrame->getName()<<"' is not a FixedFrame as required by the calibration.");
-	}
 	_fixedFrameCalibrations = ownedPtr(new CompositeCalibration<FixedFrameCalibration>());
-	FixedFrameCalibration::Ptr sensorFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(sensorFrame).cast<rw::kinematics::FixedFrame>()));
-	_fixedFrameCalibrations->addCalibration(sensorFrameCalibration);
+	BOOST_FOREACH(Frame* sensorFrame, sensorFrames) {
+		if (dynamic_cast<FixedFrame*>(sensorFrame) == NULL) {
+			RW_THROW("The frame '"<<sensorFrame->getName()<<"' is not a FixedFrame as required by the calibration.");
+		}
+
+		FixedFrameCalibration::Ptr sensorFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(sensorFrame).cast<rw::kinematics::FixedFrame>()));
+		_fixedFrameCalibrations->addCalibration(sensorFrameCalibration);
+	}
 	//_movingFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(movingFrame, true));
 
 	FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getEnd()).cast<rw::kinematics::FixedFrame>()));

@@ -34,6 +34,8 @@ protected:
 private:
 	FixedFrameCalibration::Ptr _calibration;
 	rw::kinematics::FixedFrame::Ptr _fixedFrame;	
+
+	bool inKinematicChain(rw::kinematics::Frame* start, rw::kinematics::Frame* end);
 };
 
 }

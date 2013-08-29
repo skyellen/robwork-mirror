@@ -54,13 +54,13 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 	//std::cout<<_jacobian<<std::endl;
 	//std::cout<<"Residuals = "<<_residuals<<std::endl;
 	std::cout<<"||Redisuals|| = "<<_residuals.norm()<<std::endl;
-
+	 
 	// Compute step (solve Jacobian * step = residuals).
 	_step = _jacobianSvd.solve(-_residuals);
 	//std::cout<<"ParameterCount = "<<_step.size()<<std::endl;
 	// Apply step.
 	_system->takeStep(_step);
-	
+	 
 	// Log iteration.	
 	const int iterationNumber = _iterationLogs.size() + 1;
 	const Eigen::VectorXd singularValues = _jacobianSvd.singularValues();
@@ -103,7 +103,7 @@ void NLLSNewtonSolver::solve() {
 		//	<< iterationLog.getStepNorm() << "." << std::endl;
 
 		// Stop iterating if converged.
-		if (iterationLog.isConverged())
+		if (iterationLog.isConverged() )
 			break;
 
 		// Throw exception if iteration limit has been reached.

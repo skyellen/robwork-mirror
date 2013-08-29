@@ -42,6 +42,8 @@ namespace rwlibs {
 					const rw::math::Q q = measurement.getQ();
 					_device->setQ(q, workCellState);
 
+					
+
 					// Compute Jacobian.
 					const int rowIndex = 6 * measurementIndex;
 					stackedJacobians.block(rowIndex, 0, 6, columnCount) = _jacobian->computeJacobian(_referenceFrame, _measurementFrame, workCellState);
