@@ -3,6 +3,7 @@
 #include <rw/loaders.hpp>
 #include <rwlibs/calibration.hpp>
 
+using namespace rw::kinematics;
 using namespace rwlibs::calibration;
 
 class CalibrationOptionParser {
@@ -213,6 +214,12 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout << "Loading measurements [ " << measurementFilePath << " ].. ";
 	std::cout.flush();
 	std::vector<SerialDevicePoseMeasurement> measurements = XmlMeasurementFile::load(measurementFilePath);
+	BOOST_FOREACH(SerialDevicePoseMeasurement& measurement, measurements) {
+		measurement.setDeviceName(deviceName);
+		measurement.setMarkerFrameName(measurementFrameName);
+		measurement.setSensorFrameName(referenceFrameName);
+	}
+
 	const int measurementCount = measurements.size();
 	const int validationMeasurementCount = (int)std::floor((double) measurementCount * optionParser.getValidationMeasurementPercentage());
 	const int calibrationMeasurementCount = measurementCount - validationMeasurementCount;
@@ -254,7 +261,9 @@ int main(int argumentCount, char** argumentArray) {
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
 
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
-	WorkCellCalibration::Ptr workcellCalibration = rw::common::ownedPtr(new WorkCellCalibration(serialDevice, referenceFrame.get(), encoderCorrectionFunctions));
+	std::vector<rw::kinematics::Frame*> sensorFrames;
+	sensorFrames.push_back(referenceFrame.get());
+	WorkCellCalibration::Ptr workcellCalibration = rw::common::ownedPtr(new WorkCellCalibration(serialDevice, sensorFrames, encoderCorrectionFunctions));
 	std::cout << "Initialized." << std::endl;
 
 	std::cout << "Initializing jacobian.. ";
@@ -265,11 +274,11 @@ int main(int argumentCount, char** argumentArray) {
 	bool isWeightingMeasurements = optionParser.isWeightingMeasurements();
 	std::cout << "Initializing calibrator [ Weighting: " << (isWeightingMeasurements ? "Enabled" : "Disabled") << " ].. ";
 	std::cout.flush();
-	WorkCellCalibrator::Ptr workcellCalibrator = rw::common::ownedPtr(new WorkCellCalibrator(serialDevice, referenceFrame.get(), measurementFrame, workcellCalibration, workcellJacobian));
+	WorkCellCalibrator::Ptr workcellCalibrator = rw::common::ownedPtr(new WorkCellCalibrator(workCell, workcellCalibration, workcellJacobian));
 	workcellCalibrator->setMeasurements(calibrationMeasurements);
 	workcellCalibrator->setWeightingMeasurements(isWeightingMeasurements);
 	std::cout << "Initialized." << std::endl;
-	 
+	  
 	try {
 		// Run calibrator.
 		bool isBaseCalibrationEnabled = optionParser.isBaseCalibrationEnabled();
@@ -284,14 +293,14 @@ int main(int argumentCount, char** argumentArray) {
 		///workcellCalibration->getEndCalibration()->setEnabled(true && isEndCalibrationEnabled);
 		workcellCalibration->getCompositeLinkCalibration()->setEnabled(false && isLinkCalibrationEnabled);
 		workcellCalibration->getCompositeJointCalibration()->setEnabled(false && isJointCalibrationEnabled);
-
+		 
 		printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState, workcellCalibration, true);
 		
 		std::cout<<"Check that the errors are in the range that are expected."<<std::endl;
 		std::cout<<"Press enter to continue..."<<std::endl;
 		char ch[4];
 		std::cin.getline(ch, 1); 
-
+		  
 
 		workcellCalibrator->calibrate(workCellState);
 		const int iterationCount = workcellCalibrator->getSolver()->getIterationCount();

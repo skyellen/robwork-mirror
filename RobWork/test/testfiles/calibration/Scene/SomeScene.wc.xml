@@ -12,9 +12,14 @@
 <Include file="SomeDevice.xml" />
 </SerialDevice>
 
-<Frame name="SomeSensorFrame" refframe="ArmBase" type="Movable">
+<Frame name="SomeSensorFrame1" refframe="ArmBase">
 	<RPY>0 0 180</RPY>
-	<Pos>-0.06 0 0</Pos>
+	<Pos>-0.6 0 1</Pos>
+</Frame>
+
+<Frame name="SomeSensorFrame2" refframe="ArmBase">
+	<RPY>0 0 180</RPY>
+	<Pos>0.6 0 1</Pos>
 </Frame>
 
 </WorkCell>

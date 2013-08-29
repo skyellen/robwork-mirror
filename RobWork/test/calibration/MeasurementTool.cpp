@@ -31,7 +31,7 @@ class EncoderSigmaFunction: public rw::math::Function<> {
 	public: virtual double x(double q) { return -cos(q); };
 };
 
-
+ 
 int main(int argumentCount, char** arguments) {
 	if (int parseResult = parseArguments(argumentCount, arguments) < 1)
 		return parseResult;
