@@ -35,24 +35,41 @@ MACRO(RW_SYS_INFO INFO)
     	SET(ARCH "amd64")
     ENDIF()
     
+#rehat: /etc/redhat-release
+#Slackware: /etc/slackware-version
+#Slamd64:   /etc/slamd64-version
+#Fedora:    /etc/fedora-
+    
     IF(UNIX)
         IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-            SET(SUFFIX "mac-${ARCH}")
+            SET(SUFFIX "mac-${ARCH}_${RW_BUILD_TYPE}")
         ELSE()
-            #EXECUTE_PROCESS(COMMAND cat /etc/issue OUTPUT_VARIABLE SUFFIX)
-            EXECUTE_PROCESS(COMMAND cat /etc/lsb-release OUTPUT_VARIABLE SUFFIX)
-            STRING( REGEX MATCHALL "\".+\"" SUFFIX ${SUFFIX} )
+            IF(EXISTS "/etc/lsb-release")
+                EXECUTE_PROCESS(COMMAND cat /etc/lsb-release OUTPUT_VARIABLE SUFFIX)
+                STRING( REGEX MATCHALL "\".+\"" SUFFIX ${SUFFIX} )            
+                # this will add kernel version eg Linux_3.0....
+                SET(SUFFIX "${SUFFIX}_${ARCH}_${RW_BUILD_TYPE}")
+                STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
+                STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
             
-            # this will add kernel version eg Linux_3.0....
-            #EXECUTE_PROCESS(COMMAND uname  -r OUTPUT_VARIABLE KERNEL_VERSION)
-            #SET(SUFFIX "${SUFFIX}_${KERNEL_VERSION}")
-            SET(SUFFIX "${SUFFIX}_${ARCH}_${RW_BUILD_TYPE}")
-            STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
-            STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
-        
-            # this will make it lowercase        
-            #STRING(TOLOWER "${SUFFIX}" SUFFIX)
-            #MESSAGE("${SUFFIX}")
+            ELSEIF(EXISTS "/etc/os-release")
+                EXECUTE_PROCESS(COMMAND cat /etc/os-release OUTPUT_VARIABLE SUFFIX)
+                STRING( REGEX MATCHALL "ID=\".+\"" SUFFIX1 ${SUFFIX} )
+                STRING( REGEX MATCHALL "VERSION_ID=\".+\"" SUFFIX2 ${SUFFIX} )
+                # this will add kernel version eg Linux_3.0....
+                SET(SUFFIX "${SUFFIX1}-${SUFFIX2}-${ARCH}_${RW_BUILD_TYPE}")
+                STRING( REPLACE "\"" "" SUFFIX ${SUFFIX} )
+                STRING( REPLACE " " "_" SUFFIX ${SUFFIX} )
+            ELSEIF(EXISTS "/etc/redhat-release")
+                SET(SUFFIX "redhat-${ARCH}_${RW_BUILD_TYPE}")
+            ELSEIF(EXISTS "/etc/slackware-version")
+                SET(SUFFIX "slackware-${ARCH}_${RW_BUILD_TYPE}")
+            ELSEIF(EXISTS "/etc/fedora-release")
+                SET(SUFFIX "fedora-${ARCH}_${RW_BUILD_TYPE}")
+            ELSE( )
+                # this will make it lowercase
+                SET(SUFFIX "linux-${ARCH}")
+            ENDIF()
         ENDIF()
     ELSEIF(MINGW)
     	SET(SUFFIX "windows-mingw-${ARCH}")
