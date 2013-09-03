@@ -61,6 +61,7 @@ namespace {
             const rw::math::Transform3D<>& fTA, const TreeDistanceCalc::BVTree& cmA,
             const rw::math::Transform3D<>& fTB, const TreeDistanceCalc::BVTree& cmB)
         {
+			RW_THROW("Not implemented correctly");
             using namespace rw::geometry;
             using namespace rw::math;
 
@@ -113,6 +114,7 @@ namespace {
                     push( BVJob(job.treeB.right(), job.treeA, !job.isAfromA) );
                 }
             }
+			return 0;
             //return incollision;
         }
 
