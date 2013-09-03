@@ -40,12 +40,12 @@ namespace {
         struct BVJob;
 
     public:
-        typedef typename BinaryBVTree<rw::geometry::OBB<>, rw::geometry::Triangle<> >::NodeIterator NodeIterator;
+        typedef BinaryBVTree<rw::geometry::OBB<>, rw::geometry::Triangle<> >::NodeIterator NodeIterator;
         //typedef ::rw::Traits<BinaryBVTree<rw::geometry::OBB<>, rw::geometry::Triangle<> > >::NodeIterator NodeIterator;
-        typedef typename ::rw::Traits<TreeDistanceCalc::BVTree>::BVType BVType;
-        typedef typename ::rw::Traits<TreeDistanceCalc::BVTree>::PRIMType PRIMType;
-        typedef typename ::rw::Traits<BVType>::value_type value_type;
-        typedef typename ::rw::Traits<BVType>::value_type T;
+        typedef ::rw::Traits<TreeDistanceCalc::BVTree>::BVType BVType;
+        typedef ::rw::Traits<TreeDistanceCalc::BVTree>::PRIMType PRIMType;
+        typedef ::rw::Traits<BVType>::value_type value_type;
+        typedef ::rw::Traits<BVType>::value_type T;
 
 
 
