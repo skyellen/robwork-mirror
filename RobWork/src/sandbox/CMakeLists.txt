@@ -70,6 +70,10 @@ SET(SRC_FILES
     
     #WrenchMeasure3D.cpp
     #ClarkHullND.cpp
+    
+    csg/csgjs.cpp
+    csg/CSGConvert.cpp
+    csg/CSGModel.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -87,6 +91,10 @@ SET(SRC_FILES_HPP
     WrenchMeasure3D.hpp
     calibration/EncoderDecentralization.hpp
     calibration/BFGS.hpp
+    
+    csg/csgjs.cpp
+    csg/CSGConvert.hpp
+    csg/CSGModel.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
