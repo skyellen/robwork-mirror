@@ -59,27 +59,27 @@ void TimerUtil::sleepUs(int period)
 #endif
 }
 
-long TimerUtil::currentTimeMs()
+long long TimerUtil::currentTimeMs()
 {
 #ifdef _WIN32
-    return (long) (clock()*((double)1e3/(double)CLOCKS_PER_SEC));
+    return (long long) (clock()*((double)1e3/(double)CLOCKS_PER_SEC));
 #else
     timeval current;
 
     gettimeofday(&current, 0);
-    return current.tv_sec * 1000L + current.tv_usec / 1000L;
+    return (long long)current.tv_sec * 1000L + current.tv_usec / 1000L;
 
 #endif
 }
 
-long TimerUtil::currentTimeUs()
+long long TimerUtil::currentTimeUs()
 {
 #ifdef _WIN32
-	return (long) ( clock()*((double)1e6)/((double)CLOCKS_PER_SEC)); 
+	return (long long) ( clock()*((double)1e6)/((double)CLOCKS_PER_SEC)); 
 #else
     timeval current;
 
     gettimeofday(&current, 0);
-    return current.tv_sec * 1000000L + current.tv_usec;
+    return (long long)current.tv_sec * 1000000L + current.tv_usec;
 #endif
 }

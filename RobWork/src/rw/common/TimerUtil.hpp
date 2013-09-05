@@ -41,7 +41,7 @@ namespace rw { namespace common {
 		 * you should \b not use it for getting the calendar time. It's really only meant for 
 		 * calculating wall time differences.
 		 */
-        static long currentTimeMs();
+        static long long currentTimeMs();
 
 
 		/**
@@ -53,7 +53,7 @@ namespace rw { namespace common {
          *
          * Notice: The timer cannot hold times longer than approx. 2100second.
 		 */
-        static long currentTimeUs();
+        static long long currentTimeUs();
 
         /**
          * @brief Returns system clock in seconds
