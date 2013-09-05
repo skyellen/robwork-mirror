@@ -42,6 +42,10 @@ namespace {
         // test if the trajectory is finished
         if(tdata._traj->duration()<t+info.dt){
             tdata._enabled = false;
+            
+            body->setLinVelW(Vector3D<>(0, 0, 0) , state);
+			body->setAngVelW(Vector3D<>(0, 0, 0), state);
+			
             return;
         }
 
