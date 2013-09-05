@@ -2392,14 +2392,14 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     }
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
     if(enableFeedback && odeSensorb1.size()>0){
-    	std::cout << "----------- ADD FEEDBACK\n";
+    	//std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
             sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
         }
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
     if(enableFeedback && odeSensorb2.size()>0){
-    	std::cout << "----------- ADD FEEDBACK\n";
+    	//std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
     	        sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
         }
