@@ -22,8 +22,8 @@ using namespace rwsim::simulator;
 
 namespace {
 
-    void waitUntil(long time){
-        long curr = TimerUtil::currentTimeMs();
+    void waitUntil(long long time){
+        long long curr = TimerUtil::currentTimeMs();
         while(curr<time) {
             if(1>(time-curr))
                 break;
@@ -136,8 +136,8 @@ double ThreadSimulator::getTime(){
 }
 
 void ThreadSimulator::stepperLoop(){
-    long time = TimerUtil::currentTimeMs();
-    long nextTime = time;
+    long long time = TimerUtil::currentTimeMs();
+    long long nextTime = time;
     double simTime = 0;
     bool running = true;
     // we call the callback once before starting
@@ -145,6 +145,7 @@ void ThreadSimulator::stepperLoop(){
          _stepcb(this, _state);
 
     while(running){
+		//std::cout << "!" << std::endl;
         {
             boost::mutex::scoped_lock lock(_simMutex);
             if(_postStop){
@@ -163,6 +164,7 @@ void ThreadSimulator::stepperLoop(){
             	_simulator->step(_dt, _state);
 
             } catch (...){
+				std::cout << "Error stepping" << std::endl;
             	_inError = true;
             }
 
@@ -174,7 +176,8 @@ void ThreadSimulator::stepperLoop(){
             if(sTime-simTime<0){
             	// somebody reset the time...
             	simTime = 0;
-            	nextTime = 0;
+            	time = TimerUtil::currentTimeMs();
+            	nextTime = time;
             }
 
             nextTime += std::min( (sTime-simTime), _dt) * _timescale * 1000;
@@ -202,7 +205,7 @@ void ThreadSimulator::stepperLoop(){
             waitUntil(nextTime);
         } else {
         	// if the delay is larger than one second then reset nextTime
-        	if(time-nextTime>1.0)
+        	if(time-nextTime>1000)
         		nextTime = time;
             boost::thread::yield();
         }
