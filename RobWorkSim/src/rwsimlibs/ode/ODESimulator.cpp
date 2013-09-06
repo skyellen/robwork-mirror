@@ -91,8 +91,8 @@ using namespace rwlibs::proximitystrategies;
 
 #define INITIAL_MAX_CONTACTS 1000
 
-//#define RW_DEBUGS( str ) std::cout << str  << std::endl;
-#define RW_DEBUGS( str )
+#define RW_DEBUGS( str ) std::cout << str  << std::endl;
+//#define RW_DEBUGS( str )
 
 //#define TIMING( str, func ) \
 //    { long start = rw::common::TimerUtil::currentTimeMs(); \
@@ -198,7 +198,8 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDet
     _oldTime(0),
     _useRobWorkContactGeneration(true),
     _prevStepEndedInCollision(false),
-    _detector(detector)
+    _detector(detector),
+    _logContactingBodies(false)
 {
 
     // verify that the linked ode library has the correct
@@ -1522,6 +1523,10 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
         if(a_geom==NULL || b_geom==NULL){
         	std::cout << "Geoms not found" << std::endl;
             continue;
+        }
+
+        if(_logContactingBodies){
+            _contactingBodies.push_back( std::make_pair( contact.getFrameA()->getName(),  contact.getFrameB()->getName()) );
         }
 
 		con.geom.g1 = a_geom;

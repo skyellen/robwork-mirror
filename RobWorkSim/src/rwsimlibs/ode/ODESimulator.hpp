@@ -270,7 +270,10 @@ namespace simulator {
 
 	public:
 
+        void setContactLoggingEnabled(bool enable){ _logContactingBodies = enable; }
 
+        bool _logContactingBodies;
+        std::vector<std::pair<std::string,std::string> > _contactingBodies;
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);
 
