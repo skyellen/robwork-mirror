@@ -1477,6 +1477,9 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
 using namespace rw::proximity;
 
 void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& state) {
+    if(_logContactingBodies){
+        _contactingBodies.clear();
+    }
 	std::vector<rwsim::contacts::Contact> contacts = _detector->findContacts(state);
     size_t numc = contacts.size();
     /*BOOST_FOREACH(rwsim::contacts::Contact &c, contacts) {
@@ -1582,6 +1585,10 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
 
 		ni++;
 	}
+    if(_logContactingBodies){
+        _contactingBodiesTmp = _contactingBodies;
+    }
+
 }
 
 bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration){
