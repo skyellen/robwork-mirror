@@ -1528,14 +1528,15 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
             continue;
         }
 
-        if(_logContactingBodies){
-            _contactingBodies.push_back( std::make_pair( contact.getFrameA()->getName(),  contact.getFrameB()->getName()) );
-        }
 
 		con.geom.g1 = a_geom;
 		con.geom.g2 = b_geom;
 
 		ContactPoint &point = _rwcontacts[ni];
+
+        if(_logContactingBodies){
+            _contactingBodies[std::make_pair( contact.getFrameA()->getName(),  contact.getFrameB()->getName())].push_back( point );
+        }
 
 		point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
 		point.p = ODEUtil::toVector3D(con.geom.pos);

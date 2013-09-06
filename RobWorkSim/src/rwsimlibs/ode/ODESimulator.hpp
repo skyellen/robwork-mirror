@@ -271,10 +271,10 @@ namespace simulator {
 	public:
 
         void setContactLoggingEnabled(bool enable){ _logContactingBodies = enable; }
-        std::vector<std::pair<std::string,std::string> > getContactingBodies(){ return _contactingBodiesTmp; }
+        std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > getContactingBodies(){ return _contactingBodiesTmp; }
 
         bool _logContactingBodies;
-        std::vector<std::pair<std::string,std::string> > _contactingBodies, _contactingBodiesTmp;
+        std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > _contactingBodies, _contactingBodiesTmp;
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);
 
