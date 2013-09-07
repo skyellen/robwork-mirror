@@ -169,7 +169,6 @@ namespace rw { namespace math {
          * \f$ \mathbf{V} \f$, \f$ \mathbf{\Sigma} \f$ and \f$ \mathbf{U} \f$
          * are optained using Singular Value Decomposition (SVD)
          *
-         * This method uses gesvd from LAPACK to perform SVD
          *
          */
 		static Eigen::MatrixXd pseudoInverseEigen(const Eigen::MatrixXd& am, double precision=1e-6);
