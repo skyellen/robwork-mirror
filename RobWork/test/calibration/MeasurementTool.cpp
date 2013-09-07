@@ -209,7 +209,11 @@ std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::Serial
 				transform.R() = rw::math::RPY<>(mvndVector(3), mvndVector(4), mvndVector(5)).toRotation3D() * transform.R();
 			}
 
-			measurements.push_back(SerialDevicePoseMeasurement(q, transform, covariance));
+			measurements.push_back(SerialDevicePoseMeasurement(q, transform,
+			                                                   covariance,
+			                                                   serialDevice->getName(),
+			                                                   referenceFrame->getName(),
+			                                                   measurementFrame->getName()));
 		}
 
 		return measurements;
