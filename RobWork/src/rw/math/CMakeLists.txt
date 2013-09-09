@@ -16,7 +16,7 @@ SET(FILES_CPP
   Rotation3D.cpp
   Rotation3DVector.cpp
   RPY.cpp
-  #Statistics.cpp
+  Statistics.cpp
   Transform3D.cpp
   Vector2D.cpp
   Vector3D.cpp
@@ -28,6 +28,7 @@ SET(FILES_CPP
   Line2DPolar.cpp
   Pose2D.cpp
   Wrench6D.cpp
+  #serialization.cpp
 )
 
 SET(FILES_HPP

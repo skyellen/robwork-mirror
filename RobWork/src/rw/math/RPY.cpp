@@ -15,7 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
 
+#include "Math.hpp"
 #include "RPY.hpp"
 #include "Constants.hpp"
 
@@ -98,3 +101,35 @@ const Rotation3D<T> RPY<T>::toRotation3D() const
 
 template class RPY<double>;
 template class RPY<float>;
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void write(const rw::math::RPY<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        oar.writeEnterScope(id);
+        oar.write( tmp[0]*Rad2Deg , "r" );
+        oar.write( tmp[1]*Rad2Deg , "p" );
+        oar.write( tmp[2]*Rad2Deg , "y" );
+        oar.writeLeaveScope(id);
+    }
+
+    template<class T>
+    void read(rw::math::RPY<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        double r,p,y;
+        iar.readEnterScope(id);
+        iar.read( r , "r" );
+        iar.read( p , "p" );
+        iar.read( y , "y" );
+        iar.readLeaveScope(id);
+        tmp[0] = r*Deg2Rad;
+        tmp[1] = p*Deg2Rad;
+        tmp[2] = y*Deg2Rad;
+    }
+
+    // we need these to explicitly instantiate these functions
+    template void write<double>( const rw::math::RPY<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void write<float>( const rw::math::RPY<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void read<double>(rw::math::RPY<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template void read<float>(rw::math::RPY<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}}

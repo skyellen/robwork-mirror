@@ -28,6 +28,9 @@
 #include <Eigen/Eigen>
 #include <rw/common/macros.hpp>
 #include <cstdarg>
+
+
+
 namespace rw { namespace math {
 
     /**
@@ -504,6 +507,16 @@ namespace rw { namespace math {
     rw::math::Q concat(const Q& q1, const Q& q2);
 
     /*@}*/
-}} // end namespaces
+}}
+
+namespace rw{ namespace common {
+    class OutputArchive;
+    class InputArchive;
+namespace serialization {
+    void write(const rw::math::Q& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    void read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
+
+
 
 #endif // end include guard

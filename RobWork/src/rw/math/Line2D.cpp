@@ -18,6 +18,9 @@
 
 #include "Line2D.hpp"
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
 #include <rw/math/Constants.hpp>
 
 using namespace rw::math;
@@ -94,3 +97,21 @@ Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &re
 
 	return INTERSECTS;
 }
+
+void rw::common::serialization::write(const Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id)
+{
+    oar.writeEnterScope(id);
+    oar.write( tmp.p1() , "p1" );
+    oar.write( tmp.p2() , "p2" );
+    oar.writeLeaveScope(id);
+}
+
+void rw::common::serialization::read(Line2D& tmp, rw::common::InputArchive& iar, const std::string& id){
+    rw::math::Vector2D<double> p1, p2;
+    iar.readEnterScope(id);
+    iar.read(p1, "p1");
+    iar.read(p2, "p2");
+    iar.readLeaveScope(id);
+    tmp = Line2D(p1,p2);
+}
+

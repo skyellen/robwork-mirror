@@ -17,3 +17,28 @@
 
 
 #include "CameraMatrix.hpp"
+
+
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void write(const rw::math::CameraMatrix<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3, 3);
+        oar.write( data , id );
+    }
+
+    template<class T>
+    void read(rw::math::CameraMatrix<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        std::vector<double> data;
+        iar.read(data, id);
+        rw::math::Math::fromStdVectorToMat(data, tmp, 3, 3 );
+    }
+
+    // we need these to explicitly instantiate these functions
+    template void write<double>( const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void write<float>( const rw::math::CameraMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void read<double>(rw::math::CameraMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template void read<float>(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}}

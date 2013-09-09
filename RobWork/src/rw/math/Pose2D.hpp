@@ -22,6 +22,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <iostream>
 
+
 namespace rw {
 namespace math {
 
@@ -58,16 +59,16 @@ namespace math {
 			_theta(0)
 		{}
 
-		Pose2D(rw::math::Vector2D<> pos, double theta) :
+		Pose2D(rw::math::Vector2D<T> pos, T theta) :
 			_pos(pos),
 			_theta(theta)
 		{}
 
-		Pose2D(double x, double y, double theta) :
+		Pose2D(T x, T y, T theta) :
 			_pos(x,y), _theta(theta)
 		{}
 
-		Pose2D(const rw::math::Transform2D<>& transform) :
+		Pose2D(const rw::math::Transform2D<T>& transform) :
 			_pos(transform.P()),
 			_theta(
 				// Sigh.
@@ -139,9 +140,9 @@ namespace math {
 		// The transform corresponding to the pose.
 		static
 		rw::math::Transform2D<T> transform(const Pose2D<T>& pose){
-			return rw::math::Transform2D<>(
-					rw::math::Vector2D<>(pose.x(), pose.y()),
-					rw::math::Rotation2D<>(pose.theta()));
+			return rw::math::Transform2D<T>(
+					rw::math::Vector2D<T>(pose.x(), pose.y()),
+					rw::math::Rotation2D<T>(pose.theta()));
 		}
 
 		static
@@ -157,8 +158,8 @@ namespace math {
 
 		// A vector of (x, y, theta).
 		static
-		boost::numeric::ublas::vector<double> toUblas(const Pose2D& pose){
-			typedef boost::numeric::ublas::vector<double> Vec;
+		boost::numeric::ublas::vector<T> toUblas(const Pose2D& pose){
+			typedef boost::numeric::ublas::vector<T> Vec;
 			    Vec vec(3);
 			    vec(0) = pose.x();
 			    vec(1) = pose.y();
@@ -173,5 +174,17 @@ namespace math {
 
 	/*@}*/
 }} // end namespaces
+
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+
+    template<class T>
+    void write(const rw::math::Pose2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+
+    template<class T>
+    void read(rw::math::Pose2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}} // end namespaces
 
 #endif /* POSE2D_HPP_ */

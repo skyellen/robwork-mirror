@@ -558,4 +558,14 @@ private:
 //! @}
 } /* namespace math */
 } /* namespace rw */
+
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+    void write(const rw::math::Polynomial<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    void write(const rw::math::Polynomial<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    void read(rw::math::Polynomial<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
+
 #endif /* RW_MATH_POLYNOMIAL_HPP_ */

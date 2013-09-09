@@ -22,8 +22,10 @@
 /**
  * @file rw/math/Math.hpp
  */
-
 #include <cmath>
+
+#include <rw/common/Serializable.hpp>
+
 #include "LinearAlgebra.hpp"
 #include "EAA.hpp"
 #include "RPY.hpp"
@@ -642,6 +644,74 @@ namespace rw { namespace math {
            @brief Exact implementation of ceil(log_2(n)) for n > 0.
         */
         static int ceilLog2(int n);
+
+        /**
+         * @brief convert a math vector type to an vector of doubles. The input should
+         * have the index operator () in order to use this conversion
+         * @param tmp [in] input
+         * @param size [in] length of tmp
+         * @return vector of doubles
+         */
+        template <class ARR>
+        static std::vector<double> toStdVector(const ARR& tmp, int size){
+            std::vector<double> qvec(size);
+            for(int i=0;i<size;i++){
+                qvec[i] = tmp(i);
+            }
+            return qvec;
+        }
+
+        /**
+         * @brief convert a math matrix type to an vector of doubles. The input should
+         * have the index operator (x,y) in order to use this conversion
+         * @param tmp [in] input matrix type
+         * @param size1 [in] width of tmp
+         * @param size2 [in] height of tmp
+         * @return vector of doubles
+         */
+        template <class MAT>
+        static std::vector<double> toStdVector(const MAT& tmp, int size1, int size2){
+            std::vector<double> qvec(size1*size2);
+            for(int i=0;i<size1;i++){
+                for(int j=0;j<size2;j++){
+                    qvec[i] = tmp(i,j);
+                }
+            }
+            return qvec;
+        }
+
+        /**
+         * convert a vector of doubles to a vector math type. The math type should implement
+         * the operator () in order to use this function.
+         * @param data [in] the input
+         * @param tmp [out] the output
+         * @return reference to tmp
+         */
+        template <class ARR>
+        static ARR fromStdVector(std::vector<double>& data, ARR& tmp){
+            for(size_t i=0;i<data.size();i++){
+                tmp(i) = data[i];
+            }
+            return tmp;
+        }
+
+        /**
+         * convert a vector of doubles to a matrix math type. The math type should implement
+         * the operator (i,j) in order to use this function.
+         * @param data [in] the input
+         * @param tmp [out] the output
+         * @return reference to tmp
+         */
+        template <class MAT>
+        static MAT fromStdVectorToMat(std::vector<double>& data, MAT& tmp, int size1, int size2){
+            for(size_t i=0;i<size1;i++){
+                for(size_t j=0;j<size2;j++){
+                    tmp(i,j) = data[i];
+                }
+            }
+            return tmp;
+        }
+
     };
 
     /*@}*/

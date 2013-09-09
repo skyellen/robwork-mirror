@@ -15,11 +15,40 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Rotation2D.hpp"
+
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
+
+
 
 using namespace rw::math;
 
 // Explicit template specifications.
 template class Rotation2D<double>;
 template class Rotation2D<float>;
+
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void write(const rw::math::Rotation2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        std::vector<double> data = rw::math::Math::toStdVector(tmp, 2, 2);
+        oar.write( data , id );
+    }
+
+    template<class T>
+    void read(rw::math::Rotation2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        std::vector<double> data;
+        iar.read(data, id);
+        rw::math::Math::fromStdVectorToMat(data, tmp, 2, 2 );
+    }
+
+    // we need these to explicitly instantiate these functions
+    template void write<double>( const rw::math::Rotation2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void write<float>( const rw::math::Rotation2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void read<double>(rw::math::Rotation2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template void read<float>(rw::math::Rotation2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}}

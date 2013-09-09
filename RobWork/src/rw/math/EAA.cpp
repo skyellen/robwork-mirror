@@ -15,7 +15,9 @@
  * limitations under the License.
  ********************************************************************************/
 
-
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
 #include "EAA.hpp"
 #include "Rotation3D.hpp"
 #include "Constants.hpp"
@@ -114,3 +116,25 @@ const Rotation3D<T> EAA<T>::toRotation3D() const
 // some explicit template specifications
 template class EAA<double>;
 template class EAA<float>;
+
+void rw::common::serialization::write(const EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id)
+{
+    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+}
+
+void rw::common::serialization::read(EAA<double>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    std::vector<double> arr;
+    iar.read(arr, id);
+    rw::math::Math::fromStdVector(arr, tmp);
+}
+
+void rw::common::serialization::write(const EAA<float>& tmp, rw::common::OutputArchive& oar, const std::string& id)
+{
+    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+}
+
+void rw::common::serialization::read(EAA<float>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    std::vector<double> arr;
+    iar.read(arr, id);
+    rw::math::Math::fromStdVector(arr, tmp);
+}

@@ -7,7 +7,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
+#include "Math.hpp"
 
 namespace rw {
 namespace math {
@@ -22,7 +23,7 @@ public:
 	 * @brief Calculates the mean for a list of data
 	 */
 	template <class V>
-	static T mean(const typename V& data) {
+	static T mean(const V& data) {
 		T sum = 0;
 		BOOST_FOREACH(T d, data) {
 			sum += d;
@@ -48,7 +49,7 @@ public:
 			return myvector.front();
 
 		if (myvector.size() % 1 == 1) {			
-			std::cout<<"i1 = "<<std::floor(myvector.size() / 2.0)<<std::endl;
+			std::cout<<"i1 = "<< std::floor(myvector.size() / 2.0) <<std::endl;
 			return myvector[std::floor(myvector.size() / 2.0)];
 		} else {
 			int i2 = myvector.size() / 2;

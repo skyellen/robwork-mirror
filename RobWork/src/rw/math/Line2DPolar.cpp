@@ -18,6 +18,9 @@
 #include "Line2DPolar.hpp"
 #include <rw/common/macros.hpp>
 #include <rw/math/Constants.hpp>
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
 
 using namespace rw::math;
 
@@ -122,4 +125,21 @@ Line2DPolar Line2DPolar::lineToLocal(
     const double rho_local = rho - r * cos(ami - beta);
     const double angle_local = ami - pose.theta();
     return Line2DPolar(rho_local, angle_local);
+}
+
+void rw::common::serialization::write(const Line2DPolar& tmp, rw::common::OutputArchive& oar, const std::string& id)
+{
+    oar.writeEnterScope(id);
+    oar.write( tmp.getRho(), "rho" );
+    oar.write( tmp.getTheta() , "theta" );
+    oar.writeLeaveScope(id);
+}
+
+void rw::common::serialization::read(Line2DPolar& tmp, rw::common::InputArchive& iar, const std::string& id){
+    double rho,theta;
+    iar.readEnterScope(id);
+    iar.read(rho, "rho");
+    iar.read(theta, "theta");
+    iar.readLeaveScope(id);
+    tmp = Line2DPolar(rho, theta);
 }

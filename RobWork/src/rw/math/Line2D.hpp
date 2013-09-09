@@ -138,4 +138,12 @@ private:
 } // namespace algorithms
 } // namespace rwlibs
 
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+    void write(const rw::math::Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    void read(rw::math::Line2D& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
+
+
 #endif /*RW_MATH_LINE2D_HPP*/

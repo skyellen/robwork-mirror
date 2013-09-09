@@ -493,4 +493,5 @@ namespace rw { namespace math {
 
 }} // end namespaces
 
+
 #endif // end include guard

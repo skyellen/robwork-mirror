@@ -341,4 +341,12 @@ namespace rw { namespace math {
     /*@}*/
 }} // end namespaces
 
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+    void write(const rw::math::Jacobian& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    void read(rw::math::Jacobian& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
+
+
 #endif // end include guard

@@ -18,9 +18,14 @@
 
 #include "Jacobian.hpp"
 
-#include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Math.hpp>
+
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
 #include <rw/common/macros.hpp>
+
+#include "Math.hpp"
+#include "LinearAlgebra.hpp"
+
 
 using namespace rw::math;
 using namespace boost::numeric::ublas;
@@ -94,3 +99,27 @@ void Jacobian::addRotation(const Vector3D<>& rot, size_t row, size_t col) {
     _jac(row+4, col) += rot(1);
     _jac(row+5, col) += rot(2);
 }
+
+
+
+void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar, const std::string& id){
+    std::vector<double> arr;
+    size_t size1,size2;
+    iar.readEnterScope(id);
+    iar.read( size1, "size1" );
+    iar.read( size2, "size2" );
+    iar.read( arr, "data" );
+    iar.readLeaveScope(id);
+    tmp = rw::math::Jacobian(size1,size2);
+    iar.read(arr, id);
+    Math::fromStdVectorToMat(arr, tmp, tmp.size1(), tmp.size2());
+}
+
+void rw::common::serialization::write(const rw::math::Jacobian& tmp, OutputArchive& oar, const std::string& id){
+    oar.writeEnterScope(id);
+    oar.write( tmp.size1(), "size1" );
+    oar.write( tmp.size2(), "size2" );
+    oar.write( Math::toStdVector(tmp, tmp.size1(), tmp.size2()), "data" );
+    oar.writeLeaveScope(id);
+}
+

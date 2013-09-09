@@ -21,6 +21,11 @@
 #include <cassert>
 #include <math.h>
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
+
+
 using namespace rw::math;
 
 template<class T>
@@ -60,3 +65,27 @@ const Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
 // Explicit template instantiations.
 template class Transform3D<double>;
 template class Transform3D<float>;
+
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void write(const rw::math::Transform3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3, 4);
+        oar.write( data , id );
+    }
+
+    template<class T>
+    void read(rw::math::Transform3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        std::vector<double> data;
+        iar.read(data, id);
+        rw::math::Math::fromStdVectorToMat(data, tmp, 3, 4 );
+    }
+
+    // we need these to explicitly instantiate these functions
+    template void write<double>( const rw::math::Transform3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void write<float>( const rw::math::Transform3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void read<double>(rw::math::Transform3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template void read<float>(rw::math::Transform3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}}

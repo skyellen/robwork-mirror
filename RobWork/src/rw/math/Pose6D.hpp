@@ -111,9 +111,17 @@ namespace rw { namespace math {
                 return _orientation.axis()(i-3)*_orientation.angle();
         }
 
-        EAA<T> getEAA() const{
-        	return _orientation;
+
+        const Vector3D<T>& getPos() const{
+            return _position;
         }
+
+        Vector3D<T>& getPos() {
+            return _position;
+        }
+
+        const EAA<T>& getEAA() const{ return _orientation; }
+        EAA<T>& getEAA() { return _orientation; }
 
         /**
          * @brief Returns the \f$i\f$'th element in the pose.
@@ -191,5 +199,14 @@ namespace rw { namespace math {
 
     /*@}*/
 }} // end namespaces
+
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+    template <class T>
+    void write(const rw::math::Pose6D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template <class T>
+    void read(rw::math::Pose6D<T>& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
 
 #endif // end include guard

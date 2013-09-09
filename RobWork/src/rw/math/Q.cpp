@@ -19,6 +19,10 @@
 #include "Q.hpp"
 
 #include <rw/common/macros.hpp>
+#include <rw/common/Serializable.hpp>
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
 
 using namespace rw::math;
 
@@ -166,4 +170,16 @@ Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5,
     _vec[0] = a0; _vec[1] = a1; _vec[2] = a2; _vec[3] = a3; _vec[4] = a4; _vec[5] = a5; _vec[6] = a6; _vec[7] = a7; _vec[8] = a8; _vec[9] = a9;
 }
 
+
+void rw::common::serialization::write(const rw::math::Q& tmp, rw::common::OutputArchive& oar, const std::string& id)
+{
+    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+}
+
+void rw::common::serialization::read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id){
+    std::vector<double> arr;
+    iar.read(arr, id);
+    tmp = rw::math::Q(arr.size());
+    rw::math::Math::fromStdVector(arr, tmp);
+}
 

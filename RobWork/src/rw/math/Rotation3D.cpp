@@ -18,8 +18,35 @@
 
 #include "Rotation3D.hpp"
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include "Math.hpp"
+
 using namespace rw::math;
 
 // Explicit template specifications.
 template class Rotation3D<double>;
 template class Rotation3D<float>;
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void write(const rw::math::Rotation3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3, 3);
+        oar.write( data , id );
+    }
+
+    template<class T>
+    void read(rw::math::Rotation3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        std::vector<double> data;
+        iar.read(data, id);
+        rw::math::Math::fromStdVectorToMat(data, tmp, 3, 3 );
+    }
+
+    // we need these to explicitly instantiate these functions
+    template void write<double>( const rw::math::Rotation3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void write<float>( const rw::math::Rotation3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
+    template void read<double>(rw::math::Rotation3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template void read<float>(rw::math::Rotation3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
+}}}
