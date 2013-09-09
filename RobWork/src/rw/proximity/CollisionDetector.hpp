@@ -231,8 +231,10 @@ public:
 	 */
 	void removeGeometry(rw::kinematics::Frame* frame, const std::string geometryId);
 
-
+	//! @brief Adds rule specyfying inclusion/exclusion of frame pairs in collision detection
 	void addRule(const ProximitySetupRule& rule);
+	
+	//! @brief Removes rule specyfying inclusion/exclusion of frame pairs in collision detection
 	void removeRule(const ProximitySetupRule& rule);
 
 	double getComputationTime() {
