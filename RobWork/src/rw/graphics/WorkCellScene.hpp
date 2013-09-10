@@ -73,11 +73,11 @@ namespace graphics {
          * @brief set the workcell to render
          * @param wc [in] the workcell that is to be rendered
          */
-        void setWorkCell(rw::models::WorkCell::Ptr wc);
+        void setWorkCell(rw::common::Ptr<rw::models::WorkCell> wc);
 
 
         //! @brief get the workcell that is currently being rendered.
-        rw::models::WorkCell::Ptr getWorkCell();
+        rw::common::Ptr<rw::models::WorkCell> getWorkCell();
 
         /**
          * @brief state changes are updated by calling this method. That includes
@@ -388,7 +388,7 @@ namespace graphics {
 
     private:
         SceneGraph::Ptr _scene;
-        rw::models::WorkCell::Ptr _wc;
+        rw::common::Ptr<rw::models::WorkCell> _wc;
         rw::kinematics::FKTable _fk;
 
         typedef std::map<rw::kinematics::Frame*, GroupNode::Ptr> FrameNodeMap;

@@ -18,9 +18,6 @@
 #ifndef RW_GRAPHICS_SCENEGRAPH_HPP_
 #define RW_GRAPHICS_SCENEGRAPH_HPP_
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/sensor/Scan2D.hpp>
 #include <rw/sensor/Image25D.hpp>
