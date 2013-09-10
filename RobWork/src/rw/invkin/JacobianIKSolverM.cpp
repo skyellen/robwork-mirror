@@ -29,7 +29,6 @@
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/JacobianCalculator.hpp>
-#include <rw/models/WorkCell.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
