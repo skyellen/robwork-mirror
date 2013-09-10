@@ -363,6 +363,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
                            "-D_CRT_SECURE_NO_DEPRECATE"
                            "-EHa"
                            "-bigobj"
+                           "/MP"
       )
       
       IF(BOOST_TEST_NO_LIB)
