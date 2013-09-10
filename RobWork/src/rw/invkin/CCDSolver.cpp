@@ -22,7 +22,6 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/models/SerialDevice.hpp>
-#include <rw/models/WorkCell.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/kinematics/Frame.hpp>
