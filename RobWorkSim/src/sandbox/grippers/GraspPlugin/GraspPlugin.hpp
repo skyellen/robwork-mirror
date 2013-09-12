@@ -12,6 +12,8 @@
 #include <QtGui>
 #include <QTimer>
 #include "TaskGenerator.hpp"
+#include "Gripper.hpp"
+#include "GripperTaskSimulator.hpp"
 
 
 
@@ -55,6 +57,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		
 		//! @brief GUI event handler
 		void guiEvent();
+		
+		//! @brief Design event
+		void designEvent();
 
 	private:
 		// methods
@@ -64,23 +69,45 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		//! @brief sets up open and closed gripper pose and approach vector
 		rwlibs::task::GraspTask::Ptr generateTasks(int nTasks);
 		
+		//! @brief Plan tasks automatically
+		void planTasks();
+		
 		//! @brief loads stl files for jaw geometry
 		void loadGeometry(std::string directory);
 		
+		//! @brief shows tasks in RWS window
+		void showTasks();
+		
 		//! @brief sets up the GUI
 		void setupGUI();
+		
+		/**
+		 * @brief Calculates gripper quality after the simulation is finished.
+		 * So far only success ratio is taken into account.
+		 */
+		double calculateQuality(rwlibs::task::GraspTask::Ptr tasks);
+		
+		//! @brief Experimental - add new gripper device to the workcell
+		void addGripper(rw::math::Transform3D<> transform);
 
 		// parameters
 		rw::models::WorkCell* _wc; // workcell
+		rw::models::TreeDevice::Ptr _dev; // gripper device
+		rwsim::dynamics::RigidDevice::Ptr _ddev; // dynamic gripper device
 		rwsim::dynamics::DynamicWorkCell::Ptr _dwc; // dynamic workcell
-		rw::proximity::CollisionDetector::Ptr _detector; // collision detector
-		rwsim::simulator::GraspTaskSimulator::Ptr _graspSim; // simulator
+		rwsim::simulator::GripperTaskSimulator::Ptr _graspSim; // simulator
 		rw::kinematics::State _initState; // workcell initial state
 
+		rw::graphics::Render::Ptr _render; // used to render targets
 		QTimer *_timer; // used to update RWS view periodically
+		
+		// gripper
+		rw::models::Gripper::Ptr _gripper;
 
 		// flags
 		bool _slowMotion;
+		bool _showTasks;
+		bool _silentMode;
 		
 		// grasp parameters
 		rw::math::Transform3D<> _wTapproach; // approach and retract for grasping
@@ -94,6 +121,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		// geometry panel
 		QGroupBox* _geometryBox;
 		QPushButton* _designButton;
+		QCheckBox* _autoPlanCheck;
 		QPushButton* _loadGeoButton;
 		QPushButton* _saveGeoButton;
 		
@@ -114,8 +142,10 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QGroupBox* _simBox;
 		QPushButton* _loadTaskButton;
 		QPushButton* _saveTaskButton;
+		QCheckBox* _showCheck;
 		QProgressBar* _progressBar;
 		QPushButton* _startButton;
 		QPushButton* _stopButton;
 		QCheckBox* _slowCheck;
+		QCheckBox* _silentCheck;
 };

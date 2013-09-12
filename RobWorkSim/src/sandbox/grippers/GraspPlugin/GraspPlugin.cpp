@@ -12,6 +12,12 @@
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
+#include "JawPrimitive.hpp"
+#include "RenderTarget.hpp"
+#include "FeatureTaskGenerator.hpp"
+#include "RayTaskGenerator.hpp"
+#include "DesignDialog.hpp"
+#include "GripperTaskSimulator.hpp"
 
 
 
@@ -36,6 +42,8 @@ GraspPlugin::GraspPlugin() :
     _dwc(NULL),
     _graspSim(NULL),
     _slowMotion(false),
+    _showTasks(true),
+    _silentMode(false),
     _nOfTargetsToGen(10),
     _tasks(NULL)
 {
@@ -44,8 +52,7 @@ GraspPlugin::GraspPlugin() :
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(updateSim()));
     
-    // set up the initial gripper position
-    // IN THE WORKCELL
+    _gripper = ownedPtr(new Gripper);
 }
 
 
@@ -66,12 +73,27 @@ void GraspPlugin::initialize()
 
 void GraspPlugin::startSimulation()
 {
-    if(_graspSim == NULL) {
-        QMessageBox::information(this, "SimTaskPlugin", "Grasp simulator has not been created yet!");
-        return;
-    }
+    _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+
+	// add interference objects
+	istringstream objList(_wc->getPropertyMap().get<string>("interference"));
+	
+	do {
+		string objName;
+		objList >> objName;
+		cout << objName;
+		Object::Ptr object = _wc->findObject(objName);
+		if (object != NULL) {
+			_graspSim->addInterferenceObject(object);
+		} else {
+			cout << "Null object" << endl;
+		}
+	} while (objList);
+	
+    //_graspSim->addInterferenceObject(_wc->findObject("ob1"));
+   // _graspSim->addInterferenceObject(_wc->findObject("ob2"));
     
-    if (!_graspSim->isRunning()) {
+    if (!_graspSim->isRunning() && _tasks != NULL) {
 		if (_tasks != NULL) setCurrentTask(_tasks);
 		
 		try {
@@ -92,13 +114,31 @@ void GraspPlugin::open(WorkCell* workcell)
 		Math::seed(TimerUtil::currentTimeUs());
 		
 		_wc = workcell;
-		_graspSim = ownedPtr(new GraspTaskSimulator(_dwc));
-    
+		
 		_initState = getRobWorkStudio()->getState();
-		_detector = getRobWorkStudio()->getCollisionDetector();
+		
+		_render = ownedPtr( new RenderTargets() );
+		getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame());
+		
+		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
+		
     } catch (const rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
     }
+    
+    if (_dwc) {
+		_ddev = _dwc->findDevice<RigidDevice>(_wc->getPropertyMap().get<string>("gripper"));
+        _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+        _generator = new RayTaskGenerator(_dwc, _wc->getPropertyMap().get<string>("target"), _wc->getPropertyMap().get<string>("gripper"));
+	}
+    
+    try {
+		//cout << "!!!!!" << _wc->getPropertyMap().size();
+		//cout << "!!!!!" << _wc->getPropertyMap().get<string>("target");
+		/*BOOST_FOREACH (PropertyBase::Ptr prop, _wc->getPropertyMap().getProperties()) {
+			cout << prop->getIdentifier() << endl;
+		}*/
+	} catch (...) {}
 }
 
 
@@ -115,8 +155,8 @@ void GraspPlugin::close()
     _wc = NULL;
     _dwc = NULL;
     
-    _startButton->setEnabled(false);
-    _stopButton->setEnabled(false);
+    //_startButton->setEnabled(false);
+    //_stopButton->setEnabled(false);
 }
 
 
@@ -154,18 +194,6 @@ void GraspPlugin::guiEvent()
 		}
 	}
 	
-	else if (obj == _loadGeoButton) {
-		// here we are going to open file dialog to choose stl directory for fingers
-		QString directory = QFileDialog::getExistingDirectory(this,
-			"Open gripper geometry directory", "", QFileDialog::ShowDirsOnly);
-		
-		if (directory.isEmpty()) return;
-		
-		log().info() << "Loading STL files from: " << directory.toStdString() << "\n";
-		
-		loadGeometry(directory.toStdString());
-	}
-	
 	else if (obj == _loadTaskButton) {		
 		QString taskfile = QFileDialog::getOpenFileName(this,
 			"Open file", "", tr("Task files (*.xml)"));
@@ -177,6 +205,8 @@ void GraspPlugin::guiEvent()
 		_tasks = GraspTask::load(taskfile.toStdString());
 		_progressBar->setValue(0);
 		_progressBar->setMaximum(_tasks->getAllTargets().size());
+		
+		if (_showCheck->isChecked()) showTasks();
 	}
 	
 	else if (obj == _saveTaskButton) {
@@ -216,6 +246,8 @@ void GraspPlugin::guiEvent()
 		_tasks = generateTasks(_nOfTargetsToGen);
 		_progressBar->setValue(0);
 		_progressBar->setMaximum(_nOfTargetsToGen);
+		
+		if (_showCheck->isChecked()) showTasks();
 	}
 	
 	else if (obj == _nManualEdit) {
@@ -224,17 +256,48 @@ void GraspPlugin::guiEvent()
 	}
 	
 	else if (obj == _planButton) {
-		_nOfTargetsToGen = _nAutoEdit->text().toInt();
-		
-		log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
-		
-		_tasks = _generator->generateTask(_nOfTargetsToGen);
-		
-		log().info() << "Done." << endl;
-		
-		_progressBar->setValue(0);
-		_progressBar->setMaximum(_nOfTargetsToGen);
+		planTasks();
 	}
+	
+	else if (obj == _showCheck) {
+		_showTasks = _showCheck->isChecked();
+		showTasks();
+	}
+	
+	else if (obj == _silentCheck) {
+		_silentMode = _silentCheck->isChecked();
+		
+		if (_silentMode) {
+			BOOST_FOREACH (ThreadSimulator::Ptr sim, _graspSim->getSimulators()) {
+				sim->setRealTimeScale(0.0);
+			}
+		} else {
+			BOOST_FOREACH (ThreadSimulator::Ptr sim, _graspSim->getSimulators()) {
+				sim->setRealTimeScale(0.0);
+			}
+		}
+	}
+}
+
+
+
+void GraspPlugin::designEvent()
+{
+	DesignDialog* ddialog = new DesignDialog(this, _gripper);
+	ddialog->exec();
+	
+	_gripper = ddialog->getGripper();
+	
+	//State state = _initState;
+	_gripper->updateGripper(_wc, _dwc, _dev, _ddev, _initState);
+	
+	getRobWorkStudio()->getWorkCellScene()->clearCache();
+	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_initState);
+	getRobWorkStudio()->setWorkcell(_wc);
+	//_graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+	getRobWorkStudio()->setState(_initState);
+	
+	if (_autoPlanCheck->isChecked()) planTasks();
 }
 
 
@@ -243,25 +306,28 @@ void GraspPlugin::updateSim()
 {
 	if (_graspSim == NULL || _wc == NULL || _dwc == NULL) return;
 	
-	getRobWorkStudio()->setState(_graspSim->getSimulator()->getState());
+	if (!_silentMode) getRobWorkStudio()->setState(_graspSim->getSimulator()->getState());
 	
 	// check out the number of tasks already performed and update progress bar accordingly
 	_progressBar->setValue(_graspSim->getNrTargetsDone());
-	
-	
-	if (_graspSim->isFinished()) {
+
+	if (!_graspSim->isRunning()) {
 		_timer->stop();
 		
 		_startButton->setEnabled(true);
 		_stopButton->setEnabled(false);
 		
+		double quality = calculateQuality(_tasks);
+		
+		//log().info() << "GripperQ= " << quality << endl;
+		
 		// we should print out the results of simulation here:
-		int n = 0;
+		/*int n = 0;
 		
 		BOOST_FOREACH(GraspTarget tgt, _tasks->getSubTasks()[0].getTargets()) {
 			log().info() << "Task " << ++n << ". res: " << tgt.getResult()->testStatus;
 			log().info() << " qbefore: " << tgt.getResult()->qualityBeforeLifting << " qafter: " << tgt.getResult()->qualityAfterLifting << endl;
-		}
+		}*/
 	}
 }
 
@@ -271,9 +337,9 @@ GraspTask::Ptr GraspPlugin::generateTasks(int nTasks)
 {
     GraspTask::Ptr task = ownedPtr(new GraspTask());
 
-    task->setTCPID("TCPgripper");
-    task->setGripperID("gripper");
-    task->setGraspControllerID("graspController");
+    task->setTCPID(_wc->getPropertyMap().get<string>("gripperTCP"));
+    task->setGripperID(_wc->getPropertyMap().get<string>("gripper"));
+    task->setGraspControllerID(_wc->getPropertyMap().get<string>("controller"));
 
     task->getSubTasks().resize(1);
     GraspSubTask &subtask = task->getSubTasks()[0];
@@ -289,6 +355,28 @@ GraspTask::Ptr GraspPlugin::generateTasks(int nTasks)
     }
 
     return task;
+}
+
+
+
+void GraspPlugin::planTasks()
+{
+	_nOfTargetsToGen = _nAutoEdit->text().toInt();
+		
+	log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
+	
+	try {
+		_tasks = _generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
+	} catch (rw::common::Exception& e) {
+		QMessageBox::critical(NULL, "RW Exception", e.what());
+	}
+	
+	log().info() << "Done." << endl;
+	
+	_progressBar->setValue(0);
+	_progressBar->setMaximum(_nOfTargetsToGen);
+	
+	if (_showCheck->isChecked()) showTasks();
 }
 
 
@@ -322,7 +410,13 @@ void GraspPlugin::genericEventListener(const std::string& event)
         }
         
         _dwc = dwc;
-        _generator = new TaskGenerator(_dwc, "object", "gripper");
+        
+        
+        
+        //cout << "Obiekty w WC:" << _wc->getObjects().size() << endl;
+        /*BOOST_FOREACH (Object::Ptr obj, _wc->getObjects()) {
+			cout << "!" << obj->getName() << endl;
+		}*/
         
         _startButton->setEnabled(true);
     } 
@@ -330,19 +424,43 @@ void GraspPlugin::genericEventListener(const std::string& event)
 
 
 
-void GraspPlugin::loadGeometry(std::string directory)
+double GraspPlugin::calculateQuality(rwlibs::task::GraspTask::Ptr tasks)
+{
+	int all = 0;
+	int success = 0;
+	Q gws(3);
+	
+	BOOST_FOREACH(GraspTarget& tgt, _tasks->getSubTasks()[0].getTargets()) {
+		if (tgt.getResult()->testStatus != GraspTask::UnInitialized) // only take into account performed grasps
+			all++;
+		
+		if (tgt.getResult()->testStatus == GraspTask::Success)
+			success++;
+			gws += tgt.getResult()->qualityAfterLifting;
+	}
+	
+	double quality;
+	double sim = 1.0 * success/all;
+	gws = gws / success;
+	
+	log().info() << "SIM= " << sim << endl;
+	log().info() << "GWS= " << gws << endl;
+	
+	return quality;
+}
+
+
+
+/*void GraspPlugin::loadGeometry(std::string directory)
 {
 	// remove drawables from jaws
 	getRobWorkStudio()->getWorkCellScene()->removeDrawables(_wc->findFrame("gripper.LeftFinger"));
 	getRobWorkStudio()->getWorkCellScene()->removeDrawables(_wc->findFrame("gripper.RightFinger"));
-	
-	BOOST_FOREACH (string id, _detector->getGeometryIDs(_wc->findFrame("gripper.LeftFinger"))) {
-		cout << id << endl;
-	}
-	
+
 	// remove models from collision detector
-	_detector->removeGeometry(_wc->findFrame("gripper.LeftFinger"), "LeftFingerGeo");
-	_detector->removeGeometry(_wc->findFrame("gripper.RightFinger"), "RightFingerGeo");
+	CollisionDetector::Ptr detector = getRobWorkStudio()->getCollisionDetector();
+	detector->removeGeometry(_wc->findFrame("gripper.LeftFinger"), "LeftFingerGeo");
+	detector->removeGeometry(_wc->findFrame("gripper.RightFinger"), "RightFingerGeo");
 	
 	// load stl files
 	rw::geometry::PlainTriMeshN1F::Ptr leftMesh = STLFile::load(directory + "/left.stl");
@@ -351,10 +469,10 @@ void GraspPlugin::loadGeometry(std::string directory)
 	// set the proper pose of the fingers
 	Geometry::Ptr leftGeo = ownedPtr(new Geometry(leftMesh));
 	leftGeo->setName("LeftFingerGeo");
-	leftGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0.0, 90.0*Deg2Rad, 0.0).toRotation3D()));
+	leftGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0.0, 0.0*Deg2Rad, 0.0).toRotation3D()));
 	Geometry::Ptr rightGeo = ownedPtr(new Geometry(rightMesh));
 	rightGeo->setName("RightFingerGeo");
-	rightGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(180.0*Deg2Rad, -90.0*Deg2Rad, 0.0).toRotation3D()));
+	rightGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180.0*Deg2Rad, 180.0*Deg2Rad).toRotation3D()));
 	
 	// add new geometry
 	getRobWorkStudio()->getWorkCellScene()->addGeometry(
@@ -369,8 +487,39 @@ void GraspPlugin::loadGeometry(std::string directory)
 		Geometry::PhysicalGroup);
 	
 	// add new collision models
-	_detector->addGeometry(_wc->findFrame("gripper.LeftFinger"), leftGeo);
-	_detector->addGeometry(_wc->findFrame("gripper.RightFinger"), rightGeo);
+	detector->addGeometry(_wc->findFrame("gripper.LeftFinger"), leftGeo);
+	detector->addGeometry(_wc->findFrame("gripper.RightFinger"), rightGeo);
+}*/
+
+
+
+void GraspPlugin::showTasks()
+{
+	vector<RenderTargets::Target> rtargets;
+	Transform3D<> wTo = Kinematics::worldTframe(_wc->findFrame(_wc->getPropertyMap().get<string>("target")), _wc->getDefaultState());
+	
+	if (_tasks == NULL) { return; }
+	
+	if (_showTasks) {
+		BOOST_FOREACH (GraspTarget& target, _tasks->getSubTasks()[0].getTargets()) {
+			RenderTargets::Target rt;
+			rt.ctask = &_tasks->getSubTasks()[0];
+			rt.ctarget = target;
+			rt.color[0] = 0.0;
+			rt.color[1] = 1.0;
+			rt.color[2] = 0.0;
+			rt.color[3] = 0.5;
+			
+			rt.trans = wTo * target.pose;
+			
+			rtargets.push_back(rt);
+		}
+	}
+	
+	//cout << "Painting!" << endl;
+	
+	((RenderTargets*)_render.get())->setTargets(rtargets);
+    getRobWorkStudio()->postUpdateAndRepaint();
 }
 
 
@@ -395,15 +544,10 @@ void GraspPlugin::setupGUI()
     
     _designButton = new QPushButton("Design gripper");
     geoLayout->addWidget(_designButton, row++, 0, 1, 2);
-    connect(_designButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(_designButton, SIGNAL(clicked()), this, SLOT(designEvent()));
     
-    _loadGeoButton = new QPushButton("Load gripper");
-    geoLayout->addWidget(_loadGeoButton, row, 0);
-    connect(_loadGeoButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _saveGeoButton = new QPushButton("Save gripper");
-    geoLayout->addWidget(_saveGeoButton, row++, 1);
-    connect(_saveGeoButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    _autoPlanCheck = new QCheckBox("Auto. plan");
+    geoLayout->addWidget(_autoPlanCheck, row++, 0, 1, 2);
     
     /* setup manual group */
     _manualBox = new QGroupBox("Manual task setup");
@@ -443,7 +587,7 @@ void GraspPlugin::setupGUI()
     autoLayout->addWidget(_planButton, row, 0);
     connect(_planButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
-    _nAutoEdit = new QLineEdit("10");
+    _nAutoEdit = new QLineEdit("100");
     autoLayout->addWidget(_nAutoEdit, row++, 1);
     connect(_nAutoEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
     
@@ -462,6 +606,11 @@ void GraspPlugin::setupGUI()
     simLayout->addWidget(_saveTaskButton, row++, 1);
     connect(_saveTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
+    _showCheck = new QCheckBox("Show tasks");
+    _showCheck->setChecked(true);
+    simLayout->addWidget(_showCheck, row++, 0, 1, 2);
+    connect(_showCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    
     _progressBar = new QProgressBar;
     _progressBar->setFormat("%v of %m");
     simLayout->addWidget(_progressBar, row++, 0, 1, 2);
@@ -475,8 +624,12 @@ void GraspPlugin::setupGUI()
     connect(_stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     _slowCheck = new QCheckBox("Slow motion");
-    simLayout->addWidget(_slowCheck, row++, 0, 1, 2);
-    connect(_slowCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    simLayout->addWidget(_slowCheck, row, 0);
+    connect(_slowCheck, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _silentCheck = new QCheckBox("Silent mode");
+    simLayout->addWidget(_silentCheck, row++, 1);
+    connect(_silentCheck, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     /* add groups to the base layout */
     layout->addWidget(_geometryBox);
@@ -484,6 +637,126 @@ void GraspPlugin::setupGUI()
     layout->addWidget(_autoBox);
     layout->addWidget(_simBox);
 }
+
+
+
+/*void GraspPlugin::addGripper(rw::math::Transform3D<> transform)
+{
+	Frame* world = _wc->getWorldFrame();
+	StateStructure::Ptr tree = _wc->getStateStructure();
+	
+	// remove existing gripper
+	//Device::Ptr 
+	
+	// make base
+	MovableFrame* base = new MovableFrame("Base");
+	
+	// make joints
+	PrismaticJoint* left = new PrismaticJoint("LeftFinger", Transform3D<>(Vector3D<>(), RPY<>(0, -90*Deg2Rad, 0).toRotation3D()));
+	DependentPrismaticJoint* right = new DependentPrismaticJoint(
+		"RightFinger", Transform3D<>(Vector3D<>(), RPY<>(0, 90*Deg2Rad, 0).toRotation3D()),
+		left, 1, 0);
+		
+	// make end effectors
+	FixedFrame* leftend = new FixedFrame("TCPLeftFinger", Transform3D<>());
+	FixedFrame* rightend = new FixedFrame("TCPRightFinger", Transform3D<>());
+	
+	
+	
+	// add objects to frames
+	Geometry::Ptr basegeo = ownedPtr(new Geometry(new Box(0.15, 0.1, 0.05), string("BaseGeo")));
+	Geometry::Ptr leftgeo = ownedPtr(new Geometry(new JawPrimitive(), string("LeftFingerGeo")));
+	Geometry::Ptr rightgeo = ownedPtr(new Geometry(new JawPrimitive(), string("RightFingerGeo")));
+	
+	Object* baseobj = new Object(base);
+	Model3D* basemodel = new Model3D("BaseModel");
+	basemodel->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *basegeo->getGeometryData()->getTriMesh() );
+	basemodel->setTransform(Transform3D<>(Vector3D<>::z()*-0.025, Rotation3D<>()));
+	basegeo->setTransform(Transform3D<>(Vector3D<>::z()*-0.025, Rotation3D<>()));
+	basegeo->setFrame(base);
+	baseobj->addModel(basemodel);
+	baseobj->addGeometry(basegeo);
+	_wc->add(baseobj);
+	
+	Object* leftobj = new Object(left);
+	Model3D* leftmodel = new Model3D("LeftModel");
+	leftmodel->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *leftgeo->getGeometryData()->getTriMesh() );
+	leftmodel->setTransform(Transform3D<>());
+	leftgeo->setTransform(Transform3D<>());
+	leftgeo->setFrame(left);
+	leftobj->addModel(leftmodel);
+	leftobj->addGeometry(leftgeo);
+	_wc->add(leftobj);
+	
+	Object* rightobj = new Object(right);
+	Model3D* rightmodel = new Model3D("RightModel");
+	rightmodel->addTriMesh(Model3D::Material("stlmat",0.6f,0.6f,0.6f), *rightgeo->getGeometryData()->getTriMesh() );
+	rightmodel->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
+	rightgeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
+	rightgeo->setFrame(right);
+	rightobj->addModel(rightmodel);
+	rightobj->addGeometry(rightgeo);
+	_wc->add(rightobj);
+	
+	
+	// add frames to the state structure
+	tree->addFrame(base, world);
+	tree->addFrame(left, base);
+	tree->addFrame(right, base);
+	tree->addFrame(leftend, left);
+	tree->addFrame(rightend, right);
+	
+	/*getRobWorkStudio()->getWorkCellScene()->addGeometry(
+		"BaseGeo",
+		basegeo,
+		base,
+		Geometry::PhysicalGroup);
+	getRobWorkStudio()->getWorkCellScene()->addGeometry(
+		"LeftFingerGeo",
+		leftgeo,
+		left,
+		Geometry::PhysicalGroup);
+	getRobWorkStudio()->getWorkCellScene()->addGeometry(
+		"RightFingerGeo",
+		rightgeo,
+		right,
+		Geometry::PhysicalGroup);
+	
+	getRobWorkStudio()->getCollisionDetector()->addGeometry(base, basegeo);
+	getRobWorkStudio()->getCollisionDetector()->addGeometry(left, leftgeo);
+	getRobWorkStudio()->getCollisionDetector()->addGeometry(right, rightgeo);
+	
+	// create device
+	vector<Frame*> ends;
+	ends.push_back(leftend);
+	ends.push_back(rightend);
+	
+	State state = tree->getDefaultState();
+	TreeDevice::Ptr gripper = new TreeDevice(base, ends, "gripper", state);
+	Q x1(1); x1[0] = 0;
+	Q x2(1); x2[0] = 0.05;
+	gripper->setBounds(make_pair(x1, x2));
+	_wc->addDevice(gripper);
+	
+	
+	
+	
+	base->setTransform(Transform3D<>(Vector3D<>(0, 0, 0.3), RPY<>(0, 0, 180*Deg2Rad).toRotation3D()), state);
+	
+	
+	getRobWorkStudio()->setWorkCell(_wc);
+	
+	// update collision detector
+	CollisionDetector::Ptr cd = getRobWorkStudio()->getCollisionDetector();
+	cd->addRule(ProximitySetupRule::makeExclude("Base", "LeftFinger"));
+	cd->addRule(ProximitySetupRule::makeExclude("Base", "RightFinger"));
+	cd->addRule(ProximitySetupRule::makeExclude("RightFinger", "LeftFinger"));
+	
+	
+	getRobWorkStudio()->setState(state);
+	
+	//getRobWorkStudio()->updateAndRepaint();
+}*/
 
 
 

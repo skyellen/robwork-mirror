@@ -33,14 +33,29 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory
 
 #########################
 #From here we add the plugins
-SET(SrcFiles GraspPlugin.cpp TaskGenerator.cpp FeatureTaskGenerator.cpp)
+SET(SrcFiles
+	GraspPlugin.cpp
+	TaskGenerator.cpp
+	FeatureTaskGenerator.cpp
+	RayTaskGenerator.cpp
+	csgjs.cpp
+	CSGConvert.cpp
+	CSGModel.cpp
+	JawPrimitive.cpp
+	Gripper.cpp
+	DesignDialog.cpp
+	GripperXMLLoader.cpp
+	GripperTaskSimulator.cpp
+)
 
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 # The shared library to build
 add_library( GraspPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
 target_link_libraries( GraspPlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries( test ${ROBWORK_LIBRARIES})
 
