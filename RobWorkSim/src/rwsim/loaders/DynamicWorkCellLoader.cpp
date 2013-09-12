@@ -115,8 +115,8 @@ using namespace rwlibs::simulation;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 
-#define RW_DEBUGS(str) std::cout << str << std::endl
-//#define RW_DEBUGS(str)
+//#define RW_DEBUGS(str) std::cout << str << std::endl
+#define RW_DEBUGS(str)
 
 namespace
 {
@@ -961,7 +961,7 @@ namespace
         int jIdx = 0;
         std::string framePrefix = device->getName() + ".";
         for (CI p = tree.begin(); p != tree.end(); ++p) {
-            std::cout << p->first << std::endl;
+            //std::cout << p->first << std::endl;
         	if( p->first == "FixedBase" ){
             	base = readFixedBase(p->second, state, device.get());
             } else if( p->first == "KinematicBase" ){
@@ -1230,7 +1230,7 @@ namespace
     }
 
     void readContactDataList(PTree& tree, ParserState &state ){
-        Log::debugLog() << "ReadMaterialList" << std::endl;
+        //Log::debugLog() << "ReadMaterialList" << std::endl;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "ObjectType") {
                 string id = p->second.get_child("<xmlattr>").get<std::string>("id");
@@ -1344,7 +1344,7 @@ namespace
 
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
-        	Log::debugLog()<< p->first << std::endl;
+        	//Log::debugLog()<< p->first << std::endl;
         	if (p->first == "PhysicsEngine") {
 
                 readPhysicsEngine(p->second, state);
