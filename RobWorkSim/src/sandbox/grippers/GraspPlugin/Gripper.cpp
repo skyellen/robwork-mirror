@@ -60,6 +60,8 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	MovableFrame* tcp = wc->findFrame<MovableFrame>(tcpFrameName);
 	tcp->setTransform(_tcp, state);
 	
+	cout << "LOL" << tcp->getName() << endl;
+	
 	// set bounds
 	dev->setBounds(make_pair(Q(1, _jawdist), Q(1, _opening)));
 	dev->setQ(Q(1, _jawdist), state);
