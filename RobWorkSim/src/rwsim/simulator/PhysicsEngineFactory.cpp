@@ -92,7 +92,7 @@ PhysicsEngine::Ptr PhysicsEngineFactory::makePhysicsEngine(const std::string& en
 PhysicsEngine::Ptr PhysicsEngineFactory::makePhysicsEngine(DynamicWorkCell::Ptr dwc){
     std::string engineId = dwc->getEngineSettings().get<std::string>("Engine","");
 
-    if(PhysicsEngineFactory::getEngineIDs().size()){
+    if(PhysicsEngineFactory::getEngineIDs().size() == 0){
         RW_THROW("No physics engines supported!");
         return NULL;
     }

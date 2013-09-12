@@ -174,6 +174,10 @@ public:
 
         bool _stopped;
     };
+
+protected:
+	virtual void graspFinishedCB() {}
+	
 private:
 
     //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
