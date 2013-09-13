@@ -1,6 +1,6 @@
 
 #include "SDHInvKinSolver.hpp"
-#include <rw/rw.hpp>
+
 #include <rw/models/CompositeJointDevice.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -72,9 +72,9 @@ std::vector<boost::tuple<rw::math::Transform3D<>, rw::math::Q, bool> > SDHInvKin
 
     // test if any targets are too close too consider a 3-finger grasp
     std::vector<Transform3D<> > reducedTargets(1,targetsDef[0]);
-    for(int i=1;i<targetsDef.size();i++){
+    for(std::size_t i=1;i<targetsDef.size();i++){
         bool found=false;
-        for(int j=0;j<reducedTargets.size();j++){
+        for(std::size_t j=0;j<reducedTargets.size();j++){
             if( MetricUtil::dist2(targetsDef[i].P(), reducedTargets[j].P())<0.02
                     && angle( targetsDef[i].R()*Vector3D<>::z(),  reducedTargets[j].R()*Vector3D<>::z())<45*Deg2Rad
                 ){
@@ -94,7 +94,7 @@ std::vector<boost::tuple<rw::math::Transform3D<>, rw::math::Q, bool> > SDHInvKin
     std::vector<boost::tuple<Transform3D<>, Q, bool> > result;
     State stateInit = _defState;
     std::vector<Transform3D<> > targets = targetsDef;
-    for(int i=0;i<targets.size(); i++){
+    for(std::size_t i=0;i<targets.size(); i++){
         Vector3D<> zaxis = targetsDef[i].R()*Vector3D<>::z();
         targets[i].P() -= zaxis*0.01;
     }

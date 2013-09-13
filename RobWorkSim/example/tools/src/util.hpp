@@ -5,9 +5,9 @@
 
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 
 typedef rwlibs::algorithms::KDTreeQ<std::pair<rwlibs::task::GraspSubTask*,rwlibs::task::GraspTarget*> > GTaskNNSearch;
 

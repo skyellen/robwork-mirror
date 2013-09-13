@@ -1,12 +1,10 @@
 #include "IKSoftCSolver.hpp"
 
-#include <rw/rw.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/TreeDevice.hpp>
-
-#include <map>
 #include <vector>
 
+#include <rw/rw.hpp>
+
+#include <boost/tuple/tuple.hpp>
 
 /**
  * @brief an iterative and heuristics based inverse kinematics solver specifically for the

@@ -7,11 +7,11 @@
 
 #include "IKSoftCSolver.hpp"
 
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/MetricUtil.hpp>
-
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -20,9 +20,6 @@
 #include <rw/invkin/JacobianIKSolver.hpp>
 
 #include <boost/foreach.hpp>
-
-#include <ode/ode.h>
-
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -163,10 +160,10 @@ namespace {
             if(RevoluteJoint *rwjoint = dynamic_cast<RevoluteJoint*>(joint)){
                 // find the parent joint
                 int i = getParent(joint, ikState.frames, state);
-                Frame *parent = ikState.frames[i];
+                //Unused: Frame *parent = ikState.frames[i];
                 //dBodyID pBody = ikState.bodyMap[parent]
                 dBodyID pBody = ikState.allbodies[i];
-                const double qinit = rwjoint->getData(initState)[0];
+                //Unused: const double qinit = rwjoint->getData(initState)[0];
 
                 // we rotate around the z-axis
                 Vector3D<> haxis = wTjoint.R() * Vector3D<>(0,0,1);
@@ -202,13 +199,13 @@ namespace {
                 std::cout << "PRISMATICJOINT" << std::endl;
                 PrismaticJoint* pjoint = dynamic_cast<PrismaticJoint*>(joint);
                 int i = getParent(joint, ikState.frames, state);
-                Frame *parent = ikState.frames[i];
+                //Unused: Frame *parent = ikState.frames[i];
                 dBodyID pBody = ikState.allbodies[i];
-                const double qinit = pjoint->getData(initState)[0];
+                //Unused: const double qinit = pjoint->getData(initState)[0];
 
                 // we rotate around the z-axis
                 Vector3D<> haxis = wTjoint.R() * Vector3D<>(0,0,-1);
-                Vector3D<> hpos = wTjoint.P();
+                //Unused: Vector3D<> hpos = wTjoint.P();
 
                 dJointID slider = dJointCreateSlider (ikState.worldId, 0);
                 dJointAttach(slider, jBody, pBody);
@@ -228,7 +225,7 @@ namespace {
             } else if( DependentRevoluteJoint *pframe = dynamic_cast<DependentRevoluteJoint*>(joint) ){
                 //std::cout << "pass" << std::endl;
                 int i = getParent(joint, ikState.frames, state);
-                Frame *parent = ikState.frames[i];
+                //Unused: Frame *parent = ikState.frames[i];
                 //dBodyID pBody = ikState.bodyMap[parent]
                 dBodyID pBody = ikState.allbodies[i];
                 const double qinit = pframe->calcQ(initState);
@@ -296,10 +293,11 @@ IKSoftCSolver::IKSoftCSolver(rw::models::SerialDevice* sdev,
                              const rw::kinematics::State& state)
 :
 IterativeMultiIK(foi.size()),
-_dt(0.05),
-_foi(foi),
 _arm(sdev),
-_device(device)
+_device(device),
+_foi(foi),
+_returnBestFit(false),
+_dt(0.05)
 {
     initODE();
     _ikState.worldId = dWorldCreate();
@@ -313,11 +311,11 @@ IKSoftCSolver::IKSoftCSolver(rw::models::TreeDevice* device,
                              const rw::kinematics::State& state)
 :
 IterativeMultiIK(device->getEnds().size()),
-_dt(0.05),
-_foi(device->getEnds()),
 _arm(NULL),
 _device(device),
-_returnBestFit(false)
+_foi(device->getEnds()),
+_returnBestFit(false),
+_dt(0.05)
 {
     initODE();
     _ikState.worldId = dWorldCreate();
@@ -332,11 +330,11 @@ IKSoftCSolver::IKSoftCSolver(rw::models::JointDevice* device,
                              const rw::kinematics::State& state)
     :
     IterativeMultiIK(foi.size()),
-    _dt(0.05),
-    _foi(foi),
     _arm(NULL),
     _device(device),
-    _returnBestFit(false)
+    _foi(foi),
+    _returnBestFit(false),
+    _dt(0.05)
 {
     initODE();
     _ikState.worldId = dWorldCreate();

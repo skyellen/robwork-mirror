@@ -20,6 +20,8 @@
 #include <map>
 #include <vector>
 
+#include <ode/ode.h>
+
 /** \addtogroup algorithms */
 /*@{*/
 

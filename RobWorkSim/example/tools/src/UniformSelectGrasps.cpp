@@ -1,31 +1,22 @@
+
 #include <iostream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
-#include <vector>
-#include <iterator>
 
 #include "util.hpp"
 
 #include <rw/rw.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
+using namespace boost::filesystem;
 using namespace boost::program_options;
 
 variables_map init(int argc, char** argv){

@@ -1,23 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
 
 #include "util.hpp"
 
 #include <rw/rw.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
