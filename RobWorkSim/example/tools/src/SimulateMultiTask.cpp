@@ -6,26 +6,11 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
+#include <vector>
 
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
 
-#include <vector>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-
-#include <iostream>
 #include <boost/filesystem.hpp>
 
 USE_ROBWORK_NAMESPACE

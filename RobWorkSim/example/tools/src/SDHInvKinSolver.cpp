@@ -1,15 +1,14 @@
 
 #include "SDHInvKinSolver.hpp"
-#include <rw/models/SE3Device.hpp>
-#include <rw/models/CompositeJointDevice.hpp>
 #include <rw/rw.hpp>
+#include <rw/models/CompositeJointDevice.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 
 SDHInvKinSolver::SDHInvKinSolver()
 {
-    _wc = rw::loaders::WorkCellLoader::load("SDHDeviceInvKin.wc.xml");
+    _wc = rw::loaders::WorkCellLoader::Factory::load("SDHDeviceInvKin.wc.xml");
     RW_ASSERT(_wc);
     State state = _wc->getDefaultState();
 

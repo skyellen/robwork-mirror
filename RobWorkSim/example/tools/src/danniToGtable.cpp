@@ -4,36 +4,12 @@
  *  Created on: 14-05-2009
  *      Author: jimali
  */
-
-#include <vector>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rwsim/dynamics/ContactManifold.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rw/geometry/GeometryUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
+#include <fstream>
 
 #include <rw/graspplanning/GraspTable.hpp>
-#include <rw/common/Log.hpp>
 
-using namespace boost::numeric;
-using namespace rw::math;
-using namespace rw::geometry;
-using namespace rw::common;
 using namespace rw::graspplanning;
-
-using namespace rwsim::dynamics;
+using namespace rw::math;
 
 using namespace boost::numeric::ublas;
 

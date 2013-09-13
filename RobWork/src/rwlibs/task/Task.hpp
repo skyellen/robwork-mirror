@@ -548,12 +548,12 @@ protected:
 		 * @return Pointer to the target object constructed and added.
 		 */
 		typename Target<T>::Ptr addTargetByValue(const T& value) {
-			addTarget(ownedPtr(new Target<T>(value)));
+			this->addTarget(rw::common::ownedPtr(new Target<T>(value)));
 			return this->_targets.back();
 		}
 
 		typename Target<T>::Ptr addTargetByValueToFront(const T& value) {
-            addTargetToFront(ownedPtr(new Target<T>(value)));
+            this->addTargetToFront(rw::common::ownedPtr(new Target<T>(value)));
             return this->_targets.front();
         }
 

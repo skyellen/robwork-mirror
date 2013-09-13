@@ -7,31 +7,9 @@
 #include <sys/stat.h>
 
 #include <rw/rw.hpp>
-
+#include <rw/math/Vector3D.hpp>
 #include <rwlibs/task/GraspTask.hpp>
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 
-//#include <rwsim/dynamics/ContactPoint.hpp>
-//#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/math/Vector3D.hpp>
-/*
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-*/
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-/*
-#include <rwsim/dynamics/DynamicUtil.hpp>
-#include <rwsim/dynamics/ContactManifold.hpp>
-*/
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
@@ -44,7 +22,6 @@
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
-//using namespace rwsim::dynamics;
 using namespace boost::program_options;
 using namespace boost::numeric::ublas;
 
@@ -100,7 +77,7 @@ std::vector<std::pair<Transform3D<>, RPY<> > > readPoses(std::string file){
     in.getline(line,1000);
     in.getline(line,1000);
 
-    char tmpc;
+    //Unused: char tmpc;
     while(!in.eof() ){
         in.getline(line,1000);
         std::istringstream istr(line);
@@ -157,15 +134,15 @@ int main(int argc, char** argv)
     typedef std::pair<int, bool> Value;
     typedef KDTreeQ<Value> NNSearch;
     std::vector<NNSearch::KDNode> nodes;
-    for(int i=0;i<stable.size();i++){
-        Transform3D<> t3d = stable[i].first;
+    for(std::size_t i=0;i<stable.size();i++){
+        //Unused: Transform3D<> t3d = stable[i].first;
         //stable[i].second(1) = stable[i].second(1)+13*Deg2Rad;
         RPY<> rpy = stable[i].second;
         Q key(2, rpy(1), rpy(2));
         nodes.push_back( NNSearch::KDNode(key, Value(i, true)) );
     }
-    for(int i=0;i<misses.size();i++){
-        Transform3D<> t3d = misses[i].first;
+    for(std::size_t i=0;i<misses.size();i++){
+    	//Unused: Transform3D<> t3d = misses[i].first;
         //misses[i].second(1) = misses[i].second(1)+13*Deg2Rad;
         RPY<> rpy = misses[i].second;
         Q key(2, rpy(1), rpy(2));
@@ -204,7 +181,7 @@ int main(int argc, char** argv)
         double xo = rpy(1);
         double yo = rpy(2);
 
-        int N = result.size();
+        //Unused: int N = result.size();
         BOOST_FOREACH(const NNSearch::KDNode* n, result ){
             Value v = n->value;
             RPY<> rpyo;
@@ -242,7 +219,7 @@ int main(int argc, char** argv)
 
     std::ofstream outf(output_file.c_str());
 
-    for(int i=0;i<stable.size();i++){
+    for(std::size_t i=0;i<stable.size();i++){
         Transform3D<> t3d = stable[i].first;
         EAA<> eaa(t3d.R());
         RPY<> rpy = stable[i].second;
@@ -251,7 +228,7 @@ int main(int argc, char** argv)
         outf << qualityestimates[i] << "\n";
     }
     RW_WARN("1");
-    for(int i=0;i<misses.size();i++){
+    for(std::size_t i=0;i<misses.size();i++){
         Transform3D<> t3d = misses[i].first;
         EAA<> eaa(t3d.R());
         RPY<> rpy = misses[i].second;

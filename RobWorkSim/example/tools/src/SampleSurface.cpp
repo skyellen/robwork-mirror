@@ -5,39 +5,18 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
+#include <rw/rw.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rwlibs/task.hpp>
 
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rwsim/dynamics/DynamicUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
-using namespace rwsim::dynamics;
-
 using namespace boost::numeric::ublas;
 
 int binSearchRec(const double value, std::vector<double>& surfaceArea, size_t start, size_t end){
@@ -154,7 +133,7 @@ int main(int argc, char** argv)
 
 	    Vector3D<> position = tri[0] * b0 + tri[1] * b1 + tri[2] * b2;
 	    // add some randomeness to the position
-	    const double RANDIST = 0.02;
+	    //Unused: const double RANDIST = 0.02;
 	    //position += Vector3D<>(Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST));
 
 	    // and sample the orientation

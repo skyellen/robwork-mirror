@@ -7,42 +7,13 @@
 
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rw/geometry/GeometryUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
 #include <rw/common/Log.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
-#include <sandbox/loaders/RWXMLFile.hpp>
-
-#include <rw/loaders.hpp>
-#include <rw/math.hpp>
-#include <rw/models.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/geometry.hpp>
-
-using namespace boost::numeric;
-using namespace rw::math;
-using namespace rw::geometry;
 using namespace rw::common;
-using namespace rw::loaders;
-using namespace rw::models;
-
-
+using namespace rwsim::dynamics;
+using namespace rwsim::loaders;
 
 int main(int argc, char** argv)
 {
@@ -54,7 +25,7 @@ int main(int argc, char** argv)
 	std::string filename(argv[1]);
 
 	Log::infoLog() << "Loading workcell" << std::endl;
-	DynamicWorkCellPtr dwc = DynamicWorkCellLoader::load(filename);
+	DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(filename);
 	Log::infoLog() << "workcell loadet" << std::endl;
 
 	Log::infoLog() << "saving workcell" << std::endl;

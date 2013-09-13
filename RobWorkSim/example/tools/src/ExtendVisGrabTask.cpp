@@ -16,26 +16,13 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-#include <boost/foreach.hpp>
+
 #include <rw/rw.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rwlibs/task.hpp>
-
-#include <vector>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
+#include <boost/foreach.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -57,7 +44,7 @@ vector<string> objectDirectories;
 
 int main(int argc, char** argv)
 {
-    int directoryType = 0, sceneTypeStart = 1, mergeFiles = 0;
+	//Unused: int directoryType = 0, sceneTypeStart = 1, mergeFiles = 0;
     expRoot = "";
     toStlModel = "imageFeaturesToStl";
     if (argc > 1) expRoot = std::string(argv[1]);
@@ -97,7 +84,7 @@ int main(int argc, char** argv)
                 continue;
         }
         sprintf(cmd2, "%s %s 0.005 %s", toStlModel.c_str(), file.c_str(), outfile.c_str());
-        int ret = system(cmd2);
+        //Unused: int ret = system(cmd2);
 
     }
     std::cout << "\n***************************************************** " << std::endl;
@@ -116,7 +103,7 @@ int main(int argc, char** argv)
 
     RW_ASSERT(taskFiles.size()==colStlFiles.size());
     // load workcell and initialize collision detector
-    WorkCell::Ptr wc = WorkCellLoader::load(expRoot+"/textured/workcells/empty.wc.xml");
+    WorkCell::Ptr wc = WorkCellLoader::Factory::load(expRoot+"/textured/workcells/empty.wc.xml");
     CollisionStrategy::Ptr strategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
     MovableFrame *_mframe = wc->findFrame<MovableFrame>("SchunkHand.Base");
     Frame *_end = wc->findFrame<Frame>("SchunkHand.Base");

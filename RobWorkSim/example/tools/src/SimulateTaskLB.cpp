@@ -6,27 +6,14 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/proximity/BasicFilterStrategy.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/rw.hpp>
+#include <rw/common/LogFileWriter.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
+#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
 #include <boost/program_options/options_description.hpp>
@@ -35,8 +22,6 @@
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-#include <rw/common/LogFileWriter.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -217,7 +202,8 @@ int main(int argc, char** argv)
     }
 
     // do the simulation
-    int targets = 0, totaltargets = 0;
+    //Unused: int targets = 0;
+    int totaltargets = 0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
     BOOST_FOREACH(std::string ifile, infiles){
@@ -287,7 +273,7 @@ GraspTask::Ptr generateTasks(int nrTasks, DynamicWorkCell::Ptr dwc, string objec
     string gripperName;
     dwc->getBodies();
     WorkCell::Ptr _wc = dwc->getWorkcell();
-    int nrOfCollisions = 0;
+    //Ununsed: int nrOfCollisions = 0;
     GraspTask::Ptr gtask = ownedPtr(new GraspTask());
     Body::Ptr body = dwc->findBody(objectName);
     if(body==NULL){

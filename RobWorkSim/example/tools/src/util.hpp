@@ -1,12 +1,12 @@
 #ifndef UTILS_TOOLS_HPP
 #define UTILS_TOOLS_HPP
 
+#include <vector>
+
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
-
-#include <vector>
 #include <rwlibs/task/GraspTask.hpp>
 
 typedef rwlibs::algorithms::KDTreeQ<std::pair<rwlibs::task::GraspSubTask*,rwlibs::task::GraspTarget*> > GTaskNNSearch;

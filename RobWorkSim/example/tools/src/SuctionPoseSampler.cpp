@@ -5,35 +5,16 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
+#include <rw/rw.hpp>
 #include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rwsim/dynamics/DynamicUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwlibs/task.hpp>
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
@@ -153,7 +134,7 @@ int main(int argc, char** argv)
     ProximityModel::Ptr object = cstrategy->createModel();
     cstrategy->addGeometry(object.get(), geo);
     ProximityStrategyData data;
-    data.setCollisionQueryType( AllContacts );
+    data.setCollisionQueryType( CollisionStrategy::AllContacts );
 
 	// now we choose a random number in the total area
 	const int NR_OF_SAMPLES = 10000;

@@ -8,34 +8,22 @@
 #include <sys/stat.h>
 
 #include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
 #include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
 #include <rw/loaders/rwxml/XML.hpp>
+#include <rwlibs/task.hpp>
+#include <rwlibs/task/GraspTask.hpp>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
-#include <rw/common/macros.hpp>
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
-
+using namespace rwlibs::task;
 using namespace boost::numeric;
 using namespace boost::property_tree;
-using namespace rwsim::simulator;
 
 namespace {
 
@@ -308,6 +296,7 @@ rwlibs::task::CartesianTask::Ptr  readGraspTask(const std::string& filename){
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
     }
+    return NULL;
 }
 
 
@@ -354,9 +343,9 @@ void writeUIBK(const std::string& taskFile, const std::string& outfile){
 
     rwlibs::task::CartesianTask::Ptr task = loader.getCartesianTask();
     Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
-    Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
-    Vector3D<> approach = task->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
-    Transform3D<> approachDef = Transform3D<>( approach, Rotation3D<>::identity());
+    //Unused: Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+    //Unused: Vector3D<> approach = task->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
+    //Unused: Transform3D<> approachDef = Transform3D<>( approach, Rotation3D<>::identity());
     Q openQ = task->getPropertyMap().get<Q>("OpenQ");
     Q closeQ = task->getPropertyMap().get<Q>("CloseQ");
 
@@ -433,11 +422,11 @@ void mergeRW(const std::string& tasksDir, const std::string& outfile){
         loader.load(files[0]);
         mergedtask = loader.getCartesianTask();
     }
-    for(int i=1;i<files.size();i++){
+    for(std::size_t i=1;i<files.size();i++){
         RW_WARN("1");
         const std::string& taskfile = files[i];
         RW_WARN("1"<<taskfile);
-        int fcount = 0;
+        //Unused: int fcount = 0;
         rwlibs::task::CartesianTask::Ptr task;
         {
             XMLTaskLoader loader;

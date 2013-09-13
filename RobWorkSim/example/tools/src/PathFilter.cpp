@@ -7,46 +7,21 @@
 
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rw/geometry/GeometryUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
 #include <rw/common/Log.hpp>
-#include <rw/loaders.hpp>
-#include <rw/trajectory/Path.hpp>
-
-#include <sandbox/loaders/RWXMLFile.hpp>
-
+#include <rw/kinematics.hpp>
 #include <rw/loaders.hpp>
 #include <rw/math.hpp>
-#include <rw/models.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/geometry.hpp>
+#include <rw/math/Vector3D.hpp>
+#include <rw/trajectory/Path.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
-using namespace boost::numeric;
-using namespace rw::math;
-using namespace rw::geometry;
 using namespace rw::common;
-using namespace rw::loaders;
-using namespace rw::models;
 using namespace rw::kinematics;
+using namespace rw::loaders;
+using namespace rw::math;
 using namespace rwsim::loaders;
 using namespace rwsim::dynamics;
+using namespace boost::numeric;
 
 void saveDist(std::string filename, std::vector<Transform3D<> >& poses, Rotation3D<> rot){
     std::cout << "Openning file: " << filename << std::endl;
@@ -105,9 +80,9 @@ int main(int argc, char** argv)
 	rw::trajectory::TimedStatePath outpath, startoutpath, outpathmisses, startoutpathmisses;
 	std::vector<Transform3D<> > endTrans, startTrans;
 	std::vector<Transform3D<> > endTransMisses, startTransMisses;
-	bool rotSet=false;
+	//Unused: bool rotSet=false;
 	Vector3D<> rotAxis;
-	for(int i=0;i<path->size();i++){
+	for(std::size_t i=0;i<path->size();i++){
 	    const State &state = (*path)[i].getValue();
 
 	    Transform3D<> t = plate->getTransform(state);

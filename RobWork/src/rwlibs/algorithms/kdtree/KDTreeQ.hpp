@@ -232,7 +232,7 @@ namespace rwlibs { namespace algorithms {
             oarchive.write((int)_nodes->size(), "nrNodes");
             oarchive.write(_root, "rootId");
             RW_ASSERT(_nrOfNodes==_nodes->size());
-            for(int i=0;i<_nodes->size();i++){
+            for(std::size_t i=0;i<_nodes->size();i++){
                 const TreeNode &node = (*_nodes)[i];
                 oarchive.write((boost::uint64_t)&node, "id");
                 oarchive.write((int)node._axis, "axis");

@@ -7,8 +7,6 @@
 
 #include "IKSoftCSolver.hpp"
 
-#include <rw/kinematics/Kinematics.hpp>
-
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
@@ -20,11 +18,11 @@
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/invkin/JacobianIKSolver.hpp>
-#include <rw/common/StringUtil.hpp>
 
 #include <boost/foreach.hpp>
 
-#include <rw/common/TimerUtil.hpp>
+#include <ode/ode.h>
+
 
 using namespace rw::math;
 using namespace rw::kinematics;

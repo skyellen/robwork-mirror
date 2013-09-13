@@ -5,33 +5,13 @@
  *      Author: jimali
  */
 
+#include <fstream>
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rw/geometry/GeometryUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
 #include <rw/graspplanning/GraspTable.hpp>
-#include <rw/common/Log.hpp>
+#include <rw/math/Vector3D.hpp>
 
-using namespace boost::numeric;
 using namespace rw::math;
-using namespace rw::geometry;
-using namespace rw::common;
 using namespace rw::graspplanning;
 
 const int linesize = 8*256;
@@ -39,7 +19,8 @@ char tmpStr[linesize];
 
 using namespace boost::numeric::ublas;
 Vector3D<> getVector3D(std::ifstream& istr){
-	double x,y,z,rr,rp,ry;
+	double x,y,z;
+	//Unused: double rr,rp,ry;
 	char tmpC;
 	istr >> tmpC >> x >> tmpC >> y >> tmpC >> z;
 	//std::cout << "center:" << x << "," << y << "," << z<< std::endl;
@@ -102,9 +83,9 @@ int main(int argc, char** argv)
 	}
 	std::string filename(argv[1]);
 	std::string table_filename(argv[2]);
-	int groupSize = 1;
+	//Unused: int groupSize = 1;
 
-	GraspTable *gtable = new GraspTable("SchunkHand","Cylinder");
+	//Unused: GraspTable *gtable = new GraspTable("SchunkHand","Cylinder");
 
 	std::ifstream istr( filename.c_str() );
 /*
@@ -124,18 +105,24 @@ int main(int argc, char** argv)
 	0 45 90 45 90 45 90
 	[frame 8103162]
 */
-	char tmpC;
-	double x,y,z,rr,rp,ry;
+	//Unused: char tmpC;
+	//Unused: double x,y,z,rr,rp,ry;
 	const int linesize = 8*256;
 	char tmpStr[linesize];
 	istr.getline(tmpStr,linesize); // object center
-	Vector3D<> objCenter = getVector3D(istr);
+	//Unused: Vector3D<> objCenter = getVector3D(istr);
+	//Instead:
+	getVector3D(istr);
 
 	istr.getline(tmpStr,linesize); // arm goal 1
-	Vector3D<> armGoal1 = getVector3D(istr);
+	//Unused: Vector3D<> armGoal1 = getVector3D(istr);
+	//Instead:
+	getVector3D(istr);
 
 	istr.getline(tmpStr,linesize); // arm goal 2
-	Vector3D<> armGoal2 = getVector3D(istr);
+	//Unused: Vector3D<> armGoal2 = getVector3D(istr);
+	//Instead:
+	getVector3D(istr);
 
 	istr.getline(tmpStr,linesize); // approach angle
 	double approach_angle;

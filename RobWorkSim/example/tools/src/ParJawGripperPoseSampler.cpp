@@ -5,39 +5,21 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
+#include <vector>
 
 #include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-#include <rwlibs/algorithms/kdtree/KDTree.hpp>
-#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
-
-#include <vector>
-#include <rwlibs/task/GraspTask.hpp>
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriMeshSurfaceSampler.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-
-#include <rwsim/dynamics/DynamicUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
+#include <rwlibs/algorithms/kdtree/KDTree.hpp>
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwlibs/task.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 
-#include <rw/geometry/TriMeshSurfaceSampler.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
@@ -45,7 +27,6 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -141,7 +122,7 @@ int main(int argc, char** argv)
 
     // load workcell
     std::cout << "Loading workcell: " << file_wc.string() << std::endl;
-    WorkCell::Ptr wc = WorkCellLoader::load( file_wc.string() );
+    WorkCell::Ptr wc = WorkCellLoader::Factory::load( file_wc.string() );
     RW_ASSERT( wc!=NULL );
 
     std::string name_object = vm["object"].as<std::string>();
@@ -282,8 +263,7 @@ int main(int argc, char** argv)
 
         //Transform3D<> target = sampleParSurface(CLOSEQ+jawdist,OPENQ*2.0+jawdist, sampler, object, ray, cstrategy, graspW);
 
-        int i = Math::ranI(0, features.size()-1);
-        std::pair<int,int> sfeat = features[i];
+        std::pair<int,int> sfeat = features[Math::ranI(0, features.size()-1)];
         Vector3D<> p1 = points[sfeat.first].first;
         Vector3D<> p2 = points[sfeat.second].first;
         Vector3D<> tcp_p = (p2-p1)/2.0 + p1;

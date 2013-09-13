@@ -6,28 +6,14 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/proximity/BasicFilterStrategy.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/rw.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
+#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -36,16 +22,14 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
-#include <rwlibs/task/GraspTask.hpp>
-
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
-using namespace boost::program_options;
+using namespace rwlibs::task;
 using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
-using namespace rwlibs::task;
+using namespace boost::program_options;
 
 void addPertubations(GraspTask::Ptr grasptask, double sigma_p, double sigma_a, int pertubationsPerTarget);
 
@@ -170,7 +154,8 @@ int main(int argc, char** argv)
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
     // do the simulation
-    int targets = 0, totaltargets = 0;
+    //Unused: int targets = 0;
+    int totaltargets = 0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
     bool perturbe = vm["perturbe"].as<bool>();
     BOOST_FOREACH(std::string ifile, infiles){
@@ -214,7 +199,7 @@ int main(int argc, char** argv)
             tasks.push_back(grasptask);
         }
 
-        for(int i=0;i<tasks.size();i++){
+        for(std::size_t i=0;i<tasks.size();i++){
             std::stringstream outputfile;
             if(iformat==0){
                 outputfile << sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml";
@@ -262,7 +247,7 @@ void addPertubations(GraspTask::Ptr grasptask, double sigma_p, double sigma_a, i
     //double sigma_p = 0.005;
     //double sigma_a = 15*Deg2Rad;
     //int pertubationsPerTarget = 100;
-    int count = 0;
+    //Unused: int count = 0;
     // temporarilly change refframe to Object change
     BOOST_FOREACH(GraspSubTask &stask, grasptask->getSubTasks()){
         std::vector<GraspTarget> ntargets;

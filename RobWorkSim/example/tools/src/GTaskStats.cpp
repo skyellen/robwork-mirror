@@ -6,28 +6,12 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
-
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rw/proximity/BasicFilterStrategy.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
+#include <rw/rw.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
-
-#include <rwsim/simulator/GraspTaskSimulator.hpp>
+#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
-#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -36,16 +20,11 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
 using namespace boost::program_options;
-using namespace rwsim::simulator;
-using namespace rwsim::dynamics;
-using namespace rwsim::loaders;
-using namespace rwlibs::task;
 
 std::vector<std::pair<GraspSubTask*,GraspTarget*> > getTargets(GraspTask::Ptr gtask);
 void printConfMatrix(boost::numeric::ublas::bounded_matrix<int, 7, 7>& mat);

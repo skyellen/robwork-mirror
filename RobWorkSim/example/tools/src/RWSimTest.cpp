@@ -1,30 +1,21 @@
 
 //#include "OBB.hpp"
-#include <vector>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-
 #include <stdio.h>
 // ifstream::is_open
 #include <iostream>
 #include <fstream>
 #include <rwsim/dynamics/OBRManifold.hpp>
+#include <vector>
 
+#include <rw/math/Vector3D.hpp>
+#include <rwsim/dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/ContactCluster.hpp>
+
+#include <boost/foreach.hpp>
 
 using namespace rw::math;
-using namespace boost::numeric;
 using namespace rwsim::dynamics;
+using namespace boost::numeric;
 
 
 ContactPoint makeContact(double x,double y,double z, double pen, Vector3D<> normal){
@@ -56,10 +47,10 @@ public:
      * @return
      */
     OBBManifold(double thres = 0.03, double sepThres = 0.01):
-        _threshold(thres),
-        _sepThreshold(sepThres),
+        _nrOfContacts(0),
         _deepestIdx(0),
-        _nrOfContacts(0)
+        _threshold(thres),
+        _sepThreshold(sepThres)
     {};
 
     virtual ~OBBManifold(){};
@@ -258,7 +249,7 @@ public:
 
         Vector3D<> max = rotInv * p.p;
         Vector3D<> min = max;
-        for(size_t i = 0; i<_nrOfContacts; i++ ){
+        for(int i = 0; i<_nrOfContacts; i++ ){
             const Vector3D<> prot = rotInv * _points[i].p;
             if( prot(0)>max(0) ) max(0) = prot(0);
             else if( prot(0)<min(0) ) min(0) = prot(0);
@@ -369,7 +360,7 @@ std::pair<Transform3D<>, Vector3D<> > fit(std::vector<ContactPoint>& points){
 
     Vector3D<> max = rotInv * points[0].p;
     Vector3D<> min = max;
-    for(size_t i = 0; i<nrContacts; i++ ){
+    for(int i = 0; i<nrContacts; i++ ){
         const Vector3D<> prot = rotInv * points[i].p;
         if( prot(0)>max(0) ) max(0) = prot(0);
         else if( prot(0)<min(0) ) min(0) = prot(0);
@@ -432,9 +423,11 @@ int main(int argc, char** argv)
 	if(argc>2)
 	    n = (double) std::atof(argv[2]);
 
-    float mThres = 1.0;
-    if(argc>3)
-        mThres = std::atof(argv[3]);
+    /*Unused:
+     float mThres = 1.0;
+     if(argc>3)
+		mThres = std::atof(argv[3]);
+     */
 
 	// test contact cluster
 	std::vector<ContactPoint> src = loadContacts(filename);
@@ -499,7 +492,7 @@ int main(int argc, char** argv)
         int idxFrom = srcIdx[i];
         const int idxTo = srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        ContactPoint &deepestP = src[dstIdx[idxFrom]];
+        //Unused: ContactPoint &deepestP = src[dstIdx[idxFrom]];
 
         OBRManifold manifold(13*Deg2Rad,0.2);
 
@@ -562,7 +555,7 @@ int main(int argc, char** argv)
     */
 
     std::cout << "\n\nTOTAL Nr contacts in input: " << src.size() << std::endl;
-    for(int i=0;i<manifolds.size();i++){
+    for(size_t i=0;i<manifolds.size();i++){
         std::cout << i+1 << "'th Manifold" << std::endl;
         //OBBManifold &manifold = manifolds[i];
         OBRManifold &manifold = manifolds[i];

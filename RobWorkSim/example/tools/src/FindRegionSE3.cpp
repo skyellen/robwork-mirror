@@ -7,42 +7,18 @@
 #include <sys/stat.h>
 
 #include <rw/rw.hpp>
+#include <rw/math/Vector3D.hpp>
 #include <rwlibs/task.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
-#include <vector>
-#include <rwlibs/task/GraspTask.hpp>
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rwsim/dynamics/DynamicUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 #include <iterator>
 
 #include "util.hpp"
@@ -233,10 +209,10 @@ int main(int argc, char** argv){
             count ++;
             Transform3D<> s = inputStartCfgs[ idx ];
             EAA<> sr( s.R() );
-            Vector3D<> srz = s.R()*Vector3D<>::z();
+            //Unused: Vector3D<> srz = s.R()*Vector3D<>::z();
             Transform3D<> e = inputEndCfgs[ idx ];
             EAA<> er( e.R() );
-            Vector3D<> erz = e.R()*Vector3D<>::z();
+            //Unused: Vector3D<> erz = e.R()*Vector3D<>::z();
             dir += er.axis();
             angle += er.angle();
 
@@ -290,7 +266,7 @@ int main_lpe(int argc, char** argv)
     double angleThres = vm["angle"].as<double>()*Deg2Rad;
     std::string input = vm["input"].as<string>();
     std::string output = vm["output"].as<string>();
-    int count = vm["samples"].as<int>();
+    //Unused: int count = vm["samples"].as<int>();
     GraspTask::Ptr gtask = GraspTask::load( input );
 
     // first we build a search tree to efficiently search for targets in 6d
@@ -303,7 +279,7 @@ int main_lpe(int argc, char** argv)
     std::vector< Value > selGrasps;
     std::list<const NNSearch::KDNode*> result;
 
-    for(int i=0;i<simnodes.size(); i++){
+    for(std::size_t i=0;i<simnodes.size(); i++){
         // find the node with the highest quality
         double q_max = -100;
         NNSearch::KDNode *n_max = &simnodes[0];
@@ -386,7 +362,7 @@ int main_jaj(int argc, char** argv)
 	std::vector< Value > selGrasps;
 	std::list<const NNSearch::KDNode*> result;
 	int samples_f = 0, samples_t = 0;
-	while(selGrasps.size()<count){
+	while(selGrasps.size()<(std::size_t)count){
         result.clear();
         EAA<> eaa( Math::ranRotation3D<double>() );
         //Vector3D<> k = Math::ranRotation3D<double>()*Vector3D<>::z();
@@ -398,7 +374,7 @@ int main_jaj(int argc, char** argv)
             continue;
         samples_t++;
         int idx = Math::ranI(0,result.size());
-        if(idx == result.size())
+        if((std::size_t)idx == result.size())
             idx--;
         std::list<const NNSearch::KDNode*>::iterator i = result.begin();
         //std::cout << idx << "==" <<  result.size() << std::endl;

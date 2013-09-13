@@ -16,12 +16,9 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
-#include <rw/kinematics/FKRange.hpp>
 
 #include <map>
 #include <vector>
-
-#include <ode/ode.h>
 
 /** \addtogroup algorithms */
 /*@{*/

@@ -7,30 +7,17 @@
 
 #include <vector>
 
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <rw/math/Vector3D.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Vector3D.hpp>
 
-#include <rwsim/dynamics/DynamicUtil.hpp>
+#include <boost/tuple/tuple.hpp>
 
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
+using namespace rw::geometry;
+using namespace rw::loaders;
 using namespace rw::math;
 using namespace boost::numeric;
-using namespace rw::math;
-using namespace rw::geometry;
-using namespace rwsim::dynamics;
-
 using namespace boost::numeric::ublas;
 
 int main(int argc, char** argv)

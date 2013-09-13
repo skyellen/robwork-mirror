@@ -1,13 +1,8 @@
-
-#include <rw/rw.hpp>
-#include <rw/invkin/IterativeMultiIK.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/models/TreeDevice.hpp>
-#include <rw/kinematics/FKRange.hpp>
-
 #include "IKSoftCSolver.hpp"
 
+#include <rw/rw.hpp>
+#include <rw/kinematics/State.hpp>
+#include <rw/models/TreeDevice.hpp>
 
 #include <map>
 #include <vector>

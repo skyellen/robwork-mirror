@@ -5,44 +5,21 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
+#include <vector>
 
 #include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
+#include <rw/geometry/Triangle.hpp>
+#include <rw/math/Vector3D.hpp>
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
-
-#include <vector>
+#include <rwlibs/task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <rwsim/dynamics/DynamicUtil.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
-using namespace rwsim::dynamics;
-
 using namespace boost::numeric::ublas;
-
 
 const double SOFT_LAYER_SIZE = 0.0005;
 
@@ -141,7 +118,7 @@ int main(int argc, char** argv)
     }
 
     NNSearchRes *nntree = NNSearchRes::buildTree(simnodes);
-    NNSearchPos *nntree_pos = NNSearchPos::buildTree(posnodes);
+    //Unused: NNSearchPos *nntree_pos = NNSearchPos::buildTree(posnodes);
 
     //Q diff(7, 0.015, 0.015, 0.015, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad, 25*Deg2Rad);
     Q diff(6, 0.005, 0.005, 0.005, 8*Deg2Rad, 8*Deg2Rad, 8*Deg2Rad);
@@ -217,7 +194,7 @@ int main(int argc, char** argv)
             gres->testStatus = GraspTask::Success;
 
             Q quality(gres->qualityAfterLifting.size()+1);
-            for(int i=0;i<gres->qualityAfterLifting.size();i++)
+            for(std::size_t i=0;i<gres->qualityAfterLifting.size();i++)
                 quality[i] = gres->qualityAfterLifting[i];
 
             quality[gres->qualityAfterLifting.size()] = nrNeighbors*(1.0/maxNeigh);
@@ -228,7 +205,7 @@ int main(int argc, char** argv)
             // find the simnode closest to the experiment
             //KDTreeQ::KDNode& node =  nntree->nnSearch(key);
 
-            double closest_dist = 1000.0;
+            //Unused: double closest_dist = 1000.0;
             NNSearchRes::Node* closest_node = NULL;
             // make bruteforce search on position alone
 
@@ -273,13 +250,19 @@ int main(int argc, char** argv)
             q_dim = qual.size();
             if((exptestStatus==GraspTask::Success) || (exptestStatus==GraspTask::ObjectSlipped)){
                 ss << "1\t"<< dist;
-                BOOST_FOREACH(double q, gres->qualityAfterLifting){ss << "\t" << q; }
-                BOOST_FOREACH(double q, key_scaled){ss << "\t" << q; }
+                Q qTmp;
+                qTmp = gres->qualityAfterLifting;
+                for (std::size_t ind = 0; ind < qTmp.size(); ind++) ss << "\t" << qTmp[ind];
+                qTmp = key_scaled;
+                for (std::size_t ind = 0; ind < qTmp.size(); ind++) ss << "\t" << qTmp[ind];
                 successes.push_back(ss.str());
             } else {
                 ss << "0\t"<< dist;
-                BOOST_FOREACH(double q, gres->qualityAfterLifting){ss << "\t" << q; }
-                BOOST_FOREACH(double q, key_scaled){ss << "\t" << q; }
+                Q qTmp;
+                qTmp = gres->qualityAfterLifting;
+                for (std::size_t ind = 0; ind < qTmp.size(); ind++) ss << "\t" << qTmp[ind];
+                qTmp = key_scaled;
+                for (std::size_t ind = 0; ind < qTmp.size(); ind++) ss << "\t" << qTmp[ind];
                 failures.push_back(ss.str());
             }
 	    }
