@@ -16,10 +16,17 @@ namespace rw {
 				//! @brief Smart pointer
 				typedef rw::common::Ptr<JawPrimitive> Ptr;
 				
+				//! @brief Cutout types
+				enum CutoutType {
+					Prismatic,
+					Cylindrical
+				};
+				
                 /**
                  * @brief constructor (generates basic box jaw shape: length, width, depth)
                  */
                 JawPrimitive(double length=0.1, double width=0.025, double depth=0.02) :
+					_type(Prismatic),
                     _length(length),
                     _width(width),
                     _depth(depth),
@@ -27,7 +34,8 @@ namespace rw {
                     _chamferAngle(0.0),
                     _cutPosition(_length/2),
                     _cutDepth(0.0),
-                    _cutAngle(90.0*rw::math::Deg2Rad)
+                    _cutAngle(90.0*rw::math::Deg2Rad),
+                    _cutRadius(0.0)
                 {}
 
                 /**
@@ -47,6 +55,8 @@ namespace rw {
                 double getCutPosition() const { return _cutPosition; }
                 double getCutDepth() const { return _cutDepth; }
                 double getCutAngle() const { return _cutAngle; }
+                double getCutRadius() const { return _cutRadius; }
+                CutoutType getCutType() const { return _type; }
                 
                 void setLength(double length) { _length = length; }
                 void setWidth(double width) { _width = width; }
@@ -56,23 +66,27 @@ namespace rw {
                 void setCutPosition(double pos) { _cutPosition = pos; }
                 void setCutDepth(double depth) { _cutDepth = depth; }
                 void setCutAngle(double angle) { _cutAngle = angle; }
+                void setCutRadius(double radius) { _cutRadius = radius; }
+                void setCutType(CutoutType type) { _type = type; }
                 
                 //! @brief Saves parameters to string (for use with XML saver)
-                std::string toString() const;
+                virtual std::string toString() const;
 
                 // inherited from Primitive
                 //! @copydoc Primitive::createMesh
-                TriMesh::Ptr createMesh(int resolution=0) const;
+                virtual TriMesh::Ptr createMesh(int resolution=0) const;
 
                 //! @copydoc Primitive::getParameters
-                rw::math::Q getParameters() const;
+                virtual rw::math::Q getParameters() const;
 
                 //! @copydoc GeometryData::getType
                 GeometryType getType() const { return UserType; }
 
-            private:
+            protected:
+				CutoutType _type;
+            
                 double _length, _width, _depth;
                 double _chamferDepth, _chamferAngle;
-                double _cutPosition, _cutDepth, _cutAngle;
+                double _cutPosition, _cutDepth, _cutAngle, _cutRadius;
         };
 }} // end namespaces

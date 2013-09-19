@@ -10,6 +10,7 @@
 
 class QLineEdit;
 class QPushButton;
+class QRadioButton;
 
 
 
@@ -25,13 +26,16 @@ class DesignDialog : public QDialog
 		/**
 		 * @brief Constructor
 		 */
-		DesignDialog(QWidget* parent=0, rw::models::Gripper::Ptr gripper=0);
+		DesignDialog(QWidget* parent=0, rw::models::Gripper::Ptr gripper=0, std::string wd="");
 		
 		//! @brief Destructor
 		virtual ~DesignDialog() {}
 		
 		//! @brief Get gripper
 		rw::models::Gripper::Ptr getGripper() { return _gripper; }
+		
+		//! @brief Get working directory
+		std::string getWorkingDirectory() { return _wd; }
 		
 	private slots:
 		void guiEvent();
@@ -57,6 +61,8 @@ class DesignDialog : public QDialog
 		QLineEdit* _forceEdit;
 		QLineEdit* _jawdistEdit;
 		QLineEdit* _openingEdit;
+		QRadioButton* _prismaticButton;
+		QRadioButton* _cylindricalButton;
 		
 		QPushButton* _okButton;
 		QPushButton* _cancelButton;
@@ -64,4 +70,6 @@ class DesignDialog : public QDialog
 		QPushButton* _loadButton;
 		QPushButton* _saveButton;
 		QPushButton* _defaultButton;
+		
+		std::string _wd;
 };

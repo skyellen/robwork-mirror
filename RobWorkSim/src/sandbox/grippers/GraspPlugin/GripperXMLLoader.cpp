@@ -118,10 +118,10 @@ JawPrimitive::Ptr readJaw(PTree& tree)
 {
 	Q params = readQ(tree);
 	
-	params[4] *= Deg2Rad;
-	params[7] *= Deg2Rad;
+	params[5] *= Deg2Rad;
+	if (params[0] == JawPrimitive::Prismatic) params[8] *= Deg2Rad;
 	
-	//cout << params << endl;
+	cout << params << endl;
 	
 	return ownedPtr(new JawPrimitive(params));
 }
@@ -161,6 +161,18 @@ void readParameters(PTree& tree, Gripper::Ptr gripper)
 		else if (p->first == "Force") {
 			double force = readDouble(p->second);
 			gripper->setForce(force);
+		}
+	}
+}
+
+
+
+void readTasks(PTree& tree, Gripper::Ptr gripper)
+{
+	for (CI p = tree.begin(); p != tree.end(); ++p) {
+		if (p->first == "File") {
+			gripper->setDataFilename(p->second.get_value<string>());
+			gripper->loadTasks(gripper->getDataFilename());
 		}
 	}
 }
@@ -213,6 +225,10 @@ Gripper::Ptr readGripper(PTree& tree)
 			readParameters(p->second, gripper);
 		}
 		
+		else if (p->first == "Tasks") {
+			readTasks(p->second, gripper);
+		}
+		
 		else if (p->first == "Result") {
 			readResult(p->second, gripper);
 		}
@@ -244,7 +260,7 @@ rw::models::Gripper::Ptr GripperXMLLoader::load(const std::string& filename)
 
 
 
-void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string& filename)
+void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string& dir, const std::string& filename)
 {
 	PTree tree;
 	
@@ -255,6 +271,8 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Parameters.Jawdist", gripper->getJawdist());
 	tree.put("Gripper.Parameters.Opening", gripper->getOpening());
 	tree.put("Gripper.Parameters.Force", gripper->getForce());
+	
+	tree.put("Gripper.Tasks.File", dir+'/'+gripper->getDataFilename());
 	
 	GripperQuality::Ptr q = gripper->getQuality();
 	tree.put("Gripper.Result.Experiments", q->nOfExperiments);
@@ -267,7 +285,9 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-        write_xml(filename, tree, std::locale(), settings);
+        write_xml(dir+'/'+filename, tree, std::locale(), settings);
+        cout << "Saving tasks to: " << dir+'/'+gripper->getDataFilename() << endl;
+        gripper->saveTasks(dir+'/'+gripper->getDataFilename());
     } catch (const ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());

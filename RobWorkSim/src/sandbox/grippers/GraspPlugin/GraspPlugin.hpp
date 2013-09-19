@@ -76,7 +76,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		void loadGeometry(std::string directory);
 		
 		//! @brief shows tasks in RWS window
-		void showTasks();
+		void showTasks(rwlibs::task::GraspTask::Ptr tasks);
 		
 		//! @brief sets up the GUI
 		void setupGUI();
@@ -85,7 +85,17 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		 * @brief Calculates gripper quality after the simulation is finished.
 		 * So far only success ratio is taken into account.
 		 */
-		double calculateQuality(rwlibs::task::GraspTask::Ptr tasks);
+		double calculateQuality(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks);
+		
+		/**
+		 * @brief Calculates coverage.
+		 */
+		double calculateCoverage(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks, rw::math::Q diff);
+		
+		/**
+		 * @brief Helper - filter & count targets using distance metric
+		 */
+		int filterAndCount(rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff) const;
 		
 		//! @brief Experimental - add new gripper device to the workcell
 		void addGripper(rw::math::Transform3D<> transform);
@@ -122,8 +132,8 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QGroupBox* _geometryBox;
 		QPushButton* _designButton;
 		QCheckBox* _autoPlanCheck;
-		QPushButton* _loadGeoButton;
-		QPushButton* _saveGeoButton;
+		QPushButton* _loadGripperButton;
+		QPushButton* _saveGripperButton;
 		
 		// manual grasp tasks generation
 		QGroupBox* _manualBox;
@@ -148,4 +158,10 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QPushButton* _stopButton;
 		QCheckBox* _slowCheck;
 		QCheckBox* _silentCheck;
+		
+		// working directory
+		std::string _wd;
+		
+		double _interferenceLimit;
+		double _wrenchLimit;
 };

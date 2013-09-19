@@ -17,17 +17,28 @@ using namespace rw::csg;
 
 JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 {
-	if(initQ.size() != 8)
-		RW_THROW("Size of parameter list must equal 8!");
+	if(initQ.size() != 9)
+		RW_THROW("Size of parameter list must equal 9!");
 		
-	_length = initQ(0);
-	_width = initQ(1);
-	_depth = initQ(2);
-	_chamferDepth = initQ(3);
-	_chamferAngle = initQ(4);
-	_cutPosition = initQ(5);
-	_cutDepth = initQ(6);
-	_cutAngle = initQ(7);
+		//cout << initQ << endl;
+	
+	int i = 0;
+	_type = CutoutType(initQ(i++));
+	_length = initQ(i++);
+	_width = initQ(i++);
+	_depth = initQ(i++);
+	_chamferDepth = initQ(i++);
+	_chamferAngle = initQ(i++);
+	_cutPosition = initQ(i++);
+	_cutDepth = initQ(i++);
+	
+	if (_type == Cylindrical) {
+		_cutRadius = initQ(i++);
+	} else {
+		_cutAngle = initQ(i++);
+	}
+	
+	//cout << "Made jaw" << endl;
 }
 
 
@@ -50,8 +61,13 @@ TriMesh::Ptr JawPrimitive::createMesh(int resolution) const
 	base -= CSGModel::makePlane(point, -normal);
 	
 	// make cutout
-	CSGModel cutout = CSGModel::makeWedge(_cutAngle);
-	base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).translate(_cutPosition, 0, _cutDepth);
+	if (_type == Cylindrical) {
+		CSGModel cutout = CSGModel::makeCylinder(_cutRadius, 100.0);
+		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).translate(_cutPosition, 0, _cutDepth-_cutRadius);
+	} else {
+		CSGModel cutout = CSGModel::makeWedge(_cutAngle);
+		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).translate(_cutPosition, 0, _cutDepth);
+	}
 	
 	TriMesh::Ptr mesh = base.getTriMesh();
 
@@ -60,16 +76,23 @@ TriMesh::Ptr JawPrimitive::createMesh(int resolution) const
 
 rw::math::Q JawPrimitive::getParameters() const
 {
-	Q q(8);
+	Q q(9);
 	
-	q(0) = _length;
-	q(1) = _width;
-	q(2) = _depth;
-	q(3) = _chamferDepth;
-	q(4) = _chamferAngle;
-	q(5) = _cutPosition;
-	q(6) = _cutDepth;
-	q(7) = _cutAngle;
+	int i = 0;
+	q(i++) = _type;
+	q(i++) = _length;
+	q(i++) = _width;
+	q(i++) = _depth;
+	q(i++) = _chamferDepth;
+	q(i++) = _chamferAngle;
+	q(i++) = _cutPosition;
+	q(i++) = _cutDepth;
+	
+	if (_type == Cylindrical) {
+		q(i++) = _cutRadius;
+	} else {
+		q(i++) = _cutAngle;
+	}
 	
 	return q;
 }
@@ -80,8 +103,13 @@ std::string JawPrimitive::toString() const
 {
 	stringstream str;
 	
-	str << _length << " " << _width << " " << _depth << " " << _chamferDepth << " " << Rad2Deg*_chamferAngle;
-	str << " " << _cutPosition << " " << _cutDepth << " " << Rad2Deg*_cutAngle;
+	str << _type << " " << _length << " " << _width << " " << _depth << " " << _chamferDepth << " " << Rad2Deg*_chamferAngle;
+	str << " " << _cutPosition << " " << _cutDepth << " ";
+	if (_type == Cylindrical) {
+		str << _cutRadius;
+	} else {
+		str << Rad2Deg*_cutAngle;
+	}
 	
 	return str.str();
 }

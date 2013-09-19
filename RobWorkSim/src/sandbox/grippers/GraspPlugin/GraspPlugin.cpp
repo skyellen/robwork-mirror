@@ -10,6 +10,8 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/common/Exception.hpp>
 #include <boost/lexical_cast.hpp>
+#include <rwlibs/algorithms/kdtree/KDTree.hpp>
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 #include <fstream>
 #include <iostream>
 #include "JawPrimitive.hpp"
@@ -18,6 +20,7 @@
 #include "RayTaskGenerator.hpp"
 #include "DesignDialog.hpp"
 #include "GripperTaskSimulator.hpp"
+#include "GripperXMLLoader.hpp"
 
 
 
@@ -45,7 +48,10 @@ GraspPlugin::GraspPlugin() :
     _showTasks(true),
     _silentMode(false),
     _nOfTargetsToGen(10),
-    _tasks(NULL)
+    _tasks(NULL),
+    _wd(""),
+    _interferenceLimit(0.1),
+    _wrenchLimit(0.0)
 {
     setupGUI();
     
@@ -74,9 +80,14 @@ void GraspPlugin::initialize()
 void GraspPlugin::startSimulation()
 {
     _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+    _interferenceLimit = boost::lexical_cast<double>(_wc->getPropertyMap().get<string>("interferenceLimit"));
+    _wrenchLimit = boost::lexical_cast<double>(_wc->getPropertyMap().get<string>("wrenchLimit"));
+    _graspSim->setInterferenceLimit(_interferenceLimit);
+    _graspSim->setWrenchLimit(_wrenchLimit);
+    //_wc->getPropertyMap().get<string>("intLimit");
 
 	// add interference objects
-	istringstream objList(_wc->getPropertyMap().get<string>("interference"));
+	istringstream objList(_wc->getPropertyMap().get<string>("interferenceObjects"));
 	
 	do {
 		string objName;
@@ -93,8 +104,8 @@ void GraspPlugin::startSimulation()
     //_graspSim->addInterferenceObject(_wc->findObject("ob1"));
    // _graspSim->addInterferenceObject(_wc->findObject("ob2"));
     
-    if (!_graspSim->isRunning() && _tasks != NULL) {
-		if (_tasks != NULL) setCurrentTask(_tasks);
+    if (!_graspSim->isRunning() && _gripper->getTasks() != NULL) {
+		if (_gripper->getTasks() != NULL) setCurrentTask(_gripper->getTasks());
 		
 		try {
 			_graspSim->startSimulation(_initState);
@@ -120,13 +131,14 @@ void GraspPlugin::open(WorkCell* workcell)
 		_render = ownedPtr( new RenderTargets() );
 		getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame());
 		
-		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
+		
 		
     } catch (const rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
     }
     
     if (_dwc) {
+		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
 		_ddev = _dwc->findDevice<RigidDevice>(_wc->getPropertyMap().get<string>("gripper"));
         _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
         _generator = new RayTaskGenerator(_dwc, _wc->getPropertyMap().get<string>("target"), _wc->getPropertyMap().get<string>("gripper"));
@@ -168,8 +180,8 @@ void GraspPlugin::guiEvent()
     if (obj == _startButton) {        
         startSimulation();
         
-        _startButton->setEnabled(false);
-        _stopButton->setEnabled(true);
+        //_startButton->setEnabled(false);
+        //_stopButton->setEnabled(true);
     }
     
     else if (obj == _stopButton) {
@@ -177,8 +189,8 @@ void GraspPlugin::guiEvent()
 			_graspSim->pauseSimulation(); // there should be some way to stop the simulation
 		}
 		
-		_startButton->setEnabled(true);
-		_stopButton->setEnabled(false);
+		//_startButton->setEnabled(true);
+		//_stopButton->setEnabled(false);
 	}
 	
 	else if (obj == _slowCheck) {
@@ -202,11 +214,11 @@ void GraspPlugin::guiEvent()
 			
 		log().info() << "Loading tasks from: " << taskfile.toStdString() << "\n";
 		
-		_tasks = GraspTask::load(taskfile.toStdString());
+		_gripper->setTasks(GraspTask::load(taskfile.toStdString()));
 		_progressBar->setValue(0);
-		_progressBar->setMaximum(_tasks->getAllTargets().size());
+		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
 		
-		if (_showCheck->isChecked()) showTasks();
+		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
 	}
 	
 	else if (obj == _saveTaskButton) {
@@ -217,7 +229,7 @@ void GraspPlugin::guiEvent()
 				
 		log().info() << "Saving tasks to: " << taskfile.toStdString() << endl;
 		
-		GraspTask::saveRWTask(_tasks, taskfile.toStdString());
+		GraspTask::saveRWTask(_gripper->getTasks(), taskfile.toStdString());
 	}
 	
 	else if (obj == _initialButton) { // return the workcell to the initial state
@@ -228,14 +240,14 @@ void GraspPlugin::guiEvent()
 		_wTapproach = Kinematics::worldTframe(_wc->findFrame("TCPgripper"), getRobWorkStudio()->getState());
 		log().info() << "Approach: " << inverse(_wTapproach) * _wTtarget << endl;
 		
-		_tasks = NULL;
+		_gripper->setTasks(NULL);
 	}
 	
 	else if (obj == _targetButton) { // set the target pose of the gripper
 		_wTtarget = Kinematics::worldTframe(_wc->findFrame("TCPgripper"), getRobWorkStudio()->getState());
 		log().info() << "Target: " << _wTtarget << endl;
 		
-		_tasks = NULL;
+		_gripper->setTasks(NULL);
 	}
 	
 	else if (obj == _generateButton) { // generate manual tasks
@@ -243,11 +255,11 @@ void GraspPlugin::guiEvent()
 		
 		log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
 		
-		_tasks = generateTasks(_nOfTargetsToGen);
+		_gripper->setTasks(generateTasks(_nOfTargetsToGen));
 		_progressBar->setValue(0);
 		_progressBar->setMaximum(_nOfTargetsToGen);
 		
-		if (_showCheck->isChecked()) showTasks();
+		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
 	}
 	
 	else if (obj == _nManualEdit) {
@@ -261,7 +273,7 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _showCheck) {
 		_showTasks = _showCheck->isChecked();
-		showTasks();
+		showTasks(_gripper->getTasks());
 	}
 	
 	else if (obj == _silentCheck) {
@@ -277,27 +289,66 @@ void GraspPlugin::guiEvent()
 			}
 		}
 	}
+	
+	else if (obj == _loadGripperButton) {
+		QString filename = QFileDialog::getOpenFileName(this,
+			"Open file", QString::fromStdString(_wd), tr("Gripper files (*.xml)"));
+			
+		if (filename.isEmpty()) return;
+			
+		_wd = QFileInfo(filename).path().toStdString();
+			
+		_gripper = GripperXMLLoader::load(filename.toStdString());
+		
+		_progressBar->setValue(0);
+		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
+		
+		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
+	}
+	
+	else if (obj == _saveGripperButton) {
+		QString filename = QFileDialog::getSaveFileName(this,
+			"Save file", QString::fromStdString(_wd), tr("Gripper files (*.xml)"));
+			
+		if (filename.isEmpty()) return;
+			
+		_wd = QFileInfo(filename).path().toStdString();
+		string name = QFileInfo(filename).fileName().toStdString();
+			
+		GripperXMLLoader::save(_gripper, _wd, name);
+	}
 }
 
 
 
 void GraspPlugin::designEvent()
 {
-	DesignDialog* ddialog = new DesignDialog(this, _gripper);
+	DesignDialog* ddialog = new DesignDialog(this, _gripper, _wd);
 	ddialog->exec();
+	
+	_wd = ddialog->getWorkingDirectory();
 	
 	_gripper = ddialog->getGripper();
 	
 	//State state = _initState;
 	_gripper->updateGripper(_wc, _dwc, _dev, _ddev, _initState);
+	State tstate = _initState;
 	
 	getRobWorkStudio()->getWorkCellScene()->clearCache();
 	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_initState);
 	getRobWorkStudio()->setWorkcell(_wc);
 	//_graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+	_initState = tstate;
 	getRobWorkStudio()->setState(_initState);
 	
 	if (_autoPlanCheck->isChecked()) planTasks();
+	
+	_progressBar->setValue(0);
+	if (_gripper->getTasks() != NULL) {
+		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
+	} else {
+		_progressBar->setMaximum(0);
+	}
 }
 
 
@@ -314,10 +365,12 @@ void GraspPlugin::updateSim()
 	if (!_graspSim->isRunning()) {
 		_timer->stop();
 		
-		_startButton->setEnabled(true);
-		_stopButton->setEnabled(false);
+		//_startButton->setEnabled(true);
+		//_stopButton->setEnabled(false);
 		
-		double quality = calculateQuality(_tasks);
+		double quality = calculateQuality(_gripper->getTasks(), _generator->getAllSamples());
+		
+		//TaskGenerator::filterTasks(_tasks, Q(7, 0.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1000*Deg2Rad));
 		
 		//log().info() << "GripperQ= " << quality << endl;
 		
@@ -329,6 +382,8 @@ void GraspPlugin::updateSim()
 			log().info() << " qbefore: " << tgt.getResult()->qualityBeforeLifting << " qafter: " << tgt.getResult()->qualityAfterLifting << endl;
 		}*/
 	}
+	
+	if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
 }
 
 
@@ -366,7 +421,8 @@ void GraspPlugin::planTasks()
 	log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
 	
 	try {
-		_tasks = _generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
+		_gripper->setTasks(_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState));
+		_gripper->getQuality()->nOfSampledParSurfaces = _generator->getSamples();
 	} catch (rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
 	}
@@ -376,7 +432,11 @@ void GraspPlugin::planTasks()
 	_progressBar->setValue(0);
 	_progressBar->setMaximum(_nOfTargetsToGen);
 	
-	if (_showCheck->isChecked()) showTasks();
+	//TaskGenerator::filterTasks(_tasks, Q(7, 0.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1000*Deg2Rad));
+	//TaskGenerator::filterTasks(_tasks, Q(7, 10, 10, 10, 20, 20, 20, 500*Deg2Rad));
+	//TaskGenerator::filterTasks(_tasks, Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 25*Deg2Rad));
+	
+	if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
 }
 
 
@@ -424,29 +484,110 @@ void GraspPlugin::genericEventListener(const std::string& event)
 
 
 
-double GraspPlugin::calculateQuality(rwlibs::task::GraspTask::Ptr tasks)
+double GraspPlugin::calculateQuality(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks)
 {
 	int all = 0;
 	int success = 0;
 	Q gws(3);
 	
-	BOOST_FOREACH(GraspTarget& tgt, _tasks->getSubTasks()[0].getTargets()) {
+	// calculate coverage
+	BOOST_FOREACH(GraspTarget& tgt, tasks->getSubTasks()[0].getTargets()) {
 		if (tgt.getResult()->testStatus != GraspTask::UnInitialized) // only take into account performed grasps
 			all++;
 		
-		if (tgt.getResult()->testStatus == GraspTask::Success)
+		if (tgt.getResult()->testStatus == GraspTask::Success) {
 			success++;
 			gws += tgt.getResult()->qualityAfterLifting;
+		}
 	}
 	
-	double quality;
+	double quality = 0.0;
 	double sim = 1.0 * success/all;
 	gws = gws / success;
+	double cvg = calculateCoverage(tasks, allTasks, Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 25*Deg2Rad));
 	
 	log().info() << "SIM= " << sim << endl;
 	log().info() << "GWS= " << gws << endl;
+	log().info() << "CVG= " << cvg << endl;
+	
+	// set gripper data appropriately
+	_gripper->getQuality()->successQ = sim;
+	_gripper->getQuality()->coverageQ = cvg;
 	
 	return quality;
+}
+
+
+
+double GraspPlugin::calculateCoverage(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks, rw::math::Q diff)
+{
+	double coverage = 0.0;
+	
+	int okTargets = filterAndCount(tasks, diff);
+	int allTargets = filterAndCount(allTasks, diff);
+	
+	log().info() << "N of tasks: " << tasks->getSubTasks()[0].getTargets().size() << " / N of all samples: " << allTasks->getSubTasks()[0].getTargets().size() << endl;
+	log().info() << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
+	coverage = 1.0 * okTargets / allTargets;
+	
+	return coverage;
+}
+
+
+
+int GraspPlugin::filterAndCount(rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff) const
+{
+	// create nodes for succesful grasps
+	typedef GraspResult::Ptr ValueType;
+	typedef KDTreeQ<ValueType> NNSearch;
+	vector<NNSearch::KDNode> nodes;
+	
+	BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
+		if (target.getResult()->testStatus == GraspTask::Success) {
+			Q key(7);
+            key[0] = target.pose.P()[0];
+            key[1] = target.pose.P()[1];
+            key[2] = target.pose.P()[2];
+            EAA<> eaa(target.pose.R());
+            key[3] = eaa.axis()(0);
+            key[4] = eaa.axis()(1);
+            key[5] = eaa.axis()(2);
+            key[6] = eaa.angle();
+            //key[7] = 0; // this is to remove neighbouring grasps
+            
+            //cout << key << endl;
+            
+			nodes.push_back(NNSearch::KDNode(key, target.getResult()));
+		}
+	}
+	
+	NNSearch *nntree = NNSearch::buildTree(nodes);
+	//Q diff(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 15*Deg2Rad);
+    std::list<const NNSearch::KDNode*> result;
+    
+    int nFiltered = 0;
+    BOOST_FOREACH (NNSearch::KDNode& node, nodes) {
+		if (node.value->testStatus != GraspTask::TimeOut) {
+			result.clear();
+			Q key = node.key;
+			nntree->nnSearchRect(key-diff, key+diff, result);
+			//cout << result.size() << " of neighbours" << endl;
+
+			int g = 0;
+			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
+				if (n->value->testStatus != GraspTask::TimeOut) ++g;
+				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::TimeOut;
+				//cout << n->value->testStatus << endl;
+				
+			}
+			nFiltered += g;
+			//cout << "Deleted " << g << " neighbours; left: " << nodes.size() - nFiltered << endl;
+			
+			//++nFiltered;
+		}
+	}
+	
+	return nodes.size() - nFiltered;
 }
 
 
@@ -493,22 +634,36 @@ double GraspPlugin::calculateQuality(rwlibs::task::GraspTask::Ptr tasks)
 
 
 
-void GraspPlugin::showTasks()
+void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 {
 	vector<RenderTargets::Target> rtargets;
 	Transform3D<> wTo = Kinematics::worldTframe(_wc->findFrame(_wc->getPropertyMap().get<string>("target")), _wc->getDefaultState());
 	
-	if (_tasks == NULL) { return; }
+	if (tasks == NULL) { return; }
 	
 	if (_showTasks) {
-		BOOST_FOREACH (GraspTarget& target, _tasks->getSubTasks()[0].getTargets()) {
+		BOOST_FOREACH (GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
 			RenderTargets::Target rt;
-			rt.ctask = &_tasks->getSubTasks()[0];
+			rt.ctask = &tasks->getSubTasks()[0];
 			rt.ctarget = target;
-			rt.color[0] = 0.0;
-			rt.color[1] = 1.0;
-			rt.color[2] = 0.0;
-			rt.color[3] = 0.5;
+			
+			if (target.getResult()->testStatus == GraspTask::UnInitialized) {
+				rt.color[0] = 1.0;
+				rt.color[1] = 1.0;
+				rt.color[2] = 1.0;
+				rt.color[3] = 0.5;
+			}
+			else if (target.getResult()->testStatus == GraspTask::Success) {
+				rt.color[0] = 0.0;
+				rt.color[1] = 1.0;
+				rt.color[2] = 0.0;
+				rt.color[3] = 0.5;
+			} else {
+				rt.color[0] = 1.0;
+				rt.color[1] = 0.0;
+				rt.color[2] = 0.0;
+				rt.color[3] = 0.5;
+			}
 			
 			rt.trans = wTo * target.pose;
 			
@@ -546,19 +701,23 @@ void GraspPlugin::setupGUI()
     geoLayout->addWidget(_designButton, row++, 0, 1, 2);
     connect(_designButton, SIGNAL(clicked()), this, SLOT(designEvent()));
     
+    _loadGripperButton = new QPushButton("Load gripper");
+    geoLayout->addWidget(_loadGripperButton, row, 0);
+    connect(_loadGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _saveGripperButton = new QPushButton("Save gripper");
+    geoLayout->addWidget(_saveGripperButton, row++, 1);
+    connect(_saveGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
     _autoPlanCheck = new QCheckBox("Auto. plan");
     geoLayout->addWidget(_autoPlanCheck, row++, 0, 1, 2);
     
     /* setup manual group */
-    _manualBox = new QGroupBox("Manual task setup");
+    /*_manualBox = new QGroupBox("Manual task setup");
     QGridLayout* manualLayout = new QGridLayout(_manualBox);
     _manualBox->setLayout(manualLayout);
     
     row = 0;
-    
-    _initialButton = new QPushButton("Set initial state");
-    manualLayout->addWidget(_initialButton, row++, 0, 1, 2);
-    connect(_initialButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     _approachButton = new QPushButton("Set approach");
     manualLayout->addWidget(_approachButton, row, 0);
@@ -574,7 +733,7 @@ void GraspPlugin::setupGUI()
     
     _nManualEdit = new QLineEdit("10");
     manualLayout->addWidget(_nManualEdit, row++, 1);
-    connect(_nManualEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+    connect(_nManualEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));*/
     
     /* setup auto group */
     _autoBox = new QGroupBox("Auto task setup");
@@ -597,6 +756,10 @@ void GraspPlugin::setupGUI()
     _simBox->setLayout(simLayout);
     
     row = 0;
+    
+    _initialButton = new QPushButton("Set initial state");
+    simLayout->addWidget(_initialButton, row++, 0, 1, 2);
+    connect(_initialButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     _loadTaskButton = new QPushButton("Load tasks");
     simLayout->addWidget(_loadTaskButton, row, 0);
@@ -633,9 +796,10 @@ void GraspPlugin::setupGUI()
     
     /* add groups to the base layout */
     layout->addWidget(_geometryBox);
-    layout->addWidget(_manualBox);
+    //layout->addWidget(_manualBox);
     layout->addWidget(_autoBox);
     layout->addWidget(_simBox);
+    layout->addStretch(1);
 }
 
 
@@ -706,7 +870,7 @@ void GraspPlugin::setupGUI()
 	tree->addFrame(leftend, left);
 	tree->addFrame(rightend, right);
 	
-	/*getRobWorkStudio()->getWorkCellScene()->addGeometry(
+	getRobWorkStudio()->getWorkCellScene()->addGeometry(
 		"BaseGeo",
 		basegeo,
 		base,

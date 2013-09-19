@@ -42,6 +42,10 @@ class RayTaskGenerator : public TaskGenerator
 		 */
 		rw::math::Transform3D<> _sample(double minDist, double maxDist,
 			rw::geometry::TriMeshSurfaceSampler& sampler, rw::proximity::ProximityModel::Ptr object,
-			rw::proximity::ProximityModel::Ptr ray, rw::proximity::CollisionStrategy::Ptr cstrategy, double &graspW);
+			rw::proximity::ProximityModel::Ptr ray, rw::proximity::CollisionStrategy::Ptr cstrategy, double &graspW,
+			bool& justSample);
+			
+		// data
+		
 };
 

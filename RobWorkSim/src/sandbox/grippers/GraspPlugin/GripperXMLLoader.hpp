@@ -26,7 +26,13 @@ namespace rw {
 				/**
 				 * @brief Save gripper data to XML file
 				 */
-				static void save(rw::models::Gripper::Ptr gripper, const std::string& filename);
+				static void save(rw::models::Gripper::Ptr gripper, const std::string& dir, const std::string& filename);
+				
+				
+				/*
+				 * @brief Save gripper results
+				 */
+				//static void saveResults(rw::models::Gripper::Ptr gripper, const std::string& filename);
 			
 			private:
 		};

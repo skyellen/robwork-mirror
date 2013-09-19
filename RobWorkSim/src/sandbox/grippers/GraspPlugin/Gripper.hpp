@@ -14,7 +14,11 @@
 #include <rw/graphics/WorkCellScene.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwsim/rwsim.hpp>
+#include <rwlibs/task.hpp>
+#include <rwsim/rwsim.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
 #include "JawPrimitive.hpp"
+//#include "GripperXMLLoader.hpp"
 
 
 
@@ -56,6 +60,7 @@ namespace rw {
 			}
 			
 			int nOfExperiments;
+			int nOfSampledParSurfaces;
 			double shapeQ;
 			double coverageQ;
 			double successQ; // done
@@ -103,7 +108,7 @@ namespace rw {
 				double getForce() { return _force; }
 				
 				//! @brief Sets name of the gripper
-				void setName(const std::string& name) { _name = name; }
+				void setName(const std::string& name) { _name = name; _dataFilename = name + "_data.xml"; }
 				
 				//! @brief Set gripper geometry
 				void setGeometry(rw::geometry::JawPrimitive::Ptr geometry) { _jaw = geometry; }
@@ -119,6 +124,24 @@ namespace rw {
 				
 				//! @brief Set force
 				void setForce(double force) { _force = force; }
+				
+				//! @brief Get tasks
+				rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
+				
+				//! @brief Set tasks
+				void setTasks(rwlibs::task::GraspTask::Ptr tasks) { _tasks = tasks; }
+				
+				//! @brief Loads tasks from a specified file
+				void loadTasks(std::string filename);
+				
+				//! @brief Save tasks/results to a specified file
+				void saveTasks(std::string filename);
+				
+				//! @brief Get data filename
+				std::string getDataFilename() { return _dataFilename; }
+				
+				//! @brief Set data filename
+				void setDataFilename(std::string filename) { _dataFilename = filename; }
 				
 				/**
 				 * @brief Places the gripper in the workcell
@@ -169,5 +192,9 @@ namespace rw {
 				
 				// quality
 				GripperQuality::Ptr _quality;
+				
+				// tasks
+				rwlibs::task::GraspTask::Ptr _tasks;
+				std::string _dataFilename;
 		};
 }} // end namespaces

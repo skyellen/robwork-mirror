@@ -21,7 +21,7 @@ RayTaskGenerator::RayTaskGenerator(rwsim::dynamics::DynamicWorkCell::Ptr dwc, co
 
 
 
-Transform3D<> RayTaskGenerator::_sample(double minDist, double maxDist, TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW)
+Transform3D<> RayTaskGenerator::_sample(double minDist, double maxDist, TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy, double &graspW, bool& justSample)
 {
     // now we choose a random number in the total area
     TriMesh::Ptr mesh = sampler.getMesh();
@@ -57,39 +57,49 @@ Transform3D<> RayTaskGenerator::_sample(double minDist, double maxDist, TriMeshS
             Vector3D<> normal = tri.calcFaceNormal();
             bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
             double dist = MetricUtil::dist2(tri[0], pos);//fabs( dot(faceNormal, tri[0]-pos) );
-            bool closeDist = minDist<dist && dist<maxDist;
+            bool closeDist = true; // minDist<dist && dist<maxDist;
+            //bool okDist = 0.0<dist && dist<0.1;
             
             //cout << minDist << " " << dist << " " << maxDist << endl;
             //cout << " " << closeAngle << endl;
             
-            if (closeAngle && closeDist) {
-                targetFound = true;
-                // calculate target
+            //if (closeAngle && okDist) {
+				//++_sampledParSurfaces;
+				
+				//targetFound = true;
+				//justSample = true;
+            
+			   if (closeAngle && closeDist) {
+					targetFound = true;
+					justSample = false;
+					// calculate target
 
-                //target.R() = rot*RPY<>(Math::ran(0.0,Pi), 0, 0).toRotation3D();
-                //target.R() = rot;
-                // the target transform needs to have the z-axis pointing into the x-y-plane
-                // soooo, we first generate some randomness
-                Vector3D<> avgNormal = normalize( (negFaceNormal+normal)/2.0 );
-                Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
-                Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
-                Rotation3D<> rot2( xcol, ycol, -avgNormal);
-                Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
-                // next we rotate z-axis into place
-                trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
-                target.R() = trot;
+					//target.R() = rot*RPY<>(Math::ran(0.0,Pi), 0, 0).toRotation3D();
+					//target.R() = rot;
+					// the target transform needs to have the z-axis pointing into the x-y-plane
+					// soooo, we first generate some randomness
+					Vector3D<> avgNormal = normalize( (negFaceNormal+normal)/2.0 );
+					Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
+					Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
+					Rotation3D<> rot2( xcol, ycol, -avgNormal);
+					Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
+					// next we rotate z-axis into place
+					trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
+					target.R() = trot;
 
-                graspW = dist;
-                if(dot(tri[0]-pos, -faceNormal)>0)
-                    target.P() = pos-faceNormal*(dist/2.0);
-                else
-                    target.P() = pos+faceNormal*(dist/2.0);
-                break;
-            }
+					graspW = dist;
+					if(dot(tri[0]-pos, -faceNormal)>0)
+						target.P() = pos-faceNormal*(dist/2.0);
+					else
+						target.P() = pos+faceNormal*(dist/2.0);
+					
+				//}
+				break;
+			}
         }
         
         tries++;
-        if (tries > 100) {
+        if (tries > 1000) {
 			RW_THROW("Cannot find target without collision!");
 		}
     } while( !targetFound);
@@ -117,6 +127,11 @@ rwlibs::task::GraspTask::Ptr RayTaskGenerator::generateTask(int nTargets, rw::pr
     gtask->setTCPID(_gripperTCP->getName());
     gtask->setGraspControllerID("graspController");
     
+    // setup all samples
+    _allSamples = new GraspTask;
+    _allSamples->getSubTasks().resize(1);
+	GraspSubTask& atask = _allSamples->getSubTasks()[0];
+    
     // prepare
     TriMeshSurfaceSampler sampler(_object->getGeometry()[0]);
 	sampler.setRandomPositionEnabled(false);
@@ -137,7 +152,8 @@ rwlibs::task::GraspTask::Ptr RayTaskGenerator::generateTask(int nTargets, rw::pr
     
     for (int successes = 0; successes < nTargets;) {
 		double graspW = 0.0;
-		Transform3D<> target = _sample(_closeQ[0]*2.0+_jawdist, _openQ[0]*2.0+_jawdist, sampler, object, ray, cstrategy, graspW);
+		bool justSample = false;
+		Transform3D<> target = _sample(_closeQ[0]*2.0+_jawdist, _openQ[0]*2.0+_jawdist, sampler, object, ray, cstrategy, graspW, justSample);
 
         // distance between grasping points is graspW
         // we close gripper such that it is 1 cm more openned than the target
@@ -145,7 +161,7 @@ rwlibs::task::GraspTask::Ptr RayTaskGenerator::generateTask(int nTargets, rw::pr
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
         _gripper->setQ(oq, state);
-        cout << oq << endl;
+        //cout << oq << endl;
         
         // then check for collision
         moveFrameW(wTobj * target, _gripperTCP, _gripperMovable, state);
@@ -158,11 +174,21 @@ rwlibs::task::GraspTask::Ptr RayTaskGenerator::generateTask(int nTargets, rw::pr
             gtarget.result = ownedPtr(new GraspResult());
             gtarget.result->testStatus = GraspTask::UnInitialized;
             gtarget.result->objectTtcpTarget = target;
-            gtarget.result->gripperConfigurationGrasp = oq;
+            //gtarget.result->gripperConfigurationGrasp = oq;
             stask.addTarget(gtarget);
+            atask.addTarget(gtarget);
         } else {
-			//cout << "collision" << endl;
+			GraspTarget gtarget(target);
+            gtarget.result = ownedPtr(new GraspResult());
+            gtarget.result->testStatus = GraspTask::Success;
+            gtarget.result->objectTtcpTarget = target;
+            gtarget.result->gripperConfigurationGrasp = oq;
+            atask.addTarget(gtarget);
+            
+            //cout << "Collision!\n";
 		}
+		
+		++_sampledParSurfaces;
     }
 	
 	return gtask;

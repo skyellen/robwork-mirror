@@ -2,6 +2,7 @@
 
 #include <rw/rw.hpp>
 #include <rwsim/rwsim.hpp>
+#include "PrismaticCutJaw.hpp"
 
 
 
@@ -18,7 +19,9 @@ Gripper::Gripper(const std::string& name) :
 	_tcp(Transform3D<>(Vector3D<>(0, 0, 0.05))),
 	_jawdist(0),
 	_opening(0.05),
-	_force(50)
+	_force(50),
+	_tasks(NULL),
+	_dataFilename(name + "_data.xml")
 {
 }
 
@@ -60,7 +63,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	MovableFrame* tcp = wc->findFrame<MovableFrame>(tcpFrameName);
 	tcp->setTransform(_tcp, state);
 	
-	cout << "LOL" << tcp->getName() << endl;
+	//cout << "LOL" << tcp->getName() << endl;
 	
 	// set bounds
 	dev->setBounds(make_pair(Q(1, _jawdist), Q(1, _opening)));
@@ -68,6 +71,38 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	
 	// set force
 	ddev->setMotorForceLimits(Q(2, _force, _force));
+}
+
+
+
+void Gripper::loadTasks(std::string filename)
+{
+	if (filename.empty()) return;
+	
+	//_dataFilename = filename;
+		
+	cout << "Loading tasks from: " << filename << "\n";
+	_tasks = GraspTask::load(filename);
+	cout << "Tasks loaded!" << endl;
+}
+
+
+
+void Gripper::saveTasks(std::string filename)
+{
+	if (filename.empty()) return;
+	
+	if (!_tasks) return;
+	
+	//_dataFilename = filename;
+	
+	try {
+		cout << "Saving tasks to: " << filename << "\n";
+		GraspTask::saveRWTask(_tasks, filename);
+		cout << "Tasks saved!" << endl;
+	} catch (...)
+	{
+	}
 }
 
 
