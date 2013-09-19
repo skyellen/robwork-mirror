@@ -6,7 +6,7 @@ IF(DEFINED CMAKE_BUILD_TYPE)
 build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
 Release RelWithDebInfo MinSizeRel.")
 ELSE()
-   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build,
 options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
 RelWithDebInfo MinSizeRel.")
 ENDIF()
@@ -144,8 +144,8 @@ INSTALL(FILES
         
 INSTALL(FILES "${RW_ROOT}/src/RobWorkConfig.hpp"
 		DESTINATION "${INCLUDE_INSTALL_DIR}")
-INSTALL(DIRECTORY "${RW_ROOT}/ext/boost/"
-		DESTINATION "${INCLUDE_INSTALL_DIR}/ext/boost"
+INSTALL(DIRECTORY "${RW_ROOT}/ext/boostbindings/"
+		DESTINATION "${INCLUDE_INSTALL_DIR}/ext/boostbindings"
 		PATTERN ".svn" EXCLUDE)
 
 # Install dependencies on Windows
@@ -246,3 +246,15 @@ IF(RW_BUILD_TESTS)
     ENDIF()
   ENDIF()
 ENDIF()
+
+
+string(REPLACE ";" "\n" TOFILE_DST "$ENV{RW_LIB_FILES_CPP}")
+file(WRITE "source_files" "${TOFILE_DST}")
+string(REPLACE ";" "\n" TOFILE_DST "${ROBWORK_INCLUDE_DIR}")
+file(WRITE "include_dirs" "${TOFILE_DST}")
+
+##SET(ENV{RW_LIB_FILES_CPP} "$ENV{RW_LIB_FILES_CPP}${SRC_FILES_CPP};")
+#SET(ENV{RW_LIB_FILES_HPP} "$ENV{RW_LIB_FILES_HPP}${SRC_FILES_HPP};")
+
+
+
