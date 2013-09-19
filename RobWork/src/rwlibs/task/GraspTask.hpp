@@ -46,6 +46,8 @@ public:
         CollisionObjectInitially,
         CollisionEnvironmentInitially,
         CollisionDuringExecution,
+        Interference,
+        WrenchInsufficient,
         SizeOfStatusArray
      } TestStatus;
 
@@ -181,6 +183,17 @@ struct GraspResult {
     std::vector<rw::math::Transform3D<> > gripperTobjects;
     // all contacts
     std::vector<rw::sensor::Contact3D> contactsGrasp, contactsLift;
+    
+    // Adam W
+    // interference with objects
+    //std::vector<rw::math::Transform3D<> > interferenceT;
+    
+    // measure of object interference
+    std::vector<double> interferenceDistances;
+    std::vector<double> interferenceAngles;
+    std::vector<double> interferences;
+    
+    // /Adam W
 };
 
 class GraspTarget {

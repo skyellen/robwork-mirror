@@ -250,6 +250,14 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
             }
 
             //std::vector<rw::math::Transform3D<> > gripperTobjects;
+            
+            // Adam Wolniakowski
+            //ctarget->getPropertyMap().set<std::vector<Transform3D<> > >("PosesBefore", result->posesBefore);
+            //ctarget->getPropertyMap().set<std::vector<Transform3D<> > >("PosesAfter", result->posesAfter);
+            
+            ctarget->getPropertyMap().set<std::vector<double> >("InterferenceDistances", result->interferenceDistances);
+            ctarget->getPropertyMap().set<std::vector<double> >("InterferenceAngles", result->interferenceAngles);
+            ctarget->getPropertyMap().set<std::vector<double> >("Interferences", result->interferences);
 
 
             subtask->addTarget( ctarget );
