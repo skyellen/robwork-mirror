@@ -80,7 +80,8 @@ public:
     void frameSelectedListener(rw::kinematics::Frame* frame);
     
     /**
-     * @brief Listen for generic events
+     * @brief Listen for generic events:
+     * - WorkcellUpdated event makes Jog plugin refresh GUI to represent new workcell configuration (i.e. new frames & devices).
      */
     void genericEventListener(const std::string& event);
 
