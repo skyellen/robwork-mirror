@@ -78,6 +78,11 @@ public:
 	 * @copydoc RobWorkStudioPlugin::frameSelectedListener
 	 */
     void frameSelectedListener(rw::kinematics::Frame* frame);
+    
+    /**
+     * @brief Listen for generic events
+     */
+    void genericEventListener(const std::string& event);
 
 protected:
     void showEvent ( QShowEvent * event );

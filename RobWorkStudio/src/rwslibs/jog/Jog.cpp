@@ -248,7 +248,9 @@ void Jog::initialize()
 
     getRobWorkStudio()->frameSelectedEvent().add(
     		boost::bind(&Jog::frameSelectedListener, this, _1), this);
-
+    		
+    getRobWorkStudio()->genericEvent().add(
+		boost::bind(&Jog::genericEventListener, this, _1), this);
 }
 
 
@@ -499,6 +501,14 @@ void Jog::frameSelectedListener(Frame* frame) {
 		return;
 	if(_frameToIndex.has(*frame)){
 		_cmbDevices->setCurrentIndex(_frameToIndex[*frame]);
+	}
+}
+
+void Jog::genericEventListener(const std::string& event)
+{
+	if (event == "WorkcellUpdated") {
+		log().info() << "WorkcellUpdated event" << endl;
+		open(_workcell);
 	}
 }
 
