@@ -17,38 +17,13 @@ using namespace rwsim;
 
 
 
-TaskGenerator::TaskGenerator(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const std::string& objectID, const std::string& gripperID) :
-	_dwc(dwc),
-	_gripperID(gripperID),
-	_allSamples(NULL)
+TaskGenerator::TaskGenerator(TaskDescription::Ptr td) :
+	_td(td),
+	_tasks(NULL),
+	_samples(NULL)
 {
-	_wc = _dwc->getWorkcell();
-	if (_wc == NULL || _dwc == NULL) {
-		RW_ASSERT("Null workcell or dynamic workcell.");
-	}
-	
-	_object = _wc->findObject(objectID);
-	if (_object == NULL || _object->getGeometry().size() == 0) {
-		RW_ASSERT("Invalid name of the object or no object geometry.");
-	}
-	
-	_gripper = _wc->findDevice(gripperID);
-	if (_gripper == NULL) {
-		RW_ASSERT("Cannot find the gripper.");
-	}
-	
-	_gripperMovable = dynamic_cast<MovableFrame*>(_gripper->getBase());
-	string tcpFrame = _wc->getPropertyMap().get<string>("gripperTCP");
-	_gripperTCP = _wc->findFrame(tcpFrame);
-
-	if (_gripperTCP == NULL || _gripperMovable == NULL) {
-		RW_ASSERT("Cannot find gripper TCP or movable base.");
-	}
-	
-	_closeQ = Q(1, _gripper->getBounds().first[0]);
-	_openQ = Q(1, _gripper->getBounds().second[0]);
-	
-	//cout << _openQ << _closeQ << endl;
+	_openQ = Q(1, td->getGripperDevice()->getBounds().second[0]);
+	_closeQ = Q(1, td->getGripperDevice()->getBounds().first[0]);
 }
 
 
@@ -187,7 +162,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 
 
 
-int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Status status)
+int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rwlibs::task::GraspTask::Status status)
 {
 	int n = 0;
 	
@@ -203,33 +178,33 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, rwlibs::
 
 rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proximity::CollisionDetector::Ptr cdetect, rw::kinematics::State state)
 {
-	Transform3D<> wTobj = Kinematics::worldTframe(_object->getBase(), state);
+	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), state);
 	
 	// setup task
 	GraspTask::Ptr gtask = new GraspTask;
 	gtask->getSubTasks().resize(1);
 	GraspSubTask& stask = gtask->getSubTasks()[0];
-	gtask->setGripperID(_gripperID);
+	gtask->setGripperID(_td->getGripperID());
     stask.offset = wTobj;
     stask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
     stask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
     stask.openQ = _openQ;
     stask.closeQ = _closeQ;
-    gtask->setTCPID(_gripperTCP->getName());
-    gtask->setGraspControllerID("graspController");
+    gtask->setTCPID(_td->getGripperTCP()->getName());
+    gtask->setGraspControllerID(_td->getControllerID());
     
     // setup all samples
-    _allSamples = new GraspTask;
-    _allSamples->getSubTasks().resize(1);
-	GraspSubTask& atask = _allSamples->getSubTasks()[0];
+    _samples = new GraspTask;
+    _samples->getSubTasks().resize(1);
+	GraspSubTask& atask = _samples->getSubTasks()[0];
     
     // prepare
-    TriMeshSurfaceSampler sampler(_object->getGeometry()[0]);
+    TriMeshSurfaceSampler sampler(_td->getTargetObject()->getGeometry()[0]);
 	sampler.setRandomPositionEnabled(false);
 	sampler.setRandomRotationEnabled(false);
 	
 	CollisionStrategy::Ptr cstrategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
-    CollisionDetector cd(_wc, cstrategy);
+    CollisionDetector cd(_td->getWorkCell(), cstrategy);
     
     PlainTriMeshF *rayMesh = new PlainTriMeshF(1);
     (*rayMesh)[0] = Triangle<float>( Vector3D<float>(0,(float)-0.001,0),Vector3D<float>(0,(float)0.001,0),Vector3D<float>(0,0,(float)10) );
@@ -239,7 +214,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
     ray->addGeometry(geom);
 	
 	ProximityModel::Ptr object = cstrategy->createModel();
-    cstrategy->addGeometry(object.get(), _object->getGeometry()[0]);
+    cstrategy->addGeometry(object.get(), _td->getTargetObject()->getGeometry()[0]);
     
     for (int successes = 0; successes < nTargets;) {
 		double graspW = 0.0;
@@ -250,11 +225,11 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
         Q oq = _openQ;
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
-        _gripper->setQ(oq, state);
+        _td->getGripperDevice()->setQ(oq, state);
         //cout << oq << endl;
         
         // then check for collision
-        moveFrameW(wTobj * target, _gripperTCP, _gripperMovable, state);
+        moveFrameW(wTobj * target, _td->getGripperTCP(), _td->getGripperMovable(), state);
         
         CollisionDetector::QueryResult result;
         if (!cdetect->inCollision(state, &result, true)) {

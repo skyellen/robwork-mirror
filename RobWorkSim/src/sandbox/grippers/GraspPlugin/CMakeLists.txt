@@ -40,12 +40,12 @@ SET(SrcFiles
 	CSGConvert.cpp
 	CSGModel.cpp
 	JawPrimitive.cpp
-	PrismaticCutJaw.cpp
 	Gripper.cpp
 	DesignDialog.cpp
 	GripperXMLLoader.cpp
 	GripperTaskSimulator.cpp
 	TaskDescription.cpp
+	XMLHelpers.cpp
 )
 
 SET(MocSrcFiles )

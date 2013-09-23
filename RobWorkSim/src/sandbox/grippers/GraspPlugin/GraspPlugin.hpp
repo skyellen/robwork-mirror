@@ -14,6 +14,7 @@
 #include "TaskGenerator.hpp"
 #include "Gripper.hpp"
 #include "GripperTaskSimulator.hpp"
+#include "TaskDescription.hpp"
 
 
 
@@ -130,7 +131,15 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		TaskGenerator::Ptr _generator;
 		rwlibs::task::GraspTask::Ptr _tasks; // grasp tasks planned or loaded from file
 		
+		TaskDescription::Ptr _td;
+		
 		/* GUI */
+		// setup panel
+		QGroupBox* _setupBox;
+		QPushButton* _editSetupButton;
+		QPushButton* _loadSetupButton;
+		QPushButton* _saveSetupButton;
+		
 		// geometry panel
 		QGroupBox* _geometryBox;
 		QPushButton* _designButton;

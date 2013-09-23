@@ -5,7 +5,6 @@
 #include <QtGui>
 #include <QRadioButton>
 #include "GripperXMLLoader.hpp"
-#include "PrismaticCutJaw.hpp"
 
 
 

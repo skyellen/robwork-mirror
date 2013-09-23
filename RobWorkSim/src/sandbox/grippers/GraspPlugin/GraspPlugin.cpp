@@ -48,6 +48,7 @@ GraspPlugin::GraspPlugin() :
     _silentMode(false),
     _nOfTargetsToGen(10),
     _tasks(NULL),
+    _td(NULL),
     _wd(""),
     _interferenceLimit(0.1),
     _wrenchLimit(0.0)
@@ -70,6 +71,9 @@ GraspPlugin::~GraspPlugin()
 
 void GraspPlugin::initialize()
 {
+	/* Initialization is basically only adding an event listener to the plugin,
+	 * so we know when another DynamicWorkCell is loaded.
+	 */
     getRobWorkStudio()->genericEvent().add(
 		boost::bind(&GraspPlugin::genericEventListener, this, _1), this);
 }
@@ -78,29 +82,10 @@ void GraspPlugin::initialize()
 
 void GraspPlugin::startSimulation()
 {
-    _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
-    _interferenceLimit = boost::lexical_cast<double>(_wc->getPropertyMap().get<string>("interferenceLimit"));
-    _wrenchLimit = boost::lexical_cast<double>(_wc->getPropertyMap().get<string>("wrenchLimit"));
-    _graspSim->setInterferenceLimit(_interferenceLimit);
-    _graspSim->setWrenchLimit(_wrenchLimit);
-
-	// add interference objects
-	istringstream objList(_wc->getPropertyMap().get<string>("interferenceObjects"));
-	
-	do {
-		string objName;
-		objList >> objName;
-		cout << objName;
-		Object::Ptr object = _wc->findObject(objName);
-		if (object != NULL) {
-			_graspSim->addInterferenceObject(object);
-		} else {
-			; //cout << "Null object" << endl;
-		}
-	} while (objList);
+    _graspSim = ownedPtr(new GripperTaskSimulator(_td));
     
     if (!_graspSim->isRunning() && _gripper->getTasks() != NULL) {
-		if (_gripper->getTasks() != NULL) setCurrentTask(_gripper->getTasks());
+		setCurrentTask(_gripper->getTasks());
 		
 		try {
 			_graspSim->startSimulation(_initState);
@@ -135,7 +120,7 @@ void GraspPlugin::open(WorkCell* workcell)
     if (_dwc) {
 		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
 		_ddev = _dwc->findDevice<RigidDevice>(_wc->getPropertyMap().get<string>("gripper"));
-        _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
+        //_graspSim = ownedPtr(new GripperTaskSimulator(_td));
 	}
 }
 
@@ -247,6 +232,17 @@ void GraspPlugin::guiEvent()
 		GripperXMLLoader::save(_gripper, _wd, name);
 	}
 	
+	else if (obj == _loadSetupButton) {
+		QString filename = QFileDialog::getOpenFileName(this,
+			"Open file", QString::fromStdString(_wd), tr("Task description files (*.td.xml)"));
+			
+		if (filename.isEmpty()) return;
+			
+		_wd = QFileInfo(filename).path().toStdString();
+			
+		_td = TaskDescriptionLoader::load(filename.toStdString(), _dwc);
+	}
+	
 	else if (obj == _testButton) {
 		test();
 	}
@@ -277,9 +273,7 @@ void GraspPlugin::designEvent()
 	_initState = tstate;
 	getRobWorkStudio()->setState(_initState);
 	
-	if (_autoPlanCheck->isChecked()) planTasks();
-	
-	cout << "Refreshing progress bar" << endl;
+	//cout << "Refreshing progress bar" << endl;
 	_progressBar->setValue(0);
 	if (_gripper->getTasks() != NULL) {
 		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
@@ -302,7 +296,7 @@ void GraspPlugin::updateSim()
 	if (!_graspSim->isRunning()) {
 		_timer->stop();
 
-		calculateQuality(_gripper->getTasks(), _generator->getAllSamples());
+		calculateQuality(_gripper->getTasks(), _generator->getSamples());
 	}
 	
 	if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
@@ -348,7 +342,7 @@ void GraspPlugin::planTasks()
 	}
 	
 	try {
-		_generator = new TaskGenerator(_dwc, _wc->getPropertyMap().get<string>("target"), _wc->getPropertyMap().get<string>("gripper"));
+		_generator = new TaskGenerator(_td);
 		_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
 		_gripper->setTasks(_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState));
 		//_gripper->getQuality()->nOfSampledParSurfaces = _generator->getSamples();
@@ -382,9 +376,7 @@ void GraspPlugin::setCurrentTask(GraspTask::Ptr task)
 
 void GraspPlugin::genericEventListener(const std::string& event)
 {
-    if (event == "DynamicWorkcellLoadet") { // why is that in Danish?
-        // get the dynamic workcell from the propertymap
-        RW_DEBUG("Getting dynamic workcell from propertymap!");
+    if (event == "DynamicWorkcellLoadet") { 
 	 
         DynamicWorkCell::Ptr dwc =
 			getRobWorkStudio()->getPropertyMap().get<DynamicWorkCell::Ptr>("DynamicWorkcell", NULL);
@@ -399,11 +391,11 @@ void GraspPlugin::genericEventListener(const std::string& event)
         _startButton->setEnabled(true);
     }
     
-    else if (event == "WorkcellUpdated") { // only testing
+    /*else if (event == "WorkcellUpdated") { // only testing
 		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
 		_ddev = _dwc->findDevice<RigidDevice>(_wc->getPropertyMap().get<string>("gripper"));
-        _graspSim = ownedPtr(new GripperTaskSimulator(_dwc));
-	}
+        _graspSim = ownedPtr(new GripperTaskSimulator(_td));
+	}*/
 }
 
 
@@ -435,8 +427,8 @@ double GraspPlugin::calculateQuality(rwlibs::task::GraspTask::Ptr tasks, rwlibs:
 	log().info() << "CVG= " << cvg << endl;
 	
 	// set gripper data appropriately
-	_gripper->getQuality()->successQ = sim;
-	_gripper->getQuality()->coverageQ = cvg;
+	//_gripper->getQuality()->successQ = sim;
+	//_gripper->getQuality()->coverageQ = cvg;
 	
 	return quality;
 }
@@ -572,12 +564,29 @@ void GraspPlugin::setupGUI()
     base->setLayout(layout);
     this->setWidget(base);
     
+    /* setup setup group */
+    _setupBox = new QGroupBox("Setup");
+    QGridLayout* setupLayout = new QGridLayout(_setupBox);
+    _setupBox->setLayout(setupLayout);
+    
+    _editSetupButton = new QPushButton("Open setup dialog");
+    setupLayout->addWidget(_editSetupButton, row++, 0, 1, 2);
+    connect(_editSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _loadSetupButton = new QPushButton("Load setup");
+    setupLayout->addWidget(_loadSetupButton, row, 0);
+    connect(_loadSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _saveSetupButton = new QPushButton("Save setup");
+    setupLayout->addWidget(_saveSetupButton, row++, 1);
+    connect(_saveSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
     /* setup geometry group */
+    row = 0;
+    
     _geometryBox = new QGroupBox("Gripper parametrization");
     QGridLayout* geoLayout = new QGridLayout(_geometryBox);
     _geometryBox->setLayout(geoLayout);
-    
-    row = 0;
     
     _designButton = new QPushButton("Design gripper");
     geoLayout->addWidget(_designButton, row++, 0, 1, 2);
@@ -590,24 +599,6 @@ void GraspPlugin::setupGUI()
     _saveGripperButton = new QPushButton("Save gripper");
     geoLayout->addWidget(_saveGripperButton, row++, 1);
     connect(_saveGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _autoPlanCheck = new QCheckBox("Auto. plan");
-    geoLayout->addWidget(_autoPlanCheck, row++, 0, 1, 2);
-    
-    /* setup auto group */
-    _autoBox = new QGroupBox("Auto task setup");
-    QGridLayout* autoLayout = new QGridLayout(_autoBox);
-    _autoBox->setLayout(autoLayout);
-    
-    row = 0;
-    
-    _planButton = new QPushButton("Plan");
-    autoLayout->addWidget(_planButton, row, 0);
-    connect(_planButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _nAutoEdit = new QLineEdit("100");
-    autoLayout->addWidget(_nAutoEdit, row++, 1);
-    connect(_nAutoEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
     
     /* setup sim control group */
     _simBox = new QGroupBox("Simulation control");
@@ -627,6 +618,14 @@ void GraspPlugin::setupGUI()
     _saveTaskButton = new QPushButton("Save tasks");
     simLayout->addWidget(_saveTaskButton, row++, 1);
     connect(_saveTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _planButton = new QPushButton("Plan");
+    simLayout->addWidget(_planButton, row, 0);
+    connect(_planButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    
+    _nAutoEdit = new QLineEdit("100");
+    simLayout->addWidget(_nAutoEdit, row++, 1);
+    connect(_nAutoEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
     
     _showCheck = new QCheckBox("Show tasks");
     _showCheck->setChecked(true);
@@ -650,9 +649,9 @@ void GraspPlugin::setupGUI()
     connect(_testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     /* add groups to the base layout */
+    layout->addWidget(_setupBox);
     layout->addWidget(_geometryBox);
     //layout->addWidget(_manualBox);
-    layout->addWidget(_autoBox);
     layout->addWidget(_simBox);
     layout->addStretch(1);
 }
@@ -662,5 +661,7 @@ void GraspPlugin::setupGUI()
 void GraspPlugin::test()
 {
 }
+
+
 
 Q_EXPORT_PLUGIN(GraspPlugin);

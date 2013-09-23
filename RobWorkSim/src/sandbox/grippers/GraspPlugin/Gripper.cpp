@@ -2,7 +2,6 @@
 
 #include <rw/rw.hpp>
 #include <rwsim/rwsim.hpp>
-#include "PrismaticCutJaw.hpp"
 
 
 

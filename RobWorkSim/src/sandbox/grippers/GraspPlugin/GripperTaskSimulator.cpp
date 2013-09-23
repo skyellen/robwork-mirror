@@ -2,6 +2,7 @@
 
 #include <rw/math/MetricFactory.hpp>
 
+#define DEBUG cout
 
 
 using namespace std;
@@ -9,28 +10,6 @@ USE_ROBWORK_NAMESPACE;
 using namespace robwork;
 using namespace rwsim;
 using namespace rwsim::simulator;
-
-
-
-/*Q poseDifference(Transform3D<> pose1, Transform3D<> pose2)
-{
-	double dist = MetricUtil::dist2(pose1.P(), pose2.P());
-	double a = angle(pose1*Vector3D<>::z(), pose2*Vector3D<>::z());
-	
-	Q diff(2);
-	diff[0] = dist;
-	diff[1] = a;
-	
-	return diff;
-}*/
-
-
-
-GripperTaskSimulator::GripperTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc) :
-	GraspTaskSimulator(dwc, 1),
-	_dwc(dwc),
-	_wc(dwc->getWorkcell())
-{}
 
 
 
@@ -50,9 +29,7 @@ double GripperTaskSimulator::measureInterference(SimState& sstate, const rw::kin
 	vector<double> interferenceAngles;
 	vector<double> interferences;
 	
-	BOOST_FOREACH (Object::Ptr obj, _objects) {
-		//Q diff = poseDifference(obj->getBase()->getTransform(state0), obj->getBase()->getTransform(state1));
-		//cout << obj->getName() << "- dist: " << diff[0] << " angle: " << diff[1] << endl;
+	BOOST_FOREACH (Object::Ptr obj, _td->getInterferenceObjects()) {
 		
 		Transform3D<> Tbefore = obj->getBase()->getTransform(state0);
 		Transform3D<> Tafter = obj->getBase()->getTransform(state1);
@@ -65,7 +42,7 @@ double GripperTaskSimulator::measureInterference(SimState& sstate, const rw::kin
 		
 		Metric<Transform3D<> >::Ptr metric = MetricFactory::makeTransform3DMetric<double>(1.0, 1.0);
 		double objInt = metric->distance(Tbefore, Tafter);
-		cout << "INT of " << obj->getName() << ": " << objInt << endl;
+		//DEBUG << "INT of " << obj->getName() << ": " << objInt << endl;
 		
 		interference += objInt;
 		interferences.push_back(objInt);
@@ -77,16 +54,16 @@ double GripperTaskSimulator::measureInterference(SimState& sstate, const rw::kin
 	sstate._target->getResult()->interferenceAngles = interferenceAngles;
 	sstate._target->getResult()->interferences = interferences;
 	
-	if (interference > _interferenceLimit) {
+	if (interference > _td->getInterferenceLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 		
-		cout << "INTERFERENCE: " << interference << endl;
+		DEBUG << "! INTERFERENCE: " << interference << endl;
 	}
 	
-	if (wrench < _wrenchLimit) {
+	if (wrench < _td->getWrenchLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
 		
-		cout << "WRENCH TOO SMALL: " << wrench << endl;
+		DEBUG << "! WRENCH TOO SMALL: " << wrench << endl;
 	}
 	
 	return interference;

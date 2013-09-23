@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <rw/geometry/TriMeshSurfaceSampler.hpp>
+#include "TaskDescription.hpp"
 
 
 
@@ -27,7 +28,7 @@ class TaskGenerator
 		typedef rw::common::Ptr<TaskGenerator> Ptr;
 		
 		/// Constructor.
-		TaskGenerator(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const std::string& objectID, const std::string& gripperID);
+		TaskGenerator(TaskDescription::Ptr td);
 		
 		/**
 		 * @brief Generates a number of tasks
@@ -41,11 +42,12 @@ class TaskGenerator
 		 */
 		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::proximity::CollisionDetector::Ptr cdetect,
 			rw::kinematics::State state);
+			
+		/// Get previously generated tasks.
+		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
 		
-		/**
-		 * @brief Get all samples made during task generation.
-		 */
-		rwlibs::task::GraspTask::Ptr getAllSamples() { return _allSamples; }
+		/// Get all samples made during task generation.
+		rwlibs::task::GraspTask::Ptr getSamples() { return _samples; }
 		
 		/**
 		 * @brief Filters grasp tasks.
@@ -65,9 +67,10 @@ class TaskGenerator
 		/**
 		 * @brief Counts tasks with specified status.
 		 */
-		static int countTasks(const rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Status status);
+		static int countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rwlibs::task::GraspTask::Status status);
 		
-	protected: // methods
+	protected:
+	// methods
 		/**
 		 * @brief Helper function for moving gripper TCP frame into position.
 		 */
@@ -81,15 +84,12 @@ class TaskGenerator
 			rw::geometry::TriMeshSurfaceSampler& sampler, rw::proximity::ProximityModel::Ptr object,
 			rw::proximity::ProximityModel::Ptr ray, rw::proximity::CollisionStrategy::Ptr cstrategy, double &graspW);
 			
-	protected: // data
-		rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
-		rw::models::WorkCell::Ptr _wc;
-		rw::models::Object::Ptr _object;
-		std::string _gripperID;
-		rw::models::Device::Ptr _gripper;
-		rw::kinematics::Frame* _gripperTCP;
-		rw::kinematics::MovableFrame* _gripperMovable;
+	// data
+		TaskDescription::Ptr _td;
+		
 		rw::math::Q _openQ;
 		rw::math::Q _closeQ;
-		rwlibs::task::GraspTask::Ptr _allSamples;
+		
+		rwlibs::task::GraspTask::Ptr _tasks;
+		rwlibs::task::GraspTask::Ptr _samples;
 };
