@@ -533,7 +533,7 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
 	struct RWSimLuaLibrary: public LuaState::LuaLibrary {
 		const std::string getId(){ return "RWSimLuaLibrary"; }
 		bool initLibrary(LuaState& lstate){
-			std::cout << "CALLING INIT" << std::endl;
+			//std::cout << "CALLING INIT" << std::endl;
 			return rwsim::swig::openLuaLibRWSim(lstate.get())==0;}
 	};
     // check if the lua state is there and if RobWorkSim libraries has been added

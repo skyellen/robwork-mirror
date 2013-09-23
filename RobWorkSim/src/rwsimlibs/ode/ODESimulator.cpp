@@ -91,8 +91,8 @@ using namespace rwlibs::proximitystrategies;
 
 #define INITIAL_MAX_CONTACTS 1000
 
-#define RW_DEBUGS( str ) std::cout << str  << std::endl;
-//#define RW_DEBUGS( str )
+#define RW_DEBUGS( str ) //std::cout << str  << std::endl;
+#define RW_DEBUGS( str )
 
 //#define TIMING( str, func ) \
 //    { long start = rw::common::TimerUtil::currentTimeMs(); \
@@ -1942,7 +1942,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             Vector3D<> n, p;
 
             if(res->distances[i]<0.00000001){
-            	std::cout << " penetrating " << std::endl;
+            	//std::cout << " penetrating " << std::endl;
                 // the contact is penetrating and we therefore need compute the
             	// contact normal differently
             	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
