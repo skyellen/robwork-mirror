@@ -226,6 +226,15 @@ namespace dynamics {
             _info.masscenter = com;
             _bodyChangedEvent.fire(MassChangedEvent);
         }
+        
+        /**
+         * @brief Replaces object belonging to the body.
+         * 
+         * Geometry is replaced. WARNING: BodyInfo is not changed! This has to be done manually.
+         * 
+         * @todo Make BodyInfo adjust automatically.
+         */
+        void setObject(rw::models::Object::Ptr obj);
 
         //--------------------------- interface functions ------------------
         /**

@@ -66,3 +66,14 @@ rw::math::Vector3D<> Body::getPointVelW(const rw::math::Vector3D<>& p, const rw:
     // adn last remember to transform velocity back to world frame
     return wTp.R() * pVelBody;
 }
+
+
+void Body::setObject(rw::models::Object::Ptr obj)
+{
+	_obj = obj;
+	_geometry.clear();
+	
+	BOOST_FOREACH(Geometry::Ptr geo, _obj->getGeometry()){
+		_geometry.push_back(geo);
+	}
+}
