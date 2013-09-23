@@ -109,6 +109,17 @@ void WorkCell::remove(Frame* frame){
     _tree->remove( frame );
 }
 
+void WorkCell::removeObject(Object* object){
+	object->unregister();
+	//_tree->remove( object );
+	for (std::vector<rw::common::Ptr<Object> >::iterator i = _objects.begin(); i != _objects.end(); ++i) {
+		if (i->get() == object) {
+			_objects.erase(i);
+			break;
+		}
+	}
+}
+
 
 void WorkCell::add(rw::common::Ptr<Object> object){
 

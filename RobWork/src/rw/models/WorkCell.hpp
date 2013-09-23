@@ -152,9 +152,16 @@ namespace rw { namespace models {
 		/**
 		 * @brief Removes \b frame from work cell
 		 * 
-		 * @parem frame [in] Frame to remove
+		 * @param frame [in] Frame to remove
 		 */
         void remove(kinematics::Frame* frame);
+        
+        /**
+         * @brief Removes \b object from workcell
+         * 
+         * @param object [in] Object to remove
+         */
+        void removeObject(Object* object);
 
         /**
          * @brief Adds a Device to the WorkCell.
