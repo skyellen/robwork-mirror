@@ -62,6 +62,7 @@ namespace rw { namespace models {
         void addFrame(rw::kinematics::Frame* frame);
 
         void removeGeometry(rw::geometry::Geometry::Ptr geom);
+        void removeModel(rw::graphics::Model3D::Ptr model);
 
         const std::vector<rw::geometry::Geometry::Ptr>& getGeometry();
         const std::vector<rw::graphics::Model3D::Ptr>& getModels();

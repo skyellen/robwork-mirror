@@ -83,6 +83,14 @@ void Object::removeGeometry(Geometry::Ptr geom){
     if(iter!=_geometry.end())
         _geometry.erase(iter);
 }
+
+void Object::removeModel(rw::graphics::Model3D::Ptr model)
+{
+	std::vector<Model3D::Ptr>::iterator iter = std::find(_models.begin(),_models.end(),model);
+    if(iter!=_models.end())
+        _models.erase(iter);
+}
+
 const std::vector<Geometry::Ptr>& Object::getGeometry(){
     return _geometry;
 }
