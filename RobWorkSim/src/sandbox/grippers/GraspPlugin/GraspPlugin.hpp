@@ -99,6 +99,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		
 		//! @brief Experimental - add new gripper device to the workcell
 		void addGripper(rw::math::Transform3D<> transform);
+		
+		//! @brief Place for testing stuff out
+		void test();
 
 		// parameters
 		rw::models::WorkCell* _wc; // workcell
@@ -125,7 +128,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		
 		int _nOfTargetsToGen;
 		TaskGenerator::Ptr _generator;
-		rwlibs::task::GraspTask::Ptr _tasks; // grasp task loaded from file
+		rwlibs::task::GraspTask::Ptr _tasks; // grasp tasks planned or loaded from file
 		
 		/* GUI */
 		// geometry panel
@@ -158,6 +161,8 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QPushButton* _stopButton;
 		QCheckBox* _slowCheck;
 		QCheckBox* _silentCheck;
+		
+		QPushButton* _testButton;
 		
 		// working directory
 		std::string _wd;

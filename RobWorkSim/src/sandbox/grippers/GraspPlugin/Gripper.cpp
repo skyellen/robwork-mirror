@@ -31,11 +31,13 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state)
 {
 	// remove existing objects
+	cout << "Removing objects..." << endl;
 	wc->removeObject(wc->findObject("gripper.LeftFinger").get());
 	wc->removeObject(wc->findObject("gripper.RightFinger").get());
+	cout << "Objects removed." << endl;
 	
 	// create and add new objects
-	
+	cout << "Adding new objects..." << endl;
 	Object* leftobj = new Object(wc->findFrame("gripper.LeftFinger"));
 	Geometry::Ptr leftgeo = ownedPtr(new Geometry(_jaw, string("LeftFingerGeo")));
 	Model3D* leftmodel = new Model3D("LeftModel");
@@ -57,6 +59,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	rightobj->addGeometry(rightgeo);
 	wc->add(rightobj);
 	dwc->findBody("gripper.RightFinger")->setObject(rightobj);
+	cout << "Objects added." << endl;
 	
 	// set tcp
 	string tcpFrameName = wc->getPropertyMap().get<string>("gripperTCP");
@@ -71,6 +74,8 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	
 	// set force
 	ddev->setMotorForceLimits(Q(2, _force, _force));
+	
+	cout << "Gripper updated!" << endl;
 }
 
 

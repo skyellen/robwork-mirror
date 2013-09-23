@@ -50,14 +50,14 @@ namespace rw {
 				interferenceQ(0),
 				finalQ(0) {}
 			
-			friend std::ostream& operator<<(std::ostream& stream, const GripperQuality& q)
+			/*friend std::ostream& operator<<(std::ostream& stream, const GripperQuality& q)
 			{
 				stream << "[N: " << q.nOfExperiments << ", GEO: " << q.shapeQ << ", COV: ";
 				stream << q.coverageQ << ", WSM: " << q.wrenchQ << ", INT: " << q.interferenceQ;
 				stream << ", Q: " << q.finalQ << "]" << std::endl;
 				
 				return stream;
-			}
+			}*/
 			
 			int nOfExperiments;
 			int nOfSampledParSurfaces;
@@ -169,17 +169,10 @@ namespace rw {
 					return _quality;
 				}
 				
-				// friends
-				//! @brief Output operator
-				//friend std::ostream& operator<<(std::ostream& stream, const Gripper& gripper);
-				
 				friend class rw::loaders::GripperXMLLoader;
 				
 			private:
 				std::string _name;
-				
-				//WorkCell::Ptr _wc;
-				//TreeDevice::Ptr _device;
 				
 				// geometry parameters
 				rw::geometry::JawPrimitive::Ptr _jaw;

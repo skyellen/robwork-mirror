@@ -36,8 +36,6 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory
 SET(SrcFiles
 	GraspPlugin.cpp
 	TaskGenerator.cpp
-	FeatureTaskGenerator.cpp
-	RayTaskGenerator.cpp
 	csgjs.cpp
 	CSGConvert.cpp
 	CSGModel.cpp
@@ -47,12 +45,25 @@ SET(SrcFiles
 	DesignDialog.cpp
 	GripperXMLLoader.cpp
 	GripperTaskSimulator.cpp
+	TaskDescription.cpp
 )
 
 SET(MocSrcFiles )
 QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+
+# add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	add_custom_target(doc
+	${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
+endif(DOXYGEN_FOUND)
+
 
 # The shared library to build
 add_library( GraspPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
