@@ -176,7 +176,7 @@ public:
     };
 
 protected:
-	virtual void graspFinishedCB() {}
+	virtual void graspFinishedCB(SimState& sstate) {}
 	
 private:
 
@@ -201,7 +201,7 @@ private:
 	bool getNextTarget(SimState & sstate);
 
 
-private:
+protected:
 	rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
     bool _requestSimulationStop;
     int _stepDelayMs;

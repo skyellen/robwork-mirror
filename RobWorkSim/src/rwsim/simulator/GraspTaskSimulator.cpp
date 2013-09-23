@@ -310,24 +310,24 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     Q currentQ = _hand->getQ(state);
 
-    if(sstate._wallTimer.getTime()>60){ //seconds
+    if(sstate._wallTimer.getTime()>10){ //seconds
         _timeout++;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::TimeOut;
         _stat[GraspTask::TimeOut]++;
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB();
+        graspFinishedCB(sstate);
     }
 
-    if(sim->getTime()>20.0 && sstate._currentState != NEW_GRASP){
+    if(sim->getTime()>10.0 && sstate._currentState != NEW_GRASP){
         _timeout++;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::TimeOut;
         _stat[GraspTask::TimeOut]++;
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB();
+        graspFinishedCB(sstate);
     }
 
     //Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
@@ -346,7 +346,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         //}
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB();
+        graspFinishedCB(sstate);
     }
 
     if(sstate._currentState!=NEW_GRASP ){
@@ -364,7 +364,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //}
             sstate._currentState = NEW_GRASP;
             
-            graspFinishedCB();
+            graspFinishedCB(sstate);
         }
     }
 
@@ -438,7 +438,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._target->getResult()->qualityBeforeLifting = Q();
                     sstate._currentState = NEW_GRASP;
                     
-                    graspFinishedCB();
+                    graspFinishedCB(sstate);
                 } else {
                     //std::cout << "LIFTING" << std::endl;
                     State nstate = state;
@@ -590,7 +590,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //}
             sstate._currentState = NEW_GRASP;
             
-            graspFinishedCB();
+            graspFinishedCB(sstate);
         }
     }
 
