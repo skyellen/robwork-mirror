@@ -53,7 +53,7 @@ namespace {
 
             #ifdef RWSIM_HAVE_BULLET
                 rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::BtSimulator>(), boost::lambda::_1);
-                _physicsEngines.push_back(std::make_pair(ODEPhysicsStr,rwphysics));
+                _physicsEngines.push_back(std::make_pair(BulletPhysicsStr,rwphysics));
             #endif
 
 			//rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> bum;

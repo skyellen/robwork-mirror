@@ -131,7 +131,7 @@ int main(int argc, char** argv)
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
     int nrTasks = 5000, totalNrTasks = 0, taskIndex=0;
-    if( vm.count("gentask") ){
+    if( vm["gentask"].as<bool>() ){
         string objectName = vm["object"].as<string>();
         string type = vm["gripper"].as<string>();
         int offset = Math::ranI(0,1000) * 20;

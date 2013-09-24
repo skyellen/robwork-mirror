@@ -88,7 +88,7 @@ std::vector<boost::tuple<rw::math::Transform3D<>, rw::math::Q, bool> > SDHInvKin
     }
     if(reducedTargets.size()<3)
         _nrReducedTargets++;
-    std::cout << "  [" << _nrReducedTargets << "]  ";
+    //std::cout << "  [" << _nrReducedTargets << "]  ";
 
 
     std::vector<boost::tuple<Transform3D<>, Q, bool> > result;
