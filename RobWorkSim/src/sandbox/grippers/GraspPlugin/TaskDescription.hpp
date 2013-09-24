@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include "XMLHelpers.hpp"
 
 
 
@@ -103,20 +104,16 @@ class TaskDescriptionLoader
 	public:
 	// static
 		/// Load task description from XML file.
-		static TaskDescription::Ptr load( const std::string& filename, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+		static TaskDescription::Ptr load(const std::string& filename, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 		
 		/// Save task description to XML file.
 		static void save(const std::string& filename);
 	
 	protected:
-	// typedefs
-		typedef boost::property_tree::ptree PTree;
-		typedef PTree::iterator CI;
-	
 	// methods
-		static TaskDescription::Ptr readTaskDescription(PTree& tree, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
-		static void readTarget(PTree& tree, TaskDescription::Ptr task);
-		static void readGripper(PTree& tree, TaskDescription::Ptr task);
-		static void readInterferenceObjects(PTree& tree, TaskDescription::Ptr task);
-		static void readLimits(PTree& tree, TaskDescription::Ptr task);
+		static TaskDescription::Ptr readTaskDescription(rwlibs::xml::PTree& tree, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+		static void readTarget(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readGripper(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readInterferenceObjects(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readLimits(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 };

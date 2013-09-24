@@ -1113,7 +1113,7 @@ void GraspTableGeneratorPlugin::calcColFreeRandomCfg(rw::kinematics::State& stat
 
 void GraspTableGeneratorPlugin::genericEventListener(const std::string& event){
     //std::cout << "Generic event: " << event << std::endl;
-    if( event=="DynamicWorkcellLoadet" ){
+    if( event=="DynamicWorkCellLoaded" ){
         // get the dynamic workcell from the propertymap
         RW_DEBUG("Getting dynamic workcell from propertymap!");
 

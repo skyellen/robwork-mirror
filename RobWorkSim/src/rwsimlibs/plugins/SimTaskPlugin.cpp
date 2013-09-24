@@ -773,7 +773,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
 
 
 void SimTaskPlugin::genericEventListener(const std::string& event){
-    if( event=="DynamicWorkcellLoadet" ){
+    if( event=="DynamicWorkCellLoaded" ){
         // get the dynamic workcell from the propertymap
         RW_DEBUG("Getting dynamic workcell from propertymap!");
 

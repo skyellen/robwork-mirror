@@ -403,7 +403,7 @@ void SupportPosePlugin::open(rw::models::WorkCell* workcell)
 
 void SupportPosePlugin::genericEventListener(const std::string& event){
     //std::cout << "Generic event: " << event << std::endl;
-    if( event=="DynamicWorkcellLoadet" ){
+    if( event=="DynamicWorkCellLoaded" ){
         // get the dynamic workcell from the propertymap
         RW_DEBUG("Getting dynamic workcell from propertymap!");
         boost::shared_ptr<DynamicWorkCell> *dwc =

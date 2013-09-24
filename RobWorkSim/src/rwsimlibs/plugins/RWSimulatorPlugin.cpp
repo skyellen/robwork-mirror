@@ -539,7 +539,7 @@ void RWSimulatorPlugin::open(const std::string& file)
                 _dworkcell );
 
         RW_DEBUGRWS("fire event!! ");
-        getRobWorkStudio()->genericEvent().fire("DynamicWorkcellLoadet");
+        getRobWorkStudio()->genericEvent().fire("DynamicWorkCellLoaded");
 
     }
 }

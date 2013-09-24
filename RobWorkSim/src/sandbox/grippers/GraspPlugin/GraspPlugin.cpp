@@ -376,7 +376,7 @@ void GraspPlugin::setCurrentTask(GraspTask::Ptr task)
 
 void GraspPlugin::genericEventListener(const std::string& event)
 {
-    if (event == "DynamicWorkcellLoadet") { 
+    if (event == "DynamicWorkCellLoaded") { 
 	 
         DynamicWorkCell::Ptr dwc =
 			getRobWorkStudio()->getPropertyMap().get<DynamicWorkCell::Ptr>("DynamicWorkcell", NULL);

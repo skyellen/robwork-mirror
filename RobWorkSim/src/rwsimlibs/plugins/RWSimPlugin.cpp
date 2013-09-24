@@ -643,7 +643,7 @@ void RWSimPlugin::openDwc(const std::string& file){
             _dwc );
 
     // signal to other plugins that a DynamicWorkCell has been loadet
-    getRobWorkStudio()->genericEvent().fire("DynamicWorkcellLoadet");
+    getRobWorkStudio()->genericEvent().fire("DynamicWorkCellLoaded");
 
     // if we add to propertymap before openning workcell then other plugins can test for it
     getRobWorkStudio()->setWorkcell( dwc->getWorkcell() );

@@ -97,7 +97,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
          * @brief opens a dynamic workcell with filename \b file.
          *
          * @note if successfully openned a generic event with string id
-         * 'DynamicWorkcellLoadet' will be emitted and the DynamicWorkCell will
+         * 'DynamicWorkCellLoaded' will be emitted and the DynamicWorkCell will
          * be saved in the RobWorkStudio propertymap with the string id 'DynamicWorkcell'.
          */
         void openDwc(const std::string& file);
