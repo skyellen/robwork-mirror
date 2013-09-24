@@ -56,6 +56,11 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	readInterferenceObjects(tree.get_child("InterferenceObjects"), task);
 	readLimits(tree.get_child("Limits"), task);
 	
+	DEBUG << "- coverage distance: ";
+	PTree& node = tree.get_child("CoverageDistance");
+	task->_coverageDistance = XMLHelpers::readQ(node);
+	DEBUG << task->_coverageDistance << endl;
+	
 	task->_isOk = true;
 	
 	return task;

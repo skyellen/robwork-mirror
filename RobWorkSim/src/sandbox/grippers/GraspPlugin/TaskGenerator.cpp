@@ -113,6 +113,11 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 
 rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff)
 {
+	if (!tasks) {
+		RW_WARN("tasks = NULL");
+		return NULL;
+	}
+	
 	// create nodes for succesful grasps
 	typedef GraspResult::Ptr ValueType;
 	typedef KDTreeQ<ValueType> NNSearch;
@@ -251,6 +256,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
             atask.addTarget(gtarget);
 		}
     }
+    
+    _tasks = gtask;
     
 	return gtask;
 }

@@ -82,19 +82,15 @@ void GraspPlugin::initialize()
 
 void GraspPlugin::startSimulation()
 {
-    _graspSim = ownedPtr(new GripperTaskSimulator(_td));
+    _graspSim = ownedPtr(new GripperTaskSimulator(_gripper, _gripper->getTasks(), _gripper->getSamples(), _td));
     
-    if (!_graspSim->isRunning() && _gripper->getTasks() != NULL) {
-		setCurrentTask(_gripper->getTasks());
-		
-		try {
-			_graspSim->startSimulation(_initState);
-		} catch(...) {
-			return;
-		}
+	try {
+		_graspSim->startSimulation(_initState);
+	} catch(...) {
+		return;
+	}
     
-		_timer->start();
-    }
+	_timer->start();
 }
 
 
@@ -233,6 +229,11 @@ void GraspPlugin::guiEvent()
 	}
 	
 	else if (obj == _loadSetupButton) {
+		if (!_dwc) {
+			RW_WARN("You first have to open proper dynamic workcell!");
+			return;
+		}
+		
 		QString filename = QFileDialog::getOpenFileName(this,
 			"Open file", QString::fromStdString(_wd), tr("Task description files (*.td.xml)"));
 			
@@ -343,9 +344,10 @@ void GraspPlugin::planTasks()
 	
 	try {
 		_generator = new TaskGenerator(_td);
+		
 		_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
-		_gripper->setTasks(_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState));
-		//_gripper->getQuality()->nOfSampledParSurfaces = _generator->getSamples();
+		_gripper->setTasks(_generator->getTasks());
+		_gripper->setSamples(_generator->getSamples());
 	} catch (rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
 	}
@@ -362,14 +364,15 @@ void GraspPlugin::planTasks()
 
 void GraspPlugin::setCurrentTask(GraspTask::Ptr task)
 {
-    try {
+    /*try {
         _graspSim->load(task);
+        //_graspSim->loadSamples(
     } catch(const Exception& e) {
         QMessageBox::information(this, "GraspPlugin", e.what());
         return;
     } catch(...) {
 		cout << "Unable to load tasks!" << endl;
-	}
+	}*/
 }
 
 

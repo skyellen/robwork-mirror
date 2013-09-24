@@ -44,7 +44,7 @@ void readGeometry(PTree& tree, Gripper::Ptr gripper)
 {
 	for (CI p = tree.begin(); p != tree.end(); ++p) {
 		if (p->first == "Jaw") {
-			gripper->setGeometry(readJaw(p->second));
+			//gripper->setGeometry(readJaw(p->second));
 			
 			//cout << "Reading jaw..." << p->second.get_value<string>() << endl;
 		}

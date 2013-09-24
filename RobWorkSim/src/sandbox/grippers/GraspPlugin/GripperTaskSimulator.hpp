@@ -8,6 +8,7 @@
 #include <rw/models/WorkCell.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 #include "TaskDescription.hpp"
+#include "Gripper.hpp"
 
 
 
@@ -33,12 +34,27 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		typedef rw::common::Ptr<GripperTaskSimulator> Ptr;
 
 	// constructors
-		/// Constructor.
-		GripperTaskSimulator(TaskDescription::Ptr td) :
-			GraspTaskSimulator(td->getDynamicWorkCell(), 1), _td(td) {}
+		/**
+		 * @brief Constructor.
+		 * 
+		 * @param gripper [in] Gripper to perform tasks
+		 * @param tasks [in] tasks to simulate
+		 * @param samples [in] all samples created by task generator
+		 * @param td [in] task description
+		 */
+		GripperTaskSimulator(rw::models::Gripper::Ptr gripper, rwlibs::task::GraspTask::Ptr tasks,
+			rwlibs::task::GraspTask::Ptr samples, TaskDescription::Ptr td);
 			
 		/// Destructor.
 		virtual ~GripperTaskSimulator() {}
+		
+	// methods
+		/**
+		 * @brief Load all samples created by grasp generator.
+		 * 
+		 * These samples are used for coverage calculation.
+		 */
+		void loadSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; }
 		
 	protected:
 	// methods
@@ -72,9 +88,24 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		 * 
 		 * This is the min. wrench of the grasp.
 		 */
-		double getWrench(SimState& sstate);
+		double getWrench(SimState& sstate) const;
+		
+		/**
+		 * @brief Returns coverage measurement.
+		 * 
+		 * Coverage is calculated as a ratio of filtered succesful grasps to
+		 * number of samples created by the generator.
+		 */
+		double getCoverage();
+		
+		/**
+		 * @brief Calculates min., avg. and max. wrenches in all tested grasps.
+		 */
+		rw::math::Q getWrenchMeasurement() const;
 
 	// data
+		rw::models::Gripper::Ptr _gripper;
 		TaskDescription::Ptr _td;
+		rwlibs::task::GraspTask::Ptr _samples;
 };
 }} // end namespaces

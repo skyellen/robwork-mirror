@@ -64,6 +64,8 @@ class TaskDescription
 		std::vector<rw::models::Object::Ptr> getInterferenceObjects() { return _interferenceObjects; }
 		void addInterferenceObject(rw::models::Object::Ptr object) { _interferenceObjects.push_back(object); }
 		
+		rw::math::Q getCoverageDistance() const { return _coverageDistance; }
+		
 		rw::models::Object::Ptr getTargetObject() { return _targetObject; }
 		void setTargetObject(rw::models::Object::Ptr object) { _targetObject = object; }
 		
@@ -89,6 +91,7 @@ class TaskDescription
 		double _interferenceLimit;
 		double _wrenchLimit;
 		std::vector<rw::models::Object::Ptr> _interferenceObjects;
+		rw::math::Q _coverageDistance;
 		rw::models::Object::Ptr _targetObject;
 		std::string _gripperID;
 		rw::models::Device::Ptr _gripperDevice;

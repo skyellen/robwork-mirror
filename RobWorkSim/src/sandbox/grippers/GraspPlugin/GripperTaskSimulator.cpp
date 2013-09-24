@@ -1,6 +1,7 @@
 #include "GripperTaskSimulator.hpp"
 
 #include <rw/math/MetricFactory.hpp>
+#include "TaskGenerator.hpp"
 
 #define DEBUG cout
 
@@ -10,6 +11,19 @@ USE_ROBWORK_NAMESPACE;
 using namespace robwork;
 using namespace rwsim;
 using namespace rwsim::simulator;
+using namespace rw::common;
+
+
+
+GripperTaskSimulator::GripperTaskSimulator(rw::models::Gripper::Ptr gripper, rwlibs::task::GraspTask::Ptr tasks,
+		rwlibs::task::GraspTask::Ptr samples, TaskDescription::Ptr td) :
+	GraspTaskSimulator(td->getDynamicWorkCell(), 1),
+	_gripper(gripper),
+	_samples(samples),
+	_td(td)
+{
+	load(tasks);
+}
 
 
 
@@ -22,6 +36,10 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 	 * Then, if wrench space measurement result is below specified minimum wrench,
 	 * grasp status is changed from Success to ObjectSlipped.
 	 */
+	if (!_td) {
+		RW_THROW("NULL task description!");
+	}
+	
 	if (getInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 	}
@@ -71,9 +89,56 @@ double GripperTaskSimulator::getInterference(SimState& sstate, const rw::kinemat
 
 
 
-double GripperTaskSimulator::getWrench(SimState& sstate)
+double GripperTaskSimulator::getWrench(SimState& sstate) const
 {
 	return sstate._target->getResult()->qualityAfterLifting(0);
+}
+
+
+
+double GripperTaskSimulator::getCoverage()
+{
+	if (!_gtask || !_samples) {
+		RW_WARN("NULL tasks or samples");
+		return 0.0;
+	}
+	
+	double coverage = 0.0;
+
+	Q diff = _td->getCoverageDistance();
+
+	int okTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_gtask, diff), GraspTask::Success);
+	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::Success);
+	
+	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getSubTasks()[0].getTargets().size() << endl;
+	DEBUG << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
+	coverage = 1.0 * okTargets / allTargets;
+	
+	return coverage;
+}
+
+
+
+rw::math::Q GripperTaskSimulator::getWrenchMeasurement() const
+{
+	Q wrench(3, 1000, 0, 0);
+	
+	int success = 0;
+	BOOST_FOREACH(GraspTarget& tgt, _gtask->getSubTasks()[0].getTargets()) {
+		if (tgt.getResult()->testStatus == GraspTask::Success) {
+			success++;
+			
+			Q result = tgt.getResult()->qualityAfterLifting;
+			
+			if (result(0) < wrench(0)) wrench(0) = result(0);
+			
+			wrench(1) += result(1);
+			
+			if (result(2) > wrench(2)) wrench(2) = result(2);
+		}
+	}
+	
+	return wrench;
 }
 
 
@@ -108,4 +173,18 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 
 void GripperTaskSimulator::simulationFinished(SimState& sstate)
 {
+	/* After simulation is finished, a gripper evaluation should be performed.
+	 * This includes:
+	 * - success ratio calculation
+	 * - wrench space measurement
+	 * - coverage calculation
+	 */
+	double successRatio = 1.0 * TaskGenerator::countTasks(_gtask, GraspTask::Success) / getNrTargets();
+	double coverage = getCoverage();
+	Q wrenchMeasurement = getWrenchMeasurement();
+	
+	DEBUG << "Gripper evaluation:" << endl;
+	DEBUG << "SuccessRatio= " << successRatio << endl;
+	DEBUG << "Coverage= " << coverage << endl;
+	DEBUG << "WrenchMeasurement(min/avg/max)= " << wrenchMeasurement << endl;
 }

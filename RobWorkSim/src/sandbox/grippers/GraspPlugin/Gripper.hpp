@@ -86,6 +86,9 @@ class Gripper // : public TreeDevice
 		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
 		void setTasks(rwlibs::task::GraspTask::Ptr tasks) { _tasks = tasks; }
 		
+		rwlibs::task::GraspTask::Ptr getSamples() { return _samples; }
+		void setSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; }
+		
 		double getForce() { return _force; }
 		void setForce(double force) { _force = force; }
 		
@@ -97,6 +100,78 @@ class Gripper // : public TreeDevice
 		
 		double getOpening() { return _opening; }
 		void setOpening(double opening) { _opening = opening; }
+		
+		/**
+		 * @brief Returns vector of jaw parameters.
+		 * 
+		 * If jaw geometry is not parametrized, returns Q of zero length.
+		 */
+		rw::math::Q getJawParameters() const
+		{
+			if (_isJawParametrized) {
+				return _jawParameters;
+			} else {
+				return rw::math::Q();
+			}
+		}
+		
+		/// Set jaws geometry to a mesh.
+		void setJawGeometry(rw::geometry::Geometry::Ptr geo)
+		{
+			_leftGeometry = geo;
+			_rightGeometry = geo;
+			_isJawParametrized = false;
+		}
+		
+		/**
+		 * @brief Set parametrized jaw geometry.
+		 * 
+		 * JawPrimitive is used to generate geometry mesh from given parameters.
+		 */
+		void setJawGeometry(rw::math::Q params)
+		{
+			using rw::geometry::Geometry;
+			using rw::geometry::JawPrimitive;
+			using rw::common::ownedPtr;
+			
+			_jawParameters = params;
+			_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(params)));
+			_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(params)));
+			_isJawParametrized = true;
+		}
+		
+		/**
+		 * @brief Returns vector of base parameters.
+		 * 
+		 * If base geometry is not parametrized, returns Q of zero length.
+		 */
+		rw::math::Q getBaseParameters() const
+		{
+			if (_isBaseParametrized) {
+				return _baseParameters;
+			} else {
+				return rw::math::Q();
+			}
+		}
+		
+		/// Set base geometry to a mesh.
+		void setBaseGeometry(rw::geometry::Geometry::Ptr geo) { _baseGeometry = geo; _isBaseParametrized = false; }
+		
+		/**
+		 * @brief Sets parametrized base geometry.
+		 * 
+		 * Box is used to generate mesh using given parameters.
+		 */
+		void setBaseGeometry(rw::math::Q params)
+		{
+			using rw::geometry::Geometry;
+			using rw::geometry::Box;
+			using rw::common::ownedPtr;
+			
+			_baseParameters = params;
+			_baseGeometry = ownedPtr(new Geometry(new Box(params), std::string("BaseGeo")));
+			_isBaseParametrized = true;
+		}
 		
 	// DEPRECATED
 		rw::geometry::JawPrimitive::Ptr getGeometry() { return _jaw; }
@@ -144,14 +219,15 @@ class Gripper // : public TreeDevice
 		std::string _name;
 		
 		// gripper geometry parametrizations
-		bool _isBasePrimitive;
-		bool _isJawPrimitive;
+		bool _isBaseParametrized;
+		bool _isJawParametrized;
 		rw::math::Q _baseParameters;
 		rw::math::Q _jawParameters;
 		
 		// gripper part geometries
 		rw::geometry::Geometry::Ptr _baseGeometry;
-		rw::geometry::Geometry::Ptr _jawGeometry;
+		rw::geometry::Geometry::Ptr _leftGeometry;
+		rw::geometry::Geometry::Ptr _rightGeometry;
 		
 		rw::geometry::JawPrimitive::Ptr _jaw;
 		
@@ -164,5 +240,6 @@ class Gripper // : public TreeDevice
 		// quality & tasks
 		GripperQuality::Ptr _quality;
 		rwlibs::task::GraspTask::Ptr _tasks;
+		rwlibs::task::GraspTask::Ptr _samples;
 };
 }} // end namespaces
