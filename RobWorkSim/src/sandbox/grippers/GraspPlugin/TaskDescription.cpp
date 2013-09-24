@@ -11,6 +11,7 @@ using namespace std;
 USE_ROBWORK_NAMESPACE;
 using namespace robwork;
 using namespace rwsim;
+using namespace rwsim::dynamics;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 using boost::algorithm::trim;
@@ -19,6 +20,7 @@ using namespace rwlibs::xml;
 
 
 TaskDescription::TaskDescription(rwsim::dynamics::DynamicWorkCell::Ptr dwc) :
+	_isOk(false),
 	_dwc(dwc),
 	_wc(dwc->getWorkcell().get()),
 	_initState(_wc->getDefaultState()),
@@ -54,6 +56,8 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	readInterferenceObjects(tree.get_child("InterferenceObjects"), task);
 	readLimits(tree.get_child("Limits"), task);
 	
+	task->_isOk = true;
+	
 	return task;
 }
 
@@ -88,6 +92,10 @@ void TaskDescriptionLoader::readGripper(PTree& tree, TaskDescription::Ptr task)
 	task->_gripperDevice = task->_wc->findDevice(gripperName);
 	if (!task->_gripperDevice) {
 		RW_THROW("Gripper device not found!");
+	}
+	task->_gripperDynamicDevice = task->_dwc->findDevice<RigidDevice>(gripperName);
+	if (!task->_gripperDynamicDevice) {
+		RW_THROW("Gripper dynamic device not found!");
 	}
 	
 	// read tcp frame
@@ -168,7 +176,7 @@ TaskDescription::Ptr TaskDescriptionLoader::load(const std::string& filename, rw
         PTree tree;
         read_xml(filename, tree);
 
-        task = readTaskDescription(tree.get_child("TaskDescription"), dwc);       
+        task = readTaskDescription(tree.get_child("TaskDescription"), dwc);      
     } catch (const ptree_error& e) {
         RW_THROW(e.what());
     }

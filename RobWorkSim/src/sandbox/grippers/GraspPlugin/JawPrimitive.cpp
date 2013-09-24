@@ -17,10 +17,9 @@ using namespace rw::csg;
 
 JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 {
-	if(initQ.size() != 9)
+	if(initQ.size() != 9) {
 		RW_THROW("Size of parameter list must equal 9!");
-		
-		//cout << initQ << endl;
+	}
 	
 	int i = 0;
 	_type = CutoutType(initQ(i++));
@@ -37,8 +36,6 @@ JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 	} else {
 		_cutAngle = initQ(i++);
 	}
-	
-	//cout << "Made jaw" << endl;
 }
 
 

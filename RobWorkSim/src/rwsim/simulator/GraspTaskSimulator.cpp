@@ -36,6 +36,7 @@ using rw::graspplanning::CMDistCCPMeasure3D;
 using rw::geometry::GeometryUtil;
 using rw::graspplanning::Grasp3D;
 using rwlibs::simulation::SimulatedController;
+using std::endl;
 
 const int NR_OF_QUALITY_MEASURES = 3;
 
@@ -317,7 +318,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         _stat[GraspTask::TimeOut]++;
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB(sstate);
+        graspFinished(sstate);
     }
 
     if(sim->getTime()>10.0 && sstate._currentState != NEW_GRASP){
@@ -327,7 +328,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         _stat[GraspTask::TimeOut]++;
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB(sstate);
+        graspFinished(sstate);
     }
 
     //Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
@@ -346,7 +347,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         //}
         sstate._currentState = NEW_GRASP;
         
-        graspFinishedCB(sstate);
+        graspFinished(sstate);
     }
 
     if(sstate._currentState!=NEW_GRASP ){
@@ -364,7 +365,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //}
             sstate._currentState = NEW_GRASP;
             
-            graspFinishedCB(sstate);
+            graspFinished(sstate);
         }
     }
 
@@ -438,7 +439,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     sstate._target->getResult()->qualityBeforeLifting = Q();
                     sstate._currentState = NEW_GRASP;
                     
-                    graspFinishedCB(sstate);
+                    graspFinished(sstate);
                 } else {
                     //std::cout << "LIFTING" << std::endl;
                     State nstate = state;
@@ -590,7 +591,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //}
             sstate._currentState = NEW_GRASP;
             
-            graspFinishedCB(sstate);
+            graspFinished(sstate);
         }
     }
 
@@ -605,18 +606,15 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if( !getNextTarget(sstate) ){
                 //std::cout << "STOPP" << std::endl;
                 // end we are done with this threadsimulator
-
-                Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex
-                             << " success:"<< std::setw(5) << _success
-                             << " slipped:" << std::setw(5) << _slipped
-                             << " failed:" << std::setw(5) << _failed
-                             << " collisions:" << std::setw(5) << _collision
-                             << " timeouts:" << std::setw(5) << _timeout
-                             << " skipped:" << std::setw(5) << _skipped
-                             << " simfailures:" << std::setw(5) <<_simfailed << "\n";
+                
+                
+                // execute simulation finished callback
+                simulationFinished(sstate);
 
                 sstate._stopped = true;
                 sim->postStop();
+                
+                
                 // stop the thread
                 return;
             }
@@ -736,6 +734,22 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         sstate._currentState = APPROACH;
         sstate._restingTime = 0;
     }
+}
+
+
+
+void GraspTaskSimulator::simulationFinished(SimState& sstate)
+{
+	Log::infoLog() << "Simulation finished:" << endl;
+	
+	Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex
+						 << " success:"<< std::setw(5) << _success
+						 << " slipped:" << std::setw(5) << _slipped
+						 << " failed:" << std::setw(5) << _failed
+						 << " collisions:" << std::setw(5) << _collision
+						 << " timeouts:" << std::setw(5) << _timeout
+						 << " skipped:" << std::setw(5) << _skipped
+						 << " simfailures:" << std::setw(5) <<_simfailed << "\n";
 }
 
 

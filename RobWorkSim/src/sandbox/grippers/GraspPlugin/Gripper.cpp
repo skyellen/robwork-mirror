@@ -19,8 +19,7 @@ Gripper::Gripper(const std::string& name) :
 	_jawdist(0),
 	_opening(0.05),
 	_force(50),
-	_tasks(NULL),
-	_dataFilename(name + "_data.xml")
+	_tasks(NULL)
 {
 }
 
@@ -108,55 +107,3 @@ void Gripper::saveTasks(std::string filename)
 	{
 	}
 }
-
-
-
-/*void Gripper::updateGripper(TreeDevice::Ptr dev, rw::graphics::WorkCellScene::Ptr wcs, rw::proximity::CollisionDetector::Ptr cd)
-{
-	cout << "!" << endl;
-	cout << dev->getName() << endl;
-	//if (_device == 0) return;
-	
-	// update geometry
-	// remove drawables from jaws
-	wcs->removeDrawables(_wc->findFrame("gripper.LeftFinger"));
-	wcs->removeDrawables(_wc->findFrame("gripper.RightFinger"));
-
-	// remove models from collision detector
-	BOOST_FOREACH (string st, cd->getGeometryIDs(_wc->findFrame("gripper.LeftFinger"))) {
-		cout << "$$$" << st << endl;
-	}
-	
-	cd->removeGeometry(_wc->findFrame("gripper.LeftFinger"), "LeftFingerGeo");
-	cd->removeGeometry(_wc->findFrame("gripper.RightFinger"), "RightFingerGeo");
-	
-	// load stl files
-	//rw::geometry::PlainTriMeshN1F::Ptr leftMesh = STLFile::load(directory + "/left.stl");
-	//rw::geometry::PlainTriMeshN1F::Ptr rightMesh = STLFile::load(directory + "/right.stl");
-	
-	// set the proper pose of the fingers
-	Geometry::Ptr leftGeo = ownedPtr(new Geometry(_jaw->createMesh()));
-	leftGeo->setName("LeftFingerGeo");
-	leftGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0.0, 0.0*Deg2Rad, 0.0).toRotation3D()));
-	Geometry::Ptr rightGeo = ownedPtr(new Geometry(_jaw->createMesh()));
-	rightGeo->setName("RightFingerGeo");
-	rightGeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180.0*Deg2Rad, 180.0*Deg2Rad).toRotation3D()));
-	
-	// add new geometry
-	wcs->addGeometry(
-		"LeftFingerGeo",
-		leftGeo,
-		_wc->findFrame("gripper.LeftFinger"),
-		Geometry::PhysicalGroup);
-	wcs->addGeometry(
-		"RightFingerGeo",
-		rightGeo,
-		_wc->findFrame("gripper.RightFinger"),
-		Geometry::PhysicalGroup);
-	
-	// add new collision models
-	cd->addGeometry(_wc->findFrame("gripper.LeftFinger"), leftGeo);
-	cd->addGeometry(_wc->findFrame("gripper.RightFinger"), rightGeo);
-	
-	cout << "UPDATED" << endl;
-}*/

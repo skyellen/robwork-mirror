@@ -42,13 +42,37 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		
 	protected:
 	// methods
-		/// Callback for when the grasp is finished.
-		virtual void graspFinishedCB(SimState& sstate);
+		/// @copydoc GraspTaskSimulator::graspFinished
+		virtual void graspFinished(SimState& sstate);
+		
+		/// @copydoc GraspTaskSimulator::printGraspResult
+		virtual void printGraspResult(SimState& sstate);
+		
+		/// @copydoc GraspTaskSimulator::simulationFinished
+		virtual void simulationFinished(SimState& sstate);
 		
 	private:
 	// methods
-		/// Measure interference.
-		double measureInterference(SimState& sstate, const rw::kinematics::State& state);
+		/**
+		 * @brief Returns interference measurement for given grasp.
+		 * 
+		 * This is a sum of individual object displacements compared to initial kinematic state.
+		 * In addition to returning interference face value, function sets up vectors storing
+		 * interference data in GraspResult. These are interferenceDistances, interferenceAngles
+		 * and interferences vectors, storing respectively: linear and angular displacements, and
+		 * the weighted metrics of these displacements for each individual object.
+		 * 
+		 * @param sstate [in] current simulation state
+		 * @param state0 [in] initial kinematic state
+		 */
+		double getInterference(SimState& sstate, const rw::kinematics::State& state0);
+		
+		/**
+		 * @brief Get wrench measurement for performed grasp.
+		 * 
+		 * This is the min. wrench of the grasp.
+		 */
+		double getWrench(SimState& sstate);
 
 	// data
 		TaskDescription::Ptr _td;

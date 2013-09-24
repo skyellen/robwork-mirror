@@ -13,14 +13,29 @@ using namespace rwsim::simulator;
 
 
 
-void GripperTaskSimulator::graspFinishedCB(SimState& sstate)
+void GripperTaskSimulator::graspFinished(SimState& sstate)
 {
-	measureInterference(sstate, _dwc->getWorkcell()->getDefaultState());
+	/* After each grasp is finished, its quality should be asessed.
+	 * First, grasp has to pass interference measurement. When the sum
+	 * of individual object interferences exceed limit specified in task description,
+	 * grasp status is changed from Success to Interference.
+	 * Then, if wrench space measurement result is below specified minimum wrench,
+	 * grasp status is changed from Success to ObjectSlipped.
+	 */
+	if (getInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
+		sstate._target->getResult()->testStatus = GraspTask::Interference;
+	}
+	
+	if (getWrench(sstate) < _td->getWrenchLimit()) {
+		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
+	}
+	
+	printGraspResult(sstate);
 }
 
 
 
-double GripperTaskSimulator::measureInterference(SimState& sstate, const rw::kinematics::State& state0)
+double GripperTaskSimulator::getInterference(SimState& sstate, const rw::kinematics::State& state0)
 {
 	State state1 = getSimulators()[0]->getState();
 	
@@ -42,29 +57,55 @@ double GripperTaskSimulator::measureInterference(SimState& sstate, const rw::kin
 		
 		Metric<Transform3D<> >::Ptr metric = MetricFactory::makeTransform3DMetric<double>(1.0, 1.0);
 		double objInt = metric->distance(Tbefore, Tafter);
-		//DEBUG << "INT of " << obj->getName() << ": " << objInt << endl;
 		
 		interference += objInt;
 		interferences.push_back(objInt);
 	}
 	
-	double wrench = sstate._target->getResult()->qualityAfterLifting(0);
-	
 	sstate._target->getResult()->interferenceDistances = interferenceDistances;
 	sstate._target->getResult()->interferenceAngles = interferenceAngles;
 	sstate._target->getResult()->interferences = interferences;
 	
-	if (interference > _td->getInterferenceLimit()) {
-		sstate._target->getResult()->testStatus = GraspTask::Interference;
-		
-		DEBUG << "! INTERFERENCE: " << interference << endl;
-	}
-	
-	if (wrench < _td->getWrenchLimit()) {
-		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
-		
-		DEBUG << "! WRENCH TOO SMALL: " << wrench << endl;
-	}
-	
 	return interference;
+}
+
+
+
+double GripperTaskSimulator::getWrench(SimState& sstate)
+{
+	return sstate._target->getResult()->qualityAfterLifting(0);
+}
+
+
+
+void GripperTaskSimulator::printGraspResult(SimState& sstate)
+{
+	int status = sstate._target->getResult()->testStatus;
+	
+	switch (status) {
+		case GraspTask::Success:
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": success" << endl;
+			break;
+			
+		case GraspTask::Interference:
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": INTERFERENCE" << endl;
+			break;
+			
+		case GraspTask::ObjectSlipped:
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": SLIPPED or INSUFFICIENT WRENCH" << endl;
+			break;
+			
+		case GraspTask::TimeOut:
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": TIMEOUT" << endl;
+			break;
+			
+		default:
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER";
+	}
+}
+
+
+
+void GripperTaskSimulator::simulationFinished(SimState& sstate)
+{
 }

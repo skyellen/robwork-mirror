@@ -176,7 +176,14 @@ public:
     };
 
 protected:
-	virtual void graspFinishedCB(SimState& sstate) {}
+	/// Callback called after each finished grasp.
+	virtual void graspFinished(SimState& sstate) {}
+	
+	/// Prints result after the grasp is finished.
+	virtual void printGraspResult(SimState& sstate) {}
+	
+	/// Callback called after simulation is finished.
+	virtual void simulationFinished(SimState& sstate);
 	
 private:
 

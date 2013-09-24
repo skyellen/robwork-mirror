@@ -167,9 +167,9 @@ namespace {
 
         // test if the axes of owner and joint is parallel
         double ang = angle(haxis, haxis_owner );
-        std::cout << "THE ANGLE: " << ang << std::endl;
+        //std::cout << "THE ANGLE: " << ang << std::endl;
         if( (fabs(ang-180*Deg2Rad)<0.0001 || fabs(ang)<0.0001)&& dynamic_cast<PrismaticJoint*>(owner)!=NULL ) {
-            std::cout << "JOINTS ARE PARALLEL" << std::endl;
+            //std::cout << "JOINTS ARE PARALLEL" << std::endl;
             type = ODEJoint::DEPEND_PAR;
 
             slider = dJointCreateSlider (sim->getODEWorldId(), 0);
@@ -189,7 +189,7 @@ namespace {
             dJointSetLMotorParam(motor,dParamVel, 0);
 
         } else {
-            std::cout << "JOINTS ARE NOT PARALLEL" << std::endl;
+            //std::cout << "JOINTS ARE NOT PARALLEL" << std::endl;
             // create ordinary
             type = ODEJoint::DEPEND;
 

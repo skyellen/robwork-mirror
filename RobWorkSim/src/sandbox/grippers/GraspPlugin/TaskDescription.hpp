@@ -44,6 +44,9 @@ class TaskDescription
 		virtual ~TaskDescription();
 		
 	// methods
+		/// Is task description complete and consistent.
+		bool isOk() { return _isOk; }
+		
 		rw::models::WorkCell* getWorkCell() { return _wc; }
 		void setWorkCell(rw::models::WorkCell* wc) { _wc = wc; _initState = wc->getDefaultState(); }
 		
@@ -79,6 +82,7 @@ class TaskDescription
 	
 	protected:
 	// data
+		bool _isOk; // is task description consistent
 		rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		rw::models::WorkCell* _wc;
 		rw::kinematics::State _initState;
@@ -91,6 +95,7 @@ class TaskDescription
 		rw::kinematics::Frame* _gripperTCP;
 		rw::kinematics::MovableFrame* _gripperMovable;
 		std::string _controllerID;
+		rwsim::dynamics::RigidDevice::Ptr _gripperDynamicDevice;
 };
 
 
