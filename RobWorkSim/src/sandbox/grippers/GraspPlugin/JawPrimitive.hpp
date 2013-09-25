@@ -42,7 +42,7 @@ class JawPrimitive: public Primitive {
 
 		/**
 		 * @brief constructor
-		 * @param initQ [in] vector with (length, width, depth, chamfer depth, chamfer angle, cut position, cut depth, cut angle)
+		 * @param initQ [in] vector with (length, width, depth, chamfer depth, chamfer angle, cut position, cut depth, cut angle, cut radius)
 		 */
 		JawPrimitive(const rw::math::Q& initQ);
 

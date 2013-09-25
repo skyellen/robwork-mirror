@@ -18,9 +18,10 @@ Gripper::Gripper(const std::string& name) :
 	_tcp(Transform3D<>(Vector3D<>(0, 0, 0.05))),
 	_jawdist(0),
 	_opening(0.05),
-	_force(50),
-	_tasks(NULL)
+	_force(50)
 {
+	setBaseGeometry(Q(3, 0.15, 0.1, 0.05));
+	setJawGeometry(Q(10, 0, 0.1, 0.025, 0.02, 0, 0, 0.05, 0, 90, 0));
 }
 
 
@@ -29,17 +30,35 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state)
 {
 	// remove existing objects
-	cout << "Removing objects..." << endl;
+	cout << "- Removing objects..." << endl;
+	wc->removeObject(wc->findObject("gripper.Base").get());
 	wc->removeObject(wc->findObject("gripper.LeftFinger").get());
 	wc->removeObject(wc->findObject("gripper.RightFinger").get());
-	cout << "Objects removed." << endl;
+	cout << "- Objects removed." << endl;
 	
 	// create and add new objects
-	cout << "Adding new objects..." << endl;
+	cout << "- Adding new objects..." << endl;
+	
+	// if base is parametrized, the box has to be moved from origin by half its height
+	Transform3D<> baseT;
+	if (_isBaseParametrized) {
+		baseT = Transform3D<>(-0.5*_baseParameters(2)*Vector3D<>::z());
+	}
+	
+	Object* baseobj = new Object(wc->findFrame("gripper.Base"));
+	Model3D* basemodel = new Model3D("BaseModel");
+	basemodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_baseGeometry->getGeometryData()->getTriMesh() );
+	basemodel->setTransform(baseT);
+	_baseGeometry->setTransform(baseT);
+	baseobj->addModel(basemodel);
+	baseobj->addGeometry(_baseGeometry);
+	wc->add(baseobj);
+	dwc->findBody("gripper.Base")->setObject(baseobj);
+	
 	Object* leftobj = new Object(wc->findFrame("gripper.LeftFinger"));
 	//Geometry::Ptr leftgeo = ownedPtr(new Geometry(_jaw, string("LeftFingerGeo")));
 	Model3D* leftmodel = new Model3D("LeftModel");
-	leftmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *_leftGeometry->getGeometryData()->getTriMesh() );
+	leftmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_leftGeometry->getGeometryData()->getTriMesh() );
 	leftmodel->setTransform(Transform3D<>());
 	_leftGeometry->setTransform(Transform3D<>());
 	leftobj->addModel(leftmodel);
@@ -50,7 +69,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	Object* rightobj = new Object(wc->findFrame("gripper.RightFinger"));
 	//Geometry::Ptr rightgeo = ownedPtr(new Geometry(_jaw, string("RightFingerGeo")));
 	Model3D* rightmodel = new Model3D("RightModel");
-	rightmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *_rightGeometry->getGeometryData()->getTriMesh() );
+	rightmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_rightGeometry->getGeometryData()->getTriMesh() );
 	rightmodel->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
 	_rightGeometry->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
 	rightobj->addModel(rightmodel);
@@ -78,7 +97,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 
 
 
-void Gripper::loadTasks(std::string filename)
+/*void Gripper::loadTasks(std::string filename)
 {
 	if (filename.empty()) return;
 	
@@ -106,4 +125,4 @@ void Gripper::saveTasks(std::string filename)
 	} catch (...)
 	{
 	}
-}
+}*/

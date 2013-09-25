@@ -82,7 +82,7 @@ void GraspPlugin::initialize()
 
 void GraspPlugin::startSimulation()
 {
-    _graspSim = ownedPtr(new GripperTaskSimulator(_gripper, _gripper->getTasks(), _gripper->getSamples(), _td));
+    _graspSim = ownedPtr(new GripperTaskSimulator(_gripper, _tasks, _samples, _td));
     
 	try {
 		_graspSim->startSimulation(_initState);
@@ -101,23 +101,19 @@ void GraspPlugin::open(WorkCell* workcell)
 		Math::seed(TimerUtil::currentTimeUs());
 		
 		_wc = workcell;
+		if (_wc->getPropertyMap().has("taskDescription")) {
+			string filename = _wc->getPropertyMap().get<string>("taskDescription");
+			log().info() << "Loading task description from: " << filename << endl;
+			_td = TaskDescriptionLoader::load(filename, _dwc);
+		}
 		
 		_initState = getRobWorkStudio()->getState();
 		
 		_render = ownedPtr( new RenderTargets() );
 		getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame());
-		
-		
-		
     } catch (const rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
     }
-    
-    if (_dwc) {
-		_dev = _wc->findDevice<TreeDevice>(_wc->getPropertyMap().get<string>("gripper"));
-		_ddev = _dwc->findDevice<RigidDevice>(_wc->getPropertyMap().get<string>("gripper"));
-        //_graspSim = ownedPtr(new GripperTaskSimulator(_td));
-	}
 }
 
 
@@ -155,11 +151,11 @@ void GraspPlugin::guiEvent()
 			
 		log().info() << "Loading tasks from: " << taskfile.toStdString() << "\n";
 		
-		_gripper->setTasks(GraspTask::load(taskfile.toStdString()));
+		_tasks = GraspTask::load(taskfile.toStdString());
 		_progressBar->setValue(0);
-		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
+		_progressBar->setMaximum(_tasks->getAllTargets().size());
 		
-		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
+		if (_showCheck->isChecked()) showTasks(_tasks);
 	}
 	
 	else if (obj == _saveTaskButton) {
@@ -170,7 +166,7 @@ void GraspPlugin::guiEvent()
 				
 		log().info() << "Saving tasks to: " << taskfile.toStdString() << endl;
 		
-		GraspTask::saveRWTask(_gripper->getTasks(), taskfile.toStdString());
+		GraspTask::saveRWTask(_tasks, taskfile.toStdString());
 	}
 	
 	else if (obj == _initialButton) { // return the workcell to the initial state
@@ -181,14 +177,14 @@ void GraspPlugin::guiEvent()
 		_wTapproach = Kinematics::worldTframe(_wc->findFrame("TCPgripper"), getRobWorkStudio()->getState());
 		log().info() << "Approach: " << inverse(_wTapproach) * _wTtarget << endl;
 		
-		_gripper->setTasks(NULL);
+		//_gripper->setTasks(NULL);
 	}
 	
 	else if (obj == _targetButton) { // set the target pose of the gripper
 		_wTtarget = Kinematics::worldTframe(_wc->findFrame("TCPgripper"), getRobWorkStudio()->getState());
 		log().info() << "Target: " << _wTtarget << endl;
 		
-		_gripper->setTasks(NULL);
+		//_gripper->setTasks(NULL);
 	}
 	
 	else if (obj == _planButton) {
@@ -197,7 +193,7 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _showCheck) {
 		_showTasks = _showCheck->isChecked();
-		showTasks(_gripper->getTasks());
+		showTasks(_tasks);
 	}
 	
 	else if (obj == _loadGripperButton) {
@@ -211,16 +207,18 @@ void GraspPlugin::guiEvent()
 		_gripper = GripperXMLLoader::load(filename.toStdString());
 		
 		cout << "Updating gripper..." << endl;
-		_gripper->updateGripper(_wc, _dwc, _dev, _ddev, _initState);
+		_gripper->updateGripper(_td->getWorkCell(),
+			_td->getDynamicWorkCell(),
+			_td->getGripperDevice(),
+			_td->getGripperDynamicDevice(),
+			_td->getInitState());
 		
 		cout << "Refreshing RWS..." << endl;
-		State tstate = _initState;
 		getRobWorkStudio()->getWorkCellScene()->clearCache();
-		getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_initState);
+		getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_td->getInitState());
 		getRobWorkStudio()->setWorkcell(_wc);
-		
-		_initState = tstate;
-		getRobWorkStudio()->setState(_initState);
+
+		getRobWorkStudio()->setState(_td->getInitState());
 		
 		/*_progressBar->setValue(0);
 		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
@@ -230,7 +228,7 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _saveGripperButton) {
 		QString filename = QFileDialog::getSaveFileName(this,
-			"Save file", QString::fromStdString(_wd), tr("Gripper files (*.xml)"));
+			"Save file", QString::fromStdString(_wd), tr("Gripper files (*.grp.xml)"));
 			
 		if (filename.isEmpty()) return;
 			
@@ -275,21 +273,22 @@ void GraspPlugin::designEvent()
 	
 	//State state = _initState;
 	cout << "Updating gripper..." << endl;
-	_gripper->updateGripper(_wc, _dwc, _dev, _ddev, _initState);
+	_gripper->updateGripper(_td->getWorkCell(),
+		_td->getDynamicWorkCell(),
+		_td->getGripperDevice(),
+		_td->getGripperDynamicDevice(),
+		_td->getInitState());
 	
 	cout << "Refreshing RWS..." << endl;
-	State tstate = _initState;
 	getRobWorkStudio()->getWorkCellScene()->clearCache();
-	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_initState);
+	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_td->getInitState());
 	getRobWorkStudio()->setWorkcell(_wc);
-	
-	_initState = tstate;
-	getRobWorkStudio()->setState(_initState);
+	getRobWorkStudio()->setState(_td->getInitState());
 	
 	//cout << "Refreshing progress bar" << endl;
 	_progressBar->setValue(0);
-	if (_gripper->getTasks() != NULL) {
-		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
+	if (_tasks) {
+		_progressBar->setMaximum(_tasks->getAllTargets().size());
 	} else {
 		_progressBar->setMaximum(0);
 	}
@@ -309,10 +308,10 @@ void GraspPlugin::updateSim()
 	if (!_graspSim->isRunning()) {
 		_timer->stop();
 
-		calculateQuality(_gripper->getTasks(), _generator->getSamples());
+		//calculateQuality(_gripper->getTasks(), _generator->getSamples());
 	}
 	
-	if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
+	if (_showCheck->isChecked()) showTasks(_tasks);
 }
 
 
@@ -358,8 +357,10 @@ void GraspPlugin::planTasks()
 		_generator = new TaskGenerator(_td);
 		
 		_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
-		_gripper->setTasks(_generator->getTasks());
-		_gripper->setSamples(_generator->getSamples());
+		//_gripper->setTasks(_generator->getTasks());
+		//_gripper->setSamples(_generator->getSamples());
+		_tasks = _generator->getTasks();
+		_samples = _generator->getSamples();
 	} catch (rw::common::Exception& e) {
 		QMessageBox::critical(NULL, "RW Exception", e.what());
 	}
@@ -369,7 +370,7 @@ void GraspPlugin::planTasks()
 	_progressBar->setValue(0);
 	_progressBar->setMaximum(_nOfTargetsToGen);
 
-	if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
+	if (_showCheck->isChecked()) showTasks(_tasks);
 }
 
 
@@ -587,6 +588,7 @@ void GraspPlugin::setupGUI()
     _editSetupButton = new QPushButton("Open setup dialog");
     setupLayout->addWidget(_editSetupButton, row++, 0, 1, 2);
     connect(_editSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    _editSetupButton->setEnabled(false);
     
     _loadSetupButton = new QPushButton("Load setup");
     setupLayout->addWidget(_loadSetupButton, row, 0);
@@ -595,6 +597,7 @@ void GraspPlugin::setupGUI()
     _saveSetupButton = new QPushButton("Save setup");
     setupLayout->addWidget(_saveSetupButton, row++, 1);
     connect(_saveSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    _saveSetupButton->setEnabled(false);
     
     /* setup geometry group */
     row = 0;

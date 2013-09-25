@@ -38,7 +38,7 @@ namespace rw {
 	namespace models {
 		
 /**
- * Contains detailed evaluation of specific gripepr design.
+ * Contains detailed evaluation of specific gripper design.
  * 
  * @todo ...
  */
@@ -94,6 +94,14 @@ struct GripperQuality
  * - TCP position
  * 
  * Gripper contains a GripperQuality structure which describes gripper's qualities.
+ * 
+ * Default gripper constructor creates gripper with following parameters:
+ * - parametrized base: Box 0.15 x 0.1 x 0.05
+ * - parametrized jaws: simple cuboids 0.1 x 0.025 x 0.2
+ * - force: 50 N
+ * - opening: 0.05
+ * - jawdist: 0
+ * - TCP offset: 0.05 from base
  */
 class Gripper // : public TreeDevice
 {
@@ -113,12 +121,6 @@ class Gripper // : public TreeDevice
 		std::string getName() { return _name; }
 		void setName(const std::string& name) { _name = name; }
 		
-		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; } // TO BE REMOVED
-		void setTasks(rwlibs::task::GraspTask::Ptr tasks) { _tasks = tasks; } // TO BE REMOVED
-		
-		rwlibs::task::GraspTask::Ptr getSamples() { return _samples; } // TO BE REMOVED
-		void setSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; } // TO BE REMOVED
-		
 		double getForce() { return _force; }
 		void setForce(double force) { _force = force; }
 		
@@ -130,6 +132,8 @@ class Gripper // : public TreeDevice
 		
 		double getOpening() { return _opening; }
 		void setOpening(double opening) { _opening = opening; }
+		
+		bool isJawParametrized() const { return _isJawParametrized; }
 		
 		/**
 		 * @brief Returns vector of jaw parameters.
@@ -144,6 +148,8 @@ class Gripper // : public TreeDevice
 				return rw::math::Q();
 			}
 		}
+		
+		rw::geometry::Geometry::Ptr getJawGeometry() { return _leftGeometry; }
 		
 		/// Set jaws geometry to a mesh.
 		void setJawGeometry(rw::geometry::Geometry::Ptr geo)
@@ -170,6 +176,8 @@ class Gripper // : public TreeDevice
 			_isJawParametrized = true;
 		}
 		
+		bool isBaseParametrized() const { return _isBaseParametrized; }
+		
 		/**
 		 * @brief Returns vector of base parameters.
 		 * 
@@ -183,6 +191,8 @@ class Gripper // : public TreeDevice
 				return rw::math::Q();
 			}
 		}
+		
+		rw::geometry::Geometry::Ptr getBaseGeometry() { return _baseGeometry; }
 		
 		/// Set base geometry to a mesh.
 		void setBaseGeometry(rw::geometry::Geometry::Ptr geo) { _baseGeometry = geo; _isBaseParametrized = false; }
@@ -206,12 +216,7 @@ class Gripper // : public TreeDevice
 	// DEPRECATED
 		rw::geometry::JawPrimitive::Ptr getGeometry() { return _jaw; }
 		void setGeometry(rw::geometry::JawPrimitive::Ptr geometry) { _jaw = geometry; }
-
-		/// Loads tasks from a specified file
-		void loadTasks(std::string filename);
-		
-		/// Save tasks/results to a specified file
-		void saveTasks(std::string filename);
+	// /DEPRECATED
 		
 		/**
 		 * @brief Updates selected gripper device in the workcell according to data in this class.
@@ -267,9 +272,7 @@ class Gripper // : public TreeDevice
 		double _opening;
 		double _force;
 		
-		// quality & tasks
+		// quality
 		GripperQuality::Ptr _quality;
-		rwlibs::task::GraspTask::Ptr _tasks;
-		rwlibs::task::GraspTask::Ptr _samples;
 };
 }} // end namespaces

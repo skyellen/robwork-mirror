@@ -71,12 +71,10 @@ class TaskDescription
 		
 		const std::string& getGripperID() { return _gripperID; }
 		
-		rw::models::Device::Ptr getGripperDevice() { return _gripperDevice; }
-		
+		rw::models::TreeDevice::Ptr getGripperDevice() { return _gripperDevice; }
+		rwsim::dynamics::RigidDevice::Ptr getGripperDynamicDevice() { return _gripperDynamicDevice; }
 		rw::kinematics::Frame* getGripperTCP() { return _gripperTCP; }
-		
 		rw::kinematics::MovableFrame* getGripperMovable() { return _gripperMovable; }
-		
 		const std::string& getControllerID() { return _controllerID; }
 		
 	// friends
@@ -94,7 +92,7 @@ class TaskDescription
 		rw::math::Q _coverageDistance;
 		rw::models::Object::Ptr _targetObject;
 		std::string _gripperID;
-		rw::models::Device::Ptr _gripperDevice;
+		rw::models::TreeDevice::Ptr _gripperDevice;
 		rw::kinematics::Frame* _gripperTCP;
 		rw::kinematics::MovableFrame* _gripperMovable;
 		std::string _controllerID;

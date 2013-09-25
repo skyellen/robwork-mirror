@@ -130,6 +130,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		int _nOfTargetsToGen;
 		TaskGenerator::Ptr _generator;
 		rwlibs::task::GraspTask::Ptr _tasks; // grasp tasks planned or loaded from file
+		rwlibs::task::GraspTask::Ptr _samples; // all samples
 		
 		TaskDescription::Ptr _td;
 		

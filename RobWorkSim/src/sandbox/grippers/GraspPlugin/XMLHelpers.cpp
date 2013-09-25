@@ -99,3 +99,18 @@ Q XMLHelpers::readQ(PTree& tree)
 	
 	return q;
 }
+
+
+
+std::string XMLHelpers::QToString(rw::math::Q q)
+{
+	stringstream sstr;
+	
+	sstr << ' ';
+	
+	for (int i = 0; i < q.size(); ++i) {
+		sstr << q(i) << ' ';
+	}
+	
+	return sstr.str();
+}

@@ -17,8 +17,8 @@ using namespace rw::csg;
 
 JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 {
-	if(initQ.size() != 9) {
-		RW_THROW("Size of parameter list must equal 9!");
+	if(initQ.size() != 10) {
+		RW_THROW("Size of parameter list must equal 10!");
 	}
 	
 	int i = 0;
@@ -30,12 +30,8 @@ JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 	_chamferAngle = initQ(i++);
 	_cutPosition = initQ(i++);
 	_cutDepth = initQ(i++);
-	
-	if (_type == Cylindrical) {
-		_cutRadius = initQ(i++);
-	} else {
-		_cutAngle = initQ(i++);
-	}
+	_cutAngle = initQ(i++);
+	_cutRadius = initQ(i++);
 }
 
 
@@ -73,7 +69,7 @@ TriMesh::Ptr JawPrimitive::createMesh(int resolution) const
 
 rw::math::Q JawPrimitive::getParameters() const
 {
-	Q q(9);
+	Q q(10);
 	
 	int i = 0;
 	q(i++) = _type;
@@ -84,12 +80,8 @@ rw::math::Q JawPrimitive::getParameters() const
 	q(i++) = _chamferAngle;
 	q(i++) = _cutPosition;
 	q(i++) = _cutDepth;
-	
-	if (_type == Cylindrical) {
-		q(i++) = _cutRadius;
-	} else {
-		q(i++) = _cutAngle;
-	}
+	q(i++) = _cutAngle;
+	q(i++) = _cutRadius;
 	
 	return q;
 }

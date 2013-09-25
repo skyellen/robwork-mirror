@@ -60,6 +60,9 @@ void readJaws(PTree& tree, Gripper::Ptr gripper)
 	
 	// else use parametrization
 	Q params = XMLHelpers::readQ(tree.get_child("Q"));
+	if (params(0) == 0) {
+		params(8) *= Deg2Rad;
+	}
 	DEBUG << "Jaw geometry from parameters: " << params << endl;
 	gripper->setJawGeometry(params);
 }
@@ -168,28 +171,44 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	
 	tree.put("Gripper.<xmlattr>.name", gripper->getName());
 	
-	tree.put("Gripper.Parameters.Geometry.Jaw", gripper->getGeometry()->toString());
+	// save jaw geometry
+	if (gripper->isJawParametrized()) {
+		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(gripper->getJawParameters()));
+	} else {
+		// save STL file
+		string filename = dir+"/jaw.stl";
+		STLFile::save(*gripper->_leftGeometry->getGeometryData()->getTriMesh(), filename);
+		tree.put("Gripper.Parameters.Geometry.Jaws.File", filename);
+	}
+	
+	// save base geometry
+	if (gripper->isBaseParametrized()) {
+		tree.put("Gripper.Parameters.Geometry.Base.Q", XMLHelpers::QToString(gripper->getBaseParameters()));
+	} else {
+		// save STL file
+		string filename = dir+"/base.stl";
+		STLFile::save(*gripper->_baseGeometry->getGeometryData()->getTriMesh(), filename);
+		tree.put("Gripper.Parameters.Geometry.Base.File", filename);
+	}
+	
 	tree.put("Gripper.Parameters.Offset", gripper->getTCP().P()[2]);
 	tree.put("Gripper.Parameters.Jawdist", gripper->getJawdist());
 	tree.put("Gripper.Parameters.Opening", gripper->getOpening());
 	tree.put("Gripper.Parameters.Force", gripper->getForce());
 	
-	//tree.put("Gripper.Tasks.File", dir+'/'+gripper->getDataFilename());
-	
 	GripperQuality::Ptr q = gripper->getQuality();
-	/*tree.put("Gripper.Result.Experiments", q->nOfExperiments);
-	tree.put("Gripper.Result.Shape", q->shapeQ);
-	tree.put("Gripper.Result.Coverage", q->coverageQ);
-	tree.put("Gripper.Result.SuccessRatio", q->successQ);
-	tree.put("Gripper.Result.WSM", q->wrenchQ);
-	tree.put("Gripper.Result.Interference", q->interferenceQ);
-	tree.put("Gripper.Result.Quality", q->finalQ);*/
+	tree.put("Gripper.Result.Experiments", q->nOfExperiments);
+	tree.put("Gripper.Result.Successes", q->nOfSuccesses);
+	tree.put("Gripper.Result.Samples", q->nOfSamples);
+	tree.put("Gripper.Result.Shape", q->shape);
+	tree.put("Gripper.Result.Coverage", q->coverage);
+	tree.put("Gripper.Result.SuccessRatio", q->success);
+	tree.put("Gripper.Result.Wrench", q->wrench);
+	tree.put("Gripper.Result.Quality", q->quality);
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
         write_xml(dir+'/'+filename, tree, std::locale(), settings);
-        //cout << "Saving tasks to: " << dir+'/'+gripper->getDataFilename() << endl;
-        //gripper->saveTasks(dir+'/'+gripper->getDataFilename());
     } catch (const ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());

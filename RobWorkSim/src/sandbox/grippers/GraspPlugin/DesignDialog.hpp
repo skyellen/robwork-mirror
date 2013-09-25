@@ -16,37 +16,37 @@ class QRadioButton;
 
 /**
  * @class DesignDialog
- * @brief Dialog for gripper design
+ * @brief Dialog for gripper design in the plugin.
  */
 class DesignDialog : public QDialog
 {
 	Q_OBJECT
 	
 	public:
-		/**
-		 * @brief Constructor
-		 */
+	// constructors
+		/// Constructor
 		DesignDialog(QWidget* parent=0, rw::models::Gripper::Ptr gripper=0, std::string wd="");
 		
-		//! @brief Destructor
+		/// Destructor
 		virtual ~DesignDialog() {}
 		
-		//! @brief Get gripper
+	// methods
 		rw::models::Gripper::Ptr getGripper() { return _gripper; }
-		
-		//! @brief Get working directory
 		std::string getWorkingDirectory() { return _wd; }
+		bool isChanged() const { return _changed; }
 		
 	private slots:
 		void guiEvent();
 	
 	private:
-		// methods
+	// methods
 		void _createGUI();
 		void _updateGUI();
 		void _updateGripper();
 		
+	// data
 		rw::models::Gripper::Ptr _gripper;
+		bool _changed;
 		
 		// GUI
 		QLineEdit* _nameEdit;
@@ -57,18 +57,20 @@ class DesignDialog : public QDialog
 		QLineEdit* _chfAngleEdit;
 		QLineEdit* _cutDepthEdit;
 		QLineEdit* _cutAngleEdit;
+		QLineEdit* _cutRadiusEdit;
 		QLineEdit* _tcpPosEdit;
 		QLineEdit* _forceEdit;
 		QLineEdit* _jawdistEdit;
 		QLineEdit* _openingEdit;
 		QRadioButton* _prismaticButton;
 		QRadioButton* _cylindricalButton;
+		QLineEdit* _basedxEdit;
+		QLineEdit* _basedyEdit;
+		QLineEdit* _basedzEdit;
 		
 		QPushButton* _okButton;
 		QPushButton* _cancelButton;
 		QPushButton* _applyButton;
-		QPushButton* _loadButton;
-		QPushButton* _saveButton;
 		QPushButton* _defaultButton;
 		
 		std::string _wd;

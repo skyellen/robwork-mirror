@@ -38,6 +38,8 @@ class XMLHelpers
 		static double readInt(PTree& tree);
 		static double readDouble(PTree& tree);
 		static rw::math::Q readQ(PTree& tree);
+		
+		static std::string QToString(rw::math::Q q);
 	
 	protected:
 	// static methods

@@ -59,6 +59,7 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	DEBUG << "- coverage distance: ";
 	PTree& node = tree.get_child("CoverageDistance");
 	task->_coverageDistance = XMLHelpers::readQ(node);
+	task->_coverageDistance(6) *= Deg2Rad;
 	DEBUG << task->_coverageDistance << endl;
 	
 	task->_isOk = true;
@@ -94,7 +95,7 @@ void TaskDescriptionLoader::readGripper(PTree& tree, TaskDescription::Ptr task)
 	trim(gripperName);
 	DEBUG << "\t name: [" << gripperName << "]" << endl;
 	task->_gripperID = gripperName;
-	task->_gripperDevice = task->_wc->findDevice(gripperName);
+	task->_gripperDevice = task->_wc->findDevice<TreeDevice>(gripperName);
 	if (!task->_gripperDevice) {
 		RW_THROW("Gripper device not found!");
 	}
