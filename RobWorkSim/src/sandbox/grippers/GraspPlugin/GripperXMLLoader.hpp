@@ -30,7 +30,7 @@ class GripperXMLLoader
 		 */
 		static void save(rw::models::Gripper::Ptr gripper, const std::string& dir, const std::string& filename);
 	
-	private:
+	protected:
 };
 
 }} // end namespaces

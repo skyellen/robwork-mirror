@@ -202,7 +202,7 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _loadGripperButton) {
 		QString filename = QFileDialog::getOpenFileName(this,
-			"Open file", QString::fromStdString(_wd), tr("Gripper files (*.xml)"));
+			"Open file", QString::fromStdString(_wd), tr("Gripper files (*.grp.xml)"));
 			
 		if (filename.isEmpty()) return;
 			
@@ -210,10 +210,22 @@ void GraspPlugin::guiEvent()
 			
 		_gripper = GripperXMLLoader::load(filename.toStdString());
 		
-		_progressBar->setValue(0);
+		cout << "Updating gripper..." << endl;
+		_gripper->updateGripper(_wc, _dwc, _dev, _ddev, _initState);
+		
+		cout << "Refreshing RWS..." << endl;
+		State tstate = _initState;
+		getRobWorkStudio()->getWorkCellScene()->clearCache();
+		getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_initState);
+		getRobWorkStudio()->setWorkcell(_wc);
+		
+		_initState = tstate;
+		getRobWorkStudio()->setState(_initState);
+		
+		/*_progressBar->setValue(0);
 		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
 		
-		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());
+		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());*/
 	}
 	
 	else if (obj == _saveGripperButton) {

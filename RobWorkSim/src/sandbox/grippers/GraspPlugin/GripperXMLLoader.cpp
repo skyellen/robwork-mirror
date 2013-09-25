@@ -11,8 +11,11 @@
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <rw/loaders/model3d/STLFile.hpp>
 #include "Gripper.hpp"
 #include "XMLHelpers.hpp"
+
+#define DEBUG cout
 
 
 
@@ -20,13 +23,14 @@ using namespace std;
 USE_ROBWORK_NAMESPACE;
 using namespace robwork;
 using namespace rwsim;
+using namespace rw::loaders;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 using namespace rwlibs::xml;
 
 
 
-JawPrimitive::Ptr readJaw(PTree& tree)
+/*JawPrimitive::Ptr readJaw(PTree& tree)
 {
 	Q params = XMLHelpers::readQ(tree);
 	
@@ -36,57 +40,72 @@ JawPrimitive::Ptr readJaw(PTree& tree)
 	cout << params << endl;
 	
 	return ownedPtr(new JawPrimitive(params));
+}*/
+
+
+
+void readJaws(PTree& tree, Gripper::Ptr gripper)
+{
+	boost::optional<PTree&> fileNode = tree.get_child_optional("File");
+	if (fileNode) {
+		// read jaw geometry from STL file
+		string filename = (*fileNode).get_value<string>();
+		DEBUG << "Jaw geometry from file: " << filename << endl;
+		
+		TriMesh::Ptr mesh = STLFile::load(filename);
+		gripper->setJawGeometry(ownedPtr(new Geometry(mesh)));
+		
+		return;
+	}
+	
+	// else use parametrization
+	Q params = XMLHelpers::readQ(tree.get_child("Q"));
+	DEBUG << "Jaw geometry from parameters: " << params << endl;
+	gripper->setJawGeometry(params);
+}
+
+
+
+void readBase(PTree& tree, Gripper::Ptr gripper)
+{
+	boost::optional<PTree&> fileNode = tree.get_child_optional("File");
+	if (fileNode) {
+		// read base geometry from STL file
+		string filename = (*fileNode).get_value<string>();
+		DEBUG << "Base geometry from file: " << filename << endl;
+		
+		TriMesh::Ptr mesh = STLFile::load(filename);
+		gripper->setBaseGeometry(ownedPtr(new Geometry(mesh)));
+		
+		return;
+	}
+	
+	// else use parametrization
+	Q params = XMLHelpers::readQ(tree.get_child("Q"));
+	DEBUG << "Base geometry from parameters: " << params << endl;
+	gripper->setBaseGeometry(params);
 }
 
 
 
 void readGeometry(PTree& tree, Gripper::Ptr gripper)
 {
-	for (CI p = tree.begin(); p != tree.end(); ++p) {
-		if (p->first == "Jaw") {
-			//gripper->setGeometry(readJaw(p->second));
-			
-			//cout << "Reading jaw..." << p->second.get_value<string>() << endl;
-		}
-		
-		else if (p->first == "File") {
-			// reading in geometry from file HERE
-			RW_THROW("Reading geometry from file is not supported yet.");
-		}
-	}
+	readJaws(tree.get_child("Jaws"), gripper);
+	readBase(tree.get_child("Base"), gripper);
 }
 
 
 
 void readParameters(PTree& tree, Gripper::Ptr gripper)
 {
-	for (CI p = tree.begin(); p != tree.end(); ++p) {
-		if (p->first == "Geometry") {
-			readGeometry(p->second, gripper);
-		}
-		
-		else if (p->first == "Offset") {
-			double offset = XMLHelpers::readDouble(p->second);
-			gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, offset)));
-		}
-		
-		else if (p->first == "Force") {
-			double force = XMLHelpers::readDouble(p->second);
-			gripper->setForce(force);
-		}
-	}
-}
-
-
-
-void readTasks(PTree& tree, Gripper::Ptr gripper)
-{
-	for (CI p = tree.begin(); p != tree.end(); ++p) {
-		if (p->first == "File") {
-			//gripper->setDataFilename(p->second.get_value<string>());
-			//gripper->loadTasks(gripper->getDataFilename());
-		}
-	}
+	readGeometry(tree.get_child("Geometry"), gripper);
+	
+	double offset = XMLHelpers::readDouble(tree.get_child("Offset"));
+	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, offset)));
+	
+	gripper->setJawdist(XMLHelpers::readDouble(tree.get_child("Jawdist")));
+	gripper->setOpening(XMLHelpers::readDouble(tree.get_child("Opening")));
+	gripper->setForce(XMLHelpers::readDouble(tree.get_child("Force")));
 }
 
 
@@ -95,35 +114,17 @@ void readResult(PTree& tree, Gripper::Ptr gripper)
 {
 	GripperQuality::Ptr result = gripper->getQuality();
 	
-	for (CI p = tree.begin(); p != tree.end(); ++p) {
-		if (p->first == "Experiments") {
-			//result->nOfExperiments = XMLHelpers::readInt(p->second);
-		}
-		
-		else if (p->first == "Shape") {
-			//result->shapeQ = XMLHelpers::readDouble(p->second);
-		}
-		
-		else if (p->first == "Coverage") {
-			//result->coverageQ = XMLHelpers::readDouble(p->second);
-		}
-		
-		else if (p->first == "SuccessRatio") {
-			//result->successQ = XMLHelpers::readDouble(p->second);
-		}
-		
-		else if (p->first == "WSM") {
-			//result->wrenchQ = XMLHelpers::readDouble(p->second);
-		}
-		
-		else if (p->first == "Interference") {
-			//result->interferenceQ = XMLHelpers::readDouble(p->second);
-		}
-		
-		else if (p->first == "Quality") {
-			//result->finalQ = XMLHelpers::readDouble(p->second);
-		}
-	}
+	result->nOfExperiments = XMLHelpers::readInt(tree.get_child("Experiments"));
+	result->nOfSuccesses = XMLHelpers::readInt(tree.get_child("Successes"));
+	result->nOfSamples = XMLHelpers::readInt(tree.get_child("Samples"));
+	result->shape = XMLHelpers::readDouble(tree.get_child("Shape"));
+	result->coverage = XMLHelpers::readDouble(tree.get_child("Coverage"));
+	result->success = XMLHelpers::readDouble(tree.get_child("SuccessRatio"));
+	result->wrench = XMLHelpers::readDouble(tree.get_child("Wrench"));
+	result->quality = XMLHelpers::readDouble(tree.get_child("Quality"));
+	
+	DEBUG << "Read gripper quality:" << endl;
+	DEBUG << *result << endl;
 }
 
 
@@ -132,19 +133,8 @@ Gripper::Ptr readGripper(PTree& tree)
 {
 	Gripper::Ptr gripper = ownedPtr(new Gripper);
 	
-	for (CI p = tree.begin(); p != tree.end(); ++p) {
-		if (p->first == "Parameters") {
-			readParameters(p->second, gripper);
-		}
-		
-		else if (p->first == "Tasks") {
-			readTasks(p->second, gripper);
-		}
-		
-		else if (p->first == "Result") {
-			readResult(p->second, gripper);
-		}
-	}
+	readParameters(tree.get_child("Parameters"), gripper);
+	readResult(tree.get_child("Result"), gripper);
 	
 	return gripper;
 }

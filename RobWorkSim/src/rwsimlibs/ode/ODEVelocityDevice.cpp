@@ -365,7 +365,7 @@ void ODEVelocityDevice::init(RigidDevice *rdev, const rw::kinematics::State &sta
      baseODEBody->setTransform(state);
      // first we create rigid bodies from all of the links of the RigidDevice
      BOOST_FOREACH(Body::Ptr body, rdev->getLinks()){
-         std::cout << "LINK: " << body->getName() << std::endl;
+         //std::cout << "LINK: " << body->getName() << std::endl;
          ODEBody *odebody = ODEBody::makeRigidBody(body, spaceId, _sim);
          odebody->setTransform( state );
          //_sim->addODEBody(odebody);

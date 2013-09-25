@@ -44,18 +44,38 @@ namespace rw {
  */
 struct GripperQuality
 {
+	// typedefs
 	typedef rw::common::Ptr<GripperQuality> Ptr;
 	
+	// constructors
 	GripperQuality() {}
 	
-	int nOfTargets;
-	int nOfSamples;
+	// methods
+	friend std::ostream& operator<<(std::ostream& stream, const GripperQuality& q)
+	{
+		stream 	<< "GripperQuality:\n"
+				<< "- experiments= " << q.nOfExperiments << '\n'
+				<< "- successes= " << q.nOfSuccesses << '\n'
+				<< "- samples= " << q.nOfSamples << '\n'
+				<< "- shape= " << q.shape << '\n'
+				<< "- coverage= " << q.coverage << '\n'
+				<< "- success= " << q.success << '\n'
+				<< "- wrench= " << q.wrench << '\n'
+				<< "- quality= " << q.quality << std::endl;
+				
+		return stream;
+	}
+	
+	// data	
+	int nOfExperiments; /// Number of performed experiments.
+	
+	int nOfSuccesses; /// Number of succesful grasps (filtered).
+	int nOfSamples; /// Number of generated samples (filtered).
 	
 	double shape; /// Shape evaluation based on geometry objective function.
 	double coverage; /// Ratio of filtered succesful grasps to filtered all samples.
 	double success; /// Ratio of succesful grasps to all generated grasps.
-	//double wrenchQ; // ?
-	//double interferenceQ;
+	double wrench; /// Average wrench of succesful grasps.
 	double quality; /// Ultimate measurement of gripper quality.
 };
 
@@ -64,6 +84,16 @@ struct GripperQuality
 /**
  * @class Gripper
  * @brief Gripper device (parallel jaw gripper) with parametrized geometry and kinematic and dynamic parameters.
+ * 
+ * Gripper is described by its geometric and kinematic & dynamic parameters. It contains geometries for jaws (shared between
+ * left & right jaw) and gripper base. These geometries can either be initialized from mesh (e.g. from STL file) or
+ * procedurally generated using JawPrimitive and Box primitive for fingers and base respectively.
+ * Kinematic & dynamic parameters include:
+ * - min. and max. opening
+ * - max. force
+ * - TCP position
+ * 
+ * Gripper contains a GripperQuality structure which describes gripper's qualities.
  */
 class Gripper // : public TreeDevice
 {
@@ -83,11 +113,11 @@ class Gripper // : public TreeDevice
 		std::string getName() { return _name; }
 		void setName(const std::string& name) { _name = name; }
 		
-		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
-		void setTasks(rwlibs::task::GraspTask::Ptr tasks) { _tasks = tasks; }
+		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; } // TO BE REMOVED
+		void setTasks(rwlibs::task::GraspTask::Ptr tasks) { _tasks = tasks; } // TO BE REMOVED
 		
-		rwlibs::task::GraspTask::Ptr getSamples() { return _samples; }
-		void setSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; }
+		rwlibs::task::GraspTask::Ptr getSamples() { return _samples; } // TO BE REMOVED
+		void setSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; } // TO BE REMOVED
 		
 		double getForce() { return _force; }
 		void setForce(double force) { _force = force; }
@@ -135,8 +165,8 @@ class Gripper // : public TreeDevice
 			using rw::common::ownedPtr;
 			
 			_jawParameters = params;
-			_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(params)));
-			_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(params)));
+			_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(params), std::string("LeftFingerGeo")));
+			_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(params), std::string("RightFingerGeo")));
 			_isJawParametrized = true;
 		}
 		

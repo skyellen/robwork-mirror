@@ -37,24 +37,24 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	// create and add new objects
 	cout << "Adding new objects..." << endl;
 	Object* leftobj = new Object(wc->findFrame("gripper.LeftFinger"));
-	Geometry::Ptr leftgeo = ownedPtr(new Geometry(_jaw, string("LeftFingerGeo")));
+	//Geometry::Ptr leftgeo = ownedPtr(new Geometry(_jaw, string("LeftFingerGeo")));
 	Model3D* leftmodel = new Model3D("LeftModel");
-	leftmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *leftgeo->getGeometryData()->getTriMesh() );
+	leftmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *_leftGeometry->getGeometryData()->getTriMesh() );
 	leftmodel->setTransform(Transform3D<>());
-	leftgeo->setTransform(Transform3D<>());
+	_leftGeometry->setTransform(Transform3D<>());
 	leftobj->addModel(leftmodel);
-	leftobj->addGeometry(leftgeo);
+	leftobj->addGeometry(_leftGeometry);
 	wc->add(leftobj);
 	dwc->findBody("gripper.LeftFinger")->setObject(leftobj);
 	
 	Object* rightobj = new Object(wc->findFrame("gripper.RightFinger"));
-	Geometry::Ptr rightgeo = ownedPtr(new Geometry(_jaw, string("RightFingerGeo")));
+	//Geometry::Ptr rightgeo = ownedPtr(new Geometry(_jaw, string("RightFingerGeo")));
 	Model3D* rightmodel = new Model3D("RightModel");
-	rightmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *rightgeo->getGeometryData()->getTriMesh() );
+	rightmodel->addTriMesh(Model3D::Material("stlmat",0.8f,0.8f,0.6f), *_rightGeometry->getGeometryData()->getTriMesh() );
 	rightmodel->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
-	rightgeo->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
+	_rightGeometry->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
 	rightobj->addModel(rightmodel);
-	rightobj->addGeometry(rightgeo);
+	rightobj->addGeometry(_rightGeometry);
 	wc->add(rightobj);
 	dwc->findBody("gripper.RightFinger")->setObject(rightobj);
 	cout << "Objects added." << endl;

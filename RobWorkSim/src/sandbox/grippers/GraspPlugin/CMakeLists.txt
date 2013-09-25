@@ -64,6 +64,8 @@ if(DOXYGEN_FOUND)
 )
 endif(DOXYGEN_FOUND)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
+
 
 # The shared library to build
 add_library( GraspPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
