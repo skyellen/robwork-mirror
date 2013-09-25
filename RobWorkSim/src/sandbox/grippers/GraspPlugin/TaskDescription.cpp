@@ -3,7 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include "XMLHelpers.hpp"
 
-#define DEBUG cout
+#define DEBUG rw::common::Log::debugLog()
 
 
 

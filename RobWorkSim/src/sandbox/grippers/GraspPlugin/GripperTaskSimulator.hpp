@@ -81,14 +81,14 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		 * @param sstate [in] current simulation state
 		 * @param state0 [in] initial kinematic state
 		 */
-		double getInterference(SimState& sstate, const rw::kinematics::State& state0);
+		double calculateInterference(SimState& sstate, const rw::kinematics::State& state0);
 		
 		/**
 		 * @brief Get wrench measurement for performed grasp.
 		 * 
 		 * This is the min. wrench of the grasp.
 		 */
-		double getWrench(SimState& sstate) const;
+		double calculateWrench(SimState& sstate) const;
 		
 		/**
 		 * @brief Returns coverage measurement.
@@ -96,12 +96,30 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		 * Coverage is calculated as a ratio of filtered succesful grasps to
 		 * number of samples created by the generator.
 		 */
-		double getCoverage();
+		double calculateCoverage();
 		
 		/**
 		 * @brief Calculates min., avg. and max. wrenches in all tested grasps.
 		 */
-		rw::math::Q getWrenchMeasurement() const;
+		rw::math::Q calculateWrenchMeasurement() const;
+		
+		/**
+		 * @brief Calculates gripper quality.
+		 */
+		double calculateQuality();
+		
+		/**
+		 * @brief Calculates gripper shape quality.
+		 * @todo Implement!
+		 */
+		double calculateShape();
+		
+		/**
+		 * @brief Evaluates gripper.
+		 * 
+		 * Sets up GripperQuality structure in Gripper.
+		 */
+		void evaluateGripper();
 
 	// data
 		rw::models::Gripper::Ptr _gripper;

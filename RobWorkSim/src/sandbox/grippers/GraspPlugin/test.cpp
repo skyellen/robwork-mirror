@@ -20,7 +20,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-	Q params(8, 0.1, 0.025, 0.02, 0, 0*Deg2Rad, 0, 0, 90*Deg2Rad);
+	Q params(10, 0, 0.1, 0.025, 0.02, 0, 0*Deg2Rad, 0, 0, 90*Deg2Rad, 0.0);
 	
 	options_description desc("Allowed options");
 	desc.add_options()

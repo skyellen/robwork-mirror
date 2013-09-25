@@ -40,11 +40,11 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 		RW_THROW("NULL task description!");
 	}
 	
-	if (getInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
+	if (calculateInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 	}
 	
-	if (getWrench(sstate) < _td->getWrenchLimit()) {
+	if (calculateWrench(sstate) < _td->getWrenchLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
 	}
 	
@@ -53,7 +53,7 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 
 
 
-double GripperTaskSimulator::getInterference(SimState& sstate, const rw::kinematics::State& state0)
+double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::kinematics::State& state0)
 {
 	State state1 = getSimulators()[0]->getState();
 	
@@ -89,14 +89,14 @@ double GripperTaskSimulator::getInterference(SimState& sstate, const rw::kinemat
 
 
 
-double GripperTaskSimulator::getWrench(SimState& sstate) const
+double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
 	return sstate._target->getResult()->qualityAfterLifting(0);
 }
 
 
 
-double GripperTaskSimulator::getCoverage()
+double GripperTaskSimulator::calculateCoverage()
 {
 	if (!_gtask || !_samples) {
 		RW_WARN("NULL tasks or samples");
@@ -119,7 +119,7 @@ double GripperTaskSimulator::getCoverage()
 
 
 
-rw::math::Q GripperTaskSimulator::getWrenchMeasurement() const
+rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 {
 	Q wrench(3, 1000, 0, 0);
 	
@@ -139,6 +139,20 @@ rw::math::Q GripperTaskSimulator::getWrenchMeasurement() const
 	}
 	
 	return wrench;
+}
+
+
+
+double GripperTaskSimulator::calculateShape()
+{
+	return 0.0;
+}
+
+
+
+double GripperTaskSimulator::calculateQuality()
+{
+	return 0.0;
 }
 
 
@@ -173,18 +187,40 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 
 void GripperTaskSimulator::simulationFinished(SimState& sstate)
 {
-	/* After simulation is finished, a gripper evaluation should be performed.
+	evaluateGripper();
+}
+
+
+
+void GripperTaskSimulator::evaluateGripper()
+{
+	/* This function performs gripper quality evaluation.
 	 * This includes:
 	 * - success ratio calculation
 	 * - wrench space measurement
 	 * - coverage calculation
 	 */
-	double successRatio = 1.0 * TaskGenerator::countTasks(_gtask, GraspTask::Success) / getNrTargets();
-	double coverage = getCoverage();
-	Q wrenchMeasurement = getWrenchMeasurement();
+	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
+	int samples = _samples->getSubTasks()[0].getTargets().size();
 	
-	DEBUG << "Gripper evaluation:" << endl;
-	DEBUG << "SuccessRatio= " << successRatio << endl;
-	DEBUG << "Coverage= " << coverage << endl;
-	DEBUG << "WrenchMeasurement(min/avg/max)= " << wrenchMeasurement << endl;
+	double shape = calculateShape();
+	double coverage = calculateCoverage();
+	double successRatio = 1.0 * successes / getNrTargets();
+	Q wrenchMeasurement = calculateWrenchMeasurement();
+	double wrench = wrenchMeasurement(1);
+	double quality = (shape + coverage + successRatio)/3.0;
+	
+	// save data to gripper result
+	GripperQuality::Ptr q = _gripper->getQuality();
+	
+	q->nOfExperiments = getNrTargets();
+	q->nOfSuccesses = successes;
+	q->nOfSamples = samples;
+	q->shape = shape;
+	q->coverage = coverage;
+	q->success = successRatio;
+	q->wrench = wrench;
+	q->quality = quality;
+	
+	DEBUG << *q << endl;
 }

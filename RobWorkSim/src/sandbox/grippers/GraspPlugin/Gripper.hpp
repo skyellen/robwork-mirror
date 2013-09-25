@@ -48,7 +48,16 @@ struct GripperQuality
 	typedef rw::common::Ptr<GripperQuality> Ptr;
 	
 	// constructors
-	GripperQuality() {}
+	GripperQuality() :
+		nOfExperiments(0),
+		nOfSuccesses(0),
+		nOfSamples(0),
+		shape(0.0),
+		coverage(0.0),
+		success(0.0),
+		wrench(0.0),
+		quality(0.0)
+	{}
 	
 	// methods
 	friend std::ostream& operator<<(std::ostream& stream, const GripperQuality& q)

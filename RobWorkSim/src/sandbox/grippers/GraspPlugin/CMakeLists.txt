@@ -23,6 +23,7 @@ SET(CMAKE_BUILD_TYPE Release)
 FIND_PACKAGE(RobWork REQUIRED)
 FIND_PACKAGE(RobWorkStudio REQUIRED)
 FIND_PACKAGE(RobWorkSim REQUIRED)
+FIND_PACKAGE(ODE)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} ${ROBWORKSTUDIO_INCLUDE_DIRS} ${ROBWORKSIM_INCLUDE_DIRS})
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${ROBWORKSTUDIO_LIBRARY_DIRS} ${ROBWORKSIM_LIBRARY_DIRS})
 
@@ -34,16 +35,25 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory
 #########################
 #From here we add the plugins
 SET(SrcFiles
-	GraspPlugin.cpp
 	TaskGenerator.cpp
 	csgjs.cpp
 	CSGConvert.cpp
 	CSGModel.cpp
 	JawPrimitive.cpp
 	Gripper.cpp
-	DesignDialog.cpp
 	GripperXMLLoader.cpp
 	GripperTaskSimulator.cpp
+	TaskDescription.cpp
+	XMLHelpers.cpp
+)
+
+SET(CreateGripperXmlSrc
+	csgjs.cpp
+	CSGConvert.cpp
+	CSGModel.cpp
+	JawPrimitive.cpp
+	Gripper.cpp
+	GripperXMLLoader.cpp
 	TaskDescription.cpp
 	XMLHelpers.cpp
 )
@@ -66,10 +76,15 @@ endif(DOXYGEN_FOUND)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 
-
+#MESSAGE(${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+#MESSAGE("!" ${ODE_LIBRARIES})
 # The shared library to build
-add_library( GraspPlugin MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
 add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
+add_executable( create-gripper-xml createGripperXML.cpp ${CreateGripperXmlSrc})
 target_link_libraries( GraspPlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 target_link_libraries( test ${ROBWORK_LIBRARIES})
+target_link_libraries( create-gripper-xml ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES}
+	GL GLU glut ode)
 
+#MESSAGE(${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})

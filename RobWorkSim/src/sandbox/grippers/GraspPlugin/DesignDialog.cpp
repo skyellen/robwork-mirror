@@ -86,6 +86,9 @@ void DesignDialog::_updateGripper()
 		baseParams(2) = _basedzEdit->text().toDouble();
 		_gripper->setBaseGeometry(baseParams);
 		
+		// update results
+		_gripper->getQuality()->quality = _qualityEdit->text().toDouble();
+		
 		// update general parameters
 		_gripper->setName(_nameEdit->text().toStdString());
 		_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, _tcpPosEdit->text().toDouble())));
@@ -134,6 +137,29 @@ void DesignDialog::_createGUI()
 	_basedyEdit = new QLineEdit("0.1");
 	QLabel* basedzLabel = new QLabel("dz");
 	_basedzEdit = new QLineEdit("0.05");
+	QLabel* experimentsLabel = new QLabel("N. of exp.");
+	_experimentsEdit = new QLineEdit("0");
+	_experimentsEdit->setDisabled(true);
+	QLabel* successesLabel = new QLabel("N. of successes");
+	_successesEdit = new QLineEdit("0");
+	_successesEdit->setDisabled(true);
+	QLabel* samplesLabel = new QLabel("N. of samples");
+	_samplesEdit = new QLineEdit("0");
+	_samplesEdit->setDisabled(true);
+	QLabel* shapeLabel = new QLabel("Shape");
+	_shapeEdit = new QLineEdit("0");
+	_shapeEdit->setDisabled(true);
+	QLabel* coverageLabel = new QLabel("Coverage");
+	_coverageEdit = new QLineEdit("0");
+	_coverageEdit->setDisabled(true);
+	QLabel* successLabel = new QLabel("Success Ratio");
+	_successEdit = new QLineEdit("0");
+	_successEdit->setDisabled(true);
+	QLabel* wrenchLabel = new QLabel("Wrench");
+	_wrenchEdit = new QLineEdit("0");
+	_wrenchEdit->setDisabled(true);
+	QLabel* qualityLabel = new QLabel("QUALITY");
+	_qualityEdit = new QLineEdit("0");
 	
 	_okButton = new QPushButton("OK");
 	_applyButton = new QPushButton("Apply");
@@ -174,6 +200,7 @@ void DesignDialog::_createGUI()
 	QVBoxLayout* left = new QVBoxLayout;
 	QGridLayout* jawlayout = new QGridLayout;
 	QGridLayout* baselayout = new QGridLayout;
+	QGridLayout* reslayout = new QGridLayout;
 	QVBoxLayout* btnlayout = new QVBoxLayout;
 	QHBoxLayout* typelayout = new QHBoxLayout;
 	QGridLayout* generallayout = new QGridLayout;
@@ -223,6 +250,24 @@ void DesignDialog::_createGUI()
 	baselayout->addWidget(basedzLabel, row, 0);
 	baselayout->addWidget(_basedzEdit, row++, 1);
 	
+	row = 0;
+	reslayout->addWidget(experimentsLabel, row, 0);
+	reslayout->addWidget(_experimentsEdit, row, 1);
+	reslayout->addWidget(coverageLabel, row, 2);
+	reslayout->addWidget(_coverageEdit, row++, 3);
+	reslayout->addWidget(successesLabel, row, 0);
+	reslayout->addWidget(_successesEdit, row, 1);
+	reslayout->addWidget(successLabel, row, 2);
+	reslayout->addWidget(_successEdit, row++, 3);
+	reslayout->addWidget(samplesLabel, row, 0);
+	reslayout->addWidget(_samplesEdit, row, 1);
+	reslayout->addWidget(wrenchLabel, row, 2);
+	reslayout->addWidget(_wrenchEdit, row++, 3);
+	reslayout->addWidget(shapeLabel, row, 0);
+	reslayout->addWidget(_shapeEdit, row, 1);
+	reslayout->addWidget(qualityLabel, row, 2);
+	reslayout->addWidget(_qualityEdit, row++, 3);
+	
 	btnlayout->addWidget(_okButton);
 	btnlayout->addWidget(_applyButton);
 	btnlayout->addWidget(_cancelButton);
@@ -238,8 +283,12 @@ void DesignDialog::_createGUI()
 	QWidget* baseTab = new QWidget;
 	baseTab->setLayout(baselayout);
 	
+	QWidget* resTab = new QWidget;
+	resTab->setLayout(reslayout);
+	
 	tabWidget->addTab(jawTab, "Jaws");
 	tabWidget->addTab(baseTab, "Base");
+	tabWidget->addTab(resTab, "Results");
 	
 	left->addWidget(tabWidget);
 	left->addWidget(generalBox);
@@ -287,6 +336,16 @@ void DesignDialog::_updateGUI()
 		} else {
 			QMessageBox::warning(NULL, "DesignDialog", "Gripper uses base geometry from STL!");
 		}
+		
+		// update results area
+		_experimentsEdit->setText(QString::number(_gripper->getQuality()->nOfExperiments));
+		_successesEdit->setText(QString::number(_gripper->getQuality()->nOfSuccesses));
+		_samplesEdit->setText(QString::number(_gripper->getQuality()->nOfSamples));
+		_shapeEdit->setText(QString::number(_gripper->getQuality()->shape));
+		_coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
+		_successEdit->setText(QString::number(_gripper->getQuality()->success));
+		_wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));
+		_qualityEdit->setText(QString::number(_gripper->getQuality()->quality));
 		
 		// update general parameters area
 		_nameEdit->setText(QString::fromStdString(_gripper->getName()));
