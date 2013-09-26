@@ -26,7 +26,7 @@ FIND_PACKAGE(RobWorkSim REQUIRED)
 FIND_PACKAGE(ODE)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} ${ROBWORKSTUDIO_INCLUDE_DIRS} ${ROBWORKSIM_INCLUDE_DIRS})
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${ROBWORKSTUDIO_LIBRARY_DIRS} ${ROBWORKSIM_LIBRARY_DIRS})
-
+#message("!!!!!!!!" ${ROBWORKSIM_LIBRARY_DIRS})
 # Set the output dir for generated libraries and binaries
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin" CACHE PATH "Runtime directory" FORCE )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Library directory" FORCE )
@@ -43,17 +43,6 @@ SET(SrcFiles
 	Gripper.cpp
 	GripperXMLLoader.cpp
 	GripperTaskSimulator.cpp
-	TaskDescription.cpp
-	XMLHelpers.cpp
-)
-
-SET(CreateGripperXmlSrc
-	csgjs.cpp
-	CSGConvert.cpp
-	CSGModel.cpp
-	JawPrimitive.cpp
-	Gripper.cpp
-	GripperXMLLoader.cpp
 	TaskDescription.cpp
 	XMLHelpers.cpp
 )
@@ -76,15 +65,19 @@ endif(DOXYGEN_FOUND)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 
-#MESSAGE(${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+#MESSAGE(${ROBWORKSIM_LIBRARIES})
 #MESSAGE("!" ${ODE_LIBRARIES})
 # The shared library to build
-add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+add_library(GraspLibrary ${SrcFiles})
+add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp ${MocSrcFiles} ${RccSrcFiles})
 add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
-add_executable( create-gripper-xml createGripperXML.cpp ${CreateGripperXmlSrc})
-target_link_libraries( GraspPlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+add_executable( create-gripper-xml createGripperXML.cpp)
+add_executable( create-gripper-db createGripperDB.cpp)
+
+target_link_libraries(GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries( GraspPlugin GraspLibrary)
 target_link_libraries( test ${ROBWORK_LIBRARIES})
-target_link_libraries( create-gripper-xml ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES}
-	GL GLU glut ode)
+target_link_libraries( create-gripper-xml rwsim_ode GL GLU glut ode GraspLibrary)
+target_link_libraries( create-gripper-db rwsim_ode GL GLU glut ode GraspLibrary)
 
 #MESSAGE(${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})

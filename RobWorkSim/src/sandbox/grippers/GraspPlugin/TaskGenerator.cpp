@@ -122,7 +122,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	typedef GraspResult::Ptr ValueType;
 	typedef KDTreeQ<ValueType> NNSearch;
 	vector<NNSearch::KDNode> nodes;
-	int nTasks = nodes.size();
+	//int nTasks = nodes.size();
 	
 	BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
 		if (target.getResult()->testStatus == GraspTask::Success) {
