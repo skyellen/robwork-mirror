@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 		}
 		
 		// save gripper
-		GripperXMLLoader::save(gripper, ".", filename);
+		GripperXMLLoader::save(gripper, filename);
 		
 	} catch (...) {
 		cout << "ERROR" << endl;

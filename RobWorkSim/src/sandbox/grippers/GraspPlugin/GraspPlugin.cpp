@@ -249,7 +249,7 @@ void GraspPlugin::guiEvent()
 		_wd = QFileInfo(filename).path().toStdString();
 		string name = QFileInfo(filename).fileName().toStdString();
 			
-		GripperXMLLoader::save(_gripper, _wd, name);
+		GripperXMLLoader::save(_gripper, name);
 	}
 	
 	else if (obj == _clearButton) {

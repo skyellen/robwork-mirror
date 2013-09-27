@@ -28,7 +28,7 @@ class GripperXMLLoader
 		/**
 		 * @brief Save gripper data to XML file.
 		 */
-		static void save(rw::models::Gripper::Ptr gripper, const std::string& dir, const std::string& filename);
+		static void save(rw::models::Gripper::Ptr gripper, const std::string& filename);
 	
 	protected:
 };

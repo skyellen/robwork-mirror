@@ -11,6 +11,7 @@
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem/path.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
 #include "Gripper.hpp"
 #include "XMLHelpers.hpp"
@@ -62,7 +63,7 @@ void readJaws(PTree& tree, Gripper::Ptr gripper)
 	Q params = XMLHelpers::readQ(tree.get_child("Q"));
 	params(5) *= Deg2Rad;
 	params(8) *= Deg2Rad;
-	cout << "!" << params << endl;
+	//cout << "!" << params << endl;
 	DEBUG << "Jaw geometry from parameters: " << params << endl;
 	gripper->setJawGeometry(params);
 }
@@ -165,7 +166,7 @@ rw::models::Gripper::Ptr GripperXMLLoader::load(const std::string& filename)
 
 
 
-void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string& dir, const std::string& filename)
+void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string& filename)
 {
 	PTree tree;
 	
@@ -179,8 +180,9 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(params));
 	} else {
 		// save STL file
-		string filename = dir+"/jaw.stl";
-		STLFile::save(*gripper->_leftGeometry->getGeometryData()->getTriMesh(), filename);
+		boost::filesystem::path p(filename);
+		string stlfile = p.parent_path().string()+"/jaw.stl";
+		STLFile::save(*gripper->_leftGeometry->getGeometryData()->getTriMesh(), stlfile);
 		tree.put("Gripper.Parameters.Geometry.Jaws.File", filename);
 	}
 	
@@ -189,8 +191,9 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 		tree.put("Gripper.Parameters.Geometry.Base.Q", XMLHelpers::QToString(gripper->getBaseParameters()));
 	} else {
 		// save STL file
-		string filename = dir+"/base.stl";
-		STLFile::save(*gripper->_baseGeometry->getGeometryData()->getTriMesh(), filename);
+		boost::filesystem::path p(filename);
+		string stlfile = p.parent_path().string()+"/base.stl";
+		STLFile::save(*gripper->_baseGeometry->getGeometryData()->getTriMesh(), stlfile);
 		tree.put("Gripper.Parameters.Geometry.Base.File", filename);
 	}
 	
@@ -211,7 +214,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-        write_xml(dir+'/'+filename, tree, std::locale(), settings);
+        write_xml(filename, tree, std::locale(), settings);
     } catch (const ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());

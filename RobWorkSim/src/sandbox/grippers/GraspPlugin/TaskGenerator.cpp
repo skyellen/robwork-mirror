@@ -248,6 +248,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
             stask.addTarget(gtarget);
             atask.addTarget(gtarget);
         } else {
+			//cout << "collision" << endl;
 			GraspTarget gtarget(target);
             gtarget.result = ownedPtr(new GraspResult());
             gtarget.result->testStatus = GraspTask::Success;

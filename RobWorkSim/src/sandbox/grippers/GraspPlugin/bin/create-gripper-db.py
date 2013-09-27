@@ -74,7 +74,7 @@ class GripperGenerator:
 		jawStr = "".join(str(p)+' ' for p in jawParameters)
 		
 		# construct command
-		cd = "/home/dagothar/robwork/trunk/RobWorkSim/src/sandbox/grippers/GraspPlugin/bin/"
+		cd = "${RWSIM_ROOT}src/sandbox/grippers/GraspPlugin/bin/"
 		cmd = cd+"create-gripper-xml --name {} -j {} --tcp {} --jawdist {} --opening {} --force {} {}"\
 			.format(name, jawStr, tcp, jawdist, opening, force, ("", "--stl")[stl])
 			

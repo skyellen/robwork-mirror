@@ -200,6 +200,9 @@ void GripperTaskSimulator::evaluateGripper()
 	 * - wrench space measurement
 	 * - coverage calculation
 	 */
+	 
+	DEBUG << "Evaluating..." << endl;
+	
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int samples = _samples->getSubTasks()[0].getTargets().size();
 	
