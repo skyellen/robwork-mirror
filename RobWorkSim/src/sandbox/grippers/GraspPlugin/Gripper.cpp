@@ -14,14 +14,16 @@ using namespace rwsim;
 
 Gripper::Gripper(const std::string& name) :
 	_name(name),
-	_jaw(new JawPrimitive),
+	_baseGeometry(NULL),
+	_leftGeometry(NULL),
+	_rightGeometry(NULL),
 	_tcp(Transform3D<>(Vector3D<>(0, 0, 0.05))),
 	_jawdist(0),
 	_opening(0.05),
 	_force(50)
 {
 	setBaseGeometry(Q(3, 0.15, 0.1, 0.05));
-	setJawGeometry(Q(10, 0, 0.1, 0.025, 0.02, 0, 0, 0.05, 0, 90, 0));
+	setJawGeometry(Q(10, 0, 0.1, 0.025, 0.02, 0, 0, 0.05, 0, 90*Deg2Rad, 0));
 }
 
 
@@ -29,6 +31,10 @@ Gripper::Gripper(const std::string& name) :
 void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::DynamicWorkCell::Ptr dwc,
 	rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state)
 {
+	Geometry::Ptr baseGeometry = getBaseGeometry();
+	Geometry::Ptr leftGeometry = getJawGeometry();
+	Geometry::Ptr rightGeometry = getJawGeometry();
+	
 	// remove existing objects
 	cout << "- Removing objects..." << endl;
 	wc->removeObject(wc->findObject("gripper.Base").get());
@@ -47,33 +53,31 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	
 	Object* baseobj = new Object(wc->findFrame("gripper.Base"));
 	Model3D* basemodel = new Model3D("BaseModel");
-	basemodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_baseGeometry->getGeometryData()->getTriMesh() );
+	basemodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *baseGeometry->getGeometryData()->getTriMesh() );
 	basemodel->setTransform(baseT);
-	_baseGeometry->setTransform(baseT);
+	baseGeometry->setTransform(baseT);
 	baseobj->addModel(basemodel);
-	baseobj->addGeometry(_baseGeometry);
+	baseobj->addGeometry(baseGeometry);
 	wc->add(baseobj);
 	dwc->findBody("gripper.Base")->setObject(baseobj);
 	
 	Object* leftobj = new Object(wc->findFrame("gripper.LeftFinger"));
-	//Geometry::Ptr leftgeo = ownedPtr(new Geometry(_jaw, string("LeftFingerGeo")));
 	Model3D* leftmodel = new Model3D("LeftModel");
-	leftmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_leftGeometry->getGeometryData()->getTriMesh() );
+	leftmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *leftGeometry->getGeometryData()->getTriMesh() );
 	leftmodel->setTransform(Transform3D<>());
-	_leftGeometry->setTransform(Transform3D<>());
+	leftGeometry->setTransform(Transform3D<>());
 	leftobj->addModel(leftmodel);
-	leftobj->addGeometry(_leftGeometry);
+	leftobj->addGeometry(leftGeometry);
 	wc->add(leftobj);
 	dwc->findBody("gripper.LeftFinger")->setObject(leftobj);
 	
 	Object* rightobj = new Object(wc->findFrame("gripper.RightFinger"));
-	//Geometry::Ptr rightgeo = ownedPtr(new Geometry(_jaw, string("RightFingerGeo")));
 	Model3D* rightmodel = new Model3D("RightModel");
-	rightmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *_rightGeometry->getGeometryData()->getTriMesh() );
+	rightmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *rightGeometry->getGeometryData()->getTriMesh() );
 	rightmodel->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
-	_rightGeometry->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
+	rightGeometry->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
 	rightobj->addModel(rightmodel);
-	rightobj->addGeometry(_rightGeometry);
+	rightobj->addGeometry(rightGeometry);
 	wc->add(rightobj);
 	dwc->findBody("gripper.RightFinger")->setObject(rightobj);
 	cout << "Objects added." << endl;

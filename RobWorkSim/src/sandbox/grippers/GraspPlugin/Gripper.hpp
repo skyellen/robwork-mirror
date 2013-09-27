@@ -158,7 +158,19 @@ class Gripper // : public TreeDevice
 			}
 		}
 		
-		rw::geometry::Geometry::Ptr getJawGeometry() { return _leftGeometry; }
+		rw::geometry::Geometry::Ptr getJawGeometry()
+		{
+			using rw::geometry::Geometry;
+			using rw::geometry::JawPrimitive;
+			using rw::common::ownedPtr;
+			
+			if (_isJawParametrized) {
+				_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(_jawParameters), std::string("LeftFingerGeo")));
+				//_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(_jawParameters), std::string("RightFingerGeo")));
+			}
+			
+			return _leftGeometry;
+		}
 		
 		/// Set jaws geometry to a mesh.
 		void setJawGeometry(rw::geometry::Geometry::Ptr geo)
@@ -174,14 +186,8 @@ class Gripper // : public TreeDevice
 		 * JawPrimitive is used to generate geometry mesh from given parameters.
 		 */
 		void setJawGeometry(rw::math::Q params)
-		{
-			using rw::geometry::Geometry;
-			using rw::geometry::JawPrimitive;
-			using rw::common::ownedPtr;
-			
+		{			
 			_jawParameters = params;
-			_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(params), std::string("LeftFingerGeo")));
-			_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(params), std::string("RightFingerGeo")));
 			_isJawParametrized = true;
 		}
 		
@@ -201,7 +207,18 @@ class Gripper // : public TreeDevice
 			}
 		}
 		
-		rw::geometry::Geometry::Ptr getBaseGeometry() { return _baseGeometry; }
+		rw::geometry::Geometry::Ptr getBaseGeometry()
+		{
+			using rw::geometry::Geometry;
+			using rw::geometry::Box;
+			using rw::common::ownedPtr;
+			
+			if (_isBaseParametrized) {
+				_baseGeometry = ownedPtr(new Geometry(new Box(_baseParameters), std::string("BaseGeo")));
+			}
+			
+			return _baseGeometry;
+		}
 		
 		/// Set base geometry to a mesh.
 		void setBaseGeometry(rw::geometry::Geometry::Ptr geo) { _baseGeometry = geo; _isBaseParametrized = false; }
@@ -213,18 +230,13 @@ class Gripper // : public TreeDevice
 		 */
 		void setBaseGeometry(rw::math::Q params)
 		{
-			using rw::geometry::Geometry;
-			using rw::geometry::Box;
-			using rw::common::ownedPtr;
-			
 			_baseParameters = params;
-			_baseGeometry = ownedPtr(new Geometry(new Box(params), std::string("BaseGeo")));
 			_isBaseParametrized = true;
 		}
 		
 	// DEPRECATED
-		rw::geometry::JawPrimitive::Ptr getGeometry() { return _jaw; }
-		void setGeometry(rw::geometry::JawPrimitive::Ptr geometry) { _jaw = geometry; }
+		//rw::geometry::JawPrimitive::Ptr getGeometry() { return _jaw; }
+		//void setGeometry(rw::geometry::JawPrimitive::Ptr geometry) { _jaw = geometry; }
 	// /DEPRECATED
 		
 		/**
@@ -273,7 +285,7 @@ class Gripper // : public TreeDevice
 		rw::geometry::Geometry::Ptr _leftGeometry;
 		rw::geometry::Geometry::Ptr _rightGeometry;
 		
-		rw::geometry::JawPrimitive::Ptr _jaw;
+		//rw::geometry::JawPrimitive::Ptr _jaw;
 		
 		// kinematic & dynamic parameters
 		math::Transform3D<> _tcp;

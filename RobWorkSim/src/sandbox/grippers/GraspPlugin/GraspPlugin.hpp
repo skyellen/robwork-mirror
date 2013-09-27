@@ -19,7 +19,7 @@
 
 
 /**
- * @brief a plugin for testing grippers
+ * @brief A plugin for testing grippers.
  */
 class GraspPlugin : public rws::RobWorkStudioPlugin
 {
@@ -59,49 +59,33 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		//! @brief GUI event handler
 		void guiEvent();
 		
+		/// Another GUI event handler
+		void guiEvent(int i);
+		
 		//! @brief Design event
 		void designEvent();
 
 	private:
-		// methods
-		//! @brief loads tasks into the simulator
-		void setCurrentTask(rwlibs::task::GraspTask::Ptr task);
-		
-		//! @brief sets up open and closed gripper pose and approach vector
+		// methods		
+		/// Sets up open and closed gripper pose and approach vector.
 		rwlibs::task::GraspTask::Ptr generateTasks(int nTasks);
 		
-		//! @brief Plan tasks automatically
+		/// Plan tasks automatically.
 		void planTasks();
 		
-		//! @brief loads stl files for jaw geometry
-		void loadGeometry(std::string directory);
-		
-		//! @brief shows tasks in RWS window
+		/// Shows tasks in RWS window.
 		void showTasks(rwlibs::task::GraspTask::Ptr tasks);
 		
-		//! @brief sets up the GUI
+		/// Sets up the GUI.
 		void setupGUI();
 		
-		/**
-		 * @brief Calculates gripper quality after the simulation is finished.
-		 * So far only success ratio is taken into account.
-		 */
-		double calculateQuality(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks);
+		/// Loads gripper from XML file.
+		void loadGripper(const std::string& filename);
 		
-		/**
-		 * @brief Calculates coverage.
-		 */
-		double calculateCoverage(rwlibs::task::GraspTask::Ptr tasks, rwlibs::task::GraspTask::Ptr allTasks, rw::math::Q diff);
+		/// Updates gripper device in the workcell according to chosen gripper.
+		void updateGripper();
 		
-		/**
-		 * @brief Helper - filter & count targets using distance metric
-		 */
-		int filterAndCount(rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff) const;
-		
-		//! @brief Experimental - add new gripper device to the workcell
-		void addGripper(rw::math::Transform3D<> transform);
-		
-		//! @brief Place for testing stuff out
+		/// Place for testing stuff out
 		void test();
 
 		// parameters
@@ -115,8 +99,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		rw::graphics::Render::Ptr _render; // used to render targets
 		QTimer *_timer; // used to update RWS view periodically
 		
-		// gripper
+		// grippers
 		rw::models::Gripper::Ptr _gripper;
+		std::vector<rw::models::Gripper::Ptr> _gripperList;
 
 		// flags
 		bool _slowMotion;
@@ -147,6 +132,8 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QCheckBox* _autoPlanCheck;
 		QPushButton* _loadGripperButton;
 		QPushButton* _saveGripperButton;
+		QComboBox* _gripperCombo;
+		QPushButton* _clearButton;
 		
 		// manual grasp tasks generation
 		QGroupBox* _manualBox;

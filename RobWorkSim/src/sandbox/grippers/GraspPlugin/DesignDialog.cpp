@@ -34,6 +34,7 @@ void DesignDialog::guiEvent()
 	QObject* obj = sender();
 	
 	if (obj == _okButton) {
+		_gripper = ownedPtr(new Gripper);
 		_updateGripper();
 		close();
 	}

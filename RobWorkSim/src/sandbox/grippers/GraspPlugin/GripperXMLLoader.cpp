@@ -60,9 +60,9 @@ void readJaws(PTree& tree, Gripper::Ptr gripper)
 	
 	// else use parametrization
 	Q params = XMLHelpers::readQ(tree.get_child("Q"));
-	if (params(0) == 0) {
-		params(8) *= Deg2Rad;
-	}
+	params(5) *= Deg2Rad;
+	params(8) *= Deg2Rad;
+	cout << "!" << params << endl;
 	DEBUG << "Jaw geometry from parameters: " << params << endl;
 	gripper->setJawGeometry(params);
 }
@@ -173,7 +173,10 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	
 	// save jaw geometry
 	if (gripper->isJawParametrized()) {
-		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(gripper->getJawParameters()));
+		Q params = gripper->getJawParameters();
+		params(5) *= Rad2Deg;
+		params(8) *= Rad2Deg;
+		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(params));
 	} else {
 		// save STL file
 		string filename = dir+"/jaw.stl";

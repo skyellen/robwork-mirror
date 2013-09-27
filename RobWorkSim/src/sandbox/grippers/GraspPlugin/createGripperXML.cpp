@@ -67,6 +67,8 @@ int main(int argc, char* argv[])
 		
 		if (vm.count("jaw")) {
 			jawParams = Q(vm["jaw"].as<vector<double> >());
+			jawParams(5) *= Deg2Rad;
+			jawParams(8) *= Deg2Rad;
 			gripper->setJawGeometry(jawParams);
 		}
 		
