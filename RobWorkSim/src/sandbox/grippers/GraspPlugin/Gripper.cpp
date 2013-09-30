@@ -29,7 +29,8 @@ Gripper::Gripper(const std::string& name) :
 
 
 void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::DynamicWorkCell::Ptr dwc,
-	rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state)
+	rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state,
+	TaskDescription::Ptr td)
 {
 	Geometry::Ptr baseGeometry = getBaseGeometry();
 	Geometry::Ptr leftGeometry = getJawGeometry();
@@ -83,8 +84,8 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	cout << "Objects added." << endl;
 	
 	// set tcp
-	string tcpFrameName = wc->getPropertyMap().get<string>("gripperTCP");
-	MovableFrame* tcp = wc->findFrame<MovableFrame>(tcpFrameName);
+	//string tcpFrameName = wc->getPropertyMap().get<string>("gripperTCP");
+	MovableFrame* tcp = td->getGripperMovable(); //wc->findFrame<MovableFrame>(tcpFrameName);
 	tcp->setTransform(_tcp, state);
 	
 	//cout << "LOL" << tcp->getName() << endl;

@@ -18,6 +18,7 @@
 #include <rwsim/rwsim.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 #include "JawPrimitive.hpp"
+#include "TaskDescription.hpp"
 
 
 
@@ -253,9 +254,12 @@ class Gripper // : public TreeDevice
 		 * This was done as the easiest way to try different gripper designs in the same workcell without
 		 * having it reloaded, which requires restarting RobWorkStudio. Another approach would be to
 		 * add gripper to the workcell and then remove it, but methods neccessary for are not yet implemented.
+		 * 
+		 * @todo Make this use only TaskDescription.
 		 */
 		void updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::DynamicWorkCell::Ptr dwc,
-			rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state);
+			rw::models::TreeDevice::Ptr dev, rwsim::dynamics::RigidDevice::Ptr ddev, rw::kinematics::State& state,
+			TaskDescription::Ptr td);
 		
 		/// Get gripper quality measurement structure.
 		GripperQuality::Ptr getQuality()

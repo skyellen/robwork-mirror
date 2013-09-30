@@ -36,6 +36,9 @@ class TaskDescription
 		/// Smart pointer to this type of class.
 		typedef rw::common::Ptr<TaskDescription> Ptr;
 		
+		/// Used for storing baseline and weights for quality measurements.
+		typedef struct { float shape, coverage, success, wrench; } Qualities;
+		
 	// constructors
 		/// Constructor
 		TaskDescription(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
@@ -48,10 +51,10 @@ class TaskDescription
 		bool isOk() { return _isOk; }
 		
 		rw::models::WorkCell* getWorkCell() { return _wc; }
-		void setWorkCell(rw::models::WorkCell* wc) { _wc = wc; _initState = wc->getDefaultState(); }
+		//void setWorkCell(rw::models::WorkCell* wc) { _wc = wc; _initState = wc->getDefaultState(); }
 		
 		rwsim::dynamics::DynamicWorkCell::Ptr getDynamicWorkCell() { return _dwc; }
-		void setDynamicWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc) { _dwc = dwc; setWorkCell(dwc->getWorkcell().get()); }
+		//void setDynamicWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc) { _dwc = dwc; setWorkCell(dwc->getWorkcell().get()); }
 		
 		rw::kinematics::State& getInitState() { return _initState; }
 		
@@ -67,7 +70,8 @@ class TaskDescription
 		rw::math::Q getCoverageDistance() const { return _coverageDistance; }
 		
 		rw::models::Object::Ptr getTargetObject() { return _targetObject; }
-		void setTargetObject(rw::models::Object::Ptr object) { _targetObject = object; }
+		//void setTargetObject(rw::models::Object::Ptr object) { _targetObject = object; }
+		rw::kinematics::Frame* getTargetFrame() { return _targetFrame; }
 		
 		const std::string& getGripperID() { return _gripperID; }
 		
@@ -76,6 +80,9 @@ class TaskDescription
 		rw::kinematics::Frame* getGripperTCP() { return _gripperTCP; }
 		rw::kinematics::MovableFrame* getGripperMovable() { return _gripperMovable; }
 		const std::string& getControllerID() { return _controllerID; }
+		
+		Qualities& getBaseline() { return _baseLine; }
+		Qualities& getWeights() { return _weights; }
 		
 	// friends
 		friend class TaskDescriptionLoader;
@@ -91,12 +98,15 @@ class TaskDescription
 		std::vector<rw::models::Object::Ptr> _interferenceObjects;
 		rw::math::Q _coverageDistance;
 		rw::models::Object::Ptr _targetObject;
+		rw::kinematics::Frame* _targetFrame;
 		std::string _gripperID;
 		rw::models::TreeDevice::Ptr _gripperDevice;
 		rw::kinematics::Frame* _gripperTCP;
 		rw::kinematics::MovableFrame* _gripperMovable;
 		std::string _controllerID;
 		rwsim::dynamics::RigidDevice::Ptr _gripperDynamicDevice;
+		Qualities _baseLine;
+		Qualities _weights;
 };
 
 
@@ -122,4 +132,5 @@ class TaskDescriptionLoader
 		static void readGripper(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readInterferenceObjects(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readLimits(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readQualities(rwlibs::xml::PTree& tree, TaskDescription::Qualities& q);
 };

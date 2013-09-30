@@ -56,6 +56,11 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	readInterferenceObjects(tree.get_child("InterferenceObjects"), task);
 	readLimits(tree.get_child("Limits"), task);
 	
+	DEBUG << "- baseline" << endl;
+	readQualities(tree.get_child("Baseline"), task->_baseLine);
+	DEBUG << "- weights" << endl;
+	readQualities(tree.get_child("Weights"), task->_weights);
+	
 	DEBUG << "- coverage distance: ";
 	PTree& node = tree.get_child("CoverageDistance");
 	task->_coverageDistance = XMLHelpers::readQ(node);
@@ -77,6 +82,7 @@ void TaskDescriptionLoader::readTarget(PTree& tree, TaskDescription::Ptr task)
 	DEBUG << "- target name: [" << targetName << "]" << endl;
 	
 	task->_targetObject = task->_wc->findObject(targetName);
+	task->_targetFrame = task->_targetObject->getBase();
 	
 	if (!task->_targetObject) {
 		RW_THROW("Cannot find target object!");
@@ -170,6 +176,31 @@ void TaskDescriptionLoader::readLimits(PTree& tree, TaskDescription::Ptr task)
 	PTree& wrenchChild = tree.get_child("Wrench");
 	task->_wrenchLimit = XMLHelpers::readDouble(wrenchChild);
 	DEBUG << task->_wrenchLimit << endl;
+}
+
+
+
+void TaskDescriptionLoader::readQualities(PTree& tree, TaskDescription::Qualities& q)
+{
+	DEBUG << "\tShape: ";
+	PTree& node1 = tree.get_child("Shape");
+	q.shape = XMLHelpers::readDouble(node1);
+	DEBUG << q.shape << endl;
+	
+	DEBUG << "\tCoverage: ";
+	PTree& node2 = tree.get_child("Coverage");
+	q.coverage = XMLHelpers::readDouble(node2);
+	DEBUG << q.coverage << endl;
+	
+	DEBUG << "\tSuccess ratio: ";
+	PTree& node3 = tree.get_child("SuccessRatio");
+	q.success = XMLHelpers::readDouble(node3);
+	DEBUG << q.success << endl;
+	
+	DEBUG << "\tWrench: ";
+	PTree& node4 = tree.get_child("Wrench");
+	q.wrench = XMLHelpers::readDouble(node4);
+	DEBUG << q.wrench << endl;
 }
 
 

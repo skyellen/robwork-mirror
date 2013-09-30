@@ -104,7 +104,9 @@ void GraspPlugin::open(WorkCell* workcell)
 		if (_wc->getPropertyMap().has("taskDescription")) {
 			string filename = _wc->getPropertyMap().get<string>("taskDescription");
 			log().info() << "Loading task description from: " << filename << endl;
+			cout << "Loading task description from: " << filename << endl;
 			_td = TaskDescriptionLoader::load(filename, _dwc);
+			cout << "Loaded task description." << endl;
 		}
 		
 		_initState = getRobWorkStudio()->getState();
@@ -133,19 +135,7 @@ void GraspPlugin::guiEvent(int i)
 {
 	_gripper = _gripperList[i];
 	
-	cout << "Updating gripper..." << endl;
-	_gripper->updateGripper(_td->getWorkCell(),
-		_td->getDynamicWorkCell(),
-		_td->getGripperDevice(),
-		_td->getGripperDynamicDevice(),
-		_td->getInitState());
-	
-	cout << "Refreshing RWS..." << endl;
-	getRobWorkStudio()->getWorkCellScene()->clearCache();
-	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_td->getInitState());
-	getRobWorkStudio()->setWorkcell(_wc);
-
-	getRobWorkStudio()->setState(_td->getInitState());
+	updateGripper();
 }
 
 
@@ -316,6 +306,7 @@ void GraspPlugin::designEvent()
 
 void GraspPlugin::loadGripper(const std::string& filename)
 {
+	cout << "Loading gripper from: " << filename << endl;
 	Gripper::Ptr gripper = GripperXMLLoader::load(filename);
 	_gripperList.push_back(gripper);
 	_gripperCombo->insertItem(-1, QString::fromStdString(gripper->getName()));
@@ -330,7 +321,8 @@ void GraspPlugin::updateGripper()
 		_td->getDynamicWorkCell(),
 		_td->getGripperDevice(),
 		_td->getGripperDynamicDevice(),
-		_td->getInitState());
+		_td->getInitState(),
+		_td);
 	
 	cout << "Refreshing RWS..." << endl;
 	getRobWorkStudio()->getWorkCellScene()->clearCache();
@@ -444,7 +436,7 @@ void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 {
 	//return;
 	vector<RenderTargets::Target> rtargets;
-	Transform3D<> wTo = Kinematics::worldTframe(_wc->findFrame(_wc->getPropertyMap().get<string>("target")), _wc->getDefaultState());
+	Transform3D<> wTo = Kinematics::worldTframe(_td->getTargetFrame(), _wc->getDefaultState());
 	
 	if (tasks == NULL) { return; }
 	

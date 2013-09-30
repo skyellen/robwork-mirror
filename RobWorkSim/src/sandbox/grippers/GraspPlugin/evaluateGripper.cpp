@@ -103,7 +103,8 @@ int main(int argc, char* argv[])
 		td->getDynamicWorkCell(),
 		td->getGripperDevice(),
 		td->getGripperDynamicDevice(),
-		td->getInitState());
+		td->getInitState(),
+		td);
 	CollisionDetector::Ptr cd = new CollisionDetector(td->getWorkCell(), ProximityStrategyFactory::makeDefaultCollisionStrategy());
 	TaskGenerator::Ptr generator = new TaskGenerator(td);
 	generator->generateTask(number, cd, td->getInitState());

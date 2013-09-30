@@ -200,22 +200,30 @@ void GripperTaskSimulator::evaluateGripper()
 	 * - wrench space measurement
 	 * - coverage calculation
 	 */
+	TaskDescription::Qualities& b = _td->getBaseline();
+	TaskDescription::Qualities& w = _td->getWeights();
 	 
 	DEBUG << "Evaluating..." << endl;
 	
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int samples = _samples->getSubTasks()[0].getTargets().size();
 	
-	double shape = calculateShape();
-	double coverage = calculateCoverage();
-	double successRatio = 1.0 * successes / getNrTargets();
+	double shape = calculateShape() / b.shape;
+	double coverage = calculateCoverage() / b.coverage;
+	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
-	double wrench = wrenchMeasurement(1);
-	double quality = (shape + coverage + successRatio)/3.0;
+	double wrench = wrenchMeasurement(1) / b.wrench;
+	
+	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
+	double quality = (
+		w.shape * shape +
+		w.coverage * coverage +
+		w.success * successRatio +
+		w.wrench * wrench
+		) / sumWeights;
 	
 	// save data to gripper result
 	GripperQuality::Ptr q = _gripper->getQuality();
-	
 	q->nOfExperiments = getNrTargets();
 	q->nOfSuccesses = successes;
 	q->nOfSamples = samples;
