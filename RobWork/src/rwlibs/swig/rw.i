@@ -109,6 +109,7 @@ public:
     // first we define functions that are native to Q
 	Q();
 	//%feature("autodoc","1");
+	Q(int n, double a0);
     Q(int n, double a0, double a1);
     Q(int n, double a0, double a1, double a2);
     Q(int n, double a0, double a1, double a2, double a3);
