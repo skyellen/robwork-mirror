@@ -72,37 +72,54 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
         cstrategy->inCollision(object, Transform3D<>::identity(), ray, rayTrans, data);
         typedef std::pair<int,int> PrimID;
         BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds){
-            // search for a triangle that has a normal
-            Triangle<> tri = mesh->getTriangle( pid.first );
-            Vector3D<> normal = tri.calcFaceNormal();
-            bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
-            double dist = MetricUtil::dist2(tri[0], pos);
+			// search for a triangle that has a normal
+			Triangle<> tri = mesh->getTriangle( pid.first );
+			Vector3D<> normal = tri.calcFaceNormal();
+			bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
+			double dist = MetricUtil::dist2(tri[0], pos);
             
-			   if (closeAngle) {
+		   if (closeAngle) {
+				
+				// calculate target
+				Vector3D<> avgNormal = normalize( (negFaceNormal+normal)/2.0 );
+				Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
+				Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
+				Rotation3D<> rot2( xcol, ycol, -avgNormal);
+				Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
+				// next we rotate z-axis into place
+				trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
+				target.R() = trot;
+
+				graspW = dist;
+				if(dot(tri[0]-pos, -faceNormal)>0)
+					target.P() = pos-faceNormal*(dist/2.0);
+				else
+					target.P() = pos+faceNormal*(dist/2.0);
+					
+				if (_td->hasHints()) {
+					targetFound = false;
+				} else {
 					targetFound = true;
-					// calculate target
-					Vector3D<> avgNormal = normalize( (negFaceNormal+normal)/2.0 );
-					Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
-					Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
-					Rotation3D<> rot2( xcol, ycol, -avgNormal);
-					Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
-					// next we rotate z-axis into place
-					trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
-					target.R() = trot;
-
-					graspW = dist;
-					if(dot(tri[0]-pos, -faceNormal)>0)
-						target.P() = pos-faceNormal*(dist/2.0);
-					else
-						target.P() = pos+faceNormal*(dist/2.0);
-
-				break;
+				}
+				// test if the target belongs in the area around hinted grasps
+				BOOST_FOREACH (Transform3D<> hint, _td->getHints()) {
+					// calculate distance
+					double dist = MetricUtil::dist2(target.P(), hint.P());
+					double a = angle(target.R()*Vector3D<>::z(), hint.R()*Vector3D<>::z());
+					
+					if (dist <= _td->getTeachDistance()[0] && a <= _td->getTeachDistance()[1]) {
+						targetFound = true;
+						break;
+					}
+				}
+				
+				if (targetFound) break;
 			}
         }
         
         tries++;
-        if (tries > 1000) {
-			RW_THROW("Cannot find target without collision!");
+        if (tries > 10000) {
+			RW_THROW("Cannot find target without collision! Tries: " << tries);
 		}
     } while( !targetFound);
     
@@ -152,9 +169,10 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 
 			int removed = 0;
 			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
+				if (n == &node) continue;
+				
 				if (n->value->testStatus != GraspTask::TimeOut) ++removed;
 				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::TimeOut;
-				
 			}
 			nRemoved += removed;
 		}

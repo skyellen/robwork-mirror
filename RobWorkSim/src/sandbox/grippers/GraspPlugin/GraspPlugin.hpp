@@ -64,6 +64,12 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		
 		//! @brief Design event
 		void designEvent();
+		
+		/// Adds new hint for planning grasps
+		void addHint();
+		
+		/// Removes all taught grasps
+		void clearHints();
 
 	private:
 		// methods		
@@ -125,6 +131,8 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QPushButton* _editSetupButton;
 		QPushButton* _loadSetupButton;
 		QPushButton* _saveSetupButton;
+		QPushButton* _addHintButton;
+		QPushButton* _clearHintsButton;
 		
 		// geometry panel
 		QGroupBox* _geometryBox;

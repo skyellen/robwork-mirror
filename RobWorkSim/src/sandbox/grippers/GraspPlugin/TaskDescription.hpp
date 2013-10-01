@@ -67,7 +67,12 @@ class TaskDescription
 		std::vector<rw::models::Object::Ptr> getInterferenceObjects() { return _interferenceObjects; }
 		void addInterferenceObject(rw::models::Object::Ptr object) { _interferenceObjects.push_back(object); }
 		
+		bool hasHints() const { return _hints.size() > 0; }
+		std::vector<rw::math::Transform3D<> >& getHints() { return _hints; }
+		void addHint(rw::math::Transform3D<> hint) { _hints.push_back(hint); }
+		
 		rw::math::Q getCoverageDistance() const { return _coverageDistance; }
+		rw::math::Q getTeachDistance() const { return _teachDistance; }
 		
 		rw::models::Object::Ptr getTargetObject() { return _targetObject; }
 		//void setTargetObject(rw::models::Object::Ptr object) { _targetObject = object; }
@@ -97,6 +102,7 @@ class TaskDescription
 		double _wrenchLimit;
 		std::vector<rw::models::Object::Ptr> _interferenceObjects;
 		rw::math::Q _coverageDistance;
+		rw::math::Q _teachDistance;
 		rw::models::Object::Ptr _targetObject;
 		rw::kinematics::Frame* _targetFrame;
 		std::string _gripperID;
@@ -107,6 +113,7 @@ class TaskDescription
 		rwsim::dynamics::RigidDevice::Ptr _gripperDynamicDevice;
 		Qualities _baseLine;
 		Qualities _weights;
+		std::vector<rw::math::Transform3D<> > _hints;
 };
 
 
@@ -123,7 +130,7 @@ class TaskDescriptionLoader
 		static TaskDescription::Ptr load(const std::string& filename, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 		
 		/// Save task description to XML file.
-		static void save(const std::string& filename);
+		static void save(const TaskDescription::Ptr td, const std::string& filename);
 	
 	protected:
 	// methods
@@ -133,4 +140,5 @@ class TaskDescriptionLoader
 		static void readInterferenceObjects(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readLimits(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readQualities(rwlibs::xml::PTree& tree, TaskDescription::Qualities& q);
+		static void readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 };

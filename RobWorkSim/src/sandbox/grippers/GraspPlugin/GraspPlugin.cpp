@@ -131,6 +131,24 @@ void GraspPlugin::close()
 
 
 
+void GraspPlugin::addHint()
+{
+	Transform3D<> target = Kinematics::worldTframe(_td->getGripperTCP(), getRobWorkStudio()->getState());
+	log().info() << "Added hint grasp: " << target << endl;
+	if (_td) {
+		_td->addHint(target);
+	}
+}
+
+
+
+void GraspPlugin::clearHints()
+{
+	_td->getHints().clear();
+}
+
+
+
 void GraspPlugin::guiEvent(int i)
 {
 	_gripper = _gripperList[i];
@@ -267,6 +285,17 @@ void GraspPlugin::guiEvent()
 		_wd = QFileInfo(filename).path().toStdString();
 			
 		_td = TaskDescriptionLoader::load(filename.toStdString(), _dwc);
+	}
+	
+	else if (obj == _saveSetupButton) {
+		QString filename = QFileDialog::getSaveFileName(this,
+			"Open file", QString::fromStdString(_wd), tr("Task description files (*.td.xml)"));
+			
+		if (filename.isEmpty()) return;
+			
+		_wd = QFileInfo(filename).path().toStdString();
+			
+		TaskDescriptionLoader::save(_td, filename.toStdString());
 	}
 	
 	else if (obj == _testButton) {
@@ -506,7 +535,14 @@ void GraspPlugin::setupGUI()
     _saveSetupButton = new QPushButton("Save setup");
     setupLayout->addWidget(_saveSetupButton, row++, 1);
     connect(_saveSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    _saveSetupButton->setEnabled(false);
+    
+    _addHintButton = new QPushButton("Teach grasp");
+    setupLayout->addWidget(_addHintButton, row, 0);
+    connect(_addHintButton, SIGNAL(clicked()), this, SLOT(addHint()));
+    
+    _clearHintsButton = new QPushButton("Clear hints");
+    setupLayout->addWidget(_clearHintsButton, row++, 1);
+    connect(_clearHintsButton, SIGNAL(clicked()), this, SLOT(clearHints()));
     
     /* setup geometry group */
     row = 0;

@@ -62,10 +62,21 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	readQualities(tree.get_child("Weights"), task->_weights);
 	
 	DEBUG << "- coverage distance: ";
-	PTree& node = tree.get_child("CoverageDistance");
-	task->_coverageDistance = XMLHelpers::readQ(node);
+	PTree& node1 = tree.get_child("CoverageDistance");
+	task->_coverageDistance = XMLHelpers::readQ(node1);
 	task->_coverageDistance(6) *= Deg2Rad;
 	DEBUG << task->_coverageDistance << endl;
+	
+	DEBUG << "- teach distance: ";
+	PTree& node2 = tree.get_child("TeachDistance");
+	task->_teachDistance = XMLHelpers::readQ(node2);
+	task->_teachDistance(1) *= Deg2Rad;
+	DEBUG << task->_teachDistance << endl;
+	
+	boost::optional<PTree&> node = tree.get_child_optional("HintGrasps");
+	if (node) {
+		readHints(*node, task);
+	}
 	
 	task->_isOk = true;
 	
@@ -223,7 +234,63 @@ TaskDescription::Ptr TaskDescriptionLoader::load(const std::string& filename, rw
 
 
 
-void TaskDescriptionLoader::save(const std::string& filename)
+void TaskDescriptionLoader::readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
 {
-	RW_WARN("Task description saving NOT IMPLEMENTED");
+	
+}
+
+
+
+void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::string& filename)
+{
+	PTree tree;
+	
+	
+	// put target
+	tree.put("TaskDescription.Target", td->_targetObject->getName());
+	
+	// save gripper information
+	tree.put("TaskDescription.Gripper.Name", td->_gripperDevice->getName());
+	tree.put("TaskDescription.Gripper.TCP", td->_gripperTCP->getName());
+	tree.put("TaskDescription.Gripper.Movable", td->_gripperMovable->getName());
+	tree.put("TaskDescription.Gripper.Controller", td->_controllerID);
+	
+	// save interference objects
+	BOOST_FOREACH (rw::models::Object::Ptr obj, td->_interferenceObjects) {
+		tree.put("TaskDescription.InterferenceObjects.Object", obj->getName());
+	}
+	
+	// save limits
+	tree.put("TaskDescription.Limits.Interference", td->_interferenceLimit);
+	tree.put("TaskDescription.Limits.Wrench", td->_wrenchLimit);
+	
+	// save baseline
+	tree.put("TaskDescription.Baseline.Shape", td->_baseLine.shape);
+	tree.put("TaskDescription.Baseline.Coverage", td->_baseLine.coverage);
+	tree.put("TaskDescription.Baseline.SuccessRatio", td->_baseLine.success);
+	tree.put("TaskDescription.Baseline.Wrench", td->_baseLine.wrench);
+	
+	// save weights
+	tree.put("TaskDescription.Weights.Shape", td->_weights.shape);
+	tree.put("TaskDescription.Weights.Coverage", td->_weights.coverage);
+	tree.put("TaskDescription.Weights.SuccessRatio", td->_weights.success);
+	tree.put("TaskDescription.Weights.Wrench", td->_weights.wrench);
+	
+	// save teach & coverage distance
+	tree.put("TaskDescription.TeachDistance", XMLHelpers::QToString(td->_teachDistance));
+	tree.put("TaskDescription.CoverageDistance", XMLHelpers::QToString(td->_coverageDistance));
+	
+	// save grasp hints
+	BOOST_FOREACH (Transform3D<> hint, td->_hints) {
+		tree.put("TaskDescription.HintGrasps.Target.Pos", Q(hint.P()));
+	}
+	
+	// save to XML
+	try {
+		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+        write_xml(filename, tree, std::locale(), settings);
+    } catch (const ptree_error& e) {
+        // Convert from parse errors to RobWork errors.
+        RW_THROW(e.what());
+    }
 }
