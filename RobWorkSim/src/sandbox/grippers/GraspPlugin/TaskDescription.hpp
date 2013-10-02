@@ -141,4 +141,5 @@ class TaskDescriptionLoader
 		static void readLimits(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readQualities(rwlibs::xml::PTree& tree, TaskDescription::Qualities& q);
 		static void readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readGrasp(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 };

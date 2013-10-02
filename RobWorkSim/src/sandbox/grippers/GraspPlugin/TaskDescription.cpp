@@ -236,7 +236,25 @@ TaskDescription::Ptr TaskDescriptionLoader::load(const std::string& filename, rw
 
 void TaskDescriptionLoader::readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
 {
+	DEBUG << "- hints" << endl;
 	
+	for (CI p = tree.begin(); p != tree.end(); ++p) {
+		if (p->first == "Grasp") readGrasp(p->second, task);
+	}
+}
+
+
+
+void TaskDescriptionLoader::readGrasp(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
+{
+	DEBUG << "\tGrasp: ";
+	Q posq = XMLHelpers::readQ(tree.get_child("Pos"));
+	Q rpyq = XMLHelpers::readQ(tree.get_child("RPY"));
+	DEBUG << "pos=" << posq << " rot=" << rpyq << endl;
+	
+	Vector3D<> pos(posq[0], posq[1], posq[2]);
+	RPY<> rpy(rpyq[0], rpyq[1], rpyq[2]);
+	task->_hints.push_back(Transform3D<>(pos, rpy.toRotation3D()));
 }
 
 
@@ -282,7 +300,13 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	
 	// save grasp hints
 	BOOST_FOREACH (Transform3D<> hint, td->_hints) {
-		tree.put("TaskDescription.HintGrasps.Target.Pos", Q(hint.P()));
+		PTree node;
+		
+		node.put("Pos", XMLHelpers::QToString(Q(3, hint.P()[0], hint.P()[1], hint.P()[2])));
+		RPY<> rpy(hint.R());
+		node.put("RPY", XMLHelpers::QToString(Q(3, rpy[0], rpy[1], rpy[2])));
+		
+		tree.add_child("TaskDescription.HintGrasps.Grasp", node);
 	}
 	
 	// save to XML
