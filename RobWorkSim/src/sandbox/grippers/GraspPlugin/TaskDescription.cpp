@@ -41,6 +41,14 @@ TaskDescription::~TaskDescription()
 
 
 
+void TaskDescription::setTarget(rw::models::Object::Ptr object)
+{
+	_targetObject = object;
+	_targetFrame = _targetObject->getBase();
+}
+
+
+
 TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rwsim::dynamics::DynamicWorkCell::Ptr dwc)
 {
 	TaskDescription::Ptr task = ownedPtr(new TaskDescription(dwc));

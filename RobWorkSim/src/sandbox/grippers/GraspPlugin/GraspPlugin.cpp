@@ -20,6 +20,7 @@
 #include "DesignDialog.hpp"
 #include "GripperTaskSimulator.hpp"
 #include "GripperXMLLoader.hpp"
+#include "TaskDialog.hpp"
 
 
 
@@ -253,11 +254,12 @@ void GraspPlugin::guiEvent()
 			"Save file", QString::fromStdString(_wd), tr("Gripper files (*.grp.xml)"));
 			
 		if (filename.isEmpty()) return;
+		
+		QFileInfo file(filename);
+		if (file.suffix().isEmpty()) filename += ".grp.xml";	
+		_wd = file.path().toStdString();
 			
-		_wd = QFileInfo(filename).path().toStdString();
-		string name = QFileInfo(filename).fileName().toStdString();
-			
-		GripperXMLLoader::save(_gripper, name);
+		GripperXMLLoader::save(_gripper, filename.toStdString());
 	}
 	
 	else if (obj == _clearButton) {
@@ -333,12 +335,20 @@ void GraspPlugin::designEvent()
 
 
 
+void GraspPlugin::setupEvent()
+{
+	TaskDialog* sdialog = new TaskDialog(this, _td, _wd);
+	sdialog->exec();
+}
+
+
+
 void GraspPlugin::loadGripper(const std::string& filename)
 {
 	cout << "Loading gripper from: " << filename << endl;
 	Gripper::Ptr gripper = GripperXMLLoader::load(filename);
 	_gripperList.push_back(gripper);
-	_gripperCombo->insertItem(-1, QString::fromStdString(gripper->getName()));
+	_gripperCombo->addItem(QString::fromStdString(gripper->getName()));
 }
 
 
@@ -525,8 +535,7 @@ void GraspPlugin::setupGUI()
     
     _editSetupButton = new QPushButton("Open setup dialog");
     setupLayout->addWidget(_editSetupButton, row++, 0, 1, 2);
-    connect(_editSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    _editSetupButton->setEnabled(false);
+    connect(_editSetupButton, SIGNAL(clicked()), this, SLOT(setupEvent()));
     
     _loadSetupButton = new QPushButton("Load setup");
     setupLayout->addWidget(_loadSetupButton, row, 0);
@@ -616,7 +625,7 @@ void GraspPlugin::setupGUI()
     connect(_stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     _testButton = new QPushButton("TEST");
-    simLayout->addWidget(_testButton, row++, 0, 1, 2);
+    //simLayout->addWidget(_testButton, row++, 0, 1, 2);
     connect(_testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     /* add groups to the base layout */

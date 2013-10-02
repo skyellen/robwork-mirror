@@ -52,6 +52,8 @@ class EvaluateGripper
 
 int main(int argc, char* argv[])
 {
+	Math::seed();
+	
 	// options
 	int number;
 	string dwcFilename;
@@ -77,8 +79,15 @@ int main(int argc, char* argv[])
 	try {
 		store(command_line_parser(argc, argv).options(desc).run(), vm);
 		notify(vm);
+		
+		if (vm.count("help")) {
+			cout << usage << endl;
+			cout << desc << endl;
+			return 0;
+		}
 	} catch (...) {
 		cout << usage << endl;
+		cout << desc << endl;
 		return -1;
 	}
 	

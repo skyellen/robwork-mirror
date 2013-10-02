@@ -65,6 +65,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		//! @brief Design event
 		void designEvent();
 		
+		/// Setup editing event
+		void setupEvent();
+		
 		/// Adds new hint for planning grasps
 		void addHint();
 		

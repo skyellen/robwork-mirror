@@ -48,7 +48,7 @@ SET(SrcFiles
 )
 
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp)
+QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp TaskDialog.hpp)
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
@@ -69,7 +69,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 #MESSAGE("!" ${ODE_LIBRARIES})
 # The shared library to build
 add_library(GraspLibrary ${SrcFiles})
-add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp ${MocSrcFiles} ${RccSrcFiles})
+add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp TaskDialog.cpp ${MocSrcFiles} ${RccSrcFiles})
 add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
 add_executable( create-gripper-xml createGripperXML.cpp)
 add_executable(evaluate-gripper evaluateGripper.cpp)

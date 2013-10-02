@@ -75,8 +75,9 @@ class TaskDescription
 		rw::math::Q getTeachDistance() const { return _teachDistance; }
 		
 		rw::models::Object::Ptr getTargetObject() { return _targetObject; }
-		//void setTargetObject(rw::models::Object::Ptr object) { _targetObject = object; }
 		rw::kinematics::Frame* getTargetFrame() { return _targetFrame; }
+		void setTarget(rw::models::Object::Ptr object);
+		void setTarget(std::string objectName) { setTarget(_wc->findObject(objectName)); }
 		
 		const std::string& getGripperID() { return _gripperID; }
 		
