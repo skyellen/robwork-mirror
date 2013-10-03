@@ -152,12 +152,22 @@ void TaskDialog::updateGUI()
 	}
 	_targetCombo->setCurrentIndex(_targetCombo->findText(QString::fromStdString(_td->getTargetObject()->getName())));
 	
-	// fille the gripper box
+	// fill the gripper box
 	_gripperCombo->clear();
 	BOOST_FOREACH (Device::Ptr dev, _td->getWorkCell()->getDevices()) {
 		_gripperCombo->addItem(QString::fromStdString(dev->getName()));
 	}
 	_gripperCombo->setCurrentIndex(_gripperCombo->findText(QString::fromStdString(_td->getGripperDevice()->getName())));
+	
+	// update the result section
+	_baseShapeEdit->setText(QString::number(_td->getBaseline().shape));
+	_baseCoverageEdit->setText(QString::number(_td->getBaseline().coverage));
+	_baseSuccessEdit->setText(QString::number(_td->getBaseline().success));
+	_baseWrenchEdit->setText(QString::number(_td->getBaseline().wrench));
+	_weightShapeEdit->setText(QString::number(_td->getWeights().shape));
+	_weightCoverageEdit->setText(QString::number(_td->getWeights().coverage));
+	_weightSuccessEdit->setText(QString::number(_td->getWeights().success));
+	_weightWrenchEdit->setText(QString::number(_td->getWeights().wrench));
 }
 
 
@@ -166,4 +176,17 @@ void TaskDialog::updateTaskDescription()
 {
 	// set new target
 	_td->setTarget(_targetCombo->currentText().toStdString());
+	
+	// update baseline & weights
+	TaskDescription::Qualities& base = _td->getBaseline();
+	base.shape = _baseShapeEdit->text().toDouble();
+	base.coverage = _baseCoverageEdit->text().toDouble();
+	base.success = _baseSuccessEdit->text().toDouble();
+	base.wrench = _baseWrenchEdit->text().toDouble();
+	
+	TaskDescription::Qualities& w = _td->getWeights();
+	w.shape = _weightShapeEdit->text().toDouble();
+	w.coverage = _weightCoverageEdit->text().toDouble();
+	w.success = _weightSuccessEdit->text().toDouble();
+	w.wrench = _weightWrenchEdit->text().toDouble();
 }
