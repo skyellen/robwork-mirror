@@ -86,7 +86,7 @@ void GraspPlugin::startSimulation()
     _graspSim = ownedPtr(new GripperTaskSimulator(_gripper, _tasks, _samples, _td));
     
 	try {
-		_graspSim->startSimulation(_initState);
+		_graspSim->startSimulation(_td->getInitState());
 	} catch(...) {
 		return;
 	}
@@ -200,7 +200,7 @@ void GraspPlugin::guiEvent()
 	}
 	
 	else if (obj == _initialButton) { // return the workcell to the initial state
-		getRobWorkStudio()->setState(_initState);
+		getRobWorkStudio()->setState(_td->getInitState());
 	}
 	
 	else if (obj == _approachButton) { // set the approach pose of the gripper
@@ -319,8 +319,8 @@ void GraspPlugin::designEvent()
 	
 	if (ddialog->isChanged()) {
 		_gripperList.insert(_gripperList.begin(), _gripper);
-		_gripperCombo->insertItem(-1, QString::fromStdString(_gripper->getName()));
-		_gripperCombo->setCurrentIndex(0);
+		_gripperCombo->addItem(QString::fromStdString(_gripper->getName()));
+		//_gripperCombo->setCurrentIndex(0);
 	}
 	
 	updateGripper();
@@ -367,6 +367,11 @@ void GraspPlugin::updateGripper()
 	getRobWorkStudio()->getWorkCellScene()->clearCache();
 	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_td->getInitState());
 	getRobWorkStudio()->setWorkcell(_wc);
+	
+	// update gripper TCP (again...)
+	//MovableFrame* tcp = (MovableFrame*)_td->getGripperTCP();
+	//tcp->setTransform(_gripper->getTCP(), _td->getInitState());
+	
 	getRobWorkStudio()->setState(_td->getInitState());
 }
 
@@ -376,7 +381,7 @@ void GraspPlugin::updateSim()
 {
 	if (_graspSim == NULL || _wc == NULL || _dwc == NULL) return;
 	
-	if (!_silentMode) getRobWorkStudio()->setState(_graspSim->getSimulator()->getState());
+	if (!_silentMode && _graspSim->isRunning()) getRobWorkStudio()->setState(_graspSim->getSimulator()->getState());
 	
 	// check out the number of tasks already performed and update progress bar accordingly
 	_progressBar->setValue(_graspSim->getNrTargetsDone());

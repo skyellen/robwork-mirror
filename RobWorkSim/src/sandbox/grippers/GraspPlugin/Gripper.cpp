@@ -85,7 +85,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	
 	// set tcp
 	//string tcpFrameName = wc->getPropertyMap().get<string>("gripperTCP");
-	MovableFrame* tcp = td->getGripperMovable(); //wc->findFrame<MovableFrame>(tcpFrameName);
+	MovableFrame* tcp = (MovableFrame*)td->getGripperTCP(); //wc->findFrame<MovableFrame>(tcpFrameName);
 	tcp->setTransform(_tcp, state);
 	
 	//cout << "LOL" << tcp->getName() << endl;
