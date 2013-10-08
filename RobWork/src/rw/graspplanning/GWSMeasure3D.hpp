@@ -70,10 +70,21 @@ public:
 
     /**
      * @brief get the minimum force that will break the grasp
+     * 
+     * Returns the minimum distance from the cener of the object to the wall of the wrench space.
+     * 
      * @return minimum breaking force
      */
     double getMinWrench(){ return _minWrench; };
 
+	/**
+	 * @brief get the force that will break the grasp
+	 * 
+	 * Returns the minimum force neccesary to break the grasp for the best case scenario -
+	 * if the center of the object coincides with the center of the wrench space.
+	 * 
+	 * @return minimum breaking force
+	 */
     double getAvgWrench(){ return _avgWrench; };
 
     void setLambda(double lambda){ _lambda = lambda;}

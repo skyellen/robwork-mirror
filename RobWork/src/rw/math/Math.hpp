@@ -644,6 +644,14 @@ namespace rw { namespace math {
            @brief Exact implementation of ceil(log_2(n)) for n > 0.
         */
         static int ceilLog2(int n);
+        
+        /**
+         * @brief Factorial
+         * @todo Add some safeguards?
+         */
+        static long long factorial(long long n) {
+			return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
+		}
 
         /**
          * @brief convert a math vector type to an vector of doubles. The input should

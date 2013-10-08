@@ -72,6 +72,13 @@ namespace geometry {
 		 * @return
 		 */
 		virtual double getMinDistOutside(const rw::math::VectorND<N>& vertex) = 0;
+		
+		/**
+		 * @brief Returns centroid of the convex hull.
+		 * 
+		 * Centroid is calculated as an average of face centroids weighted by face area.
+		 */
+		virtual rw::math::VectorND<N> getCentroid() = 0;
 
 	};
 

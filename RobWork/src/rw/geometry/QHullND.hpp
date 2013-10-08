@@ -24,6 +24,7 @@
 #include <float.h>
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/VectorND.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/common/macros.hpp>
 #include "ConvexHullND.hpp"
 
@@ -79,7 +80,7 @@ namespace geometry {
 		 */
 		virtual ~QHullND(){};
 
-		//! @copydoc ConvexHull3D::rebuild
+		//! @copydoc ConvexHullND::rebuild
 		void rebuild(const std::vector<rw::math::VectorND<N> >& vertices){
 		    using namespace rw::math;
 		    // convert the vertice array to an array of double
@@ -137,10 +138,10 @@ namespace geometry {
             return minDist>=0;
 		}
 
-		//! @copydoc ConvexHull3D::getMinDistOutside
+		//! @copydoc ConvexHullND::getMinDistOutside
 		double getMinDistOutside(const rw::math::VectorND<N>& vertex){ return 0; }
 		
-        //! @copydoc ConvexHull3D::getMinDistInside
+        //! @copydoc ConvexHullND::getMinDistInside
         double getMinDistInside(const rw::math::VectorND<N>& vertex){
             using namespace rw::math;
             if( _faceIdxs.size()==0 ){
@@ -156,6 +157,45 @@ namespace geometry {
             }
             return minDist;
         }
+        
+        //! @copydoc ConvexHullND::getCentroid
+        rw::math::VectorND<N> getCentroid() {
+			using namespace rw::math;
+			
+			// check if we have any faces
+			RW_ASSERT(_faceNormals.size() > 0);
+			
+			// loop over all 'faces' and calculate their areas and centroids
+			//std::vector<double> areas;
+			//std::vector<VectorND<N> > centroids;
+			int nOfFaces = _faceIdxs.size()/N;
+			VectorND<N> centroid;
+			double totalVolume = 0.0;
+			for (size_t i = 0; i < nOfFaces; ++i) {
+				RW_ASSERT(_faceIdxs.size() > i*N);
+                RW_ASSERT(i < _faceNormals.size());
+                
+                // calculate face centroid
+                VectorND<N> c;
+                for (int j = 0; j < N; ++j) {
+					c += 1.0/N * _hullVertices[_faceIdxs[i*N + j]];
+				}
+                // calculate weight (by face volume)
+                std::vector<VectorND<N> > v;
+                for (int j = 0; j < N; ++j) {
+					v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
+				}
+                double volume = GeometryUtil::simplexVolume(v);
+                
+                // update hull centroid
+                centroid += volume * c;
+                totalVolume += volume;
+			}
+			
+			centroid /= totalVolume;
+			
+			return centroid;
+		}
 
 		//! if negative then point is outside hull
 		/*

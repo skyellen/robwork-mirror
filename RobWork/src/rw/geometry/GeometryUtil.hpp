@@ -24,6 +24,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/math/InertiaMatrix.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/VectorND.hpp>
 //#include <rw/geometry/Face.hpp>
 
 #include "Geometry.hpp"
@@ -135,7 +136,40 @@ public:
      */
     static std::vector<rw::kinematics::Frame*> getAnchoredChildFrames(rw::kinematics::Frame *parent,
                                                                       const rw::kinematics::State &state);
-
+                                                                      
+    /**
+     * @brief calculates volume of k-simplex
+     * 
+     * Volume of k-dimensional simplex (triangle is 2-simplex) is calculated as:
+     * \f$ V(S) = \frac{1}{k!} \sqrt{W W^T}\f$, where:
+     * 
+     * \f$ W \f$ is a matrix consisting of rows
+     * 
+     \f$w_i = [v_{i,1}-v_{0,1}\:v_{i,2}-v_{0, 2}\:\cdots\:v_{i,k+1}-v_{0,k+1}] \f$
+     
+     * of i-th vertex coordinates.
+     * (taken from: http://www.math.niu.edu/~rusin/known-math/97/volumes.polyh)
+     */
+    template<std::size_t N>
+    static double simplexVolume(const std::vector<rw::math::VectorND<N> >& vertices) {
+		RW_ASSERT(vertices.size() > 0);
+		double volume = 0.0;
+		
+		// construct W matrix
+		Eigen::Matrix<double, N-1, N> W;
+		for (int idx = 1; idx < vertices.size(); ++idx) {
+			// vector w_i
+			Eigen::Matrix<double, 1, N> wi = (vertices[idx].e() - vertices[0].e()).transpose();
+			//std::cout << wi << std::endl;
+			W.row(idx-1) = wi;
+		}
+		//std::cout << W << std::endl;
+		
+		//calculate volume
+		volume = 1.0/rw::math::Math::factorial(N-1) * sqrt((W*W.transpose()).determinant());
+		
+		return volume;
+	}
 };
 //! @}
 }
