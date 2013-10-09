@@ -121,7 +121,7 @@ void readResult(PTree& tree, Gripper::Ptr gripper)
 	result->nOfExperiments = XMLHelpers::readInt(tree.get_child("Experiments"));
 	result->nOfSuccesses = XMLHelpers::readInt(tree.get_child("Successes"));
 	result->nOfSamples = XMLHelpers::readInt(tree.get_child("Samples"));
-	result->shape = XMLHelpers::readDouble(tree.get_child("Shape"));
+	//result->shape = XMLHelpers::readDouble(tree.get_child("Shape"));
 	result->coverage = XMLHelpers::readDouble(tree.get_child("Coverage"));
 	result->success = XMLHelpers::readDouble(tree.get_child("SuccessRatio"));
 	result->wrench = XMLHelpers::readDouble(tree.get_child("Wrench"));
@@ -206,7 +206,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Result.Experiments", q->nOfExperiments);
 	tree.put("Gripper.Result.Successes", q->nOfSuccesses);
 	tree.put("Gripper.Result.Samples", q->nOfSamples);
-	tree.put("Gripper.Result.Shape", q->shape);
+	//tree.put("Gripper.Result.Shape", q->shape);
 	tree.put("Gripper.Result.Coverage", q->coverage);
 	tree.put("Gripper.Result.SuccessRatio", q->success);
 	tree.put("Gripper.Result.Wrench", q->wrench);

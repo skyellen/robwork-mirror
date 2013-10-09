@@ -28,6 +28,9 @@ class GripperGenerator:
 		self.opening = (0.05, 0.1)
 		self.jawdist = (0, 0.01)
 		self.force = (25, 75)
+		self.baselength = (0.05, 0.5)
+		self.basewidth = (0.05, 0.1)
+		self.basedepth = (0.05, 0.05)
 		
 	def generate(self, stl=False):
 		# setup gripper name
@@ -69,14 +72,27 @@ class GripperGenerator:
 		# generate jawdist
 		jawdist = random.uniform(self.jawdist[0], min(self.jawdist[1], opening))
 		
+		# generate base dimensions
+		baselength = 2 * opening + 2 * width
+		baselength = max(baselength, self.baselength[0])
+		baselength = min(baselength, self.baselength[1])
+		basewidth = 2 * depth
+		basewidth = max(basewidth, self.basewidth[0])
+		basewidth = min(basewidth, self.basewidth[1])
+		basedepth = random.uniform(*self.basedepth)
+		
 		# make jaw parameters
 		jawParameters = (cutout, length, width, depth, chfDepth, chfAngle, tcp, cutDepth, cutAngle, cutRadius)
 		jawStr = "".join(str(p)+' ' for p in jawParameters)
 		
+		# make base parameters
+		baseParameters = (baselength, basewidth, basedepth)
+		baseStr = "".join(str(p)+' ' for p in baseParameters)
+		
 		# construct command
 		cd = "${RWSIM_ROOT}src/sandbox/grippers/GraspPlugin/bin/"
-		cmd = cd+"create-gripper-xml --name {} -j {} --tcp {} --jawdist {} --opening {} --force {} {}"\
-			.format(name, jawStr, tcp, jawdist, opening, force, ("", "--stl")[stl])
+		cmd = cd+"create-gripper-xml --name {} -j {} -b {} --tcp {} --jawdist {} --opening {} --force {} {}"\
+			.format(name, jawStr, baseStr, tcp, jawdist, opening, force, ("", "--stl")[stl])
 			
 		# execute
 		#print cmd
@@ -93,7 +109,8 @@ def main():
 	loading = ['|', '/', '-', '\\']
 	sys.stdout.write("Generating gripper database...  ")
 	
-	for i in range(0, int(args.number)):
+	number = int(args.number)
+	for i in range(0, number):
 		generator.generate(bool(args.stl))
 		sys.stdout.write("\b"+loading[i%4])
 		sys.stdout.flush()

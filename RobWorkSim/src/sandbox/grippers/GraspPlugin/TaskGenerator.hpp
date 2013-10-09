@@ -43,8 +43,7 @@ class TaskGenerator
 		 * 
 		 * @param nTargets [in] number of targets to generate
 		 */
-		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::proximity::CollisionDetector::Ptr cdetect,
-			rw::kinematics::State state);
+		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::kinematics::State state);
 			
 		/// Get previously generated tasks.
 		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }

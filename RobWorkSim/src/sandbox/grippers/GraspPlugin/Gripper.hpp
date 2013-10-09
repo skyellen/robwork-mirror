@@ -53,7 +53,7 @@ struct GripperQuality
 		nOfExperiments(0),
 		nOfSuccesses(0),
 		nOfSamples(0),
-		shape(0.0),
+		//shape(0.0),
 		coverage(0.0),
 		success(0.0),
 		wrench(0.0),
@@ -67,7 +67,7 @@ struct GripperQuality
 				<< "- experiments= " << q.nOfExperiments << '\n'
 				<< "- successes= " << q.nOfSuccesses << '\n'
 				<< "- samples= " << q.nOfSamples << '\n'
-				<< "- shape= " << q.shape << '\n'
+				//<< "- shape= " << q.shape << '\n'
 				<< "- coverage= " << q.coverage << '\n'
 				<< "- success= " << q.success << '\n'
 				<< "- wrench= " << q.wrench << '\n'
@@ -82,7 +82,7 @@ struct GripperQuality
 	int nOfSuccesses; /// Number of succesful grasps (filtered).
 	int nOfSamples; /// Number of generated samples (filtered).
 	
-	double shape; /// Shape evaluation based on geometry objective function.
+	//double shape; /// Shape evaluation based on geometry objective function.
 	double coverage; /// Ratio of filtered succesful grasps to filtered all samples.
 	double success; /// Ratio of succesful grasps to all generated grasps.
 	double wrench; /// Average wrench of succesful grasps.

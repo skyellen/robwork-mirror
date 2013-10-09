@@ -141,19 +141,21 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	vector<NNSearch::KDNode> nodes;
 	//int nTasks = nodes.size();
 	
-	BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
-		if (target.getResult()->testStatus == GraspTask::Success) {
+	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
+	//BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
+		if (p.second->getResult()->testStatus == GraspTask::Success) {
 			Q key(7);
-            key[0] = target.pose.P()[0];
-            key[1] = target.pose.P()[1];
-            key[2] = target.pose.P()[2];
-            EAA<> eaa(target.pose.R());
+            key[0] = p.second->pose.P()[0];
+            key[1] = p.second->pose.P()[1];
+            key[2] = p.second->pose.P()[2];
+            EAA<> eaa(p.second->pose.R());
             key[3] = eaa.axis()(0);
             key[4] = eaa.axis()(1);
             key[5] = eaa.axis()(2);
             key[6] = eaa.angle();
             
-			nodes.push_back(NNSearch::KDNode(key, target.getResult()));
+			nodes.push_back(NNSearch::KDNode(key, p.second->getResult()));
 		}
 	}
 	
@@ -189,8 +191,10 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 {
 	int n = 0;
 	
-	BOOST_FOREACH (GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
-		if (target.getResult()->testStatus == status)
+	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
+	//BOOST_FOREACH (GraspTarget* target, tasks->getAllTargets().second) { //tasks->getSubTasks()[0].getTargets()) {
+		if (p.second->getResult()->testStatus == status)
 			++n;
 	}
 	
@@ -199,7 +203,7 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 
 
 
-rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proximity::CollisionDetector::Ptr cdetect, rw::kinematics::State state)
+rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinematics::State state)
 {
 	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), state);
 	
@@ -239,6 +243,14 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
 	ProximityModel::Ptr object = cstrategy->createModel();
     cstrategy->addGeometry(object.get(), _td->getTargetObject()->getGeometry()[0]);
     
+    // make CD for WC & add rules excluding interference objects
+    CollisionDetector::Ptr cdetect = new CollisionDetector(_td->getWorkCell(), ProximityStrategyFactory::makeDefaultCollisionStrategy());
+    BOOST_FOREACH (Object::Ptr obj, _td->getInterferenceObjects()) {
+		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.Base", obj->getBase()->getName()));
+		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.LeftFinger", obj->getBase()->getName()));
+		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.RightFinger", obj->getBase()->getName()));
+	}
+    
     for (int successes = 0; successes < nTargets;) {
 		double graspW = 0.0;
 		Transform3D<> target = _sample(_closeQ[0]*2.0, _openQ[0]*2.0, sampler, object, ray, cstrategy, graspW);
@@ -258,12 +270,20 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::proxi
         if (!cdetect->inCollision(state, &result, true)) {
             ++successes;
             
+            // make new subtask
+            GraspSubTask subtask;
+            subtask.offset = wTobj;
+			subtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			subtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			subtask.openQ = oq;
+			subtask.closeQ = _closeQ;
+            
             GraspTarget gtarget(target);
             gtarget.result = ownedPtr(new GraspResult());
             gtarget.result->testStatus = GraspTask::UnInitialized;
             gtarget.result->objectTtcpTarget = target;
-            //gtarget.result->gripperConfigurationGrasp = oq;
-            stask.addTarget(gtarget);
+            subtask.addTarget(gtarget);
+            gtask->addSubTask(subtask);
             atask.addTarget(gtarget);
         } else {
 			//cout << "collision" << endl;

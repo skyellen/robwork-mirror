@@ -105,7 +105,7 @@ void DesignDialog::_createGUI()
 {
 	int row = 0;
 	
-	// make all the elments
+	// make all the elements
 	QLabel* lengthLabel = new QLabel("Length");
 	_lengthEdit = new QLineEdit("0.1");
 	QLabel* widthLabel = new QLabel("Width");
@@ -264,8 +264,8 @@ void DesignDialog::_createGUI()
 	reslayout->addWidget(_samplesEdit, row, 1);
 	reslayout->addWidget(wrenchLabel, row, 2);
 	reslayout->addWidget(_wrenchEdit, row++, 3);
-	reslayout->addWidget(shapeLabel, row, 0);
-	reslayout->addWidget(_shapeEdit, row, 1);
+	//reslayout->addWidget(shapeLabel, row, 0);
+	//reslayout->addWidget(_shapeEdit, row, 1);
 	reslayout->addWidget(qualityLabel, row, 2);
 	reslayout->addWidget(_qualityEdit, row++, 3);
 	
@@ -342,7 +342,7 @@ void DesignDialog::_updateGUI()
 		_experimentsEdit->setText(QString::number(_gripper->getQuality()->nOfExperiments));
 		_successesEdit->setText(QString::number(_gripper->getQuality()->nOfSuccesses));
 		_samplesEdit->setText(QString::number(_gripper->getQuality()->nOfSamples));
-		_shapeEdit->setText(QString::number(_gripper->getQuality()->shape));
+		//_shapeEdit->setText(QString::number(_gripper->getQuality()->shape));
 		_coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
 		_successEdit->setText(QString::number(_gripper->getQuality()->success));
 		_wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));

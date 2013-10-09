@@ -121,24 +121,22 @@ double GripperTaskSimulator::calculateCoverage()
 
 rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 {
-	Q wrench(3, 1000, 0, 0);
+	Q wrench(2, 0, 0);
 	
 	int success = 0;
-	BOOST_FOREACH(GraspTarget& tgt, _gtask->getSubTasks()[0].getTargets()) {
-		if (tgt.getResult()->testStatus == GraspTask::Success) {
+	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
+		if (p.second->getResult()->testStatus == GraspTask::Success) {
 			success++;
 			
-			Q result = tgt.getResult()->qualityAfterLifting;
+			Q result = p.second->getResult()->qualityAfterLifting;
 			
-			if (result(0) < wrench(0)) wrench(0) = result(0);
-			
+			wrench(0) += result(0);
 			wrench(1) += result(1);
-			
-			if (result(2) > wrench(2)) wrench(2) = result(2);
 		}
 	}
 	
-	return wrench;
+	return wrench / success;
 }
 
 
@@ -179,8 +177,10 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			break;
 			
 		default:
-			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER";
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER" << endl;
 	}
+	
+	DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
 }
 
 
@@ -208,15 +208,15 @@ void GripperTaskSimulator::evaluateGripper()
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int samples = _samples->getSubTasks()[0].getTargets().size();
 	
-	double shape = calculateShape() / b.shape;
+	//double shape = calculateShape() / b.shape;
 	double coverage = calculateCoverage() / b.coverage;
 	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
-	double wrench = wrenchMeasurement(1) / b.wrench;
+	double wrench = wrenchMeasurement(0) / b.wrench;
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
 	double quality = (
-		w.shape * shape +
+		//w.shape * shape +
 		w.coverage * coverage +
 		w.success * successRatio +
 		w.wrench * wrench
@@ -227,7 +227,7 @@ void GripperTaskSimulator::evaluateGripper()
 	q->nOfExperiments = getNrTargets();
 	q->nOfSuccesses = successes;
 	q->nOfSamples = samples;
-	q->shape = shape;
+	//q->shape = shape;
 	q->coverage = coverage;
 	q->success = successRatio;
 	q->wrench = wrench;

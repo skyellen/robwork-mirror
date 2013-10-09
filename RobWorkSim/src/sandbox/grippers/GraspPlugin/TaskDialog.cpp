@@ -78,11 +78,11 @@ void TaskDialog::createGUI()
 	QLabel* coverageLabel = new QLabel("Coverage");
 	QLabel* successLabel = new QLabel("Success");
 	QLabel* wrenchLabel = new QLabel("Wrench");
-	_baseShapeEdit = new QLineEdit("1");
+	_baseShapeEdit = new QLineEdit("0"); _baseShapeEdit->setDisabled(true);
 	_baseCoverageEdit = new QLineEdit("1");
 	_baseSuccessEdit = new QLineEdit("1");
 	_baseWrenchEdit = new QLineEdit("1");
-	_weightShapeEdit = new QLineEdit("1");
+	_weightShapeEdit = new QLineEdit("0"); _weightShapeEdit->setDisabled(true);
 	_weightCoverageEdit = new QLineEdit("1");
 	_weightSuccessEdit = new QLineEdit("1");
 	_weightWrenchEdit = new QLineEdit("1");

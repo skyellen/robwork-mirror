@@ -437,7 +437,7 @@ void GraspPlugin::planTasks()
 	try {
 		_generator = new TaskGenerator(_td);
 		
-		_generator->generateTask(_nOfTargetsToGen, getRobWorkStudio()->getCollisionDetector(), _initState);
+		_generator->generateTask(_nOfTargetsToGen, _initState);
 		//_gripper->setTasks(_generator->getTasks());
 		//_gripper->setSamples(_generator->getSamples());
 		_tasks = _generator->getTasks();
@@ -485,18 +485,20 @@ void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 	if (tasks == NULL) { return; }
 	
 	if (_showTasks) {
-		BOOST_FOREACH (GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
+		//BOOST_FOREACH (GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
+		typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+		BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
 			RenderTargets::Target rt;
-			rt.ctask = &tasks->getSubTasks()[0];
-			rt.ctarget = target;
+			rt.ctask = p.first; //&tasks->getSubTasks()[0];
+			rt.ctarget = *p.second; //target;
 			
-			if (target.getResult()->testStatus == GraspTask::UnInitialized) {
-				rt.color[0] = 1.0;
-				rt.color[1] = 1.0;
-				rt.color[2] = 1.0;
-				rt.color[3] = 0.5;
+			if (rt.ctarget.getResult()->testStatus == GraspTask::UnInitialized) {
+				rt.color[0] = 0.8;
+				rt.color[1] = 0.8;
+				rt.color[2] = 0.8;
+				rt.color[3] = 0.3;
 			}
-			else if (target.getResult()->testStatus == GraspTask::Success) {
+			else if (rt.ctarget.getResult()->testStatus == GraspTask::Success) {
 				rt.color[0] = 0.0;
 				rt.color[1] = 1.0;
 				rt.color[2] = 0.0;
@@ -505,10 +507,10 @@ void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 				rt.color[0] = 1.0;
 				rt.color[1] = 0.0;
 				rt.color[2] = 0.0;
-				rt.color[3] = 0.5;
+				rt.color[3] = 0.3;
 			}
 			
-			rt.trans = wTo * target.pose;
+			rt.trans = wTo * rt.ctarget.pose;
 			
 			rtargets.push_back(rt);
 		}
@@ -630,7 +632,7 @@ void GraspPlugin::setupGUI()
     connect(_stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     _testButton = new QPushButton("TEST");
-    //simLayout->addWidget(_testButton, row++, 0, 1, 2);
+    simLayout->addWidget(_testButton, row++, 0, 1, 2);
     connect(_testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     
     /* add groups to the base layout */
@@ -645,6 +647,13 @@ void GraspPlugin::setupGUI()
 
 void GraspPlugin::test()
 {
+	vector<VectorND<4> > vtx;
+	VectorND<4> v0; v0[0] = 0.0; v0[1] = 0.0; v0[2] = 0.0; v0[3] = 0.0; vtx.push_back(v0);
+	VectorND<4> v1; v1[0] = 1.0; v1[1] = 0.0; v1[2] = 0.0; v1[3] = 0.0; vtx.push_back(v1);
+	VectorND<4> v2; v2[0] = 0.0; v2[1] = 1.0; v2[2] = 0.0; v2[3] = 0.0; vtx.push_back(v2);
+	VectorND<4> v3; v3[0] = 0.0; v3[1] = 0.0; v3[2] = 1.0; v3[3] = 0.0; vtx.push_back(v3);
+	
+	log().info() << GeometryUtil::simplexVolume(vtx) << endl;
 }
 
 
