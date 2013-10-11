@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 			URRTData data = _urrt.getLastData();
 			std::cout<<"Configuration = "<<data.qActual<<std::endl;
 		}
-		usleep(10*1000);
+		TimerUtil::sleepMs(10);
 	}	
     return 0;
 }
