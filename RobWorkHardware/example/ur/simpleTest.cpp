@@ -24,8 +24,10 @@ int main(int argc, char** argv)
 
     rwhw::URCallBackInterface _ur;
     rwhw::UniversalRobotsRTLogging _urrt;
-    std::string ip("100.1.1.0");
-    std::string port("1000");
+
+    // SETTINGS for communicating with ur 2 on marvin
+    std::string ip("192.168.100.4");
+    int port = 33334;
 
     _urrt.connect(ip, 30003);
     //std::cout<<"Transfer Script: "<<scriptFile<<std::endl;
