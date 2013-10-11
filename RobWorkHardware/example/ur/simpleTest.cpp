@@ -41,5 +41,12 @@ int main(int argc, char** argv)
     _ur.moveQ(home, 10);
 
 
+	while (true) {
+		if (_urrt.hasData()) {
+			URRTData data = _urrt.getLastData();
+			std::cout<<"Configuration = "<<data.qActual<<std::endl;
+		}
+		usleep(10*1000);
+	}	
     return 0;
 }
