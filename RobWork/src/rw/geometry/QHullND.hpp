@@ -169,16 +169,18 @@ namespace geometry {
 			//std::vector<double> areas;
 			//std::vector<VectorND<N> > centroids;
 			int nOfFaces = _faceIdxs.size()/N;
-			VectorND<N> centroid;
+			VectorND<N> centroid = VectorND<N>::zero();;
 			double totalVolume = 0.0;
+			//std::cout << "N of faces= " << nOfFaces << std::endl;
 			for (size_t i = 0; i < nOfFaces; ++i) {
 				RW_ASSERT(_faceIdxs.size() > i*N);
                 RW_ASSERT(i < _faceNormals.size());
                 
                 // calculate face centroid
-                VectorND<N> c;
+                VectorND<N> c = VectorND<N>::zero();
                 for (int j = 0; j < N; ++j) {
-					c += 1.0/N * _hullVertices[_faceIdxs[i*N + j]];
+					c += (1.0/N) * _hullVertices[_faceIdxs[i*N + j]];
+					//std::cout << "v: " << _hullVertices[_faceIdxs[i*N + j]] << std::endl;
 				}
                 // calculate weight (by face volume)
                 std::vector<VectorND<N> > v;
@@ -186,6 +188,8 @@ namespace geometry {
 					v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
 				}
                 double volume = GeometryUtil::simplexVolume(v);
+                //std::cout << "C= " << c << std::endl;
+                //std::cout << "V= " << volume << std::endl;
                 
                 // update hull centroid
                 centroid += volume * c;

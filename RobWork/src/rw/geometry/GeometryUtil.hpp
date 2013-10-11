@@ -164,9 +164,16 @@ public:
 			W.row(idx-1) = wi;
 		}
 		//std::cout << W << std::endl;
+		//std::cout << sqrt((W*W.transpose()).determinant()) << std::endl;
 		
-		//calculate volume
-		volume = 1.0/rw::math::Math::factorial(N-1) * sqrt((W*W.transpose()).determinant());
+		// calculate volume
+		volume = 1.0/rw::math::Math::factorial(N-1) * sqrt((W*W.transpose()).determinant()); // this sometimes gives NaN
+		// even if matrix has a determinant...
+		
+		// now, for a bit of wishful thinking:
+		if (std::isnan(volume)) {
+			volume = 0.0;
+		}
 		
 		return volume;
 	}
