@@ -1,0 +1,118 @@
+  	<Frame name="CorrectedBase" refframe="UR1Mount">
+		<Pos> 0 0 0 </Pos> <RPY> 0 0 0 </RPY>
+	</Frame> 
+
+	<!-- BumbleBee 1 -->
+<Frame name="BB-1-Stereo" refframe="CorrectedBase" type="Movable">
+	<RPY> 130 -9 -120 </RPY>
+	<Pos> 0.60 0.075 0.710776</Pos>
+</Frame>
+
+<Frame name="BB-1-Left" refframe="BB-1-Stereo">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="BB-1-Left-Sim" refframe="BB-1-Left">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-1-Left</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+
+<Frame name="BB-1-Right" refframe="BB-1-Stereo" type="Movable">
+	<RPY> 0.0379993 0.0728973 0.147628</RPY>
+	<Pos> 0.121779 -0.00094912 0.004587</Pos>
+</Frame>
+
+<Frame name="BB-1-Right-Sim" refframe="BB-1-Right" type="Movable">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-1-Right</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+  
+<Drawable name="BB-1-Geo" refframe="BB-1-Stereo" >
+	<RPY>90 0 0</RPY>
+	<Pos> 0.0609 -0.0005 0.0023</Pos>
+	<Polytope file="BumbleBee2" />
+</Drawable>
+	
+
+<!-- BumbleBee 2 -->
+
+<Frame name="BB-2-Stereo" refframe="CorrectedBase" type="Movable">
+	<RPY> 40 -15 -135 </RPY>
+	<Pos> 0.550 -1.175 0.710776</Pos>
+</Frame>
+
+<Frame name="BB-2-Left" refframe="BB-2-Stereo">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="BB-2-Left-Sim" refframe="BB-2-Left">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-2-Left</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+
+<Frame name="BB-2-Right" refframe="BB-2-Stereo" type="Movable">
+	<RPY> 0.0379993 0.0728973 0.147628</RPY>
+	<Pos> 0.121779 -0.00094912 0.004587</Pos>
+</Frame>
+
+<Frame name="BB-2-Right-Sim" refframe="BB-2-Right" type="Movable">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-2-Right</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+  
+<Drawable name="BB-2-Geo" refframe="BB-2-Stereo" >
+	<RPY>90 0 0 </RPY>
+	<Pos> 0.0609 -0.0005 0.0023</Pos>
+	<Polytope file="BumbleBee2" />
+</Drawable>
+	
+
+
+<!-- BumbleBee 3 -->
+
+<Frame name="BB-3-Stereo" refframe="CorrectedBase" type="Movable">
+	<RPY> 90 0 120 </RPY>
+	<Pos> -0.720 -0.53 0.810776</Pos>
+</Frame>
+
+<Frame name="BB-3-Left" refframe="BB-3-Stereo">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="BB-3-Left-Sim" refframe="BB-3-Left">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-3-Left</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+
+<Frame name="BB-3-Right" refframe="BB-3-Stereo" type="Movable">
+	<RPY> 0.0379993 0.0728973 0.147628</RPY>
+	<Pos> 0.121779 -0.00094912 0.004587</Pos>
+</Frame>
+
+<Frame name="BB-3-Right-Sim" refframe="BB-3-Right" type="Movable">
+	<RPY>0 0 180</RPY>
+	<Pos>0 0 0</Pos>
+	<Property name="CameraName">BB-3-Right</Property>
+	<Property name="Camera"> 32.9177 1024 768</Property>
+</Frame>
+  
+<Drawable name="BB-3-Geo" refframe="BB-3-Stereo" >
+	<RPY>90 0 0 </RPY>
+	<Pos> 0.0609 -0.0005 0.0023</Pos>
+	<Polytope file="BumbleBee2" />
+</Drawable>
+	
+

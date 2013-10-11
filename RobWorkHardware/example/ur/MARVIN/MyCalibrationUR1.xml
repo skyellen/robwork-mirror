@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WorkCellCalibration>
+ <FixedFrameCalibration>
+  <FixedFrameCalibration frame="BB-1-Stereo">
+   <Transform>0.99999999999999079 -3.9980928608622861e-008 1.297652350498715e-007 -0.0019958294821165682 3.9980907520740179e-008 0.99999999999998601 1.6250795126246896e-007 -0.073660266267149888 -1.2976524154708849e-007 -1.6250794607433559e-007 0.99999999999997835 -0.050267470464850507 </Transform>
+  </FixedFrameCalibration>
+ </FixedFrameCalibration>
+ <FixedFrameCalibration>
+  <FixedFrameCalibration frame="UR1-Marker">
+   <Transform>0.97334781683342098 0.22925856940540748 0.0058767184549714507 -0.0003803816662040462 -0.22932925427757794 0.97317128888811544 0.018593967202672208 0.00055243047025223225 -0.0014562273528014433 -0.019446100843871109 0.99980984620270008 0.013648728785096133 </Transform>
+  </FixedFrameCalibration>
+ </FixedFrameCalibration>
+ <LinkCalibrations>
+  <ParallelAxisCalibration joint="UR1.Joint2" a="0.006062895893338251" alpha="0.0039324956279926902"/>
+  <ParallelAxisCalibration joint="UR1.Joint3" a="-0.001319718015598834" b="0.0066371842076133232" alpha="-0.0076094242222275827" beta="0.0080905486629770408"/>
+  <ParallelAxisCalibration joint="UR1.Joint4" a="-0.0024438285324796696" b="0.0079993207644532029" alpha="-0.010971102717717202" beta="0.014688042688315492"/>
+  <ParallelAxisCalibration joint="UR1.Joint5" a="-5.788122046204569e-005" b="0.0093477822311361647" alpha="-0.0070717766005454338" beta="-0.017944635978383035"/>
+  <ParallelAxisCalibration joint="UR1.Joint6" a="0.0010627948173577042" b="-0.0021930947841310123" alpha="0.005579025859695246" beta="-0.017142520683493728"/>
+ </LinkCalibrations>
+ <JointCalibrations device="UR1">
+  <JointEncoderCalibration joint="UR1.Joint1" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint2" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint3" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint4" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint5" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint6" tau="0" sigma="0"/>
+ </JointCalibrations>
+</WorkCellCalibration>

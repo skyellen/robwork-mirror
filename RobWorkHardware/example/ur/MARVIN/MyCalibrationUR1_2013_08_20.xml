@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WorkCellCalibration>
+ <SensorCalibration>
+  <FixedFrameCalibration frame="BB-1-Stereo">
+   <Transform>0.91452758695012504 0.075999438106875802 -0.39732024629336543 0.13505090579665868 -0.052473834974058671 0.99618212536016182 0.069768687503966087 0.0028935399666639595 0.40110570844890336 -0.042956472391829058 0.91502401724181726 -0.17792106178925385 </Transform>
+  </FixedFrameCalibration>
+ </SensorCalibration>
+ <EndCalibration>
+  <FixedFrameCalibration frame="UR1.TCP">
+   <Transform>-0.97027168945794728 -0.24094388947382681 0.02277917385782554 -0.00027910998915969191 0.24110403196803912 -0.97048872488823068 0.004525553399375601 -0.0011637713891870217 0.021016526953221374 0.0098831670045670117 0.99973027792739388 0.0025951078924130984 </Transform>
+  </FixedFrameCalibration>
+ </EndCalibration>
+ <LinkCalibrations>
+  <ParallelAxisCalibration joint="UR1.Joint2" a="0" b="0" alpha="0" beta="0"/>
+  <ParallelAxisCalibration joint="UR1.Joint3" a="0" b="0" alpha="0" beta="0"/>
+  <ParallelAxisCalibration joint="UR1.Joint4" a="0" b="0" alpha="0" beta="0"/>
+  <ParallelAxisCalibration joint="UR1.Joint5" a="0" b="0" alpha="0" beta="0"/>
+  <ParallelAxisCalibration joint="UR1.Joint6" a="0" b="0" alpha="0" beta="0"/>
+ </LinkCalibrations>
+ <JointCalibrations device="UR1">
+  <JointEncoderCalibration joint="UR1.Joint1" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint2" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint3" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint4" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint5" tau="0" sigma="0"/>
+  <JointEncoderCalibration joint="UR1.Joint6" tau="0" sigma="0"/>
+ </JointCalibrations>
+</WorkCellCalibration>

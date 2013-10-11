@@ -1,0 +1,64 @@
+<Frame name="StandCenter" refframe="UR1Mount">
+<RPY>0 0 0</RPY><Pos>-0.035 -0.525 0</Pos>
+</Frame>
+
+
+<Frame name="HRCamera" refframe="StandCenter" type="Fixed">
+<RPY>0 0 0</RPY><Pos>-0.355 0 1.31</Pos>
+</Frame>
+
+
+<Drawable name="HRCamera_drw" refframe="HRCamera">
+<RPY>0 0 0</RPY><Pos>0.155 0.04 0</Pos>
+<Box x="0.31" y="0.35" z="0.30"/>
+</Drawable>
+
+
+<Frame name="topBar" refframe="StandCenter" type="Fixed">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+</Frame>
+<Drawable name="topBar1_drw" refframe="topBar">
+<RPY>0 0 0</RPY><Pos>0 -0.57 1.335</Pos>
+<Box x="1.5" y="0.05" z="0.05"/>
+</Drawable> 
+<Drawable name="topBar2_drw" refframe="topBar">
+<RPY>0 0 0</RPY><Pos>0 0.57 1.335</Pos>
+<Box x="1.5" y="0.05" z="0.05"/>
+</Drawable>
+
+
+<Frame name="sideBar1" refframe="StandCenter">
+<RPY>0 0 0</RPY><Pos>-0.81 0 0.823</Pos>
+</Frame>
+<Drawable name="sideBar1_drw" refframe="sideBar1">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+<Box x="0.05" y="1.1" z="0.05"/>
+</Drawable>
+
+<Frame name="sideBar2" refframe="StandCenter">
+<RPY>0 0 0</RPY><Pos>0.81 0 1.078</Pos>
+</Frame>
+<Drawable name="sideBar2_drw" refframe="sideBar2">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+<Box x="0.05" y="1.1" z="0.05"/>
+</Drawable>
+<Drawable name="sideBar2Cameras_drw" refframe="sideBar2">
+<RPY>0 0 0</RPY><Pos>-0.145 0 0.13</Pos>
+<Box x="0.29" y="0.32" z="0.20"/>
+</Drawable>
+
+
+<Frame name="Setup" refframe="StandCenter">
+  <RPY>0 0 0</RPY><Pos>0 0 -0.8576</Pos>
+</Frame>
+<Drawable name="SetupGeo" refframe="Setup">
+  <RPY>90 0 0</RPY><Pos>0 0 0</Pos>
+  <Polytope file="geometry/stand.stl"/>
+</Drawable>
+
+<Frame name="SpongeGeo" refframe="StandCenter">
+  <RPY>0 0 0</RPY><Pos>0 0 0 </Pos>
+</Frame>
+<Drawable name="Sponge" refframe="SpongeGeo">
+  <Polytope file="geometry/marvinsponge.stl"/>
+</Drawable>  

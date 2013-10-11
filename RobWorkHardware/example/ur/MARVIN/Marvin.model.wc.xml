@@ -1,0 +1,27 @@
+<WorkCell name="MoveBotsScene">
+  <!-- Left robot -->
+  
+<Frame name="UR1Mount" refframe="WORLD" type="Fixed">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+</Frame>
+
+<Include file="robots/UR1.model.wc.xml" />
+
+
+<Frame name="UR2Mount" refframe="UR1Mount">
+<RPY>180 0 0</RPY><Pos>0 -1.05 0</Pos>
+</Frame>
+
+
+<Include file="robots/UR2.model.wc.xml" />
+
+
+<Include file="Environment.wc.xml" />
+ 
+<Include file="cameras/Cameras.model.wc.xml" />
+
+<!-- Collision setup -->
+<ProximitySetup file="ProximitySetup.xml" />
+ 
+	
+</WorkCell>

@@ -1,0 +1,64 @@
+<!--<Frame name="Arm1Arm2Mid" refframe="Arm1Base" type="Movable">
+<Transform>
+ -0.3546773679381911 0.93498867166306343 0.00075779003972720454 -0.18644793857054953
+ -0.93498871400759531 -0.35467743983704464 0.0011171379903994849 -0.49150787186349254
+ 0.00026334551476079313 -0.00031230174480941783 0.99999908887806799 0.00013843631648779658
+ </Transform>
+</Frame>-->
+<Frame name="Arm1Arm2Mid" refframe="Arm1Base" type="Movable">
+<Transform>
+ -0.3546773679381911 0.93498867166306343 0.00075779003972720454 -0.18644793857054953
+ -0.93498871400759531 -0.35467743983704464 0.0011171379903994849 -0.49150787186349254
+ 0.00026334551476079313 -0.00031230174480941783 0.99999908887806799 0.00013843631648779658
+ </Transform>
+</Frame>
+
+<Frame name="StandCenter" refframe="Arm1Arm2Mid">
+  <RPY>0 0 0</RPY><Pos>0 0.0275 -0.0165</Pos>  
+</Frame>
+
+<!--<Frame name="StandCenter" refframe="WORLD">
+  <RPY>0 0 0</RPY><Pos>0.5 0 0.0</Pos>
+</Frame>
+-->
+
+<!--<Frame name="Setup" refframe="StandCenter">
+  <RPY>0 0 0</RPY><Pos>0 0 -0.8576</Pos>
+</Frame>
+
+<Drawable name="SetupGeo" refframe="Setup">
+  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  <Polytope file="geometry/stand.stl"/>
+</Drawable>
+-->
+
+<Frame name="Setup" refframe="StandCenter">
+  <RPY>0 0 0</RPY><Pos>0 0 -0.8576</Pos>
+</Frame>
+<Drawable name="SetupGeo" refframe="Setup">
+  <RPY>0 0 0</RPY><Pos>0 0 0.04</Pos>
+  <Polytope file="geometry/stand.stl"/>
+</Drawable>
+
+<Frame name="CalibrationBoard" refframe="Arm1Base" type="Movable">
+	<Transform>
+ 	0.93219219983875556 0.36196288250874187 0.00075779003972720465 -0.99050939298269347
+	 -0.36196354972538825 0.93219157938317965 0.0011171379903994851 -0.63223597660944908
+ 	-0.00030204300680912455 -0.0013156796935201449 0.9999990888780681 -0.018560909727397393
+ 	</Transform>
+	<Property name="calibrationBoard" desc="x y visionClearance">
+    	  0.495 0.735 0.015 
+	</Property>
+</Frame>
+
+<!-- Camera -->
+<Frame name="CameraFrame" refframe="CalibrationBoard" type="Movable">
+<RPY>135 0 -135</RPY><Pos>1.36 0.94 0.8</Pos>
+</Frame>
+
+<Frame name="Camera" refframe="CameraFrame" type="Fixed">
+  <RPY>90 0 180</RPY><Pos>0 0 0</Pos>
+  <Property name="Camera">49 1384 1032</Property>
+</Frame>
+
+

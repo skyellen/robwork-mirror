@@ -1,0 +1,16 @@
+<!-- Screens (40") -->
+<Frame name="TVScreen1" refframe="StandCenter" type="Fixed">
+<RPY>0 0 -45</RPY><Pos>0 -1.05 1.45</Pos>
+</Frame>
+<Drawable name="TVScreen1Visu" refframe="TVScreen1">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+<Box x="1.02" y="0.5" z="0.075"/>
+</Drawable> 
+
+<Frame name="TVScreen2" refframe="StandCenter" type="Fixed">
+<RPY>-90 0 -45</RPY><Pos>-0.8 0 1.45</Pos>
+</Frame>
+<Drawable name="TVScreen2Visu" refframe="TVScreen2">
+<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+<Box x="1.02" y="0.5" z="0.075"/>
+</Drawable>

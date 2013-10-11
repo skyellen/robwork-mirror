@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<ProximitySetup UseIncludeAll="true" UseExcludeStaticPairs="true">
+<!--	<Exclude PatternA="Setup" PatternB="UR1.Base"/>
+    <Exclude PatternA="Setup" PatternB="UR2.Base"/> -->
+   <Exclude PatternA="UR1.Joint4" PatternB="UR1.TCP"/>
+   <Exclude PatternA="UR1.Joint5" PatternB="UR1.TCP"/>
+   <Exclude PatternA="Setup" PatternB="UR1.Base"/> 
+   <Exclude PatternA="Setup" PatternB="UR1.Joint1"/> 
+   <Exclude PatternA="UR2.Joint4" PatternB="UR2.TCP"/>
+   <Exclude PatternA="UR2.Joint5" PatternB="UR2.TCP"/>
+   <Exclude PatternA="Setup" PatternB="UR2.Base"/> 
+   <Exclude PatternA="Setup" PatternB="UR2.Joint1"/> 
+   <Exclude PatternA="Setup" PatternB="CalibrationBoard"/>
+   <Exclude PatternA="Setup" PatternB="sideBar1"/>
+   <Exclude PatternA="Setup" PatternB="sideBar2"/>
+   <Exclude PatternA="Setup" PatternB="wing1"/>
+   <Exclude PatternA="Setup" PatternB="wing2"/>
+   <Exclude PatternA="Setup" PatternB="SpongeGeo"/>
+   <Exclude PatternA="contourFrame" PatternB="SpongeGeo"/>
+   <Exclude PatternA="StandCenter" PatternB="SpongeGeo"/>
+   <Exclude PatternA="StandCenter" PatternB="Setup"/>
+   <Exclude PatternA="StandCenter" PatternB="UR1.Base"/>
+   <Exclude PatternA="StandCenter" PatternB="UR2.Base"/>
+   <Exclude PatternA="topBar" PatternB="Setup"/>
+</ProximitySetup>

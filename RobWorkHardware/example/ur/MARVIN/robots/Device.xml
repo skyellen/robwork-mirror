@@ -1,0 +1,46 @@
+  <PosLimit refjoint="Joint1" min="-359" max="359" />
+  <PosLimit refjoint="Joint2" min="-359" max="359" />
+  <PosLimit refjoint="Joint3" min="-359" max="359" />
+  <!--<PosLimit refjoint="Joint4" min="-179" max="179" />-->
+  <PosLimit refjoint="Joint4" min="-359" max="359" />
+  <PosLimit refjoint="Joint5" min="-359" max="359" />
+  <PosLimit refjoint="Joint6" min="-359" max="359" />
+
+  <VelLimit refjoint="Joint1" max="200.5" />
+  <VelLimit refjoint="Joint2" max="200.5" />
+  <VelLimit refjoint="Joint3" max="200.5" />
+  <VelLimit refjoint="Joint4" max="200.5" /> 
+  <VelLimit refjoint="Joint5" max="200.5" />
+  <VelLimit refjoint="Joint6" max="200.5" />
+
+  <AccLimit refjoint="Joint1" max="859.4" />
+  <AccLimit refjoint="Joint2" max="859.4" />
+  <AccLimit refjoint="Joint3" max="859.4" />
+  <AccLimit refjoint="Joint4" max="859.4" /> 
+  <AccLimit refjoint="Joint5" max="859.4" />
+  <AccLimit refjoint="Joint6" max="859.4" />
+
+  <Drawable name="Joint1Geo" refframe="Joint1">
+  	<RPY> 90 0 90</RPY> <Pos> 0 0 -0.0712</Pos>
+  	<Polytope file="geometry/rob_1c" />
+  </Drawable>
+  <Drawable name="Joint2Geo" refframe="Joint2">
+	  <RPY>90 90 0 </RPY> <Pos> 0 0 0.13570</Pos>
+  	<Polytope file="geometry/rob_2c" />
+  </Drawable>
+  <Drawable name="Joint3Geo" refframe="Joint3">
+  	<RPY> 0 90 -90 </RPY> <Pos> 0 0 0.01468</Pos>
+  	<Polytope file="geometry/rob_3c" />
+  </Drawable> 
+  <Drawable name="Joint4Geo" refframe="Joint4">
+  	<RPY> 0 90 180 </RPY> <Pos> 0.0 0 0.109</Pos>
+  	<Polytope file="geometry/rob_4c" />
+  </Drawable> 
+  <Drawable name="Joint5Geo" refframe="Joint5">
+  	<RPY> -90 0 90 </RPY> <Pos> 0 0 0.093</Pos> 
+  	<Polytope file="geometry/rob_5c" /> 
+  </Drawable>
+  <Drawable name="Joint6Geo" refframe="Joint6" >
+    <RPY> 180 0 0</RPY> <Pos> 0 0 0.0475</Pos>
+    <Polytope file="geometry/rob_6c" /> 
+  </Drawable>

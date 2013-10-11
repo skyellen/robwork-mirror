@@ -1,0 +1,24 @@
+<!-- Bumblebee camera -->
+<Frame name="Base">
+  <Pos>0 0 0</Pos>
+  <RPY>0 0 0</RPY>
+</Frame>
+<Frame name="LeftVisu" refframe="Base" type="Fixed">
+  <Pos>0 0.06 0</Pos>
+  <RPY>0 0 180</RPY>
+  <Property name="Camera">100 1024 768</Property>
+</Frame>
+<Frame name="RightVisu" refframe="Base" type="Fixed">
+  <Pos>0 -0.06 0</Pos>
+  <RPY>0 0 180</RPY>
+  <Property name="Camera">100 1024 768</Property>
+</Frame>
+<Drawable name="Geo" refframe="Base">
+  <Pos>0 0 0</Pos>
+  <RPY>0 0 0</RPY>
+  <Polytope file="BumbleBee2" />
+</Drawable>  
+<Frame name="TCP" type="EndEffector">
+  <Pos>0 0 0</Pos>
+  <RPY>0 0 0</RPY>
+</Frame>
