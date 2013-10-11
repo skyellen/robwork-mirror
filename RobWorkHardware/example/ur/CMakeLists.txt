@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 2.6.0)
 PROJECT(UR)
 
-SET(CMAKE_BUILD_TYPE Release)
+SET(CMAKE_BUILD_TYPE Debug)
 
 SET(RW_ROOT "$ENV{RW_ROOT}")
-SET(RWHW_ROOT "$ENV{RWHW_ROOT}")
+SET(RWHW_ROOT "$ENV{RW_ROOT}/../../RobWorkHardware")
 
+
+message("sødksfkskdjf ${RWHW_ROOT}")
 #Include default settings for constructing a robwork dependent project
 FIND_PACKAGE(RobWork REQUIRED HINTS "${RW_ROOT}")
 
@@ -15,5 +17,5 @@ FIND_PACKAGE(RobWorkHardware COMPONENTS universalrobots)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} ${ROBWORKHARDWARE_INCLUDE_DIRS})
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${ROBWORKHARDWARE_LIBRARY_DIRS})
 
-rosbuild_add_executable(ur simpleTest.cpp )
+add_executable(ur simpleTest.cpp )
 TARGET_LINK_LIBRARIES(ur ${PROJECT_NAME} ${ROBWORKHARDWARE_LIBRARIES} ${ROBWORK_LIBRARIES}  )
