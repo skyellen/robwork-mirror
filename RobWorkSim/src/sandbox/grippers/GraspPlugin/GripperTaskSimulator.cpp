@@ -180,7 +180,7 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER" << endl;
 	}
 	
-	DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
+	//DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
 }
 
 

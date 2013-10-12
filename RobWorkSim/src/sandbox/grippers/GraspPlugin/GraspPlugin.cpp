@@ -493,10 +493,10 @@ void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 			rt.ctarget = *p.second; //target;
 			
 			if (rt.ctarget.getResult()->testStatus == GraspTask::UnInitialized) {
-				rt.color[0] = 0.8;
-				rt.color[1] = 0.8;
-				rt.color[2] = 0.8;
-				rt.color[3] = 0.3;
+				rt.color[0] = 1.0;
+				rt.color[1] = 1.0;
+				rt.color[2] = 1.0;
+				rt.color[3] = 0.5;
 			}
 			else if (rt.ctarget.getResult()->testStatus == GraspTask::Success) {
 				rt.color[0] = 0.0;
@@ -507,7 +507,7 @@ void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 				rt.color[0] = 1.0;
 				rt.color[1] = 0.0;
 				rt.color[2] = 0.0;
-				rt.color[3] = 0.3;
+				rt.color[3] = 0.5;
 			}
 			
 			rt.trans = wTo * rt.ctarget.pose;
@@ -647,13 +647,29 @@ void GraspPlugin::setupGUI()
 
 void GraspPlugin::test()
 {
-	vector<VectorND<4> > vtx;
+	/*vector<VectorND<4> > vtx;
 	VectorND<4> v0; v0[0] = 0.0; v0[1] = 0.0; v0[2] = 0.0; v0[3] = 0.0; vtx.push_back(v0);
 	VectorND<4> v1; v1[0] = 1.0; v1[1] = 0.0; v1[2] = 0.0; v1[3] = 0.0; vtx.push_back(v1);
 	VectorND<4> v2; v2[0] = 0.0; v2[1] = 1.0; v2[2] = 0.0; v2[3] = 0.0; vtx.push_back(v2);
 	VectorND<4> v3; v3[0] = 0.0; v3[1] = 0.0; v3[2] = 1.0; v3[3] = 0.0; vtx.push_back(v3);
 	
-	log().info() << GeometryUtil::simplexVolume(vtx) << endl;
+	log().info() << GeometryUtil::simplexVolume(vtx) << endl;*/
+	vector<VectorND<3> > vtx;
+	VectorND<3> v0; v0[0] = 0.0; v0[1] = 0.0; v0[2] = 0.0; vtx.push_back(v0);
+	VectorND<3> v1; v1[0] = 1.0; v1[1] = 0.0; v1[2] = 0.0; vtx.push_back(v1);
+	VectorND<3> v2; v2[0] = 1.0; v2[1] = 1.0; v2[2] = 0.0; vtx.push_back(v2);
+	VectorND<3> v3; v3[0] = 1.0; v3[1] = 1.0; v3[2] = 1.0; vtx.push_back(v3);
+	VectorND<3> v4; v4[0] = 1.0; v4[1] = 0.0; v4[2] = 1.0; vtx.push_back(v4);
+	VectorND<3> v5; v5[0] = 0.0; v5[1] = 0.0; v5[2] = 1.0; vtx.push_back(v5);
+	VectorND<3> v6; v6[0] = 0.0; v6[1] = 1.0; v6[2] = 1.0; vtx.push_back(v6);
+	VectorND<3> v7; v7[0] = 0.0; v7[1] = 1.0; v7[2] = 0.0; vtx.push_back(v7);
+	
+	QHullND<3>::Ptr qh = new QHullND<3>;
+	qh->rebuild(vtx);
+	
+	log().info() << qh->getCentroid() << endl;
+	
+	//log().info() << GeometryUtil::simplexVolume(vtx) << endl;
 }
 
 

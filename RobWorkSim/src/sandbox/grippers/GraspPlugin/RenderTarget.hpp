@@ -41,6 +41,8 @@ class RenderTargets: public rw::graphics::Render
 			glPushMatrix();
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDisable(GL_LIGHTING);
+			glEnable (GL_BLEND);
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			BOOST_FOREACH(Target target, _targets){
 				//if(!target.enabled)
 				//    continue;

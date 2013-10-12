@@ -283,7 +283,11 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	
 	// save interference objects
 	BOOST_FOREACH (rw::models::Object::Ptr obj, td->_interferenceObjects) {
-		tree.put("TaskDescription.InterferenceObjects.Object", obj->getName());
+		PTree node;
+		
+		node.put_value(obj->getName());
+		
+		tree.add_child("TaskDescription.InterferenceObjects.Object", node);
 	}
 	
 	// save limits
