@@ -371,7 +371,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     if(sstate._currentState ==APPROACH){
         Transform3D<> ct3d = Kinematics::worldTframe(_mbase, state);
-        bool isApproachReached = MetricUtil::dist2( ct3d.P(), sstate._wTmbase_approachTarget.P() )<0.00002;
+        bool isApproachReached = MetricUtil::dist2( ct3d.P(), sstate._wTmbase_approachTarget.P() )<0.002;
         
         //std::cout << "reached: " << isApproachReached << " " << MetricUtil::dist2( ct3d.P(), sstate._wTmbase_approachTarget.P() ) << std::endl;
         //std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
@@ -402,7 +402,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             if(DynamicUtil::isResting(_dhand, state, 0.0001, 0.1) /*|| _alwaysResting*/)
                 sstate._restCount++;
 
-            bool isResting = sstate._restCount > 15;
+            bool isResting = sstate._restCount > 5;
 
             // if the device is a suction cup then the isResting must be done in another way.
             // we simply test if there is pressure
@@ -866,7 +866,8 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
     //qualities(0) = wmeasure2.getMinWrench();
     //qualities(1) = wmeasure2.getAvgWrench();
     qualities(0) = wmeasure3.getMinWrench();
-    qualities(1) = wmeasure3.getAvgWrench();
+    //qualities(1) = wmeasure3.getAvgWrench();
+    qualities(1) = wmeasure3.getAverageCenterWrench();
 
     //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);

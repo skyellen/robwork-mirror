@@ -78,7 +78,12 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	DEBUG << "- teach distance: ";
 	PTree& node2 = tree.get_child("TeachDistance");
 	task->_teachDistance = XMLHelpers::readQ(node2);
-	task->_teachDistance(1) *= Deg2Rad;
+	//task->_teachDistance(3) *= Deg2Rad;
+	//task->_teachDistance(4) *= Deg2Rad;
+	//task->_teachDistance(5) *= Deg2Rad;
+	//task->_teachDistance(7) *= Deg2Rad;
+	task->_teachDistance(3) *= Deg2Rad;
+	task->_teachDistance(4) *= Deg2Rad;
 	DEBUG << task->_teachDistance << endl;
 	
 	boost::optional<PTree&> node = tree.get_child_optional("HintGrasps");

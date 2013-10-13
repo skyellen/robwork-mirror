@@ -91,7 +91,7 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 
 double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
-	return sstate._target->getResult()->qualityAfterLifting(0);
+	return sstate._target->getResult()->qualityAfterLifting(0); // use min wrench
 }
 
 
