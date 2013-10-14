@@ -867,7 +867,7 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
     //qualities(1) = wmeasure2.getAvgWrench();
     qualities(0) = wmeasure3.getMinWrench();
     //qualities(1) = wmeasure3.getAvgWrench();
-    qualities(1) = wmeasure3.getAverageCenterWrench();
+    qualities(1) = wmeasure3.getAverageOriginWrench();
 
     //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);

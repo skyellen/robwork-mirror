@@ -91,7 +91,7 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 
 double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
-	return sstate._target->getResult()->qualityAfterLifting(0); // use min wrench
+	return sstate._target->getResult()->qualityAfterLifting(1); // use average wrench from origin
 }
 
 
@@ -177,7 +177,7 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			break;
 			
 		default:
-			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER" << endl;
+			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER(" << status << ")" << endl;
 	}
 	
 	//DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
