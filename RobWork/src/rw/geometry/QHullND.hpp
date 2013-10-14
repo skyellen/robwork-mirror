@@ -113,7 +113,7 @@ namespace geometry {
             }
 		}
 
-		bool isInside(const rw::math::VectorND<N>& vertex){
+		virtual bool isInside(const rw::math::VectorND<N>& vertex){
 		    using namespace rw::math;
             //const static double EPSILON = 0.0000001;
             if( _faceIdxs.size()==0 ){
@@ -142,7 +142,7 @@ namespace geometry {
 		double getMinDistOutside(const rw::math::VectorND<N>& vertex){ return 0; }
 		
         //! @copydoc ConvexHullND::getMinDistInside
-        double getMinDistInside(const rw::math::VectorND<N>& vertex){
+        virtual double getMinDistInside(const rw::math::VectorND<N>& vertex){
             using namespace rw::math;
             if( _faceIdxs.size()==0 ){
                 return 0;
@@ -158,8 +158,42 @@ namespace geometry {
             return minDist;
         }
         
+        //! @copydoc ConvexHullND::getAvgDistOutside
+        virtual double getAvgDistInside(const rw::math::VectorND<N>& vertex) {
+			using namespace rw::math;
+			
+			// check if we have any faces
+			RW_ASSERT(_faceNormals.size() > 0);
+			
+			// loop over all 'faces' and calculate their areas
+			int nOfFaces = _faceIdxs.size()/N;
+
+			double totalVolume = 0.0;
+			double avgDist = 0.0;
+			//std::cout << "N of faces= " << nOfFaces << std::endl;
+			for (size_t i = 0; i < nOfFaces; ++i) {
+                RW_ASSERT(i < _faceNormals.size());
+                
+                double dist = _faceOffsets[i] + dot(vertex, _faceNormals[i]);
+                
+                // calculate weight (by face volume)
+                std::vector<VectorND<N> > v;
+                for (int j = 0; j < N; ++j) {
+					v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
+				}
+                double volume = GeometryUtil::simplexVolume(v);
+
+                totalVolume += volume;
+                avgDist += -dist * volume;
+			}
+			
+			avgDist /= totalVolume;
+			
+			return avgDist;
+		}
+        
         //! @copydoc ConvexHullND::getCentroid
-        rw::math::VectorND<N> getCentroid() {
+        virtual rw::math::VectorND<N> getCentroid() {
 			using namespace rw::math;
 			
 			// check if we have any faces

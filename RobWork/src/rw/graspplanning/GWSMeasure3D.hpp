@@ -86,6 +86,16 @@ public:
 	 * @return minimum breaking force
 	 */
     double getAvgWrench(){ return _avgWrench; };
+    
+    /**
+     * @brief get average wrench in relation to the origin
+     */
+    double getAverageOriginWrench() { return _avgOriginWrench; }
+    
+    /**
+     * @brief get average wrench in relation to center of the convex hull
+     */
+    double getAverageCenterWrench() { return _avgCenterWrench; }
 
     void setLambda(double lambda){ _lambda = lambda;}
 
@@ -95,7 +105,7 @@ private:
     int _resolution;
 
     mutable bool _isInside;
-    mutable double _minWrench, _avgWrench;
+    mutable double _minWrench, _avgWrench, _avgCenterWrench, _avgOriginWrench;
     bool _useUnitVectors;
 
     double _lambda;

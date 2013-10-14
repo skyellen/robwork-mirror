@@ -124,8 +124,10 @@ double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
     rw::math::VectorND<6> center = _chullCalculator->getCentroid();
     //std::cout << "Centroid: " << center << std::endl;
     //_isInside = _chullCalculator->isInside( origin );
-    _minWrench = _chullCalculator->getMinDistInside( origin);
-    _avgWrench = _chullCalculator->getMinDistInside( center);
+    _minWrench = _chullCalculator->getMinDistInside(origin);
+    _avgWrench = _chullCalculator->getMinDistInside(center);
+    _avgOriginWrench = _chullCalculator->getAvgDistInside(origin);
+    _avgCenterWrench = _chullCalculator->getAvgDistInside(center);
 
     _isInside = _minWrench>=0;
 

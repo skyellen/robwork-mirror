@@ -64,6 +64,13 @@ namespace geometry {
 		 */
 		//virtual double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices) = 0;
 		virtual double getMinDistInside(const rw::math::VectorND<N>& vertex) = 0;
+		
+		/**
+		 * @brief Calculate average distance from point inside the convex hull to its walls.
+		 * 
+		 * Each distance is weighted according to the wall's volume.'
+		 */
+		virtual double getAvgDistInside(const rw::math::VectorND<N>& vertex) = 0;
 
 		/**
 		 * @brief If the vertex is outside the convex hull the minimum distance
@@ -74,7 +81,7 @@ namespace geometry {
 		virtual double getMinDistOutside(const rw::math::VectorND<N>& vertex) = 0;
 		
 		/**
-		 * @brief Returns centroid of the convex hull.
+		 * @brief Return centroid of the convex hull.
 		 * 
 		 * Centroid is calculated as an average of face centroids weighted by face area.
 		 */
