@@ -111,6 +111,14 @@ public:
 	 */
 	std::vector<int> getStat(){ return _stat; }
 
+	std::string getStatDescription(){
+	    std::stringstream sstr;
+	    for(int i=0;i<rwlibs::task::GraspTask::SizeOfStatusArray; i++){
+	        sstr << i << ": " << rwlibs::task::GraspTask::toString((rwlibs::task::GraspTask::Status)i) << "\n";
+	    }
+	    return sstr.str();
+	}
+
 	/**
 	 * @brief get the number of targets that have been simulated until now
 	 */

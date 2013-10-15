@@ -231,8 +231,10 @@ void RigidDevice::setMotorVelocityTargets(const rw::math::Q& q, rw::kinematics::
 	double *vals = _target.getArray(state);
     char *modes = _mode.getArray(state);
 
+    rw::math::Q velLimit = _jdev->getVelocityLimits();
+
     for(int i=0;i<std::min(_target.getN(),(int)q.size());i++){
-        vals[i] = q[i];
+        vals[i] = Math::clamp(q[i], -velLimit[i], velLimit[i]);
         modes[i] = 0;
     }
 }
@@ -240,8 +242,9 @@ void RigidDevice::setMotorVelocityTargets(const rw::math::Q& q, rw::kinematics::
 
 void RigidDevice::setJointVelocities(const rw::math::Q& q, rw::kinematics::State& state){
     double *vals = _velocity.getArray(state);
+    rw::math::Q velLimit = _jdev->getVelocityLimits();
     for(int i=0;i<std::min(_velocity.getN(),(int)q.size());i++){
-        vals[i] = q[i];
+        vals[i] = Math::clamp(q[i], -velLimit[i], velLimit[i]);
     }
 }
 

@@ -444,6 +444,7 @@ public:
     //ContactDataMap& getContactData();
     //MaterialDataMap& getMaterialData();
 
+    const std::vector<rw::common::Ptr<Body> >& getBodies();
     void addBody(rw::common::Ptr<Body> body);
     rw::common::Ptr<Body> getBody(Frame *f);
 

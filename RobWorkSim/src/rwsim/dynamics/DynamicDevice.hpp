@@ -38,7 +38,7 @@ namespace dynamics {
 	 * @brief base class for dynamic devices that has dynamic state values
 	 * such as velocity and acceleration.
 	 */
-	class DynamicDevice: public rw::kinematics::Stateless{
+	class DynamicDevice: public rw::kinematics::Stateless {
 
 	public:
 	    typedef rw::common::Ptr<DynamicDevice> Ptr;

@@ -311,7 +311,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     Q currentQ = _hand->getQ(state);
 
-    if(sstate._wallTimer.getTime()>10){ //seconds
+    if(sstate._wallTimer.getTime()>10 && sim->getTime()>15){ //seconds
         _timeout++;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::TimeOut;
@@ -399,7 +399,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             // test if the grasp is in rest
             //Log::infoLog() << _alwaysResting;
 
-            if(DynamicUtil::isResting(_dhand, state, 0.0001, 0.1) /*|| _alwaysResting*/)
+            if(DynamicUtil::isResting(_dhand, state, 0.001, 0.3) /*|| _alwaysResting*/)
                 sstate._restCount++;
 
             bool isResting = sstate._restCount > 5;
@@ -411,7 +411,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 isResting = scup->isClosed(state);
             }
 
-            //std::cout << isResting << "&& (" << sim->getTime() << "-" << sstate._restingTime << ">0.4) || " << sim->getTime() << ">" << 10 << std::endl;
+            //std::cout << isResting << "&& (" << sim->getTime() << "-" << sstate._restingTime << ">1.5) || " << sim->getTime() << ">" << 8 << std::endl;
             // if it is in rest then lift object
             if( (isResting && ( (sim->getTime()-sstate._restingTime)>1.5)) || sim->getTime()>8 ){
                 // remember to check the transform of object relative to gripper

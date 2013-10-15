@@ -155,6 +155,7 @@ void SerialDeviceController::flushQueue(){
 
 bool SerialDeviceController::stop(){
 	_stop = true;
+	_compiledTargets.clear();
 	return true;
 }
 
@@ -205,7 +206,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 
 	// we use 1.2 because we do not include velocity ramps, hence this reduces the speed a bit
 	WeightedInfinityMetric<Q>::Ptr metric = MetricFactory::makeWeightedInfinity<Q>( 1.2/velLimits );
-	std::cout << "weight: " << (1.2/velLimits) << std::endl;
+	//std::cout << "weight: " << (1.2/velLimits) << std::endl;
 	Metric<Transform3D<> >::Ptr t3d_metric = MetricFactory::makeTransform3DMetric<double>(1.2/_linVelMax, 1.2/_angVelMax  );
 	rw::kinematics::State state = initstate;
 	std::vector< Target > sequence;
@@ -224,7 +225,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 
 		Metric<Transform3D<> >::Ptr t3d_metric = MetricFactory::makeTransform3DMetric<double>(1.2/_linVelMax, 1.2/_angVelMax  );
 		double timeGuess = t3d_metric->distance(lastT, targets.back().lin_target);
-		std::cout << "TIMEGUESS: " << timeGuess << std::endl;
+		//std::cout << "TIMEGUESS: " << timeGuess << std::endl;
 		LinearInterpolator<Transform3D<> >::Ptr ramp =
 	            rw::common::ownedPtr( new LinearInterpolator<Transform3D<> >( lastT , targets.back().lin_target,timeGuess /* *(100.0/targets.back().speed )*/ ));
 	    InterpolatorTrajectory<Transform3D<> >::Ptr  ttraj = rw::common::ownedPtr( new InterpolatorTrajectory<Transform3D<> >() );
@@ -233,6 +234,13 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 
 	    return ctarget;
 	}
+
+    if(targets.back().type==VelT){
+        CompiledTarget ctarget;
+        ctarget.velcontrol = true;
+        ctarget._screw = targets.back().lin_vel_target;
+        return ctarget;
+    }
 
 
 	for(int i=0; i<targets.size(); i++){
@@ -250,7 +258,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 			// calculate configuration close to the current configuration
 			std::vector<Q> res = _solver->solve( target.lin_target, state );
 			if(res.size()==0){
-				RW_THROW("Could not calculate InvKin:" << lastQ << " --> "
+			    RW_THROW("Could not calculate InvKin:" << lastQ << " --> "
 													  << target.lin_target );
 			}
 			target.q_target = res[0];
@@ -628,6 +636,11 @@ void SerialDeviceController::updateFTcontrolWrist(
 }
 
 
+bool SerialDeviceController::start(){
+    _stop = false;
+    return true;
+}
+
 
 void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateInfo& info,
 			 rw::kinematics::State& state)
@@ -637,6 +650,10 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 	// that is if current stack has 3 targets and the robot is executing these then only the blend path between
 	// target 3 and target 4 can be modified. The blends from 1 to 2 or 2 to 3 will not be further optimized.
 
+    if(_stop){
+        _executingTarget = CompiledTarget();
+        _stop = false;
+    }
 
 	// first we check if new targets have been added
 	if(_targetAdded){
@@ -649,9 +666,18 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			_targetQueue.clear();
 		}
 
+		// TODO: first make sure to test if the last target is actually a velocity target in which
+		// case we flush the queue
+
 
 		// now do something intelligent with targets from _currentTargetIdx to lastTarget
-		CompiledTarget traj = makeTrajectory(targets, state);
+		CompiledTarget traj;
+		try{
+		    traj = makeTrajectory(targets, state);
+		} catch( const std::exception& e ){
+		    // if inverse kinematics or other things cannot compute then we discard the trajectory
+		    RW_WARN("Trajectory could not be generated due to: \n\t " << e.what() );
+		}
 		if( traj.qtraj!=NULL ){
 			std::cout << "Qtraj: " << traj.qtraj->startTime() << " --> " << traj.qtraj->endTime() << std::endl;
 			std::cout << "Currtime: " << _currentTrajTime << std::endl;
@@ -680,7 +706,9 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 				std::cout << traj.t3dtraj->dx( i*traj.t3dtraj->endTime()/100 ) << std::endl;
 			}
 		}
-		_compiledTargets.push_back( traj );
+		if(!traj.isFinished(0.0)){
+		    _compiledTargets.push_back( traj );
+		}
 	}
 
 
@@ -731,6 +759,8 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		//
 		std::cout << " ftcontrol " << std::endl;
 		updateFTcontrolWrist(info, state);
+	} else if(_executingTarget.velcontrol ){
+
 	}
 }
 

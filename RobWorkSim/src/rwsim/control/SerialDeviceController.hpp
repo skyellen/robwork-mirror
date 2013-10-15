@@ -99,8 +99,12 @@ namespace control {
 		 */
 		bool pause();
 
-		bool isStopped();
+		bool isStopped(){ return _stop; } ;
 
+		/**
+		 * @brief reenable control after calling stop
+		 * @return
+		 */
 		bool start();
 
 		//! enable safe mode, so that robot stops when collisions are detected
@@ -121,6 +125,8 @@ namespace control {
 
 		bool isMoving();
 
+
+        dynamics::DynamicDevice::Ptr getDynamicDevice(){return _ddev;};
 
 
 		//////////////////////////   simulated controller stuff
@@ -148,11 +154,12 @@ namespace control {
          * one target.
          */
 		struct CompiledTarget {
-			CompiledTarget():ftcontrol(false),fttime(0.01){}
+			CompiledTarget():ftcontrol(false),velcontrol(false),fttime(0.01){}
 			rw::trajectory::QTrajectory::Ptr qtraj;
 			rw::trajectory::Transform3DTrajectory::Ptr t3dtraj;
 			rw::math::Wrench6D<> _wrenchTarget;
-			bool ftcontrol;
+			rw::math::VelocityScrew6D<> _screw;
+			bool ftcontrol,velcontrol;
 			double fttime;
 			// the id of the last target defining this CompiledTarget
 			int toId;
@@ -186,6 +193,7 @@ namespace control {
 
         //! create trajectory from current joint position and joint velocity
         CompiledTarget makeTrajectory(const std::vector<Target>& targets, rw::kinematics::State& state);
+
 
 	private:
 		dynamics::DynamicDevice::Ptr _ddev;

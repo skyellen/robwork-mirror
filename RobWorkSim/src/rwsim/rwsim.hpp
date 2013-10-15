@@ -80,6 +80,7 @@
 #include "./control/SyncPDController.hpp"
 #include "./control/VelRampController.hpp"
 #include "./control/SuctionCupController.hpp"
+#include "./control/SerialDeviceController.hpp"
 
 #include "./simulator/DynamicSimulator.hpp"
 #include "./simulator/ThreadSimulator.hpp"

@@ -35,7 +35,8 @@ PDController::PDController(
 	_pdparams(pdparams),
 	_mode(cmode),
 	_stime(dt),
-	_accTime(0)
+	_accTime(0),
+	_enabled(true)
 {
 	if(pdparams.size()!=_ddev->getModel().getDOF())
 		RW_THROW("Nr of PDParams must match the nr of DOF in the Device!");
@@ -58,7 +59,8 @@ PDController::PDController(
 	_pdparams(rdev->getModel().getDOF(),pdparam),
 	_mode(cmode),
 	_stime(dt),
-	_accTime(0)
+	_accTime(0),
+	_enabled(true)
 {
 	setPDParams(_pdparams,_P,_D);
 }

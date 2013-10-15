@@ -17,15 +17,11 @@
 
 #include "KinematicBody.hpp"
 
-#include <rw/models/Joint.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
-
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
+#include <rw/models/Joint.hpp>
+
 
 using namespace boost::numeric;
 using namespace rw::math;
@@ -42,11 +38,12 @@ KinematicBody::KinematicBody(
 			   _base(NULL)
 
 {
-	add(_kstate);
     _base = dynamic_cast<MovableFrame*>(obj->getBase());
     if(_base==NULL){
         RW_THROW("Base frame of Object in a KinematicBody must be a MovableFrame!");
     }
+    std::cout << "Adding state in kinematicbody!!!!" << std::endl;
+    add(_kstate);
 }
 
 KinematicBody::~KinematicBody()

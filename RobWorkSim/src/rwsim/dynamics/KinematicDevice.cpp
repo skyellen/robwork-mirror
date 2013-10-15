@@ -129,6 +129,7 @@ KinematicDevice::KinematicDevice(
     for(size_t i=0;i<objects.size(); i++){
         _links.push_back( rw::common::ownedPtr( new KinematicLink(objects[i].first, objects[i].second, this, i) ) );
     }
+    add(_velocity);
 }
 
 KinematicDevice::~KinematicDevice(){
