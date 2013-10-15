@@ -148,4 +148,4 @@ void TriMeshSurfaceSampler::setZAxisDirection(const rw::math::Vector3D<>& dir){
 	setZAxisDirectionEnabled(true);
 }
 
-rw::geometry::TriMesh::Ptr TriMeshSurfaceSampler::getMesh(){ return _mesh; }
+rw::geometry::TriMesh::Ptr TriMeshSurfaceSampler::getMesh(){ return _meshes[0]; }
