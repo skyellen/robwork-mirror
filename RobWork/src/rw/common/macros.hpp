@@ -310,6 +310,7 @@ RW_LOG_ERROR(log, Log::Debug, "")
     namespace rwlibs { namespace proximitystrategies {}} \
     namespace rwlibs { namespace sensors {}} \
     namespace rwlibs { namespace task {}} \
+    namespace rwlibs { namespace simulation {}} \
 	namespace robwork \
 	{ \
 		using namespace rw; \
@@ -341,6 +342,7 @@ RW_LOG_ERROR(log, Log::Debug, "")
         using namespace rwlibs::proximitystrategies; \
         using namespace rwlibs::sensors; \
         using namespace rwlibs::task; \
+        using namespace rwlibs::simulation; \
     }
 
 /*@}*/

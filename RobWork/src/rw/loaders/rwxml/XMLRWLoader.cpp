@@ -38,7 +38,7 @@
 #include <rw/models/DHParameterSet.hpp>
 
 #include <rw/loaders/GeometryFactory.hpp>
-
+#include <boost/lexical_cast.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
 #include <rw/math/RPY.hpp>
@@ -151,6 +151,28 @@ public:
 	rw::graphics::SceneDescriptor::Ptr scene;
 };
 
+void addPropertyToMap(const DummyProperty &dprop, common::PropertyMap& map){
+    if(dprop._type=="string"){
+        map.add(dprop._name, dprop._desc, dprop._val);
+    } else if(dprop._type=="double"){
+        std::cout << "casting from string to double. type:" << dprop._type <<  " value: " << dprop._val << std::endl;
+        double val = boost::lexical_cast<double>(dprop._val);
+        map.add(dprop._name, dprop._desc, val);
+    } else if(dprop._type=="Q"){
+        std::stringstream istr(dprop._val);
+        std::vector<double> res;
+        while (!istr.eof()) {
+            double d;
+            istr >> d;
+            res.push_back(d);
+        }
+        Q val(res);
+        map.add(dprop._name, dprop._desc, val);
+    }
+
+}
+
+
 // the parent frame must exist in tree already
 void addToStateStructure(Frame *parent, DummySetup &setup) {
 	std::vector<Frame*> children = setup.toChildMap[parent->getName()];
@@ -191,11 +213,6 @@ std::string createScopedName(std::string str, std::vector<std::string> scope) {
 }
 
 typedef std::map<std::string, Frame*> FrameMap;
-
-boost::shared_ptr<Property<std::string> > createStringProperty(DummyProperty &dprop) {
-	boost::shared_ptr<Property<std::string> > prop(new common::Property<std::string>(dprop._name, dprop._desc, dprop._val));
-	return prop;
-}
 /*
  bool isIdentity(rw::math::Transform3D<>& t3d)
  {
@@ -437,12 +454,14 @@ Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
 	return frame;
 }
 
+
 void addFrameProps(DummyFrame &dframe, DummySetup &setup) {
 	Frame *frame = setup.frameMap[dframe.getName()];
 	//std::cout << "Nr of properties in frame: " << dframe._properties.size() << std::endl;
 	for (size_t i = 0; i < dframe._properties.size(); i++) {
 		const DummyProperty& dprop = dframe._properties[i];
-		frame->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+		addPropertyToMap(dprop,  frame->getPropertyMap());
+		//frame->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
 	}
 	for (size_t i = 0; i < dframe._models.size(); i++) {
 		addModelToFrame(dframe._models[i], frame, setup.tree, setup);
@@ -706,7 +725,8 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 	BOOST_FOREACH( DPropValType val, dev._propertyMap){
 		//std::string name = val.first;
 		BOOST_FOREACH( DummyProperty dprop, val.second ) {
-			model->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+		    addPropertyToMap(dprop,  model->getPropertyMap());
+			//model->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
 		}
 	}
 
@@ -960,7 +980,8 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 		ProximitySetup::set(proximitySetup, wc);
 
 		BOOST_FOREACH( DummyProperty dprop, setup.dwc->_properties ) {
-			wc->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+			//wc->getPropertyMap().add(dprop._name, dprop._desc, dprop._val);
+			addPropertyToMap( dprop, wc->getPropertyMap() );
 		}
 
 		// make sure to add the name of the workcell file to the workcell propertymap

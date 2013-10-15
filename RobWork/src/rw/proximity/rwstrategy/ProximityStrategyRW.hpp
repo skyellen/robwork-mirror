@@ -223,6 +223,10 @@ namespace rw { namespace proximity {
          */
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
 
+		void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+											  ProximityStrategyData& data);
+
+
     private:
 
         struct QueryData {

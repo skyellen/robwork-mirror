@@ -56,7 +56,10 @@ namespace common {
 
 	class BoostDOMElem : public DOMElem {
 	public:
-		BoostDOMElem(const std::string& key, rw::common::Ptr<boost::property_tree::ptree> ptree,  rw::common::Ptr< boost::property_tree::ptree > root):
+		BoostDOMElem(const std::string& key,
+		             rw::common::Ptr<boost::property_tree::ptree> ptree,
+		             rw::common::Ptr< boost::property_tree::ptree > parent,
+		             rw::common::Ptr< boost::property_tree::ptree > root):
 			_name(key),
 			_node(ptree),
 			_root(root)
@@ -67,7 +70,8 @@ namespace common {
 		//! @copydoc DOMElem::isName
 		bool isName(const std::string& name) const { return _name == name; }
 		//! @copydoc DOMElem::setName
-		void setName(const std::string& name){ _name = name; }
+		void setName(const std::string& name);
+
 		//! @copydoc DOMElem::getName
 		const std::string& getName() const { return _name; }
 		//! @copydoc DOMElem::getValue
@@ -112,17 +116,19 @@ namespace common {
 		class ElemIterImpl : public DOMElem::ItImpl {
 		public:
 			boost::property_tree::ptree::iterator _begin,_end;
-			rw::common::Ptr< boost::property_tree::ptree > _root;
-			ElemIterImpl(boost::property_tree::ptree::iterator begin,boost::property_tree::ptree::iterator end,
-					rw::common::Ptr< boost::property_tree::ptree > root):
-				_begin(begin),_end(end),_root(root)
+			rw::common::Ptr< boost::property_tree::ptree > _parent,_root;
+			ElemIterImpl(boost::property_tree::ptree::iterator begin,
+			               boost::property_tree::ptree::iterator end,
+			               rw::common::Ptr< boost::property_tree::ptree > parent,
+			               rw::common::Ptr< boost::property_tree::ptree > root):
+				_begin(begin),_end(end),_parent(parent),_root(root)
 			{
 				while(_begin!=_end && _begin->first=="<xmlattr>")
 					_begin++;
 			}
 
 			ItImpl* clone(){
-				return new ElemIterImpl(_begin, _end, _root);
+				return new ElemIterImpl(_begin, _end, _parent, _root);
 			}
 
 			void increment(){
@@ -134,7 +140,7 @@ namespace common {
 			//void add(int right){ _begin+=right; }
 
 			DOMElem::Ptr getElem(){
-				return rw::common::ownedPtr( new BoostDOMElem( _begin->first, &(_begin->second), _root) );
+				return rw::common::ownedPtr( new BoostDOMElem( _begin->first, &(_begin->second), _parent, _root) );
 			}
 
 			bool equal(ItImpl* iter) const{
@@ -145,6 +151,7 @@ namespace common {
 	private:
 		std::string _name;
 		rw::common::Ptr<boost::property_tree::ptree> _node;
+		rw::common::Ptr<boost::property_tree::ptree> _parent;
 		rw::common::Ptr< boost::property_tree::ptree > _root;
 	};
 

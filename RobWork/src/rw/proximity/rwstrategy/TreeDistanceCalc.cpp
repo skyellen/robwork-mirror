@@ -114,8 +114,8 @@ namespace {
                     push( BVJob(job.treeB.right(), job.treeA, !job.isAfromA) );
                 }
             }
-			return 0;
-            //return incollision;
+            // TODO: implementation is not working properly
+            return sdistance;
         }
 
         BVJob* top(){

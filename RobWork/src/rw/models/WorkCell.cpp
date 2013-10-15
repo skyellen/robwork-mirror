@@ -90,23 +90,27 @@ void WorkCell::addDevice(Device::Ptr device)
 
 	device->registerIn( _tree );
     _devices.push_back(device);
-    //TODO: notify changed
+    // notify changed
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
 
 void WorkCell::addFrame(Frame* frame, Frame* parent){
     if(parent==NULL)
         parent = getWorldFrame();
     _tree->addFrame(frame, parent);
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
 
 void WorkCell::addDAF(Frame* frame, Frame* parent){
     if(parent==NULL)
         parent = getWorldFrame();
     _tree->addDAF(frame, parent);
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
 
 void WorkCell::remove(Frame* frame){
     _tree->remove( frame );
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
 
 void WorkCell::removeObject(Object* object){
@@ -125,8 +129,44 @@ void WorkCell::add(rw::common::Ptr<Object> object){
 
     object->registerIn( _tree );
     _objects.push_back(object);
-    //TODO: notify changed
+    // notify changed
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
+
+void WorkCell::remove(rw::common::Ptr<Device> dev){
+    std::vector<rw::common::Ptr<Device> >::iterator iter;
+    dev->unregister( );
+    // remove from list
+    for(iter = _devices.begin() ; iter!=_devices.end();++iter){
+        if( (*iter) == dev ){
+            break;
+        }
+    }
+    if(iter==_devices.end())
+        RW_THROW("Device \"" << dev->getName() << "\" is not in workcell!");
+
+    _devices.erase(iter);
+
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
+void WorkCell::remove(rw::common::Ptr<Object> object){
+    std::vector<rw::common::Ptr<Object> >::iterator iter;
+    object->unregister( );
+    // remove from list
+    for(iter = _objects.begin() ; iter!=_objects.end();++iter){
+        if( (*iter) == object ){
+            break;
+        }
+    }
+    if(iter==_objects.end())
+        RW_THROW("Object \"" << object->getName() << "\" is not in workcell!");
+
+    _objects.erase(iter);
+
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
 
 void WorkCell::add(rw::common::Ptr<rw::sensor::SensorModel> sensor){
     sensor->registerIn(_tree);

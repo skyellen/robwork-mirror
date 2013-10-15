@@ -330,6 +330,13 @@ DistanceStrategy::Result& ProximityStrategyRW::distance(
 }
 
 
+void ProximityStrategyRW::getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+											  ProximityStrategyData& data)
+{
+	RW_THROW("Not implemented yet!");
+}
+
+
 void ProximityStrategyRW::clear()
 {
     _modelCache.clear();

@@ -96,13 +96,13 @@ void StateStructure::addDataInternal(StateData *data){
 
 void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
     // frame must not be in tree allready
-    if(has(data.get()))
-        RW_THROW("The StateData has allready been added! State data can only be added once.");
-
+    if(has(data.get())){
+        RW_THROW("The StateData has allready been added! State data can only be added once. " << data->getName() << " ID: " << data->getID());
+    }
     _version++;
     const int id = allocateDataID();
     data->setID(id);
-
+    std::cout << "add: " << data->getName() << " id: " << data->getID() << std::endl;
     boost::shared_ptr<StateData> sharedData = data;
     _allDatas.at(id) = sharedData;
     _currDatas.at(id) = sharedData;

@@ -30,6 +30,7 @@
 #include "TreeState.hpp"
 #include "StateCache.hpp"
 #include <rw/common/Ptr.hpp>
+#include <rw/common/Serializable.hpp>
 
 
 
@@ -63,7 +64,7 @@ namespace rw { namespace kinematics {
      * to check for this and crashes the program in a controlled way if it takes
      * place.)
      */
-    class State
+    class State: public rw::common::Serializable
     {
     public:
 
@@ -276,6 +277,9 @@ namespace rw { namespace kinematics {
 		 * @param obj
 		 */
 		//void add(Stateless& obj);
+
+        void read(class rw::common::InputArchive& iarchive, const std::string& id);
+        void write(class rw::common::OutputArchive& iarchive, const std::string& id) const;
 
     private:
         friend class StateData;

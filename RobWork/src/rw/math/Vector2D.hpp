@@ -26,7 +26,8 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
-
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
 #include <Eigen/Eigen>
 #include "Constants.hpp"
 

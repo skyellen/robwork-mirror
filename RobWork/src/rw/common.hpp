@@ -47,4 +47,8 @@
 #include "./common/TimerUtil.hpp"
 #include "./common/VectorIterator.hpp"
 
+#include "./common/InputArchive.hpp"
+#include "./common/OutputArchive.hpp"
+
+
 #endif /* COMMON_HPP_ */

@@ -23,6 +23,9 @@
 #ifndef RW_MATH_HPP_
 #define RW_MATH_HPP_
 
+#include "./common/InputArchive.hpp"
+#include "./common/OutputArchive.hpp"
+
 #include "./math/Constants.hpp"
 #include "./math/EAA.hpp"
 #include "./math/InertiaMatrix.hpp"

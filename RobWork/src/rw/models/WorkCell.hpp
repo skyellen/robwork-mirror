@@ -79,7 +79,7 @@ namespace rw { namespace models {
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<WorkCell> Ptr;
 
-		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED} WorkCellEventType;
+		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED,WORKCELL_CHANGED} WorkCellEventType;
 
         /**
          * @brief Constructs an empty WorkCell
@@ -383,6 +383,9 @@ namespace rw { namespace models {
         void add(rw::common::Ptr<rw::sensor::SensorModel> sensor);
 
 
+        void remove(rw::common::Ptr<Object> object);
+        void remove(rw::common::Ptr<Device> device);
+        //void remove(rw::common::Ptr<rw::sensor::SensorModel> sensor);
 
 
         /**

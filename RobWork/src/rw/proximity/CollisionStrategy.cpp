@@ -76,6 +76,10 @@ namespace
         virtual std::vector<std::string> getGeometryIDs(ProximityModel* model)
         { return _strategy->getGeometryIDs(model);}
 
+		void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts, ProximityStrategyData& data){
+			// TODO: we need to get contacts from tolerance collision checks
+		}
+
 		bool inCollision(ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,

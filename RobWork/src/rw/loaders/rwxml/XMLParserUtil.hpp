@@ -63,10 +63,12 @@ struct DummyNode {
 };
 
 struct DummyProperty {
+    DummyProperty():_type("string"){};
     std::string _name;
     std::string _refframe;
     std::string _desc;
     std::string _val;
+    std::string _type;
 };
 
 struct DHParam {

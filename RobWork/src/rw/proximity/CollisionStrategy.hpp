@@ -29,7 +29,10 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 #include <rw/kinematics/FrameMap.hpp>
+
+
 
 #include "ProximityStrategy.hpp"
 #include "CollisionToleranceStrategy.hpp"
@@ -178,6 +181,33 @@ namespace rw { namespace proximity {
             ProximityStrategyData& data) = 0;
 
         /**
+         * @brief describes a simple collision contact data structure
+         */
+		struct Contact {
+
+			// point described in object A frame
+        	rw::math::Vector3D<> point;
+
+			// surface normal on object B described in object A coordinates
+			rw::math::Vector3D<> normalA;
+			rw::math::Vector3D<> normalB;
+		};
+
+		/**
+		 * @brief this method interprets the collision query result and calculates a list of
+		 * contacts to represent the collision geometry between the colliding geometries.
+		 *
+		 * Please note that for most collisions
+		 * a single point and normal is not sufficient to describe the complete collision area. However,
+		 * it is typically a reasonable approximation.
+		 * The approximation can hence be implementation specific.
+		 * @param contacts [out] list of contacts that can be calculated from data
+		 * @param data [in] the result from the collision query
+		 */
+		virtual void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+											  ProximityStrategyData& data) = 0;
+
+        /**
            @brief A collision strategy constructed from a collision tolerance
            strategy and a resolution.
 
@@ -199,6 +229,35 @@ namespace rw { namespace proximity {
         static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
                          const rw::kinematics::FrameMap<double>& frameToTolerance,
                          double defaultTolerance);
+
+
+
+
+    	/**
+    	 * @addtogroup extensionpoints
+    	 * @extensionpoint{rw::loaders::WorkCellSaver::Factory, rw::loaders::WorkCellSaver, rw.loaders.WorkCellSaver}
+ 	 	 */
+
+		/**
+		 * @brief a factory for WorkCellSaver. This factory also defines an
+		 * extension point for workcell savers.
+		 */
+
+        class Factory: public rw::common::ExtensionPoint<CollisionStrategy> {
+	    public:
+	    	//! constructor
+	        Factory():rw::common::ExtensionPoint<CollisionStrategy>("rw.proximity.CollisionStrategy",
+	        														 "Extensions to create collision strategies"){};
+
+	        /**
+	         * @brief create
+	         * @return
+	         */
+	        //static rw::common::Ptr<CollisionStrategy> getCollisionStrategy(const std::string& strategy_hint);
+
+	    };
+
+
 
     private:
         CollisionStrategy(const CollisionStrategy&);

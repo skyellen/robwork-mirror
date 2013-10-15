@@ -35,6 +35,9 @@ namespace models {
 class JacobianCalculator
 {
 public:
+	//! smart pointer type
+	typedef rw::common::Ptr<JacobianCalculator> Ptr;
+
     /**
      * @brief Destructor
      */

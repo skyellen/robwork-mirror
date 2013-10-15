@@ -177,3 +177,12 @@ void State::add(Stateless& obj){
 	obj.registerIn( getStateStructure() );
 }
 */
+
+void State::read(rw::common::InputArchive& iarchive, const std::string& id){
+
+}
+
+void State::write(rw::common::OutputArchive& iarchive, const std::string& id) const{
+
+}
+

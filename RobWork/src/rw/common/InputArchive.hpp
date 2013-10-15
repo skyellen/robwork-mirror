@@ -84,6 +84,7 @@ public:
     double readDouble(const std::string& id) { double b; read(b,id); return b;};
     std::string readString(const std::string& id) { std::string b; read(b,id); return b;};
 
+
     //
     template<class T>
     void read(T& object, const std::string& id){

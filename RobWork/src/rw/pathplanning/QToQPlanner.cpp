@@ -19,12 +19,10 @@
 #include "QToQPlanner.hpp"
 
 #include <rw/proximity/CollisionStrategy.hpp>
-#include <rw/models/WorkCell.hpp>
 #include <rw/math/Math.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::math;
-using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::proximity;

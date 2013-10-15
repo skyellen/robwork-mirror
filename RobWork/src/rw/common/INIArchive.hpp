@@ -43,10 +43,7 @@ namespace common {
 	public:
 		INIArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false){}
 
-		void close(){
-			if(_fstr!=NULL)
-				_fstr->close();
-		}
+		void close();
 
 		virtual ~INIArchive(){
 			close();
@@ -107,8 +104,8 @@ namespace common {
 			if(val) write((int)1,id);
 			else write((int)0,id);
 		}
-		void write(boost::int8_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::uint8_t val, const std::string& id){ writeValue(val,id);};
+		void write(boost::int8_t val, const std::string& id){ writeValue((boost::int16_t)val,id);};
+		void write(boost::uint8_t val, const std::string& id){ writeValue((boost::uint16_t)val,id);};
 		void write(boost::int16_t val, const std::string& id){ writeValue(val,id);};
 		void write(boost::uint16_t val, const std::string& id){ writeValue(val,id);};
 		void write(boost::int32_t val, const std::string& id){ writeValue(val,id);};
@@ -169,7 +166,7 @@ namespace common {
 					return std::make_pair(nname,nval);
 				}
 			}
-			RW_THROW("Not valid ini property!");
+			RW_THROW("Not valid ini property! From line: " << line);
 			return std::make_pair("","");
 		}
 
@@ -199,9 +196,14 @@ namespace common {
 		virtual void read(std::vector<double>& val, const std::string& id){readValue(val,id);}
 		virtual void read(std::vector<std::string>& val, const std::string& id) ;
 
+        template<class T>
+        void read(T& object, const std::string& id){
+            ((InputArchive*)this)->read<T>(object, id);
+        }
+
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
-			_ifs->getline(_line,500);
+		     getLine();
 			std::pair<std::string,std::string> valname = getNameValue();
 			if(id!=valname.first)
 				RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
@@ -216,13 +218,14 @@ namespace common {
 
 		 template<class T>
 		 void readValue(T& val, const std::string& id){
-			_ifs->getline(_line,500);
+		     getLine();
 			std::pair<std::string,std::string> valname = getNameValue();
 			if(id!=valname.first)
 				RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
 			val = boost::lexical_cast<T>(valname.second);
 		 }
 
+		 bool getLine();
 
 	private:
 		std::string getScope(){

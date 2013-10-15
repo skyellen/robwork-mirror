@@ -61,6 +61,8 @@ namespace kinematics {
     	virtual void unregister();
 
     	StateStructure::Ptr getStateStructure(){ return _stateStruct; }
+
+    	bool isRegistered(){ return _registered;}
     protected:
 
     	//! implementations of sensor should add all their stateless data on initialization

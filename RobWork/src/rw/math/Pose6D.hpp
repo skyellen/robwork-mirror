@@ -59,6 +59,16 @@ namespace rw { namespace math {
         EAA<T> _orientation;
 
     public:
+
+        /**
+         * @brief Creates an "identity" Pose6D. Position is zero vector and orientation
+         * is zero vector
+         */
+        Pose6D() :
+            _position(0,0,0),
+            _orientation(0,0,0)
+        {}
+
         /**
          * @brief Creates a Pose6D from 6 parameters. 3 defining the
          * position and 3 defining the EAA orientation.

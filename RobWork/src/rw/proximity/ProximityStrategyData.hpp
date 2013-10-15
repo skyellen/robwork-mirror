@@ -49,7 +49,7 @@ namespace proximity {
     class ProximityStrategyData
     {
     public:
-
+    	typedef rw::common::Ptr<ProximityStrategyData> Ptr;
 
         typedef enum{CollisionData=1, TolleranceData=2, DistanceData=4} DataType;
 

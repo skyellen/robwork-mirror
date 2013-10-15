@@ -353,19 +353,19 @@ namespace rw { namespace models {
 
            By default this method forwards to baseDJframe().
         */
-        virtual JacobianCalculatorPtr baseJCend(const kinematics::State& state) const;
+        virtual JacobianCalculator::Ptr baseJCend(const kinematics::State& state) const;
 
         /**
            @brief DeviceJacobian for a particular frame.
 
            By default this method forwards to baseDJframes().
         */
-        virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
+        virtual JacobianCalculator::Ptr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
 
         /**
            @brief DeviceJacobian for a sequence of frames.
         */
-        virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
+        virtual JacobianCalculator::Ptr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
 
         /**
          * @brief Miscellaneous properties of the device.

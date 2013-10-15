@@ -31,7 +31,7 @@ using namespace rw::common;
 
 BoostXMLParser::BoostXMLParser(){
 	_tree = ownedPtr( new boost::property_tree::ptree() );
-	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
+	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
 }
 
 void BoostXMLParser::load(const std::string& filename){
@@ -40,7 +40,7 @@ void BoostXMLParser::load(const std::string& filename){
     try {
         read_xml(file, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
-        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
+        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -52,7 +52,7 @@ void BoostXMLParser::load(std::istream& input){
 	try {
         read_xml(input, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
-        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, _tree));
+        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -131,7 +131,7 @@ bool BoostDOMElem::hasAttribute(const std::string& name) const {
 DOMElem::Ptr BoostDOMElem::getChild(const std::string& name, bool optional){
 	boost::optional<boost::property_tree::ptree&> child = _node->get_child_optional(name);
 	if(child)
-		return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), this->getRoot()) );
+		return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot()) );
 
 	if(!optional){
 		RW_THROW("Parse error: Child \"" << name << "\" of element " << getName() << " does not exist!");
@@ -144,7 +144,7 @@ DOMElem::Ptr BoostDOMElem::getAttribute(const std::string& name, bool optional){
 	if(attr){
 		boost::optional<boost::property_tree::ptree&> child = _node->get_child("<xmlattr>").get_child_optional(name);
 		if(child)
-			return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), this->getRoot()) );
+			return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot()) );
 	}
 	if(!optional){
 		RW_THROW("Parse error: Attribute \"" << name << "\" of element " << getName() << " does not exist!");
@@ -156,20 +156,20 @@ DOMElem::Ptr BoostDOMElem::getAttribute(const std::string& name, bool optional){
 
 DOMElem::IteratorPair BoostDOMElem::getChildren(){
 	return std::make_pair(
-			DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _root)),
-			DOMElem::Iterator(new ElemIterImpl(_node->end()  ,_node->end(), _root)) );
+			DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _node, _root)),
+			DOMElem::Iterator(new ElemIterImpl(_node->end()  ,_node->end(), _node, _root)) );
 }
 
 DOMElem::IteratorPair BoostDOMElem::getAttributes(){
 	boost::property_tree::ptree& attribs = _node->get_child("<xmlattr>");
 	return std::make_pair(
-			DOMElem::Iterator(new ElemIterImpl(attribs.begin(),attribs.end(), _root)),
-			DOMElem::Iterator(new ElemIterImpl(attribs.end()  ,attribs.end(), _root)) );
+			DOMElem::Iterator(new ElemIterImpl(attribs.begin(),attribs.end(), _node, _root)),
+			DOMElem::Iterator(new ElemIterImpl(attribs.end()  ,attribs.end(), _node, _root)) );
 }
 
 rw::common::Ptr<DOMElem> BoostDOMElem::addChild(const std::string& name){
 	boost::property_tree::ptree &child = _node->add_child(name, boost::property_tree::ptree() );
-	return rw::common::ownedPtr(new BoostDOMElem(name, &child, this->getRoot()) );
+	return rw::common::ownedPtr(new BoostDOMElem(name, &child, _node, this->getRoot()) );
 	//return this->getChild(name);
 }
 
@@ -183,13 +183,35 @@ void BoostDOMElem::setValue(const std::string& val){
 	_node->data() = val;
 }
 
+void BoostDOMElem::setName(const std::string& name){
+	// TODO: we cannot set name directly in boost property tree, so instead
+	// we insert new node, swap with old and erase old node.
 
+    // create a new node
+
+    // swap the current node with the new
+    boost::property_tree::ptree &newchild = _parent->add_child(name, boost::property_tree::ptree() );
+    _node->swap( newchild );
+    _name = name;
+
+    boost::property_tree::ptree::iterator child_iter = _parent->begin();
+    while(child_iter!=_parent->end()){
+        if( child_iter->second == *_node ){
+            // we found the child, erase it and quit
+            _node = rw::common::Ptr< boost::property_tree::ptree >( &newchild );
+            _parent->erase(child_iter);
+            return;
+        }
+        ++child_iter;
+    }
+    RW_THROW("Could not find child in parent!!!!");
+}
 
 DOMElem::Iterator BoostDOMElem::begin(){
-	return DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _root) );
+	return DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _parent, _root) );
 }
 DOMElem::Iterator BoostDOMElem::end(){
-	return DOMElem::Iterator(new ElemIterImpl(_node->end(),_node->end(), _root) );
+	return DOMElem::Iterator(new ElemIterImpl(_node->end(),_node->end(), _parent, _root) );
 }
 
 

@@ -203,6 +203,11 @@ namespace common {
 		virtual void read(std::vector<double>& val, const std::string& id){readValue(val,id);}
 		virtual void read(std::vector<std::string>& val, const std::string& id) ;
 
+        template<class T>
+        void read(T& object, const std::string& id){
+            ((InputArchive*)this)->read<T>(object, id);
+        }
+
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
 			_ifs->getline(_line,500);

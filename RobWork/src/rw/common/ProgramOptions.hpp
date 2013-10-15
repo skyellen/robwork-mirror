@@ -51,6 +51,7 @@ namespace common {
 		boost::program_options::positional_options_description& getPosOptionDescription(){ return _posOptionDesc; }
 
 		rw::common::PropertyMap getPropertyMap(){ return _pmap;};
+
 	private:
 		int checkVariablesMap(boost::program_options::variables_map &vm);
 	private:

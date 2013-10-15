@@ -177,6 +177,8 @@ namespace {
                     XMLAttElem_p("Property",
                         XMLAtt_p("name", attrstr_p
                             [ var( _property._name ) = arg1 ] ) >>
+                        !(XMLAtt_p("type", attrstr_p
+                            [ var( _property._type ) = arg1 ] )) >>
                         !(XMLAtt_p("refframe", attrstr_p
                             [ var( _property._refframe ) = arg1 ] )) >>
                         !(XMLAtt_p("desc", attrstr_p
