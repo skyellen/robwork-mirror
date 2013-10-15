@@ -80,12 +80,15 @@ int main(int argc, char** argv)
         ("wc", value<string>()->default_value(""), "The workcell.")
         ("object", value<string>(), "then object name or stl file")
         ("gripper", value<string>(), "the gripper.")
+        ("gripper-tcp", value<string>()->default_value("GRIPPER_TCP"), "the gripper tcp.")
+        ("gripper-base", value<string>()->default_value("GRIPPER_MOVER"), "the frame that moves the gripper.")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
-        ("open", value<double>(), "default will be max q of gripper.")
-        ("close", value<double>(), "default will be min q of gripper.")
+        ("open", value<Q>(), "default will be max q of gripper.")
+        ("close", value<Q>(), "default will be min q of gripper.")
         ("jawdist", value<double>(), "The distance between jaw 1 and jaw 2 when closed.")
         ("samples", value<int>()->default_value(2000), "Nr of grasp samples that should be generated.")
+
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -117,55 +120,92 @@ int main(int argc, char** argv)
     const int NR_OF_SAMPLES = vm["samples"].as<int>();
 
     path file_wc(vm["wc"].as<std::string>());
+
     if( !exists(file_wc) ){ RW_ASSERT("WorkCell option \"wc\" must be a valid file name!"); }
 
 
     // load workcell
+    std::cout << "\n";
     std::cout << "Loading workcell: " << file_wc.string() << std::endl;
+    RW_WARN("");
     WorkCell::Ptr wc = WorkCellLoader::Factory::load( file_wc.string() );
     RW_ASSERT( wc!=NULL );
 
     std::string name_object = vm["object"].as<std::string>();
+    std::cout << "OBJECT: " << name_object << std::endl;
     path file_object(name_object);
     Geometry::Ptr object_geo;
     if( exists(file_object) ){
         // load geometry from file
         object_geo = GeometryFactory::getGeometry(file_object.string());
     }
+    RW_WARN("");
 
+    Object::Ptr obj;
     if( object_geo==NULL ){
         // load it from workcell
-        Object::Ptr obj = wc->findObject(name_object);
+        Log::infoLog() << " finding object in workcell: " << name_object<< std::endl;
+        obj = wc->findObject(name_object);
         if( obj==NULL  || obj->getGeometry().size()==0 ){
             RW_ASSERT("Object option \"object\" must be a valid file name or a name of an object in the workcell description!");
         }
+        Log::infoLog() << obj->getGeometry().size() << std::endl;
         object_geo = obj->getGeometry()[0];
-    }
+    } else {
+        // create object and add it to workcell
+        MovableFrame * mframe = new MovableFrame("stlModelObject");
+        wc->getStateStructure()->addFrame(mframe, wc->getWorldFrame() );
+        obj = ownedPtr( new Object(mframe,object_geo) );
+        wc->add(obj);
 
+    }
+    RW_WARN("");
 
 	std::string outfile = vm["output"].as<std::string>();
+	RW_WARN("");
 	std::string grippername = vm["gripper"].as<std::string>();
+	std::string grippertcp = vm["gripper-tcp"].as<std::string>();
+	std::string gripperbase = vm["gripper-base"].as<std::string>();
+	RW_WARN("");
+    // TODO: this should be automized
+    Frame* gripperTCP = wc->findFrame( grippertcp );
+    std::cout << gripperTCP->getName() << std::endl;
+    RW_ASSERT(gripperTCP!=NULL);
+    MovableFrame* gripperMovable = wc->findFrame<MovableFrame>( gripperbase );
+    RW_ASSERT(gripperMovable!=NULL);
+    RW_WARN("");
 	Geometry::Ptr geo = object_geo;
-
+	RW_WARN("");
 	Device::Ptr gripper = wc->findDevice(grippername);
 	RW_ASSERT(gripper!=NULL);
-
+	RW_WARN("");
 	// setup openq and closeq
-	double OPENQ = gripper->getBounds().second[0];
-	double CLOSEQ = gripper->getBounds().first[0];
-	if(vm.count("open")>0){ OPENQ = vm["open"].as<double>(); }
-	if(vm.count("close")>0){ OPENQ = vm["close"].as<double>(); }
-	if(vm.count("jawdist")==0) RW_THROW("jawdist option must be specified!");
-	double jawdist = vm["jawdist"].as<double>();
+	Q OPENQ = gripper->getBounds().second;
+	Q CLOSEQ = gripper->getBounds().first;
+	RW_WARN("");
+	if(vm.count("open")>0){ OPENQ = vm["open"].as<Q>(); }
+	RW_WARN("");
+	if(vm.count("close")>0){ CLOSEQ = vm["close"].as<Q>(); }
+	RW_WARN("");
+	// check if qopn and qclose properties exist on the gripper tcp frame
+	if( gripperTCP->getPropertyMap().has("qclose") )
+	    CLOSEQ = gripperTCP->getPropertyMap().get<Q>("qclose") * Deg2Rad;
+	RW_WARN("");
+	if( gripperTCP->getPropertyMap().has("qopen") )
+	    OPENQ = gripperTCP->getPropertyMap().get<Q>("qopen") * Deg2Rad;
 
-    Q openQ(1,OPENQ);
-    Q closeQ(1,CLOSEQ);
+	double jawdist = 1;
+    if(vm.count("jawdist")!=0) //RW_THROW("jawdist option must be specified!");
+        jawdist = vm["jawdist"].as<double>();
 
-	// TODO: this should be automized
-	Frame* gripperTCP = wc->findFrame( "GRIPPER_TCP" );
-	RW_ASSERT(gripperTCP!=NULL);
-	MovableFrame* gripperMovable = wc->findFrame<MovableFrame>( "GRIPPER_MOVER" );
-	RW_ASSERT(gripperMovable!=NULL);
+	double minWidth =gripperTCP->getPropertyMap().get<double>("minJawWidth",0);
+    double maxWidth =gripperTCP->getPropertyMap().get<double>("maxJawWidth",jawdist);
+
+    Q openQ = OPENQ;
+    Q closeQ = CLOSEQ;
+    std::cout << "QOpen : " << openQ << std::endl;
+    std::cout << "QClose : " << closeQ << std::endl;
+
 
 	TriMeshSurfaceSampler sampler(geo);
 	sampler.setRandomPositionEnabled(false);
@@ -178,7 +218,7 @@ int main(int argc, char** argv)
     Rotation3D<> rot(1, 0, 0,
                      0, 1, 0,
                      0, 0, 1);
-
+    RW_WARN("");
     GraspTask gtask;
     gtask.getSubTasks().resize(1);
     GraspSubTask &stask = gtask.getSubTasks()[0];
@@ -201,7 +241,7 @@ int main(int argc, char** argv)
     stask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
     stask.openQ = openQ;
     stask.closeQ = closeQ;
-    gtask.setTCPID("GRIPPER_TCP");
+    gtask.setTCPID(grippertcp);
     gtask.setGraspControllerID("GraspController");
 
     CollisionStrategy::Ptr cstrategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
@@ -229,10 +269,15 @@ int main(int argc, char** argv)
         std::pair<Vector3D<>,Vector3D<> > &p1 = points[i];
         for(int j=i;j<10000;j++){
             std::pair<Vector3D<>,Vector3D<> > &p2 = points[j];
-            bool closeAngle = angle(-p1.second,p2.second)<50*Deg2Rad;
+            bool closeAngle = angle(-p1.second,p2.second)<40*Deg2Rad;
             double dist = MetricUtil::dist2(p1.first, p2.first);
-            if(closeAngle && (dist > CLOSEQ+jawdist) && (dist < OPENQ*2.0+jawdist)){
-                features.push_back( std::make_pair(i,j) );
+            // also check that the angle between p1 to p2 vector is small
+            //closeAngle &= angle( normalize( p1.first-p2.first ) , p1.second)<40*Deg2Rad;
+            //closeAngle &= angle( normalize( p2.first-p1.first ) , p2.second)<40*Deg2Rad;
+            if(closeAngle){
+                if( (dist > minWidth) && (dist < maxWidth) ){
+                    features.push_back( std::make_pair(i,j) );
+                }
             }
         }
     }
@@ -241,8 +286,16 @@ int main(int argc, char** argv)
 
 
     // also add the stl object
-    ProximityModel::Ptr object = cstrategy->createModel();
-    cstrategy->addGeometry(object.get(), geo);
+
+
+    void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+
+    if(!obj){
+
+        ProximityModel::Ptr object = cstrategy->createModel();
+        cstrategy->addGeometry(object.get(), geo);
+        // also add it to workcell collider
+    }
     State state = wc->getDefaultState();
 
     int tries =0;
@@ -281,10 +334,17 @@ int main(int argc, char** argv)
         // we close gripper such that it is 1 cm more openned than the target
 
         Q oq = openQ;
-        oq(0) = std::min(openQ(0),(graspW+0.01)/2.0);
-        oq(0) = std::max(closeQ(0), oq(0) );
+        //std::cout << "openQ size: " << openQ.size() << std::endl;
+        // if we have a simple parallel gripper we set the fingers closer to the object
+        // if not then we just use the open configuration
+        if( gripper->getDOF()==1 ){
+            oq(0) = std::min(openQ(0),(graspW+0.01)/2.0);
+            oq(0) = std::max(closeQ(0), oq(0) );
+        }
         gripper->setQ( oq, state);
-/*
+        // todo: close the grippers until
+
+        /*
         Quaternion<> quat( target.R() );
         quat.normalize();
         target.R() = quat.toRotation3D();
@@ -300,7 +360,11 @@ int main(int argc, char** argv)
             gtarget.result->testStatus = GraspTask::CollisionInitially;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
+
+            // comment
             //stask.addTarget( gtarget );
+            // only for debug, remove this
+            // nrSuccesses++;
 
             Q key(7);
             key[0] = target.P()[0];
@@ -312,7 +376,9 @@ int main(int argc, char** argv)
             key[5] = eaa.axis()(2);
             key[6] = eaa.angle();
 
+            // comment
             //nodes.push_back( KDTreeQ::KDNode(key, gtarget.result) );
+
             allnodes.push_back( NNSearch::KDNode(key, gtarget.result) );
 
         } else {

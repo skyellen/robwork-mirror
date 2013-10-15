@@ -214,14 +214,20 @@ int main(int argc, char** argv)
                 continue;
             }
 
+            std::cout << graspSim->getStatDescription() << std::endl;
+
+            std::cout << std::endl;
+
             graspSim->load(tasks[i]);
             graspSim->startSimulation(initState);
+            for(int i=0;i<graspSim->getStat().size(); i++){ std::cout << i << "\t"; }
+            std::cout<< std::endl;
             TimerUtil::sleepMs(2000);
             do{
                 TimerUtil::sleepMs(500);
                 std::vector<int> stat = graspSim->getStat();
                 std::cout << "\r";
-                BOOST_FOREACH(int i, stat){ std::cout << i << " "; }
+                BOOST_FOREACH(int i, stat){ std::cout << i << "\t"; }
                 std::cout << std::flush;
             } while(graspSim->isRunning());
 

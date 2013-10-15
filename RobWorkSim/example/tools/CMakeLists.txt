@@ -136,6 +136,12 @@ target_link_libraries(danniToGtable ${ROBWORK_LIBRARIES})
 add_executable(GraspGenerationSDHSolver src/GraspGenerationSDHSolver.cpp src/SDHInvKinSolver.cpp src/IKSoftCSolver.cpp)
 target_link_libraries(GraspGenerationSDHSolver rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
+add_executable(cut src/cut.cpp src/CutActionParam.cpp)
+target_link_libraries(cut rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+add_executable(DBCutFiltering src/DBCutFiltering.cpp src/CutActionParam.cpp)
+target_link_libraries(DBCutFiltering rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
 #add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
 #target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 #MESSAGE("${ROBWORK_LIBRARIES}")
