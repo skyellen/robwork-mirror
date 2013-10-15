@@ -93,7 +93,7 @@ namespace rwlibs { namespace proximitystrategies {
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
 
         //! @brief cache for any of the queries possible on this PQPStrategy
-        struct PQPProximityCache: public rw::proximity::ProximityCache{
+        struct PQPProximityCache: public rw::proximity::ProximityCache {
             PQPProximityCache(void *owner):ProximityCache(owner){}
             virtual size_t size() const{ return 0;};
             virtual void clear(){};
@@ -182,16 +182,12 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::collision
+         * @copydoc rw::proximity::CollisionStrategy::getCollisionContacts
          */
-/*
-        bool collides(
-			rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            rw::proximity::CollisionData& data);
-*/
+		void getCollisionContacts(
+				std::vector<CollisionStrategy::Contact>& contacts,
+				rw::proximity::ProximityStrategyData &data);
+
         /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */

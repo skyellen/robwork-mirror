@@ -20,8 +20,15 @@ SerialDevicePoseMeasurement::SerialDevicePoseMeasurement(const rw::math::Q& q, c
 
 }
 
-SerialDevicePoseMeasurement::SerialDevicePoseMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::Matrix<double, 6, 6>& covarianceMatrix, const std::string& deviceName, const std::string& sensorFrameName, const std::string& markerFrameName) :
-	_q(q), _transform(transform), _covarianceMatrix(covarianceMatrix), _hasCovarianceMatrix(true), _deviceName(deviceName), _sensorFrameName(sensorFrameName), _markerFrameName(markerFrameName) {
+SerialDevicePoseMeasurement::SerialDevicePoseMeasurement(const rw::math::Q& q,
+                                                         const rw::math::Transform3D<>& transform,
+                                                         const Eigen::Matrix<double, 6, 6>& covarianceMatrix,
+                                                         const std::string& deviceName,
+                                                         const std::string& sensorFrameName,
+                                                         const std::string& markerFrameName) :
+        _q(q), _transform(transform), _covarianceMatrix(covarianceMatrix), _hasCovarianceMatrix(true), _deviceName(
+                deviceName), _sensorFrameName(sensorFrameName), _markerFrameName(markerFrameName)
+{
 
 }
 

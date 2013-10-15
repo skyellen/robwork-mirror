@@ -248,6 +248,11 @@ namespace rwlibs { namespace proximitystrategies {
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
 
 
+        //! @copydoc rw::proximity::CollisionStrategy::getCollisionContacts
+		void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+											  rw::proximity::ProximityStrategyData& data);
+
+
 
 		void setThreshold(double threshold);
 

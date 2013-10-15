@@ -48,159 +48,172 @@
 #include <sstream>
 
 namespace rwlibs {
+
+/**
+ * @brief define all classes that are being wrapped by SWIG. These are all
+ * typedefs of other classes in RobWork.
+ *
+ *
+ */
 namespace swig {
 
-template <typename T>
-std::string toString(const T& x)
-{
-    std::ostringstream buf;
-    buf << x;
-    return buf.str();
-}
+	/** @addtogroup swig */
+	/*@{*/
 
-//typedef rw::common::PropertyMap PropertyMap;
+	//typedef rw::common::PropertyMap PropertyMap;
 
 
-// math types
-typedef rw::math::Vector2D<double> Vector2D;
-typedef rw::math::Vector3D<double> Vector3D;
-typedef rw::math::Q Q;
-typedef rw::math::Rotation3D<double> Rotation3D;
-typedef rw::math::EAA<double> EAA;
-typedef rw::math::RPY<double> RPY;
-typedef rw::math::Quaternion<double> Quaternion;
-typedef rw::math::Transform3D<double> Transform3D;
-typedef rw::math::Pose6D<double> Pose6D;
-typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
-typedef rw::math::Wrench6D<double> Wrench6D;
-typedef rw::math::InertiaMatrix<double> InertiaMatrix;
-typedef rw::math::Jacobian Jacobian;
-typedef rw::math::QMetric QMetric;
-typedef rw::math::Transform3DMetric Transform3DMetric;
+	// math types
+	//! Vector2D
+	typedef rw::math::Vector2D<double> Vector2D;
+	//! Vector3D
+	typedef rw::math::Vector3D<double> Vector3D;
+	typedef rw::math::Q Q;
+	typedef rw::math::Rotation3D<double> Rotation3D;
+	typedef rw::math::EAA<double> EAA;
+	typedef rw::math::RPY<double> RPY;
+	typedef rw::math::Quaternion<double> Quaternion;
+	typedef rw::math::Transform3D<double> Transform3D;
+	typedef rw::math::Pose6D<double> Pose6D;
+	typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
+	typedef rw::math::Wrench6D<double> Wrench6D;
+	typedef rw::math::InertiaMatrix<double> InertiaMatrix;
+	typedef rw::math::Jacobian Jacobian;
+	typedef rw::math::QMetric QMetric;
+	typedef rw::math::Transform3DMetric Transform3DMetric;
 
-typedef rw::common::PropertyMap PropertyMap;
+	typedef rw::common::PropertyMap PropertyMap;
 
-typedef rw::geometry::GeometryData GeometryData;
-typedef rw::geometry::Primitive Primitive;
-typedef rw::geometry::Box Box;
-typedef rw::geometry::Cone Cone;
-typedef rw::geometry::Sphere Sphere;
-typedef rw::geometry::Plane Plane;
-typedef rw::geometry::Cylinder Cylinder;
-typedef rw::geometry::Triangle<double> Triangle;
-typedef rw::geometry::Triangle<float> Trianglef;
-typedef rw::geometry::TriangleN1<double> TriangleN1;
-typedef rw::geometry::TriangleN1<float> TriangleN1f;
-typedef rw::geometry::TriMesh TriMesh;
-typedef rw::geometry::PlainTriMesh<Triangle> PlainTriMesh;
-typedef rw::geometry::PlainTriMesh<Trianglef> PlainTriMeshf;
-typedef rw::geometry::PlainTriMesh<TriangleN1> PlainTriMeshN1;
-typedef rw::geometry::PlainTriMesh<TriangleN1f> PlainTriMeshN1f;
-typedef rw::geometry::ConvexHull3D ConvexHull3D;
-typedef rw::geometry::Geometry Geometry;
+	typedef rw::geometry::GeometryData GeometryData;
+	typedef rw::geometry::Primitive Primitive;
+	typedef rw::geometry::Box Box;
+	typedef rw::geometry::Cone Cone;
+	typedef rw::geometry::Sphere Sphere;
+	typedef rw::geometry::Plane Plane;
+	typedef rw::geometry::Cylinder Cylinder;
+	typedef rw::geometry::Triangle<double> Triangle;
+	typedef rw::geometry::Triangle<float> Trianglef;
+	typedef rw::geometry::TriangleN1<double> TriangleN1;
+	typedef rw::geometry::TriangleN1<float> TriangleN1f;
+	typedef rw::geometry::TriMesh TriMesh;
+	typedef rw::geometry::PlainTriMesh<Triangle> PlainTriMesh;
+	typedef rw::geometry::PlainTriMesh<Trianglef> PlainTriMeshf;
+	typedef rw::geometry::PlainTriMesh<TriangleN1> PlainTriMeshN1;
+	typedef rw::geometry::PlainTriMesh<TriangleN1f> PlainTriMeshN1f;
+	typedef rw::geometry::ConvexHull3D ConvexHull3D;
+	typedef rw::geometry::Geometry Geometry;
 
-typedef rw::sensor::Image Image;
+	typedef rw::sensor::Image Image;
 
-typedef rw::kinematics::StateData StateData;
-typedef rw::kinematics::Frame Frame;
-typedef rw::kinematics::MovableFrame MovableFrame;
-typedef rw::kinematics::FixedFrame FixedFrame;
-typedef rw::kinematics::State State;
+	typedef rw::kinematics::StateData StateData;
+	typedef rw::kinematics::Frame Frame;
+	typedef rw::kinematics::MovableFrame MovableFrame;
+	typedef rw::kinematics::FixedFrame FixedFrame;
+	typedef rw::kinematics::State State;
 
-typedef rw::trajectory::Path<Q> QPath;
-typedef rw::trajectory::TimedStatePath TimedStatePath;
-typedef rw::trajectory::TimedState TimedState;
-//typedef rw::trajectory::TrajectoryFactory TrajectoryFactory;
-typedef rw::trajectory::StateTrajectory StateTrajectory;
-typedef rw::trajectory::QTrajectory QTrajectory;
-typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
+	typedef rw::trajectory::Path<Q> QPath;
+	typedef rw::trajectory::TimedStatePath TimedStatePath;
+	typedef rw::trajectory::TimedState TimedState;
+	//typedef rw::trajectory::TrajectoryFactory TrajectoryFactory;
+	typedef rw::trajectory::StateTrajectory StateTrajectory;
+	typedef rw::trajectory::QTrajectory QTrajectory;
+	typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
 
-typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
-typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
-typedef rw::trajectory::LinearInterpolator<rw::math::Vector2D<double> > LinearInterpolatorR2;
-typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorR3;
-typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
-typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
+	typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
+	typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
+	typedef rw::trajectory::LinearInterpolator<rw::math::Vector2D<double> > LinearInterpolatorR2;
+	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorR3;
+	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
+	typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
 
-typedef rw::trajectory::RampInterpolator<double> RampInterpolator;
-typedef rw::trajectory::RampInterpolator<rw::math::Q> RampInterpolatorQ;
-typedef rw::trajectory::RampInterpolator<rw::math::Vector2D<double> > RampInterpolatorR2;
-typedef rw::trajectory::RampInterpolator<rw::math::Vector3D<double> > RampInterpolatorR3;
-typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
-typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
-
-
-typedef rw::models::WorkCell WorkCell;
-typedef rw::models::Joint Joint;
-typedef rw::models::RevoluteJoint RevoluteJoint;
-typedef rw::models::PrismaticJoint PrismaticJoint;
-
-typedef rw::models::Device Device;
-typedef rw::models::JointDevice JointDevice;
-typedef rw::models::SerialDevice SerialDevice;
-typedef rw::models::TreeDevice TreeDevice;
-typedef rw::models::CompositeDevice CompositeDevice;
-typedef rw::models::ParallelDevice ParallelDevice;
-typedef rw::models::DHParameterSet DHParameterSet;
-
-typedef rw::proximity::CollisionDetector CollisionDetector;
-typedef rw::proximity::CollisionStrategy CollisionStrategy;
-typedef rw::proximity::DistanceCalculator DistanceCalculator;
-typedef rw::proximity::DistanceStrategy DistanceStrategy;
-
-typedef rw::invkin::InvKinSolver InvKinSolver;
-typedef rw::invkin::IterativeIK IterativeIK;
-typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
-typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
-typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
-typedef rw::invkin::IKMetaSolver IKMetaSolver;
-typedef rw::invkin::ClosedFormIK ClosedFormIK;
-typedef rw::invkin::PieperSolver PieperSolver;
-
-typedef rw::loaders::ImageFactory ImageFactory;
-typedef rw::loaders::WorkCellLoader WorkCellLoader;
-typedef rw::loaders::WorkCellFactory WorkCellFactory;
-typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
-typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
-
-typedef rw::loaders::STLFile STLFile;
-
-typedef rw::RobWork RobWork;
-
-typedef rw::graphics::WorkCellScene WorkCellScene;
-typedef rw::graphics::SceneViewer SceneViewer;
-typedef rw::graphics::SceneNode SceneNode;
-typedef rw::graphics::DrawableNode DrawableNode;
+	typedef rw::trajectory::RampInterpolator<double> RampInterpolator;
+	typedef rw::trajectory::RampInterpolator<rw::math::Q> RampInterpolatorQ;
+	typedef rw::trajectory::RampInterpolator<rw::math::Vector2D<double> > RampInterpolatorR2;
+	typedef rw::trajectory::RampInterpolator<rw::math::Vector3D<double> > RampInterpolatorR3;
+	typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
+	typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
 
-typedef rw::pathplanning::QToQPlanner QToQPlanner;
-typedef rw::pathplanning::StopCriteria StopCriteria;
-typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
+	typedef rw::models::WorkCell WorkCell;
+	typedef rw::models::Joint Joint;
+	typedef rw::models::RevoluteJoint RevoluteJoint;
+	typedef rw::models::PrismaticJoint PrismaticJoint;
 
-typedef rwlibs::pathoptimization::PathLengthOptimizer PathLengthOptimizer;
-typedef rwlibs::pathoptimization::ClearanceOptimizer ClearanceOptimizer;
+	typedef rw::models::Device Device;
+	typedef rw::models::JointDevice JointDevice;
+	typedef rw::models::SerialDevice SerialDevice;
+	typedef rw::models::TreeDevice TreeDevice;
+	typedef rw::models::CompositeDevice CompositeDevice;
+	typedef rw::models::ParallelDevice ParallelDevice;
+	typedef rw::models::DHParameterSet DHParameterSet;
 
-// not added yet
-typedef rwlibs::simulation::SimulatedController SimulatedController;
-typedef rwlibs::simulation::SimulatedSensor SimulatedSensor;
-typedef rwlibs::simulation::Simulator Simulator;
+	typedef rw::proximity::CollisionDetector CollisionDetector;
+	typedef rw::proximity::CollisionStrategy CollisionStrategy;
+	typedef rw::proximity::DistanceCalculator DistanceCalculator;
+	typedef rw::proximity::DistanceStrategy DistanceStrategy;
 
-void writelog(const std::string& msg);
+	typedef rw::invkin::InvKinSolver InvKinSolver;
+	typedef rw::invkin::IterativeIK IterativeIK;
+	typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
+	typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
+	typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
+	typedef rw::invkin::IKMetaSolver IKMetaSolver;
+	typedef rw::invkin::ClosedFormIK ClosedFormIK;
+	typedef rw::invkin::PieperSolver PieperSolver;
 
-void setlog(::rw::common::LogWriter::Ptr writer);
+	typedef rw::loaders::ImageFactory ImageFactory;
+	typedef rw::loaders::WorkCellLoader WorkCellLoader;
+	typedef rw::loaders::WorkCellFactory WorkCellFactory;
+	typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
+	typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
 
-/*
-//! set the current workcell instance
-void setWorkCell(WorkCell::Ptr workcell);
-//! get current instance of workcell
-WorkCell::Ptr getWorkCell();
+	typedef rw::loaders::STLFile STLFile;
 
-void setState(const State& state);
+	typedef rw::RobWork RobWork;
 
-State& getState();
+	typedef rw::graphics::WorkCellScene WorkCellScene;
+	typedef rw::graphics::SceneViewer SceneViewer;
+	typedef rw::graphics::SceneNode SceneNode;
+	typedef rw::graphics::DrawableNode DrawableNode;
 
-void addChangedListener(  );
-*/
+	typedef rw::pathplanning::QToQPlanner QToQPlanner;
+	typedef rw::pathplanning::StopCriteria StopCriteria;
+	typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
+
+	typedef rwlibs::pathoptimization::PathLengthOptimizer PathLengthOptimizer;
+	typedef rwlibs::pathoptimization::ClearanceOptimizer ClearanceOptimizer;
+
+	// not added yet
+	typedef rwlibs::simulation::SimulatedController SimulatedController;
+	typedef rwlibs::simulation::SimulatedSensor SimulatedSensor;
+	typedef rwlibs::simulation::Simulator Simulator;
+
+	void writelog(const std::string& msg);
+
+	void setlog(::rw::common::LogWriter::Ptr writer);
+
+	template <typename T>
+	std::string toString(const T& x)
+	{
+		std::ostringstream buf;
+		buf << x;
+		return buf.str();
+	}
+
+	/*
+	//! set the current workcell instance
+	void setWorkCell(WorkCell::Ptr workcell);
+	//! get current instance of workcell
+	WorkCell::Ptr getWorkCell();
+
+	void setState(const State& state);
+
+	State& getState();
+
+	void addChangedListener(  );
+	*/
+
+	/*@}*/
 }
 }
 

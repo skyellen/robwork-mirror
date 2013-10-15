@@ -22,7 +22,7 @@
 #include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Math.hpp>
-#include "LinePolar.hpp"
+#include <rw/math/Line2DPolar.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -38,12 +38,14 @@ namespace geometry {
          * @param d [in] the number of close data values required to assert that a model fits well to data
          * @param t [in] a threshold value for determining when a datum fits a model
          */
-        static std::vector<LinePolar>
+/*
+	    static std::vector<rw::math::Line2DPolar>
             fit(std::vector<rw::math::Vector2D<> >& data, int k, int d, double t, double s )
         {
-            return fit2<LinePolar, rw::math::Vector2D<> >( data, k ,d ,t, s);
-        }
 
+            return fit2<rw::math::Line2DPolar, rw::math::Vector2D<> >( data, k ,d ,t, s);
+        }
+*/
         /**
          * @brief
         input:

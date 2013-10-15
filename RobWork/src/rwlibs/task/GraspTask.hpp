@@ -97,6 +97,8 @@ public:
                                         "CollisionObjectInitially",
                                         "CollisionEnvironmentInitially",
                                         "CollisionDuringExecution",
+                                        "Interference",
+                                        "WrenchInsufficient",
                                         "SizeOfStatusArray"};
         return strArr[status];
     }

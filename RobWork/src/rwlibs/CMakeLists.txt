@@ -12,6 +12,8 @@ add_subdirectory(simulation)
 add_subdirectory(swig)
 add_subdirectory(softbody)
 
+#add_subdirectory(grasper)
+
 foreach (dir ${RWLIBS_USER_DIRECTORIES})
   add_subdirectory(${dir})
 endforeach ()

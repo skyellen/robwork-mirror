@@ -22,8 +22,6 @@ SET(SRC_FILES
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
 
-    geometry/LinePolar.cpp
-    geometry/Pose2D.cpp
     geometry/RANSACFitting.cpp
     
     #proximity/Raycast.cpp

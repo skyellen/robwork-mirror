@@ -121,6 +121,11 @@ namespace rwlibs { namespace proximitystrategies {
          */
         void clear();
 
+        //! @copydoc rw::proximity::CollisionStrategy::getCollisionContacts
+		void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+											  rw::proximity::ProximityStrategyData& data);
+
+
         /**
            @brief Makes a Yaobi based collision strategy.
         */

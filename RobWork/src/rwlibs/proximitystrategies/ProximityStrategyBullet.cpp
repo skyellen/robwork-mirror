@@ -710,3 +710,13 @@ CollisionStrategy::Ptr ProximityStrategyBullet::make()
 {
     return ownedPtr(new ProximityStrategyBullet);
 }
+
+//! @copydoc rw::proximity::CollisionStrategy::getCollisionContacts
+void ProximityStrategyBullet::getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+									  rw::proximity::ProximityStrategyData& data)
+{
+	// TODO: implement contact generation
+	RW_THROW("NOT IMPLEMENTED YET!");
+}
+
+

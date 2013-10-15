@@ -107,6 +107,39 @@ IF( build )
         MESSAGE(STATUS "RobWorkStudio: Python bindings DISABLED")
     ENDIF() 	
 	
+	
+	FIND_PACKAGE(Java)
+	
+    FIND_PACKAGE(JNI)
+    INCLUDE(CMakeDependentOption)
+    CMAKE_DEPENDENT_OPTION(RW_JAVA_BINDINGS_ENABLED "Enable java bindings." 
+                       ON "JAVA_FOUND AND JNI_FOUND" OFF)
+    IF( RW_JAVA_BINDINGS_ENABLED )
+
+        IF( JAVA_FOUND AND JAVA_FOUND )
+            MESSAGE(STATUS "RobWorkStudio: Java bindings ENABLED!")
+            INCLUDE_DIRECTORIES(${JAVA_INCLUDE_DIRS} ${JNI_INCLUDE_DIRS})
+            SWIG_ADD_MODULE(rw_jni java rw.i)
+	        SWIG_LINK_LIBRARIES(rw_jni ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
+	        ADD_DEPENDENCIES(rw_jni rw_algorithms
+                          rw_pathplanners
+                          rw_pathoptimization
+                          rw_simulation
+                          rw_opengl
+                          rw_proximitystrategies
+                          ${YAOBI_LIBRARIES}
+                          ${PQP_LIBRARIES}  
+                          rw
+                          rw_qhull)
+	     
+        ELSE()
+            MESSAGE(STATUS "RobWorkStudio: Java bindings DISABLED!")
+        ENDIF()
+    ELSE()
+        MESSAGE(STATUS "RobWorkStudio: Java bindings DISABLED")
+    ENDIF() 	
+
+	
 	RW_ADD_INCLUDES(swig "rwlibs/swig" Lua.hpp ScriptTypes.hpp)
 	
 	

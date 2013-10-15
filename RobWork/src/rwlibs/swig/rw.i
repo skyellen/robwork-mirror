@@ -102,7 +102,7 @@ namespace std {
 /**************************
  * MATH
  */
-
+//! swig Q class
 class Q
 {
 public:
@@ -260,7 +260,11 @@ public:
 
     //bool operator==(const EAA &rhs) const;
     // std::string __tostring() const;
-
+    %extend {
+    	double& x(){ return (*$self)[0]; }
+    	double& y(){ return (*$self)[1]; }
+    	double& z(){ return (*$self)[2]; }
+    }
 
 };
 

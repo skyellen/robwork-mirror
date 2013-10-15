@@ -209,6 +209,13 @@ void ProximityStrategyYaobi::clear()
     clearFrames();
 }
 
+void ProximityStrategyYaobi::getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
+									  rw::proximity::ProximityStrategyData& data)
+{
+	RW_THROW("NOT IM PLEMENTED IN YAOBI COLLISION STRATEGY!");
+}
+
+
 
 std::vector<std::string> ProximityStrategyYaobi::getGeometryIDs(rw::proximity::ProximityModel* model){
 	RW_THROW("ProximityStrategyYaobi::getGeometryIDs(rw::proximity::ProximityModel* model): Not Implemented");

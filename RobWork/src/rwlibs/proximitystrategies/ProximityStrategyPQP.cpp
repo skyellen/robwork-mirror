@@ -25,11 +25,14 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
+#include <rw/geometry/IntersectUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
 
 #include <boost/foreach.hpp>
+
+
 
 using namespace rw::common;
 using namespace rw::proximity;
@@ -657,4 +660,47 @@ void ProximityStrategyPQP::clear()
 CollisionStrategy::Ptr ProximityStrategyPQP::make()
 {
     return ownedPtr(new ProximityStrategyPQP);
+}
+
+
+void ProximityStrategyPQP::getCollisionContacts(
+		std::vector<CollisionStrategy::Contact>& contacts, rw::proximity::ProximityStrategyData &data)
+{
+
+	CollisionStrategy::Result& res = data.getCollisionData();
+
+	PQPProximityModel* a = (PQPProximityModel*)res.a.get();
+	PQPProximityModel* b = (PQPProximityModel*)res.b.get();
+
+	if(a->getGeometryIDs().size()>1 || b->getGeometryIDs().size()>1){
+		RW_THROW(" multiple geoms on one frame is not supported for normal extraction yet!");
+	}
+
+	typedef std::pair<int,int> IntPair;
+	BOOST_FOREACH( CollisionStrategy::Result::CollisionPair &cpair, res._collisionPairs){
+		PQPModelPtr &amodel = a->models[cpair.geoIdxA].pqpmodel;
+		PQPModelPtr &bmodel = b->models[cpair.geoIdxB].pqpmodel;
+
+		CollisionStrategy::Contact contact;
+		for(int i=cpair.startIdx; i<cpair.startIdx+cpair.size; i++ ){
+			std::pair<int,int> &primPair = res._geomPrimIds[i];
+			PQP::Tri* atri = &amodel->tris[primPair.first];
+			PQP::Tri* btri = &bmodel->tris[primPair.second];
+
+			Triangle<> triA(fromRapidVector(atri->p1), fromRapidVector(atri->p2), fromRapidVector(atri->p3));
+			Triangle<> triB(res._aTb*fromRapidVector(btri->p1), res._aTb*fromRapidVector(btri->p2), res._aTb*fromRapidVector(btri->p3));
+			rw::math::Vector3D<> dst1,dst2;
+
+			if( IntersectUtil::intersetPtTriTri(triA, triB, dst1, dst2) ){
+				// add to result
+				contact.normalA = triA.calcFaceNormal();
+				contact.normalB = triB.calcFaceNormal();
+				contact.point = dst1;
+				contacts.push_back( contact );
+				contact.point = dst2;
+				contacts.push_back( contact );
+			}
+		}
+
+	}
 }

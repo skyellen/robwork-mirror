@@ -20,7 +20,7 @@ IF(build)
       ./gpm/BasicGPM.cpp
       
       MovingAverage.cpp
-      StablePlanePose.cpp
+      #StablePlanePose.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -34,7 +34,7 @@ IF(build)
       ./gpm/BasicGPM.hpp
       
       MovingAverage.hpp
-      StablePlanePose.hpp
+      #StablePlanePose.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} algorithms ${SRC_FILES} ${SRC_FILES_HPP})
