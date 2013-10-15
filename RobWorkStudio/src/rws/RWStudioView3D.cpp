@@ -842,6 +842,9 @@ void RWStudioView3D::saveBufferToFileDialog()
         try {
             // Get the save location
             QFileInfo fi(filename);
+            // test if we need to append a specific image format
+            if(fi.suffix().isEmpty())
+                fi = QFileInfo(filename + ".png");
             lastDir = fi.absolutePath().toStdString();
             // Store new save location
             _pmap->getValue().set<std::string>("LastDir", lastDir);

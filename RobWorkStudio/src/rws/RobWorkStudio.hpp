@@ -436,7 +436,7 @@ namespace rws {
 		 */		
 		RWStudioView3D::Ptr getView() { return _view; }
 		
-
+		void keyPressEvent(QKeyEvent *e);
 
 		/**
 		 * @return Returns the about box for RobWorkStudio

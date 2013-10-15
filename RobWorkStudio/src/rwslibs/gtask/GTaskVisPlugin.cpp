@@ -31,12 +31,14 @@ namespace {
         typedef rw::common::Ptr<RenderTargets> Ptr;
 
         struct Target {
+            Target():scale(1.0),enabled(true),ctask(NULL),endTarget(false){};
             GLfloat color[4];
             Transform3D<> trans;
             double scale;
             bool enabled;
             GraspSubTask *ctask;
             GraspTarget ctarget;
+            bool endTarget; // true if trans is the final grasp target (grasp or lift)
         };
 
         RenderTargets():_size(-0.02), _zoffset(0.0){
@@ -361,6 +363,7 @@ void GTaskVisPlugin::updateVis(){
             } else {
                 rt.trans = wTtcp * inverse( target.result->objectTtcpGrasp );
             }
+            rt.endTarget = true;
             rtargets.push_back(rt);
         }
 
@@ -370,6 +373,7 @@ void GTaskVisPlugin::updateVis(){
             } else {
                 rt.trans = wTtcp * inverse( target.result->objectTtcpLift );
             }
+            rt.endTarget = true;
             rtargets.push_back(rt);
         }
 
@@ -548,33 +552,26 @@ void GTaskVisPlugin::selectGrasp(int index){
     Transform3D<> wTtcp = targets[index].trans;
     //wTtcp.R().normalize();
     if(tcp!=NULL && base!=NULL){
-        /*
-        std::cout << "basename:" << base->getName() << std::endl;
-        std::cout << "tcpname :" << tcp->getName() << std::endl;
-
-        std::cout << "wTbase:" <<  Kinematics::worldTframe(base ,state) << std::endl;
-        std::cout << "wTtcp :" <<  Kinematics::worldTframe(tcp ,state) << std::endl;
-        std::cout << "bTf_e :" <<  inverse(Kinematics::worldTframe(base ,state)) * Kinematics::worldTframe(tcp ,state) << std::endl;
-
-        std::cout << "TARGET:" << wTtcp << std::endl;
-        //wTtcp.R().normalize();
-        std::cout << "TARGET:" << wTtcp << std::endl;
-        */
         Transform3D<> baseTtcp = Kinematics::frameTframe(base, tcp ,state);
-        //Transform3D<> wTbase = wTtcp * inverse( baseTtcp );
-        //base->setTransform( wTbase, state );
-        //Transform3D<> wTtcp = Kinematics::frameTframe(base, tcp ,state);
         base->moveTo(wTtcp * inverse(baseTtcp), state);
-
     }
 
 
     if(device!=NULL){
-        if( targets[index].ctask->openQ.size()>0 ){
-            Q q = targets[index].ctask->openQ;
-            if(q.size()==device->getDOF())
-                device->setQ(q, state);
+        Q q;
+        if(targets[index].endTarget){
+            if(targets[index].ctarget.result != NULL){
+                q = targets[index].ctarget.result->gripperConfigurationGrasp;
+            } else {
+                q = targets[index].ctask->closeQ;
+            }
+        } else {
+            if( targets[index].ctask->openQ.size()>0 ){
+                q = targets[index].ctask->openQ;
+            }
         }
+        if(q.size()==device->getDOF())
+            device->setQ(q, state);
     }
     if( targets[index].ctarget.result!=NULL )
         log().info() << "Quality of selected grasp: " << targets[index].ctarget.result->qualityAfterLifting << std::endl;

@@ -437,7 +437,11 @@ void RobWorkStudio::setupHelpMenu() {
     pHelpMenu->addAction(showAboutBox);
 
 }
-
+void RobWorkStudio::keyPressEvent(QKeyEvent *e)
+{
+    keyEvent().fire(e->key(), e->modifiers());
+    QWidget::keyPressEvent(e);
+}
 void RobWorkStudio::showAboutBox(){
     _aboutBox->exec();
 }

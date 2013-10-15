@@ -28,6 +28,7 @@ namespace {
     	        std::string str = format.toUpper().data();
     	        subformats.push_back(str);
     	    }
+
     	    return subformats;
     	}
 
@@ -50,7 +51,11 @@ namespace {
 
 }
 
-RWSImageLoaderPlugin::RWSImageLoaderPlugin():Plugin("RWSImageLoaderPlugin", "RWSImageLoaderPlugin", "0.1"){};
+RWSImageLoaderPlugin::RWSImageLoaderPlugin():Plugin("RWSImageLoaderPlugin", "RWSImageLoaderPlugin", "0.1")
+{
+
+
+};
 RWSImageLoaderPlugin::~RWSImageLoaderPlugin(){}
 
 std::vector<Extension::Descriptor> RWSImageLoaderPlugin::getExtensionDescriptors(){
@@ -59,6 +64,7 @@ std::vector<Extension::Descriptor> RWSImageLoaderPlugin::getExtensionDescriptors
 
     QList<QByteArray> formats = QImageReader::supportedImageFormats();
     BOOST_FOREACH(QByteArray& format, formats){
+    	//std::cout << "setting format: " << format.toUpper().data() << std::endl;
     	exts.back().getProperties().set(format.toUpper().data(), true);
     }
 
@@ -67,8 +73,13 @@ std::vector<Extension::Descriptor> RWSImageLoaderPlugin::getExtensionDescriptors
 
 rw::common::Ptr<Extension> RWSImageLoaderPlugin::makeExtension(const std::string& str){
 	if(str=="QImageLoader"){
-		return rw::common::ownedPtr( new Extension("QImageLoader","rw.loaders.printstuff",
+		Extension::Ptr extension = rw::common::ownedPtr( new Extension("QImageLoader","rw.loaders.ImageLoader",
 				this, ownedPtr(new QImageLoader()) ) );
+	    QList<QByteArray> formats = QImageReader::supportedImageFormats();
+	    BOOST_FOREACH(QByteArray& format, formats){
+	    	extension->getProperties().set(format.toUpper().data(), true);
+	    }
+	    return extension;
 	}
 	return NULL;
 }
