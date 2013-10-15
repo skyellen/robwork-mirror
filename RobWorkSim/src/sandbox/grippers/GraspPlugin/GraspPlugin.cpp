@@ -102,8 +102,9 @@ void GraspPlugin::open(WorkCell* workcell)
 		Math::seed(TimerUtil::currentTimeUs());
 		
 		_wc = workcell;
+		_wd = _wc->getFilePath();
 		if (!_td && _wc->getPropertyMap().has("taskDescription")) {
-			string filename = _wc->getPropertyMap().get<string>("taskDescription");
+			string filename = _wd+_wc->getPropertyMap().get<string>("taskDescription");
 			log().info() << "Loading task description from: " << filename << endl;
 			cout << "Loading task description from: " << filename << endl;
 			_td = TaskDescriptionLoader::load(filename, _dwc);

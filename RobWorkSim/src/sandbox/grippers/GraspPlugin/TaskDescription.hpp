@@ -71,7 +71,10 @@ class TaskDescription
 		std::vector<rw::math::Transform3D<> >& getHints() { return _hints; }
 		void addHint(rw::math::Transform3D<> hint) { _hints.push_back(hint); }
 		
+		void setCoverageDistance(rw::math::Q dist) { _coverageDistance = dist; }
 		rw::math::Q getCoverageDistance() const { return _coverageDistance; }
+		
+		void setTeachDistance(rw::math::Q dist) { _teachDistance = dist; }
 		rw::math::Q getTeachDistance() const { return _teachDistance; }
 		
 		rw::models::Object::Ptr getTargetObject() { return _targetObject; }

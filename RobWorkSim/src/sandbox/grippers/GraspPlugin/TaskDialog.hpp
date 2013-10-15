@@ -68,6 +68,12 @@ class TaskDialog : public QDialog
 		QLineEdit* _weightSuccessEdit;
 		QLineEdit* _weightWrenchEdit;
 		
+		QLineEdit* _intLimitEdit;
+		QLineEdit* _wreLimitEdit;
+		
+		QLineEdit* _teachDistEdit;
+		QLineEdit* _coverageDistEdit;
+		
 		std::string _wd;
 };
 

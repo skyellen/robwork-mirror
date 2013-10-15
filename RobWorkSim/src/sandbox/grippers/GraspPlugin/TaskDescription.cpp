@@ -312,8 +312,13 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	tree.put("TaskDescription.Weights.Wrench", td->_weights.wrench);
 	
 	// save teach & coverage distance
-	tree.put("TaskDescription.TeachDistance", XMLHelpers::QToString(td->_teachDistance));
-	tree.put("TaskDescription.CoverageDistance", XMLHelpers::QToString(td->_coverageDistance));
+	Q teachDist = td->_teachDistance;
+	teachDist(3) *= Rad2Deg;
+	teachDist(4) *= Rad2Deg;
+	tree.put("TaskDescription.TeachDistance", XMLHelpers::QToString(teachDist));
+	Q covDist = td->_coverageDistance;
+	covDist(6) *= Rad2Deg;
+	tree.put("TaskDescription.CoverageDistance", XMLHelpers::QToString(covDist));
 	
 	// save grasp hints
 	BOOST_FOREACH (Transform3D<> hint, td->_hints) {

@@ -166,6 +166,7 @@ class Gripper // : public TreeDevice
 			using rw::common::ownedPtr;
 			
 			if (_isJawParametrized) {
+				std::cout << "Generating jaw geometry..." << std::endl;
 				_leftGeometry = ownedPtr(new Geometry(new JawPrimitive(_jawParameters), std::string("LeftFingerGeo")));
 				//_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(_jawParameters), std::string("RightFingerGeo")));
 			}
@@ -189,6 +190,8 @@ class Gripper // : public TreeDevice
 		void setJawGeometry(rw::math::Q params)
 		{			
 			_jawParameters = params;
+			//_leftGeometry = NULL;
+			//_rightGeometry = NULL;
 			_isJawParametrized = true;
 		}
 		
@@ -232,6 +235,7 @@ class Gripper // : public TreeDevice
 		void setBaseGeometry(rw::math::Q params)
 		{
 			_baseParameters = params;
+			//_baseGeometry = NULL;
 			_isBaseParametrized = true;
 		}
 		

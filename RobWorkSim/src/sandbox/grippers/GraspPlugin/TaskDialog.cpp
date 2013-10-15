@@ -87,6 +87,20 @@ void TaskDialog::createGUI()
 	_weightSuccessEdit = new QLineEdit("1");
 	_weightWrenchEdit = new QLineEdit("1");
 	
+	QGroupBox* distanceBox = new QGroupBox("Distance parameters");
+	QLabel* teachDistLabel = new QLabel("Teach distance");
+	QLabel* coverageDistLabel = new QLabel("Coverage distance");
+	_teachDistEdit = new QLineEdit("");
+	_coverageDistEdit = new QLineEdit("");
+	
+	QGroupBox* interferenceBox = new QGroupBox("Interference objects");
+	
+	QGroupBox* limitBox = new QGroupBox("Limits");
+	QLabel* intLimitLabel = new QLabel("INT limit");
+	QLabel* wreLimitLabel = new QLabel("WRE limit");
+	_intLimitEdit = new QLineEdit("0.0");
+	_wreLimitEdit = new QLineEdit("0.0");
+	
 	/* connect elements */
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
 	connect(_applyButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
@@ -98,6 +112,9 @@ void TaskDialog::createGUI()
 	QGridLayout* targetLayout = new QGridLayout;
 	QGridLayout* gripperLayout = new QGridLayout;
 	QGridLayout* resultLayout = new QGridLayout;
+	QGridLayout* distLayout = new QGridLayout;
+	QGridLayout* limitLayout = new QGridLayout;
+	QGridLayout* interferenceLayout = new QGridLayout;
 	
 	/* add widgets to proper layouts */
 	buttonLayout->addWidget(_okButton);
@@ -113,31 +130,49 @@ void TaskDialog::createGUI()
 	gripperLayout->addWidget(_gripperCombo, row++, 1);
 	
 	row = 0;
-	resultLayout->addWidget(shapeLabel, row, 1);
-	resultLayout->addWidget(coverageLabel, row, 2);
-	resultLayout->addWidget(successLabel, row, 3);
-	resultLayout->addWidget(wrenchLabel, row++, 4);
+	distLayout->addWidget(teachDistLabel, row, 0);
+	distLayout->addWidget(_teachDistEdit, row++, 1);
+	distLayout->addWidget(coverageDistLabel, row, 0);
+	distLayout->addWidget(_coverageDistEdit, row++, 1);
+	
+	row = 0;
+	//resultLayout->addWidget(shapeLabel, row, 1);
+	resultLayout->addWidget(coverageLabel, row, 1);
+	resultLayout->addWidget(successLabel, row, 2);
+	resultLayout->addWidget(wrenchLabel, row++, 3);
 	resultLayout->addWidget(baseLabel, row, 0);
-	resultLayout->addWidget(_baseShapeEdit, row, 1);
-	resultLayout->addWidget(_baseCoverageEdit, row, 2);
-	resultLayout->addWidget(_baseSuccessEdit, row, 3);
-	resultLayout->addWidget(_baseWrenchEdit, row++, 4);
+	//resultLayout->addWidget(_baseShapeEdit, row, 1);
+	resultLayout->addWidget(_baseCoverageEdit, row, 1);
+	resultLayout->addWidget(_baseSuccessEdit, row, 2);
+	resultLayout->addWidget(_baseWrenchEdit, row++, 3);
 	resultLayout->addWidget(weightLabel, row, 0);
-	resultLayout->addWidget(_weightShapeEdit, row, 1);
-	resultLayout->addWidget(_weightCoverageEdit, row, 2);
-	resultLayout->addWidget(_weightSuccessEdit, row, 3);
-	resultLayout->addWidget(_weightWrenchEdit, row++, 4);
+	//resultLayout->addWidget(_weightShapeEdit, row, 1);
+	resultLayout->addWidget(_weightCoverageEdit, row, 1);
+	resultLayout->addWidget(_weightSuccessEdit, row, 2);
+	resultLayout->addWidget(_weightWrenchEdit, row++, 3);
+	
+	row = 0;
+	limitLayout->addWidget(intLimitLabel, row, 0);
+	limitLayout->addWidget(_intLimitEdit, row++, 1);
+	limitLayout->addWidget(wreLimitLabel, row, 0);
+	limitLayout->addWidget(_wreLimitEdit, row++, 1);
 	
 	row = 0;
 	layout->addWidget(targetBox, row++, 0);
-	layout->addWidget(gripperBox, row++, 0);
+	layout->addWidget(gripperBox, row, 0);
+	layout->addWidget(distanceBox, row++, 1);
+	layout->addWidget(interferenceBox, row, 0);
+	layout->addWidget(limitBox, row++, 1);
 	layout->addWidget(resultBox, row++, 0, 1, 2);
 	layout->addLayout(buttonLayout, row++, 0);
 	
 	/* set layouts */
 	targetBox->setLayout(targetLayout);
 	gripperBox->setLayout(gripperLayout);
+	distanceBox->setLayout(distLayout);
 	resultBox->setLayout(resultLayout);
+	interferenceBox->setLayout(interferenceLayout);
+	limitBox->setLayout(limitLayout);
 	setLayout(layout);
 }
 
@@ -159,6 +194,23 @@ void TaskDialog::updateGUI()
 	}
 	_gripperCombo->setCurrentIndex(_gripperCombo->findText(QString::fromStdString(_td->getGripperDevice()->getName())));
 	
+	// update the distances section
+	Q teachDist = _td->getTeachDistance();
+	teachDist(3) *= Rad2Deg;
+	teachDist(4) *= Rad2Deg;
+	stringstream ss;
+	ss << teachDist;
+	_teachDistEdit->setText(QString::fromStdString(ss.str()));
+	Q covDist = _td->getCoverageDistance();
+	covDist(6) *= Rad2Deg;
+	ss.str("");
+	ss << covDist;
+	_coverageDistEdit->setText(QString::fromStdString(ss.str()));
+	
+	// update the limits section
+	_intLimitEdit->setText(QString::number(_td->getInterferenceLimit()));
+	_wreLimitEdit->setText(QString::number(_td->getWrenchLimit()));
+	
 	// update the result section
 	_baseShapeEdit->setText(QString::number(_td->getBaseline().shape));
 	_baseCoverageEdit->setText(QString::number(_td->getBaseline().coverage));
@@ -176,6 +228,23 @@ void TaskDialog::updateTaskDescription()
 {
 	// set new target
 	_td->setTarget(_targetCombo->currentText().toStdString());
+	
+	// update distances
+	Q teachDist;
+	stringstream ss(_teachDistEdit->text().toStdString());
+	ss >> teachDist;
+	teachDist(3) *= Deg2Rad;
+	teachDist(4) *= Deg2Rad;
+	_td->setTeachDistance(teachDist);
+	Q covDist;
+	ss.str(_coverageDistEdit->text().toStdString());
+	ss >> covDist;
+	covDist(6) *= Deg2Rad;
+	_td->setCoverageDistance(covDist);
+	
+	// update limits
+	_td->setInterferenceLimit(_intLimitEdit->text().toDouble());
+	_td->setWrenchLimit(_wreLimitEdit->text().toDouble());
 	
 	// update baseline & weights
 	TaskDescription::Qualities& base = _td->getBaseline();
