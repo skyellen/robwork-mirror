@@ -439,8 +439,6 @@ void GraspPlugin::planTasks()
 		_generator = new TaskGenerator(_td);
 		
 		_generator->generateTask(_nOfTargetsToGen, _initState);
-		//_gripper->setTasks(_generator->getTasks());
-		//_gripper->setSamples(_generator->getSamples());
 		_tasks = _generator->getTasks();
 		_samples = _generator->getSamples();
 	} catch (rw::common::Exception& e) {

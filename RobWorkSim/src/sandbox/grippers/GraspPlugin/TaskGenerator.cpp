@@ -43,6 +43,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 	TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray,
 	CollisionStrategy::Ptr cstrategy, double &graspW)
 {
+	//RW_WARN("SAMPLE");
     // choose a random number in the total area
     TriMesh::Ptr mesh = sampler.getMesh();
     ProximityStrategyData data;
@@ -51,7 +52,8 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
     bool targetFound = false;
     int tries = 0;
     Transform3D<> target;
-    do {
+    do { 
+		//RW_WARN("SAMPLELOOP");
         target = sampler.sample();
         Vector3D<> pos = target.P();
         // z-axis is aligned with tri normal
@@ -71,13 +73,21 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
         // now we want to find any triangles that collide with the ray and which are parallel with the sampled
         cstrategy->inCollision(object, Transform3D<>::identity(), ray, rayTrans, data);
         typedef std::pair<int,int> PrimID;
+        //RW_WARN("1");
         BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds){
+			//RW_WARN("1.5");
 			// search for a triangle that has a normal
+			
+			//cout << "!!!" << mesh->getSize() << endl;
+			//cout << "!!!" << pid.first << endl;
 			Triangle<> tri = mesh->getTriangle( pid.first );
+			//RW_WARN("1.75");
 			Vector3D<> normal = tri.calcFaceNormal();
+			
 			bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
 			double dist = MetricUtil::dist2(tri[0], pos);
             
+            //RW_WARN("2");
 		   if (closeAngle) {
 				
 				// calculate target
@@ -95,12 +105,13 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 					target.P() = pos-faceNormal*(dist/2.0);
 				else
 					target.P() = pos+faceNormal*(dist/2.0);
-					
+				
 				if (_td->hasHints()) {
 					targetFound = false;
 				} else {
 					targetFound = true;
 				}
+				//RW_WARN("3");
 				// test if the target belongs in the area around hinted grasps
 				BOOST_FOREACH (Transform3D<> hint, _td->getHints()) {
 					// calculate distance
@@ -157,6 +168,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 					//std::cout << "dist: " << distOk << ", angle: " << angleOk << std::endl;
 						
 					if (distOk && angleOk) {
+						//RW_WARN("WEE");
 						targetFound = true;
 						break;
 					}
@@ -170,7 +182,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
         if (tries > 10000) {
 			RW_THROW("Cannot find target without collision! Tries: " << tries);
 		}
-    } while( !targetFound);
+    } while (!targetFound);
     
     return target;
 }
@@ -180,7 +192,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff)
 {
 	if (!tasks) {
-		RW_WARN("tasks = NULL");
+		//RW_WARN("tasks = NULL");
 		return NULL;
 	}
 	
@@ -268,6 +280,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     stask.closeQ = _closeQ;
     gtask->setTCPID(_td->getGripperTCP()->getName());
     gtask->setGraspControllerID(_td->getControllerID());
+    //RW_WARN("SETUP TASK");
     
     // setup all samples
     _samples = new GraspTask;
@@ -278,6 +291,10 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     TriMeshSurfaceSampler sampler(_td->getTargetObject()->getGeometry()[0]);
 	sampler.setRandomPositionEnabled(false);
 	sampler.setRandomRotationEnabled(false);
+	
+	//cout << _td->getTargetObject()->getGeometry()[0]->getName() << endl;
+	//cout << "PTR: " << _td->getTargetObject()->getGeometry()[0]->getGeometryData()->getTriMesh() << endl;
+	//cout << "MESHSIZE: " << sampler.getMesh() << endl;
 	
 	CollisionStrategy::Ptr cstrategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
     CollisionDetector cd(_td->getWorkCell(), cstrategy);
@@ -299,10 +316,13 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.LeftFinger", obj->getBase()->getName()));
 		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.RightFinger", obj->getBase()->getName()));
 	}
+	//RW_WARN("PREPARE");
     
     for (int successes = 0; successes < nTargets;) {
+		//RW_WARN("LOOPY");
 		double graspW = 0.0;
 		Transform3D<> target = _sample(_closeQ[0]*2.0, _openQ[0]*2.0, sampler, object, ray, cstrategy, graspW);
+		//RW_WARN("FOUND");
 
         // distance between grasping points is graspW
         // we close gripper such that it is 1 cm more openned than the target
@@ -316,7 +336,9 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
         moveFrameW(wTobj * target, _td->getGripperTCP(), _td->getGripperMovable(), state);
         
         CollisionDetector::QueryResult result;
+        //RW_WARN("COLLISIONCHECK");
         if (!cdetect->inCollision(state, &result, true)) {
+			//RW_WARN("YAY");
             ++successes;
             
             // make new subtask

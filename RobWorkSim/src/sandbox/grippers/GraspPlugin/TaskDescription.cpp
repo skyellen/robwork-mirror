@@ -106,6 +106,7 @@ void TaskDescriptionLoader::readTarget(PTree& tree, TaskDescription::Ptr task)
 	DEBUG << "- target name: [" << targetName << "]" << endl;
 	
 	task->_targetObject = task->_wc->findObject(targetName);
+	//DEBUG << task->_targetObject->getName() << endl;
 	task->_targetFrame = task->_targetObject->getBase();
 	
 	if (!task->_targetObject) {
