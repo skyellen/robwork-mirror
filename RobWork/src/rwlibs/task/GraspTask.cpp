@@ -258,7 +258,7 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask(){
             ctarget->getPropertyMap().set<std::vector<double> >("InterferenceDistances", result->interferenceDistances);
             ctarget->getPropertyMap().set<std::vector<double> >("InterferenceAngles", result->interferenceAngles);
             ctarget->getPropertyMap().set<std::vector<double> >("Interferences", result->interferences);
-
+			ctarget->getPropertyMap().set<double>("Interference", result->interference);
 
             subtask->addTarget( ctarget );
         }

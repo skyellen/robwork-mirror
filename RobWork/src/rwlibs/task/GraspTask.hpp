@@ -33,21 +33,21 @@ public:
     //! the possible discrete outcomes of a single task simulation
     typedef enum Status {
         UnInitialized = 0,
-        Success,
-        CollisionInitially,
-        ObjectMissed,
-        ObjectDropped,
-        ObjectSlipped,
-        TimeOut,
-        SimulationFailure,
-        InvKinFailure,
-        PoseEstimateFailure,
-        CollisionFiltered,
-        CollisionObjectInitially,
-        CollisionEnvironmentInitially,
-        CollisionDuringExecution,
-        Interference,
-        WrenchInsufficient,
+        Success, // 1
+        CollisionInitially, // 2
+        ObjectMissed, // 3
+        ObjectDropped, // 4
+        ObjectSlipped, // 5
+        TimeOut, // 6
+        SimulationFailure, // 7
+        InvKinFailure, // 8
+        PoseEstimateFailure, // 9
+        CollisionFiltered, // 10
+        CollisionObjectInitially, // 11
+        CollisionEnvironmentInitially, // 12
+        CollisionDuringExecution, // 13
+        Interference, // 14
+        WrenchInsufficient, // 15
         SizeOfStatusArray
      } TestStatus;
 
@@ -194,7 +194,7 @@ struct GraspResult {
     std::vector<double> interferenceDistances;
     std::vector<double> interferenceAngles;
     std::vector<double> interferences;
-    
+    double interference;
     // /Adam W
 };
 
