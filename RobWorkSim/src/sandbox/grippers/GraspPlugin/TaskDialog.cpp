@@ -202,7 +202,9 @@ void TaskDialog::updateGUI()
 	ss << teachDist;
 	_teachDistEdit->setText(QString::fromStdString(ss.str()));
 	Q covDist = _td->getCoverageDistance();
-	covDist(6) *= Rad2Deg;
+	//covDist(6) *= Rad2Deg;
+	covDist(1) *= Rad2Deg;
+	covDist(2) *= Rad2Deg;
 	ss.str("");
 	ss << covDist;
 	_coverageDistEdit->setText(QString::fromStdString(ss.str()));
@@ -239,7 +241,9 @@ void TaskDialog::updateTaskDescription()
 	Q covDist;
 	ss.str(_coverageDistEdit->text().toStdString());
 	ss >> covDist;
-	covDist(6) *= Deg2Rad;
+	//covDist(6) *= Deg2Rad;
+	covDist(1) *= Deg2Rad;
+	covDist(2) *= Deg2Rad;
 	_td->setCoverageDistance(covDist);
 	
 	// update limits

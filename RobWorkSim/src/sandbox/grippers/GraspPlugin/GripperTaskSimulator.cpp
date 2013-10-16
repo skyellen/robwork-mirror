@@ -83,6 +83,7 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 	sstate._target->getResult()->interferenceDistances = interferenceDistances;
 	sstate._target->getResult()->interferenceAngles = interferenceAngles;
 	sstate._target->getResult()->interferences = interferences;
+	sstate._target->getResult()->interference = interference;
 	
 	return interference;
 }
@@ -106,10 +107,10 @@ double GripperTaskSimulator::calculateCoverage()
 	double coverage = 0.0;
 
 	Q covDist = _td->getCoverageDistance();
-	double R = sqrt(2) * sin(0.5 * covDist(1));
+	double R = 2.0 * sin(0.25 * covDist(1));
 	Q diff(7, covDist(0), covDist(0), covDist(0), R, R, R, covDist(2));
-	cout << "!!!" << diff << endl;
-	diff = Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 45*Deg2Rad);
+	//cout << "!!!" << diff << endl;
+	//diff = Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 45*Deg2Rad);
 
 	int okTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_gtask, diff), GraspTask::Success);
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::Success);
@@ -187,7 +188,8 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER(" << status << ")" << endl;
 	}
 	
-	//DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
+	DEBUG << " I: " << sstate._target->getResult()->interference;
+	DEBUG << " W: " << sstate._target->getResult()->qualityAfterLifting << endl;
 }
 
 
