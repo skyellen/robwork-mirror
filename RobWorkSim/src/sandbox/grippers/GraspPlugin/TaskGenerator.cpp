@@ -216,6 +216,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
             key[5] = eaa.axis()(2);
             key[6] = eaa.angle();
             
+            //cout << key << endl;
+            
 			nodes.push_back(NNSearch::KDNode(key, p.second->getResult()));
 		}
 	}
@@ -228,8 +230,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 		if (node.value->testStatus != GraspTask::TimeOut) {
 			result.clear();
 			Q key = node.key;
-			//nntree->nnSearchRect(key-diff, key+diff, result);
-			nntree->nnSearchElipse(key, diff, result);
+			nntree->nnSearchRect(key-diff, key+diff, result);
+			//nntree->nnSearchElipse(key, diff, result);
 
 			int removed = 0;
 			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
