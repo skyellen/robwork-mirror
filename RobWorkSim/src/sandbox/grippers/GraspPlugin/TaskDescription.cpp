@@ -72,7 +72,9 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	DEBUG << "- coverage distance: ";
 	PTree& node1 = tree.get_child("CoverageDistance");
 	task->_coverageDistance = XMLHelpers::readQ(node1);
-	task->_coverageDistance(6) *= Deg2Rad;
+	//task->_coverageDistance(6) *= Deg2Rad;
+	task->_coverageDistance(1) *= Deg2Rad;
+	task->_coverageDistance(2) *= Deg2Rad;
 	DEBUG << task->_coverageDistance << endl;
 	
 	DEBUG << "- teach distance: ";
@@ -318,7 +320,9 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	teachDist(4) *= Rad2Deg;
 	tree.put("TaskDescription.TeachDistance", XMLHelpers::QToString(teachDist));
 	Q covDist = td->_coverageDistance;
-	covDist(6) *= Rad2Deg;
+	//covDist(6) *= Rad2Deg;
+	covDist(1) *= Rad2Deg;
+	covDist(2) *= Rad2Deg;
 	tree.put("TaskDescription.CoverageDistance", XMLHelpers::QToString(covDist));
 	
 	// save grasp hints

@@ -105,7 +105,11 @@ double GripperTaskSimulator::calculateCoverage()
 	
 	double coverage = 0.0;
 
-	Q diff = _td->getCoverageDistance();
+	Q covDist = _td->getCoverageDistance();
+	double R = sqrt(2) * sin(0.5 * covDist(1));
+	Q diff(7, covDist(0), covDist(0), covDist(0), R, R, R, covDist(2));
+	cout << "!!!" << diff << endl;
+	diff = Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 45*Deg2Rad);
 
 	int okTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_gtask, diff), GraspTask::Success);
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::Success);
@@ -125,11 +129,14 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 	
 	int success = 0;
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	//DEBUG << "WRENCHES!" << endl;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
+		//DEBUG << "??? " << p.second->getResult()->testStatus << endl;
 		if (p.second->getResult()->testStatus == GraspTask::Success) {
 			success++;
 			
 			Q result = p.second->getResult()->qualityAfterLifting;
+			//DEBUG << result << endl;
 			
 			wrench(0) += result(0);
 			wrench(1) += result(1);
@@ -180,7 +187,7 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER(" << status << ")" << endl;
 	}
 	
-	//DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
+	DEBUG << "- Wrench: " << sstate._target->getResult()->qualityAfterLifting << endl;
 }
 
 
@@ -209,10 +216,10 @@ void GripperTaskSimulator::evaluateGripper()
 	int samples = _samples->getSubTasks()[0].getTargets().size();
 	
 	//double shape = calculateShape() / b.shape;
-	double coverage = calculateCoverage() / b.coverage;
-	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(0) / b.wrench;
+	double coverage = calculateCoverage() / b.coverage;
+	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
 	double quality = (
