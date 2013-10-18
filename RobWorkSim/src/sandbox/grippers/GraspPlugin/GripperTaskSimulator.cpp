@@ -212,7 +212,7 @@ void GripperTaskSimulator::evaluateGripper()
 	TaskDescription::Qualities& b = _td->getBaseline();
 	TaskDescription::Qualities& w = _td->getWeights();
 	 
-	DEBUG << "Evaluating..." << endl;
+	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int samples = _samples->getSubTasks()[0].getTargets().size();
