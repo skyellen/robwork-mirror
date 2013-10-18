@@ -19,7 +19,11 @@ SET(RWS_COMPONENT_LIBRARIES $ENV{RWS_COMPONENT_LIBRARIES} CACHE STRING "componen
 
 # now create the actual RobWorkStudio executable
 # Now the RobWorkStudio executable need to be build:
-ADD_EXECUTABLE(RobWorkStudio main.cpp )
+IF (WIN32 AND IS_RELEASE)
+	ADD_EXECUTABLE(RobWorkStudio WIN32 main.cpp )
+ELSE(WIN32 AND IS_RELEASE)
+	ADD_EXECUTABLE(RobWorkStudio main.cpp )
+ENDIF(WIN32 AND IS_RELEASE)
 SET(LIBS_TMP ${RWS_PLUGIN_LIBRARIES} rws ${RWS_COMPONENT_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 #MESSAGE("${LIBS_TMP} rws_rwstudioapp ${ROBWORK_LIBRARIES}")
 TARGET_LINK_LIBRARIES(RobWorkStudio  ${LIBS_TMP} rws_rwstudioapp ${ROBWORK_LIBRARIES})
