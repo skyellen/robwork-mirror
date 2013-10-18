@@ -373,7 +373,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
       # Current issues addressed for MSVC 64 bit:
       # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
       # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures.
-      IF(AMD64)
+      IF(AMD64 OR CMAKE_CL_64)
         LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_AMD64")
       ENDIF()
     ENDIF ()
