@@ -311,7 +311,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     Q currentQ = _hand->getQ(state);
 
-    if(sstate._wallTimer.getTime()>10 && sim->getTime()>15){ //seconds
+    if(sstate._wallTimer.getTime()>10) { // && sim->getTime()>15){ //seconds
         _timeout++;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::TimeOut;
