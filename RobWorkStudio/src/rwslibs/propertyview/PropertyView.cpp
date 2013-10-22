@@ -18,6 +18,8 @@
 
 #include "PropertyView.hpp"
 
+#include <QGridLayout>
+
 #include <rws/RobWorkStudio.hpp>
 
 using namespace rw::kinematics;
@@ -139,5 +141,7 @@ void PropertyView::propertyChanged(const std::string& identifier) {
 }
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN2(PropertyView, PropertyView)
+#endif
 #endif

@@ -61,7 +61,7 @@
 
 #include <QtCore/QMap>
 #include <QtGui/QIcon>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QStringList>
 
 #if QT_VERSION >= 0x040400

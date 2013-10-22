@@ -57,7 +57,8 @@ void SamplePlugin::stateChangedListener(const State& state) {
 
 }
 
-
-
-
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1")
+#else
 Q_EXPORT_PLUGIN(SamplePlugin);
+#endif

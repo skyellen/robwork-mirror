@@ -86,13 +86,24 @@ IF(NOT DEFINED QT_BINARY_DIR)
 #	SET(QT_BINARY_DIR "${RWS_BUILD_WITH_QT_BINARY_DIR}")
 ENDIF()
 
-# Find and setup Qt4.
-FIND_PACKAGE(Qt4 REQUIRED)
-SET(QT_USE_QTOPENGL 1)
-SET(QT_USE_QTDESIGNER 1)
-SET(QT_USE_QTUITOOLS 1)
-INCLUDE(${QT_USE_FILE})
-
+# Find and setup Qt.
+SET(RWS_USE_QT5 ${RWS_BUILD_WITH_QT5})
+IF(NOT RWS_USE_QT5)
+	FIND_PACKAGE(Qt4 REQUIRED)
+	SET(QT_USE_QTOPENGL 1)
+	SET(QT_USE_QTDESIGNER 1)
+	SET(QT_USE_QTUITOOLS 1)
+	INCLUDE(${QT_USE_FILE})
+ELSE()
+	cmake_minimum_required(VERSION 2.8.3)
+	FIND_PACKAGE(Qt5Core REQUIRED)
+	FIND_PACKAGE(Qt5Gui REQUIRED)
+	FIND_PACKAGE(Qt5Widgets REQUIRED)
+	FIND_PACKAGE(Qt5OpenGL REQUIRED)
+	get_target_property(QT_UIC_EXECUTABLE Qt5::uic LOCATION)
+	SET(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES})
+	SET(QT_INCLUDES ${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5OpenGL_INCLUDE_DIRS})
+ENDIF()
 #ADD_DEFINITIONS(-DQT_PLUGIN)
 
 # Find and setup OpenGL.
@@ -107,7 +118,7 @@ IF(NOT DEFINED RWS_CXX_FLAGS)
 	
 	SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
 		CACHE STRING "Change this to force using your own 
-					  flags and not those of RobWorkSutdio"
+					  flags and not those of RobWorkStudio"
 	)
 ENDIF()
 
@@ -189,3 +200,38 @@ FOREACH (it ${ui_files})
 ENDFOREACH (it)
 
 ENDMACRO (RWS_QT4_WRAP_UI)
+
+MACRO (QT5_EXTRACT_OPTIONS _qt5_files _qt5_options)
+  SET(${_qt5_files})
+  SET(${_qt5_options})
+  SET(_QT5_DOING_OPTIONS FALSE)
+  FOREACH(_currentArg ${ARGN})
+    IF ("${_currentArg}" STREQUAL "OPTIONS")
+      SET(_QT5_DOING_OPTIONS TRUE)
+    ELSE ("${_currentArg}" STREQUAL "OPTIONS")
+      IF(_QT5_DOING_OPTIONS) 
+        LIST(APPEND ${_qt5_options} "${_currentArg}")
+      ELSE(_QT5_DOING_OPTIONS)
+        LIST(APPEND ${_qt5_files} "${_currentArg}")
+      ENDIF(_QT5_DOING_OPTIONS)
+    ENDIF ("${_currentArg}" STREQUAL "OPTIONS")
+  ENDFOREACH(_currentArg) 
+ENDMACRO (QT5_EXTRACT_OPTIONS)
+
+MACRO (RWS_QT5_WRAP_UI outfiles )
+QT5_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
+
+FOREACH (it ${ui_files})
+  GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
+  GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
+  GET_FILENAME_COMPONENT(outpath ${it} PATH)
+  
+  SET(outfile ${CMAKE_CURRENT_SOURCE_DIR}/${outpath}/ui_${outfile}.h)
+  ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+    COMMAND ${QT_UIC_EXECUTABLE}
+    ARGS ${ui_options} -o ${outfile} ${infile}
+    MAIN_DEPENDENCY ${infile})
+  SET(${outfiles} ${${outfiles}} ${outfile})
+ENDFOREACH (it)
+
+ENDMACRO (RWS_QT5_WRAP_UI)

@@ -18,6 +18,9 @@
 
 #include "PlayBack.hpp"
 
+#include <QVBoxLayout>
+#include <QLabel>
+
 #include <rws/RobWorkStudio.hpp>
 
 #include <rw/common/StringUtil.hpp>
@@ -480,5 +483,7 @@ void PlayBack::reloadPlay()
 
 //----------------------------------------------------------------------
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN2(PlayBack, PlayBack)
+#endif
 #endif

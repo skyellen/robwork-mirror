@@ -19,7 +19,7 @@
 #ifndef VARIANTMANAGER_HPP_
 #define VARIANTMANAGER_HPP_
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "qtvariantproperty.h"
 #include "qteditorfactory.h"
 #include "qttreepropertybrowser.h"

@@ -38,6 +38,9 @@ class GTaskVisPlugin: public rws::RobWorkStudioPlugin, private Ui::GTaskVisPlugi
 {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "plugin.json")
+#endif
 public:
 
     GTaskVisPlugin();

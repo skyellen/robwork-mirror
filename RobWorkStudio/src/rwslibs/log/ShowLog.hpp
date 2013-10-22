@@ -18,6 +18,8 @@
 #ifndef RW_STUDIO_LOG_MODULE_H
 #define RW_STUDIO_LOG_MODULE_H
 
+#include <QTextEdit>
+
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/models/WorkCell.hpp>
@@ -39,6 +41,9 @@ class ShowLog : public RobWorkStudioPlugin
     Q_OBJECT
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
     Q_INTERFACES(rws::RobWorkStudioPlugin)
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "plugin.json")
+#endif
 #endif
 public:
     /**

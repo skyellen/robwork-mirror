@@ -1,10 +1,11 @@
 #include "SamplePlugin.hpp"
 
 #include <QPushButton>
+#include <QGridLayout>
 
 #include <rw/rw.hpp>
 
-#include <sandbox/QHullND.hpp>
+#include <rw/geometry/QHullND.hpp>
 #include <RobWorkStudio.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -14,6 +15,7 @@ using namespace robwork;
 
 using namespace rw::math;
 using namespace rw::common;
+using namespace rw::geometry;
 using namespace rw::kinematics;
 using namespace rw::models;
 
@@ -66,7 +68,7 @@ void SamplePlugin::clickEvent() {
         log().info() << "Button 1 pressed!\n";
 
 
-        std::vector<QHullND<2>::VectorND> vertices, hullvertices;
+        std::vector<VectorND<2> > vertices, hullvertices;
         vertices.resize(100);
 
         for(size_t i=0;i<vertices.size();i++){
@@ -98,4 +100,8 @@ void SamplePlugin::stateChangedListener(const State& state) {
     log().info() << "State changed!";
 }
 
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1")
+#else
 Q_EXPORT_PLUGIN(SamplePlugin);
+#endif

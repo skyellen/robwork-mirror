@@ -632,4 +632,6 @@ void GTaskVisPlugin::on_btnRecordVideo_clicked() {
 
 }
 
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN(GTaskVisPlugin);
+#endif

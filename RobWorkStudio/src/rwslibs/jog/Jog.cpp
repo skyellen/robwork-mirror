@@ -513,5 +513,7 @@ void Jog::genericEventListener(const std::string& event)
 }
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN2(Jog, Jog)
+#endif
 #endif

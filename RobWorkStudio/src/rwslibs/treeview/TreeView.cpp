@@ -837,5 +837,7 @@ void TreeView::keyPressEvent ( QKeyEvent * event ){
 
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN2(treeview, TreeView)
+#endif
 #endif

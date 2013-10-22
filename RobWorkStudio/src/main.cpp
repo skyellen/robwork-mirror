@@ -22,6 +22,7 @@
 #endif //#ifdef __WIN32
 #include <QApplication>
 #include <QMainWindow>
+#include <QSplashScreen>
 #include <rw/common/ProgramOptions.hpp>
 #include "RobWorkStudio.hpp"
 #include <rw/RobWork.hpp>

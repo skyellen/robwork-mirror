@@ -6,7 +6,10 @@
 MACRO(RWS_ADD_PLUGIN _name _component _lib_type)
     ADD_LIBRARY(${_name} ${_lib_type} ${ARGN})
     # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    target_link_libraries(${_name} ${Boost_LIBRARIES} )
+    IF(NOT RWS_USE_STATIC_LINK_PLUGINS)
+      target_link_libraries(${_name} rws qtpropertybrowser ${ROBWORK_LIBRARIES} ${QT_LIBRARIES})
+    ENDIF()
     
     # Only link if needed
     if(WIN32 AND MSVC)
@@ -66,6 +69,10 @@ MACRO(RWS_ADD_COMPONENT _name _component)
     ADD_LIBRARY(${_name} ${PROJECT_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
+    IF(NOT RWS_USE_STATIC_LINK_PLUGINS)
+      target_link_libraries(${_name} rws qtpropertybrowser ${ROBWORK_LIBRARIES} ${QT_LIBRARIES})
+    ENDIF()
+
     
     SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}${_name};")
     
@@ -116,3 +123,41 @@ FOREACH (it ${ui_files})
 ENDFOREACH (it)
 
 ENDMACRO (RWS_QT4_WRAP_UI)
+
+MACRO (QT5_EXTRACT_OPTIONS _qt5_files _qt5_options)
+  SET(${_qt5_files})
+  SET(${_qt5_options})
+  SET(_QT5_DOING_OPTIONS FALSE)
+  FOREACH(_currentArg ${ARGN})
+    IF ("${_currentArg}" STREQUAL "OPTIONS")
+      SET(_QT5_DOING_OPTIONS TRUE)
+    ELSE ("${_currentArg}" STREQUAL "OPTIONS")
+      IF(_QT5_DOING_OPTIONS) 
+        LIST(APPEND ${_qt5_options} "${_currentArg}")
+      ELSE(_QT5_DOING_OPTIONS)
+        LIST(APPEND ${_qt5_files} "${_currentArg}")
+      ENDIF(_QT5_DOING_OPTIONS)
+    ENDIF ("${_currentArg}" STREQUAL "OPTIONS")
+  ENDFOREACH(_currentArg) 
+ENDMACRO (QT5_EXTRACT_OPTIONS)
+
+#
+# Setting up macro for easily adding rws plugin target 
+#
+MACRO (RWS_QT5_WRAP_UI outfiles )
+QT5_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
+
+FOREACH (it ${ui_files})
+  GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
+  GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
+  GET_FILENAME_COMPONENT(outpath ${it} PATH)
+  
+  SET(outfile ${CMAKE_CURRENT_SOURCE_DIR}/${outpath}/ui_${outfile}.h)
+  ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+    COMMAND ${QT_UIC_EXECUTABLE}
+    ARGS ${ui_options} -o ${outfile} ${infile}
+    MAIN_DEPENDENCY ${infile})
+  SET(${outfiles} ${${outfiles}} ${outfile})
+ENDFOREACH (it)
+
+ENDMACRO (RWS_QT5_WRAP_UI)

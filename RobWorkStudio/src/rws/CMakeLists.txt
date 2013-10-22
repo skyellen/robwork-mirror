@@ -1,10 +1,12 @@
 
-
 # if we want to use ui files add them here
 SET(UIS_FILES AboutBox.ui propertyview/PropertyViewEditor.ui propertyview/PropertyViewDialog.ui)
 
-RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
-
+IF(RWS_USE_QT5)
+	RWS_QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+ELSE()
+	RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+ENDIF()
 
 # Standard files to compile:
 SET(SRC_FILES_CPP
@@ -55,7 +57,11 @@ SET(MocHeaderFiles
 set_source_files_properties(${SRC_FILES_CPP} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 SET(MocSrcFiles)
-QT4_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+IF(RWS_USE_QT5)
+	QT5_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+ELSE()
+	QT4_WRAP_CPP(MocSrcFiles ${MocHeaderFiles} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+ENDIF()
 set_source_files_properties(${MocSrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # Resource files to rcc and compile:
@@ -63,7 +69,11 @@ IF(RWS_BUILD_SANDBOX)
     #SET(SandboxResourceFiles rwstudio_sandbox_resources.qrc)
 ENDIF ()
 # Rcc the files:
-QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qrc)
+IF(RWS_USE_QT5)
+	QT5_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qrc)
+ELSE()
+	QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qrc)
+ENDIF()
 
 # We create a static library named rwstudio that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.

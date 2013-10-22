@@ -10,7 +10,11 @@ RW_ADD_DOC(${SUBSYS_NAME})
 IF(build)    
     # if we want to use ui files add them here
     SET(UIS_FILES SensorsPlugin.ui )
-    RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+    IF(RWS_USE_QT5)
+      RWS_QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+    ELSE()
+      RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+    ENDIF()
     
     # Standard cpp files to compile:
     SET(SrcFiles Sensors.cpp SensorView.cpp)
@@ -18,10 +22,16 @@ IF(build)
     
     set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
+    IF(RWS_USE_QT5)
+    	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	# Rcc the files:
+    	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+    ELSE()
     # Header files to moc and compile:
-    QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-    # Rcc the files:
-    QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+    	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	# Rcc the files:
+    	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+    ENDIF()
         
     RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins ${RWS_DEFAULT_LIB_TYPE} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(plugins "rwslibs/sensors" ${SRC_FILES_HPP}) 

@@ -17,6 +17,7 @@
 
 #include "Lua.hpp"
 
+#include <QVBoxLayout>
 
 #include <sstream>
 #include <rw/common/StringUtil.hpp>
@@ -200,5 +201,7 @@ void Lua::setupMenu(QMenu* pluginmenu){
 
 //----------------------------------------------------------------------
 #ifndef RW_STATIC_LINK_PLUGINS
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN2(Lua, Lua)
+#endif
 #endif

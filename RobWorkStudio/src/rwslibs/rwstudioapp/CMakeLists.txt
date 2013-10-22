@@ -16,10 +16,16 @@ IF(build)
     SET(SrcFiles RobWorkStudioApp.cpp)
     SET(SRC_FILES_HPP RobWorkStudioApp.hpp)
     
+    IF(RWS_USE_QT5)
+    	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	# Rcc the files:
+    	QT5_ADD_RESOURCES(RccSrcFiles )
+    ELSE()
     # Header files to moc and compile:
-    # QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-    # Rcc the files:
-    QT4_ADD_RESOURCES(RccSrcFiles )
+    	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    	# Rcc the files:
+    	QT4_ADD_RESOURCES(RccSrcFiles )
+    ENDIF()
         
     RWS_ADD_COMPONENT(${SUBSYS_NAME} plugins ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
     RW_ADD_INCLUDES(plugins "rwslibs/rwstudioapp" ${SRC_FILES_HPP}) 

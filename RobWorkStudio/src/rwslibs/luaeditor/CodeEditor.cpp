@@ -15,7 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
- #include <QtGui>
+#include <RobWorkStudioConfig.hpp>
+
+#if RWS_USE_QT5
+#include <QtWidgets>
+#else
+#include <QtGui>
+#endif
 
  #include "CodeEditor.hpp"
 

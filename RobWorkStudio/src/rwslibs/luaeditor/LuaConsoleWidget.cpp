@@ -15,9 +15,15 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <RobWorkStudioConfig.hpp>
 #include "LuaConsoleWidget.hpp"
 
+#if RWS_USE_QT5
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
+
 #include <iostream>
 #include <iomanip>
 

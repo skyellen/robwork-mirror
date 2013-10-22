@@ -6,7 +6,7 @@
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QProcess>
 
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 #include "HelpAssistant.hpp"
 #include "../RobWorkStudioConfig.hpp"

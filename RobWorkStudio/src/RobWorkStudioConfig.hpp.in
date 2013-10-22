@@ -15,3 +15,4 @@
 #cmakedefine RWS_HAVE_LUA 1
 #cmakedefine RWS_USE_STATIC_LINK_PLUGINS
 #cmakedefine RW_STATIC_LINK_PLUGINS
+#cmakedefine RWS_USE_QT5 1

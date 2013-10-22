@@ -1,6 +1,9 @@
 
 #include "RobWorkStudioApp.hpp"
 
+#include <QApplication>
+#include <QSplashScreen>
+
 #include <rw/common/ProgramOptions.hpp>
 #include <RobWorkStudioConfig.hpp>
 #ifdef RWS_USE_STATIC_LINK_PLUGINS

@@ -81,6 +81,20 @@ MACRO (RWS_QT4_WRAP_CPP outfiles )
 
 ENDMACRO (RWS_QT4_WRAP_CPP)
 
+MACRO (RWS_QT5_WRAP_CPP outfiles )
+  # get include dirs
+  QT5_GET_MOC_FLAGS(moc_flags)
+  QT5_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
+
+  FOREACH (it ${moc_files})
+    GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
+    RWS_QT4_MAKE_OUTPUT_FILE(${it} moc_ cpp outfile)
+    QT5_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}")
+    SET(${outfiles} ${${outfiles}} ${outfile})
+  ENDFOREACH(it)
+
+ENDMACRO (RWS_QT5_WRAP_CPP)
+
 # Standard files to compile:
 SET(SRC_FILES_CPP
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp 
@@ -108,9 +122,14 @@ SET(SRC_FILES_HPP
 SET(MocHeaderFiles ${SRC_FILES_HPP} )
 
 SET(MocSrcFiles )
-RWS_QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
 
-RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp"
+IF (RWS_USE_QT5)
+	RWS_QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
+ELSE()
+	RWS_QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
+ENDIF()
+
+	RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp"
                        "${CMAKE_CURRENT_BINARY_DIR}/src/qttreepropertybrowser.moc" "${moc_flags}" "${moc_options}")
 RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp" 
                        "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertymanager.moc" "${moc_flags}" "${moc_options}")
@@ -134,7 +153,11 @@ set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtgroupboxpropertybr
 #set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowserutils.cpp PROPERTIES OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowserutils.cpp")
 
 # Resource files to rcc and compile:
+IF (RWS_USE_QT5)
+QT5_ADD_RESOURCES(ResourceFiles ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.qrc)
+ELSE()
 QT4_ADD_RESOURCES(ResourceFiles ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.qrc)
+ENDIF()
 
 # We create a static library named qtpropertybrowser that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.

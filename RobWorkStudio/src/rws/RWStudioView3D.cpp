@@ -28,6 +28,7 @@
 #include "RobWorkStudio.hpp"
 #include "SceneOpenGLViewer.hpp"
 #include <QThread>
+#include <QMenuBar>
 #include <boost/foreach.hpp>
 
 using namespace rw::graphics;
