@@ -50,8 +50,9 @@ namespace rw { namespace math {
         //typedef boost::numeric::ublas::bounded_vector<T, N> BoostBoundedVector;
 
 		//! The type of the internal Eigen Vector
-		typedef Eigen::Matrix<T, N, 1> EigenVectorND;
 		
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> EigenVectorND;
+
 
         //! Value type.
         typedef T value_type;
@@ -61,7 +62,7 @@ namespace rw { namespace math {
          */
         VectorND()
         {
-			_vec = EigenVectorND();
+			_vec = EigenVectorND(N);
         }
 
         /**
@@ -116,14 +117,14 @@ namespace rw { namespace math {
         /**
            @brief Accessor for the internal Eigen VectorND.
          */
-		Eigen::Matrix<T, N, 1>& e() {
+        EigenVectorND& e() {
 			return _vec;
 		}
 
         /**
            @brief Accessor for the internal Eigen VectorND.
          */
-		const Eigen::Matrix<T, N, 1>& e() const {
+		const EigenVectorND& e() const {
 			return _vec;
 		}
 
