@@ -132,6 +132,18 @@ public:
 	 * @param delay
 	 */
 	void setStepDelay(int delay){ _stepDelayMs=delay;};
+	
+	/**
+	 * @brief Sets the limit on wall time required for single grasp simulation.
+	 * @param limit [in] wall time limit in seconds (default 30.0)
+	 */
+	void setWallTimeLimit(double limit) { _wallTimeLimit = limit; }
+	
+	/**
+	 * @brief Sets the limit on internal simulation time for single grasp simulation.
+	 * @param limit [in] simulation time limit in seconds (default 30.0)
+	 */
+	void setSimTimeLimit(double limit) { _simTimeLimit = limit; }
 
 	// events
 
@@ -258,6 +270,9 @@ protected:
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 
 	boost::mutex _nextTargetLock;
+	
+	double _wallTimeLimit;
+	double _simTimeLimit;
 };
 
 }

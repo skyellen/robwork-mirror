@@ -64,7 +64,9 @@ GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc
 		_initialized(false),
 		_nrOfThreads(1),
 		_currentTargetIndex(0),
-		_alwaysResting(false)
+		_alwaysResting(false),
+		_wallTimeLimit(30.0),
+		_simTimeLimit(30.0)
 {
     if(nrThreads>0 && nrThreads<8)
         _nrOfThreads = nrThreads;
@@ -311,7 +313,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
     Q currentQ = _hand->getQ(state);
 
-    if(sstate._wallTimer.getTime()>10) { // && sim->getTime()>15){ //seconds
+    if(sstate._wallTimer.getTime()>_wallTimeLimit && sim->getTime()>_simTimeLimit){ //seconds
         _timeout++;
         sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
         sstate._target->getResult()->testStatus = GraspTask::TimeOut;

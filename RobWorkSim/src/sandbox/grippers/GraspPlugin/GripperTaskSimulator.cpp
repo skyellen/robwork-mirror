@@ -22,6 +22,8 @@ GripperTaskSimulator::GripperTaskSimulator(rw::models::Gripper::Ptr gripper, rwl
 	_samples(samples),
 	_td(td)
 {
+	setWallTimeLimit(10.0);
+	setSimTimeLimit(0.0);
 	load(tasks);
 }
 
