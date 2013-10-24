@@ -94,7 +94,14 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 
 double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
-	return sstate._target->getResult()->qualityAfterLifting(1); // use average wrench from origin
+	Q qual = sstate._target->getResult()->qualityAfterLifting;
+	
+	if (qual.size() >= 1) {
+		return qual(1);
+	} else {
+		//DEBUG << "No wrench measurement!" << endl;
+		return 0.0;
+	} //sstate._target->getResult()->qualityAfterLifting(1); // use average wrench from origin
 }
 
 
