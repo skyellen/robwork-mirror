@@ -29,6 +29,8 @@
 #include <QLabel>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QGroupBox>
+#include <QComboBox>
 
 #include <boost/foreach.hpp>
 
@@ -551,5 +553,6 @@ void RWSimulatorPlugin::initialize(){
 
 }
 
-
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN(RWSimulatorPlugin);
+#endif

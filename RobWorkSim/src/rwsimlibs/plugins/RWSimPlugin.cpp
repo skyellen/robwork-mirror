@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include <QMenuBar>
+
 #include <boost/foreach.hpp>
 
 #include <RobWorkStudio.hpp>
@@ -26,7 +28,6 @@
 
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/control/BodyController.hpp>
-#include <rwsimlibs/ode/ODESimulator.hpp>
 #include "rwsim/control/BeamJointController.hpp"
 //#include <rwsim/dynamics/SuctionCup.hpp>
 //#include <rwsim/control/SuctionCupController1.hpp>
@@ -677,5 +678,6 @@ void RWSimPlugin::stateChangedListener(const State& state){
     updateDialog(state);
 }
 
-Q_EXPORT_PLUGIN2(RWSimPlugin, RWSimPlugin);
-
+#if !RWS_USE_QT5
+Q_EXPORT_PLUGIN(RWSimPlugin);
+#endif

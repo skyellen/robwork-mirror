@@ -24,8 +24,6 @@ CONFIGURE_FILE(
 
 
 SET(TEST_LIBRARIES
-  rwsim_ode
-  ode
   ${ROBWORKSIM_LIBRARIES}
   ${ROBWORK_LIBRARIES}
   #${ROBWORKSTUDIO_LIBRARIES}
@@ -34,6 +32,10 @@ SET(TEST_LIBRARIES
   #${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
   #${ROBWORK_LIBRARIES}
 )
+
+IF(RWSIM_HAVE_ODE)
+	SET(TEST_LIBRARIES rwsim_ode ${ODE_LIBRARY} ${TEST_LIBRARIES})
+ENDIF()
 
 SET(COMMON_TEST_SRC
   common/CommonTest.cpp
@@ -49,10 +51,12 @@ TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
 ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp)       
-TARGET_LINK_LIBRARIES( rwsim_ode-test ${TEST_LIBRARIES} )
-ADD_TEST( rwsim_ode-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_ode-test )
-ADD_DEPENDENCIES(rwsim_ode-test ${TEST_DEPENDENCIES})
+IF(RWSIM_HAVE_ODE)
+	ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp)       
+	TARGET_LINK_LIBRARIES( rwsim_ode-test ${TEST_LIBRARIES} )
+	ADD_TEST( rwsim_ode-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_ode-test )
+	ADD_DEPENDENCIES(rwsim_ode-test ${TEST_DEPENDENCIES})
+ENDIF()
 
 ADD_CUSTOM_TARGET(tests ctest -V 
   DEPENDS rwsim_common-test ${TEST_DEPENDENCIES}
@@ -60,8 +64,13 @@ ADD_CUSTOM_TARGET(tests ctest -V
 
 INSTALL(TARGETS 
             rwsim_common-test 
+        DESTINATION ${RWSIM_INSTALL_DIR}/test)
+
+IF(RWSIM_HAVE_ODE)
+	INSTALL(TARGETS 
             rwsim_ode-test
         DESTINATION ${RWSIM_INSTALL_DIR}/test)
+ENDIF()
 
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.xml.install
         DESTINATION ${RWSIM_INSTALL_DIR}/test/TestSuiteConfig.xml)

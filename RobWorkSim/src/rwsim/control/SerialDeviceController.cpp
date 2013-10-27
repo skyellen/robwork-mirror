@@ -18,7 +18,7 @@ using namespace rw::trajectory;
 using namespace rw::kinematics;
 
 SerialDeviceController::SerialDeviceController(
-		const std::string& name, dynamics::DynamicDevice::Ptr ddev):
+		const std::string& name, DynamicDevice::Ptr ddev):
 	_ddev(ddev),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
@@ -41,7 +41,7 @@ SerialDeviceController::SerialDeviceController(
 
 
 SerialDeviceController::SerialDeviceController(
-		const std::string& name, dynamics::RigidDevice::Ptr ddev):
+		const std::string& name, RigidDevice::Ptr ddev):
 	_ddev(ddev),
 	_rdev(ddev),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),

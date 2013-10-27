@@ -3,6 +3,12 @@
 #include <iostream>
 #include <fstream>
 
+#include <QGraphicsTextItem>
+#include <QGraphicsRectItem>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
+#include <QFileDialog>
+
 #include <boost/foreach.hpp>
 
 #include <rw/rw.hpp>

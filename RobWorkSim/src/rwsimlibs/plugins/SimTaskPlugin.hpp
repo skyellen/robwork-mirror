@@ -4,7 +4,6 @@
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
 #include <rwsim/rwsim.hpp>
-#include <rwsimlibs/ode/ODESimulator.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rwsim/control/BodyController.hpp>
 #include "ui_SimTaskPlugin.h"
@@ -16,11 +15,6 @@
 #include <QTimer>
 #include <rws/propertyview/PropertyViewEditor.hpp>
 #include <rw/common/Timer.hpp>
-
-#include <RobWorkSimConfig.hpp>
-#ifdef RWSIM_HAVE_ODE
-#include <rwsimlibs/ode/ODESimulator.hpp>
-#endif
 
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
@@ -44,6 +38,9 @@ class SimTaskPlugin: public rws::RobWorkStudioPlugin, private Ui::SimTaskPlugin
 {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "SimTaskPlugin.json")
+#endif
 public:
     /**
      * @brief constructor

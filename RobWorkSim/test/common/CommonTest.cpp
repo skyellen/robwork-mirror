@@ -19,7 +19,9 @@
 #include "../TestSuiteConfig.hpp"
 
 #include <rwsim/rwsim.hpp>
+#ifdef RWSIM_HAVE_ODE
 #include <rwsimlibs/ode/ODESimulator.hpp>
+#endif
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
 using namespace rwsim::simulator;
@@ -40,20 +42,28 @@ BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
 
 BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
 {
+#ifdef RWSIM_HAVE_ODE
     // add loading tests here
     DynamicWorkCellLoader loader;
     DynamicWorkCell::Ptr dwc = loader.load("bumbum");
     ODESimulator *sim = new ODESimulator(dwc);
     sim->getGravity(); // Dummy
+#else
+	BOOST_FAIL("Simulator is not compiled with ODE - hence ODESimulator can not load workcell.");
+#endif
 }
 
 
 BOOST_AUTO_TEST_CASE( ODESimulatorResetTest )
 {
-    // Test if the simulator can handle to be reset
+#ifdef RWSIM_HAVE_ODE
+	// Test if the simulator can handle to be reset
     DynamicWorkCellLoader loader;
     DynamicWorkCell::Ptr dwc = loader.load(testFilePath() + "/simple/device1.dwc.xml");
     ODESimulator *sim = new ODESimulator(dwc);
     sim->getGravity(); // Dummy
+#else
+	BOOST_FAIL("Simulator is not compiled with ODE - hence ODESimulator can not be reset.");
+#endif
 }
 

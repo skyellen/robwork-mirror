@@ -1,6 +1,11 @@
 #include "JointControlDialog.hpp"
 
+#include <RobWorkStudioConfig.hpp>
+#if RWS_USE_QT5
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 using namespace rwlibs::control;
 

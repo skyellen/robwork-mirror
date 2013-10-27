@@ -197,8 +197,8 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 	std::vector<ContactPoint> cpRes;
 
 	std::vector<ContactPoint> rwcontacts(contacts.size());
-	int srcIdx[contacts.size()];
-	int dstIdx[contacts.size()];
+	int* srcIdx = new int[contacts.size()];
+	int* dstIdx = new int[contacts.size()];
 	std::vector<ContactPoint> rwClusteredContacts(contacts.size());
 
 	for (std::size_t i = 0; i < contacts.size(); i++) {
@@ -279,6 +279,9 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 		con.setDepth(point->penetration);
 		res.push_back(con);
 	}
+	
+	delete[] srcIdx;
+	delete[] dstIdx;
 
 	return res;
 }

@@ -4,6 +4,8 @@
 
 #include <boost/foreach.hpp>
 
+#include <QGraphicsPixmapItem>
+
 #include "RWSimGuiConfig.hpp"
 
 #ifdef USE_OPENCV
@@ -37,7 +39,6 @@
 #include <rw/sensor/Image.hpp>
 #include <rw/sensor/ImageUtil.hpp>
 #include <rw/math/Constants.hpp>
-#include <rw/math/Line2D.hpp>
 
 #include <rwsim/util/HughLineExtractor.hpp>
 #include <rwsim/util/CircleModel.hpp>

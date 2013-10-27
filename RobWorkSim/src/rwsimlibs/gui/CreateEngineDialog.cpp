@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QMessageBox>
+
 #include <boost/foreach.hpp>
 
 #include <rw/math/RPY.hpp>

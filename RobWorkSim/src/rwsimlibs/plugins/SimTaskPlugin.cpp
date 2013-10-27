@@ -795,4 +795,6 @@ void SimTaskPlugin::genericEventListener(const std::string& event){
     }
 }
 
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN(SimTaskPlugin);
+#endif

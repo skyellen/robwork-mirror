@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QFileDialog>
+
 #include <boost/foreach.hpp>
 
 #include <rw/math/RPY.hpp>

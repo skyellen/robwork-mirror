@@ -1132,5 +1132,6 @@ void GraspTableGeneratorPlugin::genericEventListener(const std::string& event){
 
 #endif
 
-
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN(GraspTableGeneratorPlugin);
+#endif

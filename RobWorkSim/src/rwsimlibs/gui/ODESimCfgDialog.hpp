@@ -23,6 +23,7 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
+#include <QDialog>
 #include <QObject>
 #include <QtGui>
 #include <QTimer>

@@ -16,11 +16,15 @@ SET(FILES_UI
 	TactileSensorDialog.ui
 	#GraspTableGeneratorPlugin.ui
 )
-RWS_QT4_WRAP_UI(UIS_OUT_H ${FILES_UI})
+IF (RWS_USE_QT5)
+	RWS_QT5_WRAP_UI(UIS_OUT_H ${FILES_UI})
+ELSE()
+	RWS_QT4_WRAP_UI(UIS_OUT_H ${FILES_UI})
+ENDIF()
 
 # Moc the files:
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles
+SET(SrcFiles_HPP
     JointControlDialog.hpp
     JogGroup.hpp
     RestingPoseDialog.hpp
@@ -34,13 +38,22 @@ QT4_WRAP_CPP(MocSrcFiles
 	BodyControllerWidget.hpp
 	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
-	OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
-        OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED
 )
+IF (RWS_USE_QT5)
+	QT5_WRAP_CPP(MocSrcFiles ${SrcFiles_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED
+)
+ELSE()
+	QT4_WRAP_CPP(MocSrcFiles ${SrcFiles_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED
+)
+ENDIF()
 
 # Rcc the files:
 SET(RccSrcFiles)
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+IF (RWS_USE_QT5)
+	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ENDIF()
 
 SET(SrcFiles 
     JointControlDialog.cpp 
@@ -53,11 +66,13 @@ SET(SrcFiles
 	GLViewRW.cpp
 	CreateEngineDialog.cpp 
 	SimCfgDialog.cpp 
-	ODESimCfgDialog.cpp
 	#SensorOutputGui.cpp
 	#TactilePadItem.cpp
 	TactileSensorDialog.cpp
 )
+IF(RWSIM_HAVE_ODE)
+	SET(SrcFiles ${SrcFiles} ODESimCfgDialog.cpp)
+ENDIF()
 
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 

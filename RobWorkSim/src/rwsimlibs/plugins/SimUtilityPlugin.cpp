@@ -334,5 +334,6 @@ void SimUtilityPlugin::initialize(){
     connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 }
 
-
+#if !RWS_USE_QT5
 Q_EXPORT_PLUGIN(SimUtilityPlugin);
+#endif

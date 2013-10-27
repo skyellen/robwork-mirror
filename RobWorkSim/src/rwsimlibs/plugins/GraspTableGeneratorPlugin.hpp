@@ -57,7 +57,9 @@ class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin, private Ui::G
     {
         Q_OBJECT
 		Q_INTERFACES( rws::RobWorkStudioPlugin )
-
+		#if RWS_USE_QT5
+			Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "GraspTableGeneratorPlugin.json")
+		#endif
     public:
         typedef std::vector<boost::numeric::ublas::matrix<float> > TactileSensorData;
 

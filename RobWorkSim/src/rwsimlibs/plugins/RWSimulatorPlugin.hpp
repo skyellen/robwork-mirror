@@ -47,6 +47,8 @@
 #include <rwsimlibs/gui/JointControlDialog.hpp>
 
 #include <RobWorkStudioPlugin.hpp>
+#include <QCheckBox>
+#include <QLabel>
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
@@ -54,6 +56,9 @@
 class RWSimulatorPlugin: public rws::RobWorkStudioPlugin {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
+#if RWS_USE_QT5
+Q_PLUGIN_METADATA(IID "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1" FILE "RWSimulatorPlugin.json")
+#endif
 public:
     RWSimulatorPlugin();
 
