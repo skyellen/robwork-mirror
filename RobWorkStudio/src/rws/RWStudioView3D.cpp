@@ -221,7 +221,7 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
 
     this->setFocusPolicy(Qt::StrongFocus);
 
-    setAcceptDrops(TRUE);
+    setAcceptDrops(true);
 }
 
 RWStudioView3D::~RWStudioView3D()

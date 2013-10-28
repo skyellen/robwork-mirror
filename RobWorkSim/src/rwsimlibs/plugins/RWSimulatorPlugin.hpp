@@ -47,6 +47,7 @@
 #include <rwsimlibs/gui/JointControlDialog.hpp>
 
 #include <RobWorkStudioPlugin.hpp>
+#include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
 #include <QObject>

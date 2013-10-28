@@ -331,7 +331,7 @@ SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
     _pmap->getValue().add<int>("GL_NR_SAMPLES","",4);
     _pmap->getValue().add<bool>("GL_MULTISAMPLE","",false);
     init();
-    setAcceptDrops(TRUE);
+    setAcceptDrops(true);
 }
 
 SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
@@ -346,7 +346,7 @@ SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
     _pmap = pmap.add<PropertyMap>("SceneViewer","",PropertyMap());
 
     init();
-    setAcceptDrops(TRUE);
+    setAcceptDrops(true);
 }
 
 SceneOpenGLViewer::~SceneOpenGLViewer()
