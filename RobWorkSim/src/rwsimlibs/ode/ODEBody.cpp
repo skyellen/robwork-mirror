@@ -196,15 +196,16 @@ void ODEBody::postupdate(rw::kinematics::State& state){
 
 
         //_rwBody->setWorldTcom(ODEUtil::getODEBodyT3D(_bodyId), state);
-        //Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
-        //Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
+        Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
+        Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
         // angular velocity is defined in world coordinates and around center of mass
         //if(_rwBody==NULL)
         //    std::cout << "BODY is null" << std::endl;
-        //_rwBody->setAngVelW( ang , state);
-        //_rwBody->setLinVelW( lin , state);
-
+        if(_rwBody!=NULL){
+            _rwBody->setAngVelW( ang , state);
+            _rwBody->setLinVelW( lin , state);
+        }
 
         //_rwBody->setForce( Vector3D<>::zero(), state );
         //_rwBody->setTorque( Vector3D<>::zero(), state );

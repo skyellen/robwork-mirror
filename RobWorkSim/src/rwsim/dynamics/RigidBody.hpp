@@ -121,7 +121,7 @@ namespace dynamics {
         /**
          * @brief return the parent frame
          */
-    	rw::kinematics::Frame* getParent(rw::kinematics::State& state) const {
+    	rw::kinematics::Frame* getParent(const rw::kinematics::State& state) const {
     		return _mframe->getParent(state);
     	};
 
@@ -155,7 +155,7 @@ namespace dynamics {
         }
 
         rw::math::Transform3D<> getWTParent(const rw::kinematics::State& state) const {
-            return rw::kinematics::Kinematics::worldTframe(_parent, state);
+            return rw::kinematics::Kinematics::worldTframe(getParent(state), state);
         }
 
         /**
@@ -301,7 +301,7 @@ namespace dynamics {
 
 
         rw::kinematics::MovableFrame *_mframe;
-        rw::kinematics::Frame *_parent;
+        //rw::kinematics::Frame *_parent;
 
         // TODO: body type
         int _bodyType;

@@ -60,12 +60,12 @@ RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
 };
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensor(const rw::kinematics::State& state) const {
-	Transform3D<> pTb = Kinematics::frameTframe(_parent, _mframe, state);
+	Transform3D<> pTb = Kinematics::frameTframe(getParent(state), _mframe, state);
 	return pTb.R() * (this->getInertia() * inverse(pTb.R()));
 }
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensorInv(const rw::kinematics::State& state) const{
-	Transform3D<> pTb = Kinematics::frameTframe(_parent, _mframe, state);
+	Transform3D<> pTb = Kinematics::frameTframe(getParent(state), _mframe, state);
 	return pTb.R() * (inverse(this->getInertia()) * inverse(pTb.R()));
 }
 
@@ -107,7 +107,7 @@ double RigidBody::calcEnergy(const rw::kinematics::State& state){
 }
 
 rw::math::Vector3D<> RigidBody::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {
-	Transform3D<> wTp = Kinematics::worldTframe(_parent, state);
+	Transform3D<> wTp = Kinematics::worldTframe(getParent(state), state);
 	Transform3D<> wTb = Kinematics::worldTframe(_mframe, state);
     // first transform point to body frame
     rw::math::Vector3D<> posOnBody = inverse(wTp).R() * (p - wTb.P());

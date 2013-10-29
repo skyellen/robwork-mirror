@@ -858,7 +858,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetERP ( _worldId, _worldERP );
 
 	dWorldSetContactSurfaceLayer(_worldId, _contactSurfaceLayer);
-	//dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
+	dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
