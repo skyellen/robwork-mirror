@@ -216,7 +216,7 @@ void RigidDevice::setMotorTargets(const rw::math::Q& q, rw::kinematics::State& s
 }
 
 void RigidDevice::setMotorForceTargets(const rw::math::Q& q, rw::kinematics::State& state){
-	std::cout << "setMotorForceTargets: " << q << std::endl;
+	//std::cout << "setMotorForceTargets: " << q << std::endl;
     double *vals = _target.getArray(state);
     char *modes = _mode.getArray(state);
 
