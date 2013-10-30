@@ -53,83 +53,60 @@ SET(CMAKE_MODULE_PATH ${RW_ROOT}/cmake/Modules ${CMAKE_MODULE_PATH})
 #
 
 UNSET(Boost_USE_STATIC_LIBS)
-SET(Boost_FIND_QUIETLY TRUE)
+UNSET(Boost_FIND_QUIETLY)
+SET(Boost_LIBRARIES_TMP "")
 IF(DEFINED UNIX)
   #SET(Boost_USE_STATIC_LIBS ON)
+  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)
+  SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})  
+  # Test libraries are optional
+  SET(Boost_FIND_QUIETLY TRUE)
 
   # On Mac OS only the header only version of boost unit test seems to work for now, needs further investigation
   IF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options test_exec_monitor unit_test_framework)
-  ELSE(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options)
+    FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+    SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
   ENDIF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-  IF(NOT Boost_FILESYSTEM_FOUND)
-    MESSAGE(FATAL_ERROR "Boost filesystem was not found.")
-  ENDIF()
-  IF(NOT Boost_REGEX_FOUND)
-    MESSAGE(FATAL_ERROR "Boost regex was not found.")
-  ENDIF()
-  IF(NOT Boost_SERIALIZATION_FOUND)
-    MESSAGE(FATAL_ERROR "Boost serialization was not found.")
-  ENDIF()
-  IF(NOT Boost_SYSTEM_FOUND)
-    MESSAGE(FATAL_ERROR "Boost system was not found.")
-  ENDIF()
-  IF(NOT Boost_THREAD_FOUND)
-    MESSAGE(FATAL_ERROR "Boost thread was not found.")
-  ENDIF()
-  IF(NOT Boost_PROGRAM_OPTIONS_FOUND)
-    MESSAGE(FATAL_ERROR "Boost program_options was not found.")
-  ENDIF()
-
+  
   IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
     # header only
     #SET(Boost_USE_STATIC_LIBS OFF)
     #FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
     SET(RW_USE_BOOST_STATIC_TEST_LIBS off)
   ELSE()
-    # libraries found
-    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)
+    # libraries found 
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)  
   ENDIF()
   
 ELSEIF(DEFINED WIN32)
   SET(Boost_USE_STATIC_LIBS ON)
-  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options test_exec_monitor unit_test_framework)
-
+  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options)
+  SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
   # If static libraries for Windows were not found, try searching again for the shared ones
   IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
      NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
     SET(Boost_USE_STATIC_LIBS OFF)
-    FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options test_exec_monitor unit_test_framework)
-  ENDIF()
-
-  IF(NOT Boost_FILESYSTEM_FOUND)
-    MESSAGE(FATAL_ERROR "Boost filesystem was not found.")
-  ENDIF()
-  IF(NOT Boost_REGEX_FOUND)
-    MESSAGE(FATAL_ERROR "Boost regex was not found.")
-  ENDIF()
-  IF(NOT Boost_SERIALIZATION_FOUND)
-    MESSAGE(FATAL_ERROR "Boost serialization was not found.")
-  ENDIF()
-  IF(NOT Boost_SYSTEM_FOUND)
-    MESSAGE(FATAL_ERROR "Boost system was not found.")
-  ENDIF()
-  IF(NOT Boost_THREAD_FOUND)
-    MESSAGE(FATAL_ERROR "Boost thread was not found.")
-  ENDIF()
-  IF(NOT Boost_PROGRAM_OPTIONS_FOUND)
-    MESSAGE(FATAL_ERROR "Boost program_options was not found.")
+    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)
+    SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
   ENDIF()
   
   # Test libraries are optional
+  SET(Boost_USE_STATIC_LIBS ON)
+  SET(Boost_FIND_QUIETLY TRUE)
+  FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+  SET(Boost_LIBRARIES_TMP ${Boost_LIBRARIES_TMP} ${Boost_LIBRARIES})
+  # If static libraries for Windows were not found, try searching again for the shared ones
   IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+    #SET(Boost_USE_STATIC_LIBS OFF)
+    #FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
     SET(RW_USE_BOOST_STATIC_TEST_LIBS off)
   ELSE()
-    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)
+    # libraries found 
+    SET(RW_USE_BOOST_STATIC_TEST_LIBS on)  
+    
   ENDIF()
 ENDIF()
+SET(Boost_LIBRARIES ${Boost_LIBRARIES_TMP})
 
 MESSAGE(STATUS "RobWork: Boost version ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found!")
 
