@@ -115,6 +115,7 @@ int main(int argc, char* argv[])
 		td->getInitState(),
 		td);
 	//CollisionDetector::Ptr cd = new CollisionDetector(td->getWorkCell(), ProximityStrategyFactory::makeDefaultCollisionStrategy());
+	cout << "Generating grasps..." << endl;
 	TaskGenerator::Ptr generator = new TaskGenerator(td);
 	generator->generateTask(number, td->getInitState());
 	GraspTask::Ptr tasks = generator->getTasks();
