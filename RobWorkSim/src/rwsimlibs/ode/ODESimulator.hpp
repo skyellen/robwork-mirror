@@ -99,6 +99,7 @@ namespace simulator {
      * <Property name="ContactSurfaceLayer" type="float">0.001</Property>
      *
      * <Property name="MaxSepDistance" type="float">0.01</Property>
+     * <Property name="MaxCorrectingVelocity" type="float">0.1</Property>
 	 * \endverbatim
 	 *
 	 */
@@ -433,6 +434,7 @@ namespace simulator {
 		double _contactSurfaceLayer;
 		double _maxSepDistance;
 		double _maxAllowedPenetration;
+		double _contactMaxCorrectingVel;
 
 		bool _useRobWorkContactGeneration;
 		bool _prevStepEndedInCollision;

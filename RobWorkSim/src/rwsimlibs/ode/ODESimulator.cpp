@@ -690,6 +690,7 @@ void ODESimulator::readProperties(){
     ContactSurfaceLayer in meter default is 0.0001
     MaxSepDistance in meter default is 0.0005
     MaxPenetration in meter default is 0.00045
+    MaxCorrectingVelocity in m/s default is 0.1
 
     PER BODY OPTIONS
 
@@ -701,7 +702,7 @@ void ODESimulator::readProperties(){
     _contactSurfaceLayer = _propertyMap.get<double>("ContactSurfaceLayer", 0.0001);
     _maxSepDistance = _propertyMap.get<double>("MaxSepDistance", 0.0005);
     _maxAllowedPenetration = _propertyMap.get<double>("MaxPenetration", _maxSepDistance);
-
+	_contactMaxCorrectingVel = _propertyMap.get<double>("MaxCorrectingVelocity", 0.1);
 
 	_maxIter = _propertyMap.get<int>("MaxIterations", 20);
 	//std::string spaceTypeStr = _propertyMap.get<std::string>("SpaceType", "QuadTree");
@@ -858,7 +859,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetERP ( _worldId, _worldERP );
 
 	dWorldSetContactSurfaceLayer(_worldId, _contactSurfaceLayer);
-	dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
+	dWorldSetContactMaxCorrectingVel(_worldId, _contactMaxCorrectingVel);
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
@@ -2011,7 +2012,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         numc = ni;
 
         //bcon.cnormal =
-            addContacts(numc, a_data, b_data, pair.first, pair.second);
+        //if (numc < 100) {
+			addContacts(numc, a_data, b_data, pair.first, pair.second);
+		//}
         res->clear();
         // update the contact normal using the manifolds
     }
