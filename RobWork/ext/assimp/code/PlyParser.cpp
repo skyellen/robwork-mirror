@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -386,7 +386,7 @@ bool PLY::Element::ParseElement (const char* pCur,
 	if (!SkipSpaces(&pCur))return false;
 	
 	//parse the number of occurences of this element
-	pOut->NumOccur = strtol10(pCur,&pCur);
+	pOut->NumOccur = strtoul10(pCur,&pCur);
 
 	// go to the next line
 	SkipSpacesAndLineEnd(pCur,&pCur);
@@ -799,25 +799,25 @@ bool PLY::PropertyInstance::ParseValue(
 	case EDT_UShort:
 	case EDT_UChar:
 
-		out->iUInt = (uint32_t)strtol10(pCur, &pCur);
+		out->iUInt = (uint32_t)strtoul10(pCur, &pCur);
 		break;
 
 	case EDT_Int:
 	case EDT_Short:
 	case EDT_Char:
 
-		out->iInt = (int32_t)strtol10s(pCur, &pCur);
+		out->iInt = (int32_t)strtol10(pCur, &pCur);
 		break;
 
 	case EDT_Float:
 
-		pCur = fast_atof_move(pCur,out->fFloat);
+		pCur = fast_atoreal_move<float>(pCur,out->fFloat);
 		break;
 
 	case EDT_Double:
 
 		float f;
-		pCur = fast_atof_move(pCur,f);
+		pCur = fast_atoreal_move<float>(pCur,f);
 		out->fDouble = (double)f;
 		break;
 

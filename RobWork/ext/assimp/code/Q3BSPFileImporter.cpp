@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------------------------------
 
-Copyright (c) 2006-2008, ASSIMP Development Team
+Copyright (c) 2006-2008, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -53,22 +53,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #	include "../contrib/zlib/zlib.h"
 #endif
 
-#include "../include/aiTypes.h"
-#include "../include/aiMesh.h"
+#include "../include/assimp/types.h"
+#include "../include/assimp/mesh.h"
 #include <vector>
+
+
+static const aiImporterDesc desc = {
+	"Quake III BSP Importer",
+	"",
+	"",
+	"",
+	aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"pk3"
+};
 
 namespace Assimp
 {
 
 using namespace Q3BSP;
 
-static const std::string Q3BSPExtention = "pk3";
-
 // ------------------------------------------------------------------------------------------------
-//	Local fnction to create a material keyname.
+//	Local function to create a material key name.
 static void createKey( int id1, int id2, std::string &rKey )
 {
-	std::stringstream str;
+	std::ostringstream str;
 	str << id1 << "." << id2;
 	rKey = str.str();
 }
@@ -93,7 +105,7 @@ static void extractIds( const std::string &rKey, int &rId1, int &rId2 )
 }
 
 // ------------------------------------------------------------------------------------------------
-//	Local helper fuction to normalize filenames.
+//	Local helper function to normalize filenames.
 static void normalizePathName( const std::string &rPath, std::string &rNormalizedPath )
 {
 	rNormalizedPath = "";
@@ -151,40 +163,37 @@ Q3BSPFileImporter::~Q3BSPFileImporter()
 		}
 
 		std::vector<Q3BSP::sQ3BSPFace*> *pCurFaceArray = (*it).second;
-		if ( NULL != pCurFaceArray )
-		{
-			delete pCurFaceArray;
-		}
+		delete pCurFaceArray;
 	}
 	m_MaterialLookupMap.clear();
 }
 
 // ------------------------------------------------------------------------------------------------
 //	Returns true, if the loader can read this.
-bool Q3BSPFileImporter::CanRead( const std::string& rFile, IOSystem* pIOHandler, bool checkSig ) const
+bool Q3BSPFileImporter::CanRead( const std::string& rFile, IOSystem* /*pIOHandler*/, bool checkSig ) const
 {
-	bool isBSPData = false;
-	if ( checkSig )
-		isBSPData = SimpleExtensionCheck( rFile, Q3BSPExtention.c_str() );
-
-	return isBSPData;
+	if(!checkSig) {
+		return SimpleExtensionCheck( rFile, "pk3" );
+	}
+	// TODO perhaps add keyword based detection
+	return false;
 }
 
 // ------------------------------------------------------------------------------------------------
 //	Adds extensions.
-void Q3BSPFileImporter::GetExtensionList( std::set<std::string>& extensions )
+const aiImporterDesc* Q3BSPFileImporter::GetInfo () const
 {
-	extensions.insert( Q3BSPExtention );
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
 //	Import method.
-void Q3BSPFileImporter::InternReadFile(const std::string &rFile, aiScene* pScene, IOSystem* pIOHandler)
+void Q3BSPFileImporter::InternReadFile(const std::string &rFile, aiScene* pScene, IOSystem* /*pIOHandler*/)
 {
 	Q3BSPZipArchive Archive( rFile );
 	if ( !Archive.isOpen() )
 	{
-		throw new DeadlyImportError( "Failed to open file " + rFile + "." );
+		throw DeadlyImportError( "Failed to open file " + rFile + "." );
 	}
 
 	std::string archiveName( "" ), mapName( "" );
@@ -472,7 +481,6 @@ void Q3BSPFileImporter::createMaterials( const Q3BSP::Q3BSPModel *pModel, aiScen
 	}
 
 	pScene->mMaterials = new aiMaterial*[ m_MaterialLookupMap.size() ];
-	size_t texIdx( 0 );
 	aiString aiMatName;
 	int textureId( -1 ), lightmapId( -1 );
 	for ( FaceMapIt it = m_MaterialLookupMap.begin(); it != m_MaterialLookupMap.end();
@@ -485,7 +493,7 @@ void Q3BSPFileImporter::createMaterials( const Q3BSP::Q3BSPModel *pModel, aiScen
 		}
 
 		aiMatName.Set( matName );
-		Assimp::MaterialHelper *pMatHelper = new Assimp::MaterialHelper;
+		aiMaterial *pMatHelper = new aiMaterial;
 		pMatHelper->AddProperty( &aiMatName, AI_MATKEY_NAME );
 
 		extractIds( matName, textureId, lightmapId );
@@ -626,9 +634,12 @@ aiFace *Q3BSPFileImporter::getNextFace( aiMesh *pMesh, unsigned int &rFaceIdx )
 // ------------------------------------------------------------------------------------------------
 //	Imports a texture file.
 bool Q3BSPFileImporter::importTextureFromArchive( const Q3BSP::Q3BSPModel *pModel,
-												 Q3BSP::Q3BSPZipArchive *pArchive, aiScene* pScene,
-												 Assimp::MaterialHelper *pMatHelper, int textureId )
+												 Q3BSP::Q3BSPZipArchive *pArchive, aiScene* /*pScene*/,
+												 aiMaterial *pMatHelper, int textureId )
 {
+	std::vector<std::string> supportedExtensions;
+	supportedExtensions.push_back( ".jpg" );
+	supportedExtensions.push_back( ".png" );
 	if ( NULL == pArchive || NULL == pArchive || NULL == pMatHelper )
 	{
 		return false;
@@ -644,9 +655,8 @@ bool Q3BSPFileImporter::importTextureFromArchive( const Q3BSP::Q3BSPModel *pMode
 	if ( NULL == pTexture )
 		return false;
 
-	std::string textureName = pTexture->strName;
-	textureName += ".jpg";
-	if ( pArchive->Exists( textureName.c_str() ) )
+	std::string textureName, ext;
+	if ( expandFile( pArchive, pTexture->strName, supportedExtensions, textureName, ext ) )
 	{
 		IOStream *pTextureStream = pArchive->Open( textureName.c_str() );
 		if ( NULL != pTextureStream )
@@ -657,11 +667,12 @@ bool Q3BSPFileImporter::importTextureFromArchive( const Q3BSP::Q3BSPModel *pMode
 			pTexture->mWidth = texSize;
 			unsigned char *pData = new unsigned char[ pTexture->mWidth ];
 			size_t readSize = pTextureStream->Read( pData, sizeof( unsigned char ), pTexture->mWidth );
+			(void)readSize;
 			ai_assert( readSize == pTexture->mWidth );
 			pTexture->pcData = reinterpret_cast<aiTexel*>( pData );
-			pTexture->achFormatHint[ 0 ] = 'j';
-			pTexture->achFormatHint[ 1 ] = 'p';
-			pTexture->achFormatHint[ 2 ] = 'g';
+			pTexture->achFormatHint[ 0 ] = ext[ 0 ];
+			pTexture->achFormatHint[ 1 ] = ext[ 1 ];
+			pTexture->achFormatHint[ 2 ] = ext[ 2 ];
 			pTexture->achFormatHint[ 2 ] = '\0';
 			res = true;
 
@@ -674,15 +685,24 @@ bool Q3BSPFileImporter::importTextureFromArchive( const Q3BSP::Q3BSPModel *pMode
 			pMatHelper->AddProperty( &name, AI_MATKEY_TEXTURE_DIFFUSE( 0 ) );
 			mTextures.push_back( pTexture );
 		}
+		else
+		{
+			// If it doesn't exist in the archive, it is probably just a reference to an external file.
+			// We'll leave it up to the user to figure out which extension the file has.
+			aiString name;
+			strncpy( name.data, pTexture->strName, sizeof name.data );
+			name.length = strlen( name.data );
+			pMatHelper->AddProperty( &name, AI_MATKEY_TEXTURE_DIFFUSE( 0 ) );
+		}
 	}
 
 	return res;
 }
 
 // ------------------------------------------------------------------------------------------------
-//	Imports a lightmap file.
+//	Imports a light map file.
 bool Q3BSPFileImporter::importLightmap( const Q3BSP::Q3BSPModel *pModel, aiScene* pScene, 
-									   Assimp::MaterialHelper *pMatHelper, int lightmapId )
+									   aiMaterial *pMatHelper, int lightmapId )
 {
 	if ( NULL == pModel || NULL == pScene || NULL == pMatHelper )
 	{
@@ -701,19 +721,21 @@ bool Q3BSPFileImporter::importLightmap( const Q3BSP::Q3BSPModel *pModel, aiScene
 	}
 
 	aiTexture *pTexture = new aiTexture;
-	pTexture->mHeight = 0;
-	pTexture->mWidth = CE_BSP_LIGHTMAPWIDTH * CE_BSP_LIGHTMAPHEIGHT;
 	
-	unsigned char *pData = new unsigned char[ pTexture->mWidth ];
-	pTexture->pcData = reinterpret_cast<aiTexel*>( pData );
+	pTexture->mWidth = CE_BSP_LIGHTMAPWIDTH;
+	pTexture->mHeight = CE_BSP_LIGHTMAPHEIGHT;
+	pTexture->pcData = new aiTexel[CE_BSP_LIGHTMAPWIDTH * CE_BSP_LIGHTMAPHEIGHT];
+
+	::memcpy( pTexture->pcData, pLightMap->bLMapData, pTexture->mWidth );
+	size_t p = 0;
+	for ( size_t i = 0; i < CE_BSP_LIGHTMAPWIDTH * CE_BSP_LIGHTMAPHEIGHT; ++i )
+	{
+		pTexture->pcData[ i ].r = pLightMap->bLMapData[ p++ ];
+		pTexture->pcData[ i ].g = pLightMap->bLMapData[ p++ ];
+		pTexture->pcData[ i ].b = pLightMap->bLMapData[ p++ ];
+		pTexture->pcData[ i ].a = 0xFF;
+	}
 	
-	pTexture->achFormatHint[ 0 ] = 'b';
-	pTexture->achFormatHint[ 1 ] = 'm';
-	pTexture->achFormatHint[ 2 ] = 'p';
-	pTexture->achFormatHint[ 3 ] = '\0';
-
-	memcpy( pTexture->pcData, pLightMap->bLMapData, pTexture->mWidth );
-
 	aiString name;
 	name.data[ 0 ] = '*';
 	name.length = 1 + ASSIMP_itoa10( name.data + 1, MAXLEN-1,  mTextures.size() );
@@ -722,6 +744,39 @@ bool Q3BSPFileImporter::importLightmap( const Q3BSP::Q3BSPModel *pModel, aiScene
 	mTextures.push_back( pTexture );
 
 	return true;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+//	Will search for a supported extension.
+bool Q3BSPFileImporter::expandFile(  Q3BSP::Q3BSPZipArchive *pArchive, const std::string &rFilename, 
+								   const std::vector<std::string> &rExtList, std::string &rFile,
+								   std::string &rExt )
+{
+	ai_assert( NULL != pArchive );
+	ai_assert( !rFilename.empty() );
+
+	if ( rExtList.empty() )
+	{
+		rFile =  rFilename;
+		rExt = "";
+		return true;
+	}
+
+	bool found = false;
+	for ( std::vector<std::string>::const_iterator it = rExtList.begin(); it != rExtList.end(); ++it )
+	{
+		const std::string textureName = rFilename + *it;
+		if ( pArchive->Exists( textureName.c_str() ) )
+		{
+			rExt = *it;
+			rFile = textureName;
+			found = true;
+			break;
+		}
+	}
+
+	return found;
 }
 
 // ------------------------------------------------------------------------------------------------

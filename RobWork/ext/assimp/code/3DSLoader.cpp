@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -52,6 +52,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "3DSLoader.h"
 
 using namespace Assimp;
+
+static const aiImporterDesc desc = {
+	"Discreet 3DS Importer",
+	"",
+	"",
+	"Limited animation support",
+	aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"3ds prj" 
+};
+
 		
 // ------------------------------------------------------------------------------------------------
 // Begins a new parsing block
@@ -108,16 +122,15 @@ bool Discreet3DSImporter::CanRead( const std::string& pFile, IOSystem* pIOHandle
 }
 
 // ------------------------------------------------------------------------------------------------
-// Get list of all extension supported by this loader
-void Discreet3DSImporter::GetExtensionList(std::set<std::string>& extensions)
+// Loader registry entry
+const aiImporterDesc* Discreet3DSImporter::GetInfo () const
 {
-	extensions.insert("3ds");
-	extensions.insert("prj");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
 // Setup configuration properties
-void Discreet3DSImporter::SetupProperties(const Importer* pImp)
+void Discreet3DSImporter::SetupProperties(const Importer* /*pImp*/)
 {
 	// nothing to be done for the moment
 }
@@ -1373,6 +1386,7 @@ void Discreet3DSImporter::ParseColorChunk(aiColor3D* out,
 		// Skip unknown chunks, hope this won't cause any problems.
 		return ParseColorChunk(out,acceptPercent);
 	};
+	(void)bGamma;
 }
 
 #endif // !! ASSIMP_BUILD_NO_3DS_IMPORTER

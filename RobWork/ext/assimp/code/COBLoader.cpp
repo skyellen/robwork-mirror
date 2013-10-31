@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -72,6 +72,20 @@ static const float units[] = {
 	1.f/1609.344f
 };	
 
+static const aiImporterDesc desc = {
+	"TrueSpace Object Importer",
+	"",
+	"",
+	"little-endian files only",
+	aiImporterFlags_SupportTextFlavour | aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"cob scn"
+};
+
+
 // ------------------------------------------------------------------------------------------------
 // Constructor to be privately used by Importer
 COBImporter::COBImporter()
@@ -99,16 +113,15 @@ bool COBImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool 
 }
 
 // ------------------------------------------------------------------------------------------------
-// List all extensions handled by this loader
-void COBImporter::GetExtensionList(std::set<std::string>& app)
+// Loader meta information
+const aiImporterDesc* COBImporter::GetInfo () const
 {
-	app.insert("cob");
-	app.insert("scn");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
 // Setup configuration properties for the loader
-void COBImporter::SetupProperties(const Importer* pImp)
+void COBImporter::SetupProperties(const Importer* /*pImp*/)
 {
 	// nothing to be done for the moment
 }
@@ -207,7 +220,7 @@ void COBImporter::InternReadFile( const std::string& pFile,
 }
 
 // ------------------------------------------------------------------------------------------------
-void ConvertTexture(boost::shared_ptr< Texture > tex, MaterialHelper* out, aiTextureType type)
+void ConvertTexture(boost::shared_ptr< Texture > tex, aiMaterial* out, aiTextureType type)
 {
 	const aiString path( tex->path );
 	out->AddProperty(&path,AI_MATKEY_TEXTURE(type,0));
@@ -286,7 +299,7 @@ aiNode* COBImporter::BuildNodes(const Node& root,const Scene& scin,aiScene* fill
 						defmat.reset(min=new Material());
 					}
 
-					MaterialHelper* mat = new MaterialHelper();
+					aiMaterial* mat = new aiMaterial();
 					fill->mMaterials[fill->mNumMaterials++] = mat;
 
 					const aiString s(format("#mat_")<<fill->mNumMeshes<<"_"<<min->matnum);
@@ -387,7 +400,7 @@ void COBImporter::ReadAsciiFile(Scene& out, StreamReaderLE* stream)
 	ChunkInfo ci;
 	for(LineSplitter splitter(*stream);splitter;++splitter) {
 
-		// add all chunks to be recognized here. /else ../ ommitted intentionally.
+		// add all chunks to be recognized here. /else ../ omitted intentionally.
 		if (splitter.match_start("PolH ")) {
 			ReadChunkInfo_Ascii(ci,splitter);
 			ReadPolH_Ascii(out,splitter,ci);
@@ -439,9 +452,9 @@ void COBImporter::ReadChunkInfo_Ascii(ChunkInfo& out, const LineSplitter& splitt
 	splitter.get_tokens(all_tokens);
 
 	out.version = (all_tokens[1][1]-'0')*100+(all_tokens[1][3]-'0')*10+(all_tokens[1][4]-'0');
-	out.id	= strtol10(all_tokens[3]);
-	out.parent_id = strtol10(all_tokens[5]);
-	out.size = strtol10s(all_tokens[7]);
+	out.id	= strtoul10(all_tokens[3]);
+	out.parent_id = strtoul10(all_tokens[5]);
+	out.size = strtol10(all_tokens[7]);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -505,7 +518,7 @@ void COBImporter::LogDebug_Ascii(const Formatter::format& message)	{
 }
 
 // ------------------------------------------------------------------------------------------------
-void COBImporter::ReadBasicNodeInfo_Ascii(Node& msh, LineSplitter& splitter, const ChunkInfo& nfo)
+void COBImporter::ReadBasicNodeInfo_Ascii(Node& msh, LineSplitter& splitter, const ChunkInfo& /*nfo*/)
 {
 	for(;splitter;++splitter) {
 		if (splitter.match_start("Name")) {
@@ -562,7 +575,7 @@ void COBImporter::ReadMat1_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 	Material& mat = out.materials.back();
 	mat = nfo;
 
-	mat.matnum = strtol10(splitter[1]);
+	mat.matnum = strtoul10(splitter[1]);
 	++splitter;
 
 	if (!splitter.match_start("shader: ")) {
@@ -626,7 +639,7 @@ void COBImporter::ReadUnit_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 	// corresponding chunk already.
 	for_each(boost::shared_ptr< Node >& nd, out.nodes) {
 		if (nd->id == nfo.parent_id) {
-			const unsigned int t=strtol10(splitter[1]);
+			const unsigned int t=strtoul10(splitter[1]);
 		
 			nd->unit_scale = t>=sizeof(units)/sizeof(units[0])?(
 				LogWarn_Ascii(splitter,format()<<t<<" is not a valid value for `Units` attribute in `Unit chunk` "<<nfo.id)
@@ -639,7 +652,7 @@ void COBImporter::ReadUnit_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 }
 
 // ------------------------------------------------------------------------------------------------
-void COBImporter::ReadChan_Ascii(Scene& out, LineSplitter& splitter, const ChunkInfo& nfo)
+void COBImporter::ReadChan_Ascii(Scene& /*out*/, LineSplitter& splitter, const ChunkInfo& nfo)
 {
 	if(nfo.version > 8) {
 		return UnsupportedChunk_Ascii(splitter,nfo,"Chan");
@@ -768,7 +781,7 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 	// either the last `Face` or the `DrawFlags` attribute, depending on the format ver.
 	for(;splitter;++splitter) {
 		if (splitter.match_start("World Vertices")) {
-			const unsigned int cnt = strtol10(splitter[2]);
+			const unsigned int cnt = strtoul10(splitter[2]);
 			msh.vertex_positions.resize(cnt);
 
 			for(unsigned int cur = 0;cur < cnt && ++splitter;++cur) {
@@ -785,7 +798,7 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 			}
 		}
 		else if (splitter.match_start("Texture Vertices")) {
-			const unsigned int cnt = strtol10(splitter[2]);
+			const unsigned int cnt = strtoul10(splitter[2]);
 			msh.texture_coords.resize(cnt);
 
 			for(unsigned int cur = 0;cur < cnt && ++splitter;++cur) {
@@ -800,7 +813,7 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 			}
 		}
 		else if (splitter.match_start("Faces")) {
-			const unsigned int cnt = strtol10(splitter[1]);
+			const unsigned int cnt = strtoul10(splitter[1]);
 			msh.faces.reserve(cnt);
 
 			for(unsigned int cur = 0; cur < cnt && ++splitter ;++cur) {
@@ -816,9 +829,9 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 				msh.faces.push_back(Face());
 				Face& face = msh.faces.back();
 
-				face.indices.resize(strtol10(splitter[2]));
-				face.flags = strtol10(splitter[4]);
-				face.material = strtol10(splitter[6]);
+				face.indices.resize(strtoul10(splitter[2]));
+				face.flags = strtoul10(splitter[4]);
+				face.material = strtoul10(splitter[6]);
 
 				const char* s = (++splitter)->c_str();
 				for(size_t i = 0; i < face.indices.size(); ++i) {
@@ -828,11 +841,11 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 					if ('<' != *s++) {
 						ThrowException("Expected < token in Face entry");
 					}
-					face.indices[i].pos_idx = strtol10(s,&s);
+					face.indices[i].pos_idx = strtoul10(s,&s);
 					if (',' != *s++) {
 						ThrowException("Expected , token in Face entry");
 					}
-					face.indices[i].uv_idx = strtol10(s,&s);
+					face.indices[i].uv_idx = strtoul10(s,&s);
 					if ('>' != *s++) {
 						ThrowException("Expected < token in Face entry");
 					}
@@ -843,14 +856,14 @@ void COBImporter::ReadPolH_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 			}
 		}
 		else if (splitter.match_start("DrawFlags")) {
-			msh.draw_flags = strtol10(splitter[1]);
+			msh.draw_flags = strtoul10(splitter[1]);
 			break;
 		}
 	}
 }
 
 // ------------------------------------------------------------------------------------------------
-void COBImporter::ReadBitM_Ascii(Scene& out, LineSplitter& splitter, const ChunkInfo& nfo)
+void COBImporter::ReadBitM_Ascii(Scene& /*out*/, LineSplitter& splitter, const ChunkInfo& nfo)
 {
 	if(nfo.version > 1) {
 		return UnsupportedChunk_Ascii(splitter,nfo,"BitM");
@@ -863,7 +876,7 @@ void COBImporter::ReadBitM_Ascii(Scene& out, LineSplitter& splitter, const Chunk
 	"\nZippedThumbnail: %02hx 02hx %02hx "
 */
 
-	const unsigned int head = strtol10((++splitter)[1]);
+	const unsigned int head = strtoul10((++splitter)[1]);
 	if (head != sizeof(Bitmap::BitmapHeader)) {
 		LogWarn_Ascii(splitter,"Unexpected ThumbNailHdrSize, skipping this chunk");
 		return;
@@ -886,7 +899,7 @@ void COBImporter::ReadString_Binary(std::string& out, StreamReaderLE& reader)
 }
 
 // ------------------------------------------------------------------------------------------------
-void COBImporter::ReadBasicNodeInfo_Binary(Node& msh, StreamReaderLE& reader, const ChunkInfo& nfo)
+void COBImporter::ReadBasicNodeInfo_Binary(Node& msh, StreamReaderLE& reader, const ChunkInfo& /*nfo*/)
 {
 	const unsigned int dupes = reader.GetI2();
 	ReadString_Binary(msh.name,reader);
@@ -1077,7 +1090,7 @@ void COBImporter::ReadPolH_Binary(COB::Scene& out, StreamReaderLE& reader, const
 }
 
 // ------------------------------------------------------------------------------------------------
-void COBImporter::ReadBitM_Binary(COB::Scene& out, StreamReaderLE& reader, const ChunkInfo& nfo)
+void COBImporter::ReadBitM_Binary(COB::Scene& /*out*/, StreamReaderLE& reader, const ChunkInfo& nfo)
 {
 	if(nfo.version > 1) {
 		return UnsupportedChunk_Binary(reader,nfo,"BitM");

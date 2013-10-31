@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2008, ASSIMP Development Team
+Copyright (c) 2006-2008, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -45,10 +45,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_FILESYSTEMFILTER_H_INC
 #define AI_FILESYSTEMFILTER_H_INC
 
-#include "../include/IOSystem.h"
+#include "../include/assimp/IOSystem.hpp"
 #include "fast_atof.h"
 #include "ParsingUtils.h"
 namespace Assimp	{
+
+inline bool IsHex(char s) {
+	return (s>='0' && s<='9') || (s>='a' && s<='f') || (s>='A' && s<='F');	
+}
 
 // ---------------------------------------------------------------------------
 /** File system filter  
@@ -60,6 +64,7 @@ public:
 	FileSystemFilter(const std::string& file, IOSystem* old)
 		: wrapped  (old)
 		, src_file (file)
+		, sep(wrapped->getOsSeparator())
 	{
 		ai_assert(NULL != wrapped);
 
@@ -81,8 +86,9 @@ public:
 			base = ".";
 			base += getOsSeparator();
 		}
-		else if ((s = *(base.end()-1)) != '\\' && s != '/')
+		else if ((s = *(base.end()-1)) != '\\' && s != '/') {
 			base += getOsSeparator();
+		}
 
 		DefaultLogger::get()->info("Import root directory is \'" + base + "\'");
 	}
@@ -112,7 +118,7 @@ public:
 	/** Returns the directory separator. */
 	char getOsSeparator() const
 	{
-		return wrapped->getOsSeparator();
+		return sep;
 	}
 
 	// -------------------------------------------------------------------
@@ -136,7 +142,9 @@ public:
 				// Finally, look for typical issues with paths
 				// and try to correct them. This is our last
 				// resort.
+				tmp = pFile;
 				Cleanup(tmp);
+				BuildPath(tmp);
 				s = wrapped->Open(tmp,pMode);
 			}
 		}
@@ -159,8 +167,6 @@ public:
 	}
 
 private:
-	IOSystem* wrapped;
-	std::string src_file, base;
 
 	// -------------------------------------------------------------------
 	/** Build a valid path from a given relative or absolute path.
@@ -168,7 +174,7 @@ private:
 	void BuildPath (std::string& in) const
 	{
 		// if we can already access the file, great.
-		if (in.length() < 3 || wrapped->Exists(in.c_str())) {
+		if (in.length() < 3 || wrapped->Exists(in)) {
 			return;
 		}
 
@@ -176,13 +182,53 @@ private:
 		if (in[1] != ':') {
 		
 			// append base path and try 
-			in = base + in;
-			if (wrapped->Exists(in.c_str())) {
+			const std::string tmp = base + in;
+			if (wrapped->Exists(tmp)) {
+				in = tmp;
 				return;
 			}
 		}
+		
+		// Chop of the file name and look in the model directory, if
+		// this fails try all sub paths of the given path, i.e.
+		// if the given path is foo/bar/something.lwo, try
+		// <base>/something.lwo
+		// <base>/bar/something.lwo
+		// <base>/foo/bar/something.lwo
+		std::string::size_type pos = in.rfind('/');
+		if (std::string::npos == pos) {
+			pos = in.rfind('\\');
+		}
 
-		// hopefully the underyling file system has another few tricks to access this file ...
+		if (std::string::npos != pos)	{
+			std::string tmp;
+			std::string::size_type last_dirsep = std::string::npos;
+
+			while(true) {
+				tmp = base;
+				tmp += sep;
+
+				std::string::size_type dirsep = in.rfind('/', last_dirsep);
+				if (std::string::npos == dirsep) {
+					dirsep = in.rfind('\\', last_dirsep);
+				}
+
+				if (std::string::npos == dirsep || dirsep == 0) {
+					// we did try this already.
+					break;
+				}
+
+				last_dirsep = dirsep-1;
+
+				tmp += in.substr(dirsep+1, in.length()-pos); 
+				if (wrapped->Exists(tmp)) {
+					in = tmp;
+					return;
+				}
+			}
+		}
+
+		// hopefully the underlying file system has another few tricks to access this file ...
 	}
 
 	// -------------------------------------------------------------------
@@ -191,13 +237,17 @@ private:
 	void Cleanup (std::string& in) const
 	{
 		char last = 0;
+		if(in.empty()) {
+			return;
+		}
 
 		// Remove a very common issue when we're parsing file names: spaces at the
 		// beginning of the path. 
 		std::string::iterator it = in.begin();
 		while (IsSpaceOrNewLine( *it ))++it;
-		if (it != in.begin())
+		if (it != in.begin()) {
 			in.erase(in.begin(),it+1);
+		}
 
 		const char sep = getOsSeparator();
 		for (it = in.begin(); it != in.end(); ++it) {
@@ -226,9 +276,8 @@ private:
 			else if (*it == '%' && in.end() - it > 2) {
 			
 				// Hex sequence in URIs
-				uint32_t tmp;
-				if( 0xffffffff != (tmp = HexOctetToDecimal(&*it))) {
-					*it = (char)tmp;
+				if( IsHex((&*it)[0]) && IsHex((&*it)[1]) ) {
+					*it = HexOctetToDecimal(&*it);
 					it = in.erase(it+1,it+2);
 					--it;
 				}
@@ -237,6 +286,11 @@ private:
 			last = *it;
 		}
 	}
+
+private:
+	IOSystem* wrapped;
+	std::string src_file, base;
+	char sep;
 };
 
 } //!ns Assimp

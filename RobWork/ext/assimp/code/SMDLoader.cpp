@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -53,6 +53,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace Assimp;
 
+static const aiImporterDesc desc = {
+	"Valve SMD Importer",
+	"",
+	"",
+	"",
+	aiImporterFlags_SupportTextFlavour,
+	0,
+	0,
+	0,
+	0,
+	"smd vta" 
+};
+
 // ------------------------------------------------------------------------------------------------
 // Constructor to be privately used by Importer
 SMDImporter::SMDImporter()
@@ -65,7 +78,7 @@ SMDImporter::~SMDImporter()
 
 // ------------------------------------------------------------------------------------------------
 // Returns whether the class can handle the format of the given file. 
-bool SMDImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool) const
+bool SMDImporter::CanRead( const std::string& pFile, IOSystem* /*pIOHandler*/, bool) const
 {
 	// fixme: auto format detection
 	return SimpleExtensionCheck(pFile,"smd","vta");
@@ -73,10 +86,9 @@ bool SMDImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool)
 
 // ------------------------------------------------------------------------------------------------
 // Get a list of all supported file extensions
-void SMDImporter::GetExtensionList(std::set<std::string>& extensions)
+const aiImporterDesc* SMDImporter::GetInfo () const
 {
-	extensions.insert("smd");
-	extensions.insert("vta");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -86,16 +98,15 @@ void SMDImporter::SetupProperties(const Importer* pImp)
 	// The 
 	// AI_CONFIG_IMPORT_SMD_KEYFRAME option overrides the
 	// AI_CONFIG_IMPORT_GLOBAL_KEYFRAME option.
-	configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_SMD_KEYFRAME,0xffffffff);
-	if(0xffffffff == configFrameID)	{
+	configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_SMD_KEYFRAME,-1);
+	if(static_cast<unsigned int>(-1) == configFrameID)	{
 		configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_GLOBAL_KEYFRAME,0);
 	}
 }
 
 // ------------------------------------------------------------------------------------------------
 // Imports the given file into the given scene structure. 
-void SMDImporter::InternReadFile( 
-	const std::string& pFile, aiScene* pScene, IOSystem* pIOHandler)
+void SMDImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOSystem* pIOHandler)
 {
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
@@ -201,6 +212,7 @@ void SMDImporter::LogWarning(const char* msg)
 {
 	char szTemp[1024];
 	ai_assert(strlen(msg) < 1000);
+	sprintf(szTemp,"Line %i: %s",iLineNumber,msg);
 	DefaultLogger::get()->warn(szTemp);
 }
 
@@ -254,7 +266,7 @@ void SMDImporter::CreateOutputMeshes()
 		iFace =  asTriangles.begin();
 		iFace != asTriangles.end();++iFace,++iNum)
 	{
-		if (0xffffffff == (*iFace).iTexture)aaiFaces[(*iFace).iTexture].push_back( 0 );
+		if (UINT_MAX == (*iFace).iTexture)aaiFaces[(*iFace).iTexture].push_back( 0 );
 		else if ((*iFace).iTexture >= aszTextures.size())
 		{
 			DefaultLogger::get()->error("[SMD/VTA] Material index overflow in face");
@@ -354,7 +366,7 @@ void SMDImporter::CreateOutputMeshes()
 				// that the parent of a vertex is 0xffffffff (if the corresponding
 				// entry in the file was unreadable)
 				// ******************************************************************
-				if (fSum < 0.975f && face.avVertices[iVert].iParentNode != 0xffffffff)
+				if (fSum < 0.975f && face.avVertices[iVert].iParentNode != UINT_MAX)
 				{
 					if (face.avVertices[iVert].iParentNode >= asBones.size())
 					{
@@ -625,7 +637,7 @@ void SMDImporter::CreateOutputMaterials()
 
 	for (unsigned int iMat = 0; iMat < pScene->mNumMaterials;++iMat)
 	{
-		MaterialHelper* pcMat = new MaterialHelper();
+		aiMaterial* pcMat = new aiMaterial();
 		pScene->mMaterials[iMat] = pcMat;
 
 		aiString szName;
@@ -645,7 +657,7 @@ void SMDImporter::CreateOutputMaterials()
 	{
 		pScene->mNumMaterials = 1;
 
-		MaterialHelper* pcHelper = new MaterialHelper();
+		aiMaterial* pcHelper = new aiMaterial();
 		pScene->mMaterials[0] = pcHelper;
 
 		int iMode = (int)aiShadingMode_Gouraud;
@@ -680,7 +692,7 @@ void SMDImporter::ParseFile()
 		if (TokenMatch(szCurrent,"version",7))
 		{
 			if(!SkipSpaces(szCurrent,&szCurrent)) break;
-			if (1 != strtol10(szCurrent,&szCurrent))
+			if (1 != strtoul10(szCurrent,&szCurrent))
 			{
 				DefaultLogger::get()->warn("SMD.version is not 1. This "
 					"file format is not known. Continuing happily ...");
@@ -1018,7 +1030,7 @@ bool SMDImporter::ParseFloat(const char* szCurrent,
 	if(!SkipSpaces(&szCurrent))
 		return false;
 
-	*szCurrentOut = fast_atof_move(szCurrent,out);
+	*szCurrentOut = fast_atoreal_move<float>(szCurrent,out);
 	return true;
 }
 
@@ -1030,7 +1042,7 @@ bool SMDImporter::ParseUnsignedInt(const char* szCurrent,
 	if(!SkipSpaces(&szCurrent))
 		return false;
 
-	out = strtol10(szCurrent,szCurrentOut);
+	out = strtoul10(szCurrent,szCurrentOut);
 	return true;
 }
 
@@ -1042,7 +1054,7 @@ bool SMDImporter::ParseSignedInt(const char* szCurrent,
 	if(!SkipSpaces(&szCurrent))
 		return false;
 
-	out = strtol10s(szCurrent,szCurrentOut);
+	out = strtol10(szCurrent,szCurrentOut);
 	return true;
 }
 

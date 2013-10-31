@@ -1,10 +1,10 @@
 
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -21,10 +21,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -54,6 +54,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace Assimp;
 
+static const aiImporterDesc desc = {
+	"AC3D Importer",
+	"",
+	"",
+	"",
+	aiImporterFlags_SupportTextFlavour,
+	0,
+	0,
+	0,
+	0,
+	"ac acc ac3d"
+};
 
 // ------------------------------------------------------------------------------------------------
 // skip to the next token
@@ -100,7 +112,7 @@ using namespace Assimp;
 	for (unsigned int i = 0; i < num;++i) \
 	{ \
 		AI_AC_SKIP_TO_NEXT_TOKEN(); \
-		buffer = fast_atof_move(buffer,((float*)out)[i]); \
+		buffer = fast_atoreal_move<float>(buffer,((float*)out)[i]); \
 	}
 
 
@@ -136,12 +148,10 @@ bool AC3DImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool
 }
 
 // ------------------------------------------------------------------------------------------------
-// Get list of file extensions handled by this loader
-void AC3DImporter::GetExtensionList(std::set<std::string>& extensions)
+// Loader meta information
+const aiImporterDesc* AC3DImporter::GetInfo () const
 {
-	extensions.insert("ac");
-	extensions.insert("acc");
-	extensions.insert("ac3d");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -199,7 +209,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 		if (TokenMatch(buffer,"kids",4))
 		{
 			SkipSpaces(&buffer);
-			unsigned int num = strtol10(buffer,&buffer);
+			unsigned int num = strtoul10(buffer,&buffer);
 			GetNextLine();
 			if (num)
 			{
@@ -252,7 +262,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 		else if (TokenMatch(buffer,"subdiv",6))
 		{
 			SkipSpaces(&buffer);
-			obj.subDiv = strtol10(buffer,&buffer);
+			obj.subDiv = strtoul10(buffer,&buffer);
 		}
 		else if (TokenMatch(buffer,"crease",6))
 		{
@@ -263,7 +273,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 		{
 			SkipSpaces(&buffer);
 
-			unsigned int t = strtol10(buffer,&buffer);
+			unsigned int t = strtoul10(buffer,&buffer);
 			obj.vertices.reserve(t);
 			for (unsigned int i = 0; i < t;++i)
 			{
@@ -289,7 +299,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 			
 			bool Q3DWorkAround = false;
 
-			const unsigned int t = strtol10(buffer,&buffer);
+			const unsigned int t = strtoul10(buffer,&buffer);
 			obj.surfaces.reserve(t);
 			for (unsigned int i = 0; i < t;++i)
 			{
@@ -311,7 +321,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 				SkipSpaces(&buffer);
 				obj.surfaces.push_back(Surface());
 				Surface& surf = obj.surfaces.back();
-				surf.flags = strtol_cppstyle(buffer);
+				surf.flags = strtoul_cppstyle(buffer);
 			
 				while (1)
 				{
@@ -323,7 +333,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 					if (TokenMatch(buffer,"mat",3))
 					{
 						SkipSpaces(&buffer);
-						surf.mat = strtol10(buffer);
+						surf.mat = strtoul10(buffer);
 					}
 					else if (TokenMatch(buffer,"refs",4))
 					{
@@ -338,7 +348,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 						}
 
 						SkipSpaces(&buffer);
-						const unsigned int m = strtol10(buffer);
+						const unsigned int m = strtoul10(buffer);
 						surf.entries.reserve(m);
 
 						obj.numRefs += m;
@@ -353,7 +363,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 							surf.entries.push_back(Surface::SurfaceEntry());
 							Surface::SurfaceEntry& entry = surf.entries.back();
 
-							entry.first = strtol10(buffer,&buffer);
+							entry.first = strtoul10(buffer,&buffer);
 							SkipSpaces(&buffer);
 							AI_AC_CHECKED_LOAD_FLOAT_ARRAY("",0,2,&entry.second);
 						}
@@ -375,7 +385,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 // Convert a material from AC3DImporter::Material to aiMaterial
 void AC3DImporter::ConvertMaterial(const Object& object,
 	const Material& matSrc,
-	MaterialHelper& matDest)
+	aiMaterial& matDest)
 {
 	aiString s;
 
@@ -422,7 +432,7 @@ void AC3DImporter::ConvertMaterial(const Object& object,
 // Converts the loaded data to the internal verbose representation
 aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 	std::vector<aiMesh*>& meshes,
-	std::vector<MaterialHelper*>& outMaterials,
+	std::vector<aiMaterial*>& outMaterials,
 	const std::vector<Material>& materials,
 	aiNode* parent)
 {
@@ -463,7 +473,7 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 			// default material if all objects of the file contain points
 			// and no faces.
 			mesh->mMaterialIndex = 0;
-			outMaterials.push_back(new MaterialHelper());
+			outMaterials.push_back(new aiMaterial());
 			ConvertMaterial(object, materials[0], *outMaterials.back());
 		}
 		else
@@ -548,7 +558,7 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 				meshes.push_back(mesh);
 
 				mesh->mMaterialIndex = (unsigned int)outMaterials.size();
-				outMaterials.push_back(new MaterialHelper());
+				outMaterials.push_back(new aiMaterial());
 				ConvertMaterial(object, materials[mat], *outMaterials.back());
 
 				// allocate storage for vertices and normals
@@ -811,7 +821,7 @@ void AC3DImporter::InternReadFile( const std::string& pFile,
 	std::vector<aiMesh*> meshes;
 	meshes.reserve(mNumMeshes);
 
-	std::vector<MaterialHelper*> omaterials;
+	std::vector<aiMaterial*> omaterials;
 	materials.reserve(mNumMeshes);
 
 	// generate a dummy root if there are multiple objects on the top layer

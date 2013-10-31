@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -51,6 +51,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MS3DLoader.h"
 #include "StreamReader.h"
 using namespace Assimp;
+
+static const aiImporterDesc desc = {
+	"Milkshape 3D Importer",
+	"",
+	"",
+	"http://chumbalum.swissquake.ch/",
+	aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"ms3d" 
+};
 
 // ASSIMP_BUILD_MS3D_ONE_NODE_PER_MESH
 //   (enable old code path, which generates extra nodes per mesh while
@@ -89,9 +102,9 @@ bool MS3DImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool
 }
 
 // ------------------------------------------------------------------------------------------------
-void MS3DImporter::GetExtensionList(std::set<std::string>& extensions)
+const aiImporterDesc* MS3DImporter::GetInfo () const
 {
-	extensions.insert("ms3d");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -227,7 +240,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 		v.bone_id[0] = stream.GetI1(); 
 		v.ref_cnt = stream.GetI1();
 
-		v.bone_id[1] = v.bone_id[2] = v.bone_id[3] = 0xffffffff;
+		v.bone_id[1] = v.bone_id[2] = v.bone_id[3] = UINT_MAX;
 		v.weights[1] = v.weights[2] = v.weights[3] = 0.f;
 		v.weights[0] = 1.f;
 	}
@@ -279,7 +292,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 			t.triangles[i] = stream.GetI2(); 
 		}
 		t.mat = stream.GetI1(); 
-		if (t.mat == 0xffffffff) {
+		if (t.mat == UINT_MAX) {
 			need_default = true;
 		}
 	}
@@ -364,6 +377,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 				}
 
 				const std::string& s = std::string(reinterpret_cast<char*>(stream.GetPtr()),len);
+				DefaultLogger::get()->debug("MS3D: Model comment: " + s);
 			}
 
 			if(stream.GetRemainingSize() > 4 && inrange((stream >> subversion,subversion),1u,3u)) {
@@ -402,7 +416,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 
 		for (unsigned int i = 0; i < groups.size(); ++i) {
 			TempGroup& g = groups[i];
-			if (g.mat == 0xffffffff) {
+			if (g.mat == UINT_MAX) {
 				g.mat = materials.size()-1;
 			}
 		}
@@ -413,7 +427,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 		pScene->mMaterials = new aiMaterial*[materials.size()];
 		for (size_t i = 0; i < materials.size(); ++i) {
 
-			MaterialHelper* mo = new MaterialHelper();
+			aiMaterial* mo = new aiMaterial();
 			pScene->mMaterials[pScene->mNumMaterials++] = mo;
 
 			const TempMaterial& mi = materials[i];
@@ -491,7 +505,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 
 				const TempVertex& v = vertices[t.indices[i]];
 				for(unsigned int a = 0; a < 4; ++a) {
-					if (v.bone_id[a] != 0xffffffff) {
+					if (v.bone_id[a] != UINT_MAX) {
 						if (v.bone_id[a] >= joints.size()) {
 							throw DeadlyImportError("MS3D: Encountered invalid bone index, file is malformed");
 						}
@@ -533,7 +547,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 					const TempVertex& v = vertices[t.indices[i]];
 					for(unsigned int a = 0; a < 4; ++a) {
 						const unsigned int bone = v.bone_id[a];
-						if(bone==0xffffffff){
+						if(bone==UINT_MAX){
 							continue;
 						}
 
@@ -581,8 +595,12 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 	if(joints.size()) {
 #ifndef ASSIMP_BUILD_MS3D_ONE_NODE_PER_MESH
 		rt->mChildren = new aiNode*[1]();
-#endif
+		rt->mNumChildren = 1;
+
+		aiNode* jt = rt->mChildren[0] = new aiNode();
+#else
 		aiNode* jt = rt->mChildren[pScene->mNumMeshes] = new aiNode();
+#endif
 		jt->mParent = rt;
 		CollectChildJoints(joints,jt);
 		jt->mName.Set("<MS3DJointRoot>");

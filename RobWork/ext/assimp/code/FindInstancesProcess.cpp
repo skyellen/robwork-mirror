@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -175,43 +175,32 @@ void FindInstancesProcess::Execute( aiScene* pScene)
 					// use a constant epsilon for colors and UV coordinates
 					static const float uvEpsilon = 10e-4f;
 
-					BOOST_STATIC_ASSERT(4 == AI_MAX_NUMBER_OF_COLOR_SETS);
-
-					// as in JIV: manually unrolled as continue wouldn't work as desired in inner loops
-					if (orig->mTextureCoords[0]) {
-						if(!CompareArrays(orig->mTextureCoords[0],inst->mTextureCoords[0],orig->mNumVertices,uvEpsilon))
-							continue;
-						if (orig->mTextureCoords[1]) {
-							if(!CompareArrays(orig->mTextureCoords[1],inst->mTextureCoords[1],orig->mNumVertices,uvEpsilon))
+					{
+						unsigned int i, end = orig->GetNumUVChannels();
+						for(i = 0; i < end; ++i) {
+							if (!orig->mTextureCoords[i]) {
 								continue;
-							if (orig->mTextureCoords[2]) {
-								if(!CompareArrays(orig->mTextureCoords[2],inst->mTextureCoords[2],orig->mNumVertices,uvEpsilon))
-									continue;
-								if (orig->mTextureCoords[3]) {
-									if(!CompareArrays(orig->mTextureCoords[3],inst->mTextureCoords[3],orig->mNumVertices,uvEpsilon))
-										continue;
-								}
+							}
+							if(!CompareArrays(orig->mTextureCoords[i],inst->mTextureCoords[i],orig->mNumVertices,uvEpsilon)) {
+								break;	
 							}
 						}
-					}
-
-					BOOST_STATIC_ASSERT(4 == AI_MAX_NUMBER_OF_COLOR_SETS);
-
-					// and the same nasty stuff for vertex colors ...
-					if (orig->mColors[0]) {
-						if(!CompareArrays(orig->mColors[0],inst->mColors[0],orig->mNumVertices,uvEpsilon))
+						if (i != end) {
 							continue;
-						if (orig->mTextureCoords[1]) {
-							if(!CompareArrays(orig->mColors[1],inst->mColors[1],orig->mNumVertices,uvEpsilon))
+						}
+					}
+					{
+						unsigned int i, end = orig->GetNumColorChannels();
+						for(i = 0; i < end; ++i) {
+							if (!orig->mColors[i]) {
 								continue;
-							if (orig->mTextureCoords[2]) {
-								if(!CompareArrays(orig->mColors[2],inst->mColors[2],orig->mNumVertices,uvEpsilon))
-									continue;
-								if (orig->mTextureCoords[3]) {
-									if(!CompareArrays(orig->mColors[3],inst->mColors[3],orig->mNumVertices,uvEpsilon))
-										continue;
-								}
 							}
+							if(!CompareArrays(orig->mColors[i],inst->mColors[i],orig->mNumVertices,uvEpsilon)) {
+								break;	
+							}
+						}
+						if (i != end) {
+							continue;
 						}
 					}
 

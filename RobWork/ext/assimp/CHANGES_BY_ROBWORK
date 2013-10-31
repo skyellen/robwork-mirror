@@ -1,0 +1,10 @@
+With exception of CMake files, the files included in this directory and subdirectories has not been modified compared to Assimp 3.0 - revision 1270.
+The files that are not needed have however been left out.
+
+ext/assimp/CMakeLists.txt is changed and ext/assimp/CMakeLists_orig.txt containts the original file
+
+ext/assimp/code/CMakeLists.txt is changed and ext/assimp/code/CMakeLists_orig.txt containts the original file
+
+Furthermore the following is changed
+
+ext/assimp/code/Q3BSPZipArchive.h : included unzip from ext/assimp/unzip

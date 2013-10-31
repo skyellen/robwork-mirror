@@ -57,7 +57,17 @@ ENDIF()
 add_subdirectory(qhull)
 #ENDIF()
 
+IF(RW_ENABLE_INTERNAL_ZLIB_TARGET)
+	add_subdirectory(zlib)
+ENDIF()
 
+IF(RW_ENABLE_INTERNAL_MINIZIP_TARGET)
+	add_subdirectory(unzip)
+ENDIF()
+
+IF(RW_ENABLE_INTERNAL_ASSIMP_TARGET)
+	add_subdirectory(assimp)
+ENDIF()
 
 # Copy libraries according to compiler (Linux users compile libraries manually)
 IF(WIN32)

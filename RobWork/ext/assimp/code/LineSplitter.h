@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -79,10 +79,14 @@ public:
 public:
 
 	// -----------------------------------------
-	/** construct from existing stream reader */
-	LineSplitter(StreamReaderLE& stream)
+	/** construct from existing stream reader 
+	note: trim is *always* assumed true if skyp_empty_lines==true
+	*/
+	LineSplitter(StreamReaderLE& stream, bool skip_empty_lines = true, bool trim = true)
 		: stream(stream)
 		, swallow()
+		, skip_empty_lines(skip_empty_lines)
+		, trim(trim)
 	{
 		cur.reserve(1024);
 		operator++();
@@ -106,20 +110,41 @@ public:
 
 		char s;
 
-		cur.clear(); // I will kill you if you deallocate.
+		cur.clear();
 		while(stream.GetRemainingSize() && (s = stream.GetI1(),1)) {
 			if (s == '\n' || s == '\r') {
+				if (skip_empty_lines) {
 					while (stream.GetRemainingSize() && ((s = stream.GetI1()) == ' ' || s == '\r' || s == '\n'));
 					if (stream.GetRemainingSize()) {
 						stream.IncPtr(-1);
 					}
-					break;
+				}
+				else {
+					// skip both potential line terminators but don't read past this line.
+					if (stream.GetRemainingSize() && (s == '\r' && stream.GetI1() != '\n')) {
+						stream.IncPtr(-1);
+					}
+
+					if (trim) {
+						while (stream.GetRemainingSize() && ((s = stream.GetI1()) == ' ' || s == '\t'));
+						if (stream.GetRemainingSize()) {
+							stream.IncPtr(-1);
+						}
+					}
+				}
+				
+				break;
 			}
 			cur += s;
 		}
 
 		++idx;
 		return *this;
+	}
+
+	// -----------------------------------------
+	LineSplitter& operator++(int) {
+		return ++(*this);
 	}
 
 	// -----------------------------------------
@@ -164,7 +189,7 @@ public:
 		return &cur;
 	}
 
-	const std::string& operator* () const {
+	std::string operator* () const {
 		return cur;
 	}
 
@@ -210,7 +235,7 @@ private:
 	line_idx idx;
 	std::string cur;
 	StreamReaderLE& stream;
-	bool swallow;
+	bool swallow, skip_empty_lines, trim;
 };
 
 }

@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -92,7 +92,7 @@ void UpdateNodes(const std::vector<unsigned int>& replaceMeshIndex, aiNode* node
 			unsigned int add = node->mMeshes[m]<<2;
 			for (unsigned int i = 0; i < 4;++i)
 			{
-				if (0xffffffff != replaceMeshIndex[add+i])++newSize;
+				if (UINT_MAX != replaceMeshIndex[add+i])++newSize;
 			}
 		}
 		if (!newSize)
@@ -112,7 +112,7 @@ void UpdateNodes(const std::vector<unsigned int>& replaceMeshIndex, aiNode* node
 				unsigned int add = node->mMeshes[m]<<2;
 				for (unsigned int i = 0; i < 4;++i)
 				{
-					if (0xffffffff != replaceMeshIndex[add+i])
+					if (UINT_MAX != replaceMeshIndex[add+i])
 						*newMeshes++ = replaceMeshIndex[add+i];
 				}
 			}
@@ -147,7 +147,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 
 	bool bAnyChanges = false;
 
-	std::vector<unsigned int> replaceMeshIndex(pScene->mNumMeshes*4,0xffffffff);
+	std::vector<unsigned int> replaceMeshIndex(pScene->mNumMeshes*4,UINT_MAX);
 	std::vector<unsigned int>::iterator meshIdx = replaceMeshIndex.begin();
 	for (unsigned int i = 0; i < pScene->mNumMeshes;++i)
 	{

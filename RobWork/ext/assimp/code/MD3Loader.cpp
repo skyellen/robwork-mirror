@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -57,8 +57,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GenericProperty.h"
 #include "RemoveComments.h"
 #include "ParsingUtils.h"
+#include "Importer.h"
 
 using namespace Assimp;
+
+static const aiImporterDesc desc = {
+	"Quake III Mesh Importer",
+	"",
+	"",
+	"",
+	aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"md3" 
+};
 
 // ------------------------------------------------------------------------------------------------
 // Convert a Q3 shader blend function to the appropriate enum value
@@ -249,7 +263,7 @@ bool Q3Shader::LoadSkin(SkinData& fill, const std::string& pFile,IOSystem* io)
 
 // ------------------------------------------------------------------------------------------------
 // Convert Q3Shader to material
-void Q3Shader::ConvertShaderToMaterial(MaterialHelper* out, const ShaderDataBlock& shader)
+void Q3Shader::ConvertShaderToMaterial(aiMaterial* out, const ShaderDataBlock& shader)
 {
 	ai_assert(NULL != out);
 
@@ -419,9 +433,9 @@ void MD3Importer::ValidateSurfaceHeaderOffsets(const MD3::Surface* pcSurf)
 }
 
 // ------------------------------------------------------------------------------------------------
-void MD3Importer::GetExtensionList(std::set<std::string>& extensions)
+const aiImporterDesc* MD3Importer::GetInfo () const
 {
-	extensions.insert("md3");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -431,8 +445,8 @@ void MD3Importer::SetupProperties(const Importer* pImp)
 	// The 
 	// AI_CONFIG_IMPORT_MD3_KEYFRAME option overrides the
 	// AI_CONFIG_IMPORT_GLOBAL_KEYFRAME option.
-	configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_MD3_KEYFRAME,0xffffffff);
-	if(0xffffffff == configFrameID) {
+	configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_MD3_KEYFRAME,-1);
+	if(static_cast<unsigned int>(-1) == configFrameID) {
 		configFrameID = pImp->GetPropertyInteger(AI_CONFIG_IMPORT_GLOBAL_KEYFRAME,0);
 	}
 
@@ -469,7 +483,7 @@ void MD3Importer::ReadSkin(Q3Shader::SkinData& fill) const
 void MD3Importer::ReadShader(Q3Shader::ShaderData& fill) const
 {
 	// Determine Q3 model name from given path
-	std::string::size_type s = path.find_last_of("\\/",path.length()-2);
+	const std::string::size_type s = path.find_last_of("\\/",path.length()-2);
 	const std::string model_file = path.substr(s+1,path.length()-(s+2));
 
 	// If no specific dir or file is given, use our default search behaviour
@@ -481,7 +495,7 @@ void MD3Importer::ReadShader(Q3Shader::ShaderData& fill) const
 	else {
 		// If the given string specifies a file, load this file.
 		// Otherwise it's a directory.
-		std::string::size_type st = configShaderFile.find_last_of('.');
+		const std::string::size_type st = configShaderFile.find_last_of('.');
 		if (st == std::string::npos) {
 			
 			if(!Q3Shader::LoadShader(fill,configShaderFile + model_file + ".shader",mIOHandler)) {
@@ -876,7 +890,7 @@ void MD3Importer::InternReadFile( const std::string& pFile,
 			else DefaultLogger::get()->warn("Unable to find shader record for " +without_ext );
 		}
 
-		MaterialHelper* pcHelper = new MaterialHelper();
+		aiMaterial* pcHelper = new aiMaterial();
 
 		const int iMode = (int)aiShadingMode_Gouraud;
 		pcHelper->AddProperty<int>(&iMode, 1, AI_MATKEY_SHADING_MODEL);

@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -243,14 +243,13 @@ void AnimResolver::ExtractBindPose(aiMatrix4x4& out)
 	if (scale_z) scaling.z = scale_z->keys[0].value;
 
 	// build the final matrix
-	aiMatrix4x4 s,r,t;
-	
-	r.FromEulerAnglesXYZ(angles);
-	//aiMatrix4x4::RotationY(angles.y,r);
-	// fixme: make FromEulerAngles static, too
+	aiMatrix4x4 s,rx,ry,rz,t;
+	aiMatrix4x4::RotationZ(angles.z, rz);
+	aiMatrix4x4::RotationX(angles.y, rx);
+	aiMatrix4x4::RotationY(angles.x, ry);
 	aiMatrix4x4::Translation(translation,t);
 	aiMatrix4x4::Scaling(scaling,s);
-	out = s*r*t;
+	out = t*ry*rx*rz*s;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -426,8 +425,8 @@ void AnimResolver::GetKeys(std::vector<aiVectorKey>& out,
 		sample_delta = 1.f / sr; 
 
 		reserve = (size_t)(
-			std::max( envl_x->keys.end()->time,
-			std::max( envl_y->keys.end()->time, envl_z->keys.end()->time )) * sr);
+			std::max( envl_x->keys.rbegin()->time,
+			std::max( envl_y->keys.rbegin()->time, envl_z->keys.rbegin()->time )) * sr);
 	}
 	else reserve = std::max(envl_x->keys.size(),std::max(envl_x->keys.size(),envl_z->keys.size()));
 	out.reserve(reserve+(reserve>>1));
@@ -459,16 +458,6 @@ void AnimResolver::GetKeys(std::vector<aiVectorKey>& out,
 			if (flags & AI_LWO_ANIM_FLAG_SAMPLE_ANIMS) {
 				//SubsampleAnimTrack(out,cur_x, cur_y, cur_z, d, sample_delta);
 			}
-
-			if (cur_x != envl_x->keys.end()-1)
-				++cur_x;
-			else end_x = true;
-			if (cur_y != envl_y->keys.end()-1)
-				++cur_y;
-			else end_y = true;
-			if (cur_z != envl_z->keys.end()-1)
-				++cur_z;
-			else end_z = true;
 		}
 
 		// Find key with lowest time value
@@ -481,8 +470,8 @@ void AnimResolver::GetKeys(std::vector<aiVectorKey>& out,
 				InterpolateTrack(out,fill,(*cur_x).time);
 			}
 		}
-		else if ((*cur_z).time <= (*cur_y).time && !end_z)	{
-			InterpolateTrack(out,fill,(*cur_z).time);
+		else if ((*cur_z).time <= (*cur_y).time && !end_y)	{
+			InterpolateTrack(out,fill,(*cur_y).time);
 		}
 		else if (!end_y) {
 			// welcome on the server, y
@@ -504,6 +493,22 @@ void AnimResolver::GetKeys(std::vector<aiVectorKey>& out,
 		lasttime = fill.mTime;
 		out.push_back(fill);
 
+		if (lasttime >= (*cur_x).time) {
+			if (cur_x != envl_x->keys.end()-1)
+				++cur_x;
+			else end_x = true;
+		}
+		if (lasttime >= (*cur_y).time) {
+			if (cur_y != envl_y->keys.end()-1)
+				++cur_y;
+			else end_y = true;
+		}
+		if (lasttime >= (*cur_z).time) {
+			if (cur_z != envl_z->keys.end()-1)
+				++cur_z;
+			else end_z = true;
+		}
+
 		if( end_x && end_y && end_z ) /* finished? */
 			break;
 	}
@@ -522,18 +527,16 @@ void AnimResolver::ExtractAnimChannel(aiNodeAnim** out, unsigned int flags /*= 0
 
 
 	//FIXME: crashes if more than one component is animated at different timings, to be resolved.
-	return;
-
-#if 0
+	
 	// If we have no envelopes, return NULL
 	if (envelopes.empty()) {
 		return;
 	}
 
 	// We won't spawn an animation channel if we don't have at least one envelope with more than one keyframe defined.
-	const bool trans = (trans_x && trans_x->keys.size() > 1 || trans_y && trans_y->keys.size() > 1 || trans_z && trans_z->keys.size() > 1);
-	const bool rotat = (rotat_x && rotat_x->keys.size() > 1 || rotat_y && rotat_y->keys.size() > 1 || rotat_z && rotat_z->keys.size() > 1);
-	const bool scale = (scale_x && scale_x->keys.size() > 1 || scale_y && scale_y->keys.size() > 1 || scale_z && scale_z->keys.size() > 1);
+	const bool trans = ((trans_x && trans_x->keys.size() > 1) || (trans_y && trans_y->keys.size() > 1) || (trans_z && trans_z->keys.size() > 1));
+	const bool rotat = ((rotat_x && rotat_x->keys.size() > 1) || (rotat_y && rotat_y->keys.size() > 1) || (rotat_z && rotat_z->keys.size() > 1));
+	const bool scale = ((scale_x && scale_x->keys.size() > 1) || (scale_y && scale_y->keys.size() > 1) || (scale_z && scale_z->keys.size() > 1));
 	if (!trans && !rotat && !scale)
 		return;
 
@@ -563,10 +566,15 @@ void AnimResolver::ExtractAnimChannel(aiNodeAnim** out, unsigned int flags /*= 0
 		anim->mRotationKeys = new aiQuatKey[ anim->mNumRotationKeys = keys.size() ];
 		
 		// convert heading, pitch, bank to quaternion
+		// mValue.x=Heading=Rot(Y), mValue.y=Pitch=Rot(X), mValue.z=Bank=Rot(Z)
+		// Lightwave's rotation order is ZXY
+		aiVector3D X(1.0,0.0,0.0);
+		aiVector3D Y(0.0,1.0,0.0);
+		aiVector3D Z(0.0,0.0,1.0);
 		for (unsigned int i = 0; i < anim->mNumRotationKeys; ++i) {
 			aiQuatKey& qk = anim->mRotationKeys[i];
 			qk.mTime  = keys[i].mTime;
-			qk.mValue = aiQuaternion( keys[i].mValue.x ,keys[i].mValue.z ,keys[i].mValue.y );
+			qk.mValue = aiQuaternion(Y,keys[i].mValue.x)*aiQuaternion(X,keys[i].mValue.y)*aiQuaternion(Z,keys[i].mValue.z);
 		}
 	}
 
@@ -578,7 +586,6 @@ void AnimResolver::ExtractAnimChannel(aiNodeAnim** out, unsigned int flags /*= 0
 		anim->mScalingKeys = new aiVectorKey[ anim->mNumScalingKeys = keys.size() ];
 		std::copy(keys.begin(),keys.end(),anim->mScalingKeys);
 	}
-#endif
 }
 
 

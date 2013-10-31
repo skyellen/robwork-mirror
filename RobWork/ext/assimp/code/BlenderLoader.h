@@ -1,8 +1,8 @@
 /*
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, 
@@ -18,10 +18,10 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -45,6 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INCLUDED_AI_BLEND_LOADER_H
 
 #include "BaseImporter.h"
+#include "LogAux.h"
+
 namespace Assimp	{
 	
 	// TinyFormatter.h
@@ -83,32 +85,6 @@ namespace Assimp	{
 		class BlenderModifier;
 	}
 
-enum aiLoaderFlags 
-{
-	aiLoaderFlags_SupportAsciiFlavour = 0x1,
-	aiLoaderFlags_SupportBinaryFlavour = 0x2,
-	aiLoaderFlags_SupportCompressedFlavour = 0x4,
-
-	aiLoaderFlags_LimitedSupport = 0x8,
-
-	aiLoaderFlags_Experimental = 0x10,
-	aiLoaderFlags_Testing = 0x20,
-	aiLoaderFlags_Production = 0x40,
-};
-
-struct aiLoaderDesc 
-{
-	const char* mName;
-	const char* mAuthor;
-	const char* mMaintainer;
-	const char* mComments;
-	unsigned int mFlags;
-
-	unsigned int mMinMajor;
-	unsigned int mMinMinor;
-	unsigned int mMaxMajor;
-	unsigned int mMaxMinor;
-};
 
 
 // -------------------------------------------------------------------------------------------
@@ -116,17 +92,12 @@ struct aiLoaderDesc
  *  call it is outsourced to BlenderDNA.cpp/BlenderDNA.h. This class only performs the
  *  conversion from intermediate format to aiScene. */
 // -------------------------------------------------------------------------------------------
-class BlenderImporter : public BaseImporter
+class BlenderImporter : public BaseImporter, public LogFunctions<BlenderImporter>
 {
-	friend class Importer;
-
-protected:
-
-	/** Constructor to be privately used by Importer */
+public:
 	BlenderImporter();
-
-	/** Destructor, private as well */
 	~BlenderImporter();
+
 
 public:
 
@@ -139,7 +110,7 @@ public:
 protected:
 
 	// --------------------
-	const aiLoaderDesc& GetInfo () const;
+	const aiImporterDesc* GetInfo () const;
 
 	// --------------------
 	void GetExtensionList(std::set<std::string>& app);
@@ -206,7 +177,7 @@ private:
 
 	// --------------------
 	void ResolveTexture(
-		MaterialHelper* out, 
+		aiMaterial* out, 
 		const Blender::Material* mat, 
 		const Blender::MTex* tex,
 		Blender::ConversionData& conv_data
@@ -214,7 +185,7 @@ private:
 
 	// --------------------
 	void ResolveImage(
-		MaterialHelper* out, 
+		aiMaterial* out, 
 		const Blender::Material* mat, 
 		const Blender::MTex* tex, 
 		const Blender::Image* img,
@@ -222,7 +193,7 @@ private:
 	);
 
 	void AddSentinelTexture(
-		MaterialHelper* out, 
+		aiMaterial* out, 
 		const Blender::Material* mat,
 		const Blender::MTex* tex, 
 		Blender::ConversionData& conv_data
@@ -240,16 +211,6 @@ private: // static stuff, mostly logging and error reporting.
 		const char* type
 	);
 
-	// -------------------------------------------------------------------
-	/** Prepend 'BLEND: ' and throw msg.*/
-	static void ThrowException(const std::string& msg);
-
-	// -------------------------------------------------------------------
-	/** @defgroup blog Prepend 'BLEND: ' and write @c message to log.*/
-	static void LogWarn  (const Formatter::format& message); //! @ingroup blog
-	static void LogError (const Formatter::format& message); //! @ingroup blog
-	static void LogInfo  (const Formatter::format& message); //! @ingroup blog
-	static void LogDebug (const Formatter::format& message); //! @ingroup blog
 
 private:
 

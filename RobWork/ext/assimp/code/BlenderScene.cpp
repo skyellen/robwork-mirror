@@ -63,7 +63,11 @@ template <> void Structure :: Convert<Object> (
     ReadFieldArray2<ErrorPolicy_Warn>(dest.obmat,"obmat",db);
     ReadFieldArray2<ErrorPolicy_Warn>(dest.parentinv,"parentinv",db);
     ReadFieldArray<ErrorPolicy_Warn>(dest.parsubstr,"parsubstr",db);
-    ReadFieldPtr<ErrorPolicy_Warn>(dest.parent,"*parent",db);
+    {
+        boost::shared_ptr<Object> parent;
+        ReadFieldPtr<ErrorPolicy_Warn>(parent,"*parent",db);
+        dest.parent = parent.get();
+    }
     ReadFieldPtr<ErrorPolicy_Warn>(dest.track,"*track",db);
     ReadFieldPtr<ErrorPolicy_Warn>(dest.proxy,"*proxy",db);
     ReadFieldPtr<ErrorPolicy_Warn>(dest.proxy_from,"*proxy_from",db);
@@ -151,8 +155,8 @@ template <> void Structure :: Convert<SubsurfModifierData> (
 { 
 
     ReadField<ErrorPolicy_Fail>(dest.modifier,"modifier",db);
-    ReadField<ErrorPolicy_Igno>(dest.subdivType,"subdivType",db);
-    ReadField<ErrorPolicy_Igno>(dest.levels,"levels",db);
+    ReadField<ErrorPolicy_Warn>(dest.subdivType,"subdivType",db);
+    ReadField<ErrorPolicy_Fail>(dest.levels,"levels",db);
     ReadField<ErrorPolicy_Igno>(dest.renderLevels,"renderLevels",db);
     ReadField<ErrorPolicy_Igno>(dest.flags,"flags",db);
 
@@ -238,7 +242,11 @@ template <> void Structure :: Convert<Base> (
     ) const
 { 
 
-    ReadFieldPtr<ErrorPolicy_Warn>(dest.prev,"*prev",db);
+    {
+        boost::shared_ptr<Base> prev;
+        ReadFieldPtr<ErrorPolicy_Warn>(prev,"*prev",db);
+        dest.prev = prev.get();
+    }
     ReadFieldPtr<ErrorPolicy_Warn>(dest.next,"*next",db);
     ReadFieldPtr<ErrorPolicy_Warn>(dest.object,"*object",db);
 
@@ -275,9 +283,10 @@ template <> void Structure :: Convert<Material> (
     ReadField<ErrorPolicy_Warn>(dest.specr,"specr",db);
     ReadField<ErrorPolicy_Warn>(dest.specg,"specg",db);
     ReadField<ErrorPolicy_Warn>(dest.specb,"specb",db);
-    ReadField<ErrorPolicy_Warn>(dest.ambir,"ambir",db);
-    ReadField<ErrorPolicy_Warn>(dest.ambig,"ambig",db);
-    ReadField<ErrorPolicy_Warn>(dest.ambib,"ambib",db);
+    ReadField<ErrorPolicy_Igno>(dest.har,"har",db);
+    ReadField<ErrorPolicy_Warn>(dest.ambr,"ambr",db);
+    ReadField<ErrorPolicy_Warn>(dest.ambg,"ambg",db);
+    ReadField<ErrorPolicy_Warn>(dest.ambb,"ambb",db);
     ReadField<ErrorPolicy_Igno>(dest.mirr,"mirr",db);
     ReadField<ErrorPolicy_Igno>(dest.mirg,"mirg",db);
     ReadField<ErrorPolicy_Igno>(dest.mirb,"mirb",db);

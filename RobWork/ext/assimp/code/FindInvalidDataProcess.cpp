@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -90,7 +90,7 @@ void UpdateMeshReferences(aiNode* node, const std::vector<unsigned int>& meshMap
 		for (unsigned int a = 0; a < node->mNumMeshes;++a)	{
 
 			register unsigned int ref = node->mMeshes[a];
-			if (0xffffffff != (ref = meshMapping[ref]))	{
+			if (UINT_MAX != (ref = meshMapping[ref]))	{
 				node->mMeshes[out++] = ref;
 			}
 		}
@@ -130,7 +130,7 @@ void FindInvalidDataProcess::Execute( aiScene* pScene)
 				delete pScene->mMeshes[a];
 				AI_DEBUG_INVALIDATE_PTR(pScene->mMeshes[a]);
 
-				meshMapping[a] = 0xffffffff;
+				meshMapping[a] = UINT_MAX;
 				continue;
 			}
 		}

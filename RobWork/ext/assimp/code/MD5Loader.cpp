@@ -1,9 +1,9 @@
 /*
 ---------------------------------------------------------------------------
-Open Asset Import Library (ASSIMP)
+Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2010, ASSIMP Development Team
+Copyright (c) 2006-2012, assimp team
 
 All rights reserved.
 
@@ -20,10 +20,10 @@ conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of the ASSIMP team, nor the names of its
+* Neither the name of the assimp team, nor the names of its
   contributors may be used to endorse or promote products
   derived from this software without specific prior
-  written permission of the ASSIMP Development Team.
+  written permission of the assimp team.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
@@ -47,7 +47,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ASSIMP_BUILD_NO_MD5_IMPORTER
 
 // internal headers
-#include "MaterialSystem.h"
 #include "RemoveComments.h"
 #include "MD5Loader.h"
 #include "StringComparison.h"
@@ -59,10 +58,25 @@ using namespace Assimp;
 // Minimum weight value. Weights inside [-n ... n] are ignored
 #define AI_MD5_WEIGHT_EPSILON 1e-5f
 
+
+static const aiImporterDesc desc = {
+	"Doom 3 / MD5 Mesh Importer",
+	"",
+	"",
+	"",
+	aiImporterFlags_SupportBinaryFlavour,
+	0,
+	0,
+	0,
+	0,
+	"md5mesh md5camera md5anim"
+};
+
 // ------------------------------------------------------------------------------------------------
 // Constructor to be privately used by Importer
 MD5Importer::MD5Importer()
-: configNoAutoLoad (false)
+: mBuffer()
+, configNoAutoLoad (false)
 {}
 
 // ------------------------------------------------------------------------------------------------
@@ -79,8 +93,9 @@ bool MD5Importer::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool 
 	if (extension == "md5anim" || extension == "md5mesh" || extension == "md5camera")
 		return true;
 	else if (!extension.length() || checkSig)	{
-		if (!pIOHandler)
+		if (!pIOHandler) {
 			return true;
+		}
 		const char* tokens[] = {"MD5Version"};
 		return SearchFileHeaderForToken(pIOHandler,pFile,tokens,1);
 	}
@@ -89,11 +104,9 @@ bool MD5Importer::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool 
 
 // ------------------------------------------------------------------------------------------------
 // Get list of all supported extensions
-void MD5Importer::GetExtensionList(std::set<std::string>& extensions)
+const aiImporterDesc* MD5Importer::GetInfo () const
 {
-	extensions.insert("md5anim");
-	extensions.insert("md5mesh");
-	extensions.insert("md5camera");
+	return &desc;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -114,7 +127,7 @@ void MD5Importer::InternReadFile( const std::string& pFile,
 	bHadMD5Mesh = bHadMD5Anim = bHadMD5Camera = false;
 
 	// remove the file extension
-	std::string::size_type pos = pFile.find_last_of('.');
+	const std::string::size_type pos = pFile.find_last_of('.');
 	mFile = (std::string::npos == pos ? pFile : pFile.substr(0,pos+1));
 
 	const std::string extension = GetExtension(pFile);
@@ -125,7 +138,7 @@ void MD5Importer::InternReadFile( const std::string& pFile,
 		else if (configNoAutoLoad || extension == "md5anim") {
 			// determine file extension and process just *one* file
 			if (extension.length() == 0) {
-				/* fixme */
+				throw DeadlyImportError("Failure, need file extension to determine MD5 part type");
 			}
 			if (extension == "md5anim") {
 				LoadMD5AnimFile();
@@ -139,31 +152,39 @@ void MD5Importer::InternReadFile( const std::string& pFile,
 			LoadMD5AnimFile();
 		}
 	}
-	catch ( std::exception&) {
-		// XXX use more idiomatic RAII solution
+	catch ( ... ) { // std::exception, Assimp::DeadlyImportError
 		UnloadFileFromMemory();
 		throw;
 	}
 
 	// make sure we have at least one file
-	if (!bHadMD5Mesh && !bHadMD5Anim && !bHadMD5Camera)
-		throw DeadlyImportError("Failed to read valid contents from this MD5* file");
+	if (!bHadMD5Mesh && !bHadMD5Anim && !bHadMD5Camera) {
+		throw DeadlyImportError("Failed to read valid contents out of this MD5* file");
+	}
 
-	// Now rotate the whole scene 90 degrees around the x axis to convert to internal coordinate system
+	// Now rotate the whole scene 90 degrees around the x axis to match our internal coordinate system
 	pScene->mRootNode->mTransformation = aiMatrix4x4(1.f,0.f,0.f,0.f,
 		0.f,0.f,1.f,0.f,0.f,-1.f,0.f,0.f,0.f,0.f,0.f,1.f);
 
 	// the output scene wouldn't pass the validation without this flag
-	if (!bHadMD5Mesh)
+	if (!bHadMD5Mesh) {
 		pScene->mFlags |= AI_SCENE_FLAGS_INCOMPLETE;
+	}
+
+	// clean the instance -- the BaseImporter instance may be reused later.
+	UnloadFileFromMemory();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Load a file into a memory buffer
 void MD5Importer::LoadFileIntoMemory (IOStream* file)
 {
+	// unload the previous buffer, if any
+	UnloadFileFromMemory();
+
 	ai_assert(NULL != file);
 	fileSize = (unsigned int)file->FileSize();
+	ai_assert(fileSize);
 
 	// allocate storage and copy the contents of the file to a memory buffer
 	pScene = pScene;
@@ -207,8 +228,9 @@ void MD5Importer::MakeDataUnique (MD5::MeshDesc& meshSrc)
 	for (FaceList::const_iterator iter = meshSrc.mFaces.begin(),iterEnd = meshSrc.mFaces.end();iter != iterEnd;++iter){
 		const aiFace& face = *iter;
 		for (unsigned int i = 0; i < 3;++i) {
-			if (face.mIndices[0] >= meshSrc.mVertices.size())
+			if (face.mIndices[0] >= meshSrc.mVertices.size()) {
 				throw DeadlyImportError("MD5MESH: Invalid vertex index");
+			}
 
 			if (abHad[face.mIndices[i]])	{
 				// generate a new vertex
@@ -324,8 +346,8 @@ void MD5Importer::LoadMD5MeshFile ()
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)	{
-		DefaultLogger::get()->warn("Failed to read MD5MESH file: " + pFile);
+	if( file.get() == NULL || !file->FileSize())	{
+		DefaultLogger::get()->warn("Failed to access MD5MESH file: " + pFile);
 		return;
 	}
 	bHadMD5Mesh = true;
@@ -356,7 +378,6 @@ void MD5Importer::LoadMD5MeshFile ()
 	if (pScene->mRootNode->mChildren[1]->mNumChildren) /* start at the right hierarchy level */
 		SkeletonMeshBuilder skeleton_maker(pScene,pScene->mRootNode->mChildren[1]->mChildren[0]);
 #else
-	std::vector<MD5::MeshDesc>::const_iterator end = meshParser.mMeshes.end();
 
 	// FIX: MD5 files exported from Blender can have empty meshes
 	for (std::vector<MD5::MeshDesc>::const_iterator it  = meshParser.mMeshes.begin(),end = meshParser.mMeshes.end(); it != end;++it) {
@@ -459,8 +480,9 @@ void MD5Importer::LoadMD5MeshFile ()
 						throw DeadlyImportError("MD5MESH: Invalid weight index");
 
 					MD5::WeightDesc& desc = meshSrc.mWeights[w];
-					if ( desc.mWeight < AI_MD5_WEIGHT_EPSILON && desc.mWeight >= -AI_MD5_WEIGHT_EPSILON)
+					if ( desc.mWeight < AI_MD5_WEIGHT_EPSILON && desc.mWeight >= -AI_MD5_WEIGHT_EPSILON) {
 						continue;
+					}
 
 					const float fNewWeight = desc.mWeight / fSum; 
 
@@ -478,8 +500,9 @@ void MD5Importer::LoadMD5MeshFile ()
 			}
 
 			// undo our nice offset tricks ...
-			for (unsigned int p = 0; p < mesh->mNumBones;++p)
+			for (unsigned int p = 0; p < mesh->mNumBones;++p) {
 				mesh->mBones[p]->mWeights -= mesh->mBones[p]->mNumWeights;
+			}
 		}
 
 		delete[] piCount;
@@ -495,7 +518,7 @@ void MD5Importer::LoadMD5MeshFile ()
 		}
 
 		// generate a material for the mesh
-		MaterialHelper* mat = new MaterialHelper();
+		aiMaterial* mat = new aiMaterial();
 		pScene->mMaterials[n] = mat;
 
 		// insert the typical doom3 textures:
@@ -528,8 +551,6 @@ void MD5Importer::LoadMD5MeshFile ()
 		mesh->mMaterialIndex = n++;
 	}
 #endif
-	// delete the file again
-	UnloadFileFromMemory();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -540,7 +561,7 @@ void MD5Importer::LoadMD5AnimFile ()
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)	{
+	if( !file.get() || !file->FileSize())	{
 		DefaultLogger::get()->warn("Failed to read MD5ANIM file: " + pFile);
 		return;
 	}
@@ -605,15 +626,17 @@ void MD5Importer::LoadMD5AnimFile ()
 
 					// translational component
 					for (unsigned int i = 0; i < 3; ++i) {
-						if ((*iter2).iFlags & (1u << i))
+						if ((*iter2).iFlags & (1u << i)) {
 							vKey->mValue[i] =  *fpCur++;
+						}
 						else vKey->mValue[i] = pcBaseFrame->vPositionXYZ[i];
 					}
 
 					// orientation component
 					for (unsigned int i = 0; i < 3; ++i) {
-						if ((*iter2).iFlags & (8u << i))
+						if ((*iter2).iFlags & (8u << i)) {
 							vTemp[i] =  *fpCur++;
+						}
 						else vTemp[i] = pcBaseFrame->vRotationQuat[i];
 					}
 
@@ -643,8 +666,6 @@ void MD5Importer::LoadMD5AnimFile ()
 			}
 		}
 	}
-	// delete the file again
-	UnloadFileFromMemory();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -655,7 +676,7 @@ void MD5Importer::LoadMD5CameraFile ()
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)	{
+	if( !file.get() || !file->FileSize())	{
 		throw DeadlyImportError("Failed to read MD5CAMERA file: " + pFile);
 	}
 	bHadMD5Camera = true;
@@ -667,8 +688,9 @@ void MD5Importer::LoadMD5CameraFile ()
 	// load the camera animation data from the parse tree
 	MD5::MD5CameraParser cameraParser(parser.mSections);
 
-	if (cameraParser.frames.empty())
+	if (cameraParser.frames.empty()) {
 		throw DeadlyImportError("MD5CAMERA: No frames parsed");
+	}
 
 	std::vector<unsigned int>& cuts = cameraParser.cuts;
 	std::vector<MD5::CameraAnimFrameDesc>& frames = cameraParser.frames;
