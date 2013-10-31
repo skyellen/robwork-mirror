@@ -28,6 +28,10 @@
 #include <rw/loaders/model3d/LoaderAC3D.hpp>
 #include <rw/loaders/model3d/LoaderOBJ.hpp>
 #include <rw/loaders/model3d/LoaderTRI.hpp>
+#include <RobWorkConfig.hpp>
+#if RW_HAVE_ASSIMP
+#include <rw/loaders/model3d/LoaderAssimp.hpp>
+#endif
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -60,7 +64,7 @@ typedef rwlibs::opengl::Drawable RWDrawable;
 namespace
 {
     const std::string extensionsArray[] = {
-        ".TRI", ".AC", ".AC3D", ".3DS", ".OBJ", ".IVG", ".STL", ".STLA", ".STLB"
+        ".TRI", ".AC", ".AC3D", ".3DS", ".OBJ", ".IVG", ".STL", ".STLA", ".STLB", ".DAE", ".DXF"
     };
 
     const int extensionCount = sizeof(extensionsArray) / sizeof(extensionsArray[0]);
@@ -190,6 +194,14 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     */
+#if RW_HAVE_ASSIMP
+    } else if (filetype == ".DAE" || filetype == ".DXF") {
+    	LoaderAssimp loader;
+		Model3D::Ptr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
+        getCache().add(filename, render, moddate);
+        return ownedPtr( new Drawable( getCache().get(filename), name ) );
+#endif
 	} else {
         RW_THROW(
             "Unknown extension "

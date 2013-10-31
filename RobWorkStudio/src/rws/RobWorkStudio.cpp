@@ -761,6 +761,9 @@ void RobWorkStudio::openFile(const std::string& file)
             if (filename.endsWith(".STL", Qt::CaseInsensitive) ||
                 filename.endsWith(".STLA", Qt::CaseInsensitive) ||
                 filename.endsWith(".STLB", Qt::CaseInsensitive) ||
+#if RW_HAVE_ASSIMP
+                filename.endsWith(".DAE", Qt::CaseInsensitive) ||
+#endif
                 filename.endsWith(".3DS", Qt::CaseInsensitive) ||
                 filename.endsWith(".AC", Qt::CaseInsensitive) ||
                 filename.endsWith(".AC3D", Qt::CaseInsensitive) ||
@@ -816,15 +819,20 @@ void RobWorkStudio::open()
 
     std::string previousOpenDirectory = _settingsMap->get<std::string>("PreviousOpenDirectory","");
     const QString dir(previousOpenDirectory.c_str());
+	
+	QString assimpExtensions = "";
+#if RW_HAVE_ASSIMP
+	assimpExtensions = " * .dae";
+#endif
 
     QString filename = QFileDialog::getOpenFileName(
         this,
         "Open WorkCell or Drawable", // Title
         dir, // Directory
-        "All supported ( *.wu *.wc *.wc.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
+        "All supported ( *.wu *.wc *.wc.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj" + assimpExtensions + ")"
         "\nTUL files ( *.wu *.wc *.dev )"
         "\nRW XML files ( *.wc.xml )"
-        "\nDrawables ( *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
+        "\nDrawables ( *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj" + assimpExtensions + ")"
         "\n All ( *.* )",
         &selectedFilter);
 

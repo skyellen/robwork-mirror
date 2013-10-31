@@ -41,6 +41,9 @@ IF( build )
                               rw
                               ${OPENGL_LIBRARIES}
                               ${XERCESC_LIBRARIES}
+                              ${ASSIMP_LIBRARIES}
+                              ${ZLIB_LIBRARIES}
+                              ${MINIZIP_LIBRARIES}
                               ${Boost_LIBRARIES}
                               ${LAPACK_LIBRARIES} 
                               ${BLAS_LIBRARIES}
@@ -54,7 +57,11 @@ IF( build )
                           ${YAOBI_LIBRARIES}
                           ${PQP_LIBRARIES}  
                           rw
-                          rw_qhull)
+                          rw_qhull
+                          ${ASSIMP_LIBRARIES}
+                          ${ZLIB_LIBRARIES}
+                          ${MINIZIP_LIBRARIES}
+)
     
     ADD_LIBRARY(rw_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
     LINK_LIBRARIES(rw_lua_s rw)

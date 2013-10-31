@@ -14,6 +14,9 @@
 #cmakedefine RW_HAVE_YAOBI 1
 #cmakedefine RW_HAVE_BULLET 1
 #cmakedefine RW_HAVE_EIGEN 1
+#cmakedefine RW_HAVE_ASSIMP 1
+#cmakedefine RW_HAVE_ZLIB 1
+#cmakedefine RW_HAVE_MINIZIP 1
 #cmakedefine RW_BUILD_CALIBRATION 1
 
 #cmakedefine HAVE_QHULL_2011 1

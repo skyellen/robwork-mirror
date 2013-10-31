@@ -70,6 +70,16 @@ SET(FILES_HPP
   ImageLoader.hpp
 )
 
+IF (RW_HAVE_ASSIMP)
+	set(FILES_CPP ${FILES_CPP}
+  		model3d/LoaderAssimp.cpp
+  	)
+
+    set(FILES_HPP ${FILES_HPP}
+  		model3d/LoaderAssimp.hpp
+    )
+ENDIF()
+
 IF (RW_HAVE_XERCES) 
 	set(FILES_CPP ${FILES_CPP}
     	xml/XercesErrorHandler.cpp

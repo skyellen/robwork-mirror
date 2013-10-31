@@ -27,6 +27,9 @@
 //#include <rw/graphics/ivg/LoaderIVG.hpp>
 #include <rw/loaders/model3d/LoaderOBJ.hpp>
 #include <rw/loaders/model3d/LoaderTRI.hpp>
+#if RW_HAVE_ASSIMP
+#include <rw/loaders/model3d/LoaderAssimp.hpp>
+#endif
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -53,7 +56,11 @@ using namespace rw::loaders;
 namespace
 {
     const std::string extensionsArray[] = {
-        ".TRI", ".AC", ".AC3D", ".3DS", ".OBJ", ".IVG", ".STL", ".STLA", ".STLB", ".PCD"
+		".TRI", ".AC", ".AC3D", ".3DS", ".OBJ", ".IVG",
+#if RW_HAVE_ASSIMP
+		".DAE",
+#endif
+		".STL", ".STLA", ".STLB", ".PCD"
     };
 
     const int extensionCount = sizeof(extensionsArray) / sizeof(extensionsArray[0]);
@@ -179,6 +186,13 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     */
+#if RW_HAVE_ASSIMP
+    } else if (filetype == ".DAE") {
+    	LoaderAssimp loader;
+		Model3D::Ptr model = loader.load(filename);
+        getCache().add(filename, model, moddate);
+        return getCache().get(filename);
+#endif
 	} else {
         RW_THROW(
             "Unknown extension "

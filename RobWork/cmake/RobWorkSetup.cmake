@@ -320,6 +320,72 @@ ELSE ()
     MESSAGE( STATUS "RobWork: Softbody DISABLED!" )    
 ENDIF()
 
+#
+# If the user wants to use the Assimp package then search for it or build internal Assimp.
+# Set RW_DISABLE_ASSIMP to ON to disable Assimp completely.
+# Zlib and Minizip/Unzip will be found/build when Assimp is enabled.
+#
+
+SET(RW_HAVE_ZLIB FALSE)
+SET(RW_HAVE_MINIZIP FALSE)
+SET(RW_HAVE_ASSIMP FALSE)
+
+# Make option for user to disable Assimp
+CMAKE_DEPENDENT_OPTION(RW_USE_ASSIMP "Set to ON to include Assimp support.
+                Set ASSIMP_INCLUDE_DIR and ASSIMP_LIBRARY_DIR 
+                to specify your own Assimp else RobWork Assimp will 
+                be used!"
+      ON "NOT RW_DISABLE_ASSIMP" OFF)
+IF(RW_USE_ASSIMP)
+	# Now try to find Assimp
+	FIND_PACKAGE(Assimp 3.0 QUIET)
+	IF( ASSIMP_FOUND )
+		MESSAGE(STATUS "RobWork: Native Assimp installation FOUND!")
+		SET(RW_HAVE_ASSIMP TRUE)
+	ELSE ()
+		SET(RW_ENABLE_INTERNAL_ASSIMP_TARGET ON)
+		MESSAGE(STATUS "RobWork: Assimp 3.0 installation NOT FOUND! Using RobWork ext Assimp.")
+
+		SET(ASSIMP_INCLUDE_DIRS "${RW_ROOT}/ext/assimp/include")
+		SET(ASSIMP_LIBRARIES "rw_assimp")
+        	SET(ASSIMP_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+		SET(RW_HAVE_ASSIMP TRUE)
+
+		# Find Zlib
+		IF(NOT RW_HAVE_ZLIB)
+    			FIND_PACKAGE(ZLIB QUIET)
+			IF( ZLIB_FOUND )
+				MESSAGE(STATUS "RobWork: Native ZLIB FOUND")
+			ELSE ()
+				MESSAGE(STATUS "RobWork: No ZLIB FOUND - using internal")
+				SET(RW_ENABLE_INTERNAL_ZLIB_TARGET ON)
+    				SET(ZLIB_INCLUDE_DIRS "${RW_ROOT}/ext/zlib")
+        			SET(ZLIB_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+	    			SET(ZLIB_LIBRARIES "rw_zlib")
+			ENDIF()
+			SET(RW_HAVE_ZLIB ON)
+		ENDIF (NOT RW_HAVE_ZLIB)
+
+		# Find Minizip/Unzip
+		IF(NOT RW_HAVE_MINIZIP)
+	    		FIND_PACKAGE(MINIZIP QUIET)
+			IF( MINIZIP_FOUND )
+				MESSAGE(STATUS "RobWork: Native MINIZIP FOUND")
+			ELSE ()
+				MESSAGE(STATUS "RobWork: No MINIZIP FOUND - using internal")
+				SET(RW_ENABLE_INTERNAL_MINIZIP_TARGET ON)
+	    			SET(MINIZIP_INCLUDE_DIRS "${RW_ROOT}/ext/unzip")
+	        		SET(MINIZIP_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR})
+		    		SET(MINIZIP_LIBRARIES "rw_unzip")
+			ENDIF()
+			SET(RW_HAVE_MINIZIP ON)
+		ENDIF (NOT RW_HAVE_MINIZIP)
+	
+	ENDIF()
+ELSE ()
+    MESSAGE( STATUS "RobWork: Assimp DISABLED!" )
+ENDIF ()
+
 #######################################################################
 # COMPILER FLAGS AND MACRO SETUP
 #
@@ -465,6 +531,9 @@ SET(ROBWORK_INCLUDE_DIR
     ${TOLUA_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIRS}
     ${QHULL_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIRS}
+    ${MINIZIP_INCLUDE_DIRS}
+    ${ASSIMP_INCLUDE_DIRS}
 )
 
 #
@@ -482,6 +551,9 @@ SET(ROBWORK_LIBRARY_DIRS
     ${BULLET_LIBRARY_DIRS}
     ${TOLUA_LIBRARY_DIRS}
     ${LAPACK_BLAS_LIBRARY_DIRS}
+    ${ZLIB_LIBRARY_DIRS}
+    ${MINIZIP_LIBRARY_DIRS}
+    ${ASSIMP_LIBRARY_DIRS}
 )
 
 
@@ -509,10 +581,13 @@ SET(ROBWORK_LIBRARIES_TMP
   ${OPENGL_LIBRARIES}
   ${XERCESC_LIBRARIES}
   ${BULLET_LIBRARIES}
+  ${ASSIMP_LIBRARIES}
   ${Boost_LIBRARIES}
   ${LAPACK_LIBRARIES} 
   ${BLAS_LIBRARIES}
   ${QHULL_LIBRARIES}
+  ${MINIZIP_LIBRARIES}
+  ${ZLIB_LIBRARIES}
   ${CMAKE_DL_LIBS}
 )
 

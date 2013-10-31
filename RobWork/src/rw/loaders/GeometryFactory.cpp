@@ -52,7 +52,7 @@ using namespace rw::math;
 namespace
 {
     const std::string extensionsArray[] = {
-        ".STL", ".STLA", ".STLB", ".PCD",".TRI", ".AC", ".AC3D", ".3DS", ".OBJ"
+        ".STL", ".STLA", ".STLB", ".PCD",".TRI", ".DAE", ".AC", ".AC3D", ".3DS", ".OBJ"
     };
 
     const int extensionCount = sizeof(extensionsArray) / sizeof(extensionsArray[0]);
