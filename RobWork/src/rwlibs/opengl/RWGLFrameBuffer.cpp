@@ -44,7 +44,8 @@ PFNGLBINDRENDERBUFFEREXTPROC                    RWGLFrameBuffer::glBindRenderbuf
 PFNGLRENDERBUFFERSTORAGEEXTPROC                 RWGLFrameBuffer::glRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
 PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          RWGLFrameBuffer::glGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
 PFNGLISRENDERBUFFEREXTPROC                      RWGLFrameBuffer::glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
-
+PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC      RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT = 0;
+PFNGLTEXIMAGE2DMULTISAMPLEPROC                  RWGLFrameBuffer::glTexImage2DMultisample = 0;
 
 bool RWGLFrameBuffer::initialize() {
     if (_frameBuffersInitialized)
@@ -69,6 +70,7 @@ bool RWGLFrameBuffer::initialize() {
     glRenderbufferStorageEXT                 = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
     glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)wglGetProcAddress("glGetRenderbufferParameterivEXT");
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
+    glRenderbufferStorageMultisampleEXT      = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)wglGetProcAddress("glRenderbufferStorageMultisampleEXT");
 #elif defined(RW_MACOS)
 
     glGenFramebuffersEXT                     = &glGenFramebuffers;
@@ -85,6 +87,7 @@ bool RWGLFrameBuffer::initialize() {
     glRenderbufferStorageEXT                 = &glRenderbufferStorage;
     glGetRenderbufferParameterivEXT          = &glGetRenderbufferParameteriv;
     glIsRenderbufferEXT                      = &glIsRenderbuffer;
+    glRenderbufferStorageMultisampleEXT      = &glRenderbufferStorageMultisampleEXT;
 
 #else
     // get pointers to GL functions
@@ -102,13 +105,14 @@ bool RWGLFrameBuffer::initialize() {
     glRenderbufferStorageEXT                 = (PFNGLRENDERBUFFERSTORAGEEXTPROC)glXGetProcAddress((GLubyte*)"glRenderbufferStorageEXT");
     glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)glXGetProcAddress((GLubyte*)"glGetRenderbufferParameterivEXT");
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)glXGetProcAddress((GLubyte*)"glIsRenderbufferEXT");
-
+    glRenderbufferStorageMultisampleEXT      = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)glXGetProcAddress((GLubyte*)"glRenderbufferStorageMultisampleEXT");
+    glTexImage2DMultisample                  = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)glXGetProcAddress((GLubyte*)"glTexImage2DMultisample");
 #endif
     // check once again FBO extension
     if(glGenFramebuffersEXT && glDeleteFramebuffersEXT && glBindFramebufferEXT && glCheckFramebufferStatusEXT &&
        glGetFramebufferAttachmentParameterivEXT && glGenerateMipmapEXT && glFramebufferTexture2DEXT && glFramebufferRenderbufferEXT &&
        glGenRenderbuffersEXT && glDeleteRenderbuffersEXT && glBindRenderbufferEXT && glRenderbufferStorageEXT &&
-       glGetRenderbufferParameterivEXT && glIsRenderbufferEXT)
+       glGetRenderbufferParameterivEXT && glIsRenderbufferEXT && glTexImage2DMultisample && glRenderbufferStorageMultisampleEXT)
     {
         _hasFrameBuffers = true;
         std::cout << "Video card supports GL_EXT_framebuffer_object." << std::endl;

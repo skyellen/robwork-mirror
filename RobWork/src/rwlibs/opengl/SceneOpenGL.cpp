@@ -105,6 +105,8 @@ namespace {
             _initialized(false),
             _renderToImage(false),
             _renderToDepth(false),
+            _useMultiSample(true),
+            _samples(4),
             _fbId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
             {}
 
@@ -125,6 +127,17 @@ namespace {
 
         std::list<SceneCamera::Ptr> getCameras(){
             return _cameras;
+        }
+
+        void setMultiSample(int samples){
+            _samples = samples;
+            if(_samples<1)
+                _samples=1;
+            if(_samples==1)
+                _useMultiSample = false;
+            else
+                _useMultiSample = true;
+
         }
 
         void init(){
@@ -154,13 +167,27 @@ namespace {
                 }
                 _fbId = 0;
                 _renderId = 0;
+
+                if( _useMultiSample ){
+                    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _aMultisampleTexture);
+                    //glRenderbufferStorageMultisample(GL_TEXTURE_2D_MULTISAMPLE, , GL_RGBA, , GL_TRUE);
+                    //RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8, _offWidth, _offHeight);
+                    RWGLFrameBuffer::glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _samples, GL_RGBA, _offWidth, _offHeight, GL_TRUE);
+                }
+
                 RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbId);
                 RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
                 RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderId);
                 // select render
                 RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
                 // create render storage
-                RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
+
+
+                if( _useMultiSample ){
+                    RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8,_offWidth, _offHeight);
+                } else {
+                    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
+                }
                 //Attach color buffer to FBO
                 RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
 
@@ -169,11 +196,20 @@ namespace {
                 //if(_renderToDepth==true){
                     RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
                     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
-                    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, _offWidth, _offHeight);
+                    if( _useMultiSample ){
+                        RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_DEPTH24_STENCIL8, _offWidth, _offHeight);
+                    } else {
+                        RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, _offWidth, _offHeight);
+                    }
+
                      //Attach depth buffer to FBO
                     RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, _renderDepthId);
                 //}
 
+                // Enable multisampling
+                if( _useMultiSample ){
+                    glEnable(GL_MULTISAMPLE);
+                }
 
                 //Does the GPU support current FBO configuration?
                 GLenum status;
@@ -262,9 +298,12 @@ namespace {
         bool _offscreenRender;
         int _offWidth, _offHeight;
 
+        bool _useMultiSample;
+
         bool _initialized, _renderToImage, _renderToDepth;
+        int _samples;
         rw::sensor::Image::ColorCode _color;
-        GLuint _fbId,_renderId,_renderDepthId,textureId;
+        GLuint _fbId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
         rw::sensor::Image::Ptr _img;
         rw::sensor::Image25D::Ptr _scan25;
         std::vector<float> _depthData;
