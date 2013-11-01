@@ -46,7 +46,7 @@ PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          RWGLFrameBuffer::glGetRenderbuff
 PFNGLISRENDERBUFFEREXTPROC                      RWGLFrameBuffer::glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC      RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT = 0;
 PFNGLTEXIMAGE2DMULTISAMPLEPROC                  RWGLFrameBuffer::glTexImage2DMultisample = 0;
-
+PFNGLBLITFRAMEBUFFEREXTPROC                     RWGLFrameBuffer::glBlitFrameBufferEXT = 0;
 bool RWGLFrameBuffer::initialize() {
     if (_frameBuffersInitialized)
         return _hasFrameBuffers;
@@ -71,6 +71,9 @@ bool RWGLFrameBuffer::initialize() {
     glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)wglGetProcAddress("glGetRenderbufferParameterivEXT");
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
     glRenderbufferStorageMultisampleEXT      = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)wglGetProcAddress("glRenderbufferStorageMultisampleEXT");
+    glTexImage2DMultisample                  = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)wglGetProcAddress("glTexImage2DMultisample");
+    glBlitFrameBufferEXT                     = (PFNGLBLITFRAMEBUFFEREXTPROC) wglGetProcAddress("glBlitFrameBufferEXT");
+
 #elif defined(RW_MACOS)
 
     glGenFramebuffersEXT                     = &glGenFramebuffers;
@@ -88,6 +91,8 @@ bool RWGLFrameBuffer::initialize() {
     glGetRenderbufferParameterivEXT          = &glGetRenderbufferParameteriv;
     glIsRenderbufferEXT                      = &glIsRenderbuffer;
     glRenderbufferStorageMultisampleEXT      = &glRenderbufferStorageMultisampleEXT;
+    glTexImage2DMultisample                  = &glTexImage2DMultisample;
+    glBlitFrameBufferEXT                     = &glBlitFrameBufferEXT;
 
 #else
     // get pointers to GL functions
@@ -107,6 +112,8 @@ bool RWGLFrameBuffer::initialize() {
     glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFEREXTPROC)glXGetProcAddress((GLubyte*)"glIsRenderbufferEXT");
     glRenderbufferStorageMultisampleEXT      = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)glXGetProcAddress((GLubyte*)"glRenderbufferStorageMultisampleEXT");
     glTexImage2DMultisample                  = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)glXGetProcAddress((GLubyte*)"glTexImage2DMultisample");
+    glBlitFrameBufferEXT                     = (PFNGLBLITFRAMEBUFFEREXTPROC) glXGetProcAddress((GLubyte*)"glBlitFrameBufferEXT");
+
 #endif
     // check once again FBO extension
     if(glGenFramebuffersEXT && glDeleteFramebuffersEXT && glBindFramebufferEXT && glCheckFramebufferStatusEXT &&
@@ -125,7 +132,6 @@ bool RWGLFrameBuffer::initialize() {
 
     _frameBuffersInitialized = true;
     return _hasFrameBuffers;
-
 }
 
 void RWGLFrameBuffer::test(LogWriter& log) {

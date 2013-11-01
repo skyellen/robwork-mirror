@@ -107,6 +107,8 @@ public:
     static PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          glGetRenderbufferParameterivEXT;           // return various renderbuffer parameters
     static PFNGLISRENDERBUFFEREXTPROC                      glIsRenderbufferEXT;                       // determine renderbuffer object type
     static PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC      glRenderbufferStorageMultisampleEXT;
+    static PFNGLBLITFRAMEBUFFEREXTPROC                     glBlitFrameBufferEXT;
+
     static PFNGLTEXIMAGE2DMULTISAMPLEPROC                  glTexImage2DMultisample;
 
 

@@ -107,7 +107,7 @@ namespace {
             _renderToDepth(false),
             _useMultiSample(true),
             _samples(4),
-            _fbId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
+            _fbId(-1),_fbTmpId(-1),_renderId(-1),_renderColorTmpId(-1),_renderDepthId(-1),textureId(-1)
             {}
 
         virtual ~SimpleCameraGroup(){};
@@ -154,6 +154,7 @@ namespace {
                 _fbId = maxGLuintSize;
                 _renderId = maxGLuintSize;
                 _renderDepthId = maxGLuintSize;
+
             } else if(_offscreenRender==true){
                 RWGLFrameBuffer::initialize();
                 if(_fbId>=0){
@@ -164,29 +165,45 @@ namespace {
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
                     if(_renderDepthId!=maxGLuintSize)
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+                    if( _useMultiSample ){
+                        // TODO: we might need to do something here
+                        RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_fbTmpId);
+                        RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderColorTmpId);
+                    }
                 }
                 _fbId = 0;
                 _renderId = 0;
 
                 if( _useMultiSample ){
-                    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _aMultisampleTexture);
+                    //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _aMultisampleTexture);
                     //glRenderbufferStorageMultisample(GL_TEXTURE_2D_MULTISAMPLE, , GL_RGBA, , GL_TRUE);
                     //RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8, _offWidth, _offHeight);
-                    RWGLFrameBuffer::glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _samples, GL_RGBA, _offWidth, _offHeight, GL_TRUE);
+                    //RWGLFrameBuffer::glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _samples, GL_RGBA, _offWidth, _offHeight, GL_TRUE);
                 }
+
+                // if multisampling is enabled then create a temporary FrameBuffer to copy to in order to use
+                // glReadPixels later
+                if( _useMultiSample ){
+                    RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbTmpId);
+                    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbTmpId);
+                    RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderColorTmpId);
+                    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderColorTmpId);
+                    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
+                }
+
 
                 RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbId);
                 RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
                 RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderId);
+
                 // select render
                 RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
                 // create render storage
-
-
                 if( _useMultiSample ){
                     RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8,_offWidth, _offHeight);
                 } else {
                     RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
+
                 }
                 //Attach color buffer to FBO
                 RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
@@ -217,9 +234,34 @@ namespace {
                 switch(status){
                 case GL_FRAMEBUFFER_COMPLETE_EXT:
                     break;
-                default:
-                    Log::errorLog() << "FrameBuffer not supported, offscreen rendering not possible! Status=" << status << std::endl;;
-                    break;
+                  case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+                  //Choose different formats
+                  Log::errorLog() << "Framebuffer object format is unsupported by the video hardware. (GL_FRAMEBUFFER_UNSUPPORTED_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+                  Log::errorLog() << "Incomplete attachment. (GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+                      Log::errorLog() << "Incomplete missing attachment. (GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT)(FBO - 820)";
+                      break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+                  Log::errorLog() << "Incomplete dimensions. (GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+                  Log::errorLog() << "Incomplete formats. (GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+                  Log::errorLog() << "Incomplete draw buffer. (GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+                  Log::errorLog() << "Incomplete read buffer. (GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT)(FBO - 820)";
+                  break;
+                  case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
+                  Log::errorLog() << "Incomplete multisample buffer. (GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT)(FBO - 820)";
+                  break;
+                  default:
+                  //Programming error; will fail on all hardware
+                    Log::errorLog() << "Some video driver error or programming error occured. Framebuffer object status is invalid. (FBO - 823)";
                 }
 
                 RWGLFrameBuffer::test( Log::infoLog() );
@@ -229,6 +271,19 @@ namespace {
 
             }
             _initialized = true;
+        }
+
+        void copyToImage( ){
+            if(_useMultiSample){
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_READ_FRAMEBUFFER, _fbId); // the multisampled frame buffer
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, _fbTmpId); // our temporary FBO to copy multisampled image into
+                RWGLFrameBuffer::glBlitFrameBufferEXT(0, 0, _offWidth, _offHeight, 0, 0, _offWidth, _offHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+                char *imgData = _img->getImageData();
+                glReadPixels(
+                    0, 0, _img->getWidth(), _img->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, imgData);
+            }
+
         }
 
         void setMainCamera(SceneCamera::Ptr cam){
@@ -264,8 +319,17 @@ namespace {
             _initialized=false;
         }
 
-        void bind(){ RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId); }
-        void unbind(){ RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0); }
+        void bind(){
+            if( _useMultiSample ){
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
+            } else {
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
+            }
+        }
+
+        void unbind(){
+            RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        }
 
         bool isInitialized(){ return _initialized; }
 
@@ -303,7 +367,7 @@ namespace {
         bool _initialized, _renderToImage, _renderToDepth;
         int _samples;
         rw::sensor::Image::ColorCode _color;
-        GLuint _fbId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
+        GLuint _fbId,_fbTmpId,_renderColorTmpId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
         rw::sensor::Image::Ptr _img;
         rw::sensor::Image25D::Ptr _scan25;
         std::vector<float> _depthData;
@@ -573,11 +637,7 @@ namespace {
         if(scam!=NULL){
             if( (scam->_renderToImage) && scam->_img!=NULL){
                 // copy rendered scene to image
-                char *imgData = scam->_img->getImageData();
-                glReadPixels(
-                    0, 0,
-                    scam->_img->getWidth(), scam->_img->getHeight(),
-                    GL_RGB, GL_UNSIGNED_BYTE, imgData);
+                scam->copyToImage();
             }
             if( (scam->_renderToDepth) && scam->_scan25!=NULL){
                 //std::cout << "render to depth" << std::endl;
