@@ -184,14 +184,12 @@ namespace {
                 // if multisampling is enabled then create a temporary FrameBuffer to copy to in order to use
                 // glReadPixels later
                 if( _useMultiSample ){
-                    std::cout << "USING MULTI SAMPLE" << std::endl;
                     RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbTmpId);
                     RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbTmpId);
                     RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderColorTmpId);
                     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderColorTmpId);
                     RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
                     RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderColorTmpId);
-
                 }
 
 
@@ -279,21 +277,19 @@ namespace {
 
         void copyToImage( ){
             if(_useMultiSample){
-                std::cout << "Copy from multi sample buffer: " <<  _fbId << "  " << _fbTmpId << std::endl;
                 RWGLFrameBuffer::glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, _fbId); // the multisampled frame buffer
-                RW_WARN("");
                 RWGLFrameBuffer::glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, _fbTmpId); // our temporary FBO to copy multisampled image into
-                RW_WARN("");
                 RWGLFrameBuffer::glBlitFrameBufferEXT(0, 0, _offWidth, _offHeight, 0, 0, _offWidth, _offHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-                RW_WARN("");
                 RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbTmpId); // now bind it so we can read from it
-                RW_WARN("");
                 char *imgData = _img->getImageData();
-                RW_WARN("");
+                glReadPixels(
+                    0, 0, _img->getWidth(), _img->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, imgData);
+            } else {
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId); // the multisampled frame buffer
+                char *imgData = _img->getImageData();
                 glReadPixels(
                     0, 0, _img->getWidth(), _img->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, imgData);
             }
-
         }
 
         void setMainCamera(SceneCamera::Ptr cam){
