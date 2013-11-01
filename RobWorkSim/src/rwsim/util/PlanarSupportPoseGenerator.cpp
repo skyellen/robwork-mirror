@@ -308,7 +308,8 @@ void PlanarSupportPoseGenerator::doAnalysis(){
 
     std::cout << "Now ";
     BOOST_FOREACH(Plane& p, _supportPlanes){
-    	SupportPose pose( -p.normal() );
+        double height = p.distance(_com);
+    	SupportPose pose( -p.normal() , height);
         std::cout << "- " << -p.normal() << std::endl;
 
         //Vector3D<> v = tri.getVertex(0);

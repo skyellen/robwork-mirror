@@ -28,12 +28,13 @@ namespace util {
 	class SupportPose {
 	public:
 
-		SupportPose(rw::math::Vector3D<> rotAxis):
+		SupportPose(rw::math::Vector3D<> rotAxis, double h=0):
 			_degree(1),
 			_rotAxes(1,rotAxis),
 			_posAxes(1),
 			_rotAxesTable(1),
-			_probability(-1)
+			_probability(-1),
+			_height(h)
 		{};
 
 		SupportPose(int degree, double prob):
@@ -66,6 +67,7 @@ namespace util {
 		// the statistics
 		double _probability;
 		double _quality;
+		double _height;
 	};
 }
 }
