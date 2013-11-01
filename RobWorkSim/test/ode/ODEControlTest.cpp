@@ -36,6 +36,8 @@ using namespace robwork;
 
 #include "../TestSuiteConfig.hpp"
 
+#include <boost/test/unit_test.hpp>
+
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
@@ -121,4 +123,32 @@ BOOST_AUTO_TEST_CASE( ODEControlDeviceTest_FC )
     }
 
     RW_WARN("end");
+}
+
+BOOST_AUTO_TEST_CASE( ODESingleObjectStabilityTest )
+{
+    // add loading tests here
+    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load( testFilePath() + "/scene/simple/single_object.dwc.xml");
+    ODESimulator::Ptr odesim = ownedPtr( new ODESimulator( dwc ) );
+    State state = dwc->getWorkcell()->getStateStructure()->getDefaultState();
+
+    RigidBody::Ptr body = dwc->findBody<RigidBody>("ObjectCup2");
+
+    // test that the control interface works
+    odesim->initPhysics(state);
+    while(odesim->getTime()<300){
+        odesim->step(0.001, state);
+
+        Transform3D<> wTb = body->wTcom(state);
+        Vector3D<> v = RPY<>(wTb.R()).toVector3D()*Rad2Deg;
+        Vector3D<> avel = body->getAngVel(state)*Rad2Deg;
+        Vector3D<> lvel = body->getLinVel(state);
+
+        std::cout << odesim->getTime() << " ";
+        std::cout << wTb.P()[0] << " "<< wTb.P()[1] << " " << wTb.P()[2] << " ";
+        std::cout << v[0] << " "<< v[1] << " " << v[2] << " " ;
+        std::cout << lvel[0] << " "<< lvel[1] << " " << lvel[2] << " " ;
+        std::cout << avel[0] << " "<< avel[1] << " " << avel[2] << " " ;
+        std::cout << "\n";
+    }
 }
