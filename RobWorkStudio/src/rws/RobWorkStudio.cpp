@@ -140,9 +140,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     setupViewGL();
     _propEditor = new PropertyViewEditor( NULL );
     _propEditor->setPropertyMap( &_propMap  );
-    _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
-    _pluginsToolBar = addToolBar(tr("Plugins"));
-    _pluginsToolBar->setObjectName("PluginsBar");
+    setupPluginsMenu();
     setupHelpMenu();
     int width = _settingsMap->get<int>("WindowWidth", 1024);
     int height = _settingsMap->get<int>("WindowHeight", 800);
@@ -423,6 +421,53 @@ void RobWorkStudio::showPropertyEditor(){
    _propEditor->show();
 }
 
+
+
+void RobWorkStudio::setupPluginsMenu()
+{
+	QAction* loadPluginAction = new QAction(QIcon(""), tr("Load plugin"), this);
+	connect(loadPluginAction, SIGNAL(triggered()), this, SLOT(loadPlugin()));
+	
+	_pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
+	_pluginsMenu->addAction(loadPluginAction);
+	_pluginsMenu->addSeparator();
+    _pluginsToolBar = addToolBar(tr("Plugins"));
+    _pluginsToolBar->setObjectName("PluginsBar");
+    
+    /*QAction* printCollisionsAction =
+        new QAction(QIcon(""), tr("Print Colliding Frames"), this); // owned
+    connect(printCollisionsAction, SIGNAL(triggered()), this, SLOT(printCollisions()));
+
+    _toolMenu = menuBar()->addMenu(tr("&Tools"));
+    _toolMenu->addAction(printCollisionsAction);*/
+}
+
+
+
+void RobWorkStudio::loadPlugin()
+{
+	QString selectedFilter;
+	
+	std::string previousOpenDirectory = _settingsMap->get<std::string>("PreviousOpenDirectory","");
+    const QString dir(previousOpenDirectory.c_str());
+	
+	QString pluginfilename = QFileDialog::getOpenFileName(
+        this,
+        "Open plugin file", // Title
+        dir, // Directory
+        "Plugin libraries ( *.so *.dll *.dylib )"
+        "\n All ( *.* )",
+        &selectedFilter);
+        
+    QFileInfo pluginInfo(pluginfilename);
+    QString pathname = pluginInfo.absolutePath();
+    QString filename = pluginInfo.baseName();
+    
+    setupPlugin(pathname, filename, 0, 1);
+}
+
+
+
 void RobWorkStudio::setupHelpMenu() {
 
     QAction *assistantAct = new QAction(tr("Help Contents"), this);
@@ -603,6 +648,61 @@ void RobWorkStudio::locatePlugins(QSettings& settings){
 */
 
 
+void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename, bool visible, int dock)
+{
+	Qt::DockWidgetArea dockarea = (Qt::DockWidgetArea)dock;
+	
+	QString pfilename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
+	bool e1 = boost::filesystem::exists( filename.toStdString() );
+	if(!e1){
+		pfilename = pathname+ "/" + filename + ".so";
+		e1 = boost::filesystem::exists( pfilename.toStdString() );
+	}
+	if(!e1){
+		pfilename = pathname+ "/" + filename + ".dll";
+		e1 = boost::filesystem::exists( pfilename.toStdString() );
+	}
+	if(!e1){
+		pfilename = pathname+ "/" + filename + ".dylib";
+		e1 = boost::filesystem::exists( pfilename.toStdString() );
+	}
+	
+	QPluginLoader loader(pfilename);
+#if QT_VERSION >= 0x040400
+	// Needed to make dynamicly loaded libraries use dynamic
+	// cast on each others objects. ONLY on linux though.
+	loader.setLoadHints(QLibrary::ResolveAllSymbolsHint |
+						QLibrary::ExportExternalSymbolsHint);
+#endif
+
+	QObject* pluginObject = loader.instance();
+	if (pluginObject != NULL) {
+		RobWorkStudioPlugin* testP = dynamic_cast<RobWorkStudioPlugin*>(pluginObject);
+		if (testP == NULL) {
+			RW_THROW("Loaded plugin is NULL, tried loading \"" << pfilename.toStdString() << "\"" );
+		}
+		
+		RobWorkStudioPlugin* plugin = qobject_cast<RobWorkStudioPlugin*>(pluginObject);
+
+		if (plugin) {
+			addPlugin(plugin, visible, dockarea);
+		} else {
+			QMessageBox::information(
+				this,
+				"Unable to load Plugin",
+				pfilename + " was not of type RobWorkStudioPlugin",
+				QMessageBox::Ok);
+		}
+	} else {
+		QMessageBox::information(
+			this,
+			"Unable to load Plugin",
+			pfilename + " was not loaded: \"" + loader.errorString() + "\"",
+			QMessageBox::Ok);
+	}
+}
+
+
 void RobWorkStudio::setupPlugins(QSettings& settings)
 {
 
@@ -621,9 +721,12 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         QString pathname = settings.value("Path").toString();
         QString filename = settings.value("Filename").toString();
         bool visible = settings.value("Visible").toBool();
-        Qt::DockWidgetArea dockarea =
-            (Qt::DockWidgetArea)settings.value("DockArea").toInt();
-
+        //Qt::DockWidgetArea dockarea =
+        //    (Qt::DockWidgetArea)settings.value("DockArea").toInt();
+        int dock = settings.value("DockArea").toInt();
+        
+        setupPlugin(pathname, filename, visible, dock);
+/*
         QString pfilename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
         bool e1 = boost::filesystem::exists( filename.toStdString() );
         if(!e1){
@@ -673,7 +776,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
                 "Unable to load Plugin",
                 pfilename + " was not loaded: \"" + loader.errorString() + "\"",
                 QMessageBox::Ok);
-        }
+        }*/
 
         settings.endGroup(); //End Specific Plugin Group
     }

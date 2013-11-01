@@ -490,6 +490,7 @@ namespace rws {
 
 		void showAboutBox();
 		void printCollisions();
+		void loadPlugin();
 	protected:
 		//! Close Event inherited from QT
 		void closeEvent( QCloseEvent * e );
@@ -500,10 +501,12 @@ namespace rws {
 		void setupFileActions();
 		void setupToolActions();
 		void setupViewGL();
+		void setupPluginsMenu();
 		void setupHelpMenu();
 
 		void createPlugins();
 
+		void setupPlugin(const QString& pathname, const QString& filename, bool visible, int dock);
 		void setupPlugins(QSettings& settings);
 
 		void openDrawable(const QString& filename);
