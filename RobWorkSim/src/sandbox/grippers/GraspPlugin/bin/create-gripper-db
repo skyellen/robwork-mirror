@@ -14,9 +14,9 @@ class GripperGenerator:
 	def __init__(self):
 		self.gripperName = "gripper"
 		self._gripperId = 0
-		self.length = (0.01, 0.2)
-		self.width = (0.001, 0.05)
-		self.depth = (0.001, 0.05)
+		self.length = (0.05, 0.2)
+		self.width = (0.0025, 0.025)
+		self.depth = (0.0025, 0.025)
 		self.chfChance = 0.5
 		self.chfDepth = (0, 1)
 		self.chfAngle = (15, 75)
@@ -25,7 +25,7 @@ class GripperGenerator:
 		self.cutDepth = (0, 0.05)
 		self.cutAngle = (60, 120)
 		self.cutRadius = (0, 0.1)
-		self.opening = (0.05, 0.1)
+		self.opening = (0.05, 0.15)
 		self.jawdist = (0, 0.01)
 		self.force = (25, 75)
 		self.baselength = (0.05, 0.5)

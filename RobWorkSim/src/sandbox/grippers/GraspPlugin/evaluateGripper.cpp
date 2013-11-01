@@ -120,10 +120,12 @@ int main(int argc, char* argv[])
 	generator->generateTask(number, td->getInitState());
 	GraspTask::Ptr tasks = generator->getTasks();
 	GraspTask::Ptr samples = generator->getSamples();
+	cout << "Grasps generated." << endl;
 	cout << "Tasks: " << tasks->getSubTasks()[0].getTargets().size() << endl;
 	cout << "Samples: " << samples->getSubTasks()[0].getTargets().size() << endl;
 	
 	/* perform simulation */
+	cout << "Starting simulation..." << endl;
 	GripperTaskSimulator::Ptr sim = new GripperTaskSimulator(gripper, tasks, samples, td);
 	sim->startSimulation(td->getInitState());
 	
