@@ -140,13 +140,13 @@ BOOST_AUTO_TEST_CASE( ODESingleObjectStabilityTest )
         odesim->step(0.001, state);
 
         Transform3D<> wTb = body->wTcom(state);
-        Vector3D<> v = RPY<>(wTb.R()).toVector3D()*Rad2Deg;
+        RPY<> v = RPY<>(wTb.R());
         Vector3D<> avel = body->getAngVel(state)*Rad2Deg;
         Vector3D<> lvel = body->getLinVel(state);
 
         std::cout << odesim->getTime() << " ";
         std::cout << wTb.P()[0] << " "<< wTb.P()[1] << " " << wTb.P()[2] << " ";
-        std::cout << v[0] << " "<< v[1] << " " << v[2] << " " ;
+        std::cout << Rad2Deg*v[0] << " "<< Rad2Deg*v[1] << " " << Rad2Deg*v[2] << " " ;
         std::cout << lvel[0] << " "<< lvel[1] << " " << lvel[2] << " " ;
         std::cout << avel[0] << " "<< avel[1] << " " << avel[2] << " " ;
         std::cout << "\n";
