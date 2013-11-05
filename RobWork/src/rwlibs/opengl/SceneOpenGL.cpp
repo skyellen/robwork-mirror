@@ -156,6 +156,7 @@ namespace {
                 _renderDepthId = maxGLuintSize;
 
             } else if(_offscreenRender==true){
+                bool useMultisample = _useMultiSample && !_renderToDepth;
                 RWGLFrameBuffer::initialize();
                 if(_fbId>=0){
                     // the parameters of the frame buffer should be changed so we create a new
@@ -165,7 +166,7 @@ namespace {
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
                     if(_renderDepthId!=maxGLuintSize)
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
-                    if( _useMultiSample ){
+                    if( useMultisample ){
                         // TODO: we might need to do something here
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_fbTmpId);
                         RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderColorTmpId);
@@ -174,7 +175,7 @@ namespace {
                 _fbId = 0;
                 _renderId = 0;
 
-                if( _useMultiSample ){
+                if( useMultisample ){
                     //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _aMultisampleTexture);
                     //glRenderbufferStorageMultisample(GL_TEXTURE_2D_MULTISAMPLE, , GL_RGBA, , GL_TRUE);
                     //RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8, _offWidth, _offHeight);
@@ -183,7 +184,7 @@ namespace {
 
                 // if multisampling is enabled then create a temporary FrameBuffer to copy to in order to use
                 // glReadPixels later
-                if( _useMultiSample ){
+                if( useMultisample ){
                     RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbTmpId);
                     RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbTmpId);
                     RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderColorTmpId);
@@ -200,7 +201,7 @@ namespace {
                 // select render
                 RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
                 // create render storage
-                if( _useMultiSample ){
+                if( useMultisample ){
                     RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8,_offWidth, _offHeight);
                 } else {
                     RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
@@ -214,7 +215,7 @@ namespace {
                 //if(_renderToDepth==true){
                     RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
                     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
-                    if( _useMultiSample ){
+                    if( useMultisample ){
                         RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_DEPTH24_STENCIL8, _offWidth, _offHeight);
                     } else {
                         RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, _offWidth, _offHeight);
@@ -225,7 +226,7 @@ namespace {
                 //}
 
                 // Enable multisampling
-                if( _useMultiSample ){
+                if( useMultisample ){
                     glEnable(GL_MULTISAMPLE);
                 }
 
@@ -291,6 +292,8 @@ namespace {
                     0, 0, _img->getWidth(), _img->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, imgData);
             }
         }
+
+
 
         void setMainCamera(SceneCamera::Ptr cam){
             _mainCam = cam;
