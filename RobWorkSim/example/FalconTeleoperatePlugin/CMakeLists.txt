@@ -21,8 +21,8 @@ PROJECT(FalconControl)
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Now set the RW/RWS root (edit this if necessary)
-SET(RobWorkStudio_DIR "$ENV{RW_ROOT}/../../RobWorkStudio/cmake")
-SET(RobWorkSim_DIR "$ENV{RW_ROOT}/../../RobWorkSim/cmake")
+SET(RobWorkStudio_DIR "$ENV{RW_ROOT}/../RobWorkStudio/cmake")
+SET(RobWorkSim_DIR "$ENV{RW_ROOT}/../RobWorkSim/cmake")
 
 #Include RobWorkSim settings
 FIND_PACKAGE(RobWorkStudio REQUIRED)
