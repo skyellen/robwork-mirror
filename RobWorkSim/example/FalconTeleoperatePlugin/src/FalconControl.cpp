@@ -208,10 +208,14 @@ void FalconControl::startSimulation() {
 
 void FalconControl::open(WorkCell* workcell)
 {
+    RW_WARN("open");
     if(workcell==NULL || _dwc==NULL)
         return;
+    RW_WARN("open");
     _startBtn->setEnabled(true);
+    RW_WARN("open");
     _wc = workcell;
+    RW_WARN("open");
 }
 
 void FalconControl::close() {
@@ -258,7 +262,7 @@ void FalconControl::stateChangedListener(const State& state) {
 
 
 void FalconControl::genericEventListener(const std::string& event){
-    if( event=="DynamicWorkcellLoadet" ){
+    if( event=="DynamicWorkCellLoaded" ){
         // get the dynamic workcell from the propertymap
         RW_DEBUG("Getting dynamic workcell from propertymap!");
         DynamicWorkCell::Ptr dwc =
