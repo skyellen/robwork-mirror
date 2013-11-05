@@ -459,11 +459,13 @@ void RobWorkStudio::loadPlugin()
         "\n All ( *.* )",
         &selectedFilter);
         
-    QFileInfo pluginInfo(pluginfilename);
-    QString pathname = pluginInfo.absolutePath();
-    QString filename = pluginInfo.baseName();
-    
-    setupPlugin(pathname, filename, 0, 1);
+    if (!pluginfilename.isEmpty()) {
+		QFileInfo pluginInfo(pluginfilename);
+		QString pathname = pluginInfo.absolutePath();
+		QString filename = pluginInfo.baseName();
+		
+		setupPlugin(pathname, filename, 0, 1);
+	}
 }
 
 

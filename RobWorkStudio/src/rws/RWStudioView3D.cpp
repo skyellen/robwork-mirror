@@ -628,7 +628,7 @@ void RWStudioView3D::setMaskCheckAction(){
 void RWStudioView3D::setCheckAction(){
     QObject *obj = sender();
 
-    Vector3D<> center = _view->getViewCenter();
+    Vector3D<> center = Vector3D<>::zero(); // = _view->getViewCenter();
     Transform3D<> view = _view->getTransform();
     Vector3D<> v2c = view.P()-center;
 
