@@ -41,6 +41,9 @@ using namespace rw::math;
 using namespace std;
 
 
+/**
+ * @brief The wrapper class for the Novint Falcon 3D controller device.
+ */
 class FalconInterface : public QThread {
 
 private:
@@ -53,10 +56,12 @@ private:
 	bool isInNMA;
 	bool initializeFalcon();
 	unsigned int _buttonState;
+	
 public:
 	
 	bool isThreadStopped;
 	
+	/// Constructor
 	FalconInterface() 
 	{
 		grasping = false;
@@ -64,19 +69,34 @@ public:
 		initializeFalcon();
 	}
 	
+	/// Destructor
 	~FalconInterface()
 	{
 		delete falcon;
 	}
 	
+	/// Starts the I/O loop
 	void run();
 	
+	/// Returns @b true if the middle button was pressed
 	bool getGrasping();
 	
+	/**
+	 * @brief Returns the position given by the controller
+	 * 
+	 * Depending on the button state, (...)
+	 */
 	Transform3D<> getPosition();
 	
+	/**
+	 * @brief Sets whether the controler uses @a strong force
+	 * 
+	 * The @a strong force is used to give a stronger haptic feedback
+	 * when user moves the controller out of the resting area.
+	 */ 
 	void setStrongForce(bool);
 	
+	/// Returns raw button register state
 	unsigned int getButtonStates();
 
 };

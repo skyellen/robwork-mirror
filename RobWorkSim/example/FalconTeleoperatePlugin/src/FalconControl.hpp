@@ -39,23 +39,21 @@ using namespace robworksim;
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 using namespace rws;
+
+
 /**
- * @brief A plugin
+ * @brief A plugin for grasping simulation in the UR test scene with use of the Novint Falcon 3D controller.
  */
-
-
 class FalconControl: public rws::RobWorkStudioPlugin, private Ui::FalconControl
 {
 Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
 public:
 
-    /**
-     * @brief constructor
-     */
+    /// Constructor
     FalconControl();
 
-    //! destructor
+    /// Destructor
     virtual ~FalconControl();
 
     virtual void open(rw::models::WorkCell* workcell);
@@ -65,7 +63,7 @@ public:
     virtual void initialize();
 
     /**
-     * @brief we listen for events regarding opening and closing of dynamic
+     * @brief We listen for events regarding opening and closing of dynamic
      * workcell
      */
     void genericEventListener(const std::string& event);
