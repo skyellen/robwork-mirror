@@ -14,20 +14,21 @@ class GripperGenerator:
 	def __init__(self):
 		self.gripperName = "gripper"
 		self._gripperId = 0
-		self.length = (0.05, 0.2)
+		self.length = (0.05, 0.15)
 		self.width = (0.0025, 0.025)
 		self.depth = (0.0025, 0.025)
 		self.chfChance = 0.5
 		self.chfDepth = (0, 1)
 		self.chfAngle = (15, 75)
-		self.tcpOffset = (0.2, 0.8)
+		self.tcpOffset = (0.5, 0.9)
 		self.cutChance = 0.67
 		self.cutDepth = (0, 0.05)
 		self.cutAngle = (60, 120)
 		self.cutRadius = (0, 0.1)
 		self.opening = (0.05, 0.15)
 		self.jawdist = (0, 0.01)
-		self.force = (25, 75)
+		self.force = (25, 100) # minimum & maximum forces
+		self.forceCoeff = 100 # force per cm^2 of jaw smallest crossection
 		self.baselength = (0.05, 0.5)
 		self.basewidth = (0.05, 0.1)
 		self.basedepth = (0.05, 0.05)
@@ -37,37 +38,49 @@ class GripperGenerator:
 		name = self.gripperName + str(self._gripperId)
 		self._gripperId += 1
 		
-		# randomize general dimensions
-		cutout = random.randint(0, 1)
-		length = random.uniform(*self.length)
-		width = random.uniform(*self.width)
-		depth = random.uniform(*self.depth)
-		
-		chfDepth = 0
-		chfAngle = 0
-		if random.uniform(0, 1) < self.chfChance:
-			chfDepth = random.uniform(*self.chfDepth)
-			chfAngle = random.uniform(*self.chfAngle)
+		"We have to repeat doing this till we get the force passing the lowest limit"
+		while True:
+			# randomize general dimensions
+			cutout = random.randint(0, 1) # which type of cutout the gripper has?
+			length = random.uniform(*self.length)
+			width = random.uniform(*self.width)
+			depth = random.uniform(*self.depth)
 			
-		tcpOffset = random.uniform(*self.tcpOffset)
-		cutAngle = random.uniform(*self.cutAngle)
-		opening = random.uniform(*self.opening)
-		force = random.uniform(*self.force)
-		
-		# find tcp position
-		tcp = tcpOffset * length
-		
-		# generate cut depth
-		cutDepth = 0
-		if random.uniform(0, 1) < self.cutChance:
-			d = length - chfDepth * width * math.tan(math.radians(chfAngle))
+			chfDepth = 0
+			chfAngle = 0
+			if random.uniform(0, 1) < self.chfChance:
+				chfDepth = random.uniform(*self.chfDepth)
+				chfAngle = random.uniform(*self.chfAngle)
+				
+			tcpOffset = random.uniform(*self.tcpOffset)
+			cutAngle = random.uniform(*self.cutAngle)
+			opening = random.uniform(*self.opening)
+			#force = random.uniform(*self.force)
+			
+			# find tcp position
+			tcp = tcpOffset * length
+			
+			# generate cut depth
+			cutDepth = 0
 			lwidth = width
-			if tcp > d:
-				lwidth = width - (tcp - d) * 1.0/math.tan(math.radians(chfAngle))
-			cutDepth = random.uniform(self.cutDepth[0], min(self.cutDepth[1], lwidth-0.001))
-		
-		# generate cut radius
-		cutRadius = random.uniform(max(self.cutRadius[0], cutDepth), self.cutRadius[1])
+			if random.uniform(0, 1) < self.cutChance:
+				d = length - chfDepth * width * math.tan(math.radians(chfAngle))
+				if tcp > d:
+					lwidth = width - (tcp - d) * 1.0/math.tan(math.radians(chfAngle))
+				cutDepth = random.uniform(self.cutDepth[0], min(self.cutDepth[1], lwidth-0.001))
+			
+			# generate cut radius
+			cutRadius = random.uniform(max(self.cutRadius[0], cutDepth), self.cutRadius[1])
+			
+			# generate force
+			"Force is generated basing on the width of the jaw in its thinnest place"
+			force = depth * (lwidth - cutDepth) / 0.0001 * self.forceCoeff
+			if force > self.force[1]:
+				force = self.force[1]
+				break
+			
+			if force > self.force[0]:
+				break
 		
 		# generate jawdist
 		jawdist = random.uniform(self.jawdist[0], min(self.jawdist[1], opening))

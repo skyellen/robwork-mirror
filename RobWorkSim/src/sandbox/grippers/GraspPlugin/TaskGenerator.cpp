@@ -43,6 +43,8 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 	TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray,
 	CollisionStrategy::Ptr cstrategy, double &graspW)
 {
+	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), _td->getInitState());
+	
 	//RW_WARN("SAMPLE");
     // choose a random number in the total area
     TriMesh::Ptr mesh = sampler.getMesh();
@@ -113,40 +115,39 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 				}
 				//RW_WARN("3");
 				// test if the target belongs in the area around hinted grasps
+				Transform3D<> targetW = inverse(wTobj) * target;
+				
 				BOOST_FOREACH (Transform3D<> hint, _td->getHints()) {
 					// calculate distance
-					/*double dist = MetricUtil::dist2(target.P(), hint.P());
-					double a = angle(target.R()*Vector3D<>::z(), hint.R()*Vector3D<>::z());
+					Q teachDist = _td->getTeachDistance();
 					
-					if (dist <= _td->getTeachDistance()[0] && a <= _td->getTeachDistance()[1]) {
-						targetFound = true;
-						break;
-					}*/
+					bool distOk = std::fabs(targetW.P()[0] - hint.P()[0]) <= teachDist[0] &&
+						std::fabs(targetW.P()[1] - hint.P()[1]) <= teachDist[1] &&
+						std::fabs(targetW.P()[2] - hint.P()[2]) <= teachDist[2];
+						
+					/*EAA<> targetEAA(target.R());
+					EAA<> hintEAA(hint.R());
+					double R = 1.0 * sin(0.25 * teachDist[3]);
+					//cout << R << endl;
 					
-					bool distOk = std::fabs(target.P()[0] - hint.P()[0]) <= _td->getTeachDistance()[0] &&
-						std::fabs(target.P()[1] - hint.P()[1]) <= _td->getTeachDistance()[1] &&
-						std::fabs(target.P()[2] - hint.P()[2]) <= _td->getTeachDistance()[2];
+					bool angleOk = std::fabs(targetEAA.axis()[0] - hintEAA.axis()[0]) <= R &&
+						std::fabs(targetEAA.axis()[1] - hintEAA.axis()[1]) <= R &&
+						std::fabs(targetEAA.axis()[2] - hintEAA.axis()[2]) <= R &&
+						std::fabs(targetEAA.angle() - hintEAA.angle()) <= teachDist[4];
 						
-						distOk = true;
-						
-					//EAA<> targetEAA(target.R());
-					//EAA<> hintEAA(hint.R());
-					
-					/*bool angleOk = std::fabs(targetEAA.axis()[0] - hintEAA.axis()[0]) <= _td->getTeachDistance()[3] &&
-						std::fabs(targetEAA.axis()[1] - hintEAA.axis()[1]) <= _td->getTeachDistance()[4] &&
-						std::fabs(targetEAA.axis()[2] - hintEAA.axis()[2]) <= _td->getTeachDistance()[5] &&
-						std::fabs(targetEAA.angle() - hintEAA.angle()) <= _td->getTeachDistance()[6];*/
-						
-					/*bool angleOk = angle(targetEAA.axis(), hintEAA.axis()) <= _td->getTeachDistance()[3] &&
-						std::fabs(targetEAA.angle() - hintEAA.angle()) <= _td->getTeachDistance()[4];*/
+					//bool angleOk = std::fabs(angle(targetEAA.axis(), hintEAA.axis())) <= teachDist[3] &&
+					//	std::fabs(targetEAA.angle() - hintEAA.angle()) <= teachDist[4];
 						
 					// find such rotation that z axes are aligned in both target and hint
-					Transform3D<> aligned(RPY<>(0, angle(target.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z()), 0).toRotation3D() * hint.R());
+					/* THIS IS OKAYISH: */
+					Transform3D<> aligned(RPY<>(0, angle(targetW.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z()), 0).toRotation3D() * hint.R());
 						
 					bool angleOk = std::fabs(angle(target.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z())) <= _td->getTeachDistance()[3] &&
 						std::fabs(angle(target.R()*Vector3D<>::x(), aligned.R()*Vector3D<>::x())) <= _td->getTeachDistance()[4];
 						//std::fabs(angle(target.R()*Vector3D<>::x(), hint.R()*Vector3D<>::x())) <= _td->getTeachDistance()[4];
-						
+					/* END OF OKAYISH */
+					
+					/* DEBUG OUTPUTS FROM NOW ON */
 					//std::cout << angleOk << " Z= " << Rad2Deg*std::fabs(angle(target.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z())) <<
 					//	" X= " << Rad2Deg*std::fabs(angle(target.R()*Vector3D<>::x(), aligned.R()*Vector3D<>::x())) << std::endl;
 						
@@ -156,18 +157,8 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 						std::cout << Rad2Deg*angle(targetEAA.axis(), hintEAA.axis()) << std::endl;
 					}*/
 						
-					/*RPY<> targetRPY(target.R());
-					RPY<> hintRPY(hint.R());
-					
-					//std::cout << "hint: " << hintRPY << " target: " << targetRPY << std::endl;
-					
-					bool angleOk = std::fabs(targetRPY[0] - hintRPY[0]) <= _td->getTeachDistance()[3] &&
-						std::fabs(targetRPY[1] - hintRPY[1]) <= _td->getTeachDistance()[4] &&
-						std::fabs(targetRPY[2] - hintRPY[2]) <= _td->getTeachDistance()[5];*/
-						
-					//std::cout << "dist: " << distOk << ", angle: " << angleOk << std::endl;
-						
 					if (distOk && angleOk) {
+						//cout << hintEAA.axis() << " " << targetEAA.axis() << endl;
 						//RW_WARN("WEE");
 						targetFound = true;
 						break;

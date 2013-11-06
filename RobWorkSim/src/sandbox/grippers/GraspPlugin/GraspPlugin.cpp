@@ -136,7 +136,7 @@ void GraspPlugin::close()
 void GraspPlugin::addHint()
 {
 	Transform3D<> target = Kinematics::worldTframe(_td->getGripperTCP(), getRobWorkStudio()->getState());
-	log().info() << "Added hint grasp: " << target << endl;
+	log().info() << "Added hint grasp: " << target.P() << " " << RPY<>(target.R()) << endl;
 	if (_td) {
 		_td->addHint(target);
 	}
