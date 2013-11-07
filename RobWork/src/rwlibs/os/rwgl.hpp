@@ -31,8 +31,8 @@
     #include <windows.h>
     #include <GL/gl.h>
 	//#include <GL/glext.h>
-	#include "glext_win32.h"
-    #include <GL/glu.h> // Header File For The GLu32 Library
+	#include "glext_win32b.h"
+    #include <GL/glu.h> // Header File For The GLu32 Library	
 #elif defined(RW_MACOS)
     #include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>

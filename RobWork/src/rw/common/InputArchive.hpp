@@ -76,8 +76,8 @@ public:
     int readInt(const std::string& id){ int b; read(b,id); return b;};
     unsigned int readUInt(const std::string& id){ unsigned int b; read(b,id); return b;};
 
-    boost::int8_t readInt8(const std::string& id){ boost::int64_t b; read(b,id); return b;};
-    boost::uint8_t readUInt8(const std::string& id){ boost::uint64_t b; read(b,id); return b;};
+    boost::int8_t readInt8(const std::string& id){ boost::int8_t b; read(b,id); return b;};
+    boost::uint8_t readUInt8(const std::string& id){ boost::uint8_t b; read(b,id); return b;};
 
     boost::int64_t readInt64(const std::string& id){ boost::int64_t b; read(b,id); return b;};
     boost::uint64_t readUInt64(const std::string& id){ boost::uint64_t b; read(b,id); return b;};
@@ -107,7 +107,7 @@ private:
     	} else if( boost::is_floating_point<T>::value || boost::is_integral<T>::value){
     		read(object,id);
     	} else {
-    		serialization::read(object, *this, id);
+    		serialization::read<T>(object, *this, id);
     	}
 
     }

@@ -19,7 +19,7 @@
 #ifndef RW_MATH_LINEARALGEBRA_HPP
 #define RW_MATH_LINEARALGEBRA_HPP
 
-#define RW_USE_UBLAS_LAPACK
+//#define RW_USE_UBLAS_LAPACK
 		
 /**
  * @file LinearAlgebra.hpp
@@ -47,6 +47,7 @@
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
 
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -61,17 +62,17 @@ namespace rw { namespace math {
     public:
 
     	//! types used to reduce namespace cluttering
-   // 	template<class T=double>
-   // 	struct Matrix {
-   // 	    //! type of this matrix
-			//typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> type;
-   // 	};
+    	template<class T=double>
+    	struct EigenMatrix {
+    	    //! type of this matrix
+			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> type;
+    	};
 
-   // 	template<class T=double>
-   // 	struct Vector {
-   // 	    //! type of this Vector
-			//typedef Eigen::Matrix<T, Eigen::Dynamic, 1> type;
-   // 	};
+    	template<class T=double>
+    	struct EigenVector {
+    	    //! type of this Vector
+			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> type;
+    	};
 
 
 
@@ -151,28 +152,9 @@ namespace rw { namespace math {
          * This method uses gesvd from LAPACK to perform SVD
          *
          */
-        static BoostMatrix<double>::type pseudoInverse(const BoostMatrix<double>::type& am, double precision=1e-6);
-#endif
+        static BoostMatrix<double>::type pseudoInverseLapack(const BoostMatrix<double>::type& am, double precision=1e-6);
 
-		 /**
-         * \brief Calculates the moore-penrose (pseudo) inverse of a matrix
-         * @f$ \mathbf{M}^+@f$
-         *
-         * \param am [in] the matrix @f$ \mathbf{M} @f$ to be inverted
-         *
-         * \param precision [in] the precision to use, values below this
-         * treshold are considered singular
-         *
-         * \return the pseudo-inverse @f$ \mathbf{M}^+@f$ of @f$ \mathbf{M} @f$
-         *
-         * \f$ \mathbf{M}^+=\mathbf{V}\mathbf{\Sigma} ^+\mathbf{U}^T \f$ where
-         * \f$ \mathbf{V} \f$, \f$ \mathbf{\Sigma} \f$ and \f$ \mathbf{U} \f$
-         * are optained using Singular Value Decomposition (SVD)
-         *
-         *
-         */
-		static Eigen::MatrixXd pseudoInverseEigen(const Eigen::MatrixXd& am, double precision=1e-6);
-
+		
         /**
          * @brief Checks the penrose conditions
          * @param A [in] a matrix
@@ -203,6 +185,30 @@ namespace rw { namespace math {
         static bool checkPenroseConditions(const BoostMatrix<double>::type& A,
                                            const BoostMatrix<double>::type& X,
                                            double prec = 1e-6);
+
+#endif
+
+		static BoostMatrix<double>::type pseudoInverse(const BoostMatrix<double>::type& am, double precision=1e-6);
+
+		 /**
+         * \brief Calculates the moore-penrose (pseudo) inverse of a matrix
+         * @f$ \mathbf{M}^+@f$
+         *
+         * \param am [in] the matrix @f$ \mathbf{M} @f$ to be inverted
+         *
+         * \param precision [in] the precision to use, values below this
+         * treshold are considered singular
+         *
+         * \return the pseudo-inverse @f$ \mathbf{M}^+@f$ of @f$ \mathbf{M} @f$
+         *
+         * \f$ \mathbf{M}^+=\mathbf{V}\mathbf{\Sigma} ^+\mathbf{U}^T \f$ where
+         * \f$ \mathbf{V} \f$, \f$ \mathbf{\Sigma} \f$ and \f$ \mathbf{U} \f$
+         * are optained using Singular Value Decomposition (SVD)
+         *
+         *
+         */
+		static Eigen::MatrixXd pseudoInverse(const Eigen::MatrixXd& am, double precision=1e-6);
+
 
 
         /**
@@ -238,6 +244,7 @@ namespace rw { namespace math {
 			double prec);
 
 
+#ifdef RW_USE_UBLAS_LAPACK
         /**
          * \brief Calculates matrix determinant
          * \param m [in] a square matrix
@@ -264,6 +271,7 @@ namespace rw { namespace math {
             }
             return det;
         }
+#endif
 
         /**
          * \brief Calculates matrix determinant
@@ -275,6 +283,7 @@ namespace rw { namespace math {
 			return m.determinat();
 		}
 
+#ifdef RW_USE_UBLAS_LAPACK
         /**
          * @brief Calculates matrix inverse using lu_factorize and lu_substitute
          * @param M [in] input matrix @f$ \mathbf{M} @f$ to invert
@@ -301,6 +310,8 @@ namespace rw { namespace math {
             // backsubstitute to get the inverse
             lu_substitute(A, pm, Minv);
         }
+
+
 
 		/**
 		 * @brief Calculates matrix inverse using lu_factorize and lu_substitute
@@ -331,6 +342,7 @@ namespace rw { namespace math {
 			return Minv;
         }
 
+#endif
 		/**
 		 * @brief Calculates matrix inverse using lu_factorize and lu_substitute
          * @param M [in] input matrix @f$ \mathbf{M} @f$ to invert
@@ -343,6 +355,7 @@ namespace rw { namespace math {
         }
 
 
+#ifdef RW_USE_UBLAS_LAPACK
         /**
          * @brief Checks if a given matrix is in SO(n) (special orthogonal)
          * @param M [in] \f$ \mathbf{M} \f$
@@ -358,6 +371,8 @@ namespace rw { namespace math {
             return isProperOrthonormal(M) && M().size1() == M().size2();
         }
 
+#endif
+
         /**
          * @brief Checks if a given matrix is in SO(n) (special orthogonal)
          * @param M [in] \f$ \mathbf{M} \f$
@@ -370,7 +385,7 @@ namespace rw { namespace math {
         template<class R>
 		static inline bool isSO(const Eigen::MatrixBase<R>& M)
         {
-            return isProperOrthonormal(M) && M().size1() == M().size2();
+            return M.cols() == M.rows() && isProperOrthonormal(M);
         }
 
 
@@ -417,6 +432,7 @@ namespace rw { namespace math {
         }
 
 
+#ifdef RW_USE_UBLAS_LAPACK
         /**
          * @brief Checks if a given matrix is proper orthonormal
          * @return true if the matrix is proper orthonormal, false otherwise
@@ -429,7 +445,7 @@ namespace rw { namespace math {
         {
             return isOrthonormal(r) && det(r) == 1.0;
         }
-
+#endif //RW_USE_UBLAS_LAPACK
 
         /**
          * @brief Checks if a given matrix is proper orthonormal
@@ -441,7 +457,7 @@ namespace rw { namespace math {
         template<class R>
 		static inline bool isProperOrthonormal(const Eigen::MatrixBase<R>& r)
         {
-            return isOrthonormal(r) && r.determinat() == 1.0;
+			return isOrthonormal(r) && r.determinant() == 1.0;
         }
 
         /**
@@ -482,11 +498,15 @@ namespace rw { namespace math {
          */
         template<class R>
 		static inline bool isOrthonormal(const Eigen::MatrixBase<R>& r)
-        {
-			const Eigen::MatrixBase<R> m = r*r.transpose() - Eigen::Matrix<R,3,3>::Identity();
-			return m.template lpNorm<Eigen::Infinity>() == 0.0;
+        {			
+			return (r * r.transpose()).isIdentity(1e-15);
+			//const Eigen::MatrixBase<R> m = r*r.transpose() ;
+			//return m.isIdentity(1e-15);
+			//double scale = m.norm();//m.lpNorm<Eigen::Infinity>();
+			//return scale == 0.0;
         }
 
+#ifdef RW_USE_UBLAS_LAPACK
         /**
          * @brief Computes the eigenvalue decomposition of a symmetric matrix
          *
@@ -525,13 +545,7 @@ namespace rw { namespace math {
             return std::make_pair(TMatrix(Ac), Wc);
         }
 
-
-
-
-
-
-
-        /**
+		        /**
          * @brief Computes the eigenvalue decomposition
          *
          * Given a matrix \f$ \mathbf{A} \in \mathbb{R}^n \f$ the eigenvalue
@@ -578,6 +592,40 @@ namespace rw { namespace math {
             return std::make_pair(typename BoostMatrix<T>::type(Vr), Wc);
         }
 
+
+
+
+#endif //RW_USE_UBLAS_LAPACK
+
+		template<class T>
+		//static std::pair<typename EigenMatrix<T>::type, typename EigenVector<T>::type > eigenDecompositionSymmetric(const typename EigenMatrix<T>::type& Am1)
+		static std::pair<typename EigenMatrix<T>::type, typename EigenVector<T>::type > eigenDecompositionSymmetric(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Am1)
+        {
+			Eigen::SelfAdjointEigenSolver<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > eigenSolver;
+			eigenSolver.compute(Am1);
+			return std::make_pair(eigenSolver.eigenvectors(), eigenSolver.eigenvalues());
+		}
+			
+		
+		template<class T>
+		static std::pair<typename EigenMatrix<std::complex<T> >::type, typename EigenVector<std::complex<T> >::type > eigenDecomposition(const typename Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Am1)
+        {
+			Eigen::EigenSolver<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > eigenSolver;
+			eigenSolver.compute(Am1);
+
+			Eigen::Matrix<std::complex<T>, Eigen::Dynamic, Eigen::Dynamic> vectors = eigenSolver.eigenvectors();
+			Eigen::Matrix<std::complex<T>, Eigen::Dynamic, 1> values = eigenSolver.eigenvalues();
+			return std::make_pair(vectors, values);
+        }
+
+
+
+
+
+
+
+#ifdef RW_USE_UBLAS_LAPACK
+
 	    /**
 	     * @brief computes the solution to a real system of linear equations
 	     *  A*X = B, where A is an N-by-N symmetric positive definite tridiagonal
@@ -620,8 +668,11 @@ namespace rw { namespace math {
 	            return true;
 	        return false;
 	    }
+#endif //#ifdef RW_USE_UBLAS_LAPACK
 
     private:
+
+#ifdef RW_USE_UBLAS_LAPACK
 	    /**
 	     * @brief lapack wrap function - computes the solution to a real system of linear equations
 	     *  A*X = B, where A is an N-by-N symmetric positive definite tridiagonal
@@ -649,7 +700,7 @@ namespace rw { namespace math {
 	     */
 	    static void lapack_triDiagonalSolve(int *N, int *NRHS, float *D, float *e, float *b, int *ldb, int *info);
 	    static void lapack_triDiagonalSolve(int *N, int *NRHS, double *D, double *e, double *b, int *ldb, int *info);
-
+#endif //RW_USE_UBLAS_LAPACK
     };
 
     /*@}*/

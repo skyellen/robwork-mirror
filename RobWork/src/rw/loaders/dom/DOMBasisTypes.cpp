@@ -208,14 +208,14 @@ Rotation3D<> DOMBasisTypes::readRotation3D(DOMElem::Ptr element, bool doCheckHea
         Rotation3D<> rot = quat.toRotation3D();
 
         using namespace boost::numeric::ublas;
-        while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+		while(fabs(rot.e().determinant()-1.0)>0.00001  ){
         	Eigen::MatrixXd u, v;
         	Eigen::VectorXd w;
 
             std::cout.precision(17);
             std::cout << rot << std::endl;
             RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
-                     "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+				"orthogonal matrix with determinant of 1! det=" << rot.e().determinant());
             LinearAlgebra::svd(rot.e(), u, w ,v);
             Eigen::MatrixXd res = u * v.transpose();
             rot = Rotation3D<>(res);
@@ -231,7 +231,7 @@ Rotation3D<> DOMBasisTypes::readRotation3D(DOMElem::Ptr element, bool doCheckHea
                             values[6], values[7], values[8]);
 
         using namespace boost::numeric::ublas;
-        while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+		while(fabs(rot.e().determinant()-1.0)>0.00001  ){
 
         	Eigen::MatrixXd u, v;
         	Eigen::VectorXd w;
@@ -239,7 +239,7 @@ Rotation3D<> DOMBasisTypes::readRotation3D(DOMElem::Ptr element, bool doCheckHea
             std::cout.precision(17);
             std::cout << rot << std::endl;
             RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
-                     "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+				"orthogonal matrix with determinant of 1! det=" << rot.e().determinant());
             LinearAlgebra::svd(rot.e(), u, w ,v);
             Eigen::MatrixXd res = u * v.transpose();
             rot = Rotation3D<>(res);
@@ -663,7 +663,7 @@ DOMElem::Ptr DOMBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, DO
 
     // check if rotation is proper orthogonal before saving it
     //RW_ASSERT( fabs(LinearAlgebra::det( target.R().m() ))-1.0 < 0.00000001 );
-    double detVal = LinearAlgebra::det( r.m() )-1.0;
+	double detVal = r.e().determinant()-1.0;
     if( fabs(detVal) > 0.0000001 ){
         RW_WARN("A rotation matrix that is being streamed does not have a determinant of 1, det="<<detVal);
     }

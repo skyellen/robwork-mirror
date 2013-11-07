@@ -91,18 +91,18 @@ int testIKSolver(
         }
     }
 
-    return errcnt;
+    return errcnt; 
 }
 
-int testMultiIKSolver(
+int testMultiIKSolver( 
     const std::string& solverName,
-    MakeMultiIKSolver maker,
-    double relativeDisplacement)
+    MakeMultiIKSolver maker,  
+    double relativeDisplacement) 
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     WorkCell::Ptr workcell = WorkCellFactory::load(
-        testFilePath() + "SchunkHand/SchunkHand.xml");
+        testFilePath() + "SchunkHand/SchunkHand.xml");  
 
     Device* any_device = workcell->getDevices().at(0).get();
 
@@ -110,7 +110,7 @@ int testMultiIKSolver(
     BOOST_REQUIRE(device);
     //std::cout << "Device loadet" << std::endl;
     // Take a configuration somewhere in the valid range.
-    std::pair<Q, Q> pair = device->getBounds();
+    std::pair<Q, Q> pair = device->getBounds(); 
     const Q q_zero = 0.45 * (pair.first + pair.second);
 
     const int maxCnt = 10;

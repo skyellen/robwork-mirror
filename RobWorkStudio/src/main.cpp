@@ -100,15 +100,19 @@ int main(int argc, char** argv)
     std::string inifile = map.get<std::string>("ini-file", "");
     std::string inputfile = map.get<std::string>("input-file", "");
 
-    if(inifile.size()<1){
-        // try load an inifile
-    }
+
+
+
+    //if(inifile.size()<1){
+    //     try load an inifile
+    //}
 
     // now initialize robwork, such that plugins ad stuff might work
-    //RobWork::getInstance()->initialize();
+    RobWork::getInstance()->initialize();
+	 
 
     {
-        MyQApplication app(argc, argv);
+        MyQApplication app(argc, argv); 
         try {
             QSplashScreen *splash;
             if(showSplash){
@@ -137,7 +141,7 @@ int main(int argc, char** argv)
                     rwstudio.addPlugin(new rws::Sensors(), false, Qt::RightDockWidgetArea);
 
 					#ifdef RW_HAVE_EIGEN
-                    //rwstudio.addPlugin(new rws::Calibration(), false, Qt::RightDockWidgetArea);
+                    rwstudio.addPlugin(new rws::Calibration(), false, Qt::RightDockWidgetArea);
 					#endif
 
                     #if RWS_HAVE_LUA
@@ -153,8 +157,8 @@ int main(int argc, char** argv)
 
                 rwstudio.loadSettingsSetupPlugins( inifile );
 
-				//std::cout<<XMLPathFormat::QPathId<<std::endl;
-				//std::cout<<XMLPropertyFormat::PropertyMapId<<std::endl;
+				std::cout<<XMLPathFormat::QPathId<<std::endl;
+				std::cout<<XMLPropertyFormat::PropertyMapId<<std::endl;
 
                 if(!inputfile.empty()){
                     if(showSplash)
@@ -181,7 +185,7 @@ int main(int argc, char** argv)
             return -1;
         }
     }
-    return 0;
+    //return 0;
 }
 
 #ifdef _WIN32

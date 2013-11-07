@@ -23,14 +23,12 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
-
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rwlibs::algorithms;
 
-using namespace boost::numeric::ublas;
+using namespace Eigen;
 
 BasicGPM::BasicGPM(
     Device* device,
@@ -46,7 +44,7 @@ BasicGPM::BasicGPM(
     _dof(device->getDOF()),
     _dt(dt),
     _delta(0.01),
-    _P(identity_matrix<double>(6)),
+	_P(MatrixXd::Identity(6,6)),
     _space(BaseFrame)
 {
     _qlower = _device->getBounds().first;
@@ -74,34 +72,40 @@ Q BasicGPM::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcpscrew)
 
     //Calculate the right projection depending on whether it is in the base
     //frame or the frame of control
-    matrix<double> P;
+    MatrixXd P;
     if (_space == ControlFrame) {
         Rotation3D<> rot = inverse(_device->baseTframe(_controlFrame, _state).R());
-        matrix<double> R = zero_matrix<double>(6,6);
-        matrix_range<matrix<double> > rot1(R, range(0,3), range(0,3));
-        rot1 = rot.m();
-        matrix_range<matrix<double> > rot2(R, range(3,6), range(3,6));
-        rot2 = rot.m();
-        P = prod(_P,R);
+        MatrixXd R = MatrixXd::Zero(6,6);
+		for (size_t i = 0; i<3; i++) {
+			for (size_t j = 0; j<3; j++) {
+				R(i,j) = rot(i,j);
+				R(i+3,j+3) = rot(i,j);
+			}
+		}
+        //matrix_range<matrix<double> > rot1(R, range(0,3), range(0,3));
+        //rot1 = rot.m();
+        //matrix_range<matrix<double> > rot2(R, range(3,6), range(3,6));
+        //rot2 = rot.m();
+        P = _P * R;
     } else {
         P = _P;
     }
 
 
-    matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
-    vector<double> tcpvel = prod(P, tcpscrew.m());
+    MatrixXd jac = P *_device->baseJframe(_controlFrame, _state).e();
+    VectorXd tcpvel = P * tcpscrew.e();
 
-    matrix<double> jac_inv = LinearAlgebra::pseudoInverse(jac);
+    MatrixXd jac_inv = LinearAlgebra::pseudoInverse(jac);
     //matrix<double> j_invTj_inv = prod(trans(jac_inv), jav);
-    matrix<double> jac_ort = identity_matrix<double>(_dof) - prod(jac_inv, jac);
-    vector<double> g = getCostGradient(q, jac);
-    vector<double> res = prod(jac_inv, tcpvel) + prod(jac_ort, g);
+    MatrixXd jac_ort = MatrixXd::Identity(_dof, _dof) - jac_inv*jac;
+    VectorXd g = getCostGradient(q, jac);
+    VectorXd res = jac_inv*tcpvel + jac_ort*g;
     Q qres = applyJointVelocityConstraint(q, dq, Q(res));
     return qres;
 }
 
-vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) {
-    vector<double> g = zero_vector<double>(_dof);
+VectorXd BasicGPM::getCostGradient(const Q& q, const MatrixXd& jac) {
+	VectorXd g = VectorXd::Zero(_dof);
 
     if (_useJointLimitsCost) {
         for (int i = 0; i<_dof; i++) {
@@ -116,10 +120,10 @@ vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) 
 
 
     if (_useSingularityCost) {
-        matrix<double> jtj = prod(trans(jac), jac);
+        MatrixXd jtj = jac.transpose()*jac;
         State state(_state);
         _device->setQ(q, state);
-        double det = LinearAlgebra::det(jtj);
+		double det = jtj.determinant();
         Q qt = q;
         double delta = _delta; // WTF?
         for (int i = 0; i<_dof; i++) {
@@ -131,12 +135,10 @@ vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) 
             _device->setQ(qt, state);
             Jacobian jac2 = _device->baseJframe(_controlFrame, state);
 
-            matrix<double> jtj1 = prod(trans(jac1.m()), jac1.m());
-            matrix<double> jtj2 = prod(trans(jac2.m()), jac2.m());
+            MatrixXd jtj1 = jac1.e().transpose()*jac1.e();
+			MatrixXd jtj2 = jac2.e().transpose()*jac2.e();
 
-            double ddet =
-                (LinearAlgebra::det(jtj2) - LinearAlgebra::det(jtj1))
-                / (2*delta);
+            double ddet = (jtj2.determinant() - jtj1.determinant()) / (2*delta);
 
             g(i) += _weightSingularity / (det*det) * ddet;
 
@@ -148,8 +150,8 @@ vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) 
 
 Q BasicGPM::applyJointVelocityConstraint(const Q& q, const Q& dq, const Q& dqnew) {
 
-    vector<double> lower(_dof);
-    vector<double> upper(_dof);
+    VectorXd lower(_dof);
+    VectorXd upper(_dof);
     calculatePosAndVelLimits(lower, upper, q, dq);
     double scale = 1;
     for (int i = 0; i<_dof; i++) {
@@ -162,8 +164,8 @@ Q BasicGPM::applyJointVelocityConstraint(const Q& q, const Q& dq, const Q& dqnew
 }
 
 void BasicGPM::calculatePosAndVelLimits(
-    vector<double>& lower,
-    vector<double>& upper,
+    VectorXd& lower,
+    VectorXd& upper,
     const Q& q,
     const Q& dq)
 {
@@ -245,7 +247,7 @@ void BasicGPM::setSingularityWeight(double w) {
     _weightSingularity = w;
 }
 
-void BasicGPM::setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space) {
+void BasicGPM::setProjection(const MatrixXd& P, ProjectionFrame space) {
     _P = P;
     _space = space;
 }

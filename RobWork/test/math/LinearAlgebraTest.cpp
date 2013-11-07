@@ -23,7 +23,7 @@
 #include <rw/math/Constants.hpp>
 
 
-using namespace boost::numeric::ublas;
+using namespace Eigen;
 using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
@@ -31,15 +31,14 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     EAA<> eaa(Vector3D<>(1.0, 0.0, 0.0), Pi/4.0);
     Rotation3D<> r = eaa.toRotation3D();
 
-    matrix<double> minv(3, 3);
-    LinearAlgebra::invertMatrix(r.m(), minv);
+	MatrixXd minv = r.e().inverse();
 
-    BOOST_CHECK(norm_inf(inverse(r).m() - minv) < 1e-10);
+	BOOST_CHECK((inverse(r).e() - minv).lpNorm<Eigen::Infinity>() < 1e-10);
 
-    minv = LinearAlgebra::pseudoInverse(r.m());
-    BOOST_CHECK(norm_inf(inverse(r).m() - minv) <= 1e-10);
+    minv = LinearAlgebra::pseudoInverse(r.e());
+	BOOST_CHECK((inverse(r).e() - minv).lpNorm<Eigen::Infinity>() <= 1e-10);
 
-    matrix<double> A = zero_matrix<double>(4);
+    MatrixXd A = MatrixXd::Zero(4,4);
     A(0,0) = 1;
     A(1,1) = 2;
     A(2,2) = 3;
@@ -48,19 +47,37 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     A(0,3) = 1;
 
     BOOST_MESSAGE("-- Check Symmetric Matrix EigenValue Decomposition...");
-    std::pair<matrix<double>, vector<double> > val1 =
-        LinearAlgebra::eigenDecompositionSymmetric(A);
-    for (size_t i = 0; i<A.size1(); i++) {
-        matrix_column<matrix<double> > x(val1.first, i);
-        double l = val1.second(i);
-        vector<double> r1 = l*x;
-        vector<double> r2 = prod(A,x);
-        BOOST_CHECK(norm_inf(r1-r2) < 1e-12);
+    std::pair<Eigen::MatrixXd, Eigen::VectorXd > val1 = LinearAlgebra::eigenDecompositionSymmetric(A);
+    for (size_t i = 0; i<A.cols(); i++) {
+		Eigen::VectorXd x = val1.first.col(i);
+		double l = val1.second(i);
+		Eigen::VectorXd r1 = l*x;
+		Eigen::VectorXd r2 = A*x;
+        //matrix_column<matrix<double> > x(val1.first, i);
+        //double l = val1.second(i);
+        //vector<double> r1 = l*x;
+        //vector<double> r2 = prod(A,x);
+		BOOST_CHECK((r1-r2).lpNorm<Eigen::Infinity>() < 1e-12);
     }
 
     BOOST_MESSAGE("-- Check Matrix EigenValue Decomposition...");
     A(1,2) = 5; //make it unsymmetric
-    std::pair<matrix<double>, vector<std::complex<double> > > val2 =
+
+    std::pair<Eigen::MatrixXcd, Eigen::VectorXcd > val2 = LinearAlgebra::eigenDecomposition(A);
+    for (size_t i = 0; i<A.cols(); i++) {
+		Eigen::VectorXcd x = val2.first.col(i);
+		std::complex<double> l = val2.second(i);
+		Eigen::VectorXcd r1 = l*x;
+		Eigen::VectorXcd r2 = A*x;
+        //matrix_column<matrix<double> > x(val1.first, i);
+        //double l = val1.second(i);
+        //vector<double> r1 = l*x;
+        //vector<double> r2 = prod(A,x);
+		BOOST_CHECK((r1-r2).lpNorm<Eigen::Infinity>() < 1e-12);
+    }
+
+	
+	/*std::pair<matrix<double>, vector<std::complex<double> > > val2 =
         LinearAlgebra::eigenDecomposition(A);
     for (size_t i = 0; i<A.size1(); i++) {
         matrix_column<matrix<double> > x(val2.first, i);
@@ -68,5 +85,5 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
         vector<double> r1 = l*x;
         vector<double> r2 = prod(A,x);
         BOOST_CHECK(norm_inf(r1-r2) < 1e-12);
-    }
+    }*/
 }

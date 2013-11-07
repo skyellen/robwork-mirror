@@ -73,7 +73,7 @@ PerspectiveTransform2D<T>::calcTransform(
 	}
 
 	// now calculate the pseudo inverse to the constructed matrix
-	Eigen::VectorXd x = LinearAlgebra::pseudoInverseEigen(A)*y;
+	Eigen::VectorXd x = LinearAlgebra::pseudoInverse(A)*y;
 	//const ublas::vector<double> x = prod(LinearAlgebra::pseudoInverse(A), y);
     return PerspectiveTransform2D(
         static_cast<T>(x(0)),

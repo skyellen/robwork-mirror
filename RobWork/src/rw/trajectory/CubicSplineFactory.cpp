@@ -20,49 +20,266 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
+#include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
+
 using namespace rw::trajectory;
 
 using namespace rw::math;
 using namespace rw::common;
 
-using namespace boost::numeric::ublas;
 
 
-namespace {
-
-/* Fills solution into x. Warning: will modify c and d! */
-    /**
-     *
-     * @param a [in] lower diag (n-1)
-     * @param b [in] diagonal (n)
-     * @param c [in] upper diag (n-1)
-     * @param d [in] Y vector
-     * @param x [out] solution
-     * @param n [in] size of matrix
-     */
-    template<class T>
-    void TridiagonalSolve (const T *a, const T *b, T *c, T *d, T *x, unsigned int n){
-
-        /* Modify the coefficients. */
-        c[0] /= b[0];   /* Division by zero risk. */
-        d[0] /= b[0];   /* Division by zero would imply a singular matrix. */
-        for (unsigned int i = 1; i < n; i++){
-            T id = 1 / (b[i] - c[i-1] * a[i]);  /* Division by zero risk. */
-            c[i] *= id;                          /* Last value calculated is redundant. */
-            d[i] = (d[i] - d[i-1] * a[i]) * id;
-        }
-
-        /* Now back substitute. */
-        x[n - 1] = d[n - 1];
-        for (int i = n - 2; i >= 0; i--)
-            x[i] = d[i] - c[i] * x[i + 1];
-    }
 
 
-}
 
 InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeNaturalSpline(QPath::Ptr qpath, double timeStep)
 {
+	std::vector<double> times;
+	for (size_t i = 0; i<qpath->size(); i++) {
+		times.push_back(i*timeStep);
+	}
+	return makeNaturalSpline(*qpath, times);
+
+}
+
+
+
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(TimedQPath::Ptr tqpath)
+{
+	QPath path;
+	std::vector<double> times;
+	BOOST_FOREACH(const TimedQ& tq, *tqpath) {
+		path.push_back(tq.getValue());
+		times.push_back(tq.getTime());
+	}
+
+	return makeNaturalSpline(path, times);
+}
+
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(const QPath& qpath, const std::vector<double>& times) 
+{
+    typedef float T;
+    using namespace boost::numeric;
+
+    if(qpath.size()<2)
+        RW_THROW("Path must be longer than 1!");
+	if (qpath.size() != times.size()) 
+		RW_THROW("Length of path and times need to be equal");
+
+    size_t dim = (qpath)[0].size(); // the number of dimensions of the points
+    size_t N = qpath.size()-1; // we have N+1 points, which yields N splines
+
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vector;
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
+
+
+    Vector B(N+1); // make room for boundary conditions
+	Eigen::SparseMatrix<T> A(N+1, N+1);
+	
+    //Vector D(N+1),DTmp(N+1); // the diagonal
+    //Vector E(N,1),ETmp(N); // the left/right to the diagonal
+    Vector Y(N+1); // the points that the spline should intersect
+
+    Vector a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
+
+    Vector H(N); // duration from point i to i+1
+    for (size_t i=0; i<N; i++) {
+        //T timeI0 = (T)((*tqpath)[i]).getTime();
+        //T timeI1 = (T)((*tqpath)[i+1]).getTime();
+        //H[i] = timeI1-timeI0;
+		H[i] = times[i+1] - times[i];
+    }
+
+    //D[0] = 2*H[0];
+	A.insert(0,0) = 2*H[0];
+	A.insert(0,1) = H[0];
+	A.insert(1,0) = H[0];
+    for (size_t i=1; i<N; i++) {
+		//D[i] = 2*(H[i-1]+H[i]);
+		A.insert(i,i) = 2*(H[i-1]+H[i]); 
+		A.insert(i,i+1) = H[i];
+		A.insert(i+1,i) = H[i];
+    }
+    //D[N] = 2*H[N-1];
+	A.insert(N, N) = 2*H[N-1];
+
+	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
+	solver.compute(A);
+
+
+    for (size_t j=0; j<(size_t)dim; j++) {
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            Y[i] = (T)(qpath[i])[j];
+        }
+		
+		B[0] = (T)(3.0*(Y[1]-Y[0])/H[0]);
+        for (size_t i=1; i<N; i++) {
+            B[i] = (T)(3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]));
+        }
+        B[N] = (T)(-3.0*(Y[N]-Y[N-1])/H[N-1]);
+
+		B = solver.solve(B);
+
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            a[i*dim+j] = Y[i];
+        }
+
+        for (size_t i=0; i<(size_t)N; i++) {
+            c[j+i*dim] = B[i];
+            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/(T)3.0;
+            d[j+i*dim] =  (B[i+1]-B[i])/((T)3.0*H[i]);//   +B[i]+B[i+1];
+        }
+    }
+
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>(times[0]) );
+
+    Q ba(dim), bb(dim), bc(dim), bd(dim);
+    for (size_t i=0; i<N; i++) {
+        for (size_t j=0; j<dim; j++) {
+            ba[j]=a[j+i*dim];
+            bb[j]=b[j+i*dim];
+            bc[j]=c[j+i*dim];
+            bd[j]=d[j+i*dim];
+        }
+        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, H[i]);
+        traj->add( ownedPtr(iptr) );
+    }
+
+    return traj;
+}
+
+
+InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr qpath,
+			const rw::math::Q& dqStart,
+		    const rw::math::Q& dqEnd,
+		    double timeStep)
+{
+	std::vector<double> times;
+	for (size_t i = 0; i<qpath->size(); i++) {
+		times.push_back(i*timeStep);
+	}
+	return makeClampedSpline(*qpath, times, dqStart, dqEnd);
+
+}
+
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(TimedQPath::Ptr tqpath,
+		const rw::math::Q& dqStart,
+	    const rw::math::Q& dqEnd)
+
+{
+	QPath path;
+	std::vector<double> times;
+	BOOST_FOREACH(const TimedQ& tq, *tqpath) {
+		path.push_back(tq.getValue());
+		times.push_back(tq.getTime());
+	}
+
+	return makeClampedSpline(path, times, dqStart, dqEnd);
+}
+
+
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(const QPath& qpath, const std::vector<double>& times, const rw::math::Q& dqStart, const rw::math::Q& dqEnd)
+{
+    typedef float T;
+    
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vector;
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
+	
+    if(qpath.size()<2)
+        RW_THROW("Path must be longer than 1!");
+
+	if (qpath.size() != times.size())
+		RW_THROW("Length of path and times need to match");
+
+    size_t dim = (qpath)[0].size(); // the number of dimensions of the points
+    size_t N = qpath.size()-1; // we have N+1 points, which yields N splines
+
+    Vector B(N+1); // make room for boundary conditions
+    //ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
+    //ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
+	Eigen::SparseMatrix<T> A(N+1, N+1);
+    Vector Y(N+1); // the points that the spline should intersect
+    Vector a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
+    Vector H(N); // duration from point i to i+1
+
+    for (size_t i=0; i<N; i++) {
+        //T timeI0 = (T)((*tqpath)[i]).getTime();
+        //T timeI1 = (T)((*tqpath)[i+1]).getTime();
+        H[i] = times[i+1]-times[i];
+    }
+
+    //D[0] = 2*H[0];
+	A.insert(0,0) = 2*H[0];
+	A.insert(0,1) = H[0];
+	A.insert(1,0) = H[0];
+    for (size_t i=1; i<N; i++) {
+        //D[i] = 2*(H[i-1]+H[i]);
+		A.insert(i,i) = 2*(H[i-1]+H[i]);
+		A.insert(i+1,i) = H[i];
+		A.insert(i,i+1) = H[i];
+    }
+    //D[N] = 2*H[N-1];
+	A.insert(N, N) = 2*H[N-1];
+
+	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
+	solver.compute(A);
+
+    for (size_t j=0; j<(size_t)dim; j++) {
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            Y[i] = (T)(qpath[i])[j];
+        }
+
+
+        B[0] = (T)(3.0*(Y[1]-Y[0])/H[0]-3*dqStart[j]);
+        for (size_t i=1; i<B.size()-1; i++) {
+            B[i] = (T)(3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]));
+        }
+        B[N] = (T)(3.0*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1]);
+
+
+		B = solver.solve(B);
+        // solution will be available in B
+        //if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
+        //    RW_THROW("Errorsolving tridiagonal system!");
+
+        for (size_t i=0; i<N+1; i++) {
+            a[i*dim+j] = Y[i];
+        }
+
+        for (size_t i=0; i<(size_t)N; i++) {
+            c[j+i*dim] = B[i];
+            b[j+i*dim] =  (T)((Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0);
+            d[j+i*dim] =  (T)((B[i+1]-B[i])/(3.0*H[i]));//   +B[i]+B[i+1];
+        }
+    }
+
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>(times[0]) );
+
+    Q ba(dim), bb(dim), bc(dim), bd(dim);
+    for (size_t i=0; i<N; i++) {
+        for (size_t j=0; j<dim; j++) {
+            ba[j]=a[j+i*dim];
+            bb[j]=b[j+i*dim];
+            bc[j]=c[j+i*dim];
+            bd[j]=d[j+i*dim];
+        }
+        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, H[i]);
+        traj->add( ownedPtr(iptr) );
+    }
+
+    return traj;
+}
+
+#ifdef RW_USE_UBLAS_LAPACK
+
+using namespace boost::numeric::ublas;
+
+
+InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeNaturalSplineLapack(QPath::Ptr qpath, double timeStep)
+{	
 	typedef float T;
 	using namespace boost::numeric;
 
@@ -131,8 +348,8 @@ InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeNaturalSpline(QPath::Ptr 
     return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(TimedQPath::Ptr tqpath)
-{
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSplineLapack(TimedQPath::Ptr tqpath)
+{	
     typedef float T;
     using namespace boost::numeric;
 
@@ -208,7 +425,8 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(T
     return traj;
 }
 
-InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr qpath,
+
+InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSplineLapack(QPath::Ptr qpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd,
 		    double timeStep)
@@ -281,7 +499,7 @@ InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr 
     return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(TimedQPath::Ptr tqpath,
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSplineLapack(TimedQPath::Ptr tqpath,
 		const rw::math::Q& dqStart,
 	    const rw::math::Q& dqEnd)
 {
@@ -360,3 +578,6 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(T
     return traj;
 }
 
+
+
+#endif

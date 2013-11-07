@@ -97,7 +97,24 @@ BOOST_AUTO_TEST_CASE( TULLoaderTest )
         BOOST_CHECK(isZero(5*acclimits(i) - newacclimits(i)));
     }
 }
-*/
+*/ 
+
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
+#include <rw/loaders/tul/TULLoader.hpp>
+
+
+
+BOOST_AUTO_TEST_CASE( WorkCellLoaderTest ) 
+{
+    BOOST_MESSAGE("- Testing WorkCellLoader");
+    // Load a tree device that has revolute joints only.
+	std::string file = testFilePath() + "SchunkHand/SchunkHand.xml";
+	WorkCell::Ptr workcell = WorkCellFactory::load(file);
+
+
+	BOOST_CHECK(workcell != NULL);
+
+}
 
 BOOST_AUTO_TEST_CASE( PathLoaderTest )
 {

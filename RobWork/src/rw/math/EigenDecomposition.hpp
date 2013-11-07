@@ -13,16 +13,14 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
-
 
 namespace rw {
 namespace math {
 
     template<class T=double>
     struct EigenDecomposition {
-        EigenDecomposition(boost::numeric::ublas::matrix<T> vectors,
-                           boost::numeric::ublas::vector<T> values):
+        EigenDecomposition(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> vectors,
+                           Eigen::Matrix<T, Eigen::Dynamic, 1> values):
             _vectors(vectors),
             _values(values)
         {
@@ -32,23 +30,24 @@ namespace math {
         /**
          * @brief returns all eigenvectors as columns in a matrix
          */
-        const boost::numeric::ublas::matrix<T>& getEigenVectors(){
+        const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& getEigenVectors(){
             return _vectors;
         }
 
         /**
          * @brief returns the i'th eigenvector
          */
-        boost::numeric::ublas::vector<T> getEigenVector(size_t i){
-            boost::numeric::ublas::vector<T> v =
-            		boost::numeric::ublas::matrix_column<boost::numeric::ublas::matrix<T> >(_vectors, i);
-            return v;
+        Eigen::Matrix<T, Eigen::Dynamic, 1> getEigenVector(size_t i){
+			return _vectors.col(i);			
+            //boost::numeric::ublas::vector<T> v =
+            //		boost::numeric::ublas::matrix_column<boost::numeric::ublas::matrix<T> >(_vectors, i);
+            //return v;
         }
 
         /**
          * @brief return all eigenvalues
          */
-        const boost::numeric::ublas::vector<T>& getEigenValues(){
+        const Eigen::Matrix<T, Eigen::Dynamic, 1>& getEigenValues() {			
             return _values;
         }
 
@@ -62,11 +61,10 @@ namespace math {
         struct MapSort
         {
         public:
-            boost::numeric::ublas::vector<T> &_values;
+            Eigen::Matrix<T, Eigen::Dynamic, 1> &_values;
             std::vector<int>& _map;
 
-            MapSort(
-                    boost::numeric::ublas::vector<T> &values,
+            MapSort(Eigen::Matrix<T, Eigen::Dynamic, 1> &values,
                     std::vector<int>& map):
                 _values(values),
                 _map(map)
@@ -83,23 +81,23 @@ namespace math {
          * eigen value has index 0
          */
         void sort(){
-
-            using namespace boost::numeric;
             std::vector<int> map(_values.size());
             for(size_t i=0;i<map.size();i++) map[i] = i;
 
             std::sort( map.begin(), map.end(), MapSort(_values, map));
             // now the mapping determines how the new vectors are to be layed out
-            ublas::matrix<T> vectors = _vectors;
-            ublas::vector<T> values = _values;
-            for(size_t i=0;i<map.size();i++){
-            	ublas::matrix_column<ublas::matrix<T> >(_vectors,i) = ublas::matrix_column<ublas::matrix<T> >(vectors, map[i]);
-                _values(i) = values(map[i]);
+            Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> vectors = _vectors;
+			Eigen::Matrix<T, Eigen::Dynamic, 1> values = _values;
+            for(size_t i=0;i<map.size();i++) {
+				_vectors.col(i) = vectors.col(map[i]);
+				_values(i) = values(map[i]);
+            	//ublas::matrix_column<ublas::matrix<T> >(_vectors,i) = ublas::matrix_column<ublas::matrix<T> >(vectors, map[i]);
+             //   _values(i) = values(map[i]);
             }
         }
 
-        boost::numeric::ublas::matrix<T> _vectors;
-        boost::numeric::ublas::vector<T> _values;
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _vectors;
+        Eigen::Matrix<T, Eigen::Dynamic, 1> _values;
     };
 }
 }

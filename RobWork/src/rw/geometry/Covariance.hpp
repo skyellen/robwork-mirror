@@ -23,10 +23,6 @@
 #include <rw/math/EigenDecomposition.hpp>
 #include <rw/math/Math.hpp>
 
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-
-
 
 namespace rw {
 namespace geometry {
@@ -42,16 +38,16 @@ namespace geometry {
 		{
 		}
 
-        Covariance(const boost::numeric::ublas::matrix<T>& matrix):_covar(matrix)
+        Covariance(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& matrix):_covar(matrix)
         {
         }
 
 		virtual ~Covariance(){};
 
-		const boost::numeric::ublas::matrix<T>& getMatrix(){ return _covar;};
+		const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& getMatrix(){ return _covar;};
 
 		rw::math::EigenDecomposition<T> eigenDecompose(){
-			typedef std::pair<boost::numeric::ublas::matrix<T>,boost::numeric::ublas::vector<T> > ResultType;
+			typedef std::pair<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<T, Eigen::Dynamic, 1> > ResultType;
 			//std::cout << "Covar: " << _covar << std::endl;
 			ResultType res = rw::math::LinearAlgebra::eigenDecompositionSymmetric( _covar );
 			//std::cout << "res: " <<  res.first << std::endl;
@@ -86,12 +82,11 @@ namespace geometry {
 		template<class RandomAccessIterator, int DIM>
 		void doInitialize(RandomAccessIterator first, RandomAccessIterator last){
 			using namespace rw::math;
-			using namespace boost::numeric;
 
 			//const size_t nrOfPoints = points.size();
 
-			_covar = ublas::zero_matrix<T>(DIM, DIM);
-			ublas::vector<T> centroid = ublas::zero_vector<T>(DIM);
+			_covar = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(DIM, DIM);
+			Eigen::Matrix<T, Eigen::Dynamic, 1> centroid = Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(DIM);
 
 			// calculate centroid
 			size_t nrOfPoints = 0;
@@ -107,7 +102,7 @@ namespace geometry {
 
 
 			// next we compute the covariance elements
-			ublas::vector<T> p = ublas::zero_vector<T>(DIM);
+			Eigen::VectorXd p = Eigen::VectorXd::Zero(DIM);
 			for( ;first!=last; ++first){
 			    for(size_t k=0; k<DIM; k++){
 			        p[k] = (*first)[k]-centroid[k];
@@ -130,7 +125,7 @@ namespace geometry {
 		//Covariance3D<T> doInitialize(const std::vector<Vector3D<T> >& points, const std::vector<double>& weights);
 
 	private:
-		boost::numeric::ublas::matrix<T> _covar;
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _covar;
 	};
 
 }

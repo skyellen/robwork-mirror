@@ -6,7 +6,7 @@
 #include "csgjs.cpp"
 
 
-
+using namespace rw;
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::geometry;

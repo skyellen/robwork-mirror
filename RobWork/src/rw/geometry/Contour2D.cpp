@@ -161,7 +161,7 @@ double Contour2D::calcCentralMoments(const Contour2D& contour, const rw::math::V
 Covariance<> Contour2D::calcCovarianceMatrix(
     const Contour2D& contour, const rw::math::Vector2D<>& c)
 {
-    boost::numeric::ublas::matrix<double> covarM = boost::numeric::ublas::zero_matrix<double>(2,2);
+    Eigen::MatrixXd covarM = Eigen::MatrixXd::Zero(2,2);
     //BOOST_FOREACH(const rw::math::Vector2D<>& q, contour){
     BOOST_FOREACH(const Contour2D::Point& cp, contour.points()){
         const Vector2D<>& q = cp.P();
@@ -196,7 +196,7 @@ Rotation2D<> Contour2D::calcOrientation(
     const Contour2D& contour, const rw::math::Vector2D<>& c)
 {
     Covariance<> covar = calcCovarianceMatrix(contour, c);
-    ublas::matrix<double> covarTmp = covar.getMatrix();
+    Eigen::MatrixXd covarTmp = covar.getMatrix();
     EigenDecomposition<> decomp = covar.eigenDecompose();
     decomp.sort();
 

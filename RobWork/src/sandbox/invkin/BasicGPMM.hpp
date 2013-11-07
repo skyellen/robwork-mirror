@@ -28,7 +28,7 @@
 
 #include <rw/kinematics/FKRange.hpp>
 
-#include <boost/numeric/ublas/vector.hpp>
+
 
 namespace rwlibs {
 namespace algorithms {
@@ -166,7 +166,7 @@ public:
      * @param P [in] The projection matrix
      * @param space [in] The space in which to apply the projection
      */
-    void setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space);
+    void setProjection(const Eigen::MatrixXd& P, ProjectionFrame space);
 
 private:
     const rw::models::Device* _device;
@@ -185,7 +185,7 @@ private:
     rw::math::Q _ddqlimit;
 
 
-    boost::numeric::ublas::matrix<double> _P;
+    Eigen::MatrixXd _P;
     ProjectionFrame _space;
 
     //TODO Rewrite into using the PropertyMap
@@ -198,13 +198,12 @@ private:
     rw::math::Q _thresholdLower;
     rw::math::Q _thresholdUpper;
 
-    boost::numeric::ublas::vector<double> getCostGradient(const rw::math::Q& q,
-                                                          const boost::numeric::ublas::matrix<double>& jac);
+    Eigen::VectorXd getCostGradient(const rw::math::Q& q, const Eigen::MatrixXd& jac);
 
     rw::math::Q applyJointVelocityConstraint(const rw::math::Q& q, const rw::math::Q& dq, const rw::math::Q& dqnew);
 
-    void calculatePosAndVelLimits(boost::numeric::ublas::vector<double>& lower,
-                                  boost::numeric::ublas::vector<double>& upper,
+    void calculatePosAndVelLimits(Eigen::VectorXd& lower,
+                                  Eigen::VectorXd& upper,
                                   const rw::math::Q& q,
                                   const rw::math::Q& dq);
 

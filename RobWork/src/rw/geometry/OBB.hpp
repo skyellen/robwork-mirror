@@ -104,7 +104,6 @@ public:
 
 
 	 static OBB<T> buildTightOBB(const rw::geometry::TriMesh& tris, size_t index = 0){
-	        using namespace boost::numeric;
 	        using namespace rw::math;
 	        using namespace rw::geometry;
 	        // 1. Compute convex hull
@@ -114,7 +113,7 @@ public:
 	        // 2. Compute centroid for convex hull
 	        // 2.1 centroid is computed using the triangles of the convex hull
 	        //ublas::bounded_matrix<T,3,3> covar;
-	        ublas::matrix<T> covar( ublas::zero_matrix<T>(3, 3) );
+	        Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
 	        Vector3D<T> centroid(0,0,0);
 
 	        // we only use triangle centers the vertices directly
@@ -141,7 +140,7 @@ public:
 	                covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/n;
 
 	        // 4. get eigenvectors from the covariance matrix
-	        typedef std::pair<ublas::matrix<T>,ublas::vector<T> > ResultType;
+	        typedef std::pair<Eigen::MatrixXd, Eigen::VectorXd > ResultType;
 	        //std::cout << "COVAR: " << covar << std::endl;
 	        ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 

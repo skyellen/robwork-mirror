@@ -18,21 +18,23 @@
 
 #include "LinearAlgebra.hpp"
 
-#include "boost/numeric/ublas/matrix_proxy.hpp"
-
-#include <boost/numeric/bindings/traits/ublas_matrix.hpp>
-#include <boost/numeric/bindings/traits/ublas_vector.hpp>
-#include <boost/numeric/bindings/lapack/gesvd.hpp>
 
 using namespace rw::math;
-
-namespace lapack = boost::numeric::bindings::lapack;
 using namespace boost::numeric::ublas;
-
 typedef LinearAlgebra::BoostMatrix<double>::type BoostMatrixType;
 typedef zero_matrix<double> BoostZeroMatrixType;
 typedef matrix<double, column_major> BoostColumnMatrixType;
 typedef matrix_range<BoostColumnMatrixType> BoostColumnMatrixTypeRange;
+
+#ifdef RW_USE_UBLAS_LAPACK
+#include "boost/numeric/ublas/matrix_proxy.hpp"
+#include <boost/numeric/bindings/traits/ublas_matrix.hpp>
+#include <boost/numeric/bindings/traits/ublas_vector.hpp>
+#include <boost/numeric/bindings/lapack/gesvd.hpp>
+
+namespace lapack = boost::numeric::bindings::lapack;
+
+
 
 
 extern "C" {
@@ -43,6 +45,7 @@ extern "C" {
     //void dptsv_(int *n, int *nrhs, double *d, double *e, double *b, int *ldb, long *info);
 
 }
+#endif //RW_USE_UBLAS_LAPACK
 
 #ifdef RW_USE_UBLAS_LAPACK
 
@@ -74,10 +77,33 @@ void LinearAlgebra::svd(
 
 #endif
 
-#define RW_USE_UBLAS_LAPACK	
-#ifdef RW_USE_UBLAS_LAPACK
+
+
+
 
 BoostMatrixType LinearAlgebra::pseudoInverse(const BoostMatrixType& am, double precision)
+{
+	Eigen::MatrixXd em(am.size1(), am.size2());
+	for (size_t i = 0; i<am.size1(); i++) {
+		for (size_t j = 0; j<am.size2(); j++) {
+			em(i,j) = am(i,j);
+		}
+	}
+	const Eigen::MatrixXd er = pseudoInverse(em, precision);
+	BoostMatrixType br(er.rows(), er.cols());
+	for (size_t i = 0; i<br.size1(); i++) {
+		for (size_t j = 0; j<br.size2(); j++) {
+			br(i,j) = er(i,j);
+		}
+	}
+	return br;
+
+}
+
+
+#ifdef RW_USE_UBLAS_LAPACK
+
+LinearAlgebra::BoostMatrix<double>::type LinearAlgebra::pseudoInverseLapack(const BoostMatrix<double>::type& am, double precision)
 {
     // rows
     const size_t m = am.size1();
@@ -123,7 +149,7 @@ BoostMatrixType LinearAlgebra::pseudoInverse(const BoostMatrixType& am, double p
 
 #endif
 
-Eigen::MatrixXd LinearAlgebra::pseudoInverseEigen(const Eigen::MatrixXd& am, double precision) {
+Eigen::MatrixXd LinearAlgebra::pseudoInverse(const Eigen::MatrixXd& am, double precision) {
 	const Eigen::JacobiSVD<Eigen::MatrixXd> svd = am.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
 	Eigen::JacobiSVD<Eigen::MatrixXd>::SingularValuesType sigma= svd.singularValues();
 	for ( long i=0; i<sigma.cols(); ++i) {
@@ -136,6 +162,8 @@ Eigen::MatrixXd LinearAlgebra::pseudoInverseEigen(const Eigen::MatrixXd& am, dou
 	return svd.matrixV() * sigma.asDiagonal()* svd.matrixU().transpose();
 
 }
+
+#ifdef RW_USE_UBLAS_LAPACK
 
 bool LinearAlgebra::checkPenroseConditions(
     const BoostMatrixType& A,
@@ -157,6 +185,8 @@ bool LinearAlgebra::checkPenroseConditions(
     return true;
 }
 
+#endif
+
 bool LinearAlgebra::checkPenroseConditions(
 	const Eigen::MatrixXd& A,
 	const Eigen::MatrixXd& X,
@@ -176,6 +206,7 @@ bool LinearAlgebra::checkPenroseConditions(
 	return true;
 }
 
+#ifdef RW_USE_UBLAS_LAPACK
 
 void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, float *D, float *e, float *b, int *ldb, int *info){
     LAPACK_SPTSV(N, NRHS, D, e, b, ldb, info);
@@ -185,3 +216,4 @@ void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, double *D, double
     LAPACK_DPTSV(N,NRHS,D,e,b,ldb,info);
 }
 
+#endif //RW_USE_UBLAS_LAPACK

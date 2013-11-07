@@ -33,6 +33,8 @@
 #include "Q.hpp"
 #include "Metric.hpp"
 
+#include <boost/math/special_functions/fpclassify.hpp>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -719,6 +721,15 @@ namespace rw { namespace math {
             }
             return tmp;
         }
+
+		/**
+		 * @brief Implements an isNaN function
+		 *
+		 * Use to make sure code is independent of specific compile specific implementations
+		 */
+		static bool isNaN(double d) {
+			return boost::math::isnan(d);
+		}
 
     };
 

@@ -269,11 +269,11 @@ Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHead
     /*
     */
 
-    while(fabs(LinearAlgebra::det(rot.m())-1.0)>0.00001  ){
+	while(fabs(rot.e().determinant()-1.0)>0.00001  ){
         std::cout.precision(16);
         std::cout << rot << std::endl;
         RW_WARN("Parse of Rotation3D failed. A rotation 3d must be an "
-                 "orthogonal matrix with determinant of 1! det=" << LinearAlgebra::det(rot.m()));
+			"orthogonal matrix with determinant of 1! det=" << rot.e().determinant());
         LinearAlgebra::svd(rot.e(), u, w ,v);
         res = u*v.transpose();
         rot = Rotation3D<>(res);

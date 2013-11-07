@@ -71,11 +71,11 @@ MACRO (RWS_QT4_WRAP_CPP outfiles )
   # get include dirs
   QT4_GET_MOC_FLAGS(moc_flags)
   QT4_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
-
+  #SET(moc_files ${outfiles})
   FOREACH (it ${moc_files})
     GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
     RWS_QT4_MAKE_OUTPUT_FILE(${it} moc_ cpp outfile)
-    QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}")
+    QT4_CREATE_MOC_COMMAND(${it} ${outfile} "${moc_flags}" "${moc_options}" ".")
     SET(${outfiles} ${${outfiles}} ${outfile})
   ENDFOREACH(it)
 
@@ -85,7 +85,7 @@ MACRO (RWS_QT5_WRAP_CPP outfiles )
   # get include dirs
   QT5_GET_MOC_FLAGS(moc_flags)
   QT5_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
-
+	
   FOREACH (it ${moc_files})
     GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
     RWS_QT4_MAKE_OUTPUT_FILE(${it} moc_ cpp outfile)
@@ -108,7 +108,7 @@ SET(SRC_FILES_CPP
     ${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowserutils_p.cpp
   ${UIS_OUT_H})
 
-SET(SRC_FILES_HPP
+SET(SRC_FILES_HPP		
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.h 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.h 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qteditorfactory.h 
@@ -123,19 +123,22 @@ SET(MocHeaderFiles ${SRC_FILES_HPP} )
 
 SET(MocSrcFiles )
 
+
 IF (RWS_USE_QT5)
 	RWS_QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
 ELSE()
-	RWS_QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})
+	RWS_QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP})	
 ENDIF()
 
-	RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp"
-                       "${CMAKE_CURRENT_BINARY_DIR}/src/qttreepropertybrowser.moc" "${moc_flags}" "${moc_options}")
+RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qttreepropertybrowser.cpp"
+                       "${CMAKE_CURRENT_BINARY_DIR}/src/qttreepropertybrowser.moc" "${moc_flags}" "${moc_options}" "")
 RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp" 
-                       "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertymanager.moc" "${moc_flags}" "${moc_options}")
+                       "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertymanager.moc" "${moc_flags}" "${moc_options}" "")
 RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qteditorfactory.cpp" 
-                       "${CMAKE_CURRENT_BINARY_DIR}/src/qteditorfactory.moc" "${moc_flags}" "${moc_options}")
-
+                       "${CMAKE_CURRENT_BINARY_DIR}/src/qteditorfactory.moc" "${moc_flags}" "${moc_options}" "")
+RWS_QT4_CREATE_MOC_COMMAND("${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp" 
+                       "${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser.moc" "${moc_flags}" "${moc_options}" "")
+					   
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.cpp PROPERTIES 
     OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/moc_qtpropertybrowser.cpp")
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertymanager.cpp PROPERTIES 

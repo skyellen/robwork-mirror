@@ -143,7 +143,7 @@ namespace geometry {
     template<class T>
     rw::geometry::OBB<T> OBBFactory<T>::makePCAHull(rw::geometry::TriMesh& meshInput){
         using namespace rw::math;
-        using namespace boost::numeric::ublas;
+        
         QHull3D hullgen;
 
         IndexedTriMeshN0D::Ptr mesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0D>(meshInput);
@@ -157,7 +157,7 @@ namespace geometry {
         }
 
         //std::cout << "\nMesh size: " << mesh.size() << "\n";
-        matrix<double> covarM = zero_matrix<double>(3,3);
+        Eigen::MatrixXd covarM = Eigen::MatrixXd(3,3);
         Vector3D<> centroidSum(0,0,0);
         double aSum= 0;
         for(size_t i=0;i<pmesh->size();i++){

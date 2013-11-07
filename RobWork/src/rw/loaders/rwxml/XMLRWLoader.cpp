@@ -597,7 +597,7 @@ Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
 		//State state( tree );
 		State state = setup.tree->getDefaultState();
 		model = ownedPtr(new ParallelDevice(legs, dev.getName(), state));
-		//std::cout << "parallel device created!!" << std::endl;
+		std::cout << "parallel device created!!" << std::endl;
 	} else if (dev._type == TreeType) {
 		RW_ASSERT( dev._frames.size()!=0);
 		//std::cout << "TreeDevice not supported yet" << std::endl;
@@ -942,8 +942,6 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 			std::string prefix = createScopedName("", (*colsetupIter)._scope);
 			std::string filename = StringUtil::getDirectoryName((*colsetupIter)._pos.file);
 			filename += "/" + (*colsetupIter)._filename;
-			//std::cout << "Colsetup prefix: " << prefix << std::endl;
-			//std::cout << "Colsetup file  : " << filename << std::endl;
 			CollisionSetup s = CollisionSetupLoader::load(prefix, filename);
 			collisionSetup.merge(s);
 		}

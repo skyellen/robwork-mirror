@@ -263,6 +263,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //std::cout << "sfdaf" << std::endl;
         //for(size_t time = 0; time < path->size(); time++)
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
+
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
         //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
@@ -283,8 +284,8 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
-        BOOST_CHECK_CLOSE( traj->dx(0)[0], 1, 0.0001 );
-        BOOST_CHECK_CLOSE( traj->dx( traj->duration() )[0], -1, 0.0001 );
+        BOOST_CHECK_CLOSE( traj->dx(0)[0], 1, 0.001 );
+        BOOST_CHECK_CLOSE( traj->dx( traj->duration() )[0], -1, 0.001 );
 
         //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
         //    std::cout << t << "\n\t" << traj->x(t) << "\n\t" << traj->dx(t) << "\n\t" << traj->ddx(t)<< std::endl;

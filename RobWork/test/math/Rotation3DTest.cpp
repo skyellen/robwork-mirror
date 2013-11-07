@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
     const EAA<> eaa(Vector3D<>(1, 0, 0), Pi / 2);
     const Rotation3D<> r3 = eaa.toRotation3D();
 
-    BOOST_CHECK(LinearAlgebra::isSO(r3.m()));
+    BOOST_CHECK(LinearAlgebra::isSO(r3.e()));
     BOOST_CHECK(r3.m().size1() == r3.m().size2() && r3.m().size1() == 3);
 
     const Rotation3D<int> ri = cast<int>(r3);

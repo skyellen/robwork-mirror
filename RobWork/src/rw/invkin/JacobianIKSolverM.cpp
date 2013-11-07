@@ -105,9 +105,9 @@ bool JacobianIKSolverM::solveLocal(
 
     //std::cout << bTed.size() << "==" << fkranges.size() << std::endl;
     RW_ASSERT(bTed.size()==_fkranges.size());
-    //std::cout << "Create vector " << std::endl;
-    boost::numeric::ublas::vector<double> b_eXed_vec(_fkranges.size()*6);
-    LinearAlgebra::BoostMatrix<double>::type Jp;
+    //std::cout << "Create vector " << std::endl;    
+	Eigen::VectorXd b_eXed_vec(_fkranges.size()*6);
+	Eigen::MatrixXd Jp;
     Device::QBox bounds = _device->getBounds();
 
     double lastError = 10000;
@@ -138,7 +138,7 @@ bool JacobianIKSolverM::solveLocal(
             //}
             //std::cout << b_eXed << std::endl;
         }
-        double error = norm_2(b_eXed_vec);
+		double error = b_eXed_vec.norm();
         //std::cout << "Error: " << cnt << " : "<< error << std::endl;
         if(!untilSmallChange){
             if( error  < maxError[0]/*belowMaxError*/ ){
@@ -155,19 +155,20 @@ bool JacobianIKSolverM::solveLocal(
         }
         lastError = error;
 
-        const ublas::vector<double>& dS = b_eXed_vec;
+        const Eigen::VectorXd& dS = b_eXed_vec;
         Jacobian J = _jacCalc->get( state );
         switch(_solverType){
         case(Transpose):
         {
-            Jp = trans( J.m() );
+			Jp = J.e().transpose();
 
-            ublas::vector<double> dTheta = prod( Jp , dS);
-            ublas::vector<double> dT = prod( J.m() , dTheta);
-            double alpha = inner_prod(b_eXed_vec,dT)/ Math::sqr( norm_2(dT) );
+            Eigen::VectorXd dTheta = Jp*dS;//prod( Jp , dS);
+            Eigen::VectorXd dT = J.e()*dTheta;//prod( J.m() , dTheta);
+            //double alpha = inner_prod(b_eXed_vec,dT)/ Math::sqr( norm_2(dT) );
+			double alpha = b_eXed_vec.dot(dT);
             RW_ASSERT(alpha>0.0);
 
-            double maxChange = norm_inf( dTheta );
+			double maxChange = dTheta.lpNorm<Eigen::Infinity>();
             double beta = 0.8/maxChange;
             dTheta *= std::min(alpha, beta);
             Q dq(dTheta);
@@ -187,8 +188,9 @@ bool JacobianIKSolverM::solveLocal(
             }*/
             //std::cout << " size: "  << W.size1() <<  " < "<< W.size2() << std::endl;
             //Jp = LinearAlgebra::pseudoInverse( prod(W, J.m()) );
-            Jp = LinearAlgebra::pseudoInverse(  J.m() );
-            Q dq ( prod( Jp , b_eXed_vec) );
+            Jp = LinearAlgebra::pseudoInverse(  J.e() );
+            //Q dq ( prod( Jp , b_eXed_vec) );
+			Q dq ( Jp*b_eXed_vec);
             double dq_len = dq.normInf();
             if( dq_len > 0.8 )
                 dq *= 0.8/dq_len;
@@ -201,16 +203,17 @@ bool JacobianIKSolverM::solveLocal(
         case(DLS):{
             //std::cout << "Error: " << cnt << " : "<< error << std::endl;
             double lambda = 0.4; // dampening factor, for now a fixed value
-            ublas::matrix<double> U = prod( J.m(), trans(J.m()) ); // U = J * (J^T)
-            ublas::identity_matrix<double> I ( U.size2() );
-            U = U + I*lambda;
-            ublas::matrix<double> Uinv(U.size1(),U.size2());
-            LinearAlgebra::invertMatrix(U, Uinv);
-            ublas::vector<double> dT = prod(Uinv, dS);
+            //ublas::matrix<double> U = prod( J.m(), trans(J.m()) ); // U = J * (J^T)
+			Eigen::MatrixXd U = J.e() * J.e().transpose();
+            //ublas::identity_matrix<double> I ( U.size2() );
+			U = U + lambda*Eigen::MatrixXd::Identity(U.rows(), U.cols());
+            Eigen::MatrixXd Uinv = U.inverse();
+            //LinearAlgebra::invertMatrix(U, Uinv);
+            Eigen::VectorXd dT = Uinv*dS;
             // Use these two lines for the traditional DLS method
-            ublas::vector<double> dTheta = prod( trans(J.m()), dT );
+			Eigen::VectorXd dTheta = J.e().transpose()*dT;
             // Scale back to not exceed maximum angle changes
-            double maxChange = norm_inf( dTheta );
+			double maxChange = dTheta.lpNorm<Eigen::Infinity>();
             if ( maxChange>45.0*Deg2Rad) {
                 dTheta *= (45.0*Deg2Rad)/maxChange;
             }

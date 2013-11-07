@@ -2,7 +2,7 @@
 #include <rw/common.hpp>
 #include <rw/loaders.hpp>
 #include <rwlibs/calibration.hpp>
-
+#include <iostream>
 using namespace rw::kinematics;
 using namespace rwlibs::calibration;
 

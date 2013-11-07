@@ -22,7 +22,6 @@ IF(build)
     
     set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
     
-
     IF(RWS_USE_QT5)
     	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     	# Rcc the files:
@@ -34,7 +33,7 @@ IF(build)
     	QT4_ADD_RESOURCES(RccSrcFiles gtask_resources.qrc)
     ENDIF()
 
-    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_FILES})
+    RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(plugins "rwslibs/gtask" ${SRC_FILES_HPP})
     TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${ROBWORKSTUDIO_LIBRARIES} rw_task rw_proximitystrategies ${ROBWORK_LIBRARIES})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})

@@ -32,7 +32,7 @@ using namespace rw::invkin;
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
-using namespace boost::numeric::ublas;
+
 namespace {
 
     double Power(double arg, int exp) {
@@ -635,7 +635,7 @@ double PieperSolver::ddf(double x) const {
 
 
 std::vector<double> PieperSolver::fSolve() const {
-    matrix<double> A(zero_matrix<double>(4,4));
+    Eigen::MatrixXd A(Eigen::MatrixXd::Zero(4,4));
 
     A(0,0) = -b/a;
     A(0,1) = -c/a;
@@ -648,8 +648,7 @@ std::vector<double> PieperSolver::fSolve() const {
 
    // std::cout<<"a = "<<a<<" b = "<<b<<" c = "<<c<<" d = "<<d<<" e = "<<e<<std::endl;
 
-    std::pair<matrix<double>, vector<std::complex<double> > > eigen =
-    	LinearAlgebra::eigenDecomposition(A);
+    std::pair<Eigen::MatrixXcd, Eigen::VectorXcd> eigen = LinearAlgebra::eigenDecomposition(A);
 
     std::vector<double> result;
     for (size_t i = 0; i<eigen.second.size(); i++) {

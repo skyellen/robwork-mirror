@@ -30,7 +30,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rwlibs::algorithms;
 
-using namespace boost::numeric::ublas;
+using namespace Eigen;
 
 namespace {
 
@@ -60,7 +60,7 @@ BasicGPMM::BasicGPMM(const rw::models::TreeDevice* device,
     _qhome(qhome),
     _dof(device->getDOF()),
     _dt(dt),
-    _P(identity_matrix<double>(6*_foi.size())),
+	_P(MatrixXd::Identity(6*_foi.size(),6*_foi.size())),
     _space(BaseFrame)
 {
     _jacCalc = _device->baseJCframes( _foi, state );
@@ -91,7 +91,7 @@ BasicGPMM::BasicGPMM(const rw::models::JointDevice* device,
 			_qhome(qhome),
 			_dof(device->getDOF()),
 			_dt(dt),
-			_P(identity_matrix<double>(6*_foi.size())),
+			_P(MatrixXd::Identity(6*_foi.size(),6*_foi.size())),
 			_space(BaseFrame)
 {
      _jacCalc = _device->baseJCframes( _foi, state );
@@ -123,50 +123,57 @@ Q BasicGPMM::solve(const Q& q, const Q& dq, const std::vector<rw::math::Velocity
     //Calculate the right projection depending on whether it is in the base
     //frame or the frame of control
     //std::cout << "Settingup matrices" << std::endl;
-    matrix<double> P;
+    MatrixXd P;
     int dim = _foi.size();
     if (_space == ControlFrame) {
-    	matrix<double> R = zero_matrix<double>(6*dim,6*dim);
+    	MatrixXd R = MatrixXd::Zero(6*dim,6*dim);
     	for(size_t i=0;i<_foi.size();i++){
 			Rotation3D<> rot = inverse(_device->baseTframe(_foi[i], _state).R());
 			int offset=i*6;
-			matrix_range<matrix<double> > rot1(R, range(0+offset,3+offset), range(0+offset,3+offset));
-			rot1 = rot.m();
-			matrix_range<matrix<double> > rot2(R, range(3+offset,6+offset), range(3+offset,6+offset));
-			rot2 = rot.m();
+			for (size_t j = 0; j<3; j++) {
+				for (size_t k = 0; k<3; k++) {
+					R(j+offset,k+offset) = rot(j,k);
+					R(j+offset+3,k+offset+3) = rot(j,k);
+				}
+			}
+
+			//matrix_range<matrix<double> > rot1(R, range(0+offset,3+offset), range(0+offset,3+offset));
+			//rot1 = rot.m();
+			//matrix_range<matrix<double> > rot2(R, range(3+offset,6+offset), range(3+offset,6+offset));
+			//rot2 = rot.m();
     	}
-    	P = prod(_P,R);
+    	P = _P*R;
     } else {
         P = _P;
     }
     //std::cout << "create tcpscrew thing" << std::endl;
     // now create the tcpscrew matrix
-    vector<double> tcpscrew(6*dim);
+    VectorXd tcpscrew(6*dim);
     for(int i=0;i<dim;i++){
-    	const vector<double>& screw = tcpvellist[i].m();
+    	const VectorXd& screw = tcpvellist[i].e();
     	for(int j=0;j<6;j++)
     		tcpscrew(j+i*6) = screw(j);
     }
 
     //std::cout << "Clculate jacobian and stuff" << std::endl;
     //matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
-    matrix<double> jac = prod(P, _jacCalc->get(_state).m());
-    vector<double> tcpvel = prod(P, tcpscrew);
+    MatrixXd jac = P*_jacCalc->get(_state).e();
+    VectorXd tcpvel = P*tcpscrew;
 
     //std::cout << "inverse" << std::endl;
-    matrix<double> jac_inv = LinearAlgebra::pseudoInverse(jac);
+    MatrixXd jac_inv = LinearAlgebra::pseudoInverse(jac);
     //matrix<double> j_invTj_inv = prod(trans(jac_inv), jav);
-    matrix<double> jac_ort = identity_matrix<double>(_dof) - prod(jac_inv, jac);
+	MatrixXd jac_ort = MatrixXd::Identity(_dof,_dof) - jac_inv*jac;
     //std::cout << "calculate cost gradient" << std::endl;
-    vector<double> g = getCostGradient(q, jac);
-    vector<double> res = prod(jac_inv, tcpvel) + prod(jac_ort, g);
+    VectorXd g = getCostGradient(q, jac);
+    VectorXd res = jac_inv*tcpvel + jac_ort*g;
     //std::cout << "apply the velocity constraints" << std::endl;
     Q qres = applyJointVelocityConstraint(q, dq, Q(res));
     return qres;
 }
 
-vector<double> BasicGPMM::getCostGradient(const Q& q, const matrix<double>& jac) {
-    vector<double> g = zero_vector<double>(_dof);
+VectorXd BasicGPMM::getCostGradient(const Q& q, const MatrixXd& jac) {
+    VectorXd g = VectorXd::Zero(_dof);
 
     if (_useJointLimitsCost) {
         for (int i = 0; i<_dof; i++) {
@@ -181,10 +188,10 @@ vector<double> BasicGPMM::getCostGradient(const Q& q, const matrix<double>& jac)
 
 
     if (_useSingularityCost) {
-        matrix<double> jtj = prod(trans(jac), jac);
+        MatrixXd jtj = jac.transpose() * jac;
         State state(_state);
         _device->setQ(q, state);
-        double det = LinearAlgebra::det(jtj);
+        double det = jtj.determinant();
         Q qt = q;
         double delta = 0.001; // WTF?
         for (int i = 0; i<_dof; i++) {
@@ -200,12 +207,10 @@ vector<double> BasicGPMM::getCostGradient(const Q& q, const matrix<double>& jac)
             //Jacobian jac2 = _device->baseJframe(_controlFrame, state);
             Jacobian jac2 = _jacCalc->get(state);
 
-            matrix<double> jtj1 = prod(trans(jac1.m()), jac1.m());
-            matrix<double> jtj2 = prod(trans(jac2.m()), jac2.m());
+            MatrixXd jtj1 = jac1.e().transpose() * jac1.e();
+			MatrixXd jtj2 = jac2.e().transpose() * jac2.e();
 
-            double ddet =
-                (LinearAlgebra::det(jtj2) - LinearAlgebra::det(jtj1))
-                / (2*delta);
+			double ddet = (jtj2.determinant() - jtj1.determinant()) / (2*delta);
 
             g(i) += _weightSingularity / (det*det) * ddet;
 
@@ -217,8 +222,8 @@ vector<double> BasicGPMM::getCostGradient(const Q& q, const matrix<double>& jac)
 
 Q BasicGPMM::applyJointVelocityConstraint(const Q& q, const Q& dq, const Q& dqnew) {
 
-    vector<double> lower(_dof);
-    vector<double> upper(_dof);
+    VectorXd lower(_dof);
+    VectorXd upper(_dof);
     calculatePosAndVelLimits(lower, upper, q, dq);
     double scale = 1;
     for (int i = 0; i<_dof; i++) {
@@ -231,8 +236,8 @@ Q BasicGPMM::applyJointVelocityConstraint(const Q& q, const Q& dq, const Q& dqne
 }
 
 void BasicGPMM::calculatePosAndVelLimits(
-    vector<double>& lower,
-    vector<double>& upper,
+    VectorXd& lower,
+    VectorXd& upper,
     const Q& q,
     const Q& dq)
 {
@@ -314,7 +319,7 @@ void BasicGPMM::setSingularityWeight(double w) {
     _weightSingularity = w;
 }
 
-void BasicGPMM::setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space) {
+void BasicGPMM::setProjection(const MatrixXd& P, ProjectionFrame space) {
     _P = P;
     _space = space;
 }

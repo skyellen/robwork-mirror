@@ -113,7 +113,7 @@ namespace common {
 			//}
 
 			// try and use overloaded method
-			serialization::write(object, *this, id);
+			serialization::write<T>(object, *this, id);
 	    }
 
 

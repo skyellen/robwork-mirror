@@ -23,6 +23,7 @@
  * @file CubicSplineFactory.hpp
  */
 
+
 #include "InterpolatorTrajectory.hpp"
 #include "CubicSplineInterpolator.hpp"
 #include "Path.hpp"
@@ -36,9 +37,6 @@ namespace trajectory {
 /**
  * @brief Factory for creating cubic splines
  *
- *
- *
- * http://www.physics.arizona.edu/~restrepo/475A/Notes/sourcea/node35.html
  *
  */
 class CubicSplineFactory
@@ -65,8 +63,19 @@ public:
      * @param tqpath [in] a list of points with associated timestaps. The spline will intersect
      * the points at the time specified in \b tqpath
      * @param offset [in]
+	 * @return a trajectory of CubicSplineInterpolators
      */
 	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSpline(TimedQPath::Ptr tqpath);
+
+	/**
+	 * @brief Construct a natural cubic spline. See documentation of CubicSplineFactory::makeNaturalSpline(QPath::Ptr, double)	 
+	 *
+	 * @param qpath [in] Path to follow
+	 * @param times [in] Times associated to the different configurations in \b qpath	 
+	 * @return a trajectory of CubicSplineInterpolators
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSpline(const QPath& qpath, const std::vector<double>& times);
+
 
 	/**
 	 * @brief creates a clamped spline trajectory with equally spaced
@@ -94,6 +103,43 @@ public:
 	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSpline(TimedQPath::Ptr tqpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd);
+
+
+	/**
+	 * @brief creates a clamped spline trajectory where the timed label is used
+	 * to determine the time between samples. A clamped spline controls
+	 * the velocity in the end points. The acceleration is 0 in the end points.
+	 * @param qpath [in] the path over which the spline should be generated.
+	 * @param times [in] the times associated to the configurations in \b qpath.
+	 * @param dqStart [in] the velocity in the first point
+	 * @param dqEnd [in] the velocity in the last point.
+	 * @return a trajectory of CubicSplineInterpolators
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSpline(const QPath& qpath, const std::vector<double>& times, const rw::math::Q& dqStart, const rw::math::Q& dqEnd);
+
+
+#ifdef RW_USE_UBLAS_LAPACK
+	/**
+	 * @brief LAPACK based version of makeNaturalSpline
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSplineLapack(QPath::Ptr qpath, double timeStep=1.0);
+
+	/**
+	 * @brief LAPACK based version of makeNaturalSpline
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSplineLapack(TimedQPath::Ptr tqpath);
+
+	/**
+	 * @brief LAPACK based version of makeNaturalSpline
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSplineLapack(QPath::Ptr qpath, const rw::math::Q& dqStart, const rw::math::Q& dqEnd,	double timeStep=1.0);
+
+	/**
+	 * @brief LAPACK based version of makeNaturalSpline
+	 */
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSplineLapack(TimedQPath::Ptr tqpath, const rw::math::Q& dqStart, const rw::math::Q& dqEnd);
+
+#endif
 
 private:
 	CubicSplineFactory();

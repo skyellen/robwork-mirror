@@ -31,6 +31,7 @@
 #include "Primitive.hpp"
 #include "TriMesh.hpp"
 
+
 namespace rw {
 namespace geometry {
 /** @addtogroup geometry */
@@ -171,7 +172,7 @@ public:
 		// even if matrix has a determinant...
 		
 		// now, for a bit of wishful thinking:
-		if (std::isnan(volume)) {
+		if (rw::math::Math::isNaN(volume) /* std::isnan(volume) */) {
 			volume = 0.0;
 		}
 		
