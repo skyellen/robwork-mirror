@@ -34,7 +34,6 @@
 using namespace rw::math;
 using namespace rw::sensor;
 using namespace rw::kinematics;
-using namespace boost::numeric;
 using namespace rw::proximity;
 using namespace rw::geometry;
 using namespace rw::common;
@@ -58,11 +57,13 @@ namespace {
     {
     	size_t i_low = i-1,i_upp=i+1;
         if(i_low<0) i_low = 0;
-        if(i_upp>=(size_t)tMatrix.size1()) i_upp = tMatrix.size1()-1;
+        if(i_upp>=(size_t)tMatrix.rows())
+        	i_upp = tMatrix.rows()-1;
 
         size_t j_low = j-1,j_upp=j+1;
         if(j_low<0) j_low = 0;
-        if(j_upp>=tMatrix.size2()) j_upp = tMatrix.size2()-1;
+        if(j_upp>=(size_t)tMatrix.cols())
+        	j_upp = tMatrix.cols()-1;
 
         Vector3D<> wp(0,0,0);
         double valSum = 0, maxVal=0;
@@ -82,7 +83,7 @@ namespace {
      */
     double calcPenetration(
         size_t i, size_t j,
-        const ublas::matrix<float>& tMatrix)
+        const Eigen::MatrixXf& tMatrix)
     {
         // the pen depth depends on force like this pendepth = 0.00025 f - 0.0625
         return 0.00025*tMatrix(i,j) - 0.0625;
@@ -96,7 +97,7 @@ namespace {
     }
 */
     boost::array<array_type::index, 2> getShape(const TactileArraySensor::ValueMatrix& tMatrix,int x, int y){
-        boost::array<array_type::index, 2> shape = {{ tMatrix.size1() +x, tMatrix.size2()+y }};
+        boost::array<array_type::index, 2> shape = {{ tMatrix.rows() +x, tMatrix.cols()+y }};
         return shape;
     }
 
@@ -156,13 +157,13 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _normalMatrix(getShape(heightMap,-1,-1)),
         _contactMatrix(getShape(heightMap,-1,-1)),
         _distCenterMatrix(getShape(heightMap,-1,-1)),
-        _distDefMatrix(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
+        _distDefMatrix(Eigen::MatrixXf::Zero(heightMap.rows()-1,heightMap.cols()-1)),
         _texelSize(texelSize),
         _texelArea(texelSize(0)*texelSize(1)),
         _fThmap(fThmap),
         _hmapTf(inverse(fThmap)),
-        _w(heightMap.size1()-1),
-        _h(heightMap.size2()-1),
+        _w(heightMap.rows()-1),
+        _h(heightMap.cols()-1),
         _vMatrix(getShape(heightMap, 0, 0)),
         _minPressure(0),
         _maxPressure(250),
@@ -205,17 +206,17 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     // we use the distribution function 1/(1+x^2+y^2) where x and y is described
     // relative to the center of the mask
     // the resolution of the mask is 5 points per texel which yields a mask of 20x20
-    _dmask = ublas::zero_matrix<float>(5*3,5*3);
+    _dmask = Eigen::MatrixXf(5*3,5*3);
 
     double dmaskSum = 0;
     double cx = 1.0/2.0;
     double cy = 1.0/2.0;
 
-    double tSize1 = 1.0/_dmask.size1();
-    double tSize2 = 1.0/_dmask.size2();
+    double tSize1 = 1.0/_dmask.rows();
+    double tSize2 = 1.0/_dmask.cols();
 
-    for(size_t i=0;i<_dmask.size1();i++){
-        for(size_t j=0;j<_dmask.size2();j++){
+    for(Eigen::DenseIndex i=0;i<_dmask.rows();i++){
+        for(Eigen::DenseIndex j=0;j<_dmask.cols();j++){
             double x = i*tSize1-cx;
             double y = j*tSize2-cy;
             double r = 4.0*sqrt(x*x+y*y);
@@ -276,7 +277,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 				std::pair<int,int> &pids = data._geomPrimIds[i];
 				//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 				RW_ASSERT(0<=pids.first);
-				RW_ASSERT(pids.first<_ntrimesh->getSize());
+				RW_ASSERT(pids.first<(int)_ntrimesh->getSize());
 
 				// for each colliding pair we find the closest intersection
 				// get the triangle
@@ -340,9 +341,9 @@ TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):
 
 TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, size_t dim_x, size_t dim_y):
     _tsensor(tsensor),
-    _distMatrix(ublas::zero_matrix<float>(dim_x,dim_y)),
-    _accForces(ublas::zero_matrix<float>(dim_x,dim_y)),
-    _pressure(ublas::zero_matrix<float>(dim_x,dim_y)),
+    _distMatrix(Eigen::MatrixXf::Zero(dim_x,dim_y)),
+    _accForces(Eigen::MatrixXf::Zero(dim_x,dim_y)),
+    _pressure(Eigen::MatrixXf::Zero(dim_x,dim_y)),
     _accTime(0),
     _stime(0.005)
 {
@@ -360,7 +361,7 @@ namespace {
     double getValueOfTexel(double tx, double ty, // texel position data
 						   double tw, double th, // texel width
                            double cx, double cy,
-                           ublas::matrix<float>& distM, double mwidth, double mheight)
+                           Eigen::MatrixXf& distM, double mwidth, double mheight)
     {
         // all values in distM that is inside the bounds of the texel need to be summed
         float texelVal = 0;
@@ -377,17 +378,17 @@ namespace {
 
         // now calculate the start and end index
         // the point must lie inside the texel so we round up
-        int xStartIdx = (int)ceil( x/mwidth*distM.size1() );
-        int yStartIdx = (int)ceil( y/mheight*distM.size2() );
+        int xStartIdx = (int)ceil( x/mwidth*distM.rows() );
+        int yStartIdx = (int)ceil( y/mheight*distM.cols() );
 
-        int xEndIdx = (int)ceil( (x+tw)/mwidth*distM.size1() );
-        int yEndIdx = (int)ceil( (y+tw)/mheight*distM.size2() );
+        int xEndIdx = (int)ceil( (x+tw)/mwidth*distM.rows() );
+        int yEndIdx = (int)ceil( (y+tw)/mheight*distM.cols() );
 
         // now make sure we don't exeed the matrix bounds
         xStartIdx = std::max(xStartIdx,0);
         yStartIdx = std::max(yStartIdx,0);
-        xEndIdx = std::min(xEndIdx,(int)distM.size1());
-        yEndIdx = std::min(yEndIdx,(int)distM.size2());
+        xEndIdx = std::min(xEndIdx,(int)distM.rows());
+        yEndIdx = std::min(yEndIdx,(int)distM.cols());
 
 
         for(int i=xStartIdx; i<xEndIdx; i++){
@@ -436,7 +437,7 @@ void TactileArraySensor::ClassState::acquire(){
 
 }
 
-ublas::matrix<float> TactileArraySensor::ClassState::getTexelData()  const {
+Eigen::MatrixXf TactileArraySensor::ClassState::getTexelData()  const {
     return _pressure;
 }
 
@@ -656,8 +657,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 			continue;
 		if( !hasCollision ){
 			// initialize variables
-			_distMatrix =  ValueMatrix(_distMatrix.size1(),_distMatrix.size2(), 100);
-			//std::cout << "DIMENSIONS: " << _distMatrix.size1() << " " << _distMatrix.size2()<< std::endl;
+			_distMatrix =  ValueMatrix::Constant(_distMatrix.rows(),_distMatrix.cols(),100);
 		}
 		hasCollision = true;
 		//std::cout << "Yes it really collides!" << bframe->getName() << std::endl;
@@ -675,11 +675,11 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	            int startIdx = data._collisionPairs[0].startIdx;
 	            int size = data._collisionPairs[0].size;
 
-				for(size_t i = startIdx; i<startIdx+size;i++){
+				for(int i = startIdx; i<startIdx+size;i++){
 					std::pair<int,int> &pids = data._geomPrimIds[i];
 					//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 					RW_ASSERT(0<=pids.first);
-					RW_ASSERT(pids.first<_tsensor->_ntrimesh->getSize());
+					RW_ASSERT(pids.first<(int)_tsensor->_ntrimesh->getSize());
 
 					// for each colliding pair we find the closest intersection
 					// get the triangle
@@ -715,8 +715,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 
     double closest = 100;
     if( hasCollision ){
-		for(size_t y=0; y<_distMatrix.size2(); y++){
-			for(size_t x=0; x<_distMatrix.size1(); x++){
+		for(Eigen::DenseIndex y=0; y<_distMatrix.cols(); y++){
+			for(Eigen::DenseIndex x=0; x<_distMatrix.rows(); x++){
 				_distMatrix(x,y) = _distMatrix(x,y) - _tsensor->_distDefMatrix(x,y);
 				if(_distMatrix(x,y)<closest)
 					closest = _distMatrix(x,y);
@@ -725,7 +725,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 		//std::cout << "\n\n" << _distMatrix << "\n\n"<< std::endl;
     }
     // now we need to convert the _distMatrix to pressure values
-    ValueMatrix pressure =  boost::numeric::ublas::zero_matrix<float>(_pressure.size1(),_pressure.size2());
+    ValueMatrix pressure =  Eigen::MatrixXf::Zero(_pressure.rows(),_pressure.cols());
     //
     // we only have the total normal force, we expect the position between finger and
     // object to be error prone so we iteratively determine the area of contact such
@@ -742,8 +742,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 			double area = 0;
 			double volume = 0;
 			double totalVolume = 0;
-			for(size_t y=0; y<_distMatrix.size2(); y++){
-				for(size_t x=0; x<_distMatrix.size1(); x++){
+			for(Eigen::DenseIndex y=0; y<_distMatrix.cols(); y++){
+				for(Eigen::DenseIndex x=0; x<_distMatrix.rows(); x++){
 					//std::cout << _distMatrix(x,y) << "\n";
 					double val = _distMatrix(x,y)-closest+offset;
 					if( val<0 ){
@@ -779,8 +779,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 			offset -= 0.001/20;
 		}
 		double totalDist = 0;
-		for(size_t y=0; y<_distMatrix.size2(); y++){
-			for(size_t x=0; x<_distMatrix.size1(); x++){
+		for(Eigen::DenseIndex y=0; y<_distMatrix.cols(); y++){
+			for(Eigen::DenseIndex x=0; x<_distMatrix.rows(); x++){
 				double dist = _distMatrix(x,y)-closest+bestOffset;
 				if( dist>0 )
 					continue;
@@ -798,8 +798,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 			//std::cout << "BestScore: " << bestScore << std::endl;
 			// now we now the actual penetration/position we can apply point force function
 			// to calculate the pressure on the sensor surface
-			for(size_t y=0; y<_distMatrix.size2(); y++){
-				for(size_t x=0; x<_distMatrix.size1(); x++){
+			for(Eigen::DenseIndex y=0; y<_distMatrix.cols(); y++){
+				for(Eigen::DenseIndex x=0; x<_distMatrix.rows(); x++){
 
 					//std::cout << _distMatrix(x,y) << "\n";
 					double dist = _distMatrix(x,y)-closest+bestOffset;
@@ -834,8 +834,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	    // copy and convert accumulated forces into pressure values
 	    //double texelArea = _texelSize(0)*_texelSize(1);
 		double totalPressure = 0, totalArea = 0;
-	    for(size_t x=0; x<_accForces.size1(); x++){
-	        for(size_t y=0; y<_accForces.size2(); y++){
+	    for(Eigen::DenseIndex x=0; x<_accForces.rows(); x++){
+	        for(Eigen::DenseIndex y=0; y<_accForces.cols(); y++){
 	            // clamp to max pressure
 	            //if( _accForces(x,y)/texelArea>1.0 )
 	            //    std::cout << "Pressure: ("<<x<<","<<y<<") " << _accForces(x,y)/texelArea << " N/m^2 " << std::endl;
@@ -858,8 +858,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	    // so we scale it down to fit-....
 	    double presScale = (totalNormalForce/(totalArea*1000))/totalPressure;
 	    double ntotpressure = 0;
-	    for(size_t x=0; x<pressure.size1(); x++){
-	        for(size_t y=0; y<pressure.size2(); y++){
+	    for(Eigen::DenseIndex x=0; x<pressure.rows(); x++){
+	        for(Eigen::DenseIndex y=0; y<pressure.cols(); y++){
 	        	if(pressure(x,y)>0){
 	        		// and convert it to pascal
 	        		pressure(x,y) *= presScale*1000;
@@ -870,7 +870,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 
 	    //std::cout << "New total pressure: " << ntotpressure << std::endl;
 
-	    _accForces = ublas::zero_matrix<double>(_accForces.size1(),_accForces.size2());
+	    _accForces = ValueMatrix::Zero(_accForces.rows(), _accForces.cols());
 	    _allForces = _allAccForces;
 	    _allAccForces.clear();
     }
@@ -882,8 +882,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
     ValueMatrix &ym = _pressure;
     ValueMatrix &xm = pressure;
     const double alpha = rdt/(_tsensor->_tau+rdt);
-    for(size_t y=0; y<ym.size2(); y++){
-    	for(size_t x=0; x<ym.size1(); x++){
+    for(Eigen::DenseIndex y=0; y<ym.rows(); y++){
+    	for(Eigen::DenseIndex x=0; x<ym.cols(); x++){
         	ym(x,y) += alpha * (xm(x,y)-ym(x,y));
         }
     }
@@ -1091,13 +1091,13 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 }
 #endif
 
-void TactileArraySensor::ClassState::setTexelData(const boost::numeric::ublas::matrix<float>& data){
-	if(data.size1()!=_pressure.size1()){
-		RW_WARN("dimension mismatch: " << data.size1() <<"!=" <<_pressure.size1());
+void TactileArraySensor::ClassState::setTexelData(const Eigen::MatrixXf& data){
+	if(data.rows()!=_pressure.rows()){
+		RW_WARN("dimension mismatch: " << data.rows() <<"!=" <<_pressure.rows());
 		return;
 	}
-	if(data.size2()!=_pressure.size2()){
-		RW_WARN("dimension mismatch: " << data.size2() <<"!=" <<_pressure.size2());
+	if(data.cols()!=_pressure.cols()){
+		RW_WARN("dimension mismatch: " << data.cols() <<"!=" <<_pressure.cols());
 		return;
 	}
 

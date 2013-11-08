@@ -34,7 +34,7 @@ void TactileArrayRender::draw(const DrawableNode::RenderInfo& info, Render::Draw
 
     if(info._state==NULL)
         return;
-    ublas::matrix<float> values = _sensor->getTexelData(*info._state);
+    Eigen::MatrixXf values = _sensor->getTexelData(*info._state);
 
     const TactileArray::VertexMatrix& verts = _sensor->getVertexGrid();
     Transform3D<> fTverts = _sensor->getTransform();
@@ -46,8 +46,8 @@ void TactileArrayRender::draw(const DrawableNode::RenderInfo& info, Render::Draw
     glMultMatrixf(gltrans);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    for(int x=0; x<(int)values.size1(); x++){
-        for(int y=0; y<(int)values.size2(); y++){
+    for(int x=0; x<(int)values.rows(); x++){
+        for(int y=0; y<(int)values.cols(); y++){
             float col = (float)(values(x,y)/maxForce);
             glBegin(GL_QUADS);
             glColor3f(col, 0.0, 1-col);
@@ -68,8 +68,8 @@ void TactileArrayRender::draw(const DrawableNode::RenderInfo& info, Render::Draw
     const TactileArray::VertexMatrix& normals = _sensor->getNormals();
     const TactileArray::VertexMatrix& centers = _sensor->getCenters();
     glBegin(GL_LINES);
-    for(int x=0; x<(int)values.size1(); x++){
-        for(int y=0; y<(int)values.size2(); y++){
+    for(int x=0; x<(int)values.rows(); x++){
+        for(int y=0; y<(int)values.cols(); y++){
             float col = (float)(values(x,y)/maxForce);
             glColor3f(col, 0.0, 1-col);
             DrawableUtil::drawGLVertex(centers[x][y]);

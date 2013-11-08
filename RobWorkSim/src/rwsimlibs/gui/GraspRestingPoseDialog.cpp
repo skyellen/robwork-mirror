@@ -33,8 +33,6 @@ using namespace rw::graspplanning;
 
 namespace bfs=boost::filesystem;
 
-using namespace boost::numeric::ublas;
-
 //#define RW_DEBUGS( str ) std::cout << str  << std::endl;
 #define RW_DEBUGS( str )
 
@@ -180,9 +178,9 @@ namespace {
             file << "\n\n";
 
             file << "# Tdata " << idx << "/" << datas.size() << "\n";
-			BOOST_FOREACH(matrix<float>& data, tdata){
-				for(size_t x=0;x<data.size1(); x++){
-					for(size_t y=0;y<data.size2(); y++){
+			BOOST_FOREACH(Eigen::MatrixXf& data, tdata){
+				for(Eigen::DenseIndex x=0;x<data.rows(); x++){
+					for(Eigen::DenseIndex y=0;y<data.cols(); y++){
 						file << data(x,y) << " ";
 					}
 					file << "\n";
@@ -254,16 +252,25 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     QDialog(parent),
     _defstate(state),
     _state(state),
+    _nrOfTests(0),
+    _totalSimTime(0),
+    _startTime(0),
     _id("0"),
     _dwc(dwc),
     _colDect(detector),
+    _lastTime(0),
+    _lastBelowThresUpdate(0),
     _avgSimTime(4),
     _avgTime(4),
     _handBase(NULL),
+    _object(NULL),
     _exitHard(false),
     _graspNotStable(false),
+    _nrOfTestsOld(0),
     _gtable("",""),
-    		_nrOfGraspsInGroup(0)
+    _nrOfGraspsInGroup(0),
+    _lastTableBackupCnt(0),
+    _tactileDataOnAllCnt(0)
 {
 	RW_ASSERT( _dwc );
     setupUi(this);
@@ -585,8 +592,8 @@ void GraspRestingPoseDialog::startAuto(){
 
 namespace {
 
-	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors, const State& state){
-		std::vector<matrix<float> > datas;
+	std::vector<Eigen::MatrixXf> getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors, const State& state){
+		std::vector<Eigen::MatrixXf> datas;
 		BOOST_FOREACH(const SimulatedSensor::Ptr& sensor, sensors){
         	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
                 datas.push_back( tsensor->getTexelData(state) );
@@ -653,7 +660,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     // record the tactile stuff if enabled
     int fingersWithData = 0;
-    std::vector<matrix<float> > datas;
+    std::vector<Eigen::MatrixXf> datas;
 
 
     // save tactile data
@@ -665,8 +672,8 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
             float sum = 0;
             // we require samples on at least two of the fingers
-            for(size_t i=0; i<datas.back().size1(); i++)
-                for(size_t j=0; j<datas.back().size2(); j++)
+            for(Eigen::DenseIndex i=0; i<datas.back().rows(); i++)
+                for(Eigen::DenseIndex j=0; j<datas.back().cols(); j++)
                 	if(datas.back()(i,j)>0.5)
                 		sum += datas.back()(i,j);
             if( sum>1 ){
@@ -1113,15 +1120,15 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
     // get the data
     int fingersWithData = 0;
     std::vector<SimulatedSensor::Ptr> sensors = sim->getSensors();
-    std::vector<matrix<float> > datas;
+    std::vector<Eigen::MatrixXf> datas;
     BOOST_FOREACH(SimulatedSensor::Ptr& sensor, sensors){
         if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
             datas.push_back( tsensor->getTexelData(state) );
 
             float sum = 0;
             // we require samples on at least two of the fingers
-            for(size_t i=0; i<datas.back().size1(); i++)
-                for(size_t j=0; j<datas.back().size2(); j++)
+            for(Eigen::DenseIndex i=0; i<datas.back().rows(); i++)
+                for(Eigen::DenseIndex j=0; j<datas.back().cols(); j++)
                     sum += datas.back()(i,j);
             if( sum>1 ){
                 fingersWithData++;

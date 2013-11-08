@@ -272,10 +272,10 @@ void GraspTable::save(const std::string& filename){
 
         for(size_t j=0;j<data._tactiledata.size();j++){
         	// write dimensions of pad
-        	fstr << data._tactiledata[j].size1() << ";";
-        	fstr << data._tactiledata[j].size2() << ";";
-        	for(size_t x=0;x<data._tactiledata[j].size1();x++)
-        		for(size_t y=0;y<data._tactiledata[j].size2();y++)
+        	fstr << data._tactiledata[j].rows() << ";";
+        	fstr << data._tactiledata[j].cols() << ";";
+        	for(Eigen::DenseIndex x=0;x<data._tactiledata[j].rows();x++)
+        		for(Eigen::DenseIndex y=0;y<data._tactiledata[j].cols();y++)
         			fstr << data._tactiledata[j](x,y) << ";";
 
         }
@@ -322,8 +322,8 @@ std::pair<int,int> GraspTable::getTactileArrayDim(int i){
 		return std::pair<int,int>(0,0);
 	if( i>=(int)_graspData[0]._tactiledata.size() )
 		RW_THROW("Index i out of range! " << i << ">=" << _graspData[0]._tactiledata.size());
-	int s1 = _graspData[0]._tactiledata[i].size1();
-	int s2 = _graspData[0]._tactiledata[i].size2();
+	int s1 = _graspData[0]._tactiledata[i].rows();
+	int s2 = _graspData[0]._tactiledata[i].cols();
 	return std::make_pair(s1,s2);
 }
 

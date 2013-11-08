@@ -38,11 +38,11 @@ namespace {
     {
         int i_low = i-1,i_upp=i+1;
         if(i_low<0) i_low = 0;
-        if(i_upp >= (int)tMatrix.size1()) i_upp = tMatrix.size1()-1;
+        if(i_upp >= (int)tMatrix.rows()) i_upp = tMatrix.cols()-1;
 
         int j_low = j-1,j_upp=j+1;
         if(j_low<0) j_low = 0;
-        if(j_upp >= (int)tMatrix.size2()) j_upp = tMatrix.size2()-1;
+        if(j_upp >= (int)tMatrix.rows()) j_upp = tMatrix.cols()-1;
 
         Vector3D<> wp(0,0,0);
         double valSum = 0, maxVal=0;
@@ -68,8 +68,8 @@ std::vector<Contact3D> TactileArrayUtil::estimateContacts(
     const Transform3D<> fTgeom = arraySensor.getTransform();
     Transform3D<> wTf = Kinematics::worldTframe(arraySensor.getFrame(), state);
 
-    for(size_t i=0;i<data.size1(); i++){
-        for(size_t j=0;j<data.size2(); j++){
+    for(Eigen::DenseIndex i=0;i<data.rows(); i++){
+        for(Eigen::DenseIndex j=0;j<data.cols(); j++){
             std::pair<double,Vector3D<> > avgPoint =
                 getWeightAverage(i,j,data,centers);
             Vector2D<> texelSize = arraySensor.getTexelSize(i,j);

@@ -80,7 +80,7 @@ class TactileSensorDialog : public QDialog, public Ui::TactileSensorDialog
 
         rwsim::dynamics::DynamicWorkCell *_dwc;
         std::vector<rwsim::sensor::TactileArraySensor*> _tsensors;
-        std::vector<boost::numeric::ublas::matrix<float> > _values;
+        std::vector<Eigen::MatrixXf> _values;
         QGraphicsScene *_scene;
         bool _renderingToImage;
 

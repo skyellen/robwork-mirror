@@ -55,7 +55,7 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         Q_OBJECT
 
     public:
-        typedef std::vector<boost::numeric::ublas::matrix<float> > TactileSensorData;
+        typedef std::vector<Eigen::MatrixXf> TactileSensorData;
 
         GraspRestingPoseDialog(const rw::kinematics::State& state,
                           rwsim::dynamics::DynamicWorkCell *dwc,

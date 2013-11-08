@@ -54,7 +54,7 @@ bool OBRManifold::addPoint(ContactPoint& p){
             return true;
 
         Vector3D<> nnorm = p.n;
-        for(size_t i=0;i<_nrOfContacts;i++){ nnorm += _points[i].n; }
+        for(int i=0;i<_nrOfContacts;i++){ nnorm += _points[i].n; }
         nnorm /= _nrOfContacts;
         //_t3d.R() = _t3d.R()*EAA<>(_normal,nnorm).toRotation3D();
         _normal = nnorm;
@@ -100,7 +100,7 @@ bool OBRManifold::addPoint(ContactPoint& p){
 
 void OBRManifold::fit(ContactPoint& p){
     // re-fit the bounding box
-    ublas::matrix<double> covar( ublas::zero_matrix<double>(2, 2) );
+    Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(2, 2) );
 
     size_t nrOfContacts = _nrOfContacts-1;
 
@@ -129,7 +129,7 @@ void OBRManifold::fit(ContactPoint& p){
     covar(1,0) = covar(0,1);
 
 
-    typedef std::pair<ublas::matrix<double>,ublas::vector<double> > ResultType;
+    typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd > ResultType;
     //std::cout << "COVAR: " << covar << std::endl;
     ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 
@@ -151,10 +151,10 @@ void OBRManifold::fit(ContactPoint& p){
 
     Vector2D<> max = rotInv * _projPoints[0];
     Vector2D<> min = max;
-    int x_max = 0, x_min = 0;
-    int y_max = 0, y_min = 0;
+    size_t x_max = 0, x_min = 0;
+    size_t y_max = 0, y_min = 0;
 
-    for(int i = 1; i<nrOfContacts+1; i++ ){
+    for(size_t i = 1; i<nrOfContacts+1; i++ ){
         const Vector2D<> prot = rotInv * _projPoints[i];
         if( prot(0)>max(0) ) {
             max(0) = prot(0); x_max = i;
@@ -176,7 +176,7 @@ void OBRManifold::fit(ContactPoint& p){
 
     // compute halflength of box and its midpoint
     Vector2D<> center = rot*( 0.5*(max+min));
-    Rotation2D<> rotation = rot;
+    //Rotation2D<> rotation = rot;
     // transform it back to 3d
     _t3d.P()(0) = center(0);
     _t3d.P()(1) = center(1);

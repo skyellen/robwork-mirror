@@ -23,7 +23,6 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/multi_array.hpp>
 #include <rw/models/Object.hpp>
 #include <rw/geometry.hpp>
@@ -88,11 +87,11 @@ namespace sensor {
 		/**
 		 * @copydoc TactileArray::getTexelData
 		 */
-		boost::numeric::ublas::matrix<float> getTexelData(const rw::kinematics::State& state)  const{
+		Eigen::MatrixXf getTexelData(const rw::kinematics::State& state)  const{
 		    return getClassState(state)->getTexelData();
 		}
 
-        void setTexelData(const boost::numeric::ublas::matrix<float>& data, rw::kinematics::State& state){
+        void setTexelData(const Eigen::MatrixXf& data, rw::kinematics::State& state){
             getClassState(state)->setTexelData(data);
         }
 
@@ -260,9 +259,9 @@ namespace sensor {
 		    virtual void acquire();
 
 	        //! @copydoc TactileArray::getTexelData
-	        virtual boost::numeric::ublas::matrix<float> getTexelData() const;
+	        virtual Eigen::MatrixXf getTexelData() const;
 
-	        virtual void setTexelData(const boost::numeric::ublas::matrix<float>& data);
+	        virtual void setTexelData(const Eigen::MatrixXf& data);
 
 	        ///// From SimulatedTactileSensor interface
 	         /**
@@ -304,7 +303,7 @@ namespace sensor {
 
             TactileArraySensor* _tsensor;
 
-            boost::numeric::ublas::matrix<float> _distMatrix;
+            Eigen::MatrixXf _distMatrix;
             ValueMatrix _accForces,_pressure;
             double _accTime, _stime;
             rw::math::Transform3D<> _wTf, _fTw;
@@ -344,7 +343,7 @@ namespace sensor {
 
 		//rw::common::Ptr<StateModel> _model;
 
-		boost::numeric::ublas::matrix<float> _distDefMatrix;
+		Eigen::MatrixXf _distDefMatrix;
 		const rw::math::Vector2D<> _texelSize;
 		double _texelArea;
 		const rw::math::Transform3D<> _fThmap,_hmapTf;
@@ -359,7 +358,7 @@ namespace sensor {
 
 		// distribution mask, a mask where the sum of all elements is 1.
 		// it describes the deformation around a point force.
-		boost::numeric::ublas::matrix<float> _dmask;
+		Eigen::MatrixXf _dmask;
 
 		rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
 
@@ -377,7 +376,6 @@ namespace sensor {
 		//std::vector<Contact3D> _forces;
 
 
-		rw::proximity::ProximityModel *model;
 		rw::geometry::Geometry::Ptr _ngeom;
 		rw::common::Ptr<rw::geometry::PlainTriMesh<rw::geometry::Triangle<> > > _ntrimesh;
 		rw::proximity::ProximityModel::Ptr _nmodel;

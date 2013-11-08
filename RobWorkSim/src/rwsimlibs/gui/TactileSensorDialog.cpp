@@ -26,7 +26,6 @@ using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::loaders;
 using namespace rw::trajectory;
-using namespace boost::numeric::ublas;
 using namespace rwlibs::simulation;
 
 
@@ -34,14 +33,14 @@ using namespace rwlibs::simulation;
 
 namespace {
 
-Moment calcMoments2D(matrix<float>& mat, double low_thres){
-        matrix<float> covar( zero_matrix<float>(2, 2) );
+Moment calcMoments2D(Eigen::MatrixXf& mat, double low_thres){
+		Eigen::MatrixXf covar(Eigen::MatrixXf::Zero(2, 2));
         Vector2D<float> centroid(0,0);
 
         //float totalval = 0;
         // we only use triangle centers the vertices directly
-        for(size_t x=0; x<mat.size1();x++){
-        	for(size_t y=0; y<mat.size2(); y++){
+        for(Eigen::DenseIndex x=0; x<mat.rows();x++){
+        	for(Eigen::DenseIndex y=0; y<mat.cols(); y++){
         		if(mat(x,y)>low_thres){
         			Vector2D<float> val(x*mat(x,y),y*mat(x,y));
         			centroid += val;
@@ -55,12 +54,12 @@ Moment calcMoments2D(matrix<float>& mat, double low_thres){
         if( centroid(0)<0.01 && centroid(1)<0.01)
         	return Moment();
 
-        const size_t n = mat.size1()*mat.size2();
+        const size_t n = mat.rows()*mat.cols();
         for(size_t j=0;j<2;j++)
             for(size_t k=0;k<2;k++)
                 covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/n;
 
-        typedef std::pair<matrix<float>,vector<float> > ResultType;
+        typedef std::pair<Eigen::MatrixXf, Eigen::VectorXf > ResultType;
         //std::cout << "COVAR: " << covar << std::endl;
         ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 
@@ -78,8 +77,8 @@ Moment calcMoments2D(matrix<float>& mat, double low_thres){
         Rotation2D<> rotInv = inverse(rot);
 
         Vector2D<> max(-100,-100),min(100,100);
-        for(size_t x=0; x<mat.size1();x++){
-        	for(size_t y=0; y<mat.size2(); y++){
+        for(Eigen::DenseIndex x=0; x<mat.rows();x++){
+        	for(Eigen::DenseIndex y=0; y<mat.cols(); y++){
         		if(mat(x,y)>low_thres){
         			Vector2D<> p = rotInv*Vector2D<>((double)x,(double)y);
                     if( p(0)>max(0) ) max(0) = p(0);
@@ -91,7 +90,6 @@ Moment calcMoments2D(matrix<float>& mat, double low_thres){
         }
         maxAxis = normalize(maxAxis)*(max(0)-min(0));
         minAxis = normalize(minAxis)*(max(1)-min(1));
-        Vector2D<float> vtmp = centroid/n;
         Moment mom;
         mom.first = minAxis/2;
         mom.second = maxAxis/2;
@@ -211,7 +209,7 @@ void TactileSensorDialog::drawTactileInput(){
     if(_autoScaleBox->isChecked()){
         maxPressure = 100;
         for(size_t sensorIdx=0; sensorIdx<_values.size();sensorIdx++){
-            matrix<float> data = _values[sensorIdx];
+            Eigen::MatrixXf data = _values[sensorIdx];
             int w = _dims[sensorIdx].first;
             int h = _dims[sensorIdx].second;
             for(int x=0;x<w;x++){
@@ -225,16 +223,16 @@ void TactileSensorDialog::drawTactileInput(){
     }
 
     for(size_t sensorIdx=0; sensorIdx<_values.size();sensorIdx++){
-        matrix<float> data = _values[sensorIdx];
+        Eigen::MatrixXf data = _values[sensorIdx];
         int w = _dims[sensorIdx].first;
         int h = _dims[sensorIdx].second;
 
-    	if(data.size1()!= (size_t)w){
-    		RW_WARN(data.size1()<<"!="<<w);
+    	if(data.rows()!= (Eigen::DenseIndex)w){
+    		RW_WARN(data.rows()<<"!="<<w);
     		continue;
     	}
-    	if(data.size2()!= (size_t)h){
-    		RW_WARN(data.size2()<<"!="<<h);
+    	if(data.cols()!= (Eigen::DenseIndex)h){
+    		RW_WARN(data.cols()<<"!="<<h);
     		continue;
     	}
 
@@ -347,7 +345,7 @@ void TactileSensorDialog::btnPressed(){
         std::ifstream ifile(file.c_str(), std::ifstream::in);
 
 
-        matrix<float> mat(13,6);
+        Eigen::MatrixXf mat(13,6);
         for(int i=0;i<13;i++){
             for(int j=0;j<6;j++)
                 ifile >> mat(i,j);
@@ -431,7 +429,7 @@ void TactileSensorDialog::findMoments(){
 
 	_moments.clear();
 	const int low_thres = _lowBoundSpin->value();
-	BOOST_FOREACH(matrix<float>& mat, _values){
+	BOOST_FOREACH(Eigen::MatrixXf& mat, _values){
 		Moment mom = calcMoments2D(mat, low_thres);
 		_moments.push_back(mom);
 		//std::cout << mom.center << mom.first << mom.second << std::endl;
@@ -444,15 +442,15 @@ void TactileSensorDialog::detectCenterMass(){
 	_centers.clear();
 	const int low_thres = _lowBoundSpin->value();
 	const int upp_thres = _uppBoundSpin->value();
-	BOOST_FOREACH(matrix<float>& mat, _values){
-        size_t w = mat.size1();
-        size_t h = mat.size2();
+	BOOST_FOREACH(Eigen::MatrixXf& mat, _values){
+		Eigen::DenseIndex w = mat.rows();
+        Eigen::DenseIndex h = mat.cols();
 
         double nrOfVals = 0;
         double totalValue = 0;
         double x=0,y=0;
-        for(std::size_t i=0;i<w;i++){
-            for(std::size_t j=0;j<h;j++){
+        for(Eigen::DenseIndex i=0;i<w;i++){
+            for(Eigen::DenseIndex j=0;j<h;j++){
             	if(low_thres<=mat(i,j) && mat(i,j)<=upp_thres){
             		nrOfVals++;
             		totalValue += mat(i,j);

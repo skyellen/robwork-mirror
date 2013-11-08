@@ -43,7 +43,6 @@
 #include <rwsimlibs/gui/TactileSensorDialog.hpp>
 
 
-using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
 using namespace rw::loaders;
 using namespace rw::models;
@@ -73,9 +72,19 @@ RWSimPlugin::RWSimPlugin():
 	RobWorkStudioPlugin("RWSimPlugin", QIcon(":/rwsimplugin/SimulationIcon.png")),
 	_dwc(NULL),
 	_sim(NULL),
+	_startTime(0),
+	_debugDrawable(NULL),
 	_debugRender(NULL),
 	_openCalled(false),
-	_tactileSensorDialog(NULL)
+	_tactileSensorDialog(NULL),
+	_timerShot(NULL),
+	_openAction(NULL),
+	_planarPoseDistAction(NULL),
+    _poseDistAction(NULL),
+    _graspSelectionAction(NULL),
+    _graspRestPoseAction(NULL),
+    _restPoseAction(NULL),
+    _poseAnalyserAction(NULL)
 {
     setupUi(this);
 
@@ -450,8 +459,8 @@ void RWSimPlugin::setRobWorkStudioState(const rw::kinematics::State& state){
 
 namespace {
 
-	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors, const State& state){
-		std::vector<matrix<float> > datas;
+	std::vector<Eigen::MatrixXf> getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors, const State& state){
+		std::vector<Eigen::MatrixXf> datas;
 		BOOST_FOREACH(const SimulatedSensor::Ptr& sensor, sensors){
         	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
                 datas.push_back( tsensor->getTexelData(state) );

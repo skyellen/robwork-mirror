@@ -72,12 +72,8 @@ namespace util {
 		static int getMinReqData(){ return 3;};
 
 	private:
-
 		double _d;
 		rw::math::Vector3D<> _n; // unit vector of the plane
-
-		// aux variables
-		double _nNorm2;
 	};
 }
 }

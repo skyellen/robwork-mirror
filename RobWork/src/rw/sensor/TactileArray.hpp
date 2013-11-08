@@ -43,7 +43,7 @@ public:
     typedef rw::common::Ptr<TactileArray> Ptr;
 
     //! type of tactile array readings
-    typedef boost::numeric::ublas::matrix<float> ValueMatrix;
+    typedef Eigen::MatrixXf ValueMatrix;
     //! type of vertices describing geometry of sensor
     typedef boost::multi_array<rw::math::Vector3D<>, 2> VertexMatrix;
 

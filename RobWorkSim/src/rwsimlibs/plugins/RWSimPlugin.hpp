@@ -145,7 +145,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
         rwlibs::opengl::Drawable *_debugDrawable;
         rwsim::drawable::SimulatorDebugRender::Ptr _debugRender;
 
-        bool _forceSceneUpdateHist, _openCalled;
+        bool _openCalled;
 
         TactileSensorDialog *_tactileSensorDialog;
 

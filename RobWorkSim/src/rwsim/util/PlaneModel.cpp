@@ -46,7 +46,7 @@ double PlaneModel::refit( std::vector<rw::math::Vector3D<> >& data ){
         using namespace boost::numeric;
         using namespace rw::math;
 
-        ublas::matrix<double> covar( ublas::zero_matrix<double>(3, 3) );
+        Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
         Vector3D<> centroid(0,0,0);
         BOOST_FOREACH(Vector3D<> &v, data){
             centroid += v;
@@ -63,7 +63,7 @@ double PlaneModel::refit( std::vector<rw::math::Vector3D<> >& data ){
                 covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/data.size();
         Vector3D<> c = centroid/data.size();
         // 4. get eigenvectors from the covariance matrix
-        typedef std::pair<ublas::matrix<double>,ublas::vector<double> > ResultType;
+        typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd> ResultType;
         //std::cout << "COVAR: " << covar << std::endl;
         ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 

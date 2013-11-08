@@ -33,7 +33,7 @@ namespace util {
 		/**
 		 * @brief constructor
 		 */
-		CircleModel(){};
+		CircleModel(): _r(0) {};
 
 		/**
 		 * @brief contructor

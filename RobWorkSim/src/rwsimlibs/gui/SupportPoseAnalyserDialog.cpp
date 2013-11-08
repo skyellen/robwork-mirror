@@ -638,9 +638,9 @@ void SupportPoseAnalyserDialog::changedEvent(){
 			}
 
 			// now add everything else
-			int pidx = 0;
-			for(int i=0;i<_startTransforms[bodyIdx].size(); i++){
-			    if( pidx<poseIdxList.size() && i==poseIdxList[pidx] ){
+			std::size_t pidx = 0;
+			for(std::size_t i=0;i<_startTransforms[bodyIdx].size(); i++){
+			    if( pidx<poseIdxList.size() && (int)i==poseIdxList[pidx] ){
 			        pidx++;
 			        continue;
 			    }
@@ -1212,8 +1212,8 @@ void SupportPoseAnalyserDialog::process(){
                 std::cout << idx << std::endl;
                 RW_ASSERT(_startTransforms.size()>j);
                 RW_ASSERT(_endTransforms.size()>j);
-                RW_ASSERT(_startTransforms[j].size()>idx);
-                RW_ASSERT(_endTransforms[j].size()>idx);
+                RW_ASSERT((int)_startTransforms[j].size()>idx);
+                RW_ASSERT((int)_endTransforms[j].size()>idx);
                 Transform3D<> s = _startTransforms[j][ idx ];
                 EAA<> sr( s.R() );
                 //Vector3D<> srz = s.R()*Vector3D<>::z();

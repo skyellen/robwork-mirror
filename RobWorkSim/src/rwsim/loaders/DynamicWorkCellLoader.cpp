@@ -112,7 +112,6 @@ using namespace rw::kinematics;
 
 using namespace rwlibs::simulation;
 
-using namespace boost::numeric;
 using namespace boost::property_tree;
 
 #define RW_DEBUGS(str) std::cout << str << std::endl
@@ -352,13 +351,13 @@ namespace
         return Vector2D<>(q[0],q[1]);
     }
 
-    ublas::matrix<float> readMatrix(PTree& tree, std::pair<int,int> dim){
+    Eigen::MatrixXf readMatrix(PTree& tree, std::pair<int,int> dim){
         Log::debugLog()<< "ReadVector2D" << std::endl;
         Q q = readQ(tree);
         if(q.size()!=(size_t)(dim.first*dim.second))
             RW_THROW("Unexpected sequence of values, must be length " << dim.first*dim.second);
 
-        ublas::matrix<double> values(dim.first, dim.second);
+        Eigen::MatrixXf values(dim.first, dim.second);
         for(int y=0;y<dim.second;y++)
             for(int x=0;x<dim.first;x++)
                 values(x,y) = (float)q(y*dim.first + x);
@@ -1025,7 +1024,7 @@ namespace
 
         Q dimTmp = readQ(tree.get_child("TexelArray"));
         std::pair<int,int> dim((int)(dimTmp(0)+1),(int)(dimTmp(1)+1));
-        ublas::matrix<float> heightMap = readMatrix(tree.get_child("TexelHeightMap"), dim);
+        Eigen::MatrixXf heightMap = readMatrix(tree.get_child("TexelHeightMap"), dim);
         Log::debugLog()<< "HeightMap" << heightMap << std::endl;
         Vector2D<> texelSize = readVector2D(tree.get_child("TexelSize"));
         double maxForce = tree.get<double>("MaxForce");

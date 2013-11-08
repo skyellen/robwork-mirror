@@ -34,7 +34,6 @@
 #include <rw/math/MetricUtil.hpp>
 
 using namespace rw::math;
-using namespace boost::numeric;
 using namespace rwsim::util;
 
 namespace {
@@ -103,7 +102,7 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
     using namespace boost::numeric;
     using namespace rw::math;
 
-    ublas::matrix<double> covar( ublas::zero_matrix<double>(3, 3) );
+    Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
     Vector3D<> centroid(0,0,0);
     BOOST_FOREACH(const Vector3D<> &v, data){
         centroid += v;
@@ -120,7 +119,7 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
             covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/data.size();
     _center = centroid/data.size();
     // 4. get eigenvectors from the covariance matrix
-    typedef std::pair<ublas::matrix<double>,ublas::vector<double> > ResultType;
+    typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd > ResultType;
     //std::cout << "COVAR: " << covar << std::endl;
     ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 
@@ -191,7 +190,7 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
 			J(i,2) = -1;
 			b(i) = -f(u, x);
 		}
-		Jinv = LinearAlgebra::pseudoInverseEigen(J);
+		Jinv = LinearAlgebra::pseudoInverse(J);
 		h = Jinv * b;
 		u = u+h;
 		//std::cout << "H: " << h << std::endl;

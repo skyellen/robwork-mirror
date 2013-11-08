@@ -250,7 +250,7 @@ void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinema
 	TactileArraySensor *tsensor;
 	std::size_t j=0;
 	for(std::size_t i=0;i<_dwc->getSensors().size();i++){
-		if( tsensor = dynamic_cast<TactileArraySensor*>(_dwc->getSensors()[i].get() ) ){
+		if( (tsensor = dynamic_cast<TactileArraySensor*>(_dwc->getSensors()[i].get() ) ) ){
 			if(j>=data._tactiledata.size())
 				continue;
 			std::cout << "tsensorname" << j <<": "  << tsensor->getName() << std::endl;
