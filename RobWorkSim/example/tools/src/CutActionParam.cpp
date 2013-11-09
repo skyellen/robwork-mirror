@@ -18,7 +18,7 @@ void CutActionParam::save(const std::vector<CutActionParam>& params, const std::
         << "# gripper pos and rpy\n"
         << "# gripper configuration: length q1 q2 q3 .... q{length}\n\n";
 
-    for(int i=0;i<params.size();i++){
+    for(std::size_t i=0;i<params.size();i++){
         const CutActionParam &param = params[i];
 
         ostr << param.posObj[0] << " " << param.posObj[1]<< " " << param.posObj[2]<< " ";

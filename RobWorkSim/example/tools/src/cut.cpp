@@ -207,7 +207,7 @@ int main(int argc, char** argv){
     rw::proximity::ProximityData pdata;
     pdata.setCollisionQueryType( CollisionDetector::FirstContactNoInfo );
     int successes=0;
-    int totalSims=params.size();
+    // int totalSims=params.size(); // Unused
     std::vector<int> failTypes( CutResult::SizeOfStatusArray , 0);
 	for(size_t pi=0;pi<params.size(); pi++){
 
@@ -256,7 +256,7 @@ int main(int argc, char** argv){
 		std::cout << pi << "\t"
                         << successes << "\t"
                         << (successes*100.0)/pi <<"%" << "\t";
-		for(int errType=0;errType<failTypes.size();errType++)
+		for(std::size_t errType=0;errType<failTypes.size();errType++)
 		    std::cout << failTypes[errType] << "\t";
         std::cout << "        \r";
 
@@ -277,7 +277,7 @@ int main(int argc, char** argv){
 
 
 		resultFile << "\n ftdata \n";
-		for(int i=0;i<result->forcepath.size();i++){
+		for(std::size_t i=0;i<result->forcepath.size();i++){
 			Vector3D<> f = result->forcepath[i].first;
 			Vector3D<> t = result->forcepath[i].second;
 			resultFile << f[0] << " " << f[1] << " " << f[2] << " "
@@ -292,7 +292,7 @@ int main(int argc, char** argv){
 			STLFile::save( *mesh,
 					out_dir+"/"+ boost::lexical_cast<std::string>(pi) + "_geo" +".stl");
 
-			for(int i=0;i<result->meshes.size();i++){
+			for(std::size_t i=0;i<result->meshes.size();i++){
 				resultFile << "\n geo "  << pi<< "_geo" << i <<".stl";
 				STLFile::save( *result->meshes[i] ,
 						out_dir+"/"+ boost::lexical_cast<std::string>(pi) + "_geo" + boost::lexical_cast<std::string>(i) +".stl");
@@ -476,7 +476,7 @@ rw::common::Ptr<CutResult> simulateCut(Knife& knife, ProximityModel::Ptr obj, Ob
 	for(int j=cuttingStartIndex+1;j<cuttingEndIndex;j++){
 		Transform3D<> knifeTrans_a = res->path[j-1];
 		Transform3D<> knifeTrans_b = res->path[j] ;
-		for(int x=1;x<knife.bladeedge.size();x++){
+		for(std::size_t x=1;x<knife.bladeedge.size();x++){
 			Vector3D<float> a1 = cast<float>( knifeTrans_a * knife.bladeedge[x-1] );
 			Vector3D<float> a2 = cast<float>( knifeTrans_a * knife.bladeedge[x] );
 
@@ -695,13 +695,13 @@ std::vector<TriMesh::Ptr> knifeMesh(TriMesh::Ptr knife, const Transform3D<>& wTk
     std::vector<int> vertColor(imesh_object->size(), 0);
     std::vector<std::vector<int> > verticeToTris(imesh_object->getVertices().size());
 
-    for(int i=0; i<imesh_object->size(); i++ ){
+    for(std::size_t i=0; i<imesh_object->size(); i++ ){
     	IndexedTriangle<uint32_t> itri = imesh_object->getIndexedTriangle(i);
     	verticeToTris[itri.getVertexIdx(0)].push_back(i);
     	verticeToTris[itri.getVertexIdx(1)].push_back(i);
     	verticeToTris[itri.getVertexIdx(2)].push_back(i);
     }
-    typedef enum{NONE=0, COLLIDING_TRI=1, LEFT_TRI, RIGHT_TRI};
+    enum{NONE=0, COLLIDING_TRI=1, LEFT_TRI, RIGHT_TRI};
     // now color all triangles on either side of the knife
     BOOST_FOREACH(int colTri, collidingTrisObject){
     	triColor[colTri] = COLLIDING_TRI;
@@ -744,7 +744,7 @@ std::vector<TriMesh::Ptr> knifeMesh(TriMesh::Ptr knife, const Transform3D<>& wTk
 
 
     // now add all triangles that are colored left to left trimesh
-    for(int tri=0; tri<triColor.size(); tri++){
+    for(std::size_t tri=0; tri<triColor.size(); tri++){
 
     	if(triColor[tri]==LEFT_TRI){
         	Triangle<> otri;

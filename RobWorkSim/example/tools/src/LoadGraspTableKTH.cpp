@@ -17,7 +17,6 @@ using namespace rw::graspplanning;
 const int linesize = 8*256;
 char tmpStr[linesize];
 
-using namespace boost::numeric::ublas;
 Vector3D<> getVector3D(std::ifstream& istr){
 	double x,y,z;
 	//Unused: double rr,rp,ry;
@@ -39,7 +38,7 @@ rw::sensor::TactileArray::ValueMatrix readMatrix(std::ifstream& istr, int xdim, 
 		for(int x=0;x<xdim;x++)
 			sstr >> vals(x,y);
 
-	return trans(vals);
+	return vals.transpose();
 }
 
 Q getQ(std::ifstream& istr){

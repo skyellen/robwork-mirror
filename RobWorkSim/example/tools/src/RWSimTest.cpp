@@ -15,7 +15,6 @@
 
 using namespace rw::math;
 using namespace rwsim::dynamics;
-using namespace boost::numeric;
 
 
 ContactPoint makeContact(double x,double y,double z, double pen, Vector3D<> normal){
@@ -167,7 +166,7 @@ public:
      */
     void fit(ContactPoint& p){
         // re-fit the bounding box
-        ublas::matrix<double> covar( ublas::zero_matrix<double>(3, 3) );
+        Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
         Vector3D<> c = p.p+_points[0].p+_points[1].p;
         covar(0,0) += _points[0].p(0)*_points[0].p(0) +
                       _points[1].p(0)*_points[1].p(0) +
@@ -209,7 +208,7 @@ public:
         covar(2,0) = covar(0,2);
         covar(2,1) = covar(1,2);
 
-        typedef std::pair<ublas::matrix<double>,ublas::vector<double> > ResultType;
+        typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd> ResultType;
         //std::cout << "COVAR: " << covar << std::endl;
         ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 
@@ -300,7 +299,7 @@ private:
 
 std::pair<Transform3D<>, Vector3D<> > fit(std::vector<ContactPoint>& points){
     // re-fit the bounding box
-    ublas::matrix<double> covar( ublas::zero_matrix<double>(3, 3) );
+    Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
     int nrContacts = points.size();
     Vector3D<> c;
     BOOST_FOREACH(ContactPoint &p, points){
@@ -324,7 +323,7 @@ std::pair<Transform3D<>, Vector3D<> > fit(std::vector<ContactPoint>& points){
     covar(2,0) = covar(0,2);
     covar(2,1) = covar(1,2);
 
-    typedef std::pair<ublas::matrix<double>,ublas::vector<double> > ResultType;
+    typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd> ResultType;
     //std::cout << "COVAR: " << covar << std::endl;
     ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 

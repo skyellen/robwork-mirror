@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 
             graspSim->load(tasks[i]);
             graspSim->startSimulation(initState);
-            for(int i=0;i<graspSim->getStat().size(); i++){ std::cout << i << "\t"; }
+            for(std::size_t j=0;j<graspSim->getStat().size(); j++){ std::cout << j << "\t"; }
             std::cout<< std::endl;
             TimerUtil::sleepMs(2000);
             do{

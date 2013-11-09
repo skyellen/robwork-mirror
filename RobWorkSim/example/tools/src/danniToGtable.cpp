@@ -10,8 +10,7 @@
 
 using namespace rw::graspplanning;
 using namespace rw::math;
-
-using namespace boost::numeric::ublas;
+using namespace rw::sensor;
 
 int main(int argc, char** argv)
 {
@@ -78,7 +77,7 @@ int main(int argc, char** argv)
 
 
         gdata._tactiledata.resize(6);
-        matrix<double> distal1(13,6),distal2(13,6),distal3(13,6);
+        TactileArray::ValueMatrix distal1(13,6),distal2(13,6),distal3(13,6);
         for(int x=0;x<13;x++)
             for(int y=0;y<6;y++){
                 distal1(x,y) = tactile[x*6+y + dist1];
@@ -86,7 +85,7 @@ int main(int argc, char** argv)
                 distal3(x,y) = tactile[x*6+y + dist3];
             }
 
-        matrix<double> proximal1(14,6),proximal2(14,6),proximal3(14,6);
+        TactileArray::ValueMatrix proximal1(14,6),proximal2(14,6),proximal3(14,6);
         for(int x=0;x<14;x++)
             for(int y=0;y<6;y++){
                 proximal1(x,y) = tactile[x*6+y + prox1];

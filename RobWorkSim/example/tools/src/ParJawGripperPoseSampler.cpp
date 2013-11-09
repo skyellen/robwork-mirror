@@ -228,8 +228,8 @@ int main(int argc, char** argv)
     Transform3D<> wTe_n(pos, rot);
     Transform3D<> wTe_home(pos+inverse(rot)*d, rot);
 
-    RW_ASSERT( fabs(LinearAlgebra::det( wTe_n.R().m() ))-1.0 < 0.0001 );
-    RW_ASSERT( fabs(LinearAlgebra::det( wTe_home.R().m() ))-1.0 < 0.0001 );
+    RW_ASSERT( fabs(LinearAlgebra::det( wTe_n.R().e() ))-1.0 < 0.0001 );
+    RW_ASSERT( fabs(LinearAlgebra::det( wTe_home.R().e() ))-1.0 < 0.0001 );
 
 
 

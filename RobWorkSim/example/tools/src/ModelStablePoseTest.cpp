@@ -48,8 +48,8 @@ int main(int argc, char** argv)
     InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
 
 
-	typedef std::pair<matrix<double>, vector<double> > Result;
-	Result res = LinearAlgebra::eigenDecompositionSymmetric( inertia.m() );
+	typedef std::pair<Eigen::MatrixXd, Eigen::VectorXd> Result;
+	Result res = LinearAlgebra::eigenDecompositionSymmetric( Eigen::MatrixXd(inertia.e()) );
 
 	std::cout << "------- Model properties ----- \n"
 			  << "- COG     : " << masscenter << "\n"

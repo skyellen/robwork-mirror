@@ -280,7 +280,7 @@ namespace rw { namespace math {
          */
 		template <class R> 
 		static inline double det(const Eigen::MatrixBase<R>& m) {
-			return m.determinat();
+			return m.determinant();
 		}
 
 #ifdef RW_USE_UBLAS_LAPACK

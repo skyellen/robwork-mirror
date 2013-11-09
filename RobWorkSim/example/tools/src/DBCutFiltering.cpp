@@ -85,9 +85,10 @@ int main(int argc, char** argv){
     std::string gripper_tcp_name = vm["gripper-tcp"].as<string>();
     std::string gripper_base_name = vm["gripper-base"].as<string>();
     std::string cutdb_name = vm["cutdb"].as<string>();
-    bool output_statepath = vm["output-statepath"].as<bool>();
-    bool output_geom = vm["output-geom"].as<bool>();
-    bool debug = vm["debug"].as<bool>();
+    // Unused variables:
+    //bool output_statepath = vm["output-statepath"].as<bool>();
+    //bool output_geom = vm["output-geom"].as<bool>();
+    //bool debug = vm["debug"].as<bool>();
 
     // load grasp database
     Log::infoLog() << "Loading grasp database: " << graspdb << std::endl;
@@ -121,10 +122,10 @@ int main(int argc, char** argv){
     double sigma_a = 10*Deg2Rad;
     std::vector<CutActionParam> cut_experiments;
 
-    for(int i=0;i<targets.size();i++){
-        GraspSubTask *subtask = targets[i].first;
+    for(std::size_t i=0;i<targets.size();i++){
+        //Unused: GraspSubTask *subtask = targets[i].first;
         GraspTarget *target = targets[i].second;
-        for(int j=0;j<cutDB.size();j++){
+        for(std::size_t j=0;j<cutDB.size();j++){
             CutActionParam base = cutDB[j];
 
             if(target->result!=NULL && target->result->testStatus==GraspTask::Success){
@@ -152,18 +153,19 @@ int main(int argc, char** argv){
     /// simulate all experiments
     CutActionParam::save(cut_experiments, cut_actions_output.str());
     std::cout << "Simulating cutting of grasp: " << std::endl;
-    int ret = system(cmd.str().c_str());
+    //int ret = system(cmd.str().c_str());
+    system(cmd.str().c_str());
     // read back the results
     std::vector<int> successes = parseSuccess(out_dir + "/resultCompact.txt");
 
     int j=0;
-    for(int i=0;i<targets.size();i++){
-        GraspSubTask *subtask = targets[i].first;
+    for(std::size_t i=0;i<targets.size();i++){
+        //Unused: GraspSubTask *subtask = targets[i].first;
         GraspTarget *target = targets[i].second;
         if(target->result!=NULL && target->result->testStatus==GraspTask::Success){
             // compute the successRate from the next cutDB.size() successes
             int succCnt=0;
-            for(int n=0;n<cutDB.size();n++){
+            for(std::size_t n=0;n<cutDB.size();n++){
                 if(successes[j]!=0)
                     succCnt++;
                 j++;
