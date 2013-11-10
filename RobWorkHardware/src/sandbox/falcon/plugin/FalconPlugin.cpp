@@ -21,7 +21,8 @@ FalconPlugin::FalconPlugin() :
 	_engine(NULL),
 	_mode(WorldMode),
 	_recordingEnabled(false),
-	_r(0), _p(0), _y(0)
+	//_r(0), _p(0), _y(0),
+	_grasping1(false), _grasping2(false)
 {
 	setupUi(this);
 	
@@ -113,22 +114,31 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier){
 			break;
 			
 		case 'W':
-			_p += 0.05; break;
+			_rpy(1) += angularVel; break;
 			
 		case 'S':
-			_p -= 0.05; break;
+			_rpy(1) -= angularVel; break;
 			
 		case 'A':
-			_r += 0.05; break;
+			_rpy(0) += angularVel; break;
 			
 		case 'D':
-			_r -= 0.05; break;
+			_rpy(0) -= angularVel; break;
 			
 		case 'Q':
-			_y += 0.05; break;
+			_rpy(2) += angularVel; break;
 			
 		case 'E':
-			_y -= 0.05; break;
+			_rpy(2) -= angularVel; break;
+			
+		case 'O':
+			_grasping2 = true; break;
+			
+		case 'P':
+			_grasping2 = false; break;
+			
+		default:
+			break;
 	}
 }
 
@@ -136,25 +146,36 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier){
 
 void FalconPlugin::timerEvent()
 {
-	//cout << "!" << _falcon->getPosition() << endl;
 	if (_tsim != NULL) {
 		State state = _tsim->getState();
-		Transform3D<> baseToTCP = _dev->baseTframe(_tcpFrame, state);
+		Transform3D<> baseTTCP = _dev->baseTframe(_tcpFrame, state);
 		
 		Vector3D<> pos = _falcon->getPosition();
 		if (pos.norm2() < deadZoneRadius) pos = Vector3D<>::zero();
+		
+		if (_falcon->getButtonState() & FalconInterface::ButtonDown) {
+			_grasping1 = true;
+		} else {
+			_grasping1 = false;
+		}
+		
+		if (_falcon->getButtonState() & FalconInterface::ButtonUp) {
+			_target = baseTTCP;
+			_rpy = RPY<>(baseTTCP.R());
+		}
 		
 		switch (_mode) {
 			case WorldMode:
 				pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
 				_target.P() += pos;
-				_target.R() = RPY<>(_r, _p, _y).toRotation3D();
+				_target.R() = _rpy.toRotation3D(); //RPY<>(_r, _p, _y).toRotation3D();
 				
 				break;
 				
 			case ToolMode:
-				_target.P() += baseToTCP.R() * pos;
-				_target.R() = baseToTCP.R();
+				pos = RPY<>(0*Deg2Rad, 180*Deg2Rad, 0*Deg2Rad).toRotation3D() * pos;
+				_target.P() += baseTTCP.R() * pos;
+				_target.R() = baseTTCP.R();
 			
 				break;
 				
@@ -170,21 +191,6 @@ void FalconPlugin::timerEvent()
 				
 				break;
 		}
-		
-		/*//Transform3D<> pointT = _pointerFrame->getTransform(state);
-		
-		pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
-		//pos = RPY<>(0*Deg2Rad, 180*Deg2Rad, 0*Deg2Rad).toRotation3D() * pos;
-		//pos(2) *= -1.0;
-		//pos = pointT.R() * pos;
-		
-		_target.P() += pos;
-		//RPY<> rpy(pointT.R());
-		_target.R() = RPY<>(_r, _p, _y).toRotation3D();
-		//pointT = Transform3D<>(RPY<>(_r, _p, _y).toRotation3D()) * pointT;
-		//_target = pointT;
-		
-		//_tsim->setState(state);*/
 		
 		_pointerFrame->setTransform(_target, state);
 		getRobWorkStudio()->setState(state);
@@ -212,6 +218,9 @@ void FalconPlugin::startSimulation()
 	_pointerFrame = _dwc->getWorkcell()->findFrame<MovableFrame>("Pointer");
 	_bodies = _dwc->getBodies();
 	_dev->setQ(Q(6, 0.1, -1.5, 1.5, -1.5, 0, 0), state);
+	WorkCellScene::Ptr scene = getRobWorkStudio()->getWorkCellScene();
+	scene->setFrameAxisVisible(true, _pointerFrame.get());
+	getRobWorkStudio()->updateAndRepaint();
 	
 	FKTable fktable(state);
 	Transform3D<> T = fktable.get(_tcpFrame);
@@ -300,54 +309,15 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 			sim->getTime(), _dev->getQ(state), Q(), objPoses));
 	}
 	
-	/* get Falcon input */	
-	/*Vector3D<> pos = _falcon->getPosition();
-	cout << pos << endl;
-	if (pos.norm2() < deadZoneRadius) pos = Vector3D<>::zero();
-	
 	if (sim->isInError()) {
 	    std::cout << "Simulator in error... what to do!" << std::endl;
 		sim->reset(state);
 		return;
 	}
-	*/
     _robotController->stop();
 	Transform3D<> baseToTCP = _dev->baseTframe(_tcpFrame, state);
     Transform3D<> target = _pointerFrame->getTransform(state);
     
-    /* what do we do with the Falcon input? */
-    // translate to RW coordinates
-    /*pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
-    
-    // set pointer accordingly
-    State state1 = state;
-    _pointerFrame->setTransform(Transform3D<>(pos), state1);
-    //getRobWorkStudio()->setState(state1);*/
-    
-    /*switch (_mode) {
-		case WorldMode:
-			pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
-			target.P() += pos;
-			
-			break;
-			
-		case ToolMode:
-			target.P() += baseToTCP.R() * pos;
-		
-			break;
-			
-		case RelativeMode:
-			break;
-			
-		case RotationMode:
-			RPY<> rpy(target.R());
-			rpy(0) += pos(0);
-			rpy(1) += pos(1);
-			rpy(2) += pos(2);
-			target.R() = rpy.toRotation3D();
-			
-			break;
-	}*/
     
     /* move the robot */
     // only move if we are far enough from the target pose
@@ -356,7 +326,12 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
         _robotController->movePTP_T(_target, 70, 0.1);
     }
     
-    //cout << _dev->getQ(state) << endl;
+    /* close the gripper */
+    if (_grasping1 || _grasping2) {
+		_gripperController->setTargetPos(Q(1, 0.0));
+	} else {
+		_gripperController->setTargetPos(Q(1, 0.035));
+	}
 }
 
 

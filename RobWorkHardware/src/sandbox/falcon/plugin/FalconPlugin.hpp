@@ -30,6 +30,9 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		/// How much has the Falcon move from neutral position to record movement (in m)
 		static const double deadZoneRadius = 0.01;
 		
+		/// Coefficient for angular movement velocity when using keys
+		static const double angularVel = 0.05;
+		
 		/// Modes of teleoperation
 		enum FalconMode { WorldMode, ToolMode, RelativeMode, RotationMode };
 	
@@ -94,8 +97,10 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		std::string _trajectoryFilename;
 		
 		rw::kinematics::MovableFrame::Ptr _pointerFrame; // pointer frame
-		double _r, _p, _y;
+		//double _r, _p, _y;
 		rw::math::Transform3D<> _target;
+		rw::math::RPY<> _rpy;
+		bool _grasping1, _grasping2;
 };
 
 #endif // end of the include guard
