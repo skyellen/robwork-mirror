@@ -196,7 +196,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
 	//BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
-		if (p.second->getResult()->testStatus == GraspTask::Success) {
+		//if (p.second->getResult()->testStatus == GraspTask::Success) {
 			Q key(7);
             key[0] = p.second->pose.P()[0];
             key[1] = p.second->pose.P()[1];
@@ -210,7 +210,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
             //cout << key << endl;
             
 			nodes.push_back(NNSearch::KDNode(key, p.second->getResult()));
-		}
+		//}
 	}
 	
 	NNSearch *nntree = NNSearch::buildTree(nodes);
