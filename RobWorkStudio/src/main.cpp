@@ -109,7 +109,6 @@ int main(int argc, char** argv)
 
     // now initialize robwork, such that plugins ad stuff might work
     RobWork::getInstance()->initialize();
-	 
 
     {
         MyQApplication app(argc, argv); 
