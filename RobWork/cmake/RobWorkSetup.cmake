@@ -223,6 +223,10 @@ ELSE ()
     MESSAGE(STATUS "RobWork: EIGEN3 installation NOT FOUND! Using RobWork ext EIGEN3.")
     SET(EIGEN3_INCLUDE_DIR "${RW_ROOT}/ext/eigen3")
 ENDIF ()
+# We need to add this to enable compilation on default ubuntu 12.04 eigen
+ADD_DEFINITIONS("-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET=1")
+
+
 
 FIND_PACKAGE(Qhull QUIET)
 IF( QHULL_FOUND )
@@ -242,8 +246,13 @@ ENDIF ()
 Find_Package(Bullet)
 SET(RW_HAVE_BULLET FALSE)
 IF( BULLET_FOUND )
-  SET(RW_HAVE_BULLET TRUE)
-  #INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIRS} )
+	MESSAGE("Bullet found! ${BULLET_INCLUDE_DIRS}")
+	MESSAGE("Bullet libs: ${BULLET_LIBRARIES}")
+   #SET(RW_HAVE_BULLET TRUE)
+   
+   #INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIRS} )
+   SET(BULLET_LIBRARIES "")
+   SET(BULLET_INCLUDE_DIRS "") 
 ELSE()
   SET(BULLET_INCLUDE_DIRS "")
 ENDIF()
@@ -505,6 +514,7 @@ ENDIF()
 IF(MSVC)
 	ADD_DEFINITIONS("-DEIGEN_DONT_ALIGN_STATICALLY=1")
 ENDIF()
+
 
 
 ###########################################################################
