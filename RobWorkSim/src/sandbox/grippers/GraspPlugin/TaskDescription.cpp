@@ -69,21 +69,24 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	DEBUG << "- weights" << endl;
 	readQualities(tree.get_child("Weights"), task->_weights);
 	
+	DEBUG << "- prefiltering distance: ";
+	PTree& node1 = tree.get_child("PrefilteringDistance");
+	task->_prefilteringDistance = XMLHelpers::readQ(node1);
+	task->_prefilteringDistance(1) *= Deg2Rad;
+	task->_prefilteringDistance(2) *= Deg2Rad;
+	DEBUG << task->_prefilteringDistance << endl;
+	
 	DEBUG << "- coverage distance: ";
-	PTree& node1 = tree.get_child("CoverageDistance");
-	task->_coverageDistance = XMLHelpers::readQ(node1);
+	PTree& node2 = tree.get_child("CoverageDistance");
+	task->_coverageDistance = XMLHelpers::readQ(node2);
 	//task->_coverageDistance(6) *= Deg2Rad;
 	task->_coverageDistance(1) *= Deg2Rad;
 	task->_coverageDistance(2) *= Deg2Rad;
 	DEBUG << task->_coverageDistance << endl;
 	
 	DEBUG << "- teach distance: ";
-	PTree& node2 = tree.get_child("TeachDistance");
-	task->_teachDistance = XMLHelpers::readQ(node2);
-	//task->_teachDistance(3) *= Deg2Rad;
-	//task->_teachDistance(4) *= Deg2Rad;
-	//task->_teachDistance(5) *= Deg2Rad;
-	//task->_teachDistance(7) *= Deg2Rad;
+	PTree& node3 = tree.get_child("TeachDistance");
+	task->_teachDistance = XMLHelpers::readQ(node3);
 	task->_teachDistance(3) *= Deg2Rad;
 	task->_teachDistance(4) *= Deg2Rad;
 	DEBUG << task->_teachDistance << endl;
@@ -319,6 +322,10 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	teachDist(3) *= Rad2Deg;
 	teachDist(4) *= Rad2Deg;
 	tree.put("TaskDescription.TeachDistance", XMLHelpers::QToString(teachDist));
+	Q preDist = td->_prefilteringDistance;
+	preDist(1) *= Rad2Deg;
+	preDist(2) *= Rad2Deg;
+	tree.put("TaskDescription.PrefilteringDistance", XMLHelpers::QToString(preDist));
 	Q covDist = td->_coverageDistance;
 	//covDist(6) *= Rad2Deg;
 	covDist(1) *= Rad2Deg;

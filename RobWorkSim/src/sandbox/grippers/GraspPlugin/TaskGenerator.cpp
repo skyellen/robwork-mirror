@@ -249,8 +249,9 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
 	//BOOST_FOREACH (GraspTarget* target, tasks->getAllTargets().second) { //tasks->getSubTasks()[0].getTargets()) {
-		if (p.second->getResult()->testStatus == status)
+		if (p.second->getResult()->testStatus == status) {
 			++n;
+		}
 	}
 	
 	return n;
@@ -363,6 +364,12 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     
     _tasks = gtask;
     
-	return gtask;
+    // preliminary filtering
+    Q preDist = _td->getPrefilteringDistance();
+	double R = 2.0 * sin(0.25 * preDist(1));
+	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
+    filterTasks(_tasks, diff);
+    
+	return _tasks;
 }
 

@@ -71,6 +71,9 @@ class TaskDescription
 		std::vector<rw::math::Transform3D<> >& getHints() { return _hints; }
 		void addHint(rw::math::Transform3D<> hint) { _hints.push_back(hint); }
 		
+		void setPrefilteringDistance(rw::math::Q dist) { _prefilteringDistance = dist; }
+		rw::math::Q getPrefilteringDistance() const { return _prefilteringDistance; }
+		
 		void setCoverageDistance(rw::math::Q dist) { _coverageDistance = dist; }
 		rw::math::Q getCoverageDistance() const { return _coverageDistance; }
 		
@@ -105,7 +108,8 @@ class TaskDescription
 		double _interferenceLimit;
 		double _wrenchLimit;
 		std::vector<rw::models::Object::Ptr> _interferenceObjects;
-		rw::math::Q _coverageDistance;
+		rw::math::Q _prefilteringDistance; // distance used to filter samples at the start, so they are more uniform
+		rw::math::Q _coverageDistance; // distance used for filtering grasps for coverage
 		rw::math::Q _teachDistance;
 		rw::models::Object::Ptr _targetObject;
 		rw::kinematics::Frame* _targetFrame;

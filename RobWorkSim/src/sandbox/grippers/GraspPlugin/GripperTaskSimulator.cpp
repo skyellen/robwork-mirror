@@ -224,15 +224,15 @@ void GripperTaskSimulator::evaluateGripper()
 	 
 	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
+	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
+	int samples = _samples->getSubTasks()[0].getTargets().size();
+	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
+	
 	//double shape = calculateShape() / b.shape;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(0) / b.wrench;
 	
 	double coverage = calculateCoverage() / b.coverage;
-	
-	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
-	int samples = _samples->getSubTasks()[0].getTargets().size();
-	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
 	double quality = (
