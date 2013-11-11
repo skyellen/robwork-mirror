@@ -22,7 +22,7 @@ FalconPlugin::FalconPlugin() :
 	_mode(WorldMode),
 	_recordingEnabled(false),
 	//_r(0), _p(0), _y(0),
-	_grasping1(false), _grasping2(false)
+	_grasping(false)
 {
 	setupUi(this);
 	
@@ -37,7 +37,7 @@ FalconPlugin::FalconPlugin() :
     
     _falcon = new FalconInterface;
     //_timer->start();
-    _falcon->setCenteringMode(true, 75.0);
+    _falcon->setCenteringMode(true, 60.0);
 	_falcon->start();
 }
 
@@ -91,11 +91,19 @@ void FalconPlugin::genericEventListener(const std::string& event)
 
 
 
-void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier){
+void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
+{
+	State state = _tsim->getState();
+	Transform3D<> baseTTCP = _dev->baseTframe(_tcpFrame, state);
+	
     switch (key) {
 		case 'G':
 			_mode = WorldMode;
 			_modeLabel->setText("GLOBAL MODE");
+			
+			_target = baseTTCP;
+			_rpy = RPY<>(baseTTCP.R());
+	
 			break;
 			
 		case 'T':
@@ -132,10 +140,10 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier){
 			_rpy(2) -= angularVel; break;
 			
 		case 'O':
-			_grasping2 = true; break;
+			_grasping = true; break;
 			
 		case 'P':
-			_grasping2 = false; break;
+			_grasping = false; break;
 			
 		default:
 			break;
@@ -150,25 +158,40 @@ void FalconPlugin::timerEvent()
 		State state = _tsim->getState();
 		Transform3D<> baseTTCP = _dev->baseTframe(_tcpFrame, state);
 		
+		/* get the view tranform from RWS */
+		Transform3D<> viewT = getRobWorkStudio()->getView()->getSceneViewer()->getViewCamera()->getTransform();
+		RPY<> viewRPY = RPY<>(viewT.R());
+		//viewRPY(2) = 0.0;
+		
 		Vector3D<> pos = _falcon->getPosition();
 		if (pos.norm2() < deadZoneRadius) pos = Vector3D<>::zero();
 		
-		if (_falcon->getButtonState() & FalconInterface::ButtonDown) {
-			_grasping1 = true;
-		} else {
-			_grasping1 = false;
+		/* check if we should enable grasping */		
+		if (_falcon->getButtonState() & FalconInterface::ButtonLeft) {
+			_grasping = true;
+		} else if (_falcon->getButtonState() & FalconInterface::ButtonRight) {
+			_grasping = false;
 		}
 		
+		/* this is for moving pointer to robot TCP */
 		if (_falcon->getButtonState() & FalconInterface::ButtonUp) {
 			_target = baseTTCP;
 			_rpy = RPY<>(baseTTCP.R());
 		}
 		
+		/* check if to enable the rotation mode from the grip */
+		if (_falcon->getButtonState() & FalconInterface::ButtonDown) {
+			_mode = RotationMode;
+		} else {
+			_mode = WorldMode;
+		}
+		
 		switch (_mode) {
-			case WorldMode:
-				pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
-				_target.P() += pos;
-				_target.R() = _rpy.toRotation3D(); //RPY<>(_r, _p, _y).toRotation3D();
+			case WorldMode:				
+				/* translate falcon position to world coordinates */
+				//pos = RPY<>(180*Deg2Rad, 0*Deg2Rad, 90*Deg2Rad).toRotation3D() * pos;
+				_target.P() += viewRPY.toRotation3D() * pos;
+				_target.R() = _rpy.toRotation3D();
 				
 				break;
 				
@@ -183,11 +206,12 @@ void FalconPlugin::timerEvent()
 				break;
 				
 			case RotationMode:
-				RPY<> rpy(_target.R());
-				rpy(0) += pos(0);
-				rpy(1) += pos(1);
-				rpy(2) += pos(2);
-				_target.R() = rpy.toRotation3D();
+				//RPY<> rpy(_target.R());
+				
+				_rpy(0) += pos(1);
+				_rpy(1) += pos(0);
+				_rpy(2) += pos(2);
+				_target.R() = _rpy.toRotation3D();
 				
 				break;
 		}
@@ -217,7 +241,7 @@ void FalconPlugin::startSimulation()
 	_gripperController = _dwc->findController<PDController>("PG70GraspController");
 	_pointerFrame = _dwc->getWorkcell()->findFrame<MovableFrame>("Pointer");
 	_bodies = _dwc->getBodies();
-	_dev->setQ(Q(6, 0.1, -1.5, 1.5, -1.5, 0, 0), state);
+	_dev->setQ(Q(6, 0.1, -1.5, -1.5, -1.5, 1.5, 0), state);
 	WorkCellScene::Ptr scene = getRobWorkStudio()->getWorkCellScene();
 	scene->setFrameAxisVisible(true, _pointerFrame.get());
 	getRobWorkStudio()->updateAndRepaint();
@@ -327,7 +351,7 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
     }
     
     /* close the gripper */
-    if (_grasping1 || _grasping2) {
+    if (_grasping) {
 		_gripperController->setTargetPos(Q(1, 0.0));
 	} else {
 		_gripperController->setTargetPos(Q(1, 0.035));

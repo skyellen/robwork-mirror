@@ -100,7 +100,7 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		//double _r, _p, _y;
 		rw::math::Transform3D<> _target;
 		rw::math::RPY<> _rpy;
-		bool _grasping1, _grasping2;
+		bool _grasping;
 };
 
 #endif // end of the include guard
