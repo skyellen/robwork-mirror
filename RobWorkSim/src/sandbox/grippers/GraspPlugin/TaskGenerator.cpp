@@ -369,6 +369,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 	double R = 2.0 * sin(0.25 * preDist(1));
 	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
     filterTasks(_tasks, diff);
+    filterTasks(_samples, diff);
     
 	return _tasks;
 }
