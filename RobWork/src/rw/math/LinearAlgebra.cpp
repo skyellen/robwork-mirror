@@ -18,6 +18,7 @@
 
 #include "LinearAlgebra.hpp"
 
+#include <rw/common/macros.hpp>
 
 using namespace rw::math;
 using namespace boost::numeric::ublas;
@@ -150,7 +151,8 @@ LinearAlgebra::BoostMatrix<double>::type LinearAlgebra::pseudoInverseLapack(cons
 #endif
 
 Eigen::MatrixXd LinearAlgebra::pseudoInverse(const Eigen::MatrixXd& am, double precision) {
-	const Eigen::JacobiSVD<Eigen::MatrixXd> svd = am.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+    /*
+    const Eigen::JacobiSVD<Eigen::MatrixXd> svd = am.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
 	Eigen::JacobiSVD<Eigen::MatrixXd>::SingularValuesType sigma= svd.singularValues();
 	for ( long i=0; i<sigma.cols(); ++i) {
 		if ( sigma(i) > precision )
@@ -160,7 +162,29 @@ Eigen::MatrixXd LinearAlgebra::pseudoInverse(const Eigen::MatrixXd& am, double p
 	}
 
 	return svd.matrixV() * sigma.asDiagonal()* svd.matrixU().transpose();
+    */
 
+    if (am.rows() < am.cols()){
+        //RW_THROW("pseudoInverse require rows >= to cols!");
+        Eigen::MatrixXd a = am.transpose();
+        Eigen::JacobiSVD < Eigen::MatrixXd > svd = a.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+        double tolerance = precision * std::max(a.cols(), a.rows()) * svd.singularValues().array().abs().maxCoeff();
+        return
+                (svd.matrixV()
+                        * Eigen::MatrixXd(
+                                (svd.singularValues().array().abs() > tolerance).select(
+                                        svd.singularValues().array().inverse(), 0)).asDiagonal() * svd.matrixU().adjoint()).transpose();
+
+    } else {
+
+        Eigen::JacobiSVD < Eigen::MatrixXd > svd = am.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+        double tolerance = precision * std::max(am.cols(), am.rows()) * svd.singularValues().array().abs().maxCoeff();
+        return
+                svd.matrixV()
+                        * Eigen::MatrixXd(
+                                (svd.singularValues().array().abs() > tolerance).select(
+                                        svd.singularValues().array().inverse(), 0)).asDiagonal() * svd.matrixU().adjoint();
+    }
 }
 
 #ifdef RW_USE_UBLAS_LAPACK
