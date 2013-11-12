@@ -42,6 +42,7 @@ namespace
     Transform3D<> reversePathTransform(const std::vector<const Frame*>& frames,
                                        const State& state)
     {
+
         RW_ASSERT(!frames.empty());
         typedef std::vector<const Frame*>::const_reverse_iterator I;
         const I end = frames.rend();
@@ -58,6 +59,28 @@ namespace
             pos = nextPos;
         }
         return transforms[pos];
+
+
+        // above has shown to be inefficient (JAR)
+        /*
+        RW_ASSERT(!frames.empty());
+        typedef std::vector<const Frame*>::const_reverse_iterator I;
+        const I end = frames.rend();
+
+        I p = frames.rbegin();
+        Transform3D<> result = (**p).getTransform(state);
+
+        int pos = 0;
+        for (++p; p != end; ++p) {
+            result = result * (**p).getTransform(state);
+        }
+        return result;
+
+        */
+
+
+
+
 
         /*
           It is not safe to call getTransform(cur, state, cur). 1. and 3.
