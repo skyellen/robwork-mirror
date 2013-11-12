@@ -376,7 +376,7 @@ namespace {
         }
         void setCopyToImage(rw::sensor::Image::Ptr img){}
         void setCopyToScan25D(rw::sensor::Image25D::Ptr img){}
-
+        void setMultiSample(int samples){};
         void setMainCamera(SceneCamera::Ptr cam){
             _maincam = cam;
         }

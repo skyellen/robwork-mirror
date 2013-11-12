@@ -196,7 +196,7 @@ namespace graphics {
 
         virtual void setCopyToImage( rw::sensor::Image::Ptr img ) = 0;
         virtual void setCopyToScan25D( rw::sensor::Image25D::Ptr img ) = 0;
-
+        virtual void setMultiSample(int samples) = 0;
 
 
     };
