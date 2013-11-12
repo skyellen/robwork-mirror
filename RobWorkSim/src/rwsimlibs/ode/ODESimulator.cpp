@@ -1937,7 +1937,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         for(size_t i=0;i<numc;i++){
 
-            dContact &con = _contacts[ni];
+            dContact &con = _contacts[ni]; 
             Vector3D<> p1 = aT * res->p1s[i];
             Vector3D<> p2 = aT * res->p2s[i];
             Vector3D<> n, p;
@@ -1975,6 +1975,16 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
             //std::cout << "Collision: " << p << n << penDepth << " " << res->distances[i]<< std::endl;
+            
+            ContactPoint &point = _rwcontacts[ni];
+            point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
+			point.p = ODEUtil::toVector3D(con.geom.pos);
+			point.penetration = con.geom.depth;
+			point.userdata = (void*) &(_contacts[ni]);
+            
+            if(_logContactingBodies) {
+				_contactingBodies[std::make_pair(pair.first->getName(), pair.second->getName())].push_back(point);
+			}
 
             // friction direction between the bodies ...
             // Not necesary to calculate, unless we need explicit control
@@ -2018,6 +2028,10 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         res->clear();
         // update the contact normal using the manifolds
     }
+    
+    if(_logContactingBodies) {
+		_contactingBodiesTmp = _contactingBodies;
+	}
 
     if(onlyTestPenetration){
         return false;
