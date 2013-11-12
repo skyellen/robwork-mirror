@@ -1,0 +1,5 @@
+<CollisionSetup>
+		<Exclude>
+			<FramePair first="Floor" second="Robottable" />
+		</Exclude>
+	</CollisionSetup>

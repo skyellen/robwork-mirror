@@ -1,0 +1,60 @@
+<WorkCell name="cup_pg70_table">
+
+<Frame name="Robottable" refframe="WORLD">
+	<RPY>0 0 0</RPY> <Pos>0 0 0</Pos>
+</Frame>
+
+ <Frame name="devoffset" refframe="Robottable" >
+    <RPY>0 0 0</RPY> <Pos>0 0 0.2501</Pos>
+</Frame>
+ <Include file="../devices/UR6855A/UR6855A.wc.xml" />
+  
+ <Frame name="handoffset" refframe="UR-6-85-5-A.TCP">
+	<RPY >0 0 0</RPY> <Pos>0 0 0.005</Pos> </Frame>
+ <Include file="../devices/PG70/PG70.wc.xml" />
+ 
+<Frame name="Cam" refframe="UR-6-85-5-A.TCP">
+	<RPY>90 0 180</RPY> <Pos>0 0 0</Pos>
+	<Property name="Camera">10 640 640</Property>
+</Frame>
+ 
+<Frame name="Pointer" refframe="WORLD" type="Movable">
+	<RPY >0 0 0</RPY> <Pos>0 0 0</Pos>
+</Frame>
+
+<!--Frame name="cam" refframe="WORLD">
+		<RPY>0 0 -90</RPY>
+		<Pos>0 5 0.3</Pos>
+		<Property name="Camera">50 640 640</Property>
+	</Frame-->
+
+  <Frame name="Floor" refframe="WORLD">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+  
+  <Frame name="Cup" refframe="WORLD" type="Movable">
+	  <RPY>0 0 0</RPY>
+	  <Pos>0.5 0.25 0.15</Pos>
+  </Frame>
+	
+
+	<Drawable name="TableGeo" refframe="Robottable">
+		<RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+		<Box x="0.25" y="0.25" z="0.5"/>
+	</Drawable>
+  <Drawable name="PlaneGeo" refframe="Floor">
+	<RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+	<Polytope file="geometry/plane_5x5"/>
+  </Drawable> 
+  <Drawable name="CupGeo" refframe="Cup">
+	  <RPY>0 0 0</RPY>
+	  <Pos>0 0 0</Pos>
+	  <!--<Box x="0.25" y="0.25" z="0.5"/-->
+	  <Polytope file="geometry/GreenCup_5k_tex.stl"/>
+  </Drawable>
+  
+	
+
+ <CollisionSetup file="CollisionSetup.xml" />
+ </WorkCell>
+ 

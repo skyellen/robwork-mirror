@@ -34,7 +34,7 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		static const double angularVel = 0.05;
 		
 		/// Modes of teleoperation
-		enum FalconMode { WorldMode, ToolMode, RelativeMode, RotationMode };
+		enum FalconMode { WorldMode, ToolMode, ViewMode, RotationMode };
 	
 	public: // constructors
 		/// Constructor
@@ -97,7 +97,7 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		std::string _trajectoryFilename;
 		
 		rw::kinematics::MovableFrame::Ptr _pointerFrame; // pointer frame
-		//double _r, _p, _y;
+		double _r, _p, _y;
 		rw::math::Transform3D<> _target;
 		rw::math::RPY<> _rpy;
 		bool _grasping;
