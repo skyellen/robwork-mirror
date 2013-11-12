@@ -812,8 +812,9 @@ void RWStudioView3D::setTransparentSlot()
         alpha = 1.0;
 
     // set alpha for all Drawable in the view
-    //BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setAlpha(alpha); }
-
+    BOOST_FOREACH(DrawableNode::Ptr da, _wcscene->getDrawables()) {
+		da->setTransparency(alpha);
+	}
 
     _view->updateView();
 }

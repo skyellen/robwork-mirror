@@ -584,7 +584,7 @@ DrawableNode::Ptr WorkCellScene::addRender(const std::string& name,rw::graphics:
 }
 
 std::vector<DrawableNode::Ptr> WorkCellScene::getDrawables(){
-    return _scene->getDrawables( _scene->getRoot() );
+    return _scene->getDrawables();
 }
 
 std::vector<DrawableNode::Ptr> WorkCellScene::getDrawables(rw::kinematics::Frame* f){
