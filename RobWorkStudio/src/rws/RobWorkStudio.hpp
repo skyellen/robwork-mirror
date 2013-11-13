@@ -436,6 +436,23 @@ namespace rws {
 		 */		
 		RWStudioView3D::Ptr getView() { return _view; }
 		
+		/**
+		 * @brief Returns the current view transform.
+		 * 
+		 * Convenience function.
+		 */
+		rw::math::Transform3D<> getViewTransform() { return getView()->getSceneViewer()->getTransform(); }
+		
+		/**
+		 * @brief Sets current view transform.
+		 * 
+		 * Convenience function. Performs update & repaint as well.
+		 */
+		void setViewTransform(rw::math::Transform3D<> nviewT3D) {
+			getView()->getSceneViewer()->setTransform(nviewT3D);
+			updateAndRepaint();
+		}
+		
 		void keyPressEvent(QKeyEvent *e);
 
 		/**
