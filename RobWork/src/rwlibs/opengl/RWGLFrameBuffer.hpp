@@ -22,7 +22,7 @@
 #if defined(RW_CYGWIN)
     #include <GL/glext.h>
 #elif defined(RW_WIN32)
-    #include <rwlibs/os/glext_win32b.h>
+    #include <rwlibs/os/glext_win32.h>
 #elif defined(RW_MACOS)
     #include <OpenGL/glext.h>
 #elif defined(RW_LINUX)
