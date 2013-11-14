@@ -98,7 +98,7 @@ def myprog():
         if thrd != -1:			
             textmsg("Kills old thread")
             kill thrd
-            isServoing == 0
+            isServoing = 0
             textmsg("Continues after kill")
             thrd = -1
         end
