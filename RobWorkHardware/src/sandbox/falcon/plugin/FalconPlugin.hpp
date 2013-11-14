@@ -33,6 +33,9 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		/// Coefficient for angular movement velocity when using keys
 		static const double angularVel = 0.05;
 		
+		/// Coefficient for speed when moving the viewpoint
+		//static const double viewVel = 5.0;
+		
 		/// Modes of teleoperation
 		enum FalconMode { WorldMode, ToolMode, ViewMode, RotationMode };
 	

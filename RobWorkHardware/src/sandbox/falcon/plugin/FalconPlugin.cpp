@@ -95,6 +95,12 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 {
 	State state = _tsim->getState();
 	Transform3D<> baseTTCP = _dev->baseTframe(_tcpFrame, state);
+	Transform3D<> worldTTCP = Kinematics::worldTframe(_tcpFrame, state);
+	
+	/* let's get the view */
+	Transform3D<> viewT = getRobWorkStudio()->getViewTransform();
+	Rotation3D<> rot;
+	Transform3D<> nviewT;
 	
     switch (key) {
 		case 'G':
@@ -111,10 +117,10 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 			_modeLabel->setText("TOOL MODE");
 			break;
 			
-		case 'R':
+		/*case 'R':
 			_mode = RotationMode;
 			_modeLabel->setText("ROTATION MODE");
-			break;
+			break;*/
 			
 		/*case 'W':
 			_rpy(1) += angularVel; break;
@@ -144,13 +150,41 @@ void FalconPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 			_rpy(0) += angularVel; break;
 			
 		case 'D':
-			_rpy(0) -= angularVel; break;
+			_rpy(0) -= angularVel; break; */
 			
 		case 'Q':
-			_y = -angularVel; break;
+			_y -= angularVel; break;
 			
 		case 'E':
-			_y = angularVel; break;*/
+			_y += angularVel; break;
+			
+		case 'A':
+			rot = EAA<>(Vector3D<>::z(), -5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot*(viewT.P()-worldTTCP.P())+worldTTCP.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'D':
+			rot = EAA<>(Vector3D<>::z(), 5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot*(viewT.P()-worldTTCP.P())+worldTTCP.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'W':
+			rot = EAA<>(viewT.R() * Vector3D<>::x(), -5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot*(viewT.P()-worldTTCP.P())+worldTTCP.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'S':
+			rot = EAA<>(viewT.R() * Vector3D<>::x(), 5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot*(viewT.P()-worldTTCP.P())+worldTTCP.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
 			
 		case 'O':
 			_grasping = true; break;
@@ -175,7 +209,8 @@ void FalconPlugin::timerEvent()
 		/* get the view tranform from RWS */
 		Transform3D<> viewT = getRobWorkStudio()->getView()->getSceneViewer()->getViewCamera()->getTransform();
 		RPY<> viewRPY = RPY<>(viewT.R());
-		//viewRPY(2) = 0.0;
+		Rotation3D<> rot;
+		Transform3D<> nviewT;
 		
 		Vector3D<> pos = _falcon->getPosition();
 		if (pos.norm2() < deadZoneRadius) pos = Vector3D<>::zero();
@@ -194,10 +229,18 @@ void FalconPlugin::timerEvent()
 		}
 		
 		/* check if to enable the rotation mode from the grip */
+		static bool alreadyPressed = false;
 		if (_falcon->getButtonState() & FalconInterface::ButtonDown) {
-			_mode = ViewMode;
+			_mode = RotationMode;
+			
+			if (!alreadyPressed) {
+				alreadyPressed = true;
+				Q robotQ = _dev->getQ(state);
+				_r = robotQ(3); _p = robotQ(4); _y = robotQ(5);
+			}
 		} else {
 			_mode = WorldMode;
+			alreadyPressed = false;
 		}
 		
 		switch (_mode) {
@@ -217,17 +260,22 @@ void FalconPlugin::timerEvent()
 				break;
 				
 			case ViewMode:
-				getRobWorkStudio()->getView()->getSceneViewer()->getViewCamera()->setTransform(
-					Transform3D<>::makeLookAt(Vector3D<>(viewT.P().norm2(), 0, 0), Vector3D<>::zero(), Vector3D<>::z()));
+				rot = EAA<>(Vector3D<>::z(), pos[0]).toRotation3D();
+				nviewT = Transform3D<>(rot*(viewT.P()-worldTTCP.P())+worldTTCP.P(), rot * viewT.R());
+				rot = EAA<>(Vector3D<>::x(), pos[1]).toRotation3D();
+				nviewT = Transform3D<>(rot*(nviewT.P()-worldTTCP.P())+worldTTCP.P(), rot * nviewT.R());
+				getRobWorkStudio()->setViewTransform(nviewT);
+				getRobWorkStudio()->updateAndRepaint();
 				break;
 				
 			case RotationMode:
 				//RPY<> rpy(_target.R());
 				
-				_rpy(0) += pos(1);
+				/*_rpy(0) += pos(1);
 				_rpy(1) += pos(0);
-				_rpy(2) += pos(2);
-				_target.R() = _rpy.toRotation3D();
+				_rpy(2) += pos(2);*/
+				//_r += pos(1); _p += pos(0); _y += 
+				//_target.R() = _rpy.toRotation3D();
 				
 				break;
 		}
@@ -271,7 +319,7 @@ void FalconPlugin::startSimulation()
     if(_sim == NULL) {
         _engine = ownedPtr(new ODESimulator(_dwc));
         RW_WARN("");
-    	_engine->setContactLoggingEnabled(true);
+    	//_engine->setContactLoggingEnabled(true);
         _sim = ownedPtr(new DynamicSimulator(_dwc, _engine));
         RW_WARN("");
   		
@@ -296,6 +344,7 @@ void FalconPlugin::startSimulation()
     _timer->start();
 
     cout << "Starting simulation..." << endl;
+    _modeLabel->setText("GLOBAL MODE");
     _trajectory = ownedPtr(new SimulationTrajectory);
     _tsim->start();
 }
@@ -351,14 +400,14 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 	}
 	
 	/* print out contact points */
-	map<pair<string, string>, vector<ContactPoint> > cbodies = _engine->getContactingBodies();
+	//map<pair<string, string>, vector<ContactPoint> > cbodies = _engine->getContactingBodies();
 	
-	cout << "Contact points: " << cbodies.size() << endl;
+	/*cout << "Contact points: " << cbodies.size() << endl;
 	for (map<pair<string, string>, vector<ContactPoint> >::iterator it = cbodies.begin(); it != cbodies.end(); ++it) {
 		if (it->second.size() > 0) {
 			cout << it->first.first << " - " << it->first.second << " => " << it->second[0].p << endl;
 		}
-	}
+	}*/
 	
 	/* error handling */
 	if (sim->isInError()) {
@@ -368,14 +417,24 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 	}
     _robotController->stop();
 	Transform3D<> baseToTCP = _dev->baseTframe(_tcpFrame, state);
+	Transform3D<> worldTTCP = Kinematics::worldTframe(_tcpFrame, state);
     Transform3D<> target = inverse(_dev->worldTbase(state)) * _target;
     
     /* move the robot */
     // only move if we are far enough from the target pose
     Metric<Transform3D<> >::Ptr t3d_metric = MetricFactory::makeTransform3DMetric<double>(1.0, 1.0);
-    if (t3d_metric->distance(baseToTCP, target) > 0.001) {
+    if (t3d_metric->distance(baseToTCP, target) > 0.001 && _mode != RotationMode) {
         _robotController->movePTP_T(target, 70, 0.1);
     }
+    
+    if (_mode = RotationMode) {
+		Q targetQ = _dev->getQ(state);
+		targetQ(5) = _y;
+		_robotController->movePTP(targetQ, 70);
+		
+		target = worldTTCP;
+		//_pointerFrame->setTransform(worldTTCP, state);
+	}
     
     /* close the gripper */
     if (_grasping) {
