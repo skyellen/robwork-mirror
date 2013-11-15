@@ -32,6 +32,19 @@ class DHParameterSet
 {
 public:
     /**
+     * @brief Constructor for DHParameters initialized to zero.
+     */
+    DHParameterSet() :
+        _alpha(0),
+        _a(0),
+        _d(0),
+        _theta(0),
+        _beta(0),
+        _b(0),
+        _isParallel(false)
+    {}
+
+    /**
      * @brief Constructor
      * @param alpha [in] \f$\alpha_{i-1}\f$
      * @param a [in] \f$a_{i-1}\f$
@@ -43,7 +56,9 @@ public:
         _a(a),
         _d(d),
         _theta(theta),
-	_isParallel(false)
+        _beta(0),
+        _b(0),
+        _isParallel(false)
     {}
 
     /**
@@ -59,16 +74,20 @@ public:
         _a(a),
         _d(d),
         _theta(theta),
-	_isParallel(false),
+        _beta(0),
+        _b(0),
+        _isParallel(false),
         _type(type)
     {}
 
     DHParameterSet(double alpha, double a, double beta, double b, bool parallel) :
         _alpha(alpha),
         _a(a),
+        _d(0),
+        _theta(0),
         _beta(beta),
         _b(b),
-	_isParallel(parallel),
+        _isParallel(parallel),
         _type("HGP")
     {}
 
