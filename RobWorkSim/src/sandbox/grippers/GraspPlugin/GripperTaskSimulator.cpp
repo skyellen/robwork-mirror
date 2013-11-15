@@ -41,16 +41,17 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 	if (!_td) {
 		RW_THROW("NULL task description!");
 	}
-	
+	//RW_WARN("");
 	if (calculateInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 	}
-	
+	//RW_WARN("");
 	if (calculateWrench(sstate) < _td->getWrenchLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
 	}
-	
+	//RW_WARN("");
 	printGraspResult(sstate);
+	//RW_WARN("");
 }
 
 
@@ -224,15 +225,15 @@ void GripperTaskSimulator::evaluateGripper()
 	 
 	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
-	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
-	int samples = _samples->getSubTasks()[0].getTargets().size();
-	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
-	
 	//double shape = calculateShape() / b.shape;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(0) / b.wrench;
 	
 	double coverage = calculateCoverage() / b.coverage;
+	
+	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
+	int samples = _samples->getSubTasks()[0].getTargets().size();
+	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
 	double quality = (

@@ -77,6 +77,9 @@ void GraspPlugin::initialize()
 	 */
     getRobWorkStudio()->genericEvent().add(
 		boost::bind(&GraspPlugin::genericEventListener, this, _1), this);
+		
+	getRobWorkStudio()->keyEvent().add(
+          boost::bind(&GraspPlugin::keyEventListener, this, _1, _2), this);
 }
 
 
@@ -475,6 +478,46 @@ void GraspPlugin::genericEventListener(const std::string& event)
 
 
 
+void GraspPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
+{
+	/* let's move the view */
+	Transform3D<> viewT = getRobWorkStudio()->getViewTransform();
+	Rotation3D<> rot;
+	Transform3D<> nviewT;
+	
+	switch (key) {
+		case 'A':
+			rot = EAA<>(Vector3D<>::z(), -5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot * viewT.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'D':
+			rot = EAA<>(Vector3D<>::z(), 5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot * viewT.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'W':
+			rot = EAA<>(viewT.R() * Vector3D<>::x(), -5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot * viewT.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'S':
+			rot = EAA<>(viewT.R() * Vector3D<>::x(), 5.0*Deg2Rad).toRotation3D();
+			nviewT = Transform3D<>(rot * viewT.P(), rot * viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+	}
+}
+
+
+
 void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
 {
 	//return;
@@ -653,7 +696,7 @@ void GraspPlugin::test()
 	VectorND<4> v3; v3[0] = 0.0; v3[1] = 0.0; v3[2] = 1.0; v3[3] = 0.0; vtx.push_back(v3);
 	
 	log().info() << GeometryUtil::simplexVolume(vtx) << endl;*/
-	vector<VectorND<3> > vtx;
+	/*vector<VectorND<3> > vtx;
 	VectorND<3> v0; v0[0] = 0.0; v0[1] = 0.0; v0[2] = 0.0; vtx.push_back(v0);
 	VectorND<3> v1; v1[0] = 1.0; v1[1] = 0.0; v1[2] = 0.0; vtx.push_back(v1);
 	VectorND<3> v2; v2[0] = 1.0; v2[1] = 1.0; v2[2] = 0.0; vtx.push_back(v2);
@@ -668,7 +711,15 @@ void GraspPlugin::test()
 	
 	log().info() << qh->getCentroid() << endl;
 	
-	//log().info() << GeometryUtil::simplexVolume(vtx) << endl;
+	//log().info() << GeometryUtil::simplexVolume(vtx) << endl;*/
+	
+	static int npic = 0;
+	
+	stringstream sstr;
+	sstr << npic++;
+	string filename = _wc->getName() + "_" + _gripper->getName() + "_" + sstr.str() + ".png";
+	log().info() << "Saving image " + filename + "..." << endl;
+	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
 }
 
 

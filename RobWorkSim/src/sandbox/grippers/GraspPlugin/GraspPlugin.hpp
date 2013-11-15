@@ -48,6 +48,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		 * @param event [in] the event id
 		 */
 		void genericEventListener(const std::string& event);
+		
+		/// listens for key presses
+		void keyEventListener(int key, Qt::KeyboardModifiers modifier);
 
 		//! @brief starts grasping simulation
 		void startSimulation();

@@ -196,7 +196,10 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
 	//BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
-		//if (p.second->getResult()->testStatus == GraspTask::Success) {
+		if (p.second->getResult()->testStatus == GraspTask::Success ||
+			p.second->getResult()->testStatus == GraspTask::Interference ||
+			p.second->getResult()->testStatus == GraspTask::UnInitialized) {
+				
 			Q key(7);
             key[0] = p.second->pose.P()[0];
             key[1] = p.second->pose.P()[1];
@@ -210,7 +213,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
             //cout << key << endl;
             
 			nodes.push_back(NNSearch::KDNode(key, p.second->getResult()));
-		//}
+		}
 	}
 	
 	NNSearch *nntree = NNSearch::buildTree(nodes);
@@ -313,6 +316,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 	}
 	//RW_WARN("PREPARE");
     
+    int failures = 0;
     for (int successes = 0; successes < nTargets;) {
 		//RW_WARN("LOOPY");
 		double graspW = 0.0;
@@ -352,12 +356,29 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
             gtask->addSubTask(subtask);
             atask.addTarget(gtarget);
         } else {
+			//RW_WARN("NAY");
+			
+			++failures;
+			if (failures > 1000*nTargets) {
+				RW_WARN("Something is rotten in the state of RobWork.");
+				break;
+			}
+			
+			// make new subtask ///
+            /*GraspSubTask subtask;
+            subtask.offset = wTobj;
+			subtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			subtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			subtask.openQ = oq;
+			subtask.closeQ = _closeQ; *///
 			//cout << "collision" << endl;
 			GraspTarget gtarget(target);
             gtarget.result = ownedPtr(new GraspResult());
             gtarget.result->testStatus = GraspTask::Success;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
+            //subtask.addTarget(gtarget); //
+            //gtask->addSubTask(subtask); //
             atask.addTarget(gtarget);
 		}
     }
@@ -368,8 +389,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     Q preDist = _td->getPrefilteringDistance();
 	double R = 2.0 * sin(0.25 * preDist(1));
 	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
-    filterTasks(_tasks, diff);
-    filterTasks(_samples, diff);
+    //filterTasks(_tasks, diff);
+    //filterTasks(_samples, diff);
     
 	return _tasks;
 }
