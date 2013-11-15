@@ -46,7 +46,7 @@ void LuaState::addLibrary(LuaLibrary::Ptr lib){
 
 void LuaState::removeLibrary(const std::string& id){
     int idx=-1;
-	for(int i=0;i<_libraryCBs.size();i++){
+	for(std::size_t i=0;i<_libraryCBs.size();i++){
 		if(_libraryCBs[i]->getId()==id){
 			idx = i;
 		}

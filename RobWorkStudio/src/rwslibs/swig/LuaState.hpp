@@ -60,6 +60,7 @@ public:
 
     struct LuaLibrary {
     	typedef rw::common::Ptr<LuaLibrary> Ptr;
+    	virtual ~LuaLibrary() {};
     	virtual const std::string getId() = 0;
     	virtual bool initLibrary(LuaState& state) = 0;
     };

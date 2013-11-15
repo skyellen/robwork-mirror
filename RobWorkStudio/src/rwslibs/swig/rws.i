@@ -19,12 +19,74 @@ using rw::pathplanning::PathPlanner;
 
 %import <rwlibs/swig/rw.i>
 
+%pragma(java) jniclassclassmodifiers="class"
 
-%template (RobWorkStudioPtr) rw::common::Ptr<RobWorkStudio>;
-%template (RWStudioView3DPtr) rw::common::Ptr<RWStudioView3D>;
+/********************************************
+ * General utility functions
+ ********************************************/
 
 rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance();
 rw::common::Ptr<RobWorkStudio> getRobWorkStudioInstance(const std::string& args);
+
+RobWorkStudio* getRobWorkStudio();
+
+void setRobWorkStudio(RobWorkStudio* rwstudio);
+
+const State& getState();
+void setState(State& state);
+rw::common::Ptr<Device> findDevice(const std::string& name);
+rw::common::Ptr<JointDevice> findJointDevice(const std::string& name);
+rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name);
+rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name);
+rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
+Frame* findFrame(const std::string& name);
+
+MovableFrame* findMovableFrame(const std::string& name);
+
+ FixedFrame* findFixedFrame(const std::string& name);
+
+ void moveTo(MovableFrame* mframe, Transform3D wTframe );
+
+ void moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp );
+
+ void moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe );
+
+ Q getQ(rw::common::Ptr<Device> dev);
+ void setQ(rw::common::Ptr<Device> dev, Q);
+
+ void setTransform(Frame* mframe, Transform3D wTframe );
+
+  Transform3D wTf(Frame* frame);
+ Transform3D fTf(Frame* frame,Frame* frame);
+
+
+/*
+State& getState();
+void setState(State& state);
+rw::common::Ptr<Device> findDevice(const std::string& name);
+rw::common::Ptr<JointDevice> findJointDevice(const std::string& name);
+rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name);
+rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name);
+rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
+*/
+
+/********************************************
+ * Qt
+ ********************************************/
+
+%nodefaultctor QString;
+class QString
+{
+};
+
+%nodefaultctor QWidget;
+class QWidget
+{
+};
+
+/********************************************
+ * RWS
+ ********************************************/
 
 class RWStudioView3D {
 public:
@@ -39,6 +101,8 @@ public:
     void saveBufferToFile(const QString& filename);
 
 };
+
+%template (RWStudioView3DPtr) rw::common::Ptr<RWStudioView3D>;
 
 class RobWorkStudio {
 public:
@@ -57,15 +121,15 @@ public:
 
     rw::common::Ptr<RWStudioView3D> getView();
 
-    const TimedStatePath& getTimedStatePath();
+    const Path<Timed<State> >& getTimedStatePath();
 
     //void updateAndRepaint();
     //void setState(const State& state);
-    //void setTimedStatePath(const TimedStatePath& path);
+    //void setTimedStatePath(const PathTimedState& path);
     void postState(const State& state);
     void postUpdateAndRepaint();
     void postSaveViewGL(const std::string& str);
-    void postTimedStatePath(const TimedStatePath& path);
+    void postTimedStatePath(const Path<Timed<State> >& path);
     void postWorkCell(rw::common::Ptr<WorkCell> workcell);
     void postOpenWorkCell(const std::string& str);
     void postExit();
@@ -168,53 +232,60 @@ public:
 
 };
 
+%template (RobWorkStudioPtr) rw::common::Ptr<RobWorkStudio>;
 
-////////////////////////////////////////////////////////////////////////////////////
-/// General utility functions that ease the use of robworkstudio
-///
+/********************************************
+ * RWSLIBS GTASK
+ ********************************************/
+ 
+/********************************************
+ * RWSLIBS JOG
+ ********************************************/
+ 
+/********************************************
+ * RWSLIBS LOG
+ ********************************************/
 
-RobWorkStudio* getRobWorkStudio();
+/********************************************
+ * RWSLIBS LUA
+ ********************************************/
 
-void setRobWorkStudio(RobWorkStudio* rwstudio);
+/********************************************
+ * RWSLIBS LUAEDITOR
+ ********************************************/
 
-const State& getState();
-void setState(State& state);
-rw::common::Ptr<Device> findDevice(const std::string& name);
-rw::common::Ptr<JointDevice> findJointDevice(const std::string& name);
-rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name);
-rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name);
-rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
-Frame* findFrame(const std::string& name);
+/********************************************
+ * RWSLIBS PLANNING
+ ********************************************/
 
-MovableFrame* findMovableFrame(const std::string& name);
+/********************************************
+ * RWSLIBS PLAYBACK
+ ********************************************/
 
- FixedFrame* findFixedFrame(const std::string& name);
+/********************************************
+ * RWSLIBS PROPERTYVIEW
+ ********************************************/
 
- void moveTo(MovableFrame* mframe, Transform3D wTframe );
+/********************************************
+ * RWSLIBS RWSTUDIOAPP
+ ********************************************/
 
- void moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp );
+/********************************************
+ * RWSLIBS SENSORS
+ ********************************************/
 
- void moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe );
+/********************************************
+ * RWSLIBS SWIG
+ ********************************************/
+ 
+/********************************************
+ * RWSLIBS TREEVIEW
+ ********************************************/
 
- Q getQ(rw::common::Ptr<Device> dev);
- void setQ(rw::common::Ptr<Device> dev, Q);
-
- void setTransform(Frame* mframe, Transform3D wTframe );
-
-  Transform3D wTf(Frame* frame);
- Transform3D fTf(Frame* frame,Frame* frame);
-
-
-/*
-State& getState();
-void setState(State& state);
-rw::common::Ptr<Device> findDevice(const std::string& name);
-rw::common::Ptr<JointDevice> findJointDevice(const std::string& name);
-rw::common::Ptr<SerialDevice> findSerialDevice(const std::string& name);
-rw::common::Ptr<TreeDevice> findTreeDevice(const std::string& name);
-rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
-*/
-
+/********************************************
+ * LUA functions
+ ********************************************/
+ 
 #ifdef SWIGLUA
 %luacode {
 

@@ -18,32 +18,36 @@
 #ifndef RWLIBS_SWIG_SCRIPTTYPES_HPP_
 #define RWLIBS_SWIG_SCRIPTTYPES_HPP_
 
-#include <rw/math.hpp>
-#include <rw/geometry.hpp>
+#include <rw/RobWork.hpp>
+
 #include <rw/common.hpp>
-#include <rw/kinematics.hpp>
-#include <rw/sensor.hpp>
-#include <rw/models.hpp>
-#include <rw/loaders.hpp>
-#include <rw/proximity.hpp>
+#include <rw/geometry.hpp>
 #include <rw/graphics.hpp>
+//#include <rw/graspplanning.hpp>
 #include <rw/invkin.hpp>
+#include <rw/kinematics.hpp>
+#include <rw/loaders.hpp>
+#include <rw/math.hpp>
+#include <rw/models.hpp>
+#include <rw/pathplanning.hpp>
+//#include <rw/plugin.hpp>
+#include <rw/proximity.hpp>
+#include <rw/sensor.hpp>
 #include <rw/trajectory.hpp>
+
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
-#include <rw/pathplanning.hpp>
-
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
 #include <rwlibs/pathoptimization/clearance/ClearanceOptimizer.hpp>
-#include <rw/RobWork.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwlibs/simulation/SimulatedController.hpp>
+#include <rwlibs/simulation/SimulatedSensor.hpp>
+
 #include <iostream>
 #include <sstream>
 
@@ -60,31 +64,14 @@ namespace swig {
 	/** @addtogroup swig */
 	/*@{*/
 
-	//typedef rw::common::PropertyMap PropertyMap;
+	typedef rw::RobWork RobWork;
 
-
-	// math types
-	//! Vector2D
-	typedef rw::math::Vector2D<double> Vector2D;
-	//! Vector3D
-	typedef rw::math::Vector3D<double> Vector3D;
-	typedef rw::math::Q Q;
-	typedef rw::math::Rotation3D<double> Rotation3D;
-	typedef rw::math::EAA<double> EAA;
-	typedef rw::math::RPY<double> RPY;
-	typedef rw::math::Quaternion<double> Quaternion;
-	typedef rw::math::Transform3D<double> Transform3D;
-	typedef rw::math::Pose6D<double> Pose6D;
-	typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
-	typedef rw::math::Wrench6D<double> Wrench6D;
-	typedef rw::math::InertiaMatrix<double> InertiaMatrix;
-	typedef rw::math::Jacobian Jacobian;
-	typedef rw::math::QMetric QMetric;
-	typedef rw::math::Transform3DMetric Transform3DMetric;
-
+	// common
 	typedef rw::common::PropertyMap PropertyMap;
 
+	// geometry
 	typedef rw::geometry::GeometryData GeometryData;
+	typedef rw::geometry::GeometryData::GeometryType GeometryType;
 	typedef rw::geometry::Primitive Primitive;
 	typedef rw::geometry::Box Box;
 	typedef rw::geometry::Cone Cone;
@@ -103,21 +90,108 @@ namespace swig {
 	typedef rw::geometry::ConvexHull3D ConvexHull3D;
 	typedef rw::geometry::Geometry Geometry;
 
-	typedef rw::sensor::Image Image;
+	// graphics
+	typedef rw::graphics::WorkCellScene WorkCellScene;
+	typedef rw::graphics::SceneViewer SceneViewer;
+	typedef rw::graphics::SceneNode SceneNode;
+	typedef rw::graphics::DrawableNode DrawableNode;
 
+	// graspplanning
+
+	// invkin
+	typedef rw::invkin::InvKinSolver InvKinSolver;
+	typedef rw::invkin::IterativeIK IterativeIK;
+	typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
+	typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
+	typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
+	typedef rw::invkin::IKMetaSolver IKMetaSolver;
+	typedef rw::invkin::ClosedFormIK ClosedFormIK;
+	typedef rw::invkin::PieperSolver PieperSolver;
+
+	// kinematics
 	typedef rw::kinematics::StateData StateData;
 	typedef rw::kinematics::Frame Frame;
 	typedef rw::kinematics::MovableFrame MovableFrame;
 	typedef rw::kinematics::FixedFrame FixedFrame;
 	typedef rw::kinematics::State State;
 
-	typedef rw::trajectory::Path<Q> QPath;
-	typedef rw::trajectory::TimedStatePath TimedStatePath;
+	// loaders
+	typedef rw::loaders::ImageFactory ImageFactory;
+	typedef rw::loaders::WorkCellLoader WorkCellLoader;
+	typedef rw::loaders::WorkCellFactory WorkCellFactory;
+	typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
+	typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
+
+	typedef rw::loaders::STLFile STLFile;
+
+	// math types
+	typedef rw::math::Vector2D<double> Vector2D;
+	typedef rw::math::Vector3D<double> Vector3D;
+	typedef rw::math::Vector3D<float> Vector3Df;
+	typedef rw::math::Q Q;
+	typedef rw::math::Rotation3D<double> Rotation3D;
+	typedef rw::math::Rotation3D<float> Rotation3Df;
+	typedef rw::math::EAA<double> EAA;
+	typedef rw::math::RPY<double> RPY;
+	typedef rw::math::Quaternion<double> Quaternion;
+	typedef rw::math::Transform3D<double> Transform3D;
+	typedef rw::math::Transform3D<float> Transform3Df;
+	typedef rw::math::Pose6D<double> Pose6D;
+	typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
+	typedef rw::math::Wrench6D<double> Wrench6D;
+	typedef rw::math::InertiaMatrix<double> InertiaMatrix;
+	typedef rw::math::Jacobian Jacobian;
+	typedef rw::math::QMetric MetricQ;
+	typedef rw::math::Transform3DMetric MetricSE3;
+
+	// models
+	typedef rw::models::WorkCell WorkCell;
+	typedef rw::models::Joint Joint;
+	typedef rw::models::RevoluteJoint RevoluteJoint;
+	typedef rw::models::PrismaticJoint PrismaticJoint;
+
+	typedef rw::models::Device Device;
+	typedef rw::models::JointDevice JointDevice;
+	typedef rw::models::SerialDevice SerialDevice;
+	typedef rw::models::TreeDevice TreeDevice;
+	typedef rw::models::CompositeDevice CompositeDevice;
+	typedef rw::models::ParallelDevice ParallelDevice;
+	typedef rw::models::DHParameterSet DHParameterSet;
+
+	// pathplanning
+	typedef rw::pathplanning::QToQPlanner QToQPlanner;
+	typedef rw::pathplanning::StopCriteria StopCriteria;
+	typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
+
+	// plugin
+
+	// proximity
+	typedef rw::proximity::CollisionDetector CollisionDetector;
+	typedef rw::proximity::CollisionStrategy CollisionStrategy;
+	typedef rw::proximity::DistanceCalculator DistanceCalculator;
+	typedef rw::proximity::DistanceStrategy DistanceStrategy;
+
+	// sensor
+	typedef rw::sensor::Image Image;
+
+	// trajectory
+	typedef rw::trajectory::Blend<Q> BlendQ;
+	typedef rw::trajectory::Blend<double> BlendR1;
+	typedef rw::trajectory::Blend<Vector2D> BlendR2;
+	typedef rw::trajectory::Blend<Vector3D> BlendR3;
+	typedef rw::trajectory::Blend<Rotation3D> BlendSO3;
+	typedef rw::trajectory::Blend<Transform3D> BlendSE3;
+
 	typedef rw::trajectory::TimedState TimedState;
-	//typedef rw::trajectory::TrajectoryFactory TrajectoryFactory;
-	typedef rw::trajectory::StateTrajectory StateTrajectory;
-	typedef rw::trajectory::QTrajectory QTrajectory;
-	typedef rw::trajectory::Transform3DTrajectory Transform3DTrajectory;
+	typedef rw::trajectory::Path<Q> PathQ;
+	typedef rw::trajectory::TimedStatePath PathTimedState;
+	typedef rw::trajectory::Trajectory<State> TrajectoryState;
+	typedef rw::trajectory::Trajectory<Q> TrajectoryQ;
+	typedef rw::trajectory::Trajectory<double> TrajectoryR1;
+	typedef rw::trajectory::Trajectory<Vector2D> TrajectoryR2;
+	typedef rw::trajectory::Trajectory<Vector3D> TrajectoryR3;
+	typedef rw::trajectory::Trajectory<Rotation3D> TrajectorySO3;
+	typedef rw::trajectory::Trajectory<Transform3D> TrajectorySE3;
 
 	typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
@@ -133,61 +207,39 @@ namespace swig {
 	typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
 	typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
+	// rwlibs algorithms
 
-	typedef rw::models::WorkCell WorkCell;
-	typedef rw::models::Joint Joint;
-	typedef rw::models::RevoluteJoint RevoluteJoint;
-	typedef rw::models::PrismaticJoint PrismaticJoint;
+	// rwlibs calibration
 
-	typedef rw::models::Device Device;
-	typedef rw::models::JointDevice JointDevice;
-	typedef rw::models::SerialDevice SerialDevice;
-	typedef rw::models::TreeDevice TreeDevice;
-	typedef rw::models::CompositeDevice CompositeDevice;
-	typedef rw::models::ParallelDevice ParallelDevice;
-	typedef rw::models::DHParameterSet DHParameterSet;
+	// rwlibs control
 
-	typedef rw::proximity::CollisionDetector CollisionDetector;
-	typedef rw::proximity::CollisionStrategy CollisionStrategy;
-	typedef rw::proximity::DistanceCalculator DistanceCalculator;
-	typedef rw::proximity::DistanceStrategy DistanceStrategy;
+	// rwlibs opengl
 
-	typedef rw::invkin::InvKinSolver InvKinSolver;
-	typedef rw::invkin::IterativeIK IterativeIK;
-	typedef rw::invkin::JacobianIKSolver JacobianIKSolver;
-	typedef rw::invkin::IterativeMultiIK IterativeMultiIK;
-	typedef rw::invkin::JacobianIKSolverM JacobianIKSolverM;
-	typedef rw::invkin::IKMetaSolver IKMetaSolver;
-	typedef rw::invkin::ClosedFormIK ClosedFormIK;
-	typedef rw::invkin::PieperSolver PieperSolver;
+	// rwlibs os
 
-	typedef rw::loaders::ImageFactory ImageFactory;
-	typedef rw::loaders::WorkCellLoader WorkCellLoader;
-	typedef rw::loaders::WorkCellFactory WorkCellFactory;
-	typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
-	typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
-
-	typedef rw::loaders::STLFile STLFile;
-
-	typedef rw::RobWork RobWork;
-
-	typedef rw::graphics::WorkCellScene WorkCellScene;
-	typedef rw::graphics::SceneViewer SceneViewer;
-	typedef rw::graphics::SceneNode SceneNode;
-	typedef rw::graphics::DrawableNode DrawableNode;
-
-	typedef rw::pathplanning::QToQPlanner QToQPlanner;
-	typedef rw::pathplanning::StopCriteria StopCriteria;
-	typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
-
+	// rwlibs pathoptimization
 	typedef rwlibs::pathoptimization::PathLengthOptimizer PathLengthOptimizer;
 	typedef rwlibs::pathoptimization::ClearanceOptimizer ClearanceOptimizer;
 
-	// not added yet
+	// rwlibs pathplanners
+
+	// rwlibs proximitystrategies
+
+	// rwlibs simulation
 	typedef rwlibs::simulation::SimulatedController SimulatedController;
 	typedef rwlibs::simulation::SimulatedSensor SimulatedSensor;
 	typedef rwlibs::simulation::Simulator Simulator;
+	typedef rwlibs::simulation::Simulator::UpdateInfo UpdateInfo;
 
+	// rwlibs softbody
+
+	// rwlibs swig
+
+	// rwlibs task
+
+	// rwlibs tools
+
+	// helper functions
 	void writelog(const std::string& msg);
 
 	void setlog(::rw::common::LogWriter::Ptr writer);
@@ -198,6 +250,14 @@ namespace swig {
 		std::ostringstream buf;
 		buf << x;
 		return buf.str();
+	}
+
+	template <typename T>
+	char * printCString(const T& x)
+	{
+		static char tmp[256];
+		sprintf(tmp,"%s", toString<T>(x).c_str());
+		return tmp;
 	}
 
 	/*

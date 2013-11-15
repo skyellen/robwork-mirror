@@ -20,6 +20,15 @@
 
 #include <rwlibs/swig/ScriptTypes.hpp>
 
+#include <rwsim/contacts/ContactDetector.hpp>
+#include <rwsim/contacts/Contact.hpp>
+#include <rwsim/contacts/ContactStrategy.hpp>
+
+#include <rwsim/control/BodyController.hpp>
+#include <rwsim/control/PoseController.hpp>
+#include <rwsim/control/PDController.hpp>
+#include <rwsim/control/SerialDeviceController.hpp>
+
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
@@ -29,16 +38,13 @@
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 
-#include <rwsim/control/BodyController.hpp>
-#include <rwsim/control/PoseController.hpp>
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/control/SerialDeviceController.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
 
-#include <rwsim/sensor/SimulatedFTSensor.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
 /**
 #ifdef __cplusplus
@@ -53,14 +59,20 @@ extern "C" {
 namespace rwsim {
 namespace swig {
 
-    template <typename T>
-    std::string toString(const T& x)
-    {
-        std::ostringstream buf;
-        buf << x;
-        return buf.str();
-    }
+	// contacts
+	typedef rwsim::contacts::ContactDetector ContactDetector;
+	typedef rwsim::contacts::ContactStrategy ContactStrategy;
+	typedef rwsim::contacts::Contact Contact;
 
+	// control
+	typedef rwsim::control::PoseController PoseController;
+	typedef rwsim::control::PDController PDController;
+	typedef rwsim::control::BodyController BodyController;
+	typedef rwsim::control::SerialDeviceController SerialDeviceController;
+
+	// drawable
+
+	// dynamics
     typedef rwsim::dynamics::DynamicWorkCell DynamicWorkCell;
     typedef rwsim::dynamics::Body Body;
     typedef rwsim::dynamics::RigidBody RigidBody;
@@ -71,18 +83,43 @@ namespace swig {
     typedef rwsim::dynamics::RigidDevice RigidDevice;
     typedef rwsim::dynamics::SuctionCup SuctionCup;
 
-    typedef rwsim::control::PoseController PoseController;
-    typedef rwsim::control::PDController PDController;
-    typedef rwsim::control::BodyController BodyController;
-    typedef rwsim::control::SerialDeviceController SerialDeviceController;
+	// loaders
 
+	// rwphysics
+
+	// sensor
+    typedef rwsim::sensor::SimulatedFTSensor SimulatedFTSensor;
+
+	// simulator
     typedef rwsim::simulator::DynamicSimulator DynamicSimulator;
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
     typedef rwsim::simulator::PhysicsEngine PhysicsEngine;
 
-    typedef rwsim::sensor::SimulatedFTSensor SimulatedFTSensor;
+	// util
 
-    // for now we add all static functions here
+	// rwsimlibs bullet
+
+	// rwsimlibs gui
+
+	// rwsimlibs ode
+    typedef rwsim::simulator::ODESimulator ODESimulator;
+
+	// rwsimlibs plugins
+
+	// rwsimlibs swig
+
+	// rwsimlibs tools
+
+	// helper functions
+    template <typename T>
+    std::string toString(const T& x)
+    {
+        std::ostringstream buf;
+        buf << x;
+        return buf.str();
+    }
+
+    // general functions
     DynamicWorkCell* getDynamicWorkCell();
 
     /**
