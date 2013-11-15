@@ -125,7 +125,7 @@ IF( SWIG_FOUND )
             					-windowtitle "RobWorkStudio Java API Documentation"
             					-public
             					-sourcepath java_src dk.robwork
-            					-linkoffline file://${RW_LIBS}/javadoc file://${RW_LIBS}/javadoc
+            					-linkoffline ${RW_LIBS}/javadoc ${RW_LIBS}/javadoc
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             )
             SET(CMAKE_SWIG_OUTDIR ${RWS_CMAKE_LIBRARY_OUTPUT_DIRECTORY})
