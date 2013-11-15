@@ -5,11 +5,12 @@ Script interface	{#page_rw_scriptinterface}
 
 # Introduction # 	{#sec_rw_sinterface_intro}
 The script interface is generated using [SWIG](http://www.swig.org/) which makes it possible to
-interface using multiple different languages including python, lua and java. See http://www.swig.org 
+interface using many different languages. See http://www.swig.org 
 for a complete list of supported languages. 
 
-By default only Lua and Python interfaces are generated for RobWork. In this document the use of 
-these two interfaces will be introduced. 
+By default Lua, Python and Java interfaces are generated for RobWork. In this document the use of 
+these interfaces will be introduced.  SWIG can not yet generate interfaces for MatLab, but fortunately
+MatLab provides good support for Java.
 
 # Lua interface # 	{#sec_robwork_lua}
 
@@ -98,3 +99,223 @@ stopCriteria = rw.StopCriteria_stopCnt(100)
 result = planner.query(q_from,q_to,stopCriteria) 
 ~~~~
 
+# Java interface # 	{#sec_robwork_java}
+The java interface is automatically enabled when running cmake if a Java SDK with Java Native Interface (JNI)
+is found. For details on SWIG for Java, see the
+<a href="http://www.swig.org/Doc2.0/SWIGDocumentation.html#Java">SWIG 2.0 Java documentation</a> which
+also contains a good description of the more advanced issues when using JNI to call C++ code from Java.
+
+Look for the line "RobWork: Java bindings ENABLED!" in the cmake output to be sure that Java interfaces are enabled.
+The interface is generated for both RobWork, RobWorkStudio and RobWorkSim, and consists of two files per project.
+
+Linux example (for a Debug build):
+
+	RobWork/libs/debug/rw_jni.so 
+	RobWork/libs/debug/rw_java.jar 
+	RobWorkStudio/libs/debug/rws_jni.so 
+	RobWorkStudio/libs/debug/rws_java.jar 
+	RobWorkSim/libs/debug/rwsim_jni.so 
+	RobWorkSim/libs/debug/rwsim_java.jar 
+
+Furthermore javadoc is generated and can be launched from:
+
+	RobWork/libs/debug/javadoc/index.html 
+	RobWorkStudio/libs/debug/javadoc/index.html 
+	RobWorkSim/libs/debug/javadoc/index.html 
+
+Unfortunately SWIG is not yet able to copy comments to javadoc, meaning that the generated
+javadoc has no descriptions for classes and methods. Instead it is 
+recommended that equivalent classes and methods are found in the ordinary apidoc.
+Note that names of classes and methods will often be different in the Java interface.
+Please see the section about naming conventions for some guidelines on how to find equivalent
+types and functions.
+
+## Compiling a Java program ## 	{#sec_robwork_java_compiling}
+To compile a basic program that can utilize the RobWork Java API, consider the following small example.
+
+Main.java
+
+~~~~{.java}
+import dk.robwork.*;
+public class Main {
+	public static void main(String[] args){
+		LoaderRW.load();
+		LoaderRWS.load();
+		LoaderRWSim.load();
+	}
+}
+~~~~
+
+To compile this piece of Java code the classpath must be set up such that the jar files can be found.
+The compile command should be similar to:
+
+	javac
+		-classpath .:/home/user/RobWork/libs/debug/rw_java.jar:/home/user/RobWorkStudio/libs/debug/rws_java.jar:/home/user/RobWorkSim/libs/debug/rwsim_java.jar
+		Main.java
+
+In the Eclipse IDE it is enough to add the jar files to the build path for the Java project.
+Similar can be done for other IDEs.
+
+Note that all generated Java classes will be located in the dk.robwork Java package.
+The LoaderRW, LoaderRWS, and LoaderRWSim classes are automatically added to the respective jar files.
+Before calling any other method in the jar files, it is important that the loader functions has been called first
+(always try to call these three lines as the first thing in your program).
+
+Now to actually run the program use the same classpath as before, and set the java.library.path:
+
+	java
+		-classpath .:/home/user/RobWork/libs/debug/rw_java.jar:/home/user/RobWorkStudio/libs/debug/rws_java.jar:/home/user/RobWorkSim/libs/debug/rwsim_java.jar
+		-Djava.library.path=/home/user/RobWork/libs/debug:/home/user/RobWorkStudio/libs/debug:/home/user/RobWorkSim/libs/debug
+		Main
+
+Note that you need to use the -Djava.library.path option to set the library path. This is the path where
+Java will search for the JNI .so (Linux) or .dll (Windows) files. In the Eclipse IDE this would be set in
+the Run Configuration under arguments to the Virtual Machine.
+
+There is an alternative to set the -Djava.library.path. If this is not specified at runtime, it can be hard-coded.
+This is done by explicitly defining the path where the .so or .dll files are located when running the load methods.
+
+		LoaderRW.load("/home/user/RobWork/libs/debug");
+		LoaderRWS.load("/home/user/RobWorkStudio/libs/debug");
+		LoaderRWSim.load("/home/user/RobWorkSim/libs/debug");
+
+## Examples ## 	{#sec_robwork_java_examples}
+To see examples of how the RobWork interface is used in Java, please look in the examples folder
+for the different projects. For example scripts for RobWorkStudio look in the folder: 
+
+	RobWorkStudio/example/scripts/java
+<!--
+## Naming Conventions ## 	{#sec_robwork_java_naming}
+Java has no concept of operator overloading which is used extensively in the C++ API.
+To solve the problem of operator overloading in Java, the following naming conventions are used:
+
+| C++              | Java                |
+| ---------------- | ------------------- |
+| `operator-()`    | `negate()`          |
+| `operator*()`    | `multiply()`        |
+| `operator/()`    | `divide()`          |
+| `operator==()`   | `equals()`          |
+
+## Memory Management & Garbage Collection ## 	{#sec_robwork_java_memory}
+Java uses automatic Garbage Collection where the liftetime of objects in C++ is controlled manually
+or by smart pointers.
+
+Each Java object tracks if it has ownership of the corresponding C++ object. It will have ownership if it was
+constructed by the Java constructor, or if it was returned by value. If C++ functions return by reference or
+as a pointer the ownership is set to false. In this case the original C++ object will not be destroyed when
+the Java object is destroyed.
+
+## Pointers, Arrays & References ## 	{#sec_robwork_java_pointers}
+Pass and return by reference, pointer or value as it is known in C++, can not be as easily controlled in Java.
+-->
+# MatLab interface # 	{#sec_robwork_matlab}
+As MatLab has good Java support, it is possible to interface RobWork from MatLab via Java.
+In general it is recommended that a basic Java program is first compiled and tested before
+trying to use the Java interface from MatLab. This is due to the fact that the MatLab libraries
+and the native JNI libraries typically depends on the same libraries, but often in different versions.
+
+## Launching MatLab ## 	{#sec_robwork_matlab_launch}
+When MatLab is to be used together with the RobWork JNI libraries, MatLab should be launched with some
+environment variables set in order to control the loading of dependent libraries.
+
+The following approach has been tested with MatLab R2013a on a Ubuntu 13.04 system. It is expected that
+the library resolution issues might be very different for other versions of both OS and MatLab.
+It is also uncertain how this will be handled in a Windows environment.
+
+First of all the problem is clearly illustrated when using ldd to resolve the dependencies of the rw_jni.so library.
+Try to execute the following in a terminal:
+
+	ldd /home/user/RobWork/libs/debug/librw_jni.so
+
+Now try to run in MatLab:
+
+	!ldd /home/user/RobWork/libs/debug/librw_jni.so
+
+Notice the difference between how the library dependencies are resolved. MatLab comes with its own version of the
+system libraries, and these will often be older than the system dependencies that the JNI library was linked
+against.
+
+It is adviced that a bash script similar to the following is used to launch MatLab.
+
+~~~~{.sh}
+#!/bin/bash
+export RW_ROOT=/home/user/RobWork
+export RW_BUILD=debug
+
+export RW_LIBS=$RW_ROOT/RobWork/libs/$RW_BUILD
+export RWStudio_LIBS=$RW_ROOT/RobWorkStudio/libs/$RW_BUILD
+export RWSim_LIBS=$RW_ROOT/RobWorkSim/libs/$RW_BUILD
+
+export MATLAB_JAVA=$JAVA_HOME/jre
+export LD_PRELOAD="$LD_PRELOAD /usr/lib/x86_64-linux-gnu/libstdc++.so.6"
+
+/opt/MATLAB/bin/matlab
+~~~~
+
+The RW* variables are set for convenience to allow writing MatLab scripts that are system independent.
+The MATLAB_JAVA variable should be set if the .jar files has been compiled to a newer version of Java
+than the JVM used by MatLab. This will make sure that MatLab uses the current system JVM.
+The LD_PRELOAD variable forces MatLab to use newer system libraries instead of the libraries that comes
+with MatLab.
+
+Note that overriding the libraries that MatLab use and changing the JVM is a drastic change that might
+give other issues in MatLab. Depending on the system it might not always be a requirement to set these variables.
+Always try setting as few variables first and then add MATLAB_JAVA and LD_PRELOAD if required.
+It might also be necessary to add even more libraries than shown here.
+
+The following MatLab code should run without errors before the RobWork API can be used from MatLab.
+
+~~~~{.m}
+RW_LIBS=getenv('RW_LIBS');
+RWStudio_LIBS=getenv('RWStudio_LIBS');
+
+% Import the java API
+javaaddpath(strcat(RW_LIBS,'/rw_java.jar'));
+javaaddpath(strcat(RWStudio_LIBS,'/rws_java.jar'));
+import dk.robwork.*;
+
+% Load the native libraries
+LoaderRW.load(RW_LIBS)
+LoaderRWS.load(RWStudio_LIBS)
+~~~~
+
+## Typical Errors ## 	{#sec_robwork_matlab_errors}
+It can be difficult to get the MatLab interface to run. The following is a list of known errors and
+possible solutions.
+
+	>> LoaderRW.load(RW_LIBS)
+	Java exception occurred:
+	java.lang.UnsatisfiedLinkError: /home/user/RobWork/RobWork/libs/debug/librw_jni.so:
+	/opt/MATLAB/bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.15' not found (required by /home/user/RobWork/RobWork/libs/debug/librw_jni.so)
+
+This error is caused by librw_jni.so as it is dependent on a newer version of the standard C++ library than
+the library provided and used by MatLab. To solve this issue set the LD_PRELOAD:
+
+	export LD_PRELOAD="$LD_PRELOAD /usr/lib/x86_64-linux-gnu/libstdc++.so.6"
+
+If classes can not be found:
+
+	>> javaaddpath(strcat(RW_LIBS,'/rw_java.jar'));
+	>> import dk.robwork.*;
+	>> LoaderRW.load(RW_LIBS)
+	Undefined variable "LoaderRW" or class "LoaderRW.load".
+
+Make sure that the .jar file is at the given path, and that the .jar actually contains a LoaderRW class.
+If this is the case, the reason for MatLab not finding the class can be that there is a mismatch between
+the .jar Java version and the MatLab JVM.
+
+There can be two solutions. First one is to use another JVM version in MatLab.
+
+	export MATLAB_JAVA=$JAVA_HOME/jre
+
+Secondly the source can be manually compiled using a different Java compiler version. The generated source
+is located in the build folder under src/rwlibs/swig/java_src and similar for the other packages. See the Java
+version used by MatLab with
+
+	version -java
+
+## Examples ## 	{#sec_robwork_matlab_examples}
+To see examples of how the RobWork Java interface can be used in MatLab, please look in the examples folder
+for the different projects. For example scripts for RobWorkStudio look in the folder: 
+
+	RobWorkStudio/example/scripts/matlab
