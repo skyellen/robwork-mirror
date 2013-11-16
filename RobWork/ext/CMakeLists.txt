@@ -70,52 +70,52 @@ IF(RW_ENABLE_INTERNAL_ASSIMP_TARGET)
 ENDIF()
 
 # Copy libraries according to compiler (Linux users compile libraries manually)
-IF(WIN32)
+#IF(WIN32)
   # Set library suffix
-  IF(AMD64)
-    SET(BLAS_LAPACK_SUFFIX "_win64")
-  ELSE()
-    SET(BLAS_LAPACK_SUFFIX "_win32")
-  ENDIF()
+#  IF(AMD64)
+#    SET(BLAS_LAPACK_SUFFIX "_win64")
+#  ELSE()
+#    SET(BLAS_LAPACK_SUFFIX "_win32")
+#  ENDIF()
   
-  IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    SET(BLAS_LAPACK_SUFFIX "${BLAS_LAPACK_SUFFIX}d")   
-  ENDIF()
+#  IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+#    SET(BLAS_LAPACK_SUFFIX "${BLAS_LAPACK_SUFFIX}d")   
+#  ENDIF()
   
   # Set library destination and copy MinGW GLUT libraries
-  IF(MINGW)
-    SET(BLAS_LAPACK_DIR "libs_mingw")
-    SET(BLAS_LAPACK_EXTENSION "a")
+#  IF(MINGW)
+#    SET(BLAS_LAPACK_DIR "libs_mingw")
+#    SET(BLAS_LAPACK_EXTENSION "a")
     
-    configure_file("${Root}/libs_mingw/glut32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/glut32.lib" COPYONLY)
-    configure_file("${Root}/libs_mingw/glut32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/glut32.dll" COPYONLY)
-    INSTALL(FILES "${Root}/libs_mingw/glut32.lib" DESTINATION "${LIB_INSTALL_DIR}")
-    INSTALL(FILES "${Root}/libs_mingw/glut32.dll" DESTINATION "${BIN_INSTALL_DIR}")
+#    configure_file("${Root}/libs_mingw/glut32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/glut32.lib" COPYONLY)
+#    configure_file("${Root}/libs_mingw/glut32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/glut32.dll" COPYONLY)
+#    INSTALL(FILES "${Root}/libs_mingw/glut32.lib" DESTINATION "${LIB_INSTALL_DIR}")
+#    INSTALL(FILES "${Root}/libs_mingw/glut32.dll" DESTINATION "${BIN_INSTALL_DIR}")
     
-    SET(BLAS_LAPACK_DEST "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
-  ELSEIF(MSVC)
-    SET(BLAS_LAPACK_DIR "libs_vs")
-    SET(BLAS_LAPACK_EXTENSION "lib")
+#    SET(BLAS_LAPACK_DEST "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
+#  ELSEIF(MSVC)
+#    SET(BLAS_LAPACK_DIR "libs_vs")
+#    SET(BLAS_LAPACK_EXTENSION "lib")
     
-    SET(BLAS_LAPACK_DEST "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}")    
-  ENDIF()
+#    SET(BLAS_LAPACK_DEST "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}")    
+#  ENDIF()
   
   # Copy libraries
-  configure_file("${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 "${BLAS_LAPACK_DEST}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 COPYONLY)
-  configure_file("${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 "${BLAS_LAPACK_DEST}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 COPYONLY)
-  configure_file("${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 "${BLAS_LAPACK_DEST}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-                 COPYONLY)
+#  configure_file("${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 "${BLAS_LAPACK_DEST}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 COPYONLY)
+#  configure_file("${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 "${BLAS_LAPACK_DEST}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 COPYONLY)
+#  configure_file("${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 "${BLAS_LAPACK_DEST}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#                 COPYONLY)
   
   
   # Install libraries
-  INSTALL(FILES "${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
-                "${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
-                "${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
-          DESTINATION "${LIB_INSTALL_DIR}")
-ENDIF()
+#  INSTALL(FILES "${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
+#                "${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
+#                "${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
+#          DESTINATION "${LIB_INSTALL_DIR}")
+#ENDIF()
 
