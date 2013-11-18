@@ -40,6 +40,8 @@
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
 
+#include <rwlibs/control/Controller.hpp>
+#include <rwlibs/control/JointController.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
@@ -212,6 +214,8 @@ namespace swig {
 	// rwlibs calibration
 
 	// rwlibs control
+	typedef rwlibs::control::Controller Controller;
+	typedef rwlibs::control::JointController JointController;
 
 	// rwlibs opengl
 

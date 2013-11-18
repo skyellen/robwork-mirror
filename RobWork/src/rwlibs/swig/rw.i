@@ -91,7 +91,20 @@ namespace rw { namespace common {
 template<class T> class Ptr {
 public:
     Ptr();
+    
+#if defined(SWIGJAVA)
+ %typemap (in) T* %{
+  jclass objcls = jenv->GetObjectClass(jarg1_);
+  const jfieldID memField = jenv->GetFieldID(objcls, "swigCMemOwn", "Z");
+  jenv->SetBooleanField(jarg1_, memField, (jboolean)false);
+  $1 = *(T **)&jarg1;
+ %}
     Ptr(T* ptr);
+ %clear T*;
+#else
+    Ptr(T* ptr);
+#endif
+
     bool isShared();
     bool isNull();
     bool operator==(void* p) const;
@@ -512,8 +525,11 @@ public:
  * KINEMATICS
  ********************************************/
 
+%nodefaultctor State;
 class State
 {
+public:
+	std::size_t size() const;
 };
 
 %template (StateVector) std::vector<State>;
@@ -1932,6 +1948,33 @@ public:
 /********************************************
  * RWLIBS CONTROL
  ********************************************/
+ 
+%nodefaultctor Controller;
+class Controller {
+public:
+	const std::string& getName() const;
+	void setName(const std::string& name);
+};
+
+%nodefaultctor JointController;
+class JointController {
+public:
+	typedef enum {
+        POSITION = 1, CNT_POSITION = 2, VELOCITY = 4, FORCE = 8, CURRENT = 16
+    } ControlMode;
+    
+    virtual ~JointController();
+    virtual unsigned int getControlModes() = 0;
+    virtual void setControlMode(ControlMode mode) = 0;
+    virtual void setTargetPos(const Q& vals) = 0;
+    virtual void setTargetVel(const Q& vals) = 0;
+    virtual void setTargetAcc(const Q& vals) = 0;
+    virtual Device& getModel();
+    virtual Q getQ() = 0;
+    virtual Q getQd() = 0;
+};
+
+%template (JointControllerPtr) rw::common::Ptr<JointController>;
  
 /********************************************
  * RWLIBS OPENGL

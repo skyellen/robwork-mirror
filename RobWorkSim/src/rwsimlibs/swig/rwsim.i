@@ -11,6 +11,60 @@
 using namespace rwlibs::swig;
 using namespace rwsim::swig;
 
+#if defined(SWIGJAVA)
+
+#include <assert.h>
+struct callback_data {
+  JNIEnv *env;
+  jobject obj;
+};
+
+void java_ThreadSimulatorStepCallback(ThreadSimulator* sim, State &state, void *ptr) {
+  struct callback_data *data = (struct callback_data*) ptr;
+  JNIEnv* env = data->env;
+  bool fromThread = false;
+  
+  JavaVM* jvm;
+  env->GetJavaVM(&jvm);
+  JNIEnv* newEnv;
+  int getEnvStat = jvm->GetEnv((void **)&newEnv, JNI_VERSION_1_6);
+  if (getEnvStat == JNI_EDETACHED) {
+    fromThread = true;
+    if (jvm->AttachCurrentThread((void **) &newEnv, NULL) != 0) {
+      std::cout << "Failed to attach" << std::endl;
+      return;
+    } else {
+      env = newEnv;
+    }
+  //} else if (getEnvStat == JNI_OK) {
+  } else if (getEnvStat == JNI_EVERSION) {
+    std::cout << "GetEnv: version not supported" << std::endl;
+    return;
+  }
+  
+  const jclass callbackInterfaceClass = env->FindClass("dk/robwork/ThreadSimulatorStepCallbackHandler");
+  assert(callbackInterfaceClass);
+  const jmethodID meth = env->GetMethodID(callbackInterfaceClass, "callback", "(Ldk/robwork/ThreadSimulator;Ldk/robwork/State;)V");
+  assert(meth);
+  
+  jclass threadSimClass = env->FindClass("dk/robwork/ThreadSimulator");
+  jmethodID threadSimConstructor = env->GetMethodID(threadSimClass, "<init>", "(JZ)V");
+  jobject jsim = env->NewObject(threadSimClass, threadSimConstructor, (jlong) sim, (jboolean)false);
+  
+  jclass stateClass = env->FindClass("dk/robwork/State");
+  jmethodID stateConstructor = env->GetMethodID(stateClass, "<init>", "(JZ)V");
+  jobject jstate = env->NewObject(stateClass, stateConstructor, (jlong) &state, (jboolean)false);
+  
+  env->CallVoidMethod(data->obj, meth, jsim, jstate);
+  if (env->ExceptionCheck()) {
+    env->ExceptionDescribe();
+  }
+  
+  if (fromThread) {
+    jvm->DetachCurrentThread();
+  }
+}
+#endif
 %}
 
 %include <std_string.i>
@@ -36,6 +90,45 @@ rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
 rw::common::Ptr<ThreadSimulator> getSimulatorInstance();
 void removeSimulatorInstance(const std::string& id);
 std::vector<std::string> getSimulatorInstances();
+
+/********************************************
+ * Boost
+ ********************************************/
+
+#if defined(SWIGJAVA)
+%typemap(jstype) cThreadSimulatorStepCallback fct "ThreadSimulatorStepCallbackHandler";
+%typemap(jtype) cThreadSimulatorStepCallback fct "ThreadSimulatorStepCallbackHandler";
+%typemap(jni) cThreadSimulatorStepCallback fct "jobject";
+%typemap(javain) cThreadSimulatorStepCallback fct "$javainput";
+
+%typemap(in,numinputs=1) (cThreadSimulatorStepCallback fct, void *userdata) {
+  struct callback_data *data = (struct callback_data*) malloc(sizeof *data);
+  data->env = jenv;
+  data->obj = JCALL1(NewGlobalRef, jenv, $input);
+  JCALL1(DeleteLocalRef, jenv, $input);
+  $1 = java_ThreadSimulatorStepCallback;
+  $2 = data;
+}
+#endif
+
+%nodefaultctor ThreadSimulatorStepCallback;
+class ThreadSimulatorStepCallback {
+public:
+	// Make pass by value possible in setStepCallback
+	ThreadSimulatorStepCallback(const ThreadSimulatorStepCallback &cb);
+};
+
+%nodefaultctor ThreadSimulatorStepCallbackEnv;
+class ThreadSimulatorStepCallbackEnv/*: public ThreadSimulatorStepCallback*/ {
+public:
+	ThreadSimulatorStepCallbackEnv(const ThreadSimulatorStepCallbackEnv &cb);
+	ThreadSimulatorStepCallbackEnv(cThreadSimulatorStepCallback fct, void *userdata);
+	void set(cThreadSimulatorStepCallback fct, void *userdata);
+#if defined(SWIGJAVA)
+	%rename(dispatch) operator();
+#endif
+	void operator()(ThreadSimulator* sim, State& state);
+};
 
 /********************************************
  * CONTACTS
@@ -184,6 +277,62 @@ public:
     void setTarget(const Transform3D& target, const VelocityScrew6D& vals);
 
 };
+
+struct PDParam {
+	PDParam();
+	PDParam(double p, double d);
+	double P;
+	double D;
+};
+
+%template (PDParamVector) std::vector<PDParam>;
+
+%nodefaultctor PDController;
+class PDController
+{
+public:
+	PDController(
+	        const std::string& name,
+	        rw::common::Ptr<DynamicDevice> rdev,
+			JointController::ControlMode cmode,
+			const std::vector<PDParam>& pdparams,
+			double dt
+			);
+
+	PDController(
+	        const std::string& name,
+	        rw::common::Ptr<DynamicDevice> rdev,
+			JointController::ControlMode cmode,
+			const PDParam& pdparam,
+			double dt
+			);
+
+	virtual ~PDController();
+
+	std::vector<PDParam> getParameters();
+	void setParameters(const std::vector<PDParam>& params);
+	double getSampleTime();
+	void setSampleTime(double stime);
+
+	// From SimulatedController
+	void update(const Simulator::UpdateInfo& info, State& state);
+	void reset(const State& state);
+	Controller* getController();
+	std::string getControllerName();
+    void setEnabled(bool enabled);
+    bool isEnabled();
+
+	// From JointController
+	unsigned int getControlModes();
+	void setControlMode(JointController::ControlMode mode);
+	void setTargetPos(const Q& target);
+	void setTargetVel(const Q& vals);
+	void setTargetAcc(const Q& vals);
+	Q getQ();
+	Q getQd();
+};
+
+%template (PDControllerPtr) rw::common::Ptr<PDController>;
 
 %nodefaultctor SerialDeviceController;
 class SerialDeviceController //: public rwlibs::simulation::SimulatedController 
@@ -641,6 +790,9 @@ public:
         rw::common::Ptr<SerialDeviceController> findSerialDeviceController(const std::string& name)
         { return $self->DynamicWorkCell::findController<SerialDeviceController>(name); }
         
+        rw::common::Ptr<PDController> findPDController(const std::string& name)
+        { return $self->DynamicWorkCell::findController<PDController>(name); }
+        
         void setGravity(double x, double y, double z){
             $self->DynamicWorkCell::setGravity( rw::math::Vector3D<>(x,y,z) );
         }
@@ -662,6 +814,12 @@ public:
 /********************************************
  * LOADERS
  ********************************************/
+
+class DynamicWorkCellLoader
+{
+public:
+    static rw::common::Ptr<DynamicWorkCell> load(const std::string& filename);
+};
 
 /********************************************
  * RWPHYSICS
@@ -834,10 +992,15 @@ class ThreadSimulator {
 		double getTime();
 		rw::common::Ptr<DynamicSimulator> getSimulator();
 
-		//! The callback type for a hook into the step call
-		//typedef boost::function<void(ThreadSimulator* sim, State&)> StepCallback;
-		// void setStepCallBack(StepCallback cb);
-
+#if defined(SWIGJAVA)
+%extend {
+		void setStepCallBack(ThreadSimulatorStepCallbackEnv cb) {
+			(*$self).setStepCallBack((ThreadSimulatorStepCallback)cb);
+		}
+}
+#endif
+		void setStepCallBack(ThreadSimulatorStepCallback cb);
+		
 		bool isInError();
 		void setInError(bool inError);
 	};

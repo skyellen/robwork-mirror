@@ -38,6 +38,8 @@
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
+
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 #include <rwsim/simulator/DynamicSimulator.hpp>
@@ -45,6 +47,8 @@
 #include <rwsim/simulator/PhysicsEngine.hpp>
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
+
+#include <rwsimlibs/swig/ThreadSimulatorStepCallbackEnv.hpp>
 
 /**
 #ifdef __cplusplus
@@ -66,6 +70,7 @@ namespace swig {
 
 	// control
 	typedef rwsim::control::PoseController PoseController;
+	typedef rwsim::control::PDParam PDParam;
 	typedef rwsim::control::PDController PDController;
 	typedef rwsim::control::BodyController BodyController;
 	typedef rwsim::control::SerialDeviceController SerialDeviceController;
@@ -84,6 +89,7 @@ namespace swig {
     typedef rwsim::dynamics::SuctionCup SuctionCup;
 
 	// loaders
+    typedef rwsim::loaders::DynamicWorkCellLoader DynamicWorkCellLoader;
 
 	// rwphysics
 
@@ -93,6 +99,7 @@ namespace swig {
 	// simulator
     typedef rwsim::simulator::DynamicSimulator DynamicSimulator;
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
+    typedef rwsim::simulator::ThreadSimulator::StepCallback ThreadSimulatorStepCallback;
     typedef rwsim::simulator::PhysicsEngine PhysicsEngine;
 
 	// util
@@ -107,6 +114,8 @@ namespace swig {
 	// rwsimlibs plugins
 
 	// rwsimlibs swig
+    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv ThreadSimulatorStepCallbackEnv;
+    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv::cThreadSimulatorStepCallback cThreadSimulatorStepCallback;
 
 	// rwsimlibs tools
 

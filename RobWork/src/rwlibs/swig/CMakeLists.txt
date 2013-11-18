@@ -116,13 +116,13 @@ IF( build )
 	
 	
 	FIND_PACKAGE(Java)
-	INCLUDE(UseJava)
 	
     FIND_PACKAGE(JNI)
     INCLUDE(CMakeDependentOption)
     CMAKE_DEPENDENT_OPTION(RW_JAVA_BINDINGS_ENABLED "Enable java bindings." 
                        ON "JAVA_FOUND AND JNI_FOUND" OFF)
     IF( RW_JAVA_BINDINGS_ENABLED )
+		INCLUDE(UseJava)
 
         IF( JAVA_FOUND AND JNI_FOUND )
             MESSAGE(STATUS "RobWork: Java bindings ENABLED!")

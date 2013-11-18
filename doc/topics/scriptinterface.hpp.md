@@ -181,9 +181,10 @@ This is done by explicitly defining the path where the .so or .dll files are loc
 
 ## Examples ## 	{#sec_robwork_java_examples}
 To see examples of how the RobWork interface is used in Java, please look in the examples folder
-for the different projects. For example scripts for RobWorkStudio look in the folder: 
+for the different projects. For example look in the folders: 
 
 	RobWorkStudio/example/scripts/java
+	RobWorkSim/example/scripts/java
 <!--
 ## Naming Conventions ## 	{#sec_robwork_java_naming}
 Java has no concept of operator overloading which is used extensively in the C++ API.
@@ -196,18 +197,102 @@ To solve the problem of operator overloading in Java, the following naming conve
 | `operator/()`    | `divide()`          |
 | `operator==()`   | `equals()`          |
 
-## Memory Management & Garbage Collection ## 	{#sec_robwork_java_memory}
-Java uses automatic Garbage Collection where the liftetime of objects in C++ is controlled manually
-or by smart pointers.
-
-Each Java object tracks if it has ownership of the corresponding C++ object. It will have ownership if it was
-constructed by the Java constructor, or if it was returned by value. If C++ functions return by reference or
-as a pointer the ownership is set to false. In this case the original C++ object will not be destroyed when
-the Java object is destroyed.
-
-## Pointers, Arrays & References ## 	{#sec_robwork_java_pointers}
-Pass and return by reference, pointer or value as it is known in C++, can not be as easily controlled in Java.
 -->
+
+## Memory, Pointers, Arrays & References ## 	{#sec_robwork_java_memory}
+In C++ there is a distinction between pass and return by reference, pointer or value.
+This is not the case for Java. The Java object proxy is technically always the equivalent of a C++ pointer.
+
+The Java objects can own the corresponding C++ object in the native interface. If it owns the native object
+is will call the C++ destructor once the Java object is Garbage Collected. The C++ destructor can also be
+called explicitly with the delete() function. In this case the Java object will be invalid, and it is up
+to the user not to call methods on a object where delete has been called. If a object is returned from a C++ function
+by value, the equivalent method in Java will return a Java object that owns the underlying C++ object. Similar
+goes for objects constructed in Java by use of the new keyword.
+
+The Java object does not need to be the owner of the C++ object. If a object is returned as a
+reference or pointer in C++, the equivalent method in Java will return the same Java type object as before, but
+this time it will not be the owner of the underlying C++ object. This distinction between return by value and
+return by reference/pointer is in many ways what one would expect from standard C++ behaviour.
+
+For input arguments to methods called in Java, every Java object passed can be considered a pointer. If the C++ function takes a value the object will
+be copied, and if the C++ function takes a reference or pointer it will be passed by reference while being owned
+by Java.
+
+Now consider the following small example of creating a smart pointer:
+~~~~{.java}
+PathTimedStatePtr path = new PathTimedStatePtr(new PathTimedState());
+~~~~
+When the new PathTimedState() constructor is called an owned object is constructed.
+Note however that this is done anonymously and that there is no reference to the newly created object.
+Clearly this object might be deleted by the Garbage Collector right after creation. As it is owned
+it will also destruct the underlying C++ object.
+
+For smart pointers (all objects in java ending with Ptr), the constructor will take ownership of the
+object it is created from. In this example the PathTimedStatePtr changes the ownership of the anonymous
+PathTimedState object to false. This way only the Java object will be Garbage Collected, but the C++
+object will remain. The smart pointer will make sure that there is still a way to access the object.
+Note that the PathTimedStatePtr object is always owned no matter what. This is important as the native
+smart pointer object must follow the lifetime of the smart pointer in Java in order to maintain the correct
+reference count.
+
+Note that using the above code snippet is always fine as long as Ptr types are constructed. Care must in general
+be taken when anonymous objects are created, or owned objects might go out of scope. Garbage Collector issues
+might be difficult to debug as it is unknown when the Garbage Collector might run, and might cause weird issues in
+the program.
+
+A good advice is to always prefer the smart pointer objects. They will always keep the C++ objects alive while
+there still exists references to it (either in native code or in Java). In general one does not need to call the
+C++ destructors explicitly with the delete function. If delete is called, consider setting the object to null right
+after to avoid calling unavailable methods (these errors might be hard to debug).
+
+## Callbacks ## 	{#sec_robwork_java_callback}
+Callbacks are typically required when doing simulations. Java does not support function pointers in the same sense
+as C++ does, so instead the callback is implemented by implementing a callback interface. For instance consider the
+callback interface for the ThreadSimulator:
+
+~~~~{.java}
+package dk.robwork;
+
+public interface ThreadSimulatorStepCallbackHandler {
+	public void callback(ThreadSimulator simulator, State state);
+}
+~~~~
+
+To register a callback on the simulator a implementation of the interface must be provided by the user.
+
+The native ThreadSimulator expects a boost function object in the setStepCallBack function.
+Looking at the ThreadSimulator Java API, there are two available setStepCallBack methods that takes on of the
+following types as input:
+
+   * ThreadSimulatorStepCallback\n
+   Represents a boost function and is equivalent to the native StepCallback typedef in ThreadSimulator.
+   It is not possible to create this type from Java, but if callbacks are provided in native code this will be the type to use.
+   
+   * ThreadSimulatorStepCallbackEnv\n
+   Represents an extended boost function. To make callbacks to Java, information about the Java environment must be stored.
+   The extended type allows this. All callbacks defined in Java is created from this type, and this type is not compatible with the ThreadSimulatorStepCallback type.\n
+
+The following three lines of code sets the callback method on the ThreadSimulator (tsim): 
+
+~~~~{.java}
+ThreadSimulatorStepCallbackHandler cb = new Callback();
+ThreadSimulatorStepCallbackEnv fct = new ThreadSimulatorStepCallbackEnv(cb);
+tsim.setStepCallBack(fct);
+~~~~
+where Callback is the implementation of the ThreadSimulatorStepCallbackHandler interface.
+
+Now consider the memory mangement aspect. First consider the ThreadSimulatorStepCallbackHandler object.
+When creating the ThreadSimulatorStepCallbackEnv object, the native code keeps a reference to the
+ThreadSimulatorStepCallbackHandle object (as it need to call this back asynchronously).
+Hence the JVM will not do Garbage Collection on this object, and we are safe.
+
+Next consider the ThreadSimulatorStepCallbackEnv object. Clearly this object is a candidate for Garbage Collection.
+Note however that the native C++ function setStepCallBack specifies that arguments are passed by value. Therefore
+the ThreadSimulatorStepCallbackEnv object is copied, and Garbage Collection can safely delete the object afterwards.
+As the ThreadSimulatorStepCallbackEnv object is owned, the underlying C++ object is also removed. This if fine as it
+has already been copied.
+
 # MatLab interface # 	{#sec_robwork_matlab}
 As MatLab has good Java support, it is possible to interface RobWork from MatLab via Java.
 In general it is recommended that a basic Java program is first compiled and tested before

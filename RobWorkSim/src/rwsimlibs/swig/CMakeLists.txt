@@ -30,13 +30,13 @@ IF( SWIG_FOUND )
 	ENDIF()
     
     FIND_PACKAGE(Java)
-	INCLUDE(UseJava)
 	
     FIND_PACKAGE(JNI)
     INCLUDE(CMakeDependentOption)
     CMAKE_DEPENDENT_OPTION(RW_JAVA_BINDINGS_ENABLED "Enable java bindings." 
                        ON "JAVA_FOUND AND JNI_FOUND" OFF)
     IF( RW_JAVA_BINDINGS_ENABLED )
+		INCLUDE(UseJava)
 
         IF( JAVA_FOUND AND JNI_FOUND )
             MESSAGE(STATUS "RobWorkSim: Java bindings ENABLED!")
@@ -45,7 +45,7 @@ IF( SWIG_FOUND )
             # Put java files in different directory suitable for JAR generation later on
             SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/java_src/dk/robwork)
             # SWIG
-            SWIG_ADD_MODULE(rwsim_jni java rwsim.i)
+            SWIG_ADD_MODULE(rwsim_jni java rwsim.i ThreadSimulatorStepCallbackEnv.cpp)
             SWIG_LINK_LIBRARIES(rwsim_jni rwsim ${ROBWORKSIM_LIBRARIES} ${ROBWORK_LIBRARIES} )
             # Force removal of previous Java compilation and source when interface file changes
             # This is required as types may be removed or change name
@@ -67,6 +67,7 @@ IF( SWIG_FOUND )
             	COMMAND cmake -E remove_directory "${RWSIM_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc"
         		COMMAND cmake -E echo "Copying Java source..."
                 COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LoaderRWSim.java java_src/dk/robwork/LoaderRWSim.java
+                COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/ThreadSimulatorStepCallbackHandler.java java_src/dk/robwork/ThreadSimulatorStepCallbackHandler.java
         		COMMAND cmake -E echo "Compiling Java files..."
                 COMMAND cmake -E make_directory java_build/dk/robwork
                 COMMAND ${Java_JAVAC_EXECUTABLE} -cp ${RW_LIBS}/rw_java.jar -d ${CMAKE_CURRENT_BINARY_DIR}/java_build java_src/dk/robwork/*.java
