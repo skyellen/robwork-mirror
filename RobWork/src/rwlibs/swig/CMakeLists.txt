@@ -115,16 +115,17 @@ IF( build )
     ENDIF() 	
 	
 	
-	FIND_PACKAGE(Java)
-	
+	FIND_PACKAGE(Java)	
     FIND_PACKAGE(JNI)
+
     INCLUDE(CMakeDependentOption)
     CMAKE_DEPENDENT_OPTION(RW_JAVA_BINDINGS_ENABLED "Enable java bindings." 
                        ON "JAVA_FOUND AND JNI_FOUND" OFF)
     IF( RW_JAVA_BINDINGS_ENABLED )
-		INCLUDE(UseJava)
 
         IF( JAVA_FOUND AND JNI_FOUND )
+        	INCLUDE(UseJava)
+        
             MESSAGE(STATUS "RobWork: Java bindings ENABLED!")
             INCLUDE_DIRECTORIES(${JAVA_INCLUDE_DIRS} ${JNI_INCLUDE_DIRS})
             set(CMAKE_SWIG_FLAGS "-package" "dk.robwork")
