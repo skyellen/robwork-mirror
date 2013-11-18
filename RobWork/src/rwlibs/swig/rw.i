@@ -16,6 +16,7 @@ using rw::trajectory::Timed;
 using rw::trajectory::Trajectory;
 using rw::trajectory::InterpolatorTrajectory;
 using rw::pathplanning::PathPlanner;
+using rwlibs::task::Task;
 %}
 
 %pragma(java) jniclassclassmodifiers="class"
@@ -81,6 +82,7 @@ void writelog(const std::string& msg);
 namespace std {
 	%template(StringVector) std::vector<string>;
 	%template(DoubleVector) std::vector<double>;
+	%template(IntVector) std::vector<int>;
 };
 
 /********************************************
@@ -2111,6 +2113,61 @@ public:
 /********************************************
  * RWLIBS TASK
  ********************************************/
+
+template <class T>
+class Task
+{
+};
+
+%template (TaskSE3) Task<Transform3D>;
+
+%template (TaskSE3Ptr) rw::common::Ptr<Task<Transform3D> >;
+
+class GraspTask {
+public:
+    typedef enum Status {
+        UnInitialized = 0,
+        Success, // 1
+        CollisionInitially, // 2
+        ObjectMissed, // 3
+        ObjectDropped, // 4
+        ObjectSlipped, // 5
+        TimeOut, // 6
+        SimulationFailure, // 7
+        InvKinFailure, // 8
+        PoseEstimateFailure, // 9
+        CollisionFiltered, // 10
+        CollisionObjectInitially, // 11
+        CollisionEnvironmentInitially, // 12
+        CollisionDuringExecution, // 13
+        Interference, // 14
+        WrenchInsufficient, // 15
+        SizeOfStatusArray
+     } TestStatus;
+
+    GraspTask():
+    GraspTask(rw::common::Ptr<Task<Transform3D> > task);
+    rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+    std::string getGripperID();
+    std::string getTCPID();
+    std::string getGraspControllerID();
+    void setGripperID(const std::string& id);
+    void setTCPID(const std::string& id);
+    void setGraspControllerID(const std::string& id);
+    //void addSubTask( class GraspSubTask& stask);
+    //std::vector<class GraspSubTask>& getSubTasks(){ return _subtasks;};
+    //void filterTasks( std::vector<GraspTask::TestStatus> &includeMask);
+    //std::vector<std::pair<class GraspSubTask*,class GraspTarget*> > getAllTargets();
+    static std::string toString(TestStatus status);
+    static void saveUIBK(rw::common::Ptr<GraspTask> task, const std::string& name );
+    static void saveRWTask(rw::common::Ptr<GraspTask> task, const std::string& name );
+    static void saveText(rw::common::Ptr<GraspTask> task, const std::string& name );
+    static rw::common::Ptr<GraspTask> load(const std::string& name);
+    static rw::common::Ptr<GraspTask> load(std::istringstream& inputStream);
+    rw::common::Ptr<GraspTask> clone();
+};
+
+%template (GraspTaskPtr) rw::common::Ptr<GraspTask>;
 
 /********************************************
  * RWLIBS TOOLS

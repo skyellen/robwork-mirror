@@ -45,6 +45,8 @@
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
+#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
@@ -101,6 +103,8 @@ namespace swig {
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
     typedef rwsim::simulator::ThreadSimulator::StepCallback ThreadSimulatorStepCallback;
     typedef rwsim::simulator::PhysicsEngine PhysicsEngine;
+    typedef rwsim::simulator::PhysicsEngineFactory PhysicsEngineFactory;
+    typedef rwsim::simulator::GraspTaskSimulator GraspTaskSimulator;
 
 	// util
 

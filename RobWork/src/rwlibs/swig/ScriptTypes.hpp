@@ -49,6 +49,8 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
+#include <rwlibs/task/Task.hpp>
+#include <rwlibs/task/GraspTask.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -240,6 +242,8 @@ namespace swig {
 	// rwlibs swig
 
 	// rwlibs task
+	typedef rwlibs::task::Task<rw::math::Transform3D<double> > TaskSE3;
+	typedef rwlibs::task::GraspTask GraspTask;
 
 	// rwlibs tools
 

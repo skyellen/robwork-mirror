@@ -8,6 +8,7 @@
 #endif
 
 #include <rw/common/Ptr.hpp>
+using rw::trajectory::Trajectory;
 using namespace rwlibs::swig;
 using namespace rwsim::swig;
 
@@ -173,7 +174,7 @@ class ContactStrategy //: public rw::proximity::ProximityStrategy
 public:
 	ContactStrategy();
 	virtual ~ContactStrategy() {};
-	virtual bool match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) = 0;
+	virtual bool match(rw::common::Ptr<GeometryData> geoA, rw::common::Ptr<GeometryData> geoB) = 0;
 	/*
 	virtual std::vector<Contact> findContacts(ProximityModel* a,
 			const Transform3D& wTa,
@@ -928,6 +929,16 @@ public:
 
 %template (PhysicsEnginePtr) rw::common::Ptr<PhysicsEngine>;
 
+%nodefaultctor PhysicsEngineFactory;
+class PhysicsEngineFactory
+{
+public:
+	static std::vector<std::string> getEngineIDs();
+	static bool hasEngineID(const std::string& engineID);
+	static rw::common::Ptr<PhysicsEngine> makePhysicsEngine(const std::string& engineID, rw::common::Ptr<DynamicWorkCell> dwc);
+    static rw::common::Ptr<PhysicsEngine> makePhysicsEngine(rw::common::Ptr<DynamicWorkCell> dwc);
+};
+
 class DynamicSimulator: public Simulator
 {
 public:
@@ -959,7 +970,7 @@ public:
 	 void setDynamicsEnabled(rw::common::Ptr<Body> body, bool enabled);
 	 // interfaces for manipulating/controlling bodies
 	 void setTarget(rw::common::Ptr<Body> body, const Transform3D& t3d, State& state);
-	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<rw::trajectory::Trajectory<Transform3D> > traj, State& state);
+	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<Trajectory<Transform3D> > traj, State& state);
 
 	 void disableBodyControl( rw::common::Ptr<Body> body );
 	 void disableBodyControl( );
@@ -1006,6 +1017,38 @@ class ThreadSimulator {
 	};
 
 %template (ThreadSimulatorPtr) rw::common::Ptr<ThreadSimulator>;
+%template (ThreadSimulatorPtrVector) std::vector<rw::common::Ptr<ThreadSimulator> >;
+
+%nodefaultctor GraspTaskSimulator;
+class GraspTaskSimulator
+{
+public:
+	GraspTaskSimulator(rw::common::Ptr<DynamicWorkCell> dwc, int nrThreads=1);
+	virtual ~GraspTaskSimulator();
+	void load(const std::string& filename);
+	void load(rw::common::Ptr<GraspTask> graspTasks);
+	rw::common::Ptr<GraspTask> getTasks();
+	rw::common::Ptr<GraspTask> getResult();
+	size_t getNrTargets();
+	rw::common::Ptr<ThreadSimulator> getSimulator();
+	std::vector<rw::common::Ptr<ThreadSimulator> > getSimulators();
+	void init(rw::common::Ptr<DynamicWorkCell> dwc, const State& initState);
+	void startSimulation(const State& initState);
+	void pauseSimulation();
+	void resumeSimulation();
+	bool isRunning();
+	bool isFinished();
+	int getStat(GraspTask::TestStatus status);
+	std::vector<int> getStat();
+	std::string getStatDescription();
+	int getNrTargetsDone();
+	void setAlwaysResting(bool alwaysResting);
+	void setStepDelay(int delay);
+	void setWallTimeLimit(double limit);
+	void setSimTimeLimit(double limit);
+};
+
+%template (GraspTaskSimulatorPtr) rw::common::Ptr<GraspTaskSimulator>;
 
 /********************************************
  * UTIL
