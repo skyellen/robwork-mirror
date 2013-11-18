@@ -49,13 +49,13 @@ Transform3D<> Kinematics::worldTframe(const Frame* to, const State& state)
 Transform3D<> Kinematics::frameTframe(const Frame* from, const Frame* to,
                                       const State& state)
 {
-/*    RW_ASSERT(from != NULL);
+    RW_ASSERT(from != NULL);
     RW_ASSERT(to != NULL);
     FKRange range(from, to, state);
     return range.get(state);
-    */
+    
     // this is about 4 times faster than using fkrange
-    return inverse(Kinematics::worldTframe(from,state))*Kinematics::worldTframe(to,state);
+    //return inverse(Kinematics::worldTframe(from,state))*Kinematics::worldTframe(to,state);
 }
 
 //----------------------------------------------------------------------
