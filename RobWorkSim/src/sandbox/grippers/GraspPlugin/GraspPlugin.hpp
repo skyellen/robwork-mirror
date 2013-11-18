@@ -86,7 +86,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		void planTasks();
 		
 		/// Shows tasks in RWS window.
-		void showTasks(rwlibs::task::GraspTask::Ptr tasks);
+		void showTasks();
 		
 		/// Sets up the GUI.
 		void setupGUI();
@@ -118,6 +118,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		// flags
 		bool _slowMotion;
 		bool _showTasks;
+		bool _showSamples;
 		bool _silentMode;
 		
 		// grasp parameters
@@ -167,6 +168,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QPushButton* _loadTaskButton;
 		QPushButton* _saveTaskButton;
 		QCheckBox* _showCheck;
+		QCheckBox* _samplesCheck;
 		QProgressBar* _progressBar;
 		QPushButton* _startButton;
 		QPushButton* _stopButton;

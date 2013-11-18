@@ -46,6 +46,7 @@ GraspPlugin::GraspPlugin() :
     _graspSim(NULL),
     _slowMotion(false),
     _showTasks(true),
+    _showSamples(false),
     _silentMode(false),
     _nOfTargetsToGen(10),
     _tasks(NULL),
@@ -189,7 +190,7 @@ void GraspPlugin::guiEvent()
 		_progressBar->setValue(0);
 		_progressBar->setMaximum(_tasks->getAllTargets().size());
 		
-		if (_showCheck->isChecked()) showTasks(_tasks);
+		showTasks();
 	}
 	
 	else if (obj == _saveTaskButton) {
@@ -223,11 +224,17 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _planButton) {
 		planTasks();
+		showTasks();
 	}
 	
 	else if (obj == _showCheck) {
 		_showTasks = _showCheck->isChecked();
-		showTasks(_tasks);
+		showTasks();
+	}
+	
+	else if (obj == _samplesCheck) {
+		_showSamples = _samplesCheck->isChecked();
+		showTasks();
 	}
 	
 	else if (obj == _loadGripperButton) {		
@@ -396,7 +403,7 @@ void GraspPlugin::updateSim()
 		//calculateQuality(_gripper->getTasks(), _generator->getSamples());
 	}
 	
-	if (_showCheck->isChecked()) showTasks(_tasks);
+	showTasks();
 }
 
 
@@ -431,29 +438,35 @@ void GraspPlugin::planTasks()
 {
 	_nOfTargetsToGen = _nAutoEdit->text().toInt();
 	
-	cout << "Planning tasks..." << endl;
+	cout << "Planning " << _nOfTargetsToGen << " tasks..." << endl;
 	log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
 	
 	if (_gripper == NULL) {
 		cout << "NULL gripper" << endl;
 	}
 	
-	try {
-		_generator = new TaskGenerator(_td);
-		
-		_generator->generateTask(_nOfTargetsToGen, _initState);
-		_tasks = _generator->getTasks();
-		_samples = _generator->getSamples();
-	} catch (rw::common::Exception& e) {
-		QMessageBox::critical(NULL, "RW Exception", e.what());
-	}
+	//bool finally = true;
+	//do {
+		try {
+			_generator = ownedPtr(new TaskGenerator(_td));
+			
+			_generator->generateTask(_nOfTargetsToGen, _initState);
+			
+			_tasks = _generator->getTasks();
+			_samples = _generator->getSamples();
+		} catch (rw::common::Exception& e) {
+			QMessageBox::critical(NULL, "RW Exception", e.what());
+			//finally = false;
+		}
+	//} while (!finally);
 	
+	cout << "Done." << endl;
 	log().info() << "Done." << endl;
 	
 	_progressBar->setValue(0);
 	_progressBar->setMaximum(_nOfTargetsToGen);
 
-	if (_showCheck->isChecked()) showTasks(_tasks);
+	//showTasks();
 }
 
 
@@ -513,20 +526,36 @@ void GraspPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 			getRobWorkStudio()->setViewTransform(nviewT);
 			getRobWorkStudio()->updateAndRepaint();
 			break;
+			
+		case 'Z':
+			nviewT = Transform3D<>(1.1*viewT.P(), viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
+			
+		case 'X':
+			nviewT = Transform3D<>(viewT.P()/1.1, viewT.R());
+			getRobWorkStudio()->setViewTransform(nviewT);
+			getRobWorkStudio()->updateAndRepaint();
+			break;
 	}
 }
 
 
 
-void GraspPlugin::showTasks(rwlibs::task::GraspTask::Ptr tasks)
+void GraspPlugin::showTasks()
 {
 	//return;
 	vector<RenderTargets::Target> rtargets;
 	Transform3D<> wTo = Kinematics::worldTframe(_td->getTargetFrame(), _wc->getDefaultState());
 	
-	if (tasks == NULL) { return; }
+	rwlibs::task::GraspTask::Ptr tasks = NULL;
 	
-	if (_showTasks) {
+	if (_showTasks) tasks = _tasks;
+	if (_showSamples) tasks = _samples;
+	//if (tasks == NULL) { return; }
+	
+	if (tasks != NULL && (_showTasks || _showSamples)) {
 		//BOOST_FOREACH (GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
 		typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 		BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
@@ -658,8 +687,13 @@ void GraspPlugin::setupGUI()
     
     _showCheck = new QCheckBox("Show tasks");
     _showCheck->setChecked(true);
-    simLayout->addWidget(_showCheck, row++, 0, 1, 2);
+    simLayout->addWidget(_showCheck, row, 0);
     connect(_showCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    
+    _samplesCheck = new QCheckBox("Show samples");
+    _samplesCheck->setChecked(false);
+    simLayout->addWidget(_samplesCheck, row++, 1);
+    connect(_samplesCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
     
     _progressBar = new QProgressBar;
     _progressBar->setFormat("%v of %m");

@@ -281,9 +281,12 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     //RW_WARN("SETUP TASK");
     
     // setup all samples
-    _samples = new GraspTask;
-    _samples->getSubTasks().resize(1);
-	GraspSubTask& atask = _samples->getSubTasks()[0];
+    //_samples = new GraspTask;
+    //_samples->getSubTasks().resize(1);
+	//GraspSubTask& atask = _samples->getSubTasks()[0];
+	GraspTask::Ptr atask = new GraspTask;
+	atask->getSubTasks().resize(1);
+    GraspSubTask& astask = atask->getSubTasks()[0];
     
     // prepare
     TriMeshSurfaceSampler sampler(_td->getTargetObject()->getGeometry()[0]);
@@ -316,7 +319,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 	}
 	//RW_WARN("PREPARE");
     
-    int failures = 0;
+    int failures_in_row = 0;
     for (int successes = 0; successes < nTargets;) {
 		//RW_WARN("LOOPY");
 		double graspW = 0.0;
@@ -339,8 +342,9 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
         if (!cdetect->inCollision(state, &result, true)) {
 			//RW_WARN("YAY");
             ++successes;
+            failures_in_row = 0;
             
-            // make new subtask
+            // make new subtask (for tasks)
             GraspSubTask subtask;
             subtask.offset = wTobj;
 			subtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
@@ -354,13 +358,24 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
             gtarget.result->objectTtcpTarget = target;
             subtask.addTarget(gtarget);
             gtask->addSubTask(subtask);
-            atask.addTarget(gtarget);
+            
+            // make new subtask (for samples only)
+            GraspSubTask asubtask;
+            /*asubtask.offset = wTobj;
+			asubtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			asubtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			asubtask.openQ = oq;
+			asubtask.closeQ = _closeQ;*/
+			asubtask.addTarget(gtarget);
+            atask->addSubTask(asubtask);
+            //atask.addTarget(gtarget);
         } else {
 			//RW_WARN("NAY");
 			
-			++failures;
-			if (failures > 1000*nTargets) {
-				RW_WARN("Something is rotten in the state of RobWork.");
+			++failures_in_row;
+			if (failures_in_row > 100) {
+				//RW_WARN("Something is rotten in the state of RobWork.");
+				RW_THROW("Something is rotten in the state of RobWork: " << successes << "/" << failures_in_row);
 				break;
 			}
 			
@@ -379,18 +394,28 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
             gtarget.result->gripperConfigurationGrasp = oq;
             //subtask.addTarget(gtarget); //
             //gtask->addSubTask(subtask); //
-            atask.addTarget(gtarget);
+            //atask.addTarget(gtarget);
+            
+            GraspSubTask asubtask;
+            /*asubtask.offset = wTobj;
+			asubtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			asubtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			asubtask.openQ = oq;
+			asubtask.closeQ = _closeQ;*/
+			asubtask.addTarget(gtarget);
+            atask->addSubTask(asubtask);
 		}
     }
     
     _tasks = gtask;
+    _samples = atask;
     
     // preliminary filtering
     Q preDist = _td->getPrefilteringDistance();
 	double R = 2.0 * sin(0.25 * preDist(1));
 	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
     //filterTasks(_tasks, diff);
-    //filterTasks(_samples, diff);
+    filterTasks(_samples, diff);
     
 	return _tasks;
 }

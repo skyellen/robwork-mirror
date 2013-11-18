@@ -126,7 +126,7 @@ double GripperTaskSimulator::calculateCoverage()
 	okTargets += TaskGenerator::countTasks(_gtask, GraspTask::Interference);
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::Success);
 	
-	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getSubTasks()[0].getTargets().size() << endl;
+	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getAllTargets().size() << endl;
 	DEBUG << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
 	coverage = 1.0 * okTargets / allTargets;
 	
@@ -225,19 +225,21 @@ void GripperTaskSimulator::evaluateGripper()
 	 
 	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
-	//double shape = calculateShape() / b.shape;
+	/* success ratio */
+	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
+	int samples = TaskGenerator::countTasks(_samples, GraspTask::Success); //_samples->getSubTasks()[0].getTargets().size();
+	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
+	
+	/* wrench */
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(0) / b.wrench;
 	
+	/* coverage */
 	double coverage = calculateCoverage() / b.coverage;
-	
-	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
-	int samples = _samples->getSubTasks()[0].getTargets().size();
-	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
+	// task set is filtered at this point
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
 	double quality = (
-		//w.shape * shape +
 		w.coverage * coverage +
 		w.success * successRatio +
 		w.wrench * wrench
@@ -248,7 +250,6 @@ void GripperTaskSimulator::evaluateGripper()
 	q->nOfExperiments = getNrTargets();
 	q->nOfSuccesses = successes;
 	q->nOfSamples = samples;
-	//q->shape = shape;
 	q->coverage = coverage;
 	q->success = successRatio;
 	q->wrench = wrench;
