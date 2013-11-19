@@ -1,0 +1,66 @@
+<WorkCell name="Belt scene 1">
+	
+	<!-- this is used for task description -->
+	<Property name="taskDescription">task.td.xml</Property>
+
+	<!-- gripper -->
+	<Frame name="gripper" refframe="WORLD">
+		<RPY>0 0 180</RPY>
+		<Pos>0 0 0.3</Pos>
+	</Frame>
+	
+	<Include file ="gripper/Gripper.xml"/>
+	
+	<!-- gripper TCP frame -->
+	<Frame name="TCPgripper" refframe="gripper.Base" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.05</Pos>
+	</Frame>
+ 
+	<!-- object (the target) -->
+	<Frame name="object" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.07501</Pos>
+		<Drawable name="objectGeo">
+			<!--<Polytope file="object_sw.stl"/>-->
+			<Cylinder radius="0.025" z="0.15"/>
+			<!--<Box x="0.05" y="0.05" z="0.15"/>-->
+		</Drawable>
+	</Frame>
+	
+	<!-- other objects (obstacles) -->
+	<Frame name="ob1" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>-0.1 0 0.07501</Pos>
+		<Drawable name="ob1Geo">
+			<Cylinder radius="0.025" z="0.15"/>
+			<!--<Box x="0.05" y="0.05" z="0.15"/>-->
+			<!--<Polytope file="obstacle.stl"/>-->
+		</Drawable>
+	</Frame>
+	
+	<Frame name="ob2" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0.1 0 0.07501</Pos>
+		<Drawable name="ob2Geo">
+			<Cylinder radius="0.025" z="0.15"/>
+			<!--<Polytope file="obstacle.stl"/>-->
+		</Drawable>
+	</Frame>
+	
+	<!-- table -->
+	<Frame name="table" refframe="WORLD" type="Fixed">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 -0.01</Pos>
+		<Drawable name="tableGeo">
+			<!--<Polytope file="table.stl"/>-->
+			<Box x="0.5" y="0.2" z="0.02"/>
+			<!--<Cylinder radius="0.5" z="0.02"/>-->
+		</Drawable>
+	</Frame>
+	
+	<!-- collision setup -->
+	<CollisionSetup file ="SceneCollisionSetup.xml"/>
+	
+</WorkCell>
+

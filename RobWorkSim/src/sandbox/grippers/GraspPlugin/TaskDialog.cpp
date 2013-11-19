@@ -89,8 +89,10 @@ void TaskDialog::createGUI()
 	
 	QGroupBox* distanceBox = new QGroupBox("Distance parameters");
 	QLabel* teachDistLabel = new QLabel("Teach distance");
+	QLabel* preDistLabel = new QLabel("Prefiltering distance");
 	QLabel* coverageDistLabel = new QLabel("Coverage distance");
 	_teachDistEdit = new QLineEdit("");
+	_preDistEdit = new QLineEdit("");
 	_coverageDistEdit = new QLineEdit("");
 	
 	QGroupBox* interferenceBox = new QGroupBox("Interference objects");
@@ -132,6 +134,8 @@ void TaskDialog::createGUI()
 	row = 0;
 	distLayout->addWidget(teachDistLabel, row, 0);
 	distLayout->addWidget(_teachDistEdit, row++, 1);
+	distLayout->addWidget(preDistLabel, row, 0);
+	distLayout->addWidget(_preDistEdit, row++, 1);
 	distLayout->addWidget(coverageDistLabel, row, 0);
 	distLayout->addWidget(_coverageDistEdit, row++, 1);
 	
@@ -201,6 +205,14 @@ void TaskDialog::updateGUI()
 	stringstream ss;
 	ss << teachDist;
 	_teachDistEdit->setText(QString::fromStdString(ss.str()));
+	
+	Q preDist = _td->getPrefilteringDistance();
+	preDist(1) *= Rad2Deg;
+	preDist(2) *= Rad2Deg;
+	ss.str("");
+	ss << preDist;
+	_preDistEdit->setText(QString::fromStdString(ss.str()));
+	
 	Q covDist = _td->getCoverageDistance();
 	//covDist(6) *= Rad2Deg;
 	covDist(1) *= Rad2Deg;
@@ -238,6 +250,15 @@ void TaskDialog::updateTaskDescription()
 	teachDist(3) *= Deg2Rad;
 	teachDist(4) *= Deg2Rad;
 	_td->setTeachDistance(teachDist);
+	
+	Q preDist;
+	ss.str(_preDistEdit->text().toStdString());
+	ss >> preDist;
+	//covDist(6) *= Deg2Rad;
+	preDist(1) *= Deg2Rad;
+	preDist(2) *= Deg2Rad;
+	_td->setPrefilteringDistance(preDist);
+	
 	Q covDist;
 	ss.str(_coverageDistEdit->text().toStdString());
 	ss >> covDist;

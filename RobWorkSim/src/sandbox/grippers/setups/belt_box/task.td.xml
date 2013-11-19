@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TaskDescription>
+	<Target>object</Target>
+	<Gripper>
+		<Name>gripper</Name>
+		<TCP>TCPgripper</TCP>
+		<Movable>gripper.Base</Movable>
+		<Controller>graspController</Controller>
+	</Gripper>
+	<InterferenceObjects>
+		<Object>ob1</Object>
+		<Object>ob2</Object>
+	</InterferenceObjects>
+	<Limits>
+		<Interference>1</Interference>
+		<Wrench>0</Wrench>
+	</Limits>
+	<Baseline>
+		<Shape>1</Shape>
+		<Coverage>1</Coverage>
+		<SuccessRatio>1</SuccessRatio>
+		<Wrench>1</Wrench>
+	</Baseline>
+	<Weights>
+		<Shape>0</Shape>
+		<Coverage>1</Coverage>
+		<SuccessRatio>1</SuccessRatio>
+		<Wrench>1</Wrench>
+	</Weights>
+	<TeachDistance> 10 10 10 45 360</TeachDistance>
+	<PrefilteringDistance> 0.005 15 15 </PrefilteringDistance>
+	<CoverageDistance> 0.01 15 15 </CoverageDistance>
+	<!--HintGrasps>
+		<Grasp>
+			<Pos> 0 -0.05 0.30004 </Pos>
+			<RPY> 0 -0 1.57 </RPY>
+		</Grasp>
+	</HintGrasps-->
+</TaskDescription>

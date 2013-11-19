@@ -1,0 +1,53 @@
+<DynamicWorkcell workcell="Scene.wc.xml">
+	
+	<!-- physics engine parameters -->
+	<PhysicsEngine>
+		<!--CollisionMargin>0.001</CollisionMargin-->
+		<RestitutionModel>Newton</RestitutionModel>
+		<ContactModel>Guendel</ContactModel>
+		<AutoDisable>true</AutoDisable>
+		<Property name="StepMethod">WorldStep</Property> 
+	</PhysicsEngine>
+
+	<!-- gravity -->
+	<Gravity>0 0 -9.81</Gravity>
+
+	<!-- materials -->
+	<Include file="DynamicMaterialDataBase.xml"/>
+
+	<!-- rigid bodies -->	
+	<RigidBody frame="object">
+		<Mass>1</Mass>
+		<EstimateInertia/>
+		<Integrator>Euler</Integrator>
+		<MaterialID>Plastic</MaterialID>
+	</RigidBody>
+	
+	<RigidBody frame="ob1">
+		<Mass>1</Mass>
+		<EstimateInertia/>
+		<Integrator>Euler</Integrator>
+		<MaterialID>Plastic</MaterialID>
+	</RigidBody>
+	
+	<RigidBody frame="ob2">
+		<Mass>1</Mass>
+		<EstimateInertia/>
+		<Integrator>Euler</Integrator>
+		<MaterialID>Plastic</MaterialID>
+	</RigidBody>
+	
+	<FixedBody frame="table">
+		<Mass>1000</Mass>
+		<EstimateInertia/>
+		<Integrator>Euler</Integrator>
+		<MaterialID>Rubber</MaterialID>
+	</FixedBody>
+ 
+	<BodyContactSensor name="bcsensor1" body="object"/>
+ 
+	<!-- gripper -->
+	<Include file="gripper/Gripper.dwc.xml"/>
+ 
+</DynamicWorkcell>
+

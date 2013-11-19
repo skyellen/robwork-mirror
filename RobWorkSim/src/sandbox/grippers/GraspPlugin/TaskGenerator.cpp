@@ -419,8 +419,11 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     Q preDist = _td->getPrefilteringDistance();
 	double R = 2.0 * sin(0.25 * preDist(1));
 	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
-    //filterTasks(_tasks, diff);
+    filterTasks(_tasks, diff);
     filterTasks(_samples, diff);
+    
+    cout << "Generated " << _tasks->getAllTargets().size() << " tasks & "
+		<< _samples->getAllTargets().size() << " samples." << endl;
     
 	return _tasks;
 }

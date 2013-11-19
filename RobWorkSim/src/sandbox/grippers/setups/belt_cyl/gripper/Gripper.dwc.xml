@@ -1,0 +1,35 @@
+<IncludeData>
+	
+	<!-- device -->
+	<RigidDevice device="gripper">
+		
+		<ForceLimit joint="LeftFinger">25</ForceLimit>	
+		<ForceLimit joint="RightFinger">25</ForceLimit>	
+
+		<!-- base -->
+		<KinematicBase frame="Base">
+			<MaterialID>Plastic</MaterialID>
+		</KinematicBase> 
+
+		<!-- fingers -->
+		<RigidJoint joint="LeftFinger">
+			<Mass>0.1</Mass>
+			<EstimateInertia/>
+			<MaterialID>Plastic</MaterialID>
+		</RigidBody>
+
+		<RigidJoint joint="RightFinger">
+			<Mass>0.1</Mass>
+			<EstimateInertia/>
+			<MaterialID>Plastic</MaterialID>
+		</RigidBody>	
+	</RigidDevice>
+
+	<!-- controller -->
+	<PDDeviceController name="graspController" device="gripper" type="Position">
+		<Sync>False</Sync>
+		<PDParams>10 0.3</PDParam>
+		<TimeStep>0.01</TimeStep>
+	</PDDeviceController>
+	
+</IncludeData>

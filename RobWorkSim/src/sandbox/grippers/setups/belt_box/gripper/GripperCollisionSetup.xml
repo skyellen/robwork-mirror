@@ -1,0 +1,7 @@
+<CollisionSetup>
+	<Exclude>
+		<FramePair first="Base" second="LeftFinger"/>
+		<FramePair first="Base" second="RightFinger"/>
+		<FramePair first="LeftFinger" second="RightFinger"/>
+	</Exclude>
+</CollisionSetup>
