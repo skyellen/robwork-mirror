@@ -137,6 +137,8 @@ double GripperTaskSimulator::calculateCoverage()
 
 rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 {
+	/* this only takes into account succesful grasps */
+	
 	Q wrench(2, 0, 0);
 	
 	int success = 0;

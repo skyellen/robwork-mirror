@@ -191,7 +191,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	typedef GraspResult::Ptr ValueType;
 	typedef KDTreeQ<ValueType> NNSearch;
 	vector<NNSearch::KDNode> nodes;
-	//int nTasks = nodes.size();
+	int nTasks = 0;
 	
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
@@ -213,6 +213,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
             //cout << key << endl;
             
 			nodes.push_back(NNSearch::KDNode(key, p.second->getResult()));
+			
+			++nTasks;
 		}
 	}
 	
@@ -232,13 +234,16 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 				if (n == &node) continue;
 				
 				if (n->value->testStatus != GraspTask::TimeOut) ++removed;
-				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::TimeOut;
+				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::TimeOut; // this is a hack
 			}
 			nRemoved += removed;
 		}
 	}
 	
+	double avgRemoved = 1.0 * nRemoved / nTasks;
+	
 	//cout << "Total number of grasps: " << nTasks << " Filtered: " << nTasks - nRemoved << endl;
+	cout << "Removed " << avgRemoved << " neighbouring nodes on average." << endl;
 	
 	return tasks;
 }
