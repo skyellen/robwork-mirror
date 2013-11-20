@@ -6,6 +6,11 @@
 #if defined (SWIGLUA)
     #include <rwsimlibs/swig/Lua.hpp>
 #endif
+#if defined (SWIGJAVA)
+	#include <rwsimlibs/swig/ThreadSimulatorStepCallbackEnv.hpp>
+    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv ThreadSimulatorStepCallbackEnv;
+    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv::cThreadSimulatorStepCallback cThreadSimulatorStepCallback;
+#endif
 
 #include <rw/common/Ptr.hpp>
 using rw::trajectory::Trajectory;
@@ -119,17 +124,17 @@ public:
 	ThreadSimulatorStepCallback(const ThreadSimulatorStepCallback &cb);
 };
 
+#if defined(SWIGJAVA)
 %nodefaultctor ThreadSimulatorStepCallbackEnv;
 class ThreadSimulatorStepCallbackEnv/*: public ThreadSimulatorStepCallback*/ {
 public:
 	ThreadSimulatorStepCallbackEnv(const ThreadSimulatorStepCallbackEnv &cb);
 	ThreadSimulatorStepCallbackEnv(cThreadSimulatorStepCallback fct, void *userdata);
 	void set(cThreadSimulatorStepCallback fct, void *userdata);
-#if defined(SWIGJAVA)
 	%rename(dispatch) operator();
-#endif
 	void operator()(ThreadSimulator* sim, State& state);
 };
+#endif
 
 /********************************************
  * CONTACTS

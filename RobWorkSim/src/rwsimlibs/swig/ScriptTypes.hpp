@@ -50,8 +50,6 @@
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
-#include <rwsimlibs/swig/ThreadSimulatorStepCallbackEnv.hpp>
-
 /**
 #ifdef __cplusplus
 extern "C" {
@@ -118,8 +116,6 @@ namespace swig {
 	// rwsimlibs plugins
 
 	// rwsimlibs swig
-    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv ThreadSimulatorStepCallbackEnv;
-    typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv::cThreadSimulatorStepCallback cThreadSimulatorStepCallback;
 
 	// rwsimlibs tools
 
