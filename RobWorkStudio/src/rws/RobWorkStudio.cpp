@@ -92,9 +92,9 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     :
     QMainWindow(NULL),
     _robwork(RobWork::getInstance()),
+    _aboutBox(NULL),
     _inStateUpdate(false),
-    _settingsMap(NULL),
-    _aboutBox(NULL)
+    _settingsMap(NULL)
 {
 	//Always create the about box.
 	_aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);

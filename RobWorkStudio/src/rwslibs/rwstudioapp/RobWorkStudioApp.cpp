@@ -26,13 +26,16 @@ using namespace robwork;
 using namespace rws;
 
 RobWorkStudioApp::RobWorkStudioApp(const std::string& args):
-            _args(args),_isRunning(false),_rwstudio(NULL)
-        {}
+	_rwstudio(NULL),
+	_args(args),
+	_thread(NULL),
+	_isRunning(false)
+{
+}
 
 
 RobWorkStudioApp::~RobWorkStudioApp()
 {
-
 }
 
 void RobWorkStudioApp::start(){

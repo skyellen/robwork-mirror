@@ -61,7 +61,7 @@ QT_BEGIN_NAMESPACE
 class QtPropertyPrivate
 {
 public:
-    QtPropertyPrivate(QtAbstractPropertyManager *manager) : m_enabled(true), m_modified(false), m_manager(manager) {}
+    QtPropertyPrivate(QtAbstractPropertyManager *manager) : q_ptr(0), m_enabled(true), m_modified(false), m_manager(manager) {}
     QtProperty *q_ptr;
 
     QSet<QtProperty *> m_parentItems;
@@ -1223,6 +1223,7 @@ public:
 };
 
 QtAbstractPropertyBrowserPrivate::QtAbstractPropertyBrowserPrivate() :
+   q_ptr(0),
    m_currentItem(0)
 {
 }
@@ -1814,14 +1815,14 @@ QtBrowserItem *QtAbstractPropertyBrowser::insertProperty(QtProperty *property,
     QList<QtProperty *> pendingList = properties();
     int pos = 0;
     int newPos = 0;
-    QtProperty *properAfterProperty = 0;
+    // Unused: QtProperty *properAfterProperty = 0;
     while (pos < pendingList.count()) {
         QtProperty *prop = pendingList.at(pos);
         if (prop == property)
             return 0;
         if (prop == afterProperty) {
             newPos = pos + 1;
-            properAfterProperty = afterProperty;
+            //properAfterProperty = afterProperty;
         }
         pos++;
     }

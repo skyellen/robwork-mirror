@@ -114,8 +114,8 @@ namespace
     {
     private:
         double _x, _y, _z;
-        QFont _font;
         QString _text;
+        QFont _font;
         QGLWidget *_qglwidget;
 
 

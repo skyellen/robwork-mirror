@@ -10,7 +10,6 @@ using namespace rw::common;
 rw::sensor::Image::Ptr ImageUtil::toRwImage( const QImage& srcimg ){
     if(srcimg.isNull())
         return NULL;
-    int depth = srcimg.depth();
     int w = srcimg.width();
     int h = srcimg.height();
 
