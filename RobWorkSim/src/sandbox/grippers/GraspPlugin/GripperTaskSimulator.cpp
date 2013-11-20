@@ -95,10 +95,11 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 
 double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
-	Q qual = sstate._target->getResult()->qualityAfterLifting;
+	Q& qual = sstate._target->getResult()->qualityAfterLifting;
+	qual = _gripper->getForce() * qual;
 	
 	if (qual.size() >= 1) {
-		return qual(1);
+		return qual(0);
 	} else {
 		//DEBUG << "No wrench measurement!" << endl;
 		return 0.0;
@@ -178,9 +179,9 @@ double GripperTaskSimulator::calculateQuality()
 
 void GripperTaskSimulator::printGraspResult(SimState& sstate)
 {
-	int status = sstate._target->getResult()->testStatus;
+	//int status = sstate._target->getResult()->testStatus;
 	
-	switch (status) {
+	/*switch (status) {
 		case GraspTask::Success:
 			DEBUG << "Grasp result " << getNrTargetsDone() << ": success" << endl;
 			break;
@@ -199,7 +200,11 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 			
 		default:
 			DEBUG << "Grasp result " << getNrTargetsDone() << ": OTHER(" << status << ")" << endl;
-	}
+	}*/
+	
+	DEBUG << "Grasp result " << getNrTargetsDone() << ": "
+		<< GraspTask::toString((GraspTask::TestStatus)sstate._target->getResult()->testStatus)
+		<< endl;
 	
 	DEBUG << " I: " << sstate._target->getResult()->interference;
 	DEBUG << " W: " << sstate._target->getResult()->qualityAfterLifting << endl;
@@ -230,7 +235,14 @@ void GripperTaskSimulator::evaluateGripper()
 	/* success ratio */
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int samples = TaskGenerator::countTasks(_samples, GraspTask::Success); //_samples->getSubTasks()[0].getTargets().size();
-	double successRatio = (1.0 * successes / getNrTargets()) / b.success;
+	
+	// number of grasps actually tried is the number of tasks minus the number of filtered tasks (w/ TimeOut status)
+	double filtered = TaskGenerator::countTasks(_gtask, GraspTask::TimeOut);
+	
+	cout << "Actual number of tasks simulated is " << getNrTargets() - filtered << " out of " << getNrTargets()
+		<< " targets." << endl;
+	
+	double successRatio = (1.0 * successes / (getNrTargets() - filtered)) / b.success;
 	
 	/* wrench */
 	Q wrenchMeasurement = calculateWrenchMeasurement();
