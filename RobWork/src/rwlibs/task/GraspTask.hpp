@@ -72,7 +72,9 @@ public:
      */
     std::vector<class GraspSubTask>& getSubTasks(){ return _subtasks;};
 
-
+	/**
+	 * @brief filters targets of the task to include only those whose status is included in the filtering mask
+	 */
     void filterTasks( std::vector<GraspTask::TestStatus> &includeMask);
 
     /**
@@ -139,8 +141,14 @@ public:
      */
     static GraspTask::Ptr load(std::istringstream& inputStream);
 
-    GraspTask::Ptr clone(){
-        GraspTask::Ptr res = rw::common::ownedPtr( new GraspTask() );
+	/**
+	 * @brief makes the copy of a task\
+	 * 
+	 * Copies over only the gripper ID, tcp ID, and the grasp controller ID.
+	 * Targets are NOT copied.
+	 */
+    GraspTask::Ptr clone() {
+        GraspTask::Ptr res = rw::common::ownedPtr(new GraspTask());
         res->_gripperID = _gripperID;
         res->_tcpID = _tcpID;
         res->_graspControllerID = _graspControllerID;
@@ -154,12 +162,15 @@ private:
 
 
 struct GraspResult {
+	/// Smart pointer to this type of class
     typedef rw::common::Ptr<GraspResult> Ptr;
 
-    GraspResult():testStatus(GraspTask::UnInitialized),liftresult(0.0){}
+	/// Constructor
+    GraspResult() : testStatus(GraspTask::UnInitialized), liftresult(0.0){}
 
+	/* data */
     int testStatus;
-    // the distance that
+    // the distance that (?)
     double liftresult;
 
     // configuration of gripper when grasp is done
@@ -186,31 +197,49 @@ struct GraspResult {
     // all contacts
     std::vector<rw::sensor::Contact3D> contactsGrasp, contactsLift;
     
-    // Adam W
     // interference with objects
     //std::vector<rw::math::Transform3D<> > interferenceT;
     
     // measure of object interference
     std::vector<double> interferenceDistances;
     std::vector<double> interferenceAngles;
-    std::vector<double> interferences;
-    double interference;
-    // /Adam W
+    std::vector<double> interferences; // interferences for each of the interference objects separately
+    double interference; // total interference for this target
 };
 
-class GraspTarget {
-public:
-    GraspTarget(){}
-    GraspTarget(const rw::math::Transform3D<> &p):pose(p){}
-    rw::math::Transform3D<> pose;
-
-    GraspResult::Ptr getResult(){
-        if(result==NULL)
-            result = rw::common::ownedPtr( new GraspResult() );
-        return result;
-    }
-
-    GraspResult::Ptr result;
+/**
+ * @class GraspTarget
+ * @brief Represents a single target for grasping described as a pose, and its result.
+ */
+class GraspTarget
+{
+	public:
+		// constructors
+		/// Default constructor
+		GraspTarget() {}
+		
+		/// Construct target from the pose
+		GraspTarget(const rw::math::Transform3D<> &p) : pose(p) {}
+		
+		/// Copy constructor
+		GraspTarget(const GraspTarget& target) {
+			pose = target.pose;
+			result = rw::common::ownedPtr(new GraspResult(*target.result));
+		}
+		
+		// methods
+		/// Returns result of the target
+		GraspResult::Ptr getResult() {
+			if(result==NULL) {
+				result = rw::common::ownedPtr(new GraspResult());
+			}
+			
+			return result;
+		}
+		
+		// data
+		rw::math::Transform3D<> pose;
+		GraspResult::Ptr result;
 };
 
 class GraspSubTask {
