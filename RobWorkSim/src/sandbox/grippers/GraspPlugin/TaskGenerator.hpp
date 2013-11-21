@@ -71,6 +71,13 @@ class TaskGenerator
 		 */
 		static int countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rwlibs::task::GraspTask::Status status);
 		
+		/**
+		 * @brief Makes a copy of a task
+		 *
+		 * Tricky.
+		 */
+		static rwlibs::task::GraspTask::Ptr copyTasks(const rwlibs::task::GraspTask::Ptr tasks);
+		
 	protected:
 	// methods
 		/**

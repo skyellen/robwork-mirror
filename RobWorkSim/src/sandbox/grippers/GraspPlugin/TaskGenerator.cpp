@@ -181,20 +181,23 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 
 
 rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::GraspTask::Ptr tasks, rw::math::Q diff)
-{
+{	
 	if (!tasks) {
 		//RW_WARN("tasks = NULL");
 		return NULL;
 	}
 	
+	GraspTask::Ptr tasks1 = copyTasks(tasks);
+	
 	// create nodes for succesful grasps
 	typedef GraspResult::Ptr ValueType;
 	typedef KDTreeQ<ValueType> NNSearch;
 	vector<NNSearch::KDNode> nodes;
+
 	int nTasks = 0;
 	
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
-	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
+	BOOST_FOREACH (TaskTarget p, tasks1->getAllTargets()) {
 	//BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
 		if (p.second->getResult()->testStatus == GraspTask::Success ||
 			p.second->getResult()->testStatus == GraspTask::Interference ||
@@ -243,9 +246,9 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	double avgRemoved = 1.0 * nRemoved / nTasks;
 	
 	//cout << "Total number of grasps: " << nTasks << " Filtered: " << nTasks - nRemoved << endl;
-	cout << "Removed " << avgRemoved << " neighbouring nodes on average." << endl;
+	//cout << "  Removed " << avgRemoved << " neighbouring nodes on average." << endl;
 	
-	return tasks;
+	return tasks1;
 }
 
 
@@ -263,6 +266,27 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 	}
 	
 	return n;
+}
+
+
+
+rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::GraspTask::Ptr tasks)
+{
+	GraspTask::Ptr tasks_copy = tasks->clone();
+	
+	// clone subtasks
+	BOOST_FOREACH (GraspSubTask& subtask, tasks->getSubTasks()) {
+		GraspSubTask subtask_copy = subtask.clone();
+		
+		// copy targets
+		BOOST_FOREACH (GraspTarget& target, subtask.getTargets()) {
+			subtask_copy.addTarget(target);
+		}
+		
+		tasks_copy->addSubTask(subtask_copy);
+	}
+	
+	return tasks_copy;
 }
 
 
@@ -415,15 +439,30 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     _tasks = gtask;
     _samples = atask;
     
+    int ntargets = _tasks->getAllTargets().size();
+    int nsamples = _samples->getAllTargets().size();
+    
     // preliminary filtering
+    cout << "Preliminary filtering" << endl;
     Q preDist = _td->getPrefilteringDistance();
 	double R = 2.0 * sin(0.25 * preDist(1));
 	Q diff(7, preDist(0), preDist(0), preDist(0), R, R, R, preDist(2));
-    filterTasks(_tasks, diff);
-    filterTasks(_samples, diff);
+	
+	cout << " - filtering targets... ";
+    _tasks = filterTasks(_tasks, diff);
+    int nftargets = countTasks(_tasks, GraspTask::UnInitialized);
+    cout << nftargets << " out of " << ntargets << endl;
     
-    cout << "Generated " << _tasks->getAllTargets().size() << " tasks & "
-		<< _samples->getAllTargets().size() << " samples." << endl;
+    cout << " - filtering samples... ";
+    _samples = filterTasks(_samples, diff);
+    int nfsamples = countTasks(_samples, GraspTask::Success);
+    cout << nfsamples << " out of " << nsamples << endl;
+    
+    //cout << "Number of UNIN tasks went from " << unin1;
+    //cout << " to " << unin2;
+    //cout << " (to " << unin3 << ")" << endl;
+    
+    cout << "Generated " << ntargets << " tasks & "	<< nsamples << " samples." << endl;
     
 	return _tasks;
 }
