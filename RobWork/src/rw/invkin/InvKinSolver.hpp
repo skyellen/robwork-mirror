@@ -29,6 +29,9 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<InvKinSolver> Ptr;
 
+	//! destructor
+	virtual ~InvKinSolver(){};
+
     /**
      * @brief Calculates the inverse kinematics
      *
