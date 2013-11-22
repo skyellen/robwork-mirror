@@ -41,7 +41,7 @@ BasicGPM::BasicGPM(
     _controlFrame(controlFrame),
     _state(state),
     _qhome(qhome),
-    _dof(device->getDOF()),
+    _dof((int)device->getDOF()),
     _dt(dt),
     _delta(0.01),
 	_P(MatrixXd::Identity(6,6)),

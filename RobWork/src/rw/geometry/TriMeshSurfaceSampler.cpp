@@ -33,7 +33,7 @@ void TriMeshSurfaceSampler::add(rw::geometry::Geometry::Ptr geom){
 
 void TriMeshSurfaceSampler::add(rw::geometry::TriMesh::Ptr mesh){
 	// add mesh to surface area vector
-	int start_idx = _surfaceArea.size();
+	int start_idx = (int)_surfaceArea.size();
 	_surfaceArea.resize( start_idx + mesh->size());
 	_sAreaSum = 0;
 	if(start_idx>0)
@@ -62,7 +62,7 @@ rw::geometry::Triangle<> TriMeshSurfaceSampler::getTriangle(const int idx){
 			return _meshes[1]->getTriangle(idx-_surfaceAreaMesh[0]);
 	}
 	// find the geometry in which the triangle with idx exists
-	int lower=0,upper=_surfaceAreaMesh.size();
+	int lower=0,upper=(int)_surfaceAreaMesh.size();
 
 	do {
 		int split = lower+(upper-lower)/2;

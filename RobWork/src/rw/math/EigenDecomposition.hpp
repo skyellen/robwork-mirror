@@ -82,7 +82,7 @@ namespace math {
          */
         void sort(){
             std::vector<int> map(_values.size());
-            for(size_t i=0;i<map.size();i++) map[i] = i;
+            for(size_t i=0;i<map.size();i++) map[i] = (int)i;
 
             std::sort( map.begin(), map.end(), MapSort(_values, map));
             // now the mapping determines how the new vectors are to be layed out

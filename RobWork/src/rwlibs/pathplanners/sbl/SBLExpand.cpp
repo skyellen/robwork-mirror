@@ -71,12 +71,12 @@ namespace
     }
 
     // Sigh.
-    Vector3D<> getLinear(const Jacobian& jac, int row, int col)
+    Vector3D<> getLinear(const Jacobian& jac, std::size_t row, std::size_t col)
     {
         return Vector3D<>(jac(row + 0, col), jac(row + 1, col), jac(row + 2, col));
     }
 
-    Vector3D<> getAngular(const Jacobian& jac, int row, int col)
+    Vector3D<> getAngular(const Jacobian& jac, std::size_t row, std::size_t col)
     {
         return Vector3D<>(jac(row + 3, col), jac(row + 4, col), jac(row + 5, col));
     }

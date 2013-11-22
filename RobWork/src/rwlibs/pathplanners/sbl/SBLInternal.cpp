@@ -476,7 +476,7 @@ namespace
     public:
         void reset()
         {
-            rebuildSpatialIndexes(randomIndexPair(start_nodes.at(0)->q.size()));
+            rebuildSpatialIndexes(randomIndexPair((int)start_nodes.at(0)->q.size()));
             _isReset = true;
         }
 

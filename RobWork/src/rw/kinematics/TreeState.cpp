@@ -192,7 +192,7 @@ void TreeState::attachFrame(Frame* frame, Frame* parent)
     //FrameList *childrenList = _parentIdxToChildList[idx];
     int childlistidx = _parentIdxToChildList[idx];
     if( childlistidx==-1 ){
-        childlistidx = _childLists.size();
+        childlistidx = (int)_childLists.size();
         _childLists.push_back(FrameList(1,frame));
         _parentIdxToChildList[idx] = childlistidx;
     } else {

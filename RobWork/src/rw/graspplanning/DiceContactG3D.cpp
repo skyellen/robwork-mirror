@@ -74,7 +74,7 @@ std::vector<Grasp3D> DiceContactG3D::generateContactSet(int maxNrOfContacts, dou
 {
 	std::vector<Grasp3D> grasps;
     const int min = 0;
-    const int max = _surfNormals.size();
+    const int max = (int)_surfNormals.size();
     const double avgScale = 1.0/_nrOfContacts;
     Grasp3D tmpGrasp(_nrOfContacts);
 
@@ -141,7 +141,7 @@ std::vector<Grasp3D> DiceContactG3D::generateContactSet(int maxNrOfContacts, dou
 Grasp3D DiceContactG3D::generateNext(){
     Grasp3D tmpGrasp(_nrOfContacts);
     const int min = 0;
-    const int max = _surfNormals.size();
+    const int max = (int)_surfNormals.size();
     const double avgScale = 1.0/_nrOfContacts;
     double atanMU = atan(_mu);
     Timer timer;

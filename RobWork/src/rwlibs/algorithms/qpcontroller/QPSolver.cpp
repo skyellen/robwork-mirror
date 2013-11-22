@@ -135,9 +135,9 @@ vector<double> QPSolver::inequalitySolve(
     //We initialize Wk to contain all the active constraints
     for (size_t i = 0; i<m; i++)
         if (fabs(b[i] - bcompare[i])<EPS)
-            Wk.push_back(i);
+            Wk.push_back((int)i);
         else
-            notWk.push_back(i);
+            notWk.push_back((int)i);
 
     for (size_t i = 0; i<n*(m+1); i++) {
         /*

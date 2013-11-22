@@ -92,7 +92,7 @@ bool Models::inBounds(const Q& q,
     const Q& a = bounds.first;
     const Q& b = bounds.second;
 
-    const int len = a.size();
+    const int len = (int)a.size();
     for (int i = 0; i < len; i++) {
         const double val = q[i];
         if (!inOrder(a[i], val, b[i], tolerance))

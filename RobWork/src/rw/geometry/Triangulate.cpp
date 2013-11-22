@@ -28,7 +28,7 @@ static const float EPSILON = 0.0000000001f;
 
 double Triangulate::calcArea(const std::vector<rw::math::Vector2D<> > &contour)
 {
-    int n = contour.size();
+    int n = (int)contour.size();
 
     float A=0.0f;
 
@@ -100,7 +100,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
 {
     /* allocate and initialize list of Vertices in polygon */
 
-    int n = contour.size();
+    int n = (int)contour.size();
 
     if ( n < 3 ){
     	rw::common::Log::debugLog() << "bad poly size" << std::endl;

@@ -23,7 +23,7 @@ namespace rw{ namespace common {namespace serialization {
     template<class T>
     void read(rw::math::Pose2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
         rw::math::Vector2D<T> pos;
-        double theta;
+        T theta;
         iar.readEnterScope(id);
         iar.read( pos , "pos" );
         iar.read( theta , "theta" );

@@ -29,7 +29,7 @@ template class Quaternion<float>;
 
 void rw::common::serialization::write(const Quaternion<double>& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id );
 }
 
 void rw::common::serialization::read(Quaternion<double>& tmp, rw::common::InputArchive& iar, const std::string& id){
@@ -40,11 +40,11 @@ void rw::common::serialization::read(Quaternion<double>& tmp, rw::common::InputA
 
 void rw::common::serialization::write(const Quaternion<float>& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id );
 }
 
 void rw::common::serialization::read(Quaternion<float>& tmp, rw::common::InputArchive& iar, const std::string& id){
-    std::vector<double> arr;
+    std::vector<float> arr;
     iar.read(arr, id);
     rw::math::Math::fromStdVector(arr, tmp);
 }

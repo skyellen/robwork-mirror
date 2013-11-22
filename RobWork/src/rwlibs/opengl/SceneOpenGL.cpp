@@ -695,7 +695,7 @@ namespace {
 
                 for(size_t y=0;y<scam->_scan25->getHeight();y++){
                     for(size_t x=0;x<scam->_scan25->getWidth();x++){
-                        double winX=x,winY=y,winZ=scam->_depthData[x+y*scam->_scan25->getWidth()];
+                        double winX=(double)x,winY=(double)y,winZ=scam->_depthData[x+y*scam->_scan25->getWidth()];
                         double posX, posY, posZ;
                         gluUnProject( winX, winY, winZ,
                                 modelview, projection, vp.viewport,

@@ -58,7 +58,7 @@ BasicGPMM::BasicGPMM(const rw::models::TreeDevice* device,
     _fkranges( createFKRanges(device->getBase(),_foi,state) ),
     _state(state),
     _qhome(qhome),
-    _dof(device->getDOF()),
+    _dof((int)device->getDOF()),
     _dt(dt),
 	_P(MatrixXd::Identity(6*_foi.size(),6*_foi.size())),
     _space(BaseFrame)
@@ -89,7 +89,7 @@ BasicGPMM::BasicGPMM(const rw::models::JointDevice* device,
 			_fkranges( createFKRanges(device->getBase(),_foi,state) ),
 			_state(state),
 			_qhome(qhome),
-			_dof(device->getDOF()),
+			_dof((int)device->getDOF()),
 			_dt(dt),
 			_P(MatrixXd::Identity(6*_foi.size(),6*_foi.size())),
 			_space(BaseFrame)
@@ -124,12 +124,12 @@ Q BasicGPMM::solve(const Q& q, const Q& dq, const std::vector<rw::math::Velocity
     //frame or the frame of control
     //std::cout << "Settingup matrices" << std::endl;
     MatrixXd P;
-    int dim = _foi.size();
+    int dim = (int)_foi.size();
     if (_space == ControlFrame) {
     	MatrixXd R = MatrixXd::Zero(6*dim,6*dim);
     	for(size_t i=0;i<_foi.size();i++){
 			Rotation3D<> rot = inverse(_device->baseTframe(_foi[i], _state).R());
-			int offset=i*6;
+			int offset=(int)i*6;
 			for (size_t j = 0; j<3; j++) {
 				for (size_t k = 0; k<3; k++) {
 					R(j+offset,k+offset) = rot(j,k);

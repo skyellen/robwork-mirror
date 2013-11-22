@@ -843,13 +843,16 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
             } else if(face->_element.size()==3){
                 // use TriangleUtil toIndexedTriMesh, though remember the normals
                 //obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-                obj->addTriangle(rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1));
+                obj->addTriangle(rw::geometry::IndexedTriangle<>(
+					(uint16_t)(nb_points-3),
+					(uint16_t)(nb_points-2),
+					(uint16_t)(nb_points-1)));
                 //mface->_subFaces.push_back(obj->_faces.back());
             } else {
                 // its a polygon, since we don't support that in Model3D, we make triangles of it
                 IndexedPolygonN<> poly(face->_element.size());
                 for(size_t j=0; j<face->_element.size();j++)
-                    poly[j] = nb_points-face->_element.size()+j;
+                    poly[j] = (uint16_t)(nb_points-face->_element.size()+j);
                 std::vector<IndexedTriangle<> > tris;
                 triangulatePolygon(poly, obj->_vertices, tris);
                 obj->addTriangles(tris);

@@ -173,7 +173,7 @@ Q::Q(size_t n, double a0, double a1, double a2, double a3, double a4, double a5,
 
 void rw::common::serialization::write(const rw::math::Q& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, tmp.size()), id );
+    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id );
 }
 
 void rw::common::serialization::read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id){

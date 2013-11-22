@@ -108,12 +108,12 @@ public:
 	        using namespace rw::geometry;
 	        // 1. Compute convex hull
 	        //std::cout << "build hull from: " << tris.size() <<  std::endl;
-	        const int nrOfTris = tris.getSize();
+	        const int nrOfTris = (int)tris.getSize();
 
 	        // 2. Compute centroid for convex hull
 	        // 2.1 centroid is computed using the triangles of the convex hull
 	        //ublas::bounded_matrix<T,3,3> covar;
-	        Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
+			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> covar( Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(3, 3) );
 	        Vector3D<T> centroid(0,0,0);
 
 	        // we only use triangle centers the vertices directly
@@ -124,9 +124,9 @@ public:
 	            centroid += cast<T>( t[0]+t[1]+t[2] );
 	            for(size_t j=0;j<3;j++)
 	                for(size_t k=0;k<3;k++)
-	                    covar(j,k) += t[0](j)*t[0](k) +
+	                    covar(j,k) += (T)(t[0](j)*t[0](k) +
                                       t[1](j)*t[1](k) +
-                                      t[2](j)*t[2](k);
+                                      t[2](j)*t[2](k));
 	        }
 	        //std::cout << "COVAR: " << covar << std::endl;
 
@@ -140,7 +140,7 @@ public:
 	                covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/n;
 
 	        // 4. get eigenvectors from the covariance matrix
-	        typedef std::pair<Eigen::MatrixXd, Eigen::VectorXd > ResultType;
+	        typedef std::pair<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<T, Eigen::Dynamic, 1> > ResultType;
 	        //std::cout << "COVAR: " << covar << std::endl;
 	        ResultType res = LinearAlgebra::eigenDecompositionSymmetric( covar );
 

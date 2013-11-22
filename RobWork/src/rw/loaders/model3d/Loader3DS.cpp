@@ -81,7 +81,7 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 
 		if( mat_src.textured ){
 			textures.push_back( mat_src.tex );
-			mat_dst.texId = textures.size()-1;
+			mat_dst.texId = (int)textures.size()-1;
 		}
 	}
 

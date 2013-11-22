@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
 
     BOOST_MESSAGE("-- Check Symmetric Matrix EigenValue Decomposition...");
     std::pair<Eigen::MatrixXd, Eigen::VectorXd > val1 = LinearAlgebra::eigenDecompositionSymmetric(A);
-    for (size_t i = 0; i<A.cols(); i++) {
+    for (size_t i = 0; i<(size_t)A.cols(); i++) {
 		Eigen::VectorXd x = val1.first.col(i);
 		double l = val1.second(i);
 		Eigen::VectorXd r1 = l*x;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     A(1,2) = 5; //make it unsymmetric
 
     std::pair<Eigen::MatrixXcd, Eigen::VectorXcd > val2 = LinearAlgebra::eigenDecomposition(A);
-    for (size_t i = 0; i<A.cols(); i++) {
+    for (size_t i = 0; i<(size_t)A.cols(); i++) {
 		Eigen::VectorXcd x = val2.first.col(i);
 		std::complex<double> l = val2.second(i);
 		Eigen::VectorXcd r1 = l*x;

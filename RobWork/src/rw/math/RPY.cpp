@@ -121,9 +121,9 @@ namespace rw{ namespace common { namespace serialization {
         iar.read( p , "p" );
         iar.read( y , "y" );
         iar.readLeaveScope(id);
-        tmp[0] = r*Deg2Rad;
-        tmp[1] = p*Deg2Rad;
-        tmp[2] = y*Deg2Rad;
+        tmp[0] = (T)(r*Deg2Rad);
+        tmp[1] = (T)(p*Deg2Rad);
+        tmp[2] = (T)(y*Deg2Rad);
     }
 
     // we need these to explicitly instantiate these functions

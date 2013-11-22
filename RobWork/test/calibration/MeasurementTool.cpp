@@ -89,7 +89,7 @@ int main(int argumentCount, char** arguments) {
 	artificialCalibration->getBaseCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
 	artificialCalibration->getEndCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
 	CompositeCalibration<DHLinkCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
 		DHLinkCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
 		if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
@@ -107,7 +107,7 @@ int main(int argumentCount, char** arguments) {
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
 		if (parameterSet(ENCODER_PARAMETER_TAU).isEnabled())
@@ -186,7 +186,7 @@ void printHelp() {
 std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice,
 	rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount,
 	bool addNoise) {
-		MultivariateNormalDistribution<double, 6> mvnd(time(0));
+		MultivariateNormalDistribution<double, 6> mvnd((unsigned int)time(0));
 
 		std::vector<SerialDevicePoseMeasurement> measurements;
 		for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
@@ -220,7 +220,7 @@ std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::Serial
 }
 
 void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, SerialDeviceCalibration::Ptr serialDeviceCalibration) {
-	const unsigned int measurementCount = measurements.size();
+	const unsigned int measurementCount = (unsigned int)measurements.size();
 
 	Eigen::VectorXd distances(measurementCount), angles(measurementCount);
 	Eigen::VectorXd calibratedDistances(measurementCount), calibratedAngles(measurementCount);

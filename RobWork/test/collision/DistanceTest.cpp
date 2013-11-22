@@ -80,8 +80,8 @@ void testStrategy0(const DistanceStrategy::Ptr& strategy)
     tree.addFrame(o1, world);
     tree.addFrame(o2, world);
 
-    Geometry::Ptr geom1 = Geometry::makeCylinder(0.0001,10);
-    Geometry::Ptr geom2 = Geometry::makeCylinder(0.0001,10);
+    Geometry::Ptr geom1 = Geometry::makeCylinder(0.0001f,10.f);
+    Geometry::Ptr geom2 = Geometry::makeCylinder(0.0001f,10.f);
     strategy->addModel(o1, geom1);
     strategy->addModel(o2, geom2);
 

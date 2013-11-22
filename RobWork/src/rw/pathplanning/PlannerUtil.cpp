@@ -104,7 +104,7 @@ Q PlannerUtil::estimateMotionWeights(
 
     size_t n = device.getDOF();
     State state = initialState;
-    Q ws = Q(Q::zero(n));
+    Q ws = Q(Q::zero((int)n));
     for (size_t i = 0; i < samples; i++) {
         Q q = sampler->sample();
         device.setQ(q, state);
@@ -127,7 +127,7 @@ Q PlannerUtil::estimateMotionWeights(
     }
 
     if (type == AVERAGE)
-        ws /= samples;
+        ws /= (double)samples;
 
     return ws;
 }

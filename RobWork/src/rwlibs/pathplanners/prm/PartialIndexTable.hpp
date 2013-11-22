@@ -67,7 +67,7 @@ namespace rwlibs { namespace pathplanners { namespace prm {
                 const double diff = bounds.second(i) - bounds.first(i);
                 int divs = (int)std::ceil(diff * weights(i) / r);
                 double stepsize = diff / divs;
-                Dimension dim = {i, divs, bounds.first(i), stepsize, 0};
+                Dimension dim = {(int)i, divs, bounds.first(i), stepsize, 0};
                 queue.push(dim);
             }
 

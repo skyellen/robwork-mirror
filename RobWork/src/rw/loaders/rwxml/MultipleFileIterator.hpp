@@ -147,8 +147,8 @@ namespace rw { namespace loaders {
         MultipleFileIterator begin(){
             MultipleFileIterator begin = *this;
             begin._pos = _data->begin();
-            begin._index = _data->size()-1;
-            begin._filePos = _filedata->size()-1;
+            begin._index = (int)_data->size()-1;
+            begin._filePos = (int)_filedata->size()-1;
             return begin;
         }
 
@@ -158,8 +158,8 @@ namespace rw { namespace loaders {
         MultipleFileIterator end(){
             MultipleFileIterator end = *this;
             end._pos = _data->end();
-            end._index = _data->size()-1;
-            end._filePos = _filedata->size()-1;
+            end._index = (int)_data->size()-1;
+            end._filePos = (int)_filedata->size()-1;
             return end;
         }
 

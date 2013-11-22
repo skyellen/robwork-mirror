@@ -220,7 +220,7 @@ int main(int argumentCount, char** argumentArray) {
 		measurement.setSensorFrameName(referenceFrameName);
 	}
 
-	const int measurementCount = measurements.size();
+	const int measurementCount = (int)measurements.size();
 	const int validationMeasurementCount = (int)std::floor((double) measurementCount * optionParser.getValidationMeasurementPercentage());
 	const int calibrationMeasurementCount = measurementCount - validationMeasurementCount;
 	RW_ASSERT(measurementCount == calibrationMeasurementCount + validationMeasurementCount);
@@ -557,7 +557,7 @@ std::ostream& operator<<(std::ostream& out, const JointEncoderCalibration::Ptr c
 }
 
 void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration) {
-	const unsigned int measurementCount = measurements.size();
+	const unsigned int measurementCount = (unsigned int)measurements.size();
 
 	rw::kinematics::State state = workCellState;
 	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
@@ -581,7 +581,7 @@ void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measureme
 }
 
 void printMeasurementSummary(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration, bool printOnlyUncalibrated) {
-	const unsigned int measurementCount = measurements.size();
+	const unsigned int measurementCount = (unsigned int)measurements.size();
 
 	Eigen::VectorXd distances(measurementCount), angles(measurementCount);
 	Eigen::VectorXd calibratedDistances(measurementCount), calibratedAngles(measurementCount);

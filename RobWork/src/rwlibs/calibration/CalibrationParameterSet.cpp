@@ -17,7 +17,7 @@ namespace rwlibs {
 		}
 
 		int CalibrationParameterSet::getCount() const {
-			return _parameters.size();
+			return (int)_parameters.size();
 		}
 
 		int CalibrationParameterSet::getEnabledCount() const {

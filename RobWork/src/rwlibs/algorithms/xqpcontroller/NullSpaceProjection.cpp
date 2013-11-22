@@ -39,7 +39,7 @@ NullSpaceProjection::NullSpaceProjection(Device* device, Frame* controlFrame, co
 {
     _device = device;
     _controlFrame = controlFrame;
-    _dof = _device->getDOF();
+    _dof = (int)_device->getDOF();
 
     _qlower = _device->getBounds().first;
     _qupper = _device->getBounds().second;

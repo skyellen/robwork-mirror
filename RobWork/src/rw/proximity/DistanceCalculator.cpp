@@ -213,7 +213,7 @@ DistanceResult DistanceCalculator::distanceOMP(const State& state,
     DistanceResult distance;
     distance.distance = DBL_MAX;
 	//std::cout<<"Distance Pairs = "<<_distancePairs.size()<<std::endl;
-	const int N = _distancePairs.size();
+	const int N = (int)_distancePairs.size();
 	int i;
 	Transform3D<> ta, tb; 
 		

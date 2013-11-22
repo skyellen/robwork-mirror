@@ -148,7 +148,7 @@ private:
 		size_t res = size_t(it - _times.begin());
 		if (res >= _trajectories.size())
 			RW_THROW("Index of trajectory is out of bounds");
-		return res;
+		return (int)res;
 			
 	}
 

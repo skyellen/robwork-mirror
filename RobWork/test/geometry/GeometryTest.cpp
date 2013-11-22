@@ -110,10 +110,10 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 	IndexedTriangle<uint16_t> tri16;
 	for(int j=0;j<100;j++)
 		for(size_t i=0;i<imeshf16->getSize();i++){
-			tri16 = (*imeshf16)[i];
-			tri16 = (*imeshf16)[i];
-			tri16 = (*imeshf16)[i];
-			tri16 = (*imeshf16)[i];
+			tri16 = (*imeshf16)[(int)i];
+			tri16 = (*imeshf16)[(int)i];
+			tri16 = (*imeshf16)[(int)i];
+			tri16 = (*imeshf16)[(int)i];
 		}
 	BOOST_MESSAGE( "toIdxMesh float uint16 get direct1 time: " << timer.getTime() );
 

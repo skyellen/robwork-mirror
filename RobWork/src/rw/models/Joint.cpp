@@ -25,7 +25,7 @@ using namespace rw::models;
 using namespace rw::math;
 
 Joint::Joint(const std::string& name, size_t dof) :
-    Frame(dof, name),
+    Frame((int)dof, name),
     _bounds(Q(dof), Q(dof)),
     _maxVelocity(Q(dof)),
     _maxAcceleration(Q(dof)),
@@ -41,7 +41,7 @@ Joint::Joint(const std::string& name, size_t dof) :
 
 
 Joint::Joint(const std::string& name, size_t dof, size_t stateSize):
-        Frame(dof, name),
+        Frame((int)dof, name),
         _bounds(Q(dof), Q(dof)),
         _maxVelocity(Q(dof)),
         _maxAcceleration(Q(dof)),

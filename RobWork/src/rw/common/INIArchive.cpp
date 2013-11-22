@@ -90,7 +90,7 @@ void INIArchive::flush(){
               break;
           // test if line has valid input
           static const boost::regex comment("^[ ]*;[.]*$");
-          static const boost::regex empty("^[\h]*$");
+          static const boost::regex empty("^[\\h]*$");
           if( boost::regex_match(_line, comment) )
               continue;
           if( boost::regex_match(_line, empty) )

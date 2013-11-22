@@ -223,7 +223,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
         const double scale = geom.getScale();
         pqpmodel = ownedPtr(new PQP_Model());
 
-        pqpmodel->BeginModel(mesh->getSize());
+        pqpmodel->BeginModel((int)mesh->getSize());
         {
             for (size_t i = 0; i < mesh->getSize(); i++) {
                 // NB: Note the cast.
@@ -232,7 +232,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
             	Vector3D<PQP_REAL> v1 = cast<PQP_REAL>(face[1]*scale);
             	Vector3D<PQP_REAL> v2 = cast<PQP_REAL>(face[2]*scale);
 
-                pqpmodel->AddTri(&v0[0], &v1[0], &v2[0], i);
+                pqpmodel->AddTri(&v0[0], &v1[0], &v2[0], (int)i);
             }
         }
         pqpmodel->EndModel();
@@ -244,7 +244,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     pmodel->models.push_back( rwpqpmodel );
 
     _allmodels.push_back(pmodel->models.back());
-    _geoIdToModelIdx[geom.getId()].push_back(_allmodels.size()-1);
+    _geoIdToModelIdx[geom.getId()].push_back((int)_allmodels.size()-1);
     return true;
 }
 
@@ -260,7 +260,7 @@ bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, 
     int idx=-1;
     for(size_t i=0;i<pmodel->models.size();i++)
         if(pmodel->models[i].geoid==geomId){
-            idx = i;
+            idx = (int)i;
             break;
         }
     if(idx<0){
@@ -400,10 +400,10 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
             	// copy data to collision data res
            		data._collisionPairs.resize(nrOfCollidingGeoms);
 
-            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
-            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
+            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = (int)geoIdxA;
+            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxB = (int)geoIdxB;
 
-            	int startIdx = data._geomPrimIds.size();
+            	int startIdx = (int)data._geomPrimIds.size();
             	int size = qdata.cache->_collideResult.num_pairs;
             	data._collisionPairs[nrOfCollidingGeoms-1].startIdx = startIdx;
             	data._collisionPairs[nrOfCollidingGeoms-1].size = size;
@@ -502,11 +502,11 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
                 rwresult.distance = std::min(rwresult.distance, dist);
                 IdMap::iterator res = idMap.find(id);
                 if( res == idMap.end() ){
-                    idMap[id] = i;
+                    idMap[id] = (int)i;
                     continue;
                 }
                 if( result.distances[ (*res).second ] > dist ){
-                    (*res).second = i;
+                    (*res).second = (int)i;
                 }
             }
 
@@ -516,11 +516,11 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
                 int id = result.id2s[j];
                 IdMap::iterator res = idMap1.find(id);
                 if( res == idMap1.end() ){
-                    idMap1[id] = j;
+                    idMap1[id] = (int)j;
                     continue;
                 }
                 if( result.distances[ (*res).second ] > dist ){
-                    (*res).second = j;
+                    (*res).second = (int)j;
                 }
             }
 

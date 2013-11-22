@@ -253,8 +253,8 @@ namespace proximity {
 			} else if(mesh.getSize()<=maxTrisInLeaf){
 				// make a leaf node
 			    BVType bv = bvFactory.makeBV( mesh );
-			    tree->setPrimIdx( mesh.getGlobalIndex(0), node);
-			    tree->setNrOfPrims( mesh.getSize(), node);
+			    tree->setPrimIdx( (int) mesh.getGlobalIndex(0), node);
+			    tree->setNrOfPrims( (int) mesh.getSize(), node);
 			    tree->setBV(bv, node);
 			} else {
 				// create a bounding volume of the mesh and split it

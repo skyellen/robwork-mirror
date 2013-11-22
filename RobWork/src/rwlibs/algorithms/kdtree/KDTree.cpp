@@ -19,7 +19,7 @@
 #include "KDTree.hpp"
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Pose6D.hpp>
+//#include <rw/math/Pose6D.hpp>
 
 using namespace rwlibs::algorithms;
 

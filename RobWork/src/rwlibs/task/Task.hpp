@@ -136,7 +136,7 @@ public:
 	 * @param entity [in] Entity to add
 	 */
 	void addEntity(rw::common::Ptr<Entity> entity) {
-	    entity->setIndex(_entities.size());
+	    entity->setIndex((int)_entities.size());
 	    _entities.push_back(entity);
 	}
 

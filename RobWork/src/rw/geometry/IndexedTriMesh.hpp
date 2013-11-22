@@ -157,7 +157,7 @@ namespace geometry {
          * @param vidx [in] the index of the triangle vertex
 		 */
         rw::math::Vector3D<T>& getVertex(size_t i, VertexIdx vidx){
-        	const uint32_t idx = _stride*i+vidx*_idxsize; // this is the unmasked idx
+        	const uint32_t idx = (uint32_t)(_stride*i+vidx*_idxsize); // this is the unmasked idx
         	const uint32_t uidx =  *((uint32_t*)&(_triIdxArr[ idx ]))&_mask; // now we mask the idx
         	return (*_vertices)[ uidx ];
         }
@@ -168,7 +168,7 @@ namespace geometry {
          * @return an indexed triangle
          */
         IndexedTriangle<uint32_t> getIndexedTriangle(size_t i) const {
-        	const uint32_t idx = _stride*i; // this is the unmasked idx
+        	const uint32_t idx = (uint32_t)(_stride*i); // this is the unmasked idx
         	const uint32_t v1 = *((uint32_t*)&(_triIdxArr[ idx ]));
         	const uint32_t v2 = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
         	const uint32_t v3 = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
@@ -200,8 +200,8 @@ namespace geometry {
         // Inherited from TriMesh
         //! @copydoc IndexedTriMesh::getTriangle
         Triangle<double> getTriangle(size_t i) const {
-            using namespace rw::math;            
-            const uint32_t idx = _stride*i; // this is the unmasked idx
+            using namespace rw::math;
+            const uint32_t idx = _stride*(uint32_t)i; // this is the unmasked idx
             const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
             const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
             const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
@@ -222,7 +222,7 @@ namespace geometry {
         //! @copydoc TriMesh::getTriangle
         void getTriangle(size_t i, Triangle<double>& dst) const {
             using namespace rw::math;
-            const uint32_t idx = _stride*i; // this is the unmasked idx
+            const uint32_t idx = _stride*(uint32_t)i; // this is the unmasked idx
             const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
             const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
             const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
@@ -241,7 +241,7 @@ namespace geometry {
         //! @copydoc TriMesh::getTriangle
         void getTriangle(size_t i, Triangle<float>& dst) const {
             using namespace rw::math;
-            const uint32_t idx = _stride*i; // this is the unmasked idx
+            const uint32_t idx = _stride*(uint32_t)i; // this is the unmasked idx
             const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
             const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
             const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
@@ -523,7 +523,7 @@ namespace geometry {
 
 		// inherited from IndexedTriMesh
 		//! @copydoc IndexedTriMesh::getNrTris
-        int getNrTris() const{ return _triangles->size(); };
+        int getNrTris() const{ return (int)_triangles->size(); };
 
 		// Inherited from TriMesh
 

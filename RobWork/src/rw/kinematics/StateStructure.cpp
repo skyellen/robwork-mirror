@@ -309,7 +309,7 @@ int StateStructure::allocateDataID()
     // check if any ids are currently available
     if (_availableDataIds.empty()) {
         // if not then generate a new id
-        const int id = _allDatas.size();
+        const int id = (int)_allDatas.size();
         _allDatas.push_back(boost::shared_ptr<StateData>());
         _currDatas.push_back(boost::shared_ptr<StateData>());
         _frames.push_back(NULL);

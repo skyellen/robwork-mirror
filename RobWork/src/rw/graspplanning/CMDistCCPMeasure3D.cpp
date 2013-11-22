@@ -29,7 +29,7 @@ double CMDistCCPMeasure3D::quality(const Grasp3D& grasp) const {
     BOOST_FOREACH(const Contact3D& con, grasp.contacts){
         sum += con.p;
     }
-    Vector3D<> CCP = sum/grasp.contacts.size();
+    Vector3D<> CCP = sum/((double)grasp.contacts.size());
     const double dist = MetricUtil::dist2(_CM, CCP);
     if(dist>_maxDist)
         return 0;

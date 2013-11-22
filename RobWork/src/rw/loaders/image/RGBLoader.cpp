@@ -372,7 +372,7 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     char *imgData = img->getImageData();
     img->getDataSize();
     for(size_t y=0;y<final->height; y++){
-        unsigned int rowidx = y*widthStep;
+        unsigned int rowidx = (int)y*widthStep;
         unsigned char *dstrow = (unsigned char *) &(imgData[rowidx]);
         unsigned char *srcrow = &(((unsigned char*)final->data)[rowidx]);
         for(int x=0;x<final->width*final->depth; x++){

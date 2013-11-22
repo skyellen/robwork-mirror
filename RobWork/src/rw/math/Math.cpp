@@ -60,7 +60,7 @@ void Math::seed(unsigned seed)
 }
 
 void Math::seed() {
-	seed(rw::common::TimerUtil::currentTimeMs());
+	seed((unsigned)rw::common::TimerUtil::currentTimeMs());
 }
 
 double Math::ran(double from, double to)

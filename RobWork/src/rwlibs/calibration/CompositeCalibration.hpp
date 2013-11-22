@@ -102,7 +102,7 @@ void CompositeCalibration<C>::addCalibration(rw::common::Ptr<C> calibration) {
 
 template<class C>
 int CompositeCalibration<C>::getCalibrationCount() const {
-	return _calibrations.size();
+	return (int)_calibrations.size();
 }
 
 template<class C>

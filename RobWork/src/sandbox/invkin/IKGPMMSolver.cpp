@@ -179,7 +179,7 @@ std::vector<Q> IKGPMMSolver::solve(
     std::vector<double> maxTmpError = maxError;
     State state = initial_state;
 
-    const int N = bTeds.size();
+    const int N = (int)bTeds.size();
 
     // for each end effector calculate the distance
     double length = 0;

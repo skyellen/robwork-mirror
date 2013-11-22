@@ -46,14 +46,14 @@ namespace geometry {
 			_last(objArr->getSize())
 		{
 			for(size_t i=0;i<_idxArr->size();i++){
-				(*_idxArr)[i] = i;
+				(*_idxArr)[i] = (T)i;
 			}
 			// calculate triangle center points
 
 			Triangle<float> tri;
             for(size_t i=0;i<_objArr->getSize();i++){
                 objArr->getTriangle(i, tri);
-                boost::tuples::get<0>( (*_valCenterArr)[i] ) = i;
+                boost::tuples::get<0>( (*_valCenterArr)[i] ) = (int)i;
                 boost::tuples::get<2>( (*_valCenterArr)[i] ) = ((tri[0]+tri[1]+tri[2])/3);
             }
 
@@ -82,7 +82,7 @@ namespace geometry {
             Triangle<float> tri;
             for(size_t i=0;i<_objArr->getSize();i++){
                 objArr->getTriangle(i, tri);
-                boost::tuples::get<0>( (*_valCenterArr)[i] ) = i;
+                boost::tuples::get<0>( (*_valCenterArr)[i] ) = (int)i;
                 boost::tuples::get<2>( (*_valCenterArr)[i] ) = ((tri[0]+tri[1]+tri[2])/3);
             }
 		}
@@ -133,10 +133,10 @@ namespace geometry {
 				_t3d(t3d),
 				_centers(centerArr)
 			{
-			    R_s0 = _t3d.R()(splitAxis,0);
-			    R_s1 = _t3d.R()(splitAxis,1);
-			    R_s2 = _t3d.R()(splitAxis,2);
-			    P_s = _t3d.P()(splitAxis);
+			    R_s0 = (float) _t3d.R()(splitAxis,0);
+			    R_s1 = (float) _t3d.R()(splitAxis,1);
+			    R_s2 = (float) _t3d.R()(splitAxis,2);
+			    P_s = (float) _t3d.P()(splitAxis);
 			}
 
 			bool operator()(const size_t& i0, const size_t& i1) {
@@ -262,7 +262,7 @@ namespace geometry {
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
 		inline rw::geometry::Triangle<> operator[](size_t i) const {
-			return _objArr->getTriangle( getGlobalIndex(i) );
+			return _objArr->getTriangle( getGlobalIndex((int)i) );
 		}
 
 		//! @copydoc TriMesh::getTriangle
@@ -271,12 +271,12 @@ namespace geometry {
 		}
 
         inline void getTriangle(size_t i, Triangle<double>& dst) const {
-            _objArr->getTriangle(  getGlobalIndex(i) , dst);
+            _objArr->getTriangle( getGlobalIndex((int)i) , dst);
         }
 
         //! @copydoc TriMesh::getTriangle
         inline void getTriangle(size_t i, Triangle<float>& dst) const {
-            _objArr->getTriangle( getGlobalIndex(i) , dst);
+            _objArr->getTriangle( getGlobalIndex((int)i) , dst);
         }
 
 

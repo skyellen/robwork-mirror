@@ -36,6 +36,7 @@ IF( build )
                               rw_opengl
                               ${LUA_LIBRARIES}
                               rw_proximitystrategies
+                              rw_task
                               ${YAOBI_LIBRARIES}
                               ${PQP_LIBRARIES}  
                               rw
@@ -54,6 +55,7 @@ IF( build )
                           rw_simulation
                           rw_opengl
                           rw_proximitystrategies
+                          rw_task
                           ${YAOBI_LIBRARIES}
                           ${PQP_LIBRARIES}  
                           rw
@@ -140,6 +142,7 @@ IF( build )
                           rw_simulation
                           rw_opengl
                           rw_proximitystrategies
+                          rw_task
                           ${YAOBI_LIBRARIES}
                           ${PQP_LIBRARIES}  
                           rw

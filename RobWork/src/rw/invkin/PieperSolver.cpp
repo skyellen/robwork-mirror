@@ -651,7 +651,7 @@ std::vector<double> PieperSolver::fSolve() const {
     std::pair<Eigen::MatrixXcd, Eigen::VectorXcd> eigen = LinearAlgebra::eigenDecomposition(A);
 
     std::vector<double> result;
-    for (size_t i = 0; i<eigen.second.size(); i++) {
+    for (size_t i = 0; i<(std::size_t)eigen.second.size(); i++) {
 //        std::cout<<"Solution = "<<eigen.second(i)<<std::endl;
         if (eigen.second(i).imag() == 0)
             result.push_back(eigen.second(i).real());

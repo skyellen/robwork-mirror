@@ -39,7 +39,7 @@ Image::Ptr Image25D::asImage() const {
         max = std::max(max, -p(2));
     }
     if(min>max-0.001)
-        max+=0.001;
+        max+=0.001f;
     //std::cout << min << " " << max << std::endl;
     return asImage(min, max);
 }
@@ -48,7 +48,7 @@ Image::Ptr Image25D::asImage(float min, float max) const {
 
     Image::Ptr outImg = ownedPtr( new Image(_width,_height, Image::GRAY, Image::Depth8U));
     float offset = min;
-    float scale = 1.0/(max - offset);
+    float scale = 1.0f/(max - offset);
     for(unsigned int i = 0; i < _width; i++) {
         for(unsigned int j = 0; j < _height; j++) {
 
@@ -60,7 +60,7 @@ Image::Ptr Image25D::asImage(float min, float max) const {
             // the value should now be between 0 and 1
             RW_ASSERT(val>=0.0);
             RW_ASSERT(val<=1.0);
-            uint8_t ival = (1-val)*255.0;
+            uint8_t ival = (uint8_t)((1-val)*255.0);
             outImg->setPixel8U(i,j, ival);
             //std::cout << (uint16_t)((1.0-((_data[j*_width+i](2))-offset)*scale)*65400) << " --- "
             //        << _data[j*_width+i](2) << "\n";

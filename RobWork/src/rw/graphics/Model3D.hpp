@@ -155,13 +155,15 @@ namespace graphics {
             }
 
             void addTriangles(const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
-                //TODO Is it safe to assume that we don't have more than 65536 faces? 
 				uint16_t startIdx = (uint16_t) _faces.size();
-                _faces.resize(_faces.size()+tris.size());
+				std::size_t newSize = _faces.size()+tris.size();
+				if (newSize > 65535)
+					RW_THROW("Model3D has two many faces! - max is 65535.");
+                _faces.resize(newSize);
                 for(size_t i=0;i<tris.size();i++){
                     _faces[startIdx+i] = tris[i];
                 }
-                _materialMap.back().size += tris.size();
+                _materialMap.back().size += (uint16_t)tris.size();
             }
 
             /**
@@ -171,12 +173,15 @@ namespace graphics {
              */
             void addTriangles(uint16_t material, const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
                 setMaterial(material);
-                uint16_t startIdx = _faces.size();
-                _faces.resize(_faces.size()+tris.size());
+                uint16_t startIdx = (uint16_t)_faces.size();
+				std::size_t newSize = _faces.size()+tris.size();
+				if (newSize > 65535)
+					RW_THROW("Model3D has two many faces! - max is 65535.");
+                _faces.resize(newSize);
                 for(size_t i=0;i<tris.size();i++){
                     _faces[startIdx+i] = tris[i];
                 }
-                _materialMap.back().size += tris.size();
+                _materialMap.back().size += (uint16_t)tris.size();
             }
 
 
@@ -186,7 +191,7 @@ namespace graphics {
              */
             void setMaterial(uint16_t material){
                 if(_materialMap.size()==0 || _materialMap.back().matId!=material){
-                    _materialMap.push_back( MaterialMapData(material, _faces.size(), 0) );
+                    _materialMap.push_back( MaterialMapData(material, (uint16_t)_faces.size(), 0) );
                 }
             }
 

@@ -173,7 +173,7 @@ namespace proximity {
             //std::cout << "Idx: " << idx+triNr << "  " << idx<<"+"<<triNr<< "\n";
             _pAccessor->getPrimitive(idx+triNr, dst);
             //std::cout << dst[0] << "\n";
-            return idx+triNr;
+            return (int)(idx+triNr);
         }
 
         inline size_t getNrPrimitives(const NodeIterator& leafnode) const{ return leafnode.nrOfPrimitives() ; };

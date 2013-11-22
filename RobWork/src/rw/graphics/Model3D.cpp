@@ -44,12 +44,12 @@ Model3D::~Model3D(){}
 
 int Model3D::addObject(Model3D::Object3D::Ptr obj){
     _objects.push_back(obj);
-    return _objects.size()-1;
+    return (int)_objects.size()-1;
 }
 
 int Model3D::addMaterial(const Model3D::Material& mat){
     _materials.push_back(mat);
-    return _materials.size()-1;
+    return (int)_materials.size()-1;
 }
 
 void Model3D::removeObject(const std::string& name){
@@ -102,9 +102,9 @@ rw::geometry::GeometryData::Ptr Model3D::toGeometryData(){
 		}
 
 		for(size_t i=0;i<fsize;i++){
-			mesh->getTriangles()[tsize+i][0] = obj->_faces[i][0]+csize;
-			mesh->getTriangles()[tsize+i][1] = obj->_faces[i][1]+csize;
-			mesh->getTriangles()[tsize+i][2] = obj->_faces[i][2]+csize;
+			mesh->getTriangles()[tsize+i][0] = obj->_faces[i][0]+(uint16_t)csize;
+			mesh->getTriangles()[tsize+i][1] = obj->_faces[i][1]+(uint16_t)csize;
+			mesh->getTriangles()[tsize+i][2] = obj->_faces[i][2]+(uint16_t)csize;
 		}
 	}
 	return mesh;
@@ -136,9 +136,9 @@ void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
             obj->_normals[i*3+0] = normal;
             obj->_normals[i*3+1] = normal;
             obj->_normals[i*3+2] = normal;
-            obj->_faces[i] = IndexedTriangle<uint16_t>(i*3+0,i*3+1,i*3+2);
+            obj->_faces[i] = IndexedTriangle<uint16_t>((uint16_t)i*3+0,(uint16_t)i*3+1,(uint16_t)i*3+2);
         }
-        obj->_materialMap.push_back( Object3D::MaterialMapData(matId,0,meshSize) );
+        obj->_materialMap.push_back( Object3D::MaterialMapData((uint16_t)matId,0,(uint16_t)meshSize) );
 
         _objects.push_back(obj);
     }
@@ -265,11 +265,11 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
                 // change all references to the vertice
                 BOOST_FOREACH(size_t changeFace, groups[j]){
                     if( obj->_faces[changeFace][0] == i)
-                        obj->_faces[changeFace][0] = nidx;
+                        obj->_faces[changeFace][0] = (uint16_t)nidx;
                     if( obj->_faces[changeFace][1] == i)
-                        obj->_faces[changeFace][1] = nidx;
+                        obj->_faces[changeFace][1] = (uint16_t)nidx;
                     if( obj->_faces[changeFace][2] == i)
-                        obj->_faces[changeFace][2] = nidx;
+                        obj->_faces[changeFace][2] = (uint16_t)nidx;
                 }
             }
         }

@@ -291,7 +291,7 @@ partition_triangles(const BuildNode&        parent,
 {
   double tri_verts[3][3];
   const TriIndxVec& tris      = parent.tris;
-  const unsigned int num_tris = tris.size();
+  const unsigned int num_tris = (unsigned int)tris.size();
   
   // make sure each child contains zero triangles
   left_child.clear();
@@ -415,7 +415,7 @@ compute_obb(OBB_Node&               obb,
   double s[3];    // eigen values
   
   const int* const indx_vec   = &bnode.tris[0];
-  const unsigned int num_tris = bnode.tris.size();
+  const unsigned int num_tris = (unsigned int)bnode.tris.size();
   
   // compute moments for all triangles
   compute_moments(trim, indx_vec, num_tris, tris_mom);
@@ -806,7 +806,7 @@ compute_median(const double axis[3], const TriMeshInterface& trim, const TriIndx
   assert(!tris.empty());
   
   double tri_verts[3][3];
-  const unsigned int num_tris = tris.size();
+  const unsigned int num_tris = (unsigned int) tris.size();
   std::vector<double> projs(num_tris);
   
   for (unsigned int i = 0; i < num_tris; ++i) {

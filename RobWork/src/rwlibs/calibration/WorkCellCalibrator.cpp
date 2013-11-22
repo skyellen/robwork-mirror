@@ -67,7 +67,7 @@ namespace rwlibs {
 
 
 			virtual void computeJacobian(Eigen::MatrixXd& stackedJacobians) {
-				const int measurementCount = _measurements.size();
+				const int measurementCount = (int)_measurements.size();
 				const int rowCount = 6 * measurementCount;
 				const int columnCount = _jacobian->getColumnCount();
 				RW_ASSERT(columnCount > 0);
@@ -101,12 +101,12 @@ namespace rwlibs {
 			}
 
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
-				const int measurementCount = _measurements.size();
+				const int measurementCount = (int)_measurements.size();
 
 				const int rowCount = 6 * measurementCount;
 				stackedResiduals.resize(6 * measurementCount);
 				rw::kinematics::State workCellState = _workCellState;
-				for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+				for (unsigned int measurementIndex = 0; measurementIndex < (unsigned int) measurementCount; measurementIndex++) {
 					const SerialDevicePoseMeasurement measurement = _measurements[measurementIndex];
 
 					Device::Ptr device = getDevice(measurement);
@@ -202,11 +202,11 @@ namespace rwlibs {
 		}*/
 
 		unsigned int WorkCellCalibrator::getMinimumMeasurementCount() const {
-			return ceil(float(_jacobian->getColumnCount()) / 6);
+			return (unsigned int) ceil(float(_jacobian->getColumnCount()) / 6);
 		}
 
 		int WorkCellCalibrator::getMeasurementCount() const {
-			return _measurements.size();
+			return (int)_measurements.size();
 		}
 
 		void WorkCellCalibrator::addMeasurement(const SerialDevicePoseMeasurement& measurement) {

@@ -32,7 +32,7 @@ void DependencyGraph::addDependency( const std::string& from, const std::string&
     int fromi,toi;
     std::map<std::string,int>::iterator fromindex = _map.find(from);
     if( fromindex == _map.end() ){
-        fromi = _map.size();
+        fromi = (int)_map.size();
         _map[from] = fromi;
     } else {
         fromi = (*fromindex).second;
@@ -40,7 +40,7 @@ void DependencyGraph::addDependency( const std::string& from, const std::string&
 
     std::map<std::string,int>::iterator toindex = _map.find(to);
     if( toindex == _map.end() ){
-        toi = _map.size();
+        toi = (int)_map.size();
         _map[to] = toi;
     } else {
         toi = (*toindex).second;

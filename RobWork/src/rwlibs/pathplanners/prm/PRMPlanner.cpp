@@ -285,7 +285,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
                 _bounds,
                 _metricWeights,
                 _Rneighbor,
-                _partialIndexTableDimensions));
+                (int)_partialIndexTableDimensions));
 
     size_t cnt = 0;
     while (cnt<nodecount) {
@@ -329,7 +329,7 @@ void PRMPlanner::enhanceRoadmap()
     for (size_t cnt = 0; cnt < std::min(
              _seeds.size(),_enhanceRandomFromSeedsCnt); cnt++)
     {
-        int index = Math::ranI(0, _seeds.size());
+        int index = Math::ranI(0, (int)_seeds.size());
         enhanceAround(_seeds[index]);
     }
 
@@ -441,8 +441,7 @@ bool PRMPlanner::inCollision(std::list<Node>& path)
         for (int i = 0; i < (int)path.size(); i++) {
 
             // Formula such that we check from the ends
-            int index1 = (int)std::floor(
-                (double)i/2.0) * ( -(i % 2) + (i+1) % 2) + (i % 2) * (path.size()-1);
+            int index1 = (int)std::floor((double)i/2.0) * ( -(i % 2) + (i+1) % 2) + (i % 2) * ((int)path.size()-1);
 
             Node n = nodes[index1];
             if(!_graph[n].checked){

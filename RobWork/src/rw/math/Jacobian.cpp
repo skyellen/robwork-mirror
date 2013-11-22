@@ -112,14 +112,14 @@ void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar,
     iar.readLeaveScope(id);
     tmp = rw::math::Jacobian(size1,size2);
     iar.read(arr, id);
-    Math::fromStdVectorToMat(arr, tmp, tmp.size1(), tmp.size2());
+    Math::fromStdVectorToMat(arr, tmp, (int)tmp.size1(), (int)tmp.size2());
 }
 
 void rw::common::serialization::write(const rw::math::Jacobian& tmp, OutputArchive& oar, const std::string& id){
     oar.writeEnterScope(id);
     oar.write( tmp.size1(), "size1" );
     oar.write( tmp.size2(), "size2" );
-    oar.write( Math::toStdVector(tmp, tmp.size1(), tmp.size2()), "data" );
+    oar.write( Math::toStdVector(tmp, (int)tmp.size1(), (int)tmp.size2()), "data" );
     oar.writeLeaveScope(id);
 }
 

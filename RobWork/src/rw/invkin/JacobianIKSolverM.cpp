@@ -241,7 +241,7 @@ std::vector<Q> JacobianIKSolverM::solve(
     std::vector<double> maxError = getMaxError();
     State state = initial_state;
 
-    const int N = bTeds.size();
+    const int N = (int)bTeds.size();
 
     if( _useInterpolation ){
         // for each end effector calculate the distance

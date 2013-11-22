@@ -38,7 +38,7 @@ public:
      * @return
      */
     MovingAverage(size_t N):
-        _len(N),_invLen(1.0),_cb(_len,0.0),_sum(0.0),_idx(0)
+        _len((int)N),_invLen(1.0),_cb(_len,0.0),_sum(0.0),_idx(0)
     {
         RW_ASSERT(N!=0);
         _invLen = 1.0/N;

@@ -155,7 +155,7 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 				for (std::size_t j = 0; j < nodes.size() && !found; j++) {
 					aiNode* nodeB = nodes[j];
 					if (nodeA->mParent == nodeB) {
-						parent = j;
+						parent = (int)j;
 						found = true;
 					}
 				}
@@ -204,7 +204,10 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 						// This is stupid
 						RW_THROW("LoaderAssimp could not load " << filename << " as a face was encountered with only " << face.mNumIndices << " vertices.");
 					} else if (face.mNumIndices == 3) {
-						IndexedTriangle<uint16_t> triangle(startId+face.mIndices[0],startId+face.mIndices[1],startId+face.mIndices[2]);
+						IndexedTriangle<uint16_t> triangle(
+							(uint16_t)(startId+face.mIndices[0]),
+							(uint16_t)(startId+face.mIndices[1]),
+							(uint16_t)(startId+face.mIndices[2]));
 						if (!mesh->HasNormals()) {
 							Vector3D<float> v0 = rwobj->_vertices[startId+face.mIndices[0]];
 							Vector3D<float> v1 = rwobj->_vertices[startId+face.mIndices[1]];

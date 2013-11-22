@@ -138,9 +138,9 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 	//// Verify that the calibration match the artificial calibration.
 	for (size_t i = 0; i<calibration->getFixedFrameCalibrations()->getCalibrationCount(); i++) {
-		FixedFrameCalibration::Ptr ffCalibration = calibration->getFixedFrameCalibrations()->getCalibration(i);
+		FixedFrameCalibration::Ptr ffCalibration = calibration->getFixedFrameCalibrations()->getCalibration((int)i);
 		if (ffCalibration->isEnabled()) {
-			FixedFrameCalibration::Ptr artificialFFCalibration = artificialCalibration->getFixedFrameCalibrations()->getCalibration(i);
+			FixedFrameCalibration::Ptr artificialFFCalibration = artificialCalibration->getFixedFrameCalibrations()->getCalibration((int)i);
 			const rw::math::Transform3D<> artificialCorrection = artificialFFCalibration->getCorrectionTransform();
 			const rw::math::Transform3D<> actualCorrection = ffCalibration->getCorrectionTransform();
 		
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 			toEigen(artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->getCorrectionTransform()), 10e-5));
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr internalLinkCalibrationsLoaded =
 			calibrationLoaded->getCompositeLinkCalibration();
-	for (unsigned int calibrationIndex = 0; calibrationIndex < internalLinkCalibrationsLoaded->getCalibrationCount(); calibrationIndex++){
+	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)internalLinkCalibrationsLoaded->getCalibrationCount(); calibrationIndex++){
 		for (int parameterIndex = 0; parameterIndex < 4; parameterIndex++){
 			/*
 			if (artificialInternalLinkCalibrations[calibrationIndex]->isParameterEnabled(parameterIndex)) {
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 
 
 std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, const std::vector<Frame*>& sensorFrames, rw::kinematics::Frame::Ptr markerFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise) {
-	MultivariateNormalDistribution<double, 6> mvnd(time(0));
+	MultivariateNormalDistribution<double, 6> mvnd((unsigned int)time(0));
 
 	std::vector<SerialDevicePoseMeasurement> measurements;
 

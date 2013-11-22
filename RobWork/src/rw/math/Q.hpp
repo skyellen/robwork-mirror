@@ -161,7 +161,7 @@ namespace rw { namespace math {
         /**
          * @brief Returns Q of length \b n initialized with 0's
          */
-        static Q zero(int n)
+        static Q zero(std::size_t n)
         {
 			return Q(Eigen::Matrix<double, Eigen::Dynamic, 1>::Zero(n));
         }

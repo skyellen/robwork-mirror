@@ -46,7 +46,7 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& pa
 																 QMetric::Ptr metric)
 {
     JointSpaceAnalysis analysis;
-    analysis.nodecount = path.size();
+    analysis.nodecount = (double)path.size();
 
     EuclideanMetric<Q> euMetric;
     if (!metric)

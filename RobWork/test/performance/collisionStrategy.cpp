@@ -72,7 +72,7 @@ struct TestResult {
 void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std::string, double> > &timings){
     // This function iterates over all configurations and for each configuration
     // it tests collision between all model pairs
-    int nrOfQueries = setup.modelsConfigurations.size()*setup.modelPairs.size();
+    int nrOfQueries = (int)(setup.modelsConfigurations.size()*setup.modelPairs.size());
     std::cout << "--------- Performancetest - testPerConfiguration ----------" << std::endl;
     std::cout << "- Collision Strategy ID: " << setup.strategyName << std::endl;
     std::cout << "- Performing " << nrOfQueries << " collision tests" << std::endl;
@@ -115,7 +115,7 @@ void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std
 void testPerObjectPair(CollisionTestSetup& setup, std::vector<std::pair<std::string, double> > &timings){
     // This function iterates over all configurations and for each configuration
     // it tests collision between all model pairs
-    int nrOfQueries = setup.modelsConfigurations.size()*setup.modelPairs.size();
+    int nrOfQueries = (int)(setup.modelsConfigurations.size()*setup.modelPairs.size());
     std::cout << "--------- Performancetest - testPerObjectPair ----------" << std::endl;
     std::cout << "- Collision Strategy ID: " << setup.strategyName << std::endl;
     std::cout << "- Performing " << setup.modelsConfigurations.size()*setup.modelPairs.size() << " collision tests" << std::endl;

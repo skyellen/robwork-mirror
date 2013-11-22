@@ -50,7 +50,7 @@ namespace
 	Ptr<yaobi::CollModel> makeModelFromSoup(TriMesh::Ptr mesh, const double scale)
     {
         unsigned char tri_stride(3);
-        unsigned num_tris(mesh->getSize());
+        unsigned num_tris((unsigned)mesh->getSize());
         unsigned num_verts(num_tris*3);
         yaobi::AppRealT *vertices = new yaobi::AppRealT[num_verts*3];
         int *tris = new int[num_tris*3];
@@ -152,7 +152,7 @@ bool ProximityStrategyYaobi::addGeometry(rw::proximity::ProximityModel* model, c
     pmodel->models.push_back( RWYaobiModel(geom.getTransform(), yaobimodel) );
 
     _allmodels.push_back(pmodel->models.back());
-    _geoIdToModelIdx[geom.getId()].push_back(_allmodels.size()-1);
+    _geoIdToModelIdx[geom.getId()].push_back((int)_allmodels.size()-1);
     return true;
 }
 
@@ -191,7 +191,8 @@ bool ProximityStrategyYaobi::inCollision(ProximityModel::Ptr aModel,
             // TODO: copy all colliding triangles into data
             if (firstContact && result.IsColliding())
             	return true;
-            isColliding |= result.IsColliding();
+			if (result.IsColliding())
+				isColliding = true;
         }
     }
 

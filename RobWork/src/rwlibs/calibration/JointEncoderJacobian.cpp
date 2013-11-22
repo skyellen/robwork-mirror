@@ -12,7 +12,7 @@ namespace rwlibs {
 		JointEncoderJacobian::JointEncoderJacobian(JointEncoderCalibration::Ptr calibration) : JacobianBase(calibration), _calibration(calibration), _device(calibration->getDevice()), _joint(calibration->getJoint()) {
 			// Find joint number.
 			const std::vector<rw::models::Joint*> joints = _device->getJoints();
-			_jointIndex = std::find(joints.begin(), joints.end(), _joint.get()) - joints.begin();
+			_jointIndex = (int)(std::find(joints.begin(), joints.end(), _joint.get()) - joints.begin());
 		}
 
 		JointEncoderJacobian::~JointEncoderJacobian() {

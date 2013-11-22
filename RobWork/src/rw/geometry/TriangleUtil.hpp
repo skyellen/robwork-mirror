@@ -86,7 +86,7 @@ namespace rw { namespace geometry {
 			Triangle<T> tri;
             for(size_t i = 0; i<triMesh.getSize(); i++){
 
-                int vIdx = i*3;
+                int vIdx = (int)i*3;
 
                 triMesh.getTriangle(i, tri);
 
@@ -94,9 +94,9 @@ namespace rw { namespace geometry {
                 RW_ASSERT(vIdx+1<(int)verticesIdx->size());
                 RW_ASSERT(vIdx+2<(int)verticesIdx->size());
 
-                (*verticesIdx)[vIdx+0] = VertexCmp<T>(tri[0], i, 0, &axis);
-                (*verticesIdx)[vIdx+1] = VertexCmp<T>(tri[1], i, 1, &axis);
-                (*verticesIdx)[vIdx+2] = VertexCmp<T>(tri[2], i, 2, &axis);
+                (*verticesIdx)[vIdx+0] = VertexCmp<T>(tri[0], (int)i, 0, &axis);
+                (*verticesIdx)[vIdx+1] = VertexCmp<T>(tri[1], (int)i, 1, &axis);
+                (*verticesIdx)[vIdx+2] = VertexCmp<T>(tri[2], (int)i, 2, &axis);
 
             }
 
@@ -108,7 +108,7 @@ namespace rw { namespace geometry {
             // run through the semi sorted list and merge vertices that are alike
             //std::stack<VertexCmp<T>*>
             std::stack<SortJob> sjobs;
-            sjobs.push(SortJob(0,0,verticesIdx->size()-1));
+            sjobs.push(SortJob(0,0,(int)(verticesIdx->size()-1)));
             while( !sjobs.empty() ){
                 SortJob job = sjobs.top();
                 sjobs.pop();

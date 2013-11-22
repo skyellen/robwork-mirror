@@ -315,7 +315,7 @@ int testClosedFormWithQ(const Q& q, std::vector<DHParameterSet>& dhparams) {
             }
         }
     }
-    return solutions.size();
+    return (int)solutions.size();
 }
 
 

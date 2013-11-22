@@ -32,7 +32,7 @@ using namespace rw::geometry;
 
 double Contour2D::calcArea()
 {
-    int n = _points.size();
+    int n = (int)_points.size();
 
     double area=0.0;
 
@@ -139,7 +139,7 @@ double Contour2D::calcSequenceMoment(
             m *= val;
         mr += m;
     }
-    const int N = contour.size();
+    const int N = (int)contour.size();
     return mr/N;
 }
 
@@ -154,7 +154,7 @@ double Contour2D::calcCentralMoments(const Contour2D& contour, const rw::math::V
             u *= val;
         ur+=u;
     }
-    const int N = contour.size();
+    const int N = (int)contour.size();
     return ur/N;
 }
 
@@ -172,7 +172,7 @@ Covariance<> Contour2D::calcCovarianceMatrix(
         covarM(1,1) += p[1]*p[1];
         //covarM(j,k) += 9*c[j]*c[k] + p[j]*p[k] + q[j]*q[k] + r[j]*r[k];
     }
-    const int N = contour.size();
+    const int N = (int)contour.size();
     covarM(0,0) = covarM(0,0)/N;
     covarM(0,1) = covarM(0,1)/N;
     covarM(1,0) = covarM(1,0)/N;
@@ -188,7 +188,7 @@ rw::math::Vector2D<> Contour2D::calcCentroid(const Contour2D& contour)
     BOOST_FOREACH(const Contour2D::Point& p, contour.points()){
         c += p.P();
     }
-    return c/contour.size();
+    return c/((int)contour.size());
 }
 
 
@@ -275,10 +275,10 @@ rw::math::Vector2D<> Contour2D::calcNormal(
 void Contour2D::recalcNormal(Contour2D& contour){
     int _avgFilterLen = 4;
     MovingAverage curvAvg1(_avgFilterLen), curvAvg2(_avgFilterLen);
-    for(int i = contour.size()-_avgFilterLen; i<_avgFilterLen; i++){
+    for(int i = (int)contour.size()-_avgFilterLen; i<_avgFilterLen; i++){
         int sampleIdx = i;
         if(i >= (int)contour.size() )
-            sampleIdx = i-contour.size();
+            sampleIdx = i-(int)contour.size();
         Vector2D<> normal = Contour2D::calcNormal(sampleIdx, 6, contour, true);
 
         curvAvg1.addSample( normal );
@@ -290,9 +290,9 @@ void Contour2D::recalcNormal(Contour2D& contour){
 
     for(size_t i=0; i<contour.size(); i++){
 
-        int sampleIdx = i+_avgFilterLen;
+        int sampleIdx = (int)i+_avgFilterLen;
         if(sampleIdx>= (int)contour.size())
-            sampleIdx = sampleIdx-contour.size();
+            sampleIdx = sampleIdx-(int)contour.size();
 
         Vector2D<> normal = Contour2D::calcNormal(sampleIdx, 6, contour, true);
         curvAvg1.addSample( normal );
@@ -529,7 +529,7 @@ namespace
         double height,
         PlainTriMeshN1F::Ptr mesh)
     {
-        const int len = object.points().size();
+        const int len = (int)object.points().size();
         for (int i = 1; i < len; i++) {
             const Vector2D<> p = object.points()[i - 1].P();
             const Vector2D<> q = object.points()[i].P();

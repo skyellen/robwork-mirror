@@ -98,7 +98,7 @@ void qhull::build(size_t dim,
 
 
 
-        exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
+        exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
 
 
 

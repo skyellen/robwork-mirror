@@ -99,7 +99,7 @@ namespace geometry {
 		    _hullVertices.resize(_vertiIdxs.size());
 		    for(size_t i=0;i<_vertiIdxs.size(); i++){
 		        _hullVertices[i] = vertices[_vertiIdxs[i]];
-		        vertIdxMap[ _vertiIdxs[i] ] = i;
+		        vertIdxMap[ _vertiIdxs[i] ] = (int)i;
 		    }
 		    for(size_t i=0;i<_faceIdxs.size();i++){
 		        int tmp = _faceIdxs[i];
@@ -166,7 +166,7 @@ namespace geometry {
 			RW_ASSERT(_faceNormals.size() > 0);
 			
 			// loop over all 'faces' and calculate their areas
-			int nOfFaces = _faceIdxs.size()/N;
+			int nOfFaces = (int)(_faceIdxs.size()/N);
 
 			double totalVolume = 0.0;
 			double avgDist = 0.0;
@@ -202,7 +202,7 @@ namespace geometry {
 			// loop over all 'faces' and calculate their areas and centroids
 			//std::vector<double> areas;
 			//std::vector<VectorND<N> > centroids;
-			int nOfFaces = _faceIdxs.size()/N;
+			int nOfFaces = (int)(_faceIdxs.size()/N);
 			VectorND<N> centroid = VectorND<N>::zero();;
 			double totalVolume = 0.0;
 			//std::cout << "N of faces= " << nOfFaces << std::endl;

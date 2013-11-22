@@ -29,7 +29,7 @@ using namespace rw::common;
 rw::common::Ptr<TriMesh> PointCloud::getTriMesh(bool forceCopy){
     // we create a trimesh with points of size 1mm
     //std::cout << "Creating mesh... " << _data.size() << std::endl;
-    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF(_data.size()) );
+    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF((int)_data.size()) );
     for(size_t i=0;i<_data.size();i++){
         Triangle<float> tri = (*mesh)[i];
         tri[0] = _data[i];
@@ -41,7 +41,7 @@ rw::common::Ptr<TriMesh> PointCloud::getTriMesh(bool forceCopy){
 }
 
 rw::common::Ptr<const TriMesh> PointCloud::getTriMesh(bool forceCopy) const{
-    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF(_data.size()) );
+    PlainTriMeshF::Ptr mesh = ownedPtr( new PlainTriMeshF((int)_data.size()) );
     //std::cout << "Creating mesh... " << _data.size() << std::endl;
     for(size_t i=0;i<_data.size();i++){
         Triangle<float> tri = (*mesh)[i];

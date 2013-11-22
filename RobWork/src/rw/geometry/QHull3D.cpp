@@ -44,7 +44,7 @@ void QHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices){
     _hullVertices.resize(_vertiIdxs.size());
     for(size_t i=0;i<_vertiIdxs.size(); i++){
         _hullVertices[i] = vertices[_vertiIdxs[i]];
-        vertIdxMap[ _vertiIdxs[i] ] = i;
+        vertIdxMap[ _vertiIdxs[i] ] = (int)i;
     }
     for(size_t i=0;i<_faceIdxs.size();i++){
         int tmp = _faceIdxs[i];

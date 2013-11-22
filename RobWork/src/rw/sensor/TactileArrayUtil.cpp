@@ -36,13 +36,13 @@ namespace {
                           const TactileArray::ValueMatrix& tMatrix,
                           const TactileArray::VertexMatrix& vMatrix)
     {
-        int i_low = i-1,i_upp=i+1;
+        int i_low = (int)i-1,i_upp=(int)i+1;
         if(i_low<0) i_low = 0;
-        if(i_upp >= (int)tMatrix.rows()) i_upp = tMatrix.cols()-1;
+        if(i_upp >= (int)tMatrix.rows()) i_upp = (int)tMatrix.cols()-1;
 
-        int j_low = j-1,j_upp=j+1;
+        int j_low = (int)j-1,j_upp=(int)j+1;
         if(j_low<0) j_low = 0;
-        if(j_upp >= (int)tMatrix.rows()) j_upp = tMatrix.cols()-1;
+        if(j_upp >= (int)tMatrix.rows()) j_upp = (int)tMatrix.cols()-1;
 
         Vector3D<> wp(0,0,0);
         double valSum = 0, maxVal=0;
@@ -72,7 +72,7 @@ std::vector<Contact3D> TactileArrayUtil::estimateContacts(
         for(Eigen::DenseIndex j=0;j<data.cols(); j++){
             std::pair<double,Vector3D<> > avgPoint =
                 getWeightAverage(i,j,data,centers);
-            Vector2D<> texelSize = arraySensor.getTexelSize(i,j);
+            Vector2D<> texelSize = arraySensor.getTexelSize((int)i,(int)j);
             double normalForce = avgPoint.first*(texelSize(0)*texelSize(1));
             if( normalForce>minContactForce ){
                 Contact3D c;

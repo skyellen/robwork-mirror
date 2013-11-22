@@ -782,7 +782,7 @@ int LoaderAC3D::loadTexture(const std::string& filename, ModelAC3D* model){
     // first tjek if the texture has allready been loaded
     for(size_t i=0;i<model->_textures.size(); i++){
         if(model->_textures[i].getName()==filename){
-            return i;
+            return (int)i;
         }
     }
     // if we did not find the texture then load it
@@ -797,8 +797,8 @@ int LoaderAC3D::loadTexture(const std::string& filename, ModelAC3D* model){
         return -1;
 
     model->_textures.push_back( TextureData( filename, image ) );
-    model->_textureMap[model->_textures.size()-1] = &model->_textures.back();
+    model->_textureMap[(int)model->_textures.size()-1] = &model->_textures.back();
 
-    return model->_textures.size()-1;
+    return (int)model->_textures.size()-1;
 }
 

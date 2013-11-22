@@ -697,8 +697,8 @@ namespace rw { namespace math {
          * @param tmp [out] the output
          * @return reference to tmp
          */
-        template <class ARR>
-        static ARR fromStdVector(std::vector<double>& data, ARR& tmp){
+        template <class T, class ARR>
+        static ARR fromStdVector(std::vector<T>& data, ARR& tmp){
             for(size_t i=0;i<data.size();i++){
                 tmp(i) = data[i];
             }
@@ -712,8 +712,8 @@ namespace rw { namespace math {
          * @param tmp [out] the output
          * @return reference to tmp
          */
-        template <class MAT>
-        static MAT fromStdVectorToMat(std::vector<double>& data, MAT& tmp, int size1, int size2){
+        template <class T, class MAT>
+        static MAT fromStdVectorToMat(std::vector<T>& data, MAT& tmp, int size1, int size2){
             for(size_t i=0;i<size1;i++){
                 for(size_t j=0;j<size2;j++){
                     tmp(i,j) = data[i];

@@ -75,7 +75,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
 
 
     Vector B(N+1); // make room for boundary conditions
-	Eigen::SparseMatrix<T> A(N+1, N+1);
+	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
 	
     //Vector D(N+1),DTmp(N+1); // the diagonal
     //Vector E(N,1),ETmp(N); // the left/right to the diagonal
@@ -88,7 +88,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
         //T timeI0 = (T)((*tqpath)[i]).getTime();
         //T timeI1 = (T)((*tqpath)[i+1]).getTime();
         //H[i] = timeI1-timeI0;
-		H[i] = times[i+1] - times[i];
+		H[i] = (float)(times[i+1] - times[i]);
     }
 
     //D[0] = 2*H[0];
@@ -97,12 +97,13 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
 	A.insert(1,0) = H[0];
     for (size_t i=1; i<N; i++) {
 		//D[i] = 2*(H[i-1]+H[i]);
-		A.insert(i,i) = 2*(H[i-1]+H[i]); 
-		A.insert(i,i+1) = H[i];
-		A.insert(i+1,i) = H[i];
+		int ei = (int) i;
+		A.insert(ei,ei) = 2*(H[i-1]+H[i]); 
+		A.insert(ei,ei+1) = H[i];
+		A.insert(ei+1,ei) = H[i];
     }
     //D[N] = 2*H[N-1];
-	A.insert(N, N) = 2*H[N-1];
+	A.insert((int)N, (int)N) = 2*H[N-1];
 
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
@@ -199,7 +200,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     Vector B(N+1); // make room for boundary conditions
     //ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
     //ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
-	Eigen::SparseMatrix<T> A(N+1, N+1);
+	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
     Vector Y(N+1); // the points that the spline should intersect
     Vector a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
     Vector H(N); // duration from point i to i+1
@@ -207,7 +208,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     for (size_t i=0; i<N; i++) {
         //T timeI0 = (T)((*tqpath)[i]).getTime();
         //T timeI1 = (T)((*tqpath)[i+1]).getTime();
-        H[i] = times[i+1]-times[i];
+        H[i] = (float)(times[i+1]-times[i]);
     }
 
     //D[0] = 2*H[0];
@@ -216,12 +217,13 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
 	A.insert(1,0) = H[0];
     for (size_t i=1; i<N; i++) {
         //D[i] = 2*(H[i-1]+H[i]);
-		A.insert(i,i) = 2*(H[i-1]+H[i]);
-		A.insert(i+1,i) = H[i];
-		A.insert(i,i+1) = H[i];
+		int ei = (int) i;
+		A.insert(ei,ei) = 2*(H[i-1]+H[i]);
+		A.insert(ei+1,ei) = H[i];
+		A.insert(ei,ei+1) = H[i];
     }
     //D[N] = 2*H[N-1];
-	A.insert(N, N) = 2*H[N-1];
+	A.insert((int)N, (int)N) = 2*H[N-1];
 
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
@@ -233,7 +235,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
 
 
         B[0] = (T)(3.0*(Y[1]-Y[0])/H[0]-3*dqStart[j]);
-        for (size_t i=1; i<B.size()-1; i++) {
+        for (size_t i=1; i<(std::size_t)B.size()-1; i++) {
             B[i] = (T)(3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]));
         }
         B[N] = (T)(3.0*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1]);

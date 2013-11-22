@@ -326,7 +326,7 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
         t3d = t3d*geom->getTransform();
 
 
-        triCnt += trimesh->getSize();
+        triCnt += (int)trimesh->getSize();
         for(size_t i=0; i<trimesh->getSize(); i++){
             Triangle<double> tri = trimesh->getTriangle(i);
             const Vector3D<>& p = t3d* (tri[0]);
@@ -390,7 +390,7 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
         Transform3D<> t3d = geom->getTransform();
 
 
-        triCnt += trimesh->getSize();
+        triCnt += (int)trimesh->getSize();
         for(size_t i=0; i<trimesh->getSize(); i++){
             Triangle<double> tri = trimesh->getTriangle(i);
             const Vector3D<>& p = t3d* (tri[0]);

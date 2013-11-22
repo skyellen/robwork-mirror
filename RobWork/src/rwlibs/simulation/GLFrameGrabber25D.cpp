@@ -58,8 +58,8 @@ void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     view->_viewCamera->setLightningEnabled( true );
     view->_viewCamera->setRefNode( drawer->getScene()->getRoot() );
     //std::cout << width <<  " " << height << std::endl;
-    view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
-    view->_viewCamera->setViewport(0,0, getWidth(), getHeight());
+    view->_viewCamera->setPerspective(_fieldOfView, (int)getWidth(), (int)getHeight(), _minDepth, _maxDepth);
+    view->_viewCamera->setViewport(0,0, (int)getWidth(), (int)getHeight());
     view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
     view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
     view->_viewCamera->setDrawMask(DrawableNode::Physical);
@@ -67,7 +67,7 @@ void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
 
     view->_camGroup->setOffscreenRenderEnabled(true);
     view->_camGroup->setOffscreenRenderColor(rw::sensor::Image::RGB);
-    view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    view->_camGroup->setOffscreenRenderSize((int)getWidth(),(int)getHeight());
     view->_camGroup->setCopyToScan25D( _img );
     view->_camGroup->setEnabled(true);
     _view = view;
@@ -78,7 +78,7 @@ void GLFrameGrabber25D::setMaxDepth(double depth){
 		RW_THROW("MaxDepth not allowed to be smaller than MinDepth: "<< depth <<">" <<_minDepth );
 	_maxDepth = depth;
     if(_view!=NULL)
-        _view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
+        _view->_viewCamera->setPerspective(_fieldOfView, (int)getWidth(), (int)getHeight(), _minDepth, _maxDepth);
 
 }
 
@@ -87,7 +87,7 @@ void GLFrameGrabber25D::setMinDepth(double depth){
 		RW_THROW("MinDepth not allowed to be larger than MaxDepth: "<< depth <<"<" <<_maxDepth );
 	_minDepth = depth;
     if(_view!=NULL)
-        _view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
+        _view->_viewCamera->setPerspective(_fieldOfView, (int)getWidth(), (int)getHeight(), _minDepth, _maxDepth);
 
 }
 

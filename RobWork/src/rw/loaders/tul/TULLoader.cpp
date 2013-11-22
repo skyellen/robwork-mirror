@@ -924,7 +924,7 @@ namespace
         {
             const VI begin = _path.begin();
             VI end = _path.end();
-            const int maxCnt = _path.size() + 1;
+            const int maxCnt = (int)_path.size() + 1;
             for (int cnt = 0; cnt < maxCnt; ++cnt, --end) {
                 const string frameName =
                     getFrameName(begin, end, name);

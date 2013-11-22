@@ -104,7 +104,7 @@ namespace common {
 	    //}
 
 	    template<typename T>
-	    void writeImpl(T& object, const std::string& id, typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL){
+	    void writeImpl(T& object, const std::string& id, typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL, typename boost::disable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL){
 	    	//BOOST_MPL_ASSERT_MSG(boost::is_reference<T>::value, "type T cannot be of type reference!" , (T) );
 
 			//if( boost::is_floating_point<T>::value || boost::is_integral<T>::value){
@@ -114,6 +114,11 @@ namespace common {
 
 			// try and use overloaded method
 			serialization::write<T>(object, *this, id);
+	    }
+
+	    template<typename T>
+	    void writeImpl(T& object, const std::string& id, typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL){
+			serialization::write<boost::uint64_t>((boost::uint64_t)object, *this, id);
 	    }
 
 

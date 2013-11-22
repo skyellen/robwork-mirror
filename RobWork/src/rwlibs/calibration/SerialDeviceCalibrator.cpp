@@ -27,7 +27,7 @@ namespace rwlibs {
 
 		private:
 			virtual void computeJacobian(Eigen::MatrixXd& stackedJacobians) {
-				const int measurementCount = _measurements.size();
+				const int measurementCount = (int)_measurements.size();
 				const int rowCount = 6 * measurementCount;
 				const int columnCount = _jacobian->getColumnCount();
 				RW_ASSERT(columnCount > 0);
@@ -59,12 +59,12 @@ namespace rwlibs {
 			}
 
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
-				const int measurementCount = _measurements.size();
+				const int measurementCount = (int)_measurements.size();
 
 				const int rowCount = 6 * measurementCount;
 				stackedResiduals.resize(6 * measurementCount);
 				rw::kinematics::State workCellState = _workCellState;
-				for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+				for (unsigned int measurementIndex = 0; measurementIndex < (unsigned int)measurementCount; measurementIndex++) {
 					const SerialDevicePoseMeasurement measurement = _measurements[measurementIndex];
 
 					// Update state according to current measurement.
@@ -139,11 +139,11 @@ namespace rwlibs {
 		}
 
 		unsigned int SerialDeviceCalibrator::getMinimumMeasurementCount() const {
-			return ceil(float(_jacobian->getColumnCount()) / 6);
+			return (unsigned int) ceil(float(_jacobian->getColumnCount()) / 6);
 		}
 
 		int SerialDeviceCalibrator::getMeasurementCount() const {
-			return _measurements.size();
+			return (int)_measurements.size();
 		}
 
 		void SerialDeviceCalibrator::addMeasurement(const SerialDevicePoseMeasurement& measurement) {

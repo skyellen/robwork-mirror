@@ -137,7 +137,7 @@ rw::common::Ptr<GraspTable> GraspTable::load(const std::string& filename){
     	size_t consize;
     	istr >> consize >> tmpC;
     	//std::cout << "8";
-    	data.grasp = Grasp3D(consize);
+    	data.grasp = Grasp3D((int)consize);
     	float cs[3];
     	for(size_t j=0;j<consize;j++){
     		for(size_t m=0;m<3;m++){
@@ -314,7 +314,7 @@ void GraspTable::save(const std::string& filename){
 int GraspTable::nrTactileArrayGrasp(){
 	if(_graspData.size()==0)
 		return 0;
-	return _graspData[0]._tactiledata.size();
+	return (int)_graspData[0]._tactiledata.size();
 }
 
 std::pair<int,int> GraspTable::getTactileArrayDim(int i){
@@ -322,8 +322,8 @@ std::pair<int,int> GraspTable::getTactileArrayDim(int i){
 		return std::pair<int,int>(0,0);
 	if( i>=(int)_graspData[0]._tactiledata.size() )
 		RW_THROW("Index i out of range! " << i << ">=" << _graspData[0]._tactiledata.size());
-	int s1 = _graspData[0]._tactiledata[i].rows();
-	int s2 = _graspData[0]._tactiledata[i].cols();
+	int s1 = (int)_graspData[0]._tactiledata[i].rows();
+	int s2 = (int)_graspData[0]._tactiledata[i].cols();
 	return std::make_pair(s1,s2);
 }
 

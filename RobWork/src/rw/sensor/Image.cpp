@@ -229,9 +229,9 @@ Image::Pixel4i Image::getPixeli(size_t x, size_t y) const {
 
     // now if representation is float then we can set it directly
     if(_depth == Image::Depth32F){
-        Pixel4i p(_imageData[cidx]*_fromFloat, 0, 0, 0);
+        Pixel4i p((int)(_imageData[cidx]*_fromFloat), 0, 0, 0);
         for(size_t i=1;i<_nrChannels;i++)
-            p.ch[i] = _imageData[cidx+i*_stride]*_fromFloat;
+            p.ch[i] = (int)(_imageData[cidx+i*_stride]*_fromFloat);
         return p;
     }
     // is an int so we need to convert it to float
@@ -250,9 +250,9 @@ void Image::getPixel(size_t x, size_t y, Pixel4i& dst) const {
 
     // now if representation is float then we can set it directly
     if(_depth == Image::Depth32F){
-        dst.ch[0] = _imageData[cidx]*_fromFloat;
+        dst.ch[0] = (int)(_imageData[cidx]*_fromFloat);
         for(size_t i=1;i<_nrChannels;i++)
-            dst.ch[i] = _imageData[cidx+i*_stride] *_fromFloat;
+            dst.ch[i] = (int)(_imageData[cidx+i*_stride] *_fromFloat);
     }
     // is an int so we need to convert it to float
     dst.ch[0] = ( *((int*)&_imageData[cidx]) &_valueMask);
@@ -309,11 +309,11 @@ int Image::getPixelValuei(size_t x, size_t y, size_t channel) const{
 
     if(_depth == Image::Depth32F){
         char *valuePtr = &_imageData[cidx+channel*_stride];
-        return ( *((float*)valuePtr))*_fromFloat;
+        return (int)  (( *((float*)valuePtr))*_fromFloat);
     } else {
         // is in int so we need to convert it to float
         char *valuePtr = &_imageData[cidx+channel*_stride];
-        return ( *((int*)valuePtr)&_valueMask);
+        return (int)  (( *((int*)valuePtr)&_valueMask));
     }
 }
 
@@ -420,7 +420,7 @@ bool Image::saveAsPGM(const std::string& fileName) const
 
         // now print all row in reverse order
         for(size_t y=0;y<_height;y++){
-            unsigned int idx = y*_widthStep;
+            unsigned int idx = (unsigned int)y*_widthStep;
             //std::cout << y << " " << idx << std::endl;
 
             fwrite((unsigned char*)&(_imageData[idx]), 1, _width, imagefile);
@@ -502,7 +502,7 @@ bool Image::saveAsPPM(const std::string& fileName) const
         fprintf(imagefile,"255\n");
 
         for(size_t y=0;y<_height;y++){
-            unsigned int idx = y*_widthStep;
+            unsigned int idx = (unsigned int)y*_widthStep;
             fwrite(&_imageData[idx], 1, _widthStep, imagefile);
         }
 
@@ -516,7 +516,7 @@ bool Image::saveAsPPM(const std::string& fileName) const
         fprintf(imagefile,"65535\n");
 
         for(size_t y=0;y<_height;y++){
-            unsigned int idx = y*_widthStep;
+            unsigned int idx = (unsigned int)y*_widthStep;
             fwrite(&_imageData[idx], 2, _widthStep, imagefile);
         }
 

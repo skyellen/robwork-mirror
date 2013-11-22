@@ -85,13 +85,13 @@ ParallelDevice::ParallelDevice(
 {
     // create the actuated joint jacobian, should be the sice of row = 6* number of legs
     // and columns = number of active joints
-    _aJointJ = makeZeroMatrix(6*(legs.size()-1), _actuatedJoints.size()) ;
+    _aJointJ = makeZeroMatrix(6*((int)legs.size()-1), (int)_actuatedJoints.size()) ;
     // and the unactuated joint matrix
-    _uaJointJ = makeZeroMatrix(6*(legs.size()-1), _unActuatedJoints.size());
+    _uaJointJ = makeZeroMatrix(6*((int)legs.size()-1), (int)_unActuatedJoints.size());
 
     // construct the current joint value vectors for actuated and unactuated joints
-    _lastAJVal = new Q(Q::zero(_actuatedJoints.size()) );
-    _lastUAJVal = new Q(Q::zero(_unActuatedJoints.size()) );
+    _lastAJVal = new Q(Q::zero((int)_actuatedJoints.size()) );
+    _lastUAJVal = new Q(Q::zero((int)_unActuatedJoints.size()) );
 
     for (size_t i = 0; i < _actuatedJoints.size(); i++)
         (*_lastAJVal)(i) = *_actuatedJoints[i]->getData(state);
@@ -166,7 +166,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
     }
 
     double e = 1e-6;
-    Q deltaQA(Q::zero( _actuatedJoints.size() ));
+    Q deltaQA(Q::zero((int) _actuatedJoints.size() ));
     for(i=0;i<_actuatedJoints.size();i++){
         deltaQA(i) = q(i) - (*_lastAJVal)(i);
     }
@@ -181,7 +181,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
         prod(LinearAlgebra::pseudoInverse(*_uaJointJ), aJdeltaQA.m()));
 
     // Solve the equation uaJ(q)*dQua = dY , where dY = deltaPoses, for dQua
-    Q deltaY(Q::zero(_unActuatedJoints.size()));
+    Q deltaY(Q::zero((int)_unActuatedJoints.size()));
 
     int iterations = 0;
     double error = 1;
@@ -234,7 +234,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             EAA<> orin = bTe.R()*(EAA<>( inverse(bTe.R())*bTe_1.R() ) );
             // copy it into deltaY
 
-            int index = i*6;
+            int index = (int)i*6;
             deltaY[index+0] = pos(0);
             deltaY[index+1] = pos(1);
             deltaY[index+2] = pos(2);
@@ -300,7 +300,7 @@ Jacobian ParallelDevice::baseJend(const State& state) const
 
         // update the row and column count
         row += 6; // allways for robots in 3d
-        column += _legs[i]->nrOfJoints();
+        column += (int)_legs[i]->nrOfJoints();
     }
 
     return Jacobian( m );

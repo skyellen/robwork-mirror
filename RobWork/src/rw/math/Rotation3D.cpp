@@ -38,7 +38,7 @@ namespace rw{ namespace common { namespace serialization {
 
     template<class T>
     void read(rw::math::Rotation3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
-        std::vector<double> data;
+        std::vector<T> data;
         iar.read(data, id);
         rw::math::Math::fromStdVectorToMat(data, tmp, 3, 3 );
     }

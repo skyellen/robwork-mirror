@@ -126,7 +126,7 @@ namespace rwlibs { namespace algorithms {
             }
 
             // create a simple median balanced tree
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, DIM);
+            TreeNode *root = buildBalancedRec(*tNodes, 0, (int)tNodes->size(), 0, DIM);
 
             return new KDTree<KEY,DIM>(*root, tNodes, metric);
         }
@@ -152,7 +152,7 @@ namespace rwlibs { namespace algorithms {
             }
 
             // create a simple median balanced tree
-            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, DIM);
+            TreeNode *root = buildBalancedRec(*tNodes, 0, (int)tNodes->size(), 0, DIM);
 
             return new KDTree<KEY,DIM>(*root, tNodes, metric);
         }
@@ -170,7 +170,9 @@ namespace rwlibs { namespace algorithms {
         * @param key [in] must be the same length as the dimensionality of the KDTree
         * @param val [in] value that is to be stored at the keys position
         */
-        void addNode(const KEY& key, boost::any val);
+        void addNode(const KEY& key, boost::any val) {
+			RW_THROW("There is no implementation yet!");
+		}
 
         /**
         * @brief finds the KDNode with key equal to nnkey
@@ -398,8 +400,8 @@ namespace rwlibs { namespace algorithms {
 
             TreeNode &mNode = tNodes[medianIdx];
             mNode._axis = 0xFF&dim;
-            mNode._left = buildBalancedRec(tNodes, startIdx, medianIdx, depth+1, nrOfDims);
-            mNode._right = buildBalancedRec(tNodes, medianIdx+1, endIdx, depth+1, nrOfDims);
+            mNode._left = buildBalancedRec(tNodes, startIdx, (int)medianIdx, depth+1, nrOfDims);
+            mNode._right = buildBalancedRec(tNodes, (int)medianIdx+1, endIdx, depth+1, nrOfDims);
             return &mNode;
         }
 

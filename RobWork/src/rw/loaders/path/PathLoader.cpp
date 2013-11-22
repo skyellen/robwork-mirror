@@ -300,7 +300,7 @@ namespace
         void inc(int len) { _pos += len; }
 
         const char* get() const { return &_input->at(0) + _pos; }
-        int size() const { return _input->size(); }
+        std::size_t size() const { return _input->size(); }
 
         std::string _name; // Identifier for the resource being read.
         const std::vector<char>* _input;

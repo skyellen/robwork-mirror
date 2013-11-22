@@ -37,5 +37,5 @@ BOOST_AUTO_TEST_CASE(Pose6DTest){
 
     Pose6D<float> pf = cast<float>(p);
     for (size_t i = 0; i<6; i++)
-        BOOST_CHECK_CLOSE(pf(i), (float)p(i), 1e-15);
+        BOOST_CHECK_CLOSE(pf(i), (float)p(i), 1e-15f);
 }

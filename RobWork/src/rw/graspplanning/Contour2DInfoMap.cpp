@@ -87,7 +87,7 @@ Contour2DInfoMap::Contour2DInfoMap(int res):
 
 void Contour2DInfoMap::reset(const Contour2D& contour)
 {
-    const int contourSize = contour.size();
+    const int contourSize = (int)contour.size();
     int _avgFilterLen = 8;
     if( contourSize<2*_avgFilterLen )
         RW_THROW("Contour is too small");
@@ -160,7 +160,7 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
         RW_DEBUGS("insert: " << nAngleIdx << " angle: "<< nAngle);
         if(nAngleIdx>=_normalToContactsMap.size()){
             RW_WARN("Index out of range: " << nAngleIdx << "<" << _normalToContactsMap.size());
-            nAngleIdx = _normalToContactsMap.size()-1;
+            nAngleIdx = (unsigned int) (_normalToContactsMap.size()-1);
         }
         _normalToContactsMap[nAngleIdx].push_back(&c);
     }

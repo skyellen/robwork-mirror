@@ -326,8 +326,8 @@ namespace rwlibs { namespace algorithms {
 
             TreeNode &mNode = tNodes[medianIdx];
             mNode._axis = 0xFF&dim;
-            mNode._left = buildBalancedRec(tNodes, startIdx, medianIdx, depth+1, nrOfDims);
-            mNode._right = buildBalancedRec(tNodes, medianIdx+1, endIdx, depth+1, nrOfDims);
+            mNode._left = buildBalancedRec(tNodes, startIdx, (int)medianIdx, depth+1, nrOfDims);
+            mNode._right = buildBalancedRec(tNodes, (int)(medianIdx+1), endIdx, depth+1, nrOfDims);
             return &mNode;
         }
 
@@ -485,7 +485,7 @@ namespace rwlibs { namespace algorithms {
 
         // create a simple median balanced tree
         size_t nrOfDims = nodes.front().key.size();
-        TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
+        TreeNode *root = buildBalancedRec(*tNodes, 0, (int)tNodes->size(), 0, nrOfDims);
 
         return new KDTreeQ<T>(*root, tNodes);
     }

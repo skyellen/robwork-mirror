@@ -54,7 +54,7 @@ bool Timer::isPaused() {
 
 void Timer::reset()
 {
-    _relativeTime = TimerUtil::currentTimeMs();
+    _relativeTime = (long)TimerUtil::currentTimeMs();
     _totalTime = 0;
     _isPaused = false;
 }
@@ -66,14 +66,14 @@ void Timer::resetAndPause() {
 
 void Timer::resetAndResume() {
     _totalTime = 0;
-    _relativeTime = TimerUtil::currentTimeMs();
+    _relativeTime = (long)TimerUtil::currentTimeMs();
     _isPaused = false;
 }
 
 void Timer::pause()
 {
     if (!_isPaused) {
-        const long now = TimerUtil::currentTimeMs();
+        const long now = (long)TimerUtil::currentTimeMs();
         _totalTime += now - _relativeTime;
         _relativeTime = now;
         _isPaused = true;
@@ -83,7 +83,7 @@ void Timer::pause()
 void Timer::resume()
 {
     if (_isPaused) {
-        _relativeTime = TimerUtil::currentTimeMs();
+        _relativeTime = (long)TimerUtil::currentTimeMs();
         _isPaused = false;
     }
 }
@@ -104,7 +104,7 @@ long Timer::getTimeMs() const
     if (_isPaused)
         return _totalTime; // convert to sec
     else
-        return _totalTime + TimerUtil::currentTimeMs() - _relativeTime;
+        return _totalTime + (long)TimerUtil::currentTimeMs() - _relativeTime;
 }
 
 
@@ -112,7 +112,7 @@ std::string Timer::toString(const std::string& format){
     char line[64];
     long timems = _totalTime;
     if(!_isPaused)
-        timems += TimerUtil::currentTimeMs() - _relativeTime;
+        timems += (long)TimerUtil::currentTimeMs() - _relativeTime;
     int dd = timems/(1000*60*60*24);
     int hh = timems/(1000*60*60)-dd*24;
     int mm = timems/(1000*60)-dd*24*60-hh*60;

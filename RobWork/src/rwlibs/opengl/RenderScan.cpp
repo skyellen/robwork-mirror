@@ -47,7 +47,7 @@ void RenderScan::setScan(const rw::sensor::Image25D& img){
 }
 
 void RenderScan::setScan(const rw::sensor::Scan2D& scan){
-	_img.resize(scan.getMeasurementCount(),1);
+	_img.resize((int)scan.getMeasurementCount(),1);
 	_img.getData() = scan.getData();
 }
 

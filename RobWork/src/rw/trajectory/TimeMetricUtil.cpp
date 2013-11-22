@@ -68,7 +68,7 @@ double TimeMetricUtil::timeDistance(
     // We simply compute the time distance for each device and choose the
     // maximum value.
 
-    const int len = workcell.getDevices().size();
+    const int len = (int)workcell.getDevices().size();
     Q device_times(len);
 
     for (int i = 0; i < len; i++) {

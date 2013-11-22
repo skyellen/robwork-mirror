@@ -122,7 +122,7 @@ private:
     //! recursive search for finding value in list
     int binSearchRec(const double value, size_t start, size_t end){
         if(start==end)
-            return start;
+            return (int)start;
         // choose a int between start and end
         size_t split = (end-start)/2+start;
         if(value<_surfaceArea[split])

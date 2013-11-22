@@ -55,8 +55,8 @@ void LogBufferedChar::write(const std::string& input) {
     if (_index + cnt >= _size) {
         switch (_policy) {
         case REMOVE_FIRST: {
-            int cnt1 = _size - _index;
-            int cnt2 = str.size() - cnt1;
+            int cnt1 = (int)_size - _index;
+            int cnt2 = (int)str.size() - cnt1;
             memcpy(get(_index), str.c_str(), cnt1);
             _index = 0;
             memcpy(get(_index), &str.c_str()[cnt1], cnt2);
@@ -66,7 +66,7 @@ void LogBufferedChar::write(const std::string& input) {
         }
         case REMOVE_LAST:
             memcpy(get(_index), str.c_str(), _size - _index);
-            _index = _size;
+            _index = (int)_size;
             break;
         case AUTO_FLUSH:
             flush();
@@ -76,7 +76,7 @@ void LogBufferedChar::write(const std::string& input) {
         }
     } else {
         memcpy(get(_index), str.c_str(), cnt);
-        _index += cnt;
+        _index += (int)cnt;
         _buffer[_index] = 0;
     }
 }

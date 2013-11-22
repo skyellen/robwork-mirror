@@ -111,25 +111,25 @@ void RenderForceTorque::draw(const DrawableNode::RenderInfo& info,
   if (_force.norm2() > 1e-4)
   {
     double forceLen = _force.norm2()*_scaleForce*lenBody;
-    glColor4f(_colorForce[0], _colorForce[1], _colorForce[2], alpha); // Blue color
+    glColor4f((GLfloat)_colorForce[0], (GLfloat)_colorForce[1], (GLfloat)_colorForce[2], (GLfloat)alpha); // Blue color
     rot = EAA<>(Vector3D<>::z(),normalize(_force));
     glRotated(rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
     gluCylinder(_quadratic, widthBody, widthBody, forceLen, 32, 32);    // Draw Our Cylinder
-    glTranslatef(0.0f,0.0f,forceLen);// Center The Cone
+    glTranslatef(0.0f,0.0f,(GLfloat)forceLen);// Center The Cone
     gluCylinder(_quadratic,widthHead,0.0f,lenHead,32,32); // A Cone
 
-    glTranslatef(0.0f,0.0f,-forceLen); // Center The Cylinder
+    glTranslatef(0.0f,0.0f,(GLfloat)-forceLen); // Center The Cylinder
     glRotated(-rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
   }
 
   if (_torque.norm2() > 1e-4)
   {
     double torqueLen = _torque.norm2()*_scaleTorque*lenBody;
-    glColor4f(_colorTorque[0], _colorTorque[1], _colorTorque[2], alpha); // Red color
+    glColor4f((GLfloat)_colorTorque[0], (GLfloat)_colorTorque[1], (GLfloat)_colorTorque[2], (GLfloat)alpha); // Red color
     rot = EAA<>(Vector3D<>::z(),normalize(_torque));
     glRotated(rot.angle()/Pi*180.,rot.axis()[0],rot.axis()[1],rot.axis()[2]);
     gluCylinder(_quadratic, widthBody, widthBody, torqueLen, 32, 32);    // Draw Our Cylinder
-    glTranslatef(0.0f,0.0f,torqueLen);// Center The Cone
+    glTranslatef(0.0f,0.0f,(GLfloat)torqueLen);// Center The Cone
     gluCylinder(_quadratic,widthHead,0.0f,lenHead,32,32); // A Cone
   }
 }

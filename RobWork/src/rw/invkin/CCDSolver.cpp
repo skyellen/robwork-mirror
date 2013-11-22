@@ -75,7 +75,7 @@ namespace
             // iterate through all joints
 
             const std::vector<Joint*> &joints = _device->getJoints();
-            for(int i=joints.size()-1;i>=0;--i){
+            for(int i=(int)joints.size()-1;i>=0;--i){
                 const Joint *curr_j = joints[i];
                 if(curr_j->getDOF()==0)
                     continue;
@@ -225,7 +225,7 @@ bool CCDSolver::solveLocal(
         ++i;
 
         const std::vector<Joint*> &joints = _device->getJoints();
-        for(int j=joints.size()-1;j>=0;--j){
+        for(int j=(int)joints.size()-1;j>=0;--j){
             const Joint *joint = joints[j];
             if(joint->getDOF()==0)
                 continue;

@@ -180,7 +180,7 @@ namespace rw { namespace common {
 		 * you should \b not use it for getting the calendar time. It's really only meant for
 		 * calculating wall time differences.
 		 */
-        static long currentTimeSec(){ return TimerUtil::currentTimeMs()/1000; }
+        static long currentTimeSec(){ return (long)(TimerUtil::currentTimeMs()/1000); }
 
 
         /**
@@ -190,7 +190,7 @@ namespace rw { namespace common {
 		 * you should \b not use it for getting the calendar time. It's really only meant for
 		 * calculating wall time differences.
 		 */
-        static long currentTimeMs(){ return TimerUtil::currentTimeMs(); }
+        static long currentTimeMs(){ return (long)TimerUtil::currentTimeMs(); }
 
 
 		/**
@@ -202,7 +202,7 @@ namespace rw { namespace common {
          *
          * Notice: The timer cannot hold times longer than approx. 2100second.
 		 */
-        static long currentTimeUs(){ return TimerUtil::currentTimeUs(); }
+        static long currentTimeUs(){ return (long)TimerUtil::currentTimeUs(); }
 
         /**
          * @brief Returns system clock in seconds

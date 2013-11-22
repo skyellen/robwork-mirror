@@ -35,7 +35,7 @@ const std::vector<NLLSIterationLog>& NLLSNewtonSolver::getIterationLogs() const 
 }
 
 const int NLLSNewtonSolver::getIterationCount() const {
-	return _iterationLogs.size();
+	return (int)_iterationLogs.size();
 }
 
 NLLSIterationLog NLLSNewtonSolver::iterate() {
@@ -62,7 +62,7 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 	_system->takeStep(_step);
 	 
 	// Log iteration.	
-	const int iterationNumber = _iterationLogs.size() + 1;
+	const int iterationNumber = (int)_iterationLogs.size() + 1;
 	const Eigen::VectorXd singularValues = _jacobianSvd.singularValues();
 	const double conditionNumber = singularValues(singularValues.rows() - 1) / singularValues(0);
 	std::cout<<"ConditionNumber = "<<conditionNumber<<std::endl;

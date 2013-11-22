@@ -48,7 +48,7 @@ namespace rwlibs { namespace simulation {
             _width(width),
             _height(height)
         {
-            _img = new rw::sensor::Image25D( width, height );
+            _img = new rw::sensor::Image25D( (int)width, (int)height );
         }
 
         /**
@@ -88,7 +88,7 @@ namespace rwlibs { namespace simulation {
             delete _img;
             _width = width;
             _height = height;
-            _img = new rw::sensor::Image25D(width, height);
+            _img = new rw::sensor::Image25D((int)width, (int)height);
         };
 
         /**
