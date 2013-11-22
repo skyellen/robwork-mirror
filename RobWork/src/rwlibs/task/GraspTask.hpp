@@ -48,6 +48,7 @@ public:
         CollisionDuringExecution, // 13
         Interference, // 14
         WrenchInsufficient, // 15
+        Filtered, // 16 - this is used to remove grasps
         SizeOfStatusArray
      } TestStatus;
 
@@ -101,6 +102,7 @@ public:
                                         "CollisionDuringExecution",
                                         "Interference",
                                         "WrenchInsufficient",
+                                        "Filtered",
                                         "SizeOfStatusArray"};
         return strArr[status];
     }
