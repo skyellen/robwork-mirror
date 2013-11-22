@@ -99,8 +99,8 @@ void testPerConfiguration( CollisionTestSetup& setup , std::vector<std::pair<std
             nrOfPrimTests += data.getCollisionData().getNrPrimTests();
         }
     }
-    double bvTestsPerCollision = nrOfBVTests/(1.0*nrCollisions);
-    double primTestsPerCollision = nrOfPrimTests/(1.0*nrCollisions);
+    //double bvTestsPerCollision = nrOfBVTests/(1.0*nrCollisions);
+    //double primTestsPerCollision = nrOfPrimTests/(1.0*nrCollisions);
 
     time.pause();
     std::cout << " - nrCollissions: " << nrCollisions/((double)nrOfQueries) << std::endl;

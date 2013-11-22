@@ -106,13 +106,13 @@ ODEBody::ODEBody(dBodyID odeBody, rw::kinematics::Frame* frame):
     _mframe(dynamic_cast<MovableFrame*>(frame)),
     _bodyId(odeBody),
     _body(NULL),
-    _rwBody(NULL),
-    _kBody(NULL),
     _rwframe(frame),
     _type(ODEBody::RigidDummy),
     _contactReductionThreshold(0.005),// 1cm
     _materialID(-1),
-    _contactID(-1)
+    _contactID(-1),
+    _rwBody(NULL),
+    _kBody(NULL)
 {
 
 }

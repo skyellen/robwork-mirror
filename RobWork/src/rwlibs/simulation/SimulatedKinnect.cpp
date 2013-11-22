@@ -57,9 +57,9 @@ namespace {
 
 SimulatedKinnect::SimulatedKinnect(const std::string& name, rw::kinematics::Frame *frame):
 		SimulatedSensor(name),
-		_noiseEnabled(true),
 		_frameRate(1),
         _dtsum(0),
+		_noiseEnabled(true),
         _near(0.01),
         _far(6),
         _fieldOfView(43),
@@ -77,9 +77,9 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name,
 		const std::string& desc,
 		rw::kinematics::Frame *frame):
         SimulatedSensor(name),
-        _noiseEnabled(true),
 		_frameRate(30),
 		_dtsum(0),
+        _noiseEnabled(true),
         _near(0.01),
         _far(6),
 		_fieldOfView(43),

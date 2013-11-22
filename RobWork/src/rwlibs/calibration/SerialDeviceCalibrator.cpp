@@ -61,7 +61,7 @@ namespace rwlibs {
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
 				const int measurementCount = (int)_measurements.size();
 
-				const int rowCount = 6 * measurementCount;
+				//const int rowCount = 6 * measurementCount;
 				stackedResiduals.resize(6 * measurementCount);
 				rw::kinematics::State workCellState = _workCellState;
 				for (unsigned int measurementIndex = 0; measurementIndex < (unsigned int)measurementCount; measurementIndex++) {

@@ -365,6 +365,7 @@ namespace proximity {
 
 //      T t, s;
 
+      /* NOT USED:
       const Vector3D<T> &a = obbA.getHalfLengths();
       const Vector3D<T> &b = obbB.getHalfLengths();
 
@@ -389,6 +390,7 @@ namespace proximity {
       // this is the rotated b*b_y+ vector
       T b_y0 = b[1]*aRb(0,1);
       T b_y1 = b[1]*aRb(1,1);
+      */
 
       // we define the edges of A and B as the segments
       // A_x+, A_e1: {( a(0), a(1)), ( a(0),-a(1))}

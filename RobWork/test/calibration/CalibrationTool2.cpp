@@ -226,8 +226,8 @@ int main(int argumentCount, char** argumentArray) {
 	RW_ASSERT(measurementCount == calibrationMeasurementCount + validationMeasurementCount);
 	std::vector<SerialDevicePoseMeasurement> calibrationMeasurements, validationMeasurements;
 	if (validationMeasurementCount > 0) {
-		for (size_t measurementIndex = 0; measurementIndex < measurementCount; measurementIndex ++) {
-			if (measurementIndex % 2 == 0 && validationMeasurements.size() < validationMeasurementCount)
+		for (size_t measurementIndex = 0; (int)measurementIndex < measurementCount; measurementIndex ++) {
+			if (measurementIndex % 2 == 0 && (int)validationMeasurements.size() < validationMeasurementCount)
 				validationMeasurements.push_back(measurements[measurementIndex]);
 			else
 				calibrationMeasurements.push_back(measurements[measurementIndex]);
@@ -235,8 +235,8 @@ int main(int argumentCount, char** argumentArray) {
 	}
 	else
 		calibrationMeasurements = measurements;
-	RW_ASSERT(calibrationMeasurements.size() == calibrationMeasurementCount);
-	RW_ASSERT(validationMeasurements.size() == validationMeasurementCount);
+	RW_ASSERT((int)calibrationMeasurements.size() == calibrationMeasurementCount);
+	RW_ASSERT((int)validationMeasurements.size() == validationMeasurementCount);
 	std::cout << "Loaded [ Calibration: " << calibrationMeasurementCount << " Validation: " << validationMeasurementCount <<  " ]." << std::endl;
 
 	// Disable existing calibration if one exist.

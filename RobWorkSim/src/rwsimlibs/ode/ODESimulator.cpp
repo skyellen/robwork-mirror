@@ -94,12 +94,13 @@ using namespace rwlibs::proximitystrategies;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 #define RW_DEBUGS( str )
 
-//#define TIMING( str, func ) \
-//    { long start = rw::common::TimerUtil::currentTimeMs(); \
-//    func; \
-//     long end = rw::common::TimerUtil::currentTimeMs(); \
-//    std::cout << str <<":" << (end-start) <<"ms"<<std::endl;  }
-
+/*
+#define TIMING( str, func ) \
+    { long start = rw::common::TimerUtil::currentTimeMs(); \
+    func; \
+     long end = rw::common::TimerUtil::currentTimeMs(); \
+    std::cout << str <<":" << (end-start) <<"ms"<<std::endl;  }
+*/
 #define TIMING( str, func ) {func;}
 
 namespace {
@@ -1687,30 +1688,30 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         // test if we have cuttable object and if we have knife
 
-        bool isknifeandcuttable = false;
+        //bool isknifeandcuttable = false;
         bool aIsKnife = pair.first->getPropertyMap().has("Knife");
         bool bIsKnife = pair.second->getPropertyMap().has("Knife");
-        Frame *knifeF, *cuttableF;
+        //Frame *knifeF, *cuttableF;
         ProximityModel::Ptr knife, cuttable;
         Transform3D<> knifeT3d, cuttableT3d;
         if(aIsKnife && pair.second->getPropertyMap().has("Cuttable")){
         	// test if object is cuttable
-        	isknifeandcuttable = true;
+        	//isknifeandcuttable = true;
         	knife = a;
         	knifeT3d = aT;
         	cuttable = b;
         	cuttableT3d = bT;
-        	knifeF = pair.first;
-        	cuttableF = pair.second;
+        	//knifeF = pair.first;
+        	//cuttableF = pair.second;
         }
         else if(bIsKnife && pair.first->getPropertyMap().has("Cuttable") ){
-        	isknifeandcuttable = true;
+        	//isknifeandcuttable = true;
         	knife = b;
         	knifeT3d = bT;
         	cuttable = a;
         	cuttableT3d = aT;
-        	knifeF = pair.second;
-        	cuttableF = pair.first;
+        	//knifeF = pair.second;
+        	//cuttableF = pair.first;
         }
 /*
         if( isknifeandcuttable ){
@@ -2397,7 +2398,7 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
         	// friction dir1 will point in direction of conveyor movement
         	Vector3D<> dir2 = cross(dir1, point->n);
         	Vector3D<> moddir1 = cross(point->n, dir2);
-        	double len = dot( normalize(moddir1), dir1 );
+        	//double len = dot( normalize(moddir1), dir1 );
         	moddir1 = normalize( moddir1 );
             ODEUtil::toODEVector(moddir1, con.fdir1);
         	//std::cout << "--> " << moddir1 << std::endl;

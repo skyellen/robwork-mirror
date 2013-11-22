@@ -165,7 +165,7 @@ void PrismaticJoint::PrismaticJointWithQMapping::multiplyTransform(
 	double q,
 	rw::math::Transform3D<>& result) const 
 {
-	double qnew = _mapping->x(q);
+	/*double qnew = */_mapping->x(q);
 	_impl->multiplyTransform(parent, q, result);
 }
 

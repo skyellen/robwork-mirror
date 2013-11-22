@@ -202,7 +202,7 @@ namespace {
         // Calculate baumgarten stabilization, linear position error feedback
         //double kBiasFactor = 0.2;
         std::cout << "4" << std::endl;
-        double slopSize = (fact->getTouchDist() - fact->getPenetrationDist())/2.0;
+        //double slopSize = (fact->getTouchDist() - fact->getPenetrationDist())/2.0;
         std::cout << "5" << std::endl;
         //double biasLayer = fact->getTouchDist()-slopSize;
         std::cout << "6" << std::endl;

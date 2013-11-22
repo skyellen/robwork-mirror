@@ -24,8 +24,8 @@ ConstraintNode::ConstraintNode(NodeType type, int id):
 
 ConstraintNode::ConstraintNode(ConstraintNode* parent, NodeType type, int id):
     _type(type),
-    _isPhysical( isPhysicalNode(type) ),
     _parentNode(parent),
+    _isPhysical( isPhysicalNode(type) ),
     _frame(NULL),
     _id(id)
 {}

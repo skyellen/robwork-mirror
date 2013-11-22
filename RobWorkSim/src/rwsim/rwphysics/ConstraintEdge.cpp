@@ -11,10 +11,10 @@ ConstraintEdge::ConstraintEdge(
     _color(0),
     _nodes(n),
     _type(type),
+    _resting(false),
     _touchDist(touchDist),
     _penDist(penDist),
-    _sepDist(sepDist),
-    _resting(false)
+    _sepDist(sepDist)
 {
     _state[0] = _state[1] = _state[2] = Static;
 
@@ -31,10 +31,10 @@ ConstraintEdge::ConstraintEdge(
     _color(0),
     _nodes(n),
     _type(type),
+    _resting(false),
     _touchDist(0),
     _penDist(0),
     _sepDist(0),
-    _resting(false),
     _id(id)
 {
     _state[0] = _state[1] = _state[2] = Static;

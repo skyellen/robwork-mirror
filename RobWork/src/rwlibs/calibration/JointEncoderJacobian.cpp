@@ -30,7 +30,7 @@ namespace rwlibs {
 
 				// Get joint value.
 				const rw::math::Q q = _device->getQ(state);
-				RW_ASSERT(_jointIndex < q.size());
+				RW_ASSERT(_jointIndex < (int)q.size());
 				const double qi = q[_jointIndex];
 
 				const CalibrationParameterSet parameterSet = _calibration->getParameterSet();

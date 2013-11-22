@@ -714,8 +714,8 @@ namespace rw { namespace math {
          */
         template <class T, class MAT>
         static MAT fromStdVectorToMat(std::vector<T>& data, MAT& tmp, int size1, int size2){
-            for(size_t i=0;i<size1;i++){
-                for(size_t j=0;j<size2;j++){
+            for(size_t i=0;(int)i<size1;i++){
+                for(size_t j=0;(int)j<size2;j++){
                     tmp(i,j) = data[i];
                 }
             }

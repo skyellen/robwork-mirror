@@ -274,7 +274,6 @@ namespace simulator {
         void setContactLoggingEnabled(bool enable){ _logContactingBodies = enable; }
         std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > getContactingBodies(){ return _contactingBodiesTmp; }
 
-        bool _logContactingBodies;
         std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > _contactingBodies, _contactingBodiesTmp;
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);
@@ -448,6 +447,8 @@ namespace simulator {
 		boost::mutex _contactMutex;
 
 		rwsim::contacts::ContactDetector::Ptr _detector;
+
+        bool _logContactingBodies;
 
 		struct CutState {
 

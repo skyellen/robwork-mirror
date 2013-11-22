@@ -136,7 +136,7 @@ rw::math::InertiaMatrix<> RWBody::getEffectiveMassW(const rw::math::Vector3D<>& 
 }
 
 void RWBody::updatePosition(double h, State &state){
-	Vector3D<> pos = _pTb.P();
+	//Vector3D<> pos = _pTb.P();
     //_integrator->updatePosition(h,_pTb.P(),_pTb.R(),_linVel,_angVel);
    // std::cout  << "Pos body: " << (_pTb.P()-pos) << std::endl;
     // update the state with rotation and position, calculate aux variables
@@ -152,11 +152,11 @@ void RWBody::updatePosition(double h, State &state){
 void RWBody::updateVelocity(double h, State &state){
     // Simple Euler integration
     // update position --- EULER STEP ---
-    Vector3D<> linAcc = _force * _massInv;
+    //Vector3D<> linAcc = _force * _massInv;
 
     // Calculate the inertia matrix and its inverse
     _ITensorInv = _pTb.R() * (_IbodyInv * inverse(_pTb.R()));
-    InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
+    //InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
 
     //std::cout << "Update velocity using integrator: " << _linVel << std::endl;
     //_integrator->updateVelocity(h, _linVel, _angVel, linAcc, _torque, I, _IInv);
@@ -175,8 +175,8 @@ void RWBody::updateImpulse(){
     //std::cout << "Update impulse: " << _linImpulse << std::endl;
     _linVel += _linImpulse * _massInv;
 
-    InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
-    Vector3D<> tau = cross( _angVel, I*_angVel );
+    //InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
+    //Vector3D<> tau = cross( _angVel, I*_angVel );
     _angVel += _ITensorInv * (_angImpulse /* - tau*/ );
 
     _linImpulse = Vector3D<>(0.0,0.0,0.0);

@@ -102,12 +102,12 @@ namespace {
             _offscreenRender(false),
             _offWidth(640),
             _offHeight(480),
+            _useMultiSample(true),
             _initialized(false),
             _renderToImage(false),
             _renderToDepth(false),
-            _useMultiSample(true),
             _samples(4),
-            _fbId(-1),_fbTmpId(-1),_renderId(-1),_renderColorTmpId(-1),_renderDepthId(-1),textureId(-1)
+            _fbId(-1),_fbTmpId(-1),_renderColorTmpId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
             {}
 
         virtual ~SimpleCameraGroup(){};

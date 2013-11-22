@@ -81,7 +81,7 @@ namespace rwlibs {
 					columnIndex++;
 				}
 
-				RW_ASSERT(columnIndex == columnCount);
+				RW_ASSERT(columnIndex == (int)columnCount);
 
 				return jacobian;
 		}

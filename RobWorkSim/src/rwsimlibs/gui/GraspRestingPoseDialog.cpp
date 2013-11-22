@@ -1053,7 +1053,7 @@ void GraspRestingPoseDialog::btnPressed(){
     			std::stringstream sstr;
     			//sstr.setf(std::fixed(int))
     			char cstr[20];
-    			std::sprintf(cstr,"%.6u",i);
+    			std::sprintf(cstr,"%.6u",(unsigned int)i);
     			sstr << str << "_" << cstr;
     			ScapePoseFormat::savePoses(sstr.str(),_bodies,_resultPoses[i],
     									   _dwc->getWorkcell()->getName(),

@@ -206,7 +206,7 @@ void RestingPoseDialog::btnPressed(){
     			std::stringstream sstr;
     			//sstr.setf(std::fixed(int))
     			char cstr[20];
-    			sprintf(cstr,"%.6u",i);
+    			sprintf(cstr,"%.6u",(unsigned int)i);
     			sstr << str << "_" << cstr;
     			ScapePoseFormat::savePoses(sstr.str(),_bodies,_resultPoses[i],
     									   _dwc->getWorkcell()->getName(),

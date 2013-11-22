@@ -158,7 +158,7 @@ public:
 		
 		// construct W matrix
 		Eigen::Matrix<double, N-1, N> W;
-		for (int idx = 1; idx < vertices.size(); ++idx) {
+		for (int idx = 1; idx < (int)vertices.size(); ++idx) {
 			// vector w_i
 			Eigen::Matrix<double, 1, N> wi = (vertices[idx].e() - vertices[0].e()).transpose();
 			//std::cout << wi << std::endl;

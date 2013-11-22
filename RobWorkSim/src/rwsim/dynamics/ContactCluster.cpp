@@ -96,7 +96,7 @@ namespace {
 
        // deepest point is at conIdx[0]
        // find all points in frontBuffer and back buffer that is within maxDist
-       const double maxDist2 = maxDist*2;
+       //const double maxDist2 = maxDist*2;
        //// std::cout  << "front" << std::endl;
        // don't look at the first element since its the deepest
 //       for(int i=1; i<state.frontSize; i++){
@@ -185,7 +185,7 @@ namespace {
 
        // deepest point is at conIdx[0]
        // find all points in frontBuffer and back buffer that is within maxDist
-       const double maxDist2 = maxDist*2;
+       //const double maxDist2 = maxDist*2;
        //// std::cout  << "front" << std::endl;
        // don't look at the first element since its the deepest
 //       for(int i=1; i<state.frontSize; i++){

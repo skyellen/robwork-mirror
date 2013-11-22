@@ -294,14 +294,14 @@ DistanceStrategy::Result& ProximityStrategyRW::distance(
 
     data.clear();
 
-    size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
+    //size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
     //bool col_res = false;
     //bool firstContact = pdata.getCollisionQueryType() == FirstContact;
 
     qdata.cache->tcollider->setQueryType( pdata.getCollisionQueryType() );
 
-    BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
-        BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
+    //BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
+        //BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
             //bool res = qdata.cache->tcollider->collides(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, &data._geomPrimIds);
             //RWTestDistance(wTa*ma->t3d, *ma->tree, wTb*mb->t3d, *mb->tree, data);
 
@@ -322,10 +322,10 @@ DistanceStrategy::Result& ProximityStrategyRW::distance(
                 col_res = true;
             }
             */
-            geoIdxB++;
-        }
-        geoIdxA++;
-    }
+            //geoIdxB++;
+        //}
+        //geoIdxA++;
+    //}
     return data;
 }
 

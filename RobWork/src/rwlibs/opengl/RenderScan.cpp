@@ -59,12 +59,12 @@ void RenderScan::setScan(float dist){
 void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
 
-    const rw::sensor::Image25D *img = &_img;
+    /*const rw::sensor::Image25D *img = &_img;
     if(_scanner!=NULL){
         //std::cout << "using scanner " ;
         img = &_scanner->getScan();
         //std::cout << img->getHeight() << " " << img->getWidth() << " \n";
-    }
+    }*/
 
 	// ignores drawstate
 	glPushMatrix();
@@ -74,7 +74,7 @@ void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawTy
 
 		glBegin(GL_LINE_STRIP);
         for(size_t x=0; x<_img.getWidth(); x++){
-        	const Vector3D<float> &v1 = _img.getData()[x+y*_img.getWidth()];
+        	//Unused: const Vector3D<float> &v1 = _img.getData()[x+y*_img.getWidth()];
         	//if(fabs(v1[2])>_maxDepth || fabs(v1[2])<_minDepth)
         	//	continue;
             

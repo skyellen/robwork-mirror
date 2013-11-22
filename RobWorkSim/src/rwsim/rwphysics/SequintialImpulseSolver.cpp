@@ -132,13 +132,13 @@ bool SequintialImpulseSolver::solveGroup( CEdgeGroup& group,
         }
     }
     RW_DEBUG("* ERROR: " << err <<  "Iterations: " << j);
-    for(size_t i=0;i<realContacts.size();i++){
+    /*for(size_t i=0;i<realContacts.size();i++){
         Contact &contact = *realContacts[i];
         ContactPointList::iterator point = contact.contactPoints.begin();
        // for(;point!=contact.contactPoints.end();++point){
        //   std::cout << "Impulses: " << point->nImpulse << " " << point->tImpulse << " " << point->dist << std::endl;
         //}
-    }
+    }*/
 
     return true;
 }

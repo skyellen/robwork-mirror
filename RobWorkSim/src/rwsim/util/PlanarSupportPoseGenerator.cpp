@@ -42,7 +42,7 @@ namespace {
        {
 
             // first we run through all triangles to figure out the nr of triangles per vertice
-            int startIdx = (int)(_verticeIdToTriIdMap.size()-mesh->getVertices().size());
+            //int startIdx = (int)(_verticeIdToTriIdMap.size()-mesh->getVertices().size());
             for(size_t i=0;i<_mesh->size();i++){
                 IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( i );
                 _verticeIdToTriIdMap[ tri[0] ]++;
@@ -287,15 +287,15 @@ void PlanarSupportPoseGenerator::doAnalysis(){
             group.push((int)i);
 
             while(!group.empty()){
-                int colored = group.top();
+                //int colored = group.top();
                 group.pop();
                 // now determine which neighbors to follow
                 // we follow neighbors according to the projection of the mass center
                 // assuming that the mass center is outside the triangle and that we have
                 // counter clock wise vertice ordering then the positive cross product between an
                 // edge (v1,v2) and the edge (v1,COM_proj) will indicate a neighbor to follow
-                Vector3D<> dir = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
-                Vector3D<> dir1 = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
+                //Vector3D<> dir = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
+                //Vector3D<> dir1 = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
 
 
 

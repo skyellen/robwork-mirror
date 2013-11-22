@@ -91,7 +91,7 @@ bool DynamicWorkCell::inDevice(Body::Ptr body){
     BOOST_FOREACH(DynamicDevice::Ptr dev, _devices){
     	const std::string& devname = dev->getName();
         bool isInDev = true;
-    	for(int i=0; i<devname.length(); i++ )
+    	for(int i=0; i<(int)devname.length(); i++ )
         	if(devname[i]!=bname[i]){
         		isInDev = false;
         		break;

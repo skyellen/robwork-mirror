@@ -84,7 +84,7 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
         std::vector<dContactGeom>& geoms = _geoms[midx];
          for(size_t i=0;i<feedback.size(); i++){
              rw::math::Vector3D<> force,snormal,posw;
-             double depth = geoms[i].depth;
+             //double depth = geoms[i].depth;
              posw = ODEUtil::toVector3D(geoms[i].pos);
              if(bodyIdx==0){
                  force = ODEUtil::toVector3D( feedback[i]->f1 );

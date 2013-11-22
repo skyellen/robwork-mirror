@@ -283,7 +283,7 @@ namespace
         // zero...
         int getPos() const { return _pos; }
 
-        bool isEnd() const { return _pos >= size(); }
+        bool isEnd() const { return _pos >= (int)size(); }
 
     private:
         void die(const std::string& msg)
@@ -296,7 +296,7 @@ namespace
 
         std::string header() { return "Reading " + quote(_name) + ": "; }
 
-        bool canRead(int len) const { return _pos + len <= size(); }
+        bool canRead(int len) const { return _pos + len <= (int)size(); }
         void inc(int len) { _pos += len; }
 
         const char* get() const { return &_input->at(0) + _pos; }

@@ -20,20 +20,20 @@ using namespace rw::kinematics;
 SerialDeviceController::SerialDeviceController(
 		const std::string& name, DynamicDevice::Ptr ddev):
 	_ddev(ddev),
+	_time(0.0),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
-	_time(0.0),
-	_name(name),
-	_q_error_last(ddev->getModel().getDOF()),
-	_q_error(ddev->getModel().getDOF()),
 	_targetAdded(false),
+	_name(name),
 	_linVelMax(1), // default 1 m/s
-	_angVelMax(Pi) // default Pi rad/s
+	_angVelMax(Pi), // default Pi rad/s
+	_q_error(ddev->getModel().getDOF()),
+	_q_error_last(ddev->getModel().getDOF())
 {
 	RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
 	_rdev = ddev.cast<rwsim::dynamics::RigidDevice>();
-	for(int i=0;i<ddev->getModel().getDOF();i++)
+	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
 		_q_error_last[i] = 0;
 	_q_error = _q_error_last;
 	_out.open("serialdev-out.txt");
@@ -44,19 +44,19 @@ SerialDeviceController::SerialDeviceController(
 		const std::string& name, RigidDevice::Ptr ddev):
 	_ddev(ddev),
 	_rdev(ddev),
+	_time(0.0),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
-	_time(0.0),
-	_name(name),
-	_q_error_last(ddev->getModel().getDOF()),
-	_q_error(ddev->getModel().getDOF()),
 	_targetAdded(false),
+	_name(name),
 	_linVelMax(1), // default 1 m/s
-	_angVelMax(Pi) // default Pi rad/s
+	_angVelMax(Pi), // default Pi rad/s
+	_q_error(ddev->getModel().getDOF()),
+	_q_error_last(ddev->getModel().getDOF())
 {
 	RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
-	for(int i=0;i<ddev->getModel().getDOF();i++)
+	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
 		_q_error_last[i] = 0;
 	_q_error = _q_error_last;
 	_out.open("serialdev-out.txt");
@@ -243,7 +243,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
     }
 
 
-	for(int i=0; i<targets.size(); i++){
+	for(int i=0; i<(int)targets.size(); i++){
 		sequence.clear();
 		Target target = targets[i];
 		target.q_start = lastQ;
@@ -270,7 +270,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 			lastQ = sequence.back().q_target;
 
 			// If there are more PTP or PTP_T in a row bundle them
-			for(i+=1;i<targets.size();i++){
+			for(i+=1;i<(int)targets.size();i++){
 				Target ntarget = targets[i];
 				ntarget.q_start = lastQ;
 				if(ntarget.type==PTP_T){
@@ -332,7 +332,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 			sequence.push_back( target );
 			std::vector<LinearInterpolator<Transform3D<> >::Ptr> linsequence;
 			// find all Lin targets following this
-			for(i+=1;i<targets.size();i++){
+			for(i+=1;i<(int)targets.size();i++){
 				Target ntarget = targets[i];
 				ntarget.t_start = targets[i-1].lin_target;
 
@@ -497,10 +497,10 @@ void SerialDeviceController::updateFTcontrolWrist(
 
 	// targets
 	const Transform3D<> bX_t = _executingTarget.t3dtraj->x( _currentTrajTime );
-	const Transform3D<> bXd_t = _executingTarget.t3dtraj->dx( _currentTrajTime );
+	/*const Transform3D<> bXd_t = _executingTarget.t3dtraj->dx( _currentTrajTime );
 	const VelocityScrew6D<> bXdd_t = VelocityScrew6D<>(_executingTarget.t3dtraj->ddx( _currentTrajTime ) );
 
-	const Wrench6D<> bF_t = _executingTarget._wrenchTarget;
+	const Wrench6D<> bF_t = _executingTarget._wrenchTarget;*/
 
 	// current configuration
 	const Transform3D<> bX_e = rw::kinematics::Kinematics::frameTframe(_ddev->getKinematicModel()->getBase(), taskFrame, state );
@@ -510,7 +510,7 @@ void SerialDeviceController::updateFTcontrolWrist(
 
 	// calculate the pose error
     VelocityScrew6D<> bXe_err = bX_e.R() * VelocityScrew6D<>( inverse(bX_e) * bX_t );
-    VelocityScrew6D<> bXde_err = bXd_e - _bXde_last;
+    //VelocityScrew6D<> bXde_err = bXd_e - _bXde_last;
 
     // update the state variables
     if(!info.rollback){
@@ -520,7 +520,7 @@ void SerialDeviceController::updateFTcontrolWrist(
 
     // we add the gain to the cartesean velocity and pose error
     Eigen::Matrix<double, 6, 1> E = bXe_err.e();
-    Eigen::Matrix<double, 6, 1> Ed = bXde_err.e();
+    //Eigen::Matrix<double, 6, 1> Ed = bXde_err.e();
     // Kp is the positional error gain, and Kv is the volocity error gain matrix
     //Eigen::Matrix<double, 6, 1> Edd = bXdd_t.e() + Kp*E + Kv*Ed;
 

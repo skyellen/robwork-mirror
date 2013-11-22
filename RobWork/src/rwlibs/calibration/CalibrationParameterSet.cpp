@@ -11,7 +11,7 @@ namespace rwlibs {
 	namespace calibration {
 
 		CalibrationParameterSet::CalibrationParameterSet(int parameterCount) : _parameters(parameterCount) {
-			for (size_t i = 0; i<parameterCount; i++)
+			for (size_t i = 0; (int)i<parameterCount; i++)
 				_parameters(i) = 0;
 
 		}

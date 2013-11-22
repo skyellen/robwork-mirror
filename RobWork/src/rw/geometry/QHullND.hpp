@@ -171,14 +171,14 @@ namespace geometry {
 			double totalVolume = 0.0;
 			double avgDist = 0.0;
 			//std::cout << "N of faces= " << nOfFaces << std::endl;
-			for (size_t i = 0; i < nOfFaces; ++i) {
+			for (size_t i = 0; (int)i < nOfFaces; ++i) {
                 RW_ASSERT(i < _faceNormals.size());
                 
                 double dist = _faceOffsets[i] + dot(vertex, _faceNormals[i]);
                 
                 // calculate weight (by face volume)
                 std::vector<VectorND<N> > v;
-                for (int j = 0; j < N; ++j) {
+                for (int j = 0; j < (int)N; ++j) {
 					v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
 				}
                 double volume = GeometryUtil::simplexVolume(v);
@@ -206,19 +206,19 @@ namespace geometry {
 			VectorND<N> centroid = VectorND<N>::zero();;
 			double totalVolume = 0.0;
 			//std::cout << "N of faces= " << nOfFaces << std::endl;
-			for (size_t i = 0; i < nOfFaces; ++i) {
+			for (size_t i = 0; (int)i < nOfFaces; ++i) {
 				RW_ASSERT(_faceIdxs.size() > i*N);
                 RW_ASSERT(i < _faceNormals.size());
                 
                 // calculate face centroid
                 VectorND<N> c = VectorND<N>::zero();
-                for (int j = 0; j < N; ++j) {
+                for (int j = 0; j < (int)N; ++j) {
 					c += (1.0/N) * _hullVertices[_faceIdxs[i*N + j]];
 					//std::cout << "v: " << _hullVertices[_faceIdxs[i*N + j]] << std::endl;
 				}
                 // calculate weight (by face volume)
                 std::vector<VectorND<N> > v;
-                for (int j = 0; j < N; ++j) {
+                for (int j = 0; j < (int)N; ++j) {
 					v.push_back(_hullVertices[_faceIdxs[i*N + j]]);
 				}
                 double volume = GeometryUtil::simplexVolume(v);

@@ -133,11 +133,11 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		BOOST_ERROR(ex.getMessage());
 	} 
 	 
-	const int iterationCount = calibrator->getSolver()->getIterationLogs().back().getIterationNumber();
+	//const int iterationCount = calibrator->getSolver()->getIterationLogs().back().getIterationNumber();
 	//BOOST_CHECK_EQUAL(iterationCount, 6);
 
 	//// Verify that the calibration match the artificial calibration.
-	for (size_t i = 0; i<calibration->getFixedFrameCalibrations()->getCalibrationCount(); i++) {
+	for (size_t i = 0; (int)i<calibration->getFixedFrameCalibrations()->getCalibrationCount(); i++) {
 		FixedFrameCalibration::Ptr ffCalibration = calibration->getFixedFrameCalibrations()->getCalibration((int)i);
 		if (ffCalibration->isEnabled()) {
 			FixedFrameCalibration::Ptr artificialFFCalibration = artificialCalibration->getFixedFrameCalibrations()->getCalibration((int)i);
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 
 	// Verify that loaded calibration fits measurements.
-	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+	for (unsigned int measurementIndex = 0; (int) measurementIndex < measurementCount; measurementIndex++) {
 		serialDevice->setQ(measurements[measurementIndex].getQ(), state);
 
 		Frame* referenceFrame = workCell->findFrame(measurements[measurementIndex].getSensorFrameName());
