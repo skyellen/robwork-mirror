@@ -271,7 +271,7 @@ void Jog::open(WorkCell* workcell)
             std::string name = (*it)->getName();
             _items.push_back(std::make_pair((*it), (MovableFrame*)NULL));
             _chosenTabs.push_back(0);
-            _frameToIndex[*((*it)->getBase())] = _items.size()-1;
+            _frameToIndex[*((*it)->getBase())] = (int)_items.size()-1;
             QVariant qvar((int)(_items.size()-1));
             _cmbDevices->addItem(name.c_str(), qvar);
         }
@@ -282,7 +282,7 @@ void Jog::open(WorkCell* workcell)
             if (frame) {
                 _items.push_back(std::make_pair((Device*)NULL, frame));
                 _chosenTabs.push_back(0);
-                _frameToIndex[*frame] = _items.size()-1;
+                _frameToIndex[*frame] = (int)_items.size()-1;
                 _cmbDevices->addItem(frame->getName().c_str(), QVariant((int)(_items.size()-1)));
             }
         }

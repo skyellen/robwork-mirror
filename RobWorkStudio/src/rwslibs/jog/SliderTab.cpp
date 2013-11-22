@@ -390,13 +390,13 @@ void JointSliderWidget::setup(const std::vector<std::string>& titles,
   */
   
     for (size_t i = 0; i<bounds.first.size(); i++) {
-        Slider* slider = new Slider(titles[i], bounds.first(i), bounds.second(i), _layout, i+2, this);
+        Slider* slider = new Slider(titles[i], bounds.first(i), bounds.second(i), _layout, (int)i+2, this);
         slider->setValue(q(i));
         connect(slider, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _sliders.push_back(slider);
     }
-	_layout->addWidget(new QLabel(""), bounds.first.size()+2,1 ); // own _slider
-	_layout->setRowStretch(bounds.first.size()+2, 1);
+	_layout->addWidget(new QLabel(""), (int)bounds.first.size()+2,1 ); // own _slider
+	_layout->setRowStretch((int)bounds.first.size()+2, 1);
 }
 
 
@@ -427,7 +427,7 @@ void JointSliderWidget::paste() {
 			updateValues(q);
 			return;
 		}
-		catch (const Exception& exp) {
+		catch (const Exception&) {
 			QMessageBox::critical(this, tr("RobWorkStudio Jog"), tr("Unable to parse '%1' as Q").arg(txt));
 			continue;
 		}

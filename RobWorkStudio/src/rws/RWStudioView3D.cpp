@@ -416,12 +416,12 @@ void RWStudioView3D::keyPressEvent(QKeyEvent *e)
         case(Qt::Key_8): camNr = 7; break;
         case(Qt::Key_9): camNr = 8; break;
         case(Qt::Key_Left):
-                camNr = currentView-1;
+                camNr = (int)currentView-1;
                 if(camNr<0)
                     camNr=int(_sensorCameraViews.size());
                 break;
         case(Qt::Key_Right):
-                camNr = currentView+1;
+                camNr = (int)currentView+1;
                 if(camNr>int(_sensorCameraViews.size()))
                     camNr=0;
                 break;

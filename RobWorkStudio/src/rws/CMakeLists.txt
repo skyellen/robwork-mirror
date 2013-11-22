@@ -70,9 +70,9 @@ IF(RWS_BUILD_SANDBOX)
 ENDIF ()
 # Rcc the files:
 IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qrc)
+	QT5_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc)
 ELSE()
-	QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc propertyview/resources.qrc)
+	QT4_ADD_RESOURCES(ResourceFiles rwstudio_resources.qrc)
 ENDIF()
 
 # We create a static library named rwstudio that all plugins should link to. Our

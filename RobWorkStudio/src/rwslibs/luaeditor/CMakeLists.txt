@@ -34,16 +34,12 @@ IF(build)
     
     IF(RWS_USE_QT5)
     	QT5_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-    	# Rcc the files:
-    	QT5_ADD_RESOURCES(RccSrcFiles luaresources.qrc)
     ELSE()
     # Header files to moc and compile:
     	QT4_WRAP_CPP(MocSrcFiles ${SRC_FILES_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-    	# Rcc the files:
-    	QT4_ADD_RESOURCES(RccSrcFiles luaresources.qrc)
     ENDIF()
             
-    RWS_ADD_COMPONENT(${SUBSYS_NAME} components STATIC ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
+    RWS_ADD_COMPONENT(${SUBSYS_NAME} components STATIC ${SrcFiles} ${MocSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(components "rwslibs/luaeditor" ${SRC_FILES_HPP}) 
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 

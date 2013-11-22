@@ -148,7 +148,7 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
     int y = _settingsMap->get<int>("WindowPosY", this->pos().y());
     std::vector<int> state_vector = _settingsMap->get<std::vector<int> >("QtMainWindowState", std::vector<int>());
     if(state_vector.size()>0){
-        QByteArray mainAppState(state_vector.size(),0);
+        QByteArray mainAppState((int)state_vector.size(),0);
         for(int i=0;i<mainAppState.size();i++){
             mainAppState[i] = (char) state_vector[i];
         }
@@ -301,7 +301,7 @@ void RobWorkStudio::updateLastFiles()
         // sort nfiles such that multiples are left out
         std::vector<std::string> tmp;
         for(size_t i=0; i<nfiles.size();i++){
-            int idx = nfiles.size()-1-i;
+            int idx = (int)(nfiles.size()-1-i);
             bool skip = false;
             BOOST_FOREACH(std::string &str, tmp){
                 if(str == nfiles[idx]){
@@ -604,7 +604,7 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
 
     std::vector<int> state_vector = _settingsMap->get<std::vector<int> >("QtMainWindowState", std::vector<int>());
     if(state_vector.size()>0){
-        QByteArray mainAppState(state_vector.size(),0);
+        QByteArray mainAppState((int)state_vector.size(),0);
         for(int i=0;i<mainAppState.size();i++){
             mainAppState[i] = (char) state_vector[i];
         }

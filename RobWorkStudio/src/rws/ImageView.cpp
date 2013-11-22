@@ -51,7 +51,7 @@ void ImageView::display(const rw::sensor::Image& image) {
                     value += (((int)(255*val))&0xFF)<<8;
                     value += (((int)(255.0*val))&0xFF);
 
-                    qimage.setPixel(i,j, value);
+                    qimage.setPixel((int)i,(int)j, value);
                 }
             }
         } else {
@@ -64,7 +64,7 @@ void ImageView::display(const rw::sensor::Image& image) {
                     value += (((int)(255.0*pixel.ch[1]))&0xFF)<<8;
                     value +=  ((int)(255.0*pixel.ch[2])&0xFF);
 
-                    qimage.setPixel(i,j, value);
+                    qimage.setPixel((int)i,(int)j, value);
                 }
             }
         }

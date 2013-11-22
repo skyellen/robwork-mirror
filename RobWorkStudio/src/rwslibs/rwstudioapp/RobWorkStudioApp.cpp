@@ -73,7 +73,7 @@ void initReasource(){
              argv[i] = &(args[i][0]);
          }
 
-         int params = args.size();
+         int params = (int)args.size();
          QApplication app(params, argv);
 
          try {

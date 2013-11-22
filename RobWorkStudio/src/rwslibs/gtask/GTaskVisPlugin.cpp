@@ -41,7 +41,7 @@ namespace {
             bool endTarget; // true if trans is the final grasp target (grasp or lift)
         };
 
-        RenderTargets():_size(-0.02), _zoffset(0.0){
+        RenderTargets():_size(-0.02f), _zoffset(0.0f){
             rw::geometry::Box box(_size/8,_size/2,_size/2);
             mesh = box.getTriMesh();
         };
@@ -236,7 +236,7 @@ void GTaskVisPlugin::updateVis(){
 
         int idx = i;
         if(nrToShow<(int)_ymtargets.size()){
-            idx = Math::ranI(0, _ymtargets.size());
+            idx = Math::ranI(0, (int)_ymtargets.size());
         } else {
             if(idx>=(int)_ymtargets.size())
                 break;
@@ -266,7 +266,7 @@ void GTaskVisPlugin::updateVis(){
         }
 
         if(qIdx>=(int)quality.size()){
-            qIdx=quality.size()-1;
+            qIdx=(int)quality.size()-1;
             continue;
         }
 
@@ -380,7 +380,7 @@ void GTaskVisPlugin::updateVis(){
     }
     //std::cout << "NR TARGETS:: " << rtargets.size() << std::endl;
     _graspSelectSpin->setMinimum(0);
-    _graspSelectSpin->setMaximum(rtargets.size()-1);
+    _graspSelectSpin->setMaximum((int)rtargets.size()-1);
 
     // if quality should be shown then we start by calculating the offset and scale
     double offset = 0;
@@ -490,7 +490,7 @@ void GTaskVisPlugin::loadTasks(QString taskFile_tmp){
     GraspTask::Ptr gtask;
     try {
         gtask = GraspTask::load(taskFile);
-    } catch (const Exception& exp) {
+    } catch (const Exception&) {
         QMessageBox::information(this, "GTaskVisPlugin", "Unable to load tasks from file");
         return;
     }
@@ -512,7 +512,7 @@ void GTaskVisPlugin::loadTasks(QString taskFile_tmp){
     }
     _ymtargets = gtask->getAllTargets();
 
-    _totalNrOfExperiments = _ymtargets.size();
+    _totalNrOfExperiments = (int)_ymtargets.size();
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _ymtargets.size() << "\n";
     _updateBtn->setEnabled(true);
 }
