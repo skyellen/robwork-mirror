@@ -119,12 +119,26 @@ MACRO(RW_INIT_PROJECT ROOT PROJECT_NAME PREFIX VERSION)
         
     # Specify wether to default compile in Release, Debug, MinSizeRel, RelWithDebInfo mode
     IF (NOT CMAKE_BUILD_TYPE)
-        SET(${PREFIX}_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+        SET(${PREFIX}_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
     else ()
-        SET(${PREFIX}_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+	# we need to force the right configuration
+	STRING(TOLOWER ${CMAKE_BUILD_TYPE} TMP_BUILD_TYPE)
+	IF (${TMP_BUILD_TYPE} STREQUAL "release")
+		SET(${PREFIX}_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+	ELSEIF ( ${TMP_BUILD_TYPE} STREQUAL "debug")
+		SET(${PREFIX}_BUILD_TYPE "Debug" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+	ELSEIF ( ${TMP_BUILD_TYPE} STREQUAL "relwithdebinfo")
+		SET(${PREFIX}_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+	ELSEIF ( ${TMP_BUILD_TYPE} STREQUAL "minsizerel")
+		SET(${PREFIX}_BUILD_TYPE "MinSizeRel" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+	ELSE ()
+		MESSAGE(FATAL_ERROR "Build type: ${CMAKE_BUILD_TYPE} not supported! please select one of: Release, Debug, RelWithDebInfo, MinSizeRel")
+	ENDIF ()
+        
     ENDIF ()
+
     STRING(TOLOWER ${${PREFIX}_BUILD_TYPE} ${PREFIX}_BUILD_TYPE)
-    MESSAGE(STATUS "${PROJECT_NAME}: Build configuration: ${RW_BUILD_TYPE}")
+    MESSAGE(STATUS "${PROJECT_NAME}: Build configuration: ${${PREFIX}_BUILD_TYPE}")
     
     # Load the optional Default.cmake file.
     INCLUDE(${ROOT}/config.cmake OPTIONAL)
@@ -136,9 +150,9 @@ MACRO(RW_INIT_PROJECT ROOT PROJECT_NAME PREFIX VERSION)
       ENDIF()
     ENDIF ()
     
-    SET(${PREFIX}_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${RW_BUILD_TYPE}" CACHE PATH "Runtime directory"  FORCE )
-    SET(${PREFIX}_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Library directory"  FORCE )
-    SET(${PREFIX}_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${RW_BUILD_TYPE}" CACHE PATH "Archive directory"  FORCE )
+    SET(${PREFIX}_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${${PREFIX}_BUILD_TYPE}" CACHE PATH "Runtime directory"  FORCE )
+    SET(${PREFIX}_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${${PREFIX}_BUILD_TYPE}" CACHE PATH "Library directory"  FORCE )
+    SET(${PREFIX}_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${${PREFIX}_BUILD_TYPE}" CACHE PATH "Archive directory"  FORCE )
     
     # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
     IF (DEFINED MSVC)
