@@ -402,7 +402,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 			//RW_WARN("NAY");
 			
 			++failures_in_row;
-			if (failures_in_row > 100) {
+			if (failures_in_row > 1000) {
 				//RW_WARN("Something is rotten in the state of RobWork.");
 				RW_THROW("Something is rotten in the state of RobWork: " << successes << "/" << failures_in_row);
 				break;
