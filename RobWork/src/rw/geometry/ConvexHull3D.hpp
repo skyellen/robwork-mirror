@@ -41,7 +41,10 @@ namespace geometry {
 	    //! smart pointer type of this class
 	    typedef rw::common::Ptr<ConvexHull3D> Ptr;
 
-		/**
+	    //! destructor
+	    virtual ~ConvexHull3D(){};
+
+	    /**
 		 * @brief rebuilts the hull
 		 * @param vertices
 		 */
