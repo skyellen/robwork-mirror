@@ -219,8 +219,7 @@ struct DummyDevice {
 public:
     DummyDevice(const std::string& name,
                 const DeviceType& type):
-        _name(name),_type(type)
-
+        _name(name),_type(type),_axelwidth(0.0)
     {}
 
     DummyDevice():
@@ -650,7 +649,7 @@ struct InsertPropertyInMap{
         _map[name].push_back( prop );
     }
 
-    std::vector<std::string> &_scope;
+    std::vector<std::string> _scope;
     std::map<std::string,
              std::vector<DummyProperty > > &_map;
 };
