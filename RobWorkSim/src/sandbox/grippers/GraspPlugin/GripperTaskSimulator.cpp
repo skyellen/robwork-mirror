@@ -241,7 +241,7 @@ void GripperTaskSimulator::evaluateGripper()
 	int samples = TaskGenerator::countTasks(_samples, GraspTask::Success); //_samples->getSubTasks()[0].getTargets().size();
 	
 	// number of grasps actually tried is the number of tasks minus the number of filtered tasks (w/ TimeOut status)
-	double filtered = TaskGenerator::countTasks(_gtask, GraspTask::TimeOut);
+	double filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
 	
 	cout << "Actual number of tasks simulated is " << getNrTargets() - filtered << " out of " << getNrTargets()
 		<< " targets." << endl;

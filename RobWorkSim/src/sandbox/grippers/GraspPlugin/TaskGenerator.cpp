@@ -226,7 +226,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
     
     int nRemoved = 0;
     BOOST_FOREACH (NNSearch::KDNode& node, nodes) {
-		if (node.value->testStatus != GraspTask::TimeOut) {
+		if (node.value->testStatus != GraspTask::Filtered) {
 			result.clear();
 			Q key = node.key;
 			nntree->nnSearchRect(key-diff, key+diff, result);
@@ -236,8 +236,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
 				if (n == &node) continue;
 				
-				if (n->value->testStatus != GraspTask::TimeOut) ++removed;
-				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::TimeOut; // this is a hack
+				if (n->value->testStatus != GraspTask::Filtered) ++removed;
+				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::Filtered; // this is a hack
 			}
 			nRemoved += removed;
 		}
