@@ -20,7 +20,7 @@ double DistModel::refit( std::vector<rw::math::Vector3D<> >& data ){
 	BOOST_FOREACH(Vector3D<> &v, data){
 		centroid += v;
 	}
-	_center = centroid/data.size();
+	_center = centroid/((double)data.size());
 
 	double sum=0;
 	BOOST_FOREACH(Vector3D<> &v, data){

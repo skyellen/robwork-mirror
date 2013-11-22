@@ -561,7 +561,7 @@ void GraspRestingPoseDialog::initializeStart(){
         _currentPreshapeIDX.push_back(i);
         _fingersInContact.push_back(false);
 
-        _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+        _currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
         _preshape = _preshapes[_currentPreshapeIDX[i]];
         _target = _targetQ[_currentPreshapeIDX[i]];
 
@@ -636,7 +636,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 		// recalc random start configurations and reset the simulator
 		_nextTimeUpdate[i] = 0;
 		State nstate = _defstate;
-		_currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+		_currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
 		_hand->getModel().setQ(_preshapes[_currentPreshapeIDX[i]], nstate);
 		_controllers[i]->setTargetPos(_targetQ[_currentPreshapeIDX[i]] );
 
@@ -845,7 +845,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     		if(_nrOfGraspsInGroup == 0 || _nrOfGraspsInGroup==_groupSizeSpin->value()){
     			// generate a new random grasp
         		nstate = _defstate;
-                _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+                _currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
                 _preshape = _preshapes[_currentPreshapeIDX[i]];
                 _target = _targetQ[_currentPreshapeIDX[i]];
                 target = _target;
@@ -937,7 +937,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     	} else {
 
     		nstate = _defstate;
-            _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+            _currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
             preshape = _preshapes[_currentPreshapeIDX[i]];
             target = _targetQ[_currentPreshapeIDX[i]];
 
@@ -967,7 +967,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
         // recalc random start configurations and reset the simulator
         _nextTimeUpdate[i] = 0;
         State nstate = _defstate;
-        _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+        _currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
         _hand->getModel().setQ(_preshapes[_currentPreshapeIDX[i]], nstate);
         _controllers[i]->setTargetPos(_targetQ[_currentPreshapeIDX[i]] );
 

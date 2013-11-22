@@ -418,7 +418,7 @@ void SimTaskPlugin::loadTasks(bool automatic){
     GraspTask::Ptr task;
     try {
         task = GraspTask::load( taskFile );
-    } catch (const Exception& exp) {
+    } catch (const Exception&) {
         QMessageBox::information(this, "SimTaskPlugin", "Unable to load tasks from file");
         return;
     }
@@ -642,11 +642,11 @@ void SimTaskPlugin::setCurrentTask(GraspTask::Ptr task){
     }
 
     //_totalNrOfExperiments = _graspSim->getNrTargets();
-    _showTaskSpinBox->setRange(0, _graspSim->getNrTargets() );
-    _nrTaskSpinBox->setRange( 0, _graspSim->getNrTargets() );
-    _nrTaskSpinBox->setValue( _graspSim->getNrTargets()-1 );
+    _showTaskSpinBox->setRange(0, (int)_graspSim->getNrTargets() );
+    _nrTaskSpinBox->setRange( 0, (int)_graspSim->getNrTargets() );
+    _nrTaskSpinBox->setValue( (int)_graspSim->getNrTargets()-1 );
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _graspSim->getNrTargets();
-    _progressBar->setMaximum( _graspSim->getNrTargets());
+    _progressBar->setMaximum( (int)_graspSim->getNrTargets());
     _startBtn->setEnabled(true);
     _stopBtn->setEnabled(true);
 
@@ -762,7 +762,7 @@ void SimTaskPlugin::saveTasks(bool automatic){
         } else if(_outputFormatBox->currentText()=="TXT"){
             GraspTask::saveText(result, taskFile);
         }
-    } catch (const Exception& exp) {
+    } catch (const Exception&) {
         QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
     }
     //std::stringstream sstr;

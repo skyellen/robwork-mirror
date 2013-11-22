@@ -162,8 +162,8 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _texelArea(texelSize(0)*texelSize(1)),
         _fThmap(fThmap),
         _hmapTf(inverse(fThmap)),
-        _w(heightMap.rows()-1),
-        _h(heightMap.cols()-1),
+        _w((int)heightMap.rows()-1),
+        _h((int)heightMap.cols()-1),
         _vMatrix(getShape(heightMap, 0, 0)),
         _minPressure(0),
         _maxPressure(250),
@@ -221,13 +221,13 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
             double y = j*tSize2-cy;
             double r = 4.0*sqrt(x*x+y*y);
             double val = -0.3476635514018692+1.224299065420561/(1.0+r*r);
-            _dmask(i,j) = std::max(val,0.0);
+            _dmask(i,j) = (float)std::max(val,0.0);
             dmaskSum += std::max(val,0.0);
             std::cout << r << ",";
         }
     }
 
-    _dmask = _dmask/dmaskSum;
+    _dmask = _dmask/((float)dmaskSum);
 
     // create a geometry of the normals
 
@@ -306,7 +306,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 				//std::cout << "NDist: " << ndist << std::endl;
 				if( ndist < (&_distDefMatrix(0,0))[pids.first] )
 					continue;
-				(&_distDefMatrix(0,0))[pids.first] = ndist;
+				(&_distDefMatrix(0,0))[pids.first] = (float)ndist;
 				(&_contactMatrix[0][0])[pids.first] = point;
 			}
 		}
@@ -493,8 +493,8 @@ void TactileArraySensor::ClassState::addForce(const Vector3D<>& point,
     int yIdx = (int)( floor(p(1)/_tsensor->_texelSize(1)));
 
     // if the index is boundary then pick the closest texel normal
-    int xIdxTmp = Math::clamp(xIdx, 0, _tsensor->_w-1);
-    int yIdxTmp = Math::clamp(yIdx, 0, _tsensor->_h-1);
+    int xIdxTmp = (int)Math::clamp(xIdx, 0, (int)_tsensor->_w-1);
+    int yIdxTmp = (int)Math::clamp(yIdx, 0, (int)_tsensor->_h-1);
 
     //std::cout << "4";
     Vector3D<> normal = _tsensor->_normalMatrix[xIdxTmp][yIdxTmp];
@@ -698,7 +698,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 					//std::cout << "NDist: " << ndist << std::endl;
 					if( ndist > (&_distMatrix(0,0))[pids.first] )
 						continue;
-					(&_distMatrix(0,0))[pids.first] = ndist;
+					(&_distMatrix(0,0))[pids.first] = (float)ndist;
 					//(&_contactMatrix[0][0])[pids.first] = point;
 				}
 			}
@@ -814,8 +814,8 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 
 					//int xIdx = (int)( floor(p(0)/_texelSize(0)));
 					//int yIdx = (int)( floor(p(1)/_texelSize(1)));
-					int xIdx = x;
-					int yIdx = y;
+					int xIdx = (int)x;
+					int yIdx = (int)y;
 					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_tsensor->_w); xi++){
 						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_tsensor->_h); yi++){
 							double texelScale = getValueOfTexel(xi*_tsensor->_texelSize(0),yi*_tsensor->_texelSize(1),
@@ -823,7 +823,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 																p(0),p(1),
 																_tsensor->_dmask, _tsensor->_maskWidth, _tsensor->_maskHeight);
 							RW_ASSERT(texelScale<100000);
-							_accForces(xi,yi) += force*texelScale;
+							_accForces(xi,yi) += (float)(force*texelScale);
 							//std::cout << "accForce +="<< force << "*" << texelScale << std::endl;
 						}
 					}
@@ -843,7 +843,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	        		continue;
 	        	}
 
-	            pressure(x,y) = std::min( _accForces(x,y)/(_tsensor->_texelArea*1000), _tsensor->_maxPressure );
+	            pressure(x,y) = (float)std::min( _accForces(x,y)/(_tsensor->_texelArea*1000), _tsensor->_maxPressure );
 	            totalArea += _tsensor->_texelArea;
 	            totalPressure += pressure(x,y);
 	        }
@@ -862,7 +862,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	        for(Eigen::DenseIndex y=0; y<pressure.cols(); y++){
 	        	if(pressure(x,y)>0){
 	        		// and convert it to pascal
-	        		pressure(x,y) *= presScale*1000;
+	        		pressure(x,y) *= (float)(presScale*1000);
 	        		ntotpressure += pressure(x,y)/1000;
 	        	}
 	        }
@@ -884,7 +884,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
     const double alpha = rdt/(_tsensor->_tau+rdt);
     for(Eigen::DenseIndex y=0; y<ym.rows(); y++){
     	for(Eigen::DenseIndex x=0; x<ym.cols(); x++){
-        	ym(x,y) += alpha * (xm(x,y)-ym(x,y));
+        	ym(x,y) += (float)(alpha * (xm(x,y)-ym(x,y)));
         }
     }
 

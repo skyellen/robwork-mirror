@@ -32,7 +32,7 @@ RenderPlanes::RenderPlanes(float planesize):_planesize(planesize){}
 RenderPlanes::~RenderPlanes(){}
 
 void RenderPlanes::addPlanes(const std::vector<PlaneModel >& planes){
-	int origSize = _planes.size();
+	int origSize = (int)_planes.size();
 	_planes.resize(_planes.size()+planes.size());
 	// add the remaining points
 	for(size_t i=0;i<planes.size();i++){

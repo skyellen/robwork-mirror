@@ -61,7 +61,7 @@ double PlaneModel::refit( std::vector<rw::math::Vector3D<> >& data ){
         for(size_t j=0;j<3;j++)
             for(size_t k=0;k<3;k++)
                 covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/data.size();
-        Vector3D<> c = centroid/data.size();
+        Vector3D<> c = centroid/((double)data.size());
         // 4. get eigenvectors from the covariance matrix
         typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd> ResultType;
         //std::cout << "COVAR: " << covar << std::endl;

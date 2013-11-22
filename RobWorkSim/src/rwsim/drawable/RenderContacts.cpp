@@ -60,7 +60,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawType type, d
 		glPushMatrix();
 
 		glColor3f(1.0, 0.0, 0.0);
-		glTranslatef(pos(0),pos(1),pos(2));// Center The Cone
+		glTranslatef((GLfloat)pos(0),(GLfloat)pos(1),(GLfloat)pos(2));// Center The Cone
 		gluSphere( _quadratic, 0.001, 32, 32);    // Draw Our Sphere
 
 		glBegin(GL_LINES);
@@ -74,7 +74,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawType type, d
 	  	double size = con.normalForce;
 		glPushMatrix();
 		glColor3f(1.0, 0.0, 0.0);
-		glTranslatef(pos(0),pos(1),pos(2));// Center The Cone
+		glTranslatef((GLfloat)pos(0),(GLfloat)pos(1),(GLfloat)pos(2));// Center The Cone
 		gluCylinder(
 			_quadratic,
 			0.001,
@@ -86,7 +86,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawType type, d
 		glPopMatrix();
 		glPushMatrix();
 		glColor3f(0.0, 0.0, 1.0);
-		glTranslatef(pos(0),pos(1),pos(2));// Center The Cone
+		glTranslatef((GLfloat)pos(0),(GLfloat)pos(1),(GLfloat)pos(2));// Center The Cone
 		gluCylinder(
 			_quadratic,
 			0.001,

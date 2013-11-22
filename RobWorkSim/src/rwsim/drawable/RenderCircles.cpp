@@ -28,7 +28,7 @@ using namespace rwsim::drawable;
 using namespace rwsim::util;
 using namespace rw::graphics;
 
-RenderCircles::RenderCircles(float angleres):_stepSize(angleres*Deg2Rad)
+RenderCircles::RenderCircles(float angleres):_stepSize((float)(angleres*Deg2Rad))
 {}
 
 RenderCircles::~RenderCircles(){}
@@ -38,7 +38,7 @@ void RenderCircles::setCircles(const std::vector<CircleModel>& circles){
 }
 
 void RenderCircles::addCircles(const std::vector<CircleModel>& circles) {
-	int origSize = _circles.size();
+	int origSize = (int)_circles.size();
 	_circles.resize(_circles.size()+circles.size());
 	// add the remaining points
 	for(size_t i=0;i<circles.size();i++){
@@ -75,7 +75,7 @@ void RenderCircles::draw(const DrawableNode::RenderInfo& info, DrawType type, do
  		for (int i=0; i<360/10; i++){
  			//p = normalize(p);
  			//std::cout << "P: " << p << std::endl;
- 			glVertex3f(c(0)+p(0)*r,c(1)+p(1)*r, c(2)+p(2)*r);
+ 			glVertex3f((GLfloat)(c(0)+p(0)*r),(GLfloat)(c(1)+p(1)*r), (GLfloat)(c(2)+p(2)*r));
 		    p = rot*p;
 	    }
  		glEnd( );

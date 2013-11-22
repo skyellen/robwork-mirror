@@ -218,8 +218,8 @@ void ContactModelFactory::DetermineContact(ConstraintEdge &e, rw::kinematics::St
     std::cout << "* Determine contact" << std::endl;
     MyContactInfo &edgeInfo = *((MyContactInfo*)e.data);
     std::cout << " Get frames! " << std::endl;
-    Frame *frameA;// = (Frame*) edgeInfo.narrowCache.f1;
-    Frame *frameB;// = (Frame*) edgeInfo.narrowCache.f2;
+    Frame *frameA = NULL;// = (Frame*) edgeInfo.narrowCache.f1;
+    Frame *frameB = NULL;// = (Frame*) edgeInfo.narrowCache.f2;
 
     if( frameA==NULL || frameB==NULL )
         std::cout << " Frame is NULLLLLL" << std::endl;

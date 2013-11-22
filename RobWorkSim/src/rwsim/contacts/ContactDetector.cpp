@@ -198,7 +198,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state) {
 }
 
 std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data) {
-	long tstart = TimerUtil::currentTimeUs();
+	long tstart = (long)TimerUtil::currentTimeUs();
 
 	std::vector<Contact> res;
 
@@ -264,7 +264,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 			}
 		}
 	}
-	long tend = TimerUtil::currentTimeUs();
+	long tend = (long)TimerUtil::currentTimeUs();
 
 	double used = ((double)(tend-tstart))/1000000.;
 

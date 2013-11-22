@@ -161,7 +161,7 @@ void GraspSelectionDialog::btnPressed(){
     	try{
     	    _gtable = GraspTable::load(filename);
     		Log::infoLog() << "Table size: " << _gtable->size() << "\n";
-    	} catch(const Exception& exp) {
+    	} catch(const Exception&) {
     		_gtable = NULL;
     		Log::errorLog() << "Load failed!\n";
     		return;
@@ -183,7 +183,13 @@ void GraspSelectionDialog::btnPressed(){
     	} else {
     	    _object = dynamic_cast<MovableFrame*>(obj);
     	}
-    	_graspTableSlider->setRange(0, _gtable->size()-1);
+		if (_gtable->size() == 0) {
+    		_graspTableSlider->setRange(0, 0);
+			_graspTableSlider->setEnabled(false);
+		} else {
+    		_graspTableSlider->setRange(0, (int)(_gtable->size()-1));
+			_graspTableSlider->setEnabled(true);
+		}
     	Frame* fbase = _dev->getBase()->getParent(_state);
     	while( !dynamic_cast<MovableFrame*>(fbase) ){
     		fbase = fbase->getParent(_state);
@@ -289,7 +295,7 @@ void GraspSelectionDialog::changedEvent(){
         }
     } else if ( obj == _graspTableSlider ){
     	int gidx = _graspTableSlider->value();
-    	int gsize = _gtable->getData().size();
+    	int gsize = (int)_gtable->getData().size();
 
     	if(gidx>=gsize)
     		return;

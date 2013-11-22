@@ -136,7 +136,7 @@ RWSimulatorPlugin::RWSimulatorPlugin():
     widg->setLayout(toplay);
     this->setWidget(widg);
     {
-        size_t row = 0;
+        int row = 0;
         QGroupBox* box = new QGroupBox("Settings", this);
         toplay->addWidget(box);
         QGridLayout* lay = new QGridLayout(box);
@@ -195,7 +195,7 @@ RWSimulatorPlugin::RWSimulatorPlugin():
         }
     }
     {
-        size_t row = 0;
+        int row = 0;
         QGroupBox* box = new QGroupBox("Control", this);
 
         toplay->addWidget(box);

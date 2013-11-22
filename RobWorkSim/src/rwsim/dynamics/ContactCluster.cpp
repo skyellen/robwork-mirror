@@ -61,7 +61,7 @@ namespace {
        //// std::cout  << "fileterContactRec" << std::endl;
        int deepIdx = srcSize-1;
        //// std::cout  << itmp << std::endl;
-       float deepPen = src[ state.cIdxSrc[deepIdx] ].penetration;
+       float deepPen = (float)src[ state.cIdxSrc[deepIdx] ].penetration;
 
        for(int j=0; j<state.backSize; j++){
            const int i = srcSize-1-j;
@@ -69,7 +69,7 @@ namespace {
            RW_ASSERT( i>=0 && i<srcSize );
            if(src[state.cIdxSrc[i]].penetration>deepPen){
         	   RW_ASSERT( state.cIdxSrc[i]>=0 && state.cIdxSrc[i]<srcSize);
-               deepPen = src[state.cIdxSrc[i]].penetration;
+               deepPen = (float)src[state.cIdxSrc[i]].penetration;
                deepIdx = i;
            }
        }
@@ -150,7 +150,7 @@ namespace {
        //// std::cout  << "fileterContactRec" << std::endl;
        int deepIdx = srcSize-1;
        //// std::cout  << itmp << std::endl;
-       float deepPen = src[ state.cIdxSrc[deepIdx] ].penetration;
+       float deepPen = (float)src[ state.cIdxSrc[deepIdx] ].penetration;
 
        for(int j=0; j<state.backSize; j++){
            const int i = srcSize-1-j;
@@ -158,7 +158,7 @@ namespace {
            RW_ASSERT( i>=0 && i<srcSize );
            if(src[state.cIdxSrc[i]].penetration>deepPen){
                RW_ASSERT( state.cIdxSrc[i]>=0 && state.cIdxSrc[i]<srcSize);
-               deepPen = src[state.cIdxSrc[i]].penetration;
+               deepPen = (float)src[state.cIdxSrc[i]].penetration;
                deepIdx = i;
            }
        }

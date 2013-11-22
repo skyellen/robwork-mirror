@@ -91,7 +91,7 @@ std::vector<Contact> ContactStrategyPQP::findContacts(ProximityModel* a, const T
 				c.setFrameB(modelB.frame);
 
 				if(res->distances[i]<0.00000001){
-					std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
+					std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, (int)i);
 					// the second is described in b's refframe so convert both to world and combine them
 					Vector3D<> a_normal = wTa.R() * normals.first;
 					Vector3D<> b_normal = wTb.R() * normals.second;
@@ -210,7 +210,7 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 	}
 
 	int fnumc = ContactCluster::normalThresClustering(
-			&rwcontacts[0], contacts.size(),
+			&rwcontacts[0], (int)contacts.size(),
 			&srcIdx[0], &dstIdx[0],
 			&rwClusteredContacts[0],
 			10*Deg2Rad);

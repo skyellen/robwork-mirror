@@ -153,8 +153,8 @@ void TactileSensorDialog::initTactileInput(){
     _dims.resize(_tsensors.size());
     for(size_t sensorIdx=0; sensorIdx<_tsensors.size();sensorIdx++){
         maxPressure = std::max(maxPressure, _tsensors[sensorIdx]->getPressureLimit().second);
-        _dims[sensorIdx].first = _tsensors[sensorIdx]->getTexelDataSize().first;
-        _dims[sensorIdx].second = _tsensors[sensorIdx]->getTexelDataSize().second;
+        _dims[sensorIdx].first = (int)_tsensors[sensorIdx]->getTexelDataSize().first;
+        _dims[sensorIdx].second = (int)_tsensors[sensorIdx]->getTexelDataSize().second;
 
         int w = _dims[sensorIdx].first;
         int h = _dims[sensorIdx].second;

@@ -120,8 +120,8 @@ ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool in
     } else {
         imesh = static_cast< IndexedTriMesh<float>* >(gdata.get());
     }
-    int nrOfVerts = imesh->getVertices().size();
-    int nrOfTris = imesh->getSize();
+    int nrOfVerts = (int)imesh->getVertices().size();
+    int nrOfTris = (int)imesh->getSize();
     // std::cout  << "- NR of faces: " << nrOfTris << std::endl;
     // std::cout  << "- NR of verts: " << nrOfVerts << std::endl;
 

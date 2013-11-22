@@ -27,7 +27,7 @@ namespace {
         while(curr<time) {
             if(1>(time-curr))
                 break;
-            TimerUtil::sleepMs( time-curr );
+            TimerUtil::sleepMs( (int)(time-curr) );
             curr = TimerUtil::currentTimeMs();
         }
     }
@@ -184,7 +184,7 @@ void ThreadSimulator::stepperLoop(){
             	nextTime = time;
             }
 
-            nextTime += std::min( (sTime-simTime), _dt) * _timescale * 1000;
+            nextTime += (int)(std::min( (sTime-simTime), _dt) * _timescale * 1000);
             //std::cout << "step: " << std::min( (sTime-simTime), _dt) << std::endl;
             simTime = sTime;
         }
@@ -194,7 +194,7 @@ void ThreadSimulator::stepperLoop(){
             _tmpState = _state;
         }
     	if(_inError)
-    	    nextTime = time+_dt*_timescale;
+    	    nextTime = (int)(time+_dt*_timescale);
 
     	// this is necesary, since callback should not be called if user signalled stop
     	if(_postStop)

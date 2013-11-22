@@ -215,7 +215,7 @@ void JointLine::wheelEvent(QWheelEvent* event)
 JogGroup::JogGroup(const std::pair<Q,Q>& bounds):
     _n(bounds.first.size()),
     _updating(false),
-    _q(Q::zero(bounds.first.size()))
+    _q(Q::zero((int)bounds.first.size()))
 {
     QGridLayout* layout = new QGridLayout(this); // owned
 
@@ -228,7 +228,7 @@ JogGroup::JogGroup(const std::pair<Q,Q>& bounds):
     for (size_t i = 1; i < _n+1; i++) {
         const double low = bounds.first(i-1);
         const double high = bounds.second(i-1);
-        JointLine* line = new JointLine(low, high, layout, i, this); // owned
+        JointLine* line = new JointLine(low, high, layout, (int)i, this); // owned
 
         connect(line, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _joints.push_back(line);
@@ -236,7 +236,7 @@ JogGroup::JogGroup(const std::pair<Q,Q>& bounds):
 
     // The last (empty) row grows! That way we make sure that the rows are
     // aligned towards the top.
-    layout->setRowStretch(_n+1, 1);
+    layout->setRowStretch((int)(_n+1), 1);
 
     updateDisplayValues();
 }

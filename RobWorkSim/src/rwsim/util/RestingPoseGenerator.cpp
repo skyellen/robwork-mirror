@@ -119,12 +119,12 @@ void RestingPoseGenerator::stop(){
 
 void RestingPoseGenerator::stepperLoop(){
     bool running = true;
-    long time = TimerUtil::currentTimeMs();
+    long time = (long)TimerUtil::currentTimeMs();
     long nextTime = -1;
 
     while(running){
         // make sure not to poll the simulation too often
-        time = TimerUtil::currentTimeMs();
+        time = (long)TimerUtil::currentTimeMs();
         if( nextTime>time ){
             TimerUtil::sleepMs(_updatePeriod-(nextTime-time));
             nextTime = nextTime+_updatePeriod;

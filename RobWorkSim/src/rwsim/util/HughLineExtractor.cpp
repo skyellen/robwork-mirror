@@ -73,7 +73,7 @@ namespace {
 
 std::vector<Line2D > HughLineExtractor::extractLines(Image& image){
 	Point center(image.getWidth()/2,image.getHeight()/2);
-	int max_dist = MetricUtil::norm2(cast<double>(center));
+	int max_dist = (int)MetricUtil::norm2(cast<double>(center));
 	std::cout << "max_dist: " << max_dist << std::endl;
 	std::cout << "center: " << center << std::endl;
 	int h_space[steps*h_ysteps];
@@ -88,7 +88,7 @@ std::vector<Line2D > HughLineExtractor::extractLines(Image& image){
 			if(color<100)
 				continue;
 
-			int val = incHughSpace(image,h_space, center,x,y,max_dist);
+			int val = incHughSpace(image,h_space, center,(int)x,(int)y,max_dist);
 			if(max_value<val)
 				max_value = val;
 		}

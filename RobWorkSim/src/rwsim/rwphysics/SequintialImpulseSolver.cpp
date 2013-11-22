@@ -19,7 +19,7 @@ using namespace rw::math;
 using namespace rwsim::simulator;
 
 
-#define RW_DEBUG( str ) std::cout << str  << std::endl;
+//#define RW_DEBUG( str ) std::cout << str  << std::endl;
 
 bool SequintialImpulseSolver::solveGroup( CEdgeGroup& group,
                                           SolverInfo& info,
@@ -56,7 +56,7 @@ bool SequintialImpulseSolver::solveGroup( CEdgeGroup& group,
         realContacts.push_back(contact);
 
         // initialize aux variables
-        nrOfContacts += contact->contactPoints.size();
+        nrOfContacts += (int)contact->contactPoints.size();
         ContactPointList::iterator point = contact->contactPoints.begin();
         for(;point!=contact->contactPoints.end();++point){
             std::cout << "PreImpulseCalc:" << std::endl;
@@ -94,7 +94,7 @@ bool SequintialImpulseSolver::solveGroup( CEdgeGroup& group,
             ContactPointList::iterator point = contact.contactPoints.begin();
             for(double jn=0,jt=0;point!=contact.contactPoints.end();++point,jn=0,jt=0,index++){
                 // first calculate the normal and tanget impulse
-                model.calcCollisionImpulse(contact,*point, jn, jt, j);
+                model.calcCollisionImpulse(contact,*point, jn, jt, (int)j);
 
                 // then clamp normal impulse
                 double tmp = point->nImpulse;

@@ -243,7 +243,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
     		return;
     	try{
     		_path = PathLoader::loadTimedStatePath(*_wc,filename).release();
-    	} catch(const Exception& exp) {
+    	} catch(const Exception&) {
     		_path = NULL;
     		_dataLoadedLbl->setText("Load failed!");
     		return;
@@ -256,7 +256,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
     		return;
     	try{
     		_startPath = PathLoader::loadTimedStatePath(*_wc,filename).release();
-    	} catch(const Exception& exp) {
+    	} catch(const Exception&) {
     		_startPath = NULL;
     		_dataLoadedLbl->setText("Load start poses failed!");
     		return;
@@ -334,7 +334,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
             poses.clear();
             misses.clear();
 
-            gen.calculateDistribution(i,poses,misses);
+            gen.calculateDistribution((int)i,poses,misses);
             _supportPoseDistributions[selectedObj].push_back(poses);
             _supportPoseDistributionsMisses[selectedObj].push_back(misses);
 
@@ -615,7 +615,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	_selPosePntRenderY->clear();
     	_selPosePntRenderZ->clear();
 
-    	_selPoseDrawX->setTransparency(0.3);
+    	_selPoseDrawX->setTransparency(0.3f);
 
 
     	std::vector<Vector3D<> > &xaxis = _xaxisS[body];
@@ -678,7 +678,7 @@ namespace {
 			// [0,Pi] -> [0,height]
 			int x = (int)(((phi+Pi)*width )/(2*Pi));
 			int y = (int)(((theta)*height )/(Pi));
-			img.getImageData()[x+y*width] = 240;
+			img.getImageData()[x+y*width] = (char)240;
 		}
 	}
 
@@ -1093,7 +1093,7 @@ namespace {
             EAA<> r( k.R());
             //Vector3D<> r = k.R()*Vector3D<>::z();
             Q key(6, k.P()[0],k.P()[1],k.P()[2], r[0],r[1],r[2]);
-            nodes.push_back(KDTreeQ<KDTreeValue>::KDNode(key, KDTreeValue(i, -1)));
+            nodes.push_back(KDTreeQ<KDTreeValue>::KDNode(key, KDTreeValue((int)i, -1)));
         }
 
         std::cout << "Nodes created, building tree.. " << std::endl;
@@ -1244,7 +1244,7 @@ void SupportPoseAnalyserDialog::process(){
 
                 _supportPoseDistributions[_bodies[j].get()].push_back( transformations );
 
-                _supportToPose[std::make_pair(j,sposes.size()-1)] = val.second;
+                _supportToPose[std::make_pair((int)j,(int)(sposes.size()-1))] = val.second;
             }
         }
 

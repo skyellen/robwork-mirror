@@ -21,7 +21,7 @@ RWBody *RWBodyPool::createBody(RWBody::BodyType type){
 	RWBody *body;
 	if(_freeBodyIDs.empty()){
 		// we need to add a new body to the body vector
-		body = new RWBody( _bodies.size() );
+		body = new RWBody( (int)_bodies.size() );
 		_bodies.push_back(body);
 		return body;
 	}

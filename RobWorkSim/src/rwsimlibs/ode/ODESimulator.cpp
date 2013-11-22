@@ -270,7 +270,7 @@ namespace {
 	bool isClose(dReal *m1, const dReal *P, const dReal *R, double eps ){
 		double rsum = 0;
 		for(int i=0;i<12;i++){
-			float val = fabs(m1[i]-R[i]);
+			float val = (float)fabs(m1[i]-R[i]);
 			rsum += val*val;
 		}
 		double psum = fabs(m1[12]-P[0])*fabs(m1[12]-P[0])+
@@ -1490,7 +1490,7 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
         _rwcontacts.resize(numc);
         _contacts.resize(numc);
         _allcontacts.resize(numc);
-	    _nrOfCon = numc;
+	    _nrOfCon = (int)numc;
     }
     int ni = 0;
 	BOOST_FOREACH(rwsim::contacts::Contact &contact, contacts) {
@@ -1946,7 +1946,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             	//std::cout << " penetrating " << std::endl;
                 // the contact is penetrating and we therefore need compute the
             	// contact normal differently
-            	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
+            	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, (int)i);
             	// the second is described in b's refframe so convert both to world and combine them
             	Vector3D<> a_normal = aT.R() * normals.first;
             	Vector3D<> b_normal = bT.R() * normals.second;
@@ -2023,7 +2023,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
         //bcon.cnormal =
         //if (numc < 100) {
-			addContacts(numc, a_data, b_data, pair.first, pair.second);
+			addContacts((int)numc, a_data, b_data, pair.first, pair.second);
 		//}
         res->clear();
         // update the contact normal using the manifolds
@@ -2147,11 +2147,11 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     // do the actual collision check
 
     numc = dCollide(o1, o2,
-                        (_contacts.size()-1) , &_contacts[0].geom,
+                        ((int)_contacts.size()-1) , &_contacts[0].geom,
                         sizeof(dContact));
 
     if( numc >= (int)_contacts.size()-1 ){
-        numc = _contacts.size()-2;
+        numc = (int)_contacts.size()-2;
         RW_WARN( "------- Too small collision buffer ------" );
     }
 

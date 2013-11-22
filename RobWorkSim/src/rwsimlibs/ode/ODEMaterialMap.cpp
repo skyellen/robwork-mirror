@@ -34,11 +34,11 @@ ODEMaterialMap::ODEMaterialMap(MaterialDataMap& map,
     _map(map), _cmap(cmap)
 {
     int nrMaterials = map.getMaxMatID();
-    _muMap.resize(nrMaterials, 0.4);
-    _bounceMap.resize(nrMaterials, 0.05);
-    _bounceVelMap.resize(nrMaterials, 0.0001);
-    _cfmMap.resize(nrMaterials, 0.001);
-    _erpMap.resize(nrMaterials, 0.2);
+    _muMap.resize(nrMaterials, 0.4f);
+    _bounceMap.resize(nrMaterials, 0.05f);
+    _bounceVelMap.resize(nrMaterials, 0.0001f);
+    _cfmMap.resize(nrMaterials, 0.001f);
+    _erpMap.resize(nrMaterials, 0.2f);
 
     /*for(int i=0;i<odeBodies.size();i++){
      int id = odeBodies[i]->getMaterialID();

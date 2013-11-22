@@ -630,7 +630,7 @@ namespace
         for(size_t i=0; i<device->getJoints().size(); i++){
             //Log::debugLog()<< device->getActiveJoint(i)->getName() << std::endl;
             if( device->getJoints()[i]->getName()== fullname)
-                return i;
+                return (int)i;
         }
         RW_THROW("Joint "+quote(fullname)+"does not exist!");
         return -1;

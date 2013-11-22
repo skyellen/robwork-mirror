@@ -83,7 +83,7 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
 
         void updateHoughThres(){
         	// we set the thres hold such that [30,50] maps to [100,1000]
-        	int samples = _xaxis[0].size();
+        	std::size_t samples = _xaxis[0].size();
         	double a = ((50.0-30.0)/(1000.0-100.0));
         	double b = 30-100.0*a;
         	double thres = a*samples+b;

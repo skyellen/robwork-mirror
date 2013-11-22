@@ -223,7 +223,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
     std::vector<int> result;
     for(size_t i=0;i<fmesh->getSize();i++){
         if( (*fmesh)[i].isInside(_com) ){
-            result.push_back(i);
+            result.push_back((int)i);
             stableList[i].first = true;
         }
     }
@@ -239,7 +239,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
             if( fabs(psup.d()-p.d())<0.001 ){
                 if( MetricUtil::dist2(psup.normal(),p.normal())<0.001 ){
                     hasPlane = true;
-                    stableList[triIdx].second = i;
+                    stableList[triIdx].second = (int)i;
                     break;
                 }
             }
@@ -247,7 +247,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
         if(!hasPlane){
             _supportPlanes.push_back(p);
             _supportTriangles.push_back(std::vector<TriangleN1<> >());
-            stableList[triIdx].second = _supportPlanes.size()-1;
+            stableList[triIdx].second = (int)_supportPlanes.size()-1;
         }
     }
     std::cout << "NR OF PLANES: " << _supportPlanes.size() << std::endl;
@@ -262,7 +262,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
                 if( MetricUtil::dist2(psup.normal(),p.normal())<0.001 ){
                     _supportTriangles[j].push_back(tri);
                     stableList[i].first = true;
-                    stableList[i].second = j;
+                    stableList[i].second = (int)j;
                 }
             }
         }
@@ -275,7 +275,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
     // next locate all non-stable triangles and find out into which stable plane
     // the object will slide from a non-stable triangle. We do this using a region growing/coloring aproach
     // where we follow the neighboring triangles
-    int tmpColor = result.size()+100;
+    int tmpColor = (int)result.size()+100;
     typedef std::pair<bool,int> StableData;
     for(size_t i=0;i<stableList.size();i++){
         StableData& st = stableList[i];
@@ -284,7 +284,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
             // which are located in the same direction of the center mass ray
             st.second = tmpColor;
             std::stack<int> group;
-            group.push(i);
+            group.push((int)i);
 
             while(!group.empty()){
                 int colored = group.top();
@@ -326,9 +326,9 @@ void PlanarSupportPoseGenerator::doAnalysis(){
 namespace {
     Rotation3D<> rand_rotation( float x, float y, float bz)
     {
-        float theta = x * Pi*2.0; /* Rotation about the pole (Z).      */
-        float phi   = y * Pi*2.0; /* For direction of pole deflection. */
-        float z     = bz * 2.0;      /* For magnitude of pole deflection. */
+        float theta = (float)(x * Pi*2.0); /* Rotation about the pole (Z).      */
+        float phi   = (float)(y * Pi*2.0); /* For direction of pole deflection. */
+        float z     = bz * 2.0f;      /* For magnitude of pole deflection. */
 
         /* Compute a vector V used for distributing points over the sphere  */
         /* via the reflection I - V Transpose(V).  This formulation of V    */
@@ -339,7 +339,7 @@ namespace {
         float r  = sqrt( z );
         float Vx = sin( phi ) * r;
         float Vy = cos( phi ) * r;
-        float Vz = sqrt( 2.0 - z );
+        float Vz = sqrt( 2.0f - z );
 
         /* Compute the row vector S = Transpose(V) * R, where R is a simple */
         /* rotation by theta about the z-axis.  No need to compute Sz since */

@@ -71,7 +71,7 @@ bool SerialDeviceController::moveLin(const rw::math::Transform3D<>& target, floa
 	Target cmd_target;
 	cmd_target.type = Lin;
 	cmd_target.lin_target = target;
-	cmd_target.speed = speed * 1.0/100.0;
+	cmd_target.speed = speed * 1.0f/100.0f;
 	cmd_target.blend = blend;
 	addTarget(cmd_target);
 	return true;
@@ -84,7 +84,7 @@ bool SerialDeviceController::movePTP(const rw::math::Q& target, float speed, flo
 	Target cmd_target;
 	cmd_target.type = PTP;
 	cmd_target.q_target = target;
-	cmd_target.speed = speed * 1.0/100.0;
+	cmd_target.speed = speed * 1.0f/100.0f;
 	cmd_target.blend = blend;
 	addTarget(cmd_target);
 	return true;
@@ -96,7 +96,7 @@ bool SerialDeviceController::movePTP_T(const rw::math::Transform3D<>& target, fl
 	Target cmd_target;
 	cmd_target.type = PTP_T;
 	cmd_target.lin_target = target;
-	cmd_target.speed = speed * 1.0/100.0;
+	cmd_target.speed = speed * 1.0f/100.0f;
 	cmd_target.blend = blend;
 	addTarget(cmd_target);
 	return true;
@@ -143,7 +143,7 @@ bool SerialDeviceController::moveLinFC(const rw::math::Transform3D<>& target,
 
 
 	cmd_target.lin_target = target;
-	cmd_target.speed = speed * 1.0/100.0;
+	cmd_target.speed = speed * 1.0f/100.0f;
 	cmd_target.blend = blend;
 	addTarget(cmd_target);
 	return true;

@@ -47,7 +47,7 @@ bool FiniteStateSampler::sample(rw::kinematics::State& state){
 				break;
 			}
 			case(RANDOM_SAMPLING):{
-				int idx = Math::ranI(0,_states.size());
+				int idx = Math::ranI(0,(int)_states.size());
 				state = _states[idx];
 				_n--;
 				break;

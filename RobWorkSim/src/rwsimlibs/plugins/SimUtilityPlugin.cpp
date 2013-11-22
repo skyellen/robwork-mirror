@@ -96,7 +96,7 @@ SimUtilityPlugin::SimUtilityPlugin():
     widg->setLayout(toplay);
     this->setWidget(widg);
     {
-        size_t row = 0;
+        int row = 0;
         QGroupBox* box = new QGroupBox("Utilities", this);
         toplay->addWidget(box);
         QGridLayout* lay = new QGridLayout(box);

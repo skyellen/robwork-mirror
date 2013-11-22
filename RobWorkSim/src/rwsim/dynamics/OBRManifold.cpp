@@ -122,7 +122,7 @@ void OBRManifold::fit(ContactPoint& p){
         covar(0,1) += _projPoints[i](0)*_projPoints[i](1);
     }
 
-    const int n = nrOfContacts+1;
+    const int n = (int)nrOfContacts+1;
     covar(0,0) = covar(0,0)-c(0)*c(0)/n;
     covar(1,1) = covar(1,1)-c(1)*c(1)/n;
     covar(0,1) = covar(0,1)-c(0)*c(1)/n;

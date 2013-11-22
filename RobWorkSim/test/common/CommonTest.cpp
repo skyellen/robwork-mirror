@@ -44,8 +44,7 @@ BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
 {
 #ifdef RWSIM_HAVE_ODE
     // add loading tests here
-    DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load("bumbum");
+    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load("bumbum");
     ODESimulator *sim = new ODESimulator(dwc);
     sim->getGravity(); // Dummy
 #else
@@ -58,8 +57,7 @@ BOOST_AUTO_TEST_CASE( ODESimulatorResetTest )
 {
 #ifdef RWSIM_HAVE_ODE
 	// Test if the simulator can handle to be reset
-    DynamicWorkCellLoader loader;
-    DynamicWorkCell::Ptr dwc = loader.load(testFilePath() + "/simple/device1.dwc.xml");
+    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(testFilePath() + "/simple/device1.dwc.xml");
     ODESimulator *sim = new ODESimulator(dwc);
     sim->getGravity(); // Dummy
 #else

@@ -113,7 +113,7 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
                 // TODO: we need to determine the mu of the friction cone
             }
 
-            glLineWidth(0.1);
+            glLineWidth((GLfloat)(0.1f));
             glBegin(GL_LINES);
             glColor3f(1.0, 0.0, 0.0);
             DrawableUtil::drawGLVertex(con.p);

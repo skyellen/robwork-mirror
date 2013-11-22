@@ -117,7 +117,7 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
     for(size_t j=0;j<3;j++)
         for(size_t k=0;k<3;k++)
             covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/data.size();
-    _center = centroid/data.size();
+    _center = centroid/((double)data.size());
     // 4. get eigenvectors from the covariance matrix
     typedef std::pair<Eigen::MatrixXd,Eigen::VectorXd > ResultType;
     //std::cout << "COVAR: " << covar << std::endl;
@@ -155,7 +155,7 @@ void CircleModel::refit(const std::vector<Vector3D<> >& data){
     Rotation3D<> invrot = inverse(rot);
     // we estimate the center and the radius so that we can hot start the non-linear
     // least square method
-    const int m = data.size();
+    const int m = (int)data.size();
     const int n = 3;
 
     Vector2D<> center2d = toVector2D(_center);

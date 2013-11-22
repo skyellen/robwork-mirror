@@ -54,7 +54,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dr
 		glPushMatrix();
 
 		glColor3f(1.0, 0.0, 0.0);
-		glTranslatef(posA(0),posA(1),posA(2));// Center The Cone
+		glTranslatef((GLfloat)posA(0),(GLfloat)posA(1),(GLfloat)posA(2));// Center The Cone
 		gluSphere( _quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
 
 		glBegin(GL_LINES);
@@ -68,7 +68,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dr
 		glPushMatrix();
 
 		glColor3f(1.0, 0.0, 0.0);
-		glTranslatef(posB(0),posB(1),posB(2));// Center The Cone
+		glTranslatef((GLfloat)posB(0),(GLfloat)posB(1),(GLfloat)posB(2));// Center The Cone
 		gluSphere( _quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
 
 		glBegin(GL_LINES);

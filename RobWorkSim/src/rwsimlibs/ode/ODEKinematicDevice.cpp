@@ -71,7 +71,7 @@ void ODEKinematicDevice::reset(rw::kinematics::State& state){
 namespace {
 
     Jacobian subJacobian(const Jacobian& jac, int toCol){
-        int m = jac.size1();
+        int m = (int)jac.size1();
         RW_ASSERT(toCol<=jac.size2());
         Jacobian jsub(m,toCol);
         for(int x=0;x<m;x++)
@@ -90,7 +90,7 @@ namespace {
     VelocityScrew6D<> mult(const Jacobian& Jq, const Q& dq, int column)
     {
         using namespace boost::numeric::ublas;
-        int m = Jq.size1();
+        int m = (int)Jq.size1();
         RW_ASSERT(column<Jq.size2());
 
         matrix<double> subjac(m,column+1);

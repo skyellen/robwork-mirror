@@ -16,7 +16,7 @@ ConstraintNode *CNodePool::createCNode(ConstraintNode::NodeType type){
         _nodes[id]->setType(type);
         return _nodes[id];
     }
-    _nodes.push_back( new ConstraintNode(type, _nodes.size()) );
+    _nodes.push_back( new ConstraintNode(type, (int)_nodes.size()) );
     return _nodes.back();
 }
 
@@ -35,7 +35,7 @@ ConstraintEdge *CNodePool::createCEdge(const CNodePair& pair, ConstraintEdge::Ed
         _edges[id]->setType(type);
         return _edges[id];
     }
-    _edges.push_back( new ConstraintEdge(pair, type, _edges.size()) );
+    _edges.push_back( new ConstraintEdge(pair, type, (int)_edges.size()) );
     return _edges.back();
 }
 

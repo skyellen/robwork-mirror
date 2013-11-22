@@ -52,13 +52,13 @@ RenderGhost::RenderGhost(rw::kinematics::Frame *frame,
 	_states(N)
 {
 	_frames.push_back(frame);
-	_drawFrame = new RenderFrame(0.2);
+	_drawFrame = new RenderFrame(0.2f);
 }
 
 RenderGhost::RenderGhost(std::list<rw::kinematics::Frame*> frames, WorkCellScene::Ptr drawer, size_t N):
 	_frames(frames), _drawer(drawer), _states(N)
 {
-	_drawFrame = new RenderFrame(0.2);
+	_drawFrame = new RenderFrame(0.2f);
 }
 
 
@@ -80,13 +80,13 @@ void RenderGhost::draw(const DrawableNode::RenderInfo& info, DrawType type, doub
 		double alpha = 0;
 		BOOST_FOREACH(DrawableNode::Ptr drawable, toDraw){
 			alpha += alphaStep;
-			drawable->setTransparency(alpha);
+			drawable->setTransparency((float)alpha);
 			//drawable->setDrawType(Drawable::WIRE);
     		for(size_t i=0; i<_states.size(); i++){
     			glPushMatrix();
     			Transform3D<> t3d = Kinematics::worldTframe(frame, _states[i]);
     			GLTransform(t3d);
-    			glColor3f(alpha,0,0);
+    			glColor3f((GLfloat)(alpha),0,0);
     			drawable->draw(info);
     			_drawFrame->draw(info, type, alpha);
     			glPopMatrix();

@@ -34,7 +34,7 @@ RenderPoints::RenderPoints(){
 RenderPoints::~RenderPoints(){}
 
 void RenderPoints::addPoints(const std::vector<rw::math::Vector3D<> >& points){
-	int origSize = _points.size();
+	int origSize = (int)_points.size();
 	_points.resize(_points.size()+points.size());
 	// add the remaining points
 	for(size_t i=0;i<points.size();i++){
@@ -56,7 +56,7 @@ void RenderPoints::draw(const DrawableNode::RenderInfo& info, DrawType type, dou
 	//glColor3fv(_color);
 	//glPointSize(100.0f);
 	//glBegin(GL_POINTS);
-    float a = alpha;
+    float a = (float)alpha;
 	// Save and restore the color so that everything doesn't turn red.
     glPushAttrib(GL_CURRENT_BIT);
     {

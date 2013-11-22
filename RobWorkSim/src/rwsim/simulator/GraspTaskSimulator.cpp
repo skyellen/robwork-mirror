@@ -122,7 +122,7 @@ void GraspTaskSimulator::load(const std::string& filename){
     GraspTask::Ptr task;
     try {
         GraspTask::load( filename );
-    } catch (const Exception& exp) {
+    } catch (const Exception&) {
         RW_WARN("Unable to load tasks from file! " << filename);
         return;
     }
@@ -133,9 +133,9 @@ namespace {
 
     std::stack<std::pair<GraspSubTask*, GraspTarget*> > generateTaskList(GraspTask::Ptr graspTasks, int &count){
         std::stack<std::pair<GraspSubTask*, GraspTarget*> > queue;
-        for(int i=graspTasks->getSubTasks().size()-1; i>-1;i--){
+        for(int i=(int)(graspTasks->getSubTasks().size()-1); i>-1;i--){
             GraspSubTask *subtask = &graspTasks->getSubTasks()[i];
-            for(int j=subtask->targets.size()-1; j>-1;j--){
+            for(int j=(int)(subtask->targets.size()-1); j>-1;j--){
                 queue.push( std::make_pair(subtask, &subtask->targets[j] ) );
                 count++;
             }
@@ -163,7 +163,7 @@ void GraspTaskSimulator::load(GraspTask::Ptr graspTasks){
         RW_THROW("No such gripper in dynamic workcell: " << handName);
     _rhand = _dhand.cast<RigidDevice>();
     _hand = _dhand->getKinematicModel();
-    _gripperDim = _hand->getDOF();
+    _gripperDim = (int)_hand->getDOF();
 
     // hbase is the
     _hbase = _dhand->getBase().cast<KinematicBody>();
@@ -511,7 +511,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 BOOST_FOREACH(Contact3D& c, sstate._target->getResult()->contactsLift){
                     contactAvg += c.p;
                 }
-                contactAvg = contactAvg/sstate._target->getResult()->contactsLift.size();
+                contactAvg = contactAvg/((double)sstate._target->getResult()->contactsLift.size());
 
                 Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), sstate._postLiftObjState);
                 Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
@@ -539,7 +539,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 BOOST_FOREACH(Contact3D& c, sstate._target->getResult()->contactsLift){
                     contactAvg += c.p;
                 }
-                contactAvg = contactAvg/sstate._target->getResult()->contactsLift.size();
+                contactAvg = contactAvg/((double)sstate._target->getResult()->contactsLift.size());
 
                 Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), sstate._postLiftObjState);
                 Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
@@ -808,7 +808,7 @@ GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(const rw
     int bestIdx = 0;
     for(size_t i=1;i<result.size();i++){
         if( result[i].contacts.size() > result[bestIdx].contacts.size() )
-            bestIdx = i;
+            bestIdx = (int)i;
     }
     return result[bestIdx];
 }

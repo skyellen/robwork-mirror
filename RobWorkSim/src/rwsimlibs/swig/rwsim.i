@@ -378,12 +378,12 @@ public:
     							  Q selection,
     							  std::string refframe,
     							  Transform3D offset,
-    							  double speed=100,
-    							  double blend=0)
+    							  float speed=100,
+    							  float blend=0)
     	{
     		float arr[6];
     		for(int i=0;i<6;i++)
-    			arr[i] = selection[i];
+    			arr[i] = (float)selection[i];
     		return $self->SerialDeviceController::moveLinFC(target,wtarget,arr,refframe,offset,speed,blend);
     	}
 
