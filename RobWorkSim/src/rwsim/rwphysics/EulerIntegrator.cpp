@@ -36,20 +36,20 @@ void EulerIntegrator::updateVelocity(double h, rw::kinematics::State& state)
     rw::math::Vector3D<> angVel  = _body->getAngVel();
     const rw::math::Vector3D<> &torque = _body->getTorque();
 
-    const InertiaMatrix<> &IBody    = _body->getBodyInertia();
-    const InertiaMatrix<> &IBodyInv = _body->getBodyInertiaInv();
-    const Transform3D<> &pTb = _body->getPTBody();
+    //const InertiaMatrix<> &IBody    = _body->getBodyInertia();
+    //const InertiaMatrix<> &IBodyInv = _body->getBodyInertiaInv();
+    //const Transform3D<> &pTb = _body->getPTBody();
 
     // Calculate the inertia matrix and its inverse
     const InertiaMatrix<> &ITensorInv = _body->getInertiaTensorInv();
-    const InertiaMatrix<> &ITensor = _body->getInertiaTensor();
+    //const InertiaMatrix<> &ITensor = _body->getInertiaTensor();
 
     // we add a bit of dampning to the velocity
     linVel += linAcc*h*0.95;
 
     // calculate the angular acceleration
     // omega = Iinv * (torque - cross(omega,I*omega))
-    rw::math::Vector3D<> tau  = cross( angVel, ITensor*angVel );
+    //rw::math::Vector3D<> tau  = cross( angVel, ITensor*angVel );
     rw::math::Vector3D<> angAcc = ITensorInv * (torque /*- tau*/);
 
     // update the angular velocity

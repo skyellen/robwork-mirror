@@ -134,12 +134,13 @@ void SimulatedFTSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
     _forceTmp = Vector3D<>();
     _torqueTmp = Vector3D<>();
 
-    Vector3D<> wTforce = _wTb.R()*_force;
-    Vector3D<> wTtorque = _wTb.R()*_torque;
+    //Vector3D<> wTforce = _wTb.R()*_force;
+    //Vector3D<> wTtorque = _wTb.R()*_torque;
 
     // testing the output:
-    std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
+    /*std::cout << info.time << "\t" << wTforce[0] << "\t" << wTforce[1] << "\t" << wTforce[2] << "\t"
             << wTtorque[0] << "\t" << wTtorque[1] << "\t" << wTtorque[2] << "\n";
+            */
 
     //std::cout << "Force : " << _wTb.R()*_force << std::endl;
     //std::cout << "Torque: " << _wTb.R()*_force << std::endl;

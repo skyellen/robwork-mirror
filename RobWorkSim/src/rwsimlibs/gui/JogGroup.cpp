@@ -113,9 +113,9 @@ JointLine::JointLine(
 {
 
 
-    QLabel* lowLabel = makeNumericQLabel(low);
+    //QLabel* lowLabel = makeNumericQLabel(low);
     _slider = makeHSlider(_sliderResolutionInt);
-    QLabel* highLabel = makeNumericQLabel(high);
+    //QLabel* highLabel = makeNumericQLabel(high);
     _box = makeDoubleSpinBox(low, high);
 
     //layout->addWidget(lowLabel, row, 0, Qt::AlignRight); // own lowLabel
