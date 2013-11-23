@@ -202,6 +202,17 @@ void FalconInterface::setCenteringMode(bool enable, double forceCoeff, double de
 
 
 
+void FalconInterface::setStickyMode(bool enable, double forceMax, double stickyRadius)
+{
+	boost::mutex::scoped_lock scoped_lock(_mutex);
+
+	_stickyMode = enable;
+	_stickyForceCoeff = forceMax / stickyRadius;
+	_stickyRadius = stickyRadius;
+}
+
+
+
 void FalconInterface::falconLoop()
 {
 	while (_running) {
@@ -228,8 +239,66 @@ void FalconInterface::falconLoop()
 				_force[0] = cForce[0];
 				_force[1] = cForce[1] + gravityForce;
 				_force[2] = cForce[2];
+			} else {
+				_force[0] = 0.0;
+				_force[1] = gravityForce;
+				_force[2] = 0.0;
 			}
 			
+			// compute additional force for the sticky mode
+			if (_stickyMode) {
+				Vector3D<> pos(_position[0], _position[1], _position[2]);
+				
+				Vector3D<> yz(0.0, _position[1], _position[2]);
+				Vector3D<> xz(_position[0], 0.0, _position[2]);
+				Vector3D<> xy(_position[0], _position[1], 0.0);
+				
+				double dist = pos.norm2(); if (dist < 0.001) dist = 0.0;
+				double xdist = yz.norm2(); if (xdist < 0.001) xdist = 0.0;
+				double ydist = xz.norm2(); if (ydist < 0.001) ydist = 0.0;
+				double zdist = xy.norm2(); if (zdist < 0.001) zdist = 0.0;
+				//cout << xy << " " << zdist << endl;
+				
+				// check origin
+				if (dist < _stickyRadius) {
+					Vector3D<> sForce = -_stickyForceCoeff * dist * normalize(pos);
+					//_force[0] += sForce[0];
+					//_force[1] += sForce[1];
+					//_force[2] += sForce[2];
+					_position[0] = 0.0;
+					_position[1] = 0.0;
+					_position[2] = 0.0;
+				}
+				
+				// check x axis
+				else if (xdist < _stickyRadius && std::fabs(_position[0]) > _stickyRadius) {
+					Vector3D<> sForce = -_stickyForceCoeff * xdist * normalize(yz);
+					_force[1] += sForce[1];
+					_force[2] += sForce[2];
+					_position[1] = 0.0;
+					_position[2] = 0.0;
+				}
+				
+				// check y axis
+				else if (ydist < _stickyRadius && std::fabs(_position[1]) > _stickyRadius) {
+					Vector3D<> sForce = -_stickyForceCoeff * ydist * normalize(xz);
+					_force[0] += sForce[0];
+					_force[2] += sForce[2];
+					_position[0] = 0.0;
+					_position[2] = 0.0;
+				}
+				
+				// check z axis
+				else if (zdist < _stickyRadius && std::fabs(_position[2]) > _stickyRadius) {
+					Vector3D<> sForce = -_stickyForceCoeff * zdist * normalize(xy);
+					_force[0] += sForce[0];
+					_force[1] += sForce[1];
+					_position[0] = 0.0;
+					_position[1] = 0.0;
+				}
+			}
+			
+			//cout << _force[0] << ", " << _force[1] << endl;
 			_falcon->setForce(_force);
 		}
 		

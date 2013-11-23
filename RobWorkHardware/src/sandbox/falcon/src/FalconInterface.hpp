@@ -89,6 +89,19 @@ class FalconInterface
 		 */
 		virtual void setCenteringMode(bool enable, double forceCoeff=100.0, double deadRadius=0.0);
 		
+		/**
+		 * @brief Sets stick-to-axes mode
+		 * 
+		 * When moving the handle out of the resting position, it tries to make it stick to
+		 * device axes.
+		 * It can be enabled together with centering mode.
+		 * 
+		 * @param enable [in] set @a true to enable sticky mode
+		 * @param forceCoeff [in] proportionality coefficient for the stickying force
+		 * @param stickRadius [in] radius from the axis where the stickying force applies
+		 */
+		virtual void setStickyMode(bool enable, double forceMax=2.0, double stickyRadius=0.0075);
+		
 	protected: // methods
 		/**
 		 * @brief Initializes the Falcon interface
@@ -114,10 +127,15 @@ class FalconInterface
 		unsigned int _buttonState; // state of the grip buttons
 		boost::array<double, 3> _force; // current Falcon force
 		
-		bool _centeringMode;
 		rw::math::Vector3D<> _centerPosition;
+		
+		bool _centeringMode;
 		double _centeringForceCoeff;
 		double _centeringDeadZoneRadius;
+		
+		bool _stickyMode;
+		double _stickyForceCoeff;
+		double _stickyRadius;
 };
 
 } // end namespace

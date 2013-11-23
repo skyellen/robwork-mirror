@@ -37,7 +37,10 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		//static const double viewVel = 5.0;
 		
 		/// Modes of teleoperation
-		enum FalconMode { WorldMode, ToolMode, ViewMode, RotationMode };
+		enum FalconMode { WorldMode, ToolMode };
+		
+		/// Modes of keyboard
+		enum InterfaceMode { ViewMode, RotationMode };
 	
 	public: // constructors
 		/// Constructor
@@ -94,7 +97,12 @@ class FalconPlugin: public rws::RobWorkStudioPlugin, private Ui::FalconPlugin
 		rwsim::control::SerialDeviceController::Ptr _robotController;
 		rwsim::control::PDController::Ptr _gripperController;
 		std::vector<rwsim::dynamics::Body::Ptr> _bodies; // bodies in the scene
+		
 		FalconMode _mode; // mode of teleoperation
+		InterfaceMode _wsad; // mode for WSAD keys
+		bool _stickyMode;
+		bool _moveJoints;
+		
 		bool _recordingEnabled;
 		SimulationTrajectory::Ptr _trajectory; // recording of the simulation
 		std::string _trajectoryFilename;
