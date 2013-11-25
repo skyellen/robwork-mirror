@@ -500,6 +500,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	    } catch ( ... ) {
 	        std::cout << "ERROR";
 	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
+	        RW_THROW("ODESimulator caught exception.");
 	    }
 
 	    // if the solution is bad then we need to reduce timestep
