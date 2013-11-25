@@ -133,7 +133,7 @@ Body::Ptr DynamicWorkCell::getBody(rw::kinematics::Frame *f){
 }
 
 void DynamicWorkCell::addBody(Body::Ptr body){
-    RW_WARN("BUMBUM");
+    //RW_WARN("BUMBUM");
     std::cout << "register in workcell" << std::endl;
 
     body->registerIn( _workcell->getStateStructure() );

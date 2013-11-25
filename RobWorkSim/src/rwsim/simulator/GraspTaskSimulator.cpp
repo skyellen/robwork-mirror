@@ -894,7 +894,7 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
 
     sstate._target = _currentTarget;
 
-    if(sstate._task!= _currentTask){
+    if(sstate._task!= _currentTask) {
         sstate._task = _currentTask;
 
         std::string refframename = _currentTask->getRefFrame();
