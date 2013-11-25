@@ -236,6 +236,9 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
 				if (n == &node) continue;
 				
+				// this is where a node gets removed
+				//cout << "REMOVING NODE " << nRemoved << endl;
+				
 				if (n->value->testStatus != GraspTask::Filtered) ++removed;
 				const_cast<NNSearch::KDNode*>(n)->value->testStatus = GraspTask::Filtered; // this is a hack
 			}
@@ -455,7 +458,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     
     cout << " - filtering samples... ";
     _samples = filterTasks(_samples, diff);
-    int nfsamples = countTasks(_samples, GraspTask::Success);
+    int nfsamples = countTasks(_samples, GraspTask::UnInitialized);
     cout << nfsamples << " out of " << nsamples << endl;
     
     //cout << "Number of UNIN tasks went from " << unin1;

@@ -61,6 +61,8 @@ int main(int argc, char* argv[])
 	string gripperFilename;
 	string outFilename;
 	
+	bool nosim = false;
+	
 	// program options
 	string usage = "This is a script used to generate tasks for a single gripper, simulate them and"
 		" evaluate gripper's performance.\n\n"
@@ -74,6 +76,7 @@ int main(int argc, char* argv[])
 		("td", value<string>(&tdFilename)->required(), "task description file")
 		("gripper,g", value<string>(&gripperFilename)->required(), "gripper file")
 		("out,o", value<string>(), "task file")
+		("nosim", "don't perform simulation")
 	;
 	variables_map vm;
 	try {
@@ -84,6 +87,10 @@ int main(int argc, char* argv[])
 			cout << usage << endl;
 			cout << desc << endl;
 			return 0;
+		}
+		
+		if (vm.count("nosim")) {
+			nosim = true;
 		}
 	} catch (...) {
 		cout << usage << endl;
@@ -125,11 +132,13 @@ int main(int argc, char* argv[])
 	cout << "Samples: " << samples->getSubTasks()[0].getTargets().size() << endl;
 	
 	/* perform simulation */
-	cout << "Starting simulation..." << endl;
-	GripperTaskSimulator::Ptr sim = new GripperTaskSimulator(gripper, tasks, samples, td);
-	sim->startSimulation(td->getInitState());
-	
-	while (sim->isRunning()) {}
+	if (!nosim) {
+		cout << "Starting simulation..." << endl;
+		GripperTaskSimulator::Ptr sim = new GripperTaskSimulator(gripper, tasks, samples, td);
+		sim->startSimulation(td->getInitState());
+		
+		while (sim->isRunning()) {}
+	}
 	
 	/* save results */
 	GripperXMLLoader::save(gripper, gripperFilename);

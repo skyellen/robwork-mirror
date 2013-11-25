@@ -129,7 +129,7 @@ double GripperTaskSimulator::calculateCoverage()
 	okTargets += TaskGenerator::countTasks(_gtask, GraspTask::Interference);
 	//DEBUG << " + interference= " << okTargets << endl;
 	DEBUG << "Filtering samples..." << endl;
-	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::Success);
+	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::UnInitialized);
 	
 	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getAllTargets().size() << endl;
 	DEBUG << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
@@ -230,6 +230,9 @@ void GripperTaskSimulator::evaluateGripper()
 	 * - success ratio calculation
 	 * - wrench space measurement
 	 * - coverage calculation
+	 * 
+	 * AT THIS POINT I'M NOT EVEN SURE WHY & HOW THIS WORKS:
+	 * 
 	 */
 	TaskDescription::Qualities& b = _td->getBaseline();
 	TaskDescription::Qualities& w = _td->getWeights();
@@ -238,7 +241,7 @@ void GripperTaskSimulator::evaluateGripper()
 	
 	/* success ratio */
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
-	int samples = TaskGenerator::countTasks(_samples, GraspTask::Success); //_samples->getSubTasks()[0].getTargets().size();
+	int samples = TaskGenerator::countTasks(_samples, GraspTask::UnInitialized); //_samples->getSubTasks()[0].getTargets().size();
 	
 	// number of grasps actually tried is the number of tasks minus the number of filtered tasks (w/ TimeOut status)
 	double filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
