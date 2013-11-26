@@ -21,16 +21,16 @@
 #include <rw/math/LinearAlgebra.hpp>
 
 #include <Eigen/Sparse>
+
+
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
 #include <Eigen/SparseCholesky>
+#endif
 
 using namespace rw::trajectory;
 
 using namespace rw::math;
 using namespace rw::common;
-
-
-
-
 
 
 InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeNaturalSpline(QPath::Ptr qpath, double timeStep)
@@ -105,9 +105,12 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
     //D[N] = 2*H[N-1];
 	A.insert((int)N, (int)N) = 2*H[N-1];
 
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
-
+#elif
+	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
+#endif
 
     for (size_t j=0; j<(size_t)dim; j++) {
         for (size_t i=0; i<(size_t)N+1; i++) {
@@ -120,7 +123,9 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
         }
         B[N] = (T)(-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
-		B = solver.solve(B);
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+        B = solver.solve(B);
+#endif
 
         for (size_t i=0; i<(size_t)N+1; i++) {
             a[i*dim+j] = Y[i];
@@ -225,8 +230,13 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     //D[N] = 2*H[N-1];
 	A.insert((int)N, (int)N) = 2*H[N-1];
 
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
+#elif
+	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
+#endif
+
 
     for (size_t j=0; j<(size_t)dim; j++) {
         for (size_t i=0; i<(size_t)N+1; i++) {
@@ -240,8 +250,9 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
         }
         B[N] = (T)(3.0*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
-
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
 		B = solver.solve(B);
+#endif
         // solution will be available in B
         //if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
         //    RW_THROW("Errorsolving tridiagonal system!");
