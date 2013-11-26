@@ -68,6 +68,33 @@ BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_CHECK_CLOSE(xe180_3.angle() , e180_3.angle(),1e-16);
     BOOST_CHECK_EQUAL(norm_inf(xe180_3.axis() - e180_3.axis()),0);
 
+    BOOST_MESSAGE("-- Testing different sign combinations for 180 degree rotations");
+    double val1 = 0.3;
+    double val2 = 0.4;
+    double val3 = 0.5;
+    for (int sign1 = -1; sign1 <= 1; sign1++) {
+        for (int sign2 = -1; sign2 <= 1; sign2++) {
+            for (int sign3 = -1; sign3 <= 1; sign3++) {
+                if (sign1 == 0 && sign2 == 0 && sign3 == 0)
+                	continue; // the zero case is not tested here
+            	Vector3D<> axisInput(sign1*val1, sign2*val2, sign3*val3);
+                BOOST_MESSAGE("--- Sign combination: " << axisInput);
+            	axisInput = normalize(axisInput);
+                EAA<> e180(axisInput*Pi);
+                BOOST_CHECK_CLOSE(e180.angle(), Pi, 1e-13);
+                Vector3D<> e180axis = e180.axis();
+                BOOST_CHECK_SMALL(norm_inf(e180axis - axisInput), 1e-15);
+                EAA<> xe180(e180.toRotation3D());
+                BOOST_CHECK_CLOSE(xe180.angle() , e180.angle(),1e-13);
+                Vector3D<> xe180axis = xe180.axis();
+                // vector can point both ways and still be valid
+                if ((xe180axis - e180axis).norm2() > (-xe180axis - e180axis).norm2())
+                	xe180axis = -xe180axis;
+                BOOST_CHECK_SMALL(norm_inf(xe180axis - e180axis),1e-15);
+            }
+        }
+    }
+
     // 90 degree's around x axis
     Vector3D<> v1(1.0, 0.0, 0.0);
     EAA<> e1(v1, Pi / 2.0);

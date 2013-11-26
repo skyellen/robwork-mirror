@@ -30,8 +30,7 @@ namespace
     {
         typedef Vector3D<T> V;
 
-		const T eps1 = static_cast<T>(1e-6);
-        const T eps2 = static_cast<T>(1e-12);
+		const T eps = static_cast<T>(1e-6);
 
         T cos_theta = (T)0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
 
@@ -41,51 +40,50 @@ namespace
 
         // ... because otherwise this often yields NaN:
         const T angle = acos(cos_theta);
-
-
         const V axis(R(2, 1) - R(1, 2),
 					 R(0, 2) - R(2, 0),
 					 R(1, 0) - R(0, 1));
 
-
-
-		if (fabs(angle) < eps1) {   // Is angle close to 0 degree
-			if (fabs(angle) < eps2) { //If the angle is very close to 0 we assume it is 0.
-				return Vector3D<T>(0,0,0);	
-			} 
+		if (fabs(angle) < eps) {   // Is angle close to 0 degree
 			return 0.5 * axis;
 		}
 
-		
-		if (fabs(angle - Pi) < eps1) { // Is the angle close to 180 degree
-			if (fabs(angle - Pi) < eps2) { //If the angle is very close to 180 we need to assume it is 180
-				return (T)Pi * V(
-					sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
-					sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
-					sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
+		if (fabs(angle - Pi) < eps) { // Is the angle close to 180 degree
+			V magnitude(
+					(T)Pi * sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
+					(T)Pi * sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
+					(T)Pi * sqrt((T)0.5 * (R(2, 2) + (T)1.0))
+			);
+			// Determine signs
+			std::size_t maxInd = 0;
+			if (magnitude[1] > magnitude[0]) maxInd = 1;
+			if (magnitude[2] > magnitude[1]) maxInd = 2;
+			if (maxInd == 0) {
+				T v1v2 = R(0,1)+R(1,0);
+				T v1v3 = R(0,2)+R(2,0);
+				if (v1v2 < 0.)
+					magnitude[1] = -magnitude[1];
+				if (v1v3 < 0.)
+					magnitude[2] = -magnitude[2];
+			} else if (maxInd == 1) {
+				T v1v2 = R(0,1)+R(1,0);
+				T v2v3 = R(1,2)+R(2,1);
+				if (v1v2 < 0.)
+					magnitude[0] = -magnitude[0];
+				if (v2v3 < 0.)
+					magnitude[2] = -magnitude[2];
+			} else if (maxInd == 2) {
+				T v1v3 = R(0,2)+R(2,0);
+				T v2v3 = R(1,2)+R(2,1);
+				if (v1v3 < 0.)
+					magnitude[0] = -magnitude[0];
+				if (v2v3 < 0.)
+					magnitude[1] = -magnitude[1];
 			}
-
-			T len = axis.norm2();
-			return axis * ((T)Pi/(len*(1+len)) );
+			return magnitude;
 		} 
 
-
-
 		return normalize(axis)*angle;
-	
-       /* const V dir(
-            R(2, 1) - R(1, 2),
-            R(0, 2) - R(2, 0),
-            R(1, 0) - R(0, 1));
-
-        // For small, but non-zero angles so that angle ~= sin(angle) we have:
-        //   angle / (2.0 * sin(angle)) ~= 0.5
-        // Is this an optimization for speed or precision?
-        if (fabs(angle) < 0.0001)
-            return 0.5 * dir;
-        else
-            return (angle / (2 * sin(angle))) * dir;
-			*/
     }
 }
 
