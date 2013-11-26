@@ -693,7 +693,11 @@ DOMElem::Ptr DOMBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, 
 }
 
 DOMElem::Ptr DOMBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, DOMElem::Ptr doc) {
-    return createElement(VelocityScrew6DId, createStringFromArray(v, 6), doc);
+    DOMElem::Ptr element = doc->addChild(VelocityScrew6DId);
+    createElement(PosId, createStringFromArray(v.linear()), element);
+    createEAA(v.angular(), element);
+	return element;
+	//return createElement(VelocityScrew6DId, createStringFromArray(v, 6), doc);
 }
 
 DOMElem::Ptr DOMBasisTypes::createIntList(const std::vector<int>& ints, DOMElem::Ptr doc){
