@@ -108,7 +108,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
-#elif
+#else
 	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
 #endif
 
@@ -233,7 +233,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
-#elif
+#else
 	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
 #endif
 
