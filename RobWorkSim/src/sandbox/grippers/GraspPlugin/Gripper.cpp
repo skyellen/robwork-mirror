@@ -17,7 +17,7 @@ Gripper::Gripper(const std::string& name) :
 	_baseGeometry(NULL),
 	_leftGeometry(NULL),
 	_rightGeometry(NULL),
-	_tcp(Transform3D<>(Vector3D<>(0, 0, 0.05))),
+	_tcp(Transform3D<>(Vector3D<>(0, 0, 0.075))),
 	_jawdist(0),
 	_opening(0.05),
 	_force(50)

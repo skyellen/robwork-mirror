@@ -123,7 +123,7 @@ void DesignDialog::_createGUI()
 	QLabel* cutRadiusLabel = new QLabel("Cut radius");
 	_cutRadiusEdit = new QLineEdit("0");
 	QLabel* tcpPosLabel = new QLabel("TCP off.");
-	_tcpPosEdit = new QLineEdit("0.05");
+	_tcpPosEdit = new QLineEdit("0.075");
 	QLabel* forceLabel = new QLabel("Force");
 	_forceEdit = new QLineEdit("50");
 	QLabel* jawdistLabel = new QLabel("Jaw dist.");

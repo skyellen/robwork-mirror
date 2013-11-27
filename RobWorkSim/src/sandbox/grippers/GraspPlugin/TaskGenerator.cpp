@@ -421,7 +421,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 			//cout << "collision" << endl;
 			GraspTarget gtarget(target);
             gtarget.result = ownedPtr(new GraspResult());
-            gtarget.result->testStatus = GraspTask::Success;
+            gtarget.result->testStatus = GraspTask::UnInitialized;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
             //subtask.addTarget(gtarget); //

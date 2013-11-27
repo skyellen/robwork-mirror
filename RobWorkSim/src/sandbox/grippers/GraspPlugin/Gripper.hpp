@@ -111,7 +111,7 @@ struct GripperQuality
  * - force: 50 N
  * - opening: 0.05
  * - jawdist: 0
- * - TCP offset: 0.05 from base
+ * - TCP offset: 0.075 from base
  */
 class Gripper // : public TreeDevice
 {
