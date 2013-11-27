@@ -25,6 +25,7 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::proximity;
+using namespace rw::trajectory;
 using namespace rwlibs::task;
 using namespace rwlibs::proximitystrategies;
 using namespace rwsim::dynamics;
@@ -112,6 +113,8 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
         _homeState = initState;
     }
 
+    _timedStatePaths.clear();
+
     _initialized = true;
 }
 
@@ -152,6 +155,7 @@ void GraspTaskSimulator::load(GraspTask::Ptr graspTasks){
     while(!_taskQueue.empty())
         _taskQueue.pop();
     _gtask = graspTasks;
+    _timedStatePaths.clear();
     int nrOfTargets = 0;
     _taskQueue = generateTaskList( _gtask, nrOfTargets );
     _totalNrOfExperiments = nrOfTargets;
@@ -312,6 +316,13 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
     sstate._state = state;
 
     Q currentQ = _hand->getQ(state);
+
+    if (_storeTimedStatePaths) {
+    	std::map<GraspTarget*, TimedStatePath> &targetPaths = _timedStatePaths[sstate._task];
+    	TimedStatePath &targetPath = targetPaths[sstate._target];
+    	TimedState timedState(sim->getTime(),state);
+    	targetPath.push_back(timedState);
+    }
 
     if(sstate._wallTimer.getTime()>_wallTimeLimit && sim->getTime()>_simTimeLimit){ //seconds
         _timeout++;

@@ -5,6 +5,7 @@
 
 #include <rw/rw.hpp>
 #include <rw/common/LogFileWriter.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
@@ -17,6 +18,7 @@
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
+using namespace rw::loaders;
 using namespace rwlibs::task;
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
@@ -35,6 +37,7 @@ int main(int argc, char** argv)
         ("help", "produce help message")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
+        ("playbackprefix", value<string>()->default_value(""), "set to store a playback file for each target (subtasks and grasps are distinguished by ID in task file).")
         ("dwc,d", value<string>()->default_value(""), "The dynamic workcell.")
         ("object", value<string>()->default_value(""), "if gentask enabled then object need be defined.")
         ("gripper", value<string>()->default_value(""), "if gentask enabled then gripper need be defined.")
@@ -197,6 +200,8 @@ int main(int argc, char** argv)
     int totaltargets = 0;
     std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
 
+    std::string playbackprefix = vm["playbackprefix"].as<std::string>();
+
     BOOST_FOREACH(std::string ifile, infiles){
         std::cout << "loading: " << path(ifile).filename() << " ";
 
@@ -228,6 +233,10 @@ int main(int argc, char** argv)
             }
         }
 
+        if (playbackprefix != "") {
+        	graspSim->setStoreTimedStatePaths(true);
+        }
+
         graspSim->load(grasptask);
         graspSim->startSimulation(initState);
         TimerUtil::sleepMs(2000);
@@ -252,6 +261,24 @@ int main(int argc, char** argv)
             GraspTask::saveText(grasptask, sstr.str() );
         }
 
+        if (playbackprefix != "") {
+        	std::map<GraspSubTask*,std::map<GraspTarget*,TimedStatePath> > timedStatePaths = graspSim->getTimedStatePaths();
+        	BOOST_FOREACH(GraspSubTask &task, grasptask->getSubTasks()) {
+        		if (timedStatePaths.find(&task) != timedStatePaths.end()) {
+        			std::map<GraspTarget*,TimedStatePath> &targetPath = timedStatePaths[&task];
+        			std::size_t i = 0;
+        			BOOST_FOREACH(GraspTarget &target, task.getTargets()) {
+                		if (targetPath.find(&target) != targetPath.end()) {
+                			TimedStatePath &path = targetPath[&target];
+                			std::stringstream sstr;
+                			sstr << playbackprefix << ifile << task.getTaskID() << "_" << i << ".rwplay";
+                			PathLoader::storeTimedStatePath(*dwc->getWorkcell(),path,sstr.str());
+                		}
+                		i++;
+        			}
+        		}
+        	}
+        }
 
     }
     std::cout << "Done" << std::endl;

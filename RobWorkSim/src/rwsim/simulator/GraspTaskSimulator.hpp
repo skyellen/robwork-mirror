@@ -145,6 +145,25 @@ public:
 	 */
 	void setSimTimeLimit(double limit) { _simTimeLimit = limit; }
 
+	/**
+	 * @brief Enable storing the simulations as TimedStatePaths.
+	 * @param enabled [in] whether or not a TimeStatePath should be stored for each grasp simulation.
+	 */
+	void setStoreTimedStatePaths(bool enabled) { _storeTimedStatePaths = enabled; }
+
+	/**
+	 * @brief Get the current map of stored TimedStatePaths.
+	 *
+	 * Note that setStoreTimedStatePaths must be set to enabled before running the simulation or
+	 * the map will be empty.
+	 * Please call this function only after simulation is finished.
+	 *
+	 * @return a map of maps to a TimedStatePath (indexed by GraspSubTask pointer and a GraspTarget pointer).
+	 */
+	std::map<rwlibs::task::GraspSubTask*, std::map<rwlibs::task::GraspTarget*,rw::trajectory::TimedStatePath> > getTimedStatePaths() const {
+		return _timedStatePaths;
+	}
+
 	// events
 
 	struct GraspedObject {
@@ -273,6 +292,9 @@ protected:
 	
 	double _wallTimeLimit;
 	double _simTimeLimit;
+
+	bool _storeTimedStatePaths;
+	std::map<rwlibs::task::GraspSubTask*, std::map<rwlibs::task::GraspTarget*,rw::trajectory::TimedStatePath> > _timedStatePaths;
 };
 
 }
