@@ -169,6 +169,27 @@ struct GraspResult {
 
 	/// Constructor
     GraspResult() : testStatus(GraspTask::UnInitialized), liftresult(0.0){}
+    
+    /// Copy constructor
+    GraspResult(const GraspResult& gresult) :
+		testStatus(gresult.testStatus),
+		liftresult(gresult.liftresult),
+		gripperConfigurationGrasp(gresult.gripperConfigurationGrasp),
+		gripperConfigurationLift(gresult.gripperConfigurationLift),
+		qualityBeforeLifting(gresult.qualityBeforeLifting),
+		qualityAfterLifting(gresult.qualityAfterLifting),
+		objectTtcpTarget(gresult.objectTtcpTarget),
+		objectTtcpApproach(gresult.objectTtcpApproach),
+		objectTtcpGrasp(gresult.objectTtcpGrasp),
+		objectTtcpLift(gresult.objectTtcpLift),
+		gripperTobjects(gresult.gripperTobjects),
+		contactsGrasp(gresult.contactsGrasp),
+		contactsLift(gresult.contactsLift),
+		interferenceDistances(gresult.interferenceDistances),
+		interferenceAngles(gresult.interferenceAngles),
+		interferences(gresult.interferences),
+		interference(gresult.interference)
+	{}
 
 	/* data */
     int testStatus;
@@ -226,7 +247,7 @@ class GraspTarget
 		/// Copy constructor
 		GraspTarget(const GraspTarget& target) {
 			pose = target.pose;
-			if(result==NULL)
+			if(target.result == NULL)
 				result = rw::common::ownedPtr(new GraspResult());
 			else
 				result = rw::common::ownedPtr(new GraspResult(*target.result));
