@@ -75,10 +75,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
 
 
     Vector B(N+1); // make room for boundary conditions
-	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
-	
-    //Vector D(N+1),DTmp(N+1); // the diagonal
-    //Vector E(N,1),ETmp(N); // the left/right to the diagonal
+
     Vector Y(N+1); // the points that the spline should intersect
 
     Vector a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
@@ -91,6 +88,10 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
 		H[i] = (float)(times[i+1] - times[i]);
     }
 
+
+
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
     //D[0] = 2*H[0];
 	A.insert(0,0) = 2*H[0];
 	A.insert(0,1) = H[0];
@@ -105,12 +106,28 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
     //D[N] = 2*H[N-1];
 	A.insert((int)N, (int)N) = 2*H[N-1];
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
+
+
 #else
-	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
+	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> A = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero((int)N+1, (int)N+1);	
+	A(0,0) = 2*H[0];
+	A(0,1) = H[0];
+	A(1,0) = H[0];
+    for (size_t i=1; i<N; i++) {
+		//D[i] = 2*(H[i-1]+H[i]);
+		int ei = (int) i;
+		A(ei,ei) = 2*(H[i-1]+H[i]); 
+		A(ei,ei+1) = H[i];
+		A(ei+1,ei) = H[i];
+    }
+    //D[N] = 2*H[N-1];
+	A((int)N, (int)N) = 2*H[N-1];
+	Eigen::LLT<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > solver;
+	solver.compute(A);
 #endif
+
 
     for (size_t j=0; j<(size_t)dim; j++) {
         for (size_t i=0; i<(size_t)N+1; i++) {
@@ -123,9 +140,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
         }
         B[N] = (T)(-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
         B = solver.solve(B);
-#endif
 
         for (size_t i=0; i<(size_t)N+1; i++) {
             a[i*dim+j] = Y[i];
@@ -203,24 +218,22 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     size_t N = qpath.size()-1; // we have N+1 points, which yields N splines
 
     Vector B(N+1); // make room for boundary conditions
-    //ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
-    //ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
-	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
     Vector Y(N+1); // the points that the spline should intersect
     Vector a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
     Vector H(N); // duration from point i to i+1
 
     for (size_t i=0; i<N; i++) {
-        //T timeI0 = (T)((*tqpath)[i]).getTime();
-        //T timeI1 = (T)((*tqpath)[i+1]).getTime();
         H[i] = (float)(times[i+1]-times[i]);
     }
+
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	Eigen::SparseMatrix<T> A((int)N+1, (int)N+1);
 
     //D[0] = 2*H[0];
 	A.insert(0,0) = 2*H[0];
 	A.insert(0,1) = H[0];
 	A.insert(1,0) = H[0];
-    for (size_t i=1; i<N; i++) {
+    for (size_t i=1; i<N; i++) { 
         //D[i] = 2*(H[i-1]+H[i]);
 		int ei = (int) i;
 		A.insert(ei,ei) = 2*(H[i-1]+H[i]);
@@ -230,11 +243,28 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     //D[N] = 2*H[N-1];
 	A.insert((int)N, (int)N) = 2*H[N-1];
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::SimplicialLLT<Eigen::SparseMatrix<T> > solver;
 	solver.compute(A);
 #else
-	RW_THROW("CubicSplineFactory cannot be used with Eigen version less than 3.1.0");
+	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> A = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero((int)N+1, (int)N+1);	
+
+    //D[0] = 2*H[0];
+	A(0,0) = 2*H[0];
+	A(0,1) = H[0];
+	A(1,0) = H[0];
+    for (size_t i=1; i<N; i++) {
+        //D[i] = 2*(H[i-1]+H[i]);
+		int ei = (int) i;
+		A(ei,ei) = 2*(H[i-1]+H[i]);
+		A(ei+1,ei) = H[i];
+		A(ei,ei+1) = H[i];
+    }
+    //D[N] = 2*H[N-1];
+	A((int)N, (int)N) = 2*H[N-1];
+
+	Eigen::LLT<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > solver;
+	solver.compute(A);
+
 #endif
 
 
@@ -250,9 +280,8 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
         }
         B[N] = (T)(3.0*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
+
 		B = solver.solve(B);
-#endif
         // solution will be available in B
         //if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
         //    RW_THROW("Errorsolving tridiagonal system!");
