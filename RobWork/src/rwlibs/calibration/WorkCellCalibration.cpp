@@ -21,6 +21,7 @@ using namespace rwlibs::calibration;
 
 
 WorkCellCalibration::WorkCellCalibration(SerialDevice::Ptr device,
+										 Frame* markerFrame,
 										 const std::vector<Frame*>& sensorFrames,
 										 const std::vector<Function<>::Ptr>& encoderCorrectionFunctions) 
 										 //:	_device(device)
@@ -37,7 +38,7 @@ WorkCellCalibration::WorkCellCalibration(SerialDevice::Ptr device,
 	}
 	//_movingFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(movingFrame, true));
 
-	FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getEnd()).cast<rw::kinematics::FixedFrame>()));
+	FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(markerFrame).cast<rw::kinematics::FixedFrame>()));
 	_fixedFrameCalibrations->addCalibration(endCalibration);
 	//_endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(device->getEnd(), false));
 	

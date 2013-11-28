@@ -18,26 +18,29 @@ MESSAGE("CALIBRATION SET FILES")
 		xml/XmlCalibrationLoader.cpp
         xml/XmlCalibrationSaver.cpp
         xml/XmlMeasurementFile.cpp
+		xml/XMLCalibrationMeasurementFile.cpp
 		JacobianBase.cpp
 		Calibration.cpp
 		CalibrationBase.cpp
 		CalibrationParameter.cpp
 		CalibrationParameterSet.cpp
-		DHLinkCalibration.cpp
-		DHLinkJacobian.cpp
+		#DHLinkCalibration.cpp
+		#DHLinkJacobian.cpp
 		JointEncoderCalibration.cpp
 		JointEncoderJacobian.cpp 
 		FixedFrameCalibration.cpp
 		FixedFrameJacobian.cpp
-		SerialDeviceCalibration.cpp
-		SerialDeviceCalibrator.cpp
-		SerialDeviceJacobian.cpp
+		#SerialDeviceCalibration.cpp
+		#SerialDeviceCalibrator.cpp
+		#SerialDeviceJacobian.cpp
 		SerialDevicePoseMeasurement.cpp
 		WorkCellCalibration.cpp
 		WorkCellCalibrator.cpp
 		WorkCellJacobian.cpp
 		ParallelAxisDHCalibration.cpp
 		ParallelAxisDHJacobian.cpp
+		CalibrationMeasurement.cpp
+		
 	)
     
 	SET(SRC_FILES_HPP
@@ -47,7 +50,8 @@ MESSAGE("CALIBRATION SET FILES")
 		nlls/NLLSSystem.hpp
 		xml/XmlCalibrationLoader.hpp
         xml/XmlCalibrationSaver.hpp
-        xml/XmlMeasurementFile.hpp
+        #xml/XmlMeasurementFile.hpp
+		xml/XMLCalibrationMeasurementFile.hpp
 		JacobianBase.hpp
 		Calibration.hpp
 		CalibrationBase.hpp
@@ -55,24 +59,25 @@ MESSAGE("CALIBRATION SET FILES")
 		CalibrationParameterSet.hpp
 		CompositeCalibration.hpp
 		CompositeJacobian.hpp
-		DHLinkCalibration.hpp
-		DHLinkJacobian.hpp
+		#DHLinkCalibration.hpp
+		#DHLinkJacobian.hpp
 		EigenTransformPlugin.hpp
 		FixedFrameCalibration.hpp
 		FixedFrameJacobian.hpp
 		Jacobian.hpp
 		JointEncoderCalibration.hpp
 		JointEncoderJacobian.hpp
-		SerialDeviceCalibration.hpp
-		SerialDeviceCalibrator.hpp
-		SerialDeviceJacobian.hpp
+		#SerialDeviceCalibration.hpp
+		#SerialDeviceCalibrator.hpp
+		#SerialDeviceJacobian.hpp
 		SerialDevicePoseMeasurement.hpp
 		WorkCellCalibration.hpp
 		WorkCellCalibrator.hpp
 		WorkCellJacobian.hpp
 		ParallelAxisDHCalibration.hpp
 		ParallelAxisDHJacobian.hpp
-
+		CalibrationMeasurement.hpp
+		
 	)
     
 	RW_ADD_LIBRARY( ${SUBSYS_NAME} calibration ${SRC_FILES} ${SRC_FILES_HPP} )

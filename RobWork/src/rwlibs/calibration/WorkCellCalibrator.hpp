@@ -14,7 +14,7 @@
 #include "nlls/NLLSSolver.hpp"
 #include "Calibration.hpp"
 #include "Jacobian.hpp"
-#include "SerialDevicePoseMeasurement.hpp"
+#include "CalibrationMeasurement.hpp"
 #include <Eigen/Geometry>
 #include <rw/models.hpp>
 
@@ -44,7 +44,7 @@ public:
 
 	int getMeasurementCount() const;
 
-	void addMeasurement(const SerialDevicePoseMeasurement& measurement);
+	void addMeasurement(CalibrationMeasurement::Ptr measurement);
 
 	void addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform,
 			const Eigen::Matrix<double, 6, 6>& covarianceMatrix =
@@ -55,7 +55,8 @@ public:
 			addMeasurement(q,transform,covarianceMatrix);
 	}
 
-	void setMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements);
+	void setMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements);
+
 
 	bool isWeightingMeasurements() const;
 
@@ -69,7 +70,7 @@ private:
 	rw::models::WorkCell::Ptr _workcell;
 	//rw::kinematics::Frame::Ptr _referenceFrame;
 	//rw::kinematics::Frame::Ptr _measurementFrame;
-	std::vector<SerialDevicePoseMeasurement> _measurements;
+	std::vector<CalibrationMeasurement::Ptr> _measurements;
 	Calibration::Ptr _calibration;
 	Jacobian::Ptr _jacobian;
 	bool _isWeightingMeasurements;

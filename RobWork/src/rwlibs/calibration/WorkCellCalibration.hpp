@@ -24,6 +24,7 @@ public:
 	typedef rw::common::Ptr<WorkCellCalibration> Ptr;
 
 	WorkCellCalibration(rw::models::SerialDevice::Ptr device,
+			rw::kinematics::Frame* markerFrame,
 			const std::vector<rw::kinematics::Frame*>& sensorFrames,
 			const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
 

@@ -1,10 +1,3 @@
-/*
-* WorkCellCalibrator.cpp
-*
-*  Created on: Feb 27, 2012
-*      Author: bing
-*/
-
 #include "WorkCellCalibrator.hpp"
 
 #include "nlls/NLLSNewtonSolver.hpp"
@@ -25,7 +18,7 @@ namespace rwlibs {
 		public:
 			typedef rw::common::Ptr<WorkCellCalibrationSystem> Ptr;
 
-			WorkCellCalibrationSystem(rw::models::WorkCell::Ptr workcell, rw::kinematics::State workCellState, const std::vector<SerialDevicePoseMeasurement>& measurements, Calibration::Ptr calibration, Jacobian::Ptr jacobian, bool isWeightingMeasurements) : 
+			WorkCellCalibrationSystem(rw::models::WorkCell::Ptr workcell, rw::kinematics::State workCellState, const std::vector<CalibrationMeasurement::Ptr>& measurements, Calibration::Ptr calibration, Jacobian::Ptr jacobian, bool isWeightingMeasurements) : 
 				_workcell(workcell), 
 				_workCellState(workCellState), /*
 				_referenceFrame(referenceFrame), 
@@ -44,30 +37,30 @@ namespace rwlibs {
 
 		private:
 
-			Device::Ptr getDevice(const SerialDevicePoseMeasurement& measurement) {
-				Device::Ptr device = _workcell->findDevice(measurement.getDeviceName());
+			Device::Ptr getDevice(CalibrationMeasurement::Ptr measurement) {
+				Device::Ptr device = _workcell->findDevice(measurement->getDeviceName());
 				if (device.isNull())
-					RW_THROW("No device in work cell which matches the name: '"<<measurement.getDeviceName());
+					RW_THROW("No device in work cell which matches the name: '"<<measurement->getDeviceName());
 				return device;
 			}
 
-			Frame* getSensorFrame(const SerialDevicePoseMeasurement& measurement) {
-				Frame* frame = _workcell->findFrame(measurement.getSensorFrameName());
+			Frame* getSensorFrame(CalibrationMeasurement::Ptr measurement) {
+				Frame* frame = _workcell->findFrame(measurement->getSensorFrameName());
 				if (frame == NULL)
-					RW_THROW("No frame in work cell which matches the name: '"<<measurement.getSensorFrameName());
+					RW_THROW("No frame in work cell which matches the name: '"<<measurement->getSensorFrameName());
 				return frame;
 			}
 
-			Frame* getMarkerFrame(const SerialDevicePoseMeasurement& measurement) {
-				Frame* frame = _workcell->findFrame(measurement.getMarkerFrameName());
+			Frame* getMarkerFrame(CalibrationMeasurement::Ptr measurement) {
+				Frame* frame = _workcell->findFrame(measurement->getMarkerFrameName());
 				if (frame == NULL)
-					RW_THROW("No frame in work cell which matches the name: '"<<measurement.getMarkerFrameName());
+					RW_THROW("No frame in work cell which matches the name: '"<<measurement->getMarkerFrameName());
 				return frame;
 			}
 
 
 			virtual void computeJacobian(Eigen::MatrixXd& stackedJacobians) {
-				const int measurementCount = (int)_measurements.size();
+				const int measurementCount = _measurements.size();
 				const int rowCount = 6 * measurementCount;
 				const int columnCount = _jacobian->getColumnCount();
 				RW_ASSERT(columnCount > 0);
@@ -76,13 +69,13 @@ namespace rwlibs {
 				stackedJacobians.resize(rowCount, columnCount);
 				rw::kinematics::State workCellState = _workCellState;
 				for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-					const SerialDevicePoseMeasurement measurement = _measurements[measurementIndex];
+					const CalibrationMeasurement::Ptr measurement = _measurements[measurementIndex];
 
 					Device::Ptr device = getDevice(measurement);
 					Frame* sensorFrame = getSensorFrame(measurement);
 					Frame* markerFrame = getMarkerFrame(measurement);
 					// Update state according to current measurement.
-					const rw::math::Q q = measurement.getQ();
+					const rw::math::Q q = measurement->getQ();
 					device->setQ(q, workCellState);
 
 					// Compute Jacobian.
@@ -90,9 +83,9 @@ namespace rwlibs {
 					stackedJacobians.block(rowIndex, 0, 6, columnCount) = _jacobian->computeJacobian(sensorFrame, markerFrame, workCellState);
 
 					// Weight Jacobian according to covariances.
-					if (_isWeightingMeasurements && measurement.hasCovarianceMatrix()) {
+					if (_isWeightingMeasurements && measurement->hasCovarianceMatrix()) {
 						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(
-							measurement.getCovarianceMatrix()).operatorInverseSqrt();
+							measurement->getCovarianceMatrix()).operatorInverseSqrt();
 						stackedJacobians.block(rowIndex, 0, 6, columnCount) = weightMatrix
 							* stackedJacobians.block(rowIndex, 0, 6, columnCount);
 					}
@@ -101,25 +94,25 @@ namespace rwlibs {
 			}
 
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
-				const int measurementCount = (int)_measurements.size();
+				const int measurementCount = _measurements.size();
 
-				//const int rowCount = 6 * measurementCount;
+				const int rowCount = 6 * measurementCount;
 				stackedResiduals.resize(6 * measurementCount);
 				rw::kinematics::State workCellState = _workCellState;
-				for (unsigned int measurementIndex = 0; measurementIndex < (unsigned int) measurementCount; measurementIndex++) {
-					const SerialDevicePoseMeasurement measurement = _measurements[measurementIndex];
+				for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
+					const CalibrationMeasurement::Ptr measurement = _measurements[measurementIndex];
 
 					Device::Ptr device = getDevice(measurement);
 					Frame* sensorFrame = getSensorFrame(measurement);
 					Frame* markerFrame = getMarkerFrame(measurement);
 
 					// Update state according to current measurement.
-					const rw::math::Q q = measurement.getQ();
+					const rw::math::Q q = measurement->getQ();
 					device->setQ(q, workCellState);
 
 					// Compute residuals.
 					const int rowIndex = 6 * measurementIndex;
-					const rw::math::Transform3D<> tfmMeasurement = measurement.getTransform();
+					const rw::math::Transform3D<> tfmMeasurement = measurement->getTransform();
 					//std::cout<<"Measurement = "<<tfmMeasurement<<std::endl;
 					//std::cout<<"Error Reference Frame = "<<_referenceFrame->getName()<<std::endl;
 					const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(sensorFrame, markerFrame, workCellState);
@@ -141,9 +134,9 @@ namespace rwlibs {
 					stackedResiduals(rowIndex + 5) = (dR(1, 0) - dR(0, 1)) / 2;
 
 					// Weight residuals according to covariances.
-					if (_isWeightingMeasurements && measurement.hasCovarianceMatrix()) {
+					if (_isWeightingMeasurements && measurement->hasCovarianceMatrix()) {
 						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(
-							measurement.getCovarianceMatrix()).operatorInverseSqrt();
+							measurement->getCovarianceMatrix()).operatorInverseSqrt();
 						stackedResiduals.segment<6>(rowIndex) = weightMatrix * stackedResiduals.segment<6>(rowIndex);
 					}
 				}
@@ -165,7 +158,7 @@ namespace rwlibs {
 			rw::kinematics::State _workCellState;
 			//rw::kinematics::Frame::Ptr _referenceFrame;
 			//rw::kinematics::Frame::Ptr _measurementFrame;
-			std::vector<SerialDevicePoseMeasurement> _measurements;
+			std::vector<CalibrationMeasurement::Ptr> _measurements;
 			Calibration::Ptr _calibration;
 			Jacobian::Ptr _jacobian;
 			bool _isWeightingMeasurements;
@@ -202,22 +195,22 @@ namespace rwlibs {
 		}*/
 
 		unsigned int WorkCellCalibrator::getMinimumMeasurementCount() const {
-			return (unsigned int) ceil(float(_jacobian->getColumnCount()) / 6);
+			return ceil(float(_jacobian->getColumnCount()) / 6);
 		}
 
 		int WorkCellCalibrator::getMeasurementCount() const {
-			return (int)_measurements.size();
+			return _measurements.size();
 		}
 
-		void WorkCellCalibrator::addMeasurement(const SerialDevicePoseMeasurement& measurement) {
+		void WorkCellCalibrator::addMeasurement(CalibrationMeasurement::Ptr measurement) {
 			_measurements.push_back(measurement);
 		}
 
 		void WorkCellCalibrator::addMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::Matrix<double, 6, 6>& covarianceMatrix) {
-			_measurements.push_back(SerialDevicePoseMeasurement(q, transform, covarianceMatrix));
+			_measurements.push_back(rw::common::ownedPtr(new CalibrationMeasurement(q, transform, covarianceMatrix)));
 		}
 
-		void WorkCellCalibrator::setMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements) {
+		void WorkCellCalibrator::setMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements) {
 			_measurements = measurements;
 		}
 
