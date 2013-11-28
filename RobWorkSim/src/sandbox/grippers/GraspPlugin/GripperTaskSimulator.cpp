@@ -128,7 +128,7 @@ double GripperTaskSimulator::calculateCoverage()
 	int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
 	//int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
 	//DEBUG << "Successful tasks: " << okTargets;
-	okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
+	//okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
 	//DEBUG << " + interference= " << okTargets << endl;
 	DEBUG << "Filtering samples..." << endl;
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::UnInitialized);
