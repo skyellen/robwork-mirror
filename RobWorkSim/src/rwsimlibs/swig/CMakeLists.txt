@@ -68,6 +68,9 @@ IF( SWIG_FOUND )
         		COMMAND cmake -E echo "Copying Java source..."
                 COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LoaderRWSim.java java_src/dk/robwork/LoaderRWSim.java
                 COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/ThreadSimulatorStepCallbackHandler.java java_src/dk/robwork/ThreadSimulatorStepCallbackHandler.java
+                COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/ThreadSimulatorStepEvent.java java_src/dk/robwork/ThreadSimulatorStepEvent.java
+                COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/ThreadSimulatorStepEventListener.java java_src/dk/robwork/ThreadSimulatorStepEventListener.java
+                COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/ThreadSimulatorStepEventDispatcher.java java_src/dk/robwork/ThreadSimulatorStepEventDispatcher.java
         		COMMAND cmake -E echo "Compiling Java files..."
                 COMMAND cmake -E make_directory java_build/dk/robwork
                 COMMAND ${Java_JAVAC_EXECUTABLE} -cp ${RW_LIBS}/rw_java.jar -d ${CMAKE_CURRENT_BINARY_DIR}/java_build java_src/dk/robwork/*.java
