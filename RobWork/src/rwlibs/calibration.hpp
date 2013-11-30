@@ -14,6 +14,7 @@
 #include "./calibration/xml/XmlCalibrationLoader.hpp"
 #include "./calibration/xml/XmlCalibrationSaver.hpp"
 #include "./calibration/xml/XmlMeasurementFile.hpp"
+#include "./calibration/xml/XMLCalibrationMeasurementFile.hpp"
 #include "./calibration/Calibration.hpp"
 #include "./calibration/CalibrationBase.hpp"
 #include "./calibration/CalibrationParameter.hpp"
