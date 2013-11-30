@@ -62,6 +62,7 @@ namespace common {
 		             rw::common::Ptr< boost::property_tree::ptree > root):
 			_name(key),
 			_node(ptree),
+			_parent(parent),
 			_root(root)
 		{};
 
