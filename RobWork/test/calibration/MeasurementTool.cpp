@@ -2,6 +2,7 @@
 #include <rw/loaders.hpp>
 #include <rwlibs/calibration.hpp>
 
+using namespace rw::kinematics;
 using namespace rwlibs::calibration;
 
 boost::program_options::options_description optionsDescription("Options");
@@ -18,10 +19,11 @@ bool addNoise;
 
 int parseArguments(int argumentCount, char** arguments);
 void printHelp();
-std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice,
+std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice,
 	rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount,
 	bool addNoise);
-void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, SerialDeviceCalibration::Ptr serialDeviceCalibration);
+
+void printMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, WorkCellCalibration::Ptr workCellCalibration);
 
 class EncoderTauFunction: public rw::math::Function<> {
 	public: virtual double x(double q) { return -sin(q); };
@@ -44,7 +46,7 @@ int main(int argumentCount, char** arguments) {
 	rw::models::WorkCell::Ptr workCell = rw::loaders::XMLRWLoader::load(workCellFilePath);
 	if (workCell.isNull()) {
 		std::cout << "FAILED." << std::endl;
-		return -1;
+		return -1; 
 	}
 	std::cout << "Loaded [ " << workCell->getName() << " ]." << std::endl;
 	rw::kinematics::State state = workCell->getDefaultState();
@@ -63,6 +65,8 @@ int main(int argumentCount, char** arguments) {
 	std::cout << "\tFinding reference frame [ " << referenceFrameName << " ].. ";
 	std::cout.flush();
 	rw::kinematics::Frame::Ptr referenceFrame = referenceFrameName.empty() ? workCell->findFrame("WORLD") : workCell->findFrame(referenceFrameName);
+	std::vector<Frame*> sensorFrames;
+	sensorFrames.push_back(referenceFrame.get());
 	if (referenceFrame.isNull()) {
 		std::cout << "FAILED." << std::endl;
 		return -1;
@@ -82,28 +86,34 @@ int main(int argumentCount, char** arguments) {
 	std::cout.flush();
 	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1;
 	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-	encoderCorrectionFunctions.push_back( rw::common::ownedPtr( new EncoderTauFunction() ) );
-
+	encoderCorrectionFunctions.push_back( rw::common::ownedPtr( new EncoderTauFunction()));
 	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
-	SerialDeviceCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new SerialDeviceCalibration(serialDevice, encoderCorrectionFunctions)));
-	artificialCalibration->getBaseCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(7.0 / 100.0, -8.0 / 100.0, 9.0 / 100.0), rw::math::RPY<>(1.9 * rw::math::Deg2Rad, -1.8 * rw::math::Deg2Rad, 1.7 * rw::math::Deg2Rad)));
-	artificialCalibration->getEndCalibration()->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 100.0, 2.0 / 100.0, -3.0 / 100.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
-	CompositeCalibration<DHLinkCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
+	 
+
+	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, measurementFrame.get(), sensorFrames, encoderCorrectionFunctions)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0), 
+																														  rw::math::RPY<>(1.7 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad, -2.0 * rw::math::Deg2Rad)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0), 
+																														  rw::math::RPY<>(1 * rw::math::Deg2Rad, 1.3 * rw::math::Deg2Rad, -1.4 * rw::math::Deg2Rad)));
+	//artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(3.0 / 1000.0, -11.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(1.3 * rw::math::Deg2Rad, -1.2 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad)));
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(2)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 1000.0, 2.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
+
+	CompositeCalibration<ParallelAxisDHCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
 	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
-		DHLinkCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
+		ParallelAxisDHCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
-		if (parameterSet(DHLinkCalibration::PARAMETER_A).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_A) = 0.3 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_B).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_B) = -0.2 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_D).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_D) = -0.1 / 100.0;
-		if (parameterSet(DHLinkCalibration::PARAMETER_ALPHA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad;
-		if (parameterSet(DHLinkCalibration::PARAMETER_BETA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
-		if (parameterSet(DHLinkCalibration::PARAMETER_THETA).isEnabled())
-			parameterSet(DHLinkCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_A).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_A) = 0.3 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_B).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_B) = -0.2 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_D) = -0.1 / 100.0;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled())
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
@@ -124,7 +134,7 @@ int main(int argumentCount, char** arguments) {
 	std::cout << " Applied." << std::endl;
 
 	std::cout << "Generating measurements [ Count: " << measurementCount << " - Noise: " << (addNoise ? "Enabled" : "Disabled") << " ]..";
-	std::vector<SerialDevicePoseMeasurement> measurements = generateMeasurements(serialDevice, referenceFrame, measurementFrame,
+	std::vector<CalibrationMeasurement::Ptr> measurements = generateMeasurements(serialDevice, referenceFrame, measurementFrame,
 		state, measurementCount, addNoise);
 	std::cout << " Generated." << std::endl;
 
@@ -136,7 +146,7 @@ int main(int argumentCount, char** arguments) {
 
 	std::cout << "Saving measurement file [ " << measurementFilePath << " ]..";
 	std::cout.flush();
-	XmlMeasurementFile::save(measurements, measurementFilePath);
+	XMLCalibrationMeasurementFile<>::save(measurements, measurementFilePath);
 	std::cout << " Saved." << std::endl;
 
 	std::cout << "Residual summary:" << std::endl;
@@ -144,7 +154,7 @@ int main(int argumentCount, char** arguments) {
 
 	return 0;
 }
-
+ 
 int parseArguments(int argumentCount, char** arguments) {
 	optionsDescription.add_options()("help", "Print help message")("workCellFile", boost::program_options::value<std::string>(&workCellFilePath)->required(),
 		"Set the work cell file path")("measurementFile", boost::program_options::value<std::string>(&measurementFilePath)->required(), "Set the measurement file path")("device",
@@ -182,13 +192,13 @@ void printHelp() {
 	std::cerr << std::endl;
 	std::cerr << optionsDescription << std::endl;
 }
-
-std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice,
+ 
+std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice,
 	rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, rw::kinematics::State state, unsigned int measurementCount,
 	bool addNoise) {
 		MultivariateNormalDistribution<double, 6> mvnd((unsigned int)time(0));
 
-		std::vector<SerialDevicePoseMeasurement> measurements;
+		std::vector<CalibrationMeasurement::Ptr> measurements;
 		for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
 			rw::math::Q q = rw::math::Math::ranQ(serialDevice->getBounds());
 			serialDevice->setQ(q, state);
@@ -209,31 +219,27 @@ std::vector<SerialDevicePoseMeasurement> generateMeasurements(rw::models::Serial
 				transform.R() = rw::math::RPY<>(mvndVector(3), mvndVector(4), mvndVector(5)).toRotation3D() * transform.R();
 			}
 
-			measurements.push_back(SerialDevicePoseMeasurement(q, transform,
-			                                                   covariance,
-			                                                   serialDevice->getName(),
-			                                                   referenceFrame->getName(),
-			                                                   measurementFrame->getName()));
+			measurements.push_back(rw::common::ownedPtr(new CalibrationMeasurement(q, transform, covariance)));
 		}
 
 		return measurements;
 }
 
-void printMeasurements(const std::vector<SerialDevicePoseMeasurement>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, SerialDeviceCalibration::Ptr serialDeviceCalibration) {
+void printMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::WorkCell::Ptr workCell, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, WorkCellCalibration::Ptr workCellCalibration) {
 	const unsigned int measurementCount = (unsigned int)measurements.size();
 
 	Eigen::VectorXd distances(measurementCount), angles(measurementCount);
 	Eigen::VectorXd calibratedDistances(measurementCount), calibratedAngles(measurementCount);
 	rw::kinematics::State state = workCell->getDefaultState();
 	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-		serialDevice->setQ(measurements[measurementIndex].getQ(), state);
+		serialDevice->setQ(measurements[measurementIndex]->getQ(), state);
 
-		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex].getTransform();
+		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex]->getTransform();
 		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-		serialDeviceCalibration->apply();
+		workCellCalibration->apply();
 		const rw::math::Transform3D<> tfmCalibratedModel =
 			rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-		serialDeviceCalibration->revert();
+		workCellCalibration->revert();
 		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
 		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
 
