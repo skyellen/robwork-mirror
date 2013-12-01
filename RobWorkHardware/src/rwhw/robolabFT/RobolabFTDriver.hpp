@@ -41,20 +41,20 @@ typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
     	~RobolabFT();
     	RobolabFTData read();
     	bool write();
-    	bool connect(const std::string& port, SerialPort::Baudrate baudrate);
-    	bool init(const std::string& port, SerialPort::Baudrate baudrate);
+
+    	bool init(const std::string& port, SerialPort::Baudrate baudrate, int sensors);
     	void run();
     	void stop();
     private:
 
     	bool updateData();
-
+       	bool connect(const std::string& port, SerialPort::Baudrate baudrate);
     	SerialPort _serialPort;
 		char _dataIn[];
-		char _dataOut[];
+
 		bool _isRunning;
 		Wrench3D _data;
-
+		char _dataOut[];
     	// Thread function
     	void runReceive();
     	double _timestamp;

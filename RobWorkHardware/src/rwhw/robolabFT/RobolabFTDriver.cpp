@@ -16,11 +16,10 @@ using namespace rw::common;
 using namespace rwhw;
 
 RobolabFT::RobolabFT(){
-	_dataIn[90];
-	_dataOut[90];
+
 	//char testchar[] = "test";
 	_isRunning =false;
-	_sensors=1;
+
 }
 RobolabFT::~RobolabFT(){
 	_serialPort.close();
@@ -28,11 +27,17 @@ RobolabFT::~RobolabFT(){
 	delete _dataOut;
 
 }
-bool RobolabFT::init(const std::string& port, SerialPort::Baudrate baudrate){
-	 connect(port,baudrate);
-	 _receiveThread = boost::thread(&RobolabFT::runReceive, this);
-	 _stopThread=false;
-	 return true;
+bool RobolabFT::init(const std::string& port, SerialPort::Baudrate baudrate, int sensors){
+	 if(connect(port,baudrate)){
+			_dataIn[7*sensors+1];
+			_dataOut[7*sensors+1];
+			_sensors=sensors;
+		 _receiveThread = boost::thread(&RobolabFT::runReceive, this);
+		 _stopThread=false;
+
+		 return true;
+	 }
+	 else return false;
 }
 bool RobolabFT::connect(const std::string& port, SerialPort::Baudrate baudrate){
 	if (_serialPort.open(port, baudrate)) {
@@ -54,6 +59,7 @@ RobolabFT::RobolabFTData RobolabFT::read(){
 	boost::unique_lock<boost::mutex> lock(_mutex);
 	tmpData.timestamp= _timestamp;
 	std::string str(_dataOut);
+	//std::cout<<"str: "<<str<<"_dataOut is :"<<_dataOut<<std::endl;
 	int lenght = str.find("\n");
 	//if(lenght>0){
 		str=str.substr(0,lenght);
@@ -82,9 +88,8 @@ RobolabFT::RobolabFTData RobolabFT::read(){
 			}
 		}
 	//}
-
-	//std::cout<<"foces: "<<tmpData.first<<std::endl;
-	//std::cout<<"tourques: "<<tmpData.second<<std::endl;
+	//	boost::unique_lock<boost::mutex> unlock(_mutex);
+	std::cout<<"foces: "<<tmpData.data.first<<"tourques: "<<tmpData.data.second<<std::endl;
 	return tmpData;
 }
 bool RobolabFT::updateData(){
@@ -104,7 +109,7 @@ void RobolabFT::run(){
 	do{
 
 		read();
-		sleep(.1);
+		sleep(1);
 	}while(_isRunning);
 
 }
@@ -134,18 +139,19 @@ void RobolabFT::stop(){
 //thread function
 void RobolabFT::runReceive(){
 	 std::cout<<"starting receive thread" << std::endl;
-	 const unsigned int timeout = 400;
+	 const unsigned int timeout = 200;
 	 bool readOK=false;
 	try{
-		int n=_sensors*6 + 1;
+		int n=_sensors*7 + 1;
 		_threadRunning = true;
 	    //unsigned char data[70];
 		 while(!_stopThread) {
 
 			 while(_dataIn[0]!='\n'){ //Find star of the tranfer
-				 readOK =_serialPort.read((char*)_dataIn, 1,timeout,2);
+				 readOK =_serialPort.read((char*)_dataIn, 1,timeout,1);
+
 			 }
-			 readOK =_serialPort.read((char*)_dataIn, n,timeout,2);
+			 readOK =_serialPort.read((char*)_dataIn, n,timeout,1);
 			 if(readOK){
 
 				 boost::unique_lock<boost::mutex> lock(_mutex);
@@ -155,8 +161,8 @@ void RobolabFT::runReceive(){
 					 _dataOut[i]=_dataIn[i];
 					// std::cout<<_dataOut[i];
 				 }
-				 std::cout<< "out is now :"<<_dataOut<<std::endl;
-				 //std::cout<<"_dataOut"<< n <<": "<< _dataOut << std::endl;
+				 //boost::unique_lock<boost::mutex> unlock(_mutex);
+				 //std::cout<< "Out is now :"<<_dataOut<<std::endl;
 			 }
 		}
 	}
