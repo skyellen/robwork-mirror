@@ -229,7 +229,7 @@ int main(int argumentCount, char** argumentArray) {
 	}
 
 	if (optionParser.getJointFileName() != "") {
-		std::ofstream outfile(optionParser.getJointFileName());
+		std::ofstream outfile(optionParser.getJointFileName().c_str());
 		outfile<<"{";
 		BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, measurements) {
 			outfile<<"{";
