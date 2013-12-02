@@ -57,6 +57,7 @@ struct GripperQuality
 		coverage(0.0),
 		success(0.0),
 		wrench(0.0),
+		topwrench(0.0),
 		quality(0.0)
 	{}
 	
@@ -71,6 +72,7 @@ struct GripperQuality
 				<< "- coverage= " << q.coverage << '\n'
 				<< "- success= " << q.success << '\n'
 				<< "- wrench= " << q.wrench << '\n'
+				<< "- topwrench= " << q.topwrench << '\n'
 				<< "- quality= " << q.quality << std::endl;
 				
 		return stream;
@@ -86,6 +88,7 @@ struct GripperQuality
 	double coverage; /// Ratio of filtered succesful grasps to filtered all samples.
 	double success; /// Ratio of succesful grasps to all generated grasps.
 	double wrench; /// Average wrench of succesful grasps.
+	double topwrench; /// Average quality of top 10% of grasps.
 	double quality; /// Ultimate measurement of gripper quality.
 };
 

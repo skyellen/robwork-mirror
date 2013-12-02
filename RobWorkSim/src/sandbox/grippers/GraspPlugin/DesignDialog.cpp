@@ -159,6 +159,9 @@ void DesignDialog::_createGUI()
 	QLabel* wrenchLabel = new QLabel("Wrench");
 	_wrenchEdit = new QLineEdit("0");
 	_wrenchEdit->setDisabled(true);
+	QLabel* topwrenchLabel = new QLabel("Top wrench");
+	_topwrenchEdit = new QLineEdit("0");
+	_topwrenchEdit->setDisabled(true);
 	QLabel* qualityLabel = new QLabel("QUALITY");
 	_qualityEdit = new QLineEdit("0");
 	
@@ -346,6 +349,7 @@ void DesignDialog::_updateGUI()
 		_coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
 		_successEdit->setText(QString::number(_gripper->getQuality()->success));
 		_wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));
+		_topwrenchEdit->setText(QString::number(_gripper->getQuality()->topwrench));
 		_qualityEdit->setText(QString::number(_gripper->getQuality()->quality));
 		
 		// update general parameters area

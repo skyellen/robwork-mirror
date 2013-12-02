@@ -1,6 +1,7 @@
 #include "GripperTaskSimulator.hpp"
 
 #include <rw/math/MetricFactory.hpp>
+#include <algorithm>
 #include "TaskGenerator.hpp"
 
 #define DEBUG cout
@@ -128,7 +129,7 @@ double GripperTaskSimulator::calculateCoverage()
 	int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
 	//int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
 	//DEBUG << "Successful tasks: " << okTargets;
-	//okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
+	okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
 	//DEBUG << " + interference= " << okTargets << endl;
 	DEBUG << "Filtering samples..." << endl;
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::UnInitialized);
@@ -142,29 +143,53 @@ double GripperTaskSimulator::calculateCoverage()
 
 
 
+bool sortf(double a, double b) { return (a>b); }
+
+
+
 rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 {
 	/* this only takes into account succesful grasps */
+	vector<double> wrenches; // used to find the top 10%
+	Q wrench(3, 0, 0, 0);
 	
-	Q wrench(2, 0, 0);
-	
-	int success = 0;
+	int successes = 0;
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	//DEBUG << "WRENCHES!" << endl;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
 		//DEBUG << "??? " << p.second->getResult()->testStatus << endl;
-		if (p.second->getResult()->testStatus == GraspTask::Success) {
-			success++;
+		if (p.second->getResult()->testStatus == GraspTask::Success || p.second->getResult()->testStatus == GraspTask::Interference) {
+			successes++;
 			
 			Q result = p.second->getResult()->qualityAfterLifting;
 			//DEBUG << result << endl;
 			
 			wrench(0) += result(0);
 			wrench(1) += result(1);
+			
+			wrenches.push_back(result(0));
 		}
 	}
 	
-	return wrench / success;
+	// find top 10%
+	sort(wrenches.begin(), wrenches.end(), sortf);
+	
+	int num = 0.1*successes < 1 ? 1 : 0.1*successes;
+	
+	if (wrenches.size() > 0) {
+		for (int i = 0; i < num; ++i) {
+			wrench(2) += wrenches[i];
+			
+			//cout << wrench(2) << endl;
+		}
+	}
+	
+	// calculate averages
+	wrench(0) /= successes;
+	wrench(1) /= successes;
+	wrench(2) /= num;
+	
+	return wrench;
 }
 
 
@@ -256,6 +281,7 @@ void GripperTaskSimulator::evaluateGripper()
 	/* wrench */
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(0) / b.wrench;
+	double topwrench = wrenchMeasurement(2) / b.wrench;
 	
 	/* coverage */
 	double coverage = calculateCoverage() / b.coverage;
@@ -276,6 +302,7 @@ void GripperTaskSimulator::evaluateGripper()
 	q->coverage = coverage;
 	q->success = successRatio;
 	q->wrench = wrench;
+	q->topwrench = topwrench;
 	q->quality = quality;
 	
 	DEBUG << *q << endl;

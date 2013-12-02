@@ -74,6 +74,7 @@ class DesignDialog : public QDialog
 		QLineEdit* _coverageEdit;
 		QLineEdit* _successEdit;
 		QLineEdit* _wrenchEdit;
+		QLineEdit* _topwrenchEdit;
 		QLineEdit* _qualityEdit;
 		
 		QPushButton* _okButton;
