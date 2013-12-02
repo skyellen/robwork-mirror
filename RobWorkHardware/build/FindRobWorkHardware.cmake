@@ -150,6 +150,7 @@ RWHW_ADD_INTERNAL_LIBRARY("rwhw_can")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_universalrobots")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_netft")
 RWHW_ADD_INTERNAL_LIBRARY("rwhw_trakstar")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_robolabFT")
 
 
 IF( rwhw_trakstar_FOUND )
