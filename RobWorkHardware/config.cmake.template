@@ -22,7 +22,7 @@ SET(COMPONENT_swissranger_ENABLE OFF)
 SET(COMPONENT_tactile_ENABLE OFF)
 SET(COMPONENT_trakstar_ENABLE OFF)
 SET(COMPONENT_universalrobots_ENABLE ON)
-
+SET(COMPONENT_robolabFT_ENABLE ON)
 
 # we need the location of RobWork
 SET(RW_ROOT ${ROOT}/../RobWork/)
