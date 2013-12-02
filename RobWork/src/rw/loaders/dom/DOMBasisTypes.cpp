@@ -337,9 +337,9 @@ VelocityScrew6D<> DOMBasisTypes::readVelocityScrew6D(DOMElem::Ptr element, bool 
     Vector3D<> linear(0, 0, 0);
     EAA<> angular(0, 0, 0);
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName( LinearId)) {
+		if (child->isName( PosId)) {
 			linear = readVector3D(child, false);
-		} else if (child->isName( AngularId)) {
+		} else if (child->isName( EAAId)) {
 			angular = readEAA(element, false);
 		} else {
 			RW_THROW("Unknown element \""<<child->getName()<<"\" specified in VelocityScrew6D");
