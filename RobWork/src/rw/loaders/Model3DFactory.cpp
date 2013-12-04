@@ -18,6 +18,8 @@
 #include <fstream>
 #include <cctype>
 
+#include <RobWorkConfig.hpp>
+
 #include "Model3DFactory.hpp"
 
 #include <rw/math/Constants.hpp>
