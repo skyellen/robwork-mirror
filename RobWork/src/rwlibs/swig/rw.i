@@ -751,7 +751,7 @@ public:
     double normInf();
 
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Q>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
@@ -783,7 +783,7 @@ public:
     %rename(elem) operator[];
 
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Vector2D>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
@@ -822,7 +822,7 @@ public:
     //%rename(elem) operator[];
     
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Vector3D>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
@@ -864,7 +864,7 @@ public:
     // std::string __tostring() const;
     
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Rotation3D>(*$self); }
         double __getitem__(int x,int y)const {return (*$self)(x,y); }
         void __setitem__(int x,int y,double d){ (*$self)(x,y) = d; }
@@ -911,7 +911,7 @@ public:
     //bool operator==(const EAA &rhs) const;
     // std::string __tostring() const;
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<EAA>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
@@ -940,7 +940,7 @@ public:
     Rotation3D toRotation3D() const;
     
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<RPY>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
@@ -974,9 +974,8 @@ public:
     double getQw() const;
 
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Quaternion>(*$self); }
-        std::string __tostring() { return toString<Quaternion>(*$self); }
         double __getitem__(int i)const {return (*$self)(i); }
         void __setitem__(int i,double d){ (*$self)(i) = d; }
 #elif defined(SWIGJAVA)
@@ -1011,7 +1010,7 @@ public:
        //Transform3D inverse(const Transform3D& val);
     };
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Transform3D>(*$self); }
 #elif defined(SWIGJAVA)
         std::string toString() const { return toString<Transform3D>(*$self); }
@@ -1042,7 +1041,7 @@ public:
 
     Transform3D toTransform3D();
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Pose6D>(*$self); }
 #elif defined(SWIGJAVA)
         std::string toString() const { return toString<Pose6D>(*$self); }
@@ -1058,7 +1057,7 @@ public:
     int size1() const ;
     int size2() const ;
 
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
     double& elem(int i, int j);
 
     %extend {
@@ -1101,15 +1100,7 @@ public:
     double normInf();
 
     %extend {
-        char *__str__() {
-             static char tmp[256];
-             sprintf(tmp,"%s", toString(*$self).c_str());
-             return tmp;
-        }
-    };
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<VelocityScrew6D>(*$self); }
         double __getitem__(std::size_t i)const {return (*$self)[i]; }
         void __setitem__(std::size_t i,double d){ (*$self)[i] = d; }
@@ -1140,7 +1131,7 @@ public:
     const Vector3D torque() const;
 
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Wrench6D>(*$self); }
         double __getitem__(std::size_t i)const {return (*$self)[i]; }
         void __setitem__(std::size_t i,double d){ (*$self)[i] = d; }
@@ -1199,7 +1190,7 @@ public:
 #endif
 
     %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON)
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<InertiaMatrix>(*$self); }
         double __getitem__(std::size_t row, std::size_t column)const {return (*$self)(row,column); }
         void __setitem__(std::size_t row, std::size_t column, double d){ (*$self)(row,column) = d; }
