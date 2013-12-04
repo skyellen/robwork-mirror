@@ -158,7 +158,7 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 	//DEBUG << "WRENCHES!" << endl;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
 		//DEBUG << "??? " << p.second->getResult()->testStatus << endl;
-		if (p.second->getResult()->testStatus == GraspTask::Success || p.second->getResult()->testStatus == GraspTask::Interference) {
+		if (p.second->getResult()->testStatus == GraspTask::Success) {// || p.second->getResult()->testStatus == GraspTask::Interference) {
 			successes++;
 			
 			Q result = p.second->getResult()->qualityAfterLifting;
@@ -167,7 +167,7 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 			wrench(0) += result(0);
 			wrench(1) += result(1);
 			
-			wrenches.push_back(result(0));
+			wrenches.push_back(result(1));
 		}
 	}
 	
@@ -185,6 +185,7 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 	}
 	
 	// calculate averages
+	if (successes == 0) successes = 1;
 	wrench(0) /= successes;
 	wrench(1) /= successes;
 	wrench(2) /= num;
@@ -268,19 +269,33 @@ void GripperTaskSimulator::evaluateGripper()
 	
 	/* success ratio */
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
+	int interferences = TaskGenerator::countTasks(_gtask, GraspTask::Interference);
+	int slippages = TaskGenerator::countTasks(_gtask, GraspTask::ObjectSlipped);
+	int failures = TaskGenerator::countTasks(_gtask, GraspTask::SimulationFailure);
+	
 	int samples = TaskGenerator::countTasks(_samples, GraspTask::UnInitialized); //_samples->getSubTasks()[0].getTargets().size();
 	
 	// number of grasps actually tried is the number of tasks minus the number of filtered tasks (w/ Filtered status)
-	double filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
+	// //and those with collision initially (ObjectCollisionInitially) - which shouldn't appear here...
+	int filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
+	//int colinits = TaskGenerator::countTasks(_gtask, GraspTask::CollisionObjectInitially);
+	int actual = getNrTargets() - filtered;// - colinits;
 	
-	cout << "Actual number of tasks simulated is " << getNrTargets() - filtered << " out of " << getNrTargets()
+	DEBUG << "* Actual number of tasks simulated is " << actual << " out of " << getNrTargets()
 		<< " targets." << endl;
+	DEBUG << "* Outcomes (success/interference/slip/fail): " << successes << "/" << interferences
+		<< "/" << slippages << "/" << failures << endl;
+		
+	/*typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
+		DEBUG << GraspTask::toString((GraspTask::TestStatus)p.second->getResult()->testStatus) << endl;
+	}*/
 	
-	double successRatio = (1.0 * successes / (getNrTargets() - filtered)) / b.success;
+	double successRatio = (1.0 * successes / actual) / b.success;
 	
 	/* wrench */
 	Q wrenchMeasurement = calculateWrenchMeasurement();
-	double wrench = wrenchMeasurement(0) / b.wrench;
+	double wrench = wrenchMeasurement(1) / b.wrench;
 	double topwrench = wrenchMeasurement(2) / b.wrench;
 	
 	/* coverage */
