@@ -1480,9 +1480,14 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
 using namespace rw::proximity;
 
 void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& state) {
-    if(_logContactingBodies){
-        _contactingBodies.clear();
-    }
+    /*if(_logContactingBodies){
+        //_contactingBodies.clear();
+    }*/
+    
+    //_contactPointsTmp.clear();
+    //_contactPoints.clear();
+    _contactingBodiesTmp.clear();
+    
 	std::vector<rwsim::contacts::Contact> contacts = _detector->findContacts(state);
     size_t numc = contacts.size();
     /*BOOST_FOREACH(rwsim::contacts::Contact &c, contacts) {
@@ -1538,7 +1543,9 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
 		ContactPoint &point = _rwcontacts[ni];
 
         if(_logContactingBodies){
-            _contactingBodies[std::make_pair( contact.getFrameA()->getName(),  contact.getFrameB()->getName())].push_back( point );
+            _contactingBodiesTmp[std::make_pair( contact.getFrameA()->getName(), contact.getFrameB()->getName())] = true; //.push_back( point );
+            //_contactPointsTmp.push_back(boost::make_tuple(contact.getFrameA()->getName(),
+			//	contact.getFrameB()->getName(),	point));
         }
 
 		point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );
@@ -1589,9 +1596,10 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
 
 		ni++;
 	}
-    if(_logContactingBodies){
-        _contactingBodiesTmp = _contactingBodies;
-    }
+    //if(_logContactingBodies){
+        _contactingBodies = _contactingBodiesTmp;
+        //_contactPoints = _contactPointsTmp;
+    //}
 
 }
 
@@ -1601,6 +1609,10 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
     ProximityFilter::Ptr filter = _bpstrategy->update(state);
     FKTable fk(state);
     ProximityStrategyData data;
+    
+    if (!onlyTestPenetration){
+		_contactingBodiesTmp.clear();
+	}
 
     // next we query the BP filter for framepairs that are possibly in collision
     while( !filter->isEmpty() ){
@@ -1640,45 +1652,11 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             continue;
         }
 
-
-        /*
-        if(a_geom == b_geom)
-            continue;
-
-        ODEBody *a_data;
-        if( a_body==NULL ) {
-            if(a_geom==NULL){
-                continue;
-            }
-            a_data = (ODEBody*) dGeomGetData(a_geom);
-        } else {
-            a_data = (ODEBody*) dBodyGetData(a_body);
-        }
-        RW_DEBUGS("- get data2")
-        ODEBody *b_data;
-        if( b_body==NULL ) {
-            if(b_geom==NULL)
-                continue;
-            b_data = (ODEBody*) dGeomGetData(b_geom);
-        } else {
-            b_data = (ODEBody*) dBodyGetData(b_body);
-        }
-        */
-
         if(a_data  == b_data)
             continue;
 
-        //const Transform3D<> aT = fk.get(*pair.first);
-        //const Transform3D<> bT = fk.get(*pair.second);
-
-        //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
-        //const Transform3D<> aT = ODEUtil::getODEGeomT3D(a_geom);
-        //const Transform3D<> bT = ODEUtil::getODEGeomT3D(b_geom);
         Transform3D<> aT = a_data->getTransform();
         Transform3D<> bT = b_data->getTransform();
-        //std::cout << aT.P() << " " << bT.P() << std::endl;
-        //const Transform3D<> aT_prev = fk.get(pair.first);
-        //const Transform3D<> bT_prev = fk.get(pair.second);
         if(a_data->getFrame()!=pair.first)
             aT = aT * Kinematics::frameTframe(a_data->getFrame(),pair.first, state);
         if(b_data->getFrame()!=pair.second)
@@ -1714,110 +1692,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         	//knifeF = pair.second;
         	//cuttableF = pair.first;
         }
-/*
-        if( isknifeandcuttable ){
-            if(onlyTestPenetration){
-            	return false;
-            }
-
-        	std::cout << "KNIFE and CUTTABLE detected" << std::endl;
-        	//CollisionResult *res;
-            data.setCollisionQueryType(CollisionStrategy::FirstContact);
-            if( _narrowStrategy->inCollision(a, aT, b, bT, data) ){
-            	std::cout << " ---- In collision...." << std::endl;
-            	Vector3D<> cutPlaneNormal = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlaneNormal");
-            	Vector3D<> cutPlanePos = knifeF->getPropertyMap().get<Vector3D<> >("CuttingPlanePos");
-            	Vector3D<> cutDir = knifeF->getPropertyMap().get<Vector3D<> >("CuttingDir");
-
-
-
-            	// now generate contacts such that the knife is constrained to the
-            	// cutting plane
-            	CutState state;
-
-            	// do collision checking
-                data.setCollisionQueryType(CollisionStrategy::AllContacts);
-                res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance, data);
-
-                // create all contacts
-                size_t numc = res->distances.size();
-                if(_rwcontacts.size()<numc){
-                    _rwcontacts.resize(numc);
-                    _contacts.resize(numc);
-                }
-                int ni = 0;
-
-                //std::cout << "--- {";
-                //for(int i=0;i<numc;i++){
-                //    std::cout << res->distances[i] << ", ";
-                //}
-                //std::cout << "}"<< std::endl;
-
-                for(size_t i=0;i<numc;i++){
-
-                    dContact &con = _contacts[ni];
-                    Vector3D<> p1 = aT * res->p1s[i];
-                    Vector3D<> p2 = aT * res->p2s[i];
-                    Vector3D<> n, p;
-
-                    if(res->distances[i]<0.00000001){
-                    	std::cout << " penetrating " << std::endl;
-                    	// in a contact we apply contact constraints in the knife plane
-
-                    	// also we add force
-
-                    	std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, i);
-                    	// the second is described in b's refframe so convert both to world and combine them
-                    	Vector3D<> a_normal = aT.R() * normals.first;
-                    	Vector3D<> b_normal = bT.R() * normals.second;
-
-                    	n = -normalize( a_normal - b_normal );
-                    	p = p1;
-                    } else {
-                    	continue;
-                    }
-
-                    ODEUtil::toODEVector(n, con.geom.normal);
-                    ODEUtil::toODEVector(p, con.geom.pos);
-
-                    double penDepth = 0.0001;
-                    con.geom.depth = penDepth;
-                    con.geom.g1 = a_geom;
-                    con.geom.g2 = b_geom;
-                    ni++;
-                }
-
-
-
-
-            	// we can be either in initialCutPhase or deep in the cutting. In the initial phase
-            	// no contacts on the cutting plane will be generated
-            	if(initialCutPhase){
-
-            	} else {
-
-            	}
-
-
-
-            	//addContacts(numc, a_data, b_data, pair.first, pair.second);
-            }
-
-
-
-        	continue;
-        }
-*/
-
 
         // first make standard collision detection, if in collision then compute all contacts from dist query
         RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
-        //std::cout << pair.first->getName() << " <--> " << pair.second->getName() << std::endl;
-        //std::cout << "bT" << bT << std::endl;
-        //const double MAX_PENETRATION  = 0.0002;
-        //const double MAX_SEP_DISTANCE = 0.0002;
-
-
 
         if(onlyTestPenetration){
         	//std::cout << "ONLY TEST COL" << std::endl;
@@ -1827,77 +1704,11 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
                 std::stringstream sstr;
                 sstr << "IN COLLISION!!!!" << pair.first->getName() << " -- " << pair.second->getName() << std::endl;
                 _collidingObjectsMsg = sstr.str();
+                
                 return true;
             }
             continue;
         }
-
-        /*
-        BodyBodyContact& bcon = _lastNonCollidingTransform[pair];
-
-        bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
-        if(!collides){
-            // reset contact history data
-            bcon.firstContact = true;
-            continue;
-        }
-        */
-
-        /*
-        // there is a collision and we need to find the correct contact points/normals.
-        if( bcon.firstContact ){
-            // if this is a first contact then we use the previous "non-colliding" state to estimate the contact normal
-            // TODO: here we could do some interpolation to find the moment of contact
-            std::cout << "First contact " << std::endl;
-            bool collides = _narrowStrategy->distance(a, aT_prev, b, bT_prev, data);
-
-
-
-
-            data.setCollisionQueryType(FirstContact);
-            bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
-
-            if( !collides ){
-                // save the last transform such that we are able to find the normal in case the bodies penetrate in the next timestep.
-                _lastNonCollidingTransform[pair] = BodyBodyContact(aT, bT);
-                return;
-            }
-
-            std::cout << "_aT" << bcon.aT << std::endl;
-            std::cout << "_bT" << bcon.bT << std::endl;
-
-            bcon.firstContact = false;
-        } else {
-            // update the contact normal and transforms
-            // we use the old contact normal to project the poses of the object into a non-penetrating stance
-
-            // TODO: here we should try and resolve the point of contact.
-            bcon.aT = aT; // translated in the negative normal direction
-            bcon.aT.P() += MAX_SEP_DISTANCE*bcon.cnormal;
-            bcon.bT = bT;
-            std::cout << "_aT" << bcon.aT << std::endl;
-            std::cout << "_bT" << bcon.bT << std::endl;
-            std::cout << "ASSERT if in collision" << std::endl;
-            RW_ASSERT(_narrowStrategy->inCollision(a, bcon.aT, b, bcon.bT, data)==false);
-            std::cout << "after ASSERT if in collision" << std::endl;
-        }
-        // calculate the contacts
-        data.setCollisionQueryType(AllContacts);
-        res = &_narrowStrategy->distances(a, bcon.aT, b, bcon.bT, MAX_SEP_DISTANCE, data);
-
-    */
-
-
-        //BodyBodyContact& bcon = _lastNonCollidingTransform[pair];
-
-        /*
-        bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
-        if(!collides){
-            // reset contact history data
-            bcon.firstContact = true;
-            continue;
-        }
-        */
 
         // TODO: if the object is a soft object then we need to add more contacts
         bool softcontact = false;
@@ -1906,19 +1717,6 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             // change MAX_SEP_DISTANCE
             softlayer = 0.001;
         }
-
-/*
-
-        if( bcon.firstContact ){
-            // here we know if
-            data.setCollisionQueryType(AllContacts);
-            res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
-
-        } else {
-            // the contact
-
-        }
-*/
 
         data.setCollisionQueryType(CollisionStrategy::AllContacts);
         res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
@@ -1930,13 +1728,6 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             _contacts.resize(numc);
         }
         int ni = 0;
-
-        //std::cout << "--- {";
-        //for(int i=0;i<numc;i++){
-        //    std::cout << res->distances[i] << ", ";
-        //}
-        //std::cout << "}"<< std::endl;
-
         for(size_t i=0;i<numc;i++){
 
             dContact &con = _contacts[ni]; 
@@ -1985,45 +1776,18 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 			point.userdata = (void*) &(_contacts[ni]);
             
             if(_logContactingBodies) {
-				_contactingBodies[std::make_pair(pair.first->getName(), pair.second->getName())].push_back(point);
+				//std::cout << "adding contact" << std::endl;
+				_contactingBodiesTmp[std::make_pair(pair.first->getName(), pair.second->getName())] = true;//.push_back(point);
+				//_contactPointsTmp.push_back(boost::make_tuple(pair.first->getName(), pair.second->getName(),
+				//	point));
 			}
 
             // friction direction between the bodies ...
             // Not necesary to calculate, unless we need explicit control
             ni++;
         }
-
-        // next we need to take care of all penetrating contacts.
-        // Our primary concern is to calculate a contact normal that makes sense...
-        // secondarily we want to calculate an approximate penetration depth.
-
-        // assumption: Penetration will allways cause multiple penetrations in the same contact area
-        // for now we use the normal of one of the object surfaces and use the max pentration as approximation
-        /*
-        for(size_t i=0;i<numc;i++){
-            if(res->distances[i]>0.00000001){
-                continue;
-            }
-
-            Vector3D<> p1 = aT * res->p1s[i];
-            Vector3D<> p2 = aT * res->p2s[i];
-
-            double len = (p2-p1).norm2();
-            Vector3D<> n = (p2-p1)/(-len);
-            //std::cout << "n: " << n << "\n";
-            Vector3D<> p = n*(res->distances[i]/2) + p1;
-
-        }
-        */
-
-
-
-
-
-
         numc = ni;
 
-        //bcon.cnormal =
         //if (numc < 100) {
 			addContacts((int)numc, a_data, b_data, pair.first, pair.second);
 		//}
@@ -2031,9 +1795,10 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         // update the contact normal using the manifolds
     }
     
-    if(_logContactingBodies) {
-		_contactingBodiesTmp = _contactingBodies;
-	}
+    //if(_logContactingBodies) {
+		_contactingBodies = _contactingBodiesTmp;
+		//_contactPoints = _contactPointsTmp;
+	//}
 
     if(onlyTestPenetration){
         return false;

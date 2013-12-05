@@ -42,6 +42,8 @@
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "ODEUtil.hpp"
 #include "ODEMaterialMap.hpp"
@@ -270,11 +272,23 @@ namespace simulator {
         bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
 	public:
+		/// Enables logging of the contact points
+        void setContactLoggingEnabled(bool enable) { _logContactingBodies = enable; }
+        
+        /// Returns a map of contacting body frame names and their contact points
+        boost::unordered_map<std::pair<std::string,std::string>, bool > getContactingBodies() {
+			return _contactingBodies;
+		}
 
-        void setContactLoggingEnabled(bool enable){ _logContactingBodies = enable; }
-        std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > getContactingBodies(){ return _contactingBodiesTmp; }
-
-        std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > _contactingBodies, _contactingBodiesTmp;
+/*
+		/**
+		 * @brief Returns a vector of all contact points
+		 * 
+		 * @return vector of tuples (name1, name2, contact point)
+		 */ /*
+        std::vector<boost::tuple<std::string, std::string, dynamics::ContactPoint> > getContactPoints() const {
+			return _contactPoints;
+		} */
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);
 
@@ -449,6 +463,8 @@ namespace simulator {
 		rwsim::contacts::ContactDetector::Ptr _detector;
 
         bool _logContactingBodies;
+        std::vector<boost::tuple<std::string, std::string, dynamics::ContactPoint> > _contactPoints, _contactPointsTmp;
+        boost::unordered_map<std::pair<std::string,std::string>, bool> _contactingBodies, _contactingBodiesTmp;
 
 		struct CutState {
 
