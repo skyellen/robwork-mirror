@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'FalconPlugin.ui'
 **
-** Created: Sat Nov 23 18:58:23 2013
+** Created: Thu Dec 5 20:14:46 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

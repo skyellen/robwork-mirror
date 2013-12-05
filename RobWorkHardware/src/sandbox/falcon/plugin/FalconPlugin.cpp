@@ -368,7 +368,7 @@ void FalconPlugin::startSimulation()
     if(_sim == NULL) {
         _engine = ownedPtr(new ODESimulator(_dwc));
         RW_WARN("");
-    	//_engine->setContactLoggingEnabled(true);
+    	_engine->setContactLoggingEnabled(true);
         _sim = ownedPtr(new DynamicSimulator(_dwc, _engine));
         RW_WARN("");
   		
@@ -434,6 +434,20 @@ void FalconPlugin::startRecording()
 
 void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinematics::State& state)
 {
+	/* print out contact points */
+	typedef boost::unordered_map<std::pair<std::string,std::string>, bool> CMap;
+	CMap cbodies = _engine->getContactingBodies();
+	std::vector<SimulationTrajectory::SimulationStep::ObjectPair> cnames;
+	
+	if (cbodies.size() > 0) {
+		cout << "Contact points: ";
+		BOOST_FOREACH (CMap::value_type& c, cbodies) {
+			cnames.push_back(std::make_pair(c.first.first, c.first.second));
+			cout << c.first.first << "-" << c.first.second << " ";
+		}
+		cout << endl;
+	}
+	
 	/* record simulation state */
 	FKTable fk(state);
 	if (_trajectory) {
@@ -444,19 +458,10 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 			objPoses.push_back(make_pair(body->getName(), fk.get(body->getBodyFrame())));
 		}
 		
-		_trajectory->addStep(SimulationTrajectory::SimulationStep(
-			sim->getTime(), _dev->getQ(state), Q(), objPoses));
+		SimulationTrajectory::SimulationStep sstep(sim->getTime(), _dev->getQ(state), Q(), objPoses, cnames);
+		
+		_trajectory->addStep(sstep);
 	}
-	
-	/* print out contact points */
-	//map<pair<string, string>, vector<ContactPoint> > cbodies = _engine->getContactingBodies();
-	
-	/*cout << "Contact points: " << cbodies.size() << endl;
-	for (map<pair<string, string>, vector<ContactPoint> >::iterator it = cbodies.begin(); it != cbodies.end(); ++it) {
-		if (it->second.size() > 0) {
-			cout << it->first.first << " - " << it->first.second << " => " << it->second[0].p << endl;
-		}
-	}*/
 	
 	/* error handling */
 	if (sim->isInError()) {

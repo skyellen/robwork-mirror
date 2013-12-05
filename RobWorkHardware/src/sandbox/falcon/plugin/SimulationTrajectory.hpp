@@ -27,25 +27,38 @@ class SimulationTrajectory
 			public: // types
 				typedef rw::common::Ptr<SimulationStep> Ptr;
 				typedef std::pair<std::string, rw::math::Transform3D<> > ObjectPose;
+				typedef std::pair<std::string, std::string> ObjectPair;
+				
 			
 			public: // methods
 				SimulationStep() : t(-1.0) {}
 				
-				SimulationStep(double t, rw::math::Q robotQ, rw::math::Q gripperQ, std::vector<ObjectPose> objPoses) :
+				SimulationStep(double t, rw::math::Q robotQ, rw::math::Q gripperQ, std::vector<ObjectPose> objPoses,
+					std::vector<ObjectPair> cntBodies) :
 					t(t),
 					robotQ(robotQ),
 					gripperQ(gripperQ),
-					objectPoses(objPoses)
+					objectPoses(objPoses),
+					contactingBodies(cntBodies)
 				{}
 				
 				friend std::ostream& operator<<(std::ostream& stream, const SimulationStep& step)
 				{
+					// print out time, robot conf., gripper conf.
 					stream << step.t << ":" << step.robotQ << ":" << step.gripperQ << ":" <<
 						step.objectPoses.size();
 						
+					// print out object poses
 					typedef std::vector<ObjectPose>::const_iterator I;
 					for (I it = step.objectPoses.begin(); it != step.objectPoses.end(); ++it) {
 						stream << ":" << it->first << " " << it->second.P() << " " << rw::math::RPY<>(it->second.R());
+					}
+					
+					// print out contacts
+					stream << "#";
+					typedef std::vector<ObjectPair>::const_iterator J;
+					for (J it = step.contactingBodies.begin(); it != step.contactingBodies.end(); ++it) {
+						stream << ":" << it->first << "-" << it->second;
 					}
 					
 					return stream;
@@ -56,6 +69,7 @@ class SimulationTrajectory
 				rw::math::Q robotQ;
 				rw::math::Q gripperQ;
 				std::vector<ObjectPose> objectPoses;
+				std::vector<ObjectPair> contactingBodies;
 		};
 		
 	public: // constructors
