@@ -115,7 +115,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 				}
 				//RW_WARN("3");
 				// test if the target belongs in the area around hinted grasps
-				Transform3D<> targetW = inverse(wTobj) * target;
+				Transform3D<> targetW = wTobj * target; //inverse(wTobj) * target;
 				
 				BOOST_FOREACH (Transform3D<> hint, _td->getHints()) {
 					// calculate distance
@@ -125,27 +125,35 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 						std::fabs(targetW.P()[1] - hint.P()[1]) <= teachDist[1] &&
 						std::fabs(targetW.P()[2] - hint.P()[2]) <= teachDist[2];
 						
-					/*EAA<> targetEAA(target.R());
+					/* Let's try EAA */
+					/*EAA<> targetEAA(targetW.R());
 					EAA<> hintEAA(hint.R());
 					double R = 1.0 * sin(0.25 * teachDist[3]);
-					//cout << R << endl;
 					
 					bool angleOk = std::fabs(targetEAA.axis()[0] - hintEAA.axis()[0]) <= R &&
 						std::fabs(targetEAA.axis()[1] - hintEAA.axis()[1]) <= R &&
 						std::fabs(targetEAA.axis()[2] - hintEAA.axis()[2]) <= R &&
 						std::fabs(targetEAA.angle() - hintEAA.angle()) <= teachDist[4];
 						
-					//bool angleOk = std::fabs(angle(targetEAA.axis(), hintEAA.axis())) <= teachDist[3] &&
-					//	std::fabs(targetEAA.angle() - hintEAA.angle()) <= teachDist[4];
+					/*bool angleOk = std::fabs(angle(targetEAA.axis(), hintEAA.axis())) <= teachDist[3] &&
+						std::fabs(targetEAA.angle() - hintEAA.angle()) <= teachDist[4];*/
 						
+					/* END OF EAA */
 					// find such rotation that z axes are aligned in both target and hint
-					/* THIS IS OKAYISH: */
-					Transform3D<> aligned(RPY<>(0, angle(targetW.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z()), 0).toRotation3D() * hint.R());
+					/* THIS IS OKAYISH: */ /*
+					Transform3D<> aligned(RPY<>(0, angle(targetW.R()*Vector3D<>::z(), hint.R()*Vector3D<>::z()), 0).toRotation3D() * hint.R());
 						
-					bool angleOk = std::fabs(angle(target.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z())) <= _td->getTeachDistance()[3] &&
-						std::fabs(angle(target.R()*Vector3D<>::x(), aligned.R()*Vector3D<>::x())) <= _td->getTeachDistance()[4];
+					bool angleOk = std::fabs(angle(targetW.R()*Vector3D<>::z(), hint.R()*Vector3D<>::z())) <= _td->getTeachDistance()[3] &&
+						std::fabs(angle(targetW.R()*Vector3D<>::x(), aligned.R()*Vector3D<>::x())) <= _td->getTeachDistance()[4];
 						//std::fabs(angle(target.R()*Vector3D<>::x(), hint.R()*Vector3D<>::x())) <= _td->getTeachDistance()[4];
 					/* END OF OKAYISH */
+					
+					/* CRAZY STUFF */
+					Vector3D<> targetZ = targetW.R() * Vector3D<>::z();
+					Vector3D<> hintZ = hint.R() * Vector3D<>::z();
+					
+					bool angleOk = std::fabs(angle(targetZ, hintZ)) <= _td->getTeachDistance()[3];
+					/* END OF CRAZY STUFF */
 					
 					/* DEBUG OUTPUTS FROM NOW ON */
 					//std::cout << angleOk << " Z= " << Rad2Deg*std::fabs(angle(target.R()*Vector3D<>::z(),hint.R()*Vector3D<>::z())) <<
@@ -170,7 +178,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
         }
         
         tries++;
-        if (tries > 10000) {
+        if (tries > 25000) {
 			RW_THROW("Cannot find target without collision! Tries: " << tries);
 		}
     } while (!targetFound);
@@ -201,6 +209,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 	//BOOST_FOREACH(GraspTarget& target, tasks->getSubTasks()[0].getTargets()) {
 		if (p.second->getResult()->testStatus == GraspTask::Success ||
 			p.second->getResult()->testStatus == GraspTask::Interference ||
+			p.second->getResult()->testStatus == GraspTask::ObjectSlipped ||
 			p.second->getResult()->testStatus == GraspTask::UnInitialized) {
 				
 			Q key(7);
@@ -379,7 +388,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
             // make new subtask (for tasks)
             GraspSubTask subtask;
             subtask.offset = wTobj;
-			subtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.1));
+			subtask.approach = Transform3D<>(Vector3D<>(0, 0, 0.3));
 			subtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
 			subtask.openQ = oq;
 			subtask.closeQ = _closeQ;

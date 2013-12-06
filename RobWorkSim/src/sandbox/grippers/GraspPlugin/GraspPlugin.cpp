@@ -141,6 +141,13 @@ void GraspPlugin::addHint()
 {
 	Transform3D<> target = Kinematics::worldTframe(_td->getGripperTCP(), getRobWorkStudio()->getState());
 	log().info() << "Added hint grasp: " << target.P() << " " << RPY<>(target.R()) << endl;
+	
+	/*EAA<> hintEAA(target.R());
+	Vector3D<> hintZ = target.R() * Vector3D<>::z();
+	
+	double hintAngle = atan2(hintZ[1], hintZ[0]);
+	cout << "hintangle= " << hintAngle << " " << hintZ << endl;*/
+	
 	if (_td) {
 		_td->addHint(target);
 	}

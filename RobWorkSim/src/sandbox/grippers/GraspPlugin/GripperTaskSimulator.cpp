@@ -48,7 +48,7 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 	}
 	//RW_WARN("");
 	if (calculateWrench(sstate) < _td->getWrenchLimit()) {
-		sstate._target->getResult()->testStatus = GraspTask::ObjectSlipped;
+		sstate._target->getResult()->testStatus = GraspTask::ObjectDropped;
 	}
 	//RW_WARN("");
 	printGraspResult(sstate);
@@ -171,10 +171,10 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 		}
 	}
 	
-	// find top 10%
+	// find top 20%
 	sort(wrenches.begin(), wrenches.end(), sortf);
 	
-	int num = 0.1*successes < 1 ? 1 : 0.1*successes;
+	int num = 0.2*successes < 1 ? 1 : 0.2*successes;
 	
 	if (wrenches.size() > 0) {
 		for (int i = 0; i < num; ++i) {
@@ -271,6 +271,7 @@ void GripperTaskSimulator::evaluateGripper()
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int interferences = TaskGenerator::countTasks(_gtask, GraspTask::Interference);
 	int slippages = TaskGenerator::countTasks(_gtask, GraspTask::ObjectSlipped);
+	int drops = TaskGenerator::countTasks(_gtask, GraspTask::ObjectDropped);
 	int failures = TaskGenerator::countTasks(_gtask, GraspTask::SimulationFailure);
 	
 	int samples = TaskGenerator::countTasks(_samples, GraspTask::UnInitialized); //_samples->getSubTasks()[0].getTargets().size();
@@ -281,10 +282,12 @@ void GripperTaskSimulator::evaluateGripper()
 	//int colinits = TaskGenerator::countTasks(_gtask, GraspTask::CollisionObjectInitially);
 	int actual = getNrTargets() - filtered;// - colinits;
 	
+	successes += slippages;
+	
 	DEBUG << "* Actual number of tasks simulated is " << actual << " out of " << getNrTargets()
 		<< " targets." << endl;
-	DEBUG << "* Outcomes (success/interference/slip/fail): " << successes << "/" << interferences
-		<< "/" << slippages << "/" << failures << endl;
+	DEBUG << "* Outcomes (success/interference/drop/fail): " << successes << "/" << interferences
+		<< "/" << drops << "/" << failures << endl;
 		
 	/*typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
