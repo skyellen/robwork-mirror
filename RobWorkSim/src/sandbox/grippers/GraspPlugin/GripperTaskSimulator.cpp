@@ -158,7 +158,7 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 	//DEBUG << "WRENCHES!" << endl;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
 		//DEBUG << "??? " << p.second->getResult()->testStatus << endl;
-		if (p.second->getResult()->testStatus == GraspTask::Success) {// || p.second->getResult()->testStatus == GraspTask::Interference) {
+		if (p.second->getResult()->testStatus == GraspTask::Success || p.second->getResult()->testStatus == GraspTask::ObjectSlipped) {
 			successes++;
 			
 			Q result = p.second->getResult()->qualityAfterLifting;
