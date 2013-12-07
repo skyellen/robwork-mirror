@@ -47,9 +47,9 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 	}
 	//RW_WARN("");
-	if (calculateWrench(sstate) < _td->getWrenchLimit()) {
+	/*if (calculateWrench(sstate) < _td->getWrenchLimit()) {
 		sstate._target->getResult()->testStatus = GraspTask::ObjectDropped;
-	}
+	}*/
 	//RW_WARN("");
 	printGraspResult(sstate);
 	//RW_WARN("");
