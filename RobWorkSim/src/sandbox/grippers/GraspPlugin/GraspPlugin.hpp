@@ -119,6 +119,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		bool _slowMotion;
 		bool _showTasks;
 		bool _showSamples;
+		bool _showSuccesses;
 		bool _silentMode;
 		
 		// grasp parameters
@@ -169,6 +170,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QPushButton* _saveTaskButton;
 		QCheckBox* _showCheck;
 		QCheckBox* _samplesCheck;
+		QCheckBox* _successCheck;
 		QProgressBar* _progressBar;
 		QPushButton* _startButton;
 		QPushButton* _stopButton;

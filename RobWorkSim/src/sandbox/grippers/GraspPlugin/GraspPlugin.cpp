@@ -47,6 +47,7 @@ GraspPlugin::GraspPlugin() :
     _slowMotion(false),
     _showTasks(true),
     _showSamples(false),
+    _showSuccesses(false),
     _silentMode(false),
     _nOfTargetsToGen(10),
     _tasks(NULL),
@@ -241,6 +242,11 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == _samplesCheck) {
 		_showSamples = _samplesCheck->isChecked();
+		showTasks();
+	}
+	
+	else if (obj == _successCheck) {
+		_showSuccesses = _successCheck->isChecked();
 		showTasks();
 	}
 	
@@ -570,9 +576,11 @@ void GraspPlugin::showTasks()
 			rt.ctask = p.first; //&tasks->getSubTasks()[0];
 			rt.ctarget = *p.second; //target;
 			
+			if (_showSuccesses && rt.ctarget.getResult()->testStatus != GraspTask::Success) continue;
+			
 			if (rt.ctarget.getResult()->testStatus == GraspTask::UnInitialized) {
-				rt.color[0] = 1.0;
-				rt.color[1] = 1.0;
+				rt.color[0] = 0.0;
+				rt.color[1] = 0.9;
 				rt.color[2] = 1.0;
 				rt.color[3] = 0.5;
 			}
@@ -701,6 +709,11 @@ void GraspPlugin::setupGUI()
     _samplesCheck->setChecked(false);
     simLayout->addWidget(_samplesCheck, row++, 1);
     connect(_samplesCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    
+    _successCheck = new QCheckBox("Show only successes");
+    _successCheck->setChecked(false);
+    simLayout->addWidget(_successCheck, row++, 1, 1, 2);
+    connect(_successCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
     
     _progressBar = new QProgressBar;
     _progressBar->setFormat("%v of %m");
