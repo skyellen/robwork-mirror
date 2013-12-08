@@ -37,19 +37,27 @@ void GripperTaskSimulator::graspFinished(SimState& sstate)
 	 * of individual object interferences exceed limit specified in task description,
 	 * grasp status is changed from Success to Interference.
 	 * Then, if wrench space measurement result is below specified minimum wrench,
-	 * grasp status is changed from Success to ObjectSlipped.
+	 * grasp status is changed from Success to ObjectDropped.
 	 */
 	if (!_td) {
 		RW_THROW("NULL task description!");
 	}
 	//RW_WARN("");
-	if (calculateInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
+	if ((sstate._target->getResult()->testStatus == GraspTask::Success ||
+		sstate._target->getResult()->testStatus == GraspTask::ObjectSlipped) &&
+		calculateInterference(sstate, _td->getInitState()) > _td->getInterferenceLimit()) {
+			
+		DEBUG << "Grasp above interference limit." << endl;
 		sstate._target->getResult()->testStatus = GraspTask::Interference;
 	}
 	//RW_WARN("");
-	/*if (calculateWrench(sstate) < _td->getWrenchLimit()) {
+	if ((sstate._target->getResult()->testStatus == GraspTask::Success ||
+		sstate._target->getResult()->testStatus == GraspTask::ObjectSlipped) &&
+		calculateWrench(sstate) < _td->getWrenchLimit()) {
+			
+		DEBUG << "Grasp below wrench limit." << endl;
 		sstate._target->getResult()->testStatus = GraspTask::ObjectDropped;
-	}*/
+	}
 	//RW_WARN("");
 	printGraspResult(sstate);
 	//RW_WARN("");
@@ -100,7 +108,7 @@ double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 	qual = _gripper->getForce() * qual;
 	
 	if (qual.size() >= 1) {
-		return qual(0);
+		return qual(1);
 	} else {
 		//DEBUG << "No wrench measurement!" << endl;
 		return 0.0;
@@ -158,7 +166,7 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 	//DEBUG << "WRENCHES!" << endl;
 	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
 		//DEBUG << "??? " << p.second->getResult()->testStatus << endl;
-		if (p.second->getResult()->testStatus == GraspTask::Success) { // || p.second->getResult()->testStatus == GraspTask::ObjectSlipped) {
+		if (p.second->getResult()->testStatus == GraspTask::Success || p.second->getResult()->testStatus == GraspTask::ObjectSlipped) {
 			successes++;
 			
 			Q result = p.second->getResult()->qualityAfterLifting;
@@ -280,7 +288,7 @@ void GripperTaskSimulator::evaluateGripper()
 	// //and those with collision initially (ObjectCollisionInitially) - which shouldn't appear here...
 	int filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
 	//int colinits = TaskGenerator::countTasks(_gtask, GraspTask::CollisionObjectInitially);
-	int actual = getNrTargets() - filtered;// - colinits;
+	int actual = getNrTargets() - filtered - failures;// - colinits;
 	
 	successes += slippages;
 	
