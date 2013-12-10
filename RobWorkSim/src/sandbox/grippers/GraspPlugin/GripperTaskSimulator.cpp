@@ -117,7 +117,7 @@ double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 
 
 
-double GripperTaskSimulator::calculateCoverage()
+double GripperTaskSimulator::calculateCoverage(double actualRatio)
 {
 	if (!_gtask || !_samples) {
 		RW_WARN("NULL tasks or samples");
@@ -145,7 +145,7 @@ double GripperTaskSimulator::calculateCoverage()
 	
 	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getAllTargets().size() << endl;
 	DEBUG << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
-	coverage = 1.0 * okTargets / allTargets;
+	coverage = 1.0 * okTargets / (allTargets * actualRatio);
 	
 	return coverage;
 }
@@ -282,19 +282,19 @@ void GripperTaskSimulator::evaluateGripper()
 	int slippages = TaskGenerator::countTasks(_gtask, GraspTask::ObjectSlipped);
 	int drops = TaskGenerator::countTasks(_gtask, GraspTask::ObjectDropped);
 	int failures = TaskGenerator::countTasks(_gtask, GraspTask::SimulationFailure);
-	
-	int samples = TaskGenerator::countTasks(_samples, GraspTask::UnInitialized); //_samples->getSubTasks()[0].getTargets().size();
-	
-	// number of grasps actually tried is the number of tasks minus the number of filtered tasks (w/ Filtered status)
-	// //and those with collision initially (ObjectCollisionInitially) - which shouldn't appear here...
-	int filtered = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
-	//int colinits = TaskGenerator::countTasks(_gtask, GraspTask::CollisionObjectInitially);
-	int actual = getNrTargets() - filtered - failures;// - colinits;
+	int samples = TaskGenerator::countTasks(_samples, GraspTask::UnInitialized);
+	int removed = TaskGenerator::countTasks(_gtask, GraspTask::Filtered);
+	int filtered = getNrTargets() - removed;
+	int actual = filtered - failures;
 	
 	successes += slippages;
 	
-	DEBUG << "* Actual number of tasks simulated is " << actual << " out of " << getNrTargets()
-		<< " targets." << endl;
+	DEBUG << " * Targets generated: " << getNrTargets() << endl;
+	DEBUG << " * After filtering: " << filtered << endl;
+	DEBUG << " * Without failure: " << actual << endl;
+	
+	//DEBUG << "* Actual number of tasks simulated is " << actual << " out of " << getNrTargets()
+	//	<< " targets." << endl;
 	DEBUG << "* Outcomes (success/interference/drop/fail): " << successes << "/" << interferences
 		<< "/" << drops << "/" << failures << endl;
 		
@@ -311,7 +311,7 @@ void GripperTaskSimulator::evaluateGripper()
 	double topwrench = wrenchMeasurement(2) / b.wrench;
 	
 	/* coverage */
-	double coverage = calculateCoverage() / b.coverage;
+	double coverage = calculateCoverage(1.0 * actual / filtered) / b.coverage;
 	// task set is filtered at this point
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;

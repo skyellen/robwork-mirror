@@ -95,8 +95,10 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		 * 
 		 * Coverage is calculated as a ratio of filtered succesful grasps to
 		 * number of samples created by the generator.
+		 * 
+		 * @param actualRatio [in] ratio of grasps that didn't end up with simulation failure)
 		 */
-		double calculateCoverage();
+		double calculateCoverage(double actualRatio=1.0);
 		
 		/**
 		 * @brief Calculates min., avg. and max. wrenches in all tested grasps.
