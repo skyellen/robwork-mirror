@@ -316,10 +316,10 @@ namespace rw { namespace trajectory {
     private:
         double _start;
         double _end;
-        double _b;
+        //double _b;
         RampInterpolator<rw::math::Q> _ramp;
 
-        double _duration;
+        //double _duration;
     };
 
 
