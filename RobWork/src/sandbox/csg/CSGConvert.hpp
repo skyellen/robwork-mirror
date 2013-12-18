@@ -13,7 +13,7 @@
 
 #include <rw/geometry/TriMesh.hpp>
 
-class csgjs_model;
+struct csgjs_model;
 
 
 
