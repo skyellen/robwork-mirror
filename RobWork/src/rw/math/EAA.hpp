@@ -96,8 +96,6 @@ namespace rw { namespace math {
          * \right]
          * @f$ if @f$ \theta = \pi @f$
          *
-         *
-         * @todo beskriv special cases
          */
         explicit EAA(const Rotation3D<T>& R);
 

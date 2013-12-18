@@ -648,8 +648,8 @@ namespace rw { namespace math {
         static int ceilLog2(int n);
         
         /**
-         * @brief Factorial
-         * @todo Add some safeguards?
+         * @brief Factorial 
+         * The method does not implement any safe guards for negative numbers of overflow of numbers. 
          */
         static long long factorial(long long n) {
 			return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
