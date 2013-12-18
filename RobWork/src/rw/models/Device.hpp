@@ -59,7 +59,10 @@ namespace rw { namespace models {
     /**
      * @brief An abstract device class
      *
-     * @todo document this
+     * The Device class is the basis for all other devices. It is assumed that all devices
+	 * have a configuration which can be encoded by a rw::math::Q, that all have a base frame
+	 * representing where in the work cell they are located and a primary end frame. Notice that
+	 * some devices may have multiple end-frames.
      */
     class Device: public rw::kinematics::Stateless
     {
