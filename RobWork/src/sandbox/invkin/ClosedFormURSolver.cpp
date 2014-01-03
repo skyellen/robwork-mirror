@@ -8,6 +8,8 @@
 #include "ClosedFormURSolver.hpp"
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Models.hpp>
+#include <iostream>
+#include <string>
 
 using namespace rw::common;
 using namespace rw::math;
@@ -20,25 +22,28 @@ ClosedFormURSolver::ClosedFormURSolver(const rw::models::Device::Ptr device, con
 	_device(device)
 {
 	Frame* frame = device->getEnd();
-	while (frame->getName().compare(device->getName().append(".Joint0"))) {
+	std::string ss = device->getName();
+	std::string str(".Joint1");
+	ss.append(str);
+	while (frame->getName().compare(ss)) {
 		_frames.push_back(frame);
 		frame = frame->getParent();
 	}
 	_frames.push_back(frame);
 	_frames.push_back(frame->getParent());
 	std::reverse(_frames.begin(),_frames.end());
-	Transform3D<> trans = Kinematics::frameTframe(_frames[0],_frames[12],state);
-	Vector3D<> direction = Kinematics::frameTframe(_frames[0],_frames[4],state).R()*Vector3D<>::z();
+	Transform3D<> trans = Kinematics::frameTframe(_frames[0],_frames[6],state);
+	Vector3D<> direction = Kinematics::frameTframe(_frames[0],_frames[2],state).R()*Vector3D<>::z();
 	_baseRadius = dot(trans.P(),direction);
-	Transform3D<> endTrans = Kinematics::frameTframe(_frames[10],_frames[12],state);
+	Transform3D<> endTrans = Kinematics::frameTframe(_frames[5],_frames[6],state);
 	_endCircleRadius = endTrans.P()[2];
-	Transform3D<> tr1 = Kinematics::frameTframe(_frames[4],_frames[6],state);
+	Transform3D<> tr1 = Kinematics::frameTframe(_frames[2],_frames[3],state);
 	_l1 = tr1.P().norm2();
-	Transform3D<> tr2 = Kinematics::frameTframe(_frames[6],_frames[8],state);
+	Transform3D<> tr2 = Kinematics::frameTframe(_frames[3],_frames[4],state);
 	_l2 = tr2.P().norm2();
-	Transform3D<> trTcp = Kinematics::frameTframe(_frames[12],_frames[13],state);
+	Transform3D<> trTcp = Kinematics::frameTframe(_frames[6],_frames[7],state);
 	_lTcp = trTcp.P().norm2();
-	Transform3D<> trJ0J1 = Kinematics::frameTframe(_frames[2],_frames[4],state);
+	Transform3D<> trJ0J1 = Kinematics::frameTframe(_frames[1],_frames[2],state);
 	_l2 = tr2.P().norm2();
 	_lJ0J1 = trJ0J1.P().norm2();
 }
@@ -214,7 +219,7 @@ Q ClosedFormURSolver::adjustJoints(const Q &q) const {
 std::pair<Vector3D<>,Vector3D<> > ClosedFormURSolver::getJoint4Positions(const Vector3D<> &baseTdh5, const Vector3D<> &tcpZ, const State &state) const {
 	Vector3D<> xDir = normalize(getPerpendicularVector(tcpZ));
 	Vector3D<> yDir = normalize(cross(tcpZ,xDir));
-	Vector3D<> dir = Kinematics::frameTframe(_frames[0],_frames[4],state).R()*Vector3D<>::z();
+	Vector3D<> dir = Kinematics::frameTframe(_frames[0],_frames[2],state).R()*Vector3D<>::z();
 	std::pair<Vector3D<>,Vector3D<> > intersections = findCirclePlaneIntersection(baseTdh5, _endCircleRadius, xDir, yDir, dir);
 	return intersections;
 }
@@ -228,7 +233,7 @@ std::pair<std::pair<double,double>,std::pair<double,double> > ClosedFormURSolver
 	tmpQ[4] = 0;
 	tmpQ[5] = 0;
 	_device->setQ(tmpQ,tmpState);
-	Transform3D<> dh0Tbase = Kinematics::frameTframe(_frames[2],_frames[0],tmpState);
+	Transform3D<> dh0Tbase = Kinematics::frameTframe(_frames[1],_frames[0],tmpState);
 	Vector3D<> target = dh0Tbase*intersection;
 	target[2] -= _lJ0J1;
 	EAA<> eaa(0,Pi/2.,0);
@@ -253,13 +258,13 @@ Q ClosedFormURSolver::getOrientationJoints(const Transform3D<> &baseTend, const 
 	tmpQ[4] = 0;
 	tmpQ[5] = 0;
 	_device->setQ(tmpQ,tmpState);
-	Vector3D<> dh4Tcenter = Kinematics::frameTframe(_frames[10],_frames[0],tmpState)*baseTdh5;
+	Vector3D<> dh4Tcenter = Kinematics::frameTframe(_frames[5],_frames[0],tmpState)*baseTdh5;
 	tmpQ[3] = std::atan2(dh4Tcenter[0],dh4Tcenter[2]);
 	_device->setQ(tmpQ,tmpState);
-	Vector3D<> dh5Ttcp = Kinematics::frameTframe(_frames[12],_frames[0],tmpState)*baseTend.P();
+	Vector3D<> dh5Ttcp = Kinematics::frameTframe(_frames[6],_frames[0],tmpState)*baseTend.P();
 	tmpQ[4] = -std::atan2(dh5Ttcp[0],dh5Ttcp[2]);
 	_device->setQ(tmpQ,tmpState);
-	Vector3D<> tcpX = (Kinematics::frameTframe(_frames[13],_frames[0],tmpState)*baseTend).R()*Vector3D<>::x();
+	Vector3D<> tcpX = (Kinematics::frameTframe(_frames[7],_frames[0],tmpState)*baseTend).R()*Vector3D<>::x();
 	tmpQ[5] = std::atan2(tcpX[1],tcpX[0]);
 	return tmpQ;
 }

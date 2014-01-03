@@ -21,6 +21,7 @@ SET(SRC_FILES
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
+    invkin/ClosedFormURSolver.cpp
 
     geometry/RANSACFitting.cpp
     
@@ -93,6 +94,8 @@ SET(SRC_FILES_HPP
     csg/csgjs.cpp
     csg/CSGConvert.hpp
     csg/CSGModel.hpp
+
+    invkin/ClosedFormURSolver.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
