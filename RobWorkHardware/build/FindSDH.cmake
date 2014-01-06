@@ -12,8 +12,6 @@ FIND_LIBRARY(SDH_LIBRARY
       sdh
    HINTS
       "${SDH_LIB_DIR_HINT}"
-      "${RWHW_ROOT}/ext/sdh2/libs/"
-      "${RWHW_ROOT}/ext/sdh3/libs/"
 )
 
 STRING(REGEX REPLACE "/libs/lib.*$" "" SDH_BASE_PATH_GUESS "${SDH_LIBRARY}")
