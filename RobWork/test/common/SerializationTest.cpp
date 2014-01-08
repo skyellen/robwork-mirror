@@ -17,6 +17,7 @@
 
 #include "../TestSuiteConfig.hpp"
 
+
 #include <rw/common/StringUtil.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -25,10 +26,77 @@
 
 #include <rw/common/INIArchive.hpp>
 #include <rw/common/BINArchive.hpp>
-#include <rw/math/Vector2D.hpp>
+
+#include <rw/common/Serializable.hpp>
+
 
 using namespace rw::common;
 using namespace rw::math;
+
+
+class myOutputArchive {
+public:
+	OutputArchive &_oa;
+	myOutputArchive(OutputArchive &oa):_oa(oa){};
+
+	template<class T>
+	inline void doWrite(const T& object, const std::string& id){
+		// the data method must have an implementation of load/save and if not then we try the generic write
+		// method which could provide a solution by the implementation itself
+		writeImpl(object, id);
+	}
+
+	/**
+	 * this function should only be called if the object inherits from Serializable
+	 */
+    template<class T>
+    inline void writeImpl(T& object, const std::string& id,
+    		typename boost::enable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL)
+    {
+    	object.write(_oa, id);
+    }
+
+    /**
+     * This function should be called if the object does not inherit from Serializable and if the
+     * object is not a pointer
+     */
+    template<typename T>
+    inline void writeImpl(T& object, const std::string& id,
+    		typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL,
+    		typename boost::disable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL)
+    {
+    	//BOOST_MPL_ASSERT_MSG(boost::is_reference<T>::value, "type T cannot be of type reference!" , (T) );
+
+		//if( boost::is_floating_point<T>::value || boost::is_integral<T>::value){
+		//	T* val = new T;
+		//	write(*val, id);
+		//}
+
+		// try and use overloaded method
+		serialization::write(object, _oa, id);
+    	//serialization::write(sd, _oa, id);
+    }
+
+};
+
+
+
+#include <rw/math/Vector2D.hpp>
+/*
+namespace rw{ namespace common {
+    class OutputArchive; class InputArchive;
+namespace serialization {
+	template<>
+	void write(const rw::math::Vector2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id){}
+	template<>
+	void write(const rw::math::Vector2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id){}
+	template<>
+	void read(rw::math::Vector2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){}
+	template<>
+	void read(rw::math::Vector2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){}
+}}} // end namespaces
+*/
+
 
 struct SerializationData: public rw::common::Serializable {
 	SerializationData(){
@@ -37,7 +105,10 @@ struct SerializationData: public rw::common::Serializable {
 		data1.push_back(0.6);
 		data1.push_back(0.7);
 		data2 = rw::math::Math::ranQ( Q(3,0,0,0), Q(3,1,1,1) );
-
+		data3 = rw::math::Math::ran();
+		data4 = rw::math::Math::ranI(0, 10000);
+		data5 = rw::math::Math::ranI(0, 10000);
+		data6 = rw::math::Math::ranI(0, 255);
 	}
 
 	bool operator== (const SerializationData& rhs) const {
@@ -48,17 +119,21 @@ struct SerializationData: public rw::common::Serializable {
 	            result &= data1[i] == rhs.data1[i];
 	        }
 	    }
-	    result &= data2 == rhs.data2;
-	    result &= data3 == rhs.data3;
+	    const double epsilon = 0.00001;
+	    result &= (data2-rhs.data2).normInf()<epsilon;
+	    result &= fabs(data3-rhs.data3)<epsilon;
 	    result &= data4 == rhs.data4;
 	    result &= data5 == rhs.data5;
 	    result &= data6 == rhs.data6;
-	    result &= data7 == rhs.data7;
+	    result &= (data7 - rhs.data7).normInf()<epsilon;
 	    return result;
 	}
 
 
-	void read(InputArchive& iarchive, const std::string& id){
+	void read(InputArchive& iarchive, const std::string& id_tmp){
+		std::string id = "sdata";
+		if(!id_tmp.empty())
+			id=id_tmp;
         iarchive.read(data1,"data1");
         iarchive.read(data2,"data2");
 
@@ -68,10 +143,15 @@ struct SerializationData: public rw::common::Serializable {
         iarchive.read(data5,"data5");
         iarchive.read(data6,"data6");
         iarchive.read(data7,"data7");
+        iarchive.read(data8,"data8");
         iarchive.readLeaveScope("primitives");
 	}
 
-	void write(OutputArchive& oarchive, const std::string& id) const{
+	void write(OutputArchive& oarchive, const std::string& id_tmp) const{
+		std::string id = "sdata";
+		if(!id_tmp.empty())
+			id = id_tmp;
+
 		oarchive.write(data1,"data1");
 		oarchive.write(data2,"data2");
 
@@ -81,6 +161,7 @@ struct SerializationData: public rw::common::Serializable {
 		oarchive.write(data5,"data5");
 		oarchive.write(data6,"data6");
 		oarchive.write(data7,"data7");
+		oarchive.write(data8,"data8");
 		oarchive.writeLeaveScope("primitives");
 	}
 
@@ -91,39 +172,40 @@ struct SerializationData: public rw::common::Serializable {
 	double data3;
 	uint32_t data4;
 	uint16_t data5;
-	uint8_t data6;
+	boost::int8_t data6;
 
-	rw::math::Vector2D<> data7;
+	rw::math::Vector3D<double> data7;
+	rw::math::Vector2D<double> data8;
 };
+
+// {0.069, 0.204, 0.022, 0, 90, 90}
+// {0.075, 0.190, -0.003, 0, 90, 90}
 
 
 BOOST_AUTO_TEST_CASE( INIArchiveTest )
 {
 	SerializationData sdata, sdata_in;
+
 	BOOST_CHECK( true );
 	{
-	    RW_WARN("1");
         INIArchive iniarchive;
-        RW_WARN("1");
         iniarchive.open("testfile.ini");
-        RW_WARN("1");
         iniarchive.write( sdata, "sdata" );
-        RW_WARN("1");
         iniarchive.close();
-        RW_WARN("1");
 	}
+
 	BOOST_CHECK( true );
 	{
-	    RW_WARN("1");
 	    INIArchive iniarchive;
-	    RW_WARN("1");
 	    iniarchive.open("testfile.ini");
-	    RW_WARN("1");
 	    iniarchive.read( sdata_in, "sdata");
-	    RW_WARN("1");
 	    iniarchive.close();
-	    RW_WARN("1");
 	}
+
+	INIArchive(std::cout).write(sdata,"sdata");
+	INIArchive(std::cout).write(sdata_in,"sdata_in");
+	INIArchive(std::cout) << sdata;
+
 	BOOST_CHECK( sdata == sdata_in );
 }
 
@@ -132,7 +214,7 @@ BOOST_AUTO_TEST_CASE( BINArchiveTest )
 	SerializationData sdata;
 
 	BINArchive iniarchive;
-	iniarchive.open("testfile.ini");
+	iniarchive.open("testfile.bin");
 
 	iniarchive.write( sdata, "sdata" );
 	iniarchive.close();

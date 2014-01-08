@@ -21,7 +21,45 @@
 
 using namespace rw::common;
 
-void BINArchive::open(const std::string& filename){
+const int BINArchive::MAX_LINE_WIDTH;
+
+BINArchive::~BINArchive(){
+	close();
+}
+
+void BINArchive::close(){
+	if(_fstr!=NULL)
+		_fstr->close();
+}
+
+void BINArchive::doWriteEnterScope(const std::string& id){
+	_scope.push_back(id);
+	(*_ofs) << "[" << getScope() << "]\n";
+}
+
+void BINArchive::doWriteLeaveScope(const std::string& id){
+	if(id!=_scope.back()){
+		RW_THROW("Scopes has been messed up!");
+	}
+	_scope.pop_back();
+}
+
+// utils to handle arrays
+void BINArchive::doReadEnterScope(const std::string& id){
+	_scope.push_back(id);
+	_ifs->getline(_line, MAX_LINE_WIDTH);
+	//(*_ofs) << "[" << getScope() << "]\n";
+}
+
+void BINArchive::doReadLeaveScope(const std::string& id){
+	if(id!=_scope.back()){
+		RW_THROW("Scopes has been messed up!");
+	}
+	_scope.pop_back();
+}
+
+
+void BINArchive::doOpenArchive(const std::string& filename){
 	if( !boost::filesystem::exists(filename.c_str()) ){
 		//create the file
 
@@ -34,7 +72,7 @@ void BINArchive::open(const std::string& filename){
 	_isopen =  _fstr->is_open();
 }
 
-void BINArchive::open(std::iostream& stream){
+void BINArchive::doOpenArchive(std::iostream& stream){
 	_fstr = NULL;
 	_iostr = &stream;
 	_ofs = _iostr;
@@ -49,7 +87,7 @@ void BINArchive::flush(){
 		_ofs->flush();
 }
 
-void BINArchive::read(bool& val, const std::string& id){
+void BINArchive::doRead(bool& val, const std::string& id){
 	int res = readUInt8(id);
 	if(res==0)
 		val = false;
@@ -57,18 +95,20 @@ void BINArchive::read(bool& val, const std::string& id){
 		val = true;
  }
 
- void BINArchive::read(std::string& val, const std::string& id){
-	 _ifs->getline(_line,500);
+ void BINArchive::doRead(std::string& val, const std::string& id){
+	 _ifs->getline(_line, MAX_LINE_WIDTH);
 	 std::pair<std::string,std::string> valname = getNameValue();
 	 //std::cout << valname.first << "  " << valname.second << std::endl;
 	 val = valname.second;
  }
 
- void BINArchive::read(std::vector<std::string>& val, const std::string& id){
-		_ifs->getline(_line,500);
+ void BINArchive::doRead(std::vector<std::string>& val, const std::string& id){
+		_ifs->getline(_line,MAX_LINE_WIDTH);
 		std::pair<std::string,std::string> valname = getNameValue();
 		if(id!=valname.first)
 			RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
 	    // read from array
 		boost::split(val, valname.second, boost::is_any_of("\t "));
  }
+
+

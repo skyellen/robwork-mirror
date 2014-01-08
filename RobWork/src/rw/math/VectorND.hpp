@@ -23,13 +23,17 @@
  * @file VectorND.hpp
  */
 
-
+#include <rw/common/Serializable.hpp>
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
+#include <rw/common/OutputArchive.hpp>
+#include <rw/common/InputArchive.hpp>
+
 #include <Eigen/Eigen>
+#include "Math.hpp"
 
 #include <rw/common/macros.hpp>
 
@@ -43,7 +47,7 @@ namespace rw { namespace math {
      *
      */
     template<size_t N, class T = double>
-    class VectorND
+    class VectorND: public rw::common::Serializable
     {
     public:
         //! The type of the internal Boost VectorND implementation.
@@ -310,7 +314,20 @@ namespace rw { namespace math {
             return true;
         }
 
+        void write(rw::common::OutputArchive& oar, const std::string& id) const {
+        	oar.write(Math::toStdVector(*this, N), id, "VectorND");
+        }
+
+        void read(rw::common::InputArchive& iar, const std::string& id){
+        	std::vector<T> result(N,0);
+        	iar.read(result, id, "VectorND");
+        	Math::fromStdVector(result, *this);
+        }
+
 		static VectorND<N,T> zero(){ return Eigen::Matrix<T,N,1>::Zero(); }
+
+
+
     private:
         //BoostBoundedVector _vec;
 		EigenVectorND _vec;
@@ -444,7 +461,12 @@ namespace rw { namespace math {
     }
 
 
+
+
+
     /**@}*/
 }} // end namespaces
+
+
 
 #endif // end include guard

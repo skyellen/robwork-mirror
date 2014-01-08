@@ -22,7 +22,7 @@
 /**
  * @file Vector3D.hpp
  */
-
+#include <rw/common/Serializable.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -475,10 +475,10 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void write(const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void read(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

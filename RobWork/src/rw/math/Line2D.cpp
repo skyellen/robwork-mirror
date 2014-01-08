@@ -98,6 +98,7 @@ Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &re
 	return INTERSECTS;
 }
 
+template<>
 void rw::common::serialization::write(const Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
     oar.writeEnterScope(id);
@@ -106,6 +107,7 @@ void rw::common::serialization::write(const Line2D& tmp, rw::common::OutputArchi
     oar.writeLeaveScope(id);
 }
 
+template<>
 void rw::common::serialization::read(Line2D& tmp, rw::common::InputArchive& iar, const std::string& id){
     rw::math::Vector2D<double> p1, p2;
     iar.readEnterScope(id);

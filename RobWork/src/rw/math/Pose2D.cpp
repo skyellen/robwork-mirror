@@ -32,10 +32,10 @@ namespace rw{ namespace common {namespace serialization {
     }
 
     // some explicit template specifications
-    template void write(const rw::math::Pose2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template void write(const rw::math::Pose2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template void read(rw::math::Pose2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read(rw::math::Pose2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const rw::math::Pose2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void write(const rw::math::Pose2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::Pose2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void read(rw::math::Pose2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 
 }}} // end namespaces
 

@@ -21,82 +21,144 @@
 #include <boost/regex.hpp>
 using namespace rw::common;
 
-void INIArchive::close(){
-    flush();
-    if(_fstr!=NULL)
-        _fstr->close();
+const int INIArchive::MAX_LINE_WIDTH;
+
+void INIArchive::close()
+{
+    //flush();
+    if (_fstr != NULL) _fstr->close();
 }
 
+void INIArchive::doWriteEnterScope(const std::string& id)
+{
+    _scope.push_back(id);
+    (*_ofs) << "[" << getScope() << "]\n";
+}
+;
 
-void INIArchive::open(const std::string& filename){
-	if( !boost::filesystem::exists(filename.c_str()) ){
-		//create the file
-	    //std::cout << "file does not exist!!" << std::endl;
-	}
-	_fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::trunc);
-	_fstr->seekg(0);
-	_iostr = _fstr;
-	_ofs = _fstr;
-	_ifs = _fstr;
-	_isopen =  _fstr->is_open();
+void INIArchive::doWriteLeaveScope(const std::string& id)
+{
+    if (id != _scope.back()) {
+        RW_THROW("Scopes has been messed up! Expected id " << _scope.back() << " got " << id);
+    }
+    _scope.pop_back();
+}
+;
+
+void INIArchive::doReadEnterScope(const std::string& id)
+{
+    _scope.push_back(id);
+    _ifs->getline(_line, MAX_LINE_WIDTH);
+    //(*_ofs) << "[" << getScope() << "]\n";
+}
+;
+
+void INIArchive::doReadLeaveScope(const std::string& id)
+{
+    if (id != _scope.back()) {
+        RW_THROW("Scopes has been messed up!");
+    }
+    _scope.pop_back();
+}
+;
+
+void INIArchive::doOpenArchive(const std::string& filename)
+{
+    _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in);
+    _iostr = _fstr;
+    _ofs = _fstr;
+    _ifs = _fstr;
+    _isopen = _fstr->is_open();
 }
 
-void INIArchive::open(std::iostream& stream){
-	_fstr = NULL;
-	_iostr = &stream;
-	_ofs = _iostr;
-	_ifs = _iostr;
-	_isopen =  true;
+void INIArchive::doOpenArchive(std::iostream& stream)
+{
+    _fstr = NULL;
+    _iostr = &stream;
+    _ofs = _iostr;
+    _ifs = _iostr;
+    _isopen = true;
 }
 
-void INIArchive::flush(){
-	if(_iostr!=NULL)
-		_iostr->flush();
-	if(_ofs!=NULL && _ofs!=_iostr)
-		_ofs->flush();
+void INIArchive::flush()
+{
+    if (_iostr != NULL) _iostr->flush();
+    if (_ofs != NULL && _ofs != _iostr) _ofs->flush();
 }
 
+void INIArchive::doWrite(boost::int8_t val, const std::string& id)
+{
+    //std::cout << "uint stuff b" << (int)val << std::endl;
+    //int bum = 4;
+    (*_ofs) << id << "=" << (int) val << "\n";
+    //std::cout << id << "=" << (int)val << "\n";
 
- void INIArchive::read(bool& val, const std::string& id){
-	int res = readInt(id);
-	if(res==0)
-		val = false;
-	else
-		val = true;
- }
+    //boost::int32_t tmp=val;std::cout << "uint stuff" << std::endl; writeValue<int>(tmp,id);
+}
+;
+void INIArchive::doWrite(boost::uint8_t val, const std::string& id)
+{
+    (*_ofs) << id << "=" << (int) val << "\n";
+    //doWrite((boost::uint32_t)val,id);
+}
 
- void INIArchive::read(std::string& val, const std::string& id){
-	 getLine();
-	 std::pair<std::string,std::string> valname = getNameValue();
-	 //std::cout << valname.first << "  " << valname.second << std::endl;
-	 val = valname.second;
- }
+void INIArchive::doRead(bool& val, const std::string& id)
+{
+    int res = readInt(id);
+    if (res == 0) val = false;
+    else val = true;
+}
 
- void INIArchive::read(std::vector<std::string>& val, const std::string& id){
-		getLine();
-		std::pair<std::string,std::string> valname = getNameValue();
-		if(id!=valname.first)
-			RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
-	    // read from array
-		boost::split(val, valname.second, boost::is_any_of("\t "));
- }
+void INIArchive::doRead(boost::int8_t& val, const std::string& id)
+{
+    boost::int16_t tmp;
+    readValue<boost::int16_t>(tmp, id);
+    val = tmp;
+}
 
- bool INIArchive::getLine(){
-      bool valid = false;
-      while(valid==false){
-          _ifs->getline(_line,500);
-          std::cout << "Line: " << _line << std::endl;
-          if( _ifs->eof() )
-              break;
-          // test if line has valid input
-          static const boost::regex comment("^[ ]*;[.]*$");
-          static const boost::regex empty("^[\\h]*$");
-          if( boost::regex_match(_line, comment) )
-              continue;
-          if( boost::regex_match(_line, empty) )
-              continue;
-          valid = true;
-      }
-      return valid;
-  }
+void INIArchive::doRead(boost::uint8_t& val, const std::string& id)
+{
+    boost::uint16_t tmp;
+    readValue<boost::uint16_t>(tmp, id);
+    val = tmp;
+}
+
+void INIArchive::doRead(std::string& val, const std::string& id)
+{
+    getLine();
+    std::pair<std::string, std::string> valname = getNameValue();
+    //std::cout << valname.first << "  " << valname.second << std::endl;
+    if (valname.first != id) {
+        RW_WARN("Mismatching id when reading INI file. " << valname.first << "!=" << id);
+    }
+    val = valname.second;
+}
+
+void INIArchive::doRead(std::vector<std::string>& val, const std::string& id)
+{
+    getLine();
+    std::pair<std::string, std::string> valname = getNameValue();
+    if (valname.first != id) {
+        RW_WARN("Mismatching id when reading INI file. " << valname.first << "!=" << id);
+    }
+    // read from array
+    boost::split(val, valname.second, boost::is_any_of("\t "));
+}
+
+bool INIArchive::getLine()
+{
+    bool valid = false;
+    while (valid == false) {
+        _ifs->getline(_line, MAX_LINE_WIDTH);
+        //std::cout << "Line: " << _line << std::endl;
+        if (_ifs->eof()) break;
+        // test if line has valid input
+        static const boost::regex comment("^[ ]*;[.]*$");
+        static const boost::regex empty("^[\\h]*$");
+        if (boost::regex_match(_line, comment)) continue;
+        if (boost::regex_match(_line, empty)) continue;
+        valid = true;
+    }
+    return valid;
+}
 

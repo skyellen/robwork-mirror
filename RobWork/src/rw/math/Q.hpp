@@ -29,7 +29,7 @@
 #include <rw/common/macros.hpp>
 #include <cstdarg>
 
-
+#include <rw/common/Serializable.hpp>
 
 namespace rw { namespace math {
 
@@ -513,8 +513,10 @@ namespace rw{ namespace common {
     class OutputArchive;
     class InputArchive;
 namespace serialization {
+	template<>
     void write(const rw::math::Q& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<>
+	void read(rw::math::Q& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 

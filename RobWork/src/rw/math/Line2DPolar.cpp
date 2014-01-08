@@ -127,6 +127,7 @@ Line2DPolar Line2DPolar::lineToLocal(
     return Line2DPolar(rho_local, angle_local);
 }
 
+template<>
 void rw::common::serialization::write(const Line2DPolar& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
     oar.writeEnterScope(id);
@@ -135,6 +136,7 @@ void rw::common::serialization::write(const Line2DPolar& tmp, rw::common::Output
     oar.writeLeaveScope(id);
 }
 
+template<>
 void rw::common::serialization::read(Line2DPolar& tmp, rw::common::InputArchive& iar, const std::string& id){
     double rho,theta;
     iar.readEnterScope(id);

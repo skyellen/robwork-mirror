@@ -21,6 +21,8 @@
 
 #include "Vector2D.hpp"
 
+#include <rw/common/Serializable.hpp>
+
 namespace rw {
 namespace math {
 
@@ -141,8 +143,8 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Line2D& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::Line2D& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::Line2D& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 

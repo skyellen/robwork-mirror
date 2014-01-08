@@ -101,7 +101,7 @@ void Jacobian::addRotation(const Vector3D<>& rot, size_t row, size_t col) {
 }
 
 
-
+template<>
 void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar, const std::string& id){
     std::vector<double> arr;
     size_t size1,size2;
@@ -115,6 +115,7 @@ void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar,
     Math::fromStdVectorToMat(arr, tmp, (int)tmp.size1(), (int)tmp.size2());
 }
 
+template<>
 void rw::common::serialization::write(const rw::math::Jacobian& tmp, OutputArchive& oar, const std::string& id){
     oar.writeEnterScope(id);
     oar.write( tmp.size1(), "size1" );

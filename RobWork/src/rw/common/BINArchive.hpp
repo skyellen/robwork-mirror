@@ -42,98 +42,90 @@ namespace common {
 	 */
 	class BINArchive: public InputArchive, public virtual OutputArchive {
 	public:
+
+		//! @brief constructor
 		BINArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_iostr(NULL),_isopen(false){}
 
-		void close(){
-			if(_fstr!=NULL)
-				_fstr->close();
-		}
+		//! destructor
+		virtual ~BINArchive();
 
-		virtual ~BINArchive(){
-			close();
-		}
+		//! close streaming to archive
+		void close();
 
-		virtual void open(const std::string& filename);
+		//! \copydoc rw::common::Archive::flush
+		void flush();
 
-		virtual void open(std::iostream& stream);
+		//! \copydoc rw::common::Archive::isOpen
+		bool isOpen(){ return _isopen; };
 
-		virtual void flush();
 
-		virtual void open(std::ostream& ofs){
+
+	protected:
+
+		static const int MAX_LINE_WIDTH = 1000;
+
+		void doOpenArchive(const std::string& filename);
+
+		void doOpenArchive(std::iostream& stream);
+
+		void doOpenOutput(std::ostream& ofs){
 			_fstr = NULL;
 			_iostr = NULL;
 			_ofs = &ofs;
 			_isopen = true;
 		}
 
-		virtual void open(std::istream& ifs){
+		void doOpenInput(std::istream& ifs){
 			_fstr = NULL;
 			_iostr = NULL;
 			_ifs = &ifs;
 			_isopen = true;
 		}
 
-
-
-		virtual bool isOpen(){ return _isopen; };
-
 		//////////////////// SCOPE
-		// utils to handle arrays
-		virtual void writeEnterScope(const std::string& id){
-			_scope.push_back(id);
-			(*_ofs) << "[" << getScope() << "]\n";
-		};
-		virtual void writeLeaveScope(const std::string& id){
-			if(id!=_scope.back()){
-				RW_THROW("Scopes has been messed up!");
-			}
-			_scope.pop_back();
-		};
+			// utils to handle arrays
+			//! \copydoc OutputArchive::writeEnterScope
+			void doWriteEnterScope(const std::string& id);
 
+			//! \copydoc OutputArchive::writeLeaveScope
+			void doWriteLeaveScope(const std::string& id);
 
-		// utils to handle arrays
-		virtual void readEnterScope(const std::string& id){
-			_scope.push_back(id);
-			_ifs->getline(_line, 500);
-			//(*_ofs) << "[" << getScope() << "]\n";
-		};
-		virtual void readLeaveScope(const std::string& id){
-			if(id!=_scope.back()){
-				RW_THROW("Scopes has been messed up!");
-			}
-			_scope.pop_back();
-		};
+			//! \copydoc InputArchive::readEnterScope
+			void doReadEnterScope(const std::string& id);
+
+			//! \copydoc OutputArchive::readLeaveScope
+			void doReadLeaveScope(const std::string& id);
 
 		///////////////////////// WRITING
 
-		virtual void write(bool val, const std::string& id){
+		void doWrite(bool val, const std::string& id){
 			if(val) write((int)1,id);
 			else write((int)0,id);
 		}
-		void write(boost::int8_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::uint8_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::int16_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::uint16_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::int32_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::uint32_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::int64_t val, const std::string& id){ writeValue(val,id);};
-		void write(boost::uint64_t val, const std::string& id){ writeValue(val,id);};
-		void write(float val, const std::string& id){ writeValue(val,id);};
-		void write(double val, const std::string& id){ writeValue(val,id);};
-		void write(const std::string& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::int8_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::uint8_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::int16_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::uint16_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::int32_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::uint32_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::int64_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(boost::uint64_t val, const std::string& id){ writeValue(val,id);};
+		void doWrite(float val, const std::string& id){ writeValue(val,id);};
+		void doWrite(double val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::string& val, const std::string& id){ writeValue(val,id);};
 
-		void write(const std::vector<bool>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::int8_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::uint8_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::int16_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::uint16_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::int32_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::uint32_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::int64_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<boost::uint64_t>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<float>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<double>& val, const std::string& id){ writeValue(val,id);};
-		void write(const std::vector<std::string>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<bool>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::int8_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::uint8_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::int16_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::uint16_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::int32_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::uint32_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::int64_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<boost::uint64_t>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<float>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<double>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<std::string>& val, const std::string& id){ writeValue(val,id);};
 
 		//template<class T>
 		//void write(const T& data, const std::string& id){ OutputArchive::write<T>(data,id); }
@@ -150,10 +142,10 @@ namespace common {
 			(*_ofs) << id << "=" << val << "\n";
 		}
 
-		template<class T>
-		void write(const T& object, const std::string& id){
-			((OutputArchive*)this)->write<T>(object, id);
-		}
+		//template<class T>
+		//void write(const T& object, const std::string& id){
+		//	((OutputArchive*)this)->write<T>(object, id);
+		//}
 
 
 		///////////////// READING
@@ -177,36 +169,36 @@ namespace common {
 			return std::make_pair("","");
 		}
 
-		virtual void read(bool& val, const std::string& id);
-		virtual void read(boost::int8_t& val, const std::string& id){readValue<boost::int8_t>(val,id);}
-		virtual void read(boost::uint8_t& val, const std::string& id){readValue<boost::uint8_t>(val,id);}
-		virtual void read(boost::int16_t& val, const std::string& id){readValue<boost::int16_t>(val,id);}
-		virtual void read(boost::uint16_t& val, const std::string& id){readValue<boost::uint16_t>(val,id);}
-		virtual void read(boost::int32_t& val, const std::string& id){readValue<boost::int32_t>(val,id);}
-		virtual void read(boost::uint32_t& val, const std::string& id){readValue<boost::uint32_t>(val,id);}
-		virtual void read(boost::int64_t& val, const std::string& id){readValue<boost::int64_t>(val,id);}
-		virtual void read(boost::uint64_t& val, const std::string& id){readValue<boost::uint64_t>(val,id);}
-		virtual void read(float& val, const std::string& id){readValue<float>(val,id);}
-		virtual void read(double& val, const std::string& id){readValue<double>(val,id);}
-		virtual void read(std::string& val, const std::string& id);
+		virtual void doRead(bool& val, const std::string& id);
+		virtual void doRead(boost::int8_t& val, const std::string& id){readValue<boost::int8_t>(val,id);}
+		virtual void doRead(boost::uint8_t& val, const std::string& id){readValue<boost::uint8_t>(val,id);}
+		virtual void doRead(boost::int16_t& val, const std::string& id){readValue<boost::int16_t>(val,id);}
+		virtual void doRead(boost::uint16_t& val, const std::string& id){readValue<boost::uint16_t>(val,id);}
+		virtual void doRead(boost::int32_t& val, const std::string& id){readValue<boost::int32_t>(val,id);}
+		virtual void doRead(boost::uint32_t& val, const std::string& id){readValue<boost::uint32_t>(val,id);}
+		virtual void doRead(boost::int64_t& val, const std::string& id){readValue<boost::int64_t>(val,id);}
+		virtual void doRead(boost::uint64_t& val, const std::string& id){readValue<boost::uint64_t>(val,id);}
+		virtual void doRead(float& val, const std::string& id){readValue<float>(val,id);}
+		virtual void doRead(double& val, const std::string& id){readValue<double>(val,id);}
+		virtual void doRead(std::string& val, const std::string& id);
 
-		virtual void read(std::vector<bool>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::int8_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::uint8_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::int16_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::uint16_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::int32_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::uint32_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::int64_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<boost::uint64_t>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<float>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<double>& val, const std::string& id){readValue(val,id);}
-		virtual void read(std::vector<std::string>& val, const std::string& id) ;
+		virtual void doRead(std::vector<bool>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::int8_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::uint8_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::int16_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::uint16_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::int32_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::uint32_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::int64_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<boost::uint64_t>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<float>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<double>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<std::string>& val, const std::string& id) ;
 
-        template<class T>
-        void read(T& object, const std::string& id){
-            ((InputArchive*)this)->read<T>(object, id);
-        }
+        //template<class T>
+        //void read(T& object, const std::string& id){
+        //    ((InputArchive*)this)->read<T>(object, id);
+        //}
 
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
@@ -249,7 +241,8 @@ namespace common {
 		std::fstream *_fstr;
 		std::iostream *_iostr;
 
-		char _line[500];
+
+		char _line[MAX_LINE_WIDTH];
 		bool _isopen;
 		std::vector<std::string> _scope;
 	};

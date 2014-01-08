@@ -29,67 +29,117 @@ namespace common {
 /**
  * @brief an archive interface for reading from a serialized class.
  */
-class InputArchive: public Archive {
+class InputArchive: public virtual Archive {
 public:
 	//! @brief constructor
     InputArchive(){};
 
-    //! @brief open an inputstream for reading
-    virtual void open(std::istream& ifs) = 0;
+    /**
+     * @brief enter specific scope with id when reading.
+     * @param id [in] id of the scope to enter
+     * @param idDefault [in] the default scope id
+     */
+    void readEnterScope(const std::string& id, const std::string& idDefault=""){
+    	if(id.empty()){
+    		doReadEnterScope(idDefault);
+    	} else {
+    		doReadEnterScope(id);
+    	}
+    }
 
-    // utils to handle arrays
-    virtual void readEnterScope(const std::string& id) = 0;
-    virtual void readLeaveScope(const std::string& id) = 0;
-
-    // reading primitives to archive
-    virtual void read(bool& val, const std::string& id) = 0;
-    virtual void read(boost::int8_t& val, const std::string& id) = 0;
-    virtual void read(boost::uint8_t& val, const std::string& id) = 0;
-    virtual void read(boost::int16_t& val, const std::string& id) = 0;
-    virtual void read(boost::uint16_t& val, const std::string& id) = 0;
-    virtual void read(boost::int32_t& val, const std::string& id) = 0;
-    virtual void read(boost::uint32_t& val, const std::string& id) = 0;
-    virtual void read(boost::int64_t& val, const std::string& id) = 0;
-    virtual void read(boost::uint64_t& val, const std::string& id) = 0;
-    virtual void read(float& val, const std::string& id) = 0;
-    virtual void read(double& val, const std::string& id) = 0;
-    virtual void read(std::string& val, const std::string& id) = 0;
-
-    virtual void read(std::vector<bool>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::int8_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::uint8_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::int16_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::uint16_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::int32_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::uint32_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::int64_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<boost::uint64_t>& val, const std::string& id) = 0;
-    virtual void read(std::vector<float>& val, const std::string& id) = 0;
-    virtual void read(std::vector<double>& val, const std::string& id) = 0;
-    virtual void read(std::vector<std::string>& val, const std::string& id) = 0;
-
-
+    /**
+     * @brief leave specific scope with id when reading.
+     * @param id [in] id of the scope to leave
+     * @param idDefault [in] the default scope id
+     */
+    void readLeaveScope(const std::string& id, const std::string& idDefault=""){
+    	if(id.empty()){
+    		doReadLeaveScope(idDefault);
+    	} else {
+    		doReadLeaveScope(id);
+    	}
+    }
 
 
     // convienience wrappers for reading primitives
+    //! read boolean
     bool readBool(const std::string& id){ bool b; read(b,id); return b;};
+    //! read integer
     int readInt(const std::string& id){ int b; read(b,id); return b;};
+    //! read unsigned integer
     unsigned int readUInt(const std::string& id){ unsigned int b; read(b,id); return b;};
-
+    //! read 8 bit integer
     boost::int8_t readInt8(const std::string& id){ boost::int8_t b; read(b,id); return b;};
+    //! read 8 bit unsigned integer
     boost::uint8_t readUInt8(const std::string& id){ boost::uint8_t b; read(b,id); return b;};
-
+    //! read 64 bit integer
     boost::int64_t readInt64(const std::string& id){ boost::int64_t b; read(b,id); return b;};
+    //! read 64 bit unsigned integer
     boost::uint64_t readUInt64(const std::string& id){ boost::uint64_t b; read(b,id); return b;};
+    //! read double floating point
     double readDouble(const std::string& id) { double b; read(b,id); return b;};
+    //! read string
     std::string readString(const std::string& id) { std::string b; read(b,id); return b;};
 
 
     //
     template<class T>
     void read(T& object, const std::string& id){
+    	doRead(object, id);
+    }
+
+    template<class T>
+    void read(T& object, const std::string& id, const std::string& idDefault){
+    	if(!id.empty())
+    		doRead(object, id);
+    	else
+    		doRead(object, idDefault);
+    }
+
+    template<class T>
+    InputArchive& operator>> (T& dst){
+    	read<T>(dst,"");
+    }
+
+protected:
+
+
+    template<class T>
+    void doRead(T& object, const std::string& id){
     	readImpl(object, id);
     }
+
+    // reading primitives to archive
+    virtual void doRead(bool& val, const std::string& id) = 0;
+    virtual void doRead(boost::int8_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::uint8_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::int16_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::uint16_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::int32_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::uint32_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::int64_t& val, const std::string& id) = 0;
+    virtual void doRead(boost::uint64_t& val, const std::string& id) = 0;
+    virtual void doRead(float& val, const std::string& id) = 0;
+    virtual void doRead(double& val, const std::string& id) = 0;
+    virtual void doRead(std::string& val, const std::string& id) = 0;
+
+    virtual void doRead(std::vector<bool>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::int8_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::uint8_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::int16_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::uint16_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::int32_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::uint32_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::int64_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<boost::uint64_t>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<float>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<double>& val, const std::string& id) = 0;
+    virtual void doRead(std::vector<std::string>& val, const std::string& id) = 0;
+
+    // utils to handle arrays
+    virtual void doReadEnterScope(const std::string& id) = 0;
+    virtual void doReadLeaveScope(const std::string& id) = 0;
+
 
 private:
     template<class T>
@@ -107,7 +157,7 @@ private:
     	} else if( boost::is_floating_point<T>::value || boost::is_integral<T>::value){
     		read(object,id);
     	} else {
-    		serialization::read<T>(object, *this, id);
+    		serialization::read(object, *this, id);
     	}
 
     }

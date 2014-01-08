@@ -32,22 +32,22 @@ template class Vector3D<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void write(const rw::math::Vector3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+    void writeImpl(const rw::math::Vector3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
         std::vector<double> data = rw::math::Math::toStdVector(tmp, 3);
         oar.write( data , id );
     }
 
     template<class T>
-    void read(rw::math::Vector3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(rw::math::Vector3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
         std::vector<T> data;
         iar.read(data, id);
         rw::math::Math::fromStdVector(data, tmp );
     }
 
     // we need these to explicitly instantiate these functions
-    template void write<double>( const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void write<float>( const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void read<double>(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read<float>(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write( const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void write( const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void read(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void read(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
 
 }}}

@@ -90,3 +90,14 @@ PerspectiveTransform2D<T>::calcTransform(
 // some explicit template specifications
 template class PerspectiveTransform2D<double>;
 template class PerspectiveTransform2D<float>;
+
+
+namespace rw{ namespace common {
+namespace serialization {
+
+	template<> void write(const rw::math::PerspectiveTransform2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void write(const rw::math::PerspectiveTransform2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::PerspectiveTransform2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void read(rw::math::PerspectiveTransform2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+}}} // end namespaces
+

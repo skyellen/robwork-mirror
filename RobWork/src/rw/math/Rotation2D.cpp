@@ -33,22 +33,22 @@ template class Rotation2D<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void write(const rw::math::Rotation2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+    void writeImpl(const rw::math::Rotation2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
         std::vector<double> data = rw::math::Math::toStdVector(tmp, 2, 2);
-        oar.write( data , id );
+        oar.write( data , id , "Rotation2D");
     }
 
     template<class T>
-    void read(rw::math::Rotation2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(rw::math::Rotation2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
         std::vector<T> data;
-        iar.read(data, id);
+        iar.read(data, id, "Rotation2D");
         rw::math::Math::fromStdVectorToMat(data, tmp, 2, 2 );
     }
 
     // we need these to explicitly instantiate these functions
-    template void write<double>( const rw::math::Rotation2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void write<float>( const rw::math::Rotation2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void read<double>(rw::math::Rotation2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read<float>(rw::math::Rotation2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write( const rw::math::Rotation2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
+    template<> void write( const rw::math::Rotation2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
+    template<> void read(rw::math::Rotation2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
+    template<> void read(rw::math::Rotation2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
 
 }}}

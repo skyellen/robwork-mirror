@@ -29,6 +29,8 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
+#include <rw/common/Serializable.hpp>
+
 #include <boost/numeric/ublas/matrix.hpp>
 
 namespace rw { namespace math {
@@ -344,8 +346,8 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Jacobian& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Jacobian& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const rw::math::Jacobian& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::Jacobian& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 

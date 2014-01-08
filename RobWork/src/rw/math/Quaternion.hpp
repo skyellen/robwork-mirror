@@ -26,7 +26,7 @@
 #include "Rotation3D.hpp"
 #include "Rotation3DVector.hpp"
 
-
+#include <rw/common/Serializable.hpp>
 #include <ostream>
 //#include <boost/math/quaternion.hpp>
 //#include <boost/math/special_functions/sign.hpp>
@@ -635,10 +635,14 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
+	template<>
     void write(const rw::math::Quaternion<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::Quaternion<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Quaternion<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::Quaternion<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<>
+	void write(const rw::math::Quaternion<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<>
+	void read(rw::math::Quaternion<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<>
+	void read(rw::math::Quaternion<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

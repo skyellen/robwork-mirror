@@ -26,8 +26,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
-#include <rw/common/InputArchive.hpp>
-#include <rw/common/OutputArchive.hpp>
+#include <rw/common/Serializable.hpp>
 #include <Eigen/Eigen>
 #include "Constants.hpp"
 
@@ -413,10 +412,10 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Vector2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::Vector2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Vector2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::Vector2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::Vector2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void write(const rw::math::Vector2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::Vector2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void read(rw::math::Vector2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 

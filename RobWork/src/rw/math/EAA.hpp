@@ -27,6 +27,7 @@
 #include "Rotation3D.hpp"
 #include "Vector3D.hpp"
 #include "Constants.hpp"
+#include <rw/common/Serializable.hpp>
 
 namespace rw { namespace math {
 
@@ -338,10 +339,10 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::EAA<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::EAA<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::EAA<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const rw::math::EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void write(const rw::math::EAA<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::EAA<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void read(rw::math::EAA<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

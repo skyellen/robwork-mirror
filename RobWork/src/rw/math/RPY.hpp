@@ -23,6 +23,8 @@
  * @file RPY.hpp
  */
 
+#include <rw/common/Serializable.hpp>
+
 #include "Rotation3DVector.hpp"
 #include "Rotation3D.hpp"
 #include "Vector3D.hpp"
@@ -160,10 +162,14 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template<class T>
-    void write(const rw::math::RPY<T>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<class T>
-    void read(rw::math::RPY<T>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<>
+    void write(const rw::math::RPY<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<>
+    void read(rw::math::RPY<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<>
+    void write(const rw::math::RPY<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<>
+    void read(rw::math::RPY<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 

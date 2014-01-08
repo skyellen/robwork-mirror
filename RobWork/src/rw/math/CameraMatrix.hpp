@@ -135,10 +135,11 @@ namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template <class T>
-    void write(const rw::math::CameraMatrix<T>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template <class T>
-    void read(rw::math::CameraMatrix<T>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+
 }}} // end namespaces
 
 

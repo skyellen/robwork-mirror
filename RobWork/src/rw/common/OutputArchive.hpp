@@ -29,45 +29,38 @@ namespace common {
 	 * @brief serializable objects can be written to an output archive.
 	 *
 	 * This class define an interface for serializing data.
+	 *
 	 */
-	class OutputArchive : public Archive {
+	class OutputArchive : public virtual Archive {
 	public:
 		//! @brief destructor
 		virtual ~OutputArchive(){};
 
-		//! @copydoc Archive::open
-		virtual void open(std::ostream& ofs) = 0;
 
 		// utils to handle arrays
-		virtual void writeEnterScope(const std::string& id) = 0;
-		virtual void writeLeaveScope(const std::string& id) = 0;
+		/**
+		 * @brief create a serialized scope in which objects can be written
+		 * @param id [in] id of the scope
+		 */
+	    void writeEnterScope(const std::string& id, const std::string& idDefault=""){
+	    	if(id.empty()){
+	    		doWriteEnterScope(idDefault);
+	    	} else {
+	    		doWriteEnterScope(id);
+	    	}
+	    }
 
-		// writing primitives to archive
-		virtual void write(bool val, const std::string& id) = 0;
-		virtual void write(boost::int8_t val, const std::string& id) = 0;
-		virtual void write(boost::uint8_t val, const std::string& id) = 0;
-		virtual void write(boost::int16_t val, const std::string& id) = 0;
-		virtual void write(boost::uint16_t val, const std::string& id) = 0;
-		virtual void write(boost::int32_t val, const std::string& id) = 0;
-		virtual void write(boost::uint32_t val, const std::string& id) = 0;
-		virtual void write(boost::int64_t val, const std::string& id) = 0;
-		virtual void write(boost::uint64_t val, const std::string& id) = 0;
-		virtual void write(float val, const std::string& id) = 0;
-		virtual void write(double val, const std::string& id) = 0;
-		virtual void write(const std::string& val, const std::string& id) = 0;
-
-		virtual void write(const std::vector<bool>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::int8_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::uint8_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::int16_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::uint16_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::int32_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::uint32_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::int64_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<boost::uint64_t>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<float>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<double>& val, const std::string& id) = 0;
-		virtual void write(const std::vector<std::string>& val, const std::string& id) = 0;
+		/**
+		 * @brief leave the current scope
+		 * @param id [in] id of the scope
+		 */
+	    void writeLeaveScope(const std::string& id, const std::string& idDefault=""){
+	    	if(id.empty()){
+	    		doWriteLeaveScope(idDefault);
+	    	} else {
+	    		doWriteLeaveScope(id);
+	    	}
+	    }
 
 
 		// now for the complex types, these needs to implement save/load functionality
@@ -81,30 +74,103 @@ namespace common {
 		void write(const T& object, const std::string& id){
 			// the data method must have an implementation of load/save and if not then we try the generic write
 			// method which could provide a solution by the implementation itself
-			writeImpl(object, id);
-
+			doWrite(object, id);
 		}
 
-	private:
+		/**
+		 * @brief Same as write(object,id) however an additional parameter is given which is the default
+		 * identifier to use in case id is empty.
+		 * @param object [in] object to serialize
+		 * @param id [in] identifier
+		 * @param id_default [in] default id
+		 */
+		template<class T>
+		void write(const T& object, const std::string& id, const std::string& id_default){
+			// the data method must have an implementation of load/save and if not then we try the generic write
+			// method which could provide a solution by the implementation itself
+			if(!id.empty())
+				doWrite(object, id);
+			else
+				doWrite(object, id_default);
+		}
+
 	    template<class T>
-	    void writeImpl(T& object, const std::string& id, typename boost::enable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL){
+	    OutputArchive& operator<< (T& dst){
+	    	write<T>(dst,"");
+	    }
+
+
+
+	protected:
+
+
+		// writing primitives to archive
+		virtual void doWrite(bool val, const std::string& id) = 0;
+		virtual void doWrite(boost::int8_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::uint8_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::int16_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::uint16_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::int32_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::uint32_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::int64_t val, const std::string& id) = 0;
+		virtual void doWrite(boost::uint64_t val, const std::string& id) = 0;
+		virtual void doWrite(float val, const std::string& id) = 0;
+		virtual void doWrite(double val, const std::string& id) = 0;
+		virtual void doWrite(const std::string& val, const std::string& id) = 0;
+
+		virtual void doWrite(const std::vector<bool>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::int8_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::uint8_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::int16_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::uint16_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::int32_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::uint32_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::int64_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<boost::uint64_t>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<float>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<double>& val, const std::string& id) = 0;
+		virtual void doWrite(const std::vector<std::string>& val, const std::string& id) = 0;
+
+		/**
+		 * @brief handles serialization of an object. The object must either be a primitive type,
+		 * inherit from Serializable or there must exist an overloaded method
+		 * rw::common::serialization::write(const T& data, class OutputArchive& oarchive, const std::string& id)
+		 *
+		 * @param object [in] object to be serialized
+		 * @param id [in] potential id associated to the object
+		 */
+		template<class T>
+		void doWrite(const T& object, const std::string& id){
+			// the data method must have an implementation of load/save and if not then we try the generic write
+			// method which could provide a solution by the implementation itself
+			writeImpl(object, id);
+		}
+
+		virtual void doWriteEnterScope(const std::string& id) = 0;
+		virtual void doWriteLeaveScope(const std::string& id) = 0;
+
+
+	private:
+
+		/**
+		 * this function should only be called if the object inherits from Serializable
+		 */
+	    template<class T>
+	    void writeImpl(T& object, const std::string& id,
+	    		typename boost::enable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL)
+	    {
 			object.write(*this, id);
 	    }
 
-/*
-	    template<class T>
-	    void writeImpl(T& object, const std::string& id, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* def=NULL){
-			write((uint64_t)object, id);
-	    }
-*/
-
-	    //template<class T>
-	    //void writeImpl(T& object, const std::string& id, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* def=NULL){
-	    //	BOOST_MPL_ASSERT_MSG(boost::is_pointer<T>::value, "type T cannot be of type reference!");
-	    //}
-
+	    /**
+	     * This function should be called if the object does not inherit from Serializable and if the
+	     * object is not a pointer
+	     */
 	    template<typename T>
-	    void writeImpl(T& object, const std::string& id, typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL, typename boost::disable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL){
+	    void writeImpl(T& object, const std::string& id,
+	    		typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL,
+	    		typename boost::disable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL)
+	    {
 	    	//BOOST_MPL_ASSERT_MSG(boost::is_reference<T>::value, "type T cannot be of type reference!" , (T) );
 
 			//if( boost::is_floating_point<T>::value || boost::is_integral<T>::value){
@@ -113,13 +179,32 @@ namespace common {
 			//}
 
 			// try and use overloaded method
-			serialization::write<T>(object, *this, id);
+			serialization::write(object, *this, id);
 	    }
 
+	    /**
+	     * This function should be called if the object is a pointer type
+	     */
 	    template<typename T>
-	    void writeImpl(T& object, const std::string& id, typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL){
-			serialization::write<boost::uint64_t>((boost::uint64_t)object, *this, id);
+	    void writeImpl(T& object, const std::string& id,
+	    		typename boost::disable_if_c<boost::is_base_of<Serializable, T>::value, T>::type* def=NULL,
+	    		typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* defptr=NULL)
+	    {
+			doWrite((boost::uint64_t)object, id);
 	    }
+
+
+	    /*
+		template<class T>
+		void writeImpl(T& object, const std::string& id, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* def=NULL){
+			write((uint64_t)object, id);
+		}
+	    */
+
+		//template<class T>
+		//void writeImpl(T& object, const std::string& id, typename boost::enable_if_c<boost::is_pointer<T>::value, T>::type* def=NULL){
+		//	BOOST_MPL_ASSERT_MSG(boost::is_pointer<T>::value, "type T cannot be of type reference!");
+		//}
 
 
 	};

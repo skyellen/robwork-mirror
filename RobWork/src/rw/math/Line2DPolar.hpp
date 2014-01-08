@@ -23,6 +23,7 @@
 #include "Vector2D.hpp"
 #include <boost/numeric/ublas/vector.hpp>
 
+#include <rw/common/Serializable.hpp>
 
 namespace rw {
 namespace math {
@@ -136,8 +137,8 @@ public:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Line2DPolar& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Line2DPolar& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::Line2DPolar& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::Line2DPolar& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif

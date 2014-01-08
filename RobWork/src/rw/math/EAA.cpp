@@ -115,24 +115,25 @@ const Rotation3D<T> EAA<T>::toRotation3D() const
 template class EAA<double>;
 template class EAA<float>;
 
+template<>
 void rw::common::serialization::write(const EAA<double>& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id );
+    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id , "EAA");
 }
-
+template<>
 void rw::common::serialization::read(EAA<double>& tmp, rw::common::InputArchive& iar, const std::string& id){
     std::vector<double> arr;
-    iar.read(arr, id);
+    iar.read(arr, id, "EAA");
     rw::math::Math::fromStdVector(arr, tmp);
 }
-
+template<>
 void rw::common::serialization::write(const EAA<float>& tmp, rw::common::OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id );
+    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id , "EAA");
 }
-
+template<>
 void rw::common::serialization::read(EAA<float>& tmp, rw::common::InputArchive& iar, const std::string& id){
     std::vector<float> arr;
-    iar.read(arr, id);
+    iar.read(arr, id, "EAA");
     rw::math::Math::fromStdVector(arr, tmp);
 }

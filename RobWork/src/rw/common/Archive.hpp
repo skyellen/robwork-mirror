@@ -47,13 +47,23 @@ namespace common {
 		 * @brief open file for reading and writing
 		 * @param filename
 		 */
-		virtual void open(const std::string& filename) = 0;
+		void open(const std::string& filename){ doOpenArchive(filename); };
 
 		/**
 		 * @brief initialize archive for reading and/or writing to a stream
 		 * @param stream [in] the stream
 		 */
-		virtual void open(std::iostream& stream) = 0;
+		void open(std::iostream& stream){ doOpenArchive(stream); };
+
+		/**
+		 * @brief open an output stream for writing
+		 */
+		void open(std::ostream& ofs){ doOpenOutput(ofs); }
+
+	    //! @brief open an inputstream for reading
+	    void open(std::istream& ifs){ doOpenInput(ifs); };
+
+
 
 		/**
 		 * @brief test if this archive is openned for manipulation. If this is false then
@@ -74,7 +84,11 @@ namespace common {
 		virtual void flush() = 0;
 
 		// TODO: make extension point for archives
-
+	protected:
+		virtual void doOpenArchive(const std::string& filename) = 0;
+		virtual void doOpenArchive(std::iostream& stream) = 0;
+		virtual void doOpenInput(std::istream& ifs) = 0;
+		virtual void doOpenOutput(std::ostream& ofs) = 0;
 	};
 
 }}

@@ -27,7 +27,7 @@
 #include "InertiaMatrix.hpp"
 #include "Rotation3D.hpp"
 #include "LinearAlgebra.hpp"
-
+#include <rw/common/Serializable.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
@@ -375,10 +375,10 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::InertiaMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::InertiaMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::InertiaMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::InertiaMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::InertiaMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void write(const rw::math::InertiaMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::InertiaMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void read(rw::math::InertiaMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard

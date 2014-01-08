@@ -213,10 +213,10 @@ namespace rw { namespace math {
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    template <class T>
-    void write(const rw::math::Pose6D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template <class T>
-    void read(rw::math::Pose6D<T>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template <> void write(const rw::math::Pose6D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template <> void write(const rw::math::Pose6D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template <> void read(rw::math::Pose6D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template <> void read(rw::math::Pose6D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif // end include guard
