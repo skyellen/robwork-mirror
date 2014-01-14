@@ -297,6 +297,7 @@ void PlayBack::sliderSetPosition(int val)
     // Draw the work cell.
     if (!_inRelativePositionChanged) {
         _player->setRelativePosition((double)val / sliderEnd);
+        getRobWorkStudio()->genericAnyEvent().fire("PlayBack::TimeRelative",(double)val/sliderEnd);
     }
 
     _inRelativePositionChanged = false;
@@ -309,6 +310,7 @@ void PlayBack::relativePositionChanged(double relative)
     // Move the slider.
     if (!_inSliderSet) {
         _slider->setValue((int)(relative * sliderEnd));
+        getRobWorkStudio()->genericAnyEvent().fire("PlayBack::TimeRelative",relative);
     }
 
     _inSliderSet = false;

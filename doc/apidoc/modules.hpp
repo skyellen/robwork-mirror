@@ -244,6 +244,11 @@ namespace rwlibs {
         @copydoc rwlibs::algorithms
     @}
 
+    @defgroup assembly assembly
+    @{
+        @copydoc rwlibs::assembly
+    @}
+
     @defgroup proximitystrategies proximitystrategies
     @{
         @copydoc rwlibs::proximitystrategies
@@ -359,6 +364,11 @@ namespace rwsim {
    @brief Contact Detection
  */
 namespace contacts {}
+
+/**
+   @brief Dynamic simulation
+ */
+namespace simulator {}
 
 }
 

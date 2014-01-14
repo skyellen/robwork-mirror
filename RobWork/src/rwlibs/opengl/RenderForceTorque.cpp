@@ -96,7 +96,7 @@ void RenderForceTorque::draw(const DrawableNode::RenderInfo& info,
     double alpha) const
 {
   static const float WIDTH = 0.3f;
-  const float SIZE = 1.0f;
+  const float SIZE = 0.25f;
 
   if(_quadratic==NULL)
     _quadratic = gluNewQuadric();
@@ -104,7 +104,7 @@ void RenderForceTorque::draw(const DrawableNode::RenderInfo& info,
   const float REL_WIDTH = 0.05f;
   const float lenHead = SIZE*3*REL_WIDTH; // the ForceTorque head
   const float widthHead = SIZE*2*REL_WIDTH;
-  const float lenBody = SIZE-lenHead; // the ForceTorque body
+  const float lenBody = 1-lenHead; // the ForceTorque body
   const float widthBody = WIDTH*SIZE*REL_WIDTH;
 
   EAA<> rot;
