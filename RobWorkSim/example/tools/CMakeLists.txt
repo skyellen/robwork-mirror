@@ -142,6 +142,12 @@ target_link_libraries(cut rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 add_executable(DBCutFiltering src/DBCutFiltering.cpp src/CutActionParam.cpp)
 target_link_libraries(DBCutFiltering rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
+add_executable(SimulateAssembly src/SimulateAssembly.cpp)
+target_link_libraries(SimulateAssembly ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
+add_executable(GenerateCircularPiHTasks src/GenerateCircularPiHTasks.cpp)
+target_link_libraries(GenerateCircularPiHTasks ${ROBWORK_LIBRARIES})
+
 #add_executable(VisGraB VisGraB.cpp VisGraBGraspTask.cpp VisGraBBenchmark.cpp SDHInvKinSolver.cpp IKSoftCSolver.cpp)
 #target_link_libraries(VisGraB rwsim ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 #MESSAGE("${ROBWORK_LIBRARIES}")

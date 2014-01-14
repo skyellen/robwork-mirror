@@ -18,6 +18,9 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>
 
+// Forward declarations
+namespace rw { namespace sensor { class FTSensor; }}
+
 namespace rwsim {
 namespace control {
 	//! @addtogroup rwsim_control
@@ -85,7 +88,7 @@ namespace control {
 								  const rw::math::Wrench6D<>& wtarget,
 								  float selection[6],
 								  std::string refframe,
-								  rw::math::Transform3D<> offset,
+								  rw::math::Rotation3D<> offset,
 								  float speed = 100,
 								  float blend = 0);
 
@@ -147,6 +150,16 @@ namespace control {
         void setEnabled(bool enabled){ _enabled=enabled; }
 
         bool isEnabled(){ return _enabled; };
+
+        /**
+         * @brief Set a FTSensor.
+         *
+         * When using hybrid position and force/torque control it is important to set the sensor used, such
+         * that the measured force/torque can be taken into account when calculating the required motor forces.
+         *
+         * @param sensor [in] a pointer to the FTSensor (must have its frame at one of the joints of the robot).
+         */
+        void setFTSensor(rw::sensor::FTSensor* sensor);
 
 	protected:
         /**
@@ -232,12 +245,15 @@ namespace control {
 		Eigen::VectorXd _q_error, _q_error_last;
 		Eigen::Matrix<double,6,1> _S;
 		rw::kinematics::Frame *_taskFrame;
+		rw::math::Rotation3D<> _eRoffset;
 		rw::math::Transform3D<> _bXd;
 		rw::math::Wrench6D<> _bFd;
 
 		rw::math::Transform3D<> _bXe_last;
 		rw::math::VelocityScrew6D<> _bXde_last;
 		std::ofstream _out;
+
+		rw::sensor::FTSensor* _ftSensor;
 
 	};
 

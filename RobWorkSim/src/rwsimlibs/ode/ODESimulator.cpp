@@ -59,6 +59,7 @@
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
 
+#include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
@@ -219,6 +220,10 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDet
 
     // setup DWC changed event
     _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
+}
+
+void ODESimulator::setContactDetector(rwsim::contacts::ContactDetector::Ptr detector) {
+	_detector = detector;
 }
 
 void ODESimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){

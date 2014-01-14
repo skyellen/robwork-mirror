@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( ODEControlDeviceTest_FC )
     // target wrench, push with 10N in the direction of z-axis
     Wrench6D<> wrench_target = Wrench6D<>(0,0,10,0,0,0);
     // offset relative to refframe
-    Transform3D<> t3d_offset = Transform3D<>( Vector3D<>(0, 0,0), RPY<>(0,0,0).toRotation3D() );
+    Rotation3D<> t3d_offset = RPY<>(0,0,0).toRotation3D();
 
     devctrl->moveLinFC(t3d_target,wrench_target,selection,"UR-6-85-5-A.TCP", t3d_offset);
 

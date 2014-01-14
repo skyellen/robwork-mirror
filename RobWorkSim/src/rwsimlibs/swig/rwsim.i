@@ -377,7 +377,7 @@ public:
     							  const Wrench6D& wtarget,
     							  Q selection,
     							  std::string refframe,
-    							  Transform3D offset,
+    							  Rotation3D offset,
     							  float speed=100,
     							  float blend=0)
     	{

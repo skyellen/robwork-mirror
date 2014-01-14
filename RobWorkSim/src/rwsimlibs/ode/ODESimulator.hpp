@@ -29,7 +29,6 @@
 #include <rw/proximity/BasicFilterStrategy.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
-#include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -52,6 +51,7 @@
 #include "ODEBody.hpp"
 #include "ODETactileSensor.hpp"
 
+namespace rwsim { namespace contacts { class ContactDetector; }}
 
 namespace rwsim {
 namespace simulator {
@@ -123,7 +123,7 @@ namespace simulator {
 		 * @param dwc [in] the dynamic workcell for which the simulator should work
 		 * @param detector [in] the contact detector to use
 		 */
-		ODESimulator(dynamics::DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDetector::Ptr detector = NULL);
+		ODESimulator(dynamics::DynamicWorkCell::Ptr dwc, rw::common::Ptr<rwsim::contacts::ContactDetector> detector = NULL);
 
 		/**
 		 * @brief destructor
@@ -131,6 +131,12 @@ namespace simulator {
 		virtual ~ODESimulator(){
 			delete _narrowStrategy;
 		}
+
+		/**
+		 * @brief Change the contact detector used by the simulator.
+		 * @param detector [in] the contact detector to use (NULL for default contact detection)
+		 */
+		void setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector = NULL);
 
 		/**
 		 * @brief sets the ODE step method that should be used for stepping
@@ -460,7 +466,7 @@ namespace simulator {
 		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
 		boost::mutex _contactMutex;
 
-		rwsim::contacts::ContactDetector::Ptr _detector;
+		rw::common::Ptr<rwsim::contacts::ContactDetector> _detector;
 
         bool _logContactingBodies;
         std::vector<boost::tuple<std::string, std::string, dynamics::ContactPoint> > _contactPoints, _contactPointsTmp;

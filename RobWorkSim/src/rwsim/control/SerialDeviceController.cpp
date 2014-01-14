@@ -8,9 +8,11 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Wrench6D.hpp>
+#include <rw/sensor/FTSensor.hpp>
 
 using namespace rwsim::control;
 using namespace rwsim::dynamics;
+using namespace rwsim::util;
 
 using namespace rw::math;
 using namespace rw::common;
@@ -28,9 +30,10 @@ SerialDeviceController::SerialDeviceController(
 	_linVelMax(1), // default 1 m/s
 	_angVelMax(Pi), // default Pi rad/s
 	_q_error(ddev->getModel().getDOF()),
-	_q_error_last(ddev->getModel().getDOF())
+	_q_error_last(ddev->getModel().getDOF()),
+	_ftSensor(NULL)
 {
-	RW_WARN("creating solver");
+	//RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
 	_rdev = ddev.cast<rwsim::dynamics::RigidDevice>();
 	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
@@ -52,9 +55,10 @@ SerialDeviceController::SerialDeviceController(
 	_linVelMax(1), // default 1 m/s
 	_angVelMax(Pi), // default Pi rad/s
 	_q_error(ddev->getModel().getDOF()),
-	_q_error_last(ddev->getModel().getDOF())
+	_q_error_last(ddev->getModel().getDOF()),
+	_ftSensor(NULL)
 {
-	RW_WARN("creating solver");
+	//RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
 	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
 		_q_error_last[i] = 0;
@@ -79,7 +83,7 @@ bool SerialDeviceController::moveLin(const rw::math::Transform3D<>& target, floa
 
 bool SerialDeviceController::movePTP(const rw::math::Q& target, float speed, float blend)
 {
-	RW_WARN("Setting PTP target!");
+	//RW_WARN("Setting PTP target!");
 	// set a joint target
 	Target cmd_target;
 	cmd_target.type = PTP;
@@ -122,24 +126,24 @@ bool SerialDeviceController::moveVelT(const rw::math::VelocityScrew6D<>& target)
 }
 
 
-bool SerialDeviceController::moveLinFC(const rw::math::Transform3D<>& target,
-						  const rw::math::Wrench6D<>& wtarget,
+bool SerialDeviceController::moveLinFC(const Transform3D<>& target,
+						  const Wrench6D<>& wtarget,
 						  float selection[6],
 						  std::string refframe,
-						  rw::math::Transform3D<> offset,
+						  Rotation3D<> offset,
 						  float speed,
 						  float blend)
 {
 
-	RW_WARN("1");
+	//RW_WARN("1");
 	Target cmd_target;
 	cmd_target.type = LinFC;
 	_bXd = target;
 	_bFd = wtarget;
 	for(int i=0;i<6;i++)
 		_S[i]=selection[i];
-	// todo: set the refframe and offset
 	_taskFrame = _ddev->getKinematicModel()->getEnd();
+	_eRoffset = offset;
 
 
 	cmd_target.lin_target = target;
@@ -200,7 +204,7 @@ namespace  {
 //! create trajectory
 SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(const std::vector<Target>& targets, rw::kinematics::State& initstate)
 {
-	RW_WARN("Make trajectory!");
+	//RW_WARN("Make trajectory!");
 
 	Q velLimits = _ddev->getKinematicModel()->getVelocityLimits();
 
@@ -303,7 +307,7 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 			for(size_t k=0;k<sequence.size();k++){
 				// make a guess on the time it will take to reach the point
 				double timeGuess = metric->distance(sequence[k].q_start, sequence[k].q_target );
-				std::cout << "timeguess: " << timeGuess << std::endl;
+				//std::cout << "timeguess: " << timeGuess << std::endl;
 
 				time+=timeGuess/std::min(target.speed, 1.0f); // scale time such that speed is taken into account
 				if (timeGuess < 1e-9)
@@ -314,9 +318,9 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 			CompiledTarget ttarget;
 			ttarget.toId = sequence.back().id;
 
-			std::cout << "path size: " << path->size() << std::endl;
-			std::cout << "Make trajectory from-to: "<< path->at(0).getValue() << " to " << path->at(1).getValue() << " time " << path->at(0).getTime() << " to " << path->at(1).getTime() << std::endl;
-			std::cout << "last: "<< path->at(0).getValue() << " to " << path->back().getValue() << " time " << path->at(0).getTime() << " to " << path->back().getTime() << std::endl;
+			//std::cout << "path size: " << path->size() << std::endl;
+			//std::cout << "Make trajectory from-to: "<< path->at(0).getValue() << " to " << path->at(1).getValue() << " time " << path->at(0).getTime() << " to " << path->at(1).getTime() << std::endl;
+			//std::cout << "last: "<< path->at(0).getValue() << " to " << path->back().getValue() << " time " << path->at(0).getTime() << " to " << path->back().getTime() << std::endl;
 			ttarget.qtraj = CubicSplineFactory::makeClampedSpline(path, lastQd, Q::zero( lastQd.size() ));
 			// finally reset the velocity in the end point
 			lastQ = path->back().getValue();
@@ -462,6 +466,8 @@ void SerialDeviceController::updateFTcontrolWrist(
 		const rwlibs::simulation::Simulator::UpdateInfo& info,
 			 rw::kinematics::State& state)
 {
+	static Vector3D<> GRAVITY(0,0,-9.82);
+
 	// This is the hybrid force torque controller with Wrist based FT feedback
     if(!info.rollback){
     	_q_error_last = _q_error;
@@ -484,11 +490,12 @@ void SerialDeviceController::updateFTcontrolWrist(
 		}
 	}
 
+	// Task frame and offset
+	Frame *taskFrame = _taskFrame;
 
+	// Force target (given in offset frame)
+	Wrench6D<> bF_t = _bFd;
 
-
-	// todo: specify task frame, current position target pose and force target
-	rw::kinematics::Frame *taskFrame = _taskFrame;
 
     // compute the jacobian
 	Jacobian J = _ddev->getKinematicModel()->baseJframe( taskFrame , state );
@@ -496,61 +503,90 @@ void SerialDeviceController::updateFTcontrolWrist(
 	Q dq = _ddev->getJointVelocities(state);
 
 	// targets
-	const Transform3D<> bX_t = _executingTarget.t3dtraj->x( _currentTrajTime );
 	/*const Transform3D<> bXd_t = _executingTarget.t3dtraj->dx( _currentTrajTime );
 	const VelocityScrew6D<> bXdd_t = VelocityScrew6D<>(_executingTarget.t3dtraj->ddx( _currentTrajTime ) );
 
 	const Wrench6D<> bF_t = _executingTarget._wrenchTarget;*/
 
 	// current configuration
-	const Transform3D<> bX_e = rw::kinematics::Kinematics::frameTframe(_ddev->getKinematicModel()->getBase(), taskFrame, state );
+	const Transform3D<> wTbase = Kinematics::worldTframe(_rdev->getKinematicModel()->getBase(),state);
+	const Transform3D<> baseTend = _ddev->getKinematicModel()->baseTframe(taskFrame, state);
+	const Transform3D<> endToffset = Transform3D<>(Vector3D<>::zero(),_eRoffset);
+	const Transform3D<> baseToffset = baseTend*endToffset;
+
+	Transform3D<> baseTtarget = _bXd*endToffset;
+	/*if (_currentTrajTime > _executingTarget.t3dtraj->duration())
+		bX_t = _executingTarget.t3dtraj->x(_executingTarget.t3dtraj->duration());
+	else
+		bX_t = _executingTarget.t3dtraj->x( _currentTrajTime );*/
+
 	const VelocityScrew6D<> bXd_e = J*dq;
 	// todo: get wrist force/torque sensor data
 	const Wrench6D<> bF_e;
 
-	// calculate the pose error
-    VelocityScrew6D<> bXe_err = bX_e.R() * VelocityScrew6D<>( inverse(bX_e) * bX_t );
+	// calculate the pose error (in offset coordinates)
+	VelocityScrew6D<> offsetX_err = VelocityScrew6D<>( inverse(baseToffset) * baseTtarget );
+    //VelocityScrew6D<> bXe_err = bX_e.R() * VelocityScrew6D<>( inverse(bX_e) * bX_t );
     //VelocityScrew6D<> bXde_err = bXd_e - _bXde_last;
 
     // update the state variables
     if(!info.rollback){
-    	_bXe_last = bX_e;
+    	_bXe_last = baseToffset;
     	_bXde_last = bXd_e;
     }
 
     // we add the gain to the cartesean velocity and pose error
-    Eigen::Matrix<double, 6, 1> E = bXe_err.e();
+    Eigen::Matrix<double, 6, 1> E = offsetX_err.e();
     //Eigen::Matrix<double, 6, 1> Ed = bXde_err.e();
     // Kp is the positional error gain, and Kv is the volocity error gain matrix
     //Eigen::Matrix<double, 6, 1> Edd = bXdd_t.e() + Kp*E + Kv*Ed;
 
 
 	Wrench6D<> env_w;
-	env_w(0) = E[0] * 10/0.01;// 10N per 0.01m
-	env_w(1) = E[1] * 10/0.01; ;// 10N per 0.01m
-	env_w(2) = E[2] * 10/0.01; ;// 10N per 0.01m
-	env_w(3) = E[3] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
-	env_w(4) = E[4] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
-	env_w(5) = E[5] * 1/(50.0*Deg2Rad); ;// 1Nm per 10 grader
+	env_w(0) = Kp(0,0) * E[0] * 10/0.01*0.05;// 10N per 0.01m
+	env_w(1) = Kp(1,1) * E[1] * 10/0.01*0.05;// 10N per 0.01m
+	env_w(2) = Kp(2,2) * E[2] * 10/0.01*0.05;// 10N per 0.01m
+	env_w(3) = Kp(3,3) * E[3] * 1/(50.0*Deg2Rad)*0.05;// 1Nm per 10 grader
+	env_w(4) = Kp(4,4) * E[4] * 1/(50.0*Deg2Rad)*0.05;// 1Nm per 10 grader
+	env_w(5) = Kp(5,5) * E[5] * 1/(50.0*Deg2Rad)*0.05;// 1Nm per 10 grader
 
+	Wrench6D<> comb_w = env_w;
 
-	//Wrench6D<> comb_w = Sf*bF_t + Sfinv*env_w;
+	RecursiveNewtonEuler dsolver(_rdev);
 
+    Frame* sensorFrame = _ftSensor->getFrame();
+    Transform3D<> sensorToffset = Kinematics::frameTframe(sensorFrame,_taskFrame,state)*endToffset;
+    if (_ftSensor != NULL) {
+    	Vector3D<> force = inverse(sensorToffset.R())*_ftSensor->getForce();
+    	Vector3D<> torque = inverse(sensorToffset.R())*_ftSensor->getTorque();
+    	Wrench6D<> ftWrench = Wrench6D<>(force,torque);
+
+    	Wrench6D<> ft_w;
+    	if (Sf(0,0) == 1.0) ft_w(0) = (bF_t(0)-ftWrench(0))/10.;
+    	if (Sf(1,1) == 1.0) ft_w(1) = (bF_t(1)-ftWrench(1))/10.;
+    	if (Sf(2,2) == 1.0) ft_w(2) = (bF_t(2)-ftWrench(2))/1.;
+    	if (Sf(3,3) == 1.0) ft_w(3) = (bF_t(3)-ftWrench(3))/10.;
+    	if (Sf(4,4) == 1.0) ft_w(4) = (bF_t(4)-ftWrench(4))/10.;
+    	if (Sf(5,5) == 1.0) ft_w(5) = (bF_t(5)-ftWrench(5))/10.;
+    	//comb_w = env_w + ft_w;
+    	std::cout << "ft_w: " << ft_w(2) << " " << bF_t(2) << " " << ftWrench(2) << std::endl;
+    	comb_w = env_w + ft_w;
+    }
 
     // calculate compensation of robot
 
-	rwsim::util::RecursiveNewtonEuler dsolver(_rdev);
+    dsolver.setGravity( inverse(wTbase.R())*GRAVITY );
 
-    dsolver.setGravity( inverse(Kinematics::worldTframe(_rdev->getKinematicModel()->getBase(),state).R())*Vector3D<>(0,0,-9.82) );
-
-    rw::math::Q ddq = rw::math::Q::zero(q.size());
+    Q ddq = Q::zero(q.size());
 
     // compute a wrench to apply to the end effector
     // this is spring based
-    dsolver.setEnvironment( env_w );
+    dsolver.setEnvironment(Wrench6D<>(baseToffset.R()*comb_w.force(),baseToffset.R()*comb_w.torque()));
 
     // solve for the torques of the robot
-    rw::math::Q tauCompensate = dsolver.solveMotorTorques(state, ddq, ddq);
+    Q tauCompensate = dsolver.solveMotorTorques(state, ddq, ddq);
+
+	//std::cout << "SerialDevCon: " << info.time << " " << bXe_err.linear() << " " << bXe_err.angular() << " " << tauCompensate << std::endl;
 
     std::cout << "COMPENSATE: " << tauCompensate << std::endl;
 	_rdev->setMotorForceTargets(tauCompensate, state);
@@ -657,7 +693,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 
 	// first we check if new targets have been added
 	if(_targetAdded){
-		RW_WARN("Update: Target added!");
+		//RW_WARN("Update: Target added!");
 		std::vector<Target> targets;
 		{
 			boost::mutex::scoped_lock lock(_targetMutex);
@@ -676,13 +712,13 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		    traj = makeTrajectory(targets, state);
 		} catch( const std::exception& e ){
 		    // if inverse kinematics or other things cannot compute then we discard the trajectory
-		    RW_WARN("Trajectory could not be generated due to: \n\t " << e.what() );
+		    //RW_WARN("Trajectory could not be generated due to: \n\t " << e.what() );
 		}
 		if( traj.qtraj!=NULL ){
-			std::cout << "Qtraj: " << traj.qtraj->startTime() << " --> " << traj.qtraj->endTime() << std::endl;
-			std::cout << "Currtime: " << _currentTrajTime << std::endl;
-			std::cout << "Start: " << traj.qtraj->x(traj.qtraj->startTime()) << std::endl;
-			std::cout << "End: " << traj.qtraj->x(traj.qtraj->endTime())<< std::endl;
+			//std::cout << "Qtraj: " << traj.qtraj->startTime() << " --> " << traj.qtraj->endTime() << std::endl;
+			//std::cout << "Currtime: " << _currentTrajTime << std::endl;
+			//std::cout << "Start: " << traj.qtraj->x(traj.qtraj->startTime()) << std::endl;
+			//std::cout << "End: " << traj.qtraj->x(traj.qtraj->endTime())<< std::endl;
 			/*for(int i=0;i<100;i++){
 
 				std::cout << traj.qtraj->x( i*traj.qtraj->endTime()/100 ) << std::endl;
@@ -693,18 +729,18 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			}*/
 
 		} else if(traj.t3dtraj!=NULL ){
-			std::cout << "t3dtraj: " << traj.t3dtraj->startTime() << " --> " << traj.t3dtraj->endTime() << std::endl;
-			std::cout << "Currtime: " << _currentTrajTime << std::endl;
-			std::cout << "Start: " << traj.t3dtraj->x(traj.t3dtraj->startTime()) << std::endl;
-			std::cout << "End: " << traj.t3dtraj->x(traj.t3dtraj->endTime())<< std::endl;
-			for(int i=0;i<100;i++){
+			//std::cout << "t3dtraj: " << traj.t3dtraj->startTime() << " --> " << traj.t3dtraj->endTime() << std::endl;
+			//std::cout << "Currtime: " << _currentTrajTime << std::endl;
+			//std::cout << "Start: " << traj.t3dtraj->x(traj.t3dtraj->startTime()) << std::endl;
+			//std::cout << "End: " << traj.t3dtraj->x(traj.t3dtraj->endTime())<< std::endl;
+			/*for(int i=0;i<100;i++){
 
 				std::cout << traj.t3dtraj->x( i*traj.t3dtraj->endTime()/100 ) << std::endl;
 			}
 			std::cout << std::endl;
 			for(int i=0;i<100;i++){
 				std::cout << traj.t3dtraj->dx( i*traj.t3dtraj->endTime()/100 ) << std::endl;
-			}
+			}*/
 		}
 		if(!traj.isFinished(0.0)){
 		    _compiledTargets.push_back( traj );
@@ -741,17 +777,17 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 	if(_executingTarget.qtraj != NULL ){
 		//RW_WARN("exe target running!");
 		// else we need to follow the trajectory
-		_currentQ = _ddev->getQ( state );
-		_currentQd = _ddev->getJointVelocities( state );
+		//_currentQ = _ddev->getQ( state );
+		//_currentQd = _ddev->getJointVelocities( state );
 
-		Q current_target_q = _executingTarget.qtraj->x( _currentTrajTime ); // the target that we should be in
-		Q current_target_vel = _executingTarget.qtraj->dx( _currentTrajTime );
+		//Q current_target_q = _executingTarget.qtraj->x( _currentTrajTime ); // the target that we should be in
+		//Q current_target_vel = _executingTarget.qtraj->dx( _currentTrajTime );
 
-		Q next_target_q = _executingTarget.qtraj->x( _currentTrajTime + info.dt );
+		//Q next_target_q = _executingTarget.qtraj->x( _currentTrajTime + info.dt );
 		Q next_target_vel = _executingTarget.qtraj->dx( _currentTrajTime + info.dt );
 
 		// now calculate the velocity of the robot such that we reach next_target_q in the next timestep
-		Q target_vel = (next_target_q - _currentQ)/info.dt - _currentQd;
+		//Q target_vel = (next_target_q - _currentQ)/info.dt - _currentQd;
 		//std::cout << _currentTrajTime << ", "<< next_target_vel << std::endl;
 		//_ddev->setMotorVelocityTargets( target_vel, state);
 		_ddev->setMotorVelocityTargets( next_target_vel, state);
@@ -772,3 +808,6 @@ void SerialDeviceController::setMaxAngularVelocity( double maxVel ){
 	_angVelMax = maxVel;
 }
 
+void SerialDeviceController::setFTSensor(rw::sensor::FTSensor* sensor) {
+	_ftSensor = sensor;
+}

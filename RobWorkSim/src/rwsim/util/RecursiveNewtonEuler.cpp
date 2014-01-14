@@ -90,7 +90,10 @@ std::vector<RecursiveNewtonEuler::Motion> RecursiveNewtonEuler::getBodyMotion(co
 	for (std::size_t k = 1; k <= _jdev->getDOF(); k++) {
 		Joint* joint = _jdev->getJoints()[k-1];
 		pCur = baseTlink.P();
-		baseTlink = baseTlink*joint->getTransform(state);
+		if (k==1)
+			baseTlink = baseTlink*joint->getTransform(state);
+		else
+			baseTlink = baseTlink*Kinematics::frameTframe(_jdev->getJoints()[k-2],joint,state);
 		dr = baseTlink.P()-pCur;
 		z = baseTlink.R().getCol(2);
 		e = 0;
@@ -144,7 +147,10 @@ std::vector<Wrench6D<> > RecursiveNewtonEuler::getBodyNetForces(const std::vecto
 		Motion motion = motions[i];
 		Body::Ptr link = _rdev->getLinks()[i];
 		Joint* joint = _jdev->getJoints()[i];
-		baseTlink = baseTlink*joint->getTransform(state);
+		if (i==0)
+			baseTlink = baseTlink*joint->getTransform(state);
+		else
+			baseTlink = baseTlink*Kinematics::frameTframe(_jdev->getJoints()[i-1],joint,state);
 		InertiaMatrix<> inertia = baseTlink.R()*link->getInertia()*inverse(baseTlink.R());
 		double mass = link->getInfo().mass;
 		const VelocityScrew6D<> &vel = motion.velocity;
@@ -186,12 +192,7 @@ std::vector<Wrench6D<> > RecursiveNewtonEuler::getJointForces(const std::vector<
 	for (std::size_t k = _jdev->getDOF(); k >= 1; k--) {
 		Body::Ptr link = _rdev->getLinks()[k-1];
 		pNext = baseTlink.P();
-		if (k == _jdev->getDOF())
-			baseTlink = Kinematics::frameTframe(_jdev->getBase(),_jdev->getJoints().back(),state);
-		else {
-			Joint* jointNext = _jdev->getJoints()[k];
-			baseTlink = baseTlink*inverse(jointNext->getTransform(state));
-		}
+		baseTlink = Kinematics::frameTframe(_jdev->getBase(),_jdev->getJoints()[k-1],state);
 		Vector3D<> com = baseTlink.R()*link->getInfo().masscenter;
 		Vector3D<> dr = pNext-baseTlink.P();
 		Vector3D<> force = forces[k-1].force() + res[k].force();
@@ -220,7 +221,10 @@ std::vector<double> RecursiveNewtonEuler::solveMotorTorques(const State &state, 
 	Vector3D<> z;
 	for (std::size_t k = 0; k < res.size()-1; k++) {
 		Joint* joint = _jdev->getJoints()[k];
-		baseTlink = baseTlink*joint->getTransform(state);
+		if (k == 0)
+			baseTlink = baseTlink*joint->getTransform(state);
+		else
+			baseTlink = baseTlink*Kinematics::frameTframe(_jdev->getJoints()[k-1],joint,state);
 		z = baseTlink.R().getCol(2);
 		res[k] = dot(jointForces[k].torque(),z);
 	}
