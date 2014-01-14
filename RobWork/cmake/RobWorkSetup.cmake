@@ -587,6 +587,7 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_pathoptimization
   rw_simulation
   rw_opengl
+  rw_assembly
   rw_task
   rw_calibration
   ${RW_LUA_LIBS}

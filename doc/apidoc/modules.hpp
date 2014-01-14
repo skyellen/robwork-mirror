@@ -95,6 +95,11 @@ namespace rwlibs {
 	namespace algorithms {}
 
 	/**
+	 * @brief Assembly strategies and task & result formats for assembly operations.
+	 */
+	namespace assembly {}
+
+	/**
 	 * @brief Dynamic library loading
 	 */
 	namespace dll {}

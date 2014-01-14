@@ -1,6 +1,7 @@
 # Each subdirectory is a library. Process them.
 
 add_subdirectory(algorithms)
+add_subdirectory(assembly)
 add_subdirectory(calibration)
 add_subdirectory(control)
 add_subdirectory(opengl)
