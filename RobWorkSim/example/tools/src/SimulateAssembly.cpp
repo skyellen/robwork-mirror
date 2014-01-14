@@ -15,9 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <rw/common/ThreadPool.hpp>
-#include <rw/common/ThreadTask.hpp>
-
 #include <rwlibs/assembly/AssemblyRegistry.hpp>
 #include <rwlibs/assembly/AssemblyResult.hpp>
 #include <rwlibs/assembly/AssemblyTask.hpp>

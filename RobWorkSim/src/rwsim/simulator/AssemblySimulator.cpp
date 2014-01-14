@@ -18,7 +18,7 @@
 #include "AssemblySimulator.hpp"
 #include "PhysicsEngineFactory.hpp"
 
-#include <rw/common/ThreadTask.hpp>
+//#include <rw/common/ThreadTask.hpp>
 #include <rw/invkin/JacobianIKSolver.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
@@ -59,7 +59,7 @@ using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
 using namespace rwsim::simulator;
 
-class AssemblySimulator::TaskSimulation: public ThreadTask {
+/*class AssemblySimulator::TaskSimulation: public ThreadTask {
 public:
 	TaskSimulation(AssemblySimulator* simulator, ThreadTask::Ptr parent, std::size_t taskIndex):
 		ThreadTask(parent),
@@ -98,7 +98,7 @@ public:
 
 private:
 	AssemblySimulator* _simulator;
-};
+};*/
 
 AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<rwsim::contacts::ContactDetector> contactDetector):
 	_dwc(dwc),
@@ -115,7 +115,7 @@ AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const
 AssemblySimulator::~AssemblySimulator() {
 }
 
-void AssemblySimulator::start(ThreadTask::Ptr task) {
+void AssemblySimulator::start(rw::common::Ptr<ThreadTask> task) {
 	_results.resize(_tasks.size());
 	BOOST_FOREACH(AssemblyResult::Ptr &res, _results) {
 		res = ownedPtr(new AssemblyResult());
@@ -123,8 +123,9 @@ void AssemblySimulator::start(ThreadTask::Ptr task) {
 	if (task == NULL) {
 		runAll();
 	} else {
-		ThreadTask::Ptr maintask = ownedPtr(new TaskDispatcher(this,task));
-		task->addSubTask(maintask);
+		//ThreadTask::Ptr maintask = ownedPtr(new TaskDispatcher(this,task));
+		//task->addSubTask(maintask);
+		runAll();
 	}
 }
 
