@@ -799,7 +799,55 @@ The example below illustrated how to construct a small task, prints out the task
 
 \include ex-task.cpp
 
+# Threading # {#sec_rw_manual_threading}
+When developing code that can run in parallel it is encouraged that the RobWork rw::common::ThreadPool concept is used.
+The ThreadPool provides a flexible way for the user to specify the number of threads that should be used in multi-threaded applications.
+By adding work to a ThreadPool instead of launching separate threads, the user has the ability to limit the resources used by the application.
+At the same time the application is able to efficiently utilize the given resources.
 
+The following example shows how a rw::common::ThreadPool can be created, and how work is added to the queue.
+The work added to the pool is handled in the order it is added. In this example a list of arguments can be given from commandline.
+The first argument is the number of threads to use (beside the main thread itself). Followed by that is an arbitrary number of image filenames.
+The example will then try to load the image files in parallel according to the number of threads given by the user. Note that zero threads
+is valid, as this would cause all work to be executed directly in the main thread. Work will in this case be executed directly in the addWork function.
+To avoid that the program ends before work has finished, the waitForEmptyQueue() function will block until there is no more work available.
+
+In the loadFile function the isStopping() method is checked. If the rw::common::ThreadPool is stopped before work has finished,
+the work added to the pool should check the isStopping() function at regular intervals to allow the application to shutdown gracefully.
+This is especially important in long running tasks.
+
+\include ex-threadpool.cpp
+
+When writing multi-threaded applications one often need to branch out into many parallel tasks, then wait for the tasks to finish and finally combine
+the results. Then one might need to branch out yet again into new parallel tasks based on the result. Also each parallel task might be able to
+parallize its work into even more subtasks. This can in principle happen in a hierachy where each subtask can have its own parallel subtasks and so forth.
+
+To facilitate easy programming of such types of tasks, the rw::common::ThreadTask can be used. The following shows the same example as before but
+instead implemented by the use of the rw::common::ThreadTask type.
+
+Consider the LoadTask class that inherits from rw::common::ThreadTask. The LoadTask class is constructed with a filename that should be loaded.
+In the run function the main work takes place - here the file is actually loaded, and the result can afterwards be retrieved with the getImage function.
+
+The MainTask class also inherits from rw::common::ThreadTask. This task is responsible for launching a LoadTask for each file given as input to the
+program. This class does not do much work in its run function. It only constructs all LoadTasks and add these as subtasks to the MainTask. The subtasks
+starts running as soon as they are added, and when each subtask finishes, the subTaskDone function is called. Here the result of the subtask is simply
+stored. If it was desired, new tasks could also be launched based on the achieved result. When there are no more subtasks running, the idle function is
+called. The idle function is the last chance to add new subtasks, otherwise the task will end and the done function will be called. When done is called
+the task is finished, and it is not possible to add more subtasks. If this task then has a parent task, the parent tasks subTaskDone will be executed.
+It is possible to change the behaviour of a rw::common::ThreadTask such that it does not finish after the idle function is called. By enabling the keep-alive
+option the task will stay in the idle state until the keep-alive is disabled or new subtasks are added. Be careful with this option. If the task does
+not end, the parents will not end either.
+
+The main function is almost as before. This time a MainTask is created that uses the ThreadPool to add its work to. When the execute function is called
+the work is added to the pool and execution starts. By using the waitUntilDone function the main loop will not end before the MainTask has finished.
+
+Note that multiple separate tasks and worker function can use the same pool at the same time.
+
+As the ThreadPool is able to run with zero threads (executing directly in the main thread), so is the ThreadTask. If zero threads are used, the complete
+task will be done at the time execute returns. It is however not recommended to use zero threads with the ThreadTask. Internally this will cause a
+large recursion depth, and will inevitably cause problems with the stack size at some point. 
+
+\include ex-threadtask.cpp
 
 # RobWorkStudio # {#sec_rws_manual_intro}
 The main goal of RobWorkStudio is to implement functionality for vizualising

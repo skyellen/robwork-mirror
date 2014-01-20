@@ -72,6 +72,8 @@ namespace swig {
 
 	// common
 	typedef rw::common::PropertyMap PropertyMap;
+	typedef rw::common::ThreadPool ThreadPool;
+	typedef rw::common::ThreadTask ThreadTask;
 
 	// geometry
 	typedef rw::geometry::GeometryData GeometryData;

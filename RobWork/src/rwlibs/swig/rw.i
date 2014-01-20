@@ -125,6 +125,55 @@ class PropertyMap
 {
 };
 
+class ThreadPool {
+public:
+    ThreadPool(int threads = -1);
+    virtual ~ThreadPool();
+    unsigned int getNumberOfThreads() const;
+    void stop();
+    bool isStopping();
+//    typedef boost::function<void(ThreadPool*)> WorkFunction;
+//    void addWork(WorkFunction work);
+	unsigned int getQueueSize();
+	void waitForEmptyQueue();
+};
+
+%template (ThreadPoolPtr) rw::common::Ptr<ThreadPool>;
+
+class ThreadTask {
+public:
+	typedef enum TaskState {
+    	INITIALIZATION,
+    	IN_QUEUE,
+    	EXECUTING,
+    	CHILDREN,
+    	IDLE,
+    	POSTWORK,
+    	DONE
+    } TaskState;
+
+	ThreadTask(rw::common::Ptr<ThreadTask> parent);
+	ThreadTask(rw::common::Ptr<ThreadPool> pool);
+	virtual ~ThreadTask();
+	bool setThreadPool(rw::common::Ptr<ThreadPool> pool);
+	rw::common::Ptr<ThreadPool> getThreadPool();
+	//virtual void run();
+	//virtual void subTaskDone(ThreadTask* subtask);
+	//virtual void idle();
+	//virtual void done();
+    bool execute();
+    TaskState wait(ThreadTask::TaskState previous);
+    void waitUntilDone();
+    TaskState getState();
+    bool addSubTask(rw::common::Ptr<ThreadTask> subtask);
+    std::vector<rw::common::Ptr<ThreadTask> > getSubTasks();
+    void setKeepAlive(bool keepAlive);
+    bool keepAlive();
+};
+
+%template (ThreadTaskPtr) rw::common::Ptr<ThreadTask>;
+%template (ThreadTaskPtrVector) std::vector<rw::common::Ptr<ThreadTask> >;
+
 /********************************************
  * GEOMETRY
  ********************************************/

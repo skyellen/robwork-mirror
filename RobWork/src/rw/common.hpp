@@ -43,6 +43,8 @@
 #include "./common/ProgramOptions.hpp"
 #include "./common/Ptr.hpp"
 #include "./common/StringUtil.hpp"
+#include "./common/ThreadPool.hpp"
+#include "./common/ThreadTask.hpp"
 #include "./common/Timer.hpp"
 #include "./common/TimerUtil.hpp"
 #include "./common/VectorIterator.hpp"

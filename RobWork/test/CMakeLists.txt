@@ -48,6 +48,7 @@ SET(COMMON_TEST_SRC
   common/StringUtilTest.cpp
   common/CommonTest.cpp
   common/SerializationTest.cpp
+  common/ThreadTest.cpp
 )
 
 SET(DEFAULT_TEST_ARGS "--log_level=all")

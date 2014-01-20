@@ -23,8 +23,11 @@ SET(FILES_CPP
   Exception.cpp
   Event.cpp
   ProgramOptions.cpp
+  ThreadPool.cpp
   ThreadSafeQueue.cpp
   ThreadSafeStack.cpp
+  ThreadSafeVariable.cpp
+  ThreadTask.cpp
   
   Archive.cpp
   BoostXMLParser.cpp
@@ -68,8 +71,11 @@ SET(FILES_HPP
   ScopedTimer.hpp
   Event.hpp
   ProgramOptions.hpp
+  ThreadPool.hpp
   ThreadSafeQueue.hpp
   ThreadSafeStack.hpp
+  ThreadSafeVariable.hpp
+  ThreadTask.hpp
   
   Archive.hpp
   BoostXMLParser.hpp
