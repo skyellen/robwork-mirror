@@ -21,7 +21,6 @@
 #include <boost/regex.hpp>
 using namespace rw::common;
 
-//const int INIArchive::MAX_LINE_WIDTH;
 
 void INIArchive::close()
 {
@@ -114,7 +113,7 @@ void INIArchive::doRead(boost::int8_t& val, const std::string& id)
 	//8 bits are handled as 16 bit to avoid confusion with char
     boost::int16_t tmp;
     readValue<boost::int16_t>(tmp, id);
-    val = (boost::int8_t)tmp;
+    val = static_cast<boost::int8_t>(tmp);
 }
 
 void INIArchive::doRead(boost::uint8_t& val, const std::string& id)
@@ -122,7 +121,7 @@ void INIArchive::doRead(boost::uint8_t& val, const std::string& id)
 	//8 bits are handled as 16 bit to avoid confusion with char
     boost::uint16_t tmp;
     readValue<boost::uint16_t>(tmp, id);
-    val = (boost::uint8_t)tmp;
+    val = static_cast<boost::uint8_t>(tmp);
 }
 
 void INIArchive::doRead(std::string& val, const std::string& id)

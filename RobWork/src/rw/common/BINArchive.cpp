@@ -21,7 +21,6 @@
 
 using namespace rw::common;
 
-//const int BINArchive::MAX_LINE_WIDTH;
 
 BINArchive::~BINArchive(){
 	close();

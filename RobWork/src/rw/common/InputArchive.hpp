@@ -99,6 +99,7 @@ public:
     template<class T>
     InputArchive& operator>> (T& dst){
     	read<T>(dst,"");
+		return *this;
     }
 
 protected:
