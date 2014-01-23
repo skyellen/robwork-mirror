@@ -94,9 +94,13 @@ namespace common {
 				doWrite(object, id_default);
 		}
 
+		/**
+		 * @brief Output stream operator
+		 */
 	    template<class T>
 	    OutputArchive& operator<< (T& dst){
 	    	write<T>(dst,"");
+			return *this;
 	    }
 
 

@@ -76,7 +76,7 @@ std::vector<Q> ClosedFormURSolver::solve(const Transform3D<>& baseTend, const St
 	elbow1 = elbow.first;
 	elbow2 = elbow.second;
 	// Elbow 1
-	if (!isnan(elbow1.first) && !isnan(elbow1.second)) {
+	if (!Math::isNaN(elbow1.first) && !Math::isNaN(elbow1.second)) {
 		tmpQ[1] = elbow1.first;
 		tmpQ[2] = elbow1.second;
 		_device->setQ(tmpQ,tmpState);
@@ -107,7 +107,7 @@ std::vector<Q> ClosedFormURSolver::solve(const Transform3D<>& baseTend, const St
 	elbow1 = elbow.first;
 	elbow2 = elbow.second;
 	// Elbow 1
-	if (!isnan(elbow2.first) && !isnan(elbow2.second)) {
+	if (!Math::isNaN(elbow2.first) && !Math::isNaN(elbow2.second)) {
 		tmpQ[1] = elbow1.first;
 		tmpQ[2] = elbow1.second;
 		_device->setQ(tmpQ,tmpState);
@@ -144,7 +144,7 @@ std::vector<Q> ClosedFormURSolver::solve(const Transform3D<>& baseTend, const St
 	elbow1 = elbow.first;
 	elbow2 = elbow.second;
 	// Elbow 1
-	if (!isnan(elbow1.first) && !isnan(elbow1.second)) {
+	if (!Math::isNaN(elbow1.first) && !Math::isNaN(elbow1.second)) {
 		tmpQ[1] = elbow1.first;
 		tmpQ[2] = elbow1.second;
 		_device->setQ(tmpQ,tmpState);
@@ -175,7 +175,7 @@ std::vector<Q> ClosedFormURSolver::solve(const Transform3D<>& baseTend, const St
 	elbow1 = elbow.first;
 	elbow2 = elbow.second;
 	// Elbow 1
-	if (!isnan(elbow2.first) && !isnan(elbow2.second)) {
+	if (!Math::isNaN(elbow2.first) && !Math::isNaN(elbow2.second)) {
 		tmpQ[1] = elbow1.first;
 		tmpQ[2] = elbow1.second;
 		_device->setQ(tmpQ,tmpState);
