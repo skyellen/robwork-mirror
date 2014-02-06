@@ -129,6 +129,7 @@ ENDIF()
 ENABLE_LANGUAGE(CXX)
 #ENABLE_LANGUAGE(Fortran)
 
+IF (DEFINED RW_USE_UBLAS_LAPACK)
 IF(NOT DEFINED WIN32)
   SET(BLA_STATIC ON)
 ENDIF()
@@ -144,7 +145,7 @@ FOREACH(lib IN LISTS LAPACK_LIBRARIES BLAS_LIBRARIES)
     get_filename_component(TMP_DIR ${lib} PATH)
     LIST(APPEND LAPACK_BLAS_LIBRARY_DIRS ${TMP_DIR})
 ENDFOREACH(lib)
-
+ENDIF()
 
 ####################################################################
 # DEPENDENCIES - OPTIONAL
@@ -442,6 +443,8 @@ IF( "${RW_CXX_FLAGS}" STREQUAL "")
                            "-DNOMINMAX" 
                            # Without this define for boost-bindings we can't link with lapack.
                            "-DBIND_FORTRAN_LOWERCASE_UNDERSCORE"
+						   "-DWIN32_LEAN_AND_MEAN"
+						   "-D_WIN32_WINNT=0x0501"
                            "-D_SCL_SECURE_NO_WARNINGS"
                            "-D_CRT_SECURE_NO_WARNINGS"
                            "-D_CRT_SECURE_NO_DEPRECATE"
