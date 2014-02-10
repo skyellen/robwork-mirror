@@ -98,7 +98,7 @@ rw::geometry::GeometryData::Ptr Model3D::toGeometryData(){
 		mesh->resize( tsize+fsize );
 		// copy all from obj to mesh
 		for(size_t i=0;i<vsize;i++){
-			mesh->getVertices()[csize+i] = obj->_transform * obj->_vertices[i];
+			mesh->getVertices()[csize+i] = /*obj->_transform*/ t3d * obj->_vertices[i];
 		}
 
 		for(size_t i=0;i<fsize;i++){
