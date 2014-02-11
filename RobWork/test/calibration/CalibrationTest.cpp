@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 	std::cout<<"Ready to try to save data"<<std::endl;
 	XMLCalibrationMeasurementFile<>::save(measurements, measurementFilePath);
 	std::cout<<"Data Saved"<<std::endl;
-	std::vector<CalibrationMeasurement::Ptr> loadedMeasurements = XMLCalibrationMeasurementFile<>::load(measurementFilePathOutput);
+	std::vector<CalibrationMeasurement::Ptr> loadedMeasurements = XMLCalibrationMeasurementFile<>::load(measurementFilePath);
 	std::cout<<"Loaded Data"<<std::endl;
 	BOOST_CHECK_EQUAL(measurements.size(), loadedMeasurements.size());
 
