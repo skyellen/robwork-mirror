@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 	const std::string deviceName("SomeDevice");
 	const std::string referenceFrameName("SomeSensorFrame1");
 	const std::string measurementFrameName("SomeDevice.Marker");
-	const std::string measurementFilePath(testFilesPath + "calibration/TestMeasurements.xml");
+	const std::string measurementFilePath("TestMeasurements.xml");
 	const int measurementCount = 2;
 
 	// Load workcell.
@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 	std::cout<<"Ready to try to save data"<<std::endl;
 	XMLCalibrationMeasurementFile<>::save(measurements, measurementFilePath);
 	std::cout<<"Data Saved"<<std::endl;
-	std::vector<CalibrationMeasurement::Ptr> loadedMeasurements = XMLCalibrationMeasurementFile<>::load(measurementFilePath);
+	std::vector<CalibrationMeasurement::Ptr> loadedMeasurements = XMLCalibrationMeasurementFile<>::load(measurementFilePathOutput);
 	std::cout<<"Loaded Data"<<std::endl;
 	BOOST_CHECK_EQUAL(measurements.size(), loadedMeasurements.size());
 
