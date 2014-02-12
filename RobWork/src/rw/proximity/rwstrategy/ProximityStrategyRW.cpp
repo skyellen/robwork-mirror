@@ -164,7 +164,7 @@ std::vector<std::string> ProximityStrategyRW::getGeometryIDs(rw::proximity::Prox
 	//return model->getGeometryIDs();
 }
 
-bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
+bool ProximityStrategyRW::doInCollision(ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
 	const Transform3D<>& wTb,
@@ -215,7 +215,7 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
     return col_res;
 }
 
-bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
+bool ProximityStrategyRW::doIsWithinDistance(ProximityModel::Ptr aModel,
     const Transform3D<>& wTa,
     ProximityModel::Ptr bModel,
     const Transform3D<>& wTb,
@@ -281,7 +281,7 @@ namespace {
 }
 */
 
-DistanceStrategy::Result& ProximityStrategyRW::distance(
+DistanceStrategy::Result& ProximityStrategyRW::doDistance(
     ProximityModel::Ptr a,
     const Transform3D<>& wTa,
     ProximityModel::Ptr b,

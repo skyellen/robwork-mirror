@@ -20,7 +20,6 @@
 #define RW_PROXIMITY_DISTANCECALCULATOR_HPP
 
 #include "DistanceStrategy.hpp"
-#include "DistanceThresholdStrategy.hpp"
 #include <rw/common/Timer.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -198,7 +197,7 @@ namespace rw { namespace proximity {
 		}
 
 
-		void setDistanceThresholdStrategy(DistanceThresholdStrategy::Ptr strategy);
+		void setDistanceThresholdStrategy(DistanceStrategy::Ptr strategy);
     private:
 		mutable rw::common::Timer _timer;
 		mutable int _cnt;
@@ -208,7 +207,7 @@ namespace rw { namespace proximity {
     	rw::kinematics::Frame* _root;
     	rw::proximity::CollisionSetup _setup;
 		DistanceStrategy::Ptr _strategy;
-		DistanceThresholdStrategy::Ptr _thresholdStrategy;
+		DistanceStrategy::Ptr _thresholdStrategy;
 
         rw::kinematics::State _state;
 

@@ -30,7 +30,7 @@
 #include "./proximity/CollisionToleranceStrategy.hpp"
 #include "./proximity/DistanceCalculator.hpp"
 #include "./proximity/DistanceStrategy.hpp"
-#include "./proximity/DistanceToleranceStrategy.hpp"
+#include "./proximity/DistanceMultiStrategy.hpp"
 #include "./proximity/ProximityStrategy.hpp"
 
 #endif /* PROXIMITY_HPP_ */

@@ -36,8 +36,7 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
-#include <rw/proximity/DistanceToleranceStrategy.hpp>
-#include <rw/proximity/DistanceThresholdStrategy.hpp>
+#include <rw/proximity/DistanceMultiStrategy.hpp>
 #include <rw/proximity/ProximityCache.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 
@@ -81,8 +80,7 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::CollisionStrategy,
         public rw::proximity::CollisionToleranceStrategy,
         public rw::proximity::DistanceStrategy,
-        public rw::proximity::DistanceToleranceStrategy,
-		public rw::proximity::DistanceThresholdStrategy
+        public rw::proximity::DistanceMultiStrategy
     {
     public:
 
@@ -172,9 +170,9 @@ namespace rwlibs { namespace proximitystrategies {
         void setFirstContact(bool b);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::collision
+         * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool inCollision(
+        bool doInCollision(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -189,9 +187,9 @@ namespace rwlibs { namespace proximitystrategies {
 				rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
+         * @copydoc rw::proximity::CollisionToleranceStrategy::doIsWithinDistance
          */
-        bool inCollision(
+        bool doIsWithinDistance(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -200,9 +198,9 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::DistanceStrategy::distance
+         * @copydoc rw::proximity::DistanceStrategy::doDistance
          */
-        rw::proximity::DistanceStrategy::Result& distance(
+        rw::proximity::DistanceStrategy::Result& doDistance(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -210,9 +208,9 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::DistanceThresholdStrategy::distance
+         * @copydoc rw::proximity::DistanceThresholdStrategy::doDistanceThreshold
          */
-        rw::proximity::DistanceStrategy::Result& distance(
+        rw::proximity::DistanceStrategy::Result& doDistanceThreshold(
             rw::proximity::ProximityModel::Ptr aModel,
             const rw::math::Transform3D<>& wTa,
             rw::proximity::ProximityModel::Ptr bModel,
@@ -221,9 +219,9 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
+         * @copydoc rw::proximity::DistanceMultiStrategy::doDistances
          */
-        rw::proximity::DistanceToleranceStrategy::Result& distances(
+        rw::proximity::DistanceMultiStrategy::Result& doDistances(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,

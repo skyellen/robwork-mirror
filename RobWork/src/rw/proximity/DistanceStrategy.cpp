@@ -57,4 +57,33 @@ namespace rw { namespace proximity {
         return distance(getModel(a), wTa, getModel(b), wTb, data);
     }
 
+
+
+    DistanceStrategy::Result DistanceStrategy::distance(
+                          const kinematics::Frame* a,
+                          const math::Transform3D<>& wTa,
+                          const kinematics::Frame* b,
+                          const math::Transform3D<>& wTb,
+                          double threshold)
+    {
+        if(getModel(a)==NULL || getModel(b)==NULL)
+            RW_THROW("Frame must have a Collision model attached!");
+        ProximityStrategyData data;
+        return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+    }
+
+    DistanceStrategy::Result& DistanceStrategy::distance(
+                          const kinematics::Frame* a,
+                          const math::Transform3D<>& wTa,
+                          const kinematics::Frame* b,
+                          const math::Transform3D<>& wTb,
+                          double threshold,
+                          ProximityStrategyData &data)
+    {
+        if(getModel(a)==NULL || getModel(b)==NULL)
+            RW_THROW("Frame must have a Collision model attached!");
+        return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+    }
+
+
 } }

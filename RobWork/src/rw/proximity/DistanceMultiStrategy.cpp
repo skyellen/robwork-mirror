@@ -16,15 +16,15 @@
  ********************************************************************************/
 
 
-#include "DistanceToleranceStrategy.hpp"
+#include "DistanceMultiStrategy.hpp"
 
 #include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
-	DistanceToleranceStrategy::DistanceToleranceStrategy() {}
-	DistanceToleranceStrategy::~DistanceToleranceStrategy() {}
+	DistanceMultiStrategy::DistanceMultiStrategy() {}
+	DistanceMultiStrategy::~DistanceMultiStrategy() {}
 
-	DistanceToleranceStrategy::Result DistanceToleranceStrategy::distances(
+	DistanceMultiStrategy::Result DistanceMultiStrategy::distances(
         const kinematics::Frame* a,
         const math::Transform3D<>& wTa,
         const kinematics::Frame* b,
@@ -38,7 +38,7 @@ namespace rw { namespace proximity {
         return distances(getModel(a),wTa,getModel(b),wTb,tolerance,data);
     }
 
-	DistanceToleranceStrategy::Result& DistanceToleranceStrategy::distances(
+	DistanceMultiStrategy::Result& DistanceMultiStrategy::distances(
         const kinematics::Frame* a,
         const math::Transform3D<>& wTa,
         const kinematics::Frame* b,

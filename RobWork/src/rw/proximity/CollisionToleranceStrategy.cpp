@@ -28,7 +28,7 @@ using namespace rw::math;
 CollisionToleranceStrategy::CollisionToleranceStrategy() {}
 CollisionToleranceStrategy::~CollisionToleranceStrategy() {}
 
-bool CollisionToleranceStrategy::inCollision(
+bool CollisionToleranceStrategy::isWithinDistance(
     const Frame* a, const Transform3D<>& wTa,
     const Frame *b, const Transform3D<>& wTb,
     double tolerance)
@@ -36,11 +36,11 @@ bool CollisionToleranceStrategy::inCollision(
     if(getModel(a)==NULL || getModel(b)==NULL)
         return false;
     ProximityStrategyData data;
-    return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
+    return isWithinDistance(getModel(a),wTa,getModel(b),wTb,tolerance,data);
 }
 
 
-bool CollisionToleranceStrategy::inCollision(
+bool CollisionToleranceStrategy::isWithinDistance(
     const Frame* a, const Transform3D<>& wTa,
     const Frame *b, const Transform3D<>& wTb,
     double tolerance,
@@ -49,5 +49,5 @@ bool CollisionToleranceStrategy::inCollision(
     if(getModel(a)==NULL || getModel(b)==NULL)
         return false;
 
-    return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
+    return isWithinDistance(getModel(a),wTa,getModel(b),wTb,tolerance,data);
 }

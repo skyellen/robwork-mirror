@@ -44,8 +44,8 @@ namespace rw { namespace proximity {
     typedef rw::common::Ptr<CollisionToleranceStrategy> CollisionToleranceStrategyPtr;
 #endif
     /**
-     * @brief The CDStrategy interface is used to abstract away
-     * specific collision detection algorithms or strategies.
+     * @brief This is a collision strategy that detects collisions between objects
+     * that are closer than a specified tolerance.
      */
     class CollisionToleranceStrategy: public virtual ProximityStrategy {
     public:
@@ -58,8 +58,8 @@ namespace rw { namespace proximity {
         virtual ~CollisionToleranceStrategy();
 
         /**
-         * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
-         * @f$ \mathcal{F}_b @f$ are in CollisionTolerance
+         * @brief Checks to see if the geometry attached to two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are closer than the specified tolerance.
          * @param a [in] @f$ \mathcal{F}_a @f$
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
          * @param b [in] @f$ \mathcal{F}_b @f$
@@ -70,7 +70,7 @@ namespace rw { namespace proximity {
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool isWithinDistance(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
@@ -78,8 +78,8 @@ namespace rw { namespace proximity {
             double tolerance);
 
         /**
-         * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
-         * @f$ \mathcal{F}_b @f$ are in CollisionTolerance
+         * @brief Checks to see if the geometry attached to two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are closer than the specified tolerance. Result is cached in data
          * @param a [in] @f$ \mathcal{F}_a @f$
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
          * @param b [in] @f$ \mathcal{F}_b @f$
@@ -90,31 +90,61 @@ namespace rw { namespace proximity {
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool isWithinDistance(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
             const math::Transform3D<>& wTb,
-            double tolerance,
+            double distance,
             class ProximityStrategyData& data);
 
         /**
+         * @brief Checks to see if two proximity models @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are closer than the specified tolerance. Result is cached in data
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param tolerance [in] frames with a distance in between them
+         * that is less than tolerance are in collision
          *
-         * @param a
-         * @param wTa
-         * @param b
-         * @param wTb
-         * @param tolerance
-         * @param data
-         * @return
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool isWithinDistance(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            class ProximityStrategyData& data) = 0;
+            class ProximityStrategyData& data)
+        {
+            return isWithinDistance(a,wTa,b,wTb,tolerance,data);
+        }
+
+    protected:
+
+        /**
+         * @brief Checks to see if two proximity models @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are closer than the specified tolerance. Result is cached in data
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param tolerance [in] frames with a distance in between them
+         * that is less than tolerance are in collision
+         *
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
+         */
+        virtual bool doIsWithinDistance(
+                    ProximityModel::Ptr a,
+                    const math::Transform3D<>& wTa,
+                    ProximityModel::Ptr b,
+                    const math::Transform3D<>& wTb,
+                    double tolerance,
+                    class ProximityStrategyData& data) = 0;
+
 
     private:
         CollisionToleranceStrategy(const CollisionToleranceStrategy&);

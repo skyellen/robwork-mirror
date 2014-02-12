@@ -104,13 +104,13 @@ DistanceCalculator::DistanceCalculator(FramePairList pairs,
 
 {
     RW_ASSERT(strategy);
-	_thresholdStrategy = _strategy.cast<DistanceThresholdStrategy>();
+	_thresholdStrategy = _strategy;
 	_timer.resetAndPause();
 }
 
 void DistanceCalculator::initialize()
 {
-	_thresholdStrategy = _strategy.cast<DistanceThresholdStrategy>();
+	_thresholdStrategy = _strategy;
 
     _distancePairs.clear();
 

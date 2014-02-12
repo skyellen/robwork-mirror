@@ -34,8 +34,9 @@ namespace rw { namespace proximity {
     /*@{*/
 
     /**
-     * @brief The DistanceStrategy interface is used to abstract away
-     * specific collision detection algorithms or strategies.
+     * @brief This is an interface that defines methods for computing the minimum distance
+     * between geometric objects. If geometry objects has been related to frames (see ProximityStrategy)
+     * then distance functions computing the distance between the geometry attached to frames can also be used.
      */
     class DistanceStrategy : public virtual ProximityStrategy {
     public:
@@ -44,7 +45,7 @@ namespace rw { namespace proximity {
 
         /**
          * @brief DistanceResult contains basic information about the distance
-         * result between two frames.
+         * result between two sets of geometries. These geometry sets
          */
         struct Result {
              //! @brief reference to the first frame
@@ -124,7 +125,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual Result distance(const kinematics::Frame* a,
+        Result distance(const kinematics::Frame* a,
         					  const math::Transform3D<>& wTa,
         		              const kinematics::Frame* b,
         		              const math::Transform3D<>& wTb);
@@ -140,7 +141,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual Result& distance(
+        Result& distance(
                               const kinematics::Frame* a,
                               const math::Transform3D<>& wTa,
                               const kinematics::Frame* b,
@@ -158,12 +159,128 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual Result& distance(
+        Result& distance(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
 			const math::Transform3D<>& wTb,
-			class ProximityStrategyData& data) = 0;
+			class ProximityStrategyData& data){ return doDistance(a,wTa,b,wTb,data); }
+
+
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ if the distance are within threshold. If the distance
+         * between the frames are larger than the threshold, the result will be inaccurate.
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param threshold [in] threshold for distance calculations
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        Result distance(const kinematics::Frame* a,
+                              const math::Transform3D<>& wTa,
+                              const kinematics::Frame* b,
+                              const math::Transform3D<>& wTb,
+                              double threshold);
+
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ if the distance are within threshold. If the distance
+         * between the frames are larger than the threshold, the result will be inaccurate.
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param threshold [in] threshold for distance calculations
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        DistanceStrategy::Result& distance(const kinematics::Frame* a,
+                              const math::Transform3D<>& wTa,
+                              const kinematics::Frame* b,
+                              const math::Transform3D<>& wTb,
+                              double threshold,
+                              ProximityStrategyData& data);
+
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ if the distance are within threshold. If the distance
+         * between the frames are larger than the threshold, the result will be inaccurate.
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param threshold [in] threshold for distance calculations
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        DistanceStrategy::Result& distance(
+                ProximityModel::Ptr a,
+                const math::Transform3D<>& wTa,
+                ProximityModel::Ptr b,
+                const math::Transform3D<>& wTb,
+                double threshold,
+                ProximityStrategyData& data){
+            return doDistanceThreshold(a, wTa, b, wTb, threshold, data);
+        }
+
+    protected:
+
+        /**
+         * @brief Calculates the distance between two proximity models @f$ \mathcal{a} @f$ and
+         * @f$ \mathcal{b} @f$
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        virtual Result& doDistance(
+            ProximityModel::Ptr a,
+            const math::Transform3D<>& wTa,
+            ProximityModel::Ptr b,
+            const math::Transform3D<>& wTb,
+            class ProximityStrategyData& data) = 0;
+
+
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ if the distance are within threshold. If the distance
+         * between the frames are larger than the threshold, the result will be inaccurate.
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param threshold [in] threshold for distance calculations
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        virtual DistanceStrategy::Result& doDistanceThreshold(
+                ProximityModel::Ptr a,
+                const math::Transform3D<>& wTa,
+                ProximityModel::Ptr b,
+                const math::Transform3D<>& wTb,
+                double threshold,
+                ProximityStrategyData& data)
+        {
+            return doDistance(a,wTa,b,wTb,data);
+        }
 
     private:
         DistanceStrategy(const DistanceStrategy&);

@@ -42,7 +42,8 @@ namespace rw { namespace proximity {
     /**
      * @brief The ProximityStrategy interface is a clean interface
      * for defining methods that are common for different proximity
-     * strategy classes
+     * strategy classes. Specifically adding of geometric models and
+     * relating them to frames.
      */
     class ProximityStrategy {
     public:

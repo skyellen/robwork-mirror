@@ -107,16 +107,6 @@ namespace rwlibs { namespace proximitystrategies {
         std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::inCollision
-         */
-        bool inCollision(
-			rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            rw::proximity::ProximityStrategyData& data);
-
-        /**
          *  @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
@@ -130,6 +120,18 @@ namespace rwlibs { namespace proximitystrategies {
            @brief Makes a Yaobi based collision strategy.
         */
 		static rw::proximity::CollisionStrategy::Ptr make();
+
+    protected:
+        /**
+         * @copydoc rw::proximity::CollisionStrategy::doInCollision
+         */
+        bool doInCollision(
+            rw::proximity::ProximityModel::Ptr a,
+            const rw::math::Transform3D<>& wTa,
+            rw::proximity::ProximityModel::Ptr b,
+            const rw::math::Transform3D<>& wTb,
+            rw::proximity::ProximityStrategyData& data);
+
     };
 
     //static const bool YaobiCollisionStrategyRegistrered = rw::proximity::ProximityStrategyFactory::addCollisionStrategy<ProximityStrategyYaobi>("YAOBI");

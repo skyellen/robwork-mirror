@@ -49,8 +49,8 @@ namespace rw { namespace proximity {
     typedef rw::common::Ptr<CollisionStrategy> CollisionStrategyPtr;
 #endif
     /**
-     * @brief The CDStrategy interface is used to abstract away
-     * specific collision detection algorithms or strategies.
+     * @brief An interface that defines methods to test collision between
+     * two objects.
      */
     class CollisionStrategy : public virtual ProximityStrategy {
     public:
@@ -136,7 +136,7 @@ namespace rw { namespace proximity {
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool inCollision(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
@@ -155,7 +155,7 @@ namespace rw { namespace proximity {
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool inCollision(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
@@ -173,12 +173,15 @@ namespace rw { namespace proximity {
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
-        virtual bool inCollision(
+        bool inCollision(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
-            ProximityStrategyData& data) = 0;
+            ProximityStrategyData& data)
+        {
+            return doInCollision(a,wTa,b,wTb,data);
+        }
 
         /**
          * @brief describes a simple collision contact data structure
@@ -242,7 +245,6 @@ namespace rw { namespace proximity {
 		 * @brief a factory for WorkCellSaver. This factory also defines an
 		 * extension point for workcell savers.
 		 */
-
         class Factory: public rw::common::ExtensionPoint<CollisionStrategy> {
 	    public:
 	    	//! constructor
@@ -257,6 +259,25 @@ namespace rw { namespace proximity {
 
 	    };
 
+
+    protected:
+
+        /**
+         * @brief Checks to see if two proximity models are in collision
+         * @param a [in] model 1
+         * @param wTa [in] transform of model a
+         * @param b [in] model 2
+         * @param wTb [in] transform of model b
+         * @param data [in/out] caching and result container
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
+         */
+        virtual bool doInCollision(
+            ProximityModel::Ptr a,
+            const math::Transform3D<>& wTa,
+            ProximityModel::Ptr b,
+            const math::Transform3D<>& wTb,
+            ProximityStrategyData& data) = 0;
 
 
     private:

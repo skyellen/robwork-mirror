@@ -23,7 +23,7 @@
 
 #include "CollisionStrategy.hpp"
 #include "DistanceStrategy.hpp"
-#include "DistanceToleranceStrategy.hpp"
+#include "DistanceMultiStrategy.hpp"
 
 namespace rw {
 namespace proximity {
@@ -34,7 +34,7 @@ namespace proximity {
      // for backward compatability
     typedef CollisionStrategy::Result CollisionResult;
     typedef DistanceStrategy::Result DistanceResult;
-    typedef DistanceToleranceStrategy::Result MultiDistanceResult;
+    typedef DistanceMultiStrategy::Result MultiDistanceResult;
 
 
     /***
@@ -51,7 +51,7 @@ namespace proximity {
     public:
     	typedef rw::common::Ptr<ProximityStrategyData> Ptr;
 
-        typedef enum{CollisionData=1, TolleranceData=2, DistanceData=4} DataType;
+        typedef enum{CollisionData=1, DistanceData=2, MultiDistanceData=4} DataType;
 
         ProximityStrategyData():
             rel_err(0),
@@ -78,12 +78,12 @@ namespace proximity {
         //double getDistance(){ return _distanceData.distance; }
 
         // For Multi distance interface
-        DistanceToleranceStrategy::Result& getMultiDistanceData(){ return _multiDistanceData;}
+        DistanceMultiStrategy::Result& getMultiDistanceData(){ return _multiDistanceData;}
         //double getMultiDistance(){ return _multiDistanceData.distance; }
 
 
         DistanceStrategy::Result _distanceData;
-        DistanceToleranceStrategy::Result _multiDistanceData;
+        DistanceMultiStrategy::Result _multiDistanceData;
 
         /*
         * @param rel_err [in] relative acceptable error

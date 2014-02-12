@@ -9,8 +9,8 @@ SET(FILES_CPP
   ProximityStrategy.cpp
   CollisionDetector.cpp
   DistanceStrategy.cpp
-  DistanceToleranceStrategy.cpp
-  DistanceThresholdStrategy.cpp
+  DistanceMultiStrategy.cpp
+  #DistanceThresholdStrategy.cpp
   DistanceCalculator.cpp
   ProximityModel.cpp
   
@@ -42,8 +42,7 @@ SET(FILES_HPP
   ProximityStrategy.hpp
   CollisionDetector.hpp
   DistanceStrategy.hpp
-  DistanceToleranceStrategy.hpp
-  DistanceThresholdStrategy.hpp
+  DistanceMultiStrategy.hpp
   DistanceCalculator.hpp
   ProximityModel.hpp
   ProximityFilterStrategy.hpp

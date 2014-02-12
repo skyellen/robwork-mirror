@@ -18,6 +18,7 @@ IF(build)
       ./xqpcontroller/XQPController.cpp
       ./xqpcontroller/NullSpaceProjection.cpp
       ./gpm/BasicGPM.cpp
+      BFGS.cpp
       
       MovingAverage.cpp
       #StablePlanePose.cpp
@@ -32,7 +33,8 @@ IF(build)
       ./xqpcontroller/XQPController.hpp
       ./xqpcontroller/NullSpaceProjection.hpp
       ./gpm/BasicGPM.hpp
-      
+	
+	  BFGS.hpp      
       MovingAverage.hpp
       #StablePlanePose.hpp
     )

@@ -165,7 +165,7 @@ bool ProximityStrategyYaobi::removeGeometry(rw::proximity::ProximityModel* model
 	return false;
 }
 
-bool ProximityStrategyYaobi::inCollision(ProximityModel::Ptr aModel,
+bool ProximityStrategyYaobi::doInCollision(ProximityModel::Ptr aModel,
     const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
     const Transform3D<>& wTb,

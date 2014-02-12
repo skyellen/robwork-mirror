@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP
-#define RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP
+#ifndef RW_PROXIMITY_distancesSTRATEGY_HPP
+#define RW_PROXIMITY_distancesSTRATEGY_HPP
 /**
  * @file DistanceStrategy.hpp
  */
@@ -33,14 +33,15 @@ namespace rw { namespace proximity {
     /*@{*/
 
     /**
-     * @brief The DistanceStrategy interface is used to abstract away
-     * specific collision detection algorithms or strategies.
+     * @brief This interface allows the definition of computing all points between two
+     * geometric objects that are closer than a specified tolerance. See ProxmityStrategy on
+     * how to add geometry to the strategy.
      */
-    class DistanceToleranceStrategy: public virtual ProximityStrategy {
+    class DistanceMultiStrategy: public virtual ProximityStrategy {
 
     public:
 		//! @brief smart pointer type to this class
-		typedef rw::common::Ptr<DistanceToleranceStrategy> Ptr;
+		typedef rw::common::Ptr<DistanceMultiStrategy> Ptr;
 
 
         /**
@@ -97,10 +98,10 @@ namespace rw { namespace proximity {
         /**
          * @brief Destroys object
          */
-        virtual ~DistanceToleranceStrategy();
+        virtual ~DistanceMultiStrategy();
 
         /**
-         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @brief Calculates all distances between geometry of two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$
          * @param result [out] MultiDistanceResult to copy result into
          * @param a [in] @f$ \mathcal{F}_a @f$
@@ -115,7 +116,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual Result distances(
+        Result distances(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
@@ -123,7 +124,7 @@ namespace rw { namespace proximity {
             double tolerance);
 
         /**
-         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @brief Calculates all distances between geometry of two  given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$
          * @param result [out] MultiDistanceResult to copy result into
          * @param a [in] @f$ \mathcal{F}_a @f$
@@ -138,7 +139,7 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual Result& distances(
+        Result& distances(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
@@ -147,35 +148,55 @@ namespace rw { namespace proximity {
             class ProximityStrategyData& data);
 
         /**
-         * @brief
-         * @param result
-         * @param a
-         * @param wTa
-         * @param b
-         * @param wTb
-         * @param tolerance
-         * @return
+         * @copydoc dodistances
          */
-        virtual Result& distances(
+        Result& distances(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
+            class ProximityStrategyData& data)
+        {
+            return doDistances(a,wTa,b,wTb,tolerance,data);
+        }
+    protected:
+
+        /**
+         * @brief Calculates all distances between two given objects @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ where the distances are below a certain threshold.
+         * @param result [out] MultiDistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param tolerance [in] point pairs that are closer than tolerance will
+         * be included in the result.
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         *
+         * @return list of distances between all points that are closer than threshold.
+         */
+        virtual Result& doDistances(
+            ProximityModel::Ptr a,
+            const math::Transform3D<>& wTa,
+            ProximityModel::Ptr b,
+            const math::Transform3D<>& wTb,
+            double tolerance,
             class ProximityStrategyData& data) = 0;
 
     private:
-        DistanceToleranceStrategy(const DistanceToleranceStrategy&);
-        DistanceToleranceStrategy& operator=(const DistanceToleranceStrategy&);
+        DistanceMultiStrategy(const DistanceMultiStrategy&);
+        DistanceMultiStrategy& operator=(const DistanceMultiStrategy&);
 
     protected:
         /**
          * @brief Creates object
          */
-        DistanceToleranceStrategy();
+        DistanceMultiStrategy();
     };
 
     /*@}*/
 }} // end namespaces
 
-#endif /* RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP */
+#endif /* RW_PROXIMITY_distancesSTRATEGY_HPP */

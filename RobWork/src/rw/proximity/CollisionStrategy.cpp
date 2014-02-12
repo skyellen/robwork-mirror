@@ -80,7 +80,7 @@ namespace
 			// TODO: we need to get contacts from tolerance collision checks
 		}
 
-		bool inCollision(ProximityModel::Ptr a,
+		bool doInCollision(ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
@@ -93,7 +93,7 @@ namespace
 
 
 
-            return _strategy->inCollision(a, wTa, b, wTb, _tolerance, data);
+            return _strategy->isWithinDistance(a, wTa, b, wTb, _tolerance, data);
         }
 
         void clear()

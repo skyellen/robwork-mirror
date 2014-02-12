@@ -298,7 +298,7 @@ ProximityStrategyPQP::QueryData ProximityStrategyPQP::initQuery(ProximityModel::
 }
 
 
-bool ProximityStrategyPQP::inCollision(
+bool ProximityStrategyPQP::doIsWithinDistance(
         ProximityModel::Ptr aModel,
         const Transform3D<>& wTa,
         ProximityModel::Ptr bModel,
@@ -361,7 +361,7 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
 }
 */
 
-bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
+bool ProximityStrategyPQP::doInCollision(ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
 	const Transform3D<>& wTb,
@@ -427,7 +427,7 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
 }
 
 
-DistanceResult& ProximityStrategyPQP::distance(
+DistanceResult& ProximityStrategyPQP::doDistance(
 										ProximityModel::Ptr aModel,
 										const Transform3D<>& wTa,
 										ProximityModel::Ptr bModel,
@@ -464,7 +464,7 @@ DistanceResult& ProximityStrategyPQP::distance(
     return rwresult;
 }
 
-MultiDistanceResult& ProximityStrategyPQP::distances(
+MultiDistanceResult& ProximityStrategyPQP::doDistances(
 	ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
@@ -605,7 +605,7 @@ std::vector<std::string> ProximityStrategyPQP::getGeometryIDs(rw::proximity::Pro
 	return res;
 }
 
-DistanceResult& ProximityStrategyPQP::distance(
+DistanceResult& ProximityStrategyPQP::doDistanceThreshold(
 												 ProximityModel::Ptr aModel,
 												 const Transform3D<>& wTa,
 												 ProximityModel::Ptr bModel,

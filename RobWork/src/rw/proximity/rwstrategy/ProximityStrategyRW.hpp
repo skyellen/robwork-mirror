@@ -35,8 +35,7 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
-#include <rw/proximity/DistanceToleranceStrategy.hpp>
-#include <rw/proximity/DistanceThresholdStrategy.hpp>
+#include <rw/proximity/DistanceMultiStrategy.hpp>
 
 #include <rw/proximity/ProximityCache.hpp>
 
@@ -154,7 +153,7 @@ namespace rw { namespace proximity {
          */
         bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-        bool addGeometry(rw::proximity::ProximityModel*, rw::geometry::Geometry::Ptr, bool);
+        bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry
@@ -174,7 +173,7 @@ namespace rw { namespace proximity {
         /**
          * @copydoc rw::proximity::CollisionStrategy::collision
          */
-        bool inCollision(
+        bool doInCollision(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
@@ -182,9 +181,9 @@ namespace rw { namespace proximity {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::CollisionToleranceStrategy::collision
+         * @copydoc rw::proximity::CollisionToleranceStrategy::doIsWithinDistance
          */
-        bool inCollision(
+        bool doIsWithinDistance(
             rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
             rw::proximity::ProximityModel::Ptr b,
@@ -192,8 +191,10 @@ namespace rw { namespace proximity {
             double tolerance,
             rw::proximity::ProximityStrategyData &data);
 
-
-        DistanceStrategy::Result& distance(
+        /**
+         * @copydoc rw::proximity::DistanceStrategy::doDistance
+         */
+        DistanceStrategy::Result& doDistance(
             rw::proximity::ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
             rw::proximity::ProximityModel::Ptr b,
@@ -225,7 +226,6 @@ namespace rw { namespace proximity {
 
 		void getCollisionContacts(std::vector<CollisionStrategy::Contact>& contacts,
 											  ProximityStrategyData& data);
-
 
     private:
 
