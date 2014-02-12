@@ -53,7 +53,7 @@ SET(SRC_FILES
     #Log.cpp
     
     calibration/EncoderDecentralization.cpp
-    calibration/BFGS.cpp
+    #calibration/BFGS.cpp
     
     #ClarkHullND.cpp
     
@@ -89,7 +89,7 @@ SET(SRC_FILES_HPP
     #Log.hpp
     WrenchMeasure3D.hpp
     calibration/EncoderDecentralization.hpp
-    calibration/BFGS.hpp
+    #calibration/BFGS.hpp
     
     csg/csgjs.cpp
     csg/CSGConvert.hpp
