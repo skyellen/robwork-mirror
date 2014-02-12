@@ -230,7 +230,7 @@ void ContactModelFactory::DetermineContact(ConstraintEdge &e, rw::kinematics::St
 
     std::cout << " calc multi distance result: " << _touchDist << std::endl;
 
-    MultiDistanceResult &result = ((DistanceToleranceStrategy*)_narrowStrategy)->distances(
+    MultiDistanceResult &result = _narrowStrategy->distances(
                                   frameA,wTa,
                                   frameB,wTb,
                                   _touchDist,
