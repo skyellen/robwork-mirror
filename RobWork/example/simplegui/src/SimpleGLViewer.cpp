@@ -1,4 +1,4 @@
-#include "SimpleGLViewer.h"
+#include "SimpleGLViewer.hpp"
 
 #include <iostream>
 #include <string>
@@ -94,7 +94,7 @@ std::map<int,MenuItem*> _menuItemMap;
 
 EventListener *_keyListener = NULL;
 
-WorkCellScene* SimpleGLViewer::getWorkCellGLDrawer(){ return &_workcellGLDrawer; };
+WorkCellScene* SimpleGLViewer::getWorkCellGLDrawer(){ return _workcellGLDrawer; };
 
 void SimpleGLViewer::setKeyListener(EventListener *listener){
     _keyListener = listener;
@@ -393,48 +393,23 @@ void myGlutDisplay( void )
         //_toolCam.acquire();
     } else {
 
-        glMatrixMode(GL_PROJECTION);
-        {
-            glLoadIdentity();
-            GLdouble aspect = (GLdouble)_width / _height;
-            gluPerspective(60, aspect, 0.10, 1000);
-        }
+        //if( _cameraCtrl ){
+            // for now we scale the pivot such that its not unrealistically large/small
+            //getViewCamera()->setTransform(_cameraCtrl->getTransform());
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+            //double dist = -(inverse(_cameraCtrl->getTransform())*_pivotDrawable->getTransform().P())[2];
+            //_pivotDrawable->setScale( Math::clamp(dist/5.0,0.00001,1) ); // 5/5
+        //}
 
-        // Rotate and place camera/scene
-        GLfloat data[16];
-        convertRotAndPosToArray(, data);
-        glMultMatrixf(data);
-        glTranslated(-_pivotPoint(0), -_pivotPoint(1), -_pivotPoint(2));
-
-        Transform3D<> vt3d(_viewPos,_viewRotation);
-
-        getViewCamera()->setTransform(_cameraCtrl->getTransform());
-
-        // update the position of the light
-    /*    Transform3D<> camTw = inverse(getViewCamera()->getTransform());
-        Transform3D<> wTlight = Transform3D<>(Vector3D<>(0,0,20));
-        Vector3D<> lightPos = (camTw*wTlight).P();// Vector3D<>(0,0,1);
-        //Vector3D<> lightPos = (camTw.R() * Vector3D<>(0,0,1) );
-
-        GLfloat lpos[] = {0.0f, 0.0f, 1.0f, 1.0f};
-        lpos[0] = lightPos[0];
-        lpos[1] = lightPos[1];
-        lpos[2] = lightPos[2];
-        glLightfv(GL_LIGHT0, GL_POSITION, lpos);
-    */
         //std::cout << _currentView->_name << std::endl;
         _renderInfo._drawType = _currentView->_drawType;
         _renderInfo._mask = _currentView->_drawMask;
         _renderInfo.cams = _currentView->_camGroup;
         _scene->draw( _renderInfo );
 
-        // TODO: draw the ArcBall
-        if(_workcellModel!=NULL){
-
-            _workcellGLDrawer->draw() draw(*_state, _workcellModel.get());
+        GLenum res = glGetError();
+        if(res!=GL_NO_ERROR){
+            //std::cout << "AN OPENGL ERROR: " << res << "\n";
         }
     }
     /* Disable lighting and set up ortho projection to render text */
@@ -621,6 +596,11 @@ const rw::kinematics::State& SimpleGLViewer::getState(){
 void SimpleGLViewer::init(int argc, char** argv){
     glutInit(&argc, argv);
 }
+
+void SimpleGLViewer::draw(){
+
+}
+
 
 void initGlut(int x, int y, int width, int height){
     /****************************************/

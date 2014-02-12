@@ -1,25 +1,16 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
-# The name of the project. (EDIT THIS)
+
+# Test CMake version
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+# The name of the project. 
 PROJECT(TutorialCollection)
 
-# Used to resolve absolute path names
-SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# optionally: point the find package in the direction of the robwork.
+SET(RobWork_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+FIND_PACKAGE(RobWork REQUIRED)
 
-##### IMPORTANT EDIT THESE PATHS TO REFLECT YOUR ROBWORK INSTALLATION #####
-# Now set the RW/RWS root (edit this if necessary)
-SET(RW_ROOT "${ROOT}/../../../RobWork")
-SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
-
-# set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)
-SET(CMAKE_BUILD_TYPE Release)
-
-#Include default settings for constructing a robwork dependent project
-SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(RobWork)
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-
-# if you have additional libraries or include dirs then add them here
-INCLUDE_DIRECTORIES(${ROOT} ${ROBWORK_INCLUDE_DIR})
 
 # And now we add any targets that we want
 add_executable(HelloWorld HelloWorld.cpp)

@@ -8,22 +8,24 @@
 
 using namespace rw::math;
 using namespace rw::models;
+using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 using namespace rwlibs::proximitystrategies;
 
 void samplerExample(WorkCell& workcell)
 {
-    Device* device = workcell.getDevices().front();
+    Device::Ptr device = workcell.getDevices().front();
 
-    QConstraintPtr constraint = QConstraint::make(
-        CollisionDetector::make(
-            &workcell, ProximityStrategyYaobi::make()),
+    CollisionDetector::Ptr coldect = ownedPtr( new CollisionDetector(&workcell, ProximityStrategyYaobi::make()) );
+
+    QConstraint::Ptr constraint = QConstraint::make(
+        coldect,
         device,
         workcell.getDefaultState());
 
-    QSamplerPtr anyQ = QSampler::makeUniform(device);
-    QSamplerPtr cfreeQ = QSampler::makeConstrained(anyQ, constraint);
+    QSampler::Ptr anyQ = QSampler::makeUniform(device);
+    QSampler::Ptr cfreeQ = QSampler::makeConstrained(anyQ, constraint);
 
     for (int i = 0; i < 4; i++) {
         const Q q = cfreeQ->sample();

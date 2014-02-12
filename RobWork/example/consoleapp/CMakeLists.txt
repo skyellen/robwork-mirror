@@ -5,36 +5,18 @@
 # files and when configuring your project.  
 #####################################################
 
-#
 # Test CMake version
-#
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # The name of the project. (EDIT THIS)
 PROJECT(ConsoleApp)
 
-# Used to resolve absolute path names
-SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-SET(RW_ROOT "${ROOT}/../../../RobWork")
-SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
+# optionally: point the find package in the direction of the robwork.
+SET(RobWork_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+FIND_PACKAGE(RobWork REQUIRED)
 
-# set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)
-SET(CMAKE_BUILD_TYPE Release)
-
-FIND_PACKAGE(RobWork)
-INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-
-# Set the output dir for generated libraries and binaries
-IF(MSVC)
-	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin" CACHE PATH "Runtime directory" FORCE)
-	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Library directory" FORCE)
-	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory" FORCE)
-ELSE()
-	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
-	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
-	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
-ENDIF()
 
 # if you have additional libraries or include dirs then add them here
 SET(USER_LIBRARIES )

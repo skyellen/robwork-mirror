@@ -6,49 +6,31 @@
 # file for adding additional dependencies to external projects  
 #####################################################
 
-#
-# Test CMake version
-#
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-# The name of the project.
+# Test CMake version
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+# The name of the project. 
 PROJECT(rw_viewer)
 
-# Used to resolve absolute path names
-SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# optionally: point the find package in the direction of the robwork.
+SET(RobWork_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+FIND_PACKAGE(RobWork REQUIRED)
 
-IF(NOT CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE Release)
-ENDIF()
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
+LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
-SET(ROBWORK_ROOT ${RW_ROOT})
-SET(RobWork_DIR ${ROOT}/../../cmake) 
-FIND_PACKAGE(RobWork) 
+# FreeGlut cannot be found if the following is not set
+SET(GLUT_Xi_LIBRARY "")
+SET(GLUT_Xmu_LIBRARY "")
 
-INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} ${ROOT}/src)
-LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS}  )
+FIND_PACKAGE(GLUT REQUIRED)
 
-# Set the output dir for generated libraries and binaries
-IF(MSVC)
-	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin" CACHE PATH "Runtime directory" FORCE)
-	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Library directory" FORCE)
-	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory" FORCE)
-ELSE()
-	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
-	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
-	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
-ENDIF()
-
-FIND_PACKAGE(GLUT)
-IF( NOT GLUT_FOUND )
-    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
-ENDIF ()
-
-INCLUDE_DIRECTORIES(${ROOT}/src/)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 # add the source files
 SET(SRC_FILES
-	src/SimpleGLViewer.cpp
+	src/SimpleGLViewer.cpp	
 	src/EventListener.cpp
 	src/Menu.cpp 
 	src/MenuItem.cpp 

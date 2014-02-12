@@ -10,7 +10,7 @@
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
-using namespace rw::pathplannning;
+using namespace rw::pathplanning;
 using namespace rw::proximity;
 using namespace rw::loaders;
 using namespace rwlibs::proximitystrategies;
@@ -22,26 +22,30 @@ void plannerExample(WorkCell& workcell)
     const State state = workcell.getDefaultState();
 
     // The first device of the workcell.
-    DevicePtr device = workcell.getDevices().front();
+    Device::Ptr device = workcell.getDevices().front();
 
-    // The path planning constraint is to avoid collisions.
-    const PlannerConstraint constraint = PlannerConstraint::make(
-        ProximityStrategyYaobi::make(), &workcell, device, state);
+    CollisionDetector coldect(&workcell, ProximityStrategyYaobi::make());
+
+    // The q constraint is to avoid collisions.
+    QConstraint::Ptr constraint = QConstraint::make(&coldect, device, state);
+
+    // the edge constraint tests the constraint on edges, eg. edge between two configurations
+    QEdgeConstraintIncremental::Ptr edgeconstraint = QEdgeConstraintIncremental::makeDefault(
+        constraint, device);
 
     // An SBL based point-to-point path planner.
-    QToQPlannerPtr planner = SBLPlanner::makeQToQPlanner(
-        SBLSetup::make(constraint, device));
+    QToQPlanner::Ptr planner = SBLPlanner::makeQToQPlanner(
+        SBLSetup::make(constraint, edgeconstraint, device));
 
     // A sampler of collision free configurations for the device.
-    QSamplerPtr cfreeQ = QSampler::makeConstrained(
-        QSampler::makeUniform(device),
-        constraint.getQConstraintPtr());
+    QSampler::Ptr cfreeQ = QSampler::makeConstrained(
+        QSampler::makeUniform(device), constraint);
 
     // The start configuration for the path.
     Q pos = device->getQ(state);
 
     // Plan 10 paths to sampled collision free configurations.
-    std::vector<Q> path;
+    rw::trajectory::Path<Q> path;
     for (int cnt = 0; cnt < 10; cnt++) {
         const Q next = cfreeQ->sample();
         const bool ok = planner->query(pos, next, path);

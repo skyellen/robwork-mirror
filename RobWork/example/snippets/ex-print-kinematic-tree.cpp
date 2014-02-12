@@ -6,6 +6,7 @@
 
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::math;
 
 
 void printKinematicTree(

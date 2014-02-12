@@ -55,7 +55,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    WorkCell::Ptr workcell = WorkCellLoader::load(argv[1]);
+    WorkCell::Ptr workcell = WorkCellFactory::load(argv[1]);
     Device::Ptr device = workcell->getDevices().front();
     const State state = workcell->getDefaultState();
 

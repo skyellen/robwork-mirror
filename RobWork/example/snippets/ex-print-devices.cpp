@@ -8,7 +8,7 @@ using namespace rw::models;
 void printDeviceNames(const WorkCell& workcell)
 {
     std::cout << "Workcell " << workcell << " contains devices:\n";
-    BOOST_FOREACH(Device* device, workcell.getDevices()) {
+    BOOST_FOREACH(Device::Ptr device, workcell.getDevices()) {
         std::cout << "- " << device->getName() << "\n";
     }
 }
