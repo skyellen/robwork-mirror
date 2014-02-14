@@ -135,6 +135,9 @@ TreeView::TreeView() :
 
     _toggleFrameAction = new QAction(tr("Show/Remove Frame"), this); // owned
     connect(_toggleFrameAction, SIGNAL(triggered()), this, SLOT(toggleFrameSlot()));
+    
+    _toggleFramesAction = new QAction(tr("Show/Remove All Frames"), this); // owned
+    connect(_toggleFramesAction, SIGNAL(triggered()), this, SLOT(toggleFramesSlot()));
 
     _selectFrameAction= new QAction(tr("Select Frame"), this); // owned
     connect(_selectFrameAction, SIGNAL(triggered()), this, SLOT(selectFrameSlot()));
@@ -483,6 +486,7 @@ void TreeView::customContextMenuRequestSlot(const QPoint& pos)
     FrameMap::iterator frameIt = _frameMap.find(item);
     if (frameIt != _frameMap.end()) {
         _contextMenu->addAction(_toggleFrameAction);
+        _contextMenu->addAction(_toggleFramesAction);
         _contextMenu->addAction(_selectFrameAction);
         //_contextMenu->addAction(_addFrameAction);
 
@@ -528,37 +532,9 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             if ( !scene->isFrameAxisVisible(frame) ) {
                 // Add new Drawable
                 scene->setFrameAxisVisible(true, frame);
-                //drawable->setScale(0.5);
 
-                //QTreeWidgetItem* geoitem = new QTreeWidgetItem(item); // owned.
-                //geoitem->setText(0, strVisFrameName);
-                //geoitem->setIcon(0,QIcon(":/images/drawable.png"));
-
-                //_drawableToItemMap[drawable] = geoitem;
             } else { // Remove the DrawableFrame
                 scene->setFrameAxisVisible(false, frame);
-
-                // find the geoitem, attached to the drawable
-                //QTreeWidgetItem* geoitem = _drawableToItemMap[drawable];
-                //RW_ASSERT(geoitem);
-
-                // Remove the associated QTreeWidgetItem from tree
-                /*
-                for (int i = item->childCount() - 1; i >= 0; i--) {
-                    RW_ASSERT(item->child(i));
-                    if (item->child(i) == geoitem) {
-                        delete item->takeChild(i);
-                        break;
-                    }
-                }
-
-                // Remove it from the drawable to item Map
-                _drawableToItemMap.erase(_drawableToItemMap.find(drawable));
-
-                // and last remove it from scene
-                scene->removeDrawable(drawable);
-                */
-
             }
         } catch(...){
 
@@ -567,9 +543,31 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
     }
 }
 
+
+
+void TreeView::toggleFramesView(QTreeWidgetItem* item)
+{
+	RW_ASSERT(item);
+
+    toggleFrameView(item);
+    
+    for (int i = 0; i < item->childCount(); i++) {
+            toggleFramesView(item->child(i));
+	}
+}
+
+
+
 void TreeView::toggleFrameSlot()
 {
     toggleFrameView(_treewidget->currentItem());
+    getRobWorkStudio()->updateAndRepaint();
+}
+
+
+void TreeView::toggleFramesSlot()
+{
+    toggleFramesView(_treewidget->currentItem());
     getRobWorkStudio()->updateAndRepaint();
 }
 

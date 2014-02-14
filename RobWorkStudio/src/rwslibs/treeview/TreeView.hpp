@@ -77,6 +77,7 @@ protected:
 private slots:
     void customContextMenuRequestSlot(const QPoint& pos);
     void toggleFrameSlot();
+    void toggleFramesSlot();
     void selectFrameSlot();
     void showSolidSlot();
     void showWireSlot();
@@ -102,6 +103,7 @@ private slots:
     void keyPressEvent ( QKeyEvent * event );
 private:
     void toggleFrameView(QTreeWidgetItem* item);
+    void toggleFramesView(QTreeWidgetItem* item);
     void collapseAll(QTreeWidgetItem* item);
     void expandAll(QTreeWidgetItem* item);
 
@@ -122,6 +124,7 @@ private:
 
     // Context Menu Actions
     QAction* _toggleFrameAction;
+    QAction* _toggleFramesAction;
     QAction* _selectFrameAction;
     QAction* _showSolidAction;
     QAction* _showWireAction;
