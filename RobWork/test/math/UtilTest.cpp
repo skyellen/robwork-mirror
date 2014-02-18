@@ -93,3 +93,65 @@ BOOST_AUTO_TEST_CASE(testWrench6D){
 	BOOST_CHECK(wrench.torque()[2] == 6 );
 
 }
+
+BOOST_AUTO_TEST_CASE(RandomSeedTest)
+{
+	// The boost random generator uses Mersenne twister pseudo-random generator
+	// The random values should therefore be deterministic for a given seed
+    BOOST_MESSAGE("- Testing Random Seeds");
+    // Check that the correct values are obtained, and that seeding with the same
+    // value gives same result.
+    for (unsigned int i = 0; i < 2; i++) {
+    	Math::seed(10);
+    	const double ran = Math::ran();
+    	const double ranFromTo = Math::ran(-0.2,0.4);
+    	const int ranI = Math::ranI(-200,7000);
+    	const double ranNormalDist = Math::ranNormalDist(1., 2.2);
+    	const Q ranQ = Math::ranQ(Q(2,0.1,0.5),Q(2,0.5,1.0));
+    	const Q ranQpair = Math::ranQ(std::make_pair<Q,Q>(Q(2,0.1,0.5),Q(2,0.5,1.0)));
+    	const Q ranDir = Math::ranDir(4, 2.1);
+    	const Q ranWeightedDir = Math::ranWeightedDir(3, Q(3,1,2,3), 0.1);
+    	BOOST_CHECK_EQUAL(ran,0.77132064313627779);
+    	BOOST_CHECK_EQUAL(ranFromTo,-0.020743304910138233);
+    	BOOST_CHECK_EQUAL(ranI,-51);
+    	BOOST_CHECK_EQUAL(ranNormalDist,-2.1159354853352048);
+    	BOOST_CHECK_EQUAL(ranQ[0],0.27720597842708228);
+    	BOOST_CHECK_EQUAL(ranQ[1],0.87440194131340832);
+    	BOOST_CHECK_EQUAL(ranQpair[0],0.43276454471051695);
+    	BOOST_CHECK_EQUAL(ranQpair[1],0.74925350688863546);
+    	BOOST_CHECK_EQUAL(ranDir[0],0.10420574144754288);
+    	BOOST_CHECK_EQUAL(ranDir[1],-1.3371934765112323);
+    	BOOST_CHECK_EQUAL(ranDir[2],-0.77189916796530089);
+    	BOOST_CHECK_EQUAL(ranDir[3],1.4195867160267628);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[0],0.0021004772778212945);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[1],-0.0086033368952058847);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[2],-0.03282871096443158);
+    }
+    // Check another seed
+    for (unsigned int i = 0; i < 2; i++) {
+    	Math::seed(123456);
+    	const double ran = Math::ran();
+    	const double ranFromTo = Math::ran(0,1);
+    	const int ranI = Math::ranI(-200,7000);
+    	const double ranNormalDist = Math::ranNormalDist(1., 2.2);
+    	const Q ranQ = Math::ranQ(Q(2,0.1,0.5),Q(2,0.5,1.0));
+    	const Q ranQpair = Math::ranQ(std::make_pair<Q,Q>(Q(2,0.1,0.5),Q(2,0.5,1.0)));
+    	const Q ranDir = Math::ranDir(4, 2.1);
+    	const Q ranWeightedDir = Math::ranWeightedDir(3, Q(3,1,2,3), 0.1);
+    	BOOST_CHECK_EQUAL(ran,0.12696982943452895);
+    	BOOST_CHECK_EQUAL(ranFromTo,0.5149132558144629);
+    	BOOST_CHECK_EQUAL(ranI,6760);
+    	BOOST_CHECK_EQUAL(ranNormalDist,2.3707402760475729);
+    	BOOST_CHECK_EQUAL(ranQ[0],0.38232804937288167);
+    	BOOST_CHECK_EQUAL(ranQ[1],0.94861826102714986);
+    	BOOST_CHECK_EQUAL(ranQpair[0],0.41153188152238729);
+    	BOOST_CHECK_EQUAL(ranQpair[1],0.68837485776748508);
+    	BOOST_CHECK_EQUAL(ranDir[0],-0.76867727692667076);
+    	BOOST_CHECK_EQUAL(ranDir[1],1.3635143841520583);
+    	BOOST_CHECK_EQUAL(ranDir[2],-0.62472325234244208);
+    	BOOST_CHECK_EQUAL(ranDir[3],-1.2528705544188166);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[0],-0.014881418304403815);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[1],-0.019235042703143274);
+    	BOOST_CHECK_EQUAL(ranWeightedDir[2],0.030365543188295908);
+    }
+}
