@@ -36,7 +36,7 @@ namespace
 
     typedef boost::normal_distribution<double> dist_type;
 
-    boost::variate_generator<boost::mt19937, dist_type> normal_distribution(
+    boost::variate_generator<boost::mt19937&, dist_type> normal_distribution(
         generator,
         boost::normal_distribution<double>(0, 1));
 }
