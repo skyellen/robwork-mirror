@@ -91,6 +91,7 @@ public:
 
     static bool hasFrameBuffers();
     static bool isFrameBuffersInitialized();
+    static bool testFrameBufferCompleteness();
 
     // Framebuffer object
     static PFNGLGENFRAMEBUFFERSEXTPROC                     glGenFramebuffersEXT;                      // FBO name generation procedure
@@ -101,6 +102,8 @@ public:
     static PFNGLGENERATEMIPMAPEXTPROC                      glGenerateMipmapEXT;                       // FBO automatic mipmap generation procedure
     static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC                glFramebufferTexture2DEXT;                 // FBO texdture attachement procedure
     static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC             glFramebufferRenderbufferEXT;              // FBO renderbuffer attachement procedure
+    static PFNGLBLITFRAMEBUFFEREXTPROC                     glBlitFrameBufferEXT;
+
     // Renderbuffer object
     static PFNGLGENRENDERBUFFERSEXTPROC                    glGenRenderbuffersEXT;                     // renderbuffer generation procedure
     static PFNGLDELETERENDERBUFFERSEXTPROC                 glDeleteRenderbuffersEXT;                  // renderbuffer deletion procedure
@@ -109,7 +112,8 @@ public:
     static PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC          glGetRenderbufferParameterivEXT;           // return various renderbuffer parameters
     static PFNGLISRENDERBUFFEREXTPROC                      glIsRenderbufferEXT;                       // determine renderbuffer object type
     static PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC      glRenderbufferStorageMultisampleEXT;
-    static PFNGLBLITFRAMEBUFFEREXTPROC                     glBlitFrameBufferEXT;
+
+
 
     static PFNGLTEXIMAGE2DMULTISAMPLEPROC                  glTexImage2DMultisample;
 

@@ -17,6 +17,7 @@
 
 #include "RWGLFrameBuffer.hpp"
 
+#include <rw/common/Log.hpp>
 #include <iostream>
 
 using namespace rw::common;
@@ -156,9 +157,52 @@ void RWGLFrameBuffer::test(LogWriter& log) {
     (log)<< "GL_RENDERBUFFER_DEPTH_SIZE_EXT: " << var << std::endl;
     glGetRenderbufferParameterivEXT(GL_RENDERBUFFER_EXT, GL_RENDERBUFFER_STENCIL_SIZE_EXT, &var);
     (log)<< "GL_RENDERBUFFER_STENCIL_SIZE_EXT: " << var << std::endl;
-
-
 }
+
+bool RWGLFrameBuffer::testFrameBufferCompleteness(){
+
+        GLenum status;
+        status = RWGLFrameBuffer::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        switch (status)
+        {
+        case GL_FRAMEBUFFER_COMPLETE_EXT:
+            return true;
+            break;
+        case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+            //Choose different formats
+            Log::errorLog()
+                    << "Framebuffer object format is unsupported by the video hardware. (GL_FRAMEBUFFER_UNSUPPORTED_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+            Log::errorLog() << "Incomplete attachment. (GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+            Log::errorLog()
+                    << "Incomplete missing attachment. (GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+            Log::errorLog() << "Incomplete dimensions. (GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+            Log::errorLog() << "Incomplete formats. (GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+            Log::errorLog() << "Incomplete draw buffer. (GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+            Log::errorLog() << "Incomplete read buffer. (GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT)(FBO - 820)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
+            Log::errorLog()
+                    << "Incomplete multisample buffer. (GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT)(FBO - 820)";
+            break;
+        default:
+            //Programming error; will fail on all hardware
+            Log::errorLog()
+                    << "Some video driver error or programming error occured. Framebuffer object status is invalid. (FBO - 823)";
+        }
+        return false;
+    }
 
 
 bool RWGLFrameBuffer::hasFrameBuffers() {

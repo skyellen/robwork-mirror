@@ -102,11 +102,11 @@ namespace {
             _offscreenRender(false),
             _offWidth(640),
             _offHeight(480),
-            _useMultiSample(true),
+            _useMultiSample(false),
             _initialized(false),
             _renderToImage(false),
             _renderToDepth(false),
-            _samples(4),
+            _samples(0),
             _fbId(-1),_fbTmpId(-1),_renderColorTmpId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
             {}
 
@@ -131,18 +131,18 @@ namespace {
 
         void setMultiSample(int samples){
             _samples = samples;
-            if(_samples<1)
-                _samples=1;
-            if(_samples==1)
+            if(_samples<1){
+                _samples=0;
                 _useMultiSample = false;
-            else
+            } else {
                 _useMultiSample = true;
-
+            }
         }
 
         void init(){
             GLuint maxGLuintSize = (GLuint) -1;
             if( (_offscreenRender==false && _fbId>=0) ){
+                //RW_WARN("_offscreenRender==false && _fbId>=0");
                 // offsreenrendering has been disabled so release all allocated storage
                 // deallocate the framebuffer
                 if(_fbId!=maxGLuintSize)
@@ -156,7 +156,23 @@ namespace {
                 _renderDepthId = maxGLuintSize;
 
             } else if(_offscreenRender==true){
+                //RW_WARN("_offscreenRender==true");
                 bool useMultisample = _useMultiSample && !_renderToDepth;
+
+                int samples;
+                glGetIntegerv(GL_MAX_SAMPLES_EXT, &samples);
+                if(samples<_samples){
+                    RW_WARN("Current hardware only supports multisampling with "<< samples << " nr of samples! "
+                            "The multi sampling will therefore be fixed to " << samples);
+                    _samples = samples;
+                }
+                if(_samples==1){
+                    _samples=0;
+                    _useMultiSample = false;
+                }
+
+                //RW_WARN("useMultisample: " << useMultisample);
+                //RW_WARN("_renderToDepth: " << _renderToDepth);
                 RWGLFrameBuffer::initialize();
                 if(_fbId>=0){
                     // the parameters of the frame buffer should be changed so we create a new
@@ -191,6 +207,8 @@ namespace {
                     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderColorTmpId);
                     RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
                     RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderColorTmpId);
+                    //RW_WARN("multisample: " << _samples);
+                    RWGLFrameBuffer::testFrameBufferCompleteness();
                 }
 
 
@@ -200,25 +218,29 @@ namespace {
 
                 // select render
                 RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
+                //RW_WARN("error: " << glGetError());
                 // create render storage
                 if( useMultisample ){
                     RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_RGBA8,_offWidth, _offHeight);
                 } else {
                     RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
-
                 }
                 //Attach color buffer to FBO
                 RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
+                //RW_WARN("error: " << glGetError());
 
+                //RW_WARN("fb: " << _offWidth << " : " <<  _offHeight);
+                RWGLFrameBuffer::testFrameBufferCompleteness();
 
-                // now if we need depth of image we also attach depth render buffer
+                // now if we need depth of image (and we need it even just for correct rendering) we also attach depth render buffer
                 //if(_renderToDepth==true){
                     RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
                     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
                     if( useMultisample ){
                         RWGLFrameBuffer::glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, _samples, GL_DEPTH24_STENCIL8, _offWidth, _offHeight);
                     } else {
-                        RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, _offWidth, _offHeight);
+                        RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8, _offWidth, _offHeight);
+                        //RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT32, _offWidth, _offHeight);
                     }
 
                      //Attach depth buffer to FBO
@@ -231,40 +253,8 @@ namespace {
                 }
 
                 //Does the GPU support current FBO configuration?
-                GLenum status;
-                status = RWGLFrameBuffer::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-                switch(status){
-                case GL_FRAMEBUFFER_COMPLETE_EXT:
-                    break;
-                  case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-                  //Choose different formats
-                  Log::errorLog() << "Framebuffer object format is unsupported by the video hardware. (GL_FRAMEBUFFER_UNSUPPORTED_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-                  Log::errorLog() << "Incomplete attachment. (GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-                      Log::errorLog() << "Incomplete missing attachment. (GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT)(FBO - 820)";
-                      break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-                  Log::errorLog() << "Incomplete dimensions. (GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-                  Log::errorLog() << "Incomplete formats. (GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-                  Log::errorLog() << "Incomplete draw buffer. (GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-                  Log::errorLog() << "Incomplete read buffer. (GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT)(FBO - 820)";
-                  break;
-                  case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
-                  Log::errorLog() << "Incomplete multisample buffer. (GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT)(FBO - 820)";
-                  break;
-                  default:
-                  //Programming error; will fail on all hardware
-                    Log::errorLog() << "Some video driver error or programming error occured. Framebuffer object status is invalid. (FBO - 823)";
-                }
+
+                RWGLFrameBuffer::testFrameBufferCompleteness();
 
                 RWGLFrameBuffer::test( Log::infoLog() );
                 RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
@@ -375,7 +365,7 @@ namespace {
         GLuint _fbId,_fbTmpId,_renderColorTmpId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
         rw::sensor::Image::Ptr _img;
         rw::sensor::Image25D::Ptr _scan25;
-        std::vector<float> _depthData;
+        std::vector<GLfloat> _depthData;
     };
 
 }
@@ -545,6 +535,7 @@ namespace {
             offscreenEnabled = scam->isOffscreenRenderEnabled();
 
             if( offscreenEnabled ){
+                //RW_WARN("offscreenEnabled: " << offscreenEnabled);
                 glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
                 scam->bind();
             }
@@ -645,6 +636,10 @@ namespace {
                 scam->copyToImage();
             }
             if( (scam->_renderToDepth) && scam->_scan25!=NULL){
+                scam->bind();
+                if(glGetError()>1)
+                    RW_WARN("error: " << glGetError());
+
                 //std::cout << "render to depth" << std::endl;
                 if(scam->_depthData.size() != scam->_scan25->getWidth()*scam->_scan25->getHeight() )
                     scam->_depthData.resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
@@ -652,10 +647,23 @@ namespace {
                 SceneCamera::Ptr maincam = scam->getMainCamera();
 
                 // copy rendered depth scene to image
+
                 glReadPixels(
                      0, 0,
                      scam->_scan25->getWidth(), scam->_scan25->getHeight(),
                      GL_DEPTH_COMPONENT, GL_FLOAT, &scam->_depthData[0]);
+
+                //glReadPixels(
+                //     0, 0,
+                //     scam->_scan25->getWidth(), scam->_scan25->getHeight(),
+                //     GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, &scam->_depthData[0]);
+
+                {
+                    int error = glGetError();
+                    if(error>1)
+                        RW_WARN("error: " << error);
+                }
+
 
                 GLdouble modelview[16];
                 GLdouble projection[16];
@@ -695,7 +703,12 @@ namespace {
 
                 for(size_t y=0;y<scam->_scan25->getHeight();y++){
                     for(size_t x=0;x<scam->_scan25->getWidth();x++){
-                        double winX=(double)x,winY=(double)y,winZ=scam->_depthData[x+y*scam->_scan25->getWidth()];
+                        GLfloat depth24_8 = scam->_depthData[x+y*scam->_scan25->getWidth()];
+                        double winZ=  depth24_8; //(depth24_8>>8)&0x00FFFFFF;
+                        //double winZ= scam->_depthData[x+y*scam->_scan25->getWidth()];
+
+                        double winX=(double)x,winY=(double)y;//
+
                         double posX, posY, posZ;
                         gluUnProject( winX, winY, winZ,
                                 modelview, projection, vp.viewport,
@@ -705,7 +718,7 @@ namespace {
                             q(0) = (float)posX;
                             q(1) = (float)posY;
                             q(2) = (float)posZ;
-                            //std::cout << q << "\n";
+                            //std::cout << q << " " << winZ << "\n";
                         }
                     }
                 }

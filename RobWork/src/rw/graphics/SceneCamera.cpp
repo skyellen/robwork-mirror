@@ -29,7 +29,10 @@ SceneCamera::SceneCamera(const std::string& name, SceneNode::Ptr subGraph):
     _enabled(true),
     _subGraph(subGraph),
     _name(name),
-    _ratioControl(Auto)
+    _ratioControl(Auto),
+    _depthTestEnabled(true),
+    _lightningEnabled(true),
+    _clearMask(true)
 {
     _aspectRatio = _w/(double)_h;
     _pmatrix.setPerspective(45, _w/(double)_h, 0.1, 30);
