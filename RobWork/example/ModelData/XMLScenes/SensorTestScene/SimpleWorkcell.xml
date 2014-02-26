@@ -1,10 +1,10 @@
 <WorkCell name="SensorTestScene">
  
- <Frame name="fanucBase" refframe="WORLD" />
+<Frame name="fanucBase" refframe="WORLD" />
  <Include file="../../XMLDevices/Fanuc-LRM200i/fanuc_lrm200i.xml" />
  
 <Frame name="handBase" refframe="LRM200.TCP" />
- <Include file="../../XMLDevices/SchunkHand/SchunkHand.xml" />
+ <Include file="../../XMLDevices/SchunkHand/SchunkHand_udep.xml" />
 
  
  <Frame name="Camera" refframe="WORLD" type="Movable">
