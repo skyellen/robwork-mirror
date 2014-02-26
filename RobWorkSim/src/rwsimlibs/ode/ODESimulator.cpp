@@ -2361,15 +2361,37 @@ void ODESimulator::enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamic
 
 void ODESimulator::exitPhysics()
 {
+	BOOST_FOREACH(ODEDevice* vdev, _odeDevices) {
+		delete vdev;
+	}
+	_odeDevices.clear();
+
+	BOOST_FOREACH(ODETactileSensor* sensor, _odeSensors) {
+		delete sensor;
+	}
+	_odeSensors.clear();
+
+	while (_odeBodies.size() > 0) {
+		ODEBody* body = _odeBodies[0];
+        if(!_dwc->inDevice(body->getRwBody()) )
+    		delete body;
+		std::vector<ODEBody*>::iterator it = _odeBodies.begin();
+		while (it < _odeBodies.end()) {
+			if (*it == body)
+				it = _odeBodies.erase(it);
+			else
+				it++;
+		}
+	}
+	_odeBodies.clear();
+
 	// only if init physics have been called
 	dJointGroupDestroy( _contactGroupId );
 	dWorldDestroy(_worldId);
 	dSpaceDestroy(_spaceId);
 
 	delete _odeMaterialMap;
-	BOOST_FOREACH(ODEDevice* vdev, _odeDevices){
-		delete vdev;
-	}
+
 	_frameToModels.clear();
 	_bpstrategy = NULL;
 

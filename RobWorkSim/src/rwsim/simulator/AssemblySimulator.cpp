@@ -181,7 +181,6 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		result = _results[taskIndex];
 		saveData = _storeExecutionData;
 	}
-	std::cout << "Execution Loop starting for taskID: " << task->taskID << std::endl;
 
 	SimState simState;
 	simState.saveData = saveData;
@@ -317,6 +316,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		std::cout << "simTime: " << simTime << std::endl;
 	}
 	result->femaleTmaleEnd = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
+	simulator->exitPhysics();
 	delete simulator;
 }
 

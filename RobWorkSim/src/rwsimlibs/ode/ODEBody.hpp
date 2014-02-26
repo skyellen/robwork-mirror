@@ -114,6 +114,8 @@ namespace simulator {
 			BOOST_FOREACH(ODEUtil::TriGeomData* data ,_triGeomDatas){
 				delete data;
 			}
+			if (_bodyId != 0)
+				dBodyDestroy(_bodyId);
 		};
 
 		/**

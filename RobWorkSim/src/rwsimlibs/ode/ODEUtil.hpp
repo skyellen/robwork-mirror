@@ -97,10 +97,15 @@ namespace simulator {
 
             TriMeshData(int sizeI,int sizeV):
                 indices(sizeI*2,0),
-                vertices(sizeV*2,0)
+                vertices(sizeV*2,0),
+                triMeshID(0)
             {
                 indices.resize(sizeI);
                 vertices.resize(sizeV);
+            }
+            ~TriMeshData() {
+            	if (triMeshID != 0)
+            		dGeomTriMeshDataDestroy(triMeshID);
             }
 
             std::vector<dTriIndex> indices;

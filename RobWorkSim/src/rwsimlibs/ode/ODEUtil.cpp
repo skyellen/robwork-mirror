@@ -17,6 +17,7 @@
 
 #include "ODEUtil.hpp"
 
+using namespace rw::common;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rwsim::simulator;
@@ -125,8 +126,8 @@ ODEUtil::TriMeshData::Ptr ODEUtil::buildTriMesh(GeometryData::Ptr gdata, bool in
     // std::cout  << "- NR of faces: " << nrOfTris << std::endl;
     // std::cout  << "- NR of verts: " << nrOfVerts << std::endl;
 
-    ODEUtil::TriMeshData *data =
-        new ODEUtil::TriMeshData(nrOfTris*3, nrOfVerts*3);
+    ODEUtil::TriMeshData::Ptr data =
+        ownedPtr(new ODEUtil::TriMeshData(nrOfTris*3, nrOfVerts*3));
     dTriMeshDataID triMeshDataId = dGeomTriMeshDataCreate();
 
     //const float myScale = 1.02;
