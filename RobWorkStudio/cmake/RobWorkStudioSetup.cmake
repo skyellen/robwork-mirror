@@ -135,7 +135,7 @@ IF(NOT DEFINED RWS_CXX_FLAGS)
 		SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
 	ENDIF()
   
-	SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
+	SET(RWS_CXX_FLAGS "${RW_BUILD_WITH_CXX_FLAGS};${RWS_CXX_FLAGS_TMP}" 
 		CACHE STRING "Change this to force using your own flags and not those of RobWorkSutdio"
 	)
 ENDIF()
@@ -154,7 +154,7 @@ IF(DEFINED RWS_LINKER_FLAGS)
 	
 	MESSAGE(STATUS "RobWorkStudio: Adding RWS linker flags: ${RWS_LINKER_FLAGS}")
 ENDIF()
-
+#MESSAGE(STATUS "${RW_BUILD_WITH_CXX_FLAGS}")
 # If we are using static linking
 IF (RWS_USE_STATIC_LINK_PLUGINS)
   MESSAGE(STATUS "RobWorkStudio: Using static linking of default plugins!")
