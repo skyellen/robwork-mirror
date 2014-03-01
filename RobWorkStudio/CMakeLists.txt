@@ -39,7 +39,7 @@ INCLUDE(${RWS_ROOT}/cmake/RobWorkStudioMacros.cmake)
 
 RW_INIT_PROJECT(${RWS_ROOT} RobWorkStudio RWS ${ROBWORKSTUDIO_VERSION})
 RW_GET_OS_INFO()
-RW_SET_INSTALL_DIRS(RobWorkStudio RWS)
+RW_SET_INSTALL_DIRS(RobWork RWS)
 RW_OPTIONS(RWS)
 
 # Add an "uninstall" target
