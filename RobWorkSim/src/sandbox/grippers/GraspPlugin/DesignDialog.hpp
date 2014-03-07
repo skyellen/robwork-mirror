@@ -7,6 +7,7 @@
 
 #include <QDialog>
 #include "Gripper.hpp"
+#include "ui_DesignDialog.h"
 
 class QLineEdit;
 class QPushButton;
@@ -49,7 +50,9 @@ class DesignDialog : public QDialog
 		bool _changed;
 		
 		// GUI
-		QLineEdit* _nameEdit;
+		Ui::designDialog ui;
+		
+		/*QLineEdit* _nameEdit;
 		QLineEdit* _lengthEdit;
 		QLineEdit* _widthEdit;
 		QLineEdit* _depthEdit;
@@ -80,7 +83,7 @@ class DesignDialog : public QDialog
 		QPushButton* _okButton;
 		QPushButton* _cancelButton;
 		QPushButton* _applyButton;
-		QPushButton* _defaultButton;
+		QPushButton* _defaultButton;*/
 		
 		std::string _wd;
 };

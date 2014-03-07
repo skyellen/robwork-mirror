@@ -189,6 +189,17 @@ class Gripper // : public TreeDevice
 		 * @brief Set parametrized jaw geometry.
 		 * 
 		 * JawPrimitive is used to generate geometry mesh from given parameters.
+		 * Parameters are (in order):
+		 * - type (0 for prismatic, 1 for cylindrical)
+		 * - length
+		 * - width
+		 * - depth
+		 * - chamfer depth
+		 * - chamfer angle
+		 * - cut position
+		 * - cut depth
+		 * - cut angle
+		 * - cut radius
 		 */
 		void setJawGeometry(rw::math::Q params)
 		{			
@@ -234,6 +245,7 @@ class Gripper // : public TreeDevice
 		 * @brief Sets parametrized base geometry.
 		 * 
 		 * Box is used to generate mesh using given parameters.
+		 * Parameters are the dimensions of the box (length x width x depth).
 		 */
 		void setBaseGeometry(rw::math::Q params)
 		{

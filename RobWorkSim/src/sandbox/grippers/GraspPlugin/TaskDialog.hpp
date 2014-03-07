@@ -7,6 +7,7 @@
 
 #include <QDialog>
 #include "TaskDescription.hpp"
+#include "ui_TaskDialog.h"
 
 class QLineEdit;
 class QPushButton;
@@ -40,7 +41,7 @@ class TaskDialog : public QDialog
 	
 	private:
 	// methods
-		void createGUI();
+		//void createGUI();
 		void updateGUI();
 		void updateTaskDescription();
 		
@@ -49,7 +50,9 @@ class TaskDialog : public QDialog
 		bool _changed;
 		
 		// GUI
-		QPushButton* _okButton;
+		Ui::taskDialog ui;
+		
+		/*QPushButton* _okButton;
 		QPushButton* _applyButton;
 		QPushButton* _cancelButton;
 		
@@ -73,7 +76,7 @@ class TaskDialog : public QDialog
 		
 		QLineEdit* _teachDistEdit;
 		QLineEdit* _preDistEdit;
-		QLineEdit* _coverageDistEdit;
+		QLineEdit* _coverageDistEdit;*/
 		
 		std::string _wd;
 };

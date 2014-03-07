@@ -15,6 +15,7 @@
 #include "Gripper.hpp"
 #include "GripperTaskSimulator.hpp"
 #include "TaskDescription.hpp"
+#include "ui_GraspPlugin.h"
 
 
 
@@ -134,8 +135,10 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		TaskDescription::Ptr _td;
 		
 		/* GUI */
+		Ui::evaluationWidget ui;
+		
 		// setup panel
-		QGroupBox* _setupBox;
+		/*QGroupBox* _setupBox;
 		QPushButton* _editSetupButton;
 		QPushButton* _loadSetupButton;
 		QPushButton* _saveSetupButton;
@@ -177,7 +180,7 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		QCheckBox* _slowCheck;
 		QCheckBox* _silentCheck;
 		
-		QPushButton* _testButton;
+		QPushButton* _testButton;*/
 		
 		// working directory
 		std::string _wd;

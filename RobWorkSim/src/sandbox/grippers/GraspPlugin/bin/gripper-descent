@@ -1,0 +1,220 @@
+#!/usr/bin/python
+
+import sys
+import os
+import subprocess
+import math
+import random
+import argparse
+import xml.etree.ElementTree as ET
+
+
+
+
+# path to RobWorkSim
+rwsim = "/home/dagothar/robwork/trunk/RobWorkSim/"
+
+
+
+def magnitude(v):
+	return math.sqrt(sum([x*x for x in v]))
+
+
+
+def normalize(v):
+	vmag = magnitude(v)
+	return [i/vmag for i in v]
+	
+	
+	
+def randir(n):
+	dir = [random.gauss(0, 1) for i in range(0, n)]
+	return normalize(dir)
+
+
+
+class GripperDescent:
+	"Class for performing a simple gradient descent on parametrized gripper."
+	
+	def __init__(self, dwc, task, name="gripper", nOfSteps=100, stepSize=1.0, simulations=100, optimize="coverage"):
+		# basic
+		self.nstep = 0
+		self.dwc = dwc
+		self.task = task
+		self.basename = name
+		self.nOfSteps = nOfSteps
+		self.stepSize = stepSize
+		self.simulations = simulations
+		self.simFaults = 10
+		self.score = [0, 0, 0, 0]
+		self.optimize = optimize
+		
+		# limits on parameters
+		#					0		1		2		3		4			5			6		7			8			9			10		11		12		13
+		#					type	length	width	depth	chfdepth	chfangle	cutpos	cutdepth	cutangle	cutradius	off		dist	open	force
+		self.weights = [	1, 		0.01, 	0.01, 	0.01, 	0.01, 		1, 			0.01, 	0.01, 		1, 			0.01,		0.01,	0.01,	0.01,	1]
+		self.lower = [		0, 		0, 		0, 		0, 		0, 			0, 			0, 		0, 			45, 		0,			0,		0,		0.1,	10]
+		self.upper = [		1, 		0.15, 	0.05, 	0.05, 	1, 			90, 		1, 		0.9, 		135, 		0.9,		1,		0.05,	0.1,	100]
+		self.current = [	0,		0.1,	0.025,	0.02,	0,			0,			0,		0,			0,			0,			0.5,	0,		0.05,	50]
+		
+	def saveGripper(self, name, parameters):
+		"Saves the gripper constructed out of the parameters"
+		
+		param = parameters[:]
+		
+		param[6] = param[6] * param[1] # cut position
+		param[7] = param[7] * param[2] # cut depth
+		param[10] = param[10] * param[1] # tcp offset
+		
+		jawStr = "".join(str(round(p, 3))+' ' for p in param[0:10])
+		
+		cd = rwsim + "src/sandbox/grippers/GraspPlugin/bin/"
+		cmd = cd + "create-gripper-xml --name {} -j {} --tcp {} --jawdist {} --opening {} --force {}"\
+			.format(name, jawStr, round(param[10], 3), round(param[11], 3), round(param[12], 3), round(param[13], 3))
+		
+		os.system(cmd)
+		
+		return name + ".grp.xml"
+		
+	def simulate(self, name, parameters):
+		"Performs a simulation of a parametrized gripper"
+		
+		# construct a simulation command
+		filename = self.saveGripper(name, parameters)
+		
+		cd = rwsim + "src/sandbox/grippers/GraspPlugin/bin/"
+		cmd = cd + "evaluate-gripper -n {} --dwc {} --td {} --gripper {} > .{}.out"\
+			.format(self.simulations, self.dwc, self.task, filename, name)
+		
+		# perform a simulation
+		status = -1
+		faults = 0
+		while (status != 0 and status != 2 and faults < self.simFaults):
+			print "Simulating... {}/{}".format(faults, self.simFaults)
+			status = int(os.system(cmd))
+			
+			if (status != 0):
+				faults = faults + 1
+				
+		if status != 0:
+			raise Exception("Simulation ended unsuccessfully!")
+				
+		# extract results
+		print "Done. Extracting results... ",
+		
+		cmd = "tail .%s.out | grep '\(coverage=\|success=\|wrench=\)' | awk '{print $3}' > .%s.res" % (name, name)
+		os.system(cmd)
+		
+		res = open(".{}.res".format(name)).readlines()
+		coverage = float(res[0])
+		success = float(res[1])
+		wrench = float(res[2])
+		topwrench = float(res[3])
+		
+		result = [coverage, success, wrench, topwrench]
+		print "Score: (" + ", ".join(str(r) for r in result) + ")"
+		
+		return result
+		
+	#def firststep
+		
+	def step(self):
+		print "Step #%d" % self.nstep
+		
+		improvement = False
+		while (improvement != True):
+			# 1. modify the current gripper randomly
+			gripper = self.current
+			dgripper = randir(14)
+			
+			for i in range(0, 14):
+				gripper[i] = gripper[i] + dgripper[i] * self.weights[i] * self.stepSize
+				
+				# check limits
+				if (gripper[i] < self.lower[i]):
+					gripper[i] = self.lower[i]
+				if (gripper[i] > self.upper[i]):
+					gripper[i] = self.upper[i]
+					
+			gripper[0] = int(gripper[0])
+				
+			# 2. simulate the new gripper
+			print "Trying gripper: " + str(gripper)
+			try:
+				score = self.simulate(self.basename+str(self.nstep), gripper)
+			except Exception:
+				print "Failure, trying different gripper..."
+				continue
+			
+			# choose optimization strategy
+			# go for best coverage
+			if self.optimize == 'coverage' and score[0] > self.score[0]:
+				self.score = score
+				improvement = True
+				
+			# go for best success ratio
+			if self.optimize == 'success' and score[1] > self.score[1]:
+				self.score = score
+				improvement = True
+				
+			# go for best wrench
+			if self.optimize == 'wrench' and score[2] > self.score[2]:
+				self.score = score
+				improvement = True
+				
+			# go for best top wrench
+			if self.optimize == 'topwrench' and score[3] > self.score[3]:
+				self.score = score
+				improvement = True
+				
+		# 3. we have a new gripper!
+		self.current = gripper
+		self.nstep = self.nstep + 1
+		
+	def run(self):
+		while (self.nstep < self.nOfSteps):
+			self.step()
+
+
+
+def main():
+	# parse command line arguments
+	parser = argparse.ArgumentParser(description="Performs a simple gradient descent on parametrized gripper.")
+	parser.add_argument("-n", "--number", action="store", dest="nOfSteps", default=100, help="number of grippers to generate")
+	parser.add_argument("-j", "--jaw", nargs=10, metavar=('type', 'length', 'width', 'depth', 'chfdepth', 'chfangle', 'cutpos', 'cutdepth', 'cutangle', 'cutradius'), default=[0, 0.1, 0.025, 0.02, 0, 0, 0, 0, 0, 0], help="jaw parameters")
+	parser.add_argument("-b", "--base", nargs=3, metavar=('length', 'width', 'depth'), default=[0.15, 0.1, 0.05], help="base parameters")
+	parser.add_argument("-k", "--kinematic", nargs=4, metavar=('offset', 'jawdist', 'opening', 'force'), default=[0.05, 0, 0.05, 50], help="kinematic parameters")
+	parser.add_argument("--dwc", required=True, nargs=1, metavar='dwc', help="dynamic workcell")
+	parser.add_argument("--td", required=True, nargs=1, metavar='td', help="task description")
+	parser.add_argument("--name", nargs=1, default="gripper", metavar='name', help="gripper base name(used to distinguish processes)")
+	parser.add_argument("-s", "--simulations", nargs=1, metavar='n', help="number of simulations to perform per step")
+	parser.add_argument("-g", "--gripper", nargs=1, metavar='filename', help="gripper file to use as the seed")
+	parser.add_argument("-o", "--optimize", nargs=1, default="coverage", metavar='filename', help="what to optimize (coverage, success, wrench, topwrench)")
+	args = parser.parse_args()
+	
+	gripperDescent = GripperDescent(args.dwc[0], args.td[0], name=args.name[0], simulations=int(args.simulations[0]), optimize=args.optimize[0])
+	
+	if args.gripper:
+		tree = ET.parse(args.gripper[0])
+		root = tree.getroot()
+		
+		parameters = [float(n) for n in root.iter('Jaws').next().find('Q').text.split()]
+		
+		tcp = float(root.iter('Offset').next().text)
+		dist = float(root.iter('Jawdist').next().text)
+		opening = float(root.iter('Opening').next().text)
+		force = float(root.iter('Force').next().text)
+		
+		parameters.extend([tcp, dist, opening, force])
+		gripperDescent.current = parameters
+		
+		print "Loaded gripper: ", parameters
+	
+	gripperDescent.run()
+	
+	pass
+
+
+
+if __name__ == "__main__":
+	main()

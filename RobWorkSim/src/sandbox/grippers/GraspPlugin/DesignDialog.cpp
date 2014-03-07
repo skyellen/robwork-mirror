@@ -23,7 +23,32 @@ DesignDialog::DesignDialog(QWidget* parent, rw::models::Gripper::Ptr gripper, st
 {
 	if (!_gripper) _gripper = ownedPtr(new Gripper);
 	
-	_createGUI();
+	//_createGUI();
+	
+	ui.setupUi(this);
+	
+	connect(ui.okButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.applyButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.cancelButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(ui.defaultButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.prismaticButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.cylindricalButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.nameEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.lengthEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.widthEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.depthEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.chfDepthEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.chfAngleEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.cutDepthEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.cutAngleEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.cutRadiusEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.tcpEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.jawdistEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.openingEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.basedxEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.basedyEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	connect(ui.basedzEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+	
 	_updateGUI();
 }
 
@@ -33,27 +58,27 @@ void DesignDialog::guiEvent()
 {
 	QObject* obj = sender();
 	
-	if (obj == _okButton) {
+	if (obj == ui.okButton) {
 		_gripper = ownedPtr(new Gripper);
 		_updateGripper();
 		close();
 	}
 	
-	else if (obj == _applyButton) {
+	else if (obj == ui.applyButton) {
 		_updateGripper();
 	}
 	
-	else if (obj == _defaultButton) {
+	else if (obj == ui.defaultButton) {
 		_gripper = ownedPtr(new Gripper);
 		_updateGUI();
 	}
 	
-	else if (obj == _prismaticButton) {
+	else if (obj == ui.prismaticButton) {
 		_updateGripper();
 		_updateGUI();
 	}
 	
-	else if (obj == _cylindricalButton) {
+	else if (obj == ui.cylindricalButton) {
 		_updateGripper();
 		_updateGUI();
 	}
@@ -68,40 +93,40 @@ void DesignDialog::_updateGripper()
 	if (_gripper) {
 		// update jaw geometry
 		Q jawParams(10);
-		jawParams(0) = (_cylindricalButton->isChecked() ? 1 : 0);
-		jawParams(1) = _lengthEdit->text().toDouble();
-		jawParams(2) = _widthEdit->text().toDouble();
-		jawParams(3) = _depthEdit->text().toDouble();
-		jawParams(4) = _chfDepthEdit->text().toDouble();
-		jawParams(5) = Deg2Rad*_chfAngleEdit->text().toDouble();
-		jawParams(6) = _tcpPosEdit->text().toDouble();
-		jawParams(7) = _cutDepthEdit->text().toDouble();
-		jawParams(8) = Deg2Rad*_cutAngleEdit->text().toDouble();
-		jawParams(9) = _cutRadiusEdit->text().toDouble();
+		jawParams(0) = (ui.cylindricalButton->isChecked() ? 1 : 0);
+		jawParams(1) = ui.lengthEdit->text().toDouble();
+		jawParams(2) = ui.widthEdit->text().toDouble();
+		jawParams(3) = ui.depthEdit->text().toDouble();
+		jawParams(4) = ui.chfDepthEdit->text().toDouble();
+		jawParams(5) = Deg2Rad*ui.chfAngleEdit->text().toDouble();
+		jawParams(6) = ui.tcpEdit->text().toDouble();
+		jawParams(7) = ui.cutDepthEdit->text().toDouble();
+		jawParams(8) = Deg2Rad*ui.cutAngleEdit->text().toDouble();
+		jawParams(9) = ui.cutRadiusEdit->text().toDouble();
 		_gripper->setJawGeometry(jawParams);
 		
 		// update base geometry
 		Q baseParams(3);
-		baseParams(0) = _basedxEdit->text().toDouble();
-		baseParams(1) = _basedyEdit->text().toDouble();
-		baseParams(2) = _basedzEdit->text().toDouble();
+		baseParams(0) = ui.basedxEdit->text().toDouble();
+		baseParams(1) = ui.basedyEdit->text().toDouble();
+		baseParams(2) = ui.basedzEdit->text().toDouble();
 		_gripper->setBaseGeometry(baseParams);
 		
 		// update results
-		_gripper->getQuality()->quality = _qualityEdit->text().toDouble();
+		_gripper->getQuality()->quality = ui.qualityEdit->text().toDouble();
 		
 		// update general parameters
-		_gripper->setName(_nameEdit->text().toStdString());
-		_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, _tcpPosEdit->text().toDouble())));
-		_gripper->setForce(_forceEdit->text().toDouble());
-		_gripper->setJawdist(_jawdistEdit->text().toDouble());
-		_gripper->setOpening(_openingEdit->text().toDouble());
+		_gripper->setName(ui.nameEdit->text().toStdString());
+		_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, ui.tcpEdit->text().toDouble())));
+		_gripper->setForce(ui.forceEdit->text().toDouble());
+		_gripper->setJawdist(ui.jawdistEdit->text().toDouble());
+		_gripper->setOpening(ui.openingEdit->text().toDouble());
 	}
 }
 
 
 
-void DesignDialog::_createGUI()
+/*void DesignDialog::_createGUI()
 {
 	int row = 0;
 	
@@ -303,7 +328,7 @@ void DesignDialog::_createGUI()
 	setLayout(layout);
 	
 	_updateGUI();
-}
+}*/
 
 
 
@@ -315,18 +340,18 @@ void DesignDialog::_updateGUI()
 		if (jawParams.size() == 10) {
 			cout << jawParams(0) << endl;
 			if (jawParams(0) == 0) {
-				_prismaticButton->setChecked(true);
+				ui.prismaticButton->setChecked(true);
 			} else {
-				_cylindricalButton->setChecked(true);
+				ui.cylindricalButton->setChecked(true);
 			}
-			_lengthEdit->setText(QString::number(jawParams(1)));
-			_widthEdit->setText(QString::number(jawParams(2)));
-			_depthEdit->setText(QString::number(jawParams(3)));
-			_chfDepthEdit->setText(QString::number(jawParams(4)));
-			_chfAngleEdit->setText(QString::number(Rad2Deg*jawParams(5)));
-			_cutDepthEdit->setText(QString::number(jawParams(7)));
-			_cutAngleEdit->setText(QString::number(Rad2Deg*jawParams(8)));
-			_cutRadiusEdit->setText(QString::number(jawParams(9)));
+			ui.lengthEdit->setText(QString::number(jawParams(1)));
+			ui.widthEdit->setText(QString::number(jawParams(2)));
+			ui.depthEdit->setText(QString::number(jawParams(3)));
+			ui.chfDepthEdit->setText(QString::number(jawParams(4)));
+			ui.chfAngleEdit->setText(QString::number(Rad2Deg*jawParams(5)));
+			ui.cutDepthEdit->setText(QString::number(jawParams(7)));
+			ui.cutAngleEdit->setText(QString::number(Rad2Deg*jawParams(8)));
+			ui.cutRadiusEdit->setText(QString::number(jawParams(9)));
 		} else {
 			QMessageBox::warning(NULL, "DesignDialog", "Gripper uses jaw geometry from STL!");
 		}
@@ -334,29 +359,29 @@ void DesignDialog::_updateGUI()
 		// update base geometry area
 		Q baseParams = _gripper->getBaseParameters();
 		if (baseParams.size() == 3) {
-			_basedxEdit->setText(QString::number(baseParams(0)));
-			_basedyEdit->setText(QString::number(baseParams(1)));
-			_basedzEdit->setText(QString::number(baseParams(2)));
+			ui.basedxEdit->setText(QString::number(baseParams(0)));
+			ui.basedyEdit->setText(QString::number(baseParams(1)));
+			ui.basedzEdit->setText(QString::number(baseParams(2)));
 		} else {
 			QMessageBox::warning(NULL, "DesignDialog", "Gripper uses base geometry from STL!");
 		}
 		
 		// update results area
-		_experimentsEdit->setText(QString::number(_gripper->getQuality()->nOfExperiments));
-		_successesEdit->setText(QString::number(_gripper->getQuality()->nOfSuccesses));
-		_samplesEdit->setText(QString::number(_gripper->getQuality()->nOfSamples));
+		ui.experimentsEdit->setText(QString::number(_gripper->getQuality()->nOfExperiments));
+		ui.successesEdit->setText(QString::number(_gripper->getQuality()->nOfSuccesses));
+		ui.samplesEdit->setText(QString::number(_gripper->getQuality()->nOfSamples));
 		//_shapeEdit->setText(QString::number(_gripper->getQuality()->shape));
-		_coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
-		_successEdit->setText(QString::number(_gripper->getQuality()->success));
-		_wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));
-		_topwrenchEdit->setText(QString::number(_gripper->getQuality()->topwrench));
-		_qualityEdit->setText(QString::number(_gripper->getQuality()->quality));
+		ui.coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
+		ui.successEdit->setText(QString::number(_gripper->getQuality()->success));
+		ui.wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));
+		ui.topWrenchEdit->setText(QString::number(_gripper->getQuality()->topwrench));
+		ui.qualityEdit->setText(QString::number(_gripper->getQuality()->quality));
 		
 		// update general parameters area
-		_nameEdit->setText(QString::fromStdString(_gripper->getName()));
-		_tcpPosEdit->setText(QString::number(_gripper->getTCP().P()[2]));
-		_forceEdit->setText(QString::number(_gripper->getForce()));
-		_jawdistEdit->setText(QString::number(_gripper->getJawdist()));
-		_openingEdit->setText(QString::number(_gripper->getOpening()));
+		ui.nameEdit->setText(QString::fromStdString(_gripper->getName()));
+		ui.tcpEdit->setText(QString::number(_gripper->getTCP().P()[2]));
+		ui.forceEdit->setText(QString::number(_gripper->getForce()));
+		ui.jawdistEdit->setText(QString::number(_gripper->getJawdist()));
+		ui.openingEdit->setText(QString::number(_gripper->getOpening()));
 	}
 }

@@ -56,6 +56,7 @@ GraspPlugin::GraspPlugin() :
     _interferenceLimit(0.1),
     _wrenchLimit(0.0)
 {
+    ui.setupUi(this);
     setupGUI();
     
     _timer = new QTimer(this);
@@ -163,6 +164,33 @@ void GraspPlugin::clearHints()
 
 
 
+void GraspPlugin::setupGUI()
+{
+	connect(ui.editSetupButton, SIGNAL(clicked()), this, SLOT(setupEvent()));
+	connect(ui.loadSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+	connect(ui.saveSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.addHintButton, SIGNAL(clicked()), this, SLOT(addHint()));
+    connect(ui.clearHintsButton, SIGNAL(clicked()), this, SLOT(clearHints()));
+    connect(ui.designButton, SIGNAL(clicked()), this, SLOT(designEvent()));
+    connect(ui.loadGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.saveGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
+    connect(ui.clearButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.initialButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.loadTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.saveTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.planButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.nAutoEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
+    connect(ui.showCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    connect(ui.samplesCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    connect(ui.successCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
+    connect(ui.startButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+}
+
+
+
 void GraspPlugin::guiEvent(int i)
 {
 	_gripper = _gripperList[i];
@@ -176,17 +204,17 @@ void GraspPlugin::guiEvent()
 {
     QObject *obj = sender();
     
-    if (obj == _startButton) {        
+    if (obj == ui.startButton) {        
         startSimulation();
     }
     
-    else if (obj == _stopButton) {
+    else if (obj == ui.stopButton) {
 		if (_graspSim->isRunning()) {
 			_graspSim->pauseSimulation(); // there should be some way to stop the simulation
 		}
 	}
 	
-	else if (obj == _loadTaskButton) {		
+	else if (obj == ui.loadTaskButton) {		
 		QString taskfile = QFileDialog::getOpenFileName(this,
 			"Open file", "", tr("Task files (*.xml)"));
 			
@@ -195,13 +223,13 @@ void GraspPlugin::guiEvent()
 		log().info() << "Loading tasks from: " << taskfile.toStdString() << "\n";
 		
 		_tasks = GraspTask::load(taskfile.toStdString());
-		_progressBar->setValue(0);
-		_progressBar->setMaximum(_tasks->getAllTargets().size());
+		ui.progressBar->setValue(0);
+		ui.progressBar->setMaximum(_tasks->getAllTargets().size());
 		
 		showTasks();
 	}
 	
-	else if (obj == _saveTaskButton) {
+	else if (obj == ui.saveTaskButton) {
 		QString taskfile = QFileDialog::getSaveFileName(this,
 			"Save file", "", tr("Task files (*.xml)"));
 			
@@ -212,11 +240,11 @@ void GraspPlugin::guiEvent()
 		GraspTask::saveRWTask(_tasks, taskfile.toStdString());
 	}
 	
-	else if (obj == _initialButton) { // return the workcell to the initial state
+	else if (obj == ui.initialButton) { // return the workcell to the initial state
 		getRobWorkStudio()->setState(_td->getInitState());
 	}
 	
-	else if (obj == _approachButton) { // set the approach pose of the gripper
+	/*else if (obj == _approachButton) { // set the approach pose of the gripper
 		_wTapproach = Kinematics::worldTframe(_wc->findFrame("TCPgripper"), getRobWorkStudio()->getState());
 		log().info() << "Approach: " << inverse(_wTapproach) * _wTtarget << endl;
 		
@@ -228,34 +256,34 @@ void GraspPlugin::guiEvent()
 		log().info() << "Target: " << _wTtarget << endl;
 		
 		//_gripper->setTasks(NULL);
-	}
+	}*/
 	
-	else if (obj == _planButton) {
+	else if (obj == ui.planButton) {
 		planTasks();
 		showTasks();
 	}
 	
-	else if (obj == _showCheck) {
-		_showTasks = _showCheck->isChecked();
+	else if (obj == ui.showCheck) {
+		_showTasks = ui.showCheck->isChecked();
 		showTasks();
 	}
 	
-	else if (obj == _samplesCheck) {
-		_showSamples = _samplesCheck->isChecked();
+	else if (obj == ui.samplesCheck) {
+		_showSamples = ui.samplesCheck->isChecked();
 		showTasks();
 	}
 	
-	else if (obj == _successCheck) {
-		_showSuccesses = _successCheck->isChecked();
+	else if (obj == ui.successCheck) {
+		_showSuccesses = ui.successCheck->isChecked();
 		showTasks();
 	}
 	
-	else if (obj == _loadGripperButton) {		
+	else if (obj == ui.loadGripperButton) {		
 		QStringList files = QFileDialog::getOpenFileNames(this,
 			"Open file", QString::fromStdString(_wd), tr("Gripper files (*.grp.xml)"));
 		if (files.isEmpty()) return;
 		
-		_gripperCombo->disconnect(this);
+		ui.gripperCombo->disconnect(this);
 		QStringList f = files;
 		QStringList::Iterator it = f.begin();
 		while (it != f.end()) {
@@ -264,8 +292,8 @@ void GraspPlugin::guiEvent()
 			_wd = QFileInfo(*it).path().toStdString();
 			++it;
 		}
-		connect(_gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
-		_gripperCombo->setCurrentIndex(0);
+		connect(ui.gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
+		ui.gripperCombo->setCurrentIndex(0);
 		
 		/*_progressBar->setValue(0);
 		_progressBar->setMaximum(_gripper->getTasks()->getAllTargets().size());
@@ -273,7 +301,7 @@ void GraspPlugin::guiEvent()
 		if (_showCheck->isChecked()) showTasks(_gripper->getTasks());*/
 	}
 	
-	else if (obj == _saveGripperButton) {
+	else if (obj == ui.saveGripperButton) {
 		QString filename = QFileDialog::getSaveFileName(this,
 			"Save file", QString::fromStdString(_wd), tr("Gripper files (*.grp.xml)"));
 			
@@ -286,18 +314,18 @@ void GraspPlugin::guiEvent()
 		GripperXMLLoader::save(_gripper, filename.toStdString());
 	}
 	
-	else if (obj == _clearButton) {
+	else if (obj == ui.clearButton) {
 		_gripperList.clear();
-		_gripperCombo->disconnect(this);
-		cout << "Number of items in combo box: " << _gripperCombo->count() << endl;
+		ui.gripperCombo->disconnect(this);
+		cout << "Number of items in combo box: " << ui.gripperCombo->count() << endl;
 		//for (int i = 0; i < _gripperCombo->count(); ++i) {
 		//	_gripperCombo->removeItem(0);
 		//}
-		_gripperCombo->clear();
-		connect(_gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
+		ui.gripperCombo->clear();
+		connect(ui.gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
 	}
 	
-	else if (obj == _loadSetupButton) {
+	else if (obj == ui.loadSetupButton) {
 		if (!_dwc) {
 			RW_WARN("You first have to open proper dynamic workcell!");
 			return;
@@ -313,7 +341,7 @@ void GraspPlugin::guiEvent()
 		_td = TaskDescriptionLoader::load(filename.toStdString(), _dwc);
 	}
 	
-	else if (obj == _saveSetupButton) {
+	else if (obj == ui.saveSetupButton) {
 		QString filename = QFileDialog::getSaveFileName(this,
 			"Open file", QString::fromStdString(_wd), tr("Task description files (*.td.xml)"));
 			
@@ -324,7 +352,7 @@ void GraspPlugin::guiEvent()
 		TaskDescriptionLoader::save(_td, filename.toStdString());
 	}
 	
-	else if (obj == _testButton) {
+	else if (obj == ui.testButton) {
 		test();
 	}
 }
@@ -343,17 +371,17 @@ void GraspPlugin::designEvent()
 	
 	if (ddialog->isChanged()) {
 		_gripperList.insert(_gripperList.begin(), _gripper);
-		_gripperCombo->addItem(QString::fromStdString(_gripper->getName()));
+		ui.gripperCombo->addItem(QString::fromStdString(_gripper->getName()));
 		//_gripperCombo->setCurrentIndex(0);
 	}
 	
 	updateGripper();
 	
-	_progressBar->setValue(0);
+	ui.progressBar->setValue(0);
 	if (_tasks) {
-		_progressBar->setMaximum(_tasks->getAllTargets().size());
+		ui.progressBar->setMaximum(_tasks->getAllTargets().size());
 	} else {
-		_progressBar->setMaximum(0);
+		ui.progressBar->setMaximum(0);
 	}
 }
 
@@ -372,7 +400,7 @@ void GraspPlugin::loadGripper(const std::string& filename)
 	cout << "Loading gripper from: " << filename << endl;
 	Gripper::Ptr gripper = GripperXMLLoader::load(filename);
 	_gripperList.push_back(gripper);
-	_gripperCombo->addItem(QString::fromStdString(gripper->getName()));
+	ui.gripperCombo->addItem(QString::fromStdString(gripper->getName()));
 }
 
 
@@ -408,7 +436,7 @@ void GraspPlugin::updateSim()
 	if (!_silentMode && _graspSim->isRunning()) getRobWorkStudio()->setState(_graspSim->getSimulator()->getState());
 	
 	// check out the number of tasks already performed and update progress bar accordingly
-	_progressBar->setValue(_graspSim->getNrTargetsDone());
+	ui.progressBar->setValue(_graspSim->getNrTargetsDone());
 
 	if (!_graspSim->isRunning()) {
 		_timer->stop();
@@ -449,7 +477,7 @@ GraspTask::Ptr GraspPlugin::generateTasks(int nTasks)
 
 void GraspPlugin::planTasks()
 {
-	_nOfTargetsToGen = _nAutoEdit->text().toInt();
+	_nOfTargetsToGen = ui.nAutoEdit->text().toInt();
 	
 	cout << "Planning " << _nOfTargetsToGen << " tasks..." << endl;
 	log().info() << "Generating " << _nOfTargetsToGen << " tasks..." << endl;
@@ -476,8 +504,8 @@ void GraspPlugin::planTasks()
 	cout << "Done." << endl;
 	log().info() << "Done." << endl;
 	
-	_progressBar->setValue(0);
-	_progressBar->setMaximum(_nOfTargetsToGen);
+	ui.progressBar->setValue(0);
+	ui.progressBar->setMaximum(_nOfTargetsToGen);
 
 	//showTasks();
 }
@@ -498,7 +526,7 @@ void GraspPlugin::genericEventListener(const std::string& event)
         
         _dwc = dwc;
 
-        _startButton->setEnabled(true);
+        ui.startButton->setEnabled(true);
     }
 }
 
@@ -606,137 +634,6 @@ void GraspPlugin::showTasks()
 	
 	((RenderTargets*)_render.get())->setTargets(rtargets);
     getRobWorkStudio()->postUpdateAndRepaint();
-}
-
-
-
-void GraspPlugin::setupGUI()
-{
-	int row = 0;
-	    
-	// setup base widget
-	QWidget* base = new QWidget(this);
-    QVBoxLayout* layout = new QVBoxLayout(base);
-    
-    base->setLayout(layout);
-    this->setWidget(base);
-    
-    /* setup setup group */
-    _setupBox = new QGroupBox("Setup");
-    QGridLayout* setupLayout = new QGridLayout(_setupBox);
-    _setupBox->setLayout(setupLayout);
-    
-    _editSetupButton = new QPushButton("Open setup dialog");
-    setupLayout->addWidget(_editSetupButton, row++, 0, 1, 2);
-    connect(_editSetupButton, SIGNAL(clicked()), this, SLOT(setupEvent()));
-    
-    _loadSetupButton = new QPushButton("Load setup");
-    setupLayout->addWidget(_loadSetupButton, row, 0);
-    connect(_loadSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _saveSetupButton = new QPushButton("Save setup");
-    setupLayout->addWidget(_saveSetupButton, row++, 1);
-    connect(_saveSetupButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _addHintButton = new QPushButton("Teach grasp");
-    setupLayout->addWidget(_addHintButton, row, 0);
-    connect(_addHintButton, SIGNAL(clicked()), this, SLOT(addHint()));
-    
-    _clearHintsButton = new QPushButton("Clear hints");
-    setupLayout->addWidget(_clearHintsButton, row++, 1);
-    connect(_clearHintsButton, SIGNAL(clicked()), this, SLOT(clearHints()));
-    
-    /* setup geometry group */
-    row = 0;
-    
-    _geometryBox = new QGroupBox("Gripper parametrization");
-    QGridLayout* geoLayout = new QGridLayout(_geometryBox);
-    _geometryBox->setLayout(geoLayout);
-    
-    _designButton = new QPushButton("Design gripper");
-    geoLayout->addWidget(_designButton, row++, 0, 1, 2);
-    connect(_designButton, SIGNAL(clicked()), this, SLOT(designEvent()));
-    
-    _loadGripperButton = new QPushButton("Load grippers");
-    geoLayout->addWidget(_loadGripperButton, row, 0);
-    connect(_loadGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _saveGripperButton = new QPushButton("Save gripper");
-    geoLayout->addWidget(_saveGripperButton, row++, 1);
-    connect(_saveGripperButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _gripperCombo = new QComboBox;
-    geoLayout->addWidget(_gripperCombo, row, 0);
-    connect(_gripperCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(guiEvent(int)));
-     
-    _clearButton = new QPushButton("Clear list");
-    geoLayout->addWidget(_clearButton, row++, 1);
-    connect(_clearButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    /* setup sim control group */
-    _simBox = new QGroupBox("Simulation control");
-    QGridLayout* simLayout = new QGridLayout(_simBox);
-    _simBox->setLayout(simLayout);
-    
-    row = 0;
-    
-    _initialButton = new QPushButton("Set initial state");
-    simLayout->addWidget(_initialButton, row++, 0, 1, 2);
-    connect(_initialButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _loadTaskButton = new QPushButton("Load tasks");
-    simLayout->addWidget(_loadTaskButton, row, 0);
-    connect(_loadTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _saveTaskButton = new QPushButton("Save tasks");
-    simLayout->addWidget(_saveTaskButton, row++, 1);
-    connect(_saveTaskButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _planButton = new QPushButton("Plan");
-    simLayout->addWidget(_planButton, row, 0);
-    connect(_planButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _nAutoEdit = new QLineEdit("100");
-    simLayout->addWidget(_nAutoEdit, row++, 1);
-    connect(_nAutoEdit, SIGNAL(editingFinished()), this, SLOT(guiEvent()));
-    
-    _showCheck = new QCheckBox("Show tasks");
-    _showCheck->setChecked(true);
-    simLayout->addWidget(_showCheck, row, 0);
-    connect(_showCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
-    
-    _samplesCheck = new QCheckBox("Show samples");
-    _samplesCheck->setChecked(false);
-    simLayout->addWidget(_samplesCheck, row++, 1);
-    connect(_samplesCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
-    
-    _successCheck = new QCheckBox("Show only successes");
-    _successCheck->setChecked(false);
-    simLayout->addWidget(_successCheck, row++, 1, 1, 2);
-    connect(_successCheck, SIGNAL(clicked()), this, SLOT(guiEvent()) );
-    
-    _progressBar = new QProgressBar;
-    _progressBar->setFormat("%v of %m");
-    simLayout->addWidget(_progressBar, row++, 0, 1, 2);
-    
-    _startButton = new QPushButton("START");
-    simLayout->addWidget(_startButton, row, 0);
-    connect(_startButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _stopButton = new QPushButton("STOP");
-    simLayout->addWidget(_stopButton, row++, 1);
-    connect(_stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    _testButton = new QPushButton("TEST");
-    simLayout->addWidget(_testButton, row++, 0, 1, 2);
-    connect(_testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
-    
-    /* add groups to the base layout */
-    layout->addWidget(_setupBox);
-    layout->addWidget(_geometryBox);
-    //layout->addWidget(_manualBox);
-    layout->addWidget(_simBox);
-    layout->addStretch(1);
 }
 
 
