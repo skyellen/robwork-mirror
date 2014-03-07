@@ -62,7 +62,7 @@ DC1394Camera* DC1394CameraFactory::getCamera(rw::kinematics::Frame* frame, unsig
 
 	if (_cameraList.at(index) == NULL) {
 		// Create DC1394 Camera and add to list
-		_cameraList.at(index) = new DC1394Camera(frame, _cameraDriverList.at(index));
+		_cameraList.at(index) = new DC1394Camera(_cameraDriverList.at(index));
 	}
 	std::cout << "done" << std::endl;
 
