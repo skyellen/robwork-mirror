@@ -29,26 +29,38 @@ int main(int argc, char** argv)
     std::cout << "Connecting to " << ip << " ... "<< std::endl;
     hand.connect("192.168.100.21", 502);
 
+    std::pair<Q,Q> lim = hand.getLimitPos();
+
     // start thread
     //std::cout << "Starting thread.." << std::endl;
-    //hand.start();
+    hand.moveCmd(lim.first);
 
     std::cout << "Get status" << std::endl;
     hand.getAllStatus();
 
-    //std::cout << "Activating hand.." << std::endl;
-    //hand.activate();
+    std::cout << "Activating hand.." << std::endl;
+    hand.activate();
+    hand.getAllStatus();
 
-    //std::cout << "Gripper activated.." << std::endl;
 
-    //std::cout << "Wait a bit.." << std::endl;
-    //TimerUtil::sleepMs(1000);
+    std::cout << "Gripper activated.." << std::endl;
 
-    std::pair<Q,Q> lim = hand.getLimitPos();
+    std::cout << "Wait a bit.." << std::endl;
+    TimerUtil::sleepMs(1000);
+    hand.getAllStatus();
+std::cout << hand.getQ() << std::endl;
+
+
     std::cout << "Move to Open: " << lim.first << std::endl;
 
     hand.moveCmd(lim.first);
+    hand.getAllStatus();
+std::cout << hand.getQ() << std::endl;
+
     TimerUtil::sleepMs(5000);
+    hand.getAllStatus();
+std::cout << hand.getQ() << std::endl;
+
     std::cout << "Move to Close" << std::endl;
     hand.moveCmd(lim.second);
     TimerUtil::sleepMs(5000);

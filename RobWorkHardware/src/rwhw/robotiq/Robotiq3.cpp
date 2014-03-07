@@ -17,7 +17,7 @@
 
 #include <boost/detail/endian.hpp>
 
-
+//#define FULL_DEBUG_INFO 1
 
 using namespace rw::models;
 using namespace rw::math;
@@ -53,7 +53,7 @@ namespace {
         uint8_t val2 = (reg>>8)&0xFF;
         val = val1<<8 | val2;
 #else
-        val = reg;
+       val = reg;
 #endif
 
     }
@@ -108,12 +108,11 @@ bool Robotiq3::connect(const std::string& ip, unsigned int port) {
 
     rw::common::Log::debugLog() << "Connected to Robotiq3 on " << ip << " port " << port << std::endl;
 
+
     // first thing we do is starting the thread
     start();
-
     // first thing we do is check status of all registers;
-    getAllStatus();
-
+    //getAllStatus();
     // if gripper is not activated then activate it
     if(!isActivated()){
         activate();
@@ -154,6 +153,8 @@ Robotiq3::ModbusPackage Robotiq3::send(ModbusPackage package){
 void Robotiq3::activate(){
     ModbusPackage package;
 
+    std::cout << "ACTIVATE" << std::endl;
+
     setReg( package.header.data.functionCode, FC16);
     setReg( package.header.data.length, 13);
 
@@ -186,10 +187,14 @@ void Robotiq3::activate(){
     if(n!=6)
         RW_THROW("N should be 6 not "<<n);
 
-
+    TimerUtil::sleepMs(100);
     getAllStatus();
+    TimerUtil::sleepMs(100);
     // get status until activation is complete
     while( _gripperStatus.data.gIMC ==1 || _gripperStatus.data.gACT==0 ){
+        //std::cout << "gIMC:"<< _gripperStatus.data.gIMC << " gACT:"<<_gripperStatus.data.gIMC << std::endl;
+        if( _gripperStatus.data.gIMC ==0 )
+            send(package);
         getAllStatus();
     }
 
@@ -221,6 +226,8 @@ void Robotiq3::getAllStatus() {
         _status.value[i] = answer.data[1+i];
     }
 
+    //std::cout << "GripperStatus: " << sizeof(GripperStatus) << std::endl;
+
     _gripperStatus.value = answer.data[1];
     _objectStatus.value = answer.data[2];
     _faultStatus.value = answer.data[3];
@@ -240,14 +247,15 @@ void Robotiq3::getAllStatus() {
 
     _statusTimeStamp = TimerUtil::currentTimeMs();
 
-    /*
+#if FULL_DEBUG_INFO    
     std::cout << "Status: ";
     std::cout.fill('0');
     for(int i=0;i<16;i++){
         std::cout << std::setw(2) << std::hex << (unsigned int)_status.value[i] << " ";
     }
     std::cout << std::endl;
-    */
+	std::cout << "gIMC:"<< _gripperStatus.data.gIMC << " gACT:"<<_gripperStatus.data.gIMC << std::endl;
+#endif
 }
 
 
@@ -270,19 +278,7 @@ void Robotiq3::run() {
                     boost::uint16_t n;
                     getReg(package.header.data.length, n);
 
-                    /*
-                    std::cout << "Recieved Header: ";
-                    std::cout.fill('0');
-                    for(int i=0;i<8;i++){
-                        std::cout << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
-                    }
-                    std::cout << ": ";
 
-                    for(int i=0;i<n-2;i++){
-                        std::cout << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
-                    }
-                    std::cout << "\n";
-                    */
 
                     // because we are only communicating with gripper this should never go above 20
                     if(n>20){
@@ -307,6 +303,20 @@ void Robotiq3::run() {
                     //read(package);
                     // now push the package as recieved
                     //_packagesRecieved.push( package );
+
+#if FULL_DEBUG_INFO
+                    std::cout << "Recieved Header: ";
+                    std::cout.fill('0');
+                    for(int i=0;i<8;i++){
+                        std::cout << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
+                    }
+                    std::cout << ": ";
+
+                    for(int i=0;i<n-2;i++){
+                        std::cout << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
+                    }
+                    std::cout << "\n";
+#endif
                 }
             }
 
@@ -321,7 +331,7 @@ void Robotiq3::run() {
                 package.header.data.protocolID = 0; // not used
                 getReg(package.header.data.length,n);
 
-                /*
+#if FULL_DEBUG_INFO    
                 std::cout << "Sending Header: ";
                 std::cout.fill('0');
                 for(int i=0;i<8;i++){
@@ -333,7 +343,7 @@ void Robotiq3::run() {
                     std::cout << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
                 }
                 std::cout << "\n";
-                */
+#endif
                 _socket->send(boost::asio::buffer(&package.header.value[0], 8 + n-2));
                 //_socket->send(boost::asio::buffer(&package.data[0], n-2));
 
