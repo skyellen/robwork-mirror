@@ -276,7 +276,6 @@ void GripperTaskSimulator::evaluateGripper()
 	 
 	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
-	/* success ratio */
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
 	int interferences = TaskGenerator::countTasks(_gtask, GraspTask::Interference);
 	int slippages = TaskGenerator::countTasks(_gtask, GraspTask::ObjectSlipped);

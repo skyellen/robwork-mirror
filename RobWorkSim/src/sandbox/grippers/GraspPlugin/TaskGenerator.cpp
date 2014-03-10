@@ -73,23 +73,19 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
         Transform3D<> rayTrans( pos-faceNormal*0.01, rot );
 
         // now we want to find any triangles that collide with the ray and which are parallel with the sampled
+        // this should look for all the collisions, so should detect a proper grasp regardless of presence of folds in the model
         cstrategy->inCollision(object, Transform3D<>::identity(), ray, rayTrans, data);
         typedef std::pair<int,int> PrimID;
-        //RW_WARN("1");
-        BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds){
-			//RW_WARN("1.5");
+        
+        BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds) {
 			// search for a triangle that has a normal
 			
-			//cout << "!!!" << mesh->getSize() << endl;
-			//cout << "!!!" << pid.first << endl;
 			Triangle<> tri = mesh->getTriangle( pid.first );
-			//RW_WARN("1.75");
 			Vector3D<> normal = tri.calcFaceNormal();
 			
 			bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
 			double dist = MetricUtil::dist2(tri[0], pos);
-            
-            //RW_WARN("2");
+
 		   if (closeAngle) {
 				
 				// calculate target
@@ -369,11 +365,13 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 
         // distance between grasping points is graspW
         // we close gripper such that it is 1 cm more openned than the target
+        cout << "GraspW: " << graspW << " closeQ: " << _closeQ(0) << " openQ: " << _openQ(0) << endl;
+        
         Q oq = _openQ;
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
         _td->getGripperDevice()->setQ(oq, state);
-        //cout << oq << endl;
+        cout << "So the oq is: " << oq(0) << endl;
         
         // then check for collision
         moveFrameW(wTobj * target, _td->getGripperTCP(), _td->getGripperMovable(), state);
