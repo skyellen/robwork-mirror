@@ -340,7 +340,7 @@ VelocityScrew6D<> DOMBasisTypes::readVelocityScrew6D(DOMElem::Ptr element, bool 
 		if (child->isName( PosId)) {
 			linear = readVector3D(child, false);
 		} else if (child->isName( EAAId)) {
-			angular = readEAA(element, false);
+			angular = readEAA(child, false);
 		} else {
 			RW_THROW("Unknown element \""<<child->getName()<<"\" specified in VelocityScrew6D");
 		}
