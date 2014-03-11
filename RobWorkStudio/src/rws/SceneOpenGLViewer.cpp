@@ -233,6 +233,8 @@ void SceneOpenGLViewer::init(){
     _backgroundRender = backgroundRender;
     _backgroundnode = _scene->makeDrawable("BackgroundRender", _backgroundRender, DrawableNode::ALL);
     _scene->addChild(_backgroundnode, _scene->getRoot());
+    
+    _backgroundnode->setVisible(_viewBackground->getValue());
 
     _worldNode = _scene->makeGroupNode("World");
     _scene->addChild(_worldNode, _scene->getRoot());
