@@ -99,7 +99,7 @@ void DesignDialog::_updateGripper()
 		jawParams(3) = ui.depthEdit->text().toDouble();
 		jawParams(4) = ui.chfDepthEdit->text().toDouble();
 		jawParams(5) = Deg2Rad*ui.chfAngleEdit->text().toDouble();
-		jawParams(6) = ui.tcpEdit->text().toDouble();
+		jawParams(6) = ui.lengthEdit->text().toDouble() - ui.tcpEdit->text().toDouble();
 		jawParams(7) = ui.cutDepthEdit->text().toDouble();
 		jawParams(8) = Deg2Rad*ui.cutAngleEdit->text().toDouble();
 		jawParams(9) = ui.cutRadiusEdit->text().toDouble();
@@ -349,6 +349,7 @@ void DesignDialog::_updateGUI()
 			ui.depthEdit->setText(QString::number(jawParams(3)));
 			ui.chfDepthEdit->setText(QString::number(jawParams(4)));
 			ui.chfAngleEdit->setText(QString::number(Rad2Deg*jawParams(5)));
+			//ui.cutPosEdit->setText(QString::number(jawParams(1)-jawParams(6)));
 			ui.cutDepthEdit->setText(QString::number(jawParams(7)));
 			ui.cutAngleEdit->setText(QString::number(Rad2Deg*jawParams(8)));
 			ui.cutRadiusEdit->setText(QString::number(jawParams(9)));

@@ -62,6 +62,7 @@ void readJaws(PTree& tree, Gripper::Ptr gripper)
 	// else use parametrization
 	Q params = XMLHelpers::readQ(tree.get_child("Q"));
 	params(5) *= Deg2Rad;
+	params(6) = params(1) - params(6);
 	params(8) *= Deg2Rad;
 	//cout << "!" << params << endl;
 	DEBUG << "Jaw geometry from parameters: " << params << endl;
