@@ -105,7 +105,7 @@ void readParameters(PTree& tree, Gripper::Ptr gripper)
 	readGeometry(tree.get_child("Geometry"), gripper);
 	
 	double offset = XMLHelpers::readDouble(tree.get_child("Offset"));
-	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, offset)));
+	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-offset)));
 	
 	gripper->setJawdist(XMLHelpers::readDouble(tree.get_child("Jawdist")));
 	gripper->setOpening(XMLHelpers::readDouble(tree.get_child("Opening")));
