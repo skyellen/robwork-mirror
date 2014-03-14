@@ -60,81 +60,84 @@ RobWork::~RobWork(void)
 
 void RobWork::initialize(){
     // we need to find the settings of robwork so we start searching for rwsettings.xml
-
+    std::cout << "Initializing ROBWORK" << std::endl;
 	// this is the search priority
 	// 1. search from execution directory
 	// 2. search from user home directory (OS specific)
 
-//    path ipath = initial_path();
-//    std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_VERSION + ".cfg.xml";
-//    if( exists(rwsettingsPath) ){
-//    	//std::cout << "FOUND CFG FILE IN EXE DIR..." << std::endl;
-//        _settings = XMLPropertyLoader::load( rwsettingsPath );
-//        _settings.add("cfgfile", "", rwsettingsPath );
-//        //std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
-//    } else if( exists( HOMEDIR ) ){
-//    	rwsettingsPath = std::string(HOMEDIR);
-//        _settings = XMLPropertyLoader::load( rwsettingsPath );
-//    	_settings.add("cfgfile", "", rwsettingsPath );
-//    } else {
-//        // create the file in current location
-//    	PropertyMap plugins;
-//        plugins.add("location","default plugin location",std::string("plugins/"));
-//        _settings.add("plugins","List of plugins or plugin locations",plugins);
-//        XMLPropertySaver::save( _settings, rwsettingsPath );
-//    }
-//    _settingsFile = rwsettingsPath;
-//
-//    // get all plugin directories and files
-//    std::vector<std::string> cfgDirs;
-//    PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
-//
-//    BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
-//    	// check if its a
-//    	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
-//    	if(propstr==NULL)
-//    		continue;
-//
-//    	cfgDirs.push_back( propstr->getValue() );
-//    	//std::cout << propstr->getValue() << std::endl;
-//    }
-//
-//    BOOST_FOREACH(std::string dir, cfgDirs){
-//
-//    	path file( dir );
-//
-//#if(BOOST_FILESYSTEM_VERSION==2)
-//    	if( !file.has_root_path() ){
-//    		file = path( ipath.string() + "/" + dir );
-//    	}
-//#else
-//    	if( file.is_relative() ){
-//    		file = path( ipath.string() + "/" + dir );
-//    	}
-//#endif
-//    	if( !exists(file) )
-//    		continue;
-//
-//        // now initialize plugin repository
-//        ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
-//
-//
-//    	// first check if its a directory or a file
-//    	if( is_directory(file) ){
-//    		// find all files in the directory *.rwplugin.xml *.rwplugin.(dll,so)
-//    		std::vector<std::string> pl_files =
-//    				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
-//    		BOOST_FOREACH(std::string pl_file, pl_files){
-//                rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
-//                reg->registerExtensions(plugin);
-//    		}
-//    	} else {
-//            rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
-//            reg->registerExtensions(plugin);
-//    	}
-//
-//    }
-//
+    path ipath = initial_path();
+    std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_VERSION + ".cfg.xml";
+    if( exists(rwsettingsPath) ){
+    	//std::cout << "FOUND CFG FILE IN EXE DIR..." << std::endl;
+        _settings = XMLPropertyLoader::load( rwsettingsPath );
+        _settings.add("cfgfile", "", rwsettingsPath );
+        //std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
+    } else if( exists( HOMEDIR ) ){
+    	rwsettingsPath = std::string(HOMEDIR);
+        _settings = XMLPropertyLoader::load( rwsettingsPath );
+    	_settings.add("cfgfile", "", rwsettingsPath );
+    } else {
+        // create the file in current location
+    	PropertyMap plugins;
+        plugins.add("location","default plugin location",std::string("plugins/"));
+        _settings.add("plugins","List of plugins or plugin locations",plugins);
+        XMLPropertySaver::save( _settings, rwsettingsPath );
+    }
+    _settingsFile = rwsettingsPath;
+
+    // get all plugin directories and files
+    std::vector<std::string> cfgDirs;
+    PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
+
+    BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
+    	// check if its a
+    	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
+    	if(propstr==NULL)
+    		continue;
+
+    	cfgDirs.push_back( propstr->getValue() );
+    	std::cout << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
+    }
+
+    BOOST_FOREACH(std::string dir, cfgDirs){
+
+    	path file( dir );
+    	std::cout << dir << std::endl;
+#if(BOOST_FILESYSTEM_VERSION==2)
+    	if( !file.has_root_path() ){
+    		file = path( ipath.string() + "/" + dir );
+    	}
+#else
+    	if( file.is_relative() ){
+    		file = path( ipath.string() + "/" + dir );
+    	}
+#endif
+    	std::cout << file.string() << std::endl;
+    	if( !exists(file) )
+    		continue;
+
+        // now initialize plugin repository
+        ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
+
+
+    	// first check if its a directory or a file
+    	if( is_directory(file) ){
+    		// find all files in the directory *.rwplugin.xml *.rwplugin.(dll,so)
+    		std::vector<std::string> pl_files =
+    				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
+    		BOOST_FOREACH(std::string pl_file, pl_files){
+    		    std::cout << "Plugin: " << pl_file<< std::endl;
+                rw::common::Ptr<Plugin> plugin = Plugin::load( pl_file );
+                reg->registerExtensions(plugin);
+    		}
+    	} else {
+            std::cout << "Plugin: " << file.string() << std::endl;
+            rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
+            reg->registerExtensions(plugin);
+    	}
+
+    }
+
 }
 
 namespace {
