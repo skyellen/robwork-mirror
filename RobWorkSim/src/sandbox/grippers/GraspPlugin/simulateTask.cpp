@@ -22,6 +22,10 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
+#include "Gripper.hpp"
+#include "GripperXMLLoader.hpp"
+#include "TaskGenerator.hpp"
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
@@ -70,6 +74,8 @@ int main(int argc, char** argv)
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
         ("dwc,d", value<string>()->default_value(""), "The dynamic workcell.")
+        ("td", value<string>()->default_value(""), "The task description file.")
+        ("gripper,g", value<string>()->default_value(""), "The gripper file.")
         ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<vector<string> >(), "input Files to simulate.")
@@ -150,6 +156,25 @@ int main(int argc, char** argv)
     // load workcell
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
+    
+    /* funny stuff */
+    cout << "* Loading task description... ";
+    std::string tdFilename = vm["td"].as<std::string>();
+	TaskDescription::Ptr td = TaskDescriptionLoader::load(tdFilename, dwc);
+	cout << "Loaded." << endl;
+	cout << "* Loading gripper... ";
+	std::string gripperFilename = vm["gripper"].as<std::string>();
+	Gripper::Ptr gripper = GripperXMLLoader::load(gripperFilename);
+	cout << "Loaded." << endl;
+	
+	gripper->updateGripper(td->getWorkCell(),
+		td->getDynamicWorkCell(),
+		td->getGripperDevice(),
+		td->getGripperDynamicDevice(),
+		td->getInitState(),
+		td);
+    /* /funny stuff */
+    
     // create GraspTaskSimulator
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
