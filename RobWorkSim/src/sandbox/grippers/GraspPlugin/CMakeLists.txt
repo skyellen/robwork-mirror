@@ -76,6 +76,8 @@ add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp TaskDialog.cpp 
 add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
 add_executable( create-gripper-xml createGripperXML.cpp)
 add_executable(evaluate-gripper evaluateGripper.cpp)
+add_executable(simulate-task simulateTask.cpp)
+add_executable(calculate-robustness GraspTaskQualityCalc.cpp)
 #add_executable( create-gripper-db createGripperDB.cpp)
 
 target_link_libraries(GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
@@ -83,6 +85,9 @@ target_link_libraries( GraspPlugin GraspLibrary )
 target_link_libraries( test ${ROBWORK_LIBRARIES})
 target_link_libraries( create-gripper-xml rwsim_ode GL GLU glut ode GraspLibrary)
 target_link_libraries(evaluate-gripper    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries(simulate-task    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries(calculate-robustness    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+
 #ftarget_link_libraries( create-gripper-db rwsim_ode GL GLU glut ode GraspLibrary)
 
 #MESSAGE(${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
