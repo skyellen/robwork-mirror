@@ -234,10 +234,10 @@ void Robotiq3::getAllStatus() {
 
     std::pair<Q,Q> lim = getLimitPos();
 
-    _currentQ(0) = lim.first(0) + (_status.data._posA / 255.0)*(lim.first(0)-lim.second(0));
-    _currentQ(1) = lim.first(1) + (_status.data._posB / 255.0)*(lim.first(1)-lim.second(1));
-    _currentQ(2) = lim.first(2) + (_status.data._posC / 255.0)*(lim.first(2)-lim.second(2));
-    _currentQ(3) = lim.first(3) + (_status.data._posScissor / 255.0)*(lim.first(3)-lim.second(3));
+    _currentQ(0) = lim.first(0) + (_status.data._posA / 255.0)*(lim.second(0)-lim.first(0));
+    _currentQ(1) = lim.first(1) + (_status.data._posB / 255.0)*(lim.second(1)-lim.first(1));
+    _currentQ(2) = lim.first(2) + (_status.data._posC / 255.0)*(lim.second(2)-lim.first(2));
+    _currentQ(3) = lim.first(3) + (_status.data._posScissor / 255.0)*(lim.second(3)-lim.first(3));
 
     //_currentSpeed(0)
     _currentForce(0)  = _status.data._forceA * 1.0/255.0;
