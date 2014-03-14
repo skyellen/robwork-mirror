@@ -118,6 +118,9 @@ namespace simulator {
 		//! smart pointer type
 		typedef rw::common::Ptr<ODESimulator> Ptr;
 
+		//! empty constructor
+        ODESimulator();
+
 		/**
 		 * @brief constructor
 		 * @param dwc [in] the dynamic workcell for which the simulator should work
@@ -131,6 +134,9 @@ namespace simulator {
 		virtual ~ODESimulator(){
 			delete _narrowStrategy;
 		}
+
+		//! @copydoc PhysicsEngine::load
+		void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
 		/**
 		 * @brief Change the contact detector used by the simulator.
@@ -497,9 +503,6 @@ namespace simulator {
 
 
 	};
-	static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
-
-
 
 }
 }

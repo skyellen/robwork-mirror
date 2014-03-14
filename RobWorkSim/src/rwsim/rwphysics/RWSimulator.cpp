@@ -66,6 +66,13 @@ namespace {
 
 }
 
+RWSimulator::RWSimulator():
+    _dwc(NULL),
+    _time(0),
+    _frameToBody(NULL,100)
+{
+
+}
 
 RWSimulator::RWSimulator(dynamics::DynamicWorkCell::Ptr dwc):
     _dwc(dwc),
@@ -75,6 +82,10 @@ RWSimulator::RWSimulator(dynamics::DynamicWorkCell::Ptr dwc):
 
 }
 
+
+void RWSimulator::load(dynamics::DynamicWorkCell::Ptr dwc){
+    _dwc = dwc;
+}
 
 void RWSimulator::initPhysics(State& state){
     // create constraint nodes and constraint edges to a CNodePool

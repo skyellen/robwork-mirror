@@ -106,21 +106,6 @@ using namespace rwlibs::proximitystrategies;
 
 namespace {
 
-    // register the ODEPhysicsEngine with the factory
-    struct InitStruct {
-        InitStruct(){
-            //std::cout << "************************** INITIALIZE ODE *********************" << std::endl;
-
-            //rwsim::simulator::PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
-            //        boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
-
-            //rwsim::simulator::PhysicsEngineFactory::addPhysicsEngine("ODE DSfdsfiudif", odephysics);
-        }
-    };
-
-    //InitStruct initializeStaticStuff;
-
-
 	std::string printArray(const dReal* arr, int n){
 	    std::stringstream str;
 	    str << "(";
@@ -219,8 +204,64 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc, rwsim::contacts::ContactDet
     }
 
     // setup DWC changed event
+    if(_dwc)
+        _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
+}
+
+ODESimulator::ODESimulator():
+    _dwc(NULL),
+    _time(0.0),
+    _render(ownedPtr( new ODEDebugRender(this) ) ),
+    _contacts(INITIAL_MAX_CONTACTS),
+    _filteredContacts(INITIAL_MAX_CONTACTS+10),
+    _rwcontacts(INITIAL_MAX_CONTACTS),
+    _rwClusteredContacts(INITIAL_MAX_CONTACTS+10),
+    _srcIdx(INITIAL_MAX_CONTACTS+10),
+    _dstIdx(INITIAL_MAX_CONTACTS+10),
+    _nrOfCon(0),
+    _enabledMap(20,1),
+    //_materialMap(dwc->getMaterialData()),
+    //_contactMap(dwc->getContactData()),
+    _narrowStrategy(new ProximityStrategyPQP()),
+    _sensorFeedbacks(5000),
+    _sensorFeedbacksGlobal(100),
+    _nextFeedbackIdx(0),
+    _nextFeedbackGlobalIdx(0),
+    _excludeMap(0,100),
+    _oldTime(0),
+    _useRobWorkContactGeneration(true),
+    _prevStepEndedInCollision(false),
+    _detector(NULL),
+    _logContactingBodies(false)
+{
+
+    // verify that the linked ode library has the correct
+    int isDouble = dCheckConfiguration ("ODE_double_precision");
+    //int isRelease = dCheckConfiguration ("ODE_EXT_no_debug");
+
+    if(sizeof(dReal)==sizeof(double)){
+        if(isDouble==0){
+            RW_THROW("Current linked library does not support double! change dDOUBLE to dSINGLE or link agains ode lib with double support!");
+        }
+    } else {
+        if(isDouble==1){
+            RW_THROW("Current linked library does not support single! change dSINGLE to dDOUBLE or link agains ode lib with single support!");
+        }
+    }
+
+    // setup DWC changed event
+    if(_dwc)
+        _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
+}
+
+
+void ODESimulator::load(rwsim::dynamics::DynamicWorkCell::Ptr dwc){
+    _dwc = dwc;
+    _materialMap = dwc->getMaterialData();
+    _contactMap = dwc->getContactData();
     _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
 }
+
 
 void ODESimulator::setContactDetector(rwsim::contacts::ContactDetector::Ptr detector) {
 	_detector = detector;
@@ -1328,6 +1369,8 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         Frame *parentFrame = tsensor->getBody1()->getBodyFrame();
         Frame *sensorFrame = tsensor->getBody2()->getBodyFrame();
 
+
+
         //std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
         //std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
         if( _rwFrameToODEBody.find(sensorFrame)== _rwFrameToODEBody.end()){
@@ -1346,8 +1389,13 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         //  RW_ASSERT(0);
         //}
         _rwsensorToOdesensor[sensor] = odesensor;
+
+
+
         // we don't add this to the map since its only used for contact joint sensing
+        // JAR: HOWEVER, the joint feedback does not seem to get contact forces on the child body, which it should....
         //_odeBodyToSensor[odeBody->getBodyID()].push_back( odesensor );
+        _odeBodyToSensor[sensorOdeBody->getBodyID()].push_back(odesensor);
         _odeSensors.push_back(odesensor);
 
         //attach(parentOdeBody->getRwBody(), sensorOdeBody->getRwBody());
@@ -2267,6 +2315,13 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
     }
     for (size_t i = 0; i < nr_con; i++) {
         dContact con = contacts[i];
+
+        if( ODEUtil::toVector3D(con.geom.normal).norm2() >1.0001  ||
+                ODEUtil::toVector3D(con.geom.normal).norm2() >0.9999 ){
+            RW_WARN("Contact normals are bad! skipping contact.");
+            continue;
+        }
+
         // add to all contacts
         ContactPoint point;
         point.n = normalize( ODEUtil::toVector3D(con.geom.normal) );

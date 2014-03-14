@@ -24,8 +24,9 @@
 #include <rw/kinematics/State.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
-
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 
 namespace rwsim {
 namespace simulator {
@@ -60,6 +61,11 @@ namespace simulator {
 		 */
 		virtual ~PhysicsEngine(){};
 
+        /**
+         * @brief adds dynamic workcell
+         */
+		virtual void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc) = 0;
+
 		/**
 		 * @brief Performs a step and updates the state
 		 */
@@ -75,6 +81,7 @@ namespace simulator {
 		 * @brief initialize simulator physics with state
 		 */
 		virtual void initPhysics(rw::kinematics::State& state) = 0;
+
 
 		/**
 		 * @brief cleans up the allocated storage fo bullet physics
@@ -175,6 +182,61 @@ namespace simulator {
 		 * @return
 		 */
 		virtual std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors() = 0;
+
+
+		/**
+         * @addtogroup extensionpoints
+         * @extensionpoint{rwsim::simulator::PhysicsEngine::Factory,rwsim::simulator::PhysicsEngine,rwsim.simulator.PhysicsEngine}
+         */
+
+        /**
+         * @brief a factory for PhysicsEngine. This factory defines an extension point for PhysicsEngines.
+         *
+         * Required properties on an extension is:
+         *  - name: engineID value:string desc:identifies the engine to the user
+         */
+        class Factory: public rw::common::ExtensionPoint<PhysicsEngine> {
+        private:
+            //! constructor
+            Factory():rw::common::ExtensionPoint<PhysicsEngine>("rwsim.simulator.PhysicsEngine", "Example extension point"){};
+
+        public:
+
+            /**
+             * @brief test if the factory has a specific physics engine
+             * @return true if engine with \b engineID is available
+             */
+            static bool hasEngineID(const std::string& engineID);
+
+            /**
+             * @brief get ids of all engines that are available
+             * @return list of string IDs
+             */
+            static std::vector<std::string> getEngineIDs();
+
+            /**
+             * @brief create the first/default available physics engine using a dynamic workcell
+             * @param dwc [in] the dynamic workcell
+             * @return physics engine
+             */
+            static PhysicsEngine::Ptr makePhysicsEngine(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+
+            /**
+             * @brief construct a physics engine with \b engineID and
+             * @param engineID [in] ID of engine
+             * @param dwc [in] dynamic workcell
+             * @return physics engine
+             */
+            static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+
+            /**
+             * @brief construct a physics engine with \b engineID
+             * @param engineID [in] ID of engine
+             * @return physics engine
+             */
+            static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID);
+
+        };
 	};
 
 	//! @}

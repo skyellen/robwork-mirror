@@ -30,6 +30,9 @@ namespace simulator {
 	class RWSimulator: public PhysicsEngine
 	{
 	public:
+
+        RWSimulator();
+
 		/**
 		 * @brief constructor
 		 */
@@ -41,6 +44,9 @@ namespace simulator {
 		virtual ~RWSimulator(){
 			exitPhysics();
 		}
+
+		//! @copydoc PhysicsEngine::load
+		void load(dynamics::DynamicWorkCell::Ptr dwc);
 
 		/**
 		 * @copydoc Simulator::initPhysics
