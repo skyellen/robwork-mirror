@@ -51,7 +51,7 @@ PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(const std::string& 
     }
 
     PhysicsEngine::Factory ep;
-    std::vector<Extension::Ptr> exts = ep.getExtensionDescriptors();
+    std::vector<Extension::Ptr> exts = ep.getExtensions();
     BOOST_FOREACH(Extension::Ptr& ext, exts){
         if(ext->getProperties().get("engineID",ext->getName() ) == engineID){
             PhysicsEngine::Ptr engine =  ext->getObject().cast<PhysicsEngine>();
@@ -70,7 +70,7 @@ PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(const std::string& 
     }
 
     PhysicsEngine::Factory ep;
-    std::vector<Extension::Ptr> exts = ep.getExtensionDescriptors();
+    std::vector<Extension::Ptr> exts = ep.getExtensions();
     BOOST_FOREACH(Extension::Ptr& ext, exts){
         if(ext->getProperties().get("engineID",ext->getName() ) == engineID){
             PhysicsEngine::Ptr engine =  ext->getObject().cast<PhysicsEngine>();
