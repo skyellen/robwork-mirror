@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_SupportPoseAnalyserDialog.h"
-
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
@@ -37,11 +35,15 @@
 #include "RestingPoseDialog.hpp"
 #include "GLViewRW.hpp"
 
+namespace Ui {
+    class SupportPoseAnalyserDialog;
+}
+
 /**
  * @brief gaphical user interface for calculating support pose and related
  * statistics of multiple objects on some support structure.
  */
-class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyserDialog
+class SupportPoseAnalyserDialog : public QDialog
     {
         Q_OBJECT
 
@@ -81,25 +83,14 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         void showPlanarDistribution();
         void saveDistribution();
 
-        void updateHoughThres(){
-        	// we set the thres hold such that [30,50] maps to [100,1000]
-        	std::size_t samples = _xaxis[0].size();
-        	double a = ((50.0-30.0)/(1000.0-100.0));
-        	double b = 30-100.0*a;
-        	double thres = a*samples+b;
-        	thres = rw::math::Math::clamp(thres,20.0,250.0);
-        	_thresholdSpin->setValue((int)thres);
-        }
+        void updateHoughThres();
 
-        rwsim::dynamics::RigidBody::Ptr getSelectedBody(){
-        	int i = _selectObjBox->currentIndex();
-        	return _bodies[i];
-        }
+        rwsim::dynamics::RigidBody::Ptr getSelectedBody();
 
 
 
     private:
-        Ui::SupportPoseAnalyserDialog _ui;
+        Ui::SupportPoseAnalyserDialog *_ui;
         std::string _previousOpenDirectory;
 
         rw::kinematics::State _defaultState;

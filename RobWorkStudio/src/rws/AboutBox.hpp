@@ -2,11 +2,11 @@
 #define RWS_ABOUTBOX_HPP
 
 #include <QDialog>
-#include "ui_AboutBox.h"
 
+// forward declare the ui class
+class Ui_AboutBoxClass;
 
 namespace rws {
-
 
 /**
  * @brief AboutBox in RobWorkStudio.
@@ -42,7 +42,8 @@ public:
      */
     void addPluginAboutWidget(const QString& title, QWidget* widget);
 private:
-    Ui::AboutBoxClass ui;
+    // we don't want ui header files included anywhere else. ui is therefore forward declared...
+    class Ui_AboutBoxClass *ui;
 
 private slots:
     void on_btnOk_clicked();

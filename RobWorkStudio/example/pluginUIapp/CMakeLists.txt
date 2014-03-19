@@ -84,10 +84,12 @@ ENDIF()
 SET(UIS_FILES SamplePlugin.ui )
 
 IF(RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+	QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 ENDIF()
+#Need to add the current binary dir to the include directory because the generated source files are placed here
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # MOC
 IF(RWS_USE_QT5)

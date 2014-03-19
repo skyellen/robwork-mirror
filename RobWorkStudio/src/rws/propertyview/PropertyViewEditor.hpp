@@ -21,7 +21,6 @@
 #define PROPERTYVIEWEDITOR_HPP_
 
 
-//#include "ui_PropertyViewEditor.h"
 #include <QtTreePropertyBrowser>
 #include <QtVariantEditorFactory>
 #include <QtVariantPropertyManager>

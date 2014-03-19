@@ -37,11 +37,13 @@
 #include <rwlibs/simulation/GLFrameGrabber.hpp>
 #include <rwlibs/simulation/GLFrameGrabber25D.hpp>
 
-#include "ui_SensorsPlugin.h"
+namespace Ui {
+    class SensorsPlugin;
+}
 
 namespace rws {
 
-class Sensors : public RobWorkStudioPlugin, private Ui::SensorsPlugin
+class Sensors : public RobWorkStudioPlugin
 {
     Q_OBJECT
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
@@ -76,6 +78,8 @@ private:
     void stateChangedListener(const rw::kinematics::State& state);
 
 private:
+    class Ui::SensorsPlugin *_ui;
+
     QTimer *_timer;
 
     rw::kinematics::State _state;

@@ -5,7 +5,7 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include<boost/filesystem/operations.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <rw/rw.hpp>
 
@@ -18,6 +18,9 @@
 
 #include <rwsim/util/GraspPolicyFactory.hpp>
 #include <rwsim/util/GraspStrategyFactory.hpp>
+
+#include "ui_GraspTableGeneratorPlugin.h"
+
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
@@ -87,19 +90,20 @@ GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
     _avgSimTime(10),
     _avgTime(10)
 {
-    setupUi( this );
+    _ui = new Ui::GraspTableGeneratorPlugin();
+    _ui->setupUi( this );
 
     Math::seed( TimerUtil::currentTimeMs() );
 
     std::vector<std::string> policies = GraspPolicyFactory::getAvailablePolicies();
     BOOST_FOREACH(const std::string& id, policies){
-        _gPolicyBox->addItem(id.c_str());
+        _ui->_gPolicyBox->addItem(id.c_str());
     }
 
 
     std::vector<std::string> strategies = GraspStrategyFactory::getAvailableStrategies();
     BOOST_FOREACH(const std::string& id, strategies){
-        _gStrategyBox->addItem(id.c_str());
+        _ui->_gStrategyBox->addItem(id.c_str());
     }
 
     //_gStrategyBox->addItem("Preshape");
@@ -109,31 +113,31 @@ GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
     //_gPolicyBox->addItem("Fixed Velocity");// close with constant velocity
     //_gPolicyBox->addItem("Fixed Force");// close with constant velocity
 
-    _qAvailMetricsBox->addItem("CM-CCP");
-    _qMetricsBox->addItem("Force closure (LEB)");
+    _ui->_qAvailMetricsBox->addItem("CM-CCP");
+    _ui->_qMetricsBox->addItem("Force closure (LEB)");
 
     RW_DEBUGS("- Setting connections ");
-    connect(_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_genTableBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_genTableBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_loadGTableConfig    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_saveGTableConfig    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_addBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_removeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_browseOutputBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_genTableBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_loadGTableConfig    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_saveGTableConfig    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_addBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_removeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_browseOutputBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_genTableBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_stopBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
     //connect(_updateRateSpin,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
     //connect(_fixedGroupBox, SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
 
     RW_DEBUGS("- Setting timer ");
     _timer = new QTimer( NULL );
-    _timer->setInterval( _updateRateSpin->value() );
+    _timer->setInterval( _ui->_updateRateSpin->value() );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 }
 
@@ -142,8 +146,8 @@ GraspTableGeneratorPlugin::~GraspTableGeneratorPlugin(){
 }
 
 void GraspTableGeneratorPlugin::cleanup(){
-	_deviceBox->clear();
-	_objectBox->clear();
+    _ui->_deviceBox->clear();
+    _ui->_objectBox->clear();
 }
 
 void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
@@ -165,7 +169,7 @@ void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
 			rw::models::Device *dev = &device->getModel();
 			RW_ASSERT(dev);
 			RW_DEBUGS("-- Dev name: " << dev->getName() );
-			_deviceBox->addItem(dev->getName().c_str());
+			_ui->_deviceBox->addItem(dev->getName().c_str());
 		}
 	}
 
@@ -175,7 +179,7 @@ void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
 		if(obj==NULL)
 			continue;
 		if( dynamic_cast<const MovableFrame*>(obj) ){
-			_objectBox->addItem(obj->getName().c_str());
+		    _ui->_objectBox->addItem(obj->getName().c_str());
 		}
 	}
 }
@@ -232,29 +236,29 @@ void GraspTableGeneratorPlugin::loadConfiguration(const std::string& file){
 void GraspTableGeneratorPlugin::btnPressed(){
     QObject *obj = sender();
 
-    if( obj == _loadGTableConfig ){loadConfiguration("");}
-    else if(obj == _saveGTableConfig){saveConfiguration("");}
+    if( obj == _ui->_loadGTableConfig ){loadConfiguration("");}
+    else if(obj == _ui->_saveGTableConfig){saveConfiguration("");}
     //else if(){ }
-    else if(obj == _genTableBtn){startTableGeneration();}
-    else if(obj == _stopBtn){
-    	if(_stopBtn->text()=="Pause"){
-    		_stopBtn->setText("Continue");
+    else if(obj == _ui->_genTableBtn){startTableGeneration();}
+    else if(obj == _ui->_stopBtn){
+    	if(_ui->_stopBtn->text()=="Pause"){
+    	    _ui->_stopBtn->setText("Continue");
     		// todo stop execution
     	} else {
-    		_stopBtn->setText("Pause");
+    	    _ui->_stopBtn->setText("Pause");
     	}
     }
-    else if(obj == _addBtn){
-    	QString txt = _qAvailMetricsBox->currentText();
+    else if(obj == _ui->_addBtn){
+    	QString txt = _ui->_qAvailMetricsBox->currentText();
     	if(txt.isEmpty()) return;
-    	_qMetricsBox->addItem(txt);
-    	_qAvailMetricsBox->removeItem(_qAvailMetricsBox->currentIndex());
-    } else if(obj == _removeBtn){
-    	QString txt = _qMetricsBox->currentText();
+    	_ui->_qMetricsBox->addItem(txt);
+    	_ui->_qAvailMetricsBox->removeItem(_ui->_qAvailMetricsBox->currentIndex());
+    } else if(obj == _ui->_removeBtn){
+    	QString txt = _ui->_qMetricsBox->currentText();
     	if(txt.isEmpty()) return;
-    	_qAvailMetricsBox->addItem(txt);
-    	_qMetricsBox->removeItem(_qMetricsBox->currentIndex());
-    } else if(obj == _browseOutputBtn){
+    	_ui->_qAvailMetricsBox->addItem(txt);
+    	_ui->_qMetricsBox->removeItem(_ui->_qMetricsBox->currentIndex());
+    } else if(obj == _ui->_browseOutputBtn){
     	QString selectedFilter;
         std::string dirname =
         		getRobWorkStudio()->getPropertyMap().get<std::string>("PreviousDirectory","");
@@ -268,7 +272,7 @@ void GraspTableGeneratorPlugin::btnPressed(){
 			" \n All ( *.* )",
 			&selectedFilter);
 
-        _outputFileEdit->setText(filename);
+        _ui->_outputFileEdit->setText(filename);
     }
 }
 
@@ -317,29 +321,29 @@ void GraspTableGeneratorPlugin::applyConfiguration(){
 
 	std::string output_file = _config.get<std::string>("OutputFile", "grasp_table_output.gdata");
 
-	setComboBox(nameHand, _deviceBox, log().error(), "Hand ");
-	setComboBox(nameObject, _objectBox, log().error(), "Object ");
-	setComboBox(nameGraspPolicy, _gPolicyBox, log().error(), "Grasp Policy ");
-	setComboBox(nameGraspStrategy, _gStrategyBox, log().error(), "Grasp Strategy ");
+	setComboBox(nameHand, _ui->_deviceBox, log().error(), "Hand ");
+	setComboBox(nameObject, _ui->_objectBox, log().error(), "Object ");
+	setComboBox(nameGraspPolicy, _ui->_gPolicyBox, log().error(), "Grasp Policy ");
+	setComboBox(nameGraspStrategy, _ui->_gStrategyBox, log().error(), "Grasp Strategy ");
 
-	_collisionFreeInitBox->setChecked(use_colfree_initstate);
-	_dynamicSimulationBox->setChecked(use_dynamic_simulation);
-	_continuesLoggingBox->setChecked(use_continues_logging);
-	_fixedGroupBox->setChecked(use_fixed_step);
+	_ui->_collisionFreeInitBox->setChecked(use_colfree_initstate);
+	_ui->_dynamicSimulationBox->setChecked(use_dynamic_simulation);
+	_ui->_continuesLoggingBox->setChecked(use_continues_logging);
+	_ui->_fixedGroupBox->setChecked(use_fixed_step);
 
-	_groupSizeSpin->setValue( group_size );
-	_tableSizeSpin->setValue( table_size );
+	_ui->_groupSizeSpin->setValue( group_size );
+	_ui->_tableSizeSpin->setValue( table_size );
 
-	_outputFileEdit->setText(output_file.c_str());
+	_ui->_outputFileEdit->setText(output_file.c_str());
 }
 
 void GraspTableGeneratorPlugin::readConfiguration(){
 
-	_config.set<std::string>("HandName", _deviceBox->currentText().toStdString());
-	_config.set<std::string>("ObjectName", _objectBox->currentText().toStdString());
+	_config.set<std::string>("HandName", _ui->_deviceBox->currentText().toStdString());
+	_config.set<std::string>("ObjectName", _ui->_objectBox->currentText().toStdString());
 
-	_config.set<std::string>("GraspPolicy", _gPolicyBox->currentText().toStdString());
-	_config.set<std::string>("GraspStrategy", _gStrategyBox->currentText().toStdString());
+	_config.set<std::string>("GraspPolicy", _ui->_gPolicyBox->currentText().toStdString());
+	_config.set<std::string>("GraspStrategy", _ui->_gStrategyBox->currentText().toStdString());
 
 
 	std::string nameQMetric = _config.get<std::string>("QualityMetric", "");
@@ -348,15 +352,15 @@ void GraspTableGeneratorPlugin::readConfiguration(){
 	std::string nameQMetric3 = _config.get<std::string>("QualityMetric3", "");
 	std::string nameQMetric4 = _config.get<std::string>("QualityMetric4", "");
 
-	_config.set<int>("TableSize", _tableSizeSpin->value());
-	_config.set<int>("GroupSize", _groupSizeSpin->value());
-	_config.set<bool>("FixedStep", _fixedGroupBox->isChecked());
-	_config.set<bool>("ContinuesTactileLogging", _continuesLoggingBox->isChecked());
-	_config.set<bool>("DynamicSimulation", _dynamicSimulationBox->isChecked());
-	_config.set<bool>("CollisionFreeInitState", _collisionFreeInitBox->isChecked());
+	_config.set<int>("TableSize", _ui->_tableSizeSpin->value());
+	_config.set<int>("GroupSize", _ui->_groupSizeSpin->value());
+	_config.set<bool>("FixedStep", _ui->_fixedGroupBox->isChecked());
+	_config.set<bool>("ContinuesTactileLogging", _ui->_continuesLoggingBox->isChecked());
+	_config.set<bool>("DynamicSimulation", _ui->_dynamicSimulationBox->isChecked());
+	_config.set<bool>("CollisionFreeInitState", _ui->_collisionFreeInitBox->isChecked());
 
 	// now set all values in the gui
-	_config.set<std::string>("OutputFile", _outputFileEdit->text().toStdString());
+	_config.set<std::string>("OutputFile", _ui->_outputFileEdit->text().toStdString());
 }
 
 
@@ -406,17 +410,17 @@ void GraspTableGeneratorPlugin::startTableGeneration(){
 	std::cout << "Start table generation! " << std::endl;
 	//
 	//JointDevice *hand = _dwc->getWorkcell()->findDevice<JointDevice>( _deviceBox->currentText().toStdString() );
-	MovableFrame *object = _dwc->getWorkcell()->findFrame<MovableFrame>( _objectBox->currentText().toStdString() );
+	MovableFrame *object = _dwc->getWorkcell()->findFrame<MovableFrame>( _ui->_objectBox->currentText().toStdString() );
 
-	DynamicDevice *hand = _dwc->findDevice(_deviceBox->currentText().toStdString()).get();
+	DynamicDevice *hand = _dwc->findDevice(_ui->_deviceBox->currentText().toStdString()).get();
 
 	if( (hand==NULL) | (object==NULL) ){
 		log().error() << "hand or object not found!" << std::endl;
 		return;
 	}
 
-	std::string policyId = _gPolicyBox->currentText().toStdString();
-	std::string strategyId = _gStrategyBox->currentText().toStdString();
+	std::string policyId = _ui->_gPolicyBox->currentText().toStdString();
+	std::string strategyId = _ui->_gStrategyBox->currentText().toStdString();
 
 	if(_gstrategy==NULL){
 		_gstrategy = GraspStrategyFactory::makeStrategy(strategyId);
@@ -427,7 +431,7 @@ void GraspTableGeneratorPlugin::startTableGeneration(){
 	}
 
 	// now create the simulations
-	if(_dynamicSimulationBox->isChecked()){
+	if(_ui->_dynamicSimulationBox->isChecked()){
 	    StateSampler::Ptr sampler = _gstrategy->getSampler();
 	    SimulatedController::Ptr controller = _gpolicy->getController();
 

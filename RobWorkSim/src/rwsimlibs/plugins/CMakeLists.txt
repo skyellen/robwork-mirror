@@ -1,25 +1,30 @@
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS})
 
+# to be able to include the generated ui header files
+include_directories(${CMAKE_CURRENT_BINARY_DIR}) 
+
 ################################################################
 # next compile RWSimulatorPlugin
 #
 SET(SrcFiles RWSimulatorPlugin.cpp )
 
 # Call the create_plugin macro for creating the plugin
-IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
+IF( RWS_USE_QT5 )
+QT5_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
-ENDIF()
-# Rcc the files:
-SET(RccSrcFiles )
-IF(RWS_USE_QT5)
-	QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-ELSE()
-	QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+QT4_WRAP_CPP(MocSrcFiles RWSimulatorPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ENDIF()
 
+# Rcc the files:
+SET(RccSrcFiles )
+
+IF( RWS_USE_QT5 )
+QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+ELSE()
+QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+
+ENDIF()
 # The shared library to build:
 ADD_LIBRARY(RWSimulatorPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(RWSimulatorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
@@ -54,10 +59,11 @@ SET(SrcFiles SimUtilityPlugin.cpp )
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
 IF(RWS_USE_QT5)
-	QT5_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
+QT5_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ELSE()
-	QT4_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
+QT4_WRAP_CPP(MocSrcFiles SimUtilityPlugin.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED)
 ENDIF()
+
 # Rcc the files:
 SET(RccSrcFiles )
 IF(RWS_USE_QT5)
@@ -77,9 +83,9 @@ TARGET_LINK_LIBRARIES(SimUtilityPlugin rwsim_gui ${ROBWORKSIM_LIBRARIES} ${ROBWO
 # next compile GraspTableGeneratorPlugin 
 #
 IF(RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
+	QT5_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
+	QT4_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
 ENDIF()
 SET(SrcFiles GraspTableGeneratorPlugin.cpp)
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
@@ -110,9 +116,9 @@ TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${ROBWORKSIM_LIBRARIES} ${ROBWOR
 # The RW Simulation 
 #
 IF(RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
+	QT5_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
+	QT4_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
 ENDIF()
 SET(SrcFiles RWSimPlugin.cpp)
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
@@ -149,9 +155,9 @@ ADD_DEPENDENCIES( RWSimPlugin ${RWSIM_LUA_LIB} rwsim_gui)
 # The SimTaskPlugin
 #
 IF(RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
+	QT5_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
+	QT4_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
 ENDIF()
 SET(SrcFiles SimTaskPlugin.cpp)
 set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
@@ -182,9 +188,9 @@ TARGET_LINK_LIBRARIES(SimTaskPlugin rwsim_gui rw_task ${ROBWORKSIM_LIBRARIES} ${
 # The SimTaskVisPlugin -- has been moved to RobWorkStudio now named gtaskplugin
 #
 IF(RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
+	QT5_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
+	QT4_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
 ENDIF()
 #SET(SrcFiles SimTaskVisPlugin.cpp)
 #set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")

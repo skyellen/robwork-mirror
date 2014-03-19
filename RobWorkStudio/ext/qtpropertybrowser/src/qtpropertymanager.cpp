@@ -6426,5 +6426,5 @@ void QtCursorPropertyManager::uninitializeProperty(QtProperty *property)
 QT_END_NAMESPACE
 #endif
 
-#include "moc_qtpropertymanager.cpp"
+#include "moc_qtpropertymanager.cxx"
 #include "qtpropertymanager.moc"

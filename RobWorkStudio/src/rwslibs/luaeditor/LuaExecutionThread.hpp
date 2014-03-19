@@ -25,7 +25,6 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rwslibs/swig/LuaState.hpp>
-#include "ui_LuaEditorWindow.h"
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
 

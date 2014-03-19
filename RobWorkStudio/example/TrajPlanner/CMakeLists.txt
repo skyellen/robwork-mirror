@@ -77,7 +77,9 @@ ENDIF()
 # if we want to use ui files add them here
 SET(UIS_FILES SamplePlugin.ui )
 
-RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+#Need to add the current binary dir to the include directory because the generated source files are placed here
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
 # Rcc the files:

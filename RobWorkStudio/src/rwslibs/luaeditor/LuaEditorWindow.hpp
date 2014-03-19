@@ -26,13 +26,16 @@
 #include <rws/RobWorkStudio.hpp>
 #include <rwslibs/swig/LuaState.hpp>
 
-#include "ui_LuaEditorWindow.h"
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
 #include "LuaExecutionThread.hpp"
 
  #include <QMainWindow>
  #include <QThread>
+
+namespace Ui {
+    class LuaEditorWindow;
+}
 
  class TreeModelCompleter;
  class QAbstractItemModel;
@@ -55,7 +58,7 @@ namespace rws {
      *
      * This editor will enable lua scripting and execution from within robworkstudio.
      */
-    class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
+    class LuaEditorWindow: public QMainWindow {
         Q_OBJECT
     public:
 
@@ -114,6 +117,7 @@ namespace rws {
     private:
         //! hold
         std::map<QWidget*, EditorTab::Ptr> _editors;
+        class Ui::LuaEditorWindow *_ui;
 
         LuaState::Ptr _lua;
         rw::common::Log::Ptr _output;

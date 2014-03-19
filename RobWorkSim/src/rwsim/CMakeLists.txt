@@ -1,8 +1,5 @@
 
-#
-# Standard cpp files to compile into library
-#
-add_library(rwsim
+SET(FILES_CPP
 	contacts/BallBallStrategy.cpp
 	contacts/Contact.cpp
 	contacts/ContactDetector.cpp
@@ -118,8 +115,128 @@ add_library(rwsim
 	rwphysics/SequintialImpulseSolver.cpp
 	rwphysics/RWBody.cpp
 	rwphysics/RWBodyPool.cpp
-	rwphysics/BodyController.cpp	
+	rwphysics/BodyController.cpp
 )
+
+SET(FILES_HPP
+	contacts/BallBallStrategy.hpp
+	contacts/Contact.hpp
+	contacts/ContactDetector.hpp
+	contacts/ContactDetectorData.hpp
+	contacts/ContactModel.hpp
+	contacts/ContactModelGeometry.hpp
+	contacts/ContactStrategy.hpp
+	contacts/ContactStrategyData.hpp
+	contacts/ContactStrategyGeometry.hpp
+	contacts/ContactStrategyPQP.hpp
+	contacts/RenderContacts.hpp
+
+	dynamics/Body.hpp
+	dynamics/RigidBody.hpp
+	dynamics/BeamBody.hpp
+	dynamics/RigidJoint.hpp
+	dynamics/KinematicBody.hpp
+	dynamics/FixedBody.hpp
+    dynamics/DynamicDevice.hpp
+	dynamics/KinematicDevice.hpp
+	dynamics/RigidDevice.hpp 
+	dynamics/DynamicWorkCell.hpp  
+	#dynamics/Contact.hpp 
+	dynamics/ContactPoint.hpp 
+	dynamics/ContactCluster.hpp
+	dynamics/ContactManifold.hpp
+	dynamics/ContactDataMap.hpp  
+	dynamics/MaterialDataMap.hpp 
+	dynamics/DynamicUtil.hpp
+	dynamics/SuctionCup.hpp
+	dynamics/OBRManifold.hpp
+	dynamics/BodyUtil.hpp
+	#dynamics/Constraint.hpp
+
+	sensor/SimulatedTactileSensor.hpp 	 
+	sensor/TactileArraySensor.hpp 
+	sensor/BodyContactSensor.hpp 
+    sensor/SimulatedFTSensor.hpp 
+	
+	loaders/DynamicWorkCellLoader.hpp
+	loaders/ScapePoseFormat.hpp
+	
+	util/MovingAverage.hpp
+	util/PointRANSACFitting.hpp
+	util/DistModel.hpp
+	util/PlaneModel.hpp
+	util/CircleModel.hpp
+	util/SupportPose.hpp
+	util/PlanarSupportPoseGenerator.hpp
+	#util/LineFit.hpp
+	#util/LinePolar.hpp
+	
+	util/HughLineExtractor.hpp
+	
+	util/RecursiveNewtonEuler.hpp
+	util/RestingPoseGenerator.hpp
+	
+	util/CollisionFreeSampler.hpp
+	util/FiniteStateSampler.hpp
+	util/SpherePoseSampler.hpp
+	util/StateSampler.hpp
+	util/PreshapeSampler.hpp
+	util/GraspPolicy.hpp
+	util/GraspStrategy.hpp
+	util/GraspPolicyFactory.hpp
+	util/GraspStrategyFactory.hpp
+	util/TargetConfigGraspPolicy.hpp
+	util/PoseSampler.hpp
+	util/BoxPoseSampler.hpp
+	util/SurfacePoseSampler.hpp
+	
+	drawable/RenderGhost.hpp
+	drawable/RenderPoints.hpp
+	drawable/RenderPlanes.hpp
+	drawable/RenderCircles.hpp
+	drawable/RenderContacts.hpp
+	
+ 	control/PDController.hpp
+ 	control/SyncPDController.hpp
+ 	control/VelRampController.hpp
+    #control/SuctionCupController.hpp
+    control/BodyController.hpp
+    control/BeamJointController.hpp
+    control/SpringJointController.hpp
+    #control/TrajectoryController.hpp
+	control/PoseController.hpp
+	control/SerialDeviceController.hpp
+    
+	simulator/DynamicSimulator.hpp
+	simulator/ThreadSimulator.hpp
+	simulator/PhysicsEngineFactory.hpp
+	simulator/GraspTaskSimulator.hpp
+	simulator/AssemblySimulator.hpp
+	
+	# RWPhysics stuff
+    rwphysics/RWSimulator.hpp
+	rwphysics/RWDebugRender.hpp
+	rwphysics/BodyIntegrator.hpp
+	rwphysics/ContactModel.hpp
+	rwphysics/ChatterjeeContactModel.hpp
+	rwphysics/CNodePairMap.hpp
+	rwphysics/CNodePool.hpp
+	rwphysics/ConstantForceManipulator.hpp
+	rwphysics/ConstraintNode.hpp
+	rwphysics/ConstraintEdge.hpp
+	#rwphysics/ConstraintSolver.hpp
+	rwphysics/ContactGraph.hpp
+	rwphysics/ContactModelFactory.hpp
+	rwphysics/EulerIntegrator.hpp
+	#rwphysics/GuendelContactModel.hpp	
+	rwphysics/ConstraintSolver.hpp
+	rwphysics/SequintialImpulseSolver.hpp
+	rwphysics/RWBody.hpp
+	rwphysics/RWBodyPool.hpp
+	rwphysics/BodyController.hpp	
+)
+
+RW_ADD_LIBRARY(rwsim rwsim ${FILES_CPP} ${FILES_HPP})
 
 #add_subdirectory(lua)
 #add_subdirectory(plugin)

@@ -12,7 +12,7 @@
 #include <windows.h>
 #endif
 
-#include "ui_GraspSelectionDialog.h"
+
 
 #include <rw/kinematics/State.hpp>
 #include <rw/graspplanning/GraspTable.hpp>
@@ -32,13 +32,17 @@
 #include <QtGui>
 #include <QTimer>
 
+namespace Ui {
+    class GraspSelectionDialog;
+}
+
 /**
  * @brief a grphical interface for calculating resting configurations of
  * rigid bodies using rigid body physics simulation.
  *
  *
  */
-class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
+class GraspSelectionDialog : public QDialog
     {
         Q_OBJECT
 
@@ -104,7 +108,7 @@ class GraspSelectionDialog : public QDialog, private Ui::GraspSelectionDialog
 
 
     private:
-        Ui::GraspSelectionDialog _ui;
+        Ui::GraspSelectionDialog *_ui;
         rw::kinematics::State _defstate;
         rw::kinematics::State _state;
         QTimer *_timer;

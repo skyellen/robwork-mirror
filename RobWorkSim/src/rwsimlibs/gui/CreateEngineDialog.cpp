@@ -23,6 +23,9 @@
 
 #include <rw/loaders/path/PathLoader.hpp>
 
+#include "ui_CreateEngineDialog.h"
+
+
 using namespace rw::loaders;
 using namespace rw::trajectory;
 using namespace rwsim::dynamics;
@@ -45,26 +48,27 @@ CreateEngineDialog::CreateEngineDialog(Ptr<DynamicWorkCell> dwc, QWidget *parent
     _dwc(dwc)
 {
 	RW_ASSERT( _dwc );
-    setupUi(this);
+	_ui = new Ui::CreateEngineDialog();
+    _ui->setupUi(this);
 
 	std::vector<std::string> engineIDs =
 		PhysicsEngineFactory::getEngineIDs();
 	BOOST_FOREACH(const std::string& engineID, engineIDs){
-		_spaceMethodBox->addItem(engineID.c_str());
+	    _ui->_spaceMethodBox->addItem(engineID.c_str());
 	}
 
-	connect(_createBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+	connect(_ui->_createBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     if(engineIDs.size()==0)
-    	_createBtn->setDisabled(true);
-    _cancelBtn->setDisabled(true);
+        _ui->_createBtn->setDisabled(true);
+    _ui->_cancelBtn->setDisabled(true);
 }
 
 
 void CreateEngineDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _createBtn ){
-        std::string engineId = _spaceMethodBox->currentText().toStdString();
+    if( obj == _ui->_createBtn ){
+        std::string engineId = _ui->_spaceMethodBox->currentText().toStdString();
         try {
             PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine(engineId, _dwc);
             _sim = ownedPtr( new DynamicSimulator(_dwc, pengine) );
@@ -76,7 +80,7 @@ void CreateEngineDialog::btnPressed(){
 
         std::cout << "********** SIMULATOR CREATED " << std::endl;
         accept();
-    } else if( obj == _cancelBtn ) {
+    } else if( obj == _ui->_cancelBtn ) {
     	_sim = NULL;
     	reject();
     }

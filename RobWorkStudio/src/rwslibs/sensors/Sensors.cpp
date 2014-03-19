@@ -42,6 +42,9 @@
 
 #include <sstream>
 
+#include "ui_SensorsPlugin.h"
+
+
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::sensor;
@@ -57,8 +60,8 @@ using namespace rwlibs::opengl;
 Sensors::Sensors():
     RobWorkStudioPlugin("Sensors", QIcon(":/sensors.png"))
 {
-
-    setupUi(this);
+    _ui = new Ui::SensorsPlugin();
+    _ui->setupUi(this);
 
 /*    QWidget *widget = new QWidget(this);
     QVBoxLayout *lay = new QVBoxLayout(widget);
@@ -92,7 +95,7 @@ Sensors::Sensors():
 
     _timer = new QTimer(this);
     _timer->setSingleShot(false);
-    _timer->setInterval(spnUpdateTime->value());
+    _timer->setInterval(_ui->spnUpdateTime->value());
     connect(_timer, SIGNAL(timeout()), this, SLOT(updateSim()));
     _timer->start();
 }
@@ -118,7 +121,7 @@ void Sensors::updateSim(){
     
     BOOST_FOREACH(SensorSet& set, _sensors) {
         //getRobWorkStudio()->getView()->makeCurrent(); TODO
-        Simulator::UpdateInfo info(0.001*spnUpdateTime->value());
+        Simulator::UpdateInfo info(0.001*_ui->spnUpdateTime->value());
         set.view->makeCurrent();
         set.sensor->update(info, _state);
         set.view->update();
@@ -140,16 +143,16 @@ void Sensors::open(WorkCell* workcell)
     State state = getRobWorkStudio()->getState();
     std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
 
-    cmbSensors->clear();
+    _ui->cmbSensors->clear();
     BOOST_FOREACH(Frame* frame, frames) {
         if (frame->getPropertyMap().has("Camera")) {
-            cmbSensors->addItem(QString("%1:%2").arg("Camera").arg(frame->getName().c_str()), QVariant(frame->getName().c_str()));
+            _ui->cmbSensors->addItem(QString("%1:%2").arg("Camera").arg(frame->getName().c_str()), QVariant(frame->getName().c_str()));
          }
         if (frame->getPropertyMap().has("Scanner25D")) {
-            cmbSensors->addItem(QString("%1:%2").arg("Scanner25D").arg(frame->getName().c_str()),  QVariant(frame->getName().c_str()));
+            _ui->cmbSensors->addItem(QString("%1:%2").arg("Scanner25D").arg(frame->getName().c_str()),  QVariant(frame->getName().c_str()));
         }
         if (frame->getPropertyMap().has("Scanner2D")) {
-            cmbSensors->addItem(QString("%1:%2").arg("Scanner2D").arg(frame->getName().c_str()),  QVariant(frame->getName().c_str()));
+            _ui->cmbSensors->addItem(QString("%1:%2").arg("Scanner2D").arg(frame->getName().c_str()),  QVariant(frame->getName().c_str()));
         }
     }
 
@@ -160,8 +163,8 @@ void Sensors::close()
 {}
 
 void Sensors::on_btnDisplay_clicked(bool checked) {
-    std::string frameName = cmbSensors->itemData(cmbSensors->currentIndex()).toString().toStdString();
-    QStringList strings = cmbSensors->currentText().split(":");
+    std::string frameName = _ui->cmbSensors->itemData(_ui->cmbSensors->currentIndex()).toString().toStdString();
+    QStringList strings = _ui->cmbSensors->currentText().split(":");
     if (strings.size()<=1) {
         QMessageBox::critical(this, tr("Sensors"), tr("Unable to split string"));
     }
@@ -259,7 +262,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
 
 
 void Sensors::on_spnUpdateTime_valueChanged(int value) {
-    _timer->setInterval(spnUpdateTime->value());
+    _timer->setInterval(_ui->spnUpdateTime->value());
 }
 
 void Sensors::viewClosed(SensorView* view) {    

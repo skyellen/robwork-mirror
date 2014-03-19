@@ -15,20 +15,15 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-
 #ifndef PROPERTYVIEWDIALOG_HPP_
 #define PROPERTYVIEWDIALOG_HPP_
 
-
-#include "ui_PropertyViewDialog.h"
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 
-#include <QMainWindow>
-#include <QCloseEvent>
-#include <QSettings>
-#include <QTimer>
+#include <QDialog>
+
+class Ui_PropertyViewDialog;
 
 class PropertyViewDialog : public QDialog {
 Q_OBJECT
@@ -40,7 +35,7 @@ private slots:
 	void acceptPressed();
 	void rejectPressed();
 private:
-	Ui::PropertyViewDialog ui;
+	class Ui_PropertyViewDialog *ui;
 	rw::common::PropertyMap::Ptr _pOriginalProperties;
 	rw::common::PropertyMap _workingCopy;
 };

@@ -18,6 +18,8 @@
 
 #include "PropertyViewDialog.hpp"
 
+#include "ui_PropertyViewDialog.h"
+
 using namespace rw::common;
 using namespace rw::math;
 
@@ -26,11 +28,12 @@ PropertyViewDialog::PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget
 	_pOriginalProperties(map),
 	_workingCopy(*map.get())
 {
-	ui.setupUi(this);	
-	ui.propertyViewEditor->setPropertyMap(&_workingCopy);
+	ui = new Ui_PropertyViewDialog();
+    ui->setupUi(this);
+	ui->propertyViewEditor->setPropertyMap(&_workingCopy);
 
-	connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(acceptPressed()));
-	connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(rejectPressed()));
+	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acceptPressed()));
+	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(rejectPressed()));
 }
 
 

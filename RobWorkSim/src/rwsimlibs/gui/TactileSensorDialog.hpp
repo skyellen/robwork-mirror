@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_TactileSensorDialog.h"
-
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -30,11 +28,14 @@
 #include <QtGui>
 #include <QTimer>
 
-        struct Moment {
-        	rw::math::Vector2D<> center;
-        	rw::math::Vector2D<> first,second;
-        };
+struct Moment {
+    rw::math::Vector2D<> center;
+    rw::math::Vector2D<> first,second;
+};
 
+namespace Ui {
+    class TactileSensorDialog;
+}
 
 /**
  * @brief a grphical interface for calculating resting configurations of
@@ -42,7 +43,7 @@
  *
  *
  */
-class TactileSensorDialog : public QDialog, public Ui::TactileSensorDialog
+class TactileSensorDialog : public QDialog
     {
         Q_OBJECT
 
@@ -76,7 +77,7 @@ class TactileSensorDialog : public QDialog, public Ui::TactileSensorDialog
         void detectCenterMass();
         void findMoments();
     private:
-        Ui::TactileSensorDialog _ui;
+        Ui::TactileSensorDialog *_ui;
 
         rwsim::dynamics::DynamicWorkCell *_dwc;
         std::vector<rwsim::sensor::TactileArraySensor*> _tsensors;

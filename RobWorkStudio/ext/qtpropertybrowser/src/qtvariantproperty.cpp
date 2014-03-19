@@ -2290,4 +2290,4 @@ void QtVariantEditorFactory::disconnectPropertyManager(QtVariantPropertyManager 
 QT_END_NAMESPACE
 #endif
 
-#include "moc_qtvariantproperty.cpp"
+#include "moc_qtvariantproperty.cxx"

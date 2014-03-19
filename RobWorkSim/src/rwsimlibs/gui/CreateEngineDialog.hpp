@@ -12,7 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_CreateEngineDialog.h"
 
 #include <rw/kinematics/State.hpp>
 
@@ -25,7 +24,11 @@
 #include <QtGui>
 #include <QTimer>
 
-class CreateEngineDialog : public QDialog, private Ui::CreateEngineDialog
+namespace Ui {
+    class CreateEngineDialog;
+}
+
+class CreateEngineDialog : public QDialog
 {
 	Q_OBJECT
 
@@ -39,7 +42,7 @@ private slots:
 	void changedEvent();
 
 private:
-	Ui::CreateEngineDialog _ui;
+	Ui::CreateEngineDialog *_ui;
 	rwsim::simulator::DynamicSimulator::Ptr _sim;
 	rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
 };

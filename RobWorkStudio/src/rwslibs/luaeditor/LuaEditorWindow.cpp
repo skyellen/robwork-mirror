@@ -32,6 +32,9 @@ extern "C" {
 #include "LuaExecutionThread.hpp"
 #include <rwlibs/swig/ScriptTypes.hpp>
 
+#include "ui_LuaEditorWindow.h"
+
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rws;
@@ -55,7 +58,8 @@ LuaEditorWindow::LuaEditorWindow(LuaState::Ptr lua, rw::common::Log::Ptr output,
 	_output(output),
 	_rws(rwstudio)
 {
-	setupUi(this);
+    _ui = new Ui::LuaEditorWindow();
+    _ui->setupUi(this);
 
 	_luaRunner =  new LuaExecutionThread("", _lua, _output->getWriter(Log::Info), this);
     lua_sethook(_lua->get(), luaLineHook, LUA_MASKLINE, 0);

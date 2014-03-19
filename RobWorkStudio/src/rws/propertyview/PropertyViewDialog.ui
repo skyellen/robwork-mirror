@@ -33,7 +33,7 @@
   <customwidget>
    <class>PropertyViewEditor</class>
    <extends>QWidget</extends>
-   <header>PropertyViewEditor.hpp</header>
+   <header location="global">rws/propertyview/PropertyViewEditor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -52,6 +52,8 @@
 #include <rwlibs/algorithms/kdtree/KDTree.hpp>
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
 
+#include "ui_SupportPoseAnalyserDialog.h"
+
 USE_ROBWORK_NAMESPACE
 using namespace std;
 using namespace robwork;
@@ -98,6 +100,22 @@ namespace {
 	}
 }
 
+void SupportPoseAnalyserDialog::updateHoughThres(){
+    // we set the thres hold such that [30,50] maps to [100,1000]
+    std::size_t samples = _xaxis[0].size();
+    double a = ((50.0-30.0)/(1000.0-100.0));
+    double b = 30-100.0*a;
+    double thres = a*samples+b;
+    thres = rw::math::Math::clamp(thres,20.0,250.0);
+    _ui->_thresholdSpin->setValue((int)thres);
+}
+
+rwsim::dynamics::RigidBody::Ptr SupportPoseAnalyserDialog::getSelectedBody(){
+    int i = _ui->_selectObjBox->currentIndex();
+    return _bodies[i];
+}
+
+
 SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State& state,
                                     DynamicWorkCell *dwc,
                                     rw::proximity::CollisionDetector *detector,
@@ -111,11 +129,12 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     _restPoseDialog(NULL),
     _rwstudio(rwstudio)
 {
-    setupUi(this);
+    _ui = new Ui::SupportPoseAnalyserDialog();
+    _ui->setupUi(this);
     _pitem = new QGraphicsPixmapItem();
     QGraphicsScene *scene = new QGraphicsScene();
-    _distributionView->setScene(scene);
-    _distributionView->scene()->addItem(_pitem);
+    _ui->_distributionView->setScene(scene);
+    _ui->_distributionView->scene()->addItem(_pitem);
     _bodies = DynamicUtil::getRigidBodies(*_dwc);
 
 	_xaxis.resize( _bodies.size() );
@@ -124,7 +143,7 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 
     // load combobox
     BOOST_FOREACH(RigidBody::Ptr  body, _bodies){
-    	_selectObjBox->addItem( body->getBodyFrame()->getName().c_str() );
+        _ui->_selectObjBox->addItem( body->getBodyFrame()->getName().c_str() );
     }
     _frameRender = ownedPtr(new RenderFrame());
     _fDraw = new Drawable( _frameRender , "FrameRender0");
@@ -165,32 +184,32 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     _ycDraw = new Drawable( _ycRender , "CirclesRendery");
     _zcDraw = new Drawable( _zcRender , "CirclesRenderz");
 
-    connect(_processBtn       ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_listenForDataBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_loadFromFileBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_loadStartPosesBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_analyzePlanarBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_calcBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_saveDistBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_processBtn       ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_listenForDataBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_loadFromFileBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_loadStartPosesBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_analyzePlanarBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_calcBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_saveDistBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_ghostStartBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_ghostEndBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_ghostStartBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_ghostEndBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_drawXBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
-    connect(_drawYBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
-    connect(_drawZBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawXBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawYBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawZBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
 
-    connect(_drawPointsBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
-    connect(_drawCirclesBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
-    connect(_drawStartPosesBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawPointsBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawCirclesBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_drawStartPosesBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
 
-    connect(_selectObjBox   ,SIGNAL(currentIndexChanged(int)), this, SLOT(changedEvent()) );
-    connect(_resultView   ,SIGNAL(itemSelectionChanged()), this, SLOT(changedEvent()) );
+    connect(_ui->_selectObjBox   ,SIGNAL(currentIndexChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_resultView   ,SIGNAL(itemSelectionChanged()), this, SLOT(changedEvent()) );
 
-    _view = new GLViewRW( _glframe );
-    QGridLayout* lay = new QGridLayout(_glframe);
-    _glframe->setLayout(lay);
+    _view = new GLViewRW( _ui->_glframe );
+    QGridLayout* lay = new QGridLayout(_ui->_glframe);
+    _ui->_glframe->setLayout(lay);
     lay->addWidget(_view);
 
     _view->addDrawable( _xDraw );
@@ -215,14 +234,14 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 	_ycDraw->setVisible( false );
 	_zcDraw->setVisible( false );
 
-	_resetBtn->setEnabled(false);
-	_processBtn->setEnabled(false);
+	_ui->_resetBtn->setEnabled(false);
+	_ui->_processBtn->setEnabled(false);
 
 
     _bodies = DynamicUtil::getRigidBodies(*_dwc);
     // load combobox
     BOOST_FOREACH(RigidBody::Ptr body, _bodies){
-        _planarObjectBox->addItem( body->getBodyFrame()->getName().c_str() );
+        _ui->_planarObjectBox->addItem( body->getBodyFrame()->getName().c_str() );
     }
 
 	//tabWidget->setTabEnabled(1,false);
@@ -233,9 +252,9 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 
 void SupportPoseAnalyserDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _loadFromFileBtn ){
-    	_resetBtn->setEnabled(true);
-    	_processBtn->setEnabled(true);
+    if( obj == _ui->_loadFromFileBtn ){
+        _ui->_resetBtn->setEnabled(true);
+        _ui->_processBtn->setEnabled(true);
     	//tabWidget->setTabEnabled(1,false);
 
     	std::string filename = openFile(_previousOpenDirectory, this);
@@ -245,12 +264,12 @@ void SupportPoseAnalyserDialog::btnPressed(){
     		_path = PathLoader::loadTimedStatePath(*_wc,filename).release();
     	} catch(const Exception&) {
     		_path = NULL;
-    		_dataLoadedLbl->setText("Load failed!");
+    		_ui->_dataLoadedLbl->setText("Load failed!");
     		return;
     	}
-    	_dataLoadedLbl->setText("State data loaded!");
+    	_ui->_dataLoadedLbl->setText("State data loaded!");
     	addStatePath(_path);
-    } else if( obj == _loadStartPosesBtn ) {
+    } else if( obj == _ui->_loadStartPosesBtn ) {
     	std::string filename = openFile(_previousOpenDirectory, this);
     	if(filename.empty())
     		return;
@@ -258,16 +277,16 @@ void SupportPoseAnalyserDialog::btnPressed(){
     		_startPath = PathLoader::loadTimedStatePath(*_wc,filename).release();
     	} catch(const Exception&) {
     		_startPath = NULL;
-    		_dataLoadedLbl->setText("Load start poses failed!");
+    		_ui->_dataLoadedLbl->setText("Load start poses failed!");
     		return;
     	}
-    	_dataLoadedLbl->setText("State start data loaded!");
+    	_ui->_dataLoadedLbl->setText("State start data loaded!");
     	addStateStartPath(_startPath);
-    } else if( obj == _listenForDataBtn ) {
+    } else if( obj == _ui->_listenForDataBtn ) {
     	//tabWidget->setTabEnabled(1,false);
     	// create the resting pose dialog
-    	_resetBtn->setEnabled(true);
-    	_processBtn->setEnabled(true);
+        _ui->_resetBtn->setEnabled(true);
+        _ui->_processBtn->setEnabled(true);
 		std::cout << "Rest pose " << std::endl;
 	    if (!_restPoseDialog ) {
 	    	std::cout << "Rest pose " << std::endl;
@@ -280,12 +299,12 @@ void SupportPoseAnalyserDialog::btnPressed(){
 	    _restPoseDialog->raise();
 	    _restPoseDialog->activateWindow();
 
-    } else if( obj == _processBtn ) {
+    } else if( obj == _ui->_processBtn ) {
    		process();
-   		_resetBtn->setEnabled(true);
+   		_ui->_resetBtn->setEnabled(true);
    		//tabWidget->setTabEnabled(1,true);
-    } else if( obj == _resetBtn ) {
-    	_processBtn->setEnabled(false);
+    } else if( obj == _ui->_resetBtn ) {
+        _ui->_processBtn->setEnabled(false);
     	//tabWidget->setTabEnabled(1,false);
     	_xaxis.clear();
     	_yaxis.clear();
@@ -302,12 +321,12 @@ void SupportPoseAnalyserDialog::btnPressed(){
     	_xcRender->clear();
     	_ycRender->clear();
     	_zcRender->clear();
-    } else if( obj == _analyzePlanarBtn ) {
+    } else if( obj == _ui->_analyzePlanarBtn ) {
     	std::cout << "analyzing planar stable poses of object" << std::endl;
     	// retrieve the object
 
     	RigidBody* selectedObj=NULL;
-    	std::string selectedName = _planarObjectBox->currentText().toStdString();
+    	std::string selectedName = _ui->_planarObjectBox->currentText().toStdString();
     	BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
     	    if( obj->getBodyFrame()->getName()==selectedName ){
     	        selectedObj = obj.get();
@@ -367,14 +386,14 @@ void SupportPoseAnalyserDialog::btnPressed(){
         updateResultView();
         // setlocale( LC_ALL, locale.c_str());
 
-    } else if(obj == _calcBtn) {
+    } else if(obj == _ui->_calcBtn) {
         showPlanarDistribution();
-    } else if(obj == _saveDistBtn){
+    } else if(obj == _ui->_saveDistBtn){
         saveDistribution();
-    } else if(obj == _ghostStartBtn){
+    } else if(obj == _ui->_ghostStartBtn){
 
         RigidBody* selectedObj=NULL;
-        std::string selectedName = _planarObjectBox->currentText().toStdString();
+        std::string selectedName = _ui->_planarObjectBox->currentText().toStdString();
         BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
             if( obj->getBodyFrame()->getName()==selectedName ){
                 selectedObj = obj.get();
@@ -387,7 +406,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
 
 
 
-    } else if(obj == _ghostEndBtn){
+    } else if(obj == _ui->_ghostEndBtn){
 
     } else  {
 
@@ -428,7 +447,7 @@ namespace {
 
 void SupportPoseAnalyserDialog::saveDistribution(){
     RigidBody *body = getSelectedBody().get();
-    int poseIdx = _resultView->currentRow();
+    int poseIdx = _ui->_resultView->currentRow();
 
     std::vector<Transform3D<> > &poses = _supportPoseDistributions[body][poseIdx];
     std::vector<Transform3D<> > &misses = _supportPoseDistributionsMisses[body][poseIdx];
@@ -447,7 +466,7 @@ void SupportPoseAnalyserDialog::saveDistribution(){
 
 void SupportPoseAnalyserDialog::showPlanarDistribution(){
     RigidBody* body=NULL;
-    std::string selectedName = _planarObjectBox->currentText().toStdString();
+    std::string selectedName = _ui->_planarObjectBox->currentText().toStdString();
     BOOST_FOREACH(RigidBody::Ptr obj, _bodies){
         if( obj->getBodyFrame()->getName()==selectedName ){
             body = obj.get();
@@ -456,15 +475,15 @@ void SupportPoseAnalyserDialog::showPlanarDistribution(){
     }
     if(body==NULL) return;
 
-    int poseIdx = _resultView->currentRow();
+    int poseIdx = _ui->_resultView->currentRow();
     std::cout << "pos1 " << poseIdx << " < " << _supportPoseDistributions[body].size() << std::endl;
     std::vector<Transform3D<> > &poses = _supportPoseDistributions[body][poseIdx];
     std::cout << "pos2";
     QImage img(640,640, QImage::Format_Mono);
     img.fill(0);
 
-    int xIdx = Math::clamp(_xAxisBox->currentIndex(), 0, 8);
-    int yIdx = Math::clamp(_yAxisBox->currentIndex(), 0, 8);
+    int xIdx = Math::clamp(_ui->_xAxisBox->currentIndex(), 0, 8);
+    int yIdx = Math::clamp(_ui->_yAxisBox->currentIndex(), 0, 8);
     Q q(9);
 
     _xaxis.clear();
@@ -520,7 +539,7 @@ void SupportPoseAnalyserDialog::addRestingPose(
 		_yaxisS[body].push_back(Vector3D<>(rot(0,1),rot(1,1),rot(2,1)));
 		_zaxisS[body].push_back(Vector3D<>(rot(0,2),rot(1,2),rot(2,2)));
 	}
-	int objIdx = _selectObjBox->currentIndex();
+	int objIdx = _ui->_selectObjBox->currentIndex();
 	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;
@@ -532,34 +551,34 @@ void SupportPoseAnalyserDialog::addRestingPose(
 
 void SupportPoseAnalyserDialog::changedEvent(){
     QObject *obj = sender();
-    if( obj == _drawXBox ){
-    	_xDraw->setVisible( _drawXBox->isChecked() && _drawPointsBox->isChecked() );
-    	_xcDraw->setVisible( _drawXBox->isChecked() && _drawCirclesBox->isChecked() );
-    } else if( obj == _drawYBox ){
-    	_yDraw->setVisible( _drawYBox->isChecked() && _drawPointsBox->isChecked());
-    	_ycDraw->setVisible( _drawYBox->isChecked() && _drawCirclesBox->isChecked() );
-    } else if( obj == _drawZBox ) {
-    	_zDraw->setVisible( _drawZBox->isChecked() && _drawPointsBox->isChecked());
-    	_zcDraw->setVisible( _drawZBox->isChecked() && _drawCirclesBox->isChecked() );
-    } else if( obj == _drawPointsBox ){
-    	_xDraw->setVisible( _drawXBox->isChecked() && _drawPointsBox->isChecked() );
-    	_yDraw->setVisible( _drawYBox->isChecked() && _drawPointsBox->isChecked());
-    	_zDraw->setVisible( _drawZBox->isChecked() && _drawPointsBox->isChecked());
-    } else if( obj == _drawCirclesBox ){
-    	_xcDraw->setVisible( _drawXBox->isChecked() && _drawCirclesBox->isChecked() );
-    	_ycDraw->setVisible( _drawYBox->isChecked() && _drawCirclesBox->isChecked() );
-    	_zcDraw->setVisible( _drawZBox->isChecked() && _drawCirclesBox->isChecked() );
-    } else if( obj == _drawStartPosesBox){
-    	bool drawStartPoses = _drawStartPosesBox->isChecked();
-    	_selPoseDrawX->setVisible( drawStartPoses && _drawXBox->isChecked());
-    	_selPoseDrawY->setVisible( drawStartPoses && _drawYBox->isChecked());
-    	_selPoseDrawZ->setVisible( drawStartPoses && _drawZBox->isChecked());
-    } else if( obj == _selectObjBox){
+    if( obj == _ui->_drawXBox ){
+    	_xDraw->setVisible( _ui->_drawXBox->isChecked() && _ui->_drawPointsBox->isChecked() );
+    	_xcDraw->setVisible( _ui->_drawXBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    } else if( obj == _ui->_drawYBox ){
+    	_yDraw->setVisible( _ui->_drawYBox->isChecked() && _ui->_drawPointsBox->isChecked());
+    	_ycDraw->setVisible( _ui->_drawYBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    } else if( obj == _ui->_drawZBox ) {
+    	_zDraw->setVisible( _ui->_drawZBox->isChecked() && _ui->_drawPointsBox->isChecked());
+    	_zcDraw->setVisible( _ui->_drawZBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    } else if( obj == _ui->_drawPointsBox ){
+    	_xDraw->setVisible( _ui->_drawXBox->isChecked() && _ui->_drawPointsBox->isChecked() );
+    	_yDraw->setVisible( _ui->_drawYBox->isChecked() && _ui->_drawPointsBox->isChecked());
+    	_zDraw->setVisible( _ui->_drawZBox->isChecked() && _ui->_drawPointsBox->isChecked());
+    } else if( obj == _ui->_drawCirclesBox ){
+    	_xcDraw->setVisible( _ui->_drawXBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    	_ycDraw->setVisible( _ui->_drawYBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    	_zcDraw->setVisible( _ui->_drawZBox->isChecked() && _ui->_drawCirclesBox->isChecked() );
+    } else if( obj == _ui->_drawStartPosesBox){
+    	bool drawStartPoses = _ui->_drawStartPosesBox->isChecked();
+    	_selPoseDrawX->setVisible( drawStartPoses && _ui->_drawXBox->isChecked());
+    	_selPoseDrawY->setVisible( drawStartPoses && _ui->_drawYBox->isChecked());
+    	_selPoseDrawZ->setVisible( drawStartPoses && _ui->_drawZBox->isChecked());
+    } else if( obj == _ui->_selectObjBox){
     	updateRenderView();
     	updateResultView();
-    } else if( obj == _resultView ){
+    } else if( obj == _ui->_resultView ){
     	RigidBody *body = getSelectedBody().get();
-    	int poseIdx = _resultView->currentRow();
+    	int poseIdx = _ui->_resultView->currentRow();
     	std::cout << "Pose: " << poseIdx << std::endl;
     	// get the support pose and the default state
     	SupportPose &pose = _supportPoses[body][poseIdx];
@@ -606,7 +625,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
         _fDraw5->setVisible( false );
     	// now we also need to show the starting points
 
-    	int bodyIdx = _selectObjBox->currentIndex();
+    	int bodyIdx = _ui->_selectObjBox->currentIndex();
     	std::vector<int> poseIdxList = _supportToPose[std::make_pair(bodyIdx,poseIdx)];
     	std::sort(poseIdxList.begin(), poseIdxList.end());
 
@@ -625,9 +644,9 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	if(xaxis.size()==_xaxis[bodyIdx].size()){
 			BOOST_FOREACH(int idx, poseIdxList){
 			    // visualize the EAA instead
-			    if(_rpyBox->isChecked() ){
+			    if(_ui->_rpyBox->isChecked() ){
 			        RPY<> eaa(_startTransforms[bodyIdx][idx].R() );
-                    _selPosePntRenderZ->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
+			        _selPosePntRenderZ->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
 			    } else {
                     EAA<> eaa(_startTransforms[bodyIdx][idx].R() );
                     _selPosePntRenderZ->addPoint( Vector3D<>(eaa[0]/4,eaa[1]/4,eaa[2]/4 ) );
@@ -646,12 +665,12 @@ void SupportPoseAnalyserDialog::changedEvent(){
 			    }
 			    if( _startTransforms[bodyIdx][i].P()[2]<0 )
 			        continue;
-			    if(_rpyBox->isChecked() ){
+			    if(_ui->_rpyBox->isChecked() ){
                     RPY<> eaa(_startTransforms[bodyIdx][i].R() );
-                     _selPosePntRenderX->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
+                    _selPosePntRenderX->addPoint( Vector3D<>(eaa(0)/4,eaa(1)/4,eaa(2)/4 ) );
                 } else {
                     EAA<> eaa(_startTransforms[bodyIdx][i].R() );
-                     _selPosePntRenderX->addPoint( Vector3D<>(eaa[0]/4,eaa[1]/4,eaa[2]/4 ) );
+                    _selPosePntRenderX->addPoint( Vector3D<>(eaa[0]/4,eaa[1]/4,eaa[2]/4 ) );
                 }
             }
     	}
@@ -1184,8 +1203,8 @@ void SupportPoseAnalyserDialog::process(){
     //int houghThres = _thresholdSpin->value();
     //double epsilon = _epsilonSpin->value();
 
-    double dist = _distSpin->value();
-    double angle = _angleSpin->value() * Deg2Rad;
+    double dist = _ui->_distSpin->value();
+    double angle = _ui->_angleSpin->value() * Deg2Rad;
 
     // map the points on the sphere to a plane of spherical coordinates
     for(size_t j=0;j<_bodies.size();j++){
@@ -1415,20 +1434,20 @@ void SupportPoseAnalyserDialog::updateResultView(){
 	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;
-	_resultView->clear();
+	_ui->_resultView->clear();
 
 	int i=0;
 	BOOST_FOREACH(const SupportPose &pose, _supportPoses[body]){
 		std::stringstream str;
 		str << "(" << i << ") [ " << pose._degree << " , " << pose._probability << " ] ";
 
-		_resultView->addItem( str.str().c_str() );
+		_ui->_resultView->addItem( str.str().c_str() );
 		i++;
 	}
 }
 
 void SupportPoseAnalyserDialog::updateRenderView(){
-	int objIdx = _selectObjBox->currentIndex();
+	int objIdx = _ui->_selectObjBox->currentIndex();
 	RigidBody *body = getSelectedBody().get();
 	if(!body)
 		return;

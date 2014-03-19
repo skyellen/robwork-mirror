@@ -12,7 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_GraspTableGeneratorPlugin.h"
 
 #include <rw/kinematics/State.hpp>
 
@@ -39,6 +38,9 @@
 
 #include <rwsimlibs/gui/ThreadSafeStack.hpp>
 
+namespace Ui {
+    class GraspTableGeneratorPlugin;
+}
 
 struct RestingConfig {
 	RestingConfig(const rw::kinematics::State& state, const std::string& str):
@@ -53,7 +55,7 @@ struct RestingConfig {
  *
  *
  */
-class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin, private Ui::GraspTableGeneratorPlugin
+class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin
     {
         Q_OBJECT
 		Q_INTERFACES( rws::RobWorkStudioPlugin )
@@ -141,7 +143,7 @@ class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin, private Ui::G
 
         std::vector<rwsim::util::RestingPoseGenerator*> _generators;
 
-        Ui::GraspTableGeneratorPlugin _ui;
+        Ui::GraspTableGeneratorPlugin *_ui;
 
         rw::kinematics::State _defstate;
         rw::kinematics::State _state;

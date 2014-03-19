@@ -23,6 +23,8 @@
 
 #include "ODESimCfgDialog.hpp"
 
+#include "ui_SimCfgDialog.h"
+
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rw::math;
@@ -36,18 +38,19 @@ SimCfgDialog::SimCfgDialog(rw::common::Ptr<DynamicSimulator> sim, QWidget *paren
     QDialog(parent),
     _sim(sim)
 {
-    setupUi(this);
+    _ui = new Ui::SimCfgDialog();
+    _ui->setupUi(this);
 
-    connect(_applyBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_applyBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
 	std::vector<std::string> engineIDs =
-		PhysicsEngineFactory::getEngineIDs();
+	PhysicsEngineFactory::getEngineIDs();
 
 	//std::string id = _sim->getID();
 	//_tabPane->addItem(id);
 	ODESimCfgDialog *dialog = new ODESimCfgDialog(sim, this);
-	_tabPane->addTab(dialog, "ODE");
+	_ui->_tabPane->addTab(dialog, "ODE");
 	//BOOST_FOREACH(const std::string& engineID, engineIDs){
 		//_tabPane->addTab(this, engineID.c_str() );
 		//_spaceMethodBox->addItem(engineID.c_str());
@@ -61,9 +64,9 @@ SimCfgDialog::SimCfgDialog(rw::common::Ptr<DynamicSimulator> sim, QWidget *paren
 
 void SimCfgDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _applyBtn ){
+    if( obj == _ui->_applyBtn ){
 
-    } else if( obj == _cancelBtn ) {
+    } else if( obj == _ui->_cancelBtn ) {
 
     }
 }

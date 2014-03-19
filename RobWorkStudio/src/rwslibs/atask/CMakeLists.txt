@@ -11,11 +11,12 @@ IF(build)
     # if we want to use ui files add them here
     SET(UIS_FILES ATaskVisPlugin.ui )
     IF(RWS_USE_QT5)
-      RWS_QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     ELSE()
-      RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     ENDIF()
-    
+	#Need to add the current binary dir to the include directory because the generated source files are placed here
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
     # Standard cpp files to compile:
     SET(SrcFiles ATaskVisPlugin.cpp)
     SET(SRC_FILES_HPP ATaskVisPlugin.hpp)
@@ -32,9 +33,9 @@ IF(build)
     	# Rcc the files:
     	QT4_ADD_RESOURCES(RccSrcFiles atask_resources.qrc)
     ENDIF()
-
+    
     RWS_ADD_PLUGIN(${SUBSYS_NAME} plugins MODULE ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
     RW_ADD_INCLUDES(plugins "rwslibs/atask" ${SRC_FILES_HPP})
-    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${ROBWORKSTUDIO_LIBRARIES} rw_task ${ROBWORK_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${SUBSYS_NAME} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
     ADD_DEPENDENCIES(${SUBSYS_NAME} ${SUBSYS_DEPS})
 ENDIF()

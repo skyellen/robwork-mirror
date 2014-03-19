@@ -20,6 +20,8 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
+#include "ui_ODESimCfgForm.h"
+
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rw::math;
@@ -33,23 +35,24 @@ ODESimCfgDialog::ODESimCfgDialog(rw::common::Ptr<rwsim::simulator::DynamicSimula
     QDialog(parent),
     _sim(sim)
 {
-    setupUi(this);
+    _ui = new Ui::ODESimCfgForm();
+    _ui->setupUi(this);
     updateValues();
-    connect(_applyBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_applyBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_cancelBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
 
-    connect(_objListWidget, SIGNAL(itemActivated(QListWidgetItem *)), this, SLOT(changedEvent()) );
-    connect(_objListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(changedEvent()) );
-    connect(_crThresSpin, SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
+    connect(_ui->_objListWidget, SIGNAL(itemActivated(QListWidgetItem *)), this, SLOT(changedEvent()) );
+    connect(_ui->_objListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(changedEvent()) );
+    connect(_ui->_crThresSpin, SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
 }
 
 
 void ODESimCfgDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _applyBtn ){
+    if( obj == _ui->_applyBtn ){
     	applyChanges();
-    } else if( obj == _cancelBtn ){
+    } else if( obj == _ui->_cancelBtn ){
 
     } else  {
 
@@ -62,34 +65,34 @@ void ODESimCfgDialog::changedEvent(){
 	if(!sim)
 		RW_THROW("Not a ODE simulator!");
 
-    if( obj == _objListWidget ){
-    	int idx = _objListWidget->currentIndex().row();
+    if( obj == _ui->_objListWidget ){
+    	int idx = _ui->_objListWidget->currentIndex().row();
     	ODEBody* body = sim->getODEBodies()[idx];
-    	_selectedName->setText( body->getFrame()->getName().c_str() );
+    	_ui->_selectedName->setText( body->getFrame()->getName().c_str() );
     	switch(body->getType()){
-    	case(ODEBody::FIXED): _objectTypeName->setText( "FIXED" ); break;
-    	case(ODEBody::RIGID):_objectTypeName->setText( "RIGID" ); break;
+    	case(ODEBody::FIXED): _ui->_objectTypeName->setText( "FIXED" ); break;
+    	case(ODEBody::RIGID):_ui->_objectTypeName->setText( "RIGID" ); break;
     	//case(ODEBody::RIGIDJOINT): _objectTypeName->setText( "RIGIDJOINT" ); break;
     	//case(ODEBody::KINJOINT): _objectTypeName->setText( "KINJOINT" ); break;
-    	case(ODEBody::KINEMATIC): _objectTypeName->setText( "KINEMATIC" ); break;
-    	case(ODEBody::LINK): _objectTypeName->setText( "LINK" ); break;
+    	case(ODEBody::KINEMATIC): _ui->_objectTypeName->setText( "KINEMATIC" ); break;
+    	case(ODEBody::LINK): _ui->_objectTypeName->setText( "LINK" ); break;
     	default: break;
     	}
 
     	int matId = body->getMaterialID();
-    	_materialBox->clear();
+    	_ui->_materialBox->clear();
     	BOOST_FOREACH(const std::string& name, sim->getDynamicWorkCell()->getMaterialData().getMaterials() ){
-			_materialBox->addItem(name.c_str());
+    	    _ui->_materialBox->addItem(name.c_str());
     	}
-    	_materialBox->setCurrentIndex(matId);
+    	_ui->_materialBox->setCurrentIndex(matId);
     	//const std::string& mname = sim->getDynamicWorkCell()->getMaterialData().getMaterialName();
-    	_crThresSpin->setValue( body->getCRThres() );
+    	_ui->_crThresSpin->setValue( body->getCRThres() );
 
 
-    } else if( obj == _crThresSpin ){
-    	int idx = _objListWidget->currentIndex().row();
+    } else if( obj == _ui->_crThresSpin ){
+    	int idx = _ui->_objListWidget->currentIndex().row();
     	ODEBody* body = sim->getODEBodies()[idx];
-    	body->setCRTThres( _crThresSpin->value() );
+    	body->setCRTThres( _ui->_crThresSpin->value() );
     }
 
 }
@@ -99,13 +102,13 @@ void ODESimCfgDialog::applyChanges(){
 	if(!sim)
 		RW_THROW("Not a ODE simulator!");
 
-	std::string stepMethod = _stepMethodBox->currentText().toStdString();
-	int maxIter = _maxIterSpin->value();
-	std::string space(_spaceMethodBox->currentText().toStdString());
-	double cfm = _cfmSpin->value();
-	double erp = _erpSpin->value();
+	std::string stepMethod = _ui->_stepMethodBox->currentText().toStdString();
+	int maxIter = _ui->_maxIterSpin->value();
+	std::string space(_ui->_spaceMethodBox->currentText().toStdString());
+	double cfm = _ui->_cfmSpin->value();
+	double erp = _ui->_erpSpin->value();
 	//double colMargin = _marginSpin->value();
-	std::string clusterAlg(_clusterAlgBox->currentText().toStdString());
+	std::string clusterAlg(_ui->_clusterAlgBox->currentText().toStdString());
 
 	PropertyMap& map = _sim->getPropertyMap();
 	map.set<int>("MaxIterations", maxIter);
@@ -132,22 +135,22 @@ void ODESimCfgDialog::updateValues(){
 	double worldERP = map.get<double>("WorldERP", 0.3);
 	std::string clustAlgStr =  map.get<std::string>("ContactClusteringAlg", "Box");
 
-	_maxIterSpin->setValue(maxIter);
-	_cfmSpin->setValue(worldCFM);
-	_erpSpin->setValue(worldERP);
+	_ui->_maxIterSpin->setValue(maxIter);
+	_ui->_cfmSpin->setValue(worldCFM);
+	_ui->_erpSpin->setValue(worldERP);
 
 
-	int i = _spaceMethodBox->findText( spaceTypeStr.c_str() );
-	_spaceMethodBox->setCurrentIndex(i);
-	i = _stepMethodBox->findText( stepStr.c_str() );
-	_stepMethodBox->setCurrentIndex(i);
-	i = _clusterAlgBox->findText( clustAlgStr.c_str() );
-	_clusterAlgBox->setCurrentIndex(i);
+	int i = _ui->_spaceMethodBox->findText( spaceTypeStr.c_str() );
+	_ui->_spaceMethodBox->setCurrentIndex(i);
+	i = _ui->_stepMethodBox->findText( stepStr.c_str() );
+	_ui->_stepMethodBox->setCurrentIndex(i);
+	i = _ui->_clusterAlgBox->findText( clustAlgStr.c_str() );
+	_ui->_clusterAlgBox->setCurrentIndex(i);
 
 	std::vector<ODEBody*>& bodies = sim->getODEBodies();
-	_objListWidget->clear();
+	_ui->_objListWidget->clear();
 	BOOST_FOREACH(ODEBody* body, bodies){
-		_objListWidget->addItem( QString( body->getFrame()->getName().c_str() ) );
+	    _ui->_objListWidget->addItem( QString( body->getFrame()->getName().c_str() ) );
 	}
 
 }

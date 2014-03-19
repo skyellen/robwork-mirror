@@ -14,6 +14,8 @@
 #include <fstream>
 #include <string>
 
+#include "ui_GraspRestingPoseDialog.h"
+
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rwsim::util;
@@ -273,7 +275,8 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     _tactileDataOnAllCnt(0)
 {
 	RW_ASSERT( _dwc );
-    setupUi(this);
+	_ui = new Ui::GraspRestingPoseDialog();
+	_ui->setupUi(this);
 
     Math::seed( TimerUtil::currentTimeMs() );
 
@@ -284,7 +287,7 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
             rw::models::Device *dev = &device->getModel();
             RW_ASSERT(dev);
             RW_DEBUGS("-- Dev name: " << dev->getName() );
-            _deviceBox->addItem(dev->getName().c_str());
+            _ui->_deviceBox->addItem(dev->getName().c_str());
         }
     }
 
@@ -294,28 +297,28 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
         if(obj==NULL)
             continue;
         if( dynamic_cast<const MovableFrame*>(obj) ){
-            _objectBox->addItem(obj->getName().c_str());
+            _ui->_objectBox->addItem(obj->getName().c_str());
         }
     }
 
-    _preshapeStratBox->addItem("Parallel");
-    _preshapeStratBox->addItem("Spherical");
-    _preshapeStratBox->addItem("Multiple10");
-    _preshapeStratBox->addItem("CylStanding");
+    _ui->_preshapeStratBox->addItem("Parallel");
+    _ui->_preshapeStratBox->addItem("Spherical");
+    _ui->_preshapeStratBox->addItem("Multiple10");
+    _ui->_preshapeStratBox->addItem("CylStanding");
 
 
-    _graspPolicyBox->addItem("SimpleClose");
+    _ui->_graspPolicyBox->addItem("SimpleClose");
 
     RW_DEBUGS("- Setting connections ");
-    connect(_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_updateRateSpin, SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
-    connect(_fixedGroupBox, SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_updateRateSpin, SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_fixedGroupBox, SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
 
     PropertyMap map;
 /*
@@ -333,29 +336,39 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     XMLPropertySaver::save(map, "GraspTableConfig.xml");
 */
     map = XMLPropertyLoader::load( "GraspTableConfig.xml" );
-	_lowRollSpin->setValue(map.get<int>("R_low",-180));
-	_highRollSpin->setValue(map.get<int>("R_high",180));
-	_lowPitchSpin->setValue(map.get<int>("P_low",-180));
-	_highPitchSpin->setValue(map.get<int>("P_high",180));
-	_lowYawSpin->setValue(map.get<int>("Y_low",-180));
-	_highYawSpin->setValue(map.get<int>("Y_high",180));
+    _ui->_lowRollSpin->setValue(map.get<int>("R_low",-180));
+    _ui->_highRollSpin->setValue(map.get<int>("R_high",180));
+    _ui->_lowPitchSpin->setValue(map.get<int>("P_low",-180));
+    _ui->_highPitchSpin->setValue(map.get<int>("P_high",180));
+    _ui->_lowYawSpin->setValue(map.get<int>("Y_low",-180));
+    _ui->_highYawSpin->setValue(map.get<int>("Y_high",180));
 
-	_xSpinBox->setValue(map.get<int>("x_delta",3)/100.0);
-	_ySpinBox->setValue(map.get<int>("y_delta",3)/100.0);
-	_zSpinBox->setValue(map.get<int>("z_delta",3)/100.0);
+    _ui->_xSpinBox->setValue(map.get<int>("x_delta",3)/100.0);
+    _ui->_ySpinBox->setValue(map.get<int>("y_delta",3)/100.0);
+    _ui->_zSpinBox->setValue(map.get<int>("z_delta",3)/100.0);
 
 
 
     RW_DEBUGS("- Setting timer ");
     _timer = new QTimer( NULL );
-    _timer->setInterval( _updateRateSpin->value() );
+    _timer->setInterval( _ui->_updateRateSpin->value() );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 
 
 
 }
 
+void GraspRestingPoseDialog::setSaveDir(const std::string& str){
+    _ui->_savePath->setText(str.c_str());
+}
 
+
+
+void GraspRestingPoseDialog::setPreshapeStrategy(const std::string& str){
+    int idx = _ui->_preshapeStratBox->findText(str.c_str());
+    if( idx>=0 )
+        _ui->_preshapeStratBox->setCurrentIndex(idx);
+}
 
 
 
@@ -376,10 +389,10 @@ void GraspRestingPoseDialog::initializeStart(){
     _tactileDataOnAllCnt=0;
 
     // if the designated directory for saving the output does not exist, then create it
-    bfs::create_directory( bfs::path(_savePath->text().toStdString()) );
+    bfs::create_directory( bfs::path(_ui->_savePath->text().toStdString()) );
 
     // write configuration to configfile
-    QString str = _savePath->text();
+    QString str = _ui->_savePath->text();
     std::string pathPre( str.toStdString() );
     std::stringstream filename, pmap_filename;
     filename << pathPre << "/config_file.txt";
@@ -407,13 +420,13 @@ void GraspRestingPoseDialog::initializeStart(){
     _id = sstemp.str();
 
     State state = _defstate;
-    int threads = _nrOfThreadsSpin->value();
+    int threads = _ui->_nrOfThreadsSpin->value();
     _simStartTimes.resize(threads, 0);
     RW_DEBUGS("threads: " << threads);
     file << "Nr of threads used: " << threads << std::endl;
 
     RW_DEBUGS("- Getting object!");
-    std::string objName = _objectBox->currentText().toStdString();
+    std::string objName = _ui->_objectBox->currentText().toStdString();
     BOOST_FOREACH(Body::Ptr body, _dwc->getBodies()){
         if(RigidBody::Ptr rbody = body.cast<RigidBody>() ){
             if(rbody->getBodyFrame()->getName()==objName){
@@ -431,7 +444,7 @@ void GraspRestingPoseDialog::initializeStart(){
     }
 
     RW_DEBUGS("- Getting device!");
-    std::string devName = _deviceBox->currentText().toStdString();
+    std::string devName = _ui->_deviceBox->currentText().toStdString();
     DynamicDevice::Ptr dev = _dwc->findDevice(devName);
     _hand = dev.cast<RigidDevice>();
     file << "Hand device name: " << devName << std::endl;
@@ -453,7 +466,7 @@ void GraspRestingPoseDialog::initializeStart(){
     // TODO: for now we only have one preshape
     Q preQ = _hand->getModel().getQ(state);
     Q tQ = preQ;
-    if( _preshapeStratBox->currentText()=="Parallel"){
+    if( _ui->_preshapeStratBox->currentText()=="Parallel"){
         preQ(0) = -1.5; preQ(1) = -1.5;
         preQ(2) = 1.571;
         preQ(3) = -1.5; preQ(4) = 0;
@@ -465,7 +478,7 @@ void GraspRestingPoseDialog::initializeStart(){
         tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
-    } else if(_preshapeStratBox->currentText()=="Spherical"){
+    } else if(_ui->_preshapeStratBox->currentText()=="Spherical"){
         preQ(0) = -1.5; preQ(1) = 0;
         preQ(2) = 0.785;
         preQ(3) = -1.5; preQ(4) = 0;
@@ -477,7 +490,7 @@ void GraspRestingPoseDialog::initializeStart(){
         tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
-    }else if(_preshapeStratBox->currentText()=="CylStanding"){
+    }else if(_ui->_preshapeStratBox->currentText()=="CylStanding"){
         preQ(0) = -1.5; preQ(1) = 0;
         preQ(2) = 0;
         preQ(3) = -1.5; preQ(4) = 0;
@@ -489,7 +502,7 @@ void GraspRestingPoseDialog::initializeStart(){
         tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
-    } else if(_preshapeStratBox->currentText()=="Multiple10"){
+    } else if(_ui->_preshapeStratBox->currentText()=="Multiple10"){
         for(int i=0;i<10;i++){
             preQ(0) = -1.5; preQ(1) = 0;
             preQ(2) = Pi/20*i;
@@ -507,7 +520,7 @@ void GraspRestingPoseDialog::initializeStart(){
     }
 
     _hand->getModel().setQ(preQ, _defstate);
-    file << "Preshape configuration type: " << _preshapeStratBox->currentText().toStdString() << "\n";
+    file << "Preshape configuration type: " << _ui->_preshapeStratBox->currentText().toStdString() << "\n";
     file << "preshapes:  \n";
     BOOST_FOREACH(Q pq, _preshapes){
     	file << "- " << pq << "\n";
@@ -517,7 +530,7 @@ void GraspRestingPoseDialog::initializeStart(){
     	file << "- " << pq << "\n";
     }
 
-    file << "\nTime between tactile readings: " << _updateRateSpin->value() << "ms\n";
+    file << "\nTime between tactile readings: " << _ui->_updateRateSpin->value() << "ms\n";
 
     _gtable = GraspTable(_hand->getModel().getName(), _bodies[0]->getMovableFrame()->getName());
 
@@ -569,7 +582,7 @@ void GraspRestingPoseDialog::initializeStart(){
         calcRandomCfg(state);
 
         _initStates.push_back(state);
-        _nextTimeUpdate.push_back( _updateRateSpin->value()/1000.0 );
+        _nextTimeUpdate.push_back( _ui->_updateRateSpin->value()/1000.0 );
         _tactiledatas.push_back(std::vector< TactileSensorData >());
         _handconfigs.push_back( std::vector< rw::math::Q >()) ;
 
@@ -586,7 +599,7 @@ void GraspRestingPoseDialog::initializeStart(){
 
 void GraspRestingPoseDialog::startAuto(){
     _exitHard = true;
-    _startBtn->click();
+    _ui->_startBtn->click();
 
 }
 
@@ -612,8 +625,8 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     DynamicSimulator::Ptr sim = tsim->getSimulator();// if the simulation is not running then don't do anything
     bool isSimRunning = tsim->isRunning();
-    if(!isSimRunning || _nrOfTests>=_nrOfTestsSpin->value()){
-    	std::string str = _savePath->text().toStdString();
+    if(!isSimRunning || _nrOfTests>=_ui->_nrOfTestsSpin->value()){
+    	std::string str = _ui->_savePath->text().toStdString();
     	std::stringstream sstr;
     	sstr << str << "/" << "grasptablefile.txt";
 
@@ -656,7 +669,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     	RW_DEBUGS("StepCallBack - done (next time)");
         return;
     }
-    _nextTimeUpdate[i] += _logIntervalSpin->value()/1000.0;
+    _nextTimeUpdate[i] += _ui->_logIntervalSpin->value()/1000.0;
 
     // record the tactile stuff if enabled
     int fingersWithData = 0;
@@ -690,7 +703,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     	_tactileDataOnAllCnt =0;
     }
 
-    if( _continuesLogging->isChecked() ){
+    if( _ui->_continuesLogging->isChecked() ){
 
         if( fingersWithData>0 ){
             _fingersInContact[i] = true;
@@ -717,13 +730,13 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     //if( _recordStatePath->checked() )
     //    _statePath.push_back( Timed<State>(time+_simStartTime, state) );
 
-    if(!isSimFinished || time<_minTimeValidSpin->value())
+    if(!isSimFinished || time<_ui->_minTimeValidSpin->value())
         _lastBelowThresUpdate = time;
 
     if(i==0)
         _state = state;
     //bool dataValid = false;
-    if( time-_lastBelowThresUpdate >  _minRestTimeSpin->value() || _tactileDataOnAllCnt>50){
+    if( time-_lastBelowThresUpdate >  _ui->_minRestTimeSpin->value() || _tactileDataOnAllCnt>50){
         // one simulation has finished...
     	_tactileDataOnAllCnt = 0;
         {
@@ -803,7 +816,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             data.grasp = g3d;
 
 
-            if( _inGroupsCheck->isChecked()){
+            if( _ui->_inGroupsCheck->isChecked()){
 				if( _nrOfGraspsInGroup==1 && ( qualities(0)<0.1 || qualities(1)<=0 || qualities(2)<=0.1 || fingersWithData<3) ){
 					_nrOfGraspsInGroup = 0;
 					//dataValid = false;
@@ -819,7 +832,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             }
 
             if(_nrOfTests-_lastTableBackupCnt>100){
-				std::string str = _savePath->text().toStdString();
+				std::string str = _ui->_savePath->text().toStdString();
 				std::stringstream sstr;
 				sstr << str << "/" << "grasptablefile" << _nrOfTests << ".txt";
 				_gtable.save(sstr.str());
@@ -841,8 +854,8 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
         _nextTimeUpdate[i] = 0;
         Q target = _target;
         Q preshape = _preshape;
-    	if( _inGroupsCheck->isChecked()){
-    		if(_nrOfGraspsInGroup == 0 || _nrOfGraspsInGroup==_groupSizeSpin->value()){
+    	if( _ui->_inGroupsCheck->isChecked()){
+    		if(_nrOfGraspsInGroup == 0 || _nrOfGraspsInGroup==_ui->_groupSizeSpin->value()){
     			// generate a new random grasp
         		nstate = _defstate;
                 _currentPreshapeIDX[i] = Math::ranI(0,(int)_preshapes.size());
@@ -878,7 +891,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     			Vector3D<> pos(0,0,0);
     			RPY<> rpy(0,0,0);
     			Q qtmp = Q::zero(6);
-    			if( _fixedGroupBox->isChecked() ){
+    			if( _ui->_fixedGroupBox->isChecked() ){
         			double devi = 0.005; //
         			if(_nrOfGraspsInGroup-1>5)
         				devi = Pi/90.0;
@@ -930,7 +943,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     			_handBase->setTransform( wThb*Transform3D<>(pos,rpy.toRotation3D()) , nstate);
 
     			_nrOfGraspsInGroup++;
-    			if(_nrOfGraspsInGroup>_groupSizeSpin->value())
+    			if(_nrOfGraspsInGroup>_ui->_groupSizeSpin->value())
     				_nrOfGraspsInGroup = 0;
 
     		}
@@ -963,7 +976,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
         tsim->setState(nstate);
         _simStartTimes[i] = time;
-    } else if( time>_maxRunningTimeSpin->value() || tsim->isInError() ){
+    } else if( time>_ui->_maxRunningTimeSpin->value() || tsim->isInError() ){
         // recalc random start configurations and reset the simulator
         _nextTimeUpdate[i] = 0;
         State nstate = _defstate;
@@ -990,8 +1003,8 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
 void GraspRestingPoseDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _saveBtn1 ){
-    	QString str = _savePath->text();
+    if( obj == _ui->_saveBtn1 ){
+    	QString str = _ui->_savePath->text();
     	std::string sstr( str.toStdString() );
         rw::models::WorkCell &wc = *_dwc->getWorkcell();
         // TODO: open file dialog and save
@@ -1007,13 +1020,13 @@ void GraspRestingPoseDialog::btnPressed(){
             startPath, sstr+"_start.rwplay");
         rw::loaders::PathLoader::storeTimedStatePath( wc,
                                    endPath, sstr+"_end.rwplay");
-    } else if( obj == _startBtn ) {
-        _startBtn->setDisabled(true);
-        _stopBtn->setDisabled(false);
-        _simulatorBtn->setDisabled(true);
-        _resetBtn->setDisabled(true);
-        bool isStart = _startBtn->text() == "Start";
-        _startBtn->setText("Continue");
+    } else if( obj == _ui->_startBtn ) {
+        _ui->_startBtn->setDisabled(true);
+        _ui->_stopBtn->setDisabled(false);
+        _ui->_simulatorBtn->setDisabled(true);
+        _ui->_resetBtn->setDisabled(true);
+        bool isStart = _ui->_startBtn->text() == "Start";
+        _ui->_startBtn->setText("Continue");
         // initialize
         if( isStart )
             initializeStart();
@@ -1024,11 +1037,11 @@ void GraspRestingPoseDialog::btnPressed(){
 					<< "- Nr of tests  : " << _nrOfTestsSpin->value() << std::endl
 					<< "- Nr of threads: " << _nrOfThreadsSpin->value() << std::endl;
 */
-    } else if( obj == _stopBtn ) {
-        if(_nrOfTests<_nrOfTestsSpin->value())
-            _startBtn->setDisabled(false);
-        _stopBtn->setDisabled(true);
-        _resetBtn->setDisabled(false);
+    } else if( obj == _ui->_stopBtn ) {
+        if(_nrOfTests<_ui->_nrOfTestsSpin->value())
+            _ui->_startBtn->setDisabled(false);
+        _ui->_stopBtn->setDisabled(true);
+        _ui->_resetBtn->setDisabled(false);
         _timer->stop();
         BOOST_FOREACH(Ptr<ThreadSimulator> sim,  _simulators){
             if(sim->isRunning())
@@ -1039,16 +1052,16 @@ void GraspRestingPoseDialog::btnPressed(){
 					<< "- Time         : " << TimerUtil::currentTime() << std::endl
 					<< "- # tests done : " << _nrOfTests << std::endl;
 */
-    } else if( obj == _resetBtn ) {
-        _startBtn->setDisabled(false);
-        _startBtn->setText("Start");
-        _simulatorBtn->setDisabled(false);
-    } else if( obj == _simulatorBtn ) {
+    } else if( obj == _ui->_resetBtn ) {
+        _ui->_startBtn->setDisabled(false);
+        _ui->_startBtn->setText("Start");
+        _ui->_simulatorBtn->setDisabled(false);
+    } else if( obj == _ui->_simulatorBtn ) {
         // create simulator
 
-    } else if( obj == _scapeBtn ) {
-    	std::string str = _savePath->text().toStdString();
-    	if( _saveMultipleCheck->isChecked() ){
+    } else if( obj == _ui->_scapeBtn ) {
+    	std::string str = _ui->_savePath->text().toStdString();
+    	if( _ui->_saveMultipleCheck->isChecked() ){
     		for(size_t i=0;i<_resultPoses.size();i++){
     			std::stringstream sstr;
     			//sstr.setf(std::fixed(int))
@@ -1079,27 +1092,27 @@ void GraspRestingPoseDialog::changedEvent(){
     if( obj == _timer ){
         // update stuff
         updateStatus();
-    } else if( obj == _updateRateSpin ){
-        _timer->setInterval( _updateRateSpin->value() );
-    } else if( obj == _forceUpdateCheck ) {
-        if( !_forceUpdateCheck->isChecked() ){
+    } else if( obj == _ui->_updateRateSpin ){
+        _timer->setInterval( _ui->_updateRateSpin->value() );
+    } else if( obj == _ui->_forceUpdateCheck ) {
+        if( !_ui->_forceUpdateCheck->isChecked() ){
             _timer->setInterval( 100 );
         } else {
-            _timer->setInterval( _updateRateSpin->value() );
+            _timer->setInterval( _ui->_updateRateSpin->value() );
         }
-    } else if(obj == _fixedGroupBox){
-    	if( _fixedGroupBox->isChecked()){
-    		_groupSizeSpin->setValue(13);
-    		_groupSizeSpin->setEnabled(false);
+    } else if(obj == _ui->_fixedGroupBox){
+    	if( _ui->_fixedGroupBox->isChecked()){
+    	    _ui->_groupSizeSpin->setValue(13);
+    	    _ui->_groupSizeSpin->setEnabled(false);
     	} else {
-    		_groupSizeSpin->setEnabled(true);
+    	    _ui->_groupSizeSpin->setEnabled(true);
     	}
     }
 }
 
 bool GraspRestingPoseDialog::isSimulationFinished( DynamicSimulator::Ptr sim , const State& state){
     // test if the hand has stopped moving
-    double lVelThres = _linVelSpin->value();
+    double lVelThres = _ui->_linVelSpin->value();
 
     Q vel = _hand->getJointVelocities(state);
     //std::cout << vel << std::endl;
@@ -1114,7 +1127,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
     std::stringstream sstr;
     sstr << "# Object( " << _object->getName()
          << " ), Device( " << _hand->getModel().getName()
-         << " ), " << _descBox->text().toStdString();
+         << " ), " << _ui->_descBox->text().toStdString();
 
 
     // get the data
@@ -1207,22 +1220,22 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
 
     Vector3D<> approach = Kinematics::worldTframe(_handBase, state).R() * Vector3D<>(0,0,1);
 
-    QString str = _savePath->text();
+    QString str = _ui->_savePath->text();
     std::string pathPre( str.toStdString() );
     world->getPropertyMap().set<std::string>("PathPre",pathPre);
 
 
     std::stringstream filename;
     if(isStable){
-        filename << pathPre << "/S_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
+        filename << pathPre << "/S_OutDataTest_" << (_ui->_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
     }else {
-        filename << pathPre << "/U_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
+        filename << pathPre << "/U_OutDataTest_" << (_ui->_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
     }
 
     RW_DEBUGS("Push restcfg");
     _restingConfigs.push( RestingConfig(state, filename.str().c_str() ) );
     RW_DEBUGS("save stuff");
-    if( _continuesLogging->isChecked() ){
+    if( _ui->_continuesLogging->isChecked() ){
         //saveRestingPoseSimple(desc, _tactiledatas[simidx], qualities, isStable, preshapeId, preq, _handconfigs[simidx], approach, _file, squal.str());
         saveRestingPose(desc,_tactiledatas[simidx],qualities,isStable,preshapeId,preq,_handconfigs[simidx],approach, filename.str(), squal.str() );
     } else {
@@ -1262,54 +1275,54 @@ void GraspRestingPoseDialog::updateStatus(){
         _avgTime.addSample(avgTestTime);
         avgTestTime = _avgTime.getAverage();
 
-        int progress = (_nrOfTests*100)/_nrOfTestsSpin->value();
-        _simProgress->setValue( progress );
+        int progress = (_nrOfTests*100)/_ui->_nrOfTestsSpin->value();
+        _ui->_simProgress->setValue( progress );
 
         //avgSimTimePerTest = _totalSimTime/(double)_nrOfTests;
         avgSimTimePerTest = 0;//_avgSimTime.getAverage();
 
         simTimeToReal = avgSimTimePerTest*1000.0/avgTestTime;
 
-        double timeLeft = ((_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
+        double timeLeft = ((_ui->_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
 
         // update the time label
         {
             std::stringstream s; s << avgTestTime/1000.0 << "s";
-            _avgTimePerTestLbl->setText(s.str().c_str());
+            _ui->_avgTimePerTestLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << simTimeToReal;
-            _simSpeedLbl->setText(s.str().c_str());
+            _ui->_simSpeedLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << avgSimTimePerTest << "s";
-            _avgSimTimeLbl->setText(s.str().c_str());
+            _ui->_avgSimTimeLbl->setText(s.str().c_str());
         }
         {
-            std::stringstream s; s << _nrOfTests << "/" << _nrOfTestsSpin->value();
-            _testsLeftLbl->setText(s.str().c_str());
+            std::stringstream s; s << _nrOfTests << "/" << _ui->_nrOfTestsSpin->value();
+            _ui->_testsLeftLbl->setText(s.str().c_str());
         }
     }
 
 
     // and last signal that workcell state has changed if user request it
-    if(_forceUpdateCheck->isChecked()){
+    if(_ui->_forceUpdateCheck->isChecked()){
         stateChanged(_state);
     }
 
-    if( _nrOfTests>=_nrOfTestsSpin->value() ){
+    if( _nrOfTests>=_ui->_nrOfTestsSpin->value() ){
         if(_exitHard)
             exit(0);
 
-        _stopBtn->click();
+        _ui->_stopBtn->click();
         //RW_DEBUGS("updateStatus! done (exit btn)");
         return;
     }
@@ -1415,20 +1428,20 @@ void GraspRestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, 
 	//if( _ui->_inGroupsCheck->)
 
 		// TODO: pick a stable object pose.
-		const double lowR = Deg2Rad * ( _lowRollSpin->value() );
-		const double highR = Deg2Rad * ( _highRollSpin->value() );
-		const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
-		const double highP = Deg2Rad * ( _highPitchSpin->value() );
-		const double lowY = Deg2Rad * ( _lowYawSpin->value() );
-		const double highY = Deg2Rad * ( _highYawSpin->value() );
+		const double lowR = Deg2Rad * ( _ui->_lowRollSpin->value() );
+		const double highR = Deg2Rad * ( _ui->_highRollSpin->value() );
+		const double lowP = Deg2Rad * ( _ui->_lowPitchSpin->value() );
+		const double highP = Deg2Rad * ( _ui->_highPitchSpin->value() );
+		const double lowY = Deg2Rad * ( _ui->_lowYawSpin->value() );
+		const double highY = Deg2Rad * ( _ui->_highYawSpin->value() );
 		double roll = Math::ran(lowR, highR);
 		double pitch = Math::ran(lowP, highP);
 		double yaw = Math::ran(lowY, highY);
 		Rotation3D<> rrot = RPY<>(roll,pitch,yaw).toRotation3D();
 
-		double x = _xSpinBox->value();
-		double y = _ySpinBox->value();
-		double z = _zSpinBox->value();
+		double x = _ui->_xSpinBox->value();
+		double y = _ui->_ySpinBox->value();
+		double z = _ui->_zSpinBox->value();
 		Vector3D<> rpos(Math::ran(-x,x), Math::ran(-y,y),Math::ran(-z,z));
 
 		// choose a preshape
@@ -1482,7 +1495,7 @@ void GraspRestingPoseDialog::updateController(){
 */
 void GraspRestingPoseDialog::calcRandomCfg(rw::kinematics::State& state){
 
-		if( _colFreeStart->isChecked() ){
+		if( _ui->_colFreeStart->isChecked() ){
 			calcColFreeRandomCfg(state);
 		} else {
 			calcColFreeRandomCfg(state);

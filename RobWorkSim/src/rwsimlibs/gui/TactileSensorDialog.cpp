@@ -17,6 +17,7 @@
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
 
+#include "ui_TactileSensorDialog.h"
 
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
@@ -110,32 +111,33 @@ TactileSensorDialog::TactileSensorDialog(
 {
 
 	RW_ASSERT( _dwc );
-    setupUi(this);
+	_ui = new Ui::TactileSensorDialog();
+	_ui->setupUi(this);
     std::vector<SimulatedSensor::Ptr> sensors = _dwc->getSensors();
     BOOST_FOREACH(SimulatedSensor::Ptr& sensor, sensors){
     	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>(sensor.get())){
     	    _tsensors.push_back(tsensor);
     	}
     }
-    _scene = _gview->scene();
+    _scene = _ui->_gview->scene();
     if(_scene==NULL){
         _scene = new QGraphicsScene();
-        _gview->setScene(_scene);
+        _ui->_gview->setScene(_scene);
     }
 
     initTactileInput();
 
-    connect(_updateBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-    connect(_saveViewBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-    connect(_loadDataBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
-    connect(_saveDataBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+    connect(_ui->_updateBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+    connect(_ui->_saveViewBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+    connect(_ui->_loadDataBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
+    connect(_ui->_saveDataBtn, SIGNAL(pressed()), this, SLOT(btnPressed()));
 
-    connect(_uppBoundSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
-    connect(_lowBoundSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
+    connect(_ui->_uppBoundSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
+    connect(_ui->_lowBoundSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
 
-    _gview->update();
+    _ui->_gview->update();
 
-    connect(_maxPressureSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
+    connect(_ui->_maxPressureSpin,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
 }
 
 void TactileSensorDialog::initTactileInput(){
@@ -199,14 +201,14 @@ void TactileSensorDialog::initTactileInput(){
 
 
     }
-    _maxPressureSpin->setMaximum(maxPressure);
-    _maxPressureSpin->setValue(maxPressure);
-    _gview->update();
+    _ui->_maxPressureSpin->setMaximum(maxPressure);
+    _ui->_maxPressureSpin->setValue(maxPressure);
+    _ui->_gview->update();
 }
 
 void TactileSensorDialog::drawTactileInput(){
-    double maxPressure = _maxPressureSpin->value();
-    if(_autoScaleBox->isChecked()){
+    double maxPressure = _ui->_maxPressureSpin->value();
+    if(_ui->_autoScaleBox->isChecked()){
         maxPressure = 100;
         for(size_t sensorIdx=0; sensorIdx<_values.size();sensorIdx++){
             Eigen::MatrixXf data = _values[sensorIdx];
@@ -219,7 +221,7 @@ void TactileSensorDialog::drawTactileInput(){
                 }
             }
         }
-        _maxPressureSpin->setValue(maxPressure);
+        _ui->_maxPressureSpin->setValue(maxPressure);
     }
 
     for(size_t sensorIdx=0; sensorIdx<_values.size();sensorIdx++){
@@ -251,7 +253,7 @@ void TactileSensorDialog::drawTactileInput(){
         }
     }
     // if features is enabled then we draw them as well
-    if( _centerOfMassBtn->isChecked() ){
+    if( _ui->_centerOfMassBtn->isChecked() ){
 
     	for(std::size_t i=0;i<_centers.size();i++){
     		//std::cout << "center : " << _centers[i] << std::endl;
@@ -267,7 +269,7 @@ void TactileSensorDialog::drawTactileInput(){
     	}
     }
 
-    if( _momentsBtn->isChecked() ){
+    if( _ui->_momentsBtn->isChecked() ){
     	for(std::size_t i=0;i<_moments.size();i++){
 
     		qreal offsetx = _rectItems[i][0]->rect().x();
@@ -288,7 +290,7 @@ void TactileSensorDialog::drawTactileInput(){
     	}
     }
 
-    _gview->update();
+    _ui->_gview->update();
     /*
     matrix<float> data = _tsensors[0]->getTexelData();
     std::cout << data << std::endl;
@@ -313,24 +315,24 @@ void TactileSensorDialog::drawTactileInput(){
 
 void TactileSensorDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _updateBtn){
+    if( obj == _ui->_updateBtn){
         //_values.clear();
         //BOOST_FOREACH(TactileArraySensor *sensor, _tsensors){
         //    _values.push_back(sensor->getTexelData());
         //}
         drawTactileInput();
 
-    } else if( obj==_saveViewBtn ){
+    } else if( obj==_ui->_saveViewBtn ){
         std::cout << "Save btn pushed!" << std::endl;
         QImage img(640,480,QImage::Format_RGB32);
         QPainter painter(&img);
-        _gview->render(&painter);
+        _ui->_gview->render(&painter);
         double time = TimerUtil::currentTime();
         std::stringstream sstr;
         int s = (int)(time);
         sstr << "TactileImageSave_"<< s << ".png";
         img.save(sstr.str().c_str());
-    } else if(obj==_loadDataBtn){
+    } else if(obj==_ui->_loadDataBtn){
         QString selectedFilter;
         QString filename = QFileDialog::getOpenFileName(
             this,
@@ -373,15 +375,15 @@ void TactileSensorDialog::btnPressed(){
 
 void TactileSensorDialog::changedEvent(){
     QObject *obj = sender();
-    if( obj == _maxPressureSpin ){
+    if( obj == _ui->_maxPressureSpin ){
         drawTactileInput();
-    } else if(obj == _lowBoundSpin){
-    	if(_lowBoundSpin->value()>_uppBoundSpin->value()){
-    		_uppBoundSpin->setValue(_lowBoundSpin->value());
+    } else if(obj == _ui->_lowBoundSpin){
+    	if(_ui->_lowBoundSpin->value()>_ui->_uppBoundSpin->value()){
+    	    _ui->_uppBoundSpin->setValue(_ui->_lowBoundSpin->value());
     	}
-    } else if(obj == _uppBoundSpin){
-    	if(_lowBoundSpin->value()>_uppBoundSpin->value()){
-    		_lowBoundSpin->setValue(_uppBoundSpin->value());
+    } else if(obj == _ui->_uppBoundSpin){
+    	if(_ui->_lowBoundSpin->value()>_ui->_uppBoundSpin->value()){
+    	    _ui->_lowBoundSpin->setValue(_ui->_uppBoundSpin->value());
     	}
     }
 }
@@ -394,7 +396,7 @@ void TactileSensorDialog::setState(const rw::kinematics::State& state){
     // now detect features in the tactile images enabled
     detectFeatures();
     drawTactileInput();
-    if(_saveCheckBox->isChecked()){
+    if(_ui->_saveCheckBox->isChecked()){
         if(_renderingToImage)
             return;
         _renderingToImage = true;
@@ -403,7 +405,7 @@ void TactileSensorDialog::setState(const rw::kinematics::State& state){
         QImage img(640,480,QImage::Format_RGB32);
         QPainter painter(&img);
         painter.setBackground( QBrush(QColor(Qt::white)));
-        _gview->render(&painter);
+        _ui->_gview->render(&painter);
         //double time = TimerUtil::currentTime();
         std::stringstream sstr;
         //int s = (int)(time);
@@ -415,10 +417,10 @@ void TactileSensorDialog::setState(const rw::kinematics::State& state){
 }
 
 void TactileSensorDialog::detectFeatures(){
-	if( _centerOfMassBtn->isChecked() || _momentsBtn->isChecked()){
+	if( _ui->_centerOfMassBtn->isChecked() || _ui->_momentsBtn->isChecked()){
 		detectCenterMass();
 	}
-	if( _momentsBtn->isChecked() ){
+	if( _ui->_momentsBtn->isChecked() ){
 		findMoments();
 	}
 }
@@ -428,7 +430,7 @@ void TactileSensorDialog::findMoments(){
 	//void calcMoments2D(matrix<float>& mat, double low_thres){
 
 	_moments.clear();
-	const int low_thres = _lowBoundSpin->value();
+	const int low_thres = _ui->_lowBoundSpin->value();
 	BOOST_FOREACH(Eigen::MatrixXf& mat, _values){
 		Moment mom = calcMoments2D(mat, low_thres);
 		_moments.push_back(mom);
@@ -440,8 +442,8 @@ void TactileSensorDialog::findMoments(){
 void TactileSensorDialog::detectCenterMass(){
 	// we run through all sensors and for each texel we calculate the center of mass
 	_centers.clear();
-	const int low_thres = _lowBoundSpin->value();
-	const int upp_thres = _uppBoundSpin->value();
+	const int low_thres = _ui->_lowBoundSpin->value();
+	const int upp_thres = _ui->_uppBoundSpin->value();
 	BOOST_FOREACH(Eigen::MatrixXf& mat, _values){
 		Eigen::DenseIndex w = mat.rows();
         Eigen::DenseIndex h = mat.cols();
@@ -469,15 +471,15 @@ void TactileSensorDialog::detectCenterMass(){
 	}
 }
 
-void TactileSensorDialog::zoomIn() { _gview->scale(1.2, 1.2); }
-void TactileSensorDialog::zoomOut() { _gview->scale(1 / 1.2, 1 / 1.2); }
-void TactileSensorDialog::rotateLeft() { _gview->rotate(-10); }
-void TactileSensorDialog::rotateRight() { _gview->rotate(10); }
+void TactileSensorDialog::zoomIn() { _ui->_gview->scale(1.2, 1.2); }
+void TactileSensorDialog::zoomOut() { _ui->_gview->scale(1 / 1.2, 1 / 1.2); }
+void TactileSensorDialog::rotateLeft() { _ui->_gview->rotate(-10); }
+void TactileSensorDialog::rotateRight() { _ui->_gview->rotate(10); }
 void TactileSensorDialog::wheelEvent(QWheelEvent* event)
 {
    qreal factor = 1.2;
    if (event->delta() < 0)
      factor = 1.0 / factor;
-   _gview->scale(factor, factor);
+   _ui->_gview->scale(factor, factor);
 }
 

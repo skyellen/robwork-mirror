@@ -23,6 +23,8 @@
 #include <fstream>
 #include <stdio.h>
 
+#include "ui_RestingPoseDialog.h"
+
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rw::math;
@@ -52,20 +54,20 @@ RestingPoseDialog::RestingPoseDialog(const rw::kinematics::State& state,
     _avgTime(4)
 {
 	RW_ASSERT( _dwc );
+	_ui = new Ui::RestingPoseDialog();
+    _ui->setupUi(this);
 
-    setupUi(this);
+    connect(_ui->_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-
-    connect(_updateRateSpin,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
+    connect(_ui->_updateRateSpin,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
 
     _timer = new QTimer( NULL );
-    _timer->setInterval( _updateRateSpin->value() );
+    _timer->setInterval( _ui->_updateRateSpin->value() );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 }
 
@@ -76,7 +78,7 @@ void RestingPoseDialog::initializeStart(){
     _frameToBody.clear();
     _nrOfTests = 0;
     State state = _defstate;
-    int threads = _nrOfThreadsSpin->value();
+    int threads = _ui->_nrOfThreadsSpin->value();
     _simStartTimes.resize(threads, 0);
     RW_DEBUGS("threads: " << threads);
 
@@ -112,9 +114,9 @@ void RestingPoseDialog::initializeStart(){
 
 void RestingPoseDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _saveBtn1 ){
+    if( obj == _ui->_saveBtn1 ){
 
-    	QString str = _savePath->text();
+    	QString str = _ui->_savePath->text();
     	std::string sstr( str.toStdString() );
         rw::models::WorkCell &wc = *_dwc->getWorkcell();
         // TODO: open file dialog and save
@@ -127,7 +129,7 @@ void RestingPoseDialog::btnPressed(){
             endPath.push_back(TimedState(i, _resultPoses[i]));
         }
 
-        if( _asCommaBtn->isChecked() ){
+        if( _ui->_asCommaBtn->isChecked() ){
             std::string textFile = sstr + ".txt";
             std::ofstream fout( textFile.c_str() );
             std::vector<RigidBody::Ptr> bodies = _dwc->findBodies<RigidBody>();
@@ -160,13 +162,13 @@ void RestingPoseDialog::btnPressed(){
             startPath, sstr+"_start.rwplay");
         rw::loaders::PathLoader::storeTimedStatePath( wc,
                                    endPath, sstr+"_end.rwplay");
-    } else if( obj == _startBtn ) {
-        _startBtn->setDisabled(true);
-        _stopBtn->setDisabled(false);
-        _simulatorBtn->setDisabled(true);
-        _resetBtn->setDisabled(true);
-        bool isStart = _startBtn->text() == "Start";
-        _startBtn->setText("Continue");
+    } else if( obj == _ui->_startBtn ) {
+        _ui->_startBtn->setDisabled(true);
+        _ui->_stopBtn->setDisabled(false);
+        _ui->_simulatorBtn->setDisabled(true);
+        _ui->_resetBtn->setDisabled(true);
+        bool isStart = _ui->_startBtn->text() == "Start";
+        _ui->_startBtn->setText("Continue");
         // initialize
         if( isStart )
             initializeStart();
@@ -175,14 +177,14 @@ void RestingPoseDialog::btnPressed(){
 
         Log::infoLog() << "Resting pose calculation started: " << std::endl
 					<< "- Time         : " << QTime::currentTime().toString().toStdString() << std::endl
-					<< "- Nr of tests  : " << _nrOfTestsSpin->value() << std::endl
-					<< "- Nr of threads: " << _nrOfThreadsSpin->value() << std::endl;
+					<< "- Nr of tests  : " << _ui->_nrOfTestsSpin->value() << std::endl
+					<< "- Nr of threads: " << _ui->_nrOfThreadsSpin->value() << std::endl;
 
-    } else if( obj == _stopBtn ) {
-        if(_nrOfTests<_nrOfTestsSpin->value())
-            _startBtn->setDisabled(false);
-        _stopBtn->setDisabled(true);
-        _resetBtn->setDisabled(false);
+    } else if( obj == _ui->_stopBtn ) {
+        if(_nrOfTests<_ui->_nrOfTestsSpin->value())
+            _ui->_startBtn->setDisabled(false);
+        _ui->_stopBtn->setDisabled(true);
+        _ui->_resetBtn->setDisabled(false);
         _timer->stop();
         BOOST_FOREACH(Ptr<ThreadSimulator> sim,  _simulators){
             if(sim->isRunning())
@@ -192,16 +194,16 @@ void RestingPoseDialog::btnPressed(){
 					<< "- Time         : " << QTime::currentTime().toString().toStdString() << std::endl
 					<< "- # tests done : " << _nrOfTests << std::endl;
 
-    } else if( obj == _resetBtn ) {
-        _startBtn->setDisabled(false);
-        _startBtn->setText("Start");
-        _simulatorBtn->setDisabled(false);
-    } else if( obj == _simulatorBtn ) {
+    } else if( obj == _ui->_resetBtn ) {
+        _ui->_startBtn->setDisabled(false);
+        _ui->_startBtn->setText("Start");
+        _ui->_simulatorBtn->setDisabled(false);
+    } else if( obj == _ui->_simulatorBtn ) {
         // create simulator
 
-    } else if( obj == _scapeBtn ) {
-    	std::string str = _savePath->text().toStdString();
-    	if( _saveMultipleCheck->isChecked() ){
+    } else if( obj == _ui->_scapeBtn ) {
+    	std::string str = _ui->_savePath->text().toStdString();
+    	if( _ui->_saveMultipleCheck->isChecked() ){
     		for(size_t i=0;i<_resultPoses.size();i++){
     			std::stringstream sstr;
     			//sstr.setf(std::fixed(int))
@@ -232,13 +234,13 @@ void RestingPoseDialog::changedEvent(){
     if( obj == _timer ){
         // update stuff
         updateStatus();
-    } else if( obj == _updateRateSpin ){
-        _timer->setInterval( _updateRateSpin->value() );
-    } else if( obj == _forceUpdateCheck ) {
-        if( !_forceUpdateCheck->isChecked() ){
+    } else if( obj == _ui->_updateRateSpin ){
+        _timer->setInterval( _ui->_updateRateSpin->value() );
+    } else if( obj == _ui->_forceUpdateCheck ) {
+        if( !_ui->_forceUpdateCheck->isChecked() ){
             _timer->setInterval( 100 );
         } else {
-            _timer->setInterval( _updateRateSpin->value() );
+            _timer->setInterval( _ui->_updateRateSpin->value() );
         }
     }
 }
@@ -252,7 +254,7 @@ void RestingPoseDialog::updateStatus(){
 
         Ptr<ThreadSimulator> sim = _simulators[i];
 
-        if(!sim->isRunning() && _nrOfTests>=_nrOfTestsSpin->value()){
+        if(!sim->isRunning() && _nrOfTests>=_ui->_nrOfTestsSpin->value()){
             continue;
         }
 
@@ -269,8 +271,8 @@ void RestingPoseDialog::updateStatus(){
         }
 
         // get stop criterias
-        double lVelThres = _linVelSpin->value();
-        double aVelThres = _angVelSpin->value();
+        double lVelThres = _ui->_linVelSpin->value();
+        double aVelThres = _ui->_angVelSpin->value();
 
         // check the velocity of all the bodies
         bool allBelowThres = true;
@@ -296,13 +298,13 @@ void RestingPoseDialog::updateStatus(){
         //if( _recordStatePath->checked() )
         //    _statePath.push_back( Timed<State>(time+_simStartTime, state) );
 
-        if(!allBelowThres || time<_minTimeValidSpin->value())
+        if(!allBelowThres || time<_ui->_minTimeValidSpin->value())
             _lastBelowThresUpdate = time;
 
         if(i==0)
             _state = state;
 
-        if( time-_lastBelowThresUpdate >  _minRestTimeSpin->value() ){
+        if( time-_lastBelowThresUpdate >  _ui->_minRestTimeSpin->value() ){
             // one simulation has finished...
             sim->stop();
 
@@ -320,21 +322,21 @@ void RestingPoseDialog::updateStatus(){
             sim->reset(state);
             _simStartTimes[i] = time;
 
-            RW_DEBUGS(_nrOfTests<<">="<<_nrOfTestsSpin->value());
-            if( _nrOfTests>=_nrOfTestsSpin->value() )
+            RW_DEBUGS(_nrOfTests<<">="<<_ui->_nrOfTestsSpin->value());
+            if( _nrOfTests>=_ui->_nrOfTestsSpin->value() )
                 continue;
             RW_DEBUGS("Start sim again");
             sim->start();
-        } else if( time>_maxRunningTimeSpin->value() ){
+        } else if( time>_ui->_maxRunningTimeSpin->value() ){
             sim->stop();
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
             sim->reset(state);
-            if( _nrOfTests>=_nrOfTestsSpin->value() )
+            if( _nrOfTests>=_ui->_nrOfTestsSpin->value() )
                 continue;
             sim->start();
-        } else if( !sim->isRunning() && _nrOfTests<_nrOfTestsSpin->value()){
+        } else if( !sim->isRunning() && _nrOfTests<_ui->_nrOfTestsSpin->value()){
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
@@ -352,49 +354,49 @@ void RestingPoseDialog::updateStatus(){
         _avgTime.addSample(avgTestTime);
         avgTestTime = _avgTime.getAverage();
 
-        int progress = (_nrOfTests*100)/_nrOfTestsSpin->value();
-        _simProgress->setValue( progress );
+        int progress = (_nrOfTests*100)/_ui->_nrOfTestsSpin->value();
+        _ui->_simProgress->setValue( progress );
 
         //avgSimTimePerTest = _totalSimTime/(double)_nrOfTests;
         avgSimTimePerTest = _avgSimTime.getAverage();
 
         simTimeToReal = avgSimTimePerTest*1000.0/avgTestTime;
 
-        double timeLeft = ((_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
+        double timeLeft = ((_ui->_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
 
         // update the time label
         {
             std::stringstream s; s << avgTestTime/1000.0 << "s";
-            _avgTimePerTestLbl->setText(s.str().c_str());
+            _ui->_avgTimePerTestLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << simTimeToReal;
-            _simSpeedLbl->setText(s.str().c_str());
+            _ui->_simSpeedLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << avgSimTimePerTest << "s";
-            _avgSimTimeLbl->setText(s.str().c_str());
+            _ui->_avgSimTimeLbl->setText(s.str().c_str());
         }
         {
-            std::stringstream s; s << _nrOfTests << "/" << _nrOfTestsSpin->value();
-            _testsLeftLbl->setText(s.str().c_str());
+            std::stringstream s; s << _nrOfTests << "/" << _ui->_nrOfTestsSpin->value();
+            _ui->_testsLeftLbl->setText(s.str().c_str());
         }
     }
 
     // and last signal that workcell state has changed if user request it
-    if(_forceUpdateCheck->isChecked())
+    if(_ui->_forceUpdateCheck->isChecked())
         stateChanged(_state);
 
-    if( _nrOfTests>=_nrOfTestsSpin->value() ){
-        _stopBtn->click();
+    if( _nrOfTests>=_ui->_nrOfTestsSpin->value() ){
+        _ui->_stopBtn->click();
         return;
     }
 }
@@ -470,24 +472,24 @@ namespace {
 void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::kinematics::State& state){
     Rotation3D<> rot;
     Vector3D<> pos;
-    if( _rotationTabs->currentIndex()==0 ){
+    if( _ui->_rotationTabs->currentIndex()==0 ){
         // calculate a random orientation in SO3
         rot = Math::ranRotation3D<double>();
-    } else if( _rotationTabs->currentIndex()==1 ){
+    } else if( _ui->_rotationTabs->currentIndex()==1 ){
         // get direction and angle
-        double angle = _angleSpin->value() * Deg2Rad;
-        if( _normalDistRot->isChecked() ){
+        double angle = _ui->_angleSpin->value() * Deg2Rad;
+        if( _ui->_normalDistRot->isChecked() ){
             rot = ranNormalDistRotation3D(angle);
         } else {
             rot = ranRotation3D(angle);
         }
     } else {
-        const double lowR = Deg2Rad * ( _lowRollSpin->value() );
-        const double highR = Deg2Rad * ( _highRollSpin->value() );
-        const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
-        const double highP = Deg2Rad * ( _highPitchSpin->value() );
-        const double lowY = Deg2Rad * ( _lowYawSpin->value() );
-        const double highY = Deg2Rad * ( _highYawSpin->value() );
+        const double lowR = Deg2Rad * ( _ui->_lowRollSpin->value() );
+        const double highR = Deg2Rad * ( _ui->_highRollSpin->value() );
+        const double lowP = Deg2Rad * ( _ui->_lowPitchSpin->value() );
+        const double highP = Deg2Rad * ( _ui->_highPitchSpin->value() );
+        const double lowY = Deg2Rad * ( _ui->_lowYawSpin->value() );
+        const double highY = Deg2Rad * ( _ui->_highYawSpin->value() );
 
         double roll = Math::ran(lowR, highR);
         double pitch = Math::ran(lowP, highP);
@@ -495,9 +497,9 @@ void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::k
         rot = RPY<>(roll,pitch,yaw).toRotation3D();
     }
 
-    pos[0] = Math::ran(_xLimit->value(), std::max(_xLimit->value(), _xLimit_2->value()));
-    pos[1] = Math::ran(_yLimit->value(), std::max(_yLimit->value(), _yLimit_2->value()));
-    pos[2] = Math::ran(_zLimit->value(), std::max(_zLimit->value(), _zLimit_2->value()));
+    pos[0] = Math::ran(_ui->_xLimit->value(), std::max(_ui->_xLimit->value(), _ui->_xLimit_2->value()));
+    pos[1] = Math::ran(_ui->_yLimit->value(), std::max(_ui->_yLimit->value(), _ui->_yLimit_2->value()));
+    pos[2] = Math::ran(_ui->_zLimit->value(), std::max(_ui->_zLimit->value(), _ui->_zLimit_2->value()));
 
     BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
         Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);
@@ -508,7 +510,7 @@ void RestingPoseDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::k
 }
 
 void RestingPoseDialog::calcRandomCfg(rw::kinematics::State& state){
-    if( _colFreeStart->isChecked() ){
+    if( _ui->_colFreeStart->isChecked() ){
         calcColFreeRandomCfg(state);
     } else {
         calcRandomCfg(_bodies, state);

@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_GraspRestingPoseDialog.h"
-
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -36,8 +34,15 @@
 #include <QtGui>
 #include <QTimer>
 
+
 #include "ThreadSafeStack.hpp"
-        struct RestingConfig {
+
+namespace Ui {
+    class GraspRestingPoseDialog;
+}
+
+
+struct RestingConfig {
             RestingConfig(const rw::kinematics::State& state, const std::string& str):
                 _state(state),_desc(str){}
             RestingConfig(){};
@@ -50,7 +55,7 @@
  *
  *
  */
-class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialog
+class GraspRestingPoseDialog : public QDialog
     {
         Q_OBJECT
 
@@ -70,15 +75,9 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
 
         std::vector<rw::kinematics::State>& getRestingPoses(){return _resultPoses;};
 
-        void setPreshapeStrategy(const std::string& str){
-            int idx = _preshapeStratBox->findText(str.c_str());
-            if( idx>=0 )
-                _preshapeStratBox->setCurrentIndex(idx);
-        }
+        void setPreshapeStrategy(const std::string& str);
 
-        void setSaveDir(const std::string& str){
-            _savePath->setText(str.c_str());
-        }
+        void setSaveDir(const std::string& str);
 
         void setUniqueID(const std::string& id){
         	_id = id;
@@ -150,7 +149,7 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
 
         };
 
-        Ui::GraspRestingPoseDialog _ui;
+        Ui::GraspRestingPoseDialog *_ui;
         rw::kinematics::State _defstate;
         rw::kinematics::State _state;
         QTimer *_timer;

@@ -1,5 +1,5 @@
 SET(SUBSYS_NAME rws_luaeditor)
-set(SUBSYS_DESC "A jog plugin")
+set(SUBSYS_DESC "A lua editor plugin")
 SET(SUBSYS_DEPS rws rws_lua_s)
 
 SET(build ${RWS_HAVE_LUA})
@@ -11,12 +11,13 @@ IF(build)
     # if we want to use ui files add them here
     SET(UIS_FILES LuaEditorWindow.ui )
     IF(RWS_USE_QT5)
-      RWS_QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT5_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     ELSE()
-      RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+      QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
     ENDIF()
-
-    
+	#Need to add the current binary dir to the include directory because the generated source files are placed here
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+	
     SET(SrcFiles LuaEditorWindow.cpp 
         LuaHighlighter.cpp 
         CodeEditor.cpp

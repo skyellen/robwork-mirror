@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_ODESimCfgForm.h"
-
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -28,7 +26,11 @@
 #include <QtGui>
 #include <QTimer>
 
-class ODESimCfgDialog : public QDialog, private Ui::ODESimCfgForm
+namespace Ui {
+    class ODESimCfgForm;
+}
+
+class ODESimCfgDialog : public QDialog
     {
         Q_OBJECT
 
@@ -50,7 +52,7 @@ class ODESimCfgDialog : public QDialog, private Ui::ODESimCfgForm
         void applyChanges();
         void updateValues();
     private:
-        Ui::ODESimCfgForm _ui;
+        Ui::ODESimCfgForm *_ui;
 
         rw::common::Ptr<rwsim::simulator::DynamicSimulator> _sim;
 };

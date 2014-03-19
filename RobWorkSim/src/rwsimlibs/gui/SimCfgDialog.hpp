@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_SimCfgDialog.h"
-
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -26,7 +24,11 @@
 #include <QtGui>
 #include <QTimer>
 
-class SimCfgDialog : public QDialog, private Ui::SimCfgDialog
+namespace Ui {
+    class SimCfgDialog;
+}
+
+class SimCfgDialog : public QDialog
     {
         Q_OBJECT
 
@@ -38,7 +40,7 @@ class SimCfgDialog : public QDialog, private Ui::SimCfgDialog
         void changedEvent();
 
     private:
-        Ui::SimCfgDialog _ui;
+        Ui::SimCfgDialog *_ui;
 
         rw::common::Ptr<rwsim::simulator::DynamicSimulator> _sim;
 };

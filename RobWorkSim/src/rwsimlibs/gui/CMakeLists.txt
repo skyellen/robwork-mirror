@@ -1,6 +1,10 @@
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS})
 
+# to be able to include the generated ui header files
+include_directories(${CMAKE_CURRENT_BINARY_DIR}) 
+
+
 ################################################################
 # first compile the general stuff into a static gui lib
 SET(FILES_UI 
@@ -17,9 +21,9 @@ SET(FILES_UI
 	#GraspTableGeneratorPlugin.ui
 )
 IF (RWS_USE_QT5)
-	RWS_QT5_WRAP_UI(UIS_OUT_H ${FILES_UI})
+	QT5_WRAP_UI(UIS_OUT_H ${FILES_UI})
 ELSE()
-	RWS_QT4_WRAP_UI(UIS_OUT_H ${FILES_UI})
+	QT4_WRAP_UI(UIS_OUT_H ${FILES_UI})
 ENDIF()
 
 # Moc the files:

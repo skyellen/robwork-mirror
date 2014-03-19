@@ -12,8 +12,6 @@
 #include <windows.h>
 #endif
 
-#include "ui_RestingPoseDialog.h"
-
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -30,13 +28,17 @@
 #include <QtGui>
 #include <QTimer>
 
+namespace Ui {
+    class RestingPoseDialog;
+}
+
 /**
  * @brief a grphical interface for calculating resting configurations of
  * rigid bodies using rigid body physics simulation.
  *
  *
  */
-class RestingPoseDialog : public QDialog, private Ui::RestingPoseDialog
+class RestingPoseDialog : public QDialog
     {
         Q_OBJECT
 
@@ -100,7 +102,7 @@ class RestingPoseDialog : public QDialog, private Ui::RestingPoseDialog
 
 
     private:
-        Ui::RestingPoseDialog _ui;
+        Ui::RestingPoseDialog *_ui;
         rw::kinematics::State _defstate;
         rw::kinematics::State _state;
         QTimer *_timer;

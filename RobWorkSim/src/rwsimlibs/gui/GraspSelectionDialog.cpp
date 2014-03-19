@@ -27,6 +27,8 @@
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <stdio.h>
 
+#include "ui_GraspSelectionDialog.h"
+
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rwsim::sensor;
@@ -83,30 +85,30 @@ GraspSelectionDialog::GraspSelectionDialog(const rw::kinematics::State& state,
     _kdtree(NULL)
 {
 	RW_ASSERT( _dwc );
+	_ui = new Ui::GraspSelectionDialog();
+    _ui->setupUi(this);
 
-    setupUi(this);
+    connect(_ui->_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_graspTableLoadBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_startBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_resetBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn     ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_simulatorBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_scapeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_graspTableLoadBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_searchBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_buildTreeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
-    connect(_searchBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_buildTreeBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_ui->_updateRateSpin,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
+    _ui->_graspTableSlider->setRange(0, 0);
+    connect(_ui->_graspTableSlider,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
 
-    connect(_updateRateSpin,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
-    _graspTableSlider->setRange(0, 0);
-    connect(_graspTableSlider,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
-
-    connect(_graspTableSlider,SIGNAL(valueChanged(int)),_graspSpin,SLOT(setValue(int)));
+    connect(_ui->_graspTableSlider,SIGNAL(valueChanged(int)),_ui->_graspSpin,SLOT(setValue(int)));
 
 
 
     _timer = new QTimer( NULL );
-    _timer->setInterval( _updateRateSpin->value() );
+    _timer->setInterval( _ui->_updateRateSpin->value() );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 }
 
@@ -117,7 +119,7 @@ void GraspSelectionDialog::initializeStart(){
     _frameToBody.clear();
     _nrOfTests = 0;
     State state = _defstate;
-    int threads = _nrOfThreadsSpin->value();
+    int threads = _ui->_nrOfThreadsSpin->value();
     _simStartTimes.resize(threads, 0);
     RW_DEBUGS("threads: " << threads);
 
@@ -153,7 +155,7 @@ using namespace rw::graspplanning;
 
 void GraspSelectionDialog::btnPressed(){
     QObject *obj = sender();
-    if( obj == _graspTableLoadBtn ){
+    if( obj == _ui->_graspTableLoadBtn ){
     	std::string dir;
     	std::string filename = openFile(dir, this);
     	if(filename.empty())
@@ -184,11 +186,11 @@ void GraspSelectionDialog::btnPressed(){
     	    _object = dynamic_cast<MovableFrame*>(obj);
     	}
 		if (_gtable->size() == 0) {
-    		_graspTableSlider->setRange(0, 0);
-			_graspTableSlider->setEnabled(false);
+		    _ui->_graspTableSlider->setRange(0, 0);
+		    _ui->_graspTableSlider->setEnabled(false);
 		} else {
-    		_graspTableSlider->setRange(0, (int)(_gtable->size()-1));
-			_graspTableSlider->setEnabled(true);
+		    _ui->_graspTableSlider->setRange(0, (int)(_gtable->size()-1));
+		    _ui->_graspTableSlider->setEnabled(true);
 		}
     	Frame* fbase = _dev->getBase()->getParent(_state);
     	while( !dynamic_cast<MovableFrame*>(fbase) ){
@@ -202,9 +204,9 @@ void GraspSelectionDialog::btnPressed(){
     	    _handBase = dynamic_cast<MovableFrame*>(fbase);
     	else
     	    _handBase = NULL;
-    } else if( obj == _startBtn ) {
+    } else if( obj == _ui->_startBtn ) {
 
-    } else if( obj == _searchBtn)  {
+    } else if( obj == _ui->_searchBtn)  {
     	// TODO:
     	//std::string str = _searchEdit->text().toStdString();
 
@@ -216,7 +218,7 @@ void GraspSelectionDialog::btnPressed(){
     	setGraspState(*data,_state);
     	stateChanged(_state);
 
-    } else if ( obj == _buildTreeBtn ){
+    } else if ( obj == _ui->_buildTreeBtn ){
     	Log::infoLog() << "Building tree!\n";
     	// build the KD-tree with the database
     	Q key(6);
@@ -266,17 +268,17 @@ void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinema
 	}
 	{
 		std::stringstream sstr; sstr << "Quality: " << data.quality;
-		_qualityLbl->setText(sstr.str().c_str());
+		_ui->_qualityLbl->setText(sstr.str().c_str());
 	}
 	{
 		std::stringstream sstr; sstr << "Nr contacts: " << data.grasp.contacts.size();
-		_contactLbl->setText(sstr.str().c_str());
+		_ui->_contactLbl->setText(sstr.str().c_str());
 	}
 	Transform3D<> oTh = inverse(data.op.toTransform3D())*data.hp.toTransform3D();
 	RPY<> rpy( oTh.R() );
 	{
 		std::stringstream sstr; sstr << "Pose: " << oTh.P() <<" "<< rpy;
-		_poseLbl->setText(sstr.str().c_str());
+		_ui->_poseLbl->setText(sstr.str().c_str());
 	}
 }
 
@@ -285,16 +287,16 @@ void GraspSelectionDialog::changedEvent(){
     if( obj == _timer ){
         // update stuff
         updateStatus();
-    } else if( obj == _updateRateSpin ){
-        _timer->setInterval( _updateRateSpin->value() );
-    } else if( obj == _forceUpdateCheck ) {
-        if( !_forceUpdateCheck->isChecked() ){
+    } else if( obj == _ui->_updateRateSpin ){
+        _timer->setInterval( _ui->_updateRateSpin->value() );
+    } else if( obj == _ui->_forceUpdateCheck ) {
+        if( !_ui->_forceUpdateCheck->isChecked() ){
             _timer->setInterval( 100 );
         } else {
-            _timer->setInterval( _updateRateSpin->value() );
+            _timer->setInterval( _ui->_updateRateSpin->value() );
         }
-    } else if ( obj == _graspTableSlider ){
-    	int gidx = _graspTableSlider->value();
+    } else if ( obj == _ui->_graspTableSlider ){
+    	int gidx = _ui->_graspTableSlider->value();
     	int gsize = (int)_gtable->getData().size();
 
     	if(gidx>=gsize)
@@ -315,15 +317,15 @@ void GraspSelectionDialog::updateStatus(){
     for(size_t i=0;i<_simulators.size(); i++){
         Ptr<ThreadSimulator> sim = _simulators[i];
 
-        if(!sim->isRunning() && _nrOfTests>=_nrOfTestsSpin->value()){
+        if(!sim->isRunning() && _nrOfTests>=_ui->_nrOfTestsSpin->value()){
             continue;
         }
 
         state = sim->getState();
 
         // get stop criterias
-        double lVelThres = _linVelSpin->value();
-        double aVelThres = _angVelSpin->value();
+        double lVelThres = _ui->_linVelSpin->value();
+        double aVelThres = _ui->_angVelSpin->value();
 
         // check the velocity of all the bodies
         bool allBelowThres = true;
@@ -349,7 +351,7 @@ void GraspSelectionDialog::updateStatus(){
         //if( _recordStatePath->checked() )
         //    _statePath.push_back( Timed<State>(time+_simStartTime, state) );
 
-        if(!allBelowThres || time<_minTimeValidSpin->value())
+        if(!allBelowThres || time<_ui->_minTimeValidSpin->value())
             _lastBelowThresUpdate = time;
 
 
@@ -357,7 +359,7 @@ void GraspSelectionDialog::updateStatus(){
             _state = state;
 
 
-        if( time-_lastBelowThresUpdate >  _minRestTimeSpin->value() ){
+        if( time-_lastBelowThresUpdate >  _ui->_minRestTimeSpin->value() ){
             // one simulation has finished...
             sim->stop();
 
@@ -375,21 +377,21 @@ void GraspSelectionDialog::updateStatus(){
             sim->setState(state);
             _simStartTimes[i] = time;
 
-            RW_DEBUGS(_nrOfTests<<">="<<_nrOfTestsSpin->value());
-            if( _nrOfTests>=_nrOfTestsSpin->value() )
+            RW_DEBUGS(_nrOfTests<<">="<<_ui->_nrOfTestsSpin->value());
+            if( _nrOfTests>=_ui->_nrOfTestsSpin->value() )
                 continue;
             RW_DEBUGS("Start sim again");
             sim->start();
-        } else if( time>_maxRunningTimeSpin->value() ){
+        } else if( time>_ui->_maxRunningTimeSpin->value() ){
             sim->stop();
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
             sim->setState(state);
-            if( _nrOfTests>=_nrOfTestsSpin->value() )
+            if( _nrOfTests>=_ui->_nrOfTestsSpin->value() )
                 continue;
             sim->start();
-        } else if( !sim->isRunning() && _nrOfTests<_nrOfTestsSpin->value()){
+        } else if( !sim->isRunning() && _nrOfTests<_ui->_nrOfTestsSpin->value()){
             // recalc random start configurations and reset the simulator
             calcRandomCfg(state);
             _initStates[i] = state;
@@ -407,49 +409,49 @@ void GraspSelectionDialog::updateStatus(){
         _avgTime.addSample(avgTestTime);
         avgTestTime = _avgTime.getAverage();
 
-        int progress = (_nrOfTests*100)/_nrOfTestsSpin->value();
-        _simProgress->setValue( progress );
+        int progress = (_nrOfTests*100)/_ui->_nrOfTestsSpin->value();
+        _ui->_simProgress->setValue( progress );
 
         //avgSimTimePerTest = _totalSimTime/(double)_nrOfTests;
         avgSimTimePerTest = _avgSimTime.getAverage();
 
         simTimeToReal = avgSimTimePerTest*1000.0/avgTestTime;
 
-        double timeLeft = ((_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
+        double timeLeft = ((_ui->_nrOfTestsSpin->value()-_nrOfTests)*avgTestTime)/1000.0;
 
         // update the time label
         {
             std::stringstream s; s << avgTestTime/1000.0 << "s";
-            _avgTimePerTestLbl->setText(s.str().c_str());
+            _ui->_avgTimePerTestLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << timeLeft << "s";
-            _estimatedTimeLeftLbl->setText(s.str().c_str());
+            _ui->_estimatedTimeLeftLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << simTimeToReal;
-            _simSpeedLbl->setText(s.str().c_str());
+            _ui->_simSpeedLbl->setText(s.str().c_str());
         }
         {
             std::stringstream s; s << avgSimTimePerTest << "s";
-            _avgSimTimeLbl->setText(s.str().c_str());
+            _ui->_avgSimTimeLbl->setText(s.str().c_str());
         }
         {
-            std::stringstream s; s << _nrOfTests << "/" << _nrOfTestsSpin->value();
-            _testsLeftLbl->setText(s.str().c_str());
+            std::stringstream s; s << _nrOfTests << "/" << _ui->_nrOfTestsSpin->value();
+            _ui->_testsLeftLbl->setText(s.str().c_str());
         }
     }
 
     // and last signal that workcell state has changed if user request it
-    if(_forceUpdateCheck->isChecked())
+    if(_ui->_forceUpdateCheck->isChecked())
         stateChanged(state);
 
-    if( _nrOfTests>=_nrOfTestsSpin->value() ){
-        _stopBtn->click();
+    if( _nrOfTests>=_ui->_nrOfTestsSpin->value() ){
+        _ui->_stopBtn->click();
         return;
     }
 }
@@ -479,12 +481,12 @@ void GraspSelectionDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
 }
 
 void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw::kinematics::State& state){
-    const double lowR = Deg2Rad * ( _lowRollSpin->value() );
-    const double highR = Deg2Rad * ( _highRollSpin->value() );
-    const double lowP = Deg2Rad * ( _lowPitchSpin->value() );
-    const double highP = Deg2Rad * ( _highPitchSpin->value() );
-    const double lowY = Deg2Rad * ( _lowYawSpin->value() );
-    const double highY = Deg2Rad * ( _highYawSpin->value() );
+    const double lowR = Deg2Rad * ( _ui->_lowRollSpin->value() );
+    const double highR = Deg2Rad * ( _ui->_highRollSpin->value() );
+    const double lowP = Deg2Rad * ( _ui->_lowPitchSpin->value() );
+    const double highP = Deg2Rad * ( _ui->_highPitchSpin->value() );
+    const double lowY = Deg2Rad * ( _ui->_lowYawSpin->value() );
+    const double highY = Deg2Rad * ( _ui->_highYawSpin->value() );
 
 
     BOOST_FOREACH(RigidBody::Ptr rbody, bodies){
@@ -499,7 +501,7 @@ void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody::Ptr> &bodies, rw
 }
 
 void GraspSelectionDialog::calcRandomCfg(rw::kinematics::State& state){
-    if( _colFreeStart->isChecked() ){
+    if( _ui->_colFreeStart->isChecked() ){
         calcColFreeRandomCfg(state);
     } else {
         calcRandomCfg(_bodies, state);
