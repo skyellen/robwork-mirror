@@ -45,6 +45,7 @@
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
     #include <rwslibs/log/ShowLog.hpp>
     #include <rwslibs/jog/Jog.hpp>
+    #include <rwslibs/pointer/PointerPlugin.hpp>
     #include <rwslibs/treeview/TreeView.hpp>
     #include <rwslibs/playback/PlayBack.hpp>
     #include <rwslibs/planning/Planning.hpp>
@@ -133,6 +134,7 @@ int main(int argc, char** argv)
                 #ifdef RWS_USE_STATIC_LINK_PLUGINS
                     rwstudio.addPlugin(new rws::ShowLog(), false, Qt::BottomDockWidgetArea);
                     rwstudio.addPlugin(new rws::Jog(), false, Qt::LeftDockWidgetArea);
+                    rwstudio.addPlugin(new rws::PointerPlugin(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::TreeView(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::PlayBack(), false, Qt::BottomDockWidgetArea);
                     rwstudio.addPlugin(new rws::PropertyView(), false, Qt::LeftDockWidgetArea);
