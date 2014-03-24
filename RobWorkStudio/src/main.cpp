@@ -134,7 +134,7 @@ int main(int argc, char** argv)
                 #ifdef RWS_USE_STATIC_LINK_PLUGINS
                     rwstudio.addPlugin(new rws::ShowLog(), false, Qt::BottomDockWidgetArea);
                     rwstudio.addPlugin(new rws::Jog(), false, Qt::LeftDockWidgetArea);
-                    rwstudio.addPlugin(new rws::PointerPlugin(), false, Qt::LeftDockWidgetArea);
+                    //rwstudio.addPlugin(new rws::PointerPlugin(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::TreeView(), false, Qt::LeftDockWidgetArea);
                     rwstudio.addPlugin(new rws::PlayBack(), false, Qt::BottomDockWidgetArea);
                     rwstudio.addPlugin(new rws::PropertyView(), false, Qt::LeftDockWidgetArea);
