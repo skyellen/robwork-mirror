@@ -45,7 +45,7 @@
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
     #include <rwslibs/log/ShowLog.hpp>
     #include <rwslibs/jog/Jog.hpp>
-    #include <rwslibs/pointer/PointerPlugin.hpp>
+    //#include <rwslibs/pointer/PointerPlugin.hpp>
     #include <rwslibs/treeview/TreeView.hpp>
     #include <rwslibs/playback/PlayBack.hpp>
     #include <rwslibs/planning/Planning.hpp>
