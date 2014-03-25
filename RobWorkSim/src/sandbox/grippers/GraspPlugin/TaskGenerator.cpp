@@ -39,9 +39,7 @@ void TaskGenerator::moveFrameW(const Transform3D<>& wTtcp, Frame* tcp,
 
 
 
-Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
-	TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray,
-	CollisionStrategy::Ptr cstrategy, double &graspW)
+SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityModel::Ptr object, ProximityModel::Ptr ray, CollisionStrategy::Ptr cstrategy)
 {
 	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), _td->getInitState());
 	
@@ -54,6 +52,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
     bool targetFound = false;
     int tries = 0;
     Transform3D<> target;
+    double graspW = 0.0;
     do { 
 		//RW_WARN("SAMPLELOOP");
         target = sampler.sample();
@@ -179,7 +178,7 @@ Transform3D<> TaskGenerator::_sample(double minDist, double maxDist,
 		}
     } while (!targetFound);
     
-    return target;
+    return SurfaceSample(target, graspW);
 }
 
 
@@ -299,7 +298,7 @@ rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::Grasp
 
 
 
-rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinematics::State state)
+rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples)
 {
 	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), state);
 	
@@ -354,14 +353,21 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.LeftFinger", obj->getBase()->getName()));
 		cdetect->addRule(ProximitySetupRule::makeExclude("gripper.RightFinger", obj->getBase()->getName()));
 	}
-	//RW_WARN("PREPARE");
     
     int failures_in_row = 0;
     for (int successes = 0; successes < nTargets;) {
-		//RW_WARN("LOOPY");
-		double graspW = 0.0;
-		Transform3D<> target = _sample(_closeQ[0]*2.0, _openQ[0]*2.0, sampler, object, ray, cstrategy, graspW);
-		//RW_WARN("FOUND");
+		// generate a surface sample - or use the supplied vector
+		SurfaceSample ssample;
+		
+		if (ssamples && ssamples->size() > 0) {
+			ssample = ssamples->back();
+			ssamples->pop_back();
+		} else {
+			ssample = sample(sampler, object, ray, cstrategy);
+		}
+		
+		double& graspW = ssample.graspW;
+		Transform3D<>& target = ssample.transform;
 
         // distance between grasping points is graspW
         // we close gripper such that it is 1 cm more openned than the target

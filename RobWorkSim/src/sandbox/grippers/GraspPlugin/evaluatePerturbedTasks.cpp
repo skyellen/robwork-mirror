@@ -88,10 +88,10 @@ int main(int argc, char** argv)
         ("help", "produce help message")
         ("output,o", value<string>()->default_value("out.xml"), "the output file.")
         ("oformat,b", value<string>()->default_value("RWTASK"), "The output format, RWTASK, UIBK, Text.")
-        ("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
-        ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
+        //("exclude,e", value<std::vector<string> >(), "Exclude grasps based on TestStatus.")
+        //("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<string>(), "Name of grasp task file.")
-        ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
+        ("perturbe", value<bool>()->default_value(true), "Add small random pertubations to all targets.")
         ("perturbations", value<int>()->default_value(1), "Number of perturbations to perform on each target.")
     ;
     positional_options_description optionDesc;
@@ -108,25 +108,25 @@ int main(int argc, char** argv)
 	bool perturbe = vm["perturbe"].as<bool>();
 	int pertubations = vm["perturbations"].as<int>();
 
-	path outp(outfile);
-	create_directory(outp);
+	//path outp(outfile);
+	//create_directory(outp);
 
     path ip(input);
-    std::vector<std::string> infiles;
+    /*std::vector<std::string> infiles;
     if( is_directory(ip) ){
         infiles = IOUtil::getFilesInFolder( ip.string(), false, true);
     } else {
         infiles.push_back( ip.string() );
-    }
+    }*/
 
 	if(perturbe){
-	    BOOST_FOREACH(std::string file, infiles){
-	        std::stringstream sstr;
-	        GraspTask::Ptr gtask = GraspTask::load( file );
-	        std::cout << "Processing: " << path(file).filename().string() << std::endl;
-	        sstr << outfile << "/" << path(file).filename().string();
-	        calcPerturbedQuality(gtask, sstr.str(), pertubations );
-	    }
+	    //BOOST_FOREACH(std::string file, infiles){
+	        //std::stringstream sstr;
+	        GraspTask::Ptr gtask = GraspTask::load(ip.string());
+	        std::cout << "Processing...\n" << endl; // << path(file).filename().string() << std::endl;
+	        //sstr << outfile << "/" << path(file).filename().string();
+	        calcPerturbedQuality(gtask, outfile, pertubations );
+	   //}
 	    return 0;
 	}
 

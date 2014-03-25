@@ -45,6 +45,7 @@ SET(SrcFiles
 	GripperTaskSimulator.cpp
 	TaskDescription.cpp
 	XMLHelpers.cpp
+	SurfaceSample.cpp
 )
 
 SET(UisFiles GraspPlugin.ui DesignDialog.ui TaskDialog.ui)
@@ -78,6 +79,7 @@ add_executable( create-gripper-xml createGripperXML.cpp)
 add_executable(evaluate-gripper evaluateGripper.cpp)
 add_executable(simulate-perturbed-tasks simulatePerturbedTasks.cpp)
 add_executable(evaluate-perturbed-tasks evaluatePerturbedTasks.cpp)
+add_executable(generate-surface-samples generateSurfaceSamples.cpp)
 #add_executable( create-gripper-db createGripperDB.cpp)
 
 target_link_libraries(GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
@@ -87,6 +89,7 @@ target_link_libraries( create-gripper-xml rwsim_ode GL GLU glut ode GraspLibrary
 target_link_libraries(evaluate-gripper    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 target_link_libraries(simulate-perturbed-tasks    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 target_link_libraries(evaluate-perturbed-tasks    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries(generate-surface-samples    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 #ftarget_link_libraries( create-gripper-db rwsim_ode GL GLU glut ode GraspLibrary)
 

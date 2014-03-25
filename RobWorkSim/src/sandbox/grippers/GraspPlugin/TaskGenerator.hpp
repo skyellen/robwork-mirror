@@ -13,6 +13,7 @@
 #include <string>
 #include <rw/geometry/TriMeshSurfaceSampler.hpp>
 #include "TaskDescription.hpp"
+#include "SurfaceSample.hpp"
 
 
 
@@ -43,7 +44,7 @@ class TaskGenerator
 		 * 
 		 * @param nTargets [in] number of targets to generate
 		 */
-		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::kinematics::State state);
+		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples=NULL);
 			
 		/// Get previously generated tasks.
 		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
@@ -78,6 +79,12 @@ class TaskGenerator
 		 */
 		static rwlibs::task::GraspTask::Ptr copyTasks(const rwlibs::task::GraspTask::Ptr tasks);
 		
+		/**
+		 * @brief Generates samples on the surface.
+		 */
+		SurfaceSample sample(rw::geometry::TriMeshSurfaceSampler& sampler, rw::proximity::ProximityModel::Ptr object,
+			rw::proximity::ProximityModel::Ptr ray, rw::proximity::CollisionStrategy::Ptr cstrategy);
+		
 	protected:
 	// methods
 		/**
@@ -85,13 +92,6 @@ class TaskGenerator
 		 */
 		static void moveFrameW(const rw::math::Transform3D<>& wTtcp, rw::kinematics::Frame* tcp,
 			rw::kinematics::MovableFrame* base, rw::kinematics::State& state);
-			
-		/**
-		 * @brief Generates samples on the surface - for internal use.
-		 */
-		rw::math::Transform3D<> _sample(double minDist, double maxDist,
-			rw::geometry::TriMeshSurfaceSampler& sampler, rw::proximity::ProximityModel::Ptr object,
-			rw::proximity::ProximityModel::Ptr ray, rw::proximity::CollisionStrategy::Ptr cstrategy, double &graspW);
 			
 	// data
 		TaskDescription::Ptr _td;

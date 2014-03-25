@@ -60,8 +60,10 @@ int main(int argc, char* argv[])
 	string tdFilename;
 	string gripperFilename;
 	string outFilename;
+	string samplesFilename;
 	
 	bool nosim = false;
+	bool useSamples = false;
 	
 	// program options
 	string usage = "This is a script used to generate tasks for a single gripper, simulate them and"
@@ -75,6 +77,7 @@ int main(int argc, char* argv[])
 		("dwc", value<string>(&dwcFilename)->required(), "dynamic workcell file")
 		("td", value<string>(&tdFilename)->required(), "task description file")
 		("gripper,g", value<string>(&gripperFilename)->required(), "gripper file")
+		("samples,s", value<string>(), "surface samples")
 		("out,o", value<string>(), "task file")
 		("nosim", "don't perform simulation")
 	;
@@ -108,10 +111,20 @@ int main(int argc, char* argv[])
 	cout << "* Loading gripper... ";
 	Gripper::Ptr gripper = GripperXMLLoader::load(gripperFilename);
 	cout << "Loaded." << endl;
+	
 	if (vm.count("out")) {
 		outFilename = vm["out"].as<string>();
 	} else {
 		outFilename = gripper->getName()+".tasks.xml";
+	}
+	
+	vector<SurfaceSample> ssamples;
+	if (vm.count("samples")) {
+		samplesFilename = vm["samples"].as<string>();
+		useSamples = true;
+		
+		// load samples
+		ssamples = SurfaceSample::loadFromXML(samplesFilename);
 	}
 	
 	/* generate tasks */
@@ -124,7 +137,13 @@ int main(int argc, char* argv[])
 	//CollisionDetector::Ptr cd = new CollisionDetector(td->getWorkCell(), ProximityStrategyFactory::makeDefaultCollisionStrategy());
 	cout << "Generating grasps..." << endl;
 	TaskGenerator::Ptr generator = new TaskGenerator(td);
-	generator->generateTask(number, td->getInitState());
+	
+	if (useSamples) {
+		generator->generateTask(number, td->getInitState(), &ssamples);
+	} else {
+		generator->generateTask(number, td->getInitState());
+	}
+
 	GraspTask::Ptr tasks = generator->getTasks();
 	GraspTask::Ptr samples = generator->getSamples();
 	cout << "Grasps generated." << endl;
