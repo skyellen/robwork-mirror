@@ -76,8 +76,8 @@ add_library( GraspPlugin MODULE GraspPlugin.cpp DesignDialog.cpp TaskDialog.cpp 
 add_executable( test test.cpp csgjs.cpp CSGConvert.cpp CSGModel.cpp JawPrimitive.cpp)
 add_executable( create-gripper-xml createGripperXML.cpp)
 add_executable(evaluate-gripper evaluateGripper.cpp)
-add_executable(simulate-task simulateTask.cpp)
-add_executable(calculate-robustness GraspTaskQualityCalc.cpp)
+add_executable(simulate-perturbed-tasks simulatePerturbedTasks.cpp)
+add_executable(evaluate-perturbed-tasks evaluatePerturbedTasks.cpp)
 #add_executable( create-gripper-db createGripperDB.cpp)
 
 target_link_libraries(GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
