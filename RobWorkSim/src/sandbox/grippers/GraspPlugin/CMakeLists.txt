@@ -85,8 +85,8 @@ target_link_libraries( GraspPlugin GraspLibrary )
 target_link_libraries( test ${ROBWORK_LIBRARIES})
 target_link_libraries( create-gripper-xml rwsim_ode GL GLU glut ode GraspLibrary)
 target_link_libraries(evaluate-gripper    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-target_link_libraries(simulate-task    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
-target_link_libraries(calculate-robustness    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries(simulate-perturbed-tasks    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
+target_link_libraries(evaluate-perturbed-tasks    rwsim_ode GL GLU glut ode GraspLibrary ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ${ROBWORKSIM_LIBRARIES})
 
 #ftarget_link_libraries( create-gripper-db rwsim_ode GL GLU glut ode GraspLibrary)
 
