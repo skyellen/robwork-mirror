@@ -81,8 +81,8 @@ void GraspPlugin::initialize()
     getRobWorkStudio()->genericEvent().add(
 		boost::bind(&GraspPlugin::genericEventListener, this, _1), this);
 		
-	getRobWorkStudio()->keyEvent().add(
-          boost::bind(&GraspPlugin::keyEventListener, this, _1, _2), this);
+	//getRobWorkStudio()->keyEvent().add(
+    //      boost::bind(&GraspPlugin::keyEventListener, this, _1, _2), this);
 }
 
 

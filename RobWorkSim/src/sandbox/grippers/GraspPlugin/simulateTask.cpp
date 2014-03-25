@@ -81,7 +81,7 @@ int main(int argc, char** argv)
         ("input", value<vector<string> >(), "input Files to simulate.")
         ("align", value<bool>()->default_value(false), "Use aligned grasps from input.")
         ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
-        ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
+        ("perturbations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
         ("sigma_a", value<double>()->default_value(8), "Standard deviation in of angle in Degree.")
         ("sigma_p", value<double>()->default_value(0.003), "Standard deviation of position in meters.")
     ;
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 
     double sigma_p = vm["sigma_p"].as<double>();
     double sigma_a = vm["sigma_a"].as<double>()*Deg2Rad;
-    int pertubationsPerTarget = vm["pertubations"].as<int>();
+    int pertubationsPerTarget = vm["perturbations"].as<int>();
 
 
     std::map<int,bool> includeMap;
