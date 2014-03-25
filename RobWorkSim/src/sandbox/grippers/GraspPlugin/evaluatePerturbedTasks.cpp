@@ -92,7 +92,7 @@ int main(int argc, char** argv)
         ("include,i", value<std::vector<string> >(), "Include grasps based on TestStatus. ")
         ("input", value<string>(), "Name of grasp task file.")
         ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
-        ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
+        ("perturbations", value<int>()->default_value(1), "Number of perturbations to perform on each target.")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 	std::string input = vm["input"].as<std::string>();
 	std::string outfile = vm["output"].as<std::string>();
 	bool perturbe = vm["perturbe"].as<bool>();
-	int pertubations = vm["pertubations"].as<int>();
+	int pertubations = vm["perturbations"].as<int>();
 
 	path outp(outfile);
 	create_directory(outp);
