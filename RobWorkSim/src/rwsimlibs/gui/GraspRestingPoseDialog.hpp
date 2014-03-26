@@ -12,6 +12,10 @@
 #include <windows.h>
 #endif
 
+#include <QObject>
+#include <QtGui>
+#include <QTimer>
+
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -29,10 +33,6 @@
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
-
-#include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 
 #include "ThreadSafeStack.hpp"

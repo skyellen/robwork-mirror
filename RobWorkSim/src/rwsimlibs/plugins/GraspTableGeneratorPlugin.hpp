@@ -12,6 +12,7 @@
 #include <windows.h>
 #endif
 
+#include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/kinematics/State.hpp>
 
@@ -26,15 +27,10 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
-#include <rws/RobWorkStudioPlugin.hpp>
 #include <rwsim/util/RestingPoseGenerator.hpp>
 
 #include <rwsim/util/GraspStrategy.hpp>
 #include <rwsim/util/GraspPolicy.hpp>
-
-#include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 #include <rwsimlibs/gui/ThreadSafeStack.hpp>
 

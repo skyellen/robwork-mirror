@@ -12,6 +12,10 @@
 #include <windows.h>
 #endif
 
+#include <QObject>
+#include <QtGui>
+#include <QTimer>
+
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
@@ -28,9 +32,6 @@
 #include <rwsim/drawable/RenderCircles.hpp>
 #include <rw/math/Pose6D.hpp>
 #include <rwlibs/opengl/RenderFrame.hpp>
-#include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 #include "RestingPoseDialog.hpp"
 #include "GLViewRW.hpp"

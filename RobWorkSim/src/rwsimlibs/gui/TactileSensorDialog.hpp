@@ -12,6 +12,10 @@
 #include <windows.h>
 #endif
 
+#include <QObject>
+#include <QtGui>
+#include <QTimer>
+
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -23,10 +27,6 @@
 #include <rwsim/util/MovingAverage.hpp>
 
 #include <rw/proximity/CollisionDetector.hpp>
-
-#include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 struct Moment {
     rw::math::Vector2D<> center;

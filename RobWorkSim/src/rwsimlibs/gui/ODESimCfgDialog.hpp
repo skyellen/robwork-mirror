@@ -12,6 +12,11 @@
 #include <windows.h>
 #endif
 
+#include <QDialog>
+#include <QObject>
+#include <QtGui>
+#include <QTimer>
+
 #include <rw/kinematics/State.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -20,11 +25,6 @@
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-
-#include <QDialog>
-#include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 namespace Ui {
     class ODESimCfgForm;
