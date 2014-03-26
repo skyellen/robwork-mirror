@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	options_description desc("Allowed options");
 	desc.add_options()
 		("help,h", "help message")
-		("ntargets,t", value<int>(&ntargets)->default_value(100), "number of tasks to generate")
+		("ntargets,t", value<int>(&ntargets)->default_value(0), "number of tasks to generate")
 		("nsamples,s", value<int>(&nsamples)->default_value(0), "number of samples to use")
 		("dwc", value<string>(&dwcFilename)->required(), "dynamic workcell file")
 		("td", value<string>(&tdFilename)->required(), "task description file")
