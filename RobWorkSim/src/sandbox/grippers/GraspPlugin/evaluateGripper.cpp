@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	Math::seed();
 	
 	// options
-	int number;
+	int ntargets, nsamples;
 	string dwcFilename;
 	string tdFilename;
 	string gripperFilename;
@@ -73,11 +73,12 @@ int main(int argc, char* argv[])
 	options_description desc("Allowed options");
 	desc.add_options()
 		("help,h", "help message")
-		("number,n", value<int>(&number)->default_value(100), "number of tasks to generate")
+		("ntargets,t", value<int>(&ntargets)->default_value(100), "number of tasks to generate")
+		("nsamples,s", value<int>(&nsamples)->default_value(0), "number of samples to use")
 		("dwc", value<string>(&dwcFilename)->required(), "dynamic workcell file")
 		("td", value<string>(&tdFilename)->required(), "task description file")
 		("gripper,g", value<string>(&gripperFilename)->required(), "gripper file")
-		("samples,s", value<string>(), "surface samples")
+		("samples", value<string>(), "surface samples file")
 		("out,o", value<string>(), "task file")
 		("nosim", "don't perform simulation")
 	;
@@ -139,9 +140,9 @@ int main(int argc, char* argv[])
 	TaskGenerator::Ptr generator = new TaskGenerator(td);
 	
 	if (useSamples) {
-		generator->generateTask(number, td->getInitState(), &ssamples);
+		generator->generateTask(ntargets, td->getInitState(), &ssamples, nsamples);
 	} else {
-		generator->generateTask(number, td->getInitState());
+		generator->generateTask(ntargets, td->getInitState(), NULL, nsamples);
 	}
 
 	GraspTask::Ptr tasks = generator->getTasks();

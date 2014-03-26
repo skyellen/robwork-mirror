@@ -298,7 +298,7 @@ rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::Grasp
 
 
 
-rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples)
+rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples, int nSamples)
 {
 	Transform3D<> wTobj = Kinematics::worldTframe(_td->getTargetObject()->getBase(), state);
 	
@@ -355,7 +355,9 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 	}
     
     int failures_in_row = 0;
-    for (int successes = 0; successes < nTargets;) {
+    int successes = 0, samples = 0;
+    //for (int successes = 0; successes < nTargets;) {
+	while ((nSamples == 0 && successes < nTargets) || (nSamples > 0 && samples < nSamples)) {
 		// generate a surface sample - or use the supplied vector
 		SurfaceSample ssample;
 		
@@ -365,6 +367,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 		} else {
 			ssample = sample(sampler, object, ray, cstrategy);
 		}
+		
+		++samples;
 		
 		double& graspW = ssample.graspW;
 		Transform3D<>& target = ssample.transform;

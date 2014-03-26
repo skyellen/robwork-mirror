@@ -42,9 +42,13 @@ class TaskGenerator
 		 * that only passed the parallel normals check, and not the collision check. This vector can be accessed by
 		 * getAllSamples() method, and is used for calculating the coverage.
 		 * 
+		 * A vector of pre-sampled surface samples can be provided, so the same sample set can be used to test different grippers.
+		 * If the nSamples is provided (>0), the target generation continues until nSamples of samples were used.
+		 * 
 		 * @param nTargets [in] number of targets to generate
+		 * @param state [in] state
 		 */
-		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples=NULL);
+		virtual rwlibs::task::GraspTask::Ptr generateTask(int nTargets, rw::kinematics::State state, std::vector<SurfaceSample>* ssamples=NULL, int nSamples=0);
 			
 		/// Get previously generated tasks.
 		rwlibs::task::GraspTask::Ptr getTasks() { return _tasks; }
