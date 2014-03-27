@@ -2,8 +2,8 @@
 # Helper to use RobWork from outside project
 #
 # ROBWORKSTUDIO_LIBRARIES is filled with all available RobWork libraries
-# ROBWORKSTUDIO_INCLUDE_DIRS is filled with RobWork and available 3rdparty headers
-# ROBWORKSTUDIO_LIBRARY_DIRS is filled with RobWork components libraries install directory and
+# ROBWORKSTUDIO_INCLUDE_DIRS is filled with RobWorkStudio and available 3rdparty headers
+# ROBWORKSTUDIO_LIBRARY_DIRS is filled with RobWorkStudio components libraries install directory and
 # 3rdparty libraries paths
 # 
 #                                   www.robwork.dk
@@ -79,13 +79,13 @@ else()
   else()
     MESSAGE(STATUS "Does not recognize build type: ${CMAKE_BUILD_TYPE} choosing any existing RobWorkStudio installation!")
     if( EXISTS ${CFG_ROOT}/RobWorkStudioBuildConfig_release.cmake )
-      SET(${RW_BUILD_TYPE} release)
+      SET(${RWS_BUILD_TYPE} release)
     elseif( EXISTS ${CFG_ROOT}/RobWorkStudioBuildConfig_minsizerel.cmake )
-      SET(${RW_BUILD_TYPE} minsizerel)
+      SET(${RWS_BUILD_TYPE} minsizerel)
     elseif(EXISTS ${CFG_ROOT}/RobWorkStudioBuildConfig_relwithdebinfo.cmake)
-      SET(${RW_BUILD_TYPE} relwithdebinfo)
+      SET(${RWS_BUILD_TYPE} relwithdebinfo)
     elseif(EXISTS ${CFG_ROOT}/RobWorkStudioBuildConfig_debug.cmake)
-      SET(${RW_BUILD_TYPE} debug)
+      SET(${RWS_BUILD_TYPE} debug)
     else()
       MESSAGE(FATAL_ERROR "Could not find any build of RobWorkStudio!")
     endif()
@@ -101,19 +101,19 @@ get_filename_component(RWSCFG_ROOT ${CMAKE_CURRENT_LIST_FILE} PATH)
 
 # check if user specified a RobWorkStudio_DIR
 if(DEFINED RobWorkStudio_DIR)
-  if(EXISTS "${RobWorkStudio_DIR}/src/RobWorkStudioConfig.hpp")
-    # Found RobWork in a build tree of RobWork
-    set(RWSCFG_ROOT "${RobWorkStudio_DIR}/cmake")
+  if(EXISTS "${RobWorkStudio_DIR}/../src/RobWorkStudioConfig.hpp")
+    # Found RobWorkStudio in a build tree of RobWork
+    set(RWSCFG_ROOT "${RobWorkStudio_DIR}")
     set(is_installed false)
-  elseif(EXISTS "${RobWorkStudio_DIR}/RobWorkConfig.cmake")
-    # Found a RobWork installation
+  elseif(EXISTS "${RobWorkStudio_DIR}/RobWorkStudioConfig.cmake")
+    # Found a RobWorkStudio installation
     set(RWSCFG_ROOT "${RobWorkStudio_DIR}/cmake")
     set(is_installed true)
   elseif(EXISTS "${RobWorkStudio_DIR}/include/robworkstudio-${RobWorkStudio_VERSION_MAJOR}.${RobWorkStudio_VERSION_MINOR}/RobWorkStudioConfig.hpp")
     set(RWSCFG_ROOT "${RobWorkStudio_DIR}/share/robworkstudio-${RobWorkStudio_VERSION_MAJOR}.${RobWorkStudio_VERSION_MINOR}/")
     set(is_installed true)    
   else()
-    # found no RobWork installation ot build tree in RobWorkStudio_DIR so we try extracting it from RobWorkStudioConfig.cmake location instead
+    # found no RobWorkStudio installation ot build tree in RobWorkStudio_DIR so we try extracting it from RobWorkStudioConfig.cmake location instead
   endif()
 endif()
 
