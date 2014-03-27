@@ -44,9 +44,9 @@ namespace {
 		if (fixedFrame.isNull())
 			RW_THROW("Frame \"" << frameName << "\" not found.");
 
-		DOMElem::Ptr transformElement = element->getChild("Transform");
+		DOMElem::Ptr transformElement = element->getChild("Transform3D");
 		if (transformElement == NULL)
-			RW_THROW("\"Transform\" element not found");
+			RW_THROW("\"Transform3D\" element not found");
 
 		Transform3D<> t3d = DOMBasisTypes::readTransform3D(transformElement, false);
 
