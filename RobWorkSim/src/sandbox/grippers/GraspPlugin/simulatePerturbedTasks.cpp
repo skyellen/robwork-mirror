@@ -215,23 +215,24 @@ int main(int argc, char** argv)
                 target.result = NULL;
             }
         }
+        
         std::vector<GraspTask::Ptr> tasks;
         if(perturbe){
             addPertubations(grasptask, sigma_p, sigma_a, pertubationsPerTarget );
-            int nroftarg = 6000/(pertubationsPerTarget+1);
-            tasks = splitTask(grasptask,nroftarg*(pertubationsPerTarget+1));
+            //int nroftarg = 6000/(pertubationsPerTarget+1);
+            //tasks = splitTask(grasptask,nroftarg*(pertubationsPerTarget+1));
         } else {
             tasks.push_back(grasptask);
         }
 
-        for(std::size_t i=0;i<tasks.size();i++){
+       // for(std::size_t i=0;i<tasks.size();i++){
             std::stringstream outputfile;
             if(iformat==0){
-                outputfile << sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml";
+                outputfile << sstr.str()+".task.xml";
             } else if(iformat==1){
-                outputfile <<  sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".uibk.xml";
+                outputfile <<  sstr.str()+".uibk.xml";
             } else if(iformat==2){
-                outputfile <<  sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".txt";
+                outputfile <<  sstr.str()+".txt";
             }
             if( boost::filesystem::exists( path( outputfile.str() ) ) ){
                 std::cout << "result already exists!\n\t" << outputfile.str() << std::endl;
@@ -243,7 +244,7 @@ int main(int argc, char** argv)
 
             std::cout << std::endl;
 
-            graspSim->load(tasks[i]);
+            graspSim->load(grasptask);
             graspSim->startSimulation(initState);
             for(std::size_t j=0;j<graspSim->getStat().size(); j++){ std::cout << j << "\t"; }
             std::cout<< std::endl;
@@ -262,14 +263,14 @@ int main(int argc, char** argv)
 
             std::cout << "Saving to: " << sstr.str() << std::endl;
             if(iformat==0){
-                GraspTask::saveRWTask(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml" );
+                GraspTask::saveRWTask(grasptask, sstr.str()+".task.xml" );
             } else if(iformat==1){
-                GraspTask::saveUIBK(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".uibk.xml" );
+                GraspTask::saveUIBK(grasptask, sstr.str()+".uibk.xml" );
             } else if(iformat==2){
-                GraspTask::saveText(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".txt" );
+                GraspTask::saveText(grasptask, sstr.str()+".txt" );
             }
         }
-    }
+    //}
     std::cout << "Done" << std::endl;
     return 0;
 }
