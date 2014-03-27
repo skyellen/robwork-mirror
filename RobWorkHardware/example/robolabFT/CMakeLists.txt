@@ -1,9 +1,8 @@
 # check compiler/operating system
 
-FIND_PACKAGE(robolabFT)
-
-
 IF(COMPONENT_robolabFT_ENABLE )
+    FIND_PACKAGE(robolabFT)
+
     INCLUDE_DIRECTORIES( ${ROBOLABFT_INCLUDE_DIR} )
 
     set(LibraryList
