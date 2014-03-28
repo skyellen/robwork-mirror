@@ -634,7 +634,8 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             //RW_WARN("1");
 
             if( sstate._target->getResult()->testStatus != GraspTask::UnInitialized &&
-                    sstate._target->getResult()->testStatus !=GraspTask::SimulationFailure ){
+                sstate._target->getResult()->testStatus !=GraspTask::SimulationFailure &&
+                sstate._target->getResult()->testStatus !=GraspTask::Filtered){
                 // if test status is set then we allready processed this task.
                 if(sstate._target->getResult()->testStatus<GraspTask::SizeOfStatusArray)
                     _stat[sstate._target->getResult()->testStatus]++;
