@@ -35,6 +35,8 @@
 #include <rw/sensor.hpp>
 #include <rw/trajectory.hpp>
 
+#include <rw/math/LinearAlgebra.hpp>
+
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
@@ -149,6 +151,7 @@ namespace swig {
 	typedef rw::math::Jacobian Jacobian;
 	typedef rw::math::QMetric MetricQ;
 	typedef rw::math::Transform3DMetric MetricSE3;
+	typedef Eigen::MatrixXd Matrix;
 
 	// models
 	typedef rw::models::WorkCell WorkCell;

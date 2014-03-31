@@ -3,6 +3,7 @@
 %{
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
 #if defined (SWIGLUA)
 #include <rwlibs/swig/Lua.hpp>
 #endif
@@ -754,6 +755,37 @@ private:
 /********************************************
  * MATH
  ********************************************/
+
+class Matrix {
+public:
+	
+	Matrix(int dimx, int dimy);
+	
+#if !defined(SWIGJAVA)
+    double& operator()(size_t row, size_t column);
+    const double& operator()(size_t row, size_t column) const;
+
+    const Matrix operator+(const Matrix& wrench) const;    
+    const Matrix operator-(const Matrix& wrench) const;
+#endif
+
+#if defined(SWIGJAVA)
+	%rename(subtract) operator-(const Matrix&) const;
+	%rename(add) operator+(const Matrix&) const;
+#endif
+	
+	%extend {
+		Matrix pseudoinverse() {
+			 return rw::math::LinearAlgebra::pseudoInverse( (*$self) );
+		}
+		
+		double& elem(int x, int y){
+			return (*$self)(x,y);
+		}
+	}
+	
+};
+
 
 class Q
 {
@@ -1718,6 +1750,69 @@ public:
     }
 
 };
+
+%extend Path<Timed<State> > {
+	
+	static rw::common::Ptr<Path<Timed<State> > > load(const std::string& filename, rw::common::Ptr<WorkCell> wc){
+		std::auto_ptr<rw::trajectory::TimedStatePath> spath = 
+			rw::loaders::PathLoader::loadTimedStatePath(*wc, filename);
+		return rw::common::Ptr<rw::trajectory::TimedStatePath>( spath );
+	}
+	
+	void save(const std::string& filename, rw::common::Ptr<WorkCell> wc){		 		
+		rw::loaders::PathLoader::storeTimedStatePath(*wc,*$self,filename); 
+	}
+	
+	void append(rw::common::Ptr<Path<Timed<State> > > spath){
+		double startTime = 0;
+		if($self->size()>0)
+			startTime = (*$self).back().getTime(); 
+		
+		for(size_t i = 0; i<spath->size(); i++){
+			Timed<State> tstate = (*spath)[i]; 
+			tstate.getTime() += startTime;
+			(*$self).push_back( tstate );
+		}
+	}
+	
+};
+
+%extend Path<State > {
+	
+	static rw::common::Ptr<Path<State> > load(const std::string& filename, rw::common::Ptr<WorkCell> wc){
+		std::auto_ptr<rw::trajectory::StatePath> spath = 
+			rw::loaders::PathLoader::loadStatePath(*wc, filename);
+		return rw::common::ownedPtr( spath );
+	}
+	
+	void save(const std::string& filename, rw::common::Ptr<WorkCell> wc){		 		
+		rw::loaders::PathLoader::storeStatePath(*wc,*$self,filename); 
+	}
+	
+	void append(rw::common::Ptr<Path<State> > spath){
+		double startTime = 0;
+		if($self->size()>0)
+			startTime = (*$self).front().getTime(); 
+		
+		for(size_t i = 0; i<spath->size(); i++){
+			(*$self).push_back( (*spath)[i] );
+		}
+	}
+	
+	
+	rw::common::Ptr<Path<Timed<State> > > toTimedStatePath(double timeStep){
+		rw::common::Ptr<TimedStatePath> spath = 
+			rw::common::ownedPtr( new rw::trajectory::TimedStatePath() );	
+		for(size_t i = 0; i<spath->size(); i++){
+			Timed<State> tstate(timeStep*i, (*spath)[i]); 
+			spath->push_back( tstate );
+		}	
+		return spath;
+	}
+	
+};
+
+
 
 template <class T>
 class Blend
