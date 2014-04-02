@@ -8,7 +8,7 @@ default_target: all
 #=============================================================================
 # Special targets provided by cmake.
 
-# Disable implicit rules so canoncical targets will work.
+# Disable implicit rules so canonical targets will work.
 .SUFFIXES:
 
 # Remove some rules from gmake that .SUFFIXES does not remove.
@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/andersgb1/workspace/RobWork
+CMAKE_SOURCE_DIR = /home/dagothar/robwork/trunk/RobWork
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/andersgb1/workspace/RobWork
+CMAKE_BINARY_DIR = /home/dagothar/robwork/trunk/RobWork
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -91,7 +91,7 @@ install/strip/fast: install/strip
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\" \"algorithms\" \"assembly\" \"calibration\" \"control\" \"opengl\" \"pathoptimization\" \"pathplanners\" \"proximitystrategies\" \"rw\" \"simulation\" \"swig\" \"task\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -101,7 +101,7 @@ list_install_components/fast: list_install_components
 # Special rule for the target package
 package: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
-	cd /home/andersgb1/workspace/RobWork && /usr/bin/cpack --config ./CPackConfig.cmake
+	cd /home/dagothar/robwork/trunk/RobWork && /usr/bin/cpack --config ./CPackConfig.cmake
 .PHONY : package
 
 # Special rule for the target package
@@ -111,7 +111,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	cd /home/andersgb1/workspace/RobWork && /usr/bin/cpack --config ./CPackSourceConfig.cmake /home/andersgb1/workspace/RobWork/CPackSourceConfig.cmake
+	cd /home/dagothar/robwork/trunk/RobWork && /usr/bin/cpack --config ./CPackSourceConfig.cmake /home/dagothar/robwork/trunk/RobWork/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -128,16 +128,26 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # The main all target
 all: cmake_check_build_system
-	cd /home/andersgb1/workspace/RobWork && $(CMAKE_COMMAND) -E cmake_progress_start /home/andersgb1/workspace/RobWork/CMakeFiles /home/andersgb1/workspace/RobWork/RobWork/ext/qhull/CMakeFiles/progress.marks
-	cd /home/andersgb1/workspace/RobWork && $(MAKE) -f CMakeFiles/Makefile2 RobWork/ext/qhull/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andersgb1/workspace/RobWork/CMakeFiles 0
+	cd /home/dagothar/robwork/trunk/RobWork && $(CMAKE_COMMAND) -E cmake_progress_start /home/dagothar/robwork/trunk/RobWork/CMakeFiles /home/dagothar/robwork/trunk/RobWork/ext/qhull/CMakeFiles/progress.marks
+	cd /home/dagothar/robwork/trunk/RobWork && $(MAKE) -f CMakeFiles/Makefile2 ext/qhull/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dagothar/robwork/trunk/RobWork/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/andersgb1/workspace/RobWork && $(MAKE) -f CMakeFiles/Makefile2 RobWork/ext/qhull/clean
+	cd /home/dagothar/robwork/trunk/RobWork && $(MAKE) -f CMakeFiles/Makefile2 ext/qhull/clean
 .PHONY : clean
 
 # The main clean target
@@ -146,17 +156,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/andersgb1/workspace/RobWork && $(MAKE) -f CMakeFiles/Makefile2 RobWork/ext/qhull/preinstall
+	cd /home/dagothar/robwork/trunk/RobWork && $(MAKE) -f CMakeFiles/Makefile2 ext/qhull/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/andersgb1/workspace/RobWork && $(MAKE) -f CMakeFiles/Makefile2 RobWork/ext/qhull/preinstall
+	cd /home/dagothar/robwork/trunk/RobWork && $(MAKE) -f CMakeFiles/Makefile2 ext/qhull/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/andersgb1/workspace/RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/dagothar/robwork/trunk/RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -173,6 +183,7 @@ help:
 	@echo "... package"
 	@echo "... package_source"
 	@echo "... rebuild_cache"
+	@echo "... test"
 .PHONY : help
 
 
@@ -184,6 +195,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/andersgb1/workspace/RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/dagothar/robwork/trunk/RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
