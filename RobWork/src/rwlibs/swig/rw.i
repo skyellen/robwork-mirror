@@ -844,6 +844,10 @@ public:
     double normInf();
 
     %extend {
+    double& elem(int i){
+			return (*$self)[i];
+		}
+		
 #if (defined(SWIGLUA) || defined(SWIGPYTHON))
         char *__str__() { return printCString<Q>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
