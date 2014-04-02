@@ -767,6 +767,7 @@ public:
 
     const Matrix operator+(const Matrix& wrench) const;    
     const Matrix operator-(const Matrix& wrench) const;
+    const Matrix operator*(const Matrix& wrench) const;
 #endif
 
 #if defined(SWIGJAVA)
@@ -781,6 +782,17 @@ public:
 		
 		double& elem(int x, int y){
 			return (*$self)(x,y);
+		}
+		
+		/* These accesors are neccesary because Python does not allow
+		lvalues consisting of access operators calls (cannot assign to a function call).
+		Moreover, it's not possible to dereference a pointer obtained from function returning a reference. */
+		double get(int x, int y) {
+			return (*$self)(x, y);
+		}
+		
+		void set(int x, int y, double value) {
+			(*$self)(x, y) = value;
 		}
 	}
 	
