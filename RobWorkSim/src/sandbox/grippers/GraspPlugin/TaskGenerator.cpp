@@ -381,7 +381,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
         Q oq = _openQ;
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
-        _td->getGripperDevice()->setQ(oq, state);
+        _td->getGripperDevice()->setQ(_openQ, state);
         cout << "So the oq is: " << oq(0) << endl;
         
         // then check for collision
