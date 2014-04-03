@@ -45,6 +45,7 @@ SchunkPG70::~SchunkPG70() {
 
 bool SchunkPG70::connectSerial(const std::string& port) {
 	if(initialize(port)) {
+		std::cout<<"Port Initialized"<<std::endl;
 		unsigned int statusMem = 0;
 		bool getStatusMem = false;
 		bool dataComOK = false;
@@ -56,14 +57,17 @@ bool SchunkPG70::connectSerial(const std::string& port) {
 		bool tmp = true;
 		do {
 			try {
-				_port->clean();
+		/*		_port->clean();
 				_defMaxPos = _cube->getDefMinPos();
+std::cout<<"_defMaxPos = "<<_defMaxPos<<std::endl;
 				_port->clean();
 				_defMinPos = _cube->getDefMaxPos();
+std::cout<<"_defMinPos = "<<_defMinPos<<std::endl;*/
 				float maxcur = _cube->getMaxCur();
 				std::cout<<"MAXIMAL CURRENT = "<<maxcur<<std::endl;
 				tmp=false;
 			} catch(rw::common::Exception& e) {
+				std::cout<<"Exception: "<<e.what()<<std::endl;
 				rw::common::TimerUtil::sleepMs(100);
 				tmp=true;
 				std::cout<<"faild to get Position limits"<<std::endl;
@@ -72,7 +76,7 @@ bool SchunkPG70::connectSerial(const std::string& port) {
 
 		std::cout<<"Position limits: "<<_defMinPos<<","<<_defMaxPos<<std::endl;
 
-		setGraspPowerPct(5.0);
+		setGraspPowerPct(1.0);
 		logTextReadySig("Parallel gripper ready");
 		return true;
 	} else {
@@ -119,7 +123,7 @@ bool SchunkPG70::initialize(const std::string& port) {
 		logTextReadySig("Parallel gripper not found", true);
 		return false;
 	}
-
+	
 	// Make a cube port
 	std::vector<rwhw::Cube*> cubes;
 	try {
@@ -251,13 +255,14 @@ bool SchunkPG70::setQ(const rw::math::Q& q) {
 	}
 	rw::math::Q qTmp = 2.0*q;
 	if(qTmp[0] < 0.0 || qTmp[0] > MAXPOS) {
+		//std::cout<<"Position = "<<q<<" MAXPOS = "<<MAXPOS<<std::endl;
 		logTextReadySig("Position out of range", true);
 		return false;
 	}
 	try {
 		bool getStatusMem=false;
 		_port->clean();
-		std::cout<<"MAXIMAL CURRENT = "<<_cube->getMaxCur()<<std::endl;
+		//std::cout<<"MAXIMAL CURRENT = "<<_cube->getMaxCur()<<std::endl;
 		while(!_cube->resetCmd()) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
 		_port->clean();
 		while(!_cube->setTargetVel(VEL)){ rw::common::TimerUtil::sleepMs(100); _port->clean();};
