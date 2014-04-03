@@ -64,7 +64,7 @@ std::cout<<"_defMaxPos = "<<_defMaxPos<<std::endl;
 				_defMinPos = _cube->getDefMaxPos();
 std::cout<<"_defMinPos = "<<_defMinPos<<std::endl;*/
 				float maxcur = _cube->getMaxCur();
-				std::cout<<"MAXIMAL CURRENT = "<<maxcur<<std::endl;
+				//std::cout<<"MAXIMAL CURRENT = "<<maxcur<<std::endl;
 				tmp=false;
 			} catch(rw::common::Exception& e) {
 				std::cout<<"Exception: "<<e.what()<<std::endl;
@@ -74,7 +74,7 @@ std::cout<<"_defMinPos = "<<_defMinPos<<std::endl;*/
 			}
 		}while(tmp);
 
-		std::cout<<"Position limits: "<<_defMinPos<<","<<_defMaxPos<<std::endl;
+		//std::cout<<"Position limits: "<<_defMinPos<<","<<_defMaxPos<<std::endl;
 
 		setGraspPowerPct(1.0);
 		logTextReadySig("Parallel gripper ready");
