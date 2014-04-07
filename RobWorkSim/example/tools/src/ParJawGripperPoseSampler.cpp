@@ -534,7 +534,7 @@ Transform3D<> sampleParSurface(double minDist, double maxDist, TriMeshSurfaceSam
         negFaceNormal = normalize( negFaceNormal );
 
         Rotation3D<> rot(normalize(cross(xaxis,negFaceNormal)), xaxis, negFaceNormal);
-        Transform3D<> rayTrans( pos-faceNormal*0.01, rot );
+        Transform3D<> rayTrans( pos-faceNormal*0.001, rot );
 
         // now we want to find any triangles that collide with the ray and which are parallel with the sampled
         cstrategy->inCollision(object,Transform3D<>::identity(), ray, rayTrans, data);
