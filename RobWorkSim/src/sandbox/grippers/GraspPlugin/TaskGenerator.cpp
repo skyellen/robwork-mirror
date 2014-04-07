@@ -68,8 +68,10 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
         negFaceNormal(2) += Math::ran(-0.1,0.1);
         negFaceNormal = normalize( negFaceNormal );
 
-        Rotation3D<> rot(normalize(cross(xaxis,negFaceNormal)), xaxis, negFaceNormal);
-        Transform3D<> rayTrans( pos-faceNormal*0.001, rot );
+        Rotation3D<> rot(normalize(cross(xaxis,-faceNormal)), xaxis, -faceNormal);
+        
+        Transform3D<> rayTrans( pos-faceNormal*0.001,  RPY<>(Math::ran(-0.1,0.1),Math::ran(-0.1,0.1),Math::ran(-0.1,0.1)).toRotation3D()*rot );
+        //RPY<>(Math::ran(-0.1,0.1),Math::ran(-0.1,0.1),Math::ran(-0.1,0.1)).toRotation3D()*
 
         // now we want to find any triangles that collide with the ray and which are parallel with the sampled
         // this should look for all the collisions, so should detect a proper grasp regardless of presence of folds in the model
@@ -82,26 +84,30 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
 			Triangle<> tri = mesh->getTriangle( pid.first );
 			Vector3D<> normal = tri.calcFaceNormal();
 			
-			bool closeAngle = angle(negFaceNormal,normal)<50*Deg2Rad;
-			double dist = MetricUtil::dist2(tri[0], pos);
+			bool closeAngle = angle(-faceNormal,normal)<50*Deg2Rad;
+			double dist = 0;//MetricUtil::dist2(tri[0], pos);
+
+			double d1 = dot( tri[0], -faceNormal);
+			double d2 = dot( pos, -faceNormal);
+			dist = d1-d2;
 
 		   if (closeAngle) {
 				
 				// calculate target
-				Vector3D<> avgNormal = normalize( (negFaceNormal+normal)/2.0 );
+				Vector3D<> avgNormal = normalize( (-faceNormal+normal)/2.0 );
 				Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
 				Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
 				Rotation3D<> rot2( xcol, ycol, -avgNormal);
 				Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
 				// next we rotate z-axis into place
 				trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
-				target.R() = trot;
+				target.R() = trot; 
 
 				graspW = dist;
-				if(dot(tri[0]-pos, -faceNormal)>0)
+				//if(dot(tri[0]-pos, -faceNormal)>0)
+					//target.P() = pos-faceNormal*(dist/2.0);
+				//else
 					target.P() = pos-faceNormal*(dist/2.0);
-				else
-					target.P() = pos+faceNormal*(dist/2.0);
 				
 				if (_td->hasHints()) {
 					targetFound = false;
@@ -174,7 +180,7 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
         
         tries++;
         if (tries > 25000) {
-			RW_THROW("Cannot find target without collision! Tries: " << tries);
+			RW_THROW("Cannot find target that's OK! Tries: " << tries);
 		}
     } while (!targetFound);
     
