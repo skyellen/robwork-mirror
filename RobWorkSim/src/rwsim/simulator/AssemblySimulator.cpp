@@ -27,11 +27,13 @@
 #include <rwlibs/assembly/AssemblyResult.hpp>
 #include <rwlibs/assembly/AssemblyControlResponse.hpp>
 #include <rwlibs/assembly/AssemblyControlStrategy.hpp>
+#include <rwlibs/assembly/AssemblyParameterization.hpp>
 #include <rwlibs/assembly/AssemblyState.hpp>
 #include <rwlibs/assembly/AssemblyTask.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
+#include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
