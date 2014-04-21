@@ -45,12 +45,12 @@ using namespace rwlibs::xml;
 
 
 
-void readJaws(PTree& tree, Gripper::Ptr gripper)
+void readJaws(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
 	boost::optional<PTree&> fileNode = tree.get_child_optional("File");
 	if (fileNode) {
 		// read jaw geometry from STL file
-		string filename = (*fileNode).get_value<string>();
+		string filename = path + (*fileNode).get_value<string>();
 		DEBUG << "Jaw geometry from file: " << filename << endl;
 		
 		TriMesh::Ptr mesh = STLFile::load(filename);
@@ -71,7 +71,7 @@ void readJaws(PTree& tree, Gripper::Ptr gripper)
 
 
 
-void readBase(PTree& tree, Gripper::Ptr gripper)
+void readBase(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
 	boost::optional<PTree&> fileNode = tree.get_child_optional("File");
 	if (fileNode) {
@@ -93,17 +93,17 @@ void readBase(PTree& tree, Gripper::Ptr gripper)
 
 
 
-void readGeometry(PTree& tree, Gripper::Ptr gripper)
+void readGeometry(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
-	readJaws(tree.get_child("Jaws"), gripper);
-	readBase(tree.get_child("Base"), gripper);
+	readJaws(tree.get_child("Jaws"), gripper, path);
+	readBase(tree.get_child("Base"), gripper, path);
 }
 
 
 
-void readParameters(PTree& tree, Gripper::Ptr gripper)
+void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
-	readGeometry(tree.get_child("Geometry"), gripper);
+	readGeometry(tree.get_child("Geometry"), gripper, path);
 	
 	double offset = XMLHelpers::readDouble(tree.get_child("Offset"));
 	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-offset)));
@@ -115,7 +115,7 @@ void readParameters(PTree& tree, Gripper::Ptr gripper)
 
 
 
-void readResult(PTree& tree, Gripper::Ptr gripper)
+void readResult(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
 	GripperQuality::Ptr result = gripper->getQuality();
 	
@@ -135,12 +135,12 @@ void readResult(PTree& tree, Gripper::Ptr gripper)
 
 
 
-Gripper::Ptr readGripper(PTree& tree)
+Gripper::Ptr readGripper(PTree& tree, const std::string& path)
 {
 	Gripper::Ptr gripper = ownedPtr(new Gripper);
 	
-	readParameters(tree.get_child("Parameters"), gripper);
-	readResult(tree.get_child("Result"), gripper);
+	readParameters(tree.get_child("Parameters"), gripper, path);
+	readResult(tree.get_child("Result"), gripper, path);
 	
 	return gripper;
 }
@@ -152,10 +152,14 @@ rw::models::Gripper::Ptr GripperXMLLoader::load(const std::string& filename)
 	Gripper::Ptr gripper;
 	
     try {
+		// get path
+		boost::filesystem::path p(filename);
+		string gripperPath = p.parent_path().string()+"/";
+		
         PTree tree;
         read_xml(filename, tree);
 
-        gripper = readGripper(tree.get_child("Gripper"));
+        gripper = readGripper(tree.get_child("Gripper"), gripperPath);
         string name = tree.get_child("Gripper").get_child("<xmlattr>.name").get_value<string>();
         gripper->setName(name);        
     } catch (const ptree_error& e) {

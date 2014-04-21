@@ -75,8 +75,8 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	Object* rightobj = new Object(wc->findFrame("gripper.RightFinger"));
 	Model3D* rightmodel = new Model3D("RightModel");
 	rightmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *rightGeometry->getGeometryData()->getTriMesh() );
-	rightmodel->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
-	rightGeometry->setTransform(Transform3D<>(Vector3D<>(), RPY<>(0, 180*Deg2Rad, 180*Deg2Rad).toRotation3D()));
+	rightmodel->setTransform(Transform3D<>(Vector3D<>(), Rotation3D<>(1, 0, 0, 0, 1, 0, 0, 0, -1)));
+	rightGeometry->setTransform(Transform3D<>(Vector3D<>(), Rotation3D<>(1, 0, 0, 0, 1, 0, 0, 0, -1)));
 	rightobj->addModel(rightmodel);
 	rightobj->addGeometry(rightGeometry);
 	wc->add(rightobj);

@@ -57,21 +57,16 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
 		//RW_WARN("SAMPLELOOP");
         target = sampler.sample();
         Vector3D<> pos = target.P();
+        
         // z-axis is aligned with tri normal
         Vector3D<> negFaceNormal = -(target.R() * Vector3D<>::z());
         Vector3D<> faceNormal = -negFaceNormal;
         Vector3D<> xaxis = target.R() * Vector3D<>::x();
 
-        // add some noise to the "shooting direction"
-        negFaceNormal(0) += Math::ran(-0.1,0.1);
-        negFaceNormal(1) += Math::ran(-0.1,0.1);
-        negFaceNormal(2) += Math::ran(-0.1,0.1);
-        negFaceNormal = normalize( negFaceNormal );
-
-        Rotation3D<> rot(normalize(cross(xaxis,-faceNormal)), xaxis, -faceNormal);
+        Rotation3D<> rot(normalize(cross(xaxis, -faceNormal)), xaxis, -faceNormal);
         
-        Transform3D<> rayTrans( pos-faceNormal*0.001,  RPY<>(Math::ran(-0.1,0.1),Math::ran(-0.1,0.1),Math::ran(-0.1,0.1)).toRotation3D()*rot );
-        //RPY<>(Math::ran(-0.1,0.1),Math::ran(-0.1,0.1),Math::ran(-0.1,0.1)).toRotation3D()*
+        // create ray transform and add some noise to the "shooting direction"
+        Transform3D<> rayTrans(pos-faceNormal*0.001, RPY<>(Math::ran(-0.1, 0.1), Math::ran(-0.1, 0.1), Math::ran(-0.1, 0.1)).toRotation3D()*rot);
 
         // now we want to find any triangles that collide with the ray and which are parallel with the sampled
         // this should look for all the collisions, so should detect a proper grasp regardless of presence of folds in the model
@@ -79,35 +74,34 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
         typedef std::pair<int,int> PrimID;
         
         BOOST_FOREACH(PrimID pid, data.getCollisionData()._geomPrimIds) {
-			// search for a triangle that has a normal
 			
-			Triangle<> tri = mesh->getTriangle( pid.first );
+			// search for a triangle that has a normal
+			Triangle<> tri = mesh->getTriangle(pid.first);
 			Vector3D<> normal = tri.calcFaceNormal();
 			
-			bool closeAngle = angle(-faceNormal,normal)<50*Deg2Rad;
-			double dist = 0;//MetricUtil::dist2(tri[0], pos);
+			bool closeAngle = angle(-faceNormal,normal)<50*Deg2Rad; // are the normals aprox. parallel?
+			
+			// calculate the distance between primitives on the opposite sides of an object
+			double d1 = dot(tri[0], -faceNormal); // cast a triangle point on the origin
+			double d2 = dot(pos, -faceNormal); // cast a pos point on the origin
+			double dist = d1 - d2;
 
-			double d1 = dot( tri[0], -faceNormal);
-			double d2 = dot( pos, -faceNormal);
-			dist = d1-d2;
-
-		   if (closeAngle) {
+			if (closeAngle) {
 				
 				// calculate target
-				Vector3D<> avgNormal = normalize( (-faceNormal+normal)/2.0 );
-				Vector3D<> xcol = normalize( cross(xaxis,-avgNormal) );
-				Vector3D<> ycol = normalize( cross(-avgNormal,xcol) );
-				Rotation3D<> rot2( xcol, ycol, -avgNormal);
+				Vector3D<> avgNormal = normalize((-faceNormal + normal)/2.0);
+				Vector3D<> xcol = normalize(cross(xaxis, -avgNormal));
+				Vector3D<> ycol = normalize(cross(-avgNormal, xcol));
+				Rotation3D<> rot2(xcol, ycol, -avgNormal);
 				Rotation3D<> trot = rot2*RPY<>(Math::ran(0.0,Pi*2.0), 0, 0).toRotation3D();
+				
 				// next we rotate z-axis into place
 				trot = trot * RPY<>(0, 90*Deg2Rad, 0).toRotation3D();
 				target.R() = trot; 
 
 				graspW = dist;
-				//if(dot(tri[0]-pos, -faceNormal)>0)
-					//target.P() = pos-faceNormal*(dist/2.0);
-				//else
-					target.P() = pos-faceNormal*(dist/2.0);
+
+				target.P() = pos-faceNormal*(dist/2.0);
 				
 				if (_td->hasHints()) {
 					targetFound = false;
@@ -387,7 +381,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
         Q oq = _openQ;
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
-        _td->getGripperDevice()->setQ(_openQ, state);
+        //oq(0) = 
+        _td->getGripperDevice()->setQ(oq, state);
         cout << "So the oq is: " << oq(0) << endl;
         
         // then check for collision
