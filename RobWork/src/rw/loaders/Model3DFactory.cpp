@@ -176,10 +176,18 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         getCache().add(filename, model, moddate);
         return getCache().get(filename);
     } else if (filetype == ".OBJ") {
-    	LoaderOBJ loader;
-		Model3D::Ptr model = loader.load(filename);
+#if RW_HAVE_ASSIMP
+        std::cout << "Using ASSIMP" << std::endl;
+        LoaderAssimp loader;
+        Model3D::Ptr model = loader.load(filename);
         getCache().add(filename, model, moddate);
         return getCache().get(filename);
+#else
+        LoaderOBJ loader;
+        Model3D::Ptr model = loader.load(filename);
+        getCache().add(filename, model, moddate);
+        return getCache().get(filename);
+#endif
     /*
     } else if (filetype == ".IVG") {
     	LoaderIVG loader;

@@ -899,12 +899,12 @@ rw::common::Ptr<CameraGroup> SceneOpenGL::makeCameraGroup(const std::string& nam
 
 DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& filename, int dmask){
     rwlibs::opengl::Drawable::Ptr drawable = NULL;
-     try {
+     //try {
          drawable = DrawableFactory::getDrawable(filename, filename);
          drawable->setMask(dmask);
-     } catch (const rw::common::Exception& exp){
-         RW_WARN(exp.getMessage());
-     }
+     //} catch (const rw::common::Exception& exp){
+     //    RW_WARN(exp.getMessage());
+     //}
      return drawable;
 }
 

@@ -24,14 +24,10 @@
 
 #include <rw/math/Constants.hpp>
 
-#include <rw/loaders/model3d/Loader3DS.hpp>
-#include <rw/loaders/model3d/LoaderAC3D.hpp>
-#include <rw/loaders/model3d/LoaderOBJ.hpp>
-#include <rw/loaders/model3d/LoaderTRI.hpp>
+
 #include <RobWorkConfig.hpp>
-#if RW_HAVE_ASSIMP
-#include <rw/loaders/model3d/LoaderAssimp.hpp>
-#endif
+
+#include <rw/loaders/Model3DFactory.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -159,7 +155,15 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
 
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable(getCache().get(filename), name) );
-    } else if (filetype == ".3DS") {
+    } else {
+        Model3D::Ptr model = Model3DFactory::loadModel( filename, name );
+        Render *render = new RenderModel3D( model );
+        getCache().add(filename, render, moddate);
+        //std::cout << "Creating drawable!" << std::endl;
+        return ownedPtr( new Drawable( getCache().get(filename), name ) );
+    }
+   /*
+    if (filetype == ".3DS") {
     	//std::cout << "loading 3ds file!" << std::endl;
     	Loader3DS loader;
 		Model3D::Ptr model = loader.load(filename);
@@ -194,7 +198,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     */
-#if RW_HAVE_ASSIMP
+/* #if RW_HAVE_ASSIMP
     } else if (filetype == ".DAE" || filetype == ".DXF") {
     	LoaderAssimp loader;
 		Model3D::Ptr model = loader.load(filename);
@@ -211,7 +215,7 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
             << " that was resolved to file name "
             << filename);
     }
-
+*/
     RW_ASSERT(!"Impossible");
     return NULL; // To avoid a compiler warning.
 }

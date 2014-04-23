@@ -22,6 +22,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 
 #include <rw/geometry/Triangulate.hpp>
 
@@ -50,6 +52,12 @@ static Vector3D<float> toRWVector(const aiVector3D &vector) {
 }
 
 LoaderAssimp::LoaderAssimp() {
+
+Assimp::Logger::LogSeverity severity = Assimp::Logger::VERBOSE;
+Assimp::DefaultLogger::create("",severity,aiDefaultLogStream_STDOUT);
+Assimp::DefaultLogger::create("assimp_log.txt",severity,aiDefaultLogStream_FILE);
+Assimp::DefaultLogger::get()->info("this is my info call");
+
 }
 
 LoaderAssimp::~LoaderAssimp() {
@@ -74,7 +82,11 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 		//UR5 uses this:
 		//if (scene->HasLights())
 		//	RW_THROW("LoaderAssimp could not load file " << filename << " : can not yet handle lights.");
-		if (scene->HasTextures())
+        //std::cout << "Loading using assimp:  " << filename << std::endl;
+        //std::cout << "scene->HasTextures(): " << scene->HasTextures() << std::endl;
+        //std::cout << "scene->HasMaterials(): " << scene->HasMaterials() << std::endl;
+
+        if (scene->HasTextures())
 			RW_THROW("LoaderAssimp could not load file " << filename << " : can not yet handle textures.");
 
 		// Add materials
@@ -84,7 +96,10 @@ Model3D::Ptr LoaderAssimp::load(const std::string& filename) {
 			for (std::size_t i = 0; i < scene->mNumMaterials; i++) {
 				Model3D::Material &rwmaterial = materials[i];
 				aiMaterial* material = scene->mMaterials[i];
+                //for( int n=0;n<0xb;n++)
+                //    std::cout << "   " << material->GetTextureCount((aiTextureType)n) << std::endl;
 
+                //std::cout  << "DIFFUSE:" << material->GetTextureCount(aiTextureType_DIFFUSE) << std::endl;
 				// Set name
 				aiString name;
 				if (material->Get(AI_MATKEY_NAME,name) == aiReturn_SUCCESS) {

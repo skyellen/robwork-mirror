@@ -9,7 +9,7 @@
 # Faces: 800
 #
 ####
-mtllib ./OrangeMarmelade_800_tex.obj.mtl
+mtllib OrangeMarmelade_800_tex.mtl
 
 vn -0.083146 -1.481159 -5.852365
 v 0.006447 0.048632 -0.035114 0.752941 0.752941 0.752941
