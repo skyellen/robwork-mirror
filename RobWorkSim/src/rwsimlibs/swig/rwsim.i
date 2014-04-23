@@ -598,6 +598,49 @@ public:
 %template (RigidBodyPtr) rw::common::Ptr<RigidBody>;
 %template (RigidBodyPtrVector) std::vector<rw::common::Ptr<RigidBody> >;
 
+struct SpringParams {
+public:
+	SpringParams();
+	bool enabled;
+	Matrix compliance;
+	Matrix damping;
+};
+
+%nestedworkaround Constraint::SpringParams;
+
+%nodefaultctor Constraint;
+class Constraint {
+public:
+	typedef enum {
+		Fixed,
+		Prismatic,
+		Revolute,
+		Universal,
+		Spherical,
+		Piston,
+		PrismaticRotoid,
+		PrismaticUniversal,
+		Free
+	} ConstraintType;
+
+	Constraint(const std::string& name, const ConstraintType &type, Body* b1, Body* b2);
+	virtual ~Constraint();
+	ConstraintType getType() const;
+	Body* getBody1() const;
+	Body* getBody2() const;
+	size_t getDOF() const;
+	size_t getDOFLinear() const;
+	size_t getDOFAngular() const;
+	Transform3D getTransform() const;
+	void setTransform(const Transform3D &parentTconstraint);
+	SpringParams getSpringParams() const;
+	void setSpringParams(const SpringParams &params);
+	//static bool toConstraintType(const std::string &string, Constraint::ConstraintType &type);
+};
+
+%template (ConstraintPtr) rw::common::Ptr<Constraint>;
+%template (ConstraintPtrVector) std::vector<rw::common::Ptr<Constraint> >;
+
 %nodefaultctor DynamicDevice;
 class DynamicDevice {
 
@@ -718,6 +761,7 @@ public:
     DynamicWorkCell(rw::common::Ptr<WorkCell> workcell,
                     const std::vector<rw::common::Ptr<Body> >& bodies,
                     const std::vector<rw::common::Ptr<Body> >& allbodies,
+                    const std::vector<rw::common::Ptr<Constraint> >& constraints,
                     const std::vector<rw::common::Ptr<DynamicDevice> >& devices,
                     const std::vector<rw::common::Ptr<SimulatedController> >& controllers);
 	
@@ -744,6 +788,10 @@ public:
     const std::vector<rw::common::Ptr<Body> >& getBodies();
     void addBody(rw::common::Ptr<Body> body);
     rw::common::Ptr<Body> getBody(Frame *f);
+    
+    void addConstraint(rw::common::Ptr<Constraint> constraint);
+    const std::vector<rw::common::Ptr<Constraint> >& getConstraints() const;
+	rw::common::Ptr<Constraint> findConstraint(const std::string& name) const;
 
     rw::common::Ptr<WorkCell> getWorkcell();
 

@@ -277,7 +277,7 @@ void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
     }
 }
 
-rw::math::Transform3D<> ODEBody::getTransform(){
+rw::math::Transform3D<> ODEBody::getTransform() const {
     if(_type==FIXED){
         if(_triGeomDatas.size()>0){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
@@ -291,7 +291,7 @@ rw::math::Transform3D<> ODEBody::getTransform(){
     }
 }
 
-rw::math::Transform3D<> ODEBody::getTransformCOM(){
+rw::math::Transform3D<> ODEBody::getTransformCOM() const {
     if(_type==FIXED){
         if(_triGeomDatas.size()>0){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);

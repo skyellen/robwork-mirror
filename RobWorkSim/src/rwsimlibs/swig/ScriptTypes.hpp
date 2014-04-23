@@ -29,6 +29,7 @@
 #include <rwsim/control/PDController.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
 
+#include <rwsim/dynamics/Constraint.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
@@ -82,6 +83,8 @@ namespace swig {
     typedef rwsim::dynamics::Body Body;
     typedef rwsim::dynamics::RigidBody RigidBody;
     typedef rwsim::dynamics::FixedBody FixedBody;
+    typedef rwsim::dynamics::Constraint Constraint;
+    typedef rwsim::dynamics::Constraint::SpringParams SpringParams;
     typedef rwsim::dynamics::KinematicBody KinematicBody;
     typedef rwsim::dynamics::BodyInfo BodyInfo;
     typedef rwsim::dynamics::DynamicDevice DynamicDevice;

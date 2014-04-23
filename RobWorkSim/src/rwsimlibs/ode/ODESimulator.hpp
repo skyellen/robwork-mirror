@@ -30,7 +30,6 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
-#include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
@@ -47,6 +46,7 @@
 #include "ODEUtil.hpp"
 #include "ODEMaterialMap.hpp"
 #include "ODEJoint.hpp"
+#include "ODEConstraint.hpp"
 #include "ODEDevice.hpp"
 #include "ODEBody.hpp"
 #include "ODETactileSensor.hpp"
@@ -202,6 +202,12 @@ namespace simulator {
 		bool isInitialized(){ return _isSimulatorInitialized;};
 
 		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state);
+
+		/**
+		 * @brief Add a Constraint between two bodies.
+		 * @param constraint [in] a pointer to the RobWork constraint.
+		 */
+		void addConstraint(rwsim::dynamics::Constraint::Ptr constraint);
 		void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
 		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
 
@@ -239,7 +245,7 @@ namespace simulator {
         //std::map<rw::kinematics::Frame*, ODEJoint*> _jointToODEJoint;
         //std::map<rw::kinematics::Frame*, dGeomID> _frameToOdeGeoms;
 
-		dWorldID getODEWorldId(){ return _worldId; }
+		dWorldID getODEWorldId() const { return _worldId; }
 
 		void addODEJoint(ODEJoint* odejoint){
 		    _jointToODEJoint[odejoint->getJoint()] = odejoint;
@@ -425,6 +431,9 @@ namespace simulator {
 
         std::vector<ODEJoint*> _allODEJoints;
         double _maxPenetration;
+
+        std::map<rwsim::dynamics::Constraint::Ptr, ODEConstraint*> _constraintToODEConstraint;
+        std::vector<ODEConstraint*> _odeConstraints;
 
         std::map< dBodyID, std::vector<ODETactileSensor*> > _odeBodyToSensor;
         std::map<rwlibs::simulation::SimulatedSensor::Ptr, ODETactileSensor*> _rwsensorToOdesensor;

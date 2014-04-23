@@ -141,13 +141,13 @@ namespace simulator {
 		dynamics::Body::Ptr getRwBody(){ return _body; }
 
 		//! get the ODE bodyId
-		dBodyID getBodyID(){ return _bodyId; }
+		dBodyID getBodyID() const { return _bodyId; }
 
 		//! get transform from world to bodyframe
-		rw::math::Transform3D<> getTransform();
+		rw::math::Transform3D<> getTransform() const;
 
 		//! get transform from world to COM
-		rw::math::Transform3D<> getTransformCOM();
+		rw::math::Transform3D<> getTransformCOM() const;
 
         //! set transform of body, using bodyframe
         void setTransform(const rw::kinematics::State& state);

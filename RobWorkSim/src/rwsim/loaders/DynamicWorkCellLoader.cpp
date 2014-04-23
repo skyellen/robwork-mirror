@@ -49,6 +49,7 @@
 #include <rw/math/Constants.hpp>
 
 #include <rwsim/dynamics/Body.hpp>
+#include <rwsim/dynamics/Constraint.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -361,6 +362,22 @@ namespace
         for(int y=0;y<dim.second;y++)
             for(int x=0;x<dim.first;x++)
                 values(x,y) = (float)q(y*dim.first + x);
+
+        return values;
+    }
+
+    Eigen::MatrixXd readMatrixD(PTree& tree, std::pair<int,int> dim){
+        Log::debugLog()<< "ReadVector2D" << std::endl;
+        Q q = readQ(tree);
+        if(q.size() != (size_t)(dim.first*dim.second))
+            RW_THROW("Unexpected sequence of values, must be length " << dim.first*dim.second);
+
+        Eigen::MatrixXd values(dim.first, dim.second);
+        for(int y=0; y < dim.second; y++) {
+            for(int x=0; x < dim.first; x++) {
+                values(x,y) = (double) q(y*dim.first + x);
+            }
+        }
 
         return values;
     }
@@ -1269,6 +1286,58 @@ namespace
         }
     }
 
+    void readSpring(PTree& tree, ParserState &state, Constraint::Ptr constraint = NULL ){
+        Log::debugLog() << "ReadSpring" << std::endl;
+        if (constraint == NULL) {
+        	const string name = tree.get_child("<xmlattr>").get<std::string>("constraint");
+        	Constraint::Ptr constraint = state.dwc->findConstraint(name);
+        	if (constraint == NULL)
+        		RW_THROW("Spring refers to constraint " << quote(name) << " that could not be found!");
+        }
+    	Constraint::SpringParams params;
+    	params.enabled = true;
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+        	const int freeDOF = constraint->getDOF();
+        	if (p->first == "Compliance") {
+        		params.compliance = readMatrixD(p->second, std::make_pair<int,int>(freeDOF,freeDOF));
+        	} else if (p->first == "Damping") {
+        		params.damping = readMatrixD(p->second, std::make_pair<int,int>(freeDOF,freeDOF));
+        	} else if(p->first!="<xmlcomment>" && p->first != "<xmlattr>"){
+        		RW_THROW("Unknown element");
+        	}
+        }
+        constraint->setSpringParams(params);
+    }
+
+    void readConstraint(PTree& tree, ParserState &state ){
+        Log::debugLog() << "ReadConstraint" << std::endl;
+        const string name = tree.get_child("<xmlattr>").get<std::string>("name");
+        const string type = tree.get_child("<xmlattr>").get<std::string>("type");
+        const string parent = tree.get_child("<xmlattr>").get<std::string>("parent");
+        const string child = tree.get_child("<xmlattr>").get<std::string>("child");
+        Constraint::ConstraintType cType;
+        if (!Constraint::toConstraintType(type,cType)) {
+        	RW_THROW("Constraint type " << type << " not recognized!");
+        }
+        const Body::Ptr body1 = state.dwc->findBody(parent);
+        const Body::Ptr body2 = state.dwc->findBody(child);
+        if (body1 == NULL)
+        	RW_THROW("Parent body " << quote(parent) << " for constraint " << quote(name) << " not found!");
+        if (body2 == NULL)
+        	RW_THROW("Child body " << quote(child) << " for constraint " << quote(name) << " not found!");
+        Constraint::Ptr constraint = ownedPtr(new Constraint(name,cType,body1.get(),body2.get()));
+        state.dwc->addConstraint(constraint);
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+        	if (p->first == "Transform3D") {
+        		constraint->setTransform(readTransform(p->second));
+            } else if (p->first == "Spring") {
+            	readSpring(p->second,state,constraint);
+        	} else if(p->first!="<xmlcomment>" && p->first != "<xmlattr>"){
+        		RW_THROW("Unknown element");
+        	}
+        }
+    }
+
 
 
     void readInclude(PTree& tree, PTree &parent, CI &iter, ParserState& state){
@@ -1403,7 +1472,10 @@ namespace
                 readContactMap(p->second,state);
             } else if (p->first == "ContactModel") {
 
-
+            } else if (p->first == "Constraint") {
+            	readConstraint(p->second,state);
+            } else if (p->first == "Spring") {
+            	readSpring(p->second,state);
             } else
             ///// THE DIFFERENT SENSOR MODELS
             if (p->first == "TactileArraySensor") {

@@ -488,6 +488,11 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             dev->update(conStepInfo, tmpState);
         }
 
+		RW_DEBUGS("------------- Constraints pre-update:");
+		BOOST_FOREACH(ODEConstraint *constraint, _odeConstraints) {
+			constraint->update(conStepInfo, tmpState);
+		}
+
         RW_DEBUGS("------------- Body pre-update:");
         BOOST_FOREACH(ODEBody *body, _odeBodies){
             body->update(conStepInfo, tmpState);
@@ -945,6 +950,11 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
         addDevice(device, initState);
     }
 
+	 RW_DEBUGS( "- ADDING CONSTRAINTS " );
+	 BOOST_FOREACH(Constraint::Ptr constraint, _dwc->getConstraints()) {
+		 addConstraint(constraint);
+	 }
+
     RW_DEBUGS( "- ADDING SENSORS " );
     BOOST_FOREACH(rwlibs::simulation::SimulatedSensor::Ptr sensor, _dwc->getSensors()){
     	addSensor(sensor, state);
@@ -1043,6 +1053,20 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
     _odeBodies.push_back(odeBody);
 
 
+}
+
+void ODESimulator::addConstraint(Constraint::Ptr constraint) {
+	const Body* const body1 = constraint->getBody1();
+	const Body* const body2 = constraint->getBody2();
+	const ODEBody* const ode1 = _rwFrameToODEBody[body1->getBodyFrame()];
+	const ODEBody* const ode2 = _rwFrameToODEBody[body2->getBodyFrame()];
+	if (ode1 == NULL)
+		RW_THROW("Invalid body1 of Constraint: " << constraint->getName());
+	if (ode2 == NULL)
+		RW_THROW("Invalid body2 of Constraint: " << constraint->getName());
+	ODEConstraint *odeConstraint = new ODEConstraint(constraint, ode1, ode2, this);
+	_constraintToODEConstraint[constraint] = odeConstraint;
+	_odeConstraints.push_back(odeConstraint);
 }
 
 void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
@@ -2416,6 +2440,11 @@ void ODESimulator::enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamic
 
 void ODESimulator::exitPhysics()
 {
+	BOOST_FOREACH(ODEConstraint* constraint, _odeConstraints) {
+		delete constraint;
+	}
+	_odeConstraints.clear();
+	
 	BOOST_FOREACH(ODEDevice* vdev, _odeDevices) {
 		delete vdev;
 	}

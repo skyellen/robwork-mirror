@@ -32,7 +32,7 @@ SET(FILES_CPP
 	dynamics/SuctionCup.cpp
 	dynamics/OBRManifold.cpp
 	dynamics/BodyUtil.cpp
-	#dynamics/Constraint.cpp
+	dynamics/Constraint.cpp
 
 	sensor/SimulatedTactileSensor.cpp 	 
 	sensor/TactileArraySensor.cpp 

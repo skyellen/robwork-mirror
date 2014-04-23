@@ -26,6 +26,7 @@
 
 
 #include "Body.hpp"
+#include "Constraint.hpp"
 #include "ContactDataMap.hpp"
 #include "MaterialDataMap.hpp"
 #include <rwlibs/simulation/SimulatedController.hpp>
@@ -55,15 +56,18 @@ namespace dynamics {
      * class for the kinematic information/data in a workcell
      *
      * The dynamic description includes:
-     * Body: severel different forms of bodies that may be constrained by rules
-     * Controllers: severel controllers that in some way control/influence the bodies
-     * Sensors: bodies that have tactile sensing capability
+     * - Body: severel different forms of bodies that may be constrained by rules
+     * - Constraint: constraining the bodies to move in a specific way relative to each other
+     * - Controllers: severel controllers that in some way control/influence the bodies
+     * - Sensors: bodies that have tactile sensing capability
      *
      */
     class DynamicWorkCell
     {
     public:
         typedef std::vector<Body::Ptr> BodyList;
+        //! @brief Type for the list of constraints
+        typedef std::vector<Constraint::Ptr> ConstraintList;
         typedef std::vector<DynamicDevice::Ptr> DeviceList;
         typedef std::vector<rwlibs::simulation::SimulatedController::Ptr> ControllerList;
         typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
@@ -71,15 +75,23 @@ namespace dynamics {
 
         /**
          * @brief Constructor
+         * @param workcell [in] a smart pointer to the rw::models::WorkCell
          */
     	DynamicWorkCell(rw::models::WorkCell::Ptr workcell);
 
-        /**
-         * @brief Constructor
-         */
+    	/**
+    	 * @brief Constructor
+    	 * @param workcell [in] a smart pointer to the rw::models::WorkCell
+    	 * @param bodies [in] a list of bodies.
+    	 * @param allbodies [in] a list of bodies.
+    	 * @param constraints [in] a list of constraints.
+    	 * @param devices [in] a list of devices.
+    	 * @param controllers [in] a list of controllers.
+    	 */
     	DynamicWorkCell(rw::models::WorkCell::Ptr workcell,
                         const BodyList& bodies,
                         const BodyList& allbodies,
+                        const ConstraintList& constraints,
                         const DeviceList& devices,
                         const ControllerList& controllers);
 
@@ -91,7 +103,7 @@ namespace dynamics {
         /**
          * @brief gets a list of all bodies in the dynamic workcell
          */
-        const BodyList& getBodies(){ return _allbodies;};
+        const BodyList& getBodies() const { return _allbodies;};
 
         /**
          * @brief find a specific body with name \b name
@@ -126,6 +138,24 @@ namespace dynamics {
             }
             return bodies;
         }
+
+        /**
+         * @brief Add a constraint to the dynamic workcell.
+         * @param constraint [in] a smart pointer to the constraint to add.
+         */
+        void addConstraint(Constraint::Ptr constraint);
+
+        /**
+         * @brief gets a list of all constraints in the dynamic workcell
+         */
+        const ConstraintList& getConstraints() const { return _constraints;};
+
+        /**
+         * @brief find a specific constraint with name \b name
+         * @param name [in] name of constraint
+         * @return constraint if found, NULL otherwise
+         */
+    	Constraint::Ptr findConstraint(const std::string& name) const;
 
     	/**
     	 * @brief gets a list of all dynamic devices in the dynamic workcell
@@ -164,7 +194,7 @@ namespace dynamics {
     	/**
     	 * @brief gets a list of all controllers in the dynamic workcell
     	 */
-        const ControllerList& getControllers(){
+        const ControllerList& getControllers() const {
              return _controllers;
         }
 
@@ -206,11 +236,6 @@ namespace dynamics {
         }
 
         /**
-         * @brief
-         */
-        //const std::vector<Constraint>& getConstraints();
-
-        /**
          * @brief adds a body to the dynamic workcell.
          *
          * Notice that this will change the length of the default
@@ -248,10 +273,26 @@ namespace dynamics {
     	}
 
     	/**
+    	 * @brief Get the static contact data information.
+    	 * @return a reference to a constant rwsim::dynamics::ContactDataMap.
+    	 */
+    	const ContactDataMap& getContactData() const{
+    	    return _contactDataMap;
+    	}
+
+    	/**
     	 * @brief gets the material data information, like friction
     	 * properties
     	 */
     	MaterialDataMap& getMaterialData(){
+    	    return _matDataMap;
+    	}
+
+    	/**
+    	 * @brief Get the material data information, like friction.
+    	 * @return a reference to a constant rwsim::dynamics::ContactDataMap.
+    	 */
+    	const MaterialDataMap& getMaterialData() const {
     	    return _matDataMap;
     	}
 
@@ -263,7 +304,7 @@ namespace dynamics {
     	/**
     	 * @brief gets the default kinematic workcell
     	 */
-    	rw::models::WorkCell::Ptr getWorkcell(){ return _workcell; };
+    	rw::models::WorkCell::Ptr getWorkcell() const { return _workcell; };
 
     	/**
     	 * @brief the collision margin describe how close
@@ -300,7 +341,7 @@ namespace dynamics {
          * @brief get the gravity in this dynamic workcell
          * @return gravity
          */
-        const rw::math::Vector3D<>& getGravity(){
+        const rw::math::Vector3D<>& getGravity() const {
             return _gravity;
         }
 
@@ -312,6 +353,13 @@ namespace dynamics {
         	return _engineSettings;
         }
 
+        /**
+         * @brief Get the settings and properties for the physics engine.
+         * @return a reference to a constant PropertyMap.
+         */
+        const rw::common::PropertyMap& getEngineSettings() const {
+        	return _engineSettings;
+        }
 
         typedef enum{GravityChangedEvent,
                     ConstraintAddedEvent,
@@ -338,6 +386,7 @@ namespace dynamics {
         // length of nr of bodies
         BodyList _bodies;
         BodyList _allbodies;
+        ConstraintList _constraints;
         DeviceList _devices;
         // list of controllers in the workcell
         ControllerList _controllers;

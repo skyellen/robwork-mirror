@@ -18,6 +18,7 @@ These formats will be described in the following.
 ## Proximity setup format ##
 
 # Dynamic WorkCell file format #
+\subpage page_xml_dynamicworkcell_format
 
 # Task file format #
 

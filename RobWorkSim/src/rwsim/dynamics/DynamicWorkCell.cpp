@@ -48,11 +48,13 @@ DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell):
 DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
                                  const DynamicWorkCell::BodyList& bodies,
                                  const DynamicWorkCell::BodyList& allbodies,
+                                 const ConstraintList& constraints,
                                  const DynamicWorkCell::DeviceList& devices,
                                  const ControllerList& controllers):
     _workcell(workcell),
     _bodies(bodies),
     _allbodies(allbodies),
+    _constraints(constraints),
     _devices(devices),
     _controllers(controllers),
     _collisionMargin(0.001),
@@ -61,6 +63,10 @@ DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
 {
     BOOST_FOREACH(SimulatedController::Ptr b, _controllers){
         b->registerIn( workcell->getStateStructure() );
+    }
+
+    BOOST_FOREACH(Constraint::Ptr b, _constraints){
+    	workcell->getStateStructure()->addData(b.get());
     }
 
     BOOST_FOREACH(DynamicDevice::Ptr b, _devices){
@@ -143,4 +149,15 @@ void DynamicWorkCell::addBody(Body::Ptr body){
 
 }
 
+void DynamicWorkCell::addConstraint(Constraint::Ptr constraint) {
+	_workcell->getStateStructure()->addData(constraint.get());
+	_constraints.push_back(constraint);
+}
 
+Constraint::Ptr DynamicWorkCell::findConstraint(const std::string& name) const {
+    BOOST_FOREACH(const Constraint::Ptr &constraint, _constraints){
+        if(constraint->getName()==name)
+            return constraint;
+    }
+    return NULL;
+}
