@@ -186,26 +186,27 @@ BOOST_AUTO_TEST_CASE( INIArchiveTest )
 {
 	SerializationData sdata, sdata_in;
 
-	BOOST_CHECK( true );
 	{
         INIArchive iniarchive;
         iniarchive.open("testfile.ini");
+        BOOST_CHECK( iniarchive.isOpen() );
         iniarchive.write( sdata, "sdata" );
         iniarchive.close();
 	}
 
-	BOOST_CHECK( true );
 	{
 	    INIArchive iniarchive;
 	    iniarchive.open("testfile.ini");
+	    BOOST_CHECK( iniarchive.isOpen() );
 	    iniarchive.read( sdata_in, "sdata");
 	    iniarchive.close();
 	}
 
-	INIArchive(std::cout).write(sdata,"sdata");
-	INIArchive(std::cout).write(sdata_in,"sdata_in");
-	INIArchive(std::cout) << sdata;
-
+	{
+        INIArchive(std::cout).write(sdata,"sdata");
+        INIArchive(std::cout).write(sdata_in,"sdata_in");
+        INIArchive(std::cout) << sdata;
+	}
 	BOOST_CHECK( sdata == sdata_in );
 }
 

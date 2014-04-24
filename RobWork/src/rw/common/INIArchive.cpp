@@ -63,7 +63,12 @@ void INIArchive::doReadLeaveScope(const std::string& id)
 
 void INIArchive::doOpenArchive(const std::string& filename)
 {
-    _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in);
+    if( !boost::filesystem3::exists(filename) ) {
+        _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::trunc );
+    } else {
+        _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in);
+    }
+
     _iostr = _fstr;
     _ofs = _fstr;
     _ifs = _fstr;
@@ -148,6 +153,8 @@ void INIArchive::doRead(std::vector<std::string>& val, const std::string& id)
 
 bool INIArchive::getLine()
 {
+    if( !_isopen )
+        return false;
     bool valid = false;
     while (valid == false) {
         _ifs->getline(_line, MAX_LINE_WIDTH);
