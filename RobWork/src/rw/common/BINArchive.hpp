@@ -46,6 +46,11 @@ namespace common {
 		//! @brief constructor
 		BINArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_iostr(NULL),_isopen(false){}
 
+		BINArchive(std::ostream& ofs):_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false)
+        {
+            open(ofs);
+        }
+
 		//! destructor
 		virtual ~BINArchive();
 
@@ -112,7 +117,7 @@ namespace common {
 		void doWrite(boost::uint64_t val, const std::string& id){ writeValue(val,id);};
 		void doWrite(float val, const std::string& id){ writeValue(val,id);};
 		void doWrite(double val, const std::string& id){ writeValue(val,id);};
-		void doWrite(const std::string& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::string& val, const std::string& id);
 
 		void doWrite(const std::vector<bool>& val, const std::string& id){ writeValue(val,id);};
 		void doWrite(const std::vector<boost::int8_t>& val, const std::string& id){ writeValue(val,id);};
@@ -125,21 +130,23 @@ namespace common {
 		void doWrite(const std::vector<boost::uint64_t>& val, const std::string& id){ writeValue(val,id);};
 		void doWrite(const std::vector<float>& val, const std::string& id){ writeValue(val,id);};
 		void doWrite(const std::vector<double>& val, const std::string& id){ writeValue(val,id);};
-		void doWrite(const std::vector<std::string>& val, const std::string& id){ writeValue(val,id);};
+		void doWrite(const std::vector<std::string>& val, const std::string& id);
 
 		//template<class T>
 		//void write(const T& data, const std::string& id){ OutputArchive::write<T>(data,id); }
 
 		template<class T>
 		void writeValue( const std::vector<T>& val, const std::string& id ){
-			(*_ofs) << id << "=";
-			BOOST_FOREACH(const T& rval, val){ (*_ofs) << rval << " "; }
-			(*_ofs) << "\n";
+		    boost::uint32_t s = val.size();
+		    _ofs->write((char*)&s, sizeof(s) );
+			BOOST_FOREACH(const T& rval, val){
+			    _ofs->write((char*)&rval, sizeof(rval) );
+			}
 		}
 
 		template<class T>
 		void writeValue( const T&  val, const std::string& id ){
-			(*_ofs) << id << "=" << val << "\n";
+		    _ofs->write((char*)&val, sizeof(val) );
 		}
 
 		//template<class T>
@@ -149,25 +156,6 @@ namespace common {
 
 
 		///////////////// READING
-
-		std::pair<std::string, std::string> getNameValue(){
-			std::string line(_line);
-			for(size_t i=0;i<line.size();i++){
-				if(line[i]== '='){
-					char nname[100],nval[100];
-					// split is at i
-					std::string name = line.substr(0,i);
-					std::string val = line.substr(i+1,line.size()-1);
-
-					sscanf(name.c_str(), "%s",nname);
-					sscanf(val.c_str(), "%s",nval);
-
-					return std::make_pair(nname,nval);
-				}
-			}
-			RW_THROW("Not valid ini property!");
-			return std::make_pair("","");
-		}
 
 		virtual void doRead(bool& val, const std::string& id);
 		virtual void doRead(boost::int8_t& val, const std::string& id){readValue<boost::int8_t>(val,id);}
@@ -182,7 +170,7 @@ namespace common {
 		virtual void doRead(double& val, const std::string& id){readValue<double>(val,id);}
 		virtual void doRead(std::string& val, const std::string& id);
 
-		virtual void doRead(std::vector<bool>& val, const std::string& id){readValue(val,id);}
+		virtual void doRead(std::vector<bool>& val, const std::string& id);
 		virtual void doRead(std::vector<boost::int8_t>& val, const std::string& id){readValue(val,id);}
 		virtual void doRead(std::vector<boost::uint8_t>& val, const std::string& id){readValue(val,id);}
 		virtual void doRead(std::vector<boost::int16_t>& val, const std::string& id){readValue(val,id);}
@@ -202,26 +190,21 @@ namespace common {
 
 		 template<class T>
 		 void readValue(std::vector<T>& val, const std::string& id){
-			_ifs->getline(_line,500);
-			std::pair<std::string,std::string> valname = getNameValue();
-			if(id!=valname.first)
-				RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
-			// read from array
-			std::vector<std::string> result;
-			boost::split(result, valname.second, boost::is_any_of("\t "));
-			BOOST_FOREACH(std::string& rval, result){
-				val.push_back( boost::lexical_cast<T>(rval) );
+            boost::uint32_t s = 0;
+            _ifs->read((char*)&s, sizeof(boost::uint32_t) );
+            std::cout << "LEN:" << s << std::endl;
+            val.resize(s);
+            for( boost::uint32_t i=0; i<s;i++){
+                T &tmp = val[i];
+                _ifs->read((char*)& (tmp), sizeof(T) );
 			}
 		 }
 
 
 		 template<class T>
 		 void readValue(T& val, const std::string& id){
-			_ifs->getline(_line,500);
-			std::pair<std::string,std::string> valname = getNameValue();
-			if(id!=valname.first)
-				RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
-			val = boost::lexical_cast<T>(valname.second);
+		     _ifs->read((char*)&val, sizeof(val) );
+		     std::cout << val << " ";
 		 }
 
 

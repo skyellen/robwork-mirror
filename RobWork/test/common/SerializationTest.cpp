@@ -202,23 +202,45 @@ BOOST_AUTO_TEST_CASE( INIArchiveTest )
 	    iniarchive.close();
 	}
 
+	BOOST_CHECK( sdata == sdata_in );
+
 	{
         INIArchive(std::cout).write(sdata,"sdata");
         INIArchive(std::cout).write(sdata_in,"sdata_in");
         INIArchive(std::cout) << sdata;
 	}
-	BOOST_CHECK( sdata == sdata_in );
+
 }
 
 BOOST_AUTO_TEST_CASE( BINArchiveTest )
 {
-	SerializationData sdata;
+    SerializationData sdata, sdata_in;
 
-	BINArchive iniarchive;
-	iniarchive.open("testfile.bin");
+    INIArchive(std::cout).write(sdata,"sdata");
+    {
+        BINArchive iniarchive;
+        iniarchive.open("testfile.bin");
+        BOOST_CHECK( iniarchive.isOpen() );
+        iniarchive.write( sdata, "sdata" );
+        iniarchive.close();
+    }
 
-	iniarchive.write( sdata, "sdata" );
-	iniarchive.close();
+    {
+        BINArchive iniarchive;
+        iniarchive.open("testfile.bin");
+        BOOST_CHECK( iniarchive.isOpen() );
+        iniarchive.read( sdata_in, "sdata");
+        iniarchive.close();
+    }
+
+    BOOST_CHECK( sdata == sdata_in );
+
+    {
+        BINArchive(std::cout).write(sdata,"sdata");
+        BINArchive(std::cout).write(sdata_in,"sdata_in");
+        BINArchive(std::cout) << sdata;
+    }
+
 
 }
 

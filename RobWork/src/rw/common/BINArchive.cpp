@@ -33,7 +33,6 @@ void BINArchive::close(){
 
 void BINArchive::doWriteEnterScope(const std::string& id){
 	_scope.push_back(id);
-	(*_ofs) << "[" << getScope() << "]\n";
 }
 
 void BINArchive::doWriteLeaveScope(const std::string& id){
@@ -46,8 +45,6 @@ void BINArchive::doWriteLeaveScope(const std::string& id){
 // utils to handle arrays
 void BINArchive::doReadEnterScope(const std::string& id){
 	_scope.push_back(id);
-	_ifs->getline(_line, MAX_LINE_WIDTH);
-	//(*_ofs) << "[" << getScope() << "]\n";
 }
 
 void BINArchive::doReadLeaveScope(const std::string& id){
@@ -59,12 +56,12 @@ void BINArchive::doReadLeaveScope(const std::string& id){
 
 
 void BINArchive::doOpenArchive(const std::string& filename){
-	if( !boost::filesystem::exists(filename.c_str()) ){
-		//create the file
+    if( !boost::filesystem3::exists(filename) ) {
+        _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
+    } else {
+        _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::binary);
+    }
 
-	}
-
-	_fstr = new std::fstream(filename.c_str());
 	_iostr = _fstr;
 	_ofs = _fstr;
 	_ifs = _fstr;
@@ -86,6 +83,18 @@ void BINArchive::flush(){
 		_ofs->flush();
 }
 
+void BINArchive::doRead(std::vector<bool>& val, const std::string& id){
+    boost::uint32_t s = 0;
+    _ifs->read((char*)&s, sizeof(boost::uint32_t) );
+    std::cout << "LEN:" << s << std::endl;
+    val.resize(s);
+    for( boost::uint32_t i=0; i<s;i++){
+        uint8_t tmp;
+        _ifs->read((char*)& (tmp), sizeof(uint8_t) );
+        val[i] = tmp;
+    }
+}
+
 void BINArchive::doRead(bool& val, const std::string& id){
 	int res = readUInt8(id);
 	if(res==0)
@@ -94,20 +103,43 @@ void BINArchive::doRead(bool& val, const std::string& id){
 		val = true;
  }
 
+void BINArchive::doWrite(const std::string& val, const std::string& id){
+    boost::uint32_t s = val.size();
+     (*_ofs) << s;
+     BOOST_FOREACH(const char& rval, val){ (*_ofs) << rval; }
+}
+
+void BINArchive::doWrite(const std::vector<std::string>& val, const std::string& id){
+    boost::uint32_t s = val.size();
+     (*_ofs) << s;
+     BOOST_FOREACH(const std::string& str_tmp, val){
+         boost::uint32_t str_s = str_tmp.size();
+          (*_ofs) << str_s;
+          BOOST_FOREACH(const char& rval, str_tmp){ (*_ofs) << rval; }
+     }
+}
+
  void BINArchive::doRead(std::string& val, const std::string& id){
-	 _ifs->getline(_line, MAX_LINE_WIDTH);
-	 std::pair<std::string,std::string> valname = getNameValue();
-	 //std::cout << valname.first << "  " << valname.second << std::endl;
-	 val = valname.second;
+     boost::uint32_t s;
+     (*_ifs) >> s;
+     val.resize(s);
+     for( boost::uint32_t i=0; i<s;i++){
+         (*_ifs) >> val[i];
+     }
  }
 
  void BINArchive::doRead(std::vector<std::string>& val, const std::string& id){
-		_ifs->getline(_line,MAX_LINE_WIDTH);
-		std::pair<std::string,std::string> valname = getNameValue();
-		if(id!=valname.first)
-			RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
-	    // read from array
-		boost::split(val, valname.second, boost::is_any_of("\t "));
+     boost::uint32_t s,ss;
+     (*_ifs) >> s;
+     val.resize(s);
+     for( boost::uint32_t i=0; i<s;i++){
+         (*_ifs) >> ss;
+         std::string str_val;
+         str_val.resize(ss);
+         for( boost::uint32_t j=0; j<ss;j++){
+             (*_ifs) >> str_val[j];
+         }
+     }
  }
 
 
