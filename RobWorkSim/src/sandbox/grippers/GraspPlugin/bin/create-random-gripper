@@ -1,0 +1,134 @@
+#!/usr/bin/python
+
+import sys
+import os
+import math
+import random
+import argparse
+
+
+
+class GripperGenerator:
+	"Class for generating grippers."
+	
+	def __init__(self):
+		self.gripperName = "gripper"
+		self._gripperId = 0
+		self.length = (0.05, 0.15)
+		self.width = (0.0025, 0.025)
+		self.depth = (0.0025, 0.025)
+		self.chfChance = 0.5
+		self.chfDepth = (0, 1)
+		self.chfAngle = (15, 75)
+		self.tcpOffset = (0.5, 0.9)
+		self.cutChance = 0.67
+		self.cutDepth = (0, 0.05)
+		self.cutAngle = (60, 120)
+		self.cutRadius = (0, 0.1)
+		self.opening = (0.05, 0.15)
+		self.jawdist = (0, 0.01)
+		self.force = (25, 100) # minimum & maximum forces
+		self.forceCoeff = 100 # force per cm^2 of jaw smallest crossection
+		self.baselength = (0.05, 0.5)
+		self.basewidth = (0.05, 0.1)
+		self.basedepth = (0.05, 0.05)
+		
+	def generate(self, stl=False):
+		# setup gripper name
+		name = self.gripperName + str(self._gripperId)
+		self._gripperId += 1
+		
+		"We have to repeat doing this till we get the force passing the lowest limit"
+		while True:
+			# randomize general dimensions
+			cutout = random.randint(0, 1) # which type of cutout the gripper has?
+			length = random.uniform(*self.length)
+			width = random.uniform(*self.width)
+			depth = random.uniform(*self.depth)
+			
+			chfDepth = 0
+			chfAngle = 0
+			if random.uniform(0, 1) < self.chfChance:
+				chfDepth = random.uniform(*self.chfDepth)
+				chfAngle = random.uniform(*self.chfAngle)
+				
+			tcpOffset = random.uniform(*self.tcpOffset)
+			cutAngle = random.uniform(*self.cutAngle)
+			opening = random.uniform(*self.opening)
+			#force = random.uniform(*self.force)
+			
+			# find tcp position
+			tcp = tcpOffset * length
+			
+			# generate cut depth
+			cutDepth = 0
+			lwidth = width
+			if random.uniform(0, 1) < self.cutChance:
+				d = length - chfDepth * width * math.tan(math.radians(chfAngle))
+				if tcp > d:
+					lwidth = width - (tcp - d) * 1.0/math.tan(math.radians(chfAngle))
+				cutDepth = random.uniform(self.cutDepth[0], min(self.cutDepth[1], lwidth-0.001))
+			
+			# generate cut radius
+			cutRadius = random.uniform(max(self.cutRadius[0], cutDepth), self.cutRadius[1])
+			
+			# generate force
+			"Force is generated basing on the width of the jaw in its thinnest place"
+			force = depth * (lwidth - cutDepth) / 0.0001 * self.forceCoeff
+			if force > self.force[1]:
+				force = self.force[1]
+				break
+			
+			if force > self.force[0]:
+				break
+		
+		# generate jawdist
+		jawdist = random.uniform(self.jawdist[0], min(self.jawdist[1], opening))
+		
+		# generate base dimensions
+		baselength = 2 * opening + 2 * width
+		baselength = max(baselength, self.baselength[0])
+		baselength = min(baselength, self.baselength[1])
+		basewidth = 2 * depth
+		basewidth = max(basewidth, self.basewidth[0])
+		basewidth = min(basewidth, self.basewidth[1])
+		basedepth = random.uniform(*self.basedepth)
+		
+		# make jaw parameters
+		jawParameters = (cutout, length, width, depth, chfDepth, chfAngle, tcp, cutDepth, cutAngle, cutRadius)
+		jawStr = "".join(str(p)+' ' for p in jawParameters)
+		
+		# make base parameters
+		baseParameters = (baselength, basewidth, basedepth)
+		baseStr = "".join(str(p)+' ' for p in baseParameters)
+		
+		# construct command
+		cd = "${RWSIM_ROOT}src/sandbox/grippers/GraspPlugin/bin/"
+		cmd = cd+"create-gripper-xml --name {} -j {} -b {} --tcp {} --jawdist {} --opening {} --force {} {}"\
+			.format(name, jawStr, baseStr, tcp, jawdist, opening, force, ("", "--stl")[stl])
+			
+		# execute
+		#print cmd
+		os.system(cmd)
+
+def main():
+	parser = argparse.ArgumentParser(description="Generates gripper database.")
+	parser.add_argument("number", nargs="?", default="1", help="number of grippers to generate")
+	parser.add_argument("--stl", action="store_true", help="generate STL files")
+	args = parser.parse_args()
+	
+	generator = GripperGenerator()
+	
+	loading = ['|', '/', '-', '\\']
+	sys.stdout.write("Generating gripper database...  ")
+	
+	number = int(args.number)
+	for i in range(0, number):
+		generator.generate(bool(args.stl))
+		sys.stdout.write("\b"+loading[i%4])
+		sys.stdout.flush()
+
+	sys.stdout.write("\b Done.\n")
+
+if __name__ == "__main__":
+	main()
