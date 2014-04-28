@@ -20,9 +20,17 @@ PROJECT(NovintFalcon)
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
+SET(RW_ROOT "/home/nadezda/workspace/rwtrunk/RobWork")
+
+SET(RWSTUDIO_ROOT "/home/nadezda/workspace/rwtrunk/RobWorkStudio")
+SET(RWSIM_ROOT "/home/nadezda/workspace/rwtrunk/RobWorkSim")
+SET(RobWork_DIR ${RW_ROOT}/cmake)
+SET(RobWorkSim_DIR ${RWSIM_ROOT}/cmake)
+SET(RobWorkStudio_DIR ${RWSTUDIO_ROOT}/cmake)
+
 # Now set the RW/RWS root (edit this if necessary)
-SET(RobWorkStudio_DIR "$ENV{RW_ROOT}/../RobWorkStudio/cmake")
-SET(RobWorkSim_DIR "$ENV{RW_ROOT}/../RobWorkSim/cmake")
+#SET(RobWorkStudio_DIR "/home/nadezda/workspace/rwtrunk/RobWorkStudio")
+#SET(RobWorkSim_DIR "/home/nadezda/workspace/rwtrunk/RobWorkSim")
 
 #Include RobWorkSim settings
 FIND_PACKAGE(RobWorkStudio REQUIRED)
@@ -41,7 +49,7 @@ ELSE()
 	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 ENDIF()
 
-
+set(CMAKE_CXX_FLAGS ${CMAKE_CSS_FLAGS} "-fPIC") 
 
 # if we want to use ui files add them here
 #SET(UIS_FILES src/FalconControl.ui )

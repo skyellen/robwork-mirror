@@ -58,7 +58,7 @@ class SimulationTrajectory
 					stream << "#";
 					typedef std::vector<ObjectPair>::const_iterator J;
 					for (J it = step.contactingBodies.begin(); it != step.contactingBodies.end(); ++it) {
-						stream << ":" << it->first << "-" << it->second;
+						stream << it->first << "," << it->second<< ":";
 					}
 					
 					return stream;

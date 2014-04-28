@@ -349,7 +349,7 @@ void FalconPlugin::startSimulation()
 	_dev = _dwc->getWorkcell()->findDevice( "UR-6-85-5-A" );
 	_tcpFrame = _dwc->getWorkcell()->findFrame( "UR-6-85-5-A.TCP" );
 	_robotController = _dwc->findController<SerialDeviceController>("URController");
-	_gripperController = _dwc->findController<PDController>("PG70GraspController");
+	_gripperController = _dwc->findController<PDController>("GraspController");
 	_pointerFrame = _dwc->getWorkcell()->findFrame<MovableFrame>("Pointer");
 	_bodies = _dwc->getBodies();
 	_dev->setQ(Q(6, 0.1, -1.5, -1.5, -1.5, 1.5, 0), state);
@@ -447,6 +447,11 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 		}
 		cout << endl;
 	}
+
+	/*typedef std::vector<SimulationTrajectory::SimulationStep::ObjectPair>::const_iterator J;
+	for (J it = cnames.begin(); it != cnames.end(); ++it) {
+		cout  << ":" << it->first << "-" << it->second << "$$";
+	}*/
 	
 	/* record simulation state */
 	FKTable fk(state);
@@ -459,7 +464,7 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
 		}
 		
 		SimulationTrajectory::SimulationStep sstep(sim->getTime(), _dev->getQ(state), Q(), objPoses, cnames);
-		
+		cout << sstep<< " ";
 		_trajectory->addStep(sstep);
 	}
 	
@@ -492,9 +497,11 @@ void FalconPlugin::step(rwsim::simulator::ThreadSimulator* sim, const rw::kinema
     
     /* close the gripper */
     if (_grasping) {
-		_gripperController->setTargetPos(Q(1, 0.0));
+		//_gripperController->setTargetPos(Q(1, 0.0));
+		_gripperController->setTargetPos( Q(10, 66,55,66,0, 66,55,66, 66,55,66)*Deg2Rad );
 	} else {
-		_gripperController->setTargetPos(Q(1, 0.035));
+		//_gripperController->setTargetPos(Q(1, 0.035));
+		_gripperController->setTargetPos( Q(10,0,0,0,0,0,0,0,0,0,0)*Deg2Rad );
 	}
 }
 
