@@ -43,26 +43,6 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::trajectory;
 
-namespace
-{
-    Timer collisionTimer;
-    Timer roadmapBuildTimer;
-    Timer queryTimer;
-    Timer shortestPathTimer;
-    Timer neighborTimer;
-    Timer enhanceTimer;
-
-
-    void printTimeStats()
-    {
-        std::cout<<"Build RoadMap Time    = "<<roadmapBuildTimer.getTime()<<std::endl;
-        std::cout<<"Collision Time        = "<<collisionTimer.getTime()<<std::endl;
-        std::cout<<"Query Time            = "<<queryTimer.getTime()<<std::endl;
-        std::cout<<"Shortest Path Time    = "<<shortestPathTimer.getTime()<<std::endl;
-        std::cout<<"Neightbor Search Time = "<<neighborTimer.getTime()<<std::endl;
-        std::cout<<"Enhance Time          = "<<enhanceTimer.getTime()<<std::endl;
-    }
-}
 
 PRMPlanner::PRMPlanner(rw::pathplanning::QConstraint::Ptr constraint,
 	rw::pathplanning::QSampler::Ptr sampler,
@@ -118,7 +98,7 @@ void PRMPlanner::initialize(
     _Rneighbor = 0.1;
     _Nneighbor = 20;
     _partialIndexTableDimensions = 4;
-    _neighborSearchStrategy = BRUTE_FORCE;
+    _neighborSearchStrategy = PARTIAL_INDEX_TABLE;
     _collisionCheckingStrategy = LAZY;
     _shortestPathSearchStrategy = A_STAR;
     _astarTimeOutTime = 1.0;
@@ -143,6 +123,7 @@ void PRMPlanner::initialize(
 
     enhanceTimer.reset();
     enhanceTimer.pause();
+    _roadmap_initialized = false;
 }
 
 PRMPlanner::~PRMPlanner()
@@ -157,6 +138,17 @@ void PRMPlanner::test(size_t i) {
     prm::PartialIndexTable<Node> pit(_bounds, _metricWeights, _Rneighbor, i);
 
 }*/
+
+void PRMPlanner::printTimeStats()
+{
+    std::cout<<"Build RoadMap Time    = "<<roadmapBuildTimer.getTime()<<std::endl;
+    std::cout<<"Collision Time        = "<<collisionTimer.getTime()<<std::endl;
+    std::cout<<"Query Time            = "<<queryTimer.getTime()<<std::endl;
+    std::cout<<"Shortest Path Time    = "<<shortestPathTimer.getTime()<<std::endl;
+    std::cout<<"Neightbor Search Time = "<<neighborTimer.getTime()<<std::endl;
+    std::cout<<"Enhance Time          = "<<enhanceTimer.getTime()<<std::endl;
+}
+
 
 void PRMPlanner::setNeighborCount(size_t n) {
     _Nneighbor = n;
@@ -277,7 +269,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
 {
     roadmapBuildTimer.resume();
     _Rneighbor = estimateRneighbor(nodecount);
-    std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
+    //std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
 
     if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
         _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(
@@ -297,10 +289,13 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
         Node node = addNode(q, _collisionCheckingStrategy != LAZY);
         addEdges(node);
         cnt++;
-		std::cout<<"cnt = "<<cnt<<std::endl;
+		//std::cout<<"cnt = "<<cnt<<std::endl;
     }
     roadmapBuildTimer.pause();
-    printTimeStats();
+    _roadmap_initialized = true;
+
+    //printTimeStats();
+
 }
 
 void PRMPlanner::enhanceAround(const Q& q)
@@ -349,21 +344,40 @@ bool PRMPlanner::doQuery(
     const StopCriteria& stop)
 {
     queryTimer.resume();
-    std::cout<<"Query"<<std::endl;
+
+    // check that qInit and qGoal are right size
+    if(qInit.size() != _bounds.first.size() )
+        RW_THROW("qInit input is not the right dimension. " << qInit.size() << "!=" << _bounds.first.size() );
+    if(qGoal.size() != _bounds.first.size() )
+        RW_THROW("qGoal input is not the right dimension. " << qGoal.size() << "!=" << _bounds.first.size() );
+    // now test if input is out of bounds
+    for(size_t i=0;i<qInit.size();i++){
+        if(qInit[i]<_bounds.first[i] || qInit[i]>_bounds.second[i])
+            RW_THROW("qInit input is out of bounds: " << qInit << "<" << _bounds.first.size() );
+
+        if(qGoal[i]<_bounds.first[i] || qGoal[i]>_bounds.second[i])
+            RW_THROW("qGoal input is out of bounds: " << qGoal << "<" << _bounds.first.size() );
+    }
+
     if (_constraint->inCollision(qInit)) {
         RW_WARN("Init in collision.");
-        std::cout<<"Init in collision."<<std::endl;
         queryTimer.pause();
         return false;
     }
 
     if (_constraint->inCollision(qGoal)) {
         RW_WARN("Goal in collision.");
-        std::cout<<"Goal in collision."<<std::endl;
         queryTimer.pause();
         return false;
     }
 
+    // check if roadmap was initialized, if not then build it
+    if( !_roadmap_initialized ){
+        RW_WARN("Roadmap was not build/initialized before first query. It will be built now with 1000 nodes!");
+        buildRoadmap(1000);
+    }
+
+    // test if qInit and qGoal is within bounds of robot
     typedef boost::graph_traits<PRM>::vertex_iterator NodePointer;
 
     Node nInit = addNode(qInit, true);
@@ -387,25 +401,26 @@ bool PRMPlanner::doQuery(
             break;
         }
         if (!pathFound) { //TODO Perhaps make a graph enhancement step
-            std::cout<<"No Path Enhance Roadmap"<<std::endl;
+            //std::cout<<"No Path Enhance Roadmap"<<std::endl;
             enhanceRoadmap();
             continue;
         } 
 
         bool inCol = inCollision(nodepath);
         if (!inCol) {
-            std::cout<<"Time to find path = "<<timer.getTime()<<std::endl;
+            //std::cout<<"Time to find path = "<<timer.getTime()<<std::endl;
             for (std::list<Node>::iterator it = nodepath.begin(); it != nodepath.end(); ++it) {
                 path.push_back(_graph[*it].q);
             }
             queryTimer.pause();
-            printTimeStats();
+            //printTimeStats();
             return true;
         }
     }
 
     queryTimer.pause();
-    printTimeStats();
+
+    //printTimeStats();
     return false;
 }
 
@@ -586,7 +601,7 @@ bool PRMPlanner::searchForShortestPathDijkstra(const Node& nInit, const Node& nG
 
 
 bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal, std::list<Node>& result) {
-	std::cout<<"A*"<<std::endl;std::cout.flush();
+	//std::cout<<"A*"<<std::endl;std::cout.flush();
     shortestPathTimer.resume();
     // Perform index mapping
     typedef boost::graph_traits<PRM>::vertices_size_type t_size_t;
@@ -595,10 +610,10 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
     boost::graph_traits<PRM>::vertex_iterator vi, vend;
     t_size_t cnt = 0;
 
-	std::cout<<"A* A"<<std::endl;std::cout.flush();
+	//std::cout<<"A* A"<<std::endl;std::cout.flush();
     for(boost::tie(vi,vend) = boost::vertices(_graph); vi != vend; ++vi)
         put(indexMap, *vi, cnt++);
-	std::cout<<"A* B"<<std::endl;std::cout.flush();
+	//std::cout<<"A* B"<<std::endl;std::cout.flush();
     // Initialize property map
     // TODO: change to use index map
      std::map<Node, Node> pSource;
@@ -607,13 +622,13 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
     //std::vector<PRM::vertex_descriptor> p(num_vertices(_graph));
     std::vector<float> d(num_vertices(_graph));
     try {
-		std::cout<<"A* C"<<std::endl;std::cout.flush();
-		//const boost::bundle_property_map<PRM, boost::detail::edge_desc_impl<boost::undirected_tag, void*>, rwlibs::pathplanners::PRMPlanner::EdgeData, double>
-		//	&pmap = get(&EdgeData::weight, _graph);
+		//std::cout<<"A* C"<<std::endl;std::cout.flush();
+		const boost::bundle_property_map<PRM, boost::detail::edge_desc_impl<boost::undirected_tag, void*>, rwlibs::pathplanners::PRMPlanner::EdgeData, double>
+			&pmap = get(&EdgeData::weight, _graph);
 
 		// call astar named parameter interface
 		// TODO: PRM Planner fails with gcc 4.4  -  astar_search disabled = not working
-        /*astar_search(
+        astar_search(
             _graph,
             nInit,
             PathHeuristic(_graph, _metric.get(), nGoal),
@@ -621,8 +636,8 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             vertex_index_map(indexMap).predecessor_map(p).
             visitor(AStarGoalVisitor<Node>(nGoal, _astarTimeOutTime))
             );
-            */
-		std::cout<<"A* D"<<std::endl;std::cout.flush();
+
+		//std::cout<<"A* D"<<std::endl;std::cout.flush();
         /*astar_search(
 
             _graph,
@@ -634,17 +649,17 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             visitor(AStarGoalVisitor<Node>(nGoal))
             );*/
     } catch (const AStarGoalVisitor<Node>::FoundGoal&) { // found a path to the goal
-        std::cout<<"A* E "<<std::endl;std::cout.flush();
+        //std::cout<<"A* E "<<std::endl;std::cout.flush();
 		for(Node n = nGoal; ; n = p[n]) {
             result.push_front(n);
             if(p[n] == n)
                 break;
         }
         shortestPathTimer.pause();
-		std::cout<<"A* F "<<result.size()<<std::endl;std::cout.flush();
+		//std::cout<<"A* F "<<result.size()<<std::endl;std::cout.flush();
         return true;
     } catch (const AStarGoalVisitor<Node>::AStarTimeOut&) {
-		std::cout<<"A* G"<<std::endl;std::cout.flush();
+		//std::cout<<"A* G"<<std::endl;std::cout.flush();
         RW_WARN("AStar Timed Out - Running Dijsktra Instead");
         return searchForShortestPathDijkstra(nInit, nGoal, result);
     }

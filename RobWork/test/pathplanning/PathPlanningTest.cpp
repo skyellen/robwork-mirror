@@ -26,6 +26,7 @@
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rwlibs/pathplanners/prm/PartialIndexTable.hpp>
+#include <rwlibs/pathplanners/prm/PRMPlanner.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/WorkCell.hpp>
@@ -46,6 +47,7 @@ using namespace robwork;
 using namespace rwlibs::proximitystrategies;
 using namespace boost::unit_test;
 using namespace rwlibs::pathplanners::prm;
+using namespace rwlibs::pathplanners;
 
 BOOST_AUTO_TEST_CASE( testPartialIndexTable )
 {
@@ -94,44 +96,25 @@ BOOST_AUTO_TEST_CASE( testPartialIndexTable )
 
     BOOST_CHECK(ok);
 }
-/*
-void testPathPlanning(const CollisionStrategyPtr& strategy)
+
+void testPathPlanning(const CollisionStrategy::Ptr& strategy)
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
-    WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath() + "simple/workcell.wu");
+    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(testFilePath() + "simple/workcell.wu");
 
-    Device* device = workcell->findDevice("Device");
+    Device::Ptr device = workcell->findDevice("Device");
     const State& state = workcell->getDefaultState();
     const PlannerConstraint constraint = PlannerConstraint::make(
         strategy, workcell, device, state);
 
-    QToQPlannerPtr line = QToQPlanner::make(constraint);
-
-    const QToQPlannerPtr plannersArray[] = {
-        RRTPlanner::makeQToQPlanner(constraint, device),
-        ARWPlanner::makeQToQPlanner(constraint, device),
-        SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device))
-    };
-    const std::vector<QToQPlannerPtr> planners(
-        plannersArray, plannersArray + sizeof(plannersArray) / sizeof(*plannersArray));
-
     const Q from = device->getQ(state);
     bool res;
 
+    ////////////////////// test local straight line planner
+    QToQPlanner::Ptr line = QToQPlanner::make(constraint);
     // Plan a couple of straight-line paths.
     {
-        Q q(7);
-        {
-            int i = 0;
-            q[i++] = 0.854336;
-            q[i++] = 1.28309;
-            q[i++] = -1.58383;
-            q[i++] = -0.822832;
-            q[i++] = -0.362664;
-            q[i++] = -0.989248;
-            q[i++] = -0.376991;
-        }
+        Q q(7,0.854336,1.28309,-1.58383,-0.822832,-0.362664,-0.989248,-0.376991);
 
         const Q linearToGood = q;
         Q linearToBad = q;
@@ -144,51 +127,93 @@ void testPathPlanning(const CollisionStrategyPtr& strategy)
 
         res = line->query(from, linearToBad, path, 2);
         BOOST_CHECK(!res);
+
+        // test wrong inputs
     }
+
+    //////////////////// test global planners
+
+    QToQPlanner::Ptr rrtplanner = RRTPlanner::makeQToQPlanner(constraint, device);
+    QToQPlanner::Ptr arwplanner = ARWPlanner::makeQToQPlanner(constraint, device);
+    QToQPlanner::Ptr sblplanner = SBLPlanner::makeQToQPlanner(
+            SBLSetup::make(constraint.getQConstraintPtr(),
+                           QEdgeConstraintIncremental::makeDefault(constraint.getQConstraintPtr(), device), device));
+    PRMPlanner::Ptr prmplanner_default = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
+    PRMPlanner::Ptr prmplanner_lazy_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
+    PRMPlanner::Ptr prmplanner_lazy_dijkstra = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
+    PRMPlanner::Ptr prmplanner_lazy_brute_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
+
+    prmplanner_lazy_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
+    prmplanner_lazy_dijkstra->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
+    prmplanner_lazy_brute_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
+    prmplanner_lazy_brute_astar->setNeighSearchStrategy(PRMPlanner::BRUTE_FORCE);
+
+    // building roadmaps
+    prmplanner_lazy_astar->buildRoadmap(1000);
+    prmplanner_lazy_dijkstra->buildRoadmap(1000);
+    prmplanner_lazy_brute_astar->buildRoadmap(1000);
+
+
+    //prmplanner->setCollisionCheckingStrategy(PRMPlanner::NODECHECK);
+    //prmplanner->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
+    //prmplanner->setNeighSearchStrategy(PRMPlanner::PARTIAL_INDEX_TABLE);
+    //prmplanner->setAStarTimeOutTime(1);
+    //prmplanner->buildRoadmap(2000);
+
+
+    std::vector<std::pair<std::string,QToQPlanner::Ptr> > planners;
+    planners.push_back(std::make_pair("RRT",rrtplanner) );
+    planners.push_back(std::make_pair("ARW",arwplanner) );
+    planners.push_back(std::make_pair("SBL",sblplanner) );
+    planners.push_back(std::make_pair("PRM (default)",prmplanner_default) );
+    planners.push_back(std::make_pair("PRM (lazy,partial,astar)",prmplanner_lazy_astar) );
+    planners.push_back(std::make_pair("PRM (lazy,partial,dijkstra)",prmplanner_lazy_dijkstra) );
+    planners.push_back(std::make_pair("PRM (lazy,brute,astar)",prmplanner_lazy_brute_astar) );
 
     // Plan some paths to random configurations with RRT and SBL.
     {
-        QSamplerPtr cfreeQ = QSampler::makeConstrained(
+        // first generate targets to plan to
+        QSampler::Ptr cfreeQ = QSampler::makeConstrained(
             QSampler::makeUniform(device),
             constraint.getQConstraintPtr(),
             1000);
 
-        std::cout << "- RRT, ARW, and SBL paths: ";
+        std::vector<Q> samples;
         for (int i = 0; i < 10; i++) {
-            const Q to = cfreeQ->sample();
-            BOOST_FOREACH(const QToQPlannerPtr& planner, planners) {
+            samples.push_back(cfreeQ->sample());
+        }
+
+        // next test on each planner
+        typedef std::pair<std::string, QToQPlanner::Ptr> Pair ;
+        BOOST_FOREACH( Pair planner, planners) {
+            std::cout << "Testing QToQPlanner " << planner.first << std::endl;
+            BOOST_FOREACH(Q to, samples){
                 QPath path;
-                res = planner->query(from, to, path, 4);
+                res = planner.second->query(from, to, path, 4);
                 BOOST_CHECK(res);
                 BOOST_CHECK(!PlannerUtil::inCollision(constraint, path));
             }
-            std::cout << i << " ";
         }
-        std::cout << "\n";
     }
 }
-*/
+
 namespace
 {
-    std::vector<CollisionStrategy::Ptr> allCollisionStrategies()
+    CollisionStrategy::Ptr getCollisionStrategy()
     {
-        std::vector<CollisionStrategy::Ptr> result;
+
 #if RW_HAVE_PQP == 1
-        result.push_back(ProximityStrategyPQP::make());
+        return ProximityStrategyPQP::make();
 #endif
 #if RW_HAVE_YAOBI == 1
-        result.push_back(ProximityStrategyYaobi::make());
+        return ProximityStrategyYaobi::make();
 #endif
-        return result;
+        return NULL;
     }
 }
 
 BOOST_AUTO_TEST_CASE( testPathPlanningMain )
 {
-/*
-    std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
-	BOOST_FOREACH(CollisionStrategyPtr &sptr, strategies){
-		testPathPlanning(sptr);
-	}
-	*/
+    CollisionStrategy::Ptr strategy = getCollisionStrategy();
+	testPathPlanning(strategy);
 }

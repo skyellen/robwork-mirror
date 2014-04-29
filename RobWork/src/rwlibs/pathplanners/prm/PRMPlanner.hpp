@@ -231,6 +231,11 @@ namespace rwlibs { namespace pathplanners {
          */
         void setAStarTimeOutTime(double timeout);
 
+        /**
+         * @brief print timing stats from previous run.
+         */
+        void printTimeStats();
+
     private:
         bool doQuery(
             const rw::math::Q& qInit,
@@ -239,6 +244,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::pathplanning::StopCriteria& stop);
 
     private:
+        bool _roadmap_initialized;
 		rw::pathplanning::QConstraint::Ptr _constraint;
 		rw::pathplanning::QSampler::Ptr _sampler;
         double _resolution;
@@ -258,6 +264,15 @@ namespace rwlibs { namespace pathplanners {
 
         ShortestPathSearchStrategy _shortestPathSearchStrategy;
         double _astarTimeOutTime;
+
+        // for stats testing
+        rw::common::Timer collisionTimer;
+        rw::common::Timer roadmapBuildTimer;
+        rw::common::Timer queryTimer;
+        rw::common::Timer shortestPathTimer;
+        rw::common::Timer neighborTimer;
+        rw::common::Timer enhanceTimer;
+
 
         /**
          * @brief The data contained in the PRM graph node
