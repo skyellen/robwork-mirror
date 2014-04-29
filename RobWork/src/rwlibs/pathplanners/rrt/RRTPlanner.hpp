@@ -51,6 +51,8 @@ namespace rwlibs { namespace pathplanners {
     class RRTPlanner
     {
     public:
+        typedef rw::common::Ptr<RRTPlanner> Ptr;
+
         //! The type of RRT planner to construct.
         enum PlannerType {
             /**

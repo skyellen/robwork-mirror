@@ -43,6 +43,8 @@ namespace rwlibs { namespace pathplanners {
     class SBLPlanner
     {
     public:
+        typedef rw::common::Ptr<SBLPlanner> Ptr;
+
         /**
            @brief An SBL based sampled region planner.
 

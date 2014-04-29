@@ -46,6 +46,7 @@ namespace rwlibs { namespace pathplanners {
     class ARWPlanner
     {
     public:
+        typedef rw::common::Ptr<ARWPlanner> Ptr;
         /**
            @brief ARW based point-to-point planner.
 
