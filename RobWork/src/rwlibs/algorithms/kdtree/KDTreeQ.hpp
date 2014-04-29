@@ -58,6 +58,8 @@ namespace rwlibs { namespace algorithms {
         struct TreeNode;
 
     public:
+        typedef rw::common::Ptr<KDTreeQ<VALUE_TYPE> > Ptr;
+
         typedef rw::math::Q KEY;
 
         //! a struct for the node in the tree
@@ -90,7 +92,7 @@ namespace rwlibs { namespace algorithms {
             _dim(dim),
             _nrOfNodes(0),
             _root(NULL),
-            _nodes(new std::vector<TreeNode>())
+            _nodes(new std::vector<TreeNode*>())
         {
         }
 
@@ -134,6 +136,13 @@ namespace rwlibs { namespace algorithms {
         void addNode(const rw::math::Q& key, VALUE_TYPE val);
 
         /**
+         * @brief remove the node with key nnkey
+         * @param nnkey [in] the key of the node to remove
+         * @return
+         */
+        void removeNode(const rw::math::Q& nnkey);
+
+        /**
         * @brief finds the KDNode with key equal to nnkey
         * @param nnkey [in] the key that is to be found
         * @return KDNode with key equal to nnkey if existing, else NULL
@@ -146,6 +155,7 @@ namespace rwlibs { namespace algorithms {
         * @return the nearest neighbor to nnkey
         */
         KDNode& nnSearch(const rw::math::Q& nnkey);
+
 
         /**
         * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
@@ -179,7 +189,7 @@ namespace rwlibs { namespace algorithms {
         size_t _dim;
         size_t _nrOfNodes;
         TreeNode *_root;
-        std::vector<TreeNode>* _nodes;
+        std::vector<TreeNode*>* _nodes;
 
     public:
 
@@ -191,11 +201,12 @@ namespace rwlibs { namespace algorithms {
             iarchive.read(nrNodes, "nrNodes");
             rootId = iarchive.readUInt64("rootId");
 
-            std::vector<TreeNode>* nodes = new std::vector<TreeNode>(nrNodes);
+            std::vector<TreeNode*>* nodes = new std::vector<TreeNode*>(nrNodes);
             std::vector<int> idToNodeIdx(nrNodes);
             std::map<boost::uint64_t, boost::tuple<TreeNode*,boost::uint64_t,boost::uint64_t> > toNode;
             for(int i=0;i<nrNodes;i++){
-                TreeNode &node = (*nodes)[i];
+                (*nodes)[i] = new TreeNode();
+                TreeNode &node = *(*nodes)[i];
 
                 boost::uint64_t id = iarchive.readUInt64("id");
                 node._axis = iarchive.readInt("axis");
@@ -214,7 +225,7 @@ namespace rwlibs { namespace algorithms {
 
             // finally travel through nodes and set the correct left/right values
             for(int i=0;i<nrNodes;i++){
-                TreeNode &node = (*nodes)[i];
+                TreeNode &node = *(*nodes)[i];
 
                 boost::tuple<TreeNode*,boost::uint64_t,boost::uint64_t> val = toNode[ idToNodeIdx[i] ];
                 int leftIdx = boost::get<1>(val);
@@ -233,7 +244,7 @@ namespace rwlibs { namespace algorithms {
             oarchive.write((boost::uint64_t)_root, "rootId");
             RW_ASSERT(_nrOfNodes==_nodes->size());
             for(std::size_t i=0;i<_nodes->size();i++){
-                const TreeNode &node = (*_nodes)[i];
+                const TreeNode &node = *(*_nodes)[i];
                 oarchive.write((boost::uint64_t)&node, "id");
                 oarchive.write((int)node._axis, "axis");
                 oarchive.write(node._deleted, "del");
@@ -262,8 +273,8 @@ namespace rwlibs { namespace algorithms {
         KDTreeQ(){};
 
         //! constructor
-        KDTreeQ(TreeNode &root, std::vector<TreeNode> *nodes):
-            _dim(root._kdnode->key.size()),
+        KDTreeQ(TreeNode *root, std::vector<TreeNode*> *nodes):
+            _dim(root->_kdnode->key.size()),
             _root(&root),_nodes(nodes)
         {
         };
@@ -551,6 +562,22 @@ namespace rwlibs { namespace algorithms {
     }
 
     template<class T>
+    void KDTreeQ<T>::removeNode(const rw::math::Q& nnkey){
+        TreeNode *tmpNode = _root;
+          for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%_dim ){
+              rw::math::Q& key = tmpNode->_kdnode->key;
+              if( nnkey(lev)==key(lev) && !(tmpNode->_deleted) && (nnkey == key) ) {
+                  tmpNode->_deleted = true;
+                  return;
+              } else if( nnkey(lev) > key(lev) ){
+                  tmpNode = tmpNode->_right;
+              } else {
+                  tmpNode = tmpNode->_left;
+              }
+          }
+    };
+
+    template<class T>
     void KDTreeQ<T>::nnSearchElipse(const rw::math::Q& nnkey,
                         const rw::math::Q& radi,
                         std::list<const KDNode*>& nodes)
@@ -649,6 +676,43 @@ namespace rwlibs { namespace algorithms {
                 unhandled.push( n->_left );
             if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
                 unhandled.push( n->_right );
+        }
+    };
+
+    template<class T>
+    void KDTreeQ<T>::addNode(const rw::math::Q& nnkey, T val){
+        // first test if root is empty. if it is add value as root
+        if(_root==NULL){
+            _nodes->push_back( new TreeNode(new KDNode(nnkey,val)) );
+            _root =  _nodes->back();
+            return;
+        }
+
+        // else find the parent in which this is to be inserted
+        TreeNode *tmpNode = _root;
+        // find the leaf in which to insert the new value
+        for(size_t lev=0; tmpNode!=NULL; lev = (lev+1)%_dim ){
+            KEY& key = tmpNode->_kdnode->key;
+
+            if( nnkey(lev) > key(lev) ){
+                if(tmpNode->_right==NULL){
+                    TreeNode *node = new TreeNode(new KDNode(nnkey,val));
+                    node->_axis = (lev+1)%_dim;
+                    _nodes->push_back(node);
+                    tmpNode->_right =  _nodes->back();
+                    return;
+                }
+                tmpNode = tmpNode->_right;
+            } else {
+                if(tmpNode->_left==NULL){
+                    TreeNode *node = new TreeNode(new KDNode(nnkey,val));
+                    node->_axis = (lev+1)%_dim;
+                    _nodes->push_back(node);
+                    tmpNode->_left =  _nodes->back();
+                    return;
+                }
+                tmpNode = tmpNode->_left;
+            }
         }
     };
 
