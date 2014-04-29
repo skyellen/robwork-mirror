@@ -314,6 +314,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
                 _Rneighbor,
                 (int)_partialIndexTableDimensions));
     } else if( _neighborSearchStrategy == KDTREE ) {
+        // TODO: make sure to re-balance tree after construction and once in a while...
         _kdtree = ownedPtr( new rwlibs::algorithms::KDTreeQ<Node>(_bounds.first.size()) );
     }
 
