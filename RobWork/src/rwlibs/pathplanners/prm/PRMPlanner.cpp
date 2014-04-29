@@ -214,9 +214,8 @@ void PRMPlanner::addEdges(Node node)
     size_t bf_nc = 0;
     size_t pit_nc = 0;
 
-    switch (_neighborSearchStrategy) {
-    case BRUTE_FORCE:
-    {
+    // search for neighbors
+    if(_neighborSearchStrategy == BRUTE_FORCE ){
         //Find neighbors using brute force
         boost::graph_traits<PRM>::vertex_iterator vi, vend;
         for(vi = vertices(_graph).first; *vi != node; ++vi) {
@@ -229,10 +228,7 @@ void PRMPlanner::addEdges(Node node)
                 neighborTimer.resume();
             }
         }
-        break;
-    }
-    case PARTIAL_INDEX_TABLE:
-    {
+    } else if(_neighborSearchStrategy == PARTIAL_INDEX_TABLE ){
         std::list<Node> nodes = _partialIndexTable->searchNeighbors(_graph[node].q);
 
         for(std::list<Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
@@ -248,9 +244,46 @@ void PRMPlanner::addEdges(Node node)
                 }
             }
         }
+    } else if(_neighborSearchStrategy == KDTREE ){
+        _kdnodesSearchResult.clear();
 
-        break;
-    }}
+        Q radi = _metricWeights;
+        for(size_t i=0;i<radi.size();i++){
+            radi[i] = _Rneighbor/std::max(_metricWeights(i),0.1); // scale the neighbor according to weights
+        }
+        //std::cout << radi << std::endl;
+        // now make vector length _Rneighbor
+        double nlen = radi.norm2();
+        for(size_t i=0;i<radi.size();i++){
+            radi[i] = radi[i]*(_Rneighbor*std::sqrt(_bounds.first.size()))/nlen;
+        }
+        //std::cout << radi << std::endl;
+        //std::cout << radi.norm2() << std::endl;
+        //std::cout << (_bounds.second - _bounds.first) << std::endl;
+
+        //std::cout << _metricWeights << std::endl;
+        //std::cout << _Rneighbor << std::endl;
+        // now normalize the vector
+        //double len = radi.norm2();
+        //for(int i=0;i<radi.size();i++)
+        //    radi[i] = radi[i]/len * _Rneighbor;
+
+        //int divs = (int)std::ceil(diff * weights(i) / r);
+
+
+        _kdtree->nnSearchElipse(_graph[node].q, radi ,_kdnodesSearchResult);
+        //std::cout << "Found: neighN " <<  _kdnodesSearchResult.size() << "\n";
+
+        typedef const rwlibs::algorithms::KDTreeQ<Node>::KDNode* VALUE;
+        BOOST_FOREACH(VALUE nnode,  _kdnodesSearchResult ){
+            neighborTimer.pause();
+            double dist = _metric->distance(_graph[node].q, _graph[nnode->value].q);
+            if( dist < _Rneighbor){
+                addEdge(nnode->value, node, dist);
+            }
+            neighborTimer.resume();
+        }
+    }
 
     neighborTimer.pause();
 }
@@ -261,6 +294,8 @@ PRMPlanner::Node PRMPlanner::addNode(const Q& q, bool checked)
     Node newNode = add_vertex(data, _graph);
     if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE) {
         _partialIndexTable->addNode(newNode, q);
+    } else if( _neighborSearchStrategy == KDTREE ){
+        _kdtree->addNode(q, newNode);
     }
     return newNode;
 }
@@ -271,14 +306,18 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
     _Rneighbor = estimateRneighbor(nodecount);
     //std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
 
-    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
+    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE){
         _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(
             new prm::PartialIndexTable<Node>(
                 _bounds,
                 _metricWeights,
                 _Rneighbor,
                 (int)_partialIndexTableDimensions));
+    } else if( _neighborSearchStrategy == KDTREE ) {
+        _kdtree = ownedPtr( new rwlibs::algorithms::KDTreeQ<Node>(_bounds.first.size()) );
+    }
 
+    // initialize the node map
     size_t cnt = 0;
     while (cnt<nodecount) {
         Q q = _sampler->sample();
@@ -669,8 +708,11 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
 
 
 void PRMPlanner::removeCollidingNode(Node node){
-    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
+    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE){
         _partialIndexTable->removeNode(node, _graph[node].q);
+    } else if( _neighborSearchStrategy == KDTREE ) {
+        _kdtree->removeNode( _graph[node].q );
+    }
 
     clear_vertex(node, _graph);
     remove_vertex(node, _graph);

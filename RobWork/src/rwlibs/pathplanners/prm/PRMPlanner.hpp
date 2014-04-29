@@ -30,6 +30,9 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/common/Timer.hpp>
+
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/astar_search.hpp>
@@ -155,7 +158,8 @@ namespace rwlibs { namespace pathplanners {
          */
         enum NeighborSearchStrategy {
             BRUTE_FORCE = 0, /*!< Run through all node and look a which a sufficient close. */
-            PARTIAL_INDEX_TABLE /*!< Use a partial index table to make an more efficient lookup. */
+            PARTIAL_INDEX_TABLE, /*!< Use a partial index table to make an more efficient lookup. */
+            KDTREE /*!< Use KD tree for neighbor search */
         };
 
         /**
@@ -351,6 +355,8 @@ namespace rwlibs { namespace pathplanners {
         typedef PRM::edge_descriptor Edge;
 
         boost::shared_ptr<prm::PartialIndexTable<Node> > _partialIndexTable;
+        rwlibs::algorithms::KDTreeQ<Node>::Ptr  _kdtree;
+        std::list<const rwlibs::algorithms::KDTreeQ<Node>::KDNode*> _kdnodesSearchResult;
 
         void initialize(
             const rw::models::Device& device,
