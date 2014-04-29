@@ -182,6 +182,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	if (gripper->isJawParametrized()) {
 		Q params = gripper->getJawParameters();
 		params(5) *= Rad2Deg;
+		params(6) = params(1)-gripper->getTCP().P()[2];
 		params(8) *= Rad2Deg;
 		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(params));
 	} else {
@@ -203,7 +204,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 		tree.put("Gripper.Parameters.Geometry.Base.File", filename);
 	}
 	
-	tree.put("Gripper.Parameters.Offset", gripper->getTCP().P()[2]);
+	tree.put("Gripper.Parameters.Offset", gripper->getJawParameters()[1]-gripper->getTCP().P()[2]);
 	tree.put("Gripper.Parameters.Jawdist", gripper->getJawdist());
 	tree.put("Gripper.Parameters.Opening", gripper->getOpening());
 	tree.put("Gripper.Parameters.Force", gripper->getForce());
