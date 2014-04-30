@@ -19,7 +19,7 @@ the NSIS installers contain headers and precompiled libraries for all dependenci
 These SDKs are suitable for users who want to get started quickly with the development of
 RobWork and RobWorkStudio plugins.
 
-Please look at the [download](http://www.robwork.dk/jrobwork/index.php?option=com_jdownloads&view=viewcategory&catid=8&Itemid=83)_ section on the homepage for downloading the SDK packages.
+Please look at the [download](http://www.robwork.dk/jrobwork/index.php/download) section on the homepage for downloading the SDK packages.
 
 # Installing RobWork from source # 		{#sec-rw-install-compile}
 This section will explain how to install RobWork from source. Several platforms and compilers
