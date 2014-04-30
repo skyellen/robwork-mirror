@@ -47,7 +47,7 @@ class GripperGenerator:
 			
 		# generate cut depth
 		cutDepthtmp = random.uniform(*self.cutDepth)
-		cutDepth = cutDepthtmp * depth
+		cutDepth = cutDepthtmp * width
 			
 		# generate cut radius
 		cutRadius = 0
