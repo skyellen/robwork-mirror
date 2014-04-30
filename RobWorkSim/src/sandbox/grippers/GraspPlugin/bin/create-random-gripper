@@ -18,7 +18,7 @@ class GripperGenerator:
 		self.chfDepth = (0, 1)
 		self.chfAngle = (0, 90)
 		self.tcpOffset = (0, 1)
-		self.cutDepth = (0, 0.05)
+		self.cutDepth = (0, 1)
 		self.cutAngle = (45, 135)
 		self.cutRadius = (0, 1)
 		self.opening = (0.0, 0.1)
