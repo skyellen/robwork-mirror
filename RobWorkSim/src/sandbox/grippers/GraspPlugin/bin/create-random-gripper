@@ -46,8 +46,13 @@ class GripperGenerator:
 		tcp = tcpOffset * length
 			
 		# generate cut depth
+		lwidth = width
+		d = chfDepth * width * math.tan(math.radians(chfAngle))
+		if tcp < d:
+			lwidth = width - (d - tcp) * 1.0/math.tan(math.radians(chfAngle))
+			
 		cutDepthtmp = random.uniform(*self.cutDepth)
-		cutDepth = cutDepthtmp * width
+		cutDepth = cutDepthtmp * lwidth
 			
 		# generate cut radius
 		cutRadius = 0
