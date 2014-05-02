@@ -188,6 +188,10 @@ int main(int argc, char* argv[])
 		gripper->getQuality().robustness = sim->getGripperQuality().success;
 	}
 	
+	/* display results */
+	cout << "\nRESULTS" << endl;
+	cout << gripper->getQuality() << endl;
+	
 	/* save results */
 	GripperXMLLoader::save(gripper, gripperFilename);
 	GraspTask::saveRWTask(tasks, outFilename);
