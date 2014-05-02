@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
 		("tcp,t", value<double>(), "TCP offset")
 		("jawdist,m", value<double>(), "min. jaws opening")
 		("opening,M", value<double>(), "max. jaws opening")
+		("stroke,s", value<double>(), "gripper stroke")
 		("force,f", value<double>(), "max. gripping force")
 		("out,o", value<string>(), "output file")
 		("stl", "save base & jaw meshes to STL")
@@ -87,6 +88,11 @@ int main(int argc, char* argv[])
 		
 		if (vm.count("opening")) {
 			gripper->setOpening(vm["opening"].as<double>());
+		}
+		
+		if (vm.count("stroke")) {
+			double opening = gripper->getOpening();
+			gripper->setJawdist(opening - vm["stroke"].as<double>());
 		}
 		
 		if (vm.count("force")) {
