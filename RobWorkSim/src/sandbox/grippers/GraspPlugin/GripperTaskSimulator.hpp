@@ -56,6 +56,11 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		 */
 		void loadSamples(rwlibs::task::GraspTask::Ptr samples) { _samples = samples; }
 		
+		/**
+		 * @brief Get the simulated gripper's quality
+		 */
+		rw::models::GripperQuality getGripperQuality() const { return _quality; }
+		
 	protected:
 	// methods
 		/// @copydoc GraspTaskSimulator::graspFinished
@@ -127,5 +132,7 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		rw::models::Gripper::Ptr _gripper;
 		TaskDescription::Ptr _td;
 		rwlibs::task::GraspTask::Ptr _samples;
+		
+		rw::models::GripperQuality _quality; // quality of the simulated gripper
 };
 }} // end namespaces

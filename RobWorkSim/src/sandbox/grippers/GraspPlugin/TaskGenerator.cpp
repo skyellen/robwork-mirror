@@ -277,7 +277,7 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 
 
 
-rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::GraspTask::Ptr tasks)
+rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::GraspTask::Ptr tasks, bool onlySuccesses)
 {
 	GraspTask::Ptr tasks_copy = tasks->clone();
 	
@@ -287,13 +287,56 @@ rwlibs::task::GraspTask::Ptr  TaskGenerator::copyTasks(const rwlibs::task::Grasp
 		
 		// copy targets
 		BOOST_FOREACH (GraspTarget& target, subtask.getTargets()) {
-			subtask_copy.addTarget(target);
+			if (!onlySuccesses || target.getResult()->testStatus == GraspTask::Success) {
+				subtask_copy.addTarget(target);
+			}
 		}
 		
 		tasks_copy->addSubTask(subtask_copy);
 	}
 	
 	return tasks_copy;
+}
+
+
+
+rwlibs::task::GraspTask::Ptr TaskGenerator::addPerturbations(rwlibs::task::GraspTask::Ptr tasks, double sigma_p, double sigma_a, int perturbations)
+{
+	GraspTask::Ptr perturbed = tasks->clone();
+	int perturbationsPerTarget = perturbations / tasks->getAllTargets().size() + 1;
+	
+	int generated = 0;
+	bool stop = false;
+	BOOST_FOREACH (GraspSubTask &stask, tasks->getSubTasks()) {
+		GraspSubTask stask_copy = stask.clone();
+		
+        BOOST_FOREACH (GraspTarget &target, stask.getTargets()) {
+            
+            for (int i=0; i < perturbationsPerTarget; i++) {
+                Vector3D<> pos(Math::ranNormalDist(0, sigma_p), Math::ranNormalDist(0, sigma_p), Math::ranNormalDist(0, sigma_p));
+                
+                // we can do this only for small sigmas (approximation)
+                EAA<> rot(Math::ranNormalDist(0, sigma_a), Math::ranNormalDist(0, sigma_a), Math::ranNormalDist(0, sigma_a));
+
+                Transform3D<> ntarget = target.pose * Transform3D<>(pos, rot);
+                stask_copy.addTarget(ntarget);
+                
+                ++generated;
+                if (generated >= perturbations) {
+					stop = true;
+					break;
+				}
+            }
+            
+            if (stop) break;
+        }
+        
+        perturbed->addSubTask(stask_copy);
+        
+        if (stop) break;
+    }
+    
+    return perturbed;
 }
 
 

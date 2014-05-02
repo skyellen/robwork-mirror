@@ -321,7 +321,7 @@ void GripperTaskSimulator::evaluateGripper()
 		) / sumWeights;
 	
 	// save data to gripper result
-	GripperQuality::Ptr q = _gripper->getQuality();
+	/*GripperQuality::Ptr q = _gripper->getQuality();
 	q->nOfExperiments = getNrTargets();
 	q->nOfSuccesses = successes;
 	q->nOfSamples = samples;
@@ -331,5 +331,16 @@ void GripperTaskSimulator::evaluateGripper()
 	q->topwrench = topwrench;
 	q->quality = quality;
 	
-	DEBUG << *q << endl;
+	DEBUG << *q << endl;*/
+	
+	_quality.nOfExperiments = getNrTargets();
+	_quality.nOfSuccesses = successes;
+	_quality.nOfSamples = samples;
+	_quality.coverage = coverage;
+	_quality.success = successRatio;
+	_quality.wrench = wrench;
+	_quality.topwrench = topwrench;
+	_quality.quality = quality;
+	
+	DEBUG << _quality << endl;
 }

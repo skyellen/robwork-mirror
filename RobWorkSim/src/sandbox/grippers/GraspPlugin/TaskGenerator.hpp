@@ -78,10 +78,22 @@ class TaskGenerator
 		
 		/**
 		 * @brief Makes a copy of a task
+		 * 
+		 * @param onlySuccesses [in] only copy over succesful tasks
 		 *
 		 * Tricky.
 		 */
-		static rwlibs::task::GraspTask::Ptr copyTasks(const rwlibs::task::GraspTask::Ptr tasks);
+		static rwlibs::task::GraspTask::Ptr copyTasks(const rwlibs::task::GraspTask::Ptr tasks, bool onlySuccesses=false);
+		
+		/**
+		 * @brief Creates a new task with perturbed targets
+		 * 
+		 * @param tasks [inout] target of operation
+		 * @param sigma_p [in] std deviation for position change
+		 * @param sigma_a [in] std deviation for the angle change
+		 * @param perturbations [in] number of perturbed grasps to generate
+		 */
+		static rwlibs::task::GraspTask::Ptr addPerturbations(rwlibs::task::GraspTask::Ptr tasks, double sigma_p, double sigma_a, int perturbations);
 		
 		/**
 		 * @brief Generates samples on the surface.

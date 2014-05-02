@@ -113,7 +113,7 @@ void DesignDialog::_updateGripper()
 		_gripper->setBaseGeometry(baseParams);
 		
 		// update results
-		_gripper->getQuality()->quality = ui.qualityEdit->text().toDouble();
+		_gripper->getQuality().quality = ui.qualityEdit->text().toDouble();
 		
 		// update general parameters
 		_gripper->setName(ui.nameEdit->text().toStdString());
@@ -368,15 +368,15 @@ void DesignDialog::_updateGUI()
 		}
 		
 		// update results area
-		ui.experimentsEdit->setText(QString::number(_gripper->getQuality()->nOfExperiments));
-		ui.successesEdit->setText(QString::number(_gripper->getQuality()->nOfSuccesses));
-		ui.samplesEdit->setText(QString::number(_gripper->getQuality()->nOfSamples));
+		ui.experimentsEdit->setText(QString::number(_gripper->getQuality().nOfExperiments));
+		ui.successesEdit->setText(QString::number(_gripper->getQuality().nOfSuccesses));
+		ui.samplesEdit->setText(QString::number(_gripper->getQuality().nOfSamples));
 		//_shapeEdit->setText(QString::number(_gripper->getQuality()->shape));
-		ui.coverageEdit->setText(QString::number(_gripper->getQuality()->coverage));
-		ui.successEdit->setText(QString::number(_gripper->getQuality()->success));
-		ui.wrenchEdit->setText(QString::number(_gripper->getQuality()->wrench));
-		ui.topWrenchEdit->setText(QString::number(_gripper->getQuality()->topwrench));
-		ui.qualityEdit->setText(QString::number(_gripper->getQuality()->quality));
+		ui.coverageEdit->setText(QString::number(_gripper->getQuality().coverage));
+		ui.successEdit->setText(QString::number(_gripper->getQuality().success));
+		ui.wrenchEdit->setText(QString::number(_gripper->getQuality().wrench));
+		ui.topWrenchEdit->setText(QString::number(_gripper->getQuality().topwrench));
+		ui.qualityEdit->setText(QString::number(_gripper->getQuality().quality));
 		
 		// update general parameters area
 		ui.nameEdit->setText(QString::fromStdString(_gripper->getName()));

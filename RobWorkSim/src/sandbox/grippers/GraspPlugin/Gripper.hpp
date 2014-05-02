@@ -58,6 +58,7 @@ struct GripperQuality
 		success(0.0),
 		wrench(0.0),
 		topwrench(0.0),
+		robustness(0.0),
 		quality(0.0)
 	{}
 	
@@ -73,6 +74,7 @@ struct GripperQuality
 				<< "- success= " << q.success << '\n'
 				<< "- wrench= " << q.wrench << '\n'
 				<< "- topwrench= " << q.topwrench << '\n'
+				<< "- robustness= " << q.robustness << '\n'
 				<< "- quality= " << q.quality << std::endl;
 				
 		return stream;
@@ -88,7 +90,8 @@ struct GripperQuality
 	double coverage; /// Ratio of filtered succesful grasps to filtered all samples.
 	double success; /// Ratio of succesful grasps to all generated grasps.
 	double wrench; /// Average wrench of succesful grasps.
-	double topwrench; /// Average quality of top 10% of grasps.
+	double topwrench; /// Average quality of top 20% of grasps.
+	double robustness; /// Robustness of succesful grasps.
 	double quality; /// Ultimate measurement of gripper quality.
 };
 
@@ -281,14 +284,7 @@ class Gripper // : public TreeDevice
 			TaskDescription::Ptr td);
 		
 		/// Get gripper quality measurement structure.
-		GripperQuality::Ptr getQuality()
-		{
-			if (_quality == NULL) {
-				_quality = rw::common::ownedPtr(new GripperQuality);
-			}
-			
-			return _quality;
-		}
+		GripperQuality& getQuality() { return _quality; }
 		
 	// friends
 		friend class rw::loaders::GripperXMLLoader;
@@ -317,6 +313,6 @@ class Gripper // : public TreeDevice
 		double _force;
 		
 		// quality
-		GripperQuality::Ptr _quality;
+		GripperQuality _quality;
 };
 }} // end namespaces

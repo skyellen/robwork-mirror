@@ -187,6 +187,7 @@ void GraspPlugin::setupGUI()
     connect(ui.startButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     connect(ui.stopButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
     connect(ui.testButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
+    connect(ui.perturbButton, SIGNAL(clicked()), this, SLOT(guiEvent()));
 }
 
 
@@ -260,6 +261,11 @@ void GraspPlugin::guiEvent()
 	
 	else if (obj == ui.planButton) {
 		planTasks();
+		showTasks();
+	}
+	
+	else if (obj == ui.perturbButton) {
+		perturbTasks();
 		showTasks();
 	}
 	
@@ -441,7 +447,10 @@ void GraspPlugin::updateSim()
 	if (!_graspSim->isRunning()) {
 		_timer->stop();
 
+		_gripper->getQuality() = GripperQuality(_graspSim->getGripperQuality());
 		//calculateQuality(_gripper->getTasks(), _generator->getSamples());
+		
+		log().info() << "Simulation is finished." << endl;
 	}
 	
 	showTasks();
@@ -508,6 +517,38 @@ void GraspPlugin::planTasks()
 	ui.progressBar->setMaximum(_nOfTargetsToGen);
 
 	//showTasks();
+}
+
+
+
+void GraspPlugin::perturbTasks()
+{
+	bool onlySuccesses = ui.perturbBox->isChecked();
+	int nPerturbations = ui.perturbEdit->text().toInt();
+	
+	cout << "Perturbing tasks..." << endl;
+	log().info() << "Perturbing tasks..." << endl;
+	
+	if (_gripper == NULL) {
+		cout << "NULL gripper" << endl;
+	}
+	
+	//int toPerturb = onlySuccesses ? TaskGenerator::countTasks(_tasks,GraspTask::Success) : _nOfTargetsToGen;
+	
+	try {
+		if(onlySuccesses) _tasks = TaskGenerator::copyTasks(_tasks, true);
+		_tasks = TaskGenerator::addPerturbations(_tasks, 0.003, 8.0*Deg2Rad, nPerturbations);
+		
+	} catch (rw::common::Exception& e) {
+		
+		QMessageBox::critical(NULL, "RW Exception", e.what());
+	}
+	
+	cout << "Done." << endl;
+	log().info() << "Done." << endl;
+	
+	ui.progressBar->setValue(0);
+	ui.progressBar->setMaximum(nPerturbations);
 }
 
 

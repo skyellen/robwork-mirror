@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	Math::seed();
 	
 	// options
-	int ntargets, nsamples;
+	int ntargets, nsamples, rtargets;
 	string dwcFilename;
 	string tdFilename;
 	string gripperFilename;
@@ -64,6 +64,9 @@ int main(int argc, char* argv[])
 	
 	bool nosim = false;
 	bool useSamples = false;
+	bool testRobustness = false;
+	
+	double sigma_a, sigma_p;
 	
 	// program options
 	string usage = "This is a script used to generate tasks for a single gripper, simulate them and"
@@ -81,6 +84,9 @@ int main(int argc, char* argv[])
 		("samples", value<string>(), "surface samples file")
 		("out,o", value<string>(), "task file")
 		("nosim", "don't perform simulation")
+		("robustness,r", value<int>(&rtargets)->default_value(0), "test robustnesss with s number of targets")
+		("sigma_a", value<double>(&sigma_a)->default_value(8), "Standard deviation in of angle in degrees.")
+        ("sigma_p", value<double>(&sigma_p)->default_value(0.003), "Standard deviation of position in meters.")
 	;
 	variables_map vm;
 	try {
@@ -95,6 +101,10 @@ int main(int argc, char* argv[])
 		
 		if (vm.count("nosim")) {
 			nosim = true;
+		}
+		
+		if (vm.count("robustness")) {
+			testRobustness = true;
 		}
 	} catch (...) {
 		cout << usage << endl;
@@ -158,6 +168,24 @@ int main(int argc, char* argv[])
 		sim->startSimulation(td->getInitState());
 		
 		while (sim->isRunning()) {}
+		
+		gripper->getQuality() = sim->getGripperQuality();
+	}
+	
+	/* perform robustness tests */
+	if (testRobustness) {
+		cout << "Starting robustness test..." << endl;
+		
+		// perturbate only succesful tasks
+		tasks = TaskGenerator::copyTasks(tasks, true);
+		tasks = TaskGenerator::addPerturbations(tasks, sigma_p, sigma_a*Deg2Rad, rtargets);
+			
+		GripperTaskSimulator::Ptr sim = new GripperTaskSimulator(gripper, tasks, samples, td);
+		sim->startSimulation(td->getInitState());
+			
+		while (sim->isRunning()) {}
+		
+		gripper->getQuality().robustness = sim->getGripperQuality().success;
 	}
 	
 	/* save results */

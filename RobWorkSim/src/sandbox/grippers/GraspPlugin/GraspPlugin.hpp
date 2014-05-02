@@ -86,6 +86,9 @@ class GraspPlugin : public rws::RobWorkStudioPlugin
 		/// Plan tasks automatically.
 		void planTasks();
 		
+		/// Generate a perturbed set of tasks.
+		void perturbTasks();
+		
 		/// Shows tasks in RWS window.
 		void showTasks();
 		

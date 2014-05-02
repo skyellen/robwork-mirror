@@ -108,29 +108,48 @@ void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 	double offset = XMLHelpers::readDouble(tree.get_child("Offset"));
 	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-offset)));
 	
-	gripper->setJawdist(XMLHelpers::readDouble(tree.get_child("Jawdist")));
-	gripper->setOpening(XMLHelpers::readDouble(tree.get_child("Opening")));
+	double jawdist = XMLHelpers::readDouble(tree.get_child("Jawdist"));
+	double opening = XMLHelpers::readDouble(tree.get_child("Opening"));
+	
+	gripper->setJawdist(jawdist);
+	gripper->setOpening(opening);
 	gripper->setForce(XMLHelpers::readDouble(tree.get_child("Force")));
+	
+	// it is also possible to dispense with Jawdist, and use Stroke, which overwrites it instead
+	boost::optional<PTree&> strokeNode = tree.get_child_optional("Stroke");
+	if (strokeNode) {
+		double stroke = XMLHelpers::readDouble(strokeNode.get());
+		gripper->setJawdist(opening - stroke);
+	}
 }
 
 
 
 void readResult(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 {
-	GripperQuality::Ptr result = gripper->getQuality();
+	GripperQuality& result = gripper->getQuality();
 	
-	result->nOfExperiments = XMLHelpers::readInt(tree.get_child("Experiments"));
-	result->nOfSuccesses = XMLHelpers::readInt(tree.get_child("Successes"));
-	result->nOfSamples = XMLHelpers::readInt(tree.get_child("Samples"));
+	result.nOfExperiments = XMLHelpers::readInt(tree.get_child("Experiments"));
+	result.nOfSuccesses = XMLHelpers::readInt(tree.get_child("Successes"));
+	result.nOfSamples = XMLHelpers::readInt(tree.get_child("Samples"));
 	//result->shape = XMLHelpers::readDouble(tree.get_child("Shape"));
-	result->coverage = XMLHelpers::readDouble(tree.get_child("Coverage"));
-	result->success = XMLHelpers::readDouble(tree.get_child("SuccessRatio"));
-	result->wrench = XMLHelpers::readDouble(tree.get_child("Wrench"));
-	result->topwrench = XMLHelpers::readDouble(tree.get_child("TopWrench"));
-	result->quality = XMLHelpers::readDouble(tree.get_child("Quality"));
+	result.coverage = XMLHelpers::readDouble(tree.get_child("Coverage"));
+	result.success = XMLHelpers::readDouble(tree.get_child("SuccessRatio"));
+	result.wrench = XMLHelpers::readDouble(tree.get_child("Wrench"));
+	result.topwrench = XMLHelpers::readDouble(tree.get_child("TopWrench"));
+	result.quality = XMLHelpers::readDouble(tree.get_child("Quality"));
+	
+	// robustness is optional, because it was introduced recently,
+	// and we want to maintain compatibility
+	boost::optional<PTree&> robustnessNode = tree.get_child_optional("Robustness");
+	if (robustnessNode) {
+		result.robustness = XMLHelpers::readDouble(robustnessNode.get());
+	} else {
+		result.robustness = 0.0;
+	}
 	
 	DEBUG << "Read gripper quality:" << endl;
-	DEBUG << *result << endl;
+	DEBUG << result << endl;
 }
 
 
@@ -208,17 +227,19 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Parameters.Jawdist", gripper->getJawdist());
 	tree.put("Gripper.Parameters.Opening", gripper->getOpening());
 	tree.put("Gripper.Parameters.Force", gripper->getForce());
+	tree.put("Gripper.Parameters.Stroke", gripper->getOpening()-gripper->getJawdist());
 	
-	GripperQuality::Ptr q = gripper->getQuality();
-	tree.put("Gripper.Result.Experiments", q->nOfExperiments);
-	tree.put("Gripper.Result.Successes", q->nOfSuccesses);
-	tree.put("Gripper.Result.Samples", q->nOfSamples);
+	GripperQuality& q = gripper->getQuality();
+	tree.put("Gripper.Result.Experiments", q.nOfExperiments);
+	tree.put("Gripper.Result.Successes", q.nOfSuccesses);
+	tree.put("Gripper.Result.Samples", q.nOfSamples);
 	//tree.put("Gripper.Result.Shape", q->shape);
-	tree.put("Gripper.Result.Coverage", q->coverage);
-	tree.put("Gripper.Result.SuccessRatio", q->success);
-	tree.put("Gripper.Result.Wrench", q->wrench);
-	tree.put("Gripper.Result.TopWrench", q->topwrench);
-	tree.put("Gripper.Result.Quality", q->quality);
+	tree.put("Gripper.Result.Coverage", q.coverage);
+	tree.put("Gripper.Result.SuccessRatio", q.success);
+	tree.put("Gripper.Result.Wrench", q.wrench);
+	tree.put("Gripper.Result.TopWrench", q.topwrench);
+	tree.put("Gripper.Result.Quality", q.quality);
+	tree.put("Gripper.Result.Robustness", q.robustness);
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
