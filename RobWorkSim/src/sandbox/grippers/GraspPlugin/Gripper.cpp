@@ -91,13 +91,59 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	//cout << "LOL" << tcp->getName() << endl;
 	
 	// set bounds
-	dev->setBounds(make_pair(Q(1, _jawdist), Q(1, _opening)));
-	dev->setQ(Q(1, _jawdist), state);
+	double minOpening = _jawdist;
+	if (minOpening < 0.0) minOpening = 0.0;
+	
+	dev->setBounds(make_pair(Q(1, minOpening), Q(1, _opening)));
+	dev->setQ(Q(1, minOpening), state);
 	
 	// set force
 	ddev->setMotorForceLimits(Q(2, _force, _force));
 	
 	cout << "Gripper updated!" << endl;
+}
+
+
+
+double Gripper::getCrossHeight(double x) const
+{
+	if (_isJawParametrized) { // jaw is parametrized -- easy
+		
+		double length = _jawParameters(1);
+		
+		if (x > length) return 0.0; // far beyond the gripper
+		
+		double depth = _jawParameters(3);
+		double width = _jawParameters(2);
+		double lwidth = width;
+		
+		// check if to subtract from the width due to the chamfering
+		double chfDepth = _jawParameters(4);
+		double chfAngle = _jawParameters(5);
+		double d = length - chfDepth * width * tan(chfAngle);
+		if (x > d) {
+			lwidth = width - (x - d) * 1.0/tan(chfAngle);
+		}
+		
+		// check if subtract from the width due to the cut
+		double cutPos = _jawParameters(6);
+		double cutDepth = _jawParameters(7);
+		double cutAngle = _jawParameters(8);
+		double cutDist = abs(x - cutPos);
+		
+		if (cutDist < cutDepth * tan(cutAngle/2.0)) {
+			lwidth -= cutDepth - cutDist * tan(1.57 - cutAngle/2.0);
+		}
+		
+		if (lwidth < 0.0) lwidth = 0.0;
+		
+		return lwidth;
+		
+	} else {
+		// TODO: calculate stl's crossection somehow
+	
+		return 0.0;
+	}
 }
 
 

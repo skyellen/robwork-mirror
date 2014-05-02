@@ -144,10 +144,15 @@ class Gripper // : public TreeDevice
 		void setTCP(rw::math::Transform3D<> tcp) { _tcp = tcp; }
 		
 		double getJawdist() { return _jawdist; }
-		void setJawdist(double jawdist) { _jawdist = jawdist; }
+		void setJawdist(double jawdist) { _jawdist = jawdist > 0.0 ? jawdist : 0.0; }
 		
 		double getOpening() { return _opening; }
 		void setOpening(double opening) { _opening = opening; }
+		
+		/*double getStroke() { return _stroke; }
+		void setStroke(double stroke) {
+			_stroke = stroke;
+		}*/
 		
 		bool isJawParametrized() const { return _isJawParametrized; }
 		
@@ -286,6 +291,15 @@ class Gripper // : public TreeDevice
 		/// Get gripper quality measurement structure.
 		GripperQuality& getQuality() { return _quality; }
 		
+		/**
+		 * @brief Calculates parametrized gripper's crossection breadth at the point along its length.
+		 * 
+		 * @param x [in] distance from the base
+		 * 
+		 * @return crossection height
+		 */
+		double getCrossHeight(double x) const;
+		
 	// friends
 		friend class rw::loaders::GripperXMLLoader;
 		
@@ -311,6 +325,7 @@ class Gripper // : public TreeDevice
 		double _jawdist;
 		double _opening;
 		double _force;
+		double _stroke;
 		
 		// quality
 		GripperQuality _quality;

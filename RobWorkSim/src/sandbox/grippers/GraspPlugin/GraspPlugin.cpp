@@ -705,13 +705,32 @@ void GraspPlugin::test()
 	
 	//log().info() << GeometryUtil::simplexVolume(vtx) << endl;*/
 	
-	static int npic = 0;
+	/*static int npic = 0;
 	
 	stringstream sstr;
 	sstr << npic++;
 	string filename = _wc->getName() + "_" + _gripper->getName() + "_" + sstr.str() + ".png";
 	log().info() << "Saving image " + filename + "..." << endl;
-	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
+	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));*/
+	
+	// let's calculate gripper's hights...
+	ofstream file;
+	string filename = _gripper->getName() + ".dat";
+	file.open(filename.c_str());
+	
+	for (double x = 0.0; x < 0.1; x += 0.001) {
+		double l = _gripper->getJawParameters()[1];
+		double h = 100 * _gripper->getCrossHeight(x);
+		double b = 100 * _gripper->getJawParameters()[3];
+		double M = x > l ? 0.0 : (_gripper->getJawParameters()[1] - x) * _gripper->getForce();
+		double sigma = 6 * M / (b * h * h);
+		if (isnan(sigma)) sigma = 0.0;
+		
+		cout << x << ' ' << h << ' ' << M << ' ' << sigma << endl;
+		file << x << ' ' << h << ' ' << M << ' ' << sigma << endl;
+	}
+	
+	file.close();
 }
 
 

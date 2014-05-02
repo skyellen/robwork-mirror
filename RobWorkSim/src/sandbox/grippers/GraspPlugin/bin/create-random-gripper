@@ -77,7 +77,7 @@ class GripperGenerator:
 			.format(name, jawStr, tcp, stroke, opening, force)
 			
 		# execute
-		#print cmd
+		print cmd
 		os.system(cmd)
 
 def main():
