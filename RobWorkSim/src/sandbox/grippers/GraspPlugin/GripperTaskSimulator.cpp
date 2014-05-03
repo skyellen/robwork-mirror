@@ -321,7 +321,8 @@ void GripperTaskSimulator::evaluateGripper()
 	 * penalty = stress / stresslimit clamped to [0, 1]
 	 * quality = success - penalty clamped to [0, 1]
 	 */
-	double penalty = _gripper->getMaxStress() / _td->getStressLimit();
+	double maxstress = _gripper->getMaxStress();
+	double penalty = maxstress / _td->getStressLimit();
 	if (penalty > 1.0) penalty = 1.0;
 	
 	double quality = successRatio - penalty;
@@ -347,6 +348,7 @@ void GripperTaskSimulator::evaluateGripper()
 	_quality.success = successRatio;
 	_quality.wrench = wrench;
 	_quality.topwrench = topwrench;
+	_quality.maxstress = maxstress;
 	_quality.quality = quality;
 	
 	DEBUG << _quality << endl;
