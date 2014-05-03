@@ -148,6 +148,31 @@ double Gripper::getCrossHeight(double x) const
 
 
 
+double Gripper::getMaxStress() const
+{
+	if (!_isJawParametrized) return 0.0; // TODO: add calculations for STL
+	
+	double length = _jawParameters(1);
+	
+	double sigmaMax = 0.0;
+	
+	for (double x = 0.0; x < length; x += 0.001) {
+		double h = 100 * getCrossHeight(x);
+		double b = 100 * _jawParameters(3);
+		double M = x > length ? 0.0 : (length - x) * _force;
+		double sigma = 6 * M / (b * h * h);
+		if (isnan(sigma)) sigma = 0.0;
+		
+		if (sigma > sigmaMax) sigmaMax = sigma;
+		
+		//cout << x << ' ' << h << ' ' << M << ' ' << sigma << endl;
+	}
+	
+	return sigmaMax;
+}
+
+
+
 /*void Gripper::loadTasks(std::string filename)
 {
 	if (filename.empty()) return;

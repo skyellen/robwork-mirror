@@ -148,6 +148,15 @@ void readResult(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 		result.robustness = 0.0;
 	}
 	
+	// maxstress is optional, because it was introduced recently,
+	// and we want to maintain compatibility
+	boost::optional<PTree&> stressNode = tree.get_child_optional("MaxStress");
+	if (stressNode) {
+		result.maxstress = XMLHelpers::readDouble(stressNode.get());
+	} else {
+		result.maxstress = 0.0;
+	}
+	
 	DEBUG << "Read gripper quality:" << endl;
 	DEBUG << result << endl;
 }
@@ -240,6 +249,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Result.TopWrench", q.topwrench);
 	tree.put("Gripper.Result.Quality", q.quality);
 	tree.put("Gripper.Result.Robustness", q.robustness);
+	tree.put("Gripper.Result.MaxStress", q.maxstress);
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);

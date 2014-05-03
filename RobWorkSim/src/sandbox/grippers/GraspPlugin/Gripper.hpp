@@ -59,6 +59,7 @@ struct GripperQuality
 		wrench(0.0),
 		topwrench(0.0),
 		robustness(0.0),
+		maxstress(0.0),
 		quality(0.0)
 	{}
 	
@@ -75,6 +76,7 @@ struct GripperQuality
 				<< "- wrench= " << q.wrench << '\n'
 				<< "- topwrench= " << q.topwrench << '\n'
 				<< "- robustness= " << q.robustness << '\n'
+				<< "- maxstress= " << q.maxstress << '\n'
 				<< "- quality= " << q.quality << std::endl;
 				
 		return stream;
@@ -92,6 +94,7 @@ struct GripperQuality
 	double wrench; /// Average wrench of succesful grasps.
 	double topwrench; /// Average quality of top 20% of grasps.
 	double robustness; /// Robustness of succesful grasps.
+	double maxstress; /// Max. stress a gripper takes.
 	double quality; /// Ultimate measurement of gripper quality.
 };
 
@@ -138,7 +141,7 @@ class Gripper // : public TreeDevice
 		void setName(const std::string& name) { _name = name; }
 		
 		double getForce() { return _force; }
-		void setForce(double force) { _force = force; }
+		void setForce(double force) { _force = force; _quality.maxstress = getMaxStress(); }
 		
 		rw::math::Transform3D<> getTCP() { return _tcp; }
 		void setTCP(rw::math::Transform3D<> tcp) { _tcp = tcp; }
@@ -215,6 +218,8 @@ class Gripper // : public TreeDevice
 			//_leftGeometry = NULL;
 			//_rightGeometry = NULL;
 			_isJawParametrized = true;
+			
+			_quality.maxstress = getMaxStress();
 		}
 		
 		bool isBaseParametrized() const { return _isBaseParametrized; }
@@ -299,6 +304,15 @@ class Gripper // : public TreeDevice
 		 * @return crossection height
 		 */
 		double getCrossHeight(double x) const;
+		
+		/**
+		 * @brief Calculates worst case maximum stress for the gripper.
+		 * 
+		 * It's calculated by assuming max. grippers force acting on the tip (which gives the largest moment).
+		 * 
+		 * @return Stress.
+		 */
+		double getMaxStress() const;
 		
 	// friends
 		friend class rw::loaders::GripperXMLLoader;

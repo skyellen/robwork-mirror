@@ -26,6 +26,7 @@ TaskDescription::TaskDescription(rwsim::dynamics::DynamicWorkCell::Ptr dwc) :
 	_initState(_wc->getDefaultState()),
 	_interferenceLimit(0.0),
 	_wrenchLimit(0.0),
+	_stressLimit(10.0), // arbitrary
 	_targetObject(NULL)
 {
 	if (_wc == NULL || _dwc == NULL) {
@@ -206,6 +207,15 @@ void TaskDescriptionLoader::readLimits(PTree& tree, TaskDescription::Ptr task)
 	PTree& wrenchChild = tree.get_child("Wrench");
 	task->_wrenchLimit = XMLHelpers::readDouble(wrenchChild);
 	DEBUG << task->_wrenchLimit << endl;
+	
+	boost::optional<PTree&> stressNode = tree.get_child_optional("Stress");
+	if (stressNode) {
+		DEBUG << "\tStress limit: ";
+		task->_stressLimit = XMLHelpers::readDouble(stressNode.get());
+		DEBUG << task->_stressLimit << endl;
+	} else {
+		task->_stressLimit = 0.0;
+	}
 }
 
 
@@ -304,6 +314,7 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	// save limits
 	tree.put("TaskDescription.Limits.Interference", td->_interferenceLimit);
 	tree.put("TaskDescription.Limits.Wrench", td->_wrenchLimit);
+	tree.put("TaskDescription.Limits.Stress", td->_stressLimit);
 	
 	// save baseline
 	tree.put("TaskDescription.Baseline.Shape", td->_baseLine.shape);

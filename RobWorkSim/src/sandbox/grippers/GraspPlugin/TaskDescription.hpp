@@ -64,6 +64,9 @@ class TaskDescription
 		double getWrenchLimit() const { return _wrenchLimit; }
 		void setWrenchLimit(double limit) { _wrenchLimit = limit; }
 		
+		double getStressLimit() const { return _stressLimit; }
+		void setStressLimit(double limit) { _stressLimit = limit; }
+		
 		std::vector<rw::models::Object::Ptr> getInterferenceObjects() { return _interferenceObjects; }
 		void addInterferenceObject(rw::models::Object::Ptr object) { _interferenceObjects.push_back(object); }
 		
@@ -107,6 +110,7 @@ class TaskDescription
 		rw::kinematics::State _initState;
 		double _interferenceLimit;
 		double _wrenchLimit;
+		double _stressLimit;
 		std::vector<rw::models::Object::Ptr> _interferenceObjects;
 		rw::math::Q _prefilteringDistance; // distance used to filter samples at the start, so they are more uniform
 		rw::math::Q _coverageDistance; // distance used for filtering grasps for coverage

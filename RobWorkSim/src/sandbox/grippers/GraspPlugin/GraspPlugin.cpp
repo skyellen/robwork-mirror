@@ -714,7 +714,7 @@ void GraspPlugin::test()
 	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));*/
 	
 	// let's calculate gripper's hights...
-	ofstream file;
+	/*ofstream file;
 	string filename = _gripper->getName() + ".dat";
 	file.open(filename.c_str());
 	
@@ -730,7 +730,9 @@ void GraspPlugin::test()
 		file << x << ' ' << h << ' ' << M << ' ' << sigma << endl;
 	}
 	
-	file.close();
+	file.close();*/
+	
+	log().info() << "Max stress= " << _gripper->getMaxStress() << endl;
 }
 
 

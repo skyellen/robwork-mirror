@@ -314,11 +314,18 @@ void GripperTaskSimulator::evaluateGripper()
 	// task set is filtered at this point
 	
 	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
-	double quality = (
-		w.coverage * coverage +
-		w.success * successRatio +
-		w.wrench * wrench
-		) / sumWeights;
+	
+	/* Calculate quality
+	 * 
+	 * quality is based on success, but with subtracted penalty for max stress:
+	 * penalty = stress / stresslimit clamped to [0, 1]
+	 * quality = success - penalty clamped to [0, 1]
+	 */
+	double penalty = _gripper->getMaxStress() / _td->getStressLimit();
+	if (penalty > 1.0) penalty = 1.0;
+	
+	double quality = successRatio - penalty;
+	if (quality < 0.0) quality = 0.0;
 	
 	// save data to gripper result
 	/*GripperQuality::Ptr q = _gripper->getQuality();
