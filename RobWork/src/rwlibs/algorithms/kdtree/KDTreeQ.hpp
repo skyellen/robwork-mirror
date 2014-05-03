@@ -275,7 +275,7 @@ namespace rwlibs { namespace algorithms {
         //! constructor
         KDTreeQ(TreeNode *root, std::vector<TreeNode*> *nodes):
             _dim(root->_kdnode->key.size()),
-            _root(&root),_nodes(nodes)
+            _root(root),_nodes(nodes)
         {
         };
 
@@ -310,7 +310,7 @@ namespace rwlibs { namespace algorithms {
             bool _deleted; //
             unsigned char _axis; // the splitting axis
         };
-
+/*
         struct SimpleCompare {
         private:
             size_t _dim;
@@ -318,28 +318,39 @@ namespace rwlibs { namespace algorithms {
             SimpleCompare(size_t dim):_dim(dim){};
 
             bool operator()(const TreeNode& e1, const TreeNode& e2) {
+                RW_ASSERT(e1._kdnode);
+                RW_ASSERT(e2._kdnode);
                 return e1._kdnode->key[_dim] < e2._kdnode->key[_dim] ;
             }
         };
+*/
+        struct SimpleCompare2 {
+        private:
+            size_t _dim;
+        public:
+            SimpleCompare2(size_t dim):_dim(dim){};
 
-        static TreeNode* buildBalancedRec(std::vector<TreeNode>& tNodes, int startIdx,
+            bool operator()(TreeNode* e1, TreeNode* e2) {
+                return e1->_kdnode->key[_dim] < e2->_kdnode->key[_dim] ;
+            }
+        };
+
+        static TreeNode* buildBalancedRec(std::vector<TreeNode*>& tNodes, int startIdx,
                                           int endIdx, size_t depth, size_t nrOfDims){
             if(endIdx<=startIdx)
                 return NULL;
 
             //std::cout << "RecBuild(" << startIdx << "," << endIdx << ")" << std::endl;
             size_t len = endIdx-startIdx;
-
             size_t dim = depth % nrOfDims;
             // the compare func can
-            std::sort( &tNodes[startIdx], &tNodes[endIdx-1], SimpleCompare(dim) );
+            std::sort( &tNodes[startIdx], &tNodes[endIdx-1], SimpleCompare2(dim) );
             size_t medianIdx = startIdx+len/2;
-
-            TreeNode &mNode = tNodes[medianIdx];
-            mNode._axis = 0xFF&dim;
-            mNode._left = buildBalancedRec(tNodes, startIdx, (int)medianIdx, depth+1, nrOfDims);
-            mNode._right = buildBalancedRec(tNodes, (int)(medianIdx+1), endIdx, depth+1, nrOfDims);
-            return &mNode;
+            TreeNode *mNode = tNodes[medianIdx];
+            mNode->_axis = 0xFF&dim;
+            mNode->_left = buildBalancedRec(tNodes, startIdx, (int)medianIdx, depth+1, nrOfDims);
+            mNode->_right = buildBalancedRec(tNodes, (int)(medianIdx+1), endIdx, depth+1, nrOfDims);
+            return mNode;
         }
 
         void nnSearchRec(const rw::math::Q& nnkey, TreeNode* node,
@@ -485,20 +496,17 @@ namespace rwlibs { namespace algorithms {
             return NULL;
 
         // create all tree nodes in a list
-        std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
-
+        std::vector<TreeNode*> *tNodes = new std::vector<TreeNode*>( nodes.size() );
         // copy the KDNodes into the tree nodes
-        int i=0;
-        BOOST_FOREACH(KDNode& n, nodes){
-            (*tNodes)[i]._kdnode = &n;
-            i++;
+        for(int i=0;i<tNodes->size();i++){
+            (*tNodes)[i] = new TreeNode();
+            (*tNodes)[i]->_kdnode = new KDTreeQ<T>::KDNode( nodes[i] );
         }
 
         // create a simple median balanced tree
         size_t nrOfDims = nodes.front().key.size();
         TreeNode *root = buildBalancedRec(*tNodes, 0, (int)tNodes->size(), 0, nrOfDims);
-
-        return new KDTreeQ<T>(*root, tNodes);
+        return new KDTreeQ<T>(root, tNodes);
     }
 
     template<class T>
@@ -507,11 +515,12 @@ namespace rwlibs { namespace algorithms {
             return NULL;
 
         // create all tree nodes in a list
-        std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
+        std::vector<TreeNode*> *tNodes = new std::vector<TreeNode*>( nodes.size() );
 
         // copy the KDNodes into the tree nodes
         int i=0;
         BOOST_FOREACH(KDNode* n, nodes){
+            (*tNodes)[i] = new TreeNode();
             (*tNodes)[i]._kdnode = n;
             i++;
         }
