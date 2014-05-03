@@ -168,7 +168,7 @@ struct GraspResult {
     typedef rw::common::Ptr<GraspResult> Ptr;
 
 	/// Constructor
-    GraspResult() : testStatus(GraspTask::UnInitialized), liftresult(0.0){}
+    GraspResult() : testStatus(GraspTask::UnInitialized), liftresult(0.0),interference(0.0){}
     
     /// Copy constructor
     GraspResult(const GraspResult& gresult) :
