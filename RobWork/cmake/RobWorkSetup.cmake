@@ -422,7 +422,11 @@ IF( "${RW_CXX_FLAGS}" STREQUAL "")
     IF ( (CMAKE_COMPILER_IS_GNUCXX) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") )
       # Turn off annoying GCC warnings
       SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-unused-function" "-Wno-pragmas")
-      	MESSAGE("GNUCXX ${RW_CXX_FLAGS_TMP}")
+      IF ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+      	SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-unused-function")
+      ENDIF()
+
+      MESSAGE("GNUCXX ${RW_CXX_FLAGS_TMP}")
       IF(IS_RELEASE)
           LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_DISABLE_ASSERTS")
       ENDIF() 
