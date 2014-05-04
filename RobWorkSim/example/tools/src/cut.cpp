@@ -253,9 +253,9 @@ int main(int argc, char** argv){
 		    failTypes[result->failType]++;
 		}
 
-		std::cout << pi << "\t"
+		std::cout << (pi+1) << "\t"
                         << successes << "\t"
-                        << (successes*100.0)/pi <<"%" << "\t";
+                        << (successes*100.0)/(pi+1) <<"%" << "\t";
 		for(std::size_t errType=0;errType<failTypes.size();errType++)
 		    std::cout << failTypes[errType] << "\t";
         std::cout << "        \r";
@@ -438,9 +438,11 @@ rw::common::Ptr<CutResult> simulateCut(Knife& knife, ProximityModel::Ptr obj, Ob
 	// until it is through the object
 	Vector3D<> cpos = res->path.back().P();
 	bool lastCollide = true;
+	int j = 1;
 	for(;i<timesteps;i++){
 		// calculate new position of knife
-		Transform3D<> t3d_knife(cpos + ndir*(len_dt*i), param.rpy );
+		Transform3D<> t3d_knife(cpos + ndir*(len_dt*j), param.rpy );
+		j++;
 		//Transform3D<> t3d_knife(param.pos + param.dir*(len_dt*i), param.rpy );
 
 		res->path.push_back(t3d_knife);

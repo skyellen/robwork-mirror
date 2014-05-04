@@ -15,12 +15,16 @@
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
+#include <rw/RobWork.hpp>
+
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
+
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace std;
@@ -59,6 +63,8 @@ std::vector<GraspTask::Ptr> splitTask(GraspTask::Ptr grasptask, int split){
 
 int main(int argc, char** argv)
 {
+    rw::RobWork::getInstance()->initialize();
+
     Math::seed(time(NULL));
     srand ( time(NULL) );
     Log::log().setDisable(Log::DebugMask);
@@ -76,7 +82,7 @@ int main(int argc, char** argv)
         ("align", value<bool>()->default_value(false), "Use aligned grasps from input.")
         ("perturbe", value<bool>()->default_value(false), "Add small random pertubations to all targets.")
         ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
-        ("sigma_a", value<double>()->default_value(8), "Standard deviation in of angle in Degree.")
+        ("sigma_a", value<double>()->default_value(2), "Standard deviation in of angle in Degree.")
         ("sigma_p", value<double>()->default_value(0.003), "Standard deviation of position in meters.")
     ;
     positional_options_description optionDesc;

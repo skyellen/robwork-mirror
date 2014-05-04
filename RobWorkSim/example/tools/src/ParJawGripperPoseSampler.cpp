@@ -140,7 +140,7 @@ int main(int argc, char** argv)
         object_geo = GeometryFactory::getGeometry(file_object.string());
     }
     RW_WARN("");
-
+    Frame *objectFrame = NULL;
     Object::Ptr obj;
     if( object_geo==NULL ){
         // load it from workcell
@@ -241,6 +241,8 @@ int main(int argc, char** argv)
     stask.retract = Transform3D<>(Vector3D<>(0,0,0.10));
     stask.openQ = openQ;
     stask.closeQ = closeQ;
+    stask.objectID = name_object;
+    stask.refframe = name_object;
     gtask.setTCPID(grippertcp);
     gtask.setGraspControllerID("GraspController");
 
@@ -258,22 +260,23 @@ int main(int argc, char** argv)
     std::vector< std::pair<Vector3D<>,Vector3D<> > > points;
     std::cout << "creating points..." << std::endl;
     // first sample 10000
-    for(int i=0;i<10000;i++){
+    int NUMBER_TO_SAMPLE = 2000;
+    for(int i=0;i<NUMBER_TO_SAMPLE;i++){
         Transform3D<> transform = sampler.sample();
         points.push_back( std::make_pair(transform.P(),transform.R()*Vector3D<>::z()) );
     }
     // now create a feature list where normals are <50Deg apart and
     std::cout << "creating features" << std::endl;
     std::vector<std::pair<int,int> > features;
-    for(int i=0;i<10000; i++){
+    for(int i=0;i<NUMBER_TO_SAMPLE; i++){
         std::pair<Vector3D<>,Vector3D<> > &p1 = points[i];
-        for(int j=i;j<10000;j++){
+        for(int j=i;j<NUMBER_TO_SAMPLE;j++){
             std::pair<Vector3D<>,Vector3D<> > &p2 = points[j];
             bool closeAngle = angle(-p1.second,p2.second)<40*Deg2Rad;
             double dist = MetricUtil::dist2(p1.first, p2.first);
             // also check that the angle between p1 to p2 vector is small
-            //closeAngle &= angle( normalize( p1.first-p2.first ) , p1.second)<40*Deg2Rad;
-            //closeAngle &= angle( normalize( p2.first-p1.first ) , p2.second)<40*Deg2Rad;
+            closeAngle &= angle( normalize( p1.first-p2.first ) , p1.second)<50*Deg2Rad;
+            closeAngle &= angle( normalize( p2.first-p1.first ) , p2.second)<50*Deg2Rad;
             if(closeAngle){
                 if( (dist > minWidth) && (dist < maxWidth) ){
                     features.push_back( std::make_pair(i,j) );
@@ -288,7 +291,7 @@ int main(int argc, char** argv)
     // also add the stl object
 
 
-    void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+    //void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
 
     if(!obj){
 
@@ -319,9 +322,16 @@ int main(int argc, char** argv)
         std::pair<int,int> sfeat = features[Math::ranI(0, features.size()-1)];
         Vector3D<> p1 = points[sfeat.first].first;
         Vector3D<> p2 = points[sfeat.second].first;
+        Vector3D<> n1 = points[sfeat.first].second;
+        Vector3D<> n2 = points[sfeat.second].second;
+
         Vector3D<> tcp_p = (p2-p1)/2.0 + p1;
         // generate orientation, xaxis determine gripper closing direction, zaxis the approach
-        Vector3D<> xaxis = normalize(p2-p1);
+        // make the xaxis point along the average normal
+
+        Vector3D<> avgNormal = normalize(-n1 + n2);
+        Vector3D<> xaxis = avgNormal;
+        //Vector3D<> xaxis = normalize(p2-p1);
         Vector3D<> yaxis = normalize(cross(Vector3D<>(Math::Math::ranNormalDist(0,1),Math::Math::ranNormalDist(0,1),Math::Math::ranNormalDist(0,1)), xaxis ));
         Vector3D<> zaxis = normalize( cross(xaxis,yaxis) );
         Transform3D<> target( tcp_p, Rotation3D<>(xaxis,yaxis,zaxis) );
@@ -341,8 +351,14 @@ int main(int argc, char** argv)
             oq(0) = std::min(openQ(0),(graspW+0.01)/2.0);
             oq(0) = std::max(closeQ(0), oq(0) );
         }
+        Q step =  (closeQ - openQ)/10;
+        std::vector<Q> openSamples(10,oq);
+        for(int j=1;j<openSamples.size();j++){
+            openSamples[j] =openQ + step*j;
+        }
+
         gripper->setQ( oq, state);
-        // todo: close the grippers until
+        // todo: close the grippers until they are close to
 
         /*
         Quaternion<> quat( target.R() );
@@ -350,8 +366,32 @@ int main(int argc, char** argv)
         target.R() = quat.toRotation3D();
 */
         // place gripper in target position
-        moveFrameW(target, gripperTCP, gripperMovable, state);
-        if( cdetect.inCollision(state, &result, true) ){
+        // target is defined in object coordinates
+        Transform3D<> mbaseTtcp = Kinematics::frameTframe(gripperMovable,gripperTCP, state);
+
+        Transform3D<> wTtarget = Kinematics::worldTframe(obj->getBase(), state) * target;
+        Transform3D<> wTtarget_base = wTtarget * inverse( mbaseTtcp );
+
+        gripperMovable->moveTo(wTtarget_base, wc->getWorldFrame() , state);
+
+        bool inCol = cdetect.inCollision(state, &result, true);
+        if(!inCol){
+            // we have success, before continueing try to
+            // find a gripper configuration that is closer to the object than the original
+            // if we don't find any in collision then the hand will never touch the object so its a bad grasp
+            int j;
+            for(j=1;j<openSamples.size();j++){
+                gripper->setQ( openSamples[j], state);
+                if(cdetect.inCollision(state, &result, true)){
+                    break;
+                }
+                oq = openSamples[j];
+            }
+            if(j==openSamples.size())
+                inCol = true;
+        }
+
+        if( inCol ){
 
             tries++;
 
@@ -360,6 +400,7 @@ int main(int argc, char** argv)
             gtarget.result->testStatus = GraspTask::CollisionInitially;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
+
 
             // comment
             //stask.addTarget( gtarget );
@@ -382,12 +423,15 @@ int main(int argc, char** argv)
             allnodes.push_back( NNSearch::KDNode(key, gtarget.result) );
 
         } else {
+
+
             nrSuccesses++;
             GraspTarget gtarget( target );
             gtarget.result = ownedPtr( new GraspResult() );
             gtarget.result->testStatus = GraspTask::UnInitialized;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
+            gtarget.result->gripperConfigurationLift = oq;
             stask.addTarget( gtarget );
 
             // calculate the quality
@@ -413,8 +457,9 @@ int main(int argc, char** argv)
 
     }
     std::cout << std::endl;
-    std::cout << "Building search trees... ";
+    std::cout << "Building search trees... " << std::endl;
     NNSearch *nntree = NNSearch::buildTree(nodes);
+    std::cout << "Build for all " << std::endl;
     NNSearch *nntree_all = NNSearch::buildTree(allnodes);
 
     std::cout << std::endl;
@@ -447,7 +492,7 @@ int main(int argc, char** argv)
         */
 
         std::cout << "\n" << nodeNr << "\t" << nrNeighbors << "\t" <<  nrNeighbors_all << std::flush;
-        node.value->qualityAfterLifting = Q(1, nrNeighbors );
+        node.value->qualityAfterLifting = Q(1, (nrNeighbors*1.0/(nrNeighbors_all+0.0001)) );
 
         nodeNr++;
     }
