@@ -92,7 +92,7 @@ TARGET_LINK_LIBRARIES( rw_invkin-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_invkin-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_invkin-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_invkin-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp)       
+ADD_EXECUTABLE( rw_loader-test ${DO_EXCLUDE} test-main.cpp loaders/TULLoaderTest.cpp loaders/Model3DLoaderTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_loader-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_loader-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_loader-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_loader-test ${TEST_DEPENDENCIES})
@@ -113,10 +113,10 @@ ADD_TEST( rw_collision-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_collision-test 
 ADD_DEPENDENCIES(rw_collision-test ${TEST_DEPENDENCIES})
 
 # This depends on RW_DRAWABLE_LIBRARY_LIST.
-#ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
-#TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
-#ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
-#ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
+ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
+TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
+ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
+ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rw_graphics-test ${DO_EXCLUDE} test-main.cpp graphics/GraphicsTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_graphics-test ${TEST_LIBRARIES} )

@@ -8,8 +8,10 @@
 
 #ifdef RW_USE_BOOST_STATIC_TEST_LIBS
 #include <boost/test/unit_test.hpp>
+#include <boost/test/detail/unit_test_parameters.hpp>
 #else
 #include <boost/test/included/unit_test.hpp>
+#include <boost/test/detail/unit_test_parameters.hpp>
 #endif
 using boost::unit_test::test_suite;
 
@@ -32,7 +34,8 @@ boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
 {
     // Get the top level suite from the registry
     //boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_all_errors);
-	boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_messages);
+    //if( boost::unit_test::runtime_config::log_level() < boost::unit_test::log_messages )
+    //boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_successful_tests);
 
     boost::property_tree::ptree tree;
     // load test configuration file

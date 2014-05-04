@@ -142,16 +142,19 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
     PRMPlanner::Ptr prmplanner_lazy_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
     PRMPlanner::Ptr prmplanner_lazy_dijkstra = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
     PRMPlanner::Ptr prmplanner_lazy_brute_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
+    PRMPlanner::Ptr prmplanner_lazy_kdtree_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
 
     prmplanner_lazy_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
     prmplanner_lazy_dijkstra->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
     prmplanner_lazy_brute_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
     prmplanner_lazy_brute_astar->setNeighSearchStrategy(PRMPlanner::BRUTE_FORCE);
+    prmplanner_lazy_kdtree_astar->setNeighSearchStrategy(PRMPlanner::KDTREE);
 
     // building roadmaps
     prmplanner_lazy_astar->buildRoadmap(1000);
     prmplanner_lazy_dijkstra->buildRoadmap(1000);
     prmplanner_lazy_brute_astar->buildRoadmap(1000);
+    prmplanner_lazy_kdtree_astar->buildRoadmap(1000);
 
 
     //prmplanner->setCollisionCheckingStrategy(PRMPlanner::NODECHECK);
@@ -169,6 +172,8 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
     planners.push_back(std::make_pair("PRM (lazy,partial,astar)",prmplanner_lazy_astar) );
     planners.push_back(std::make_pair("PRM (lazy,partial,dijkstra)",prmplanner_lazy_dijkstra) );
     planners.push_back(std::make_pair("PRM (lazy,brute,astar)",prmplanner_lazy_brute_astar) );
+    planners.push_back(std::make_pair("PRM (lazy,kdtree,astar)",prmplanner_lazy_kdtree_astar) );
+
 
     // Plan some paths to random configurations with RRT and SBL.
     {

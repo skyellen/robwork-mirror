@@ -19,9 +19,9 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/graphics/Model3DLoader.hpp>
+#include <rw/loaders/Model3DLoader.hpp>
 //#include <rwlibs/drawable/RenderSTL.hpp>
-#include <rw/graphics/ac3d/LoaderAC3D.hpp>
+#include <rw/loaders/model3d/LoaderAC3D.hpp>
 #include <rwlibs/opengl/DrawableFactory.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
