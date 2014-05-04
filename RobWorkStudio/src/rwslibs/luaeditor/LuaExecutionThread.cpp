@@ -18,7 +18,6 @@
 #include "LuaExecutionThread.hpp"
 
 #include <QtGui>
-#include <QMessageBox>
 
 extern "C" {
 	#include <lua.h>
@@ -73,9 +72,11 @@ void LuaExecutionThread::set(const std::string& cmd,
              }
          }
      } catch (const Exception& exp) {
-         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what()));
+         //QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what()));
+         Log::errorLog() << "Lua: Failed to execute script with message \"" << exp.what() << "\" \n";
      } catch (std::exception& e) {
-         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(e.what()));
+         //QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(e.what()));
+         Log::errorLog() << "Lua: Failed to execute script with message \"" << e.what() << "\" \n";
      } 
  }
 
