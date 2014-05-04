@@ -298,7 +298,7 @@ namespace simulator {
 			return _contactingBodies;
 		}
 
-/*
+
 		/**
 		 * @brief Returns a vector of all contact points
 		 * 
