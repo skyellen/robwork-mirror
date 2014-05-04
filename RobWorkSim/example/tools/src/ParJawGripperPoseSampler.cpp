@@ -315,7 +315,7 @@ int main(int argc, char** argv)
     std::vector<NNSearch::KDNode> allnodes;
     int nrSuccesses = 0;
     for(int i=0; nrSuccesses<NR_OF_SAMPLES; i++){
-        if(i>200000)
+        if(i>500000)
             break;
 
         CollisionDetector::QueryResult result;
@@ -333,6 +333,7 @@ int main(int argc, char** argv)
         Vector3D<> n2 = points[sfeat.second].second;
 
         Vector3D<> tcp_p = (p2-p1)/2.0 + p1;
+
         // generate orientation, xaxis determine gripper closing direction, zaxis the approach
         // make the xaxis point along the average normal
 
@@ -341,7 +342,11 @@ int main(int argc, char** argv)
         //Vector3D<> xaxis = normalize(p2-p1);
         Vector3D<> yaxis = normalize(cross(Vector3D<>(Math::Math::ranNormalDist(0,1),Math::Math::ranNormalDist(0,1),Math::Math::ranNormalDist(0,1)), xaxis ));
         Vector3D<> zaxis = normalize( cross(xaxis,yaxis) );
-        Transform3D<> target( tcp_p, Rotation3D<>(xaxis,yaxis,zaxis) );
+        // randomize the tcp point a bit in the approach direction
+        Rotation3D<> rot = Rotation3D<>(xaxis,yaxis,zaxis) ;
+        Vector3D<> tcp_p_ran = tcp_p + rot*Vector3D<>(0,0,Math::ran(-0.02,0.02));
+
+        Transform3D<> target( tcp_p_ran, Rotation3D<>(xaxis,yaxis,zaxis) );
         graspW = MetricUtil::dist2(p1,p2);
         //std::cout << graspW << std::endl;
         //if(!LinearAlgebra::isProperOrthonormal(target.R().m() ))
@@ -390,6 +395,13 @@ int main(int argc, char** argv)
             for(j=1;j<openSamples.size();j++){
                 gripper->setQ( openSamples[j], state);
                 if(cdetect.inCollision(state, &result, true)){
+                    // stop if its colliding with the surroundings and not the object
+                    BOOST_FOREACH(FramePair pair, result.collidingFrames ){
+                        if( pair.first!=obj->getBase() && pair.second!=obj->getBase()){
+                            inCol = true;
+                            break;
+                        }
+                    }
                     break;
                 }
                 oq = openSamples[j];

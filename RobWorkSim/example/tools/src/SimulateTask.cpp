@@ -242,7 +242,7 @@ int main(int argc, char** argv)
             TimerUtil::sleepMs(2000);
             do{
                 if(outputState){
-                    statep.push_back(TimedState(statep.size()/0.01,graspSim->getSimulator()->getState()));
+                    statep.push_back(TimedState(statep.size()*0.01,graspSim->getSimulator()->getState()));
                 }
                 TimerUtil::sleepMs(100);
                 std::vector<int> stat = graspSim->getStat();
