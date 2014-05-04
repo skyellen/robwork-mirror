@@ -188,13 +188,14 @@ namespace control {
 			}
 		};
 
-		typedef enum{PTP, PTP_T, Lin, VelQ, VelT, LinFC} TargetType;
+		typedef enum{PTP, PTP_T, Lin, VelQ, VelT, LinFC, TrajQ} TargetType;
 		struct Target {
 			TargetType type;
 			rw::math::Q q_target;
 			rw::math::Q q_vel_target;
 			rw::math::Transform3D<> lin_target;
 			rw::math::VelocityScrew6D<> lin_vel_target;
+			rw::trajectory::QTrajectory::Ptr qtraj;
 
 			float speed, blend;
 

@@ -33,7 +33,7 @@ SerialDeviceController::SerialDeviceController(
 	_q_error_last(ddev->getModel().getDOF()),
 	_ftSensor(NULL)
 {
-	//RW_WARN("creating solver");
+	RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
 	_rdev = ddev.cast<rwsim::dynamics::RigidDevice>();
 	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
@@ -58,7 +58,7 @@ SerialDeviceController::SerialDeviceController(
 	_q_error_last(ddev->getModel().getDOF()),
 	_ftSensor(NULL)
 {
-	//RW_WARN("creating solver");
+	RW_WARN("creating solver");
 	_solver = ownedPtr( new rw::invkin::JacobianIKSolver(ddev->getKinematicModel(), ddev->getStateStructure()->getDefaultState()) );
 	for(int i=0;i<(int)ddev->getModel().getDOF();i++)
 		_q_error_last[i] = 0;
@@ -125,6 +125,15 @@ bool SerialDeviceController::moveVelT(const rw::math::VelocityScrew6D<>& target)
 	return true;
 }
 
+bool SerialDeviceController::moveTraj(const rw::trajectory::QTrajectory::Ptr traj, float speed)
+{
+    Target cmd_target;
+    cmd_target.type = TrajQ;
+    cmd_target.qtraj = traj;
+    cmd_target.speed = speed;
+    addTarget(cmd_target);
+    return true;
+}
 
 bool SerialDeviceController::moveLinFC(const Transform3D<>& target,
 						  const Wrench6D<>& wtarget,
@@ -202,7 +211,8 @@ namespace  {
 }
 
 //! create trajectory
-SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(const std::vector<Target>& targets, rw::kinematics::State& initstate)
+SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(
+        const std::vector<Target>& targets, rw::kinematics::State& initstate)
 {
 	//RW_WARN("Make trajectory!");
 
@@ -220,6 +230,13 @@ SerialDeviceController::CompiledTarget SerialDeviceController::makeTrajectory(co
 	Q lastQ = _ddev->getKinematicModel()->getQ(initstate);
 	Q lastQd = _currentQd;
 	Transform3D<> lastT = _ddev->getKinematicModel()->baseTend(initstate);
+
+    if(targets.back().type==TrajQ){
+        CompiledTarget ctarget;
+        ctarget.qtraj = targets.back().qtraj;
+        ctarget.toId = targets.back().id;
+        return ctarget;
+    }
 
 	if(targets.back().type==LinFC){
 		CompiledTarget ctarget;
@@ -685,14 +702,15 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 	// we make the decision that any 3 future targets may be locked for further optimisation.
 	// that is if current stack has 3 targets and the robot is executing these then only the blend path between
 	// target 3 and target 4 can be modified. The blends from 1 to 2 or 2 to 3 will not be further optimized.
-
+    RW_WARN("");
     if(_stop){
         _executingTarget = CompiledTarget();
         _stop = false;
     }
-
+    RW_WARN("");
 	// first we check if new targets have been added
 	if(_targetAdded){
+	    RW_WARN("");
 		//RW_WARN("Update: Target added!");
 		std::vector<Target> targets;
 		{
@@ -701,11 +719,11 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			targets = _targetQueue;
 			_targetQueue.clear();
 		}
-
+		RW_WARN("");
 		// TODO: first make sure to test if the last target is actually a velocity target in which
 		// case we flush the queue
 
-
+		RW_WARN("");
 		// now do something intelligent with targets from _currentTargetIdx to lastTarget
 		CompiledTarget traj;
 		try{
@@ -714,11 +732,12 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		    // if inverse kinematics or other things cannot compute then we discard the trajectory
 		    //RW_WARN("Trajectory could not be generated due to: \n\t " << e.what() );
 		}
+		RW_WARN("");
 		if( traj.qtraj!=NULL ){
-			//std::cout << "Qtraj: " << traj.qtraj->startTime() << " --> " << traj.qtraj->endTime() << std::endl;
-			//std::cout << "Currtime: " << _currentTrajTime << std::endl;
-			//std::cout << "Start: " << traj.qtraj->x(traj.qtraj->startTime()) << std::endl;
-			//std::cout << "End: " << traj.qtraj->x(traj.qtraj->endTime())<< std::endl;
+			std::cout << "Qtraj: " << traj.qtraj->startTime() << " --> " << traj.qtraj->endTime() << std::endl;
+			std::cout << "Currtime: " << _currentTrajTime << std::endl;
+			std::cout << "Start: " << traj.qtraj->x(traj.qtraj->startTime()) << std::endl;
+			std::cout << "End: " << traj.qtraj->x(traj.qtraj->endTime())<< std::endl;
 			/*for(int i=0;i<100;i++){
 
 				std::cout << traj.qtraj->x( i*traj.qtraj->endTime()/100 ) << std::endl;
@@ -755,7 +774,7 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 	}
 
 	if( _executingTarget.isFinished(_currentTrajTime) ){
-
+	    RW_WARN("");
 		// the trajectory is finished.
 		// check if we should start another compiled target
 		if(_compiledTargets.empty()){
@@ -767,12 +786,14 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			_ddev->setMotorVelocityTargets(Q::zero(_ddev->getKinematicModel()->getDOF()), state);
 			return;
 		} else {
+		    RW_WARN("");
 			//RW_WARN("Target avail!");
 			_executingTarget = _compiledTargets.front();
 			_currentTrajTime = 0;
 			_compiledTargets.pop_front();
 		}
 	}
+	RW_WARN("");
 	//RW_WARN("goto exe");
 	if(_executingTarget.qtraj != NULL ){
 		//RW_WARN("exe target running!");
@@ -782,15 +803,16 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 
 		//Q current_target_q = _executingTarget.qtraj->x( _currentTrajTime ); // the target that we should be in
 		//Q current_target_vel = _executingTarget.qtraj->dx( _currentTrajTime );
-
+	    RW_WARN("");
 		//Q next_target_q = _executingTarget.qtraj->x( _currentTrajTime + info.dt );
 		Q next_target_vel = _executingTarget.qtraj->dx( _currentTrajTime + info.dt );
-
+		RW_WARN("");
 		// now calculate the velocity of the robot such that we reach next_target_q in the next timestep
 		//Q target_vel = (next_target_q - _currentQ)/info.dt - _currentQd;
 		//std::cout << _currentTrajTime << ", "<< next_target_vel << std::endl;
 		//_ddev->setMotorVelocityTargets( target_vel, state);
 		_ddev->setMotorVelocityTargets( next_target_vel, state);
+		RW_WARN("");
 	} else if(_executingTarget.ftcontrol ){
 		//
 		std::cout << " ftcontrol " << std::endl;
