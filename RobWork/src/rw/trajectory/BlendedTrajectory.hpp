@@ -62,7 +62,12 @@ namespace trajectory {
          * @param ascaleIn [in] The acceleration scale [0;1]
          * @param verbose [in] True to print our debug text
          */
-		BlendedTrajectory(rw::models::Device::Ptr deviceIn, const rw::trajectory::QPath& pathIn, const std::vector<double>& betaIn, const double vscaleIn, const double ascaleIn, const bool verbose = false);
+		BlendedTrajectory(rw::models::Device::Ptr deviceIn,
+		                  const rw::trajectory::QPath& pathIn,
+		                  const std::vector<double>& betaIn,
+		                  const double vscaleIn,
+		                  const double ascaleIn,
+		                  const bool verbose = false);
 
         /**
          * @brief Destructor
