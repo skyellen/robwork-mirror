@@ -42,7 +42,7 @@ KinematicBody::KinematicBody(
     if(_base==NULL){
         RW_THROW("Base frame of Object in a KinematicBody must be a MovableFrame!");
     }
-    std::cout << "Adding state in kinematicbody!!!!" << std::endl;
+    //std::cout << "Adding state in kinematicbody!!!!" << std::endl;
     add(_kstate);
 }
 
