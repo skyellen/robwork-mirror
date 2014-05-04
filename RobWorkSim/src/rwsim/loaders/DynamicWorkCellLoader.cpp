@@ -115,8 +115,8 @@ using namespace rwlibs::simulation;
 
 using namespace boost::property_tree;
 
-#define RW_DEBUGS(str) std::cout << str << std::endl
-//#define RW_DEBUGS(str)
+//#define RW_DEBUGS(str) std::cout << str << std::endl
+#define RW_DEBUGS(str)
 
 namespace
 {
