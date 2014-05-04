@@ -98,14 +98,14 @@ void Player::setupRecording(const QString filename, const QString& type) {
 }
 
 void Player::startRecording() {
-    std::cout << "start rec"<< std::endl;
+    //std::cout << "start rec"<< std::endl;
     _record = true;
     _recNo = 0;
     startTimer();
 }
 
 void Player::stopRecording() {
-    std::cout << "end rec"<< std::endl;
+    //std::cout << "end rec"<< std::endl;
     stopTimer();
     _record = false;
 }
@@ -138,6 +138,11 @@ void Player::tick()
         //while (number.length() < RECORD_NUM_OF_DIGITS)
         //    number.prepend("0");
         QString filename = _recordFilename + number + "." + _recordType;
+
+        // if we want the entire robworkstudio frame...
+        //QPixmap originalPixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+        //originalPixmap.save(filename);
+
         _rwstudio->saveViewGL(filename);
     }
 
