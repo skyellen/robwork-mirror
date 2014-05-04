@@ -16,40 +16,28 @@
  ********************************************************************************/
 
 
-#include "Camera.hpp"
+#include "CameraModel.hpp"
 
 #include <algorithm>
 
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
-Camera::Camera(
+CameraModel::CameraModel(
+        rw::math::ProjectionMatrix projection,
     const std::string& name,
     const std::string& modelInfo)
     :
-    Sensor(name, modelInfo),
-    _modelInfo(modelInfo),
-    _initialized(false),
-    _started(false)
+    Sensor(name, modelInfo)
 {}
 
-Camera::~Camera()
+CameraModel::~CameraModel()
 {}
 
-bool Camera::removeListener(CameraListener& listener)
-{
-    typedef std::vector<CameraListener*>::iterator I;
-    const I p = std::find(_listeners.begin(), _listeners.end(), &listener);
-    const bool ok = p != _listeners.end();
-    if (ok) _listeners.erase(p);
-    return ok;
+double CameraModel::getFarClippingPlane(){
+    return _pmatrix.getClipPlanes().second;
 }
 
-bool Camera::addListener(CameraListener& listener)
-{
-    typedef std::vector<CameraListener*>::iterator I;
-    const I p = std::find(_listeners.begin(), _listeners.end(), &listener);
-    const bool ok = p != _listeners.end();
-    if (ok) _listeners.push_back(&listener);
-    return ok;
+double CameraModel::getNearClippingPlane(){
+    return _pmatrix.getClipPlanes().first;
 }

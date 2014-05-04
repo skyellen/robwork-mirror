@@ -16,16 +16,15 @@
  ********************************************************************************/
 
 
-#ifndef RW_SENSOR_CAMERADRIVER_HPP
-#define RW_SENSOR_CAMERADRIVER_HPP
+#ifndef RW_SENSOR_CAMERAMODEL_HPP
+#define RW_SENSOR_CAMERAMODEL_HPP
 
 /**
- * @file Camera.hpp
+ * @file CameraModel.hpp
  */
 
 #include "Image.hpp"
-#include "Sensor.hpp"
-#include "CameraListener.hpp"
+#include "SensorModel.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
@@ -39,11 +38,11 @@ namespace rw { namespace sensor {
     /* @{ */
 
     /**
-     * @brief The CameraModel class defines a generel kinematic camera model where
+     * @brief The CameraModel class defines a generel pinhole camera model where
      * camera parameters and state values are stored.
      *
      */
-    class CameraModel : public Sensor
+    class CameraModel : public SensorModel
     {
     public:
 		//! @brief smart pointer type to this class
@@ -55,53 +54,41 @@ namespace rw { namespace sensor {
          * @param name [in] name of sensor
          * @param modelInfo [in] info string
          */
-        CameraModel(
+        CameraModel(rw::math::ProjectionMatrix projection,
             const std::string& name,
             const std::string& modelInfo);
-
-        /**
-         * @brief sets the camera model information
-         * @param info [in] information of the camera
-         */
-        void setModelInfo(const std::string info) { _modelInfo = info; }
 
         /**
          * @brief destructor
          */
         virtual ~CameraModel();
 
-        /**
-         * @brief returns the camera model information (version, type, size, etc.)
-         * @return camera model information
-         */
-        virtual std::string getModelInfo() const { return _modelInfo;};
 
         /**
-         * @brief returns the last image acquired from the camera. This method
-         * is not blocking, if no image has been acquired yet an empty image
-         * is returned. The image returned can for some specific drivers be read
-         * only.
+         * @brief returns the image if it has been saved in the State. Else null is
+         * returned.
          * @return last image captured from camera.
          */
         Image::Ptr getImage(rw::kinematics::State& state);
 
         /**
-         * @brief image
-         * @param img
-         * @param state
+         * @brief set the image in the state
+         * @param img [in] image to set in state
+         * @param state [in/out] the state in which to set the image.
          */
         void setImage(Image::Ptr img, rw::kinematics::State& state);
 
+        //! get the camera projection matrix
+        rw::math::ProjectionMatrix getProjectionMatrix();
 
+        //! field of view of camera
         double getFocalLength();
-
 
         //!@brief get horisontal field of view in degrees.
         double getFieldOfViewX();
 
         //!@brief get vertical field of view in degrees.
         double getFieldOfViewY();
-
 
         /**
          * @brief get width of the captured images
@@ -120,10 +107,12 @@ namespace rw { namespace sensor {
          */
         unsigned int getHeight();
 
-
         void setHeight(unsigned int width);
 
         ///// a list of features that most of the time is available
+
+        double getFarClippingPlane();
+        double getNearClippingPlane();
 
 
     protected:
@@ -131,9 +120,9 @@ namespace rw { namespace sensor {
         //! name of camera model information
         std::string _modelInfo;
 
-        bool _hasGain, _hasShutter;
-        double _gain;
-        double _shutter;
+        rw::math::ProjectionMatrix _pmatrix;
+
+
     };
 
     /* @} */
