@@ -256,6 +256,10 @@ namespace rw { namespace kinematics {
          */
         bool isDAF();
 
+
+        rw::math::Transform3D<> wTf(const rw::kinematics::State& state) const;
+        rw::math::Transform3D<> fTf(Frame* to, const rw::kinematics::State& state) const;
+
     protected:
         /**
          * @brief A frame with \b dof number of degrees of freedom.

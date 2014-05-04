@@ -107,6 +107,18 @@ std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)
     return out << "Frame[" << frame.getName() << "]";
 }
 
+rw::math::Transform3D<> Frame::wTf(const rw::kinematics::State& state) const
+{
+    return Kinematics::worldTframe( this, state );
+}
+
+rw::math::Transform3D<> Frame::fTf(Frame* to, const rw::kinematics::State& state) const
+{
+    return Kinematics::frameTframe( this, to, state );
+}
+
+
+
 // Frame transforms.
 /*
 void Frame::multiplyTransform(const Transform3D<>& parent,
