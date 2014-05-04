@@ -23,7 +23,7 @@
 #include <xercesc/dom/DOMNodeList.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMText.hpp>
-
+#include <xercesc/util/XMLDouble.hpp>
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
@@ -544,12 +544,21 @@ const XMLCh* XMLBasisTypes::readElementTextXMLCh(xercesc::DOMElement* element, b
     return NULL;
 }
 
-#include <xercesc/util/XMLDouble.hpp>
+
 
 double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, DoubleId);
-    return XMLDouble(readElementTextXMLCh(element)).getValue();
+    double val;
+    try {
+        val = XMLDouble(readElementTextXMLCh(element)).getValue();
+    } catch (...) {
+        RW_WARN("Double Value could not be parsed correctly form \""
+                << XMLStr(readElementTextXMLCh(element)).str()
+                << "\". Setting to NaN! ");
+        val = NAN;
+    }
+    return val;
     //return std::atof(readElementText(element).c_str());
 }
 
