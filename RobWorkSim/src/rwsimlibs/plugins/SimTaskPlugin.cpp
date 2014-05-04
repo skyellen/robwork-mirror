@@ -227,17 +227,12 @@ void SimTaskPlugin::btnPressed() {
         if(_graspSim->getSimulator()!=NULL)
             _graspSim->getSimulator()->setRealTimeScale(delay);
     } else if(obj==_showTaskSpinBox){
-
 /*
+        std::vector<std::pair<GraspSubTask*,GraspTarget*> > _targets = _graspSim->getTasks()->getAllTargets();
         if(_targets==NULL){
             log().error() << "No targets\n";
             return;
         }
-        if(!_configured){
-            log().error() << "Not configured\n";
-            return;
-        }
-
 
         State state = getRobWorkStudio()->getState();
         int idxTmp = _showTaskSpinBox->value();
@@ -273,7 +268,7 @@ void SimTaskPlugin::btnPressed() {
         //std::cout << "HOME: " << _home << std::endl;
 
         getRobWorkStudio()->setState(state);
-        */
+*/
     } else if(obj==_timer){
         if(_graspSim->getSimulator()==NULL)
             return;
@@ -435,6 +430,7 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     std::string objectName = _objectComboBox->currentText().toStdString();
     std::string type = _typeComboBox->currentText().toStdString();
     std::string gripperName = type;
+    std::string gripperTcpName;
     GraspTask::Ptr gtask = ownedPtr(new GraspTask());
     Body* body = _dwc->findBody(objectName).get();
     if(body==NULL){
@@ -450,6 +446,45 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
                      0, 1, 0,
                      0, 0, 1);
 
+    // check if type is actually the gripper name, else query the user
+    if( _wc->findDevice(type)==NULL ){
+        QStringList items, tcpitems;
+        BOOST_FOREACH(Device::Ptr dev, _wc->getDevices() ){
+            std::string name = dev->getName();
+            items << tr( name.c_str() );
+        }
+       bool ok;
+       QString item = QInputDialog::getItem(this, tr("Please specify which gripper you use:"),
+                                            tr("Gripper:"), items, 0, false, &ok);
+       if ( !ok ){
+           return NULL;
+       }
+       gripperName = item.toStdString();
+       Device::Ptr dev = _wc->findDevice(gripperName);
+       std::vector<Frame*> frames = Kinematics::findAllFrames( dev->getBase() );
+       // now get the tcp to use
+       BOOST_FOREACH(Frame *f, frames ){
+           std::string name = f->getName();
+           tcpitems << tr( name.c_str() );
+       }
+
+       item = QInputDialog::getItem(this, tr("Please specify which TCP frame you use:"),
+                                            tr("TCP Frame:"), tcpitems, 0, false, &ok);
+
+       if ( !ok ){
+           return NULL;
+       }
+
+       gripperTcpName  = item.toStdString();
+
+
+    } else {
+        gripperName = type;
+    }
+
+
+
+
 
     // first set up the configuration
     Vector3D<> d(0,0,-0.02);
@@ -459,24 +494,33 @@ GraspTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     Q closeQ(1,1.0);
     if( type=="PG70" ){
         openQ  = Q(1, 0.034);
-        gripperName = type;
         closeQ = Q(1, 0.0);
-        gtask->setTCPID("TCPPG70");
+
+        if(gripperTcpName.empty()){
+            gtask->setTCPID("TCPPG70");
+            gripperName = type;
+        }
     } else if( type== "PG70_SMALL"){
         openQ  = Q(1, 0.01);
         closeQ = Q(1, 0.0);
-        gripperName = type;
-        gtask->setTCPID("TCPPG70");
+        if(gripperTcpName.empty()){
+            gripperName = type;
+            gtask->setTCPID("TCPPG70");
+        }
     } else if( type== "GS20"){
         openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
-        gripperName = type;
-        gtask->setTCPID("TCPGS20");
+        if(gripperTcpName.empty()){
+            gripperName = type;
+            gtask->setTCPID("TCPGS20");
+        }
     } else if( type== "GS20_WIDE"){
         openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
-        gripperName = "GS20";
-        gtask->setTCPID("TCPGS20");
+        if(gripperTcpName.empty()){
+            gripperName = "GS20";
+            gtask->setTCPID("TCPGS20");
+        }
     } else if( type== "SDH_PAR"){
         openQ =  Q(7,-1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
         closeQ = Q(7,-1.571,-1.571,1.571,  0.0  , 0.419,  0.0,   0.419);
