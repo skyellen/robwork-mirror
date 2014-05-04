@@ -15,7 +15,7 @@
 
 #include <rwsim/dynamics/RigidBody.hpp>
 
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
@@ -52,7 +52,7 @@ CreateEngineDialog::CreateEngineDialog(Ptr<DynamicWorkCell> dwc, QWidget *parent
     _ui->setupUi(this);
 
 	std::vector<std::string> engineIDs =
-		PhysicsEngineFactory::getEngineIDs();
+		PhysicsEngine::Factory::getEngineIDs();
 	BOOST_FOREACH(const std::string& engineID, engineIDs){
 	    _ui->_spaceMethodBox->addItem(engineID.c_str());
 	}
@@ -70,7 +70,7 @@ void CreateEngineDialog::btnPressed(){
     if( obj == _ui->_createBtn ){
         std::string engineId = _ui->_spaceMethodBox->currentText().toStdString();
         try {
-            PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine(engineId, _dwc);
+            PhysicsEngine::Ptr pengine = PhysicsEngine::Factory::makePhysicsEngine(engineId, _dwc);
             _sim = ownedPtr( new DynamicSimulator(_dwc, pengine) );
         } catch(...) {
             QMessageBox::information(this, "Creating Engine", "Error creating Physics Engine!");
