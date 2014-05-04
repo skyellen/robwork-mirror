@@ -103,6 +103,12 @@ bool ProjectionMatrix::getFrustum(double& left, double& right,
     return true;
 }
 
+std::pair<double,double> ProjectionMatrix::getClipPlanes() const {
+    double zNear = _matrix(2,3)/ (_matrix(2,2)-1.0);
+    double zFar = _matrix(2,3) / (1.0+_matrix(2,2));
+    return std::make_pair(zNear,zFar);
+}
+
 bool ProjectionMatrix::getOrtho(double& left, double& right,
                       double& bottom, double& top,
                       double& zNear, double& zFar) const

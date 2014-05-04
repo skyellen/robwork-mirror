@@ -28,6 +28,7 @@ SET(FILES_CPP
   Line2DPolar.cpp
   Pose2D.cpp
   Wrench6D.cpp
+  ProjectionMatrix.cpp
   #serialization.cpp
 )
 
@@ -56,6 +57,7 @@ SET(FILES_HPP
   VelocityScrew6D.hpp
   PerspectiveTransform2D.hpp
   EigenDecomposition.hpp
+  ProjectionMatrix.hpp
 )
 
 SOURCE_GROUP(math FILES ${FILES_CPP} ${FILES_HPP})
