@@ -51,8 +51,12 @@ namespace
             I p = path.begin();
             I q = path.begin();
             for (++q; q != path.end(); ++p, ++q) {
-                const double dt = q->getTime() - p->getTime();
-                RW_ASSERT(dt >= 0);
+                double dt = q->getTime() - p->getTime();
+                //RW_ASSERT(dt >= 0);
+                if(!(dt >= 0)){
+                    RW_WARN("dt is wrong in trajectory. dt=" << dt << ". dt is force to 0.");
+                    dt = 0;
+                }
                 const X& a = p->getValue();
                 const X& b = q->getValue();
                 trajectory->add(new LinearInterpolator<X>(a, b, dt));
