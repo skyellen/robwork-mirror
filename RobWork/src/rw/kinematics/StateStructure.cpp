@@ -102,7 +102,7 @@ void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
     _version++;
     const int id = allocateDataID();
     data->setID(id);
-    std::cout << "add: " << data->getName() << " id: " << data->getID() << std::endl;
+    //std::cout << "add: " << data->getName() << " id: " << data->getID() << std::endl;
     boost::shared_ptr<StateData> sharedData = data;
     _allDatas.at(id) = sharedData;
     _currDatas.at(id) = sharedData;
