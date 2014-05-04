@@ -87,8 +87,8 @@ void java_ThreadSimulatorStepCallback(ThreadSimulator* sim, State &state, void *
  * General utility functions
  ********************************************/
 
-DynamicWorkCell* getDynamicWorkCell();
-void setDynamicWorkCell(DynamicWorkCell* dwc);
+rw::common::Ptr<DynamicWorkCell> getDynamicWorkCell();
+void setDynamicWorkCell(rw::common::Ptr<DynamicWorkCell> dwc);
 
 rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
 void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);

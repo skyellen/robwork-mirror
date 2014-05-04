@@ -10,11 +10,11 @@ rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc_internal;
 
 std::map<std::string, rwsim::simulator::ThreadSimulator::Ptr> sim_instances_internal;
 
-rwsim::dynamics::DynamicWorkCell* rwsim::swig::getDynamicWorkCell(){
-    return dwc_internal.get();
+rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> rwsim::swig::getDynamicWorkCell(){
+    return dwc_internal;
 }
 
-void rwsim::swig::setDynamicWorkCell(rwsim::swig::DynamicWorkCell* dwc){
+void rwsim::swig::setDynamicWorkCell(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc){
     dwc_internal = dwc;
 }
 

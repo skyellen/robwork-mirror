@@ -132,12 +132,12 @@ namespace swig {
     }
 
     // general functions
-    DynamicWorkCell* getDynamicWorkCell();
+    rw::common::Ptr<DynamicWorkCell> getDynamicWorkCell();
 
     /**
      * @brief set current dynamic workcell instance
      */
-    void setDynamicWorkCell(DynamicWorkCell* dwc);
+    void setDynamicWorkCell(rw::common::Ptr<DynamicWorkCell> dwc);
 
     /**
      * @brief add instance of simulator
