@@ -56,7 +56,9 @@ namespace util {
 		             const rw::kinematics::State& state);
 
 
-		void calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses, std::vector<rw::math::Transform3D<> >& posesMises);
+		void calculateDistribution(int i,
+		                           std::vector<rw::math::Transform3D<> >& poses,
+		                           std::vector<rw::math::Transform3D<> >& posesMises);
 		/**
 		 * @brief gets the previously calculated support poses.
 		 * @return
