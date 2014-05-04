@@ -315,6 +315,9 @@ int main(int argc, char** argv)
     std::vector<NNSearch::KDNode> allnodes;
     int nrSuccesses = 0;
     for(int i=0; nrSuccesses<NR_OF_SAMPLES; i++){
+        if(i>200000)
+            break;
+
         CollisionDetector::QueryResult result;
         if( !( i%10) )
             std::cout << "Successes: " << nrSuccesses << " of "  << i <<"     \r" << std::flush;
