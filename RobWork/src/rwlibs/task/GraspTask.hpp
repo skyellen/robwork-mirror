@@ -247,10 +247,12 @@ class GraspTarget
 		/// Copy constructor
 		GraspTarget(const GraspTarget& target) {
 			pose = target.pose;
-			if(target.result == NULL)
+			result = target.result;
+			/*if(target.result == NULL)
 				result = rw::common::ownedPtr(new GraspResult());
 			else
 				result = rw::common::ownedPtr(new GraspResult(*target.result));
+				*/
 		}
 		
 		// methods
