@@ -12,7 +12,6 @@ SET(FILES_CPP
   SceneCamera.cpp
   WorkCellScene.cpp
   SceneViewer.cpp
-  ProjectionMatrix.cpp
   Render.cpp  
   SceneDescriptor.cpp
 )
@@ -29,7 +28,6 @@ SET(FILES_HPP
   SceneCamera.hpp
   WorkCellScene.hpp
   SceneViewer.hpp
-  ProjectionMatrix.hpp
   Render.hpp   
   DrawableNodeClone.hpp
 )

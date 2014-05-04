@@ -22,7 +22,7 @@
 #include <rw/graphics/DrawableNode.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/sensor/Image25D.hpp>
-#include "ProjectionMatrix.hpp"
+#include <rw/math/ProjectionMatrix.hpp>
 
 
 namespace rw {
