@@ -330,7 +330,7 @@ namespace rwlibs { namespace algorithms {
         public:
             SimpleCompare2(size_t dim):_dim(dim){};
 
-            bool operator()(TreeNode* e1, TreeNode* e2) {
+            bool operator()(const TreeNode* e1, const TreeNode* e2) {
                 return e1->_kdnode->key[_dim] < e2->_kdnode->key[_dim] ;
             }
         };
@@ -343,8 +343,13 @@ namespace rwlibs { namespace algorithms {
             //std::cout << "RecBuild(" << startIdx << "," << endIdx << ")" << std::endl;
             size_t len = endIdx-startIdx;
             size_t dim = depth % nrOfDims;
+
             // the compare func can
-            std::sort( &tNodes[startIdx], &tNodes[endIdx-1], SimpleCompare2(dim) );
+            std::sort( tNodes.begin()+startIdx, tNodes.begin()+endIdx, SimpleCompare2(dim) );
+            // check sorting is okay
+            for(int i=startIdx;i<endIdx-1;i++)
+                if( tNodes[i]->_kdnode->key[dim] > tNodes[i+1]->_kdnode->key[dim] )
+                    RW_WARN(" sort not working!" << i);
             size_t medianIdx = startIdx+len/2;
             TreeNode *mNode = tNodes[medianIdx];
             mNode->_axis = 0xFF&dim;
@@ -521,7 +526,7 @@ namespace rwlibs { namespace algorithms {
         int i=0;
         BOOST_FOREACH(KDNode* n, nodes){
             (*tNodes)[i] = new TreeNode();
-            (*tNodes)[i]._kdnode = n;
+            (*tNodes)[i]->_kdnode = n;
             i++;
         }
 
@@ -529,7 +534,7 @@ namespace rwlibs { namespace algorithms {
         size_t nrOfDims = nodes.front()->key.size();
         TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
 
-        return new KDTreeQ<T>(*root, tNodes);
+        return new KDTreeQ<T>(root, tNodes);
     }
 
     template<class T>
@@ -676,13 +681,15 @@ namespace rwlibs { namespace algorithms {
             // if the key   is in range then add it to the result
             size_t j;
             for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
+
             //std::cout << j << "==" << _dim << " k:" << key << std::endl;
-            if( j==_dim ) // this is in range
+            if( j==_dim && n->_deleted==false) // this is in range
                 nodes.push_back( n->_kdnode );
 
             // add the children to the unhandled queue if the current dimension
             if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
                 unhandled.push( n->_left );
+
             if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
                 unhandled.push( n->_right );
         }
