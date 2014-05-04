@@ -20,6 +20,7 @@
 #include <rw/math/Constants.hpp>
 #include <rw/common/macros.hpp>
 #include "PlainTriMesh.hpp"
+#include <rw/math/Vector2D.hpp>
 
 using namespace rw::geometry;
 using namespace rw::math;
@@ -105,4 +106,8 @@ rw::math::Q Tube::getParameters() const {
 	q(0) = _height;
 	q(1) = _radius;
 	return q;
+}
+
+bool Tube::doIsInside(const rw::math::Vector3D<>& point){
+    return point[2]<_height && rw::math::Vector2D<>(point[0],point[1]).norm2()<_radius;
 }

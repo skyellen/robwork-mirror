@@ -20,6 +20,8 @@
 #include "QHullND.hpp"
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/thread.hpp>
+#include <rw/common/macros.hpp>
+#include <float.h>
 
 using namespace std;
 using namespace rw::geometry;

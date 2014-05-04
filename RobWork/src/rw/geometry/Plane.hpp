@@ -200,6 +200,11 @@ namespace geometry {
                 << "n: " << p.normal() << ", d: " << p.d()
                 << ")";
         };
+	protected:
+        bool doIsInside(const rw::math::Vector3D<>& point){
+            // test if point is on the back side of the plane
+            return fabs( dot(point, _normal) ) < fabs(_d);
+        }
 
 	private:
 		rw::math::Vector3D<> _normal;

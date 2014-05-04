@@ -33,7 +33,8 @@ public:
 	/**
 	 * @brief Constructs tube primitive with the specified setup
 	 *
-	 * The tube is aligned with the height in the z-direction.
+	 * The tube is aligned with the height in the z-direction such that tube extends height/2
+	 * above and below the xy-plane.
 	 *
 	 * @param radius [in] radius of the tube.
 	 * @param height [in] height of the cylinder.
@@ -72,6 +73,9 @@ public:
 
 	//! @copydoc GeometryData::getType
 	GeometryType getType() const { return TubePrim; };
+protected:
+
+	bool doIsInside(const rw::math::Vector3D<>& point);
 
 private:
 	float _radius;

@@ -51,13 +51,14 @@ namespace geometry {
 
         // inherited from Primitive
         //! @copydoc Primitive::createMesh
-		TriMesh::Ptr createMesh(int resolution);
+		TriMesh::Ptr createMesh(int resolution) const;
 
         //! @copydoc Primitive::getParameters
         rw::math::Q getParameters() const;
-
+    protected:
+        bool doIsInside(const rw::math::Vector3D<>& point);
     private:
-        double _height, _widthX, _widthY;
+        double _widthX, _widthY, _height;
     };
 
 } // geometry

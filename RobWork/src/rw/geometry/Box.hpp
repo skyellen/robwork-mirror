@@ -28,7 +28,7 @@ namespace geometry {
 	//! @addtogroup geometry
 	// @{
 	/**
-	 * @brief a box primitive
+	 * @brief a box primitive, origin is in center of box
 	 */
 	class Box: public Primitive {
 	public:
@@ -66,7 +66,8 @@ namespace geometry {
 
 		//! @copydoc GeometryData::getType
 		GeometryType getType() const { return BoxPrim; };
-
+	protected:
+		 bool doIsInside(const rw::math::Vector3D<>& point);
 	private:
 		double _dx,_dy,_dz;
 	};

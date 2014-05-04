@@ -64,7 +64,16 @@ namespace geometry {
         //! @copydoc GeometryData::isConvex
         virtual bool isConvex() { return true; }
 
+        //! test if a point is on the border or inside this primitive
+        bool isInside(const rw::math::Vector3D<>& point ) { return doIsInside(point); };
     protected:
+
+        virtual bool doIsInside(const rw::math::Vector3D<>& point)
+        {
+            RW_THROW("Current primitive " << GeometryData::toString(getType()) << " does not implement isInside method!" );
+            return false;
+        };
+
         Primitive(){};
 
     };

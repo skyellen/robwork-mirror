@@ -54,7 +54,10 @@ namespace geometry {
 
 		//! @copydoc GeometryData::getType
 		GeometryData::GeometryType getType() const { return GeometryData::SpherePrim; };
-
+	protected:
+		 bool doIsInside(const rw::math::Vector3D<>& point){
+		     return point.norm2()<_radius;
+		 }
 	private:
 		double _radius;
 		double _levels;

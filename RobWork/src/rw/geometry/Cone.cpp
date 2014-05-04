@@ -20,6 +20,7 @@
 #include <rw/math/Constants.hpp>
 #include <rw/common/macros.hpp>
 #include "PlainTriMesh.hpp"
+#include <rw/math/Vector2D.hpp>
 
 using namespace rw::geometry;
 using namespace rw::math;
@@ -85,4 +86,20 @@ TriMesh::Ptr Cone::createMesh(int resolution) const{
 	return ownedPtr(mesh);
 }
 
+bool Cone::doIsInside(const rw::math::Vector3D<>& point)
+{
+    // first test if the point z is within cone
+    if(point[2]<-_height/2 || point[2]>_height/2)
+        return false;
+    // next calculate distance to z-axis (center of cone) and compare to distance
+    // from cone surface to z-axis
+    double distToZaxis = Vector2D<>(point[0],point[1]).norm2();
+    double maxdistToZaxis;
+    if( _radiusTop<_radiusBottom ){
+        maxdistToZaxis = _radiusTop + (_height - (point[2]+_height/2)) * (_radiusBottom-_radiusTop);
+    } else {
+        maxdistToZaxis = _radiusBottom + (_height - (point[2]+_height/2)) * (_radiusTop-_radiusBottom);
+    }
+    return distToZaxis<maxdistToZaxis;
+}
 

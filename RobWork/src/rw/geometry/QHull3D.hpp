@@ -18,13 +18,8 @@
 #ifndef RW_GEOMETRY_QHULL3D_HPP_
 #define RW_GEOMETRY_QHULL3D_HPP_
 
-#include <stack>
-#include <set>
 #include <vector>
-#include <float.h>
-#include <boost/numeric/ublas/vector.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/common/macros.hpp>
+
 #include "ConvexHull3D.hpp"
 
 namespace rw {

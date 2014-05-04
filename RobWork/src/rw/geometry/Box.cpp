@@ -104,3 +104,10 @@ rw::math::Q Box::getParameters() const {
 	q(2) = _dz;
 	return q;
 }
+
+bool Box::doIsInside(const rw::math::Vector3D<>& point){
+    if(fabs(point[0])<_dx && fabs(point[1])<_dy && fabs(point[2])<_dz)
+        return true;
+    return false;
+
+}

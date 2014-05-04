@@ -16,3 +16,78 @@
  ********************************************************************************/
 
 #include "Pyramid.hpp"
+
+#include "PlainTriMesh.hpp"
+
+using namespace rw::geometry;
+using namespace rw::common;
+using namespace rw::math;
+
+ Pyramid::Pyramid(const rw::math::Q& initQ){
+     _widthX=initQ(0);
+     _widthY=initQ(1);
+     _height=initQ(2);
+ }
+
+ Pyramid::Pyramid(double widthx, double widthy, double height)
+     :_widthX(widthx),_widthY(widthy),_height(height)
+ {
+
+ }
+
+ Pyramid::~Pyramid(){}
+
+TriMesh::Ptr Pyramid::createMesh(int resolution) const{
+    rw::geometry::PlainTriMeshF::Ptr mesh = ownedPtr( new rw::geometry::PlainTriMeshF( 6 ) );
+    // the bottom two triangles
+    (*mesh)[0].getVertex(0) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+    (*mesh)[0].getVertex(1) = Vector3D<float>(-_widthX/2, _widthY/2,0);
+    (*mesh)[0].getVertex(2) = Vector3D<float>( _widthX/2, _widthY/2,0);
+
+    (*mesh)[1].getVertex(0) = Vector3D<float>( _widthX/2, _widthY/2,0);
+    (*mesh)[1].getVertex(1) = Vector3D<float>( _widthX/2,-_widthY/2,0);
+    (*mesh)[1].getVertex(2) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+
+    // the four sides
+    (*mesh)[2].getVertex(0) = Vector3D<float>( 0, 0, _height);
+    (*mesh)[2].getVertex(1) = Vector3D<float>( _widthX/2,-_widthY/2,0);
+    (*mesh)[2].getVertex(2) = Vector3D<float>( _widthX/2, _widthY/2,0);
+
+    (*mesh)[3].getVertex(0) = Vector3D<float>( 0, 0, _height);
+    (*mesh)[3].getVertex(1) = Vector3D<float>( _widthX/2, _widthY/2,0);
+    (*mesh)[3].getVertex(2) = Vector3D<float>(-_widthX/2, _widthY/2,0);
+
+    (*mesh)[4].getVertex(0) = Vector3D<float>( 0, 0, _height);
+    (*mesh)[4].getVertex(1) = Vector3D<float>(-_widthX/2, _widthY/2,0);
+    (*mesh)[4].getVertex(2) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+
+    (*mesh)[5].getVertex(0) = Vector3D<float>( 0, 0, _height);
+    (*mesh)[5].getVertex(1) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+    (*mesh)[5].getVertex(2) = Vector3D<float>( _widthX/2,-_widthY/2,0);
+
+    return mesh;
+}
+
+rw::math::Q Pyramid::getParameters() const{
+    return rw::math::Q(3, _widthX, _widthY, _height);
+}
+
+bool Pyramid::doIsInside(const rw::math::Vector3D<>& point){
+    // test if point is on back of all faces of pyramid
+
+    // first test bottom of pyramid
+    if(point[2]<0)
+        return false;
+
+    // test side of line (widhtX/2,0)(0,_height) and (0,_height)(-widhtX/2,0)
+    if( ((0 - _widthX/2)*(point[2] - 0) - (_height - 0)*( fabs(point[0]) - _widthX/2)) > 0 )
+        return false;
+
+    // test side of line (widhtY/2,0)(0,_height) and (0,_height)(-widhtY/2,0)
+    if( ((0 - _widthY/2)*(point[2] - 0) - (_height - 0)*( fabs(point[1]) - _widthY/2)) > 0 )
+        return false;
+
+    // ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0;
+
+    return true;
+}

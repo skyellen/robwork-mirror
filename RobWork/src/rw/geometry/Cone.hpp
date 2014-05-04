@@ -33,7 +33,7 @@ namespace geometry {
 	 *
 	 * The cone is aligned with the z-axis such that top is in the positive z-axis
 	 * and the bottom is in the negative z-axis. The center of the cone will be
-	 * in (0,0,0)
+	 * in (0,0,0) which is inside the cone.
 	 *
 	 */
 	class Cone: public Primitive {
@@ -70,7 +70,8 @@ namespace geometry {
 
 		//! @copydoc GeometryData::getType
 		GeometryType getType() const { return ConePrim; };
-
+	protected:
+		bool doIsInside(const rw::math::Vector3D<>& point);
 	private:
 		double _radiusTop, _radiusBottom, _height;
 	};
