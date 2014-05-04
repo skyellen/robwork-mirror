@@ -270,7 +270,7 @@ int main_lpe(int argc, char** argv)
     GraspTask::Ptr gtask = GraspTask::load( input );
 
     // first we build a search tree to efficiently search for targets in 6d
-    std::vector<NNSearch::KDNode> simnodes;
+    std::vector<NNSearch::KDNode*> simnodes;
     NNSearch *nntree = buildKDTree_pos_eaa(gtask,simnodes);
 
 
@@ -282,8 +282,9 @@ int main_lpe(int argc, char** argv)
     for(std::size_t i=0;i<simnodes.size(); i++){
         // find the node with the highest quality
         double q_max = -100;
-        NNSearch::KDNode *n_max = &simnodes[0];
-        BOOST_FOREACH(NNSearch::KDNode& n, simnodes){
+        NNSearch::KDNode *n_max = simnodes[0];
+        BOOST_FOREACH(NNSearch::KDNode *nptr, simnodes){
+            NNSearch::KDNode &n = *nptr;
             Value &val = n.value;
             if(val.second==NULL)
                 continue;

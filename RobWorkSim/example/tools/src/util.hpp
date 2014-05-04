@@ -101,7 +101,7 @@ buildKDTree_eaa(rwlibs::task::GraspTask::Ptr gtask) {
 }
 
 rwlibs::algorithms::KDTreeQ<std::pair<rwlibs::task::GraspSubTask*,rwlibs::task::GraspTarget*> >*
-buildKDTree_pos_eaa(rwlibs::task::GraspTask::Ptr gtask, std::vector<rwlibs::algorithms::KDTreeQ<std::pair<rwlibs::task::GraspSubTask*,rwlibs::task::GraspTarget*> >::KDNode>& simnodes) {
+buildKDTree_pos_eaa(rwlibs::task::GraspTask::Ptr gtask, std::vector<rwlibs::algorithms::KDTreeQ<std::pair<rwlibs::task::GraspSubTask*,rwlibs::task::GraspTarget*> >::KDNode*>& simnodes) {
     using namespace rw::math;
     using namespace rwlibs::task;
     using namespace rwlibs::algorithms;
@@ -117,7 +117,7 @@ buildKDTree_pos_eaa(rwlibs::task::GraspTask::Ptr gtask, std::vector<rwlibs::algo
             Vector3D<> n = eaa.axis();
 
             Q key(7, p[0], p[1], p[2], n[0], n[1], n[2], eaa.angle() );
-            simnodes.push_back( NNSearch::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
+            simnodes.push_back( new NNSearch::KDNode(key, std::pair<GraspSubTask*,GraspTarget*>(&stask,&target)) );
         }
     }
     return NNSearch::buildTree(simnodes);

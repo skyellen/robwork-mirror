@@ -24,6 +24,8 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
+#include <rw/models/Models.hpp>
+
 #include <rwsimlibs/ode/ODESimulator.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -84,6 +86,7 @@ int main(int argc, char** argv)
         ("pertubations", value<int>()->default_value(1), "Number of pertubations to perform on each target.")
         ("sigma_a", value<double>()->default_value(2), "Standard deviation in of angle in Degree.")
         ("sigma_p", value<double>()->default_value(0.003), "Standard deviation of position in meters.")
+        ("output-statepath", value<bool>()->default_value(false), "State path for visually checking cutting trajectory.")
     ;
     positional_options_description optionDesc;
     optionDesc.add("input",-1);
@@ -109,6 +112,8 @@ int main(int argc, char** argv)
     double sigma_a = vm["sigma_a"].as<double>()*Deg2Rad;
     int pertubationsPerTarget = vm["pertubations"].as<int>();
 
+    bool outputState = vm["output-statepath"].as<bool>();
+    TimedStatePath statep;
 
     std::map<int,bool> includeMap;
     if(vm.count("include")){
@@ -156,6 +161,9 @@ int main(int argc, char** argv)
     // load workcell
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
+    WorkCell::Ptr wc = dwc->getWorkcell();
+    std::cout << "WorkCell: nr frames: " << Models::findAllFrames(*wc).size() << std::endl;
+
     // create GraspTaskSimulator
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
@@ -226,11 +234,17 @@ int main(int argc, char** argv)
 
             graspSim->load(tasks[i]);
             graspSim->startSimulation(initState);
+            if(outputState){
+                statep.push_back(TimedState(0,initState));
+            }
             for(std::size_t j=0;j<graspSim->getStat().size(); j++){ std::cout << j << "\t"; }
             std::cout<< std::endl;
             TimerUtil::sleepMs(2000);
             do{
-                TimerUtil::sleepMs(500);
+                if(outputState){
+                    statep.push_back(TimedState(statep.size()/0.01,graspSim->getSimulator()->getState()));
+                }
+                TimerUtil::sleepMs(100);
                 std::vector<int> stat = graspSim->getStat();
                 std::cout << "\r";
                 BOOST_FOREACH(int i, stat){ std::cout << i << "\t"; }
@@ -241,6 +255,11 @@ int main(int argc, char** argv)
             // save the result
             totaltargets++;
 
+            // store timed state
+            if(outputState){
+                std::cout << "Statepath: " << statep.size() << std::endl;
+                PathLoader::storeTimedStatePath(*dwc->getWorkcell(),statep, sstr.str()+".rwplay");
+            }
             std::cout << "Saving to: " << sstr.str() << std::endl;
             if(iformat==0){
                 GraspTask::saveRWTask(grasptask, sstr.str()+"_"+boost::lexical_cast<std::string>(i)+".task.xml" );

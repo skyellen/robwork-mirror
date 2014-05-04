@@ -77,39 +77,60 @@ int main_lpe(int argc, char** argv)
     //Unused: int count = vm["samples"].as<int>();
     GraspTask::Ptr gtask = GraspTask::load( input );
 
-    // first we build a search tree to efficiently search for targets in 6d
-    std::vector<GTaskNNSearch::Node> simnodes;
-    GTaskNNSearch *nntree = buildKDTree_pos_eaa(gtask, simnodes);
+    if( boost::filesystem3::exists(output) ){
+        std::cout << "Output allready exists! skipping filtering." << std::endl;
+        return 0;
+    }
 
+
+    // first we build a search tree to efficiently search for targets in 6d
+    std::vector<GTaskNNSearch::Node*> simnodes;
+    std::cout << "Building tree!" << std::endl;
+    GTaskNNSearch *nntree = buildKDTree_pos_eaa(gtask, simnodes);
+    std::cout << "sim nodes:"  << simnodes.size() << std::endl;
 
     Q diff(7, distThres, distThres, distThres, angleThres, angleThres, angleThres,angleThres);
+    std::cout << diff << std::endl;
     typedef std::pair<GraspSubTask*, GraspTarget*> Value;
     std::vector< Value > selGrasps;
     std::list<const GTaskNNSearch::Node*> result;
 
     for(std::size_t i=0;i<simnodes.size(); i++){
+        if(simnodes[i]->value.second == NULL)
+            continue;
         // find the node with the highest quality
         double q_max = -100;
-        GTaskNNSearch::Node *n_max = &simnodes[0];
-        BOOST_FOREACH(GTaskNNSearch::Node& n, simnodes){
+        GTaskNNSearch::Node *n_max = simnodes[0];
+
+        // TODO: use a priority queue instead of this brute search
+        int idx = 0;
+        BOOST_FOREACH(GTaskNNSearch::Node* nptr, simnodes){
+            GTaskNNSearch::Node& n = *nptr;
+            idx++;
             GTaskNNSearch::Value &val = n.value;
-            if(val.second==NULL)
+            if(val.second==NULL){
                 continue;
-            if(val.second->getResult()==NULL)
+            }
+            if(val.second->result==NULL)
                 continue;
             Q qual = val.second->getResult()->qualityAfterLifting;
             if(qual.size()==0)
+                qual = val.second->getResult()->qualityBeforeLifting;
+
+            if(qual.size()==0)
                 continue;
             if(q_max<qual[0]){
+                //std::cout << "found higher:" << qual[0] << " idx: " << idx << std::endl;
                 q_max = qual[0];
                 n_max = &n;
             }
         }
+        // just to make sure we found a node above....
         if(q_max<-90)
             break;
         // we stop the sampling at a certain threshold 30% success
-        if(q_max<0.3)
-            break;
+        //if(q_max<0.3)
+        //    break;
 
         // add the max node
         GTaskNNSearch::Value &v = n_max->value;
@@ -119,7 +140,9 @@ int main_lpe(int argc, char** argv)
         // use the max node as a sample point and remove all neighboring nodes
         result.clear();
         nntree->nnSearchRect( n_max->key-diff, n_max->key+diff, result);
+        //std::cout << "s:" << result.size() << "\n";
         BOOST_FOREACH(const GTaskNNSearch::Node* res_n, result){
+            nntree->removeNode( res_n->key );
             GTaskNNSearch::Node* r_n = (GTaskNNSearch::Node*) res_n;
             r_n->value.second = NULL;
         }
@@ -136,7 +159,7 @@ int main_lpe(int argc, char** argv)
         res.addSubTask(stask);
     }
 
-    GraspTask::saveRWTask(&res, output + ".rwtask.xml");
+    GraspTask::saveRWTask(&res, output);
     //std::cout << "COVERAGE: " << (((double)samples_t)/(double)samples_f)*100.0 << "%" << std::endl;
     return 0;
 }

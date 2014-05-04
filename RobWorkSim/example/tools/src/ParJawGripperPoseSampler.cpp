@@ -115,6 +115,11 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    std::string outfile = vm["output"].as<std::string>();
+    if( boost::filesystem3::exists(outfile) ){
+        std::cout << "Output allready exists! Skipping database generation." << std::endl;
+        return 0;
+    }
 
 
     const int NR_OF_SAMPLES = vm["samples"].as<int>();
@@ -127,7 +132,7 @@ int main(int argc, char** argv)
     // load workcell
     std::cout << "\n";
     std::cout << "Loading workcell: " << file_wc.string() << std::endl;
-    RW_WARN("");
+
     WorkCell::Ptr wc = WorkCellLoader::Factory::load( file_wc.string() );
     RW_ASSERT( wc!=NULL );
 
@@ -139,7 +144,7 @@ int main(int argc, char** argv)
         // load geometry from file
         object_geo = GeometryFactory::getGeometry(file_object.string());
     }
-    RW_WARN("");
+
     Frame *objectFrame = NULL;
     Object::Ptr obj;
     if( object_geo==NULL ){
@@ -159,38 +164,37 @@ int main(int argc, char** argv)
         wc->add(obj);
 
     }
-    RW_WARN("");
 
-	std::string outfile = vm["output"].as<std::string>();
-	RW_WARN("");
+
+
 	std::string grippername = vm["gripper"].as<std::string>();
 	std::string grippertcp = vm["gripper-tcp"].as<std::string>();
 	std::string gripperbase = vm["gripper-base"].as<std::string>();
-	RW_WARN("");
+
     // TODO: this should be automized
     Frame* gripperTCP = wc->findFrame( grippertcp );
     std::cout << gripperTCP->getName() << std::endl;
     RW_ASSERT(gripperTCP!=NULL);
     MovableFrame* gripperMovable = wc->findFrame<MovableFrame>( gripperbase );
     RW_ASSERT(gripperMovable!=NULL);
-    RW_WARN("");
+
 	Geometry::Ptr geo = object_geo;
-	RW_WARN("");
+
 	Device::Ptr gripper = wc->findDevice(grippername);
 	RW_ASSERT(gripper!=NULL);
-	RW_WARN("");
+
 	// setup openq and closeq
 	Q OPENQ = gripper->getBounds().second;
 	Q CLOSEQ = gripper->getBounds().first;
-	RW_WARN("");
+
 	if(vm.count("open")>0){ OPENQ = vm["open"].as<Q>(); }
-	RW_WARN("");
+
 	if(vm.count("close")>0){ CLOSEQ = vm["close"].as<Q>(); }
-	RW_WARN("");
+
 	// check if qopn and qclose properties exist on the gripper tcp frame
 	if( gripperTCP->getPropertyMap().has("qclose") )
 	    CLOSEQ = gripperTCP->getPropertyMap().get<Q>("qclose") * Deg2Rad;
-	RW_WARN("");
+
 	if( gripperTCP->getPropertyMap().has("qopen") )
 	    OPENQ = gripperTCP->getPropertyMap().get<Q>("qopen") * Deg2Rad;
 
@@ -218,7 +222,7 @@ int main(int argc, char** argv)
     Rotation3D<> rot(1, 0, 0,
                      0, 1, 0,
                      0, 0, 1);
-    RW_WARN("");
+
     GraspTask gtask;
     gtask.getSubTasks().resize(1);
     GraspSubTask &stask = gtask.getSubTasks()[0];
@@ -428,7 +432,7 @@ int main(int argc, char** argv)
             nrSuccesses++;
             GraspTarget gtarget( target );
             gtarget.result = ownedPtr( new GraspResult() );
-            gtarget.result->testStatus = GraspTask::UnInitialized;
+            gtarget.result->testStatus = GraspTask::Success;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
             gtarget.result->gripperConfigurationLift = oq;
@@ -447,8 +451,8 @@ int main(int argc, char** argv)
             key[6] = eaa.angle();
 
             //bool success=true;
-            nodes.push_back( NNSearch::KDNode(key, gtarget.result) );
-            allnodes.push_back( NNSearch::KDNode(key, gtarget.result) );
+            nodes.push_back( NNSearch::KDNode(key, stask.getTargets().back().getResult() ) );
+            allnodes.push_back( NNSearch::KDNode(key, stask.getTargets().back().getResult() ) );
 
             //Q quality = calculateQuality(object, gripper, cdetect, cstrategy, state, openQ, closeQ);
             //gtarget.result->qualityAfterLifting
@@ -461,6 +465,10 @@ int main(int argc, char** argv)
     NNSearch *nntree = NNSearch::buildTree(nodes);
     std::cout << "Build for all " << std::endl;
     NNSearch *nntree_all = NNSearch::buildTree(allnodes);
+
+
+
+    std::cout << "Found " << nodes.size() << "  " << allnodes.size() << std::endl;
 
     std::cout << std::endl;
 
@@ -477,6 +485,10 @@ int main(int argc, char** argv)
         nntree_all->nnSearchRect(key-diff,key+diff, result);
         size_t nrNeighbors_all = result.size();
 
+        if( nrNeighbors_all<nrNeighbors ){
+            RW_WARN("Neigh: " << nrNeighbors_all << "<" << nrNeighbors);
+        }
+
         GraspResult::Ptr gres = node.value;
         /*
         // count how many that are close rotationally to
@@ -492,7 +504,7 @@ int main(int argc, char** argv)
         */
 
         std::cout << "\n" << nodeNr << "\t" << nrNeighbors << "\t" <<  nrNeighbors_all << std::flush;
-        node.value->qualityAfterLifting = Q(1, (nrNeighbors*1.0/(nrNeighbors_all+0.0001)) );
+        gres->qualityAfterLifting = Q(1, (nrNeighbors*1.0/(nrNeighbors_all+0.0001)) );
 
         nodeNr++;
     }
