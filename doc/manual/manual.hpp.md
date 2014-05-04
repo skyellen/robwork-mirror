@@ -177,8 +177,47 @@ The \b root class can now be used for parsing the xml data. Lets assume we have 
 
 
 ## Generic serialization  ##
+The generic serialization is not a centralized controlled serialization as the XML
+ serialization described above. There are two main concepts to the generic
+serialization: Archive, Serializable
+
+An Archive is an instance that formats data that can be read or written to it from a 
+Serializable object/class. As such interfaces for both InputArchive and 
+OutputArchive exists. A serializable class is a class that either inherits from 
+the rw::common::Serializable (intrusive) or using an extrusive way that overwrites the functions
+
+~~~~~ {.cpp} 
+void rw::common::serialization::write(const THE_CLASS&, OutputArchive& oar);
+void rw::common::serialization::read(THE_CLASS&, InputArchive& iar);
+~~~~~
+
+In any case save and load methods should be determined for the individual 
+serializable classes. In these methods read/write operations on the archive should
+be performed such as to store or restore the state of the class. The use of 
+an archive can be quite simple:
+
 ~~~~~~{.cpp}
-	static void save(const KDTreeQ<VALUE_TYPE>& out, OutputArchive& oarchive) {
+INIArchive ar(std::cout);
+ar.write(1, "length");
+ar.write(1.120, "width");
+ar.write(5.120, "height");
+produce:
+length : 1
+width : 1,120
+height : 5.120
+~~~~~~
+
+As can be seen an identifier can be associated to the value that is to be serialized. This 
+id makes type checking possible and should allways be used/defined. The archive interface 
+define serialization of primitives (int, float, double, string) and vectors of primitives.
+More complex types will need to implement their own serialization pieced together from 
+the primitives.
+
+Finally, the archive also defines a way to enter scopes. A scope is simply a grouping of 
+value-identifier pairs. 
+
+~~~~~~{.cpp}
+	void write(const KDTreeQ<VALUE_TYPE>& out, OutputArchive& oarchive) {
 	    oarchive.write(out._dim, "dim");
 	    oarchive.write((int)out._nodes->size(), "nrNodes");
 	    oarchive.write((boost::uint64_t)out._root, "rootId");
@@ -196,6 +235,13 @@ The \b root class can now be used for parsing the xml data. Lets assume we have 
 	}
 ~~~~~~
 
+### Archive types ###
+There is currently:
+- an rw::common::INIArchive which prints in INI format
+- an rw::common::BINArchive which prints in binary compressed format 
+
+### Limitations ###
+
 # Workcells # {#sec_rw_manual_workcells}
 The WorkCell is one of the primary containers in RobWork. A WorkCell should gather all stateless 
 elements/models of a scene. These are primarily:
@@ -209,7 +255,7 @@ elements/models of a scene. These are primarily:
 RobWork supports workcells described in an XML format.
 
 The below program loads a workcell from the file named on the command
-line. If the loading of the workcell fails, the
+lie. If the loading of the workcell fails, the
 rw::loaders::WorkCellLoader::load() function will throw an exception,
 and the program will abort with an error message.
 
