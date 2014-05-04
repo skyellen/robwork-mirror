@@ -41,7 +41,7 @@
 #include "./geometry/Pyramid.hpp"
 #include "./geometry/Cone.hpp"
 //#include "./geometry/AABB.hpp"
-
+#include "./geometry/PointCloud.hpp"
 //#include "./geometry/Point.hpp"
 #include "./geometry/Line.hpp"
 #include "./geometry/Plane.hpp"

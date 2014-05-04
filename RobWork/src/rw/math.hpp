@@ -37,6 +37,7 @@
 #include "./math/MetricFactory.hpp"
 #include "./math/MetricUtil.hpp"
 #include "./math/PerspectiveTransform2D.hpp"
+#include "./math/ProjectionMatrix.hpp"
 #include "./math/Pose2D.hpp"
 #include "./math/Pose6D.hpp"
 #include "./math/Q.hpp"
