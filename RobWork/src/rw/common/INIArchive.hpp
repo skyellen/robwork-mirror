@@ -46,6 +46,11 @@ namespace common {
 		 */
 		INIArchive():_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false){}
 
+		INIArchive(const std::string& filename):_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false)
+		{
+		    open(filename);
+		}
+
 		INIArchive(std::ostream& ofs):_ofs(NULL),_ifs(NULL),_fstr(NULL),_isopen(false)
 		{
 			open(ofs);
