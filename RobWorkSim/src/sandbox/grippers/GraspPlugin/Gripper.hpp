@@ -185,7 +185,7 @@ class Gripper // : public TreeDevice
 				//_rightGeometry = ownedPtr(new Geometry(new JawPrimitive(_jawParameters), std::string("RightFingerGeo")));
 			}
 			
-			return _leftGeometry;
+			return new Geometry(*_leftGeometry);
 		}
 		
 		/// Set jaws geometry to a mesh.

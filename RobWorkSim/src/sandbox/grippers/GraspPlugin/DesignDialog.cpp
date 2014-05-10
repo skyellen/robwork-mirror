@@ -99,7 +99,8 @@ void DesignDialog::_updateGripper()
 		jawParams(3) = ui.depthEdit->text().toDouble();
 		jawParams(4) = ui.chfDepthEdit->text().toDouble();
 		jawParams(5) = Deg2Rad*ui.chfAngleEdit->text().toDouble();
-		jawParams(6) = ui.lengthEdit->text().toDouble() - ui.tcpEdit->text().toDouble();
+		//jawParams(6) = ui.lengthEdit->text().toDouble() - ui.tcpEdit->text().toDouble();
+		jawParams(6) = ui.tcpEdit->text().toDouble();
 		jawParams(7) = ui.cutDepthEdit->text().toDouble();
 		jawParams(8) = Deg2Rad*ui.cutAngleEdit->text().toDouble();
 		jawParams(9) = ui.cutRadiusEdit->text().toDouble();
@@ -380,7 +381,8 @@ void DesignDialog::_updateGUI()
 		
 		// update general parameters area
 		ui.nameEdit->setText(QString::fromStdString(_gripper->getName()));
-		ui.tcpEdit->setText(QString::number(_gripper->getJawParameters()[1]-_gripper->getTCP().P()[2]));
+		//ui.tcpEdit->setText(QString::number(_gripper->getJawParameters()[1]-_gripper->getTCP().P()[2]));
+		ui.tcpEdit->setText(QString::number(_gripper->getTCP().P()[2]));
 		ui.forceEdit->setText(QString::number(_gripper->getForce()));
 		ui.jawdistEdit->setText(QString::number(_gripper->getJawdist()));
 		ui.openingEdit->setText(QString::number(_gripper->getOpening()));

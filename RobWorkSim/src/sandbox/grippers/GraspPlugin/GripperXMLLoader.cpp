@@ -62,7 +62,7 @@ void readJaws(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 	// else use parametrization
 	Q params = XMLHelpers::readQ(tree.get_child("Q"));
 	params(5) *= Deg2Rad;
-	params(6) = params(1) - params(6);
+	//params(6) = params(1) - params(6);
 	params(8) *= Deg2Rad;
 	//cout << "!" << params << endl;
 	DEBUG << "Jaw geometry from parameters: " << params << endl;
@@ -106,7 +106,8 @@ void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 	readGeometry(tree.get_child("Geometry"), gripper, path);
 	
 	double offset = XMLHelpers::readDouble(tree.get_child("Offset"));
-	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-offset)));
+	//gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-offset)));
+	gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, offset)));
 	
 	double jawdist = XMLHelpers::readDouble(tree.get_child("Jawdist"));
 	double opening = XMLHelpers::readDouble(tree.get_child("Opening"));
@@ -210,7 +211,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	if (gripper->isJawParametrized()) {
 		Q params = gripper->getJawParameters();
 		params(5) *= Rad2Deg;
-		params(6) = params(1)-gripper->getTCP().P()[2];
+		//params(6) = params(1)-gripper->getTCP().P()[2];
 		params(8) *= Rad2Deg;
 		tree.put("Gripper.Parameters.Geometry.Jaws.Q", XMLHelpers::QToString(params));
 	} else {
