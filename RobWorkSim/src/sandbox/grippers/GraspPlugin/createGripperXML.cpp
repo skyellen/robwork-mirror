@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
 		}
 		
 		if (vm.count("tcp")) {
-			gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-vm["tcp"].as<double>())));
+			//gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-vm["tcp"].as<double>())));
+			gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, vm["tcp"].as<double>())));
 		}
 		
 		if (vm.count("jawdist")) {

@@ -23,7 +23,7 @@ class GripperGenerator:
 		self.cutRadius = (0, 1)
 		self.opening = (0.0, 0.1)
 		self.jawdist = (0, 1)
-		self.stroke = (0, 0.05)
+		self.stroke = (0, 0.1)
 		self.force = (0, 100) # minimum & maximum forces
 		
 	def generate(self, name="gripper"):
