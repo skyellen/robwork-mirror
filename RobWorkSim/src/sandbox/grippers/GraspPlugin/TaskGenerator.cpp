@@ -238,7 +238,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::filterTasks(const rwlibs::task::Gras
 
 			int removed = 0;
 			BOOST_FOREACH (const NNSearch::KDNode* n, result) {
-				if (n == &node) continue;
+				if (n->key == node.key) continue;
 				
 				// this is where a node gets removed
 				//cout << "REMOVING NODE " << nRemoved << endl;
@@ -267,6 +267,7 @@ int TaskGenerator::countTasks(const rwlibs::task::GraspTask::Ptr tasks, const rw
 	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
 	BOOST_FOREACH (TaskTarget p, tasks->getAllTargets()) {
 	//BOOST_FOREACH (GraspTarget* target, tasks->getAllTargets().second) { //tasks->getSubTasks()[0].getTargets()) {
+		//cout << p.second->getResult()->testStatus << endl;
 		if (p.second->getResult()->testStatus == status) {
 			++n;
 		}
@@ -419,14 +420,14 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 
         // distance between grasping points is graspW
         // we close gripper such that it is 1 cm more openned than the target
-        cout << "GraspW: " << graspW << " closeQ: " << _closeQ(0) << " openQ: " << _openQ(0) << endl;
+        //cout << "GraspW: " << graspW << " closeQ: " << _closeQ(0) << " openQ: " << _openQ(0) << endl;
         
         Q oq = _openQ;
         oq(0) = std::max(_closeQ(0), _closeQ(0)+(graspW+0.01)/2.0);
         oq(0) = std::min(_openQ(0), oq(0) );
         //oq(0) = 
         _td->getGripperDevice()->setQ(oq, state);
-        cout << "So the oq is: " << oq(0) << endl;
+        //cout << "So the oq is: " << oq(0) << endl;
         
         // then check for collision
         moveFrameW(wTobj * target, _td->getGripperTCP(), _td->getGripperMovable(), state);
@@ -467,7 +468,7 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 			//RW_WARN("NAY");
 			
 			++failures_in_row;
-			if (failures_in_row > 1000) {
+			if (failures_in_row > 10000) {
 				//RW_WARN("Something is rotten in the state of RobWork.");
 				RW_THROW("Something is rotten in the state of RobWork: " << successes << "/" << failures_in_row);
 				break;
