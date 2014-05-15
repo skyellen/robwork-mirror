@@ -118,7 +118,8 @@ void DesignDialog::_updateGripper()
 		
 		// update general parameters
 		_gripper->setName(ui.nameEdit->text().toStdString());
-		_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, ui.lengthEdit->text().toDouble() - ui.tcpEdit->text().toDouble())));
+		//_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, ui.lengthEdit->text().toDouble() - ui.tcpEdit->text().toDouble())));
+		_gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, ui.tcpEdit->text().toDouble())));
 		_gripper->setForce(ui.forceEdit->text().toDouble());
 		_gripper->setJawdist(ui.jawdistEdit->text().toDouble());
 		_gripper->setOpening(ui.openingEdit->text().toDouble());

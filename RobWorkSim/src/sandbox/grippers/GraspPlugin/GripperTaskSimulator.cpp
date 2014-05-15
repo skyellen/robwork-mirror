@@ -129,17 +129,17 @@ double GripperTaskSimulator::calculateCoverage(double actualRatio)
 	Q covDist = _td->getCoverageDistance();
 	double R = 2.0 * sin(0.25 * covDist(1));
 	Q diff(7, covDist(0), covDist(0), covDist(0), R, R, R, covDist(2));
-	//cout << "!!!" << diff << endl;
-	//diff = Q(7, 0.01, 0.01, 0.01, 0.1, 0.1, 0.1, 45*Deg2Rad);
-
+	
+	/* okTargets is the number of succesful targets after filtering +
+	 * the number of slippages + the number of interferences */
 	DEBUG << "Filtering targets..." << endl;
 	GraspTask::Ptr coverageTasks = TaskGenerator::filterTasks(_gtask, diff);
-	int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
-	//int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success);
+	int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success); 	
 	//DEBUG << "Successful tasks: " << okTargets;
 	okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::ObjectSlipped);
 	okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
 	//DEBUG << " + interference= " << okTargets << endl;
+	
 	DEBUG << "Filtering samples..." << endl;
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::UnInitialized);
 	
