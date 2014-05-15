@@ -111,10 +111,11 @@ void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 	
 	double jawdist = XMLHelpers::readDouble(tree.get_child("Jawdist"));
 	double opening = XMLHelpers::readDouble(tree.get_child("Opening"));
+	double force = XMLHelpers::readDouble(tree.get_child("Force"));
 	
 	gripper->setJawdist(jawdist);
 	gripper->setOpening(opening);
-	gripper->setForce(XMLHelpers::readDouble(tree.get_child("Force")));
+	gripper->setForce(force);
 	
 	// it is also possible to dispense with Jawdist, and use Stroke, which overwrites it instead
 	boost::optional<PTree&> strokeNode = tree.get_child_optional("Stroke");
@@ -124,7 +125,7 @@ void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 	}
 	
 	DEBUG << "Offset: " << offset << endl;
-	DEBUG << "Opening: " << oening << endl;
+	DEBUG << "Opening: " << opening << endl;
 	DEBUG << "Force: " << force << endl;
 }
 
