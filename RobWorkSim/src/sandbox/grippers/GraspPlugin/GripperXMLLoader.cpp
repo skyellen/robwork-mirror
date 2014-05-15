@@ -122,6 +122,10 @@ void readParameters(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 		double stroke = XMLHelpers::readDouble(strokeNode.get());
 		gripper->setJawdist(opening - stroke);
 	}
+	
+	DEBUG << "Offset: " << offset << endl;
+	DEBUG << "Opening: " << oening << endl;
+	DEBUG << "Force: " << force << endl;
 }
 
 
