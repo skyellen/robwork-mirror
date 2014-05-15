@@ -238,7 +238,8 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 		tree.put("Gripper.Parameters.Geometry.Base.File", filename);
 	}
 	
-	tree.put("Gripper.Parameters.Offset", gripper->getJawParameters()[1]-gripper->getTCP().P()[2]);
+	//tree.put("Gripper.Parameters.Offset", gripper->getJawParameters()[1]-gripper->getTCP().P()[2]);
+	tree.put("Gripper.Parameters.Offset", gripper->getTCP().P()[2]);
 	tree.put("Gripper.Parameters.Jawdist", gripper->getJawdist());
 	tree.put("Gripper.Parameters.Opening", gripper->getOpening());
 	tree.put("Gripper.Parameters.Force", gripper->getForce());
