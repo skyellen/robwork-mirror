@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 		("samples", value<string>(), "surface samples file")
 		("out,o", value<string>(), "task file")
 		("nosim", "don't perform simulation")
-		("robustness,r", value<int>(&rtargets)->default_value(0), "test robustnesss with s number of targets")
+		("robustness,r", value<int>(&rtargets), "test robustnesss with s number of targets")
 		("sigma_a", value<double>(&sigma_a)->default_value(8), "Standard deviation in of angle in degrees.")
         ("sigma_p", value<double>(&sigma_p)->default_value(0.003), "Standard deviation of position in meters.")
 	;
