@@ -15,6 +15,7 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include "XMLHelpers.hpp"
+#include "Alignment.hpp"
 
 
 
@@ -74,6 +75,10 @@ class TaskDescription
 		std::vector<rw::math::Transform3D<> >& getHints() { return _hints; }
 		void addHint(rw::math::Transform3D<> hint) { _hints.push_back(hint); }
 		
+		bool hasAlignments() const { return _alignments.size() > 0; }
+		std::vector<Alignment>& getAlignments() { return _alignments; }
+		void addAlignment(const Alignment& alignment) { _alignments.push_back(alignment); }
+		
 		void setPrefilteringDistance(rw::math::Q dist) { _prefilteringDistance = dist; }
 		rw::math::Q getPrefilteringDistance() const { return _prefilteringDistance; }
 		
@@ -126,6 +131,7 @@ class TaskDescription
 		Qualities _baseLine;
 		Qualities _weights;
 		std::vector<rw::math::Transform3D<> > _hints;
+		std::vector<Alignment> _alignments;
 };
 
 
@@ -154,4 +160,6 @@ class TaskDescriptionLoader
 		static void readQualities(rwlibs::xml::PTree& tree, TaskDescription::Qualities& q);
 		static void readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readGrasp(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		static void readAlignment(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 };

@@ -92,9 +92,14 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 	task->_teachDistance(4) *= Deg2Rad;
 	DEBUG << task->_teachDistance << endl;
 	
-	boost::optional<PTree&> node = tree.get_child_optional("HintGrasps");
-	if (node) {
-		readHints(*node, task);
+	boost::optional<PTree&> node4 = tree.get_child_optional("HintGrasps");
+	if (node4) {
+		readHints(*node4, task);
+	}
+	
+	boost::optional<PTree&> node5 = tree.get_child_optional("Alignments");
+	if (node5) {
+		readAlignments(*node5, task);
 	}
 	
 	task->_isOk = true;
@@ -288,6 +293,32 @@ void TaskDescriptionLoader::readGrasp(rwlibs::xml::PTree& tree, TaskDescription:
 
 
 
+void TaskDescriptionLoader::readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
+{
+	DEBUG << "- alignments" << endl;
+	
+	for (CI p = tree.begin(); p != tree.end(); ++p) {
+		if (p->first == "Alignment") readAlignment(p->second, task);
+	}
+}
+
+
+
+void TaskDescriptionLoader::readAlignment(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
+{
+	DEBUG << "\tAlignment: ";
+	Q posq = XMLHelpers::readQ(tree.get_child("Pos"));
+	Q rpyq = XMLHelpers::readQ(tree.get_child("RPY"));
+	Q distq = XMLHelpers::readQ(tree.get_child("Dist"));
+	DEBUG << "pos=" << posq << " rot=" << rpyq << " dist=" << distq << endl;
+	
+	Vector3D<> pos(posq[0], posq[1], posq[2]);
+	RPY<> rpy(rpyq[0], rpyq[1], rpyq[2]);
+	task->_alignments.push_back(Alignment(Transform3D<>(pos, rpy.toRotation3D()), distq));
+}
+
+
+
 void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::string& filename)
 {
 	PTree tree;
@@ -352,6 +383,18 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 		node.put("RPY", XMLHelpers::QToString(Q(3, rpy[0], rpy[1], rpy[2])));
 		
 		tree.add_child("TaskDescription.HintGrasps.Grasp", node);
+	}
+	
+	// save alignments
+	BOOST_FOREACH (Alignment a, td->_alignments) {
+		PTree node;
+		
+		node.put("Pos", XMLHelpers::QToString(Q(3, a.pose.P()[0], a.pose.P()[1], a.pose.P()[2])));
+		RPY<> rpy(a.pose.R());
+		node.put("RPY", XMLHelpers::QToString(Q(3, rpy[0], rpy[1], rpy[2])));
+		node.put("Dist", XMLHelpers::QToString(a.dist));
+		
+		tree.add_child("TaskDescription.Alignments.Alignment", node);
 	}
 	
 	// save to XML
