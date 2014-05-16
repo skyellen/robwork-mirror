@@ -21,7 +21,7 @@ class GripperGenerator:
 		self.cutDepth = (0, 1)
 		self.cutAngle = (45, 135)
 		self.cutRadius = (0, 1)
-		self.opening = (0.0, 0.1)
+		self.opening = (0.0, 0.05)
 		self.jawdist = (0, 1)
 		self.stroke = (0, 0.1)
 		self.force = (0, 100) # minimum & maximum forces
