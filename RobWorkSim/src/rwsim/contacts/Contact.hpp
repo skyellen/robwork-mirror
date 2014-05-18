@@ -205,7 +205,16 @@ public:
 	 * @return the same ostream as out parameter.
 	 */
 	friend std::ostream& operator<<(std::ostream& out, const Contact& contact) {
-		out << "Frames: " << contact.getFrameA()->getName() << " <-> " << contact.getFrameB()->getName();
+		out << "Frames: ";
+		if (contact.getFrameA() != NULL)
+			out << contact.getFrameA()->getName();
+		else
+			out << " (none) ";
+		out << " <-> ";
+		if (contact.getFrameB() != NULL)
+			out << contact.getFrameB()->getName();
+		else
+			out << " (none) ";
 		out << " Points: " << contact.getPointA() << " <-> " << contact.getPointB();
 		out << " Normal: " << contact.getNormal() << " Depth: " << contact.getDepth();
 		return out;
