@@ -6,7 +6,8 @@
 add_subdirectory(gui)
 
 add_subdirectory(ode)
-add_subdirectory(bullet)
+add_subdirectory(tntphysics)
+add_subdirectory(bullet) 
 add_subdirectory(swig)
 
 # the plugins may use all of the above 

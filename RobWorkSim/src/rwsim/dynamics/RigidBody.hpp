@@ -197,7 +197,7 @@ namespace dynamics {
         /**
          * @brief returns the angular velocity described in world frame
          */
-        virtual rw::math::Vector3D<> getAngVelW(rw::kinematics::State& state){
+        virtual rw::math::Vector3D<> getAngVelW(const rw::kinematics::State& state) const {
             return getWTParent(state).R() * getAngVel(state);
         }
 

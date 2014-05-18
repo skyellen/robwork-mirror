@@ -84,7 +84,7 @@ namespace dynamics {
              return _nameToID[objType];
          }
 
-         const std::string& getObjectTypeName( int id ){
+         const std::string& getObjectTypeName( int id ) const {
              return _objectNames[id];
          }
 
@@ -92,7 +92,7 @@ namespace dynamics {
              return _objectNames;
          }
 
-         int getMaxID(){return _objectCnt;};
+         int getMaxID() const {return _objectCnt;};
 
 
     	/**
@@ -112,7 +112,7 @@ namespace dynamics {
         const NewtonData& getNewtonData(const std::string &nameA,
                                         const std::string &nameB);
 
-        const NewtonData& getNewtonData(int idA, int idB);
+        const NewtonData& getNewtonData(int idA, int idB) const ;
 
 
     	/**

@@ -61,9 +61,9 @@ const ContactDataMap::NewtonData&
 
 
 
-const ContactDataMap::NewtonData& ContactDataMap::getNewtonData(int idA, int idB)
+const ContactDataMap::NewtonData& ContactDataMap::getNewtonData(int idA, int idB) const
 {
-    NewtonMap::iterator res = _newtonDataMap.find( std::make_pair(idA,idB) );
+    NewtonMap::const_iterator res = _newtonDataMap.find( std::make_pair(idA,idB) );
     if( res == _newtonDataMap.end() ){
         typedef std::map<std::string, int>::value_type BVal;
         BOOST_FOREACH(BVal val, _nameToID){

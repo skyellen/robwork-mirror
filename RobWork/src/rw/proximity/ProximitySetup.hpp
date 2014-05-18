@@ -86,7 +86,7 @@ public:
 
 
 
-	bool useExcludeStaticPairs() {
+	bool useExcludeStaticPairs() const {
 		return _useExcludeStaticPairs;
 	}
 
@@ -94,7 +94,7 @@ public:
 		_useExcludeStaticPairs = exclude;
 	}
 
-	bool useIncludeAll() {
+	bool useIncludeAll() const {
 		return _useIncludeAll;
 	}
 

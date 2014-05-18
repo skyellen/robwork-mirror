@@ -415,34 +415,34 @@ namespace dynamics {
         /**
          * @brief returns torque described in world frame
          */
-        virtual rw::math::Vector3D<> getTorqueW(rw::kinematics::State& state){
+        virtual rw::math::Vector3D<> getTorqueW(const rw::kinematics::State& state) const {
             return rw::kinematics::Kinematics::worldTframe( getParentFrame(state) , state).R() * getTorque(state);
         }
 
-        virtual rw::math::Transform3D<> getTransformW(const rw::kinematics::State& state){
+        virtual rw::math::Transform3D<> getTransformW(const rw::kinematics::State& state) const {
             return rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
         }
 
-        rw::math::Transform3D<> pTbf(const rw::kinematics::State& state){
+        rw::math::Transform3D<> pTbf(const rw::kinematics::State& state) const {
             return _bodyframe->getTransform(state);
         }
 
-        rw::math::Transform3D<> pTcom(const rw::kinematics::State& state){
+        rw::math::Transform3D<> pTcom(const rw::kinematics::State& state) const {
             rw::math::Transform3D<> t3d = _bodyframe->getTransform(state);
             t3d.P() += _info.masscenter;
             return t3d;
         }
 
-        rw::math::Transform3D<> wTbf(const rw::kinematics::State& state){
+        rw::math::Transform3D<> wTbf(const rw::kinematics::State& state) const {
             return rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
         }
         // world
-        rw::math::Transform3D<> wTcom(const rw::kinematics::State& state){
+        rw::math::Transform3D<> wTcom(const rw::kinematics::State& state) const {
             rw::math::Transform3D<> t3d = rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
             return rw::math::Transform3D<>( t3d.P() + t3d.R()*_info.masscenter , t3d.R() );
         }
 
-        rw::models::Object::Ptr getObject(){ return _obj; };
+        rw::models::Object::Ptr getObject() const { return _obj; };
 
     private:
         rw::kinematics::Frame *_bodyframe;

@@ -225,6 +225,17 @@ ELSE()
     MESSAGE(STATUS "RobWorkSim: ODE disabled.")
 ENDIF()
 
+# test if TNTPhysics exists
+OPTION(RWSIM_USE_TNTPHYSICS "Set to ON if TNTPhysics should be used." ${RWSIM_BUILD_WITH_TNTPHYSICS})
+IF(RWSIM_USE_TNTPHYSICS)
+    IF(RWSIM_BUILD_WITH_TNTPHYSICS)
+        SET(RWSIM_TNTPHYSICS_LIBRARY rwsim_tnt)
+   ELSE()
+       MESSAGE(SEND_ERROR "RobWorkSim: TNTPhysics enabled but RobWorkSim was NOT build with TNTPhysics support! Please recompile RobWorkSim")
+   ENDIF()
+ELSE()
+    MESSAGE(STATUS "RobWorkSim: TNTPhysics disabled.")
+ENDIF()
 
 
 set(ROBWORKSIM_BUILD_PATH "${RWSIM_BUILD_WITH_RWSIM_ROOT}")
