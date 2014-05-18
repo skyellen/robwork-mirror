@@ -180,6 +180,14 @@ namespace simulator {
 		 void setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
 
 		 /**
+		  * @brief Set a velocity target.
+		  * @param body [in] the body that should move.
+		  * @param velocity [in] the velocity target.
+		  * @param state [in/out] the state to update with the new targets.
+		  */
+		 void setTarget(dynamics::Body::Ptr body, const rw::math::VelocityScrew6D<>& velocity, rw::kinematics::State& state);
+
+		 /**
 		  * @brief disables the target control of body \b body.
 		  * @param body
 		  */

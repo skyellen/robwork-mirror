@@ -63,6 +63,9 @@ AssemblyTask::AssemblyTask(CartesianTask::Ptr task, AssemblyRegistry::Ptr regist
 	femalePoseController = task->getPropertyMap().get<std::string>("FemalePoseController","");
 	maleFTSensor = task->getPropertyMap().get<std::string>("MaleFTSensor","");
 	femaleFTSensor = task->getPropertyMap().get<std::string>("FemaleFTSensor","");
+	maleFlexFrames = task->getPropertyMap().get<std::vector<std::string> >("MaleFlexibilityFrames",std::vector<std::string>());
+	femaleFlexFrames = task->getPropertyMap().get<std::vector<std::string> >("FemaleFlexibilityFrames",std::vector<std::string>());
+	bodyContactSensors = task->getPropertyMap().get<std::vector<std::string> >("BodyContactSensors",std::vector<std::string>());
 }
 
 AssemblyTask::~AssemblyTask() {
@@ -108,6 +111,12 @@ CartesianTask::Ptr AssemblyTask::toCartesianTask() {
 		root->getPropertyMap().set<std::string>("MaleFTSensor",maleFTSensor);
 	if (femaleFTSensor != "")
 		root->getPropertyMap().set<std::string>("FemaleFTSensor",femaleFTSensor);
+	if (maleFlexFrames.size() > 0)
+		root->getPropertyMap().set<std::vector<std::string> >("MaleFlexibilityFrames",maleFlexFrames);
+	if (femaleFlexFrames.size() > 0)
+		root->getPropertyMap().set<std::vector<std::string> >("FemaleFlexibilityFrames",femaleFlexFrames);
+	if (bodyContactSensors.size() > 0)
+		root->getPropertyMap().set<std::vector<std::string> >("BodyContactSensors",bodyContactSensors);
 
 	return root;
 }
@@ -205,6 +214,9 @@ AssemblyTask::Ptr AssemblyTask::clone() const {
 	res->femalePoseController = femalePoseController;
 	res->maleFTSensor = maleFTSensor;
 	res->femaleFTSensor = femaleFTSensor;
+	res->maleFlexFrames = maleFlexFrames;
+	res->femaleFlexFrames = femaleFlexFrames;
+	res->bodyContactSensors = bodyContactSensors;
 
 	return res;
 }

@@ -20,6 +20,7 @@
 
 using namespace rw::common;
 using namespace rw::math;
+using namespace rw::trajectory;
 using namespace rwlibs::assembly;
 using namespace rwlibs::task;
 
@@ -41,6 +42,9 @@ AssemblyState::AssemblyState(CartesianTarget::Ptr target) {
 	torque = target->getPropertyMap().get<Vector3D<> >("FTSensorFemaleTorque",Vector3D<>());
 	ftSensorFemale = Wrench6D<>(force,torque);
 	contact = target->getPropertyMap().get<bool>("Contact",false);
+	maleflexT = target->getPropertyMap().get<Path<Transform3D<> > >("MaleFlexT",std::vector<Transform3D<> >());
+	femaleflexT = target->getPropertyMap().get<Path<Transform3D<> > >("FemaleFlexT",std::vector<Transform3D<> >());
+	contacts = target->getPropertyMap().get<Path<Transform3D<> > >("Contacts",std::vector<Transform3D<> >());
 }
 
 AssemblyState::~AssemblyState() {
@@ -48,9 +52,12 @@ AssemblyState::~AssemblyState() {
 
 CartesianTarget::Ptr AssemblyState::toCartesianTarget(const AssemblyState &state) {
 	CartesianTarget::Ptr target = ownedPtr(new CartesianTarget(state.femaleTmale));
-	target->getPropertyMap().set<Transform3D<> >("FemaleOffset",state.femaleOffset);
-	target->getPropertyMap().set<Transform3D<> >("MaleOffset",state.maleOffset);
-	target->getPropertyMap().set<std::string>("Phase",state.phase);
+	if (!(state.femaleOffset==Transform3D<>::identity()))
+		target->getPropertyMap().set<Transform3D<> >("FemaleOffset",state.femaleOffset);
+	if (!(state.maleOffset==Transform3D<>::identity()))
+		target->getPropertyMap().set<Transform3D<> >("MaleOffset",state.maleOffset);
+	if (state.phase != "")
+		target->getPropertyMap().set<std::string>("Phase",state.phase);
 	if (!(state.ftSensorMale.force() == Vector3D<>::zero()))
 		target->getPropertyMap().set<Vector3D<> >("FTSensorMaleForce",state.ftSensorMale.force());
 	if (!(state.ftSensorMale.torque() == Vector3D<>::zero()))
@@ -60,5 +67,12 @@ CartesianTarget::Ptr AssemblyState::toCartesianTarget(const AssemblyState &state
 	if (!(state.ftSensorFemale.torque() == Vector3D<>::zero()))
 		target->getPropertyMap().set<Vector3D<> >("FTSensorFemaleTorque",state.ftSensorFemale.torque());
 	target->getPropertyMap().set<bool>("Contact",state.contact);
+	if (state.maleflexT.size() > 0)
+		target->getPropertyMap().set<Path<Transform3D<> > >("MaleFlexT",state.maleflexT);
+	if (state.femaleflexT.size() > 0)
+		target->getPropertyMap().set<Path<Transform3D<> > >("FemaleFlexT",state.femaleflexT);
+	if (state.contacts.size() > 0)
+		target->getPropertyMap().set<Path<Transform3D<> > >("Contacts",state.contacts);
+
 	return target;
 }

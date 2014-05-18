@@ -101,6 +101,10 @@ void DynamicSimulator::setTarget(dynamics::Body::Ptr body, rw::trajectory::Traje
     _bodyController->setTarget(body, traj, state);
 }
 
+void DynamicSimulator::setTarget(dynamics::Body::Ptr body, const rw::math::VelocityScrew6D<>& velocity, rw::kinematics::State& state){
+    _bodyController->setTarget(body, velocity, state);
+}
+
 void DynamicSimulator::disableBodyControl( dynamics::Body::Ptr body ){
     _bodyController->disableBodyControl( body );
 }

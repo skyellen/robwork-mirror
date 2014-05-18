@@ -1,7 +1,28 @@
+/********************************************************************************
+ * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWSIM_CONTROL_BODYCONTROLLER_HPP_
 #define RWSIM_CONTROL_BODYCONTROLLER_HPP_
 
-//! @file BodyController.hpp
+/**
+ * @file BodyController.hpp
+ *
+ * \copydoc rwsim::control::BodyController
+ */
 
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
@@ -56,6 +77,16 @@ namespace control {
 		               rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj,
 		               rw::kinematics::State& state);
 
+	/**
+	 * @brief Set a velocity target.
+	 * @param body [in] the body that should move.
+	 * @param velocity [in] the velocity target.
+	 * @param state [in/out] the state to update with the new targets.
+	 */
+	void setTarget(rwsim::dynamics::Body::Ptr body,
+			const rw::math::VelocityScrew6D<> &velocity,
+			rw::kinematics::State& state);
+
 		/**
 		 * @brief set the force target of a body, the forces will be added such that the force
 		 * on the body in each timestep will be timestep/[force;torque]. In other words the wrench
@@ -106,7 +137,7 @@ namespace control {
 
         bool isEnabled(){ return _enabled; } ;
 
-        typedef enum {Pose6DController, TrajectoryController, ForceController} ControlType;
+        typedef enum {Pose6DController, TrajectoryController, VelocityController, ForceController} ControlType;
         struct TargetData {
             TargetData():_type(Pose6DController),_enabled(false){ reset();}
             TargetData(ControlType type):_type(type),_enabled(true){ reset(); }
@@ -117,6 +148,7 @@ namespace control {
             }
             ControlType _type;
             rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr _traj;
+			rw::math::VelocityScrew6D<> _velocity;
             rw::math::Transform3D<> _target;
             rw::math::Vector3D<> _force, _torque;
             double _time, // current time on the trajectory
@@ -130,9 +162,9 @@ namespace control {
 
 	private:
 		std::map<rwsim::dynamics::Body*, TargetData> _bodyMap;
-		//std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
 		std::list<rwsim::dynamics::Body::Ptr> _bodies;
 		bool _enabled;
+		boost::mutex _mutex;
 	};
 
 	//! @}

@@ -4,6 +4,8 @@
 #include <rw/kinematics/MovableFrame.hpp>
 
 #include <rwlibs/opengl/RenderForceTorque.hpp>
+#include <rwlibs/opengl/RenderPointCloud.hpp>
+#include <rwlibs/opengl/RenderLines.hpp>
 #include <rwlibs/assembly/AssemblyResult.hpp>
 #include <rwlibs/assembly/AssemblyState.hpp>
 #include <rwlibs/assembly/AssemblyTask.hpp>
@@ -125,6 +127,21 @@ void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
     			_contactLabel->setText("Contact: Yes");
     		else
     			_contactLabel->setText("Contact: No");
+    		if (_contactPointRender != NULL) {
+    			_contactPointRender->clear();
+    			BOOST_FOREACH(const Transform3D<> contact, astate.contacts) {
+    				const Vector3D<> p = contact.P();
+        			_contactPointRender->addPoint(p);
+    			}
+    		}
+    		if (_contactNormalRender != NULL) {
+    			_contactNormalRender->clear();
+    			BOOST_FOREACH(const Transform3D<> contact, astate.contacts) {
+    				const Vector3D<> p = contact.P();
+    				const Vector3D<> n = contact.R().getCol(2);
+    				_contactNormalRender->addLine(p,p+0.01*n);
+    			}
+    		}
     	} else if(event=="AVis::LoadFile"){
             std::string file = boost::any_cast<std::string>(data);
             QMetaObject::invokeMethod( this, "loadTasks", Qt::QueuedConnection, Q_ARG( QString, QString(file.c_str()) ) );
@@ -215,8 +232,12 @@ void ATaskVisPlugin::selectTask(std::size_t i) {
 
 	getRobWorkStudio()->getWorkCellScene()->removeDrawable("MaleFTRender");
 	getRobWorkStudio()->getWorkCellScene()->removeDrawable("FemaleFTRender");
+	getRobWorkStudio()->getWorkCellScene()->removeDrawable("ContactPointRender");
+	getRobWorkStudio()->getWorkCellScene()->removeDrawable("ContactNormalRender");
 	_maleFTrender = NULL;
 	_femaleFTrender = NULL;
+	_contactPointRender = NULL;
+	_contactNormalRender = NULL;
 	if (_currentTask->maleFTSensor != "") {
 		// For now just use the base frame of the peg
 		Frame* ftFrame = _wc->findFrame(_currentTask->maleID);
@@ -234,6 +255,13 @@ void ATaskVisPlugin::selectTask(std::size_t i) {
 			_femaleFTrender->setScales(0.01,1);
 			getRobWorkStudio()->getWorkCellScene()->addRender("FemaleFTRender", _femaleFTrender, ftFrame);
 		}
+	}
+	if (_currentTask->bodyContactSensors.size() > 0) {
+		_contactPointRender = ownedPtr(new RenderPointCloud());
+		_contactPointRender->setPointSize(5);
+		getRobWorkStudio()->getWorkCellScene()->addRender("ContactPointRender", _contactPointRender, _wc->getWorldFrame());
+		_contactNormalRender = ownedPtr(new RenderLines());
+		getRobWorkStudio()->getWorkCellScene()->addRender("ContactNormalRender", _contactNormalRender, _wc->getWorldFrame());
 	}
 
     PropertyMap::Ptr map = ownedPtr(new PropertyMap());
@@ -279,6 +307,14 @@ void ATaskVisPlugin::constructPlayback() {
 		const State& defState = wc->getDefaultState();
 		MovableFrame* male = wc->findFrame<MovableFrame>(_currentTask->maleID);
 		MovableFrame* female = wc->findFrame<MovableFrame>(_currentTask->femaleID);
+		std::vector<MovableFrame*> maleFlexFrames;
+		std::vector<MovableFrame*> femaleFlexFrames;
+		BOOST_FOREACH(const std::string &name, _currentTask->maleFlexFrames) {
+			maleFlexFrames.push_back(_wc->findFrame<MovableFrame>(name));
+		}
+		BOOST_FOREACH(const std::string &name, _currentTask->femaleFlexFrames) {
+			femaleFlexFrames.push_back(_wc->findFrame<MovableFrame>(name));
+		}
 		if (male == NULL)
 			RW_THROW("Male frame could not be found (the frame must be Movable)!");
 		if (female == NULL)
@@ -313,11 +349,34 @@ void ATaskVisPlugin::constructPlayback() {
 					male->setTransform(male->getTransform(defState)*maleTtcp*astate.maleOffset*inverse(maleTtcp),state);
 				}
 				// For now the male objects is moved relative to the female object - could be opposite
-				Transform3D<> wTfemaleTCP = Kinematics::worldTframe(femaleTCP,state);
-				Transform3D<> wTmaleTCPNew = wTfemaleTCP*astate.femaleTmale;
-				Transform3D<> wTmaleParent = Kinematics::worldTframe(male->getParent(state),state);
+				const Transform3D<> wTfemaleTCP = Kinematics::worldTframe(femaleTCP,state);
+				const Transform3D<> wTmaleTCPNew = wTfemaleTCP*astate.femaleTmale;
+				if (maleFlexFrames.size() > 0 && astate.maleflexT.size() > 0) {
+					RW_ASSERT(maleFlexFrames.size() == astate.maleflexT.size());
+					// Find the world transform of the first flexible frame
+					Transform3D<> wTflex = wTmaleTCPNew;
+					BOOST_REVERSE_FOREACH(const Transform3D<> &flexT, astate.maleflexT) {
+						wTflex = wTflex*inverse(flexT);
+					}
+					// Find the transform to the first flexible frame from the parent frame
+					MovableFrame* cur = maleFlexFrames.front();
+					Transform3D<> parentTflex = inverse(Kinematics::worldTframe(cur->getParent(),state))*wTflex;
+					cur->setTransform(parentTflex,state);
+					for (std::size_t i = 1; i < maleFlexFrames.size(); i++) {
+						const Transform3D<> flexT = astate.maleflexT[i-1];
+						const MovableFrame* prev = maleFlexFrames[i-1];
+						cur = maleFlexFrames[i];
+						const Frame* curParent = cur->getParent();
+						const Transform3D<> prevTparent = Kinematics::frameTframe(prev,curParent,state);
+						parentTflex = inverse(prevTparent)*flexT;
+						cur->setTransform(parentTflex,state);
+					}
+				}
+				// Now set the transform of the male object relative to its parent
+				const Transform3D<> wTmaleParent = Kinematics::worldTframe(male->getParent(),state);
 				male->setTransform(inverse(wTmaleParent)*wTmaleTCPNew*inverse(maleTtcp),state);
-				TimedState tstate(time,state);
+				// Add state to path
+				const TimedState tstate(time,state);
 				rwpath.push_back(tstate);
 			}
 			getRobWorkStudio()->setTimedStatePath(rwpath);

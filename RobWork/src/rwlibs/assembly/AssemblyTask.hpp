@@ -172,6 +172,12 @@ public:
     std::string maleFTSensor;
     //! @brief The Force/Torque sensor that is used to control the pose of the female object.
     std::string femaleFTSensor;
+    //! @brief If there is flexibility between the control frame and the peg, the intermediate flexibility base frames can be set here for the male manipulator.
+    std::vector<std::string> maleFlexFrames;
+    //! @brief If there is flexibility between the control frame and the peg, the intermediate flexibility base frames can be set here for the female manipulator.
+    std::vector<std::string> femaleFlexFrames;
+    //! @brief Add contacts to the result for the given BodyContactSensors.
+    std::vector<std::string> bodyContactSensors;
     ///@}
 };
 //! @}

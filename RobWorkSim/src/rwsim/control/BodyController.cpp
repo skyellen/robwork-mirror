@@ -1,3 +1,20 @@
+/********************************************************************************
+ * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #include "BodyController.hpp"
 
 #include <rw/common/macros.hpp>
@@ -30,46 +47,65 @@ namespace {
         // the forcecontroller does not work for kinematic devices
         if(tdata._type==BodyController::ForceController)
             return;
+        else if (tdata._type==BodyController::VelocityController) {
+    		body->setLinVelW(tdata._velocity.linear(), state);
+    		Vector3D<> angVelW = tdata._velocity.angular().angle()*tdata._velocity.angular().axis();
+    		body->setAngVelW(angVelW, state);
+    		if (tdata._velocity.linear().norm2() == 0 && angVelW.norm2() == 0) {
+        		tdata._enabled = false;
 
-        // for a kinematic body we allways follow a trajectory
-        // basically we just need the current time to be calculate
-        if(!info.rollback){
-            // then we need to update the _lastTime
-            tdata._lastTime += info.dt_prev;
+        		body->setLinVelW(Vector3D<>::zero(), state);
+        		body->setAngVelW(Vector3D<>::zero(), state);
+
+        		return;
+    		}
+        } else {
+        	// for a kinematic body we allways follow a trajectory
+        	// basically we just need the current time to be calculate
+        	if(!info.rollback){
+        		// then we need to update the _lastTime
+        		tdata._lastTime += info.dt_prev;
+        	}
+        	double t = tdata._lastTime;
+
+        	// test if the trajectory is finished
+        	if(tdata._traj->duration()<t+info.dt){
+        		tdata._enabled = false;
+
+        		body->setLinVelW(Vector3D<>(0, 0, 0) , state);
+        		body->setAngVelW(Vector3D<>(0, 0, 0), state);
+
+        		return;
+        	}
+
+        	// the target position for next step.
+        	Transform3D<> nextPose = tdata._traj->x(t+info.dt);
+
+        	// set angular and linear velocities of body such that it will move toward nextPose in time info.dt
+
+        	Transform3D<> wTt = nextPose;
+        	Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
+
+        	const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
+        	const VelocityScrew6D<> vel( bTt );
+        	const VelocityScrew6D<> velW = (wTb.R() * vel);
+
+        	for (std::size_t i = 0; i < 6; i++) {
+        		if(Math::isNaN(vel[i])) {
+        			RW_THROW("BodyController encountered nan value for velocity screw of Kinematic body " << body->getName() << ".");
+        		}
+        	}
+
+        	Vector3D<> vErrW = velW.linear()/info.dt;
+        	// check if the current velocity will overshoot the target if we have a constant deacceleration of ACC_MAX
+        	// compute arrive time assuming konstant deacceleration
+        	body->setLinVelW( vErrW , state);
+
+        	// and now control the angular velocity
+        	Vector3D<> angVelW(velW(3),velW(4),velW(5));
+
+        	body->setAngVelW(angVelW/info.dt, state);
         }
-        double t = tdata._lastTime;
-
-        // test if the trajectory is finished
-        if(tdata._traj->duration()<t+info.dt){
-            tdata._enabled = false;
-            
-            body->setLinVelW(Vector3D<>(0, 0, 0) , state);
-			body->setAngVelW(Vector3D<>(0, 0, 0), state);
-			
-            return;
-        }
-
-        // the target position for next step.
-        Transform3D<> nextPose = tdata._traj->x(t+info.dt);
-
-        // set angular and linear velocities of body such that it will move toward nextPose in time info.dt
-
-        Transform3D<> wTt = nextPose;
-        Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
-
-        const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
-        const VelocityScrew6D<> vel( bTt );
-        const VelocityScrew6D<> velW = (wTb.R() * vel);
-
-        Vector3D<> vErrW = velW.linear()/info.dt;
-        // check if the current velocity will overshoot the target if we have a constant deacceleration of ACC_MAX
-        // compute arrive time assuming konstant deacceleration
-        body->setLinVelW( vErrW , state);
-
-        // and now control the angular velocity
-        Vector3D<> angVelW(velW(3),velW(4),velW(5));
-
-        body->setAngVelW(angVelW/info.dt, state);
     }
 
     void updateBody(Body* body, BodyController::TargetData& tdata,
@@ -87,6 +123,8 @@ namespace {
         if(tdata._type==BodyController::ForceController){
             body->setForceW( info.dt*tdata._force, state);
             body->setTorqueW( info.dt*tdata._torque, state);
+        } else if (tdata._type==BodyController::VelocityController) {
+        	RW_THROW("Velocity targets not supported yet for non-kinematic bodies!");
         } else {
 
             // test if the trajectory is finished
@@ -125,6 +163,8 @@ namespace {
 }
 
 void BodyController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
+	boost::mutex::scoped_lock lock(_mutex);
+
     //std::cout << "B" << std::endl;
     //Log::infoLog() << "update";
     BOOST_FOREACH(Body::Ptr body, _bodies){
@@ -142,6 +182,8 @@ void BodyController::update(const rwlibs::simulation::Simulator::UpdateInfo& inf
 }
 
 void BodyController::disableBodyControl(rwsim::dynamics::Body::Ptr body){
+	boost::mutex::scoped_lock lock(_mutex);
+
     if(_bodyMap.find(body.get())==_bodyMap.end())
         return;
 
@@ -149,6 +191,8 @@ void BodyController::disableBodyControl(rwsim::dynamics::Body::Ptr body){
 }
 
 void BodyController::disableBodyControl(){
+	boost::mutex::scoped_lock lock(_mutex);
+
     _bodyMap.clear();
     _bodies.clear();
 }
@@ -162,6 +206,7 @@ void BodyController::setTarget(rwsim::dynamics::Body::Ptr body,
                                const rw::math::Transform3D<>& target,
                                rw::kinematics::State& state)
 {
+	boost::mutex::scoped_lock lock(_mutex);
 
     // create a trajectory using a velocity ramp function
     Transform3D<> from = Kinematics::worldTframe(body->getBodyFrame(), state);
@@ -190,6 +235,8 @@ void BodyController::setTarget(rwsim::dynamics::Body::Ptr body,
 }
 
 void BodyController::setTarget(Body::Ptr body, rw::trajectory::Trajectory<Transform3D<> >::Ptr traj, State& state){
+	boost::mutex::scoped_lock lock(_mutex);
+
     TargetData& data = _bodyMap[body.get()];
     data.reset();
     data._type = TrajectoryController;
@@ -199,11 +246,24 @@ void BodyController::setTarget(Body::Ptr body, rw::trajectory::Trajectory<Transf
     _bodies.push_back(body);
 }
 
+void BodyController::setTarget(Body::Ptr body, const VelocityScrew6D<> &velocity, State& state) {
+	boost::mutex::scoped_lock lock(_mutex);
+
+    TargetData& data = _bodyMap[body.get()];
+    data.reset();
+    data._type = VelocityController;
+    data._velocity = velocity;
+    _bodyMap[body.get()]._enabled = true;
+    _bodies.push_back(body);
+}
+
 void BodyController::setForceTarget(rwsim::dynamics::Body::Ptr body,
                     rw::math::Vector3D<> force,
                     rw::math::Vector3D<> torque,
                     rw::kinematics::State& state)
 {
+	boost::mutex::scoped_lock lock(_mutex);
+
     TargetData& data = _bodyMap[body.get()];
     data.reset();
     data._type = ForceController;
@@ -215,6 +275,8 @@ void BodyController::setForceTarget(rwsim::dynamics::Body::Ptr body,
 
 
 rw::math::Transform3D<> BodyController::getTarget(rwsim::dynamics::Body::Ptr body){
+	boost::mutex::scoped_lock lock(_mutex);
+
     if( _bodyMap.find(body.get())!=_bodyMap.end() ){
         // add body to control
         return _bodyMap[body.get()]._target;
@@ -223,5 +285,7 @@ rw::math::Transform3D<> BodyController::getTarget(rwsim::dynamics::Body::Ptr bod
 }
 
 Trajectory<Transform3D<> >::Ptr BodyController::getTargetTrajectory(Body::Ptr body){
+	boost::mutex::scoped_lock lock(_mutex);
+
     return _bodyMap[body.get()]._traj;
 }

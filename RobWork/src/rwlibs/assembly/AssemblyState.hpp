@@ -26,6 +26,7 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>
+#include <rw/trajectory/Path.hpp>
 
 // Forward declarations
 namespace rwlibs { namespace task {
@@ -88,6 +89,15 @@ public:
 
 	//! @brief True if there is contact between the two objects.
 	bool contact;
+
+	//! @brief Transformations for specified male frames.
+	rw::trajectory::Path<rw::math::Transform3D<> > maleflexT;
+
+	//! @brief Transformations for specified female frames.
+	rw::trajectory::Path<rw::math::Transform3D<> > femaleflexT;
+
+	//! @brief Contacts detected.
+	rw::trajectory::Path<rw::math::Transform3D<> > contacts;
 };
 //! @}
 } /* namespace assembly */

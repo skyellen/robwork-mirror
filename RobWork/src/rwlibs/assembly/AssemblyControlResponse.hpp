@@ -27,6 +27,7 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VectorND.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Wrench6D.hpp>
 
 namespace rwlibs {
@@ -51,6 +52,7 @@ public:
 	//! @brief The control mode.
 	typedef enum Type {
 		POSITION,    //!< Position control
+		VELOCITY,    //!< Velocity control
 		HYBRID_FT_POS//!< Hybrid position and force/torque control
 	} Type;
 
@@ -58,6 +60,8 @@ public:
 	Type type;
 	//! @brief Positional control of the robot.
 	rw::math::Transform3D<> femaleTmaleTarget;
+	//! @brief Relative velocity target for velocity control.
+	rw::math::VelocityScrew6D<> femaleTmaleVelocityTarget;
 	//! @brief Specify the coordinate axes for hybrid force/torque control.
 	rw::math::Rotation3D<> offset;
 	//! @brief Select which coordinates axes to use force/torque control instead of position control.

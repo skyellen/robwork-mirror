@@ -35,6 +35,8 @@ class AssemblyResult;
 class AssemblyTask;
 } }
 namespace rwlibs { namespace opengl { class RenderForceTorque; } }
+namespace rwlibs { namespace opengl { class RenderPointCloud; } }
+namespace rwlibs { namespace opengl { class RenderLines; } }
 
 namespace rwslibs {
 
@@ -111,6 +113,8 @@ private:
     bool _showReal;
     rw::common::Ptr<rwlibs::opengl::RenderForceTorque> _maleFTrender;
     rw::common::Ptr<rwlibs::opengl::RenderForceTorque> _femaleFTrender;
+    rw::common::Ptr<rwlibs::opengl::RenderPointCloud> _contactPointRender;
+    rw::common::Ptr<rwlibs::opengl::RenderLines> _contactNormalRender;
 };
 //! @}
 } /* namespace rwslibs */
