@@ -11,6 +11,12 @@ bool OBRManifold::addPoint(ContactPoint& p){
 
     // handle if we have less than 5 points
     if(_nrOfContacts==5){
+        // if the contact point is too close to any of the current contacts then
+        // discard it
+        for (int i = 0; i < _nrOfContacts; i++) {
+        	if(MetricUtil::dist2(p.p,_points[i].p)<0.000001)
+        		return true;
+        }
         // if the point is inside the obb then we only need to check if its
         // deeper than the deepest point and if it s replace it
         if( isInsideOBB(p.p) ){
@@ -33,9 +39,11 @@ bool OBRManifold::addPoint(ContactPoint& p){
         }
         if(minPenIdx==-1)
             return true; // something went wrong, we keep the new manifold but the old points
-        _points[minPenIdx] = p;
-        if( _points[_deepestIdx].penetration<p.penetration )
-            _deepestIdx = minPenIdx;
+        if( _points[minPenIdx].penetration<p.penetration ) {
+        	_points[minPenIdx] = p;
+        	if( _points[_deepestIdx].penetration<p.penetration )
+        		_deepestIdx = minPenIdx;
+        }
         return true;
     } else if(_nrOfContacts>1) {
         // only add a point if its on the contact manifold plane
@@ -48,10 +56,10 @@ bool OBRManifold::addPoint(ContactPoint& p){
 
         // if the contact point is too close to any of the current contacts then
         // discard it
-        if(MetricUtil::dist2(p.p,_points[0].p)<0.000001)
-            return true;
-        if(MetricUtil::dist2(p.p,_points[1].p)<0.000001)
-            return true;
+        for (int i = 0; i < _nrOfContacts; i++) {
+        	if(MetricUtil::dist2(p.p,_points[i].p)<0.000001)
+        		return true;
+        }
 
         Vector3D<> nnorm = p.n;
         for(int i=0;i<_nrOfContacts;i++){ nnorm += _points[i].n; }

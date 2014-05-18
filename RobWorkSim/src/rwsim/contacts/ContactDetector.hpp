@@ -38,6 +38,10 @@
 
 namespace rwsim {
 namespace contacts {
+
+// Forward declarations
+class ContactDetectorTracking;
+
 //! @addtogroup rwsim_contacts
 
 //! @{
@@ -87,16 +91,7 @@ public:
 	/**
 	 * @brief Contact detector for a workcell.
 	 *
-	 * A default broad-phase collision detector is used (a static filter list).
-	 *
-	 * @note The strategy rule table will be empty and no contacts will be found before strategies are added.
-	 *
-	 * @param workcell [in] the workcell.
-	 */
-	ContactDetector(rw::models::WorkCell::Ptr workcell);
-
-	/**
-	 * @brief Contact detector for a workcell with specific broad-phase filter.
+	 * If no broad-phase filter is given, a default will be created for the workcell.
 	 *
 	 * @note The strategy rule table will be empty and no contacts will be found before strategies are added.
 	 *
@@ -104,7 +99,7 @@ public:
 	 * @param filter [in] broad-phase filter to remove frames that are obviously not colliding.
 	 */
 	ContactDetector(rw::models::WorkCell::Ptr workcell,
-			rw::proximity::ProximityFilterStrategy::Ptr filter);
+			rw::proximity::ProximityFilterStrategy::Ptr filter = NULL);
 
 	/**
 	 * @brief Destruct contact detector.
@@ -112,6 +107,12 @@ public:
 	 * The strategy table and stored contact models is cleared.
 	 */
 	virtual ~ContactDetector();
+
+	/**
+	 * @brief Set a new broad-phase filter.
+	 * @param filter [in] broad-phase filter to remove frames that are obviously not colliding.
+	 */
+	void setProximityFilterStrategy(rw::proximity::ProximityFilterStrategy::Ptr filter);
 
 	/**
 	 * @brief Find contacts in workcell.
@@ -134,6 +135,30 @@ public:
 	 */
 	virtual std::vector<Contact> findContacts(const rw::kinematics::State& state,
 			ContactDetectorData &data);
+
+	/**
+	 * @brief Find contacts in workcell while tracking known contacts.
+	 *
+	 * @param state [in] the state to find contacts for.
+	 * @param data [in/out] allows caching between contact detection calls,
+	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
+	 * @param tracking [in/out] the tracking data with information about known contacts.
+	 * @return a vector of new contacts.
+	 */
+	virtual std::vector<Contact> findContacts(const rw::kinematics::State& state,
+			ContactDetectorData &data, ContactDetectorTracking& tracking);
+
+	/**
+	 * @brief Updates previously found contacts.
+	 *
+	 * @param state [in] the new state to find the updated contacts for.
+	 * @param data [in/out] allows caching between contact detection calls,
+	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
+	 * @param tracking [in/out] the tracking data with information about known contacts.
+	 * @return a vector of contacts.
+	 */
+	virtual std::vector<Contact> updateContacts(const rw::kinematics::State& state,
+			ContactDetectorData &data, ContactDetectorTracking& tracking);
 
 	/**
 	 * @brief The broad-phase filter strategy used by the contact detector.
@@ -159,10 +184,28 @@ public:
 	///@{
 	/**
 	 * @brief Get the complete contact strategy table.
-	 *
 	 * @return The strategy table used.
 	 */
 	virtual StrategyTable getContactStategies() const;
+
+	/**
+	 * @brief Get the contact strategies that match the given frame names.
+	 * @param frameA [in] the name of the first frame.
+	 * @param frameB [in] the name of the second frame.
+	 * @return a new strategy table that includes only strategies matching the given frame pair.
+	 */
+
+	virtual StrategyTable getContactStrategies(const std::string& frameA, const std::string& frameB) const;
+
+	/**
+	 * @brief Get the contact strategies that match the given frame names and geometries.
+	 * @param frameA [in] the name of the first frame.
+	 * @param geometryA [in] the first geometry.
+	 * @param frameB [in] the name of the second frame.
+	 * @param geometryB [in] the second geometry.
+	 * @return a new strategy table that includes only strategies matching the given frame pair, and uses the given geometries.
+	 */
+	virtual StrategyTable getContactStrategies(const std::string& frameA, rw::common::Ptr<const rw::geometry::Geometry> geometryA, const std::string& frameB, rw::common::Ptr<const rw::geometry::Geometry> geometryB) const;
 
 	/**
 	 * @brief Add a strategy to the strategy table that matches all frames.
@@ -244,21 +287,15 @@ public:
 	virtual void printStrategyTable() const;
 	///@}
 
+	/**
+	 * @brief Create a default workcell from a workcell, where the default strategies has been set.
+	 * @param workcell [in] the workcell to create detector for.
+	 * @return a new contact detector.
+	 */
+	static ContactDetector::Ptr makeDefault(rw::models::WorkCell::Ptr workcell);
+
 private:
-	struct Cell {
-		enum ALIGNMENT {
-			LEFT, RIGHT
-		};
-		Cell() :
-				alignment(LEFT) {
-		}
-		Cell(std::string string) :
-				alignment(LEFT) {
-			strings.push_back(string);
-		}
-		std::vector<std::string> strings;
-		ALIGNMENT alignment;
-	};
+	struct Cell;
 	static void printTable(const std::vector<std::vector<Cell> > &table,
 			bool header = false);
 	void initializeGeometryMap();

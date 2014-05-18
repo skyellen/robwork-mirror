@@ -34,30 +34,22 @@ namespace contacts {
 /**
  * @brief Container for data that is stored by contact strategies between contact detection calls.
  *
- * This will in general be a list of the previous contacts detected by the strategy. Special implementations can however be used by
- * strategies that need to store more data.
- *
- * Keeping this data between consecutive calls to the contact strategy will allow strategies to exploit spatial and temporal coherence to
- * speed up algorithms.
+ * Keeping data between consecutive calls to the contact strategy will allow strategies to exploit spatial and
+ * temporal coherence to speed up algorithms.
  */
 class ContactStrategyData {
 public:
-	/**
-	 * @brief Get list of contacts.
-	 *
-	 * @return list of contacts.
-	 */
-	std::vector<Contact> getContacts();
+	//! @brief Constructor.
+	ContactStrategyData();
+
+	//! @brief Destructor.
+	virtual ~ContactStrategyData();
 
 	/**
-	 * @brief Set list of contacts.
-	 *
-	 * @param contacts [in] list of contacts.
+	 * @brief Do a copy of the data.
+	 * @return a new copy of the data owned by the caller.
 	 */
-	void setContacts(const std::vector<Contact> &contacts);
-
-private:
-	std::vector<Contact> _contacts;
+	virtual ContactStrategyData* copy() const;
 };
 //! @}
 } /* namespace contacts */

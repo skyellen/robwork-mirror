@@ -41,44 +41,43 @@ namespace contacts {
  */
 class ContactDetectorData {
 public:
-	/**
-	 * @brief Get the strategy data for the strategy with given priority.
-	 *
-	 * @param priority [in] the priority to find strategy data for.
-	 * @return the strategy data.
-	 */
-	ContactStrategyData getStrategyData(std::size_t priority) const;
+	//! @brief Constructor.
+	ContactDetectorData();
+
+	//! @brief Copy data to new container.
+	ContactDetectorData(const ContactDetectorData& data);
+
+	//! @brief Destructor.
+	virtual ~ContactDetectorData();
 
 	/**
-	 * @brief Set the strategy data for the strategy with the given priority.
-	 *
-	 * @param priority [in] the priority to find strategy data for.
-	 * @param data [in] the strategy data to set.
+	 * @brief Assign data from other container to this container.
+	 * @param data [in] the data to copy.
+	 * @return reference to this container.
 	 */
-	void setStrategyData(std::size_t priority, const ContactStrategyData &data);
+	ContactDetectorData& operator=(const ContactDetectorData& data);
 
-	/**
-	 * @brief Add strategy data for the strategy with the given priority.
-	 *
-	 * @param priority [in] the priority to add strategy data for.
-	 * @param data [in] the strategy data to set.
-	 */
-	void addStrategyData(std::size_t priority, const ContactStrategyData &data);
-
-	/**
-	 * @brief Remove strategy data for the strategy with the given priority.
-	 *
-	 * @param priority [in] the priority to remove strategy data for.
-	 */
-	void removeStrategyData(std::size_t priority);
-
-	/**
-	 * @brief Remove all data.
-	 */
+	//! @brief Remove all data.
 	void clear();
 
+	/**
+	 * @brief Get the stored ContactStrategyData for a specific pair of ContactModels.
+	 * @param modelA [in] the first ContactModel.
+	 * @param modelB [in] the second ContactModel.
+	 * @return a pointer to the ContactStrategyData - caller does NOT own the pointer.
+	 */
+	ContactStrategyData* getStrategyData(const ContactModel* modelA, const ContactModel* modelB) const;
+
+	/**
+	 * @brief Set the used ContactStrategyData for a specific pair of ContactModels.
+	 * @param modelA [in] the first ContactModel.
+	 * @param modelB [in] the second ContactModel.
+	 * @param data [in] a pointer to the ContactStrategyData - ownership is transferred to ContactDetectorData.
+	 */
+	void setStrategyData(const ContactModel* modelA, const ContactModel* modelB, ContactStrategyData* data);
+
 private:
-	std::vector<ContactStrategyData> _stratData;
+	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*> _modelPairToData;
 };
 //! @}
 } /* namespace contacts */

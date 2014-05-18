@@ -4,12 +4,14 @@ SET(FILES_CPP
 	contacts/Contact.cpp
 	contacts/ContactDetector.cpp
 	contacts/ContactDetectorData.cpp
+	contacts/ContactDetectorTracking.cpp
 	contacts/ContactModel.cpp
 	contacts/ContactModelGeometry.cpp
 	contacts/ContactStrategy.cpp
 	contacts/ContactStrategyData.cpp
 	contacts/ContactStrategyGeometry.cpp
 	contacts/ContactStrategyPQP.cpp
+	contacts/ContactStrategyTracking.cpp
 	contacts/RenderContacts.cpp
 
 	dynamics/Body.cpp

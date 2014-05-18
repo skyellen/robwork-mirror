@@ -24,11 +24,11 @@
  * \copydoc rwsim::contacts::BallBallStrategy
  */
 
-#include "ContactModel.hpp"
 #include "ContactStrategy.hpp"
 
 namespace rwsim {
 namespace contacts {
+
 //! @addtogroup rwsim_contacts
 
 //! @{
@@ -37,122 +37,68 @@ namespace contacts {
  */
 class BallBallStrategy: public rwsim::contacts::ContactStrategy {
 public:
-	/**
-	 * @brief Create new strategy.
-	 */
+	//! @brief Create new strategy.
 	BallBallStrategy();
 
-	/**
-	 * @brief Destructor
-	 */
+	//! @brief Destructor
 	virtual ~BallBallStrategy();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::match
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::match
 	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&)
-	 */
-	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
-			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
-			const rw::math::Transform3D<>& wTb);
-
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,ContactStrategyData&)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,ContactStrategyData*,ContactStrategyTracking*) const
 	virtual std::vector<Contact> findContacts(
 			rw::proximity::ProximityModel* a,
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel* b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData &data);
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const;
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::getName
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::updateContacts
+	virtual std::vector<Contact> updateContacts(
+			rw::proximity::ProximityModel* a,
+			const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel* b,
+			const rw::math::Transform3D<>& wTb,
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const;
+
+	//! @copydoc rwsim::contacts::ContactStrategy::createTracking
+	virtual ContactStrategyTracking* createTracking() const;
+
+	//! @copydoc rwsim::contacts::ContactStrategy::getName
 	virtual std::string getName();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::createModel
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::createModel
 	virtual rw::proximity::ProximityModel::Ptr createModel();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::destroyModel
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::destroyModel
     virtual void destroyModel(rw::proximity::ProximityModel* model);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
     virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::removeGeometry
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::removeGeometry
     virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::getGeometryIDs
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::getGeometryIDs
     virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::clear
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::clear
     virtual void clear();
 
-    /**
-     * @brief For modelling of a single ball.
-     */
-	struct Model {
-    	//! The geometry id of the ball.
-		std::string geoId;
+private:
+    struct Model;
+	class BallModel;
+	class BallTracking;
 
-		//! Radius of the ball.
-		double radius;
-
-		//! The center of the ball.
-		rw::math::Vector3D<> center;
-
-		//! The frame
-		const rw::kinematics::Frame* frame;
-	};
-
-	/**
-	 * @brief The contact model used by this strategy. One model can consist of multiple balls if desired.
-	 */
-	class BallModel: public ContactModel {
-	public:
-		/**
-		 * @brief Construct new model for object consisting of one or more balls.
-		 *
-		 * @param owner [in] the strategy that owns this model.
-		 */
-		BallModel(ContactStrategy *owner):
-			ContactModel(owner)
-		{
-		}
-
-		/**
-		 * @copydoc rwsim::contacts::ContactModel::getName
-		 */
-		virtual std::string getName() const { return "BallModel"; };
-
-		/**
-		 * @brief List of ball models belonging to this model.
-		 */
-		std::vector<Model> models;
-	};
+	virtual bool findContact(Contact &c,
+			const Model& a,	const rw::math::Transform3D<>& wTa,
+			const Model& b,	const rw::math::Transform3D<>& wTb, bool distCheck = true) const;
 };
 //! @}
 } /* namespace contacts */

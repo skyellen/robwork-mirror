@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "BallBallStrategy.hpp"
+#include "ContactStrategyTracking.hpp"
 
 #include <rw/geometry/Sphere.hpp>
 
@@ -24,6 +25,60 @@ using namespace rw::geometry;
 using namespace rw::proximity;
 using namespace rw::math;
 using namespace rwsim::contacts;
+
+struct BallBallStrategy::Model {
+	std::string geoId;
+	double radius;
+	rw::math::Vector3D<> center;
+	const rw::kinematics::Frame* frame;
+};
+
+class BallBallStrategy::BallModel: public ContactModel {
+public:
+	BallModel(ContactStrategy *owner): ContactModel(owner) {}
+	virtual std::string getName() const { return "BallModel"; }
+	std::vector<Model> models;
+};
+
+class BallBallStrategy::BallTracking: public ContactStrategyTracking {
+public:
+	BallTracking() {};
+	virtual ~BallTracking() {};
+
+	virtual const void* getUserData(std::size_t index) const {
+		return userData[index];
+	}
+
+	virtual void setUserData(std::size_t index, const void* data) {
+		userData[index] = data;
+	}
+
+	virtual void remove(std::size_t index) {
+		userData.erase(userData.begin()+index);
+		modelIDs.erase(modelIDs.begin()+index);
+	}
+
+	virtual ContactStrategyTracking* copy() const {
+		BallTracking* tracking = new BallTracking();
+		tracking->modelIDs = modelIDs;
+		tracking->userData = userData;
+		return tracking;
+	}
+
+	bool find(std::size_t a, std::size_t b, std::size_t& res) const {
+		for (std::size_t i = 0; i < modelIDs.size(); i++) {
+			if (modelIDs[i].first == a && modelIDs[i].second == b) {
+				res = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
+public:
+	std::vector<std::pair<std::size_t, std::size_t> > modelIDs;
+	std::vector<const void*> userData;
+};
 
 BallBallStrategy::BallBallStrategy()
 {
@@ -39,42 +94,97 @@ bool BallBallStrategy::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
 	return false;
 }
 
-std::vector<Contact> BallBallStrategy::findContacts(ProximityModel* a, const Transform3D<>& wTa, ProximityModel* b, const Transform3D<>& wTb)
+bool BallBallStrategy::findContact(Contact &c,
+		const Model& a,	const Transform3D<>& wTa,
+		const Model& b,	const Transform3D<>& wTb, bool distCheck) const
 {
-	ContactStrategyData data;
-	return findContacts(a,wTa,b,wTb,data);
+	const Vector3D<> cA = wTa.R()*a.center+wTa.P();
+	const Vector3D<> cB = wTb.R()*b.center+wTb.P();
+	const Vector3D<> cVec = cB-cA;
+	double cVecLen = cVec.norm2();
+	if (!distCheck || cVecLen <= a.radius + b.radius) {
+		const Vector3D<> cVecNorm = cVec/cVecLen;
+		c.setFrameA(a.frame);
+		c.setFrameB(b.frame);
+		c.setPointA(cA+a.radius*cVecNorm);
+		c.setPointB(cB-b.radius*cVecNorm);
+		c.setNormal(cVecNorm);
+		c.setDepth(a.radius + b.radius - cVecLen);
+		c.setTransform(inverse(wTa)*wTb);
+		return true;
+	}
+	return false;
 }
 
-std::vector<Contact> BallBallStrategy::findContacts(ProximityModel* a, const Transform3D<>& wTa, ProximityModel* b, const Transform3D<>& wTb, ContactStrategyData &data)
+std::vector<Contact> BallBallStrategy::findContacts(
+		ProximityModel* a, const Transform3D<>& wTa,
+		ProximityModel* b, const Transform3D<>& wTb,
+		ContactStrategyData* data,
+		ContactStrategyTracking* tracking) const
 {
+	RW_ASSERT(dynamic_cast<BallModel*>(a));
+	RW_ASSERT(dynamic_cast<BallModel*>(b));
+	RW_ASSERT(dynamic_cast<BallTracking*>(tracking));
 	std::vector<Contact> res;
-	BallModel* mA = (BallModel*) a;
-	BallModel* mB = (BallModel*) b;
-	for (std::vector<Model>::iterator itA = mA->models.begin(); itA < mA->models.end(); itA++) {
-		for (std::vector<Model>::iterator itB = mB->models.begin(); itB < mB->models.end(); itB++) {
-			Model modelA = *itA;
-			Model modelB = *itB;
-			Vector3D<> cA = wTa.R()*modelA.center+wTa.P();
-			Vector3D<> cB = wTb.R()*modelB.center+wTb.P();
-			Vector3D<> cVec = cB-cA;
-			double cVecLen = cVec.norm2();
-			if (cVecLen <= modelA.radius + modelB.radius) {
-				Vector3D<> cVecNorm = cVec/cVecLen;
-				Contact c;
+	BallModel* const mA = (BallModel*) a;
+	BallModel* const mB = (BallModel*) b;
+	BallTracking* const ballTracking = (BallTracking*) tracking;
+	std::vector<std::pair<std::size_t,std::size_t> > newModels;
+	std::vector<const void*> newUserData;
+	for (std::size_t i = 0; i < mA->models.size(); i++) {
+		for (std::size_t j = 0; j < mB->models.size(); j++) {
+			std::size_t oldId;
+			const bool oldContact = ballTracking->find(i,j,oldId);
+			const Model modelA = mA->models[i];
+			const Model modelB = mB->models[j];
+			Contact c;
+			if (findContact(c, modelA, wTa, modelB, wTb, !oldContact)) {
 				c.setModelA(mA);
 				c.setModelB(mB);
-				c.setFrameA(modelA.frame);
-				c.setFrameB(modelB.frame);
-				c.setPointA(cA+modelA.radius*cVecNorm);
-				c.setPointB(cB-modelB.radius*cVecNorm);
-				c.setNormal(cVecNorm);
-				c.setDepth(modelA.radius + modelB.radius - cVecLen);
-				c.setTransform(inverse(wTa)*wTb);
 				res.push_back(c);
+			}
+			if (oldContact) {
+				newModels.push_back(ballTracking->modelIDs[oldId]);
+				newUserData.push_back(ballTracking->userData[oldId]);
+			} else {
+				newModels.push_back(std::make_pair<std::size_t,std::size_t>(i,j));
+				newUserData.push_back(NULL);
 			}
 		}
 	}
+	ballTracking->modelIDs = newModels;
+	ballTracking->userData = newUserData;
 	return res;
+}
+
+std::vector<Contact> BallBallStrategy::updateContacts(
+		ProximityModel* a, const Transform3D<>& wTa,
+		ProximityModel* b, const Transform3D<>& wTb,
+		ContactStrategyData* data,
+		ContactStrategyTracking* tracking) const
+{
+	RW_ASSERT(dynamic_cast<BallModel*>(a));
+	RW_ASSERT(dynamic_cast<BallModel*>(b));
+	std::vector<Contact> res;
+	BallModel* const mA = (BallModel*) a;
+	BallModel* const mB = (BallModel*) b;
+	const BallTracking* const ballTracking = (const BallTracking*) tracking;
+	for (std::size_t i = 0; i < ballTracking->modelIDs.size(); i++) {
+		const std::pair<std::size_t, std::size_t>& modelIDs = ballTracking->modelIDs[i];
+		const Model modelA = mA->models[modelIDs.first];
+		const Model modelB = mA->models[modelIDs.second];
+		Contact c;
+		if (findContact(c, modelA, wTa, modelB, wTb, false)) {
+			c.setModelA(mA);
+			c.setModelB(mB);
+			res.push_back(c);
+		}
+	}
+	return res;
+}
+
+ContactStrategyTracking* BallBallStrategy::createTracking() const {
+	return new BallTracking();
 }
 
 std::string BallBallStrategy::getName() {

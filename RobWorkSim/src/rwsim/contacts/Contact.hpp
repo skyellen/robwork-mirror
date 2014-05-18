@@ -198,6 +198,19 @@ public:
 	 */
 	virtual void clear();
 
+	/**
+	 * @brief Stream operator.
+	 * @param out [in/out] the stream to write to.
+	 * @param contact [in] the contact to print.
+	 * @return the same ostream as out parameter.
+	 */
+	friend std::ostream& operator<<(std::ostream& out, const Contact& contact) {
+		out << "Frames: " << contact.getFrameA()->getName() << " <-> " << contact.getFrameB()->getName();
+		out << " Points: " << contact.getPointA() << " <-> " << contact.getPointB();
+		out << " Normal: " << contact.getNormal() << " Depth: " << contact.getDepth();
+		return out;
+	}
+
 private:
 	ContactModel::Ptr _a, _b;
 	const rw::kinematics::Frame * _frameA;

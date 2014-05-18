@@ -19,32 +19,60 @@
 
 using namespace rwsim::contacts;
 
-ContactStrategyData ContactDetectorData::getStrategyData(std::size_t priority) const {
-	if (priority > _stratData.size())
-		priority = _stratData.size();
-	return _stratData[priority];
+ContactDetectorData::ContactDetectorData()
+{
 }
 
-void ContactDetectorData::setStrategyData(std::size_t priority, const ContactStrategyData &data) {
-	if (priority > _stratData.size())
-		return;
-	_stratData[priority] = data;
+ContactDetectorData::ContactDetectorData(const ContactDetectorData& data) {
+	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
+	for (it = data._modelPairToData.begin(); it != data._modelPairToData.end(); it++) {
+		_modelPairToData[(*it).first] = (*it).second->copy();
+	}
 }
 
-void ContactDetectorData::addStrategyData(std::size_t priority, const ContactStrategyData &data) {
-	if (priority > _stratData.size())
-		priority = _stratData.size();
-	std::vector<ContactStrategyData>::iterator it = _stratData.begin();
-	for (std::size_t i = 0; i < priority; i++)
-		it++;
-	_stratData.insert(it,data);
+ContactDetectorData::~ContactDetectorData() {
+	clear();
 }
 
-void ContactDetectorData::removeStrategyData(std::size_t priority) {
-	if (priority > _stratData.size())
-		priority = _stratData.size();
-	std::vector<ContactStrategyData>::iterator it = _stratData.begin();
-	for (std::size_t i = 0; i < priority; i++)
-		it++;
-	_stratData.erase(it);
+ContactDetectorData& ContactDetectorData::operator=(const ContactDetectorData& data) {
+	if (this != &data)
+	{
+		clear();
+		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
+		for (it = data._modelPairToData.begin(); it != data._modelPairToData.end(); it++) {
+			_modelPairToData[(*it).first] = (*it).second->copy();
+		}
+	}
+	return *this;
+}
+
+void ContactDetectorData::clear() {
+	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
+	for (it = _modelPairToData.begin(); it != _modelPairToData.end(); it++) {
+		delete (*it).second;
+	}
+	_modelPairToData.clear();
+}
+
+ContactStrategyData* ContactDetectorData::getStrategyData(const ContactModel* modelA, const ContactModel* modelB) const {
+	{
+		std::pair<const ContactModel*,const ContactModel*> pair(modelA,modelB);
+		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it = _modelPairToData.find(pair);
+		if (it != _modelPairToData.end())
+			return (*it).second;
+	}
+	{
+		std::pair<const ContactModel*,const ContactModel*> pair(modelB,modelA);
+		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it = _modelPairToData.find(pair);
+		if (it != _modelPairToData.end())
+			return (*it).second;
+	}
+	return NULL;
+}
+
+void ContactDetectorData::setStrategyData(const ContactModel* modelA, const ContactModel* modelB, ContactStrategyData* data) {
+	ContactStrategyData* oldData = getStrategyData(modelA,modelB);
+	if (oldData != NULL)
+		delete oldData;
+	_modelPairToData[std::make_pair<const ContactModel*,const ContactModel*>(modelA,modelB)] = data;
 }

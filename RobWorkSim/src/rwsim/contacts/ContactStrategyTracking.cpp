@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "ContactStrategyData.hpp"
-
-using namespace rwsim::contacts;
-
-ContactStrategyData::ContactStrategyData() {
-}
-
-ContactStrategyData::~ContactStrategyData() {
-}
-
-ContactStrategyData* ContactStrategyData::copy() const {
-	return new ContactStrategyData();
-}
+#include "ContactStrategyTracking.hpp"

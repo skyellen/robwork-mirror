@@ -37,6 +37,10 @@
 
 namespace rwsim {
 namespace contacts {
+
+// Forward declarations
+class ContactStrategyTracking;
+
 //! @addtogroup rwsim_contacts
 
 //! @{
@@ -82,7 +86,7 @@ public:
 			rw::proximity::ProximityModel* a,
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel* b,
-			const rw::math::Transform3D<>& wTb) = 0;
+			const rw::math::Transform3D<>& wTb) const;
 
 	/**
 	 * @brief Check if there is contact between two contact models using additional data.
@@ -94,7 +98,7 @@ public:
 	 * @param wTa [in] transform of model a.
 	 * @param b [in] model b.
 	 * @param wTb [in] transform of model b.
-	 * @param data [in/out] Allows caching between contact detection calls,
+	 * @param data [in/out] allows caching between contact detection calls,
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @return a list of contacts.
 	 */
@@ -103,7 +107,74 @@ public:
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel* b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData &data) = 0;
+			ContactStrategyData* data) const;
+
+	/**
+	 * @brief Check if there is contact between two contact models using additional data.
+	 *
+	 * Use of this function is encouraged if changes between consecutive calls are expected to be small.
+	 * This will in some cases allow the detection algorithm to do certain speed-ups.
+	 *
+	 * @param a [in] model a.
+	 * @param wTa [in] transform of model a.
+	 * @param b [in] model b.
+	 * @param wTb [in] transform of model b.
+	 * @param data [in/out] allows caching between contact detection calls,
+	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
+	 * @param tracking [in/out] meta-data for previously found contacts.
+	 * @return a list of contacts.
+	 */
+	virtual std::vector<Contact> findContacts(
+			rw::proximity::ProximityModel* a,
+			const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel* b,
+			const rw::math::Transform3D<>& wTb,
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const = 0;
+
+	/**
+	 * @brief Update known contacts between two contact models.
+	 *
+	 * @param a [in] model a.
+	 * @param wTa [in] current transform of model a.
+	 * @param b [in] model b.
+	 * @param wTb [in] current transform of model b.
+	 * @param data [in/out] allows caching between contact detection calls,
+	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
+	 * @param tracking [in/out] meta-data for previously found contacts.
+	 * @return a list of updated contacts.
+	 */
+	virtual std::vector<Contact> updateContacts(
+			rw::proximity::ProximityModel* a,
+			const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel* b,
+			const rw::math::Transform3D<>& wTb,
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const = 0;
+
+	/**
+	 * @brief Create a data container for this strategy.
+	 * @return a pointer to the data container.
+	 */
+	virtual ContactStrategyData* createData() const;
+
+	/**
+	 * @brief Destroy a data container.
+	 * @param data [in/out] a pointer to the container.
+	 */
+	void destroyData(ContactStrategyData*& data) const;
+
+	/**
+	 * @brief Create tracking information for this strategy.
+	 * @return a pointer to the information.
+	 */
+	virtual ContactStrategyTracking* createTracking() const = 0;
+
+	/**
+	 * @brief Destroy tracking information.
+	 * @param data [in/out] a pointer to the information.
+	 */
+	void destroyTracking(ContactStrategyTracking*& data) const;
 
 	/**
 	 * @brief Get the name of the strategy as a string.

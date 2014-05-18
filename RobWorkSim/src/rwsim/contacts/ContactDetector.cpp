@@ -18,6 +18,7 @@
 #include "ContactDetector.hpp"
 #include "BallBallStrategy.hpp"
 #include "ContactStrategyPQP.hpp"
+#include "ContactDetectorTracking.hpp"
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
 
@@ -31,17 +32,9 @@ using namespace rw::models;
 using namespace rw::proximity;
 using namespace rwsim::contacts;
 
-ContactDetector::ContactDetector(WorkCell::Ptr workcell):
-	_wc(workcell),
-	_bpfilter(ownedPtr( new BasicFilterStrategy(workcell) )),
-	_timer(0)
-{
-	initializeGeometryMap();
-}
-
 ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr filter):
 	_wc(wc),
-	_bpfilter(filter),
+	_bpfilter(filter == NULL ? ownedPtr( new BasicFilterStrategy(wc) ) : filter),
 	_timer(0)
 {
 	initializeGeometryMap();
@@ -50,6 +43,10 @@ ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr 
 ContactDetector::~ContactDetector()
 {
 	clearStrategies();
+}
+
+void ContactDetector::setProximityFilterStrategy(ProximityFilterStrategy::Ptr filter) {
+	_bpfilter = filter;
 }
 
 double ContactDetector::getTimer() const {
@@ -105,6 +102,37 @@ ProximityFilterStrategy::Ptr ContactDetector::getProximityFilterStrategy() const
 
 std::list<ContactDetector::StrategyTableRow> ContactDetector::getContactStategies() const {
 	return _strategies;
+}
+
+ContactDetector::StrategyTable ContactDetector::getContactStrategies(const std::string& frameA, const std::string& frameB) const {
+	StrategyTable res;
+	std::list<StrategyTableRow>::const_iterator it;
+	for (it = _strategies.begin(); (it != _strategies.end()); it++) {
+		StrategyTableRow stratMatch = *it;
+		std::vector<ProximitySetupRule> rules = stratMatch.rules.getProximitySetupRules();
+		bool match = false;
+		BOOST_FOREACH(ProximitySetupRule &rule, rules) {
+			if (rule.match(frameA,frameB))
+				match = true;
+		}
+		if (match) {
+			res.push_back(stratMatch);
+		}
+	}
+	return res;
+}
+
+ContactDetector::StrategyTable ContactDetector::getContactStrategies(const std::string& frameA, rw::common::Ptr<const Geometry> geometryA, const std::string& frameB, rw::common::Ptr<const Geometry> geometryB) const {
+	StrategyTable res;
+	StrategyTable table = getContactStrategies(frameA,frameB);
+	std::list<StrategyTableRow>::const_iterator it;
+	for (it = table.begin(); (it != table.end()); it++) {
+		StrategyTableRow stratMatch = *it;
+		if (stratMatch.strategy->match(geometryA->getGeometryData(),geometryB->getGeometryData())) {
+			res.push_back(stratMatch);
+		}
+	}
+	return res;
 }
 
 void ContactDetector::addContactStrategy(ContactStrategy::Ptr strategy, std::size_t pri) {
@@ -234,7 +262,6 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 					match = true;
 			}
 			if (match) {
-				ContactStrategyData stratData;//(data.getStrategyData(stratMatch.priority));
 				std::vector<std::pair<Geometry::Ptr,Geometry::Ptr> >::iterator pairIt;
 				for (pairIt = geoPairs.begin(); pairIt < geoPairs.end(); pairIt++) {
 					Geometry::Ptr geoA = (*pairIt).first;
@@ -252,8 +279,12 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						}
 						ContactModel::Ptr modelA = mapA[geoA->getId()];
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
+						ContactStrategyData* stratData = data.getStrategyData(modelA.get(),modelB.get());
+						if (stratData == NULL) {
+							stratData = stratMatch.strategy->createData();
+							data.setStrategyData(modelA.get(),modelB.get(),stratData);
+						}
 						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData);
-						//data.setStrategyData(stratMatch.priority,stratData);
 						pairIt = geoPairs.erase(pairIt);
 						pairIt--;
 				        if( contacts.size() > 0 ){
@@ -271,6 +302,171 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 	_timer += used;
 	return res;
 }
+
+std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking) {
+	long tstart = (long)TimerUtil::currentTimeUs();
+
+	std::vector<Contact> res;
+	std::vector<ContactDetectorTracking::ContactInfo>& trackInfo = tracking.getInfo();
+	trackInfo.clear();
+
+	ProximityFilter::Ptr filter = _bpfilter->update(state);
+	const FKTable fk(state);
+	while( !filter->isEmpty() ){
+		const FramePair& pair = filter->frontAndPop();
+
+		const Transform3D<> aT = fk.get(*pair.first);
+		const Transform3D<> bT = fk.get(*pair.second);
+
+		std::vector<Contact> contacts;
+
+		std::vector<Geometry::Ptr> unmatchedA = _frameToGeo[*pair.first];
+		std::vector<Geometry::Ptr> unmatchedB = _frameToGeo[*pair.second];
+		std::vector<std::pair<Geometry::Ptr,Geometry::Ptr> > geoPairs;
+		BOOST_FOREACH(Geometry::Ptr geoA, unmatchedA) {
+			BOOST_FOREACH(Geometry::Ptr geoB, unmatchedB) {
+				std::pair<Geometry::Ptr,Geometry::Ptr> pair;
+				pair.first = geoA;
+				pair.second = geoB;
+				geoPairs.push_back(pair);
+			}
+		}
+
+		std::list<StrategyTableRow>::const_iterator it;
+		for (it = _strategies.begin(); (it != _strategies.end()); it++) {
+			StrategyTableRow stratMatch = *it;
+			std::vector<ProximitySetupRule> rules = stratMatch.rules.getProximitySetupRules();
+			bool match = false;
+			BOOST_FOREACH(ProximitySetupRule &rule, rules) {
+				if (rule.match(pair.first->getName(),pair.second->getName()))
+					match = true;
+			}
+			if (match) {
+				std::vector<std::pair<Geometry::Ptr,Geometry::Ptr> >::iterator pairIt;
+				for (pairIt = geoPairs.begin(); pairIt < geoPairs.end(); pairIt++) {
+					Geometry::Ptr geoA = (*pairIt).first;
+					Geometry::Ptr geoB = (*pairIt).second;
+					if (stratMatch.strategy->match(geoA->getGeometryData(),geoB->getGeometryData())) {
+						std::map<std::string, ContactModel::Ptr> &mapA = stratMatch.models[*pair.first];
+						std::map<std::string, ContactModel::Ptr> &mapB = stratMatch.models[*pair.second];
+						if (mapA.find(geoA->getId())==mapA.end()) {
+							ProximityModel::Ptr model = stratMatch.strategy->createModel();
+							stratMatch.strategy->addGeometry(model.get(),geoA);
+						}
+						if (mapB.find(geoB->getId())==mapB.end()) {
+							ProximityModel::Ptr model = stratMatch.strategy->createModel();
+							stratMatch.strategy->addGeometry(model.get(),geoB);
+						}
+						ContactModel::Ptr modelA = mapA[geoA->getId()];
+						ContactModel::Ptr modelB = mapB[geoB->getId()];
+						ContactStrategyData* stratData = data.getStrategyData(modelA.get(),modelB.get());
+						ContactStrategyTracking* stratTracking = tracking.getStrategyTracking(modelA.get(),modelB.get());
+						if (stratData == NULL) {
+							stratData = stratMatch.strategy->createData();
+							data.setStrategyData(modelA.get(),modelB.get(),stratData);
+						}
+						if (stratTracking == NULL) {
+							stratTracking = stratMatch.strategy->createTracking();
+							tracking.setStrategyTracking(modelA.get(),modelB.get(),stratTracking);
+						}
+						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData, stratTracking);
+						pairIt = geoPairs.erase(pairIt);
+						pairIt--;
+						if( contacts.size() > 0 ){
+							ContactDetectorTracking::ContactInfo info;
+							info.frames = pair;
+							info.models = std::make_pair<ContactModel*,ContactModel*>(modelA.get(),modelB.get());
+							info.strategy = stratMatch.strategy;
+							info.tracking = stratTracking;
+							info.total = contacts.size();
+							for (std::size_t i = 0; i < contacts.size(); i++) {
+								info.id = i;
+								trackInfo.push_back(info);
+							}
+							res.insert(res.end(),contacts.begin(),contacts.end());
+						}
+					}
+				}
+			}
+		}
+	}
+	long tend = (long)TimerUtil::currentTimeUs();
+
+	double used = ((double)(tend-tstart))/1000000.;
+
+	_timer += used;
+
+	return res;
+}
+
+std::vector<Contact> ContactDetector::updateContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking) {
+	std::vector<Contact> res;
+	const FKTable fk(state);
+	std::vector<ContactDetectorTracking::ContactInfo>& infos = tracking.getInfo();
+	std::vector<ContactDetectorTracking::ContactInfo>::iterator it;
+	for (it = infos.begin(); it != infos.end(); it++) {
+		const ContactDetectorTracking::ContactInfo& info = *it;
+		if (info.id > 0)
+			continue;
+		const Frame* const frameA = info.frames.first;
+		const Frame* const frameB = info.frames.second;
+		ContactModel* const modelA = info.models.first;
+		ContactModel* const modelB = info.models.second;
+		const Transform3D<> aT = fk.get(frameA);
+		const Transform3D<> bT = fk.get(frameB);
+		ContactStrategyData* stratData = data.getStrategyData(modelA,modelB);
+		if (stratData == NULL)
+			RW_THROW("ContactDetector (updateContacts): could not find ContactStrategyData for the two models in ContactDetectorData!");
+		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, info.tracking);
+		const std::size_t total = info.total;
+		if (contacts.size() < total) {
+			const std::size_t remove = total-contacts.size();
+			(*it).total = contacts.size();
+			for (std::size_t i = 0; i < total-1; i++) {
+				it++;
+				(*it).total = contacts.size();
+			}
+			for (std::size_t i = 0; i < remove; i++) {
+				it = infos.erase(it);
+				it--;
+			}
+			//for (std::size_t i = 0; i < contacts.size()-1; i++)
+			//	it--; // Skipped in beginning of for loop anyway!
+		} else if (contacts.size() > total) {
+			const std::size_t add = contacts.size()-total;
+			(*it).total = contacts.size();
+			for (std::size_t i = 0; i < total-1; i++) {
+				it++;
+				(*it).total = contacts.size();
+			}
+			for (std::size_t i = 0; i < add; i++) {
+				ContactDetectorTracking::ContactInfo newInfo = *it;
+				newInfo.id = total+i;
+				newInfo.total = contacts.size();
+				it = infos.insert(it,newInfo);
+			}
+			//for (std::size_t i = 0; i < contacts.size()-1; i++)
+			//	it--; // Skipped in beginning of for loop anyway!
+		}
+		res.insert(res.end(),contacts.begin(),contacts.end());
+	}
+	return res;
+}
+
+struct ContactDetector::Cell {
+	enum ALIGNMENT {
+		LEFT, RIGHT
+	};
+	Cell() :
+		alignment(LEFT) {
+	}
+	Cell(std::string string) :
+		alignment(LEFT) {
+		strings.push_back(string);
+	}
+	std::vector<std::string> strings;
+	ALIGNMENT alignment;
+};
 
 void ContactDetector::printStrategyTable() const {
 	if (_strategies.size() == 0)
@@ -382,4 +578,10 @@ void ContactDetector::printTable(const std::vector<std::vector<Cell> > &table, b
 			std::cout << "-";
 		std::cout << std::endl;
 	}
+}
+
+ContactDetector::Ptr ContactDetector::makeDefault(WorkCell::Ptr workcell) {
+	ContactDetector::Ptr def = ownedPtr(new ContactDetector(workcell));
+	def->setDefaultStrategies();
+	return def;
 }

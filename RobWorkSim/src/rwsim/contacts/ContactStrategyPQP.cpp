@@ -16,10 +16,13 @@
  ********************************************************************************/
 
 #include "ContactStrategyPQP.hpp"
+#include "ContactStrategyTracking.hpp"
 
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/OBRManifold.hpp>
+
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 using namespace rw::common;
 using namespace rw::geometry;
@@ -28,6 +31,79 @@ using namespace rw::math;
 using namespace rwlibs::proximitystrategies;
 using namespace rwsim::contacts;
 using namespace rwsim::dynamics;
+
+struct ContactStrategyPQP::Model {
+	std::string geoId;
+	rw::geometry::TriMesh::Ptr mesh;
+	rw::math::Transform3D<> transform;
+	const rw::kinematics::Frame* frame;
+	rw::proximity::ProximityModel::Ptr pmodel;
+};
+
+class ContactStrategyPQP::TriMeshModel: public ContactModel {
+public:
+	TriMeshModel(ContactStrategy *owner): ContactModel(owner) {}
+	virtual std::string getName() const { return "TriMeshModel"; }
+	std::vector<Model> models;
+};
+
+class ContactStrategyPQP::PQPTracking: public ContactStrategyTracking {
+public:
+	PQPTracking() {};
+	virtual ~PQPTracking() {};
+	virtual const void* getUserData(std::size_t index) const {
+		RW_ASSERT(index < info.size());
+		return info[index].userData;
+	}
+	virtual void setUserData(std::size_t index, const void* data) {
+		RW_ASSERT(index < info.size());
+		info[index].userData = data;
+	}
+	virtual void remove(std::size_t index) {
+		RW_ASSERT(index < info.size());
+		std::vector<TrackInfo>::iterator it = info.begin()+index;
+		const std::size_t total = it->total;
+		RW_ASSERT(index == it->id);
+		RW_ASSERT(total <= info.size());
+		it = info.erase(it);
+		it = it - index;
+		for (std::size_t i = 0; i < total-1; i++) {
+			it->total--;
+			it->id = i;
+			it++;
+		}
+	}
+	virtual ContactStrategyTracking* copy() const {
+		PQPTracking* tracking = new PQPTracking();
+		tracking->aTb = aTb;
+		tracking->info = info;
+		return tracking;
+	}
+
+	struct TrackInfo {
+		std::size_t modelIDa;
+		std::size_t modelIDb;
+		const void* userData;
+		rw::math::Vector3D<> posA;
+		rw::math::Vector3D<> posB;
+		std::size_t id;
+		std::size_t total;
+	};
+
+	bool find(std::size_t a, std::size_t b, std::vector<TrackInfo>& res) const {
+		res.clear();
+		for (std::size_t i = 0; i < info.size(); i++) {
+			if (info[i].modelIDa == a && info[i].modelIDb == b) {
+				res.push_back(info[i]);
+			}
+		}
+		return res.size() > 0;
+	}
+
+public:
+	rw::math::Transform3D<> aTb;
+	std::vector<TrackInfo> info;
+};
 
 ContactStrategyPQP::ContactStrategyPQP():
 	_matchAll(true),
@@ -60,62 +136,246 @@ bool ContactStrategyPQP::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
 	return false;
 }
 
-std::vector<Contact> ContactStrategyPQP::findContacts(ProximityModel* a, const Transform3D<>& wTa, ProximityModel* b, const Transform3D<>& wTb) {
-	ContactStrategyData data;
-	return findContacts(a,wTa,b,wTb,data);
+void ContactStrategyPQP::findContact(std::vector<Contact> &contacts,
+			const Model& a,	const Transform3D<>& wTa,
+			const Model& b,	const Transform3D<>& wTb,
+			bool distCheck) const
+{
+	double threshold;
+	if (distCheck)
+		threshold = getThreshold();
+	else
+		threshold = 15*getThreshold();
+
+	MultiDistanceResult *res;
+	ProximityStrategyData data;
+
+	data.setCollisionQueryType(CollisionStrategy::AllContacts);
+	res = &_narrowStrategy->distances(a.pmodel, wTa, b.pmodel, wTb, threshold, data);
+
+	for(size_t i=0;i<res->distances.size();i++){
+		Contact c;
+		Vector3D<> p1 = wTa*res->p1s[i];//a.transform?
+		Vector3D<> p2 = wTa*res->p2s[i];//a.transform?
+		c.setPointA(p1);
+		c.setPointB(p2);
+
+		c.setFrameA(a.frame);
+		c.setFrameB(b.frame);
+
+		if(res->distances[i]<0.00000001){
+			std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, (int)i);
+			// the second is described in b's refframe so convert both to world and combine them
+			Vector3D<> a_normal = wTa.R() * normals.first;
+			Vector3D<> b_normal = wTb.R() * normals.second;
+
+			c.setNormal(-normalize( a_normal - b_normal ));
+		} else {
+			c.setNormal(normalize(p2-p1));
+		}
+		c.setDepth(-res->distances[i]);
+		c.setTransform(inverse(wTa)*wTb);
+		contacts.push_back(c);
+	}
+
+	res->clear();
 }
 
-std::vector<Contact> ContactStrategyPQP::findContacts(ProximityModel* a, const Transform3D<>& wTa, ProximityModel* b, const Transform3D<>& wTb, ContactStrategyData &data) {
+std::vector<Contact> ContactStrategyPQP::findContacts(
+		ProximityModel* a, const Transform3D<>& wTa,
+		ProximityModel* b, const Transform3D<>& wTb,
+		ContactStrategyData* data,
+		ContactStrategyTracking* tracking) const
+{
+	RW_ASSERT(dynamic_cast<TriMeshModel*>(a));
+	RW_ASSERT(dynamic_cast<TriMeshModel*>(b));
 	std::vector<Contact> contacts;
-	TriMeshModel* mA = (TriMeshModel*) a;
-	TriMeshModel* mB = (TriMeshModel*) b;
-	for (std::vector<Model>::iterator itA = mA->models.begin(); itA < mA->models.end(); itA++) {
-		for (std::vector<Model>::iterator itB = mB->models.begin(); itB < mB->models.end(); itB++) {
-			Model modelA = *itA;
-			Model modelB = *itB;
+	TriMeshModel* const mA = (TriMeshModel*) a;
+	TriMeshModel* const mB = (TriMeshModel*) b;
+	PQPTracking* const pqpTracking = (PQPTracking*) tracking;
+	std::vector<PQPTracking::TrackInfo> newInfo;
 
-			MultiDistanceResult *res;
-		    ProximityStrategyData data;
+	const Transform3D<> aTb = inverse(wTa)*wTb;
+	const EAA<> dif(inverse(pqpTracking->aTb.R())*aTb.R());
+	const double absoluteThreshold = getUpdateThresholdAbsolute();
+	const double linThreshold = getUpdateThresholdLinear()*(pqpTracking->aTb.P()-aTb.P()).norm2();
+	const double angThreshold = getUpdateThresholdAngular()*dif.angle();
+	const double threshold = absoluteThreshold+linThreshold+angThreshold;
 
-			data.setCollisionQueryType(CollisionStrategy::AllContacts);
-			res = &_narrowStrategy->distances(mA->pmodel, wTa, mB->pmodel, wTb, getThreshold(), data);
+	for (std::size_t i = 0; i < mA->models.size(); i++) {
+		for (std::size_t j = 0; j < mB->models.size(); j++) {
+			std::vector<PQPTracking::TrackInfo> currentInfos;
+			const bool oldContact = pqpTracking->find(i,j,currentInfos);
+			const Model modelA = mA->models[i];
+			const Model modelB = mB->models[j];
 
-			for(size_t i=0;i<res->distances.size();i++){
-				Contact c;
-				Vector3D<> p1 = wTa*modelA.transform*res->p1s[i];
-				Vector3D<> p2 = wTa*modelA.transform*res->p2s[i];
-				c.setPointA(p1);
-				c.setPointB(p2);
-
-				c.setFrameA(modelA.frame);
-				c.setFrameB(modelB.frame);
-
-				if(res->distances[i]<0.00000001){
-					std::pair< Vector3D<>, Vector3D<> > normals = _narrowStrategy->getSurfaceNormals(*res, (int)i);
-					// the second is described in b's refframe so convert both to world and combine them
-					Vector3D<> a_normal = wTa.R() * normals.first;
-					Vector3D<> b_normal = wTb.R() * normals.second;
-
-					c.setNormal(-normalize( a_normal - b_normal ));
-				} else {
-					c.setNormal(normalize(p2-p1));
-				}
-				c.setDepth(-res->distances[i]);
+			std::vector<Contact> tmpContacts;
+			findContact(tmpContacts, modelA, wTa, modelB, wTb, !oldContact);
+			BOOST_FOREACH(Contact &c, tmpContacts) {
 				c.setModelA(mA);
 				c.setModelB(mB);
-				c.setTransform(Transform3D<>::identity()); // Should be set correctly!
-				contacts.push_back(c);
+				//std::cout << " - " << c << std::endl;
 			}
 
-			res->clear();
+			if (_filtering == MANIFOLD) {
+				tmpContacts = manifoldFilter(tmpContacts);
+			}
+
+			BOOST_FOREACH(Contact &c, tmpContacts) {
+				c.setDepth(getThreshold()+c.getDepth());
+			}
+
+			std::size_t curId = 0;
+			if (oldContact) {
+				BOOST_FOREACH(const PQPTracking::TrackInfo& info, currentInfos) {
+					const Vector3D<> posA = info.posA;
+					const Vector3D<> posB = info.posB;
+					std::vector<std::size_t> candidates;
+					for (std::size_t k = 0; k < tmpContacts.size(); k++) {
+						const Contact& c = tmpContacts[k];
+						const Vector3D<> newPosA = inverse(wTa)*c.getPointA();
+						const Vector3D<> newPosB = inverse(wTb)*c.getPointB();
+						if ((newPosA-posA).norm2() <= threshold && (newPosB-posB).norm2() <= threshold) {
+							candidates.push_back(k);
+						}
+					}
+					if (candidates.size() > 0) {
+						double depth = tmpContacts[candidates[0]].getDepth();
+						std::size_t deepest = candidates[0];
+						for (std::size_t k = 1; k < candidates.size(); k++) {
+							double tmpDepth = tmpContacts[candidates[k]].getDepth();
+							if (tmpDepth > depth) {
+								depth = tmpDepth;
+								deepest = candidates[k];
+							}
+						}
+						contacts.push_back(tmpContacts[deepest]);
+						newInfo.push_back(info);
+						newInfo.back().posA = inverse(wTa)*tmpContacts[deepest].getPointA();
+						newInfo.back().posB = inverse(wTb)*tmpContacts[deepest].getPointB();
+						newInfo.back().id = curId;
+						curId++;
+						tmpContacts.erase(tmpContacts.begin()+deepest);
+					}
+				}
+			}
+			// Add remaining contacts
+			PQPTracking::TrackInfo info;
+			info.modelIDa = i;
+			info.modelIDb = j;
+			info.userData = NULL;
+			BOOST_FOREACH(const Contact&c, tmpContacts) {
+				if (c.getDepth() > 0) {
+					info.id = curId;
+					info.posA = inverse(wTa)*c.getPointA();
+					info.posB = inverse(wTb)*c.getPointB();
+					newInfo.push_back(info);
+					curId++;
+					contacts.push_back(c);
+				}
+			}
+			tmpContacts.clear();
+			BOOST_FOREACH(PQPTracking::TrackInfo& info, newInfo) {
+				info.total = contacts.size();
+			}
 		}
 	}
-	switch (_filtering) {
-	case MANIFOLD:
-		return manifoldFilter(contacts);
-	default:
-		return contacts;
+	pqpTracking->aTb = inverse(wTa)*wTb;
+	pqpTracking->info = newInfo;
+	return contacts;
+}
+
+std::vector<Contact> ContactStrategyPQP::updateContacts(
+		ProximityModel* a, const Transform3D<>& wTa,
+		ProximityModel* b, const Transform3D<>& wTb,
+		ContactStrategyData* data,
+		ContactStrategyTracking* tracking) const
+{
+	RW_ASSERT(dynamic_cast<TriMeshModel*>(a));
+	RW_ASSERT(dynamic_cast<TriMeshModel*>(b));
+	std::vector<Contact> contacts;
+	TriMeshModel* const mA = (TriMeshModel*) a;
+	TriMeshModel* const mB = (TriMeshModel*) b;
+	PQPTracking* const pqpTracking = (PQPTracking*) tracking;
+	std::vector<PQPTracking::TrackInfo> newInfo;
+
+	const Transform3D<> aTb = inverse(wTa)*wTb;
+	const EAA<> dif(inverse(pqpTracking->aTb.R())*aTb.R());
+	const double absoluteThreshold = getUpdateThresholdAbsolute();
+	const double linThreshold = getUpdateThresholdLinear()*(pqpTracking->aTb.P()-aTb.P()).norm2();
+	const double angThreshold = getUpdateThresholdAngular()*dif.angle();
+	const double threshold = absoluteThreshold+linThreshold+angThreshold;
+
+	std::vector<PQPTracking::TrackInfo>::iterator it;
+	for (it = pqpTracking->info.begin(); it != pqpTracking->info.end(); it++) {
+		const PQPTracking::TrackInfo& info = *it;
+		std::vector<PQPTracking::TrackInfo> currentInfos;
+		currentInfos.push_back(*it);
+		for (std::size_t i = 0; i < info.total-1; i++) {
+			it++;
+			currentInfos.push_back(*it);
+		}
+		const Model modelA = mA->models[info.modelIDa];
+		const Model modelB = mB->models[info.modelIDb];
+
+		std::vector<Contact> tmpContacts;
+		findContact(tmpContacts, modelA, wTa, modelB, wTb, false);
+		BOOST_FOREACH(Contact &c, tmpContacts) {
+			c.setModelA(mA);
+			c.setModelB(mB);
+		}
+
+		if (_filtering == MANIFOLD) {
+			tmpContacts = manifoldFilter(tmpContacts);
+		}
+
+		BOOST_FOREACH(Contact &c, tmpContacts) {
+			c.setDepth(getThreshold()+c.getDepth());
+		}
+
+		std::size_t curId = 0;
+		BOOST_FOREACH(const PQPTracking::TrackInfo& info, currentInfos) {
+			const Vector3D<> posA = info.posA;
+			const Vector3D<> posB = info.posB;
+			std::vector<std::size_t> candidates;
+			for (std::size_t k = 0; k < tmpContacts.size(); k++) {
+				const Contact& c = tmpContacts[k];
+				const Vector3D<> newPosA = inverse(wTa)*c.getPointA();
+				const Vector3D<> newPosB = inverse(wTb)*c.getPointB();
+				if ((newPosA-posA).norm2() <= threshold && (newPosB-posB).norm2() <= threshold) {
+					candidates.push_back(k);
+				}
+			}
+			if (candidates.size() > 0) {
+				double depth = tmpContacts[candidates[0]].getDepth();
+				std::size_t deepest = candidates[0];
+				for (std::size_t k = 1; k < candidates.size(); k++) {
+					double tmpDepth = tmpContacts[candidates[k]].getDepth();
+					if (tmpDepth > depth) {
+						depth = tmpDepth;
+						deepest = candidates[k];
+					}
+				}
+				contacts.push_back(tmpContacts[deepest]);
+				newInfo.push_back(info);
+				newInfo.back().posA = inverse(wTa)*tmpContacts[deepest].getPointA();
+				newInfo.back().posB = inverse(wTb)*tmpContacts[deepest].getPointB();
+				newInfo.back().id = curId;
+				curId++;
+				tmpContacts.erase(tmpContacts.begin()+deepest);
+			}
+		}
+		for (std::size_t i = 0; i < curId; i++) {
+			newInfo[newInfo.size()-1-i].total = curId;
+		}
 	}
+	pqpTracking->aTb = inverse(wTa)*wTb;
+	pqpTracking->info = newInfo;
+	return contacts;
+}
+
+ContactStrategyTracking* ContactStrategyPQP::createTracking() const {
+	return new PQPTracking();
 }
 
 std::string ContactStrategyPQP::getName() {
@@ -124,13 +384,16 @@ std::string ContactStrategyPQP::getName() {
 
 ProximityModel::Ptr ContactStrategyPQP::createModel() {
 	TriMeshModel* model = new TriMeshModel(this);
-	model->pmodel = _narrowStrategy->createModel();
+	//model->pmodel = _narrowStrategy->createModel();
 	return ownedPtr(model);
 }
 
 void ContactStrategyPQP::destroyModel(ProximityModel* model) {
 	TriMeshModel* bmodel = (TriMeshModel*) model;
-	_narrowStrategy->destroyModel(bmodel->pmodel.get());
+	//_narrowStrategy->destroyModel(bmodel->pmodel.get());
+	BOOST_FOREACH(const Model& model, bmodel->models) {
+		removeGeometry(bmodel,model.geoId);
+	}
 	bmodel->models.clear();
 }
 
@@ -143,15 +406,18 @@ bool ContactStrategyPQP::addGeometry(ProximityModel* model, const Geometry& geom
 				geomData->getType() != GeometryData::IdxTriMesh)
 			return false;
 	}
+	// todo: Convex decomposition when trimesh is concave
 	TriMesh* sData = (TriMesh*) geomData.get();
 	Model newModel;
 	newModel.geoId = geom.getId();
 	newModel.transform = geom.getTransform();
 	newModel.mesh = sData->getTriMesh();
 	newModel.frame = geom.getFrame();
+	newModel.pmodel = _narrowStrategy->createModel();
 	bmodel->models.push_back(newModel);
 
-	_narrowStrategy->addGeometry(bmodel->pmodel.get(),geom);
+	_narrowStrategy->addGeometry(newModel.pmodel.get(),geom);
+	//_narrowStrategy->addGeometry(bmodel->pmodel.get(),geom);
 
 	return true;
 }
@@ -164,11 +430,12 @@ bool ContactStrategyPQP::removeGeometry(ProximityModel* model, const std::string
 	TriMeshModel* bmodel = (TriMeshModel*) model;
 	for (std::vector<Model>::iterator it = bmodel->models.begin(); it < bmodel->models.end(); it++) {
 		if ((*it).geoId == geomId) {
+			_narrowStrategy->removeGeometry((*it).pmodel.get(), geomId);
 			bmodel->models.erase(it);
 			return true;
 		}
 	}
-	_narrowStrategy->removeGeometry(bmodel->pmodel.get(), geomId);
+	//_narrowStrategy->removeGeometry(bmodel->pmodel.get(), geomId);
 	return false;
 }
 
@@ -194,7 +461,6 @@ void ContactStrategyPQP::setContactFilter(ContactFilter filter) {
 
 std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contact> &contacts) {
 	std::vector<Contact> res;
-	std::vector<ContactPoint> cpRes;
 
 	std::vector<ContactPoint> rwcontacts(contacts.size());
 	int* srcIdx = new int[contacts.size()];
@@ -204,7 +470,7 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 	for (std::size_t i = 0; i < contacts.size(); i++) {
 		ContactPoint &point = rwcontacts[i];
 		point.n = normalize( contacts[i].getNormal() );
-		point.p = contacts[i].getNormal()*(contacts[i].getDepth()/2) + contacts[i].getPointA();
+		point.p = (contacts[i].getPointA()+contacts[i].getPointB())/2.;
 		point.penetration = contacts[i].getDepth();
         point.userdata = (void*) &(contacts[i]);
 	}
@@ -234,22 +500,17 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 
 	// run through all manifolds and get the contact points that will be used.
 	int contactIdx = 0;
-	rw::math::Vector3D<> contactNormalAvg(0,0,0);
 	BOOST_FOREACH(OBRManifold& obr, manifolds){
-		contactNormalAvg += obr.getNormal();
-		int nrContacts = obr.getNrOfContacts();
+		const int nrContacts = obr.getNrOfContacts();
 		// if the manifold area is very small then we only use a single point
 		// for contact
-		Vector3D<> hf = obr.getHalfLengths();
+		const Vector3D<> hf = obr.getHalfLengths();
 		if(hf(0)*hf(1)<(0.001*0.001)){
-			cpRes.push_back( obr.getDeepestPoint() );
 			RW_ASSERT( contactIdx<(int)dst.size() );
 			dst[contactIdx] = obr.getDeepestPoint();
 			contactIdx++;
 		} else {
-			//std::cout << "Manifold: " << nrContacts << ";" << std::endl;
 			for(int j=0;j<nrContacts; j++){
-				cpRes.push_back( obr.getContact(j) );
 				RW_ASSERT( contactIdx<(int)dst.size() );
 				dst[contactIdx] = obr.getContact(j);
 				contactIdx++;
@@ -257,29 +518,24 @@ std::vector<Contact> ContactStrategyPQP::manifoldFilter(const std::vector<Contac
 		}
 	}
 
-	Vector3D<> cNormal(0,0,0);
 	// Run through all contacts and define contact constraints between them
 	std::vector<ContactPoint> &contactPointList = dst;
-	int num = contactIdx;
-
-	for (int i = 0; i < num; i++) {
+	for (int i = 0; i < contactIdx; i++) {
 		ContactPoint *point = &contactPointList[i];
 		point->n = normalize(point->n);
 		Contact &con = *((Contact*)point->userdata);
 
-		cNormal += point->n;
-		double rwnlength = MetricUtil::norm2(point->n);
+		const double rwnlength = MetricUtil::norm2(point->n);
 		if((0.9>rwnlength) || (rwnlength>1.1)){
-			//std::cout <<  "\n\n Normal not normalized _0_ !\n"<<std::endl;
 			continue;
 		}
 		con.setNormal(point->n);
-		con.setPointA(point->p-point->n*point->penetration/2);
-		con.setPointB(point->p+point->n*point->penetration/2);
+		con.setPointA(point->p-point->n*fabs(point->penetration/2));
+		con.setPointB(point->p+point->n*fabs(point->penetration/2));
 		con.setDepth(point->penetration);
 		res.push_back(con);
 	}
-	
+
 	delete[] srcIdx;
 	delete[] dstIdx;
 
@@ -291,4 +547,16 @@ double ContactStrategyPQP::getThreshold() const {
 	if (threshold == -0.1)
 		threshold = _propertyMap.get<double>("MaxSepDistance", 0.0005);
     return threshold;
+}
+
+double ContactStrategyPQP::getUpdateThresholdAbsolute() const {
+	return _propertyMap.get<double>("ContactStrategyPQPUpdateThresholdAbsolute", 0.001);
+}
+
+double ContactStrategyPQP::getUpdateThresholdLinear() const {
+	return _propertyMap.get<double>("ContactStrategyPQPUpdateThresholdLinear", 2.);
+}
+
+double ContactStrategyPQP::getUpdateThresholdAngular() const {
+	return _propertyMap.get<double>("ContactStrategyPQPUpdateThresholdAngular", 0.25);
 }

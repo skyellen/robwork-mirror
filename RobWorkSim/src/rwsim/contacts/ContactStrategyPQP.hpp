@@ -18,17 +18,20 @@
 #ifndef RWSIM_CONTACTS_CONTACTSTRATEGYPQP_HPP_
 #define RWSIM_CONTACTS_CONTACTSTRATEGYPQP_HPP_
 
-#include "ContactStrategy.hpp"
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-
 /**
  * @file ContactStrategyPQP.hpp
  *
  * \copydoc rwsim::contacts::ContactStrategyPQP
  */
 
+#include "ContactStrategy.hpp"
+
+// Forward declarations
+namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+
 namespace rwsim {
 namespace contacts {
+
 //! @addtogroup rwsim_contacts
 
 //! @{
@@ -37,86 +40,64 @@ namespace contacts {
  */
 class ContactStrategyPQP: public rwsim::contacts::ContactStrategy {
 public:
-	/**
-	 * @brief Strategy used for condensing contacts.
-	 */
-	enum ContactFilter {
+	//! @brief Strategy used for condensing contacts.
+	typedef enum ContactFilter {
 		NONE,//!< No filtering.
 		MANIFOLD//!< Filtering with manifold.
-	};
+	} ContactFilter;
 
-	/**
-	 * @brief Create new strategy.
-	 */
+	//! @brief Create new strategy.
 	ContactStrategyPQP();
 
-	/**
-	 * @brief Destructor
-	 */
+	//! @brief Destructor
 	virtual ~ContactStrategyPQP();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::match
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::match
 	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&)
-	 */
-	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
-			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
-			const rw::math::Transform3D<>& wTb);
-
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,ContactStrategyData&)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,ContactStrategyData*,ContactStrategyTracking*) const
 	virtual std::vector<Contact> findContacts(
 			rw::proximity::ProximityModel* a,
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel* b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData &data);
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const;
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::getName
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::updateContacts
+	virtual std::vector<Contact> updateContacts(
+			rw::proximity::ProximityModel* a,
+			const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel* b,
+			const rw::math::Transform3D<>& wTb,
+			ContactStrategyData* data,
+			ContactStrategyTracking* tracking) const;
+
+	//! @copydoc rwsim::contacts::ContactStrategy::createTracking
+	virtual ContactStrategyTracking* createTracking() const;
+
+	//! @copydoc rwsim::contacts::ContactStrategy::getName
 	virtual std::string getName();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::createModel
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::createModel
 	virtual rw::proximity::ProximityModel::Ptr createModel();
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::destroyModel
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::destroyModel
 	virtual void destroyModel(rw::proximity::ProximityModel* model);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::removeGeometry
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::removeGeometry
 	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::getGeometryIDs
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::getGeometryIDs
 	virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
-	/**
-	 * @copydoc rwsim::contacts::ContactStrategy::clear
-	 */
+	//! @copydoc rwsim::contacts::ContactStrategy::clear
 	virtual void clear();
 
 	/**
@@ -144,59 +125,64 @@ public:
 	 */
 	virtual double getThreshold() const;
 
-    /**
-     * @brief For modelling of a trimesh.
-     */
-	struct Model {
-    	//! The geometry id of the mesh.
-		std::string geoId;
-
-		//! Pointer to the trimesh.
-		rw::geometry::TriMesh::Ptr mesh;
-
-		//! The location of the mesh.
-		rw::math::Transform3D<> transform;
-
-		//! The frame
-		const rw::kinematics::Frame* frame;
-	};
+	/**
+	 * @brief The current update threshold used for contact tracking.
+	 *
+	 * The threshold is a absolute threshold that is combined with the motion-relative
+	 * thresholds getUpdateThresholdLinear() and getUpdateThresholdAngular().
+	 *
+	 * Default value of this is 1 mm.
+	 *
+	 * @return the threshold.
+	 */
+	virtual double getUpdateThresholdAbsolute() const;
 
 	/**
-	 * @brief The contact model used by this strategy.
+	 * @brief The current update threshold used for contact tracking.
+	 *
+	 * The threshold is a factor that is multiplied with the change in relative
+	 * displacement of two frames. If the distance between an old and updated contact
+	 * is less than this threshold it will be classified as the same contact.
+	 *
+	 * The default is 2.
+	 * The threshold be changed by setting the ContactStrategyPQPUpdateThresholdLinear property in the PropertyMap.
+	 *
+	 * Note that the getUpdateThresholdAngular is accumulated with this threshold.
+	 *
+	 * @return the factor.
 	 */
-	class TriMeshModel: public ContactModel {
-	public:
-		/**
-		 * @brief Construct new model for object consisting of a trimesh.
-		 *
-		 * @param owner [in] the strategy that owns this model.
-		 */
-		TriMeshModel(ContactStrategy *owner):
-			ContactModel(owner)
-		{
-		}
+	virtual double getUpdateThresholdLinear() const;
 
-		/**
-		 * @copydoc rwsim::contacts::ContactModel::getName
-		 */
-		virtual std::string getName() const { return "TriMeshModel"; };
-
-		/**
-		 * @brief List of trimesh models belonging to this model.
-		 */
-		std::vector<Model> models;
-
-		/**
-		 * @brief Proximity Model for use with collision detector.
-		 */
-		ProximityModel::Ptr pmodel;
-	};
+	/**
+	 * @brief The current update threshold used for contact tracking.
+	 *
+	 * The threshold is a factor that is multiplied with the angular change of the relative
+	 * rotation. If the distance between an old and updated contact is less than this
+	 * threshold it will be classified as the same contact.
+	 *
+	 * The default is 0.25 m/rad.
+	 * The threshold can be changed by setting the ContactStrategyPQPUpdateThresholdAngular property in the PropertyMap.
+	 *
+	 * Note that the getUpdateThresholdLinear is accumulated with this threshold.
+	 *
+	 * @return the factor.
+	 */
+	virtual double getUpdateThresholdAngular() const;
 
 private:
-	std::vector<Contact> manifoldFilter(const std::vector<Contact> &contacts);
+	struct Model;
+	class TriMeshModel;
+	class PQPTracking;
+
+	virtual void findContact(std::vector<Contact> &contacts,
+				const Model& a,	const rw::math::Transform3D<>& wTa,
+				const Model& b,	const rw::math::Transform3D<>& wTb,
+				bool distCheck = true) const;
+
+	static std::vector<Contact> manifoldFilter(const std::vector<Contact> &contacts);
 
 	bool _matchAll;
-	rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
+	rwlibs::proximitystrategies::ProximityStrategyPQP* _narrowStrategy;
 	ContactFilter _filtering;
 };
 //! @}
