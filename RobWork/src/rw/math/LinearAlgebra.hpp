@@ -125,7 +125,7 @@ namespace rw { namespace math {
          * @param sigma [out] The \f$\mathbf{sigma}\f$ vector with diagonal elements
          * @param V [out] Result matrix \f$\mathbf{V}\f$
 		 */
-		static void svd(const Eigen::MatrixXd& M, Eigen::MatrixXd& U, Eigen::VectorXd sigma, Eigen::MatrixXd& V) {
+		static void svd(const Eigen::MatrixXd& M, Eigen::MatrixXd& U, Eigen::VectorXd& sigma, Eigen::MatrixXd& V) {
 			const Eigen::JacobiSVD<Eigen::MatrixXd> svd = M.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
 			U = svd.matrixU();
 			sigma = svd.singularValues();
