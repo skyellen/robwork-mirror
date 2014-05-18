@@ -372,6 +372,15 @@ namespace simulator {}
 
 }
 
+
+//! @brief RobWorkSim libraries: Physics engines, plugins, and script interface.
+namespace rwsimlibs {
+
+//! @brief The TNTPhysics engine implementation.
+namespace tntphysics {}
+
+}
+
 /**
 
 @defgroup rwsim RobWorkSim
@@ -411,6 +420,17 @@ namespace simulator {}
     @defgroup rwsim_rwphysics rwphysics
     @{
         @copydoc rwsim::drawable
+    @}
+
+@}
+
+@defgroup rwsimlibs RobWorkSim libraries
+@{
+    @brief Physics engines, GUI & Plugins, and script interface.
+
+    @defgroup rwsimlibs_tntphysics TNTPhysics
+    @{
+        @copydoc rwsimlibs::tntphysics
     @}
 
 @}
