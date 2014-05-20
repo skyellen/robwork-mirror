@@ -38,9 +38,7 @@ namespace contacts {
 template <class A, class B>
 class ContactModelGeometry: public rwsim::contacts::ContactModel {
 public:
-	/**
-	 * Model for each geometry.
-	 */
+	//! @brief Model for each geometry.
 	template <class T>
 	struct GeometryModel {
 		//! The geometry id.
@@ -56,34 +54,29 @@ public:
 		const rw::kinematics::Frame* frame;
 	};
 
+	//! @brief The type of GeometryModel for geometry A.
 	typedef GeometryModel<A> TypeA;
+
+	//! @brief The type of GeometryModel for geometry B.
 	typedef GeometryModel<B> TypeB;
 
 	/**
 	 * @brief Construct new model for contacts between geometries.
-	 *
 	 * @param owner [in] the strategy that owns this model.
 	 */
 	ContactModelGeometry(ContactStrategy *owner): ContactModel(owner) {}
 
-	/**
-	 * @brief Destructor
-	 */
+	//! @brief Destructor
 	virtual ~ContactModelGeometry() {};
 
-	/**
-	 * @copydoc rwsim::contacts::ContactModel::getName
-	 */
+	//! @copydoc rwsim::contacts::ContactModel::getName
 	virtual std::string getName() const { return "ContactModelGeometry"; };
 
-	/**
-	 * @brief List of geometry models belonging to this model.
-	 */
+public:
+	//! @brief List of geometry models belonging to this model.
 	std::vector<GeometryModel<A> > modelsA;
 
-	/**
-	 * @brief List of hole models belonging to this model.
-	 */
+	//! @brief List of hole models belonging to this model.
 	std::vector<GeometryModel<B> > modelsB;
 };
 //! @}

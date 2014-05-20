@@ -62,7 +62,8 @@ public:
 	 * @copydoc rwsim::contacts::ContactStrategy::destroyModel
 	 */
 	virtual void destroyModel(rw::proximity::ProximityModel* model) {
-		GeometryModel* bmodel = (GeometryModel*) model;
+		GeometryModel* bmodel = dynamic_cast<GeometryModel*>(model);
+		RW_ASSERT(bmodel);
 		bmodel->modelsA.clear();
 		bmodel->modelsB.clear();
 	}
@@ -71,7 +72,8 @@ public:
 	 * @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
 	 */
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom) {
-		GeometryModel* bmodel = (GeometryModel*) model;
+		GeometryModel* bmodel = dynamic_cast<GeometryModel*>(model);
+		RW_ASSERT(bmodel);
 		rw::geometry::GeometryData::Ptr geomData = geom.getGeometryData();
 		typename GeometryModel::TypeA newModelA;
 		typename GeometryModel::TypeB newModelB;

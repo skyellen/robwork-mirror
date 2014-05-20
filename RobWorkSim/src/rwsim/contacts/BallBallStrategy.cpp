@@ -35,49 +35,61 @@ struct BallBallStrategy::Model {
 
 class BallBallStrategy::BallModel: public ContactModel {
 public:
+	typedef rw::common::Ptr<BallModel> Ptr;
 	BallModel(ContactStrategy *owner): ContactModel(owner) {}
 	virtual std::string getName() const { return "BallModel"; }
 	std::vector<Model> models;
 };
 
-class BallBallStrategy::BallTracking: public ContactStrategyTracking {
+class BallBallStrategy::BallTracking: public ContactStrategyTracking::StrategyData {
 public:
 	BallTracking() {};
 	virtual ~BallTracking() {};
 
-	virtual const void* getUserData(std::size_t index) const {
+	virtual const ContactStrategyTracking::UserData::Ptr getUserData(std::size_t index) const {
+		RW_ASSERT(index < userData.size());
 		return userData[index];
 	}
 
-	virtual void setUserData(std::size_t index, const void* data) {
+	virtual void setUserData(std::size_t index, const ContactStrategyTracking::UserData::Ptr data) {
+		RW_ASSERT(index < userData.size());
 		userData[index] = data;
 	}
 
 	virtual void remove(std::size_t index) {
+		RW_ASSERT(index < userData.size());
 		userData.erase(userData.begin()+index);
 		modelIDs.erase(modelIDs.begin()+index);
 	}
 
-	virtual ContactStrategyTracking* copy() const {
+	virtual StrategyData* copy() const {
 		BallTracking* tracking = new BallTracking();
 		tracking->modelIDs = modelIDs;
 		tracking->userData = userData;
 		return tracking;
 	}
 
+	virtual std::size_t getSize() const {
+		return userData.size();
+	}
+
 	bool find(std::size_t a, std::size_t b, std::size_t& res) const {
+		bool found = false;
 		for (std::size_t i = 0; i < modelIDs.size(); i++) {
 			if (modelIDs[i].first == a && modelIDs[i].second == b) {
+				if (found) {
+					RW_THROW("Tracking information between a pair of balls was stored more than once, but there can only be one contact between such a pair!");
+				}
 				res = i;
-				return true;
+				found = true;
 			}
 		}
-		return false;
+		return found;
 	}
 
 public:
 	std::vector<std::pair<std::size_t, std::size_t> > modelIDs;
-	std::vector<const void*> userData;
+	std::vector<ContactStrategyTracking::UserData::Ptr> userData;
 };
 
 BallBallStrategy::BallBallStrategy()
@@ -117,20 +129,22 @@ bool BallBallStrategy::findContact(Contact &c,
 }
 
 std::vector<Contact> BallBallStrategy::findContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb,
-		ContactStrategyData* data,
-		ContactStrategyTracking* tracking) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb,
+		ContactStrategyData& data,
+		ContactStrategyTracking& tracking) const
 {
-	RW_ASSERT(dynamic_cast<BallModel*>(a));
-	RW_ASSERT(dynamic_cast<BallModel*>(b));
-	RW_ASSERT(dynamic_cast<BallTracking*>(tracking));
 	std::vector<Contact> res;
-	BallModel* const mA = (BallModel*) a;
-	BallModel* const mB = (BallModel*) b;
-	BallTracking* const ballTracking = (BallTracking*) tracking;
+	const BallModel::Ptr mA = a.cast<BallModel>();
+	const BallModel::Ptr mB = b.cast<BallModel>();
+	RW_ASSERT(mA != NULL);
+	RW_ASSERT(mB != NULL);
+	if (!tracking.isInitialized())
+		tracking.setStrategyData(new BallTracking());
+	BallTracking* const ballTracking = dynamic_cast<BallTracking*>(tracking.getStrategyData());
+	RW_ASSERT(ballTracking);
 	std::vector<std::pair<std::size_t,std::size_t> > newModels;
-	std::vector<const void*> newUserData;
+	std::vector<ContactStrategyTracking::UserData::Ptr> newUserData;
 	for (std::size_t i = 0; i < mA->models.size(); i++) {
 		for (std::size_t j = 0; j < mB->models.size(); j++) {
 			std::size_t oldId;
@@ -158,21 +172,24 @@ std::vector<Contact> BallBallStrategy::findContacts(
 }
 
 std::vector<Contact> BallBallStrategy::updateContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb,
-		ContactStrategyData* data,
-		ContactStrategyTracking* tracking) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb,
+		ContactStrategyData& data,
+		ContactStrategyTracking& tracking) const
 {
-	RW_ASSERT(dynamic_cast<BallModel*>(a));
-	RW_ASSERT(dynamic_cast<BallModel*>(b));
 	std::vector<Contact> res;
-	BallModel* const mA = (BallModel*) a;
-	BallModel* const mB = (BallModel*) b;
-	const BallTracking* const ballTracking = (const BallTracking*) tracking;
+	const BallModel::Ptr mA = a.cast<BallModel>();
+	const BallModel::Ptr mB = b.cast<BallModel>();
+	RW_ASSERT(mA != NULL);
+	RW_ASSERT(mB != NULL);
+	if (!tracking.isInitialized())
+		tracking.setStrategyData(new BallTracking());
+	BallTracking* const ballTracking = dynamic_cast<BallTracking*>(tracking.getStrategyData());
+	RW_ASSERT(ballTracking);
 	for (std::size_t i = 0; i < ballTracking->modelIDs.size(); i++) {
 		const std::pair<std::size_t, std::size_t>& modelIDs = ballTracking->modelIDs[i];
 		const Model modelA = mA->models[modelIDs.first];
-		const Model modelB = mA->models[modelIDs.second];
+		const Model modelB = mB->models[modelIDs.second];
 		Contact c;
 		if (findContact(c, modelA, wTa, modelB, wTb, false)) {
 			c.setModelA(mA);
@@ -181,10 +198,6 @@ std::vector<Contact> BallBallStrategy::updateContacts(
 		}
 	}
 	return res;
-}
-
-ContactStrategyTracking* BallBallStrategy::createTracking() const {
-	return new BallTracking();
 }
 
 std::string BallBallStrategy::getName() {
@@ -196,12 +209,14 @@ ProximityModel::Ptr BallBallStrategy::createModel() {
 }
 
 void BallBallStrategy::destroyModel(ProximityModel* model) {
-	BallModel* bmodel = (BallModel*) model;
+	BallModel* bmodel = dynamic_cast<BallModel*>(model);
+	RW_ASSERT(bmodel);
 	bmodel->models.clear();
 }
 
 bool BallBallStrategy::addGeometry(ProximityModel* model, const Geometry& geom) {
-	BallModel* bmodel = (BallModel*) model;
+	BallModel* bmodel = dynamic_cast<BallModel*>(model);
+	RW_ASSERT(bmodel);
 	GeometryData::Ptr geomData = geom.getGeometryData();
 	if (geomData->getType() != GeometryData::SpherePrim)
 		return false;
@@ -220,7 +235,8 @@ bool BallBallStrategy::addGeometry(ProximityModel* model, Geometry::Ptr geom, bo
 }
 
 bool BallBallStrategy::removeGeometry(ProximityModel* model, const std::string& geomId) {
-	BallModel* bmodel = (BallModel*) model;
+	BallModel* bmodel = dynamic_cast<BallModel*>(model);
+	RW_ASSERT(bmodel);
 	for (std::vector<Model>::iterator it = bmodel->models.begin(); it < bmodel->models.end(); it++) {
 		if ((*it).geoId == geomId) {
 			bmodel->models.erase(it);
@@ -231,7 +247,8 @@ bool BallBallStrategy::removeGeometry(ProximityModel* model, const std::string& 
 }
 
 std::vector<std::string> BallBallStrategy::getGeometryIDs(ProximityModel* model) {
-	BallModel* bmodel = (BallModel*) model;
+	BallModel* bmodel = dynamic_cast<BallModel*>(model);
+	RW_ASSERT(bmodel);
 	std::vector<std::string> res;
 	for (std::vector<Model>::iterator it = bmodel->models.begin(); it < bmodel->models.end(); it++)
 		res.push_back((*it).geoId);

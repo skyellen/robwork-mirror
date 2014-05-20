@@ -378,11 +378,6 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 	AssemblyState realState;
 	AssemblyState assumedState;
 	realState.femaleTmale = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
-	Frame* controlFrame;
-	if (simState.maleDevice == NULL)
-		controlFrame = simState.maleBodyControl->getBodyFrame();
-	else
-		controlFrame = simState.maleDevice->getEnd();
 	if (task->maleFlexFrames.size() > 0) {
 		for (std::size_t i = 1; i < task->maleFlexFrames.size(); i++) {
 			Frame* prev = _dwc->getWorkcell()->findFrame(task->maleFlexFrames[i-1]);

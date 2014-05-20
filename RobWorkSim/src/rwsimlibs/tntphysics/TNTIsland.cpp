@@ -475,7 +475,7 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 			if (bodyB == NULL)
 				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
 			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,rwstate);
-			tracking.setUserData(id,tntcontact);
+			tracking.setUserData(id,TNTUtil::TNTUserData::make(tntcontact));
 			const Vector3D<> velI = tntcontact->getVelocityParentW(tntstate,rwstate).linear();
 			const Vector3D<> velJ = tntcontact->getVelocityChildW(tntstate,rwstate).linear();
 			const Vector3D<> nij = tntcontact->getNormalW(tntstate);

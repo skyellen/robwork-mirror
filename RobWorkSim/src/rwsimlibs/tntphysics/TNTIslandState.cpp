@@ -17,6 +17,7 @@
 
 #include "TNTIslandState.hpp"
 #include "TNTConstraint.hpp"
+#include "TNTUtil.hpp"
 
 using namespace rw::math;
 using namespace rwsim::contacts;
@@ -180,8 +181,13 @@ void TNTIslandState::removeTemporaryConstraint(const TNTConstraint* constraint) 
 	}
 	std::vector<Contact>::iterator it = _contacts.begin();
 	for (std::size_t i = 0; i < _tracking.getInfo().size(); i++) {
-		const void* const userData = _tracking.getUserData(i);
-		if (userData == constraint) {
+		const ContactStrategyTracking::UserData::Ptr userData = _tracking.getUserData(i);
+		const TNTUtil::TNTUserData* tntData = dynamic_cast<const TNTUtil::TNTUserData*>(userData.get());
+		if (!tntData) {
+			it++;
+			continue;
+		}
+		if ((TNTConstraint*)tntData->contact == constraint) {
 			_tracking.remove(i);
 			i--;
 			it = _contacts.erase(it);

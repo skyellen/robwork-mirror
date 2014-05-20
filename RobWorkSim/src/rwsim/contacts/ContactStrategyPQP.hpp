@@ -55,26 +55,23 @@ public:
 	//! @copydoc rwsim::contacts::ContactStrategy::match
 	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB);
 
-	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,rw::proximity::ProximityModel*,const rw::math::Transform3D<>&,ContactStrategyData*,ContactStrategyTracking*) const
+	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,ContactStrategyData*,ContactStrategyTracking&) const
 	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData* data,
-			ContactStrategyTracking* tracking) const;
+			ContactStrategyData& data,
+			ContactStrategyTracking& tracking) const;
 
 	//! @copydoc rwsim::contacts::ContactStrategy::updateContacts
 	virtual std::vector<Contact> updateContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData* data,
-			ContactStrategyTracking* tracking) const;
-
-	//! @copydoc rwsim::contacts::ContactStrategy::createTracking
-	virtual ContactStrategyTracking* createTracking() const;
+			ContactStrategyData& data,
+			ContactStrategyTracking& tracking) const;
 
 	//! @copydoc rwsim::contacts::ContactStrategy::getName
 	virtual std::string getName();
@@ -172,11 +169,13 @@ public:
 private:
 	struct Model;
 	class TriMeshModel;
+	class PQPData;
 	class PQPTracking;
 
 	virtual void findContact(std::vector<Contact> &contacts,
 				const Model& a,	const rw::math::Transform3D<>& wTa,
 				const Model& b,	const rw::math::Transform3D<>& wTb,
+				PQPData* data,
 				bool distCheck = true) const;
 
 	static std::vector<Contact> manifoldFilter(const std::vector<Contact> &contacts);

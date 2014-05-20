@@ -9,7 +9,6 @@ bool OBRManifold::addPoint(ContactPoint& p){
     //if( !inManifold(p) )
     //    RW_THROW("Not in manifold");
 
-    // handle if we have less than 5 points
     if(_nrOfContacts==5){
         // if the contact point is too close to any of the current contacts then
         // discard it

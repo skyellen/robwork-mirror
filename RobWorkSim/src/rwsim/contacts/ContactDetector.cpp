@@ -81,14 +81,20 @@ void ContactDetector::initializeModels(StrategyTableRow &strategy) {
 			BOOST_FOREACH(Geometry::Ptr geoA, oA->getGeometry() ){
 				BOOST_FOREACH(Geometry::Ptr geoB, oB->getGeometry() ){
 					if (strategy.strategy->match(geoA->getGeometryData(),geoB->getGeometryData())) {
-						ProximityModel::Ptr modelA = strategy.strategy->createModel();
-						ProximityModel::Ptr modelB = strategy.strategy->createModel();
-						strategy.strategy->addGeometry(modelA.get(),geoA);
-						strategy.strategy->addGeometry(modelB.get(),geoB);
-						std::pair<std::string,ContactModel::Ptr> pairA = std::pair<std::string,ContactModel::Ptr>(geoA->getId(),modelA.cast<ContactModel>());
-						std::pair<std::string,ContactModel::Ptr> pairB = std::pair<std::string,ContactModel::Ptr>(geoB->getId(),modelB.cast<ContactModel>());
-						strategy.models[*(geoA->getFrame())].insert(pairA);
-						strategy.models[*(geoB->getFrame())].insert(pairB);
+						std::map<std::string,ContactModel::Ptr>& mapA = strategy.models[*(geoA->getFrame())];
+						std::map<std::string,ContactModel::Ptr>& mapB = strategy.models[*(geoB->getFrame())];
+						if (mapA.find(geoA->getId()) == mapA.end()) {
+							ProximityModel::Ptr model = strategy.strategy->createModel();
+							strategy.strategy->addGeometry(model.get(),geoA);
+							std::pair<std::string,ContactModel::Ptr> pair = std::pair<std::string,ContactModel::Ptr>(geoA->getId(),model.cast<ContactModel>());
+							mapA.insert(pair);
+						}
+						if (mapB.find(geoB->getId()) == mapB.end()) {
+							ProximityModel::Ptr model = strategy.strategy->createModel();
+							strategy.strategy->addGeometry(model.get(),geoB);
+							std::pair<std::string,ContactModel::Ptr> pair = std::pair<std::string,ContactModel::Ptr>(geoB->getId(),model.cast<ContactModel>());
+							mapB.insert(pair);
+						}
 					}
 				}
 			}
@@ -279,11 +285,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						}
 						ContactModel::Ptr modelA = mapA[geoA->getId()];
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
-						ContactStrategyData* stratData = data.getStrategyData(modelA.get(),modelB.get());
-						if (stratData == NULL) {
-							stratData = stratMatch.strategy->createData();
-							data.setStrategyData(modelA.get(),modelB.get(),stratData);
-						}
+						ContactStrategyData& stratData = data.getStrategyData(modelA.get(),modelB.get());
 						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData);
 						pairIt = geoPairs.erase(pairIt);
 						pairIt--;
@@ -359,16 +361,8 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						}
 						ContactModel::Ptr modelA = mapA[geoA->getId()];
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
-						ContactStrategyData* stratData = data.getStrategyData(modelA.get(),modelB.get());
-						ContactStrategyTracking* stratTracking = tracking.getStrategyTracking(modelA.get(),modelB.get());
-						if (stratData == NULL) {
-							stratData = stratMatch.strategy->createData();
-							data.setStrategyData(modelA.get(),modelB.get(),stratData);
-						}
-						if (stratTracking == NULL) {
-							stratTracking = stratMatch.strategy->createTracking();
-							tracking.setStrategyTracking(modelA.get(),modelB.get(),stratTracking);
-						}
+						ContactStrategyData& stratData = data.getStrategyData(modelA.get(),modelB.get());
+						ContactStrategyTracking& stratTracking = tracking.getStrategyTracking(modelA.get(),modelB.get());
 						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData, stratTracking);
 						pairIt = geoPairs.erase(pairIt);
 						pairIt--;
@@ -377,7 +371,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 							info.frames = pair;
 							info.models = std::make_pair<ContactModel*,ContactModel*>(modelA.get(),modelB.get());
 							info.strategy = stratMatch.strategy;
-							info.tracking = stratTracking;
+							info.tracking = &stratTracking;
 							info.total = contacts.size();
 							for (std::size_t i = 0; i < contacts.size(); i++) {
 								info.id = i;
@@ -405,7 +399,7 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 	std::vector<ContactDetectorTracking::ContactInfo>& infos = tracking.getInfo();
 	std::vector<ContactDetectorTracking::ContactInfo>::iterator it;
 	for (it = infos.begin(); it != infos.end(); it++) {
-		const ContactDetectorTracking::ContactInfo& info = *it;
+		ContactDetectorTracking::ContactInfo& info = *it;
 		if (info.id > 0)
 			continue;
 		const Frame* const frameA = info.frames.first;
@@ -414,10 +408,10 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 		ContactModel* const modelB = info.models.second;
 		const Transform3D<> aT = fk.get(frameA);
 		const Transform3D<> bT = fk.get(frameB);
-		ContactStrategyData* stratData = data.getStrategyData(modelA,modelB);
-		if (stratData == NULL)
-			RW_THROW("ContactDetector (updateContacts): could not find ContactStrategyData for the two models in ContactDetectorData!");
-		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, info.tracking);
+		ContactStrategyData& stratData = data.getStrategyData(modelA,modelB);
+		if (!stratData.isInitialized())
+			RW_THROW("ContactDetector (updateContacts): could not find initialized ContactStrategyData for the two models in ContactDetectorData!");
+		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, *info.tracking);
 		const std::size_t total = info.total;
 		if (contacts.size() < total) {
 			const std::size_t remove = total-contacts.size();

@@ -41,6 +41,9 @@ namespace contacts {
  */
 class ContactDetectorData {
 public:
+	//! @brief Smart pointer type.
+	typedef rw::common::Ptr<ContactDetectorData> Ptr;
+
 	//! @brief Constructor.
 	ContactDetectorData();
 
@@ -64,20 +67,12 @@ public:
 	 * @brief Get the stored ContactStrategyData for a specific pair of ContactModels.
 	 * @param modelA [in] the first ContactModel.
 	 * @param modelB [in] the second ContactModel.
-	 * @return a pointer to the ContactStrategyData - caller does NOT own the pointer.
+	 * @return a reference to the ContactStrategyData.
 	 */
-	ContactStrategyData* getStrategyData(const ContactModel* modelA, const ContactModel* modelB) const;
-
-	/**
-	 * @brief Set the used ContactStrategyData for a specific pair of ContactModels.
-	 * @param modelA [in] the first ContactModel.
-	 * @param modelB [in] the second ContactModel.
-	 * @param data [in] a pointer to the ContactStrategyData - ownership is transferred to ContactDetectorData.
-	 */
-	void setStrategyData(const ContactModel* modelA, const ContactModel* modelB, ContactStrategyData* data);
+	ContactStrategyData& getStrategyData(const ContactModel* modelA, const ContactModel* modelB);
 
 private:
-	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*> _modelPairToData;
+	std::map<const ContactModel*, std::map<const ContactModel*, ContactStrategyData> > _modelPairToData;
 };
 //! @}
 } /* namespace contacts */

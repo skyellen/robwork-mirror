@@ -194,11 +194,6 @@ public:
 	void setDepth(double depth);
 
 	/**
-	 * @brief Clear all result values
-	 */
-	virtual void clear();
-
-	/**
 	 * @brief Stream operator.
 	 * @param out [in/out] the stream to write to.
 	 * @param contact [in] the contact to print.

@@ -54,14 +54,10 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<ContactStrategy> Ptr;
 
-	/**
-	 * @brief Create new contact strategy.
-	 */
+	//! @brief Create new contact strategy.
 	ContactStrategy() {};
 
-	/**
-	 * @brief Destruct contact strategy.
-	 */
+	//! @brief Destruct contact strategy.
 	virtual ~ContactStrategy() {};
 
 	/**
@@ -83,9 +79,9 @@ public:
 	 * @return a list of contacts.
 	 */
 	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb) const;
 
 	/**
@@ -103,14 +99,14 @@ public:
 	 * @return a list of contacts.
 	 */
 	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData* data) const;
+			ContactStrategyData& data) const;
 
 	/**
-	 * @brief Check if there is contact between two contact models using additional data.
+	 * @brief Check if there is contact between two contact models using additional data and tracking of contacts.
 	 *
 	 * Use of this function is encouraged if changes between consecutive calls are expected to be small.
 	 * This will in some cases allow the detection algorithm to do certain speed-ups.
@@ -125,12 +121,12 @@ public:
 	 * @return a list of contacts.
 	 */
 	virtual std::vector<Contact> findContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData* data,
-			ContactStrategyTracking* tracking) const = 0;
+			ContactStrategyData& data,
+			ContactStrategyTracking& tracking) const = 0;
 
 	/**
 	 * @brief Update known contacts between two contact models.
@@ -145,36 +141,12 @@ public:
 	 * @return a list of updated contacts.
 	 */
 	virtual std::vector<Contact> updateContacts(
-			rw::proximity::ProximityModel* a,
+			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel* b,
+			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
-			ContactStrategyData* data,
-			ContactStrategyTracking* tracking) const = 0;
-
-	/**
-	 * @brief Create a data container for this strategy.
-	 * @return a pointer to the data container.
-	 */
-	virtual ContactStrategyData* createData() const;
-
-	/**
-	 * @brief Destroy a data container.
-	 * @param data [in/out] a pointer to the container.
-	 */
-	void destroyData(ContactStrategyData*& data) const;
-
-	/**
-	 * @brief Create tracking information for this strategy.
-	 * @return a pointer to the information.
-	 */
-	virtual ContactStrategyTracking* createTracking() const = 0;
-
-	/**
-	 * @brief Destroy tracking information.
-	 * @param data [in/out] a pointer to the information.
-	 */
-	void destroyTracking(ContactStrategyTracking*& data) const;
+			ContactStrategyData& data,
+			ContactStrategyTracking& tracking) const = 0;
 
 	/**
 	 * @brief Get the name of the strategy as a string.
@@ -183,39 +155,25 @@ public:
 	 */
 	virtual std::string getName() = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::createModel
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::createModel
 	virtual rw::proximity::ProximityModel::Ptr createModel() = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::destroyModel
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::destroyModel
 	virtual void destroyModel(rw::proximity::ProximityModel* model) = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom) = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false) = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::removeGeometry
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::removeGeometry
 	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId) = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::getGeometryIDs
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::getGeometryIDs
 	virtual std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model) = 0;
 
-	/**
-	 * @copydoc rw::proximity::ProximityStrategy::clear
-	 */
+	//! @copydoc rw::proximity::ProximityStrategy::clear
 	virtual void clear() = 0;
 
 	/**

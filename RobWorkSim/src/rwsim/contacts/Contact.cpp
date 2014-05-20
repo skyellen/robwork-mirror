@@ -29,7 +29,6 @@ Contact::Contact():
 }
 
 Contact::~Contact() {
-	clear();
 }
 
 ContactModel::Ptr Contact::getModelA() const {
@@ -115,7 +114,4 @@ void Contact::setDepth() {
 
 void Contact::setDepth(double depth) {
 	_depth = depth;
-}
-
-void Contact::clear(){
 }

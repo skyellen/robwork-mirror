@@ -24,6 +24,8 @@
  * \copydoc rwsim::contacts::ContactDetectorTracking
  */
 
+#include "ContactStrategyTracking.hpp"
+
 #include <rw/common/Ptr.hpp>
 #include <vector>
 #include <map>
@@ -37,7 +39,6 @@ namespace contacts {
 // Forward declarations
 class ContactModel;
 class ContactStrategy;
-class ContactStrategyTracking;
 
 //! @addtogroup rwsim_contacts
 
@@ -48,6 +49,9 @@ class ContactStrategyTracking;
  */
 class ContactDetectorTracking {
 public:
+	//! @brief Smart pointer type.
+	typedef rw::common::Ptr<ContactDetectorTracking> Ptr;
+
 	//! @brief Constructor.
 	ContactDetectorTracking();
 
@@ -67,8 +71,48 @@ public:
 	//! @brief Clear all stored meta-data.
 	void clear();
 
+	/**
+	 * @brief Remove meta-data for a specific contact.
+	 * @param index [in] the contact to remove.
+	 */
+	void remove(std::size_t index);
+
+	/**
+	 * @brief Get user data for the contact with given index.
+	 * @param index [in] the contact to get user data for.
+	 * @return Pointer to user data, or NULL if no user data is set.
+	 */
+	ContactStrategyTracking::UserData::Ptr getUserData(std::size_t index) const;
+
+	/**
+	 * @brief Get user data for all contacts.
+	 * @return list of pointers to user data - can be NULL if none is set.
+	 */
+	std::vector<ContactStrategyTracking::UserData::Ptr> getUserData() const;
+
+	/**
+	 * @brief Attach user data to a given contact.
+	 * @param index [in] the contact to set user data for.
+	 * @param data [in] a pointer to the data.
+	 */
+	void setUserData(std::size_t index, ContactStrategyTracking::UserData::Ptr data);
+
+	/**
+	 * @brief Set user data for all contacts.
+	 * @param data [in] list of pointers to data.
+	 */
+	void setUserData(const std::vector<ContactStrategyTracking::UserData::Ptr> &data);
+
+	/**
+	 * @brief Get the number of contacts tracked.
+	 * @return the number of contacts.
+	 */
+	std::size_t getSize() const;
+
 	//! @brief Meta-data for a contact that allows it to be recalculated.
 	struct ContactInfo {
+		//! @brief Constructor.
+		ContactInfo(): tracking(NULL), id(0), total(0) {}
 		//! @brief The frame pair the contact can be calculated from.
 		std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*> frames;
 		//! @brief The contact models the contact can be calculated from.
@@ -84,6 +128,11 @@ public:
 	};
 
 	/**
+	 * @name Functions for internal usage.
+	 * These functions should under normal circumstances not be used by the user of a ContactDetector.
+	 */
+	///@{
+	/**
 	 * @brief Get a reference to the stored meta-data.
 	 * @return reference to a vector of ContactInfo.
 	 */
@@ -96,56 +145,17 @@ public:
 	const std::vector<ContactInfo>& getInfo() const;
 
 	/**
-	 * @brief Remove meta-data for a specific contact.
-	 * @param index [in] the contact to remove.
-	 */
-	void remove(std::size_t index);
-
-	/**
 	 * @brief Get the stored ContactStrategyTracking for a specific pair of ContactModels.
 	 * @param modelA [in] the first ContactModel.
 	 * @param modelB [in] the second ContactModel.
 	 * @return a pointer to the ContactStrategyTracking - caller does NOT own the pointer.
 	 */
-	ContactStrategyTracking* getStrategyTracking(const ContactModel* modelA, const ContactModel* modelB) const;
-
-	/**
-	 * @brief Set the used ContactStrategyTracking for a specific pair of ContactModels.
-	 * @param modelA [in] the first ContactModel.
-	 * @param modelB [in] the second ContactModel.
-	 * @param data [in] a pointer to the ContactStrategyTracking - ownership is transferred to ContactDetectorTracking.
-	 */
-	void setStrategyTracking(const ContactModel* modelA, const ContactModel* modelB, ContactStrategyTracking* tracking);
-
-	/**
-	 * @brief Get user data for the contact with given index.
-	 * @param index [in] the contact to get user data for.
-	 * @return Pointer to user data, or NULL if no user data is set.
-	 */
-	const void* getUserData(std::size_t index) const;
-
-	/**
-	 * @brief Get user data for all contacts.
-	 * @return list of pointers to user data - can be NULL if none is set.
-	 */
-	std::vector<const void*> getUserData() const;
-
-	/**
-	 * @brief Attach user data to a given contact.
-	 * @param index [in] the contact to set user data for.
-	 * @param data [in] a pointer to the data.
-	 */
-	void setUserData(std::size_t index, const void* data);
-
-	/**
-	 * @brief Set user data for all contacts.
-	 * @param data [in] list of pointers to data.
-	 */
-	void setUserData(const std::vector<const void*> &data);
+	ContactStrategyTracking& getStrategyTracking(const ContactModel* modelA, const ContactModel* modelB);
+	///@}
 
 private:
 	std::vector<ContactInfo> _info;
-	std::map<const ContactModel*, std::map<const ContactModel*, ContactStrategyTracking*> > _modelPairToTracking;
+	std::map<const ContactModel*, std::map<const ContactModel*, ContactStrategyTracking> > _modelPairToTracking;
 };
 //! @}
 } /* namespace contacts */

@@ -19,12 +19,41 @@
 
 using namespace rwsim::contacts;
 
-ContactStrategyData::ContactStrategyData() {
+ContactStrategyData::ContactStrategyData():
+	_data(NULL)
+{
+}
+
+ContactStrategyData::ContactStrategyData(const ContactStrategyData& data):
+	_data(data._data == NULL ? NULL : data._data->copy())
+{
 }
 
 ContactStrategyData::~ContactStrategyData() {
+	if (_data != NULL) {
+		delete _data;
+		_data = NULL;
+	}
 }
 
-ContactStrategyData* ContactStrategyData::copy() const {
-	return new ContactStrategyData();
+ContactStrategyData& ContactStrategyData::operator=(const ContactStrategyData& data) {
+	if (this != &data)
+	{
+		if (_data != NULL)
+			delete _data;
+		_data = data._data->copy();
+	}
+	return *this;
+}
+
+ContactStrategyData::SpecificData* ContactStrategyData::getSpecificData() const {
+	return _data;
+}
+
+void ContactStrategyData::setSpecificData(SpecificData* data) {
+	_data = data;
+}
+
+bool ContactStrategyData::isInitialized() const {
+	return _data != NULL;
 }

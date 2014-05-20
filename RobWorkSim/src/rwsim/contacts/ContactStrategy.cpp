@@ -24,38 +24,20 @@ using namespace rw::proximity;
 using namespace rwsim::contacts;
 
 std::vector<Contact> ContactStrategy::findContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb) const
 {
-	ContactStrategyData* data = createData();
-	const std::vector<Contact> contacts = findContacts(a,wTa,b,wTb,data);
-	destroyData(data);
-	return contacts;
+	ContactStrategyData data;
+	return findContacts(a,wTa,b,wTb,data);
 }
 
 std::vector<Contact> ContactStrategy::findContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb,
-		ContactStrategyData* data) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb,
+		ContactStrategyData& data) const
 {
-	ContactStrategyTracking* tracking = createTracking();
-	const std::vector<Contact> contacts = findContacts(a,wTa,b,wTb,data,tracking);
-	destroyTracking(tracking);
-	return contacts;
-}
-
-ContactStrategyData* ContactStrategy::createData() const {
-	return new ContactStrategyData();
-}
-
-void ContactStrategy::destroyData(ContactStrategyData*& data) const {
-	delete data;
-	data = NULL;
-}
-
-void ContactStrategy::destroyTracking(ContactStrategyTracking*& data) const {
-	delete data;
-	data = NULL;
+	ContactStrategyTracking tracking;
+	return findContacts(a,wTa,b,wTb,data,tracking);
 }
 
 PropertyMap& ContactStrategy::getPropertyMap() {

@@ -24,9 +24,12 @@ ContactDetectorData::ContactDetectorData()
 }
 
 ContactDetectorData::ContactDetectorData(const ContactDetectorData& data) {
-	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
+	std::map<const ContactModel*, std::map<const ContactModel*, ContactStrategyData> >::const_iterator it;
 	for (it = data._modelPairToData.begin(); it != data._modelPairToData.end(); it++) {
-		_modelPairToData[(*it).first] = (*it).second->copy();
+		std::map<const ContactModel*, ContactStrategyData>::const_iterator it2;
+		for (it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+			_modelPairToData[it->first][it2->first] = it2->second;
+		}
 	}
 }
 
@@ -38,41 +41,27 @@ ContactDetectorData& ContactDetectorData::operator=(const ContactDetectorData& d
 	if (this != &data)
 	{
 		clear();
-		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
+		std::map<const ContactModel*, std::map<const ContactModel*, ContactStrategyData> >::const_iterator it;
 		for (it = data._modelPairToData.begin(); it != data._modelPairToData.end(); it++) {
-			_modelPairToData[(*it).first] = (*it).second->copy();
+			std::map<const ContactModel*, ContactStrategyData>::const_iterator it2;
+			for (it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+				_modelPairToData[it->first][it2->first] = it2->second;
+			}
 		}
 	}
 	return *this;
 }
 
 void ContactDetectorData::clear() {
-	std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it;
-	for (it = _modelPairToData.begin(); it != _modelPairToData.end(); it++) {
-		delete (*it).second;
-	}
 	_modelPairToData.clear();
 }
 
-ContactStrategyData* ContactDetectorData::getStrategyData(const ContactModel* modelA, const ContactModel* modelB) const {
-	{
-		std::pair<const ContactModel*,const ContactModel*> pair(modelA,modelB);
-		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it = _modelPairToData.find(pair);
-		if (it != _modelPairToData.end())
-			return (*it).second;
+ContactStrategyData& ContactDetectorData::getStrategyData(const ContactModel* modelA, const ContactModel* modelB) {
+	const ContactModel* first = modelA;
+	const ContactModel* second = modelB;
+	if (first < second) {
+		second = modelA;
+		first = modelB;
 	}
-	{
-		std::pair<const ContactModel*,const ContactModel*> pair(modelB,modelA);
-		std::map<std::pair<const ContactModel*,const ContactModel*>, ContactStrategyData*>::const_iterator it = _modelPairToData.find(pair);
-		if (it != _modelPairToData.end())
-			return (*it).second;
-	}
-	return NULL;
-}
-
-void ContactDetectorData::setStrategyData(const ContactModel* modelA, const ContactModel* modelB, ContactStrategyData* data) {
-	ContactStrategyData* oldData = getStrategyData(modelA,modelB);
-	if (oldData != NULL)
-		delete oldData;
-	_modelPairToData[std::make_pair<const ContactModel*,const ContactModel*>(modelA,modelB)] = data;
+	return _modelPairToData[first][second];
 }

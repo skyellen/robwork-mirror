@@ -18,6 +18,8 @@
 #include "ContactStrategyPQP.hpp"
 #include "ContactStrategyTracking.hpp"
 
+#include <rw/proximity/ProximityCache.hpp>
+
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/OBRManifold.hpp>
@@ -42,20 +44,42 @@ struct ContactStrategyPQP::Model {
 
 class ContactStrategyPQP::TriMeshModel: public ContactModel {
 public:
+	typedef rw::common::Ptr<TriMeshModel> Ptr;
 	TriMeshModel(ContactStrategy *owner): ContactModel(owner) {}
+	~TriMeshModel() {
+		if (models.size() > 0) {
+			RW_THROW("Please use destroyModel on ContactStrategyPQP to deallocate internal caching before deleting the ProximityModel.");
+		}
+	}
 	virtual std::string getName() const { return "TriMeshModel"; }
 	std::vector<Model> models;
 };
 
-class ContactStrategyPQP::PQPTracking: public ContactStrategyTracking {
+class ContactStrategyPQP::PQPData: public ContactStrategyData::SpecificData {
 public:
-	PQPTracking() {};
-	virtual ~PQPTracking() {};
-	virtual const void* getUserData(std::size_t index) const {
+	PQPData() {
+		data.setCollisionQueryType(CollisionStrategy::AllContacts);
+	}
+	virtual ~PQPData() {}
+	virtual SpecificData* copy() const {
+		PQPData* const cp = new PQPData();
+		cp->data = data;
+		return cp;
+	}
+
+public:
+	ProximityStrategyData data;
+};
+
+class ContactStrategyPQP::PQPTracking: public ContactStrategyTracking::StrategyData {
+public:
+	PQPTracking() {}
+	virtual ~PQPTracking() {}
+	virtual const ContactStrategyTracking::UserData::Ptr getUserData(std::size_t index) const {
 		RW_ASSERT(index < info.size());
 		return info[index].userData;
 	}
-	virtual void setUserData(std::size_t index, const void* data) {
+	virtual void setUserData(std::size_t index, const ContactStrategyTracking::UserData::Ptr data) {
 		RW_ASSERT(index < info.size());
 		info[index].userData = data;
 	}
@@ -63,27 +87,32 @@ public:
 		RW_ASSERT(index < info.size());
 		std::vector<TrackInfo>::iterator it = info.begin()+index;
 		const std::size_t total = it->total;
-		RW_ASSERT(index == it->id);
+		const std::size_t id = it->id;
+		RW_ASSERT(id < total);
 		RW_ASSERT(total <= info.size());
 		it = info.erase(it);
-		it = it - index;
+		it = it - id;
 		for (std::size_t i = 0; i < total-1; i++) {
 			it->total--;
 			it->id = i;
 			it++;
 		}
 	}
-	virtual ContactStrategyTracking* copy() const {
+	virtual StrategyData* copy() const {
 		PQPTracking* tracking = new PQPTracking();
 		tracking->aTb = aTb;
 		tracking->info = info;
 		return tracking;
 	}
 
+	virtual std::size_t getSize() const {
+		return info.size();
+	}
+
 	struct TrackInfo {
 		std::size_t modelIDa;
 		std::size_t modelIDb;
-		const void* userData;
+		ContactStrategyTracking::UserData::Ptr userData;
 		rw::math::Vector3D<> posA;
 		rw::math::Vector3D<> posB;
 		std::size_t id;
@@ -139,24 +168,28 @@ bool ContactStrategyPQP::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
 void ContactStrategyPQP::findContact(std::vector<Contact> &contacts,
 			const Model& a,	const Transform3D<>& wTa,
 			const Model& b,	const Transform3D<>& wTb,
+			PQPData* data,
 			bool distCheck) const
 {
 	double threshold;
+
+	// If distance check should be used, the ordinary distance threshold is used.
+	// When known contacts should be updated, there should be no threshold as
+	// the contacts can then be in any distance.
+	// (for now the "unlimited threshold" is achieved by just making the threshold 15 times bigger)
 	if (distCheck)
 		threshold = getThreshold();
 	else
 		threshold = 15*getThreshold();
 
 	MultiDistanceResult *res;
-	ProximityStrategyData data;
 
-	data.setCollisionQueryType(CollisionStrategy::AllContacts);
-	res = &_narrowStrategy->distances(a.pmodel, wTa, b.pmodel, wTb, threshold, data);
+	res = &_narrowStrategy->distances(a.pmodel, wTa, b.pmodel, wTb, threshold, data->data);
 
 	for(size_t i=0;i<res->distances.size();i++){
 		Contact c;
-		Vector3D<> p1 = wTa*res->p1s[i];//a.transform?
-		Vector3D<> p2 = wTa*res->p2s[i];//a.transform?
+		Vector3D<> p1 = wTa*res->p1s[i];
+		Vector3D<> p2 = wTa*res->p2s[i];
 		c.setPointA(p1);
 		c.setPointB(p2);
 
@@ -182,17 +215,25 @@ void ContactStrategyPQP::findContact(std::vector<Contact> &contacts,
 }
 
 std::vector<Contact> ContactStrategyPQP::findContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb,
-		ContactStrategyData* data,
-		ContactStrategyTracking* tracking) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb,
+		ContactStrategyData& data,
+		ContactStrategyTracking& tracking) const
 {
-	RW_ASSERT(dynamic_cast<TriMeshModel*>(a));
-	RW_ASSERT(dynamic_cast<TriMeshModel*>(b));
 	std::vector<Contact> contacts;
-	TriMeshModel* const mA = (TriMeshModel*) a;
-	TriMeshModel* const mB = (TriMeshModel*) b;
-	PQPTracking* const pqpTracking = (PQPTracking*) tracking;
+	const TriMeshModel::Ptr mA = a.cast<TriMeshModel>();
+	const TriMeshModel::Ptr mB = b.cast<TriMeshModel>();
+	RW_ASSERT(mA != NULL);
+	RW_ASSERT(mB != NULL);
+	if (!data.isInitialized())
+		data.setSpecificData(new PQPData());
+	PQPData* const pqpData = dynamic_cast<PQPData*>(data.getSpecificData());
+	RW_ASSERT(pqpData);
+	if (!tracking.isInitialized())
+		tracking.setStrategyData(new PQPTracking());
+	PQPTracking* const pqpTracking = dynamic_cast<PQPTracking*>(tracking.getStrategyData());
+	RW_ASSERT(pqpTracking);
+
 	std::vector<PQPTracking::TrackInfo> newInfo;
 
 	const Transform3D<> aTb = inverse(wTa)*wTb;
@@ -210,11 +251,10 @@ std::vector<Contact> ContactStrategyPQP::findContacts(
 			const Model modelB = mB->models[j];
 
 			std::vector<Contact> tmpContacts;
-			findContact(tmpContacts, modelA, wTa, modelB, wTb, !oldContact);
+			findContact(tmpContacts, modelA, wTa, modelB, wTb, pqpData, !oldContact);
 			BOOST_FOREACH(Contact &c, tmpContacts) {
 				c.setModelA(mA);
 				c.setModelB(mB);
-				//std::cout << " - " << c << std::endl;
 			}
 
 			if (_filtering == MANIFOLD) {
@@ -276,7 +316,7 @@ std::vector<Contact> ContactStrategyPQP::findContacts(
 			}
 			tmpContacts.clear();
 			BOOST_FOREACH(PQPTracking::TrackInfo& info, newInfo) {
-				info.total = contacts.size();
+				info.total = curId;
 			}
 		}
 	}
@@ -286,17 +326,25 @@ std::vector<Contact> ContactStrategyPQP::findContacts(
 }
 
 std::vector<Contact> ContactStrategyPQP::updateContacts(
-		ProximityModel* a, const Transform3D<>& wTa,
-		ProximityModel* b, const Transform3D<>& wTb,
-		ContactStrategyData* data,
-		ContactStrategyTracking* tracking) const
+		ProximityModel::Ptr a, const Transform3D<>& wTa,
+		ProximityModel::Ptr b, const Transform3D<>& wTb,
+		ContactStrategyData& data,
+		ContactStrategyTracking& tracking) const
 {
-	RW_ASSERT(dynamic_cast<TriMeshModel*>(a));
-	RW_ASSERT(dynamic_cast<TriMeshModel*>(b));
 	std::vector<Contact> contacts;
-	TriMeshModel* const mA = (TriMeshModel*) a;
-	TriMeshModel* const mB = (TriMeshModel*) b;
-	PQPTracking* const pqpTracking = (PQPTracking*) tracking;
+	const TriMeshModel::Ptr mA = a.cast<TriMeshModel>();
+	const TriMeshModel::Ptr mB = b.cast<TriMeshModel>();
+	RW_ASSERT(mA != NULL);
+	RW_ASSERT(mB != NULL);
+	if (!data.isInitialized())
+		data.setSpecificData(new PQPData());
+	PQPData* const pqpData = dynamic_cast<PQPData*>(data.getSpecificData());
+	RW_ASSERT(pqpData);
+	if (!tracking.isInitialized())
+		tracking.setStrategyData(new PQPTracking());
+	PQPTracking* const pqpTracking = dynamic_cast<PQPTracking*>(tracking.getStrategyData());
+	RW_ASSERT(pqpTracking);
+
 	std::vector<PQPTracking::TrackInfo> newInfo;
 
 	const Transform3D<> aTb = inverse(wTa)*wTb;
@@ -319,7 +367,7 @@ std::vector<Contact> ContactStrategyPQP::updateContacts(
 		const Model modelB = mB->models[info.modelIDb];
 
 		std::vector<Contact> tmpContacts;
-		findContact(tmpContacts, modelA, wTa, modelB, wTb, false);
+		findContact(tmpContacts, modelA, wTa, modelB, wTb, pqpData, false);
 		BOOST_FOREACH(Contact &c, tmpContacts) {
 			c.setModelA(mA);
 			c.setModelB(mB);
@@ -374,23 +422,18 @@ std::vector<Contact> ContactStrategyPQP::updateContacts(
 	return contacts;
 }
 
-ContactStrategyTracking* ContactStrategyPQP::createTracking() const {
-	return new PQPTracking();
-}
-
 std::string ContactStrategyPQP::getName() {
 	return "ContactStrategyPQP";
 }
 
 ProximityModel::Ptr ContactStrategyPQP::createModel() {
 	TriMeshModel* model = new TriMeshModel(this);
-	//model->pmodel = _narrowStrategy->createModel();
 	return ownedPtr(model);
 }
 
 void ContactStrategyPQP::destroyModel(ProximityModel* model) {
-	TriMeshModel* bmodel = (TriMeshModel*) model;
-	//_narrowStrategy->destroyModel(bmodel->pmodel.get());
+	TriMeshModel* bmodel = dynamic_cast<TriMeshModel*>(model);
+	RW_ASSERT(bmodel);
 	BOOST_FOREACH(const Model& model, bmodel->models) {
 		removeGeometry(bmodel,model.geoId);
 	}
@@ -398,7 +441,8 @@ void ContactStrategyPQP::destroyModel(ProximityModel* model) {
 }
 
 bool ContactStrategyPQP::addGeometry(ProximityModel* model, const Geometry& geom) {
-	TriMeshModel* bmodel = (TriMeshModel*) model;
+	TriMeshModel* bmodel = dynamic_cast<TriMeshModel*>(model);
+	RW_ASSERT(bmodel);
 	GeometryData::Ptr geomData = geom.getGeometryData();
 	if (!_matchAll) {
 		if (geomData->getType() != GeometryData::LineMesh &&
@@ -417,7 +461,6 @@ bool ContactStrategyPQP::addGeometry(ProximityModel* model, const Geometry& geom
 	bmodel->models.push_back(newModel);
 
 	_narrowStrategy->addGeometry(newModel.pmodel.get(),geom);
-	//_narrowStrategy->addGeometry(bmodel->pmodel.get(),geom);
 
 	return true;
 }
@@ -427,7 +470,8 @@ bool ContactStrategyPQP::addGeometry(ProximityModel* model, Geometry::Ptr geom, 
 }
 
 bool ContactStrategyPQP::removeGeometry(ProximityModel* model, const std::string& geomId) {
-	TriMeshModel* bmodel = (TriMeshModel*) model;
+	TriMeshModel* bmodel = dynamic_cast<TriMeshModel*>(model);
+	RW_ASSERT(bmodel);
 	for (std::vector<Model>::iterator it = bmodel->models.begin(); it < bmodel->models.end(); it++) {
 		if ((*it).geoId == geomId) {
 			_narrowStrategy->removeGeometry((*it).pmodel.get(), geomId);
@@ -435,12 +479,12 @@ bool ContactStrategyPQP::removeGeometry(ProximityModel* model, const std::string
 			return true;
 		}
 	}
-	//_narrowStrategy->removeGeometry(bmodel->pmodel.get(), geomId);
 	return false;
 }
 
 std::vector<std::string> ContactStrategyPQP::getGeometryIDs(ProximityModel* model) {
-	TriMeshModel* bmodel = (TriMeshModel*) model;
+	TriMeshModel* bmodel = dynamic_cast<TriMeshModel*>(model);
+	RW_ASSERT(bmodel);
 	std::vector<std::string> res;
 	for (std::vector<Model>::iterator it = bmodel->models.begin(); it < bmodel->models.end(); it++)
 		res.push_back((*it).geoId);

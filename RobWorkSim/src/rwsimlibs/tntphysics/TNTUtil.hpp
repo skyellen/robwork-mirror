@@ -28,6 +28,7 @@
 #include <set>
 
 #include <rw/math/Vector3D.hpp>
+#include <rwsim/contacts/ContactStrategyTracking.hpp>
 
 // Forward declarations
 namespace rw { namespace kinematics { class Frame; } };
@@ -41,6 +42,7 @@ namespace tntphysics {
 // Forward declarations
 class TNTBodyConstraintManager;
 class TNTIslandState;
+class TNTContact;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -68,11 +70,27 @@ class TNTIslandState;
  */
 class TNTUtil {
 public:
+	//! @brief Tracking structure that utilizes the features of the contact detector with tracking.
+	struct TNTUserData: public rwsim::contacts::ContactStrategyTracking::UserData {
+		/**
+		 * @brief Construct new data for the given TNTContact.
+		 * @param contact [in] the contact to assign to this user-data structure.
+		 */
+		TNTUserData(const TNTContact* contact): contact(contact) {}
+
+		//! @brief The TNTContact assigned to the given contact.
+		const TNTContact* const contact;
+
+		static rwsim::contacts::ContactStrategyTracking::UserData::Ptr make(const TNTContact* contact) {
+			return rw::common::ownedPtr(new TNTUserData(contact));
+		}
+	};
+
 	//! @brief Predefined mark that can be used to mark new contacts.
-	static const void* MARK_NEW;
+	static const rwsim::contacts::ContactStrategyTracking::UserData::Ptr MARK_NEW;
 
 	//! @brief Predefined mark that can is used for newly detected contacts.
-	static const void* MARK_RAW;
+	static const rwsim::contacts::ContactStrategyTracking::UserData::Ptr MARK_RAW;
 
 	/**
 	 * @brief Find the contacts with the given mark.
@@ -81,17 +99,7 @@ public:
 	 * @param mark [in] the mark to search for.
 	 * @return a list of indices for contacts that has the given mark.
 	 */
-	static std::vector<std::size_t> getMarkedContacts(const std::vector<rwsim::contacts::Contact>& input, const rwsim::contacts::ContactDetectorTracking& tracking, const void* mark);
-
-	/**
-	 * @brief Find the contacts that was tracked from previous contact detection and has user data associated.
-	 * @param input [in] the list of contacts to classify.
-	 * @param tracking [in] the tracking information from the rwsim::contacts::ContactDetector.
-	 * @param bc [in] the body-constraint manager that has the constraints in the system.
-	 * @param tntstate [in] the state.
-	 * @return a list of indices for contacts that has been classified as known.
-	 */
-	//static std::vector<std::size_t> getKnownContacts(const std::vector<rwsim::contacts::Contact>& input, const rwsim::contacts::ContactDetectorTracking& tracking, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate);
+	static std::vector<std::size_t> getMarkedContacts(const std::vector<rwsim::contacts::Contact>& input, const rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
 
 	/**
 	 * @brief Get the contacts refered to by a list of indices.
@@ -107,7 +115,7 @@ public:
 	 * @param tracking [in/out] the tracking information.
 	 * @param mark [in] only remove contacts that has this mark.
 	 */
-	static void removeNonPenetrating(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, const void* mark);
+	static void removeNonPenetrating(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
 
 	/**
 	 * @brief Remove all known contacts, leaving only the marked ones.
@@ -124,7 +132,7 @@ public:
 	 * @param tracking [in/out] the tracking information.
 	 * @param mark [in] only remove contacts that has this mark.
 	 */
-	static void remove(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, const void* mark);
+	static void remove(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
 
 	/**
 	 * @brief Mark all contacts with a given mark with a different mark.
@@ -133,15 +141,7 @@ public:
 	 * @param oldMark [in] the old mark.
 	 * @param newMark [in] the new mark.
 	 */
-	static void mark(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, const void* oldMark, const void* newMark);
-
-	/**
-	 * @brief If there are multiple new contacts between the same pair of frames, only keep the most penetrating and remove the others.
-	 * @param contacts [in/out] the complete contact list.
-	 * @param tracking [in/out] the tracking information.
-	 * @param mark [in] only the contacts with this mark is removed.
-	 */
-	//static void keepOnlyMostPenetrating(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, const void* mark);
+	static void mark(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr oldMark, rwsim::contacts::ContactStrategyTracking::UserData::Ptr newMark);
 
 	/**
 	 * @brief Do integration for all bodies and update the state structures.
@@ -161,29 +161,13 @@ public:
 	static double minDistance(const std::vector<rwsim::contacts::Contact>& contacts);
 
 	/**
-	 * @brief Get all contacts that has a distance within some threshold.
-	 * @param contacts [in] the list of contacts.
-	 * @param tracking [in/out] the tracking information.
-	 * @param threshold [in] the threshold.
-	 * @return list of contacts within the distance.
-	 */
-	//static std::vector<rwsim::contacts::Contact> contactsWithinThreshold(const std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, double threshold);
-
-	/**
 	 * @brief Remove contacts with specific mark that has a distance greater than some threshold.
 	 * @param contacts [in/out] the list of contacts.
 	 * @param tracking [in/out] the tracking information.
 	 * @param threshold [in] the threshold.
 	 * @param mark [in] only the contacts with this mark can be removed.
 	 */
-	static void removeContactsOutsideThreshold(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, double threshold, const void* mark);
-
-	/**
-	 * @brief Get a set of all frame pairs that are covered by the list of contacts.
-	 * @param contacts [in] the list of contacts.
-	 * @return set of frame pairs.
-	 */
-	//static std::set<std::pair<const rw::kinematics::Frame*,const rw::kinematics::Frame*> > getFramePairs(const std::vector<rwsim::contacts::Contact>& contacts);
+	static void removeContactsOutsideThreshold(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, double threshold, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
 
 	/**
 	 * @brief Update the temporary contacts with new contact information.
@@ -195,37 +179,9 @@ public:
 	 */
 	static void updateTemporaryContacts(const std::vector<rwsim::contacts::Contact>& contacts, const rwsim::contacts::ContactDetectorTracking& tracking, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, const rw::kinematics::State &rwstate);
 
-	/**
-	 * @brief Search for the contacts that are leaving.
-	 * @param contacts [in] list of contacts.
-	 * @param tracking [in] tracking information for the contacts.
-	 * @param bc [in] the body-constraint manager.
-	 * @param tntstate [in] the current state.
-	 * @param rwstate [in] the current state.
-	 * @param mark [in] only contact with this mark will be found.
-	 * @return list of indices to the contacts that are leaving.
-	 */
-	/*static std::vector<std::size_t> getLeavingContacts(
-			const std::vector<rwsim::contacts::Contact>& contacts,
-			const rwsim::contacts::ContactDetectorTracking& tracking,
-			const TNTBodyConstraintManager* bc,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State &rwstate,
-			const void* mark);*/
-
-	/**
-	 * @brief Get only the contacts that are non-leaving.
-	 * @param contacts [in] list of contacts.
-	 * @param bc [in] the body-constraint manager.
-	 * @param tntstate [in] the current state.
-	 * @param rwstate [in] the current state.
-	 * @return list of contacts that are non-leaving.
-	 */
-	//static std::vector<rwsim::contacts::Contact> getNonLeavingContacts(const std::vector<rwsim::contacts::Contact>& contacts, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate, const rw::kinematics::State &rwstate);
-
 private:
-	static const void* getNewMark();
-	class DummyMark {};
+	static rwsim::contacts::ContactStrategyTracking::UserData::Ptr getNewMark();
+	class DummyMark: public rwsim::contacts::ContactStrategyTracking::UserData {};
 	TNTUtil() {};
 	virtual ~TNTUtil() {};
 };
