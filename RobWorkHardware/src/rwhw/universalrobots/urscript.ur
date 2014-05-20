@@ -115,26 +115,26 @@ def myprog():
     def moveT():
         #Reads in x,y,z,ax,ay,az,speed
         motionFinished = 0
-        pose = socket_read_ascii_float(7)
-        textmsg(pose)
-        cnt = 0
-        while cnt < pose[0]-1:
-            posetarget[cnt] = pose[cnt+1]
-            cnt = cnt + 1
-        end
+        #pose = socket_read_ascii_float(7)
+        #textmsg(pose)
+        #cnt = 0
+        #while cnt < pose[0]-1:
+            #posetarget[cnt] = pose[cnt+1]
+            #cnt = cnt + 1
+        #end
         #q[0] is the length of the data, hence q[q[0]] is the last element
-        speed = pose[pose[0]]
-        textmsg("speed ")
-        textmsg(speed)
-        if thrd != -1:
-            Kill thrd
-        end
-        enter_critical
+        #speed = pose[pose[0]]
+        #textmsg("speed ")
+        #textmsg(speed)
+        #if thrd != -1:
+            #Kill thrd
+        #end
+        #enter_critical
         #We only wish to start a new thread if our previous motion is finished
-        if thrd == -1:
-            thrd = run moveLthread()
-        end
-        exit_critical
+        #if thrd == -1:
+            #thrd = run moveLthread()
+        #end
+        #exit_critical
     end
 
     def servoQ():
