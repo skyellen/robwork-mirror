@@ -69,6 +69,9 @@ int main(int argc, char** argv) {
 	        		("hole,h", value<std::string>()->default_value("Hole"), "The name of the Hole (required).")
 	        		("pegController", value<std::string>()->default_value(""), "The name of the controller for the peg (optional).")
 	        		("holeController", value<std::string>()->default_value(""), "The name of the controller for the hole (optional).")
+	        		("pegFlexibilityFrames", value<std::vector<std::string> >()->multitoken(), "Intermediate flexible frames that will have its transformations saved (optional).")
+	        		("holeFlexibilityFrames", value<std::vector<std::string> >()->multitoken(), "Intermediate flexible frames that will have its transformations saved (optional).")
+	        		("bodyContactSensors", value<std::vector<std::string> >()->multitoken(), "Save contacts from body contact sensors.")
 	        		("prad", value<double>(), "Radius of the peg (can be extracted from workcell if Cylinder).")
 	        		("plen", value<double>(), "Length of the peg (can be extracted from workcell if Cylinder).")
 	        		("hrad", value<double>(), "Radius of the hole (can be extracted from workcell if Tube).")
@@ -91,17 +94,17 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	std::string wcFile = vm["wc"].as<std::string>();
-	std::string pegName = vm["peg"].as<std::string>();
-	std::string holeName = vm["hole"].as<std::string>();
+	const std::string wcFile = vm["wc"].as<std::string>();
+	const std::string pegName = vm["peg"].as<std::string>();
+	const std::string holeName = vm["hole"].as<std::string>();
 	double prad = 0;
 	double plen = 0;
 	double hrad = 0;
 	double hlen = 0;
 	if (vm.count("prad")) prad = vm["prad"].as<double>();
-	if (vm.count("plen")) prad = vm["plen"].as<double>();
-	if (vm.count("hrad")) prad = vm["hrad"].as<double>();
-	if (vm.count("hlen")) prad = vm["hlen"].as<double>();
+	if (vm.count("plen")) plen = vm["plen"].as<double>();
+	if (vm.count("hrad")) hrad = vm["hrad"].as<double>();
+	if (vm.count("hlen")) hlen = vm["hlen"].as<double>();
 
 	WorkCell::Ptr wc = NULL;
 	if (wcFile != "") {
@@ -157,7 +160,6 @@ int main(int argc, char** argv) {
 	CircularPiHParameterization::Ptr parameters = ownedPtr(new CircularPiHParameterization(hrad,hlen,prad,plen,Pi/4.));
 	parameters->distanceA = 0.015;
 
-	//const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
 	AssemblyTask::Ptr task = ownedPtr(new AssemblyTask());
 	task->maleID = pegName;
 	task->femaleID = holeName;
@@ -181,6 +183,12 @@ int main(int argc, char** argv) {
 	task->femalePoseController = vm["holeController"].as<std::string>();
 	task->maleFTSensor = vm["pegFTSensor"].as<std::string>();
 	task->femaleFTSensor = vm["holeFTSensor"].as<std::string>();
+	if (vm.count("pegFlexibilityFrames"))
+		task->maleFlexFrames = vm["pegFlexibilityFrames"].as<std::vector<std::string> >();
+	if (vm.count("holeFlexibilityFrames"))
+		task->femaleFlexFrames = vm["holeFlexibilityFrames"].as<std::vector<std::string> >();
+	if (vm.count("bodyContactSensors"))
+		task->bodyContactSensors = vm["bodyContactSensors"].as<std::vector<std::string> >();
 
 	std::vector<AssemblyTask::Ptr> tasks;
 	tasks.push_back(task);

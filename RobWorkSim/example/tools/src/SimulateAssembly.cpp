@@ -15,6 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <rw/RobWork.hpp>
+
 #include <rwlibs/assembly/AssemblyRegistry.hpp>
 #include <rwlibs/assembly/AssemblyResult.hpp>
 #include <rwlibs/assembly/AssemblyTask.hpp>
@@ -23,11 +25,13 @@
 //#include <rwsim/contacts/ContactStrategyCylinderTube.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/simulator/AssemblySimulator.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 
+using namespace rw;
 using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::math;
@@ -41,6 +45,13 @@ using namespace rwsim::simulator;
 using namespace boost::program_options;
 
 int main(int argc, char** argv) {
+	RobWork::getInstance()->initialize();
+	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
+	std::cout << "Engines available: " << engines.size() << std::endl;
+	BOOST_FOREACH(const std::string& str, engines) {
+		std::cout << str << std::endl;
+	}
+	
 	//Math::seed( TimerUtil::currentTimeMs() );
 	options_description desc("Allowed options");
 	desc.add_options()
