@@ -66,7 +66,7 @@ DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
     }
 
     BOOST_FOREACH(Constraint::Ptr b, _constraints){
-    	workcell->getStateStructure()->addData(b.get());
+    	workcell->getStateStructure()->addData(b.getSharedPtr());
     }
 
     BOOST_FOREACH(DynamicDevice::Ptr b, _devices){
@@ -147,7 +147,7 @@ void DynamicWorkCell::addBody(Body::Ptr body){
 }
 
 void DynamicWorkCell::addConstraint(Constraint::Ptr constraint) {
-	_workcell->getStateStructure()->addData(constraint.get());
+	_workcell->getStateStructure()->addData(constraint.getSharedPtr());
 	_constraints.push_back(constraint);
 }
 

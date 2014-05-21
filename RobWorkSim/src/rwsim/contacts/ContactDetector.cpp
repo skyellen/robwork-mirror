@@ -182,16 +182,34 @@ void ContactDetector::addContactStrategy(StrategyTableRow &strategy, std::size_t
 }
 
 void ContactDetector::removeContactStrategy(std::size_t pri) {
-	std::list<StrategyTableRow>::iterator it = _strategies.begin();
 	if (pri > _strategies.size()-1)
 		return;
+	std::list<StrategyTableRow>::iterator it = _strategies.begin();
+	for (std::size_t i = 0; i < pri; i++) {
+		it++;
+	}
+	// Now the strategy must get the ability to destroy internal data it might have associated
+	// with the ContactModels used by the strategy.
+	const std::vector<Frame*>& frames = _wc->getFrames();
+	BOOST_FOREACH(const Frame* const frame, frames) {
+		if (it->models.has(*frame)) {
+			std::map<std::string,ContactModel::Ptr>& mapA = it->models[*frame];
+			std::map<std::string,ContactModel::Ptr>::iterator itMap;
+			for (itMap = mapA.begin(); itMap != mapA.end(); itMap++) {
+				it->strategy->destroyModel(itMap->second.get());
+			}
+			it->models.erase(*frame);
+		}
+	}
+	// Finally erase the row in the strategy table
 	it = _strategies.erase(it);
 	for (; it != _strategies.end(); it++)
 		(*it).priority--;
 }
 
 void ContactDetector::clearStrategies() {
-	_strategies.clear();
+	for(std::size_t i = 0; i < _strategies.size(); i++)
+		removeContactStrategy(0);
 }
 
 void ContactDetector::setContactStrategies(std::list<StrategyTableRow> strategies) {
