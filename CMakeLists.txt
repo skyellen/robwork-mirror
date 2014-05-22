@@ -134,7 +134,11 @@ ENDIF()
 # now configure documentation
 CONFIGURE_FILE(${ROOT}/doc/Doxyfile.in ${ROOT}/doc/Doxyfile) 
 
-FIND_PROGRAM(doc_executable doxygen)
+FIND_PROGRAM(doc_executable doxygen
+    HINTS
+        ${DOXYGEN_PATH}
+        $ENV{DOXYGEN_PATH}
+)
 IF(doc_executable)
     ADD_CUSTOM_TARGET(rwdoc ${doc_executable} WORKING_DIRECTORY ${ROOT}/doc)
 ENDIF()
