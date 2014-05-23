@@ -28,6 +28,9 @@
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rw/common/ExtensionPoint.hpp>
 
+// Forward declarations
+namespace rwsim { namespace contacts { class ContactDetector; } }
+
 namespace rwsim {
 namespace simulator {
 	//! @addtogroup rwsim_simulator
@@ -65,6 +68,13 @@ namespace simulator {
          * @brief adds dynamic workcell
          */
 		virtual void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc) = 0;
+
+		/**
+		 * @brief Change the contact detector used by the engine.
+		 * @param detector [in] the contact detector to use (NULL for default contact detection)
+		 * @return true if engine supports using a ContactDetector and the detector was set successfully.
+		 */
+		virtual bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector) = 0;
 
 		/**
 		 * @brief Performs a step and updates the state

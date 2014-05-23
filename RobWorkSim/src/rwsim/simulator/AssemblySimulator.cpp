@@ -39,10 +39,6 @@
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 
-#ifdef RWSIM_HAVE_ODE
-#include <rwsimlibs/ode/ODESimulator.hpp>
-#endif
-
 using namespace rw::common;
 using namespace rw::invkin;
 using namespace rw::kinematics;
@@ -292,13 +288,12 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 				simulator->addSensor(sensor, state);
 		}
 	}
-
-#ifdef RWSIM_HAVE_ODE
-	if (_engineID == "ODE") {
-		ODESimulator::Ptr odesim = pe.cast<ODESimulator>();
-		odesim->setContactDetector(_contactDetector);
+	
+	{
+		bool setCD = pe->setContactDetector(_contactDetector);
+		if (_contactDetector != NULL && !setCD)
+			RW_THROW("AssemblySimulator could not set ContactDetector on the used PhysicsEngine!");
 	}
-#endif
 
 	while(running){
 		{

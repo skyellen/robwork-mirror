@@ -174,10 +174,11 @@ void TNTIsland::resetScene(const TNTIslandState &state) {
 	*_state = state;
 }
 
-void TNTIsland::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
+bool TNTIsland::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
 	_detector = detector;
 	if (_bp != NULL)
 		_detector->setProximityFilterStrategy(_bp->getProximityFilterStrategy());
+	return true;
 }
 
 void TNTIsland::load(rw::common::Ptr<DynamicWorkCell> dwc) {

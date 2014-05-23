@@ -154,12 +154,16 @@ public:
 	ContactDetector(rw::common::Ptr<WorkCell> workcell);
 	//ContactDetector(rw::common::Ptr<WorkCell> workcell, rw::common::Ptr<ProximityFilterStrategy> filter);
 	virtual ~ContactDetector();
+	//void setProximityFilterStrategy(rw::proximity::ProximityFilterStrategy::Ptr filter);
 	virtual std::vector<Contact> findContacts(const State& state);
-	//virtual std::vector<Contact> findContacts(const State& state, ContactDetectorData &data);
+	virtual std::vector<Contact> findContacts(const State& state, ContactDetectorData &data);
+	virtual std::vector<Contact> findContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking);
+	virtual std::vector<Contact> updateContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking);
 	//virtual rw::common::Ptr<ProximityFilterStrategy> getProximityFilterStrategy() const;
 	virtual double getTimer() const;
 	virtual void setTimer(double value = 0);
 	//virtual StrategyTable getContactStategies() const;
+	//virtual StrategyTable getContactStrategies(const std::string& frameA, rw::common::Ptr<const rw::geometry::Geometry> geometryA, const std::string& frameB, rw::common::Ptr<const rw::geometry::Geometry> geometryB) const;
 	virtual void addContactStrategy(rw::common::Ptr<ContactStrategy> strategy, std::size_t priority = 0);
 	//virtual void addContactStrategy(ProximitySetupRule rule, rw::common::Ptr<ContactStrategy> strategy, std::size_t priority = 0);
 	//virtual void addContactStrategy(ProximitySetup rules, rw::common::Ptr<ContactStrategy> strategy, std::size_t priority = 0);
@@ -174,6 +178,48 @@ public:
 
 %template (ContactDetectorPtr) rw::common::Ptr<ContactDetector>;
 
+class ContactDetectorData {
+public:
+	ContactDetectorData();
+	ContactDetectorData(const ContactDetectorData& data);
+	virtual ~ContactDetectorData();
+	//ContactDetectorData& operator=(const ContactDetectorData& data);
+	void clear();
+	//ContactStrategyData& getStrategyData(const ContactModel* modelA, const ContactModel* modelB);
+};
+
+%template (ContactDetectorDataPtr) rw::common::Ptr<ContactDetectorData>;
+
+class ContactDetectorTracking {
+public:
+	ContactDetectorTracking();
+	ContactDetectorTracking(const ContactDetectorTracking& data);
+	virtual ~ContactDetectorTracking();
+	//ContactDetectorTracking& operator=(const ContactDetectorTracking& data);
+	void clear();
+	void remove(std::size_t index);
+	//ContactStrategyTracking::UserData::Ptr getUserData(std::size_t index) const;
+	//std::vector<ContactStrategyTracking::UserData::Ptr> getUserData() const;
+	//void setUserData(std::size_t index, ContactStrategyTracking::UserData::Ptr data);
+	//void setUserData(const std::vector<ContactStrategyTracking::UserData::Ptr> &data);
+	std::size_t getSize() const;
+
+	/*struct ContactInfo {
+		ContactInfo(): tracking(NULL), id(0), total(0) {}
+		std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*> frames;
+		std::pair<ContactModel*,ContactModel*> models;
+		rw::common::Ptr<ContactStrategy> strategy;
+		ContactStrategyTracking* tracking;
+		std::size_t id;
+		std::size_t total;
+	};
+	std::vector<ContactInfo>& getInfo();
+	const std::vector<ContactInfo>& getInfo() const;*/
+	//ContactStrategyTracking& getStrategyTracking(const ContactModel* modelA, const ContactModel* modelB);
+};
+
+%template (ContactDetectorTrackingPtr) rw::common::Ptr<ContactDetectorTracking>;
+
 class ContactStrategy //: public rw::proximity::ProximityStrategy
 {
 public:
@@ -181,16 +227,30 @@ public:
 	virtual ~ContactStrategy() {};
 	virtual bool match(rw::common::Ptr<GeometryData> geoA, rw::common::Ptr<GeometryData> geoB) = 0;
 	/*
-	virtual std::vector<Contact> findContacts(ProximityModel* a,
+	virtual std::vector<Contact> findContacts(rw::common::Ptr<ProximityModel> a,
 			const Transform3D& wTa,
-			ProximityModel* b,
+			rw::common::Ptr<ProximityModel> b,
 			const Transform3D& wTb) = 0;
 	virtual std::vector<Contact> findContacts(
-			ProximityModel* a,
+			rw::common::Ptr<ProximityModel> a,
 			const Transform3D& wTa,
-			ProximityModel* b,
+			rw::common::Ptr<ProximityModel> b,
 			const Transform3D& wTb,
 			ContactStrategyData &data) = 0;
+	virtual std::vector<Contact> findContacts(
+			rw::common::Ptr<ProximityModel> a,
+			const Transform3D& wTa,
+			rw::common::Ptr<ProximityModel> b,
+			const Transform3D& wTb,
+			ContactStrategyData &data,
+			ContactStrategyTracking& tracking) = 0;
+	virtual std::vector<Contact> updateContacts(
+			rw::common::Ptr<ProximityModel> a,
+			const Transform3D& wTa,
+			rw::common::Ptr<ProximityModel> b,
+			const Transform3D& wTb,
+			ContactStrategyData& data,
+			ContactStrategyTracking& tracking) const = 0;
 	*/
 	virtual std::string getName() = 0;
 	
@@ -715,7 +775,7 @@ public:
 
     rw::common::Ptr<Body> getEndBody();
 
-    //void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+    //void addToWorkCell(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
     double getRadius();
 
@@ -958,6 +1018,8 @@ class PhysicsEngine
 {
 public:
 	virtual ~PhysicsEngine(){};
+	virtual void load(rw::common::Ptr<DynamicWorkCell> dwc) = 0;
+	virtual bool setContactDetector(rw::common::Ptr<ContactDetector> detector) = 0;
 	virtual void step(double dt, State& state) = 0;
 	virtual void resetScene(State& state) = 0;
 	virtual void initPhysics(State& state) = 0;
@@ -1129,6 +1191,8 @@ public:
 		virtual ~ODESimulator();
 		
 		// PhysicsEngine interface
+		void load(rw::common::Ptr<DynamicWorkCell> dwc);
+		bool setContactDetector(rw::common::Ptr<ContactDetector> detector);
 		void step(double dt, State& state);
 		void resetScene(State& state);
 		void initPhysics(State& state);

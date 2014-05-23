@@ -123,14 +123,11 @@ public:
 	 */
 	void resetScene(const TNTIslandState &state);
 
-	/**
-	 * @brief Set the contact detector to use.
-	 * @param detector [in] the contact detector to use.
-	 */
-	void setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
-
 	//! @copydoc PhysicsEngine::load
 	virtual void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+
+	//! @copydoc PhysicsEngine::setContactDetector
+	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
 
 	//! @copydoc PhysicsEngine::step
 	void step(double dt, rw::kinematics::State& state);

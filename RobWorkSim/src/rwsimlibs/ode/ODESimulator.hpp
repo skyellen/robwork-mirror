@@ -138,11 +138,8 @@ namespace simulator {
 		//! @copydoc PhysicsEngine::load
 		void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
-		/**
-		 * @brief Change the contact detector used by the simulator.
-		 * @param detector [in] the contact detector to use (NULL for default contact detection)
-		 */
-		void setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector = NULL);
+		//! @copydoc PhysicsEngine::setContactDetector
+		bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
 
 		/**
 		 * @brief sets the ODE step method that should be used for stepping

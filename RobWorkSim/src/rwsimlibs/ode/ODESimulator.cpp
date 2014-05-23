@@ -263,8 +263,9 @@ void ODESimulator::load(rwsim::dynamics::DynamicWorkCell::Ptr dwc){
 }
 
 
-void ODESimulator::setContactDetector(rwsim::contacts::ContactDetector::Ptr detector) {
+bool ODESimulator::setContactDetector(rwsim::contacts::ContactDetector::Ptr detector) {
 	_detector = detector;
+	return true;
 }
 
 void ODESimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){

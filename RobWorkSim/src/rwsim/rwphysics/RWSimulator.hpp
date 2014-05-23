@@ -48,6 +48,9 @@ namespace simulator {
 		//! @copydoc PhysicsEngine::load
 		void load(dynamics::DynamicWorkCell::Ptr dwc);
 
+		//! @copydoc PhysicsEngine::setContactDetector
+		bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
+
 		/**
 		 * @copydoc Simulator::initPhysics
 		 */

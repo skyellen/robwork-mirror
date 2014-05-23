@@ -504,6 +504,9 @@ void MyNearCallback(btBroadphasePair& collisionPair,
     dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);
 }
 
+bool BtSimulator::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
+	return false;
+}
 
 void BtSimulator::initPhysics(rw::kinematics::State& state)
 {

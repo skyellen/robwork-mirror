@@ -108,6 +108,9 @@ namespace simulator {
             exitPhysics();
         }
 
+    	//! @copydoc PhysicsEngine::setContactDetector
+    	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
+
         void initPhysics(rw::kinematics::State& state);
 
         void step(double dt, rw::kinematics::State& state);

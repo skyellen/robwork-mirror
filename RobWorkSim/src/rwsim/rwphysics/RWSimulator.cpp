@@ -87,6 +87,10 @@ void RWSimulator::load(dynamics::DynamicWorkCell::Ptr dwc){
     _dwc = dwc;
 }
 
+bool RWSimulator::setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector) {
+	return false;
+}
+
 void RWSimulator::initPhysics(State& state){
     // create constraint nodes and constraint edges to a CNodePool
     RW_DEBUG("- Allocating CNodePool");

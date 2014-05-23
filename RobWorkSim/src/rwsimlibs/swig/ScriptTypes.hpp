@@ -21,6 +21,8 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 
 #include <rwsim/contacts/ContactDetector.hpp>
+#include <rwsim/contacts/ContactDetectorData.hpp>
+#include <rwsim/contacts/ContactDetectorTracking.hpp>
 #include <rwsim/contacts/Contact.hpp>
 #include <rwsim/contacts/ContactStrategy.hpp>
 
@@ -66,6 +68,8 @@ namespace swig {
 
 	// contacts
 	typedef rwsim::contacts::ContactDetector ContactDetector;
+	typedef rwsim::contacts::ContactDetectorData ContactDetectorData;
+	typedef rwsim::contacts::ContactDetectorTracking ContactDetectorTracking;
 	typedef rwsim::contacts::ContactStrategy ContactStrategy;
 	typedef rwsim::contacts::Contact Contact;
 
