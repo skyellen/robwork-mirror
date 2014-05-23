@@ -237,7 +237,6 @@ public:
 	void setNormal(Vector3D normal);
 	void setDepth();
 	void setDepth(double depth);
-	virtual void clear();
 	//tostring
 };
 
