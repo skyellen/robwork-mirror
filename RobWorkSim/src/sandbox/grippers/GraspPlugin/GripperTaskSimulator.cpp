@@ -124,6 +124,8 @@ double GripperTaskSimulator::calculateCoverage(double actualRatio)
 		return 0.0;
 	}
 	
+	//DEBUG << "CALCULATING COVERAGE - " << endl;
+	
 	double coverage = 0.0;
 
 	Q covDist = _td->getCoverageDistance();
@@ -132,7 +134,7 @@ double GripperTaskSimulator::calculateCoverage(double actualRatio)
 	
 	/* okTargets is the number of succesful targets after filtering +
 	 * the number of slippages + the number of interferences */
-	DEBUG << "Filtering targets..." << endl;
+	//DEBUG << "Filtering targets..." << endl;
 	GraspTask::Ptr coverageTasks = TaskGenerator::filterTasks(_gtask, diff);
 	int okTargets = TaskGenerator::countTasks(coverageTasks, GraspTask::Success); 	
 	//DEBUG << "Successful tasks: " << okTargets;
@@ -140,11 +142,11 @@ double GripperTaskSimulator::calculateCoverage(double actualRatio)
 	okTargets += TaskGenerator::countTasks(coverageTasks, GraspTask::Interference);
 	//DEBUG << " + interference= " << okTargets << endl;
 	
-	DEBUG << "Filtering samples..." << endl;
+	//DEBUG << "Filtering samples..." << endl;
 	int allTargets = TaskGenerator::countTasks(TaskGenerator::filterTasks(_samples, diff), GraspTask::UnInitialized);
 	
-	DEBUG << "N of tasks: " << getNrTargets() << " / N of all samples: " << _samples->getAllTargets().size() << endl;
-	DEBUG << "Filtered grasps: " << okTargets << " / Parallel samples: " << allTargets << endl;
+	DEBUG << "Requested targets: " << getNrTargets() << " / Samples: " << _samples->getAllTargets().size() << endl;
+	DEBUG << "Targets (S+I) after filtering: " << okTargets << " / Samples after filtering: " << allTargets << endl;
 	coverage = 1.0 * okTargets / (allTargets * actualRatio);
 	
 	return coverage;
@@ -274,7 +276,8 @@ void GripperTaskSimulator::evaluateGripper()
 	 */
 	TaskDescription::Qualities& b = _td->getBaseline();
 	TaskDescription::Qualities& w = _td->getWeights();
-	 
+	
+	DEBUG << "EVALUATION - " << endl;
 	DEBUG << _gripper->getName() << " - Evaluating..." << endl;
 	
 	int successes = TaskGenerator::countTasks(_gtask, GraspTask::Success);
@@ -289,9 +292,10 @@ void GripperTaskSimulator::evaluateGripper()
 	
 	successes += slippages;
 	
+	DEBUG << "CALCULATING SUCCESS RATIO - " << endl;
 	DEBUG << " * Targets generated: " << getNrTargets() << endl;
-	DEBUG << " * After filtering: " << filtered << endl;
-	DEBUG << " * Without failure: " << actual << endl;
+	DEBUG << " * After preliminary filtering: " << filtered << endl;
+	DEBUG << " * Actual simulated targets (without sim failure): " << actual << endl;
 	
 	//DEBUG << "* Actual number of tasks simulated is " << actual << " out of " << getNrTargets()
 	//	<< " targets." << endl;
@@ -306,11 +310,13 @@ void GripperTaskSimulator::evaluateGripper()
 	double successRatio = (1.0 * successes / actual) / b.success;
 	
 	/* wrench */
+	DEBUG << "CALCULATING WRENCH - " << endl;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
 	double wrench = wrenchMeasurement(1) / b.wrench;
 	double topwrench = wrenchMeasurement(2) / b.wrench;
 	
 	/* coverage */
+	DEBUG << "CALCULATING COVERAGE - " << endl;
 	double coverage = calculateCoverage(1.0 * actual / filtered) / b.coverage;
 	// task set is filtered at this point
 	
@@ -322,25 +328,19 @@ void GripperTaskSimulator::evaluateGripper()
 	 * penalty = stress / stresslimit clamped to [0, 1]
 	 * quality = success - penalty clamped to [0, 1]
 	 */
+	DEBUG << "CALCULATING STRESS - " << endl;
 	double maxstress = _gripper->getMaxStress();
 	double penalty = maxstress / _td->getStressLimit();
 	if (penalty > 1.0) penalty = 1.0;
 	
+	DEBUG << " * Max stress: " << maxstress << endl;
+	DEBUG << " * Penalty: " << penalty << endl;
+	
+	DEBUG << "CALCULATING QUALITY - " << endl;
 	double quality = successRatio - penalty;
 	if (quality < 0.0) quality = 0.0;
 	
 	// save data to gripper result
-	/*GripperQuality::Ptr q = _gripper->getQuality();
-	q->nOfExperiments = getNrTargets();
-	q->nOfSuccesses = successes;
-	q->nOfSamples = samples;
-	q->coverage = coverage;
-	q->success = successRatio;
-	q->wrench = wrench;
-	q->topwrench = topwrench;
-	q->quality = quality;
-	
-	DEBUG << *q << endl;*/
 	
 	_quality.nOfExperiments = getNrTargets();
 	_quality.nOfSuccesses = successes;
@@ -352,5 +352,6 @@ void GripperTaskSimulator::evaluateGripper()
 	_quality.maxstress = maxstress;
 	_quality.quality = quality;
 	
+	DEBUG << "DONE - " << endl;
 	DEBUG << _quality << endl;
 }
