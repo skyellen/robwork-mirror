@@ -11,7 +11,8 @@
 #
 #  Input variables:
 #    RobWorkHardware_FIND_COMPONENTS - List of required RWHW components to search for (see list below).
-#                                      A error is reported if these are not found.
+#                                      If REQUIRED is set then a fatal error is reported if these are not found. 
+#                                       else only a warning is issues. 
 #
 #  Components:
 #    camera
@@ -72,7 +73,11 @@ IF(RobWorkHardware_FIND_COMPONENTS)
         IF(${COMP_FOUND} GREATER -1)
             LIST(APPEND LIBRARIES_TO_INCLUDE "rwhw_${component}")
         ELSE()
-            MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+            IF( RobWorkHardware_REQUIRED )
+              MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+            ELSE ()
+              MESSAGE(WARNING "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+            ENDIF()
         ENDIF()
     ENDFOREACH()
     MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")
