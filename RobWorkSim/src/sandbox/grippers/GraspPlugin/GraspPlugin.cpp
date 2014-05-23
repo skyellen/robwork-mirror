@@ -705,13 +705,13 @@ void GraspPlugin::test()
 	
 	//log().info() << GeometryUtil::simplexVolume(vtx) << endl;*/
 	
-	static int npic = 0;
+	/*static int npic = 0;
 	
 	stringstream sstr;
 	sstr << npic++;
 	string filename = _wc->getName() + "_" + _gripper->getName() + "_" + sstr.str() + ".png";
 	log().info() << "Saving image " + filename + "..." << endl;
-	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
+	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));*/
 	
 	// let's calculate gripper's hights...
 	/*ofstream file;
@@ -733,6 +733,10 @@ void GraspPlugin::test()
 	file.close();*/
 	
 	//log().info() << "Max stress= " << _gripper->getMaxStress() << endl;
+	
+	/* LET'S TEST ALIGNMENTS */
+	Frame* frame = _td->getTargetFrame();
+	log().info() << RPY<>(frame->getTransform(getRobWorkStudio()->getState()).R()) << endl;
 }
 
 

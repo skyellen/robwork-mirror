@@ -461,7 +461,11 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
 			asubtask.retract = Transform3D<>(Vector3D<>(0, 0, 0.1));
 			asubtask.openQ = oq;
 			asubtask.closeQ = _closeQ;*/
-			asubtask.addTarget(gtarget);
+			GraspTarget gtarget1(target);
+            gtarget1.result = ownedPtr(new GraspResult());
+            gtarget1.result->testStatus = GraspTask::UnInitialized;
+            gtarget1.result->objectTtcpTarget = target;
+			asubtask.addTarget(gtarget1);
             atask->addSubTask(asubtask);
             //atask.addTarget(gtarget);
         } else {
