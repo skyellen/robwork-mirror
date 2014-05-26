@@ -48,19 +48,19 @@ namespace rw {
 				 * @brief Constructs cube primitive.
 				 * @param x, y, z length, width and depth
 				 */
-				static CSGModel& makeBox(float x, float y, float z);
+				static CSGModel& makeBox(double x, double y, double z);
 				
 				/**
 				 * @brief Constructs cylinder primitive.
 				 * @param r, h radius, height
 				 */
-				static CSGModel& makeCylinder(float r, float h);
+				static CSGModel& makeCylinder(double r, double h);
 				
 				/**
 				 * @brief Constructs sphere primitive.
 				 * @param r radius
 				 */
-				static CSGModel& makeSphere(float r);
+				static CSGModel& makeSphere(double r);
 				
 				/**
 				 * @brief Constructs plane. \n
@@ -76,23 +76,23 @@ namespace rw {
 				 * The wedge tip is located at origin and the edge runs along z axis.
 				 * The wedge axis runs along x axis
 				 */
-				static CSGModel& makeWedge(float angle);
+				static CSGModel& makeWedge(double angle);
 				
 				//... need more primitives?
 				// - mostly for convenience
 				
 				// manipulation
 				/** @brief Translates the csgmodel. */
-				CSGModel& translate(float x, float y, float z);
+				CSGModel& translate(double x, double y, double z);
 				
 				/** @brief Returns translated copy. */
-				CSGModel& translated(float x, float y, float z) const;
+				CSGModel& translated(double x, double y, double z) const;
 				
 				/** @brief Rotates the csgmodel. */
-				CSGModel& rotate(float r, float p, float y);
+				CSGModel& rotate(double r, double p, double y);
 				
 				/** @brief Returns rotated copy. */
-				CSGModel& rotated(float r, float p, float y) const;
+				CSGModel& rotated(double r, double p, double y) const;
 				
 				/** @brief Applies RobWork transformation. */
 				CSGModel& transform(const math::Transform3D<>& T);

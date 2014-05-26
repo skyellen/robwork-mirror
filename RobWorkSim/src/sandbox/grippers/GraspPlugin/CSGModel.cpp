@@ -45,7 +45,7 @@ CSGModel::CSGModel(const TriMesh& trimesh) :
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::makeBox(float x, float y, float z)
+CSGModel& CSGModel::makeBox(double x, double y, double z)
 {
 	Box box(x, y, z);
 	
@@ -57,7 +57,7 @@ CSGModel& CSGModel::makeBox(float x, float y, float z)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::makeCylinder(float r, float h)
+CSGModel& CSGModel::makeCylinder(double r, double h)
 {
 	Cylinder cyl(r, h);
 	
@@ -69,7 +69,7 @@ CSGModel& CSGModel::makeCylinder(float r, float h)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel:: makeSphere(float r)
+CSGModel& CSGModel:: makeSphere(double r)
 {
 	Sphere sph(r, 4);
 	
@@ -83,7 +83,7 @@ CSGModel& CSGModel:: makeSphere(float r)
 //----------------------------------------------------------------------
 CSGModel& CSGModel::makePlane(Vector3D<> point, Vector3D<> normal)
 {
-	const float planeSize = 100.0;
+	const double planeSize = 100.0;
 	
 	normal = normalize(normal);
 	Transform3D<> t = Transform3D<>::makeLookAt(point, point+normal, Vector3D<>::y());
@@ -100,7 +100,7 @@ CSGModel& CSGModel::makePlane(Vector3D<> point, Vector3D<> normal)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::makeWedge(float angle)
+CSGModel& CSGModel::makeWedge(double angle)
 {
 	return
 		makePlane(Vector3D<>(), Vector3D<>(-sin(angle/2), -cos(angle/2), 0)) *
@@ -110,7 +110,7 @@ CSGModel& CSGModel::makeWedge(float angle)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::translate(float x, float y, float z)
+CSGModel& CSGModel::translate(double x, double y, double z)
 {
 	Transform3D<> t(Vector3D<>(x, y, z), Rotation3D<>());
 	
@@ -122,7 +122,7 @@ CSGModel& CSGModel::translate(float x, float y, float z)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::translated(float x, float y, float z) const
+CSGModel& CSGModel::translated(double x, double y, double z) const
 {	
 	CSGModel* result = new CSGModel(*this);
 	
@@ -132,7 +132,7 @@ CSGModel& CSGModel::translated(float x, float y, float z) const
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::rotate(float r, float p, float y)
+CSGModel& CSGModel::rotate(double r, double p, double y)
 {
 	Transform3D<> t(Vector3D<>(), RPY<>(r, p, y).toRotation3D());
 	
@@ -144,7 +144,7 @@ CSGModel& CSGModel::rotate(float r, float p, float y)
 
 
 //----------------------------------------------------------------------
-CSGModel& CSGModel::rotated(float r, float p, float y) const
+CSGModel& CSGModel::rotated(double r, double p, double y) const
 {	
 	CSGModel* result = new CSGModel(*this);
 	
