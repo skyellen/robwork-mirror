@@ -9,6 +9,7 @@
 #define RW_VERSION_PATCH ${ROBWORK_VERSION_PATCH}
 
 #define RW_REVISION "${ROBWORK_REVISION}"
+#define RW_BUILD_TYPE "${RW_BUILD_TYPE}"
 
 #cmakedefine RW_HAVE_PQP 1
 #cmakedefine RW_HAVE_YAOBI 1
