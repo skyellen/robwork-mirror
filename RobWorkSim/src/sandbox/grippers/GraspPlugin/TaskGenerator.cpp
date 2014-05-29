@@ -401,8 +401,8 @@ rwlibs::task::GraspTask::Ptr TaskGenerator::generateTask(int nTargets, rw::kinem
     int failures_in_row = 0;
     int successes = 0, samples = 0;
     //for (int successes = 0; successes < nTargets;) {
-//	while ((nTargets > 0 && successes < nTargets) || (nSamples > 0 && samples < nSamples)) {
-	while ((nTargets == 0 || successes < nTargets) && (nSamples == 0 || samples < nSamples)) {
+	while ((nTargets > 0 && successes < nTargets) || (nSamples > 0 && samples < nSamples)) {
+	//while ((nTargets == 0 || successes < nTargets) && (nSamples == 0 || samples < nSamples)) {
 		// generate a surface sample - or use the supplied vector
 		SurfaceSample ssample;
 		
