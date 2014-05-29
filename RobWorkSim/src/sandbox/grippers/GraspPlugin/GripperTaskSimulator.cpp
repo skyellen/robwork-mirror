@@ -337,7 +337,7 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << " * Penalty: " << penalty << endl;
 	
 	DEBUG << "CALCULATING QUALITY - " << endl;
-	double quality = successRatio - penalty;
+	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench - penalty;
 	if (quality < 0.0) quality = 0.0;
 	
 	// save data to gripper result
