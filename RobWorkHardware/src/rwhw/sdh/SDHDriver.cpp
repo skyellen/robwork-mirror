@@ -419,7 +419,7 @@ rw::math::Q SDHDriver::getVelLimits(){
 		RW_THROW(ex);
 	}
 	//		The max limits are not a valid value to send, but needed to round down!? This works!
-	return toQ(vellimits)- rw::math::Q(vellimits.size(),0.01);
+	return toQ(vellimits)- rw::math::Q((toQ(vellimits)).size(),0.01);
 }
 
 rw::math::Q SDHDriver::getAccLimits(){
