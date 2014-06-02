@@ -4,7 +4,7 @@
 #    ROBWORKHARDWARE_INCLUDE_DIR  - Where to find robwork include sub-directory.
 #    ROBWORKHARDWARE_LIBRARIES    - List of libraries when using RobWork (includes all libraries that RobWork depends on).
 #    ROBWORKHARDWARE_LIBRARY_DIRS - List of directories where libraries of RobWork are located. 
-#    ROBWORKHARDWARE_FOUND        - True if RobWork was found. (not impl yet)
+#    ROBWORKHARDWARE_FOUND        - True if RobWork was found. (not fully implemented yet)
 #
 #    ROBWORKHARDWARE_ROOT         - If set this defines the root of RobWorkHardware if not set then it
 #                                   if possible be autodetected.
@@ -37,6 +37,9 @@
 # Allow the syntax else (), endif (), etc.
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+# Indicate whether a fatal error happened that should render ROBWORKHARDWARE_FOUND to be false
+SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS FALSE)
+
 # Check if RW_ROOT path are setup correctly
 #FIND_FILE(ROBWORKHARDWARE_FOUND FindRobWorkHardware.cmake ${ROBWORKHARDWARE_ROOT}/build NO_DEFAULT_PATH)
 
@@ -51,6 +54,7 @@ FIND_FILE(RWHW_ROOT_PATH_TEST FindRobWorkHardware.cmake
 )
 
 IF(NOT RWHW_ROOT_PATH_TEST)
+  SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
     MESSAGE(FATAL_ERROR "Path to RobWorkHardware root (ROBWORKHARDWARE_ROOT) is incorrectly setup! \nROBWORKHARDWARE_ROOT  ==${ROBWORKHARDWARE_ROOT}")
 ENDIF()
 
@@ -74,6 +78,7 @@ IF(RobWorkHardware_FIND_COMPONENTS)
             LIST(APPEND LIBRARIES_TO_INCLUDE "rwhw_${component}")
         ELSE()
             IF( RobWorkHardware_REQUIRED )
+	      SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
               MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
             ELSE ()
               MESSAGE(WARNING "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
@@ -270,3 +275,9 @@ FOREACH(l ${ROBWORKHARDWARE_LIBRARIES_TMP})
     LIST(APPEND ROBWORKHARDWARE_LIBRARIES ${l})
   ENDIF()
 ENDFOREACH(l)
+
+IF (ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS)
+  SET(ROBWORKHARDWARE_FOUND FALSE)
+ELSE()
+  SET(ROBWORKHARDWARE_FOUND TRUE)
+ENDIF()
