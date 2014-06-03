@@ -155,9 +155,10 @@ namespace {
 
             const double mass = body->getInfo().mass;
             const InertiaMatrix<> inertia = body->getInfo().inertia;
+            const InertiaMatrix<> inertiaW = wTb.R()*inertia*inverse(wTb.R());
 
             body->setForceW( (vErrW-vCurW)*mass*10 , state);
-            body->setTorqueW( inertia*(aErrW-aCurW)*10 , state);
+            body->setTorqueW( inertiaW*(aErrW-aCurW)*10 , state);
 
         }
     }
