@@ -38,6 +38,9 @@ namespace contacts {
 template <class A, class B>
 class ContactModelGeometry: public rwsim::contacts::ContactModel {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<ContactModelGeometry<A, B> > Ptr;
+
 	//! @brief Model for each geometry.
 	template <class T>
 	struct GeometryModel {

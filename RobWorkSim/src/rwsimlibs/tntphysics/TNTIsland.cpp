@@ -178,6 +178,7 @@ bool TNTIsland::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
 	_detector = detector;
 	if (_bp != NULL)
 		_detector->setProximityFilterStrategy(_bp->getProximityFilterStrategy());
+	TNT_DEBUG_CONTACTS("Contact detector set:" << std::endl << _detector);
 	return true;
 }
 
@@ -188,7 +189,7 @@ void TNTIsland::load(rw::common::Ptr<DynamicWorkCell> dwc) {
 	_dwc = dwc;
 	_materialMap = new TNTMaterialMap(dwc->getContactData(),dwc->getMaterialData());
 	_detector = ContactDetector::makeDefault(dwc->getWorkcell());
-	_detector->printStrategyTable();
+	TNT_DEBUG_CONTACTS("Default contact detector constructed based on dynamic workcell:" << std::endl << _detector);
 	_gravity = dwc->getGravity();
 	_map = dwc->getEngineSettings();
 }

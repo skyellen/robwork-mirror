@@ -208,8 +208,9 @@ void ContactDetector::removeContactStrategy(std::size_t pri) {
 }
 
 void ContactDetector::clearStrategies() {
-	for(std::size_t i = 0; i < _strategies.size(); i++)
+	while (_strategies.size() > 0) {
 		removeContactStrategy(0);
+	}
 }
 
 void ContactDetector::setContactStrategies(std::list<StrategyTableRow> strategies) {
@@ -422,13 +423,15 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 			continue;
 		const Frame* const frameA = info.frames.first;
 		const Frame* const frameB = info.frames.second;
+		RW_ASSERT(frameA != NULL);
+		RW_ASSERT(frameB != NULL);
 		ContactModel* const modelA = info.models.first;
 		ContactModel* const modelB = info.models.second;
+		RW_ASSERT(modelA != NULL);
+		RW_ASSERT(modelB != NULL);
 		const Transform3D<> aT = fk.get(frameA);
 		const Transform3D<> bT = fk.get(frameB);
 		ContactStrategyData& stratData = data.getStrategyData(modelA,modelB);
-		if (!stratData.isInitialized())
-			RW_THROW("ContactDetector (updateContacts): could not find initialized ContactStrategyData for the two models in ContactDetectorData!");
 		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, *info.tracking);
 		const std::size_t total = info.total;
 		if (contacts.size() < total) {
@@ -483,8 +486,20 @@ struct ContactDetector::Cell {
 void ContactDetector::printStrategyTable() const {
 	if (_strategies.size() == 0)
 			std::cout << "No strategies registered." << std::endl;
-	std::vector<std::vector<Cell> > table;
+	std::vector<std::vector<ContactDetector::Cell> > table;
+	constructTable(table);
+	printTable(table, std::cout, true);
+}
 
+void ContactDetector::printStrategyTable(std::ostream& out) const {
+	if (_strategies.size() == 0)
+			out << "No strategies registered." << std::endl;
+	std::vector<std::vector<ContactDetector::Cell> > table;
+	constructTable(table);
+	printTable(table, out, true);
+}
+
+void ContactDetector::constructTable(std::vector<std::vector<ContactDetector::Cell> >& table) const {
 	std::vector<Cell> header;
 	header.push_back(Cell("Priority"));
 	header.push_back(Cell("Pattern A"));
@@ -532,11 +547,9 @@ void ContactDetector::printStrategyTable() const {
 		}
 		table.push_back(row);
 	}
-
-	printTable(table, true);
 }
 
-void ContactDetector::printTable(const std::vector<std::vector<Cell> > &table, bool header) {
+void ContactDetector::printTable(const std::vector<std::vector<Cell> > &table, std::ostream& out, bool header) {
 	if (table.size() == 0)
 		return;
 	if (table[0].size() == 0)
@@ -561,34 +574,34 @@ void ContactDetector::printTable(const std::vector<std::vector<Cell> > &table, b
 	}
 	totalwidth += width.size()+1;
 	for (std::size_t i = 0; i < totalwidth; i++)
-		std::cout << "-";
-	std::cout << std::endl;
+		out << "-";
+	out << std::endl;
 	BOOST_FOREACH(const std::vector<Cell> &row, table) {
 		std::size_t stringI = 0;
 		bool more = true;
 		while (more) {
 			more = false;
-			std::cout << "|";
+			out << "|";
 			std::size_t colI = 0;
 			BOOST_FOREACH(Cell col, row) {
 				if (stringI+1 < col.strings.size())
 					more = true;
 				if (col.alignment == Cell::RIGHT)
-					std::cout << std::right;
+					out << std::right;
 				else
-					std::cout << std::left;
+					out << std::left;
 				if (stringI < col.strings.size())
-					std::cout << std::setw(width[colI]) << col.strings[stringI] << "|";
+					out << std::setw(width[colI]) << col.strings[stringI] << "|";
 				else
-					std::cout << std::setw(width[colI]) << "" << "|";
+					out << std::setw(width[colI]) << "" << "|";
 				colI++;
 			}
 			stringI++;
-			std::cout << std::endl;
+			out << std::endl;
 		}
 		for (std::size_t i = 0; i < totalwidth; i++)
-			std::cout << "-";
-		std::cout << std::endl;
+			out << "-";
+		out << std::endl;
 	}
 }
 

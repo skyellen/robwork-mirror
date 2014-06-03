@@ -41,7 +41,10 @@ ContactStrategyData& ContactStrategyData::operator=(const ContactStrategyData& d
 	{
 		if (_data != NULL)
 			delete _data;
-		_data = data._data->copy();
+		if (data._data != NULL)
+			_data = data._data->copy();
+		else
+			_data = NULL;
 	}
 	return *this;
 }

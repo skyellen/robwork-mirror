@@ -41,6 +41,9 @@ protected:
 	typedef ContactModelGeometry<A, B> GeometryModel;
 
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<ContactStrategyGeometry<A, B> > Ptr;
+
 	/**
 	 * @brief Construct new strategy
 	 */

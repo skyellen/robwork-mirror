@@ -112,7 +112,15 @@ public:
 	//! @brief Meta-data for a contact that allows it to be recalculated.
 	struct ContactInfo {
 		//! @brief Constructor.
-		ContactInfo(): tracking(NULL), id(0), total(0) {}
+		ContactInfo():
+			frames(std::make_pair<rw::kinematics::Frame*, rw::kinematics::Frame*>(NULL,NULL)),
+			models(std::make_pair<ContactModel*,ContactModel*>(NULL,NULL)),
+			strategy(NULL),
+			tracking(NULL),
+			id(0),
+			total(0)
+		{
+		}
 		//! @brief The frame pair the contact can be calculated from.
 		std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*> frames;
 		//! @brief The contact models the contact can be calculated from.

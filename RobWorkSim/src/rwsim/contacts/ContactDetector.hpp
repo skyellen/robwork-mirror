@@ -285,6 +285,11 @@ public:
 	 * @brief Print the current strategy table to standard output.
 	 */
 	virtual void printStrategyTable() const;
+
+	/**
+	 * @brief Print the current strategy table to given output stream.
+	 */
+	virtual void printStrategyTable(std::ostream& out) const;
 	///@}
 
 	/**
@@ -294,10 +299,33 @@ public:
 	 */
 	static ContactDetector::Ptr makeDefault(rw::models::WorkCell::Ptr workcell);
 
+	/**
+	 * @brief Stream operator.
+	 * @param out [in/out] the stream to write to.
+	 * @param detector [in] the detector to print strategy table for.
+	 * @return the same ostream as out parameter.
+	 */
+	friend std::ostream& operator<<(std::ostream& out, const ContactDetector& detector) {
+		detector.printStrategyTable(out);
+		return out;
+	}
+
+	/**
+	 * @brief Stream operator.
+	 * @param out [in/out] the stream to write to.
+	 * @param detector [in] the detector to print strategy table for.
+	 * @return the same ostream as out parameter.
+	 */
+	friend std::ostream& operator<<(std::ostream& out, ContactDetector::Ptr detector) {
+		detector->printStrategyTable(out);
+		return out;
+	}
+
 private:
 	struct Cell;
+	void constructTable(std::vector<std::vector<Cell> >& table) const;
 	static void printTable(const std::vector<std::vector<Cell> > &table,
-			bool header = false);
+			std::ostream& out, bool header = false);
 	void initializeGeometryMap();
 	void initializeModels(StrategyTableRow &strategy);
 
