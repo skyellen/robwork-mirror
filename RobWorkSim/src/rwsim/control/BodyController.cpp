@@ -134,29 +134,30 @@ namespace {
             }
 
             // the target position for next step.
-            Transform3D<> nextPose = tdata._traj->x(t+info.dt);
+            const Transform3D<> nextPose = tdata._traj->x(t+info.dt);
 
             // TODO: apply a wrench to the body such that is will move toward nextPose in time info.dt
             // for now we just create simple penalty based on the velocity
-            Transform3D<> wTt = nextPose;
-            Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
+            const Transform3D<> wTt = nextPose;
+            const Transform3D<> wTb = Kinematics::worldTframe(body->getBodyFrame(), state);
 
             const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
             const VelocityScrew6D<> vel( bTt );
             const VelocityScrew6D<> velW = (wTb.R() * vel);
 
-            Vector3D<> vErrW = velW.linear()/info.dt;
+            const Vector3D<> vErrW = velW.linear()/info.dt;
             // and now control the angular velocity
-            Vector3D<> aErrW = Vector3D<>(velW(3),velW(4),velW(5))/info.dt;
+            const Vector3D<> aErrW = Vector3D<>(velW(3),velW(4),velW(5))/info.dt;
 
             // get the current velocities
-            Vector3D<> vCurW = body->getLinVelW(state);
-            Vector3D<> aCurW = body->getAngVelW(state);
+            const Vector3D<> vCurW = body->getLinVelW(state);
+            const Vector3D<> aCurW = body->getAngVelW(state);
 
-            double mass = body->getInfo().mass;
+            const double mass = body->getInfo().mass;
+            const InertiaMatrix<> inertia = body->getInfo().inertia;
 
             body->setForceW( (vErrW-vCurW)*mass*10 , state);
-            body->setTorqueW( (aErrW-aCurW)*mass*10 , state);
+            body->setTorqueW( inertia*(aErrW-aCurW)*10 , state);
 
         }
     }
