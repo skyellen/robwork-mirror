@@ -176,11 +176,12 @@ void ContactStrategyPQP::findContact(std::vector<Contact> &contacts,
 	// If distance check should be used, the ordinary distance threshold is used.
 	// When known contacts should be updated, there should be no threshold as
 	// the contacts can then be in any distance.
-	// (for now the "unlimited threshold" is achieved by just making the threshold 15 times bigger)
+	// (for now the "unlimited threshold" is achieved by just making the threshold x times bigger)
+	// Note that bigger threshold requires more computation time, so this is a trade-off.
 	if (distCheck)
 		threshold = getThreshold();
 	else
-		threshold = 15*getThreshold();
+		threshold = 3*getThreshold();
 
 	MultiDistanceResult *res;
 
