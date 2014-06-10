@@ -240,6 +240,7 @@ void SceneOpenGLViewer::init(){
     _scene->addChild(_worldNode, _scene->getRoot());
 
     _mainView = ownedPtr( new SceneViewer::View("MainView") );
+    _mainView->_drawMask = dmask;
     _currentView = _mainView;
     // add background camera
     _backCam = _scene->makeCamera("BackgroundCam");
@@ -720,28 +721,41 @@ DrawableNode::Ptr SceneOpenGLViewer::pickDrawable(rw::graphics::SceneGraph::Rend
     return _scene->pickDrawable(info, x, y);
 }
 
-void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
+rw::kinematics::Frame* SceneOpenGLViewer::pickFrame(int x, int y)
 {
-    // 6/5/2010
-    if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
-/*
-        int winx = event->x();
-        int winy = height()-event->y();
-        // we pick the scene before
-        Frame *frame = pickFrame(winx,winy);
-        if( frame ){
-            _rwStudio->frameSelectedEvent().fire( frame );
-        }
-*/
-    } else if (event->button() == Qt::LeftButton) {
+	DrawableNode::Ptr d = pickDrawable(x, y);
+	
+    if (d == NULL) {
+        return NULL;
+	}
+    Frame *res = (_wcscene) ? _wcscene->getFrame(d) : NULL;
+    
+    return res;
+}
+
+void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
+{ 
+	if (event->button() == Qt::LeftButton) {
         int winx = event->x();
         int winy = height()-event->y();
 
         Vector3D<> pos = _scene->unproject(_mainCam, winx, winy);
+        
         if (pos[2] != 1) {
+			
+			// double click + SHIFT => positionSelected event
             if (event->modifiers() == Qt::ShiftModifier) {
                 positionSelectedEvent().fire( pos );
-            } else {
+                
+            // doubleclick + CONTROL => frameSelected event
+            } else if (event->modifiers() == Qt::ControlModifier) {
+				Frame *frame = pickFrame(winx, winy);
+				if (frame) {
+					//frameSelectedEvent().fire(frame);
+				}
+				
+			// plain doubleclick => move pivot point
+			} else {
                 _cameraCtrl->setCenter(pos, Vector2D<>(event->x(), event->y()));
                 _pivotDrawable->setTransform( Transform3D<>(pos, Rotation3D<>::identity()) );
                 updateGL();
