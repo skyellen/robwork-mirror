@@ -194,6 +194,7 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     _view = sceneview;
     _wcscene = ownedPtr( new WorkCellScene(_view->getScene()) );
     _view->setWorldNode( _wcscene->getWorldNode() );
+    _view->setWorkCellScene(_wcscene);
 
     setupActions();
 
@@ -356,8 +357,11 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
 
 rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
     DrawableNode::Ptr d = _view->pickDrawable( x, y);
-    if(d==NULL)
+    if(d==NULL) {
+		RW_WARN("pickFrame(): drawable is NULL");
         return NULL;
+	}
+	Log::debugLog() << "Drawable name is " << d->getName() << std::endl;
     Frame *res = _wcscene->getFrame(d);
     return res;
 }
@@ -369,7 +373,8 @@ rw::graphics::DrawableNode::Ptr RWStudioView3D::pick(int x, int y){
 
 void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
     if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
-
+		
+		Log::debugLog() << "Mouse double click with control modifier..." << std::endl;
         int winx = event->x();
         int winy = height()-event->y();
         // we pick the scene before
@@ -377,7 +382,9 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
         if( frame != NULL){
             _rws->frameSelectedEvent().fire( frame );
             Log::debugLog() << "Frame: " << frame->getName() << std::endl;
-        }
+        } else {
+			Log::debugLog() << "Frame is NULL." << std::endl;
+		}
     }
 }
 
@@ -623,6 +630,9 @@ void RWStudioView3D::setMaskCheckAction(){
 
     //std::cout << "Mask action: " << mask << std::endl;
     _view->getMainView()->_viewCamera->setDrawMask( mask );
+    
+    // refresh view
+    _view->updateView();
 }
 
 void RWStudioView3D::setCheckAction(){
