@@ -111,6 +111,18 @@ public:
 	 */
 	bool storeExecutionData();
 
+	/**
+	 * @brief Get the currently set limit for the simulation time per task.
+	 * @return the maximum simulated time to spend on a single task.
+	 */
+	double getMaxSimTime() const;
+
+	/**
+	 * @brief Set the limit for simulation time per task.
+	 * @param maxTime [in] the maximum simulated time to spend on a single task.
+	 */
+	void setMaxSimTime(double maxTime);
+
 private:
 	class TaskDispatcher;
 	class TaskSimulation;
@@ -132,7 +144,8 @@ private:
 	bool _storeExecutionData;
 	bool _postStopFinish, _postStopCancel;
 	double _dt;
-	boost::mutex _mutex;
+	double _maxSimTime;
+	mutable boost::mutex _mutex;
 };
 //! @}
 } /* namespace simulator */

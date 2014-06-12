@@ -45,6 +45,7 @@
 
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 
+#include <rwsim/simulator/AssemblySimulator.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
@@ -104,6 +105,7 @@ namespace swig {
     typedef rwsim::sensor::SimulatedFTSensor SimulatedFTSensor;
 
 	// simulator
+    typedef rwsim::simulator::AssemblySimulator AssemblySimulator;
     typedef rwsim::simulator::DynamicSimulator DynamicSimulator;
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
     typedef rwsim::simulator::ThreadSimulator::StepCallback ThreadSimulatorStepCallback;

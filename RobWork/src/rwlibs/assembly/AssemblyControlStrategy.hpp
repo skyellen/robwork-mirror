@@ -91,9 +91,10 @@ public:
 	 * @param controlState [in] a ControlState previously created by the createState() function.
 	 * @param state [in] the real state of the system.
 	 * @param ftSensor [in] a pointer to the male force/torque sensor.
+	 * @param time [in] the current time.
 	 * @return a AssemblyControlResponse with a new target for the male controller (or NULL if nothing should be done).
 	 */
-	virtual rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, ControlState::Ptr controlState, rw::kinematics::State &state, rw::sensor::FTSensor* ftSensor) const = 0;
+	virtual rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, ControlState::Ptr controlState, rw::kinematics::State &state, rw::sensor::FTSensor* ftSensor, double time) const = 0;
 
 	/**
 	 * @brief Get the initial relative configuration between female and male objects (uses object TCP frames as given in the AssemblyTask).

@@ -106,7 +106,8 @@ AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const
 	_storeExecutionData(false),
 	_postStopFinish(false),
 	_postStopCancel(false),
-	_dt(0.001)
+	_dt(0.001),
+	_maxSimTime(5)
 {
 }
 
@@ -180,11 +181,13 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	// Get local copies of shared values
 	bool saveData;
 	double dt;
+	double maxRunTime;
 	AssemblyTask::Ptr task;
 	AssemblyResult::Ptr result;
 	{
 		boost::mutex::scoped_lock lock(_mutex);
 		dt = _dt;
+		maxRunTime = _maxSimTime;
 		task = _tasks[taskIndex];
 		result = _results[taskIndex];
 		saveData = _storeExecutionData;
@@ -290,7 +293,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	}
 	
 	{
-		bool setCD = pe->setContactDetector(_contactDetector);
+		const bool setCD = pe->setContactDetector(_contactDetector);
 		if (_contactDetector != NULL && !setCD)
 			RW_THROW("AssemblySimulator could not set ContactDetector on the used PhysicsEngine!");
 	}
@@ -341,10 +344,10 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 
 		//time = TimerUtil::currentTimeMs();
 
-		if (simTime > 5)
+		if (simTime > maxRunTime)
 			running = false;
 
-		std::cout << "simTime: " << simTime << std::endl;
+		//std::cout << "simTime: " << simTime << std::endl;
 	}
 	result->femaleTmaleEnd = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
 	simulator->exitPhysics();
@@ -482,17 +485,19 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		if (simState.maleDevice != NULL) {
 			ct3d = simState.maleDevice->baseTend(simState.state);
 			controllerMoving = simState.maleController->isMoving();
+			simState.baseTfemale = Kinematics::frameTframe(simState.maleDevice->getBase(),simState.femaleTCP,defState);
+			simState.maleTend = Kinematics::frameTframe(simState.maleTCP,simState.maleDevice->getEnd(),defState);
 		} else
 			ct3d = simState.maleBodyControl->getTransformW(simState.state);
-		bool isPoseReached = MetricUtil::dist2( ct3d.P(), simState.maleApproach.P() )<0.0005;
 		VelocityScrew6D<> dif( inverse(ct3d) * simState.maleApproach );
-		std::cout << "Approach: " << controllerMoving << " " << MetricUtil::dist2( ct3d.P(), simState.maleApproach.P() ) << " " << dif.linear().norm2() << " " << dif.angular().angle() << " " << simState.maleTarget << std::endl;
+		bool isPoseReached = dif.linear().norm2() < 0.0005;
+		//std::cout << "Approach: " << controllerMoving << " " << MetricUtil::dist2( ct3d.P(), simState.maleApproach.P() ) << " " << dif.linear().norm2() << " " << dif.angular().angle() << " " << simState.maleTarget << std::endl;
 		if (isPoseReached && !controllerMoving && dif.angular().angle() < 0.01) {
 			simState.controlState = task->strategy->createState();
 			//_restCycles = 0;
 			//_restMs = _tsim->getTime();
 			simState.phase = SimState::INSERTION;
-			std::cout << "Approach: Continues to next state!" << std::endl;
+			//std::cout << "Approach: Continues to next state!" << std::endl;
 		}
 	}
 	break;
@@ -502,15 +507,20 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		assumedState.phase = "Insertion";
 		assumedState.contact = false;
 
-		Transform3D<> femaleTmale = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
+		if (simState.maleDevice != NULL) {
+			simState.baseTfemale = Kinematics::frameTframe(simState.maleDevice->getBase(),simState.femaleTCP,simState.state);
+			simState.maleTend = Kinematics::frameTframe(simState.maleTCP,simState.maleDevice->getEnd(),simState.state);
+		}
+
+		/*Transform3D<> femaleTmale = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
 		bool contact = hasContact(simState.femaleContactSensor,simState.male);
 		AssemblyState::Ptr real = ownedPtr(new AssemblyState());
 		real->femaleTmale = femaleTmale;
 		real->contact = contact;
 		AssemblyState::Ptr assumed = ownedPtr(new AssemblyState());
 		assumed->femaleTmale = femaleTmale;
-		assumed->contact = contact;
-		AssemblyControlResponse::Ptr response = task->strategy->update(task->parameters, real, assumed, simState.controlState, simState.state, ftSensorMale);
+		assumed->contact = contact;*/
+		AssemblyControlResponse::Ptr response = task->strategy->update(task->parameters, &realState, &assumedState, simState.controlState, simState.state, ftSensorMale, simState.time);
 		//std::cout << "Insertion: " << ftSensor->getForce() << " " << ftSensor->getTorque() << std::endl;
 		//simState.phase = SimState::FINISHED;
 		if (response != NULL) {
@@ -538,7 +548,7 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 					Transform3D<> position = simState.baseTfemale * response->femaleTmaleTarget * simState.maleTend;
 					if (simState.maleController != NULL) {
 						if (!ftControl)
-							simState.maleController->movePTP_T(position,5);
+							simState.maleController->movePTP_T(position,10);
 						else
 							simState.maleController->moveLinFC(position,response->force_torque,sel,"",response->offset, 5);
 					} else {
@@ -577,27 +587,43 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 }
 
 void AssemblySimulator::stopFinishCurrent() {
+	boost::mutex::scoped_lock lock(_mutex);
 	_postStopFinish = true;
 }
 
 void AssemblySimulator::stopCancelCurrent() {
+	boost::mutex::scoped_lock lock(_mutex);
 	_postStopCancel = true;
 }
 
 void AssemblySimulator::setTasks(std::vector<AssemblyTask::Ptr> tasks) {
+	boost::mutex::scoped_lock lock(_mutex);
 	_tasks = tasks;
 }
 
 std::vector<AssemblyResult::Ptr> AssemblySimulator::getResults() {
+	boost::mutex::scoped_lock lock(_mutex);
 	return _results;
 }
 
 void AssemblySimulator::setStoreExecutionData(bool enable) {
+	boost::mutex::scoped_lock lock(_mutex);
 	_storeExecutionData = enable;
 }
 
 bool AssemblySimulator::storeExecutionData() {
+	boost::mutex::scoped_lock lock(_mutex);
 	return _storeExecutionData;
+}
+
+double AssemblySimulator::getMaxSimTime() const {
+	boost::mutex::scoped_lock lock(_mutex);
+	return _maxSimTime;
+}
+
+void AssemblySimulator::setMaxSimTime(double maxTime) {
+	boost::mutex::scoped_lock lock(_mutex);
+	_maxSimTime = maxTime;
 }
 
 std::vector<Q> AssemblySimulator::orderSolutions(const std::vector<Q> &solutions, const Q &curQ) {

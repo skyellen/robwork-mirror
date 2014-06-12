@@ -50,7 +50,7 @@ public:
 	ControlState::Ptr createState() const;
 
 	//! @copydoc rwlibs::assembly::AssemblyControlStrategy::update
-	rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, ControlState::Ptr controlState, rw::kinematics::State &state, rw::sensor::FTSensor* ftSensor) const;
+	rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, ControlState::Ptr controlState, rw::kinematics::State &state, rw::sensor::FTSensor* ftSensor, double time) const;
 
 	//! @copydoc rwlibs::assembly::AssemblyControlStrategy::getApproach
 	rw::math::Transform3D<> getApproach(rw::common::Ptr<AssemblyParameterization> parameters);

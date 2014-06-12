@@ -57,7 +57,7 @@ CircularPiHControlStrategy::ControlState::Ptr CircularPiHControlStrategy::create
 	return ownedPtr(new CircularControlState());
 }
 
-AssemblyControlResponse::Ptr CircularPiHControlStrategy::update(AssemblyParameterization::Ptr parameters, AssemblyState::Ptr real, AssemblyState::Ptr assumed, ControlState::Ptr controlState, State &state, FTSensor* ftSensor) const {
+AssemblyControlResponse::Ptr CircularPiHControlStrategy::update(AssemblyParameterization::Ptr parameters, AssemblyState::Ptr real, AssemblyState::Ptr assumed, ControlState::Ptr controlState, State &state, FTSensor* ftSensor, double time) const {
 	static double zForceTarget = -5; // Newton
 
 	VectorND<6,bool> selection;

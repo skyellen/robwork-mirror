@@ -1164,6 +1164,26 @@ public:
 
 %template (GraspTaskSimulatorPtr) rw::common::Ptr<GraspTaskSimulator>;
 
+%nodefaultctor AssemblySimulator;
+class AssemblySimulator
+{
+public:
+	AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<ContactDetector> contactDetector = NULL);
+	virtual ~AssemblySimulator();
+	void start(rw::common::Ptr<ThreadTask> task = NULL);
+	void stopFinishCurrent();
+	void stopCancelCurrent();
+	bool isRunning();
+	void setTasks(std::vector<rw::common::Ptr<AssemblyTask> > tasks);
+	std::vector<rw::common::Ptr<AssemblyResult> > getResults();
+	void setStoreExecutionData(bool enable);
+	bool storeExecutionData();
+	double getMaxSimTime() const;
+	void setMaxSimTime(double maxTime);
+};
+
+%template (AssemblySimulatorPtr) rw::common::Ptr<AssemblySimulator>;
+
 /********************************************
  * UTIL
  ********************************************/
