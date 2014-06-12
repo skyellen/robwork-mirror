@@ -42,6 +42,13 @@
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
 
+#include <rwlibs/assembly/AssemblyControlResponse.hpp>
+#include <rwlibs/assembly/AssemblyControlStrategy.hpp>
+#include <rwlibs/assembly/AssemblyParameterization.hpp>
+#include <rwlibs/assembly/AssemblyRegistry.hpp>
+#include <rwlibs/assembly/AssemblyResult.hpp>
+#include <rwlibs/assembly/AssemblyState.hpp>
+#include <rwlibs/assembly/AssemblyTask.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
@@ -217,6 +224,15 @@ namespace swig {
 	typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
 	// rwlibs algorithms
+
+	// rwlibs assembly
+	typedef rwlibs::assembly::AssemblyControlResponse AssemblyControlResponse;
+	typedef rwlibs::assembly::AssemblyControlStrategy AssemblyControlStrategy;
+	typedef rwlibs::assembly::AssemblyParameterization AssemblyParameterization;
+	typedef rwlibs::assembly::AssemblyRegistry AssemblyRegistry;
+	typedef rwlibs::assembly::AssemblyResult AssemblyResult;
+	typedef rwlibs::assembly::AssemblyState AssemblyState;
+	typedef rwlibs::assembly::AssemblyTask AssemblyTask;
 
 	// rwlibs calibration
 

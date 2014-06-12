@@ -126,6 +126,8 @@ class PropertyMap
 {
 };
 
+%template (PropertyMapPtr) rw::common::Ptr<PropertyMap>;
+
 class ThreadPool {
 public:
     ThreadPool(int threads = -1);
@@ -1760,6 +1762,8 @@ public:
 %template (TimedQVectorPtr) rw::common::Ptr<std::vector<Timed<Q> > >;
 %template (TimedStateVectorPtr) rw::common::Ptr<std::vector<Timed<State> > >;
 
+%template (PathSE3) Path<Transform3D>;
+%template (PathSE3Ptr) rw::common::Ptr<Path<Transform3D> >;
 %template (PathQ) Path<Q>;
 %template (PathQPtr) rw::common::Ptr<Path<Q> >;
 %template (PathTimedQ) Path<Timed<Q> >;
@@ -2115,7 +2119,146 @@ public:
 /********************************************
  * RWLIBS ALGORITHMS
  ********************************************/
- 
+
+/********************************************
+ * RWLIBS ASSEMBLY
+ ********************************************/
+
+class AssemblyControlResponse
+{
+public:
+	AssemblyControlResponse();
+	virtual ~AssemblyControlResponse();
+	
+	/*
+	typedef enum Type {
+		POSITION,    //!< Position control
+		VELOCITY,    //!< Velocity control
+		HYBRID_FT_POS//!< Hybrid position and force/torque control
+	} Type;
+
+	Type type;
+	*/
+	
+	Transform3D femaleTmaleTarget;
+	VelocityScrew6D femaleTmaleVelocityTarget;
+	Rotation3D offset;
+	//VectorND<6,bool> selection;
+	Wrench6D force_torque;
+	bool done;
+};
+
+%template (AssemblyControlResponsePtr) rw::common::Ptr<AssemblyControlResponse>;
+
+class AssemblyControlStrategy
+{
+public:
+	AssemblyControlStrategy();
+	virtual ~AssemblyControlStrategy();
+	
+	/*
+	class ControlState {
+	public:
+		//! @brief smart pointer type to this class
+	    typedef rw::common::Ptr<ControlState> Ptr;
+
+		//! @brief Constructor.
+		ControlState() {};
+
+		//! @brief Destructor.
+		virtual ~ControlState() {};
+	};
+	virtual rw::common::Ptr<ControlState> createState() const;
+	*/
+	
+	//virtual rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, rw::common::Ptr<ControlState> controlState, State &state, FTSensor* ftSensor, double time) const = 0;
+	virtual Transform3D getApproach(rw::common::Ptr<AssemblyParameterization> parameters) = 0;
+	virtual std::string getID() = 0;
+	virtual std::string getDescription() = 0;
+	virtual rw::common::Ptr<AssemblyParameterization> createParameterization(const rw::common::Ptr<PropertyMap> map) = 0;
+};
+
+%template (AssemblyControlStrategyPtr) rw::common::Ptr<AssemblyControlStrategy>;
+
+class AssemblyParameterization
+{
+public:
+	AssemblyParameterization();
+	AssemblyParameterization(rw::common::Ptr<PropertyMap> pmap);
+	virtual ~AssemblyParameterization();
+	virtual rw::common::Ptr<PropertyMap> toPropertyMap() const;
+	virtual rw::common::Ptr<AssemblyParameterization> clone() const;
+};
+
+%template (AssemblyParameterizationPtr) rw::common::Ptr<AssemblyParameterization>;
+
+class AssemblyRegistry
+{
+public:
+	AssemblyRegistry();
+	virtual ~AssemblyRegistry();
+	void addStrategy(const std::string id, rw::common::Ptr<AssemblyControlStrategy> strategy);
+	rw::common::Ptr<AssemblyControlStrategy> getStrategy(const std::string &id);
+};
+
+%template (AssemblyRegistryPtr) rw::common::Ptr<AssemblyRegistry>;
+
+class AssemblyResult
+{
+public:
+	AssemblyResult();
+	AssemblyResult(rw::common::Ptr<Task<Transform3D> > task);
+	virtual ~AssemblyResult();
+	rw::common::Ptr<AssemblyResult> clone() const;
+	rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+	static void saveRWResult(rw::common::Ptr<AssemblyResult> result, const std::string& name);
+	static void saveRWResult(std::vector<rw::common::Ptr<AssemblyResult> > results, const std::string& name);
+	static std::vector<rw::common::Ptr<AssemblyResult> > load(const std::string& name);
+	static std::vector<rw::common::Ptr<AssemblyResult> > load(std::istringstream& inputStream);
+};
+
+%template (AssemblyResultPtr) rw::common::Ptr<AssemblyResult>;
+%template (AssemblyResultPtrVector) std::vector<rw::common::Ptr<AssemblyResult> >;
+
+class AssemblyState
+{
+public:
+	AssemblyState();
+	//AssemblyState(rw::common::Ptr<Target<Transform3D> > target);
+	virtual ~AssemblyState();
+	//static rw::common::Ptr<Target<Transform3D> > toCartesianTarget(const AssemblyState &state);
+
+	std::string phase;
+	Transform3D femaleOffset;
+	Transform3D maleOffset;
+	Transform3D femaleTmale;
+	Wrench6D ftSensorMale;
+	Wrench6D ftSensorFemale;
+	bool contact;
+	Path<Transform3D> maleflexT;
+	Path<Transform3D> femaleflexT;
+	Path<Transform3D> contacts;
+};
+
+%template (AssemblyStatePtr) rw::common::Ptr<AssemblyState>;
+
+class AssemblyTask
+{
+public:
+	AssemblyTask();
+	AssemblyTask(rw::common::Ptr<Task<Transform3D> > task, rw::common::Ptr<AssemblyRegistry> registry = NULL);
+	virtual ~AssemblyTask();
+	rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+	static void saveRWTask(rw::common::Ptr<AssemblyTask> task, const std::string& name);
+	static void saveRWTask(std::vector<rw::common::Ptr<AssemblyTask> > tasks, const std::string& name);
+	static std::vector<rw::common::Ptr<AssemblyTask> > load(const std::string& name, rw::common::Ptr<AssemblyRegistry> registry = NULL);
+	static std::vector<rw::common::Ptr<AssemblyTask> > load(std::istringstream& inputStream, rw::common::Ptr<AssemblyRegistry> registry = NULL);
+	rw::common::Ptr<AssemblyTask> clone() const;
+};
+
+%template (AssemblyTaskPtr) rw::common::Ptr<AssemblyTask>;
+%template (AssemblyTaskPtrVector) std::vector<rw::common::Ptr<AssemblyTask> >;
+
 /********************************************
  * RWLIBS CALIBRATION
  ********************************************/
