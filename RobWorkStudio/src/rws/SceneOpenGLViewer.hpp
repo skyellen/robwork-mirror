@@ -218,6 +218,15 @@ public:
     rw::graphics::DrawableNode::Ptr pickDrawable(int x, int y);
     rw::graphics::DrawableNode::Ptr pickDrawable(rw::graphics::SceneGraph::RenderInfo& info, int x, int y);
     rw::graphics::SceneGraph::RenderInfo& getRenderInfo(){ return _renderInfo; };
+    
+    /**
+     * @brief picks the frame that has drawables that intersect the ray cast into the screen from
+     * the screen coordinates \b x and \b y.
+     * @param x [in] x coordinate
+     * @param y [in] y coordinate
+     * @return the frame that was selected, Null if no frames where selected.
+     */
+    rw::kinematics::Frame* pickFrame(int x, int y);
 
 protected:
     //! Overridden from QGLWidget

@@ -377,8 +377,8 @@ namespace rws {
 		typedef rw::common::Event<StateTrajectoryChangedListener, const rw::trajectory::TimedStatePath&>  StateTrajectoryChangedEvent;
 
 		/**
-		 * @brief Returns KeyEvent needed for subscription and firing of events
-		 * @return Reference to the KeyEvent
+		 * @brief Returns stateTrajectoryChangedEvent needed for subscription and firing of event
+		 * @return Reference to the stateTrajectoryChangedEvent
 		 */		
 		StateTrajectoryChangedEvent& stateTrajectoryChangedEvent() {
 			return _stateTrajectoryChangedEvent;
@@ -404,7 +404,7 @@ namespace rws {
 
 		/**
 		 * @brief Returns PositionChangedEvent object needed for subscription to and firing of event
-		 * @return REference to the PositionSelectedEvent
+		 * @return Reference to the PositionSelectedEvent
 		 */		
 		PositionSelectedEvent& positionSelectedEvent() {
 			return _positionSelectedEvent;
