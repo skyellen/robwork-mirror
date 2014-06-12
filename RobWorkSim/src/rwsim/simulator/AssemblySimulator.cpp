@@ -94,6 +94,11 @@ public:
 		}
 	}
 
+	void done() {
+		boost::mutex::scoped_lock lock(_simulator->_mutex);
+		_simulator->_running = false;
+	}
+
 private:
 	AssemblySimulator* _simulator;
 };*/
@@ -106,6 +111,7 @@ AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const
 	_storeExecutionData(false),
 	_postStopFinish(false),
 	_postStopCancel(false),
+	_running(false),
 	_dt(0.001),
 	_maxSimTime(5)
 {
@@ -115,12 +121,18 @@ AssemblySimulator::~AssemblySimulator() {
 }
 
 void AssemblySimulator::start(rw::common::Ptr<ThreadTask> task) {
+	{
+		boost::mutex::scoped_lock lock(_mutex);
+		_running = true;
+	}
 	_results.resize(_tasks.size());
 	BOOST_FOREACH(AssemblyResult::Ptr &res, _results) {
 		res = ownedPtr(new AssemblyResult());
 	}
 	if (task == NULL) {
 		runAll();
+		boost::mutex::scoped_lock lock(_mutex);
+		_running = false;
 	} else {
 		//ThreadTask::Ptr maintask = ownedPtr(new TaskDispatcher(this,task));
 		//task->addSubTask(maintask);
@@ -355,9 +367,13 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 }
 
 void AssemblySimulator::runAll() {
+	// Note: _tasks is read-only while _running is true (mutex not required)
 	for (std::size_t i = 0; i < _tasks.size(); i++) {
-		if (_postStopFinish || _postStopCancel)
-			return;
+		{
+			boost::mutex::scoped_lock lock(_mutex);
+			if (_postStopFinish || _postStopCancel)
+				break;
+		}
 		runSingle(i);
 	}
 }
@@ -596,18 +612,29 @@ void AssemblySimulator::stopCancelCurrent() {
 	_postStopCancel = true;
 }
 
+bool AssemblySimulator::isRunning() {
+	boost::mutex::scoped_lock lock(_mutex);
+	return _running;
+}
+
 void AssemblySimulator::setTasks(std::vector<AssemblyTask::Ptr> tasks) {
 	boost::mutex::scoped_lock lock(_mutex);
+	if (_running)
+		RW_THROW("AssemblySimulator (setTasks): it is not allowed to change the tasks while the simulator is running!");
 	_tasks = tasks;
 }
 
 std::vector<AssemblyResult::Ptr> AssemblySimulator::getResults() {
 	boost::mutex::scoped_lock lock(_mutex);
+	if (_running)
+		RW_THROW("AssemblySimulator (getResults): the simulator is still running!");
 	return _results;
 }
 
 void AssemblySimulator::setStoreExecutionData(bool enable) {
 	boost::mutex::scoped_lock lock(_mutex);
+	if (_running)
+		RW_THROW("AssemblySimulator (setStoreExecutionData): the setting can not be changed while running!");
 	_storeExecutionData = enable;
 }
 
@@ -623,6 +650,8 @@ double AssemblySimulator::getMaxSimTime() const {
 
 void AssemblySimulator::setMaxSimTime(double maxTime) {
 	boost::mutex::scoped_lock lock(_mutex);
+	if (_running)
+		RW_THROW("AssemblySimulator (setMaxSimTime): the setting can not be changed while running!");
 	_maxSimTime = maxTime;
 }
 

@@ -143,6 +143,7 @@ private:
 	std::vector<rw::common::Ptr<rwlibs::assembly::AssemblyResult> > _results;
 	bool _storeExecutionData;
 	bool _postStopFinish, _postStopCancel;
+	bool _running;
 	double _dt;
 	double _maxSimTime;
 	mutable boost::mutex _mutex;
