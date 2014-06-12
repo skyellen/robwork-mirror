@@ -646,7 +646,9 @@ bool WorkCellScene::removeDrawable(const std::string& name, rw::kinematics::Fram
 rw::kinematics::Frame* WorkCellScene::getFrame(DrawableNode::Ptr d){
     //std::cout << d->_parentNodes.size() << std::endl;
     GroupNode::Ptr gn = d->_parentNodes.front().cast<GroupNode>();
-    if(gn==NULL)
+    if(gn==NULL) {
+		RW_WARN("Group Node is NULL");
         return NULL;
+	}
     return _nodeFrameMap[gn];
 }

@@ -11,6 +11,7 @@
 
 #include <rw/common/PropertyMap.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 
 
 namespace rw {
@@ -47,6 +48,8 @@ namespace graphics {
         virtual void updateState(const rw::kinematics::State& state) = 0;
 
         virtual void setWorldNode(rw::graphics::GroupNode::Ptr wnode) = 0;
+        
+        virtual void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene) { _wcscene = wcscene; }
 
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;
 
@@ -150,8 +153,10 @@ namespace graphics {
 
 
 
-    private:
+    protected:
         PositionSelectedEvent _positionSelectedEvent;
+        rw::graphics::WorkCellScene::Ptr _wcscene;
+        
         //View::Ptr _mainView;
         //std::vector<View::Ptr> _views;
     };
