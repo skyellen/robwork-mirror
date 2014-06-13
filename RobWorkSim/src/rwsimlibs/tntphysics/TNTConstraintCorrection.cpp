@@ -86,12 +86,11 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		if (!rParent && !rChild)
 			continue;
 		if (contact) {
-			const Vector3D<> rij = contact->getPositionParentW(tntstate);
-			const Vector3D<> rji = contact->getPositionChildW(tntstate);
-			const Vector3D<> nij = contact->getLinearRotationParentW(tntstate).getCol(2);
+			const Vector3D<> nij = contact->getNormalW(tntstate);
 			rhs[curConstraint] = -contact->getContact().getDepth();
 			if (rParent) {
 				const Vector3D<> Ri = rParent->getWorldTcom(tntstate).P();
+				const Vector3D<> rij = contact->getPositionParentW(tntstate);
 				const unsigned int bodyId = bodies[rParent]*6;
 				lhs(curConstraint,bodyId+0) = nij[0];
 				lhs(curConstraint,bodyId+1) = nij[1];
@@ -103,6 +102,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 			}
 			if (rChild) {
 				const Vector3D<> Rj = rChild->getWorldTcom(tntstate).P();
+				const Vector3D<> rji = contact->getPositionChildW(tntstate);
 				const unsigned int bodyId = bodies[rChild]*6;
 				lhs(curConstraint,bodyId+0) = -nij[0];
 				lhs(curConstraint,bodyId+1) = -nij[1];
@@ -205,7 +205,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		}
 	}
 
-	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-12);
+	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-4);
 	const Eigen::VectorXd sol = lhsInv*rhs;
 	for (unsigned int i = 0; i < id; i++) {
 		const Eigen::VectorXd correction = sol.block(i*6,0,6,1);

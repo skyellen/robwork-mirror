@@ -111,6 +111,7 @@ Eigen::VectorXd TNTSolverSVD::solve(double h, const State &rwstate, const TNTIsl
 			eigenValues[i] = complex.real();
 		}
 		TNT_DEBUG_SOLVER("Eigenvalues: " << eigenValues.transpose() << ".");
+		TNT_DEBUG_SOLVER("RHS: " << rhs.transpose() << ".");
 #endif
 	} else
 		solution = Eigen::VectorXd::Zero(0);

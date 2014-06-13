@@ -150,128 +150,114 @@ void TNTCollisionSolverSingle::resolveContacts(
 		const State& rwstate) const
 {
 	TNTIslandState tmpState;
+
 	// Construct initial lists assuming all known contacts will be leaving and only the new contacts will penetrate.
-	std::vector<const TNTContact*> penetratingContacts = contacts;
-	std::vector<const TNTContact*> leavingContacts;
+	std::vector<const TNTContact*> mandatory = contacts;
+	std::vector<const TNTContact*> optional;
 	std::vector<const TNTConstraint*> nonContacts;
 	BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
 		if (contact) {
 			bool found = false;
-			BOOST_FOREACH(const TNTContact* const penContact, penetratingContacts) {
-				if (penContact == contact) {
+			BOOST_FOREACH(const TNTContact* const mandatoryContact, mandatory) {
+				if (mandatoryContact == contact) {
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				leavingContacts.push_back(contact);
+				optional.push_back(contact);
 			}
 		} else {
 			nonContacts.push_back(contact);
 		}
 	}
-	// Find solution repeatedly and add penetrating contacts until no contacts are penetrating.
-	// Also remove non-penetrating contacts! (otherwise solver will throw exception!)
-	bool noPenetrations = false;
-	while (!noPenetrations) {
+	std::vector<bool> enabled(optional.size(),false);
+
+	bool repeat = true;
+	std::list<std::vector<bool> > testedCombinations;
+	std::list<std::vector<bool> > allCombinations;
+	bool testedAll = false;
+	while (repeat) {
+		// Check if we have already tested this combination before.
+		bool testedCombination = false;
+		BOOST_FOREACH(const std::vector<bool>& comb, testedCombinations) {
+			bool match = true;
+			for (std::size_t i = 0; i < comb.size(); i++) {
+				if (comb[i] != enabled[i]) {
+					match = false;
+					break;
+				}
+			}
+			if (match) {
+				testedCombination = true;
+				if (allCombinations.size() > 0) {
+					allCombinations.erase(allCombinations.begin());
+					if (allCombinations.size() == 0)
+						testedAll = true;
+				}
+				break;
+			}
+		}
+		if (testedAll)
+			RW_THROW("TNTCollisionSolverSingle (resolveContacts): all combinations tested - none was valid.");
+		// If loop was found, we break it by suggesting a new combination
+		if (testedCombination) {
+			// Construct list of all possible combinations if not already done
+			if (allCombinations.size() == 0) {
+				const std::size_t nrOfContacts = optional.size();
+				RW_ASSERT(nrOfContacts > 0);
+				std::size_t nrOfComb = 2;
+				for (std::size_t i = 1; i < nrOfContacts; i++)
+					nrOfComb *= 2;
+				allCombinations.resize(nrOfComb);
+				std::size_t i = 0;
+				BOOST_FOREACH(std::vector<bool>& comb, allCombinations) {
+					comb.resize(nrOfContacts);
+					std::size_t val = i;
+					for (std::size_t k = 0; k < nrOfContacts; k++) {
+						comb[k] = val%2;
+						val = val >> 1;
+					}
+					i++;
+				}
+			}
+			// Now try the first combination in list
+			enabled = allCombinations.front();
+			continue;
+		}
+		// Add the current combinations to the list of tested combinations
+		testedCombinations.push_back(enabled);
+
+		// Construct list of contacts
+		std::vector<const TNTContact*> penetratingContacts = mandatory;
+		for (std::size_t i = 0; i < enabled.size(); i++) {
+			if (enabled[i]) {
+				penetratingContacts.push_back(optional[i]);
+			}
+		}
+
+		// Now try to solve
 		tmpState = tntstate;
 		if (penetratingContacts.size() > 0 || nonContacts.size() > 0) {
 			solve(parent, child, penetratingContacts, nonContacts, restitutionModel, tmpState, rwstate);
 		}
-#if TNT_DEBUG_ENABLE_BOUNCING
-		static const double TOLERANCE = 1e-4;
-		if (leavingContacts.size() == 0) {
-			BOOST_FOREACH(const TNTContact* const contact, penetratingContacts) {
+		repeat = false;
+		for (std::size_t i = 0; i < enabled.size(); i++) {
+			if (!enabled[i]) {
+				const TNTContact* const contact = optional[i];
 				const Vector3D<> linVelI = contact->getVelocityParentW(tmpState,rwstate).linear();
 				const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
 				const Vector3D<> linRelVel = linVelI-linVelJ;
 				const Vector3D<> nij = contact->getNormalW(tmpState);
-				const double vel = dot(-linRelVel,nij);
-				const bool leaving = vel >= 0;
+				const bool leaving = dot(-linRelVel,nij) >= 0;
 				if (!leaving) {
-					if (vel < -TOLERANCE) {
-						RW_THROW("TNTCollisionSolverSingle (resolveContacts): a contact did not become non-penetrating when applying impulse. Velocity is " << vel << " and should be bigger than " << -TOLERANCE);
-					}
+					enabled[i] = true;
+					repeat = true;
 				}
-			}
-			BOOST_FOREACH(const TNTConstraint* const constraint, nonContacts) {
-				if (constraint->getDimVelocity() == 0)
-					continue;
-				const VelocityScrew6D<> velI = constraint->getVelocityParentW(tmpState,rwstate);
-				const VelocityScrew6D<> velJ = constraint->getVelocityChildW(tmpState,rwstate);
-				const Vector3D<> angVelI = velI.angular().angle()*velI.angular().axis();
-				const Vector3D<> angVelJ = velJ.angular().angle()*velJ.angular().axis();
-				const Vector3D<> linRelVel = velI.linear()-velJ.linear();
-				const Vector3D<> angRelVel = angVelI-angVelJ;
-				const Rotation3D<> linRot = constraint->getLinearRotationParentW(tmpState);
-				const Rotation3D<> angRot = constraint->getLinearRotationParentW(tmpState);
-				const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
-				Vector3D<> lin = Vector3D<>::zero();
-				Vector3D<> ang = Vector3D<>::zero();
-				for (std::size_t i = 0; i < 3; i++) {
-					if (modes[i] == TNTConstraint::Velocity) {
-						lin += dot(linRelVel,linRot.getCol(i))*linRot.getCol(i);
-					}
-				}
-				for (std::size_t i = 3; i < 6; i++) {
-					if (modes[i] == TNTConstraint::Velocity) {
-						ang += dot(angRelVel,angRot.getCol(i-3))*angRot.getCol(i-3);
-					}
-				}
-				if (lin.norm2() > TOLERANCE) {
-					RW_THROW("TNTCollisionSolverSingle (resolveContacts): a constraint violated the desired linear velocity when applying impulse.");
-				}
-				if (ang.norm2() > TOLERANCE) {
-					RW_THROW("TNTCollisionSolverSingle (resolveContacts): a constraint violated the desired angular velocity when applying impulse.");
-				}
-			}
-		}
-#endif
-		noPenetrations = true;
-		std::vector<const TNTContact*>::iterator it;
-		for (it = leavingContacts.begin(); it != leavingContacts.end(); it++) {
-			const TNTContact* const contact = *it;
-			/*bool found = false;
-			BOOST_FOREACH(const TNTContact* const inputContact, contacts) {
-				if (inputContact == contact) {
-					found = true;
-					break;
-				}
-			}
-			if (found) {
-				continue;
-			}*/
-			const Vector3D<> linVelI = contact->getVelocityParentW(tmpState,rwstate).linear();
-			const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
-			const Vector3D<> linRelVel = linVelI-linVelJ;
-			const Vector3D<> nij = contact->getNormalW(tmpState);
-			const bool leaving = dot(-linRelVel,nij) >= 0;
-			if (!leaving) {
-				penetratingContacts.push_back(contact);
-				it = leavingContacts.erase(it);
-				it--;
-				noPenetrations = false;
 			}
 		}
 	}
-	/*if (leavingContacts.size() > 0) {
-		TNT_DEBUG_BOUNCING(leavingContacts.size() << " contacts resolved as leaving.");
-		BOOST_FOREACH(const TNTContact* const contact, leavingContacts) {
-			bc.removeTemporaryConstraint(contact,tmpState);
-		}
-	}
-	std::size_t removed = 0;
-	BOOST_FOREACH(const TNTContact* const contact, penetratingContacts) {
-		const TNTRestitutionModel::Values restitution = restitutionModel.getRestitution(*contact,tntstate,rwstate);
-		if (restitution.normal > 0) {
-			bc.removeTemporaryConstraint(contact,tmpState);
-			removed++;
-		}
-	}
-	if (removed > 0)
-		TNT_DEBUG_BOUNCING("Removing " << removed << " contacts with normal restitution.");
-		*/
 	tntstate = tmpState;
 }
 

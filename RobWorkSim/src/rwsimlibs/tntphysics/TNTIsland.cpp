@@ -29,11 +29,13 @@
 #include "TNTSolver.hpp"
 #include "TNTContactResolver.hpp"
 #include "TNTUtil.hpp"
+#include "TNTRigidBody.hpp"
 
 #include <rw/common/ThreadTask.hpp>
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/contacts/ContactDetectorData.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include <rwsim/sensor/SimulatedTactileSensor.hpp>
 
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -42,6 +44,7 @@ using namespace rwlibs::simulation;
 using namespace rwsim::contacts;
 using namespace rwsim::drawable;
 using namespace rwsim::dynamics;
+using namespace rwsim::sensor;
 using namespace rwsimlibs::tntphysics;
 
 class TNTIsland::StepTask: public ThreadTask {
@@ -99,7 +102,7 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
-	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
+	map.add<std::string>("TNTContactResolver","Default contact resolver.","NonPenetration");
 	return map;
 }
 
@@ -159,7 +162,7 @@ void TNTIsland::setGravity(const Vector3D<> &gravity) {
 
 void TNTIsland::step(double dt, State& state, rw::common::Ptr<ThreadTask> task) {
 	if (task == NULL) {
-		doStep(dt,state);
+		TNT_TIMING("Complete step",	doStep(dt,state));
 	} else {
 		_task = ownedPtr(new StepTask(this,dt,state,task));
 		task->addSubTask(_task);
@@ -308,7 +311,16 @@ void TNTIsland::addDevice(DynamicDevice::Ptr dev, State &state) {
 }
 
 void TNTIsland::addSensor(SimulatedSensor::Ptr sensor, State &state) {
-	RW_WARN("TNTIsland (addSensor): sensor can not be added yet (" << sensor->getName() << ")");
+	const SimulatedSensor* const ssensor = sensor.get();
+	if(const SimulatedTactileSensor* const tsensor = dynamic_cast<const SimulatedTactileSensor*>(ssensor) ){
+        const Frame* const bframe = tsensor->getFrame();
+        RW_ASSERT(bframe!=NULL);
+        if(_bc->getBody(bframe) == NULL)
+            RW_THROW("TNTIsland (addSensor): The frame (" << bframe->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
+		_sensors.push_back(sensor);
+    } else {
+    	RW_WARN("TNTIsland (addSensor): this type of sensor can not be added yet (" << sensor->getName() << ")");
+    }
 }
 
 void TNTIsland::removeSensor(SimulatedSensor::Ptr sensor) {
@@ -337,7 +349,9 @@ void TNTIsland::doStep(double dt, State& state) {
 		count = 0;
 	count++;*/
 
-	TNT_DEBUG_GENERAL("Time: " << _state->getTime());
+	TNT_DEBUG_DELIMITER()
+	TNT_DEBUG_GENERAL("Time: " << _state->getTime())
+
 #if TNT_DEBUG_ENABLE_CONTACTS
 	if (_state->getContacts().size() > 0) {
 		const std::size_t rawNo = TNTUtil::getMarkedContacts(_state->getContacts(),_state->getContactsTracking(),TNTUtil::MARK_RAW).size();
@@ -373,19 +387,21 @@ void TNTIsland::doStep(double dt, State& state) {
 	}
 
 	// Do impulses & find the constraint forces
-	solveConstraints(dt,*_state,state);
+	TNT_TIMING("Impulse & Constraint solver", solveConstraints(dt,*_state,state))
 
 	ContactDetectorData cdData = _state->getContactData();
 	IntegrateSample sample0(0,*_state,state);
 
 	// Do a broad phase integration (halfes the step until there are no PQP trimesh penetrations)
 	IntegrateSample sampleH;
-	{
-		double oldDt = dt;
-		dt = integrateBroadPhase(dt,sample0,sampleH,cdData);
-		if (dt < oldDt)
-			TNT_DEBUG_ROLLBACK("Broad-phase check decreased timestep to " << dt << " from " << oldDt << ".");
-	}
+	TNT_TIMING("Broad-phase Rollback",
+			{
+					double oldDt = dt;
+					dt = integrateBroadPhase(dt,sample0,sampleH,cdData);
+					if (dt < oldDt)
+						TNT_DEBUG_ROLLBACK("Broad-phase check decreased timestep to " << dt << " from " << oldDt << ".");
+			}
+	)
 
 	// If there are new contacts, check if rollback should be performed
 	bool doRollback = false;
@@ -420,30 +436,35 @@ void TNTIsland::doStep(double dt, State& state) {
 		// Store the results & update RobWork state
 		storeResults(cdData,sampleH,state);
 	} else {
-		// Do a backwards tracking of the new contacts to time dt=0
-		sample0.backwardTrack = sampleH.backwardTrack;
-		sample0.backwardContacts = _detector->updateContacts(sample0.rwstate,cdData,sample0.backwardTrack);
-		if (sample0.backwardContacts.size() == 0)
-			RW_THROW("TNTIsland (doStep): The new contact could not be traced back to time dt = 0!");
+		TNT_TIMING("Ordinary Rollback",
+				{
+						// Do a backwards tracking of the new contacts to time dt=0
+						sample0.backwardTrack = sampleH.backwardTrack;
+						sample0.backwardContacts = _detector->updateContacts(sample0.rwstate,cdData,sample0.backwardTrack);
+						if (sample0.backwardContacts.size() == 0)
+							RW_THROW("TNTIsland (doStep): The new contact could not be traced back to time dt = 0!");
 
-		const double minDist = TNTUtil::minDistance(sample0.backwardContacts);
+						const double minDist = TNTUtil::minDistance(sample0.backwardContacts);
 
-		if (fabs(minDist) < 0.0001) {
-			TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0 - repeating the step with extra contact(s).");
-			sample0.forwardTrack = sampleH.forwardTrack;
-			sample0.forwardContacts = _detector->findContacts(sample0.rwstate,cdData,sample0.forwardTrack);
-			storeResults(cdData,sample0,state);
-		} else {
-			// Ordinary Rollback
-			TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback.");
-			IntegrateSample result = integrateRollback(sample0,sampleH,cdData);
-			TNT_DEBUG_ROLLBACK("Narrow-phase rollback performed with stepsize " << result.time);
-			result.forwardTrack = sampleH.forwardTrack;
-			result.forwardContacts = _detector->findContacts(result.rwstate,cdData,result.forwardTrack);
-			storeResults(cdData,result,state);
-		}
+						if (fabs(minDist) < 0.0001) {
+							TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0 - repeating the step with extra contact(s).");
+							sample0.forwardTrack = sampleH.forwardTrack;
+							sample0.forwardContacts = _detector->findContacts(sample0.rwstate,cdData,sample0.forwardTrack);
+							storeResults(cdData,sample0,state);
+						} else {
+							// Ordinary Rollback
+							TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback.");
+							IntegrateSample result = integrateRollback(sample0,sampleH,cdData);
+							TNT_DEBUG_ROLLBACK("Narrow-phase rollback performed with stepsize " << result.time);
+							result.forwardTrack = sampleH.forwardTrack;
+							result.forwardContacts = _detector->findContacts(result.rwstate,cdData,result.forwardTrack);
+							storeResults(cdData,result,state);
+						}
+				}
+		)
 	}
 	TNT_DEBUG_GENERAL("Step ended.");
+	TNT_DEBUG_DELIMITER()
 }
 
 void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const State& rwstate) const {
@@ -528,9 +549,36 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 		delete resolver;
 		delete solver;
 	}
+
+	const TNTBodyConstraintManager::ConstraintList constraints = _bc->getTemporaryConstraints(&tntstate);
+	if (constraints.size() > 0) {
+		TNT_DEBUG_SOLVER("Contact Resolution");
+		std::vector<TNTContact*> contacts;
+		BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
+			if (const TNTContact* const c = dynamic_cast<const TNTContact*>(constraint)) {
+				const std::string linear = c->isLeaving() ? "Leaving" : c->getTypeLinear() == TNTContact::Sticking ? "Sticking" : "Sliding";
+				const std::string angular = c->isLeaving() ? "Leaving" : c->getTypeAngular() == TNTContact::Sticking ? "Sticking" : "Sliding";
+				const Wrench6D<> wrench = c->getWrench(tntstate);
+				TNT_DEBUG_SOLVER(" - " << linear << " " << angular << " - force/torque: " << wrench.force() << " " << wrench.torque());
+			}
+		}
+	}
 }
 
 double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, IntegrateSample& res, ContactDetectorData& cdData) const {
+	{
+		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
+		if (bodies.size() > 0) {
+			TNT_DEBUG_INTEGRATOR("Motion before integration");
+			BOOST_FOREACH(const TNTRigidBody* const body, bodies) {
+				const Transform3D<> pos = body->getWorldTcom(first.tntstate);
+				const VelocityScrew6D<> vel = body->getVelocityW(first.rwstate,first.tntstate);
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " vel: " << vel.linear() << " " << vel.angular());
+			}
+		}
+	}
+
 	bool fastCheck = true;
 	for (unsigned int iteration = 1; iteration <= TNT_MAX_ITERATIONS; iteration++) {
 		const double dtTry = dt/std::pow(2.,(int)(iteration-1));
@@ -538,13 +586,16 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 			TNT_DEBUG_ROLLBACK("Trying broad-phase time-step " << dtTry << " (original " << dt << ").");
 		res = first;
 		res.time = dtTry;
-		TNTUtil::step(dtTry,_gravity,_bc,res.tntstate,res.rwstate);
+
+		TNT_TIMING("Integration Step", TNTUtil::step(dtTry,_gravity,_bc,res.tntstate,res.rwstate))
 		if (fastCheck) {
-			if (!_bp->maxPenetrationExceeded(_detector,res.rwstate))
+			bool penetrating = false;
+			TNT_TIMING("Penetration Check", penetrating = _bp->maxPenetrationExceeded(_detector,res.rwstate) )
+			if (!penetrating)
 				fastCheck = false;
 		}
 		if (!fastCheck) {
-			res.forwardContacts = _detector->updateContacts(res.rwstate,cdData,res.forwardTrack);
+			TNT_TIMING("Update Contacts", res.forwardContacts = _detector->updateContacts(res.rwstate,cdData,res.forwardTrack) )
 #if TNT_DEBUG_ENABLE_CONTACTS
 			if (res.forwardContacts.size() != first.forwardContacts.size()) {
 				// More detailed check needed - matching algorithm
@@ -561,7 +612,8 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 #endif
 			TNTUtil::updateTemporaryContacts(res.forwardContacts,res.forwardTrack,_bc,res.tntstate,res.rwstate);
 #if TNT_ENABLE_CONSTRAINT_CORRECTION
-			_correction->correct(_bc->getConstraints(res.tntstate),res.tntstate,res.rwstate);
+
+			TNT_TIMING("Constraint Correction", _correction->correct(_bc->getConstraints(res.tntstate),res.tntstate,res.rwstate) )
 			// Update RobWork bodies
 			const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 			BOOST_FOREACH(const TNTBody* body, bodies) {
@@ -569,7 +621,7 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 			}
 #endif
 			if (!_bp->maxPenetrationExceeded(_detector,res.rwstate)) {
-				res.forwardContacts = _detector->findContacts(res.rwstate,cdData,res.forwardTrack);
+				TNT_TIMING("Find Contacts", res.forwardContacts = _detector->findContacts(res.rwstate,cdData,res.forwardTrack) )
 				dt = dtTry;
 				break;
 			}
@@ -579,6 +631,20 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 			RW_THROW("TNTIsland (integrateBroadPhase): Maximum of " << TNT_MAX_ITERATIONS << " iterations exceeded!");
 		}
 	}
+
+	{
+		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
+		if (bodies.size() > 0) {
+			TNT_DEBUG_INTEGRATOR("Motion after broad-phase integration");
+			BOOST_FOREACH(const TNTRigidBody* const body, bodies) {
+				const Transform3D<> pos = body->getWorldTcom(res.tntstate);
+				const VelocityScrew6D<> vel = body->getVelocityW(res.rwstate,res.tntstate);
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " vel: " << vel.linear() << " " << vel.angular());
+			}
+		}
+	}
+
 	return dt;
 }
 
@@ -642,6 +708,20 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 			RW_THROW("TNTIsland (doStep): Maximum of " << TNT_MAX_ITERATIONS << " iterations exceeded!");
 	}
 	delete rollbackData;
+
+	{
+		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
+		if (bodies.size() > 0) {
+			TNT_DEBUG_INTEGRATOR("Motion after narrow-phase integration");
+			BOOST_FOREACH(const TNTRigidBody* const body, bodies) {
+				const Transform3D<> pos = body->getWorldTcom(result.tntstate);
+				const VelocityScrew6D<> vel = body->getVelocityW(result.rwstate,result.tntstate);
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " vel: " << vel.linear() << " " << vel.angular());
+			}
+		}
+	}
+
 	return result;
 }
 

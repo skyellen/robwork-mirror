@@ -52,19 +52,24 @@
 // Debugging Settings
 #define TNT_DEBUG_ENABLE false
 //#define TNT_DEBUG_FILE "tntdebug.txt"
+#define TNT_DEBUG_TIMING_LIMIT 2 // Lower limit for timing values to output in ms
 
 #if TNT_DEBUG_ENABLE
 #define TNT_DEBUG_ENABLE_GENERAL true
+#define TNT_DEBUG_ENABLE_TIMING true
 #define TNT_DEBUG_ENABLE_CONTACTS true
 #define TNT_DEBUG_ENABLE_ROLLBACK true
 #define TNT_DEBUG_ENABLE_BOUNCING true
 #define TNT_DEBUG_ENABLE_SOLVER true
+#define TNT_DEBUG_ENABLE_INTEGRATOR true
 #else
 #define TNT_DEBUG_ENABLE_GENERAL false
+#define TNT_DEBUG_ENABLE_TIMING false
 #define TNT_DEBUG_ENABLE_CONTACTS false
 #define TNT_DEBUG_ENABLE_ROLLBACK false
 #define TNT_DEBUG_ENABLE_BOUNCING false
 #define TNT_DEBUG_ENABLE_SOLVER false
+#define TNT_DEBUG_ENABLE_INTEGRATOR false
 #endif
 
 // Debugging Macros
@@ -82,6 +87,13 @@
 	TNT__filestream << TNT__message;                                           \
 	TNT__filestream.close();                                                   \
 }
+#define TNT_DEBUG_DELIMITER()                                                  \
+{                                                                              \
+	std::ofstream TNT__filestream;                                             \
+	TNT__filestream.open(TNT_DEBUG_FILE,std::ios_base::app);                   \
+	TNT__filestream << "---------------------------------------" << std::endl; \
+	TNT__filestream.close();                                                   \
+}
 #else
 #define TNT_DEBUG(header,ostreamExpression)                                    \
 {                                                                              \
@@ -91,12 +103,24 @@
 	rw::common::Message TNT__message(__FILE__, TNT__line, TNT__stream.str());  \
 	rw::common::Log::debugLog().write( TNT__message);                          \
 }
+#define TNT_DEBUG_DELIMITER()                                                  \
+{                                                                              \
+	std::stringstream TNT__stream;                                             \
+	TNT__stream << "---------------------------------------" << std::endl;     \
+	rw::common::Log::debugLog().write(TNT__stream.str());                      \
+}
 #endif
 
 #ifdef TNT_DEBUG_ENABLE_GENERAL
 #define TNT_DEBUG_GENERAL(ostreamExpression) TNT_DEBUG("GENERAL - ",ostreamExpression)
 #else
 #define TNT_DEBUG_GENERAL(ostreamExpression)
+#endif
+
+#ifdef TNT_DEBUG_ENABLE_TIMING
+#define TNT_DEBUG_TIMING(ostreamExpression) TNT_DEBUG("TIMING - ",ostreamExpression)
+#else
+#define TNT_DEBUG_TIMING(ostreamExpression)
 #endif
 
 #ifdef TNT_DEBUG_ENABLE_CONTACTS
@@ -123,15 +147,39 @@
 #define TNT_DEBUG_SOLVER(ostreamExpression)
 #endif
 
+#ifdef TNT_DEBUG_ENABLE_INTEGRATOR
+#define TNT_DEBUG_INTEGRATOR(ostreamExpression) TNT_DEBUG("INTEGRATOR - ",ostreamExpression)
+#else
+#define TNT_DEBUG_INTEGRATOR(ostreamExpression)
+#endif
+
 #else // !TNT_DEBUG_ENABLE
 #define TNT_DEBUG(type,ostreamExpression)
+#define TNT_DEBUG_DELIMITER()
 
 #define TNT_DEBUG_GENERAL(ostreamExpression)
+#define TNT_DEBUG_TIMING(ostreamExpression)
 #define TNT_DEBUG_CONTACTS(ostreamExpression)
 #define TNT_DEBUG_ROLLBACK(ostreamExpression)
 #define TNT_DEBUG_BOUNCING(ostreamExpression)
 #define TNT_DEBUG_SOLVER(ostreamExpression)
+#define TNT_DEBUG_INTEGRATOR(ostreamExpression)
 
+#endif
+
+// Time Measurement Macros
+#ifdef TNT_DEBUG_ENABLE_TIMING
+#define TNT_TIMING( str, func )										\
+    {																\
+		const long start = rw::common::TimerUtil::currentTimeMs();	\
+		func;														\
+		const long end = rw::common::TimerUtil::currentTimeMs();	\
+		if (end-start > TNT_DEBUG_TIMING_LIMIT) {					\
+    		TNT_DEBUG_TIMING(str <<": " << (end-start) <<" ms")		\
+    	}															\
+    }
+#else
+#define TNT_TIMING( str, func ) {func;}
 #endif
 
 #endif /* RWSIMLIBS_TNTPHYSICS_TNTSETTINGS_HPP_ */

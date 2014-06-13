@@ -219,6 +219,7 @@ private:
 
 	TNTBroadPhase* _bp;
 	rw::common::Ptr<rwsim::contacts::ContactDetector> _detector;
+	std::list<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 
 	rw::common::Ptr<rw::common::ThreadTask> _task;
 	TNTBodyConstraintManager* _bc;
