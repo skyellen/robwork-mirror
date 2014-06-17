@@ -38,7 +38,7 @@ class TaskDescription
 		typedef rw::common::Ptr<TaskDescription> Ptr;
 		
 		/// Used for storing baseline and weights for quality measurements.
-		typedef struct { float shape, coverage, success, wrench; } Qualities;
+		typedef struct { float coverage, success, wrench, topwrench, robustness, stress; } Qualities;
 		
 	// constructors
 		/// Constructor

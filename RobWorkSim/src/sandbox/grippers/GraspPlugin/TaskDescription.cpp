@@ -227,10 +227,10 @@ void TaskDescriptionLoader::readLimits(PTree& tree, TaskDescription::Ptr task)
 
 void TaskDescriptionLoader::readQualities(PTree& tree, TaskDescription::Qualities& q)
 {
-	DEBUG << "\tShape: ";
+	/*DEBUG << "\tShape: ";
 	PTree& node1 = tree.get_child("Shape");
 	q.shape = XMLHelpers::readDouble(node1);
-	DEBUG << q.shape << endl;
+	DEBUG << q.shape << endl;*/
 	
 	DEBUG << "\tCoverage: ";
 	PTree& node2 = tree.get_child("Coverage");
@@ -348,13 +348,13 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	tree.put("TaskDescription.Limits.Stress", td->_stressLimit);
 	
 	// save baseline
-	tree.put("TaskDescription.Baseline.Shape", td->_baseLine.shape);
+	//tree.put("TaskDescription.Baseline.Shape", td->_baseLine.shape);
 	tree.put("TaskDescription.Baseline.Coverage", td->_baseLine.coverage);
 	tree.put("TaskDescription.Baseline.SuccessRatio", td->_baseLine.success);
 	tree.put("TaskDescription.Baseline.Wrench", td->_baseLine.wrench);
 	
 	// save weights
-	tree.put("TaskDescription.Weights.Shape", td->_weights.shape);
+	//tree.put("TaskDescription.Weights.Shape", td->_weights.shape);
 	tree.put("TaskDescription.Weights.Coverage", td->_weights.coverage);
 	tree.put("TaskDescription.Weights.SuccessRatio", td->_weights.success);
 	tree.put("TaskDescription.Weights.Wrench", td->_weights.wrench);

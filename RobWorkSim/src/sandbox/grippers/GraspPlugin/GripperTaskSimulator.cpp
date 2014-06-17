@@ -105,7 +105,7 @@ double GripperTaskSimulator::calculateInterference(SimState& sstate, const rw::k
 double GripperTaskSimulator::calculateWrench(SimState& sstate) const
 {
 	Q& qual = sstate._target->getResult()->qualityAfterLifting;
-	qual = _gripper->getForce() * qual;
+	//qual = _gripper->getForce() * qual;
 	
 	if (qual.size() >= 1) {
 		return qual(1);
@@ -320,7 +320,7 @@ void GripperTaskSimulator::evaluateGripper()
 	double coverage = calculateCoverage(1.0 * actual / filtered) / b.coverage;
 	// task set is filtered at this point
 	
-	double sumWeights = w.shape + w.coverage + w.success + w.wrench;
+	//double sumWeights = w.coverage + w.success + w.wrench + w.topwrench + w.robustness + w.stress;
 	
 	/* Calculate quality
 	 * 
@@ -337,7 +337,7 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << " * Penalty: " << penalty << endl;
 	
 	DEBUG << "CALCULATING QUALITY - " << endl;
-	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench - penalty;
+	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench + w.topwrench * topwrench - penalty;
 	if (quality < 0.0) quality = 0.0;
 	
 	// save data to gripper result
