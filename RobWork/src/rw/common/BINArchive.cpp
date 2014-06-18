@@ -56,7 +56,7 @@ void BINArchive::doReadLeaveScope(const std::string& id){
 
 
 void BINArchive::doOpenArchive(const std::string& filename){
-    if( !boost::filesystem3::exists(filename) ) {
+    if( !boost::filesystem::exists(filename) ) {
         _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary);
     } else {
         _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::binary);

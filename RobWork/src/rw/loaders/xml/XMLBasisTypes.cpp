@@ -556,7 +556,7 @@ double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeade
         RW_WARN("Double Value could not be parsed correctly form \""
                 << XMLStr(readElementTextXMLCh(element)).str()
                 << "\". Setting to NaN! ");
-        val = NAN;
+        val = std::numeric_limits<double>::quiet_NaN();
     }
     return val;
     //return std::atof(readElementText(element).c_str());

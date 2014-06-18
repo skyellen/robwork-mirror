@@ -63,7 +63,7 @@ void INIArchive::doReadLeaveScope(const std::string& id)
 
 void INIArchive::doOpenArchive(const std::string& filename)
 {
-    if( !boost::filesystem3::exists(filename) ) {
+    if( !boost::filesystem::exists(filename) ) {
         _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in | std::ios::trunc );
     } else {
         _fstr = new std::fstream(filename.c_str(), std::ios::out | std::ios::in);
