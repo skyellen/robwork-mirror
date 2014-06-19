@@ -152,27 +152,16 @@ void TNTCollisionSolverSingle::resolveContacts(
 	TNTIslandState tmpState;
 
 	// Construct initial lists assuming all known contacts will be leaving and only the new contacts will penetrate.
-	std::vector<const TNTContact*> mandatory = contacts;
-	std::vector<const TNTContact*> optional;
+	std::vector<const TNTContact*> candidates;
 	std::vector<const TNTConstraint*> nonContacts;
 	BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
-		if (contact) {
-			bool found = false;
-			BOOST_FOREACH(const TNTContact* const mandatoryContact, mandatory) {
-				if (mandatoryContact == contact) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				optional.push_back(contact);
-			}
-		} else {
+		if (contact)
+			candidates.push_back(contact);
+		else
 			nonContacts.push_back(contact);
-		}
 	}
-	std::vector<bool> enabled(optional.size(),false);
+	std::vector<bool> enabled(candidates.size(),false);
 
 	bool repeat = true;
 	std::list<std::vector<bool> > testedCombinations;
@@ -205,7 +194,7 @@ void TNTCollisionSolverSingle::resolveContacts(
 		if (testedCombination) {
 			// Construct list of all possible combinations if not already done
 			if (allCombinations.size() == 0) {
-				const std::size_t nrOfContacts = optional.size();
+				const std::size_t nrOfContacts = candidates.size();
 				RW_ASSERT(nrOfContacts > 0);
 				std::size_t nrOfComb = 2;
 				for (std::size_t i = 1; i < nrOfContacts; i++)
@@ -230,22 +219,28 @@ void TNTCollisionSolverSingle::resolveContacts(
 		testedCombinations.push_back(enabled);
 
 		// Construct list of contacts
-		std::vector<const TNTContact*> penetratingContacts = mandatory;
+		std::vector<const TNTContact*> penetratingContacts;
 		for (std::size_t i = 0; i < enabled.size(); i++) {
 			if (enabled[i]) {
-				penetratingContacts.push_back(optional[i]);
+				penetratingContacts.push_back(candidates[i]);
 			}
 		}
 
 		// Now try to solve
 		tmpState = tntstate;
+		Eigen::VectorXd solution;
 		if (penetratingContacts.size() > 0 || nonContacts.size() > 0) {
-			solve(parent, child, penetratingContacts, nonContacts, restitutionModel, tmpState, rwstate);
+			solution = solve(parent, child, penetratingContacts, nonContacts, restitutionModel, tmpState, rwstate);
+			applySolution(solution, parent, child, penetratingContacts, nonContacts, restitutionModel, tmpState, rwstate);
 		}
 		repeat = false;
+		Eigen::MatrixXd::Index solId = 0;
+		BOOST_FOREACH(const TNTConstraint* constraint, nonContacts) {
+			solId += constraint->getDimVelocity();
+		}
 		for (std::size_t i = 0; i < enabled.size(); i++) {
+			const TNTContact* const contact = candidates[i];
 			if (!enabled[i]) {
-				const TNTContact* const contact = optional[i];
 				const Vector3D<> linVelI = contact->getVelocityParentW(tmpState,rwstate).linear();
 				const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
 				const Vector3D<> linRelVel = linVelI-linVelJ;
@@ -255,19 +250,39 @@ void TNTCollisionSolverSingle::resolveContacts(
 					enabled[i] = true;
 					repeat = true;
 				}
+			} else {
+				const TNTRestitutionModel::Values restitution = restitutionModel.getRestitution(*contact,tntstate,rwstate);
+				bool outwards = true;
+				if (!restitution.enableTangent) {
+					RW_ASSERT(solId < solution.rows());
+					outwards = solution[solId] < 0;
+				} else if (restitution.enableTangent) {
+					RW_ASSERT(solId+2 < solution.rows());
+					outwards = solution[solId+2] < 0;
+				}
+				if (!outwards) {
+					enabled[i] = false;
+					repeat = true;
+				}
+				solId++;
+				if (restitution.enableTangent)
+					solId += 2;
+				if (restitution.enableAngular)
+					solId += 1;
 			}
 		}
+		RW_ASSERT(solId == solution.rows());
 	}
 	tntstate = tmpState;
 }
 
-void TNTCollisionSolverSingle::solve(
+Eigen::VectorXd TNTCollisionSolverSingle::solve(
 		const TNTBody* const parent,
 		const TNTBody* const child,
 		const std::vector<const TNTContact*>& contacts,
 		const std::vector<const TNTConstraint*>& constraints,
 		const TNTRestitutionModel& restitutionModel,
-		TNTIslandState& tntstate,
+		const TNTIslandState& tntstate,
 		const State& rwstate) const
 {
 	RW_ASSERT(contacts.size() > 0 || constraints.size() > 0);
@@ -394,8 +409,25 @@ void TNTCollisionSolverSingle::solve(
 	const Eigen::VectorXd sol = LinearAlgebra::pseudoInverse(lhs)*rhs;
 	TNT_DEBUG_BOUNCING("Residual: " << (rhs-lhs*sol).transpose() << ".");
 
-	// Apply the solution
-	dimVel = 0;
+	return sol;
+}
+
+void TNTCollisionSolverSingle::applySolution(
+		const Eigen::VectorXd& solution,
+		const TNTBody* const parent,
+		const TNTBody* const child,
+		const std::vector<const TNTContact*>& contacts,
+		const std::vector<const TNTConstraint*>& constraints,
+		const TNTRestitutionModel& restitutionModel,
+		TNTIslandState& tntstate,
+		const State& rwstate) const
+{
+	RW_ASSERT(contacts.size() > 0 || constraints.size() > 0);
+	const TNTRigidBody* const rParent = dynamic_cast<const TNTRigidBody*>(parent);
+	const TNTRigidBody* const rChild = dynamic_cast<const TNTRigidBody*>(child);
+	RW_ASSERT(rParent || rChild);
+
+	Eigen::MatrixXd::Index dimVel = 0;
 	std::list<std::pair<Vector3D<>, Wrench6D<> > > parentImpulses;
 	std::list<std::pair<Vector3D<>, Wrench6D<> > > childImpulses;
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
@@ -414,13 +446,13 @@ void TNTCollisionSolverSingle::solve(
 			Vector3D<> impN = Vector3D<>::zero();
 			for (std::size_t i = 0; i < 3; i++) {
 				if (modes[i] == TNTConstraint::Velocity) {
-					impF += sol[dimVel]*linRot.getCol(i);
+					impF += solution[dimVel]*linRot.getCol(i);
 					dimVel++;
 				}
 			}
 			for (std::size_t i = 0; i < 3; i++) {
 				if (modes[i+3] == TNTConstraint::Velocity) {
-					impN += sol[dimVel]*angRot.getCol(i);
+					impN += solution[dimVel]*angRot.getCol(i);
 					dimVel++;
 				}
 			}
@@ -462,15 +494,15 @@ void TNTCollisionSolverSingle::solve(
 		Vector3D<> impF = Vector3D<>::zero();
 		Vector3D<> impN = Vector3D<>::zero();
 		if (!leaving && restitution.enableTangent) {
-			impF += sol[dimVel]*tangentDir;
+			impF += solution[dimVel]*tangentDir;
 			dimVel++;
-			impF += sol[dimVel]*zeroDir;
+			impF += solution[dimVel]*zeroDir;
 			dimVel++;
 		}
-		impF += sol[dimVel]*nij;
+		impF += solution[dimVel]*nij;
 		dimVel++;
 		if (!leaving && restitution.enableAngular) {
-			impN = sol[dimVel]*nij;
+			impN = solution[dimVel]*nij;
 			dimVel++;
 		}
 

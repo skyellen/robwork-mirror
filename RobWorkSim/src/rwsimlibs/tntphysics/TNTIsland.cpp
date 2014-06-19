@@ -392,6 +392,8 @@ void TNTIsland::doStep(double dt, State& state) {
 	ContactDetectorData cdData = _state->getContactData();
 	IntegrateSample sample0(0,*_state,state);
 
+	TNT_DEBUG_CONTACTS("Known contacts: " << sample0.forwardContacts.size());
+
 	// Do a broad phase integration (halfes the step until there are no PQP trimesh penetrations)
 	IntegrateSample sampleH;
 	TNT_TIMING("Broad-phase Rollback",
@@ -407,7 +409,7 @@ void TNTIsland::doStep(double dt, State& state) {
 	bool doRollback = false;
 	const std::vector<std::size_t> newContactsH = TNTUtil::getMarkedContacts(sampleH.forwardContacts,sampleH.forwardTrack,TNTUtil::MARK_RAW);
 	if (newContactsH.size() > 0) {
-#if TNT_DEBUG_CONTACTS
+#if TNT_DEBUG_ENABLE_CONTACTS
 		TNT_DEBUG_CONTACTS("Found " << newContactsH.size() << " new contacts after step of size " << dt << ".");
 		BOOST_FOREACH(std::size_t i, newContactsH) {
 			TNT_DEBUG_CONTACTS(" - " << sampleH.forwardContacts[i]);
@@ -425,6 +427,11 @@ void TNTIsland::doStep(double dt, State& state) {
 			sampleH.backwardContacts = sampleH.forwardContacts;
 			TNTUtil::removeKnown(sampleH.backwardContacts,sampleH.backwardTrack,_bc,sampleH.tntstate);
 			TNT_DEBUG_ROLLBACK("Rollback requested - " << sampleH.backwardContacts.size() << " contacts in candidate set with minimum distance " << minDist << "!");
+#if TNT_DEBUG_ENABLE_CONTACTS && TNT_DEBUG_ENABLE_ROLLBACK
+			BOOST_FOREACH(const Contact& c, sampleH.backwardContacts) {
+				TNT_DEBUG_CONTACTS(" - " << c);
+			}
+#endif
 		} else {
 			TNT_DEBUG_ROLLBACK("Distance for new contact(s) at step size " << dt << " was low enough (" << minDist << ") that rollback is not required!");
 			if (minDist <= 0)
@@ -444,16 +451,31 @@ void TNTIsland::doStep(double dt, State& state) {
 						if (sample0.backwardContacts.size() == 0)
 							RW_THROW("TNTIsland (doStep): The new contact could not be traced back to time dt = 0!");
 
-						const double minDist = TNTUtil::minDistance(sample0.backwardContacts);
+#if TNT_DEBUG_ENABLE_ROLLBACK && TNT_DEBUG_ENABLE_CONTACTS
+						TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0.");
+						BOOST_FOREACH(const Contact& c, sample0.backwardContacts) {
+							TNT_DEBUG_CONTACTS(" - " << c);
+						}
+#endif
 
-						if (fabs(minDist) < 0.0001) {
-							TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0 - repeating the step with extra contact(s).");
+						TNTUtil::removePenetrating(sample0.backwardContacts,sample0.backwardTrack,TNTUtil::MARK_NEW);
+						TNT_DEBUG_ROLLBACK(sample0.backwardContacts.size() << " contacts left after removing penetrating contacts.");
+
+						bool completeRollback = false;
+						double minDist = 0;
+						if (sample0.backwardContacts.size() > 0) {
+							minDist = TNTUtil::minDistance(sample0.backwardContacts);
+							completeRollback = minDist < 0.0001;
+						}
+
+						if (completeRollback) {
+							TNT_DEBUG_ROLLBACK("Distance at dt = 0 was low enough (" << minDist << ") that previous step is repeated with more new contacts!");
 							sample0.forwardTrack = sampleH.forwardTrack;
 							sample0.forwardContacts = _detector->findContacts(sample0.rwstate,cdData,sample0.forwardTrack);
 							storeResults(cdData,sample0,state);
 						} else {
 							// Ordinary Rollback
-							TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback.");
+							TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback on  " << sampleH.backwardContacts.size() << " new contact(s).");
 							IntegrateSample result = integrateRollback(sample0,sampleH,cdData);
 							TNT_DEBUG_ROLLBACK("Narrow-phase rollback performed with stepsize " << result.time);
 							result.forwardTrack = sampleH.forwardTrack;
@@ -463,7 +485,7 @@ void TNTIsland::doStep(double dt, State& state) {
 				}
 		)
 	}
-	TNT_DEBUG_GENERAL("Step ended.");
+	TNT_DEBUG_GENERAL("Step ended.")
 	TNT_DEBUG_DELIMITER()
 }
 
@@ -526,6 +548,8 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 			if (tntcontacts.size() > 0)
 				TNT_DEBUG_BOUNCING("Contacts to treat as bouncing: " << tntcontacts.size());
 			bouncingSolver->applyImpulses(tntcontacts,*_bc,&map,tntstate,rwstate);
+		} else {
+			TNT_DEBUG_BOUNCING("No contacts to treat as bouncing.");
 		}
 	}
 
@@ -550,10 +574,10 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 		delete solver;
 	}
 
+#if TNT_DEBUG_ENABLE_SOLVER
 	const TNTBodyConstraintManager::ConstraintList constraints = _bc->getTemporaryConstraints(&tntstate);
 	if (constraints.size() > 0) {
 		TNT_DEBUG_SOLVER("Contact Resolution");
-		std::vector<TNTContact*> contacts;
 		BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
 			if (const TNTContact* const c = dynamic_cast<const TNTContact*>(constraint)) {
 				const std::string linear = c->isLeaving() ? "Leaving" : c->getTypeLinear() == TNTContact::Sticking ? "Sticking" : "Sliding";
@@ -562,10 +586,14 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 				TNT_DEBUG_SOLVER(" - " << linear << " " << angular << " - force/torque: " << wrench.force() << " " << wrench.torque());
 			}
 		}
+	} else {
+		TNT_DEBUG_SOLVER("All contacts treated as leaving.");
 	}
+#endif
 }
 
 double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, IntegrateSample& res, ContactDetectorData& cdData) const {
+#if TNT_DEBUG_ENABLE_INTEGRATOR
 	{
 		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
 		if (bodies.size() > 0) {
@@ -578,6 +606,7 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 			}
 		}
 	}
+#endif
 
 	bool fastCheck = true;
 	for (unsigned int iteration = 1; iteration <= TNT_MAX_ITERATIONS; iteration++) {
@@ -597,6 +626,10 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 		if (!fastCheck) {
 			TNT_TIMING("Update Contacts", res.forwardContacts = _detector->updateContacts(res.rwstate,cdData,res.forwardTrack) )
 #if TNT_DEBUG_ENABLE_CONTACTS
+			TNT_DEBUG_CONTACTS("Contacts after update: " << res.forwardContacts.size());
+			BOOST_FOREACH(const Contact& c, res.forwardContacts) {
+				TNT_DEBUG_CONTACTS(" - " << c);
+			}
 			if (res.forwardContacts.size() != first.forwardContacts.size()) {
 				// More detailed check needed - matching algorithm
 				TNT_DEBUG_CONTACTS(" - Number of contacts changed.");
@@ -604,15 +637,10 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 				BOOST_FOREACH(const Contact& c, first.forwardContacts) {
 					TNT_DEBUG_CONTACTS(" - " << c);
 				}
-				TNT_DEBUG_CONTACTS(" - After update: " << res.forwardContacts.size());
-				BOOST_FOREACH(const Contact& c, res.forwardContacts) {
-					TNT_DEBUG_CONTACTS(" - " << c);
-				}
 			}
 #endif
 			TNTUtil::updateTemporaryContacts(res.forwardContacts,res.forwardTrack,_bc,res.tntstate,res.rwstate);
 #if TNT_ENABLE_CONSTRAINT_CORRECTION
-
 			TNT_TIMING("Constraint Correction", _correction->correct(_bc->getConstraints(res.tntstate),res.tntstate,res.rwstate) )
 			// Update RobWork bodies
 			const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
@@ -632,6 +660,7 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 		}
 	}
 
+#if TNT_DEBUG_ENABLE_INTEGRATOR
 	{
 		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
 		if (bodies.size() > 0) {
@@ -644,6 +673,7 @@ double TNTIsland::integrateBroadPhase(double dt, const IntegrateSample& first, I
 			}
 		}
 	}
+#endif
 
 	return dt;
 }
@@ -669,15 +699,16 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 	for (unsigned int iteration = 1; iteration <= TNT_MAX_ITERATIONS; iteration++) {
 		RW_ASSERT(rollbackSamples.size() >= 2);
 		const double dtTry = rollback->getTimestep(rollbackSamples,rollbackData);
-		RW_ASSERT(dtTry >= rollbackSamples.begin()->time);
-		RW_ASSERT(dtTry <= rollbackSamples.rbegin()->time);
+		RW_ASSERT(dtTry > rollbackSamples.begin()->time);
+		RW_ASSERT(dtTry < rollbackSamples.rbegin()->time);
+		TNT_DEBUG_ROLLBACK("Iteration " << iteration << ": trying time " << dtTry);
 
 		result = sample0;
 		result.time = dtTry;
 		TNTUtil::step(dtTry,_gravity,_bc,result.tntstate,result.rwstate);
 		result.forwardContacts = _detector->updateContacts(result.rwstate,cdData,result.forwardTrack);
 		TNTUtil::updateTemporaryContacts(result.forwardContacts,result.forwardTrack,_bc,result.tntstate,result.rwstate);
-#if TNT_ENABLE_CONSTRAINT_CORRECTION
+#if TNT_ENABLE_CONSTRAINT_CORRECTION && 0
 		_correction->correct(_bc->getConstraints(result.tntstate),result.tntstate,result.rwstate);
 		// Update RobWork bodies
 		const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
@@ -689,15 +720,24 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 		result.backwardContacts = _detector->updateContacts(result.rwstate,cdData,result.backwardTrack);
 		if (result.backwardContacts.size() > 0) {
 			const double minDist = TNTUtil::minDistance(result.backwardContacts);
+			TNT_DEBUG_ROLLBACK(" Minimum distance: " << minDist);
 			if (fabs(minDist) < 0.0001) {
+				TNT_DEBUG_ROLLBACK(" - distance is less than " << 0.0001 << " (" << fabs(minDist) << ") - rollback done.");
 				doRollback = false;
 			} else {
 				if (minDist < 0)
 					TNTUtil::removeNonPenetrating(result.backwardContacts,result.backwardTrack,TNTUtil::MARK_NEW);
+#if TNT_DEBUG_ENABLE_ROLLBACK && TNT_DEBUG_ENABLE_CONTACTS
+				TNT_DEBUG_ROLLBACK("Making rollback sample with " << result.backwardContacts.size() << " new contact(s).");
+				BOOST_FOREACH(const Contact& c, result.backwardContacts) {
+					TNT_DEBUG_CONTACTS(" - " << c);
+				}
+#endif
 				const TNTRollbackMethod::Sample rollbackSample = TNTRollbackMethod::Sample(dtTry,result.backwardContacts);
 				rollbackSamples.insert(rollbackSample);
 			}
 		} else {
+			TNT_DEBUG_ROLLBACK(" - lost all contacts - rollback done.");
 			doRollback = false;
 		}
 
@@ -709,6 +749,7 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 	}
 	delete rollbackData;
 
+#if TNT_DEBUG_ENABLE_INTEGRATOR
 	{
 		const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
 		if (bodies.size() > 0) {
@@ -721,6 +762,7 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 			}
 		}
 	}
+#endif
 
 	return result;
 }
@@ -739,7 +781,14 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 
 	// Keep only the new contacts for bouncing that are within a certain distance
 	TNTUtil::remove(sample.forwardContacts,sample.forwardTrack,TNTUtil::MARK_RAW);
+#if TNT_DEBUG_ENABLE_ROLLBACK && TNT_DEBUG_ENABLE_CONTACTS
+	TNT_DEBUG_ROLLBACK("All contacts for next step: " << sample.forwardContacts.size());
+	BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
+		TNT_DEBUG_ROLLBACK(" - " << c);
+	}
+#endif
 	TNTUtil::removeContactsOutsideThreshold(sample.forwardContacts,sample.forwardTrack,0.0001,TNTUtil::MARK_NEW);
+	TNT_DEBUG_ROLLBACK("After removing contacts outside threshold: " << sample.forwardContacts.size());
 
 	// Update the constraints
 	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,*_state,rwstate);

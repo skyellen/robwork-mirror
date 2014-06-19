@@ -57,6 +57,9 @@ public:
 	 * @param rwstate [in] the state of the system.
 	 */
 	virtual void correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
+
+private:
+	struct BodyPairError;
 };
 //! @}
 } /* namespace tntphysics */

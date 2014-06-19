@@ -60,6 +60,7 @@ double TNTRollbackMethodRidder::getTimestep(SampleSet& samples, RollbackData* da
 		const double d3 = sample3.distance[deepestFrames];
 		return t2 + (t2-t1)*Math::sign(d1-d3)*d2/std::sqrt(d2*d2-d1*d3);
 	} else if(samples.size() == 4) {
+		RW_THROW("TNTRollbackMethodRidder (getTimestep): four samples not implemented yet!");
 	} else if(samples.size() > 4) {
 		RW_THROW("TNTRollbackMethodRidder (getTimestep): the size of the SampleSet should be maximum four!");
 	}

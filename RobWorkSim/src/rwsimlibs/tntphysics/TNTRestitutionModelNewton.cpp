@@ -65,7 +65,7 @@ TNTRestitutionModel::Values TNTRestitutionModelNewton::getRestitution(const TNTC
 	//const Vector3D<> angRelVel = drij.angular().angle()*drij.angular().axis()-drji.angular().axis()*drji.angular().angle();
 	if (linRelVel.norm2() > _linThreshold) {
 		res.normal = _cr;
-		res.enableTangent = true;
+		res.enableTangent = false;
 		res.tangent = _cr;
 	}
 	return res;

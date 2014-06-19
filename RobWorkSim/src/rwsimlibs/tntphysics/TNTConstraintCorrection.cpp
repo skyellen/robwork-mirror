@@ -23,10 +23,23 @@
 #include "TNTContact.hpp"
 
 #include <rw/kinematics/State.hpp>
+#include <rwsim/dynamics/Body.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsimlibs::tntphysics;
+
+struct TNTConstraintCorrection::BodyPairError {
+	BodyPairError(): body1(NULL), body2(NULL), error(0) {}
+	BodyPairError(const TNTBody* body1, const TNTBody* body2, double error):
+		body1(body1),
+		body2(body2),
+		error(error)
+	{}
+	const TNTBody* body1;
+	const TNTBody* body2;
+	double error;
+};
 
 TNTConstraintCorrection::TNTConstraintCorrection() {
 }
@@ -35,15 +48,20 @@ TNTConstraintCorrection::~TNTConstraintCorrection() {
 }
 
 void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const State& rwstate) const {
+	std::list<const TNTConstraint*> reducedConstraints;
 	unsigned int nrOfConstraints = 0;
 	std::map<const TNTBody*, unsigned int> bodies;
 	std::vector<const TNTRigidBody*> idToBody;
+	std::list<BodyPairError> idsToError;
 	unsigned int id = 0;
-	BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
+	for (std::list<TNTConstraint*>::const_iterator itA = constraints.begin(); itA != constraints.end(); itA++) {
+		const TNTConstraint* const constraint = *itA;
 		if (constraint->getDimVelocity() == 0)
 			continue;
 		const TNTRigidBody* const rParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
 		const TNTRigidBody* const rChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
+		if (!rParent && !rChild)
+			continue;
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
 		if (rParent) {
 			if (bodies.find(rParent) == bodies.end()) {
@@ -59,15 +77,56 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 				id++;
 			}
 		}
-		if (contact)
-			nrOfConstraints += 1;
-		else {
+		if (contact) {
+			bool match = false;
+			std::list<TNTConstraint*>::const_iterator itB = itA;
+			for (itB++; itB != constraints.end(); itB++) {
+				const TNTConstraint* const constraintB = *itB;
+				const TNTContact* const contactB = dynamic_cast<const TNTContact*>(constraintB);
+				if (!contactB)
+					continue;
+				if ((constraint->getParent() != contactB->getParent() || constraint->getChild() != contactB->getChild()) &&
+						(constraint->getParent() != contactB->getChild() || constraint->getChild() != contactB->getParent()))
+					continue;
+				const Vector3D<> nA = contact->getNormalW(tntstate);
+				const Vector3D<> pAp = contact->getPositionParentW(tntstate);
+				const Vector3D<> pAc = contact->getPositionChildW(tntstate);
+				Vector3D<> nB;
+				Vector3D<> pBp;
+				Vector3D<> pBc;
+				if (constraint->getParent() == contactB->getParent()) {
+					nB = contactB->getNormalW(tntstate);
+					pBp = contactB->getPositionParentW(tntstate);
+					pBc = contactB->getPositionChildW(tntstate);
+				} else {
+					nB = -contactB->getNormalW(tntstate);
+					pBp = contactB->getPositionChildW(tntstate);
+					pBc = contactB->getPositionParentW(tntstate);
+				}
+				const double distP = (pAp-pBp).norm2();
+				const double distC = (pAc-pBc).norm2();
+				const double distN = acos(dot(nA,nB));
+				if (distP < 0.003 && distC < 0.003 && distN < 2.0*Deg2Rad) {
+					match = true;
+					break;
+				}
+			}
+			if (!match) {
+				nrOfConstraints += 1;
+				reducedConstraints.push_back(constraint);
+			}
+
+			// Save initial error to check if it is getting smaller
+			const double error = -contact->getContact().getDepth();
+			idsToError.push_back(BodyPairError(contact->getParent(),contact->getChild(),error));
+		} else {
 			const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
 			for (std::size_t i = 0; i < 6; i++) {
 				if (modes[i] == TNTConstraint::Velocity) {
 					nrOfConstraints++;
 				}
 			}
+			reducedConstraints.push_back(constraint);
 		}
 	}
 
@@ -77,14 +136,10 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 	unsigned int curConstraint = 0;
 	Eigen::MatrixXd lhs = Eigen::MatrixXd::Zero(nrOfConstraints,6*id);
 	Eigen::VectorXd rhs = Eigen::VectorXd::Zero(nrOfConstraints);
-	BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
-		if (constraint->getDimVelocity() == 0)
-			continue;
+	BOOST_FOREACH(const TNTConstraint* const constraint, reducedConstraints) {
 		const TNTRigidBody* const rParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
 		const TNTRigidBody* const rChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
-		if (!rParent && !rChild)
-			continue;
 		if (contact) {
 			const Vector3D<> nij = contact->getNormalW(tntstate);
 			rhs[curConstraint] = -contact->getContact().getDepth();
@@ -205,7 +260,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		}
 	}
 
-	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-4);
+	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-6);
 	const Eigen::VectorXd sol = lhsInv*rhs;
 	for (unsigned int i = 0; i < id; i++) {
 		const Eigen::VectorXd correction = sol.block(i*6,0,6,1);
@@ -214,5 +269,29 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		wTcom.P() += Vector3D<>(correction.block(0,0,3,1));
 		wTcom.R() = EAA<>(Vector3D<>(correction.block(3,0,3,1))).toRotation3D()*wTcom.R();
 		body->setWorldTcom(wTcom,tntstate);
+	}
+
+	// Construct map from body pair to error
+	std::vector<std::vector<double> > contactErrors(idToBody.size(),std::vector<double>(idToBody.size(),0));
+	BOOST_FOREACH(const BodyPairError& bpe, idsToError) {
+		const unsigned int id1 = bodies[bpe.body1];
+		const unsigned int id2 = bodies[bpe.body2];
+		const double err = fabs(bpe.error);
+		if (err > contactErrors[id1][id2]) {
+			contactErrors[id1][id2] = err;
+			contactErrors[id2][id1] = err;
+		}
+	}
+
+	BOOST_FOREACH(const TNTConstraint* const constraint, reducedConstraints) {
+		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
+		if (contact) {
+			const double newError = -contact->getContact().getDepth();
+			const unsigned int id1 = bodies[contact->getParent()];
+			const unsigned int id2 = bodies[contact->getChild()];
+			const double error = contactErrors[id1][id2];
+			if (fabs(newError) > error)
+				RW_THROW("TNTConstraintCorrection (correct): correction failed - error between " << contact->getParent()->get()->getName() << " and " << contact->getChild()->get()->getName() << " increased from " << error << " to " << newError << ".");
+		}
 	}
 }

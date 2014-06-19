@@ -40,8 +40,8 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 			const std::string modelId = "Newton";
 			PropertyMap parameters;
 			parameters.set("cr",contactDataMap.getNewtonData(i,j).cr);
-			parameters.set("LinearThreshold",0.01); // 1cm per second
-			parameters.set("AngularThreshold",5*Deg2Rad); // 5 degrees per second
+			parameters.set("LinearThreshold",0.00001); // 1/100 mm per second (as ODE)
+			parameters.set("AngularThreshold",1*Deg2Rad); // 1 degrees per second
 			const TNTRestitutionModel* model = TNTRestitutionModel::Factory::makeModel(modelId, parameters);
 			_restitutionModels[i][j] = model;
 			if (i != j)

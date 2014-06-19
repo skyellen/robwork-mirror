@@ -118,6 +118,14 @@ public:
 	static void removeNonPenetrating(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
 
 	/**
+	 * @brief Remove the new contacts that are in penetration and leave the new non-penetrating contacts.
+	 * @param contacts [in/out] the complete contact list.
+	 * @param tracking [in/out] the tracking information.
+	 * @param mark [in] only remove contacts that has this mark.
+	 */
+	static void removePenetrating(std::vector<rwsim::contacts::Contact>& contacts, rwsim::contacts::ContactDetectorTracking& tracking, rwsim::contacts::ContactStrategyTracking::UserData::Ptr mark);
+
+	/**
 	 * @brief Remove all known contacts, leaving only the marked ones.
 	 * @param contacts [in/out] the complete contact list.
 	 * @param tracking [in/out] the tracking information.
@@ -159,6 +167,13 @@ public:
 	 * @return the minimum distance.
 	 */
 	static double minDistance(const std::vector<rwsim::contacts::Contact>& contacts);
+
+	/**
+	 * @brief Get the maximum distance in a list of contacts.
+	 * @param contacts [in] the list of contacts.
+	 * @return the maximum distance.
+	 */
+	static double maxDistance(const std::vector<rwsim::contacts::Contact>& contacts);
 
 	/**
 	 * @brief Remove contacts with specific mark that has a distance greater than some threshold.

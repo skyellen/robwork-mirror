@@ -122,7 +122,17 @@ private:
 			TNTIslandState& tntstate,
 			const rw::kinematics::State& rwstate) const;
 
-	void solve(
+	Eigen::VectorXd solve(
+			const TNTBody* parent,
+			const TNTBody* child,
+			const std::vector<const TNTContact*>& contacts,
+			const std::vector<const TNTConstraint*>& constraints,
+			const TNTRestitutionModel& restitutionModel,
+			const TNTIslandState& tntstate,
+			const rw::kinematics::State& rwstate) const;
+
+	void applySolution(
+			const Eigen::VectorXd& solution,
 			const TNTBody* parent,
 			const TNTBody* child,
 			const std::vector<const TNTContact*>& contacts,

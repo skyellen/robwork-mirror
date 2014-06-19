@@ -73,6 +73,24 @@ void TNTUtil::removeNonPenetrating(std::vector<Contact>& contacts, ContactDetect
 	}
 }
 
+void TNTUtil::removePenetrating(std::vector<Contact>& contacts, ContactDetectorTracking& tracking, ContactStrategyTracking::UserData::Ptr mark) {
+	std::vector<Contact>::iterator it;
+	std::size_t i = 0;
+	for (it = contacts.begin(); it != contacts.end(); it++) {
+		if (!(tracking.getUserData(i) == mark)) {
+			it++;
+			continue;
+		}
+		if ((*it).getDepth() > 0) {
+			it = contacts.erase(it);
+			it--;
+			tracking.remove(i);
+		} else {
+			i++;
+		}
+	}
+}
+
 void TNTUtil::removeKnown(std::vector<Contact>& contacts, ContactDetectorTracking& tracking, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate) {
 	RW_ASSERT(contacts.size() == tracking.getInfo().size());
 	const TNTBodyConstraintManager::ConstraintList constraints = bc->getTemporaryConstraints(&tntstate);
@@ -152,6 +170,17 @@ double TNTUtil::minDistance(const std::vector<Contact>& contacts) {
 			minDist = -c.getDepth();
 	}
 	return minDist;
+}
+
+double TNTUtil::maxDistance(const std::vector<Contact>& contacts) {
+	if (contacts.size() == 0)
+		RW_THROW("TNTUtil (maxDistance): no contacts given!");
+	double maxDist = -contacts[0].getDepth();
+	BOOST_FOREACH(const Contact &c, contacts) {
+		if (-c.getDepth() > maxDist)
+			maxDist = -c.getDepth();
+	}
+	return maxDist;
 }
 
 void TNTUtil::removeContactsOutsideThreshold(std::vector<Contact>& contacts, ContactDetectorTracking& tracking, double threshold, ContactStrategyTracking::UserData::Ptr mark) {
