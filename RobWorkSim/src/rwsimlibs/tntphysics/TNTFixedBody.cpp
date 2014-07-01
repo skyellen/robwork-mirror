@@ -24,7 +24,7 @@ using namespace rw::math;
 using namespace rwsim::dynamics;
 using namespace rwsimlibs::tntphysics;
 
-TNTFixedBody::TNTFixedBody(rw::common::Ptr<const FixedBody> body):
+TNTFixedBody::TNTFixedBody(FixedBody::Ptr body):
 	TNTBody(body)
 {
 }
@@ -32,8 +32,8 @@ TNTFixedBody::TNTFixedBody(rw::common::Ptr<const FixedBody> body):
 TNTFixedBody::~TNTFixedBody() {
 }
 
-rw::common::Ptr<const FixedBody> TNTFixedBody::getFixedBody() const {
-	return get().cast<const FixedBody>();
+FixedBody::Ptr TNTFixedBody::getFixedBody() const {
+	return get().cast<FixedBody>();
 }
 
 void TNTFixedBody::updateRW(State &rwstate, const TNTIslandState &tntstate) const {

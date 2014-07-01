@@ -48,7 +48,7 @@ public:
 	 * @brief Construct a new kinematic body.
 	 * @param body [in] a pointer to the underlying rwsim::dynamics::KinematicBody.
 	 */
-	TNTKinematicBody(rw::common::Ptr<const rwsim::dynamics::KinematicBody> body);
+	TNTKinematicBody(rw::common::Ptr<rwsim::dynamics::KinematicBody> body);
 
 	//! @brief Destructor.
 	virtual ~TNTKinematicBody();
@@ -57,7 +57,7 @@ public:
 	 * @brief Get the wrapped rwsim::dynamics::KinematicBody
 	 * @return the native object.
 	 */
-	rw::common::Ptr<const rwsim::dynamics::KinematicBody> getKinematicBody() const;
+	rw::common::Ptr<rwsim::dynamics::KinematicBody> getKinematicBody() const;
 
 	/**
 	 * @brief Integrate the motion.

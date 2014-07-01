@@ -60,6 +60,12 @@ public:
 	 */
 	TNTRWConstraint(rw::common::Ptr<const rwsim::dynamics::Constraint> constraint, const TNTBody* parent, const TNTBody* child);
 
+	/**
+	 * @brief Get the native RobWork constraint.
+	 * @return a pointer to a constant RobWork constraint.
+	 */
+	rw::common::Ptr<const rwsim::dynamics::Constraint> getConstraint() const;
+
 	//! @brief Destructor.
 	virtual ~TNTRWConstraint();
 

@@ -26,7 +26,7 @@ using namespace rw::math;
 using namespace rwsim::dynamics;
 using namespace rwsimlibs::tntphysics;
 
-TNTKinematicBody::TNTKinematicBody(rw::common::Ptr<const KinematicBody> body):
+TNTKinematicBody::TNTKinematicBody(KinematicBody::Ptr body):
 	TNTBody(body)
 {
 }
@@ -34,8 +34,8 @@ TNTKinematicBody::TNTKinematicBody(rw::common::Ptr<const KinematicBody> body):
 TNTKinematicBody::~TNTKinematicBody() {
 }
 
-rw::common::Ptr<const KinematicBody> TNTKinematicBody::getKinematicBody() const {
-	return get().cast<const KinematicBody>();
+KinematicBody::Ptr TNTKinematicBody::getKinematicBody() const {
+	return get().cast<KinematicBody>();
 }
 
 void TNTKinematicBody::integrate(double stepsize, TNTIslandState &tntstate, const State& rwstate) const {

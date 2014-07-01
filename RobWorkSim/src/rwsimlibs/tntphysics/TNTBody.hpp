@@ -64,7 +64,7 @@ public:
 	 * @brief Get the wrapped rwsim::dynamics::Body
 	 * @return a smart pointer to the wrapped body.
 	 */
-	rw::common::Ptr<const rwsim::dynamics::Body> get() const;
+	rw::common::Ptr<rwsim::dynamics::Body> get() const;
 
 	/**
 	 * @brief The configuration of a body. Bodies can inherit and extend this to use
@@ -172,10 +172,10 @@ protected:
 	 * @brief Construct a new body.
 	 * @param body [in] a pointer to the underlying rwsim::dynamics::Body.
 	 */
-	TNTBody(rw::common::Ptr<const rwsim::dynamics::Body> body);
+	TNTBody(rw::common::Ptr<rwsim::dynamics::Body> body);
 
 private:
-	rw::common::Ptr<const rwsim::dynamics::Body> _body;
+	rw::common::Ptr<rwsim::dynamics::Body> _body;
 };
 //! @}
 } /* namespace tntphysics */

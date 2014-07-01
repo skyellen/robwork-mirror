@@ -63,6 +63,10 @@ TNTRWConstraint::~TNTRWConstraint() {
 	_spring = NULL;
 }
 
+rw::common::Ptr<const Constraint> TNTRWConstraint::getConstraint() const {
+	return _rwConstraint;
+}
+
 void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 	const Constraint::SpringParams params = _rwConstraint->getSpringParams();
 

@@ -45,7 +45,7 @@ public:
 	 * @brief Construct a new fixed body.
 	 * @param body [in] a pointer to the underlying rwsim::dynamics::FixedBody.
 	 */
-	TNTFixedBody(rw::common::Ptr<const rwsim::dynamics::FixedBody> body);
+	TNTFixedBody(rw::common::Ptr<rwsim::dynamics::FixedBody> body);
 
 	//! @brief Destructor.
 	virtual ~TNTFixedBody();
@@ -54,7 +54,7 @@ public:
 	 * @brief Get the wrapped rwsim::dynamics::FixedBody
 	 * @return the native object.
 	 */
-	rw::common::Ptr<const rwsim::dynamics::FixedBody> getFixedBody() const;
+	rw::common::Ptr<rwsim::dynamics::FixedBody> getFixedBody() const;
 
 	//! @copydoc TNTBody::updateRW
 	virtual void updateRW(rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const;

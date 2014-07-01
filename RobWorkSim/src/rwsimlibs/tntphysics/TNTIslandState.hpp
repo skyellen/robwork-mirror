@@ -78,6 +78,30 @@ public:
 	 */
 	void setTime(double time);
 
+	/**
+	 * @brief Get the length of the last timestep.
+	 * @return timestep.
+	 */
+	double getLastTimeStep() const;
+
+	/**
+	 * @brief Change the length of the last timestep.
+	 * @param timestep [in] new timestep.
+	 */
+	void setLastTimeStep(double timestep);
+
+	/**
+	 * @brief Get the number of repetitions.
+	 * @return repetitions.
+	 */
+	std::size_t getRepetitions() const;
+
+	/**
+	 * @brief Change the number of repetitions already done.
+	 * @param repetitions [in] new number of repetitions.
+	 */
+	void setRepetitions(std::size_t repetitions);
+
 
 	/**
 	 * @name Bodies.
@@ -214,6 +238,8 @@ public:
 
 private:
 	double _time;
+	double _timestep;
+	std::size_t _repeated;
 
 	std::map<const rwsim::dynamics::Body*, const TNTBody*> _rwBodyToBody;
 	std::map<const TNTBody*, TNTBody::Configuration*> _bodyToConfiguration;

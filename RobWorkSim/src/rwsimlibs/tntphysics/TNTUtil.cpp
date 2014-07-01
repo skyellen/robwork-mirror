@@ -23,15 +23,23 @@
 #include "TNTRigidBody.hpp"
 #include "TNTIntegrator.hpp"
 #include "TNTContact.hpp"
+#include "TNTRWConstraint.hpp"
 
 #include <rw/kinematics/FramePairMap.hpp>
+#include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwsim/contacts/Contact.hpp>
 #include <rwsim/contacts/ContactDetectorTracking.hpp>
+#include <rwsim/dynamics/Body.hpp>
+#include <rwsim/sensor/SimulatedTactileSensor.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::math;
+using namespace rwlibs::simulation;
 using namespace rwsim::contacts;
+using namespace rwsim::dynamics;
+using namespace rwsim::sensor;
 using namespace rwsimlibs::tntphysics;
 
 const ContactStrategyTracking::UserData::Ptr TNTUtil::MARK_NEW = getNewMark();
@@ -59,17 +67,15 @@ void TNTUtil::removeNonPenetrating(std::vector<Contact>& contacts, ContactDetect
 	std::vector<Contact>::iterator it;
 	std::size_t i = 0;
 	for (it = contacts.begin(); it != contacts.end(); it++) {
-		if (!(tracking.getUserData(i) == mark)) {
-			it++;
-			continue;
+		if (tracking.getUserData(i) == mark) {
+			if ((*it).getDepth() < 0) {
+				it = contacts.erase(it);
+				it--;
+				tracking.remove(i);
+				i--;
+			}
 		}
-		if ((*it).getDepth() < 0) {
-			it = contacts.erase(it);
-			it--;
-			tracking.remove(i);
-		} else {
-			i++;
-		}
+		i++;
 	}
 }
 
@@ -77,17 +83,15 @@ void TNTUtil::removePenetrating(std::vector<Contact>& contacts, ContactDetectorT
 	std::vector<Contact>::iterator it;
 	std::size_t i = 0;
 	for (it = contacts.begin(); it != contacts.end(); it++) {
-		if (!(tracking.getUserData(i) == mark)) {
-			it++;
-			continue;
+		if (tracking.getUserData(i) == mark) {
+			if ((*it).getDepth() > 0) {
+				it = contacts.erase(it);
+				it--;
+				tracking.remove(i);
+				i--;
+			}
 		}
-		if ((*it).getDepth() > 0) {
-			it = contacts.erase(it);
-			it--;
-			tracking.remove(i);
-		} else {
-			i++;
-		}
+		i++;
 	}
 }
 
@@ -192,7 +196,7 @@ void TNTUtil::removeContactsOutsideThreshold(std::vector<Contact>& contacts, Con
 			continue;
 		}
 		const Contact& c = *it;
-		if (fabs(c.getDepth()) > threshold) {
+		if (-c.getDepth() > threshold) {
 			it = contacts.erase(it);
 			it--;
 			tracking.remove(i);
@@ -231,6 +235,63 @@ void TNTUtil::updateTemporaryContacts(const std::vector<Contact>& contacts, cons
 	// Remove the TNTContacts that was not found in updated set of contacts
 	BOOST_FOREACH(TNTConstraint* const constraint, constraints) {
 		tntstate.removeTemporaryConstraint(constraint);
+	}
+}
+
+void TNTUtil::updateSensors(const std::list<SimulatedSensor::Ptr>& sensors, double time, double dt, double dt_prev, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate, State& rwstate) {
+	Simulator::UpdateInfo info;
+	info.dt = dt;
+	info.dt_prev = dt_prev;
+	info.time = time;
+	info.rollback = false;
+
+	BOOST_FOREACH(const SimulatedSensor::Ptr sensor, sensors) {
+		SimulatedSensor* const ssensor = sensor.get();
+		if(SimulatedTactileSensor* const tsensor = dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
+			TNTBodyConstraintManager::ConstraintListConst constraints;
+			const TNTBody* tntbody;
+			if(SimulatedFTSensor* const ftsensor = dynamic_cast<SimulatedFTSensor*>(tsensor) ){
+				const Body::Ptr b1 = ftsensor->getBody1();
+				const Body::Ptr b2 = ftsensor->getBody2();
+				RW_ASSERT(b1 != NULL);
+				RW_ASSERT(b2 != NULL);
+				const TNTBody* const tntbody1 = bc->getBody(b1->getBodyFrame());
+				const TNTBody* const tntbody2 = bc->getBody(b2->getBodyFrame());
+				RW_ASSERT(tntbody1 != NULL);
+				RW_ASSERT(tntbody2 != NULL);
+				constraints = bc->getConstraints(tntbody1,tntbody2,tntstate);
+				tntbody = tntbody2;
+			} else {
+				const Frame* const bframe = tsensor->getFrame();
+				const TNTBody* const body = bc->getBody(bframe);
+				constraints = bc->getConstraints(body,tntstate);
+				tntbody = body;
+			}
+			BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
+				const Wrench6D<> wrench = constraint->getWrench(tntstate);
+				if(const TNTRWConstraint* const rwconstraint = dynamic_cast<const TNTRWConstraint*>(constraint) ){
+					if (constraint->getParent() == tntbody) {
+						tsensor->addWrenchWToCOM(wrench.force(),wrench.torque(),rwstate,tntbody->get());
+					} else {
+						tsensor->addWrenchWToCOM(-wrench.force(),-wrench.torque(),rwstate,tntbody->get());
+					}
+				} else if(const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint) ){
+					const Vector3D<> n = contact->getNormalW(tntstate);
+					if (constraint->getParent() == tntbody) {
+						const Vector3D<> pos = constraint->getPositionParentW(tntstate);
+						tsensor->addWrenchWToCOM(Vector3D<>::zero(),wrench.torque(),rwstate,tntbody->get());
+						tsensor->addForceW(pos,wrench.force(),n,rwstate,tntbody->get());
+					} else {
+						const Vector3D<> pos = constraint->getPositionChildW(tntstate);
+						tsensor->addWrenchWToCOM(Vector3D<>::zero(),-wrench.torque(),rwstate,tntbody->get());
+						tsensor->addForceW(pos,-wrench.force(),-n,rwstate,tntbody->get());
+					}
+				} else {
+					RW_THROW("TNTUtil (updateSensors): unknown type of TNTConstraint encountered!");
+				}
+			}
+		}
+		ssensor->update(info,rwstate);
 	}
 }
 

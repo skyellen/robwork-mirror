@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <set>
+#include <list>
 
 #include <rw/math/Vector3D.hpp>
 #include <rwsim/contacts/ContactStrategyTracking.hpp>
@@ -33,6 +34,7 @@
 // Forward declarations
 namespace rw { namespace kinematics { class Frame; } };
 namespace rw { namespace kinematics { class State; } };
+namespace rwlibs { namespace simulation { class SimulatedSensor; } };
 namespace rwsim { namespace contacts { class Contact; } };
 namespace rwsim { namespace contacts { class ContactDetectorTracking; } };
 
@@ -193,6 +195,18 @@ public:
 	 * @param rwstate [in] the current state.
 	 */
 	static void updateTemporaryContacts(const std::vector<rwsim::contacts::Contact>& contacts, const rwsim::contacts::ContactDetectorTracking& tracking, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, const rw::kinematics::State &rwstate);
+
+	/**
+	 * @brief Update the sensors.
+	 * @param sensors [in] the list of sensors to update.
+	 * @param time [in] the current simulation time.
+	 * @param dt [in] the timestep.
+	 * @param dt_prev [in] previous timestep.
+	 * @param bc [in] the body-constraint manager.
+	 * @param tntstate [in] the current state to update with new information.
+	 * @param rwstate [in] the current state.
+	 */
+	static void updateSensors(const std::list<rw::common::Ptr<rwlibs::simulation::SimulatedSensor> >& sensors, double time, double dt, double dt_prev, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate, rw::kinematics::State& rwstate);
 
 private:
 	static rwsim::contacts::ContactStrategyTracking::UserData::Ptr getNewMark();

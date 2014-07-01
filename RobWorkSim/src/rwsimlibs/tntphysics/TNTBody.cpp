@@ -25,7 +25,7 @@ using namespace rw::math;
 using namespace rwsim::dynamics;
 using namespace rwsimlibs::tntphysics;
 
-TNTBody::TNTBody(rw::common::Ptr<const Body> body):
+TNTBody::TNTBody(Body::Ptr body):
 	_body(body)
 {
 }
@@ -33,7 +33,7 @@ TNTBody::TNTBody(rw::common::Ptr<const Body> body):
 TNTBody::~TNTBody() {
 }
 
-rw::common::Ptr<const Body> TNTBody::get() const {
+Body::Ptr TNTBody::get() const {
 	return _body;
 }
 

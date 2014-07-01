@@ -260,6 +260,17 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		}
 	}
 
+	// Skip correction if it is small anyway
+	bool doSolve = false;
+	for (unsigned int i = 0; i < nrOfConstraints; i++) {
+		if (fabs((double)rhs[i]) > 1e-8) {
+			doSolve = true;
+			break;
+		}
+	}
+	if (!doSolve)
+		return;
+
 	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-6);
 	const Eigen::VectorXd sol = lhsInv*rhs;
 	for (unsigned int i = 0; i < id; i++) {

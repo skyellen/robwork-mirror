@@ -268,6 +268,24 @@ void TNTCollisionSolverChain::applyImpulses(
 		}
 		TNT_DEBUG_BOUNCING(sstr.str());
 #endif
+		// First check that at least one of the originating contacts in chain has relative velocity higher than threshold
+		bool velExceedingThreshold = false;
+		BOOST_FOREACH(const std::size_t contactID, componentToContacts[chainID]) {
+			const TNTContact* const contact = contacts[contactID];
+			const Vector3D<> velP = contact->getVelocityParentW(tntstate,rwstate).linear();
+			const Vector3D<> velC = contact->getVelocityChildW(tntstate,rwstate).linear();
+			const Vector3D<> n = contact->getNormalW(tntstate);
+			const double relVel = dot(velC-velP,n);
+			if (fabs(relVel) > 1e-16) {
+				velExceedingThreshold = true;
+				break;
+			}
+		}
+		if (!velExceedingThreshold) {
+			TNT_DEBUG_BOUNCING("Relative velocity of all initiating contacts in chain was below threshold - skipping impulse solver.");
+			continue;
+		}
+
 		// Construct initial list of indices for object pairs where impulse(s) origins
 		bool equal = true;
 		std::set<std::size_t> indices;

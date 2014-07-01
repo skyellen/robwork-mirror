@@ -39,9 +39,12 @@
 
 // Contact resolution
 #define TNT_CONTACTRESOLVER_MAX_ITERATIONS 50
+#define TNT_CONSTRAINT_MAX_FORCE 1000 // Newton
 
 // Bodies
 #define TNT_WORKSPACE 50 // 50x50x50 meters
+#define TNT_MAX_LINVEL 100 // meters per second
+#define TNT_MAX_ANGVEL 100 // radians per second
 
 // Sanity Checks
 #define TNT_CHECK_HIGH 3

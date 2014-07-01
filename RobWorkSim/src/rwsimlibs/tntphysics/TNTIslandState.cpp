@@ -24,12 +24,16 @@ using namespace rwsim::contacts;
 using namespace rwsimlibs::tntphysics;
 
 TNTIslandState::TNTIslandState():
-	_time(0)
+	_time(0),
+	_timestep(0),
+	_repeated(0)
 {
 };
 
 TNTIslandState::TNTIslandState(const TNTIslandState& state):
 	_time(state.getTime()),
+	_timestep(state.getLastTimeStep()),
+	_repeated(state.getRepetitions()),
 	_rwBodyToBody(state._rwBodyToBody),
 	_constraintToAppliedWrench(state._constraintToAppliedWrench),
 	_constraintToConstraintWrench(state._constraintToConstraintWrench),
@@ -58,6 +62,8 @@ TNTIslandState::~TNTIslandState()
 TNTIslandState& TNTIslandState::operator=(const TNTIslandState &state) {
 	if (&state != this) {
 		_time = state.getTime();
+		_timestep = state.getLastTimeStep();
+		_repeated = state.getRepetitions();
 		_rwBodyToBody = state._rwBodyToBody;
 		_constraintToAppliedWrench = state._constraintToAppliedWrench;
 		_constraintToConstraintWrench = state._constraintToConstraintWrench;
@@ -81,6 +87,22 @@ double TNTIslandState::getTime() const {
 
 void TNTIslandState::setTime(double time) {
 	_time = time;
+}
+
+double TNTIslandState::getLastTimeStep() const {
+	return _timestep;
+}
+
+void TNTIslandState::setLastTimeStep(double timestep) {
+	_timestep = timestep;
+}
+
+std::size_t TNTIslandState::getRepetitions() const {
+	return _repeated;
+}
+
+void TNTIslandState::setRepetitions(std::size_t repetitions) {
+	_repeated = repetitions;
 }
 
 TNTBody::Configuration* TNTIslandState::getConfiguration(const TNTBody* body) const {
