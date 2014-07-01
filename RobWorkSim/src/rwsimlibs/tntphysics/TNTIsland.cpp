@@ -103,7 +103,7 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
-	map.add<std::string>("TNTContactResolver","Default contact resolver.","NonPenetration");
+	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
 	return map;
 }
 
@@ -744,7 +744,31 @@ TNTIsland::IntegrateSample TNTIsland::integrateRollback(const IntegrateSample& s
 
 		result = sample0;
 		result.time = dtTry;
+		{
+			const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
+			if (bodies.size() > 0) {
+				TNT_DEBUG_INTEGRATOR("Motion before step");
+				BOOST_FOREACH(const TNTRigidBody* const body, bodies) {
+					const Transform3D<> pos = body->getWorldTcom(result.tntstate);
+					const VelocityScrew6D<> vel = body->getVelocityW(result.rwstate,result.tntstate);
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " vel: " << vel.linear() << " " << vel.angular());
+				}
+			}
+		}
 		TNTUtil::step(dtTry,_gravity,_bc,result.tntstate,result.rwstate);
+		{
+			const TNTBodyConstraintManager::DynamicBodyList bodies = _bc->getDynamicBodies();
+			if (bodies.size() > 0) {
+				TNT_DEBUG_INTEGRATOR("Motion after step");
+				BOOST_FOREACH(const TNTRigidBody* const body, bodies) {
+					const Transform3D<> pos = body->getWorldTcom(result.tntstate);
+					const VelocityScrew6D<> vel = body->getVelocityW(result.rwstate,result.tntstate);
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " vel: " << vel.linear() << " " << vel.angular());
+				}
+			}
+		}
 		result.forwardContacts = _detector->updateContacts(result.rwstate,cdData,result.forwardTrack);
 		TNTUtil::updateTemporaryContacts(result.forwardContacts,result.forwardTrack,_bc,result.tntstate,result.rwstate);
 #if TNT_ENABLE_CONSTRAINT_CORRECTION && 0
