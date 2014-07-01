@@ -98,6 +98,9 @@ public:
 
 	//! @brief Contacts detected.
 	rw::trajectory::Path<rw::math::Transform3D<> > contacts;
+
+	//! @brief Maximum contact force detected (of the contacts in the \b contacts list).
+	rw::math::Vector3D<> maxContactForce;
 };
 //! @}
 } /* namespace assembly */

@@ -112,12 +112,25 @@ AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const
 	_postStopFinish(false),
 	_postStopCancel(false),
 	_running(false),
-	_dt(0.001),
+	_dt(0),
 	_maxSimTime(5)
 {
+	setDt();
 }
 
 AssemblySimulator::~AssemblySimulator() {
+}
+
+double AssemblySimulator::getDt() const {
+	boost::mutex::scoped_lock lock(_mutex);
+	return _dt;
+}
+
+void AssemblySimulator::setDt(double dt) {
+	boost::mutex::scoped_lock lock(_mutex);
+	if (_running)
+		RW_THROW("AssemblySimulator (setDt): it is not allowed to change the timestep while the simulator is running!");
+	_dt = dt;
 }
 
 void AssemblySimulator::start(rw::common::Ptr<ThreadTask> task) {
@@ -422,8 +435,11 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 			const Transform3D<> wTsensor = Kinematics::worldTframe(sensor->getSensorFrame(),simState.state);
 			const Vector3D<> p = wTsensor*c.p;
 			const Vector3D<> n = normalize(wTsensor.R()*c.n);
+			const Vector3D<> force = wTsensor*c.f;
 			Rotation3D<> contact = EAA<>(Vector3D<>::z(),n).toRotation3D();
 			realState.contacts.push_back(Transform3D<>(p,contact));
+			if (force.norm2() > realState.maxContactForce.norm2())
+				realState.maxContactForce = force;
 		}
 	}
 

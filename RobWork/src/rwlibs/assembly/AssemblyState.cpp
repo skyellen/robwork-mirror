@@ -45,6 +45,7 @@ AssemblyState::AssemblyState(CartesianTarget::Ptr target) {
 	maleflexT = target->getPropertyMap().get<Path<Transform3D<> > >("MaleFlexT",std::vector<Transform3D<> >());
 	femaleflexT = target->getPropertyMap().get<Path<Transform3D<> > >("FemaleFlexT",std::vector<Transform3D<> >());
 	contacts = target->getPropertyMap().get<Path<Transform3D<> > >("Contacts",std::vector<Transform3D<> >());
+	maxContactForce = target->getPropertyMap().get<Vector3D<> >("MaxContactForce",Vector3D<>());
 }
 
 AssemblyState::~AssemblyState() {
@@ -73,6 +74,8 @@ CartesianTarget::Ptr AssemblyState::toCartesianTarget(const AssemblyState &state
 		target->getPropertyMap().set<Path<Transform3D<> > >("FemaleFlexT",state.femaleflexT);
 	if (state.contacts.size() > 0)
 		target->getPropertyMap().set<Path<Transform3D<> > >("Contacts",state.contacts);
+	if (!(state.maxContactForce == Vector3D<>::zero()))
+		target->getPropertyMap().set<Vector3D<> >("MaxContactForce",state.maxContactForce);
 
 	return target;
 }

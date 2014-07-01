@@ -123,10 +123,15 @@ void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
     		}
     		_ftMaleLabel->setText(QString::fromStdString("Force/Torque (male): ") + QString::number(astate.ftSensorMale.force().norm2()) + QString::fromStdString("N / ") + QString::number(astate.ftSensorMale.torque().norm2()) + QString::fromStdString("Nm"));
     		_ftFemaleLabel->setText(QString::fromStdString("Force/Torque (female): ") + QString::number(astate.ftSensorFemale.force().norm2()) + QString::fromStdString("N / ") + QString::number(astate.ftSensorFemale.torque().norm2()) + QString::fromStdString("Nm"));
+    		std::stringstream sstr;
+    		sstr << "Contact: ";
     		if (astate.contact)
-    			_contactLabel->setText("Contact: Yes");
+    			sstr << "Yes";
     		else
-    			_contactLabel->setText("Contact: No");
+    			sstr << "No";
+    		if (astate.contacts.size() > 0)
+    			sstr << " - " << astate.contacts.size() << " contacts detected - max force is " << astate.maxContactForce.norm2() << "N";
+    		_contactLabel->setText(QString::fromStdString(sstr.str()));
     		if (_contactPointRender != NULL) {
     			_contactPointRender->clear();
     			BOOST_FOREACH(const Transform3D<> contact, astate.contacts) {
@@ -154,7 +159,7 @@ void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
 
 
     } catch (...){
-        Log::warningLog() << "GTaskVisPlugin: Event \"" << event << "\" did not have the correct datatype or an error occured!\n";
+        Log::warningLog() << "ATaskVisPlugin: Event \"" << event << "\" did not have the correct datatype or an error occured!\n";
     }
 }
 

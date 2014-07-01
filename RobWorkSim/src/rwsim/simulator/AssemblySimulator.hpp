@@ -70,6 +70,18 @@ public:
 	virtual ~AssemblySimulator();
 
 	/**
+	 * @brief Get the size of the timestep used in simulation.
+	 * @return the size of the timestep
+	 */
+	double getDt() const;
+
+	/**
+	 * @brief Set the size of the timestep to use in simulation.
+	 * @param dt [in] the stepsize (default is 0.001 seconds).
+	 */
+	void setDt(double dt = 0.001);
+
+	/**
 	 * @brief Run the simulation.
 	 * @param task (optional) if this simulator runs in a ThreadTask, pass a pointer to this task to let the simulator add work for parallel processing.
 	 */
