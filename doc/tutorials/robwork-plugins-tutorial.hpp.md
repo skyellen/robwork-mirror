@@ -1,4 +1,4 @@
-RobWork Plugins and Extensions   {#robworkplugins} 
+RobWork Plugins and Extensions   {#page_robworkplugins} 
 ===============================
 
 This tutorial will cover the creation and usage of RobWork plugins. This should not be confused with

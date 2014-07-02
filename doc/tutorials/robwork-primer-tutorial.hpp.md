@@ -198,7 +198,7 @@ from tutorial 1 with a file “WorkCellAndDevices.cpp” and create the file wit
 Loading a !WorkCell in RobWork is fairly simple:
 
 ~~~{.cpp}
- WorkCell::Ptr wc = WorkCellLoader::load("SimpleWorkCell.wc.xml");
+ WorkCell::Ptr wc = WorkCellLoader::Factory::load("SimpleWorkCell.wc.xml");
 ~~~
 
  The typical functions of the workcell is to create a default State and add/remove/find frames or devices. The
@@ -215,8 +215,8 @@ Loading a !WorkCell in RobWork is fairly simple:
  FixedFrame* fframe = wc->findFrame<FixedFrame>("FixedFrameName");
  MovableFrame* mframe = wc->findFrame<MovableFrame>("MovableFrameName");
  // find a device by name
- Device* wc->findDevice("SerialDeviceName");
- SerialDevice* wc->findDevice<SerialDevice>("SerialDeviceName");
+ Device::Ptr wc->findDevice("SerialDeviceName");
+ SerialDevice::Ptr wc->findDevice<SerialDevice>("SerialDeviceName");
 ~~~
 
  The basic building blocks of a workcell are Frames. These are ordered in a tree-structure where the ROOT
@@ -232,9 +232,9 @@ Loading a !WorkCell in RobWork is fairly simple:
  // we can find the world to frame transform by a little jogling
  Transform3D<> wTf = wTmf * inverse(fTmf);
  // test if frame is a dynamic attachable frame
- if( Kinematics::isDAF( *mframe ) ){
+ if( Kinematics::isDAF( mframe ) ){
  	// attach mframe to end of serial device
- 	Kinematics::gripFrame(state, *mframe, *sdevice->getEnd() );
+ 	Kinematics::gripFrame(state, mframe, sdevice->getEnd() );
  }
 ~~~
 
