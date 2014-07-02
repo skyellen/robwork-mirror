@@ -59,8 +59,9 @@ RobWork::~RobWork(void)
 
 
 void RobWork::initialize(){
+	const Log::Ptr logInstance = Log::getInstance();
     // we need to find the settings of robwork so we start searching for rwsettings.xml
-    std::cout << "Initializing ROBWORK" << std::endl;
+	Log::debugLog() << "Initializing ROBWORK" << std::endl;
 	// this is the search priority
 	// 1. search from execution directory
 	// 2. search from user home directory (OS specific)
@@ -96,13 +97,13 @@ void RobWork::initialize(){
     		continue;
 
     	cfgDirs.push_back( propstr->getValue() );
-    	std::cout << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
+    	Log::debugLog() << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
     }
 
     BOOST_FOREACH(std::string dir, cfgDirs){
 
     	path file( dir );
-    	std::cout << dir << std::endl;
+    	Log::debugLog() << dir << std::endl;
 #if(BOOST_FILESYSTEM_VERSION==2)
     	if( !file.has_root_path() ){
     		file = path( ipath.string() + "/" + dir );
@@ -112,7 +113,7 @@ void RobWork::initialize(){
     		file = path( ipath.string() + "/" + dir );
     	}
 #endif
-    	std::cout << file.string() << std::endl;
+    	Log::debugLog() << file.string() << std::endl;
     	if( !exists(file) )
     		continue;
 
@@ -126,12 +127,13 @@ void RobWork::initialize(){
     		std::vector<std::string> pl_files =
     				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
     		BOOST_FOREACH(std::string pl_file, pl_files){
-    		    std::cout << "Plugin: " << pl_file<< std::endl;
+    			Log::debugLog() << "Plugin: " << pl_file<< std::endl;
                 rw::common::Ptr<Plugin> plugin = Plugin::load( pl_file );
                 reg->registerExtensions(plugin);
+                Log::setLog(logInstance);
     		}
     	} else {
-            std::cout << "Plugin: " << file.string() << std::endl;
+    		Log::debugLog() << "Plugin: " << file.string() << std::endl;
             rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
             reg->registerExtensions(plugin);
     	}
