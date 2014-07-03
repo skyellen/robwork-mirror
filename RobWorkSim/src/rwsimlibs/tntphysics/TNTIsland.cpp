@@ -103,7 +103,7 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
-	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
+	map.add<std::string>("TNTContactResolver","Default contact resolver.","NonPenetration");
 	return map;
 }
 
