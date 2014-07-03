@@ -35,7 +35,7 @@ using namespace rwsimlibs::tntphysics;
 
 TNTBroadPhase::TNTBroadPhase(rw::common::Ptr<const DynamicWorkCell> dwc):
 	_dwc(dwc),
-	_defaultProximitySetup(new ProximitySetup((new BasicFilterStrategy(dwc->getWorkcell()))->getProximitySetup())),
+	_defaultProximitySetup(getDefaultProximitySetup(dwc)),
 	_bpStrategy(getEmptyBPStrategy(dwc)),
 	_collisionStrategy(new ProximityStrategyPQP()),
 	_frameToBPRule(new FrameMap<std::list<ProximitySetupRule> >()),
@@ -46,6 +46,7 @@ TNTBroadPhase::TNTBroadPhase(rw::common::Ptr<const DynamicWorkCell> dwc):
 TNTBroadPhase::~TNTBroadPhase() {
 	delete _defaultProximitySetup;
 	delete _bpStrategy;
+	delete _collisionStrategy;
 	delete _frameToBPRule;
 	delete _frameGeoToPModel;
 }
@@ -169,4 +170,11 @@ ProximityFilterStrategy* TNTBroadPhase::getEmptyBPStrategy(rw::common::Ptr<const
 	ProximitySetup rules;
 	rules.setUseIncludeAll(false);
 	return new BasicFilterStrategy(dwc->getWorkcell(),rules);
+}
+
+const ProximitySetup* TNTBroadPhase::getDefaultProximitySetup(rw::common::Ptr<const DynamicWorkCell> dwc) {
+	BasicFilterStrategy* const bfstrategy = new BasicFilterStrategy(dwc->getWorkcell());
+	const ProximitySetup* const psetup = new ProximitySetup(bfstrategy->getProximitySetup());
+	delete bfstrategy;
+	return psetup;
 }

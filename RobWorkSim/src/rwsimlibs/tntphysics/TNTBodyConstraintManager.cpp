@@ -38,6 +38,18 @@ TNTBodyConstraintManager::TNTBodyConstraintManager()
 }
 
 TNTBodyConstraintManager::~TNTBodyConstraintManager() {
+	BOOST_FOREACH(const TNTBody* const body, _allBodies) {
+		delete body;
+	}
+	_allBodies.clear();
+	_dynamicBodies.clear();
+	_kinematicBodies.clear();
+	_frameToBody.clear();
+	BOOST_FOREACH(const TNTConstraint* const constraint, _constraints) {
+		delete constraint;
+	}
+	_constraints.clear();
+	_bodyToConstraints.clear();
 }
 
 void TNTBodyConstraintManager::initFromDWC(const rw::common::Ptr<const DynamicWorkCell>& dwc) {

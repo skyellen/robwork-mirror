@@ -73,6 +73,10 @@ TNTIslandState& TNTIslandState::operator=(const TNTIslandState &state) {
 		_tempConstraints = state._tempConstraints;
 		_bodyToTempConstraints = state._bodyToTempConstraints;
 		std::map<const TNTBody*, TNTBody::Configuration*>::const_iterator it;
+		for (it = _bodyToConfiguration.begin(); it != _bodyToConfiguration.end(); it++) {
+			std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
+			delete entry.second;
+		}
 		for (it = state._bodyToConfiguration.begin(); it != state._bodyToConfiguration.end(); it++) {
 			std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
 			_bodyToConfiguration[entry.first] = entry.second->clone();

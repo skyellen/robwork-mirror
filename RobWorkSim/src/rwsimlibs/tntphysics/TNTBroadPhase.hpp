@@ -115,6 +115,7 @@ public:
 
 private:
 	static rw::proximity::ProximityFilterStrategy* getEmptyBPStrategy(rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> dwc);
+	static const rw::proximity::ProximitySetup* getDefaultProximitySetup(rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> dwc);
 
 	const rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> _dwc;
 	const rw::proximity::ProximitySetup* const _defaultProximitySetup;

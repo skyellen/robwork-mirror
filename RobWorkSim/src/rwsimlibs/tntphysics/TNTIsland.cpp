@@ -147,10 +147,9 @@ TNTIsland::TNTIsland(rw::common::Ptr<DynamicWorkCell> dwc, rw::common::Ptr<Conta
 
 TNTIsland::~TNTIsland() {
 	delete _correction;
+	delete _materialMap;
 	if (_bc != NULL)
 		exitPhysics();
-	if (_materialMap != NULL)
-		delete _materialMap;
 }
 
 const Vector3D<>& TNTIsland::getGravity() const {
@@ -255,6 +254,8 @@ void TNTIsland::exitPhysics() {
 		RW_THROW("TNTIsland (exitPhysics): initPhysics has not been called!");
 	delete _bc;
 	_bc = NULL;
+	if (_state != NULL)
+		delete _state;
 	_state = NULL;
 	if (_bp != NULL)
 		delete _bp;
