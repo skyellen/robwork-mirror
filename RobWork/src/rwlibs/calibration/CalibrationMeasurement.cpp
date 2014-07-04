@@ -15,11 +15,11 @@ CalibrationMeasurement::CalibrationMeasurement(const rw::math::Q& q, const rw::m
 
 }
 
-CalibrationMeasurement::CalibrationMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::Matrix<double, 6, 6>& covarianceMatrix, const std::string& deviceName, const std::string& sensorFrameName, const std::string& markerFrameName) :
+CalibrationMeasurement::CalibrationMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::MatrixXd& covarianceMatrix, const std::string& deviceName, const std::string& sensorFrameName, const std::string& markerFrameName) :
 	_q(q), _transform(transform), _covarianceMatrix(covarianceMatrix), _hasCovarianceMatrix(true), _deviceName(deviceName), _sensorFrameName(sensorFrameName), _markerFrameName(markerFrameName) {
 
 }
-
+ 
 CalibrationMeasurement::~CalibrationMeasurement() {
 
 }
@@ -32,8 +32,13 @@ const rw::math::Transform3D<>& CalibrationMeasurement::getTransform() const {
 	return _transform;
 }
 
-const Eigen::Matrix<double, 6, 6>& CalibrationMeasurement::getCovarianceMatrix() const {
+const Eigen::MatrixXd& CalibrationMeasurement::getCovarianceMatrix() const {
 	return _covarianceMatrix;
+}
+
+void CalibrationMeasurement::setCovarianceMatrix(const Eigen::MatrixXd& covar) {
+	_covarianceMatrix = covar;
+	_hasCovarianceMatrix = true;
 }
 
 bool CalibrationMeasurement::hasCovarianceMatrix() const {

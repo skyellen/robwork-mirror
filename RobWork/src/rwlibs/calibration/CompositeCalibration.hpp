@@ -177,7 +177,8 @@ bool CompositeCalibration<C>::isApplied() const {
 template<class C>
 void CompositeCalibration<C>::apply() {
 	if (isEnabled() == false) {
-		RW_THROW("Tries to apply a calibration which is not enabled");
+		return;
+		//RW_THROW("Tries to apply a calibration which is not enabled");
 	}
 	if (isApplied())
 		return;
@@ -195,11 +196,14 @@ void CompositeCalibration<C>::apply() {
 template<class C>
 void CompositeCalibration<C>::revert() {
 	if (isEnabled() == false) {
-		RW_THROW("Tries to revert a calibration which is not enabled");
+		return;
+//		RW_THROW("Tries to revert a calibration which is not enabled");
 	}
 
-	if (isApplied() == false)
-		RW_THROW("Tries to revert and calibration which is not applied");
+	if (isApplied() == false) {
+		return;
+	//	RW_THROW("Tries to revert and calibration which is not applied");
+	}
 
 	for (typename std::vector<rw::common::Ptr<C> >::iterator it = _calibrations.begin(); it != _calibrations.end(); ++it) {
 		rw::common::Ptr<C> calibration = (*it);
@@ -207,7 +211,7 @@ void CompositeCalibration<C>::revert() {
 			calibration->revert();
 	}
 
-	RW_ASSERT(!isApplied());
+	//RW_ASSERT(!isApplied());
 }
 
 template<class C>

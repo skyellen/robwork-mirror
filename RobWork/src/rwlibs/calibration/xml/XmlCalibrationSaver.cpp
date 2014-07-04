@@ -51,10 +51,10 @@ DOMElem::Ptr ElementCreator::createElement<FixedFrameCalibration::Ptr>(
 {
 	DOMElem::Ptr element = parent->addChild("FixedFrameCalibration");
 	element->addAttribute("frame")->setValue(calibration->getFrame()->getName());
-	DOMElem::Ptr transformElement = element->addChild("Transform");
+	DOMElem::Ptr transformElement = element->addChild("Transform3D");//Name does not matter, it is overwritten in the DOMBasisTypes::write anyway.
 //	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );
 	rw::math::Transform3D<> correction = calibration->getCorrectionTransform();
-	DOMBasisTypes::write(correction, transformElement);
+	DOMBasisTypes::write(correction, transformElement, true);
 
 	return element;
 }

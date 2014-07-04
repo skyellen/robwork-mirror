@@ -62,8 +62,12 @@ public:
 
 	void setWeightingMeasurements(bool isWeightingMeasurements);
 
-	void calibrate(const rw::kinematics::State& workCellState);
+	//void setUsePreCalibration(bool usePrecalibration);
 
+	//bool isUsingPreCalibration() const;
+
+	void calibrate(const rw::kinematics::State& workCellState);
+	
 	NLLSSolver::Ptr getSolver() const;
 
 private:
@@ -75,6 +79,7 @@ private:
 	Jacobian::Ptr _jacobian;
 	bool _isWeightingMeasurements;
 	NLLSSolver::Ptr _solver;
+//	bool _usePreCalibration;
 };
 
 }

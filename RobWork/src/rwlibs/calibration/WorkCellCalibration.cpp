@@ -9,8 +9,8 @@
 
 #include <rw/models.hpp>
 
-namespace rwlibs {
-namespace calibration {
+#include <boost/foreach.hpp>
+
 
 
 using namespace rw::math;
@@ -20,12 +20,12 @@ using namespace rw::kinematics;
 using namespace rwlibs::calibration;
 
 
-WorkCellCalibration::WorkCellCalibration(SerialDevice::Ptr device,
-										 Frame* markerFrame,
+WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr, Frame*> > deviceMarkerPairs,
 										 const std::vector<Frame*>& sensorFrames,
 										 const std::vector<Function<>::Ptr>& encoderCorrectionFunctions) 
-										 //:	_device(device)
+										 :	_deviceMarkerPairs(deviceMarkerPairs)
 {
+
 	//The calibration of the moving frame. Typically the camera frame, but could also be other frames.
 	_fixedFrameCalibrations = ownedPtr(new CompositeCalibration<FixedFrameCalibration>());
 	BOOST_FOREACH(Frame* sensorFrame, sensorFrames) {
@@ -35,47 +35,52 @@ WorkCellCalibration::WorkCellCalibration(SerialDevice::Ptr device,
 
 		FixedFrameCalibration::Ptr sensorFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(sensorFrame).cast<rw::kinematics::FixedFrame>()));
 		_fixedFrameCalibrations->addCalibration(sensorFrameCalibration);
+		_sensorFrameCalibrations[sensorFrame->getName()] = sensorFrameCalibration;
 	}
+
 	//_movingFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(movingFrame, true));
 
-	FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(markerFrame).cast<rw::kinematics::FixedFrame>()));
-	_fixedFrameCalibrations->addCalibration(endCalibration);
+	
+	BOOST_FOREACH(DeviceMarkerPair deviceMarkerPair, deviceMarkerPairs) {
+		FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(deviceMarkerPair.second).cast<rw::kinematics::FixedFrame>()));
+		_markerCalibrations[deviceMarkerPair.first->getName()] = endCalibration;
+		_fixedFrameCalibrations->addCalibration(endCalibration);
+		
 	//_endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(device->getEnd(), false));
 	
-	_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
-	_compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
+		_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
+		_compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
 
-	std::vector<rw::models::Joint*> joints = device->getJoints();
-	for (std::vector<rw::models::Joint*>::iterator jointIterator = joints.begin(); jointIterator != joints.end(); jointIterator++) {
-		rw::models::Joint::Ptr joint = (*jointIterator);
+		std::vector<rw::models::Joint*> joints = deviceMarkerPair.first->getJoints();
+		for (std::vector<rw::models::Joint*>::iterator jointIterator = joints.begin(); jointIterator != joints.end(); jointIterator++) {
+			rw::models::Joint::Ptr joint = (*jointIterator);
 
-		// Add link calibrations for intermediate links.
-		if (jointIterator != joints.begin() ) {
-			ParallelAxisDHCalibration::Ptr linkCalibration = rw::common::ownedPtr(new ParallelAxisDHCalibration(joint));
-			_compositeLinkCalibration->addCalibration(linkCalibration);
+			// Add link calibrations for intermediate links.
+			if (jointIterator != joints.begin() ) {
+				ParallelAxisDHCalibration::Ptr linkCalibration = rw::common::ownedPtr(new ParallelAxisDHCalibration(joint));
+				_compositeLinkCalibration->addCalibration(linkCalibration);
 
-			// Disable d and theta for first link.
-			if (jointIterator == ++(joints.begin())) {
-				CalibrationParameterSet parameterSet = linkCalibration->getParameterSet();
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_D).setEnabled(false);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).setEnabled(false);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_A).setEnabled(true);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).setEnabled(true);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_B).setEnabled(false);
-				parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).setEnabled(false);
+				// Disable d and theta for first link.
+				if (jointIterator == ++(joints.begin())) {
+					CalibrationParameterSet parameterSet = linkCalibration->getParameterSet();
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_D).setEnabled(false);
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).setEnabled(false);
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_A).setEnabled(true);
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).setEnabled(true);
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_B).setEnabled(false);
+					parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).setEnabled(false);
 				
-				linkCalibration->setParameterSet(parameterSet);
-				//break;
+					linkCalibration->setParameterSet(parameterSet);
+					//break;
+				}
 			}
-		}
 
-		// Add joint calibrations.
-		JointEncoderCalibration::Ptr jointCalibration = rw::common::ownedPtr(new JointEncoderCalibration(device.cast<rw::models::JointDevice>(), joint));
-		_compositeJointCalibration->addCalibration(jointCalibration);
+			// Add joint calibrations.
+			JointEncoderCalibration::Ptr jointCalibration = rw::common::ownedPtr(new JointEncoderCalibration(deviceMarkerPair.first.cast<rw::models::JointDevice>(), joint));
+			_compositeJointCalibration->addCalibration(jointCalibration);
+		}
 	}
-	
-//	((CompositeCalibration<Calibration>*) this)->addCalibration(_sensorFrameCalibration.cast<Calibration>());
-//	((CompositeCalibration<Calibration>*) this)->addCalibration(_endCalibration.cast<Calibration>());
+
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_fixedFrameCalibrations.cast<Calibration>());
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeLinkCalibration.cast<Calibration>());
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointCalibration.cast<Calibration>());
@@ -108,6 +113,23 @@ WorkCellCalibration::WorkCellCalibration(/*rw::models::SerialDevice::Ptr device,
 WorkCellCalibration::~WorkCellCalibration() {
 
 }
+
+FixedFrameCalibration::Ptr WorkCellCalibration::getFixedFrameCalibrationForSensor(const std::string& sensor) {
+	if (_sensorFrameCalibrations.find(sensor) != _sensorFrameCalibrations.end()) {
+		return _sensorFrameCalibrations[sensor];
+	}
+	return NULL;
+}
+
+FixedFrameCalibration::Ptr WorkCellCalibration::getFixedFrameCalibrationForMarker(const std::string& marker) {
+	if (_markerCalibrations.find(marker) != _markerCalibrations.end()) {
+		return _markerCalibrations[marker];
+	}
+	return NULL;
+
+}
+
+
 /*
 rw::models::SerialDevice::Ptr WorkCellCalibration::getDevice() const {
 	return _device;
@@ -160,4 +182,25 @@ void WorkCellCalibration::set(WorkCellCalibration::Ptr calibration, rw::common::
 }
 
 
-} } //End namespaces
+void WorkCellCalibration::prependCalibration(WorkCellCalibration::Ptr calibration) 
+{
+	typedef std::map<std::string, FixedFrameCalibration::Ptr> StringCalibMap;
+	for (StringCalibMap::iterator it = _markerCalibrations.begin(); it != _markerCalibrations.end(); ++it) {
+		FixedFrameCalibration::Ptr ffc = calibration->getFixedFrameCalibrationForMarker((*it).first);
+		Transform3D<> oldTransform = (*it).second->getCorrectionTransform();
+		Transform3D<> preTransform = ffc->getCorrectionTransform();
+		Transform3D<> newTransform = preTransform*oldTransform;
+		(*it).second->setCorrectionTransform(newTransform);
+	}
+	
+
+	for (StringCalibMap::iterator it = _sensorFrameCalibrations.begin(); it != _sensorFrameCalibrations.end(); ++it) {
+		FixedFrameCalibration::Ptr ffc = calibration->getFixedFrameCalibrationForSensor((*it).first);
+		Transform3D<> oldTransform = (*it).second->getCorrectionTransform();
+		Transform3D<> preTransform = ffc->getCorrectionTransform();
+		Transform3D<> newTransform = preTransform*oldTransform;
+		(*it).second->setCorrectionTransform(newTransform);
+	}
+
+}
+

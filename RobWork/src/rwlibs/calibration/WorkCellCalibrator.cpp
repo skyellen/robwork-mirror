@@ -1,5 +1,5 @@
 #include "WorkCellCalibrator.hpp"
-
+#include "WorkCellExtrinsicCalibrator.hpp"
 #include "nlls/NLLSNewtonSolver.hpp"
 
 #include <rw/math/EAA.hpp>
@@ -81,13 +81,14 @@ namespace rwlibs {
 					// Compute Jacobian.
 					const int rowIndex = 6 * measurementIndex;
 					stackedJacobians.block(rowIndex, 0, 6, columnCount) = _jacobian->computeJacobian(sensorFrame, markerFrame, workCellState);
-
+					//if (measurementIndex == 0) {
+					//	std::cout<<"Jacobian[0] = "<<_jacobian->computeJacobian(sensorFrame, markerFrame, workCellState)<<std::endl;
+					//}
 					// Weight Jacobian according to covariances.
 					if (_isWeightingMeasurements && measurement->hasCovarianceMatrix()) {
-						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(
-							measurement->getCovarianceMatrix()).operatorInverseSqrt();
-						stackedJacobians.block(rowIndex, 0, 6, columnCount) = weightMatrix
-							* stackedJacobians.block(rowIndex, 0, 6, columnCount);
+						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(measurement->getCovarianceMatrix()).operatorInverseSqrt();
+						//const Eigen::MatrixXd weightMatrix = measurement->getCovarianceMatrix();
+						stackedJacobians.block(rowIndex, 0, 6, columnCount) = weightMatrix * stackedJacobians.block(rowIndex, 0, 6, columnCount);
 					}
 				}
 				
@@ -118,16 +119,23 @@ namespace rwlibs {
 					const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(sensorFrame, markerFrame, workCellState);
 					//std::cout<<"Model Transform = "<<tfmModel<<std::endl;
 						
-					rw::math::Vector3D<> dP = tfmModel.P() - tfmMeasurement.P();
-//					std::cout<<"dP = "<<dP<<std::endl;
+					//rw::math::Vector3D<> dP = tfmModel.P() - tfmMeasurement.P();
+					rw::math::Vector3D<> dP = tfmMeasurement.P() - tfmModel.P();
+					//std::cout<<"dP = "<<dP<<std::endl;
 					//dP = -dP;
 					stackedResiduals(rowIndex + 0) = dP(0);
 					stackedResiduals(rowIndex + 1) = dP(1);
 					stackedResiduals(rowIndex + 2) = dP(2);
-					rw::math::Rotation3D<> dR = tfmModel.R() * rw::math::inverse(tfmMeasurement.R());
+					//rw::math::Rotation3D<> dR = tfmModel.R() * rw::math::inverse(tfmMeasurement.R());
+					rw::math::Rotation3D<> dR = tfmMeasurement.R()*inverse(tfmModel.R());
 
 					//std::cout<<"dR = "<<EAA<>(dR)<<std::endl;
 					//dR = Rotation3D<>::identity();
+
+					//if (measurementIndex == 0) {
+					//	std::cout<<" dp = "<<dP<<std::endl;
+					//	std::cout<<"dr = "<<(dR(2, 1) - dR(1, 2)) / 2<<"  "<<(dR(0, 2) - dR(2, 0)) / 2<<"  "<<(dR(1, 0) - dR(0, 1)) / 2<<std::endl;
+					//}
 
 					stackedResiduals(rowIndex + 3) = (dR(2, 1) - dR(1, 2)) / 2;
 					stackedResiduals(rowIndex + 4) = (dR(0, 2) - dR(2, 0)) / 2;
@@ -135,8 +143,8 @@ namespace rwlibs {
 
 					// Weight residuals according to covariances.
 					if (_isWeightingMeasurements && measurement->hasCovarianceMatrix()) {
-						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(
-							measurement->getCovarianceMatrix()).operatorInverseSqrt();
+						const Eigen::Matrix<double, 6, 6> weightMatrix = Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6> >(measurement->getCovarianceMatrix()).operatorInverseSqrt();
+						//const Eigen::MatrixXd weightMatrix = measurement->getCovarianceMatrix();
 						stackedResiduals.segment<6>(rowIndex) = weightMatrix * stackedResiduals.segment<6>(rowIndex);
 					}
 				}
@@ -166,7 +174,7 @@ namespace rwlibs {
 
 		WorkCellCalibrator::WorkCellCalibrator(rw::models::WorkCell::Ptr workcell,
 			/*rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, */Calibration::Ptr calibration, Jacobian::Ptr jacobian) :
-		_workcell(workcell), /*_referenceFrame(referenceFrame), _measurementFrame(measurementFrame), */_calibration(calibration), _jacobian(jacobian), _isWeightingMeasurements(true) {
+		_workcell(workcell), /*_referenceFrame(referenceFrame), _measurementFrame(measurementFrame), */_calibration(calibration), _jacobian(jacobian), _isWeightingMeasurements(true)/*, _usePreCalibration(true)*/ {
 
 		}
 
@@ -195,7 +203,7 @@ namespace rwlibs {
 		}*/
 
 		unsigned int WorkCellCalibrator::getMinimumMeasurementCount() const {
-			return ceil(float(_jacobian->getColumnCount()) / 6);
+			return static_cast<unsigned int>(ceil(float(_jacobian->getColumnCount()) / 6));
 		}
 
 		int WorkCellCalibrator::getMeasurementCount() const {
@@ -222,6 +230,17 @@ namespace rwlibs {
 			_isWeightingMeasurements = isWeightingMeasurements;
 		}
 
+		/*
+		void WorkCellCalibrator::setUsePreCalibration(bool usePrecalibration) {
+			_usePreCalibration = usePrecalibration;
+		}
+
+		bool WorkCellCalibrator::isUsingPreCalibration() const {
+			return _usePreCalibration;
+		}
+		*/
+
+
 		void WorkCellCalibrator::calibrate(const rw::kinematics::State& workCellState) {
 			RW_ASSERT(_calibration->isEnabled());
 
@@ -234,6 +253,7 @@ namespace rwlibs {
 			const bool wasApplied = _calibration->isApplied();
 			if (!wasApplied)
 				_calibration->apply();
+				
 
 			// Solve non-linear least square system.
 			try {

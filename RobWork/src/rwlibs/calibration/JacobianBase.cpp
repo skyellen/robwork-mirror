@@ -39,7 +39,7 @@ namespace rwlibs {
 				RW_ASSERT(!referenceFrame.isNull());
 				RW_ASSERT(!targetFrame.isNull());
 				RW_ASSERT(getColumnCount() != 0);
-				RW_ASSERT(_calibration->isApplied());
+				//RW_ASSERT(_calibration->isApplied());
 				return doComputeJacobian(referenceFrame, targetFrame, state);
 		}
 

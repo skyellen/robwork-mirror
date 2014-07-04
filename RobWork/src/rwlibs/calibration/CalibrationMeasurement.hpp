@@ -56,8 +56,8 @@ public:
 	 * @param sensorFrameName [in] Name of the sensor frame
 	 * @param markerFrameName [in] Name of the frame of the marker
 	 */	
-	CalibrationMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::Matrix<double, 6, 6>& covarianceMatrix, const std::string& deviceName = "", const std::string& sensorFrameName = "", const std::string& markerFrameName = "");
-
+	CalibrationMeasurement(const rw::math::Q& q, const rw::math::Transform3D<>& transform, const Eigen::MatrixXd& covarianceMatrix, const std::string& deviceName = "", const std::string& sensorFrameName = "", const std::string& markerFrameName = "");
+	
 	/**
 	 * @brief Destructor
 	 */
@@ -76,7 +76,13 @@ public:
 	/**
 	 * @brief Returns the covariance matrix associated to the measurement
 	 */
-	const Eigen::Matrix<double, 6, 6>& getCovarianceMatrix() const;
+	const Eigen::MatrixXd& getCovarianceMatrix() const;
+
+	/**
+	 * @brief Sets the covariance matrix for the measurement
+	 * @param covar [in] The covariance to use for the measurement.
+	 */
+	void setCovarianceMatrix(const Eigen::MatrixXd& covar); 
 
 	/**
 	 * @brief Returns true is the covariance has been setted.
@@ -127,18 +133,19 @@ public:
 	 */
 	void setDetectionInfo(DetectionInfoBase::Ptr detectionInfo);
 
+	
 private:
 	rw::math::Q _q;
 	rw::math::Transform3D<> _transform;
-	Eigen::Matrix<double, 6, 6> _covarianceMatrix;
+	Eigen::MatrixXd _covarianceMatrix;
 	bool _hasCovarianceMatrix;
 	std::string _deviceName;
 	std::string _sensorFrameName;
 	std::string _markerFrameName;
 
 	DetectionInfoBase::Ptr _detectionInfo;
-
-
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 

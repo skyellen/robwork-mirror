@@ -23,8 +23,11 @@ class WorkCellCalibration: public CompositeCalibration<CalibrationBase> {
 public:
 	typedef rw::common::Ptr<WorkCellCalibration> Ptr;
 
-	WorkCellCalibration(rw::models::SerialDevice::Ptr device,
-			rw::kinematics::Frame* markerFrame,
+	typedef std::pair<rw::models::SerialDevice::Ptr, rw::kinematics::Frame*> DeviceMarkerPair;
+
+	WorkCellCalibration(std::vector<DeviceMarkerPair> deviceMarkerPairs,
+		/*rw::models::SerialDevice::Ptr device,
+			rw::kinematics::Frame* markerFrame,*/
 			const std::vector<rw::kinematics::Frame*>& sensorFrames,
 			const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
 
@@ -59,10 +62,23 @@ public:
 
 	static void set(WorkCellCalibration::Ptr calibration, rw::common::PropertyMap& propertyMap);
 
+	FixedFrameCalibration::Ptr getFixedFrameCalibrationForSensor(const std::string& sensor);
+	FixedFrameCalibration::Ptr getFixedFrameCalibrationForMarker(const std::string& marker);
+
+
+	std::vector<DeviceMarkerPair> getDeviceMarkerPairs() const {
+		return _deviceMarkerPairs;
+	}
+
+	void prependCalibration(WorkCellCalibration::Ptr calibration);
+
 private:
+	std::vector<DeviceMarkerPair> _deviceMarkerPairs;
 	//rw::models::SerialDevice::Ptr _device;
 	//FixedFrameCalibration::Ptr _sensorFrameCalibration;
 	//FixedFrameCalibration::Ptr _endCalibration;
+	std::map<std::string, FixedFrameCalibration::Ptr> _sensorFrameCalibrations;
+	std::map<std::string, FixedFrameCalibration::Ptr> _markerCalibrations;
 	CompositeCalibration<FixedFrameCalibration>::Ptr _fixedFrameCalibrations;
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr _compositeLinkCalibration;
 	CompositeCalibration<JointEncoderCalibration>::Ptr _compositeJointCalibration;

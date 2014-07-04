@@ -52,11 +52,13 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 
 	//std::cout<<"Jacobian = "<<_jacobian.rows()<<" "<<_jacobian.cols()<<std::endl;
 	//std::cout<<_jacobian<<std::endl;
-	//std::cout<<"Residuals = "<<_residuals<<std::endl;
+	for (size_t i = 0; i<12; i++)
+		std::cout<<"Residuals["<<i<<"] = "<<_residuals[i]<<std::endl;
+
 	std::cout<<"||Redisuals|| = "<<_residuals.norm()<<std::endl;
 	 
 	// Compute step (solve Jacobian * step = residuals).
-	_step = _jacobianSvd.solve(-_residuals);
+	_step = _jacobianSvd.solve(_residuals);
 	//std::cout<<"ParameterCount = "<<_step.size()<<std::endl;
 	// Apply step.
 	_system->takeStep(_step);
@@ -69,15 +71,17 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 	const bool isSingular = (singularValues.rows() != _jacobianSvd.nonzeroSingularValues());
 	const double residualNorm = _residuals.norm();
 	const double stepNorm = _step.norm();
-	//std::cout<<"Step = "<<_step<<std::endl;
+	//std::cout<<"Step = "<<_step<<std::endl;	
 	std::cout<<"Step Size= "<<stepNorm<<std::endl;
+	_system->computeResiduals(_residuals);
+	std::cout<<"||Redisuals After|| = "<<_residuals.norm()<<std::endl;
 	const bool isConverged = _step.norm() <= stepConvergenceTolerance;
 	NLLSIterationLog iterationLog(iterationNumber, conditionNumber, isSingular, residualNorm, stepNorm, isConverged);
 	_iterationLogs.push_back(iterationLog);
 
-	//std::cout<<"Press enter to continue..."<<std::endl;
-	//char ch[4];
-	//std::cin.getline(ch, 1);
+	std::cout<<"Press enter to continue..."<<std::endl;
+	char ch[4];
+	std::cin.getline(ch, 1);
 
 	// Verify iteration.
 	if (isSingular)
@@ -96,7 +100,7 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 void NLLSNewtonSolver::solve() {
 	while (true) {
 		NLLSIterationLog iterationLog = iterate();
-
+		//return;
 		//std::cout << "Step: " << _step.transpose() << std::endl;
 		//std::cout << "Iteration " << iterationLog.getIterationNumber() << " completed. Singular: " << (iterationLog.isSingular() ? "Yes" : "No")
 		//	<< ". Condition: " << iterationLog.getConditionNumber() << ". ||Residuals||: " << iterationLog.getResidualNorm() << ". ||Step||: "

@@ -112,7 +112,7 @@ void XMLCalibrationMeasurementFile<INFOSERIALIZER>::addMeasurementToDomElement(c
 
 	if (measurement->hasCovarianceMatrix()) {
 		DOMElem::Ptr elmCovarianceMatrix = elmMeasurement->addChild(COVARIANCE_MATRIX_ID);
-		Eigen::Matrix<double, 6, 6> covarianceMatrix = measurement->getCovarianceMatrix();
+		Eigen::MatrixXd covarianceMatrix = measurement->getCovarianceMatrix();
 		DOMBasisTypes::write( covarianceMatrix, elmCovarianceMatrix, false);
 	}
 
@@ -179,10 +179,11 @@ CalibrationMeasurement::Ptr XMLCalibrationMeasurementFile<INFOSERIALIZER>::conve
 		measurement->setSensorFrameName(sensorFrame);
 	}
 
-	Eigen::Matrix<double, 6, 6> covariance = Eigen::Matrix<double, 6, 6>::Identity();
+	Eigen::MatrixXd covariance = Eigen::MatrixXd::Identity(6,6);
 	if( element->hasChild(COVARIANCE_MATRIX_ID) ){
 		DOMElem::Ptr elmMatrix = element->getChild(COVARIANCE_MATRIX_ID);
 		covariance = DOMBasisTypes::readMatrix(elmMatrix);
+		measurement->setCovarianceMatrix(covariance);
 	} 
 
 	
