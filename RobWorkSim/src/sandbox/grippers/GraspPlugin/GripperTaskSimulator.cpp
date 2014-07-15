@@ -331,7 +331,7 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << "CALCULATING STRESS - " << endl;
 	double maxstress = _gripper->getMaxStress();
 	double penaltyS = maxstress / _td->getStressLimit();
-	if (penaltyS > 1.0) penaltyS = 1.0;
+	//if (penaltyS > 1.0) penaltyS = 1.0;
 	
 	DEBUG << " * Max stress: " << maxstress << endl;
 	DEBUG << " * Penalty (stress): " << penaltyS << endl;
@@ -339,16 +339,16 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << "CALCULATING VOLUME - " << endl;
 	double volume = _gripper->getVolume();
 	double penaltyV = 1e3 * volume;
-	if (penaltyV > 1.0) penaltyV = 1.0;
+	//if (penaltyV > 1.0) penaltyV = 1.0;
 	
 	DEBUG << " * Volume: " << volume << endl;
 	DEBUG << " * Penalty (volume): " << penaltyV << endl;
 	
 	DEBUG << "CALCULATING PENALTY - " << endl;
 	double penalty = w.stress * penaltyS + w.volume * penaltyV;
-	if (penalty > 1.0) {
-		penalty = 1.0;
-	}
+	//if (penalty > 1.0) {
+	//	penalty = 1.0;
+	//}
 	DEBUG << " * Penalty (volume+stress): " << penalty << endl;
 	
 	DEBUG << "CALCULATING QUALITY - " << endl;
