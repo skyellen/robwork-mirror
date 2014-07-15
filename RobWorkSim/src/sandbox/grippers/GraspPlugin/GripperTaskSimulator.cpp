@@ -338,7 +338,7 @@ void GripperTaskSimulator::evaluateGripper()
 	
 	DEBUG << "CALCULATING VOLUME - " << endl;
 	double volume = _gripper->getVolume();
-	double penaltyV = 1e3 * volume;
+	double penaltyV = volume;
 	//if (penaltyV > 1.0) penaltyV = 1.0;
 	
 	DEBUG << " * Volume: " << volume << endl;
