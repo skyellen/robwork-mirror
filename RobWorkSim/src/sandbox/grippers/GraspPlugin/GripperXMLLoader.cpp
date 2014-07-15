@@ -163,6 +163,14 @@ void readResult(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 		result.maxstress = 0.0;
 	}
 	
+	// volume is optional
+	boost::optional<PTree&> volumeNode = tree.get_child_optional("Volume");
+	if (volumeNode) {
+		result.volume = XMLHelpers::readDouble(volumeNode.get());
+	} else {
+		result.volume = 0.0;
+	}
+	
 	DEBUG << "Read gripper quality:" << endl;
 	DEBUG << result << endl;
 }
@@ -257,6 +265,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Result.Quality", q.quality);
 	tree.put("Gripper.Result.Robustness", q.robustness);
 	tree.put("Gripper.Result.MaxStress", q.maxstress);
+	tree.put("Gripper.Result.Volume", q.volume);
 	
 	try {
 		boost::property_tree::xml_writer_settings<char> settings('\t', 1);

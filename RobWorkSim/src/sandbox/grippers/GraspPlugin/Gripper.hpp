@@ -77,6 +77,7 @@ struct GripperQuality
 				<< "- topwrench= " << q.topwrench << '\n'
 				<< "- robustness= " << q.robustness << '\n'
 				<< "- maxstress= " << q.maxstress << '\n'
+				<< "- volume= " << q.volume << '\n'
 				<< "- quality= " << q.quality << std::endl;
 				
 		return stream;
