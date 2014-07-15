@@ -173,6 +173,13 @@ double Gripper::getMaxStress() const
 
 
 
+double Gripper::getVolume() const
+{
+	return _jawParameters(1) * _jawParameters(2) * _jawParameters(3);
+}
+
+
+
 /*void Gripper::loadTasks(std::string filename)
 {
 	if (filename.empty()) return;

@@ -95,6 +95,7 @@ struct GripperQuality
 	double topwrench; /// Average quality of top 20% of grasps.
 	double robustness; /// Robustness of succesful grasps.
 	double maxstress; /// Max. stress a gripper takes.
+	double volume; /// The volume of the gripper's jaw.
 	double quality; /// Ultimate measurement of gripper quality.
 };
 
@@ -313,6 +314,15 @@ class Gripper // : public TreeDevice
 		 * @return Stress.
 		 */
 		double getMaxStress() const;
+		
+		/**
+		 * @brief Calculates the volume of the gripper's jaw outline.
+		 * 
+		 * This is an estimation of material neccesary to make the finger.
+		 * 
+		 * @return Volume [m^3].
+		 */
+		double getVolume() const;
 		
 	// friends
 		friend class rw::loaders::GripperXMLLoader;

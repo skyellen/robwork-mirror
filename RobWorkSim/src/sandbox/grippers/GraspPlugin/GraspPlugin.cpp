@@ -426,10 +426,6 @@ void GraspPlugin::updateGripper()
 	getRobWorkStudio()->getWorkCellScene()->updateSceneGraph(_td->getInitState());
 	getRobWorkStudio()->setWorkcell(_wc);
 	
-	// update gripper TCP (again...)
-	//MovableFrame* tcp = (MovableFrame*)_td->getGripperTCP();
-	//tcp->setTransform(_gripper->getTCP(), _td->getInitState());
-	
 	getRobWorkStudio()->setState(_td->getInitState());
 }
 
@@ -707,11 +703,11 @@ void GraspPlugin::test()
 	
 	static int npic = 0;
 	
-	stringstream sstr;
+	/*stringstream sstr;
 	sstr << npic++;
 	string filename = _wc->getName() + "_" + _gripper->getName() + "_" + sstr.str() + ".png";
 	log().info() << "Saving image " + filename + "..." << endl;
-	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
+	getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));*/
 	
 	// let's calculate gripper's hights...
 	/*ofstream file;
@@ -737,6 +733,22 @@ void GraspPlugin::test()
 	/* LET'S TEST ALIGNMENTS */
 	/*Frame* frame = _td->getTargetFrame();
 	log().info() << RPY<>(frame->getTransform(getRobWorkStudio()->getState()).R()) << endl;*/
+	
+	// sequence gripper pictures
+	BOOST_FOREACH (Gripper::Ptr g, _gripperList) {
+		// load gripper
+		_gripper = g;
+		updateGripper();
+		
+		// make picture
+		//npic = 0;
+		
+		//stringstream sstr;
+		//sstr << npic++;
+		string filename = _gripper->getName() + ".png";
+		log().info() << "Saving image " + filename + "..." << endl;
+		getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
+	}
 }
 
 
