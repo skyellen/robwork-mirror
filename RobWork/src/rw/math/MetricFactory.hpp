@@ -316,7 +316,7 @@ namespace rw { namespace math {
 
             T doDistance(const rw::math::Transform3D<T>& a, const rw::math::Transform3D<T>& b) const
             {
-                return doDistance(a*inverse(b));
+                return doDistance(inverse(b)*a);
             }
     private:
         T _posWeight;
