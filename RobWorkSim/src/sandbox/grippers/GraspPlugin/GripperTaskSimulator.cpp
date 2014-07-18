@@ -352,6 +352,14 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << " * Penalty (volume+stress): " << penalty << endl;
 	
 	DEBUG << "CALCULATING QUALITY - " << endl;
+	DEBUG << " * Weights: " << endl;
+	DEBUG << "  - Wsuccess= " << w.success << endl;
+	DEBUG << "  - Wcoverage= " << w.coverage << endl;
+	DEBUG << "  - Wwrench= " << w.wrench << endl;
+	DEBUG << "  - Wtopwrench= " << w.topwrench << endl;
+	DEBUG << "  - Wstress= " << w.stress << endl;
+	DEBUG << "  - Wvolume= " << w.volume << endl;
+	
 	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench + w.topwrench * topwrench - penalty;
 	if (quality < 0.0) quality = 0.0;
 	
