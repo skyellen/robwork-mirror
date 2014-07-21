@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 		("opening,M", value<double>(), "max. jaws opening")
 		("stroke,s", value<double>(), "gripper stroke")
 		("force,f", value<double>(), "max. gripping force")
+		("quality,q", value<double>(), "quality")
 		("out,o", value<string>(), "output file")
 		("stl", "save base & jaw meshes to STL")
 	;
@@ -98,6 +99,10 @@ int main(int argc, char* argv[])
 		
 		if (vm.count("force")) {
 			gripper->setForce(vm["force"].as<double>());
+		}
+		
+		if (vm.count("quality")) {
+			gripper->getQuality().quality = vm["force"].as<double>();
 		}
 		
 		if (vm.count("stl")) {
