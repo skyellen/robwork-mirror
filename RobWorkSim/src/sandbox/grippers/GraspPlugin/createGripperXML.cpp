@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 	// parameters
 	Q jawParams(10, 0, 0.1, 0.025, 0.02, 0, 0*Deg2Rad, 0, 0, 90*Deg2Rad, 0);
 	Q baseParams(3, 0.15, 0.1, 0.05);
+	Q qualities(5, 0.0, 0.0, 0.0, 0.0, 0.0);
 	
 	// program options
 	options_description desc("Allowed options");
@@ -38,7 +39,7 @@ int main(int argc, char* argv[])
 		("opening,M", value<double>(), "max. jaws opening")
 		("stroke,s", value<double>(), "gripper stroke")
 		("force,f", value<double>(), "max. gripping force")
-		("quality,q", value<double>(), "quality")
+		("quality,q", value<vector<double> >()->multitoken(), "quality")
 		("out,o", value<string>(), "output file")
 		("stl", "save base & jaw meshes to STL")
 	;
@@ -102,7 +103,12 @@ int main(int argc, char* argv[])
 		}
 		
 		if (vm.count("quality")) {
-			gripper->getQuality().quality = vm["force"].as<double>();
+			qualities = Q(vm["quality"].as<vector<double> >());
+			gripper->getQuality().success = qualities(0);
+			gripper->getQuality().coverage = qualities(1);
+			gripper->getQuality().wrench = qualities(2);
+			gripper->getQuality().topwrench = qualities(3);
+			gripper->getQuality().quality = qualities(4);
 		}
 		
 		if (vm.count("stl")) {
