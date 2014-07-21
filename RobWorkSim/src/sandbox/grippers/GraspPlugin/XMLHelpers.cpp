@@ -33,8 +33,9 @@ std::pair<bool, double> XMLHelpers::toDouble(const std::string& str)
 {
 	std::pair<bool, double> nothing(false, 0);
 	istringstream buf(str);
-	double x;
-	buf >> x;
+	string number;
+	buf >> number;
+	double x = boost::lexical_cast<double>(number);
 	if (!buf) return nothing;
 	string rest;
 	buf >> rest;
