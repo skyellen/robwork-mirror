@@ -46,6 +46,7 @@
 #include "./math/Rotation3D.hpp"
 #include "./math/Rotation3DVector.hpp"
 #include "./math/RPY.hpp"
+#include "./math/Statistics.hpp"
 #include "./math/Transform2D.hpp"
 #include "./math/Transform3D.hpp"
 #include "./math/Vector2D.hpp"
