@@ -16,9 +16,9 @@ MATLAB provides good support for Java.
 
 # Python interface # 	{#sec_robwork_python}
 
-Make sure you have both swig and python installed. You can check this when running
-cmake. There should be lines like: "RobWork: python bindings ENABLED" and
-"RobWorkStudio: python bindings ENABLED"
+Make sure you have both swig and python installed. If you are using Ubuntu, make sure to install python-dev package as well.
+You can check if Python interfaces for RobWork are generated when running cmake. There should be lines like: "RobWork: python bindings ENABLED" and
+"RobWorkStudio: python bindings ENABLED".
 
 When compiling RobWork, RobWorkStudio and RobWorkSim the python interfaces will be
 generated. These consist of two files per project and they are placed in the
