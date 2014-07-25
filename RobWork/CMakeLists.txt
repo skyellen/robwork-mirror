@@ -25,7 +25,7 @@ SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(CMAKE_MODULE_PATH ${RW_ROOT}/cmake/Modules ${CMAKE_MODULE_PATH})
 INCLUDE(${RW_ROOT}/cmake/RobWorkMacros.cmake)
 
-RW_INIT_PROJECT(${RW_ROOT} RobWork RW ${ROBWORK_VERSION})
+RW_INIT_PROJECT(${RW_ROOT} RobWork RW ${ROBWORK_VERSION}) 
 RW_GET_OS_INFO()
 RW_SET_INSTALL_DIRS(RobWork RW)
 SET(RW_EXT_INSTALL_DIR ${INCLUDE_INSTALL_DIR}/ext/)
@@ -50,6 +50,9 @@ ADD_SUBDIRECTORY(src)
 
 RW_SYS_INFO(INFO)
 MESSAGE(STATUS "RobWork: system id=${INFO} ")
+
+# Compile the RobWork tools folder
+ADD_SUBDIRECTORY(tools)
 
 #############################################################
 # setup testing
@@ -226,7 +229,7 @@ IF(RW_BUILD_TESTS)
     ELSEIF(${MSVC_VERSION} EQUAL 1600)
       SET(MSVC_SOLUTION_DIR ${RW_ROOT}/projects/VisualStudio2010/RobWork)
     ENDIF()
-    SET(MSVC_SOLUTION_FILE ${MSVC_SOLUTION_DIR}/RobWork.sln)
+    SET(MSVC_SOLUTION_FILE ${MSVC_SOLUTION_DIR}/RobWork.sln) 
     
     # Set up tests for enclosed solutions
     IF(EXISTS ${MSVC_SOLUTION_FILE})
@@ -246,6 +249,9 @@ IF(RW_BUILD_TESTS)
     ENDIF()
   ENDIF()
 ENDIF()
+
+
+
 
 
 string(REPLACE ";" "\n" TOFILE_DST "$ENV{RW_LIB_FILES_CPP}")
