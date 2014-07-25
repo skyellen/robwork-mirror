@@ -26,12 +26,12 @@ SET(TEST_LIBRARIES
   ${RW_PATHPLANNERS_LIBRARY_LIST}
   ${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
   ${ROBWORK_LIBRARIES}
-)
+) 
 
 SET(MATH_TEST_SRC 
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
-  math/Pose6DTest.cpp
+  math/Pose6DTest.cpp 
   math/QuaternionTest.cpp
   math/Rotation3DTest.cpp
   math/RPYTest.cpp
@@ -155,19 +155,6 @@ TARGET_LINK_LIBRARIES( rw_calibration-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_calibration-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_calibration-test ${DEFAULT_TEST_ARGS} )
 ADD_DEPENDENCIES( rw_calibration-test ${TEST_DEPENDENCIES} )
 SET( CALIBRATION_TEST rw_calibration-test )
-
-
-#ADD_EXECUTABLE( rw_calibration-tool calibration/CalibrationTool.cpp )
-#TARGET_LINK_LIBRARIES( rw_calibration-tool ${TEST_LIBRARIES} )
-#ADD_DEPENDENCIES( rw_calibration-tool ${TEST_DEPENDENCIES} )
-
-ADD_EXECUTABLE( rw_calibration-tool2 calibration/CalibrationTool2.cpp )
-TARGET_LINK_LIBRARIES( rw_calibration-tool2 ${TEST_LIBRARIES} )
-ADD_DEPENDENCIES( rw_calibration-tool2 ${TEST_DEPENDENCIES} )
-
-ADD_EXECUTABLE( rw_calibration-mtool calibration/MeasurementTool.cpp )
-TARGET_LINK_LIBRARIES( rw_calibration-mtool ${TEST_LIBRARIES} )
-ADD_DEPENDENCIES( rw_calibration-mtool ${TEST_DEPENDENCIES} )
 
 
 ADD_CUSTOM_TARGET(rw_all-tests ctest -V 
