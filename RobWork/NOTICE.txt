@@ -10,11 +10,7 @@
    RobWork depends on
    
    Boost: www.boost.org
-   
-   Boost Bindings for Blas/Lapack: www.boost.org (available in sandbox) 
-   
-   Blas/Lapack: http://www.netlib.org/ 
-   
+
    Lua: Lua.org, PUC-Rio (http://www.lua.org/)
    
    ToLua: Waldemar Celes, http://www.tecgraf.puc-rio.br/~celes/tolua/  
