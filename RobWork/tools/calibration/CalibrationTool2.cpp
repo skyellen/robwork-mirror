@@ -9,7 +9,7 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rwlibs::calibration;
 
-class CalibrationOptionParser {
+class CalibrationOptionParser { 
 public:
 	CalibrationOptionParser() : _optionsDescription("Options") {
 		_optionsDescription.add_options()
@@ -358,7 +358,7 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout.flush();
 	WorkCellCalibrator::Ptr workcellCalibrator = rw::common::ownedPtr(new WorkCellCalibrator(workCell, workcellCalibration, workcellJacobian));
 	workcellCalibrator->setMeasurements(calibrationMeasurements);
-	workcellCalibrator->setWeightingMeasurements(true || isWeightingMeasurements);
+	workcellCalibrator->setUseWeightedMeasurements(true || isWeightingMeasurements);
 	std::cout << "Initialized." << std::endl;
 	  
 	try {
@@ -372,7 +372,7 @@ int main(int argumentCount, char** argumentArray) {
 		workcellCalibration->getFixedFrameCalibrations()->getCalibration(0)->setEnabled(true && isBaseCalibrationEnabled);
 		workcellCalibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(true && isEndCalibrationEnabled);
 		workcellCalibration->getCompositeLinkCalibration()->setEnabled(true && isLinkCalibrationEnabled);
-		workcellCalibration->getCompositeJointCalibration()->setEnabled(true && isJointCalibrationEnabled);
+		workcellCalibration->getCompositeJointEncoderCalibration()->setEnabled(true && isJointCalibrationEnabled);
 		
 		std::cout<<"Calibration Measurements: "<<std::endl;
 		printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
@@ -505,7 +505,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 		}
 	}
 
-	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
+	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
 		for (size_t calibrationIndex = 0; calibrationIndex < compositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 			JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);

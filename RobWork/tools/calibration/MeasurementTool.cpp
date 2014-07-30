@@ -172,7 +172,7 @@ int main(int argumentCount, char** arguments) {
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
-	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
+	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointEncoderCalibration();
 	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();

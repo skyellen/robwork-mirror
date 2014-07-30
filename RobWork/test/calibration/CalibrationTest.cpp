@@ -1,9 +1,20 @@
-/*
-* CalibrationTest.cpp
-*
-*  Created on: Sep 7, 2012
-*      Author: bing
-*/
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 
 #include "../TestSuiteConfig.hpp"
 #include "MultivariateNormalDistribution.hpp"
@@ -54,11 +65,11 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	BOOST_REQUIRE(!measurementFrame.isNull());
 
 	// Find existing calibration.
-	WorkCellCalibration::Ptr workCellCalibrationExisting = WorkCellCalibration::get(serialDevice);
+	//WorkCellCalibration::Ptr workCellCalibrationExisting = WorkCellCalibration::get(serialDevice);
 	//BOOST_CHECK(!serialDeviceCalibrationExisting.isNull());
-	if (!workCellCalibrationExisting.isNull())
-		workCellCalibrationExisting->revert();
-
+	//if (!workCellCalibrationExisting.isNull())
+	//	workCellCalibrationExisting->revert();
+	 
 	// Setup artificial calibration.
 	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1; 
 	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
@@ -68,7 +79,11 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	std::vector<rw::kinematics::Frame*> sensorFrames;
 	sensorFrames.push_back(sensorFrame1.get());
 	sensorFrames.push_back(sensorFrame2.get());
-	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, measurementFrame.get(), sensorFrames, encoderCorrectionFunctions)));
+
+	std::vector<WorkCellCalibration::DeviceMarkerPair> deviceMarkerPairs;
+	deviceMarkerPairs.push_back(std::make_pair(serialDevice, measurementFrame.get()));
+
+	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames, encoderCorrectionFunctions)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0), 
 																														  rw::math::RPY<>(1.7 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad, -2.0 * rw::math::Deg2Rad)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0), 
@@ -93,7 +108,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
 		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
-	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointCalibration();
+	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointEncoderCalibration();
 	for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
@@ -111,9 +126,8 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	BOOST_CHECK_EQUAL(measurements.size(), measurementCount);
 
 	artificialCalibration->revert();
-
 	//// Initialize calibration, jacobian and calibrator.
-	WorkCellCalibration::Ptr calibration(rw::common::ownedPtr(new WorkCellCalibration(serialDevice, measurementFrame.get(), sensorFrames, encoderCorrectionFunctions)));
+	WorkCellCalibration::Ptr calibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames, encoderCorrectionFunctions)));
 	WorkCellJacobian::Ptr jacobian(rw::common::ownedPtr(new WorkCellJacobian(calibration)));
 	WorkCellCalibrator::Ptr calibrator(rw::common::ownedPtr(new WorkCellCalibrator(workCell, calibration, jacobian)));
 	calibrator->setMeasurements(measurements);
@@ -123,7 +137,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	calibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(true);
 	calibration->getFixedFrameCalibrations()->getCalibration(2)->setEnabled(true);
 	calibration->getCompositeLinkCalibration()->setEnabled(true);
-	calibration->getCompositeJointCalibration()->setEnabled(true);
+	calibration->getCompositeJointEncoderCalibration()->setEnabled(true);
 
 
 	try {
@@ -172,7 +186,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 			}
 		}
 	}
-	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
+	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
 		for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 			JointEncoderCalibration::Ptr calibration = compositeJointCalibration->getCalibration(calibrationIndex);
