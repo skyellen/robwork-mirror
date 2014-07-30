@@ -49,7 +49,7 @@ WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr
 	//_endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(device->getEnd(), false));
 	
 		_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
-		_compositeJointCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
+		_compositeJointEncoderCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
 
 		std::vector<rw::models::Joint*> joints = deviceMarkerPair.first->getJoints();
 		for (std::vector<rw::models::Joint*>::iterator jointIterator = joints.begin(); jointIterator != joints.end(); jointIterator++) {
@@ -77,13 +77,13 @@ WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr
 
 			// Add joint calibrations.
 			JointEncoderCalibration::Ptr jointCalibration = rw::common::ownedPtr(new JointEncoderCalibration(deviceMarkerPair.first.cast<rw::models::JointDevice>(), joint));
-			_compositeJointCalibration->addCalibration(jointCalibration);
+			_compositeJointEncoderCalibration->addCalibration(jointCalibration);
 		}
 	}
 
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_fixedFrameCalibrations.cast<Calibration>());
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeLinkCalibration.cast<Calibration>());
-	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointCalibration.cast<Calibration>());
+	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointEncoderCalibration.cast<Calibration>());
 }
 
 		
@@ -98,7 +98,7 @@ WorkCellCalibration::WorkCellCalibration(/*rw::models::SerialDevice::Ptr device,
 			//_endCalibration(endCalibration),
 			_fixedFrameCalibrations(fixedFrameCalibrations),
 			_compositeLinkCalibration(compositeLinkCalibration),
-			_compositeJointCalibration(compositeJointCalibration)
+			_compositeJointEncoderCalibration(compositeJointCalibration)
 {
 	//_fixedFrameCalibrations = ownedPtr(new CompositeCalibration<FixedFrameCalibration>());
 	//_fixedFrameCalibrations->addCalibration(sensorFrameCalibration);
@@ -107,7 +107,7 @@ WorkCellCalibration::WorkCellCalibration(/*rw::models::SerialDevice::Ptr device,
 	//((CompositeCalibration<Calibration>*) this)->addCalibration(_sensorFrameCalibration.cast<Calibration>());
 	//((CompositeCalibration<Calibration>*) this)->addCalibration(_endCalibration.cast<Calibration>());
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeLinkCalibration.cast<Calibration>());
-	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointCalibration.cast<Calibration>());
+	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointEncoderCalibration.cast<Calibration>());
 }
 
 WorkCellCalibration::~WorkCellCalibration() {
@@ -153,10 +153,11 @@ CompositeCalibration<ParallelAxisDHCalibration>::Ptr WorkCellCalibration::getCom
 	return _compositeLinkCalibration;
 }
  
-CompositeCalibration<JointEncoderCalibration>::Ptr WorkCellCalibration::getCompositeJointCalibration() const {
-	return _compositeJointCalibration;
+CompositeCalibration<JointEncoderCalibration>::Ptr WorkCellCalibration::getCompositeJointEncoderCalibration() const {
+	return _compositeJointEncoderCalibration;
 }
 
+/*
 WorkCellCalibration::Ptr WorkCellCalibration::get(rw::models::SerialDevice::Ptr device) {
 	return get(device->getPropertyMap());
 }
@@ -181,7 +182,7 @@ void WorkCellCalibration::set(WorkCellCalibration::Ptr calibration, rw::common::
 	propertyMap.add<WorkCellCalibration::Ptr>("Calibration", "Calibration of SerialDevice", calibration);
 }
 
-
+*/
 void WorkCellCalibration::prependCalibration(WorkCellCalibration::Ptr calibration) 
 {
 	typedef std::map<std::string, FixedFrameCalibration::Ptr> StringCalibMap;

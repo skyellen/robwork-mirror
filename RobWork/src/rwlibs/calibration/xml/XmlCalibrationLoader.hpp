@@ -23,14 +23,26 @@
 
 namespace rwlibs {
 namespace calibration {
+/** @addtogroup calibration */
+/*@{*/
+
 
 	/**
-	 * @brief loads a calibration file for a serialdevice
+	 * @brief Loads a calibration file for a workcell.
+	 * 
+	 * The file needs to satisfy the XML format of the calibration
 	 */
 	class XmlCalibrationLoader {
 	public:
+		/**
+		* @brief Loads calibration file.
+		* @param workcell [in] Workcell to which the calibration are associated
+		* @param filename [in] Name of the file to load
+		*/
 		static WorkCellCalibration::Ptr load(rw::models::WorkCell::Ptr workcell, std::string fileName);
 	};
+
+	/* @} */
 
 }
 }

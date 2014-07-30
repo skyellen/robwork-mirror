@@ -1,7 +1,20 @@
-/*
- * WorkCellJacobian.cpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
-  */
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 
 #include "WorkCellJacobian.hpp"
 
@@ -10,11 +23,8 @@
 namespace rwlibs {
 namespace calibration {
 
-using namespace rwlibs::calibration;
 
 WorkCellJacobian::WorkCellJacobian(WorkCellCalibration::Ptr calibration) {
-//	_baseJacobian = rw::common::ownedPtr(new FixedFrameJacobian(calibration->getBaseCalibration()));
-//	_endJacobian = rw::common::ownedPtr(new FixedFrameJacobian(calibration->getEndCalibration()));
 
 	_compositeFixedFrameJacobian = rw::common::ownedPtr(new CompositeJacobian<FixedFrameJacobian>());
 	CompositeCalibration<FixedFrameCalibration>::Ptr compositeFixedFrameCalibration = calibration->getFixedFrameCalibrations();
@@ -32,40 +42,24 @@ WorkCellJacobian::WorkCellJacobian(WorkCellCalibration::Ptr calibration) {
 		_compositeLinkJacobian->addJacobian(jacobian);
 	}
 
-	_compositeJointJacobian = rw::common::ownedPtr(new CompositeJacobian<JointEncoderJacobian>());
-	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
+	_compositeJointEncoderJacobian = rw::common::ownedPtr(new CompositeJacobian<JointEncoderJacobian>());
+	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	for (int calibrationIndex = 0; calibrationIndex < compositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);
 		JointEncoderJacobian::Ptr jacobian = rw::common::ownedPtr(new JointEncoderJacobian(jointCalibration));
-		_compositeJointJacobian->addJacobian(jacobian);
+		_compositeJointEncoderJacobian->addJacobian(jacobian);
 	}
 
-	//addJacobian(_baseJacobian.cast<Jacobian>());
-	//addJacobian(_endJacobian.cast<Jacobian>());
 	addJacobian(_compositeFixedFrameJacobian.cast<Jacobian>());
 	addJacobian(_compositeLinkJacobian.cast<Jacobian>());
-	addJacobian(_compositeJointJacobian.cast<Jacobian>());
+	addJacobian(_compositeJointEncoderJacobian.cast<Jacobian>());
 }
 
 WorkCellJacobian::~WorkCellJacobian() {
 
 }
 
-FixedFrameJacobian::Ptr WorkCellJacobian::getBaseJacobian() const {
-	return _baseJacobian;
-}
 
-FixedFrameJacobian::Ptr WorkCellJacobian::getEndJacobian() const {
-	return _endJacobian;
-}
-
-CompositeJacobian<ParallelAxisDHJacobian>::Ptr WorkCellJacobian::getCompositeLinkJacobian() const {
-	return _compositeLinkJacobian;
-}
-
-CompositeJacobian<JointEncoderJacobian>::Ptr WorkCellJacobian::getCompositeJointJacobian() const {
-	return _compositeJointJacobian;
-}
 
 }
 }

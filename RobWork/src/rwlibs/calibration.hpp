@@ -26,12 +26,9 @@
 #include "./calibration/FixedFrameJacobian.hpp"
 #include "./calibration/Jacobian.hpp"
 #include "./calibration/JacobianBase.hpp"
-#include "./calibration/SerialDeviceCalibration.hpp"
-#include "./calibration/SerialDeviceCalibrator.hpp"
-#include "./calibration/SerialDeviceJacobian.hpp"
-#include "./calibration/SerialDevicePoseMeasurement.hpp"
 #include "./calibration/WorkCellCalibrator.hpp"
 #include "./calibration/WorkCellCalibration.hpp"
 #include "./calibration/WorkCellJacobian.hpp"
-
+#include "./calibration/WorkCellExtrinsicCalibrator.hpp"
+#include "./calibration/CalibrationUtils.hpp"
 #endif /* RWLIBS_CALIBRATION_HPP_ */

@@ -48,8 +48,14 @@ protected:
 	 */
 	JacobianBase(Calibration::Ptr calibration);
 
+	/**
+	 * @copydoc Jacobian::doComputeJacobian()
+	 */
 	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state) = 0;
 	
+	/**
+	 * @brief Jacobian::doTakeStep()
+	 */
 	virtual void doTakeStep(const Eigen::VectorXd& step);
 
 private:

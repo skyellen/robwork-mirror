@@ -42,8 +42,7 @@ namespace rwlibs {
 			return _variance != 0.0;
 		}
 
-		double CalibrationParameter::getVariance() const {
-			RW_ASSERT(hasVariance());
+		double CalibrationParameter::getVariance() const {			
 			return _variance;
 		}
 
@@ -67,7 +66,6 @@ namespace rwlibs {
 		}
 
 		CalibrationParameter& CalibrationParameter::operator =(const double& value) {
-			RW_ASSERT(isEnabled());
 			setValue(value);
 			return *this;
 		}
@@ -77,7 +75,6 @@ namespace rwlibs {
 		}
 
 		CalibrationParameter CalibrationParameter::operator +=(const double& value) {
-			RW_ASSERT(isEnabled());
 			this->operator=(this->operator+(value));
 			return *this;
 		}

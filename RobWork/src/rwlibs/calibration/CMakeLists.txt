@@ -16,8 +16,7 @@ MESSAGE("CALIBRATION SET FILES")
 		nlls/NLLSNewtonSolver.cpp
 		nlls/NLLSSystem.cpp
 		xml/XmlCalibrationLoader.cpp
-        xml/XmlCalibrationSaver.cpp
-        xml/XmlMeasurementFile.cpp
+        xml/XmlCalibrationSaver.cpp        
 		xml/XMLCalibrationMeasurementFile.cpp
 		JacobianBase.cpp
 		Calibration.cpp
@@ -28,7 +27,6 @@ MESSAGE("CALIBRATION SET FILES")
 		JointEncoderJacobian.cpp 
 		FixedFrameCalibration.cpp
 		FixedFrameJacobian.cpp
-		SerialDevicePoseMeasurement.cpp
 		WorkCellCalibration.cpp
 		WorkCellCalibrator.cpp
 		WorkCellExtrinsicCalibrator.cpp
@@ -55,13 +53,11 @@ MESSAGE("CALIBRATION SET FILES")
 		CalibrationParameterSet.hpp
 		CompositeCalibration.hpp
 		CompositeJacobian.hpp
-		EigenTransformPlugin.hpp
 		FixedFrameCalibration.hpp
 		FixedFrameJacobian.hpp
 		Jacobian.hpp
 		JointEncoderCalibration.hpp
 		JointEncoderJacobian.hpp
-		SerialDevicePoseMeasurement.hpp
 		WorkCellCalibration.hpp
 		WorkCellCalibrator.hpp
 		WorkCellExtrinsicCalibrator.hpp

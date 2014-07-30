@@ -26,6 +26,9 @@
 namespace rwlibs {
 namespace calibration {
 
+/** @addtogroup calibration */
+/*@{*/
+
 
 /**
  * @brief Interface specification for serialization of detection information
@@ -224,6 +227,8 @@ std::vector<CalibrationMeasurement::Ptr> XMLCalibrationMeasurementFile<INFOSERIA
 	return measurements;
 }
 
+
+/* @} */
 
 } //end namespace calibration
 } //end namespace rwlibs

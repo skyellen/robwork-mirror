@@ -9,12 +9,12 @@
 
 namespace rwlibs {
 	namespace calibration {
-		int FixedFrameCalibration::PARAMETER_X = 0;
-		int FixedFrameCalibration::PARAMETER_Y = 1;
-		int FixedFrameCalibration::PARAMETER_Z = 2;
-		int FixedFrameCalibration::PARAMETER_ROLL = 3;
-		int FixedFrameCalibration::PARAMETER_PITCH = 4;
-		int FixedFrameCalibration::PARAMETER_YAW = 5;
+		//int FixedFrameCalibration::PARAMETER_X = 0;
+		//int FixedFrameCalibration::PARAMETER_Y = 1;
+		//int FixedFrameCalibration::PARAMETER_Z = 2;
+		//int FixedFrameCalibration::PARAMETER_ROLL = 3;
+		//int FixedFrameCalibration::PARAMETER_PITCH = 4;
+		//int FixedFrameCalibration::PARAMETER_YAW = 5;
 
 		FixedFrameCalibration::FixedFrameCalibration(rw::kinematics::FixedFrame::Ptr frame) :
 			CalibrationBase(CalibrationParameterSet(6)), _frame(frame)		{

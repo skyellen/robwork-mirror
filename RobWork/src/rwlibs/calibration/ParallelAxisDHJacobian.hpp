@@ -1,6 +1,19 @@
-/*
- * DHLinkJacobian.hpp
- */
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #ifndef RWLIBS_CALIBRATION_PARALLELAXISDHJACOBIAN_HPP_
 #define RWLIBS_CALIBRATION_PARALLELAXISDHJACOBIAN_HPP_
@@ -17,24 +30,41 @@
 namespace rwlibs {
 namespace calibration {
 
+/** @addtogroup calibration */
+/*@{*/
 
+/**
+ * @brief Implementation of Jacobian for the ParallelAxisDHCalibration
+ */
 class ParallelAxisDHJacobian: public JacobianBase {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+	/** @brief Smart pointer declaration */
 	typedef rw::common::Ptr<ParallelAxisDHJacobian> Ptr;
 
+	/**
+	 * @brief Constructs Jacobian based on \bcalibration
+	 */
 	ParallelAxisDHJacobian(ParallelAxisDHCalibration::Ptr calibration);
 
+	/**
+	 * @brief Destructor
+	 */
 	virtual ~ParallelAxisDHJacobian();
 
 protected:
+	/**
+	 * @copydoc Jacobian::doComputeJacobian()
+	 */
 	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
 
 private:
 	ParallelAxisDHCalibration::Ptr _calibration;
 	rw::models::Joint::Ptr _joint;
 };
+
+/* @} */
 
 }
 }

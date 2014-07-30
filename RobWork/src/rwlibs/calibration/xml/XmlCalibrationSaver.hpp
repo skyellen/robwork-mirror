@@ -23,12 +23,30 @@
 namespace rwlibs {
 namespace calibration {
 
+/** @addtogroup calibration */
+/*@{*/
+
+/** 
+ * @brief Save function for writing a work cell calibration in an XML format
+ */
 class XmlCalibrationSaver {
 public:
+	/**
+	 * @brief Saves \bworkcellCalibration to the file \bfileName
+	 * @param workcellCalibration [in] workcellCalibration to store
+	 * @param fileName [in] Name of the file to which to write.
+	 */
 	static void save(WorkCellCalibration::Ptr workcellCalibration, std::string fileName);
 
+	/**
+	 * @brief Writes \bworkcellCalibration to stream.
+	 * @param workcellCalibration [in] workcellCalibration to write
+	 * @param ostream [in] Stream to write to
+	 */
 	static void save(WorkCellCalibration::Ptr workcellCalibration, std::ostream& ostream);
 };
+
+/* @} */
 
 }
 }

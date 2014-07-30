@@ -140,7 +140,7 @@ void createDOMDocument(DOMElem::Ptr rootDoc, WorkCellCalibration::Ptr calibratio
 	}
 
 
-	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointCalibration();
+	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	const int jointCalibrationCount = compositeJointCalibration->getCalibrationCount();
 	if (jointCalibrationCount > 0) {
 		DOMElem::Ptr jointCalibrationElement = rootElement->addChild( "JointCalibrations" );

@@ -14,25 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ********************************************************************************/
+//
+//#ifndef RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP
+//#define RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP
+//
+//#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
+//#include <rwlibs/calibration/SerialDevicePoseMeasurement.hpp>
+//
+//namespace rwlibs {
+//namespace calibration {
+//
+//	class XmlMeasurementFile {
+//	public:
+//		static void save(const std::vector<SerialDevicePoseMeasurement>& measurements, std::string fileName);
+//
+//		static std::vector<SerialDevicePoseMeasurement> load(std::string fileName);
+//	};
+//
+//}
+//}
 
-#ifndef RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP
-#define RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP
-
-#include <rwlibs/calibration/SerialDeviceCalibration.hpp>
-#include <rwlibs/calibration/SerialDevicePoseMeasurement.hpp>
-
-namespace rwlibs {
-namespace calibration {
-
-	class XmlMeasurementFile {
-	public:
-		static void save(const std::vector<SerialDevicePoseMeasurement>& measurements, std::string fileName);
-
-		static std::vector<SerialDevicePoseMeasurement> load(std::string fileName);
-	};
-
-}
-}
-
-#endif /* RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP */
+//#endif /* RWLIBS_CALIBRATION_XMLMEASUREMENTFILE_HPP */
  
