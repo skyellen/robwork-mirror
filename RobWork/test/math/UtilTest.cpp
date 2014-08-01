@@ -20,6 +20,7 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
+#include <rw/math/MetricFactory.hpp>
 #include <rw/math/Wrench6D.hpp>
 
 
@@ -66,6 +67,15 @@ BOOST_AUTO_TEST_CASE(testVector3D_cross){
 
     BOOST_CHECK_EQUAL( MetricUtil::normInf(cross(v1, v2)), 0);
 }
+
+BOOST_AUTO_TEST_CASE(testTransform3DAngleMetric){
+    Vector3D<> v1(1.0, 2.0, 2.0);
+	Transform3D<> t1(Vector3D<>(1, 0, 0), Rotation3D<>::identity());
+    Transform3D<> t2(Vector3D<>(1, 0, 0), RPY<>(1.4, 0, 0).toRotation3D());
+	BOOST_CHECK_CLOSE(Transform3DAngleMetric<double>(1.0, 0.0).distance(t1, t2), 0, 1e-15);
+	BOOST_CHECK_CLOSE(Transform3DAngleMetric<double>(0.0, 1.0).distance(t1, t2), 1.4, 1e-15);
+}
+
 
 BOOST_AUTO_TEST_CASE(testRotation3D_inverse){
     Vector3D<std::string> i("i1", "i2", "i3");
