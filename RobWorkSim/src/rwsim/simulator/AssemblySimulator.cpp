@@ -577,17 +577,22 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 						} else
 							sel[i] = 1;
 					}
-					Transform3D<> position = simState.baseTfemale * response->femaleTmaleTarget * simState.maleTend;
+					const Transform3D<> position = simState.baseTfemale * response->femaleTmaleTarget * simState.maleTend;
 					if (simState.maleController != NULL) {
 						if (!ftControl)
 							simState.maleController->movePTP_T(position,10);
 						else
 							simState.maleController->moveLinFC(position,response->force_torque,sel,"",response->offset, 5);
 					} else {
-						if (!ftControl)
+						if (ftControl)
+							RW_THROW("AssemblySimulator (stateMachine): force/torque control not possible on free objects.");
+						if (response->type == AssemblyControlResponse::POSITION)
 							simState.simulator->setTarget(simState.maleBodyControl,position,simState.state);
-						else
-							simState.simulator->setTarget(simState.maleBodyControl,position,simState.state);
+						else if (response->type == AssemblyControlResponse::POSITION_TRAJECTORY) {
+							const Trajectory<Transform3D<> >::Ptr traj = response->worldTendTrajectory;
+							RW_ASSERT(traj != NULL);
+							simState.simulator->setTarget(simState.maleBodyControl,traj,simState.state);
+						}
 					}
 				}
 			}

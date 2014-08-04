@@ -30,6 +30,9 @@
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Wrench6D.hpp>
 
+// Forward declarations
+namespace rw { namespace trajectory { template <class T> class Trajectory; } }
+
 namespace rwlibs {
 namespace assembly {
 //! @addtogroup assembly
@@ -51,15 +54,18 @@ public:
 
 	//! @brief The control mode.
 	typedef enum Type {
-		POSITION,    //!< Position control
-		VELOCITY,    //!< Velocity control
-		HYBRID_FT_POS//!< Hybrid position and force/torque control
+		POSITION,				//!< Position control
+		POSITION_TRAJECTORY,	//!< Trajectory control
+		VELOCITY,				//!< Velocity control
+		HYBRID_FT_POS			//!< Hybrid position and force/torque control
 	} Type;
 
 	//! @brief Choose the control mode.
 	Type type;
 	//! @brief Positional control of the robot.
 	rw::math::Transform3D<> femaleTmaleTarget;
+	//! @brief Trajectory control of the robot (in world coordinates).
+	rw::common::Ptr<rw::trajectory::Trajectory<rw::math::Transform3D<> > > worldTendTrajectory;
 	//! @brief Relative velocity target for velocity control.
 	rw::math::VelocityScrew6D<> femaleTmaleVelocityTarget;
 	//! @brief Specify the coordinate axes for hybrid force/torque control.
