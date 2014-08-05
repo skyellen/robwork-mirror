@@ -707,7 +707,7 @@ void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& mea
 
 	//Eigen::VectorXd distances(measurementCount), angles(measurementCount);
 	rw::kinematics::State state = workCellState;
-	std::ofstream outfile("d:\\temp\\Result_"+name+".txt");
+	std::ofstream outfile(("d:\\temp\\Result_"+name+".txt").c_str());
 	outfile<<"{";
 	std::map<std::string, Statistics<double> > distances;
 	std::map<std::string, Statistics<double> > angles;
