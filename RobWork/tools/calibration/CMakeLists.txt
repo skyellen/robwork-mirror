@@ -25,9 +25,9 @@ SET(CALIBRATION_DEPENDENCIES rw_calibration)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
-ADD_EXECUTABLE( rw_calibration-tool2 CalibrationTool2.cpp )
-TARGET_LINK_LIBRARIES( rw_calibration-tool2 ${ROBWORK_LIBRARIES} )  
-ADD_DEPENDENCIES( rw_calibration-tool2 ${CALIBRATION_DEPENDENCIES} )
+ADD_EXECUTABLE( rw_calibration-tool CalibrationTool.cpp )
+TARGET_LINK_LIBRARIES( rw_calibration-tool ${ROBWORK_LIBRARIES} )  
+ADD_DEPENDENCIES( rw_calibration-tool ${CALIBRATION_DEPENDENCIES} )
 
 ADD_EXECUTABLE( rw_calibration-mtool MeasurementTool.cpp )
 TARGET_LINK_LIBRARIES( rw_calibration-mtool ${ROBWORK_LIBRARIES} )
