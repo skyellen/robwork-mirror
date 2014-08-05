@@ -3,7 +3,6 @@
 #include <rw/loaders.hpp>
 #include <rw/math/Statistics.hpp>
 #include <rwlibs/calibration.hpp>
-#include <iomanip>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -24,9 +23,9 @@ public:
 			("endCalibration", boost::program_options::value<bool>(&_isEndCalibrationEnabled)->default_value(true), "Disable calibration of end transformation")
 			("linkCalibration", boost::program_options::value<bool>(&_isLinkCalibrationEnabled)->default_value(true), "Enable/disable calibration of link transformations")
 			("jointCalibration", boost::program_options::value<bool>(&_isJointCalibrationEnabled)->default_value(true), "Enable/disable calibration of joint transformations")
+			("preCalibrateExtrinsics", boost::program_options::value<bool>(&_isPreCalibrateExtrinsicsEnabled)->default_value(true), "Enable/disable whether to use a precalibration of the extrinsic parameters")
 			("mathematicaoutputfile", boost::program_options::value<std::string>(&_mathematicaOutputFileName), "Set the file to which to write joint values")
-			("validationMeasurementPercentage", boost::program_options::value<double>(&_validationMeasurementPercentage)->default_value(0.2), "Percentage of measurements to reserve for validation")
-			("test_only", boost::program_options::value<bool>(&_isTestOnlyEnabled)->default_value(false)->zero_tokens(), "Only run test without calibrating");
+			("validationMeasurementPercentage", boost::program_options::value<double>(&_validationMeasurementPercentage)->default_value(0.2), "Percentage of measurements to reserve for validation");
 	}
 	
 	void parseArguments(int argumentCount, char** argumentArray) {
@@ -88,13 +87,14 @@ public:
 		return _isJointCalibrationEnabled;
 	}
 
+	bool isPreCalibrateExtrinsicsEnabled() const {
+		return _isPreCalibrateExtrinsicsEnabled;	
+	}
+
 	double getValidationMeasurementPercentage() const {
 		return _validationMeasurementPercentage;
 	}
 
-	bool isTestOnlyEnabled() const {
-		return _isTestOnlyEnabled;
-	}
 
 	friend std::ostream& operator<<(std::ostream& out, CalibrationOptionParser& parser) {
 		out << "Usage:" << std::endl;
@@ -116,22 +116,14 @@ private:
 	bool _isEndCalibrationEnabled;
 	bool _isLinkCalibrationEnabled;
 	bool _isJointCalibrationEnabled;
-	double _validationMeasurementPercentage;
-	bool _isTestOnlyEnabled;
+	bool _isPreCalibrateExtrinsicsEnabled;
+	double _validationMeasurementPercentage;	
 	std::string _mathematicaOutputFileName;
 };
 
 std::ostream& operator<<(std::ostream& out, const NLLSSolver::Ptr solver);
 std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calibration);
-void printMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration);
 
-void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, 
-							 WorkCell::Ptr workcell,
-							 const State& workCellState, 
-							 const std::string& name="");
-
-class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
-class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
 
 int main(int argumentCount, char** argumentArray) {
 	std::cout << "Parsing arguments.. ";
@@ -161,7 +153,6 @@ int main(int argumentCount, char** argumentArray) {
 		std::cout << "FAILED." << std::endl;
 		return -1;
 	}
-
 
 	std::cout << "Loaded [ " << workCell->getName() << " ]." << std::endl;
 
@@ -223,7 +214,7 @@ int main(int argumentCount, char** argumentArray) {
 	typedef std::pair<SerialDevice::Ptr, Frame*> SerialDeviceFramePair;
 	std::vector<SerialDeviceFramePair> devicesAndFrames;
 	for (std::set<StringPair>::iterator it = deviceAndFrameNames.begin(); it != deviceAndFrameNames.end(); ++it) {
-		std::cout<<"Device = "<<(*it).first<<"  Frame = "<<(*it).second<<std::endl;		
+		std::cout<<"Device "<<(*it).first<<" has marker frame "<<(*it).second<<std::endl;		
 		SerialDevice::Ptr dev = workCell->findDevice<SerialDevice>((*it).first);
 		Frame* frame = workCell->findFrame((*it).second);
 		devicesAndFrames.push_back(SerialDeviceFramePair(dev, frame));
@@ -234,31 +225,15 @@ int main(int argumentCount, char** argumentArray) {
 		sensorFrames.push_back(workCell->findFrame(*it));
 	}
 
-	for (std::vector<SerialDeviceFramePair>::iterator it1 = devicesAndFrames.begin(); it1 != devicesAndFrames.end(); ++it1) {
-		for (std::vector<Frame*>::iterator it2 = sensorFrames.begin(); it2 != sensorFrames.end(); ++it2) {
-			std::cout<<std::setprecision(15)<<"T["<<(*it1).first->getName()<<" to "<<(*it2)->getName()<<" = "<<Kinematics::frameTframe((*it1).first->getBase(), (*it2), workCellState)<<std::endl;
-		}
-	}
-
-	
-	if (optionParser.isTestOnlyEnabled()) {
-
-		if (optionParser.getCalibrationFilePath().empty() == true) {
-			std::cerr<<"No calibration file specified for the verification!";
-			return 0;
-		}
-		std::string calibrationFilePath = optionParser.getCalibrationFilePath();
-		WorkCellCalibration::Ptr calibration = XmlCalibrationLoader::load(workCell, calibrationFilePath);
-		std::cout<<"Error without calibration: "<<std::endl;
-		printMeasurementSummary(measurements, workCell, workCellState);		
-		calibration->apply();
-		std::cout<<"Error with calibration: "<<std::endl;
-		printMeasurementSummary(measurements, workCell, workCellState);
-		return 0;
-
-	}
+	//Prints the relative transformation between base of the devices and the sensor frames
+	//for (std::vector<SerialDeviceFramePair>::iterator it1 = devicesAndFrames.begin(); it1 != devicesAndFrames.end(); ++it1) {
+	//	for (std::vector<Frame*>::iterator it2 = sensorFrames.begin(); it2 != sensorFrames.end(); ++it2) {
+	//		std::cout<<std::setprecision(15)<<"T["<<(*it1).first->getName()<<" to "<<(*it2)->getName()<<" = "<<Kinematics::frameTframe((*it1).first->getBase(), (*it2), workCellState)<<std::endl;
+	//	}
+	//}
 
 
+	//Find the measurements to be used for calibration and validation 
 	const size_t measurementCount = measurements.size();
 	size_t calibrationMeasurementCount = (int)std::floor((double) measurementCount * (1.0 - optionParser.getValidationMeasurementPercentage()));		
 	size_t validationMeasurementCount = measurementCount - calibrationMeasurementCount;
@@ -268,7 +243,6 @@ int main(int argumentCount, char** argumentArray) {
 	std::set<int> indices;
 	while (indices.size() < validationMeasurementCount) {
 		indices.insert(Math::ranI(0, measurementCount));	
-		std::cout<<".";
 	}
 
 	for (int i = 0; i<measurementCount; i++) {
@@ -283,36 +257,36 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout<<"Calibration Measurements = "<<calibrationMeasurements.size()<<std::endl;
 	std::cout<<"Validation Measurements = "<<validationMeasurements.size()<<std::endl;
 
-	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
-
-
-	WorkCellCalibration::Ptr exCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames, encoderCorrectionFunctions));
-	WorkCellExtrinsicCalibrator extrinsicCalibrator(workCell);
-	extrinsicCalibrator.setMeasurements(calibrationMeasurements);
-	std::cout<<"============================================================"<<std::endl;
-	extrinsicCalibrator.calibrate(exCalibration);
-	XmlCalibrationSaver::save(exCalibration, "d:\\temp\\ExCalibration.xml");
 	
-	std::cout<<"Summary without extrinsic calibration"<<std::endl;
-	std::cout<<"Calibration Data"<<std::endl;	
-	printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
-	std::cout<<"Validation Data"<<std::endl;
-	printMeasurementSummary(validationMeasurements, workCell, workCellState);
+	//Run the extrinsic calibration
+	WorkCellCalibration::Ptr exCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames));
+	if (optionParser.isPreCalibrateExtrinsicsEnabled()) {
+		std::cout<<"Precalibrating Extrinsics...";
+		std::wcout.flush();
+		WorkCellExtrinsicCalibrator extrinsicCalibrator(workCell);
+		extrinsicCalibrator.setMeasurements(calibrationMeasurements);
+		extrinsicCalibrator.calibrate(exCalibration);
+		std::cout<<"Extrinsics precalibrated"<<std::endl;
+	}
 	
-	std::cout<<"All data"<<std::endl;
-	printMeasurementSummary(measurements, workCell, workCellState,"AllBeforeExtrinsic");
-	exCalibration->apply();
+	//std::cout<<"Summary without extrinsic calibration"<<std::endl;
+	//std::cout<<"Calibration Data"<<std::endl;	
+	//CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
+	//std::cout<<"Validation Data"<<std::endl;
+	//CalibrationUtils::printMeasurementSummary(validationMeasurements, workCell, workCellState, std::cout);
+	//
+	//std::cout<<"All data"<<std::endl;
+	//CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
+	//exCalibration->apply();
 
-	std::cout<<"Summary after apply the extrinsic calibration"<<std::endl;
-	std::cout<<"Calibration Data"<<std::endl;
-	printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
-	std::cout<<"Validation Data"<<std::endl;
-	printMeasurementSummary(validationMeasurements, workCell, workCellState);
-	std::cout<<"All data"<<std::endl;
-	printMeasurementSummary(measurements, workCell, workCellState,"AllAfterExtrinsic");
-	char ch[3]; std::cin.getline(ch, 1);
+	//std::cout<<"Summary after apply the extrinsic calibration"<<std::endl;
+	//std::cout<<"Calibration Data"<<std::endl;
+	//CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
+	//std::cout<<"Validation Data"<<std::endl;
+	//CalibrationUtils::printMeasurementSummary(validationMeasurements, workCell, workCellState, std::cout);
+	//std::cout<<"All data"<<std::endl;
+	//CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
+	//char ch[3]; std::cin.getline(ch, 1);
 
 
 
@@ -346,7 +320,7 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout << "Initializing calibration... "<<std::endl;
 	
 	
-	WorkCellCalibration::Ptr workcellCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames, encoderCorrectionFunctions));
+	WorkCellCalibration::Ptr workcellCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames));
 	std::cout << "Initialized." << std::endl;
 
 	std::cout << "Initializing jacobian... ";
@@ -370,35 +344,35 @@ int main(int argumentCount, char** argumentArray) {
 		bool isJointCalibrationEnabled = optionParser.isJointCalibrationEnabled();
 		std::cout << "Calibrating [ Base: " << (isBaseCalibrationEnabled ? "Enabled" : "Disabled") << " - End: " << (isEndCalibrationEnabled ? "Enabled" : "Disabled") << " - Link: " << (isLinkCalibrationEnabled ? "Enabled" : "Disabled") << " - Joint: " << (isJointCalibrationEnabled ? "Enabled" : "Disabled") << " ].. ";
 		std::cout.flush();
-		workcellCalibration->getFixedFrameCalibrations()->getCalibration(0)->setEnabled(true && isBaseCalibrationEnabled);
-		workcellCalibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(true && isEndCalibrationEnabled);
-		workcellCalibration->getCompositeLinkCalibration()->setEnabled(true && isLinkCalibrationEnabled);
-		workcellCalibration->getCompositeJointEncoderCalibration()->setEnabled(true && isJointCalibrationEnabled);
+		workcellCalibration->getFixedFrameCalibrations()->getCalibration(0)->setEnabled(isBaseCalibrationEnabled);
+		workcellCalibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(isEndCalibrationEnabled);
+		workcellCalibration->getCompositeLinkCalibration()->setEnabled(isLinkCalibrationEnabled);
+		workcellCalibration->getCompositeJointEncoderCalibration()->setEnabled(isJointCalibrationEnabled);
 		
-		std::cout<<"Calibration Measurements: "<<std::endl;
-		printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
-		std::cout<<"Validation Measurementss: "<<std::endl;
-		printMeasurementSummary(validationMeasurements, workCell, workCellState);
-		
+		std::cout<<"Measurements: "<<std::endl;
+		CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
 		std::cout<<"Check that the errors are in the range that are expected."<<std::endl;
 		std::cout<<"Press enter to continue..."<<std::endl;
 		char ch[4];
 		std::cin.getline(ch, 1); 
 		   
 		//exCalibration->revert();
+		std::cout<<"Calibrating...";
+		std::cout.flush();
 		workcellCalibrator->calibrate(workCellState);
+		std::cout<<"Solver Output: "<<workcellCalibrator->getSolver()<<std::endl;
 		const int iterationCount = workcellCalibrator->getSolver()->getIterationCount();
 		std::cout << "Calibrated [ Iteration count: " << iterationCount << " ]." << std::endl;
 
+		//In case the extrinsics are precalibrated they are reverted here
 		exCalibration->revert();
 
 		std::cout<<"=========== WITHOUT CALIBRATION ============="<<std::endl;
-		printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
+		CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
 
+		//In case the extrinsics are precalibrated they are prepended to the workcell calibration here.
 		workcellCalibration->prependCalibration(exCalibration);
 		workcellCalibration->apply();		
-		std::cout<<"=========== WITH MERGED CALIBRATION ============="<<std::endl;
-		printMeasurementSummary(calibrationMeasurements, workCell, workCellState);
 
 		// Save calibration.
 		std::string calibrationFilePath = optionParser.getCalibrationFilePath();
@@ -407,9 +381,6 @@ int main(int argumentCount, char** argumentArray) {
 			std::cout.flush();			
 			XmlCalibrationSaver::save(workcellCalibration, calibrationFilePath);
 			std::cout << "Saved." << std::endl;
-			std::cout<<"Tries to load"<<std::endl;
-			XmlCalibrationLoader::load(workCell, calibrationFilePath);
-			std::cout<<"Loaded"<<std::endl;
 		}
 
 		if (optionParser.isDetailPrintingEnabled()) {
@@ -436,10 +407,10 @@ int main(int argumentCount, char** argumentArray) {
 	//printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState);
 
 	std::cout<<"=========== WITH CALIBRATION ============="<<std::endl;
-	workcellCalibration->apply();
-	printMeasurementSummary(calibrationMeasurements, workCell, workCellState, "CalibrationSet");
+	std::cout << "Residual summary (calibration):" << std::endl;
+	CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
 	std::cout << "Residual summary (validation):" << std::endl;
-	printMeasurementSummary(validationMeasurements, workCell, workCellState, "ValidationSet");
+	CalibrationUtils::printMeasurementSummary(validationMeasurements, workCell, workCellState, std::cout);
 
 	return 0;
 }
@@ -458,7 +429,7 @@ std::ostream& operator<<(std::ostream& out, const NLLSSolver::Ptr solver) {
 
 std::ostream& operator<<(std::ostream& out, const NLLSIterationLog& iterationLog) {
 	out << "\tIteration " << iterationLog.getIterationNumber() << ": Jacobian [ Singular: " << (iterationLog.isSingular() ? "Yes" : "No")
-			<< " Condition: " << iterationLog.getConditionNumber() << " ] ||Residuals||: " << iterationLog.getResidualNorm() << " ||Step||: "
+			<< ", Condition: " << iterationLog.getConditionNumber() << " ] ||Residuals||: " << iterationLog.getResidualNorm() << " ||Step||: "
 			<< iterationLog.getStepNorm();
 	return out;
 }
@@ -643,118 +614,4 @@ std::ostream& operator<<(std::ostream& out, const JointEncoderCalibration::Ptr c
 	return out;
 }
 
-void printMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration) {
-	const unsigned int measurementCount = measurements.size();
 
-	rw::kinematics::State state = workCellState;
-	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-		serialDevice->setQ(measurements[measurementIndex]->getQ(), state);
-
-		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex]->getTransform();
-		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-		workcellCalibration->apply();
-		const rw::math::Transform3D<> tfmCalibratedModel =rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-		workcellCalibration->revert();
-		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
-		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
-
-		double distance = tfmError.P().norm2(), calibratedDistance = tfmCalibratedError.P().norm2();
-		double angle = rw::math::EAA<>(tfmError.R()).angle(), calibratedAngle = rw::math::EAA<>(tfmCalibratedError.R()).angle();
-
-		std::cout << "\tMeasurement " << measurementIndex + 1 <<"Q = "<<measurements[measurementIndex]->getQ()<<": [ Uncalibrated: " << distance * 1000.0 << " mm / "
-			<< angle * rw::math::Rad2Deg << " \u00B0 - Calibrated: " << calibratedDistance * 1000.0 << " mm / "
-			<< calibratedAngle * rw::math::Rad2Deg << " \u00B0 ]" << std::endl;
-	}
-}
-
-//void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::SerialDevice::Ptr serialDevice, rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr measurementFrame, const rw::kinematics::State& workCellState, WorkCellCalibration::Ptr workcellCalibration, bool printOnlyUncalibrated) {
-//	const unsigned int measurementCount = measurements.size();
-//
-//	Eigen::VectorXd distances(measurementCount), angles(measurementCount);
-//	Eigen::VectorXd calibratedDistances(measurementCount), calibratedAngles(measurementCount);
-//	rw::kinematics::State state = workCellState;
-//	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-//		serialDevice->setQ(measurements[measurementIndex]->getQ(), state);
-//
-//		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex]->getTransform();
-//		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);
-//		workcellCalibration->apply();
-//		const rw::math::Transform3D<> tfmCalibratedModel = rw::kinematics::Kinematics::frameTframe(referenceFrame.get(), measurementFrame.get(), state);	
-//		//std::cout<<"Calibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
-//		workcellCalibration->revert();
-//		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
-//		const rw::math::Transform3D<> tfmCalibratedError = rw::math::Transform3D<>(tfmCalibratedModel.P() - tfmMeasurement.P(), tfmCalibratedModel.R() * rw::math::inverse(tfmMeasurement.R()));
-////		std::cout<<"UnCalibrated: "<<serialDevice->getBase()->getName()<<"->"<<referenceFrame->getName()<<" = "<<rw::kinematics::Kinematics::frameTframe(serialDevice->getBase(), referenceFrame.get(), workCellState)<<std::endl;
-//		distances(measurementIndex) = tfmError.P().norm2(), calibratedDistances(measurementIndex) = tfmCalibratedError.P().norm2();
-//		angles(measurementIndex) = rw::math::EAA<>(tfmError.R()).angle(), calibratedAngles(measurementIndex) = rw::math::EAA<>(tfmCalibratedError.R()).angle();
-//	}
-//	std::cout << "\tSummary - Uncalibrated: [ Avg: " << distances.mean() * 1000.0 << " mm / " << angles.mean() * rw::math::Rad2Deg << " deg - Min: "
-//		<< distances.minCoeff() * 1000.0 << " mm / " << angles.minCoeff() * rw::math::Rad2Deg << " deg - Max: " << distances.maxCoeff() * 1000.0 << " mm / "
-//		<< angles.maxCoeff() * rw::math::Rad2Deg << " deg ]" << std::endl;
-//
-//	if (printOnlyUncalibrated)
-//		return;
-//
-//	std::cout << "\tSummary - Calibrated: [ Avg: " << calibratedDistances.mean() * 1000.0 << " mm / " << calibratedAngles.mean() * rw::math::Rad2Deg << " deg - Min: "
-//		<< calibratedDistances.minCoeff() * 1000.0 << " mm / " << calibratedAngles.minCoeff() * rw::math::Rad2Deg << " deg - Max: "
-//		<< calibratedDistances.maxCoeff() * 1000.0 << " mm / " << calibratedAngles.maxCoeff() * rw::math::Rad2Deg << " deg ]" << std::endl;
-//
-//	
-//}
-
-
-void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, WorkCell::Ptr workCell, const rw::kinematics::State& workCellState, const std::string& name) {
-	const unsigned int measurementCount = measurements.size();
-
-	//Eigen::VectorXd distances(measurementCount), angles(measurementCount);
-	rw::kinematics::State state = workCellState;
-	std::ofstream outfile(("d:\\temp\\Result_"+name+".txt").c_str());
-	outfile<<"{";
-	std::map<std::string, Statistics<double> > distances;
-	std::map<std::string, Statistics<double> > angles;
-	for (unsigned int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
-		CalibrationMeasurement::Ptr measurement = measurements[measurementIndex];
-		SerialDevice::Ptr serialDevice = workCell->findDevice<SerialDevice>(measurement->getDeviceName());
-		Frame* sensorFrame = workCell->findFrame(measurement->getSensorFrameName());
-		Frame* markerFrame = workCell->findFrame(measurement->getMarkerFrameName());
-		serialDevice->setQ(measurement->getQ(), state);
-
-		const rw::math::Transform3D<> tfmMeasurement = measurements[measurementIndex]->getTransform();
-		const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(sensorFrame, markerFrame, state);
-		const rw::math::Transform3D<> tfmError = rw::math::Transform3D<>(tfmModel.P() - tfmMeasurement.P(), tfmModel.R() * rw::math::inverse(tfmMeasurement.R()));
-		
-		//if (measurementIndex == 0) {
-		//	std::cout<<"Configuration = "<<measurements[measurementIndex]->getQ()<<std::endl;
-		//	std::cout<<"SerialDevice Name = "<<serialDevice->getName()<<std::endl;
-		//	std::cout<<"Device Base2end = "<<serialDevice->baseTend(state)<<std::endl;
-		//	std::cout<<"tfmMeasurement = "<<tfmMeasurement<<std::endl;
-		//	std::cout<<"tfmModel = "<<tfmModel<<std::endl;
-		//	std::cout<<"tfmError = "<<tfmError<<std::endl;
-		//	char ch[3]; std::cin.getline(ch, 1);
-		//}
-		distances[measurement->getSensorFrameName()].add(tfmError.P().norm2());
-		//distances(measurementIndex) = ;
-
-		//calibratedDistances(measurementIndex) = tfmCalibratedError.P().norm2();
-		angles[measurement->getSensorFrameName()].add(rw::math::EAA<>(tfmError.R()).angle());
-		//calibratedAngles(measurementIndex) = rw::math::EAA<>(tfmCalibratedError.R()).angle();
-		//outfile<<"{"<<distances(measurementIndex)<<","<<angles(measurementIndex)<<","<<tfmModel.P()(0)<<","<<tfmModel.P()(1)<<","<<tfmModel.P()(2)<<"}";
-		//if (measurementIndex != measurementCount-1)
-		//	outfile<<",";
-	}
-	outfile<<"}"<<std::endl;
-	outfile.close();
-	//std::cout<<"Distance Errors: "<<distances<<std::endl;
-	//std::cout<<"Angular Errors: "<<angles<<std::endl;
-	for (std::map<std::string, Statistics<double> >::iterator it = distances.begin(); it != distances.end(); ++it) {
-		double dist = (*it).second.mean();
-		std::pair<double, double> distMinMax = (*it).second.minAndMaxValue();
-		double angle = angles[(*it).first].mean();
-		std::pair<double, double> angleMinMax = angles[(*it).first].minAndMaxValue();
-		
-		std::cout << "\tSummary("<<(*it).first<<") - : [ Avg: " << dist * 1000.0 << " mm / " << angle * rw::math::Rad2Deg << " deg - Min: "
-			<< distMinMax.first * 1000.0 << " mm / " << angleMinMax.first * rw::math::Rad2Deg << " deg - Max: " << distMinMax.second * 1000.0 << " mm / "
-			<< angleMinMax.second * rw::math::Rad2Deg << " deg ]" << std::endl;
-	}
-
-}

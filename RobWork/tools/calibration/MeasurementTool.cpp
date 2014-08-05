@@ -29,14 +29,6 @@ std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::Serial
 
 void printMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::WorkCell::Ptr workCell, WorkCellCalibration::Ptr workCellCalibration);
 
-class EncoderTauFunction: public rw::math::Function<> {
-	public: virtual double x(double q) { return -sin(q); };
-}; 
-
-class EncoderSigmaFunction: public rw::math::Function<> {
-	public: virtual double x(double q) { return -cos(q); };
-};
-
  
 int main(int argumentCount, char** arguments) {
 	if (int parseResult = parseArguments(argumentCount, arguments) < 1)
@@ -135,10 +127,6 @@ int main(int argumentCount, char** arguments) {
 
 	std::cout << "Initializing artificial calibration..";
 	std::cout.flush();
-	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1;
-	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-	encoderCorrectionFunctions.push_back( rw::common::ownedPtr( new EncoderTauFunction()));
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
 	 
 	typedef std::pair<SerialDevice::Ptr, Frame*> DevAndFrame;
 	std::vector<DevAndFrame> deviceAndFramePairs;
@@ -146,7 +134,7 @@ int main(int argumentCount, char** arguments) {
 		deviceAndFramePairs.push_back(std::make_pair(devices[i], markerFrames[i]));
 	}
 
-	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceAndFramePairs, sensorFrames, encoderCorrectionFunctions)));
+	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceAndFramePairs, sensorFrames)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0), 
 																														  rw::math::RPY<>(1.7 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad, -2.0 * rw::math::Deg2Rad)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0), 
@@ -176,10 +164,10 @@ int main(int argumentCount, char** arguments) {
 	for (unsigned int calibrationIndex = 0; calibrationIndex < (unsigned int)artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
-		if (parameterSet(ENCODER_PARAMETER_TAU).isEnabled())
-			parameterSet(ENCODER_PARAMETER_TAU) = 0.003;
-		if (parameterSet(ENCODER_PARAMETER_SIGMA).isEnabled())
-			parameterSet(ENCODER_PARAMETER_SIGMA) = -0.002;
+		if (parameterSet(JointEncoderCalibration::PARAMETER_TAU).isEnabled())
+			parameterSet(JointEncoderCalibration::PARAMETER_TAU) = 0.003;
+		if (parameterSet(JointEncoderCalibration::PARAMETER_SIGMA).isEnabled())
+			parameterSet(JointEncoderCalibration::PARAMETER_SIGMA) = -0.002;
 		artificialJointCalibration->setParameterSet(parameterSet);
 	}
 	std::cout << " Initialized." << std::endl;
