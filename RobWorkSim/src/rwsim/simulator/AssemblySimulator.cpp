@@ -372,6 +372,9 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		if (simTime > maxRunTime)
 			running = false;
 
+		if (simState.phase == SimState::FAILED || simState.phase == SimState::FINISHED)
+			running = false;
+
 		//std::cout << "simTime: " << simTime << std::endl;
 	}
 	result->femaleTmaleEnd = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
@@ -599,6 +602,10 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		}
 	}
 	break;
+	default:
+		break;
+	}
+	switch(simState.phase) {
 	case SimState::FINISHED:
 	{
 		realState.phase = "Finished";
@@ -614,6 +621,8 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		assumedState.contact = true;
 	}
 	break;
+	default:
+		break;
 	}
 	if (simState.saveData) {
 		Timed<AssemblyState> trealState(simState.time,realState);
