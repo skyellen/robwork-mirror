@@ -3,6 +3,7 @@
 #include <rw/loaders.hpp>
 #include <rw/math/Statistics.hpp>
 #include <rwlibs/calibration.hpp>
+#include <iomanip>
 
 using namespace rw::math;
 using namespace rw::kinematics;
