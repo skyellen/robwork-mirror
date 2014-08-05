@@ -267,6 +267,7 @@ int main(int argumentCount, char** argumentArray) {
 		extrinsicCalibrator.setMeasurements(calibrationMeasurements);
 		extrinsicCalibrator.calibrate(exCalibration);
 		std::cout<<"Extrinsics precalibrated"<<std::endl;
+		exCalibration->apply();
 	}
 	
 	//std::cout<<"Summary without extrinsic calibration"<<std::endl;
@@ -277,7 +278,7 @@ int main(int argumentCount, char** argumentArray) {
 	//
 	//std::cout<<"All data"<<std::endl;
 	//CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
-	//exCalibration->apply();
+	
 
 	//std::cout<<"Summary after apply the extrinsic calibration"<<std::endl;
 	//std::cout<<"Calibration Data"<<std::endl;
@@ -360,15 +361,21 @@ int main(int argumentCount, char** argumentArray) {
 		std::cout<<"Calibrating...";
 		std::cout.flush();
 		workcellCalibrator->calibrate(workCellState);
-		std::cout<<"Solver Output: "<<workcellCalibrator->getSolver()<<std::endl;
 		const int iterationCount = workcellCalibrator->getSolver()->getIterationCount();
 		std::cout << "Calibrated [ Iteration count: " << iterationCount << " ]." << std::endl;
+		if (optionParser.isDetailPrintingEnabled()) {
+			std::cout << "Solver summary:" << std::endl;
+			std::cout << workcellCalibrator->getSolver() << std::endl;
+		}
 
 		//In case the extrinsics are precalibrated they are reverted here
 		exCalibration->revert();
 
 		std::cout<<"=========== WITHOUT CALIBRATION ============="<<std::endl;
+		std::cout << "Residual summary (calibration):" << std::endl;
 		CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
+		std::cout << "Residual summary (validation):" << std::endl;
+		CalibrationUtils::printMeasurementSummary(validationMeasurements, workCell, workCellState, std::cout);
 
 		//In case the extrinsics are precalibrated they are prepended to the workcell calibration here.
 		workcellCalibration->prependCalibration(exCalibration);
@@ -383,10 +390,6 @@ int main(int argumentCount, char** argumentArray) {
 			std::cout << "Saved." << std::endl;
 		}
 
-		if (optionParser.isDetailPrintingEnabled()) {
-			std::cout << "Solver summary:" << std::endl;
-			std::cout << workcellCalibrator->getSolver() << std::endl;
-		}
 	} catch (rw::common::Exception& exception) {
 		std::cout << "FAILED: " << exception.getMessage() << std::endl;
 
@@ -405,7 +408,7 @@ int main(int argumentCount, char** argumentArray) {
 	//printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState);
 	//std::cout << "Residual summary (validation):" << std::endl;
 	//printMeasurementSummary(validationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState);
-
+	workcellCalibration->apply();
 	std::cout<<"=========== WITH CALIBRATION ============="<<std::endl;
 	std::cout << "Residual summary (calibration):" << std::endl;
 	CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
