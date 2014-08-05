@@ -21,8 +21,7 @@ using namespace rwlibs::calibration;
 
 
 WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr, Frame*> > deviceMarkerPairs,
-										 const std::vector<Frame*>& sensorFrames,
-										 const std::vector<Function<>::Ptr>& encoderCorrectionFunctions) 
+										 const std::vector<Frame*>& sensorFrames) 
 										 :	_deviceMarkerPairs(deviceMarkerPairs)
 {
 

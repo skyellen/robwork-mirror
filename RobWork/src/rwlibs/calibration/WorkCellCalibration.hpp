@@ -53,8 +53,7 @@ public:
 	 * @param encoderCorrectionFunctions [in] The correction functions to be used for the encoder corrections.
 	 */
 	WorkCellCalibration(std::vector<DeviceMarkerPair> deviceMarkerPairs,
-			const std::vector<rw::kinematics::Frame*>& sensorFrames,
-			const std::vector<rw::math::Function<>::Ptr>& encoderCorrectionFunctions = std::vector<rw::math::Function<>::Ptr>());
+			const std::vector<rw::kinematics::Frame*>& sensorFrames);
 
 	/**
 	 * @brief Constructs a workcell calibration consisting of the elements specified

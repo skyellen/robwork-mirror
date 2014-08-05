@@ -52,10 +52,10 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 
 	//std::cout<<"Jacobian = "<<_jacobian.rows()<<" "<<_jacobian.cols()<<std::endl;
 	//std::cout<<_jacobian<<std::endl;
-	for (size_t i = 0; i<12; i++)
-		std::cout<<"Residuals["<<i<<"] = "<<_residuals[i]<<std::endl;
+	//for (size_t i = 0; i<12; i++)
+	//	std::cout<<"Residuals["<<i<<"] = "<<_residuals[i]<<std::endl;
 
-	std::cout<<"||Redisuals|| = "<<_residuals.norm()<<std::endl;
+	//std::cout<<"||Redisuals|| = "<<_residuals.norm()<<std::endl;
 	 
 	// Compute step (solve Jacobian * step = residuals).
 	_step = _jacobianSvd.solve(_residuals);
@@ -67,21 +67,21 @@ NLLSIterationLog NLLSNewtonSolver::iterate() {
 	const int iterationNumber = (int)_iterationLogs.size() + 1;
 	const Eigen::VectorXd singularValues = _jacobianSvd.singularValues();
 	const double conditionNumber = singularValues(singularValues.rows() - 1) / singularValues(0);
-	std::cout<<"ConditionNumber = "<<conditionNumber<<std::endl;
+	//std::cout<<"ConditionNumber = "<<conditionNumber<<std::endl;
 	const bool isSingular = (singularValues.rows() != _jacobianSvd.nonzeroSingularValues());
 	const double residualNorm = _residuals.norm();
 	const double stepNorm = _step.norm();
 	//std::cout<<"Step = "<<_step<<std::endl;	
-	std::cout<<"Step Size= "<<stepNorm<<std::endl;
+	//std::cout<<"Step Size= "<<stepNorm<<std::endl;
 	_system->computeResiduals(_residuals);
-	std::cout<<"||Redisuals After|| = "<<_residuals.norm()<<std::endl;
+	//std::cout<<"||Redisuals After|| = "<<_residuals.norm()<<std::endl;
 	const bool isConverged = _step.norm() <= stepConvergenceTolerance;
 	NLLSIterationLog iterationLog(iterationNumber, conditionNumber, isSingular, residualNorm, stepNorm, isConverged);
 	_iterationLogs.push_back(iterationLog);
 
-	std::cout<<"Press enter to continue..."<<std::endl;
-	char ch[4];
-	std::cin.getline(ch, 1);
+	//std::cout<<"Press enter to continue..."<<std::endl;
+	//char ch[4];
+	//std::cin.getline(ch, 1);
 
 	// Verify iteration.
 	if (isSingular)

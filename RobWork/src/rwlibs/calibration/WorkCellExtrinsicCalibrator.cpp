@@ -41,8 +41,7 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 		sortedMeasurements[measurement->getDeviceName()].push_back(measurement);
 	}
 
-	std::vector<Device2SensorResult> results;
-	std::cout<<"Sorted Measurements size = "<<sortedMeasurements.size()<<std::endl;
+	std::vector<Device2SensorResult> results;	
 	for (StringMeasurementMap::iterator it = sortedMeasurements.begin(); it != sortedMeasurements.end(); ++it) {
 		calibrateForSingleDevice((*it).first, (*it).second, results);
 	}
@@ -72,44 +71,41 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 		const std::string name = (*it).first;
 		Vector3D<> pos = positions[name] /= (double)cnts[name];
 		Vector3D<> eaavec = eaas[name] /= (double)cnts[name];
-		std::cout<<"Marker Correction Pos = "<<pos<<"  EAA="<<eaavec<<std::endl;
+		//std::cout<<"Marker Correction Pos = "<<pos<<"  EAA="<<eaavec<<std::endl;
 		workcellCalibration->getFixedFrameCalibrationForMarker((*it).first)->setCorrectionTransform(Transform3D<>(pos, EAA<>(eaavec(0), eaavec(1), eaavec(2)))); 		
 	}
 
 
 	//Find the offset of the sensors
 	std::string primaryDevice = workcellCalibration->getDeviceMarkerPairs().front().first->getName();
-	std::cout<<"Primary Device = "<<primaryDevice<<std::endl;
+	//std::cout<<"Primary Device = "<<primaryDevice<<std::endl;
 	BOOST_FOREACH(Device2SensorResult res, results) {		
-		std::cout<<"Result: "<<std::endl;
-		std::cout<<" base2sensor = "<<res.base2sensor<<std::endl;
-		std::cout<<" end2marker = "<<res.tool2marker<<std::endl;
+		//std::cout<<"Result: "<<std::endl;
+		//std::cout<<" base2sensor = "<<res.base2sensor<<std::endl;
+		//std::cout<<" end2marker = "<<res.tool2marker<<std::endl;
 
 		if (res.device == primaryDevice) {
 			Frame* baseFrame = _workcell->findDevice(res.device)->getBase();
 			Frame* sensorFrame = _workcell->findFrame(res.sensor);
 			Transform3D<> Tsensor2base = Kinematics::frameTframe(sensorFrame, baseFrame, _workcell->getDefaultState());
 			Transform3D<> Tcorrection = Tsensor2base * inverse(res.base2sensor);
-			std::cout<<"Sensor Correction = "<<Tcorrection<<std::endl;
+//			std::cout<<"Sensor Correction = "<<Tcorrection<<std::endl;
 			workcellCalibration->getFixedFrameCalibrationForSensor(res.sensor)->setCorrectionTransform(Tcorrection);
 
 			Transform3D<> Tbase2sensor= Kinematics::frameTframe(baseFrame, sensorFrame, _workcell->getDefaultState());
 		} else {
-			std::cout<<"SOMETHING IS WRONG WE DO NOT APPLY IT"<<std::endl;
-			//We don't do anything with these measurements yet....
+			RW_THROW("Inconsistency between the primary device and the device for which the result has been computed.");			
 		}
 	}
 }
 
 void WorkCellExtrinsicCalibrator::calibrateForSingleDevice(const std::string& deviceName, const std::vector<CalibrationMeasurement::Ptr>& measurements, std::vector<Device2SensorResult>& results) {
-	std::cout<<"Run calibration for "<<deviceName<<std::endl;
 	typedef std::map<std::string, std::vector<CalibrationMeasurement::Ptr> > StringMeasurementMap;
 	StringMeasurementMap sortedMeasurements;
 
 	BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, _measurements) {
 		sortedMeasurements[measurement->getSensorFrameName()].push_back(measurement);
 	}
-	std::cout<<"Measurements Sorted into sensors = "<<sortedMeasurements.size()<<std::endl;
 	Vector3D<> eaaAvg(0,0,0);
 	Vector3D<> posAvg(0,0,0);
 	int cnt = 0;
@@ -119,13 +115,8 @@ void WorkCellExtrinsicCalibrator::calibrateForSingleDevice(const std::string& de
 		result.sensor = (*it).first; //The sensor name
 		//std::pair<Transform3D<>, Transform3D<> > res = 
 		calibrateSingleDeviceAndSensor((*it).second, result);
-		std::cout<<"Number of measurements for "<<(*it).first<<" = "<<(*it).second.size()<<std::endl;
 		results.push_back(result);
 		EAA<> eaaBase(result.base2sensor.R());
-		std::cout<<"=============="<<std::endl;
-		std::cout<<"Cnt = "<<(*it).second.size()<<std::endl;
-		std::cout<<"eaa = "<<eaaBase<<std::endl;
-		std::cout<<"pos = "<<result.base2sensor.P()<<std::endl;		
 	}
 /*
 	eaaAvg /= (double)cnt;
@@ -386,7 +377,7 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	}
 
 	Transform3D<> Tbase = Transform3D<>(Vector3D<>(px), Rotation3D<>(RX));
-	std::cout<<"Tbase = "<<Tbase<<std::endl;
+	//std::cout<<"Tbase = "<<Tbase<<std::endl;
 	//Find the average TnTCP
 	std::vector<Transform3D<> > tntcps;
 	Vector3D<> posTool(0,0,0);
@@ -416,9 +407,9 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	eaaAxis /= (double)K;
 	eaaAxis = normalize(eaaAxis);
 	eaaAngle /= (double)K;
-	std::cout<<"posTool = "<<posTool<<std::endl;
-	std::cout<<"eaaTool = "<<eaaAxis<<"  "<<eaaAngle<<std::endl;
-	std::cout<<"Ttool = "<<Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle))<<std::endl;
+	//std::cout<<"posTool = "<<posTool<<std::endl;
+	//std::cout<<"eaaTool = "<<eaaAxis<<"  "<<eaaAngle<<std::endl;
+	//std::cout<<"Ttool = "<<Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle))<<std::endl;
 	result.base2sensor = Tbase;
 	result.tool2marker = Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle));
 	result.cnt = measurements.size();
