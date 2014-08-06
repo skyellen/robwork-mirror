@@ -76,6 +76,8 @@ public:
 	rw::math::Wrench6D<> force_torque;
 	//! @brief Indicate whether or not the control strategy has finished the assembly operation.
 	bool done;
+	//! @brief Indicate if the insertion succeeded.
+	bool success;
 };
 //! @}
 } /* namespace assembly */

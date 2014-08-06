@@ -21,7 +21,8 @@ using namespace rwlibs::assembly;
 
 AssemblyControlResponse::AssemblyControlResponse():
 	type(POSITION),
-	done(false)
+	done(false),
+	success(false)
 {
 }
 

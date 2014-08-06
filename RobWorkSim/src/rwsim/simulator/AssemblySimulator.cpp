@@ -332,6 +332,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 			}
 		}
 
+		std::string errorstring;
 		if(!inError){
 			try {
 				simulator->step(dt, state);
@@ -339,6 +340,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 			} catch (std::exception& e){
 				std::cout << "Error stepping" << std::endl;
 				std::cout << e.what() << std::endl;
+				errorstring = e.what();
 				inError = 	true;
 			} catch (...){
 				std::cout << "Error stepping" << std::endl;
@@ -359,8 +361,11 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 			simTime = sTime;
 		}
 
-		if (inError)
+		if (inError) {
 			running = false;
+			result->error = AssemblyResult::SIMULATION_ERROR;
+			result->errorMessage = errorstring;
+		}
 
 		simState.state = state;
 		simState.time = simTime;
@@ -559,9 +564,10 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		//std::cout << "Insertion: " << ftSensor->getForce() << " " << ftSensor->getTorque() << std::endl;
 		//simState.phase = SimState::FINISHED;
 		if (response != NULL) {
-			if (response->done)
+			if (response->done) {
 				simState.phase = SimState::FINISHED;
-			else {
+				result->success = response->success;
+			} else {
 				if (response->type == AssemblyControlResponse::VELOCITY) {
 					VelocityScrew6D<> velocity = simState.baseTfemale.R() * response->femaleTmaleVelocityTarget;
 					if (simState.maleController != NULL) {

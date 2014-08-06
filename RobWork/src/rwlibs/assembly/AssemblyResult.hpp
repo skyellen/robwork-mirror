@@ -52,6 +52,13 @@ public:
 	//! @brief smart pointer type to this class
     typedef rw::common::Ptr<AssemblyResult> Ptr;
 
+	//! @brief Different error codes.
+	typedef enum Error {
+		NONE,            //!< No error.
+		SIMULATION_ERROR,//!< Failure of physics engine.
+		OTHER            //!< Other unspecified error.
+	} Error;
+
     //! @brief Constructor for empty result.
 	AssemblyResult();
 
@@ -104,6 +111,20 @@ public:
 	 */
 	static std::vector<AssemblyResult::Ptr> load(std::istringstream& inputStream);
 
+	/**
+	 * @brief Convert an error to string format.
+	 * @param error [in] the error to convert.
+	 * @return a string representation.
+	 */
+	static std::string toString(const Error& error);
+
+	/**
+	 * @brief Convert a string to a specific error.
+	 * @param string [in] the string to convert.
+	 * @return an error enum.
+	 */
+	static Error toError(const std::string& string);
+
 public:
 	/**
 	 * @name Mandatory settings
@@ -112,6 +133,8 @@ public:
 	///@{
 	//! @brief True or false depending on if the two objects where assembled as specified in the task.
 	bool success;
+	//! @brief Indication of an error.
+	Error error;
 	//! @brief The final relative transformation between the objects (with respect to the TCP frames set in the task).
 	rw::math::Transform3D<> femaleTmaleEnd;
     ///@}
@@ -138,6 +161,8 @@ public:
 	rw::trajectory::Path<rw::trajectory::Timed<AssemblyState> > assumedState;
 	//! @brief The approach pose used.
 	rw::math::Transform3D<> approach;
+	//! @brief Detailed error message.
+	std::string errorMessage;
     ///@}
 };
 //! @}

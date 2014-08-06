@@ -29,7 +29,8 @@ using namespace rwlibs::assembly;
 using namespace rwlibs::task;
 
 AssemblyResult::AssemblyResult():
-	success(false)
+	success(false),
+	error(NONE)
 {
 }
 
@@ -37,8 +38,10 @@ AssemblyResult::AssemblyResult(CartesianTask::Ptr task) {
 	taskID = task->getPropertyMap().get<std::string>("TaskID","");
 	resultID = task->getPropertyMap().get<std::string>("ResultID","");
 	success = task->getPropertyMap().get<bool>("Success",false);
+	error = toError(task->getPropertyMap().get<std::string>("Error",""));
 	femaleTmaleEnd = task->getPropertyMap().get<Transform3D<> >("FemaleTmaleEnd",Transform3D<>::identity());
 	approach = task->getPropertyMap().get<Transform3D<> >("Approach",Transform3D<>::identity());
+	errorMessage = task->getPropertyMap().get<std::string>("ErrorMessage","");
 	realState.clear();
 	assumedState.clear();
 	BOOST_FOREACH(CartesianTarget::Ptr target, task->getTargets()) {
@@ -64,8 +67,10 @@ AssemblyResult::Ptr AssemblyResult::clone() const {
 	res->taskID = taskID;
 	res->resultID = resultID;
 	res->success = success;
+	res->error = error;
 	res->femaleTmaleEnd = femaleTmaleEnd;
 	res->approach = approach;
+	res->errorMessage = errorMessage;
 
 	res->realState = realState;
 	res->assumedState = assumedState;
@@ -78,8 +83,10 @@ CartesianTask::Ptr AssemblyResult::toCartesianTask() {
 	root->getPropertyMap().set<std::string>("TaskID",taskID);
 	root->getPropertyMap().set<std::string>("ResultID",resultID);
 	root->getPropertyMap().set<bool>("Success",success);
+	root->getPropertyMap().set<std::string>("Error",toString(error));
 	root->getPropertyMap().set<rw::math::Transform3D<> >("FemaleTmaleTargetEnd",femaleTmaleEnd);
 	root->getPropertyMap().set<rw::math::Transform3D<> >("Approach",approach);
+	root->getPropertyMap().set<std::string>("ErrorMessage",errorMessage);
 	BOOST_FOREACH(const Timed<AssemblyState> &tstate, realState) {
 		AssemblyState state = tstate.getValue();
 		double time = tstate.getTime();
@@ -165,4 +172,23 @@ std::vector<AssemblyResult::Ptr> AssemblyResult::load(std::istringstream& inputS
 		results.push_back(aresult);
 	}
 	return results;
+}
+
+std::string AssemblyResult::toString(const Error& error) {
+	if (error == NONE)
+		return "";
+	else if (error == SIMULATION_ERROR)
+		return "Simulation";
+	return "OTHER";
+}
+
+AssemblyResult::Error AssemblyResult::toError(const std::string& string) {
+	std::string str = string;
+	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+	if (str == "")
+		return NONE;
+	if (str == "SIMULATION")
+		return SIMULATION_ERROR;
+	else
+		return OTHER;
 }
