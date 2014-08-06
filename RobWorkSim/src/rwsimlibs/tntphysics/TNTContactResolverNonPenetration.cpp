@@ -66,7 +66,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 	bool testedAll = false;
 	while (repeat) {
 		if (iterations == TNT_CONTACTRESOLVER_MAX_ITERATIONS)
-			RW_THROW("TNTContactResolverNonPenetration (solve): maximum number of iterations (" << TNT_CONTACTRESOLVER_MAX_ITERATIONS << ") reached in contact resolution.");
+			RW_THROW("TNTContactResolverNonPenetration (solve): maximum number of iterations (" << TNT_CONTACTRESOLVER_MAX_ITERATIONS << ") reached in contact resolution - " << allCombinations.size() << " combinations in total.");
 		// Check if we have already tested this combination before.
 		bool testedCombination = false;
 		BOOST_FOREACH(const std::list<bool>& comb, testedCombinations) {
@@ -177,7 +177,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 			const Vector3D<> linRelVel = linVelI-linVelJ;
 			const Vector3D<> nij = contact->getNormalW(tmpState);
 			if (contact->isLeaving()) {
-				const bool penetrating = dot(-linRelVel,nij) < -1e-8;
+				const bool penetrating = dot(-linRelVel,nij) < -1e-5;
 				if (penetrating) {
 					repeat = true;
 					contact->setType(TNTContact::Sliding,TNTContact::Sliding);
