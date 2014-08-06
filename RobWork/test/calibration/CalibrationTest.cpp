@@ -30,9 +30,6 @@ using namespace rw::models;
 
 std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::SerialDevice::Ptr serialDevice, const std::vector<Frame*>& sensorFrames, Frame::Ptr markerFrame, rw::kinematics::State state, unsigned int measurementCount, bool addNoise);
 
-class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
-class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
-
 BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 #ifdef _WIN32
 	_CrtSetDbgFlag(0);
@@ -71,11 +68,6 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//	workCellCalibrationExisting->revert();
 	 
 	// Setup artificial calibration.
-	const int ENCODER_PARAMETER_TAU = 0, ENCODER_PARAMETER_SIGMA = 1; 
-	std::vector<rw::math::Function<>::Ptr> encoderCorrectionFunctions;
-
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderTauFunction()));
-	encoderCorrectionFunctions.push_back(rw::common::ownedPtr(new EncoderSigmaFunction()));
 	std::vector<rw::kinematics::Frame*> sensorFrames;
 	sensorFrames.push_back(sensorFrame1.get());
 	sensorFrames.push_back(sensorFrame2.get());
@@ -83,7 +75,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	std::vector<WorkCellCalibration::DeviceMarkerPair> deviceMarkerPairs;
 	deviceMarkerPairs.push_back(std::make_pair(serialDevice, measurementFrame.get()));
 
-	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames, encoderCorrectionFunctions)));
+	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0), 
 																														  rw::math::RPY<>(1.7 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad, -2.0 * rw::math::Deg2Rad)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0), 
@@ -106,16 +98,16 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
-		artificialLinkCalibration->setParameterSet(parameterSet);
+		artificialLinkCalibration->setParameterSet(parameterSet); 
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointEncoderCalibration();
 	for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
-		if (parameterSet(ENCODER_PARAMETER_TAU).isEnabled())
-			parameterSet(ENCODER_PARAMETER_TAU) = 0.003;
-		if (parameterSet(ENCODER_PARAMETER_SIGMA).isEnabled())
-			parameterSet(ENCODER_PARAMETER_SIGMA) = -0.002;
+		if (parameterSet(JointEncoderCalibration::PARAMETER_TAU).isEnabled())
+			parameterSet(JointEncoderCalibration::PARAMETER_TAU) = 0.003;
+		if (parameterSet(JointEncoderCalibration::PARAMETER_SIGMA).isEnabled())
+			parameterSet(JointEncoderCalibration::PARAMETER_SIGMA) = -0.002;
 		artificialJointCalibration->setParameterSet(parameterSet);
 	}
 
@@ -127,7 +119,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 	artificialCalibration->revert();
 	//// Initialize calibration, jacobian and calibrator.
-	WorkCellCalibration::Ptr calibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames, encoderCorrectionFunctions)));
+	WorkCellCalibration::Ptr calibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames)));
 	WorkCellJacobian::Ptr jacobian(rw::common::ownedPtr(new WorkCellJacobian(calibration)));
 	WorkCellCalibrator::Ptr calibrator(rw::common::ownedPtr(new WorkCellCalibrator(workCell, calibration, jacobian)));
 	calibrator->setMeasurements(measurements);
