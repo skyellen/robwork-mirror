@@ -222,6 +222,7 @@ class Gripper // : public TreeDevice
 			_isJawParametrized = true;
 			
 			_quality.maxstress = getMaxStress();
+			_quality.volume = getVolume();
 		}
 		
 		bool isBaseParametrized() const { return _isBaseParametrized; }
