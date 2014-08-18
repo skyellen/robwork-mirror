@@ -1,54 +1,49 @@
 /****************************************************************************
-** 
-** Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-** Contact: Nokia Corporation (qt-info@nokia.com)
-** 
-** This file is part of a Qt Solutions component.
 **
-** Commercial Usage  
-** Licensees holding valid Qt Commercial licenses may use this file in
-** accordance with the Qt Solutions Commercial License Agreement provided
-** with the Software or, alternatively, in accordance with the terms
-** contained in a written agreement between you and Nokia.
-** 
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-** 
-** In addition, as a special exception, Nokia gives you certain
-** additional rights. These rights are described in the Nokia Qt LGPL
-** Exception version 1.1, included in the file LGPL_EXCEPTION.txt in this
-** package.
-** 
-** GNU General Public License Usage 
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-** 
-** Please note Third Party Software included with Qt Solutions may impose
-** additional restrictions and it is the user's responsibility to ensure
-** that they have met the licensing requirements of the GPL, LGPL, or Qt
-** Solutions Commercial license and the relevant license of the Third
-** Party Software they are using.
-** 
-** If you are unsure which license is appropriate for your use, please
-** contact Nokia at qt-info@nokia.com.
-** 
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of the Qt Solutions component.
+**
+** $QT_BEGIN_LICENSE:BSD$
+** You may use this file under the terms of the BSD license as follows:
+**
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
+**     of its contributors may be used to endorse or promote products derived
+**     from this software without specific prior written permission.
+**
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+**
+** $QT_END_LICENSE$
+**
 ****************************************************************************/
 
 
 #include "qtpropertybrowser.h"
-#include <QtCore/QSet>
-#include <QtCore/QMap>
-#include <QtGui/QIcon>
+#include <QSet>
+#include <QMap>
+#include <QIcon>
+#include <QLineEdit>
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -61,7 +56,10 @@ QT_BEGIN_NAMESPACE
 class QtPropertyPrivate
 {
 public:
-    QtPropertyPrivate(QtAbstractPropertyManager *manager) : q_ptr(0), m_enabled(true), m_modified(false), m_manager(manager) {}
+    QtPropertyPrivate(QtAbstractPropertyManager *manager)
+        : m_enabled(true),
+          m_modified(false),
+          m_manager(manager) {}
     QtProperty *q_ptr;
 
     QSet<QtProperty *> m_parentItems;
@@ -300,6 +298,19 @@ QIcon QtProperty::valueIcon() const
 QString QtProperty::valueText() const
 {
     return d_ptr->m_manager->valueText(this);
+}
+
+/*!
+    Returns the display text according to the echo-mode set on the editor.
+
+    When the editor is a QLineEdit, this will return a string equal to what
+    is displayed.
+
+    \sa QtAbstractPropertyManager::valueText()
+*/
+QString QtProperty::displayText() const
+{
+    return d_ptr->m_manager->displayText(this);
 }
 
 /*!
@@ -725,6 +736,35 @@ QString QtAbstractPropertyManager::valueText(const QtProperty *property) const
 }
 
 /*!
+    Returns a string representing the current state of the given \a
+    property.
+
+    The default implementation of this function returns an empty
+    string.
+
+    \sa QtProperty::valueText()
+*/
+QString QtAbstractPropertyManager::displayText(const QtProperty *property) const
+{
+    Q_UNUSED(property)
+    return QString();
+}
+
+/*!
+    Returns the echo mode representing the current state of the given \a
+    property.
+
+    The default implementation of this function returns QLineEdit::Normal.
+
+    \sa QtProperty::valueText()
+*/
+EchoMode QtAbstractPropertyManager::echoMode(const QtProperty *property) const
+{
+    Q_UNUSED(property)
+    return QLineEdit::Normal;
+}
+
+/*!
     Creates a property with the given \a name which then is owned by this manager.
 
     Internally, this function calls the createProperty() and
@@ -783,7 +823,7 @@ QtProperty *QtAbstractPropertyManager::createProperty()
     property is being destroyed so that it can remove the property's
     additional attributes.
 
-    \sa clear(),  propertyDestroyed()
+    \sa clear(), propertyDestroyed()
 */
 void QtAbstractPropertyManager::uninitializeProperty(QtProperty *property)
 {
@@ -844,7 +884,7 @@ void QtAbstractPropertyManager::uninitializeProperty(QtProperty *property)
     which also provides a pure virtual convenience overload of this
     function enabling access to the property's manager.
 
-    \sa  QtAbstractEditorFactory::createEditor()
+    \sa QtAbstractEditorFactory::createEditor()
 */
 
 /*!
@@ -1223,7 +1263,6 @@ public:
 };
 
 QtAbstractPropertyBrowserPrivate::QtAbstractPropertyBrowserPrivate() :
-   q_ptr(0),
    m_currentItem(0)
 {
 }
@@ -1815,14 +1854,12 @@ QtBrowserItem *QtAbstractPropertyBrowser::insertProperty(QtProperty *property,
     QList<QtProperty *> pendingList = properties();
     int pos = 0;
     int newPos = 0;
-    // Unused: QtProperty *properAfterProperty = 0;
     while (pos < pendingList.count()) {
         QtProperty *prop = pendingList.at(pos);
         if (prop == property)
             return 0;
         if (prop == afterProperty) {
             newPos = pos + 1;
-            //properAfterProperty = afterProperty;
         }
         pos++;
     }
@@ -1986,4 +2023,4 @@ void QtAbstractPropertyBrowser::setCurrentItem(QtBrowserItem *item)
 QT_END_NAMESPACE
 #endif
 
-#include "moc_qtpropertybrowser.cxx"
+#include "moc_qtpropertybrowser.cpp"
