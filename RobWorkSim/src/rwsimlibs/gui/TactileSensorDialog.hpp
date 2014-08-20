@@ -15,6 +15,8 @@
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
+#include <QDialog>
+#include <QGraphicsScene>
 
 #include <rw/kinematics/State.hpp>
 

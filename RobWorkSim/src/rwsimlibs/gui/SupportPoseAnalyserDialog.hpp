@@ -15,6 +15,7 @@
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
+#include <QGraphicsPixmapItem>
 
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>

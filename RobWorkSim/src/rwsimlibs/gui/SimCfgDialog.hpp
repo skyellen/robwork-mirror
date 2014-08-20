@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
+#include <QDialog>
 
 namespace Ui {
     class SimCfgDialog;

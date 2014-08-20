@@ -13,6 +13,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include <QPushButton>
+#include <QInputDialog>
+
 #include <fstream>
 #include <iostream>
 

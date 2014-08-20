@@ -31,6 +31,7 @@
 #include <QLabel>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QGroupBox>
 
 #include <boost/foreach.hpp>
 
