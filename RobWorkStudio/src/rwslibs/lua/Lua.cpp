@@ -188,7 +188,10 @@ void Lua::setupMenu(QMenu* pluginmenu){
     _openEditorAction = new QAction(tr("Lua Teachpad"), this); // owned
     connect(_openEditorAction, SIGNAL(triggered()), this, SLOT(startEditor()));
 
-    boost::tuple<QWidget*, QMenu*, int> action = getMenu(menu, "&Tools");
+
+
+
+    boost::tuple<QWidget*, QMenu*, int> action = RobWorkStudioPlugin::getMenu((QWidget*)menu, std::string("&Tools") );
     if(action.get<1>()!=NULL){
         action.get<1>()->addAction( _openEditorAction );
     } else {
