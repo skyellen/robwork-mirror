@@ -935,9 +935,9 @@ void RobWorkStudio::open()
         this,
         "Open WorkCell or Drawable", // Title
         dir, // Directory
-        "All supported ( *.wu *.wc *.wc.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj" + assimpExtensions + ")"
+        "All supported ( *.wu *.wc *.xml *.wc.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj" + assimpExtensions + ")"
         "\nTUL files ( *.wu *.wc *.dev )"
-        "\nRW XML files ( *.wc.xml )"
+        "\nRW XML files ( *.wc.xml *.xml)"
         "\nDrawables ( *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj" + assimpExtensions + ")"
         "\n All ( *.* )",
         &selectedFilter);
