@@ -4,6 +4,7 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rwslibs/swig/ScriptTypes.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rwslibs/rwstudioapp/RobWorkStudioApp.hpp>
 using namespace rwlibs::swig;
 using namespace rws::swig;
 
@@ -172,30 +173,35 @@ public:
         }
 
         void fireGenericEvent(const std::string& str){
-            $self->genericEvent().fire(str);
+        	RW_WARN("fireGenericEvent(const std::string& str) IS DEPRECATED. PLEASE USE send and wait. These use the GenericAnyEvent");
+        	
+            $self->postGenericEvent(str);
         }
 
         void send(const std::string& id){
-            $self->genericEvent().fire(id);
+        	boost::any data;
+        	std::cout << "Sending event: " << id << std::endl;
+            $self->postGenericAnyEvent(id, data);
         }
         void send(const std::string& id, const std::string& val){
-            $self->genericAnyEvent().fire(id, val);
+            $self->postGenericAnyEvent(id, val);
         }
 
         void send(const std::string& id, double val){
-            $self->genericAnyEvent().fire(id, val);
+            $self->postGenericAnyEvent(id, val);
         }
 
         void send(const std::string& id, Q val){
-            $self->genericAnyEvent().fire(id, val);
+            $self->postGenericAnyEvent(id, val);
         }
 
         void send(const std::string& id, const PropertyMap& val){
-            $self->genericAnyEvent().fire(id, val);
+            $self->postGenericAnyEvent(id, val);
         }
 
         int wait(const std::string& id){
             try {
+            	
                 $self->waitForAnyEvent(id);
             } catch ( ... ){
                 return 0;
@@ -269,6 +275,21 @@ public:
 /********************************************
  * RWSLIBS RWSTUDIOAPP
  ********************************************/
+namespace rws{
+    class RobWorkStudioApp
+     {
+     public:
+        RobWorkStudioApp(const std::string& args);
+        ~RobWorkStudioApp();
+
+        void start();
+        void run();
+
+        bool isRunning();
+		RobWorkStudio * getRobWorkStudio();
+	
+     };
+}
 
 /********************************************
  * RWSLIBS SENSORS
@@ -312,7 +333,7 @@ public:
     function setQ(dev, q)
       local state = rws.getState()
       dev:setQ(q, state)
-      setState(state)
+      rws.setState(state)
     end
 
     function setTransform(frame, trans)
@@ -321,13 +342,13 @@ public:
       setState(state)
     end
 
-
+	
     function wTf(frame)
-      return rw.worldTframe(frame, getState() )
+      return rw.worldTframe(frame, rws.getState() )
     end
 
     function fTf(frameA, frameB)
-      return rw.worldTframe(frameA, frameB, getState() )
+      return rw.worldTframe(frameA, frameB, rws.getState() )
     end
 }
 #endif
