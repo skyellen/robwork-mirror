@@ -168,7 +168,8 @@ void GTaskVisPlugin::open(WorkCell* workcell)
         return;
     _wc = workcell;
     _render = ownedPtr( new RenderTargets() );
-    getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame() );
+    _targetDrawable = getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame() );
+
 
     BOOST_FOREACH(MovableFrame* object, workcell->findFrames<MovableFrame>() ){
         _frameSelectBox->addItem(object->getName().c_str());
@@ -227,6 +228,12 @@ void GTaskVisPlugin::updateVis(){
     bool showInGripperFrame = _invertBox->isChecked();
 
     Transform3D<> wTo = Kinematics::worldTframe(selframe, getRobWorkStudio()->getState() );
+    // set the frame of the drawable
+    getRobWorkStudio()->getWorkCellScene()->removeDrawable(_targetDrawable);
+    _targetDrawable = getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, selframe );
+    _targetDrawable->setTransform( inverse( wTo ) );
+
+
     Transform3D<> wTtcp = Kinematics::worldTframe(tcpframe, getRobWorkStudio()->getState() );
 
     int nrToShow = _nrOfTargetSpin->value();
@@ -566,7 +573,9 @@ void GTaskVisPlugin::selectGrasp(int index){
                 q = targets[index].ctask->closeQ;
             }
         } else {
-            if( targets[index].ctask->openQ.size()>0 ){
+            if(targets[index].ctarget.result != NULL && targets[index].ctarget.result->gripperConfigurationGrasp.size()>0){
+                q = targets[index].ctarget.result->gripperConfigurationGrasp;
+            } else if( targets[index].ctask->openQ.size()>0 ){
                 q = targets[index].ctask->openQ;
             }
         }

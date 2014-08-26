@@ -82,6 +82,7 @@ private:
     rwlibs::task::GraspTask::Ptr _graspTask;
     std::vector<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _ymtargets;
     rw::graphics::Render::Ptr _render;
+    rw::graphics::DrawableNode::Ptr _targetDrawable;
 };
 
 #endif
