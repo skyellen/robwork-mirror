@@ -175,6 +175,8 @@ namespace rws {
 		void postState(const rw::kinematics::State& state);
 		void postUpdateAndRepaint();
 		void postSaveViewGL(const std::string& str);
+		void postGenericEvent(const std::string& id);
+		void postGenericAnyEvent(const std::string& id, boost::any);
 
 		/**
 		 * @brief Returns the current state
@@ -280,7 +282,6 @@ namespace rws {
 		 * @return Reference to the GenericEvent
 		 */
 		GenericEvent& genericEvent() { return _genericEvent; }
-
 
         typedef boost::function<void(const std::string&, boost::any)> GenericAnyEventListener;
 

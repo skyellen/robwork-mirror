@@ -419,6 +419,7 @@ void RobWorkStudio::showPropertyEditor(){
     // start property editor
    _propEditor->update();
    _propEditor->show();
+   _propEditor->resize(400,600);
 }
 
 
@@ -1083,48 +1084,47 @@ namespace {
         static const QEvent::Type ExitEvent = (QEvent::Type)1204;
         static const QEvent::Type SetWorkCell = (QEvent::Type)1205;
         static const QEvent::Type OpenWorkCell = (QEvent::Type)1206;
+        static const QEvent::Type GenericEvent = (QEvent::Type)1207;
+        static const QEvent::Type GenericAnyEvent = (QEvent::Type)1208;
 
-        //static QEvent::Type SetStateEvent = 1200;
-        RobWorkStudioEvent(QEvent::Type type, rw::common::Ptr<bool> handshake):QEvent(type),_hs(handshake){}
+        boost::any _anyData;
+        rw::common::Ptr<bool> _hs;
 
-        RobWorkStudioEvent(QEvent::Type type, const std::string& string, rw::common::Ptr<bool> handshake=NULL):
-            QEvent(type), _str(string),_hs(handshake){}
-
-        RobWorkStudioEvent(QEvent::Type type, rw::models::WorkCell::Ptr wc, rw::common::Ptr<bool> handshake=NULL):
-            QEvent(type), _wc(wc),_hs(handshake){}
-
-        RobWorkStudioEvent(const State& state, rw::common::Ptr<bool> handshake=NULL):
-            QEvent(SetStateEvent),_hs(handshake)
+        RobWorkStudioEvent(QEvent::Type type, boost::any adata):
+        	QEvent(type),_anyData(adata),_hs( ownedPtr( new bool( false) ))
         {
-            _data = ownedPtr( new rw::common::Property<State>("State","",state) );
         }
 
-        RobWorkStudioEvent(const TimedStatePath& path, rw::common::Ptr<bool> handshake=NULL):
-            QEvent(SetTimedStatePathEvent),_hs(handshake)
+        RobWorkStudioEvent(QEvent::Type type):
+        	QEvent(type),_anyData(NULL),_hs( ownedPtr( new bool( false) ))
         {
-            _data = ownedPtr( new rw::common::Property<TimedStatePath>("TimedStatePath","",path) );
         }
 
-        ~RobWorkStudioEvent(){
+        virtual ~RobWorkStudioEvent(){
+        	std::cout << "RobWorkStudioEvent: destruct" << std::endl;
             done();
         }
 
         void done(){
-            //if(_hs!=NULL)
-            //    *_hs = true;
+
+            if(_hs!=NULL){
+            	std::cout << "Done: " << std::endl;
+            	std::cout << "set hs "<<std::endl;
+                *_hs = true;
+                std::cout << "hs " << *_hs <<std::endl;
+            } else {
+            	std::cout << "Done: hs==NULL" << std::endl;
+            }
         }
 
-        static void wait(Ptr<bool> hs){
-            // for some reason this produce endless loop in some cases.....
-            //if(hs!=NULL)
-            //    while(*hs==false)
-            //        TimerUtil::sleepMs(10);
+        void wait(){
+            while(_hs!=NULL && *_hs==false){
+            	TimerUtil::sleepMs(500);
+            	std::cout << "Wait1: " << *_hs << std::endl;
+            }
+            std::cout << "Wait done: " << std::endl;
         }
 
-		rw::common::PropertyBase::Ptr _data;
-        std::string _str;
-        rw::models::WorkCell::Ptr _wc;
-        rw::common::Ptr<bool> _hs;
     };
 }
 
@@ -1143,74 +1143,89 @@ void RobWorkStudio::setState(const rw::kinematics::State& state)
 }
 
 void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& path){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(path, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetTimedStatePathEvent, path);
+    QApplication::postEvent( this, event );
+    event->wait();
 }
 
 void RobWorkStudio::postExit(){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent, handshake) );
-
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent, NULL);
+	QApplication::postEvent( this, event );
+	//event->wait();
 }
 
 void RobWorkStudio::postState(const rw::kinematics::State& state){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(state, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+    RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetStateEvent, state) ;
+    QApplication::postEvent( this, event );
+    event->wait();
 }
 
 void RobWorkStudio::postUpdateAndRepaint(){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent);
+    QApplication::postEvent( this, event);
+    event->wait();
 }
 
 void RobWorkStudio::postSaveViewGL(const std::string& filename){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename);
+    QApplication::postEvent( this, event );
+    event->wait();
 }
 
 void RobWorkStudio::postWorkCell(rw::models::WorkCell::Ptr workcell){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SetWorkCell, workcell, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetWorkCell, workcell);
+    QApplication::postEvent( this, event );
+    event->wait();
 }
 
 void RobWorkStudio::postOpenWorkCell(const std::string& filename){
-    Ptr<bool> handshake = ownedPtr( new bool(false) );
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::OpenWorkCell, filename, handshake) );
-    //RobWorkStudioEvent::wait(handshake);
+    RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::OpenWorkCell, filename);
+    QApplication::postEvent( this, event );
+    event->wait();
+}
+
+void RobWorkStudio::postGenericEvent(const std::string& id){
+	std::cout << "postGenericEvent" << std::endl;
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::GenericEvent, id);
+    QApplication::postEvent( this, event );
+    std::cout << "waiting for event" << std::endl;
+    event->wait();
+}
+
+void RobWorkStudio::postGenericAnyEvent(const std::string& id, boost::any data){
+	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::GenericAnyEvent, std::make_pair(id,data));
+    QApplication::postEvent( this, event );
+    event->wait();
 }
 
 bool RobWorkStudio::event(QEvent *event)
 {
-    if (event->type() == RobWorkStudioEvent::SetStateEvent ) {
-        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-        Property<State> *p = toProperty<State>( rwse->_data.get() );
-        if (p!=NULL) {
-            setState( p->getValue() );
-        }
+	RobWorkStudioEvent *rwse_test = dynamic_cast<RobWorkStudioEvent *>(event);
+    if(rwse_test !=NULL)
+		std::cout << "EVENT: " << event->type() << std::endl;
+    //   rwse->done();
+
+
+	// WARNING: only use this pointer if you know its the right type
+    RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+	if (event->type() == RobWorkStudioEvent::SetStateEvent ) {
+        State state = boost::any_cast<State>(rwse->_anyData);
+        setState( state );
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::SetTimedStatePathEvent) {
-        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-        Property<TimedStatePath> *p = toProperty<TimedStatePath>( rwse->_data.get() );
-        if (p!=NULL) {
-            setTimedStatePath( p->getValue() );
-        }
+        TimedStatePath tstate = boost::any_cast<TimedStatePath>(rwse->_anyData);
+        setTimedStatePath( tstate );
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::UpdateAndRepaintEvent) {
-        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
         updateAndRepaint();
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::SaveViewGLEvent) {
-        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+        std::string str = boost::any_cast<std::string>(rwse->_anyData);
         try{
-            saveViewGL(QString( rwse->_str.c_str() ));
+            saveViewGL(QString( str.c_str() ));
         } catch (const Exception& exp) {
             QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(exp.what()));
         } catch (std::exception& e) {
@@ -1222,33 +1237,35 @@ bool RobWorkStudio::event(QEvent *event)
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::SetWorkCell){
-        RobWorkStudioEvent *rwse =  static_cast<RobWorkStudioEvent *>(event);
-        setWorkCell( rwse->_wc);
+        WorkCell::Ptr wc = boost::any_cast<WorkCell::Ptr>(rwse->_anyData);
+        setWorkCell( wc);
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::OpenWorkCell){
-        RobWorkStudioEvent *rwse =  static_cast<RobWorkStudioEvent *>(event);
-        openWorkCellFile( rwse->_str.c_str() );
+        std::string str = boost::any_cast<std::string>(rwse->_anyData);
+        openWorkCellFile( str.c_str() );
+        rwse->done();
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::GenericEvent){
+        std::string id = boost::any_cast<std::string>(rwse->_anyData);
+        this->genericEvent().fire(id);
+        rwse->done();
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::GenericAnyEvent){
+        std::pair<std::string,boost::any> data = boost::any_cast<std::pair<std::string,boost::any> >(rwse->_anyData);
+        this->genericAnyEvent().fire(data.first,data.second);
         rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
-        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-
         closeWorkCell();
-
         rwse->done();
-
         close();
-
         //QCoreApplication::exit(1);
         //abort();
         return true;
     } else {
         //event->ignore();
     }
-    RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-    if(rwse !=NULL)
-        rwse->done();
 
     return QMainWindow::event(event);
 }
@@ -1263,6 +1280,7 @@ namespace {
     public:
         AnyEventListener(const std::string& myid):_id(myid),_eventSuccess(false){}
         void cb(const std::string& id, boost::any data){
+        	std::cout << "Any event recieved in CALLBACK!!!!" << std::endl;
             if(!_eventSuccess){
                 if(_id==id){
                     _data = data;
@@ -1277,8 +1295,10 @@ namespace {
 }
 
 boost::any RobWorkStudio::waitForAnyEvent(const std::string& id, double timeout){
+	std::cout << " Wait for ANY event, with id: " << id << std::endl;
     AnyEventListener listener(id);
     genericAnyEvent().add( boost::bind(&AnyEventListener::cb, &listener, _1, _2), &listener );
+    std::cout << "Added event, now wait!" << std::endl;
     // now wait until event is called
     const double starttime = TimerUtil::currentTime();
     bool reachedTimeout = false;
