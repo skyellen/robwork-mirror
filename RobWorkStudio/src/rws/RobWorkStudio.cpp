@@ -1185,10 +1185,8 @@ void RobWorkStudio::postOpenWorkCell(const std::string& filename){
 }
 
 void RobWorkStudio::postGenericEvent(const std::string& id){
-	std::cout << "postGenericEvent" << std::endl;
 	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::GenericEvent, id);
     QApplication::postEvent( this, event );
-    std::cout << "waiting for event" << std::endl;
     event->wait();
 }
 
@@ -1201,8 +1199,8 @@ void RobWorkStudio::postGenericAnyEvent(const std::string& id, boost::any data){
 bool RobWorkStudio::event(QEvent *event)
 {
 	RobWorkStudioEvent *rwse_test = dynamic_cast<RobWorkStudioEvent *>(event);
-    if(rwse_test !=NULL)
-		std::cout << "EVENT: " << event->type() << std::endl;
+    //if(rwse_test !=NULL)
+	//	std::cout << "EVENT: " << event->type() << std::endl;
     //   rwse->done();
 
 
@@ -1280,7 +1278,7 @@ namespace {
     public:
         AnyEventListener(const std::string& myid):_id(myid),_eventSuccess(false){}
         void cb(const std::string& id, boost::any data){
-        	std::cout << "Any event recieved in CALLBACK!!!!" << std::endl;
+        	//std::cout << "Any event recieved in CALLBACK!!!!" << std::endl;
             if(!_eventSuccess){
                 if(_id==id){
                     _data = data;
@@ -1295,10 +1293,10 @@ namespace {
 }
 
 boost::any RobWorkStudio::waitForAnyEvent(const std::string& id, double timeout){
-	std::cout << " Wait for ANY event, with id: " << id << std::endl;
+	//std::cout << " Wait for ANY event, with id: " << id << std::endl;
     AnyEventListener listener(id);
     genericAnyEvent().add( boost::bind(&AnyEventListener::cb, &listener, _1, _2), &listener );
-    std::cout << "Added event, now wait!" << std::endl;
+    //std::cout << "Added event, now wait!" << std::endl;
     // now wait until event is called
     const double starttime = TimerUtil::currentTime();
     bool reachedTimeout = false;
