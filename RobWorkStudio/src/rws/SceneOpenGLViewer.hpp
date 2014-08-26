@@ -215,6 +215,7 @@ public:
         //updateGL();
     };
 
+
     rw::graphics::DrawableNode::Ptr pickDrawable(int x, int y);
     rw::graphics::DrawableNode::Ptr pickDrawable(rw::graphics::SceneGraph::RenderInfo& info, int x, int y);
     rw::graphics::SceneGraph::RenderInfo& getRenderInfo(){ return _renderInfo; };
@@ -253,6 +254,10 @@ protected:
     //! Overridden from QGLWidget
     void wheelEvent(QWheelEvent* event);
 
+    void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene){
+        _wcscene = wcscene;
+    }
+
 private:
     void init();
 
@@ -267,6 +272,7 @@ private:
 private:
 
 	rwlibs::opengl::SceneOpenGL::Ptr _scene;
+	rw::graphics::WorkCellScene::Ptr _wcscene;
 
 	// the main camera which is controlled by the gui
     rw::graphics::SceneCamera::Ptr _mainCam, _backCam, frontCam;

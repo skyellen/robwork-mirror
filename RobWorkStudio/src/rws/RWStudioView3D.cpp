@@ -29,6 +29,7 @@
 #include "SceneOpenGLViewer.hpp"
 #include <QThread>
 #include <QMenuBar>
+#include <QVBoxLayout>
 #include <boost/foreach.hpp>
 
 using namespace rw::graphics;
