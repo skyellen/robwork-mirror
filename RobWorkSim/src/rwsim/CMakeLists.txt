@@ -94,6 +94,7 @@ SET(FILES_CPP
 	simulator/ThreadSimulator.cpp
 	simulator/PhysicsEngine.cpp
 	simulator/PhysicsEngineFactory.cpp
+	simulator/PhysicsEngine.cpp	
 	simulator/GraspTaskSimulator.cpp
 	simulator/AssemblySimulator.cpp
 	
