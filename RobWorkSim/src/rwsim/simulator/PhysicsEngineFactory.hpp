@@ -26,11 +26,13 @@
 #include <rwsim/rwphysics/RWSimulator.hpp>
 
 #include <boost/function.hpp>
+
+/*
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp> // !
 #include <boost/lambda/construct.hpp>
 #include <boost/function.hpp>
-
+*/
 #include <vector>
 
 namespace rwsim {
@@ -52,6 +54,7 @@ namespace simulator {
         typedef boost::function<PhysicsEngine*(rwsim::dynamics::DynamicWorkCell::Ptr)> makePhysicsEngineFunctor;
         static void addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor);
 
+        /*
         template<class T>
         class Register{
         public:
@@ -68,6 +71,7 @@ namespace simulator {
             ~Register(){};
             //static std::string type;
         };
+        */
 
 	};
 }
