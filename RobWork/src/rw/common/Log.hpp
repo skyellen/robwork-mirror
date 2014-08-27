@@ -45,29 +45,40 @@ namespace rw { namespace common {
      * The Log class owns a number of LogWriters in a static map, which can be accessed
      * using a string identifier. All logs are global.
      *
-     * By default the Log class contains an Info, Warning and Error log. These can be accessed as
+     * By default the Log class contains a Debug, Info, Warning and Error log. These can be accessed
+     * statically as:
      * \code
-     * Log::get(Log::infoId()).writeln("This is an info message");
-     * Log::get(Log::warningId()).writeln("This is an error message");
-     * Log::get(Log::errorId()).writeln("This is an error message");
+     * Log::debugLog() <<  "This is an debug message";
+     * Log::infoLog() << "This is an info message";
+     * Log::warnLog() << "This is an error message";
+     * Log::errorLog() << "This is an error message";
      * \endcode
-     * or
+     * or on the log instance
      * \code
-     * Log::writeln(Log::infoId(), "Another info message");
-     * Log::writeln(Log::warningId(), "Another warning message");
-     * Log::writeln(Log::infoId(), "Another error message");
+     * Log &log = Log::log();
+     * log.debug() <<  "This is an debug message";
+     * log.info() << "This is an info message";
+     * log.warn() << "This is an error message";
+     * log.error() << "This is an error message";
      * \endcode
      * or using one one the RW_LOG, RW_LOGLINE or RW_LOG2 macros, e.g.
      * \code
-     * RW_LOG(Log::infoId(), "The value of x is "<<x);
-     * RW_LOGLINE(Log::infoId(), "The value of x is "<<x);
-     * RW_LOG2(Log::infoId(), "The value of x is "<<x);
+     * RW_LOG_INFO("The value of x is "<<x);
+     * RW_LOG_DEBUG("The value of x is "<<x);
+     * RW_LOG_ERROR(Log::infoId(), "The value of x is "<<x);
      * \endcode
      *
+     * You can control what logs are active both using a loglevel and by using a log mask.
+     * The loglevel enables all logs with LogIndex lower or equal to the loglevel. As default
+     * loglevel is LogIndex::info which means debug and all user logs are disabled. However,
+     * logs can be individually enabled using log masks which will override loglevel setting.
      *
-     * Log::log() << blabla << std::endl;
-     * Log::log(info) << blabla
+     * Notice that logmasks cannot disable logs that are below or equal to loglevel.
      *
+     * change loglevel:
+     * \code
+     * Log::log().setLevel(Log::Debug);
+     * \endcode
      *
      *
      */
@@ -77,7 +88,7 @@ namespace rw { namespace common {
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<Log> Ptr;
 
-        //! @brief log level mask
+        //! @brief loglevel mask
     	enum LogIndexMask {
     		FatalMask=1, CriticalMask=2,
     		ErrorMask=4, WarningMask=8,
@@ -91,7 +102,11 @@ namespace rw { namespace common {
 
 
 
-    	//! @brief Indices for different logs.
+    	/**
+    	 * @brief Indices for different logs. The loglevel will be Info as default. Everything below the
+    	 * loglevel is enabled.
+    	 *
+    	 */
     	enum LogIndex {
     		Fatal=0, Critical=1,
     		Error=2, Warning=3,
@@ -116,7 +131,7 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the info log level
+    	 * that is associated with the info loglevel
     	 * @return info LogWriter
     	 */
         static LogWriter& infoLog() { 
@@ -125,7 +140,7 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the warning log level
+    	 * that is associated with the warning loglevel
     	 * @return warning LogWriter
     	 */
         static LogWriter& warningLog() { 
@@ -135,7 +150,7 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the error log level
+    	 * that is associated with the error loglevel
     	 * @return error LogWriter
     	 */
         static LogWriter& errorLog() { 
@@ -144,7 +159,7 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the debug log level
+    	 * that is associated with the debug loglevel
     	 * @return debug LogWriter
     	 */
         static LogWriter& debugLog() { 
@@ -169,6 +184,7 @@ namespace rw { namespace common {
          * @param log [in] the log that will be used through the static log methods.
          */
         static void setLog(Log::Ptr log);
+
         //************************* Here follows the member interface
 
         /**
@@ -180,6 +196,15 @@ namespace rw { namespace common {
          * @brief Destructor
          */
         virtual ~Log();
+
+        /**
+         * @brief set the loglevel. Any log with LogIndex equal to or less than
+         * loglevel will be enabled. Any log above will be disabled unless an
+         * enabled mask is specified for that log
+         * @param loglevel [in] the level
+         */
+        void setLevel(LogIndex loglevel){ _loglevel = loglevel; }
+
 
         /**
          * @brief gets the log writer associated to logindex \b id
@@ -227,7 +252,7 @@ namespace rw { namespace common {
          *
          * If the \b id is unknown an exception is thrown.
          *
-         * @param id [in] Log level
+         * @param id [in] loglevel
          * @return Reference to LogWriter object
          */
         LogWriter& get(LogIndex id);
@@ -268,7 +293,7 @@ namespace rw { namespace common {
          *
          * If the \b id cannot be found an exception is thrown
          *
-         * @param id [in] Log level
+         * @param id [in] loglevel
          */
         void flush(LogIndex id);
 
@@ -301,11 +326,11 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the info log level
+    	 * that is associated with the info loglevel
     	 * @return info LogWriter
     	 */
         rw::common::LogWriter& info(){ 
-			if (isLogEnabled(InfoMask))
+			if (isLogEnabled(Info))
 				return get(Info);
 			else
 				return *_defaultWriter;
@@ -313,11 +338,11 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the warning log level
+    	 * that is associated with the warning loglevel
     	 * @return info LogWriter
     	 */
         rw::common::LogWriter& warning(){ 
-			if (isLogEnabled(WarningMask))			
+			if (isLogEnabled(Warning))
 				return get(Warning);
 			else
 				return *_defaultWriter;
@@ -325,11 +350,11 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the error log level
+    	 * that is associated with the error loglevel
     	 * @return info LogWriter
     	 */
         rw::common::LogWriter& error(){ 
-			if (isLogEnabled(ErrorMask))			
+			if (isLogEnabled(Error))
 				return get(Error);
 			else
 				return *_defaultWriter;
@@ -337,19 +362,19 @@ namespace rw { namespace common {
 
     	/**
     	 * @brief convenience function for getting the LogWriter
-    	 * that is associated with the debug log level
+    	 * that is associated with the debug loglevel
     	 * @return info LogWriter
     	 */
         rw::common::LogWriter& debug(){ 
-			if (isLogEnabled(DebugMask)) 
+			if (isLogEnabled(Debug))
 				return get(Debug);
 			else
 				return *_defaultWriter;
 			};
 
         /**
-         * @brief the log level is a runtime handle for enabling/disabling
-         * logging to specific log levels.
+         * @brief the loglevel is a runtime handle for enabling/disabling
+         * logging to specific loglevels.
          * @param mask
 		 *
 		 * @note DEPRECATED. Use setEnable/setDisable instead
@@ -358,7 +383,7 @@ namespace rw { namespace common {
 
 
         /**
-         * @brief get the current log level
+         * @brief get the current log mask
          * @return the LogIndex
 		 * @note DEPRECATED. To be removed
 		 */
@@ -385,11 +410,14 @@ namespace rw { namespace common {
 		}
 
         bool isLogEnabled(LogIndex idx) {
+            if(idx<=_loglevel)
+                return true;
             return (_logEnabledMask & toMask(idx) ) != 0;
         }
 
 		int _logEnabledMask;
 		int _tabLevel;
+		LogIndex _loglevel;
 		std::vector<rw::common::LogWriter::Ptr> _writers;
 		rw::common::LogWriter::Ptr _defaultWriter;
 

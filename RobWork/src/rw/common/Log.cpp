@@ -71,13 +71,14 @@ Log::Ptr Log::getInstance(){
 }
 
 Log::Log():
-	_logEnabledMask(Log::AllMask),
+	_logEnabledMask( 0 ), // enabled logs are completely defined by loglevel
 	_tabLevel(0),
-	_writers(32)
+	_writers(32),
+	_loglevel(Log::Info)
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
-    setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
-    setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
+	setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
+	setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
     setWriter(Warning, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
     setWriter(Error, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
 	setWriter(Critical, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
