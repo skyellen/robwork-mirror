@@ -36,13 +36,17 @@ using boost::filesystem::initial_path;
 
 
 #if defined(RW_CYGWIN)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_VERSION + ".cfg.xml"
+    #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/
+    #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_WIN32)
-    #define HOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/robwork-" + RW_VERSION + ".cfg.xml"
+    #define RWCFGHOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/
+    #define RWCFGFILE std::string(std::getenv("APPDATA")) + "/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_MACOS)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/Library/Preferences/com.robwork-" + RW_VERSION + ".cfg.xml"
+    #define RWCFGHOMEDIR std::string(std::getenv("HOME"))  + "/Library/Preferences/
+    #define RWCFGFILE std::string(std::getenv("HOME")) + "/Library/Preferences/com.robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_LINUX)
-    #define HOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_VERSION + ".cfg.xml"
+    #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/"
+    #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-" + RW_VERSION + ".cfg.xml"
 #endif
 
 
@@ -61,28 +65,60 @@ RobWork::~RobWork(void)
 void RobWork::initialize(){
 	const Log::Ptr logInstance = Log::getInstance();
     // we need to find the settings of robwork so we start searching for rwsettings.xml
-	Log::debugLog() << "Initializing ROBWORK" << std::endl;
+    Log::debugLog() << "Initializing ROBWORK" << std::endl;
+
 	// this is the search priority
 	// 1. search from execution directory
 	// 2. search from user home directory (OS specific)
 
     path ipath = initial_path();
-    std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_VERSION + ".cfg.xml";
+    std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_BUILD_TYPE + "-" + RW_VERSION + ".cfg.xml";
     if( exists(rwsettingsPath) ){
     	//std::cout << "FOUND CFG FILE IN EXE DIR..." << std::endl;
         _settings = XMLPropertyLoader::load( rwsettingsPath );
         _settings.add("cfgfile", "", rwsettingsPath );
         //std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
-    } else if( exists( HOMEDIR ) ){
-    	rwsettingsPath = std::string(HOMEDIR);
+    } else if( exists( RWCFGFILE ) ){
+    	rwsettingsPath = std::string(RWCFGFILE);
         _settings = XMLPropertyLoader::load( rwsettingsPath );
     	_settings.add("cfgfile", "", rwsettingsPath );
     } else {
-        // create the file in current location
-    	PropertyMap plugins;
-        plugins.add("location","default plugin location",std::string("plugins/"));
+        // create the file in default current location
+        PropertyMap plugins;
+
+        plugins.add("location-1","Default plugin location",std::string("plugins/"));
+
+        char* rwRootVar = getenv("RW_ROOT");
+        if(rwRootVar != NULL)
+            plugins.add("location-2","Default plugin location for RobWork",std::string(rwRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
+
+        char* rwsRootVar = getenv("RWS_ROOT");
+        if(rwsRootVar != NULL)
+            plugins.add("location-3","Default plugin location for RobWorkStudio",std::string(rwsRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
+
+        char* rwsimRootVar = getenv("RWSIM_ROOT");
+        if(rwsimRootVar != NULL)
+            plugins.add("location-4","Default plugin location for RobWorkSim",std::string(rwsimRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
+
+        char* rwhwRootVar = getenv("RWHW_ROOT");
+        if(rwhwRootVar != NULL)
+            plugins.add("location-5","Default plugin location for RobWorkSim",std::string(rwsimRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
+
         _settings.add("plugins","List of plugins or plugin locations",plugins);
-        XMLPropertySaver::save( _settings, rwsettingsPath );
+
+        if( !exists( RWCFGHOMEDIR ) ){
+            // create config dir
+            boost::filesystem::path dir( RWCFGHOMEDIR );
+            if ( boost::filesystem::create_directory(dir) )
+                RW_WARN("Could not create cfg directory: " << RWCFGHOMEDIR  << ". Instead using: " <<  ipath.string());
+        }
+
+        if( exists( RWCFGHOMEDIR ) ){
+            XMLPropertySaver::save( _settings, RWCFGFILE );
+        } else {
+            XMLPropertySaver::save( _settings, rwsettingsPath );
+        }
+
     }
     _settingsFile = rwsettingsPath;
 
@@ -90,6 +126,7 @@ void RobWork::initialize(){
     std::vector<std::string> cfgDirs;
     PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
 
+    Log::debugLog() << "Looking for RobWork plugins in following directories:\n";
     BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
     	// check if its a
     	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
@@ -97,11 +134,12 @@ void RobWork::initialize(){
     		continue;
 
     	cfgDirs.push_back( propstr->getValue() );
-    	Log::debugLog() << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
+    	//std::cout << "\t" << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
+    	Log::debugLog() << "\t" << propstr->getValue() << std::endl;
     }
 
+    Log::debugLog() << "Loading plugins:\n";
     BOOST_FOREACH(std::string dir, cfgDirs){
-
     	path file( dir );
     	Log::debugLog() << dir << std::endl;
 #if(BOOST_FILESYSTEM_VERSION==2)
@@ -127,13 +165,13 @@ void RobWork::initialize(){
     		std::vector<std::string> pl_files =
     				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
     		BOOST_FOREACH(std::string pl_file, pl_files){
-    			Log::debugLog() << "Plugin: " << pl_file<< std::endl;
+    		    Log::debugLog() << "\t Plugin: "<< pl_file<< std::endl;
                 rw::common::Ptr<Plugin> plugin = Plugin::load( pl_file );
                 reg->registerExtensions(plugin);
                 Log::setLog(logInstance);
     		}
     	} else {
-    		Log::debugLog() << "Plugin: " << file.string() << std::endl;
+    	    Log::debugLog() << "\t Plugin: " <<  file.string() << std::endl;
             rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
             reg->registerExtensions(plugin);
     	}
