@@ -88,6 +88,9 @@ namespace common {
 		 */
 		virtual DOMElem::Ptr getRootElement() = 0;
 
+
+        virtual void setDebug(bool debug) = 0;
+
 		// extra stuff that can be added in top of document
 		/**
 		 * @brief make an instance of the default DOM parser
