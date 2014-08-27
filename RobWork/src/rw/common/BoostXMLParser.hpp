@@ -45,11 +45,15 @@ namespace common {
 		void save(const std::string& filename);
 		void save(std::ostream& input);
 
+		void setDebug(bool debug){_debug=debug;};
+
+		bool isDebug(){return _debug;};
 		DOMElem::Ptr getRootElement(){ return _root;};
 
 		// extra stuff that can be added in top of document
 
 	private:
+		bool _debug;
 		DOMElem::Ptr _root;
 		rw::common::Ptr< boost::property_tree::ptree > _tree;
 	};
@@ -59,11 +63,13 @@ namespace common {
 		BoostDOMElem(const std::string& key,
 		             rw::common::Ptr<boost::property_tree::ptree> ptree,
 		             rw::common::Ptr< boost::property_tree::ptree > parent,
-		             rw::common::Ptr< boost::property_tree::ptree > root):
+		             rw::common::Ptr< boost::property_tree::ptree > root,
+		             BoostXMLParser* parser):
 			_name(key),
 			_node(ptree),
 			_parent(parent),
-			_root(root)
+			_root(root),
+			_parser(parser)
 		{};
 
 	public:
@@ -76,12 +82,12 @@ namespace common {
 		//! @copydoc DOMElem::getName
 		const std::string& getName() const { return _name; }
 		//! @copydoc DOMElem::getValue
-		std::string getValue() const { return _node->get_value<std::string>(); }
+		std::string getValue() const;
 
 		//! @copydoc DOMElem::getValueAsInt
-		int getValueAsInt() const { return _node->get_value<int>(); }
+		int getValueAsInt() const ;
 		//! @copydoc DOMElem::getValueAsDouble
-		double getValueAsDouble() const { return _node->get_value<double>(); }
+		double getValueAsDouble() const ;
 		//! @copydoc DOMElem::getValueAsStringList
 		std::vector<std::string> getValueAsStringList(char stringseperator = ';') const ;
 		std::vector<double> getValueAsDoubleList() const ;
@@ -118,18 +124,21 @@ namespace common {
 		public:
 			boost::property_tree::ptree::iterator _begin,_end;
 			rw::common::Ptr< boost::property_tree::ptree > _parent,_root;
+			BoostXMLParser *_parser;
+
 			ElemIterImpl(boost::property_tree::ptree::iterator begin,
 			               boost::property_tree::ptree::iterator end,
 			               rw::common::Ptr< boost::property_tree::ptree > parent,
-			               rw::common::Ptr< boost::property_tree::ptree > root):
-				_begin(begin),_end(end),_parent(parent),_root(root)
+			               rw::common::Ptr< boost::property_tree::ptree > root,
+			               BoostXMLParser *parser):
+				_begin(begin),_end(end),_parent(parent),_root(root),_parser(parser)
 			{
 				while(_begin!=_end && _begin->first=="<xmlattr>")
 					_begin++;
 			}
 
 			ItImpl* clone(){
-				return new ElemIterImpl(_begin, _end, _parent, _root);
+				return new ElemIterImpl(_begin, _end, _parent, _root,_parser);
 			}
 
 			void increment(){
@@ -141,7 +150,7 @@ namespace common {
 			//void add(int right){ _begin+=right; }
 
 			DOMElem::Ptr getElem(){
-				return rw::common::ownedPtr( new BoostDOMElem( _begin->first, &(_begin->second), _parent, _root) );
+				return rw::common::ownedPtr( new BoostDOMElem( _begin->first, &(_begin->second), _parent, _root, _parser) );
 			}
 
 			bool equal(ItImpl* iter) const{
@@ -154,6 +163,7 @@ namespace common {
 		rw::common::Ptr<boost::property_tree::ptree> _node;
 		rw::common::Ptr<boost::property_tree::ptree> _parent;
 		rw::common::Ptr< boost::property_tree::ptree > _root;
+		BoostXMLParser *_parser;
 	};
 
 }} //namespace

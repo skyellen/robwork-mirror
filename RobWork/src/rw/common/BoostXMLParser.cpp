@@ -29,9 +29,9 @@ using namespace rw::common;
 
 //////////////// stuff for loader
 
-BoostXMLParser::BoostXMLParser(){
+BoostXMLParser::BoostXMLParser():_debug(false){
 	_tree = ownedPtr( new boost::property_tree::ptree() );
-	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
+	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree, this));
 }
 
 void BoostXMLParser::load(const std::string& filename){
@@ -40,7 +40,10 @@ void BoostXMLParser::load(const std::string& filename){
     try {
         read_xml(file, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
-        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
+        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree, this));
+    } catch (const boost::property_tree::xml_parser_error& e) {
+        RW_THROW(e.message() << ". \n\tIn line: " << e.line() << " \n\t In file: " << e.filename());
+
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -52,7 +55,9 @@ void BoostXMLParser::load(std::istream& input){
 	try {
         read_xml(input, *_tree, boost::property_tree::xml_parser::trim_whitespace);
         // create root element
-        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree));
+        _root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree, this));
+    } catch (const boost::property_tree::xml_parser_error& e) {
+        RW_THROW(e.message() << ". \n\tIn line: " << e.line() << " \n\t In file: " << e.filename());
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -110,6 +115,28 @@ std::vector<double> BoostDOMElem::getValueAsDoubleList(int size) const {
     return values;
 }
 
+std::string BoostDOMElem::getValue() const {
+    std::string val = _node->get_value<std::string>();
+    if(_parser->isDebug())
+        Log::debugLog() << val;
+
+    return _node->get_value<std::string>();
+}
+
+int BoostDOMElem::getValueAsInt() const {
+    int val = _node->get_value<int>();
+    if(_parser->isDebug())
+        Log::debugLog() << val;
+    return val;
+}
+
+double BoostDOMElem::getValueAsDouble() const {
+    double val = _node->get_value<double>();
+    if(_parser->isDebug())
+        Log::debugLog() << val;
+    return val;
+}
+
 bool BoostDOMElem::hasChild(const std::string& name) const {
 	boost::optional<boost::property_tree::ptree&> child = _node->get_child_optional(name);
 	if(child)
@@ -129,9 +156,12 @@ bool BoostDOMElem::hasAttribute(const std::string& name) const {
 
 
 DOMElem::Ptr BoostDOMElem::getChild(const std::string& name, bool optional){
+    if(_parser->isDebug())
+        Log::debugLog() << "Child: " << name << "\n";
+
 	boost::optional<boost::property_tree::ptree&> child = _node->get_child_optional(name);
 	if(child)
-		return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot()) );
+		return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot(), _parser) );
 
 	if(!optional){
 		RW_THROW("Parse error: Child \"" << name << "\" of element " << getName() << " does not exist!");
@@ -140,11 +170,14 @@ DOMElem::Ptr BoostDOMElem::getChild(const std::string& name, bool optional){
 }
 
 DOMElem::Ptr BoostDOMElem::getAttribute(const std::string& name, bool optional){
+    if(_parser->isDebug())
+        Log::debugLog() << "Attr: " << name << "\n";
+
 	boost::optional<boost::property_tree::ptree&> attr = _node->get_child_optional("<xmlattr>");
 	if(attr){
 		boost::optional<boost::property_tree::ptree&> child = _node->get_child("<xmlattr>").get_child_optional(name);
 		if(child)
-			return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot()) );
+			return rw::common::ownedPtr(new BoostDOMElem(name, &child.get(), _node, this->getRoot(), _parser) );
 	}
 	if(!optional){
 		RW_THROW("Parse error: Attribute \"" << name << "\" of element " << getName() << " does not exist!");
@@ -156,20 +189,20 @@ DOMElem::Ptr BoostDOMElem::getAttribute(const std::string& name, bool optional){
 
 DOMElem::IteratorPair BoostDOMElem::getChildren(){
 	return std::make_pair(
-			DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _node, _root)),
-			DOMElem::Iterator(new ElemIterImpl(_node->end()  ,_node->end(), _node, _root)) );
+			DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _node, _root,_parser)),
+			DOMElem::Iterator(new ElemIterImpl(_node->end()  ,_node->end(), _node, _root,_parser)) );
 }
 
 DOMElem::IteratorPair BoostDOMElem::getAttributes(){
 	boost::property_tree::ptree& attribs = _node->get_child("<xmlattr>");
 	return std::make_pair(
-			DOMElem::Iterator(new ElemIterImpl(attribs.begin(),attribs.end(), _node, _root)),
-			DOMElem::Iterator(new ElemIterImpl(attribs.end()  ,attribs.end(), _node, _root)) );
+			DOMElem::Iterator(new ElemIterImpl(attribs.begin(),attribs.end(), _node, _root,_parser)),
+			DOMElem::Iterator(new ElemIterImpl(attribs.end()  ,attribs.end(), _node, _root,_parser)) );
 }
 
 rw::common::Ptr<DOMElem> BoostDOMElem::addChild(const std::string& name){
 	boost::property_tree::ptree &child = _node->add_child(name, boost::property_tree::ptree() );
-	return rw::common::ownedPtr(new BoostDOMElem(name, &child, _node, this->getRoot()) );
+	return rw::common::ownedPtr(new BoostDOMElem(name, &child, _node, this->getRoot(),_parser) );
 	//return this->getChild(name);
 }
 
@@ -208,10 +241,10 @@ void BoostDOMElem::setName(const std::string& name){
 }
 
 DOMElem::Iterator BoostDOMElem::begin(){
-	return DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _parent, _root) );
+	return DOMElem::Iterator(new ElemIterImpl(_node->begin(),_node->end(), _parent, _root,_parser) );
 }
 DOMElem::Iterator BoostDOMElem::end(){
-	return DOMElem::Iterator(new ElemIterImpl(_node->end(),_node->end(), _parent, _root) );
+	return DOMElem::Iterator(new ElemIterImpl(_node->end(),_node->end(), _parent, _root,_parser) );
 }
 
 
