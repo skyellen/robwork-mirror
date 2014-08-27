@@ -155,7 +155,7 @@ void addPropertyToMap(const DummyProperty &dprop, common::PropertyMap& map){
     if(dprop._type=="string"){
         map.add(dprop._name, dprop._desc, dprop._val);
     } else if(dprop._type=="double"){
-        std::cout << "casting from string to double. type:" << dprop._type <<  " value: " << dprop._val << std::endl;
+        //std::cout << "casting from string to double. type:" << dprop._type <<  " value: " << dprop._val << std::endl;
         double val = boost::lexical_cast<double>(dprop._val);
         map.add(dprop._name, dprop._desc, val);
     } else if(dprop._type=="Q"){
