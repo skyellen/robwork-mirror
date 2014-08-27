@@ -8,6 +8,7 @@
 
 #include "SceneGraph.hpp"
 #include "SceneCamera.hpp"
+#include "WorkCellScene.hpp"
 
 #include <rw/common/PropertyMap.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -151,6 +152,7 @@ namespace graphics {
          */
         virtual rw::math::Transform3D<> getTransform() { return getViewCamera()->getTransform(); };
 
+        //virtual void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene) = 0;
 
 
     protected:
