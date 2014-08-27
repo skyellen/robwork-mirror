@@ -89,7 +89,7 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
 
     for(int i=0;i<_nrOfThreads;i++){
         //Log::debugLog() << "Making physics engine";
-        PhysicsEngine::Ptr engine = PhysicsEngineFactory::makePhysicsEngine(_dwc);
+        PhysicsEngine::Ptr engine = PhysicsEngine::Factory::makePhysicsEngine(_dwc);
 
         //Log::debugLog() << "Making simulator";
         DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
@@ -97,8 +97,8 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
         try {
             State istate = initState;
             sim->init(istate);
-        } catch(...){
-            RW_THROW("could not initialize simulator!\n");
+        } catch(const std::exception& e){
+            RW_THROW("could not initialize simulator!\n failed with: " << e.what());
         }
         //Log::debugLog() << "Creating Thread simulator";
 
