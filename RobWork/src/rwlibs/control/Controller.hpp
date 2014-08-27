@@ -21,6 +21,8 @@
 #include <iostream>
 #include <string>
 
+#include <rw/common/Ptr.hpp>
+
 namespace rwlibs {
 namespace control {
 
@@ -33,6 +35,9 @@ class Controller
 {
 
 public:
+    //! smart poiner definition for controller
+    typedef rw::common::Ptr<Controller> Ptr;
+
     //! @brief destructor
     virtual ~Controller(){};
 
