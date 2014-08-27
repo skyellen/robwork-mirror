@@ -105,11 +105,15 @@ PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool 
 }
 
 
+bool DOMPropertyMapLoader::hasProperties(DOMElem::Ptr element) {
+    return element->isName("PropertyMap");
+}
+
 PropertyMap DOMPropertyMapLoader::readProperties(DOMElem::Ptr element, bool checkHeader) {
 
     if (checkHeader)
     	if(!element->isName("PropertyMap"))
-            RW_THROW("Parse error: Expected \"PropertyMap\" got \"" + element->getName() + "\"!");
+    	    RW_THROW("Parse error: Expected \"PropertyMap\" got \"" + element->getName() + "\"!");
 
     PropertyMap properties;
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren()){

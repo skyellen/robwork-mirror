@@ -63,6 +63,7 @@ public:
      * @return Loaded PropertyMap
      */
     static rw::common::PropertyMap readProperties(rw::common::DOMElem::Ptr element, bool checkHeader = true);
+    static bool hasProperties(rw::common::DOMElem::Ptr element);
 
     /**
      * @brief Read in rw::common::PropertyMap from file
