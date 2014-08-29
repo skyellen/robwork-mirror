@@ -1075,7 +1075,8 @@ void RobWorkStudio::setTStatePath(rw::trajectory::TimedStatePath path){
 }
 
 namespace {
-    class RobWorkStudioEvent: public QEvent {
+
+	class RobWorkStudioEvent: public QEvent {
     public:
         static const QEvent::Type SetStateEvent = (QEvent::Type)1200;
         static const QEvent::Type SetTimedStatePathEvent = (QEvent::Type)1201;
@@ -1090,13 +1091,13 @@ namespace {
         boost::any _anyData;
         rw::common::Ptr<bool> _hs;
 
-        RobWorkStudioEvent(QEvent::Type type, boost::any adata):
-        	QEvent(type),_anyData(adata),_hs( ownedPtr( new bool( false) ))
+        RobWorkStudioEvent(QEvent::Type type, rw::common::Ptr<bool> hs, boost::any adata):
+        	QEvent(type),_anyData(adata),_hs( hs )
         {
         }
 
-        RobWorkStudioEvent(QEvent::Type type):
-        	QEvent(type),_anyData(NULL),_hs( ownedPtr( new bool( false) ))
+        RobWorkStudioEvent(QEvent::Type type, rw::common::Ptr<bool> hs):
+        	QEvent(type),_anyData(NULL),_hs( hs )
         {
         }
 
@@ -1117,6 +1118,24 @@ namespace {
             }
         }
 
+
+    };
+
+    class RobWorkStudioEventHS {
+    public:
+		RobWorkStudioEventHS(QEvent::Type type, boost::any adata):
+        	_hs( ownedPtr( new bool(false)) )
+        {
+			event = new RobWorkStudioEvent(type, _hs, adata);
+        }
+
+        RobWorkStudioEventHS(QEvent::Type type):
+        	_hs( ownedPtr( new bool(false)))
+        {
+        	event = new RobWorkStudioEvent(type, _hs);
+        }
+
+
         void wait(){
             while(_hs!=NULL && *_hs==false){
             	TimerUtil::sleepMs(500);
@@ -1125,7 +1144,11 @@ namespace {
             std::cout << "Wait done: " << std::endl;
         }
 
+        rw::common::Ptr<bool> _hs;
+        RobWorkStudioEvent *event;
+
     };
+
 }
 
 void RobWorkStudio::setTimedStatePath(const rw::trajectory::TimedStatePath& path)
@@ -1143,56 +1166,56 @@ void RobWorkStudio::setState(const rw::kinematics::State& state)
 }
 
 void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& path){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetTimedStatePathEvent, path);
-    QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::SetTimedStatePathEvent, path);
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postExit(){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent, NULL);
-	QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::ExitEvent, NULL);
+	QApplication::postEvent( this, event->event );
 	//event->wait();
 }
 
 void RobWorkStudio::postState(const rw::kinematics::State& state){
-    RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetStateEvent, state) ;
-    QApplication::postEvent( this, event );
+    RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::SetStateEvent, state) ;
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postUpdateAndRepaint(){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent);
-    QApplication::postEvent( this, event);
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::UpdateAndRepaintEvent);
+    QApplication::postEvent( this, event->event);
     event->wait();
 }
 
 void RobWorkStudio::postSaveViewGL(const std::string& filename){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename);
-    QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::SaveViewGLEvent, filename);
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postWorkCell(rw::models::WorkCell::Ptr workcell){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::SetWorkCell, workcell);
-    QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::SetWorkCell, workcell);
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postOpenWorkCell(const std::string& filename){
-    RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::OpenWorkCell, filename);
-    QApplication::postEvent( this, event );
+    RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::OpenWorkCell, filename);
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postGenericEvent(const std::string& id){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::GenericEvent, id);
-    QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::GenericEvent, id);
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
 void RobWorkStudio::postGenericAnyEvent(const std::string& id, boost::any data){
-	RobWorkStudioEvent *event = new RobWorkStudioEvent(RobWorkStudioEvent::GenericAnyEvent, std::make_pair(id,data));
-    QApplication::postEvent( this, event );
+	RobWorkStudioEventHS *event = new RobWorkStudioEventHS(RobWorkStudioEvent::GenericAnyEvent, std::make_pair(id,data));
+    QApplication::postEvent( this, event->event );
     event->wait();
 }
 
