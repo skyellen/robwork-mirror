@@ -19,6 +19,7 @@
 #include "ThreadSimulator.hpp"
 #include <stack>
 #include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 namespace rwsim {
@@ -86,7 +87,7 @@ public:
 	std::vector<ThreadSimulator::Ptr> getSimulators();
 
 	//----- simulation control and query function api
-	void init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState);
+	void init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState, std::string engineID = "ODE");
 	void startSimulation(const rw::kinematics::State& initState);
 	void pauseSimulation();
 	void resumeSimulation();

@@ -78,7 +78,7 @@ GraspTaskSimulator::~GraspTaskSimulator(){
 
 }
 
-void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState){
+void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState, std::string engineID){
     _dwc = dwc;
     _collisionDetector = ownedPtr(
         new CollisionDetector( dwc->getWorkcell(), ProximityStrategyFactory::makeDefaultCollisionStrategy()));
@@ -89,7 +89,7 @@ void GraspTaskSimulator::init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const r
 
     for(int i=0;i<_nrOfThreads;i++){
         //Log::debugLog() << "Making physics engine";
-        PhysicsEngine::Ptr engine = PhysicsEngine::Factory::makePhysicsEngine(_dwc);
+        PhysicsEngine::Ptr engine = PhysicsEngine::Factory::makePhysicsEngine(engineID, _dwc);
 
         //Log::debugLog() << "Making simulator";
         DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
