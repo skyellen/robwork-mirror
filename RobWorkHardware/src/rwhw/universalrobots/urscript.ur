@@ -217,7 +217,7 @@ def myprog():
 #
 
     #Setup the host name
-    host = "192.168.100.1"
+    host = HOST
     port = PORT
     opened = socket_open(host, port)
     textmsg("Socket Status")

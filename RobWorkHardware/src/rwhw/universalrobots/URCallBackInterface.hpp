@@ -23,9 +23,29 @@ public:
 	URCallBackInterface();
 
 	bool connect(const std::string& host, unsigned int port);
-
-	void startInterface(unsigned int callbackPort);
-      void startInterface(unsigned int callbackPort, const std::string& filename);
+	
+	/**
+	 * @brief Starts robot interface thread and sends a script to the controller.
+	 * 
+	 * @deprecated Use start() instead.
+	 * 
+	 * Uses default host (192.168.100.1).
+	 * 
+	 * @param callbackPort [in] port used for communicating with robot, e.g. 33334.
+	 * @param filename [in] UR script filename; if not specified, a default bundled script is used.
+	 */
+    void startInterface(unsigned int callbackPort, const std::string& filename="");
+    
+    /**
+     * @brief Starts robot interface thread and sends a script to the controller.
+     * 
+     * Required to start robot communication. Call connect() first, then start().
+     * 
+     * @param host [in] IP address of the host, e.g. 192.168.100.1.
+     * @param callbackPort [in] port used for communicating with robot, e.g. 33334.
+     * @param filename [in] UR script filename; if not specified, a default bundled script is used.
+     */
+    void start(const std::string& host, unsigned int callbackPort, const std::string& filename="");
 
 	void stopInterface();
 

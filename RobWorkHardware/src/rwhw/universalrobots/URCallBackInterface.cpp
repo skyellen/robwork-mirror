@@ -36,99 +36,66 @@ bool URCallBackInterface::connect(const std::string& host, unsigned int port) {
 	return _urPrimary.connect(host, port);
 }
 
-void URCallBackInterface::startInterface(unsigned int callbackPort) {
-	_callbackPort = callbackPort;
-	_thread = ownedPtr(new boost::thread(boost::bind(&URCallBackInterface::run, this)));
-
-
-	/*std::cout<<"Ready to load"<<std::endl;
-	std::ifstream infile(filename.c_str());
-	std::cout<<"Script Loaded"<<std::endl;
-	// get length of file:
-	infile.seekg (0, std::ios::end);
-	long length = infile.tellg();
-	infile.seekg (0, std::ios::beg);
-
-	// allocate memory:
-	char *buffer = new char [length+1];
-
-	// read data as a block:
-	infile.read (buffer,length);
-    buffer[length] = 0;*/
-    std::string script = UR_SCRIPT; //(buffer);
-/*
-      for (size_t i = 0; i<UR_SCRIPT.size(); i++) {
-            if (UR_SCRIPT[i] == '\'')
-                  UR_SCRIPT[i] = '\"';
-      }
-*/
-
-    int n = script.find("PORT");
-    if (n == std::string::npos)
-        RW_THROW("Unable to find PORT in script");
-    std::stringstream sstr;
-    sstr<<script.substr(0, n)<<callbackPort<<script.substr(n+4);
-	
-    //std::cout<<"Send Script "<<sstr.str()<<std::endl;
-
-      _urPrimary.sendScript(sstr.str());
-      _urPrimary.start(); // why is this not called?
+void URCallBackInterface::startInterface(unsigned int callbackPort, const std::string& filename) {
+	start("192.168.100.1", callbackPort);
 }
 
-void URCallBackInterface::startInterface(unsigned int callbackPort, const std::string& filename) {
+void URCallBackInterface::startInterface(const std::string& host, unsigned int callbackPort, const std::string& filename) {
 	_callbackPort = callbackPort;
+	
+	// launch communication thread
 	_thread = ownedPtr(new boost::thread(boost::bind(&URCallBackInterface::run, this)));
 
+	// load UR script
+	std::string script;
+	if (!filename.empty()) { // load UR script from file
+		std::cout << "Loading UR script from file " << filename << "..." << std::endl;
+		std::ifstream infile(filename.c_str());
+		std::cout << "Script loaded." << std::endl;
+		// get length of file:
+		infile.seekg (0, std::ios::end);
+		long length = infile.tellg();
+		infile.seekg (0, std::ios::beg);
 
-	std::cout<<"Ready to load"<<std::endl;
-	std::ifstream infile(filename.c_str());
-	std::cout<<"Script Loaded"<<std::endl;
-	// get length of file:
-	infile.seekg (0, std::ios::end);
-	long length = infile.tellg();
-	infile.seekg (0, std::ios::beg);
+		// allocate memory:
+		char *buffer = new char [length+1];
 
-	// allocate memory:
-	char *buffer = new char [length+1];
-
-	// read data as a block:
-	infile.read (buffer,length);
-      buffer[length] = 0;
-      std::string script(buffer);
-
-  /*    for (size_t i = 0; i<UR_SCRIPT.size(); i++) {
-            if (UR_SCRIPT[i] == '\'')
-                  UR_SCRIPT[i] = '\"';
-      }
-
-
-      if (script == UR_SCRIPT)
-            std::cout<<"The scripts are the same"<<std::endl;
-      else
-            std::cout<<"There are differences"<<std::endl;
-
-
-
-      std::cout<<"Sizes = "<<script.size()<<"  "<<UR_SCRIPT.size()<<std::endl;
-      for (size_t i = 0; i<script.size(); i++) {
-            std::cout<<"script["<<i<<"] = "<<(int)script.at(i)<<"  "<<(int)UR_SCRIPT.at(i)<<std::endl;
-            if (script.at(i) != UR_SCRIPT.at(i))
-                  std::cout<<"DIFFERENCE AT "<<i<<std::endl;
-      }
-*/
-//      script = UR_SCRIPT;
-
-      int n = script.find("PORT");
-/*      if (n == std::string::npos)
-        RW_THROW("Unable to find PORT in script");
-*/
-      std::stringstream sstr;
-      sstr<<script.substr(0, n)<<callbackPort<<script.substr(n+4);
-
-//      std::cout<<"Send Script "<<sstr.str()<<std::endl;
-
-      _urPrimary.sendScript(sstr.str());
-      //_urPrimary.start(); // why is this not called?
+		// read data as a block:
+		infile.read(buffer, length);
+		buffer[length] = '\0';
+		
+		script = std::string(buffer);
+		delete[] buffer;
+	} else { // use default script
+		script = UR_SCRIPT;
+	}
+	
+	// replace PORT placeholder with correct port value
+	std::stringstream sstr_port;
+    int n = script.find("PORT");
+    if (n == std::string::npos) {
+		RW_WARN("Unable to find PORT in script");
+		sstr_port << script;
+	} else {
+		sstr_port << script.substr(0, n) << callbackPort << script.substr(n + 4);
+	}
+	script = sstr_port.str();
+	
+	// replace HOST placeholder with correct port value
+	std::stringstream sstr_host;
+    n = script.find("HOST");
+    if (n == std::string::npos) {
+		RW_WARN("Unable to find HOST in script");
+		sstr_host << script;
+	} else {
+		std::stringstream sstr;
+		sstr_host << script.substr(0, n) << "\"" << host << "\"" << script.substr(n + 4);
+	}
+	script = sstr_host.str();
+	
+	// send script to robot
+    _urPrimary.sendScript(script);
+    //_urPrimary.start(); // not sure if that's neccesary
 }
 
 
