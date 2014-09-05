@@ -40,7 +40,7 @@ void URCallBackInterface::startInterface(unsigned int callbackPort, const std::s
 	start("192.168.100.1", callbackPort);
 }
 
-void URCallBackInterface::startInterface(const std::string& host, unsigned int callbackPort, const std::string& filename) {
+void URCallBackInterface::start(const std::string& host, unsigned int callbackPort, const std::string& filename) {
 	_callbackPort = callbackPort;
 	
 	// launch communication thread
