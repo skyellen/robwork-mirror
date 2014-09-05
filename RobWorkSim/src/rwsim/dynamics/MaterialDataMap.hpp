@@ -76,14 +76,15 @@ namespace dynamics {
           * @param material [in] name of material
           * @return
           */
-    	int getDataID( const std::string& material ){
-    	    if(_matToMatID.find(material)==_matToMatID.end() ){
+    	int getDataID( const std::string& material ) const {
+    		std::map<std::string, int>::const_iterator foundMat = _matToMatID.find(material);
+    	    if(foundMat ==_matToMatID.end() ){
     	        RW_THROW("Material \"" << material << "\" does not exist!");
     	    }
-    	    return _matToMatID[material];
+    	    return foundMat->second;
     	}
 
-    	const std::string& getMaterialName( int id ){
+    	const std::string& getMaterialName( int id ) const {
     	    return _mat[id];
     	}
 
@@ -91,7 +92,7 @@ namespace dynamics {
     	    return _mat;
     	}
 
-    	int getMaxMatID(){return _matCnt;};
+    	int getMaxMatID() const {return _matCnt;};
 
         /**
          *
@@ -101,10 +102,10 @@ namespace dynamics {
          * @return
          */
         const FrictionData&
-            getFrictionData(int matAID, int matBID, int dataType=0);
+            getFrictionData(int matAID, int matBID, int dataType=0) const;
 
         const FrictionData&
-            getFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0);
+            getFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0) const;
 
 
     	/**
@@ -122,7 +123,7 @@ namespace dynamics {
          * @param type
          * @return
          */
-        const FrictionData& getDefaultFriction(int type){
+        const FrictionData& getDefaultFriction(int type) const {
             return _defaultFrictionData;
         }
 

@@ -15,6 +15,7 @@ IF (RWSIM_HAVE_ODE)
     	ODEMaterialMap.cpp
     	ODESuctionCupDevice.cpp
     	ODEConstraint.cpp
+    	ODEContactStrategy.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -29,6 +30,7 @@ IF (RWSIM_HAVE_ODE)
     	ODETactileSensor.hpp
     	ODEMaterialMap.hpp
     	ODEConstraint.hpp
+    	ODEContactStrategy.hpp
     )
     
     ADD_LIBRARY(rwsim_ode ${SRC_FILES} ${SRC_FILES_HPP})

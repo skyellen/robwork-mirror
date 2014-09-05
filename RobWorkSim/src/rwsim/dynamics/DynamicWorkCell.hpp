@@ -201,7 +201,7 @@ namespace dynamics {
         /**
          * @brief get the list of sensors
          */
-        const SensorList& getSensors(){
+        const SensorList& getSensors() const {
             return _sensors;
         };
 

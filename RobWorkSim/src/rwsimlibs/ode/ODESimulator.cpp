@@ -2106,10 +2106,10 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     BOOST_FOREACH(OBRManifold& obr, manifolds){
         contactNormalAvg += obr.getNormal();
         int nrContacts = obr.getNrOfContacts();
-        // if the manifold area is very small then we only use a single point
+        // if the manifold area is very small (area requires at least 3 points) then we only use a single point
         // for contact
         Vector3D<> hf = obr.getHalfLengths();
-        if(hf(0)*hf(1)<(0.001*0.001)){
+        if(hf(0)*hf(1)<(0.001*0.001) && nrContacts >= 3){
             _allcontacts.push_back( obr.getDeepestPoint() );
             RW_ASSERT( contactIdx<(int)dst.size() );
             dst[contactIdx] = obr.getDeepestPoint();

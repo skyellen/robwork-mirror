@@ -41,17 +41,17 @@ MaterialDataMap::~MaterialDataMap()
 const FrictionData&
     MaterialDataMap::getFrictionData(int materialA,
                                      int materialB,
-                                     int type)
+                                     int type) const
 {
     //std::cout << "GET friction" << std::endl;
     MatIDPair pair(materialA,materialB);
-    FrictionMap::iterator res = _frictionMap.find(pair);
+    FrictionMap::const_iterator res = _frictionMap.find(pair);
     if( res == _frictionMap.end() ){
         RW_WARN("No FrictionData for material pair: ("<<materialA << ";" << materialB << ") or ("
                 << getMaterialName(materialA) << ";" << getMaterialName(materialB) << ")");
         return getDefaultFriction(type);
     }
-    BOOST_FOREACH(FrictionData& data, (*res).second){
+    BOOST_FOREACH(const FrictionData& data, (*res).second){
         if(data.type==type){
             return data;
         }
@@ -62,7 +62,7 @@ const FrictionData&
 const FrictionData&
     MaterialDataMap::getFrictionData(const std::string& materialA,
                                      const std::string& materialB,
-                                     int type)
+                                     int type) const
 {
     return getFrictionData(getDataID(materialA), getDataID(materialB), type);
 }

@@ -56,9 +56,9 @@ namespace geometry {
 		//! @brief destructor
 		virtual ~Cylinder();
 
-		double getRadius(){ return _radius;}
+		double getRadius() const { return _radius;}
 
-		double getHeight(){ return _height;}
+		double getHeight() const { return _height;}
 		// inherited from Primitive
 
 		//! @copydoc Primitive::createMesh
