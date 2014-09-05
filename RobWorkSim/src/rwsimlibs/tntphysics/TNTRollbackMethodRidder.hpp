@@ -49,6 +49,8 @@ public:
 	double getTimestep(SampleSet& samples, RollbackData* data) const;
 
 private:
+	class RollbackDataRidder;
+	static double threeSamples(const Sample& sample1, const Sample& sample2, const Sample& sample3, RollbackDataRidder* data);
 	static void fixSampleSet(SampleSet& samples);
 	static std::pair<const rw::kinematics::Frame*, const rw::kinematics::Frame*> findDeepest(const Sample& sample);
 };
