@@ -147,6 +147,8 @@ bool TNTBroadPhase::maxPenetrationExceeded(rw::common::Ptr<const ContactDetector
 				if (strategies.size() > 0) {
 					if (strategies.front().strategy->getName() != "ContactStrategyPQP")
 						continue;
+				} else {
+					continue;
 				}
 				ProximityModel::Ptr modelA = (*itA).second;
 				ProximityModel::Ptr modelB = (*itB).second;
