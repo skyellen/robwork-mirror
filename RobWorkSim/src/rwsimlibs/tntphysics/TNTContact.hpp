@@ -39,9 +39,10 @@ namespace tntphysics {
  */
 class TNTContact: public TNTConstraint {
 public:
-	//! @brief Contact constraint types
+	//! @brief Contact friction types
 	typedef enum Type {
-		Sticking = 1,//!< Sticking - the relative velocity is zero.
+		None = 0,    //!< None - no friction is applied, and the contact can move freely.
+		Sticking = 1,//!< Sticking - the relative velocity is restricted to zero.
 		Sliding = 2  //!< Sliding - force will be added opposite to the relative velocity.
 	} Type;
 
@@ -120,6 +121,9 @@ public:
 	//! @copydoc TNTConstraint::getDimWrench
 	virtual std::size_t getDimWrench() const;
 
+	//! @copydoc TNTConstraint::getDimFree
+	virtual std::size_t getDimFree() const;
+
 	/**
 	 * @brief Get the normal of the contact in world coordinates.
 	 * @param tntstate [in] the current state.
@@ -127,11 +131,60 @@ public:
 	 */
 	rw::math::Vector3D<> getNormalW(const TNTIslandState &tntstate) const;
 
+	/**
+	 * @brief Get the current tangential friction dir.
+	 * @param tntstate [in] the current state.
+	 * @return the direction.
+	 */
+	rw::math::Vector3D<> getFrictionDirW(const TNTIslandState &tntstate) const;
+
+	/**
+	 * @brief Set the friction direction in local coordinates.
+	 * @param frictionDir [in] the new tangential friction direction.
+	 * @note The direction is forced to be perpendicular to the normal direction.
+	 */
+	void setFrictionDir(const rw::math::Vector3D<>& frictionDir);
+
+	/**
+	 * @brief Set the friction direction in world coordinates.
+	 * @param frictionDir [in] the new tangential friction direction.
+	 * @param state [in] the state.
+	 * @note The direction is forced to be perpendicular to the normal direction.
+	 */
+	void setFrictionDirW(const rw::math::Vector3D<>& frictionDir, const rw::kinematics::State &state);
+
+	/**
+	 * @brief Set the friction parameters to use if in sliding mode.
+	 * @param linearCoefficient [in] friction coefficient that applies force proportional to the normal force.
+	 * @param angularCoefficient [in] friction coefficient that applies torque proportional to the normal force.
+	 * @param absoluteLinear [in] viscuous friction that is independent from forces.
+	 * @param absoluteAngular [in] viscuous friction that is independent from forces.
+	 */
+	void setFriction(double linearCoefficient, double angularCoefficient, double absoluteLinear, double absoluteAngular);
+
+	/**
+	 * @brief Get a string representation of the contact Type.
+	 * @param type [in] the type.
+	 * @return the type as a string.
+	 */
+	static std::string toString(Type type);
+
+protected:
+	//! @copydoc TNTConstraint::getWrenchModelLHS
+	virtual Eigen::MatrixXd getWrenchModelLHS(const TNTConstraint* constraint) const;
+
+	//! @copydoc TNTConstraint::getWrenchModelRHS
+	virtual Eigen::VectorXd getWrenchModelRHS() const;
+
 private:
 	bool _leaving;
 	Type _linearType;
 	Type _angularType;
 	rwsim::contacts::Contact _contact;
+	double _muLin;
+	double _muAng;
+	double _muLinViscuous;
+	double _muAngViscuous;
 };
 //! @}
 } /* namespace tntphysics */

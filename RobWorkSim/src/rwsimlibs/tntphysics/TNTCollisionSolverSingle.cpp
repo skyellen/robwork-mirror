@@ -155,11 +155,12 @@ void TNTCollisionSolverSingle::resolveContacts(
 	std::vector<const TNTContact*> candidates;
 	std::vector<const TNTConstraint*> nonContacts;
 	BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
+		RW_ASSERT(constraint != NULL);
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
 		if (contact)
 			candidates.push_back(contact);
 		else
-			nonContacts.push_back(contact);
+			nonContacts.push_back(constraint);
 	}
 	std::vector<bool> enabled(candidates.size(),false);
 
@@ -245,7 +246,7 @@ void TNTCollisionSolverSingle::resolveContacts(
 				const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
 				const Vector3D<> linRelVel = linVelI-linVelJ;
 				const Vector3D<> nij = contact->getNormalW(tmpState);
-				const bool leaving = dot(-linRelVel,nij) >= 0;
+				const bool leaving = dot(-linRelVel,nij) >= -TNT_COLLISION_LEAVINGVEL_THRESHOLD;
 				if (!leaving) {
 					enabled[i] = true;
 					repeat = true;
@@ -255,10 +256,10 @@ void TNTCollisionSolverSingle::resolveContacts(
 				bool outwards = true;
 				if (!restitution.enableTangent) {
 					RW_ASSERT(solId < solution.rows());
-					outwards = solution[solId] < 0;
+					outwards = solution[solId] < TNT_COLLISION_LEAVINGVEL_THRESHOLD;
 				} else if (restitution.enableTangent) {
 					RW_ASSERT(solId+2 < solution.rows());
-					outwards = solution[solId+2] < 0;
+					outwards = solution[solId+2] < TNT_COLLISION_LEAVINGVEL_THRESHOLD;
 				}
 				if (!outwards) {
 					enabled[i] = false;
@@ -293,9 +294,11 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 	// Allocate new matrix and vector structures
 	Eigen::MatrixXd::Index dimVel = 0;
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
+		RW_ASSERT(constraint != NULL);
 		dimVel += constraint->getDimVelocity();
 	}
 	BOOST_FOREACH(const TNTContact* contact, contacts) {
+		RW_ASSERT(contact != NULL);
 		const VelocityScrew6D<>& velI = contact->getVelocityParentW(tntstate,rwstate);
 		const VelocityScrew6D<>& velJ = contact->getVelocityChildW(tntstate,rwstate);
 		const Vector3D<> linRelVel = velI.linear()-velJ.linear();
@@ -327,16 +330,20 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 		if (dim > 0) {
 			const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
 			// Construct RHS
+			Eigen::VectorXd::Index dimCnt = dimVel;
 			for (std::size_t i = 0; i < 3; i++) {
 				if (modes[i] == TNTConstraint::Velocity) {
-					rhs[dimVel+i] = -dot(linRelVel,linRot.getCol(i));
+					rhs[dimCnt] = -dot(linRelVel,linRot.getCol(i));
+					dimCnt++;
 				}
 			}
 			for (std::size_t i = 0; i < 3; i++) {
 				if (modes[i+3] == TNTConstraint::Velocity) {
-					rhs[dimVel+3+i] = -dot(angRelVel,angRot.getCol(i));
+					rhs[dimCnt] = -dot(angRelVel,angRot.getCol(i));
+					dimCnt++;
 				}
 			}
+			dimCnt = dimVel;
 			// Construct LHS blocks
 			Eigen::MatrixXd::Index dimVelB = 0;
 			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
@@ -346,8 +353,13 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 					dimVelB += dimB;
 				}
 			}
-			if (contacts.size() > 0)
-				RW_THROW("TNTCollisionSolverSingle (solve): can not yet handle mixed contacts and constraints between two objects.");
+			BOOST_FOREACH(const TNTContact* contactB, contacts) {
+				const Eigen::MatrixXd block = getBlock(constraint,contactB,restitutionModel,tntstate,rwstate);
+				RW_ASSERT(block.rows() == dim);
+				const Eigen::MatrixXd::Index dimB = block.cols();
+				lhs.block(dimVel,dimVelB,dim,dimB) = block;
+				dimVelB += dimB;
+			}
 			dimVel += dim;
 		}
 	}
@@ -360,9 +372,6 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 		const Vector3D<> zeroDir = normalize(cross(nij,linRelVel));
 		const Vector3D<> tangentDir = normalize(cross(zeroDir,nij));
 		const bool leaving = dot(-linRelVel,nij) >= 0;
-
-		if (constraints.size() > 0)
-			RW_THROW("TNTCollisionSolverSingle (solve): can not yet handle mixed contacts and constraints between two objects.");
 
 		Eigen::VectorXd::Index dim = 1;
 		// Construct RHS
@@ -393,6 +402,13 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 		}
 		// Construct LHS blocks
 		Eigen::MatrixXd::Index dimVelB = 0;
+		BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
+			const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity();
+			if (dimB > 0) {
+				lhs.block(dimVel,dimVelB,dim,dimB) = getBlock(contact,constraintB,restitutionModel,tntstate,rwstate);
+				dimVelB += dimB;
+			}
+		}
 		BOOST_FOREACH(const TNTContact* contactB, contacts) {
 			const Eigen::MatrixXd block = getBlock(contact,contactB,restitutionModel,tntstate,rwstate);
 			RW_ASSERT(block.rows() == dim);
@@ -618,7 +634,7 @@ Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
 			}
 			for (std::size_t j = 3; j < 6; j++) {
 				if (modesB[j] == TNTConstraint::Velocity) {
-					block(row,col) = linRotA.getCol(i).e().transpose()*BFlin*angRotB.getCol(j-3).e();
+					block(row,col) = linRotA.getCol(i).e().transpose()*bNlin*angRotB.getCol(j-3).e();
 					col++;
 				}
 			}
@@ -630,18 +646,299 @@ Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
 			col = 0;
 			for (std::size_t j = 0; j < 3; j++) {
 				if (modesB[j] == TNTConstraint::Velocity) {
-					block(row,col) = angRotA.getCol(i-3).e().transpose()*BFlin*linRotB.getCol(j).e();
+					block(row,col) = angRotA.getCol(i-3).e().transpose()*BFang*linRotB.getCol(j).e();
 					col++;
 				}
 			}
 			for (std::size_t j = 3; j < 6; j++) {
 				if (modesB[j] == TNTConstraint::Velocity) {
-					block(row,col) = angRotA.getCol(i-3).e().transpose()*BFlin*angRotB.getCol(j-3).e();
+					block(row,col) = angRotA.getCol(i-3).e().transpose()*bNang*angRotB.getCol(j-3).e();
 					col++;
 				}
 			}
 			row++;
 		}
+	}
+
+	return block;
+}
+
+Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
+		const TNTConstraint* constraintA,
+		const TNTContact* contactB,
+		const TNTRestitutionModel& restitutionModel,
+		const TNTIslandState& tntstate,
+		const State& rwstate) const
+{
+	const TNTBody* const parentA = constraintA->getParent();
+	const TNTBody* const childA = constraintA->getChild();
+	const TNTBody* const parentB = contactB->getParent();
+	const TNTBody* const childB = contactB->getChild();
+	const TNTRigidBody* const rParentA = dynamic_cast<const TNTRigidBody*>(parentA);
+	const TNTRigidBody* const rChildA = dynamic_cast<const TNTRigidBody*>(childA);
+	const TNTRigidBody* const rParentB = dynamic_cast<const TNTRigidBody*>(parentB);
+	const TNTRigidBody* const rChildB = dynamic_cast<const TNTRigidBody*>(childB);
+	int sign;
+	if (rParentA == rParentB && rChildA == rChildB)
+		sign = 1;
+	else
+		sign = -1;
+
+	// Construct the full 6x4 matrix in world coordinates
+	const Vector3D<> rij = constraintA->getPositionParentW(tntstate);
+	const Vector3D<> rji = constraintA->getPositionChildW(tntstate);
+	const Transform3D<>& wTbI = parentA->getWorldTcom(tntstate);
+	const Transform3D<>& wTbJ = childA->getWorldTcom(tntstate);
+	const Vector3D<>& RI = wTbI.P();
+	const Vector3D<>& RJ = wTbJ.P();
+
+	const VelocityScrew6D<>& velIB = contactB->getVelocityParentW(tntstate,rwstate);
+	const VelocityScrew6D<>& velJB = contactB->getVelocityChildW(tntstate,rwstate);
+	const Vector3D<> linRelVelB = velIB.linear()-velJB.linear();
+	const Vector3D<> nijB = contactB->getNormalW(tntstate);
+	const Vector3D<> zeroDirB = normalize(cross(nijB,linRelVelB));
+	const Vector3D<> tangentDirB = normalize(cross(zeroDirB,nijB));
+	const bool leavingB = dot(-linRelVelB,nijB) >= 0;
+
+	//TNTRestitutionModel::Values restitutionA;
+	TNTRestitutionModel::Values restitutionB;
+	//if (!leavingA)
+	//	restitutionA = restitutionModel.getRestitution(*contactA,tntstate,rwstate);
+	if (!leavingB)
+		restitutionB = restitutionModel.getRestitution(*contactB,tntstate,rwstate);
+
+	Vector3D<> rik, rjk;
+	if (parentA == parentB)
+		rik = contactB->getPositionParentW(tntstate);
+	else
+		rik = contactB->getPositionChildW(tntstate);
+	if (childA == parentB)
+		rjk = contactB->getPositionParentW(tntstate);
+	else
+		rjk = contactB->getPositionChildW(tntstate);
+
+	Eigen::Matrix3d BFlin = Eigen::Matrix3d::Zero();
+	Eigen::Matrix<double,3,1> bNlin = Eigen::Matrix<double,3,1>::Zero();
+	Eigen::Matrix3d BFang = Eigen::Matrix3d::Zero();
+	Eigen::Matrix<double,3,1> bNang = Eigen::Matrix<double,3,1>::Zero();
+	if (rParentA) {
+		const rw::common::Ptr<const RigidBody> rwbodyI = rParentA->getRigidBody();
+		const InertiaMatrix<>& inertiaInvI = wTbI.R()*rwbodyI->getBodyInertiaInv()*inverse(wTbI.R());
+		const double massInvI = rwbodyI->getMassInv();
+		BFlin += sign*massInvI*Eigen::Matrix3d::Identity()-sign*Math::skew(rij-RI)*inertiaInvI.e()*Math::skew(rik-RI);
+		if (!leavingB && restitutionB.enableAngular)
+			bNlin += -sign*Math::skew(rij-RI)*inertiaInvI.e()*nijB.e();
+		BFang += sign*inertiaInvI.e()*Math::skew(rik-RI);
+		if (!leavingB && restitutionB.enableAngular)
+			bNang += sign*inertiaInvI.e()*nijB.e();
+	}
+	if (rChildA) {
+		const rw::common::Ptr<const RigidBody> rwbodyJ = rChildA->getRigidBody();
+		const InertiaMatrix<>& inertiaInvJ = wTbJ.R()*rwbodyJ->getBodyInertiaInv()*inverse(wTbJ.R());
+		const double massInvJ = rwbodyJ->getMassInv();
+		BFlin += sign*massInvJ*Eigen::Matrix3d::Identity()-sign*Math::skew(rji-RJ)*inertiaInvJ.e()*Math::skew(rjk-RJ);
+		if (!leavingB && restitutionB.enableAngular)
+			bNlin += -sign*Math::skew(rji-RJ)*inertiaInvJ.e()*nijB.e();
+		BFang += sign*inertiaInvJ.e()*Math::skew(rjk-RJ);
+		if (!leavingB && restitutionB.enableAngular)
+			bNang += sign*inertiaInvJ.e()*nijB.e();
+	}
+
+	// Now make rotated block of correct size
+	const std::vector<TNTConstraint::Mode> modesA = constraintA->getConstraintModes();
+	const Rotation3D<> linRotA = constraintA->getLinearRotationParentW(tntstate);
+	const Rotation3D<> angRotA = constraintA->getAngularRotationParentW(tntstate);
+
+	const Eigen::VectorXd::Index dimA = constraintA->getDimVelocity();
+	Eigen::VectorXd::Index dimB = 1;
+	if (!leavingB && restitutionB.enableTangent)
+		dimB += 2;
+	if (!leavingB && restitutionB.enableAngular)
+		dimB += 1;
+	Eigen::MatrixXd block = Eigen::MatrixXd::Zero(dimA,dimB);
+	Eigen::MatrixXd::Index row = 0;
+	Eigen::MatrixXd::Index col = 0;
+
+
+	for (std::size_t i = 0; i < 3; i++) {
+		if (modesA[i] == TNTConstraint::Velocity) {
+			col = 0;
+			if (!leavingB && restitutionB.enableTangent) {
+				block(row,col) = linRotA.getCol(i).e().transpose()*BFlin*tangentDirB.e();
+				col++;
+				block(row,col) = linRotA.getCol(i).e().transpose()*BFlin*zeroDirB.e();
+				col++;
+			}
+			block(row,col) = linRotA.getCol(i).e().transpose()*BFlin*nijB.e();
+			col++;
+			if (!leavingB && restitutionB.enableAngular) {
+				block(row,col) = linRotA.getCol(i).e().transpose()*bNlin;
+				col++;
+			}
+			row++;
+		}
+	}
+	for (std::size_t i = 3; i < 6; i++) {
+		if (modesA[i] == TNTConstraint::Velocity) {
+			col = 0;
+			if (!leavingB && restitutionB.enableTangent) {
+				block(row,col) = angRotA.getCol(i-3).e().transpose()*BFang*tangentDirB.e();
+				col++;
+				block(row,col) = angRotA.getCol(i-3).e().transpose()*BFang*zeroDirB.e();
+				col++;
+			}
+			block(row,col) = angRotA.getCol(i-3).e().transpose()*BFang*nijB.e();
+			col++;
+			if (!leavingB && restitutionB.enableAngular) {
+				block(row,col) = angRotA.getCol(i-3).e().transpose()*bNang;
+				col++;
+			}
+			row++;
+		}
+	}
+	return block;
+}
+
+Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
+		const TNTContact* contactA,
+		const TNTConstraint* constraintB,
+		const TNTRestitutionModel& restitutionModel,
+		const TNTIslandState& tntstate,
+		const State& rwstate) const
+{
+	const TNTBody* const parentA = contactA->getParent();
+	const TNTBody* const childA = contactA->getChild();
+	const TNTBody* const parentB = constraintB->getParent();
+	const TNTBody* const childB = constraintB->getChild();
+	const TNTRigidBody* const rParentA = dynamic_cast<const TNTRigidBody*>(parentA);
+	const TNTRigidBody* const rChildA = dynamic_cast<const TNTRigidBody*>(childA);
+	const TNTRigidBody* const rParentB = dynamic_cast<const TNTRigidBody*>(parentB);
+	const TNTRigidBody* const rChildB = dynamic_cast<const TNTRigidBody*>(childB);
+	int sign;
+	if (rParentA == rParentB && rChildA == rChildB)
+		sign = 1;
+	else
+		sign = -1;
+
+	// Construct the full 4x6 matrix in world coordinates
+	const VelocityScrew6D<>& velI = contactA->getVelocityParentW(tntstate,rwstate);
+	const VelocityScrew6D<>& velJ = contactA->getVelocityChildW(tntstate,rwstate);
+	const Vector3D<> linRelVel = velI.linear()-velJ.linear();
+	const Vector3D<> rij = contactA->getPositionParentW(tntstate);
+	const Vector3D<> rji = contactA->getPositionChildW(tntstate);
+	const Vector3D<> nij = contactA->getNormalW(tntstate);
+	const Vector3D<> zeroDir = normalize(cross(nij,linRelVel));
+	const Vector3D<> tangentDir = normalize(cross(zeroDir,nij));
+	const Transform3D<>& wTbI = parentA->getWorldTcom(tntstate);
+	const Transform3D<>& wTbJ = childA->getWorldTcom(tntstate);
+	const Vector3D<>& RI = wTbI.P();
+	const Vector3D<>& RJ = wTbJ.P();
+	const bool leavingA = dot(-linRelVel,nij) >= 0;
+
+	TNTRestitutionModel::Values restitutionA;
+	if (!leavingA)
+		restitutionA = restitutionModel.getRestitution(*contactA,tntstate,rwstate);
+
+	Vector3D<> rik, rjk;
+	if (parentA == parentB)
+		rik = constraintB->getPositionParentW(tntstate);
+	else
+		rik = constraintB->getPositionChildW(tntstate);
+	if (childA == parentB)
+		rjk = constraintB->getPositionParentW(tntstate);
+	else
+		rjk = constraintB->getPositionChildW(tntstate);
+
+	Eigen::Matrix3d BFlin = Eigen::Matrix3d::Zero();
+	Eigen::Matrix3d bNlin = Eigen::Matrix3d::Zero();
+	Eigen::Matrix<double,1,3> BFang = Eigen::Matrix<double,1,3>::Zero();
+	Eigen::Matrix<double,1,3> bNang = Eigen::Matrix<double,1,3>::Zero();
+	if (rParentA) {
+		const rw::common::Ptr<const RigidBody> rwbodyI = rParentA->getRigidBody();
+		const InertiaMatrix<>& inertiaInvI = wTbI.R()*rwbodyI->getBodyInertiaInv()*inverse(wTbI.R());
+		const double massInvI = rwbodyI->getMassInv();
+		BFlin += sign*massInvI*Eigen::Matrix3d::Identity()-sign*Math::skew(rij-RI)*inertiaInvI.e()*Math::skew(rik-RI);
+		bNlin += -sign*Math::skew(rij-RI)*inertiaInvI.e();
+		if (!leavingA && restitutionA.enableAngular) {
+			BFang += sign*nij.e().transpose()*inertiaInvI.e()*Math::skew(rik-RI);
+			bNang += sign*nij.e().transpose()*inertiaInvI.e();
+		}
+	}
+	if (rChildA) {
+		const rw::common::Ptr<const RigidBody> rwbodyJ = rChildA->getRigidBody();
+		const InertiaMatrix<>& inertiaInvJ = wTbJ.R()*rwbodyJ->getBodyInertiaInv()*inverse(wTbJ.R());
+		const double massInvJ = rwbodyJ->getMassInv();
+		BFlin += sign*massInvJ*Eigen::Matrix3d::Identity()-sign*Math::skew(rji-RJ)*inertiaInvJ.e()*Math::skew(rjk-RJ);
+		bNlin += -sign*Math::skew(rji-RJ)*inertiaInvJ.e();
+		if (!leavingA && restitutionA.enableAngular) {
+			BFang += sign*nij.e().transpose()*inertiaInvJ.e()*Math::skew(rjk-RJ);
+			bNang += sign*nij.e().transpose()*inertiaInvJ.e();
+		}
+	}
+
+	// Now make rotated block of correct size
+	const std::vector<TNTConstraint::Mode> modesB = constraintB->getConstraintModes();
+	const Rotation3D<> linRotB = constraintB->getLinearRotationParentW(tntstate);
+	const Rotation3D<> angRotB = constraintB->getAngularRotationParentW(tntstate);
+
+	Eigen::VectorXd::Index dimA = 1;
+	const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity();
+	if (!leavingA && restitutionA.enableTangent)
+		dimA += 2;
+	if (!leavingA && restitutionA.enableAngular)
+		dimA += 1;
+	Eigen::MatrixXd block = Eigen::MatrixXd::Zero(dimA,dimB);
+	Eigen::MatrixXd::Index row = 0;
+	Eigen::MatrixXd::Index col = 0;
+	if (!leavingA && restitutionA.enableTangent) {
+		col = 0;
+		for (std::size_t j = 0; j < 3; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row+0,col) = tangentDir.e().transpose()*BFlin*linRotB.getCol(j).e();
+				block(row+1,col) = zeroDir.e().transpose()*BFlin*linRotB.getCol(j).e();
+				col++;
+			}
+		}
+		for (std::size_t j = 3; j < 6; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row+0,col) = tangentDir.e().transpose()*bNlin*angRotB.getCol(j-3).e();
+				block(row+1,col) = zeroDir.e().transpose()*bNlin*angRotB.getCol(j-3).e();
+				col++;
+			}
+		}
+		row += 2;
+	}
+	col = 0;
+	{
+		for (std::size_t j = 0; j < 3; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row,col) = nij.e().transpose()*BFlin*linRotB.getCol(j).e();
+				col++;
+			}
+		}
+		for (std::size_t j = 3; j < 6; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row,col) = nij.e().transpose()*bNlin*angRotB.getCol(j-3).e();
+				col++;
+			}
+		}
+		row++;
+	}
+	col = 0;
+	if (!leavingA && restitutionA.enableAngular) {
+		for (std::size_t j = 0; j < 3; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row,col) = BFang*linRotB.getCol(j).e();
+				col++;
+			}
+		}
+		for (std::size_t j = 3; j < 6; j++) {
+			if (modesB[j] == TNTConstraint::Velocity) {
+				block(row,col) = bNang*angRotB.getCol(j-3).e();
+				col++;
+			}
+		}
+		row++;
 	}
 
 	return block;
@@ -672,22 +969,23 @@ Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
 	const VelocityScrew6D<>& velI = contactA->getVelocityParentW(tntstate,rwstate);
 	const VelocityScrew6D<>& velJ = contactA->getVelocityChildW(tntstate,rwstate);
 	const Vector3D<> linRelVel = velI.linear()-velJ.linear();
-	const VelocityScrew6D<>& velIB = contactB->getVelocityParentW(tntstate,rwstate);
-	const VelocityScrew6D<>& velJB = contactB->getVelocityChildW(tntstate,rwstate);
-	const Vector3D<> linRelVelB = velIB.linear()-velJB.linear();
 	const Vector3D<> rij = contactA->getPositionParentW(tntstate);
 	const Vector3D<> rji = contactA->getPositionChildW(tntstate);
 	const Vector3D<> nij = contactA->getNormalW(tntstate);
 	const Vector3D<> zeroDir = normalize(cross(nij,linRelVel));
 	const Vector3D<> tangentDir = normalize(cross(zeroDir,nij));
-	const Vector3D<> nijB = contactB->getNormalW(tntstate);
-	const Vector3D<> zeroDirB = normalize(cross(nijB,linRelVelB));
-	const Vector3D<> tangentDirB = normalize(cross(zeroDirB,nijB));
 	const Transform3D<>& wTbI = parentA->getWorldTcom(tntstate);
 	const Transform3D<>& wTbJ = childA->getWorldTcom(tntstate);
 	const Vector3D<>& RI = wTbI.P();
 	const Vector3D<>& RJ = wTbJ.P();
 	const bool leavingA = dot(-linRelVel,nij) >= 0;
+
+	const VelocityScrew6D<>& velIB = contactB->getVelocityParentW(tntstate,rwstate);
+	const VelocityScrew6D<>& velJB = contactB->getVelocityChildW(tntstate,rwstate);
+	const Vector3D<> linRelVelB = velIB.linear()-velJB.linear();
+	const Vector3D<> nijB = contactB->getNormalW(tntstate);
+	const Vector3D<> zeroDirB = normalize(cross(nijB,linRelVelB));
+	const Vector3D<> tangentDirB = normalize(cross(zeroDirB,nijB));
 	const bool leavingB = dot(-linRelVelB,nijB) >= 0;
 
 	TNTRestitutionModel::Values restitutionA;
@@ -717,11 +1015,11 @@ Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
 		const double massInvI = rwbodyI->getMassInv();
 		BFlin += sign*massInvI*Eigen::Matrix3d::Identity()-sign*Math::skew(rij-RI)*inertiaInvI.e()*Math::skew(rik-RI);
 		if (!leavingB && restitutionB.enableAngular)
-			bNlin += -sign*Math::skew(rij-RI)*inertiaInvI.e()*nij.e();
+			bNlin += -sign*Math::skew(rij-RI)*inertiaInvI.e()*nijB.e();
 		if (!leavingA && restitutionA.enableAngular)
 			BFang += sign*nij.e().transpose()*inertiaInvI.e()*Math::skew(rik-RI);
 		if (!leavingA && !leavingB && restitutionA.enableAngular && restitutionB.enableAngular)
-			bNang += sign*nij.e().transpose()*inertiaInvI.e()*nij.e();
+			bNang += sign*nij.e().transpose()*inertiaInvI.e()*nijB.e();
 	}
 	if (rChildA) {
 		const rw::common::Ptr<const RigidBody> rwbodyJ = rChildA->getRigidBody();
@@ -729,11 +1027,12 @@ Eigen::MatrixXd TNTCollisionSolverSingle::getBlock(
 		const double massInvJ = rwbodyJ->getMassInv();
 		BFlin += sign*massInvJ*Eigen::Matrix3d::Identity()-sign*Math::skew(rji-RJ)*inertiaInvJ.e()*Math::skew(rjk-RJ);
 		if (!leavingB && restitutionB.enableAngular)
-			bNlin += -sign*Math::skew(rji-RJ)*inertiaInvJ.e()*nij.e();
+			bNlin += -sign*Math::skew(rji-RJ)*inertiaInvJ.e()*nijB.e();
 		if (!leavingA && restitutionA.enableAngular)
 			BFang += sign*nij.e().transpose()*inertiaInvJ.e()*Math::skew(rjk-RJ);
 		if (!leavingA && !leavingB && restitutionA.enableAngular && restitutionB.enableAngular)
-			bNang += sign*nij.e().transpose()*inertiaInvJ.e()*nij.e();
+			//bNang += sign*nij.e().transpose()*inertiaInvJ.e()*nij.e();
+			bNang += sign*nij.e().transpose()*inertiaInvJ.e()*nijB.e();
 	}
 
 	// Now make rotated block of correct size

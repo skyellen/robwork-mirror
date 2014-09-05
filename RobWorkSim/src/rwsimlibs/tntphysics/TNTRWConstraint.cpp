@@ -17,6 +17,7 @@
 
 #include "TNTRWConstraint.hpp"
 #include "TNTBody.hpp"
+#include "TNTSettings.hpp"
 
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/Constraint.hpp>
@@ -50,7 +51,7 @@ TNTRWConstraint::TNTRWConstraint(rw::common::Ptr<const Constraint> constraint, c
 	_rwConstraint(constraint),
 	_modes(getModes(constraint)),
 	_dimVel(6-constraint->getDOF()),
-	_dimWrench(constraint->getDOF()),
+	_dimFree(constraint->getDOF()),
 	_spring(NULL)
 {
 	RW_ASSERT(parent != NULL);
@@ -113,8 +114,8 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[1];
 				const Vector3D<> z = normalize(cross(x,y));
 				pRcLin = Rotation3D<>(normalize(cross(fixed,z)),fixed,z);
-				_spring->cDec.modes[0] = TNTConstraint::Wrench;
-				_spring->cDec.modes[1] = TNTConstraint::Wrench;
+				_spring->cDec.modes[0] = TNTConstraint::Free;
+				_spring->cDec.modes[1] = TNTConstraint::Free;
 				_spring->cDec.modes[2] = TNTConstraint::Velocity;
 				changed = true;
 			} else if (_spring->linComp == 3 && _spring->cDec.linFixedDirs.size() == 2) {
@@ -125,7 +126,7 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[1];
 				const Vector3D<> z = _spring->rowToDir[2];
 				pRcLin = EAA<>(notFixed,Vector3D<>::x()).toRotation3D()*Rotation3D<>(x,y,z);
-				_spring->cDec.modes[0] = TNTConstraint::Wrench;
+				_spring->cDec.modes[0] = TNTConstraint::Free;
 				_spring->cDec.modes[1] = TNTConstraint::Velocity;
 				_spring->cDec.modes[2] = TNTConstraint::Velocity;
 				changed = true;
@@ -135,8 +136,8 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[1];
 				const Vector3D<> z = _spring->rowToDir[2];
 				pRcLin = EAA<>(fixed,Vector3D<>::z()).toRotation3D()*Rotation3D<>(x,y,z);
-				_spring->cDec.modes[0] = TNTConstraint::Wrench;
-				_spring->cDec.modes[1] = TNTConstraint::Wrench;
+				_spring->cDec.modes[0] = TNTConstraint::Free;
+				_spring->cDec.modes[1] = TNTConstraint::Free;
 				_spring->cDec.modes[2] = TNTConstraint::Velocity;
 				changed = true;
 			}
@@ -158,8 +159,8 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[_spring->linComp+1];
 				const Vector3D<> z = normalize(cross(x,y));
 				pRcAng = Rotation3D<>(normalize(cross(fixed,z)),fixed,z);
-				_spring->cDec.modes[3] = TNTConstraint::Wrench;
-				_spring->cDec.modes[4] = TNTConstraint::Wrench;
+				_spring->cDec.modes[3] = TNTConstraint::Free;
+				_spring->cDec.modes[4] = TNTConstraint::Free;
 				_spring->cDec.modes[5] = TNTConstraint::Velocity;
 				changed = true;
 			} else if (_spring->angComp == 3 && _spring->cDec.angFixedDirs.size() == 2) {
@@ -170,7 +171,7 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[_spring->linComp+1];
 				const Vector3D<> z = _spring->rowToDir[_spring->linComp+2];
 				pRcAng = EAA<>(notFixed,Vector3D<>::x()).toRotation3D()*Rotation3D<>(x,y,z);
-				_spring->cDec.modes[3] = TNTConstraint::Wrench;
+				_spring->cDec.modes[3] = TNTConstraint::Free;
 				_spring->cDec.modes[4] = TNTConstraint::Velocity;
 				_spring->cDec.modes[5] = TNTConstraint::Velocity;
 				changed = true;
@@ -180,8 +181,8 @@ void TNTRWConstraint::update(TNTIslandState &tntstate, const State& rwstate) {
 				const Vector3D<> y = _spring->rowToDir[_spring->linComp+1];
 				const Vector3D<> z = _spring->rowToDir[_spring->linComp+2];
 				pRcAng = EAA<>(fixed,Vector3D<>::z()).toRotation3D()*Rotation3D<>(x,y,z);
-				_spring->cDec.modes[3] = TNTConstraint::Wrench;
-				_spring->cDec.modes[4] = TNTConstraint::Wrench;
+				_spring->cDec.modes[3] = TNTConstraint::Free;
+				_spring->cDec.modes[4] = TNTConstraint::Free;
 				_spring->cDec.modes[5] = TNTConstraint::Velocity;
 				changed = true;
 			}
@@ -265,10 +266,14 @@ std::size_t TNTRWConstraint::getDimVelocity() const {
 }
 
 std::size_t TNTRWConstraint::getDimWrench() const {
+	return 0;
+}
+
+std::size_t TNTRWConstraint::getDimFree() const {
 	if (_spring != NULL)
 		return _spring->cDec.freeDirs.size();
 	else
-		return _dimWrench;
+		return _dimFree;
 }
 
 void TNTRWConstraint::createSpring() {
@@ -381,40 +386,40 @@ std::vector<TNTConstraint::Mode> TNTRWConstraint::getModes(rw::common::Ptr<const
 	case Constraint::Fixed:
 		break;
 	case Constraint::Prismatic:
-		modes[2] = Wrench;
+		modes[2] = Free;
 		break;
 	case Constraint::Revolute:
-		modes[5] = Wrench;
+		modes[5] = Free;
 		break;
 	case Constraint::Universal:
-		modes[3] = Wrench;
-		modes[4] = Wrench;
+		modes[3] = Free;
+		modes[4] = Free;
 		break;
 	case Constraint::Spherical:
-		modes[3] = Wrench;
-		modes[4] = Wrench;
-		modes[5] = Wrench;
+		modes[3] = Free;
+		modes[4] = Free;
+		modes[5] = Free;
 		break;
 	case Constraint::Piston:
-		modes[2] = Wrench;
-		modes[5] = Wrench;
+		modes[2] = Free;
+		modes[5] = Free;
 		break;
 	case Constraint::PrismaticRotoid:
-		modes[2] = Wrench;
-		modes[3] = Wrench;
+		modes[2] = Free;
+		modes[3] = Free;
 		break;
 	case Constraint::PrismaticUniversal:
-		modes[2] = Wrench;
-		modes[3] = Wrench;
-		modes[4] = Wrench;
+		modes[2] = Free;
+		modes[3] = Free;
+		modes[4] = Free;
 		break;
 	case Constraint::Free:
-		modes[0] = Wrench;
-		modes[1] = Wrench;
-		modes[2] = Wrench;
-		modes[3] = Wrench;
-		modes[4] = Wrench;
-		modes[5] = Wrench;
+		modes[0] = Free;
+		modes[1] = Free;
+		modes[2] = Free;
+		modes[3] = Free;
+		modes[4] = Free;
+		modes[5] = Free;
 		break;
 	default:
 		RW_THROW("TNTRWConstraint could not be created - type of Constraint is unknown!");
@@ -423,14 +428,14 @@ std::vector<TNTConstraint::Mode> TNTRWConstraint::getModes(rw::common::Ptr<const
 	return modes;
 }
 
-void TNTRWConstraint::decomposeCompliance(const Eigen::MatrixXd &compliance, const Spring &spring, ComplianceDecomposition &dec, double tolerance) {
+void TNTRWConstraint::decomposeCompliance(const Eigen::MatrixXd &compliance, const Spring &spring, ComplianceDecomposition &dec) {
 	// Do SVD on compliance matrix
 	Eigen::MatrixXd U;
 	Eigen::MatrixXd V;
 	Eigen::VectorXd sigmaTmp;
 	LinearAlgebra::svd(compliance,U,sigmaTmp,V);
 	// Zero out close to singular directions
-	const Eigen::VectorXd sigma = (sigmaTmp.array().abs() < tolerance).select(0, sigmaTmp);
+	const Eigen::VectorXd sigma = (sigmaTmp.array().abs() < TNT_SPRING_EIGENVALUE_SQRT_THRESHOLD).select(0, sigmaTmp);
 	const Eigen::VectorXd sigmaInv = (sigma.array().abs() > 0).select(sigma.array().inverse(), 0);
 	// Construct the Moore-Penrose pseudoinverse
 	dec.cachedCompliance = compliance;

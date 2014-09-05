@@ -33,6 +33,7 @@ namespace tntphysics {
 class TNTIslandState;
 class TNTSolver;
 class TNTContact;
+class TNTMaterialMap;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -58,10 +59,16 @@ public:
 	 * @brief Solve for the constraint forces and torques while resolving the contact types.
 	 * @param persistentContacts [in] contacts that should never be removed.
 	 * @param h [in] the stepsize.
+	 * @param map [in] the material map to use to resolve friction models.
 	 * @param rwstate [in] the current state.
 	 * @param tntstate [in/out] the current TNTIslandState.
 	 */
-	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const rw::kinematics::State &rwstate, TNTIslandState &tntstate) const = 0;
+	virtual void solve(
+			const std::vector<TNTContact*>& persistentContacts,
+			double h,
+			const TNTMaterialMap& map,
+			const rw::kinematics::State &rwstate,
+			TNTIslandState &tntstate) const = 0;
 
 	/**
 	 * @addtogroup extensionpoints

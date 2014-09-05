@@ -46,7 +46,7 @@ const TNTContactResolver* TNTContactResolverNonPenetration::createResolver(const
 	return new TNTContactResolverNonPenetration(solver);
 }
 
-void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& persistentContacts, double h, const State &rwstate, TNTIslandState &tntstate) const {
+void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const State &rwstate, TNTIslandState &tntstate) const {
 	if (_solver == NULL)
 		RW_THROW("TNTContactResolverNonPenetration (solve): There is no TNTSolver set for this resolver - please construct a new resolver for TNTSolver to use.");
 	TNTIslandState resState;
@@ -80,7 +80,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 						break;
 					}
 				} else {
-					if (contact->isLeaving() || contact->getTypeLinear() != TNTContact::Sliding || contact->getTypeAngular() != TNTContact::Sliding) {
+					if (contact->isLeaving()) {
 						match = false;
 						break;
 					}
@@ -126,7 +126,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 				if (!val)
 					contact->setTypeLeaving();
 				else
-					contact->setType(TNTContact::Sliding,TNTContact::Sliding);
+					contact->setType(TNTContact::None,TNTContact::None);
 				i++;
 			}
 			continue;
@@ -139,17 +139,13 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 			} else {
 				const TNTContact::Type linType = contact->getTypeLinear();
 				const TNTContact::Type angType = contact->getTypeAngular();
-				if (linType == TNTContact::Sticking) {
-					RW_THROW("TNTContactResolverNonPenetration (solve): contact should not be sticking in this resolver.");
-				} else if (linType == TNTContact::Sliding) {
-					if (angType == TNTContact::Sticking)
-						RW_THROW("TNTContactResolverNonPenetration (solve): contact should not be sticking in this resolver.");
-					else if (angType == TNTContact::Sliding)
-						testedCombinations.back().push_back(true);
-					else
-						RW_THROW("TNTContactResolverNonPenetration (solve): encountered unknown angular contact type.");
+				if (linType != TNTContact::None) {
+					RW_THROW("TNTContactResolverNonPenetration (solve): only allowed linear contact type in this resolver is None.");
 				} else {
-					RW_THROW("TNTContactResolverNonPenetration (solve): encountered unknown linear contact type.");
+					if (angType != TNTContact::None)
+						RW_THROW("TNTContactResolverNonPenetration (solve): only allowed linear contact type in this resolver is None.");
+					else
+						testedCombinations.back().push_back(true);
 				}
 			}
 		}
@@ -180,7 +176,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 				const bool penetrating = dot(-linRelVel,nij) < -1e-5;
 				if (penetrating) {
 					repeat = true;
-					contact->setType(TNTContact::Sliding,TNTContact::Sliding);
+					contact->setType(TNTContact::None,TNTContact::None);
 				}
 			} else {
 				const Wrench6D<> wrench = contact->getWrenchConstraint(tmpState);

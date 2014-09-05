@@ -84,13 +84,16 @@ public:
 	//! @copydoc TNTConstraint::getDimWrench
 	virtual std::size_t getDimWrench() const;
 
+	//! @copydoc TNTConstraint::getDimFree
+	virtual std::size_t getDimFree() const;
+
 private:
 	struct ComplianceDecomposition;
 	struct Spring;
 
 	static std::vector<Mode> getModes(rw::common::Ptr<const rwsim::dynamics::Constraint> constraint);
 	//void decomposeCompliance(const Eigen::MatrixXd &compliance, double tolerance = 1e-6);
-	static void decomposeCompliance(const Eigen::MatrixXd &compliance, const Spring &spring, ComplianceDecomposition &dec, double tolerance = 1e-6);
+	static void decomposeCompliance(const Eigen::MatrixXd &compliance, const Spring &spring, ComplianceDecomposition &dec);
 	void createSpring();
 	void deleteSpring();
 	Eigen::VectorXd getX(const rw::math::Transform3D<> &wTchild, const rw::math::Transform3D<> &wTconstraint, const rw::kinematics::State &state) const;
@@ -100,7 +103,7 @@ private:
 	const rw::common::Ptr<const rwsim::dynamics::Constraint> _rwConstraint;
 	const std::vector<Mode> _modes;
 	const std::size_t _dimVel;
-	const std::size_t _dimWrench;
+	const std::size_t _dimFree;
 	rw::math::Transform3D<> _pTc;
 	rw::math::Transform3D<> _cTc;
 	Spring* _spring;

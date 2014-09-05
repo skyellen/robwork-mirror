@@ -29,7 +29,11 @@ TNTContact::TNTContact(const TNTBody* parent, const TNTBody* child):
 	TNTConstraint(parent,child),
 	_leaving(false),
 	_linearType(Sticking),
-	_angularType(Sticking)
+	_angularType(Sticking),
+	_muLin(0),
+	_muAng(0),
+	_muLinViscuous(0),
+	_muAngViscuous(0)
 {
 	RW_ASSERT(parent != NULL);
 	RW_ASSERT(child != NULL);
@@ -40,7 +44,11 @@ TNTContact::TNTContact(const TNTBody* parent, const TNTBody* child, const Contac
 	_leaving(false),
 	_linearType(Sticking),
 	_angularType(Sticking),
-	_contact(contact)
+	_contact(contact),
+	_muLin(0),
+	_muAng(0),
+	_muLinViscuous(0),
+	_muAngViscuous(0)
 {
 	RW_ASSERT(parent != NULL);
 	RW_ASSERT(child != NULL);
@@ -111,47 +119,151 @@ void TNTContact::reset(TNTIslandState &tntstate, const State &rwstate) {
 
 std::vector<TNTConstraint::Mode> TNTContact::getConstraintModes() const {
 	std::vector<TNTConstraint::Mode> modes;
-	if (_leaving) {
-		modes.push_back(Wrench);
-		modes.push_back(Wrench);
-		modes.push_back(Wrench);
+	if (_leaving || _linearType == None) {
+		modes.push_back(Free);
+		modes.push_back(Free);
 	} else if (_linearType == Sticking) {
-		modes.push_back(Velocity);
 		modes.push_back(Velocity);
 		modes.push_back(Velocity);
 	} else if (_linearType == Sliding) {
 		modes.push_back(Wrench);
-		modes.push_back(Wrench);
-		modes.push_back(Velocity);
+		modes.push_back(Free);
 	}
-	modes.push_back(Wrench);
-	modes.push_back(Wrench);
-	if (_leaving || _angularType == Sliding) {
-		modes.push_back(Wrench);
+	if (_leaving)
+		modes.push_back(Free);
+	else
+		modes.push_back(Velocity);
+	modes.push_back(Free);
+	modes.push_back(Free);
+	if (_leaving || _angularType == None) {
+		modes.push_back(Free);
 	} else if (_angularType == Sticking) {
 		modes.push_back(Velocity);
+	} else if (_angularType == Sliding) {
+		modes.push_back(Wrench);
 	}
 	return modes;
 }
 
 std::size_t TNTContact::getDimVelocity() const {
-	if (_leaving)
-		return 0;
-	else if (_linearType == Sticking && _angularType == Sticking)
-		return 4;
-	else if (_linearType == Sticking && _angularType == Sliding)
-		return 3;
-	else if (_linearType == Sliding && _angularType == Sticking)
-		return 2;
-	else if (_linearType == Sliding && _angularType == Sliding)
-		return 1;
-	return 0;
+	std::size_t dim = 0;
+	if (!_leaving) {
+		dim++;
+		if (_linearType == Sticking)
+			dim += 2;
+		if (_angularType == Sticking)
+			dim++;
+	}
+	return dim;
 }
 
 std::size_t TNTContact::getDimWrench() const {
-	return 6-getDimVelocity();
+	std::size_t dim = 0;
+	if (!_leaving) {
+		if (_linearType == Sliding)
+			dim++;
+		if (_angularType == Sliding)
+			dim++;
+	}
+	return dim;
+}
+
+std::size_t TNTContact::getDimFree() const {
+	std::size_t dim = 0;
+	if (_leaving) {
+		dim = 6;
+	} else {
+		dim = 2;
+		if (_linearType == None)
+			dim += 2;
+		else if (_linearType == Sliding)
+			dim++;
+		if (_angularType == None)
+			dim++;
+	}
+	return dim;
 }
 
 Vector3D<> TNTContact::getNormalW(const TNTIslandState &tntstate) const {
 	return getLinearRotationParentW(tntstate).getCol(2);
+}
+
+Vector3D<> TNTContact::getFrictionDirW(const TNTIslandState &tntstate) const {
+	return getLinearRotationParentW(tntstate).getCol(0);
+}
+
+void TNTContact::setFrictionDir(const Vector3D<>& frictionDir) {
+	const Vector3D<> x = _rotLinParent.getCol(0);
+	const Vector3D<> normalP = _rotLinParent.getCol(2);
+	const Vector3D<> normalC = _rotLinParent.getCol(2);
+	const Vector3D<> frictionDir_proj = normalize(frictionDir-dot(normalP,frictionDir)*normalP);
+	const Vector3D<> sinN = cross(x,frictionDir_proj);
+	const double cos = dot(x,frictionDir_proj);
+	const double angle = Math::sign(dot(sinN,normalP))*atan2(sinN.norm2(),cos);
+	const Rotation3D<> Rp = EAA<>(normalP,angle).toRotation3D();
+	const Rotation3D<> Rc = EAA<>(normalC,angle).toRotation3D();
+	_rotLinParent = Rp*_rotLinParent;
+	_rotLinChild = Rc*_rotLinChild;
+	_rotAngParent = Rp*_rotAngParent;
+	_rotAngChild = Rc*_rotAngChild;
+}
+
+void TNTContact::setFrictionDirW(const Vector3D<>& frictionDir, const State &state) {
+	const Frame* const frameP = getParent()->get()->getBodyFrame();
+	const Transform3D<> wTp = Kinematics::worldTframe(frameP,state);
+	const Vector3D<> dir = inverse(wTp.R())*frictionDir;
+	setFrictionDir(dir);
+}
+
+void TNTContact::setFriction(double linearCoefficient, double angularCoefficient, double absoluteLinear, double absoluteAngular) {
+	_muLin = linearCoefficient;
+	_muAng = angularCoefficient;
+	_muLinViscuous = absoluteLinear;
+	_muAngViscuous = absoluteAngular;
+}
+
+std::string TNTContact::toString(Type type) {
+	switch (type) {
+	case None:
+		return "None";
+	case Sliding:
+		return "Sliding";
+	case Sticking:
+		return "Sticking";
+	}
+	return "ERROR";
+}
+
+Eigen::MatrixXd TNTContact::getWrenchModelLHS(const TNTConstraint* constraint) const {
+	Eigen::MatrixXd matrix = Eigen::MatrixXd::Zero(getDimWrench(),6);
+	if (constraint == this) {
+		RW_ASSERT(!_leaving);
+		RW_ASSERT(_linearType == Sliding || _angularType == Sliding);
+		if (_linearType == Sliding && _angularType != Sliding) {
+			matrix(0,0) = 1;
+			matrix(0,2) = _muLin;
+		} else if (_linearType != Sliding && _angularType == Sliding) {
+			matrix(0,2) = _muAng;
+			matrix(0,5) = 1;
+		} else {
+			matrix(0,0) = 1;
+			matrix(0,2) = _muLin;
+			matrix(1,2) = _muAng;
+			matrix(1,5) = 1;
+		}
+	}
+	return matrix;
+}
+
+Eigen::VectorXd TNTContact::getWrenchModelRHS() const {
+	Eigen::VectorXd vector = Eigen::VectorXd::Zero(getDimWrench());
+	if (_linearType == Sliding && _angularType != Sliding)
+		vector[0] = _muLinViscuous;
+	else if (_linearType != Sliding && _angularType == Sliding)
+		vector[0] = _muAngViscuous;
+	else if (_linearType == Sliding && _angularType == Sliding) {
+		vector[0] = _muLinViscuous;
+		vector[1] = _muAngViscuous;
+	}
+	return vector;
 }

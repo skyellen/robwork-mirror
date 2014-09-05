@@ -148,8 +148,22 @@ private:
 			const rw::kinematics::State& rwstate) const;
 
 	Eigen::MatrixXd getBlock(
+			const TNTConstraint* constraintA,
+			const TNTContact* constraintB,
+			const TNTRestitutionModel& restitutionModel,
+			const TNTIslandState& tntstate,
+			const rw::kinematics::State& rwstate) const;
+
+	Eigen::MatrixXd getBlock(
 			const TNTContact* constraintA,
 			const TNTContact* constraintB,
+			const TNTRestitutionModel& restitutionModel,
+			const TNTIslandState& tntstate,
+			const rw::kinematics::State& rwstate) const;
+
+	Eigen::MatrixXd getBlock(
+			const TNTContact* constraintA,
+			const TNTConstraint* constraintB,
 			const TNTRestitutionModel& restitutionModel,
 			const TNTIslandState& tntstate,
 			const rw::kinematics::State& rwstate) const;

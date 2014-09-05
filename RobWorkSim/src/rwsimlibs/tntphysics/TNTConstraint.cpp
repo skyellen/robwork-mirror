@@ -80,13 +80,7 @@ Vector3D<> TNTConstraint::getPositionParentW(const TNTIslandState &state) const 
 Vector3D<> TNTConstraint::getPositionChildW(const TNTIslandState &state) const {
 	return _child->getWorldTcom(state)*_posChild;
 }
-/*
-Vector3D<> TNTConstraint::getPositionAvgW(const TNTIslandState &state) const {
-	const Vector3D<> p = getPositionParentW(state);
-	const Vector3D<> c = getPositionChildW(state);
-	return (p+c)/2;
-}
-*/
+
 Rotation3D<> TNTConstraint::getLinearRotationParentW(const TNTIslandState &state) const {
 	return _parent->getWorldTcom(state).R()*_rotLinParent;
 }
@@ -94,15 +88,7 @@ Rotation3D<> TNTConstraint::getLinearRotationParentW(const TNTIslandState &state
 Rotation3D<> TNTConstraint::getLinearRotationChildW(const TNTIslandState &state) const {
 	return _child->getWorldTcom(state).R()*_rotLinChild;
 }
-/*
-Rotation3D<> TNTConstraint::getLinearRotationAvgW(const TNTIslandState &state) const {
-	const Rotation3D<> p = getLinearRotationParentW(state);
-	const Rotation3D<> c = getLinearRotationChildW(state);
-	const EAA<> dif(inverse(p)*c);
-	const EAA<> mid(dif.angle()/2.*dif.axis());
-	return p*mid.toRotation3D();
-}
-*/
+
 Rotation3D<> TNTConstraint::getAngularRotationParentW(const TNTIslandState &state) const {
 	return _parent->getWorldTcom(state).R()*_rotAngParent;
 }
@@ -110,15 +96,7 @@ Rotation3D<> TNTConstraint::getAngularRotationParentW(const TNTIslandState &stat
 Rotation3D<> TNTConstraint::getAngularRotationChildW(const TNTIslandState &state) const {
 	return _child->getWorldTcom(state).R()*_rotAngChild;
 }
-/*
-Rotation3D<> TNTConstraint::getAngularRotationAvgW(const TNTIslandState &state) const {
-	const Rotation3D<> p = getAngularRotationParentW(state);
-	const Rotation3D<> c = getAngularRotationChildW(state);
-	const EAA<> dif(inverse(p)*c);
-	const EAA<> mid(dif.angle()/2.*dif.axis());
-	return p*mid.toRotation3D();
-}
-*/
+
 VelocityScrew6D<> TNTConstraint::getVelocityParentW(const TNTIslandState &tntstate, const State& rwstate) const {
 	const VelocityScrew6D<> vel = _parent->getVelocityW(rwstate,tntstate);
 	const Vector3D<> R = _parent->getWorldTcom(tntstate).P();
@@ -157,7 +135,8 @@ void TNTConstraint::applyWrench(TNTIslandState &tntstate, const Wrench6D<>& wren
 }
 
 Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, const std::list<TNTConstraint*>& constraints, const State &rwstate, const TNTIslandState &tntstate) const {
-	const std::size_t dim = getDimVelocity();
+	const std::size_t dim = 6-getDimFree();
+	RW_ASSERT(dim >= 0);
 	Eigen::VectorXd res = Eigen::VectorXd::Zero(dim);
 	Eigen::Matrix<double, 6, 1> velParent = Eigen::Matrix<double, 6, 1>::Zero();
 	Eigen::Matrix<double, 6, 1> velChild = Eigen::Matrix<double, 6, 1>::Zero();
@@ -234,10 +213,22 @@ Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, const
 	// Now we take only the constraint directions!
 	const std::vector<Mode> constraintModes = getConstraintModes();
 	std::size_t cI = 0;
+	bool wrenchConstraints = false;
+	Eigen::VectorXd wrenchRHS;
+	std::size_t iWrench = 0;
 	for (std::size_t i = 0; i < 6; i++) {
 		const Mode &mode = constraintModes[i];
 		if (mode == Velocity) {
 			res[cI] = rotated[i];
+			cI ++;
+		} else if (mode == Wrench) {
+			if (!wrenchConstraints) {
+				wrenchConstraints = true;
+				wrenchRHS = getWrenchModelRHS();
+				RW_ASSERT(wrenchRHS.rows() == (int)getDimWrench());
+			}
+			res[cI] = wrenchRHS[iWrench];
+			iWrench++;
 			cI ++;
 		}
 	}
@@ -249,7 +240,7 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 	const TNTBody* child = _child;
 	const TNTBody* constraintParent = constraint->getParent();
 	const TNTBody* constraintChild = constraint->getChild();
-	const std::size_t dim = getDimVelocity();
+	const std::size_t dim = getDimVelocity()+getDimWrench();
 	Eigen::Matrix<double, 6, 6> matrixParent = Eigen::Matrix<double, 6, 6>::Zero();
 	Eigen::Matrix<double, 6, 6> matrixChild = Eigen::Matrix<double, 6, 6>::Zero();
 	if (const TNTFixedBody* const body = dynamic_cast<const TNTFixedBody*>(parent)) {
@@ -303,22 +294,50 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 	// Now we take only the rows and columns for the constrained directions!
 	const std::vector<Mode> constraintModes = getConstraintModes();
 	const std::vector<Mode> constraintModesB = constraint->getConstraintModes();
-	const std::size_t dimB = constraint->getDimVelocity();
+	const std::size_t dimB = constraint->getDimVelocity() + constraint->getDimWrench();
 	std::size_t cI = 0;
 	Eigen::MatrixXd reduced(dim,dimB);
+	bool wrenchConstraints = false;
+	Eigen::MatrixXd wrenchLHS;
+	std::size_t iWrench = 0;
 	for (std::size_t i = 0; i < 6; i++) {
 		const Mode &modeI = constraintModes[i];
 		if (modeI == Velocity) {
 			std::size_t cJ = 0;
 			for (std::size_t j = 0; j < 6; j++) {
 				const Mode &modeJ = constraintModesB[j];
-				if (modeJ == Velocity) {
+				if (modeJ == Velocity || modeJ == Wrench) {
 					reduced(cI,cJ) = rotated(i,j);
 					cJ++;
 				}
 			}
 			cI++;
+		} else if (modeI == Wrench) {
+			if (!wrenchConstraints) {
+				wrenchConstraints = true;
+				wrenchLHS = getWrenchModelLHS(constraint);
+				RW_ASSERT(wrenchLHS.cols() == 6);
+				RW_ASSERT(wrenchLHS.rows() == (int)getDimWrench());
+			}
+			std::size_t cJ = 0;
+			for (std::size_t j = 0; j < 6; j++) {
+				const Mode &modeJ = constraintModesB[j];
+				if (modeJ == Velocity || modeJ == Wrench) {
+					reduced(cI,cJ) = wrenchLHS(iWrench,j);
+					cJ++;
+				}
+			}
+			iWrench++;
+			cI++;
 		}
 	}
 	return reduced;
+}
+
+Eigen::MatrixXd TNTConstraint::getWrenchModelLHS(const TNTConstraint* constraint) const {
+	return Eigen::MatrixXd::Zero(getDimWrench(),6);
+}
+
+Eigen::VectorXd TNTConstraint::getWrenchModelRHS() const {
+	return Eigen::VectorXd::Zero(getDimWrench());
 }

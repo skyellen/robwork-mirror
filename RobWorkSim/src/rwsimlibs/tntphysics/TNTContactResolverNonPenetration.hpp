@@ -57,7 +57,7 @@ public:
 	virtual const TNTContactResolver* createResolver(const TNTSolver* solver) const;
 
 	//! @copydoc TNTContactResolver::solve
-	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const rw::kinematics::State &rwstate, TNTIslandState &tntstate) const;
+	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const rw::kinematics::State &rwstate, TNTIslandState &tntstate) const;
 
 private:
 	const TNTSolver* const _solver;

@@ -46,28 +46,37 @@ class TNTIslandState;
 /**
  * @brief A generic interface that makes implementation of constraints simple.
  *
- * A constraint works between two objects, and can be either a velocity or a force constraint
- * or a combination.
+ * A constraint works between two objects, and it is possible to choose a constraint mode independently for
+ * different directions. If Velocity mode is chosen, this indicates that there should be zero relative velocity
+ * between the two objects. A Wrench constraint indicates that there is a relationship between forces that should
+ * be maintained in force-space. If the Wrench mode is used, a custom model for the force-space constraint should
+ * be specified - otherwise the wrench will be fixed to zero by default. Using Wrench mode with a zero wrench
+ * constraint should be avoided - instead use the Free mode. There is an important distinction between these two
+ * cases. When using the Wrench mode, equations and unknowns are added and solved for. For degenerate systems
+ * the Wrench mode might not give the exact forces that where desired. The Free mode applies allows applying a
+ * fixed force that is included in the existing equations, but it does not increase the size of the equation
+ * system. Even though there are degeneracies in a system, the force in the Free directions will always be as
+ * specified manually.
  *
- * The TNTConstraint is used to set up the equation system that is used for solving the constraint forces.
- * It does this by using the TNTIntegrator associated to the constrained objects. These integrators
- * are responsible for giving a relationship between the applied constraint forces and torques and objects
+ * To be able to supply velocity-constraints to the solver, the TNTConstraint uses the TNTIntegrator associated
+ * to the constrained objects. These integrators
+ * are responsible for providing a relationship between the applied constraint forces and torques and the objects
  * contribution to the relative motion in the constraint. The TNTConstraint can combine these linear
  * relationships and can construct matrix blocks that are used directly by a TNTSolver to set up the complete
  * equation system. This is how the TNTSolverSVD works for instance.
  *
  * A constraint is specified by a point on each object where the constraint will be acting. Furthermore it
- * is defined by a orthonormal basis for linear constraints, and a orthonormal basis for angular constrints.
- * Often these two rotations will be equal, but in some cases they might not need to be equal.
- *
- * The contraint mode can be set for these orthonormal directions individually.
+ * is defined by a orthonormal basis for linear constraints, and a orthonormal basis for angular constraints.
+ * Often these two rotations will be equal, but in some cases they might not be equal.
+ * The contraint mode can be set for these orthonormal directions individually as already described.
  */
 class TNTConstraint {
 public:
-	//! @brief The choice of constraint mode.
+	//! @brief The choice of constraint mode - the TNTSolver uses these modes to impose the correct kind of constraints.
 	typedef enum Mode {
-		Wrench, //!< Wrench mode
-		Velocity//!< Velocity mode
+		Free,   //!< No constraint
+		Wrench, //!< Force-space constraint
+		Velocity//!< Zero velocity constraint
 	} Mode;
 
 	//! @brief Destructor.
@@ -147,13 +156,6 @@ public:
 	virtual rw::math::Vector3D<> getPositionChildW(const TNTIslandState &state) const;
 
 	/**
-	 * @brief Get the average of the global position at the parent and child.
-	 * @param state [in] the current state of the system.
-	 * @return position in world coordinates.
-	 */
-	//virtual rw::math::Vector3D<> getPositionAvgW(const TNTIslandState &state) const;
-
-	/**
 	 * @brief Get the linear orthonormal basis on the parent object in world coordinates.
 	 * @param state [in] the current state of the system.
 	 * @return rotation from world coordinate system.
@@ -168,13 +170,6 @@ public:
 	virtual rw::math::Rotation3D<> getLinearRotationChildW(const TNTIslandState &state) const;
 
 	/**
-	 * @brief Get the average linear orthonormal basis on the child and parent objects.
-	 * @param state [in] the current state of the system.
-	 * @return rotation from world coordinate system.
-	 */
-	//virtual rw::math::Rotation3D<> getLinearRotationAvgW(const TNTIslandState &state) const;
-
-	/**
 	 * @brief Get the angular orthonormal basis on the parent object in world coordinates.
 	 * @param state [in] the current state of the system.
 	 * @return rotation from world coordinate system.
@@ -187,13 +182,6 @@ public:
 	 * @return rotation from world coordinate system.
 	 */
 	virtual rw::math::Rotation3D<> getAngularRotationChildW(const TNTIslandState &state) const;
-
-	/**
-	 * @brief Get the average angular orthonormal basis on the child and parent objects.
-	 * @param state [in] the current state of the system.
-	 * @return rotation from world coordinate system.
-	 */
-	//virtual rw::math::Rotation3D<> getAngularRotationAvgW(const TNTIslandState &state) const;
 	///@}
 
 	/**
@@ -269,6 +257,8 @@ public:
 	 * @brief Apply a wrench in the constraint manually.
 	 * @param tntstate [in/out] the state to update.
 	 * @param wrench [in] the wrench to apply.
+	 * @note Applying a wrench in a constrained direction will cause the solver to make
+	 * the constraint wrench smaller. The total wrench should be the same in these directions.
 	 */
 	virtual void applyWrench(TNTIslandState &tntstate, const rw::math::Wrench6D<>& wrench);
 	///@}
@@ -279,7 +269,7 @@ public:
 	 */
 	///@{
 	/**
-	 * @brief Get which directions to constrain in velocity mode, and which to constrain in force mode.
+	 * @brief Get which directions to constrain in velocity mode, and which to constrain in wrench mode.
 	 * @return list of length 6.
 	 */
 	virtual std::vector<Mode> getConstraintModes() const = 0;
@@ -314,10 +304,16 @@ public:
 	virtual std::size_t getDimVelocity() const = 0;
 
 	/**
-	 * @brief The number of force constraints.
-	 * @return the number of directions controlled in force mode.
+	 * @brief The number of wrench constraints.
+	 * @return the number of directions controlled in wrench mode.
 	 */
 	virtual std::size_t getDimWrench() const = 0;
+
+	/**
+	 * @brief The number of force constraints.
+	 * @return the number of directions controlled in free mode.
+	 */
+	virtual std::size_t getDimFree() const = 0;
 	///@}
 
 protected:
@@ -327,6 +323,20 @@ protected:
 	 * @param child [in] the second object.
 	 */
 	TNTConstraint(const TNTBody* parent, const TNTBody* child);
+
+	/**
+	 * @brief Get the contribution of another constraint force to this wrench-constraint.
+	 * @param constraint the other constraint.
+	 * @return matrix of dimensions n x 6, where n must be the number of directions set to Wrench mode (see getDimWrench).
+	 * @note If not overridden by more specific subclasses, the wrench will be nonconstrained (the solver can set it to anything).
+	 */
+	virtual Eigen::MatrixXd getWrenchModelLHS(const TNTConstraint* constraint) const;
+
+	/**
+	 * @brief Get the wrench-independent term of the wrench model.
+	 * @return vector of dimensions n x 1, where n must be the number of directions set to Wrench mode (see getDimWrench).
+	 */
+	virtual Eigen::VectorXd getWrenchModelRHS() const;
 
 	//! @brief The local position on the parent object from the center of mass.
 	rw::math::Vector3D<> _posParent;

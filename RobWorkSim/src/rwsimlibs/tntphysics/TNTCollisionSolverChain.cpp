@@ -222,19 +222,38 @@ void TNTCollisionSolverChain::applyImpulses(
 			itPrev++;
 			itNext++;
 
+			// Find which body is in the front and which is in the back (or both)
+			const TNTBody* body1 = NULL;
+			const TNTBody* body2 = NULL;
+			if (itPrev == chain.rend() && itNext == chain.end()) {
+				// Order does not matter (there is only one body in the chain
+				body1 = bodyA;
+				body2 = bodyB;
+			} else if (itPrev != chain.rend()) {
+				if (*itPrev == bodyA)
+					body2 = bodyB;
+				else
+					body2 = bodyA;
+			} else if (itNext != chain.end()) {
+				if (*itNext == bodyA)
+					body1 = bodyB;
+				else
+					body1 = bodyA;
+			}
+
 			// Insert into chain at correct places (only at ends!) and do extra sanity check that neighbours are valid
-			if (bodyA != NULL) {
+			if (body1 != NULL) {
 				if (itPrev != chain.rend()) {
 					RW_ASSERT(*itPrev == bodyA || *itPrev == bodyB);
 				} else {
-					chain.push_front(bodyA);
+					chain.push_front(body1);
 				}
 			}
-			if (bodyB != NULL) {
+			if (body2 != NULL) {
 				if (itNext != chain.end()) {
 					RW_ASSERT(*itNext == bodyA || *itNext == bodyB);
 				} else {
-					chain.push_back(bodyB);
+					chain.push_back(body2);
 				}
 			}
 		}
@@ -319,14 +338,25 @@ void TNTCollisionSolverChain::applyImpulses(
 					indexToContacts[i].push_back(contact);
 				}
 			}
+			//TNT_DEBUG_BOUNCING("ContactID: " << contactID << " " << bodyA->get()->getName() << "-" << bodyB->get()->getName() << ". Chain pos: " << i << " (equal: " << equal << ").");
 		}
 
 		// Now solve the initial impulses
 		BOOST_FOREACH(const std::size_t index, indices) {
 			const std::vector<const TNTContact*>& contactsOrigin = indexToContacts[index];
 			RW_ASSERT(contactsOrigin.size() > 0);
-			TNT_DEBUG_BOUNCING("Solving chain with " << contactsOrigin.size() << " initial penetrating contacts.");
+#if TNT_DEBUG_ENABLE_INTEGRATOR
+			TNT_DEBUG_BOUNCING("Solving chain with " << contactsOrigin.size() << " initial penetrating contacts (even: " << equal << ").");
+			BOOST_FOREACH(const TNTContact* contact, contactsOrigin) {
+				TNT_DEBUG_BOUNCING(" - velocities before solving for " << contact->getParent()->get()->getName() << " and " << contact->getChild()->get()->getName() << ": " << contact->getParent()->getVelocityW(rwstate,tntstate).linear() << " - " << contact->getParent()->getVelocityW(rwstate,tntstate).angular() << " and " << contact->getChild()->getVelocityW(rwstate,tntstate).linear() << " - " << contact->getChild()->getVelocityW(rwstate,tntstate).angular() << ".");
+			}
+#endif
 			_solver->applyImpulses(contactsOrigin,bc,map,tntstate,rwstate);
+#if TNT_DEBUG_ENABLE_INTEGRATOR
+			BOOST_FOREACH(const TNTContact* contact, contactsOrigin) {
+				TNT_DEBUG_BOUNCING(" - velocities after solving for " << contact->getParent()->get()->getName() << " and " << contact->getChild()->get()->getName() << ": " << contact->getParent()->getVelocityW(rwstate,tntstate).linear() << " - " << contact->getParent()->getVelocityW(rwstate,tntstate).angular() << " and " << contact->getChild()->getVelocityW(rwstate,tntstate).linear() << " - " << contact->getChild()->getVelocityW(rwstate,tntstate).angular() << ".");
+			}
+#endif
 		}
 
 		// Now solve even and uneven pairs in shift until no object pairs have penetrating contacts
@@ -357,7 +387,7 @@ void TNTCollisionSolverChain::applyImpulses(
 							const Vector3D<> angRelVel = velI.angular().axis()*velI.angular().angle()-velJ.angular().axis()*velJ.angular().angle();
 							if (contact) {
 								const Vector3D<> nij = contact->getNormalW(tntstate);
-								solvePair = dot(-linRelVel,nij) < 0;
+								solvePair = dot(-linRelVel,nij) < -1e-4;
 							} else {
 								const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
 								Vector3D<> linRelVelConstraint = Vector3D<>::zero();
@@ -368,7 +398,7 @@ void TNTCollisionSolverChain::applyImpulses(
 											const Vector3D<> dir = constraint->getLinearRotationParent().getCol(modeI);
 											linRelVelConstraint += dot(dir,linRelVel)*dir;
 										} else {
-											const Vector3D<> dir = constraint->getAngularRotationParent().getCol(modeI);
+											const Vector3D<> dir = constraint->getAngularRotationParent().getCol(modeI-3);
 											angRelVelConstraint += dot(dir,angRelVel)*dir;
 										}
 									}
@@ -383,7 +413,10 @@ void TNTCollisionSolverChain::applyImpulses(
 							break;
 					}
 					if (solvePair) {
+						TNT_DEBUG_BOUNCING("Solving for impulses between " << bodyA->get()->getName() << " and " << bodyB->get()->getName() << ".");
+						TNT_DEBUG_BOUNCING(" - velocities before solving: " << bodyA->getVelocityW(rwstate,tntstate).linear() << " - " << bodyA->getVelocityW(rwstate,tntstate).angular() << " and " << bodyB->getVelocityW(rwstate,tntstate).linear() << " - " << bodyB->getVelocityW(rwstate,tntstate).angular() << ".");
 						_solver->applyImpulses(bodyA,bodyB,bc,map,tntstate,rwstate);
+						TNT_DEBUG_BOUNCING(" - velocities after solving: " << bodyA->getVelocityW(rwstate,tntstate).linear() << " - " << bodyA->getVelocityW(rwstate,tntstate).angular() << " and " << bodyB->getVelocityW(rwstate,tntstate).linear() << " - " << bodyB->getVelocityW(rwstate,tntstate).angular() << ".");
 						penetrations = true;
 					}
 				}

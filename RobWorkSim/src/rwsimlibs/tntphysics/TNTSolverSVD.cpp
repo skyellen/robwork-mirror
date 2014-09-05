@@ -59,7 +59,7 @@ Eigen::VectorXd TNTSolverSVD::solve(double h, const State &rwstate, const TNTIsl
 		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
 		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
 		if (dynParent || dynChild) {
-			dimVel += constraint->getDimVelocity();
+			dimVel += constraint->getDimVelocity()+constraint->getDimWrench();
 		}
 	}
 	Eigen::MatrixXd lhs = Eigen::MatrixXd::Zero(dimVel,dimVel);
@@ -71,13 +71,13 @@ Eigen::VectorXd TNTSolverSVD::solve(double h, const State &rwstate, const TNTIsl
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
 		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
 		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
-		const Eigen::VectorXd::Index dim = constraint->getDimVelocity();
+		const Eigen::VectorXd::Index dim = constraint->getDimVelocity()+constraint->getDimWrench();
 		if (dim > 0 && (dynParent || dynChild)) {
 			Eigen::VectorXd aij = constraint->getRHS(h, _gravity, constraints, rwstate, tntstate);
 			rhs.block(dimVel,0,dim,1) = aij;
 			Eigen::MatrixXd::Index dimVelB = 0;
 			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
-				const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity();
+				const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity()+constraintB->getDimWrench();
 				if (dimB > 0) {
 					const TNTBody* const cP = constraint->getParent();
 					const TNTBody* const cPB = constraintB->getParent();
@@ -129,14 +129,16 @@ void TNTSolverSVD::saveSolution(const Eigen::VectorXd& solution, TNTIslandState 
 		Vector3D<> velLin, velAng;
 		for (std::size_t i = 0; i < 3; i++) {
 			const TNTConstraint::Mode &mode = constraintModes[i];
-			if (mode == TNTConstraint::Velocity) {
+			if (mode == TNTConstraint::Velocity || mode == TNTConstraint::Wrench) {
+				RW_ASSERT((int)cI < solution.rows());
 				velLin[i] = solution[cI];
 				cI ++;
 			}
 		}
 		for (std::size_t i = 3; i < 6; i++) {
 			const TNTConstraint::Mode &mode = constraintModes[i];
-			if (mode == TNTConstraint::Velocity) {
+			if (mode == TNTConstraint::Velocity || mode == TNTConstraint::Wrench) {
+				RW_ASSERT((int)cI < solution.rows());
 				velAng[i-3] = solution[cI];
 				cI ++;
 			}

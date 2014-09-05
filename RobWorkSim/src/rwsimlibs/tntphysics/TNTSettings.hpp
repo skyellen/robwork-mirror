@@ -28,8 +28,17 @@
  * engines inefficient.
  */
 
+// Collision settings
+#define TNT_COLLISION_LEAVINGVEL_THRESHOLD 1e-6
+
+// Constraint settings
+#define TNT_SPRING_EIGENVALUE_SQRT_THRESHOLD 1e-6
+
 // Solver settings
 #define TNT_SVD_PRECISSION 1e-8
+
+// Rollback
+#define TNT_ENABLE_ROLLBACK 1
 
 // Constraint Correction
 #define TNT_ENABLE_CONSTRAINT_CORRECTION 1
@@ -38,7 +47,7 @@
 #define TNT_MAX_ITERATIONS 10
 
 // Contact resolution
-#define TNT_CONTACTRESOLVER_MAX_ITERATIONS 50
+#define TNT_CONTACTRESOLVER_MAX_ITERATIONS 250
 #define TNT_CONSTRAINT_MAX_FORCE 1000 // Newton
 
 // Bodies
