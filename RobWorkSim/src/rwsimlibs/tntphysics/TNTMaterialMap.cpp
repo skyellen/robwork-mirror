@@ -17,6 +17,7 @@
 
 #include "TNTMaterialMap.hpp"
 #include "TNTBody.hpp"
+#include "TNTFrictionModel.hpp"
 #include "TNTRestitutionModel.hpp"
 
 #include <rwsim/dynamics/Body.hpp>
@@ -29,11 +30,43 @@ using namespace rwsim::dynamics;
 using namespace rwsimlibs::tntphysics;
 
 TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const MaterialDataMap &materialDataMap) {
-	int maxTypeId = contactDataMap.getMaxID();
+	// Construct list of material names (friction)
+	const int maxMatId = materialDataMap.getMaxMatID();
+	_idToMat.resize(maxMatId);
+	for (int i = 0; i < maxMatId; i++) {
+		_idToMat[i] = materialDataMap.getMaterialName(i);
+	}
+	// Construct list of object type names (collisions)
+	const int maxTypeId = contactDataMap.getMaxID();
 	_idToType.resize(maxTypeId);
 	for (int i = 0; i < maxTypeId; i++) {
 		_idToType[i] = contactDataMap.getObjectTypeName(i);
 	}
+	// Construct friction models for all pairs of materials
+	_frictionModels.resize(maxMatId+1,std::vector<rw::common::Ptr<const TNTFrictionModel> >(maxMatId+1));
+	for (int i = 0; i < maxMatId; i++) {
+		for (int j = i; j < maxMatId; j++) {
+			const std::string modelId = "Coulomb";
+			PropertyMap parameters;
+			const FrictionData& data = materialDataMap.getFrictionData(i,j,Coulomb);
+			bool found = false;
+			BOOST_FOREACH(const FrictionParam& pars, data.parameters) {
+				if (pars.first == "Mu") {
+					RW_ASSERT(pars.second.size() > 0);
+					parameters.set("mu",pars.second[0]);
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				RW_THROW("TNTMaterialMap (TNTMaterialMap): Could not find correct friction data.");
+			const TNTFrictionModel* model = TNTFrictionModel::Factory::makeModel(modelId, parameters);
+			_frictionModels[i][j] = model;
+			if (i != j)
+				_frictionModels[j][i] = _frictionModels[i][j];
+		}
+	}
+	// Construct restitution models for all pairs of object types
 	_restitutionModels.resize(maxTypeId+1,std::vector<rw::common::Ptr<const TNTRestitutionModel> >(maxTypeId+1));
 	for (int i = 0; i < maxTypeId; i++) {
 		for (int j = i; j < maxTypeId; j++) {
@@ -51,6 +84,34 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 }
 
 TNTMaterialMap::~TNTMaterialMap() {
+}
+
+const TNTFrictionModel& TNTMaterialMap::getFrictionModel(const TNTBody &bodyA, const TNTBody &bodyB) const {
+	const std::string typeA = bodyA.get()->getInfo().material;
+	const std::string typeB = bodyB.get()->getInfo().material;
+	bool foundA = false;
+	bool foundB = false;
+	std::size_t idA;
+	std::size_t idB;
+	for (std::size_t i = 0; i < _idToMat.size(); i++) {
+		if (!foundA) {
+			if (_idToMat[i] == typeA) {
+				foundA = true;
+				idA = i;
+			}
+		}
+		if (!foundB) {
+			if (_idToMat[i] == typeB) {
+				foundB = true;
+				idB = i;
+			}
+		}
+		if (foundA && foundB)
+			break;
+	}
+	if (!foundA || !foundB)
+		RW_THROW("TNTMaterialMap (getFrictionModel): could not find a friction model for the given bodies \"" << bodyA.get()->getName() << "\" and \"" << bodyB.get()->getName() << "\".");
+	return *(_frictionModels[idA][idB]);
 }
 
 const TNTRestitutionModel& TNTMaterialMap::getRestitutionModel(const TNTBody &bodyA, const TNTBody &bodyB) const {

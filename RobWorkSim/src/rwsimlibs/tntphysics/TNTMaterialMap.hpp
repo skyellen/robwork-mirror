@@ -37,13 +37,14 @@ namespace tntphysics {
 
 // Forward declarations
 class TNTBody;
+class TNTFrictionModel;
 class TNTRestitutionModel;
 
 //! @addtogroup rwsimlibs_tntphysics
 
 //! @{
 /**
- * @brief The material map keeps a map of restitution models for each pair of bodies.
+ * @brief The material map keeps a map of friction and restitution models for each pair of bodies.
  */
 class TNTMaterialMap {
 public:
@@ -58,6 +59,14 @@ public:
 	virtual ~TNTMaterialMap();
 
 	/**
+	 * @brief Get the friction model associated to a pair of bodies.
+	 * @param bodyA [in] the first body.
+	 * @param bodyB [in] the second body.
+	 * @return reference to the friction model.
+	 */
+	const TNTFrictionModel& getFrictionModel(const TNTBody &bodyA, const TNTBody &bodyB) const;
+
+	/**
 	 * @brief Get the restitution model associated to a pair of bodies.
 	 * @param bodyA [in] the first body.
 	 * @param bodyB [in] the second body.
@@ -66,6 +75,8 @@ public:
 	const TNTRestitutionModel& getRestitutionModel(const TNTBody &bodyA, const TNTBody &bodyB) const;
 
 private:
+	std::vector<std::string> _idToMat;
+	std::vector<std::vector<rw::common::Ptr<const TNTFrictionModel> > > _frictionModels;
 	std::vector<std::string> _idToType;
 	std::vector<std::vector<rw::common::Ptr<const TNTRestitutionModel> > > _restitutionModels;
 };

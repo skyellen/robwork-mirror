@@ -20,6 +20,10 @@ SET(SRC_FILES
 	
 	TNTBodyConstraintManager.cpp
 	
+	TNTFrictionModel.cpp
+	TNTFrictionModelNone.cpp
+	TNTFrictionModelCoulomb.cpp
+	
 	TNTRestitutionModel.cpp
 	TNTRestitutionModelNewton.cpp
 	TNTCollisionSolver.cpp
