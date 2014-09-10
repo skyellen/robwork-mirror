@@ -369,6 +369,11 @@ void ODEConstraint::update(const Simulator::UpdateInfo& dt, State& state) {
 	_rwConstraint->getBody2()->addForceToPos(-cartForceC,childTconstraint.P(),state);
 	_rwConstraint->getBody1()->addTorque(cartTorqueP,state);
 	_rwConstraint->getBody2()->addTorque(-cartTorqueC,state);
+	// In the case where the body frame is not in the com we add a torque to the body to account for this
+	const Vector3D<> com1 = _rwConstraint->getBody1()->getInfo().masscenter;
+	const Vector3D<> com2 = _rwConstraint->getBody2()->getInfo().masscenter;
+	_rwConstraint->getBody1()->addTorque(cross(parentTconstraint.P()-com1,cartForceP),state);
+	_rwConstraint->getBody2()->addTorque(cross(childTconstraint.P()-com2,-cartForceC),state);
 
 	// Motors are now added for static friction.
 
