@@ -39,7 +39,7 @@ using boost::filesystem::initial_path;
     #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/
     #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_WIN32)
-    #define RWCFGHOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/
+    #define RWCFGHOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/"
     #define RWCFGFILE std::string(std::getenv("APPDATA")) + "/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_MACOS)
     #define RWCFGHOMEDIR std::string(std::getenv("HOME"))  + "/Library/Preferences/
