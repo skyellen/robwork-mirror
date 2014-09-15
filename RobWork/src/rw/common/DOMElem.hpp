@@ -224,6 +224,8 @@ namespace common {
 		 */
 		class ItImpl {
 		public:
+                    //! Virtual destructor
+                    virtual ~ItImpl() { /* Do nothing */ };
 			//! clone this ItImpl object
 			virtual ItImpl* clone() = 0;
 			//! increment the iterator
