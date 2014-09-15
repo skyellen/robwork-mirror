@@ -212,10 +212,13 @@ namespace rw { namespace math {
             return _m[row][column];
         }
 
-
-        const Vector3D<T> getCol(size_t col) const {
-            RW_ASSERT(col < 3);
-            return Vector3D<T>(_m[0][col],_m[1][col],_m[2][col]);
+		/**
+		 * @brief Returns the i'th column of the rotation matrix
+		 * @param i [in] Index of the colum to return. Only valid indices are 0, 1 and 2.
+		 */
+        const Vector3D<T> getCol(size_t i) const {
+            RW_ASSERT(i < 3);
+            return Vector3D<T>(_m[0][i],_m[1][i],_m[2][i]);
         }
 
         /**
