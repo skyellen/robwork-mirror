@@ -98,8 +98,8 @@ private:
 	Eigen::VectorXd getX(const rw::math::Transform3D<> &wTchild, const rw::math::Transform3D<> &wTconstraint, const rw::kinematics::State &state) const;
 	Eigen::VectorXd getXd(const rw::math::Transform3D<> &wTparent, const rw::math::Transform3D<> &wTconstraint, const rw::kinematics::State &state) const;
 	std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > toCartesian(const Eigen::VectorXd &reduced) const;
-	void setMotorDirLin(const rw::math::Vector3D<> axis, unsigned int dirNumber, double frictionForce) const;
-	void setMotorDirAng(const rw::math::Vector3D<> axis, unsigned int dirNumber, double frictionForce) const;
+	void setMotorDirLin(const rw::math::Vector3D<> axis, unsigned int dirNumber) const;
+	void setMotorDirAng(const rw::math::Vector3D<> axis, unsigned int dirNumber) const;
 
 	const rw::common::Ptr<const rwsim::dynamics::Constraint> _rwConstraint;
 	const ODEBody* const _parent;
@@ -108,6 +108,10 @@ private:
 
 	Spring* _spring;
 	dJointID _jointId;
+	bool _useSpringFrictionLin;
+	bool _useSpringFrictionAng;
+	double _springFrictionLin;
+	double _springFrictionAng;
 };
 //! @}
 } /* namespace simulator */

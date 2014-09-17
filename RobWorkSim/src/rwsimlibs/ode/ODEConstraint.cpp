@@ -32,7 +32,11 @@ ODEConstraint::ODEConstraint(rw::common::Ptr<const Constraint> constraint, const
 	_parent(parent),
 	_child(child),
 	_world(simulator->getODEWorldId()),
-	_spring(NULL)
+	_spring(NULL),
+	_useSpringFrictionLin(false),
+	_useSpringFrictionAng(false),
+	_springFrictionLin(0.01),
+	_springFrictionAng(0.01)
 {
 	createJoint();
 }
@@ -265,15 +269,15 @@ std::pair<Vector3D<>, Vector3D<> > ODEConstraint::toCartesian(const Eigen::Vecto
 	return pair;
 }
 
-void ODEConstraint::setMotorDirLin(const rw::math::Vector3D<> axis, unsigned int dirNumber, double frictionForce) const {
+void ODEConstraint::setMotorDirLin(const rw::math::Vector3D<> axis, unsigned int dirNumber) const {
 	dJointSetLMotorAxis(_spring->motorLin, dirNumber, 1, axis(0) , axis(1), axis(2));
-	dJointSetLMotorParam(_spring->motorLin,dParamFMax+dParamGroup*dirNumber,frictionForce);
+	dJointSetLMotorParam(_spring->motorLin,dParamFMax+dParamGroup*dirNumber,_springFrictionLin);
 	dJointSetLMotorParam(_spring->motorLin,dParamVel+dParamGroup*dirNumber,0);
 }
 
-void ODEConstraint::setMotorDirAng(const rw::math::Vector3D<> axis, unsigned int dirNumber, double frictionForce) const {
+void ODEConstraint::setMotorDirAng(const rw::math::Vector3D<> axis, unsigned int dirNumber) const {
 	dJointSetAMotorAxis(_spring->motorAng, dirNumber, 1, axis(0) , axis(1), axis(2));
-	dJointSetAMotorParam(_spring->motorAng,dParamFMax+dParamGroup*dirNumber,frictionForce);
+	dJointSetAMotorParam(_spring->motorAng,dParamFMax+dParamGroup*dirNumber,_springFrictionAng);
 	dJointSetAMotorParam(_spring->motorAng,dParamVel+dParamGroup*dirNumber,0);
 }
 
@@ -375,108 +379,112 @@ void ODEConstraint::update(const Simulator::UpdateInfo& dt, State& state) {
 	_rwConstraint->getBody1()->addTorque(cross(parentTconstraint.P()-com1,cartForceP),state);
 	_rwConstraint->getBody2()->addTorque(cross(childTconstraint.P()-com2,-cartForceC),state);
 
-	// Motors are now added for static friction.
+	// Motors are now added for static friction (if enabled).
 
 	// First friction is applied in the main direction of the applied force (if possible)
-	if ((_spring->linComp-motorLinDirs.size()) > 0) {
-		const Vector3D<> axis = normalize(wTconstraint.R()*cart.first);
-		if (!(axis == Vector3D<>::zero())) {
-			setMotorDirLin(axis, motorLinDirs.size(), 0.01);
-			motorLinDirs.push_back(axis);
-		} else {
-			if (motorLinDirs.size() == 0) {
-				setMotorDirLin(wTconstraint.R()*_spring->rowToDir[0], motorLinDirs.size(), 0.01);
-				motorLinDirs.push_back(wTconstraint.R()*_spring->rowToDir[0]);
-			} else if (motorLinDirs.size() == 1 && _spring->angComp == 2) {
-				const Vector3D<> dir1 = _spring->rowToDir[0];
-				const Vector3D<> dir2 = _spring->rowToDir[1];
-				const Vector3D<> rot = normalize(cross(dir1,dir2));
-				const Vector3D<> axis = normalize(cross(rot,motorLinDirs[0]));
-				setMotorDirLin(axis, motorLinDirs.size(), 0.01);
+	if (_useSpringFrictionLin) {
+		if ((_spring->linComp-motorLinDirs.size()) > 0) {
+			const Vector3D<> axis = normalize(wTconstraint.R()*cart.first);
+			if (!(axis == Vector3D<>::zero())) {
+				setMotorDirLin(axis, motorLinDirs.size());
 				motorLinDirs.push_back(axis);
-			} else if (motorLinDirs.size() == 1 && _spring->angComp == 3) {
-				const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorLinDirs[0]).toRotation3D();
-				setMotorDirLin(dirs.getCol(0), motorLinDirs.size(), 0.01);
-				motorLinDirs.push_back(dirs.getCol(0));
-				setMotorDirLin(dirs.getCol(1), motorLinDirs.size(), 0.01);
-				motorLinDirs.push_back(dirs.getCol(1));
-			} else if (motorLinDirs.size() == 2) {
-				const Vector3D<> axis = normalize(cross(motorLinDirs[0],motorLinDirs[1]));
-				setMotorDirLin(axis, motorLinDirs.size(), 0.01);
-				motorLinDirs.push_back(axis);
+			} else {
+				if (motorLinDirs.size() == 0) {
+					setMotorDirLin(wTconstraint.R()*_spring->rowToDir[0], motorLinDirs.size());
+					motorLinDirs.push_back(wTconstraint.R()*_spring->rowToDir[0]);
+				} else if (motorLinDirs.size() == 1 && _spring->angComp == 2) {
+					const Vector3D<> dir1 = _spring->rowToDir[0];
+					const Vector3D<> dir2 = _spring->rowToDir[1];
+					const Vector3D<> rot = normalize(cross(dir1,dir2));
+					const Vector3D<> axis = normalize(cross(rot,motorLinDirs[0]));
+					setMotorDirLin(axis, motorLinDirs.size());
+					motorLinDirs.push_back(axis);
+				} else if (motorLinDirs.size() == 1 && _spring->angComp == 3) {
+					const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorLinDirs[0]).toRotation3D();
+					setMotorDirLin(dirs.getCol(0), motorLinDirs.size());
+					motorLinDirs.push_back(dirs.getCol(0));
+					setMotorDirLin(dirs.getCol(1), motorLinDirs.size());
+					motorLinDirs.push_back(dirs.getCol(1));
+				} else if (motorLinDirs.size() == 2) {
+					const Vector3D<> axis = normalize(cross(motorLinDirs[0],motorLinDirs[1]));
+					setMotorDirLin(axis, motorLinDirs.size());
+					motorLinDirs.push_back(axis);
+				}
 			}
 		}
-	}
 
-	// If there are more free linear directions, these are added now
-	if (_spring->linComp == 3 && motorLinDirs.size() == 2) {
-		const Vector3D<> axis = normalize(cross(motorLinDirs[0],motorLinDirs[1]));
-		setMotorDirLin(axis, motorLinDirs.size(), 0.01);
-		motorLinDirs.push_back(axis);
-	} else if (_spring->linComp == 3 && motorLinDirs.size() == 1) {
-		Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorLinDirs[0]).toRotation3D();
-		setMotorDirLin(dirs.getCol(0), motorLinDirs.size(), 0.01);
-		motorLinDirs.push_back(dirs.getCol(0));
-		setMotorDirLin(dirs.getCol(1), motorLinDirs.size(), 0.01);
-		motorLinDirs.push_back(dirs.getCol(1));
-	} else if (_spring->linComp == 2 && motorLinDirs.size() == 1) {
-		const Vector3D<> dir1 = _spring->rowToDir[0];
-		const Vector3D<> dir2 = _spring->rowToDir[1];
-		const Vector3D<> rot = normalize(cross(dir1,dir2));
-		const Vector3D<> axis = normalize(cross(wTconstraint.R()*rot,motorLinDirs[0]));
-		setMotorDirLin(axis, motorLinDirs.size(), 0.01);
-		motorLinDirs.push_back(axis);
+		// If there are more free linear directions, these are added now
+		if (_spring->linComp == 3 && motorLinDirs.size() == 2) {
+			const Vector3D<> axis = normalize(cross(motorLinDirs[0],motorLinDirs[1]));
+			setMotorDirLin(axis, motorLinDirs.size());
+			motorLinDirs.push_back(axis);
+		} else if (_spring->linComp == 3 && motorLinDirs.size() == 1) {
+			Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorLinDirs[0]).toRotation3D();
+			setMotorDirLin(dirs.getCol(0), motorLinDirs.size());
+			motorLinDirs.push_back(dirs.getCol(0));
+			setMotorDirLin(dirs.getCol(1), motorLinDirs.size());
+			motorLinDirs.push_back(dirs.getCol(1));
+		} else if (_spring->linComp == 2 && motorLinDirs.size() == 1) {
+			const Vector3D<> dir1 = _spring->rowToDir[0];
+			const Vector3D<> dir2 = _spring->rowToDir[1];
+			const Vector3D<> rot = normalize(cross(dir1,dir2));
+			const Vector3D<> axis = normalize(cross(wTconstraint.R()*rot,motorLinDirs[0]));
+			setMotorDirLin(axis, motorLinDirs.size());
+			motorLinDirs.push_back(axis);
+		}
 	}
 
 	// First angular friction is applied in the main direction of the applied torque (if possible)
-	if ((_spring->angComp-motorAngDirs.size()) > 0) {
-		const Vector3D<> axis = normalize(wTconstraint.R()*cart.second);
-		if (!(axis == Vector3D<>::zero())) {
-			setMotorDirAng(axis, motorAngDirs.size(), 0.01);
-			motorAngDirs.push_back(axis);
-		} else {
-			if (motorAngDirs.size() == 0) {
-				setMotorDirAng(wTconstraint.R()*_spring->rowToDir[_spring->linComp], motorAngDirs.size(), 0.01);
-				motorAngDirs.push_back(wTconstraint.R()*_spring->rowToDir[_spring->linComp]);
-			} else if (motorAngDirs.size() == 1 && _spring->angComp == 2) {
-				const Vector3D<> dir1 = _spring->rowToDir[0+_spring->linComp];
-				const Vector3D<> dir2 = _spring->rowToDir[1+_spring->linComp];
-				const Vector3D<> rot = normalize(cross(dir1,dir2));
-				const Vector3D<> axis = normalize(cross(rot,motorAngDirs[0]));
-				setMotorDirAng(axis, motorAngDirs.size(), 0.01);
+	if (_useSpringFrictionAng) {
+		if ((_spring->angComp-motorAngDirs.size()) > 0) {
+			const Vector3D<> axis = normalize(wTconstraint.R()*cart.second);
+			if (!(axis == Vector3D<>::zero())) {
+				setMotorDirAng(axis, motorAngDirs.size());
 				motorAngDirs.push_back(axis);
-			} else if (motorAngDirs.size() == 1 && _spring->angComp == 3) {
-				const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorAngDirs[0]).toRotation3D();
-				setMotorDirAng(dirs.getCol(0), motorAngDirs.size(), 0.01);
-				motorAngDirs.push_back(dirs.getCol(0));
-				setMotorDirAng(dirs.getCol(1), motorAngDirs.size(), 0.01);
-				motorAngDirs.push_back(dirs.getCol(1));
-			} else if (motorAngDirs.size() == 2) {
-				const Vector3D<> axis = normalize(cross(motorAngDirs[0],motorAngDirs[1]));
-				setMotorDirAng(axis, motorAngDirs.size(), 0.01);
-				motorAngDirs.push_back(axis);
+			} else {
+				if (motorAngDirs.size() == 0) {
+					setMotorDirAng(wTconstraint.R()*_spring->rowToDir[_spring->linComp], motorAngDirs.size());
+					motorAngDirs.push_back(wTconstraint.R()*_spring->rowToDir[_spring->linComp]);
+				} else if (motorAngDirs.size() == 1 && _spring->angComp == 2) {
+					const Vector3D<> dir1 = _spring->rowToDir[0+_spring->linComp];
+					const Vector3D<> dir2 = _spring->rowToDir[1+_spring->linComp];
+					const Vector3D<> rot = normalize(cross(dir1,dir2));
+					const Vector3D<> axis = normalize(cross(rot,motorAngDirs[0]));
+					setMotorDirAng(axis, motorAngDirs.size());
+					motorAngDirs.push_back(axis);
+				} else if (motorAngDirs.size() == 1 && _spring->angComp == 3) {
+					const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorAngDirs[0]).toRotation3D();
+					setMotorDirAng(dirs.getCol(0), motorAngDirs.size());
+					motorAngDirs.push_back(dirs.getCol(0));
+					setMotorDirAng(dirs.getCol(1), motorAngDirs.size());
+					motorAngDirs.push_back(dirs.getCol(1));
+				} else if (motorAngDirs.size() == 2) {
+					const Vector3D<> axis = normalize(cross(motorAngDirs[0],motorAngDirs[1]));
+					setMotorDirAng(axis, motorAngDirs.size());
+					motorAngDirs.push_back(axis);
+				}
 			}
 		}
-	}
 
-	// If there are more free angular directions, these are added now
-	if (_spring->angComp == 3 && motorAngDirs.size() == 2) {
-		const Vector3D<> axis = normalize(cross(motorAngDirs[0],motorAngDirs[1]));
-		setMotorDirAng(axis, motorAngDirs.size(), 0.01);
-		motorAngDirs.push_back(axis);
-	} else if (_spring->angComp == 3 && motorAngDirs.size() == 1) {
-		const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorAngDirs[0]).toRotation3D();
-		setMotorDirAng(dirs.getCol(0), motorAngDirs.size(), 0.01);
-		motorAngDirs.push_back(dirs.getCol(0));
-		setMotorDirAng(dirs.getCol(1), motorAngDirs.size(), 0.01);
-		motorAngDirs.push_back(dirs.getCol(1));
-	} else if (_spring->angComp == 2 && motorAngDirs.size() == 1) {
-		const Vector3D<> dir1 = _spring->rowToDir[0+_spring->linComp];
-		const Vector3D<> dir2 = _spring->rowToDir[1+_spring->linComp];
-		const Vector3D<> rot = normalize(cross(dir1,dir2));
-		const Vector3D<> axis = normalize(cross(wTconstraint.R()*rot,motorAngDirs[0]));
-		setMotorDirAng(axis, motorAngDirs.size(), 0.01);
-		motorAngDirs.push_back(axis);
+		// If there are more free angular directions, these are added now
+		if (_spring->angComp == 3 && motorAngDirs.size() == 2) {
+			const Vector3D<> axis = normalize(cross(motorAngDirs[0],motorAngDirs[1]));
+			setMotorDirAng(axis, motorAngDirs.size());
+			motorAngDirs.push_back(axis);
+		} else if (_spring->angComp == 3 && motorAngDirs.size() == 1) {
+			const Rotation3D<> dirs = EAA<>(wTconstraint.R()*Vector3D<>::z(),motorAngDirs[0]).toRotation3D();
+			setMotorDirAng(dirs.getCol(0), motorAngDirs.size());
+			motorAngDirs.push_back(dirs.getCol(0));
+			setMotorDirAng(dirs.getCol(1), motorAngDirs.size());
+			motorAngDirs.push_back(dirs.getCol(1));
+		} else if (_spring->angComp == 2 && motorAngDirs.size() == 1) {
+			const Vector3D<> dir1 = _spring->rowToDir[0+_spring->linComp];
+			const Vector3D<> dir2 = _spring->rowToDir[1+_spring->linComp];
+			const Vector3D<> rot = normalize(cross(dir1,dir2));
+			const Vector3D<> axis = normalize(cross(wTconstraint.R()*rot,motorAngDirs[0]));
+			setMotorDirAng(axis, motorAngDirs.size());
+			motorAngDirs.push_back(axis);
+		}
 	}
 }
 
@@ -523,7 +531,7 @@ void ODEConstraint::createSpring() {
 		}
 	}
 	// Construct linear motor if there are linear DOFs
-	if (_spring->linComp > 0) {
+	if (_useSpringFrictionLin && _spring->linComp > 0) {
 		_spring->motorLin = dJointCreateLMotor(_world, 0);
 		dJointAttach(_spring->motorLin, _parent->getBodyID(), _child->getBodyID());
 		dJointSetLMotorNumAxes(_spring->motorLin, _spring->linComp);
@@ -533,7 +541,7 @@ void ODEConstraint::createSpring() {
 		}
 	}
 	// Construct angular motor if there are angular DOFs
-	if (_spring->angComp > 0) {
+	if (_useSpringFrictionAng && _spring->angComp > 0) {
 		_spring->motorAng = dJointCreateAMotor(_world, 0);
 		dJointAttach(_spring->motorAng, _parent->getBodyID(), _child->getBodyID());
 		dJointSetAMotorNumAxes(_spring->motorAng, _spring->angComp);
@@ -545,9 +553,9 @@ void ODEConstraint::createSpring() {
 }
 
 void ODEConstraint::deleteSpring() {
-	if (_spring->linComp > 0)
+	if (_useSpringFrictionLin && _spring->linComp > 0)
 		dJointDestroy (_spring->motorLin);
-	if (_spring->angComp > 0)
+	if (_useSpringFrictionAng && _spring->angComp > 0)
 		dJointDestroy (_spring->motorAng);
 	delete _spring;
 	_spring = NULL;

@@ -89,7 +89,8 @@ double TNTRollbackMethodRidder::getTimestep(SampleSet& samples, RollbackData* da
 			const double d1 = sample1.distance[ridderData->curPair];
 			const double d2 = sample2.distance[ridderData->curPair];
 			const double d3 = sample3.distance[ridderData->curPair];
-			const double d4 = sample4.distance[ridderData->curPair];
+			const std::pair<const Frame*, const Frame*> newDeepest = findDeepest(sample4);
+			const double d4 = sample4.distance[newDeepest];
 			Sample sample1new;
 			Sample sample3new;
 			if (d1*d2 < 0 && d1*d4 < 0) {
@@ -110,6 +111,7 @@ double TNTRollbackMethodRidder::getTimestep(SampleSet& samples, RollbackData* da
 			samples.clear();
 			samples.insert(sample1new);
 			samples.insert(sample3new);
+			ridderData->curPair = newDeepest;
 			return (sample1new.time+sample3new.time)/2.;
 		} else {
 			samples.clear();

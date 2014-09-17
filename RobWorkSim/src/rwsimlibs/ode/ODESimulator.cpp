@@ -1031,10 +1031,12 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
         RW_THROW("Body with name \"" << body->getName() << "\" allready exists in the simulator! " );
 
     ODEBody *odeBody = NULL;
+    bool odeBodyAdded = false;
     if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
         odeBody = ODEBody::makeRigidBody(rbody, _spaceId, this);
         //_allbodies.push_back(odeBody->getBodyID());
         dBodySetAutoDisableFlag(odeBody->getBodyID(), 0);
+        odeBodyAdded = true;
     } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body.get() ) ) {
         odeBody = ODEBody::makeKinematicBody(kbody, _spaceId, this);
         //_allbodies.push_back(odeBody->getBodyID());
@@ -1045,15 +1047,17 @@ void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::Stat
         return;
     }
 
-    BOOST_FOREACH(Frame* f, odeBody->getRwBody()->getFrames() ){
-        _rwFrameToODEBody[f] = odeBody;
-    }
-    BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odeBody->getTriGeomData()){
-        _frameToOdeGeoms[odeBody->getFrame()] = tgeom->geomId;
-    }
-    _odeBodies.push_back(odeBody);
+    if (!odeBodyAdded) {
+    	BOOST_FOREACH(Frame* f, odeBody->getRwBody()->getFrames() ){
+    		_rwFrameToODEBody[f] = odeBody;
+    	}
+    	BOOST_FOREACH(ODEUtil::TriGeomData* tgeom , odeBody->getTriGeomData()){
+    		_frameToOdeGeoms[odeBody->getFrame()] = tgeom->geomId;
+    	}
 
-
+    	_odeBodies.push_back(odeBody);
+    }
+	odeBody->setTransform(state);
 }
 
 void ODESimulator::addConstraint(Constraint::Ptr constraint) {
