@@ -102,7 +102,7 @@ void RobWork::initialize(){
 
         char* rwhwRootVar = getenv("RWHW_ROOT");
         if(rwhwRootVar != NULL)
-            plugins.add("location-5","Default plugin location for RobWorkSim",std::string(rwsimRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
+            plugins.add("location-5","Default plugin location for RobWorkHardware",std::string(rwhwRootVar)+"/libs/"+RW_BUILD_TYPE+"/");
 
         _settings.add("plugins","List of plugins or plugin locations",plugins);
 

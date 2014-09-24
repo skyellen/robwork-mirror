@@ -390,15 +390,20 @@ namespace rw { namespace common {
         int getLogIndexMask() const{ return _logEnabledMask; };
 
 
-		/** 
-		 *
+		/**
+		 * @brief Enable log(s) given by log mask.
+		 * @param mask [in] the mask for the logs to enable.
 		 */
 		void setEnable(int mask) {
 			_logEnabledMask = _logEnabledMask | mask;
 		}
 
+		/**
+		 * @brief Disable log(s) given by log mask.
+		 * @param mask [in] the mask for the logs to disable.
+		 */
 		void setDisable(int mask) {
-			_logEnabledMask = _logEnabledMask ^ mask;
+			_logEnabledMask = _logEnabledMask & (_logEnabledMask ^ mask);
 		}
 
 

@@ -73,8 +73,8 @@ Log::Ptr Log::getInstance(){
 Log::Log():
 	_logEnabledMask( 0 ), // enabled logs are completely defined by loglevel
 	_tabLevel(0),
-	_writers(32),
-	_loglevel(Log::Info)
+	_loglevel(Log::Info),
+	_writers(32)
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
 	setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
