@@ -45,7 +45,9 @@ using namespace rwsim::simulator;
 using namespace boost::program_options;
 
 int main(int argc, char** argv) {
+	Log::log().setLevel(Log::Debug);
 	RobWork::getInstance()->initialize();
+	Log::log().setLevel(Log::Info);
 	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
 	std::cout << "Engines available: " << engines.size() << std::endl;
 	BOOST_FOREACH(const std::string& str, engines) {
@@ -75,16 +77,17 @@ int main(int argc, char** argv) {
 
 	if (!vm.count("dwc")) RW_THROW("Please set the dwc parameter!");
 	DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(vm["dwc"].as<std::string>());
+	Log::log().setLevel(Log::Debug);
 
 	AssemblyRegistry::Ptr registry = ownedPtr(new AssemblyRegistry());
 	std::vector<AssemblyTask::Ptr> tasks = AssemblyTask::load(vm["input"].as<std::string>(),registry);
 
 	ContactDetector::Ptr detector = ownedPtr(new ContactDetector(dwc->getWorkcell()));
 	detector->setDefaultStrategies(dwc->getEngineSettings());
-	/*ContactStrategyCylinderTube::Ptr strat = ownedPtr( new ContactStrategyCylinderTube() );
-	ProximitySetupRule match("UR1.Peg","Hole",ProximitySetupRule::INCLUDE_RULE);
-	detector->addContactStrategy(match,strat);*/
+	detector->printStrategyTable();
 	AssemblySimulator::Ptr sim = ownedPtr(new AssemblySimulator(dwc,"ODE",detector));
+	sim->setDt(0.002);
+	sim->setMaxSimTime(10);
 	sim->setTasks(tasks);
 	sim->setStoreExecutionData(true);
 	sim->start();
