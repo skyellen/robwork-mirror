@@ -36,6 +36,7 @@
 #include <rwsim/contacts/ContactDetectorData.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -329,10 +330,21 @@ void TNTIsland::addDevice(DynamicDevice::Ptr dev, State &state) {
 void TNTIsland::addSensor(SimulatedSensor::Ptr sensor, State &state) {
 	const SimulatedSensor* const ssensor = sensor.get();
 	if(const SimulatedTactileSensor* const tsensor = dynamic_cast<const SimulatedTactileSensor*>(ssensor) ){
-        const Frame* const bframe = tsensor->getFrame();
-        RW_ASSERT(bframe!=NULL);
-        if(_bc->getBody(bframe) == NULL)
-            RW_THROW("TNTIsland (addSensor): The frame (" << bframe->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
+		if(const SimulatedFTSensor* const ftsensor = dynamic_cast<const SimulatedFTSensor*>(tsensor) ){
+			const Frame* const parentFrame = ftsensor->getBody1()->getBodyFrame();
+			const Frame* const sensorFrame = ftsensor->getBody2()->getBodyFrame();
+			RW_ASSERT(parentFrame != NULL);
+			RW_ASSERT(sensorFrame != NULL);
+			if(_bc->getBody(parentFrame) == NULL)
+				RW_THROW("TNTIsland (addSensor): The frame (" << parentFrame->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
+			if(_bc->getBody(sensorFrame) == NULL)
+				RW_THROW("TNTIsland (addSensor): The frame (" << sensorFrame->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
+		} else {
+			const Frame* const bframe = tsensor->getFrame();
+			RW_ASSERT(bframe!=NULL);
+			if(_bc->getBody(bframe) == NULL)
+				RW_THROW("TNTIsland (addSensor): The frame (" << bframe->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
+		}
 		_sensors.push_back(sensor);
     } else {
     	RW_WARN("TNTIsland (addSensor): this type of sensor can not be added yet (" << sensor->getName() << ")");
