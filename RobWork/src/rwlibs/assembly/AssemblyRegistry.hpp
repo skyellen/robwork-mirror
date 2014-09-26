@@ -24,10 +24,7 @@
  * \copydoc rwlibs::assembly::AssemblyRegistry
  */
 
-#include <map>
-#include <string>
-
-#include <rw/common/Ptr.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 
 namespace rwlibs {
 namespace assembly {
@@ -37,14 +34,20 @@ class AssemblyControlStrategy;
 
 //! @addtogroup task
 
+/**
+ * @addtogroup extensionpoints
+ * @extensionpoint{rwlibs::assembly::AssemblyRegistry,rwlibs::assembly::AssemblyControlStrategy,rwlibs.assembly.AssemblyControlStrategy}
+ */
+
 //! @{
 /**
- * @brief A registry of control strategies.
+ * @brief A registry of control strategies. The registry defines an extension point.
  *
- * When users implement own assembly control strategies, a registry must be created to
- * be able to deserialize an stored AssemblyTask.
+ * Users can define custom assembly control strategies in two ways. Either an extension
+ * must be registered, or the user must create an AssemblyRegistry and add the strategy
+ * to this registry manually.
  */
-class AssemblyRegistry {
+class AssemblyRegistry: public rw::common::ExtensionPoint<AssemblyControlStrategy> {
 public:
 	//! @brief smart pointer type to this class
     typedef rw::common::Ptr<AssemblyRegistry> Ptr;
@@ -63,11 +66,24 @@ public:
 	void addStrategy(const std::string id, rw::common::Ptr<AssemblyControlStrategy> strategy);
 
 	/**
+	 * @brief Get the available strategies.
+	 * @return a vector of identifiers for strategies.
+	 */
+	std::vector<std::string> getStrategies() const;
+
+	/**
+	 * @brief Check if strategy is available.
+	 * @param id [in] the name of the strategy.
+	 * @return true if available, false otherwise.
+	 */
+	bool hasStrategy(const std::string& id) const;
+
+	/**
 	 * @brief Get the strategy with a specific identifier.
 	 * @param id [in] the identifier.
 	 * @return a pointer to the strategy.
 	 */
-	rw::common::Ptr<AssemblyControlStrategy> getStrategy(const std::string &id);
+	rw::common::Ptr<AssemblyControlStrategy> getStrategy(const std::string &id) const;
 
 private:
 	std::map<std::string, rw::common::Ptr<AssemblyControlStrategy> > _map;

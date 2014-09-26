@@ -31,14 +31,14 @@ public:
      * @param ext_point_id [in] identifier of extension point
      * @return list of extension point descriptions
      */
-    std::vector<Extension::Descriptor> getExtensionDescriptors(const std::string& ext_point_id);
+    std::vector<Extension::Descriptor> getExtensionDescriptors(const std::string& ext_point_id) const;
 
     /**
      * @brief get all extensions of a specific extension point
      * @param ext_point_id [in] identifier of extension point
      * @return list of extensions
      */
-    std::vector<rw::common::Ptr<Extension> > getExtensions(const std::string& ext_point_id);
+    std::vector<rw::common::Ptr<Extension> > getExtensions(const std::string& ext_point_id) const;
 
     /**
      * @brief register extensions and extension points of a plugin

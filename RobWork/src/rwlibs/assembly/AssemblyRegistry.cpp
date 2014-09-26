@@ -21,7 +21,9 @@
 using namespace rw::common;
 using namespace rwlibs::assembly;
 
-AssemblyRegistry::AssemblyRegistry() {
+AssemblyRegistry::AssemblyRegistry():
+	ExtensionPoint<AssemblyControlStrategy>("rwlibs.assembly.AssemblyControlStrategy", "AssemblyControlStrategy extension point.")
+{
 	CircularPiHControlStrategy::Ptr strategy = ownedPtr(new CircularPiHControlStrategy());
 	_map[strategy->getID()] = strategy;
 }
@@ -33,9 +35,41 @@ void AssemblyRegistry::addStrategy(const std::string id, rw::common::Ptr<Assembl
 	_map[id] = strategy;
 }
 
-rw::common::Ptr<AssemblyControlStrategy> AssemblyRegistry::getStrategy(const std::string &id) {
+std::vector<std::string> AssemblyRegistry::getStrategies() const {
+    std::vector<std::string> ids;
+    const std::vector<Extension::Descriptor> exts = getExtensionDescriptors();
+    BOOST_FOREACH(const Extension::Descriptor& ext, exts){
+        ids.push_back( ext.getProperties().get("strategyID",ext.name) );
+    }
+    std::map<std::string, AssemblyControlStrategy::Ptr>::const_iterator it;
+    for (it = _map.begin(); it != _map.end(); it++) {
+    	ids.push_back(it->first);
+    }
+    return ids;
+}
+
+bool AssemblyRegistry::hasStrategy(const std::string& id) const {
+    const std::vector<Extension::Descriptor> exts = getExtensionDescriptors();
+    BOOST_FOREACH(const Extension::Descriptor& ext, exts){
+        if(ext.getProperties().get("strategyID",ext.name) == id)
+            return true;
+    }
 	if (_map.find(id) == _map.end())
+		return false;
+	else
+		return true;
+}
+
+AssemblyControlStrategy::Ptr AssemblyRegistry::getStrategy(const std::string &id) const {
+	const std::vector<Extension::Ptr> exts = getExtensions();
+	BOOST_FOREACH(const Extension::Ptr& ext, exts){
+		if(ext->getProperties().get("strategyID",ext->getName() ) == id){
+			return ext->getObject().cast<AssemblyControlStrategy>();
+		}
+	}
+    const std::map<std::string, AssemblyControlStrategy::Ptr>::const_iterator it = _map.find(id);
+	if (it == _map.end())
 		return NULL;
 	else
-		return _map[id];
+		return it->second;
 }

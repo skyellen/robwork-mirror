@@ -35,6 +35,7 @@ public:
         rw::common::PropertyMap props;
 
         rw::common::PropertyMap& getProperties(){ return props;}
+        const rw::common::PropertyMap& getProperties() const { return props;}
     };
 
 public:

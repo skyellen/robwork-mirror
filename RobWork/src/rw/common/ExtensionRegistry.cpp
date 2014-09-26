@@ -16,27 +16,31 @@ ExtensionRegistry::ExtensionRegistry() {
 
 }
 
-std::vector<Extension::Descriptor> ExtensionRegistry::getExtensionDescriptors(const std::string& ext_point_id){
+std::vector<Extension::Descriptor> ExtensionRegistry::getExtensionDescriptors(const std::string& ext_point_id) const {
 	std::vector<Extension::Descriptor> result;
 
-	if(_descMap.find(ext_point_id)==_descMap.end())
+	std::map<std::string, std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > > >::const_iterator it;
+	it = _descMap.find(ext_point_id);
+	if(it==_descMap.end())
 		return std::vector<Extension::Descriptor>();
 
 	typedef std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > Desc;
-	BOOST_FOREACH(const Desc &desc, _descMap[ext_point_id]){
+	BOOST_FOREACH(const Desc &desc, it->second){
 		result.push_back( desc.first );
 	}
 	return result;
 }
 
-std::vector<rw::common::Ptr<Extension> > ExtensionRegistry::getExtensions(const std::string& ext_point_id){
+std::vector<rw::common::Ptr<Extension> > ExtensionRegistry::getExtensions(const std::string& ext_point_id) const {
 	std::vector<rw::common::Ptr<Extension> > result;
 
-	if(_descMap.find(ext_point_id)==_descMap.end())
+	std::map<std::string, std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > > >::const_iterator it;
+	it = _descMap.find(ext_point_id);
+	if(it==_descMap.end())
 		return result;
 
 	typedef std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > Desc;
-	BOOST_FOREACH(const Desc &desc, _descMap[ext_point_id]){
+	BOOST_FOREACH(const Desc &desc, it->second){
 		result.push_back( desc.second->makeExtension( desc.first.id ) );
 	}
 	return result;

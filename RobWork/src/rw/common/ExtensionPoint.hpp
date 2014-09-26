@@ -46,13 +46,13 @@ public:
     const rw::common::PropertyMap& getSchema() const {return _schema; }
 
     //! @brief get all extension descriptions of this extension point
-    std::vector<Extension::Descriptor> getExtensionDescriptors(){
+    std::vector<Extension::Descriptor> getExtensionDescriptors() const {
     	ExtensionRegistry::Ptr  reg = ExtensionRegistry::getInstance();
     	return reg->getExtensionDescriptors( _id );
     }
 
     //! @brief get all extensions of this extension point
-    std::vector<rw::common::Ptr<Extension> > getExtensions(){
+    std::vector<rw::common::Ptr<Extension> > getExtensions() const {
     	ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
     	return reg->getExtensions( _id );
     }
