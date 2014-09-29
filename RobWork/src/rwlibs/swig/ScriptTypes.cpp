@@ -19,7 +19,9 @@
 
 
 void rwlibs::swig::writelog(const std::string& msg){
+	::rw::common::Log::log().setEnable( ::rw::common::Log::User8Mask );
     ::rw::common::Log::log().write(::rw::common::Log::User8, msg);
+
 }
 
 void rwlibs::swig::setlog(::rw::common::LogWriter::Ptr writer){
