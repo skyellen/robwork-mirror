@@ -47,12 +47,6 @@ namespace geometry {
 		 */
 		Cylinder(float radius, float height);
 
-		/**
-		 * @brief constructor
-		 * @param initQ [in] vector of (radius, height)
-		 */
-		Cylinder(const rw::math::Q& initQ);
-
 		//! @brief destructor
 		virtual ~Cylinder();
 
@@ -71,8 +65,8 @@ namespace geometry {
 		GeometryType getType() const { return CylinderPrim; };
 
 	private:
-		float _radius;
-		float _height;
+		const float _radius;
+		const float _height;
 	};
 	//! @}
 

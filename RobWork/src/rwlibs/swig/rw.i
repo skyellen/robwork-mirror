@@ -274,7 +274,6 @@ class Cylinder: public Primitive {
 public:
 	Cylinder();
 	Cylinder(float radius, float height);
-	Cylinder(const Q& initQ);
 	virtual ~Cylinder();
 	double getRadius() const;
 	double getHeight() const;
