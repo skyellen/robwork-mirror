@@ -248,7 +248,7 @@ namespace rw { namespace math {
          * @param precision [in] The precision to use for testing
          * @return True if all elements are less than \b precision apart.
          */
-        bool equal(const Rotation3D<T>& rot, T precision=0.000001) {
+        bool equal(const Rotation3D<T>& rot, T precision=0.000001) const {
             for (int i = 0; i<3; i++)
                 for (int j = 0; j<3; j++)
                     if (fabs(_m[i][j] - rot(i,j)) > precision)

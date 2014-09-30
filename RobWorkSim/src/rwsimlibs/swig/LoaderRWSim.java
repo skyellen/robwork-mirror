@@ -23,6 +23,7 @@ public class LoaderRWSim {
 	
 	/**
 	 * Get the platform-independent name of the native library without path.
+	 * @return the name of the native library.
 	 */
 	public static String getShortName(){
 		return "rwsim_jni";
@@ -30,6 +31,7 @@ public class LoaderRWSim {
 	
 	/**
 	 * Get the platform-dependent name of the native library without path.
+	 * @return the name of the native library.
 	 */
 	public static String getFullName() {
 		return System.mapLibraryName(getShortName());

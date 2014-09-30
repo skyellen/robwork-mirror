@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME rw_swig)
 set(SUBSYS_DESC "Swig interfaces for RobWork")
-SET(SUBSYS_DEPS rw rw_simulation rw_pathplanners rw_pathoptimization)
+SET(SUBSYS_DEPS rw rw_simulation rw_pathplanners rw_pathoptimization rw_task)
 
 if( SWIG_FOUND )
     set(DEFAULT TRUE)

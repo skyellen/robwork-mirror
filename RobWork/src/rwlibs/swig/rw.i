@@ -267,7 +267,20 @@ public:
     double refit( std::vector<Vector3D >& data );
     rw::common::Ptr<TriMesh> createMesh(int resolution) const ;
     Q getParameters() const;
-    GeometryType getType() const{ return PlanePrim; };
+    GeometryType getType() const;
+};
+
+class Cylinder: public Primitive {
+public:
+	Cylinder();
+	Cylinder(float radius, float height);
+	Cylinder(const Q& initQ);
+	virtual ~Cylinder();
+	double getRadius() const;
+	double getHeight() const;
+	rw::common::Ptr<TriMesh> createMesh(int resolution) const;
+	Q getParameters() const;
+	GeometryType getType() const;
 };
 
 class ConvexHull3D {
@@ -975,7 +988,7 @@ public:
 
     static const Rotation3D& identity();
     static Rotation3D skew(const Vector3D& v);
-    bool equal(const Rotation3D& rot, double precision);
+    bool equal(const Rotation3D& rot, double precision) const;
 
     //EAA operator*(const EAA& other) const;
 
@@ -2141,11 +2154,13 @@ public:
 	*/
 	
 	Transform3D femaleTmaleTarget;
+	rw::common::Ptr<Trajectory<Transform3D> > worldTendTrajectory;
 	VelocityScrew6D femaleTmaleVelocityTarget;
 	Rotation3D offset;
 	//VectorND<6,bool> selection;
 	Wrench6D force_torque;
 	bool done;
+	bool success;
 };
 
 %template (AssemblyControlResponsePtr) rw::common::Ptr<AssemblyControlResponse>;
@@ -2198,7 +2213,9 @@ public:
 	AssemblyRegistry();
 	virtual ~AssemblyRegistry();
 	void addStrategy(const std::string id, rw::common::Ptr<AssemblyControlStrategy> strategy);
-	rw::common::Ptr<AssemblyControlStrategy> getStrategy(const std::string &id);
+	std::vector<std::string> getStrategies() const;
+	bool hasStrategy(const std::string& id) const;
+	rw::common::Ptr<AssemblyControlStrategy> getStrategy(const std::string &id) const;
 };
 
 %template (AssemblyRegistryPtr) rw::common::Ptr<AssemblyRegistry>;
@@ -2215,6 +2232,18 @@ public:
 	static void saveRWResult(std::vector<rw::common::Ptr<AssemblyResult> > results, const std::string& name);
 	static std::vector<rw::common::Ptr<AssemblyResult> > load(const std::string& name);
 	static std::vector<rw::common::Ptr<AssemblyResult> > load(std::istringstream& inputStream);
+	
+	bool success;
+	//Error error;
+	Transform3D femaleTmaleEnd;
+
+	std::string taskID;
+	std::string resultID;
+    
+    Path<Timed<AssemblyState> > realState;
+	Path<Timed<AssemblyState> > assumedState;
+	Transform3D approach;
+	std::string errorMessage;
 };
 
 %template (AssemblyResultPtr) rw::common::Ptr<AssemblyResult>;
@@ -2238,9 +2267,13 @@ public:
 	Path<Transform3D> maleflexT;
 	Path<Transform3D> femaleflexT;
 	Path<Transform3D> contacts;
+	Vector3D maxContactForce;
 };
 
 %template (AssemblyStatePtr) rw::common::Ptr<AssemblyState>;
+%template (TimedAssemblyState) Timed<AssemblyState>;
+%template (TimedAssemblyStateVector) std::vector<Timed<AssemblyState> >;
+%template (PathTimedAssemblyState) Path<Timed<AssemblyState> >;
 
 class AssemblyTask
 {
@@ -2254,6 +2287,29 @@ public:
 	static std::vector<rw::common::Ptr<AssemblyTask> > load(const std::string& name, rw::common::Ptr<AssemblyRegistry> registry = NULL);
 	static std::vector<rw::common::Ptr<AssemblyTask> > load(std::istringstream& inputStream, rw::common::Ptr<AssemblyRegistry> registry = NULL);
 	rw::common::Ptr<AssemblyTask> clone() const;
+
+	std::string maleID;
+    std::string femaleID;
+    Transform3D femaleTmaleTarget;
+    rw::common::Ptr<AssemblyControlStrategy> strategy;
+    rw::common::Ptr<AssemblyParameterization> parameters;
+    
+    std::string maleTCP;
+    std::string femaleTCP;
+    
+    std::string taskID;
+    std::string workcellName;
+    std::string generator;
+    std::string date;
+    std::string author;
+    
+    std::string malePoseController;
+    std::string femalePoseController;
+    std::string maleFTSensor;
+    std::string femaleFTSensor;
+    std::vector<std::string> maleFlexFrames;
+    std::vector<std::string> femaleFlexFrames;
+    std::vector<std::string> bodyContactSensors;
 };
 
 %template (AssemblyTaskPtr) rw::common::Ptr<AssemblyTask>;

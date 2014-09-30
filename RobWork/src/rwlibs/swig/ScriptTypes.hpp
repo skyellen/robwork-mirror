@@ -234,6 +234,9 @@ namespace swig {
 	typedef rwlibs::assembly::AssemblyState AssemblyState;
 	typedef rwlibs::assembly::AssemblyTask AssemblyTask;
 
+	typedef rw::trajectory::Timed<AssemblyState> TimedAssemblyState;
+	typedef rw::trajectory::Path<rw::trajectory::Timed<AssemblyState> > PathTimedAssemblyState;
+
 	// rwlibs calibration
 
 	// rwlibs control
