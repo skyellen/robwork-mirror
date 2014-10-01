@@ -105,8 +105,8 @@ namespace sensor {
 
 		 rw::sensor::FTSensor::Ptr getSensor(){ return _ftsensorWrapper;};
 
-		 rwsim::dynamics::Body::Ptr getBody1(){ return _body;};
-		 rwsim::dynamics::Body::Ptr getBody2(){ return _body1;};
+		 rwsim::dynamics::Body::Ptr getBody1() const { return _body;};
+		 rwsim::dynamics::Body::Ptr getBody2() const { return _body1;};
 	private:
 		SimulatedFTSensor();
 
