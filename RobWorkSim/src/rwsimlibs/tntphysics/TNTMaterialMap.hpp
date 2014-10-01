@@ -28,7 +28,6 @@
 #include <vector>
 
 // Forward declarations
-namespace rw { namespace common { template <class T> class Ptr; }};
 namespace rwsim { namespace dynamics { class ContactDataMap; } }
 namespace rwsim { namespace dynamics { class MaterialDataMap; } }
 
@@ -76,9 +75,9 @@ public:
 
 private:
 	std::vector<std::string> _idToMat;
-	std::vector<std::vector<rw::common::Ptr<const TNTFrictionModel> > > _frictionModels;
+	std::vector<std::vector<const TNTFrictionModel*> > _frictionModels;
 	std::vector<std::string> _idToType;
-	std::vector<std::vector<rw::common::Ptr<const TNTRestitutionModel> > > _restitutionModels;
+	std::vector<std::vector<const TNTRestitutionModel*> > _restitutionModels;
 };
 //! @}
 } /* namespace tntphysics */

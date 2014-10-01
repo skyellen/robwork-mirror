@@ -43,7 +43,7 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 		_idToType[i] = contactDataMap.getObjectTypeName(i);
 	}
 	// Construct friction models for all pairs of materials
-	_frictionModels.resize(maxMatId+1,std::vector<rw::common::Ptr<const TNTFrictionModel> >(maxMatId+1));
+	_frictionModels.resize(maxMatId+1,std::vector<const TNTFrictionModel*>(maxMatId+1,NULL));
 	for (int i = 0; i < maxMatId; i++) {
 		for (int j = i; j < maxMatId; j++) {
 			const std::string modelId = "Coulomb";
@@ -51,7 +51,9 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 			const FrictionData& data = materialDataMap.getFrictionData(i,j,Coulomb);
 			bool found = false;
 			BOOST_FOREACH(const FrictionParam& pars, data.parameters) {
-				if (pars.first == "Mu") {
+				std::string parName = pars.first;
+				std::transform(parName.begin(), parName.end(),parName.begin(), ::toupper);
+				if (parName == "MU") {
 					RW_ASSERT(pars.second.size() > 0);
 					parameters.set("mu",pars.second[0]);
 					found = true;
@@ -67,7 +69,7 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 		}
 	}
 	// Construct restitution models for all pairs of object types
-	_restitutionModels.resize(maxTypeId+1,std::vector<rw::common::Ptr<const TNTRestitutionModel> >(maxTypeId+1));
+	_restitutionModels.resize(maxTypeId+1,std::vector<const TNTRestitutionModel*>(maxTypeId+1,NULL));
 	for (int i = 0; i < maxTypeId; i++) {
 		for (int j = i; j < maxTypeId; j++) {
 			const std::string modelId = "Newton";
@@ -84,6 +86,22 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 }
 
 TNTMaterialMap::~TNTMaterialMap() {
+	{
+		for (std::size_t i = 0; i < _frictionModels.size(); i++) {
+			for (std::size_t j = i; j < _frictionModels[i].size(); j++) {
+				delete _frictionModels[i][j];
+			}
+		}
+		_frictionModels.clear();
+	}
+	{
+		for (std::size_t i = 0; i < _restitutionModels.size(); i++) {
+			for (std::size_t j = i; j < _restitutionModels[i].size(); j++) {
+				delete _restitutionModels[i][j];
+			}
+		}
+		_restitutionModels.clear();
+	}
 }
 
 const TNTFrictionModel& TNTMaterialMap::getFrictionModel(const TNTBody &bodyA, const TNTBody &bodyB) const {
