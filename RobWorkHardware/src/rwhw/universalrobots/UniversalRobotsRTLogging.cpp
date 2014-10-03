@@ -160,7 +160,7 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     //If there is any data left, just read it to empty buffer
     char* buffer = new char[msgSize];
     _socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
-
+    delete[] buffer;
     {
 		boost::mutex::scoped_lock lock(_mutex);
 		_data.driverTimeStamp = timestamp;
