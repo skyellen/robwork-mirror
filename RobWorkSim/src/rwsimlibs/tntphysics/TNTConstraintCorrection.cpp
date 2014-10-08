@@ -173,7 +173,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 			const Vector3D<> rji = constraint->getPositionChildW(tntstate);
 			const Rotation3D<> rotI = constraint->getAngularRotationParentW(tntstate);
 			const Rotation3D<> rotJ = constraint->getAngularRotationChildW(tntstate);
-			const EAA<> rotDifEAA(inverse(rotJ)*rotI);
+			const EAA<> rotDifEAA(rotJ*inverse(rotI));
 			const Vector3D<> rotDif = rotDifEAA.angle()*rotDifEAA.axis();
 			const Rotation3D<> linR = constraint->getLinearRotationParentW(tntstate);
 			const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
@@ -272,6 +272,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		return;
 
 	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-6);
+	RW_ASSERT(lhsInv.cols() == rhs.rows());
 	const Eigen::VectorXd sol = lhsInv*rhs;
 	for (unsigned int i = 0; i < id; i++) {
 		const Eigen::VectorXd correction = sol.block(i*6,0,6,1);
