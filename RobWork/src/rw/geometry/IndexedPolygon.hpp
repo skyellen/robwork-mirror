@@ -161,12 +161,19 @@ namespace geometry {
 
 		/** 
 		 * @brief Constructs IndexedPolygonN-n with the vertices and normals specified
+		 *
+		 * In case the number of vertices and normals does not match the method either asserts or throws an exception.
+		 *
+		 * @param vertices [in] The vertices to be part of the polygon
+		 * @param normals [in] The normals associated to the vertices
 		 */
 		IndexedPolygonNN(const std::vector<T>& vertices, const std::vector<T>& normals):
 			_polyN(vertices),
 			_normals(normals)
 		{
 			RW_ASSERT_MSG(vertices.size() == _normals.size(), "The number of vertices and normals does not match.");
+			if (vertices.size() != normals.size()) 
+				RW_THROW("The number of vertices ("<<vertices.size()<<") and normals ("<<normal.size()<<") does not match.");
 		}
 
 
