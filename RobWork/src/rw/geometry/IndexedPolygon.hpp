@@ -64,8 +64,8 @@ namespace geometry {
         }
 
         /**
-         * @brief nr of vertices of this polygon
-         * @return
+         * @brief Number of vertices of this polygon
+         * @return Number of vertices
          */
         virtual size_t size() const = 0;
 
@@ -78,14 +78,24 @@ namespace geometry {
 	template<class T=uint16_t>
 	class IndexedPolygonN : public IndexedPolygon<T> {
 	protected:
-		boost::numeric::ublas::vector<T> _vertices;
+		std::vector<T> _vertices;
 
 	public:
-	    //@brief default constructor
+		//! @brief Smart pointer to IndexedPolygonN
+		typedef rw::common::Ptr<IndexedPolygonN<T> > Ptr;
 
+	    //@brief Constructs IndexedPolygon with space for n vertices
 	    IndexedPolygonN(size_t n):
 	    	_vertices(n)
 	    {};
+
+		/** 
+		 * @brief Constructs IndexedPolygonN with the vertices specified
+		 */
+		IndexedPolygonN(const std::vector<T>& vertices):
+			_vertices(vertices)
+		{
+		}
 
 	    /**
 	     * @brief returns the index of vertex i of the triangle
@@ -103,6 +113,29 @@ namespace geometry {
             return _vertices[i];
         }
 
+		/**
+		 * @brief Adds a vertex to the polygon
+		 *
+		 * The point will be added to the end of the list of points
+		 * @param p [in] The point to add
+		 */
+		void addVertex(const T& p) {
+			_vertices.push_back(p);
+		}
+
+		/**
+		 * @brief Removes vertex from the polygon
+		 *
+		 * @param i [in] Index of the point to remove
+		 */
+		void removeVertexIdx(size_t i) {
+			RW_ASSERT_MSG(i<_vertices.size(), "The requested index "<<i<<" is not less than the number of items<<");
+			_vertices.erase(_vertices.begin() + i);		
+		}
+
+		/**
+		 * @copydoc IndexedPolygon::size
+		 */
         size_t size() const{ return _vertices.size(); };
 
 	};
@@ -114,14 +147,29 @@ namespace geometry {
     class IndexedPolygonNN : public IndexedPolygon<T> {
     private:
     	IndexedPolygonN<T> _polyN;
-    	boost::numeric::ublas::vector<T> _normals;
+    	//boost::numeric::ublas::vector<T> _normals;
+		std::vector<T> _normals;
     public:
+		//! @brief Smart pointer to IndexedPolygonNN
+		typedef rw::common::Ptr<IndexedPolygonNN<T> > Ptr;
 
-        //! @brief default constructor
+        //! @brief Construct IndexPolygonNN with space for n vertices and normals
         IndexedPolygonNN(size_t n):
         	_polyN(n),
         	_normals(n)
         {};
+
+		/** 
+		 * @brief Constructs IndexedPolygonN-n with the vertices and normals specified
+		 */
+		IndexedPolygonNN(const std::vector<T>& vertices, const std::vector<T>& normals):
+			_polyN(vertices),
+			_normals(normals)
+		{
+			RW_ASSERT_MSG(vertices.size() == _normals.size(), "The number of vertices and normals does not match.");
+		}
+
+
 
         /**
          * @brief returns the index of vertex i of the triangle
@@ -150,6 +198,30 @@ namespace geometry {
         const T& getNormalIdx(size_t i) const  {
             return _normals[i];
         }
+
+		/**
+		 * @brief Adds a vertex to the polygon
+		 *
+		 * The point will be added to the end of the list of points
+		 * @param p [in] The point to add
+		 * @param n [in] Normal associated to the point
+		 */
+		void addVertex(const T& p, const T& n) {
+			_vertices.push_back(p);
+			_normals.push_back(n);
+		}
+
+		/**
+		 * @brief Removes vertex from the polygon
+		 *
+		 * @param i [in] Index of the point to remove
+		 */
+		void removeVertexIdx(size_t i) {
+			RW_ASSERT_MSG(i<_vertices.size() && i<_normals.size(), "The requested index "<<i<<" is not less than the number of items<<");
+			_vertices.erase(_vertices.begin() + i);		
+			_normals.erase(_normals.begin() + i);
+		}
+
 
     };
     // @}

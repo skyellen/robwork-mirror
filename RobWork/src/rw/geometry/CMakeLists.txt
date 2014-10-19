@@ -76,6 +76,7 @@ SET(FILES_HPP
     ConvexHull3D.hpp
     IncrementalHull3D.hpp
     IndexedArray.hpp
+	IndexedPolygon.hpp
     #GiftWrapHull3D.hpp
     Contour2D.hpp
     Contour2DUtil.hpp
