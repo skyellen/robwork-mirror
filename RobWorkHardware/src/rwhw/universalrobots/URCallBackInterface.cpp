@@ -96,7 +96,7 @@ void URCallBackInterface::startCommunication(const std::string& host, const unsi
 	
     // send script to robot
     _urPrimary.sendScript(script);
-    //_urPrimary.start(); // not sure if that's neccesary
+    _urPrimary.start();
 }
 
 
