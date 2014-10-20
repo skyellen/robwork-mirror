@@ -129,7 +129,7 @@ namespace geometry {
 		 * @param i [in] Index of the point to remove
 		 */
 		void removeVertexIdx(size_t i) {
-			RW_ASSERT_MSG(i<_vertices.size(), "The requested index "<<i<<" is not less than the number of items<<");
+                    RW_ASSERT_MSG(i<_vertices.size(), "The requested index "<<i<<" is not less than the number of items: " << _vertices.size());
 			_vertices.erase(_vertices.begin() + i);		
 		}
 
@@ -173,7 +173,7 @@ namespace geometry {
 		{
 			RW_ASSERT_MSG(vertices.size() == _normals.size(), "The number of vertices and normals does not match.");
 			if (vertices.size() != normals.size()) 
-				RW_THROW("The number of vertices ("<<vertices.size()<<") and normals ("<<normal.size()<<") does not match.");
+				RW_THROW("The number of vertices (" << vertices.size() << ") and normals (" << normals.size() << ") does not match.");
 		}
 
 
@@ -214,8 +214,8 @@ namespace geometry {
 		 * @param n [in] Normal associated to the point
 		 */
 		void addVertex(const T& p, const T& n) {
-			_vertices.push_back(p);
-			_normals.push_back(n);
+                    _polyN.addVertex(p);
+                    _normals.push_back(n);
 		}
 
 		/**
@@ -224,11 +224,10 @@ namespace geometry {
 		 * @param i [in] Index of the point to remove
 		 */
 		void removeVertexIdx(size_t i) {
-			RW_ASSERT_MSG(i<_vertices.size() && i<_normals.size(), "The requested index "<<i<<" is not less than the number of items<<");
-			_vertices.erase(_vertices.begin() + i);		
+                    RW_ASSERT_MSG(i < _polyN.size() && i < _normals.size(), "The requested index " << i << " is not less than the number of items: " << _polyN.size() << " and " << _normals.size());
+			_polyN.removeVertexIdx(i);		
 			_normals.erase(_normals.begin() + i);
 		}
-
 
     };
     // @}
