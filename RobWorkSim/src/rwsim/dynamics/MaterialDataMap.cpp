@@ -38,6 +38,22 @@ MaterialDataMap::~MaterialDataMap()
 {
 }
 
+bool MaterialDataMap::hasFrictionData(int matAID, int matBID, int dataType) const {
+    MatIDPair pair(matAID,matBID);
+    FrictionMap::const_iterator res = _frictionMap.find(pair);
+    if( res == _frictionMap.end() )
+    	return false;
+    BOOST_FOREACH(const FrictionData& data, (*res).second){
+        if(data.type==dataType)
+        	return true;
+    }
+    return false;
+}
+
+bool MaterialDataMap::hasFrictionData(const std::string& matAID, const std::string& matBID, int dataType) const {
+    return hasFrictionData(getDataID(matAID), getDataID(matBID), dataType);
+}
+
 const FrictionData&
     MaterialDataMap::getFrictionData(int materialA,
                                      int materialB,

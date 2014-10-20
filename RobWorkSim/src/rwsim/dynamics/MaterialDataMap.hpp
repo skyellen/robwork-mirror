@@ -94,6 +94,24 @@ namespace dynamics {
 
     	int getMaxMatID() const {return _matCnt;};
 
+    	/**
+    	 * @brief Test if the given material pair has friction data in map.
+    	 * @param matAID [in] id of first material.
+    	 * @param matBID [in] id of second material.
+    	 * @param dataType [in] the type of friction data (default is zero).
+    	 * @return true if friction data exists - false otherwise.
+    	 */
+    	bool hasFrictionData(int matAID, int matBID, int dataType=0) const;
+
+    	/**
+    	 * @brief Test if the given material pair has friction data in map.
+    	 * @param matAID [in] the name of the first material.
+    	 * @param matBID [in] the name of the second material.
+    	 * @param dataType [in] the type of friction data (default is zero).
+    	 * @return true if friction data exists - false otherwise.
+    	 */
+    	bool hasFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0) const;
+
         /**
          *
          * @param materialA

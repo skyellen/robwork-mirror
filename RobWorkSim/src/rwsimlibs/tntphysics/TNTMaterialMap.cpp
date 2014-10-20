@@ -48,7 +48,12 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 		for (int j = i; j < maxMatId; j++) {
 			const std::string modelId = "Coulomb";
 			PropertyMap parameters;
-			const FrictionData& data = materialDataMap.getFrictionData(i,j,Coulomb);
+			FrictionData data;
+			if (materialDataMap.hasFrictionData(i,j,Coulomb)) {
+				data = materialDataMap.getFrictionData(i,j,Coulomb);
+			} else {
+				data = materialDataMap.getDefaultFriction(Coulomb);
+			}
 			bool found = false;
 			BOOST_FOREACH(const FrictionParam& pars, data.parameters) {
 				std::string parName = pars.first;
@@ -86,22 +91,18 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 }
 
 TNTMaterialMap::~TNTMaterialMap() {
-	{
-		for (std::size_t i = 0; i < _frictionModels.size(); i++) {
-			for (std::size_t j = i; j < _frictionModels[i].size(); j++) {
-				delete _frictionModels[i][j];
-			}
+	for (std::size_t i = 0; i < _frictionModels.size(); i++) {
+		for (std::size_t j = i; j < _frictionModels[i].size(); j++) {
+			delete _frictionModels[i][j];
 		}
-		_frictionModels.clear();
 	}
-	{
-		for (std::size_t i = 0; i < _restitutionModels.size(); i++) {
-			for (std::size_t j = i; j < _restitutionModels[i].size(); j++) {
-				delete _restitutionModels[i][j];
-			}
+	_frictionModels.clear();
+	for (std::size_t i = 0; i < _restitutionModels.size(); i++) {
+		for (std::size_t j = i; j < _restitutionModels[i].size(); j++) {
+			delete _restitutionModels[i][j];
 		}
-		_restitutionModels.clear();
 	}
+	_restitutionModels.clear();
 }
 
 const TNTFrictionModel& TNTMaterialMap::getFrictionModel(const TNTBody &bodyA, const TNTBody &bodyB) const {
