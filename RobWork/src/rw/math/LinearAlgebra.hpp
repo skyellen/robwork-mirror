@@ -344,12 +344,12 @@ namespace rw { namespace math {
 
 #endif
 		/**
-		 * @brief Calculates matrix inverse using lu_factorize and lu_substitute
+		 * @brief Calculates matrix inverse.
          * @param M [in] input matrix @f$ \mathbf{M} @f$ to invert
          * @return output matrix @f$ \mathbf{M}^{-1} @f$
          **/
         template<class T>
-		static Eigen::MatrixBase<T> inverse(const Eigen::MatrixBase<T>& M)
+		static T inverse(const Eigen::MatrixBase<T>& M)
         {
 			return M.inverse();
         }

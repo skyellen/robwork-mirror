@@ -86,4 +86,20 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
         vector<double> r2 = prod(A,x);
         BOOST_CHECK(norm_inf(r1-r2) < 1e-12);
     }*/
+
+    BOOST_MESSAGE("-- Check Matrix Inverse...");
+    {
+    	const Eigen::MatrixXd inv = LinearAlgebra::inverse(A);
+    	Eigen::MatrixXd invExp(4,4);
+    	invExp << 4./3., 0, 0, -1./3.,
+    			0, 0.5, -5./6., 0,
+    			0, 0, 1./3., 0,
+    			-1./3., 0, 0, 1./3.;
+    	BOOST_CHECK((inv-invExp).isZero(std::numeric_limits<double>::epsilon()));
+    	// Check that it works with other types
+    	Eigen::VectorXd v(1);
+    	v(0) = 7;
+    	const Eigen::VectorXd vInv = LinearAlgebra::inverse(v);
+    	BOOST_CHECK_SMALL((double)vInv(0)-1./7.,std::numeric_limits<double>::epsilon());
+    }
 }
