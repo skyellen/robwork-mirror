@@ -16,3 +16,37 @@
  ********************************************************************************/
 
 #include "Polynomial.hpp"
+
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+#include <rw/math/Math.hpp>
+
+using namespace rw::common;
+using namespace rw::math;
+
+// some explicit template specifications
+template class Polynomial<double>;
+template class Polynomial<float>;
+
+namespace rw{ namespace common { namespace serialization {
+
+    template<class T>
+    void writeImpl(const rw::math::Polynomial<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+        const std::vector<double> data = rw::math::Math::toStdVector(tmp, tmp.order()+1);
+        oar.write(data, id);
+    }
+
+    template<class T>
+    void readImpl(rw::math::Polynomial<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+        std::vector<T> data;
+        iar.read(data, id);
+        tmp = Polynomial<T>(data);
+    }
+
+    // we need these to explicitly instantiate these functions
+    template<> void write(const rw::math::Polynomial<double>& tmp, rw::common::OutputArchive& oar, const std::string& id){writeImpl(tmp,oar,id);}
+    template<> void write(const rw::math::Polynomial<float>& tmp, rw::common::OutputArchive& oar, const std::string& id){writeImpl(tmp,oar,id);}
+    template<> void read(rw::math::Polynomial<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+
+}}}

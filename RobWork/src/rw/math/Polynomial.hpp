@@ -19,6 +19,7 @@
 #define RW_MATH_POLYNOMIAL_HPP_
 
 #include <rw/common/macros.hpp>
+#include <rw/common/Serializable.hpp>
 
 #include <vector>
 #include <limits>
@@ -125,12 +126,19 @@ public:
 	T evaluate(const T &x, T& err) const {
 		// Horner's Method
 		T res = _coef.back();
-		err = fabs(res);
-		for (int i = _coef.size()-2; i >= 0; i--) {
+		double errCoef = 0; // Error due to finite precision coefficients
+		double errX = 0; // Error due to finite precision x value
+		double errComb = 0; // Combinational error of error both in coefficients and x (magnitude very small - eps*eps)
+		errCoef = fabs(res);
+		const double dX = fabs(x)*_EPS;
+ 		for (int i = _coef.size()-2; i >= 0; i--) {
+ 			errX = fabs(res)*dX+errX*fabs(x)+errX*dX;
 			res = _coef[i]+res*x;
-			err = fabs(_coef[i]) + fabs(x)*err;
+			errComb = errComb*fabs(x)+errComb*dX+errCoef*_EPS*dX;
+			errCoef = fabs(_coef[i]) + fabs(x)*errCoef;
 		}
-		err *= _EPS;
+ 		errCoef *= _EPS;
+ 		err = errCoef+errX+errComb;
 		return res;
 	}
 
@@ -219,7 +227,7 @@ public:
 	 * @return a new polynomial of same order minus one.
 	 * @note To evaluate derivatives use the evaluate derivative method which is more precise.
 	 */
-	Polynomial<T> derivative(std::size_t n = 1) {
+	Polynomial<T> derivative(std::size_t n = 1) const {
 		if (n == 0)
 			return *this;
 		std::size_t no = order()-1;
@@ -562,10 +570,10 @@ private:
 namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
-    void write(const rw::math::Polynomial<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void write(const rw::math::Polynomial<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    void read(rw::math::Polynomial<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void write(const rw::math::Polynomial<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void write(const rw::math::Polynomial<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void read(rw::math::Polynomial<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<> void read(rw::math::Polynomial<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 }}} // end namespaces
 
 #endif /* RW_MATH_POLYNOMIAL_HPP_ */

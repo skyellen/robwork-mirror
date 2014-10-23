@@ -31,6 +31,7 @@ SET(TEST_LIBRARIES
 SET(MATH_TEST_SRC 
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
+  math/PolynomialTest.cpp
   math/Pose6DTest.cpp 
   math/QuaternionTest.cpp
   math/Rotation3DTest.cpp
