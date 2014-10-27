@@ -177,7 +177,7 @@ QTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMet
 	QPath::const_iterator it1 = path.begin();
 	QPath::const_iterator it2 = path.begin();
 	it2++;
-	for (;it2 != path.end(); ++it2) {
+	for (;it2 != path.end(); ++it1, ++it2) {
 		double d = metric->distance(*it1, *it2);
 		Ptr<LinearInterpolator<Q> > interpolator = ownedPtr(new LinearInterpolator<Q>(*it1, *it2, d));
 		trajectory->add(interpolator);
@@ -199,12 +199,14 @@ QTrajectory::Ptr TrajectoryFactory::makeEmptyQTrajectory()
  * @param times [in] times for each segment
  */
 Transform3DTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times) {
+	RW_ASSERT(path.size() > 1);
+	RW_ASSERT(times.size() == path.size()-1);
 	InterpolatorTrajectory<Transform3D<> >::Ptr trajectory = ownedPtr(new InterpolatorTrajectory<Transform3D<> >());
 	Transform3DPath::const_iterator it1 = path.begin();
 	Transform3DPath::const_iterator it2 = path.begin();
 	it2++;
 	std::vector<double>::const_iterator it3 = times.begin();
-	for (;it2 != path.end(); ++it2, ++it3) {		
+	for (;it2 != path.end(); ++it1, ++it2, ++it3) {
 		LinearInterpolator<Transform3D<> >::Ptr interpolator = ownedPtr(new LinearInterpolator<Transform3D<> >(*it1, *it2, *it3));
 		trajectory->add(interpolator);
 	}
@@ -218,7 +220,7 @@ Transform3DTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const Transfo
 	Transform3DPath::const_iterator it1 = path.begin();
 	Transform3DPath::const_iterator it2 = path.begin();
 	it2++;	
-	for (;it2 != path.end(); ++it2) {		
+	for (;it2 != path.end(); ++it1, ++it2) {
 		double duration = metric->distance(*it1, *it2);
 		LinearInterpolator<Transform3D<> >::Ptr interpolator = ownedPtr(new LinearInterpolator<Transform3D<> >(*it1, *it2, duration));
 		trajectory->add(interpolator);

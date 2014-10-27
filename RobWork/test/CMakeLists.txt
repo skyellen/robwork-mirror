@@ -104,7 +104,7 @@ TARGET_LINK_LIBRARIES( rw_kinematics-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_kinematics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_kinematics-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_kinematics-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_trajectory-test ${DO_EXCLUDE} test-main.cpp trajectory/PathTest.cpp trajectory/trajectory.cpp)       
+ADD_EXECUTABLE( rw_trajectory-test ${DO_EXCLUDE} test-main.cpp trajectory/PathTest.cpp trajectory/trajectory.cpp trajectory/TrajectoryFactoryTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_trajectory-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_trajectory-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_trajectory-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_trajectory-test ${TEST_DEPENDENCIES})
