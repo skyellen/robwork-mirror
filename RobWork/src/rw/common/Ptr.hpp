@@ -138,6 +138,21 @@ namespace rw { namespace common {
                 return Ptr<S>(dynamic_cast<S*>(_ptr));
         }
 
+        template <class S>
+        Ptr<S> scast() {
+			if (_owned_ptr)
+				return Ptr<S>(boost::static_pointer_cast<S>(_owned_ptr));
+			else
+				return Ptr<S>(static_cast<S*>(_ptr));
+        }
+
+		template <class S>
+        Ptr<S> scast() const {
+            if (_owned_ptr)
+                return Ptr<S>(boost::static_pointer_cast<S>(_owned_ptr));
+            else
+                return Ptr<S>(static_cast<S*>(_ptr));
+        }
         /**
          *  @brief Implicit conversion to a superclass of a ptr.
          */

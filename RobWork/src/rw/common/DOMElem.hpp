@@ -224,8 +224,10 @@ namespace common {
 		 */
 		class ItImpl {
 		public:
-                    //! Virtual destructor
-                    virtual ~ItImpl() { /* Do nothing */ };
+
+			//! destructor
+			virtual ~ItImpl(){}
+
 			//! clone this ItImpl object
 			virtual ItImpl* clone() = 0;
 			//! increment the iterator
@@ -260,10 +262,14 @@ namespace common {
 			/** Difference type. */
 			typedef ptrdiff_t difference_type;
 
+			//! constructor
 			Iterator():_impl(NULL){}
+			//! constructor
 			Iterator(ItImpl *impl):_impl(impl){}
+			//! constructor
 			Iterator(Iterator const& right) : _impl(right._impl->clone()) {}
-			~Iterator() { delete _impl; }
+			//! destructor
+			virtual ~Iterator() { delete _impl; }
 
 			Iterator& operator=(Iterator const& right)
 			{

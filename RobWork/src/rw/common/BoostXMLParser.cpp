@@ -220,9 +220,13 @@ void BoostDOMElem::setName(const std::string& name){
 	// TODO: we cannot set name directly in boost property tree, so instead
 	// we insert new node, swap with old and erase old node.
 
-    // create a new node
+	// first be sure we are not at the root node
+	if(_parent==NULL){
+		RW_THROW("you cannot set name of root");
+	}
 
-    // swap the current node with the new
+    // create a new node
+	    // swap the current node with the new
     boost::property_tree::ptree &newchild = _parent->add_child(name, boost::property_tree::ptree() );
     _node->swap( newchild );
     _name = name;
