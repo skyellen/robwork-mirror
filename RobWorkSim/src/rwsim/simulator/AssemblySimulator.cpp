@@ -298,7 +298,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	RW_ASSERT(pe != NULL);
 	DynamicSimulator* simulator = new DynamicSimulator(_dwc,pe);
 	simState.simulator = simulator;
-	simState.femaleContactSensor = ownedPtr(new BodyContactSensor("HoleContactSensor", simState.femaleTCP));
+	simState.femaleContactSensor = ownedPtr(new BodyContactSensor("HoleContactSensor", simState.female->getBodyFrame()));
 	try {
 		simulator->init(state);
 	} catch(...){
