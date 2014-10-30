@@ -17,25 +17,27 @@
 
 #include "PhysicsEngineFactory.hpp"
 
-#include <rw/common/macros.hpp>
-#include <rw/common/StringUtil.hpp>
+//#include <RobWorkSimConfig.hpp>
 
-#ifdef RWSIM_HAVE_ODE
-#include <rwsimlibs/ode/ODESimulator.hpp>
-#endif
+//#include <rw/common/macros.hpp>
+//#include <rw/common/StringUtil.hpp>
 
-#ifdef RWSIM_HAVE_BULLET
-#include <rwsimlibs/bullet/BtSimulator.hpp>
-#endif
+//#ifdef RWSIM_HAVE_ODE
+//#include <rwsimlibs/ode/ODESimulator.hpp>
+//#endif
+
+//#ifdef RWSIM_HAVE_BULLET
+//#include <rwsimlibs/bullet/BtSimulator.hpp>
+//#endif
 
 using namespace rw::common;
 using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
 
 namespace {
-    const std::string RWPhysicsStr("RWPhysics");
-    const std::string ODEPhysicsStr("ODE");
-    const std::string BulletPhysicsStr("Bullet");
+    //const std::string RWPhysicsStr("RWPhysics");
+    //const std::string ODEPhysicsStr("ODE");
+    //const std::string BulletPhysicsStr("Bullet");
 
 
     typedef std::pair<std::string, PhysicsEngineFactory::makePhysicsEngineFunctor> PhysicsEnginePair;

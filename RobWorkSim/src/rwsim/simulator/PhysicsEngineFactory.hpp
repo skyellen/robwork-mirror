@@ -18,12 +18,13 @@
 #ifndef RWSIM_SIMULATOR_PHYSICSENGINEFACTORY_HPP_
 #define RWSIM_SIMULATOR_PHYSICSENGINEFACTORY_HPP_
 
-#include <RobWorkSimConfig.hpp>
+#include "PhysicsEngine.hpp"
+//#include <RobWorkSimConfig.hpp>
 
-#include "DynamicSimulator.hpp"
+//#include "DynamicSimulator.hpp"
 
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rwsim/rwphysics/RWSimulator.hpp>
+//#include <rwsim/dynamics/DynamicWorkCell.hpp>
+//#include <rwsim/rwphysics/RWSimulator.hpp>
 
 #include <boost/function.hpp>
 
@@ -47,11 +48,11 @@ namespace simulator {
 
 		static bool hasEngineID(const std::string& engineID);
 
-		static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+		static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
-        static PhysicsEngine::Ptr makePhysicsEngine(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+        static PhysicsEngine::Ptr makePhysicsEngine(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
-        typedef boost::function<PhysicsEngine*(rwsim::dynamics::DynamicWorkCell::Ptr)> makePhysicsEngineFunctor;
+        typedef boost::function<PhysicsEngine*(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell>)> makePhysicsEngineFunctor;
         static void addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor);
 
         /*
