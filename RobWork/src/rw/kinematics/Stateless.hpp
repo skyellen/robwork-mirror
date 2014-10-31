@@ -62,6 +62,8 @@ namespace kinematics {
 
     	StateStructure::Ptr getStateStructure(){ return _stateStruct; }
 
+    	const StateStructure::Ptr getStateStructure() const { return _stateStruct; }
+
     	bool isRegistered(){ return _registered;}
     protected:
 

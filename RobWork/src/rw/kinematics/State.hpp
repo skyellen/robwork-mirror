@@ -67,7 +67,7 @@ namespace rw { namespace kinematics {
     class State: public rw::common::Serializable
     {
     public:
-
+    	typedef rw::common::Ptr<State> Ptr;
         //! Value type.
         typedef double value_type;
 
@@ -280,6 +280,8 @@ namespace rw { namespace kinematics {
 
         void read(class rw::common::InputArchive& iarchive, const std::string& id);
         void write(class rw::common::OutputArchive& iarchive, const std::string& id) const;
+
+        static const State& getDefault( StateData* data );
 
     private:
         friend class StateData;

@@ -147,6 +147,7 @@ namespace rw { namespace kinematics {
         rw::common::Ptr<StateCache> getDefaultCache(){ return _cache; }
         void setCache(rw::common::Ptr<StateCache> cache, State& state);
 
+        class StateStructure* getStateStructure() { return _sstructure;};
 
     public:
 
@@ -179,7 +180,7 @@ namespace rw { namespace kinematics {
         // Doxygen documentation.
         friend class StateStructure;
 
-        void setID(int id) { _id = id; }
+        void setID(int id, class StateStructure* sstructure) { _id = id; _sstructure = sstructure;}
 
     private:
 
@@ -187,6 +188,8 @@ namespace rw { namespace kinematics {
         // responsibility of the tree in which the frame is inserted. The ID of
         // a frame may change over time.
         int _id;
+        // the statestructure in which this statedata is registered
+        StateStructure* _sstructure;
 
         // The size of the state memmory allocated for this state data.
         // This value remains fixed throughout the life time of the statedata.

@@ -23,6 +23,9 @@
 
 #include <boost/foreach.hpp>
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+
 using namespace rw::common;
 using namespace rw::kinematics;
 
@@ -172,6 +175,10 @@ void State::upgrade(){
     }
 }
 
+const State& State::getDefault( StateData* data ){
+	return data->getStateStructure()->getDefaultState();
+}
+
 /*
 void State::add(Stateless& obj){
 	obj.registerIn( getStateStructure() );
@@ -179,10 +186,34 @@ void State::add(Stateless& obj){
 */
 
 void State::read(rw::common::InputArchive& iarchive, const std::string& id){
+	// read the state setup
+/*
+	std::vector<boost::uint8_t> varray;
+	iarchive.read(varray, "QStateArray");
+	//_q_state = QState( rw::math::Q( (double*)&varray(0), varray.size()/sizeof(double) ) );
 
+	// now to the tree state
+
+*/
 }
 
-void State::write(rw::common::OutputArchive& iarchive, const std::string& id) const{
+void State::write(rw::common::OutputArchive& oarchive, const std::string& id) const{
+	// the id of the state
+/*
+	// add id
+	oarchive.write( _stateUniqueId, "StateID");
 
+	// add the Q state
+    boost::uint8_t* array = (uint8_t)&_q_state(0);
+    unsigned int array_byte_size = _q_state.size()*sizeof(double);
+
+    std::vector<boost::uint8_t> varray(array,array+array_byte_size);
+    oarchive.write( varray, "QStateArray");
+
+    // now read the tree state
+    putTreeState(state, frames);
+*/
 }
+
+
 

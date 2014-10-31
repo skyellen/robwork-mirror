@@ -21,6 +21,7 @@
 #include <rw/common/StringUtil.hpp>
 
 #include "StateData.hpp"
+#include "StateCache.hpp"
 #include "StateStructure.hpp"
 
 namespace rw {
@@ -40,6 +41,12 @@ namespace kinematics {
             _N(dN)
         {
             _sdata = boost::shared_ptr<StateData>(new StateData((sizeof(DATA)*dN)/sizeof(double)+1, rw::common::StringUtil::ranName("sdata")));
+        }
+
+    	StatelessData(int dN, rw::common::Ptr<StateCache> cache):
+            _N(dN)
+        {
+            _sdata = boost::shared_ptr<StateData>(new StateData((sizeof(DATA)*dN)/sizeof(double)+1, rw::common::StringUtil::ranName("sdata"), cache));
         }
 
     	//! destructor
@@ -130,8 +137,23 @@ namespace kinematics {
          */
         int getN() const {return _N;}
 
+        /**
+         * @brief get the cache of this statedata object. If it has no cache then
+         * the returned pointer will be NULL.
+         * @param state [in] state in which to get cache from.
+         * @return
+         */
+        template<class CACHE_TYPE>
+        CACHE_TYPE* getStateCache(rw::kinematics::State& state) const {
+        	return static_cast<CACHE_TYPE*>(_sdata->getCache(state).get());
+        }
+        template<class CACHE_TYPE>
+        CACHE_TYPE* getStateCache(const rw::kinematics::State& state) const {
+        	return static_cast<CACHE_TYPE*>(_sdata->getCache(state).get());
+        }
 
         boost::shared_ptr<StateData> getStateData(){return _sdata;}
+
 
     private:
         int _N;

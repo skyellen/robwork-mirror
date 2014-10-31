@@ -82,12 +82,13 @@ void StateStructure::addDataInternal(StateData *data){
 
     _version++;
     const int id = allocateDataID();
-    data->setID(id);
+    data->setID(id, this);
 
     // There is no turning back. Ownership is forever taken.
     boost::shared_ptr<StateData> sharedData( data );
     _allDatas.at(id) = sharedData;
     _currDatas.at(id) = sharedData;
+    _stateIdxMap[sharedData->getName()] = id;
     // make room in the initial state data array
     // now frame must be in the tree
     RW_ASSERT(has(data));
@@ -101,11 +102,12 @@ void StateStructure::addDataInternal(boost::shared_ptr<StateData> data){
     }
     _version++;
     const int id = allocateDataID();
-    data->setID(id);
+    data->setID(id, this);
     //std::cout << "add: " << data->getName() << " id: " << data->getID() << std::endl;
     boost::shared_ptr<StateData> sharedData = data;
     _allDatas.at(id) = sharedData;
     _currDatas.at(id) = sharedData;
+    _stateIdxMap[sharedData->getName()] = id;
     // make room in the initial state data array
     // now frame must be in the tree
     RW_ASSERT(has(data.get()));
@@ -331,4 +333,15 @@ Frame* StateStructure::findFrame(const std::string& name) const {
     if( _allDatas[idx]==NULL )
         return NULL;
     return _frames[pos->second];
+}
+
+boost::shared_ptr<StateData> StateStructure::findData(const std::string& name) const {
+	// TODO: make a map for faster searching of state data
+
+	typedef std::map<std::string,int>::const_iterator I;
+    const I pos = _stateIdxMap.find(name);
+    if (pos == _stateIdxMap.end())
+        return boost::shared_ptr<StateData>();
+    int idx = pos->second;
+    return _allDatas[idx];
 }

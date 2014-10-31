@@ -214,6 +214,7 @@ namespace rw { namespace kinematics {
          * @return The frame with name \b name or NULL if no such frame.
          */
         kinematics::Frame* findFrame(const std::string& name) const;
+        boost::shared_ptr<kinematics::StateData> findData(const std::string& name) const;
 
         /**
          * @brief Defines a listener for StateData added events
@@ -284,6 +285,7 @@ namespace rw { namespace kinematics {
         // map from string id to frame name
         typedef std::map<std::string, int> FrameIdxMap;
         FrameIdxMap _frameIdxMap;
+        std::map<std::string, int> _stateIdxMap;
 
         // event stuff
         StateDataAddedEvent _stateDataAddedEvent;
