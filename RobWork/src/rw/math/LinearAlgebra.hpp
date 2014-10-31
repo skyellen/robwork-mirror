@@ -41,8 +41,11 @@
 
 #include <boost/numeric/bindings/traits/ublas_matrix.hpp>
 #include <boost/numeric/bindings/traits/ublas_vector.hpp>
+
+#ifdef RW_USE_UBLAS_LAPACK
 #include <boost/numeric/bindings/lapack/gesvd.hpp>
 #include <boost/numeric/bindings/lapack/ptsv.hpp>
+#endif
 
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
