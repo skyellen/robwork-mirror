@@ -18,6 +18,8 @@
 
 #include "FixedFrame.hpp"
 
+#include <rw/kinematics/Kinematics.hpp>
+
 using namespace rw::kinematics;
 using namespace rw::math;
 
@@ -47,4 +49,11 @@ void FixedFrame::setTransform(const Transform3D<>& transform){
 
 Transform3D<> FixedFrame::doGetTransform(const State& state) const {
     return _transform;
+}
+
+void FixedFrame::moveTo(const rw::math::Transform3D<>& refTtarget, Frame* refframe, State& state){
+    // first calculate transform from refframe to parent frame
+    Transform3D<> parentTref = Kinematics::frameTframe(getParent(), refframe, state);
+    Transform3D<> parentTmframe = parentTref * refTtarget;
+    setTransform( parentTmframe);
 }

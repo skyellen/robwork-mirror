@@ -65,6 +65,8 @@ namespace rw { namespace kinematics {
          */
 		void setTransform(const rw::math::Transform3D<>& transform);
 
+		void moveTo(const rw::math::Transform3D<>& refTtarget, Frame* refframe, State& state);
+
         /**
          * @brief get the fixed transform of this frame.
          */
