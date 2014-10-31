@@ -119,7 +119,6 @@ namespace rw { namespace sensor {
 
         //! name of camera model information
         std::string _modelInfo;
-
         rw::math::ProjectionMatrix _pmatrix;
 
 
