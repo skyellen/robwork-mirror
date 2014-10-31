@@ -438,6 +438,20 @@ namespace rw { namespace math {
 			}
 			return false;
 		}
+
+	    void toStdVector(std::vector<double>& v){
+	    	v.resize(size());
+	    	for (size_t i = 0; i<size(); i++) {
+	    		v[i] = _vec[i];
+	    	}
+	    }
+
+	    std::vector<double> toStdVector(){
+	    	std::vector<double> v(size());
+	    	toStdVector(v);
+	    	return v;
+	    }
+
     private:
 		void init(size_t n, const double* values);
 
@@ -505,6 +519,7 @@ namespace rw { namespace math {
      * @return the concatenation of q1 and q2
      */
     rw::math::Q concat(const Q& q1, const Q& q2);
+
 
     /*@}*/
 }}
