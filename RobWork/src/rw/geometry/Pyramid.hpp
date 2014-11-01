@@ -55,6 +55,10 @@ namespace geometry {
 
         //! @copydoc Primitive::getParameters
         rw::math::Q getParameters() const;
+
+		//! @copydoc GeometryData::getType
+		GeometryType getType() const { return PyramidPrim; };
+
     protected:
         bool doIsInside(const rw::math::Vector3D<>& point);
     private:
