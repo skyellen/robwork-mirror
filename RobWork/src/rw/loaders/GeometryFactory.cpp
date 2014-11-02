@@ -25,7 +25,9 @@
 #include <rw/graphics/Model3DFactory.hpp>
 
 #include "model3d/STLFile.hpp"
+#include <rw/geometry/Plane.hpp>
 #include <rw/geometry/Box.hpp>
+#include <rw/geometry/Cone.hpp>
 #include <rw/geometry/Cylinder.hpp>
 #include <rw/geometry/Tube.hpp>
 #include <rw/geometry/Sphere.hpp>
@@ -113,7 +115,13 @@ namespace
 	}
 
 	Geometry::Ptr constructCone(std::stringstream& sstr){
-		RW_THROW("Could not read (radius, height, divisions).");
+		float height, radiusTop;
+		if (sstr >> radiusTop >> height) {
+			return ownedPtr(new Geometry(ownedPtr(new Cone(height, radiusTop, 0))));
+		} else {
+			RW_THROW("Could not read (radius, height).");
+			return NULL;
+		}
 		return NULL;
 	}
 
@@ -128,8 +136,7 @@ namespace
 	}
 
 	Geometry::Ptr constructPlane(std::stringstream& sstr){
-		RW_THROW("Could not read (radius, height, divisions).");
-		return NULL;
+		return ownedPtr(new Geometry(ownedPtr(new Plane(Vector3D<>::z(),0))));
 	}
 }
 /*
@@ -234,6 +241,8 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
     std::string type;
     sstr >> type;
 
+    if (type == "#Plane")
+        return constructPlane(sstr);
     if (type == "#Box")
         return constructBox(sstr);
     if (type == "#Cylinder")
