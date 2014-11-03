@@ -164,6 +164,9 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
     BOOST_CHECK(LinearAlgebra::isSO(r3.e()));
     BOOST_CHECK(r3.m().size1() == r3.m().size2() && r3.m().size1() == 3);
 
+    BOOST_CHECK(r1 == r1);
+    BOOST_CHECK(!(r1 == r3));
+
     const Rotation3D<int> ri = cast<int>(r3);
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++)

@@ -233,7 +233,7 @@ namespace rw { namespace math {
         bool operator==(const Rotation3D<T> &rhs) const {
             for (int i = 0; i<3; i++)
                 for (int j = 0; j<3; j++)
-                    if (_m[i][j] == rhs(i,j))
+                    if (!(_m[i][j] == rhs(i,j)))
                         return false;
             return true;
         }
