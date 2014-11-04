@@ -91,6 +91,8 @@ void ATaskVisPlugin::genericAnyEventListener(const std::string& event, boost::an
     // used as control from ither plugins or scripts
     try{
     	if (event == "PlayBack::TimeRelative") {
+    		if (_currentTask == NULL)
+    			return;
     		double timeRelative = boost::any_cast<double>(data);
     		Path<Timed<AssemblyState> > path;
     		if (_showReal)
@@ -355,7 +357,7 @@ void ATaskVisPlugin::constructPlayback() {
 				}
 				// For now the male objects is moved relative to the female object - could be opposite
 				const Transform3D<> wTfemaleTCP = Kinematics::worldTframe(femaleTCP,state);
-				const Transform3D<> wTmaleTCPNew = wTfemaleTCP*astate.femaleTmale;
+				const Transform3D<> wTmaleTCPNew = wTfemaleTCP*astate.femaleTmale*inverse(maleTtcp)*astate.maleOffset*maleTtcp;
 				if (maleFlexFrames.size() > 0 && astate.maleflexT.size() > 0) {
 					RW_ASSERT(maleFlexFrames.size() == astate.maleflexT.size());
 					// Find the world transform of the first flexible frame

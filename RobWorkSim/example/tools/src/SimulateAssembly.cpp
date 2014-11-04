@@ -82,10 +82,11 @@ int main(int argc, char** argv) {
 	AssemblyRegistry::Ptr registry = ownedPtr(new AssemblyRegistry());
 	std::vector<AssemblyTask::Ptr> tasks = AssemblyTask::load(vm["input"].as<std::string>(),registry);
 
-	ContactDetector::Ptr detector = ownedPtr(new ContactDetector(dwc->getWorkcell()));
-	detector->setDefaultStrategies(dwc->getEngineSettings());
-	detector->printStrategyTable();
-	AssemblySimulator::Ptr sim = ownedPtr(new AssemblySimulator(dwc,"ODE",detector));
+	//ContactDetector::Ptr detector = ownedPtr(new ContactDetector(dwc->getWorkcell()));
+	//detector->setDefaultStrategies(dwc->getEngineSettings());
+	//detector->printStrategyTable();
+	//AssemblySimulator::Ptr sim = ownedPtr(new AssemblySimulator(dwc,"TNTIsland",detector));
+	AssemblySimulator::Ptr sim = ownedPtr(new AssemblySimulator(dwc,"ODE",NULL));
 	sim->setDt(0.002);
 	sim->setMaxSimTime(10);
 	sim->setTasks(tasks);

@@ -411,7 +411,6 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		ftSensorFemale = simState.femaleFTSensor;
 
 	AssemblyState realState;
-	AssemblyState assumedState;
 	realState.femaleTmale = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);
 	if (task->maleFlexFrames.size() > 0) {
 		for (std::size_t i = 1; i < task->maleFlexFrames.size(); i++) {
@@ -431,12 +430,6 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		realState.ftSensorFemale = Wrench6D<>(ftSensorFemale->getForce(),ftSensorFemale->getTorque());
 	realState.contact = hasContact(simState.femaleContactSensor,simState.male);
 
-	// Add noise to the assumed readings to simulate uncertainty!
-	if (simState.maleFTSensor != NULL)
-		assumedState.ftSensorMale = Wrench6D<>(ftSensorMale->getForce(),ftSensorMale->getTorque());
-	if (simState.femaleFTSensor != NULL)
-		assumedState.ftSensorFemale = Wrench6D<>(ftSensorFemale->getForce(),ftSensorFemale->getTorque());
-
 	BOOST_FOREACH(const BodyContactSensor::Ptr &sensor, simState.bodyContactSensors) {
 		const std::vector<Contact3D>& contacts = sensor->getContacts();
 		BOOST_FOREACH(const Contact3D& c, contacts) {
@@ -450,6 +443,19 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 				realState.maxContactForce = force;
 		}
 	}
+
+	AssemblyState assumedState;
+	if (result->assumedState.size() > 0)
+		assumedState = result->assumedState.back().getValue();
+	else {
+		assumedState = realState;
+	}
+
+	// Add noise to the assumed readings to simulate uncertainty!
+	if (simState.maleFTSensor != NULL)
+		assumedState.ftSensorMale = Wrench6D<>(ftSensorMale->getForce(),ftSensorMale->getTorque());
+	if (simState.femaleFTSensor != NULL)
+		assumedState.ftSensorFemale = Wrench6D<>(ftSensorFemale->getForce(),ftSensorFemale->getTorque());
 
 	switch(simState.phase) {
 	case SimState::INIT:
