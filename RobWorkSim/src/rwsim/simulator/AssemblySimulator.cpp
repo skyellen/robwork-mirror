@@ -585,12 +585,14 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 					bool ftControl = (response->type == AssemblyControlResponse::HYBRID_FT_POS);
 					VectorND<6,bool> selection = response->selection;
 					float sel[6];
-					for (std::size_t i = 0; i < 6; i++) {
-						if (selection[i]) {
-							ftControl = true;
-							sel[i] = 0;
-						} else
-							sel[i] = 1;
+					if (ftControl) {
+						for (std::size_t i = 0; i < 6; i++) {
+							if (selection[i]) {
+								ftControl = true;
+								sel[i] = 0;
+							} else
+								sel[i] = 1;
+						}
 					}
 					const Transform3D<> position = simState.baseTfemale * response->femaleTmaleTarget * simState.maleTend;
 					if (simState.maleController != NULL) {
