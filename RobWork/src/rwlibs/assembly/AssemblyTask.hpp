@@ -99,6 +99,14 @@ public:
 	static std::vector<AssemblyTask::Ptr> load(const std::string& name, rw::common::Ptr<AssemblyRegistry> registry = NULL);
 
 	/**
+	 * @brief Load tasks from multiple files.
+	 * @param names [in] the filenames to load tasks from.
+	 * @param registry [in] a registry of control strategies to be used.
+	 * @return a vector of tasks loaded from the files.
+	 */
+	static std::vector<AssemblyTask::Ptr> load(const std::vector<std::string>& names, rw::common::Ptr<AssemblyRegistry> registry = NULL);
+
+	/**
 	 * @brief Load tasks from a input stream.
 	 * @param inputStream [in] the stream to load tasks from.
 	 * @param registry [in] a registry of control strategies to be used.

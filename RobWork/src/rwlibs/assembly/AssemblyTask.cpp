@@ -165,6 +165,15 @@ std::vector<AssemblyTask::Ptr> AssemblyTask::load(const std::string& filename, A
 	return tasks;
 }
 
+std::vector<AssemblyTask::Ptr> AssemblyTask::load(const std::vector<std::string>& filenames, AssemblyRegistry::Ptr registry) {
+	std::vector<AssemblyTask::Ptr> tasks;
+	BOOST_FOREACH(const std::string& filename, filenames) {
+		const std::vector<AssemblyTask::Ptr> tmp = load(filename,registry);
+		tasks.insert(tasks.end(),tmp.begin(),tmp.end());
+	}
+	return tasks;
+}
+
 std::vector<AssemblyTask::Ptr> AssemblyTask::load(std::istringstream& inputStream, AssemblyRegistry::Ptr registry) {
 	std::istringstream streamCopy;
 	streamCopy.str(inputStream.str());

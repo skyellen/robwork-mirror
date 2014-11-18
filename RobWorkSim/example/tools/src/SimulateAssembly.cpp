@@ -27,6 +27,8 @@
 #include <rwsim/simulator/AssemblySimulator.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
 
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
@@ -42,29 +44,24 @@ using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
 using namespace rwsim::simulator;
 
+using namespace boost::filesystem;
 using namespace boost::program_options;
 
 int main(int argc, char** argv) {
-	Log::log().setLevel(Log::Debug);
-	RobWork::getInstance()->initialize();
-	Log::log().setLevel(Log::Info);
-	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
-	std::cout << "Engines available: " << engines.size() << std::endl;
-	BOOST_FOREACH(const std::string& str, engines) {
-		std::cout << str << std::endl;
-	}
-	
 	//Math::seed( TimerUtil::currentTimeMs() );
 	options_description desc("Allowed options");
 	desc.add_options()
 	        		("help", "Produce this help message.")
 	        		("output,o", value<std::string>()->default_value("results.assembly.xml"), "The result output file.")
 	        		("dwc,d", value<std::string>(), "The dynamic workcell (requried).")
-	        		("input,i", value<std::string>()->default_value("tasks.assembly.xml"), "The input task file (required).")
+	        		("input,i", value<std::vector<std::string> >(), "The input task files (required).")
 	        		;
+    positional_options_description optionDesc;
+    optionDesc.add("input",-1);
 
 	variables_map vm;
-	store(parse_command_line(argc, argv, desc), vm);
+    store(command_line_parser(argc, argv).
+              options(desc).positional(optionDesc).run(), vm);
 	notify(vm);
 
 	if (vm.count("help")) {
@@ -77,10 +74,31 @@ int main(int argc, char** argv) {
 
 	if (!vm.count("dwc")) RW_THROW("Please set the dwc parameter!");
 	DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(vm["dwc"].as<std::string>());
+
 	Log::log().setLevel(Log::Debug);
+	RobWork::getInstance()->initialize();
+	Log::log().setLevel(Log::Info);
+	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
+	std::cout << "Engines available: " << engines.size() << std::endl;
+	BOOST_FOREACH(const std::string& str, engines) {
+		std::cout << str << std::endl;
+	}
+
+    std::vector<std::string> infiles;
+    if(vm.count("input") ){
+        const std::vector<std::string> &inputs = vm["input"].as<std::vector<std::string> >();
+        BOOST_FOREACH(std::string input, inputs){
+            path ip(input);
+            if( is_directory(ip) ){
+                infiles = IOUtil::getFilesInFolder( ip.string(), false, true);
+            } else {
+                infiles.push_back( ip.string() );
+            }
+        }
+    }
 
 	AssemblyRegistry::Ptr registry = ownedPtr(new AssemblyRegistry());
-	std::vector<AssemblyTask::Ptr> tasks = AssemblyTask::load(vm["input"].as<std::string>(),registry);
+	std::vector<AssemblyTask::Ptr> tasks = AssemblyTask::load(infiles,registry);
 
 	//ContactDetector::Ptr detector = ownedPtr(new ContactDetector(dwc->getWorkcell()));
 	//detector->setDefaultStrategies(dwc->getEngineSettings());
