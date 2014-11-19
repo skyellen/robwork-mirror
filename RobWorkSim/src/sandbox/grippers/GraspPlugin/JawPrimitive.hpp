@@ -37,12 +37,13 @@ class JawPrimitive: public Primitive {
 			_cutPosition(_length/2),
 			_cutDepth(0.0),
 			_cutAngle(90.0*rw::math::Deg2Rad),
-			_cutRadius(0.0)
+			_cutRadius(0.0),
+			_cutTilt(0.0)
 		{}
 
 		/**
 		 * @brief constructor
-		 * @param initQ [in] vector with (length, width, depth, chamfer depth, chamfer angle, cut position, cut depth, cut angle, cut radius)
+		 * @param initQ [in] vector with (length, width, depth, chamfer depth, chamfer angle, cut position, cut depth, cut angle, cut radius, cut tilt)
 		 */
 		JawPrimitive(const rw::math::Q& initQ);
 
@@ -60,6 +61,7 @@ class JawPrimitive: public Primitive {
 		double getCutAngle() const { return _cutAngle; }
 		double getCutRadius() const { return _cutRadius; }
 		CutoutType getCutType() const { return _type; }
+		double getCutTilt() const { return _cutTilt; }
 		
 		void setLength(double length) { _length = length; }
 		void setWidth(double width) { _width = width; }
@@ -71,6 +73,7 @@ class JawPrimitive: public Primitive {
 		void setCutAngle(double angle) { _cutAngle = angle; }
 		void setCutRadius(double radius) { _cutRadius = radius; }
 		void setCutType(CutoutType type) { _type = type; }
+		void setCutTilt(double tilt) { _cutTilt = tilt; }
 		
 		//! @brief Saves parameters to string (for use with XML saver)
 		virtual std::string toString() const;
@@ -91,7 +94,7 @@ class JawPrimitive: public Primitive {
 	
 		double _length, _width, _depth;
 		double _chamferDepth, _chamferAngle;
-		double _cutPosition, _cutDepth, _cutAngle, _cutRadius;
+		double _cutPosition, _cutDepth, _cutAngle, _cutRadius, _cutTilt;
 };
 
 }} // end namespaces

@@ -17,8 +17,8 @@ using namespace rw::csg;
 
 JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 {
-	if(initQ.size() != 10) {
-		RW_THROW("Size of parameter list must equal 10!");
+	if(!(initQ.size() == 10 || initQ.size() == 11)) {
+		RW_THROW("Size of parameter list must equal 10 or 11 (cut tilt)!");
 	}
 	
 	int i = 0;
@@ -32,6 +32,10 @@ JawPrimitive::JawPrimitive(const rw::math::Q& initQ)
 	_cutDepth = initQ(i++);
 	_cutAngle = initQ(i++);
 	_cutRadius = initQ(i++);
+	
+	if (initQ.size() == 11) {
+		_cutTilt = initQ(i++);
+	}
 }
 
 
@@ -56,10 +60,10 @@ TriMesh::Ptr JawPrimitive::createMesh(int resolution) const
 	// make cutout
 	if (_type == Cylindrical) {
 		CSGModel cutout = CSGModel::makeCylinder(_cutRadius, 100.0);
-		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).translate(_cutPosition, 0, _cutDepth-_cutRadius);
+		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).rotate(_cutTilt, 0, 0).translate(_cutPosition, 0, _cutDepth-_cutRadius);
 	} else {
 		CSGModel cutout = CSGModel::makeWedge(_cutAngle);
-		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).translate(_cutPosition, 0, _cutDepth);
+		base -= cutout.rotate(-90*Deg2Rad, 90*Deg2Rad, 0).rotate(_cutTilt, 0, 0).translate(_cutPosition, 0, _cutDepth);
 	}
 	
 	TriMesh::Ptr mesh = base.getTriMesh();
@@ -69,7 +73,7 @@ TriMesh::Ptr JawPrimitive::createMesh(int resolution) const
 
 rw::math::Q JawPrimitive::getParameters() const
 {
-	Q q(10);
+	Q q(11);
 	
 	int i = 0;
 	q(i++) = _type;
@@ -82,6 +86,7 @@ rw::math::Q JawPrimitive::getParameters() const
 	q(i++) = _cutDepth;
 	q(i++) = _cutAngle;
 	q(i++) = _cutRadius;
+	q(i++) = _cutTilt;
 	
 	return q;
 }
@@ -99,6 +104,7 @@ std::string JawPrimitive::toString() const
 	} else {
 		str << Rad2Deg*_cutAngle;
 	}
+	str << " " << Rad2Deg*_cutTilt;
 	
 	return str.str();
 }

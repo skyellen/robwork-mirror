@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	
 	try {
 		variables_map vm;
-		store(command_line_parser(argc, argv).options(desc).positional(posDesc).run(), vm);
+		store(command_line_parser(argc, argv).options(desc).positional(posDesc).style(command_line_style::unix_style ^ command_line_style::allow_short).run(), vm);
 		notify(vm);
 		
 		/* PROCESS */
@@ -72,6 +72,7 @@ int main(int argc, char* argv[])
 			jawParams = Q(vm["jaw"].as<vector<double> >());
 			jawParams(5) *= Deg2Rad;
 			jawParams(8) *= Deg2Rad;
+			jawParams(10) *= Deg2Rad;
 			gripper->setJawGeometry(jawParams);
 		}
 		

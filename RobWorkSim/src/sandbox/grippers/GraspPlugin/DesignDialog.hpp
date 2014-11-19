@@ -52,38 +52,5 @@ class DesignDialog : public QDialog
 		// GUI
 		Ui::designDialog ui;
 		
-		/*QLineEdit* _nameEdit;
-		QLineEdit* _lengthEdit;
-		QLineEdit* _widthEdit;
-		QLineEdit* _depthEdit;
-		QLineEdit* _chfDepthEdit;
-		QLineEdit* _chfAngleEdit;
-		QLineEdit* _cutDepthEdit;
-		QLineEdit* _cutAngleEdit;
-		QLineEdit* _cutRadiusEdit;
-		QLineEdit* _tcpPosEdit;
-		QLineEdit* _forceEdit;
-		QLineEdit* _jawdistEdit;
-		QLineEdit* _openingEdit;
-		QRadioButton* _prismaticButton;
-		QRadioButton* _cylindricalButton;
-		QLineEdit* _basedxEdit;
-		QLineEdit* _basedyEdit;
-		QLineEdit* _basedzEdit;
-		QLineEdit* _experimentsEdit;
-		QLineEdit* _successesEdit;
-		QLineEdit* _samplesEdit;
-		QLineEdit* _shapeEdit;
-		QLineEdit* _coverageEdit;
-		QLineEdit* _successEdit;
-		QLineEdit* _wrenchEdit;
-		QLineEdit* _topwrenchEdit;
-		QLineEdit* _qualityEdit;
-		
-		QPushButton* _okButton;
-		QPushButton* _cancelButton;
-		QPushButton* _applyButton;
-		QPushButton* _defaultButton;*/
-		
 		std::string _wd;
 };

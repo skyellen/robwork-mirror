@@ -1,5 +1,7 @@
 #include <iostream>
 #include <rw/rw.hpp>
+#include <rw/RobWork.hpp>
+#include <rw/common/ExtensionRegistry.hpp>
 #include <rwsim/rwsim.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
@@ -8,6 +10,8 @@
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rwsimlibs/ode/ODEPlugin.hpp>
+
 #include "TaskDescription.hpp"
 #include "Gripper.hpp"
 #include "GripperXMLLoader.hpp"
@@ -28,6 +32,7 @@ using namespace rwsim::loaders;
 using namespace rwsim::simulator;
 using namespace boost::program_options;
 namespace po = boost::program_options;
+
 
 
 
@@ -53,6 +58,9 @@ class EvaluateGripper
 int main(int argc, char* argv[])
 {
 	Math::seed();
+	RobWork::getInstance()->initialize();
+	// register ODE plugin
+	//ExtensionRegistry::getInstance()->registerExtensions(&odeplugin);
 	
 	// options
 	int ntargets, nsamples, rtargets;
@@ -164,10 +172,21 @@ int main(int argc, char* argv[])
 	/* perform simulation */
 	if (!nosim) {
 		cout << "Starting simulation..." << endl;
-		GripperTaskSimulator::Ptr sim = new GripperTaskSimulator(gripper, tasks, samples, td);
-		sim->startSimulation(td->getInitState());
+		GripperTaskSimulator::Ptr sim = ownedPtr(new GripperTaskSimulator(gripper, tasks, samples, td));
+		cout << "Simulator created." << endl;
 		
-		while (sim->isRunning()) {}
+		try {
+			cout << "Launching..." << endl;
+			sim->startSimulation(td->getInitState());
+			cout << "Launched." << endl;
+		} catch(...) {
+			cout << "Error starting simulation..." << endl;
+			return -1;
+		}
+		
+		while (sim->isRunning()) {
+			//cout << "Running..." << endl;
+		}
 		
 		gripper->getQuality() = sim->getGripperQuality();
 	}

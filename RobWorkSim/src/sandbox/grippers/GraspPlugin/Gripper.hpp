@@ -84,20 +84,19 @@ struct GripperQuality
 	}
 	
 	// data	
-	int nOfExperiments; /// Number of performed experiments.
+	int nOfExperiments; // Number of performed experiments.
 	
-	int nOfSuccesses; /// Number of succesful grasps (filtered).
-	int nOfSamples; /// Number of generated samples (filtered).
+	int nOfSuccesses; // Number of succesful grasps (filtered).
+	int nOfSamples; // Number of generated samples (filtered).
 	
-	//double shape; /// Shape evaluation based on geometry objective function.
-	double coverage; /// Ratio of filtered succesful grasps to filtered all samples.
-	double success; /// Ratio of succesful grasps to all generated grasps.
-	double wrench; /// Average wrench of succesful grasps.
-	double topwrench; /// Average quality of top 20% of grasps.
-	double robustness; /// Robustness of succesful grasps.
-	double maxstress; /// Max. stress a gripper takes.
-	double volume; /// The volume of the gripper's jaw.
-	double quality; /// Ultimate measurement of gripper quality.
+	double coverage; // Ratio of filtered succesful grasps to filtered all samples.
+	double success; // Ratio of succesful grasps to all generated grasps.
+	double wrench; // Average wrench of succesful grasps.
+	double topwrench; // Average quality of top 20% of grasps.
+	double robustness; // Robustness of succesful grasps.
+	double maxstress; // Max. stress a gripper takes.
+	double volume; // The volume of the gripper's jaw.
+	double quality; // Ultimate measurement of gripper quality.
 };
 
 
@@ -213,6 +212,7 @@ class Gripper // : public TreeDevice
 		 * - cut depth
 		 * - cut angle
 		 * - cut radius
+		 * - cut tilt
 		 */
 		void setJawGeometry(rw::math::Q params)
 		{			

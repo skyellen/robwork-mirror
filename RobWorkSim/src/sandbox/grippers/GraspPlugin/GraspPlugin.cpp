@@ -506,13 +506,18 @@ void GraspPlugin::planTasks()
 		}
 	//} while (!finally);
 	
+	log().info() << "Tasks: " << _tasks->getSubTasks()[0].getTargets().size() << endl;
+	log().info() << "Samples: " << _samples->getSubTasks()[0].getTargets().size() << endl;
+	cout << "Tasks: " << _tasks->getSubTasks()[0].getTargets().size() << endl;
+	cout << "Samples: " << _samples->getSubTasks()[0].getTargets().size() << endl;
+	
 	cout << "Done." << endl;
 	log().info() << "Done." << endl;
 	
 	ui.progressBar->setValue(0);
 	ui.progressBar->setMaximum(_nOfTargetsToGen);
 
-	//showTasks();
+	showTasks();
 }
 
 
@@ -623,7 +628,7 @@ void GraspPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 
 void GraspPlugin::showTasks()
 {
-	//return;
+	return;
 	vector<RenderTargets::Target> rtargets;
 	Transform3D<> wTo = Kinematics::worldTframe(_td->getTargetFrame(), _wc->getDefaultState());
 	
@@ -669,8 +674,8 @@ void GraspPlugin::showTasks()
 	
 	//cout << "Painting!" << endl;
 	
-	((RenderTargets*)_render.get())->setTargets(rtargets);
-    getRobWorkStudio()->postUpdateAndRepaint();
+	//((RenderTargets*)_render.get())->setTargets(rtargets);
+    //getRobWorkStudio()->postUpdateAndRepaint();
 }
 
 
@@ -731,8 +736,8 @@ void GraspPlugin::test()
 	//log().info() << "Max stress= " << _gripper->getMaxStress() << endl;
 	
 	/* LET'S TEST ALIGNMENTS */
-	/*Frame* frame = _td->getTargetFrame();
-	log().info() << RPY<>(frame->getTransform(getRobWorkStudio()->getState()).R()) << endl;*/
+	//Frame* frame = _td->getTargetFrame();
+	//log().info() << RPY<>(frame->getTransform(getRobWorkStudio()->getState()).R()) << endl;*/
 	
 	// sequence gripper pictures
 	BOOST_FOREACH (Gripper::Ptr g, _gripperList) {
@@ -749,6 +754,10 @@ void GraspPlugin::test()
 		log().info() << "Saving image " + filename + "..." << endl;
 		getRobWorkStudio()->saveViewGL(QString::fromStdString(filename));
 	}
+	
+	// test gripper finger volume
+	//log().info() << "Finger volume calculated from STL = " << _gripper->getJawGeometry()->getGeometryData()->getTriMesh()->getVolume() << endl;
+	//log().info() << "Finger volume calculated from parameters = " << _gripper->getVolume() << endl;
 }
 
 
