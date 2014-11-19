@@ -610,6 +610,22 @@ void RWStudioView3D::setDrawType(Render::DrawType drawType)
 }
 
 void RWStudioView3D::setMaskCheckAction(){
+	QObject *obj = sender();
+	
+	if (obj == _physicalMaskEnabled) {
+		_rws->getPropertyMap().get<PropertyMap>("SceneViewer").set<bool>("ShowPhysicalModels", _physicalMaskEnabled->isChecked());
+	}
+	else if (obj == _virtualMaskEnabled) {
+		_rws->getPropertyMap().get<PropertyMap>("SceneViewer").set<bool>("ShowVirtualModels", _virtualMaskEnabled->isChecked());
+	}
+	else if (obj == _drawableMaskEnabled) {
+		_rws->getPropertyMap().get<PropertyMap>("SceneViewer").set<bool>("ShowDrawableModels", _drawableMaskEnabled->isChecked());
+	}
+	else if (obj == _collisionMaskEnabled) {
+		_rws->getPropertyMap().get<PropertyMap>("SceneViewer").set<bool>("ShowCollisionModels", _collisionMaskEnabled->isChecked());
+	}
+	
+	// create new mask
     int mask = 0;
 
     if( _physicalMaskEnabled->isChecked() )
@@ -629,8 +645,8 @@ void RWStudioView3D::setMaskCheckAction(){
     if( _user4MaskEnabled->isChecked() )
         mask = mask | DrawableNode::User4;
 
-    //std::cout << "Mask action: " << mask << std::endl;
-    _view->getMainView()->_viewCamera->setDrawMask( mask );
+    // set draw mask for camera
+    _view->getMainView()->_viewCamera->setDrawMask(mask);
     
     // refresh view
     _view->updateView();
