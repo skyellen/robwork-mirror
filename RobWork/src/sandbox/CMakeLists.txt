@@ -24,6 +24,7 @@ SET(SRC_FILES
     invkin/ClosedFormURSolver.cpp
 
     geometry/RANSACFitting.cpp
+    algorithms/RANSACModel.cpp
     
     #proximity/Raycast.cpp
     #proximity/BVTree.cpp
@@ -73,6 +74,15 @@ SET(SRC_FILES
     csg/csgjs.cpp
     csg/CSGConvert.cpp
     csg/CSGModel.cpp
+    
+    algorithms/ConstraintModel.cpp
+	algorithms/ConstraintGenerator.cpp
+	algorithms/PointConstraint.cpp
+	algorithms/LineConstraint.cpp
+	algorithms/StablePoseConstraint.cpp
+	algorithms/BoxConstraint.cpp
+	algorithms/PlaneConstraint.cpp
+	algorithms/FixtureConstraint.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -94,8 +104,20 @@ SET(SRC_FILES_HPP
     csg/csgjs.cpp
     csg/CSGConvert.hpp
     csg/CSGModel.hpp
+    
+    algorithms/ConstraintModel.hpp
+    algorithms/ConstraintGenerator.hpp
+    algorithms/PointConstraint.hpp
+    algorithms/LineConstraint.hpp
+    algorithms/StablePoseConstraint.hpp
+	algorithms/BoxConstraint.hpp
+	algorithms/PlaneConstraint.hpp
+	algorithms/FixtureConstraint.hpp
 
     invkin/ClosedFormURSolver.hpp
+    
+    geometry/RANSACFitting.hpp
+    algorithms/RANSACModel.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
