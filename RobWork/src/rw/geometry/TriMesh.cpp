@@ -19,6 +19,7 @@
 #include "TriMesh.hpp"
 
 using namespace rw::geometry;
+using namespace rw::math;
 
 rw::common::Ptr<TriMesh> TriMesh::getTriMesh(bool forceCopy){
 	if(forceCopy){
@@ -27,3 +28,23 @@ rw::common::Ptr<TriMesh> TriMesh::getTriMesh(bool forceCopy){
 	return TriMesh::Ptr(this);
 }
 
+
+
+double TriMesh::getVolume() const
+{
+	double volume = 0.0;
+	
+	// iterate over triangles
+	for (size_t i = 0; i < size(); ++i) {
+		Triangle<double> tri = getTriangle(i);
+		
+		Vector3D<double> v0 = tri.getVertex(0);
+		Vector3D<double> v1 = tri.getVertex(1);
+		Vector3D<double> v2 = tri.getVertex(2);
+		
+		double dv = dot(v0, cross(v1, v2));
+		volume += dv;
+	}
+	
+	return volume/6.0;
+}

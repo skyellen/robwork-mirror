@@ -84,6 +84,11 @@ namespace geometry {
         virtual bool isConvex() { return _isConvex; }
 
         void setConvexEnabled(bool isConvex){ _isConvex = isConvex; }
+        
+        /**
+         * @brief calculate a volume of this triangle mesh
+         */
+        double getVolume() const;
 
 	    /**
 	     * @brief struct for iterating over the centers of triangles in a mesh
