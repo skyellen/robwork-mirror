@@ -27,7 +27,7 @@
  */
 
 #include <rw/math/Pose6D.hpp>
-#include <sandbox/geometry/RANSACModel.hpp>
+#include <sandbox/algorithms/RANSACModel.hpp>
 
 #include <iostream>
 
