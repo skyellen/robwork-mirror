@@ -54,7 +54,7 @@ typedef rw::math::Pose6D<double> ConstraintSample;
  * * add a model adequacy evaluation method?
  * * should this be made a template? (ie. maybe it could take other types of samples, not only a pose...)
  */
-class ConstraintModel : public rw::geometry::RANSACModel<ConstraintSample> {
+class ConstraintModel : public RANSACModel<ConstraintSample> {
 	public:
 		//! @brief Smart pointer type to this class.
 		typedef rw::common::Ptr<ConstraintModel> Ptr;
@@ -66,7 +66,7 @@ class ConstraintModel : public rw::geometry::RANSACModel<ConstraintSample> {
 		/**
 		 * @brief Constructor.
 		 */
-		ConstraintModel() : rw::geometry::RANSACModel<ConstraintSample>() {}
+		ConstraintModel() {}
 		
 		//! @brief Destructor.
 		virtual ~ConstraintModel() {}
