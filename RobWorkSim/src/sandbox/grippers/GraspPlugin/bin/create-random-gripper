@@ -21,6 +21,7 @@ class GripperGenerator:
 		self.cutDepth = (0, 1)
 		self.cutAngle = (45, 135)
 		self.cutRadius = (0, 1)
+		cutTilt = (-90, 90)
 		self.opening = (0.0, 0.05)
 		self.jawdist = (0, 1)
 		self.stroke = (0, 0.05)
@@ -40,6 +41,7 @@ class GripperGenerator:
 				
 		tcpOffset = random.uniform(*self.tcpOffset)
 		cutAngle = random.uniform(*self.cutAngle)
+		cutTilt = random.uniform(*self.cutTilt)
 		force = random.uniform(*self.force)
 			
 		# find tcp position
@@ -68,12 +70,12 @@ class GripperGenerator:
 		opening = random.uniform(max(stroke, self.opening[0]), self.opening[1])
 		
 		# make jaw parameters
-		jawParameters = (cutout, length, width, depth, chfDepth, chfAngle, tcp, cutDepth, cutAngle, cutRadius)
+		jawParameters = (cutout, length, width, depth, chfDepth, chfAngle, tcp, cutDepth, cutAngle, cutRadius, cutTilt)
 		jawStr = "".join(str(p)+' ' for p in jawParameters)
 		
 		# construct command
 		cd = "${RWSIM_ROOT}/src/sandbox/grippers/GraspPlugin/bin/"
-		cmd = cd+"create-gripper-xml --name {} -j {} --tcp {} --stroke {} --opening {} --force {}"\
+		cmd = cd+"create-gripper-xml --name {} --jaw {} --tcp {} --stroke {} --opening {} --force {}"\
 			.format(name, jawStr, tcp, stroke, opening, force)
 			
 		# execute
