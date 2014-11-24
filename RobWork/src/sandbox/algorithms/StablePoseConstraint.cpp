@@ -34,3 +34,11 @@ double StablePoseConstraint::fitError(ConstraintSample sample) const
 void StablePoseConstraint::update(ConstraintSample sample)
 {
 }
+
+
+
+bool StablePoseConstraint::same(const StablePoseConstraint& model, double threshold) const
+{
+	return true;
+}
+

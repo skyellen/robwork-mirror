@@ -19,6 +19,8 @@
  
 #include "PlaneConstraint.hpp"
 
+#include <rw/math/Metric.hpp>
+
 
 
 using namespace rwlibs::algorithms;
@@ -27,10 +29,49 @@ using namespace rwlibs::algorithms;
 
 double PlaneConstraint::fitError(ConstraintSample sample) const
 {
+	// return a distance of the sample to the model
+	return _model.distance(sample.P());
+}
+
+
+
+bool PlaneConstraint::invalid() const
+{
+	return false;
+}
+
+
+
+void PlaneConstraint::refit()
+{
+	// extract positions from the samples
+	std::vector<rw::math::Vector3D<> > points;
+	
+	for (std::vector<ConstraintSample>::iterator i = _data.begin(); i != _data.end(); ++i) {
+		points.push_back(i->P());
+	}
+	
+	// re-fit plane
+	_model.refit(points);
+}
+
+
+
+bool PlaneConstraint::same(const PlaneConstraint& model, double threshold) const
+{
+	// make a metric to compute distance between planes
+	rw::math::Metric<rw::geometry::Plane>::Ptr metric = rw::geometry::Plane::makeMetric();
+	
+	double d = metric->distance(_model, model._model);
+	
+	return d <= threshold;
 }
 
 
 
 void PlaneConstraint::update(ConstraintSample sample)
 {
+	_data.push_back(sample);
+	
+	refit();
 }

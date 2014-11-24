@@ -58,6 +58,6 @@ RW_ADD_LIBRARY(rw rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
 RW_ADD_INCLUDES(rw "rw" ${FILES_HPP} )
 RW_ADD_INCLUDE_DIRS(rw "rw" 
     common geometry invkin kinematics loaders math models pathplanning 
-    proximity sensor trajectory plugin graphics)
+    proximity sensor trajectory plugin graphics constraints)
 
 ENDIF()

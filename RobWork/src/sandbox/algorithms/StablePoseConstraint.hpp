@@ -47,7 +47,7 @@ class StablePoseConstraint : public ConstraintModel {
 		typedef rw::common::Ptr<StablePoseConstraint> Ptr;
 		
 		//! @copydoc ConstraintModel::MinSamples
-		static const int MinSamples = 3;
+		static const int MinSamples = 4;
 		
 	public: // constructors
 		/**
@@ -66,10 +66,13 @@ class StablePoseConstraint : public ConstraintModel {
 		virtual bool invalid() const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit() const;
+		virtual void refit();
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
 		virtual int getMinReqData() const { return MinSamples; }
+		
+		//! @copydoc sandbox::algorithms::RANSACModel::same
+		virtual bool same(const StablePoseConstraint& model, double threshold) const;
 		
 		//! @copydoc ConstraintModel::update
 		virtual void update(ConstraintSample sample);

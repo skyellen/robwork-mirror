@@ -27,6 +27,7 @@
  */
 
 #include <rw/math/Vector3D.hpp>
+#include <rw/geometry/Plane.hpp>
 
 #include "ConstraintModel.hpp"
 
@@ -53,7 +54,9 @@ class PlaneConstraint : public ConstraintModel {
 		/**
 		 * @brief Constructor.
 		 */
-		PlaneConstraint() {};
+		PlaneConstraint() :
+			_model(rw::math::Vector3D<>(), rw::math::Vector3D<>::x(), rw::math::Vector3D<>::y())
+		{};
 		
 		//! @brief Destructor.
 		virtual ~PlaneConstraint() {};
@@ -66,16 +69,27 @@ class PlaneConstraint : public ConstraintModel {
 		virtual bool invalid() const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit() const;
+		virtual void refit();
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
 		virtual int getMinReqData() const { return MinSamples; }
 		
+		//! @copydoc sandbox::algorithms::RANSACModel::same
+		virtual bool same(const PlaneConstraint& model, double threshold) const;
+		
 		//! @copydoc ConstraintModel::update
 		virtual void update(ConstraintSample sample);
+		
+		/**
+		 * @brief Streaming operator.
+		 */
+		friend std::ostream& operator<<(std::ostream& out, const PlaneConstraint& plane)
+		{
+			return out << plane._model;
+		}
 	
 	protected: // body
-		// how to represent a surface?
+		rw::geometry::Plane _model;
 };
 
 

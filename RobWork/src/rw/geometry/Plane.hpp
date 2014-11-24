@@ -26,7 +26,7 @@ namespace rw {
 namespace geometry {
 	//! @addtogroup geometry
 	// @{
-
+	
     /**
      * @brief plane primitive represented in Hessian normal-form: a*nx+b*ny+c*nz+d=0
      */
@@ -38,6 +38,16 @@ namespace geometry {
 		typedef rw::common::Ptr<Plane> Ptr;
 
 		typedef double value_type;
+		
+		/**
+		 * @brief constructor
+		 * 
+		 * Makes a plane on X-Y surface.
+		 */
+		Plane() :
+			_normal(rw::math::Vector3D<>::z()),
+			_d(0.0)
+		{}
 
 	    /**
 	     * @brief constructor
@@ -180,15 +190,9 @@ namespace geometry {
 		 * two planes. The distance between two planes is computed as follows:
 		 *
 		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);
-         * 
-         * \bug This function is not implemented!
-         * 
-         * \warning This function is not implemented 
-		 *
 		 * @return
 		 */
-		static rw::math::Metric<Plane>::Ptr makeMetric(double angToDistWeight=1.0);
-        
+		static rw::math::Metric<Plane>::Ptr makeMetric(double angToDistWeight=1.0);        
         
         /**
            @brief Streaming operator.
@@ -209,6 +213,41 @@ namespace geometry {
 	private:
 		rw::math::Vector3D<> _normal;
 		double _d;
+	};
+	
+	
+	
+	/**
+	 * @brief A metric for calculating plane-to-plane distance.
+	 */
+	class PlaneMetric: public rw::math::Metric<Plane> {
+	public: // constructors
+		PlaneMetric(double angToDistWeight = 1.0) :
+			_angToDistWeight(angToDistWeight)
+		{}
+		
+	protected:
+		//! @brief Calculates distance from the plane to reference plane (X-Y surface)
+        double doDistance(const Plane& q) const
+        {
+			return doDistance(Plane(), q);
+		}
+
+		/**
+		 * @brief Calculates distance between two planes
+		 * 
+		 * The distance is calculated according to formula:
+		 * 
+		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);
+		 */
+        double doDistance(const Plane& a, const Plane& b) const
+        {
+			return 0.5*rw::math::angle(a.normal(), b.normal())*_angToDistWeight + 0.5*fabs(a.d() - b.d());
+		}
+
+        int doSize() const { return -1; }
+
+		double _angToDistWeight;
 	};
 	// @}
 } // geometry

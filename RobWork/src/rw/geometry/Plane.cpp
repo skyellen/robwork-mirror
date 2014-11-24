@@ -159,7 +159,14 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
 	return sum;
 }
 
-namespace {
+
+
+rw::math::Metric<Plane>::Ptr Plane::makeMetric(double angToDistWeight)
+{
+	return rw::common::ownedPtr(new PlaneMetric(angToDistWeight));
+}
+
+/*namespace {
 
 	class PlaneMetric: Metric<Plane> {
 	protected:
@@ -170,7 +177,7 @@ namespace {
         int doSize() const { return -1; }
 
 	};
-}
+}*/
 
 
 

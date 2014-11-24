@@ -83,6 +83,7 @@ SET(SRC_FILES
 	algorithms/BoxConstraint.cpp
 	algorithms/PlaneConstraint.cpp
 	algorithms/FixtureConstraint.cpp
+	algorithms/ConstraintSandbox.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -113,6 +114,7 @@ SET(SRC_FILES_HPP
 	algorithms/BoxConstraint.hpp
 	algorithms/PlaneConstraint.hpp
 	algorithms/FixtureConstraint.hpp
+	algorithms/ConstraintSandbox.hpp
 
     invkin/ClosedFormURSolver.hpp
     

@@ -83,6 +83,11 @@ class RANSACModel {
 		 */
 		virtual int getMinReqData() const { return 0; }
 		
+		/**
+		 * @brief Tests whether a model is same within a threshold of another model.
+		 */
+		virtual bool same(const RANSACModel& model, double threshold) const { return true; }
+		
 		//! @brief Get the model quality.
 		double getQuality() const { return _quality; }
 		

@@ -26,7 +26,7 @@
  * @file ConstraintModel.hpp
  */
 
-#include <rw/math/Pose6D.hpp>
+#include <rw/math/Transform3D.hpp>
 #include <sandbox/algorithms/RANSACModel.hpp>
 
 #include <iostream>
@@ -38,7 +38,7 @@ namespace rwlibs { namespace algorithms {
 	
 	
 //! @brief Type for constraint model samples.
-typedef rw::math::Pose6D<double> ConstraintSample;
+typedef rw::math::Transform3D<double> ConstraintSample;
 
 
 
@@ -98,9 +98,14 @@ class ConstraintModel : public RANSACModel<ConstraintSample> {
 		virtual void refit() {}
 		
 		/**
-		 * @brief sandbox::algorithms::RANSACModel::getMinReqData
+		 * @brief algorithms::RANSACModel::getMinReqData
 		 */
 		virtual int getMinReqData() const { return MinSamples; }
+		
+		/**
+		 * @copydoc algorithms::RANSACModel::same
+		 */
+		virtual bool same(const RANSACModel& model, double threshold) const { return true; }
 		
 		/**
 		 * @brief Updates the model by adding a sample.
