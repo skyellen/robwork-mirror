@@ -23,8 +23,9 @@ SET(SRC_FILES
     invkin/IKGPMMSolver.cpp
     invkin/ClosedFormURSolver.cpp
 
-    geometry/RANSACFitting.cpp
+    algorithms/RANSACFitting.cpp
     algorithms/RANSACModel.cpp
+    algorithms/PlaneModel.cpp
     
     #proximity/Raycast.cpp
     #proximity/BVTree.cpp
@@ -118,8 +119,9 @@ SET(SRC_FILES_HPP
 
     invkin/ClosedFormURSolver.hpp
     
-    geometry/RANSACFitting.hpp
+    algorithms/RANSACFitting.hpp
     algorithms/RANSACModel.hpp
+    algorithms/PlaneModel.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})

@@ -74,7 +74,7 @@ bool PlaneModel::same(const PlaneModel& model, double threshold) const
 	
 	double d = metric->distance(_model, model._model);
 	
-	std::cout << "Plane distance = " << d << std::endl;
+	//std::cout << "Plane distance = " << d << std::endl;
 	
 	return d <= threshold;
 }

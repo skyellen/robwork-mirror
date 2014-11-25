@@ -89,7 +89,7 @@ namespace geometry {
 				maybeInliers[0] = data[idx];
 				while(true){
 					int idxSecond = Math::ranI(0,data.size());
-					if(idx != idxSecond && (data[idxSecond]-data[idx]).norm2() > 10E-5 ){
+					if(idx != idxSecond) { // && (data[idxSecond]-data[idx]).norm2() > 10E-5 ){
 						maybeInliers[1] = data[idxSecond];
 						break;
 					}
