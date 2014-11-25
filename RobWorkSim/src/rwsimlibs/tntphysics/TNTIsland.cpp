@@ -869,9 +869,39 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 	tntcontacts.clear();
 	// Update RobWork bodies
 	BOOST_FOREACH(const TNTBody* body, bodies) {
+#if TNT_DEBUG_ENABLE_CORRECTION
+		const Transform3D<> before = body->get()->getTransformW(sample.rwstate);
+#endif
 		body->updateRW(sample.rwstate,sample.tntstate);
+#if TNT_DEBUG_ENABLE_CORRECTION
+		const Transform3D<> after = body->get()->getTransformW(sample.rwstate);
+		if (!(before.P() == after.P()) || !(before.R() == after.R())) {
+			std::stringstream sstr;
+			if (!(before.P() == after.P()))
+				sstr << " before: " << before.P() << " after: " << after.P();
+			if (!(before.R() == after.R()))
+				sstr << " before (ang): " << RPY<>(before.R()) << " after (ang): " << RPY<>(after.R());
+			TNT_DEBUG_CORRECTION("Corrected " << body->get()->getName() << sstr.str());
+		}
+#endif
 	}
+#if TNT_DEBUG_ENABLE_CORRECTION
+	TNT_DEBUG_CORRECTION("Contacts before update: " << sample.forwardContacts.size());
+#if TNT_DEBUG_ENABLE_CONTACTS
+	BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
+		TNT_DEBUG_CORRECTION(" - " << c);
+	}
+#endif
+#endif
 	sample.forwardContacts = _detector->updateContacts(sample.rwstate,cdData,sample.forwardTrack);
+#if TNT_DEBUG_ENABLE_CORRECTION
+	TNT_DEBUG_CORRECTION("Contacts after update: " << sample.forwardContacts.size());
+#if TNT_DEBUG_ENABLE_CONTACTS
+	BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
+		TNT_DEBUG_CORRECTION(" - " << c);
+	}
+#endif
+#endif
 	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
 #endif
 

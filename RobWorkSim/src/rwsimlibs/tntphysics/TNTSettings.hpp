@@ -74,6 +74,7 @@
 #define TNT_DEBUG_ENABLE_BOUNCING true
 #define TNT_DEBUG_ENABLE_SOLVER true
 #define TNT_DEBUG_ENABLE_INTEGRATOR true
+#define TNT_DEBUG_ENABLE_CORRECTION true
 #else
 #define TNT_DEBUG_ENABLE_GENERAL false
 #define TNT_DEBUG_ENABLE_TIMING false
@@ -82,6 +83,7 @@
 #define TNT_DEBUG_ENABLE_BOUNCING false
 #define TNT_DEBUG_ENABLE_SOLVER false
 #define TNT_DEBUG_ENABLE_INTEGRATOR false
+#define TNT_DEBUG_ENABLE_CORRECTION false
 #endif
 
 // Debugging Macros
@@ -165,6 +167,12 @@
 #define TNT_DEBUG_INTEGRATOR(ostreamExpression)
 #endif
 
+#ifdef TNT_DEBUG_ENABLE_CORRECTION
+#define TNT_DEBUG_CORRECTION(ostreamExpression) TNT_DEBUG("CORRECTION - ",ostreamExpression)
+#else
+#define TNT_DEBUG_CORRECTION(ostreamExpression)
+#endif
+
 #else // !TNT_DEBUG_ENABLE
 #define TNT_DEBUG(type,ostreamExpression)
 #define TNT_DEBUG_DELIMITER()
@@ -176,6 +184,7 @@
 #define TNT_DEBUG_BOUNCING(ostreamExpression)
 #define TNT_DEBUG_SOLVER(ostreamExpression)
 #define TNT_DEBUG_INTEGRATOR(ostreamExpression)
+#define TNT_DEBUG_CORRECTION(ostreamExpression)
 
 #endif
 
