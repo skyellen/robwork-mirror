@@ -242,7 +242,10 @@ namespace geometry {
 		 */
         double doDistance(const Plane& a, const Plane& b) const
         {
-			return 0.5*rw::math::angle(a.normal(), b.normal())*_angToDistWeight + 0.5*fabs(a.d() - b.d());
+			// if the normal faces the other direction, the real angle is 180 deg - calculated angle
+			double ang = rw::math::angle(a.normal(), b.normal());
+			ang = ((rw::math::Pi - ang) < ang) ? (rw::math::Pi - ang) : ang;
+			return 0.5*ang*_angToDistWeight + 0.5*fabs(a.d() - b.d());
 		}
 
         int doSize() const { return -1; }

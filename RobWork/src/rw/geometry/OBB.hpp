@@ -76,7 +76,7 @@ public:
 	inline const rw::math::Vector3D<T>& getHalfLengths() const { return _halfLng; }
 
 	//! @brief calculate the volume of this OBB
-	T calcVolumne() const {
+	T calcVolume() const {
 	    return _halfLng(0)*2 * _halfLng(1)*2 * _halfLng(2)*2;
 	}
 
