@@ -25,13 +25,13 @@ using namespace rwlibs::algorithms;
  
  
  
-double StablePoseConstraint::fitError(ConstraintSample sample) const
+double StablePoseConstraint::fitError(rw::math::Transform3D<> sample) const
 {
 }
 
 
 
-void StablePoseConstraint::update(ConstraintSample sample)
+void StablePoseConstraint::update(rw::math::Transform3D<> sample)
 {
 }
 

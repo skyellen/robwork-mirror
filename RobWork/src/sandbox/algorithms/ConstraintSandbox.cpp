@@ -17,20 +17,11 @@
  
  
  
-#include "PointConstraint.hpp"
+#include "ConstraintSandbox.hpp"
 
 
 
 using namespace rwlibs::algorithms;
  
  
- 
-double PointConstraint::fitError(rw::math::Transform3D<> sample) const
-{
-}
 
-
-
-void PointConstraint::update(rw::math::Transform3D<> sample)
-{
-}

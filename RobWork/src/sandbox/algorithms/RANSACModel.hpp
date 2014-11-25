@@ -74,14 +74,14 @@ class RANSACModel {
 		virtual bool invalid() const { return false; }
 		
 		/**
-		 * @brief Recalculates the model based on samples it holds.
+		 * @brief Recalculates the model based on provided samples.
 		 */
-		virtual void refit() {}
+		virtual double refit(const std::vector<T>& data) { return 0.0; }
 		
 		/**
 		 * @brief Returns the number of samples required to create a model.
 		 */
-		virtual int getMinReqData() const { return 0; }
+		static int getMinReqData() { return 0; }
 		
 		/**
 		 * @brief Tests whether a model is same within a threshold of another model.
@@ -92,7 +92,7 @@ class RANSACModel {
 		double getQuality() const { return _quality; }
 		
 		//! @brief Set the model quality.
-		void setQuality(double quality) { _quality = quality; }
+		void setQuality(size_t n, double quality) { _n = n; _quality = quality; }
 		
 		//! @brief Access data.
 		std::vector<T>& getData() { return _data; }
@@ -100,6 +100,7 @@ class RANSACModel {
 	protected: // body
 		std::vector<T> _data;
 		
+		size_t _n;
 		double _quality;
 };
 

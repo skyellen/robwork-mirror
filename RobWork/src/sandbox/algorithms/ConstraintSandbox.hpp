@@ -17,16 +17,14 @@
  
  
 
-#ifndef RW_ALGORITHMS_FixtureConstraint_HPP
-#define RW_ALGORITHMS_FixtureConstraint_HPP
+#ifndef RW_ALGORITHMS_ConstraintSandbox_HPP
+#define RW_ALGORITHMS_ConstraintSandbox_HPP
 
 
 
 /**
- * @file FixtureConstraint.hpp
+ * @file ConstraintSandbox.hpp
  */
-
-#include <rw/math/Vector3D.hpp>
 
 #include "ConstraintModel.hpp"
 
@@ -37,48 +35,26 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A fixture constraint model.
- * 
- * Describes a plane constraint, i.e. ... ???
- * ^ TODO: write
+ * @brief A class for testing out constraint generation methods.
  */
-class FixtureConstraint {
+class ConstraintSandbox {
 	public:
 		//! @brief Smart pointer type to this class.
-		typedef rw::common::Ptr<FixtureConstraint> Ptr;
-		
-		//! @copydoc ConstraintModel::MinSamples
-		static const int MinSamples = 3; // ??
+		typedef rw::common::Ptr<ConstraintSandbox> Ptr;
 		
 	public: // constructors
 		/**
 		 * @brief Constructor.
 		 */
-		FixtureConstraint() {};
+		ConstraintSandbox() {};
 		
 		//! @brief Destructor.
-		virtual ~FixtureConstraint() {};
+		virtual ~ConstraintSandbox() {};
 
 	public: // methods
-		/**
-		 * @copydoc ConstraintModel::belongsTo
-		 */
-		virtual bool belongsTo(rw::math::Transform3D<> sample) const;
 		
-		/**
-		 * @copydoc ConstraintModel::fitError
-		 * 
-		 * Returns the shortest distance between the sample and the model.
-		 */
-		virtual double fitError(rw::math::Transform3D<> sample) const;
-		
-		/**
-		 * @copydoc ConstraintModel::update
-		 */
-		virtual void update(rw::math::Transform3D<> sample);
 	
 	protected: // body
-		// how to represent a fixture?
 };
 
 

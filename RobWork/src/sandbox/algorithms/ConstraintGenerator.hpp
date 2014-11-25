@@ -26,8 +26,6 @@
  * @file ConstraintGenerator.hpp
  */
 
-#include <rw/math/Pose6D.hpp>
-
 #include <iostream>
 
 #include "ConstraintModel.hpp"
@@ -39,7 +37,7 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief Generates a set of algorithms deduced from provided samples.
+ * @brief Generates a set of constraints deduced from provided samples.
  * 
  * Constraint generator...
  * ^ TODO: write
@@ -65,22 +63,22 @@ class ConstraintGenerator {
 		/**
 		 * @brief Add a sample.
 		 */
-		virtual void add(ConstraintSample sample);
+		virtual void add(rw::math::Transform3D<> sample);
 		
 		/**
 		 * @brief Add samples.
 		 */
-		virtual void add(const std::vector<ConstraintSample >& samples);
+		virtual void add(const std::vector<rw::math::Transform3D<> >& samples);
 		
 		/**
 		 * @brief Returns samples.
 		 * ^ TODO: make it a reference?
 		 */
-		std::vector<ConstraintSample > getSamples() const { return _samples; }
+		std::vector<rw::math::Transform3D<> > getSamples() const { return _samples; }
 		
 		/**
 		 * @brief Recalculates the algorithms.
-		 * ^ TODO: should it return new algorithms at the same time?
+		 * ^ TODO: should it return new constraints at the same time?
 		 */
 		virtual bool recalculate();
 		
@@ -88,13 +86,13 @@ class ConstraintGenerator {
 		 * @brief Returns a vector of algorithms found.
 		 * ^ TODO:
 		 * * shall this be an ordered list? (hierarchy/accuracy/...)
-		 * * shall it recalculate algorithms if not yet called?
+		 * * shall it recalculate constraints if not yet called?
 		 */
-		std::vector<ConstraintModel> getConstraints() const { return _algorithms; }
+		std::vector<ConstraintModel> getConstraints() const { return _constraints; }
 	
 	private: // body
-		std::vector<ConstraintSample> _samples;
-		std::vector<ConstraintModel> _algorithms;
+		std::vector<rw::math::Transform3D<> > _samples;
+		std::vector<ConstraintModel> _constraints;
 };
 
 

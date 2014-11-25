@@ -25,12 +25,12 @@ using namespace rwlibs::algorithms;
  
  
  
-double BoxConstraint::fitError(ConstraintSample sample) const
+double BoxConstraint::fitError(rw::math::Transform3D<> sample) const
 {
 }
 
 
 
-void BoxConstraint::update(ConstraintSample sample)
+void BoxConstraint::update(rw::math::Transform3D<> sample)
 {
 }

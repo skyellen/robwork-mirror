@@ -25,19 +25,19 @@ using namespace rwlibs::algorithms;
  
  
  
-bool FixtureConstraint::belongsTo(ConstraintSample sample) const
+bool FixtureConstraint::belongsTo(rw::math::Transform3D<> sample) const
 {
 	 
 }
  
  
  
-double FixtureConstraint::fitError(ConstraintSample sample) const
+double FixtureConstraint::fitError(rw::math::Transform3D<> sample) const
 {
 }
 
 
 
-void FixtureConstraint::update(ConstraintSample sample)
+void FixtureConstraint::update(rw::math::Transform3D<> sample)
 {
 }

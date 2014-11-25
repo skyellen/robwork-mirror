@@ -17,18 +17,19 @@
  
  
 
-#ifndef RW_ALGORITHMS_LINECONSTRAINT_HPP
-#define RW_ALGORITHMS_LINECONSTRAINT_HPP
+#ifndef RW_ALGORITHMS_PlaneModel_HPP
+#define RW_ALGORITHMS_PlaneModel_HPP
 
 
 
 /**
- * @file LineConstraint.hpp
+ * @file PlaneModel.hpp
  */
 
 #include <rw/math/Vector3D.hpp>
+#include <rw/geometry/Plane.hpp>
 
-#include "ConstraintModel.hpp"
+#include "RANSACModel.hpp"
 
 
 
@@ -37,45 +38,66 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A line constraint model.
+ * @brief A plane constraint model.
  * 
- * Describes a line constraint, i.e. an edge in Cartesian coordinates.
+ * Describes a plane constraint, i.e. a surface.
  */
-class LineConstraint : public ConstraintModel {
+class PlaneModel : public RANSACModel<rw::math::Transform3D<> > {
 	public:
 		//! @brief Smart pointer type to this class.
-		typedef rw::common::Ptr<LineConstraint> Ptr;
+		typedef rw::common::Ptr<PlaneModel> Ptr;
 		
 		//! @copydoc ConstraintModel::MinSamples
-		static const int MinSamples = 2;
+		static const int MinSamples = 3;
 		
 	public: // constructors
 		/**
 		 * @brief Constructor.
 		 */
-		LineConstraint() : ConstraintModel() {}
+		PlaneModel() :
+			_model(rw::math::Vector3D<>(), rw::math::Vector3D<>::x(), rw::math::Vector3D<>::y())
+		{};
 		
 		//! @brief Destructor.
-		virtual ~LineConstraint() {}
+		virtual ~PlaneModel() {};
+		
+		//! @brief Create a model from a set of samples.
+		static PlaneModel& make(const std::vector<rw::math::Transform3D<> >& data)
+		{
+			PlaneModel::Ptr model = new PlaneModel();
+			
+			model->_data = data;
+			model->refit(data);
+			
+			return *model;
+		}
 
 	public: // methods
-		//! @copydoc sandbox::algorithms::RANSACModel::fitError
+		//! @copydoc RANSACModel::fitError
 		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::invalid
+		//! @copydoc RANSACModel::invalid
 		virtual bool invalid() const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit();
+		//! @copydoc RANSACModel::refit
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples);
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return MinSamples; }
+		//! @copydoc RANSACModel::getMinReqData
+		static int getMinReqData() { return MinSamples; }
 		
-		//! @copydoc ConstraintModel::update
-		virtual void update(rw::math::Transform3D<> sample);
+		//! @copydoc RANSACModel::same
+		virtual bool same(const PlaneModel& model, double threshold) const;
+		
+		/**
+		 * @brief Streaming operator.
+		 */
+		friend std::ostream& operator<<(std::ostream& out, const PlaneModel& plane)
+		{
+			return out << plane._model;
+		}
 	
 	protected: // body
-		// how to represent a line? -- there is a Line2D class, but no 3D model...; implement this?
+		rw::geometry::Plane _model;
 };
 
 

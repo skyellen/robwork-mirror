@@ -25,7 +25,7 @@ using namespace rwlibs::algorithms;
  
  
  
-double LineConstraint::fitError(ConstraintSample sample) const
+double LineConstraint::fitError(rw::math::Transform3D<> sample) const
 {
 }
 
@@ -43,6 +43,6 @@ void LineConstraint::refit()
 
 
 
-void LineConstraint::update(ConstraintSample sample)
+void LineConstraint::update(rw::math::Transform3D<> sample)
 {
 }

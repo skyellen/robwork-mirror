@@ -37,8 +37,8 @@ namespace rwlibs { namespace algorithms {
 	
 	
 	
-//! @brief Type for constraint model samples.
-typedef rw::math::Transform3D<double> ConstraintSample;
+// //! @brief Type for constraint model samples.
+// typedef rw::math::Transform3D<double> rw::math::Transform3D<>;
 
 
 
@@ -54,7 +54,7 @@ typedef rw::math::Transform3D<double> ConstraintSample;
  * * add a model adequacy evaluation method?
  * * should this be made a template? (ie. maybe it could take other types of samples, not only a pose...)
  */
-class ConstraintModel : public RANSACModel<ConstraintSample> {
+class ConstraintModel : public RANSACModel<rw::math::Transform3D<> > {
 	public:
 		//! @brief Smart pointer type to this class.
 		typedef rw::common::Ptr<ConstraintModel> Ptr;
@@ -72,7 +72,7 @@ class ConstraintModel : public RANSACModel<ConstraintSample> {
 		virtual ~ConstraintModel() {}
 		
 		//! @brief Create a model from a set of samples.
-		static ConstraintModel& make(const std::vector<ConstraintSample>& data)
+		static ConstraintModel& make(const std::vector<rw::math::Transform3D<> >& data)
 		{
 			ConstraintModel::Ptr model = new ConstraintModel(); // ownedPtr?
 			
@@ -83,49 +83,64 @@ class ConstraintModel : public RANSACModel<ConstraintSample> {
 
 	public: // methods		
 		/**
-		 * @copydoc sandbox::algorithms::RANSACModel::fitError
+		 * @copydoc RANSACModel::fitError
 		 */
-		virtual double fitError(ConstraintSample sample) const { return 0.0; }
+		virtual double fitError(rw::math::Transform3D<> sample) const { return 0.0; }
 		
 		/**
-		 * @copydoc sandbox::algorithms::RANSACModel::invalid
+		 * @copydoc RANSACModel::invalid
 		 */
 		virtual bool invalid() const { return false; }
 		
 		/**
-		 * @copydoc sandbox::algorithms::RANSACModel::refit
+		 * @copydoc RANSACModel::refit
 		 */
-		virtual void refit() {}
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples) { return 0.0; }
 		
 		/**
-		 * @brief algorithms::RANSACModel::getMinReqData
+		 * @brief RANSACModel::getMinReqData
 		 */
-		virtual int getMinReqData() const { return MinSamples; }
+		static int getMinReqData() { return MinSamples; }
 		
 		/**
-		 * @copydoc algorithms::RANSACModel::same
+		 * @copydoc RANSACModel::same
 		 */
 		virtual bool same(const RANSACModel& model, double threshold) const { return true; }
 		
 		/**
 		 * @brief Updates the model by adding a sample.
 		 */
-		virtual void update(ConstraintSample sample) { _inliers.push_back(sample); }
+		virtual void update(rw::math::Transform3D<> sample)
+		{
+			_data.push_back(sample);
+			
+			refit(_data);
+		}
+		
+		/**
+		 * @brief Updates the model by adding a vector of samples.
+		 */
+		virtual void update(const std::vector<rw::math::Transform3D<> >& samples)
+		{
+			_data.insert(_data.end(), samples.begin(), samples.end());
+			
+			refit(_data);
+		}
 		
 		/**
 		 * @brief Returns the list of inliers.
 		 */
-		std::vector<ConstraintSample > getInliers() const { return _inliers; }
+		//std::vector<rw::math::Transform3D<> > getInliers() const { return _inliers; }
 		
 		/**
 		 * @brief Check whether a sample belongs to the model.
 		 * 
 		 * Returns \b true when the sample is within a threshold distance of the model.
 		 */
-		virtual bool belongsTo(ConstraintSample sample, double threshold) const { return fitError(sample) <= threshold; }
+		virtual bool belongsTo(rw::math::Transform3D<> sample, double threshold) const { return fitError(sample) <= threshold; }
 	
 	protected: // body
-		std::vector<ConstraintSample> _inliers;
+		//std::vector<rw::math::Transform3D<> > _inliers;
 		
 		// here should be model data
 };

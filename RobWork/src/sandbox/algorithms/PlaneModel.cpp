@@ -17,7 +17,7 @@
  
  
  
-#include "PlaneConstraint.hpp"
+#include "PlaneModel.hpp"
 
 #include <rw/math/Metric.hpp>
 
@@ -27,7 +27,7 @@ using namespace rwlibs::algorithms;
  
  
 
-double PlaneConstraint::fitError(rw::math::Transform3D<> sample) const
+double PlaneModel::fitError(rw::math::Transform3D<> sample) const
 {
 	// return a distance of the sample to the model
 	return _model.distance(sample.P());
@@ -35,14 +35,14 @@ double PlaneConstraint::fitError(rw::math::Transform3D<> sample) const
 
 
 
-bool PlaneConstraint::invalid() const
+bool PlaneModel::invalid() const
 {
 	return false;
 }
 
 
 
-double PlaneConstraint::refit(const std::vector<rw::math::Transform3D<> >& samples)
+double PlaneModel::refit(const std::vector<rw::math::Transform3D<> >& samples)
 {
 	_data = samples;
 	
@@ -67,12 +67,14 @@ double PlaneConstraint::refit(const std::vector<rw::math::Transform3D<> >& sampl
 
 
 
-bool PlaneConstraint::same(const PlaneConstraint& model, double threshold) const
+bool PlaneModel::same(const PlaneModel& model, double threshold) const
 {
 	// make a metric to compute distance between planes
 	rw::math::Metric<rw::geometry::Plane>::Ptr metric = rw::geometry::Plane::makeMetric();
 	
 	double d = metric->distance(_model, model._model);
+	
+	std::cout << "Plane distance = " << d << std::endl;
 	
 	return d <= threshold;
 }

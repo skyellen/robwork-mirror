@@ -60,7 +60,7 @@ class BoxConstraint {
 
 	public: // methods
 		//! @copydoc sandbox::algorithms::RANSACModel::fitError
-		virtual double fitError(ConstraintSample sample) const;
+		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::invalid
 		virtual bool invalid() const;
@@ -72,7 +72,7 @@ class BoxConstraint {
 		virtual int getMinReqData() const { return MinSamples; }
 		
 		//! @copydoc ConstraintModel::update
-		virtual void update(ConstraintSample sample);
+		virtual void update(rw::math::Transform3D<> sample);
 	
 	protected: // body
 		// how to represent a box?

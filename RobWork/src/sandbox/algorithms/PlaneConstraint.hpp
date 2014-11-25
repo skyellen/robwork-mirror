@@ -60,25 +60,33 @@ class PlaneConstraint : public ConstraintModel {
 		
 		//! @brief Destructor.
 		virtual ~PlaneConstraint() {};
+		
+		//! @brief Create a model from a set of samples.
+		static PlaneConstraint& make(const std::vector<rw::math::Transform3D<> >& data)
+		{
+			PlaneConstraint::Ptr model = new PlaneConstraint();
+			
+			model->_data = data;
+			model->refit(data);
+			
+			return *model;
+		}
 
 	public: // methods
 		//! @copydoc sandbox::algorithms::RANSACModel::fitError
-		virtual double fitError(ConstraintSample sample) const;
+		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::invalid
 		virtual bool invalid() const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit();
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples);
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return MinSamples; }
+		static int getMinReqData() { return MinSamples; }
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::same
 		virtual bool same(const PlaneConstraint& model, double threshold) const;
-		
-		//! @copydoc ConstraintModel::update
-		virtual void update(ConstraintSample sample);
 		
 		/**
 		 * @brief Streaming operator.

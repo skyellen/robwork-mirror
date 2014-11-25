@@ -60,7 +60,7 @@ class StablePoseConstraint : public ConstraintModel {
 
 	public: // methods
 		//! @copydoc sandbox::algorithms::RANSACModel::fitError
-		virtual double fitError(ConstraintSample sample) const;
+		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
 		//! @copydoc sandbox::algorithms::RANSACModel::invalid
 		virtual bool invalid() const;
@@ -75,7 +75,7 @@ class StablePoseConstraint : public ConstraintModel {
 		virtual bool same(const StablePoseConstraint& model, double threshold) const;
 		
 		//! @copydoc ConstraintModel::update
-		virtual void update(ConstraintSample sample);
+		virtual void update(rw::math::Transform3D<> sample);
 	
 	protected: // body
 		// how to represent an orientation?
