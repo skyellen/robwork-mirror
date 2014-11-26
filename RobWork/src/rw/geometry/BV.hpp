@@ -68,7 +68,7 @@ namespace geometry {
 
         inline value_type calcArea() const { return ((DerivedType*) this)->calcArea(); }
 
-        inline value_type calcVolumne() const { return ((DerivedType*) this)->calcVolume(); }
+        inline value_type calcVolume() const { return ((DerivedType*) this)->calcVolume(); }
 
     };
 

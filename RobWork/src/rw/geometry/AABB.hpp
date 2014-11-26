@@ -49,7 +49,7 @@ namespace geometry {
         inline const rw::math::Vector3D<T>& getPosition() const { return _position; }
 
         //! @brief calculate the volume of this OBB
-        inline T calcVolumne() const {
+        inline T calcVolume() const {
             return _halfLng(0)*2 * _halfLng(1)*2 * _halfLng(2)*2;
         }
 

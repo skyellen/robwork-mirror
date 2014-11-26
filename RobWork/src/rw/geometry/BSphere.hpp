@@ -51,7 +51,7 @@ namespace geometry {
             return (T)(4.0*rw::math::Pi*_radius*_radius);
         }
 
-        inline T calcVolumne() const {
+        inline T calcVolume() const {
             return (T)(4.0/3.0*rw::math::Pi*_radius*_radius*_radius);
         }
 

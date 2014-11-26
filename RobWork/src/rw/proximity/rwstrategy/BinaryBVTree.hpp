@@ -276,7 +276,7 @@ namespace proximity {
                 if(!parent.first->isLeaf()){
                     id++;
                     std::cout << "\t" << parent.second << "->" << id <<"\n";
-                    std::cout << "\t" << parent.second << "[label=\"" << parent.first->bv().calcVolumne() <<"\"]\n";
+                    std::cout << "\t" << parent.second << "[label=\"" << parent.first->bv().calcVolume() <<"\"]\n";
                     if(parent.first->left()!=NULL){
                         children.push(std::make_pair(parent.first->left(), id));
                     } else {
