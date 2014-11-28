@@ -27,40 +27,38 @@ using namespace rwlibs::algorithms;
  
  
 
-double PlaneModel::fitError(rw::math::Transform3D<> sample) const
+double PlaneModel::fitError(const rw::math::Vector3D<>& sample) const
 {
 	// return a distance of the sample to the model
-	return _model.distance(sample.P());
+	return _model.distance(sample);
 }
 
 
 
 bool PlaneModel::invalid() const
 {
+	// test whether all the data points are co-linear
 	return false;
 }
 
 
 
-double PlaneModel::refit(const std::vector<rw::math::Transform3D<> >& samples)
+double PlaneModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 {
 	_data = samples;
-	
-	// extract positions from the samples
-	std::vector<rw::math::Vector3D<> > points;
-	
-	for (std::vector<rw::math::Transform3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
-		points.push_back(i->P());
-	}
-	
+
 	// re-fit plane
-	_model.refit(points);
+	_model.refit(_data);
 	
 	// calculate total fit error
 	double error = 0.0;
-	for (std::vector<rw::math::Transform3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
-		error += fitError(*i);
+	for (std::vector<rw::math::Vector3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
+		double sample_error = fitError(*i);
+		error += sample_error * sample_error;
 	}
+	
+	int n = _data.size();
+	error /= (n > 0 ? n : 1);
 	
 	return error;
 }
@@ -73,8 +71,6 @@ bool PlaneModel::same(const PlaneModel& model, double threshold) const
 	rw::math::Metric<rw::geometry::Plane>::Ptr metric = rw::geometry::Plane::makeMetric();
 	
 	double d = metric->distance(_model, model._model);
-	
-	//std::cout << "Plane distance = " << d << std::endl;
 	
 	return d <= threshold;
 }

@@ -40,67 +40,233 @@ namespace rwlibs { namespace algorithms {
 /**
  * @brief An interface for RANSAC model fitting.
  */
-template <class T>
-class RANSACModel {
+template <class MODEL, class DATA>
+class RANSACModel
+{
 	public:
 		//! @brief Smart pointer type to this class.
-		typedef rw::common::Ptr<RANSACModel<T> > Ptr;
+		typedef rw::common::Ptr<RANSACModel<MODEL, DATA> > Ptr;
 		
 	public: // constructors
 		//! @brief Constructor.
 		RANSACModel() {}
 		
+		/**
+		 * @brief Creates a new model of this type using provided data.
+		 */
+		virtual MODEL& make(const std::vector<DATA>& data) const {
+			typename MODEL::Ptr newModel = new MODEL();
+			
+			newModel->refit(data);
+			
+			return *newModel;
+		}
+		
 		//! @brief Destructor.
 		virtual ~RANSACModel() {}
 		
-		//! @brief Create a model from a set of samples.
-		static RANSACModel<T>& make(const std::vector<T>& data)
+		/**
+		 * @brief Find models fitting a set of observations.
+		 */
+		static std::vector<MODEL> findModels(const std::vector<DATA>& data, int maxIterations, int dataRequired, double dataThreshold, double modelThreshold) {
+			std::vector<DATA> samples(data); // copy data into the local vector <- argh
+			std::vector<std::pair<MODEL, int> > models; // pair containing a model and a number of inliers
+			
+			int iterations = 0;
+			while (++iterations < maxIterations) {
+				
+				int n = MODEL().getMinReqData();
+				
+				std::random_shuffle(samples.begin(), samples.end());
+				std::vector<DATA> maybeInliers;
+				maybeInliers.insert(maybeInliers.end(), samples.begin(), samples.begin()+n);
+
+				// create a model based on the maybeInliers
+				MODEL maybeModel;
+				try { 
+					maybeModel = maybeModel.make(maybeInliers);
+
+					if (maybeModel.invalid()) {
+						continue;
+					}
+				} catch(...) {
+					continue;
+				}
+				
+				// add the maybe inliers to the conensus set
+				std::vector<DATA> consensusSet(maybeInliers);
+
+				// check if any point in data fits the model with an error smaller than t
+				for (size_t i = 0; i < data.size(); i++) {
+					if (maybeModel.fitError(data[i]) < dataThreshold) {
+						consensusSet.push_back(data[i]);
+					}
+				}
+
+				// if consensus set size is large enough, we have a model
+				if (consensusSet.size() > dataRequired) {
+					//std::cout << "We have a model!" << std::endl;
+					models.push_back(std::pair<MODEL, int>(maybeModel, consensusSet.size()));
+				}
+
+			}
+			
+			// merging models
+			//std::cout << "Merging models" << std::endl;
+			if (models.size() == 0) {
+				return std::vector<MODEL>();
+			}
+            if (models.size() == 1) {
+                return std::vector<MODEL>(1, models[0].first);
+			}
+			
+			// merge models that are closely related
+			std::vector<std::pair<MODEL*, int> > modelsPtr(models.size());
+			
+			for (size_t i = 0; i < models.size(); i++) {
+				modelsPtr[i].first = &(models[i].first);
+				modelsPtr[i].second = models[i].second;
+			}
+
+			std::vector<MODEL> newModels;
+			// for all found models...
+			for (size_t i = 0; i < modelsPtr.size() - 1; i++) {
+
+				if (modelsPtr[i].first == NULL) {
+					continue;
+				}
+				
+				// compare with all following models...
+				std::pair<MODEL*, int> bestCloseModel(modelsPtr[i].first, modelsPtr[i].second);
+				for (size_t j = i + 1; j < modelsPtr.size(); j++) {
+					
+					if (modelsPtr[j].first == NULL) {
+						continue;
+					}
+
+					// (disregard, if those models are different)
+					bool res = models[i].first.same(models[j].first, modelThreshold);
+					if (!res) {
+						continue;
+					}
+
+					// ...to see which model has more inliers
+					// merge those models
+					if (bestCloseModel.second < modelsPtr[j].second){
+					    bestCloseModel = modelsPtr[j];
+					}
+					
+					// mark the model as processed
+					modelsPtr[j].first = NULL;
+				}
+				
+				if (bestCloseModel.first == NULL) {
+					continue;
+				}
+
+				// re-fit data to the best close model found
+				std::vector<DATA> consensusSet;
+                for (size_t k = 0; k < data.size(); ++k) {
+					if (bestCloseModel.first->fitError(data[k]) < dataThreshold) {
+                        consensusSet.push_back(data[k]);
+                    }
+                }
+                
+                double error;
+				try {
+				    error = bestCloseModel.first->refit(consensusSet);
+				} catch (...) {
+					continue;
+				}
+				
+				//std::cout << "BestModel: " << consensusSet.size() << std::endl; 
+				bestCloseModel.first->setQuality(error);
+				newModels.push_back(*bestCloseModel.first);
+			}
+
+			std::cout << "Nr of models found: " << models.size() << std::endl;
+			std::cout << "filtered to       : " << newModels.size() << std::endl;
+
+			return newModels;
+		}
+		
+		/**
+		 * @brief Select the model with the biggest number of inliers.
+		 */
+		static MODEL& bestModel(std::vector<MODEL>& models)
 		{
-			RANSACModel<T>::Ptr model = new RANSACModel<T>();
-			model->_data = data;
-			return *model;
+			if (models.size() == 0) {
+				return *(new MODEL());
+			}
+			
+			size_t inliers = 0;
+			int idx = 0;
+			
+			for (int i = 0; i < models.size(); ++i) {
+				size_t curInliers = models[i].getNumberOfInliers();
+				
+				if (curInliers > inliers) {
+					inliers = curInliers;
+					idx = i;
+				}
+			}
 		}
 
 	public: // methods		
 		/**
-		 * @brief Returns fitting error of the sample.
-		 * ^ TODO: needs metric? -- perhaps metric should be a part of the model
+		 * @brief Calculates the fitting error of a sample.
 		 */
-		virtual double fitError(T sample) const { return 0.0; }
+		virtual double fitError(const DATA& sample) const = 0;
 		
 		/**
-		 * @brief Checks whether a model is invalid.
+		 * @brief Check whether a sample belongs to the model.
+		 * 
+		 * Returns \b true when the sample is within a threshold distance of the model.
 		 */
-		virtual bool invalid() const { return false; }
+		virtual bool belongsTo(const DATA& sample, double threshold) const { return fitError(sample) <= threshold; }
+		
+		/**
+		 * @brief Checks whether the model is invalid.
+		 */
+		virtual bool invalid() const = 0;
 		
 		/**
 		 * @brief Recalculates the model based on provided samples.
+		 * 
+		 * @return Fit error on a set of provided samples.
 		 */
-		virtual double refit(const std::vector<T>& data) { return 0.0; }
+		virtual double refit(const std::vector<DATA>& data) = 0;
 		
 		/**
-		 * @brief Returns the number of samples required to create a model.
+		 * @brief Returns the number of samples required to create the model.
 		 */
-		static int getMinReqData() { return 0; }
+		virtual int getMinReqData() const = 0;
 		
 		/**
-		 * @brief Tests whether a model is same within a threshold of another model.
+		 * @brief Tests whether the model is same to a threshold of another model.
 		 */
-		virtual bool same(const RANSACModel& model, double threshold) const { return true; }
+		virtual bool same(const MODEL& model, double threshold) const = 0;
+		
+		/**
+		 * @brief Get the number of inliers.
+		 */
+		virtual size_t getNumberOfInliers() const { return _data.size(); }
 		
 		//! @brief Get the model quality.
 		double getQuality() const { return _quality; }
 		
-		//! @brief Set the model quality.
-		void setQuality(size_t n, double quality) { _n = n; _quality = quality; }
+		/**
+		 * @brief Set the model quality.
+		 *
+		 * @param quality [in] fitting error of the model
+		 */
+		void setQuality(double quality) { _quality = quality; }
 		
 		//! @brief Access data.
-		std::vector<T>& getData() { return _data; }
+		std::vector<DATA>& getData() { return _data; }
 	
 	protected: // body
-		std::vector<T> _data;
-		
-		size_t _n;
+		std::vector<DATA> _data;
 		double _quality;
 };
 

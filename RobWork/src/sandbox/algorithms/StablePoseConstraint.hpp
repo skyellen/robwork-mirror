@@ -26,9 +26,9 @@
  * @file StablePoseConstraint.hpp
  */
 
-#include <rw/math/Vector3D.hpp>
-
 #include "ConstraintModel.hpp"
+
+#include <rw/geometry/Plane.hpp>
 
 
 
@@ -39,7 +39,9 @@ namespace rwlibs { namespace algorithms {
 /**
  * @brief A stable pose constraint model.
  * 
- * Describes a stable pose constraint, i.e. an orientation of the object.
+ * Describes a stable pose constraint, i.e. a valid pose expected for an object.
+ * Current implementation considers a set of orientations obtained from a revolution around
+ * a single axis as a stable pose (i.e. allowing 1 DoF freedom of rotation).
  */
 class StablePoseConstraint : public ConstraintModel {
 	public:
@@ -53,32 +55,44 @@ class StablePoseConstraint : public ConstraintModel {
 		/**
 		 * @brief Constructor.
 		 */
-		StablePoseConstraint() {};
+		StablePoseConstraint() {}
 		
 		//! @brief Destructor.
-		virtual ~StablePoseConstraint() {};
+		virtual ~StablePoseConstraint() {}
+		
+		//! @brief Constructor.
+		StablePoseConstraint(const std::vector<rw::math::Transform3D<> >& data)
+		{
+			refit(data);
+		}
 
 	public: // methods
-		//! @copydoc sandbox::algorithms::RANSACModel::fitError
+		//! @copydoc RANSACModel::fitError
 		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::invalid
+		/**
+		 * @copydoc RANSACModel::invalid
+		 *
+		 * In the case of a stable pose, a model is invalid, if...
+		 */
 		virtual bool invalid() const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit();
+		//! @copydoc RANSACModel::refit
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples);
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return MinSamples; }
+		//! @copydoc RANSACModel::getMinReqData
+		static int getMinReqData() { return MinSamples; }
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::same
+		//! @copydoc RANSACModel::same
 		virtual bool same(const StablePoseConstraint& model, double threshold) const;
-		
-		//! @copydoc ConstraintModel::update
-		virtual void update(rw::math::Transform3D<> sample);
 	
 	protected: // body
-		// how to represent an orientation?
+		rw::math::Vector3D<> _normal; // normal
+		double _dx, _dy, _dz; // x, y, z plane distances respectively
+		
+		rw::geometry::Plane _xplane;
+		rw::geometry::Plane _yplane;
+		rw::geometry::Plane _zplane;
 };
 
 

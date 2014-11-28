@@ -34,33 +34,19 @@
 
 
 namespace rwlibs { namespace algorithms {
-	
-	
-	
-// //! @brief Type for constraint model samples.
-// typedef rw::math::Transform3D<double> rw::math::Transform3D<>;
-
-
 
 /**
  * @brief An interface for constraint models.
  * 
  * Constraint model describes...
- * ^ TODO: write
  * 
- * @note
- * * there should be a way to sample the model space,
- * * define a wrapper class for sample? or a typedef,
- * * add a model adequacy evaluation method?
- * * should this be made a template? (ie. maybe it could take other types of samples, not only a pose...)
+ * @note You can't extend the base class with purely abstract virtual functions... Because it needs to be possible to instantiate. D'oh!
+ * @note Do i even need this class though?
  */
-class ConstraintModel : public RANSACModel<rw::math::Transform3D<> > {
+class ConstraintModel : public RANSACModel<ConstraintModel, rw::math::Transform3D<> > {
 	public:
 		//! @brief Smart pointer type to this class.
 		typedef rw::common::Ptr<ConstraintModel> Ptr;
-		
-		//! @brief A number of inliers required to make a model.
-		static const int MinSamples = 1;
 		
 	public: // constructors
 		/**
@@ -70,79 +56,36 @@ class ConstraintModel : public RANSACModel<rw::math::Transform3D<> > {
 		
 		//! @brief Destructor.
 		virtual ~ConstraintModel() {}
-		
-		//! @brief Create a model from a set of samples.
-		static ConstraintModel& make(const std::vector<rw::math::Transform3D<> >& data)
-		{
-			ConstraintModel::Ptr model = new ConstraintModel(); // ownedPtr?
-			
-			model->_data = data;
-			
-			return *model;
-		}
 
-	public: // methods		
-		/**
-		 * @copydoc RANSACModel::fitError
-		 */
-		virtual double fitError(rw::math::Transform3D<> sample) const { return 0.0; }
+	public: // methods
+		//! @copydoc RANSACModel::fitError
+		virtual double fitError(const rw::math::Transform3D<>& sample) const { return 0.0; }
 		
-		/**
-		 * @copydoc RANSACModel::invalid
-		 */
-		virtual bool invalid() const { return false; }
+		//! @copydoc RANSACModel::invalid
+		virtual bool invalid() const { return true; }
 		
-		/**
-		 * @copydoc RANSACModel::refit
-		 */
-		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples) { return 0.0; }
+		//! @copydoc RANSACModel::refit
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& data) { return 0.0; }
 		
-		/**
-		 * @brief RANSACModel::getMinReqData
-		 */
-		static int getMinReqData() { return MinSamples; }
+		//! @copydoc RANSACModel::getMinReqData
+		virtual int getMinReqData() const { return 0; }
 		
-		/**
-		 * @copydoc RANSACModel::same
-		 */
-		virtual bool same(const RANSACModel& model, double threshold) const { return true; }
+		//! @copydoc RANSACModel::same
+		virtual bool same(const ConstraintModel& model, double threshold) const { return false; }
 		
 		/**
 		 * @brief Updates the model by adding a sample.
+		 * TODO: should it check if the sample belongs to a model?
 		 */
-		virtual void update(rw::math::Transform3D<> sample)
-		{
-			_data.push_back(sample);
-			
-			refit(_data);
-		}
+		//virtual void update(rw::math::Transform3D<> sample) = 0;
 		
 		/**
 		 * @brief Updates the model by adding a vector of samples.
+		 * TODO: should it check iif the sampel belongs to a model?
 		 */
-		virtual void update(const std::vector<rw::math::Transform3D<> >& samples)
-		{
-			_data.insert(_data.end(), samples.begin(), samples.end());
-			
-			refit(_data);
-		}
-		
-		/**
-		 * @brief Returns the list of inliers.
-		 */
-		//std::vector<rw::math::Transform3D<> > getInliers() const { return _inliers; }
-		
-		/**
-		 * @brief Check whether a sample belongs to the model.
-		 * 
-		 * Returns \b true when the sample is within a threshold distance of the model.
-		 */
-		virtual bool belongsTo(rw::math::Transform3D<> sample, double threshold) const { return fitError(sample) <= threshold; }
+		//virtual void update(const std::vector<rw::math::Transform3D<> >& samples) = 0;		
 	
 	protected: // body
-		//std::vector<rw::math::Transform3D<> > _inliers;
-		
-		// here should be model data
 };
 
 

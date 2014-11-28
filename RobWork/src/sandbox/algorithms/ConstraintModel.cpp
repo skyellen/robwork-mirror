@@ -18,6 +18,7 @@
  
  
 #include "ConstraintModel.hpp"
- 
- 
-// TODO: serialization stuff?
+
+
+
+using namespace rwlibs::algorithms;

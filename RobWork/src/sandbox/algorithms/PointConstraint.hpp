@@ -39,7 +39,7 @@ namespace rwlibs { namespace algorithms {
 /**
  * @brief A point constraint model.
  * 
- * Describes a point constraint, i.e. a position in Cartesian coordinates.
+ * Describes a point constraint, e.g. a part feeder.
  */
 class PointConstraint : public ConstraintModel {
 	public:
@@ -55,25 +55,34 @@ class PointConstraint : public ConstraintModel {
 		 */
 		PointConstraint() {};
 		
+		//! @brief Constructor.
+		PointConstraint(const std::vector<rw::math::Transform3D<> >& data)
+		{
+			refit(data);
+		}
+		
 		//! @brief Destructor.
 		virtual ~PointConstraint() {};
 
 	public: // methods
-		//! @copydoc sandbox::algorithms::RANSACModel::fitError
+		//! @copydoc RANSACModel::fitError
 		virtual double fitError(rw::math::Transform3D<> sample) const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::invalid
+		//! @copydoc RANSACModel::invalid
 		virtual bool invalid() const;
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::refit
-		virtual void refit() const;
+		//! @copydoc RANSACModel::refit
+		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples);
 		
-		//! @copydoc sandbox::algorithms::RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return MinSamples; }
+		//! @copydoc RANSACModel::getMinReqData
+		static int getMinReqData() { return MinSamples; }
 		
 		//! @copydoc ConstraintModel::update
 		virtual void update(rw::math::Transform3D<> sample);
-	
+		
+		//! @copydoc ConstraintModel::update
+		virtual void update(std::vector<rw::math::Transform3D<> > sample);
+
 	protected: // body
 		rw::math::Vector3D<double> _point;
 };

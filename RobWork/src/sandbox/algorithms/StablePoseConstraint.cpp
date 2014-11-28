@@ -31,8 +31,31 @@ double StablePoseConstraint::fitError(rw::math::Transform3D<> sample) const
 
 
 
-void StablePoseConstraint::update(rw::math::Transform3D<> sample)
+bool StablePoseConstraint::invalid() const
 {
+}
+
+
+
+double StablePoseConstraint::refit(const std::vector<rw::math::Transform3D<> >& samples)
+{
+	// fit a plane to x-values
+	_data = samples;
+	
+	// positions of X, Y, Z points on a unit sphere
+	std::vector<rw::math::Vector3D<> > xpoints, ypoints, zpoints;
+	for (std::vector<rw::math::Transform3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
+		xpoints.push_back(i->R().getCol(0));
+		ypoints.push_back(i->R().getCol(1));
+		zpoints.push_back(i->R().getCol(2));
+	}
+	
+	// fit planes
+	_xplane.refit(xpoints);
+	_yplane.refit(ypoints);
+	_zplane.refit(zpoints);
+	
+	
 }
 
 

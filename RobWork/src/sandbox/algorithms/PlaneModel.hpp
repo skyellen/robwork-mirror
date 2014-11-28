@@ -38,17 +38,13 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A plane constraint model.
- * 
- * Describes a plane constraint, i.e. a surface.
+ * @brief A plane model.
  */
-class PlaneModel : public RANSACModel<rw::math::Transform3D<> > {
+class PlaneModel : public RANSACModel<PlaneModel, rw::math::Vector3D<> >
+{
 	public:
 		//! @brief Smart pointer type to this class.
 		typedef rw::common::Ptr<PlaneModel> Ptr;
-		
-		//! @copydoc ConstraintModel::MinSamples
-		static const int MinSamples = 3;
 		
 	public: // constructors
 		/**
@@ -56,34 +52,27 @@ class PlaneModel : public RANSACModel<rw::math::Transform3D<> > {
 		 */
 		PlaneModel() :
 			_model(rw::math::Vector3D<>(), rw::math::Vector3D<>::x(), rw::math::Vector3D<>::y())
-		{};
+		{}
 		
 		//! @brief Destructor.
-		virtual ~PlaneModel() {};
-		
-		//! @brief Create a model from a set of samples.
-		static PlaneModel& make(const std::vector<rw::math::Transform3D<> >& data)
-		{
-			PlaneModel::Ptr model = new PlaneModel();
-			
-			model->_data = data;
-			model->refit(data);
-			
-			return *model;
-		}
+		virtual ~PlaneModel() {}
 
 	public: // methods
 		//! @copydoc RANSACModel::fitError
-		virtual double fitError(rw::math::Transform3D<> sample) const;
+		virtual double fitError(const rw::math::Vector3D<>& sample) const;
 		
 		//! @copydoc RANSACModel::invalid
 		virtual bool invalid() const;
 		
-		//! @copydoc RANSACModel::refit
-		virtual double refit(const std::vector<rw::math::Transform3D<> >& samples);
-		
 		//! @copydoc RANSACModel::getMinReqData
-		static int getMinReqData() { return MinSamples; }
+		virtual int getMinReqData() const { return 3; }
+		
+		/**
+		 * @copydoc RANSACModel::refit
+		 * 
+		 * Returns standard variance of point distances to the plane model (an average of distances squared).
+		 */		
+		virtual double refit(const std::vector<rw::math::Vector3D<> >& samples);
 		
 		//! @copydoc RANSACModel::same
 		virtual bool same(const PlaneModel& model, double threshold) const;
