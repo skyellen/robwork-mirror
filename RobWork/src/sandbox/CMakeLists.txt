@@ -22,10 +22,6 @@ SET(SRC_FILES
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
     invkin/ClosedFormURSolver.cpp
-
-    algorithms/RANSACFitting.cpp
-    algorithms/RANSACModel.cpp
-    algorithms/PlaneModel.cpp
     
     #proximity/Raycast.cpp
     #proximity/BVTree.cpp
@@ -76,15 +72,22 @@ SET(SRC_FILES
     csg/CSGConvert.cpp
     csg/CSGModel.cpp
     
+    #algorithms/ConstraintModel.cpp
+	#algorithms/ConstraintGenerator.cpp
+	#algorithms/PointConstraint.cpp
+	#algorithms/LineConstraint.cpp
+	#
+	#algorithms/BoxConstraint.cpp
+	#algorithms/PlaneConstraint.cpp
+	#algorithms/FixtureConstraint.cpp
+	#algorithms/ConstraintSandbox.cpp
+	
+    algorithms/RANSACModel.cpp
+    algorithms/PointModel.cpp
+    algorithms/PlaneModel.cpp
+     algorithms/StablePose1DModel.cpp
     algorithms/ConstraintModel.cpp
-	algorithms/ConstraintGenerator.cpp
-	algorithms/PointConstraint.cpp
-	algorithms/LineConstraint.cpp
-	algorithms/StablePoseConstraint.cpp
-	algorithms/BoxConstraint.cpp
-	algorithms/PlaneConstraint.cpp
-	algorithms/FixtureConstraint.cpp
-	algorithms/ConstraintSandbox.cpp
+    #algorithms/StablePoseConstraint.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -107,21 +110,23 @@ SET(SRC_FILES_HPP
     csg/CSGConvert.hpp
     csg/CSGModel.hpp
     
-    algorithms/ConstraintModel.hpp
-    algorithms/ConstraintGenerator.hpp
-    algorithms/PointConstraint.hpp
-    algorithms/LineConstraint.hpp
-    algorithms/StablePoseConstraint.hpp
-	algorithms/BoxConstraint.hpp
-	algorithms/PlaneConstraint.hpp
-	algorithms/FixtureConstraint.hpp
-	algorithms/ConstraintSandbox.hpp
+    #algorithms/ConstraintGenerator.hpp
+    #algorithms/PointConstraint.hpp
+    #algorithms/LineConstraint.hpp
+    #algorithms/StablePoseConstraint.hpp
+	#algorithms/BoxConstraint.hpp
+	#algorithms/PlaneConstraint.hpp
+	#algorithms/FixtureConstraint.hpp
+	#algorithms/ConstraintSandbox.hpp
 
     invkin/ClosedFormURSolver.hpp
     
-    algorithms/RANSACFitting.hpp
     algorithms/RANSACModel.hpp
+    algorithms/PointModel.hpp
     algorithms/PlaneModel.hpp
+    algorithms/StablePose1DModel.hpp
+    algorithms/ConstraintModel.hpp
+    #algorithms/StablePoseConstraint.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
