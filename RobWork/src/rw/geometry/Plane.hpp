@@ -95,10 +95,10 @@ namespace geometry {
 		inline const rw::math::Vector3D<>& normal() const {return _normal;};
 
 		//! @brief get distance to {0,0,0} from plane along normal.
-		inline double& d(){return _d;};
+		inline double& d() {return _d; }
 
 		//! @brief get distance to {0,0,0} from plane along normal.
-		inline double d() const {return _d;};
+		inline double d() const {return _d; }
 
 		/**
 		 * @brief calculates the shortest distance from point to plane. 

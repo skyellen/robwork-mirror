@@ -142,9 +142,16 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
         // compute the z axis as the cross product
         _normal = normalize( cross(maxAxis,midAxis) );
         // normal should allways point in the z direction
-        if( _normal(2)<0 )
+        if( _normal(2)<0 ) {
         	_normal = -_normal;
-        _d = -_normal(0)*c(0) -_normal(1)*c(1) - _normal(2)*c(2);
+		}
+        
+        _d = dot(_normal, c); //-_normal(0)*c(0) -_normal(1)*c(1) - _normal(2)*c(2);
+        
+        /*if( _normal(2)<0 ) {
+        	_normal = -_normal;
+        	_d = -_d;
+        }*/
 
 	}
 
