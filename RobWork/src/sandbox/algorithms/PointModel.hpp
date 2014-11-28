@@ -17,17 +17,16 @@
  
  
 
-#ifndef RW_ALGORITHMS_PlaneModel_HPP
-#define RW_ALGORITHMS_PlaneModel_HPP
+#ifndef RW_ALGORITHMS_PointModel_HPP
+#define RW_ALGORITHMS_PointModel_HPP
 
 
 
 /**
- * @file PlaneModel.hpp
+ * @file PointModel.hpp
  */
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Plane.hpp>
 
 #include "RANSACModel.hpp"
 
@@ -38,24 +37,23 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A plane model.
+ * @brief A point model.
  */
-class PlaneModel : public RANSACModel<PlaneModel, rw::math::Vector3D<> >
+class PointModel : public RANSACModel<PointModel, rw::math::Vector3D<> >
 {
 	public:
 		//! @brief Smart pointer type to this class.
-		typedef rw::common::Ptr<PlaneModel> Ptr;
+		typedef rw::common::Ptr<PointModel> Ptr;
 		
 	public: // constructors
 		/**
 		 * @brief Constructor.
 		 */
-		PlaneModel() :
-			_model(rw::math::Vector3D<>(), rw::math::Vector3D<>::x(), rw::math::Vector3D<>::y())
+		PointModel()
 		{}
 		
 		//! @brief Destructor.
-		virtual ~PlaneModel() {}
+		virtual ~PointModel() {}
 
 	public: // methods
 		//! @copydoc RANSACModel::fitError
@@ -65,34 +63,24 @@ class PlaneModel : public RANSACModel<PlaneModel, rw::math::Vector3D<> >
 		virtual bool invalid() const;
 		
 		//! @copydoc RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return 3; }
+		virtual int getMinReqData() const { return 1; }
 		
-		/**
-		 * @copydoc RANSACModel::refit
-		 * 
-		 * Returns standard variance of point distances to the plane model (an average of distances squared).
-		 */		
+		//! @copydoc RANSACModel::refit
 		virtual double refit(const std::vector<rw::math::Vector3D<> >& samples);
 		
 		//! @copydoc RANSACModel::same
-		virtual bool same(const PlaneModel& model, double threshold) const;
-		
-		//! @brief Get plane normal.
-		inline rw::math::Vector3D<> normal() const { return _model.normal(); }
-		
-		//! @brief Get plane distance from {0, 0, 0} along normal.
-		inline double d() const { return _model.d(); }
+		virtual bool same(const PointModel& model, double threshold) const;
 		
 		/**
 		 * @brief Streaming operator.
 		 */
-		friend std::ostream& operator<<(std::ostream& out, const PlaneModel& plane)
+		friend std::ostream& operator<<(std::ostream& out, const PointModel& model)
 		{
-			return out << plane._model;
+			return out << model._model;
 		}
 	
 	protected: // body
-		rw::geometry::Plane _model;
+		rw::math::Vector3D<> _model;
 };
 
 

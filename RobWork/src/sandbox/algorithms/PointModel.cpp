@@ -17,7 +17,7 @@
  
  
  
-#include "PlaneModel.hpp"
+#include "PointModel.hpp"
 
 #include <rw/math/Metric.hpp>
 
@@ -27,28 +27,32 @@ using namespace rwlibs::algorithms;
  
  
 
-double PlaneModel::fitError(const rw::math::Vector3D<>& sample) const
+double PointModel::fitError(const rw::math::Vector3D<>& sample) const
 {
 	// return a distance of the sample to the model
-	return _model.distance(sample);
+	return (sample - _model).norm2();
 }
 
 
 
-bool PlaneModel::invalid() const
+bool PointModel::invalid() const
 {
-	// test whether all the data points are co-linear
 	return false;
 }
 
 
 
-double PlaneModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
+double PointModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 {
 	_data = samples;
 
-	// re-fit plane
-	_model.refit(_data);
+	// re-fit point model
+	int n = _data.size();
+	_model = rw::math::Vector3D<>();
+	for (int i = 0; i < n; ++i) {
+		_model += _data[i];
+	}
+	_model *= 1.0 / (n > 0 ? n : 1);
 	
 	// calculate total fit error
 	double error = 0.0;
@@ -57,21 +61,19 @@ double PlaneModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 		error += sample_error * sample_error;
 	}
 	
-	int n = _data.size();
+	
 	error /= (n > 0 ? n : 1);
-	setQuality(error);
 	
 	return error;
 }
 
 
 
-bool PlaneModel::same(const PlaneModel& model, double threshold) const
+bool PointModel::same(const PointModel& model, double threshold) const
 {
-	// make a metric to compute distance between planes
-	rw::math::Metric<rw::geometry::Plane>::Ptr metric = rw::geometry::Plane::makeMetric();
+	double d = (model._model - _model).norm2();
 	
-	double d = metric->distance(_model, model._model);
+	//std::cout << d << std::endl;
 	
 	return d <= threshold;
 }

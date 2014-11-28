@@ -17,17 +17,16 @@
  
  
 
-#ifndef RW_ALGORITHMS_PlaneModel_HPP
-#define RW_ALGORITHMS_PlaneModel_HPP
+#ifndef RW_ALGORITHMS_StablePose1DModel_HPP
+#define RW_ALGORITHMS_StablePose1DModel_HPP
 
 
 
 /**
- * @file PlaneModel.hpp
+ * @file StablePose1DModel.hpp
  */
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Plane.hpp>
+#include <rw/math/Rotation3D.hpp>
 
 #include "RANSACModel.hpp"
 
@@ -38,61 +37,51 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A plane model.
+ * @brief A point model.
  */
-class PlaneModel : public RANSACModel<PlaneModel, rw::math::Vector3D<> >
+class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotation3D<> >
 {
 	public:
 		//! @brief Smart pointer type to this class.
-		typedef rw::common::Ptr<PlaneModel> Ptr;
+		typedef rw::common::Ptr<StablePose1DModel> Ptr;
 		
 	public: // constructors
 		/**
 		 * @brief Constructor.
 		 */
-		PlaneModel() :
-			_model(rw::math::Vector3D<>(), rw::math::Vector3D<>::x(), rw::math::Vector3D<>::y())
+		StablePose1DModel()
 		{}
 		
 		//! @brief Destructor.
-		virtual ~PlaneModel() {}
+		virtual ~StablePose1DModel() {}
 
 	public: // methods
 		//! @copydoc RANSACModel::fitError
-		virtual double fitError(const rw::math::Vector3D<>& sample) const;
+		virtual double fitError(const rw::math::Rotation3D<>& sample) const;
 		
 		//! @copydoc RANSACModel::invalid
 		virtual bool invalid() const;
 		
 		//! @copydoc RANSACModel::getMinReqData
-		virtual int getMinReqData() const { return 3; }
+		virtual int getMinReqData() const { return 4; }
 		
-		/**
-		 * @copydoc RANSACModel::refit
-		 * 
-		 * Returns standard variance of point distances to the plane model (an average of distances squared).
-		 */		
-		virtual double refit(const std::vector<rw::math::Vector3D<> >& samples);
+		//! @copydoc RANSACModel::refit
+		virtual double refit(const std::vector<rw::math::Rotation3D<> >& samples);
 		
 		//! @copydoc RANSACModel::same
-		virtual bool same(const PlaneModel& model, double threshold) const;
-		
-		//! @brief Get plane normal.
-		inline rw::math::Vector3D<> normal() const { return _model.normal(); }
-		
-		//! @brief Get plane distance from {0, 0, 0} along normal.
-		inline double d() const { return _model.d(); }
+		virtual bool same(const StablePose1DModel& model, double threshold) const;
 		
 		/**
 		 * @brief Streaming operator.
 		 */
-		friend std::ostream& operator<<(std::ostream& out, const PlaneModel& plane)
+		friend std::ostream& operator<<(std::ostream& out, const StablePose1DModel& model)
 		{
-			return out << plane._model;
+			return out << "StablePose1D(normal: " << model._normal << ", distances: (" << model._dx << ", " << model._dy << ", " << model._dz << "))";
 		}
 	
 	protected: // body
-		rw::geometry::Plane _model;
+		rw::math::Vector3D<> _normal;
+		double _dx, _dy, _dz;
 };
 
 

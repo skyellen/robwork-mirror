@@ -73,7 +73,7 @@ class RANSACModel
 			std::vector<std::pair<MODEL, int> > models; // pair containing a model and a number of inliers
 			
 			int iterations = 0;
-			while (++iterations < maxIterations) {
+			while (iterations++ < maxIterations) {
 				
 				int n = MODEL().getMinReqData();
 				
@@ -140,13 +140,18 @@ class RANSACModel
 				std::pair<MODEL*, int> bestCloseModel(modelsPtr[i].first, modelsPtr[i].second);
 				for (size_t j = i + 1; j < modelsPtr.size(); j++) {
 					
+					//std::cout << "Comparing model " << i << " with model " << j;
+					
 					if (modelsPtr[j].first == NULL) {
+						// the model was looked at already
+						//std::cout << " 1st == null" << std::endl;
 						continue;
 					}
 
 					// (disregard, if those models are different)
 					bool res = models[i].first.same(models[j].first, modelThreshold);
 					if (!res) {
+						//std::cout << " m1 != m2" << std::endl;
 						continue;
 					}
 
@@ -158,9 +163,11 @@ class RANSACModel
 					
 					// mark the model as processed
 					modelsPtr[j].first = NULL;
+					//std::cout << " merged" << std::endl;
 				}
 				
 				if (bestCloseModel.first == NULL) {
+					//std::cout << " best == null" << std::endl;
 					continue;
 				}
 
@@ -172,20 +179,20 @@ class RANSACModel
                     }
                 }
                 
-                double error;
 				try {
-				    error = bestCloseModel.first->refit(consensusSet);
+				    bestCloseModel.first->refit(consensusSet);
 				} catch (...) {
+					//std::cout << " crash" << std::endl;
 					continue;
 				}
 				
 				//std::cout << "BestModel: " << consensusSet.size() << std::endl; 
-				bestCloseModel.first->setQuality(error);
 				newModels.push_back(*bestCloseModel.first);
+				//std::cout << " saved" << std::endl;
 			}
 
-			std::cout << "Nr of models found: " << models.size() << std::endl;
-			std::cout << "filtered to       : " << newModels.size() << std::endl;
+			//std::cout << "Nr of models found: " << models.size() << std::endl;
+			//std::cout << "filtered to       : " << newModels.size() << std::endl;
 
 			return newModels;
 		}
@@ -193,16 +200,16 @@ class RANSACModel
 		/**
 		 * @brief Select the model with the biggest number of inliers.
 		 */
-		static MODEL& bestModel(std::vector<MODEL>& models)
+		static MODEL bestModel(const std::vector<MODEL>& models)
 		{
 			if (models.size() == 0) {
 				return *(new MODEL());
 			}
 			
 			size_t inliers = 0;
-			int idx = 0;
+			size_t idx = 0;
 			
-			for (int i = 0; i < models.size(); ++i) {
+			for (size_t i = 0; i < models.size(); ++i) {
 				size_t curInliers = models[i].getNumberOfInliers();
 				
 				if (curInliers > inliers) {
@@ -210,6 +217,8 @@ class RANSACModel
 					idx = i;
 				}
 			}
+			
+			return models[idx];
 		}
 
 	public: // methods		
@@ -250,7 +259,7 @@ class RANSACModel
 		/**
 		 * @brief Get the number of inliers.
 		 */
-		virtual size_t getNumberOfInliers() const { return _data.size(); }
+		size_t getNumberOfInliers() const { return _data.size(); }
 		
 		//! @brief Get the model quality.
 		double getQuality() const { return _quality; }
