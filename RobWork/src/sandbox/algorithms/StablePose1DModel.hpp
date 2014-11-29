@@ -71,6 +71,12 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 		//! @copydoc RANSACModel::same
 		virtual bool same(const StablePose1DModel& model, double threshold) const;
 		
+		//! @brief Get stable pose normal.
+		inline rw::math::Vector3D<> normal() const { return _normal; }
+		
+		//! @brief Get stable pose plane distances.
+		inline rw::math::Vector3D<> d() const { return rw::math::Vector3D<>(_dx, _dy, _dz); }
+		
 		/**
 		 * @brief Streaming operator.
 		 */
@@ -82,6 +88,8 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 	protected: // body
 		rw::math::Vector3D<> _normal;
 		double _dx, _dy, _dz;
+		
+		bool _invalid;
 };
 
 

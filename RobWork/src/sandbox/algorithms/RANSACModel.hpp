@@ -27,6 +27,7 @@
  */
 
 #include <rw/common/Ptr.hpp>
+#include <rw/math/Math.hpp>
 
 #include <iostream>
 #include <vector>
@@ -39,6 +40,8 @@ namespace rwlibs { namespace algorithms {
 
 /**
  * @brief An interface for RANSAC model fitting.
+ * 
+ * @todo A model needs to remember the indices of inliers from the set of data...
  */
 template <class MODEL, class DATA>
 class RANSACModel
@@ -69,7 +72,13 @@ class RANSACModel
 		 * @brief Find models fitting a set of observations.
 		 */
 		static std::vector<MODEL> findModels(const std::vector<DATA>& data, int maxIterations, int dataRequired, double dataThreshold, double modelThreshold) {
-			std::vector<DATA> samples(data); // copy data into the local vector <- argh
+			//std::vector<DATA> samples(data); // copy data into the local vector <- argh
+			
+			// create a vector of indices used for shuffling and picking random points so they don't repeat
+			std::vector<size_t> indices;
+			for (size_t i = 0; i < data.size(); ++i) {
+				indices.push_back(i);
+			}
 			std::vector<std::pair<MODEL, int> > models; // pair containing a model and a number of inliers
 			
 			int iterations = 0;
@@ -77,9 +86,12 @@ class RANSACModel
 				
 				int n = MODEL().getMinReqData();
 				
-				std::random_shuffle(samples.begin(), samples.end());
+				std::random_shuffle(indices.begin(), indices.end());
 				std::vector<DATA> maybeInliers;
-				maybeInliers.insert(maybeInliers.end(), samples.begin(), samples.begin()+n);
+				for (size_t i = 0; i < n; ++i) {
+					maybeInliers.push_back(data[indices[i]]);
+				}
+				//maybeInliers.insert(maybeInliers.end(), samples.begin(), samples.begin()+n);
 
 				// create a model based on the maybeInliers
 				MODEL maybeModel;
@@ -173,14 +185,21 @@ class RANSACModel
 
 				// re-fit data to the best close model found
 				std::vector<DATA> consensusSet;
+				std::vector<size_t> consensusSetIndices;
                 for (size_t k = 0; k < data.size(); ++k) {
 					if (bestCloseModel.first->fitError(data[k]) < dataThreshold) {
                         consensusSet.push_back(data[k]);
+                        consensusSetIndices.push_back(k);
                     }
                 }
                 
 				try {
 				    bestCloseModel.first->refit(consensusSet);
+				    bestCloseModel.first->_indices = consensusSetIndices;
+				    
+				    if (bestCloseModel.first->invalid()) {
+						continue;
+					}
 				} catch (...) {
 					//std::cout << " crash" << std::endl;
 					continue;
@@ -200,8 +219,7 @@ class RANSACModel
 		/**
 		 * @brief Select the model with the biggest number of inliers.
 		 */
-		static MODEL bestModel(const std::vector<MODEL>& models)
-		{
+		static MODEL bestModel(const std::vector<MODEL>& models)	{
 			if (models.size() == 0) {
 				return *(new MODEL());
 			}
@@ -215,6 +233,37 @@ class RANSACModel
 				if (curInliers > inliers) {
 					inliers = curInliers;
 					idx = i;
+				}
+			}
+			
+			return models[idx];
+		}
+		
+		/**
+		 * @brief Select a model randomly, with a chance based on the number of inliers.
+		 */
+		static MODEL likelyModel(const std::vector<MODEL>& models) {
+			if (models.size() == 0) {
+				return *(new MODEL());
+			}
+			
+			size_t total_inliers = 0;
+			std::vector<size_t> thresholds;
+			
+			for (size_t i = 0; i < models.size(); ++i) {
+				size_t inliers = models[i].getNumberOfInliers();
+				
+				total_inliers += inliers;
+				thresholds.push_back(total_inliers);
+			}
+			
+			size_t pick = rw::math::Math::ran(0.0, 1.0) * total_inliers;
+			
+			size_t idx = 0; // model index
+			for (size_t i = 0; i < models.size(); ++i) {
+				if (pick < thresholds[i]) {
+					idx = i;
+					break;
 				}
 			}
 			
@@ -273,10 +322,28 @@ class RANSACModel
 		
 		//! @brief Access data.
 		std::vector<DATA>& getData() { return _data; }
+		
+		//! @brief Access data.
+		const std::vector<DATA>& getData() const { return _data; }
+		
+		/**
+		 * @brief Get the vector of inlier indices
+		 * 
+		 * @return a vector of indices of inliers in the data vector supplied to findModels function.
+		 */
+		std::vector<size_t>& getInlierIndices() { return _indices; }
 	
 	protected: // body
 		std::vector<DATA> _data;
 		double _quality;
+		
+		/* <hack>
+		 * For some calculations, it is neccesary to know which data points given to findModels()
+		 * function were actualy fitted in the model. This vector holds the indices of inliers.
+		 * Use at your own risk, if you know what you are doing.
+		 * </hack>
+		 */
+		std::vector<size_t> _indices;
 };
 
 
