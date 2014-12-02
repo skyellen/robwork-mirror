@@ -63,6 +63,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         std::ostringstream outstream;
         const Log::LogIndex ID = Log::User1;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedMsg(&outstream)) );
+        Log::log().setEnable(Log::User1Mask);
         RW_LOG(ID, "Message");
         RW_LOG(ID, "A"<<std::endl);
         RW_LOG(ID, "MessageB"<<std::endl);
@@ -94,6 +95,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         const Log::LogIndex ID = Log::User2;
         int size = 6;
         Log::log().setWriter(ID, ownedPtr(new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_FIRST)) );
+        Log::log().setEnable(Log::User2Mask);
         RW_LOG(ID, "0123");
         RW_LOG(ID, "4567");
         Log::log().flush(ID);
