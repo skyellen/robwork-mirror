@@ -159,7 +159,7 @@ void TNTCollisionSolverSingle::resolveContacts(
 		const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
 		if (contact)
 			candidates.push_back(contact);
-		else
+		else if (constraint->getDimVelocity() > 0)
 			nonContacts.push_back(constraint);
 	}
 	std::vector<bool> enabled(candidates.size(),false);
@@ -295,7 +295,9 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 	Eigen::MatrixXd::Index dimVel = 0;
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
 		RW_ASSERT(constraint != NULL);
-		dimVel += constraint->getDimVelocity();
+		const std::size_t dim = constraint->getDimVelocity();
+		RW_ASSERT(dim > 0);
+		dimVel += dim;
 	}
 	BOOST_FOREACH(const TNTContact* contact, contacts) {
 		RW_ASSERT(contact != NULL);
@@ -419,6 +421,7 @@ Eigen::VectorXd TNTCollisionSolverSingle::solve(
 		dimVel += dim;
 	}
 	RW_ASSERT(lhs.rows() == lhs.cols());
+	RW_ASSERT(lhs.rows() > 0);
 
 	// Solve
 	TNT_DEBUG_BOUNCING("Solving " << lhs.rows() << " x " << lhs.cols() << " equation system.");
