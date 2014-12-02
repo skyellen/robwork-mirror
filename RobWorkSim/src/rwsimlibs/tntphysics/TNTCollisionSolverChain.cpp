@@ -389,6 +389,8 @@ void TNTCollisionSolverChain::applyImpulses(
 								const Vector3D<> nij = contact->getNormalW(tntstate);
 								solvePair = dot(-linRelVel,nij) < -1e-4;
 							} else {
+								if (constraint->getDimVelocity() == 0)
+									continue;
 								const std::vector<TNTConstraint::Mode> modes = constraint->getConstraintModes();
 								Vector3D<> linRelVelConstraint = Vector3D<>::zero();
 								Vector3D<> angRelVelConstraint = Vector3D<>::zero();
