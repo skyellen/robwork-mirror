@@ -27,57 +27,166 @@ namespace geometry {
 	//! @addtogroup geometry
 	// @{
 	/**
-	 * @brief a line segment in 3d. described by two points
+	 * @brief A line segment in 3d, described by two points
 	 */
 	class Line: public Primitive {
-	public:
+		public:
+			//! @brief Smart pointer to Line.
+			typedef rw::common::Ptr<Line> Ptr;
+		
+			typedef double value_type;
+			
+			/**
+			 * @brief Constructor.
+			 * 
+			 * Default constructor returns line segment along z axis with unit length.
+			 */
+			Line();
 
-	    /**
-	     * @brief Line primitive
-	     * @param params [in] must be 6 long and contain 2 points lying on the line
-	     */
-		Line(const rw::math::Q& params);
+			/**
+			 * @brief Line primitive
+			 * @param params [in] must be 6 long and contain 2 points lying on the line
+			 */
+			Line(const rw::math::Q& params);
 
-		/**
-		 * @brief constructor
-		 * @param p1
-		 * @param p2
-		 * @return
-		 */
-		Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
+			/**
+			 * @brief constructor
+			 * @param p1
+			 * @param p2
+			 * @return
+			 */
+			Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
 
-		//! @brief destructor
-		virtual ~Line();
+			//! @brief destructor
+			virtual ~Line();
 
-		//! @brief get point 1
-		inline rw::math::Vector3D<>& p1(){ return _p1;};
+			//! @brief get point 1
+			inline rw::math::Vector3D<>& p1() { return _p1; }
 
-		//! @brief get point 1
-		inline const rw::math::Vector3D<>& p1() const{ return _p1;};
+			//! @brief get point 1
+			inline const rw::math::Vector3D<>& p1() const { return _p1; }
 
-		//! @brief get point 2
-		inline rw::math::Vector3D<>& p2(){ return _p2;};
+			//! @brief get point 2
+			inline rw::math::Vector3D<>& p2() { return _p2; }
 
-		//! @brief get point 2
-		inline const rw::math::Vector3D<>& p2() const { return _p2;};
+			//! @brief get point 2
+			inline const rw::math::Vector3D<>& p2() const { return _p2; }
+			
+			
+			//! @brief Get a direction vector u = normalize(p2 - p1).
+			inline rw::math::Vector3D<> dir() const { return normalize(_p2 - _p1); }
+			
+			/**
+			 * @brief Calculates the shortest distance from a point to a line extending along this line segment.
+			 * 
+			 * For the purposes of this calculation, the line is treated as infinitely extending geometric entity, without begining nor end.
+			 */
+			double distance(const rw::math::Vector3D<>& point) const;
+			
+			/**
+			 * @brief Calculates the shortest distance to another line.
+			 * 
+			 * For the purposes of this calculation, the lines are treated as infinitely extending geometric entity, without begining nor end.
+			 */
+			double distance(const Line& line) const;
+			
+			/**
+			 * @brief Finds a point on the line closest to specified point.
+			 *
+			 * For the purposes of this calculation, the line is treated as infinitely extending geometric entity, without begining nor end.
+			 */
+			rw::math::Vector3D<> closestPoint(const rw::math::Vector3D<>& point) const;
+			
+			/**
+			 * @brief Fit this line to a set of points
+			 *
+			 * Uses centroid calculation and SVD analysis to determine the parameters of the line.
+			 * p1 is the point on the line closest to origin {0, 0, 0},
+			 * and p2 is chosen so as (p2 - p1) is an unit vector.
+			 * Error is the sum of point distances to the line squared.
+			 *
+			 * @param data [in] a set of points
+			 * 
+			 * @return sum of the squares of point distances to the line
+			 */
+			double refit(std::vector<rw::math::Vector3D<> >& data);
 
-		// inherited from Primitive
-		//! @copydoc Primitive::createMesh
-		TriMesh::Ptr createMesh(int resolution) const { return NULL;};
+			// inherited from Primitive
+			//! @copydoc Primitive::createMesh
+			TriMesh::Ptr createMesh(int resolution) const { return NULL; }
 
-		//! @copydoc Primitive::getParameters
-		rw::math::Q getParameters() const{ return rw::math::Q(2);};
+			//! @copydoc Primitive::getParameters
+			rw::math::Q getParameters() const { return rw::math::Q(6, _p1[0], _p1[1], _p1[2], _p2[0], _p2[1], _p2[2]); }
 
-		//! @copydoc Primitive::getType
-		GeometryType getType() const { return LinePrim; };
+			//! @copydoc Primitive::getType
+			GeometryType getType() const { return LinePrim; }
 
-		static std::vector<Line> makeGrid(int dim_x, int dim_y,double size_x=1.0, double size_y=1.0,
-		                                  const rw::math::Vector3D<>& xdir = rw::math::Vector3D<>::x(),
-		                                  const rw::math::Vector3D<>& ydir = rw::math::Vector3D<>::y());
+			//! @brief Create set of lines making a grid.
+			static std::vector<Line> makeGrid(int dim_x, int dim_y,double size_x=1.0, double size_y=1.0,
+											  const rw::math::Vector3D<>& xdir = rw::math::Vector3D<>::x(),
+											  const rw::math::Vector3D<>& ydir = rw::math::Vector3D<>::y());
 
-	private:
-		rw::math::Vector3D<> _p1,_p2;
-		//rw::math::Q _param;
+			/**
+			 * @brief create a metric that can be used to compare the difference between
+			 * two lines. The distance between two lines is computed as follows:
+			 *
+			 * val = 0.5*angle(l1.dir, l2.dir)*angToDistWeight + 0.5*l1.distance(l2)
+			 * @return
+			 */
+			static rw::math::Metric<Line>::Ptr makeMetric(double angToDistWeight=1.0);
+			
+			/**
+			   @brief Streaming operator.
+			 */
+			friend std::ostream& operator<<(std::ostream& out, const Line& line)
+			{
+				return out
+					<< "Line("
+					<< "p1: " << line._p1 << ", p2: " << line._p2
+					<< ")";
+			};
+			
+		private:
+			rw::math::Vector3D<> _p1,_p2;
+	};
+	
+	
+	
+	/**
+	 * @brief A metric for calculating line-to-line distance.
+	 */
+	class LineMetric: public rw::math::Metric<Line> {
+		public:
+			LineMetric(double angToDistWeight = 1.0) :
+				_angToDistWeight(angToDistWeight)
+			{}
+		
+		protected:
+			//! @brief Calculates distance from the line to Z axis
+			double doDistance(const Line& l) const
+			{
+				return doDistance(Line(rw::math::Vector3D<>(), rw::math::Vector3D<>::z()), l);
+			}
+		
+			/**
+			 * @brief Calculates distance between two lines
+			 * 
+			 * The distance is calculated according to formula:
+			 * 
+			 * val = 0.5*angle(l1.dir, l2.dir)*angToDistWeight + 0.5*distance(l1, l2)
+			 */
+			double doDistance(const Line& a, const Line& b) const
+			{
+				// if the direction faces the other direction, the real angle is 180 deg - calculated angle
+				double ang = rw::math::angle(a.dir(), b.dir());
+				ang = ((rw::math::Pi - ang) < ang) ? (rw::math::Pi - ang) : ang;
+				
+				return 0.5*ang*_angToDistWeight + 0.5*a.distance(b);
+			}
+
+			int doSize() const { return -1; }
+
+			double _angToDistWeight;
 	};
 	// @}
 } // geometry

@@ -40,7 +40,7 @@ namespace geometry {
 		typedef double value_type;
 		
 		/**
-		 * @brief constructor
+		 * @brief Constructor.
 		 * 
 		 * Makes a plane on X-Y surface.
 		 */
@@ -69,7 +69,8 @@ namespace geometry {
 		 * @return
 		 */
 		Plane(const rw::math::Vector3D<>& n, double d):
-			_normal(n),_d(d){}
+			_normal(n) ,_d(d)
+		{}
 
 		/**
 		 * @brief constructor - calculates the plane from 3 vertices
@@ -80,65 +81,63 @@ namespace geometry {
 		Plane(const rw::math::Vector3D<>& p1,
 			  const rw::math::Vector3D<>& p2,
 			  const rw::math::Vector3D<>& p3):
-				  _normal(normalize( cross( p2 - p1, p3 - p1 )) )
+				  _normal(normalize(cross(p2 - p1, p3 - p1)))
 		{
 			_d = dot(_normal, p1);
 		}
 
 		//! @brief destructor
-		virtual ~Plane(){};
+		virtual ~Plane() {};
 
 		//! @brief get plane normal
-		inline rw::math::Vector3D<>& normal(){return _normal;};
+		inline rw::math::Vector3D<>& normal(){ return _normal; }
 
 		//! @brief get plane normal
-		inline const rw::math::Vector3D<>& normal() const {return _normal;};
+		inline const rw::math::Vector3D<>& normal() const { return _normal; }
 
 		//! @brief get distance to {0,0,0} from plane along normal.
-		inline double& d() {return _d; }
+		inline double& d() { return _d; }
 
 		//! @brief get distance to {0,0,0} from plane along normal.
-		inline double d() const {return _d; }
+		inline double d() const { return _d; }
 
 		/**
-		 * @brief calculates the shortest distance from point to plane. 
+		 * @brief Calculates the shortest distance from point to plane. 
 		 *
 		 * The distance includes the sign s.t. a negative distance corresponds to \b point
 		 * being behind the plane and a positive distance in front of the plane.
 		 *
 		 * @param point
-		 * @return
 		 */
 		double distance(const rw::math::Vector3D<>& point){
-		    return dot(point,_normal)+_d;
+		    return dot(point, _normal) + _d;
 		}
 
 		/**
-		 * @brief default metric for computing the difference between 2 planes
-		 * @param point
-		 * @return
+		 * @brief Default metric for computing the difference between 2 planes
+		 * @param plane [in]
 		 */
-		double distance(const Plane& plane){
+		double distance(const Plane& plane) {
 			double ang = angle(_normal, plane.normal());
-			return (ang+fabs(_d-plane.d()))/2.0;
+			return (ang + fabs(_d - plane.d())) / 2.0;
 		}
 
 		/**
-		 * @brief fit this plane to a set of points
+		 * @brief Fit this plane to a set of points.
 		 *
 		 * A PCA analysis of the points are made and the two axes with
 		 * largest extends are used for defining the plane. The error is the
 		 * sum of the squared mean of the points to the plane.
 		 *
 		 * @param data [in] a set of points
-		 * @return
+		 * @return fitting error
 		 */
-		double refit( std::vector<rw::math::Vector3D<> >& data );
+		double refit(std::vector<rw::math::Vector3D<> >& data);
 
 		/**
 		 * @brief Calculates the intersection between the line and plane.
 		 *
-		 * The defined by \b p1 and \p2 is considered infinitely long.
+		 * The line defined by \b p1 and \b p2 is considered infinitely long.
 		 * Throws a rw::common::Exception if the line is parallel to the plane.
 		 *
 		 * @param p1 [in] point 1 on the line
@@ -146,11 +145,12 @@ namespace geometry {
 		 */
 		rw::math::Vector3D<> intersection(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) {
 			double denominator = dot(_normal, p2-p1);
+			
 			if (fabs(denominator) < 1e-16) {
-				RW_THROW("The specified line is parallel to the plane. Points: "<<p1<<"; "<<p2<<" Normal = "<<_normal);
+				RW_THROW("The specified line is parallel to the plane. Points: " << p1 << "; " << p2 << " Normal = " << _normal);
 			}
-			double t = (-_d-dot(_normal, p1))/denominator;
-			return p1+t*(p2-p1);
+			double t = (-_d-dot(_normal, p1)) / denominator;
+			return p1 + t * (p2 - p1);
 		}
 
 		//static Plane fitFrom(const std::vector<rw::math::Vector3D<> >& data){ return };
@@ -166,27 +166,26 @@ namespace geometry {
 		 * @param resolution [in] Resolution of the mesh (not applicable for a plane)
 		 * @param size [in] Size of the plane.
 		 */
-		TriMesh::Ptr createMesh(int resolution, double size) const ;
+		TriMesh::Ptr createMesh(int resolution, double size) const;
 
 
 		//! @copydoc Primitive::getParameters()
 		rw::math::Q getParameters() const;
 
 		//! @copydoc Primitive::getType()
-		GeometryType getType() const{ return PlanePrim; };
+		GeometryType getType() const { return PlanePrim; }
 
 		/**
-		 * @brief computes the distance from point to plane
+		 * @brief Computes the distance from point to plane.
 		 * @param p [in]
-		 * @return
 		 */
-		double distance( const rw::math::Vector3D<>& p ) const {
-			return fabs( _normal(0)*p(0)+_normal(1)*p(1)+_normal(2)*p(2) + _d );
+		double distance(const rw::math::Vector3D<>& p) const {
+			return fabs(dot(_normal, p) + _d);
 		}
 
 
 		/**
-		 * @brief create a metric that can be used to compare distance between
+		 * @brief Create a metric that can be used to compare distance between
 		 * two planes. The distance between two planes is computed as follows:
 		 *
 		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);

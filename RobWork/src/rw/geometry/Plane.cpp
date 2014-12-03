@@ -81,36 +81,42 @@ double Plane::refit( std::vector<rw::math::Vector3D<> >& data ){
 	if(data.size()==3){
 		if( MetricUtil::dist2(data[1],data[0])<0.1 ||
 				MetricUtil::dist2(data[2],data[1])<0.1 ||
-				MetricUtil::dist2(data[0],data[2])<0.1){
-			_normal = Vector3D<>(0,0,0);
+				MetricUtil::dist2(data[0],data[2])<0.1) {
+			_normal = Vector3D<>(0, 0, 0);
 			return 1000;
 		}
 
 		_normal = normalize( cross(data[1]-data[0],data[2]-data[0]) );
-        if( _normal(2)<0 )
+        if (_normal(2) < 0) {
         	_normal = -_normal;
+		}
+		
 		const rw::math::Vector3D<>& p = data[0];
-		_d = -_normal(0)*p(0) -_normal(1)*p(1) -_normal(2)*p(2);
+		_d = -dot(_normal, p);
 	} else {
 
         using namespace boost::numeric;
         using namespace rw::math;
 
-        Eigen::MatrixXd covar( Eigen::MatrixXd::Zero(3, 3) );
-        Vector3D<> centroid(0,0,0);
-        BOOST_FOREACH(Vector3D<> &v, data){
+        Eigen::MatrixXd covar(Eigen::MatrixXd::Zero(3, 3));
+        Vector3D<> centroid(0, 0, 0);
+        BOOST_FOREACH(Vector3D<> &v, data) {
             centroid += v;
-            for(size_t j=0;j<3;j++)
-                for(size_t k=0;k<3;k++)
-                    covar(j,k) += v(j)*v(k);
+            for(size_t j = 0; j < 3; j++) {
+                for(size_t k = 0; k < 3; k++) {
+                    covar(j, k) += v(j) * v(k);
+				}
+			}
         }
         //std::cout << "COVAR: " << covar << std::endl;
 
         // 3. Compute Covariance matrix
         // 3.1 using the variables from 2.1 we create the covariance matrix
-        for(size_t j=0;j<3;j++)
-            for(size_t k=0;k<3;k++)
-                covar(j,k) = covar(j,k)-centroid[j]*centroid[k]/data.size();
+        for(size_t j = 0; j < 3; j++) {
+            for(size_t k = 0; k < 3; k++) {
+                covar(j, k) = covar(j, k) - centroid[j]*centroid[k] / data.size();
+			}
+		}
         Vector3D<> c = centroid/((double)data.size());
         // 4. get eigenvectors from the covariance matrix
         typedef std::pair<Eigen::MatrixXd, Eigen::VectorXd > ResultType;
