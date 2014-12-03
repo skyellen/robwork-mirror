@@ -72,8 +72,8 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 {
 	const double NormalAlignmentThreshold = 5.0 * Deg2Rad;
 	const int PlaneFitIterations = 100;
-	const double PlaneFitThreshold = 0.1;
-	const double PlaneModelThreshold = 0.1;
+	const double PlaneFitThreshold = 0.05;
+	const double PlaneModelThreshold = 0.05;
 	
 	_data = samples;
 	int n = _data.size();
@@ -93,7 +93,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		xPoints.push_back(sample.getRow(0));
 	}
 	PlaneModel xPlane = PlaneModel::likelyModel(PlaneModel::findModels(xPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
-	cout << "xplane " << xPlane << endl;
+	//cout << "xplane " << xPlane << endl;
 	normal = xPlane.normal();
 	maxInliers = xPlane.getNumberOfInliers();
 	bestPlane = &xPlane;
