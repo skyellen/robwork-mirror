@@ -20,39 +20,71 @@
 #define RW_GEOMETRY_RAY_HPP
 
 
-#include "Primitive.hpp"
+#include "Line.hpp"
 
 namespace rw {
 namespace geometry {
 
     /**
-     * @brief a Ray described by a position and a direction
+     * @brief A ray - an infinitely extending half-line described by a starting position and a direction.
      */
-    class Ray {
-    public:
-        /**
-         * @brief constructor
-         * @param pos [in] position from which the ray starts
-         * @param dir [in] direction in which the ray shoots
-         */
-        Ray(rw::math::Vector3D<>& pos, rw::math::Vector3D<>& dir);
+    class Ray: public Line {
+		public:
+			/**
+			 * @brief constructor
+			 * @param pos [in] position from which the ray starts
+			 * @param dir [in] direction in which the ray shoots
+			 */
+			Ray(rw::math::Vector3D<>& pos, rw::math::Vector3D<>& dir) :
+				Line(pos, pos + dir),
+				_pos(pos),
+				_dir(dir)
+			{}
 
-        //! @brief destructor
-        virtual ~Ray();
+			//! @brief Destructor.
+			virtual ~Ray() {}
 
-        /**
-         * @brief get the position from which the ray starts
-         */
-        rw::math::Vector3D<>& pos();
 
-        /**
-         * get the direction in which the ray shoots
-         */
-        rw::math::Vector3D<>& dir();
 
-    private:
-        rw::math::Vector3D<> _p1,_p2;
+			/**
+			 * @brief Get the position from which the ray starts.
+			 */
+			rw::math::Vector3D<>& pos() { return _pos; }
 
+			/**
+			 * @brief Get the direction in which the ray shoots.
+			 */
+			rw::math::Vector3D<>& dir() { return _dir; }
+			
+			
+			
+			// inherited from Primitive
+			//! @copydoc Primitive::createMesh
+			TriMesh::Ptr createMesh(int resolution) const { return NULL; }
+
+			//! @copydoc Primitive::getParameters
+			rw::math::Q getParameters() const { return rw::math::Q(6, _pos[0], _pos[1], _pos[2], _dir[0], _dir[1], _dir[2]); }
+
+			//! @copydoc Primitive::getType
+			GeometryType getType() const { return LinePrim; }
+			
+			
+			
+			/**
+			   @brief Streaming operator.
+			 */
+			friend std::ostream& operator<<(std::ostream& out, const Ray& ray)
+			{
+				return out
+					<< "Ray("
+					<< "pos: " << ray._pos << ", dir: " << ray._dir
+					<< ")";
+			};
+
+
+
+		private:
+			rw::math::Vector3D<> _pos, _dir;
     };
 
 } // geometry

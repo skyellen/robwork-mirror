@@ -17,6 +17,7 @@ SET(FILES_CPP
     Pyramid.cpp
     Cone.cpp
     Line.cpp
+    Ray.cpp
     Plane.cpp  
     ConvexHull2D.cpp
     ConvexHull3D.cpp    
@@ -71,6 +72,7 @@ SET(FILES_HPP
     Cone.hpp
     #AABB.hpp
     Line.hpp
+    Ray.hpp
     Plane.hpp
     ConvexHull2D.hpp
     ConvexHull3D.hpp

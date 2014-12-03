@@ -238,13 +238,26 @@ namespace geometry {
 		 * The distance is calculated according to formula:
 		 * 
 		 * val = 0.5*angle(p1.normal, p2.normal)*angToDistWeight + 0.5*fabs(p1.d-p2.d);
+		 * 
+		 * Angle is normalized, so that planes with opposite normals are treated as the same plane.
 		 */
         double doDistance(const Plane& a, const Plane& b) const
         {
-			// if the normal faces the other direction, the real angle is 180 deg - calculated angle
+			
 			double ang = rw::math::angle(a.normal(), b.normal());
-			ang = ((rw::math::Pi - ang) < ang) ? (rw::math::Pi - ang) : ang;
-			return 0.5*ang*_angToDistWeight + 0.5*fabs(a.d() - b.d());
+			double d = b.d();
+			
+			// if the normal faces the other direction, the real angle is 180 deg - calculated angle
+			// and one of the distances is reversed
+			if ((rw::math::Pi - ang) < ang) {
+				ang = rw::math::Pi - ang;
+				d = -d;
+			}
+			
+			//ang = ((rw::math::Pi - ang) < ang) ? (rw::math::Pi - ang) : ang;
+			
+			
+			return 0.5*ang*_angToDistWeight + 0.5*fabs(a.d() - d);
 		}
 
         int doSize() const { return -1; }

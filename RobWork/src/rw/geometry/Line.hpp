@@ -21,13 +21,15 @@
 
 #include "Primitive.hpp"
 
+#include <iostream>
+
 namespace rw {
 namespace geometry {
 
 	//! @addtogroup geometry
 	// @{
 	/**
-	 * @brief A line segment in 3d, described by two points
+	 * @brief A line in 3D, described by a two points.
 	 */
 	class Line: public Primitive {
 		public:
@@ -39,37 +41,37 @@ namespace geometry {
 			/**
 			 * @brief Constructor.
 			 * 
-			 * Default constructor returns line segment along z axis with unit length.
+			 * Default constructor returns line segment from {0, 0, 0} to {0, 0, 1}.
 			 */
 			Line();
 
 			/**
-			 * @brief Line primitive
+			 * @brief Constructor.
 			 * @param params [in] must be 6 long and contain 2 points lying on the line
 			 */
 			Line(const rw::math::Q& params);
 
 			/**
-			 * @brief constructor
-			 * @param p1
-			 * @param p2
-			 * @return
+			 * @brief Constructor.
+			 *
+			 * @param p1 [in] point 1.
+			 * @param p2 [in] point 2.
 			 */
 			Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
 
 			//! @brief destructor
 			virtual ~Line();
 
-			//! @brief get point 1
+			//! @brief Get point 1.
 			inline rw::math::Vector3D<>& p1() { return _p1; }
 
-			//! @brief get point 1
+			//! @brief Get point 1.
 			inline const rw::math::Vector3D<>& p1() const { return _p1; }
 
-			//! @brief get point 2
+			//! @brief Get point 2.
 			inline rw::math::Vector3D<>& p2() { return _p2; }
 
-			//! @brief get point 2
+			//! @brief Get point 2.
 			inline const rw::math::Vector3D<>& p2() const { return _p2; }
 			
 			
@@ -77,7 +79,7 @@ namespace geometry {
 			inline rw::math::Vector3D<> dir() const { return normalize(_p2 - _p1); }
 			
 			/**
-			 * @brief Calculates the shortest distance from a point to a line extending along this line segment.
+			 * @brief Calculates the shortest distance from a point to the line.
 			 * 
 			 * For the purposes of this calculation, the line is treated as infinitely extending geometric entity, without begining nor end.
 			 */
@@ -180,6 +182,9 @@ namespace geometry {
 				// if the direction faces the other direction, the real angle is 180 deg - calculated angle
 				double ang = rw::math::angle(a.dir(), b.dir());
 				ang = ((rw::math::Pi - ang) < ang) ? (rw::math::Pi - ang) : ang;
+				
+				//std::cout << "angle= " << ang << std::endl;
+				//std::cout << "dist= " << a.distance(b) << std::endl;
 				
 				return 0.5*ang*_angToDistWeight + 0.5*a.distance(b);
 			}

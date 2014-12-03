@@ -47,14 +47,14 @@ Line::Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) :
 Line::~Line() {}
 
 double Line::distance(const rw::math::Vector3D<>& point) const {
-	return cross(point - _p1, point - _p2).norm2() / (_p2 - _p1).norm2();
+	return fabs(cross(point - _p1, point - _p2).norm2() / (_p2 - _p1).norm2());
 }
 
 double Line::distance(const Line& line) const {
 	Vector3D<> b = _p2 - _p1;
 	Vector3D<> d = line._p2 - line._p1;
 	
-	return dot(_p1 - line._p1, cross(b, d)) / cross(b, d).norm2();
+	return fabs(dot(_p1 - line._p1, cross(b, d)) / cross(b, d).norm2());
 }
 
 rw::math::Vector3D<> Line::closestPoint(const rw::math::Vector3D<>& point) const {
