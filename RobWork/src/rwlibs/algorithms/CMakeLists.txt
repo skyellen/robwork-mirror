@@ -22,6 +22,11 @@ IF(build)
       
       MovingAverage.cpp
       #StablePlanePose.cpp
+      RANSACModel.cpp
+      PointModel.cpp
+      LineModel.cpp
+      PlaneModel.cpp
+      StablePose1DModel.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -37,6 +42,12 @@ IF(build)
 	  BFGS.hpp      
       MovingAverage.hpp
       #StablePlanePose.hpp
+      
+      RANSACModel.hpp
+      PointModel.hpp
+      LineModel.hpp
+      PlaneModel.hpp
+      StablePose1DModel.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} algorithms ${SRC_FILES} ${SRC_FILES_HPP})
