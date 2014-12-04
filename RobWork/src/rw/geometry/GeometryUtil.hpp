@@ -20,17 +20,15 @@
 
 #include <vector>
 
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/InertiaMatrix.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VectorND.hpp>
-//#include <rw/geometry/Face.hpp>
 
 #include "Geometry.hpp"
-#include "Primitive.hpp"
-#include "TriMesh.hpp"
 
+namespace rw { namespace geometry { class TriMesh; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace geometry {
@@ -38,75 +36,128 @@ namespace geometry {
 /*@{*/
 /**
  * @brief Utility functions for calculating properties of geometry
+ *
+ * The methods for calculation of volume, inertia, and the center of gravity, is as described in [1].
+ *
+ * [1]: Fast and Accurate Computation of Polyhedral Mass Properties, Brian Mirtich. Journal of Graphics Tools, Vol.1, pages 31-58, 1996
  */
 class GeometryUtil
 {
 public:
+	/**
+	 * @brief Estimates the volume of a list of geometries.
+	 * @note If geometries are overlapping, the overlapping regions will count twice in the volume.
+     * @param geoms [in] the list of geometries.
+	 * @return the total volume of the geometries.
+	 */
+    static double estimateVolume(const std::vector<Geometry::Ptr> &geoms);
 
     /**
-     * @brief estimates the inertia and center of mass for a group of frames that is anchored
-     * to the reference frame. the inertia will be described relative to the frame
+	 * @brief Estimates the volume of a trimesh.
+     * @param trimesh [in] the trimesh.
+	 * @return the total volume of the trimesh.
      */
-    static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> >
-            estimateInertia(double mass, rw::kinematics::Frame &frame, const rw::kinematics::State& state);
+    static double estimateVolume(const rw::geometry::TriMesh &trimesh);
 
     /**
-     * @brief estimates the inertia of a list of geometries.
-     * The inertia is described relative
-     * to the ref coordinate system. Each geometry is assumed to be described relative to
-     * ref.
-     * @note the inertia is NOT described around center of gravity, but around ref
-     */
-	static rw::math::InertiaMatrix<> estimateInertia(double mass, const std::vector<Geometry::Ptr> &geoms,
-	                                                 rw::kinematics::Frame* ref, const rw::kinematics::State& state,
-                                                     const rw::math::Transform3D<>& reftrans =
-                                                             rw::math::Transform3D<>::identity());
-
-    /**
-     * @brief estimates the inertia and center of gravity (COG) of a list of geometries.
-     * The inertia is described relative
-     * to the ref coordinate system translated to COG. Each geometry is assumed to
-     * be described relative to ref.
+     * @brief Estimates the inertia and center of gravity (COG) of a list of geometries.
+     *
+     * The inertia is described relative to the ref coordinate system translated to COG.
+     * The \b reftrans parameter can however be used to transform the geometries.
+     *
+     * @param mass [in] the total mass of all geometries.
+     * @param geoms [in] the list of geometries.
+     * @param ref [in] the reference frame for the geometries (if NULL, it is assumed that
+     * the geometries are defined relative to the same frame).
+	 * @param state [in] state used to retrieve the current location of geometries relative to the reference frame
+	 * (only used if ref is given).
+	 * @param reftrans [in] (optional) used to transform the geometry before calculation of the inertia.
+	 * @return the center of gravity relative to the ref frame and the inertia around
+	 * the center of gravity (in the coordinate frame of the ref frame).
      */
     static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(
     		double mass,
     		const std::vector<Geometry::Ptr> &geoms,
-    		rw::kinematics::Frame* ref,
+    		const rw::kinematics::Frame* ref,
     		const rw::kinematics::State& state,
     		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
 
     /**
-      * @brief estimates the inertia and center of gravity (COG) of a list of geometries.
-      * The inertia is described relative
-      * to the ref coordinate system translated to COG. Each geometry is assumed to
-      * be described relative to ref.
-      */
+     * @brief Estimates the inertia of a list of geometries.
+     *
+     * The inertia is described relative to the ref coordinate system
+     * The \b reftrans parameter can however be used to transform the geometries.
+     *
+     * @param mass [in] the total mass of all geometries.
+     * @param geoms [in] the list of geometries.
+     * @param ref [in] the reference frame for the geometries (if NULL, it is assumed that
+     * the geometries are defined relative to the same frame).
+	 * @param state [in] state used to retrieve the current location of geometries relative to the reference frame
+	 * (only used if ref is given).
+	 * @param reftrans [in] (optional) used to transform the geometry before calculation of the inertia.
+	 * @return the inertia around relative to the ref frame.
+     */
+    static rw::math::InertiaMatrix<> estimateInertia(
+    		double mass,
+    		const std::vector<Geometry::Ptr> &geoms,
+    		const rw::kinematics::Frame* ref,
+    		const rw::kinematics::State& state,
+    		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
+
+    /**
+     * @brief Estimates the inertia of a list of geometries.
+     *
+     * The inertia is described relative to the geometry reference frame.
+     * The \b reftrans parameter can however be used to transform the geometries.
+     *
+     * @note The geometries should be defined relative to the same frame - otherwise the
+     * result will not make sense.
+     *
+     * @param mass [in] the total mass of all geometries.
+     * @param geoms [in] the list of geometries.
+     * @param reftrans [in] (optional) used to transform the geometry before calculation of the inertia.
+     * @return the inertia matrix relative to the reference frame.
+     */
      static rw::math::InertiaMatrix<> estimateInertia(
              double mass,
              const std::vector<Geometry::Ptr> &geoms,
              const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
 
-
     /**
-     * @brief estimates the center of gravity (COG) of a list of geometries.
-     * @param geoms [in] the geometries
-     * @return the center of gravity of the geometries
+     * @brief Estimates the center of gravity (COG) of a list of geometries.
+     *
+     * The COG will be found relative to the geometry frame.
+     *
+     * @note The geometries should be defined relative to the same frame - otherwise the
+     * result will not make sense.
+     *
+     * @param geoms [in] the list of geometries.
+     * @return the center of gravity for the geometries.
      */
     static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
 
     /**
-     * @brief estimates the center of gravity (COG) of a list of geometries.
-     * @param geoms [in] the geometries
-     * @return the center of gravity of the geometries
+     * @brief Estimates the center of gravity (COG) of a list of geometries.
+     *
+     * The COG will be given relative to the given reference frame.
+     *
+     * @param geoms [in] the list of geometries.
+     * @param ref [in] the reference frame.
+     * @param state [in] the state which gives the position of the geometries relative to the reference frame.
+     * @return the center of gravity for the geometries.
      */
-	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms, rw::kinematics::Frame* ref, const rw::kinematics::State& state);
+	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms,
+			const rw::kinematics::Frame* ref,
+			const rw::kinematics::State& state);
 
     /**
-     * @brief estimates the center of gravity (COG) of a triangle mesh \b trimesh
-     * @param trimesh [in] the triangle mesh
-     * @return the center of gravity of the mesh
+     * @brief Estimates the center of gravity (COG) of a triangle mesh.
+     * @param trimesh [in] the triangle mesh.
+     * @param t3d [in] (optional) make a transformation of the trimesh.
+     * @return the center of gravity of the mesh.
      */
-    static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh);
+    static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh,
+    		const rw::math::Transform3D<>& t3d = rw::math::Transform3D<>::identity());
 
     /**
       * @brief calculates the max distance to any triangle in the geoms, from some point \b center
@@ -114,30 +165,25 @@ public:
       * @param center [in] the point to calculate the distance from
       * @return the maximum distance to any triangle in the geometries
       */
-    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms, const rw::math::Vector3D<> center, rw::kinematics::Frame* ref, const rw::kinematics::State& state);
-
-    /**
-     * @brief estimates center of gravity (COG) of a single tirangle mesh
-     * @param trimesh [in] triangle mesh
-     * @param t3d [in] transform
-     * @return center of gravity
-     */
-    static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>& t3d);
+    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
+    		const rw::math::Vector3D<> center,
+			rw::kinematics::Frame* ref,
+			const rw::kinematics::State& state);
 
     /**
      * @brief util function that locates all frames that is staticly connected to f
      * and that has geometry information.
      */
     static std::vector<rw::kinematics::Frame*> getAnchoredFrames(rw::kinematics::Frame &f,
-                                                                 const rw::kinematics::State &state);
+    		const rw::kinematics::State &state);
 
     /**
      * @brief util function that locates all frames in the sub tree of parent
      * that is staticly connected and that has geometry information.
      */
     static std::vector<rw::kinematics::Frame*> getAnchoredChildFrames(rw::kinematics::Frame *parent,
-                                                                      const rw::kinematics::State &state);
-                                                                      
+    		const rw::kinematics::State &state);
+
     /**
      * @brief calculates volume of k-simplex
      * 

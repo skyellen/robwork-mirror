@@ -79,7 +79,7 @@ TARGET_LINK_LIBRARIES( rw_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_common-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_common-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_geometry-test ${DO_EXCLUDE} test-main.cpp geometry/GeometryTest.cpp)       
+ADD_EXECUTABLE( rw_geometry-test ${DO_EXCLUDE} test-main.cpp geometry/GeometryTest.cpp geometry/GeometryUtilTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_geometry-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_geometry-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_geometry-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_geometry-test ${TEST_DEPENDENCIES})
