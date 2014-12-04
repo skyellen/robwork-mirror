@@ -628,7 +628,7 @@ void GraspPlugin::keyEventListener(int key, Qt::KeyboardModifiers modifier)
 
 void GraspPlugin::showTasks()
 {
-	return;
+	//return;
 	vector<RenderTargets::Target> rtargets;
 	Transform3D<> wTo = Kinematics::worldTframe(_td->getTargetFrame(), _wc->getDefaultState());
 	

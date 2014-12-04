@@ -23,7 +23,8 @@ namespace po = boost::program_options;
 int main(int argc, char* argv[])
 {
 	// parameters
-	Q jawParams(10, 0, 0.1, 0.025, 0.02, 0, 0*Deg2Rad, 0, 0, 90*Deg2Rad, 0);
+	double params[] = { 0, 0.1, 0.025, 0.02, 0, 0*Deg2Rad, 0, 0, 90*Deg2Rad, 0, 0 };
+	Q jawParams(11, params);
 	Q baseParams(3, 0.15, 0.1, 0.05);
 	Q qualities(5, 0.0, 0.0, 0.0, 0.0, 0.0);
 	
@@ -47,9 +48,13 @@ int main(int argc, char* argv[])
 	posDesc.add("out", -1);
 	
 	try {
+		cout << "Processing cmdline" << endl;
+		
 		variables_map vm;
 		store(command_line_parser(argc, argv).options(desc).positional(posDesc).style(command_line_style::unix_style ^ command_line_style::allow_short).run(), vm);
 		notify(vm);
+		
+		cout << "Processed" << endl;
 		
 		/* PROCESS */
 		if (vm.count("help")) {
@@ -62,6 +67,7 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 		
+		cout << "Making gripper" << endl;
 		Gripper::Ptr gripper = ownedPtr(new Gripper);
 		
 		if (vm.count("name")) {
@@ -69,11 +75,12 @@ int main(int argc, char* argv[])
 		}
 		
 		if (vm.count("jaw")) {
+			cout << "Found jaw" << endl;
 			jawParams = Q(vm["jaw"].as<vector<double> >());
 			jawParams(5) *= Deg2Rad;
 			jawParams(8) *= Deg2Rad;
 			jawParams(10) *= Deg2Rad;
-			gripper->setJawGeometry(jawParams);
+			//gripper->setJawGeometry(jawParams);
 		}
 		
 		if (vm.count("base")) {
@@ -82,6 +89,7 @@ int main(int argc, char* argv[])
 		}
 		
 		if (vm.count("tcp")) {
+			cout << "Found tcp" << endl;
 			//gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, gripper->getJawParameters()[1]-vm["tcp"].as<double>())));
 			gripper->setTCP(Transform3D<>(Vector3D<>(0, 0, vm["tcp"].as<double>())));
 		}

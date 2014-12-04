@@ -251,7 +251,11 @@ void GripperTaskSimulator::printGraspResult(SimState& sstate)
 	
 	DEBUG << " I: " << sstate._target->getResult()->interference;
 	DEBUG << " W: " << sstate._target->getResult()->qualityAfterLifting << endl;
-	DEBUG << " Pose: " << sstate._target->getResult()->objectTtcpLift.P() << RPY<>(sstate._target->getResult()->objectTtcpLift.R()) << endl;
+	
+	if ((GraspTask::TestStatus)sstate._target->getResult()->testStatus == GraspTask::Success) {
+		rw::math::Transform3D<> pose = inverse(sstate._target->getResult()->objectTtcpLift);
+		DEBUG << " Pose: " << pose.P() << " " << RPY<>(pose.R()) << endl;
+	}
 }
 
 
