@@ -86,6 +86,12 @@ class RANSACModel
 		static std::vector<MODEL> findModels(const std::vector<DATA>& data, int maxIterations, int dataRequired, double dataThreshold, double modelThreshold) {
 			
 			int n = MODEL().getMinReqData();
+			
+			if (data.size() < n || data.size() < dataRequired) {
+				RW_WARN("Too few samples to create a proper model.");
+				
+				return std::vector<MODEL>();
+			}
 
 			// create a vector of indices used for shuffling and picking random points so they don't repeat
 			std::vector<size_t> indices;
@@ -136,9 +142,33 @@ class RANSACModel
 			// merging models
 			//std::cout << "Merging models" << std::endl;
 			if (models.size() == 0) {
+				// if no models found, return empty vector
 				return std::vector<MODEL>();
 			}
+			
             if (models.size() == 1) {
+				// re-fit data to the single
+				std::vector<DATA> consensusSet;
+				std::vector<size_t> consensusSetIndices;
+                for (size_t k = 0; k < data.size(); ++k) {
+					if (models[0].first.fitError(data[k]) < dataThreshold) {
+                        consensusSet.push_back(data[k]);
+                        consensusSetIndices.push_back(k);
+                    }
+                }
+                
+				try {
+				    models[0].first.refit(consensusSet);
+				    models[0].first._indices = consensusSetIndices;
+				    
+				    if (models[0].first.invalid() || models[0].first.getNumberOfInliers() < dataRequired) {
+						return std::vector<MODEL>();
+					}
+				} catch (...) {
+					//std::cout << " crash" << std::endl;
+					return std::vector<MODEL>();
+				}
+				
                 return std::vector<MODEL>(1, models[0].first);
 			}
 			
@@ -207,7 +237,7 @@ class RANSACModel
 				    bestCloseModel.first->refit(consensusSet);
 				    bestCloseModel.first->_indices = consensusSetIndices;
 				    
-				    if (bestCloseModel.first->invalid()) {
+				    if (bestCloseModel.first->invalid() || bestCloseModel.first->getNumberOfInliers() < dataRequired) {
 						continue;
 					}
 				} catch (...) {
@@ -223,11 +253,11 @@ class RANSACModel
 			//std::cout << "Nr of models found: " << models.size() << std::endl;
 			//std::cout << "filtered to       : " << newModels.size() << std::endl;
 			
-			// sort models
-			if (newModels.size() > 0) { // it shouldn't be 0 at this point though
+			// sort models SEGFAULTS for some reason
+			/*if (newModels.size() > 0) { // it shouldn't be 0 at this point though
 				std::sort(newModels.begin(), newModels.end());
 				std::reverse(newModels.begin(), newModels.end());
-			}
+			}*/
 			
 			return newModels;
 		}

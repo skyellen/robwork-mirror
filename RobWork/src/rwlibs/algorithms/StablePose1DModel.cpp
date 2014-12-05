@@ -87,25 +87,34 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	//cout << _data[0].getRow(0)[2] << " " << _data[0].getRow(1)[2] << " " << _data[0].getRow(2)[2] << endl;
 	
+	bool invalidFlag = true;
+	
 	// x plane
 	vector<Vector3D<> > xPoints;
 	BOOST_FOREACH (rw::math::Rotation3D<>& sample, _data) {
 		xPoints.push_back(sample.getRow(0));
 	}
-	PlaneModel xPlane = PlaneModel::likelyModel(PlaneModel::findModels(xPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+	vector<PlaneModel> xModels = PlaneModel::findModels(xPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);	
+	PlaneModel xPlane = PlaneModel::likelyModel(xModels);
 	//cout << "xplane " << xPlane << endl;
-	normal = xPlane.normal();
-	maxInliers = xPlane.getNumberOfInliers();
-	bestPlane = &xPlane;
+	
+	if (xModels.size() > 0) {
+		invalidFlag = false;
+		normal = xPlane.normal();
+		maxInliers = xPlane.getNumberOfInliers();
+		bestPlane = &xPlane;
+	}
 	
 	// y plane
 	vector<Vector3D<> > yPoints;
 	BOOST_FOREACH (rw::math::Rotation3D<>& sample, _data) {
 		yPoints.push_back(sample.getRow(1));
 	}
-	PlaneModel yPlane = PlaneModel::likelyModel(PlaneModel::findModels(yPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+	vector<PlaneModel> yModels = PlaneModel::findModels(yPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);
+	PlaneModel yPlane = PlaneModel::likelyModel(yModels);
 	//cout << "yplane " << yPlane << endl;
-	if (yPlane.getNumberOfInliers() > maxInliers) {
+	if (yModels.size() > 0 && yPlane.getNumberOfInliers() > maxInliers) {
+		invalidFlag = false;
 		normal = yPlane.normal();
 		maxInliers = yPlane.getNumberOfInliers();
 		bestPlane = &yPlane;
@@ -116,17 +125,29 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	BOOST_FOREACH (rw::math::Rotation3D<>& sample, _data) {
 		//cout << sample.getRow(2) << endl;
 		zPoints.push_back(sample.getRow(2));
-	} 
-	PlaneModel zPlane = PlaneModel::likelyModel(PlaneModel::findModels(zPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+	}
+	vector<PlaneModel> zModels = PlaneModel::findModels(zPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);
+	PlaneModel zPlane = PlaneModel::likelyModel(zModels);
 	//cout << "zplane " << zPlane << endl;
-	if (zPlane.getNumberOfInliers() > maxInliers) {
+	if (zModels.size() > 0 && zPlane.getNumberOfInliers() > maxInliers) {
+		invalidFlag = false;
 		normal = zPlane.normal();
 		maxInliers = zPlane.getNumberOfInliers();
 		bestPlane = &zPlane;
 	}
 	
+	//cout << "Max inliers= " << maxInliers << endl;
+	
+	// check if at least one plane found
+	if (invalidFlag || !bestPlane) {
+		_invalid = true;
+		return 0.0;
+	}
+	
 	// TODO: do re-fitting and segmentation of a sphere
 	/* re-fit two planes with the least number of inliers, using inliers of the best plane */
+	
+	invalidFlag = true;
 	// x plane
 	if (bestPlane != &xPlane) {
 		// make new inliers
@@ -137,7 +158,13 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 			xPoints.push_back(_data[idx].getRow(0));
 		}
 		
-		xPlane = PlaneModel::likelyModel(PlaneModel::findModels(xPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+		//cout << "XPoints size=" << xPoints.size() << endl;
+		xModels = PlaneModel::findModels(xPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);
+		xPlane = PlaneModel::likelyModel(xModels);
+		
+		if (xModels.size() > 0) {
+			invalidFlag = false;
+		}
 	}
 	
 	// y plane
@@ -150,7 +177,13 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 			yPoints.push_back(_data[idx].getRow(1));
 		}
 		
-		yPlane = PlaneModel::likelyModel(PlaneModel::findModels(yPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+		//cout << "YPoints size=" << yPoints.size() << endl;
+		yModels = PlaneModel::findModels(yPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);
+		yPlane = PlaneModel::likelyModel(yModels);
+		
+		if (yModels.size() > 0) {
+			invalidFlag = false;
+		}
 	}
 	
 	// z plane
@@ -163,7 +196,15 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 			zPoints.push_back(_data[idx].getRow(2));
 		}
 		
-		zPlane = PlaneModel::likelyModel(PlaneModel::findModels(zPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold));
+		//cout << "ZPoints size=" << zPoints.size() << endl;
+		zModels = PlaneModel::findModels(zPoints, PlaneFitIterations, 4, PlaneFitThreshold, PlaneModelThreshold);
+		zPlane = PlaneModel::likelyModel(zModels);
+	}
+	
+	// check if at least one plane found
+	if (invalidFlag) {
+		_invalid = true;
+		return 0.0;
 	}
 	
 	/* check if normals are aligned */
@@ -192,6 +233,8 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	// if two of the normals are not aligned, it is not a good model
 	if (nan_counter >= 2) {
 		_invalid = true;
+		
+		return 0.0;
 	} else {
 		_invalid = false;
 	}

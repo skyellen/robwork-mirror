@@ -68,6 +68,8 @@ BOOST_AUTO_TEST_CASE(RANSACLineTest) {
 	 */
 	BOOST_MESSAGE("- Testing line fitting with RANSAC");
 	
+	Math::seed(0);
+	
 	// read data file
 	string filePath = testFilePath() + "ransac/line_data.csv";
 	ifstream inFile(filePath.c_str());
@@ -107,6 +109,8 @@ BOOST_AUTO_TEST_CASE(RANSACPlaneTest) {
 	 * Test file also contains 5 random outliers.
 	 */
 	BOOST_MESSAGE("- Testing plane fitting with RANSAC");
+	
+	Math::seed(0);
 	
 	// read data file
 	string filePath = testFilePath() + "ransac/plane_data.csv";
@@ -148,6 +152,8 @@ BOOST_AUTO_TEST_CASE(RANSACStablePose1DTest) {
 	 */
 	BOOST_MESSAGE("- Testing stable pose 1 dof fitting with RANSAC");
 	
+	Math::seed(0);
+	
 	// read data file
 	string filePath = testFilePath() + "ransac/stablepose_data.csv";
 	ifstream inFile(filePath.c_str());
@@ -175,4 +181,17 @@ BOOST_AUTO_TEST_CASE(RANSACStablePose1DTest) {
 	);
 	
 	BOOST_CHECK(bestModel.same(referenceModel, 0.05));
+	
+	// check if stable pose defined by axes is the same as one defined by planes and a normal
+	StablePose1DModel modelPlanes(
+		Vector3D<>(0.181716811988644, 0.619803060100149, -0.763428560463371),
+		Vector3D<>(0, 0, 1)
+	);
+	
+	StablePose1DModel modelAxes = StablePose1DModel::fromAxes(
+		Vector3D<>(0, 0, 1),
+		Vector3D<>(0.181716811988644, 0.619803060100149, -0.763428560463371)
+	);
+	
+	BOOST_CHECK(modelPlanes.same(modelAxes, 0.01));
 }

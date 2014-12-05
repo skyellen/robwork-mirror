@@ -56,7 +56,11 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 		/**
 		 * @brief Constructor.
 		 */
-		StablePose1DModel()
+		StablePose1DModel() :
+			_normal(rw::math::Vector3D<>::z()),
+			_dx(0.0),
+			_dy(0.0),
+			_dz(1.0)
 		{}
 		
 		/**
@@ -66,11 +70,28 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 		 * @param distances [in] Dx, Dy and Dz distances for the respective planes
 		 */
 		StablePose1DModel(const rw::math::Vector3D<>& normal, const rw::math::Vector3D<> distances) :
-			_normal(normal),
+			_normal(normalize(normal)),
 			_dx(distances[0]),
 			_dy(distances[1]),
 			_dz(distances[2])
 		{}
+		
+		/**
+		 * @brief Constructs stable pose from an axis of rotation described in the object frame of reference, and a placement of that axis in global frame of reference.
+		 * 
+		 * @param local [in] rotation axis in the body frame of reference
+		 * @param global [in] location of the axis of rotation in the world coordinate frame
+		 */
+		static StablePose1DModel fromAxes(const rw::math::Vector3D<>& local, const rw::math::Vector3D<>& global) {
+			rw::math::Vector3D<> normal = normalize(global);
+			rw::math::Vector3D<> loc = normalize(local);
+			
+			double dx = dot(rw::math::Vector3D<>::x(), loc);
+			double dy = dot(rw::math::Vector3D<>::y(), loc);
+			double dz = dot(rw::math::Vector3D<>::z(), loc);
+			
+			return StablePose1DModel(normal, rw::math::Vector3D<>(dx, dy, dz));
+		}
 		
 		//! @brief Destructor.
 		virtual ~StablePose1DModel() {}
