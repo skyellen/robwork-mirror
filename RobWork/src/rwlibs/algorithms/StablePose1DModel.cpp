@@ -70,10 +70,10 @@ bool StablePose1DModel::invalid() const
 
 double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samples)
 {
-	const double NormalAlignmentThreshold = 5.0 * Deg2Rad;
+	const double NormalAlignmentThreshold = 10.0 * Deg2Rad;
 	const int PlaneFitIterations = 100;
-	const double PlaneFitThreshold = 0.05;
-	const double PlaneModelThreshold = 0.05;
+	const double PlaneFitThreshold = 0.1;
+	const double PlaneModelThreshold = 0.1;
 	
 	_data = samples;
 	int n = _data.size();
@@ -103,6 +103,8 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		normal = xPlane.normal();
 		maxInliers = xPlane.getNumberOfInliers();
 		bestPlane = &xPlane;
+		
+		//cout << "x plane is the best " << maxInliers << endl;
 	}
 	
 	// y plane
@@ -118,6 +120,8 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		normal = yPlane.normal();
 		maxInliers = yPlane.getNumberOfInliers();
 		bestPlane = &yPlane;
+		
+		//cout << "y plane is the best " << maxInliers << endl;
 	}
 	
 	// z plane
@@ -134,12 +138,15 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		normal = zPlane.normal();
 		maxInliers = zPlane.getNumberOfInliers();
 		bestPlane = &zPlane;
+		
+		//cout << "z plane is the best " << maxInliers << endl;
 	}
 	
 	//cout << "Max inliers= " << maxInliers << endl;
 	
 	// check if at least one plane found
 	if (invalidFlag || !bestPlane) {
+		//cout << "invalid because no best plane found" << endl;
 		_invalid = true;
 		return 0.0;
 	}
@@ -150,6 +157,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	invalidFlag = true;
 	// x plane
 	if (bestPlane != &xPlane) {
+		//cout << "refitting x plane" << endl;
 		// make new inliers
 		xPoints.clear();
 
@@ -169,6 +177,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	// y plane
 	if (bestPlane != &yPlane) {
+		//cout << "refitting y plane" << endl;
 		// make new inliers
 		yPoints.clear();
 
@@ -188,6 +197,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	// z plane
 	if (bestPlane != &zPlane) {
+		//cout << "refitting z plane" << endl;
 		// make new inliers
 		zPoints.clear();
 
@@ -203,6 +213,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	// check if at least one plane found
 	if (invalidFlag) {
+		//cout << "invalid because no other plane found" << endl;
 		_invalid = true;
 		return 0.0;
 	}
@@ -232,6 +243,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	// if two of the normals are not aligned, it is not a good model
 	if (nan_counter >= 2) {
+		//cout << "invalid because normals were unaligned" << endl;
 		_invalid = true;
 		
 		return 0.0;
