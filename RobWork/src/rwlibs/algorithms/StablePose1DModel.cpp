@@ -30,6 +30,7 @@
 using namespace std;
 using namespace boost;
 using namespace rw::math;
+using namespace rw::geometry;
 using namespace rwlibs::algorithms;
  
  
@@ -70,7 +71,7 @@ bool StablePose1DModel::invalid() const
 
 double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samples)
 {
-	const double NormalAlignmentThreshold = 10.0 * Deg2Rad;
+	const double NormalAlignmentThreshold = 15.0 * Deg2Rad;
 	const int PlaneFitIterations = 100;
 	const double PlaneFitThreshold = 0.1;
 	const double PlaneModelThreshold = 0.1;
@@ -78,8 +79,116 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	_data = samples;
 	int n = _data.size();
 
-	/* re-fit point model */
-	/* 1. fit x, y, z planes and pick the best one */
+	// find x, y, z versor positions on the sphere
+	vector<Vector3D<> > x_points, y_points, z_points;
+	BOOST_FOREACH (rw::math::Rotation3D<>& sample, _data) {
+		// taking a row of the rotation matrix is the quickest way of finding a versor position on the unit sphere
+		// allegedly, this should be columns, but that doesn't work
+		x_points.push_back(sample.getRow(0));
+		y_points.push_back(sample.getRow(1));
+		z_points.push_back(sample.getRow(2));
+	}
+	
+	// fit planes
+	Plane x_plane, y_plane, z_plane;
+	double x_error = x_plane.refit(x_points);
+	double y_error = y_plane.refit(y_points);
+	double z_error = z_plane.refit(z_points);
+	
+	// find the best fitting plane
+	Plane* best_plane = NULL;
+	double best_error = 1000; //numeric_limits<double>::max();
+	
+	if (x_error < best_error) {
+		best_plane = &x_plane;
+		best_error = x_error;
+		
+		//cout << "best plane: x" << endl;
+	}
+	
+	if (y_error < best_error) {
+		best_plane = &y_plane;
+		best_error = y_error;
+		
+		//cout << "best plane: y" << endl;
+	}
+	
+	if (z_error < best_error) {
+		best_plane = &z_plane;
+		best_error = z_error;
+		
+		//cout << "best plane: z" << endl;
+	}
+	
+	if (!best_plane) {
+		//cout << "best plane: not found" << endl;
+		
+		_invalid = true;
+		return 0.0;
+	} else {
+		_invalid = false;
+	}
+	
+	_normal = best_plane->normal();
+	
+	// calculate distances
+	if (best_plane != &x_plane) {
+		Vector3D<> c;
+		BOOST_FOREACH (const Vector3D<>& p, x_points) {
+			c += p;
+		}
+		c /= x_points.size();
+		
+		_dx = dot(c, _normal);
+	} else {
+		_dx = x_plane.d();
+	}
+	
+	if (best_plane != &y_plane) {
+		Vector3D<> c;
+		BOOST_FOREACH (const Vector3D<>& p, y_points) {
+			c += p;
+		}
+		c /= y_points.size();
+		
+		_dy = dot(c, _normal);
+	} else {
+		_dy = y_plane.d();
+	}
+	
+	if (best_plane != &z_plane) {
+		Vector3D<> c;
+		BOOST_FOREACH (const Vector3D<>& p, z_points) {
+			c += p;
+		}
+		c /= z_points.size();
+		
+		_dz = dot(c, _normal);
+	} else {
+		_dz = z_plane.d();
+	}
+	
+	//cout << "normal= " << _normal << endl;
+	//cout << "dx= " << _dx << endl;
+	//cout << "dy= " << _dy << endl;
+	//cout << "dz= " << _dz << endl;
+	
+	// calculate fitting error
+	double error = 0.0;
+	for (std::vector<rw::math::Rotation3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
+		double sample_error = fitError(*i);
+		error += sample_error * sample_error;
+	}
+
+	error /= (n > 0 ? n : 1);
+	setQuality(error);
+	
+	//cout << "error= " << error << endl;
+	
+	return error;
+
+	/* OLD VERSION WITH RANSAC // re-fit point model
+	// 1. fit x, y, z planes and pick the best one
 	//int idx = 0; // which plane fit was the best: x, y, or z?
 	PlaneModel *bestPlane = NULL; // which plane was the best?
 	Vector3D<> normal;
@@ -152,7 +261,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	}
 	
 	// TODO: do re-fitting and segmentation of a sphere
-	/* re-fit two planes with the least number of inliers, using inliers of the best plane */
+	//re-fit two planes with the least number of inliers, using inliers of the best plane
 	
 	invalidFlag = true;
 	// x plane
@@ -218,7 +327,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		return 0.0;
 	}
 	
-	/* check if normals are aligned */
+	// check if normals are aligned
 	size_t nan_counter = 0;
 	if (angle(xPlane.normal(), normal) <= NormalAlignmentThreshold) {
 		_dx = dot(xPlane.d() * xPlane.normal(), normal);
@@ -265,7 +374,7 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	
 	//cout << *this << "  | error= " << error << endl;
 	
-	return error;
+	return error; */
 }
 
 

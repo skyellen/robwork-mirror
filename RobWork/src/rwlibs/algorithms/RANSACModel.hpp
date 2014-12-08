@@ -115,6 +115,7 @@ class RANSACModel
 					maybeModel = maybeModel.make(maybeInliers);
 
 					if (maybeModel.invalid()) {
+						//std::cout << "model was invalid" << std::endl;
 						continue;
 					}
 				} catch(...) {
@@ -128,6 +129,8 @@ class RANSACModel
 				for (size_t i = 0; i < data.size(); i++) {
 					if (maybeModel.fitError(data[i]) < dataThreshold) {
 						consensusSet.push_back(data[i]);
+					} else {
+						//std::cout << "cannot add sample to consensus set" << std::endl;
 					}
 				}
 
@@ -138,6 +141,8 @@ class RANSACModel
 				}
 
 			}
+			
+			//std::cout << "N of maybe models= " << models.size() << std::endl;
 			
 			// merging models
 			//std::cout << "Merging models" << std::endl;
@@ -151,7 +156,7 @@ class RANSACModel
 				std::vector<DATA> consensusSet;
 				std::vector<size_t> consensusSetIndices;
                 for (size_t k = 0; k < data.size(); ++k) {
-					if (models[0].first.fitError(data[k]) < dataThreshold) {
+					if (models[0].first.belongsTo(data[k], dataThreshold)) {
                         consensusSet.push_back(data[k]);
                         consensusSetIndices.push_back(k);
                     }
@@ -159,6 +164,7 @@ class RANSACModel
                 
 				try {
 				    models[0].first.refit(consensusSet);
+				    //models[0].first._data = consensusSet;
 				    models[0].first._indices = consensusSetIndices;
 				    
 				    if (models[0].first.invalid() || models[0].first.getNumberOfInliers() < dataRequired) {
@@ -227,7 +233,7 @@ class RANSACModel
 				std::vector<DATA> consensusSet;
 				std::vector<size_t> consensusSetIndices;
                 for (size_t k = 0; k < data.size(); ++k) {
-					if (bestCloseModel.first->fitError(data[k]) < dataThreshold) {
+					if (bestCloseModel.first->belongsTo(data[k], dataThreshold)) {
                         consensusSet.push_back(data[k]);
                         consensusSetIndices.push_back(k);
                     }
@@ -235,6 +241,7 @@ class RANSACModel
                 
 				try {
 				    bestCloseModel.first->refit(consensusSet);
+				    //bestCloseModel.first->_data = consensusSet;
 				    bestCloseModel.first->_indices = consensusSetIndices;
 				    
 				    if (bestCloseModel.first->invalid() || bestCloseModel.first->getNumberOfInliers() < dataRequired) {
