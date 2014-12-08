@@ -135,6 +135,18 @@ public:
 	 */
 	void setMaxSimTime(double maxTime);
 
+	/**
+	 * @brief Test whether or not the simulation is set up to start in the approach pose.
+	 * @return true if simulation should start in approach pose.
+	 */
+	bool getStartInApproach() const;
+
+	/**
+	 * @brief Start simulation directly in the approach position as given by the strategy.
+	 * @param val [in] true if simulation should start in approach pose (default is false).
+	 */
+	void setStartInApproach(bool val = false);
+
 private:
 	class TaskDispatcher;
 	class TaskSimulation;
@@ -158,6 +170,7 @@ private:
 	bool _running;
 	double _dt;
 	double _maxSimTime;
+	bool _startInApproach;
 	mutable boost::mutex _mutex;
 };
 //! @}
