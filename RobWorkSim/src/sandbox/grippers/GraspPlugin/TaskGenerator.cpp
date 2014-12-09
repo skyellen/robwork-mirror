@@ -146,8 +146,11 @@ SurfaceSample TaskGenerator::sample(TriMeshSurfaceSampler& sampler, ProximityMod
 					/* CRAZY STUFF */
 					Vector3D<> targetZ = targetW.R() * Vector3D<>::z();
 					Vector3D<> hintZ = hint.R() * Vector3D<>::z();
+					Vector3D<> targetY = targetW.R() * Vector3D<>::y();
+					Vector3D<> hintY = hint.R() * Vector3D<>::y();
 					
-					bool angleOk = std::fabs(angle(targetZ, hintZ)) <= _td->getTeachDistance()[3];
+					bool angleOk = (std::fabs(angle(targetZ, hintZ)) <= _td->getTeachDistance()[3]) && 
+						(std::fabs(angle(targetY, hintY)) <= _td->getTeachDistance()[4]);
 					/* END OF CRAZY STUFF */
 					
 					/* DEBUG OUTPUTS FROM NOW ON */
