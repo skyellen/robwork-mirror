@@ -102,6 +102,7 @@ bool TNTIsland::IntegrateSampleCompare::operator()(const IntegrateSample& s1, co
 PropertyMap TNTIsland::getDefaultPropertyMap() {
 	PropertyMap map;
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
+	TNTCollisionSolver::Factory::makeSolver("Chain")->addDefaultProperties(map);
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
 	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
@@ -388,6 +389,8 @@ void TNTIsland::doStep(double dt, State& state) {
 #endif
 		if (remaining != tntTempConstraints)
 			RW_THROW("TNTIsland (doStep): the number of temporary constraints should be the same as the number of contacts that are not either raw or new.");
+		if (rawNo != 0)
+			RW_THROW("TNTIsland (doStep): there should not be raw contacts at this point.");
 	}
 
 	if (_state->getRepetitions() == 0) {
@@ -592,7 +595,7 @@ void TNTIsland::solveConstraints(double dt, TNTIslandState& tntstate, const Stat
 			else
 				solverID = _defaultMap.get<std::string>("TNTCollisionSolver");
 			const TNTCollisionSolver::Ptr bouncingSolver = TNTCollisionSolver::Factory::makeSolver(solverID);
-			bouncingSolver->applyImpulses(tntcontacts,*_bc,_materialMap,tntstate,rwstate);
+			bouncingSolver->doCollisions(tntcontacts,*_bc,_materialMap,tntstate,rwstate,_map);
 		} else {
 			TNT_DEBUG_BOUNCING("No contacts to treat as bouncing.");
 		}

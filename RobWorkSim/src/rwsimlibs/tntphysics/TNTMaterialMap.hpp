@@ -38,6 +38,7 @@ namespace tntphysics {
 class TNTBody;
 class TNTFrictionModel;
 class TNTRestitutionModel;
+class TNTContact;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -72,6 +73,14 @@ public:
 	 * @return reference to the restitution model.
 	 */
 	const TNTRestitutionModel& getRestitutionModel(const TNTBody &bodyA, const TNTBody &bodyB) const;
+
+	/**
+	 * @brief Get the restitution model associated to the pair of bodies given by a contact.
+	 * @param contact [in] the contact.
+	 * @param bodyB [in] the second body.
+	 * @return reference to the restitution model.
+	 */
+	const TNTRestitutionModel& getRestitutionModel(const TNTContact &contact) const;
 
 private:
 	std::vector<std::string> _idToMat;

@@ -61,6 +61,9 @@ class TNTMaterialMap;
  *
  * Consider using the TNTIsland directly in rare circumstances if the dynamic system is extremely
  * simple, and the overhead in managing independent islands would be too big.
+ *
+ * Please note that the simulator uses many thresholds, tolerances and other properties. These
+ * are documented in the documentation for the #getDefaultPropertyMap function.
  */
 class TNTIsland: public rwsim::simulator::PhysicsEngine {
 public:
@@ -195,9 +198,32 @@ public:
 	//! @copydoc PhysicsEngine::getSensors
 	std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors();
 
-private:
+	/**
+	 * @brief Get a new PropertyMap with default properties.
+	 *
+	 * This function will return the properties that are used if they have not been
+	 * specified by the user. These options are loaded from the dynamic workcell.
+	 * Please see the \ref sec_rwsimxml_physicsengine "Dynamic WorkCell XML File Format" page for
+	 * more information on this.
+	 *
+	 * Below you find a list of properties used by this engine by default. Please be aware that
+	 * some properties are used to specify alternative implementations of certain subcomponents of
+	 * the simulator. These alternative implementations might use different properties, which will
+	 * be documented in the relevant classes. The map returned by this function will include the default
+	 * properties for the default choice of subcomponents. These will not be documented in the list below,
+	 * but instead references are provided to more information on the specific properties for these components.
+	 *
+	 *  Property Name           | Type   | Default value | Description
+	 *  ----------------------- | ------ | ------------- | -----------
+	 *  TNTCollisionSolver      | string | Chain         | Specifies the TNTCollisionSolver used (default is TNTCollisionSolverChain).
+	 *  -                       | -      | -             | See TNTCollisionSolverChain::addDefaultProperties for further information on the properties used by collision solvers.
+	 *  TNTContactResolver      | string | Heuristic     | Specifies the TNTContactResolver used (default is TNTContactResolverHeuristic).
+	 *  TNTSolver               | string | SVD           | Specifies the TNTSolver used (default is TNTSolverSVD).
+	 *  TNTRollbackMethod       | string | Ridder        | Specifies the TNTRollbackMethod used (default is TNTRollbackMethodRidder).
+	 */
 	static rw::common::PropertyMap getDefaultPropertyMap();
 
+private:
 	class StepTask;
 	struct IntegrateSample;
 	struct IntegrateSampleCompare {
@@ -227,7 +253,7 @@ private:
 	rw::math::Vector3D<> _gravity;
 
 	rw::common::PropertyMap _map;
-	rw::common::PropertyMap _defaultMap;
+	const rw::common::PropertyMap _defaultMap;
 };
 //! @}
 } /* namespace tntphysics */

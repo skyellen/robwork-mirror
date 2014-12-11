@@ -29,6 +29,9 @@
 #include <rw/math/Wrench6D.hpp>
 #include <vector>
 
+// Forward declarations
+namespace rw { namespace common { class ThreadTask; } }
+
 namespace rwsimlibs {
 namespace tntphysics {
 
@@ -44,14 +47,18 @@ class TNTRigidBody;
 //! @{
 /**
  * @brief Interface for collision solvers that handle bouncing contacts.
+ *
+ * Different paradigms exist for collision handling, and this interface defines a high-level
+ * abstraction for different solvers that can be used to resolve collisions. The Factory
+ * defines a default set of collisions solvers, and allows extension with custom solvers if
+ * required.
+ *
+ * Please see the Factory class for an overview of available solvers.
  */
 class TNTCollisionSolver {
 public:
     //! Smart pointer type of TNTCollisionSolver
     typedef rw::common::Ptr<const TNTCollisionSolver> Ptr;
-
-    //! @brief Empty constructor.
-	TNTCollisionSolver();
 
     //! @brief Destructor.
 	virtual ~TNTCollisionSolver();
@@ -59,37 +66,42 @@ public:
 	/**
 	 * @brief Find and apply impulses with origin in given contacts.
 	 *
-	 * Resolving the impulses will in principle involve the complete graph of constraint-connected
+	 * Resolving the impulses involves the complete graph of contact/constraint-connected
 	 * bodies. This information is provided by the TNTBodyConstraintManager. The state structures
 	 * makes it possible to get the positions and velocities of bodies and constraints, and allows
 	 * storing new velocities after they have been changed instantaneously by the applied impulses.
 	 *
 	 * Impulses will origin in the contacts given as input to the function. These contacts are
-	 * expected to have relative velocities that make them penetrating. Restitution models are used
-	 * to relate the incoming and outgoing relative velocities of the contacts.
+	 * expected to have relative velocities that make them colliding. Restitution models are used
+	 * to relate the incoming and outgoing relative velocities of the contacts. These will be
+	 * retrieved from the TNTMaterialMap.
 	 *
 	 * If there are non-contact constraints between the two objects, impulses are applied in these
 	 * constraints to make sure that the relative velocity stays zero.
 	 *
-	 * There can be contacts between the two objects besides the penetrating contacts given as input.
-	 * Due to the impulse applied by these penetrating contacts (and possibly constraint impulses),
+	 * There can be contacts between the two objects besides the colliding contacts given as input.
+	 * Due to the impulse applied by the colliding contacts (and possibly constraint impulses),
 	 * the existing contacts might become either leaving or penetrating. An impulse will be applied
 	 * at these existing contacts if they become penetrating, to make sure that they do not penetrate.
 	 *
-	 * @param contacts [in] the list of contacts to apply impulses for.
-	 * @param bc [in] the current graph of bodies connected by constraints (including the contacts
-	 * given as arguments).
+	 * @param contacts [in] the list of initiating colliding contacts.
+	 * @param bc [in] the current graph of bodies connected by constraints (the colliding contact
+	 * are expected to be included in this graph as well).
 	 * @param map [in] the material map to use to resolve restitution models.
 	 * @param tntstate [in/out] the current configuration of the system, where new velocities will
 	 * be stored.
 	 * @param rwstate [in] the current state.
+	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
+	 * @param task [in] (optional) task to add work to.
 	 */
-	virtual void applyImpulses(
+	virtual void doCollisions(
 			const std::vector<const TNTContact*>& contacts,
 			const TNTBodyConstraintManager& bc,
 			const TNTMaterialMap* map,
 			TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const = 0;
+			const rw::kinematics::State& rwstate,
+			const rw::common::PropertyMap& pmap,
+			rw::common::Ptr<rw::common::ThreadTask> task = NULL) const = 0;
 
 	/**
 	 * @brief Apply an impulse at given position to a body.
@@ -126,6 +138,22 @@ public:
 			TNTIslandState& tntstate);
 
 	/**
+	 * @brief Add the default properties to the given map.
+	 *
+	 * Please look at the documentation for the specific implementations of this function to get information about
+	 * the required properties for these implementations.
+	 *
+	 * @param map [in/out] the map to add the default properties to.
+	 */
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
+
+	/**
+	 * @brief Get a new PropertyMap with default properties.
+	 * @return PropertyMap with all default properties.
+	 */
+	rw::common::PropertyMap getDefaultMap() const;
+
+	/**
 	 * @addtogroup extensionpoints
 	 * @extensionpoint{rwsimlibs::tntphysics::TNTCollisionSolver::Factory,rwsimlibs::tntphysics::TNTCollisionSolver,rwsimlibs.tntphysics.TNTCollisionSolver}
 	 */
@@ -133,8 +161,15 @@ public:
 	/**
 	 * @brief A factory for a TNTCollisionSolver. This factory also defines an ExtensionPoint.
 	 *
-	 * By default the factory provides the following TNTCollisionSolver type:
-	 *  - Single (Solver for single collisions) - TNTCollisionSolverSingle
+	 * By default the factory provides the following TNTCollisionSolver types:
+	 *  - None (Throws exception if a collision occur)
+	 *  - Single (Solver for one or more collisions between a single pair of bodies) - TNTCollisionSolverSingle
+	 *  - Chain (Sequential solver that applies the single solver iteratively) - TNTCollisionSolverChain
+	 *  - Simultaneous (Solver for simultaneous handling) - TNTCollisionSolverSimultaneous
+	 *  - Hybrid (A hybrid between sequential and simultaneous handling that applies the simultaneous solver iteratively) - TNTCollisionSolverHybrid
+	 *
+	 *  A good introduction to different collision handling methods can be found at:
+	 *  http://www.myphysicslab.com/Collision-methods.html
 	 */
 	class Factory: public rw::common::ExtensionPoint<TNTCollisionSolver> {
 	public:
@@ -161,6 +196,14 @@ public:
 	private:
 		Factory();
 	};
+
+protected:
+	//! @brief Constructor.
+	TNTCollisionSolver();
+
+private:
+	class TNTCollisionSolverNone;
+	const rw::common::PropertyMap _emtpyMap;
 };
 //! @}
 } /* namespace tntphysics */

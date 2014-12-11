@@ -31,25 +31,22 @@ namespace tntphysics {
 
 // Forward declarations
 class TNTBody;
-class TNTConstraint;
-class TNTRestitutionModel;
+class TNTFixedBody;
+class TNTRigidBody;
 
 //! @addtogroup rwsimlibs_tntphysics
 
 //! @{
 /**
- * @brief The most basic implementation of a TNTCollisionSolver.
+ * @brief The most simple implementation of a TNTCollisionSolver.
  *
- * The solver is only able to resolve a single collision at a time, and will throw
- * an exception if there are multiple contacts/constraints at the same time.
+ * The solver is only able to solve collisions between a pair of objects if these
+ * objects are not connected by contacts or constraints to any other objects. If
+ * more than two objects are in contact, this method will throw an exception.
  *
- * A rigid body that has a new contact that should be resolved with this method,
- * should not have any other contacts or constraints defined. For kinematic objects
- * there can be multiple contacts and constraints, as long as they are not between
- * the same two objects being resolved with this method.
- *
- * If this strategy is used as a part of a larger strategy, the exceptions can be
- * disabled with the setCheckNoChain() function.
+ * Note that the solver solves for all constraints and contacts between two objects
+ * simultaneously. It uses the TNTCollisionSolverSimultaneous solver for this purpose.
+ * Please see this class for further description of the method and properties.
  */
 class TNTCollisionSolverSingle: public rwsimlibs::tntphysics::TNTCollisionSolver {
 public:
@@ -59,116 +56,92 @@ public:
     //! @brief Destructor.
 	virtual ~TNTCollisionSolverSingle();
 
-	//! @copydoc TNTCollisionSolver::applyImpulses
-	virtual void applyImpulses(
+	//! @copydoc TNTCollisionSolver::doCollisions
+	virtual void doCollisions(
 			const std::vector<const TNTContact*>& contacts,
 			const TNTBodyConstraintManager& bc,
 			const TNTMaterialMap* map,
 			TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
+			const rw::kinematics::State& rwstate,
+			const rw::common::PropertyMap& pmap,
+			rw::common::Ptr<rw::common::ThreadTask> task = NULL) const;
 
 	/**
-	 * @brief Find and apply impulses such that constraints are satisfied between two bodies.
+	 * @brief Find and apply impulses such that contacts and constraints are satisfied between two bodies.
 	 *
 	 * This function is provided as a utility function for more complex collision solvers.
-	 * If there are no penetrating contacts between two bodies, this function can be used to solve
-	 * for constraint impulses. If the non-penetrating contacts becomes penetrating when applying
-	 * constraint impulses, impulses are applied for these contacts as well to keep them from
-	 * penetrating.
+	 * The function does not consider initiating collisions, but solves for all contacts and constraints
+	 * between the two given bodies. Collisions can be applied if the two bodies has come in collision due
+	 * to collisions with other objects.
 	 *
-	 * @param constraints [in] the list of constraints to apply impulses for.
-	 * @param bc [in] the current graph of bodies connected by constraints (including the contacts
-	 * given as arguments).
+	 * @note At least on of the two bodies must be a TNTRigidBody.
+	 *
+	 * @param bodyA [in] the first body of the pair to apply impulses for.
+	 * @param bodyB [in] the second body of the pair to apply impulses for.
+	 * @param bc [in] the current graph of bodies connected by contacts  and constraints.
 	 * @param map [in] the material map to use to resolve restitution models.
 	 * @param tntstate [in/out] the current configuration of the system, where new velocities will
 	 * be stored.
 	 * @param rwstate [in] the current state.
+	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
+	 * @param task [in] (optional) task to add work to.
 	 */
-	virtual void applyImpulses(
+	virtual void doCollisions(
 			const TNTBody* bodyA,
 			const TNTBody* bodyB,
 			const TNTBodyConstraintManager& bc,
 			const TNTMaterialMap* map,
 			TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
+			const rw::kinematics::State& rwstate,
+			const rw::common::PropertyMap& pmap,
+			rw::common::Ptr<rw::common::ThreadTask> task = NULL) const;
 
 	/**
-	 * @brief Get status of the optional check for impulse chains.
-	 * @return true if enabled (default if not actively disabled)
+	 * @brief Find and apply impulses between a rigid body and multiple fixed bodies.
+	 *
+	 * This function is provided as a utility function for more complex collision solvers.
+	 * The function does not consider initiating collisions, but solves for all contacts and constraints
+	 * between the two given bodies. Collisions can be applied if the two bodies has come in collision due
+	 * to collisions with other objects.
+	 *
+	 * This function uses the fact that multiple fixed bodies can be considered one static object.
+	 *
+	 * @param rigidBody [in] the rigid body.
+	 * @param fixedBodies [in] a list of fixed bodies that the rigid body is in collision with.
+	 * @param bc [in] the current graph of bodies connected by contacts  and constraints.
+	 * @param map [in] the material map to use to resolve restitution models.
+	 * @param tntstate [in/out] the current configuration of the system, where new velocities will
+	 * be stored.
+	 * @param rwstate [in] the current state.
+	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
+	 * @param task [in] (optional) task to add work to.
 	 */
-	bool doCheckNoChain() const;
+	virtual void doCollisions(
+			const TNTRigidBody* rigidBody,
+			const std::vector<const TNTFixedBody*> fixedBodies,
+			const TNTBodyConstraintManager& bc,
+			const TNTMaterialMap* map,
+			TNTIslandState& tntstate,
+			const rw::kinematics::State& rwstate,
+			const rw::common::PropertyMap& pmap,
+			rw::common::Ptr<rw::common::ThreadTask> task = NULL) const;
 
 	/**
-	 * @brief Enable or disable check for impulse chains.
+	 * @copybrief TNTCollisionSolver::addDefaultProperties
 	 *
-	 * Check is enabled by default, meaning an exception will be thrown if a
-	 * chain is encountered.
+	 * This implementation uses TNTCollisionSolverSimultaneous to solve for pairs of bodies.
+	 * See documentation for this class for default values and description of properties.
 	 *
-	 * Disabling this check makes sense if the solver is used as part of a more
-	 * complex strategy for solving impulse chains.
+	 *  Property Name                            | Type   | Default value | Description
+	 *  ---------------------------------------- | ------ | ------------- | -----------
+	 *  -                                        | -      | -             | TNTCollisionSolverSimultaneous::addDefaultProperties defines properties used by this solver.
 	 *
-	 * @param enable [in] true if check should be enabled (default), or false to disable check.
+	 * @param map [in/out] the map to add properties to.
 	 */
-	void setCheckNoChain(bool enable);
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
 
 private:
-	void resolveContacts(
-			const TNTBody* parent,
-			const TNTBody* child,
-			const std::vector<const TNTContact*>& contacts,
-			const std::list<const TNTConstraint*>& constraints,
-			const TNTRestitutionModel& restitutionModel,
-			const TNTBodyConstraintManager& bc,
-			TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	Eigen::VectorXd solve(
-			const TNTBody* parent,
-			const TNTBody* child,
-			const std::vector<const TNTContact*>& contacts,
-			const std::vector<const TNTConstraint*>& constraints,
-			const TNTRestitutionModel& restitutionModel,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	void applySolution(
-			const Eigen::VectorXd& solution,
-			const TNTBody* parent,
-			const TNTBody* child,
-			const std::vector<const TNTContact*>& contacts,
-			const std::vector<const TNTConstraint*>& constraints,
-			const TNTRestitutionModel& restitutionModel,
-			TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	Eigen::MatrixXd getBlock(
-			const TNTConstraint* constraintA,
-			const TNTConstraint* constraintB,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	Eigen::MatrixXd getBlock(
-			const TNTConstraint* constraintA,
-			const TNTContact* constraintB,
-			const TNTRestitutionModel& restitutionModel,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	Eigen::MatrixXd getBlock(
-			const TNTContact* constraintA,
-			const TNTContact* constraintB,
-			const TNTRestitutionModel& restitutionModel,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	Eigen::MatrixXd getBlock(
-			const TNTContact* constraintA,
-			const TNTConstraint* constraintB,
-			const TNTRestitutionModel& restitutionModel,
-			const TNTIslandState& tntstate,
-			const rw::kinematics::State& rwstate) const;
-
-	bool _checkNoChain;
+	class SolvePairTask;
 };
 //! @}
 } /* namespace tntphysics */

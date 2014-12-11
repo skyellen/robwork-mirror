@@ -18,6 +18,8 @@
 #include "TNTCollisionSolver.hpp"
 #include "TNTCollisionSolverSingle.hpp"
 #include "TNTCollisionSolverChain.hpp"
+#include "TNTCollisionSolverSimultaneous.hpp"
+#include "TNTCollisionSolverHybrid.hpp"
 #include "TNTRigidBody.hpp"
 
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -67,6 +69,33 @@ void TNTCollisionSolver::applyImpulses(const std::vector<Wrench6D<> >& impulses,
 	body.setVelocityW(VelocityScrew6D<>(linVel,EAA<>(angVel)),tntstate);
 }
 
+void TNTCollisionSolver::addDefaultProperties(PropertyMap& map) const {
+}
+
+PropertyMap TNTCollisionSolver::getDefaultMap() const {
+	PropertyMap map;
+	addDefaultProperties(map);
+	return map;
+}
+
+class TNTCollisionSolver::TNTCollisionSolverNone: public TNTCollisionSolver {
+public:
+	TNTCollisionSolverNone() {};
+	virtual ~TNTCollisionSolverNone() {};
+	virtual void doCollisions(
+			const std::vector<const TNTContact*>& contacts,
+			const TNTBodyConstraintManager& bc,
+			const TNTMaterialMap* map,
+			TNTIslandState& tntstate,
+			const rw::kinematics::State& rwstate,
+			const rw::common::PropertyMap& pmap,
+			rw::common::Ptr<ThreadTask> task) const
+	{
+		if (contacts.size() > 0)
+			RW_THROW("TNTCollisionSolver::TNTCollisionSolverNone (applyImpulses): this collision solver can not handle any collisions (use this solver only if it is known that there will be no collisions).");
+	}
+};
+
 TNTCollisionSolver::Factory::Factory():
 	ExtensionPoint<TNTCollisionSolver>("rwsimlibs.tntphysics.TNTCollisionSolver", "TNTCollisionSolver extension point.")
 {
@@ -76,8 +105,11 @@ std::vector<std::string> TNTCollisionSolver::Factory::getSolvers() {
     std::vector<std::string> ids;
     TNTCollisionSolver::Factory ep;
     std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    ids.push_back("None");
     ids.push_back("Single");
     ids.push_back("Chain");
+    ids.push_back("Simultaneous");
+    ids.push_back("Hybrid");
     BOOST_FOREACH(Extension::Descriptor& ext, exts){
         ids.push_back( ext.getProperties().get("solverID",ext.name) );
     }
@@ -85,9 +117,15 @@ std::vector<std::string> TNTCollisionSolver::Factory::getSolvers() {
 }
 
 bool TNTCollisionSolver::Factory::hasSolver(const std::string& method) {
-    if( method == "Single")
+    if( method == "None")
         return true;
-    if( method == "Chain")
+    else if( method == "Single")
+        return true;
+    else if( method == "Chain")
+        return true;
+    else if( method == "Simultaneous")
+        return true;
+    else if( method == "Hybrid")
         return true;
     TNTCollisionSolver::Factory ep;
     std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
@@ -99,10 +137,16 @@ bool TNTCollisionSolver::Factory::hasSolver(const std::string& method) {
 }
 
 TNTCollisionSolver::Ptr TNTCollisionSolver::Factory::makeSolver(const std::string& method) {
-    if( method == "Single")
+    if( method == "None")
+        return ownedPtr(new TNTCollisionSolverNone());
+    else if( method == "Single")
         return ownedPtr(new TNTCollisionSolverSingle());
-    if( method == "Chain")
+    else if( method == "Chain")
         return ownedPtr(new TNTCollisionSolverChain());
+    else if( method == "Simultaneous")
+        return ownedPtr(new TNTCollisionSolverSimultaneous());
+    else if( method == "Hybrid")
+        return ownedPtr(new TNTCollisionSolverHybrid());
     TNTCollisionSolver::Factory ep;
 	std::vector<Extension::Ptr> exts = ep.getExtensions();
 	BOOST_FOREACH(Extension::Ptr& ext, exts){

@@ -28,6 +28,7 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <set>
 
 // Forward declarations
 namespace rw { namespace common { template <class T> class Ptr; }};
@@ -132,6 +133,14 @@ public:
 	 * @brief Get all constraints for a given pair of bodies.
 	 * @param bodyA [in] the first body to find constraints for.
 	 * @param bodyB [in] the second body to find constraints for.
+	 * @return a list of constraints (constant objects).
+	 */
+	ConstraintList getConstraints(const TNTBody* bodyA, const TNTBody* bodyB) const;
+
+	/**
+	 * @brief Get all constraints for a given pair of bodies.
+	 * @param bodyA [in] the first body to find constraints for.
+	 * @param bodyB [in] the second body to find constraints for.
 	 * @param state [in] the TNTIslandState where temporary constraints are stored.
 	 * @return a list of constraints (constant objects).
 	 */
@@ -151,10 +160,22 @@ public:
 	void addBody(const TNTBody* const body);
 
 	/**
+	 * @brief Add a set of new body to the manager.
+	 * @param bodies [in] the bodies to add.
+	 */
+	void addBodies(const BodyList& bodies);
+
+	/**
 	 * @brief Add a new persistent constraint to the manager.
 	 * @param constraint [in] the constraint to add.
 	 */
 	void addConstraint(TNTConstraint* constraint);
+
+	/**
+	 * @brief Add new persistent constraints to the manager.
+	 * @param constraints [in] the constraints to add.
+	 */
+	void addConstraints(const ConstraintList& constraints);
 
 	/**
 	 * @brief Add temporary constraint.
@@ -195,13 +216,60 @@ public:
 	 */
 	const TNTBody* getBody(const rw::kinematics::Frame* frame) const;
 
+	/**
+	 * @brief Check if body is added.
+	 * @param body [in] the body to check for.
+	 * @return true if body was found, false otherwise.
+	 */
+	bool has(const TNTBody* body) const;
+
+	/**
+	 * @brief Get the dynamic components using dynamic contact info.
+	 *
+	 * A dynamic component is composed of dynamic bodies directly connected to each other
+	 * by contacts or constraints. Constraints must however be constrained in velocity space
+	 * in at least one dimension to be considered. Fixed or kinematic bodies are included in
+	 * the component if they are connected to the dynamic bodies in the component.
+	 *
+	 * This means that springs and static bodies have the effect of increasing the number of
+	 * dynamic components, making each component smaller. This is a benefit as it makes the
+	 * underlying dynamics problem easier to solve and parallelize.
+	 *
+	 * Each dynamic body is guaranteed to only lie in one component, but the static bodies can
+	 * be included in multiple components simultaneously. Be aware that free constraints (that
+	 * are not constrained in velocity space) is not included in any component.
+	 *
+	 * @param state [in] the state where contact constraints are saved.
+	 * @return a set of dynamic components owned by the caller.
+	 */
+	std::set<TNTBodyConstraintManager*> getDynamicComponents(const TNTIslandState& state) const;
+
+	/**
+	 * @brief Get components that are connected by the given constraints.
+	 *
+	 * Connected components tries to connect the given by constraints.
+	 * Constraints sharing the same end-bodies will be connected in the same component.
+	 *
+	 * Note that the components found by this function might include more constraints than
+	 * the number of constraints given as input. This is due to the fact that a pair of objects
+	 * can have more than one contact and/or constraint. Even though the input only mentions one
+	 * of these, all other contacts and constraints will also be included in the component.
+	 *
+	 * @param constraints [in] list of constraints to search from.
+	 * @return a set of connected components owned by the caller.
+	 */
+	std::set<TNTBodyConstraintManager*> getConnectedComponents(const ConstraintListConst& constraints) const;
+
 private:
+	TNTBodyConstraintManager(const TNTBodyConstraintManager* parent);
+
 	BodyList _allBodies;
 	DynamicBodyList _dynamicBodies;
 	KinematicBodyList _kinematicBodies;
 	ConstraintList _constraints;
 	std::map<const TNTBody*, ConstraintListConst> _bodyToConstraints;
 	std::map<const rw::kinematics::Frame*, const TNTBody*> _frameToBody;
+	const TNTBodyConstraintManager* const _parent;
 };
 //! @}
 } /* namespace tntphysics */

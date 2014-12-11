@@ -19,6 +19,7 @@
 #include "TNTBody.hpp"
 #include "TNTFrictionModel.hpp"
 #include "TNTRestitutionModel.hpp"
+#include "TNTContact.hpp"
 
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
@@ -159,4 +160,8 @@ const TNTRestitutionModel& TNTMaterialMap::getRestitutionModel(const TNTBody &bo
 	if (!foundA || !foundB)
 		RW_THROW("TNTMaterialMap (getRestitutionModel): could not find a restitution model for the given bodies \"" << bodyA.get()->getName() << "\" and \"" << bodyB.get()->getName() << "\".");
 	return *(_restitutionModels[idA][idB]);
+}
+
+const TNTRestitutionModel& TNTMaterialMap::getRestitutionModel(const TNTContact &contact) const {
+	return getRestitutionModel(*contact.getParent(),*contact.getChild());
 }

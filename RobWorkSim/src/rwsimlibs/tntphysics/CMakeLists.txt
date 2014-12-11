@@ -29,6 +29,8 @@ SET(SRC_FILES
 	TNTCollisionSolver.cpp
 	TNTCollisionSolverSingle.cpp
 	TNTCollisionSolverChain.cpp
+	TNTCollisionSolverHybrid.cpp
+	TNTCollisionSolverSimultaneous.cpp
 	TNTMaterialMap.cpp
 	
 	TNTConstraintCorrection.cpp

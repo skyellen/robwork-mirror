@@ -28,9 +28,6 @@
  * engines inefficient.
  */
 
-// Collision settings
-#define TNT_COLLISION_LEAVINGVEL_THRESHOLD 1e-6
-
 // Constraint settings
 #define TNT_SPRING_EIGENVALUE_SQRT_THRESHOLD 1e-6
 
