@@ -406,11 +406,16 @@ class RANSACModel
 		
 		/**
 		 * @brief Returns the number of samples required to create the model.
+		 * 
+		 * No model will be found, if data size is less than this amount.
 		 */
 		virtual int getMinReqData() const = 0;
 		
 		/**
 		 * @brief Tests whether the model is same to a threshold of another model.
+		 * 
+		 * This is used to filter down (merge) similar models found in the course of RANSAC algorithm
+		 * execution.
 		 */
 		virtual bool same(const MODEL& model, double threshold) const = 0;
 		
@@ -419,7 +424,10 @@ class RANSACModel
 		 */
 		size_t getNumberOfInliers() const { return _data.size(); }
 		
-		//! @brief Get the model quality.
+		/** @brief Get the model quality.
+		 * 
+		 * The model quality is a sum of fitting errors for all its inliers.
+		 */
 		double getQuality() const { return _quality; }
 		
 		/**
@@ -440,7 +448,7 @@ class RANSACModel
 		 * 
 		 * @return a vector of indices of inliers in the data vector supplied to findModels function.
 		 */
-		std::vector<size_t>& getInlierIndices() { return _indices; }
+		std::vector<size_t> getInlierIndices() const { return _indices; }
 	
 	protected: // body
 		std::vector<DATA> _data;
