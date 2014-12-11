@@ -1,7 +1,9 @@
 #include "GripperTaskSimulator.hpp"
 
 #include <rw/math/MetricFactory.hpp>
+#include <rwlibs/algorithms/StablePose1DModel.hpp>
 #include <algorithm>
+#include <vector>
 #include "TaskGenerator.hpp"
 
 #define DEBUG cout
@@ -13,6 +15,7 @@ using namespace robwork;
 using namespace rwsim;
 using namespace rwsim::simulator;
 using namespace rw::common;
+using namespace rwlibs::algorithms;
 
 
 
@@ -206,6 +209,84 @@ rw::math::Q GripperTaskSimulator::calculateWrenchMeasurement() const
 
 
 
+double GripperTaskSimulator::calculateAlignment() const {
+	double alignment = 0.0;
+	
+	// store rotations
+	int successes = 0;
+	vector<Rotation3D<> > rot_before, rot_after;
+	typedef std::pair<class GraspSubTask*, class GraspTarget*> TaskTarget;
+	BOOST_FOREACH (TaskTarget p, _gtask->getAllTargets()) {
+		
+		// we only take succesful grasps
+		if (p.second->getResult()->testStatus == GraspTask::Success) {
+			rw::math::Transform3D<> poseApproach = inverse(p.second->getResult()->objectTtcpApproach);
+			rw::math::Transform3D<> poseLift = inverse(p.second->getResult()->objectTtcpLift);
+		
+			rot_before.push_back(poseApproach.R());
+			rot_after.push_back(poseLift.R());
+			
+			++successes;
+		}
+	}
+	
+	// use RANSAC to find the most likely stable pose
+	vector<StablePose1DModel> models = StablePose1DModel::findModels(rot_after, 100, 5, 0.05, 1.5);
+	
+	if (models.size() == 0) return 0.0;
+	sort(models.begin(), models.end());
+	reverse(models.begin(), models.end());
+	
+	int inliers = 0;
+	Rotation3DAngleMetric<double> metric;
+	DEBUG << "Models found (" << models.size() << "):" << endl;
+	BOOST_FOREACH (const StablePose1DModel& m, models) {
+		DEBUG << " - StablePose: " << m << ", QUALITY: " << m.getQuality() << ", INLIERS: " << m.getNumberOfInliers() << endl;
+		inliers += m.getNumberOfInliers();
+		
+		// calculate model mean and variance
+		int n = m.getNumberOfInliers();		
+		vector<size_t> indices = m.getInlierIndices();
+		if (indices.size() == 0) continue;
+		
+		// mean
+		vector<double> diffs;
+		double avg_diff = 0.0;
+		BOOST_FOREACH (size_t idx, indices) {
+			double diff = metric.distance(rot_before[idx], rot_after[idx]);
+			diffs.push_back(diff);
+			avg_diff += diff;
+		}
+		avg_diff /= n;
+		DEBUG << "Average difference= " << avg_diff << endl;
+		
+		// variance
+		double variance = 0.0;
+		BOOST_FOREACH (double diff, diffs) {
+			double dvar = diff - avg_diff;
+			//DEBUG << "Dvar= " << dvar << endl;
+			variance += dvar * dvar;
+		}
+		variance = sqrt(variance / n);
+		DEBUG << "Variance= " << variance << endl;
+		
+		alignment += variance * n / successes;
+		DEBUG << "Alignment so far= " << alignment << endl;
+	}
+	
+	DEBUG << "Sum of inliers= " << inliers << endl;
+	DEBUG << "Total successes= " << successes << endl;
+
+	// this uses the number of inliers in all of the stable poses:
+	//alignment = (successes > 0) ? 1.0 * inliers / successes : 0.0; //sqrt(alignment / diffs.size());
+	
+	DEBUG << "Alignment= " << alignment << endl;
+	
+	return 10.0 * alignment; // scaling factor
+}
+
+
+
 double GripperTaskSimulator::calculateShape()
 {
 	return 0.0;
@@ -316,6 +397,11 @@ void GripperTaskSimulator::evaluateGripper()
 	
 	double successRatio = (1.0 * successes / actual) / b.success;
 	
+	/* alignment */
+	DEBUG << "CALCULATING ALIGNMENT - " << endl;
+	double alignment = calculateAlignment();
+	DEBUG << " * Alignment: " << alignment << endl;
+	
 	/* wrench */
 	DEBUG << "CALCULATING WRENCH - " << endl;
 	Q wrenchMeasurement = calculateWrenchMeasurement();
@@ -381,6 +467,7 @@ void GripperTaskSimulator::evaluateGripper()
 	_quality.topwrench = topwrench;
 	_quality.maxstress = maxstress;
 	_quality.volume = volume;
+	_quality.alignment = alignment;
 	_quality.quality = quality;
 	
 	DEBUG << "DONE - " << endl;

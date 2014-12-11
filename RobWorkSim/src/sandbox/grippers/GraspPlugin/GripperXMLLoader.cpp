@@ -172,6 +172,14 @@ void readResult(PTree& tree, Gripper::Ptr gripper, const std::string& path)
 		result.volume = 0.0;
 	}
 	
+	// alignment is optional
+	boost::optional<PTree&> alignNode = tree.get_child_optional("Alignment");
+	if (alignNode) {
+		result.alignment = XMLHelpers::readDouble(alignNode.get());
+	} else {
+		result.alignment = 0.0;
+	}
+	
 	DEBUG << "Read gripper quality:" << endl;
 	DEBUG << result << endl;
 }
@@ -268,6 +276,7 @@ void GripperXMLLoader::save(rw::models::Gripper::Ptr gripper, const std::string&
 	tree.put("Gripper.Result.Quality", q.quality);
 	tree.put("Gripper.Result.Robustness", q.robustness);
 	tree.put("Gripper.Result.MaxStress", q.maxstress);
+	tree.put("Gripper.Result.Alignment", q.alignment);
 	tree.put("Gripper.Result.Volume", q.volume);
 	
 	try {

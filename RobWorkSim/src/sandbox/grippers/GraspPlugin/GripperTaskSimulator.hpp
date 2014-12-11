@@ -89,6 +89,18 @@ class GripperTaskSimulator : public GraspTaskSimulator
 		double calculateInterference(SimState& sstate, const rw::kinematics::State& state0);
 		
 		/**
+		 * @brief Returns alignment index for all performed grasps
+		 * 
+		 * Performs a pose classification on tcpTobject poses after lifting objects.
+		 * The model of a stable pose with the highest number of inliers is selected.
+		 * For all the poses matching the model, an angle between pose before grasping, and a pose after grasping is calculated.
+		 * The alignment index is a width of a histogram of pose angle changes. It is calculated as a standard variation of
+		 * the angle values.
+		 */
+		 
+		double calculateAlignment() const;
+		
+		/**
 		 * @brief Get wrench measurement for performed grasp.
 		 * 
 		 * This is the min. wrench of the grasp.

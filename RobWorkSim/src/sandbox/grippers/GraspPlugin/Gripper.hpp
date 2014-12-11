@@ -60,6 +60,7 @@ struct GripperQuality
 		topwrench(0.0),
 		robustness(0.0),
 		maxstress(0.0),
+		alignment(0.0),
 		quality(0.0)
 	{}
 	
@@ -77,6 +78,7 @@ struct GripperQuality
 				<< "- topwrench= " << q.topwrench << '\n'
 				<< "- robustness= " << q.robustness << '\n'
 				<< "- maxstress= " << q.maxstress << '\n'
+				<< "- alignment= " << q.alignment << '\n'
 				<< "- volume= " << q.volume << '\n'
 				<< "- quality= " << q.quality << std::endl;
 				
@@ -96,6 +98,7 @@ struct GripperQuality
 	double robustness; // Robustness of succesful grasps.
 	double maxstress; // Max. stress a gripper takes.
 	double volume; // The volume of the gripper's jaw.
+	double alignment; // Aligning property of the gripper.
 	double quality; // Ultimate measurement of gripper quality.
 };
 
