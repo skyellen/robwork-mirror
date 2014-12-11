@@ -30,11 +30,13 @@
 #include <boost/thread/mutex.hpp>
 
 #include <vector>
+#include <list>
 
 namespace rw {
 namespace common {
 
 // Forward declarations
+class Exception;
 class ThreadPool;
 template <typename T> class ThreadSafeVariable;
 
@@ -108,9 +110,11 @@ public:
     /**
      * @brief Create task that will use a specific thread pool.
      *
-     * @param pool [in] a pointer to the ThreadPool to use.
+     * If no thread pool is given, the task will not use parallelization.
+     *
+     * @param pool [in] (optional) a pointer to the ThreadPool to use.
      */
-	ThreadTask(rw::common::Ptr<ThreadPool> pool);
+	ThreadTask(rw::common::Ptr<ThreadPool> pool = NULL);
 
     /**
      * @brief Destruct this task.
@@ -140,16 +144,30 @@ public:
      */
     ///@{
 	//! @brief Function is the first function executed to do the actual work (new subtasks can be added in this function).
-	virtual void run() {};
+	virtual void run();
 
-	//! @brief Function is executed each time a subtask has finished (new subtasks can be added in this function).
-	virtual void subTaskDone(ThreadTask* subtask) {};
+	/**
+	 * @brief Function is executed each time a subtask has finished (new subtasks can be added in this function).
+	 *
+	 * If #registerFailure is used to register failures in subtasks, this function should handle or propagate
+	 * the failures.
+	 *
+	 * The default implementation of this function is as follows:
+	 * \verbatim
+	  	BOOST_FOREACH(const Exception& e, subtask->getExceptions()) {
+			registerFailure(e);
+		}
+		\endverbatim
+	 *
+	 * @param subtask [in] the subtask that just finished.
+	 */
+	virtual void subTaskDone(ThreadTask* subtask);
 
 	//! @brief Function is executed when the task becomes idle (new subtasks can be added in this function).
-	virtual void idle() {};
+	virtual void idle();
 
 	//! @brief Function is executed when work is finished (at this point new subtasks can NOT be added).
-	virtual void done() {};
+	virtual void done();
     ///@}
 
     /**
@@ -210,6 +228,22 @@ public:
      */
     bool keepAlive();
 
+    /**
+     * @brief Mark the task as a failure by registering an exception.
+     *
+     * The user should override the #subTaskDone function in the parent task to
+     * either handle the exceptions appropriately or propagate them further on.
+     *
+     * @param e [in] an exception describing the problem.
+     */
+    void registerFailure(const Exception& e);
+
+    /**
+     * @brief Get a list of exceptions registered in task and subtasks.
+     * @return a list of exceptions.
+     */
+    std::list<Exception> getExceptions() const;
+
 private:
     typedef boost::function<void(ThreadTask*)> ParentCallback;
 
@@ -227,6 +261,7 @@ private:
     ThreadSafeVariable<std::vector<rw::common::Ptr<ThreadTask> > >* _children;
     ThreadSafeVariable<unsigned int>* _childrenMissing;
     ThreadSafeVariable<ParentCallback>* _parentCallback;
+    ThreadSafeVariable<std::list<Exception> >* _exceptions;
 
     // Mutex for exclusive access to atomic manipulation of all data
     boost::mutex _mutex;

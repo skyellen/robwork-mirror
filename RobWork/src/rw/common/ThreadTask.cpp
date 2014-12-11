@@ -19,6 +19,7 @@
 #include "ThreadPool.hpp"
 #include "ThreadSafeVariable.hpp"
 #include "macros.hpp"
+#include "Exception.hpp"
 
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
@@ -26,12 +27,13 @@
 using namespace rw::common;
 
 ThreadTask::ThreadTask(ThreadTask::Ptr parent):
-	_pool(new ThreadSafeVariable<ThreadPool::Ptr>(parent->getThreadPool())),
+	_pool(new ThreadSafeVariable<ThreadPool::Ptr>(parent != NULL ? parent->getThreadPool() : NULL)),
 	_state(new ThreadSafeVariable<TaskState>(INITIALIZATION)),
 	_keepAlive(new ThreadSafeVariable<bool>(false)),
 	_children(new ThreadSafeVariable<std::vector<ThreadTask::Ptr> >(std::vector<ThreadTask::Ptr>())),
 	_childrenMissing(new ThreadSafeVariable<unsigned int>(0)),
-	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1)))
+	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1))),
+	_exceptions(new ThreadSafeVariable<std::list<Exception> >(std::list<Exception>()))
 {
 }
 
@@ -41,7 +43,8 @@ ThreadTask::ThreadTask(ThreadPool::Ptr pool):
 	_keepAlive(new ThreadSafeVariable<bool>(false)),
 	_children(new ThreadSafeVariable<std::vector<ThreadTask::Ptr> >(std::vector<ThreadTask::Ptr>())),
 	_childrenMissing(new ThreadSafeVariable<unsigned int>(0)),
-	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1)))
+	_parentCallback(new ThreadSafeVariable<ParentCallback>(boost::bind(&ThreadTask::parentCallbackDefault,this,_1))),
+	_exceptions(new ThreadSafeVariable<std::list<Exception> >(std::list<Exception>()))
 {
 }
 
@@ -52,6 +55,7 @@ ThreadTask::~ThreadTask() {
 	delete _children;
 	delete _childrenMissing;
 	delete _parentCallback;
+	delete _exceptions;
 }
 
 bool ThreadTask::setThreadPool(ThreadPool::Ptr pool) {
@@ -70,6 +74,21 @@ bool ThreadTask::setThreadPool(ThreadPool::Ptr pool) {
 ThreadPool::Ptr ThreadTask::getThreadPool() {
 	return _pool->getVariable();
 }
+
+void ThreadTask::run() {
+};
+
+void ThreadTask::subTaskDone(ThreadTask* subtask) {
+	BOOST_FOREACH(const Exception& e, subtask->getExceptions()) {
+		registerFailure(e);
+	}
+};
+
+void ThreadTask::idle() {
+};
+
+void ThreadTask::done() {
+};
 
 bool ThreadTask::execute() {
 	// Do a quick check on the state
@@ -93,8 +112,12 @@ bool ThreadTask::execute() {
 	// The ThreadPool can not change anymore (state is IN_QUEUE) so we just read it without holding the lock:
 	ThreadPool::Ptr pool = _pool->getVariable();
 	// Work is now added to the pool, where it is queued (it might start executing immediately).
-	ThreadPool::WorkFunction workFct = boost::bind(&ThreadTask::runWrap,this,_1);
-	pool->addWork(workFct);
+	if (pool != NULL) {
+		ThreadPool::WorkFunction workFct = boost::bind(&ThreadTask::runWrap,this,_1);
+		pool->addWork(workFct);
+	} else {
+		runWrap(NULL);
+	}
 	BOOST_FOREACH(ThreadTask::Ptr subtask, children) {
 		subtask->execute();
 	}
@@ -180,6 +203,17 @@ void ThreadTask::setKeepAlive(bool keepAlive) {
 
 bool ThreadTask::keepAlive() {
 	return _keepAlive->getVariable();
+}
+
+void ThreadTask::registerFailure(const Exception& e) {
+	boost::mutex::scoped_lock lock(_mutex);
+	std::list<Exception> exceptions = _exceptions->getVariable();
+	exceptions.push_back(e);
+	_exceptions->setVariable(exceptions);
+}
+
+std::list<Exception> ThreadTask::getExceptions() const {
+	return _exceptions->getVariable();
 }
 
 void ThreadTask::runWrap(ThreadPool* pool) {
