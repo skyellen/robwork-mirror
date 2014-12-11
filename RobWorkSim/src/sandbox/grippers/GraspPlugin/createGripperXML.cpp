@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 			jawParams(5) *= Deg2Rad;
 			jawParams(8) *= Deg2Rad;
 			jawParams(10) *= Deg2Rad;
-			//gripper->setJawGeometry(jawParams);
+			gripper->setJawGeometry(jawParams);
 		}
 		
 		if (vm.count("base")) {
