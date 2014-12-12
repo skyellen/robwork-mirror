@@ -38,6 +38,11 @@ TNTBodyConstraintManager::TNTBodyConstraintManager():
 {
 }
 
+TNTBodyConstraintManager::TNTBodyConstraintManager(const TNTBodyConstraintManager* parent):
+	_parent(parent)
+{
+}
+
 TNTBodyConstraintManager::~TNTBodyConstraintManager() {
 	if (_parent == NULL) {
 		BOOST_FOREACH(const TNTBody* const body, _allBodies) {
