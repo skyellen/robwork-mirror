@@ -156,7 +156,7 @@ public:
 	}
 
 	void run() {
-		if (_chain.bodies.size() <= 1)
+		if (_chain.bodies.size() == 0)
 			return;
 		// Solve the initial impulses
 		{
@@ -222,6 +222,7 @@ public:
 #if TNT_DEBUG_ENABLE_BOUNCING
 		TNT_DEBUG_BOUNCING("Velocities after solving:");
 		BOOST_FOREACH(const std::size_t index, _indices) {
+			RW_ASSERT(index <= _chain.bodies.size());
 			if (index == 0 || index == _chain.bodies.size()) {
 				const TNTBody* body;
 				if (index == 0)
@@ -643,7 +644,6 @@ std::set<std::size_t> TNTCollisionSolverChain::getIndices(
 					break;
 				}
 			}
-			i++;
 		}
 		if (!found) {
 			BOOST_FOREACH(const TNTFixedBody* const body, chain.fixedBodiesEnd) {

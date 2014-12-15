@@ -142,11 +142,11 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 		PropertyMap tmpMap;
 		addDefaultPropertiesInternal(tmpMap);
 		if (RESOLVER_THRESHOLD < 0) {
-			RESOLVER_THRESHOLD = pmap.get<double>(PROPERTY_RESOLVER_TOLERANCE,-1.);
+			RESOLVER_THRESHOLD = tmpMap.get<double>(PROPERTY_RESOLVER_TOLERANCE,-1.);
 			RW_ASSERT(RESOLVER_THRESHOLD > 0);
 		}
 		if (PRECISION < 0) {
-			PRECISION = pmap.get<double>(PROPERTY_SVD_PRECISION,-1.);
+			PRECISION = tmpMap.get<double>(PROPERTY_SVD_PRECISION,-1.);
 			RW_ASSERT(PRECISION > 0);
 		}
 	}
