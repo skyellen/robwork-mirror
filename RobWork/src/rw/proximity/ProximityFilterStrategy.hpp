@@ -59,9 +59,12 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<ProximityFilterStrategy> Ptr;
 
+	//! @brief Destructor
+	virtual ~ProximityFilterStrategy() {};
 
 	/**
-	 * @brief reset
+	 * @brief Reset
+	 * @param state [in] the state.
 	 */
 	virtual void reset(const rw::kinematics::State& state) = 0;
 
@@ -73,8 +76,8 @@ public:
 	virtual ProximityCache::Ptr createProximityCache() = 0;
 
 	/**
-	 *
-	 * @param state
+	 * @brief Do an update
+	 * @param state [in] the state.
 	 * @return
 	 */
 	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state) = 0;
@@ -83,12 +86,14 @@ public:
 	 * @brief called once before acquirering all possibly colliding
 	 * frame pairs in the workcell
 	 * @param state [in] the state for which collision detection is performed.
+	 * @param data
 	 */
 	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state, ProximityCache::Ptr data) = 0;
 
 	/**
 	 * @brief get the proximity setup that describe the include/exclude rules of this
 	 * BroadPhaseStrategy
+	 * @return a reference to the ProximitySetup
 	 */
 	virtual ProximitySetup& getProximitySetup() = 0;
 
@@ -134,6 +139,7 @@ public:
 
 	/**
 	 * @brief Adds a ProximitySetupRule
+	 * @param rule [in] the rule to add.
 	 */
 	virtual void addRule(const ProximitySetupRule& rule) = 0;
 
@@ -141,6 +147,7 @@ public:
 	/**
 	 * @brief Removes a ProximitySetupRule
 	 * If the rule cannot be found, then noting happens.
+	 * @param rule [in] the rule to remove.
 	 */
 	virtual void removeRule(const ProximitySetupRule& rule) = 0;
 
