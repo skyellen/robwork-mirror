@@ -25,6 +25,7 @@ IF(build)
       RANSACModel.cpp
       PointModel.cpp
       LineModel.cpp
+      StructuredLineModel.cpp
       PlaneModel.cpp
       StablePose1DModel.cpp
     )
@@ -46,6 +47,7 @@ IF(build)
       RANSACModel.hpp
       PointModel.hpp
       LineModel.hpp
+      StructuredLineModel.hpp
       PlaneModel.hpp
       StablePose1DModel.hpp
     )
