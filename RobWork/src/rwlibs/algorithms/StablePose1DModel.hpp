@@ -113,7 +113,7 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 		 * 
 		 * StablePose1DModel requires at least 4 samples.
 		 */
-		virtual int getMinReqData() const { return 4; }
+		virtual int getMinReqData() const { return 3; }
 		
 		//! @copydoc RANSACModel::refit
 		virtual double refit(const std::vector<rw::math::Rotation3D<> >& samples);

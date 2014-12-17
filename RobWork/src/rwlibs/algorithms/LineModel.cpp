@@ -74,5 +74,5 @@ bool LineModel::same(const LineModel& model, double threshold) const
 	double d = metric->distance(_model, model._model);
 	//std::cout << "distance= " << d << std::endl;
 	
-	return d <= threshold;
+	return (d <= threshold);
 }

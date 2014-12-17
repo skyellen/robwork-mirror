@@ -54,7 +54,10 @@ double Line::distance(const Line& line) const {
 	Vector3D<> b = _p2 - _p1;
 	Vector3D<> d = line._p2 - line._p1;
 	
-	return fabs(dot(_p1 - line._p1, cross(b, d)) / cross(b, d).norm2());
+	double bdcross = cross(b, d).norm2();
+	if (bdcross == 0.0) return 0.0;
+	
+	return fabs(dot(_p1 - line._p1, cross(b, d)) / bdcross);
 }
 
 rw::math::Vector3D<> Line::closestPoint(const rw::math::Vector3D<>& point) const {
