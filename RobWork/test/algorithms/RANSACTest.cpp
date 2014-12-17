@@ -21,6 +21,7 @@
 #include <rw/math/RPY.hpp>
 #include <rwlibs/algorithms/RANSACModel.hpp>
 #include <rwlibs/algorithms/LineModel.hpp>
+#include <rwlibs/algorithms/StructuredLineModel.hpp>
 #include <rwlibs/algorithms/PlaneModel.hpp>
 #include <rwlibs/algorithms/StablePose1DModel.hpp>
 
@@ -96,6 +97,48 @@ BOOST_AUTO_TEST_CASE(RANSACLineTest) {
 		Vector3D<>(0.989086430219537, -0.722790548702032, -0.706598794410653)
 	);
 	LineModel referenceModel(referenceLine);
+	
+	BOOST_CHECK(bestModel.same(referenceModel, 0.01));
+}
+
+
+
+BOOST_AUTO_TEST_CASE(RANSACStructuredLineTest) {
+	/* Test whether RANSAC finds a structured line model in supplied data file.
+	 * 
+	 * Test file contains 10 points lying on a line with noise of sigma=0.1 added to their position.
+	 * Test file also contains 5 random outliers.
+	 */
+	BOOST_MESSAGE("- Testing structured line fitting with RANSAC");
+	
+	Math::seed(0);
+	
+	// read data file
+	string filePath = testFilePath() + "ransac/sline_data.csv";
+	ifstream inFile(filePath.c_str());
+	vector<Transform3D<> > data = readData(inFile);
+	inFile.close();
+	BOOST_CHECK(data.size() > 0);
+	
+	// extract positions
+	vector<Vector3D<> > pos;
+	BOOST_FOREACH (const Transform3D<>& t, data) {
+		pos.push_back(t.P());
+	}
+	
+	// find models
+	vector<StructuredLineModel> models = StructuredLineModel::findModels(pos, 100, 3, 0.1, 0.1);
+	StructuredLineModel bestModel = StructuredLineModel::bestModel(models);
+	
+	// check if any model found
+	BOOST_CHECK(models.size() > 0);
+	
+	// check if the model is acceptably close to ground truth
+	rw::geometry::Line referenceLine(
+		Vector3D<>(-0.00421171, 0.0240888, 0.023985),
+		Vector3D<>(0.677764, -0.428622, 0.598408)
+	);
+	StructuredLineModel referenceModel(referenceLine, Vector3D<>(0.68698, -0.43474, 0.60617), 0.944152);
 	
 	BOOST_CHECK(bestModel.same(referenceModel, 0.01));
 }
