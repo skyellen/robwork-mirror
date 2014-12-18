@@ -131,7 +131,14 @@ class TaskDescription
 		Qualities _baseLine;
 		Qualities _weights;
 		std::vector<rw::math::Transform3D<> > _hints;
-		std::vector<Alignment> _alignments;
+		
+		// alignment
+		std::vector<Alignment> _alignments; // DEPRECATED
+		
+		// ransac parameters for finding stable pose
+		int _iterations;
+		double _dataThreshold;
+		double _modelThreshold;
 };
 
 

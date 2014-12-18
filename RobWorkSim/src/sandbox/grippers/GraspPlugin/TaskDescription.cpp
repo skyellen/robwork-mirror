@@ -102,6 +102,17 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 		readAlignments(*node5, task);
 	}
 	
+	boost::optional<PTree&> node6 = tree.get_child_optional("Alignment");
+	if (node6) {
+		DEBUG << "- alignment parameters: ";
+		Q params = XMLHelpers::readQ(*node6);
+		DEBUG << params << endl;
+		task->_iterations = (int)params[0];
+		task->_dataThreshold = (double)params[1];
+		task->_modelThreshold = (double)params[2];
+	}
+	
+	
 	task->_isOk = true;
 	
 	return task;
@@ -417,6 +428,9 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 		
 		tree.add_child("TaskDescription.Alignments.Alignment", node);
 	}
+	
+	// save alignment ransac parameters
+	tree.put("TaskDescription.Alignment", XMLHelpers::QToString(Q(3, td->_iterations, td->_dataThreshold, td->_modelThreshold)));
 	
 	// save to XML
 	try {
