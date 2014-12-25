@@ -35,6 +35,7 @@
 #include "Transform3D.hpp"
 #include "EAA.hpp"
 #include "Vector3D.hpp"
+#include "Math.hpp"
 
 namespace rw { namespace math {
 
@@ -65,11 +66,10 @@ namespace rw { namespace math {
     template<class T = double>
     class Wrench6D
     {
-    public:		
-		//! The type of the internal Eigne Vector
-		typedef Eigen::Matrix<T, 6, 1> EigenVector6D;
-		EigenVector6D _wrench;
+	private:
+		T _wrench[6];
 
+	public:		
 		/**
          * @brief Constructs a 6 degrees of freedom velocity screw
          *
@@ -89,14 +89,17 @@ namespace rw { namespace math {
 		Wrench6D(const Eigen::MatrixBase<R>& v) {
 			if (v.cols() != 1 || v.rows() != 6)
 				RW_THROW("Unable to initialize VectorND with "<<v.rows()<< " x "<<v.cols()<<" matrix");
-			_wrench = v;
+			for (size_t i = 0; i<6; i++)
+				_wrench[i] = v(i);
 		}
 
         /**
          * @brief Default Constructor. Initialized the wrench to 0
          */
-		Wrench6D() : _wrench(EigenVector6D::Zero(6))
-        {}
+		Wrench6D() 
+        {
+			_wrench[0] = _wrench[1] = _wrench[2] = _wrench[3] = _wrench[4] = _wrench[5] = 0;
+		}
 
         /**
          * @brief Constructs a wrench from a force and torque
@@ -115,7 +118,7 @@ namespace rw { namespace math {
         {
 			boost::numeric::ublas::bounded_vector<T, 6> v(r);
 			for (size_t i = 0; i<6; i++) {
-				_wrench(i) = v(i);
+				_wrench[i] = v(i);
 			}
 		}
 
@@ -147,7 +150,7 @@ namespace rw { namespace math {
          * @return the force
          */
         const Vector3D<T> force() const {
-            return Vector3D<T>(_wrench(0), _wrench(1), _wrench(2));
+            return Vector3D<T>(_wrench[0], _wrench[1], _wrench[2]);
         }
 
         /**
@@ -156,7 +159,7 @@ namespace rw { namespace math {
          * @return the torque
          */
         const Vector3D<T> torque() const {
-            return Vector3D<T>(_wrench(3), _wrench(4), _wrench(5));
+            return Vector3D<T>(_wrench[3], _wrench[4], _wrench[5]);
         }
 
         /**
@@ -168,7 +171,7 @@ namespace rw { namespace math {
          */
         T& operator()(std::size_t index) {
             assert(index < 6);
-            return _wrench(index);
+			return _wrench[index];
         }
 
         /**
@@ -180,7 +183,7 @@ namespace rw { namespace math {
          */
         const T& operator()(std::size_t index) const {
             assert(index < 6);
-            return _wrench(index);
+            return _wrench[index];
         }
 
         //! @copydoc operator()
@@ -200,7 +203,8 @@ namespace rw { namespace math {
          * @return reference to the Wrench6D to support additional assignments.
          */
         Wrench6D<T>& operator+=(const Wrench6D<T>& wrench) {
-            _wrench += wrench.e();
+            for (size_t i = 0; i<6; i++)	 
+				_wrench[i] += wrench(i);
             return *this;
         }
 
@@ -215,7 +219,8 @@ namespace rw { namespace math {
          * assignments.
          */
         Wrench6D<T>& operator-=(const Wrench6D<T>& wrench) {
-            _wrench -= wrench.e();
+            for (size_t i = 0; i<6; i++)	 
+				_wrench[i] -= wrench(i);
             return *this;
         }
 
@@ -228,14 +233,16 @@ namespace rw { namespace math {
          * assigments
          */
         Wrench6D<T>& operator *= (T s) {
-            _wrench *= s;
+            for (size_t i = 0; i<6; i++)	 
+				_wrench[i] *= s;
+
             return *this;
         }
 
 
 
         /**
-         * @brief Scales wrenchw and returns scaled version
+         * @brief Scales wrench and returns scaled version
          *
          * @param wrench [in] Wrench to scale
          * @param s [in] scaling value
@@ -413,13 +420,13 @@ namespace rw { namespace math {
          * @brief Adds two wrenches together @f$
          * \mathbf{w}_{12}=\mathbf{w}_1+\mathbf{w}_2 @f$
          *
-         * @param wrench [in] @f$ \mathbf{\nu}_1 @f$
+         * @param rhs [in] @f$ \mathbf{\nu}_1 @f$
          *
          * @return the wrench @f$ \mathbf{w}_{12} @f$
          */
-        const Wrench6D<T> operator+(const Wrench6D<T>& wrench) const
+        const Wrench6D<T> operator+(const Wrench6D<T>& rhs) const
         {
-            return Wrench6D<T>(_wrench+wrench.e());
+			return Wrench6D<T>(_wrench[0]+rhs(0),_wrench[1]+rhs(1),_wrench[2]+rhs(2),_wrench[3]+rhs(3),_wrench[4]+rhs(4),_wrench[5]+rhs(5));
         }
 
         /**
@@ -429,9 +436,9 @@ namespace rw { namespace math {
          * \param wrench [in] \f$\mathbf{w}_1\f$
          * \return the wrench \f$\mathbf{w}_{12} \f$
          */
-        const Wrench6D<T> operator-(const Wrench6D<T>& wrench) const
+        const Wrench6D<T> operator-(const Wrench6D<T>& rhs) const
         {
-            return Wrench6D<T>(_wrench-wrench.e());
+			return Wrench6D<T>(_wrench[0]-rhs(0),_wrench[1]-rhs(1),_wrench[2]-rhs(2),_wrench[3]-rhs(3),_wrench[4]-rhs(4),_wrench[5]-rhs(5));
         }
 
         /**
@@ -443,7 +450,8 @@ namespace rw { namespace math {
          */
         friend std::ostream& operator<<(std::ostream& os, const Wrench6D<T>& wrench)
         {
-            return os << wrench.e();
+			return os << "{{"<<wrench(0)<<","<<wrench(1)<<","<<wrench(2)<<"},{"<<wrench(3)<<","<<wrench(4)<<","<<wrench(5)<<"}}";
+            //return os << wrench.e();
         }
 
         /**
@@ -466,7 +474,8 @@ namespace rw { namespace math {
          * @return the 1-norm
          */
         T norm1() const {
-            return _wrench.template lpNorm<1>();
+			return fabs(_wrench[0])+fabs(_wrench[1])+fabs(_wrench[2])+fabs(_wrench[3])+fabs(_wrench[4])+fabs(_wrench[5]);
+            //return _wrench.template lpNorm<1>();
         }
 
 
@@ -490,7 +499,7 @@ namespace rw { namespace math {
          * @return the 2-norm
          */
         T norm2() const {
-            return _wrench.norm();
+            return std::sqrt(Math::sqr(_wrench[0])+Math::sqr(_wrench[1])+Math::sqr(_wrench[2])+Math::sqr(_wrench[3])+Math::sqr(_wrench[4])+Math::sqr(_wrench[5]));
         }
 
         /**
@@ -513,7 +522,7 @@ namespace rw { namespace math {
          * @return the infinite norm
          */
         T normInf() const {
-			return _wrench.template lpNorm<Eigen::Infinity>();
+			return std::max(fabs(_wrench[0]), std::max(fabs(_wrench[1]), std::max(fabs(_wrench[2]), std::max(fabs(_wrench[3]), std::max(fabs(_wrench[4]),fabs(_wrench[5]))))));
         }
 
         /**
@@ -543,26 +552,19 @@ namespace rw { namespace math {
         boost::numeric::ublas::bounded_vector<T, 6> m() const { 
 			boost::numeric::ublas::bounded_vector<T, 6> m;
 			for (size_t i = 0; i<6; i++)
-				m(i) = _wrench(i);
+				m(i) = _wrench[i];
 			return m; 
 		}
 
         /**
-           @brief Accessor for the internal Eigen velocity screw state.
+           @brief Converter to Eigen data type
          */
-		EigenVector6D& e() {
-			return _wrench;
+		Eigen::Matrix<T, 6, 1> e() const {
+			Eigen::Matrix<T, 6, 1> res;
+			for (size_t i = 0; i<6; i++)
+				res(i) = _wrench[i];
+			return res;
 		}
-
-        /**
-           @brief Accessor for the internal Eigen velocity screw state.
-         */
-		const EigenVector6D& e() const {
-			return _wrench;
-		}
-
-
-	private:
 
 
     };

@@ -25,7 +25,7 @@
 using namespace rw::math;
 
 template<class T>
-Wrench6D<T>::Wrench6D(T vx, T vy, T vz, T wx, T wy, T wz) : _wrench(6){
+Wrench6D<T>::Wrench6D(T vx, T vy, T vz, T wx, T wy, T wz) {
     _wrench[0] = vx;
     _wrench[1] = vy;
     _wrench[2] = vz;
@@ -35,7 +35,7 @@ Wrench6D<T>::Wrench6D(T vx, T vy, T vz, T wx, T wy, T wz) : _wrench(6){
 }
 
 template<class T>
-Wrench6D<T>::Wrench6D(const Vector3D<T>& force, const Vector3D<T>& torque) : _wrench(6){
+Wrench6D<T>::Wrench6D(const Vector3D<T>& force, const Vector3D<T>& torque) {
     _wrench[0] = force(0);
     _wrench[1] = force(1);
     _wrench[2] = force(2);

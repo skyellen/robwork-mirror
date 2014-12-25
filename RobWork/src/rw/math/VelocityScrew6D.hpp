@@ -35,6 +35,7 @@
 #include "Transform3D.hpp"
 #include "EAA.hpp"
 #include "Vector3D.hpp"
+#include "Math.hpp"
 
 namespace rw { namespace math {
 
@@ -65,11 +66,10 @@ namespace rw { namespace math {
     template<class T = double>
     class VelocityScrew6D
     {
-    public:		
-		//! The type of the internal Eigne Vector
-		typedef Eigen::Matrix<T, 6, 1> EigenVector6D;
-		EigenVector6D _screw;
+	private:
+		T _screw[6]; 
 
+	public:
 		/**
          * @brief Constructs a 6 degrees of freedom velocity screw
          *
@@ -86,14 +86,21 @@ namespace rw { namespace math {
 		VelocityScrew6D(const Eigen::MatrixBase<R>& v) {
 			if (v.cols() != 1 || v.rows() != 6)
 				RW_THROW("Unable to initialize VectorND with "<<v.rows()<< " x "<<v.cols()<<" matrix");
-			_screw = v;
+			_screw[0] = v[0];
+			_screw[1] = v[1];
+			_screw[2] = v[2];
+			_screw[3] = v[3];
+			_screw[4] = v[4];
+			_screw[5] = v[5];
 		}
 
         /**
          * @brief Default Constructor. Initialized the velocity to 0
          */
-		VelocityScrew6D() : _screw(EigenVector6D::Zero(6))
-        {}
+		VelocityScrew6D() 
+		{
+			_screw[0] = _screw[1] = _screw[2] = _screw[3] = _screw[4] = _screw[5] = 0;
+		}
 
         /**
          * @brief Constructs a velocity screw in frame @f$ a @f$ from a
@@ -117,7 +124,7 @@ namespace rw { namespace math {
          * @return the linear velocity
          */
         const Vector3D<T> linear() const {
-            return Vector3D<T>(_screw(0), _screw(1), _screw(2));
+			return Vector3D<T>(_screw[0], _screw[1], _screw[2]);
         }
 
         /**
@@ -127,7 +134,7 @@ namespace rw { namespace math {
          * @return the angular velocity
          */
         const EAA<T> angular() const {
-            return EAA<T>(_screw(3), _screw(4), _screw(5));
+            return EAA<T>(_screw[3], _screw[4], _screw[5]);
         }
 
         /**
@@ -139,7 +146,7 @@ namespace rw { namespace math {
          */
         T& operator()(std::size_t index) {
             assert(index < 6);
-            return _screw(index);
+            return _screw[index];
         }
 
         /**
@@ -151,7 +158,7 @@ namespace rw { namespace math {
          */
         const T& operator()(std::size_t index) const {
             assert(index < 6);
-            return _screw(index);
+            return _screw[index];
         }
 
         //! @copydoc operator()
@@ -170,7 +177,12 @@ namespace rw { namespace math {
          * assignments.
          */
         VelocityScrew6D<T>& operator+=(const VelocityScrew6D<T>& screw) {
-            _screw += screw.e();
+            _screw[0] += screw(0);
+			_screw[1] += screw(1);
+			_screw[2] += screw(2);
+			_screw[3] += screw(3);
+			_screw[4] += screw(4);
+			_screw[5] += screw(5);
             return *this;
         }
 
@@ -184,8 +196,13 @@ namespace rw { namespace math {
          * assignments.
          */
         VelocityScrew6D<T>& operator-=(const VelocityScrew6D<T>& screw) {
-            _screw -= screw.e();
-            return *this;
+            _screw[0] -= screw(0);
+			_screw[1] -= screw(1);
+			_screw[2] -= screw(2);
+			_screw[3] -= screw(3);
+			_screw[4] -= screw(4);
+			_screw[5] -= screw(5);            
+			return *this;
         }
 
         /**
@@ -197,7 +214,12 @@ namespace rw { namespace math {
          * assigments
          */
         VelocityScrew6D<T>& operator *= (T s) {
-            _screw *= s;
+			_screw[0] *= s;
+			_screw[1] *= s;
+			_screw[2] *= s;
+			_screw[3] *= s;
+			_screw[4] *= s;
+			_screw[5] *= s;
             return *this;
         }
 
@@ -400,8 +422,13 @@ namespace rw { namespace math {
          * @return the velocity screw @f$ \mathbf{\nu}_{12} @f$
          */
         const VelocityScrew6D<T> operator+(const VelocityScrew6D<T>& screw2) const
-        {
-            return VelocityScrew6D<T>(_screw+screw2.e());
+        {			
+			return VelocityScrew6D<T>(_screw[0]+screw2._screw[0],
+									  _screw[1]+screw2._screw[1],
+									  _screw[2]+screw2._screw[2],
+									  _screw[3]+screw2._screw[3],
+									  _screw[4]+screw2._screw[4],
+									  _screw[5]+screw2._screw[5]);
         }
 
         /**
@@ -414,7 +441,12 @@ namespace rw { namespace math {
          */
         const VelocityScrew6D<T> operator-(const VelocityScrew6D<T>& screw2) const
         {
-            return VelocityScrew6D<T>(_screw-screw2.e());
+            return VelocityScrew6D<T>(_screw[0]-screw2._screw[0],
+									  _screw[1]-screw2._screw[1],
+									  _screw[2]-screw2._screw[2],
+									  _screw[3]-screw2._screw[3],
+									  _screw[4]-screw2._screw[4],
+									  _screw[5]-screw2._screw[5]);
         }
 
         /**
@@ -426,7 +458,7 @@ namespace rw { namespace math {
          */
         friend std::ostream& operator<<(std::ostream& os, const VelocityScrew6D<T>& screw)
         {
-            return os << screw.e();
+			return os << "{{"<<screw(0)<<","<<screw(1)<<","<<screw(2)<<"},{"<<screw(3)<<","<<screw(4)<<","<<screw(5)<<"}}";
         }
 
         /**
@@ -449,7 +481,7 @@ namespace rw { namespace math {
          * @return the 1-norm
          */
         T norm1() const {
-            return _screw.template lpNorm<1>();
+			return fabs(_screw[0])+fabs(_screw[1])+fabs(_screw[2])+fabs(_screw[3])+fabs(_screw[4])+fabs(_screw[5]);
         }
 
 
@@ -473,7 +505,7 @@ namespace rw { namespace math {
          * @return the 2-norm
          */
         T norm2() const {
-            return _screw.norm();
+			return std::sqrt(Math::sqr(_screw[0])+Math::sqr(_screw[1])+Math::sqr(_screw[2])+Math::sqr(_screw[3])+Math::sqr(_screw[4])+Math::sqr(_screw[5]));
         }
 
         /**
@@ -485,7 +517,7 @@ namespace rw { namespace math {
          * @return the infinite norm
          */
         friend T normInf(const VelocityScrew6D& screw)
-        {
+        {			
             return screw.normInf();
         }
 
@@ -496,7 +528,7 @@ namespace rw { namespace math {
          * @return the infinite norm
          */
         T normInf() const {
-			return _screw.template lpNorm<Eigen::Infinity>();
+			return std::max(fabs(_screw[0]), std::max(fabs(_screw[1]), std::max(fabs(_screw[2]), std::max(fabs(_screw[3]), std::max(fabs(_screw[4]),fabs(_screw[5]))))));
         }
 
         /**
@@ -526,33 +558,29 @@ namespace rw { namespace math {
         {
 			boost::numeric::ublas::bounded_vector<T, 6> v(r);
 			for (size_t i = 0; i<6; i++) {
-				_screw(i) = v(i);
+				_screw[i] = v(i);
 			}
 		}
 
 
         /**
-           @brief Converter to Boost velocity screw state.
+           @brief Converter to Boost bounded_vector
          */
         boost::numeric::ublas::bounded_vector<T, 6> m() const { 
 			boost::numeric::ublas::bounded_vector<T, 6> m;
 			for (size_t i = 0; i<6; i++)
-				m(i) = _screw(i);
+				m(i) = _screw[i];
 			return m; 
 		}
 
         /**
-           @brief Accessor for the internal Eigen velocity screw state.
+           @brief Converter to Eigen vector
          */
-		EigenVector6D& e() {
-			return _screw;
-		}
-
-        /**
-           @brief Accessor for the internal Eigen velocity screw state.
-         */
-		const EigenVector6D& e() const {
-			return _screw;
+		Eigen::Matrix<T, Eigen::Dynamic, 1> e() const {
+			Eigen::Matrix<T, Eigen::Dynamic, 1> res;
+			for (size_t i = 0; i<6; i++)
+				res(i) = _screw[i];
+			return res;
 		}
 
 

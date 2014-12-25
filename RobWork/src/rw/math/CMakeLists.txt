@@ -57,6 +57,7 @@ SET(FILES_HPP
   Vector2D.hpp
   Vector3D.hpp
   VelocityScrew6D.hpp
+  Wrench6D.hpp
   PerspectiveTransform2D.hpp
   EigenDecomposition.hpp
   ProjectionMatrix.hpp
