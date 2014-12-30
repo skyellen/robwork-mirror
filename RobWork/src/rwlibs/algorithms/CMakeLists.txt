@@ -28,6 +28,7 @@ IF(build)
       StructuredLineModel.cpp
       PlaneModel.cpp
       StablePose1DModel.cpp
+      StablePose0DModel.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -50,6 +51,7 @@ IF(build)
       StructuredLineModel.hpp
       PlaneModel.hpp
       StablePose1DModel.hpp
+      StablePose0DModel.cpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} algorithms ${SRC_FILES} ${SRC_FILES_HPP})

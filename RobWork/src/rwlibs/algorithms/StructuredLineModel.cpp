@@ -159,7 +159,7 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 
 bool StructuredLineModel::same(const StructuredLineModel& model, double threshold) const
 {
-	// make a metric to compute distance between planes
+	// make a metric to compute distance between lines
 	rw::math::Metric<rw::geometry::Line>::Ptr metric = rw::geometry::Line::makeMetric();
 	
 	double d = metric->distance(_line, model._line);

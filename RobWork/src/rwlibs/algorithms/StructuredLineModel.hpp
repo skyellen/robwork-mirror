@@ -105,10 +105,10 @@ class StructuredLineModel : public RANSACModel<StructuredLineModel, rw::math::Ve
 		rw::geometry::Line line() const { return _line; }
 		
 		//! @brief Get starting point.
-		rw::math::Vector3D<> start() const { return _start; }
+		inline rw::math::Vector3D<> start() const { return _start; }
 		
 		//! @brief Get interval.
-		double getInterval() const { return _interval; }
+		inline double getInterval() const { return _interval; }
 		
 		/* operators */
 		/**
