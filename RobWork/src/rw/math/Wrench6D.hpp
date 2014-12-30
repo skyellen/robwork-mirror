@@ -128,9 +128,9 @@ namespace rw { namespace math {
          * @param force [in] linear force
          */
         void setForce(const Vector3D<T>& force) {
-            _wrench(0) = force(0);
-            _wrench(1) = force(1);
-            _wrench(2) = force(2);
+            _wrench[0] = force(0);
+            _wrench[1] = force(1);
+            _wrench[2] = force(2);
         }
 
         /**
@@ -139,9 +139,9 @@ namespace rw { namespace math {
          * @param torque [in] angular torque
          */
         void setTorque(const Vector3D<T>& torque) {
-            _wrench(3) = torque(0);
-            _wrench(4) = torque(1);
-            _wrench(5) = torque(2);
+            _wrench[3] = torque(0);
+            _wrench[4] = torque(1);
+            _wrench[5] = torque(2);
         }
 
         /**
