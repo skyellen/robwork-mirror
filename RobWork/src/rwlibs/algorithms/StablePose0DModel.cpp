@@ -75,7 +75,7 @@ double StablePose0DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		model = model.slerp(Quaternion<>(s), weight / i);
 	}
 	
-	if (n > 0) model = 1.0 / n * model;
+	//if (n > 0) model = 1.0 / n * model;
 	_rot = model.toRotation3D();
 	
 	//cout << "fitted: " << model << endl;
