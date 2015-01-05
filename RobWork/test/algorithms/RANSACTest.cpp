@@ -24,6 +24,7 @@
 #include <rwlibs/algorithms/StructuredLineModel.hpp>
 #include <rwlibs/algorithms/PlaneModel.hpp>
 #include <rwlibs/algorithms/StablePose1DModel.hpp>
+#include <rwlibs/algorithms/StablePose0DModel.hpp>
 
 #include <vector>
 #include <fstream>
@@ -238,3 +239,42 @@ BOOST_AUTO_TEST_CASE(RANSACStablePose1DTest) {
 	
 	BOOST_CHECK(modelPlanes.same(modelAxes, 0.01));
 }
+
+
+
+BOOST_AUTO_TEST_CASE(RANSACStablePose0DTest) {
+	/* Test whether RANSAC finds a stable pose with 0 dof model in provided data file.
+	 * 
+	 * Test file contains 10 points with orientations matching a stable pose with noise of sigma=5deg.
+	 * Test file also contains 5 random outliers.
+	 */
+	BOOST_MESSAGE("- Testing stable pose 0 dof fitting with RANSAC");
+	
+	Math::seed(0);
+	
+	// read data file
+	string filePath = testFilePath() + "ransac/stablepose0_data.csv";
+	ifstream inFile(filePath.c_str());
+	vector<Transform3D<> > data = readData(inFile);
+	inFile.close();
+	BOOST_CHECK(data.size() > 0);
+	
+	// extract orientations
+	vector<Rotation3D<> > rot;
+	BOOST_FOREACH (const Transform3D<>& t, data) {
+		rot.push_back(t.R());
+	}
+	
+	// find models
+	vector<StablePose0DModel> models = StablePose0DModel::findModels(rot, 100, 5, 0.5, 0.5);
+	StablePose0DModel bestModel = StablePose0DModel::bestModel(models);
+	
+	// check if any model found
+	BOOST_CHECK(models.size() > 0);
+	
+	// check if the model is acceptably close to ground truth
+	StablePose0DModel referenceModel(RPY<>(0.1, 0.45, 0.0).toRotation3D());
+	
+	BOOST_CHECK(bestModel.same(referenceModel, 1.0));
+}
+
