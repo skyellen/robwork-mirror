@@ -26,8 +26,7 @@
 
 #include <list>
 
-// Forward declarations
-namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace common { class PropertyMap; } }
 
 namespace rwsimlibs {
 namespace tntphysics {
@@ -40,7 +39,10 @@ class TNTIslandState;
 
 //! @{
 /**
- * @brief Positional correction of bodies to satisfy the constraints.
+ * @brief Correction of the position and orientation of bodies such that positional errors in constraints and
+ * contacts are reduced or eliminated.
+ *
+ * The correction algorithm uses the properties described in #addDefaultProperties .
  */
 class TNTConstraintCorrection {
 public:
@@ -53,10 +55,21 @@ public:
 	/**
 	 * @brief Do the correction.
 	 * @param constraints [in] vector of constraints to correct.
+	 * @param properties [in] a reference to the PropertyMap.
 	 * @param tntstate [in/out] the state that will be updated.
-	 * @param rwstate [in] the state of the system.
 	 */
-	virtual void correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
+	virtual void correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const rw::common::PropertyMap& properties) const;
+
+	/**
+	 * @brief Insert the properties used by default into property map.
+	 *
+	 *  Property Name                | Type   | Default value          | Description
+	 *  ---------------------------- | ------ | ---------------------- | -----------
+	 *  TNTCorrectionThresholdFactor | double | \f$\frac{10}{0.003}\f$ | Angle between a pair of contact normals must be less than this factor multiplied by the distance between the contact points to be included (degrees per meter).
+	 *
+	 * @param properties [in/out] PropertyMap to add properties to.
+	 */
+	static void addDefaultProperties(rw::common::PropertyMap& properties);
 
 private:
 	struct BodyPairError;

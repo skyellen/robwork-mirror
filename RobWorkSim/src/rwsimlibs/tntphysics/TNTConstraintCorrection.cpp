@@ -22,10 +22,9 @@
 #include "TNTRigidBody.hpp"
 #include "TNTContact.hpp"
 
-#include <rw/kinematics/State.hpp>
 #include <rwsim/dynamics/Body.hpp>
 
-using namespace rw::kinematics;
+using namespace rw::common;
 using namespace rw::math;
 using namespace rwsimlibs::tntphysics;
 
@@ -47,7 +46,15 @@ TNTConstraintCorrection::TNTConstraintCorrection() {
 TNTConstraintCorrection::~TNTConstraintCorrection() {
 }
 
-void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const State& rwstate) const {
+void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const PropertyMap& properties) const {
+	double threshold = properties.get<double>("TNTCorrectionThresholdFactor", -1);
+	if (threshold < 0) {
+		PropertyMap map;
+		addDefaultProperties(map);
+		threshold = map.get<double>("TNTCorrectionThresholdFactor", -1);
+	}
+	RW_ASSERT(threshold > 0);
+
 	std::list<const TNTConstraint*> reducedConstraints;
 	unsigned int nrOfConstraints = 0;
 	std::map<const TNTBody*, unsigned int> bodies;
@@ -106,7 +113,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 				const double distP = (pAp-pBp).norm2();
 				const double distC = (pAc-pBc).norm2();
 				const double distN = acos(dot(nA,nB));
-				if (distP < 0.003 && distC < 0.003 && distN < 2.0*Deg2Rad) {
+				if (distN > std::max(distP,distC)*threshold*Deg2Rad) {
 					match = true;
 					break;
 				}
@@ -306,4 +313,10 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 				RW_THROW("TNTConstraintCorrection (correct): correction failed - error between " << contact->getParent()->get()->getName() << " and " << contact->getChild()->get()->getName() << " increased from " << error << " to " << newError << ".");
 		}
 	}
+}
+
+void TNTConstraintCorrection::addDefaultProperties(PropertyMap& properties) {
+	const Property<double>::Ptr added = properties.set<double>("TNTCorrectionThresholdFactor", 10.0/0.003);
+	RW_ASSERT(added != NULL);
+	added->setDescription("Angle between a pair of contact normals must be less than this factor multiplied by the distance between the contact points to be included (degrees per meter).");
 }

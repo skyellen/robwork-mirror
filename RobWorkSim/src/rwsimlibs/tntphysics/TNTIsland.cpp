@@ -106,6 +106,9 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
 	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
+	map.add<int>("TNTCorrection","Enable or disable contact & constraint correction.",1);
+	TNTConstraintCorrection::addDefaultProperties(map);
+	map.add<int>("TNTRollback","Enable or disable rollback.",1);
 	return map;
 }
 
@@ -453,91 +456,101 @@ void TNTIsland::doStep(double dt, State& state) {
 		TNTUtil::mark(sampleH.forwardContacts,sampleH.forwardTrack,TNTUtil::MARK_RAW,TNTUtil::MARK_NEW);
 	}
 
-#if !TNT_ENABLE_ROLLBACK
-	// Store the results & update RobWork state
-	storeResults(cdData,sampleH,state);
-#else
-	// If there are new contacts, check if rollback should be performed
-	bool doRollback = false;
-	if (newContactsH.size() > 0) {
-		if (minDist < -0.0001) {
-			doRollback = true;
-			// Construct backward tracking with the new contacts only
-			sampleH.backwardTrack = sampleH.forwardTrack;
-			sampleH.backwardContacts = sampleH.forwardContacts;
-			TNTUtil::removeKnown(sampleH.backwardContacts,sampleH.backwardTrack,_bc,sampleH.tntstate);
-			TNT_DEBUG_ROLLBACK("Rollback requested - " << sampleH.backwardContacts.size() << " contacts in candidate set with minimum distance " << minDist << "!");
-#if TNT_DEBUG_ENABLE_CONTACTS && TNT_DEBUG_ENABLE_ROLLBACK
-			BOOST_FOREACH(const Contact& c, sampleH.backwardContacts) {
-				TNT_DEBUG_CONTACTS(" - " << c);
-			}
-#endif
-		} else {
-			TNT_DEBUG_ROLLBACK("Distance for new contact(s) at step size " << dt << " was low enough (" << minDist << ") that rollback is not required!");
-		}
-	}
+	int enableRollback = 1;
+	if (_map.has("TNTRollback"))
+		enableRollback = _map.get<int>("TNTRollback");
+	else
+		enableRollback = _defaultMap.get<int>("TNTRollback");
 
-	if (!doRollback) {
-		// Store the results & update RobWork state
+#if !TNT_ENABLE_ROLLBACK
+	enableRollback = 0;
+#endif
+
+	if (enableRollback == 0) {
+		// Store the results & update RobWork stateTNTRollback
 		storeResults(cdData,sampleH,state);
 	} else {
-		TNT_TIMING("Ordinary Rollback",
-				{
-						// Do a backwards tracking of the new contacts to time dt=0
-						sample0.backwardTrack = sampleH.backwardTrack;
-						sample0.backwardContacts = _detector->updateContacts(sample0.rwstate,cdData,sample0.backwardTrack);
-						if (sample0.backwardContacts.size() == 0) {
-							//RW_THROW("TNTIsland (doStep): The new contact could not be traced back to time dt = 0!");
-							TNT_DEBUG_ROLLBACK("The new contact(s) could not be traced back to time dt = 0!");
-							TNT_DEBUG_ROLLBACK(" - taking complete step instead.");
-							storeResults(cdData,sampleH,state);
-						} else {
+		// If there are new contacts, check if rollback should be performed
+		bool doRollback = false;
+		if (newContactsH.size() > 0) {
+			if (minDist < -0.0001) {
+				doRollback = true;
+				// Construct backward tracking with the new contacts only
+				sampleH.backwardTrack = sampleH.forwardTrack;
+				sampleH.backwardContacts = sampleH.forwardContacts;
+				TNTUtil::removeKnown(sampleH.backwardContacts,sampleH.backwardTrack,_bc,sampleH.tntstate);
+				TNT_DEBUG_ROLLBACK("Rollback requested - " << sampleH.backwardContacts.size() << " contacts in candidate set with minimum distance " << minDist << "!");
+#if TNT_DEBUG_ENABLE_CONTACTS && TNT_DEBUG_ENABLE_ROLLBACK
+				BOOST_FOREACH(const Contact& c, sampleH.backwardContacts) {
+					TNT_DEBUG_CONTACTS(" - " << c);
+				}
+#endif
+			} else {
+				TNT_DEBUG_ROLLBACK("Distance for new contact(s) at step size " << dt << " was low enough (" << minDist << ") that rollback is not required!");
+			}
+		}
+
+		if (!doRollback) {
+			// Store the results & update RobWork state
+			storeResults(cdData,sampleH,state);
+		} else {
+			TNT_TIMING("Ordinary Rollback",
+					{
+							// Do a backwards tracking of the new contacts to time dt=0
+							sample0.backwardTrack = sampleH.backwardTrack;
+							sample0.backwardContacts = _detector->updateContacts(sample0.rwstate,cdData,sample0.backwardTrack);
+							if (sample0.backwardContacts.size() == 0) {
+								//RW_THROW("TNTIsland (doStep): The new contact could not be traced back to time dt = 0!");
+								TNT_DEBUG_ROLLBACK("The new contact(s) could not be traced back to time dt = 0!");
+								TNT_DEBUG_ROLLBACK(" - taking complete step instead.");
+								storeResults(cdData,sampleH,state);
+							} else {
 
 #if TNT_DEBUG_ENABLE_ROLLBACK && TNT_DEBUG_ENABLE_CONTACTS
-							TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0.");
-							BOOST_FOREACH(const Contact& c, sample0.backwardContacts) {
-								TNT_DEBUG_CONTACTS(" - " << c);
-							}
+								TNT_DEBUG_ROLLBACK("Tracked " << sample0.backwardContacts.size() << " new contact(s) to dt = 0.");
+								BOOST_FOREACH(const Contact& c, sample0.backwardContacts) {
+									TNT_DEBUG_CONTACTS(" - " << c);
+								}
 #endif
 
-							TNTUtil::removePenetrating(sample0.backwardContacts,sample0.backwardTrack,TNTUtil::MARK_NEW);
-							TNT_DEBUG_ROLLBACK(sample0.backwardContacts.size() << " contacts left after removing penetrating contacts.");
+								TNTUtil::removePenetrating(sample0.backwardContacts,sample0.backwardTrack,TNTUtil::MARK_NEW);
+								TNT_DEBUG_ROLLBACK(sample0.backwardContacts.size() << " contacts left after removing penetrating contacts.");
 
-							double minDist = 0;
-							if (sample0.backwardContacts.size() > 0) {
-								minDist = TNTUtil::minDistance(sample0.backwardContacts);
-								if (minDist < 0.0001) {
-									TNT_DEBUG_ROLLBACK("Distance at dt = 0 was low enough (" << minDist << ") that previous step is repeated with more new contacts!");
-									if (_state->getRepetitions() < 5) {
-										sampleInitial.forwardContacts = _detector->findContacts(sampleH.rwstate,cdData,sampleInitial.forwardTrack);
-										TNTUtil::mark(sampleInitial.forwardContacts,sampleInitial.forwardTrack,TNTUtil::MARK_RAW,TNTUtil::MARK_NEW);
-										sampleInitial.forwardContacts = _detector->findContacts(sampleInitial.rwstate,cdData,sampleInitial.forwardTrack);
-										storeResults(cdData,sampleInitial,state);
+								double minDist = 0;
+								if (sample0.backwardContacts.size() > 0) {
+									minDist = TNTUtil::minDistance(sample0.backwardContacts);
+									if (minDist < 0.0001) {
+										TNT_DEBUG_ROLLBACK("Distance at dt = 0 was low enough (" << minDist << ") that previous step is repeated with more new contacts!");
+										if (_state->getRepetitions() < 5) {
+											sampleInitial.forwardContacts = _detector->findContacts(sampleH.rwstate,cdData,sampleInitial.forwardTrack);
+											TNTUtil::mark(sampleInitial.forwardContacts,sampleInitial.forwardTrack,TNTUtil::MARK_RAW,TNTUtil::MARK_NEW);
+											sampleInitial.forwardContacts = _detector->findContacts(sampleInitial.rwstate,cdData,sampleInitial.forwardTrack);
+											storeResults(cdData,sampleInitial,state);
+										} else {
+											TNT_DEBUG_ROLLBACK(" - as there have already been 5 repetitions there is probably an issue with tracking contacts - instead taking complete step.");
+											storeResults(cdData,sampleH,state);
+										}
 									} else {
-										TNT_DEBUG_ROLLBACK(" - as there have already been 5 repetitions there is probably an issue with tracking contacts - instead taking complete step.");
-										storeResults(cdData,sampleH,state);
+										// Ordinary Rollback
+										TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback on  " << sampleH.backwardContacts.size() << " new contact(s).");
+										IntegrateSample result = integrateRollback(sample0,sampleH,cdData);
+										TNT_DEBUG_ROLLBACK("Narrow-phase rollback performed with stepsize " << result.time);
+										result.forwardTrack = sampleH.forwardTrack;
+										result.forwardContacts = _detector->findContacts(result.rwstate,cdData,result.forwardTrack);
+										storeResults(cdData,result,state);
 									}
 								} else {
-									// Ordinary Rollback
-									TNT_DEBUG_ROLLBACK("Performing narrow-phase rollback on  " << sampleH.backwardContacts.size() << " new contact(s).");
-									IntegrateSample result = integrateRollback(sample0,sampleH,cdData);
-									TNT_DEBUG_ROLLBACK("Narrow-phase rollback performed with stepsize " << result.time);
-									result.forwardTrack = sampleH.forwardTrack;
-									result.forwardContacts = _detector->findContacts(result.rwstate,cdData,result.forwardTrack);
-									storeResults(cdData,result,state);
+									TNT_DEBUG_ROLLBACK("There are no contacts that are non-penetrating at dt = 0, hence rollback is impossible. Contact tracking must have failed.");
+									TNT_DEBUG_ROLLBACK(" - one complete step is performed even though the penetration is too big.");
+									// Tracking must have failed!
+									// Store the results & update RobWork state
+									storeResults(cdData,sampleH,state);
 								}
-							} else {
-								TNT_DEBUG_ROLLBACK("There are no contacts that are non-penetrating at dt = 0, hence rollback is impossible. Contact tracking must have failed.");
-								TNT_DEBUG_ROLLBACK(" - one complete step is performed even though the penetration is too big.");
-								// Tracking must have failed!
-								// Store the results & update RobWork state
-								storeResults(cdData,sampleH,state);
 							}
-						}
-				}
-		)
+					}
+			)
+		}
 	}
-#endif
 
 	TNT_DEBUG_GENERAL("Step ended.")
 	TNT_DEBUG_DELIMITER()
@@ -849,63 +862,71 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 	const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 
 #if TNT_ENABLE_CONSTRAINT_CORRECTION
-	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
-	std::list<TNTConstraint*> constraints = _bc->getConstraints(sample.tntstate);
-	const std::vector<std::size_t> contactIDs = TNTUtil::getMarkedContacts(sample.forwardContacts,sample.forwardTrack,TNTUtil::MARK_NEW);
-	std::vector<TNTContact*> tntcontacts;
-	BOOST_FOREACH(std::size_t id, contactIDs) {
-		const Contact &c = sample.forwardContacts[id];
-		const TNTBody* const bodyA = _bc->getBody(c.getFrameA());
-		const TNTBody* const bodyB = _bc->getBody(c.getFrameB());
-		if (bodyA == NULL)
-			RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameA()->getName() << "\".");
-		if (bodyB == NULL)
-			RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
-		TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,sample.rwstate);
-		tntcontacts.push_back(tntcontact);
-		constraints.push_back(tntcontact);
-	}
-	TNT_TIMING("Constraint Correction", _correction->correct(constraints,sample.tntstate,sample.rwstate) )
-	BOOST_FOREACH(TNTContact* contact, tntcontacts) {
-		delete contact;
-	}
-	tntcontacts.clear();
-	// Update RobWork bodies
-	BOOST_FOREACH(const TNTBody* body, bodies) {
+	int enableCorrection = 1;
+	if (_map.has("TNTCorrection"))
+		enableCorrection = _map.get<int>("TNTCorrection");
+	else
+		enableCorrection = _defaultMap.get<int>("TNTCorrection");
+
+	if (enableCorrection) {
+		TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
+		std::list<TNTConstraint*> constraints = _bc->getConstraints(sample.tntstate);
+		const std::vector<std::size_t> contactIDs = TNTUtil::getMarkedContacts(sample.forwardContacts,sample.forwardTrack,TNTUtil::MARK_NEW);
+		std::vector<TNTContact*> tntcontacts;
+		BOOST_FOREACH(std::size_t id, contactIDs) {
+			const Contact &c = sample.forwardContacts[id];
+			const TNTBody* const bodyA = _bc->getBody(c.getFrameA());
+			const TNTBody* const bodyB = _bc->getBody(c.getFrameB());
+			if (bodyA == NULL)
+				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameA()->getName() << "\".");
+			if (bodyB == NULL)
+				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
+			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,sample.rwstate);
+			tntcontacts.push_back(tntcontact);
+			constraints.push_back(tntcontact);
+		}
+		TNT_TIMING("Constraint Correction", _correction->correct(constraints,sample.tntstate,_map) )
+		BOOST_FOREACH(TNTContact* contact, tntcontacts) {
+			delete contact;
+		}
+		tntcontacts.clear();
+		// Update RobWork bodies
+		BOOST_FOREACH(const TNTBody* body, bodies) {
 #if TNT_DEBUG_ENABLE_CORRECTION
-		const Transform3D<> before = body->get()->getTransformW(sample.rwstate);
+			const Transform3D<> before = body->get()->getTransformW(sample.rwstate);
 #endif
-		body->updateRW(sample.rwstate,sample.tntstate);
+			body->updateRW(sample.rwstate,sample.tntstate);
 #if TNT_DEBUG_ENABLE_CORRECTION
-		const Transform3D<> after = body->get()->getTransformW(sample.rwstate);
-		if (!(before.P() == after.P()) || !(before.R() == after.R())) {
-			std::stringstream sstr;
-			if (!(before.P() == after.P()))
-				sstr << " before: " << before.P() << " after: " << after.P();
-			if (!(before.R() == after.R()))
-				sstr << " before (ang): " << RPY<>(before.R()) << " after (ang): " << RPY<>(after.R());
-			TNT_DEBUG_CORRECTION("Corrected " << body->get()->getName() << sstr.str());
+			const Transform3D<> after = body->get()->getTransformW(sample.rwstate);
+			if (!(before.P() == after.P()) || !(before.R() == after.R())) {
+				std::stringstream sstr;
+				if (!(before.P() == after.P()))
+					sstr << " before: " << before.P() << " after: " << after.P();
+				if (!(before.R() == after.R()))
+					sstr << " before (ang): " << RPY<>(before.R()) << " after (ang): " << RPY<>(after.R());
+				TNT_DEBUG_CORRECTION("Corrected " << body->get()->getName() << sstr.str());
+			}
+#endif
+		}
+#if TNT_DEBUG_ENABLE_CORRECTION
+		TNT_DEBUG_CORRECTION("Contacts before update: " << sample.forwardContacts.size());
+#if TNT_DEBUG_ENABLE_CONTACTS
+		BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
+			TNT_DEBUG_CORRECTION(" - " << c);
 		}
 #endif
-	}
+#endif
+		sample.forwardContacts = _detector->updateContacts(sample.rwstate,cdData,sample.forwardTrack);
 #if TNT_DEBUG_ENABLE_CORRECTION
-	TNT_DEBUG_CORRECTION("Contacts before update: " << sample.forwardContacts.size());
+		TNT_DEBUG_CORRECTION("Contacts after update: " << sample.forwardContacts.size());
 #if TNT_DEBUG_ENABLE_CONTACTS
-	BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
-		TNT_DEBUG_CORRECTION(" - " << c);
+		BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
+			TNT_DEBUG_CORRECTION(" - " << c);
+		}
+#endif
+#endif
+		TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
 	}
-#endif
-#endif
-	sample.forwardContacts = _detector->updateContacts(sample.rwstate,cdData,sample.forwardTrack);
-#if TNT_DEBUG_ENABLE_CORRECTION
-	TNT_DEBUG_CORRECTION("Contacts after update: " << sample.forwardContacts.size());
-#if TNT_DEBUG_ENABLE_CONTACTS
-	BOOST_FOREACH(const Contact& c, sample.forwardContacts) {
-		TNT_DEBUG_CORRECTION(" - " << c);
-	}
-#endif
-#endif
-	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
 #endif
 
 	const TNTIslandState& tntstate = sample.tntstate;
