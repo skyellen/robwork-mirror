@@ -216,6 +216,7 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 			}
 			// Now try the first combination in list
 			enabled = allCombinations.front();
+			TNT_DEBUG_BOUNCING("Combination suggested by heuristic already tested - trying a different one (" << allCombinations.size() << " left).");
 			continue;
 		}
 		// Add the current combinations to the list of tested combinations
