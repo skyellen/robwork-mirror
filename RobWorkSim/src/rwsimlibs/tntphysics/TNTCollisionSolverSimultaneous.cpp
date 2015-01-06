@@ -199,6 +199,8 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 			if (allCombinations.size() == 0) {
 				const std::size_t nrOfContacts = candidates.size();
 				RW_ASSERT(nrOfContacts > 0);
+				if (nrOfContacts >= 24)
+					RW_THROW("TNTCollisionSolverSimultaneous (resolveContacts): There are too many contacts (" << nrOfContacts << " of max 24) - please reduce the number of contacts or increase the value of \"" << PROPERTY_RESOLVER_TOLERANCE << "\".");
 				std::size_t nrOfComb = 2;
 				for (std::size_t i = 1; i < nrOfContacts; i++)
 					nrOfComb *= 2;
