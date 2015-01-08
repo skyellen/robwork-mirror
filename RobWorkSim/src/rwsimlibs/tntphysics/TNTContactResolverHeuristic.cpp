@@ -70,11 +70,11 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 		}
 		if (maxPenetrationVelocity < 0) {
 			maxPenetrationVelocity = tmpMap.get<double>(PROPERTY_PROPMAXVEL,-1);
-			RW_ASSERT(maxPenetrationVelocity > 0);
+			RW_ASSERT(maxPenetrationVelocity >= 0);
 		}
 		if (maxAttractionForce < 0) {
 			maxAttractionForce = tmpMap.get<double>(PROPERTY_PROPMAXFORCE,-1);
-			RW_ASSERT(maxAttractionForce > 0);
+			RW_ASSERT(maxAttractionForce >= 0);
 		}
 	}
 
