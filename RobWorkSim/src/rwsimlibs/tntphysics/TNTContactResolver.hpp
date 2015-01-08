@@ -62,13 +62,25 @@ public:
 	 * @param map [in] the material map to use to resolve friction models.
 	 * @param rwstate [in] the current state.
 	 * @param tntstate [in/out] the current TNTIslandState.
+	 * @param map [in] parameters that adjusts the behaviour of the resolver - see #addDefaultProperties
 	 */
 	virtual void solve(
 			const std::vector<TNTContact*>& persistentContacts,
 			double h,
 			const TNTMaterialMap& map,
 			const rw::kinematics::State &rwstate,
-			TNTIslandState &tntstate) const = 0;
+			TNTIslandState &tntstate,
+			const rw::common::PropertyMap& pmap) const = 0;
+
+	/**
+	 * @brief Add the default properties to the given map.
+	 *
+	 * Please look at the documentation for the specific implementations of this function to get information about
+	 * the required properties for these implementations.
+	 *
+	 * @param map [in/out] the map to add the default properties to.
+	 */
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
 
 	/**
 	 * @addtogroup extensionpoints

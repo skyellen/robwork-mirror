@@ -58,7 +58,20 @@ public:
 	virtual const TNTContactResolver* createResolver(const TNTSolver* solver) const;
 
 	//! @copydoc TNTContactResolver::solve
-	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const rw::kinematics::State &rwstate, TNTIslandState &tntstate) const;
+	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const rw::kinematics::State &rwstate, TNTIslandState &tntstate,	const rw::common::PropertyMap& pmap) const;
+
+	/**
+	 * @copybrief TNTContactResolver::addDefaultProperties
+	 *
+	 *  Property Name                                         | Type   | Default value | Description
+	 *  ----------------------------------------------------- | ------ | ------------- | -----------
+	 *  TNTContactResolverMaxIterations                       | int    | \f$1000\f$    | Stop if resolver exceeds this number of iterations (use 0 to test all combinations).
+	 *  TNTContactResolverMaxPenetrationVelocity              | double | \f$10^{-5}\f$ | Continue resolving as long as there are contacts with penetrating relative velocities greater than this (m/s).
+	 *  TNTContactResolverMaxAttractionForce                  | double | \f$0\f$       | Continue resolving as long as there are contacts with attracting forces greater than this (N).
+	 *
+	 * @param map [in/out] the map to add properties to.
+	 */
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
 
 private:
 	typedef enum Type {

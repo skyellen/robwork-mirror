@@ -21,13 +21,17 @@
 #include "TNTConstraint.hpp"
 #include "TNTContact.hpp"
 #include "TNTIslandState.hpp"
-#include "TNTSettings.hpp"
 #include "TNTRigidBody.hpp"
 #include "TNTIntegrator.hpp"
 
+using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsimlibs::tntphysics;
+
+#define PROPERTY_PROPMAXITERATIONS "TNTContactResolverMaxIterations"
+#define PROPERTY_PROPMAXVEL "TNTContactResolverMaxPenetrationVelocity"
+#define PROPERTY_PROPMAXFORCE "TNTContactResolverMaxAttractionForce"
 
 TNTContactResolverNonPenetration::TNTContactResolverNonPenetration():
 	_solver(NULL)
@@ -46,9 +50,33 @@ const TNTContactResolver* TNTContactResolverNonPenetration::createResolver(const
 	return new TNTContactResolverNonPenetration(solver);
 }
 
-void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const State &rwstate, TNTIslandState &tntstate) const {
+void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& persistentContacts,
+		double h, const TNTMaterialMap& map, const State &rwstate, TNTIslandState &tntstate,
+		const PropertyMap& pmap) const
+{
 	if (_solver == NULL)
 		RW_THROW("TNTContactResolverNonPenetration (solve): There is no TNTSolver set for this resolver - please construct a new resolver for TNTSolver to use.");
+	int maxIterations = pmap.get<int>(PROPERTY_PROPMAXITERATIONS,-1);
+	double maxPenetrationVelocity = pmap.get<double>(PROPERTY_PROPMAXVEL,-1);
+	double maxAttractionForce = pmap.get<double>(PROPERTY_PROPMAXFORCE,-1);
+
+	if (maxIterations < 0 || maxPenetrationVelocity < 0 || maxAttractionForce < 0) {
+		PropertyMap tmpMap;
+		addDefaultProperties(tmpMap);
+		if (maxIterations < 0) {
+			maxIterations = tmpMap.get<int>(PROPERTY_PROPMAXITERATIONS,-1);
+			RW_ASSERT(maxIterations > 0);
+		}
+		if (maxPenetrationVelocity < 0) {
+			maxPenetrationVelocity = tmpMap.get<double>(PROPERTY_PROPMAXVEL,-1);
+			RW_ASSERT(maxPenetrationVelocity > 0);
+		}
+		if (maxAttractionForce < 0) {
+			maxAttractionForce = tmpMap.get<double>(PROPERTY_PROPMAXFORCE,-1);
+			RW_ASSERT(maxAttractionForce > 0);
+		}
+	}
+
 	TNTIslandState resState;
 	const TNTBodyConstraintManager::ConstraintList constraints = _solver->getManager()->getTemporaryConstraints(&tntstate);
 	std::vector<TNTContact*> contacts;
@@ -65,8 +93,8 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 	std::list<std::list<bool> > allCombinations;
 	bool testedAll = false;
 	while (repeat) {
-		if (iterations == TNT_CONTACTRESOLVER_MAX_ITERATIONS)
-			RW_THROW("TNTContactResolverNonPenetration (solve): maximum number of iterations (" << TNT_CONTACTRESOLVER_MAX_ITERATIONS << ") reached in contact resolution - " << allCombinations.size() << " combinations in total.");
+		if ((int)iterations == maxIterations && maxIterations != 0)
+			RW_THROW("TNTContactResolverNonPenetration (solve): maximum number of iterations (" << maxIterations << ") reached in contact resolution - " << allCombinations.size() << " combinations in total.");
 		// Check if we have already tested this combination before.
 		bool testedCombination = false;
 		BOOST_FOREACH(const std::list<bool>& comb, testedCombinations) {
@@ -173,14 +201,14 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 			const Vector3D<> linRelVel = linVelI-linVelJ;
 			const Vector3D<> nij = contact->getNormalW(tmpState);
 			if (contact->isLeaving()) {
-				const bool penetrating = dot(-linRelVel,nij) < -1e-5;
+				const bool penetrating = dot(-linRelVel,nij) < -maxPenetrationVelocity;
 				if (penetrating) {
 					repeat = true;
 					contact->setType(TNTContact::None,TNTContact::None);
 				}
 			} else {
 				const Wrench6D<> wrench = contact->getWrenchConstraint(tmpState);
-				if (dot(wrench.force(),nij) > 0) {
+				if (dot(wrench.force(),nij) > -maxAttractionForce) {
 					repeat = true;
 					contact->setTypeLeaving();
 				}
@@ -202,4 +230,10 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 		}
 	}
 	tntstate = resState;
+}
+
+void TNTContactResolverNonPenetration::addDefaultProperties(PropertyMap& map) const {
+	map.add<int>(PROPERTY_PROPMAXITERATIONS,"Stop if resolver exceeds this number of iterations (use 0 to test all combinations).",1000);
+	map.add<double>(PROPERTY_PROPMAXVEL,"Continue resolving as long as there are contacts with penetrating relative velocities greater than this (m/s).",1e-5);
+	map.add<double>(PROPERTY_PROPMAXFORCE,"Continue resolving as long as there are contacts with attracting forces greater than this (N).",0);
 }

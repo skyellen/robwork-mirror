@@ -44,7 +44,6 @@
 #define TNT_MAX_ITERATIONS 10
 
 // Contact resolution
-#define TNT_CONTACTRESOLVER_MAX_ITERATIONS 250
 #define TNT_CONSTRAINT_MAX_FORCE 1000 // Newton
 
 // Bodies

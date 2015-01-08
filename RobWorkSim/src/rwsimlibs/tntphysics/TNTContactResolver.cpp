@@ -24,6 +24,9 @@
 using namespace rw::common;
 using namespace rwsimlibs::tntphysics;
 
+void TNTContactResolver::addDefaultProperties(PropertyMap& map) const {
+}
+
 TNTContactResolver::Factory::Factory():
 	ExtensionPoint<TNTContactResolver>("rwsimlibs.tntphysics.TNTContactResolver", "TNTContactResolver extension point.")
 {
