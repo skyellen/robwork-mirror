@@ -34,6 +34,7 @@ IF( build )
                               rw_pathoptimization
                               rw_simulation
                               rw_opengl
+                              rw_assembly
                               ${LUA_LIBRARIES}
                               rw_proximitystrategies
                               rw_task
@@ -67,6 +68,10 @@ IF( build )
     
     ADD_LIBRARY(rw_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
     LINK_LIBRARIES(rw_lua_s rw)
+
+	# the dynamic version
+    #ADD_LIBRARY(rw_lua DYNAMIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
+    #LINK_LIBRARIES(rw_lua rw)
     
 	# this is used to indicate static linking to Visual Studio or mingw
 	IF (DEFINED MSVC) 
@@ -84,8 +89,8 @@ IF( build )
 	FIND_PACKAGE(PythonInterp)
     FIND_PACKAGE(PythonLibs)
     INCLUDE(CMakeDependentOption)
-    CMAKE_DEPENDENT_OPTION(RW_PYTHON_BINDINGS_ENABLED "Enable python bindings." 
-                       ON "PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND" OFF)
+    #CMAKE_DEPENDENT_OPTION(RW_PYTHON_BINDINGS_ENABLED "Enable python bindings." 
+    #                   ON "PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND" OFF)
     IF( RW_PYTHON_BINDINGS_ENABLED )
 
         IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
