@@ -88,10 +88,16 @@ namespace geometry {
     public:
 
     	//! @brief get array of normals
-        const std::vector<rw::math::Vector3D<T> >& getNormals() const{return *_normals;}
+        const std::vector<rw::math::Vector3D<T> >& getNormals() const{
+        	RW_ASSERT(_normals);
+        	return *_normals;
+        }
 
         //! @brief get array of normals
-        std::vector<rw::math::Vector3D<T> >& getNormals(){return *_normals;};
+        std::vector<rw::math::Vector3D<T> >& getNormals(){
+        	RW_ASSERT(_normals);
+        	return *_normals;
+        };
 
         //! @brief get array of vertices
         const std::vector<rw::math::Vector3D<T> >& getVertices() const{
