@@ -60,11 +60,15 @@ add_library(lua51
   src/lua.c
   src/luac.c)
 
+ 
+add_definitions("-DLUA_USE_POSIX")
+add_definitions("-DLUA_USE_DLOPEN")
+
 add_executable(lua src/lua.cpp)
-target_link_libraries(lua lua51)
+target_link_libraries(lua lua51 ${CMAKE_DL_LIBS})
 
 add_executable(luac src/luac.cpp)
-target_link_libraries(luac lua51)
+target_link_libraries(luac lua51 ${CMAKE_DL_LIBS})
 
 INSTALL(TARGETS lua luac DESTINATION ${RW_INSTALL_DIR}/bin)
 INSTALL(TARGETS lua51 DESTINATION ${LIB_INSTALL_DIR})
