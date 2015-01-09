@@ -172,6 +172,36 @@ SET(BOOST_ROOT ${RW_BUILD_WITH_BOOST_ROOT})
 SET(BOOST_INCLUDEDIR ${RW_BUILD_WITH_BOOST_INCLUDE_DIR})
 SET(BOOST_LIBRARYDIR ${RW_BUILD_WITH_BOOST_LIBRARY_DIR})
 
+# check which components to include
+SET(LIBRARIES_TO_INCLUDE ) # Libraries that must be included
+SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have been build
+IF(RobWork_FIND_COMPONENTS)
+    # FIRST check if all required components are installed/build
+    FOREACH(component IN LISTS RobWork_FIND_COMPONENTS)
+    	IF( NOT( ${component} STREQUAL "rw") )
+    	 
+        LIST(FIND RW_BUILD_WITH_LIBRARIES "rw_${component}" COMP_FOUND)
+        
+        IF(${COMP_FOUND} GREATER -1)
+            LIST(APPEND LIBRARIES_TO_INCLUDE "rw_${component}")
+        ELSE()
+            IF( RobWorkHardware_REQUIRED )
+	      SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
+              MESSAGE(FATAL_ERROR "The component: rw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+            ELSE ()
+	      SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
+              MESSAGE(WARNING "The component: rw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+            ENDIF()
+        ENDIF()
+        ENDIF()
+    ENDFOREACH()
+    #MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")    
+ENDIF()
+
+SET(OPTIONAL_LIBRARIES_TO_INCLUDE ${RW_BUILD_WITH_LIBRARIES})
+
+
+
 
 # Set extra compiler flags. The user should be able to change this
 SET(RW_CXX_FLAGS ${RW_BUILD_WITH_CXX_FLAGS} 
@@ -196,7 +226,7 @@ ENDIF()
 set(ROBWORK_BUILD_PATH "${RW_BUILD_WITH_RW_ROOT}")
 set(ROBWORK_INCLUDE_DIRS_TMP "${RW_BUILD_WITH_INCLUDE_DIRS}")
 set(ROBWORK_LIBRARY_DIRS_TMP "${RW_BUILD_WITH_LIBRARY_DIRS}")
-set(ROBWORK_LIBRARIES_TMP "${RW_BUILD_WITH_LIBRARIES}")
+set(ROBWORK_LIBRARIES_TMP "${LIBRARIES_TO_INCLUDE};${OPTIONAL_LIBRARIES_TO_INCLUDE}")
 
 
 # make sure that the library and include paths are pointing to the right locations
@@ -209,7 +239,7 @@ STRING(REPLACE "${ROBWORK_BUILD_PATH}/libs/${RW_BUILD_TYPE}" "${RW_LIBS}" ROBWOR
 list(REMOVE_DUPLICATES ROBWORK_LIBRARY_DIRS)
 #MESSAGE("INCLUDES: ${ROBWORK_LIBRARY_DIRS}")
 
-STRING(REPLACE "${ROBWORK_BUILD_PATH}/libs/${RW_BUILD_TYPE}" "${RW_LIBS}" ROBWORK_LIBRARIES "${RW_BUILD_WITH_LIBRARIES}")
+STRING(REPLACE "${ROBWORK_BUILD_PATH}/libs/${RW_BUILD_TYPE}" "${RW_LIBS}" ROBWORK_LIBRARIES "${ROBWORK_LIBRARIES_TMP}")
 #list(REMOVE_DUPLICATES ROBWORK_LIBRARIES)
 #MESSAGE("INCLUDES: ${ROBWORK_LIBRARIES}")
 
