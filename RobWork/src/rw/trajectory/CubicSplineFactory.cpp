@@ -71,7 +71,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(c
     size_t N = qpath.size()-1; // we have N+1 points, which yields N splines
 
 	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vector;
-	typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
+	//typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
 
 
     Vector B(N+1); // make room for boundary conditions
@@ -206,7 +206,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(c
     typedef float T;
     
 	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vector;
-	typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
+	//typedef Eigen::Matrix<T, Eigen::Dynamic, 1, 1> Matrix;
 	
     if(qpath.size()<2)
         RW_THROW("Path must be longer than 1!");
