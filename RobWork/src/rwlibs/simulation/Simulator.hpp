@@ -33,6 +33,8 @@ namespace simulation {
     {
     public:
 
+    	typedef rw::common::Ptr<Simulator> Ptr;
+
         /**
          * @brief step info is used when updating controllers, devices and bodies.
          */
