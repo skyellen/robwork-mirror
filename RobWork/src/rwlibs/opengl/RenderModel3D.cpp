@@ -12,11 +12,6 @@ using namespace rw::graphics;
 RenderModel3D::RenderModel3D(Model3D::Ptr model):
 	_model(model)
 {
-	//std::cout << "Render model created: \n";
-	//std::cout << "nr mat: " << model->_materials.size() << std::endl;
-	//std::cout << "nr obj: " << model->_objects.size() << std::endl;
-
-
     // create list of textures
     BOOST_FOREACH(TextureData& texdata, _model->_textures){
         if( texdata.hasImageData() ){
