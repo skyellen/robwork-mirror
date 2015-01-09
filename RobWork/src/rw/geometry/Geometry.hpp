@@ -141,6 +141,10 @@ namespace rw { namespace geometry {
 		//! @brief util function for creating a Cylinder geometry
 		static Geometry::Ptr makeCylinder(float radius, float height);
 
+		static Geometry::Ptr makeGrid(int dim_x, int dim_y,double size_x=1.0, double size_y=1.0,
+		                                  const rw::math::Vector3D<>& xdir = rw::math::Vector3D<>::x(),
+		                                  const rw::math::Vector3D<>& ydir = rw::math::Vector3D<>::y());
+
 		//GeometryData* getBV(){return _bv;};
 		//void setBV(GeometryData* bv){_bv = bv;};
 

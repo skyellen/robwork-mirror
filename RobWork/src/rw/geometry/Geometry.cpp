@@ -24,6 +24,7 @@
 #include "Box.hpp"
 #include "Cylinder.hpp"
 #include "Cone.hpp"
+#include "IndexedTriMesh.hpp"
 
 using namespace rw::geometry;
 using namespace rw::math;
@@ -93,3 +94,28 @@ Geometry::Ptr Geometry::makeCone(double height, double radiusTop, double radiusB
 Geometry::Ptr Geometry::makeCylinder(float radius, float height){
     return ownedPtr(new Geometry(ownedPtr(new Cylinder(radius, height))));
 }
+
+
+Geometry::Ptr Geometry::makeGrid(int dim_x, int dim_y, double size_x, double size_y, const rw::math::Vector3D<>& xdir, const rw::math::Vector3D<>& ydir){
+    //Rotation3D<> rot =< EAA<>(Vector3D<>::z(), normal).toRotation3D();
+	rw::geometry::IndexedTriMeshN0<float>::Ptr imesh = ownedPtr( new rw::geometry::IndexedTriMeshN0<float>());
+
+    rw::math::Vector3D<float> xdir_n = cast<float>(normalize(xdir));
+    rw::math::Vector3D<float> ydir_n = cast<float>(normalize(ydir));
+
+    for(int dy=0;dy<=dim_y;dy++){
+    	for(int dx=0;dx<=dim_x;dx++){
+    		imesh->getVertices().push_back( xdir_n* (dx-dim_x/2.0*size_x) + ydir_n*(dy-dim_y/2.0*size_y) );
+    	}
+    }
+
+    for(int dy=0;dy<=dim_y-1;dy++){
+    	for(int dx=0;dx<=dim_x-1;dx++){
+    		imesh->add( IndexedTriangle<>(dx+1 + dy*size_y, dx + dy*size_y , dx+1 + (dy+1)*size_y) );
+    		imesh->add( IndexedTriangle<>(dx + (dy+1)*size_y , dx+1 + (dy+1)*size_y, dx+1 + dy*size_y) );
+    	}
+    }
+
+    return ownedPtr(new Geometry(imesh));
+}
+
