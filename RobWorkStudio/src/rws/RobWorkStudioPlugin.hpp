@@ -140,6 +140,11 @@ namespace rws {
 		 */
 		virtual void setLog(rw::common::Log::Ptr log);
 
+		//! get current state of RobWorkStudio
+		const rw::kinematics::State& getState();
+		//! set current state of RobWorkStudio
+		void setState(const rw::kinematics::State& state);
+
 	public slots:
 		/**
 		 * @brief toggles the visibility of the plugin
