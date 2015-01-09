@@ -676,7 +676,7 @@ void ProximityStrategyPQP::getCollisionContacts(
 		RW_THROW(" multiple geoms on one frame is not supported for normal extraction yet!");
 	}
 
-	typedef std::pair<int,int> IntPair;
+	//typedef std::pair<int,int> IntPair;
 	BOOST_FOREACH( CollisionStrategy::Result::CollisionPair &cpair, res._collisionPairs){
 		PQPModelPtr &amodel = a->models[cpair.geoIdxA].pqpmodel;
 		PQPModelPtr &bmodel = b->models[cpair.geoIdxB].pqpmodel;
