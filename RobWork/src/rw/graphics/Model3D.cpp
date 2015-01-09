@@ -37,10 +37,11 @@ using namespace rw::geometry;
 
 Model3D::Model3D(const std::string& name):
         _name(name),
-        _mask(rw::geometry::Geometry::PhysicalGroup)
+        _mask(rw::geometry::Geometry::PhysicalGroup),
+        _isDynamic(false)
 {}
 
-Model3D::~Model3D(){}
+Model3D::~Model3D(){ }
 
 int Model3D::addObject(Model3D::Object3D::Ptr obj){
     _objects.push_back(obj);
@@ -110,38 +111,42 @@ rw::geometry::GeometryData::Ptr Model3D::toGeometryData(){
 	return mesh;
 }
 
+void Model3D::addGeometry(const Material& mat, rw::geometry::Geometry::Ptr geom){
+	TriMesh::Ptr mesh = geom->getGeometryData()->getTriMesh(false);
+	addTriMesh(mat, *mesh);
+}
+
 void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
     const size_t maxMeshSize = 21845; // we use 16 bit indexing, so with normal array at size = 3*nrTriangles we get (2^16)/3 allowed
+	size_t nrObjects = (size_t)std::floor(mesh.size()/(maxMeshSize*1.0))+1;
+	int matId = addMaterial( mat );
 
-    size_t nrObjects = (size_t)std::floor(mesh.size()/(maxMeshSize*1.0))+1;
-    int matId = addMaterial( mat );
+	for(size_t objNr = 0; objNr<nrObjects; objNr++){
 
-    for(size_t objNr = 0; objNr<nrObjects; objNr++){
+		size_t meshSize = mesh.size()-maxMeshSize*objNr;
+		if( meshSize > maxMeshSize)
+			meshSize = maxMeshSize;
 
-        size_t meshSize = mesh.size()-maxMeshSize*objNr;
-        if( meshSize > maxMeshSize)
-            meshSize = maxMeshSize;
+		Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
+		obj->_vertices.resize(meshSize*3);
+		obj->_normals.resize(meshSize*3);
+		obj->_faces.resize(meshSize);
+		Triangle<float> tri;
+		for(size_t i=0;i<meshSize;i++){
+			mesh.getTriangle(maxMeshSize*objNr + i , tri);
+			Vector3D<float> normal = tri.calcFaceNormal();
+			obj->_vertices[i*3+0] = tri[0];
+			obj->_vertices[i*3+1] = tri[1];
+			obj->_vertices[i*3+2] = tri[2];
+			obj->_normals[i*3+0] = normal;
+			obj->_normals[i*3+1] = normal;
+			obj->_normals[i*3+2] = normal;
+			obj->_faces[i] = IndexedTriangle<uint16_t>((uint16_t)i*3+0,(uint16_t)i*3+1,(uint16_t)i*3+2);
+		}
+		obj->_materialMap.push_back( Object3D::MaterialMapData((uint16_t)matId,0,(uint16_t)meshSize) );
 
-        Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
-        obj->_vertices.resize(meshSize*3);
-        obj->_normals.resize(meshSize*3);
-        obj->_faces.resize(meshSize);
-        Triangle<float> tri;
-        for(size_t i=0;i<meshSize;i++){
-            mesh.getTriangle(maxMeshSize*objNr + i , tri);
-            Vector3D<float> normal = tri.calcFaceNormal();
-            obj->_vertices[i*3+0] = tri[0];
-            obj->_vertices[i*3+1] = tri[1];
-            obj->_vertices[i*3+2] = tri[2];
-            obj->_normals[i*3+0] = normal;
-            obj->_normals[i*3+1] = normal;
-            obj->_normals[i*3+2] = normal;
-            obj->_faces[i] = IndexedTriangle<uint16_t>((uint16_t)i*3+0,(uint16_t)i*3+1,(uint16_t)i*3+2);
-        }
-        obj->_materialMap.push_back( Object3D::MaterialMapData((uint16_t)matId,0,(uint16_t)meshSize) );
-
-        _objects.push_back(obj);
-    }
+		_objects.push_back(obj);
+	}
 }
 
 

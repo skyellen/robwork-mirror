@@ -26,6 +26,7 @@
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/IndexedTriangle.hpp>
 #include <rw/geometry/IndexedPolygon.hpp>
+#include <rw/geometry/Geometry.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector2D.hpp>
 
@@ -141,6 +142,7 @@ namespace graphics {
                 _parentObj(-1),
                 //_texture(-1),
                 _hasTexture(false),
+                _mappedToFaces(false),
                 _texOffset(0,0),
                 _texRepeat(0,0),
                 _materialMap(1,MaterialMapData(0,0,0))
@@ -149,11 +151,13 @@ namespace graphics {
             //! @brief test if the object is textured
             bool hasTexture() const{ return _hasTexture;};
 
+            //! add triangle using currently selected material
             void addTriangle(const rw::geometry::IndexedTriangle<uint16_t>& tri){
                 _faces.push_back(tri);
                 _materialMap.back().size += 1;
             }
 
+            //! add triangles using currently selected material
             void addTriangles(const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
 				uint16_t startIdx = (uint16_t) _faces.size();
 				std::size_t newSize = _faces.size()+tris.size();
@@ -168,8 +172,8 @@ namespace graphics {
 
             /**
              * @brief add triangles to this object using a specific material in the Model3D
-             * @param material
-             * @param tris
+             * @param material [in] index of the material to be used
+             * @param tris [in] triangles to add
              */
             void addTriangles(uint16_t material, const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
                 setMaterial(material);
@@ -258,7 +262,7 @@ namespace graphics {
             // these should be compiled
             //std::vector<MaterialFaces::Ptr> _matFaces;
             std::vector<MaterialPolys::Ptr> _matPolys;
-
+            // parameter that define if geometry is rigid (static) or if it changes
         };
 
     public:
@@ -279,10 +283,25 @@ namespace graphics {
 
         /**
          * @brief add an Object to this Model3D
+         * @param obj [in] the geometric object to add.
+         * @return index of object in model3d
+         */
+        int addObject(Object3D::Ptr obj);
+
+        /**
+         * @brief add geometry to this model3d
+         * @param mat [in] the material properties to use for
          * @param obj
          * @return
          */
-        int addObject(Object3D::Ptr obj);
+        void addGeometry(const Material& mat, rw::geometry::Geometry::Ptr geom);
+
+        /**
+         * add a triangle mesh to this model3d
+         * @param mat
+         * @param mesh
+         */
+        void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
 
         /**
          * @brief all objects in a model use the materials defined on the model
@@ -291,36 +310,72 @@ namespace graphics {
          */
         int addMaterial(const Material& mat);
 
+        /**
+         * @brief get material with string id matid
+         * @param matid [in] string id
+         * @return pointer to Matrial data
+         */
         Material* getMaterial(const std::string& matid);
+
+        /**
+         * @brief check if model has material with id matid
+         * @param matid [in] string id of material
+         * @return true if exists in model
+         */
         bool hasMaterial(const std::string& matid);
 
-        void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
-
+        /**
+         * @brief remove object with string id name
+         * @param name [in] name of object to remove
+         */
         void removeObject(const std::string& name);
 
+
+        //! @brief get all materials that are available in this model
         std::vector<Material>& getMaterials(){ return _materials; };
+
+        //! @brief get all objects that make out this model
         std::vector<Object3D::Ptr>& getObjects(){ return _objects; };
 
+        //! get pose of this modle3d
         const rw::math::Transform3D<>& getTransform(){ return _transform;};
+        //! set the pose of this modle3d
         void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;};
 
+        //! get string identifier of this model3d
         const std::string& getName(){ return _name; };
+        //! set string identifier of this model3d
         void setName(const std::string& name){ _name = name; };
 
+        //! get mask of this model3d
         int getMask(){ return _mask; }
+        //! set mask of this model3d
         void setMask(int mask){ _mask = mask; }
 
+        /**
+         * @brief convert this model3d to a geometry. Notice that geometry does not hold any
+         * color information.
+         * @return a geometry of this model3d
+         */
         rw::geometry::GeometryData::Ptr toGeometryData();
 
-    //private:
-        rw::math::Transform3D<> _transform;
+        //! true if data in the model are expected to change
+        bool isDynamic() const { return _isDynamic;}
+        //! set to true if data in the model are expected to change
+        void setDynamic(bool dynamic) { _isDynamic = dynamic;}
+
+        // todo make these availabkle through proper interfaces
         std::vector<Material> _materials; // The array of materials
         std::vector<Object3D::Ptr> _objects; // The array of objects in the model
         std::vector<TextureData> _textures;
+
+    protected:
+        rw::math::Transform3D<> _transform;
         std::string _name;
         int _mask;
         int totalVerts;			// Total number of vertices in the model
         int totalFaces;			// Total number of faces in the model
+        bool _isDynamic;
     };
     //! @}
 }
