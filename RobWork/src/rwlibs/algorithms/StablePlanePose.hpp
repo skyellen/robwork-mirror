@@ -18,6 +18,11 @@
 #ifndef RWLIBS_ALGORITHMS_STABLEPLANEPOSE_HPP_
 #define RWLIBS_ALGORITHMS_STABLEPLANEPOSE_HPP_
 
+#include "StablePose.hpp"
+#include <vector>
+
+namespace rwlibs {
+namespace algorithms {
 /**
  * @brief calculate the stable poses of an object lying on a planar support
  * structure.
@@ -46,6 +51,11 @@ class StablePlanePose {
 	 */
 	void setGeometry(rw::geometry::Geometry::Ptr geom);
 
+	/**
+	 * @brief set the geometry to process and include the specification of the center of mass
+	 * @param geom [in] geometry
+	 * @param CM [in] center of mass
+	 */
 	void setGeometry(rw::geometry::Geometry::Ptr geom, const rw::math::Vector3D<>& CM);
 
 	/**
@@ -54,7 +64,19 @@ class StablePlanePose {
 	 * @param dist [in] the minimum distance from the edge of the supporting
 	 * polygon to the point defined by CM projected onto the supporting polygon.
 	 */
-	std::vector<StablePose> calculatePoses(double dist);
+	std::vector<StablePose> calcStablePoses(bool includePoseDistributions=false);
+
+	/**
+	 * @brief calculate the pose distributions eg. the probabilities of an object
+	 * falling into a specific stable pose when starting in a uniformly selected random
+	 * orientation.
+	 * @return
+	 */
+	std::vector<StablePose> calcPoseDistributions();
+
 };
+
+}
+}
 
 #endif /* STABLEPLANEPOSE_HPP_ */
