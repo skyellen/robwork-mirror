@@ -1,11 +1,16 @@
-SET(component_name robotiq)
+SET(SUBSYS_NAME robotiq )
+SET(SUBSYS_DESC "driver for robotiq" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build TRUE)
+set(DEFAULT TRUE)
+set(REASON) 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
+IF( build )
+    MESSAGE(STATUS "RobWorkHardware: ${SUBSYS_NAME} component ENABLED")    
 
     SET(SRC_CPP Robotiq3.cpp)
     SET(SRC_HPP Robotiq3.hpp)
@@ -17,6 +22,4 @@ IF( COMPONENT_${component_name}_ENABLE )
 	add_executable(robotiq_test simpleTest.cpp )
 	TARGET_LINK_LIBRARIES(robotiq_test rwhw_robotiq ${ROBWORK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

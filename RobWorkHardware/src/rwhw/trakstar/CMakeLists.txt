@@ -1,27 +1,40 @@
-SET(component_name trakstar)
+SET(SUBSYS_NAME trakstar )
+SET(SUBSYS_DESC "Calibration of devices" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+FIND_PACKAGE(TrakStar QUIET)
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
+SET(build TRUE)
+set(DEFAULT TRAKSTAR_FOUND)
+set(REASON "")
 
-    FIND_PACKAGE(TrakStar)
-    IF(TRAKSTAR_FOUND)
-        SET(SRC_CPP )
-        SET(SRC_HPP )
-        
-        LIST(APPEND SRC_CPP Trakstar.cpp)
-        LIST(APPEND SRC_HPP Trakstar.hpp)
-        
-        INCLUDE_DIRECTORIES(${TRAKSTAR_INCLUDE_DIR})
-        ADD_LIBRARY(rwhw_trakstar ${SRC_CPP} ${SRC_HPP})
-        INSTALL(TARGETS rwhw_trakstar DESTINATION ${RWHW_LIB_INSTALL_DIR})
-        SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_trakstar;")
-    ELSE()
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - TrakStar lib not found")
-    ENDIF()
+IF( ${TRAKSTAR_FOUND} )
+    set(REASON "Trakstar library found!")
 ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")    
+    set(REASON "Trakstar library not found!")
+ENDIF()
+IF( ${BUILD_trakstar} )
+    FIND_PACKAGE(TrakStar REQUIRED)
+    IF( NOT ${TRAKSTAR_FOUND} )
+        SET(BUILD_trakstar FALSE)
+        set(REASON "Could not find Trakstar libraries!")
+    ENDIF()
+ENDIF()
+
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
+   
+    SET(SRC_CPP )
+    SET(SRC_HPP )
+    
+    LIST(APPEND SRC_CPP Trakstar.cpp)
+    LIST(APPEND SRC_HPP Trakstar.hpp)
+    
+    INCLUDE_DIRECTORIES(${TRAKSTAR_INCLUDE_DIR})
+    RW_ADD_LIBRARY(rwhw_trakstar trakstar ${SRC_CPP} ${SRC_HPP})
+    RW_ADD_INCLUDES(trakstar "rw/hw" ${SRC_HPP})
+    SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_trakstar;")
 ENDIF()

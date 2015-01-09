@@ -1,15 +1,16 @@
-SET(component_name sick)
+SET(SUBSYS_NAME sick )
+SET(SUBSYS_DESC "Driver for sick device" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build TRUE)
+set(DEFAULT TRUE)
+set(REASON) 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
-    
-    ADD_LIBRARY(rwhw_sick SickLMS.cpp SickLMS.hpp)
-    INSTALL(TARGETS rwhw_sick DESTINATION ${RWHW_LIB_INSTALL_DIR})
+IF( build )  
+    RW_ADD_LIBRARY(rwhw_sick sick SickLMS.cpp SickLMS.hpp)
+    RW_ADD_INCLUDES(sick "rwhw/sick" SickLMS.hpp)
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sick;")
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

@@ -1,11 +1,16 @@
-SET(component_name CAN)
+SET(SUBSYS_NAME CAN )
+SET(SUBSYS_DESC "Library of drivers for different CAN devices" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
-                       
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: CAN component ENABLED")
+SET(build TRUE)
+set(DEFAULT TRUE)
+set(REASON) 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
+    #MESSAGE(STATUS "RobWorkHardware: CAN component ENABLED")
     
     SET(SRC_CPP ${RW_IO_USER_FILES} CANPortFactory.cpp)
     SET(SRC_HPP )
@@ -26,9 +31,7 @@ IF( COMPONENT_${component_name}_ENABLE )
      LIST(APPEND SRC_HPP ./IEICAN02/IEICANPort.hpp)
     ENDIF()
     
-    ADD_LIBRARY(rwhw_can ${SRC_CPP} ${SRC_HPP})
-    INSTALL(TARGETS rwhw_can DESTINATION ${RWHW_LIB_INSTALL_DIR})
+    RW_ADD_LIBRARY(rwhw_can can ${SRC_CPP} ${SRC_HPP})
+    RW_ADD_INCLUDES(can "rwhw/can" ${SRC_HPP})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_can;")
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: CAN component DISABLED")
 ENDIF()

@@ -1,14 +1,16 @@
 SET(component_name serialport)
+SET(SUBSYS_NAME serialport )
+SET(SUBSYS_DESC "Serial port abstractions!" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build )
+set(DEFAULT TRUE)
+set(REASON "")
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
-
-    ADD_LIBRARY(rwhw_serialport SerialPort.cpp)    
+IF( build )
+    RW_ADD_LIBRARY(rwhw_serialport serialport SerialPort.cpp)
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_serialport;")
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

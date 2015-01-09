@@ -1,15 +1,27 @@
-SET(component_name sdh)
-
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(SUBSYS_NAME sdh )
+SET(SUBSYS_DESC "Driver for robolab sdh " )
+SET(SUBSYS_DEPS rw )
 
 # make sure that SDH can be found
-FIND_PACKAGE(SDH QUIET)
+SET(build TRUE)
+set(DEFAULT FALSE)
+set(REASON) 
+IF( ${BUILD_sdh} )
+    FIND_PACKAGE(SDH)
+    IF( NOT SDH_FOUND )
+        #MESSAGE(STATUS "NOT FOUND")
+        set(DEFAULT FALSE)
+        set(BUILD_sdh FALSE)
+        set(REASON "SDH library not found!")
+    ENDIF()
+ENDIF()
 
-IF(SDH_FOUND)
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
-    
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
+   
     INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} )
     
     SET(SRC_FILES )
@@ -18,14 +30,8 @@ IF(SDH_FOUND)
     #    ADD_TOLUA_PACKAGE("SDHDriverLua" "SDHDriverLuaStub")
     ENDIF()
     
-    ADD_LIBRARY(rwhw_sdh SDHDriver.cpp SDHDriver.hpp ${SRC_FILES} ${SRC_FILES_HPP})
-    INSTALL(TARGETS rwhw_sdh DESTINATION ${RWHW_LIB_INSTALL_DIR})
+    RW_ADD_LIBRARY(rwhw_sdh sdh SDHDriver.cpp SDHDriver.hpp ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_INCLUDES(sdh rwhw_sdh DESTINATION ${RWHW_LIB_INSTALL_DIR})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sdh;")
     
-ELSE()
-    IF( COMPONENT_${component_name}_ENABLE )
-        MESSAGE(FATAL_ERROR "RobWorkHardware: ${component_name} component DISABLED - SDH library and/or ESD can was not found")
-    ELSE()
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
-    ENDIF()            
 ENDIF()

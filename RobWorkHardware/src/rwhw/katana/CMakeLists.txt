@@ -1,12 +1,22 @@
-SET(component_name katana)
+SET(SUBSYS_NAME katana )
+SET(SUBSYS_DESC "Library for controlling the katana robot" )
+SET(SUBSYS_DEPS rw )
+
+SET(build TRUE)
+
 
 INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+CMAKE_DEPENDENT_OPTION(COMPONENT_${SUBSYS_NAME}_ENABLE "Enable ${SUBSYS_NAME} component." 
+                       ${COMPONENT_${SUBSYS_NAME}_ENABLE} "COMPONENT_${SUBSYS_NAME}_ENABLE" OFF)
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
+set(DEFAULT TRUE)
+set(REASON) 
 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
     FIND_PACKAGE(KATANA)
     IF(KATANA_FOUND)
      MESSAGE(STATUS "Katana sdk found. Katana driver will be build!")
@@ -17,6 +27,4 @@ IF( COMPONENT_${component_name}_ENABLE )
     ELSE()
      MESSAGE(STATUS "RobWorkHardware: Katana sdk NOT found. Katana driver will NOT be build!")
     ENDIF()
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

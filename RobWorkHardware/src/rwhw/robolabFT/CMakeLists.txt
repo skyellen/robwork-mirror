@@ -1,21 +1,22 @@
-SET(component_name robolabFT)
+SET(SUBSYS_NAME robolabFT )
+SET(SUBSYS_DESC "Driver for robolab force torque device" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build TRUE)
+set(DEFAULT TRUE)
+set(REASON) 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
 
-IF(COMPONENT_${component_name}_ENABLE)
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
-    
+IF( build )
    # INCLUDE_DIRECTORIES( ${robolabFT_INCLUDE_DIR} )
     
     SET(SRC_FILES RobolabFTDriver.cpp)
     SET(SRC_FILES_HPP RobolabFTDriver.hpp)
     
-    ADD_LIBRARY(rwhw_robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
+    RW_ADD_LIBRARY(robolabFT rwhw_robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
     INSTALL(TARGETS rwhw_robolabFT DESTINATION ${RWHW_LIB_INSTALL_DIR})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robolabFT;")
     MESSAGE(STATUS "robolabFT include dir:" ${robolabFT_INCLUDE_DIR})
-ELSE() 
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")            
 ENDIF()

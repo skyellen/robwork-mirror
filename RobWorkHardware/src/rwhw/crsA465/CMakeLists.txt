@@ -1,15 +1,16 @@
-SET(component_name CRSA465)
+SET(SUBSYS_NAME CRSA465 )
+SET(SUBSYS_DESC "Library of drivers for the CRSA465 robot" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
-                       
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
-    
+SET(build TRUE)
+set(DEFAULT FALSE)
+set(REASON) 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )   
     ADD_LIBRARY(rwhw_crsa465 ./CRSA465.cpp ./crs_aci.cpp)
     INSTALL(TARGETS rwhw_crsa465 DESTINATION ${RWHW_LIB_INSTALL_DIR})
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_crsa465;")
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ENDIF()

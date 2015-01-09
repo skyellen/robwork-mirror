@@ -1,23 +1,29 @@
-SET(component_name fanucdriver)
+SET(SUBSYS_NAME fanucdriver)
+SET(SUBSYS_DESC "Library of drivers for controlling fanuc robot" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." ON "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build TRUE)
+set(DEFAULT TRUE)
+set(REASON) 
 
-IF( COMPONENT_${component_name}_ENABLE )
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
+IF(COMPONENT_${SUBSYS_NAME}_ENABLE AND NOT DEFINED WIN32)
+  SET(BUILD_${SUBSYS_NAME} FALSE)
+  set(REASON "WIN32 only")
+ENDIF()
 
-    IF(DEFINED WIN32)
-        ADD_LIBRARY(
-          rwhw_fanucdevice
-          ./FanucDriver.cpp
-          ./FanucVirtual.cpp
-          ./VelRampProfile.cpp
-        )
-        SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_fanucdevice;")
-    ELSE()
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - WIN32 only")
-    ENDIF()
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+ 
+IF( build AND DEFINED WIN32)
+    #MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
+
+    ADD_LIBRARY(
+      rwhw_fanucdevice
+      ./FanucDriver.cpp
+      ./FanucVirtual.cpp
+      ./VelRampProfile.cpp
+    )
+    SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_fanucdevice;")
 ENDIF()
 

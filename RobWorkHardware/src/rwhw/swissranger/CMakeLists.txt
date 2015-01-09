@@ -1,22 +1,27 @@
-SET(component_name swissranger)
+SET(SUBSYS_NAME swissranger )
+SET(SUBSYS_DESC "Swiss ranger driver" )
+SET(SUBSYS_DEPS rw )
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component." 
-                       ${COMPONENT_${component_name}_ENABLE} "COMPONENT_${component_name}_ENABLE" OFF)
+SET(build TRUE)
+set(DEFAULT FALSE)
+set(REASON)
 
-IF( COMPONENT_${component_name}_ENABLE )
-    FIND_PACKAGE(SwissRanger)
-    IF(SwissRanger_FOUND)
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
-    
-        ADD_LIBRARY(rwhw_swissranger 
-             SRCalibrationData.cpp SwissRanger.cpp
-             SRCalibrationData.hpp SwissRanger.hpp SRConstants.hpp)
-        INSTALL(TARGETS rwhw_swissranger DESTINATION ${RWHW_LIB_INSTALL_DIR})
-        set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_swissranger;")
-    ELSE ()
-        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - swissranger lib not found")
+IF( ${BUILD_swissranger} )
+    FIND_PACKAGE(SwissRanger REQUIRED)
+    IF(NOT SwissRanger_FOUND)
+        set(BUILD_swissranger FALSE)
+        set(REASON "Could not find swissranger library")
     ENDIF()
-ELSE()
-    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
+ENDIF()
+ 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
+    RW_ADD_LIBRARY(rwhw_swissranger swissranger 
+         SRCalibrationData.cpp SwissRanger.cpp
+         SRCalibrationData.hpp SwissRanger.hpp SRConstants.hpp)
+    RW_ADD_INCLUDES(swissranger "rwhw/swissranger" SRCalibrationData.hpp SwissRanger.hpp SRConstants.hpp)
+    set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_swissranger;")
 ENDIF()

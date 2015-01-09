@@ -64,6 +64,15 @@ SET(RWHW_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 
 LIST(APPEND CMAKE_MODULE_PATH ${ROOT}/build ${RW_ROOT}/build ${RWHW_ROOT}/build)
 
+IF( NOT DEFINED CMAKE_BUILD_TYPE)
+    # check which build is available
+      
+ENDIF() 
+
+IF(EXISTS ${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+
+ELSEIF(EXISTS ${RWHW_ROOT}/build/RobWorkHardwareBuildConfigRelease.cmake
+
 INCLUDE(${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
 

@@ -25,6 +25,13 @@ SET(COMPONENT_universalrobots_ENABLE ON)
 SET(COMPONENT_robolabFT_ENABLE OFF)
 SET(COMPONENT_robotiq_ENABLE ON)
 
+#SET(BUILD_universalrobots ON)
+#SET(BUILD_robotiq ON)
+#SET(BUILD_sdh ON)
+#SET(BUILD_swissranger OFF)
+
+SET(PROJECT_SHARED_LIBS ON)
+
 # we need the location of RobWork
 SET(RW_ROOT ${ROOT}/../RobWork/)
 
