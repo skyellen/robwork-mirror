@@ -690,6 +690,7 @@ void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename
 		if (plugin) {
 			addPlugin(plugin, visible, dockarea);
 		} else {
+			RW_WARN("Unable to load Plugin"<<pfilename.toStdString() <<" was not of type RobWorkStudioPlugin");
 			QMessageBox::information(
 				this,
 				"Unable to load Plugin",
@@ -697,6 +698,7 @@ void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename
 				QMessageBox::Ok);
 		}
 	} else {
+		RW_WARN("Unable to load Plugin"<< pfilename.toStdString() << " was not loaded: \"" << loader.errorString().toStdString() + "\"");
 		QMessageBox::information(
 			this,
 			"Unable to load Plugin",
@@ -717,7 +719,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         const QString& pluginname = plugins.at(i);
 
 
-        //std::cout << "Plugin = " << pluginname.toStdString() << "\n";
+        std::cout << "Plugin = " << pluginname.toStdString() << "\n";
 
         settings.beginGroup(pluginname);
 
