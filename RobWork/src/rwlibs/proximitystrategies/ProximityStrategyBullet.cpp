@@ -303,13 +303,15 @@ ProximityStrategyBullet::ProximityStrategyBullet() :
 	clearStats();
 	// create dispatcher
 
+	//_collisionConfiguration = new btSoftBodyRigidBodyCollisionConfiguration();
 	_collisionConfiguration = new btDefaultCollisionConfiguration();
 
-	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	///use the default collision dispatcher. For parallel processing you can use a different dispatcher (see Extras/BulletMultiThreaded)
 	_dispatcher = new	btCollisionDispatcher(_collisionConfiguration);
 
 	//_gimpactColAlg = new btGImpactCollisionAlgorithm();
 	btGImpactCollisionAlgorithm::registerAlgorithm(_dispatcher);
+
 
 	//_dispatcher->setNearCallback(MyNearCallback);
 	btVector3 worldAabbMin(-20,-20,-20);
