@@ -38,7 +38,12 @@ namespace rwlibs { namespace algorithms {
 
 
 /**
- * @brief A model of a line with data points placed in regular intervals.
+ * @brief A model for points placed along a line with regular intervals.
+ * 
+ * Structured line is defined using a line in 3D, a starting point which is chosen as the data point with lowest (x+y+z) value, and an interval.
+ * 
+ * @image html sline.png
+ * Structured line model requires at least two samples to create.
  */
 class StructuredLineModel : public RANSACModel<StructuredLineModel, rw::math::Vector3D<> >
 {
@@ -86,6 +91,8 @@ class StructuredLineModel : public RANSACModel<StructuredLineModel, rw::math::Ve
 		/**
 		 * @copydoc RANSACModel::same
 		 * 
+		 * @todo Include interval difference
+		 * 
 		 * StructuredLineModels are the same when the distance between them, according
 		 * to metric taking into account weighted sum of direction angle difference
 		 * and the closest separation between lines is lower than specified threshold.
@@ -95,10 +102,16 @@ class StructuredLineModel : public RANSACModel<StructuredLineModel, rw::math::Ve
 		/**
 		 * @brief Test if interval matches the dataset.
 		 * 
-		 * Calculates cumulated distance squared to grid points that would exist for a given interval.
-		 * Used for finding interval when refitting. Interval is taken to be the global minimum of this function.
+		 * This is used to find the interval value for the model when refitting. Returns the total error
+		 * associated with given interval. We want to minimize this function, trying a range of possible intervals.
+		 * The procedure is as follows:
+		 * 1. Find all grid spots on a line between the most outlying samples for a given interval.
+		 * 2. For all grid spots find the samples that are closer to it, than they are to any other spot.
+		 * 3. If there are no such samples, use the closest one.
+		 * 4. For each of the spots calculate cumulated distance to the neighbours.
+		 * 5. Total error is the sum of spot errors.
 		 */
-		double testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval) const;
+		double testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval, rw::math::Vector3D<> start, double maxDist) const;
 		
 		/* getters */
 		//! @brief Get line.

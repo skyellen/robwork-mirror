@@ -39,7 +39,7 @@ double StructuredLineModel::fitError(const rw::math::Vector3D<>& sample) const
 	
 	// 2. find the closest 'grid spot' on the line
 	double cells = round((closestPoint - _start).norm2() / _interval);
-	Vector3D<> closestSpot = _start + cells * _line.dir();
+	Vector3D<> closestSpot = _start + cells * _interval * _line.dir();
 	
 	// 3. calculate p2p distance of a sample to the closest grid spot
 	double distance = (sample - closestSpot).norm2();
@@ -57,23 +57,94 @@ bool StructuredLineModel::invalid() const
 
 
 
-double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval) const
+/*double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval) const
 {
 	double error = 0.0;
+	
+	//cout << "interval= " << interval << endl;
 	
 	BOOST_FOREACH (const Vector3D<>& p, samples) {
 		// 1. find the closest point on line
 		Vector3D<> closestPoint = _line.closestPoint(p);
 		
+		//cout << "closestpoint= " << closestPoint << endl;
+		
 		// 2. find the closest 'grid spot' on the line
 		double cells = round((closestPoint - _start).norm2() / interval);
-		Vector3D<> closestSpot = _start + cells * _line.dir();
+		//cout << "cells = " << cells << endl;
+		Vector3D<> closestSpot = _start + cells * interval * _line.dir();
+		
+		//cout << "closestspot= " << closestSpot << endl;
 		
 		// 3. calculate p2p distance of a sample to the closest grid spot
 		double distance = (p - closestSpot).norm2();
 		
+		//cout << "distance= " << distance << endl;
+		
 		error += distance * distance;
 	}
+	
+	cout << "interval= " << interval << " error= " << error << endl;
+	
+	return error;
+}*/
+
+
+
+double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval, rw::math::Vector3D<> start, double maxDist) const
+{
+	if (interval == 0.0) {
+		return std::numeric_limits<double>::max();
+	}
+	
+	double error = 0.0;
+	
+	// generate as many spots as interval allows in the sample set
+	// and sort samples as to which spot they fall closest to
+	typedef pair<Vector3D<>, vector<Vector3D<> > > Spot;
+	vector<Spot> spots;
+	for (double t = 0.0; t < maxDist; t+= interval) {
+		Vector3D<> spot = start + t * _line.dir();
+		
+		// find all samples that are closer to this spot than to neighbours
+		vector<Vector3D<> > neighbours;
+		BOOST_FOREACH (const Vector3D<>& s, samples) {
+			Vector3D<> closestPoint = _line.closestPoint(s);
+			if ((closestPoint - spot).norm2() < interval/2.0) {
+				neighbours.push_back(s);
+			}
+		}
+		
+		// if spot has no neighbours, add the closest sample
+		if (neighbours.size() == 0) {
+			Vector3D<> nearest = samples[0];
+			double ndist = (nearest - spot).norm2();
+			BOOST_FOREACH (const Vector3D<>& s, samples) {
+				double d = (s - spot).norm2();
+				if (d < ndist) {
+					nearest = s;
+					ndist = d;
+				}
+			}
+			neighbours.push_back(nearest);
+		}
+		
+		spots.push_back(Spot(spot, neighbours));
+	}
+	
+	// for each of the spots calculate the error
+	BOOST_FOREACH (const Spot& s, spots) {
+		//cout << "neighbours= " << s.second.size() << endl;
+		double spot_error = 0.0;
+		BOOST_FOREACH (const Vector3D<>& p, s.second) {
+			double dist = (p - s.first).norm2();
+			spot_error += dist * dist;
+		}
+		
+		error += spot_error;
+	}
+	
+	//cout << "interval= " << interval << " error= " << error << endl;
 	
 	return error;
 }
@@ -93,10 +164,12 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	_line.refit(_data);
 	
 	// 2. beginning is the point with lowest x+y+z value
-	Vector3D<> start = samples[0];
+	Vector3D<> start = _data[0];
 	double xyz = start[0] + start[1] + start[2];
+	//cout << "start xyz=" << xyz << endl;
 	BOOST_FOREACH (const Vector3D<>& p, _data) {
 		double dist = p[0] + p[1] + p[2];
+		//cout << "pt xyz=" << p << ": " << dist << endl;
 		if (dist < xyz) {
 			start = p;
 			xyz = dist;
@@ -122,7 +195,7 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	typedef pair<double, double> IntervalQuality;
 	vector<IntervalQuality> intervals;
 	for (double t = 0.0; t < maxDist; t += maxDist / 1000.0) {
-		double q = testInterval(_data, t);
+		double q = testInterval(_data, t, _start, maxDist);
 		if (isnan(q)) continue;
 		
 		intervals.push_back(IntervalQuality(t, q));
@@ -132,6 +205,7 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	// find interval with best quality
 	IntervalQuality bestInterval = intervals[0];
 	BOOST_FOREACH (const IntervalQuality& iq, intervals) {
+		//cout << "int= " << iq.first << " q= " << iq.second << endl;
 		if (iq.second < bestInterval.second) {
 			//quality = iq.second;
 			bestInterval = iq;
@@ -139,7 +213,7 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	}
 	
 	_interval = bestInterval.first;
-	//cout << "Interval: " << _interval << endl;
+	//cout << "best interval: " << _interval << " q: " << bestInterval.second << endl;
 	
 	// calculate total fit error
 	double error = 0.0;
