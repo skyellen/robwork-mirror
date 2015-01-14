@@ -18,9 +18,6 @@ IF( build )
     RW_ADD_LIBRARY(rwhw_robolabFT robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
     RW_ADD_INCLUDES(robolabFT "rwhw/robolabFT" ${SRC_FILES_HPP})
     
-    
-    
-    INSTALL(TARGETS rwhw_robolabFT DESTINATION ${RWHW_LIB_INSTALL_DIR})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robolabFT;")
     MESSAGE(STATUS "robolabFT include dir:" ${robolabFT_INCLUDE_DIR})
 ENDIF()
