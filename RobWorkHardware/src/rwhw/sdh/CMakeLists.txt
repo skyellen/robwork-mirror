@@ -29,9 +29,9 @@ IF( build )
     IF(TOLUA++_FOUND)
     #    ADD_TOLUA_PACKAGE("SDHDriverLua" "SDHDriverLuaStub")
     ENDIF()
-    
+        
     RW_ADD_LIBRARY(rwhw_sdh sdh SDHDriver.cpp SDHDriver.hpp ${SRC_FILES} ${SRC_FILES_HPP})
-    RW_ADD_INCLUDES(sdh rwhw_sdh DESTINATION ${RWHW_LIB_INSTALL_DIR})
+    RW_ADD_INCLUDES(sdh "rw/hw" SDHDriver.hpp SDHDriverLua.hpp )
     set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sdh;")
     
 ENDIF()
