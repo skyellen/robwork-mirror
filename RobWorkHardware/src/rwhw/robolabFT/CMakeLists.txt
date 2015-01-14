@@ -16,7 +16,7 @@ IF( build )
     SET(SRC_FILES_HPP RobolabFTDriver.hpp)
     
     RW_ADD_LIBRARY(rwhw_robolabFT robolabFT ${SRC_FILES} ${SRC_FILES_HPP})
-    RW_ADD_INCLUDES(robolabFT "rwhw/robolabFT" ${SRC_HPP})
+    RW_ADD_INCLUDES(robolabFT "rwhw/robolabFT" ${SRC_FILES_HPP})
     
     
     
