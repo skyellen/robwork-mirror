@@ -3,10 +3,12 @@ SET(SUBSYS_DESC "driver for netft" )
 SET(SUBSYS_DEPS rw )
 
 SET(build TRUE)
+SET(default TRUE)
+
 
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(COMPONENT_${SUBSYS_NAME}_ENABLE "Enable ${SUBSYS_NAME} component." 
-                       ${COMPONENT_${SUBSYS_NAME}_ENABLE} "COMPONENT_${SUBSYS_NAME}_ENABLE" OFF)
+                       ${COMPONENT_${SUBSYS_NAME}_ENABLE} "${default}" OFF)
 
 set(DEFAULT TRUE)
 set(REASON) 

@@ -35,6 +35,6 @@ IF( build )
     
     INCLUDE_DIRECTORIES(${TRAKSTAR_INCLUDE_DIR})
     RW_ADD_LIBRARY(rwhw_trakstar trakstar ${SRC_CPP} ${SRC_HPP})
-    RW_ADD_INCLUDES(trakstar "rw/hw" ${SRC_HPP})
+    RW_ADD_INCLUDES(trakstar "rwhw/trakstar" ${SRC_HPP})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_trakstar;")
 ENDIF()
