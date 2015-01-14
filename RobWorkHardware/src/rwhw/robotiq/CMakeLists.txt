@@ -14,9 +14,9 @@ IF( build )
 
     SET(SRC_CPP Robotiq3.cpp)
     SET(SRC_HPP Robotiq3.hpp)
-    
-    ADD_LIBRARY(rwhw_robotiq ${SRC_CPP} ${SRC_HPP})
-    INSTALL(TARGETS rwhw_robotiq DESTINATION ${RWHW_LIB_INSTALL_DIR})
+
+    RW_ADD_LIBRARY(rwhw_robotiq robotiq ${SRC_CPP} ${SRC_HPP})
+    RW_ADD_INCLUDES(robotiq "rwhw/robotiq" ${SRC_HPP})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robotiq;")
 
 	add_executable(robotiq_test simpleTest.cpp )
