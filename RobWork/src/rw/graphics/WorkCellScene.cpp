@@ -51,119 +51,7 @@ namespace
         return false;
     }
 
-    //std::vector<Drawable::Ptr>
-    void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap, WorkCell::Ptr wc)
-    {
-        // The information of drawables is located in SceneDescriptor and "model::Object"s
-        // first check if there is any object with a frame "frame" in it
-        std::vector<Object::Ptr> objs = wc->getObjects();
 
-        BOOST_FOREACH(Object::Ptr obj, objs){
-            // the collision info is the geometry and visualization is Model3D
-            // in case no models are available the collision geometry will be used
-            std::vector<Geometry::Ptr> geoms = obj->getGeometry();
-            BOOST_FOREACH(Geometry::Ptr geom, geoms){
-                if(geom->getFrame()!=&frame)
-                    continue;
-
-                DrawableGeometryNode::Ptr dnode = scene->makeDrawable(geom->getName(), geom, geom->getMask() );
-                scene->addChild(dnode, node);
-                frameDrawableMap[&frame].push_back( dnode );
-            }
-
-            if(obj->getBase()!=&frame)
-                continue;
-
-            BOOST_FOREACH(Model3D::Ptr model, obj->getModels()){
-                DrawableNode::Ptr dnode = scene->makeDrawable(model->getName(), model, model->getMask() );
-                scene->addChild(dnode, node);
-                frameDrawableMap[&frame].push_back( dnode );
-            }
-
-        }
-/*
-        SceneDescriptor::Ptr scdesc = wc->getSceneDescriptor();
-
-        if ( DrawableModelInfo::get(&frame).size()>0 ) {
-            // Load the drawable:
-            const std::vector<DrawableModelInfo> infos = DrawableModelInfo::get(&frame);
-            BOOST_FOREACH(const DrawableModelInfo &info, infos) {
-                // forst check if the drawable is allready in the currentDrawables list
-                DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
-
-                if(dnode!=NULL){
-                    if( (dnode->getMask()&DrawableNode::DrawableObject)!=0){
-                        frameDrawableMap[&frame].push_back( dnode );
-                        continue;
-                    }
-                }
-                //if(has(info.getName(), node))
-                //    continue;
-
-                rw::graphics::DrawableNode::Ptr drawable = NULL;
-                try {
-                    drawable = scene->makeDrawable( info );
-                } catch (const rw::common::Exception& exp){
-                    RW_WARN(exp.getMessage());
-                    continue;
-                }
-				if(drawable != NULL) {					
-					// Set various properties for the drawable:
-					drawable->setTransform(info.getTransform());
-					drawable->setScale((float)info.getGeoScale());
-					drawable->setMask( DrawableNode::DrawableObject | DrawableNode::Physical );
-
-					if (info.isHighlighted())
-						drawable->setHighlighted(true);
-
-					if (info.isWireMode())
-						drawable->setDrawType(DrawableNode::WIRE);
-
-					GroupNode::addChild(drawable, node);
-					frameDrawableMap[&frame].push_back( drawable );
-				}
-            }
-        }
-        if (CollisionModelInfo::get(&frame).size()>0 ) {
-            std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(&frame);
-            BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
-
-                DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
-                if(dnode!=NULL){
-                    if( (dnode->getMask()&DrawableNode::CollisionObject) !=0){
-                        frameDrawableMap[&frame].push_back( dnode );
-                        continue;
-                    }
-                }
-
-                //if( has(info.getName(), node ) )
-                //    continue;
-
-                rw::graphics::DrawableNode::Ptr drawable = NULL;
-                try {
-                    drawable = scene->makeDrawable( info );
-                } catch (const rw::common::Exception& exp){
-                    RW_WARN(exp.getMessage());
-                    continue;
-                }
-
-                if (drawable) {
-                    // Set various properties for the drawable:
-                    drawable->setMask( DrawableNode::CollisionObject );
-                    drawable->setTransform(info.getTransform());
-                    drawable->setScale((float)info.getGeoScale());
-                    GroupNode::addChild(drawable, node);
-                    frameDrawableMap[&frame].push_back( drawable );
-                } else {
-                    RW_WARN(
-                        "NULL drawable returned by loadDrawableFile() for GeoString "
-                        << info.getGeoString());
-                }
-
-            }
-        }
-        */
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -278,6 +166,13 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
         }
     }
 
+    // also iterate through all deformable objects and update their geometries
+    typedef std::map< rw::models::DeformableObject::Ptr, std::vector<Model3D::Ptr>  > DeformObjectMap;
+    BOOST_FOREACH( DeformObjectMap::value_type data, _deformableObjectsMap ){
+    	BOOST_FOREACH( Model3D::Ptr model, data.second){
+    		data.first->update( model, state );
+    	}
+    }
 
 }
 
@@ -349,7 +244,52 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
         */
 
         // now for each DrawableInfo on frame check that they are on the frame
-        addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap, _wc);
+
+        // The information of drawables is located in SceneDescriptor and "model::Object"s
+        // first check if there is any object with a frame "frame" in it
+        std::vector<Object::Ptr> objs = _wc->getObjects();
+        State state = _wc->getDefaultState();
+
+        BOOST_FOREACH(Object::Ptr obj, objs){
+        	// just test if this object has anything to do with the frame
+        	if(obj->getBase()!=frame)
+				continue;
+
+
+	        // check if obj is deformable object
+	    	if( DeformableObject::Ptr dobj = obj.cast<DeformableObject>() ){
+	    		// make deep copy of the models.
+	    		std::vector<Model3D::Ptr> models = dobj->getModels(state);
+	    		// update the models with current state
+	    		_deformableObjectsMap[dobj] =  models;
+				BOOST_FOREACH(Model3D::Ptr model, models){
+					DrawableNode::Ptr dnode = _scene->makeDrawable(model->getName(), model, model->getMask() );
+					_scene->addChild(dnode, node);
+					_frameDrawableMap[frame].push_back( dnode );
+				}
+
+	    	} else {
+
+				// the collision info is the geometry and visualization is Model3D
+				// in case no models are available the collision geometry will be used
+				std::vector<Geometry::Ptr> geoms = obj->getGeometry(state);
+				BOOST_FOREACH(Geometry::Ptr geom, geoms){
+					if(geom->getFrame()!=frame)
+						continue;
+
+					DrawableGeometryNode::Ptr dnode = _scene->makeDrawable(geom->getName(), geom, geom->getMask() );
+					_scene->addChild(dnode, node);
+					_frameDrawableMap[frame].push_back( dnode );
+				}
+
+				BOOST_FOREACH(Model3D::Ptr model, obj->getModels()){
+					DrawableNode::Ptr dnode = _scene->makeDrawable(model->getName(), model, model->getMask() );
+					_scene->addChild(dnode, node);
+					_frameDrawableMap[frame].push_back( dnode );
+				}
+	    	}
+		}
+
 
         Frame::iterator_pair iter = frame->getChildren(state);
         for(;iter.first!=iter.second; ++iter.first ){

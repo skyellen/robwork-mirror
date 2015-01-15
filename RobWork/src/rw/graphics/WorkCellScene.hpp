@@ -29,9 +29,12 @@
 #include <rw/sensor/Scan2D.hpp>
 #include <rw/sensor/Image25D.hpp>
 
+#include <rw/models/DeformableObject.hpp>
+#include <rw/models/RigidObject.hpp>
+
 #include "SceneGraph.hpp"
 
-namespace rw { namespace models { class WorkCell; }}
+namespace rw { namespace models { class WorkCell;}}
 namespace rw { namespace kinematics { class Frame; class State; }}
 
 namespace rw {
@@ -416,6 +419,8 @@ namespace graphics {
         std::map<rw::kinematics::Frame*, FrameVisualState> _frameStateMap;
         //! mapping from frame to all its drawables, 1:many
         std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> > _frameDrawableMap;
+
+        std::map< rw::models::DeformableObject::Ptr, std::vector<Model3D::Ptr>  > _deformableObjectsMap;
 
         //! the drawable used to draw the frame axis
         DrawableNode::Ptr _frameAxis;
