@@ -6,7 +6,7 @@ IF(DEFINED CMAKE_BUILD_TYPE)
 build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
 Release RelWithDebInfo MinSizeRel.")
 ELSE()
-   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build,
 options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
 RelWithDebInfo MinSizeRel.")
 ENDIF()
@@ -55,18 +55,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/cmake/Modules/")
 INCLUDE(${RWSIM_ROOT}/cmake/RobWorkSimSetup.cmake)
 
 # now lets find RobWorkStudio
-# if RWS_ROOT is defined then we use that, else we try finding it the traditional way
-IF(RWS_ROOT)
-    SET(RobWorkStudio_DIR ${RWS_ROOT}/cmake)
-ELSE()
-    # try finding it relative to this directory
-    FIND_FILE(ROBWORKSTUDIODEVEL_FOUND RobWorkStudioSetup.cmake 
-        ${RWSIM_ROOT}/../RobWorkStudio/cmake NO_DEFAULT_PATH)
-    IF(ROBWORKDEVEL_FOUND)
-        SET(RobWorkStudio_DIR ${RWSIM_ROOT}/../RobWorkStudio/cmake)    
-    ENDIF()
-ENDIF()
-#MESSAGE("RWS_ROOT ${RobWorkStudio_DIR}")
+
 FIND_PACKAGE(RobWorkStudio ${ROBWORKSIM_VERSION} REQUIRED)
 
 
