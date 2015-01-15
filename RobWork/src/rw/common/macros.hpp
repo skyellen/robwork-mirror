@@ -217,14 +217,15 @@ do { int RW__line = __LINE__;                                               \
 #define RW_LOG(id, ostreamExpression) do {     \
     std::stringstream RW__stream;                   \
     RW__stream << ostreamExpression;                \
+    RW__stream << std::endl;                    \
     rw::common::Log::log().write(id, RW__stream.str());   \
 } while (0)
 
 
-#define RW_LOG_ERROR(ostreamExpression) RW_LOG(Log::Error, ostreamExpression)
-#define RW_LOG_WARNING(ostreamExpression) RW_LOG(Log::Warning, ostreamExpression)
-#define RW_LOG_DEBUG(ostreamExpression) RW_LOG(Log::Debug, ostreamExpression)
-#define RW_LOG_INFO(ostreamExpression) RW_LOG(Log::Info, ostreamExpression)
+#define RW_LOG_ERROR(ostreamExpression) RW_LOG(rw::common::Log::Error, ostreamExpression)
+#define RW_LOG_WARNING(ostreamExpression) RW_LOG(rw::common::Log::Warning, ostreamExpression)
+#define RW_LOG_DEBUG(ostreamExpression) RW_LOG(rw::common::Log::Debug, ostreamExpression)
+#define RW_LOG_INFO(ostreamExpression) RW_LOG(rw::common::Log::Info, ostreamExpression)
 
 
 
