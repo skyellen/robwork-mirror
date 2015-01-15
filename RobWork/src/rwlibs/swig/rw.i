@@ -178,6 +178,25 @@ public:
 %template (ThreadTaskPtrVector) std::vector<rw::common::Ptr<ThreadTask> >;
 
 /********************************************
+ * ROBWORK CLASS
+ ********************************************/
+ namespace rw {
+ 
+ class RobWork {
+ public:
+	RobWork();
+	
+	static rw::common::Ptr<RobWork> getInstance();
+	
+	std::string getVersion() const;
+	void initialize();
+ };
+ 
+ %template (RobWorkPtr) rw::common::Ptr<RobWork>;
+ 
+ }
+
+/********************************************
  * GEOMETRY
  ********************************************/
 
