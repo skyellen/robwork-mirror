@@ -6,7 +6,7 @@ IF(DEFINED CMAKE_BUILD_TYPE)
 build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug
 Release RelWithDebInfo MinSizeRel.")
 ELSE()
-   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build,
+   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build,
 options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release
 RelWithDebInfo MinSizeRel.")
 ENDIF()
@@ -92,7 +92,9 @@ FIND_PACKAGE(Subversion QUIET)
 IF(Subversion_FOUND)
     Subversion_WC_INFO(${RWS_ROOT} RobWorkStudio)
     MESSAGE(STATUS "RobWorkStudio: Current revision is ${RobWorkStudio_WC_REVISION}")
-    SET(ROBWORKSTUDIO_REVISION ${RobWork_WC_REVISION})
+    SET(ROBWORKSTUDIO_REVISION ${RobWorkStudio_WC_REVISION})
+ELSE()
+    MESSAGE(STATUS "RobWorkStudio: No revision info!")
 ENDIF(Subversion_FOUND)
 
 ###############################################################
