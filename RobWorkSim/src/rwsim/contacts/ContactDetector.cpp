@@ -59,9 +59,10 @@ void ContactDetector::setTimer(double value) {
 
 void ContactDetector::initializeGeometryMap() {
 	// run through all objects in workcell and collect the geometric information
+	State state = _wc->getDefaultState();
 	std::vector<Object::Ptr> objects = _wc->getObjects();
 	BOOST_FOREACH(Object::Ptr object, objects) {
-		BOOST_FOREACH(Geometry::Ptr geom, object->getGeometry() ){
+		BOOST_FOREACH(Geometry::Ptr geom, object->getGeometry(state) ){
 			Frame* frame = geom->getFrame();
 			_frameToGeo[*frame].push_back(geom);
 		}
@@ -70,6 +71,7 @@ void ContactDetector::initializeGeometryMap() {
 
 void ContactDetector::initializeModels(StrategyTableRow &strategy) {
 	// run through all objects in workcell and collect the geometric information
+	State state = _wc->getDefaultState();
 	std::vector<Object::Ptr> objects = _wc->getObjects();
 	std::vector<Object::Ptr>::iterator itA;
 	for (itA = objects.begin(); itA < objects.end(); itA++) {
@@ -78,8 +80,8 @@ void ContactDetector::initializeModels(StrategyTableRow &strategy) {
 		for (; itB < objects.end(); itB++) {
 			Object::Ptr oA = *itA;
 			Object::Ptr oB = *itB;
-			BOOST_FOREACH(Geometry::Ptr geoA, oA->getGeometry() ){
-				BOOST_FOREACH(Geometry::Ptr geoB, oB->getGeometry() ){
+			BOOST_FOREACH(Geometry::Ptr geoA, oA->getGeometry(state) ){
+				BOOST_FOREACH(Geometry::Ptr geoB, oB->getGeometry(state) ){
 					if (strategy.strategy->match(geoA->getGeometryData(),geoB->getGeometryData())) {
 						std::map<std::string,ContactModel::Ptr>& mapA = strategy.models[*(geoA->getFrame())];
 						std::map<std::string,ContactModel::Ptr>& mapB = strategy.models[*(geoB->getFrame())];
@@ -225,9 +227,10 @@ void ContactDetector::setDefaultStrategies() {
 
 void ContactDetector::setDefaultStrategies(const PropertyMap& map) {
     std::vector<Object::Ptr> objects = _wc->getObjects();
+    State state = _wc->getDefaultState();
     std::size_t spheres = 0;
     BOOST_FOREACH(Object::Ptr object, objects) {
-        BOOST_FOREACH(Geometry::Ptr geom, object->getGeometry()){
+        BOOST_FOREACH(Geometry::Ptr geom, object->getGeometry(state)){
         	GeometryData::Ptr gdata = geom->getGeometryData();
         	GeometryData::GeometryType gtype = gdata->getType();
             if (gtype == GeometryData::SpherePrim) spheres++;

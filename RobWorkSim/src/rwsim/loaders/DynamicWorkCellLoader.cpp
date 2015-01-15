@@ -75,6 +75,7 @@
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/StringUtil.hpp>
+#include <rw/models/RigidObject.hpp>
 
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
@@ -502,13 +503,13 @@ namespace
         Log::debugLog()<< "ReadRigidBody" << std::endl;
 
         string refframeName = tree.get_child("<xmlattr>").get<std::string>("frame");
-        Object::Ptr obj = state.wc->findObject(prefix+refframeName);
+        RigidObject::Ptr obj = state.wc->findObject(prefix+refframeName).cast<RigidObject>();
         if( !obj ){
             // create one without any geometry
             MovableFrame* baseframe = state.wc->findFrame<MovableFrame>(prefix+refframeName);
             if(baseframe==NULL)
                 RW_THROW("no frame with name " << prefix+refframeName);
-            obj = ownedPtr(new Object(baseframe));
+            obj = ownedPtr(new RigidObject(baseframe));
             state.wc->add( obj );
         }
 
@@ -539,7 +540,7 @@ namespace
 
         std::vector<Geometry::Ptr> geoms;
         BOOST_FOREACH(Object::Ptr assobj, info.objects){
-            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry()){
+            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry(state.rwstate)){
                 geoms.push_back(g);
             }
         }
@@ -555,7 +556,7 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(obj->getGeometry().size()!=0){
+        	if(obj->getGeometry(state.rwstate).size()!=0){
         	    if( tree.get_optional<string>("COG") ){
         	        // if COG specified then use it and calculate inertia
 
@@ -563,7 +564,7 @@ namespace
         	        Transform3D<> ref(info.masscenter);
         	        info.inertia = GeometryUtil::estimateInertia(info.mass, geoms, mframe,state.rwstate, ref);
         	    } else {
-        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), mframe,state.rwstate);
+        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(state.rwstate), mframe,state.rwstate);
         	    }
         	} else {
         		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
@@ -661,12 +662,12 @@ namespace
         Frame *frame = getFrameFromAttr(tree, state, frameAttr, prefix);
 
         RW_DEBUGS("Trying to find object: \"" << frame->getName() << "\"");
-        Object::Ptr obj = state.wc->findObject( frame->getName() );
+        RigidObject::Ptr obj = state.wc->findObject( frame->getName() ).cast<RigidObject>();
         if(obj==NULL){
             // TODO: unfortunately the robwork kinematic loader does not fully support the
             // Object loading yet. So we need to create an object for this particular frame
             RW_DEBUGS("Adding new object to state!");
-            obj = ownedPtr( new Object(frame) );
+            obj = ownedPtr( new RigidObject(frame) );
             state.wc->add(obj);
         }
 
@@ -714,11 +715,11 @@ namespace
         //Object::Ptr obj = state.wc->findObject(device->getName()+string(".")+refjointName);
 
         Frame *frame = getFrameFromAttr(tree, state, "joint", device->getName()+".");
-        Object::Ptr obj = state.wc->findObject( frame->getName() );
+        RigidObject::Ptr obj = state.wc->findObject( frame->getName() ).cast<RigidObject>();
         if(obj==NULL){
             // TODO: unfortunately the robwork kinematic loader does not fully support the
             // Object loading yet. So we need to create an object for this particular frame
-            obj = ownedPtr( new Object(frame) );
+            obj = ownedPtr( new RigidObject(frame) );
             state.wc->add(obj);
         }
 
@@ -736,15 +737,15 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(obj->getGeometry().size()!=0){
+        	if(obj->getGeometry(state.rwstate).size()!=0){
         		if( tree.get_optional<string>("COG") ){
         			// if COG specified then use it and calculate inertia
 
         			info.masscenter = readVector3D( tree.get_child("COG") );
         			Transform3D<> ref(info.masscenter);
-        			info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(), obj->getBase(),state.rwstate, ref);
+        			info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(state.rwstate), obj->getBase(),state.rwstate, ref);
         		} else {
-        			boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), obj->getBase(),state.rwstate);
+        			boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(state.rwstate), obj->getBase(),state.rwstate);
         		}
         	} else {
         		RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
@@ -757,13 +758,13 @@ namespace
         Log::debugLog()<< "ReadLink" << std::endl;
 
         string refframeName = tree.get_child("<xmlattr>").get<std::string>("object");
-        Object::Ptr obj = state.wc->findObject(device->getName()+"."+refframeName);
+        RigidObject::Ptr obj = state.wc->findObject(device->getName()+"."+refframeName).cast<RigidObject>();
         if( !obj ){
             // create one without any geometry
             Frame* baseframe = state.wc->findFrame(device->getName()+"."+refframeName);
             if(baseframe==NULL)
                 RW_THROW("no frame with name " << device->getName()+"." + refframeName);
-            obj = ownedPtr(new Object(baseframe));
+            obj = ownedPtr(new RigidObject(baseframe));
             state.wc->add( obj );
         }
 
@@ -791,7 +792,7 @@ namespace
 
         std::vector<Geometry::Ptr> geoms;
         BOOST_FOREACH(Object::Ptr assobj, info.objects){
-            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry()){
+            BOOST_FOREACH(Geometry::Ptr g, assobj->getGeometry(state.rwstate)){
                 geoms.push_back(g);
             }
         }
@@ -801,7 +802,7 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-            if(obj->getGeometry().size()!=0){
+            if(obj->getGeometry(state.rwstate).size()!=0){
         		if( tree.get_optional<string>("COG") ){
         			// if COG specified then use it and calculate inertia
 

@@ -141,8 +141,12 @@ namespace dynamics {
         /**
          * @brief get all geometry associated with this body
          */
+        const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(const rw::kinematics::State& state){
+            return _obj->getGeometry(state);
+        }
+
         const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(){
-            return _geometry;
+        	return getGeometry( _obj->getStateStructure()->getDefaultState() );
         }
 
         /**
@@ -446,7 +450,6 @@ namespace dynamics {
 
     private:
         rw::kinematics::Frame *_bodyframe;
-        std::vector<rw::geometry::Geometry::Ptr> _geometry;
         std::vector<rw::kinematics::Frame*> _frames;
 
 

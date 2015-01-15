@@ -40,9 +40,6 @@ Body::Body(const BodyInfo& info, rw::models::Object::Ptr obj):
     if(_info.objects.size()==0)
         _info.objects.push_back(obj);
     BOOST_FOREACH(Object::Ptr iobj, _info.objects){
-        BOOST_FOREACH(Geometry::Ptr geom, iobj->getGeometry() ){
-            _geometry.push_back(geom);
-        }
         BOOST_FOREACH(Frame* f, iobj->getFrames() ){
             _frames.push_back(f);
         }
@@ -71,9 +68,4 @@ rw::math::Vector3D<> Body::getPointVelW(const rw::math::Vector3D<>& p, const rw:
 void Body::setObject(rw::models::Object::Ptr obj)
 {
 	_obj = obj;
-	_geometry.clear();
-	
-	BOOST_FOREACH(Geometry::Ptr geo, _obj->getGeometry()){
-		_geometry.push_back(geo);
-	}
 }
