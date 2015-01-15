@@ -124,11 +124,16 @@ endif()
 GET_ROBWORKSIM_BUILD_TYPE(${RWSIMCFG_ROOT} RWSIM_BUILD_TYPE)
 
 
-# check whether RobWorkConfig.cmake is found into a RobWork installation or in a build tree
+# check whether RobWorkSimConfig.cmake is found into a RobWorkSim installation or in a build tree
 if(EXISTS "${RWSIMCFG_ROOT}/../src/RobWorkSimConfig.hpp")
   # Found RobWorkConfig.cmake in a build tree of RobWork
   SET(succmsg "RobWorkSim: Found a RobWorkSim build tree")
   set(RWSIM_ROOT "${RWSIMCFG_ROOT}/..")
+  
+  # RobWork and RobWorkStudio roots should then be obvious
+  SET(RW_ROOT ${RWSIM_ROOT}/../RobWork)
+  SET(RWS_ROOT ${RWSIM_ROOT}/../RobWorkStudio)
+  
   
   set(RWSIM_INCLUDE_EXT "${RWSIM_ROOT}/ext")
   set(RWSIM_INCLUDE_SRC "${RWSIM_ROOT}/src/")
@@ -145,7 +150,7 @@ else()
     set(RWSIM_LIBS "${RWSIM_ROOT}/libs/${RWSIM_BUILD_TYPE}")
   else(WIN32)
     # RobWorkSimConfig.cmake is installed to RWSIM_INTALL/share/robworksim-x.y
-
+	
     set(RWSIM_ROOT "${RWSIMCFG_ROOT}")
     set(RWSIM_INSTALL "${RWSIMCFG_ROOT}/../../")
     set(RWSIM_LIBS "${RWSIM_INSTALL}/lib/")
@@ -156,8 +161,6 @@ endif()
 
 #MESSAGE(STATUS "RWSIM_ROOT   : ${RWSIM_ROOT}")
 #MESSAGE(STATUS "RWSIMCFG_ROOT: ${RWSIMCFG_ROOT}")
-
-#INCLUDE(${RWSIMCFG_ROOT}/RobWorkSimMacros.cmake)
 
 #############################################################
 # now RWSIM_ROOT and RWSIMCFG_ROOT is set. Lets extract the stuff needed to run a project
@@ -170,6 +173,10 @@ IF(EXISTS ${RWSIM_ROOT}/cmake/RobWorkSimBuildConfig_${RWSIM_BUILD_TYPE}.cmake)
 
 # setup path to custom find scripts
 SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIMCFG_ROOT}/Modules")
+
+FIND_PACKAGE(RobWork REQUIRED)
+FIND_PACKAGE(RobWorkStudio REQUIRED)
+
 
 # test if Bullet exists
 OPTION(RWSIM_USE_BULLET "Set to ON if Bullet should be use. you may need to set BULLET_ROOT" ${RWSIM_BUILD_WITH_BULLET})
