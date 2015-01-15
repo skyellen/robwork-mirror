@@ -38,11 +38,11 @@ namespace rwhw {
          * 
          * Required to start robot communication. Call connect() first, then startCommunication().
          * 
-         * @param host [in] IP address of the host, e.g. 192.168.100.1.
+         * @param host [in] IP address of the host (to which the robot will connect), e.g. 192.168.100.1.
          * @param callbackPort [in] port used for communicating with robot, e.g. 33334.
          * @param filename [in] UR script filename; if not specified, a default bundled script is used.
          */
-        void startCommunication(const std::string& host, const unsigned int callbackPort, const std::string& filename="");
+        void startCommunication(const std::string& callbackIP, const unsigned int callbackPort, const std::string& filename="");
 
         /**
          * @brief Stops the robot interface thread
@@ -89,6 +89,7 @@ namespace rwhw {
 
 
 	unsigned int _callbackPort;
+        boost::asio::ip::address _callbackIP;
 
 	bool _stopServer;
 	bool _robotStopped;

@@ -1,5 +1,3 @@
-/* */
-/* */
 #include "URCallBackInterface.hpp"
 #include "URCommon.hpp"
 #include <rw/math/Transform3D.hpp>
@@ -7,7 +5,7 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Timer.hpp>
-
+#include <rw/common/Log.hpp>
 
 #include "urscript.hpp"
 
@@ -21,7 +19,8 @@ URCallBackInterface::URCallBackInterface():
     _robotStopped(true),
     _isMoving(false)
 {
-
+    /* Set the global loglevel to debug */
+    Log::log().setLevel(Log::Debug);
 }
 
 bool URCallBackInterface::isMoving() const {
@@ -41,15 +40,19 @@ void URCallBackInterface::startInterface(const unsigned int callbackPort, const 
     startCommunication("192.168.100.1", callbackPort, filename);
 }
 
-void URCallBackInterface::startCommunication(const std::string& host, const unsigned int callbackPort, const std::string& filename) {
+void URCallBackInterface::startCommunication(const std::string& callbackIP, const unsigned int callbackPort, const std::string& filename) {
     _callbackPort = callbackPort;
-	
+    /* There should be some better error checking at the conversion of the IP from string to ip::address - but the documentation is limited with what error codes that can be returned / exception(s) that can be thrown - [look at the source for more specific error documentation/information] */
+    _callbackIP = boost::asio::ip::address::from_string(callbackIP);
+
     // launch communication thread
+    RW_LOG_DEBUG("Spawning communication thread");
     _thread = ownedPtr(new boost::thread(boost::bind(&URCallBackInterface::run, this)));
 
     // load UR script
     std::string script;
     if (!filename.empty()) { // load UR script from file
+        RW_LOG_DEBUG("Loading UR script from the file: " << filename);
         std::cout << "Loading UR script from file " << filename << "..." << std::endl;
         std::ifstream infile(filename.c_str());
         std::cout << "Script loaded." << std::endl;
@@ -68,6 +71,7 @@ void URCallBackInterface::startCommunication(const std::string& host, const unsi
         script = std::string(buffer);
         delete[] buffer;
     } else { // use default script
+        RW_LOG_DEBUG("Using default UR script/file");
         script = UR_SCRIPT;
     }
 	
@@ -90,12 +94,20 @@ void URCallBackInterface::startCommunication(const std::string& host, const unsi
         sstr_host << script;
     } else {
         std::stringstream sstr;
-        sstr_host << script.substr(0, n) << "\"" << host << "\"" << script.substr(n + 4);
+        RW_ASSERT(_callbackIP.is_v4());
+        sstr_host << script.substr(0, n) << "\"" << _callbackIP.to_string() << "\"" << script.substr(n + 4);
     }
     script = sstr_host.str();
 	
     // send script to robot
-    _urPrimary.sendScript(script);
+    RW_LOG_DEBUG("Sending script to the robot");
+    bool sendScriptStatus = false;
+    sendScriptStatus = _urPrimary.sendScript(script);
+    if (sendScriptStatus) {
+        RW_LOG_DEBUG("Successfully sent the script to the robot");
+    } else {
+        RW_LOG_ERROR("Was not successful in sending the script to the robot.");
+    }
     _urPrimary.start();
 }
 
@@ -155,7 +167,9 @@ void URCallBackInterface::sendStop(tcp::socket& socket) {
 }
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
+    RW_LOG_DEBUG("Handling command request - obtaining lock...");
     boost::mutex::scoped_lock lock(_mutex);
+    RW_LOG_DEBUG("Obtained lock");
 
     //std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
     std::vector<int> integers(8);
@@ -163,11 +177,12 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
     if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
         integers[0] = URScriptCommand::DO_NOTHING;
         URCommon::send(&socket, integers);
-        //std::cout<<"Do Nothing"<<std::endl;
+        RW_LOG_DEBUG("Do nothing");
         return;
     }
 
     URScriptCommand cmd = _commands.front();
+    RW_LOG_DEBUG("Command type: " << cmd._type);
 
     _isServoing = false;
     integers[0] = cmd._type;
@@ -175,27 +190,22 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
     case URScriptCommand::STOP:
         break;
     case URScriptCommand::MOVEQ:
-        std::cout<<"Ready to execute move Q"<<std::endl;
         q2intVector(cmd._q, integers, 1);
         integers[7] = cmd._speed*10000;
         _isMoving = true;
         break;
     case URScriptCommand::MOVET: 
-        std::cout<<"Ready to execute move Q"<<std::endl;
         t2intVector(cmd._transform, integers, 1);
         integers[7] = cmd._speed*10000;
         _isMoving = true;
         break;
     case URScriptCommand::SERVOQ:
-    {
         // make sure that q is not too big... eg. it should be reachable within 0.008 seconds
         q2intVector(cmd._q, integers, 1);
         _isMoving = true;
         _isServoing = true;
-    }
-    break;
+        break;
     case URScriptCommand::FORCE_MODE_START:
-        std::cout<<"Force Mode Start"<<std::endl;
         integers.resize(26);
         t2intVector(cmd._transform, integers, 1);
         integers[7] = 0;
@@ -205,26 +215,29 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         //_isMoving = true;
         break;
     case URScriptCommand::FORCE_MODE_UPDATE:
-        std::cout<<"FORCE_MODE_UPDATE"<<std::endl;
         wrench2intVector(cmd._wrench, integers, 1);
         integers[7] = 0;
         //_isMoving = true;
         break;
     case URScriptCommand::FORCE_MODE_END:
+        // Why nothing?
         break;
     default:
-        RW_THROW("Unsupported command type: "<<cmd._type);
+        RW_LOG_DEBUG("Unsupported command: " << cmd._type);
+        RW_THROW("Unsupported command type: " << cmd._type);
         break;
     }
+    RW_LOG_DEBUG("Sending command to robot...");
     URCommon::send(&socket, integers);
+    RW_LOG_DEBUG("Command to robot sent");
     //std::cout<<"Sends: "<<std::endl;
     //BOOST_FOREACH(int i, integers) {
     //	std::cout<<i<<" "<<std::endl;
     //}
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
+        RW_LOG_DEBUG("Popping commands as the command type was not SERVOQ");
         _commands.pop();
-        //std::cout<<"Pops commands"<<std::endl;
     }
 }
 
@@ -233,12 +246,14 @@ void URCallBackInterface::run() {
     {
 	boost::asio::io_service io_service;
 
-	tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _callbackPort));
+	tcp::acceptor acceptor(io_service, tcp::endpoint(_callbackIP, _callbackPort));
 	while(!_stopServer)
 	{
             tcp::socket socket(io_service);
             std::cout<<"Ready to accept incoming connections "<<std::endl;
+            RW_LOG_DEBUG("Ready to accept incoming connections on port '" << _callbackPort << "'");
             acceptor.accept(socket);
+            RW_LOG_DEBUG("Incoming connection accepted");
             std::cout<<"Incoming accepted"<<std::endl;
             Timer timer;
             timer.resetAndResume();  
@@ -247,22 +262,35 @@ void URCallBackInterface::run() {
 //          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl;
                 boost::system::error_code error;
                 size_t available = socket.available(error);
-                if (error == boost::asio::error::eof) {
-                    std::cout<<"Reached EOF"<<std::endl;
-                    break;
-                }
-                if (available >= 1) {
+                if (available == 0) {
+                    if (error == boost::asio::error::eof) {
+                        std::cout<<"Reached EOF"<<std::endl;
+                        RW_LOG_DEBUG("Reached EOF on the socket.");
+                        break;
+                    } else {
+#if 0
+/* Commented out due to missing error code to catch the case where there are no errors, but 0 bytes are available to be read - could catch a posix specific 0=successful error code from the boost system error codes, but that seem a bit too hackish... */
+                        /* Unknown error occured */
+                        RW_LOG_ERROR("Unkown error '" << error << "' occured when querying for available bytes on the socket.");
+                        /* Just jump up a level, to have the socket/connection be reestablished */
+                        break;
+#endif
+                    }
+                } else {
                     char ch;
                     if (!URCommon::getChar(&socket, &ch))
                         continue;
                 
-                    if (_robotStopped) { 
+                    RW_LOG_DEBUG("Received the byte/char '" << ch << "' from the connection.");
+
+                    if (_robotStopped) {
+                        RW_LOG_DEBUG("Robot is stopped, going to send stop.");
                         sendStop(socket);
                     } else {
                         if (ch == 0) {
                             _isMoving = false;
                         } 
-                        //std::cout<<"Time = "<<timer.getTime()<<std::endl;        
+                        RW_LOG_DEBUG("Going to handle command request - Time: " << timer.getTime());
                         timer.resetAndResume();
                         handleCmdRequest(socket);
                     }
@@ -275,10 +303,6 @@ void URCallBackInterface::run() {
     {
 	std::cerr << e.what() << std::endl;
     }
-
-
-
-
 }
 
 
@@ -330,7 +354,7 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 //	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
 
-    size_t n = _commands.size();
+    //size_t n = _commands.size();
     popAllUpdateCommands();
     //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
@@ -343,7 +367,7 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits) {
     boost::mutex::scoped_lock lock(_mutex);
 
-    size_t n = _commands.size();
+    //size_t n = _commands.size();
     popAllUpdateCommands();
     //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 

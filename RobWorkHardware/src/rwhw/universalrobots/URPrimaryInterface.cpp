@@ -10,8 +10,10 @@
 
 
 #include <rw/common/TimerUtil.hpp>
+#include <rw/common/Log.hpp>
 
 #include <boost/thread.hpp>
+#include <boost/asio/write.hpp>
 
 #include <iostream>
 #include <string>
@@ -180,9 +182,17 @@ bool URPrimaryInterface::sendCommand(const std::string &str) {
 		return false;
 	}
 	std::cout<<"Send Command\n"<<str<<std::endl;
+        RW_LOG_DEBUG("Send Command:\n" << str);
 
-	_socket->send(boost::asio::buffer(str.c_str(), str.size()));
-	return true;
+        std::size_t bytesTransfered = 0;
+        bytesTransfered = boost::asio::write(*_socket, boost::asio::buffer(str.c_str(), str.size()));
+        RW_LOG_DEBUG("Bytes to be transfered '" << str.size() << "' and bytes actually transfered '" << bytesTransfered << "'");
+
+        if (str.size() == bytesTransfered) {
+            return true;
+        } else {
+            return false;
+        }
 }
 
 //Read incomming data
