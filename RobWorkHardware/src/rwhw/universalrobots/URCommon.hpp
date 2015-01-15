@@ -6,6 +6,8 @@
 #include <rw/math/Q.hpp>
 #include <rw/common/types.hpp>
 #include <rw/common/TimerUtil.hpp>
+#include <rw/common/Log.hpp>
+
 #include <boost/asio.hpp>
 
 class URCommon {
@@ -233,14 +235,21 @@ public:
 			for (size_t i = 0; i<integers.size(); i++) {
 				ibuf[i] = integers[i];
 			}
+                        /* TODO:
+                         * This call to memcpy(...) is unnecessary? as the two (not-commented) for-loops are doing the same thing, just flipping the "word order" ?
+                         */
 			memcpy(buffer, ibuf, n);
         
 	  //      for (size_t i = 0; i<n; i++) {
 		//        std::cout<<"buffer = "<<(int)buffer[i]<<" ibuf = "<<(int)((char*)ibuf)[i]<<std::endl;
 		  //  }
 
+                        /* TODO:
+                         * Has hardcoded information (ie. 4 and 3 that are dependent on the size of int)
+                         * Rewrite to dynamic sizes using sizeof(int) and verify that the content in buffer will be the same
+                         */
 			for (size_t i = 0; i<integers.size(); i++) {
-				for (size_t j = 0; j<sizeof(int); j++) {
+				for (size_t j = 0; j < sizeof(int); j++) {
 					buffer[4*i+j] = ((char*)(&integers.at(i)))[3-j];
 				}
 			}
@@ -256,7 +265,16 @@ public:
 			}
 			buffer[0] = 1;
     		socket->send(boost::asio::buffer(buffer, n));*/
-    		socket->send(boost::asio::buffer(buffer, n));
+                        /*socket->send(boost::asio::buffer(buffer, n));*/
+                        std::size_t bytesTransfered = 0;
+                        bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
+                        if (bytesTransfered == n) {
+                            /* Successful send */
+                            RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
+                        } else {
+                            /* Unsuccessful send */
+                            RW_LOG_ERROR("Unable to send all the '" << n << "' bytes - only sent '" << bytesTransfered << "' bytes");
+                        }
 		} catch (std::exception& e) {
 			delete[] buffer;
 			delete[] ibuf;
@@ -267,6 +285,10 @@ public:
 
 	}
 
+    /* TODO:
+     * Update the socket->send to boost::asio::write(socket, <buffer>) versions
+     * Consider changing the void to int/bool and return status on whether every byte was transfered or not (should also look at the function(s) above)
+     */
     static inline void send(boost::asio::ip::tcp::socket* socket, unsigned char ch) {
     	socket->send(boost::asio::buffer(&ch, 1));
     }
