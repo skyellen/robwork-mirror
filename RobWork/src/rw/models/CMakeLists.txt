@@ -33,6 +33,8 @@ SET(FILES_CPP
   WorkCell.cpp
   DHParameterSet.cpp
   Object.cpp
+  RigidObject.cpp
+  DeformableObject.cpp
   SE3Device.cpp
 )
 

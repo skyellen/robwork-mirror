@@ -62,10 +62,11 @@ BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,cons
 void BasicFilterStrategy::initialize() {
     // run through all objects in workcell and collect the geometric information
     _frameToGeoIdMap.clear();
+    State state = _workcell->getDefaultState();
     std::vector<Object::Ptr> objects = _workcell->getObjects();
 
     BOOST_FOREACH(Object::Ptr object, objects) {
-        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry() ){
+        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry(state) ){
             Frame* frame = geom->getFrame();
             RW_ASSERT(frame);
             _frameToGeoIdMap[*frame].push_back(geom->getName());

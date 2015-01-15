@@ -23,6 +23,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
+#include <rw/models/RigidObject.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::proximity;
@@ -53,15 +54,17 @@ ProximityModel::Ptr ProximityStrategy::getModel(const rw::kinematics::Frame* fra
 
 bool ProximityStrategy::addModel(rw::models::Object::Ptr object)
 {
-    std::vector<Geometry::Ptr> geoms = object->getGeometry();
-    BOOST_FOREACH(Geometry::Ptr geom, geoms){
-        Frame* geoframe = geom->getFrame();
-        if(!hasModel(geoframe))
-            _frameToModel[*geoframe] = createModel();
-        ProximityModel::Ptr model = getModel(geoframe);
-        addGeometry(model.get(), geom);
+    if(RigidObject::Ptr robj = object.cast<RigidObject>()){
+		std::vector<Geometry::Ptr> geoms = robj->getGeometry();
+		BOOST_FOREACH(Geometry::Ptr geom, geoms){
+			Frame* geoframe = geom->getFrame();
+			if(!hasModel(geoframe))
+				_frameToModel[*geoframe] = createModel();
+			ProximityModel::Ptr model = getModel(geoframe);
+			addGeometry(model.get(), geom);
+		}
+		return true;
     }
-    return true;
 }
 
 /*

@@ -74,8 +74,9 @@ CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
 void CollisionDetector::initialize(WorkCell::Ptr wc) {
     // run through all objects in workcell and collect the geometric information
     std::vector<Object::Ptr> objects = wc->getObjects();
+    State state = wc->getDefaultState();
     BOOST_FOREACH(Object::Ptr object, objects) {
-        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry() ){
+        BOOST_FOREACH(geometry::Geometry::Ptr geom, object->getGeometry( state ) ){
             Frame* frame = geom->getFrame();
             RW_ASSERT(frame);
             _npstrategy->addModel(frame, geom);

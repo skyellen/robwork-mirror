@@ -36,13 +36,13 @@ using boost::filesystem::initial_path;
 
 
 #if defined(RW_CYGWIN)
-    #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/
+    #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/"
     #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_WIN32)
     #define RWCFGHOMEDIR std::string(std::getenv("APPDATA")) + "/robwork/"
     #define RWCFGFILE std::string(std::getenv("APPDATA")) + "/robwork/robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_MACOS)
-    #define RWCFGHOMEDIR std::string(std::getenv("HOME"))  + "/Library/Preferences/
+    #define RWCFGHOMEDIR std::string(std::getenv("HOME"))  + "/Library/Preferences/"
     #define RWCFGFILE std::string(std::getenv("HOME")) + "/Library/Preferences/com.robwork-" + RW_BUILD_TYPE + "-"+ RW_VERSION + ".cfg.xml"
 #elif defined(RW_LINUX)
     #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/"

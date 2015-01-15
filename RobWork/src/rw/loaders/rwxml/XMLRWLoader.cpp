@@ -36,6 +36,7 @@
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/ParallelLeg.hpp>
 #include <rw/models/DHParameterSet.hpp>
+#include <rw/models/RigidObject.hpp>
 
 #include <rw/loaders/GeometryFactory.hpp>
 #include <boost/lexical_cast.hpp>
@@ -140,7 +141,7 @@ public:
 	std::map<std::string, Frame*> frameMap;
 	std::map<std::string, DummyFrame*> dummyFrameMap;
 	std::map<std::string, std::vector<Frame*> > toChildMap;
-	std::map<Frame*, Object::Ptr> objectMap;
+	std::map<Frame*, RigidObject::Ptr> objectMap;
 	std::vector<InitialAction*> actions;
 	boost::shared_ptr<DummyWorkcell> dwc;
 
@@ -272,10 +273,10 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			break;
 		}
 
-		Object::Ptr object;
+		RigidObject::Ptr object;
 		if (model._isDrawable || model._colmodel) {
 			if (setup.objectMap.find(modelframe) == setup.objectMap.end())
-				setup.objectMap[modelframe] = ownedPtr(new Object(modelframe));
+				setup.objectMap[modelframe] = ownedPtr(new RigidObject(modelframe));
 			object = setup.objectMap[modelframe];
 		}
 
@@ -929,7 +930,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(const std::string& fname) {
 
 		// add all objects to scene
 		{
-			std::map<Frame*, Object::Ptr>::iterator first = setup.objectMap.begin();
+			std::map<Frame*, RigidObject::Ptr>::iterator first = setup.objectMap.begin();
 			for (; first != setup.objectMap.end(); ++first) {
 				wc->add((*first).second);
 			}

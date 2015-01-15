@@ -25,6 +25,7 @@
 #include <rw/kinematics/Stateless.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/graphics/Model3D.hpp>
+#include <rw/math/InertiaMatrix.hpp>
 
 #include <vector>
 
@@ -34,49 +35,116 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-       @brief Nothing descriptive yet.
-    */
+     * @brief The object class represents a physical thing in the scene which has geometry.
+     * An object has a base frame (similar to a Device) and may have a number of associated frames.
+     *
+     */
     class Object: public rw::kinematics::Stateless
     {
     public:
+    	//! smart pointer
         typedef rw::common::Ptr<Object> Ptr;
 
+    protected:
         //! constructor
         Object(rw::kinematics::Frame* baseframe);
-        //! constructor
-        Object(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
-        //! constructor
-        Object(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
         //! constructor - first frame is base
         Object(std::vector<rw::kinematics::Frame*> frames);
-        //! constructor - first frame is base
-        Object(std::vector<rw::kinematics::Frame*> frames, rw::geometry::Geometry::Ptr geom);
-        Object(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
 
+    public:
+        //! destructor
         virtual ~Object();
 
-        void addGeometry(rw::geometry::Geometry::Ptr geom);
+        /**
+         * @brief get name of this object. Name is always the same as the name of the
+         * base frame.
+         * @return name of object.
+         */
+        const std::string& getName(){ return _base->getName(); };
 
-        void addModel(rw::graphics::Model3D::Ptr model);
-
-        void addFrame(rw::kinematics::Frame* frame);
-
-        void removeGeometry(rw::geometry::Geometry::Ptr geom);
-        void removeModel(rw::graphics::Model3D::Ptr model);
-
-        const std::vector<rw::geometry::Geometry::Ptr>& getGeometry();
-        const std::vector<rw::graphics::Model3D::Ptr>& getModels();
-
+        /**
+         * @brief get base frame of this object
+         * @return base frame of object
+         */
         rw::kinematics::Frame* getBase();
-
         const rw::kinematics::Frame* getBase() const;
 
+        /**
+         * @brief get all associated frames of this object
+         * @return a vector of frames
+         */
         const std::vector<rw::kinematics::Frame*>& getFrames();
 
-        const std::string& getName(){ return _base->getName(); };
+        /**
+         * @brief associate a frame to this Object.
+         * @param frame [in] frame to associate to object
+         */
+        void addFrame(rw::kinematics::Frame* frame);
+
+        /**
+         * @brief get default geometries
+         * @return geometry for collision detection
+         */
+        const std::vector<rw::geometry::Geometry::Ptr>& getGeometry() const {
+        	return doGetGeometry(this->getStateStructure()->getDefaultState());
+        }
+
+        /**
+         * @brief get the default models
+         * @return models for vizualization
+         */
+        const std::vector<rw::graphics::Model3D::Ptr>& getModels() const {
+        	return doGetModels(this->getStateStructure()->getDefaultState());
+        }
+
+        // stuff that should be implemented by deriving classes
+        /**
+         * @brief get geometry of this object
+         * @return geometry for collision detection.
+         */
+        const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(const rw::kinematics::State& state) const{ return doGetGeometry(state); }
+
+        /**
+         * @brief get visualization models of this object
+         * @return models for visualization
+         */
+        const std::vector<rw::graphics::Model3D::Ptr>& getModels(const rw::kinematics::State& state) const{ return doGetModels(state);}
+
+
+	    /**
+	     * @brief get mass in Kg of this object
+	     * @return mass in kilo grams
+	     */
+	    virtual double getMass(rw::kinematics::State& state) const = 0;
+
+	    /**
+	     * @brief get center of mass of this object
+	     * @param state [in] the state in which to get center of mass
+	     * @return
+	     */
+	    virtual rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const = 0;
+
+	    /**
+	     * @brief returns the inertia matrix of this body calculated around COM with the orientation
+	     * of the base frame.
+	     */
+	    virtual rw::math::InertiaMatrix<> getInertia(rw::kinematics::State& state) const = 0;
 
     protected:
         friend class WorkCell;
+
+        /**
+         * @brief get geometry of this object
+         * @return geometry for collision detection.
+         */
+        virtual const std::vector<rw::geometry::Geometry::Ptr>& doGetGeometry(const rw::kinematics::State& state) const = 0;
+
+        /**
+         * @brief get visualization models of this object
+         * @return models for visualization
+         */
+        virtual const std::vector<rw::graphics::Model3D::Ptr>& doGetModels(const rw::kinematics::State& state) const = 0;
+
 
     private:
         rw::kinematics::Frame *_base;
