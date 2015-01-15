@@ -287,6 +287,7 @@ void PlayBack::showSettings() {
     _settings.exec();
     _player->setTickInterval(_settings.getUpdateRate());
     _player->setupRecording(_settings.getRecordFilename(), _settings.getRecordFileType());
+    _player->setRelativeSpeed( _settings.getScale() );
 }
 
 

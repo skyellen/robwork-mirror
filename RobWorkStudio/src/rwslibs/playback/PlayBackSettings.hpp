@@ -22,20 +22,25 @@ public:
     QString getRecordFilename();
 
     QString getRecordFileType();
+
+    double getScale(){ return _theScale;}
+
 protected:
     void showEvent(QShowEvent* event);
 
 private slots:
     void browse();
     void ok();
+    void scale();
     void cancel();
 
 private:
-    double _updateRate;
+    double _updateRate, _theScale;
     QString _recordFilename;
     QString _recordType;
 
     QDoubleSpinBox* _spnUpdateRate;
+    QDoubleSpinBox* _spnScale;
     QLineEdit* _edtFilename;
     QComboBox* _cmbType;
 };

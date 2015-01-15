@@ -24,7 +24,7 @@ namespace {
 }
 
 PlayBackSettings::PlayBackSettings():
-    QDialog(NULL)
+    QDialog(NULL),_theScale(1.0)
 {
     setWindowModality(Qt::WindowModal);
 
@@ -71,6 +71,26 @@ PlayBackSettings::PlayBackSettings():
     }
 
     {
+        QGroupBox* grpScale = new QGroupBox(tr("&Scale"));
+        pLayout->addWidget(grpScale);
+        QHBoxLayout *hbox = new QHBoxLayout();
+
+        hbox->addWidget(new QLabel("To:"));
+
+        _spnScale = new QDoubleSpinBox();
+        _spnScale->setRange(0.001, 1000000);
+        _spnScale->setValue(1);
+        _spnScale->setSingleStep(1);
+        hbox->addWidget(_spnScale);
+        grpScale->setLayout(hbox);
+        QPushButton* btnScale = new QPushButton(tr("Scale"));
+        hbox->addWidget(btnScale);
+        connect(btnScale, SIGNAL(clicked()), this, SLOT(scale()));
+
+
+    }
+
+    {
         QWidget* base = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(base);
         base->setLayout(layout);
@@ -103,6 +123,12 @@ void PlayBackSettings::browse() {
         return;
     _edtFilename->setText(result);
 }
+
+void PlayBackSettings::scale() {
+    _theScale = _spnScale->value();
+    done(0);
+}
+
 
 void PlayBackSettings::ok() {
     _updateRate = _spnUpdateRate->value();
