@@ -179,9 +179,7 @@ public:
 
 /********************************************
  * ROBWORK CLASS
- ********************************************/
- namespace rw {
- 
+ ********************************************/ 
  class RobWork {
  public:
 	RobWork();
@@ -193,8 +191,6 @@ public:
  };
  
  %template (RobWorkPtr) rw::common::Ptr<RobWork>;
- 
- }
 
 /********************************************
  * GEOMETRY
