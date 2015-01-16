@@ -556,7 +556,7 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(obj->getGeometry(state.rwstate).size()!=0){
+        	if(obj->getGeometry().size()!=0){
         	    if( tree.get_optional<string>("COG") ){
         	        // if COG specified then use it and calculate inertia
 
@@ -564,7 +564,7 @@ namespace
         	        Transform3D<> ref(info.masscenter);
         	        info.inertia = GeometryUtil::estimateInertia(info.mass, geoms, mframe,state.rwstate, ref);
         	    } else {
-        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(state.rwstate), mframe,state.rwstate);
+        	        boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), mframe,state.rwstate);
         	    }
         	} else {
         		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
@@ -737,15 +737,15 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-        	if(obj->getGeometry(state.rwstate).size()!=0){
+        	if(obj->getGeometry().size()!=0){
         		if( tree.get_optional<string>("COG") ){
         			// if COG specified then use it and calculate inertia
 
         			info.masscenter = readVector3D( tree.get_child("COG") );
         			Transform3D<> ref(info.masscenter);
-        			info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(state.rwstate), obj->getBase(),state.rwstate, ref);
+        			info.inertia = GeometryUtil::estimateInertia(info.mass, obj->getGeometry(), obj->getBase(),state.rwstate, ref);
         		} else {
-        			boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(state.rwstate), obj->getBase(),state.rwstate);
+        			boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, obj->getGeometry(), obj->getBase(),state.rwstate);
         		}
         	} else {
         		RW_THROW("No geometry present to generate Inertia from Object: \"" << obj->getName() << "\"");
@@ -802,7 +802,7 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-            if(obj->getGeometry(state.rwstate).size()!=0){
+            if(obj->getGeometry().size()!=0){
         		if( tree.get_optional<string>("COG") ){
         			// if COG specified then use it and calculate inertia
 
