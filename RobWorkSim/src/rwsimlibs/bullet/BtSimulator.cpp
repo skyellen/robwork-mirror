@@ -1,14 +1,12 @@
-#include "BtSimulator.hpp"
+// changles to BtSimulator class made by simat (jan 2015) is fitted to bullet-2.82
 
-///btBulletDynamicsCommon.h is the main Bullet include file, contains most common include files.
-#include <btBulletDynamicsCommon.h>
-// include gimpact stuff
-#include <BulletCollision/Gimpact/btGImpactShape.h>
-#include <BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
-//#include <GIMPACTUtils/btGImpactConvexDecompositionShape.h>
+#include "BtSimulator.hpp"
+#include "BtDebugRender.hpp"
+
+#include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
 
 #include <rw/models/JointDevice.hpp>
-#include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
@@ -16,7 +14,6 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rw/loaders/GeometryFactory.hpp>
 
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
@@ -24,37 +21,41 @@
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
-#include <rwsim/dynamics/DynamicUtil.hpp>
+
+#include <rwsim/contacts/ContactDetector.hpp>
 
 #include <boost/foreach.hpp>
 
-using namespace rwsim::simulator;
-using namespace rwsim::dynamics;
-using namespace rwlibs::simulation;
-//using namespace rwsim::sensor;
-
-
 using namespace rw::kinematics;
 using namespace rw::geometry;
-using namespace rw::models;
 using namespace rw::math;
+using namespace rw::models;
+
+using namespace rwsim::contacts;
+using namespace rwsim::dynamics;
+using namespace rwsim::drawable;
+using namespace rwsim::simulator;
+using namespace rwlibs::simulation;
 
 // define the maximum number of objects
 #define MAX_PROXIES (1024)
-//#define COL_MARGIN 0.04
+#define COL_MARGIN 0.001
+
+// TODO: simat - fix this terrible hack to be able to have actual friction- and restitution-values for object specific collisions
+#define commonFriction 1.05;
+#define commonRestitution 0.01;
 
 namespace {
 
-
-	btVector3 makeBtVector(const rw::math::Vector3D<>& v3d){
+	btVector3 makeBtVector(const Vector3D<>& v3d){
 		return btVector3(v3d(0),v3d(1),v3d(2));
 	}
 
-	rw::math::Vector3D<> toVector3D(const btVector3& v){
+	Vector3D<> toVector3D(const btVector3& v){
         return Vector3D<>(v[0],v[1],v[2]);
     }
 
-	btTransform makeBtTransform(const rw::math::Transform3D<> &t3d){
+	btTransform makeBtTransform(const Transform3D<> &t3d){
 		btTransform btt3d;
 		Quaternion<> quat(t3d.R());
 
@@ -66,32 +67,16 @@ namespace {
 	    return btt3d;
 	}
 
-	typedef std::pair<CollisionModelInfo,Transform3D<> > ColInfoPair;
-
-	btCollisionShape* createColShape(ColInfoPair &colInfo, rwsim::simulator::BtSimulator::ColCache& colCache, double margin, bool cacheEnabled){
-	    std::string geofile = colInfo.first.getId();
-	    Transform3D<> colT3d = colInfo.first.getTransform();
-	    colInfo.second = colInfo.second*colT3d;
-
-	    // if model lie in cache then we are finished
-	    if (cacheEnabled && colCache.has(geofile) ) {
-	        //std::cout << "BT CACHE HIT" << std::endl;
-	        return colCache.get(geofile).get();
-	    }
-
-	    Geometry::Ptr geom = GeometryFactory::loadCollisionGeometry(colInfo.first);
-
-	    TriMesh* mesh = dynamic_cast<TriMesh*>(geom->getGeometryData().get());
+	btCollisionShape* createColShape(Geometry::Ptr geometry, State state, double margin){
+	    TriMesh* mesh = dynamic_cast<TriMesh*>(geometry->getGeometryData().get());
 	    if( mesh==NULL ){
 	        return NULL;
 	    }
 
 	    btTriangleMesh* trimesh = new btTriangleMesh();
 
-	    Transform3D<> rw_pTf = colInfo.second;//colT3d;
-	    //if(frame!=parent){
-	    //    rw_pTf = Kinematics::FrameTframe(parent, frame,state)*colT3d;
-	    //}
+	    Transform3D<> rw_pTf = geometry->getTransform();
+
 	    btTransform pTf = makeBtTransform( rw_pTf );
 
 	    // TODO: remember to transform any geometry reference to root nodes reference
@@ -112,174 +97,24 @@ namespace {
 	        return NULL;
 	    }
 	    // create the collision shape from the trimesh data
-	    //bool useQuantizedBvhTree = true;
-	    //btCollisionShape* colShape  = new btBvhTriangleMeshShape(trimesh,useQuantizedBvhTree);
 	    btGImpactMeshShape *colShape = new btGImpactMeshShape(trimesh);
-
-	    //btGImpactConvexDecompositionShape *colShape  = new
-	    //    btGImpactConvexDecompositionShape(
-	    //           trimesh, btVector3(1.f,1.f,1.f), btScalar(margin) );
-
 	    colShape->setMargin(margin);
 
 	    colShape->postUpdate();
 	    colShape->updateBound();// Call this method once before doing collisions
 
-	    if(cacheEnabled) colCache.add(geofile,colShape);
-	    //colShapes.push_back(colShape);
 	    return colShape;
 	}
 
 
-	btCollisionShape* getColShapes(
-        const std::vector<Frame*>& frames,
-        rw::kinematics::Frame* parent,
-        BtSimulator::ColCache& colCache,
-        const rw::kinematics::State &state,
+	btCollisionShape* getColShape( Geometry::Ptr geometry,
+        const State &state,
         double margin)
     {
-	    bool cacheEnabled = true;
-
-	    std::vector< ColInfoPair > colModelInfos;
-	    BOOST_FOREACH(const Frame* frame, frames){
-            // check if frame has collision descriptor
-            if (frame==NULL || CollisionModelInfo::get(frame).size()==0 )
-                continue;
-            Transform3D<> t3d = Kinematics::frameTframe(parent, frame,state);
-            BOOST_FOREACH(CollisionModelInfo info, CollisionModelInfo::get(frame)){
-                colModelInfos.push_back( ColInfoPair(info,t3d) );
-            }
-	    }
 	    btTransform btTrans;
 	    btTrans.setIdentity();
-	    if( colModelInfos.size()==1 ){
-	        return createColShape( colModelInfos[0] , colCache, margin , cacheEnabled);
-	    } else if(colModelInfos.size()>1) {
-	        // create compound shape
-	        btCompoundShape *cshape = new btCompoundShape();
-	        BOOST_FOREACH(ColInfoPair pair, colModelInfos){
-	            btCollisionShape *shape = createColShape( pair , colCache,margin , cacheEnabled );
-	            //cshape->addChildShape(makeBtTransform(pair.second), shape);
-	            cshape->addChildShape(btTrans, shape);
-	        }
-	        return cshape;
-	    }
-	    return NULL;
-	    /*
-		std::vector<btCollisionShape*> colShapes;
 
-		std::vector<btTransform> transform;
-
-		// add triangles from each node
-		BOOST_FOREACH(Frame* frame, frames){
-			if (frame==NULL)
-				continue;
-			// check if frame has collision descriptor
-			if ( !Accessor::collisionModelInfo().has(*frame) )
-				continue;
-			// get the geo descriptor
-			std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
-			Transform3D<> colT3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
-			// if model lie in cache then we are finished
-			if (cacheEnabled && colCache.has(geofile) ) {
-                colShapes.push_back(colCache.get(geofile).get() );
-                std::cout << "BT CACHE HIT" << std::endl;
-                continue;
-            }
-
-			std::vector<Face<float> > result;
-			FaceArrayFactory::loadFaceArrayFile(geofile, result);
-			btTriangleMesh* trimesh = new btTriangleMesh();
-
-			Transform3D<> rw_pTf = colT3d;
-			if(frame!=parent){
-			    rw_pTf = Kinematics::FrameTframe(parent, frame,state)*colT3d;
-			}
-            btTransform pTf = makeBtTransform( rw_pTf );
-
-			// TODO: remember to transform any geometry reference to root nodes reference
-			for (size_t i=0; i<result.size(); i++)
-			{
-				Face<float> &f = result[i];
-				btVector3 v1(f._vertex1[0], f._vertex1[1], f._vertex1[2]);
-				btVector3 v2(f._vertex2[0], f._vertex2[1], f._vertex2[2]);
-				btVector3 v3(f._vertex3[0], f._vertex3[1], f._vertex3[2]);
-
-				v1 = pTf * v1;
-				v2 = pTf * v2;
-				v3 = pTf * v3;
-
-				trimesh->addTriangle(v1, v2, v3);
-			}
-			if (trimesh->getNumTriangles() == 0) {
-                delete trimesh;
-                continue;
-            }
-			// create the collision shape from the trimesh data
-	        //bool useQuantizedBvhTree = true;
-	        //btCollisionShape* colShape  = new btBvhTriangleMeshShape(trimesh,useQuantizedBvhTree);
-	        btGImpactMeshShape *colShape = new btGImpactMeshShape(trimesh);
-
-			//btGImpactConvexDecompositionShape *colShape  = new
-	        //    btGImpactConvexDecompositionShape(
-	        //           trimesh, btVector3(1.f,1.f,1.f), btScalar(margin) );
-
-			colShape->setMargin(margin);
-
-	        colShape->postUpdate();
-	        colShape->updateBound();// Call this method once before doing collisions
-
-	        if(cacheEnabled) colCache.add(geofile,colShape);
-	        colShapes.push_back(colShape);
-		}
-		return colShapes;
-		*/
-	}
-
-	btTriangleMesh* createTriMesh(
-			const std::vector<Frame*>& frames,
-			rw::kinematics::Frame* parent,
-			rw::kinematics::State &state){
-	   btTriangleMesh* trimesh = new btTriangleMesh();
-
-	   // add triangles from each node
-	   BOOST_FOREACH(Frame* frame, frames){
-		   if( frame==NULL )
-			   continue;
-		   // check if frame has collision descriptor
-		   if( CollisionModelInfo::get(frame).size()==0 )
-			   continue;
-		   // get the geo descriptor
-		   std::string geofile = CollisionModelInfo::get(frame)[0].getId();
-		   Transform3D<> colT3d = CollisionModelInfo::get(frame)[0].getTransform();
-
-		   PlainTriMeshN1F::Ptr mesh = STLFile::load(geofile);
-
-		   // TODO: remember to transform any geometry reference to root nodes reference
-           Transform3D<> rw_pTf = colT3d;
-            if(frame!=parent){
-                rw_pTf = Kinematics::frameTframe(parent, frame,state)*colT3d;
-            }
-            btTransform pTf = makeBtTransform( rw_pTf );
-
-		   for (size_t i=0;i<mesh->getSize();i++){
-		       TriangleN1<float> &tri = (*mesh)[i];
-	            btVector3 v1(tri[0][0], tri[0][1], tri[0][2]);
-	            btVector3 v2(tri[1][0], tri[1][1], tri[1][2]);
-	            btVector3 v3(tri[2][0], tri[2][1], tri[2][2]);
-
-			   v1 = pTf * v1;
-			   v2 = pTf * v2;
-			   v3 = pTf * v3;
-			   trimesh->addTriangle(v1,v2,v3);
-		   }
-	   }
-	   if( trimesh->getNumTriangles() == 0 ){
-		   delete trimesh;
-		   return NULL;
-	   }
-	   std::cout << "TriMesh size: " << trimesh->getNumTriangles()<< std::endl;
-	   return trimesh;
+	    return createColShape( geometry , state, margin);
 	}
 
 	void addKinematicDevice(){
@@ -294,7 +129,7 @@ typedef std::pair<Frame*,btRigidBody*> FrameBodyPair;
 class btPositionDevice: public BtSimulator::btDevice {
 
 public:
-    btPositionDevice(KinematicDevice* dev,
+    btPositionDevice(KinematicDevice::Ptr dev,
                      std::vector<FrameBodyPair > frameToBtBody):
         _kdev(dev),
         _frameToBtBody(frameToBtBody)
@@ -303,7 +138,7 @@ public:
 
     virtual ~btPositionDevice(){};
 
-    void update(double dt, rw::kinematics::State& state){
+    void update(double dt, State& state){
         _kdev->getModel().setQ( _kdev->getQ(state), state);
         // for each joint update the position of the corresponding btRigidBody
 
@@ -313,19 +148,19 @@ public:
         }
     }
 
-    void postUpdate(rw::kinematics::State& state){
+    void postUpdate(State& state){
 
     }
 
 private:
-    KinematicDevice *_kdev;
+    KinematicDevice::Ptr _kdev;
     std::vector<std::pair<Frame*,btRigidBody*> > _frameToBtBody;
 };
 
 class btVelocityDevice: public BtSimulator::btDevice {
 public:
 
-    btVelocityDevice(RigidDevice *rdev,std::vector<btTypedConstraint*> constraints):
+    btVelocityDevice(RigidDevice::Ptr rdev,std::vector<btTypedConstraint*> constraints):
         _rdev(rdev),
         _constraints(constraints)
     {
@@ -334,10 +169,9 @@ public:
 
     virtual ~btVelocityDevice(){};
 
-    void update(double dt, rw::kinematics::State& state){
-        rw::math::Q velQ = _rdev->getVelocity(state);
-        std::cout << "size of velQ: " << velQ.size() << std::endl;
-        for(int i = 0; i<_constraints.size(); i++){
+    void update(double dt, State& state){
+        Q velQ = _rdev->getVelocity(state);
+        for(unsigned int i = 0; i<_constraints.size(); i++){
             double vel = velQ[i];
             if(dynamic_cast<btHingeConstraint*>(_constraints[i])){
                 btHingeConstraint* hinge = dynamic_cast<btHingeConstraint*>(_constraints[i]);
@@ -350,61 +184,90 @@ public:
         }
     }
 
-    void postUpdate(rw::kinematics::State& state){
-        rw::math::Q q = _rdev->getModel().getQ(state);
-        for(int i = 0; i<_constraints.size(); i++){
+    void postUpdate(State& state){
+        Q q = _rdev->getModel().getQ(state);
+        for(unsigned int i = 0; i<_constraints.size(); i++){
             if(dynamic_cast<btHingeConstraint*>(_constraints[i])){
                 btHingeConstraint* hinge = dynamic_cast<btHingeConstraint*>(_constraints[i]);
                 q[i] = hinge->getHingeAngle();
             } else if( dynamic_cast<btSliderConstraint*>(_constraints[i]) ){
-                btSliderConstraint* slider = dynamic_cast<btSliderConstraint*>(_constraints[i]);
-               // q[i]
+//                btSliderConstraint* slider = dynamic_cast<btSliderConstraint*>(_constraints[i]); // simat - not used so commented to suppress warning
             }
         }
         _rdev->getModel().setQ(q, state);
     }
 
 private:
-    RigidDevice *_rdev;
+    RigidDevice::Ptr _rdev;
     std::vector<btTypedConstraint*> _constraints;
 
 };
 
-BtSimulator::BtSimulator(dynamics::DynamicWorkCell *dwc):
-	_dwc(dwc),_time(0.0),_dt(1.0/120.0)
+BtSimulator::BtSimulator():
+	m_dynamicsWorld(NULL),
+	m_overlappingPairCache(NULL),
+	m_dispatcher(NULL),
+	m_solver(NULL),
+	m_collisionConfiguration(NULL),
+	_dwc(NULL),
+	_render( rw::common::ownedPtr(new BtDebugRender(this)) ),
+	_time(0.0),
+	_dt(0.001),
+	_initPhysicsHasBeenRun(false)
+{
+};
+
+
+BtSimulator::BtSimulator(DynamicWorkCell* dwc):
+	m_dynamicsWorld(NULL),
+	m_overlappingPairCache(NULL),
+	m_dispatcher(NULL),
+	m_solver(NULL),
+	m_collisionConfiguration(NULL),
+	_dwc(dwc),
+	_render( rw::common::ownedPtr(new BtDebugRender(this)) ),
+	_time(0.0),
+	_dt(0.001),
+	_initPhysicsHasBeenRun(false)
 {
 }
 
-#define MAX_VEL 2
-#define MAX_FORCE 100
+SimulatorDebugRender::Ptr BtSimulator::createDebugRender(){
+	return NULL;
+	//    return _render;
+}
 
-void BtSimulator::step(double dt, rw::kinematics::State& state){
+void BtSimulator::step(double dt, State& state){
 
 	// update KINEMATICS OBJECT frames, links are moddeled this way
 	// these need to be set before we make the update
-    /*std::cout << "1";
-	for(size_t i=0; i<_btLinks.size(); i++){
-		Transform3D<> t3d = Kinematics::WorldTframe( &(_rwLinks[i]->getBodyFrame()), state);
-		_btLinks[i]->getMotionState()->setWorldTransform( makeBtTransform(t3d) );
-	}
-	*/
+
     //std::cout << "Controller" << std::endl;
-    //BOOST_FOREACH(Controller *controller, _dwc->getControllers() ){
-    //    controller->update(dt, state);
-    //}
+    BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
+        controller->update(dt, state);
+
+    }
     //std::cout << "Dev" << std::endl;
     BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->update(dt,state);
     }
     //std::cout << "Step" << std::endl;
 	// update all device force/velocity input
+    // then for kinematic bodies
+
+	for(size_t i=0; i<_btLinks.size(); i++){
+		Transform3D<> t3d = Kinematics::worldTframe( _rwLinks[i]->getBodyFrame(), state);
+		Vector3D<> posDisplacement(_rwLinks[i]->getLinVel(state)[0]*dt,_rwLinks[i]->getLinVel(state)[1]*dt,_rwLinks[i]->getLinVel(state)[2]*dt);
+		Rotation3D<> rotDisplacement( RPY<>( _rwLinks[i]->getAngVel(state)[0]*dt, _rwLinks[i]->getAngVel(state)[1]*dt, _rwLinks[i]->getAngVel(state)[2]*dt).toRotation3D());
+		t3d = t3d * Transform3D<> (posDisplacement,rotDisplacement);
+		_btLinks[i]->getMotionState()->setWorldTransform( makeBtTransform(t3d) );
+	}
 
 	///step the simulation
 	if (m_dynamicsWorld)
 	{
-		//double dt = 0.005;
-		m_dynamicsWorld->stepSimulation(dt,200,1.0/480.0);
-	    //m_dynamicsWorld->stepSimulation(_dt);
+//		m_dynamicsWorld->stepSimulation(dt,100,1.0/500.0);
+	    m_dynamicsWorld->stepSimulation(dt,0);
 		_time += dt;
 	}
 
@@ -413,11 +276,11 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
         dev->postUpdate(state);
     }
 
-	// now copy all transforms into state
-	for(size_t i=0; i<_btBodies.size(); i++){
-		RigidBody *b = _rwBodies[i];
+	// update the kinematic bodies of robwork to match the motion handled by bullet
+	for(size_t i=0; i<_btLinks.size(); i++){
+		KinematicBody::Ptr b = _rwLinks[i];
 		MovableFrame &mframe = *(b->getMovableFrame());
-		btRigidBody *btb = _btBodies[i];
+		btRigidBody *btb = _btLinks[i];
 		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
 		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
 
@@ -432,36 +295,51 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
         b->setAngVel( ang , state);
         b->setLinVel( lin , state);
 	}
+
+	// now copy all transforms into state
+	for(size_t i=0; i<_btBodies.size(); i++){
+		RigidBody::Ptr b = _rwBodies[i];
+		MovableFrame &mframe = *(b->getMovableFrame());
+		btRigidBody *btb = _btBodies[i];
+		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
+		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
+
+		Vector3D<> ang = toVector3D( btb->getAngularVelocity() );
+        Vector3D<> lin = toVector3D( btb->getLinearVelocity() );
+		Vector3D<> pos(v[0],v[1],v[2]);
+		Quaternion<> quat(q[0],q[1],q[2],q[3]);
+		Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
+		mframe.setTransform( inverse(wTp) * Transform3D<>(pos,quat), state );
+
+
+        b->setAngVel( ang , state);
+        b->setLinVel( lin , state);
+	}
 }
 
-btRigidBody* BtSimulator::createRigidBody(Frame* bframe,
+btRigidBody* BtSimulator::createRigidBody(Geometry::Ptr geometry,
                                           double mass,
-                                          const rw::kinematics::State& state,
+                                          const State& state,
                                           double margin){
-    std::cout << "RigidBody: " << bframe->getName() << std::endl;
-    // create a triangle mesh for all staticly connected nodes
-    // TODO: check if colinfo for rigid body frame
-    std::vector<Frame*> frames = DynamicUtil::getAnchoredFrames( *bframe, state);
-
     btCollisionShape* colShape =
-        getColShapes(frames, bframe, _colCache, state, margin);
+        getColShape(geometry, state, margin);
     if( colShape==NULL)
         return NULL;
-    // if the colShape allready is in the m_collisionShapes then don't add it
+    // if the colShape already is in the m_collisionShapes then don't add it
     bool isInList = false;
     for(int m=0;m<m_collisionShapes.size();m++){
         if( m_collisionShapes[m]==colShape )
             isInList = true;
     }
     if( !isInList ){
-        std::cout << "Col shape added!!!" << std::endl;
+//        std::cout << "Col shape added!!!" << std::endl;
         m_collisionShapes.push_back(colShape);
     }
 
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mass != 0.f);
 
-    Transform3D<> t3d = Kinematics::worldTframe(bframe, state);
+    Transform3D<> t3d = geometry->getFrame()->getTransform(state);
     btTransform startTransform = makeBtTransform(t3d);
 
     btVector3 localInertia(1,1,1);
@@ -472,8 +350,12 @@ btRigidBody* BtSimulator::createRigidBody(Frame* bframe,
 
     btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
-    rbInfo.m_additionalDamping = true;
-    rbInfo.m_additionalDampingFactor = 1.5;
+// TODO: should damping be enabled at what should the value be?
+//    rbInfo.m_additionalDamping = true;
+//    rbInfo.m_additionalDampingFactor = 1.5;
+
+// TODO: simat - fix friction
+// bullets set "friction" on objects and as default when bodies collidied the 2 m_friction values are multiplied together. This is not correct and is currently overridden in the CustomMaterialCombinerCallback()
     rbInfo.m_friction = 0.5;
     rbInfo.m_restitution = 0.01;
 
@@ -482,12 +364,9 @@ btRigidBody* BtSimulator::createRigidBody(Frame* bframe,
 
     // add rigid body to to map
 
-    _rwBtBodyToFrame[btbody] = bframe;
+    _rwBtBodyToFrame[btbody] = geometry->getFrame();
     if( isDynamic ){
-        _rwFrameToBtBody[bframe] = btbody;
-        BOOST_FOREACH(Frame* frame, frames){
-            _rwFrameToBtBody[frame] = btbody;
-        }
+        _rwFrameToBtBody[geometry->getFrame()] = btbody;
     }
     return btbody;
 }
@@ -498,25 +377,44 @@ void MyNearCallback(btBroadphasePair& collisionPair,
                     btCollisionDispatcher& dispatcher,
                     const btDispatcherInfo& dispatchInfo)
 {
-
     // Do your collision logic here
     // Only dispatch the bullet collision information if you want the physics to continue
     dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);
 }
 
-bool BtSimulator::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
+
+// TODO: simat - fix this bad friction fix to allow for multiobject individual friction and restitution
+// current problem is that from this function there is no access to object material on the btCollisionObjectWrapper passed to this function
+static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisionObjectWrapper* colObj0Wrap,int partId0,int index0,const btCollisionObjectWrapper* colObj1Wrap,int partId1,int index1){
+    // Apply material properties
+	cp.m_combinedFriction = commonFriction;//colObj0Wrap->getCollisionObject()->getFriction();
+	cp.m_combinedRestitution = commonRestitution;//colObj0Wrap->getCollisionObject()->getRestitution();
+
+    //FROM BULLET documentation: this return value is currently ignored, but to be on the safe side: return false if you don't calculate friction
+    return true;
+}
+
+// simat - needed to register the CustomMaterialCombinerCallback to bullet
+extern ContactAddedCallback		gContactAddedCallback;
+
+bool BtSimulator::setContactDetector(ContactDetector::Ptr detector) {
 	return false;
 }
 
-void BtSimulator::initPhysics(rw::kinematics::State& state)
+void BtSimulator::initPhysics(State& state)
 {
-	//setCameraDistance(btScalar(50.));
+	// simat - needed to register the CustomMaterialCombinerCallback to bullet
+    gContactAddedCallback = CustomMaterialCombinerCallback;
+
+
     int nrFixedBody(0),nrRigidBody(0),nrLinkBody(0);
+
 	///collision configuration contains default setup for memory, collision setup
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 
-	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	///use the default collision dispatcher. For parallel processing you can use a different dispatcher (see Extras/BulletMultiThreaded)
 	m_dispatcher = new	btCollisionDispatcher(m_collisionConfiguration);
+
 	m_dispatcher->setNearCallback(MyNearCallback);
 
 	btGImpactCollisionAlgorithm::registerAlgorithm(m_dispatcher);
@@ -528,44 +426,40 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	m_overlappingPairCache = new btAxisSweep3(worldAabbMin,worldAabbMax,MAX_PROXIES);
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	btSequentialImpulseConstraintSolver* sol =
-	    new btSequentialImpulseConstraintSolver();
+	m_solver = new btSequentialImpulseConstraintSolver();
 
-	//btOdeQuickstepConstraintSolver* sol = new btOdeQuickstepConstraintSolver();
-	m_solver = sol;
+	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_overlappingPairCache,m_solver,m_collisionConfiguration);
 
-	btDiscreteDynamicsWorld *discreteWorld= new btDiscreteDynamicsWorld(m_dispatcher,m_overlappingPairCache,m_solver,m_collisionConfiguration);
-	m_dynamicsWorld = discreteWorld;
-	discreteWorld->getSolverInfo().m_splitImpulse = true;
-	//discreteWorld->getSolverInfo().m_numIterations = 20;
-	//discreteWorld->getSolverInfo().m_splitImpulsePenetrationThreshold = -0.002;
+	m_dynamicsWorld->getSolverInfo().m_splitImpulse = true;
 
-	//discreteWorld->getSolverInfo().m_erp = 0.4f;
-	//discreteWorld->getSolverInfo().m_erp2 = 0.3f;
 	m_dynamicsWorld->setGravity(btVector3(0,0,-10));
 
 	std::vector<RigidBody::Ptr> rbodies = _dwc->findBodies<RigidBody>();
+
 	for(size_t i=0; i<rbodies.size(); i++){
-		std::string fname = rbodies[i]->getBodyFrame().getName();
-		std::cout << "Body: " << fname << std::endl;
-		std::cout << "RigidBody: " << rbodies[i]->getBodyFrame().getName() << std::endl;
+		std::string fname = rbodies[i]->getBodyFrame()->getName();
+//		std::cout << "Body: " << fname << std::endl;
+//		std::cout << "RigidBody: " << rbodies[i]->getBodyFrame()->getName() << std::endl;
 		// create a triangle mesh for all staticly connected nodes
-		btRigidBody *btbody = createRigidBody(rbodies[i], state, 0.01);
+		btRigidBody *btbody = createRigidBody(rbodies[i]->getGeometry()[0],rbodies[i]->getMass(), state, COL_MARGIN);
+		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);// flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
+
 		_btBodies.push_back(btbody);
-		_rwBodies.push_back(rbody);
+		_rwBodies.push_back(rbodies[i]);
 		nrRigidBody++;
 	}
 
 	std::vector<FixedBody::Ptr> fbodies = _dwc->findBodies<FixedBody>();
 	for(size_t i=0; i<fbodies.size(); i++){
-		std::string fname = fbodies[i]->getBodyFrame().getName();
-		std::cout << "Body: " << fname << std::endl;
+		std::string fname = fbodies[i]->getBodyFrame()->getName();
+//		std::cout << "Body: " << fname << std::endl;
 
-		std::cout << "FixedBody: " << fbodies[i]->getBodyFrame().getName() << std::endl;
+//		std::cout << "FixedBody: " << fbodies[i]->getBodyFrame()->getName() << std::endl;
 
-		btRigidBody *btbody = createRigidBody(fbodies[i],0.f, state,0.01);
+		btRigidBody *btbody = createRigidBody(fbodies[i]->getGeometry()[0],0.f,state,COL_MARGIN);
 		btbody->setCollisionFlags( btbody->getCollisionFlags() |
-								   btCollisionObject::CF_STATIC_OBJECT);
+								   btCollisionObject::CF_STATIC_OBJECT );
+		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK); // flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
 
 		nrFixedBody++;
 	}
@@ -573,31 +467,31 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	std::vector<KinematicBody::Ptr> kbodies = _dwc->findBodies<KinematicBody>();
 	for(size_t i=0; i<kbodies.size(); i++){
 			// use kinematic objects for visualising
-			std::cout << "KinematicBody: " << kbodies[i]->getBodyFrame().getName() << std::endl;
+//			std::cout << "KinematicBody: " << kbodies[i]->getBodyFrame()->getName() << std::endl;
 
-            btRigidBody *btbody = createRigidBody(kbodies[i], 0.f, state, 0.01);
+            btRigidBody *btbody = createRigidBody(kbodies[i]->getGeometry()[0], 0.f, state, COL_MARGIN);
             btbody->setCollisionFlags( btbody->getCollisionFlags() |
                                        btCollisionObject::CF_KINEMATIC_OBJECT );
             btbody->setActivationState(DISABLE_DEACTIVATION);
+    		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);// flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
 
+            _btLinks.push_back(btbody);
+            _rwLinks.push_back(kbodies[i]);
 			nrLinkBody++;
-		}
 	}
-
-
 
 	// ok, now add constraints
 	BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices() ){
-	   if( device.cast<RigidDevice>()!=NULL ){
-	        std::cout << "RigidDevice...." << std::endl;
-	        // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
-	        RigidDevice::Ptr fDev = device.cast<RigidDevice>()
+		if( device.cast<RigidDevice>()!=NULL ){
+			std::cout << "RigidDevice...." << std::endl;
+			// add kinematic constraints from base to joint1, joint1 to joint2 and so forth
+			RigidDevice::Ptr fDev = device.cast<RigidDevice>();
 	        JointDevice *jdev = dynamic_cast<JointDevice*>( &(fDev->getModel()) );
-	        std::vector<btTypedConstraint*> constraints;
-	        std::cout << "Nr of Joints " << jdev->getDOF()<< std::endl;
+			std::vector<btTypedConstraint*> constraints;
+			std::cout << "Nr of Joints " << jdev->getDOF()<< std::endl;
 
-	        // handle base of robot specificly
-	        /*Frame *base = jdev->getBase();
+			// handle base of robot specificly
+			/*Frame *base = jdev->getBase();
 	        if( _rwFrameToBtBody[base]==NULL ){
 	            // base is not staticly connected to some
 	            std::cout << "Base is not connected!!" << std::endl;
@@ -609,118 +503,118 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	        }
 
 	        btRigidBody *btBase = _rwFrameToBtBody[base];
-	        */
+			 */
 
-	        for(size_t i=0;i<jdev->getDOF();i++){
+			for(size_t i=0;i<jdev->getDOF();i++){
 
-	            Joint *joint = jdev->getJoints()[i];
-	            Frame *parent = joint->getParent(state);
+				Joint *joint = jdev->getJoints()[i];
+				Body::Ptr link = fDev->getLinks()[i];
+				Frame *parent = joint->getParent(state);
 
-	            std::cout << parent->getName() << "-->" << joint->getName() << std::endl;
+				std::cout << parent->getName() << "-->" << joint->getName() << std::endl;
 
-	            btRigidBody *btParent = _rwFrameToBtBody[parent];
-	            const Frame* parentFrame = NULL;
-                if(btParent==NULL){
-                    RW_WARN("btParent is NULL, " << joint->getName());
-                } else {
-                    parentFrame = _rwBtBodyToFrame[btParent];
-                }
+				btRigidBody *btParent = _rwFrameToBtBody[parent];
+				const Frame* parentFrame = NULL;
+				if(btParent==NULL){
+					RW_WARN("btParent is NULL, " << joint->getName());
+				} else {
+					parentFrame = _rwBtBodyToFrame[btParent];
+				}
 
-	            btRigidBody *btChild = createRigidBody(joint, 0.2 , state, 0.001 ); //_rwFrameToBtBody[joint];
-	            if(btChild==NULL){
-	                RW_WARN("btChild is NULL, " << joint->getName());
-	                RW_ASSERT(0);
-	            }
+				btRigidBody *btChild = createRigidBody(link->getGeometry()[0], 0.2 , state, 0.001 ); //_rwFrameToBtBody[joint];
+				if(btChild==NULL){
+					RW_WARN("btChild is NULL, " << joint->getName());
+					RW_ASSERT(0);
+				}
 
 
 
-                std::cout << parent->getName() << " " << joint->getName() << std::endl;
-	            Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+				std::cout << parent->getName() << " " << joint->getName() << std::endl;
+				Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
 
-	            Transform3D<> wTparent;
-	            if(parentFrame!=NULL)
-	                wTparent = Kinematics::worldTframe(parentFrame,state);
+				Transform3D<> wTparent;
+				if(parentFrame!=NULL)
+					wTparent = Kinematics::worldTframe(parentFrame,state);
 
-	            btTransform frameInA, frameInB;
-	            frameInA.setIdentity(); // = makeBtTransform( childT3d );
-	            frameInB = makeBtTransform( inverse(wTparent) * wTchild );
+				btTransform frameInA, frameInB;
+				frameInA.setIdentity(); // = makeBtTransform( childT3d );
+				frameInB = makeBtTransform( inverse(wTparent) * wTchild );
 
-	            btChild->setActivationState(DISABLE_DEACTIVATION);
-	            if(btParent!=NULL)
-	                btParent->setActivationState(DISABLE_DEACTIVATION);
+				btChild->setActivationState(DISABLE_DEACTIVATION);
+				if(btParent!=NULL)
+					btParent->setActivationState(DISABLE_DEACTIVATION);
 
-	            if(dynamic_cast<RevoluteJoint*>(joint)){
-	                std::cout << "Hinge constraint" << std::endl;
-	                double softness = 0.8;
-	                double bias = 0.5;
-	                double relaxation = 0.1;
-	                btHingeConstraint *hinge;
-	                if( btParent != NULL){
-	                    hinge = new btHingeConstraint(*btChild, *btParent, frameInA, frameInB);
-	                } else {
-	                    hinge = new btHingeConstraint(*btChild, frameInA);
-	                }
-	                hinge->setLimit( joint->getBounds().first[0], joint->getBounds().second[0]
-	                                 //,softness, bias, relaxation
-	                                 );
-	                hinge->setAngularOnly(false);
-	                hinge->enableAngularMotor(true, 0.0, 10);
-	                m_dynamicsWorld->addConstraint(hinge, true);
+				if(dynamic_cast<RevoluteJoint*>(joint)){
+					std::cout << "Hinge constraint" << std::endl;
+					btHingeConstraint *hinge;
+					if( btParent != NULL){
+						hinge = new btHingeConstraint(*btChild, *btParent, frameInA, frameInB);
+					} else {
+						hinge = new btHingeConstraint(*btChild, frameInA);
+					}
+					hinge->setLimit( joint->getBounds().first[0], joint->getBounds().second[0]
+																							//,softness, bias, relaxation
+					);
+					hinge->setAngularOnly(false);
+					hinge->enableAngularMotor(true, 0.0, 10);
+					m_dynamicsWorld->addConstraint(hinge, true);
 
-	                _jointToConstraintMap[joint] = hinge;
-	                constraints.push_back(hinge);
-	            } else if( dynamic_cast<PrismaticJoint*>(joint) ){
-	                std::cout << "Slider constraint" << std::endl;
-	                btSliderConstraint *slider = new btSliderConstraint(*btChild, *btParent, frameInA, frameInB, true);
-	                slider->setLowerLinLimit( joint->getBounds().first[0] );
-	                slider->setUpperLinLimit( joint->getBounds().second[0] );
-	                slider->setLowerAngLimit(-0.00001);
-	                slider->setUpperAngLimit( 0.00001);
+					_jointToConstraintMap[joint] = hinge;
+					constraints.push_back(hinge);
+				} else if( dynamic_cast<PrismaticJoint*>(joint) ){
+					std::cout << "Slider constraint" << std::endl;
+					btSliderConstraint *slider = new btSliderConstraint(*btChild, *btParent, frameInA, frameInB, true);
+					slider->setLowerLinLimit( joint->getBounds().first[0] );
+					slider->setUpperLinLimit( joint->getBounds().second[0] );
+					slider->setLowerAngLimit(-0.00001);
+					slider->setUpperAngLimit( 0.00001);
 
-	                slider->setPoweredLinMotor(true);
-	                slider->setMaxLinMotorForce(0.1);
-	                slider->setTargetLinMotorVelocity(0.0);
+					slider->setPoweredLinMotor(true);
+					slider->setMaxLinMotorForce(0.1);
+					slider->setTargetLinMotorVelocity(0.0);
 
-	                m_dynamicsWorld->addConstraint(slider, true);
-	                _jointToConstraintMap[joint] = slider;
-	                constraints.push_back(slider);
-	            //} else if(  ) {
+					m_dynamicsWorld->addConstraint(slider, true);
+					_jointToConstraintMap[joint] = slider;
+					constraints.push_back(slider);
+					//} else if(  ) {
 
-	            } else {
-	                RW_WARN("Joint type not supported!");
-	            }
-	        }
-	        _btDevices.push_back( new btVelocityDevice(fDev,constraints) );
+					} else {
+						RW_WARN("Joint type not supported!");
+					}
+			}
+			_btDevices.push_back( new btVelocityDevice(fDev,constraints) );
 
-	    } else  if( dynamic_cast<KinematicDevice*>( device ) ){
-	        std::cout << "KinematicDevice...." << std::endl;
-	        KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device );
-	        std::vector<FrameBodyPair> frameBodyList;
-	        BOOST_FOREACH(KinematicBody *body, kdev->getLinks() ){
-	            Frame *frame = &body->getBodyFrame();
-	            btRigidBody *btBody = _rwFrameToBtBody[frame];
+		} else  if(device.cast<KinematicDevice>() != NULL) {
+			std::cout << "KinematicDevice...." << std::endl;
+			const KinematicDevice::Ptr kdev = device.cast<KinematicDevice>();
+			std::vector<FrameBodyPair> frameBodyList;
+			BOOST_FOREACH(const Body::Ptr body, kdev->getLinks() ){
+				Frame* const frame = body->getBodyFrame();
+				btRigidBody *btBody = _rwFrameToBtBody[frame];
 
-	            frameBodyList.push_back( std::make_pair(frame, btBody ) );
-	        }
+				frameBodyList.push_back( std::make_pair(frame, btBody ) );
+			}
 
-	        _btDevices.push_back( new btPositionDevice(kdev, frameBodyList) );
-	    } else {
-	        RW_WARN("Controller not supported!");
-	    }
-	    _devices.push_back(device);
+			_btDevices.push_back( new btPositionDevice(kdev, frameBodyList) );
+		} else {
+			RW_WARN("Controller not supported!");
+		}
+		_devices.push_back(device);
 	}
 
 	resetScene(state);
 
-    std::cout << "BtSimulator: initializing physics" << std::endl
-              << " - Collision Margin: " << _dwc->getCollisionMargin() << std::endl
-              << " - Nr of fixed bodies: " << nrFixedBody << std::endl
-              << " - Nr of rigid bodies: " << nrRigidBody << std::endl
-              << " - Nr of controlled bodies: " << nrLinkBody << std::endl;
+	_initPhysicsHasBeenRun=true;
+
+//    std::cout << "BtSimulator: initializing physics" << std::endl
+//              << " - Collision Margin: " << _dwc->getCollisionMargin() << std::endl
+//              << " - Nr of fixed bodies: " << nrFixedBody << std::endl
+//              << " - Nr of rigid bodies: " << nrRigidBody << std::endl
+//              << " - Nr of controlled bodies: " << nrLinkBody << std::endl;
 
 }
 
-void BtSimulator::resetScene(rw::kinematics::State& state)
+void BtSimulator::resetScene(State& state)
 {
 	int numObjects = 0;
 	if (m_dynamicsWorld)
@@ -757,7 +651,7 @@ void BtSimulator::resetScene(rw::kinematics::State& state)
 
     // now set the new position of all bodies
     for(size_t i=0; i<_btBodies.size(); i++){
-        RigidBody *b = _rwBodies[i];
+        RigidBody::Ptr b = _rwBodies[i];
         MovableFrame &mframe = *(b->getMovableFrame());
         Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
         Transform3D<> t3d = wTp * mframe.getTransform( state );
@@ -779,161 +673,133 @@ void BtSimulator::resetScene(rw::kinematics::State& state)
 void BtSimulator::exitPhysics(){
 	//cleanup in the reverse order of creation/initialization
 	//remove the rigidbodies from the dynamics world and delete them
-	int i;
-   //removed/delete constraints
-    for (i=m_dynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
-    {
-        btTypedConstraint* constraint = m_dynamicsWorld->getConstraint(i);
-        m_dynamicsWorld->removeConstraint(constraint);
-        delete constraint;
-    }
-
-	for (i=m_dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--){
-		btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		if (body && body->getMotionState()){
-			delete body->getMotionState();
+	if(_initPhysicsHasBeenRun){
+		int i;
+	   //removed/delete constraints
+		for (i=m_dynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
+		{
+			btTypedConstraint* constraint = m_dynamicsWorld->getConstraint(i);
+			m_dynamicsWorld->removeConstraint(constraint);
+			delete constraint;
 		}
-		m_dynamicsWorld->removeCollisionObject( obj );
-		delete obj;
-	}
 
-	//delete collision shapes
-	for (int j=0;j<m_collisionShapes.size();j++){
-		btCollisionShape* shape = m_collisionShapes[j];
-		delete shape;
-	}
+		for (i=m_dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--){
+			btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
+			btRigidBody* body = btRigidBody::upcast(obj);
+			if (body && body->getMotionState()){
+				delete body->getMotionState();
+			}
+			m_dynamicsWorld->removeCollisionObject( obj );
+			delete obj;
+		}
 
-	//delete dynamics world
-	delete m_dynamicsWorld;
+		//delete collision shapes
+		for (int j=0;j<m_collisionShapes.size();j++){
+			btCollisionShape* shape = m_collisionShapes[j];
+			delete shape;
+		}
+		//delete dynamics world
+		delete m_dynamicsWorld;
+
 	//delete solver
 	delete m_solver;
-	//delete broadphase
+
+//delete broadphase
 	delete m_overlappingPairCache;
-	//delete dispatcher
+
+//delete dispatcher
+
 	delete m_dispatcher;
+
 	delete m_collisionConfiguration;
+	}
 
 }
 
-// if both GripA and GribB exist, create a prismatic joint between them
-/*if( gripA!=NULL && gripB!=NULL && gripperBase!=NULL){
-    gripA->setActivationState(DISABLE_DEACTIVATION);
-    gripB->setActivationState(DISABLE_DEACTIVATION);
-    btTransform sliderTransform;
-
-    // bestem transformationen fra gripperBase til
-    Transform3D<> baseTframeA = Kinematics::frameTframe(gripperBaseFrame,gripAFrame,state);
-
-    btTransform frameInA, frameInB;
-    frameInA = btTransform::getIdentity();
-    frameInB = makeBtTransform(baseTframeA);
-
-
-    bool useLinearReferenceFrameA = true;//use gripB for linear limits
-    btGeneric6DofConstraint* slider = new btGeneric6DofConstraint(*gripA,*gripperBase,frameInA,frameInB,useLinearReferenceFrameA);
-    slider->setLinearLowerLimit(btVector3(0,0.0,0));
-    slider->setLinearUpperLimit(btVector3(0,0.1,0));
-    slider->setAngularLowerLimit(btVector3(0,0,0));
-    slider->setAngularUpperLimit(btVector3(0,0,0));
-
-    m_dynamicsWorld->addConstraint(slider);
-
-    Transform3D<> baseTframeB = Kinematics::frameTframe(gripperBaseFrame,gripBFrame,state);
-    frameInA = btTransform::getIdentity();
-    frameInB = makeBtTransform(baseTframeB);
-
-    //bool useLinearReferenceFrameA = false;//use gripB for linear limits
-    slider = new btGeneric6DofConstraint(*gripB,*gripperBase,frameInA,frameInB,useLinearReferenceFrameA);
-    slider->setLinearLowerLimit(btVector3(0,-0.1,0));
-    slider->setLinearUpperLimit(btVector3(0,0.00,0));
-    slider->setAngularLowerLimit(btVector3(0,0,0));
-    slider->setAngularUpperLimit(btVector3(0,0,0));
-
-    m_dynamicsWorld->addConstraint(slider);
-    // add yet another constraint such that
-    _usingGripper = true;
+btDynamicsWorld* BtSimulator::getBtWorld() const {
+    return m_dynamicsWorld;
 }
-*/
 
+void BtSimulator::load(DynamicWorkCell::Ptr dwc){
+	_dwc = dwc;
+	_materialMap = dwc->getMaterialData();
+	_contactMap = dwc->getContactData();
+}
 
-/*
- *
- *
-void BtSimulator::adjustForceOnGripper( rw::kinematics::State& state ){
-    Transform3D<> baseTframeA = Kinematics::frameTframe(gripperBaseFrame,gripAFrame,state);
-    Transform3D<> baseTframeB = Kinematics::frameTframe(gripperBaseFrame,gripBFrame,state);
+// simat - functions below is not used but were essential for succesful compile
+void BtSimulator::addDevice(DynamicDevice::Ptr dev, State& nstate){
+	std::cout << "DANGER: called not finished function: a12" << std::endl;
 
-    double posA = baseTframeA.P()[1];
-    double posB = baseTframeB.P()[1];
+	// TODO: implement method
+}
 
+void BtSimulator::attach(Body::Ptr b1, Body::Ptr b2){
+	std::cout << "DANGER: called not finished function: a11" << std::endl;
 
+	 // TODO: implement method
+}
 
+void BtSimulator::detach(Body::Ptr b1, Body::Ptr b2){
+	std::cout << "DANGER: called not finished function: a10" << std::endl;
 
-    btVector3 velA = gripA->getVelocityInLocalPoint(btVector3(0,0,0));
-    btVector3 velB = gripB->getVelocityInLocalPoint(btVector3(0,0,0));
+	 // TODO: implement method
+}
 
-    //std::cout << "VelA: " << velA[0] << ";" << velA[1] <<  ";" << velA[2] <<   std::endl;
+void BtSimulator::addSensor(SimulatedSensor::Ptr sensor, State& state){
+	std::cout << "DANGER: called not finished function: a9" << std::endl;
 
-    // position is the same since its a parallel gripper with coupled joints
-    double gPosA = Math::clamp(_goalPos, 0, 0.1);
-    double gPosB = -Math::clamp(_goalPos, 0, 0.1);
-    // compensate for position difference
-    double diffPosComp = (posA + posB);
+	 // TODO: implement method
+}
 
-    std::cout << "PosA: " << posA << " -> " << gPosA << std::endl;
-    std::cout << "PosB: " << posB << " -> " << gPosB << std::endl;
+void BtSimulator::setDynamicsEnabled(Body::Ptr body, bool enabled){
+	std::cout << "DANGER: called not finished function: a9" << std::endl;
 
-    double errPA = posA-gPosA;
-    double errPB = posB-gPosB;
+	 // TODO: implement method
+}
 
-    std::cout << "errPosA: " << errPA << std::endl;
-    std::cout << "errPosB: " << errPB << std::endl;
+void BtSimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){
+	std::cout << "DANGER: called not finished function: a8" << std::endl;
 
-    double errPosA = errPA*_qKp + (errPA - _errPALast)*_qKd/_dt ;
-    _errPALast = errPA;
+	 // TODO: implement method
+}
 
-    double errPosB = errPB*_qKp + (errPB - _errPBLast)*_qKd/_dt ;
-    _errPBLast = errPB;
+void BtSimulator::setEnabled(Body::Ptr body, bool enabled){
+	std::cout << "DANGER: called not finished function: a7" << std::endl;
 
-    errPosA = Math::clamp(errPosA, -MAX_VEL, MAX_VEL);
-    errPosB = Math::clamp(errPosB, -MAX_VEL, MAX_VEL);
+	 // TODO: implement method
+}
 
+void BtSimulator::emitPropertyChanged(){
+	std::cout << "DANGER: called not finished function: a6" << std::endl;
 
-    double forceA = (velA[1]-errPosA)*_vKp + (velA[1]-errPosA)*_vKd/_dt;
-    double forceB = (velB[1]-errPosB)*_vKp + (velB[1]-errPosB)*_vKd/_dt;
+	 // TODO: implement method
+}
 
-    forceA = Math::clamp( forceA, -MAX_FORCE, MAX_FORCE );
-    forceB = Math::clamp( forceB, -MAX_FORCE, MAX_FORCE );
+void BtSimulator::addBody(Body::Ptr body, State& state){
+	std::cout << "DANGER: called not finished function: a5" << std::endl;
 
-    std::cout << "Force: " << forceA << " " << forceB << std::endl;
+	 // TODO: implement method
+}
 
-    // transform local description of force to global description
-    Transform3D<> wTa = Kinematics::worldTframe(gripAFrame,state);
-    Transform3D<> wTb = Kinematics::worldTframe(gripBFrame,state);
-    Vector3D<> vfA = wTa * Vector3D<>(0, forceA,0);
-    Vector3D<> vfB = wTb * Vector3D<>(0, forceB,0);
-    gripA->clearForces();
-    gripA->applyCentralForce(makeBtVector(vfA));
-    gripB->clearForces();
-    gripB->applyCentralForce(makeBtVector(vfB));
-}*/
+void BtSimulator::addConstraint(Constraint::Ptr constraint) {
+	std::cout << "DANGER: called not finished function: a4" << std::endl;
 
-/*
-Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
-Transform3D<> wTparent = Kinematics::worldTframe(parentFrame,state);
+	 // TODO: implement method
+}
 
-btTransform frameInA, frameInB;
-frameInA.setIdentity(); // the joint allready use z-axis for rotation
-frameInB = makeBtTransform( inverse(wTparent) * wTchild ); // calculate transform from parent to joint
+void BtSimulator::removeSensor(SimulatedSensor::Ptr sensor){
+	std::cout << "DANGER: called not finished function: a3" << std::endl;
 
-btChild->setActivationState(DISABLE_DEACTIVATION);
-btParent->setActivationState(DISABLE_DEACTIVATION);
+	 // TODO: implement method
+}
 
-btHingeConstraint *hinge = new btHingeConstraint(*btChild, *btParent, frameInA, frameInB);
-hinge->setLimit( joint->getBounds().first, joint->getBounds().second );
-//hinge->setAngularOnly(true);
-hinge->enableAngularMotor(true, 0.0, 10);
-m_dynamicsWorld->addConstraint(hinge, true);
-_jointToConstraintMap[joint] = hinge;
-constraints.push_back(hinge);*/
+void BtSimulator::disableCollision(Body::Ptr b1, Body::Ptr b2){
+	std::cout << "DANGER: called not finished function: a2" << std::endl;
+
+	 // TODO: implement method
+}
+
+void BtSimulator::enableCollision(Body::Ptr b1, Body::Ptr b2){
+	std::cout << "DANGER: called not finished function: a1" << std::endl;
+	 // TODO: implement method
+}

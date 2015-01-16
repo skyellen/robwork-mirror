@@ -15,6 +15,9 @@ SET(SRC_FILES_HPP
 
 ADD_LIBRARY(rwsim_bullet ${SRC_FILES} ${SRC_FILES_HPP})
 
+ADD_LIBRARY(bt_plugin.rwplugin MODULE BtPlugin.cpp BtPlugin.hpp)
+TARGET_LINK_LIBRARIES(bt_plugin.rwplugin rwsim_bullet ${ROBWORKSIM_LIBRARIES})
+
 #INSTALL(TARGETS rwsim_bullet DESTINATION ${RWSIM_LIB_INSTALL_DIR})
 
 ENDIF()

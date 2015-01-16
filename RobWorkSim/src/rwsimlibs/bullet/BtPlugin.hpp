@@ -15,53 +15,44 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
-#define RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
+#ifndef RWSIM_SIMULATOR_BTPLUGIN_HPP_
+#define RWSIM_SIMULATOR_BTPLUGIN_HPP_
 
 /**
- * @file BtDebugRender.hpp
+ * @file BtPlugin.hpp
  *
- * \copydoc rwsim::simulator::BtDebugRender
+ * \copydoc rwsim::simulator::BtPlugin
  */
 
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
-//#include <OpenGl/GLDebugDrawer.h>
+#include <rw/common/Plugin.hpp>
 
 namespace rwsim {
 namespace simulator {
-class BtSimulator;
-
 //! @addtogroup rwsimlibs
 
 //! @{
 /**
- * @brief Debug render for the Bullet engine.
+ * @brief A Bullet plugin that provides additional functionality to the
+ * rwsim::simulator::PhysicsEngine::Factory through the plugin structure.
+ *
+ * The following extension is added with the use of this plugin:
+ *  - Bullet
  */
-class BtDebugRender: public rwsim::drawable::SimulatorDebugRender {
+class BtPlugin: public rw::common::Plugin {
 public:
-	/**
-	 * @brief Constructor.
-	 * @param sim the simulator the debug render is associated to.
-	 */
-	BtDebugRender(BtSimulator *sim);
+	//! @brief Construct new plugin
+	BtPlugin();
 
 	//! @brief Destructor
-	virtual ~BtDebugRender();
+	virtual ~BtPlugin();
 
-    //! @copydoc rw::graphics::Render::draw
-	virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info,
-			DrawType draw,
-			double alpha) const;
+    //! @copydoc rw::common::Plugin::getExtensionDescriptors
+	std::vector<rw::common::Extension::Descriptor> getExtensionDescriptors();
 
-    //! @copydoc rwsim::drawable::SimulatorDebugRender::setDrawMask
-	virtual void setDrawMask(unsigned int mask);
-
-private:
-	BtSimulator *_sim;
-	//GLDebugDrawer *_debugDrawer;
-	unsigned int _drawMask;
+    //! @copydoc rw::common::Plugin::makeExtension
+	rw::common::Ptr<rw::common::Extension> makeExtension(const std::string& str);
 };
 //! @}
 } /* namespace simulator */
 } /* namespace rwsim */
-#endif /* RWSIM_SIMULATION_BTDEBUGRENDER_HPP_ */
+#endif /* RWSIM_SIMULATOR_BTPLUGIN_HPP_ */
