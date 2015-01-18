@@ -38,7 +38,7 @@ double StructuredLineModel::fitError(const rw::math::Vector3D<>& sample) const
 	Vector3D<> closestPoint = _line.closestPoint(sample);
 	
 	// 2. find the closest 'grid spot' on the line
-	double cells = round((closestPoint - _start).norm2() / _interval);
+	double cells = Math::round((closestPoint - _start).norm2() / _interval);
 	Vector3D<> closestSpot = _start + cells * _interval * _line.dir();
 	
 	// 3. calculate p2p distance of a sample to the closest grid spot
@@ -70,7 +70,7 @@ bool StructuredLineModel::invalid() const
 		//cout << "closestpoint= " << closestPoint << endl;
 		
 		// 2. find the closest 'grid spot' on the line
-		double cells = round((closestPoint - _start).norm2() / interval);
+		double cells = Math::round((closestPoint - _start).norm2() / interval);
 		//cout << "cells = " << cells << endl;
 		Vector3D<> closestSpot = _start + cells * interval * _line.dir();
 		
@@ -196,7 +196,7 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	vector<IntervalQuality> intervals;
 	for (double t = 0.0; t < maxDist; t += maxDist / 1000.0) {
 		double q = testInterval(_data, t, _start, maxDist);
-		if (isnan(q)) continue;
+		if (Math::isNaN(q)) continue;
 		
 		intervals.push_back(IntervalQuality(t, q));
 		//cout << " --- " << t << ", " << q << endl;
