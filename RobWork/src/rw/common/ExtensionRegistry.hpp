@@ -45,6 +45,12 @@ public:
      * @param plugin [in] the plugin that is to be registered
      */
     void registerExtensions(rw::common::Ptr<Plugin> plugin);
+    
+    /**
+     * @brief get a list of registered plugins
+     * @return list of plugins
+     */
+    std::vector<rw::common::Ptr<Plugin> > getPlugins() const;
 
 private:
 

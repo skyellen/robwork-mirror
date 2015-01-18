@@ -52,5 +52,9 @@
 #include "./common/InputArchive.hpp"
 #include "./common/OutputArchive.hpp"
 
+#include "./common/Plugin.hpp"
+#include "./common/Extension.hpp"
+#include "./common/ExtensionRegistry.hpp"
+
 
 #endif /* COMMON_HPP_ */

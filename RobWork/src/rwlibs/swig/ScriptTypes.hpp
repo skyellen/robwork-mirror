@@ -83,6 +83,10 @@ namespace swig {
 	typedef rw::common::PropertyMap PropertyMap;
 	typedef rw::common::ThreadPool ThreadPool;
 	typedef rw::common::ThreadTask ThreadTask;
+	typedef rw::common::Plugin Plugin;
+	typedef rw::common::Extension Extension;
+	typedef rw::common::Extension::Descriptor ExtensionDescriptor;
+	typedef rw::common::ExtensionRegistry ExtensionRegistry;
 
 	// geometry
 	typedef rw::geometry::GeometryData GeometryData;
@@ -106,6 +110,8 @@ namespace swig {
 	typedef rw::geometry::Geometry Geometry;
 
 	// graphics
+	typedef rw::graphics::Model3D Model3D;
+	typedef rw::graphics::Model3D::Material Model3DMaterial;
 	typedef rw::graphics::WorkCellScene WorkCellScene;
 	typedef rw::graphics::SceneViewer SceneViewer;
 	typedef rw::graphics::SceneNode SceneNode;
@@ -161,6 +167,9 @@ namespace swig {
 	typedef Eigen::MatrixXd Matrix;
 
 	// models
+	typedef rw::models::Object Object;
+	typedef rw::models::RigidObject RigidObject;
+	typedef rw::models::DeformableObject DeformableObject;
 	typedef rw::models::WorkCell WorkCell;
 	typedef rw::models::Joint Joint;
 	typedef rw::models::RevoluteJoint RevoluteJoint;

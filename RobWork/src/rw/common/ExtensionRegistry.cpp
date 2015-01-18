@@ -47,6 +47,18 @@ std::vector<rw::common::Ptr<Extension> > ExtensionRegistry::getExtensions(const 
 }
 
 
+
+std::vector<rw::common::Ptr<Plugin> > ExtensionRegistry::getPlugins() const {
+	std::vector<rw::common::Ptr<Plugin> > result;
+	
+	BOOST_FOREACH (const rw::common::Ptr<Plugin> plugin, _plugins) {
+		result.push_back(plugin);
+	}
+	
+	return result;
+}
+
+
 void ExtensionRegistry::registerExtensions(rw::common::Ptr<Plugin> plugin){
 	BOOST_FOREACH(Extension::Descriptor desc, plugin->getExtensionDescriptors()){
 		_descMap[desc.point].push_back( std::make_pair( desc , plugin ) );

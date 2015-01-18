@@ -56,5 +56,7 @@
 #include "./models/WorkCell.hpp"
 #include "./models/VirtualJoint.hpp"
 #include "./models/Object.hpp"
+#include "./models/RigidObject.hpp"
+#include "./models/DeformableObject.hpp"
 
 #endif /* MODELS_HPP_ */

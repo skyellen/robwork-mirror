@@ -177,6 +177,43 @@ public:
 %template (ThreadTaskPtr) rw::common::Ptr<ThreadTask>;
 %template (ThreadTaskPtrVector) std::vector<rw::common::Ptr<ThreadTask> >;
 
+class Plugin {
+protected:
+	 Plugin(const std::string& id, const std::string& name, const std::string& version);
+	 
+public:
+	const std::string& getId();
+    const std::string& getName();
+    const std::string& getVersion();
+};
+
+%template (PluginPtr) rw::common::Ptr<Plugin>;
+%template (PluginPtrVector) std::vector<rw::common::Ptr<Plugin> >;
+
+class Extension {
+public:
+	//struct Descriptor {
+	//};
+	
+	Extension(ExtensionDescriptor desc, Plugin* plugin);
+	
+	const std::string& getId();
+	const std::string& getName();
+};
+
+%template (ExtensionPtr) rw::common::Ptr<Extension>;
+%template (ExtensionPtrVector) std::vector<rw::common::Ptr<Extension> >;
+
+class ExtensionRegistry {
+public:
+	ExtensionRegistry();
+	static rw::common::Ptr<ExtensionRegistry> getInstance();
+	std::vector<rw::common::Ptr<Extension> > getExtensions(const std::string& ext_point_id) const;
+	std::vector<rw::common::Ptr<Plugin> > getPlugins() const;
+};
+
+%template (ExtensionRegistryPtr) rw::common::Ptr<ExtensionRegistry>;
+
 /********************************************
  * ROBWORK CLASS
  ********************************************/ 
@@ -1385,6 +1422,53 @@ public:
 /********************************************
  * MODELS
  ********************************************/
+ 
+class Object {
+protected:
+	Object(Frame* baseframe);
+public:
+	const std::string& getName();
+	rw::kinematics::Frame* getBase();
+    const rw::kinematics::Frame* getBase() const;
+    const std::vector<rw::kinematics::Frame*>& getFrames();
+    void addFrame(rw::kinematics::Frame* frame);
+    const std::vector<rw::geometry::Geometry::Ptr>& getGeometry() const;
+    const std::vector<rw::graphics::Model3D::Ptr>& getModels() const;
+    const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(const rw::kinematics::State& state) const;
+    const std::vector<rw::graphics::Model3D::Ptr>& getModels(const rw::kinematics::State& state) const;
+    double getMass(rw::kinematics::State& state) const;
+    rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const;
+    rw::math::InertiaMatrix<> getInertia(rw::kinematics::State& state) const;
+};
+%template (ObjectPtr) rw::common::Ptr<Object>;
+
+class RigidObject : public Object {
+public:
+	RigidObject(rw::kinematics::Frame* baseframe);
+	RigidObject(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
+	RigidObject(rw::kinematics::Frame* baseframe, std::vector<rw::geometry::Geometry::Ptr> geom);
+	RigidObject(std::vector<rw::kinematics::Frame*> frames);
+	RigidObject(std::vector<rw::kinematics::Frame*> frames, rw::geometry::Geometry::Ptr geom);
+	RigidObject(std::vector<rw::kinematics::Frame*> frames, std::vector<rw::geometry::Geometry::Ptr> geom);
+	void addGeometry(rw::geometry::Geometry::Ptr geom);
+	void removeGeometry(rw::geometry::Geometry::Ptr geom);
+	void addModel(rw::graphics::Model3D::Ptr model);
+	void removeModel(rw::graphics::Model3D::Ptr model);
+    double getMass() const;
+    void setMass(double mass);
+    rw::math::InertiaMatrix<> getInertia() const;
+    void setInertia(const rw::math::InertiaMatrix<>& inertia);
+    rw::math::Vector3D<> getCOM() const;
+    void setCOM(const rw::math::Vector3D<>& com);
+    void approximateInertia();
+    void approximateInertiaCOM();
+    const std::vector<rw::geometry::Geometry::Ptr>& getGeometry() const ;
+    const std::vector<rw::graphics::Model3D::Ptr>& getModels() const;
+    double getMass(rw::kinematics::State& state) const;
+    rw::math::InertiaMatrix<> getInertia(rw::kinematics::State& state) const;
+    rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const;
+};
+%template (RigidObjectPtr) rw::common::Ptr<RigidObject>;
 
 class WorkCell {
 public:
@@ -1419,6 +1503,10 @@ public:
         std::vector<rw::common::Ptr<Device> > getDevices() const
                 { return $self->rw::models::WorkCell::getDevices(); }
     };
+    
+    rw::common::Ptr<Object> findObject(const std::string& name) const;
+    void add(rw::common::Ptr<Object> object);
+    void remove(rw::common::Ptr<Object> object);
 
 
     State getDefaultState() const;

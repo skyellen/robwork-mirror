@@ -39,7 +39,7 @@ namespace rwlibs { namespace algorithms {
 
 /**
  * @brief A stable pose with 0 DoF model.
- * 
+ * o
  * Models a stable pose with 0 DoF, i.e. essentially a single orientation in SE3.
  * 
  * The model requires at least 1 sample.
