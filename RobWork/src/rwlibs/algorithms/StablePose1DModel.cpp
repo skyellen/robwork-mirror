@@ -71,11 +71,6 @@ bool StablePose1DModel::invalid() const
 
 double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samples)
 {
-	const double NormalAlignmentThreshold = 15.0 * Deg2Rad;
-	const int PlaneFitIterations = 100;
-	const double PlaneFitThreshold = 0.1;
-	const double PlaneModelThreshold = 0.1;
-	
 	_data = samples;
 	int n = _data.size();
 

@@ -153,7 +153,7 @@ double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> 
 
 double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 {
-	if (samples.size() < getMinReqData()) {
+	if ((int)samples.size() < getMinReqData()) {
 		RW_THROW("Too few samples to refit structured line model.");
 		return 0.0;
 	}

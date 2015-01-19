@@ -60,7 +60,8 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 			_normal(rw::math::Vector3D<>::z()),
 			_dx(0.0),
 			_dy(0.0),
-			_dz(1.0)
+			_dz(1.0),
+			_invalid(false)
 		{}
 		
 		/**
@@ -73,7 +74,8 @@ class StablePose1DModel : public RANSACModel<StablePose1DModel, rw::math::Rotati
 			_normal(normalize(normal)),
 			_dx(distances[0]),
 			_dy(distances[1]),
-			_dz(distances[2])
+			_dz(distances[2]),
+			_invalid(false)
 		{}
 		
 		/**
