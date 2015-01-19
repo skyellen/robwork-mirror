@@ -262,6 +262,9 @@ void Jog::open(WorkCell* workcell)
 	const std::vector<Device::Ptr>& devices = workcell->getDevices();
     close();
     _workcell = workcell;
+    
+    _workcell->workCellChangedEvent().add(boost::bind(&Jog::workcellChangedListener, this, _1), this);
+    
     _selectedFrame = 0;
     if (workcell) {
         //std::cout<<"Get State"<<std::endl;
@@ -495,6 +498,81 @@ void Jog::stateChangedListener(const State& state)
         updateValues();
     }
 }
+
+void Jog::update() {
+	typedef std::vector<Device::Ptr>::const_iterator DevI;
+    typedef std::vector<Frame*> FrameVector;
+
+	const std::vector<Device::Ptr>& devices = _workcell->getDevices();
+    disconnect(_tabWidget, 0, 0, 0);
+    _cmbDevices->clear();
+    _items.clear();
+    _chosenTabs.clear();
+    removeTabs();
+    _frameToIndex.clear();
+    WorkCell::Ptr workcell = _workcell;
+    
+    _selectedFrame = 0;
+    if (workcell) {
+        //std::cout<<"Get State"<<std::endl;
+        _state = getRobWorkStudio()->getState();
+        int qs_pos = 0;
+        for (DevI it = devices.begin(); it != devices.end(); ++it, ++qs_pos) {
+            std::string name = (*it)->getName();
+            _items.push_back(std::make_pair((*it), (MovableFrame*)NULL));
+            _chosenTabs.push_back(0);
+            _frameToIndex[*((*it)->getBase())] = (int)_items.size()-1;
+            QVariant qvar((int)(_items.size()-1));
+            _cmbDevices->addItem(name.c_str(), qvar);
+        }
+        //std::cout<<"Device Initialized"<<std::endl;
+        FrameVector frames = Kinematics::findAllFrames(workcell->getWorldFrame(), _state);
+        for (FrameVector::iterator it = frames.begin(); it != frames.end(); ++it) {
+            MovableFrame* frame = dynamic_cast<MovableFrame*>(*it);
+            if (frame) {
+                _items.push_back(std::make_pair((Device*)NULL, frame));
+                _chosenTabs.push_back(0);
+                _frameToIndex[*frame] = (int)_items.size()-1;
+                _cmbDevices->addItem(frame->getName().c_str(), QVariant((int)(_items.size()-1)));
+            }
+        }
+
+    } else {
+        disconnect(_tabWidget, 0, 0, 0);
+		_cmbDevices->clear();
+		_items.clear();
+		_chosenTabs.clear();
+		removeTabs();
+		_frameToIndex.clear();
+    }
+    _rwsSettings = getRobWorkStudio()->getPropertyMap().getPtr<rw::common::PropertyMap>("RobWorkStudioSettings");
+    if(_rwsSettings) {
+        // Find the unit properties if there are any
+        std::string unitDescAngle = _rwsSettings->get<std::string>("AngleUnit", "");
+        std::string unitDescDistance = _rwsSettings->get<std::string>("DistanceUnit", "");
+        // Update combo boxes
+        if(unitDescAngle.size()) {
+            updateUnitCB(_cmbAngleUnit, unitDescAngle);
+            unitDescAngle = _cmbAngleUnit->currentText().toStdString();
+        }
+        if(unitDescDistance.size()) {
+            updateUnitCB(_cmbDistanceUnit, unitDescDistance);
+            unitDescDistance = _cmbDistanceUnit->currentText().toStdString();
+        }
+
+        updateUnit(unitDescAngle, unitDescDistance);
+    }
+}
+
+void Jog::workcellChangedListener(int){
+    // we need to call the update slot, but since this is possibly from a non qt thread, we need to separate
+    // it through Qt::queue
+//     std::cout << "TreeView: WORKCELL CHANGED" << std::endl;
+
+    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
+
+}
+
 
 void Jog::frameSelectedListener(Frame* frame) {
 	if(frame==NULL)

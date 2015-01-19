@@ -88,6 +88,8 @@ public:
 	 */
     void frameSelectedListener(rw::kinematics::Frame* frame);
     
+    void workcellChangedListener(int);
+    
     /**
      * @brief Listen for generic events:
      * - WorkcellUpdated event makes Jog plugin refresh GUI to represent new workcell configuration (i.e. new frames & devices).
@@ -102,6 +104,8 @@ private slots:
     void cmbUnitChanged(int index);
 
     void tabChanged(int);
+    
+    void update();
 
     void stateChanged(const rw::kinematics::State& state);
 
