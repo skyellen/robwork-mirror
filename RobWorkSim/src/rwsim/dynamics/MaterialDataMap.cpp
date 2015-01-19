@@ -38,6 +38,38 @@ MaterialDataMap::~MaterialDataMap()
 {
 }
 
+void MaterialDataMap::add(const std::string& name, const std::string& desc) {
+	if( _matToMatID.find(name)==_matToMatID.end() ){
+		_matToMatID[name] = _matCnt;
+		_mat.push_back("");
+		_matCnt++;
+	}
+
+	int mat = getDataID( name );
+	_matToDesc[mat] = desc;
+	_mat[mat] = name;
+}
+
+int MaterialDataMap::getDataID( const std::string& material ) const {
+	std::map<std::string, int>::const_iterator foundMat = _matToMatID.find(material);
+	if(foundMat ==_matToMatID.end() ){
+		RW_THROW("Material \"" << material << "\" does not exist!");
+	}
+	return foundMat->second;
+}
+
+const std::string& MaterialDataMap::getMaterialName( int id ) const {
+	return _mat[id];
+}
+
+const std::vector<std::string>& MaterialDataMap::getMaterials(){
+	return _mat;
+}
+
+int MaterialDataMap::getMaxMatID() const {
+	return _matCnt;
+}
+
 bool MaterialDataMap::hasFrictionData(int matAID, int matBID, int dataType) const {
     MatIDPair pair(matAID,matBID);
     FrictionMap::const_iterator res = _frictionMap.find(pair);
@@ -54,11 +86,7 @@ bool MaterialDataMap::hasFrictionData(const std::string& matAID, const std::stri
     return hasFrictionData(getDataID(matAID), getDataID(matBID), dataType);
 }
 
-const FrictionData&
-    MaterialDataMap::getFrictionData(int materialA,
-                                     int materialB,
-                                     int type) const
-{
+const FrictionData& MaterialDataMap::getFrictionData(int materialA, int materialB, int type) const {
     //std::cout << "GET friction" << std::endl;
     MatIDPair pair(materialA,materialB);
     FrictionMap::const_iterator res = _frictionMap.find(pair);
@@ -75,22 +103,32 @@ const FrictionData&
     return getDefaultFriction(type);
 }
 
-const FrictionData&
-    MaterialDataMap::getFrictionData(const std::string& materialA,
-                                     const std::string& materialB,
-                                     int type) const
-{
+const std::vector<FrictionData> MaterialDataMap::getFrictionDatas(int matAID, int matBID) const {
+    const MatIDPair pair(matAID,matBID);
+    const FrictionMap::const_iterator res = _frictionMap.find(pair);
+    if(res != _frictionMap.end())
+    	return res->second;
+    return std::vector<FrictionData>();
+}
+
+const FrictionData& MaterialDataMap::getFrictionData(const std::string& materialA, const std::string& materialB, int type) const {
     return getFrictionData(getDataID(materialA), getDataID(materialB), type);
 }
 
-void MaterialDataMap::addFrictionData(const std::string& materialA,
-                        const std::string& materialB,
-                        const FrictionData& data)
-{
+const std::vector<FrictionData> MaterialDataMap::getFrictionDatas(const std::string& matAID, const std::string& matBID) const {
+    return getFrictionDatas(getDataID(matAID), getDataID(matBID));
+}
+
+void MaterialDataMap::addFrictionData(const std::string& materialA, const std::string& materialB, const FrictionData& data) {
     int matAID = getDataID(materialA);
     int matBID = getDataID(materialB);
     MatIDPair pairA(matAID,matBID);
     MatIDPair pairB(matBID,matAID);
     _frictionMap[pairA].push_back(data);
-    _frictionMap[pairB].push_back(data);
+    if (matAID != matBID)
+    	_frictionMap[pairB].push_back(data);
+}
+
+const FrictionData& MaterialDataMap::getDefaultFriction(int type) const {
+	return _defaultFrictionData;
 }

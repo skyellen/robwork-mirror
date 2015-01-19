@@ -1193,8 +1193,16 @@ namespace
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "FrictionData") {
                 Log::debugLog()<< "FrictionData" << std::endl;
-                std::string typestr = p->second.get_child("<xmlattr>").get<std::string>("type");
-                dataTmp.data.type = Coulomb; //matMap.getDataID(typestr);
+                const std::string typestr = p->second.get_child("<xmlattr>").get<std::string>("type");
+				std::string typestrUpper = typestr;
+				std::transform(typestrUpper.begin(), typestrUpper.end(),typestrUpper.begin(), ::toupper);
+				if (typestrUpper == "COULOMB") {
+	                dataTmp.data.type = Coulomb;
+	                dataTmp.data.typeName = "Coulomb";
+				} else {
+	                dataTmp.data.type = Custom;
+	                dataTmp.data.typeName = typestr;
+				}
                 // all elements of FrictionData must be param arrays
                 for (CI d = p->second.begin(); d != p->second.end(); ++d) {
                     if( d->first != "<xmlattr>" && d->first != "<xmlcomment>"){

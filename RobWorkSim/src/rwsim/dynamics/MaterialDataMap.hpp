@@ -18,146 +18,158 @@
 #ifndef RWSIM_DYNAMICS_MATERIALDATAMAP_HPP_
 #define RWSIM_DYNAMICS_MATERIALDATAMAP_HPP_
 
-#include <rw/common/macros.hpp>
-#include <iostream>
 #include <map>
 #include <rw/math/Q.hpp>
 #include <vector>
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup rwsim_dynamics
-	//! @{
+//! @addtogroup rwsim_dynamics
+//! @{
 
-    typedef enum {Coulomb} FrictionType;
+//! @brief Predefined friction types.
+typedef enum {Coulomb, Custom} FrictionType;
 
-    typedef std::pair<std::string, rw::math::Q> FrictionParam;
-    struct FrictionData {
-        int type;
-        std::vector<FrictionParam> parameters;
-    };
+//! @brief Definition of a parameter for a friction model.
+typedef std::pair<std::string, rw::math::Q> FrictionParam;
 
-    /**
-     *
-     */
-    class MaterialDataMap
-    {
-    public:
+//! @brief Definition of a friction model.
+struct FrictionData {
+	//! @brief The FrictionType
+	int type;
+	//! @brief The name of the model.
+	std::string typeName;
+	//! @brief The parameters for the model.
+	std::vector<FrictionParam> parameters;
+};
 
-        /**
-         * @brief constructor
-         */
-    	MaterialDataMap();
+/**
+ * @brief A map of materials and friction models defined between materials.
+ */
+class MaterialDataMap
+{
+public:
+	//! @brief Constructor
+	MaterialDataMap();
 
-    	/**
-    	 * @brief destructor
-    	 */
-    	virtual ~MaterialDataMap();
+	//! @brief Destructor
+	virtual ~MaterialDataMap();
 
-    	/**
-    	 * @brief add a material name with a description.
-    	 * @param name [in] name of material
-    	 * @param desc [in] description of material
-    	 */
-    	void add(std::string name, std::string desc){
-    	    if( _matToMatID.find(name)==_matToMatID.end() ){
-    	        _matToMatID[name] = _matCnt;
-    	        _mat.push_back("");
-    	        _matCnt++;
-    	    }
+	/**
+	 * @brief Add a material name with a description.
+	 * @param name [in] name of material.
+	 * @param desc [in] description of material.
+	 */
+	void add(const std::string& name, const std::string& desc);
 
-    	    int mat = getDataID( name );
-    	    _matToDesc[mat] = desc;
-    	    _mat[mat] = name;
-    	}
+	/**
+	 * @brief Converts a string of material type name to an int identifier.
+	 * @param material [in] name of material.
+	 * @return the id of the material.
+	 */
+	int getDataID(const std::string& material) const;
 
-        /**
-          * @brief converts a string of material type name to an int identifier.
-          * @param material [in] name of material
-          * @return
-          */
-    	int getDataID( const std::string& material ) const {
-    		std::map<std::string, int>::const_iterator foundMat = _matToMatID.find(material);
-    	    if(foundMat ==_matToMatID.end() ){
-    	        RW_THROW("Material \"" << material << "\" does not exist!");
-    	    }
-    	    return foundMat->second;
-    	}
+	/**
+	 * @brief Convert an id of a material to the name of the material.
+	 * @param id [in] the id of the material.
+	 * @return the name of the material.
+	 */
+	const std::string& getMaterialName( int id ) const;
 
-    	const std::string& getMaterialName( int id ) const {
-    	    return _mat[id];
-    	}
+	/**
+	 * @brief Get a list of the names of all materials.
+	 * @return a list of material names.
+	 */
+	const std::vector<std::string>& getMaterials();
 
-    	const std::vector<std::string>& getMaterials(){
-    	    return _mat;
-    	}
+	/**
+	 * @brief Get the number of materials.
+	 * @return the maximum id of a material.
+	 */
+	int getMaxMatID() const;
 
-    	int getMaxMatID() const {return _matCnt;};
+	/**
+	 * @brief Test if the given material pair has friction data in map.
+	 * @param matAID [in] id of first material.
+	 * @param matBID [in] id of second material.
+	 * @param dataType [in] the type of friction data (default is Coulomb).
+	 * @return true if friction data exists - false otherwise.
+	 */
+	bool hasFrictionData(int matAID, int matBID, int dataType = Coulomb) const;
 
-    	/**
-    	 * @brief Test if the given material pair has friction data in map.
-    	 * @param matAID [in] id of first material.
-    	 * @param matBID [in] id of second material.
-    	 * @param dataType [in] the type of friction data (default is zero).
-    	 * @return true if friction data exists - false otherwise.
-    	 */
-    	bool hasFrictionData(int matAID, int matBID, int dataType=0) const;
+	/**
+	 * @brief Test if the given material pair has friction data in map.
+	 * @param matAID [in] the name of the first material.
+	 * @param matBID [in] the name of the second material.
+	 * @param dataType [in] the type of friction data (default is Coulomb).
+	 * @return true if friction data exists - false otherwise.
+	 */
+	bool hasFrictionData(const std::string& matAID, const std::string& matBID, int dataType = Coulomb) const;
 
-    	/**
-    	 * @brief Test if the given material pair has friction data in map.
-    	 * @param matAID [in] the name of the first material.
-    	 * @param matBID [in] the name of the second material.
-    	 * @param dataType [in] the type of friction data (default is zero).
-    	 * @return true if friction data exists - false otherwise.
-    	 */
-    	bool hasFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0) const;
+	/**
+	 * @brief Get a specific friction model for a pair of materials.
+	 * @param matAID [in] id of first material.
+	 * @param matBID [in] id of second material.
+	 * @param dataType [in] the type of friction data (default is Coulomb).
+	 * @return the friction data.
+	 */
+	const FrictionData& getFrictionData(int matAID, int matBID, int dataType = Coulomb) const;
 
-        /**
-         *
-         * @param materialA
-         * @param materialB
-         * @param dataType [in] default type is 0
-         * @return
-         */
-        const FrictionData&
-            getFrictionData(int matAID, int matBID, int dataType=0) const;
+	/**
+	 * @brief Get all friction data associated to the given pair of materials.
+	 * @param matAID [in] the id of the first material.
+	 * @param matBID [in] the id of the second material.
+	 * @return a vector of friction data.
+	 */
+	const std::vector<FrictionData> getFrictionDatas(int matAID, int matBID) const;
 
-        const FrictionData&
-            getFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0) const;
+	/**
+	 * @brief Get a specific friction model for a pair of materials.
+	 * @param matAID [in] the name of the first material.
+	 * @param matBID [in] the name of the second material.
+	 * @param dataType [in] the type of friction data (default is Coulomb).
+	 * @return the friction data.
+	 */
+	const FrictionData&	getFrictionData(const std::string& matAID, const std::string& matBID, int dataType = Coulomb) const;
 
+	/**
+	 * @brief Get all friction data associated to the given pair of materials.
+	 * @param matAID [in] the name of the first material.
+	 * @param matBID [in] the name of the second material.
+	 * @return a vector of friction data.
+	 */
+	const std::vector<FrictionData> getFrictionDatas(const std::string& matAID, const std::string& matBID) const;
 
-    	/**
-    	 *
-    	 * @param materialA
-    	 * @param materialB
-    	 * @param data
-    	 */
-        void addFrictionData(const std::string& materialA,
-                             const std::string& materialB,
-                             const FrictionData& data);
+	/**
+	 * @brief Add friction data for the given pair of materials.
+	 * @param materialA [in] the name of the first material.
+	 * @param materialB [in] the name of the second material.
+	 * @param data [in] the data to add.
+	 */
+	void addFrictionData(const std::string& materialA,
+			const std::string& materialB,
+			const FrictionData& data);
 
-        /**
-         *
-         * @param type
-         * @return
-         */
-        const FrictionData& getDefaultFriction(int type) const {
-            return _defaultFrictionData;
-        }
+	/**
+	 * @brief Get the default friction model.
+	 * @param type [in] the type of model.
+	 * @return the default friction data.
+	 */
+	const FrictionData& getDefaultFriction(int type) const;
 
-    private:
-        std::map<std::string, int> _strToIntID;
+private:
+	std::map<std::string, int> _strToIntID;
 
-        typedef std::pair<int,int> MatIDPair;
-        typedef std::map<MatIDPair, std::vector<FrictionData> > FrictionMap;
-        FrictionMap _frictionMap;
-        std::vector<std::string> _mat;
-        std::map<std::string, int> _matToMatID;
-        std::map<int, std::string> _matToDesc;
-        FrictionData _defaultFrictionData;
-        int _matCnt;
-    };
-    //! @}
+	typedef std::pair<int,int> MatIDPair;
+	typedef std::map<MatIDPair, std::vector<FrictionData> > FrictionMap;
+	FrictionMap _frictionMap;
+	std::vector<std::string> _mat;
+	std::map<std::string, int> _matToMatID;
+	std::map<int, std::string> _matToDesc;
+	FrictionData _defaultFrictionData;
+	int _matCnt;
+};
+//! @}
 }
 }
 
