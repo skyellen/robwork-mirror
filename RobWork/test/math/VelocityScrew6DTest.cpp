@@ -98,4 +98,13 @@ BOOST_AUTO_TEST_CASE(VelocityScrew6DTest) {
     for (size_t i = 0; i<6; i++)
 	BOOST_CHECK((float)screw(i) == vsf(i));
   }
+
+  {
+    const Vector3D<> linear(0.1, 0.2, 0.3);
+    const EAA<> angular(0.4, 0.5, 0.6);
+    const VelocityScrew6D<> screw(linear, angular);
+    const Eigen::VectorXd eigen = screw.e();
+    for (size_t i = 0; i<6; i++)
+    	BOOST_CHECK(eigen(i) == screw(i));
+  }
 }

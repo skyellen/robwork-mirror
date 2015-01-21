@@ -40,5 +40,9 @@ BOOST_AUTO_TEST_CASE(Wrench6DTest) {
 
       BOOST_CHECK(wrench.force() == vec1);
       BOOST_CHECK(wrench.torque() == vec2);
+
+      const Eigen::VectorXd eigen = wrench.e();
+      for (size_t i = 0; i<6; i++)
+      	BOOST_CHECK(eigen(i) == wrench(i));
   }
 }

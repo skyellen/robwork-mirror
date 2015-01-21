@@ -576,8 +576,8 @@ namespace rw { namespace math {
         /**
            @brief Converter to Eigen vector
          */
-		Eigen::Matrix<T, Eigen::Dynamic, 1> e() const {
-			Eigen::Matrix<T, Eigen::Dynamic, 1> res;
+		Eigen::Matrix<T, 6, 1> e() const {
+			Eigen::Matrix<T, 6, 1> res;
 			for (size_t i = 0; i<6; i++)
 				res(i) = _screw[i];
 			return res;

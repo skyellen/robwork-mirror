@@ -123,7 +123,7 @@ bool JacobianIKSolver::solveLocal(const Transform3D<> &bTed,
             return true;
         }
 
-        const Eigen::VectorXd& dS = b_eXed.e();
+        const Eigen::VectorXd dS = b_eXed.e();
         Jacobian J = _devJac->get( state );
 
         //std::cout << dS << std::endl;
