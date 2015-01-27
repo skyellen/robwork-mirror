@@ -3,33 +3,31 @@
 # ROBWORKHARDWARE SPECIFIC
 #
 
-# specify any of these options to force the inclusion of the specific component 
-SET(COMPONENT_camera_ENABLE ON)
-SET(COMPONENT_CAN_ENABLE OFF)
-SET(COMPONENT_CRSA465_ENABLE OFF)
-SET(COMPONENT_DOCKWELDER_ENABLE OFF)
-SET(COMPONENT_fanucdevice_ENABLE OFF)
-SET(COMPONENT_katana_ENABLE ON)
-SET(COMPONENT_motomanIA20_ENABLE ON)
-SET(COMPONENT_netft_ENABLE ON)
-SET(COMPONENT_pa10_ENABLE OFF)
-SET(COMPONENT_pcube_ENABLE ON)
-SET(COMPONENT_schunkpg70_ENABLE ON)
-SET(COMPONENT_sdh_ENABLE OFF)
-SET(COMPONENT_serialport_ENABLE ON)
-SET(COMPONENT_sick_ENABLE OFF)
-SET(COMPONENT_swissranger_ENABLE OFF)
-SET(COMPONENT_tactile_ENABLE OFF)
-SET(COMPONENT_trakstar_ENABLE OFF)
-SET(COMPONENT_universalrobots_ENABLE ON)
-SET(COMPONENT_robolabFT_ENABLE OFF)
-SET(COMPONENT_robotiq_ENABLE ON)
-
-#SET(BUILD_universalrobots ON)
-#SET(BUILD_robotiq ON)
-#SET(BUILD_sdh ON)
+# specify any of these options to manually enforce inclusion or exclusion 
+# of a specific component. Components that require third party drivers for compilation
+# are typically disabled by default.
+#SET(BUILD_camera ON)
+#SET(BUILD_CAN OFF)
+#SET(BUILD_CRSA465 OFF)
+#SET(BUILD_DOCKWELDER OFF)
+#SET(BUILD_fanucdevice OFF)
+#SET(BUILD_katana ON)
+#SET(BUILD_motomanIA20 ON)
+#SET(BUILD_netft ON)
+#SET(BUILD_pa10 OFF)
+#SET(BUILD_pcube ON)
+#SET(BUILD_schunkpg70 ON)
+#SET(BUILD_sdh OFF)
+#SET(BUILD_serialport ON)
+#SET(BUILD_sick OFF)
 #SET(BUILD_swissranger OFF)
+#SET(BUILD_tactile OFF)
+#SET(BUILD_trakstar OFF)
+#SET(BUILD_universalrobots ON)
+#SET(BUILD_robolabFT OFF)
+#SET(BUILD_robotiq ON)
 
+# set to ON to build shared libraries
 SET(PROJECT_SHARED_LIBS ON)
 
 # we need the location of RobWork
