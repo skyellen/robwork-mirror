@@ -2,16 +2,18 @@ SET(SUBSYS_NAME motomanIA20 )
 SET(SUBSYS_DESC "Library for controlling the motomanIA20 robot" )
 SET(SUBSYS_DEPS rw )
 
-SET(build TRUE)
 
-
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${SUBSYS_NAME}_ENABLE "Enable ${SUBSYS_NAME} component." 
-                       ${COMPONENT_${SUBSYS_NAME}_ENABLE} "COMPONENT_${SUBSYS_NAME}_ENABLE" OFF)
 
 set(DEFAULT TRUE)
-set(REASON) 
-RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+set(REASON )
+IF( DEFINED WIN32)
+    set(DEFAULT false)
+    set(REASON "Does not support windows!")
+endif()
+ 
+SET(build TRUE)
+ 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
 RW_ADD_DOC( ${SUBSYS_NAME} )
 

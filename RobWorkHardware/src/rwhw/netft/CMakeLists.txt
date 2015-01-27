@@ -6,15 +6,20 @@ SET(build TRUE)
 SET(default TRUE)
 
 
-INCLUDE(CMakeDependentOption)
-CMAKE_DEPENDENT_OPTION(COMPONENT_${SUBSYS_NAME}_ENABLE "Enable ${SUBSYS_NAME} component." 
-                       ${COMPONENT_${SUBSYS_NAME}_ENABLE} "${default}" OFF)
-
+FIND_PACKAGE(Boost REQUIRED COMPONENTS system regex QUIET)
 set(DEFAULT TRUE)
-set(REASON) 
-RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+set(REASON )
+IF( NOT BOOST_FOUND)
+    set(DEFAULT false)
+    set(REASON "Boost system and/or regex not found!")
+endif()
+ 
+SET(build TRUE)
+ 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
 RW_ADD_DOC( ${SUBSYS_NAME} )
+
 
 IF( build )
     #MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    

@@ -4,24 +4,21 @@ SET(SUBSYS_DEPS rw )
 
 # make sure that SDH can be found
 SET(build TRUE)
-set(DEFAULT FALSE)
-set(REASON) 
-IF( ${BUILD_sdh} )
-    FIND_PACKAGE(SDH)
-    IF( NOT SDH_FOUND )
-        #MESSAGE(STATUS "NOT FOUND")
-        set(DEFAULT FALSE)
-        set(BUILD_sdh FALSE)
-        set(REASON "SDH library not found!")
-    ENDIF()
-ENDIF()
 
-RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} COMPONENT_${SUBSYS_NAME}_ENABLE ${REASON})
+FIND_PACKAGE(SDH QUIET)
+set(DEFAULT TRUE)
+set(REASON )
+IF( NOT SDH_FOUND)
+    set(DEFAULT false)
+    set(REASON "SDH library not found!")
+endif()
+ 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
 RW_ADD_DOC( ${SUBSYS_NAME} )
 
 IF( build )
-   
+    FIND_PACKAGE(SDH)   
     INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} )
     
     SET(SRC_FILES )
