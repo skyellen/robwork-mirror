@@ -208,18 +208,12 @@ SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have b
 IF(RobWorkHardware_FIND_COMPONENTS)
     # FIRST check if all required components are installed/build
     FOREACH(component IN LISTS RobWorkHardware_FIND_COMPONENTS)
-        
         LIST(FIND RWHW_BUILD_WITH_LIBRARIES "rwhw_${component}" COMP_FOUND)
         IF(${COMP_FOUND} GREATER -1)
             LIST(APPEND LIBRARIES_TO_INCLUDE "rwhw_${component}")
+            SET(RobWorkHardware_${component}_FOUND TRUE)
         ELSE()
-            IF( RobWorkHardware_REQUIRED )
-	      SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
-              MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
-            ELSE ()
-	      SET(ROBWORKHARDWARE_EXPERIENCED_FATAL_PROBLEMS TRUE)
-              MESSAGE(WARNING "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
-            ENDIF()
+            SET(RobWorkHardware_${component}_FOUND FALSE)
         ENDIF()
     ENDFOREACH()
     MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")
@@ -374,11 +368,15 @@ ELSE()
 ENDIF()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(RobWorkHardware "Found RobWorkHardware-Version ${RobWorkHardware_VERSION}" RWHW_ROOT ROBWORKHARDWARE_LIBRARIES ROBWORKHARDWARE_INCLUDE_DIRS ROBWORKHARDWARE_LIBRARY_DIRS)
+find_package_handle_standard_args(RobWorkHardware 
+                                      REQUIRED_VARS RWHW_ROOT ROBWORKHARDWARE_LIBRARIES 
+                                                    ROBWORKHARDWARE_INCLUDE_DIRS ROBWORKHARDWARE_LIBRARY_DIRS
+                                      VERSION_VAR ${RobWorkHardware_VERSION}
+                                      HANDLE_COMPONENTS                  
+                                  )
 mark_as_advanced(ROBWORKHARDWARE_LIBRARIES ROBWORKHARDWARE_INCLUDE_DIRS ROBWORKHARDWARE_LIBRARY_DIRS)
 
 if(ROBWORKHARDWARE_FOUND)
   set(ROBWORKHARDWARE_VERSION ${RobWorkHardware_VERSION} CACHE STRING "RobWorkHardware version")
 endif(ROBWORKHARDWARE_FOUND)
-
 
