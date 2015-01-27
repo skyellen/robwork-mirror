@@ -367,6 +367,19 @@ ELSE()
   MESSAGE(STATUS "RobWorkHardware: Could not find a suitable RobWorkHardware installation!") 
 ENDIF()
 
+# Find and add full path information for the RobWorkHardware libraries
+SET(ROBWORKHARDWARE_LIBRARIES_TMP ${ROBWORKHARDWARE_LIBRARIES})
+SET(ROBWORKHARDWARE_LIBRARIES)
+FOREACH(l ${ROBWORKHARDWARE_LIBRARIES_TMP})
+  UNSET(tmp CACHE)
+  FIND_LIBRARY(tmp ${l} PATHS ${ROBWORKHARDWARE_LIBRARY_DIRS} NO_DEFAULT_PATH)
+  IF(tmp)
+    LIST(APPEND ROBWORKHARDWARE_LIBRARIES ${tmp})
+  ELSE()
+    LIST(APPEND ROBWORKHARDWARE_LIBRARIES ${l})
+  ENDIF()
+ENDFOREACH(l)
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(RobWorkHardware 
                                       REQUIRED_VARS RWHW_ROOT ROBWORKHARDWARE_LIBRARIES 
