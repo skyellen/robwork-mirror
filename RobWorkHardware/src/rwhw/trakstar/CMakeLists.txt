@@ -2,17 +2,17 @@ SET(SUBSYS_NAME trakstar )
 SET(SUBSYS_DESC "Calibration of devices" )
 SET(SUBSYS_DEPS rw )
 
-FIND_PACKAGE(TrakStar QUIET)
-
 SET(build TRUE)
-set(DEFAULT TRAKSTAR_FOUND)
-set(REASON "")
 
-IF( ${TRAKSTAR_FOUND} )
-    set(REASON "Trakstar library found!")
-ELSE()
-    set(REASON "Trakstar library not found!")
+FIND_PACKAGE(TrakStar QUIET)
+SET(DEFAULT TRUE)
+SET(REASON)
+IF( NOT TRAKSTAR_FOUND )
+    SET(DEFAULT FALSE)
+    SET(REASON "Trakstar library not found!")
 ENDIF()
+
+
 IF( ${BUILD_trakstar} )
     FIND_PACKAGE(TrakStar REQUIRED)
     IF( NOT ${TRAKSTAR_FOUND} )
@@ -26,7 +26,7 @@ RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
 RW_ADD_DOC( ${SUBSYS_NAME} )
 
 IF( build )
-   
+    FIND_PACKAGE(TrakStar)
     SET(SRC_CPP )
     SET(SRC_HPP )
     
