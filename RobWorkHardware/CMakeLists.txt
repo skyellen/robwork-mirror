@@ -57,12 +57,12 @@ ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P
 # setup stuff for RobWorkHardware
 
 # Load the optional Default.cmake file.
-INCLUDE(${ROOT}/config.cmake OPTIONAL)
-IF (NOT EXISTS ${RWHW_ROOT}/config.cmake)
-  # Setup the default settings in case no RobWork.cmake exist.
-  INCLUDE(${RWHW_ROOT}/config.cmake.template)
-  MESSAGE(STATUS " No config.cmake file loaded, using default settings from config.cmake.template")
-ENDIF ()
+#INCLUDE(${ROOT}/config.cmake OPTIONAL)
+#IF (NOT EXISTS ${RWHW_ROOT}/config.cmake)
+#  # Setup the default settings in case no RobWork.cmake exist.
+#  INCLUDE(${RWHW_ROOT}/config.cmake.template)
+#  MESSAGE(STATUS " No config.cmake file loaded, using default settings from config.cmake.template")
+#ENDIF ()
 
 # make sure that libraries can reach the cmake modules
 SET(CMAKE_MODULE_PATH ${RWHW_ROOT}/cmake/Modules ${CMAKE_MODULE_PATH})
