@@ -1152,7 +1152,7 @@ public:
 	void resumeSimulation();
 	bool isRunning();
 	bool isFinished();
-	int getStat(GraspTask::TestStatus status);
+	int getStat(GraspResult::TestStatus status);
 	std::vector<int> getStat();
 	std::string getStatDescription();
 	int getNrTargetsDone();

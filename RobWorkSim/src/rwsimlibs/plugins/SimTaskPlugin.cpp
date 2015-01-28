@@ -334,9 +334,9 @@ void SimTaskPlugin::btnPressed() {
                 GraspTask::Ptr task = _graspSim->getResult();
 
                 if(_onlySuccessBox->isChecked()){
-                    std::vector<GraspTask::TestStatus> includefilter;
-                    includefilter.push_back( GraspTask::Success );
-                    includefilter.push_back( GraspTask::ObjectSlipped );
+                    std::vector<GraspResult::TestStatus> includefilter;
+                    includefilter.push_back( GraspResult::Success );
+                    includefilter.push_back( GraspResult::ObjectSlipped );
                     task->filterTasks( includefilter );
                 }
 
@@ -794,9 +794,9 @@ void SimTaskPlugin::saveTasks(bool automatic){
 
     if(_onlySuccessBox->isChecked()){
         // remove all failing grasp targets
-        std::vector<GraspTask::TestStatus> includefilter;
-        includefilter.push_back( GraspTask::Success );
-        includefilter.push_back( GraspTask::ObjectSlipped );
+        std::vector<GraspResult::TestStatus> includefilter;
+        includefilter.push_back( GraspResult::Success );
+        includefilter.push_back( GraspResult::ObjectSlipped );
         result->filterTasks( includefilter );
     }
 

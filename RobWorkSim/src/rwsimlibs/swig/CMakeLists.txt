@@ -28,6 +28,29 @@ IF( SWIG_FOUND )
 	ELSE()
 	    SET_TARGET_PROPERTIES(rwsim_lua_s PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
 	ENDIF()
+	
+	FIND_PACKAGE(PythonInterp)
+    FIND_PACKAGE(PythonLibs)
+    INCLUDE(CMakeDependentOption)
+    CMAKE_DEPENDENT_OPTION(RWSIM_PYTHON_BINDINGS_ENABLED "Enable python bindings." 
+                       ON "PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND" OFF)
+    IF( RWSIM_PYTHON_BINDINGS_ENABLED )
+        IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
+            MESSAGE(STATUS "RobWorkSim: Python bindings ENABLED!")
+            INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+            
+            SET(CMAKE_SWIG_OUTDIR ${RWSIM_CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+            SWIG_ADD_MODULE(rwsim python rwsim.i ScriptTypes.cpp)
+            SWIG_LINK_LIBRARIES(rwsim rwsim
+                ${ROBWORK_LIBRARIES} 
+                ${PYTHON_LIBRARIES} )
+  
+        ELSE()
+            MESSAGE(STATUS "RobWorkSim: Python bindings DISABLED!")
+        ENDIF()
+    ELSE()
+        MESSAGE(STATUS "RobWorkSim: Python bindings DISABLED")
+    ENDIF()
     
     FIND_PACKAGE(Java)
 	

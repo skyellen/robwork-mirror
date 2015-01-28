@@ -60,6 +60,9 @@
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwlibs/task/Task.hpp>
 #include <rwlibs/task/GraspTask.hpp>
+#include <rwlibs/task/GraspTarget.hpp>
+#include <rwlibs/task/GraspResult.hpp>
+#include <rwlibs/task/GraspSubTask.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -135,6 +138,7 @@ namespace swig {
 	typedef rw::kinematics::MovableFrame MovableFrame;
 	typedef rw::kinematics::FixedFrame FixedFrame;
 	typedef rw::kinematics::State State;
+	typedef rw::kinematics::StateStructure StateStructure;
 
 	// loaders
 	typedef rw::loaders::ImageFactory ImageFactory;
@@ -277,6 +281,9 @@ namespace swig {
 	// rwlibs task
 	typedef rwlibs::task::Task<rw::math::Transform3D<double> > TaskSE3;
 	typedef rwlibs::task::GraspTask GraspTask;
+	typedef rwlibs::task::GraspSubTask GraspSubTask;
+	typedef rwlibs::task::GraspTarget GraspTarget;
+	typedef rwlibs::task::GraspResult GraspResult;
 
 	// rwlibs tools
 

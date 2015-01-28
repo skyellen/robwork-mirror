@@ -100,8 +100,8 @@ public:
 	 * @param status [in]
 	 * @return
 	 */
-	int getStat(rwlibs::task::GraspTask::TestStatus status){
-	    if(status<0 && status>rwlibs::task::GraspTask::SizeOfStatusArray)
+	int getStat(rwlibs::task::GraspResult::TestStatus status){
+	    if(status<0 && status>rwlibs::task::GraspResult::SizeOfStatusArray)
 	        RW_THROW("Unknown TestStatus!");
 	    return _stat[status];
 	}
@@ -114,8 +114,8 @@ public:
 
 	std::string getStatDescription(){
 	    std::stringstream sstr;
-	    for(int i=0;i<rwlibs::task::GraspTask::SizeOfStatusArray; i++){
-	        sstr << i << ": " << rwlibs::task::GraspTask::toString((rwlibs::task::GraspTask::Status)i) << "\n";
+	    for(int i=0;i<rwlibs::task::GraspResult::SizeOfStatusArray; i++){
+	        sstr << i << ": " << rwlibs::task::GraspResult::toString((rwlibs::task::GraspResult::TestStatus)i) << "\n";
 	    }
 	    return sstr.str();
 	}

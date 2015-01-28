@@ -27,6 +27,9 @@ IF(build)
       ./TaskUtils.cpp
       ./TypeRepository.cpp
       ./GraspTask.cpp
+      ./GraspTarget.cpp
+      ./GraspResult.cpp
+      ./GraspSubTask.cpp
     )
     
     
@@ -39,6 +42,9 @@ IF(build)
       ./TaskUtils.hpp
       ./TypeRepository.hpp
       ./GraspTask.hpp
+      ./GraspTarget.hpp
+      ./GraspResult.hpp
+      ./GraspSubTask.hpp
     )
     
     

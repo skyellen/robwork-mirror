@@ -50,7 +50,7 @@ be useful to start an instance of RobWorkStudio:
 ~~~~{.py}
 rwstudio = rws.getRobWorkStudio()
 // now load a workcell
-rwstudio.loadWorkCell('some/workcell.wc.xml')
+rwstudio.openWorkCell('some/workcell.wc.xml')
 // lets get the workcell
 wc = rwstudio.getWorkCell()
 print wc.getName()

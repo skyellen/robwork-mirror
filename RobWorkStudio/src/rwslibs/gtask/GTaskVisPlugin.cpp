@@ -292,36 +292,36 @@ void GTaskVisPlugin::updateVis(){
             if(!_untestedBox->isChecked() )
                 continue;
 
-        } else if(testStatus==GraspTask::ObjectDropped){
+        } else if(testStatus==GraspResult::ObjectDropped){
             if(!_droppedBox->isChecked() )
                 continue;
             droppedStat++;
             rt.color[0] = 1.0;
-        } else if(testStatus==GraspTask::ObjectMissed){
+        } else if(testStatus==GraspResult::ObjectMissed){
             if(!_missedBox->isChecked() )
                 continue;
             missedStat++;
             rt.color[0] = 0.5;
-        } else if(testStatus==GraspTask::Success){
+        } else if(testStatus==GraspResult::Success){
             if(!_successBox->isChecked() )
                 continue;
             successStat++;
             rt.color[1] = 1.0;
-        } else if(testStatus==GraspTask::ObjectSlipped){
+        } else if(testStatus==GraspResult::ObjectSlipped){
             if(!_slippedBox->isChecked() )
                 continue;
             slippedStat++;
             rt.color[0] = 0.0;
             rt.color[1] = 1.0;
             rt.color[2] = 0.5;
-        } else if(testStatus==GraspTask::CollisionInitially ||
-                  testStatus==GraspTask::CollisionEnvironmentInitially ||
-                  testStatus==GraspTask::CollisionObjectInitially){
+        } else if(testStatus==GraspResult::CollisionInitially ||
+                  testStatus==GraspResult::CollisionEnvironmentInitially ||
+                  testStatus==GraspResult::CollisionObjectInitially){
             if(!_collisionsBox->isChecked() )
                 continue;
-            if(testStatus==GraspTask::CollisionEnvironmentInitially)
+            if(testStatus==GraspResult::CollisionEnvironmentInitially)
                 collisionEnvStat++;
-            else if(testStatus==GraspTask::CollisionObjectInitially)
+            else if(testStatus==GraspResult::CollisionObjectInitially)
                 collisionObjStat++;
             else
                 collisionStat++;
@@ -334,7 +334,7 @@ void GTaskVisPlugin::updateVis(){
             if(!_otherBox->isChecked() )
                 continue;
             otherStat++;
-            if(testStatus==GraspTask::SimulationFailure){
+            if(testStatus==GraspResult::SimulationFailure){
                 rt.color[0] = 1;
                 rt.color[1] = 1;
                 rt.color[2] = 1;
