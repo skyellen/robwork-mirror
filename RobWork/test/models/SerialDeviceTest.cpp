@@ -225,14 +225,6 @@ BOOST_AUTO_TEST_CASE(forwardKinematicsTest)
         // And last define the PUMA560 end-effector frame
         FixedFrame *tool = new FixedFrame("Tool",Transform3D<>::identity());
 
-        // update the active attribute on all active joints, which means all actuated joints
-        //Accessor::activeJoint().set(*joint1,true);
-        //Accessor::activeJoint().set(*joint2,true);
-        //Accessor::activeJoint().set(*joint3,true);
-        //Accessor::activeJoint().set(*joint4,true);
-        //Accessor::activeJoint().set(*joint5,true);
-        //Accessor::activeJoint().set(*joint6,true);
-
         // add all frames and joints to the Tree there by defining their parent child relationship
         tree->addFrame(base,world);
         tree->addFrame(joint1,base);
@@ -286,11 +278,9 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     boost::shared_ptr<StateStructure> tree =
         boost::shared_ptr<StateStructure>(new StateStructure());
     Frame *world = tree->getRoot();
-    //tree->addFrame(world);
 
     // Define the simplified (only 6-dof) Kuka-kr16 robot
-
-    // Define the PUMA560 base frame
+    // Define the base frame
     FixedFrame *base =
         new FixedFrame("Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
 
@@ -311,14 +301,6 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
                                -1.0,            0.0,            0.0,
                                0.0,  1.0/sqrt(2.0), -1.0/sqrt(2.0) )) ) ;
 
-    // update the active attribute on all active joints, which means all actuated joints
-    //Accessor::activeJoint().set(*joint1,true);
-    //Accessor::activeJoint().set(*joint2,true);
-    //Accessor::activeJoint().set(*joint3,true);
-    //Accessor::activeJoint().set(*joint4,true);
-    //Accessor::activeJoint().set(*joint5,true);
-    //Accessor::activeJoint().set(*joint6,true);
-
     // add all frames and joints to the Tree there by defining their parent child relationship
     tree->addFrame(base,world);
     tree->addFrame(joint1,base);
@@ -328,8 +310,6 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     tree->addFrame(joint5,joint4);
     tree->addFrame(joint6,joint5);
     tree->addFrame(tool,joint6);
-
-    //tree->addFrameChain(world, tool);
 
     // Now before constructing the device, construct the rest of the environment.
     // Define the environment
@@ -383,29 +363,31 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
     Frame *kr16_j6 = joint6;
 
     // Make velocity vector
-    Q dq(6);
+    Q dq(6, 0.0);
     for(size_t i = 0; i<dq.size(); i++)
         dq[i] = 1.0;
-
+    dq[5] = 0;
     // Velocity of end-effector seen from base
-    VelocityScrew6D<> bVe = kr16t.baseJframe(tool,state) * dq;
-
+    VelocityScrew6D<> bVe = kr16t.baseJframe(kr16_j6,state) * dq;
     // Velocity of tool seen from base
     VelocityScrew6D<> bVt = kr16t.baseJend(state) * dq;
 
     // Velocity of end-effector seen from end-effector
-    Rotation3D<> toolRbase = inverse(kr16t.baseTframe(tool,state).R());
-    VelocityScrew6D<> eVe =  toolRbase * bVe;
+    VelocityScrew6D<> eVe = inverse(kr16t.baseTframe(kr16_j6,state).R()) * bVe;
     // Velocity of tool seen from tool
-    VelocityScrew6D<> tVt = inverse(kr16t.baseTend(state).R()) * bVt;
+    VelocityScrew6D<> tVt = inverse(kr16t.baseTframe(kr16t.getEnd(), state).R()) * bVt;
 
-    BOOST_CHECK(normInf(eVe - tVt) < 1e-6);
+    // set translation to be from t to e
+    Transform3D<> eTt = Kinematics::frameTframe( kr16_j6, kr16t.getEnd(), state);
+    Transform3D<> tTe = inverse( eTt );
 
     // Velocity of end-effector seen from end-effector (calculated from tool velocity)
-    VelocityScrew6D<> eVe2 = tool->getTransform(state) * tVt;
+    VelocityScrew6D<> eVe2 = eTt * tVt;
     // Velocity of tool seen from tool (calculated from end-effector velocity)
-    VelocityScrew6D<> tVt2 = tool->getTransform(state) * eVe;
-    BOOST_CHECK(normInf(eVe2 - tVt2) < 1e-6);
+    VelocityScrew6D<> tVt2 = tTe  * eVe;
+
+    BOOST_CHECK(normInf(eVe - eVe2) < 1e-6 );
+    BOOST_CHECK(normInf(tVt - tVt2) < 1e-6 );
 
 
     Transform3D<double> t_bTe = kr16t.baseTend(state);
@@ -415,7 +397,7 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
 
     Jacobian b_eJq = kr16t.baseJframe(kr16_j6,state);
     Jacobian e_eJb_e(inverse(kr16t.baseTframe(kr16_j6,state).R()));
-    Jacobian t_tJe_e(inverse(tool->getTransform(state)));
+    Jacobian t_tJe_e( tTe );
 
     Jacobian t_tJq = t_tJe_e * e_eJb_e * b_eJq;
     VelocityScrew6D<> tVt3 = t_tJq * dq;
@@ -427,26 +409,4 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
 
     Jacobian b_tJb_e = b_tJe_t * e_tJt_t * t_tJe_e * e_eJb_e;
 
-    //std::cout
-    //    << "b_tJb_e"
-    //    << b_tJb_e
-    //    << "\n"
-    //    << "b_tJb_e"
-    //    << Jacobian(inverse(tool->getTransform(state)).P())
-    //    << "\n";
-
-    boost::numeric::ublas::matrix<double> placeholder =
-        prod(
-            kr16t.baseTend(state).R().m(),
-            Math::skew(inverse(tool->getTransform(state)).P().m()));
-
-    //std::cout
-    //    << "1) "
-    //    << prod(placeholder,inverse(kr16t.baseTend(state)).R().m())
-    //    << "\n";
-
-    //std::cout
-    //    << "2) "
-    //    << Math::skew(inverse(tool->getTransform(state)).P().m())
-    //    << "\n";
 }
