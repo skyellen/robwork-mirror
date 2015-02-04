@@ -51,10 +51,10 @@ SET(SrcFiles
 SET(UisFiles GraspPlugin.ui DesignDialog.ui TaskDialog.ui)
 
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp TaskDialog.hpp)
+QT5_WRAP_CPP(MocSrcFiles GraspPlugin.hpp DesignDialog.hpp TaskDialog.hpp)
 SET(RccSrcFiles )
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
-QT4_WRAP_UI(UiHeaders ${UisFiles} )
+QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
+QT5_WRAP_UI(UiHeaders ${UisFiles} )
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)

@@ -3,7 +3,7 @@
 #include <rw/rw.hpp>
 #include <rwsim/rwsim.hpp>
 
-
+#include <rw/models/RigidObject.hpp>
 
 using namespace std;
 USE_ROBWORK_NAMESPACE;
@@ -52,7 +52,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 		baseT = Transform3D<>(-0.5*_baseParameters(2)*Vector3D<>::z());
 	}
 	
-	Object* baseobj = new Object(wc->findFrame("gripper.Base"));
+	RigidObject* baseobj = new RigidObject(wc->findFrame("gripper.Base"));
 	Model3D* basemodel = new Model3D("BaseModel");
 	basemodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *baseGeometry->getGeometryData()->getTriMesh() );
 	basemodel->setTransform(baseT);
@@ -62,7 +62,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	wc->add(baseobj);
 	dwc->findBody("gripper.Base")->setObject(baseobj);
 	
-	Object* leftobj = new Object(wc->findFrame("gripper.LeftFinger"));
+	RigidObject* leftobj = new RigidObject(wc->findFrame("gripper.LeftFinger"));
 	Model3D* leftmodel = new Model3D("LeftModel");
 	leftmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *leftGeometry->getGeometryData()->getTriMesh() );
 	leftmodel->setTransform(Transform3D<>());
@@ -72,7 +72,7 @@ void Gripper::updateGripper(rw::models::WorkCell::Ptr wc, rwsim::dynamics::Dynam
 	wc->add(leftobj);
 	dwc->findBody("gripper.LeftFinger")->setObject(leftobj);
 	
-	Object* rightobj = new Object(wc->findFrame("gripper.RightFinger"));
+	RigidObject* rightobj = new RigidObject(wc->findFrame("gripper.RightFinger"));
 	Model3D* rightmodel = new Model3D("RightModel");
 	rightmodel->addTriMesh(Model3D::Material("stlmat",0.4f,0.4f,0.4f), *rightGeometry->getGeometryData()->getTriMesh() );
 	rightmodel->setTransform(Transform3D<>(Vector3D<>(), Rotation3D<>(1, 0, 0, 0, 1, 0, 0, 0, -1)));
