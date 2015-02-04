@@ -125,7 +125,7 @@ namespace rw { namespace math {
 			RW_ASSERT(r.cols() == 3);
 			for (size_t i = 0; i<3; i++) 
 				for (size_t j = 0; j<3; j++) 
-					_matrix(i,j) = r(i,j);
+					_matrix(i,j) = r.row(i)(j);
 				
 		}
 

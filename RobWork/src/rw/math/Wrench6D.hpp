@@ -90,7 +90,7 @@ namespace rw { namespace math {
 			if (v.cols() != 1 || v.rows() != 6)
 				RW_THROW("Unable to initialize VectorND with "<<v.rows()<< " x "<<v.cols()<<" matrix");
 			for (size_t i = 0; i<6; i++)
-				_wrench[i] = v(i);
+				_wrench[i] = v.row(i)(0);
 		}
 
         /**

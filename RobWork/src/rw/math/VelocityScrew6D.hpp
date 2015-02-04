@@ -86,12 +86,20 @@ namespace rw { namespace math {
 		VelocityScrew6D(const Eigen::MatrixBase<R>& v) {
 			if (v.cols() != 1 || v.rows() != 6)
 				RW_THROW("Unable to initialize VectorND with "<<v.rows()<< " x "<<v.cols()<<" matrix");
-			_screw[0] = v[0];
-			_screw[1] = v[1];
-			_screw[2] = v[2];
-			_screw[3] = v[3];
-			_screw[4] = v[4];
-			_screw[5] = v[5];
+			/* For some reason the following does not WORK AT ALL (JIMMY)
+			_screw[0] = v(0,0);
+			_screw[1] = v(1,0);
+			_screw[2] = v(2,0);
+			_screw[3] = v(3,0);
+			_screw[4] = v(4,0);
+			_screw[5] = v(5,0);
+			*/ // instead use
+			_screw[0] = v.row(0)(0);
+			_screw[1] = v.row(1)(0);
+			_screw[2] = v.row(2)(0);
+			_screw[3] = v.row(3)(0);
+			_screw[4] = v.row(4)(0);
+			_screw[5] = v.row(5)(0);
 		}
 
         /**
@@ -308,30 +316,30 @@ namespace rw { namespace math {
 
         /**
          * @brief Changes velocity referencepoint of
-         * velocityscrew: @f$ \robabx{b}{b}{\mathbf{\nu}}\to
-         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         * velocityscrew: @f$ \robabx{a}{q}{\mathbf{\nu}}\to
+         * \robabx{a}{p}{\mathbf{\nu}} @f$
          *
-         * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
-         * rigidly connected.
+         * The vector should describe a translation from the current
+         * velocity reference point q to the wanted/new velocity reference point p
+         * seen from frame @f$ \mathcal{F}_a @f$
          *
-         * @param aPb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
-         * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
+         * @param aPqTop [in] the translation from point q to point p seen in
+         * frame @f$ \mathcal{F}_a @f$
          *
-         * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$
-         * \robabx{b}{b}{\mathbf{\nu}} @f$
+         * @param aV [in] velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
+         * \robabx{a}{q}{\mathbf{\nu}} @f$
          *
          * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
-         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         * \robabx{a}{p}{\mathbf{\nu}} @f$
          *
-         * Transformation of both the velocity reference point and of the base to
-         * which the VelocityScrew is expressed
+         * Transformation of the velocity reference point
          *
          * \f[
-         * \robabx{a}{a}{\mathbf{\nu}} =
+         * \robabx{a}{p}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabx{a}{a}{\mathbf{v}} \\
-         *  \robabx{a}{a}{\mathbf{\omega}}
+         *  \robabx{a}{p}{\mathbf{v}} \\
+         *  \robabx{a}{p}{\mathbf{\omega}}
          *  \end{array}
          * \right] =
          * \left[
@@ -341,11 +349,11 @@ namespace rw { namespace math {
          *    \mathbf{0}^{3x3} & \robabx{a}{b}{\mathbf{R}}
          *  \end{array}
          * \right]
-         * \robabx{b}{b}{\mathbf{\nu}} =
+         * \robabx{a}{p}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{v}} +
-         *    \robabx{a}{b}{\mathbf{p}} \times \robabx{a}{b}{\mathbf{R}}
+         *    \robabx{a}{p}{\mathbf{v}} +
+         *    \robabx{a}{qTop}{\mathbf{p}}
          *    \robabx{b}{b}{\mathbf{\omega}}\\
          *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{\omega}}
          *  \end{array}
@@ -353,12 +361,12 @@ namespace rw { namespace math {
          * \f]
          *
          */
-        friend const VelocityScrew6D<T> operator*(const Vector3D<T>& aPb,
+        friend const VelocityScrew6D<T> operator*(const Vector3D<T>& aPqTop,
                                                   const VelocityScrew6D<T>& bV)
         {
             const Vector3D<T>& bv = bV.linear();
             const EAA<T>& bw = bV.angular();
-            const Vector3D<T>& av = bv + cross(aPb, bw);
+            const Vector3D<T>& av = bv + cross(aPqTop, bw);
             return VelocityScrew6D<T>(av, bw);
         }
 

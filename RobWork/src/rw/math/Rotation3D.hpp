@@ -365,15 +365,15 @@ namespace rw { namespace math {
 		explicit Rotation3D(const Eigen::MatrixBase<R>& m) {
 			RW_ASSERT(m.cols() == 3);
 			RW_ASSERT(m.rows() == 3);
-            _m[0][0] = m(0,0);
-            _m[0][1] = m(0,1);
-            _m[0][2] = m(0,2);
-            _m[1][0] = m(1,0);
-            _m[1][1] = m(1,1);
-            _m[1][2] = m(1,2);
-            _m[2][0] = m(2,0);
-            _m[2][1] = m(2,1);
-            _m[2][2] = m(2,2);
+            _m[0][0] = m.row(0)(0);
+            _m[0][1] = m.row(0)(1);
+            _m[0][2] = m.row(0)(2);
+            _m[1][0] = m.row(1)(0);
+            _m[1][1] = m.row(1)(1);
+            _m[1][2] = m.row(1)(2);
+            _m[2][0] = m.row(2)(0);
+            _m[2][1] = m.row(2)(1);
+            _m[2][2] = m.row(2)(2);
 		}
 
 

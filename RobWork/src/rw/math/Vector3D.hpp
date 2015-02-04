@@ -115,9 +115,9 @@ namespace rw { namespace math {
         template <class R>
 		explicit Vector3D(const Eigen::MatrixBase<R>& r)             
         {			
-			_vec[0] = r(0);
-			_vec[1] = r(1);
-			_vec[2] = r(2);
+			_vec[0] = r.row(0)(0);
+			_vec[1] = r.row(1)(0);
+			_vec[2] = r.row(2)(0);
 		}
 
         /**
