@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         BOOST_FOREACH(GraspTarget& target,stask.targets ){
             if(target.result==NULL)
                 continue;
-            if(target.result->testStatus!=GraspTask::Success && target.result->testStatus!=GraspTask::ObjectSlipped)
+            if(target.result->testStatus!=GraspResult::Success && target.result->testStatus!=GraspResult::ObjectSlipped)
                 continue;
             if(target.result->qualityAfterLifting[0]<0.05)
                 continue;
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
             size_t nrNeighbors = result.size();
             std::cout << "nrNeighbors: " << nrNeighbors << std::endl;
             int exptestStatus = gres->testStatus;
-            gres->testStatus = GraspTask::Success;
+            gres->testStatus = GraspResult::Success;
 
             Q quality(gres->qualityAfterLifting.size()+1);
             for(std::size_t i=0;i<gres->qualityAfterLifting.size();i++)
@@ -248,7 +248,7 @@ int main(int argc, char** argv)
             std::cout << (closest_node->key-key) << std::endl;
             Q qual = gressim->qualityAfterLifting;
             q_dim = qual.size();
-            if((exptestStatus==GraspTask::Success) || (exptestStatus==GraspTask::ObjectSlipped)){
+            if((exptestStatus==GraspResult::Success) || (exptestStatus==GraspResult::ObjectSlipped)){
                 ss << "1\t"<< dist;
                 Q qTmp;
                 qTmp = gres->qualityAfterLifting;

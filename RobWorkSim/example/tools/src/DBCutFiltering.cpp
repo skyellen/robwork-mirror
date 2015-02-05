@@ -128,7 +128,7 @@ int main(int argc, char** argv){
         for(std::size_t j=0;j<cutDB.size();j++){
             CutActionParam base = cutDB[j];
 
-            if(target->result!=NULL && target->result->testStatus==GraspTask::Success){
+            if(target->result!=NULL && target->result->testStatus==GraspResult::Success){
                 CutActionParam exp = base;
                 exp.gripperQ = target->result->gripperConfigurationGrasp;
                 exp.posGripper = target->result->objectTtcpGrasp.P();
@@ -162,7 +162,7 @@ int main(int argc, char** argv){
     for(std::size_t i=0;i<targets.size();i++){
         //Unused: GraspSubTask *subtask = targets[i].first;
         GraspTarget *target = targets[i].second;
-        if(target->result!=NULL && target->result->testStatus==GraspTask::Success){
+        if(target->result!=NULL && target->result->testStatus==GraspResult::Success){
             // compute the successRate from the next cutDB.size() successes
             int succCnt=0;
             for(std::size_t n=0;n<cutDB.size();n++){

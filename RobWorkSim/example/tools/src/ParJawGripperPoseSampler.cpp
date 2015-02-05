@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     }
 
     std::string outfile = vm["output"].as<std::string>();
-    if( boost::filesystem3::exists(outfile) ){
+    if( boost::filesystem::exists(outfile) ){
         std::cout << "Output allready exists! Skipping database generation." << std::endl;
         return 0;
     }
@@ -146,11 +146,11 @@ int main(int argc, char** argv)
     }
 
     Frame *objectFrame = NULL;
-    Object::Ptr obj;
+    RigidObject::Ptr obj;
     if( object_geo==NULL ){
         // load it from workcell
         Log::infoLog() << " finding object in workcell: " << name_object<< std::endl;
-        obj = wc->findObject(name_object);
+        obj = wc->findObject(name_object).cast<RigidObject>();
         if( obj==NULL  || obj->getGeometry().size()==0 ){
             RW_ASSERT("Object option \"object\" must be a valid file name or a name of an object in the workcell description!");
         }
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
         // create object and add it to workcell
         MovableFrame * mframe = new MovableFrame("stlModelObject");
         wc->getStateStructure()->addFrame(mframe, wc->getWorldFrame() );
-        obj = ownedPtr( new Object(mframe,object_geo) );
+        obj = ownedPtr( new RigidObject(mframe,object_geo) );
         wc->add(obj);
 
     }
@@ -416,7 +416,7 @@ int main(int argc, char** argv)
 
             GraspTarget gtarget( target );
             gtarget.result = ownedPtr( new GraspResult() );
-            gtarget.result->testStatus = GraspTask::CollisionInitially;
+            gtarget.result->testStatus = GraspResult::CollisionInitially;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
 
@@ -447,7 +447,7 @@ int main(int argc, char** argv)
             nrSuccesses++;
             GraspTarget gtarget( target );
             gtarget.result = ownedPtr( new GraspResult() );
-            gtarget.result->testStatus = GraspTask::Success;
+            gtarget.result->testStatus = GraspResult::Success;
             gtarget.result->objectTtcpTarget = target;
             gtarget.result->gripperConfigurationGrasp = oq;
             gtarget.result->gripperConfigurationLift = oq;

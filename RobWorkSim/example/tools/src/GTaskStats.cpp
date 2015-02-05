@@ -104,7 +104,7 @@ int main(int argc, char** argv)
         if(!silent)
             std::cout << "Doing baseline statistics" << std::endl;
         int targets = 0, results = 0;
-        std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
+        std::vector<int> testStat(GraspResult::SizeOfStatusArray,0);
 
         BOOST_FOREACH(std::string ifile, baselinefiles){
             //std::cout << "Processing: " << ifile << std::endl;
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
                 BOOST_FOREACH(GraspTarget& target, stask.getTargets()){
                     targets++;
                     if(target.result==NULL){
-                        testStat[GraspTask::UnInitialized]++;
+                        testStat[GraspResult::UnInitialized]++;
                         continue;
                     }
                     results++;
@@ -185,20 +185,20 @@ int main(int argc, char** argv)
                 int tstatus2 = inputtargets[i].second->getResult()->testStatus;
                 int stat1=0,stat2=0; // 0 is collision, 1 success, 2
 
-                if(tstatus1==GraspTask::ObjectSlipped || tstatus1==GraspTask::Success ){ stat1 = 0;}
-                else if(tstatus1==GraspTask::ObjectMissed){ stat1 = 1;}
-                else if(tstatus1==GraspTask::ObjectDropped){ stat1 = 2;}
-                else if(tstatus1==GraspTask::CollisionEnvironmentInitially){ stat1 = 3;}
-                else if(tstatus1==GraspTask::SimulationFailure){ stat1 = 4;}
-                else if(tstatus1==GraspTask::CollisionObjectInitially){ stat1 = 5;}
+                if(tstatus1==GraspResult::ObjectSlipped || tstatus1==GraspResult::Success ){ stat1 = 0;}
+                else if(tstatus1==GraspResult::ObjectMissed){ stat1 = 1;}
+                else if(tstatus1==GraspResult::ObjectDropped){ stat1 = 2;}
+                else if(tstatus1==GraspResult::CollisionEnvironmentInitially){ stat1 = 3;}
+                else if(tstatus1==GraspResult::SimulationFailure){ stat1 = 4;}
+                else if(tstatus1==GraspResult::CollisionObjectInitially){ stat1 = 5;}
                 else { stat1 = 6;}
 
-                if(tstatus2==GraspTask::ObjectSlipped || tstatus2==GraspTask::Success ){ stat2 = 0;}
-                else if(tstatus2==GraspTask::ObjectMissed){ stat2 = 1;}
-                else if(tstatus2==GraspTask::ObjectDropped){ stat2 = 2;}
-                else if(tstatus2==GraspTask::CollisionEnvironmentInitially){ stat2 = 3;}
-                else if(tstatus2==GraspTask::SimulationFailure){ stat2 = 4;}
-                else if(tstatus2==GraspTask::CollisionObjectInitially){ stat2 = 5;}
+                if(tstatus2==GraspResult::ObjectSlipped || tstatus2==GraspResult::Success ){ stat2 = 0;}
+                else if(tstatus2==GraspResult::ObjectMissed){ stat2 = 1;}
+                else if(tstatus2==GraspResult::ObjectDropped){ stat2 = 2;}
+                else if(tstatus2==GraspResult::CollisionEnvironmentInitially){ stat2 = 3;}
+                else if(tstatus2==GraspResult::SimulationFailure){ stat2 = 4;}
+                else if(tstatus2==GraspResult::CollisionObjectInitially){ stat2 = 5;}
                 else { stat2 = 6;}
 
                 confMat(stat1,stat2)++;

@@ -77,18 +77,18 @@ int main(int argc, char** argv)
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
         BOOST_FOREACH(std::string include, includes){
             if(include=="Success"){
-                includeMap[GraspTask::Success] = true;
-                taskincludefilter.push_back(GraspTask::Success);
+                includeMap[GraspResult::Success] = true;
+                taskincludefilter.push_back(GraspResult::Success);
             }
             else if(include=="ObjectSlipped"){
-                includeMap[GraspTask::ObjectSlipped] = true;
-                taskincludefilter.push_back(GraspTask::ObjectSlipped);
+                includeMap[GraspResult::ObjectSlipped] = true;
+                taskincludefilter.push_back(GraspResult::ObjectSlipped);
             }
             else { RW_THROW("Unsupported include tag!"); }
         }
     } else {
         // include all
-        for(int i=0;i<GraspTask::SizeOfStatusArray;i++){
+        for(int i=0;i<GraspResult::SizeOfStatusArray;i++){
             taskincludefilter.push_back( (GraspTask::TestStatus)i );
             includeMap[i] = true;
         }
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
     // do the simulation
     //Unused: int targets = 0;
     int totaltargets = 0;
-    std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
+    std::vector<int> testStat(GraspResult::SizeOfStatusArray,0);
 
     std::string playbackprefix = vm["playbackprefix"].as<std::string>();
 

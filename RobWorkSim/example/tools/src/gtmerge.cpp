@@ -68,26 +68,26 @@ int main(int argc, char** argv)
     if(vm.count("include")){
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
         BOOST_FOREACH(std::string include, includes){
-            if(include=="Success"){ includeMap[GraspTask::Success] = true; }
-            else if(include=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = true; }
+            if(include=="Success"){ includeMap[GraspResult::Success] = true; }
+            else if(include=="ObjectSlipped"){ includeMap[GraspResult::ObjectSlipped] = true; }
             else { RW_THROW("Unsupported include tag!"); }
         }
     } else {
         // include all
-        for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
+        for(int i=0;i<GraspResult::SizeOfStatusArray;i++)
             includeMap[i] = true;
     }
 
     if(vm.count("exclude")){
         const std::vector<std::string> &excludes = vm["exclude"].as<vector<string> >();
         BOOST_FOREACH(std::string exclude, excludes){
-            if(exclude=="Success"){ includeMap[GraspTask::Success] = false; }
-            else if(exclude=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = false; }
+            if(exclude=="Success"){ includeMap[GraspResult::Success] = false; }
+            else if(exclude=="ObjectSlipped"){ includeMap[GraspResult::ObjectSlipped] = false; }
             else if(exclude=="Collision"){
-                includeMap[GraspTask::CollisionFiltered] = false;
-                includeMap[GraspTask::CollisionObjectInitially] = false;
-                includeMap[GraspTask::CollisionEnvironmentInitially] = false;
-                includeMap[GraspTask::CollisionInitially] = false;
+                includeMap[GraspResult::CollisionFiltered] = false;
+                includeMap[GraspResult::CollisionObjectInitially] = false;
+                includeMap[GraspResult::CollisionEnvironmentInitially] = false;
+                includeMap[GraspResult::CollisionInitially] = false;
             }
 
             else { RW_THROW("Unsupported exclude tag!"); }
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     GraspTask::Ptr gtask;
     const std::vector<std::string> &inputs = vm["input"].as<vector<string> >();
     int targets = 0, totaltargets = 0, localNrTargets=0,nrBatches=0;
-    std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
+    std::vector<int> testStat(GraspResult::SizeOfStatusArray,0);
     BOOST_FOREACH(std::string input, inputs){
         path ip(input);
         std::vector<std::string> infiles;
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
         }
     }
     std::cout << "Statistics: ";
-    for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
+    for(int i=0;i<GraspResult::SizeOfStatusArray;i++)
         std::cout << i << ":" << testStat[i] << " ; ";
     std::cout << std::endl;
 

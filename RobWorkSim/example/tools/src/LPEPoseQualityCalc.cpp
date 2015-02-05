@@ -43,7 +43,7 @@ int calcPerturbedQuality(GraspTask::Ptr gtask, std::string outfile, int pertubat
         }
 
         GraspResult::Ptr tres = tasks[i].second->getResult();
-        if(tres->testStatus == GraspTask::Success || tres->testStatus == GraspTask::ObjectSlipped){
+        if(tres->testStatus == GraspResult::Success || tres->testStatus == GraspResult::ObjectSlipped){
             succCnt++;
         } else {
             failCnt++;

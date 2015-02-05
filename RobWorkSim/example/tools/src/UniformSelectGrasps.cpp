@@ -77,7 +77,7 @@ int main_lpe(int argc, char** argv)
     //Unused: int count = vm["samples"].as<int>();
     GraspTask::Ptr gtask = GraspTask::load( input );
 
-    if( boost::filesystem3::exists(output) ){
+    if( boost::filesystem::exists(output) ){
         std::cout << "Output allready exists! skipping filtering." << std::endl;
         return 0;
     }

@@ -119,13 +119,13 @@ int main(int argc, char** argv)
     if(vm.count("include")){
         const std::vector<std::string> &includes = vm["include"].as<vector<string> >();
         BOOST_FOREACH(std::string include, includes){
-            if(include=="Success"){ includeMap[GraspTask::Success] = true; }
-            else if(include=="ObjectSlipped"){ includeMap[GraspTask::ObjectSlipped] = true; }
+            if(include=="Success"){ includeMap[GraspResult::Success] = true; }
+            else if(include=="ObjectSlipped"){ includeMap[GraspResult::ObjectSlipped] = true; }
             else { RW_THROW("Unsupported include tag!"); }
         }
     } else {
         // include all
-        for(int i=0;i<GraspTask::SizeOfStatusArray;i++)
+        for(int i=0;i<GraspResult::SizeOfStatusArray;i++)
             includeMap[i] = true;
     }
 
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     // do the simulation
     //Unused: int targets = 0;
     int totaltargets = 0;
-    std::vector<int> testStat(GraspTask::SizeOfStatusArray,0);
+    std::vector<int> testStat(GraspResult::SizeOfStatusArray,0);
     bool perturbe = vm["perturbe"].as<bool>();
     BOOST_FOREACH(std::string ifile, infiles){
         std::cout << "loading: " << path(ifile).filename() << " ";
@@ -196,7 +196,7 @@ int main(int argc, char** argv)
             BOOST_FOREACH(GraspTarget &target, stask.getTargets() ){
                 if(target.result!=NULL){
                     if(useAlignedGrasp){
-                        if( target.result->testStatus==GraspTask::Success || target.result->testStatus==GraspTask::ObjectSlipped){
+                        if( target.result->testStatus==GraspResult::Success || target.result->testStatus==GraspResult::ObjectSlipped){
                             target.pose = target.result->objectTtcpLift;
                         }
                     }
