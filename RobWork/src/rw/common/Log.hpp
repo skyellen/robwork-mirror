@@ -398,6 +398,12 @@ namespace rw { namespace common {
 			_logEnabledMask = _logEnabledMask | mask;
 		}
 
+        bool isEnabled(LogIndex idx) {
+            if(idx<=_loglevel)
+                return true;
+            return (_logEnabledMask & toMask(idx) ) != 0;
+        }
+
 		/**
 		 * @brief Disable log(s) given by log mask.
 		 * @param mask [in] the mask for the logs to disable.
