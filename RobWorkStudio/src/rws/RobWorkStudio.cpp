@@ -1139,11 +1139,13 @@ namespace {
 
 
         void wait(){
-            while(_hs!=NULL && *_hs==false){
-            	TimerUtil::sleepMs(500);
-            	std::cout << "Wait1: " << *_hs << std::endl;
+        	int cnt = 0;
+            while(_hs!=NULL && *_hs==false && cnt<100){
+            	TimerUtil::sleepMs(5);
+            	//std::cout << "Wait1: " << *_hs << std::endl;
+            	cnt++;
             }
-            std::cout << "Wait done: " << std::endl;
+            //std::cout << "Wait done: " << std::endl;
         }
 
         rw::common::Ptr<bool> _hs;
