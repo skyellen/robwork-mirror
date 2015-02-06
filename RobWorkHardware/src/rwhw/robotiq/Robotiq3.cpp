@@ -17,8 +17,6 @@
 
 #include <boost/detail/endian.hpp>
 
-//#define FULL_DEBUG_INFO 1
-
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::common;
@@ -62,22 +60,22 @@ namespace {
 
 
 Robotiq3::Robotiq3():
-	_haveReceivedSize(false),
-	_socket(0),
-	_connected(false),
-	_force(4,1,1,1,1),
-	_speed(4,1,1,1,1),
-	_target(4,0,0,0,0),
-	_currentQ(4,0,0,0,0),
-	_currentSpeed(4,0,0,0,0),
-	_currentForce(4,0,0,0,0)
+    _haveReceivedSize(false),
+    _socket(0),
+    _connected(false),
+    _currentQ(4,0,0,0,0),
+    _currentSpeed(4,0,0,0,0),
+    _currentForce(4,0,0,0,0),
+    _target(4,0,0,0,0),
+    _speed(4,1,1,1,1),
+    _force(4,1,1,1,1)
 {
 
 
 }
 
 Robotiq3::~Robotiq3() {
-	disconnect();
+    disconnect();
 }
 
 bool Robotiq3::connect(const std::string& ip, unsigned int port) {
@@ -101,18 +99,16 @@ bool Robotiq3::connect(const std::string& ip, unsigned int port) {
 
     if (_socket == NULL) {
         _connected = false;
-        rw::common::Log::debugLog() << "Could not connected to Robotiq3 on " << ip << " port " << port << std::endl;
+        RW_LOG_DEBUG("Could not connected to Robotiq3 on " << ip << " port " << port);
         return false;
     }
     _connected = true;
 
-    rw::common::Log::debugLog() << "Connected to Robotiq3 on " << ip << " port " << port << std::endl;
+    RW_LOG_DEBUG("Connected to Robotiq3 on " << ip << " port " << port);
 
 
     // first thing we do is starting the thread
     start();
-    // first thing we do is check status of all registers;
-    //getAllStatus();
     // if gripper is not activated then activate it
     if(!isActivated()){
         activate();
@@ -153,7 +149,7 @@ Robotiq3::ModbusPackage Robotiq3::send(ModbusPackage package){
 void Robotiq3::activate(){
     ModbusPackage package;
 
-    std::cout << "ACTIVATE" << std::endl;
+    RW_LOG_DEBUG("Activating hand");
 
     setReg( package.header.data.functionCode, FC16);
     setReg( package.header.data.length, 13);
@@ -161,7 +157,7 @@ void Robotiq3::activate(){
     // register start address
     //package.data[0] = 0x03 ;
     //package.data[1] = 0xE8;
-    package.data[0] = 0x00 ;
+    package.data[0] = 0x00;
     package.data[1] = 0x00;
 
     // number of registers
@@ -181,23 +177,30 @@ void Robotiq3::activate(){
 
     // this blocks until package answered or timeout
     ModbusPackage answer = send(package);
-    // todo: could check if response is correct
+
+    // Checking response
     boost::uint16_t n;
     getReg(answer.header.data.length,n);
-    if(n!=6)
-        RW_THROW("N should be 6 not "<<n);
-
-    TimerUtil::sleepMs(100);
-    getAllStatus();
-    TimerUtil::sleepMs(100);
-    // get status until activation is complete
-    while( _gripperStatus.data.gIMC ==1 || _gripperStatus.data.gACT==0 ){
-        //std::cout << "gIMC:"<< _gripperStatus.data.gIMC << " gACT:"<<_gripperStatus.data.gIMC << std::endl;
-        if( _gripperStatus.data.gIMC ==0 )
-            send(package);
-        getAllStatus();
+    if( n!=6 ||
+        answer.data[0] != 0x00 ||
+        answer.data[1] != 0x00 ||
+        answer.data[2] != 0x00 ||
+        answer.data[3] != 0x03) {
+        RW_THROW("Received message is wrong size (is " << n << " should be " << 6 << ") or wrong content");
     }
 
+    TimerUtil::sleepMs(20);
+    getAllStatus();
+    // get status until activation is complete
+    while( _gripperStatus.data.gIMC==1 || _gripperStatus.data.gACT==0 ){
+        if( _gripperStatus.data.gIMC==0 ) {
+            TimerUtil::sleepMs(20);
+            send(package);
+        }
+        TimerUtil::sleepMs(20);
+        getAllStatus();
+    }
+    RW_LOG_DEBUG("Hand activated");
 }
 
 void Robotiq3::getAllStatus() {
@@ -218,15 +221,15 @@ void Robotiq3::getAllStatus() {
     ModbusPackage answer = send(package);
 
     // number of data bytes to use, should be 16
-    if( answer.data[0] != 16 )
-        RW_THROW("answer should be 16 not "<< answer.data[0]);
+    boost::uint16_t n;
+    getReg(answer.header.data.length, n);
+    if( answer.data[0] != 16 || n != 16+3)
+        RW_THROW("answer should contain 16 bytes and not "<< (int) answer.data[0] << " and the length should be 19 instead of " << n);
 
     // now read everything into internal variables
     for(int i=0;i<16;i++){
         _status.value[i] = answer.data[1+i];
     }
-
-    //std::cout << "GripperStatus: " << sizeof(GripperStatus) << std::endl;
 
     _gripperStatus.value = answer.data[1];
     _objectStatus.value = answer.data[2];
@@ -247,15 +250,18 @@ void Robotiq3::getAllStatus() {
 
     _statusTimeStamp = TimerUtil::currentTimeMs();
 
-#if FULL_DEBUG_INFO    
-    std::cout << "Status: ";
-    std::cout.fill('0');
-    for(int i=0;i<16;i++){
-        std::cout << std::setw(2) << std::hex << (unsigned int)_status.value[i] << " ";
+    // todo Move this to trace level instead of debug once trace is implemented
+    if (Log::log().isEnabled(Log::Debug)) {
+        std::stringstream traceMessage;
+        traceMessage << "Status: ";
+        traceMessage.fill('0');
+        for(int i=0;i<16;i++){
+            traceMessage << std::setw(2) << std::hex << (unsigned int)_status.value[i] << " ";
+        }
+        traceMessage << std::endl;
+        traceMessage << "gIMC:"<< _gripperStatus.data.gIMC << " gACT:"<<_gripperStatus.data.gACT;
+        RW_LOG_DEBUG(traceMessage.str());
     }
-    std::cout << std::endl;
-	std::cout << "gIMC:"<< _gripperStatus.data.gIMC << " gACT:"<<_gripperStatus.data.gIMC << std::endl;
-#endif
 }
 
 
@@ -267,9 +273,8 @@ void Robotiq3::run() {
             {
                 //Get the length of the available data
                 uint32_t bytesReady = _socket->available();
-                //std::cout<<"bytes ready "<<bytesReady<<std::endl;
 
-                // if bytes avaialble then read modbus header
+                // if bytes available then read modbus header
                 if(bytesReady>7){
 
                     _socket->read_some(boost::asio::buffer(&package.header.value[0], 8));
@@ -278,45 +283,35 @@ void Robotiq3::run() {
                     boost::uint16_t n;
                     getReg(package.header.data.length, n);
 
-
-
                     // because we are only communicating with gripper this should never go above 20
                     if(n>20){
-                        RW_WARN("Something is wrong in driver. Too many"
-                                " data recieved: " << n);
+                        RW_WARN("Something is wrong in driver. Too much data received: " << n);
                         RW_WARN("Resetting socket");
                         abort();
                     }
 
-                    //std::cout << "reading data n: " << n << std::endl;
+                    // read the rest of the package
+                    _socket->read_some(boost::asio::buffer(&package.data[0], n-2));
 
-                    //std::cout << "Available bytes: " << _socket->available() << std::endl;
-
-                    // read the reslimt of the package
-                    _socket->read_some(boost::asio::buffer(&package.data[0], n));
-
-                    // signal that the package was recieved
+                    // signal that the package was received
                     _packagesIntransit[package.header.data.transactionID].first = package;
                     _packagesIntransit[package.header.data.transactionID].second = true;
 
-                    // now interpreet the package data and update instance state variables
-                    //read(package);
-                    // now push the package as recieved
-                    //_packagesRecieved.push( package );
+                    // todo Move this to trace level instead of debug once trace is implemented
+                    if (Log::log().isEnabled(Log::Debug)) {
+                        std::stringstream traceMessage;
+                        traceMessage << "Received Header: ";
+                        traceMessage.fill('0');
+                        for(int i=0;i<8;i++){
+                            traceMessage << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
+                        }
+                        traceMessage << ": ";
 
-#if FULL_DEBUG_INFO
-                    std::cout << "Recieved Header: ";
-                    std::cout.fill('0');
-                    for(int i=0;i<8;i++){
-                        std::cout << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
+                        for(int i=0;i<n-2;i++){
+                            traceMessage << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
+                        }
+                        RW_LOG_DEBUG(traceMessage.str());
                     }
-                    std::cout << ": ";
-
-                    for(int i=0;i<n-2;i++){
-                        std::cout << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
-                    }
-                    std::cout << "\n";
-#endif
                 }
             }
 
@@ -331,25 +326,35 @@ void Robotiq3::run() {
                 package.header.data.protocolID = 0; // not used
                 getReg(package.header.data.length,n);
 
-#if FULL_DEBUG_INFO    
-                std::cout << "Sending Header: ";
-                std::cout.fill('0');
-                for(int i=0;i<8;i++){
-                    std::cout << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
+                // todo Move this to trace level instead of debug once trace is implemented
+                if (Log::log().isEnabled(Log::Debug)) {
+                    std::stringstream traceMessage;
+                    traceMessage << "Sending Header: ";
+                    traceMessage.fill('0');
+                    for(int i=0;i<8;i++){
+                        traceMessage << std::setw(2) << std::hex << (unsigned int)package.header.value[i] << " ";
+                    }
+                    traceMessage << ": ";
+                    for(int i=0;i<n-2;i++){
+                        traceMessage << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
+                    }
+                    RW_LOG_DEBUG(traceMessage.str());
                 }
-                std::cout << ": ";
 
-                for(int i=0;i<n-2;i++){
-                    std::cout << std::setw(2) << std::hex << (unsigned int)package.data[i] << " ";
+
+                std::size_t bytesToBeTransfered = 8 + n-2;
+                std::size_t bytesTransfered = 0;
+                bytesTransfered = boost::asio::write(*_socket, boost::asio::buffer(&package.header.value[0], bytesToBeTransfered));
+                if (bytesTransfered == bytesToBeTransfered) {
+                    /* Successful send */
+                    RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
+                } else {
+                    /* Unsuccessful send */
+                    RW_LOG_DEBUG("Unable to send all the '" << bytesToBeTransfered << "' bytes - only sent '" << bytesTransfered << "' bytes");
                 }
-                std::cout << "\n";
-#endif
-                _socket->send(boost::asio::buffer(&package.header.value[0], 8 + n-2));
-                //_socket->send(boost::asio::buffer(&package.data[0], n-2));
-
-
             }
 
+            boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         } else {
             boost::this_thread::sleep(boost::posix_time::milliseconds(100));
         }
@@ -379,8 +384,36 @@ namespace {
 
 }
 
-bool Robotiq3::stopCmd(){
-    return false;
+void Robotiq3::stopCmd(){
+    ModbusPackage package;
+
+    setReg( package.header.data.functionCode, FC16);
+    setReg( package.header.data.length, 9);
+
+    // register start address
+    package.data[0] = 0x00;
+    package.data[1] = 0x00;
+
+    // number of registers
+    package.data[2] = 0x00;
+    package.data[3] = 0x01;
+    // number data bytes to follow
+    package.data[4] = 0x02;
+
+    package.data[5] = 0x01; // action request
+    package.data[6] = 0x0c; // gripper options
+
+    ModbusPackage answer = send(package);
+
+    // check if response is correct
+    boost::uint16_t n;
+    getReg(answer.header.data.length,n);
+    if( n!=6 ||
+        answer.data[0] != 0x00 ||
+        answer.data[1] != 0x00 ||
+        answer.data[2] != 0x00 ||
+        answer.data[3] != 0x01)
+        RW_THROW("Received message is wrong size (is " << n << " should be " << 6 << ") or wrong content");
 }
 
 void Robotiq3::moveCmd(bool block){
@@ -394,9 +427,7 @@ void Robotiq3::moveCmd(bool block){
     std::pair<Q,Q> lim = getLimitPos();
 
     setReg(package.header.data.functionCode, FC16);
-    setReg(package.header.data.length, 23);
-    //setReg(package.header.data.length, 19);
-
+    setReg(package.header.data.length, 2 + 5 + 16);
 
     ActionRequest actreq;
     actreq.data.rACT = 1;
@@ -407,9 +438,6 @@ void Robotiq3::moveCmd(bool block){
     gripopt.value = 0x00;
     gripopt.data.rICF = 1; // individual finger control
     gripopt.data.rICS = 1; // individual control of scissor. disable mode selection
-
-    //std::cout << _force << _speed << std::endl;
-
 
     ActionRequestCMD cmd;
     cmd.data._actionRequest = actreq.value;
@@ -437,29 +465,22 @@ void Robotiq3::moveCmd(bool block){
     package.data[1] = 0x00;
     // number of registers
     package.data[2] = 0x00;
-    package.data[3] = 8;
-    //package.data[3] = 6;
+    package.data[3] = 0x08;
     // number data to follow
     package.data[4] = 16;
-    //package.data[4] = 12;
 
     // now come the positions, speed and forces
     for(int i=0;i<16;i++){
         package.data[5+i] = cmd.value[i];
-        //std::cout << i << std::hex <<":" << (unsigned int)cmd.value[i] << std::endl;
     }
 
     // this blocks until package answered or timeout
     ModbusPackage answer = send(package);
 
-    // number of data bytes to use, should be 16
-    //if( answer.data[0] != 16 )
-        //RW_THROW("answer should be 16 not "<< answer.data[0]);
+    // number of data bytes to use, should be 0
+    if( answer.data[0] != 0 )
+        RW_THROW("answer should be 0 not "<< answer.data[0]);
 
-    // now read everything into internal variables
-    for(int i=0;i<16;i++){
-        //_status.value[i] = answer.data[1+i];
-    }
 }
 
 void Robotiq3::moveCmd(rw::math::Q target, bool block){

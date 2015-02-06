@@ -36,34 +36,33 @@ namespace rwhw {
 class Robotiq3  {
 
 public:
-	typedef rw::common::Ptr<Robotiq3> Ptr;
+    typedef rw::common::Ptr<Robotiq3> Ptr;
 
 
 
     /*
-    Global Gripper Status - A global Gripper Status is available. This gives information such as which Operation
-    Mode is currently active or if the Gripper is closed or open.
-    Object Status - There is also an Object Status that let you know if there is an object in the Gripper and, in the
-    affirmative, how many fingers are in contact with it.
-    Fault Status - The Fault Status gives additional details about the cause of a fault.
-    Position Request Echo - The Gripper returns the position requested by the robot to make sure that the new
-    command has been received correctly.
-    Motor Encoder Status - The information of the encoders of the four motors is also available.
-    Current Status - The current of the motors can also be known. Since the torque of the motor is a linear
-    function of the current, this gives infor
-
+       Global Gripper Status - A global Gripper Status is available. This gives information such as which Operation
+       Mode is currently active or if the Gripper is closed or open.
+       Object Status - There is also an Object Status that let you know if there is an object in the Gripper and, in the
+       affirmative, how many fingers are in contact with it.
+       Fault Status - The Fault Status gives additional details about the cause of a fault.
+       Position Request Echo - The Gripper returns the position requested by the robot to make sure that the new
+       command has been received correctly.
+       Motor Encoder Status - The information of the encoders of the four motors is also available.
+       Current Status - The current of the motors can also be known. Since the torque of the motor is a linear
+       function of the current, this gives infor
      *
-	     */
+     */
 
-	// for robot input
-	/*
-	enum{ GRIPPER_STATUS=0,
-	       OBJECT_DETECTION,
-	       FAULT_STATUS,
-	       POS_REQUEST_ECHO,
-	       FINGER_A_POS,
-	       FINGER_A_CURRENT,
-	       FINGER_B_POS_REQ_ECHO,
+    // for robot input
+    /*
+    enum{ GRIPPER_STATUS=0,
+           OBJECT_DETECTION,
+           FAULT_STATUS,
+           POS_REQUEST_ECHO,
+           FINGER_A_POS,
+           FINGER_A_CURRENT,
+           FINGER_B_POS_REQ_ECHO,
            FINGER_B_POS,
            FINGER_B_CURRENT,
            FINGER_C_POS_REQ_ECHO,
@@ -73,18 +72,18 @@ public:
            SCISSOR_POS,
            SCISSOR_CUR,
            RESERVED
-	};
+    };
 
-	// for robot output
-	enum{ ACTION_REQUEST=0,
-	      GRIPPER_OPTIONS,
-	      GRIPPER_OPTIONS2,
-	      POS_REQ, // finger A in individual mode
-	      SPEED,
-	      FORCE,
-	      FINGER_B_POS_REQ,
-	      FINGER_B_SPEED,
-	      FINGER_B_FORCE,
+    // for robot output
+    enum{ ACTION_REQUEST=0,
+          GRIPPER_OPTIONS,
+          GRIPPER_OPTIONS2,
+          POS_REQ, // finger A in individual mode
+          SPEED,
+          FORCE,
+          FINGER_B_POS_REQ,
+          FINGER_B_SPEED,
+          FINGER_B_FORCE,
           FINGER_C_POS_REQ,
           FINGER_C_SPEED,
           FINGER_C_FORCE,
@@ -92,11 +91,11 @@ public:
           SCISSOR_SPEED,
           SCISSOR_FORCE,
           RESERVED
-	};
+    };
     */
 
 
-	/// INPUT STUFF
+    /// INPUT STUFF
 
         union FaultStatus{
             struct  {
@@ -133,9 +132,9 @@ public:
 
     // internal status variables
     struct GripperStatusAll {
-	    union {
-	        struct {
-	            boost::uint8_t _gripperStatus;
+        union {
+            struct {
+                boost::uint8_t _gripperStatus;
                 boost::uint8_t _objectStatus;
                 boost::uint8_t _faultStatus;
 
@@ -156,9 +155,9 @@ public:
                 boost::uint8_t _forceScissor;
 
                 boost::uint8_t _reserved;
-	        } data;
+            } data;
             boost::uint8_t value[16];
-	    };
+        };
     };
 
     union ActionRequest {
@@ -213,12 +212,7 @@ public:
 
     };
 
-
-
-
-
-
-	/// OUTPUT STUFF
+    /// OUTPUT STUFF
 
     struct ModbusPackage {
         union {
@@ -252,17 +246,10 @@ public:
      */
     bool connect(const std::string& host, unsigned int port=502);
     bool isConnected() const{ return _connected; }
-
-    /**
-     * @brief reset the gripper will take a couple of seconds
-     */
-    void resetCMD(){
-        //send();
-    }
+    void disconnect();
 
     // blocking commands
     void getAllStatus();
-    void activate();
     bool isActivated(){ return _gripperStatus.data.gACT == 1; }
     bool isGripperMoving(){ return _gripperStatus.data.gSTA == 0; }
     bool isGripperBlocked(){ return _gripperStatus.data.gSTA == 2 || _gripperStatus.data.gSTA == 1; }
@@ -302,10 +289,10 @@ public:
      */
     bool waitCmd(double timeout);
 
-/**
-* @brief stop movement of all gripper joints
-*/	
-    bool stopCmd();
+    /**
+     * @brief stop movement of all gripper joints
+     */
+    void stopCmd();
 
     /**
      * @brief sets the wanted target in rad.
@@ -360,44 +347,41 @@ public:
     std::pair<rw::math::Q,rw::math::Q> getLimitVel();
     std::pair<rw::math::Q,rw::math::Q> getLimitCurr();
 
-
-	void start();
-	void stop();
-	void disconnect();
-
-	ModbusPackage send(ModbusPackage package);
-
 private:
-	rw::common::Ptr<boost::thread> _thread;
-	mutable boost::mutex _mutex;
-	bool _stop;
-	void run();
+rw::common::Ptr<boost::thread> _thread;
+mutable boost::mutex _mutex;
+    bool _stop;
+    void activate();
+    void run();
+    void start();
+    void stop();
+    ModbusPackage send(ModbusPackage package);
 
-	bool _haveReceivedSize;
-	uint32_t messageLength, messageOffset;
+    bool _haveReceivedSize;
+    uint32_t messageLength, messageOffset;
 
-	boost::asio::ip::tcp::socket* _socket;
-	boost::asio::io_service _ioService;
+    boost::asio::ip::tcp::socket* _socket;
+    boost::asio::io_service _ioService;
 
-	std::string _hostName;
+    std::string _hostName;
 
-	bool _connected;
+    bool _connected;
 
-	static const unsigned int max_buf_len = 5000000;
-	char buf[max_buf_len];
+    static const unsigned int max_buf_len = 5000000;
+    char buf[max_buf_len];
 
-	GripperStatusAll _status;
+    GripperStatusAll _status;
 
-	boost::uint8_t _packageIDCounter;
+    boost::uint8_t _packageIDCounter;
 
     std::map<boost::uint8_t, std::pair<ModbusPackage,bool> > _packagesIntransit;
 
-	std::queue<ModbusPackage> _packagesOutgoing;
-	std::queue<ModbusPackage> _packagesRecieved;
+    std::queue<ModbusPackage> _packagesOutgoing;
+    std::queue<ModbusPackage> _packagesRecieved;
 
-	long long _statusTimeStamp;
-	rw::math::Q _currentQ, _currentSpeed, _currentForce;
-	rw::math::Q _target, _speed, _force;
+    long long _statusTimeStamp;
+    rw::math::Q _currentQ, _currentSpeed, _currentForce;
+    rw::math::Q _target, _speed, _force;
 
 };
 
