@@ -398,6 +398,11 @@ namespace rw { namespace common {
 			_logEnabledMask = _logEnabledMask | mask;
 		}
 
+       /**
+         * @brief Checks if the given LogIndex is enabled. This can be used to
+         * determine if a certain log level will be displayed or not.
+         * @param loglevel [in] the level
+         */
         bool isEnabled(LogIndex idx) {
             if(idx<=_loglevel)
                 return true;
@@ -412,16 +417,6 @@ namespace rw { namespace common {
 			_logEnabledMask = _logEnabledMask & (_logEnabledMask ^ mask);
 		}
 
-		/**
-         * @brief Checks if the given LogIndex is enabled. This can be used to
-         * determine if a certain log level will be displayed or not.
-         * @param loglevel [in] the level
-         */
-        bool isLogEnabled(LogIndex idx) {
-            if(idx<=_loglevel)
-                return true;
-            return (_logEnabledMask & toMask(idx) ) != 0;
-        }
 
     private:
     	bool isValidLogIndex(LogIndex id);
@@ -429,6 +424,12 @@ namespace rw { namespace common {
 		bool isLogEnabled(LogIndexMask mask) {
 			return (_logEnabledMask & mask) != 0;
 		}
+
+        bool isLogEnabled(LogIndex idx) {
+            if(idx<=_loglevel)
+                return true;
+            return (_logEnabledMask & toMask(idx) ) != 0;
+        }
 
 		int _logEnabledMask;
 		int _tabLevel;
