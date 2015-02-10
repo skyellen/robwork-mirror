@@ -1,8 +1,9 @@
 #include <iostream>
 
 #include <rw/rw.hpp>
-#include "Robotiq3.hpp"
 #include <boost/program_options.hpp>
+
+#include "Robotiq.hpp"
 namespace po = boost::program_options;
 
 USE_ROBWORK_NAMESPACE
@@ -39,7 +40,7 @@ int main(int argc, char** argv)
 
     Log::infoLog() << "Initializing Robotiq" << std::endl;
 
-    rwhw::Robotiq3 hand;
+    rwhw::Robotiq hand;
 
     // SETTINGS for communicating with ur 2 on marvin
     std::cout << "Connecting to " << ip << " ... " << std::endl;

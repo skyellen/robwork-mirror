@@ -1,11 +1,4 @@
-/*
- * UniversalRobots.cpp
- *
- *  Created on: Apr 15, 2010
- *      Author: lpe
- */
-
-#include "Robotiq3.hpp"
+#include "Robotiq.hpp"
 
 #include <rw/common/TimerUtil.hpp>
 
@@ -56,10 +49,18 @@ namespace {
 
     }
 
+    boost::uint8_t toVal8(int val){
+        int tmp = val*0xFF;
+        if(tmp>0xFF)
+            return 0xFF;
+        if(tmp<0)
+            return 0;
+        return tmp & 0xFF;
+    }
 }
 
 
-Robotiq3::Robotiq3():
+Robotiq::Robotiq():
     _haveReceivedSize(false),
     _socket(0),
     _connected(false),
@@ -74,11 +75,11 @@ Robotiq3::Robotiq3():
 
 }
 
-Robotiq3::~Robotiq3() {
+Robotiq::~Robotiq() {
     disconnect();
 }
 
-bool Robotiq3::connect(const std::string& ip, unsigned int port) {
+bool Robotiq::connect(const std::string& ip, unsigned int port) {
     if (_connected) {
         RW_THROW("Already connected. Disconnect before connecting again!");
     }
@@ -117,13 +118,13 @@ bool Robotiq3::connect(const std::string& ip, unsigned int port) {
     return true;
 }
 
-void Robotiq3::disconnect(){
+void Robotiq::disconnect(){
     stop();
     _thread->join();
     _socket->close();
 }
 
-Robotiq3::ModbusPackage Robotiq3::send(ModbusPackage package){
+Robotiq::ModbusPackage Robotiq::send(ModbusPackage package){
     if(!_connected) {
         RW_THROW("Unable to send command before connecting.");
     }
@@ -146,13 +147,15 @@ Robotiq3::ModbusPackage Robotiq3::send(ModbusPackage package){
 }
 
 
-void Robotiq3::activate(){
+void Robotiq::activate(){
+    // Same for Robtiq2 and Robotiq3
     ModbusPackage package;
 
     RW_LOG_DEBUG("Activating hand");
 
     setReg( package.header.data.functionCode, FC16);
     setReg( package.header.data.length, 13);
+    setReg(package.header.data.unitID, 2);
 
     // register start address
     //package.data[0] = 0x03 ;
@@ -203,7 +206,7 @@ void Robotiq3::activate(){
     RW_LOG_DEBUG("Hand activated");
 }
 
-void Robotiq3::getAllStatus() {
+void Robotiq::getAllStatus() {
     ModbusPackage package;
 
     setReg(package.header.data.functionCode, FC04);
@@ -265,7 +268,7 @@ void Robotiq3::getAllStatus() {
 }
 
 
-void Robotiq3::run() {
+void Robotiq::run() {
     ModbusPackage package;
     while (!_stop) {
         if (_connected) {
@@ -362,29 +365,16 @@ void Robotiq3::run() {
     }
 }
 
-void Robotiq3::start() {
-    _thread = ownedPtr(new boost::thread(&Robotiq3::run, this));
+void Robotiq::start() {
+    _thread = ownedPtr(new boost::thread(&Robotiq::run, this));
     _stop = false;
 }
 
-void Robotiq3::stop() {
+void Robotiq::stop() {
     _stop = true;
 }
 
-namespace {
-
-    boost::uint8_t toVal8(int val){
-        int tmp = val*0xFF;
-        if(tmp>0xFF)
-            return 0xFF;
-        if(tmp<0)
-            return 0;
-        return tmp & 0xFF;
-    }
-
-}
-
-void Robotiq3::stopCmd(){
+void Robotiq::stopCmd(){
     ModbusPackage package;
 
     setReg( package.header.data.functionCode, FC16);
@@ -416,7 +406,7 @@ void Robotiq3::stopCmd(){
         RW_THROW("Received message is wrong size (is " << n << " should be " << 6 << ") or wrong content");
 }
 
-void Robotiq3::moveCmd(bool block){
+void Robotiq::moveCmd(bool block){
     // move to target
     //
     // set target and move to it
@@ -483,53 +473,53 @@ void Robotiq3::moveCmd(bool block){
 
 }
 
-void Robotiq3::moveCmd(rw::math::Q target, bool block){
+void Robotiq::moveCmd(rw::math::Q target, bool block){
     std::pair<Q,Q> lim = getLimitPos();
     _target = Math::clampQ(target, lim.first, lim.second );
     moveCmd(block);
 }
 
-void Robotiq3::moveJointCmd(int jointIdx, double target, bool block){ }
+void Robotiq::moveJointCmd(int jointIdx, double target, bool block){ }
 
-bool Robotiq3::waitCmd(double timeout){ return true; }
+bool Robotiq::waitCmd(double timeout){ return true; }
 
-void Robotiq3::setTargetQ(const rw::math::Q& target){
+void Robotiq::setTargetQ(const rw::math::Q& target){
     std::pair<Q,Q> lim = getLimitPos();
     _target = Math::clampQ(target, lim.first, lim.second );
 }
 
-void Robotiq3::setTargetQVel(const rw::math::Q& jointVel){
+void Robotiq::setTargetQVel(const rw::math::Q& jointVel){
     std::pair<Q,Q> lim = getLimitVel();
     _speed = Math::clampQ(jointVel, lim.first, lim.second );
 }
 
-void Robotiq3::setTargetQAcc(const rw::math::Q& jointAcc){
+void Robotiq::setTargetQAcc(const rw::math::Q& jointAcc){
 
 }
 
-void Robotiq3::setTargetQCurrent(const rw::math::Q& jointCurr){
+void Robotiq::setTargetQCurrent(const rw::math::Q& jointCurr){
     std::pair<Q,Q> lim = getLimitCurr();
     _force = Math::clampQ(jointCurr, lim.first, lim.second );
 }
 
-rw::math::Q Robotiq3::getTargetQ(){ return _target; }
+rw::math::Q Robotiq::getTargetQ(){ return _target; }
 
-rw::math::Q Robotiq3::getQ(){  return _currentQ; }
+rw::math::Q Robotiq::getQ(){  return _currentQ; }
 
-rw::math::Q Robotiq3::getdQ(){ return _currentSpeed; }
+rw::math::Q Robotiq::getdQ(){ return _currentSpeed; }
 
-rw::math::Q Robotiq3::getQCurrent(){ return _currentForce; }
+rw::math::Q Robotiq::getQCurrent(){ return _currentForce; }
 
 
-std::pair<rw::math::Q,rw::math::Q> Robotiq3::getLimitPos(){
+std::pair<rw::math::Q,rw::math::Q> Robotiq::getLimitPos(){
     return std::make_pair( rw::math::Q(4,0,0,0,-16), rw::math::Q(4,66,66,66,10) );
 }
 
-std::pair<rw::math::Q,rw::math::Q> Robotiq3::getLimitVel(){
+std::pair<rw::math::Q,rw::math::Q> Robotiq::getLimitVel(){
     return std::make_pair( rw::math::Q(4,0,0,0,0), rw::math::Q(4,1,1,1,1) );
 }
 
-std::pair<rw::math::Q,rw::math::Q> Robotiq3::getLimitCurr(){
+std::pair<rw::math::Q,rw::math::Q> Robotiq::getLimitCurr(){
     return std::make_pair( rw::math::Q(4,0,0,0,0), rw::math::Q(4,1,1,1,1) );
 }
 

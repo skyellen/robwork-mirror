@@ -1,6 +1,6 @@
 /* */
 #ifndef RWHW_ROBOTIQ3_HPP
-#define RWHW_ROBOTIQ3_HPP
+#define RWHW_ROBOTIQ_HPP
 
 
 #include <rw/math/Q.hpp>
@@ -33,10 +33,10 @@ namespace rwhw {
  * The speed limits and force limits are all [0:1]
  *
  */
-class Robotiq3  {
+class Robotiq  {
 
 public:
-    typedef rw::common::Ptr<Robotiq3> Ptr;
+    typedef rw::common::Ptr<Robotiq> Ptr;
 
 
 
@@ -233,10 +233,10 @@ public:
     /**
      * @brief Creates object
      */
-    Robotiq3();
+    Robotiq();
 
     //! destructor
-    virtual ~Robotiq3();
+    virtual ~Robotiq();
 
     /**
      * @brief connect using

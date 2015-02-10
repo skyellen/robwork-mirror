@@ -12,8 +12,8 @@ RW_ADD_DOC( ${SUBSYS_NAME} )
 IF( build )
     MESSAGE(STATUS "RobWorkHardware: ${SUBSYS_NAME} component ENABLED")    
 
-    SET(SRC_CPP Robotiq3.cpp)
-    SET(SRC_HPP Robotiq3.hpp)
+    SET(SRC_CPP Robotiq.cpp)
+    SET(SRC_HPP Robotiq.hpp)
 
     RW_ADD_LIBRARY(rwhw_robotiq robotiq ${SRC_CPP} ${SRC_HPP})
     RW_ADD_INCLUDES(robotiq "rwhw/robotiq" ${SRC_HPP})
