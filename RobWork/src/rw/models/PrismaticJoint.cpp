@@ -165,12 +165,12 @@ void PrismaticJoint::PrismaticJointWithQMapping::multiplyTransform(
 	double q,
 	rw::math::Transform3D<>& result) const 
 {
-	/*double qnew = */_mapping->x(q);
+	/*double qnew = */_mapping->f(q);
 	_impl->multiplyTransform(parent, q, result);
 }
 
 rw::math::Transform3D<> PrismaticJoint::PrismaticJointWithQMapping::getTransform(double q) {
-	double qnew = _mapping->x(q);
+	double qnew = _mapping->f(q);
 	return _impl->getTransform(qnew);
 }
 
@@ -187,6 +187,6 @@ void PrismaticJoint::PrismaticJointWithQMapping::getJacobian(size_t row,
 						 Jacobian& jacobian) const 
 {
 	Vector3D<> axis = joint.R().getCol(2);
-	axis *= _mapping->dx(q);
+	axis *= _mapping->df(q);
     jacobian.addPosition(axis, row, col);
 }

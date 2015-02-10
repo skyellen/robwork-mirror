@@ -43,8 +43,8 @@ namespace rwlibs {
 				for (int parameterIndex = 0; parameterIndex < parameterSet.getCount(); parameterIndex++) {
 					if (parameterSet(parameterIndex).isEnabled()) {
 						// Revolute joint implementation.
-						jacobian.block<3, 1>(0, columnIndex) = correctionFunctions[parameterIndex]->x(qi) * jointAxis.cross(posToEnd);
-						jacobian.block<3, 1>(3, columnIndex) = correctionFunctions[parameterIndex]->x(qi) * jointAxis;
+						jacobian.block<3, 1>(0, columnIndex) = correctionFunctions[parameterIndex]->f(qi) * jointAxis.cross(posToEnd);
+						jacobian.block<3, 1>(3, columnIndex) = correctionFunctions[parameterIndex]->f(qi) * jointAxis;
 						columnIndex++;
 					}
 				}

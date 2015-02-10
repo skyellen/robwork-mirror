@@ -513,12 +513,12 @@ void RevoluteJoint::RevoluteJointWithQMapping::multiplyTransform(
 	double q,
 	rw::math::Transform3D<>& result) const 
 {
-	double qnew = _mapping->x(q);
+	double qnew = _mapping->f(q);
 	_impl->multiplyTransform(parent, qnew, result);
 }
 
 rw::math::Transform3D<> RevoluteJoint::RevoluteJointWithQMapping::getTransform(double q) {
-	double qnew = _mapping->x(q);
+	double qnew = _mapping->f(q);
 	return _impl->getTransform(qnew);
 }
 
@@ -535,7 +535,7 @@ void RevoluteJoint::RevoluteJointWithQMapping::getJacobian(size_t row,
 {	
 	Vector3D<> axis = joint.R().getCol(2);
 	//The axis is scaled with the first order derivative of the mapping to account for the mapping.
-	axis *= _mapping->dx(q);
+	axis *= _mapping->df(q);
 	const Vector3D<> p = cross(axis, tcp.P() - joint.P());
 
     jacobian.addPosition(p, row, col);

@@ -22,8 +22,8 @@ using namespace rw::common;
 using namespace rwlibs::calibration;
 
 namespace {
-	class EncoderTauFunction: public rw::math::Function<> { public: virtual double x(double q) { return -sin(q); }; };
-	class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double x(double q) { return -cos(q); }; };
+	class EncoderTauFunction: public rw::math::Function<> { public: virtual double f(double q) { return -sin(q); }; };
+	class EncoderSigmaFunction: public rw::math::Function<> { public: virtual double f(double q) { return -cos(q); }; };
 }
 
 class JointEncoderMapping : public rw::math::Function1Diff<> {
@@ -31,17 +31,17 @@ public:
 	JointEncoderMapping(const std::vector<rw::math::Function<>::Ptr>& correctionFunctions, const CalibrationParameterSet& parameterSet) : _correctionFunctions(correctionFunctions), _parameterSet(parameterSet) {
 	}
 
-	virtual double x(double q) {
+	virtual double f(double q) {
 		double correctedQ = q;
 		for (int parameterIndex = 0; parameterIndex < _parameterSet.getCount(); parameterIndex++) {
 			if (_parameterSet(parameterIndex).isEnabled()) {
-				correctedQ += _parameterSet(parameterIndex) * _correctionFunctions[parameterIndex]->x(q);
+				correctedQ += _parameterSet(parameterIndex) * _correctionFunctions[parameterIndex]->f(q);
 			}
 		}
 		return correctedQ;
 	}
 
-	virtual double dx(double q) {
+	virtual double df(double q) {
 		return 0;
 	}
 

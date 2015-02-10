@@ -31,27 +31,46 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-       @brief Interfaces for 1 dimensional function
-    */
-	template<class T = double>
+     *  @brief Interface for functions
+     */
+	template<class RES_T = double, class ARG_T = double>
     class Function
     {
     public:
+		//! Smart pointer to this type of class.
 		typedef rw::common::Ptr<Function> Ptr;
 
-		virtual T x(T q) = 0;
+	public:
+		/**
+		 * @brief Returns function value for arguments q.
+		 */
+		virtual RES_T f(ARG_T q) = 0;
+		
+		/**
+		 * @brief Wraps the evaluation of x() with operator().
+		 */
+		RES_T operator()(ARG_T q) {
+			return f(q);
+		}
     };
 
     /**
-       @brief Interfaces for 1 dimensional function which are 1 time differentiable
-    */
-	template <class T = double>
-	class Function1Diff: public Function<T>
+     * @brief Interface for functions which are 1 time differentiable
+     */
+	template<class RES_T = double, class ARG_T = double, class GRAD_T = double>
+	class Function1Diff: virtual public Function<RES_T, ARG_T>
 	{
 	public:
+		//! Smart pointer to this type of class.
 		typedef rw::common::Ptr<Function1Diff> Ptr;
-		virtual T dx(T q) = 0;
+		
+	public:
+		/**
+		 * @brief Returns gradient(derivative) of the function
+		 */
+		virtual GRAD_T df(ARG_T q) = 0;
 	};
+	
 
     /*@}*/
 }} // end namespaces
