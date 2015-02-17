@@ -1,0 +1,45 @@
+SET(SUBSYS_NAME rwsim_luai )
+SET(SUBSYS_DESC "Interface for accessing RobWorkSim from lua." )
+SET(SUBSYS_DEPS rw )
+
+# make sure that SDH can be found
+SET(build TRUE)
+
+FIND_PACKAGE(SWIG 1.3 QUIET)
+set(DEFAULT TRUE)
+set(REASON )
+IF( NOT SWIG_FOUND)
+    set(DEFAULT false)
+    set(REASON "SWIG not found!")
+else()
+
+endif()
+ 
+RW_SUBSYS_OPTION( build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+RW_SUBSYS_DEPEND( build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} )
+RW_ADD_DOC( ${SUBSYS_NAME} )
+
+IF( build )
+   SET(RWSIM_HAVE_LUA TRUE CACHE INTERNAL "")
+	#MESSAGE(STATUS "SWIG found adding swig modules!")
+	INCLUDE(UseSWIG)
+	
+	SET(CMAKE_SWIG_FLAGS "")
+
+	SET_SOURCE_FILES_PROPERTIES(../rwsim.i PROPERTIES CPLUSPLUS ON)
+	SET_SOURCE_FILES_PROPERTIES(../rwsim.i PROPERTIES SWIG_FLAGS "-includeall")
+	
+	# lua interface generation
+    SWIG_ADD_MODULE(rwsim_lua lua ../rwsim.i ../ScriptTypes.cpp Lua.cpp)
+	SWIG_LINK_LIBRARIES(rwsim_lua rw ${ROBWORKSIM_LIBRARIES} ${ROBWORK_LIBRARIES})
+
+    ADD_LIBRARY(rwsim_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
+    LINK_LIBRARIES(rwsim_lua_s rw ${ROBWORKSIM_LIBRARIES} ${ROBWORK_LIBRARIES})
+	# this is used to indicate static linking to Visual Studio or mingw
+	IF (DEFINED MSVC) 
+	    SET_TARGET_PROPERTIES(rwsim_lua_s PROPERTIES COMPILE_FLAGS "/DSTATIC_LINKED")
+	ELSE()
+	    SET_TARGET_PROPERTIES(rwsim_lua_s PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
+	ENDIF()
+	
+ENDIF()

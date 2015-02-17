@@ -4,10 +4,10 @@
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rwsimlibs/swig/ScriptTypes.hpp>
 #if defined (SWIGLUA)
-    #include <rwsimlibs/swig/Lua.hpp>
+    #include <rwsimlibs/swig/lua/Lua.hpp>
 #endif
 #if defined (SWIGJAVA)
-	#include <rwsimlibs/swig/ThreadSimulatorStepCallbackEnv.hpp>
+	#include <rwsimlibs/swig/java/ThreadSimulatorStepCallbackEnv.hpp>
     typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv ThreadSimulatorStepCallbackEnv;
     typedef rwsimlibs::swig::ThreadSimulatorStepCallbackEnv::cThreadSimulatorStepCallback cThreadSimulatorStepCallback;
 #endif

@@ -18,7 +18,7 @@ public class ThreadSimulatorStepEvent extends EventObject {
 	 * @param threadsimulator	the {@link ThreadSimulator} that makes the callbacks.
 	 * @param state				the new {@link State} after the simulation step.
 	 */
-	public ThreadSimulatorStepEvent(Object source, ThreadSimulator threadsimulator, State state) {
+	public ThreadSimulatorStepEvent(java.lang.Object source, ThreadSimulator threadsimulator, State state) {
 		super(source);
 		this.threadsimulator = threadsimulator;
 		this.state = state;
