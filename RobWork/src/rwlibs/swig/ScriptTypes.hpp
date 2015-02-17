@@ -111,6 +111,7 @@ namespace swig {
 	typedef rw::geometry::PlainTriMesh<TriangleN1f> PlainTriMeshN1f;
 	typedef rw::geometry::ConvexHull3D ConvexHull3D;
 	typedef rw::geometry::Geometry Geometry;
+	typedef rw::geometry::PointCloud PointCloud;
 
 	// graphics
 	typedef rw::graphics::Model3D Model3D;
@@ -119,6 +120,7 @@ namespace swig {
 	typedef rw::graphics::SceneViewer SceneViewer;
 	typedef rw::graphics::SceneNode SceneNode;
 	typedef rw::graphics::DrawableNode DrawableNode;
+	typedef rw::graphics::Model3D Model3D;
 
 	// graspplanning
 
@@ -178,6 +180,10 @@ namespace swig {
 	typedef rw::models::Joint Joint;
 	typedef rw::models::RevoluteJoint RevoluteJoint;
 	typedef rw::models::PrismaticJoint PrismaticJoint;
+
+	typedef rw::models::Object Object;
+	typedef rw::models::DeformableObject DeformableObject;
+	typedef rw::models::RigidObject RigidObject;
 
 	typedef rw::models::Device Device;
 	typedef rw::models::JointDevice JointDevice;
