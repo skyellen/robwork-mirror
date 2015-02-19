@@ -23,6 +23,13 @@
 #include <rw/common/Timer.hpp>
 #include <rw/common/Ptr.hpp>
 
+
+#include <rw/common/Event.hpp>
+#include <boost/any.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
+
 using namespace rw::common;
 
 class A {
@@ -69,5 +76,77 @@ BOOST_AUTO_TEST_CASE( TimerTest )
 	BOOST_CHECK_MESSAGE(tstr3 == "1:2:30", "Should be: " << tstr3);
 	std::string tstr4 = Timer(1,2,2,10).toString("h:m");
 	BOOST_CHECK_MESSAGE(tstr4 == "1:2", "Should be: " << tstr4);
+
+}
+
+
+typedef boost::function<void(const std::string&, boost::any)> GenericAnyEventListener;
+typedef rw::common::Event<GenericAnyEventListener, const std::string&, boost::any> GenericAnyEvent;
+
+namespace {
+	bool b1,b2;
+	void cb1(const std::string& id, boost::any data){
+		b1 = true;
+	}
+
+	void cb2(const std::string& id, boost::any data){
+		b2 = true;
+	}
+
+
+	class AnyEventListener {
+	    public:
+	        AnyEventListener(bool &check):_check(check){}
+	        void cb(const std::string& id, boost::any data){
+	        	_check = true;
+	        	//std::cout << id << std::endl;
+	        }
+	        bool &_check;
+	        std::string _id;
+	        boost::any _data;
+	        bool _eventSuccess;
+	    };
+}
+
+
+BOOST_AUTO_TEST_CASE( EventTest )
+{
+
+	// create event
+	GenericAnyEvent event;
+
+
+	// add some listeners designed with global callback functions
+	event.add( boost::bind(&cb1, _1, _2), (void*)&cb1 );
+	event.add( boost::bind(&cb2, _1, _2), (void*)&cb2 );
+
+	boost::any data;
+	b1=false;b2=false;
+	event.fire("Msg1",data);
+	BOOST_CHECK(b1==true && b2==true);
+
+	// remove cb1
+	b1=false;b2=false;
+	event.remove((void*)&cb1 );
+	event.fire("Msg2",data);
+	BOOST_CHECK(b1==false && b2==true);
+
+
+	// add listener designed with class
+	AnyEventListener listener1(b1), listener2(b2);
+	event.add( boost::bind(&AnyEventListener::cb, &listener1, _1, _2), &listener1 );
+	event.add( boost::bind(&AnyEventListener::cb, &listener2, _1, _2), &listener2 );
+
+	b1=false;b2=false;
+	event.fire("Msg1",data);
+	BOOST_CHECK(b1==true && b2==true);
+
+	// remove cb1
+	b1=false;b2=false;
+	event.remove(&listener1);
+	event.fire("Msg2",data);
+	BOOST_CHECK(b1==false && b2==true);
+
+
 
 }

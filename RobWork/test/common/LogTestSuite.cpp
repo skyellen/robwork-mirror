@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(LogTest) {
         RW_LOG_INFO("Message");
         RW_LOG_INFO("2"<<std::endl);
         outstream.getline(msg, 100);
-        BOOST_CHECK(std::string(msg) == "Message2");
+        BOOST_CHECK_MESSAGE(std::string(msg) == "Message2", std::string(msg) << " == Message2");
         Log::log().setWriter(Log::Info, ownedPtr( new LogStreamWriter(&std::cout)) );
     }
 
