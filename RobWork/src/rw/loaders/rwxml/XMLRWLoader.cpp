@@ -157,8 +157,14 @@ void addPropertyToMap(const DummyProperty &dprop, common::PropertyMap& map){
         map.add(dprop._name, dprop._desc, dprop._val);
     } else if(dprop._type=="double"){
         //std::cout << "casting from string to double. type:" << dprop._type <<  " value: " << dprop._val << std::endl;
-        double val = boost::lexical_cast<double>(dprop._val);
-        map.add(dprop._name, dprop._desc, val);
+    	try {
+    		double val = boost::lexical_cast<double>(dprop._val);
+        	map.add(dprop._name, dprop._desc, val);
+    	} catch(const std::exception& e) {
+
+    		RW_WARN("Could not parse double property value: " << dprop._name << ". An error occoured:\n " << std::string(e.what()));
+
+    	}
     } else if(dprop._type=="Q"){
         std::stringstream istr(dprop._val);
         std::vector<double> res;
