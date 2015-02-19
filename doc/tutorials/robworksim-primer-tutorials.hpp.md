@@ -1,4 +1,4 @@
-RobWorkSim - Dynamic Simulation in RobWork  {#page_rw_robworksim_primer}
+RobWorkSim - Dynamic Simulation in RobWork  {#pageRobWorkSimPrimer}
 ===============================
 
 [TOC]

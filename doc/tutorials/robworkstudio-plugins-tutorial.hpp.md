@@ -1,4 +1,4 @@
-RobWorkStudio/GUI plugins     {#page-rw-robworkstudio-plugins} 
+RobWorkStudio/GUI plugins     {#pageRobWorkStudioPlugins} 
 ===========================
 
 [TOC]
