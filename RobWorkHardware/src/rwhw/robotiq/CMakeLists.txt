@@ -12,14 +12,17 @@ RW_ADD_DOC( ${SUBSYS_NAME} )
 IF( build )
     MESSAGE(STATUS "RobWorkHardware: ${SUBSYS_NAME} component ENABLED")    
 
-    SET(SRC_CPP Robotiq.cpp)
-    SET(SRC_HPP Robotiq.hpp)
+    SET(SRC_CPP Robotiq.cpp Robotiq3.cpp Robotiq2.cpp)
+    SET(SRC_HPP Robotiq.hpp Robotiq3.hpp Robotiq2.hpp)
 
     RW_ADD_LIBRARY(rwhw_robotiq robotiq ${SRC_CPP} ${SRC_HPP})
     RW_ADD_INCLUDES(robotiq "rwhw/robotiq" ${SRC_HPP})
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_robotiq;")
 
-	add_executable(robotiq_test simpleTest.cpp )
-	TARGET_LINK_LIBRARIES(robotiq_test rwhw_robotiq ${ROBWORK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_executable(robotiq3_test robotiq3SimpleTest.cpp )
+	TARGET_LINK_LIBRARIES(robotiq3_test rwhw_robotiq ${ROBWORK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	
+	add_executable(robotiq2_test robotiq2SimpleTest.cpp )
+	TARGET_LINK_LIBRARIES(robotiq2_test rwhw_robotiq ${ROBWORK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 ENDIF()

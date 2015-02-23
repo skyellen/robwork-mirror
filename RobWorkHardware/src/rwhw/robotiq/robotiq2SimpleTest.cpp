@@ -3,7 +3,7 @@
 #include <rw/rw.hpp>
 #include <boost/program_options.hpp>
 
-#include "Robotiq.hpp"
+#include "Robotiq2.hpp"
 namespace po = boost::program_options;
 
 USE_ROBWORK_NAMESPACE
@@ -36,49 +36,45 @@ int main(int argc, char** argv)
           return -1;
     }
 
-    std::string ip("192.168.100.21");
+    // SETTINGS for communicating with robotiq2 on marvin
+    std::string ip("192.168.100.22");
 
     Log::infoLog() << "Initializing Robotiq" << std::endl;
 
-    rwhw::Robotiq hand;
+    rwhw::Robotiq2 hand;
 
-    // SETTINGS for communicating with ur 2 on marvin
     std::cout << "Connecting to " << ip << " ... " << std::endl;
     hand.connect(ip);
 
+    std::cout << "Get status" << std::endl;
+    hand.getAllStatusCMD();
     std::cout << "Get hand limit" << std::endl;
     std::pair<Q, Q> lim = hand.getLimitPos();
-
-    std::cout << "Moving to hand limit" << std::endl;
-    hand.moveCmd(lim.first);
-
-    std::cout << "Get status" << std::endl;
-    hand.getAllStatus();
     std::cout << "Joint values " << hand.getQ() << std::endl;
 
     std::cout << "Move to Open: " << lim.first << std::endl;
 
     hand.moveCmd(lim.first);
-    hand.getAllStatus();
-    std::cout << "Joint values " << hand.getQ() << std::endl;
+    hand.getAllStatusCMD();
+    std::cout << "Joint values while moving " << hand.getQ() << std::endl;
 
     TimerUtil::sleepMs(5000);
-    hand.getAllStatus();
-    std::cout << "Joint values " << hand.getQ() << std::endl;
+    hand.getAllStatusCMD();
+    std::cout << "Joint values. Should be open " << hand.getQ() << std::endl;
 
-    std::cout << "Move to Close" << std::endl;
+    std::cout << "Move to Close " << lim.second << std::endl;
     hand.moveCmd(lim.second);
-    TimerUtil::sleepMs(1000);
+    TimerUtil::sleepMs(500);
     std::cout << "Stop mid Close" << std::endl;
     hand.stopCmd();
-    TimerUtil::sleepMs(10000);
-    std::cout << "Resume Close" << std::endl;
-    hand.moveCmd(false);
     TimerUtil::sleepMs(5000);
+    std::cout << "Resume Close" << std::endl;
+    hand.moveCmd();
+    TimerUtil::sleepMs(1000);
 
     std::cout << "Move to Open: " << lim.first << std::endl;
     hand.moveCmd(lim.first);
-    TimerUtil::sleepMs(1000);
+    TimerUtil::sleepMs(500);
     std::cout << "Stop and disconnect" << std::endl;
     hand.stopCmd();
     hand.disconnect();
