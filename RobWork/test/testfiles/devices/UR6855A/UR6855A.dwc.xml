@@ -1,0 +1,62 @@
+<IncludeData>  
+
+ <RigidDevice device="UR-6-85-5-A">
+  <ForceLimit joint="Joint0">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint1">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint2">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint3">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint4">1000.0</ForceLimit>	
+  <ForceLimit joint="Joint5">1000.0</ForceLimit>	
+  <!-- if motors are not specified then force motors will be added by default to active joints none will be added to -->
+  <!-- Motor joint="" type="velocity|force">
+   <ForceLimit max="1000.0" />
+  </Motor -->
+
+    <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+	<!-- if a kinematic base, use this -->
+
+  <KinematicBase frame="Base">
+	<MaterialID>Plastic</MaterialID>
+  </KinematicBase> 
+
+<!-- if a rigidbase is created then make sure it references a movable frame-->
+  <Link object="Joint0">
+   <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint1">
+  <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint2">
+  <Mass>1.0</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+  <Link object="Joint3">
+  <Mass>0.5</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint4">
+  <Mass>0.3</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+  </Link>
+
+  <Link object="Joint5">
+   <Mass>0.1</Mass>
+   <EstimateInertia />
+   <MaterialID>Aluminum</MaterialID>
+   <Associate object="PG70.Base" />
+  </Link>
+
+ </RigidDevice>
+
+</IncludeData>

@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE( testPartialIndexTable )
 void testPathPlanning(const CollisionStrategy::Ptr& strategy)
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
-    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(testFilePath() + "simple/workcell.wu");
+    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(testFilePath() + "simple/workcell.wc.xml");
 
-    Device::Ptr device = workcell->findDevice("Device");
+    Device::Ptr device = workcell->findDevice("PA10");
     const State& state = workcell->getDefaultState();
     const PlannerConstraint constraint = PlannerConstraint::make(
         strategy, workcell, device, state);
@@ -114,11 +114,8 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
     QToQPlanner::Ptr line = QToQPlanner::make(constraint);
     // Plan a couple of straight-line paths.
     {
-        Q q(7,0.854336,1.28309,-1.58383,-0.822832,-0.362664,-0.989248,-0.376991);
-
-        const Q linearToGood = q;
-        Q linearToBad = q;
-        linearToBad[0] = 2.399;
+        Q linearToGood(7,0.854336,1.28309,-1.58383,-0.822832,-0.362664,-0.989248,-0.376991);
+        Q linearToBad(7,2.399,1.28309,-1.58383,-0.822832,-0.362664,-0.989248,-0.376991);
 
         QPath path;
         res = line->query(from, linearToGood, path, 2);
@@ -145,12 +142,19 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
     PRMPlanner::Ptr prmplanner_lazy_kdtree_astar = ownedPtr( new PRMPlanner(constraint.getQConstraintPtr(), QSampler::makeUniform(*device), 0.01, *device, state) );
 
     prmplanner_lazy_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
+    prmplanner_lazy_astar->setNeighSearchStrategy(PRMPlanner::PARTIAL_INDEX_TABLE);
+
     prmplanner_lazy_dijkstra->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
+    prmplanner_lazy_dijkstra->setNeighSearchStrategy(PRMPlanner::PARTIAL_INDEX_TABLE);
+
     prmplanner_lazy_brute_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
     prmplanner_lazy_brute_astar->setNeighSearchStrategy(PRMPlanner::BRUTE_FORCE);
+
+    prmplanner_lazy_kdtree_astar->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
     prmplanner_lazy_kdtree_astar->setNeighSearchStrategy(PRMPlanner::KDTREE);
 
     // building roadmaps
+    prmplanner_default->buildRoadmap(1000);
     prmplanner_lazy_astar->buildRoadmap(1000);
     prmplanner_lazy_dijkstra->buildRoadmap(1000);
     prmplanner_lazy_brute_astar->buildRoadmap(1000);
@@ -191,13 +195,16 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
         // next test on each planner
         typedef std::pair<std::string, QToQPlanner::Ptr> Pair ;
         BOOST_FOREACH( Pair planner, planners) {
-            std::cout << "Testing QToQPlanner " << planner.first << std::endl;
-            BOOST_FOREACH(Q to, samples){
+        	std::cout << "Testing QToQPlanner " << planner.first;
+        	Timer time;
+        	BOOST_FOREACH(Q to, samples){
                 QPath path;
+
                 res = planner.second->query(from, to, path, 4);
                 BOOST_CHECK(res);
                 BOOST_CHECK(!PlannerUtil::inCollision(constraint, path));
             }
+        	std::cout << " time:" << time.getTimeMs() << "ms" << std::endl;
         }
     }
 }

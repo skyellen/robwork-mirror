@@ -1,25 +1,25 @@
 
 <CollisionSetup>
   <Exclude>
-    <FramePair first="Link0Geo" second="Link1Geo"/>
-    <FramePair first="Link0Geo" second="Link2Geo"/>
-    <FramePair first="Link0Geo" second="Link3Geo"/>
-    <FramePair first="Link0Geo" second="Link4Geo"/>
-    <FramePair first="Link1Geo" second="Link2Geo"/>
-    <FramePair first="Link1Geo" second="Link3Geo"/>
-    <FramePair first="Link1Geo" second="Link4Geo"/>
-    <FramePair first="Link1Geo" second="Link5Geo"/>
-    <FramePair first="Link2Geo" second="Link3Geo"/>
-    <FramePair first="Link2Geo" second="Link5Geo"/>
-    <FramePair first="Link2Geo" second="Link6Geo"/>
-    <FramePair first="Link3Geo" second="Link4Geo"/>
-    <FramePair first="Link3Geo" second="Link5Geo"/>
-    <FramePair first="Link3Geo" second="Link6Geo"/>
-    <FramePair first="Link3Geo" second="Link7Geo"/>
-    <FramePair first="Link4Geo" second="Link5Geo"/>
-    <FramePair first="Link4Geo" second="Link6Geo"/>
-    <FramePair first="Link5Geo" second="Link6Geo"/>
-    <FramePair first="Link5Geo" second="Link7Geo"/>
-    <FramePair first="Link6Geo" second="Link7Geo"/>
+    <FramePair first="Joint0" second="Joint1"/>
+    <FramePair first="Joint0" second="Joint2"/>
+    <FramePair first="Joint0" second="Joint3"/>
+    <FramePair first="Joint0" second="Joint4"/>
+    <FramePair first="Joint1" second="Joint2"/>
+    <FramePair first="Joint1" second="Joint3"/>
+    <FramePair first="Joint1" second="Joint4"/>
+    <FramePair first="Joint1" second="Joint5"/>
+    <FramePair first="Joint2" second="Joint3"/>
+    <FramePair first="Joint2" second="Joint5"/>
+    <FramePair first="Joint2" second="Joint6"/>
+    <FramePair first="Joint3" second="Joint4"/>
+    <FramePair first="Joint3" second="Joint5"/>
+    <FramePair first="Joint3" second="Joint6"/>
+    <FramePair first="Joint3" second="Joint7"/>
+    <FramePair first="Joint4" second="Joint5"/>
+    <FramePair first="Joint4" second="Joint6"/>
+    <FramePair first="Joint5" second="Joint6"/>
+    <FramePair first="Joint5" second="Joint7"/>
+    <FramePair first="Joint6" second="Joint7"/>
   </Exclude>
 </CollisionSetup>

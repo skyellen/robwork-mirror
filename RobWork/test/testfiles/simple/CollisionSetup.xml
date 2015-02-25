@@ -16,5 +16,7 @@
     <FramePair first="Floor" second="Wall-1"/>
     <FramePair first="Floor" second="Wall-2"/>
     <FramePair first="Wall-1" second="Wall-2"/>
+    <FramePair first="Floor" second="PA10.Base" />
+    <FramePair first="Floor" second="Cylinder-1" />
   </Exclude>
 </CollisionSetup>

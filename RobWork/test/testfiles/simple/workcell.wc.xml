@@ -1,0 +1,35 @@
+<WorkCell name="SimpleWorkcell">
+
+<Frame name="base" refframe="WORLD"> <RPY>0 0 0</RPY><Pos> 0  0  0 </Pos> </Frame>
+
+<Include file="../PA10/pa10.xml" />
+
+<Frame name="Item" refframe="WORLD" type="Movable">
+  <RPY> 0 0 0 </RPY> <Pos>0 0.6 0.5125</Pos>
+  <Drawable name="cyl"> <Cylinder radius="0.025" z="1" /> </Drawable>
+</Frame>
+
+<Frame name="Pos-0"> <RPY>0 0 0</RPY><Pos> 0  0  0.25 </Pos> </Frame>
+
+<Frame name="Wall-1" refframe="Pos-0">
+  <RPY>0 0 0</RPY><Pos>0.5 0.5 0</Pos>
+  <Drawable name="box"> <Box x="0.05" y="1" z="0.5" /> </Drawable>
+</Frame>
+
+<Frame name="Wall-2" refframe="Pos-0">
+  <RPY> 90 0 0 </RPY><Pos>-0.5 0.5 0.3</Pos>
+  <Drawable name="box"> <Box x="0.05" y="1" z="0.5" /> </Drawable>
+</Frame>
+
+<Frame name="Cylinder-1" refframe="WORLD">
+  <RPY>0 0 0</RPY><Pos>-0.6 -0.02 0.6</Pos>
+  <Drawable name="cyl"> <Cylinder radius="0.2" z="1.2" /> </Drawable>
+</Frame>
+
+<Frame name="Floor" refframe="WORLD">
+  <RPY>0 0 0</RPY> <Pos>0 0 -0.0125</Pos>
+  <Drawable name="box"> <Box x="4" y="3" z="0.025" /> </Drawable>
+</Frame>
+
+<CollisionSetup file="CollisionSetup.xml" />
+</WorkCell>
