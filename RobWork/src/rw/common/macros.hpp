@@ -105,7 +105,7 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 RW_DEBUG("The value of x is " << x << ". x should be less than zero.");
  *
 \endcode
- * Warning messages can be intercepted via debugLog().
+ * Debug messages can be intercepted via debugLog().
  */
 #ifdef RW_DEBUG_ENABLE
 #define RW_DEBUG(ostreamExpression) do { int RW__line = __LINE__;                                               \

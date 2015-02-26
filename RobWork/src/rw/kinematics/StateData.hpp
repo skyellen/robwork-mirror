@@ -36,7 +36,7 @@ namespace rw { namespace kinematics {
     /*@{*/
 
     /**
-     * @brief the basic building block for the stateless desing using
+     * @brief the basic building block for the stateless design using
      * the StateStructure class. A StateData represents a size,
      * a unique id, and a unique name, when inserted into the StateStructure.
      * The size will allocate "size"-doubles in State objects originating from the

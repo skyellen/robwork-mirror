@@ -82,27 +82,27 @@ namespace rw { namespace kinematics {
         virtual ~State();
 
         /**
-         * @brief Assign to a state the tree state of this state.
+         * @brief Assign to a state the configuration state of this state.
          *
          * The State can be thought of as consisting of a tree state
          * (TreeState) (for the structure of the tree) and a configuration state
          * (QState) (containing joint values, for example). The setQStateInState()
          * method copies into this state the QState part of another state.
          *
-         * @param to [out] The state to which the Q state is written.
+         * @param to [out] The state to which the configuration state is written.
          */
         void setQStateInState(State& to) const
         { to.getQState() = getQState(); }
 
         /**
-         * @brief Assign to a state the tree state of the another state.
+         * @brief Assign to a state the tree state of this state.
          *
          * The State can be thought of as consisting of a tree state
          * (TreeState) (for the structure of the tree) and a configuration state
          * (QState) (containing joint values, for example). The setTreeState()
          * method copies into this state the TreeState part of another state.
          *
-         * Implementation note: setTreeStateInState() is currently a lot faster that
+         * Implementation note: setTreeStateInState() is currently a lot faster than
          * setQStateInState() (even though they are both fast), so if you have the
          * choice then use the former.
          *
@@ -145,8 +145,8 @@ namespace rw { namespace kinematics {
          * @brief Addition of configuration states.
          *
          * It is \e undefined whether it is the tree state of \b a or \b b that
-         * used for the resulting state. We say that it is undefined to force
-         * you to use setTreeStateInState() to make it explicit the choice of
+         * is used for the resulting state. We say that it is undefined to force
+         * you to use setTreeStateInState() to make you explicitly choose the
          * tree state.
          */
         friend State operator+(const State& a, const State& b)
@@ -158,8 +158,8 @@ namespace rw { namespace kinematics {
          * @brief Subtraction of configuration states.
          *
          * It is \e undefined whether it is the tree state of \b a or \b b that
-         * used for the resulting state. We say that it is undefined to force
-         * you to use setTreeStateInState() to make it explicit the choice of
+         * is used for the resulting state. We say that it is undefined to force
+         * you to use setTreeStateInState() to make you explicitly choose the
          * tree state.
          */
         friend State operator-(const State& a, const State& b)
@@ -220,7 +220,7 @@ namespace rw { namespace kinematics {
         }
 
         /**
-         * @brief The dimension of the state vector.
+         * @brief The dimension of the configuration state vector.
          *
          * Knowing the size of the state is useful for example in error
          * messages, so that you can report if two states seem to belong to
@@ -267,7 +267,7 @@ namespace rw { namespace kinematics {
         int getUniqueId() const { return _stateUniqueId; }
 
         /**
-         * @brief Returns pointer to the state structure (the  structure of Frame's and StateData)
+         * @brief Returns pointer to the state structure (the structure of Frame's and StateData)
          * @return Pointer to the StateStructure matching the frame
          */
 		rw::common::Ptr<StateStructure> getStateStructure() const;
@@ -318,7 +318,6 @@ namespace rw { namespace kinematics {
         rw::common::Ptr<StateCache> getCache(int id) const;
 
         void setCache(int id, rw::common::Ptr<StateCache> cache);
-
 
         /**
          * @brief Constructs a state

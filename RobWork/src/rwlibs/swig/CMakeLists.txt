@@ -94,7 +94,7 @@ IF( build )
     IF( RW_PYTHON_BINDINGS_ENABLED )
 
         IF( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
-            MESSAGE(STATUS "RobWorkStudio: Python bindings ENABLED!")
+            MESSAGE(STATUS "RobWork: Python bindings ENABLED!")
             INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
             SWIG_ADD_MODULE(rw python rw.i)
 	        SWIG_LINK_LIBRARIES(rw ${ROBWORK_LIBRARIES} ${PYTHON_LIBRARIES} )
@@ -115,10 +115,10 @@ IF( build )
             #    ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT swig)
 	        
         ELSE()
-            MESSAGE(STATUS "RobWorkStudio: Python bindings DISABLED!")
+            MESSAGE(STATUS "RobWork: Python bindings DISABLED!")
         ENDIF()
     ELSE()
-        MESSAGE(STATUS "RobWorkStudio: Python bindings DISABLED")
+        MESSAGE(STATUS "RobWork: Python bindings DISABLED")
     ENDIF() 	
 	
 	
