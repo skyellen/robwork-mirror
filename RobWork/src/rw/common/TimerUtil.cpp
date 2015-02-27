@@ -33,8 +33,6 @@
 
 using namespace rw::common;
 
-inline double round(double d) { return floor(d + 0.5); }
-
 double TimerUtil::currentTime()
 {
 	return static_cast<double>(currentTimeUs()) / static_cast<double>(1e6);

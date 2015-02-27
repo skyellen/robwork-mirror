@@ -36,8 +36,6 @@ using namespace rw::kinematics;
 using namespace rwlibs::algorithms;
 using namespace rwlibs::algorithms::qpcontroller;
 
-inline double round(double d) { return floor(d + 0.5); }
-
 QPController::QPController(double h, const State& state, Device* device):
     _h(h),
     _state(state)

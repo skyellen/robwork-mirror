@@ -38,17 +38,17 @@ double StablePose1DModel::fitError(const rw::math::Rotation3D<>& sample) const
 {
 	// calculate a norm of plane distances
 	double dx = 0.0;
-	if (!isnan(_dx)) {
+	if (!Math::isNaN(_dx)) {
 		dx = dot(sample.getRow(0), _normal) - _dx;
 	}
 	
 	double dy = 0.0;
-	if (!isnan(_dy)) {
+	if (!Math::isNaN(_dy)) {
 		dy = dot(sample.getRow(1), _normal) - _dy;
 	}
 	
 	double dz = 0.0;
-	if (!isnan(_dz)) {
+	if (!Math::isNaN(_dz)) {
 		dz = dot(sample.getRow(2), _normal) - _dz;
 	}
 	
@@ -223,9 +223,9 @@ bool StablePose1DModel::same(const StablePose1DModel& model, double threshold) c
 	double dy = _dy - model._dy;
 	double dz = _dz - model._dz;
 	
-	if (isnan(dx)) dx = 0.0;
-	if (isnan(dy)) dy = 0.0;
-	if (isnan(dz)) dz = 0.0;
+	if (Math::isNaN(dx)) dx = 0.0;
+	if (Math::isNaN(dy)) dy = 0.0;
+	if (Math::isNaN(dz)) dz = 0.0;
 	
 	double d = 0.5 * angle(_normal, model._normal) + 0.5 * Vector3D<>(dx, dy, dz).norm2();
 	
