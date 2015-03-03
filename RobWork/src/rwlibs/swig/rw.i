@@ -7,7 +7,7 @@
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #if defined (SWIGLUA)
-#include <rwlibs/swig/Lua.hpp>
+#include <rwlibs/swig/lua/Lua.hpp>
 #endif
 
 using namespace rwlibs::swig;
@@ -1586,8 +1586,8 @@ public:
     const std::vector<rw::common::Ptr<Model3D> >& getModels() const;
 
     // stuff that should be implemented by deriving classes
-    virtual const std::vector<rw::common::Ptr<Geometry> >& getGeometry(const State& state) const = 0;
-    virtual const std::vector<rw::common::Ptr<Model3D> >& getModels() const = 0;
+     const std::vector<rw::common::Ptr<Geometry> >& getGeometry(const State& state) const;
+    const std::vector<rw::common::Ptr<Model3D> >& getModels(const State& state) const;
     virtual double getMass(State& state) const = 0;
     virtual rw::math::Vector3D<> getCOM(State& state) const = 0;
     virtual rw::math::InertiaMatrix<> getInertia(State& state) const = 0;
