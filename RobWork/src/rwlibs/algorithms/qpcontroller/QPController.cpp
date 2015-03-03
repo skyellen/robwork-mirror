@@ -136,7 +136,7 @@ void QPController::calculateVelocityLimits(
             //  std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
         } else {
             //For qmax
-            double j_x = round(sqrt(1-8*x/(_h*_h*_amin[i]))/2-1);
+            double j_x = Math::round(sqrt(1-8*x/(_h*_h*_amin[i]))/2-1);
             double q_end_x = (x+_h*_h*_amin[i]*(j_x*(j_x+1))/2)/(_h*(j_x+1));
             double q_max_x = q_end_x-j_x*_amin[i]*_h;
             double X = x-_h*q_max_x;
@@ -144,7 +144,7 @@ void QPController::calculateVelocityLimits(
                 posmax = 0;
                 //          std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
             } else {
-                double j_X = round(sqrt(1.-8*X/(_h*_h*_amin[i]))/2.-1);
+                double j_X = Math::round(sqrt(1.-8*X/(_h*_h*_amin[i]))/2.-1);
                 double q_end_X = (X+_h*_h*_amin[i]*(j_X*(j_X+1))/2)/(_h*(j_X+1));
                 posmax = q_end_X-j_X*_amin[i]*_h;
             }
@@ -154,7 +154,7 @@ void QPController::calculateVelocityLimits(
             //  std::cout<<"Warning: Set lower pos limit to 0 because"<<x<<"<=0"<<std::endl;
             posmin = 0;
         }else {//For qmin
-            double j_x = round(sqrt(1+8*x/(_h*_h*_amax[i]))/2-1);
+            double j_x = Math::round(sqrt(1+8*x/(_h*_h*_amax[i]))/2-1);
             double q_end_x = (-x+_h*_h*_amax[i]*(j_x*(j_x+1))/2)/(_h*(j_x+1));
             double q_min_x = q_end_x-j_x*_amax[i]*_h;
             double X = x+_h*q_min_x;
@@ -162,7 +162,7 @@ void QPController::calculateVelocityLimits(
                 posmin = 0;
                 //   std::cout<<"Warning: Set lower pos limit to 0"<<x<<"<=0"<<std::endl;
             }else {
-                double j_X = round(sqrt(1+8*X/(_h*_h*_amax[i]))/2-1);
+                double j_X = Math::round(sqrt(1+8*X/(_h*_h*_amax[i]))/2-1);
                 double q_end_X = (-X+_h*_h*_amax[i]*(j_X*(j_X+1))/2)/(_h*(j_X+1));
                     posmin = q_end_X-j_X*_amax[i]*_h;
             }
