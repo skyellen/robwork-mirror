@@ -25,7 +25,7 @@
 
 #include <rws/RobWorkStudio.hpp>
 #include <rwslibs/swig/ScriptTypes.hpp>
-#include <rwslibs/swig/LuaState.hpp>
+#include <rwslibs/swig/lua/LuaState.hpp>
 
 extern "C" {
     #include <lua.h>

@@ -24,7 +24,7 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rws/RobWorkStudio.hpp>
-#include <rwslibs/swig/LuaState.hpp>
+#include <rwslibs/swig/lua/LuaState.hpp>
 
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
