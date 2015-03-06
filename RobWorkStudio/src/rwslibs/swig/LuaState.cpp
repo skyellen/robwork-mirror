@@ -18,7 +18,7 @@
 #include "LuaState.hpp"
 
 #include <rwlibs/swig/ScriptTypes.hpp>
-#include <rwlibs/swig/Lua.hpp>
+#include <rwlibs/swig/lua/Lua.hpp>
 #include "ScriptTypes.hpp"
 #include "Lua.hpp"
 

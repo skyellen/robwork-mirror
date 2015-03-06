@@ -1,4 +1,4 @@
-#include <rwlibs/swig/Lua.hpp>
+#include <rwlibs/swig/lua/Lua.hpp>
 
 #include <iostream>
 #include <string>
