@@ -138,8 +138,8 @@ void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zN
     double top    =  tan_fovy * zNear;
     double bottom =  -top;
     setFrustum(left,right,bottom,top,zNear,zFar);
-    double fovyt, aspectRatiot, zneart, zfart;
-    ProjectionMatrix::getPerspective(fovyt, aspectRatiot, zneart, zfart);
+    //double fovyt, aspectRatiot, zneart, zfart;
+    //ProjectionMatrix::getPerspective(fovyt, aspectRatiot, zneart, zfart);
 }
 
 bool ProjectionMatrix::getPerspective(double& fovy,double& aspectRatio, double& zNear, double& zFar) const
@@ -161,6 +161,13 @@ ProjectionMatrix ProjectionMatrix::makePerspective(double fovy, double aspectRat
 {
     ProjectionMatrix matrix;
     matrix.setPerspective(fovy,aspectRatio,zNear,zFar);
+    return matrix;
+}
+
+ProjectionMatrix ProjectionMatrix::makePerspective(double fovy, double width, double height, double zNear, double zFar)
+{
+    ProjectionMatrix matrix;
+    matrix.setPerspective(fovy,width/height,zNear,zFar);
     return matrix;
 }
 

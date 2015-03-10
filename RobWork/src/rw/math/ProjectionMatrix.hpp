@@ -147,6 +147,18 @@ namespace math {
         static ProjectionMatrix makePerspective(double fovy, double aspectRatio, double zNear, double zFar);
 
         /**
+         * @brief creates a projection matrix with a perspective projection
+         * @param fovy [in]
+         * @param width [in] of image
+         * @param height [in] of image
+         * @param zNear [in]
+         * @param zFar [in]
+         * @return
+         */
+        static ProjectionMatrix makePerspective(double fovy, double width, double height, double zNear, double zFar);
+
+
+        /**
          * @brief creates a projection matrix with a orthographic projection
          * @param left
          * @param right
