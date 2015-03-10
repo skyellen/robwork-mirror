@@ -38,6 +38,15 @@ rw::common::Ptr<PropertyMap> AssemblyParameterization::toPropertyMap() const {
 }
 
 AssemblyParameterization::Ptr AssemblyParameterization::clone() const {
-	AssemblyParameterization::Ptr res = ownedPtr(new AssemblyParameterization(_pmap));
-	return res;
+	return ownedPtr(new AssemblyParameterization(_pmap));
+}
+
+AssemblyParameterization::Ptr AssemblyParameterization::make(rw::common::Ptr<PropertyMap> pmap) const {
+	const AssemblyParameterization::Ptr clone = this->clone();
+	clone->reset(pmap);
+	return clone;
+}
+
+void AssemblyParameterization::reset(rw::common::Ptr<PropertyMap> pmap) {
+	_pmap = pmap;
 }

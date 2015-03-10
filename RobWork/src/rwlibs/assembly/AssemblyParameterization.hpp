@@ -43,8 +43,8 @@ namespace assembly {
  *
  * By deriving from this class, the parameterization can be stored and restored via a PropertyMap structure.
  * This is mainly used as a way to extend the assembly assembly specification with additional data, while maintaining
- * the ability to serialize, load and save the AssemblyTask. Derived classes should override the clone() and
- * toPropertyMap() functions.
+ * the ability to serialize, load and save the AssemblyTask. Derived classes should override the #clone, #make,
+ * #reset and #toPropertyMap functions.
  *
  * Notice that this is also a concrete class, allowing the user to create a parameterization that is always empty,
  * or create a parameterization based on a custom PropertyMap. The latter is especially useful if scripting
@@ -79,7 +79,20 @@ public:
 	 */
 	virtual AssemblyParameterization::Ptr clone() const;
 
+	/**
+	 * @brief Construct a parameterization of same type from a PropertyMap.
+	 * @param pmap [in] a PropertyMap.
+	 */
+	virtual AssemblyParameterization::Ptr make(rw::common::Ptr<rw::common::PropertyMap> pmap) const;
+
+	/**
+	 * @brief Reset the parameters by taking new parameters from a PropertyMap.
+	 * @param pmap [in] a PropertyMap.
+	 */
+	virtual void reset(rw::common::Ptr<rw::common::PropertyMap> pmap);
+
 protected:
+	//! @brief The PropertyMap.
 	rw::common::Ptr<rw::common::PropertyMap> _pmap;
 };
 //! @}

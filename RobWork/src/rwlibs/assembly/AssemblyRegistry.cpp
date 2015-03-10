@@ -63,6 +63,8 @@ bool AssemblyRegistry::hasStrategy(const std::string& id) const {
 AssemblyControlStrategy::Ptr AssemblyRegistry::getStrategy(const std::string &id) const {
 	const std::vector<Extension::Ptr> exts = getExtensions();
 	BOOST_FOREACH(const Extension::Ptr& ext, exts){
+		if (ext == NULL)
+			continue;
 		if(ext->getProperties().get("strategyID",ext->getName() ) == id){
 			return ext->getObject().cast<AssemblyControlStrategy>();
 		}

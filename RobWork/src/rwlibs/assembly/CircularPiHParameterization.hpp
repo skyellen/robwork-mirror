@@ -67,6 +67,12 @@ public:
 	//! @copydoc rwlibs::assembly::AssemblyParameterization::clone
 	AssemblyParameterization::Ptr clone() const;
 
+	//! @copydoc rwlibs::assembly::AssemblyParameterization::make
+	AssemblyParameterization::Ptr make(rw::common::Ptr<rw::common::PropertyMap> pmap) const;
+
+	//! @copydoc rwlibs::assembly::AssemblyParameterization::reset
+	void reset(rw::common::Ptr<rw::common::PropertyMap> pmap);
+
 public:
 	/**
 	 * @name Object dimensions
