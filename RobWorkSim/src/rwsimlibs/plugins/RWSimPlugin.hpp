@@ -36,7 +36,7 @@
 
 #include <RobWorkSimConfig.hpp>
 #ifdef RWSIM_HAVE_LUA
-#include <rwslibs/swig/LuaState.hpp>
+#include <rwslibs/swig/lua/LuaState.hpp>
 #include <rwsimlibs/swig/lua/Lua.hpp>
 #include <rwsimlibs/swig/ScriptTypes.hpp>
 #endif

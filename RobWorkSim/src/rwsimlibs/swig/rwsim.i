@@ -989,13 +989,13 @@ public:
 
     Transform3D getTransform();
 
-    Vector3D getForce(State& state);
+    Vector3D getForce();
     
-	Vector3D getTorque(State& state);
+	Vector3D getTorque();
 
-	Vector3D getMaxTorque();
+	double getMaxTorque();
 
-	Vector3D getMaxForce();
+	double getMaxForce();
 
 	Frame* getSensorFrame();
 

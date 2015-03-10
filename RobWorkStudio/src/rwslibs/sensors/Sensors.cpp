@@ -190,9 +190,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         //getRobWorkStudio()->getView()->makeCurrentContext(); TODO
         GLFrameGrabber::Ptr framegrabber = ownedPtr( new GLFrameGrabber(width,height,fovy) );
         framegrabber->init(gldrawer);
-        CameraModel::Ptr model = ownedPtr( new CameraModel(ProjectionMatrix::makePerspective(fovy,width,height,0.01,30),"simcam",frame) );
-        getRobWorkStudio()->getWorkCell()->add( model );
-        SimulatedCamera *simcam = new SimulatedCamera(model, framegrabber);
+        SimulatedCamera *simcam = new SimulatedCamera("SimulatedCamera", frame, framegrabber);
         sensor = simcam;
         simcam->initialize();
         simcam->start();
