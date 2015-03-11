@@ -2,6 +2,8 @@
 //#define BOOST_TEST_MODULE "core-test"
 #include "TestSuiteConfig.hpp"
 
+#include <rw/RobWork.hpp>
+
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -21,7 +23,9 @@ using boost::unit_test::test_suite;
  */
 struct InitRobWork {
 public:
-	InitRobWork(){ }
+	InitRobWork(){
+		//rw::RobWork::init();
+	}
 	~InitRobWork(){ }
 };
 
@@ -42,11 +46,8 @@ boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
 
     boost::filesystem::path full_path( boost::filesystem::current_path() );
     boost::filesystem::path path( argv[0] );
-    //std::ofstream log("/home/jimali/mylog.txt");
-    //log << full_path << std::endl;
-    //log << path << std::endl;
-    //log << "sanfdælsajflojfjljdsifdsifidsfjd" << std::endl;
-    //log << path.parent_path().string() + "/TestSuiteConfig.xml" << std::endl;
+
+    rw::RobWork::init(argc,(const char**)argv);
 
     try{
         boost::property_tree::read_xml(path.parent_path().string() + "/TestSuiteConfig.xml", tree);
