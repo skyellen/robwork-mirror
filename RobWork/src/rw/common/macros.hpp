@@ -110,7 +110,7 @@ RW_DEBUG("The value of x is " << x << ". x should be less than zero.");
 #ifdef RW_DEBUG_ENABLE
 #define RW_DEBUG(ostreamExpression) do { int RW__line = __LINE__;                                               \
     if( rw::common::Log::log().isEnabled(rw::common::Log::Debug) ) { \
-    	rw::common::Log::debugLog() << __FILE__ << ":" << RW__line << " " << ostreamExpression;        \
+    	rw::common::Log::debugLog() << __FILE__ << ":" << RW__line << " " << ostreamExpression << std::endl;        \
     } \
 } while (0)
 #else
@@ -166,7 +166,7 @@ RW_DEBUG("The value of x is " << x << ". x should be less than zero.");
  * @param log [in] LogWriter to write to
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-#define RW_LOG(id, ostreamExpression) do { rw::common::Log::log().get(id) << ostreamExpression; } while (0)
+#define RW_LOG(id, ostreamExpression) do { rw::common::Log::log().get(id) << ostreamExpression << std::endl; } while (0)
 
 #define RW_LOG_ERROR(ostreamExpression) RW_LOG(rw::common::Log::Error, ostreamExpression)
 #define RW_LOG_WARNING(ostreamExpression) RW_LOG(rw::common::Log::Warning, ostreamExpression)
