@@ -327,6 +327,11 @@ namespace swig {
 	void addChangedListener(  );
 	*/
 
+        // Math helper function to obtain random rotation and transform
+        // They have been manually specified as the Rotation3D and Transform3D classes are not specified in rw.i as templated classes,
+        // so I/mband could not get the templated functions in Math.hpp to easily be integrated into swig.
+        Rotation3D getRandomRotation3D();
+        Transform3D getRandomTransform3D(const double translationLength = 1);
 	/*@}*/
 }
 }

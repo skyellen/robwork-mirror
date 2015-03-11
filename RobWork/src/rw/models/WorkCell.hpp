@@ -67,11 +67,6 @@ namespace rw { namespace models {
      * devices, object and obstacles in the environment. WorkCell contains the
      * World Frame, which represents the root and the only frame without a
      * parent.
-     *
-     * It should be noted that WorkCell supports only very static work cells:
-     * Following initialization you can not add or remove frames of the forward
-     * kinematics tree. An interface for such more dynamic workcells will have
-     * to be designed later.
      */
     class WorkCell {
     public:

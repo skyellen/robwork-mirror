@@ -1514,6 +1514,71 @@ public:
 %template (MetricSE3) Metric<Transform3D>;
 %template (MetricSE3Ptr) rw::common::Ptr<Metric<Transform3D> >;
 
+// Utility function within rw::Math
+Rotation3D getRandomRotation3D();
+Transform3D getRandomTransform3D(const double translationLength = 1);
+
+namespace rw { namespace math {
+    class Math
+    {
+    public:
+        static inline double clamp(double val, double min, double max);
+
+        static rw::math::Q clampQ(const rw::math::Q& q,
+                                  const rw::math::Q& min,
+                                  const rw::math::Q& max);
+
+        static rw::math::Q clampQ(const rw::math::Q& q,
+                                  const std::pair<rw::math::Q, rw::math::Q>& bounds);
+
+        static rw::math::Vector3D<> clamp(const rw::math::Vector3D<>& q,
+                                          const rw::math::Vector3D<>& min,
+                                          const rw::math::Vector3D<>& max);
+
+        static double ran();
+
+        static void seed(unsigned seed);
+
+        static void seed();
+
+        static double ran(double from, double to);
+
+        static int ranI(int from, int to);
+
+        static double ranNormalDist(double mean, double sigma);
+
+        static rw::math::Q ranQ(const rw::math::Q& from, const rw::math::Q& to);
+
+        static rw::math::Q ranQ(const std::pair<rw::math::Q,rw::math::Q>& bounds);
+
+        static rw::math::Q ranDir(size_t dim, double length = 1);
+        
+        static rw::math::Q ranWeightedDir(size_t dim, const rw::math::Q& weights, double length = 1);
+
+        static double round(double d);
+
+        static Q sqr(const Q& q);
+
+        static Q sqrt(const Q& q);
+
+        static Q abs(const Q& v);
+
+        static double min(const Q& v);
+
+        static double max(const Q& v);
+
+        static double sign(double s);
+
+        static Q sign(const Q& q);
+
+        static int ceilLog2(int n);
+        
+        static long long factorial(long long n);
+
+        static bool isNaN(double d);
+    };
+}} // end namespaces
+
 /********************************************
  * MODELS
  ********************************************/

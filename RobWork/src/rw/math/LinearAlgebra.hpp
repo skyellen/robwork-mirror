@@ -50,6 +50,7 @@
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
 
+#include <limits>
 
 namespace rw { namespace math {
 
@@ -386,11 +387,26 @@ namespace rw { namespace math {
          *
          */
         template<class R>
-		static inline bool isSO(const Eigen::MatrixBase<R>& M)
+        static inline bool isSO(const Eigen::MatrixBase<R>& M)
         {
             return M.cols() == M.rows() && isProperOrthonormal(M);
         }
 
+        /**
+         * @brief Checks if a given matrix is in SO(n) (special orthogonal)
+         * @param M [in] \f$ \mathbf{M} \f$
+         * @param precision [in] the precision to use for floating point comparison
+         * @return true if \f$ M\in SO(n) \f$
+         *
+         * \f$ SO(n) = {\mathbf{R}\in \mathbb{R}^{n\times n} :
+         * \mathbf{R}\mathbf{R}^T=\mathbf{I}, det \mathbf{R}=+1} \f$
+         *
+         */
+        template<class R>
+        static inline bool isSO(const Eigen::MatrixBase<R>& M, typename R::Scalar precision)
+        {
+            return M.cols() == M.rows() && isProperOrthonormal(M, precision);
+        }
 
         /**
          * @brief Checks if a given matrix is in so(n)
@@ -458,9 +474,9 @@ namespace rw { namespace math {
          * is equal to \f$ +1 \f$
          */
         template<class R>
-		static inline bool isProperOrthonormal(const Eigen::MatrixBase<R>& r)
+        static inline bool isProperOrthonormal(const Eigen::MatrixBase<R>& r, typename R::Scalar precision = std::numeric_limits<typename R::Scalar>::epsilon())
         {
-			return isOrthonormal(r) && r.determinant() == 1.0;
+            return isOrthonormal(r, precision) && fabs(r.determinant() - 1.0) <= precision;
         }
 
         /**
@@ -500,9 +516,9 @@ namespace rw { namespace math {
          * \f$ \mathbf{M}\mathbf{M}^T=I \f$
          */
         template<class R>
-		static inline bool isOrthonormal(const Eigen::MatrixBase<R>& r)
+        static inline bool isOrthonormal(const Eigen::MatrixBase<R>& r, typename R::Scalar precision = std::numeric_limits<typename R::Scalar>::epsilon())
         {			
-			return (r * r.transpose()).isIdentity(1e-15);
+			return (r * r.transpose()).isIdentity(precision);
 			//const Eigen::MatrixBase<R> m = r*r.transpose() ;
 			//return m.isIdentity(1e-15);
 			//double scale = m.norm();//m.lpNorm<Eigen::Infinity>();

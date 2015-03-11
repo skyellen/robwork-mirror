@@ -166,3 +166,37 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
     	BOOST_CHECK_CLOSE(ranWeightedDir[2],0.030365543188295908,1.0e-06);
     }
 }
+
+BOOST_AUTO_TEST_CASE(ranRotation3D) {
+    const int times = 10;
+    Math::seed(423); // seed the RNG - The seed was arbitrarily chosen
+    for (int i = 0; i < times; ++i) {
+        Rotation3D<> rot = Math::ranRotation3D<double>();
+        BOOST_CHECK(rot.isProperRotation(1.0e-15));
+        // Use the following to have the value of the determinant printed, if the precision of the comparison within the implemented functions used by isProperRotation(), has to be updated.
+        // BOOST_CHECK_EQUAL(rot.e().determinant(), 1.0);
+    }
+
+    for (int i = 0; i < times; ++i) {
+        Rotation3D<float> rot = Math::ranRotation3D<float>();
+        BOOST_CHECK(rot.isProperRotation(1.0e-06));
+        // BOOST_CHECK_EQUAL(rot.e().determinant(), 1.0);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(ranTransform3D) {
+    /*
+     * Not testing the translation part as that should just be some random doubles or floats
+     */
+    const int times = 10;
+    Math::seed(829); // seed the RNG - The seed was arbitrarily chosen
+    for (int i = 0; i < times; ++i) {
+        Transform3D<> transform = Math::ranTransform3D<double>();
+        BOOST_CHECK(transform.R().isProperRotation(1.0e-15));
+    }
+
+    for (int i = 0; i < times; ++i) {
+        Transform3D<float> transform = Math::ranTransform3D<float>();
+        BOOST_CHECK(transform.R().isProperRotation(1.0e-06));
+    }
+}

@@ -266,6 +266,20 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Verify that this rotation is a proper rotation
+         *
+         * @return True if this rotation is considered a proper rotation
+         */
+        bool isProperRotation() const;
+
+        /**
+         * @brief Verify that this rotation is a proper rotation
+         *
+         * @return True if this rotation is considered a proper rotation
+         */
+        bool isProperRotation(T precision) const;
+
+        /**
          * @brief Returns a Boost 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
          *

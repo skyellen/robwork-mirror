@@ -21,8 +21,19 @@
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"
+#include <rw/math/LinearAlgebra.hpp>
 
 using namespace rw::math;
+
+template<class T>
+bool Rotation3D<T>::isProperRotation() const {
+    return rw::math::LinearAlgebra::isSO(e());
+}
+
+template<class T>
+bool Rotation3D<T>::isProperRotation(T precision) const {
+    return rw::math::LinearAlgebra::isSO(e(), precision);
+}
 
 template<class T>
 typename Rotation3D<T>::BoostMatrix3x3 Rotation3D<T>::m() const

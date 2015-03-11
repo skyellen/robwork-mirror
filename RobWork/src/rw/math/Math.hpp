@@ -354,18 +354,40 @@ namespace rw { namespace math {
 		/**
 		 * @brief Returns a uniformly distributed random orientation
 		 *
-		 * @return Random orientation
+		 * @return Random orientation represented as a Quaternion
+		 */
+		template<class T>
+		static rw::math::Quaternion<T> ranQuaternion() {
+                    double u1 = Math::ran();
+                    double u2 = Math::ran();
+                    double u3 = Math::ran();
+                    Quaternion<T> q( std::sqrt(1-u1)*sin(2*Pi*u2), std::sqrt(1-u1)*cos(2*Pi*u2), std::sqrt(u1)*sin(2*Pi*u3), std::sqrt(u1)*cos(2*Pi*u3) );
+                    return q;
+		}
+
+		/**
+		 * @brief Returns a uniformly distributed random orientation
+		 *
+		 * @return Random orientation represented as a Rotation3D
 		 */
 		template<class T>
 		static rw::math::Rotation3D<T> ranRotation3D() {
-		    using namespace rw::common;
-	        double u1 = Math::ran();
-	        double u2 = Math::ran();
-	        double u3 = Math::ran();
-	        Quaternion<T> q( std::sqrt(1-u1)*sin(2*Pi*u2), std::sqrt(1-u1)*cos(2*Pi*u2), std::sqrt(u1)*sin(2*Pi*u3), std::sqrt(u1)*cos(2*Pi*u3) );
-			return q.toRotation3D();
+                    return ranQuaternion<T>().toRotation3D();
 		}
 
+		/**
+		 * @brief Returns random Transform3D based on ranDir and ranRotation3D
+		 *
+                 * @param translationLength [in] 
+		 * @return Random Transform3D
+		 */
+                 template<class T>
+                 static rw::math::Transform3D<T> ranTransform3D(const double translationLength = 1) {
+                     rw::math::Q dir = ranDir(3, translationLength);
+                     rw::math::Vector3D<T> translation(dir(0), dir(1), dir(2));
+                     return rw::math::Transform3D<T>(translation, ranRotation3D<T>());
+                 }
+        
         /**
          * @brief Rounds off to nearest integer
          *
