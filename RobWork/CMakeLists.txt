@@ -58,6 +58,9 @@ ADD_SUBDIRECTORY(tools)
 # setup testing
 #
 CONFIGURE_FILE("${RW_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
+# configure testing configuration
+CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
+
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RW_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RW_BUILD_TESTS}" OFF)
@@ -71,9 +74,6 @@ IF( RW_IS_TESTS_ENABLED )
 ELSE ()
     MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
-
-# configure testing configuration
-CONFIGURE_FILE("${RW_ROOT}/CTestConfig.cmake.in" "${RW_ROOT}/CTestConfig.cmake")
 
 #############################################################
 # Test if we should compile the EXAMPLES
