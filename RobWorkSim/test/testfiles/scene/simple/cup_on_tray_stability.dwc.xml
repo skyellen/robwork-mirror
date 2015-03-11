@@ -1,4 +1,4 @@
-<DynamicWorkcell workcell="single_object.wc.xml">
+<DynamicWorkcell workcell="cup_on_tray_stability.wc.xml">
   <PhysicsEngine>
    <!--CollisionMargin>0.001</CollisionMargin-->
    <RestitutionModel>Newton</RestitutionModel>
@@ -16,6 +16,13 @@
  <!-- Now define all the rigid bodies that exist in the workcell, remember to
       reference the RigidBody to a movableframe -->
  
+ <RigidBody frame="Cup">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID> 
+ </RigidBody>
+
  <RigidBody frame="Tray">
   <Mass>0.1</Mass>
   <EstimateInertia />
@@ -23,8 +30,7 @@
   <MaterialID>Plastic</MaterialID> 
  </RigidBody>
 
-
-<FixedBody frame="Floor">
+ <FixedBody frame="Floor">
   <MaterialID>Plastic</MaterialID> </FixedBody>
  
 </DynamicWorkcell>

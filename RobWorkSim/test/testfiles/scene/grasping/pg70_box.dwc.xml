@@ -1,0 +1,19 @@
+<DynamicWorkcell workcell="pg70_box.wc.xml">
+ 
+ <Gravity>0 0 -9.8</Gravity>
+ 
+ <Include file="../DynamicMaterialDataBase.xml" />
+
+ <FixedBody frame="Floor">
+   <MaterialID>Plastic</MaterialID> </FixedBody>
+ 
+ <RigidBody frame="object">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>   
+   
+ <Include file="../../devices/PG70/PG70.dwc.xml" />
+ 
+</DynamicWorkcell>

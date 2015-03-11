@@ -51,8 +51,13 @@ TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
 ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
 
+ADD_EXECUTABLE( rwsim_tasksimulation-test ${DO_EXCLUDE} test-main.cpp tasksimulation/GraspTaskSimulation.cpp)       
+TARGET_LINK_LIBRARIES( rwsim_tasksimulation-test ${TEST_LIBRARIES} )
+ADD_TEST( rwsim_tasksimulation-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_tasksimulation-test )
+ADD_DEPENDENCIES(rwsim_tasksimulation-test ${TEST_DEPENDENCIES})
+
 IF(RWSIM_HAVE_ODE)
-	ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp)       
+	ADD_EXECUTABLE( rwsim_ode-test ${DO_EXCLUDE} test-main.cpp ode/ODEControlTest.cpp ) #  ode/ODESimpleTest.cpp        
 	TARGET_LINK_LIBRARIES( rwsim_ode-test ${TEST_LIBRARIES} )
 	ADD_TEST( rwsim_ode-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_ode-test )
 	ADD_DEPENDENCIES(rwsim_ode-test ${TEST_DEPENDENCIES})

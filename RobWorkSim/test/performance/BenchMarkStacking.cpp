@@ -47,34 +47,18 @@ using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
 using namespace rwsim::control;
 
-BOOST_AUTO_TEST_CASE( ODEControlDeviceTest )
-{
-    // add loading tests here
-    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load( testFilePath() + "/ur_control_test_scene/cup_pg70_table.dwc.xml");
 
-    SerialDeviceController::Ptr devctrl = dwc->findController<SerialDeviceController>("URController");
-    Device::Ptr ur = dwc->getWorkcell()->findDevice("UR-6-85-5-A");
-    ODESimulator::Ptr odesim = ownedPtr( new ODESimulator( dwc ) );
 
-    State state = dwc->getWorkcell()->getStateStructure()->getDefaultState();
 
-    FKTable table(state);
 
-    // test that the control interface works
-    odesim->initPhysics(state);
-    Q target(6,0,-0.2,0,0,0,0);
-    devctrl->movePTP( target, 100);
-    for(int i=0; i<200; i++){
-    	std::cout << i << ":";
-    	odesim->step(0.01, state);
-    	std::cout << ur->getQ(state) << std::endl;
-    }
 
-    RW_WARN("end");
-}
 
-/*
-BOOST_AUTO_TEST_CASE( ODEControlDeviceTest_FC )
+
+
+
+
+
+BOOST_AUTO_TEST_CASE( StackingBenchmark )
 {
     // add loading tests here
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load( testFilePath() + "/ur_control_test_scene/cup_pg70_table.dwc.xml");
@@ -124,8 +108,7 @@ BOOST_AUTO_TEST_CASE( ODEControlDeviceTest_FC )
 
     RW_WARN("end");
 }
-*/
-/*
+
 BOOST_AUTO_TEST_CASE( ODESingleObjectStabilityTest )
 {
     // add loading tests here
@@ -153,5 +136,3 @@ BOOST_AUTO_TEST_CASE( ODESingleObjectStabilityTest )
         std::cout << "\n";
     }
 }
-*/
-

@@ -60,8 +60,7 @@ using namespace rwsim::loaders;
 
 BOOST_AUTO_TEST_CASE( FTSensorTest )
 {
-	// load a scene with a FT sensor mounted in between a kinematic body and a dynamic
-	// place the kinematic body in different poses and pla
+    // add loading tests here
     DynamicWorkCellLoader loader;
 
 

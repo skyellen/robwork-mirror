@@ -1,33 +1,20 @@
-<WorkCell name="cup_pg70_table">
+<WorkCell name="single_object_scene">
 
   <Frame name="Floor" refframe="WORLD">
     <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+    <Drawable name="PlaneGeo">
+	 <RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+	 <Polytope file="../../objects/plane_5x5"/>
+    </Drawable>  
   </Frame>
 
-  <Frame name="ObjectCup2" refframe="WORLD" type="Movable">
-    <RPY>-89.961 0.700 0</RPY><Pos>0.900 -0.475 0.018</Pos>
+  <Frame name="Tray" refframe="WORLD" type="Movable">
+    <RPY>-89.961 0.700 0</RPY><Pos>0 0 1</Pos>
+    <Drawable name="ObjectCup2Geo">
+	 <RPY>-90 0 90</RPY><Pos>0 0 0</Pos>
+  	 <Polytope file="../../objects/BlueSupport"/>
+    </Drawable>  
   </Frame>
-
-  <Frame name="ObjectCup3" refframe="WORLD" type="Movable">
-    <RPY>-1.700 -0.634 -88.597</RPY><Pos>0.891 -0.491 0.085</Pos>
-  </Frame>
-
-  <Drawable name="ObjectCup3Geo" refframe="ObjectCup3">
-	<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
-	<Polytope file="../../objects/GreenCup_5k_tex"/>
-  </Drawable>  
-  
-  <Drawable name="ObjectCup2Geo" refframe="ObjectCup2">
-	<RPY>-90 0 90</RPY><Pos>0 0 0</Pos>
-	<Polytope file="../../objects/BlueSupport"/>
-  </Drawable>  
-	
-  <Drawable name="PlaneGeo" refframe="Floor">
-	<RPY>0 180 0</RPY><Pos>0 0 0</Pos>
-	<Polytope file="../../objects/plane_5x5"/>
-  </Drawable>  
-
-
 
  </WorkCell>
  

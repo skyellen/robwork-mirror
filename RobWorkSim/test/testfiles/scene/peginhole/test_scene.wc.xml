@@ -1,0 +1,39 @@
+<WorkCell name="Peg-In-Hole-Scene1">
+ 
+ <Frame name="platform">
+   <Drawable name="pgeo" >
+     <Polytope file="../../objects/platform" /></Drawable>
+ </Frame>
+ 
+ <Frame name="peg1" refframe="WORLD" type="Movable">
+ <RPY>0 0 0</RPY><Pos>0 0 0.31</Pos>
+   <Drawable name="peg1geo" >
+     <Polytope file="../../objects/peg299" /></Drawable>
+ </Frame>
+
+ <Frame name="peg2" refframe="WORLD" type="Movable">
+   <RPY>0 0 0</RPY><Pos>1 0 0.31</Pos>
+   <Drawable name="peg2geo" >
+     <Polytope file="../../objects/peg298" /></Drawable>
+ </Frame>
+  
+  
+ <Frame name="peg3" refframe="WORLD" type="Movable">
+   <RPY>0 0 0</RPY> <Pos>-1 0 0.31</Pos>
+   <Drawable name="peg3geo" >
+     <Polytope file="../../objects/peg30-10" /></Drawable>
+ </Frame>
+ 
+ 
+ <Frame name="peg4" refframe="WORLD" type="Movable">
+   <RPY>0 0 0</RPY> <Pos>0 1 0.31</Pos>
+   <Drawable name="peg4geo" >
+     <Polytope file="../../objects/peg-square298" /></Drawable>
+ </Frame>
+ 
+ <Frame name="peg5" refframe="WORLD" type="Movable">
+   <RPY>0 0 0</RPY> <Pos>0 -1 0.31</Pos>
+   <Drawable name="peg5geo" >
+     <Polytope file="../../objects/peg-square298" /></Drawable>
+ </Frame>
+ </WorkCell>

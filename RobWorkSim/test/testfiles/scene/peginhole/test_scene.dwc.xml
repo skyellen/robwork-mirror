@@ -1,0 +1,58 @@
+<DynamicWorkcell workcell="test_scene.wc.xml">
+  <PhysicsEngine>
+   <!--CollisionMargin>0.001</CollisionMargin-->
+   <RestitutionModel>Newton</RestitutionModel>
+   <ContactModel>Guendel</ContactModel>
+   <AutoDisable>true</AutoDisable>
+   <Property name="StepMethod">WorldStep</Property> 
+ </PhysicsEngine>
+ 
+ <Gravity>0 0 -9.82</Gravity>
+ 
+ <Include file="properties.xml"/>
+  
+ <!-- You can override the default contactmodel for a specific set of bodies -->
+ <ContactModel first="fnameA" second="fnameB" type="Mirtich" />
+ 
+ <FixedBody frame="platform">
+  <MaterialID>Plastic</MaterialID> </FixedBody>
+ 
+ <!-- Now define all the rigid bodies that exist in the workcell, remember to
+      reference the RigidBody to a movableframe -->
+ <RigidBody frame="peg1">
+  <Mass>0.3</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>
+ 
+  <RigidBody frame="peg2">
+  <Mass>0.3</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>
+
+ <RigidBody frame="peg3">
+  <Mass>0.3</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>
+
+
+ <RigidBody frame="peg4">
+  <Mass>0.3</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>
+ 
+ <RigidBody frame="peg5">
+  <Mass>0.3</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID>
+ </RigidBody>
+
+</DynamicWorkcell>

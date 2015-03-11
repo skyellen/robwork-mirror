@@ -28,40 +28,21 @@ using namespace rwsim::simulator;
 
 BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
 {
-    // add loading tests here
-    DynamicWorkCell::Ptr dwc1 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device1.dwc.xml");
+    // check failed loading of non-existing scene
+	BOOST_CHECK_THROW( DynamicWorkCellLoader::load(testFilePath() + "/devices/does_not_exist.dwc.xml"), std::exception);
 
-    DynamicWorkCell::Ptr dwc2 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device2.dwc.xml");
+	// check successfull loading of different dynamic workcells
+    DynamicWorkCell::Ptr dwc_pg70, dwc_sdh, dwc_ur;
+    BOOST_CHECK_NO_THROW( dwc_pg70 = DynamicWorkCellLoader::load(testFilePath() + "/devices/PG70/test_scene.dwc.xml") );
+    BOOST_CHECK_NO_THROW( dwc_sdh = DynamicWorkCellLoader::load(testFilePath() + "/devices/SDH2/test_scene.dwc.xml") );
+    BOOST_CHECK_NO_THROW( dwc_ur = DynamicWorkCellLoader::load(testFilePath() + "/devices/UR6855A/test_scene.dwc.xml") );
 
-    DynamicWorkCell::Ptr dwc3 = DynamicWorkCellLoader::load(testFilePath() + "/simple/device3.dwc.xml");
+    // check that the scenes contain correct information
+    BOOST_CHECK( dwc_pg70->findController("GraspController") != NULL );
+    BOOST_CHECK( dwc_pg70->findDevice("PG70") != NULL );
+    BOOST_CHECK( dwc_pg70->findDevice<RigidDevice>("PG70") != NULL );
+    BOOST_CHECK( dwc_pg70->findBody("PG70.Base") != NULL );
+    BOOST_CHECK( dwc_pg70->findBody("PG70.RightFinger") != NULL );
 
-    DynamicWorkCell::Ptr dwcM1 = DynamicWorkCellLoader::load(testFilePath() + "/simple/deviceMulti1.dwc.xml");
-
-}
-
-
-BOOST_AUTO_TEST_CASE( ODESimulatorLoadTest )
-{
-#ifdef RWSIM_HAVE_ODE
-    // add loading tests here
-    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load("bumbum");
-    ODESimulator *sim = new ODESimulator(dwc);
-    sim->getGravity(); // Dummy
-#else
-	BOOST_FAIL("Simulator is not compiled with ODE - hence ODESimulator can not load workcell.");
-#endif
-}
-
-
-BOOST_AUTO_TEST_CASE( ODESimulatorResetTest )
-{
-#ifdef RWSIM_HAVE_ODE
-	// Test if the simulator can handle to be reset
-    DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(testFilePath() + "/simple/device1.dwc.xml");
-    ODESimulator *sim = new ODESimulator(dwc);
-    sim->getGravity(); // Dummy
-#else
-	BOOST_FAIL("Simulator is not compiled with ODE - hence ODESimulator can not be reset.");
-#endif
 }
 

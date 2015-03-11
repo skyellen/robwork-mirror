@@ -20,6 +20,12 @@
  </Joint>
  <Frame name="TCPLeft" refframe="LeftFinger" type="EndEffector">
  </Frame>
+ 
+   <Frame name="TCPPG70" refframe="Base">
+	<RPY>90 0 0</RPY><Pos>0 0 0.14</Pos>
+	<Property name="minJawWidth" type="double">0.01</Property>
+    <Property name="maxJawWidth" type="double">0.09</Property>
+  </Frame>
 
 
 <!-- Define limits -->

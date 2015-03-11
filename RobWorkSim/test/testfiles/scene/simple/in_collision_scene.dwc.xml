@@ -16,7 +16,14 @@
  <!-- Now define all the rigid bodies that exist in the workcell, remember to
       reference the RigidBody to a movableframe -->
  
- <RigidBody frame="Tray">
+ <RigidBody frame="ObjectCup2">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID> 
+ </RigidBody>
+
+ <RigidBody frame="ObjectCup3">
   <Mass>0.1</Mass>
   <EstimateInertia />
   <Integrator>Euler</Integrator>

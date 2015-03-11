@@ -1,0 +1,24 @@
+<WorkCell name="PG70BoxGraspScene">
+
+ <Frame name="GripperOffset" refframe="WORLD">
+    <RPY>0 0 0</RPY> <Pos>0 0 0.2</Pos>
+    </Frame>
+ 
+ <Include file="../../devices/PG70/PG70.wc.xml" />
+
+ <Frame name="Floor" refframe="WORLD">
+  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  <Drawable name="PlaneGeo" refframe="Floor">
+   <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+   <Polytope file="../../objects/plane_5x5"/>
+  </Drawable>  
+ </Frame>
+ 
+ <Frame name="object" refframe="WORLD" type="Movable">
+    <RPY>0 0 0</RPY> <Pos>0 0 0.06</Pos>
+    <Drawable name="ObjectGeo">
+	 <Box x="0.06" y="0.06" z="0.1"/>
+    </Drawable>
+ </Frame>
+ 
+ </WorkCell>

@@ -1,0 +1,28 @@
+<WorkCell name="cup_on_tray_stability">
+
+  <Frame name="Floor" refframe="WORLD">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+    <Drawable name="PlaneGeo" >
+	  <RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+	  <Polytope file="../../objects/plane_5x5"/>
+    </Drawable>  
+  </Frame>
+
+  <Frame name="Tray" refframe="WORLD" type="Movable">
+    <RPY>-89.961 0.700 0</RPY><Pos>0.900 -0.475 0.018</Pos>
+    <Drawable name="TrayGeo" >
+	  <RPY>-90 0 90</RPY><Pos>0 0 0</Pos>
+  	  <Polytope file="../../objects/BlueSupport"/>
+    </Drawable>  
+  </Frame>
+
+  <Frame name="Cup" refframe="WORLD" type="Movable">
+    <RPY>-1.700 -0.634 -88.597</RPY><Pos>0.891 -0.491 0.085</Pos>
+    <Drawable name="CupGeo" >
+	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	  <Polytope file="../../objects/GreenCup_5k_tex"/>
+    </Drawable>  
+  </Frame>
+
+ </WorkCell>
+ 
