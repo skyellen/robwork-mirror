@@ -71,6 +71,9 @@ MESSAGE(STATUS "RobWorkStudio: platform ${INFO} ")
 # setup testing
 #
 CONFIGURE_FILE("${RWS_ROOT}/cmake/CTestCustom.cmake.in" "CTestCustom.cmake")
+# configure testing configuration
+CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
+
 INCLUDE(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(RWS_IS_TESTS_ENABLED "Set when you want to build the tests" 
                    ON "${RWS_BUILD_TESTS}" OFF)
@@ -81,9 +84,6 @@ IF( RWS_IS_TESTS_ENABLED )
 ELSE ()
     MESSAGE(STATUS "RobWorkStudio: tests DISABLED!")
 ENDIF()
-
-# configure testing configuration
-CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
 
 ###############################################################
 # Try to find the current revision 
