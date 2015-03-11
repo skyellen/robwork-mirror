@@ -11,6 +11,8 @@
 #define RW_REVISION "${ROBWORK_REVISION}"
 #define RW_BUILD_TYPE "${RW_BUILD_TYPE}"
 
+#define RW_BUILD_DIR "${RW_ROOT}"
+
 #cmakedefine RW_HAVE_PQP 1
 #cmakedefine RW_HAVE_YAOBI 1
 #cmakedefine RW_HAVE_BULLET 1
