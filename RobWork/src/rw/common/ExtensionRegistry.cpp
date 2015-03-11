@@ -1,19 +1,16 @@
 #include "ExtensionRegistry.hpp"
 
 #include "Plugin.hpp"
+#include <rw/RobWork.hpp>
 
 using namespace rw::common;
 
 rw::common::Ptr<ExtensionRegistry> ExtensionRegistry::getInstance(){
-    static rw::common::Ptr<ExtensionRegistry> _instance;
-    if(_instance == NULL)
-    	_instance = rw::common::ownedPtr(new ExtensionRegistry());
-    return _instance;
+	return rw::RobWork::getInstance()->getExtensionRegistry();
 }
 
 ExtensionRegistry::ExtensionRegistry() {
     // load settings file
-
 }
 
 std::vector<Extension::Descriptor> ExtensionRegistry::getExtensionDescriptors(const std::string& ext_point_id) const {

@@ -24,6 +24,11 @@
 #include <rw/common/ExtensionRegistry.hpp>
 #include <rw/common/Plugin.hpp>
 
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/option.hpp>
+#include <boost/program_options/parsers.hpp>
+
 #include <cstdlib>
 using namespace rw;
 using namespace rw::common;
@@ -34,6 +39,7 @@ using boost::filesystem::path;
 using boost::filesystem::exists;
 using boost::filesystem::initial_path;
 
+using namespace boost::program_options;
 
 #if defined(RW_CYGWIN)
     #define RWCFGHOMEDIR std::string(std::getenv("HOME")) + "/.config/robwork/"
@@ -49,7 +55,6 @@ using boost::filesystem::initial_path;
     #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-" + RW_VERSION + ".cfg.xml"
 #endif
 
-
 RobWork::RobWork(void) 
 {
 }
@@ -61,28 +66,22 @@ RobWork::~RobWork(void)
 	}
 }
 
+void RobWork::initialize(const std::vector<std::string>& plugins){
+    Log::infoLog() << "Initializing ROBWORK" << std::endl;
 
-void RobWork::initialize(){
-	const Log::Ptr logInstance = Log::getInstance();
-    // we need to find the settings of robwork so we start searching for rwsettings.xml
-    Log::debugLog() << "Initializing ROBWORK" << std::endl;
+    // user supplied arguments will always be taken into account
 
 	// this is the search priority
-	// 1. search from execution directory
-	// 2. search from user home directory (OS specific)
-
+    // 1. check if env variables define where robwork and therefore plugins are located
+	// 2. search for config file from execution directory
+	// 3. search from user home directory (OS specific)
+    // 4. check hardcoded build directory
     path ipath = initial_path();
     std::string rwsettingsPath = ipath.string() + "/robwork-" + RW_BUILD_TYPE + "-" + RW_VERSION + ".cfg.xml";
-    if( exists(rwsettingsPath) ){
-    	//std::cout << "FOUND CFG FILE IN EXE DIR..." << std::endl;
-        _settings = XMLPropertyLoader::load( rwsettingsPath );
-        _settings.add("cfgfile", "", rwsettingsPath );
-        //std::cout << "loading RobWork settings from: " << rwsettingsPath << std::endl;
-    } else if( exists( RWCFGFILE ) ){
-    	rwsettingsPath = std::string(RWCFGFILE);
-        _settings = XMLPropertyLoader::load( rwsettingsPath );
-    	_settings.add("cfgfile", "", rwsettingsPath );
-    } else {
+    char* rwRootVar = getenv("RW_ROOT");
+
+    if( rwRootVar != NULL ){
+    	Log::infoLog() << "Found RobWork root dir in environment variable RW_ROOT..." << std::endl;
         // create the file in default current location
         PropertyMap plugins;
 
@@ -106,19 +105,29 @@ void RobWork::initialize(){
 
         _settings.add("plugins","List of plugins or plugin locations",plugins);
 
-        if( !exists( RWCFGHOMEDIR ) ){
-            // create config dir
-            boost::filesystem::path dir( RWCFGHOMEDIR );
-            if ( boost::filesystem::create_directory(dir) )
-                RW_WARN("Could not create cfg directory: " << RWCFGHOMEDIR  << ". Instead using: " <<  ipath.string());
-        }
+    } else if( exists(rwsettingsPath) ){
+    	Log::infoLog() << "Found robwork configuration file in execution directory..." << std::endl;
+        _settings = XMLPropertyLoader::load( rwsettingsPath );
+        _settings.add("cfgfile", "", rwsettingsPath );
+    } else if( exists( RWCFGFILE ) ){
+    	Log::infoLog() << "Found robwork configuration filr in global configuration directory:\n\t" << std::string(RWCFGFILE) << std::endl;
+    	rwsettingsPath = std::string(RWCFGFILE);
+        _settings = XMLPropertyLoader::load( rwsettingsPath );
+    	_settings.add("cfgfile", "", rwsettingsPath );
+    } else if( exists( std::string(RW_BUILD_DIR) ) ){
+    	// check if the build directory exist
+    	Log::infoLog() << "Found robwork in build directory: \"" << std::string(RW_BUILD_DIR) << "\""<< std::endl;
+    	std::string buildDir( RW_BUILD_DIR );
 
-        if( exists( RWCFGHOMEDIR ) ){
-            XMLPropertySaver::save( _settings, RWCFGFILE );
-        } else {
-            XMLPropertySaver::save( _settings, rwsettingsPath );
-        }
+        // create the file in default current location
+        PropertyMap plugins;
+        plugins.add("location-1","Default plugin location",std::string("plugins/"));
+        plugins.add("location-2","Default plugin location for RobWork",buildDir+"/libs/"+RW_BUILD_TYPE+"/");
+        plugins.add("location-3","Default plugin location for RobWorkStudio",buildDir+"/../RobWorkStudio/libs/"+RW_BUILD_TYPE+"/");
+        plugins.add("location-4","Default plugin location for RobWorkSim",buildDir+"/../RobWorkSim/libs/"+RW_BUILD_TYPE+"/");
+        plugins.add("location-5","Default plugin location for RobWorkHardware",buildDir+"/../RobWorkHardware/libs/"+RW_BUILD_TYPE+"/");
 
+        _settings.add("plugins","List of plugins or plugin locations",plugins);
     }
     _settingsFile = rwsettingsPath;
 
@@ -126,7 +135,15 @@ void RobWork::initialize(){
     std::vector<std::string> cfgDirs;
     PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
 
-    Log::debugLog() << "Looking for RobWork plugins in following directories:\n";
+    // add user defined plugin hints
+    Log::infoLog() << "Adding plugins from arguments:\n";
+    for(size_t i=0;i<plugins.size();i++){
+    	std::stringstream sstr;
+    	sstr << "loc-from-arg-" << i;
+    	pluginsMap.add(sstr.str(), "Plugin location from init arguments", plugins[i]);
+    }
+
+    Log::infoLog() << "Looking for RobWork plugins in following directories:\n";
     BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
     	// check if its a
     	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
@@ -134,14 +151,13 @@ void RobWork::initialize(){
     		continue;
 
     	cfgDirs.push_back( propstr->getValue() );
-    	//std::cout << "\t" << propstr->getIdentifier() << " " << propstr->getValue() << std::endl;
-    	Log::debugLog() << "\t" << propstr->getValue() << std::endl;
+    	Log::infoLog() << "\t" << propstr->getValue() << std::endl;
     }
 
-    Log::debugLog() << "Loading plugins:\n";
+    Log::infoLog() << "Loading plugins:\n";
     BOOST_FOREACH(std::string dir, cfgDirs){
     	path file( dir );
-    	Log::debugLog() << dir << std::endl;
+    	Log::debugLog() << " processing hint: " << dir << std::endl;
 #if(BOOST_FILESYSTEM_VERSION==2)
     	if( !file.has_root_path() ){
     		file = path( ipath.string() + "/" + dir );
@@ -156,6 +172,7 @@ void RobWork::initialize(){
     		continue;
 
         // now initialize plugin repository
+
         ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
 
 
@@ -165,30 +182,121 @@ void RobWork::initialize(){
     		std::vector<std::string> pl_files =
     				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
     		BOOST_FOREACH(std::string pl_file, pl_files){
-    		    Log::debugLog() << "\t Plugin: "<< pl_file<< std::endl;
+    		    Log::infoLog() << "\t "<< pl_file<< std::endl;
                 rw::common::Ptr<Plugin> plugin = Plugin::load( pl_file );
                 reg->registerExtensions(plugin);
-                Log::setLog(logInstance);
     		}
     	} else {
-    	    Log::debugLog() << "\t Plugin: " <<  file.string() << std::endl;
+    	    Log::debugLog() << "\t " <<  file.string() << std::endl;
             rw::common::Ptr<Plugin> plugin = Plugin::load( file.string() );
             reg->registerExtensions(plugin);
     	}
-
     }
-
 }
 
 namespace {
+    rw::common::Ptr<rw::common::ExtensionRegistry> _extensionReg;
+    rw::common::Log::Ptr _log;
     RobWork::Ptr _rwinstance;
+
+    // this is used for initializing variables on program startup
+    // hence, any program linked with this code will execute the constructor
+    // before main(argc,argv) is entered...
+    struct AutoInitializeRobWork {
+       	AutoInitializeRobWork(){
+       		//rw::common::Log::debugLog() << " AUTO INITILIZING ROBWORK .... " << std::endl;
+        	if(_log==NULL)
+        		_log =  rw::common::ownedPtr( new rw::common::Log() );
+    		if(_extensionReg==NULL)
+    			_extensionReg = rw::common::ownedPtr(new rw::common::ExtensionRegistry());
+       		RobWork::getInstance()->initialize();
+
+       	}
+    } _initializer;
+}
+
+rw::common::Ptr<rw::common::ExtensionRegistry> RobWork::getExtensionRegistry(){
+	// test for NULL, to avoid problems with 'static initialization order fiasco'
+	if(_extensionReg==NULL)
+		_extensionReg =  rw::common::ownedPtr(new rw::common::ExtensionRegistry());
+    return _extensionReg;
+}
+
+void RobWork::setExtensionRegistry(rw::common::Ptr<rw::common::ExtensionRegistry> extreg){
+    _extensionReg = extreg;
+}
+
+
+void RobWork::init(){
+	RobWork::getInstance()->initialize();
+}
+
+void RobWork::init(int argc, const char** argv){
+	// get log level, plugins, or plugin directories
+
+    options_description desc("RobWork options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("rwloglevel", value<std::string>()->default_value("info"), "Set to debug, info, error, fatal")
+        ("rwplugin", value<std::vector<std::string> >()->multitoken(), "Specific RobWork plugins or plugin directories to load. ");
+    	("rwroot", value<std::string>(), "Directory of RobWork installation or development environment.");
+    ;
+    positional_options_description optionDesc;
+    variables_map vm;
+    store(command_line_parser(argc, argv).
+              options(desc).positional(optionDesc).run(), vm);
+    notify(vm);
+
+    if (vm.count("help")) {
+    	std::cout << "Usage example setting RobWork parameters:\n\n"
+                  << "\t" << argv[0] <<" --rwloglevel=debug --rwplugin=/home/user/userplugin/libs/release/userplugin.rwplugin.so \n"
+                  << "\t Plugins look like *.rwplugin.(dll,so,xml) \n"
+                  << "\n";
+    	std::cout << desc << "\n";
+        return;
+    }
+
+    std::vector<std::string> plugins;
+    if( vm.count("rwplugin") ){
+    	plugins = vm["rwplugin"].as<std::vector<std::string> >();
+    }
+
+
+	RobWork::getInstance()->initialize(plugins);
+
+	std::string rwloglevel_arg = vm["rwloglevel"].as<std::string>();
+	if(rwloglevel_arg=="debug"){ Log::getInstance()->setLevel( Log::Debug ); }
+	else if(rwloglevel_arg=="info"){ Log::getInstance()->setLevel( Log::Info ); }
+	else if(rwloglevel_arg=="error"){ Log::getInstance()->setLevel( Log::Error ); }
+	else if(rwloglevel_arg=="fatal"){ Log::getInstance()->setLevel( Log::Fatal ); }
+	else { RW_WARN("rwloglevel set to unknown value!"); }
+}
+
+void RobWork::setLog(rw::common::Log::Ptr log){
+	_log = log;
+}
+
+rw::common::Log& RobWork::getLog()
+{
+	// test for NULL, to avoid problems with 'static initialization order fiasco'
+	if(_log==NULL)
+		_log =  rw::common::ownedPtr( new rw::common::Log() );
+    return *_log;
+}
+
+rw::common::Log::Ptr RobWork::getLogPtr()
+{
+	if(_log==NULL)
+		_log =  rw::common::ownedPtr( new rw::common::Log() );
+	return _log;
 }
 
 RobWork::Ptr RobWork::getInstance(){
-    if(_rwinstance==NULL){
-        _rwinstance = ownedPtr( new RobWork() );
-    }
-    return _rwinstance;
+	// test for NULL, to avoid problems with 'static initialization order fiasco'
+	if(_rwinstance==NULL){
+		_rwinstance = ownedPtr( new RobWork() );
+	}
+	return _rwinstance;
 }
 
 void RobWork::setInstance(RobWork::Ptr rw){

@@ -22,7 +22,7 @@
 #include <boost/foreach.hpp>
 
 #include <rw/common/LogStreamWriter.hpp>
-
+#include <rw/RobWork.hpp>
 using namespace rw;
 using namespace rw::common;
 
@@ -43,31 +43,20 @@ namespace {
 	};
 }
 
-Log::Ptr _log;
-
-struct InitLog {
-    InitLog(){
-        _log =  ownedPtr( new Log() );
-    }
-    virtual ~InitLog(){};
-}; 
-
-InitLog _initLog;
-
 
 Log& Log::log(){
-	return *_log;
+	return rw::RobWork::getInstance()->getLog();
 }
 
 
 void Log::setLog(Log::Ptr log){
-    if(_log==log)
+    if(rw::RobWork::getInstance()->getLogPtr()==log)
         return;
-    _log = log;
+    rw::RobWork::getInstance()->setLog(log);
 }
 
 Log::Ptr Log::getInstance(){
-	return _log;
+	return rw::RobWork::getInstance()->getLogPtr();
 }
 
 Log::Log():
@@ -87,7 +76,6 @@ Log::Log():
 }
 
 Log::~Log() {
-    // std::cout << "Destroing log!! " << std::endl;
 
 }
 

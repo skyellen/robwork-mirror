@@ -22,6 +22,7 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/common/ExtensionRegistry.hpp>
 
 namespace rw {
 
@@ -30,8 +31,6 @@ namespace rw {
  *
  * A RobWork instance contains common objects and configuration which may be used
  * by multiple plugins which may originate from different shared libraries.
- *
- *
  */
 class RobWork
 {
@@ -49,34 +48,22 @@ public:
      */
     ~RobWork(void);
 
-
-    /**
-     * @brief Returns the PluginRepository 
-     * @return PluginRepository
-     */
-    /*
-    rw::plugin::PluginRepository& getPluginRepository()
-    {
-        return _pluginRepository;
-    }
-    */
-
     /**
      * @brief Returns the common log
      */
-    rw::common::Log& getLog()
-    {
-        return _log;
-    }
+    rw::common::Log& getLog();
 
     /**
      * @brief get a pointer to the common log
      * @return
      */
-	rw::common::Log::Ptr getLogPtr()
-    {
-		return rw::common::Log::Ptr(&_log);
-    }
+	rw::common::Log::Ptr getLogPtr();
+
+	/**
+	 * @brief set logger for this instance of RobWork
+	 * @param log
+	 */
+	void setLog(rw::common::Log::Ptr log);
 
     /**
      * @brief Returns the version of RobWork
@@ -91,7 +78,7 @@ public:
      *
      * Reads in its configuration file which specify plugins and so on.
      */
-    void initialize();
+    void initialize(const std::vector<std::string>& plugins = std::vector<std::string>());
 
     /**
      * @brief get settings of RobWork instance
@@ -100,9 +87,30 @@ public:
     rw::common::PropertyMap& getSettings();
 
     /**
+     * @brief get the extension registry
+     * @return
+     */
+    rw::common::Ptr<rw::common::ExtensionRegistry> getExtensionRegistry();
+
+    /**
+     * @brief set extension registry of this instance of robwork
+     */
+    void setExtensionRegistry(rw::common::Ptr<rw::common::ExtensionRegistry> extreg);
+
+    /**
      * @brief returns an RobWork instance
      */
     static RobWork::Ptr getInstance();
+
+    /**
+     * @brief initialize robwork
+     */
+    static void init();
+
+    /**
+     * @brief initialize robwork - including possible command line options
+     */
+    static void init(int argc, const char** argv);
 
     /**
      * @brief sets the robwork instance
@@ -110,18 +118,11 @@ public:
      */
     static void setInstance(RobWork::Ptr rw);
 
-
 private:
-    //rw::plugin::PluginRepository _pluginRepository;
     rw::common::PropertyMap _settings;
-    rw::common::Log _log;
     std::string _settingsFile;
 };
 
-#ifdef RW_USE_DEPRECATED
-//! deprecated smart pointer type
-typedef rw::common::Ptr<RobWork> RobWorkPtr;
-#endif
 } //end namespace rw
 
 
