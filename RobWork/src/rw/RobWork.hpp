@@ -110,7 +110,7 @@ public:
     /**
      * @brief initialize robwork - including possible command line options
      */
-    static void init(int argc, const char** argv);
+    static void init(int argc, const char* const* argv);
 
     /**
      * @brief sets the robwork instance

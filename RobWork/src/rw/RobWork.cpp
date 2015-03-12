@@ -231,15 +231,15 @@ void RobWork::init(){
 	RobWork::getInstance()->initialize();
 }
 
-void RobWork::init(int argc, const char** argv){
+void RobWork::init(int argc, const char* const * argv){
 	// get log level, plugins, or plugin directories
 
     options_description desc("RobWork options");
     desc.add_options()
         ("help", "produce help message")
         ("rwloglevel", value<std::string>()->default_value("info"), "Set to debug, info, error, fatal")
-        ("rwplugin", value<std::vector<std::string> >()->multitoken(), "Specific RobWork plugins or plugin directories to load. ");
-    	("rwroot", value<std::string>(), "Directory of RobWork installation or development environment.");
+        ("rwplugin", value<std::vector<std::string> >()->multitoken(), "Specific RobWork plugins or plugin directories to load. ")
+    	("rwroot", value<std::string>(), "Directory of RobWork installation or development environment.")
     ;
     positional_options_description optionDesc;
     variables_map vm;
