@@ -77,6 +77,8 @@ public:
 	 *  ---------------------------------------- | ------ | ------------- | -----------
 	 *  TNTCollisionSolverResolverTolerance      | double | \f$10^{-6}\f$ | Resolver will activate contacts with colliding velocity greater than this, and deactivate contacts that has leaving velocity greater than this (in m/s).
 	 *  TNTCollisionSolverSingularValuePrecision | double | \f$10^{-6}\f$ | Precision of SVD - see rw::math::LinearAlgebra::pseudoInverse(const Eigen::MatrixXd&, double) .
+	 *  TNTCollisionSolverMaxContacts            | int    | \f$24\f$      | Maximum number of simultaneous contacts before throwing exception (only used if solve iterative i disabled).
+	 *  TNTCollisionSolverIterations             | int    | \f$200\f$     | Maximum number of iterations in iterative solver (set to zero to disable iterative solver).
 	 *
 	 * @param map [in/out] the map to add properties to.
 	 */
@@ -116,7 +118,17 @@ private:
 			const TNTMaterialMap* map,
 			const TNTIslandState& tntstate,
 			const rw::kinematics::State& rwstate,
-			double precision);
+			double precision,
+			bool iterative,
+			unsigned int iterations);
+
+	static Eigen::VectorXd iterativeSVD(
+			const Eigen::MatrixXd& A,
+			const Eigen::VectorXd& b,
+			Eigen::MatrixXd::Index constraintDim,
+			unsigned int iterations,
+			double svdPrecision,
+			double eps);
 
 	static void applySolution(
 			const Eigen::VectorXd& solution,

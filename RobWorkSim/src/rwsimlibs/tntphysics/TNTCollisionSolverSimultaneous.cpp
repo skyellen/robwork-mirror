@@ -38,6 +38,8 @@ using namespace rwsimlibs::tntphysics;
 
 #define PROPERTY_RESOLVER_TOLERANCE "TNTCollisionSolverResolverTolerance"
 #define PROPERTY_SVD_PRECISION "TNTCollisionSolverSingularValuePrecision"
+#define PROPERTY_MAX_CONTACTS "TNTCollisionSolverMaxContacts"
+#define PROPERTY_ITERATIONS "TNTCollisionSolverIterations"
 
 TNTCollisionSolverSimultaneous::TNTCollisionSolverSimultaneous() {
 }
@@ -89,6 +91,8 @@ void TNTCollisionSolverSimultaneous::addDefaultProperties(PropertyMap& map) cons
 void TNTCollisionSolverSimultaneous::addDefaultPropertiesInternal(PropertyMap& map) {
 	map.add<double>(PROPERTY_RESOLVER_TOLERANCE,"Resolver will activate contacts with colliding velocity greater than this, and deactivate contacts that has leaving velocity greater than this (in m/s).",1e-6);
 	map.add<double>(PROPERTY_SVD_PRECISION,"Precision of SVD - used for LinearAlgebra::pseudoInverse.",1e-6);
+	map.add<int>(PROPERTY_MAX_CONTACTS,"Maximum number of simultaneous contacts before throwing exception (only used if solve iterative i disabled).",24);
+	map.add<int>(PROPERTY_ITERATIONS,"Maximum number of iterations in iterative solver (set to zero to disable iterative solver).",200);
 }
 
 void TNTCollisionSolverSimultaneous::handleComponent(
@@ -138,7 +142,9 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 	// First find the properties to use
 	double RESOLVER_THRESHOLD = pmap.get<double>(PROPERTY_RESOLVER_TOLERANCE,-1.);
 	double PRECISION = pmap.get<double>(PROPERTY_SVD_PRECISION,-1.);
-	if (RESOLVER_THRESHOLD < 0 || PRECISION < 0) {
+	int MAX_CONTACTS = pmap.get<int>(PROPERTY_MAX_CONTACTS,-1.);
+	int ITERATIONS = pmap.get<int>(PROPERTY_ITERATIONS,-1);
+	if (RESOLVER_THRESHOLD < 0 || PRECISION < 0 || MAX_CONTACTS < 0 || ITERATIONS < 0) {
 		PropertyMap tmpMap;
 		addDefaultPropertiesInternal(tmpMap);
 		if (RESOLVER_THRESHOLD < 0) {
@@ -149,9 +155,14 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 			PRECISION = tmpMap.get<double>(PROPERTY_SVD_PRECISION,-1.);
 			RW_ASSERT(PRECISION > 0);
 		}
+		if (MAX_CONTACTS < 0) {
+			MAX_CONTACTS = tmpMap.get<int>(PROPERTY_MAX_CONTACTS,-1.);
+		}
+		if (ITERATIONS < 0) {
+			ITERATIONS = tmpMap.get<int>(PROPERTY_ITERATIONS,-1.);
+			RW_ASSERT(ITERATIONS >= 0);
+		}
 	}
-
-	TNTIslandState tmpState;
 
 	// Construct initial lists assuming all known contacts will be leaving and only the new contacts will penetrate.
 	std::vector<const TNTContact*> candidates;
@@ -164,123 +175,138 @@ void TNTCollisionSolverSimultaneous::resolveContacts(
 		else
 			nonContacts.push_back(constraint);
 	}
-	std::vector<bool> enabled(candidates.size(),false);
 
-	bool repeat = true;
-	std::list<std::vector<bool> > testedCombinations;
-	std::list<std::vector<bool> > allCombinations;
-	bool testedAll = false;
-	while (repeat) {
-		// Check if we have already tested this combination before.
-		bool testedCombination = false;
-		BOOST_FOREACH(const std::vector<bool>& comb, testedCombinations) {
-			bool match = true;
-			for (std::size_t i = 0; i < comb.size(); i++) {
-				if (comb[i] != enabled[i]) {
-					match = false;
+	if (ITERATIONS > 0) {
+		// Now try to solve
+		Eigen::VectorXd solution;
+		if (candidates.size() > 0 || nonContacts.size() > 0) {
+			solution = solve(candidates, nonContacts, map, tntstate, rwstate, PRECISION, true, ITERATIONS);
+			applySolution(solution, component, candidates, nonContacts, map, tntstate, rwstate);
+		}
+		BOOST_FOREACH(const TNTRigidBody* const body, component) {
+			const VelocityScrew6D<> vel = body->getVelocityW(tntstate);
+			body->setVelocityW(vel,tntstate);
+		}
+	} else {
+		TNTIslandState tmpState;
+		std::vector<bool> enabled(candidates.size(),false);
+		bool repeat = true;
+		std::list<std::vector<bool> > testedCombinations;
+		std::list<std::vector<bool> > allCombinations;
+		bool testedAll = false;
+		while (repeat) {
+			// Check if we have already tested this combination before.
+			bool testedCombination = false;
+			BOOST_FOREACH(const std::vector<bool>& comb, testedCombinations) {
+				bool match = true;
+				for (std::size_t i = 0; i < comb.size(); i++) {
+					if (comb[i] != enabled[i]) {
+						match = false;
+						break;
+					}
+				}
+				if (match) {
+					testedCombination = true;
+					if (allCombinations.size() > 0) {
+						allCombinations.erase(allCombinations.begin());
+						if (allCombinations.size() == 0)
+							testedAll = true;
+					}
 					break;
 				}
 			}
-			if (match) {
-				testedCombination = true;
-				if (allCombinations.size() > 0) {
-					allCombinations.erase(allCombinations.begin());
-					if (allCombinations.size() == 0)
-						testedAll = true;
-				}
-				break;
-			}
-		}
-		if (testedAll)
-			RW_THROW("TNTCollisionSolverSimultaneous (resolveContacts): all combinations tested - none was valid.");
-		// If loop was found, we break it by suggesting a new combination
-		if (testedCombination) {
-			// Construct list of all possible combinations if not already done
-			if (allCombinations.size() == 0) {
-				const std::size_t nrOfContacts = candidates.size();
-				RW_ASSERT(nrOfContacts > 0);
-				if (nrOfContacts >= 24)
-					RW_THROW("TNTCollisionSolverSimultaneous (resolveContacts): There are too many contacts (" << nrOfContacts << " of max 24) - please reduce the number of contacts or increase the value of \"" << PROPERTY_RESOLVER_TOLERANCE << "\".");
-				std::size_t nrOfComb = 2;
-				for (std::size_t i = 1; i < nrOfContacts; i++)
-					nrOfComb *= 2;
-				allCombinations.resize(nrOfComb);
-				std::size_t i = 0;
-				BOOST_FOREACH(std::vector<bool>& comb, allCombinations) {
-					comb.resize(nrOfContacts);
-					std::size_t val = i;
-					for (std::size_t k = 0; k < nrOfContacts; k++) {
-						comb[k] = val%2;
-						val = val >> 1;
+			if (testedAll)
+				RW_THROW("TNTCollisionSolverSimultaneous (resolveContacts): all combinations tested - none was valid.");
+			// If loop was found, we break it by suggesting a new combination
+			if (testedCombination) {
+				// Construct list of all possible combinations if not already done
+				if (allCombinations.size() == 0) {
+					const std::size_t nrOfContacts = candidates.size();
+					RW_ASSERT(nrOfContacts > 0);
+					if ((int)nrOfContacts > MAX_CONTACTS && MAX_CONTACTS > 0)
+						RW_THROW("TNTCollisionSolverSimultaneous (resolveContacts): There are too many contacts (" << nrOfContacts << " of max " << MAX_CONTACTS << ") - please reduce the number of contacts or increase the value of \"" << PROPERTY_MAX_CONTACTS << "\".");
+					std::size_t nrOfComb = 2;
+					for (std::size_t i = 1; i < nrOfContacts; i++)
+						nrOfComb *= 2;
+					allCombinations.resize(nrOfComb);
+					std::size_t i = 0;
+					BOOST_FOREACH(std::vector<bool>& comb, allCombinations) {
+						comb.resize(nrOfContacts);
+						std::size_t val = i;
+						for (std::size_t k = 0; k < nrOfContacts; k++) {
+							comb[k] = val%2;
+							val = val >> 1;
+						}
+						i++;
 					}
-					i++;
 				}
+				// Now try the first combination in list
+				enabled = allCombinations.front();
+				TNT_DEBUG_BOUNCING("Combination suggested by heuristic already tested - trying a different one (" << allCombinations.size() << " left).");
+				continue;
 			}
-			// Now try the first combination in list
-			enabled = allCombinations.front();
-			TNT_DEBUG_BOUNCING("Combination suggested by heuristic already tested - trying a different one (" << allCombinations.size() << " left).");
-			continue;
-		}
-		// Add the current combinations to the list of tested combinations
-		testedCombinations.push_back(enabled);
+			// Add the current combinations to the list of tested combinations
+			testedCombinations.push_back(enabled);
 
-		// Construct list of contacts
-		std::vector<const TNTContact*> penetratingContacts;
-		for (std::size_t i = 0; i < enabled.size(); i++) {
-			if (enabled[i]) {
-				penetratingContacts.push_back(candidates[i]);
+			// Construct list of contacts
+			std::vector<const TNTContact*> penetratingContacts;
+			for (std::size_t i = 0; i < enabled.size(); i++) {
+				if (enabled[i]) {
+					penetratingContacts.push_back(candidates[i]);
+				}
 			}
-		}
 
-		// Now try to solve
-		tmpState = tntstate;
-		Eigen::VectorXd solution;
-		if (penetratingContacts.size() > 0 || nonContacts.size() > 0) {
-			solution = solve(penetratingContacts, nonContacts, map, tmpState, rwstate, PRECISION);
-			applySolution(solution, component, penetratingContacts, nonContacts, map, tmpState, rwstate);
-		}
-		repeat = false;
-		Eigen::MatrixXd::Index solId = 0;
-		BOOST_FOREACH(const TNTConstraint* constraint, nonContacts) {
-			solId += constraint->getDimVelocity();
-		}
-		for (std::size_t i = 0; i < enabled.size(); i++) {
-			const TNTContact* const contact = candidates[i];
-			if (!enabled[i]) {
-				const Vector3D<> linVelI = contact->getVelocityParentW(tmpState,rwstate).linear();
-				const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
-				const Vector3D<> linRelVel = linVelI-linVelJ;
-				const Vector3D<> nij = contact->getNormalW(tmpState);
-				const bool leaving = dot(-linRelVel,nij) >= -RESOLVER_THRESHOLD;
-				if (!leaving) {
-					enabled[i] = true;
-					repeat = true;
-				}
-			} else {
-				const TNTRestitutionModel::Values restitution = map->getRestitutionModel(*contact).getRestitution(*contact,tntstate,rwstate);
-				bool outwards = true;
-				if (!restitution.enableTangent) {
-					RW_ASSERT(solId < solution.rows());
-					outwards = solution[solId] < RESOLVER_THRESHOLD;
-				} else if (restitution.enableTangent) {
-					RW_ASSERT(solId+2 < solution.rows());
-					outwards = solution[solId+2] < RESOLVER_THRESHOLD;
-				}
-				if (!outwards) {
-					enabled[i] = false;
-					repeat = true;
-				}
-				solId++;
-				if (restitution.enableTangent)
-					solId += 2;
-				if (restitution.enableAngular)
-					solId += 1;
+			// Now try to solve
+			tmpState = tntstate;
+			Eigen::VectorXd solution;
+			if (penetratingContacts.size() > 0 || nonContacts.size() > 0) {
+				solution = solve(penetratingContacts, nonContacts, map, tmpState, rwstate, PRECISION, false, 0);
+				applySolution(solution, component, penetratingContacts, nonContacts, map, tmpState, rwstate);
 			}
+			repeat = false;
+			Eigen::MatrixXd::Index solId = 0;
+			BOOST_FOREACH(const TNTConstraint* constraint, nonContacts) {
+				solId += constraint->getDimVelocity();
+			}
+			for (std::size_t i = 0; i < enabled.size(); i++) {
+				const TNTContact* const contact = candidates[i];
+				if (!enabled[i]) {
+					const Vector3D<> linVelI = contact->getVelocityParentW(tmpState,rwstate).linear();
+					const Vector3D<> linVelJ = contact->getVelocityChildW(tmpState,rwstate).linear();
+					const Vector3D<> linRelVel = linVelI-linVelJ;
+					const Vector3D<> nij = contact->getNormalW(tmpState);
+					const bool leaving = dot(-linRelVel,nij) >= -RESOLVER_THRESHOLD;
+					if (!leaving) {
+						enabled[i] = true;
+						repeat = true;
+					}
+				} else {
+					const TNTRestitutionModel::Values restitution = map->getRestitutionModel(*contact).getRestitution(*contact,tntstate,rwstate);
+					bool outwards = true;
+					if (!restitution.enableTangent) {
+						RW_ASSERT(solId < solution.rows());
+						outwards = solution[solId] < RESOLVER_THRESHOLD;
+					} else if (restitution.enableTangent) {
+						RW_ASSERT(solId+2 < solution.rows());
+						outwards = solution[solId+2] < RESOLVER_THRESHOLD;
+					}
+					if (!outwards) {
+						enabled[i] = false;
+						repeat = true;
+					}
+					solId++;
+					if (restitution.enableTangent)
+						solId += 2;
+					if (restitution.enableAngular)
+						solId += 1;
+				}
+			}
+			RW_ASSERT(solId == solution.rows());
 		}
-		RW_ASSERT(solId == solution.rows());
-	}
-	BOOST_FOREACH(const TNTRigidBody* const body, component) {
-		body->setVelocityW(body->getVelocityW(tmpState),tntstate);
+		BOOST_FOREACH(const TNTRigidBody* const body, component) {
+			const VelocityScrew6D<> vel = body->getVelocityW(tmpState);
+			body->setVelocityW(vel,tntstate);
+		}
 	}
 }
 
@@ -290,7 +316,9 @@ Eigen::VectorXd TNTCollisionSolverSimultaneous::solve(
 	const TNTMaterialMap* map,
 	const TNTIslandState& tntstate,
 	const State& rwstate,
-	double precision)
+	double precision,
+	bool iterative,
+	unsigned int iterations)
 {
 	RW_ASSERT(contacts.size() > 0 || constraints.size() > 0);
 
@@ -300,6 +328,7 @@ Eigen::VectorXd TNTCollisionSolverSimultaneous::solve(
 		RW_ASSERT(constraint != NULL);
 		dimVel += constraint->getDimVelocity();
 	}
+	const Eigen::MatrixXd::Index dimVelConstraint = dimVel;
 	BOOST_FOREACH(const TNTContact* contact, contacts) {
 		RW_ASSERT(contact != NULL);
 		const VelocityScrew6D<>& velI = contact->getVelocityParentW(tntstate,rwstate);
@@ -429,12 +458,84 @@ Eigen::VectorXd TNTCollisionSolverSimultaneous::solve(
 
 	// Solve
 	TNT_DEBUG_BOUNCING("Solving " << lhs.rows() << " x " << lhs.cols() << " equation system.");
-	const Eigen::VectorXd sol = LinearAlgebra::pseudoInverse(lhs,precision)*rhs;
+	Eigen::VectorXd sol;
+	if (iterative) {
+		sol = iterativeSVD(lhs,rhs,dimVelConstraint,iterations,precision,precision);
+	} else {
+		sol = LinearAlgebra::pseudoInverse(lhs,precision)*rhs;
+	}
 	TNT_DEBUG_BOUNCING("Residual: " << (rhs-lhs*sol).transpose() << ".");
 
 	return sol;
 }
 
+Eigen::VectorXd TNTCollisionSolverSimultaneous::iterativeSVD(const Eigen::MatrixXd& A, const Eigen::VectorXd& b, Eigen::MatrixXd::Index constraintDim, unsigned int iterations, double svdPrecision, double eps) {
+	const Eigen::MatrixXd::Index N = A.rows();
+
+	// Do a full SVD
+	const Eigen::JacobiSVD<Eigen::MatrixXd> svd = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+	const double tolerance = svdPrecision * std::max(A.cols(), A.rows()) * svd.singularValues().array().abs().maxCoeff();
+	const Eigen::MatrixXd& U = svd.matrixU();
+	const Eigen::ArrayXd Wdiag = (svd.singularValues().array().abs() > tolerance).select(svd.singularValues().array(), 0);
+	//const Eigen::ArrayXd WinvDiag = (svd.singularValues().array().abs() > tolerance).select(svd.singularValues().array().inverse(), 0);
+	const int K = (Wdiag != 0).count(); // the rank
+	//const Eigen::DiagonalWrapper<const Eigen::VectorXd> W = Eigen::VectorXd(Wdiag).asDiagonal();
+	const Eigen::MatrixXd& V = svd.matrixV();
+
+	/*if (K == N) {
+		// Full rank - note we can not be sure that all elements of sX becomes negative
+		const Eigen::VectorXd WsDiag(Wdiag);
+		const Eigen::DiagonalWrapper<const Eigen::VectorXd> Ws = WsDiag.asDiagonal();
+		const Eigen::VectorXd sX = V*Ws.inverse()*U.transpose()*b;
+		if (sX.maxCoeff() <= 0)
+			return sX;
+	}*/
+
+	// Extract submatrices in range and null space
+	const Eigen::Block<const Eigen::MatrixXd> Us = U.topLeftCorner(N,K);
+	//const Eigen::Block<const Eigen::MatrixXd> Ws = W.topLeftCorner(N,N);
+	const Eigen::ArrayXd WdiagHead = Wdiag.head(K);
+	const Eigen::VectorXd WsDiag(WdiagHead);
+	const Eigen::DiagonalWrapper<const Eigen::VectorXd> Ws = WsDiag.asDiagonal();
+	const Eigen::MatrixXd VT = V.transpose();
+	const Eigen::Block<const Eigen::MatrixXd> Vs = V.topLeftCorner(N,K);
+	const Eigen::Block<const Eigen::MatrixXd> VsT = VT.topLeftCorner(K,N);
+	const Eigen::Block<const Eigen::MatrixXd> VsP = V.bottomRightCorner(N,N-K);
+	const Eigen::Block<const Eigen::MatrixXd> VsPT = VT.bottomRightCorner(N-K,N);
+
+	// Constant values
+	//const Eigen::DiagonalWrapper<const Eigen::VectorXd> B = Eigen::VectorXd(WdiagHead.array().square() + 1).asDiagonal();
+	const Eigen::VectorXd BinvDiag( (WdiagHead.array().square() + 1).inverse() );
+	const Eigen::DiagonalWrapper<const Eigen::VectorXd> Binv = BinvDiag.asDiagonal();
+	const Eigen::MatrixXd Gs = Us*Ws;
+	const Eigen::MatrixXd GsT = Ws*Us.transpose();
+	const Eigen::VectorXd zeroVecN = Eigen::VectorXd::Zero(N);
+
+	// Initialize
+	Eigen::VectorXd phi = Eigen::VectorXd::Zero(K);
+	Eigen::VectorXd phiP = Eigen::VectorXd::Zero(N-K);
+	Eigen::VectorXd sB = -b;
+	Eigen::VectorXd sX = Eigen::VectorXd::Zero(N);
+	double err = 2*eps;
+	for (unsigned int k = 0; k < iterations && err > eps; k++) {
+		const Eigen::VectorXd dsB = -sB;
+		Eigen::VectorXd dsX = -sX.cwiseMax(zeroVecN);//+ALPHA*(-sX).cwiseMax(zeroVecN);
+		for (Eigen::MatrixXd::Index i = 0; i < constraintDim; i++) {
+			dsX[i] = 0;
+		}
+		//const Eigen::VectorXd dsB = -sB;
+		//const Eigen::VectorXd dsX = -ALPHA*sX;
+		const Eigen::VectorXd dPhi = Binv*(GsT*dsB+VsT*dsX);
+		const Eigen::VectorXd dPhiP = VsPT*dsX;
+		phi += dPhi;
+		phiP += dPhiP;
+		sB += Gs*dPhi;
+		sX += Vs*dPhi+VsP*dPhiP;
+		err = dPhi.norm()+dPhiP.norm();
+		std::cout << "cs iteration " << k << ": " << err << std::endl;
+	}
+	return sX;
+}
 
 void TNTCollisionSolverSimultaneous::applySolution(
 	const Eigen::VectorXd& solution,

@@ -216,8 +216,10 @@ public:
 			if (_runningTasks > 0)
 				return;
 		}
-		if (getExceptions().size() > 0)
+		if (getExceptions().size() > 0) {
+			setKeepAlive(false);
 			return;
+		}
 
 #if TNT_DEBUG_ENABLE_BOUNCING
 		TNT_DEBUG_BOUNCING("Velocities after solving:");
@@ -254,7 +256,7 @@ public:
 		const std::size_t start = equal ? 1 : 2;
 		if (!equal) {
 			const TNTRigidBody* const rigidBody = dynamic_cast<const TNTRigidBody*>(_chain.bodies.front());
-			RW_ASSERT(rigidBody != NULL);
+			RW_ASSERT(_chain.fixedBodiesBegin.size() == 0 || rigidBody != NULL);
 			BOOST_FOREACH(const TNTFixedBody* const fBody, _chain.fixedBodiesBegin) {
 				const TNTBodyConstraintManager::ConstraintListConst constraints = _component.getConstraints(rigidBody,fBody,_tntstate);
 				BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
@@ -278,7 +280,7 @@ public:
 		}
 		if (_chain.bodies.size()%2 == start%2) {
 			const TNTRigidBody* const rigidBody = dynamic_cast<const TNTRigidBody*>(_chain.bodies.back());
-			RW_ASSERT(rigidBody != NULL);
+			RW_ASSERT(_chain.fixedBodiesBegin.size() == 0 || rigidBody != NULL);
 			BOOST_FOREACH(const TNTFixedBody* const fBody, _chain.fixedBodiesEnd) {
 				const TNTBodyConstraintManager::ConstraintListConst constraints = _component.getConstraints(rigidBody,fBody,_tntstate);
 				BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {

@@ -55,6 +55,14 @@ public:
 	void run() {
 		std::list<const TNTRigidBody*> component;
 		std::list<const TNTConstraint*> constraints;
+		if (_bodyA == NULL) {
+			try {
+				RW_THROW("TNTCollisionSolverSingle::SolvePairTask run(): body A was NULL!");
+			} catch(const Exception& e) {
+				registerFailure(e);
+			}
+			return;
+		}
 		component.push_back(_bodyA);
 		BOOST_FOREACH(const TNTBody* const body,_bodyB) {
 			if (component.size() < 2) {
@@ -200,7 +208,7 @@ void TNTCollisionSolverSingle::doCollisions(
 	const TNTRigidBody* const rBodyB = dynamic_cast<const TNTRigidBody*>(bodyB);
 	const TNTRigidBody* rigidBody;
 	std::vector<const TNTBody*> other(1,NULL);
-	if (bodyA != NULL) {
+	if (rBodyA != NULL) {
 		rigidBody = rBodyA;
 		other[0] = bodyB;
 	} else if (rBodyB != NULL) {
