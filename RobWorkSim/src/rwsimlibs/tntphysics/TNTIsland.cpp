@@ -145,7 +145,7 @@ TNTIsland::TNTIsland(rw::common::Ptr<DynamicWorkCell> dwc, rw::common::Ptr<Conta
 	_dwc(dwc),
 	_materialMap(new TNTMaterialMap(dwc->getContactData(),dwc->getMaterialData())),
 	_bp(NULL),
-	_detector(detector == NULL ? ContactDetector::makeDefault(dwc->getWorkcell()) : detector),
+	_detector(detector == NULL ? ContactDetector::makeDefault(dwc->getWorkcell(),dwc->getEngineSettings()) : detector),
 	_bc(NULL),
 	_state(NULL),
 	_gravity(dwc->getGravity()),
@@ -202,7 +202,7 @@ void TNTIsland::load(rw::common::Ptr<DynamicWorkCell> dwc) {
 	RW_ASSERT(dwc != NULL);
 	_dwc = dwc;
 	_materialMap = new TNTMaterialMap(dwc->getContactData(),dwc->getMaterialData());
-	_detector = ContactDetector::makeDefault(dwc->getWorkcell());
+	_detector = ContactDetector::makeDefault(dwc->getWorkcell(),dwc->getEngineSettings());
 	TNT_DEBUG_CONTACTS("Default contact detector constructed based on dynamic workcell:" << std::endl << _detector);
 	_gravity = dwc->getGravity();
 	_map = dwc->getEngineSettings();

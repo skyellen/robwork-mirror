@@ -300,6 +300,14 @@ public:
 	static ContactDetector::Ptr makeDefault(rw::models::WorkCell::Ptr workcell);
 
 	/**
+	 * @brief Create a default workcell from a workcell, where the default strategies has been set.
+	 * @param workcell [in] the workcell to create detector for.
+	 * @param map [in] the map to take properties from.
+	 * @return a new contact detector.
+	 */
+	static ContactDetector::Ptr makeDefault(rw::models::WorkCell::Ptr workcell, const rw::common::PropertyMap& map);
+
+	/**
 	 * @brief Stream operator.
 	 * @param out [in/out] the stream to write to.
 	 * @param detector [in] the detector to print strategy table for.

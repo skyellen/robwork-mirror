@@ -613,3 +613,9 @@ ContactDetector::Ptr ContactDetector::makeDefault(WorkCell::Ptr workcell) {
 	def->setDefaultStrategies();
 	return def;
 }
+
+ContactDetector::Ptr ContactDetector::makeDefault(WorkCell::Ptr workcell, const PropertyMap& map) {
+	ContactDetector::Ptr def = ownedPtr(new ContactDetector(workcell));
+	def->setDefaultStrategies(map);
+	return def;
+}
