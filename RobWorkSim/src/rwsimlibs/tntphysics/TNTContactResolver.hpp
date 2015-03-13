@@ -59,17 +59,21 @@ public:
 	 * @brief Solve for the constraint forces and torques while resolving the contact types.
 	 * @param persistentContacts [in] contacts that should never be removed.
 	 * @param h [in] the stepsize.
+	 * @param discontinuity [in] solve differently if it is the first step after a discontinuity.
 	 * @param map [in] the material map to use to resolve friction models.
 	 * @param rwstate [in] the current state.
-	 * @param tntstate [in/out] the current TNTIslandState.
+	 * @param tntstate0 [in] the initial TNTIslandState.
+	 * @param tntstateH [in/out] the new TNTIslandState to calculate forces for.
 	 * @param map [in] parameters that adjusts the behaviour of the resolver - see #addDefaultProperties
 	 */
 	virtual void solve(
 			const std::vector<TNTContact*>& persistentContacts,
 			double h,
+			bool discontinuity,
 			const TNTMaterialMap& map,
 			const rw::kinematics::State &rwstate,
-			TNTIslandState &tntstate,
+			const TNTIslandState &tntstate0,
+			TNTIslandState &tntstateH,
 			const rw::common::PropertyMap& pmap) const = 0;
 
 	/**

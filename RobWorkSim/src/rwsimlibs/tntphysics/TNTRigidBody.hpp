@@ -25,6 +25,8 @@
  */
 #include "TNTBody.hpp"
 #include <rw/common/Ptr.hpp>
+#include <rw/math/Wrench6D.hpp>
+#include <list>
 
 // Forward declarations
 namespace rwsim { namespace dynamics { class RigidBody; } }
@@ -35,6 +37,7 @@ namespace tntphysics {
 // Forward declarations
 class TNTIntegrator;
 class TNTIslandState;
+class TNTConstraint;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -114,6 +117,26 @@ public:
 	 */
 	virtual const RigidConfiguration* getConfiguration(const TNTIslandState &tntstate) const;
 
+	/**
+	 * @brief Get the net wrench on the body.
+	 * @param gravity [in] the gravity.
+	 * @param constraints [in] the contacts and constraints to include.
+	 * @param tntstate [in] the state to get contact and constraint forces.
+	 * @param state [in] state where manually applied forces can be set.
+	 * @return the net wrench.
+	 */
+	virtual rw::math::Wrench6D<> getNetWrench(const rw::math::Vector3D<>& gravity, const std::list<TNTConstraint*>& constraints, const TNTIslandState &tntstate, const rw::kinematics::State& state) const;
+
+	/**
+	 * @brief Get the external wrench on the body (constraint forces and torques not included).
+	 * @param gravity [in] the gravity.
+	 * @param constraints [in] the contacts and constraints to include.
+	 * @param tntstate [in] the state to get contact and constraint forces.
+	 * @param state [in] state where manually applied forces can be set.
+	 * @return the external wrench.
+	 */
+	virtual rw::math::Wrench6D<> getExternalWrench(const rw::math::Vector3D<>& gravity, const std::list<TNTConstraint*>& constraints, const TNTIslandState &tntstate, const rw::kinematics::State& state) const;
+
 	//! @copydoc TNTBody::reset
 	virtual void reset(TNTIslandState &tntstate, const rw::kinematics::State &rwstate) const;
 
@@ -145,7 +168,7 @@ public:
 	 *
 	 * The integrator is automatically created based on the integratorType set in rwsim::dynamics::BodyInfo.
 	 * This integratorType should be available in the TNTIntegrator::Factory, or the rigid body will
-	 * not be able to associate a integrator.
+	 * not be able to associate an integrator.
 	 *
 	 * @return a pointer to the TNTIntegrator - NOT owned by caller, but owned by TNTRigidBody.
 	 */

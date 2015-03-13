@@ -133,7 +133,7 @@ public:
 	 * @brief Get all constraints for a given pair of bodies.
 	 * @param bodyA [in] the first body to find constraints for.
 	 * @param bodyB [in] the second body to find constraints for.
-	 * @return a list of constraints (constant objects).
+	 * @return a list of constraints.
 	 */
 	ConstraintList getConstraints(const TNTBody* bodyA, const TNTBody* bodyB) const;
 
@@ -152,6 +152,13 @@ public:
 	 * @return list of constraints.
 	 */
 	ConstraintList getTemporaryConstraints(const TNTIslandState* state) const;
+
+	/**
+	 * @brief Check if there are any contacts or constraints.
+	 * @param state [in] state where contacts are stored.
+	 * @return true if there are any contacts or constraints.
+	 */
+	bool hasContactsOrConstraints(const TNTIslandState& state) const;
 
 	/**
 	 * @brief Add a new body to the manager.

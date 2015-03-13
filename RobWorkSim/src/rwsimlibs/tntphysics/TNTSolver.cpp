@@ -17,6 +17,7 @@
 
 #include "TNTSolver.hpp"
 #include "TNTSolverSVD.hpp"
+#include "TNTSolverIterativeSVD.hpp"
 #include "TNTSettings.hpp"
 #include "TNTBodyConstraintManager.hpp"
 #include "TNTConstraint.hpp"
@@ -39,7 +40,7 @@ TNTSolver::TNTSolver(const TNTBodyConstraintManager* manager, const Vector3D<dou
 {
 }
 
-Eigen::VectorXd TNTSolver::solve(double h, const State &rwstate, const TNTIslandState &tntstate, const PropertyMap& pmap) const {
+Eigen::VectorXd TNTSolver::solve(double h, bool discontinuity, const State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH, const PropertyMap& pmap) const {
 	if (_manager == NULL)
 		RW_THROW("TNTSolverSVD (solve): There is no body-constraint manager set for this solver - please construct a new solver for body-constraint graph to use.");
 
@@ -58,17 +59,18 @@ Eigen::VectorXd TNTSolver::solve(double h, const State &rwstate, const TNTIsland
 
 	Eigen::MatrixXd lhs;
 	Eigen::VectorXd rhs;
-	getMatrices(lhs, rhs, h, rwstate, tntstate, DEBUG == 1);
+	getMatrices(lhs, rhs, h, discontinuity, rwstate, tntstate0, tntstateH, DEBUG == 1);
 	const Eigen::VectorXd sol = solve(lhs, rhs, pmap);
 	RW_ASSERT(lhs.rows() == sol.size());
 	return sol;
 }
 
-void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h, const State &rwstate, const TNTIslandState &tntstate, bool debug) const {
+void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h, bool discontinuity, const State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH, bool debug) const {
 	// Allocate new matrix and vector structures
 	Eigen::MatrixXd::Index dimCon = 0;
 	Eigen::MatrixXd::Index dimVar = 0;
-	const TNTBodyConstraintManager::ConstraintList constraints = _manager->getConstraints(tntstate);
+	const TNTBodyConstraintManager::ConstraintList constraints0 = _manager->getConstraints(tntstate0);
+	const TNTBodyConstraintManager::ConstraintList constraints = _manager->getConstraints(tntstateH);
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
 		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
 		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
@@ -107,7 +109,7 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
 		const Eigen::VectorXd::Index dim = constraint->getDimVelocity()+constraint->getDimWrench();
 		if (dim > 0 && (dynParent || dynChild)) {
-			Eigen::VectorXd aij = constraint->getRHS(h, _gravity, constraints, rwstate, tntstate);
+			Eigen::VectorXd aij = constraint->getRHS(h, _gravity, discontinuity, constraints0, constraints, rwstate, tntstate0, tntstateH);
 			rhs.block(dimCon,0,dim,1) = aij;
 			Eigen::MatrixXd::Index dimVarB = 0;
 			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
@@ -119,7 +121,7 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 					const TNTBody* const cC = constraint->getChild();
 					const TNTBody* const cCB = constraintB->getChild();
 					if (cP == cPB || cP == cCB || cC == cPB || cC == cCB) {
-						Eigen::MatrixXd B = constraint->getLHS(constraintB, h, rwstate, tntstate);
+						Eigen::MatrixXd B = constraint->getLHS(constraintB, h, discontinuity, rwstate, tntstateH);
 						lhs.block(dimCon,dimVarB,dim,dimB) = B;
 					}
 					dimVarB += dimB;
@@ -188,6 +190,7 @@ TNTSolver::Factory::Factory():
 std::vector<std::string> TNTSolver::Factory::getSolvers() {
 	std::vector<std::string> solvers;
 	solvers.push_back("SVD");
+	solvers.push_back("IterativeSVD");
 	TNTSolver::Factory factory;
 	std::vector<Extension::Descriptor> exts = factory.getExtensionDescriptors();
 	BOOST_FOREACH(Extension::Descriptor& ext, exts){
@@ -198,6 +201,8 @@ std::vector<std::string> TNTSolver::Factory::getSolvers() {
 
 bool TNTSolver::Factory::hasSolver(const std::string& solverType) {
 	if (solverType == "SVD")
+		return true;
+	else if (solverType == "IterativeSVD")
 		return true;
 	TNTSolver::Factory factory;
 	std::vector<Extension::Descriptor> exts = factory.getExtensionDescriptors();
@@ -211,6 +216,8 @@ bool TNTSolver::Factory::hasSolver(const std::string& solverType) {
 const TNTSolver* TNTSolver::Factory::makeSolver(const std::string& solverType, const TNTBodyConstraintManager* manager, const Vector3D<double> &gravity) {
 	if (solverType == "SVD")
 		return new TNTSolverSVD(manager,gravity);
+	else if (solverType == "IterativeSVD")
+		return new TNTSolverIterativeSVD(manager,gravity);
 	TNTSolver::Factory factory;
 	std::vector<Extension::Ptr> exts = factory.getExtensions();
 	BOOST_FOREACH(Extension::Ptr ext, exts){

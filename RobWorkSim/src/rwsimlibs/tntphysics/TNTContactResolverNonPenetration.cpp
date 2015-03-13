@@ -51,7 +51,8 @@ const TNTContactResolver* TNTContactResolverNonPenetration::createResolver(const
 }
 
 void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& persistentContacts,
-		double h, const TNTMaterialMap& map, const State &rwstate, TNTIslandState &tntstate,
+		double h, bool discontinuity, const TNTMaterialMap& map, const State &rwstate,
+		const TNTIslandState &tntstate0, TNTIslandState &tntstateH,
 		const PropertyMap& pmap) const
 {
 	if (_solver == NULL)
@@ -78,7 +79,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 	}
 
 	TNTIslandState resState;
-	const TNTBodyConstraintManager::ConstraintList constraints = _solver->getManager()->getTemporaryConstraints(&tntstate);
+	const TNTBodyConstraintManager::ConstraintList constraints = _solver->getManager()->getTemporaryConstraints(&tntstateH);
 	std::vector<TNTContact*> contacts;
 	BOOST_FOREACH(TNTConstraint* const constraint, constraints) {
 		if (TNTContact* const contact = dynamic_cast<TNTContact*>(constraint)) {
@@ -181,18 +182,20 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 		// Now try to solve and check if the solution is valid
 		iterations++;
 		repeat = false;
-		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate, pmap);
-		tmpState = tntstate;
+		const Eigen::VectorXd solution = _solver->solve(h, discontinuity, rwstate, tntstate0, tntstateH, pmap);
+		tmpState = tntstateH;
 		_solver->saveSolution(solution,tmpState);
 		resState = tmpState;
 		{
 			// Update velocities (but keep the same positions)
 			const TNTBodyConstraintManager::DynamicBodyList rbodies = _solver->getManager()->getDynamicBodies();
 			BOOST_FOREACH(const TNTRigidBody* rbody, rbodies) {
-				TNTRigidBody::RigidConfiguration* config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tmpState.getConfiguration(rbody));
-				const Transform3D<> wTcom = config->getWorldTcom();
-				rbody->getIntegrator()->integrate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config,tmpState,rwstate);
-				config->setWorldTcom(wTcom);
+				const TNTRigidBody::RigidConfiguration* const config0 = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstate0.getConfiguration(rbody));
+				TNTRigidBody::RigidConfiguration* const config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tmpState.getConfiguration(rbody));
+				//const Transform3D<> wTcom = config->getWorldTcom();
+				//rbody->getIntegrator()->integrate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config,tmpState,rwstate);
+				//config->setWorldTcom(wTcom);
+				rbody->getIntegrator()->velocityUpdate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config0,*config,tntstate0,tmpState,rwstate);
 			}
 		}
 		BOOST_FOREACH(TNTContact* contact, contacts) {
@@ -229,7 +232,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 			}
 		}
 	}
-	tntstate = resState;
+	tntstateH = resState;
 }
 
 void TNTContactResolverNonPenetration::addDefaultProperties(PropertyMap& map) const {

@@ -126,7 +126,16 @@ Wrench6D<> TNTConstraint::getWrenchConstraint(const TNTIslandState &tntstate) co
 }
 
 void TNTConstraint::clearWrench(TNTIslandState &tntstate) {
+	clearWrenchApplied(tntstate);
+	clearWrenchConstraint(tntstate);
+}
+
+void TNTConstraint::clearWrenchApplied(TNTIslandState &tntstate) {
 	tntstate.setWrenchApplied(this,Wrench6D<>());
+}
+
+void TNTConstraint::clearWrenchConstraint(TNTIslandState &tntstate) {
+	tntstate.setWrenchConstraint(this,Wrench6D<>());
 }
 
 void TNTConstraint::applyWrench(TNTIslandState &tntstate, const Wrench6D<>& wrench) {
@@ -134,7 +143,7 @@ void TNTConstraint::applyWrench(TNTIslandState &tntstate, const Wrench6D<>& wren
 	tntstate.setWrenchApplied(this,cur+wrench);
 }
 
-Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, const std::list<TNTConstraint*>& constraints, const State &rwstate, const TNTIslandState &tntstate) const {
+Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, bool discontinuity, const std::list<TNTConstraint*>& constraints0, const std::list<TNTConstraint*>& constraintsH, const State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH) const {
 	const std::size_t dim = 6-getDimFree();
 	RW_ASSERT(dim >= 0);
 	Eigen::VectorXd res = Eigen::VectorXd::Zero(dim);
@@ -143,70 +152,52 @@ Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, const
 	if (const TNTFixedBody* const body = dynamic_cast<const TNTFixedBody*>(_parent)) {
 		// Do nothing
 	} else if (const TNTKinematicBody* const body = dynamic_cast<const TNTKinematicBody*>(_parent)) {
-		const Vector3D<>& R = body->getWorldTcom(tntstate).P();
-		const Vector3D<> pos = getPositionParentW(tntstate);
-		const VelocityScrew6D<> vel = body->getVelocityW(rwstate,tntstate);
+		const Vector3D<>& R = body->getWorldTcom(tntstateH).P();
+		const Vector3D<> pos = getPositionParentW(tntstateH);
+		const VelocityScrew6D<> vel = body->getVelocityW(rwstate,tntstate0);
 		const Vector3D<> ang = vel.angular().angle()*vel.angular().axis();
 		const Vector3D<> lin = vel.linear()+cross(ang,pos-R);
 		velParent << lin.e(), ang.e();
 	} else if (const TNTRigidBody* const body = dynamic_cast<const TNTRigidBody*>(_parent)) {
-		const TNTRigidBody::RigidConfiguration* const config = body->getConfiguration(tntstate);
-		const Vector3D<> R = config->getWorldTcom().P();
-		const Vector3D<> pos = getPositionParentW(tntstate);
-		Vector3D<> Fext = gravity*body->getRigidBody()->getMass()+body->getRigidBody()->getForceW(rwstate);
-		Vector3D<> Next = body->getRigidBody()->getTorqueW(rwstate);
-		BOOST_FOREACH(TNTConstraint* constraint, constraints) {
-			const Wrench6D<> wrench = constraint->getWrenchApplied(tntstate);
-			if (constraint->getParent() == body) {
-				const Vector3D<> pos = constraint->getPositionParentW(tntstate);
-				Fext += wrench.force();
-				Next += wrench.torque()+cross(pos-R,wrench.force());
-			} else if (constraint->getChild() == body) {
-				const Vector3D<> pos = constraint->getPositionChildW(tntstate);
-				Fext += -wrench.force();
-				Next += -wrench.torque()+cross(pos-R,-wrench.force());
-			}
-		}
-		velParent = body->getIntegrator()->eqPointVelIndependent(pos,h,*config,*config,Fext,Next);
+		const TNTRigidBody::RigidConfiguration* const config0 = body->getConfiguration(tntstate0);
+		const TNTRigidBody::RigidConfiguration* const configH = body->getConfiguration(tntstateH);
+		const Vector3D<> pos = getPositionParentW(tntstateH);
+		const Wrench6D<> Wtot0 = body->getNetWrench(gravity,constraints0,tntstate0,rwstate);
+		const Wrench6D<> WextH = body->getExternalWrench(gravity,constraintsH,tntstateH,rwstate);
+		const TNTIntegrator* integrator = body->getIntegrator();
+		if (discontinuity)
+			integrator = integrator->getDiscontinuityIntegrator();
+		velParent = integrator->eqPointVelIndependent(pos,h,*config0,*configH,Wtot0.force(),Wtot0.torque(),WextH.force(),WextH.torque());
 	} else {
 		RW_THROW("TNTConstraint (getRHS): the type of body \"" << _parent->get()->getName() << "\" is not supported!");
 	}
 	if (const TNTFixedBody* const body = dynamic_cast<const TNTFixedBody*>(_child)) {
 		// Do nothing
 	} else if (const TNTKinematicBody* const body = dynamic_cast<const TNTKinematicBody*>(_child)) {
-		const Vector3D<>& R = body->getWorldTcom(tntstate).P();
-		const Vector3D<> pos = getPositionChildW(tntstate);
-		const VelocityScrew6D<> vel = body->getVelocityW(rwstate,tntstate);
+		const Vector3D<>& R = body->getWorldTcom(tntstateH).P();
+		const Vector3D<> pos = getPositionChildW(tntstateH);
+		const VelocityScrew6D<> vel = body->getVelocityW(rwstate,tntstate0);
 		const Vector3D<> ang = vel.angular().angle()*vel.angular().axis();
 		const Vector3D<> lin = vel.linear()+cross(ang,pos-R);
 		velChild << lin.e(), ang.e();
 	} else if (const TNTRigidBody* const body = dynamic_cast<const TNTRigidBody*>(_child)) {
-		const TNTRigidBody::RigidConfiguration* const config = body->getConfiguration(tntstate);
-		const Vector3D<> R = config->getWorldTcom().P();
-		const Vector3D<> pos = getPositionChildW(tntstate);
-		Vector3D<> Fext = gravity*body->getRigidBody()->getMass()+body->getRigidBody()->getForceW(rwstate);
-		Vector3D<> Next = body->getRigidBody()->getTorqueW(rwstate);
-		BOOST_FOREACH(TNTConstraint* constraint, constraints) {
-			const Wrench6D<> wrench = constraint->getWrenchApplied(tntstate);
-			if (constraint->getParent() == body) {
-				const Vector3D<> pos = constraint->getPositionParentW(tntstate);
-				Fext += wrench.force();
-				Next += wrench.torque()+cross(pos-R,wrench.force());
-			} else if (constraint->getChild() == body) {
-				const Vector3D<> pos = constraint->getPositionChildW(tntstate);
-				Fext += -wrench.force();
-				Next += -wrench.torque()+cross(pos-R,-wrench.force());
-			}
-		}
-		velChild = body->getIntegrator()->eqPointVelIndependent(pos,h,*config,*config,Fext,Next);
+		const TNTRigidBody::RigidConfiguration* const config0 = body->getConfiguration(tntstate0);
+		const TNTRigidBody::RigidConfiguration* const configH = body->getConfiguration(tntstateH);
+		const Vector3D<> pos = getPositionChildW(tntstateH);
+		const Wrench6D<> Wtot0 = body->getNetWrench(gravity,constraints0,tntstate0,rwstate);
+		const Wrench6D<> WextH = body->getExternalWrench(gravity,constraintsH,tntstateH,rwstate);
+		const TNTIntegrator* integrator = body->getIntegrator();
+		if (discontinuity)
+			integrator = integrator->getDiscontinuityIntegrator();
+		velChild = integrator->eqPointVelIndependent(pos,h,*config0,*configH,Wtot0.force(),Wtot0.torque(),WextH.force(),WextH.torque());
 	} else {
 		RW_THROW("TNTConstraint (getRHS): the type of body \"" << _child->get()->getName() << "\" is not supported!");
 	}
 	const Eigen::Matrix<double, 6, 1> total = velChild-velParent;
 
 	// Rotate to local constraint coordinates:
-	const Rotation3D<> Rlin = getLinearRotationParentW(tntstate);
-	const Rotation3D<> Rang = getAngularRotationParentW(tntstate);
+	const Rotation3D<> Rlin = getLinearRotationParentW(tntstateH);
+	const Rotation3D<> Rang = getAngularRotationParentW(tntstateH);
 	Eigen::Matrix<double,6,1> rotated;
 	rotated << inverse(Rlin).e()*total.block(0,0,3,1), inverse(Rang).e()*total.block(3,0,3,1);
 
@@ -235,7 +226,7 @@ Eigen::VectorXd TNTConstraint::getRHS(double h, const Vector3D<> &gravity, const
 	return res;
 }
 
-Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h, const State &rwstate, const TNTIslandState &tntstate) const {
+Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h, bool discontinuity, const State &rwstate, const TNTIslandState &tntstate) const {
 	const TNTBody* parent = _parent;
 	const TNTBody* child = _child;
 	const TNTBody* constraintParent = constraint->getParent();
@@ -252,10 +243,16 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 		const Vector3D<> pos = getPositionParentW(tntstate);
 		if (parent == constraintParent) {
 			const Vector3D<> constraintPos = constraint->getPositionParentW(tntstate);
-			matrixParent = body->getIntegrator()->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
+			const TNTIntegrator* integrator = body->getIntegrator();
+			if (discontinuity)
+				integrator = integrator->getDiscontinuityIntegrator();
+			matrixParent = integrator->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
 		} else if (parent == constraintChild) {
 			const Vector3D<> constraintPos = constraint->getPositionChildW(tntstate);
-			matrixParent = -body->getIntegrator()->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
+			const TNTIntegrator* integrator = body->getIntegrator();
+			if (discontinuity)
+				integrator = integrator->getDiscontinuityIntegrator();
+			matrixParent = -integrator->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
 		}
 	} else {
 		RW_THROW("TNTConstraint (getLHS): one of the bodies \"" << _parent->get()->getName() << "\" and \"" << _child->get()->getName() << "\" must be a TNTRigidBody!");
@@ -269,10 +266,16 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 		const Vector3D<> pos = getPositionChildW(tntstate);
 		if (child == constraintParent) {
 			const Vector3D<> constraintPos = constraint->getPositionParentW(tntstate);
-			matrixChild = -body->getIntegrator()->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
+			const TNTIntegrator* integrator = body->getIntegrator();
+			if (discontinuity)
+				integrator = integrator->getDiscontinuityIntegrator();
+			matrixChild = -integrator->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
 		} else if (child == constraintChild) {
 			const Vector3D<> constraintPos = constraint->getPositionChildW(tntstate);
-			matrixChild = body->getIntegrator()->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
+			const TNTIntegrator* integrator = body->getIntegrator();
+			if (discontinuity)
+				integrator = integrator->getDiscontinuityIntegrator();
+			matrixChild = integrator->eqPointVelConstraintWrenchFactor(pos,h,constraintPos,*config,*config);
 		}
 	} else {
 		RW_THROW("TNTConstraint (getLHS): the type of body \"" << child->get()->getName() << "\" is not supported!");
@@ -294,41 +297,54 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 	// Now we take only the rows and columns for the constrained directions!
 	const std::vector<Mode> constraintModes = getConstraintModes();
 	const std::vector<Mode> constraintModesB = constraint->getConstraintModes();
-	const std::size_t dimB = constraint->getDimVelocity() + constraint->getDimWrench();
+	//const std::size_t dimB = (constraint->getDimVelocity()+constraint->getDimWrench() > 0) ? 6 : 0;
+	const std::size_t dimB = constraint->getDimVelocity()+constraint->getDimWrench();
 	std::size_t cI = 0;
 	Eigen::MatrixXd reduced(dim,dimB);
 	bool wrenchConstraints = false;
 	Eigen::MatrixXd wrenchLHS;
 	std::size_t iWrench = 0;
-	for (std::size_t i = 0; i < 6; i++) {
-		const Mode &modeI = constraintModes[i];
-		if (modeI == Velocity) {
-			std::size_t cJ = 0;
-			for (std::size_t j = 0; j < 6; j++) {
-				const Mode &modeJ = constraintModesB[j];
-				if (modeJ == Velocity || modeJ == Wrench) {
-					reduced(cI,cJ) = rotated(i,j);
-					cJ++;
+	if (dimB > 0) {
+		for (std::size_t i = 0; i < 6; i++) {
+			const Mode &modeI = constraintModes[i];
+			if (modeI == Velocity) {
+				std::size_t cJ = 0;
+				for (std::size_t j = 0; j < 6; j++) {
+					const Mode &modeJ = constraintModesB[j];
+					if (modeJ == Velocity || modeJ == Wrench) {
+						reduced(cI,cJ) = rotated(i,j);
+						cJ++;
+					}
 				}
-			}
-			cI++;
-		} else if (modeI == Wrench) {
-			if (!wrenchConstraints) {
-				wrenchConstraints = true;
-				wrenchLHS = getWrenchModelLHS(constraint);
-				RW_ASSERT(wrenchLHS.cols() == 6);
-				RW_ASSERT(wrenchLHS.rows() == (int)getDimWrench());
-			}
-			std::size_t cJ = 0;
-			for (std::size_t j = 0; j < 6; j++) {
-				const Mode &modeJ = constraintModesB[j];
-				if (modeJ == Velocity || modeJ == Wrench) {
-					reduced(cI,cJ) = wrenchLHS(iWrench,j);
-					cJ++;
+				/*
+				for (std::size_t j = 0; j < 6; j++) {
+					reduced(cI,j) = rotated(i,j);
 				}
+				 */
+				cI++;
+			} else if (modeI == Wrench) {
+				if (!wrenchConstraints) {
+					wrenchConstraints = true;
+					wrenchLHS = getWrenchModelLHS(constraint);
+					RW_ASSERT(wrenchLHS.cols() == 6);
+					RW_ASSERT(wrenchLHS.rows() == (int)getDimWrench());
+				}
+				std::size_t cJ = 0;
+				for (std::size_t j = 0; j < 6; j++) {
+					const Mode &modeJ = constraintModesB[j];
+					if (modeJ == Velocity || modeJ == Wrench) {
+						reduced(cI,cJ) = wrenchLHS(iWrench,j);
+						cJ++;
+					}
+				}
+				/*
+				for (std::size_t j = 0; j < 6; j++) {
+					reduced(cI,j) = wrenchLHS(iWrench,j);
+				}
+				*/
+				iWrench++;
+				cI++;
 			}
-			iWrench++;
-			cI++;
 		}
 	}
 	return reduced;

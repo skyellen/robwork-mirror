@@ -254,6 +254,18 @@ public:
 	virtual void clearWrench(TNTIslandState &tntstate);
 
 	/**
+	 * @brief Clear the applied wrench.
+	 * @param tntstate [in/out] the state to reset the wrench in.
+	 */
+	virtual void clearWrenchApplied(TNTIslandState &tntstate);
+
+	/**
+	 * @brief Clear the constraint wrench.
+	 * @param tntstate [in/out] the state to reset the wrench in.
+	 */
+	virtual void clearWrenchConstraint(TNTIslandState &tntstate);
+
+	/**
 	 * @brief Apply a wrench in the constraint manually.
 	 * @param tntstate [in/out] the state to update.
 	 * @param wrench [in] the wrench to apply.
@@ -279,23 +291,27 @@ public:
 	 * (often the desired relative velocity).
 	 * @param stepsize [in] the stepsize to use.
 	 * @param gravity [in] the gravity in world coordinates.
-	 * @param constraints [in] list of constraints with pre-applied forces.
+	 * @param discontinuity [in] first step after a discontinuity will be integrated and solved for differently.
+	 * @param constraints0 [in] list of initial constraints.
+	 * @param constraintsH [in] list of constraints with pre-applied forces.
 	 * @param rwstate [in] the state.
-	 * @param tntstate [in] the state.
+	 * @param tntstate0 [in] the initial state.
+	 * @param tntstateH [in] the new state.
 	 * @return a vector block  with dimensions given by getDimVelocity().
 	 */
-	virtual Eigen::VectorXd getRHS(double stepsize, const rw::math::Vector3D<> &gravity, const std::list<TNTConstraint*>& constraints, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const;
+	virtual Eigen::VectorXd getRHS(double stepsize, const rw::math::Vector3D<> &gravity, bool discontinuity, const std::list<TNTConstraint*>& constraints0, const std::list<TNTConstraint*>& constraintsH, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH) const;
 
 	/**
 	 * @brief Get the matrix block that relates the force/torque contribution of some arbitrary constraint
 	 * to the motion in the constraint which is solved for.
 	 * @param constraint [in] the constraint to get contribution matrix for.
 	 * @param stepsize [in] the stepsize to use.
+	 * @param discontinuity [in] first step after a discontinuity will be integrated and solved for differently.
 	 * @param rwstate [in] the state.
 	 * @param tntstate [in] the state.
 	 * @return a matrix block with dimensions given by getDimVelocity().
 	 */
-	virtual Eigen::MatrixXd getLHS(const TNTConstraint* constraint, double stepsize, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const;
+	virtual Eigen::MatrixXd getLHS(const TNTConstraint* constraint, double stepsize, bool discontinuity, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const;
 
 	/**
 	 * @brief The number of velocity constraints.

@@ -61,12 +61,14 @@ public:
 	/**
 	 * @brief Solve the constraint forces for the constraints in the system.
 	 * @param h [in] the timestep to solve for.
+	 * @param discontinuity [in] true if the integration scheme should be different because of a discontinuity.
 	 * @param rwstate [in] the current state.
-	 * @param tntstate [in] the current TNTIslandState.
+	 * @param tntstate0 [in] the current TNTIslandState at beginning of time step.
+	 * @param tntstateH [in] the TNTIslandState predicted at end of time step.
 	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
 	 * @return a raw vector with the solution.
 	 */
-	virtual Eigen::VectorXd solve(double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate, const rw::common::PropertyMap& pmap) const;
+	virtual Eigen::VectorXd solve(double h, bool discontinuity, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH, const rw::common::PropertyMap& pmap) const;
 
 	/**
 	 * @brief Solve the dynamics.
@@ -160,7 +162,7 @@ protected:
 	const rw::math::Vector3D<> _gravity;
 
 private:
-	void getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate, bool debug) const;
+	void getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h, bool discontinuity, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate0, const TNTIslandState &tntstateH, bool debug) const;
 };
 //! @}
 } /* namespace tntphysics */

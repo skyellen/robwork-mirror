@@ -18,6 +18,7 @@
 #include "TNTRigidBody.hpp"
 #include "TNTIntegrator.hpp"
 #include "TNTIslandState.hpp"
+#include "TNTConstraint.hpp"
 
 #include <rwsim/dynamics/RigidBody.hpp>
 
@@ -49,6 +50,46 @@ TNTBody::Configuration* TNTRigidBody::makeConfiguration(const State &rwstate) co
 
 const TNTRigidBody::RigidConfiguration* TNTRigidBody::getConfiguration(const TNTIslandState &tntstate) const {
 	return dynamic_cast<const TNTRigidBody::RigidConfiguration*>(tntstate.getConfiguration(this));
+}
+
+Wrench6D<> TNTRigidBody::getNetWrench(const Vector3D<>& gravity, const std::list<TNTConstraint*>& constraints, const TNTIslandState &tntstate, const State& rwstate) const {
+	const TNTRigidBody::RigidConfiguration* const config = getConfiguration(tntstate);
+	const Vector3D<> R = config->getWorldTcom().P();
+	Vector3D<> Fext = gravity*getRigidBody()->getMass()+getRigidBody()->getForceW(rwstate);
+	Vector3D<> Next = getRigidBody()->getTorqueW(rwstate);
+	BOOST_FOREACH(TNTConstraint* constraint, constraints) {
+		const Wrench6D<> wrench = constraint->getWrench(tntstate);
+		if (constraint->getParent() == this) {
+			const Vector3D<> pos = constraint->getPositionParentW(tntstate);
+			Fext += wrench.force();
+			Next += wrench.torque()+cross(pos-R,wrench.force());
+		} else if (constraint->getChild() == this) {
+			const Vector3D<> pos = constraint->getPositionChildW(tntstate);
+			Fext += -wrench.force();
+			Next += -wrench.torque()+cross(pos-R,-wrench.force());
+		}
+	}
+	return Wrench6D<>(Fext,Next);
+}
+
+Wrench6D<> TNTRigidBody::getExternalWrench(const Vector3D<>& gravity, const std::list<TNTConstraint*>& constraints, const TNTIslandState &tntstate, const State& rwstate) const {
+	const TNTRigidBody::RigidConfiguration* const config = getConfiguration(tntstate);
+	const Vector3D<> R = config->getWorldTcom().P();
+	Vector3D<> Fext = gravity*getRigidBody()->getMass()+getRigidBody()->getForceW(rwstate);
+	Vector3D<> Next = getRigidBody()->getTorqueW(rwstate);
+	BOOST_FOREACH(TNTConstraint* constraint, constraints) {
+		const Wrench6D<> wrench = constraint->getWrenchApplied(tntstate);
+		if (constraint->getParent() == this) {
+			const Vector3D<> pos = constraint->getPositionParentW(tntstate);
+			Fext += wrench.force();
+			Next += wrench.torque()+cross(pos-R,wrench.force());
+		} else if (constraint->getChild() == this) {
+			const Vector3D<> pos = constraint->getPositionChildW(tntstate);
+			Fext += -wrench.force();
+			Next += -wrench.torque()+cross(pos-R,-wrench.force());
+		}
+	}
+	return Wrench6D<>(Fext,Next);
 }
 
 void TNTRigidBody::reset(TNTIslandState &tntstate, const State &rwstate) const {

@@ -52,8 +52,9 @@ const TNTContactResolver* TNTContactResolverHeuristic::createResolver(const TNTS
 }
 
 void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persistentContacts,
-		double h, const TNTMaterialMap& map, const State &rwstate, TNTIslandState &tntstate,
-		const PropertyMap& pmap) const
+	double h, bool discontinuity, const TNTMaterialMap& map, const State &rwstate,
+	const TNTIslandState &tntstate0, TNTIslandState &tntstateH,
+	const PropertyMap& pmap) const
 {
 	if (_solver == NULL)
 		RW_THROW("TNTContactResolverHeuristic (solve): There is no TNTSolver set for this resolver - please construct a new resolver for TNTSolver to use.");
@@ -81,7 +82,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 	// Construct list of contacts
 	std::vector<TNTContact*> contacts;
 	{
-		const TNTBodyConstraintManager::ConstraintList constraints = _solver->getManager()->getTemporaryConstraints(&tntstate);
+		const TNTBodyConstraintManager::ConstraintList constraints = _solver->getManager()->getTemporaryConstraints(&tntstateH);
 		BOOST_FOREACH(TNTConstraint* const constraint, constraints) {
 			if (TNTContact* const contact = dynamic_cast<TNTContact*>(constraint)) {
 				contacts.push_back(contact);
@@ -96,7 +97,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 	std::size_t combinations = 1;
 	BOOST_FOREACH(TNTContact* const contact, contacts) {
 		const TNTFrictionModel& model = map.getFrictionModel(*contact->getParent(),*contact->getChild());
-		const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstate,rwstate);
+		const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstateH,rwstate);
 		// Determine which modes are allowed for each contact and save for later use
 		// (4 different combinations of tangent and angular on/off)
 		if (vals.enableAngular) {
@@ -131,17 +132,20 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 				typeAngular = TNTContact::None;
 				break;
 			case TanOn_AngOff:
+				std::cout << "Type: " << TNTContact::toString(typeLinear) << std::endl;
 				if (typeLinear == TNTContact::None || typeLinear == TNTContact::Sliding) {
+					std::cout << "A" << std::endl;
 					initialChoice[i] = Sliding;
 					typeLinear = TNTContact::Sliding;
-					const Vector3D<> velP = contact->getVelocityParentW(tntstate,rwstate).linear();
-					const Vector3D<> velC = contact->getVelocityChildW(tntstate,rwstate).linear();
+					const Vector3D<> velP = contact->getVelocityParentW(tntstateH,rwstate).linear();
+					const Vector3D<> velC = contact->getVelocityChildW(tntstateH,rwstate).linear();
 					if ((velC-velP).norm2() < 1e-3) {
 						// Relative velocity is too small to determine friction direction - we force it into rolling mode first
 						initialChoice[i] = Sticking;
 						typeLinear = TNTContact::Sticking;
 					}
 				} else {
+					std::cout << "B" << std::endl;
 					initialChoice[i] = Sticking;
 					typeLinear = TNTContact::Sticking;
 				}
@@ -183,9 +187,10 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 
 			// For tangential sliding we update the friction direction with the current direction of motion
 			if (typeLinear == TNTContact::Sliding) {
-				const Vector3D<> velP = contact->getVelocityParentW(tntstate,rwstate).linear();
-				const Vector3D<> velC = contact->getVelocityChildW(tntstate,rwstate).linear();
+				const Vector3D<> velP = contact->getVelocityParentW(tntstateH,rwstate).linear();
+				const Vector3D<> velC = contact->getVelocityChildW(tntstateH,rwstate).linear();
 				contact->setFrictionDirW(normalize(velC-velP),rwstate);
+				contact->setFriction(vals.tangent,vals.tangentAbsolute,vals.angular,vals.angularAbsolute);
 			}
 		}
 		i++;
@@ -292,8 +297,8 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 		}
 
 		// Now try to solve
-		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate, pmap);
-		tmpState = tntstate;
+		const Eigen::VectorXd solution = _solver->solve(h, discontinuity, rwstate, tntstate0, tntstateH, pmap);
+		tmpState = tntstateH;
 		_solver->saveSolution(solution,tmpState);
 		resState = tmpState;
 
@@ -301,10 +306,12 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 		{
 			const TNTBodyConstraintManager::DynamicBodyList rbodies = _solver->getManager()->getDynamicBodies();
 			BOOST_FOREACH(const TNTRigidBody* rbody, rbodies) {
-				TNTRigidBody::RigidConfiguration* config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tmpState.getConfiguration(rbody));
-				const Transform3D<> wTcom = config->getWorldTcom();
-				rbody->getIntegrator()->integrate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config,tmpState,rwstate);
-				config->setWorldTcom(wTcom);
+				const TNTRigidBody::RigidConfiguration* const config0 = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstate0.getConfiguration(rbody));
+				TNTRigidBody::RigidConfiguration* const config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tmpState.getConfiguration(rbody));
+				//const Transform3D<> wTcom = config->getWorldTcom();
+				//rbody->getIntegrator()->integrate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config,tmpState,rwstate);
+				//config->setWorldTcom(wTcom);
+				rbody->getIntegrator()->velocityUpdate(_solver->getManager()->getConstraints(rbody, tmpState),_solver->getGravity(),h,*config0,*config,tntstate0,tmpState,rwstate);
 			}
 		}
 		// Now check if solutions are valid
@@ -349,13 +356,13 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 					case TanOn_AngOff:
 					{
 						const TNTFrictionModel& model = map.getFrictionModel(*contact->getParent(),*contact->getChild());
-						const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstate,rwstate);
+						const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstateH,rwstate);
 						if (typeLinear == TNTContact::Sliding) {
 							const Vector3D<> velP = contact->getVelocityParentW(tmpState,rwstate).linear();
 							const Vector3D<> velC = contact->getVelocityChildW(tmpState,rwstate).linear();
 							const Vector3D<> velRelDir = normalize(velC-velP);
 							const Wrench6D<> wrench = contact->getWrench(tmpState);
-							const Vector3D<> normal = contact->getNormalW(tntstate);
+							const Vector3D<> normal = contact->getNormalW(tntstateH);
 							const Vector3D<> F_tangent = wrench.force()-dot(normal,wrench.force())*normal;
 							if (dot(velRelDir,F_tangent) <= -1e-15) {
 								// Tangent force must be in the direction the child moves relative to its parent
@@ -364,7 +371,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 							}
 						} else if (typeLinear == TNTContact::Sticking) {
 							const Wrench6D<> wrench = contact->getWrench(tmpState);
-							const Vector3D<> normal = contact->getNormalW(tntstate);
+							const Vector3D<> normal = contact->getNormalW(tntstateH);
 							const double F_normal = dot(normal,wrench.force());
 							const Vector3D<> F_tangent = wrench.force()-dot(normal,wrench.force())*normal;
 							if (F_tangent.norm2() > fabs(vals.tangent*F_normal)) {
@@ -399,7 +406,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 			_solver->getManager()->removeTemporaryConstraint(contact,resState);
 	}
 
-	tntstate = resState;
+	tntstateH = resState;
 }
 
 void TNTContactResolverHeuristic::addDefaultProperties(PropertyMap& map) const {

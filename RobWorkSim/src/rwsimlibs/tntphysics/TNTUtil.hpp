@@ -157,11 +157,35 @@ public:
 	 * @brief Do integration for all bodies and update the state structures.
 	 * @param dt [in] the stepsize.
 	 * @param gravity [in] the gravity in world coordinates.
+	 * @param discontinuity [in] integrate as first step after a discontinuity.
 	 * @param bc [in] the body-constraint manager.
 	 * @param tntstate [in/out] the current state to update.
 	 * @param rwstate [in/out] the current state to update.
 	 */
-	static void step(double dt, const rw::math::Vector3D<>& gravity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, rw::kinematics::State& rwstate);
+	static void step(double dt, const rw::math::Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, rw::kinematics::State& rwstate);
+
+	/**
+	 * @brief Do integration of all body positions and update the state structures.
+	 * @param dt [in] the stepsize.
+	 * @param gravity [in] the gravity in world coordinates.
+	 * @param discontinuity [in] integrate as first step after a discontinuity.
+	 * @param bc [in] the body-constraint manager.
+	 * @param tntstate [in/out] the current state to update.
+	 * @param rwstate [in/out] the current state to update.
+	 */
+	static void positionUpdate(double dt, const rw::math::Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, rw::kinematics::State& rwstate);
+
+	/**
+	 * @brief Do integration of all body velocities and update the state structures.
+	 * @param dt [in] the stepsize.
+	 * @param gravity [in] the gravity in world coordinates.
+	 * @param discontinuity [in] integrate as first step after a discontinuity.
+	 * @param bc [in] the body-constraint manager.
+	 * @param tntstate0 [in] the initial state.
+	 * @param tntstateH [in/out] the next state, which is updated.
+	 * @param rwstate [in] the next state.
+	 */
+	static void velocityUpdate(double dt, const rw::math::Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate0, TNTIslandState& tntstateH, const rw::kinematics::State& rwstate);
 
 	/**
 	 * @brief Get the minimum distance in a list of contacts.

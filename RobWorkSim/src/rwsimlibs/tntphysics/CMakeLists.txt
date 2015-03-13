@@ -12,6 +12,7 @@ SET(SRC_FILES
 	
 	TNTIntegrator.cpp
 	TNTIntegratorEuler.cpp
+	TNTIntegratorHeun.cpp
 	
 	TNTBody.cpp
 	TNTRigidBody.cpp
@@ -41,9 +42,11 @@ SET(SRC_FILES
 	
 	TNTSolver.cpp
 	TNTSolverSVD.cpp
+	TNTSolverIterativeSVD.cpp
 	
 	TNTContactResolver.cpp
 	TNTContactResolverNonPenetration.cpp
+	TNTContactResolverFull.cpp
 	TNTContactResolverHeuristic.cpp
 	
 	TNTRollbackMethod.cpp

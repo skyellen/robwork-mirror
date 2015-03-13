@@ -58,7 +58,7 @@ public:
 	virtual const TNTContactResolver* createResolver(const TNTSolver* solver) const;
 
 	//! @copydoc TNTContactResolver::solve
-	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, const TNTMaterialMap& map, const rw::kinematics::State &rwstate, TNTIslandState &tntstate,	const rw::common::PropertyMap& pmap) const;
+	virtual void solve(const std::vector<TNTContact*>& persistentContacts, double h, bool discontinuity, const TNTMaterialMap& map, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate0, TNTIslandState &tntstateH, const rw::common::PropertyMap& pmap) const;
 
 	/**
 	 * @copybrief TNTContactResolver::addDefaultProperties

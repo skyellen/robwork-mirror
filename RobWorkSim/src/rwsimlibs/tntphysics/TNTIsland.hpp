@@ -217,9 +217,9 @@ public:
 	 *  ----------------------- | ------ | ------------- | -----------
 	 *  TNTCollisionSolver      | string | Chain         | Specifies the TNTCollisionSolver used (default is TNTCollisionSolverChain).
 	 *  -                       | -      | -             | See TNTCollisionSolverChain::addDefaultProperties for further information on the properties used by collision solvers.
-	 *  TNTContactResolver      | string | Heuristic     | Specifies the TNTContactResolver used (default is TNTContactResolverHeuristic).
+	 *  TNTContactResolver      | string | Full          | Specifies the TNTContactResolver used (default is TNTContactResolverFull).
 	 *  -                       | -      | -             | See TNTContactResolver::addDefaultProperties for further information on the properties used by contact resolvers.
-	 *  TNTSolver               | string | SVD           | Specifies the TNTSolver used (default is TNTSolverSVD).
+	 *  TNTSolver               | string | IterativeSVD  | Specifies the TNTSolver used (default is TNTSolverIterativeSVD).
 	 *  -                       | -      | -             | See TNTSolver::addDefaultProperties for further information on the properties used by solvers.
 	 *  TNTRollbackMethod       | string | Ridder        | Specifies the TNTRollbackMethod used (default is TNTRollbackMethodRidder).
 	 *  TNTCorrection           | int    | 1             | Enable or disable correction (default is enabled=1).
@@ -237,11 +237,17 @@ private:
 	typedef std::set<IntegrateSample, IntegrateSampleCompare> IntegrateBuffer;
 
 	void doStep(double dt, rw::kinematics::State& state);
-	void solveConstraints(double dt, TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
-	double integrateBroadPhase(double dt, const IntegrateSample& first, IntegrateSample& res, rwsim::contacts::ContactDetectorData& cdData) const;
-	IntegrateSample integrateRollback(const IntegrateSample& sample0, const IntegrateSample& sampleH, rwsim::contacts::ContactDetectorData& cdData) const;
+	void velocityAndForce(double dt, bool discontinuity, const IntegrateSample& sample0, IntegrateSample& sampleH) const;
+	void position(IntegrateSample& sample, rwsim::contacts::ContactDetectorData& cdData) const;
+	bool collisionSolver(TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
+	double rollbackBroadPhase(double dt, bool discontinuity, const IntegrateSample& first, IntegrateSample& res) const;
+	double rollback(bool discontinuity, IntegrateSample& sample0, IntegrateSample& sampleH, rwsim::contacts::ContactDetectorData& cdData) const;
+	IntegrateSample rollbackNarrowPhase(bool discontinuity, IntegrateSample& sample0, IntegrateSample& sampleH, rwsim::contacts::ContactDetectorData& cdData) const;
+	void constraintSolver(double dt, bool discontinuity, const TNTIslandState& tntstate0, TNTIslandState& tntstateH, const rw::kinematics::State& rwstate) const;
+
 	void storeResults(rwsim::contacts::ContactDetectorData& cdData, IntegrateSample& sample, rw::kinematics::State& rwstate) const;
 
+private:
 	const TNTConstraintCorrection* const _correction;
 	std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
 

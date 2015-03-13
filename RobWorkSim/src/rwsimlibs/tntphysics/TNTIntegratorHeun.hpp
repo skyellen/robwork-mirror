@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIMLIBS_TNTPHYSICS_TNTINTEGRATOREULER_HPP_
-#define RWSIMLIBS_TNTPHYSICS_TNTINTEGRATOREULER_HPP_
+#ifndef RWSIMLIBS_TNTPHYSICS_TNTINTEGRATORHEUN_HPP_
+#define RWSIMLIBS_TNTPHYSICS_TNTINTEGRATORHEUN_HPP_
 
 /**
- * @file TNTEulerIntegrator.hpp
+ * @file TNTIntegratorHeun.hpp
  *
- * \copydoc rwsimlibs::tntphysics::TNTEulerIntegrator
+ * \copydoc rwsimlibs::tntphysics::TNTIntegratorHeun
  */
 
 #include "TNTIntegrator.hpp"
@@ -32,21 +32,21 @@ namespace tntphysics {
 
 //! @{
 /**
- * @brief Integration of body motion using the Euler scheme.
+ * @brief Integration of body motion using the Heun scheme.
  */
-class TNTIntegratorEuler: public rwsimlibs::tntphysics::TNTIntegrator {
+class TNTIntegratorHeun: public TNTIntegrator {
 public:
 	//! @brief Default constructor for empty integrator.
-	TNTIntegratorEuler();
+	TNTIntegratorHeun();
 
 	/**
 	 * @brief Construct integrator for body.
 	 * @param body [in] the body to associate integrator to.
 	 */
-	TNTIntegratorEuler(const TNTRigidBody* body);
+	TNTIntegratorHeun(const TNTRigidBody* body);
 
 	//! @brief Destructor
-	virtual ~TNTIntegratorEuler();
+	virtual ~TNTIntegratorHeun();
 
 	//! @copydoc TNTIntegrator::makeIntegrator
 	virtual const TNTIntegrator* makeIntegrator(const TNTRigidBody* body) const;
@@ -71,8 +71,11 @@ public:
 
 	//! @copydoc TNTIntegrator::getDiscontinuityIntegrator
 	virtual const TNTIntegrator* getDiscontinuityIntegrator() const;
+
+private:
+	const TNTIntegrator* const _euler;
 };
 //! @}
 } /* namespace tntphysics */
 } /* namespace rwsimlibs */
-#endif /* RWSIMLIBS_TNTPHYSICS_TNTINTEGRATOREULER_HPP_ */
+#endif /* RWSIMLIBS_TNTPHYSICS_TNTINTEGRATORHEUN_HPP_ */

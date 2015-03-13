@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERNONPENETRATION_HPP_
-#define RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERNONPENETRATION_HPP_
+#ifndef RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERFULL_HPP_
+#define RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERFULL_HPP_
 
 /**
- * @file TNTContactResolverNonPenetration.hpp
+ * @file TNTContactResolverFull.hpp
  *
- * \copydoc rwsimlibs::tntphysics::TNTContactResolverNonPenetration
+ * \copydoc rwsimlibs::tntphysics::TNTContactResolverFull
  */
 
 #include "TNTContactResolver.hpp"
@@ -32,26 +32,24 @@ namespace tntphysics {
 
 //! @{
 /**
- * @brief The simplest form of contact resolver possible. The resolver only enforces non-penetration
- * by resolving contacts as either leaving or sliding without friction. In other words, Forces are only
- * applied in the normal direction of the contacts to make sure that objects do not penetrate.
+ * @brief Simple contact resolver that gives the solver a complete LCP problem.
  */
-class TNTContactResolverNonPenetration: public rwsimlibs::tntphysics::TNTContactResolver {
+class TNTContactResolverFull: public TNTContactResolver {
 public:
 	/**
 	 * @brief Default constructor.
 	 * @note Using resolve() will throw an exception when resolver is created like this.
 	 */
-	TNTContactResolverNonPenetration();
+	TNTContactResolverFull();
 
 	/**
 	 * @brief Construct new solver.
      * @param solver [in] a pointer to the solver to use.
 	 */
-	TNTContactResolverNonPenetration(const TNTSolver* solver);
+	TNTContactResolverFull(const TNTSolver* solver);
 
 	//! @brief Destructor.
-	virtual ~TNTContactResolverNonPenetration();
+	virtual ~TNTContactResolverFull();
 
 	//! @copydoc TNTContactResolver::createResolver
 	virtual const TNTContactResolver* createResolver(const TNTSolver* solver) const;
@@ -62,11 +60,7 @@ public:
 	/**
 	 * @copybrief TNTContactResolver::addDefaultProperties
 	 *
-	 *  Property Name                                         | Type   | Default value | Description
-	 *  ----------------------------------------------------- | ------ | ------------- | -----------
-	 *  TNTContactResolverMaxIterations                       | int    | \f$1000\f$    | Stop if resolver exceeds this number of iterations (use 0 to test all combinations).
-	 *  TNTContactResolverMaxPenetrationVelocity              | double | \f$10^{-5}\f$ | Continue resolving as long as there are contacts with penetrating relative velocities greater than this (m/s).
-	 *  TNTContactResolverMaxAttractionForce                  | double | \f$0\f$       | Continue resolving as long as there are contacts with attracting forces greater than this (N).
+	 * This resolver does not use any properties.
 	 *
 	 * @param map [in/out] the map to add properties to.
 	 */
@@ -78,4 +72,4 @@ private:
 //! @}
 } /* namespace tntphysics */
 } /* namespace rwsimlibs */
-#endif /* RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERNONPENETRATION_HPP_ */
+#endif /* RWSIMLIBS_TNTPHYSICS_TNTCONTACTRESOLVERFULL_HPP_ */

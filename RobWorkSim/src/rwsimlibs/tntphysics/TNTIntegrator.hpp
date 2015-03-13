@@ -89,6 +89,50 @@ public:
 	virtual void integrate(const std::list<const TNTConstraint*> &constraints, const rw::math::Vector3D<>& gravity, double stepsize, TNTRigidBody::RigidConfiguration &configuration, TNTIslandState &state, const rw::kinematics::State &rwstate) const;
 
 	/**
+	 * @brief Integrate the position with the given constraints.
+	 *
+	 * The integrator must calculate the new positions explicitly from the initial position and
+	 * velocity.
+	 *
+	 * This function is allowed to update the velocity. This velocity will then be considered an estimate
+	 * which will be taken into consideration. The net force given to the velocity update function will
+	 * be calculated based on this estimate.
+	 *
+	 * @param constraints [in] a list of the constraints acting on the body.
+	 * @param gravity [in] the gravity in world coordinates.
+	 * @param stepsize [in] the size of the step to integrate.
+	 * @param configuration [in/out] the configuration to update.
+	 * @param state [in/out] the state with the current constraint forces, position and velocities.
+	 * @param rwstate [in] the current state.
+	 */
+	virtual void positionUpdate(const std::list<const TNTConstraint*> &constraints,
+			const rw::math::Vector3D<>& gravity,
+			double stepsize,
+			TNTRigidBody::RigidConfiguration &configuration,
+			TNTIslandState &state,
+			const rw::kinematics::State &rwstate) const;
+
+	/**
+	 * @brief Integrate the velocity with the given constraints.
+	 * @param constraints [in] a list of the constraints acting on the body.
+	 * @param gravity [in] the gravity in world coordinates.
+	 * @param stepsize [in] the size of the step to integrate.
+	 * @param configuration0 [in] the initial configuration.
+	 * @param configurationH [in/out] the configuration to update.
+	 * @param state0 [in] the state with the initial constraint forces, position and velocities.
+	 * @param stateH [in] the state with the new constraint forces, position and velocities.
+	 * @param rwstate [in] the state with forces applied directly to the bodies by the user.
+	 */
+	virtual void velocityUpdate(const std::list<const TNTConstraint*> &constraints,
+			const rw::math::Vector3D<>& gravity,
+			double stepsize,
+			const TNTRigidBody::RigidConfiguration &configuration0,
+			TNTRigidBody::RigidConfiguration &configurationH,
+			const TNTIslandState &state0,
+			const TNTIslandState &stateH,
+			const rw::kinematics::State &rwstate) const;
+
+	/**
 	 * @brief Integrate the motion with the given net force and torque acting on the object.
 	 * @param netFT [in] the net force and torque acting in the center of mass of the body, given in world frame.
 	 * @param stepsize [in] the time to integrate.
@@ -97,16 +141,40 @@ public:
 	virtual void integrate(const rw::math::Wrench6D<> &netFT, double stepsize, TNTRigidBody::RigidConfiguration &configuration) const = 0;
 
 	/**
+	 * @brief Integrate the position and orientation with the given net force and torque acting on the object.
+	 * @param netFT [in] the net force and torque acting in the center of mass of the body, given in world frame.
+	 * @param stepsize [in] the time to integrate.
+	 * @param configuration [in/out] the configuration to update.
+	 */
+	virtual void positionUpdate(const rw::math::Wrench6D<> &netFT, double stepsize, TNTRigidBody::RigidConfiguration &configuration) const = 0;
+
+	/**
+	 * @brief Integrate the velocity with the given net force and torque acting on the object.
+	 * @param netFTcur [in] the net force and torque acting in the center of mass of the body, given in world frame.
+	 * @param netFTnext [in] the net force and torque acting in the center of mass of the body after taking step of size stepsize.
+	 * @param stepsize [in] the time to integrate.
+	 * @param configuration0 [in] the initial configuration.
+	 * @param configurationH [in/out] the configuration to update.
+	 */
+	virtual void velocityUpdate(const rw::math::Wrench6D<> &netFTcur,
+			const rw::math::Wrench6D<> &netFTnext,
+			double stepsize,
+			const TNTRigidBody::RigidConfiguration &configuration0,
+			TNTRigidBody::RigidConfiguration &configuration) const = 0;
+
+	/**
 	 * @brief Get the socalled independent motion of the point, which is not related to a constraint wrench.
 	 * @param point [in] the point to find contribution for.
 	 * @param stepsize [in] the size of the step to solve for.
-	 * @param configuration [in] the current configuration.
-	 * @param configurationGuess [in] for iterative linearization.
-	 * @param Fext [in] an extra external force not related to the constraints or gravity.
-	 * @param Next [in] an extra external torque not related to the constraints.
+	 * @param configuration0 [in] the initial configuration.
+	 * @param configurationH [in] the configuration to find constraint forces for.
+	 * @param Ftot0 [in] initial net force not related to the constraints or gravity.
+	 * @param Ntot0 [in] initial net torque not related to the constraints.
+	 * @param FextH [in] external force not related to the constraints or gravity.
+	 * @param NextH [in] external torque not related to the constraints.
 	 * @return a vector of size 6.
 	 */
-	virtual Eigen::Matrix<double, 6, 1> eqPointVelIndependent(const rw::math::Vector3D<> point, double stepsize, const TNTRigidBody::RigidConfiguration &configuration, const TNTRigidBody::RigidConfiguration &configurationGuess, const rw::math::Vector3D<>& Fext, const rw::math::Vector3D<>& Next) const = 0;
+	virtual Eigen::Matrix<double, 6, 1> eqPointVelIndependent(const rw::math::Vector3D<> point, double stepsize, const TNTRigidBody::RigidConfiguration &configuration0, const TNTRigidBody::RigidConfiguration &configurationH, const rw::math::Vector3D<>& Ftot0, const rw::math::Vector3D<>& Ntot0, const rw::math::Vector3D<>& FextH, const rw::math::Vector3D<>& NextH) const = 0;
 
 	/**
 	 * @brief Get the dependent motion of the point, which is dependent on the applied constraint wrench.
@@ -129,6 +197,15 @@ public:
 	 */
 	virtual bool eqIsApproximation() const = 0;
 
+	/**
+	 * @brief Get integrator used in first step after a discontinuity.
+	 *
+	 * Higher order integrators will typically need a first order method in the first
+	 * step after a continuity.
+	 *
+	 * @return a pointer to a integrator (owned by this integrator).
+	 */
+	virtual const TNTIntegrator* getDiscontinuityIntegrator() const = 0;
 
 	/**
 	 * @addtogroup extensionpoints
@@ -140,7 +217,7 @@ public:
 	 * extension point for TNTIntegrator.
 	 *
 	 * By default the factory provides the following TNTIntegrator types:
-	 *  - Euler - TNTEulerIntegrator
+	 *  - Euler - TNTIntegratorEuler
 	 */
     class Factory: public rw::common::ExtensionPoint<TNTIntegrator> {
     public:
@@ -178,6 +255,9 @@ protected:
 
 private:
 	const TNTRigidBody* const _body;
+
+	rw::math::Wrench6D<> getNetFT(const std::list<const TNTConstraint*> &constraints, const rw::math::Vector3D<>& gravity, const TNTRigidBody::RigidConfiguration &configuration, const TNTIslandState &state, const rw::kinematics::State &rwstate) const;
+	rw::math::Wrench6D<> getExtFT(const std::list<const TNTConstraint*> &constraints, const rw::math::Vector3D<>& gravity, const TNTRigidBody::RigidConfiguration &configuration, const TNTIslandState &state, const rw::kinematics::State &rwstate) const;
 };
 //! @}
 } /* namespace tntphysics */

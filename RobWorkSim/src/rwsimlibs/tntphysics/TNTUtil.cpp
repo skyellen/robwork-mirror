@@ -149,11 +149,14 @@ void TNTUtil::mark(std::vector<Contact>& contacts, ContactDetectorTracking& trac
 	}
 }
 
-void TNTUtil::step(double dt, const Vector3D<>& gravity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, State& rwstate) {
+void TNTUtil::step(double dt, const Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, State& rwstate) {
 	const TNTBodyConstraintManager::DynamicBodyList rbodies = bc->getDynamicBodies();
 	BOOST_FOREACH(const TNTRigidBody* rbody, rbodies) {
 		TNTRigidBody::RigidConfiguration* config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstate.getConfiguration(rbody));
-		rbody->getIntegrator()->integrate(bc->getConstraints(rbody, tntstate),gravity,dt,*config,tntstate,rwstate);
+		const TNTIntegrator* integrator = rbody->getIntegrator();
+		if (discontinuity)
+			integrator = integrator->getDiscontinuityIntegrator();
+		integrator->integrate(bc->getConstraints(rbody, tntstate),gravity,dt,*config,tntstate,rwstate);
 	}
 	const TNTBodyConstraintManager::KinematicBodyList kbodies = bc->getKinematicBodies();
 	BOOST_FOREACH(const TNTKinematicBody* kbody, kbodies) {
@@ -162,6 +165,38 @@ void TNTUtil::step(double dt, const Vector3D<>& gravity, const TNTBodyConstraint
 	const TNTBodyConstraintManager::BodyList bodies = bc->getBodies();
 	BOOST_FOREACH(const TNTBody* body, bodies) {
 		body->updateRW(rwstate,tntstate);
+	}
+}
+
+void TNTUtil::positionUpdate(double dt, const Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, TNTIslandState& tntstate, State& rwstate) {
+	const TNTBodyConstraintManager::DynamicBodyList rbodies = bc->getDynamicBodies();
+	BOOST_FOREACH(const TNTRigidBody* rbody, rbodies) {
+		TNTRigidBody::RigidConfiguration* const config = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstate.getConfiguration(rbody));
+		const TNTBodyConstraintManager::ConstraintListConst constraints = bc->getConstraints(rbody, tntstate);
+		const TNTIntegrator* integrator = rbody->getIntegrator();
+		if (discontinuity)
+			integrator = integrator->getDiscontinuityIntegrator();
+		integrator->positionUpdate(constraints,gravity,dt,*config,tntstate,rwstate);
+	}
+	const TNTBodyConstraintManager::KinematicBodyList kbodies = bc->getKinematicBodies();
+	BOOST_FOREACH(const TNTKinematicBody* kbody, kbodies) {
+		kbody->integrate(dt,tntstate,rwstate);
+	}
+	const TNTBodyConstraintManager::BodyList bodies = bc->getBodies();
+	BOOST_FOREACH(const TNTBody* body, bodies) {
+		body->updateRW(rwstate,tntstate);
+	}
+}
+
+void TNTUtil::velocityUpdate(double dt, const Vector3D<>& gravity, bool discontinuity, const TNTBodyConstraintManager* bc, const TNTIslandState& tntstate0, TNTIslandState& tntstateH, const State& rwstate) {
+	const TNTBodyConstraintManager::DynamicBodyList rbodies = bc->getDynamicBodies();
+	BOOST_FOREACH(const TNTRigidBody* rbody, rbodies) {
+		TNTRigidBody::RigidConfiguration* const config0 = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstate0.getConfiguration(rbody));
+		TNTRigidBody::RigidConfiguration* const configH = dynamic_cast<TNTRigidBody::RigidConfiguration*>(tntstateH.getConfiguration(rbody));
+		const TNTIntegrator* integrator = rbody->getIntegrator();
+		if (discontinuity)
+			integrator = integrator->getDiscontinuityIntegrator();
+		integrator->velocityUpdate(bc->getConstraints(rbody, tntstate0),gravity,dt,*config0,*configH,tntstate0,tntstateH,rwstate);
 	}
 }
 

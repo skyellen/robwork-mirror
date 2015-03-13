@@ -172,6 +172,14 @@ TNTBodyConstraintManager::ConstraintList TNTBodyConstraintManager::getTemporaryC
 		return ConstraintList();
 }
 
+bool TNTBodyConstraintManager::hasContactsOrConstraints(const TNTIslandState& state) const {
+	if (_constraints.size() > 0)
+		return true;
+	if (_parent == NULL)
+		return state.hasTemporaryConstraints();
+	return false;
+}
+
 void TNTBodyConstraintManager::addBody(const TNTBody* const body) {
 	_allBodies.push_back(body);
 
