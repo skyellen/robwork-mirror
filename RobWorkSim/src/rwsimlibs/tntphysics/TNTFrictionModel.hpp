@@ -82,7 +82,7 @@ public:
 	 * @param rwstate [in] the current state of the system.
 	 * @return the Values.
 	 */
-	virtual Values getRestitution(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const = 0;
+	virtual Values getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const = 0;
 
 	/**
 	 * @addtogroup extensionpoints

@@ -247,6 +247,7 @@ void TNTUtil::updateSensors(const std::list<SimulatedSensor::Ptr>& sensors, doub
 
 	BOOST_FOREACH(const SimulatedSensor::Ptr sensor, sensors) {
 		SimulatedSensor* const ssensor = sensor.get();
+		ssensor->reset(rwstate);
 		if(SimulatedTactileSensor* const tsensor = dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
 			TNTBodyConstraintManager::ConstraintListConst constraints;
 			const TNTBody* tntbody;
@@ -271,9 +272,13 @@ void TNTUtil::updateSensors(const std::list<SimulatedSensor::Ptr>& sensors, doub
 				const Wrench6D<> wrench = constraint->getWrench(tntstate);
 				if(const TNTRWConstraint* const rwconstraint = dynamic_cast<const TNTRWConstraint*>(constraint) ){
 					if (constraint->getParent() == tntbody) {
-						tsensor->addWrenchWToCOM(wrench.force(),wrench.torque(),rwstate,tntbody->get());
+						const Vector3D<> pos = constraint->getPositionParentW(tntstate);
+						tsensor->addWrenchWToCOM(Vector3D<>::zero(),wrench.torque(),rwstate,tntbody->get());
+						tsensor->addForceW(pos,wrench.force(),Vector3D<>::zero(),rwstate,tntbody->get());
 					} else {
-						tsensor->addWrenchWToCOM(-wrench.force(),-wrench.torque(),rwstate,tntbody->get());
+						const Vector3D<> pos = constraint->getPositionChildW(tntstate);
+						tsensor->addWrenchWToCOM(Vector3D<>::zero(),-wrench.torque(),rwstate,tntbody->get());
+						tsensor->addForceW(pos,-wrench.force(),Vector3D<>::zero(),rwstate,tntbody->get());
 					}
 				} else if(const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint) ){
 					const Vector3D<> n = contact->getNormalW(tntstate);

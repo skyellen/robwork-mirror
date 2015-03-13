@@ -58,8 +58,8 @@ public:
 	//! @copydoc TNTFrictionModel::withProperties
 	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const;
 
-	//! @copydoc TNTFrictionModel::getRestitution
-	virtual Values getRestitution(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
+	//! @copydoc TNTFrictionModel::getFriction
+	virtual Values getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
 
 private:
 	double _mu;

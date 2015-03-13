@@ -109,7 +109,9 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	delete solver;
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
 	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
-	TNTContactResolver::Factory::makeResolver("Heuristic",NULL)->addDefaultProperties(map);
+	const TNTContactResolver* const resolver = TNTContactResolver::Factory::makeResolver("Heuristic",NULL);
+	resolver->addDefaultProperties(map);
+	delete resolver;
 	map.add<int>("TNTCorrection","Enable or disable contact & constraint correction.",1);
 	TNTConstraintCorrection::addDefaultProperties(map);
 	map.add<int>("TNTRollback","Enable or disable rollback.",1);

@@ -45,8 +45,8 @@ public:
 	//! @copydoc TNTFrictionModel::withProperties
 	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const { return this; };
 
-	//! @copydoc TNTFrictionModel::getRestitution
-	virtual Values getRestitution(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const { return Values(); };
+	//! @copydoc TNTFrictionModel::getFriction
+	virtual Values getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const { return Values(); };
 };
 //! @}
 } /* namespace tntphysics */

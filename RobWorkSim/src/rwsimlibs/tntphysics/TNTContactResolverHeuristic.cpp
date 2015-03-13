@@ -96,7 +96,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 	std::size_t combinations = 1;
 	BOOST_FOREACH(TNTContact* const contact, contacts) {
 		const TNTFrictionModel& model = map.getFrictionModel(*contact->getParent(),*contact->getChild());
-		const TNTFrictionModel::Values vals = model.getRestitution(*contact,tntstate,rwstate);
+		const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstate,rwstate);
 		// Determine which modes are allowed for each contact and save for later use
 		// (4 different combinations of tangent and angular on/off)
 		if (vals.enableAngular) {
@@ -349,7 +349,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 					case TanOn_AngOff:
 					{
 						const TNTFrictionModel& model = map.getFrictionModel(*contact->getParent(),*contact->getChild());
-						const TNTFrictionModel::Values vals = model.getRestitution(*contact,tntstate,rwstate);
+						const TNTFrictionModel::Values vals = model.getFriction(*contact,tntstate,rwstate);
 						if (typeLinear == TNTContact::Sliding) {
 							const Vector3D<> velP = contact->getVelocityParentW(tmpState,rwstate).linear();
 							const Vector3D<> velC = contact->getVelocityChildW(tmpState,rwstate).linear();

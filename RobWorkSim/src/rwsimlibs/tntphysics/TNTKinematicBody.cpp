@@ -41,7 +41,7 @@ KinematicBody::Ptr TNTKinematicBody::getKinematicBody() const {
 void TNTKinematicBody::integrate(double stepsize, TNTIslandState &tntstate, const State& rwstate) const {
 	const VelocityScrew6D<> velW = getVelocityW(rwstate,tntstate);
 	const Vector3D<> linVelW = velW.linear();
-	const Vector3D<> angVelW = velW.angular().axis()*velW.angular().angle();
+	const Vector3D<> angVelW(velW(3), velW(4), velW(5));
 	Transform3D<> wTcom = getWorldTcom(tntstate);
 	wTcom.P() += stepsize*linVelW;
 	wTcom.R() = EAA<>(stepsize*angVelW).toRotation3D()*wTcom.R();
@@ -51,7 +51,7 @@ void TNTKinematicBody::integrate(double stepsize, TNTIslandState &tntstate, cons
 void TNTKinematicBody::updateRW(State &rwstate, const TNTIslandState &tntstate) const {
 	const rw::common::Ptr<const KinematicBody> rwbody = getKinematicBody();
 	Transform3D<> wTb = getWorldTcom(tntstate);
-	wTb.P() -= rwbody->getInfo().masscenter;
+	wTb.P() -= wTb.R()*rwbody->getInfo().masscenter;
 
 	MovableFrame* const frame = dynamic_cast<MovableFrame*>(rwbody->getBodyFrame());
 	if (frame == NULL)

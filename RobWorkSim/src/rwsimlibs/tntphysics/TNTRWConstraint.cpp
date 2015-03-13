@@ -351,8 +351,9 @@ Eigen::VectorXd TNTRWConstraint::getXd(const Transform3D<> &wTparent, const Tran
 	const Vector3D<> linVelP = velP.linear();
 	const Vector3D<> linVelC = velC.linear();
 	const Vector3D<> angVelC = velC.angular().angle()*velC.angular().axis();
-	const Vector3D<> angVelCon = getVelocityParentW(tntstate,rwstate).linear();
-	const VelocityScrew6D<> relVelP(linVelC-linVelP, EAA<>(angVelC-angVelCon));
+	const EAA<> angVelCon = getVelocityParentW(tntstate,rwstate).angular();
+	const Vector3D<> angVelConVec = angVelCon.angle()*angVelCon.axis();
+	const VelocityScrew6D<> relVelP(linVelC-linVelP, EAA<>(angVelC-angVelConVec));
 	const VelocityScrew6D<> relVelCon(inverse(wTconstraint.R())*relVelP);
 	Eigen::VectorXd XcurD(_spring->linComp+_spring->angComp);
 	unsigned int redI = 0;

@@ -28,9 +28,10 @@ TNTFrictionModelCoulomb::TNTFrictionModelCoulomb():
 {
 }
 
-TNTFrictionModelCoulomb::TNTFrictionModelCoulomb(const PropertyMap &map):
-	_mu(map.get<double>("mu",0))
-{
+TNTFrictionModelCoulomb::TNTFrictionModelCoulomb(const PropertyMap &map) {
+	_mu = map.get<double>("mu",-1);
+	if (_mu < 0)
+		_mu = map.get<double>("Mu",-1);
 }
 
 TNTFrictionModelCoulomb::TNTFrictionModelCoulomb(double mu):
@@ -47,7 +48,7 @@ const TNTFrictionModel* TNTFrictionModelCoulomb::withProperties(const PropertyMa
 	return new TNTFrictionModelCoulomb(map);
 }
 
-TNTFrictionModel::Values TNTFrictionModelCoulomb::getRestitution(const TNTContact& contact, const TNTIslandState& tntstate, const State& rwstate) const {
+TNTFrictionModel::Values TNTFrictionModelCoulomb::getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const State& rwstate) const {
 	Values res;
 	if (_mu > 0) {
 		res.enableTangent = true;
