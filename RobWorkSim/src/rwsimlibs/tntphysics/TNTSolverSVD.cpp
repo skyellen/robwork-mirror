@@ -18,27 +18,23 @@
 #include "TNTSolverSVD.hpp"
 
 #include "TNTSettings.hpp"
-#include "TNTBodyConstraintManager.hpp"
-#include "TNTConstraint.hpp"
-#include "TNTRigidBody.hpp"
-#include "TNTIslandState.hpp"
 
 #include <boost/foreach.hpp>
 
-using namespace rw::kinematics;
+using namespace rw::common;
 using namespace rw::math;
 using namespace rwsimlibs::tntphysics;
 
-#include <rwsim/dynamics/Body.hpp>
+#define PROPERTY_SVD_PRECISION "TNTSolverSVDPrecision"
+#define PROPERTY_ENABLE_DEBUG "TNTSolverDebug"
 
 TNTSolverSVD::TNTSolverSVD():
-	_manager(NULL)
+	TNTSolver(NULL,Vector3D<>::zero())
 {
 }
 
 TNTSolverSVD::TNTSolverSVD(const TNTBodyConstraintManager* manager, const Vector3D<double> &gravity):
-	_manager(manager),
-	_gravity(gravity)
+	TNTSolver(manager,gravity)
 {
 }
 
@@ -49,113 +45,56 @@ const TNTSolver* TNTSolverSVD::createSolver(const TNTBodyConstraintManager* mana
 	return new TNTSolverSVD(manager,gravity);
 }
 
-Eigen::VectorXd TNTSolverSVD::solve(double h, const State &rwstate, const TNTIslandState &tntstate) const {
+Eigen::VectorXd TNTSolverSVD::solve(const Eigen::MatrixXd& A, const Eigen::VectorXd& b, const PropertyMap& pmap) const {
 	if (_manager == NULL)
 		RW_THROW("TNTSolverSVD (solve): There is no body-constraint manager set for this solver - please construct a new solver for body-constraint graph to use.");
-	// Allocate new matrix and vector structures
-	Eigen::MatrixXd::Index dimVel = 0;
-	const TNTBodyConstraintManager::ConstraintList constraints = _manager->getConstraints(tntstate);
-	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
-		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
-		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
-		if (dynParent || dynChild) {
-			dimVel += constraint->getDimVelocity()+constraint->getDimWrench();
-		}
-	}
-	Eigen::MatrixXd lhs = Eigen::MatrixXd::Zero(dimVel,dimVel);
-	Eigen::VectorXd rhs = Eigen::VectorXd::Zero(dimVel);
-	TNT_DEBUG_SOLVER("Constructing constraint equation system of dimensions " << dimVel << " x " << dimVel << ".");
 
-	// Construct the matrices
-	dimVel = 0;
-	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
-		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
-		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
-		const Eigen::VectorXd::Index dim = constraint->getDimVelocity()+constraint->getDimWrench();
-		if (dim > 0 && (dynParent || dynChild)) {
-			Eigen::VectorXd aij = constraint->getRHS(h, _gravity, constraints, rwstate, tntstate);
-			rhs.block(dimVel,0,dim,1) = aij;
-			Eigen::MatrixXd::Index dimVelB = 0;
-			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
-				const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity()+constraintB->getDimWrench();
-				if (dimB > 0) {
-					const TNTBody* const cP = constraint->getParent();
-					const TNTBody* const cPB = constraintB->getParent();
-					const TNTBody* const cC = constraint->getChild();
-					const TNTBody* const cCB = constraintB->getChild();
-					if (cP == cPB || cP == cCB || cC == cPB || cC == cCB) {
-						Eigen::MatrixXd B = constraint->getLHS(constraintB, h, rwstate, tntstate);
-						lhs.block(dimVel,dimVelB,dim,dimB) = B;
-					}
-					dimVelB += dimB;
-				}
-			}
-			dimVel += dim;
-		}
+	// First find the properties to use
+	double PRECISION = pmap.get<double>(PROPERTY_SVD_PRECISION,-1.);
+	int DEBUG = pmap.get<int>(PROPERTY_ENABLE_DEBUG,-1.);
+#if !TNT_DEBUG_ENABLE_SOLVER
+	DEBUG = 0;
+#endif
+	if (PRECISION < 0 || (DEBUG != 0 && DEBUG != 1)) {
+		PropertyMap tmpMap;
+		addDefaultProperties(tmpMap);
+		if (PRECISION < 0)
+			PRECISION = tmpMap.get<double>(PROPERTY_SVD_PRECISION,-1.);
+		RW_ASSERT(PRECISION > 0);
+		if (DEBUG < 0)
+			DEBUG = tmpMap.get<int>(PROPERTY_ENABLE_DEBUG,-1.);
+		RW_ASSERT(DEBUG == 0 || DEBUG == 1);
 	}
 
 	// Solution
 	Eigen::VectorXd solution;
-	RW_ASSERT(lhs.rows() == rhs.rows());
-	if (lhs.rows() > 0) {
-		solution = LinearAlgebra::pseudoInverse(lhs,TNT_SVD_PRECISSION)*rhs;
-#ifdef TNT_DEBUG_ENABLE_SOLVER
-		const Eigen::VectorXd residual = lhs*solution-rhs;
-		TNT_DEBUG_SOLVER("Forces & Torques found with norm-2 residual " << residual.norm() << ".");
-		if (residual.norm() > 1e-10)
-			TNT_DEBUG_SOLVER("Forces & Torques found with residuals " << residual.transpose() << ".");
-		std::pair<Eigen::Matrix<std::complex<double>, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<std::complex<double>, Eigen::Dynamic, -1> > dec = LinearAlgebra::eigenDecomposition(lhs);
-		Eigen::VectorXd eigenValues(dec.second.rows());
-		for (Eigen::VectorXd::Index i = 0; i < dec.second.rows(); i++) {
-			const std::complex<double> &complex = dec.second(i,0);
-			eigenValues[i] = complex.real();
+	RW_ASSERT(A.rows() == b.rows());
+	if (A.rows() > 0) {
+		solution = LinearAlgebra::pseudoInverse(A,PRECISION)*b;
+		if (DEBUG == 1) {
+			const Eigen::VectorXd residual = A*solution-b;
+			TNT_DEBUG_SOLVER("Forces & Torques found with norm-2 residual " << residual.norm() << ".");
+			if (residual.norm() > 1e-10)
+				TNT_DEBUG_SOLVER("Forces & Torques found with residuals " << residual.transpose() << ".");
+			/*std::pair<Eigen::Matrix<std::complex<double>, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<std::complex<double>, Eigen::Dynamic, -1> > dec = LinearAlgebra::eigenDecomposition(lhs);
+			Eigen::VectorXd eigenValues(dec.second.rows());
+			for (Eigen::VectorXd::Index i = 0; i < dec.second.rows(); i++) {
+				const std::complex<double> &complex = dec.second(i,0);
+				eigenValues[i] = complex.real();
+			}
+			TNT_DEBUG_SOLVER("Eigenvalues: " << eigenValues.transpose() << ".");*/
+			TNT_DEBUG_SOLVER("LHS: " << std::endl << A);
+			TNT_DEBUG_SOLVER("RHS: " << b.transpose() << ".");
+			TNT_DEBUG_SOLVER("Solution: " << solution.transpose() << ".");
+			TNT_DEBUG_SOLVER("Residual: " << residual.transpose() << ".");
 		}
-		TNT_DEBUG_SOLVER("Eigenvalues: " << eigenValues.transpose() << ".");
-		TNT_DEBUG_SOLVER("RHS: " << rhs.transpose() << ".");
-#endif
 	} else
 		solution = Eigen::VectorXd::Zero(0);
 	return solution;
 }
 
-void TNTSolverSVD::saveSolution(const Eigen::VectorXd& solution, TNTIslandState &state) const {
-	if (_manager == NULL)
-		RW_THROW("TNTSolverSVD (saveSolution): There is no body-constraint manager set for this solver - please construct a new solver for body-constraint graph to use.");
-	std::size_t cI = 0;
-	const TNTBodyConstraintManager::ConstraintList constraints = _manager->getConstraints(state);
-	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
-		// Restore full wrench vectors
-		const std::vector<TNTConstraint::Mode> constraintModes = constraint->getConstraintModes();
-		Vector3D<> velLin, velAng;
-		for (std::size_t i = 0; i < 3; i++) {
-			const TNTConstraint::Mode &mode = constraintModes[i];
-			if (mode == TNTConstraint::Velocity || mode == TNTConstraint::Wrench) {
-				RW_ASSERT((int)cI < solution.rows());
-				velLin[i] = solution[cI];
-				cI ++;
-			}
-		}
-		for (std::size_t i = 3; i < 6; i++) {
-			const TNTConstraint::Mode &mode = constraintModes[i];
-			if (mode == TNTConstraint::Velocity || mode == TNTConstraint::Wrench) {
-				RW_ASSERT((int)cI < solution.rows());
-				velAng[i-3] = solution[cI];
-				cI ++;
-			}
-		}
-		// Rotate back to world frame
-		const Rotation3D<> Rlin = constraint->getLinearRotationParentW(state);
-		const Rotation3D<> Rang = constraint->getAngularRotationParentW(state);
-		const Wrench6D<> wrench(Rlin*velLin,Rang*velAng);
-		state.setWrenchConstraint(constraint,wrench);
-	}
-	TNT_DEBUG_SOLVER("Forces & Torques applied.");
-}
-
-const TNTBodyConstraintManager* TNTSolverSVD::getManager() const {
-	return _manager;
-}
-
-const Vector3D<>& TNTSolverSVD::getGravity() const {
-	return _gravity;
+void TNTSolverSVD::addDefaultProperties(PropertyMap& map) const {
+	TNTSolver::addDefaultProperties(map);
+	map.add<double>(PROPERTY_SVD_PRECISION,"Precision of SVD - used for LinearAlgebra::pseudoInverse.",1e-6);
+	map.add<int>(PROPERTY_ENABLE_DEBUG,"Enable or disable debugging (really slow).",1);
 }

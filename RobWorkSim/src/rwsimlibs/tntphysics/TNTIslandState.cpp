@@ -166,6 +166,10 @@ ContactDetectorTracking TNTIslandState::getContactsTracking() const {
 	return _tracking;
 }
 
+bool TNTIslandState::hasContacts() const {
+	return _contacts.size() > 0;
+}
+
 void TNTIslandState::setContacts(const std::vector<Contact>& contacts, const ContactDetectorTracking& data) {
 	_contacts = contacts;
 	_tracking = data;
@@ -183,6 +187,10 @@ std::list<const TNTConstraint*> TNTIslandState::getTemporaryConstraints(const TN
 			list.insert(list.end(),(*it).second.begin(),(*it).second.end());
 	}
 	return list;
+}
+
+bool TNTIslandState::hasTemporaryConstraints() const {
+	return _tempConstraints.size() > 0;
 }
 
 void TNTIslandState::addTemporaryConstraint(TNTConstraint* constraint) {

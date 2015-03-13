@@ -219,6 +219,7 @@ public:
 	 *  -                       | -      | -             | See TNTCollisionSolverChain::addDefaultProperties for further information on the properties used by collision solvers.
 	 *  TNTContactResolver      | string | Heuristic     | Specifies the TNTContactResolver used (default is TNTContactResolverHeuristic).
 	 *  TNTSolver               | string | SVD           | Specifies the TNTSolver used (default is TNTSolverSVD).
+	 *  -                       | -      | -             | See TNTSolver::addDefaultProperties for further information on the properties used by solvers.
 	 *  TNTRollbackMethod       | string | Ridder        | Specifies the TNTRollbackMethod used (default is TNTRollbackMethodRidder).
 	 *  TNTCorrection           | int    | 1             | Enable or disable correction (default is enabled=1).
 	 *  -                       | -      | -             | See TNTConstraintCorrection::addDefaultProperties for further information on the properties used by correction method.

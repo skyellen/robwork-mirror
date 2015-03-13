@@ -38,7 +38,7 @@ class TNTSolverSVD: public rwsimlibs::tntphysics::TNTSolver {
 public:
 	/**
 	 * @brief Default constructor.
-	 * @note Using solve() or saveSolution() will throw an exception when solver is created like this.
+	 * @note Using solve() will throw an exception when solver is created like this.
 	 */
 	TNTSolverSVD();
 
@@ -56,20 +56,19 @@ public:
 	virtual const TNTSolver* createSolver(const TNTBodyConstraintManager* manager, const rw::math::Vector3D<double> &gravity) const;
 
 	//! @copydoc TNTSolver::solve
-	virtual Eigen::VectorXd solve(double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const;
+	virtual Eigen::VectorXd solve(const Eigen::MatrixXd& A, const Eigen::VectorXd& b, const rw::common::PropertyMap& pmap) const;
 
-	//! @copydoc TNTSolver::saveSolution
-	virtual void saveSolution(const Eigen::VectorXd& solution, TNTIslandState &state) const;
-
-	//! @copydoc TNTSolver::getManager
-	virtual const TNTBodyConstraintManager* getManager() const;
-
-	//! @copydoc TNTSolver::getGravity
-	virtual const rw::math::Vector3D<>& getGravity() const;
-
-private:
-	const TNTBodyConstraintManager* const _manager;
-	const rw::math::Vector3D<> _gravity;
+	/**
+	 * @copybrief TNTSolver::addDefaultProperties
+	 *
+	 *  Property Name          | Type   | Default value | Description
+	 *  ---------------------- | ------ | ------------- | -----------
+	 *  TNTSolverSVDPrecision  | double | \f$10^{-6}\f$ | Precision of SVD - see rw::math::LinearAlgebra::pseudoInverse(const Eigen::MatrixXd&, double) .
+	 *  TNTSolverDebug         | int    | 0             | Enable or disable debugging (really slow).
+	 *
+	 * @param map [in/out] the map to add properties to.
+	 */
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
 };
 //! @}
 } /* namespace tntphysics */

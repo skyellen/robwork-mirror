@@ -292,7 +292,7 @@ void TNTContactResolverHeuristic::solve(const std::vector<TNTContact*>& persiste
 		}
 
 		// Now try to solve
-		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate);
+		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate, pmap);
 		tmpState = tntstate;
 		_solver->saveSolution(solution,tmpState);
 		resState = tmpState;

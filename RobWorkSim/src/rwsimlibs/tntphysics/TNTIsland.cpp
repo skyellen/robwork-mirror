@@ -104,6 +104,9 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
 	TNTCollisionSolver::Factory::makeSolver("Chain")->addDefaultProperties(map);
 	map.add<std::string>("TNTSolver","Default constraint solver.","SVD");
+	const TNTSolver* const solver = TNTSolver::Factory::makeSolver("SVD",NULL,Vector3D<>::zero());
+	solver->addDefaultProperties(map);
+	delete solver;
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
 	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
 	TNTContactResolver::Factory::makeResolver("Heuristic",NULL)->addDefaultProperties(map);
@@ -240,9 +243,7 @@ void TNTIsland::initPhysics(State& state) {
 	if (_state != NULL)
 		delete _state;
 	_state = new TNTIslandState();
-	if (!(_dwc == NULL)) {
-		_bc->initFromDWC(_dwc);
-	}
+	_bc->initFromDWC(_dwc);
 	if (_bp != NULL)
 		delete _bp;
 	_bp = new TNTBroadPhase(_dwc);
@@ -376,7 +377,7 @@ void TNTIsland::doStep(double dt, State& state) {
 	TNT_DEBUG_DELIMITER()
 	TNT_DEBUG_GENERAL("Time: " << _state->getTime())
 
-	if (_state->getContacts().size() > 0) {
+	if (_state->hasContacts()) {
 		const std::size_t rawNo = TNTUtil::getMarkedContacts(_state->getContacts(),_state->getContactsTracking(),TNTUtil::MARK_RAW).size();
 		const std::size_t newNo = TNTUtil::getMarkedContacts(_state->getContacts(),_state->getContactsTracking(),TNTUtil::MARK_NEW).size();
 		const std::size_t remaining = _state->getContacts().size()-rawNo-newNo;
@@ -457,15 +458,11 @@ void TNTIsland::doStep(double dt, State& state) {
 		TNTUtil::mark(sampleH.forwardContacts,sampleH.forwardTrack,TNTUtil::MARK_RAW,TNTUtil::MARK_NEW);
 	}
 
-	int enableRollback = 1;
+	int enableRollback;
 	if (_map.has("TNTRollback"))
 		enableRollback = _map.get<int>("TNTRollback");
 	else
 		enableRollback = _defaultMap.get<int>("TNTRollback");
-
-#if !TNT_ENABLE_ROLLBACK
-	enableRollback = 0;
-#endif
 
 	if (enableRollback == 0) {
 		// Store the results & update RobWork stateTNTRollback
@@ -862,8 +859,7 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 
 	const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 
-#if TNT_ENABLE_CONSTRAINT_CORRECTION
-	int enableCorrection = 1;
+	int enableCorrection;
 	if (_map.has("TNTCorrection"))
 		enableCorrection = _map.get<int>("TNTCorrection");
 	else
@@ -928,7 +924,6 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 #endif
 		TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,sample.tntstate,sample.rwstate);
 	}
-#endif
 
 	const TNTIslandState& tntstate = sample.tntstate;
 	*_state = tntstate;

@@ -195,6 +195,12 @@ public:
 	virtual rwsim::contacts::ContactDetectorTracking getContactsTracking() const;
 
 	/**
+	 * @brief Check if there are any contacts stored in state.
+	 * @return true if there are contacts, false if not.
+	 */
+	virtual bool hasContacts() const;
+
+	/**
 	 * @brief Set the list of contacts.
 	 * @param contacts [in] list of contacts.
 	 * @param data [in] the tracking data.
@@ -219,6 +225,12 @@ public:
 	 * @return list of constraints for body.
 	 */
 	std::list<const TNTConstraint*> getTemporaryConstraints(const TNTBody* body) const;
+
+	/**
+	 * @brief Check if any contacts are currently registered in the state.
+	 * @return true if there are contact constraints, false if not.
+	 */
+	bool hasTemporaryConstraints() const;
 
 	/**
 	 * @brief Add a new temporary constraint.

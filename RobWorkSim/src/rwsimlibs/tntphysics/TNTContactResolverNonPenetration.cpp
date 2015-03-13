@@ -181,7 +181,7 @@ void TNTContactResolverNonPenetration::solve(const std::vector<TNTContact*>& per
 		// Now try to solve and check if the solution is valid
 		iterations++;
 		repeat = false;
-		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate);
+		const Eigen::VectorXd solution = _solver->solve(h, rwstate, tntstate, pmap);
 		tmpState = tntstate;
 		_solver->saveSolution(solution,tmpState);
 		resState = tmpState;

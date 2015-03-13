@@ -63,28 +63,56 @@ public:
 	 * @param h [in] the timestep to solve for.
 	 * @param rwstate [in] the current state.
 	 * @param tntstate [in] the current TNTIslandState.
+	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
 	 * @return a raw vector with the solution.
 	 */
-	virtual Eigen::VectorXd solve(double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate) const = 0;
+	virtual Eigen::VectorXd solve(double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate, const rw::common::PropertyMap& pmap) const;
+
+	/**
+	 * @brief Solve the dynamics.
+	 *
+	 * The dynamics problem is often written as a complementarity problem \f${\bf A} {\bf f} \geq {\bf b}\f$ where \f${\bf f} \geq {\bf 0}\f$.
+	 * This is an equation for the contact and constraint velocities given the interaction forces and torques, \f${\bf f}\f$.
+	 *
+	 * @param A [in] the system matrix on the left hand side of the equation system. This matrix must be symmetric and Positive Semi-definite.
+	 * @param b [in] the right hand side of the equation system.
+	 * @param pmap [in] properties to use - see #addDefaultProperties for details.
+	 * @return the vector \f${\bf f}\f$.
+	 */
+	virtual Eigen::VectorXd solve(const Eigen::MatrixXd& A, const Eigen::VectorXd& b, const rw::common::PropertyMap& pmap) const = 0;
 
 	/**
 	 * @brief Save the forces and torques obtained with solve() to the state.
 	 * @param solution [in] the force/torque vector.
 	 * @param state [in/out] the state.
 	 */
-	virtual void saveSolution(const Eigen::VectorXd& solution, TNTIslandState &state) const = 0;
+	virtual void saveSolution(const Eigen::VectorXd& solution, TNTIslandState &state) const;
 
 	/**
 	 * @brief Get the body-constraint manager used by the solver.
 	 * @return a pointer to a constant TNTBodyConstraintManager - NOT owned by caller.
 	 */
-	virtual const TNTBodyConstraintManager* getManager() const = 0;
+	virtual const TNTBodyConstraintManager* getManager() const;
 
 	/**
 	 * @brief Get gravity used by the solver.
 	 * @return a reference to the gravity.
 	 */
-	virtual const rw::math::Vector3D<>& getGravity() const = 0;
+	virtual const rw::math::Vector3D<>& getGravity() const;
+
+	/**
+	 * @brief Add the default properties to the given map.
+	 *
+	 * Please look at the documentation for the specific implementations of this function to get information about
+	 * the required properties for these implementations.
+	 *
+	 *  Property Name   | Type   | Default value | Description
+	 *  --------------- | ------ | ------------- | -----------
+	 *  TNTSolverDebug  | int    | 0             | Enable or disable debugging (really slow).
+	 *
+	 * @param map [in/out] the map to add the default properties to.
+	 */
+	virtual void addDefaultProperties(rw::common::PropertyMap& map) const;
 
 	/**
 	 * @addtogroup extensionpoints
@@ -127,7 +155,12 @@ public:
     };
 
 protected:
-	TNTSolver() {};
+	TNTSolver(const TNTBodyConstraintManager* manager, const rw::math::Vector3D<double> &gravity);
+	const TNTBodyConstraintManager* const _manager;
+	const rw::math::Vector3D<> _gravity;
+
+private:
+	void getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h, const rw::kinematics::State &rwstate, const TNTIslandState &tntstate, bool debug) const;
 };
 //! @}
 } /* namespace tntphysics */

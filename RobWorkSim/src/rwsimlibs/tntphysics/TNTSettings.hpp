@@ -31,14 +31,8 @@
 // Constraint settings
 #define TNT_SPRING_EIGENVALUE_SQRT_THRESHOLD 1e-6
 
-// Solver settings
-#define TNT_SVD_PRECISSION 1e-8
-
 // Rollback
-#define TNT_ENABLE_ROLLBACK 1
-
-// Constraint Correction
-#define TNT_ENABLE_CONSTRAINT_CORRECTION 1
+#define TNT_ROLLBACK_THRESHOLD 1e-5
 
 // Iterations
 #define TNT_MAX_ITERATIONS 10
@@ -185,15 +179,15 @@
 #endif
 
 // Time Measurement Macros
-#ifdef TNT_DEBUG_ENABLE_TIMING
-#define TNT_TIMING( str, func )										\
-    {																\
-		const long start = rw::common::TimerUtil::currentTimeMs();	\
-		func;														\
-		const long end = rw::common::TimerUtil::currentTimeMs();	\
-		if (end-start > TNT_DEBUG_TIMING_LIMIT) {					\
-    		TNT_DEBUG_TIMING(str <<": " << (end-start) <<" ms")		\
-    	}															\
+#if TNT_DEBUG_ENABLE_TIMING
+#define TNT_TIMING( str, func )										    \
+    {																    \
+		const long long start = rw::common::TimerUtil::currentTimeUs();	\
+		func;														    \
+		const long long end = rw::common::TimerUtil::currentTimeUs();	\
+		if (end-start >= TNT_DEBUG_TIMING_LIMIT) {					    \
+    		TNT_DEBUG_TIMING(str <<": " << (end-start) <<" us")		    \
+    	}															    \
     }
 #else
 #define TNT_TIMING( str, func ) {func;}
