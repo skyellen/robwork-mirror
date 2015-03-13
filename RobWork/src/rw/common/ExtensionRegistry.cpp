@@ -57,7 +57,17 @@ std::vector<rw::common::Ptr<Plugin> > ExtensionRegistry::getPlugins() const {
 
 
 void ExtensionRegistry::registerExtensions(rw::common::Ptr<Plugin> plugin){
+	// make sure plugins with same id does not add duplicates of extension points
 	BOOST_FOREACH(Extension::Descriptor desc, plugin->getExtensionDescriptors()){
+		if(_descMap.find(desc.point)!=_descMap.end() ){
+			// check if plugin/extension allready exists
+			std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > > &res = _descMap[desc.point];
+			for(int i=0;i<res.size();i++){
+				if(res[i].first.id == desc.id && res[i].second->getId() == plugin->getId()){
+					continue;
+				}
+			}
+		}
 		_descMap[desc.point].push_back( std::make_pair( desc , plugin ) );
 	}
 	_plugins.push_back( plugin );

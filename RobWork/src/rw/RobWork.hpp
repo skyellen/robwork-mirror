@@ -121,6 +121,7 @@ public:
 private:
     rw::common::PropertyMap _settings;
     std::string _settingsFile;
+    std::map<std::string, std::time_t> _pluginChangedMap;
 };
 
 } //end namespace rw
