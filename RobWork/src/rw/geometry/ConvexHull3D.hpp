@@ -77,7 +77,7 @@ namespace geometry {
 		 * @brief create a plain trimesh from the hull facets
 		 * @return the hull facets as a plain triangle mesh with normal information
 		 */
-		virtual rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<> >* toTriMesh() = 0;
+		virtual rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<> >::Ptr toTriMesh() = 0;
 
 	};
 

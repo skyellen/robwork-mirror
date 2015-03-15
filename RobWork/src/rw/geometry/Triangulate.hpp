@@ -41,25 +41,42 @@ namespace geometry {
         //static PlainTriMeshN0D triangulatePolygon(const std::vector< rw::math::Vector3D<> >& points)
 
         /**
-         * @brief
-         * @param points
-         * @return
+         * @brief Triangulates the polygon described by \bpoints
+		 * 
+		 * The polygon need to be simple (no edges crossing and no holes). Both convex and concave polygons are supported
+		 *
+         * @param points [in] Points of the polygon
+         * @param result [in] Indices of the vertices defining the triangles. The corners of the n'th triangle is the points with indices result[3*n], result[3*n+1] and result[3*n+2]
          */
         static bool processPoints(const std::vector<rw::math::Vector2D<> >& points, std::vector<int>& result);
 
-        // compute area of a contour/polygon
+        /**
+         * @brief Triangulates the polygon described by \bpoints
+		 * 
+		 * The polygon need to be simple (no edges crossing and no holes). Both convex and concave polygons are supported
+		 *
+         * @param points [in] Points of the polygon
+         * @param result [in] Indices of the vertices defining the triangles. The corners of the n'th triangle is the points with indices result[3*n], result[3*n+1] and result[3*n+2]
+         */
+		static bool processPoints(const std::vector< rw::math::Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria = 1e-5);
+
+        /**
+		 * @brief Computes area of the polygon defined by \bcontour
+		 */
         static double calcArea(const std::vector<rw::math::Vector2D<> > &contour);
 
-        // decide if point Px/Py is inside triangle defined by
-        // (Ax,Ay) (Bx,By) (Cx,Cy)
-        static bool insideTriangle2D(
+		/**
+		 * @brief Checks if the point (Px,Py) is inside the triangle (Ax,Ay), (Bx,By), (Cx,Cy)
+		 */
+		static bool insideTriangle2D(
             float Ax, float Ay,
             float Bx, float By,
             float Cx, float Cy,
             float Px, float Py);
 
     private:
-        static bool snip(
+
+		static bool snip(
             const std::vector<rw::math::Vector2D<> > &contour,
             int u,
             int v,

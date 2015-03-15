@@ -153,7 +153,7 @@ namespace geometry {
         } else {
             // build the convex hull
             hullgen.rebuild(mesh->getVertices() );
-            pmesh = rw::common::ownedPtr(hullgen.toTriMesh());
+            pmesh = hullgen.toTriMesh();
         }
 
         //std::cout << "\nMesh size: " << mesh.size() << "\n";

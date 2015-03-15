@@ -20,8 +20,12 @@
 #include <cstring>
 #include <cassert>
 
-#include "Triangulate.hpp"
+#include <boost/foreach.hpp>
 
+#include "Triangulate.hpp"
+#include "Plane.hpp"
+
+using namespace rw::math;
 using namespace rw::geometry;
 
 static const float EPSILON = 0.0000000001f;
@@ -95,6 +99,44 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
 }
 
 
+bool Triangulate::processPoints(const std::vector< Vector3D<> >& contour, std::vector<int>& result, double colinearCriteria) {
+	//Compute plane of the contour 
+	if (contour.size() < 3) {
+		return false;
+	}
+
+	Vector3D<> v1 = normalize(contour[1]-contour[0]);
+	Vector3D<> v2;
+	size_t i = 2;
+	do {
+		v2 = normalize(contour[i]-contour[0]);
+		i++;
+	} while (fabs(dot(v1, v2) - 1) < colinearCriteria && i<contour.size());
+	if (i == contour.size()) {
+		RW_THROW("The points on the contour appears to be colinear");
+	}
+	
+	Vector3D<> normal = Math::abs(cross(v1, v2));
+	int maxIdx = 0;
+	if (normal[0] > normal[1] && normal[0] > normal[2]) {
+		maxIdx = 0;	
+	}
+	else if (normal[1] > normal[0] && normal[1] > normal[2]) {	
+		maxIdx = 1;
+	}
+	else {
+		maxIdx = 2;
+	}
+	
+	std::vector<Vector2D<> > contour2D;
+	BOOST_FOREACH(const Vector3D<>& p3d, contour) {
+		contour2D.push_back(Vector2D<>(p3d[(maxIdx+1) % 3], p3d[(maxIdx+2) % 3]));
+	}
+
+	return processPoints(contour2D, result);
+
+}
+
 bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& contour, std::vector<int>& result)
 //bool Triangulate::Process(const Vector2DVector &contour,Vector2DVector &result)
 {
@@ -103,7 +145,7 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
     int n = (int)contour.size();
 
     if ( n < 3 ){
-    	rw::common::Log::debugLog() << "bad poly size" << std::endl;
+    	//rw::common::Log::debugLog() << "Triangulate::processPoints has recieved polygon with less than 3 vertices" << std::endl;
     	return false;
     }
 
@@ -111,10 +153,16 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
 
     /* we want a counter-clockwise polygon in V */
 
-    if ( 0.0f < calcArea(contour) )
-        for (int v=0; v<n; v++) V[v] = v;
-    else
-        for(int v=0; v<n; v++) V[v] = (n-1)-v;
+    if ( 0.0f < calcArea(contour) ) {
+        for (int v=0; v<n; v++) {
+			V[v] = v;
+		}
+	}
+    else {
+        for(int v=0; v<n; v++) {
+			V[v] = (n-1)-v;
+		}
+	}
 
     int nv = n;
 
@@ -128,14 +176,23 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
         {
             //** Triangulate: ERROR - probable bad polygon!
         	delete[] V;
-        	rw::common::Log::debugLog() << "bad poly" << std::endl;
+        	rw::common::Log::debugLog() << "Triangulate::processPoints appear to have received a non-simple polygon" << std::endl;
             return false;
         }
 
         /* three consecutive vertices in current polygon, <u,v,w> */
-        int u = v  ; if (nv <= u) u = 0;     /* previous */
-        v = u+1; if (nv <= v) v = 0;     /* new v    */
-        int w = v+1; if (nv <= w) w = 0;     /* next     */
+        int u = v; 
+		if (nv <= u) {
+			u = 0;     /* previous */
+		}
+        v = u+1; 
+		if (nv <= v) {
+			v = 0;     /* new v    */
+		}
+        int w = v+1; 
+		if (nv <= w)  {
+			w = 0;     /* next     */
+		}
 
         if ( snip(contour,u,v,w,nv,V) )
         {
@@ -152,7 +209,10 @@ bool Triangulate::processPoints(const std::vector< rw::math::Vector2D<> >& conto
             m++;
 
             /* remove v from remaining polygon */
-            for(s=v,t=v+1;t<nv;s++,t++) V[s] = V[t]; nv--;
+            for(s=v,t=v+1;t<nv;s++,t++) {
+				V[s] = V[t]; 
+			}
+			nv--;
 
             /* resest error detection counter */
             count = 2*nv;

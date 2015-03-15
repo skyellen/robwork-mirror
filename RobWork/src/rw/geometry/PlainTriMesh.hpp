@@ -83,11 +83,29 @@ namespace geometry {
 
 		/**
 		 * @brief add a triangle to the triangle mesh.
+		 * @param triangle [in] Triangle to add. The triangle is copied.
 		 */
 		void add(const TRI& triangle){
 			_triangles.push_back(triangle);
 		}
 
+		/**
+		 * @brief Add all triangles in the mesh \b triangles to this
+		 * @param [in] Triangle mesh for which to add triangles
+		 */
+		void add(typename PlainTriMesh<TRI>::Ptr triangles) {
+			_triangles.insert(_triangles.end(), triangles->_triangles.begin(), triangles->_triangles.end());
+		}
+
+
+
+
+		/**
+		 * @brief Clears the list of triangles
+		 */
+		void clear() {
+			_triangles.clear();
+		}
 		/**
 		 * @brief the vector of triangles
 		 * @return a reference to the triangle vector

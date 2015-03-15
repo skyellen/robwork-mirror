@@ -40,30 +40,30 @@ using namespace rw::math;
 TriMesh::Ptr Pyramid::createMesh(int resolution) const{
     rw::geometry::PlainTriMeshF::Ptr mesh = ownedPtr( new rw::geometry::PlainTriMeshF( 6 ) );
     // the bottom two triangles
-    (*mesh)[0].getVertex(0) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
-    (*mesh)[0].getVertex(1) = Vector3D<float>(-_widthX/2, _widthY/2,0);
-    (*mesh)[0].getVertex(2) = Vector3D<float>( _widthX/2, _widthY/2,0);
+    (*mesh)[0].getVertex(0) = Vector3D<float>(static_cast<float>(-_widthX/2.0),static_cast<float>(-_widthY/2), 0);
+    (*mesh)[0].getVertex(1) = Vector3D<float>(static_cast<float>(-_widthX/2.0), static_cast<float>((float)_widthY/2.0), 0);
+    (*mesh)[0].getVertex(2) = Vector3D<float>(static_cast<float>(_widthX/2.0), static_cast<float>(_widthY/2), 0);
 
-    (*mesh)[1].getVertex(0) = Vector3D<float>( _widthX/2, _widthY/2,0);
-    (*mesh)[1].getVertex(1) = Vector3D<float>( _widthX/2,-_widthY/2,0);
-    (*mesh)[1].getVertex(2) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+    (*mesh)[1].getVertex(0) = Vector3D<float>(static_cast<float>(_widthX/2.0),static_cast<float>( _widthY/2), 0);
+    (*mesh)[1].getVertex(1) = Vector3D<float>(static_cast<float>(_widthX/2.0),static_cast<float>(-_widthY/2), 0);
+    (*mesh)[1].getVertex(2) = Vector3D<float>(static_cast<float>(-_widthX/2.0),static_cast<float>(-_widthY/2.0), 0);
 
     // the four sides
-    (*mesh)[2].getVertex(0) = Vector3D<float>( 0, 0, _height);
-    (*mesh)[2].getVertex(1) = Vector3D<float>( _widthX/2,-_widthY/2,0);
-    (*mesh)[2].getVertex(2) = Vector3D<float>( _widthX/2, _widthY/2,0);
+    (*mesh)[2].getVertex(0) = Vector3D<float>( 0, 0, static_cast<float>(_height));
+    (*mesh)[2].getVertex(1) = Vector3D<float>(static_cast<float>(_widthX/2.0),static_cast<float>(-_widthY/2.0), 0);
+    (*mesh)[2].getVertex(2) = Vector3D<float>(static_cast<float>(_widthX/2.0),static_cast<float>(_widthY/2.0), 0);
 
-    (*mesh)[3].getVertex(0) = Vector3D<float>( 0, 0, _height);
-    (*mesh)[3].getVertex(1) = Vector3D<float>( _widthX/2, _widthY/2,0);
-    (*mesh)[3].getVertex(2) = Vector3D<float>(-_widthX/2, _widthY/2,0);
+    (*mesh)[3].getVertex(0) = Vector3D<float>( 0, 0, static_cast<float>(_height));
+    (*mesh)[3].getVertex(1) = Vector3D<float>(static_cast<float>(_widthX/2.0), static_cast<float>(_widthY/2.0), 0);
+    (*mesh)[3].getVertex(2) = Vector3D<float>(static_cast<float>(-_widthX/2.0), static_cast<float>(_widthY/2.0), 0);
 
-    (*mesh)[4].getVertex(0) = Vector3D<float>( 0, 0, _height);
-    (*mesh)[4].getVertex(1) = Vector3D<float>(-_widthX/2, _widthY/2,0);
-    (*mesh)[4].getVertex(2) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
+    (*mesh)[4].getVertex(0) = Vector3D<float>( 0, 0, static_cast<float>(_height));
+    (*mesh)[4].getVertex(1) = Vector3D<float>(static_cast<float>(-_widthX/2.0), static_cast<float>(_widthY/2.0), 0);
+    (*mesh)[4].getVertex(2) = Vector3D<float>(static_cast<float>(-_widthX/2.0), static_cast<float>(-_widthY/2.0), 0);
 
-    (*mesh)[5].getVertex(0) = Vector3D<float>( 0, 0, _height);
-    (*mesh)[5].getVertex(1) = Vector3D<float>(-_widthX/2,-_widthY/2,0);
-    (*mesh)[5].getVertex(2) = Vector3D<float>( _widthX/2,-_widthY/2,0);
+    (*mesh)[5].getVertex(0) = Vector3D<float>( 0, 0, static_cast<float>(_height));
+    (*mesh)[5].getVertex(1) = Vector3D<float>(static_cast<float>(-_widthX/2.0), static_cast<float>(-_widthY/2.0), 0);
+    (*mesh)[5].getVertex(2) = Vector3D<float>(static_cast<float>( _widthX/2.0), static_cast<float>(-_widthY/2.0), 0);
 
     return mesh;
 }

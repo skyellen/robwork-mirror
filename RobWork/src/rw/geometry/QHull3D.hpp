@@ -40,6 +40,8 @@ namespace geometry {
 	 */
 	class QHull3D: public ConvexHull3D {
 	public:
+		//! smart pointer type of this class
+		typedef rw::common::Ptr<QHull3D> Ptr;
 
 	    /**
 		 * @brief constructor
@@ -64,9 +66,30 @@ namespace geometry {
         double getMinDistInside(const rw::math::Vector3D<>& vertex);
 
         //! @copydoc ConvexHull3D::toTriMesh
-        rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >* toTriMesh();
+        rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >::Ptr toTriMesh();
 
-        const std::vector<rw::math::Vector3D<> >& getVertices() const {return _hullVertices;};
+		/**
+		 * @brief Returns the vertices defining the convex hull
+		 */
+        const std::vector<rw::math::Vector3D<> >& getVertices() const 
+		{
+			return _hullVertices;
+		};
+
+		/**
+		 * @brief Returns the normals of the planes defining the convex hull
+		 */
+		const std::vector<rw::math::Vector3D<> >& getPlaneNormals() const 
+		{
+			return _faceNormals;
+		}
+
+		/**
+		 * @brief Returns the offsets of the planes defining the convex hull
+		 */
+		const std::vector<double>& getPlaneOffsets() const {
+			return _faceOffsets;
+		}
 	private:
         std::vector<rw::math::Vector3D<> > _hullVertices, _faceNormals;
         std::vector<double> _faceOffsets;
