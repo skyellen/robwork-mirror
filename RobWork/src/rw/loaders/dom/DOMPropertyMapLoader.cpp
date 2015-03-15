@@ -134,7 +134,8 @@ PropertyMap DOMPropertyMapLoader::load(std::istream& instream, const std::string
     // todo: add schema load to interface
     parser->load(instream);
     DOMElem::Ptr elementRoot = parser->getRootElement();
-    PropertyMap map = readProperties(elementRoot);
+    DOMElem::Ptr pmapRoot = elementRoot->getChild("PropertyMap",false);
+    PropertyMap map = readProperties(pmapRoot);
     //map.set<std::string>("PropertyMapFileName", "");
     return map;
 }
@@ -144,7 +145,8 @@ PropertyMap DOMPropertyMapLoader::load(const std::string& filename, const std::s
     // todo: add schema load to interface
     parser->load(filename);
     DOMElem::Ptr elementRoot = parser->getRootElement();
-    PropertyMap map = readProperties(elementRoot);
+    DOMElem::Ptr pmapRoot = elementRoot->getChild("PropertyMap",false);
+    PropertyMap map = readProperties(pmapRoot);
     //map.set<std::string>("PropertyMapFileName", filename);
     return map;
 }
