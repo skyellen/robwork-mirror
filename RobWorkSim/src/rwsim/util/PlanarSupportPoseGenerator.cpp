@@ -212,7 +212,7 @@ void PlanarSupportPoseGenerator::analyze(const rw::geometry::TriMesh& mesh){
 
 void PlanarSupportPoseGenerator::doAnalysis(){
 
-	PlainTriMesh<TriangleN1<> > *fmesh = _hullGenerator->toTriMesh();
+	PlainTriMesh<TriangleN1<> >::Ptr fmesh = _hullGenerator->toTriMesh();
 	IndexedTriMeshN0<>::Ptr imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*fmesh);
 
 	STLFile::save(*fmesh,"hull_mesh.stl");
