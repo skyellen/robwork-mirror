@@ -209,7 +209,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 						lhs(constraintID,bodyId+0) = dir[0];
 						lhs(constraintID,bodyId+1) = dir[1];
 						lhs(constraintID,bodyId+2) = dir[2];
-						const Vector3D<> ang(-dir.e().transpose()*Math::skew(rij-Ri));
+						const Vector3D<> ang(-Math::skew(rij-Ri).transpose()*dir.e());
 						lhs(constraintID,bodyId+3) = ang[0];
 						lhs(constraintID,bodyId+4) = ang[1];
 						lhs(constraintID,bodyId+5) = ang[2];
@@ -239,7 +239,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 						lhs(constraintID,bodyId+0) = -dir[0];
 						lhs(constraintID,bodyId+1) = -dir[1];
 						lhs(constraintID,bodyId+2) = -dir[2];
-						const Vector3D<> ang(dir.e().transpose()*Math::skew(rji-Rj));
+						const Vector3D<> ang(Math::skew(rji-Rj).transpose()*dir.e());
 						lhs(constraintID,bodyId+3) = ang[0];
 						lhs(constraintID,bodyId+4) = ang[1];
 						lhs(constraintID,bodyId+5) = ang[2];
