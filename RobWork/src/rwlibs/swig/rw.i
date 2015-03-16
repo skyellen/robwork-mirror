@@ -382,7 +382,7 @@ public:
     virtual bool isInside(const Vector3D& vertex) = 0;
     virtual double getMinDistInside(const Vector3D& vertex) = 0;
     virtual double getMinDistOutside(const Vector3D& vertex) = 0;
-    virtual PlainTriMeshN1* toTriMesh() = 0;
+    virtual rw::common::Ptr<PlainTriMeshN1> toTriMesh() = 0;
 };
 
 
