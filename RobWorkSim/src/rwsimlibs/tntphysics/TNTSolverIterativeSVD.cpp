@@ -30,6 +30,7 @@ using namespace rwsimlibs::tntphysics;
 #define PROPERTY_ITERATIVESVD_PRECISION "TNTSolverIterativeSVDPrecision"
 #define PROPERTY_ITERATIVESVD_ITERATIONS "TNTSolverIterativeSVDIterations"
 #define PROPERTY_ITERATIVESVD_ALPHA "TNTSolverIterativeSVDAlpha"
+#define PROPERTY_ITERATIVESVD_ALPHA_THRESHOLD "TNTSolverIterativeSVDAlphaThreshold"
 #define PROPERTY_ENABLE_DEBUG "TNTSolverDebug"
 
 TNTSolverIterativeSVD::TNTSolverIterativeSVD():
@@ -57,12 +58,13 @@ Eigen::VectorXd TNTSolverIterativeSVD::solve(const Eigen::MatrixXd& A, const Eig
 	double SVD_PRECISION = pmap.get<double>(PROPERTY_SVD_PRECISION,-1.);
 	double PRECISION = pmap.get<double>(PROPERTY_ITERATIVESVD_PRECISION,-1.);
 	double ALPHA = pmap.get<double>(PROPERTY_ITERATIVESVD_ALPHA,0.01);
+	double ALPHA_THRESHOLD = pmap.get<double>(PROPERTY_ITERATIVESVD_ALPHA_THRESHOLD,0.01);
 	int ITERATIONS = pmap.get<int>(PROPERTY_ITERATIVESVD_ITERATIONS,-1.);
 	int DEBUG = pmap.get<int>(PROPERTY_ENABLE_DEBUG,-1.);
 #if !TNT_DEBUG_ENABLE_SOLVER
 	DEBUG = 0;
 #endif
-	if (SVD_PRECISION < 0 || PRECISION < 0 || ALPHA < 0 || ITERATIONS < 0 || (DEBUG != 0 && DEBUG != 1)) {
+	if (SVD_PRECISION < 0 || PRECISION < 0 || ALPHA < 0 || ALPHA_THRESHOLD < 0 || ITERATIONS < 0 || (DEBUG != 0 && DEBUG != 1)) {
 		PropertyMap tmpMap;
 		addDefaultProperties(tmpMap);
 		if (SVD_PRECISION < 0)
@@ -74,6 +76,9 @@ Eigen::VectorXd TNTSolverIterativeSVD::solve(const Eigen::MatrixXd& A, const Eig
 		if (ALPHA < 0)
 			ALPHA = tmpMap.get<double>(PROPERTY_ITERATIVESVD_ALPHA,-1.);
 		RW_ASSERT(ALPHA >= 0);
+		if (ALPHA_THRESHOLD < 0)
+			ALPHA_THRESHOLD = tmpMap.get<double>(PROPERTY_ITERATIVESVD_ALPHA_THRESHOLD,-1.);
+		RW_ASSERT(ALPHA_THRESHOLD >= 0);
 		if (ITERATIONS < 0)
 			ITERATIONS = tmpMap.get<int>(PROPERTY_ITERATIVESVD_ITERATIONS,-1.);
 		RW_ASSERT(ITERATIONS > 0);
@@ -123,28 +128,31 @@ Eigen::VectorXd TNTSolverIterativeSVD::solve(const Eigen::MatrixXd& A, const Eig
         Eigen::VectorXd phiP = Eigen::VectorXd::Zero(N-K);
         Eigen::VectorXd sB = -b;
         Eigen::VectorXd sX = Eigen::VectorXd::Zero(N);
-        double err = 2*PRECISION;
+    	Eigen::VectorXd bViolation = sB.cwiseMax(zeroVecN);
+    	Eigen::VectorXd xViolation = sX.cwiseMax(zeroVecN);
+        double fObj = 0.5*(bViolation.dot(bViolation)+xViolation.dot(xViolation));
+        //double err = 2*PRECISION;
+        double a = ALPHA;
         int k = 0;
-        for (; k < ITERATIONS && err > PRECISION; k++) {
-        	const Eigen::VectorXd bViolation = sB.cwiseMax(zeroVecN);
-        	const Eigen::VectorXd xViolation = sX.cwiseMax(zeroVecN);
-        	const Eigen::VectorXd dsB = -bViolation+ALPHA*(-sB).cwiseMax(zeroVecN);
-        	const Eigen::VectorXd dsX = -xViolation+ALPHA*(-sX).cwiseMax(zeroVecN);
-        	//const Eigen::VectorXd dsB = -sB;
-        	//const Eigen::VectorXd dsX = -ALPHA*sX;
+        for (; k < ITERATIONS && fObj > PRECISION; k++) {
+        	if (fObj <= ALPHA_THRESHOLD && a > 0)
+        		a = 0;
+        	bViolation = sB.cwiseMax(zeroVecN);
+        	xViolation = sX.cwiseMax(zeroVecN);
+        	const Eigen::VectorXd dsB = -bViolation+a*(-sB).cwiseMax(zeroVecN);
+        	const Eigen::VectorXd dsX = -xViolation+a*(-sX).cwiseMax(zeroVecN);
         	const Eigen::VectorXd dPhi = Binv*(GsT*dsB+VsT*dsX);
         	const Eigen::VectorXd dPhiP = VsPT*dsX;
         	phi += dPhi;
         	phiP += dPhiP;
         	sB += Gs*dPhi;
         	sX += Vs*dPhi+VsP*dPhiP;
-        	err = dPhi.norm()+dPhiP.norm();
-        	std::cout << "iteration " << k << ": " << err << std::endl;
+        	fObj = dPhi.norm()+dPhiP.norm();
         }
         solution = sX;
 		if (DEBUG == 1) {
 			const Eigen::VectorXd residual = A*solution-b;
-			TNT_DEBUG_SOLVER("Forces & Torques found with error " << err << " after " << k << " of " << ITERATIONS << " iterations.");
+			TNT_DEBUG_SOLVER("Forces & Torques found with error " << fObj << " after " << k << " of " << ITERATIONS << " iterations.");
 			TNT_DEBUG_SOLVER("A dimensions: " << A.rows() << "x" << A.cols() << " - rank " << K << ".");
 			TNT_DEBUG_SOLVER("Solution: " << solution.transpose() << ".");
 			TNT_DEBUG_SOLVER("-B: " << (-b).transpose() << ".");
@@ -159,7 +167,8 @@ void TNTSolverIterativeSVD::addDefaultProperties(PropertyMap& map) const {
 	TNTSolver::addDefaultProperties(map);
 	map.add<double>(PROPERTY_SVD_PRECISION,"Precision of SVD - used for LinearAlgebra::pseudoInverse.",1e-6);
 	map.add<double>(PROPERTY_ITERATIVESVD_PRECISION,"Precision of the method.",1e-6);
-	map.add<int>(PROPERTY_ITERATIVESVD_ITERATIONS,"The maximum number of iterations of the method.",20);
+	map.add<int>(PROPERTY_ITERATIVESVD_ITERATIONS,"The maximum number of iterations of the method.",200);
 	map.add<double>(PROPERTY_ITERATIVESVD_ALPHA,"The alpha parameter which adds the objective of small forces and torques.",0.01);
+	map.add<double>(PROPERTY_ITERATIVESVD_ALPHA_THRESHOLD,"If this precision is achieved, alpha is set to zero.",1e-4);
 	map.add<int>(PROPERTY_ENABLE_DEBUG,"Enable or disable debugging (really slow).",0);
 }

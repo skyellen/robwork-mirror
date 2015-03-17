@@ -61,13 +61,14 @@ public:
 	/**
 	 * @copybrief TNTSolver::addDefaultProperties
 	 *
-	 *  Property Name                   | Type   | Default value | Description
-	 *  ------------------------------- | ------ | ------------- | -----------
-	 *  TNTSolverSVDPrecision           | double | \f$10^{-6}\f$ | Precision of SVD - see rw::math::LinearAlgebra::pseudoInverse(const Eigen::MatrixXd&, double) .
-	 *  TNTSolverIterativeSVDPrecision  | double | \f$10^{-6}\f$ | Precision of the method.
-	 *  TNTSolverIterativeSVDIterations | int    | 20            | The maximum number of iterations of the method.
-	 *  TNTSolverIterativeSVDAlpha      | double | \f$0.01\f$    | The \f$\alpha\f$ parameter which adds the objective of small forces and torques.
-	 *  TNTSolverDebug                  | int    | 0             | Enable or disable debugging (really slow).
+	 *  Property Name                       | Type   | Default value | Description
+	 *  ----------------------------------- | ------ | ------------- | -----------
+	 *  TNTSolverSVDPrecision               | double | \f$10^{-6}\f$ | Precision of SVD - see rw::math::LinearAlgebra::pseudoInverse(const Eigen::MatrixXd&, double) .
+	 *  TNTSolverIterativeSVDPrecision      | double | \f$10^{-6}\f$ | Precision of the method.
+	 *  TNTSolverIterativeSVDIterations     | int    | 200           | The maximum number of iterations of the method.
+	 *  TNTSolverIterativeSVDAlpha          | double | \f$0.01\f$    | The \f$\alpha\f$ parameter which adds the objective of small forces and torques.
+	 *  TNTSolverIterativeSVDAlphaThreshold | double | \f$10^{-4}\f$ | If this precision is achieved, \f$\alpha\f$ is set to zero.
+	 *  TNTSolverDebug                      | int    | 0             | Enable or disable debugging (really slow).
 	 *
 	 * @param map [in/out] the map to add properties to.
 	 */
