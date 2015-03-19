@@ -27,7 +27,8 @@
 #include <rw/graphics/Render.hpp>
 
 namespace rwlibs { namespace opengl {
-
+/** @addtogroup opengl */
+/*@{*/
     /**
      * @brief Render a point cloud
      */	
@@ -139,7 +140,7 @@ namespace rwlibs { namespace opengl {
     };
 
     typedef rw::common::Ptr<RenderPointCloud> RenderPointCloudPtr;
-
+//! @}
 }} // end namespaces
 
 #endif // end include guard

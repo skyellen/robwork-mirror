@@ -25,7 +25,7 @@
 
 namespace rwlibs { namespace opengl {
 
-    /** @addtogroup drawable */
+    /** @addtogroup opengl */
     /*@{*/
     /**
      * @brief texture class that wraps the construction of opengl

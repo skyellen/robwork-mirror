@@ -28,7 +28,7 @@
 namespace rwlibs {
 namespace opengl {
 
-	//! @addtogroup drawable
+	//! @addtogroup opengl
 	// @{
 
 

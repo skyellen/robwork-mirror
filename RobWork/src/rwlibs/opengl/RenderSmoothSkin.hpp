@@ -26,7 +26,7 @@
 
 namespace rwlibs { namespace opengl {
 
-    /** @addtogroup drawable */
+    /** @addtogroup opengl */
     /*@{*/
 	//! @file RenderSmoothSkin.hpp
 

@@ -27,7 +27,8 @@
 #include <rw/graphics/Render.hpp>
 
 namespace rwlibs { namespace opengl {
-
+/** @addtogroup opengl */
+/*@{*/
     /**
      * @brief Render drawing a collection of lines
      */
@@ -64,7 +65,7 @@ namespace rwlibs { namespace opengl {
 
     //! smart pointer to RenderCameraFrustum
     typedef rw::common::Ptr<RenderCameraFrustum> RenderCameraFrustumPtr;
-
+//! @}
 }} // end namespaces
 
 #endif // end include guard

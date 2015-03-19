@@ -338,7 +338,7 @@ namespace {
         };
 
 
-        void setCopyToScan25D( rw::sensor::Image25D::Ptr scan){
+        void setCopyToScan25D( rw::geometry::PointCloud::Ptr scan){
             _scan25 = scan;
             if(scan!=NULL){
                 _renderToDepth = true;
@@ -364,7 +364,7 @@ namespace {
         rw::sensor::Image::ColorCode _color;
         GLuint _fbId,_fbTmpId,_renderColorTmpId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
         rw::sensor::Image::Ptr _img;
-        rw::sensor::Image25D::Ptr _scan25;
+        rw::geometry::PointCloud::Ptr _scan25;
         std::vector<GLfloat> _depthData;
     };
 
@@ -941,13 +941,7 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,const rw::se
     return drawable;
 }
 
-DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,const rw::sensor::Scan2D& scan, int dmask){
-    RenderScan::Ptr render = ownedPtr(new RenderScan(scan));
-    Drawable::Ptr drawable = ownedPtr( new Drawable(render, name, dmask) );
-    return drawable;
-}
-
-DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,const rw::sensor::Image25D& scan, int dmask){
+DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,const rw::geometry::PointCloud& scan, int dmask){
     RenderScan::Ptr render = ownedPtr(new RenderScan(scan));
     Drawable::Ptr drawable = ownedPtr( new Drawable(render, name, dmask) );
     return drawable;

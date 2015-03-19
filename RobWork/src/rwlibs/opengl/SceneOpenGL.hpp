@@ -29,8 +29,6 @@
 
 #include <boost/thread/mutex.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/Scan2D.hpp>
-#include <rw/sensor/Image25D.hpp>
 #include <rw/models/DrawableModelInfo.hpp>
 #include <rw/graphics/SceneGraph.hpp>
 #include <rw/kinematics/FKTable.hpp>
@@ -51,7 +49,7 @@ namespace rw { namespace kinematics { class Frame; class State; }}
 
 namespace rwlibs { namespace opengl {
 
-    /** @addtogroup drawable */
+    /** @addtogroup opengl */
     /*@{*/
 
 
@@ -102,9 +100,7 @@ namespace rwlibs { namespace opengl {
         //! @copydoc SceneGraph::makeDrawable
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image& img, int dmask);
         //! @copydoc SceneGraph::makeDrawable
-        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Scan2D& scan, int dmask);
-        //! @copydoc SceneGraph::makeDrawable
-        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image25D& scan, int dmask);
+        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::geometry::PointCloud& scan, int dmask);
         //! @copydoc SceneGraph::makeDrawable
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const std::string& text);
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask);

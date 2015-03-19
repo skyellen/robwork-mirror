@@ -27,7 +27,8 @@
 #include <rw/graphics/Render.hpp>
 
 namespace rwlibs { namespace opengl {
-
+/** @addtogroup opengl */
+/*@{*/
     /**
      * @brief Render drawing a collection of lines
      */
@@ -125,7 +126,7 @@ namespace rwlibs { namespace opengl {
 
     //! smart pointer to renderlines
     typedef rw::common::Ptr<RenderLines> RenderLinesPtr;
-
+//! @}
 }} // end namespaces
 
 #endif // end include guard
