@@ -32,6 +32,7 @@
 #include <rw/models/DrawableModelInfo.hpp>
 #include <rw/graphics/SceneGraph.hpp>
 #include <rw/kinematics/FKTable.hpp>
+#include <rw/geometry/PointCloud.hpp>
 
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/opengl/RenderFrame.hpp>
