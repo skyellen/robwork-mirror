@@ -18,7 +18,7 @@ using rw::pathplanning::PathPlanner;
 
 %}
 
-%import <rwlibs/swig/rw.i>
+%import <rwlibs/swig/rw.i> 
 
 %pragma(java) jniclassclassmodifiers="class"
 
@@ -78,10 +78,10 @@ rw::common::Ptr<ParallelDevice> findParallelDevice(const std::string& name);
 %nodefaultctor QString;
 class QString
 {
-};
+}; 
 
 %nodefaultctor QWidget;
-class QWidget
+class QWidget 
 {
 };
 
@@ -89,23 +89,23 @@ class QWidget
  * RWS
  ********************************************/
 
-class RWStudioView3D {
+class RWStudioView3D { 
 public:
     RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent);
-    void showPivotPoint(bool visible);
-    //void setDrawType(rw::graphics::DrawableNode::DrawType drawType);
+    void showPivotPoint(bool visible);  
+    //void setDrawType(rw::graphics::DrawableNode::DrawType drawType); 
     Frame* pickFrame(int x, int y);
     rw::common::Ptr<DrawableNode> pick(int x, int y);
-
-    rw::common::Ptr<WorkCellScene> getWorkCellScene();
-    rw::common::Ptr<SceneViewer> getSceneViewer();
+ 
+    rw::common::Ptr<WorkCellScene> getWorkCellScene(); 
+    rw::common::Ptr<SceneViewer> getSceneViewer(); 
     void saveBufferToFile(const QString& filename);
 
 };
 
 %template (RWStudioView3DPtr) rw::common::Ptr<RWStudioView3D>;
 
-class RobWorkStudio {
+class RobWorkStudio { 
 public:
     RobWorkStudio(const PropertyMap& map);
 
