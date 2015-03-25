@@ -92,7 +92,7 @@ namespace control {
 
         void setEnabled(bool enabled){ _enabled = enabled; };
 
-        bool isEnabled(){ return _enabled; } ;
+        bool isEnabled() const{ return _enabled; } ;
 
 		////// inherited from JointController
 
@@ -105,6 +105,8 @@ namespace control {
 		 * @param vals
 		 */
 		void setTarget(const rw::math::Transform3D<>& target, const rw::math::VelocityScrew6D<>& vals);
+
+        rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return this;}
 
 	private:
 		PoseController();

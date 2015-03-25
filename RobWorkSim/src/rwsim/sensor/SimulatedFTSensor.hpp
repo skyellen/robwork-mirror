@@ -20,6 +20,8 @@
 
 #include "SimulatedTactileSensor.hpp"
 #include <rw/sensor/FTSensor.hpp>
+#include <rw/sensor/FTSensorModel.hpp>
+
 
 namespace rwsim {
 namespace sensor {
@@ -32,7 +34,7 @@ namespace sensor {
 	 */
 	class SimulatedFTSensor: public SimulatedTactileSensor {
 	public:
-
+		typedef rw::common::Ptr<SimulatedFTSensor> Ptr;
 		/**
 		 * @brief constructor - the forces will be described relative to body \b body1
 		 * @param name [in] identifier
@@ -46,7 +48,7 @@ namespace sensor {
 
 
 		//! @brief destructor
-		virtual ~SimulatedFTSensor(){};
+		virtual ~SimulatedFTSensor();
 
 		//// Interface inherited from SimulatedSensor
 		//! @copydoc SimulatedSensor::update
@@ -83,27 +85,25 @@ namespace sensor {
                       dynamics::Body::Ptr body=NULL);
 
 		//! @copydoc TactileMultiAxisSensor::getTransform
-		rw::math::Transform3D<> getTransform();
+		rw::math::Transform3D<> getTransform() const;
 
 		//!@copydoc TactileMultiAxisSensor::getForce
-		rw::math::Vector3D<> getForce();
+		rw::math::Vector3D<> getForce(rw::kinematics::State& state) const;
 
 
 		//! @copydoc TactileMultiAxisSensor::getTorque
-		rw::math::Vector3D<> getTorque();
-
-		//! @copydoc TactileMultiAxisSensor::getMaxTorque
-		double getMaxTorque(){return _maxTorque;};
+		rw::math::Vector3D<> getTorque(rw::kinematics::State& state) const;
 
 
-		//! @copydoc TactileMultiAxisSensor::getMaxForce
-		double getMaxForce(){return _maxForce;};
+		rw::math::Vector3D<> getMaxTorque(){return _ftmodel->getMaxTorque();}
+
+		rw::math::Vector3D<> getMaxForce(){return _ftmodel->getMaxForce();}
 
 		rw::kinematics::Frame * getSensorFrame(){ return _sframe; }
 
  		void acquire(){}
 
-		 rw::sensor::FTSensor::Ptr getSensor(){ return _ftsensorWrapper;};
+		 rw::sensor::FTSensor::Ptr getFTSensor(rw::kinematics::State& state);
 
 		 rwsim::dynamics::Body::Ptr getBody1() const { return _body;};
 		 rwsim::dynamics::Body::Ptr getBody2() const { return _body1;};
@@ -111,18 +111,19 @@ namespace sensor {
 		SimulatedFTSensor();
 
 	private:
-		// the frame that the force and torque is described in relation to
-		rw::math::Transform3D<> _transform;
-		rw::math::Vector3D<> _force, _forceTmp, _torque, _torqueTmp;
-		double _maxForce,_maxTorque;
-
-		//! aux variables updated through \b update
-		rw::math::Transform3D<> _fTb, _wTb, _bTw;
-
 		rwsim::dynamics::Body::Ptr _body, _body1;
+		rw::sensor::FTSensor::Ptr _ftsensorWrapper;
+		rw::kinematics::Frame *_sframe;
+		rw::common::Ptr<rw::sensor::FTSensorModel> _ftmodel;
 
-		 rw::sensor::FTSensor::Ptr _ftsensorWrapper;
-		 rw::kinematics::Frame *_sframe;
+		struct FTStateData {
+			rw::math::Vector3D<> _force, _forceTmp, _torque, _torqueTmp;
+
+			//! aux variables updated through \b update
+			rw::math::Transform3D<> _fTb, _wTb, _bTw;
+		};
+
+		 rw::kinematics::StatelessData< FTStateData > _sdata;
 	};
 	//! @}
 }

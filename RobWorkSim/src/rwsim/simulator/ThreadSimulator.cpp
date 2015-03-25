@@ -49,6 +49,23 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
     _inError(false),
     _postStop(false)
 {
+
+}
+
+ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator):
+    _simulator(simulator),
+    _thread(NULL),
+    //_period(-1),
+    _dt(0.001),
+    _timescale(0.0),
+    _state( simulator->getDynamicWorkCell()->getWorkcell()->getDefaultState()),
+    _tmpState(simulator->getDynamicWorkCell()->getWorkcell()->getDefaultState()),
+    _running(false),
+    _stepcb(NULL),
+    _inError(false),
+    _postStop(false)
+{
+
 }
 
 ThreadSimulator::~ThreadSimulator(){

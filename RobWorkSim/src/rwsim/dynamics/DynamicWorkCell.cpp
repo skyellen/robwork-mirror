@@ -62,7 +62,10 @@ DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
     _gravity(0,0,-9.82)
 {
     BOOST_FOREACH(SimulatedController::Ptr b, _controllers){
-        b->registerIn( workcell->getStateStructure() );
+    	if(!b->getControllerModel()->isRegistered())
+    		workcell->add(b->getControllerModel());
+    	if(!b->isRegistered())
+    		b->registerIn(workcell->getStateStructure());
     }
 
     BOOST_FOREACH(Constraint::Ptr b, _constraints){
@@ -150,6 +153,16 @@ void DynamicWorkCell::addConstraint(Constraint::Ptr constraint) {
 	_workcell->getStateStructure()->addData(constraint.getSharedPtr());
 	_constraints.push_back(constraint);
 }
+
+void DynamicWorkCell::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
+	if( !sensor->getSensorModel()->isRegistered() )
+		_workcell->add( sensor->getSensorModel() );
+	if(!sensor->isRegistered())
+		sensor->registerIn(_workcell->getStateStructure());
+    _sensors.push_back(sensor);
+    _changedEvent.fire(SensorAddedEvent, boost::any(sensor) );
+}
+
 
 Constraint::Ptr DynamicWorkCell::findConstraint(const std::string& name) const {
     BOOST_FOREACH(const Constraint::Ptr &constraint, _constraints){

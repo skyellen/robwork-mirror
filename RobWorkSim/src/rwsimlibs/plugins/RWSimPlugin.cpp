@@ -356,8 +356,8 @@ void RWSimPlugin::btnPressed(){
             }
         }
         if(ctrl){
-            if( ctrl->getController()!=NULL ){
-                if( JointController* jctrl = dynamic_cast<JointController*>(ctrl->getController()) ){
+            if( ctrl->getControllerHandle(_sim->getSimulator())!=NULL ){
+                if( JointController* jctrl = dynamic_cast<JointController*>(ctrl->getControllerHandle(_sim->getSimulator()).get()) ){
                     JointControlDialog *dialog = new JointControlDialog(jctrl,this);
                     dialog->show();
                     dialog->raise();
@@ -573,7 +573,7 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
             //std::cout << "ADDING TACTILE SENSOR DRAWER..." << std::endl;
             TactileArray *tsensor = dynamic_cast<TactileArray*>(sensor.get());
             TactileArrayRender *render = new TactileArrayRender(tsensor);
-            Drawable *drawable = new Drawable(ownedPtr<Render>(render), sensor->getSensor()->getName() );
+            Drawable *drawable = new Drawable(ownedPtr<Render>(render), sensor->getSensorModel()->getName() );
             //getRobWorkStudio()->getWorkCellGLDrawer()->addDrawableToFrame(workcell->getWorldFrame(), drawable);
             //std::cout << "TO: " << sensor->getFrame()->getName() << std::endl;
 

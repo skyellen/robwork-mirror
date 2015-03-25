@@ -63,7 +63,7 @@ void DynamicSimulator::removeController(rwlibs::simulation::SimulatedController:
 }
 
 void DynamicSimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state){
-    _pengine->addSensor(sensor, state);
+	_pengine->addSensor(sensor, state);
 }
 
 void DynamicSimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state){

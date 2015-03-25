@@ -16,6 +16,7 @@ SpringJointController::SpringJointController(
 		const std::vector<SpringParam>& springParam,
 		double dt):
 	JointController(name, &rdev->getModel()),
+	SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,rdev->getKinematicModel()->getBase()))),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_target(rw::math::Q::zero(rdev->getModel().getDOF())),

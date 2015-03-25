@@ -282,19 +282,19 @@ public:
 	const Frame* getFrameA() const;
 	const Frame* getFrameB() const;
 	Transform3D aTb() const;
-	Vector3D getPointA() const;
-	Vector3D getPointB() const;
-	Vector3D getNormal() const;
+	rw::math::Vector3D<double> getPointA() const;
+	rw::math::Vector3D<double> getPointB() const;
+	rw::math::Vector3D<double> getNormal() const;
 	double getDepth() const;
 //	void setModelA(ContactModel::Ptr modelA);
 //	void setModelB(ContactModel::Ptr modelB);
 	void setFrameA(const Frame* frame);
 	void setFrameB(const Frame* frame);
 	void setTransform(Transform3D aTb);
-	void setPointA(Vector3D pointA);
-	void setPointB(Vector3D pointB);
-	void setPoints(Vector3D pointA, Vector3D pointB);
-	void setNormal(Vector3D normal);
+	void setPointA(rw::math::Vector3D<double> pointA);
+	void setPointB(rw::math::Vector3D<double> pointB);
+	void setPoints(rw::math::Vector3D<double> pointA, rw::math::Vector3D<double> pointB);
+	void setNormal(rw::math::Vector3D<double> normal);
 	void setDepth();
 	void setDepth(double depth);
 	//tostring
@@ -504,7 +504,7 @@ public:
     std::string material;
     std::string objectType;
     double mass;
-    Vector3D masscenter;
+    rw::math::Vector3D<double> masscenter;
     InertiaMatrix inertia;
     std::string integratorType;
     //std::vector<Frame*> frames;
@@ -540,32 +540,32 @@ public:
 
     void setMass(double m);
     void setMass(double m, const InertiaMatrix& inertia);
-    void setMass(double m, const InertiaMatrix& inertia, const Vector3D& com);
+    void setMass(double m, const InertiaMatrix& inertia, const rw::math::Vector3D<double>& com);
 
     //! interface functions
-    virtual Vector3D getPointVelW(const Vector3D& p, const State& state) const = 0;
+    virtual rw::math::Vector3D<double> getPointVelW(const rw::math::Vector3D<double>& p, const State& state) const = 0;
     virtual void reset(State &state) = 0;
     virtual double calcEnergy(const State& state) = 0;
-    virtual void setForce(const Vector3D& f, State& state) = 0;
-    virtual Vector3D getForce(const State& state) const = 0;
-    virtual void addForce(const Vector3D& force, State& state) = 0;
-    virtual void setTorque(const Vector3D& t, State& state) = 0;
-    virtual void addTorque(const Vector3D& t, State& state) = 0;
-    virtual Vector3D getTorque(const State& state) const = 0;
+    virtual void setForce(const rw::math::Vector3D<double>& f, State& state) = 0;
+    virtual rw::math::Vector3D<double> getForce(const State& state) const = 0;
+    virtual void addForce(const rw::math::Vector3D<double>& force, State& state) = 0;
+    virtual void setTorque(const rw::math::Vector3D<double>& t, State& state) = 0;
+    virtual void addTorque(const rw::math::Vector3D<double>& t, State& state) = 0;
+    virtual rw::math::Vector3D<double> getTorque(const State& state) const = 0;
 
     virtual Frame* getParentFrame(const State& state) const;
-    virtual void setForceW(const Vector3D& f, State& state);
-    virtual Vector3D getForceW(const State& state) const;
-    virtual void addForceW(const Vector3D& force, State& state);
-    void addForceToPos(const Vector3D& force,
-                               const Vector3D& pos,
+    virtual void setForceW(const rw::math::Vector3D<double>& f, State& state);
+    virtual rw::math::Vector3D<double> getForceW(const State& state) const;
+    virtual void addForceW(const rw::math::Vector3D<double>& force, State& state);
+    void addForceToPos(const rw::math::Vector3D<double>& force,
+                               const rw::math::Vector3D<double>& pos,
                                State& state);
-    virtual void addForceWToPosW(const Vector3D& force,
-                                 const Vector3D& pos,
+    virtual void addForceWToPosW(const rw::math::Vector3D<double>& force,
+                                 const rw::math::Vector3D<double>& pos,
                                  State& state);
-    virtual void setTorqueW(const Vector3D& t, State& state);
-    virtual void addTorqueW(const Vector3D& t, State& state);
-    virtual Vector3D getTorqueW(State& state);
+    virtual void setTorqueW(const rw::math::Vector3D<double>& t, State& state);
+    virtual void addTorqueW(const rw::math::Vector3D<double>& t, State& state);
+    virtual rw::math::Vector3D<double> getTorqueW(State& state);
     virtual Transform3D getTransformW(const State& state);
 
     Transform3D pTbf(const State& state);
@@ -578,12 +578,12 @@ public:
 
     %extend {
 
-        Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state, const Vector3D& dir){
+        Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state, const rw::math::Vector3D<double>& dir){
             return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, dir);
         }
 
         Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state){
-            return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, -Vector3D::z());
+            return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, -rw::math::Vector3D<double>::z());
         }
         
     };
@@ -621,26 +621,26 @@ public:
         const std::vector<rw::common::Ptr<Geometry> >& geoms
         );
 
-    //InertiaMatrix getEffectiveMassW(const Vector3D& wPc);
+    //InertiaMatrix getEffectiveMassW(const rw::math::Vector3D<double>& wPc);
     Frame* getParent(State& state) const;
     Transform3D getPTBody(const State& state) const;
     void setPTBody(const Transform3D& pTb, State& state);
     Transform3D getWTBody(const State& state) const;
 
     Transform3D getWTParent(const State& state) const;
-    Vector3D getLinVel(const State& state) const;
+    rw::math::Vector3D<double> getLinVel(const State& state) const;
 
     /**
      * @brief return the linear velocity described in world frame
      */
-    Vector3D getLinVelW(const State& state) const;
-    void setLinVel(const Vector3D &lvel, State& state);
-    void setLinVelW(const Vector3D &lvel, State& state);
-    Vector3D getAngVel(const State& state) const ;
-    Vector3D getAngVelW(State& state);
-    void setAngVel(const Vector3D &avel, State& state);
-    void setAngVelW(const Vector3D &avel, State& state);
-    Vector3D getPointVel(const Vector3D& p, const State& state);
+    rw::math::Vector3D<double> getLinVelW(const State& state) const;
+    void setLinVel(const rw::math::Vector3D<double> &lvel, State& state);
+    void setLinVelW(const rw::math::Vector3D<double> &lvel, State& state);
+    rw::math::Vector3D<double> getAngVel(const State& state) const ;
+    rw::math::Vector3D<double> getAngVelW(State& state);
+    void setAngVel(const rw::math::Vector3D<double> &avel, State& state);
+    void setAngVelW(const rw::math::Vector3D<double> &avel, State& state);
+    rw::math::Vector3D<double> getPointVel(const rw::math::Vector3D<double>& p, const State& state);
     double getMass() const;
     const InertiaMatrix& getBodyInertia() const;
     const InertiaMatrix& getBodyInertiaInv() const;
@@ -648,8 +648,8 @@ public:
     //InertiaMatrix calcInertiaTensorInvW(const State& state) const;
     InertiaMatrix calcInertiaTensor(const State& state) const;
     MovableFrame* getMovableFrame();
-    InertiaMatrix calcEffectiveMass(const Vector3D& wPc, const State& state) const;
-    InertiaMatrix calcEffectiveMassW(const Vector3D& wPc, const State& state) const;
+    InertiaMatrix calcEffectiveMass(const rw::math::Vector3D<double>& wPc, const State& state) const;
+    InertiaMatrix calcEffectiveMassW(const rw::math::Vector3D<double>& wPc, const State& state) const;
     //InertiaMatrix calcEffectiveInertia(const State& state) const;
     //InertiaMatrix calcEffectiveInertiaInv(const State& state) const;
 };
@@ -860,8 +860,8 @@ public:
     //WorkCellDimension getWorldDimension();
 
     bool inDevice(rw::common::Ptr<Body> body);
-    void setGravity(const Vector3D& grav);
-    const Vector3D& getGravity();
+    void setGravity(const rw::math::Vector3D<double>& grav);
+    const rw::math::Vector3D<double>& getGravity();
     PropertyMap& getEngineSettings();
 
 
@@ -907,7 +907,7 @@ public:
         { return $self->DynamicWorkCell::findController<PDController>(name); }
         
         void setGravity(double x, double y, double z){
-            $self->DynamicWorkCell::setGravity( rw::math::Vector3D<>(x,y,z) );
+            $self->DynamicWorkCell::setGravity( rw::math::Vector3D<double>(x,y,z) );
         }
         
 		rw::common::Ptr<Body> getBody(const std::string& name) const{
@@ -963,39 +963,39 @@ public:
 	void update(const Simulator::UpdateInfo& info, State& state);
 	void reset(const State& state);
 
-	void addForceW(const Vector3D& point,
-				   const Vector3D& force,
-				   const Vector3D& cnormal,
+	void addForceW(const rw::math::Vector3D<double>& point,
+				   const rw::math::Vector3D<double>& force,
+				   const rw::math::Vector3D<double>& cnormal,
 				   State& state,
 				   rw::common::Ptr<Body> body = NULL);
 
-	void addForce(const Vector3D& point,
-				  const Vector3D& force,
-				  const Vector3D& cnormal,
+	void addForce(const rw::math::Vector3D<double>& point,
+				  const rw::math::Vector3D<double>& force,
+				  const rw::math::Vector3D<double>& cnormal,
 				  State& state,
 				  rw::common::Ptr<Body> body=NULL);
 
     void addWrenchToCOM(
-                  const Vector3D& force,
-                  const Vector3D& torque,
+                  const rw::math::Vector3D<double>& force,
+                  const rw::math::Vector3D<double>& torque,
                   State& state,
                   rw::common::Ptr<Body> body=NULL);
 
     void addWrenchWToCOM(
-                  const Vector3D& force,
-                  const Vector3D& torque,
+                  const rw::math::Vector3D<double>& force,
+                  const rw::math::Vector3D<double>& torque,
                   State& state,
                   rw::common::Ptr<Body> body=NULL);
 
     Transform3D getTransform();
 
-    Vector3D getForce();
+    rw::math::Vector3D<double> getForce( State& state );
     
-	Vector3D getTorque();
+	rw::math::Vector3D<double> getTorque( State& state );
 
-	double getMaxTorque();
+	//double getMaxTorque();
 
-	double getMaxForce();
+	//double getMaxForce();
 
 	Frame* getSensorFrame();
 
@@ -1242,7 +1242,7 @@ public:
 		rw::common::Ptr<DynamicWorkCell> getDynamicWorkCell();
 		void disableCollision(rw::common::Ptr<Body> b1, rw::common::Ptr<Body> b2);
 		void enableCollision(rw::common::Ptr<Body> b1, rw::common::Ptr<Body> b2);
-		Vector3D getGravity();
+		rw::math::Vector3D<double> getGravity();
 		//dWorldID getODEWorldId();
 		//void addODEJoint(ODEJoint* odejoint);
 		//ODEJoint* getODEJoint(rw::models::Joint* joint);
@@ -1253,7 +1253,7 @@ public:
 		//dBodyID getODEBodyId(rw::kinematics::Frame* frame);
 		//dBodyID getODEBodyId(rwsim::dynamics::Body* body);
         //std::vector<ODEDevice*> getODEDevices() { return _odeDevices;}
-        void addEmulatedContact(const Vector3D& pos, const Vector3D& force, const Vector3D& normal, Body* b);
+        void addEmulatedContact(const rw::math::Vector3D<double>& pos, const rw::math::Vector3D<double>& force, const rw::math::Vector3D<double>& normal, Body* b);
         void setContactLoggingEnabled(bool enable);
         //std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > getContactingBodies(){ return _contactingBodiesTmp; }
         //std::map<std::pair<std::string,std::string>,std::vector<dynamics::ContactPoint> > _contactingBodies, _contactingBodiesTmp;

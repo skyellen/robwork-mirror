@@ -117,16 +117,17 @@ void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& i
         //std::cout << force << torque << std::endl;
         _rwsensor->addWrenchWToCOM(force, torque, state, _bodyGlobal[i] );
     }
-
+    RW_WARN("");
     // add all direct contacts
     BOOST_FOREACH(DirectContact& dc, _directContacts){
         _rwsensor->addForceW( dc.p, dc.f, dc.n, state, dc.b);
     }
-
+    RW_WARN("");
 
     clear();
+    RW_WARN("");
     _rwsensor->update(info, state);
-
+    RW_WARN("");
 /*
     for(size_t midx=0;midx<_feedback.size();midx++){
         int bodyIdx=_bodyIdx[midx];

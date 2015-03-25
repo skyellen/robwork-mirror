@@ -30,7 +30,7 @@ namespace sensor {
 	 */
 	class SimulatedTactileSensor: public rwlibs::simulation::SimulatedSensor {
 	protected:
-	    SimulatedTactileSensor(const std::string& name):rwlibs::simulation::SimulatedSensor(name){}
+	    SimulatedTactileSensor(rw::sensor::SensorModel::Ptr model);
 
 	public:
 

@@ -209,11 +209,7 @@ namespace dynamics {
          * @brief add a sensor to the dynamic workcell
          * @param sensor [in] a simulated sensor
          */
-        void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
-            sensor->registerIn( _workcell->getStateStructure() );
-            _sensors.push_back(sensor);
-            _changedEvent.fire(SensorAddedEvent, boost::any(sensor) );
-        };
+        void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
         /**
          * @brief find a sensor
@@ -251,7 +247,11 @@ namespace dynamics {
     	 */
     	void addController(rwlibs::simulation::SimulatedController::Ptr manipulator){
     	    //TODO: change STATE and WorkCell accordingly
-    	    manipulator->registerIn( _workcell->getStateStructure() );
+    		if(!manipulator->getControllerModel()->isRegistered())
+    			_workcell->add(manipulator->getControllerModel());
+        	if(!manipulator->isRegistered())
+        		manipulator->registerIn(_workcell->getStateStructure());
+
     		_controllers.push_back(manipulator);
     		_changedEvent.fire(ControllerAddedEvent, boost::any(manipulator) );
     	}

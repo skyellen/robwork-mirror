@@ -33,17 +33,7 @@ namespace control {
 		 * @param rdev
 		 * @param state
 		 */
-		SyncPDController(const std::string& name, dynamics::RigidDevice* rdev, const rw::kinematics::State& state):
-			JointController(name, &rdev->getModel()),
-			_ddev(rdev),
-			_time(0.0),
-			_target(rdev->getModel().getQ(state)),
-			_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
-			_velramp(&(rdev->getModel())),
-			_currentQ(_target)
-		{
-			_velramp.setTarget(_target,_target);
-		}
+		SyncPDController(const std::string& name, dynamics::RigidDevice* rdev, const rw::kinematics::State& state);
 
 		//! @brief destructor
 		virtual ~SyncPDController(){};
@@ -113,7 +103,10 @@ namespace control {
 
         void setEnabled(bool enabled){ _enabled = enabled; };
 
-        bool isEnabled(){ return _enabled; } ;
+        bool isEnabled() const { return _enabled; } ;
+
+        rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return this;}
+
 	private:
 		dynamics::RigidDevice *_ddev;
 		double _time;

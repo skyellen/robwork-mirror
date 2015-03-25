@@ -275,19 +275,17 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	}
 
 	if (task->maleFTSensor != "") {
-		SimulatedSensor::Ptr sensor = _dwc->findSensor(task->maleFTSensor);
-		if (sensor != NULL) {
-			SimulatedFTSensor::Ptr ftSensor = sensor.cast<SimulatedFTSensor>();
-			simState.maleFTSensor = ftSensor->getSensor().cast<FTSensor>().get();
+		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->maleFTSensor);
+		if (ftsensor != NULL) {
+			simState.maleFTSensor = ftsensor->getFTSensor(state).get();
 			if (simState.maleController != NULL)
 				simState.maleController->setFTSensor(simState.maleFTSensor);
 		}
 	}
 	if (task->femaleFTSensor != "") {
-		SimulatedSensor::Ptr sensor = _dwc->findSensor(task->femaleFTSensor);
-		if (sensor != NULL) {
-			SimulatedFTSensor::Ptr ftSensor = sensor.cast<SimulatedFTSensor>();
-			simState.femaleFTSensor = ftSensor->getSensor().cast<FTSensor>().get();
+		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->femaleFTSensor);
+		if (ftsensor != NULL) {
+			simState.femaleFTSensor = ftsensor->getFTSensor(state).get();
 			if (simState.femaleController != NULL)
 				simState.femaleController->setFTSensor(simState.femaleFTSensor);
 		}
@@ -491,12 +489,12 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 		std::cout << "found female sensor!" << std::endl;
 	if (simState.femaleFTSensor != NULL)
 		realState.ftSensorFemale = Wrench6D<>(ftSensorFemale->getForce(),ftSensorFemale->getTorque());
-	realState.contact = hasContact(simState.femaleContactSensor,simState.male);
+	realState.contact = hasContact(simState.femaleContactSensor,simState.male, simState.state);
 
 	BOOST_FOREACH(const BodyContactSensor::Ptr &sensor, simState.bodyContactSensors) {
-		const std::vector<Contact3D>& contacts = sensor->getContacts();
+		const std::vector<Contact3D>& contacts = sensor->getContacts(simState.state);
 		BOOST_FOREACH(const Contact3D& c, contacts) {
-			const Transform3D<> wTsensor = Kinematics::worldTframe(sensor->getSensorFrame(),simState.state);
+			const Transform3D<> wTsensor = Kinematics::worldTframe(sensor->getSensorModel()->getFrame(),simState.state);
 			const Vector3D<> p = wTsensor*c.p;
 			const Vector3D<> n = normalize(wTsensor.R()*c.n);
 			const Vector3D<> force = wTsensor*c.f;
@@ -780,10 +778,10 @@ std::vector<Q> AssemblySimulator::orderSolutions(const std::vector<Q> &solutions
 	return newSol;
 }
 
-bool AssemblySimulator::hasContact(BodyContactSensor::Ptr sensor, Body::Ptr body)
+bool AssemblySimulator::hasContact(BodyContactSensor::Ptr sensor, Body::Ptr body, rw::kinematics::State& state)
 {
-	const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts();
-	const std::vector<Body::Ptr>& bodies = sensor->getBodies();
+	const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts(state);
+	const std::vector<Body::Ptr>& bodies = sensor->getBodies(state);
 
 	RW_ASSERT(bodies.size() == contacts.size() );
 

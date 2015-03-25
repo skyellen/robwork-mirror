@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+  * Copyright 2014 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

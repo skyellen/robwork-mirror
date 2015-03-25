@@ -34,7 +34,8 @@ using namespace rw::common;
 
 
 BodyController::BodyController(const std::string& name):
-	Controller(name)
+	Controller(name),
+	SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,NULL)))
 {
 }
 

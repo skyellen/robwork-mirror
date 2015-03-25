@@ -213,6 +213,8 @@ public:
                                 _wTmbase_retractTarget; // retract to this config from _approachTarget
 
         bool _stopped;
+
+        rwlibs::control::JointController *_graspController;
     };
 
 protected:
@@ -274,7 +276,7 @@ protected:
     rwsim::dynamics::KinematicBody::Ptr _hbase;
     rw::kinematics::MovableFrame *_mbase;
 
-    rwlibs::control::JointController *_graspController;
+    rwlibs::simulation::SimulatedController::Ptr _simGraspController;
 
     rw::kinematics::Frame *_tcp;
     rw::kinematics::State _homeState;

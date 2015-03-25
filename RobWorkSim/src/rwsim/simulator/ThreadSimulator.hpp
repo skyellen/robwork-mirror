@@ -38,6 +38,11 @@ namespace simulator {
 	    typedef rw::common::Ptr<ThreadSimulator> Ptr;
 
 		/**
+		 * @brief constructor - using the default workcell state as starting state
+		 */
+		ThreadSimulator(DynamicSimulator::Ptr simulator);
+
+		/**
 		 * @brief constructor
 		 */
 		ThreadSimulator(DynamicSimulator::Ptr simulator, const rw::kinematics::State &state);

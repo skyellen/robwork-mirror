@@ -2,6 +2,20 @@
 
 using namespace rwsim::control;
 
+SyncPDController::SyncPDController(const std::string& name, dynamics::RigidDevice* rdev, const rw::kinematics::State& state):
+	JointController(name, &rdev->getModel()),
+	SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,rdev->getKinematicModel()->getBase()))),
+	_ddev(rdev),
+	_time(0.0),
+	_target(rdev->getModel().getQ(state)),
+	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
+	_velramp(&(rdev->getModel())),
+	_currentQ(_target)
+{
+	_velramp.setTarget(_target,_target);
+}
+
+
 void SyncPDController::setControlMode(ControlMode mode){
     if(mode!=POSITION || mode !=VELOCITY )
         RW_THROW("Unsupported control mode!");

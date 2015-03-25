@@ -351,7 +351,7 @@ void TNTIsland::addSensor(SimulatedSensor::Ptr sensor, State &state) {
 			if(_bc->getBody(sensorFrame) == NULL)
 				RW_THROW("TNTIsland (addSensor): The frame (" << sensorFrame->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");
 		} else {
-			const Frame* const bframe = tsensor->getFrame();
+			const Frame* bframe = tsensor->getFrame();
 			RW_ASSERT(bframe!=NULL);
 			if(_bc->getBody(bframe) == NULL)
 				RW_THROW("TNTIsland (addSensor): The frame (" << bframe->getName() << ") that the sensor is being attached to is not a body in the simulator! Did you remember to run initphysics!");

@@ -98,29 +98,38 @@ namespace sensor {
 		 *
 		 * @return
 		 */
-		const std::vector<rw::sensor::Contact3D>& getContacts(){
-			return _contacts;
+		const std::vector<rw::sensor::Contact3D>& getContacts(const rw::kinematics::State& state) const {
+			return _sdata.getStateCache<ClassState>(state)->_contacts;
 		}
 
-		std::vector<rwsim::dynamics::Body::Ptr> getBodies(){ return _bodies; }
-
-		rw::kinematics::Frame * getSensorFrame(){ return _sframe; }
+		std::vector<rwsim::dynamics::Body::Ptr> getBodies(const rw::kinematics::State& state){
+			return _sdata.getStateCache<ClassState>(state)->_bodies;
+		}
 
 	public: // stateless stuff
-		/*
-		class ClassState: public rw::kinematics::ObjectStateData {
+
+		class ClassState: public rw::kinematics::StateCache {
 		public:
+			std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
+			std::vector<rwsim::dynamics::Body::Ptr> _bodiesTmp, _bodies;
 
+            size_t size() const{
+                return (_contacts.size()+_contactsTmp.size())*sizeof(rw::sensor::Contact3D) +
+                		(_bodiesTmp.size()+_bodies.size())*sizeof(rwsim::dynamics::Body::Ptr);
+            }
 
+            /**
+             * @brief this creates a deep copy of this cache
+             */
+            rw::common::Ptr<rw::kinematics::StateCache> clone() const{
+                return rw::common::ownedPtr( new ClassState( *this ) );
+            }
 		};
-		*/
 
 	private:
 		// hmm,
-		std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
-		std::vector<rwsim::dynamics::Body::Ptr> _bodiesTmp, _bodies;
 		rw::math::Transform3D<> _wTf, _fTw;
-		rw::kinematics::Frame *_sframe;
+		rw::kinematics::StatelessData<int> _sdata;
 	};
 
 	typedef rw::common::Ptr<BodyContactSensor> BodyContactSensorPtr;

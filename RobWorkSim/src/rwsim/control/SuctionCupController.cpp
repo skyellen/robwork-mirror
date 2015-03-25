@@ -13,6 +13,7 @@ using namespace rw::common;
 
 
 SuctionCupController::SuctionCupController(const std::string& name, rwsim::dynamics::SuctionCup::Ptr dev):
+		SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,dev->getBaseBody()->getBodyFrame()))),
         _dev(dev),_name(name)
 {
     // initialize springs between the body parts of the device
@@ -51,7 +52,7 @@ SuctionCupController::~SuctionCupController(){
 
 void SuctionCupController::update(double dt, rw::kinematics::State& state){
     // check the contact state of the suction cup mouth
-    RW_WARN("");
+    ;
     std::vector<BodyContactSensor::Ptr> &sensors = _dev->getBodySensors();
     bool inContact=true;
     Body* body = NULL;
@@ -91,7 +92,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         Rotation3D<> rot(xaxis, yaxis, normal);
         // we also need the orientation, for now we assume that p[0] and p[2] is on the y axis
         Transform3D<> centerFrame(contactCenter, rot);
-        RW_WARN("");
+        ;
         // calculate force direction
         Transform3D<> wTb = Kinematics::worldTframe(_dev->getBodyFrame(), state);
 
@@ -102,13 +103,13 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         const double mainstrainF_elasticity = 50/_dev->getHeight(); // max force on 50N
         const double rotaionstrain_elasticity = (10*_dev->getRadius())/(90*Deg2Rad); // max force in point 10N and max angular displacement 90Deg, therefore t_max = (r*F_max)/90deg
         //const double torsionalstrain_elasticity = ;//
-        RW_WARN("");
+        ;
         // first we look at the main strain, which is a spring connecting the center point to the bodyframe
         Vector3D<> mainstrainF = contactCenter-wTb.P();
         Vector3D<> mainstrainF_dir = normalize(mainstrainF);
         double mainstrainF_length = mainstrainF.norm2();
         double mainstrainF_springforce = mainstrainF_elasticity * _dev->getHeight()-mainstrainF_length;
-        RW_WARN("");
+        ;
         // add the mainstrain force to the bodies
         BOOST_FOREACH(Body* bodyPart, _dev->getBodyParts()){
             bodyPart->addForceW( mainstrainF_dir*(mainstrainF_springforce/N), state  );
@@ -116,7 +117,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         }
         _dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce, state );
 
-        RW_WARN("");
+        ;
         // now add forces related to the rotational stress
         Vector3D<> rotationVector = cross(wTb*Vector3D<>::z(), mainstrainF_dir);
         if(rotationVector.norm2()>0.00001 ){
@@ -141,7 +142,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
 */
 
 
-        RW_WARN("");
+        ;
         // next we look at the torsional stress
         // first we calculate the angular displacement of the y-axis around the
         /*
@@ -196,15 +197,15 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         Rotation3D<> rot(xaxis, yaxis, normal);
         // we also need the orientation, for now we assume that p[0] and p[2] is on the y axis
         Transform3D<> centerFrame(contactCenter, rot);
-        RW_WARN("");
+
 
 
         // calculate force direction
         Transform3D<> wTb = Kinematics::worldTframe(_dev->getBodyFrame(), state);
         //Vector3D<> vacumForce = normalize(wTb.P()-contactCenter)*suctionForce;
-        RW_WARN("");
+
         body->addForceWToPosW( normal*suctionForce , contactCenter, state );
-        RW_WARN("");
+
 
         // -------------------------------------------------------------------------------
         // next update the contact force of the contacting mouth parts, such that the elasticity of the
@@ -215,20 +216,20 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         const double mainstrainF_elasticity = 50/_dev->getHeight(); // max force on 50N
         const double rotaionstrain_elasticity = (10*_dev->getRadius())/(90*Deg2Rad); // max force in point 10N and max angular displacement 90Deg, therefore t_max = (r*F_max)/90deg
         //const double torsionalstrain_elasticity = ;//
-        RW_WARN("");
+
         // first we look at the main strain, which is a spring connecting the center point to the bodyframe
         Vector3D<> mainstrainF = contactCenter-wTb.P();
         Vector3D<> mainstrainF_dir = normalize(mainstrainF);
         double mainstrainF_length = mainstrainF.norm2();
         double mainstrainF_springforce = mainstrainF_elasticity * _dev->getHeight()-mainstrainF_length;
-        RW_WARN("");
+
         // add the mainstrain force to the bodies
         BOOST_FOREACH(Body* body, _dev->getBodyParts()){
             body->addForceW( mainstrainF_dir*(mainstrainF_springforce/N), state  );
         }
         _dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce, state );
 
-        RW_WARN("");
+
         // now add forces related to the rotational stress
         Vector3D<> rotationVector = cross(wTb*Vector3D<>::z(), mainstrainF_dir);
         if(rotationVector.norm2()>0.00001 ){
@@ -250,7 +251,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
             }
             //_dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce );
         }
-        RW_WARN("");
+
         // next we look at the torsional stress
         // first we calculate the angular displacement of the y-axis around the
         /*
@@ -268,7 +269,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
             Vector3D<> force = normalize(displacement)*displacement.norm2()*mainstrainF_elasticity*10;
             body->addForceW(force, state);
         }
-        RW_WARN("");
+
     }
 }
 

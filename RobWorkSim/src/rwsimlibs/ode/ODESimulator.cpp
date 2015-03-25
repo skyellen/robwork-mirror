@@ -92,8 +92,8 @@ using namespace rwlibs::proximitystrategies;
 
 #define INITIAL_MAX_CONTACTS 1000
 
-#define RW_DEBUGS( str ) //std::cout << str  << std::endl;
-#define RW_DEBUGS( str )
+#define RW_DEBUGS( str ) rw::common::Log::debugLog() << str  << std::endl;
+//#define RW_DEBUGS( str )
 
 /*
 #define TIMING( str, func ) \
@@ -973,6 +973,17 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	resetScene(state);
 }
 
+void ODESimulator::addController(rwlibs::simulation::SimulatedController::Ptr controller){
+	if(!controller->isRegistered())
+		controller->registerIn( _dwc->getWorkcell()->getStateStructure() );
+	_controllers.push_back(controller);
+}
+
+void ODESimulator::removeController(rwlibs::simulation::SimulatedController::Ptr controller){
+
+}
+
+
 /*
 ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::State& state, dSpaceID spaceid)
 {
@@ -1389,6 +1400,9 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
 }
 #endif
 void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state){
+	// make sure that the sensor is registered in the state
+	if(!sensor->isRegistered())
+		sensor->registerIn(state);
 	_sensors.push_back(sensor);
 
 	SimulatedSensor *ssensor = sensor.get();
@@ -1520,6 +1534,13 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
     }
     _sensors = newsensors;
     Frame *bframe = sensor->getFrame();
+
+    // check if sensor is not part of dynamicworkcell
+    if( _dwc->findSensor( sensor->getName() ) != sensor){
+    	// then remove it from the state
+    	sensor->unregister();
+    }
+
     if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
         return;
     }

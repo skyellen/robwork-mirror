@@ -23,17 +23,7 @@ namespace control {
 
 	public:
 
-		VelRampController(const std::string& name, dynamics::KinematicDevice* kdev, const rw::kinematics::State& state):
-			JointController(name, &kdev->getModel()),
-			_ddev(kdev),
-			_time(0.0),
-			_velramp(&(kdev->getModel())),
-			_target(kdev->getModel().getQ(state)),
-			_currentQ(_target)
-		{
-			_velramp.setTarget(_target,_target);
-
-		}
+		VelRampController(const std::string& name, dynamics::KinematicDevice* kdev, const rw::kinematics::State& state);
 
 		virtual ~VelRampController(){};
 
@@ -67,7 +57,10 @@ namespace control {
 
         void setEnabled(bool enabled){ _enabled = enabled; };
 
-        bool isEnabled(){ return _enabled; } ;
+        bool isEnabled() const { return _enabled; } ;
+
+        rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return this;}
+
 	private:
 		dynamics::KinematicDevice *_ddev;
 		double _time;

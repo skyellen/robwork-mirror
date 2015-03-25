@@ -1068,7 +1068,7 @@ namespace
         TactileArraySensor::Ptr sensor =
             ownedPtr( new TactileArraySensor(name, tactileFrame, transform, heightMap, texelSize) );
 
-        sensor->setPressureLimit(minForce, maxForce);
+        sensor->getTactileArrayModel()->setPressureLimit(minForce,maxForce);
         state.dwc->addSensor(sensor);
     }
 

@@ -15,6 +15,7 @@ PoseController::PoseController(
 		const rw::kinematics::State& state,
 		double dt):
 	Controller(name),
+	SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,rdev->getKinematicModel()->getBase()))),
 	_ddev(rdev),
     _device( _ddev->getKinematicModel() ),
     _endframe( _device->getEnd() ),
@@ -33,6 +34,7 @@ PoseController::PoseController(
 		double dt,
 		rw::kinematics::Frame* endframe):
 	Controller(name),
+	SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,rdev->getKinematicModel()->getBase()))),
     _ddev(rdev),
     _device( _ddev->getKinematicModel() ),
     _endframe( endframe ),

@@ -89,27 +89,11 @@ namespace {
         return 0.00025*tMatrix(i,j) - 0.0625;
     }
     typedef boost::multi_array<double, 2> array_type;
-/*
 
-    boost::array<array_type::index, 2> getShape(const rwlibs::sensors::TactileMatrix& tMatrix){
-        boost::array<array_type::index, 2> shape = {{ tMatrix.getMatrix().size1(), tMatrix.getMatrix().size2() }};
-        return shape;
-    }
-*/
     boost::array<array_type::index, 2> getShape(const TactileArraySensor::ValueMatrix& tMatrix,int x, int y){
         boost::array<array_type::index, 2> shape = {{ tMatrix.rows() +x, tMatrix.cols()+y }};
         return shape;
     }
-
-    // this method takes a grid of distances connected to each cell and the corresponding
-    // positions given in the
-    /*
-    void triangulateGrid(ublas::matrix<double>& dist,
-                         const boost::multi_array<DistPoint, 2>& points)
-    {
-        // first we extrapolate any holes that might be in the
-    }
-    */
 
     class TactileArrayWrapper: public rw::sensor::TactileArray {
     private:
@@ -120,7 +104,7 @@ namespace {
             TactileArray(name),
             _sensor(sensor)
         {
-            this->attachTo( bframe );
+            //this->attachTo( bframe );
         }
 
         rw::math::Vector2D<> getTexelSize(int x, int y) const{ return _sensor->getTexelSize(x,y); }
@@ -132,13 +116,18 @@ namespace {
         int getWidth() const{ return _sensor->getWidth(); }
         int getHeight() const{ return _sensor->getHeight(); }
 
-        void acquire(rw::kinematics::State& state){ _sensor->acquire(state); }
-        TactileArray::ValueMatrix getTexelData(const rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
+        void acquire(rw::kinematics::State& state){ } //_sensor->acquire(state); }
+        rw::sensor::TactileArrayModel::ValueMatrix& getTexelData( rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
+        const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData( const rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
+
     };
 
 }
 
 
+const std::vector<rw::sensor::Contact3D>& TactileArraySensor::getActualContacts(const rw::kinematics::State& state){
+	return _sdata.getStateCache<ClassState>(state)->getActualContacts();
+}
 
 rw::sensor::TactileArray::Ptr TactileArraySensor::getTactileArraySensor(){
     return _tactileArraySensorWrapper;
@@ -147,14 +136,16 @@ rw::sensor::Sensor::Ptr TactileArraySensor::getSensor(){
     return _tactileArraySensorWrapper;
 }
 
+TactileArraySensor::~TactileArraySensor(){
+
+}
+
 TactileArraySensor::TactileArraySensor(const std::string& name,
     dynamics::Body::Ptr obj,
     const rw::math::Transform3D<>& fThmap,
     const ValueMatrix& heightMap,
     const rw::math::Vector2D<>& texelSize):
-        SimulatedTactileSensor(name),
-        _centerMatrix(getShape(heightMap,-1,-1)),
-        _normalMatrix(getShape(heightMap,-1,-1)),
+        SimulatedTactileSensor( ownedPtr( new rw::sensor::TactileArrayModel(name, _body->getBodyFrame(), fThmap, heightMap, texelSize[0], texelSize[1])  ) ),
         _contactMatrix(getShape(heightMap,-1,-1)),
         _distCenterMatrix(getShape(heightMap,-1,-1)),
         _distDefMatrix(Eigen::MatrixXf::Zero(heightMap.rows()-1,heightMap.cols()-1)),
@@ -162,11 +153,6 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _texelArea(texelSize(0)*texelSize(1)),
         _fThmap(fThmap),
         _hmapTf(inverse(fThmap)),
-        _w((int)heightMap.rows()-1),
-        _h((int)heightMap.cols()-1),
-        _vMatrix(getShape(heightMap, 0, 0)),
-        _minPressure(0),
-        _maxPressure(250),
         _dmask(5*3,5*3),
         _narrowStrategy(new rwlibs::proximitystrategies::ProximityStrategyPQP()),
         _maxPenetration(0.0015),
@@ -174,30 +160,14 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _tau(0.1),
         _body(obj)
 {
+
+	_tmodel = getSensorModel().cast<TactileArrayModel>();
+	_tmodel->setPressureLimit(0,250); // in kPa
+
 	_tactileArraySensorWrapper = ownedPtr( new TactileArrayWrapper( this, _body->getBodyFrame(), name ) );
 
-    // calculate the normals and centers of all texels
-    // first calculate the 3D vertexes of the grid from the heightmap specification
-    double tw = _texelSize(0), th = _texelSize(1);
-    for(int y=0;y<_h+1; y++){
-        for(int x=0;x<_w+1; x++){
-            _vMatrix[x][y](0) = x*tw;
-            _vMatrix[x][y](1) = y*th;
-            _vMatrix[x][y](2) = heightMap(x,y);
-        }
-    }
-
-    for(int j=0;j<_h; j++){
-     	for(int i=0;i<_w; i++){
-            Vector3D<> p = _vMatrix[i][j]  +_vMatrix[i+1][j]+
-                           _vMatrix[i][j+1]+_vMatrix[i+1][j+1];
-            _centerMatrix[i][j] = p/4;
-            // now calculate unit normal
-            Vector3D<> n = cross(_vMatrix[i+1][j]-_vMatrix[i][j],
-                                 _vMatrix[i+1][j+1]-_vMatrix[i][j] );
-            _normalMatrix[i][j] = normalize(n);
-        }
-    }
+	int w = getWidth();
+	int h = getHeight();
 
     // calculate the distribution matrix, let it span 4x4 texels
     _maskWidth = 3*_texelSize(0);
@@ -231,16 +201,16 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 
     // create a geometry of the normals
 
-    const TactileArray::VertexMatrix& normals = _normalMatrix;
-    const TactileArray::VertexMatrix& centers = _centerMatrix;
+    const TactileArray::VertexMatrix& normals = _tmodel->getNormals();
+    const TactileArray::VertexMatrix& centers = _tmodel->getCenters();
 
     Vector3D<> offsetDir = (centers[1][0]-centers[0][0])/5;
     //std::cout << "offesetDir: " << offsetDir << std::endl;
 
-    PlainTriMesh<Triangle<> > *trimesh = new PlainTriMesh<Triangle<> >(_h*_w);
-    for(int x=0;x<_w;x++){
-    	for(int y=0;y<_h;y++){
-    		int i=x*_h+y;
+    PlainTriMesh<Triangle<> > *trimesh = new PlainTriMesh<Triangle<> >(h*w);
+    for(int x=0;x<w;x++){
+    	for(int y=0;y<h;y++){
+    		int i=x*h+y;
     		(*trimesh)[i][0] = centers[x][y];
     		(*trimesh)[i][1] = centers[x][y]+offsetDir;
     		(*trimesh)[i][2] = centers[x][y]+normals[x][y]*0.008;
@@ -314,30 +284,9 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 	//std::cout << "Dist" << _distDefMatrix << std::endl;
 
     // create state object and add it to
-    _mystate = new StateData(0, name, ownedPtr(new ClassState(this, _w, _h) ) );
-    add( _mystate );
+	_sdata = StatelessData<int>(1, rw::common::ownedPtr( new ClassState(this, getWidth(), getHeight())).cast<rw::kinematics::StateCache>()),
+    add( _sdata );
 }
-/*
-TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):
-        _centerMatrix(getShape(tMatrix)),-1,-1),
-        _normalMatrix(getShape(tMatrix),-1,-1),
-        _w(tMatrix.getMatrix().size1()+1),
-        _h(tMatrix.getMatrix().size2()+1),
-        _vMatrix(vMatrix)
-{
-    // calculate center and normal of each tactil
-    for(int i=0;i<_w-1; i++){
-        for(int j=0;j<_h-1; j++){
-            Vector3D<> p = vMatrix[i][j]+vMatrix[i+1][j]+vMatrix[i][j+1]+vMatrix[i+1][j+1];
-            _centerMatrix[i][j] = p/4;
-            // now calculate unit normal
-            Vector3D<> n = cross(vMatrix[i+1][j]-vMatrix[i][j],
-                                 vMatrix[i+1][j+1]-vMatrix[i][j] );
-            _normalMatrix[i][j] = normalize(n);
-        }
-    }
-}
-*/
 
 TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, size_t dim_x, size_t dim_y):
     _tsensor(tsensor),
@@ -354,7 +303,17 @@ void TactileArraySensor::ClassState::reset(const rw::kinematics::State& state){
 
 }
 
+TactileArraySensor::ClassState::Ptr TactileArraySensor::getClassState(rw::kinematics::State& state) const {
+	if( _sdata.getStateCache<ClassState>(state) == NULL)
+		return NULL;
+	return _sdata.getStateCache<ClassState>(state);
+}
 
+TactileArraySensor::ClassState::Ptr TactileArraySensor::getClassState(rw::kinematics::State& state) {
+	if( _sdata.getStateCache<ClassState>(state) == NULL)
+		_sdata.getStateData()->setCache( rw::common::ownedPtr( new ClassState(this, getWidth(), getHeight())) , state);
+	return _sdata.getStateCache<ClassState>(state);
+}
 
 namespace {
 
@@ -493,11 +452,11 @@ void TactileArraySensor::ClassState::addForce(const Vector3D<>& point,
     int yIdx = (int)( floor(p(1)/_tsensor->_texelSize(1)));
 
     // if the index is boundary then pick the closest texel normal
-    int xIdxTmp = (int)Math::clamp(xIdx, 0, (int)_tsensor->_w-1);
-    int yIdxTmp = (int)Math::clamp(yIdx, 0, (int)_tsensor->_h-1);
+    int xIdxTmp = (int)Math::clamp(xIdx, 0, (int)_tsensor->getWidth()-1);
+    int yIdxTmp = (int)Math::clamp(yIdx, 0, (int)_tsensor->getHeight()-1);
 
     //std::cout << "4";
-    Vector3D<> normal = _tsensor->_normalMatrix[xIdxTmp][yIdxTmp];
+    Vector3D<> normal = _tsensor->getNormals()[xIdxTmp][yIdxTmp];
     if( dot(f, normal)>=0 ){
         //std::cout << "SAME DIRECTION" << std::endl;
         return;
@@ -809,15 +768,15 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 					double force = dist*distToForce;
 
 					//Vector3D<> p = _hmapTf * dp.p1;
-					Vector3D<> p = _tsensor->_centerMatrix[x][y];//_contactMatrix[x][y];
+					Vector3D<> p = _tsensor->getCenters()[x][y];//_contactMatrix[x][y];
 
 
 					//int xIdx = (int)( floor(p(0)/_texelSize(0)));
 					//int yIdx = (int)( floor(p(1)/_texelSize(1)));
 					int xIdx = (int)x;
 					int yIdx = (int)y;
-					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_tsensor->_w); xi++){
-						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_tsensor->_h); yi++){
+					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_tsensor->getWidth()); xi++){
+						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_tsensor->getHeight()); yi++){
 							double texelScale = getValueOfTexel(xi*_tsensor->_texelSize(0),yi*_tsensor->_texelSize(1),
 							                                    _tsensor->_texelSize(0),_tsensor->_texelSize(1),
 																p(0),p(1),
@@ -843,7 +802,7 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 	        		continue;
 	        	}
 
-	            pressure(x,y) = (float)std::min( _accForces(x,y)/(_tsensor->_texelArea*1000), _tsensor->_maxPressure );
+	            pressure(x,y) = (float)std::min( _accForces(x,y)/(_tsensor->_texelArea*1000), _tsensor->getPressureLimit().second );
 	            totalArea += _tsensor->_texelArea;
 	            totalPressure += pressure(x,y);
 	        }
@@ -895,6 +854,59 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
     _wTf = Kinematics::worldTframe( _tsensor->getSensorFrame(), state);
     _fTw = inverse(_wTf);
 }
+
+void TactileArraySensor::setDeformationMask(const ValueMatrix& dmask, double width, double height){
+	_dmask = dmask;
+	_maskWidth = width;
+	_maskHeight = height;
+}
+
+void TactileArraySensor::reset(const rw::kinematics::State& state){
+	_sdata.getStateCache<ClassState>(state)->reset(state);
+}
+
+void TactileArraySensor::addForceW(const rw::math::Vector3D<>& point,
+               const rw::math::Vector3D<>& force,
+               const rw::math::Vector3D<>& snormal,
+               rw::kinematics::State& state,
+               dynamics::Body::Ptr body)
+{
+	_sdata.getStateCache<ClassState>(state)->addForceW(point,force,snormal,body);
+}
+
+void TactileArraySensor::addForce(const rw::math::Vector3D<>& point,
+              const rw::math::Vector3D<>& force,
+              const rw::math::Vector3D<>& snormal,
+              rw::kinematics::State& state,
+              dynamics::Body::Ptr body)
+{
+	_sdata.getStateCache<ClassState>(state)->addForce(point,force,snormal,body);
+}
+
+void TactileArraySensor::addWrenchToCOM(
+              const rw::math::Vector3D<>& force,
+              const rw::math::Vector3D<>& torque,
+              rw::kinematics::State& state,
+              dynamics::Body::Ptr body)
+{
+
+}
+
+void TactileArraySensor::addWrenchWToCOM(
+              const rw::math::Vector3D<>& force,
+              const rw::math::Vector3D<>& torque,
+              rw::kinematics::State& state,
+              dynamics::Body::Ptr body)
+{
+
+}
+
+//! @copydoc rwlibs::simulation::SimulatedSensor::update
+void TactileArraySensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+	_sdata.getStateCache<ClassState>(state)->update(info,state);
+}
+
+
 
 #ifdef OLD_STUFF
 void TactileArraySensor::update(double dt, rw::kinematics::State& state){

@@ -639,7 +639,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     // check if any contact forces are too large...
     bool largeForces = false;
-    std::vector<rw::sensor::Contact3D> contacts = _bodySensor->getContacts();
+    std::vector<rw::sensor::Contact3D> contacts = _bodySensor->getContacts(state);
     BOOST_FOREACH(rw::sensor::Contact3D& con, contacts){
     	if( con.normalForce >1000 )
     		largeForces = true;
@@ -673,7 +673,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     // record the tactile stuff if enabled
     int fingersWithData = 0;
-    std::vector<Eigen::MatrixXf> datas;
+    std::vector<TactileArrayModel::ValueMatrix> datas;
 
 
     // save tactile data
@@ -743,7 +743,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             int simidx = i;
             // calculate grasp quality
             rw::math::Q qualities( Q::zero(3) );
-            Grasp3D g3d( _bodySensor->getContacts() );
+            Grasp3D g3d( _bodySensor->getContacts(state) );
 
             //Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
             RW_DEBUGS("***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size());
@@ -1155,7 +1155,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
     }
     // calculate grasp quality
     rw::math::Q qualities( Q::zero(3) );
-    Grasp3D g3d( _bodySensor->getContacts() );
+    Grasp3D g3d( _bodySensor->getContacts(state) );
     if(g3d.contacts.size()<1){
         _tactiledatas[simidx].clear();
         _handconfigs[simidx].clear();

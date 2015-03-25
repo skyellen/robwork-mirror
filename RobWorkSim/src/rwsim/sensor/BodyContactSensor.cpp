@@ -27,40 +27,55 @@ using namespace rw::math;
 using namespace rwsim::sensor;
 using namespace rwsim;
 
+namespace {
+
+}
+
 BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Frame* frame):
-        SimulatedTactileSensor(name),
-        _sframe(frame)
+        SimulatedTactileSensor( rw::common::ownedPtr( new SensorModel(name,frame,"Direct mapped tactile body contact sensor."))),
+        _sdata(1, rw::common::ownedPtr( new ClassState()).cast<rw::kinematics::StateCache>())
 {
-    attachTo(frame);
+	add(_sdata);
 }
 
 BodyContactSensor::~BodyContactSensor(){}
 
 void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+	RW_WARN("");
 
-	 //if(_contactsTmp.size()>0)
+	if( !isRegistered() )
+		RW_WARN("BOSY NOT REGISTERED IN STATE YET...");
+
+	//(if(_contactsTmp.size()>0)
      //   std::cout << "Nr contacts in update: " << _contactsTmp.size() << std::endl;
-     _contacts = _contactsTmp;
-     _contactsTmp.clear();
+	ClassState* cstate = _sdata.getStateCache<ClassState>(state);
+	if(cstate==NULL)
+		RW_WARN("CSTATE IS NULL");
 
-     _bodies = _bodiesTmp;
-     _bodiesTmp.clear();
-
+	RW_WARN("");
+	cstate->_contacts = cstate->_contactsTmp;
+	cstate->_contactsTmp.clear();
+	RW_WARN("");
+	cstate->_bodies = cstate->_bodiesTmp;
+	cstate->_bodiesTmp.clear();
+	RW_WARN("");
      //std::cout << "Sensor Forces: ";
      //BOOST_FOREACH(Contact3D& c, _contacts){
      //    std::cout << "--" <<  c.normalForce << "\n";
      //}
 
      // update aux variables
-     _wTf = Kinematics::worldTframe( getSensorFrame(), state);
+     _wTf = Kinematics::worldTframe( getFrame(), state);
      _fTw = inverse(_wTf);
+     RW_WARN("");
 }
 
 
 void BodyContactSensor::reset(const rw::kinematics::State& state){
-    _contacts.clear();
-    _bodies.clear();
-    _wTf = Kinematics::worldTframe( getSensorFrame(), state);
+	ClassState* cstate = _sdata.getStateCache<ClassState>(state);
+	cstate->_contacts.clear();
+	cstate->_bodies.clear();
+    _wTf = Kinematics::worldTframe( getFrame(), state);
     _fTw = inverse(_wTf);
 }
 
@@ -85,7 +100,7 @@ void BodyContactSensor::addForce(const rw::math::Vector3D<>& point,
 {
     //if(body!=NULL)
     //std::cout << "addForce("<< point << force << snormal << std::endl;
-
-    _bodiesTmp.push_back( body );
-    _contactsTmp.push_back( Contact3D(point, snormal, force)  );
+	ClassState* cstate = _sdata.getStateCache<ClassState>(state);
+	cstate->_bodiesTmp.push_back( body );
+	cstate->_contactsTmp.push_back( Contact3D(point, snormal, force)  );
 }

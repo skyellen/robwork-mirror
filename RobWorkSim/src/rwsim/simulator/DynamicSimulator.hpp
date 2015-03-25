@@ -201,6 +201,7 @@ namespace simulator {
 
 		 void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
+		 rwsim::dynamics::DynamicWorkCell::Ptr getDynamicWorkCell(){ return _dwc; }
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 PhysicsEngine::Ptr _pengine;

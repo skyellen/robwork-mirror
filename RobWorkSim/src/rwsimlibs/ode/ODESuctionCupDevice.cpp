@@ -122,8 +122,8 @@ void ODESuctionCupDevice::updateNoRollBack(const rwlibs::simulation::Simulator::
     Body *object = NULL;
 
     //bool inContact = false;
-    std::vector<Body::Ptr> cbodies = _sensor->getBodies();
-    std::vector<Contact3D> contacts = _sensor->getContacts();
+    std::vector<Body::Ptr> cbodies = _sensor->getBodies(state);
+    std::vector<Contact3D> contacts = _sensor->getContacts(state);
 
     // test if the entire mouthpiece is in contact
     //std::cout <<  "Contacts: " << contacts.size() << std::endl;

@@ -25,7 +25,7 @@
  */
 
 #include <vector>
-
+#include <rw/kinematics/State.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <rw/common/Ptr.hpp>
@@ -155,7 +155,7 @@ private:
 	void runAll();
 	void stateMachine(SimState &state, rw::common::Ptr<rwlibs::assembly::AssemblyTask> task, rw::common::Ptr<rwlibs::assembly::AssemblyResult> result);
 	static std::vector<rw::math::Q> orderSolutions(const std::vector<rw::math::Q> &solutions, const rw::math::Q &curQ);
-	bool hasContact(rw::common::Ptr<rwsim::sensor::BodyContactSensor> sensor, rw::common::Ptr<rwsim::dynamics::Body> body);
+	bool hasContact(rw::common::Ptr<rwsim::sensor::BodyContactSensor> sensor, rw::common::Ptr<rwsim::dynamics::Body> body, rw::kinematics::State& state);
 
 private:
 	const rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;

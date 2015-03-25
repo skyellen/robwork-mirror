@@ -149,7 +149,7 @@ namespace control {
 
         void setEnabled(bool enabled){ _enabled=enabled; }
 
-        bool isEnabled(){ return _enabled; };
+        bool isEnabled() const { return _enabled; };
 
         /**
          * @brief Set a FTSensor.
@@ -160,6 +160,9 @@ namespace control {
          * @param sensor [in] a pointer to the FTSensor (must have its frame at one of the joints of the robot).
          */
         void setFTSensor(rw::sensor::FTSensor* sensor);
+
+        rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return NULL; }
+
 
 	protected:
         /**

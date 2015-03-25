@@ -101,7 +101,9 @@ namespace control {
 
         void setEnabled(bool enabled){ _enabled = enabled; };
 
-        bool isEnabled(){ return _enabled; } ;
+        bool isEnabled() const { return _enabled; } ;
+
+        rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return NULL;}
 
 	private:
 		BeamJointController();

@@ -192,9 +192,7 @@ namespace simulator {
 		//! @copydoc Simulator::emitPropertyChanged
 		void emitPropertyChanged();
 
-		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
-			_controllers.push_back(controller);
-		}
+		void addController(rwlibs::simulation::SimulatedController::Ptr controller);
 
 		bool isInitialized(){ return _isSimulatorInitialized;};
 
@@ -208,8 +206,7 @@ namespace simulator {
 		void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
 		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
 
-		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
-
+		void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
 		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
 		const rw::kinematics::FramePairMap<std::vector<dynamics::ContactManifold> >&

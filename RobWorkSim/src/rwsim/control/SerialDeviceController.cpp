@@ -21,6 +21,7 @@ using namespace rw::kinematics;
 
 SerialDeviceController::SerialDeviceController(
 		const std::string& name, DynamicDevice::Ptr ddev):
+		SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,ddev->getKinematicModel()->getBase()))),
 	_ddev(ddev),
 	_time(0.0),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
@@ -45,6 +46,7 @@ SerialDeviceController::SerialDeviceController(
 
 SerialDeviceController::SerialDeviceController(
 		const std::string& name, RigidDevice::Ptr ddev):
+		SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,ddev->getKinematicModel()->getBase()))),
 	_ddev(ddev),
 	_rdev(ddev),
 	_time(0.0),
@@ -571,7 +573,7 @@ void SerialDeviceController::updateFTcontrolWrist(
 
 	RecursiveNewtonEuler dsolver(_rdev);
 
-    Frame* sensorFrame = _ftSensor->getFrame();
+    Frame* sensorFrame = _ftSensor->getSensorModel()->getFrame();
     Transform3D<> sensorToffset = Kinematics::frameTframe(sensorFrame,_taskFrame,state)*endToffset;
     if (_ftSensor != NULL) {
     	Vector3D<> force = inverse(sensorToffset.R())*_ftSensor->getForce();
@@ -782,9 +784,13 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 			//RW_WARN("Finished and no compiled in queue! " << _currentTrajTime << "s");
 			// if no targets are ready then Keep setting the velocity to zero.
 			// TODO: we might need to make sure that the robot does not drift...
+
 			_currentQ = _ddev->getQ(state);
+
 			_currentQd = _ddev->getJointVelocities(state);
+
 			_ddev->setMotorVelocityTargets(Q::zero(_ddev->getKinematicModel()->getDOF()), state);
+
 			return;
 		} else {
 
@@ -812,12 +818,15 @@ void SerialDeviceController::update(const rwlibs::simulation::Simulator::UpdateI
 		//Q target_vel = (next_target_q - _currentQ)/info.dt - _currentQd;
 		//std::cout << _currentTrajTime << ", "<< next_target_vel << std::endl;
 		//_ddev->setMotorVelocityTargets( target_vel, state);
+
 		_ddev->setMotorVelocityTargets( next_target_vel, state);
 
 	} else if(_executingTarget.ftcontrol ){
 		//
 		std::cout << " ftcontrol " << std::endl;
+
 		updateFTcontrolWrist(info, state);
+
 	} else if(_executingTarget.velcontrol ){
 
 	}

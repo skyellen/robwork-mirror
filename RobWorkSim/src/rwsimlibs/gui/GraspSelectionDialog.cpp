@@ -262,7 +262,7 @@ void GraspSelectionDialog::setGraspState(GraspTable::GraspData& data, rw::kinema
 			if(j>=data._tactiledata.size())
 				continue;
 			std::cout << "tsensorname" << j <<": "  << tsensor->getName() << std::endl;
-			tsensor->setTexelData(data._tactiledata[j], state);
+			tsensor->getTactileArrayModel()->setTexelData(data._tactiledata[j], state);
 			j++;
 		}
 	}
