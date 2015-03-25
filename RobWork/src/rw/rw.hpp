@@ -40,4 +40,6 @@
 #include "proximity.hpp"
 #include "graspplanning.hpp"
 
+#include "RobWork.hpp"
+
 #endif // end include guard

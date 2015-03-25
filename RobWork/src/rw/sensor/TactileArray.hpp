@@ -61,6 +61,8 @@ public:
      */
     virtual ~TactileArray(){}
 
+    rw::kinematics::Frame* getFrame() const { return getSensorModel()->getFrame(); }
+
     /**
      * @brief gets the size of an individual tactile cell with coordinates (x,y)
      * @param x
@@ -121,7 +123,8 @@ public:
      * the unit N/m^2.
      * @return matrix of texel pressure values
      */
-    virtual ValueMatrix getTexelData(const rw::kinematics::State& state) const = 0;
+    virtual ValueMatrix& getTexelData( rw::kinematics::State& state) const = 0;
+    virtual const ValueMatrix& getTexelData( const rw::kinematics::State& state) const = 0;
 
     //virtual boost::numeric::ublas::matrix<bool> getMatrixMask() = 0;
 

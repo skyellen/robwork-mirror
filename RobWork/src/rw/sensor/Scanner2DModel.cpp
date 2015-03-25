@@ -15,18 +15,26 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#include "Scan2D.hpp"
+#include "Scanner2DModel.hpp"
 
 using namespace rw::sensor;
-using namespace rw::math;
+using namespace rw::kinematics;
 
-Scan2D::Scan2D():_width(0){};
-
-Scan2D::Scan2D(size_t width): 
-	_width(width),
-	_data(width, Vector3D<float>(0,0,0))
+Scanner2DModel::Scanner2DModel(const std::string& name, double angleRange, int width, rw::kinematics::Frame* frame )
+	: SensorModel(name, frame),_sstate(1, rw::common::ownedPtr( new Scanner2DModelCache(width)).cast<StateCache>() ),
+	  _width(width),_angleRange(angleRange)
 {
+	add(_sstate);
 }
 
-Scan2D::~Scan2D(){};
+
+Scanner2DModel::~Scanner2DModel(){
+}
+
+rw::geometry::PointCloud& Scanner2DModel::getScan(const rw::kinematics::State& state){
+	return _sstate.getStateCache<Scanner2DModelCache>(state)->_cloud;
+}
+
+void Scanner2DModel::setScan(const rw::geometry::PointCloud& data, const rw::kinematics::State& state){
+	_sstate.getStateCache<Scanner2DModelCache>(state)->_cloud = data;
+}

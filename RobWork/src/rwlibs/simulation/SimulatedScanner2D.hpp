@@ -21,13 +21,16 @@
 //! @file SimulatedScanner2D.hpp
 
 #include <rw/math/Constants.hpp>
-#include <rw/sensor/Scan2D.hpp>
 #include <rw/sensor/Scanner2D.hpp>
 #include "FrameGrabber25D.hpp"
 #include "SimulatedSensor.hpp"
+#include <rw/sensor/Scanner2DModel.hpp>
+
 
 namespace rwlibs { namespace simulation {
-    //! @addtogroup simulation
+    // forward declaration
+	class Simulator;
+	//! @addtogroup simulation
 	// @{
 
     /**
@@ -93,7 +96,7 @@ namespace rwlibs { namespace simulation {
         double getFrameRate();
 
         //! @copydoc SimulatedSensor::getScan
-        const rw::sensor::Image25D& getScan() const;
+        const rw::geometry::PointCloud& getScan() const;
 
         //! @copydoc SimulatedSensor::update
         void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -101,10 +104,14 @@ namespace rwlibs { namespace simulation {
         //! @copydoc SimulatedSensor::reset
         void reset(const rw::kinematics::State& state);
 
-        //! @copydoc SimulatedSensor::getSensor
-        rw::sensor::Sensor::Ptr getSensor(){ return _rsensor;}
+        /**
+         * @brief returns a handle to what represents a statefull interface.
+         * The handle will be locked to the simulator
+         * @return
+         */
+        rw::sensor::Scanner2D::Ptr getScanner2DSensor(rwlibs::simulation::Simulator* instance);
 
-        rw::sensor::Scanner2D::Ptr getScanner2DSensor();
+        rw::sensor::Scanner2DModel::Ptr getSensorModel();
 
         //! @copydoc SimulatedSensor::getAngularRange
         virtual double getAngularRange() {
@@ -119,7 +126,7 @@ namespace rwlibs { namespace simulation {
         FrameGrabber25D::Ptr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
-        rw::sensor::Scanner2D::Ptr _rsensor;
+        rw::sensor::Scanner2DModel::Ptr _smodel;
     };
 
 

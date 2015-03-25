@@ -66,7 +66,7 @@ std::vector<Contact3D> TactileArrayUtil::estimateContacts(
     const TactileArray::VertexMatrix& centers = arraySensor.getCenters();
     const TactileArray::VertexMatrix& normals = arraySensor.getNormals();
     const Transform3D<> fTgeom = arraySensor.getTransform();
-    Transform3D<> wTf = Kinematics::worldTframe(arraySensor.getFrame(), state);
+    Transform3D<> wTf = Kinematics::worldTframe(arraySensor.getSensorModel()->getFrame(), state);
 
     for(Eigen::DenseIndex i=0;i<data.rows(); i++){
         for(Eigen::DenseIndex j=0;j<data.cols(); j++){

@@ -27,6 +27,7 @@
 using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rwlibs::simulation;
+using namespace rw::common;
 
 namespace {
 
@@ -34,11 +35,11 @@ class CameraWrapper: public rw::sensor::Camera {
 public:
     SimulatedCamera *_simscanner;
 
-    CameraWrapper(SimulatedCamera *scanner,rw::kinematics::Frame *sframe, const std::string& name):
+    CameraWrapper(SimulatedCamera *scanner, const std::string& name):
         Camera(name, "Simulated Camera"),
         _simscanner(scanner)
     {
-        attachTo(sframe);
+
     }
 
     bool initialize(){ return _simscanner->initialize(); }
@@ -56,20 +57,31 @@ public:
 
 }
 
+SimulatedCamera::SimulatedCamera(const std::string& name, double fov,
+		rw::kinematics::Frame* frame, FrameGrabber::Ptr frameGrabber) :
+		SimulatedSensor(
+				ownedPtr(
+						new CameraModel(
+								rw::math::ProjectionMatrix::makePerspective(fov,
+										frameGrabber->getWidth(),
+										frameGrabber->getHeight(), 0.01, 30),
+								name, frame, "SimulatedCamera with near 0.01 and far field 30"))), _frameRate(30), _dtSum(0.0), _frameGrabber(
+				frameGrabber), _isAcquired(false)
+{
+	_csensor = rw::common::ownedPtr(new CameraWrapper(this,  name));
+}
 
 SimulatedCamera::SimulatedCamera(
-    const std::string& name,
-    rw::kinematics::Frame *frame,
+	rw::sensor::CameraModel::Ptr model,
     FrameGrabber::Ptr frameGrabber)
     :
-    SimulatedSensor(name),
+    SimulatedSensor( model ),
     _frameRate(30),
     _dtSum(0.0),
     _frameGrabber(frameGrabber),
     _isAcquired(false)
 {
-    _csensor = rw::common::ownedPtr( new CameraWrapper(this, frame,  name) );
-    attachTo(frame);
+    _csensor = rw::common::ownedPtr( new CameraWrapper(this,  model->getName()) );
 }
 
 SimulatedCamera::~SimulatedCamera()

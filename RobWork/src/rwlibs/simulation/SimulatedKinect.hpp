@@ -15,10 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_SIMULATION_SimulatedKinnect_HPP_
-#define RWLIBS_SIMULATION_SimulatedKinnect_HPP_
+#ifndef RWLIBS_SIMULATION_SimulatedKinect_HPP_
+#define RWLIBS_SIMULATION_SimulatedKinect_HPP_
 
-//! @file SimulatedKinnect.hpp
+//! @file SimulatedKinect.hpp
 
 #include <rw/common/Ptr.hpp>
 #include <rw/sensor/Scanner25D.hpp>
@@ -26,6 +26,8 @@
 #include "FrameGrabber25D.hpp"
 #include "SimulatedScanner25D.hpp"
 #include <rw/graphics/SceneViewer.hpp>
+#include <rw/sensor/CameraModel.hpp>
+#include <rw/sensor/Scanner25DModel.hpp>
 
 
 namespace rwlibs { namespace simulation {
@@ -33,31 +35,35 @@ namespace rwlibs { namespace simulation {
 	// @{
 
     /**
-     * @brief
+     * @brief Simulates a Kinnect grabbing RGBD images.
      */
-    class SimulatedKinnect : public SimulatedSensor
+    class SimulatedKinect : public SimulatedSensor
     {
     public:
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
          */
-    	SimulatedKinnect(const std::string& name,
-    	                 rw::kinematics::Frame *frame);
+    	SimulatedKinect(const std::string& name, rw::kinematics::Frame *frame);
 
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
          * @param desc [in] description of this scanner
          */
-    	SimulatedKinnect(const std::string& name,
-                         const std::string& desc,
-                         rw::kinematics::Frame *frame);
+    	SimulatedKinect(const std::string& name, const std::string& desc, rw::kinematics::Frame *frame);
+
+    	/**
+    	 * @brief constructor
+    	 * @param camModel [in] the camera model to use
+    	 * @param scannerModel [in] the scanner model to use
+    	 */
+    	SimulatedKinect(rw::sensor::CameraModel::Ptr camModel, rw::sensor::Scanner25DModel::Ptr scannerModel);
 
     	/**
     	 * @brief destructor
     	 */
-    	virtual ~SimulatedKinnect();
+    	virtual ~SimulatedKinect();
 
 
     	void init(rw::graphics::SceneViewer::Ptr drawer);
@@ -86,13 +92,13 @@ namespace rwlibs { namespace simulation {
         bool isDataReady();
 
         //! @copydoc Scanner25D::getRange
-        std::pair<double,double> getRange();
+        std::pair<double,double> getRange() const;
 
         //! @copydoc Scanner25D::getFrameRate
-        double getFrameRate();
+        double getFrameRate() const;
 
         //! @copydoc Scanner25D::getImage
-    	const rw::sensor::Image25D& getScan();
+    	const rw::geometry::PointCloud& getScan();
 
     	const rw::sensor::Image& getImage();
 
@@ -103,7 +109,7 @@ namespace rwlibs { namespace simulation {
     	void reset(const rw::kinematics::State& state);
 
     	//! @copydoc SimulatedSensor::getSensor
-        rw::sensor::Sensor::Ptr getSensor(){ return _rsensor;}
+        rw::sensor::Sensor::Ptr getSensorHandle(rwlibs::simulation::Simulator::Ptr simulator);
 
         /**
          * @brief set to true to enable realistic noise on the scan.
@@ -115,21 +121,34 @@ namespace rwlibs { namespace simulation {
          * @brief returns the vertical field of view
          * @return the vertical field of view
          */
-        double getVerticalFieldOfView() { return _fieldOfView;}
+        double getVerticalFieldOfView() const { return _fieldOfView;}
 
         /**
          * @brief returns the width of the image
          * @return the width of the image
          */
-        int getWidth() { return _width; }
+        int getWidth() const { return _width; }
 
         /**
          * @brief returns the height of the image
          * @return the height of the image
          */
-        int getHeight() { return _height; }
+        int getHeight() const { return _height; }
+
+        /**
+         * @brief get the model of the camera of this kinect
+         */
+        rw::sensor::CameraModel::Ptr getCameraModel(){ return _camModel; }
+
+        /**
+         * @brief get the model of the range scannger of this kinect
+         */
+        rw::sensor::Scanner25DModel::Ptr getScannerModel(){ return _scannerModel; }
 
     private:
+        rw::sensor::CameraModel::Ptr _camModel;
+        rw::sensor::Scanner25DModel::Ptr _scannerModel;
+
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned, _noiseEnabled;
         rw::sensor::Scanner25D::Ptr _rsensor;
@@ -144,7 +163,8 @@ namespace rwlibs { namespace simulation {
         int _width, _height;
 
         rw::sensor::Image::Ptr _img;
-        rw::sensor::Image25D::Ptr _scan;
+        rw::geometry::PointCloud::Ptr _scan;
+
 
 
     };
@@ -153,4 +173,4 @@ namespace rwlibs { namespace simulation {
 }
 }
 
-#endif /* SimulatedKinnect_HPP_ */
+#endif /* SimulatedKinect_HPP_ */

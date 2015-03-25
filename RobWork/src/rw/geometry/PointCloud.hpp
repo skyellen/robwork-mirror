@@ -39,6 +39,8 @@ namespace geometry {
 	public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<PointCloud> Ptr;
+        //! type of point used internally in pointcloud
+        typedef rw::math::Vector3D<float> point_type;
 
         /**
          * @brief constructor
@@ -57,10 +59,11 @@ namespace geometry {
 		 */
 		virtual ~PointCloud(){};
 
+		//! @copydoc GeometryData::getType
 		 GeometryType getType() const{ return GeometryData::PointCloud; };
 
 		/**
-		 * @brief gets the number of triangles in the triangle array.
+		 * @brief gets the number of points in the point cloud.
 		 */
 		virtual size_t size() const { return _data.size(); };
 

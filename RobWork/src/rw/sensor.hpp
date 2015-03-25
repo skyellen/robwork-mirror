@@ -41,7 +41,5 @@
 #include "./sensor/SensorData.hpp"
 #include "./sensor/Image.hpp"
 #include "./sensor/Contact3D.hpp"
-#include "./sensor/Image25D.hpp"
-#include "./sensor/Scan2D.hpp"
 
 #endif /* SENSOR_HPP_ */

@@ -26,9 +26,7 @@
 
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/Scan2D.hpp>
-#include <rw/sensor/Image25D.hpp>
-
+#include <rw/geometry/PointCloud.hpp>
 #include <rw/models/DeformableObject.hpp>
 #include <rw/models/RigidObject.hpp>
 
@@ -243,19 +241,9 @@ namespace graphics {
          * @param scan [in] the scan
          * @param frame [in] the frame where the drawable is to be placed
          * @param dmask [in] the drawable mask
-         * @return the drawable node geometry
-         */
-        DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-
-        /**
-         * @brief create and add a drawable node of a scan to the scene
-         * @param name [in] name of drawable node
-         * @param scan [in] the scan
-         * @param frame [in] the frame where the drawable is to be placed
-         * @param dmask [in] the drawable mask
          * @return the drawable node
          */
-        DrawableNode::Ptr addScan(const std::string& name, const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+        DrawableNode::Ptr addScan(const std::string& name, const rw::geometry::PointCloud& scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
 
         /**
          * @brief create and add a drawable node of a render, to the scene

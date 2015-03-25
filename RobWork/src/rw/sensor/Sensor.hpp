@@ -25,9 +25,7 @@
 
 #include <string>
 #include <rw/common/PropertyMap.hpp>
-#include <rw/kinematics/StateStructure.hpp>
-#include <rw/kinematics/Stateless.hpp>
-
+#include "SensorModel.hpp"
 
 namespace rw {
     namespace kinematics { class Frame;}
@@ -40,9 +38,12 @@ namespace rw { namespace sensor {
     /* @{ */
 
     /**
-     * @brief a generel kinematic sensor interface. The sensor
+     * @brief a generel hardware sensor interface. The sensor should interface
+     * to a statefull instance of either a real world sensor or a simulated
+     * sensor. The sensor interface acts as a realistic handle to controlling
+     * some specific instance of a sensor.
      */
-    class Sensor: public rw::kinematics::Stateless
+    class Sensor
     {
     protected:
         /**
@@ -96,28 +97,31 @@ namespace rw { namespace sensor {
          *
          * The frame can be NULL.
          */
-        kinematics::Frame* getFrame() const { return _frame; }
+        SensorModel::Ptr getSensorModel() const { return _sensormodel; }
 
         /**
          * @brief Sets the frame to which the sensor should be attached
          *
          * @param frame The frame, which can be NULL
          */
-        virtual void attachTo(kinematics::Frame* frame) { _frame = frame; }
+        virtual void setSensorModel(SensorModel::Ptr smodel) { _sensormodel = smodel; }
 
         /**
          * @brief gets the propertymap of this sensor
          */
-        rw::common::PropertyMap& getPropertyMap(){
-            return _propertyMap;
-        }
+        rw::common::PropertyMap& getPropertyMap(){ return _propertyMap; }
+
+        /**
+         * @brief gets the propertymap of this sensor
+         */
+        const rw::common::PropertyMap& getPropertyMap() const { return _propertyMap; }
 
     private:
         Sensor(){};
         std::string _name;
         std::string _description;
-        kinematics::Frame* _frame;
         rw::common::PropertyMap _propertyMap;
+        SensorModel::Ptr _sensormodel;
     };
 
     /** @} */

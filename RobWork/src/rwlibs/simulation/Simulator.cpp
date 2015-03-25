@@ -17,3 +17,22 @@
 
 #include "Simulator.hpp"
 
+using namespace rwlibs::simulation;
+
+rw::sensor::Sensor::Ptr Simulator::getSensorHandle(SimulatedSensor* ssensor, const std::string& type){
+	if(_simsensorToHandle.find(std::make_pair(ssensor,type))==_simsensorToHandle.end()){
+		return NULL;
+	}
+	return _simsensorToHandle[std::make_pair(ssensor,type)];
+}
+
+bool Simulator::hasHandle(SimulatedSensor* ssensor, const std::string& type){
+	if(_simsensorToHandle.find(std::make_pair(ssensor,type))==_simsensorToHandle.end()){
+		return false;
+	}
+	return true;
+}
+
+void Simulator::addHandle(SimulatedSensor* ssensor, const std::string& type, rw::sensor::Sensor::Ptr sensor){
+	_simsensorToHandle[std::make_pair(ssensor,type)] = sensor;
+}

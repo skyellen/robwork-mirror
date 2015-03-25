@@ -43,7 +43,7 @@ namespace rwlibs { namespace simulation {
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
         SimulatedScanner1D(const std::string& name,
-                FrameGrabber25DPtr framegrabber);
+                FrameGrabber25D::Ptr framegrabber);
 
         /**
          * @brief constructor
@@ -53,7 +53,7 @@ namespace rwlibs { namespace simulation {
          */
         SimulatedScanner1D(const std::string& name,
                 const std::string& desc,
-                FrameGrabber25DPtr framegrabber);
+                FrameGrabber25D::Ptr framegrabber);
 
         /**
          * @brief destructor
@@ -90,7 +90,7 @@ namespace rwlibs { namespace simulation {
         double getFrameRate();
 
         //! @copydoc Scanner1D::getImage
-        const rw::sensor::Scan2D& getImage();
+        const rw::geometry::PointCloud& getImage();
 
         //! @copydoc SimulatedSensor::update
         void update(double dt, rw::kinematics::State& state);
@@ -103,13 +103,10 @@ namespace rwlibs { namespace simulation {
 
 
         //! @copydoc SimulatedSensor::getData
-        virtual const rw::sensor::Scan2D& getData() {
+        virtual const rw::geometry::PointCloud& getData() {
             return _scan;
         }
 
-        rw::sensor::Image25D& getImage25D() {
-            return _image;
-        }
         //! @copydoc SimulatedSensor::getResolution
         virtual double getResolution() {
             return _framegrabber->getFieldOfViewY()*rw::math::Deg2Rad/_scan.getWidth();
@@ -120,8 +117,7 @@ namespace rwlibs { namespace simulation {
         FrameGrabber25D::Ptr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
-        rw::sensor::Scan2D _scan;
-        rw::sensor::Image25D _image;
+        rw::geometry::PointCloud _scan;
     };
 
     /**

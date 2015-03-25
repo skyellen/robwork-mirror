@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "SimulatedKinnect.hpp"
+#include "SimulatedKinect.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Constants.hpp>
@@ -25,6 +25,7 @@ using namespace rwlibs::simulation;
 using namespace rw::sensor;
 using namespace rw::math;
 using namespace rw::graphics;
+using namespace rw::common;
 
 namespace {
 /*
@@ -53,10 +54,38 @@ namespace {
 
     };
 */
+
+	class KinectSensorModel: public SensorModel {
+	public:
+		rw::sensor::CameraModel::Ptr _camModel;
+		rw::sensor::Scanner25DModel::Ptr _scanModel;
+
+		KinectSensorModel(rw::sensor::CameraModel::Ptr camModel, rw::sensor::Scanner25DModel::Ptr scanModel):
+			SensorModel(camModel->getName(),camModel->getFrame()),_camModel(camModel),_scanModel(scanModel)
+		{
+
+		}
+		static rw::common::Ptr<KinectSensorModel> make(rw::sensor::CameraModel::Ptr camModel, rw::sensor::Scanner25DModel::Ptr scanModel){
+			return rw::common::ownedPtr( new KinectSensorModel(camModel,scanModel));
+		}
+	};
+
+	rw::common::Ptr<CameraModel> makeDefaultCameraModel(const std::string& name,
+			rw::kinematics::Frame *frame, double fov, int w, int h, double near, double far)
+	{
+		return rw::common::ownedPtr( new CameraModel(ProjectionMatrix::makePerspective(fov*Deg2Rad,w,h,near,far), name, frame ) );
+	}
+
+	rw::common::Ptr<Scanner25DModel> makeDefaultScannerModel(const std::string& name,
+			rw::kinematics::Frame *frame, double fov, int w, int h, double near, double far)
+	{
+		return rw::common::ownedPtr( new Scanner25DModel(name, w, h, frame ) );
+	}
+
 }
 
-SimulatedKinnect::SimulatedKinnect(const std::string& name, rw::kinematics::Frame *frame):
-		SimulatedSensor(name),
+SimulatedKinect::SimulatedKinect(const std::string& name, rw::kinematics::Frame *frame):
+		SimulatedSensor( KinectSensorModel::make( makeDefaultCameraModel(name,frame,43,640,480,0.01,6), makeDefaultScannerModel(name,frame,43,640,480,0.01,6) )),
 		_frameRate(1),
         _dtsum(0),
 		_noiseEnabled(true),
@@ -67,16 +96,15 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name, rw::kinematics::Fram
         _width(640),
         _height(480),
         _img(new rw::sensor::Image( _width, _height, rw::sensor::Image::RGB, rw::sensor::Image::Depth8U )),
-        _scan(new rw::sensor::Image25D(_width,_height))
+        _scan(new rw::geometry::PointCloud(_width,_height))
 {
     //_rsensor = rw::common::ownedPtr( new Scanner25DWrapper(this, frame,  name) );
-    attachTo(frame);
 }
 
-SimulatedKinnect::SimulatedKinnect(const std::string& name,
+SimulatedKinect::SimulatedKinect(const std::string& name,
 		const std::string& desc,
 		rw::kinematics::Frame *frame):
-        SimulatedSensor(name),
+		SimulatedSensor( KinectSensorModel::make( makeDefaultCameraModel(name,frame,43,640,480,0.01,6), makeDefaultScannerModel(name,frame,43,640,480,0.01,6) )),
 		_frameRate(30),
 		_dtsum(0),
         _noiseEnabled(true),
@@ -87,16 +115,32 @@ SimulatedKinnect::SimulatedKinnect(const std::string& name,
         _width(640),
         _height(480),
         _img(new rw::sensor::Image( _width, _height, rw::sensor::Image::RGB, rw::sensor::Image::Depth8U )),
-        _scan(new rw::sensor::Image25D(_width,_height))
+        _scan(new rw::geometry::PointCloud(_width,_height))
 {
 
     //_rsensor = rw::common::ownedPtr( new Scanner25DWrapper(this, frame,  name) );
-    attachTo(frame);
 }
 
-SimulatedKinnect::~SimulatedKinnect(){}
+SimulatedKinect::SimulatedKinect(rw::sensor::CameraModel::Ptr camModel, rw::sensor::Scanner25DModel::Ptr scannerModel):
+	SimulatedSensor( KinectSensorModel::make(camModel,scannerModel)),
+	_frameRate(1),
+    _dtsum(0),
+	_noiseEnabled(true),
+    _near(0.01),
+    _far(6),
+    _fieldOfView(43),
+    _grabSingleFrame(false),
+    _width(640),
+    _height(480),
+    _img(new rw::sensor::Image( _width, _height, rw::sensor::Image::RGB, rw::sensor::Image::Depth8U )),
+    _scan(new rw::geometry::PointCloud(_width,_height))
+{
 
-void SimulatedKinnect::init(rw::graphics::SceneViewer::Ptr drawer){
+}
+
+SimulatedKinect::~SimulatedKinect(){}
+
+void SimulatedKinect::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
 
     SceneViewer::View::Ptr view = _drawer->createView("CameraSensorView");
@@ -126,45 +170,45 @@ void SimulatedKinnect::init(rw::graphics::SceneViewer::Ptr drawer){
 }
 
 
-void SimulatedKinnect::open(){
+void SimulatedKinect::open(){
     if(_drawer==NULL)
         RW_THROW("The SimulatedKinect sensor has not been properly initialized, please call init(...)");
 	_isOpenned = true;
     _dtsum = 0;
 }
 
-bool SimulatedKinnect::isOpen(){
+bool SimulatedKinect::isOpen(){
 	return _isOpenned;
 }
 
-void SimulatedKinnect::close(){
+void SimulatedKinect::close(){
 	_isOpenned = false;
 }
 
-void SimulatedKinnect::acquire(){
+void SimulatedKinect::acquire(){
 	if(!_isOpenned)
 		RW_THROW("Scanner has not been openned yet!");
 	_isAcquired = false;
 	_grabSingleFrame = true;
 }
 
-bool SimulatedKinnect::isDataReady(){
+bool SimulatedKinect::isDataReady(){
 	return _isAcquired;
 }
 
-std::pair<double,double> SimulatedKinnect::getRange(){
+std::pair<double,double> SimulatedKinect::getRange() const{
 	return std::make_pair(_near, _far);
 }
 
-double SimulatedKinnect::getFrameRate(){
+double SimulatedKinect::getFrameRate() const {
 	return _frameRate;
 }
 
-const Image& SimulatedKinnect::getImage(){
+const Image& SimulatedKinect::getImage(){
     return *_img;
 }
 
-const Image25D& SimulatedKinnect::getScan(){
+const rw::geometry::PointCloud& SimulatedKinect::getScan(){
     return *_scan;
 }
 
@@ -180,7 +224,7 @@ namespace {
         return p00 + p10*r + p01*d + p20*r*r + p11*r*d + p02*d*d;
     }
 
-    void applyNoise(rw::sensor::Image25D::Ptr scan){
+    void applyNoise(rw::geometry::PointCloud::Ptr scan){
 
         // walk through data and change z accordingly
         std::vector<Vector3D<float> > &data = scan->getData();
@@ -205,13 +249,20 @@ namespace {
 
 }
 
-void SimulatedKinnect::update(const Simulator::UpdateInfo& info, rw::kinematics::State& state){
+void SimulatedKinect::update(const Simulator::UpdateInfo& info, rw::kinematics::State& state){
     if(!_isOpenned)
         return;
     if( _frameRate<0.00001){
         if(_grabSingleFrame){
             _grabSingleFrame=false;
             rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(getFrame(), state);
+
+            Image::Ptr img = _camModel->getImage(state);
+            if(img==NULL){
+            	img = ownedPtr( new rw::sensor::Image( _width, _height, rw::sensor::Image::RGB, rw::sensor::Image::Depth8U ) );
+            	_camModel->setImage(img, state);
+            }
+
             _view->_viewCamera->setTransform( wTf );
             // the image is grabbed in the negative z-axis
             _drawer->renderView(_view);
@@ -232,6 +283,13 @@ void SimulatedKinnect::update(const Simulator::UpdateInfo& info, rw::kinematics:
 
         rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(getFrame(), state);
         _view->_viewCamera->setTransform( wTf );
+        Image::Ptr img = _camModel->getImage(state);
+        if(img==NULL){
+        	img = ownedPtr( new rw::sensor::Image( _width, _height, rw::sensor::Image::RGB, rw::sensor::Image::Depth8U ) );
+        	_camModel->setImage(img, state);
+        }
+
+        _view->_camGroup->setCopyToImage( img ); // get the image from the relevant state
         // the image is grabbed in the negative z-axis
         _drawer->renderView(_view);
 
@@ -242,8 +300,13 @@ void SimulatedKinnect::update(const Simulator::UpdateInfo& info, rw::kinematics:
     }
 }
 
-void SimulatedKinnect::reset(const rw::kinematics::State& state){
+void SimulatedKinect::reset(const rw::kinematics::State& state){
 
 }
+
+rw::sensor::Sensor::Ptr SimulatedKinect::getSensorHandle(rwlibs::simulation::Simulator::Ptr simulator){
+	return _rsensor;
+}
+
 
 

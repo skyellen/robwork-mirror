@@ -26,8 +26,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/Scan2D.hpp>
-#include <rw/sensor/Image25D.hpp>
+#include <rw/geometry/PointCloud.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/geometry.hpp>
 
@@ -70,8 +69,8 @@ namespace graphics {
             rw::geometry::Geometry::Ptr geom;
             double frameSize;
             rw::sensor::Image::Ptr img;
-            rw::sensor::Scan2D::Ptr scan;
-            rw::sensor::Image25D::Ptr scan25;
+            rw::geometry::PointCloud::Ptr scan;
+            rw::geometry::PointCloud::Ptr scan25;
             // TODO: lights
 
 
@@ -241,19 +240,9 @@ namespace graphics {
          * @param scan [in] the scan
          * @param frame [in] the frame where the drawable is to be placed
          * @param dmask [in] the drawable mask
-         * @return the drawable node geometry
-         */
-        DrawableProxy::Ptr addScan(const std::string& name, rw::sensor::Scan2D::Ptr scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
-
-        /**
-         * @brief create and add a drawable node of a scan to the scene
-         * @param name [in] name of drawable node
-         * @param scan [in] the scan
-         * @param frame [in] the frame where the drawable is to be placed
-         * @param dmask [in] the drawable mask
          * @return the drawable node
          */
-        DrawableProxy::Ptr addScan(const std::string& name, rw::sensor::Image25D::Ptr scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
+        DrawableProxy::Ptr addScan(const std::string& name, rw::geometry::PointCloud::Ptr scan, rw::kinematics::Frame* frame, int dmask=DrawableNode::Virtual);
 
         /**
          * @brief create and add a drawable node of a render, to the scene

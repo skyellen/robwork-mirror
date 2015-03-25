@@ -39,6 +39,8 @@ namespace sensor {
  */
 class FTSensor : public Sensor {
 public:
+	typedef rw::common::Ptr<FTSensor> Ptr;
+
     /**
      * @param name
      * @param frame

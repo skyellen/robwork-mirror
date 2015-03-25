@@ -25,12 +25,15 @@
 #include "FrameGrabber25D.hpp"
 #include "SimulatedSensor.hpp"
 
+#include <rw/sensor/Scanner25DModel.hpp>
+
 namespace rwlibs { namespace simulation {
     //! @addtogroup simulation
 	// @{
 
     /**
-     * @brief
+     * @brief a simulated range scanner for 2.5D images, that is basically
+     * pointclouds without color information.
      */
     class SimulatedScanner25D : public SimulatedSensor
     {
@@ -90,7 +93,7 @@ namespace rwlibs { namespace simulation {
         double getFrameRate();
 
         //! @copydoc Scanner25D::getImage
-    	const rw::sensor::Image25D& getScan();
+    	const rw::geometry::PointCloud& getScan();
 
     	//! @copydoc SimulatedSensor::update
         void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -98,21 +101,17 @@ namespace rwlibs { namespace simulation {
     	//! @copydoc SimulatedSensor::reset
     	void reset(const rw::kinematics::State& state);
 
-    	//! @copydoc SimulatedSensor::getSensor
-        rw::sensor::Sensor::Ptr getSensor(){ return _rsensor;}
+    	//! @copydoc rw::simulation::SimulatedSensor::getSensorHandle
+        rw::sensor::Sensor::Ptr getSensorHandle(rwlibs::simulation::Simulator::Ptr instance);
 
-        rw::sensor::Scanner25D::Ptr getScanner25DSensor(){ return _rsensor;}
+    	//! get instance of scanner
+        rw::sensor::Scanner25D::Ptr getScanner25DSensor(rwlibs::simulation::Simulator::Ptr instance);
+
     private:
-        FrameGrabber25DPtr _framegrabber;
+        FrameGrabber25D::Ptr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
-        rw::sensor::Scanner25D::Ptr _rsensor;
     };
-
-    /**
-     * @brief Definition of pointer to SimulatedScanner25D
-     */
-    typedef rw::common::Ptr<SimulatedScanner25D> SimulatedScanner25DPtr;
 
     //! @}
 }

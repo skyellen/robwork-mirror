@@ -1,4 +1,14 @@
 SET(FILES_CPP
+  SensorModel.cpp
+  CameraModel.cpp
+  
+  FTSensorModel.cpp
+  Scanner2DModel.cpp
+  Scanner25DModel.cpp
+  StereoCameraModel.cpp
+  RGBDCameraModel.cpp
+  TactileArrayModel.cpp
+  
   Sensor.cpp
   
   Camera.cpp
@@ -7,20 +17,16 @@ SET(FILES_CPP
   CameraListener.cpp
   Image.cpp
   ImageUtil.cpp
-  
   TactileArray.cpp
   TactileArrayUtil.cpp
   FTSensor.cpp
-  
   Scanner.cpp
   Scanner1D.cpp
   Scanner2D.cpp
-  Scan2D.cpp
   Scanner25D.cpp
-  Image25D.cpp
-  
   Contact2D.cpp
   Contact3D.cpp
+  
 )
 
 SET(FILES_HPP
@@ -40,9 +46,7 @@ SET(FILES_HPP
   Scanner.hpp
   Scanner1D.hpp
   Scanner2D.hpp
-  Scan2D.hpp
   Scanner25D.hpp
-  Image25D.hpp
 
   Contact2D.hpp
   Contact3D.hpp

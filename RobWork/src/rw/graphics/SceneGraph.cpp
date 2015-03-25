@@ -375,7 +375,7 @@ namespace {
             _color = color;
         }
         void setCopyToImage(rw::sensor::Image::Ptr img){}
-        void setCopyToScan25D(rw::sensor::Image25D::Ptr img){}
+        void setCopyToScan25D(rw::geometry::PointCloud::Ptr img){}
         void setMultiSample(int samples){};
         void setMainCamera(SceneCamera::Ptr cam){
             _maincam = cam;

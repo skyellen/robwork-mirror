@@ -16,15 +16,16 @@
  ********************************************************************************/
 
 
-#ifndef RW_SENSOR_SENSORMODEL_HPP
-#define RW_SENSOR_SENSORMODEL_HPP
+#ifndef RW_MODELS_CONTROLLERMODEL_HPP
+#define RW_MODELS_CONTROLLERMODEL_HPP
 
 /**
- * @file Sensor.hpp
+ * @file ControllerModel.hpp
  */
 
 #include <string>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Stateless.hpp>
 
 
@@ -33,90 +34,91 @@ namespace rw {
     namespace models { class WorkCell;}
 } // end namespaces
 
-namespace rw { namespace sensor {
+namespace rw { namespace models {
 
-    /** @addtogroup sensor */
+    /** @addtogroup models */
     /* @{ */
 
     /**
-     * @brief a general sensormodel interface. The sensormodel describe the model of a sensor
-     * and define the data that are part of the State. Much like Device, which describe
-     * the kinematic model of a robot. A sensormodel should have a name id and be associated,
-     * referenced to some frame in the workcell.
+     * @brief Interface to allow modelling of different types of controllers.
+     * A controller is an instance that takes an input manipulates it to an output
+     * that in effect controls something. As such controllers vary greatly and have
+     * only little in common.
      */
-    class SensorModel: public rw::kinematics::Stateless
+    class ControllerModel: public rw::kinematics::Stateless
     {
     public:
 
         //! smart pointer type
-        typedef rw::common::Ptr<SensorModel> Ptr;
+        typedef rw::common::Ptr<ControllerModel> Ptr;
 
     	/**
          * @brief constructor
-         * @param name [in] the name of this sensor
-         * @param frame [in] the frame that the sensor is referenced to
+         * @param name [in] the name of this controllermodel
+         * @param frame [in] the frame to which this controller is attached/associated.
          */
-    	SensorModel(const std::string& name, kinematics::Frame* frame);
+    	ControllerModel(const std::string& name, kinematics::Frame* frame);
 
         /**
          * @brief constructor
-         * @param name [in] the name of this sensor
-         * @param frame [in] the frame that the sensor is referenced to
-         * @param description [in] description of the sensor
+         * @param name [in] the name of this controllermodel
+         * @param frame [in] the frame to which this controller is attached/associated.
+         * @param description [in] description of the controller
          */
-        SensorModel(const std::string& name, kinematics::Frame* frame, const std::string& description);
+    	ControllerModel(const std::string& name, kinematics::Frame* frame, const std::string& description);
 
         //! destructor
-        virtual ~SensorModel(){}
+        virtual ~ControllerModel(){}
 
         /**
-         * @brief sets the name of this sensor
-         * @param name [in] name of this sensor
+         * @brief sets the name of this controllermodel
+         * @param name [in] name of this controllermodel
          */
         void setName(const std::string& name) { _name = name; }
 
         /**
-         * @brief sets the description of this sensor
-         * @param description [in] description of this sensor
+         * @brief sets the description of this controllermodel
+         * @param description [in] description of this controllermodel
          */
         void setDescription(const std::string& description)
         { _description = description; }
 
         /**
-         * @brief returns the name of this sensor
-         * @return name of sensor
+         * @brief returns the name of this controllermodel
+         * @return name of controllermodel
          */
         const std::string& getName() const { return _name; }
 
         /**
-         * @brief returns a description of this sensor
-         * @return reference to this sensors description
+         * @brief returns a description of this controllermodel
+         * @return reference to this controllermodels description
          */
         const std::string& getDescription() const { return _description; }
 
         /**
-         * @brief The frame to which the sensor is attached.
+         * @brief The frame to which the controllermodel is attached.
          *
          * The frame can be NULL.
          */
         kinematics::Frame* getFrame() const { return _frame; }
 
         /**
-         * @brief Sets the frame to which the sensor should be attached
+         * @brief Sets the frame to which the controllermodel should be attached
          *
          * @param frame The frame, which can be NULL
          */
         virtual void attachTo(kinematics::Frame* frame) { _frame = frame; }
 
         /**
-         * @brief gets the propertymap of this sensor
+         * @brief gets the propertymap of this controllermodel
          */
-        rw::common::PropertyMap& getPropertyMap() { return _propertyMap; }
+        rw::common::PropertyMap& getPropertyMap(){return _propertyMap;}
 
         /**
-         * @brief gets the propertymap of this sensor
+         * @brief gets the propertymap of this controllermodel
          */
-        const rw::common::PropertyMap& getPropertyMap() const { return _propertyMap; }
+        const rw::common::PropertyMap& getPropertyMap() const {return _propertyMap;}
+
     private:
         std::string _name;
         std::string _description;

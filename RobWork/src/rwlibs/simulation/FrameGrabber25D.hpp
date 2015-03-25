@@ -23,7 +23,7 @@
  * @file FrameGrabber.hpp
  */
 
-#include <rw/sensor/Image25D.hpp>
+#include <rw/geometry/PointCloud.hpp>
 #include <rw/kinematics/Frame.hpp>
 
 namespace rwlibs { namespace simulation {
@@ -48,7 +48,7 @@ namespace rwlibs { namespace simulation {
             _width(width),
             _height(height)
         {
-            _img = new rw::sensor::Image25D( (int)width, (int)height );
+            _img = new rw::geometry::PointCloud( (int)width, (int)height );
         }
 
         /**
@@ -63,13 +63,13 @@ namespace rwlibs { namespace simulation {
          * @brief returns the width of the image
          * @return the height of the image
          */
-        size_t getWidth() { return _img->getWidth(); }
+        size_t getWidth() const { return _img->getWidth(); }
 
         /**
          * @brief returns the height of the image
          * @return the height of the image
          */
-        size_t getHeight() { return _img->getHeight(); }
+        size_t getHeight() const { return _img->getHeight(); }
 
 
         /**
@@ -88,14 +88,14 @@ namespace rwlibs { namespace simulation {
             delete _img;
             _width = width;
             _height = height;
-            _img = new rw::sensor::Image25D((int)width, (int)height);
+            _img = new rw::geometry::PointCloud((int)width, (int)height);
         };
 
         /**
          * @brief returns the image
          * @return the image
          */
-        virtual rw::sensor::Image25D& getImage() { return *_img; }
+        virtual rw::geometry::PointCloud& getImage() { return *_img; }
 
 
         /**
@@ -124,7 +124,7 @@ namespace rwlibs { namespace simulation {
 
     protected:
         //! @brief The image
-        rw::sensor::Image25D *_img;
+        rw::geometry::PointCloud *_img;
         size_t _width;
         size_t _height;
 

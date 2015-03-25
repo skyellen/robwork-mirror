@@ -9,6 +9,7 @@ SET(FILES_CPP
   #DeviceJacobian.cpp
   #TimeMetricUtil.cpp
   ConveyorItem.cpp
+  ControllerModel.cpp
   Device.cpp
   JointDevice.cpp
   VirtualJoint.cpp
@@ -36,6 +37,8 @@ SET(FILES_CPP
   RigidObject.cpp
   DeformableObject.cpp
   SE3Device.cpp
+  
+  
 )
 
 SET(FILES_HPP
@@ -47,6 +50,7 @@ SET(FILES_HPP
   # ConveyorSegment.hpp
   # DeviceJacobian.hpp 
   #TimeMetricUtil.hpp
+  ControllerModel.hpp
   Models.hpp
   ConveyorItem.hpp
   Device.hpp

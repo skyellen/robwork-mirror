@@ -492,14 +492,7 @@ DrawableNode::Ptr WorkCellScene::addImage(const std::string& name,const rw::sens
     return drawable;
 }
 
-DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask){
-    DrawableNode::Ptr drawable = _scene->makeDrawable(name, scan);
-    drawable->setMask(dmask);
-    addDrawable(drawable, frame);
-    return drawable;
-}
-
-DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask){
+DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::geometry::PointCloud& scan, rw::kinematics::Frame* frame, int dmask){
     DrawableNode::Ptr drawable = _scene->makeDrawable(name, scan);
     drawable->setMask(dmask);
     addDrawable(drawable, frame);

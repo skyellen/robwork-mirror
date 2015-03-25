@@ -16,20 +16,21 @@
  ********************************************************************************/
 
 
-#ifndef RW_SENSOR_STEREOCAMERA_HPP
-#define RW_SENSOR_STEREOCAMERA_HPP
+#ifndef RW_SENSOR_STEREOCAMERAMODEL_HPP
+#define RW_SENSOR_STEREOCAMERAMODEL_HPP
 
 /**
- * @file StereoCamera.hpp
+ * @file StereoCameraModel.hpp
  */
 
 #include "Image.hpp"
-#include "Sensor.hpp"
-#include "CameraListener.hpp"
+
+#include "SensorModel.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/ProjectionMatrix.hpp>
 
 namespace rw { namespace sensor {
    
@@ -48,10 +49,10 @@ namespace rw { namespace sensor {
     * which give the pose of the cameras relative some external frame.
     *
     */
-   class StereoCamera : public Sensor {
+   class StereoCameraModel : public SensorModel {
       public:
          //! @brief smart pointer type to this class
-         typedef rw::common::Ptr<StereoCamera> Ptr;
+         typedef rw::common::Ptr<StereoCameraModel> Ptr;
 
          //! @brief output calibration file format for SaveCalibration()
          enum CalibrationFormat {
@@ -64,32 +65,39 @@ namespace rw { namespace sensor {
             VERTICAL
          };
          
-      protected:
          /**
           * @brief constructor
           * @param name [in] name of sensor
+          * @param fov [in] horizontal field of view
+          * @param width [in] width of image
+          * @param height [in] height of image
+          * @param TL [in] transform from sensor frame to left camera frame
+          * @param TR [in] transform from sensor frame to right camera frame
+          * @param frame [in] sensor frame
           * @param modelInfo [in] info string
           */
-         StereoCamera(const std::string& name,
-                      const std::string& modelInfo);
-         
-         /**
-          * @brief sets the camera model information
-          * @param info [in] information of the camera
-          */
-         void setModelInfo(const std::string info) { _modelInfo = info; }
-      
-      public:
+         StereoCameraModel(const std::string& name,
+        		 	 	 double fov, double width, double height,
+                         const rw::math::Transform3D<>& TL,
+                         const rw::math::Transform3D<>& TR,
+        		 	 	 rw::kinematics::Frame* frame,
+        		 	 	 const std::string& modelInfo="");
          /**
           * @brief destructor
           */
-         virtual ~StereoCamera();
-         
-         /**
-          * @brief returns the camera model information (version, type, size, etc.)
-          * @return camera model information
-          */
-         virtual std::string getModelInfo() const { return _modelInfo;};
+         virtual ~StereoCameraModel();
+
+         //! get left image
+         Image::Ptr getLeftImage(const rw::kinematics::State& state);
+
+         //! set left image
+         void setLeftImage(Image::Ptr img, rw::kinematics::State& state);
+
+         //! get right image
+         Image::Ptr getRightImage(const rw::kinematics::State& state);
+
+         //! set right image
+         void setRightImage(Image::Ptr img, rw::kinematics::State& state);
          
          /**
           * @brief utility function for saving a stereo calibration to a file
@@ -129,24 +137,49 @@ namespace rw { namespace sensor {
                                      const std::vector<double>& dist = std::vector<double>(4, 0.0),
                                      FOVDirection direction = HORIZONTAL,
                                      CalibrationFormat format = OPENCV);
-         
-      protected:
-         //! name of camera model information
-         std::string _modelInfo;
-      
       private:
-         StereoCamera(const StereoCamera&);
-         StereoCamera& operator=(const StereoCamera&);
+
+         //! cache to allow storing state information
+         class StereoCameraModelCache: public rw::kinematics::StateCache {
+     	public:
+     		typedef rw::common::Ptr<StereoCameraModelCache> Ptr;
+     		rw::common::Ptr<rw::sensor::Image> _leftImage,_rightImage;
+
+     		//! constructor
+     		StereoCameraModelCache()
+     		{
+     		};
+
+     		//! @copydoc rw::kinematics::StateCache::size
+     		size_t size() const{
+     			size_t stmp = 0;
+     			if(_leftImage!=NULL)
+     				stmp+=_leftImage->getDataSize();
+     			if(_rightImage!=NULL)
+     				stmp+=_rightImage->getDataSize();
+     			return stmp;
+     		};
+
+     		//! @copydoc rw::kinematics::StateCache::clone
+     		virtual rw::common::Ptr<StateCache> clone() const{
+     			StereoCameraModelCache::Ptr cache = rw::common::ownedPtr( new StereoCameraModelCache(*this) );
+     			if(_leftImage!=NULL)
+     				cache->_leftImage = rw::common::ownedPtr( new Image( *_leftImage ));
+     			if(_rightImage!=NULL)
+     				cache->_rightImage = rw::common::ownedPtr( new Image( *_rightImage ));
+     			return cache;
+     		};
+     	};
+
+         //! name of camera model information
+         rw::math::ProjectionMatrix _pmatrix;
+         rw::math::Transform3D<> _TR, _TL;
+         rw::kinematics::StatelessData<int> _sdata;
+      
    };
    
    /* @} */
    
-#ifdef RW_USE_DEPRECATED
-   /**
-    * @brief Smart pointer to StereoCamera
-    */
-   typedef rw::common::Ptr<StereoCamera> StereoCameraPtr;
-#endif
 }} // end namespaces
 
 #endif // end include guard

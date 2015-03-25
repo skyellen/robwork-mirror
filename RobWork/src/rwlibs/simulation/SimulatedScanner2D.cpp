@@ -19,6 +19,7 @@
 
 using namespace rwlibs::simulation;
 using namespace rw::sensor;
+using namespace rw::common;
 
 namespace {
 
@@ -26,15 +27,15 @@ namespace {
     public:
         SimulatedScanner2D *_simscanner;
 
-        Sensor2DWrapper(SimulatedScanner2D *scanner,rw::kinematics::Frame *sframe, const std::string& name):
-            Scanner2D(name),
+        Sensor2DWrapper(SimulatedScanner2D *scanner):
+            Scanner2D(scanner->getSensorModel()->getName()),
             _simscanner(scanner)
         {
-            attachTo(sframe);
+            setSensorModel( scanner->getSensorModel() );
         }
 
-        const Image25D& getScan() const{ return _simscanner->getScan(); };
-        double getAngularRange() { return _simscanner->getAngularRange(); };
+        const rw::geometry::PointCloud& getScan() const{ return _simscanner->getScan(); };
+        double getAngularRange() const { return _simscanner->getAngularRange(); };
         size_t getMeasurementCount() const { return _simscanner->getMeasurementCount(); };
 
 
@@ -53,26 +54,22 @@ namespace {
 
 
 SimulatedScanner2D::SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame, FrameGrabber25D::Ptr framegrabber):
-   SimulatedSensor(name),
+   SimulatedSensor( rw::common::ownedPtr( new Scanner2DModel(name, _framegrabber->getFieldOfViewY(), framegrabber->getWidth(),frame) )),
    _framegrabber(framegrabber),
     _frameRate(30),
     _dtsum(0)
 {
-    _rsensor = rw::common::ownedPtr( new Sensor2DWrapper(this, frame, name) );
-    attachTo(frame);
 }
 
 SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
                                        const std::string& desc,
                                        rw::kinematics::Frame* frame,
                                        FrameGrabber25D::Ptr framegrabber):
-        SimulatedSensor(name),
+       SimulatedSensor( ownedPtr( new Scanner2DModel(name, _framegrabber->getFieldOfViewY(), framegrabber->getWidth(),frame) )),
 		_framegrabber(framegrabber),
 		_frameRate(30),
         _dtsum(0)
 {
-    _rsensor = rw::common::ownedPtr( new Sensor2DWrapper(this, frame, name) );
-    attachTo(frame);
 }
 
 SimulatedScanner2D::~SimulatedScanner2D(){}
@@ -93,7 +90,7 @@ void SimulatedScanner2D::close(){
 
 
 
-const Image25D& SimulatedScanner2D::getScan() const {
+const rw::geometry::PointCloud& SimulatedScanner2D::getScan() const {
     return _framegrabber->getImage();
 }
 
@@ -137,9 +134,19 @@ void SimulatedScanner2D::reset(const rw::kinematics::State& state){
 
 }
 
-rw::sensor::Scanner2D::Ptr SimulatedScanner2D::getScanner2DSensor(){
-    return _rsensor;
+rw::sensor::Scanner2DModel::Ptr SimulatedScanner2D::getSensorModel(){
+	return _smodel;
+}
 
-};
+rw::sensor::Scanner2D::Ptr SimulatedScanner2D::getScanner2DSensor(rwlibs::simulation::Simulator* instance){
+	if( instance->hasHandle(this) )
+		return instance->getSensorHandle(this).cast<rw::sensor::Scanner2D>();
+
+	rw::common::Ptr<Sensor2DWrapper> handle =
+			rw::common::ownedPtr( new Sensor2DWrapper(this) );
+
+	instance->addHandle(this, handle );
+	return handle;
+}
 
 

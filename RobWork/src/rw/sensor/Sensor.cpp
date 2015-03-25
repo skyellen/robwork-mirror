@@ -26,13 +26,12 @@ using namespace rw::kinematics;
 Sensor::Sensor(const std::string& name, const std::string& description)
     :
     _name(name),
-    _description(description),
-	_frame(NULL)
+    _description(description)
 {
 }
 
 Sensor::Sensor(const std::string& name):
-    _name(name),
-	_frame(NULL)
+    _name(name)
+
 {
 }

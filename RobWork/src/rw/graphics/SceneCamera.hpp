@@ -21,7 +21,7 @@
 #include "SceneNode.hpp"
 #include <rw/graphics/DrawableNode.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/Image25D.hpp>
+#include <rw/geometry/PointCloud.hpp>
 #include <rw/math/ProjectionMatrix.hpp>
 
 
@@ -195,7 +195,7 @@ namespace graphics {
         virtual void setOffscreenRenderColor(rw::sensor::Image::ColorCode color) = 0;
 
         virtual void setCopyToImage( rw::sensor::Image::Ptr img ) = 0;
-        virtual void setCopyToScan25D( rw::sensor::Image25D::Ptr img ) = 0;
+        virtual void setCopyToScan25D( rw::geometry::PointCloud::Ptr img ) = 0;
         virtual void setMultiSample(int samples) = 0;
 
 

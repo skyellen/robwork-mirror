@@ -23,6 +23,7 @@
 #include "Model3DFactory.hpp"
 
 #include <rw/math/Constants.hpp>
+#include <rw/geometry/PointCloud.hpp>
 
 #include <rw/loaders/model3d/Loader3DS.hpp>
 #include <rw/loaders/model3d/LoaderAC3D.hpp>
@@ -41,7 +42,6 @@
 #include <rw/geometry/Geometry.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
-#include <rw/sensor/Image25D.hpp>
 #include <string>
 #include <istream>
 #include <sstream>
@@ -155,9 +155,16 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         getCache().add(filename, model, moddate);
         return getCache().get(filename);
     } else if (filetype == ".PCD") {
-        Image25D::Ptr img = Image25D::load(filename );
+        rw::geometry::PointCloud::Ptr img = rw::geometry::PointCloud::loadPCD( filename );
+        Geometry::Ptr geom = ownedPtr( new Geometry(img) );
+        // convert to model3d
+        Model3D::Ptr model = ownedPtr( new Model3D(filename) );
+        Model3D::Material mat_gray("gray_pcd",0.7,0.7,0.7);
+        model->addGeometry( mat_gray , geom );
 
-
+        getCache().add(filename, model, moddate);
+        //std::cout << "Creating drawable!" << std::endl;
+        return getCache().get(filename);
     } else if (filetype == ".3DS") {
     	//std::cout << "loading 3ds file!" << std::endl;
     	Loader3DS loader;

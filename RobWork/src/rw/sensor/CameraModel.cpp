@@ -26,18 +26,47 @@ using namespace rw::kinematics;
 CameraModel::CameraModel(
         rw::math::ProjectionMatrix projection,
     const std::string& name,
+    rw::kinematics::Frame* frame,
     const std::string& modelInfo)
     :
-    Sensor(name, modelInfo)
-{}
+    SensorModel(name, frame, modelInfo),
+    _sdata(1, rw::common::ownedPtr( new CameraModelCache()).cast<StateCache>())
+{
+	add(_sdata);
+}
 
 CameraModel::~CameraModel()
 {}
 
-double CameraModel::getFarClippingPlane(){
+double CameraModel::getFarClippingPlane() const{
     return _pmatrix.getClipPlanes().second;
 }
 
-double CameraModel::getNearClippingPlane(){
+double CameraModel::getNearClippingPlane() const{
     return _pmatrix.getClipPlanes().first;
 }
+
+Image::Ptr CameraModel::getImage(const rw::kinematics::State& state){
+	return 	_sdata.getStateCache<CameraModelCache>(state)->_image;
+}
+
+void CameraModel::setImage(Image::Ptr img, rw::kinematics::State& state){
+	_sdata.getStateCache<CameraModelCache>(state)->_image = img;
+}
+
+
+rw::math::ProjectionMatrix CameraModel::getProjectionMatrix() const { return _pmatrix; }
+
+double CameraModel::getFieldOfViewX() const{
+	double fovy,aspect,znear,zfar;
+	_pmatrix.getPerspective(fovy,aspect,znear,zfar);
+	return fovy*aspect;
+}
+
+double CameraModel::getFieldOfViewY() const{
+	double fovy,aspect,znear,zfar;
+	_pmatrix.getPerspective(fovy,aspect,znear,zfar);
+	return fovy;
+}
+
+

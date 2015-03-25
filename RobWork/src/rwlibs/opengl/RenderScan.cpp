@@ -11,27 +11,20 @@ using namespace rwlibs::opengl;
 using namespace rw::math;
 using namespace rw::graphics;
 
-RenderScan::RenderScan(const rw::sensor::Image25D& img):
+RenderScan::RenderScan(const rw::geometry::PointCloud& img):
         _minDepth(0),
         _maxDepth(10)
 {
     setScan(img);
 }
 
-
-RenderScan::RenderScan(const rw::sensor::Scan2D& img):
-		_minDepth(0),
-		_maxDepth(10)
-{
-    setScan(img);
-}
 
 RenderScan::RenderScan():
         _minDepth(0),
         _maxDepth(10)
 {}
 
-RenderScan::RenderScan(const rw::sensor::Scanner25D::Ptr scanner)
+RenderScan::RenderScan(const rw::sensor::Scanner25DModel::Ptr scanner)
 {
     _scanner = scanner;
     _minDepth = (float)scanner->getRange().first;
@@ -42,13 +35,8 @@ RenderScan::RenderScan(const rw::sensor::Scanner25D::Ptr scanner)
 
 RenderScan::~RenderScan(){}
 
-void RenderScan::setScan(const rw::sensor::Image25D& img){
+void RenderScan::setScan(const rw::geometry::PointCloud& img){
 	_img = img;
-}
-
-void RenderScan::setScan(const rw::sensor::Scan2D& scan){
-	_img.resize((int)scan.getMeasurementCount(),1);
-	_img.getData() = scan.getData();
 }
 
 void RenderScan::setScan(float dist){

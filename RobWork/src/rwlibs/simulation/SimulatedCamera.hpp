@@ -26,9 +26,9 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/sensor/Camera.hpp>
 #include <rw/sensor/Image.hpp>
+#include <rw/sensor/CameraModel.hpp>
 
 #include <rwlibs/simulation/SimulatedSensor.hpp>
-
 #include "FrameGrabber.hpp"
 
 #include <string>
@@ -52,13 +52,20 @@ namespace rwlibs { namespace simulation {
         typedef rw::common::Ptr<SimulatedCamera> Ptr;
 
         /**
+         * @brief creates a simulated pinhole camera,
+         * @param name [in] name of sensor
+         * @param frame [in] frame to which the camera is attached
+         * @param frameGrabber [in] the frameGrabber from which this Camera should grab images
+         */
+        SimulatedCamera(const std::string& name, double fov, rw::kinematics::Frame* frame, FrameGrabber::Ptr frameGrabber);
+
+        /**
          * @brief constructor
-         * @param name [in] name and model info of camera
+         * @param model [in] the model and info of the camera
          * @param frameGrabber [in] the frameGrabber from which this Camera should grab
-         * @param frame [in] frame associated with the camera
          * images.
          */
-        SimulatedCamera(const std::string& name, rw::kinematics::Frame *frame, FrameGrabber::Ptr frameGrabber);
+        SimulatedCamera(rw::sensor::CameraModel::Ptr model, FrameGrabber::Ptr frameGrabber);
 
         /**
          * @brief destructor
@@ -108,12 +115,12 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc rw::sensor::Camera::getWidth
          */
-        virtual unsigned int getWidth(){return _frameGrabber->getWidth();};
+        virtual unsigned int getWidth() const {return _frameGrabber->getWidth();}
 
         /**
          * @copydoc rw::sensor::Camera::getHeight
          */
-        virtual unsigned int getHeight(){return _frameGrabber->getHeight();};
+        virtual unsigned int getHeight() const {return _frameGrabber->getHeight();}
 
         /**
          * @copydoc SimulatedSensor::update
@@ -123,7 +130,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc SimulatedSensor::reset
          */
-        void reset(const rw::kinematics::State& state){};
+        void reset(const rw::kinematics::State& state){}
 
         /**
          * @copydoc SimulatedSensor::getSensor
@@ -135,7 +142,6 @@ namespace rwlibs { namespace simulation {
         void acquire(char *imgData);
 
     private:
-        std::string _name;
         double _frameRate;
         double _dtSum;
         FrameGrabber::Ptr _frameGrabber;

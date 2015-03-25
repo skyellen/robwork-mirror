@@ -167,10 +167,58 @@ void WorkCell::remove(rw::common::Ptr<Object> object){
     _workCellChangedEvent.fire(WORKCELL_CHANGED);
 }
 
+void WorkCell::remove(rw::common::Ptr<rw::sensor::SensorModel> sensor){
+    std::vector<rw::common::Ptr<rw::sensor::SensorModel> >::iterator iter;
+    sensor->unregister( );
+    // remove from list
+    for(iter = _sensors.begin() ; iter!=_sensors.end();++iter){
+        if( (*iter) == sensor ){
+            break;
+        }
+    }
+    if(iter==_sensors.end())
+        RW_THROW("Sensor \"" << sensor->getName() << "\" is not in workcell!");
+
+    _sensors.erase(iter);
+
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
+
+void WorkCell::remove(rw::common::Ptr<ControllerModel> controller){
+    std::vector<rw::common::Ptr<ControllerModel> >::iterator iter;
+    controller->unregister( );
+    // remove from list
+    for(iter = _controllers.begin() ; iter!=_controllers.end();++iter){
+        if( (*iter) == controller ){
+            break;
+        }
+    }
+    if(iter==_controllers.end())
+        RW_THROW("Controller \"" << controller->getName() << "\" is not in workcell!");
+
+    _controllers.erase(iter);
+
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
+
+
 
 void WorkCell::add(rw::common::Ptr<rw::sensor::SensorModel> sensor){
     sensor->registerIn(_tree);
     _sensors.push_back(sensor);
+    _workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
+void WorkCell::add(rw::common::Ptr<rw::models::ControllerModel> controller){
+	controller->registerIn(_tree);
+	_controllers.push_back(controller);
+	_workCellChangedEvent.fire(WORKCELL_CHANGED);
+}
+
+void WorkCell::add(rw::common::Ptr<Device> device){
+	addDevice(device);
 }
 
 const std::vector<Device::Ptr>& WorkCell::getDevices() const

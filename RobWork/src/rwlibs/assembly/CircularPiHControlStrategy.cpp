@@ -73,7 +73,7 @@ AssemblyControlResponse::Ptr CircularPiHControlStrategy::update(AssemblyParamete
 	response->selection = selection;
 
 	//Transform3D<> sensorTworld = inverse(Kinematics::worldTframe(ftSensor->getFrame(),state));
-	Transform3D<> sensorTworld = inverse(Kinematics::worldTframe(ftSensor->getFrame(),state));
+	Transform3D<> sensorTworld = inverse(Kinematics::worldTframe(ftSensor->getSensorModel()->getFrame(),state));
 
 	CircularControlState::Ptr circularState = controlState.cast<CircularControlState>();
 	switch(circularState->phase) {

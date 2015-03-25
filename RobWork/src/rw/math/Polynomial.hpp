@@ -32,7 +32,7 @@
 
 namespace rw {
 namespace math {
-//! @addtogroup rw_math
+//! @addtogroup math
 
 //! @{
 /**

@@ -194,17 +194,7 @@ SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addImage(const std::string&
     return proxy;
 }
 
-SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addScan(const std::string& name, rw::sensor::Scan2D::Ptr scan, rw::kinematics::Frame* frame, int dmask){
-    DrawableProxy::Ptr proxy = ownedPtr( new DrawableProxy());
-    proxy->name = name;
-    proxy->dmask = dmask;
-    proxy->scan = scan;
-
-    _frameStateMap[frame].drawables.push_back(proxy);
-    return proxy;
-}
-
-SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addScan(const std::string& name, rw::sensor::Image25D::Ptr scan, rw::kinematics::Frame* frame, int dmask){
+SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addScan(const std::string& name, rw::geometry::PointCloud::Ptr scan, rw::kinematics::Frame* frame, int dmask){
     DrawableProxy::Ptr proxy = ownedPtr( new DrawableProxy());
     proxy->name = name;
     proxy->dmask = dmask;

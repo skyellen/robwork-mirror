@@ -21,9 +21,8 @@
 //! @file RenderScan.hpp
 
 #include <rwlibs/os/rwgl.hpp>
-#include <rw/sensor/Image25D.hpp>
-#include <rw/sensor/Scan2D.hpp>
-#include <rw/sensor/Scanner25D.hpp>
+#include <rw/geometry/PointCloud.hpp>
+#include <rw/sensor/Scanner25DModel.hpp>
 
 #include "RWGLTexture.hpp"
 #include <rw/graphics/Render.hpp>
@@ -31,7 +30,7 @@
 namespace rwlibs {
 namespace opengl {
 
-	//! @addtogroup drawable
+	//! @addtogroup opengl
 	// @{
 
 
@@ -47,17 +46,14 @@ namespace opengl {
 		RenderScan();
 
 		//! @brief constructor
-		RenderScan(const rw::sensor::Image25D& img);
-
-        //! @brief constructor
-        RenderScan(const rw::sensor::Scan2D& img);
+		RenderScan(const rw::geometry::PointCloud& img);
 
         /**
          * @brief the renderer will pull the scanner for
          * @param scanner
          * @return
          */
-        RenderScan(const rw::sensor::Scanner25D::Ptr scanner);
+        RenderScan(const rw::sensor::Scanner25DModel::Ptr scanner);
 
         //! @brief destructor
 		virtual ~RenderScan();
@@ -66,13 +62,7 @@ namespace opengl {
 		 * \brief set a 2.5 dimensional scan
 		 * @param img
 		 */
-		void setScan(const rw::sensor::Image25D& img);
-
-		/**
-		 * \brief set a two dimensional scan
-		 * @param img
-		 */
-		void setScan(const rw::sensor::Scan2D& img);
+		void setScan(const rw::geometry::PointCloud& img);
 
 		/**
 		 * \brief set a one dimensional scan
@@ -100,8 +90,8 @@ namespace opengl {
                   double alpha) const;
 
 	private:
-        rw::sensor::Scanner25D::Ptr _scanner;
-        rw::sensor::Image25D _img;
+        rw::sensor::Scanner25DModel::Ptr _scanner;
+        rw::geometry::PointCloud _img;
         float _minDepth,_maxDepth;
 	};
 	//! smart pointer type

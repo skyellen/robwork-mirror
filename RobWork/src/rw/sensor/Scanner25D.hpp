@@ -19,7 +19,7 @@
 #define RW_SENSOR_SCANNER25D_HPP
 
 #include "Scanner.hpp"
-#include "Image25D.hpp"
+#include <rw/geometry/PointCloud.hpp>
 
 #include <rw/common/Ptr.hpp>
 
@@ -64,7 +64,7 @@ public:
      * @brief gets the last acquired image
      * @return the image that was last acquired.
      */
-    virtual const Image25D& getScan() = 0;
+    virtual const rw::geometry::PointCloud& getScan() = 0;
 
 };
 

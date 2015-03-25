@@ -30,6 +30,7 @@
 #include <rw/sensor/SensorModel.hpp>
 #include <rw/common/Ptr.hpp>
 
+#include "ControllerModel.hpp"
 #include "Device.hpp"
 #include "Object.hpp"
 #include <vector>
@@ -370,18 +371,23 @@ namespace rw { namespace models {
          */
         rw::common::Ptr<Object> findObject(const std::string& name) const;
 
-        /**
-		 * @brief Adds de
-		 */
-      //  void add(rw::common::Ptr<Device> device){ addDevice(device); }
+        //! @brief Add device to workcell
+        void add(rw::common::Ptr<Device> device);
+        //! @brief Add object to workcell
         void add(rw::common::Ptr<Object> object);
+        //! @brief Add sensormodel to workcell
         void add(rw::common::Ptr<rw::sensor::SensorModel> sensor);
+        //! @brief Add controllermodel to workcell
+        void add(rw::common::Ptr<ControllerModel> controller);
 
-
+        //! @brief Remove object from workcell
         void remove(rw::common::Ptr<Object> object);
+        //! @brief Remove device from workcell
         void remove(rw::common::Ptr<Device> device);
-        //void remove(rw::common::Ptr<rw::sensor::SensorModel> sensor);
-
+        //! @brief Remove sensormodel from workcell
+        void remove(rw::common::Ptr<rw::sensor::SensorModel> sensor);
+        //! @brief Remove controllermodel from workcell
+        void remove(rw::common::Ptr<ControllerModel> controller);
 
         /**
          * @brief gets the complete state structure of the workcell.
@@ -472,6 +478,7 @@ namespace rw { namespace models {
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;
         std::vector<rw::sensor::SensorModel::Ptr> _sensors;
+        std::vector<ControllerModel::Ptr> _controllers;
         rw::common::Ptr<rw::graphics::SceneDescriptor> _sceneDescriptor;
     private:
         WorkCell();

@@ -22,7 +22,7 @@
 //! @file SimulatedSensor.hpp
 
 #include <rw/kinematics/State.hpp>
-#include <rw/sensor/Sensor.hpp>
+#include <rw/sensor/SensorModel.hpp>
 #include <rw/common/Ptr.hpp>
 #include "Simulator.hpp"
 #include <rw/kinematics/Frame.hpp>
@@ -35,22 +35,30 @@ namespace simulation {
     /**
      * @brief simulated sensor interface
      */
-    class SimulatedSensor: public rw::sensor::Sensor {
+    class SimulatedSensor: public rw::kinematics::Stateless {
     public:
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedSensor> Ptr;
 
     protected:
         //! constructor
-        SimulatedSensor(const std::string& name):Sensor(name){};
-
-        //! constructor
-        SimulatedSensor(const std::string& name, const std::string& desc):Sensor(name,desc){};
+        SimulatedSensor(rw::sensor::SensorModel::Ptr model):_model(model){}
 
     public:
 
         //! @brief destructor
-        virtual ~SimulatedSensor(){};
+        virtual ~SimulatedSensor();
+
+        /**
+         * @brief get name of this simulated sensor
+         */
+        const std::string& getName() const { return _model->getName(); }
+
+        /**
+         * @brief get frame that this sensor is attached to.
+         * @return frame
+         */
+        rw::kinematics::Frame* getFrame() const { return _model->getFrame(); }
 
         /**
          * @brief steps the the SimulatedSensor with time \b dt and saves any state
@@ -67,21 +75,18 @@ namespace simulation {
         virtual void reset(const rw::kinematics::State& state) = 0;
 
         /**
-         * @brief get the "real" sensor interface of this simulated sensor. This might be
-         * NULL if the simulatedsensor does not implement a specific Sensor interface.
+         * @brief get the sensor model of this simulated sensor. 
          */
-        virtual rw::sensor::Sensor::Ptr getSensor() = 0;
+        rw::sensor::SensorModel::Ptr getSensorModel() { return _model; }
 
         /**
-         * @copydoc rw::sensor::Sensor::attachTo
-         *
-         * @note we want to make sure that the frame is also changed on the "real" sensor
+         * get a handle to controlling an instance of the simulated sensor in a specific simulator
+         * @param sim [in] the simulator in which the handle is active
          */
-        void attachTo(rw::kinematics::Frame* frame) {
-            rw::sensor::Sensor::attachTo(frame);
-            if(getSensor())
-                getSensor()->attachTo( frame );
-        }
+        rw::sensor::Sensor::Ptr getSensorHandle(rwlibs::simulation::Simulator::Ptr sim);
+
+    private:
+        rw::sensor::SensorModel::Ptr _model;
 
     };
     //! @}

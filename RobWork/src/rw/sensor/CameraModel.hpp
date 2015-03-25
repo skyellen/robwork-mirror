@@ -28,6 +28,7 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/math/ProjectionMatrix.hpp>
 
 #include <vector>
 #include <string>
@@ -49,27 +50,31 @@ namespace rw { namespace sensor {
 		typedef rw::common::Ptr<CameraModel> Ptr;
 
     public:
-        /**
-         * @brief constructor
-         * @param name [in] name of sensor
-         * @param modelInfo [in] info string
-         */
-        CameraModel(rw::math::ProjectionMatrix projection,
-            const std::string& name,
-            const std::string& modelInfo);
+
+		/**
+		 * constructor
+		 * @param projection [in] pinhole projection model
+		 * @param name [in] name of camera
+		 * @param frame [in] frame that camera is attached/referenced to
+		 * @param modelInfo [in] text description of the camera
+		 */
+		CameraModel(
+        			rw::math::ProjectionMatrix projection,
+        			const std::string& name,
+        			rw::kinematics::Frame* frame,
+        			const std::string& modelInfo = "");
 
         /**
          * @brief destructor
          */
         virtual ~CameraModel();
 
-
         /**
          * @brief returns the image if it has been saved in the State. Else null is
          * returned.
          * @return last image captured from camera.
          */
-        Image::Ptr getImage(rw::kinematics::State& state);
+        Image::Ptr getImage(const  rw::kinematics::State& state);
 
         /**
          * @brief set the image in the state
@@ -79,49 +84,54 @@ namespace rw { namespace sensor {
         void setImage(Image::Ptr img, rw::kinematics::State& state);
 
         //! get the camera projection matrix
-        rw::math::ProjectionMatrix getProjectionMatrix();
-
-        //! field of view of camera
-        double getFocalLength();
+        rw::math::ProjectionMatrix getProjectionMatrix() const;
 
         //!@brief get horisontal field of view in degrees.
-        double getFieldOfViewX();
+        double getFieldOfViewX() const;
 
         //!@brief get vertical field of view in degrees.
-        double getFieldOfViewY();
-
-        /**
-         * @brief get width of the captured images
-         * @return width
-         */
-        unsigned int getWidth();
-
-        /**
-         * @brief set width of this camera model
-         */
-        void setWidth(unsigned int);
-
-        /**
-         * @brief get width of the captured images
-         * @return width
-         */
-        unsigned int getHeight();
-
-        void setHeight(unsigned int width);
+        double getFieldOfViewY() const;
 
         ///// a list of features that most of the time is available
-
-        double getFarClippingPlane();
-        double getNearClippingPlane();
+        //! @brief get far clipping plane
+        double getFarClippingPlane() const;
+        //! @brief get near clipping plane
+        double getNearClippingPlane() const;
 
 
     protected:
 
+        //! CameraModelCache that define data to store in the State
+        class CameraModelCache: public rw::kinematics::StateCache {
+    	public:
+    		typedef rw::common::Ptr<CameraModelCache> Ptr;
+    		rw::common::Ptr<rw::sensor::Image> _image;
+
+    		//! constructor
+    		CameraModelCache()
+    		{
+    		};
+
+    		//! @copydoc rw::kinematics::StateCache::size
+    		size_t size() const{
+    			if(_image!=NULL)
+    				return _image->getDataSize();
+    			return 0;
+    		};
+
+    		//! @copydoc rw::kinematics::StateCache::clone
+    		virtual rw::common::Ptr<StateCache> clone() const{
+    			CameraModelCache::Ptr cache = rw::common::ownedPtr( new CameraModelCache(*this) );
+    		    if(_image!=NULL)
+    		    	cache->_image = rw::common::ownedPtr( new Image( *_image ));
+    			return cache;
+    		};
+    	};
+
+    private:
         //! name of camera model information
-        std::string _modelInfo;
         rw::math::ProjectionMatrix _pmatrix;
-
-
+        rw::kinematics::StatelessData<int> _sdata;
     };
 
     /* @} */

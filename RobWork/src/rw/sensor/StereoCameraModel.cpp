@@ -29,13 +29,42 @@ using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rw::math;
 
-StereoCamera::StereoCamera(const std::string& name,
-                           const std::string& modelInfo) : Sensor(name, modelInfo),
-                                                           _modelInfo(modelInfo) {}
+StereoCameraModel::StereoCameraModel(const std::string& name,
+	 	 double fov, double width, double height,
+        const rw::math::Transform3D<>& TL,
+        const rw::math::Transform3D<>& TR,
+	 	 rw::kinematics::Frame* frame,
+	 	 const std::string& modelInfo):
+		SensorModel(name, frame, modelInfo),
+		_sdata(1, rw::common::ownedPtr( new StereoCameraModelCache()).cast<StateCache>()),
+		_pmatrix( ProjectionMatrix::makePerspective(fov*height/width, width/height, 0.001, 30) ),
+		_TR(TR), _TL(TL)
+{
+	add(_sdata);
+}
 
-StereoCamera::~StereoCamera() {}
+StereoCameraModel::~StereoCameraModel() {}
 
-bool StereoCamera::SaveCalibration(const std::string& filename,
+
+Image::Ptr StereoCameraModel::getLeftImage(const rw::kinematics::State& state){
+	return 	_sdata.getStateCache<StereoCameraModelCache>(state)->_leftImage;
+}
+
+void StereoCameraModel::setLeftImage(Image::Ptr img, rw::kinematics::State& state){
+	_sdata.getStateCache<StereoCameraModelCache>(state)->_leftImage = img;
+}
+
+Image::Ptr StereoCameraModel::getRightImage(const rw::kinematics::State& state){
+	return 	_sdata.getStateCache<StereoCameraModelCache>(state)->_rightImage;
+}
+
+void StereoCameraModel::setRightImage(Image::Ptr img, rw::kinematics::State& state){
+	_sdata.getStateCache<StereoCameraModelCache>(state)->_rightImage = img;
+}
+
+
+
+bool StereoCameraModel::SaveCalibration(const std::string& filename,
                                    double fov, double wx, double wy,
                                    const rw::math::Transform3D<>& TL,
                                    const rw::math::Transform3D<>& TR,
@@ -77,7 +106,7 @@ bool StereoCamera::SaveCalibration(const std::string& filename,
    return false;
 }
 
-void StereoCamera::WriteCalibration(std::ostream& os,
+void StereoCameraModel::WriteCalibration(std::ostream& os,
                                     double fov, double wx, double wy,
                                     const rw::math::Transform3D<>& T,
                                     const std::vector<double>& dist,

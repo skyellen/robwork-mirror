@@ -23,7 +23,7 @@
  */
 
 #include "Scanner.hpp"
-#include "Image25D.hpp"
+#include <rw/geometry/PointCloud.hpp>
 
 namespace rw {
 namespace sensor {
@@ -68,14 +68,14 @@ public:
      * @brief gets the last acquired scan as a depth image
      * of height 1.
      */
-    virtual const Image25D& getScan() const = 0;
+    virtual const rw::geometry::PointCloud& getScan() const = 0;
 
     /**
      * @brief Returns the angular range of the scanner.
      *
      * @return Angular range in radians
      */
-    virtual double getAngularRange() = 0;
+    virtual double getAngularRange() const = 0;
 
     /**
      * @brief Returns the number of scan points
@@ -84,12 +84,6 @@ public:
 
 };
 
-#ifdef RW_USE_DEPRECATED
-/**
- * @brief Smart pointer to Scanner2D
- */
-typedef rw::common::Ptr<Scanner2D> Scanner2DPtr;
-#endif
 /*@}*/
 
 }

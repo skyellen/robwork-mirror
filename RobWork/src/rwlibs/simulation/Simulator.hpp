@@ -22,9 +22,13 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/sensor/Sensor.hpp>
 
 namespace rwlibs {
 namespace simulation {
+
+	class SimulatedSensor;
+
     //! @addtogroup simulation
     /**
      * @brief interface of a general simulator
@@ -39,7 +43,9 @@ namespace simulation {
          * @brief step info is used when updating controllers, devices and bodies.
          */
         struct UpdateInfo {
+    		//! constructor
             UpdateInfo():dt(0.0),time(0.0),rollback(false){}
+            //! constructor
             UpdateInfo(double dt_step):dt(dt_step),time(0.0),rollback(false){}
             /**
              * @brief the timestep which is about to take place
@@ -100,10 +106,48 @@ namespace simulation {
         virtual void setEnabled(rw::kinematics::Frame* frame, bool enabled) = 0;
 
         /**
-         * @brief
+         * @brief get propertymap of this simulator
          */
         virtual rw::common::PropertyMap& getPropertyMap() = 0;
 
+        /**
+         * @brief get sensorhandle to a statefull instance of the simulated sensor, controlling
+         * the sensor in this simulator.
+         * @param ssensor [in] the simulated sensor for which to retrieve a handle
+         * @return handle to simulated sensor instance or null if none exists
+         */
+        template<class SIMSENSORTYPE>
+        rw::sensor::Sensor::Ptr getSensorHandle(SIMSENSORTYPE* ssensor){
+        	return getSensorHandle(ssensor, typeid(SIMSENSORTYPE).name());
+        }
+
+        /**
+         * @brief Test if handle for simulatedsensor exists.
+         * @param ssensor [in] the simulated sensor for which to check if a handle exists
+         * @return true if a handle to simulated sensor instance exists, false otherwise
+         */
+        template<class SIMSENSORTYPE>
+        bool hasHandle(SIMSENSORTYPE* ssensor){
+        	return hasHandle(ssensor, typeid(SIMSENSORTYPE).name());
+        }
+
+        /**
+         * @brief add handle to a specific simulated sensor
+         * @param ssensor [in] simulated sensor to add handle to
+         * @param sensor [in] handle to statfull instance
+         */
+        template<class SIMSENSORTYPE>
+        void addHandle(SIMSENSORTYPE* ssensor, rw::sensor::Sensor::Ptr sensor){
+        	addHandle(ssensor, typeid(SIMSENSORTYPE).name(), sensor);
+        }
+
+    private:
+        rw::sensor::Sensor::Ptr getSensorHandle(SimulatedSensor* ssensor, const std::string& type);
+        bool hasHandle(SimulatedSensor* ssensor, const std::string& type);
+        void addHandle(SimulatedSensor* ssensor, const std::string& type, rw::sensor::Sensor::Ptr sensor);
+
+    private:
+        std::map<std::pair<SimulatedSensor*,std::string>,rw::sensor::Sensor::Ptr> _simsensorToHandle;
     };
     //! @}
 }

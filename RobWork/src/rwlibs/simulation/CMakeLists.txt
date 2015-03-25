@@ -3,7 +3,8 @@ set(SUBSYS_DESC "Simulated sensors and controllers")
 SET(SUBSYS_DEPS rw rw_control)
 
 SET(build TRUE)
-RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+SET(DEFAULT TRUE)
+RW_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT})
 RW_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS glu opengl)
 RW_ADD_DOC(${SUBSYS_NAME})
 
@@ -15,7 +16,7 @@ IF(build)
       FrameGrabber25D.cpp
       GLFrameGrabber.cpp
       SimulatedCamera.cpp
-      SimulatedKinnect.cpp
+      SimulatedKinect.cpp
       GLFrameGrabber25D.cpp
       KinematicSimulator.cpp
       SimulatedController.cpp
@@ -40,7 +41,7 @@ IF(build)
       Simulator.hpp
       SimulatedScanner25D.hpp
       SimulatedScanner2D.hpp
-      SimulatedKinnect.hpp
+      SimulatedKinect.hpp
     )
         
     RW_ADD_LIBRARY(${SUBSYS_NAME} simulation ${SRC_FILES} ${CAM_SRC_FILES_HPP} ${SRC_FILES_HPP})

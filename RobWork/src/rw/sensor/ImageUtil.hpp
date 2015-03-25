@@ -25,7 +25,7 @@
 
 #include <rw/common/macros.hpp>
 #include "Image.hpp"
-
+#include <rw/geometry/PointCloud.hpp>
 namespace rw { namespace sensor {
 
 /** @addtogroup sensor */
@@ -73,6 +73,23 @@ public:
      */
     //static void flipY(const Image& srcimg, Image& dstimg);
 
+    /**
+     * convert pointcloud to a depth image. Colors are scaled to min and ax distance of
+     * points.
+     * @param cloud [in] cloud to convert to image
+     * @return image showing the pointcloud as a depth image
+     */
+    static rw::sensor::Image::Ptr makeDepthImage(const rw::geometry::PointCloud& cloud) ;
+
+    /**
+     * convert pointcloud to a depth image. Colors are scaled to min and max distance
+     * specified by user
+     * @param cloud [in] cloud to convert to image
+     * @param min [in] the minimum distance corresponding to black
+     * @param max [in] the maximum distance corresponding to white
+     * @return image showing the pointcloud as a depth image
+     */
+    static rw::sensor::Image::Ptr makeDepthImage(const rw::geometry::PointCloud& cloud, float min, float max);
 private:
     ImageUtil();
 };

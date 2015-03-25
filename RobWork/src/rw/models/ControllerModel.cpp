@@ -15,18 +15,18 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "SensorModel.hpp"
+#include "ControllerModel.hpp"
 
 #include <rw/kinematics/Frame.hpp>
 
-using namespace rw::sensor;
+using namespace rw::models;
 using namespace rw::kinematics;
 
-SensorModel::SensorModel(const std::string& name, kinematics::Frame* frame,
+ControllerModel::ControllerModel(const std::string& name, kinematics::Frame* frame,
 		const std::string& description) :
 		_name(name), _description(description), _frame(frame) {
 }
 
-SensorModel::SensorModel(const std::string& name, kinematics::Frame* frame) :
+ControllerModel::ControllerModel(const std::string& name, kinematics::Frame* frame) :
 		_name(name), _frame(frame) {
 }

@@ -19,8 +19,6 @@
 #define RW_GRAPHICS_SCENEGRAPH_HPP_
 
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/Scan2D.hpp>
-#include <rw/sensor/Image25D.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/Line.hpp>
 #include <rw/graphics/Model3D.hpp>
@@ -126,8 +124,8 @@ namespace graphics {
         virtual DrawableGeometryNode::Ptr makeDrawable(const std::string& name, const std::vector<rw::geometry::Line >& lines, int dmask=DrawableNode::Physical)= 0;
 
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image& img, int dmask=DrawableNode::Virtual)= 0;
-        virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Scan2D& scan, int dmask=DrawableNode::Virtual)= 0;
-        virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image25D& scan, int dmask=DrawableNode::Virtual)= 0;
+
+        virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::geometry::PointCloud& scan, int dmask=DrawableNode::Virtual)= 0;
 
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, Model3D::Ptr model, int dmask=DrawableNode::Physical) = 0;
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask=DrawableNode::Physical)= 0;

@@ -16,4 +16,102 @@
  ********************************************************************************/
 
 
-#include "TactileArray.hpp"
+#include "TactileArrayModel.hpp"
+
+using namespace rw::sensor;
+using namespace rw::math;
+
+TactileArrayModel::TactileArrayModel(const std::string& name,
+			rw::kinematics::Frame * frame,
+			const rw::math::Transform3D<>& fThmap,
+			const ValueMatrix& heightMap,
+			double cw, double ch):
+					SensorModel(name, frame),
+					_sdata(1, rw::common::ownedPtr( new TactileModelCache()).cast<rw::kinematics::StateCache>()),
+					_fThmap(fThmap),_heightMap(heightMap),_cellWidth(cw),_cellHeight(ch)
+{
+	_minPressure = 0;
+	_maxPressure = 1000;
+
+	 int w((int)_heightMap.cols()-1);
+	 int h((int)_heightMap.rows()-1);
+
+    // calculate the normals and centers of all texels
+    // first calculate the 3D vertexes of the grid from the heightmap specification
+    double tw = _cellWidth, th = _cellHeight;
+    for(int y=0;y<h+1; y++){
+        for(int x=0;x<w+1; x++){
+            _vertexGrid[x][y](0) = x*tw;
+            _vertexGrid[x][y](1) = y*th;
+            _vertexGrid[x][y](2) = _heightMap(x,y);
+        }
+    }
+
+    for(int j=0;j<h; j++){
+     	for(int i=0;i<w; i++){
+            Vector3D<> p = _vertexGrid[i][j]  +_vertexGrid[i+1][j]+
+            		_vertexGrid[i][j+1]+_vertexGrid[i+1][j+1];
+            _cellCenters[i][j] = p/4;
+            // now calculate unit normal
+            Vector3D<> n = cross(_vertexGrid[i+1][j]-_vertexGrid[i][j],
+            		_vertexGrid[i+1][j+1]-_vertexGrid[i][j] );
+            _cellNormals[i][j] = normalize(n);
+        }
+    }
+    add(_sdata);
+}
+
+
+TactileArrayModel::~TactileArrayModel(){}
+
+rw::math::Vector2D<> TactileArrayModel::getTexelSize(int x, int y) const{
+	return rw::math::Vector2D<>(_cellWidth,_cellHeight);
+}
+
+std::pair<double,double> TactileArrayModel::getPressureLimit() const {
+	return std::make_pair(_minPressure, _maxPressure);
+}
+
+
+void TactileArrayModel::setPressureLimit(double min, double max) {
+	_minPressure = min;
+	_maxPressure = max;
+}
+
+
+const TactileArrayModel::VertexMatrix& TactileArrayModel::getVertexGrid() const {
+	return _vertexGrid;
+}
+
+const rw::math::Transform3D<>& TactileArrayModel::getTransform() const{ return _fThmap; }
+
+const TactileArrayModel::VertexMatrix& TactileArrayModel::getCenters() const{
+	return _cellCenters;
+}
+
+const TactileArrayModel::VertexMatrix& TactileArrayModel::getNormals()  const{
+	return _cellNormals;
+}
+
+int TactileArrayModel::getWidth() const{
+	return _heightMap.cols()-1;
+}
+
+int TactileArrayModel::getHeight() const{
+	return _heightMap.rows()-1;
+}
+
+
+//************** the statefull interface (dynamic states) ***************
+
+TactileArrayModel::ValueMatrix& TactileArrayModel::getTexelData(rw::kinematics::State& state) const{
+	return *_sdata.getStateCache<TactileModelCache>(state)->_data;
+}
+
+const TactileArrayModel::ValueMatrix& TactileArrayModel::getTexelData(const rw::kinematics::State& state) const{
+	return *_sdata.getStateCache<TactileModelCache>(state)->_data;
+}
+
+void TactileArrayModel::setTexelData(const TactileArrayModel::ValueMatrix& data, rw::kinematics::State& state) const{
+	(*_sdata.getStateCache<TactileModelCache>(state)->_data) = data;
+}

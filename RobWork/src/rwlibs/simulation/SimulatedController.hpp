@@ -23,6 +23,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/control/Controller.hpp>
+#include <rw/models/ControllerModel.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include "Simulator.hpp"
 
@@ -34,6 +35,9 @@ namespace simulation {
      * @brief interface of a simulated controller
      */
     class SimulatedController: public rw::kinematics::Stateless {
+    protected:
+    	SimulatedController(rw::models::ControllerModel::Ptr model);
+
     public:
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedController> Ptr;
@@ -59,10 +63,16 @@ namespace simulation {
         virtual void reset(const rw::kinematics::State& state) = 0;
 
         /**
-         * @brief get the controller associated with this simulated controller
+         * @brief get the controller handle eg. statefull handle, associated with this simulated controller
          * @return
          */
-        virtual rwlibs::control::Controller* getController() = 0;
+        virtual rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim) = 0;
+
+        /**
+         * @brief get the controllermodel of this simulated controller
+         * @return
+         */
+        rw::models::ControllerModel::Ptr getControllerModel(){ return _model; }
 
         /**
          * @brief disable or enable this controller
@@ -74,7 +84,10 @@ namespace simulation {
          * @brief true if this controller is enabled
          * @return
          */
-        virtual bool isEnabled() = 0;
+        virtual bool isEnabled() const = 0;
+
+    private:
+        rw::models::ControllerModel::Ptr _model;
 
     };
     //! @}
