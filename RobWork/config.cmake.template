@@ -13,7 +13,9 @@ SET(RW_ENABLE_PERFORMANCE_TESTS ON)
 SET(RW_BUILD_SANDBOX OFF)
 SET(RW_BUILD_EXAMPLES OFF)
 
-SET(BUILD_rw_swig on)
+# force building specific libraries
+#SET(BUILD_rw_java on)
+#SET(BUILD_rw_python on)
 
 # RobWork has prebuilt libraries for BLAS and LAPACK
 # which can be used on win32. Adding the library directory to the path
