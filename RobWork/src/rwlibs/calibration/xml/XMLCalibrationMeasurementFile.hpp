@@ -159,8 +159,20 @@ CalibrationMeasurement::Ptr XMLCalibrationMeasurementFile<INFOSERIALIZER>::conve
 	DOMElem::Ptr elmState = element->getChild( DOMBasisTypes::QId );
 	rw::math::Q q = DOMBasisTypes::readQ(elmState, false);
 
-	DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Transform3DId );
-	rw::math::Transform3D<> transform = DOMBasisTypes::readTransform3D(elmTransform, false);
+	rw::math::Transform3D<> transform;
+	if( element->hasChild(DOMBasisTypes::Transform3DId) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Transform3DId );
+		transform = DOMBasisTypes::readTransform3D(elmTransform, false);
+	}
+	if( element->hasChild(DOMBasisTypes::QuaternionId) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::QuaternionId );
+		transform.R() = DOMBasisTypes::readQuaternion(elmTransform, false).toRotation3D();
+	}
+	if( element->hasChild(DOMBasisTypes::Vector3DId) ){
+		DOMElem::Ptr elmTransform = element->getChild( DOMBasisTypes::Vector3DId );
+		transform.P() = DOMBasisTypes::readVector3D(elmTransform, false);
+	}
+
 
 	CalibrationMeasurement::Ptr measurement = ownedPtr(new CalibrationMeasurement(q, transform));
 
