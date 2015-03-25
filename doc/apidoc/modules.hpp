@@ -150,7 +150,18 @@ namespace rwlibs {
    	 */
 	namespace softbody {}
 
+	/**
+     * @brief SWIG generated interface for Robwork. The supported generated interface languages are: Lua, Python and Java.
+	 *
+	 * The SWIG interface to RobWork is very similar to the RobWork c++ interface. However, due to
+	 * limitations in other languages, then the interfaces cannot match the c++ interface exactly.
+	 * Class's in this module are documented as c++ classes with c++ functions, but they really
+	 * only define the classes and functions that was wrapped and available through SWIG.
+   	 */
 	namespace swig {}
+
+
+	namespace calibration {}
 }
 
 /**
@@ -297,6 +308,15 @@ namespace rwlibs {
     @defgroup swig swig
     @{
         @copydoc rwlibs::swig
+    @}
+
+    @defgroup assembly assembly
+    @{
+        @copydoc rwlibs::assembly
+    @}
+    @defgroup calibration calibration
+    @{
+        @copydoc rwlibs::calibration
     @}
 
 @}
