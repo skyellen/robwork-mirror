@@ -21,7 +21,7 @@
 
 #include <QVBoxLayout>
 
-
+#include <rw/sensor/ImageUtil.hpp>
 
 using namespace rws;
 using namespace rw::common;
@@ -78,7 +78,7 @@ void Scan25DView::update() {
 
     if(_scanner != NULL && _scanner->isScanReady() ){
         //Image::Ptr img = _scanner->getImage().asImage(_scanner->getRange().first, _scanner->getRange().second);
-        Image::Ptr img = _scanner->getScan().asImage();
+        Image::Ptr img = ImageUtil::makeDepthImage(_scanner->getScan());
 
         //_scanRender->setScan(img);
         // convert to depth image
@@ -121,7 +121,7 @@ void Scan2DView::makeCurrent() {
 
 void Scan2DView::update() {
     if(_scanner != NULL && _scanner->isScanReady() ){
-        const Image25D& scan = _scanner->getScan();
+        const rw::geometry::PointCloud& scan = _scanner->getScan();
         _scanRender->setScan(scan);
     }
 

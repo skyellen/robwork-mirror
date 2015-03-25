@@ -464,7 +464,7 @@ void RobWorkStudio::loadPlugin()
 		QFileInfo pluginInfo(pluginfilename);
 		QString pathname = pluginInfo.absolutePath();
 		QString filename = pluginInfo.baseName();
-		
+
 		setupPlugin(pathname, filename, 0, 1);
 	}
 }
@@ -654,7 +654,7 @@ void RobWorkStudio::locatePlugins(QSettings& settings){
 void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename, bool visible, int dock)
 {
 	Qt::DockWidgetArea dockarea = (Qt::DockWidgetArea)dock;
-	
+
 	QString pfilename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
 	bool e1 = boost::filesystem::exists( filename.toStdString() );
 	if(!e1){
@@ -669,7 +669,7 @@ void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename
 		pfilename = pathname+ "/" + filename + ".dylib";
 		e1 = boost::filesystem::exists( pfilename.toStdString() );
 	}
-	
+
 	QPluginLoader loader(pfilename);
 #if QT_VERSION >= 0x040400
 	// Needed to make dynamicly loaded libraries use dynamic
@@ -684,7 +684,7 @@ void RobWorkStudio::setupPlugin(const QString& pathname, const QString& filename
 		if (testP == NULL) {
 			RW_THROW("Loaded plugin is NULL, tried loading \"" << pfilename.toStdString() << "\"" );
 		}
-		
+
 		RobWorkStudioPlugin* plugin = qobject_cast<RobWorkStudioPlugin*>(pluginObject);
 
 		if (plugin) {
@@ -1225,7 +1225,7 @@ void RobWorkStudio::postGenericAnyEvent(const std::string& id, boost::any data){
 
 bool RobWorkStudio::event(QEvent *event)
 {
-	RobWorkStudioEvent *rwse_test = dynamic_cast<RobWorkStudioEvent *>(event);
+	//RobWorkStudioEvent *rwse_test = dynamic_cast<RobWorkStudioEvent *>(event);
     //if(rwse_test !=NULL)
 	//	std::cout << "EVENT: " << event->type() << std::endl;
     //   rwse->done();

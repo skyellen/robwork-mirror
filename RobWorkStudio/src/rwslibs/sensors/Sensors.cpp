@@ -190,7 +190,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         //getRobWorkStudio()->getView()->makeCurrentContext(); TODO
         GLFrameGrabber::Ptr framegrabber = ownedPtr( new GLFrameGrabber(width,height,fovy) );
         framegrabber->init(gldrawer);
-        SimulatedCamera *simcam = new SimulatedCamera("SimulatedCamera", frame, framegrabber);
+        SimulatedCamera *simcam = new SimulatedCamera("SimulatedCamera", fovy, frame, framegrabber);
         sensor = simcam;
         simcam->initialize();
         simcam->start();
@@ -215,8 +215,8 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         framegrabber25d->grab(frame, getRobWorkStudio()->getState());
         gldrawer->updateView();
         gldrawer->updateView();
-        const Image25D& img = framegrabber25d->getImage();
-        Image25D::save(img,"mytestfile.pcd");
+        const rw::geometry::PointCloud& img = framegrabber25d->getImage();
+        rw::geometry::PointCloud::savePCD(img,"mytestfile.pcd");
 
 
         SimulatedScanner25D* simscan25 = new SimulatedScanner25D("SimulatedScanner25D", frame, framegrabber25d);
@@ -244,8 +244,8 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(1, cnt,fovy) );
         framegrabber25d->init(gldrawer);
         framegrabber25d->grab(frame, getRobWorkStudio()->getState());
-        const Image25D& img = framegrabber25d->getImage();
-        Image25D::save(img,"mytestfile.pcd");
+        const rw::geometry::PointCloud& img = framegrabber25d->getImage();
+        rw::geometry::PointCloud::savePCD(img,"mytestfile.pcd");
 
 
         SimulatedScanner2D* simscan2D = new SimulatedScanner2D("SimulatedScanner2D", frame, framegrabber25d);
