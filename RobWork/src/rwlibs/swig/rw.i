@@ -74,6 +74,8 @@ void writelog(const std::string& msg);
     }
 %}
 
+
+
 /********************************************
  * Constants
  ********************************************/
@@ -102,14 +104,14 @@ namespace rw { namespace common {
 template<class T> class Ptr {
 public:
     Ptr();
-    
+     
 #if defined(SWIGJAVA)
  %typemap (in) T* %{
   jclass objcls = jenv->GetObjectClass(jarg1_);
   const jfieldID memField = jenv->GetFieldID(objcls, "swigCMemOwn", "Z");
   jenv->SetBooleanField(jarg1_, memField, (jboolean)false);
   $1 = *(T **)&jarg1;
- %}
+ %} 
     Ptr(T* ptr);
  %clear T*;
 #else
@@ -118,7 +120,7 @@ public:
 
     bool isShared();
     bool isNull();
-    bool operator==(void* p) const;
+    //bool operator==(void* p) const;
 
     template<class A>
     bool operator==(const rw::common::Ptr<A>& p) const;
@@ -130,13 +132,22 @@ public:
 };
 }}
 
+/** @addtogroup swig */
+/* @{ */
+
+//! @copydoc rw::common::PropertyMap
 class PropertyMap
 {
-public:
+public: 
+	//! @copydoc rw::common::PropertyMap::PropertyMap
 	PropertyMap();
+	//! @copydoc rw::common::PropertyMap::has
 	bool has(const std::string& identifier) const;
+    //! @copydoc rw::common::PropertyMap::size
     size_t size() const;
+    //! @copydoc rw::common::PropertyMap::empty 
     bool empty() const;
+    //! @copydoc rw::common::PropertyMap::erase
     bool erase(const std::string& identifier);
     
 	%extend {
@@ -153,8 +164,8 @@ public:
 		Pose6D& getPose(const std::string& id){ return $self->get<Pose6D>(id); }
 		void setPose6D(const std::string& id, Pose6D p){  $self->set<Pose6D>(id, p); }
 		
-		Vector3D& getVector3D(const std::string& id){ return $self->get<Vector3D>(id); }
-		void setVector3D(const std::string& id, Vector3D p){  $self->set<Vector3D>(id, p); }
+		rw::math::Vector3D<double>& getVector3(const std::string& id){ return $self->get<rw::math::Vector3D<double> >(id); }
+		void setVector3(const std::string& id, rw::math::Vector3D<double> p){  $self->set<rw::math::Vector3D<double> >(id, p); }
 
 		Transform3D& getTransform3D(const std::string& id){ return $self->get<Transform3D>(id); }
 		void setTransform3D(const std::string& id, Transform3D p){  $self->set<Transform3D>(id, p); }
@@ -166,11 +177,13 @@ public:
 		void save(const std::string& filename){ rw::loaders::XMLPropertySaver::save( *($self), filename ); }
 		
 	}    
-
+ 
 };
 %template (PropertyMapPtr) rw::common::Ptr<PropertyMap>;
 
-class ThreadPool {
+
+
+class ThreadPool { 
 public:
     ThreadPool(int threads = -1);
     virtual ~ThreadPool();
@@ -348,17 +361,17 @@ public:
 class Plane: public Primitive {
 public:
     Plane(const Q& q);
-    Plane(const Vector3D& n, double d);
-    Plane(const Vector3D& p1,
-          const Vector3D& p2,
-          const Vector3D& p3);
+    Plane(const rw::math::Vector3D<double>& n, double d);
+    Plane(const rw::math::Vector3D<double>& p1,
+          const rw::math::Vector3D<double>& p2,
+          const rw::math::Vector3D<double>& p3);
 
-    Vector3D& normal();
-    //const Vector3D& normal() const;
+    rw::math::Vector3D<double>& normal();
+    //const rw::math::Vector3D<double>& normal() const;
     double& d();
     //double d() const;
-    double distance(const Vector3D& point);
-    double refit( std::vector<Vector3D >& data );
+    double distance(const rw::math::Vector3D<double>& point);
+    double refit( std::vector<rw::math::Vector3D<double> >& data );
     rw::common::Ptr<TriMesh> createMesh(int resolution) const ;
     Q getParameters() const;
     GeometryType getType() const;
@@ -378,10 +391,10 @@ public:
 
 class ConvexHull3D {
 public:
-    virtual void rebuild(const std::vector<Vector3D>& vertices) = 0;
-    virtual bool isInside(const Vector3D& vertex) = 0;
-    virtual double getMinDistInside(const Vector3D& vertex) = 0;
-    virtual double getMinDistOutside(const Vector3D& vertex) = 0;
+    virtual void rebuild(const std::vector<rw::math::Vector3D<double> >& vertices) = 0;
+    virtual bool isInside(const rw::math::Vector3D<double>& vertex) = 0;
+    virtual double getMinDistInside(const rw::math::Vector3D<double>& vertex) = 0;
+    virtual double getMinDistOutside(const rw::math::Vector3D<double>& vertex) = 0;
     virtual rw::common::Ptr<PlainTriMeshN1> toTriMesh() = 0;
 };
 
@@ -737,7 +750,7 @@ public:
 class StateStructure {
 public:
 	StateStructure();
-	
+	 
 	void addFrame(Frame *frame, Frame *parent=NULL);
 	const State& getDefaultState() const;
 	const std::vector<Frame*>& getFrames() const;
@@ -755,8 +768,8 @@ public:
     Frame* getParent(const State& state);
     Frame* getDafParent(const State& state);
 
-#if !defined(SWIGJAVA)
-    const PropertyMap& getPropertyMap() const ;
+#if !defined(SWIGJAVA) 
+    const PropertyMap& getPropertyMap() const ; 
     const Frame* getParent() const ;
     const Frame* getParent(const State& state) const;
     const Frame* getDafParent(const State& state) const;
@@ -877,7 +890,7 @@ public:
     enum Type { QType = 0, Vector3DType, Rotation3DType, Transform3DType};
     Type getType();
     rw::common::Ptr<Trajectory<Q> > getQTrajectory();
-    rw::common::Ptr<Trajectory<Vector3D> > getVector3DTrajectory();
+    rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > > getVector3DTrajectory();
     rw::common::Ptr<Trajectory<Rotation3D> > getRotation3DTrajectory();
     rw::common::Ptr<Trajectory<Transform3D> > getTransform3DTrajectory();
 };
@@ -886,11 +899,11 @@ class XMLTrajectorySaver
 {
 public:
     static bool save(const Trajectory<Q>& trajectory, const std::string& filename);
-    static bool save(const Trajectory<Vector3D>& trajectory, const std::string& filename);
+    static bool save(const Trajectory<rw::math::Vector3D<double> >& trajectory, const std::string& filename);
     static bool save(const Trajectory<Rotation3D>& trajectory, const std::string& filename);
     static bool save(const Trajectory<Transform3D>& trajectory, const std::string& filename);
     static bool write(const Trajectory<Q>& trajectory, std::ostream& outstream);
-    static bool write(const Trajectory<Vector3D>& trajectory, std::ostream& outstream);
+    static bool write(const Trajectory<rw::math::Vector3D<double> >& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<Rotation3D>& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<Transform3D>& trajectory, std::ostream& outstream);
 private:
@@ -900,619 +913,7 @@ private:
 /********************************************
  * MATH
  ********************************************/
-
-class Matrix {
-public:
-	
-	Matrix(int dimx, int dimy);
-	
-#if !defined(SWIGJAVA)
-    double& operator()(size_t row, size_t column);
-    const double& operator()(size_t row, size_t column) const;
-
-    const Matrix operator+(const Matrix& wrench) const;    
-    const Matrix operator-(const Matrix& wrench) const;
-    const Matrix operator*(const Matrix& wrench) const;
-#endif
-
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Matrix&) const;
-	%rename(add) operator+(const Matrix&) const;
-#endif
-	
-	%extend {
-		Matrix pseudoinverse() {
-			 return rw::math::LinearAlgebra::pseudoInverse( (*$self) );
-		}
-		
-		double& elem(int x, int y){
-			return (*$self)(x,y);
-		}
-		
-		/* These accesors are neccesary because Python does not allow
-		lvalues consisting of access operators calls (cannot assign to a function call).
-		Moreover, it's not possible to dereference a pointer obtained from function returning a reference. */
-		double get(int x, int y) {
-			return (*$self)(x, y);
-		}
-		
-		void set(int x, int y, double value) {
-			(*$self)(x, y) = value;
-		}
-
-#if (defined(SWIGPYTHON))
-		/* This typemap makes it possible to access Matrix class elements using following syntax:
-		
-		myMatrix[1, 1] = value
-		print myMatrix[1, 1]
-		
-		-- using __getitem__ and __setitem__ methods. */
-		%typemap(in) int[2](int temp[2]) {
-			int i;
-			if (PyTuple_Check($input)) {
-				if (!PyArg_ParseTuple($input, "ii", temp, temp+1)) {
-					PyErr_SetString(PyExc_TypeError, "tuple must have 2 elements");
-					return NULL;
-				}
-				$1 = &temp[0];
-			} else {
-				PyErr_SetString(PyExc_TypeError, "expected a tuple.");
-				return NULL;
-			}
-		}
-		
-        double __getitem__(int i[2])const {return (*$self)(i[0], i[1]); }
-        void __setitem__(int i[2], double d){ (*$self)(i[0], i[1]) = d; }
-#endif
-	}
-	
-};
-
-
-class Q
-{
-public:
-    // first we define functions that are native to Q
-	Q();
-	//%feature("autodoc","1");
-	Q(int n, double a0);
-    Q(int n, double a0, double a1);
-    Q(int n, double a0, double a1, double a2);
-    Q(int n, double a0, double a1, double a2, double a3);
-    Q(int n, double a0, double a1, double a2, double a3, double a4);
-    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5);
-    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6);
-    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7);
-    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8);
-    Q(int n, double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9);
-
-    Q(const std::vector<double>& r);
-#if defined(SWIGJAVA)
-%apply double[] {double *};
-#endif
-    Q(int n, const double* values);
-
-    int size() const;
-
-#if !defined(SWIGJAVA)
-    %rename(elem) operator[];
-    double& operator[](unsigned int i) ;
-#endif
-
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Q&) const;
-	%rename(add) operator+(const Q&) const;
-#endif
-
-    const Q operator-() const;
-    Q operator-(const Q& b) const;
-    Q operator+(const Q& b) const;
-    Q operator*(double s) const;
-    Q operator/(double s) const;
-    double norm2();
-    double norm1();
-    double normInf();
-
-    %extend {
-		
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Q>(*$self); }
-        double __getitem__(int i)const {return (*$self)[i]; }
-        void __setitem__(int i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Q>(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i,double d){ (*$self)[i] = d; }
-#endif
-    };
-
-};
-
-%template (QVector) std::vector<Q>;
-%template(QPair) std::pair<Q, Q>;
-
-namespace rw {
-namespace math {
-
-template<class T> class Vector2D
-{
-public:
-    Vector2D();
-    %feature("autodoc","1");
-    Vector2D(T x, T y);
-    size_t size() const;
-
-    T norm2();
-    T norm1();
-    T normInf();
-
-    //double& operator[](unsigned int i) ;
-    %rename(elem) operator[];
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<rw::math::Vector2D<T> >(*$self); }
-        double __getitem__(int i)const {return (*$self)[i]; }
-        void __setitem__(int i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<rw::math::Vector2D<T> >(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i,double d){ (*$self)[i] = d; }
-#endif
-    };
-
-};
-
-}}
-
-%template (Vector2Df) rw::math::Vector2D<float>;
-%template (Vector2Dd) rw::math::Vector2D<double>;
-%template (Vector2DVector) std::vector<rw::math::Vector2D<double> >;
-%rename(Vector2Df) rw::math::Vector2D<float>;
-%rename(Vector2D) rw::math::Vector2D<double>;
-
-
-
-namespace rw { namespace math {
-
-template<class T> class Vector3D
-{
-public:
-    Vector3D();
-    %feature("autodoc","1");
-    Vector3D(T x, T y, T z);
-    size_t size() const;
-    Vector3D operator*(T scale) const;
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Vector3D&) const;
-	%rename(add) operator+(const Vector3D&) const;
-#endif
-    Vector3D operator+(const Vector3D& other) const;
-    Vector3D operator-(const Vector3D& other) const;
-    bool operator==(const Vector3D& q);
-
-    T norm2();
-    T norm1();
-    T normInf();
-
-    //double& operator[](unsigned int i) ;
-    //%rename(elem) operator[];
-    
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<rw::math::Vector3D<T> >(*$self); }
-        T __getitem__(int i)const {return (*$self)[i]; }
-        void __setitem__(int i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<rw::math::Vector3D<T> >(*$self); }
-        T get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i,double d){ (*$self)[i] = d; }
-#endif
-    };
-};
-} }
-%template (Vector3f) rw::math::Vector3D<float>;
-%template (Vector3d) rw::math::Vector3D<double>;
-%template (Vector3DVector) std::vector<rw::math::Vector3D<double> >;
-
-
-class Rotation3D
-{
-public:
-    // Lua methods:
-    Rotation3D();
-    %feature("autodoc","1");
-    Rotation3D(double v0,double v1,double v2,
-    			double v3,double v4,double v5,
-    			double v6,double v7,double v8);
-    			
-    explicit Rotation3D(const Rotation3D& R);
-
-    Rotation3D operator*(const Rotation3D& other) const;
-    Vector3D operator*(const Vector3D& vec) const;
-    //Rotation3D inverse() const;
-
-    static const Rotation3D& identity();
-    static Rotation3D skew(const Vector3D& v);
-    bool equal(const Rotation3D& rot, double precision) const;
-
-    //EAA operator*(const EAA& other) const;
-
-    bool operator==(const Rotation3D &rhs) const;
-    //double& operator[](unsigned int i) ;
-
-    // std::string __tostring() const;
-    
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Rotation3D>(*$self); }
-        double __getitem__(int x,int y)const {return (*$self)(x,y); }
-        void __setitem__(int x,int y,double d){ (*$self)(x,y) = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Rotation3D>(*$self); }
-        double get(std::size_t row, std::size_t column) const { return (*$self)(row, column); }
-        void set(std::size_t row, std::size_t column, double d){ (*$self)(row, column) = d; }
-#endif
-    };
-};
-
-%template (Rotation3DVector) std::vector<Rotation3D>;
-
-
-//Rotation3D inverse(const Rotation3D& val);
-
-class EAA
-{
-public:
-    // Lua methods:
-    EAA();
-     %feature("autodoc","1");
-    EAA(const EAA& eaa);
-     %feature("autodoc","1");
-    EAA(const Rotation3D& rot);
-     %feature("autodoc","1");
-    EAA(const Vector3D& axis, double angle);
-     %feature("autodoc","1");
-    EAA(double thetakx, double thetaky, double thetakz);
-     %feature("autodoc","1");
-    EAA(const Vector3D& v1, const Vector3D& v2);
-
-    double angle() const;
-    Vector3D axis() const;
-
-    //const double& operator[](unsigned int i) const;
-	//double& operator[](unsigned int i);
-	//%rename(elem) operator[];
-
-    //EAA operator*(const Rotation3D& other) const;
-
-    Rotation3D toRotation3D() const;
-
-    //bool operator==(const EAA &rhs) const;
-    // std::string __tostring() const;
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<EAA>(*$self); }
-        double __getitem__(int i)const {return (*$self)[i]; }
-        void __setitem__(int i,double d){ (*$self)[i] = d; }
-    	double& x() { return (*$self)[0]; }
-    	double& y() { return (*$self)[1]; }
-    	double& z() { return (*$self)[2]; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<EAA>(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i,double d){ (*$self)[i] = d; }
-    	double x() const { return (*$self)[0]; }
-    	double y() const { return (*$self)[1]; }
-    	double z() const { return (*$self)[2]; }
-#endif
-    };
-};
-
-class RPY
-{
-public:
-    // Lua methods:
-    RPY();
-    RPY(const RPY& eaa);
-    RPY(const Rotation3D& rot);
-    RPY(double roll, double pitch, double yaw);
-    Rotation3D toRotation3D() const;
-    
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<RPY>(*$self); }
-        double __getitem__(int i)const {return (*$self)[i]; }
-        void __setitem__(int i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<RPY>(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i,double d){ (*$self)[i] = d; }
-#endif
-    };
-};
-
-
-class Quaternion
-{
-public:
-    // Lua methods:
-    Quaternion();
-    Quaternion(double qx, double qy, double qz, double qw);
-    Quaternion(const Quaternion& eaa);
-    Quaternion(const Rotation3D& rot);
-    Quaternion operator*(double s);
-
-    void normalize();
-
-    Rotation3D toRotation3D() const;
-    Quaternion slerp(const Quaternion& v, const double t) const;
-
-    double getQx() const;
-    double getQy() const;
-    double getQz() const;
-    double getQw() const;
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Quaternion>(*$self); }
-        double __getitem__(int i)const {return (*$self)(i); }
-        void __setitem__(int i,double d){ (*$self)(i) = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Quaternion>(*$self); }
-        double get(std::size_t i) const { return (*$self)(i); }
-        void set(std::size_t i,double d){ (*$self)(i) = d; }
-#endif
-    };
-};
-
-
-
-//Quaternion operator*(double s, const Quaternion& v);
-
-class Transform3D {
-public:
-	Transform3D();
-    Transform3D(const Transform3D& t3d);
-    Transform3D(const Vector3D& position,const Rotation3D& rotation);
-
-    Transform3D operator*(const Transform3D& other) const;
-    Vector3D operator*(const Vector3D& other) const;
-
-    static Transform3D DH(double alpha, double a, double d, double theta);
-    static Transform3D craigDH(double alpha, double a, double d, double theta);
-	
-    Vector3D& P();
-    Rotation3D& R();
-
-    %extend {
-       Transform3D inverse(){ return inverse(*$self); }
-       //Transform3D inverse(const Transform3D& val);
-    };
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Transform3D>(*$self); }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Transform3D>(*$self); }
-#endif
-    };
-};
-
-%template (Transform3DVector) std::vector<Transform3D>;
-
-/*
-%inline %{
-
-    Transform3D inverse(Transform3D t3d){ return rw::math::inverse(t3d); }
-
-    Rotation3D inverse(Rotation3D t3d){
-        std::cout << "CALLING LUA INVERSE.... DUNNO WHY" << std::endl;
-        return rw::math::inverse(t3d);
-    }
-
-%}
-*/
-
-class Pose6D {
-public:
-	Pose6D(const Pose6D& p6d);
-    Pose6D(const Vector3D& position,const EAA& rotation);
-    Pose6D(const Transform3D& t3d);
-
-    Transform3D toTransform3D();
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Pose6D>(*$self); }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Pose6D>(*$self); }
-#endif
-    };
-};
-
-class Jacobian
-{
-public:
-    Jacobian(int m, int n);
-
-    int size1() const ;
-    int size2() const ;
-
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-    double& elem(int i, int j);
-
-    %extend {
-        char *__str__() { return printCString<Jacobian>(*$self); }
-        double __getitem__(std::size_t row, std::size_t column)const {return (*$self)(row, column); }
-        void __setitem__(std::size_t row, std::size_t column,double d){ (*$self)(row, column) = d; }
-    };
-#elif defined(SWIGJAVA)
-    %extend {
-        std::string toString() const { return toString<Jacobian>(*$self); }
-        double elem(std::size_t row, std::size_t column) const { return (*$self)(row, column); }
-        double get(std::size_t row, std::size_t column) const { return (*$self)(row, column); }
-        void set(std::size_t row, std::size_t column, double d){ (*$self)(row, column) = d; }
-    };
-#endif
-};
-
-
-
-class VelocityScrew6D
-{
-public:
-	VelocityScrew6D();
-	VelocityScrew6D(const VelocityScrew6D& p6d);
-    VelocityScrew6D(const Vector3D& position,const EAA& rotation);
-    VelocityScrew6D(const Transform3D& t3d);
-
-    // lua functions
-    VelocityScrew6D operator*(double scale) const;
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const VelocityScrew6D&) const;
-	%rename(add) operator+(const VelocityScrew6D&) const;
-#endif
-    VelocityScrew6D operator+(const VelocityScrew6D& other) const;
-    VelocityScrew6D operator-(const VelocityScrew6D& other) const;
-    //bool operator==(const VelocityScrew6D& q);
-
-    double norm2();
-    double norm1();
-    double normInf();
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<VelocityScrew6D>(*$self); }
-        double __getitem__(std::size_t i)const {return (*$self)[i]; }
-        void __setitem__(std::size_t i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<VelocityScrew6D>(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i, double d){ (*$self)[i] = d; }
-#endif
-    };
-
-    //Transform3D toTransform3D();
-    // std::string __tostring() const;
-};
-
-
-class Wrench6D
-{
-public:		
-    Wrench6D(double fx, double fy, double fz, double tx, double ty, double tz);
-
-    // TODO: add constructor on vector
-
-    Wrench6D();
-
-    Wrench6D(const Vector3D& force, const Vector3D& torque);
-
-    const Vector3D force() const;
-    const Vector3D torque() const;
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Wrench6D>(*$self); }
-        double __getitem__(std::size_t i)const {return (*$self)[i]; }
-        void __setitem__(std::size_t i,double d){ (*$self)[i] = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Wrench6D>(*$self); }
-        double get(std::size_t i) const { return (*$self)[i]; }
-        void set(std::size_t i, double d){ (*$self)[i] = d; }
-#endif
-    };
-
-    const Wrench6D operator*( double s) const;
-    /*
-    friend const Wrench6D<T> operator*(const Transform3D& aTb,
-                                              const Wrench6D& bV);
-    
-    friend const Wrench6D operator*(const Vector3D& aPb,
-                                       const Wrench6D& bV);
-
-
-    friend const Wrench6D operator*(const Rotation3D& aRb, const Wrench6D& bV);
-*/
-#if defined(SWIGJAVA)
-	%rename(subtract) operator-(const Wrench6D&) const;
-	%rename(add) operator+(const Wrench6D&) const;
-#endif
-    const Wrench6D operator+(const Wrench6D& wrench) const;    
-    const Wrench6D operator-(const Wrench6D& wrench) const;
-
-    double norm1() const;
-    
-    double norm2() const ;
-    double normInf() const ;
-};
-
-
-class InertiaMatrix{
-public:
-    InertiaMatrix(
-        double r11, double r12, double r13,
-        double r21, double r22, double r23,
-        double r31, double r32, double r33);
-
-    InertiaMatrix(
-        const Vector3D& i,
-        const Vector3D& j,
-        const Vector3D& k);
-
-    InertiaMatrix(
-        double i = 0.0,
-        double j = 0.0,
-        double k = 0.0);
-
-#if !defined(SWIGJAVA)
-    double& operator()(size_t row, size_t column);
-    const double& operator()(size_t row, size_t column) const;
-#endif
-
-    %extend {
-#if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<InertiaMatrix>(*$self); }
-        double __getitem__(std::size_t row, std::size_t column)const {return (*$self)(row,column); }
-        void __setitem__(std::size_t row, std::size_t column, double d){ (*$self)(row,column) = d; }
-#elif defined(SWIGJAVA)
-        std::string toString() const { return toString<InertiaMatrix>(*$self); }
-        double get(std::size_t row, std::size_t column) const { return (*$self)(row,column); }
-        void set(std::size_t row, std::size_t column, double val) { (*$self)(row,column) = val; }
-#endif
-    };
-
-    //const Base& m() const;
-    //Base& m();
-
-    //friend InertiaMatrix operator*(const Rotation3D<T>& aRb, const InertiaMatrix& bRc);
-    //friend InertiaMatrix operator*(const InertiaMatrix& aRb, const Rotation3D<T>& bRc);
-    //friend InertiaMatrix operator+(const InertiaMatrix& I1, const InertiaMatrix& I2);
-    //friend Vector3D<T> operator*(const InertiaMatrix& aRb, const Vector3D<T>& bVc);
-    //friend InertiaMatrix inverse(const InertiaMatrix& aRb);
-    //friend std::ostream& operator<<(std::ostream &os, const InertiaMatrix& r);
-
-    static InertiaMatrix makeSolidSphereInertia(double mass, double radi);
-    static InertiaMatrix makeHollowSphereInertia(double mass, double radi);
-    static InertiaMatrix makeCuboidInertia(double mass, double x, double y, double z);
-};
-
-%nodefaultctor Metric;
-template <class T>
-class Metric
-{
-public:
-    double distance(const T& q) const;
-
-    double distance(const T& a, const T& b) const;
-
-    int size() const;
-
-};
-
-%template (MetricQ) Metric<Q>;
-%template (MetricQPtr) rw::common::Ptr<Metric<Q> >;
-%template (MetricSE3) Metric<Transform3D>;
-%template (MetricSE3Ptr) rw::common::Ptr<Metric<Transform3D> >;
+%include <rwlibs/swig/rwmath.i>
 
 // Utility function within rw::Math
 Rotation3D getRandomRotation3D();
@@ -1713,7 +1114,7 @@ public:
     const std::vector<rw::common::Ptr<Model3D> >& getModels(const State& state) const;
     
     double getMass(State& state) const;
-    Vector3D getCOM(rw::kinematics::State& state) const;
+    rw::math::Vector3D<double> getCOM(rw::kinematics::State& state) const;
     InertiaMatrix getInertia(State& state) const;
     void update(rw::graphics::Model3D::Ptr model, const State& state);
 };
@@ -1839,136 +1240,6 @@ class DHParameterSet
  * PATHPLANNING
  ********************************************/
 
-class PlannerConstraint
-{
-public:
-    PlannerConstraint();
-
-    //PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
-
-    bool inCollision(const Q& q);
-
-    bool inCollision(const Q& q1, const Q& q2);
-
-    //QConstraint& getQConstraint() const { return *_constraint; }
-
-    //QEdgeConstraint& getQEdgeConstraint() const { return *_edge; }
-
-    //const QConstraint::Ptr& getQConstraintPtr() const { return _constraint; }
-
-    //const QEdgeConstraint::Ptr& getQEdgeConstraintPtr() const { return _edge; }
-
-    //static PlannerConstraint make(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
-
-    static PlannerConstraint make(rw::common::Ptr<CollisionDetector> detector,
-                                  rw::common::Ptr<Device> device,
-                                  const State& state);
-
-    static PlannerConstraint make(rw::common::Ptr<CollisionStrategy> strategy,
-                                  rw::common::Ptr<WorkCell> workcell,
-                                  rw::common::Ptr<Device> device,
-                                  const State& state);
-
-    /*
-    static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
-        const rw::proximity::CollisionSetup& setup,
-        rw::common::Ptr<WorkCell> workcell,
-        rw::common::Ptr<Device> device,
-        const State& state);
-     */
-};
-
-%template (PlannerConstraintPtr) rw::common::Ptr<PlannerConstraint>;
-
-%nodefaultctor StopCriteria;
-class StopCriteria
- {
-#if defined(SWIGJAVA)
-%apply bool[] {bool *};
-#endif
- 
- public:
-     bool stop() const;
-     rw::common::Ptr<StopCriteria> instance() const;
-     virtual ~StopCriteria();
-     static rw::common::Ptr<StopCriteria> stopAfter(double time);
-     static rw::common::Ptr<StopCriteria> stopNever();
-     static rw::common::Ptr<StopCriteria> stopNow();
-     static rw::common::Ptr<StopCriteria> stopByFlag(bool* stop);
-     //static rw::common::Ptr<StopCriteria> stopByFun(boost::function<bool ()> fun);
-     static rw::common::Ptr<StopCriteria> stopCnt(int cnt);
-     static rw::common::Ptr<StopCriteria> stopEither(
-         const std::vector<rw::common::Ptr<StopCriteria> >& criteria);
-
-     static rw::common::Ptr<StopCriteria> stopEither(
-         const rw::common::Ptr<StopCriteria>& a,
-         const rw::common::Ptr<StopCriteria>& b);
-};
-
-%template (StopCriteriaPtr) rw::common::Ptr<StopCriteria>;
-%template (StopCriteriaPtrVector) std::vector<rw::common::Ptr<StopCriteria> >;
-
-/*
-%nodefaultctor PathPlanner;
-template <class From, class To, class PATH = Path<From> >
-class PathPlanner
-{
-public:
-
-    bool query(const From& from, To& to, PATH& path, const StopCriteria& stop);
-
-    bool query(const From& from, To& to, PATH& path, double time);
-
-    bool query(const From& from, To& to, PATH& path);
-
-    PropertyMap& getProperties();
-
-};
-%nodefaultctor QToQPathPlanner;
-%template (QToQPathPlanner) PathPlanner<Q,const Q,QPath>;
-*/
-%nodefaultctor QToQPlanner;
-class QToQPlanner {
-public:
-
-    %extend {
-
-        rw::common::Ptr<Path<Q> > query(Q from, Q to, rw::common::Ptr<StopCriteria> stop){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,*stop);
-            return path;
-        }
-
-        rw::common::Ptr<Path<Q> > query(Q from, Q to, double time){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,time);
-            return path;
-        }
-
-        rw::common::Ptr<Path<Q> > query(Q from, Q to){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path);
-            return path;
-        }
-
-        PropertyMap& getProperties(){
-            return $self->rw::pathplanning::PathPlanner<Q,const Q>::getProperties();
-        }
-
-        static rw::common::Ptr<QToQPlanner> makeRRT(rw::common::Ptr<CollisionDetector> cdect, rw::common::Ptr<Device> dev, const State& state){
-            const rw::pathplanning::PlannerConstraint constraint = rw::pathplanning::PlannerConstraint::make(
-                cdect.get(), dev, state);
-            return rwlibs::pathplanners::RRTPlanner::makeQToQPlanner(constraint, dev);
-        }
-
-        static rw::common::Ptr<QToQPlanner> makeSBL(rw::common::Ptr<CollisionDetector> cdect, rw::common::Ptr<Device> dev, const State& state){
-            rw::pathplanning::QConstraint::Ptr qconstraint = rw::pathplanning::QConstraint::make(cdect.get(), dev, state);
-            return rwlibs::pathplanners::SBLPlanner::makeQToQPlanner(rwlibs::pathplanners::SBLSetup::make(qconstraint, rw::pathplanning::QEdgeConstraintIncremental::makeDefault(qconstraint, dev), dev));
-        }
-    };
-};
-
-%template (QToQPlannerPtr) rw::common::Ptr<QToQPlanner>;
 
 
 /********************************************
@@ -2188,15 +1459,15 @@ public:
 };
 
 %template (BlendR1) Blend<double>;
-%template (BlendR2) Blend<Vector2D>;
-%template (BlendR3) Blend<Vector3D>;
+%template (BlendR2) Blend<Vector2>;
+%template (BlendR3) Blend<rw::math::Vector3D<double> >;
 %template (BlendSO3) Blend<Rotation3D>;
 %template (BlendSE3) Blend<Transform3D>;
 %template (BlendQ) Blend<Q>;
 
 %template (BlendR1Ptr) rw::common::Ptr<Blend<double> >;
-%template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2D> >;
-%template (BlendR3Ptr) rw::common::Ptr<Blend<Vector3D> >;
+%template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2> >;
+%template (BlendR3Ptr) rw::common::Ptr<Blend<rw::math::Vector3D<double> > >;
 %template (BlendSO3Ptr) rw::common::Ptr<Blend<Rotation3D> >;
 %template (BlendSE3Ptr) rw::common::Ptr<Blend<Transform3D> >;
 %template (BlendQPtr) rw::common::Ptr<Blend<Q> >;
@@ -2212,15 +1483,15 @@ public:
 };
 
 %template (InterpolatorR1) Interpolator<double>;
-%template (InterpolatorR2) Interpolator<Vector2D>;
-%template (InterpolatorR3) Interpolator<Vector3D>;
+%template (InterpolatorR2) Interpolator<Vector2>;
+%template (InterpolatorR3) Interpolator<rw::math::Vector3D<double> >;
 %template (InterpolatorSO3) Interpolator<Rotation3D>;
 %template (InterpolatorSE3) Interpolator<Transform3D>;
 %template (InterpolatorQ) Interpolator<Q>;
 
 %template (InterpolatorR1Ptr) rw::common::Ptr<Interpolator<double> >;
-%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2D> >;
-%template (InterpolatorR3Ptr) rw::common::Ptr<Interpolator<Vector3D> >;
+%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2> >;
+%template (InterpolatorR3Ptr) rw::common::Ptr<Interpolator<rw::math::Vector3D<double> > >;
 %template (InterpolatorSO3Ptr) rw::common::Ptr<Interpolator<Rotation3D> >;
 %template (InterpolatorSE3Ptr) rw::common::Ptr<Interpolator<Transform3D> >;
 %template (InterpolatorQPtr) rw::common::Ptr<Interpolator<Q> >;
@@ -2294,14 +1565,14 @@ public:
 //////////// RAMP interpolator
 
 
-class RampInterpolatorR3: public Interpolator<Vector3D> {
+class RampInterpolatorR3: public Interpolator<rw::math::Vector3D<double> > {
 public:
-    RampInterpolatorR3(const Vector3D& start, const Vector3D& end,
+    RampInterpolatorR3(const rw::math::Vector3D<double>& start, const rw::math::Vector3D<double>& end,
                        double vellimit,double acclimit);
 
-    Vector3D x(double t) const;
-    Vector3D dx(double t) const;
-    Vector3D ddx(double t) const;
+    rw::math::Vector3D<double> x(double t) const;
+    rw::math::Vector3D<double> dx(double t) const;
+    rw::math::Vector3D<double> ddx(double t) const;
     double duration() const;
 };
 
@@ -2377,16 +1648,16 @@ protected:
 
 %template (TrajectoryState) Trajectory<State>;
 %template (TrajectoryR1) Trajectory<double>;
-%template (TrajectoryR2) Trajectory<Vector2D>;
-%template (TrajectoryR3) Trajectory<Vector3D>;
+%template (TrajectoryR2) Trajectory<Vector2>;
+%template (TrajectoryR3) Trajectory<rw::math::Vector3D<double> >;
 %template (TrajectorySO3) Trajectory<Rotation3D>;
 %template (TrajectorySE3) Trajectory<Transform3D>;
 %template (TrajectoryQ) Trajectory<Q>;
 
 %template (TrajectoryStatePtr) rw::common::Ptr<Trajectory<State> >;
 %template (TrajectoryR1Ptr) rw::common::Ptr<Trajectory<double> >;
-%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<Vector2D> >;
-%template (TrajectoryR3Ptr) rw::common::Ptr<Trajectory<Vector3D> >;
+%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<Vector2> >;
+%template (TrajectoryR3Ptr) rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > >;
 %template (TrajectorySO3Ptr) rw::common::Ptr<Trajectory<Rotation3D> >;
 %template (TrajectorySE3Ptr) rw::common::Ptr<Trajectory<Transform3D> >;
 %template (TrajectoryQPtr) rw::common::Ptr<Trajectory<Q> >;
@@ -2407,8 +1678,8 @@ public:
 };
 
 %template (InterpolatorTrajectoryR1) InterpolatorTrajectory<double>;
-%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2D>;
-%template (InterpolatorTrajectoryR3) InterpolatorTrajectory<Vector3D>;
+%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2>;
+%template (InterpolatorTrajectoryR3) InterpolatorTrajectory<rw::math::Vector3D<double> >;
 %template (InterpolatorTrajectorySO3) InterpolatorTrajectory<Rotation3D>;
 %template (InterpolatorTrajectorySE3) InterpolatorTrajectory<Transform3D>;
 %template (InterpolatorTrajectoryQ) InterpolatorTrajectory<Q>;
@@ -2574,7 +1845,7 @@ public:
 	Path<Transform3D> maleflexT;
 	Path<Transform3D> femaleflexT;
 	Path<Transform3D> contacts;
-	Vector3D maxContactForce;
+	rw::math::Vector3D<double> maxContactForce;
 };
 
 %template (AssemblyStatePtr) rw::common::Ptr<AssemblyState>;
@@ -2733,6 +2004,7 @@ public:
 /********************************************
  * RWLIBS PATHPLANNERS
  ********************************************/
+%include <rwlibs/swig/rwplanning.i>
 
 /********************************************
  * RWLIBS PROXIMITYSTRATEGIES
@@ -2847,6 +2119,8 @@ public:
      };
 };
 %template (GraspResultPtr) rw::common::Ptr<GraspResult>;
+
+/* @} */
 
 //TODO add other grasptask related classes
 

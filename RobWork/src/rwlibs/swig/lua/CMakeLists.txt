@@ -30,8 +30,10 @@ IF( build )
 	SET_SOURCE_FILES_PROPERTIES(../rw.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	# lua interface generation
+	SET(SWIG_MODULE_rw_lua_EXTRA_DEPS ../rwmath.i ../rwplanning.i)
 	STRING(REPLACE "rw_lua" "" LIBS_WITHOUT_RW_LUA ${ROBWORK_LIBRARIES})
     SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp)
+	
 	SWIG_LINK_LIBRARIES(rw_lua rw_algorithms
                               rw_pathplanners
                               rw_pathoptimization

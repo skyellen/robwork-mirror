@@ -152,21 +152,31 @@ namespace swig {
 	typedef rw::loaders::STLFile STLFile;
 
 	// math types
-	typedef rw::math::Vector2D<double> Vector2D;
-	typedef rw::math::Vector3D<double> Vector3D;
-	typedef rw::math::Vector3D<float> Vector3Df;
-	typedef rw::math::Q Q;
+	typedef rw::math::Vector2D<double> Vector2;
+	typedef rw::math::Vector2D<float> Vector2f;
+	typedef rw::math::Vector3D<double> Vector3;
+	typedef rw::math::Vector3D<float> Vector3f;
 	typedef rw::math::Rotation3D<double> Rotation3D;
 	typedef rw::math::Rotation3D<float> Rotation3Df;
 	typedef rw::math::EAA<double> EAA;
+	typedef rw::math::EAA<float> EAAf;
 	typedef rw::math::RPY<double> RPY;
+	typedef rw::math::RPY<float> RPYf;
+	typedef rw::math::RPY<double> ZYX;
+	typedef rw::math::RPY<float> ZYXf;
 	typedef rw::math::Quaternion<double> Quaternion;
+	typedef rw::math::Quaternion<float> Quaternionf;
 	typedef rw::math::Transform3D<double> Transform3D;
 	typedef rw::math::Transform3D<float> Transform3Df;
 	typedef rw::math::Pose6D<double> Pose6D;
+	typedef rw::math::Pose6D<float> Pose6Df;
 	typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
+	typedef rw::math::VelocityScrew6D<float> VelocityScrew6Df;
 	typedef rw::math::Wrench6D<double> Wrench6D;
+	typedef rw::math::Wrench6D<float> Wrench6Df;
 	typedef rw::math::InertiaMatrix<double> InertiaMatrix;
+	typedef rw::math::InertiaMatrix<float> InertiaMatrixf;
+	typedef rw::math::Q Q;
 	typedef rw::math::Jacobian Jacobian;
 	typedef rw::math::QMetric MetricQ;
 	typedef rw::math::Transform3DMetric MetricSE3;
@@ -195,6 +205,8 @@ namespace swig {
 
 	// pathplanning
 	typedef rw::pathplanning::QToQPlanner QToQPlanner;
+	typedef rw::pathplanning::QToTPlanner QToTPlanner;
+
 	typedef rw::pathplanning::StopCriteria StopCriteria;
 	typedef rw::pathplanning::PlannerConstraint PlannerConstraint;
 
@@ -212,8 +224,8 @@ namespace swig {
 	// trajectory
 	typedef rw::trajectory::Blend<Q> BlendQ;
 	typedef rw::trajectory::Blend<double> BlendR1;
-	typedef rw::trajectory::Blend<Vector2D> BlendR2;
-	typedef rw::trajectory::Blend<Vector3D> BlendR3;
+	typedef rw::trajectory::Blend<Vector2> BlendR2;
+	typedef rw::trajectory::Blend<Vector3> BlendR3;
 	typedef rw::trajectory::Blend<Rotation3D> BlendSO3;
 	typedef rw::trajectory::Blend<Transform3D> BlendSE3;
 
@@ -223,22 +235,22 @@ namespace swig {
 	typedef rw::trajectory::Trajectory<State> TrajectoryState;
 	typedef rw::trajectory::Trajectory<Q> TrajectoryQ;
 	typedef rw::trajectory::Trajectory<double> TrajectoryR1;
-	typedef rw::trajectory::Trajectory<Vector2D> TrajectoryR2;
-	typedef rw::trajectory::Trajectory<Vector3D> TrajectoryR3;
+	typedef rw::trajectory::Trajectory<Vector2> TrajectoryR2;
+	typedef rw::trajectory::Trajectory<Vector3> TrajectoryR3;
 	typedef rw::trajectory::Trajectory<Rotation3D> TrajectorySO3;
 	typedef rw::trajectory::Trajectory<Transform3D> TrajectorySE3;
 
 	typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
-	typedef rw::trajectory::LinearInterpolator<rw::math::Vector2D<double> > LinearInterpolatorR2;
+	typedef rw::trajectory::LinearInterpolator<Vector2 > LinearInterpolatorR2;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorR3;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
 
 	typedef rw::trajectory::RampInterpolator<double> RampInterpolator;
 	typedef rw::trajectory::RampInterpolator<rw::math::Q> RampInterpolatorQ;
-	typedef rw::trajectory::RampInterpolator<rw::math::Vector2D<double> > RampInterpolatorR2;
-	typedef rw::trajectory::RampInterpolator<rw::math::Vector3D<double> > RampInterpolatorR3;
+	typedef rw::trajectory::RampInterpolator<Vector2 > RampInterpolatorR2;
+	typedef rw::trajectory::RampInterpolator<Vector3 > RampInterpolatorR3;
 	typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
 	typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
