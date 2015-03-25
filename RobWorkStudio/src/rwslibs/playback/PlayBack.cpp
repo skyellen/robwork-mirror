@@ -429,6 +429,9 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
 
         speedValueChanged(_speed->value());
 
+        loopPlaybackChanged(_loop->checkState());
+        interpolateChanged(_interpolate->checkState());
+
     } else {
         _player = makeEmptyPlayer();
         setInfoLabel();
