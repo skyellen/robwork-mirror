@@ -3,7 +3,8 @@
 #include <boost/algorithm/string.hpp>
 #include "XMLHelpers.hpp"
 
-#define DEBUG rw::common::Log::debugLog()
+#define DEBUG cout
+//rw::common::Log::debugLog()
 
 
 
@@ -27,6 +28,11 @@ TaskDescription::TaskDescription(rwsim::dynamics::DynamicWorkCell::Ptr dwc) :
 	_interferenceLimit(0.0),
 	_wrenchLimit(0.0),
 	_stressLimit(10.0), // arbitrary
+	_alignmentModel(STABLEPOSE0D),
+	_iterations(100),
+	_minInliers(10),
+	_dataThreshold(0.5),
+	_modelThreshold(0.5),
 	_targetObject(NULL)
 {
 	if (_wc == NULL || _dwc == NULL) {
@@ -97,19 +103,21 @@ TaskDescription::Ptr TaskDescriptionLoader::readTaskDescription(PTree& tree, rws
 		readHints(*node4, task);
 	}
 	
-	boost::optional<PTree&> node5 = tree.get_child_optional("Alignments");
-	if (node5) {
-		readAlignments(*node5, task);
-	}
+	//boost::optional<PTree&> node5 = tree.get_child_optional("Alignments");
+	//if (node5) {
+	//	readAlignments(*node5, task);
+	//}
 	
 	boost::optional<PTree&> node6 = tree.get_child_optional("Alignment");
 	if (node6) {
-		DEBUG << "- alignment parameters: ";
+		/*DEBUG << "- alignment parameters: ";
 		Q params = XMLHelpers::readQ(*node6);
 		DEBUG << params << endl;
 		task->_iterations = (int)params[0];
-		task->_dataThreshold = (double)params[1];
-		task->_modelThreshold = (double)params[2];
+		task->_minInliers = (int)params[1];
+		task->_dataThreshold = (double)params[2];
+		task->_modelThreshold = (double)params[3];*/
+		readAlignment(*node6, task);
 	}
 	
 	
@@ -276,6 +284,15 @@ void TaskDescriptionLoader::readQualities(PTree& tree, TaskDescription::Qualitie
 	} else {
 		q.volume = 0.0;
 	}
+	
+	boost::optional<PTree&> alignmentNode = tree.get_child_optional("Alignment");
+	if (alignmentNode) {
+		DEBUG << "\tAlignment: ";
+		q.alignment = XMLHelpers::readDouble(alignmentNode.get());
+		DEBUG << q.alignment << endl;
+	} else {
+		q.alignment = 0.0;
+	}
 }
 
 
@@ -323,7 +340,7 @@ void TaskDescriptionLoader::readGrasp(rwlibs::xml::PTree& tree, TaskDescription:
 
 
 
-void TaskDescriptionLoader::readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
+/*void TaskDescriptionLoader::readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
 {
 	DEBUG << "- alignments" << endl;
 	
@@ -345,6 +362,30 @@ void TaskDescriptionLoader::readAlignment(rwlibs::xml::PTree& tree, TaskDescript
 	Vector3D<> pos(posq[0], posq[1], posq[2]);
 	RPY<> rpy(rpyq[0], rpyq[1], rpyq[2]);
 	task->_alignments.push_back(Alignment(Transform3D<>(pos, rpy.toRotation3D()), distq));
+}*/
+
+
+
+void TaskDescriptionLoader::readAlignment(rwlibs::xml::PTree& tree, TaskDescription::Ptr task)
+{
+	DEBUG << "\tAlignment model: ";
+	string model = tree.get_child("Model").get_value<string>();
+	DEBUG << "model: " << model << endl;
+	if (model == "StablePose0D") {
+		task->_alignmentModel = TaskDescription::STABLEPOSE0D;
+	}
+	else if (model == "StablePose1D") {
+		task->_alignmentModel = TaskDescription::STABLEPOSE1D;
+	}
+	
+	DEBUG << "\tAlignment parameters: ";
+	Q params = XMLHelpers::readQ(tree.get_child("Parameters"));
+	DEBUG << "parameters:" << params << endl;
+	
+	task->_iterations = (int)params[0];
+	task->_minInliers = (int)params[1];
+	task->_dataThreshold = params[2];
+	task->_modelThreshold = params[3];
 }
 
 
@@ -418,7 +459,7 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 	}
 	
 	// save alignments
-	BOOST_FOREACH (Alignment a, td->_alignments) {
+	/*BOOST_FOREACH (Alignment a, td->_alignments) {
 		PTree node;
 		
 		node.put("Pos", XMLHelpers::QToString(Q(3, a.pose.P()[0], a.pose.P()[1], a.pose.P()[2])));
@@ -427,10 +468,10 @@ void TaskDescriptionLoader::save(const TaskDescription::Ptr td, const std::strin
 		node.put("Dist", XMLHelpers::QToString(a.dist));
 		
 		tree.add_child("TaskDescription.Alignments.Alignment", node);
-	}
+	}*/
 	
 	// save alignment ransac parameters
-	tree.put("TaskDescription.Alignment", XMLHelpers::QToString(Q(3, td->_iterations, td->_dataThreshold, td->_modelThreshold)));
+	tree.put("TaskDescription.Alignment", XMLHelpers::QToString(Q(4, td->_iterations, td->_minInliers, td->_dataThreshold, td->_modelThreshold)));
 	
 	// save to XML
 	try {

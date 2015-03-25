@@ -38,7 +38,10 @@ class TaskDescription
 		typedef rw::common::Ptr<TaskDescription> Ptr;
 		
 		/// Used for storing baseline and weights for quality measurements.
-		typedef struct { double coverage, success, wrench, topwrench, robustness, stress, volume; } Qualities;
+		typedef struct { double coverage, success, wrench, topwrench, robustness, stress, volume, alignment; } Qualities;
+		
+		/// Used to indicate the type of utilized alignment RANSAC model
+		typedef enum { STABLEPOSE0D, STABLEPOSE1D } AlignmentModel;
 		
 	// constructors
 		/// Constructor
@@ -75,9 +78,9 @@ class TaskDescription
 		std::vector<rw::math::Transform3D<> >& getHints() { return _hints; }
 		void addHint(rw::math::Transform3D<> hint) { _hints.push_back(hint); }
 		
-		bool hasAlignments() const { return _alignments.size() > 0; }
-		std::vector<Alignment>& getAlignments() { return _alignments; }
-		void addAlignment(const Alignment& alignment) { _alignments.push_back(alignment); }
+		//bool hasAlignments() const { return _alignments.size() > 0; }
+		//std::vector<Alignment>& getAlignments() { return _alignments; }
+		//void addAlignment(const Alignment& alignment) { _alignments.push_back(alignment); }
 		
 		void setPrefilteringDistance(rw::math::Q dist) { _prefilteringDistance = dist; }
 		rw::math::Q getPrefilteringDistance() const { return _prefilteringDistance; }
@@ -103,6 +106,18 @@ class TaskDescription
 		
 		Qualities& getBaseline() { return _baseLine; }
 		Qualities& getWeights() { return _weights; }
+		
+		/**
+		 * @brief Returns the type of RANSAC stable pose model used for alignment
+		 */
+		AlignmentModel getAlignmentModel() const { return _alignmentModel; }
+		
+		/**
+		 * @brief Returns RANSAC parameters for finding stable pose model
+		 * 
+		 * @return Q of length 4: (iterations, minInliers, dataThreshold, modelThreshold)
+		 */
+		rw::math::Q getRANSACParameters() const { return rw::math::Q(4, _iterations, _minInliers, _dataThreshold, _modelThreshold); }
 		
 	// friends
 		friend class TaskDescriptionLoader;
@@ -136,7 +151,9 @@ class TaskDescription
 		std::vector<Alignment> _alignments; // DEPRECATED
 		
 		// ransac parameters for finding stable pose
+		AlignmentModel _alignmentModel;
 		int _iterations;
+		int _minInliers;
 		double _dataThreshold;
 		double _modelThreshold;
 };
@@ -167,6 +184,7 @@ class TaskDescriptionLoader
 		static void readQualities(rwlibs::xml::PTree& tree, TaskDescription::Qualities& q);
 		static void readHints(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readGrasp(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
-		static void readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		//static void readAlignments(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
+		//static void readAlignment(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 		static void readAlignment(rwlibs::xml::PTree& tree, TaskDescription::Ptr task);
 };

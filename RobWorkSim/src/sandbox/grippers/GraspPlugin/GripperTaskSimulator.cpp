@@ -2,6 +2,7 @@
 
 #include <rw/math/MetricFactory.hpp>
 #include <rwlibs/algorithms/StablePose1DModel.hpp>
+#include <rwlibs/algorithms/StablePose0DModel.hpp>
 #include <algorithm>
 #include <vector>
 #include "TaskGenerator.hpp"
@@ -231,7 +232,8 @@ double GripperTaskSimulator::calculateAlignment() const {
 	}
 	
 	// use RANSAC to find the most likely stable pose
-	vector<StablePose1DModel> models = StablePose1DModel::findModels(rot_after, 100, 5, 0.05, 1.5);
+	Q params = _td->getRANSACParameters();
+	vector<StablePose0DModel> models = StablePose0DModel::findModels(rot_after, (int)params[0], (int)params[1], params[2], params[3]);
 	
 	if (models.size() == 0) return 0.0;
 	sort(models.begin(), models.end());
@@ -240,7 +242,7 @@ double GripperTaskSimulator::calculateAlignment() const {
 	int inliers = 0;
 	Rotation3DAngleMetric<double> metric;
 	DEBUG << "Models found (" << models.size() << "):" << endl;
-	BOOST_FOREACH (const StablePose1DModel& m, models) {
+	BOOST_FOREACH (const StablePose0DModel& m, models) {
 		DEBUG << " - StablePose: " << m << ", QUALITY: " << m.getQuality() << ", INLIERS: " << m.getNumberOfInliers() << endl;
 		inliers += m.getNumberOfInliers();
 		
@@ -282,7 +284,7 @@ double GripperTaskSimulator::calculateAlignment() const {
 	
 	DEBUG << "Alignment= " << alignment << endl;
 	
-	return 10.0 * alignment; // scaling factor
+	return 1.0 * alignment; // scaling factor
 }
 
 
@@ -452,8 +454,9 @@ void GripperTaskSimulator::evaluateGripper()
 	DEBUG << "  - Wtopwrench= " << w.topwrench << endl;
 	DEBUG << "  - Wstress= " << w.stress << endl;
 	DEBUG << "  - Wvolume= " << w.volume << endl;
+	DEBUG << "  - Walignment= " << w.alignment << endl;
 	
-	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench + w.topwrench * topwrench - penalty;
+	double quality = w.success * successRatio + w.coverage * coverage + w.wrench * wrench + w.topwrench * topwrench + w.alignment * alignment - penalty;
 	if (quality < 0.0) quality = 0.0;
 	
 	// save data to gripper result
