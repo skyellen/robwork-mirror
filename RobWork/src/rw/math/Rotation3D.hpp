@@ -34,6 +34,8 @@
 
 #include <Eigen/Eigen>
 
+#include <limits>
+
 namespace rw { namespace math {
 
     /** @addtogroup math */
@@ -257,7 +259,7 @@ namespace rw { namespace math {
          * @param precision [in] The precision to use for testing
          * @return True if all elements are less than \b precision apart.
          */
-        bool equal(const Rotation3D<T>& rot, T precision=0.000001) const {
+        bool equal(const Rotation3D<T>& rot, const T precision = std::numeric_limits<T>::epsilon()) const {
             for (int i = 0; i<3; i++)
                 for (int j = 0; j<3; j++)
                     if (fabs(_m[i][j] - rot(i,j)) > precision)
