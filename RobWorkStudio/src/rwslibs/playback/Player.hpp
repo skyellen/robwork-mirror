@@ -66,6 +66,12 @@ public:
     // Move to end of path.
     void toEnd();
 
+    /**
+     * @brief Take a single step.
+     * @param forward [in] true to move one step forward, false to move backwards.
+     */
+    void step(bool forward);
+
     // Move to a relative position.
     void setRelativePosition(double relative);
 

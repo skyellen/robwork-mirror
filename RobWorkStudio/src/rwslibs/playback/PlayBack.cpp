@@ -487,6 +487,13 @@ void PlayBack::reloadPlay()
     	openPlayFile(_file);
 }
 
+void PlayBack::keyPressEvent(QKeyEvent* e){
+	if( e->key() == Qt::Key_F)
+		_player->step(true);
+	else if( e->key() == Qt::Key_B)
+		_player->step(false);
+}
+
 //----------------------------------------------------------------------
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5

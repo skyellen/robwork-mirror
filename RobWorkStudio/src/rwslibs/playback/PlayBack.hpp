@@ -88,6 +88,8 @@ private:
     void openPlayFile(const std::string& file);
     void setInfoLabel();
 
+    void keyPressEvent(QKeyEvent* event);
+
 private:
     rw::models::WorkCell* _workcell;
     //rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;

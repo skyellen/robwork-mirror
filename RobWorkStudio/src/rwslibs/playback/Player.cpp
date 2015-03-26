@@ -220,6 +220,44 @@ void Player::toEnd()
     draw();
 }
 
+void Player::step(bool forward) {
+    stopTimer();
+
+	// Find the first index of the current segment
+    const int N = _path.size()-1;
+	int curId = -1;
+	bool interpolated = false;
+    for(int i = 0; i < N; i++){
+        if(_path[i].getTime() <= _now && _now < _path[i+1].getTime()){
+    		curId = i;
+        	if( _path[i].getTime() != _now)
+        		interpolated = true;
+        	break;
+        }
+    }
+    if( _now >= _path.back().getTime() ){
+    	curId = N;
+    }
+
+    // Determine next id
+    int nextId = curId;
+    if (forward)
+    	nextId++;
+    else if (!interpolated)
+        nextId--;
+
+    // Respect bounds
+    if (nextId > N)
+    	nextId = N;
+    else if (nextId < 0)
+    	nextId = 0;
+
+    // Move to new id
+	_now = _path[(std::size_t)nextId].getTime();
+	_drawer->draw(_path[(std::size_t)nextId].getValue());
+    relativePositionChanged(_now / getEndTime());
+}
+
 // Move to a specific time.
 
 void Player::setRelativePosition(double relative)
