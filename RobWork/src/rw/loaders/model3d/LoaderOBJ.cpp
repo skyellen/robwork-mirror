@@ -18,7 +18,6 @@
 #include "LoaderOBJ.hpp"
 
 #include <fstream>
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <boost/foreach.hpp>
@@ -116,8 +115,8 @@ public:
 	struct Vec4
 	{
 	public:
-		GLfloat _v[4];
-		Vec4(GLfloat v1, GLfloat v2, GLfloat v3, GLfloat v4)
+		float _v[4];
+		Vec4(float v1, float v2, float v3, float v4)
 		{
 			_v[0] = v1;
 			_v[1] = v2;
@@ -159,7 +158,6 @@ public:
 	class RenderItem
 	{
 	public:
-		virtual void render(float alpha)=0;
 		virtual void write(std::ostream &out)=0;
 	};
 
@@ -173,7 +171,7 @@ public:
 		std::vector<IVec3> _element;
 
 		Face(OBJReader *objReader) : _objReader(objReader) {}
-		virtual void render(float alpha);
+
 		virtual void write(std::ostream &out)
 		{
 			out << "f";
@@ -204,7 +202,6 @@ public:
 
 	public:
 		UseMaterial(Mtl *material) : _material(material) {}
-		virtual void render(float alpha);
 		virtual void write(std::ostream &out)
 		{
 			out << "usemtl " << _material->_name << std::endl;
@@ -299,20 +296,6 @@ private:
 }
 
 
-void OBJReader::Face::render(float alpha)
-{
-	std::vector<IVec3>::iterator it;
-
-	glBegin(GL_POLYGON);
-	for(it=_element.begin(); it!=_element.end(); it++)
-	{
-		if(it->_v[2] != -1)
-			glNormal3fv(_objReader->_vertexNormals[it->_v[2]-1]._v);
-		glVertex3fv(_objReader->_geoVertices[it->_v[0]-1]._v);
-	}
-	glEnd();
-}
-
 void OBJReader::Face::calcCommonNormal()
 {
 	if(_element.size() >= 3)
@@ -336,15 +319,6 @@ void OBJReader::Face::calcCommonNormal()
 	}
 }
 
-void OBJReader::UseMaterial::render(float alpha)
-{
-	//glColor4f(_material->_Kd._v[0], _material->_Kd._v[1], _material->_Kd._v[2], 1.0f);
-	glColor4f(_material->_Kd._v[0], _material->_Kd._v[1], _material->_Kd._v[2], alpha);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, _material->_Ka._v);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, _material->_Kd._v);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, _material->_Ks._v);
-	//glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, _material->_Ns._v);
-}
 
 OBJReader::OBJReader()
 {
@@ -642,12 +616,6 @@ void OBJReader::parseMtlFile(const std::string& fileName)
 	}
 }
 
-void OBJReader::render(float alpha) const
-{
-	std::vector<RenderItem*>::const_iterator it;
-	for(it=_renderItems.begin(); it!=_renderItems.end(); it++)
-		(*it)->render(alpha);
-}
 
 void OBJReader::scale(float factor)
 {
