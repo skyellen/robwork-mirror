@@ -63,6 +63,9 @@ std::pair<Q, Q> SE3Device::getBounds() const
     return std::make_pair(qMin, qMax);
 }
 
+void SE3Device::setBounds(const std::pair<Q, Q>& bounds){
+
+}
 
 Jacobian SE3Device::baseJend(const State& state) const
 {
