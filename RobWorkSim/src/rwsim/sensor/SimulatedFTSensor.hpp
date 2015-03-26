@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef TRWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
-#define TRWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
+#ifndef RWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
+#define RWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_
 
 #include "SimulatedTactileSensor.hpp"
 #include <rw/sensor/FTSensor.hpp>
@@ -40,6 +40,7 @@ namespace sensor {
 		 * @param name [in] identifier
 		 * @param body [in] the first body
 		 * @param body1 [in] the second body
+		 * @param frame [in] (optional) the reference frame - default is the \b body1 body frame.
 		 */
         SimulatedFTSensor(const std::string& name,
                           dynamics::Body::Ptr body,
@@ -72,41 +73,78 @@ namespace sensor {
 					  rw::kinematics::State& state,
 					  dynamics::Body::Ptr body=NULL);
 
+		//! @copydoc SimulatedTactileSensor::addWrenchToCOM
         void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
                       dynamics::Body::Ptr body=NULL);
 
+		//! @copydoc SimulatedTactileSensor::addWrenchWToCOM
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
                       dynamics::Body::Ptr body=NULL);
 
-		//! @copydoc TactileMultiAxisSensor::getTransform
+        /**
+         * @brief Get the transform.
+         * @return the transform.
+         */
 		rw::math::Transform3D<> getTransform() const;
 
-		//!@copydoc TactileMultiAxisSensor::getForce
-		rw::math::Vector3D<> getForce(rw::kinematics::State& state) const;
+        /**
+         * @brief Get the measured force in the reference frame.
+		 * @param state [in] the state.
+         * @return the force.
+         */
+		rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const;
 
+		/**
+		 * @brief Get the measured torque around and in the reference frame.
+		 * @param state [in] the state.
+		 * @return the torque.
+		 */
+		rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const;
 
-		//! @copydoc TactileMultiAxisSensor::getTorque
-		rw::math::Vector3D<> getTorque(rw::kinematics::State& state) const;
+		/**
+		 * @brief Maximum torque.
+		 * @return the maximum torque.
+		 */
+		rw::math::Vector3D<> getMaxTorque() const {return _ftmodel->getMaxTorque();}
 
+		/**
+		 * @brief Maximum force.
+		 * @return the maximum force.
+		 */
+		rw::math::Vector3D<> getMaxForce() const {return _ftmodel->getMaxForce();}
 
-		rw::math::Vector3D<> getMaxTorque(){return _ftmodel->getMaxTorque();}
-
-		rw::math::Vector3D<> getMaxForce(){return _ftmodel->getMaxForce();}
-
-		rw::kinematics::Frame * getSensorFrame(){ return _sframe; }
+		/**
+		 * @brief Get the sensor frame (the \b body1 body frame unless reference frame is set differently).
+		 * @return a pointer to the sensor frame.
+		 */
+		rw::kinematics::Frame * getSensorFrame() const { return _sframe; }
 
  		void acquire(){}
 
+		/**
+		 * @brief Get a FTSensor version of this sensor.
+		 * @param state [in] the state.
+		 * @return a smart pointer to a FTSensor .
+		 */
 		 rw::sensor::FTSensor::Ptr getFTSensor(rw::kinematics::State& state);
 
-		 rwsim::dynamics::Body::Ptr getBody1() const { return _body;};
-		 rwsim::dynamics::Body::Ptr getBody2() const { return _body1;};
+		/**
+		 * @brief Get the first body (the body influencing the sensor body)
+		 * @return the Body.
+		 */
+		 rwsim::dynamics::Body::Ptr getBody1() const { return _body; }
+
+		/**
+		 * @brief Get the second body (the sensor body).
+		 * @return the Body.
+		 */
+		 rwsim::dynamics::Body::Ptr getBody2() const { return _body1; }
 	private:
 		SimulatedFTSensor();
 
@@ -129,4 +167,4 @@ namespace sensor {
 }
 }
 
-#endif /* TACTILEMULTIAXISSENSOR_HPP_ */
+#endif /* RWSIM_SENSOR_SIMULATEDFTSENSOR_HPP_ */
