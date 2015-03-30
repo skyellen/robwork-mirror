@@ -16,6 +16,8 @@ SET(RW_BUILD_EXAMPLES OFF)
 # force building specific libraries
 #SET(BUILD_rw_java on)
 #SET(BUILD_rw_python on)
+# set libs to be built as shared as default
+SET(PROJECT_SHARED_LIBS ON)
 
 # RobWork has prebuilt libraries for BLAS and LAPACK
 # which can be used on win32. Adding the library directory to the path
