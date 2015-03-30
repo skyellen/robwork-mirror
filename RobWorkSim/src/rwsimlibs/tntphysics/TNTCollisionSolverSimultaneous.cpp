@@ -512,28 +512,40 @@ Eigen::VectorXd TNTCollisionSolverSimultaneous::iterativeSVD(const Eigen::Matrix
 	const Eigen::VectorXd zeroVecN = Eigen::VectorXd::Zero(N);
 
 	// Initialize
+	static const double ALPHA = 0.01;
+	static const double ALPHA_THRESHOLD = 1e-5;
 	Eigen::VectorXd phi = Eigen::VectorXd::Zero(K);
 	Eigen::VectorXd phiP = Eigen::VectorXd::Zero(N-K);
 	Eigen::VectorXd sB = -b;
 	Eigen::VectorXd sX = Eigen::VectorXd::Zero(N);
-	double err = 2*eps;
-	for (unsigned int k = 0; k < iterations && err > eps; k++) {
-		const Eigen::VectorXd dsB = -sB;
-		Eigen::VectorXd dsX = -sX.cwiseMax(zeroVecN);//+ALPHA*(-sX).cwiseMax(zeroVecN);
+	Eigen::VectorXd xViolation = sX.cwiseMax(zeroVecN);
+	for (Eigen::MatrixXd::Index i = 0; i < constraintDim; i++) {
+		xViolation[i] = 0;
+	}
+    double fObj = 0.5*(sB.dot(sB)+xViolation.dot(xViolation));
+    double a = ALPHA;
+	unsigned int k;
+	for (k = 0; k < iterations && fObj > eps; k++) {
+    	if (fObj <= ALPHA_THRESHOLD && a > 0) {
+    		a = 0;
+    		TNT_DEBUG_BOUNCING("Alpha set to zero at iteration " << k << ".");
+    	}
+    	xViolation = sX.cwiseMax(zeroVecN);
 		for (Eigen::MatrixXd::Index i = 0; i < constraintDim; i++) {
-			dsX[i] = 0;
+			xViolation[i] = 0;
 		}
-		//const Eigen::VectorXd dsB = -sB;
-		//const Eigen::VectorXd dsX = -ALPHA*sX;
+    	const Eigen::VectorXd dsX = -xViolation+a*(-sX).cwiseMax(zeroVecN);
+		const Eigen::VectorXd dsB = -sB;
 		const Eigen::VectorXd dPhi = Binv*(GsT*dsB+VsT*dsX);
 		const Eigen::VectorXd dPhiP = VsPT*dsX;
 		phi += dPhi;
 		phiP += dPhiP;
 		sB += Gs*dPhi;
 		sX += Vs*dPhi+VsP*dPhiP;
-		err = dPhi.norm()+dPhiP.norm();
-		std::cout << "cs iteration " << k << ": " << err << std::endl;
+    	fObj = dPhi.norm()+dPhiP.norm();
 	}
+	TNT_DEBUG_BOUNCING("Iterations: " << k << " of " << iterations << ".");
+	TNT_DEBUG_BOUNCING("Precision: " << fObj << " with target " << eps << ".");
 	return sX;
 }
 

@@ -115,49 +115,49 @@
 }
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_GENERAL
+#if TNT_DEBUG_ENABLE_GENERAL
 #define TNT_DEBUG_GENERAL(ostreamExpression) TNT_DEBUG("GENERAL - ",ostreamExpression)
 #else
 #define TNT_DEBUG_GENERAL(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_TIMING
+#if TNT_DEBUG_ENABLE_TIMING
 #define TNT_DEBUG_TIMING(ostreamExpression) TNT_DEBUG("TIMING - ",ostreamExpression)
 #else
 #define TNT_DEBUG_TIMING(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_CONTACTS
+#if TNT_DEBUG_ENABLE_CONTACTS
 #define TNT_DEBUG_CONTACTS(ostreamExpression) TNT_DEBUG("CONTACTS - ",ostreamExpression)
 #else
 #define TNT_DEBUG_CONTACTS(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_ROLLBACK
+#if TNT_DEBUG_ENABLE_ROLLBACK
 #define TNT_DEBUG_ROLLBACK(ostreamExpression) TNT_DEBUG("ROLLBACK - ",ostreamExpression)
 #else
 #define TNT_DEBUG_ROLLBACK(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_BOUNCING
+#if TNT_DEBUG_ENABLE_BOUNCING
 #define TNT_DEBUG_BOUNCING(ostreamExpression) TNT_DEBUG("BOUNCING - ",ostreamExpression)
 #else
 #define TNT_DEBUG_BOUNCING(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_SOLVER
+#if TNT_DEBUG_ENABLE_SOLVER
 #define TNT_DEBUG_SOLVER(ostreamExpression) TNT_DEBUG("SOLVER - ",ostreamExpression)
 #else
 #define TNT_DEBUG_SOLVER(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_INTEGRATOR
+#if TNT_DEBUG_ENABLE_INTEGRATOR
 #define TNT_DEBUG_INTEGRATOR(ostreamExpression) TNT_DEBUG("INTEGRATOR - ",ostreamExpression)
 #else
 #define TNT_DEBUG_INTEGRATOR(ostreamExpression)
 #endif
 
-#ifdef TNT_DEBUG_ENABLE_CORRECTION
+#if TNT_DEBUG_ENABLE_CORRECTION
 #define TNT_DEBUG_CORRECTION(ostreamExpression) TNT_DEBUG("CORRECTION - ",ostreamExpression)
 #else
 #define TNT_DEBUG_CORRECTION(ostreamExpression)

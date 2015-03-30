@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "TNTConstraintCorrection.hpp"
+#include "TNTSettings.hpp"
 #include "TNTConstraint.hpp"
 #include "TNTIslandState.hpp"
 
@@ -27,6 +28,9 @@
 using namespace rw::common;
 using namespace rw::math;
 using namespace rwsimlibs::tntphysics;
+
+#define PROPERTY_PROPTHRESHOLDFACTOR "TNTCorrectionThresholdFactor"
+#define PROPERTY_PROPLAYER "TNTCorrectionContactLayer"
 
 struct TNTConstraintCorrection::BodyPairError {
 	BodyPairError(): body1(NULL), body2(NULL), error(0) {}
@@ -47,13 +51,18 @@ TNTConstraintCorrection::~TNTConstraintCorrection() {
 }
 
 void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constraints, TNTIslandState& tntstate, const PropertyMap& properties) const {
-	double threshold = properties.get<double>("TNTCorrectionThresholdFactor", -1);
-	if (threshold < 0) {
+	double threshold = properties.get<double>(PROPERTY_PROPTHRESHOLDFACTOR, -1);
+	double layer = properties.get<double>(PROPERTY_PROPLAYER, -1);
+	if (threshold < 0 || layer < 0) {
 		PropertyMap map;
 		addDefaultProperties(map);
-		threshold = map.get<double>("TNTCorrectionThresholdFactor", -1);
+		if (threshold < 0)
+			threshold = map.get<double>(PROPERTY_PROPTHRESHOLDFACTOR, -1);
+		if (layer < 0)
+			layer = map.get<double>(PROPERTY_PROPLAYER, -1);
 	}
 	RW_ASSERT(threshold > 0);
+	RW_ASSERT(layer > 0);
 
 	std::list<const TNTConstraint*> reducedConstraints;
 	unsigned int nrOfConstraints = 0;
@@ -113,10 +122,10 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 				const double distP = (pAp-pBp).norm2();
 				const double distC = (pAc-pBc).norm2();
 				const double distN = acos(dot(nA,nB));
-				if (distN > std::max(distP,distC)*threshold*Deg2Rad) {
+				/*if (distN > std::max(distP,distC)*threshold*Deg2Rad) {
 					match = true;
 					break;
-				}
+				}*/
 			}
 			if (!match) {
 				nrOfConstraints += 1;
@@ -268,7 +277,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 	}
 
 	// Skip correction if it is small anyway
-	bool doSolve = false;
+	/*bool doSolve = false;
 	for (unsigned int i = 0; i < nrOfConstraints; i++) {
 		if (fabs((double)rhs[i]) > 1e-8) {
 			doSolve = true;
@@ -276,11 +285,12 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		}
 	}
 	if (!doSolve)
-		return;
+		return;*/
 
-	const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-6);
-	RW_ASSERT(lhsInv.cols() == rhs.rows());
-	const Eigen::VectorXd sol = lhsInv*rhs;
+	//const Eigen::MatrixXd lhsInv = LinearAlgebra::pseudoInverse(lhs,1e-6);
+	//RW_ASSERT(lhsInv.cols() == rhs.rows());
+	//const Eigen::VectorXd sol = lhsInv*rhs;
+	const Eigen::VectorXd sol = minimize(lhs,rhs,1e-9,layer);
 	for (unsigned int i = 0; i < id; i++) {
 		const Eigen::VectorXd correction = sol.block(i*6,0,6,1);
 		const TNTRigidBody* body = idToBody[i];
@@ -315,8 +325,41 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 	}
 }
 
+Eigen::VectorXd TNTConstraintCorrection::minimize(const Eigen::MatrixXd& A, const Eigen::VectorXd& b, double svdPrecision, double layer) {
+	const Eigen::MatrixXd::Index M = A.rows();
+	const Eigen::MatrixXd::Index N = A.cols();
+
+	Eigen::MatrixXd B(M,M+N);
+	B.block(0,0,M,N) = A;
+	Eigen::VectorXd x(N);
+
+	double alpha = 1;
+	bool iterate = true;
+	unsigned int k = 0;
+	for (; k < 10 && iterate; k++) {
+		iterate = false;
+		B.block(0,N,M,M) = Eigen::MatrixXd::Identity(M,M)*(-1./sqrt(alpha));
+		const Eigen::MatrixXd Binv = LinearAlgebra::pseudoInverse(B,svdPrecision);
+		const Eigen::VectorXd y = Binv*b;
+		x = y.topRows(N);
+		const Eigen::VectorXd s = y.bottomRows(M)/sqrt(alpha);
+
+		TNT_DEBUG_CORRECTION("Alpha: " << alpha);
+		TNT_DEBUG_CORRECTION(" - Contact/constraint error: " << s.transpose());
+		TNT_DEBUG_CORRECTION(" - Displacement: " << x.transpose());
+
+		if (s.maxCoeff() < -layer) {
+			alpha *= 2;
+			iterate = true;
+		}
+	}
+
+	TNT_DEBUG_CORRECTION("Iterations: " << k << " - alpha: " << alpha);
+
+	return x;
+}
+
 void TNTConstraintCorrection::addDefaultProperties(PropertyMap& properties) {
-	const Property<double>::Ptr added = properties.set<double>("TNTCorrectionThresholdFactor", 10.0/0.003);
-	RW_ASSERT(added != NULL);
-	added->setDescription("Angle between a pair of contact normals must be less than this factor multiplied by the distance between the contact points to be included (degrees per meter).");
+	properties.add<double>(PROPERTY_PROPTHRESHOLDFACTOR,"Angle between a pair of contact normals must be less than this factor multiplied by the distance between the contact points to be included (degrees per meter).",10.0/0.003);
+	properties.add<double>(PROPERTY_PROPLAYER,"The maximum penetration allowed in a contact after correction (in meters).",0.0005);
 }

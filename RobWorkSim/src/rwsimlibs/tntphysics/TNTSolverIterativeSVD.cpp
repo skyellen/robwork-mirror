@@ -157,6 +157,8 @@ Eigen::VectorXd TNTSolverIterativeSVD::solve(const Eigen::MatrixXd& A, const Eig
 			TNT_DEBUG_SOLVER("Solution: " << solution.transpose() << ".");
 			TNT_DEBUG_SOLVER("-B: " << (-b).transpose() << ".");
 			TNT_DEBUG_SOLVER("Residual: " << residual.transpose() << ".");
+			TNT_DEBUG_SOLVER("Iterations: " << k << " of " << ITERATIONS << ".");
+			TNT_DEBUG_SOLVER("Precision: " << fObj << " with target " << PRECISION << ".");
 		}
 	} else
 		solution = Eigen::VectorXd::Zero(0);

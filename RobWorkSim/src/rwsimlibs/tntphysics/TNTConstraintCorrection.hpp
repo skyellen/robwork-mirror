@@ -26,6 +26,8 @@
 
 #include <list>
 
+#include <Eigen/Eigen>
+
 namespace rw { namespace common { class PropertyMap; } }
 
 namespace rwsimlibs {
@@ -66,6 +68,7 @@ public:
 	 *  Property Name                | Type   | Default value          | Description
 	 *  ---------------------------- | ------ | ---------------------- | -----------
 	 *  TNTCorrectionThresholdFactor | double | \f$\frac{10}{0.003}\f$ | Angle between a pair of contact normals must be less than this factor multiplied by the distance between the contact points to be included (degrees per meter).
+	 *  TNTCorrectionContactLayer    | double | \f$0.0005\f$           | The maximum penetration allowed in a contact after correction (in meters).
 	 *
 	 * @param properties [in/out] PropertyMap to add properties to.
 	 */
@@ -73,6 +76,12 @@ public:
 
 private:
 	struct BodyPairError;
+
+	static Eigen::VectorXd minimize(
+			const Eigen::MatrixXd& A,
+			const Eigen::VectorXd& b,
+			double svdPrecision,
+			double layer);
 };
 //! @}
 } /* namespace tntphysics */
