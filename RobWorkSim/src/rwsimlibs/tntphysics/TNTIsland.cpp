@@ -31,6 +31,8 @@
 #include "TNTUtil.hpp"
 #include "TNTRigidBody.hpp"
 
+#include "TNTDebugRender.hpp"
+
 #include <rw/common/ThreadTask.hpp>
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/contacts/ContactDetectorData.hpp>
@@ -126,6 +128,7 @@ TNTIsland::TNTIsland():
 	_detector(NULL),
 	_bc(NULL),
 	_state(NULL),
+	_render(NULL),
 	_defaultMap(getDefaultPropertyMap())
 {
 }
@@ -138,6 +141,7 @@ TNTIsland::TNTIsland(rw::common::Ptr<ContactDetector> detector):
 	_detector(detector),
 	_bc(NULL),
 	_state(NULL),
+	_render(NULL),
 	_defaultMap(getDefaultPropertyMap())
 {
 }
@@ -151,6 +155,7 @@ TNTIsland::TNTIsland(rw::common::Ptr<DynamicWorkCell> dwc, rw::common::Ptr<Conta
 	_bc(NULL),
 	_state(NULL),
 	_gravity(dwc->getGravity()),
+	_render(NULL),
 	_map(dwc->getEngineSettings()),
 	_defaultMap(getDefaultPropertyMap())
 {
@@ -299,8 +304,11 @@ void TNTIsland::setDynamicsEnabled(Body::Ptr body, bool enabled) {
 }
 
 SimulatorDebugRender::Ptr TNTIsland::createDebugRender() {
-	RW_WARN("TNTIsland (createDebugRender): no debug render implemented yet!");
-	return NULL;
+	if (_bc == NULL)
+		return NULL;
+	if (_render == NULL)
+		_render = ownedPtr(new TNTDebugRender());
+	return _render;
 }
 
 PropertyMap& TNTIsland::getPropertyMap() {
@@ -559,6 +567,10 @@ void TNTIsland::doStep(double dt, State& state) {
 	if (sample.time > 0 && _sensors.size() > 0) {
 		TNTUtil::updateSensors(_sensors,_state->getTime(),sample.time,_state->getLastTimeStep(),_bc,*_state,state);
 	}
+
+	if (_render != NULL) {
+		_render.scast<TNTDebugRender>()->update(_bc,_state,_gravity);
+	}
 }
 
 void TNTIsland::position(IntegrateSample& sample, ContactDetectorData& cdData) const {
@@ -713,7 +725,13 @@ double TNTIsland::rollbackBroadPhase(double dt, bool discontinuity, const Integr
 			TNT_DEBUG_INTEGRATOR("Positions before broad-phase integration");
 			BOOST_FOREACH(const TNTBody* const body, bodies) {
 				const Transform3D<> pos = body->getWorldTcom(first.tntstate);
-				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+				const TNTRigidBody* const rbody = dynamic_cast<const TNTRigidBody*>(body);
+				if (rbody) {
+					const VelocityScrew6D<> vel = rbody->getVelocityW(first.tntstate);
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()) << " vel: " << vel.linear() << " " << vel.angular());
+				} else {
+					TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+				}
 			}
 		}
 	}
@@ -746,7 +764,14 @@ double TNTIsland::rollbackBroadPhase(double dt, bool discontinuity, const Integr
 			const Transform3D<> pos = body->getWorldTcom(res.tntstate);
 			if (pos.P().normInf() > TNT_WORKSPACE)
 				RW_THROW("TNTIsland (rollbackBroadPhase): position for body \"" << body->get()->getName() << "\" is " << pos.P() << " which is outisde the workspace of size " << TNT_WORKSPACE << "x" << TNT_WORKSPACE << "x" << TNT_WORKSPACE << " m - aborting.");
-			TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+
+			const TNTRigidBody* const rbody = dynamic_cast<const TNTRigidBody*>(body);
+			if (rbody) {
+				const VelocityScrew6D<> vel = rbody->getVelocityW(first.tntstate);
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()) << " vel: " << vel.linear() << " " << vel.angular());
+			} else {
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
+			}
 		}
 	}
 

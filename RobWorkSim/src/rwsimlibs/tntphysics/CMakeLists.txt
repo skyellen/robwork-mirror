@@ -54,6 +54,8 @@ SET(SRC_FILES
 	
 	TNTUtil.cpp
 	
+	TNTDebugRender.cpp
+	
 	TNTIsland.cpp
 )
 

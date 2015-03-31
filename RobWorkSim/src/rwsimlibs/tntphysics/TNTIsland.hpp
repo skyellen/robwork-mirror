@@ -263,6 +263,8 @@ private:
 	TNTIslandState* _state;
 	rw::math::Vector3D<> _gravity;
 
+	rwsim::drawable::SimulatorDebugRender::Ptr _render;
+
 	rw::common::PropertyMap _map;
 	const rw::common::PropertyMap _defaultMap;
 };
