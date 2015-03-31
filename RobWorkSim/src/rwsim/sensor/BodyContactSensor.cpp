@@ -41,8 +41,6 @@ BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Fr
 BodyContactSensor::~BodyContactSensor(){}
 
 void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
-	RW_WARN("");
-
 	if( !isRegistered() )
 		RW_WARN("BOSY NOT REGISTERED IN STATE YET...");
 
@@ -52,14 +50,11 @@ void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
 	if(cstate==NULL)
 		RW_WARN("CSTATE IS NULL");
 
-	RW_WARN("");
 	cstate->_contacts = cstate->_contactsTmp;
 	cstate->_contactsTmp.clear();
-	RW_WARN("");
 	cstate->_bodies = cstate->_bodiesTmp;
 	cstate->_bodiesTmp.clear();
-	RW_WARN("");
-     //std::cout << "Sensor Forces: ";
+	 //std::cout << "Sensor Forces: ";
      //BOOST_FOREACH(Contact3D& c, _contacts){
      //    std::cout << "--" <<  c.normalForce << "\n";
      //}
@@ -67,7 +62,6 @@ void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& 
      // update aux variables
      _wTf = Kinematics::worldTframe( getFrame(), state);
      _fTw = inverse(_wTf);
-     RW_WARN("");
 }
 
 
