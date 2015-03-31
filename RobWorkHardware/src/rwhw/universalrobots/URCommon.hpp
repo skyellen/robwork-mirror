@@ -13,7 +13,7 @@
 class URCommon {
 public:
 	static inline bool getChar(boost::asio::ip::tcp::socket* socket, char* output) {
-		return socket->read_some(boost::asio::buffer(output, 1));
+		return socket->read_some(boost::asio::buffer(output, 1)) > 0;
 	}
 
 

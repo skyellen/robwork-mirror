@@ -76,7 +76,7 @@ bool URPrimaryInterface::isConnected() const {
 }
 
 
-bool URPrimaryInterface::connect(const std::string& ip, unsigned int port) {
+void URPrimaryInterface::connect(const std::string& ip, unsigned int port) {
 	if (_connected) {
 		RW_THROW("Already connected. Disconnect before connecting again!");
 
@@ -87,31 +87,33 @@ bool URPrimaryInterface::connect(const std::string& ip, unsigned int port) {
 		boost::asio::ip::tcp::resolver::query query(ip.c_str(), "");
 		boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
 		boost::asio::ip::tcp::endpoint ep = (*iter).endpoint();
-		ep.port(port);
+		
+		ep.port(port);	
+
 		//Connecting to server
 		_socket = new boost::asio::ip::tcp::socket(_ioService);
-		_socket->connect(ep);
+		_socket->connect(ep);		
 
 	} catch(boost::system::system_error& e) {
+		_connected = false;
 		RW_THROW("Unable to connect to command port with message: "<<e.what());
 	}
 
-	if (_socket == NULL) {
-		_connected = false;
-		return false;
-	}
-	_connected = true;
-	std::cout<<"Primary Interface Connected"<<std::endl;
-    return true;
+	_connected = true;	
 }
 
 
+std::string URPrimaryInterface::getLocalIP() {
+	if (_socket->is_open()) {
+		boost::asio::ip::address addr = _socket->local_endpoint().address();	
+		return addr.to_string();
+	}
+	RW_THROW("Unable to obtain IP before the connection to the UR has been established");
+}
 
 bool URPrimaryInterface::sendScriptFile(const std::string& filename)
 {
-	std::cout<<"Ready to load"<<std::endl;
 	std::ifstream infile(filename.c_str());
-	std::cout<<"Script Loaded"<<std::endl;
 	// get length of file:
 	infile.seekg (0, std::ios::end);
 	long length = infile.tellg();
@@ -124,9 +126,9 @@ bool URPrimaryInterface::sendScriptFile(const std::string& filename)
 	infile.read (buffer,length);
     buffer[length] = 0;
 	
-    std::cout<<"Send Script "<<buffer<<std::endl;
+    //std::cout<<"Send Script "<<buffer<<std::endl;
 
-    return sendScript(buffer);
+    return sendScript(buffer); 
 
 }
 
@@ -181,7 +183,7 @@ bool URPrimaryInterface::sendCommand(const std::string &str) {
 		RW_THROW("Unable to send command before connecting.");
 		return false;
 	}
-	std::cout<<"Send Command\n"<<str<<std::endl;
+	//std::cout<<"Send Command\n"<<str<<std::endl;
         RW_LOG_DEBUG("Send Command:\n" << str);
 
         std::size_t bytesTransfered = 0;

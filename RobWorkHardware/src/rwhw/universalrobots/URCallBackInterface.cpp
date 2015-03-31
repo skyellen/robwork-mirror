@@ -2,6 +2,7 @@
 #include "URCommon.hpp"
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/EAA.hpp>
+#include <rw/math/Statistics.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Timer.hpp>
@@ -11,7 +12,7 @@
 
 using namespace rw::common;
 using namespace rw::math;
-using namespace rwhw;
+using namespace rwhw; 
 using namespace boost::asio::ip;
 
 URCallBackInterface::URCallBackInterface():
@@ -23,6 +24,7 @@ URCallBackInterface::URCallBackInterface():
     Log::log().setLevel(Log::Debug);
 }
 
+
 bool URCallBackInterface::isMoving() const {
     return _isMoving;
 }
@@ -31,17 +33,22 @@ double URCallBackInterface::driverTime() const {
     return URCommon::driverTimeStamp();
 }
 
-bool URCallBackInterface::connect(const std::string& host, const unsigned int port) {
-    return _urPrimary.connect(host, port);
+void URCallBackInterface::connect(const std::string& host, const unsigned int port) {
+    _urPrimary.connect(host, port);
 }
 
 /* Deprecated function */
-void URCallBackInterface::startInterface(const unsigned int callbackPort, const std::string& filename) {
-    startCommunication("192.168.100.1", callbackPort, filename);
+//void URCallBackInterface::startInterface(const unsigned int callbackPort, const std::string& filename) {
+//    startCommunication("192.168.100.1", callbackPort, filename);
+//}
+
+void URCallBackInterface::startCommunication(const unsigned int callbackPort, ControllerBox cb,  const std::string& filename) {
+	startCommunication(_urPrimary.getLocalIP(), callbackPort, cb, filename);
 }
 
-void URCallBackInterface::startCommunication(const std::string& callbackIP, const unsigned int callbackPort, const std::string& filename) {
-    _callbackPort = callbackPort;
+void URCallBackInterface::startCommunication(const std::string& callbackIP, const unsigned int callbackPort, ControllerBox cb, const std::string& filename) {
+    _cb = cb;
+	_callbackPort = callbackPort;
     /* There should be some better error checking at the conversion of the IP from string to ip::address - but the documentation is limited with what error codes that can be returned / exception(s) that can be thrown - [look at the source for more specific error documentation/information] */
     _callbackIP = boost::asio::ip::address::from_string(callbackIP);
 
@@ -58,7 +65,7 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
         std::cout << "Script loaded." << std::endl;
         // get length of file:
         infile.seekg (0, std::ios::end);
-        long length = infile.tellg();
+        long long length = infile.tellg();
         infile.seekg (0, std::ios::beg);
 
         // allocate memory:
@@ -99,6 +106,39 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
     }
     script = sstr_host.str();
 	
+	// Remove commands not fitting for the specific version of the controller
+	
+	
+	std::string cbId;
+	switch (cb) {
+	case CB2:
+		cbId = "CB2";
+		break;
+	case CB3:
+		cbId = "CB3";
+		break;
+	default:
+		RW_THROW("Unknown controller box specified: "<<cb);
+		break;
+	}
+
+	n = script.find("$");
+	while (n != std::string::npos) {	
+		std::cout<<"Found $"<<script.substr(n+1,3)<<std::endl;
+		if (script.substr(n+1,3) != cbId) {			
+			std::cout<<"Erase line "<<n<<" to "<<script.find("\n", n)<<std::endl;
+			script.erase(n, script.find("\n", n)-n+1);
+		} else {
+			std::cout<<"Erase symbol"<<std::endl;
+			script.erase(n, 4);
+		}
+		n = script.find("$");
+	}
+
+	std::ofstream outfile("d:\\temp\\scriptTestOut.txt");
+	outfile<<script<<std::endl;
+	outfile.close();
+
     // send script to robot
     RW_LOG_DEBUG("Sending script to the robot");
     bool sendScriptStatus = false;
@@ -112,10 +152,6 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
 }
 
 
-/* Deprecated function */
-void URCallBackInterface::stopInterface() {
-    stopCommunication();
-}
 
 void URCallBackInterface::stopCommunication() {
     _stopServer = true;
@@ -165,25 +201,25 @@ void URCallBackInterface::sendStop(tcp::socket& socket) {
     integers[0] = URScriptCommand::STOP;
     URCommon::send(&socket, integers);    
 }
-
+ 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
     RW_LOG_DEBUG("Handling command request - obtaining lock...");
     boost::mutex::scoped_lock lock(_mutex);
     RW_LOG_DEBUG("Obtained lock");
 
-    //std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
     std::vector<int> integers(8);
 
-    if (_commands.size() == 0 || (_isMoving && !_isServoing)) {
+    if (_commands.size() == 0 || (_isMoving && !_isServoing)) {		
         integers[0] = URScriptCommand::DO_NOTHING;
         URCommon::send(&socket, integers);
         RW_LOG_DEBUG("Do nothing");
         return;
     }
 
+	//std::cout<<"Handle Cmd Request ="<<_commands.size()<<std::endl;
+
     URScriptCommand cmd = _commands.front();
     RW_LOG_DEBUG("Command type: " << cmd._type);
-
     _isServoing = false;
     integers[0] = cmd._type;
     switch (cmd._type) {
@@ -222,7 +258,17 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
     case URScriptCommand::FORCE_MODE_END:
         // Why nothing?
         break;
-    default:
+	case URScriptCommand::TEACH_MODE_START:
+		//std::cout<<__FILE__<<"Teach Mode Start Command"<<std::endl;
+		break;
+	case URScriptCommand::TEACH_MODE_END:
+		//std::cout<<__FILE__<<"Teach Mode End Command"<<std::endl;
+		break;
+	case URScriptCommand::SET_DIGOUT:
+		integers[1] = cmd._id;
+		integers[2] = cmd._bValue;
+		break;
+	default:
         RW_LOG_DEBUG("Unsupported command: " << cmd._type);
         RW_THROW("Unsupported command type: " << cmd._type);
         break;
@@ -245,26 +291,31 @@ void URCallBackInterface::run() {
     try
     {
 	boost::asio::io_service io_service;
-
+	RW_LOG_DEBUG("Callback IP = "<<_callbackIP);
+	RW_LOG_DEBUG("Callback Port = "<<_callbackPort);
 	tcp::acceptor acceptor(io_service, tcp::endpoint(_callbackIP, _callbackPort));
 	while(!_stopServer)
 	{
             tcp::socket socket(io_service);
-            std::cout<<"Ready to accept incoming connections "<<std::endl;
+			
+            //std::cout<<"Ready to accept incoming connections "<<std::endl;
             RW_LOG_DEBUG("Ready to accept incoming connections on port '" << _callbackPort << "'");
             acceptor.accept(socket);
             RW_LOG_DEBUG("Incoming connection accepted");
-            std::cout<<"Incoming accepted"<<std::endl;
-            Timer timer;
-            timer.resetAndResume();  
+            //std::cout<<"Incoming accepted"<<std::endl;
+            //Timer timer;
+			//Timer timer2;
+            //timer.resetAndResume();  
+			//Statistics<double> stats;
+			int cnt = 0;
             while (!_stopServer) {
-		//  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
-//          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl;
+			//  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
+//          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl; 
                 boost::system::error_code error;
                 size_t available = socket.available(error);
                 if (available == 0) {
                     if (error == boost::asio::error::eof) {
-                        std::cout<<"Reached EOF"<<std::endl;
+                        //std::cout<<"Reached EOF"<<std::endl;
                         RW_LOG_DEBUG("Reached EOF on the socket.");
                         break;
                     } else {
@@ -277,10 +328,16 @@ void URCallBackInterface::run() {
 #endif
                     }
                 } else {
-                    char ch;
+
+					char ch;
                     if (!URCommon::getChar(&socket, &ch))
                         continue;
-                
+
+					//stats.add(timer2.getTimeMs());
+					//std::cout<<"\b\b\b\b\b\b\b T="<<timer2.getTimeMs()<<std::endl;
+					//timer2.resetAndResume();
+
+               
                     RW_LOG_DEBUG("Received the byte/char '" << ch << "' from the connection.");
 
                     if (_robotStopped) {
@@ -290,10 +347,16 @@ void URCallBackInterface::run() {
                         if (ch == 0) {
                             _isMoving = false;
                         } 
-                        RW_LOG_DEBUG("Going to handle command request - Time: " << timer.getTime());
-                        timer.resetAndResume();
+                        //RW_LOG_DEBUG("Going to handle command request - Time: " << timer.getTime());
+                        //timer.resetAndResume();
                         handleCmdRequest(socket);
                     }
+
+					//if (cnt++ % 100 == 0) {
+					//	std::cout<<"Avg/min/max/stddev Time = "<<stats.mean()<<"/"<<stats.minValue()<<"/"<<stats.maxValue()<<"/"<<std::sqrt(stats.variance())<<std::endl;
+					//	stats.clear();
+					//}
+
                 }
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1));
             }
@@ -301,13 +364,13 @@ void URCallBackInterface::run() {
     }
     catch (std::exception& e)
     {
-	std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
     }
 }
 
 
 void URCallBackInterface::stopRobot() {
-    std::cout<<"RWHW Stop UR"<<std::endl;
+    //std::cout<<"RWHW Stop UR"<<std::endl;
     //_commands.push(URScriptCommand(URScriptCommand::STOP));
     boost::mutex::scoped_lock lock(_mutex);
     _robotStopped = true;
@@ -317,6 +380,7 @@ void URCallBackInterface::stopRobot() {
 }
 
 void URCallBackInterface::popAllUpdateCommands() {
+	
     while ((_commands.size() > 0) &&
            ((_commands.front()._type == URScriptCommand::SERVOQ) || (_commands.front()._type == URScriptCommand::FORCE_MODE_UPDATE)))
     {
@@ -334,7 +398,7 @@ void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
 /* FIXME:
  * These kinds of output messages should be converted to RobWork debug (and/or log) messages, so they can easily be enabled and disabled.
  */
-    std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
+    //std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
 //    _isMoving = true;
 }
@@ -348,28 +412,23 @@ void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float 
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
 //    _isMoving = true;
-}
+} 
 
 void URCallBackInterface::servo(const rw::math::Q& q) {
-//	std::cout<<"Received a servoQ "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
 
-    //size_t n = _commands.size();
     popAllUpdateCommands();
-    //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
-
+	
     _commands.push(URScriptCommand(URScriptCommand::SERVOQ, q, 1));
     _robotStopped = false;
-
+	 
 }
 
 
 void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits) {
     boost::mutex::scoped_lock lock(_mutex);
 
-    //size_t n = _commands.size();
     popAllUpdateCommands();
-    //std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
 
     _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_START, base2ref, selection, wrench, limits));
     _robotStopped = false;
@@ -378,10 +437,7 @@ void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref
 void URCallBackInterface::forceModeUpdate(const rw::math::Wrench6D<>& wrench) {
     boost::mutex::scoped_lock lock(_mutex);
 
-    size_t n = _commands.size();
     popAllUpdateCommands();
-    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
-
     _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_UPDATE, wrench));
 
 }
@@ -389,11 +445,32 @@ void URCallBackInterface::forceModeUpdate(const rw::math::Wrench6D<>& wrench) {
 
 void URCallBackInterface::forceModeEnd() {
     boost::mutex::scoped_lock lock(_mutex);
-
-    size_t n = _commands.size();
     popAllUpdateCommands();
-    std::cout<<"Command Buffer Size "<<_commands.size()<<"  "<<n<<std::endl;
+	URScriptCommand cmd(URScriptCommand::FORCE_MODE_END);
+    _commands.push(cmd);
+}
 
-    _commands.push(URScriptCommand(URScriptCommand::FORCE_MODE_END));
 
+void URCallBackInterface::teachModeStart() {
+	if (_cb < CB3)
+		RW_THROW("Teach Mode Start is not supported on controller boxes older than CB3");
+	boost::mutex::scoped_lock lock(_mutex);
+	popAllUpdateCommands();
+	_commands.push(URScriptCommand(URScriptCommand::TEACH_MODE_START));
+	_robotStopped = false;
+}
+
+void URCallBackInterface::teachModeEnd() {
+	if (_cb < CB3)
+		RW_THROW("Teach Mode End is not supported on controller boxes older than CB3");
+
+	boost::mutex::scoped_lock lock(_mutex);
+    popAllUpdateCommands();
+    _commands.push(URScriptCommand(URScriptCommand::TEACH_MODE_END));
+}
+
+void URCallBackInterface::setDigitalOutput(int id, bool value) {
+	boost::mutex::scoped_lock lock(_mutex);
+	_commands.push(URScriptCommand(URScriptCommand::SET_DIGOUT, id, value));
+	_robotStopped = false;
 }

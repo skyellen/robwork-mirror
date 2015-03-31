@@ -1,5 +1,4 @@
 def myprog():
-    set_digital_out(3, True)
     global qtarget = [ 0,0,0,0,0,0]
     global posetarget = [ 0,0,0,0,0,0]
     global dqtarget = [ 0,0,0,0,0,0 ]
@@ -211,7 +210,32 @@ def myprog():
 	def force_mode_end():
         force_mode_end()
 	end
+	
+	
+    def teach_mode_start():
+$CB3	textmsg("Start Teach Mode")
+$CB3    teach_mode()
+    end
+	
+    def teach_mode_end():
+$CB3	textmsg("End Teach Mode")
+$CB3    end_teach_mode()
+    end
 
+	def set_io():
+		textmsg("Step OI")
+		id = receive_buffer[2]
+		onoff = receive_buffer[3]
+		if onoff == 1:
+	$CB3	set_standard_digital_out(id, True)
+	$CB2	set_digital_out(id, True)
+		else:
+	$CB3	set_standard_digital_out(id, False)
+	$CB2	set_digital_out(id, False)
+		end	
+	end
+	
+	
 #
 # The main loop is running below
 #
@@ -219,6 +243,10 @@ def myprog():
     #Setup the host name
     host = HOST
     port = PORT
+	textmsg("Host")
+	textmsg(host)
+	textmsg("Port")
+	textmsg(port)
     opened = socket_open(host, port)
     textmsg("Socket Status")
     textmsg(opened)
@@ -229,18 +257,20 @@ def myprog():
 
     textmsg("Socket opened !!")
     errcnt = 0
-    while errcnt < 1:
- 		#textmsg("running")
+	socket_send_byte(0)
+    while errcnt < 1:       
+		receive_buffer = socket_read_binary_integer(8)
+
         if motionFinished == 1:
             #textmsg("Sends finished")
             socket_send_byte(0)
         else:
             socket_send_byte(1)
         end
-        
-        receive_buffer = socket_read_binary_integer(8)
+
         #textmsg(receive_buffer)
         if receive_buffer[0] != 8:
+			textmsg("Did not receive 8 integers as expected")
             stopRobot()
             errcnt = errcnt + 1
         elif receive_buffer[1] == 0: #0: Stop Robot
@@ -254,7 +284,8 @@ def myprog():
         	isStopped = 0
             moveT()
         elif receive_buffer[1] == 3: #3: Servo to T
-        	isStopped = 0
+			textmsg("servo")
+			isStopped = 0
             servoQ()
         elif receive_buffer[1] == 4: #4: Start Force Mode Base
         	textmsg("Force Mode Start")
@@ -265,11 +296,19 @@ def myprog():
             force_mode_update()
         elif receive_buffer[1] == 6: #6: End Force Mode
             force_mode_end()
+        elif receive_buffer[1] == 7: #7: Teach mode start
+            teach_mode_start()
+        elif receive_buffer[1] == 8: #8: Teach mode end
+            teach_mode_end()
+		elif receive_buffer[1] == 9: #9: Set IO
+			set_io()
         elif receive_buffer[1] == 9999: #1: Do nothing
         	isStopped = 0
             #Right motion already taken
         end
-    
+
+
+		
         #if motionFinished == 1:
         #textmsg("Sends finished")
         #socket_set_var("FIN", 1)

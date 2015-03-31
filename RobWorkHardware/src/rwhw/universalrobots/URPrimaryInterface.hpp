@@ -44,7 +44,19 @@ public:
 
 	~URPrimaryInterface();
 
-	bool connect(const std::string& host, unsigned int port);
+	/**
+	 * @brief Connect to the UR
+	 *
+	 * Throws a rw::common::Exception if failing to connect
+	 * @param host [in] IP address of the UR
+	 * @param port [in] Port for connecting to the UR. Defaults to 30002.
+	 */
+	void connect(const std::string& host, unsigned int port = 30002);
+
+	/**
+	 * @brief Returns the IP of the computer on which the application using the driver is running
+	 */
+	std::string getLocalIP();
 
 	void start();
 	void stop();
