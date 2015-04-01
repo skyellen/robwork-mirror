@@ -290,6 +290,8 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask() {
 						GraspResult::ObjectDropped);
 			}
 
+			ctarget->getPropertyMap().set<std::vector<rw::math::Transform3D<> > >(
+					"InterferenceTs", result->interferenceTs);
 			ctarget->getPropertyMap().set<std::vector<double> >(
 					"InterferenceDistances", result->interferenceDistances);
 			ctarget->getPropertyMap().set<std::vector<double> >(

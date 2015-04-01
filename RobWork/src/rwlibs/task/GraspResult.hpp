@@ -122,6 +122,7 @@ public:
 	std::vector<rw::sensor::Contact3D> contactsGrasp, contactsLift;
 
 	// measure of object interference
+	std::vector<rw::math::Transform3D<> > interferenceTs;
 	std::vector<double> interferenceDistances;
 	std::vector<double> interferenceAngles;
 	std::vector<double> interferences; // interferences for each of the interference objects separately

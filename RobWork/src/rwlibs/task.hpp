@@ -18,5 +18,11 @@
 #include "./task/loader/XMLTaskFormat.hpp"
 #include "./task/loader/XMLTaskLoader.hpp"
 #include "./task/loader/XMLTaskSaver.hpp"
+#include "./task/GraspTask.hpp"
+#include "./task/GraspSubTask.hpp"
+#include "./task/GraspTarget.hpp"
+#include "./task/GraspResult.hpp"
+
+
 
 #endif /* RWLIBS_TASK_HPP_ */
