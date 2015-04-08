@@ -360,6 +360,7 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	DynamicSimulator* simulator = new DynamicSimulator(_dwc,pe);
 	simState.simulator = simulator;
 	simState.femaleContactSensor = ownedPtr(new BodyContactSensor("HoleContactSensor", simState.female->getBodyFrame()));
+	simState.femaleContactSensor->registerIn(state);
 	try {
 		simulator->init(state);
 	} catch(...){
