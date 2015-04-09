@@ -110,6 +110,8 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 		const Eigen::VectorXd::Index dim = constraint->getDimVelocity()+constraint->getDimWrench();
 		if (dim > 0 && (dynParent || dynChild)) {
 			Eigen::VectorXd aij = constraint->getRHS(h, _gravity, discontinuity, constraints0, constraints, rwstate, tntstate0, tntstateH);
+			RW_ASSERT(aij.rows() == dim);
+			RW_ASSERT(dimCon+dim <= rhs.rows());
 			rhs.block(dimCon,0,dim,1) = aij;
 			Eigen::MatrixXd::Index dimVarB = 0;
 			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
@@ -124,6 +126,9 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 					const TNTBody* const cCB = constraintB->getChild();
 					if (cP == cPB || cP == cCB || cC == cPB || cC == cCB) {
 						Eigen::MatrixXd B = constraint->getLHS(constraintB, h, discontinuity, rwstate, tntstateH);
+						RW_ASSERT(B.rows() == dim);
+						RW_ASSERT(B.cols() == dimB);
+						RW_ASSERT(dimVarB+dimVarB <= lhs.cols());
 						lhs.block(dimCon,dimVarB,dim,dimB) = B;
 					}
 					dimVarB += dimB;
