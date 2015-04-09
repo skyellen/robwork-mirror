@@ -353,14 +353,15 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 			simState.phase = SimState::INSERTION;
 		}
 	}
+
+	simState.femaleContactSensor = ownedPtr(new BodyContactSensor("HoleContactSensor", simState.female->getBodyFrame()));
+	simState.femaleContactSensor->registerIn(state);
 	simState.state = state;
 
 	PhysicsEngine::Ptr pe = PhysicsEngine::Factory::makePhysicsEngine(_engineID,_dwc);
 	RW_ASSERT(pe != NULL);
 	DynamicSimulator* simulator = new DynamicSimulator(_dwc,pe);
 	simState.simulator = simulator;
-	simState.femaleContactSensor = ownedPtr(new BodyContactSensor("HoleContactSensor", simState.female->getBodyFrame()));
-	simState.femaleContactSensor->registerIn(state);
 	try {
 		simulator->init(state);
 	} catch(...){
