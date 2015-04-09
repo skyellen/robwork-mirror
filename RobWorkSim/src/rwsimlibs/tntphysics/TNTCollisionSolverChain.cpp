@@ -634,9 +634,9 @@ std::set<std::size_t> TNTCollisionSolverChain::getIndices(
 			}
 		}
 		if (!found) {
-			for (i = 0; i < chain.bodies.size()-1; i++) {
-				const TNTBody* const body = chain.bodies[i];
-				const TNTBody* const bodyNext = chain.bodies[i+1];
+			for (i = 1; i < chain.bodies.size(); i++) {
+				const TNTBody* const body = chain.bodies[i-1];
+				const TNTBody* const bodyNext = chain.bodies[i];
 				if (body == bodyA && bodyNext == bodyB) {
 					found = true;
 					break;
