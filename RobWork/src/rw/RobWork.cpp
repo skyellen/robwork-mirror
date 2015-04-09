@@ -180,6 +180,7 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     		std::vector<std::string> pl_files =
     				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
     		BOOST_FOREACH(std::string pl_file, pl_files){
+
     		    pluginsFiles.push_back(pl_file);
     		}
     	} else {
@@ -189,17 +190,22 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
 
     // make sure not to add duplicates of plugins
     ExtensionRegistry::Ptr reg = ExtensionRegistry::getInstance();
+
     BOOST_FOREACH(std::string pfilename, pluginsFiles){
+
     	std::time_t time = boost::filesystem::last_write_time(pfilename);
     	// check if plugin was allready added
     	path pfile(pfilename);
+
     	std::string key = pfile.filename().string();
     	if(_pluginChangedMap.find(key)!=_pluginChangedMap.end()){
     		if( _pluginChangedMap[key]>=time )
     			continue;
     	}
+
 		_pluginChangedMap[key] = time;
 		Log::infoLog() << "\t " <<  pfilename << std::endl;
+
 		rw::common::Ptr<Plugin> plugin = Plugin::load( pfilename );
 		reg->registerExtensions(plugin);
     }
@@ -213,6 +219,7 @@ namespace {
     // this is used for initializing variables on program startup
     // hence, any program linked with this code will execute the constructor
     // before main(argc,argv) is entered...
+
     struct AutoInitializeRobWork {
        	AutoInitializeRobWork(){
        		//rw::common::Log::debugLog() << " AUTO INITILIZING ROBWORK .... " << std::endl;
@@ -220,10 +227,11 @@ namespace {
         		_log =  rw::common::ownedPtr( new rw::common::Log() );
     		if(_extensionReg==NULL)
     			_extensionReg = rw::common::ownedPtr(new rw::common::ExtensionRegistry());
-       		RobWork::getInstance()->initialize();
+       		//RobWork::getInstance()->initialize();
 
        	}
     } _initializer;
+
 }
 
 rw::common::Ptr<rw::common::ExtensionRegistry> RobWork::getExtensionRegistry(){
@@ -238,9 +246,6 @@ void RobWork::setExtensionRegistry(rw::common::Ptr<rw::common::ExtensionRegistry
 }
 
 
-void RobWork::init(){
-	RobWork::getInstance()->initialize();
-}
 
 void RobWork::init(int argc, const char* const * argv){
 	// get log level, plugins, or plugin directories
@@ -272,8 +277,10 @@ void RobWork::init(int argc, const char* const * argv){
     	plugins = vm["rwplugin"].as<std::vector<std::string> >();
     }
 
-
-	RobWork::getInstance()->initialize(plugins);
+	if(_rwinstance==NULL){
+		_rwinstance = ownedPtr( new RobWork() );
+	}
+	_rwinstance->initialize(plugins);
 
 	std::string rwloglevel_arg = vm["rwloglevel"].as<std::string>();
 	if(rwloglevel_arg=="debug"){ Log::getInstance()->setLevel( Log::Debug ); }
@@ -302,10 +309,18 @@ rw::common::Log::Ptr RobWork::getLogPtr()
 	return _log;
 }
 
+void RobWork::init(){
+	if(_rwinstance==NULL){
+		_rwinstance = ownedPtr( new RobWork() );
+	}
+	_rwinstance->initialize();
+}
+
 RobWork::Ptr RobWork::getInstance(){
 	// test for NULL, to avoid problems with 'static initialization order fiasco'
 	if(_rwinstance==NULL){
 		_rwinstance = ownedPtr( new RobWork() );
+		_rwinstance->initialize();
 	}
 	return _rwinstance;
 }
