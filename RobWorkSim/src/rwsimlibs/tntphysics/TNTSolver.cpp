@@ -113,9 +113,11 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 			rhs.block(dimCon,0,dim,1) = aij;
 			Eigen::MatrixXd::Index dimVarB = 0;
 			BOOST_FOREACH(const TNTConstraint* constraintB, constraints) {
+				const bool dynParentB = dynamic_cast<const TNTRigidBody*>(constraintB->getParent());
+				const bool dynChildB = dynamic_cast<const TNTRigidBody*>(constraintB->getChild());
 				//const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity()+constraintB->getDimWrench() > 0 ? 6 : 0;
 				const Eigen::VectorXd::Index dimB = constraintB->getDimVelocity()+constraintB->getDimWrench();
-				if (dimB > 0) {
+				if (dimB > 0 && (dynParentB || dynChildB)) {
 					const TNTBody* const cP = constraint->getParent();
 					const TNTBody* const cPB = constraintB->getParent();
 					const TNTBody* const cC = constraint->getChild();
