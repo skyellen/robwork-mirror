@@ -145,11 +145,13 @@ void TNTSolver::saveSolution(const Eigen::VectorXd& solution, TNTIslandState &st
 	std::size_t cI = 0;
 	const TNTBodyConstraintManager::ConstraintList constraints = _manager->getConstraints(state);
 	BOOST_FOREACH(const TNTConstraint* constraint, constraints) {
+		const bool dynParent = dynamic_cast<const TNTRigidBody*>(constraint->getParent());
+		const bool dynChild = dynamic_cast<const TNTRigidBody*>(constraint->getChild());
 		// Restore full wrench vectors
 		const std::vector<TNTConstraint::Mode> constraintModes = constraint->getConstraintModes();
 		//const Eigen::MatrixXd::Index dimVar = constraint->getDimVelocity() + constraint->getDimWrench() > 0 ? 6 : 0;
 		const Eigen::MatrixXd::Index dimVar = constraint->getDimVelocity() + constraint->getDimWrench();
-		if (dimVar > 0) {
+		if (dimVar > 0 && (dynParent || dynChild)) {
 			Vector3D<> velLin, velAng;
 			for (std::size_t i = 0; i < 3; i++) {
 				const TNTConstraint::Mode &mode = constraintModes[i];
