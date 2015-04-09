@@ -128,7 +128,7 @@ void TNTSolver::getMatrices(Eigen::MatrixXd& lhs, Eigen::VectorXd& rhs, double h
 						Eigen::MatrixXd B = constraint->getLHS(constraintB, h, discontinuity, rwstate, tntstateH);
 						RW_ASSERT(B.rows() == dim);
 						RW_ASSERT(B.cols() == dimB);
-						RW_ASSERT(dimVarB+dimVarB <= lhs.cols());
+						RW_ASSERT(dimVarB+dimB <= lhs.cols());
 						lhs.block(dimCon,dimVarB,dim,dimB) = B;
 					}
 					dimVarB += dimB;
