@@ -45,12 +45,26 @@ PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool 
              RW_THROW("Parse error: Expected \"Property\" Got \"" + element->getName() + "\"!");
 
 	std::string name = "", description = "";
+	DOMElem::Ptr value = NULL;
 	BOOST_FOREACH( DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName("id") ) {
+		if (child->isName("Name") ) {
 			name = child->getValue();
 		} else if (child->isName("Description")) {
 			description = child->getValue();
-		} else if (child->isName("PropertyMap")) {
+		} else if (child->isName("Value")) {
+			value = child;
+		} else {
+			RW_THROW("Parse Error: child element \" << child->getName() << \" not recognized in Property with name \""<< name << "\"!");
+	    }
+    }
+
+	if (name == "")
+		RW_THROW("Parse Error: name element not defined in Property!");
+	if (value == NULL)
+		RW_THROW("Parse Error: data value not defined in Property with name \""<< name << "\"!");
+
+	BOOST_FOREACH( DOMElem::Ptr child, value->getChildren() ){
+		if (child->isName("PropertyMap")) {
 			return ownedPtr(new Property<PropertyMap>(name, description, DOMPropertyMapLoader::readProperties(child, true)));
 		} else if (child->isName("String")) {
 			return ownedPtr(new Property<std::string>(name, description, DOMBasisTypes::readString(child)));
@@ -94,12 +108,10 @@ PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool 
 		} else if (child->isName("T3DPath")){
 			DOMPathLoader loader(child);
 			return ownedPtr(new Property<Transform3DPath >(name, description, *loader.getTransform3DPath()));
-	    } else {
-	    	RW_THROW("Parse Error: data value not reqognized in property with id \""<< name << "\"!");
-	    }
-    }
-
-	RW_THROW("Parse Error: data value not defined in property with id \""<< name << "\"!");
+		} else {
+			RW_THROW("Parse Error: data value \"" << child->getName() << "\" not recognized in Property with name \""<< name << "\"!");
+		}
+	}
 
 	return NULL;
 }
@@ -118,7 +130,7 @@ PropertyMap DOMPropertyMapLoader::readProperties(DOMElem::Ptr element, bool chec
     PropertyMap properties;
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren()){
 		if ( child->isName("Property") ) {
-			PropertyBase::Ptr property = readProperty(element, false);
+			PropertyBase::Ptr property = readProperty(child, false);
 			if (property != NULL)
 				properties.add(property);
 		}
