@@ -8,6 +8,7 @@
 #ifndef RWSIM_SWIG_LUA_HPP_
 #define RWSIM_SWIG_LUA_HPP_
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif

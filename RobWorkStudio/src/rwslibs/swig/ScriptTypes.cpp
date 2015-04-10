@@ -81,15 +81,15 @@ rw::common::Ptr<RobWorkStudio> rws::swig::getRobWorkStudioInstance(const std::st
     if(robApp==NULL || !robApp->isRunning() ){
         robApp = new RobWorkStudioApp( args );
         robApp->start();
-        while(robApp->_rwstudio==NULL){
+        while(robApp->getRobWorkStudio()==NULL){
             if(!robApp->isRunning())
                 return NULL;
             rw::common::TimerUtil::sleepMs(100);
         }
         //if(rwstudio_internal==NULL)
-            rwstudio_internal = robApp->_rwstudio;
+            rwstudio_internal = robApp->getRobWorkStudio();
     }
-    return robApp->_rwstudio;
+    return robApp->getRobWorkStudio();
 }
 
 rwlibs::swig::Q rws::swig::getQ(rw::common::Ptr<rwlibs::swig::Device> dev){
@@ -120,4 +120,10 @@ rwlibs::swig::Transform3D rws::swig::wTf(rwlibs::swig::Frame* frame){
 }
 rwlibs::swig::Transform3D rws::swig::fTf(rwlibs::swig::Frame* frame, rwlibs::swig::Frame* to){
     return rw::kinematics::Kinematics::frameTframe(frame, to, getState());
+}
+rwlibs::swig::Transform3D rws::swig::wTf(const std::string& name){
+    return rw::kinematics::Kinematics::worldTframe(findFrame(name), getState());
+}
+rwlibs::swig::Transform3D rws::swig::fTf(const std::string& frame, const std::string& to){
+    return rw::kinematics::Kinematics::frameTframe(findFrame(frame), findFrame(to), getState());
 }

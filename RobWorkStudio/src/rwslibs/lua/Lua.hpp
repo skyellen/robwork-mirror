@@ -77,7 +77,7 @@ namespace rws {
         void resetLua();
 
     private:
-        LuaState::Ptr _lua;
+        rwlibs::swig::LuaState::Ptr _lua;
         rw::kinematics::State _state;
         std::string _previousOpenDirectory;
 

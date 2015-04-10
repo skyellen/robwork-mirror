@@ -23,7 +23,7 @@
 #include <QObject>
 
 #include <rw/common/LogWriter.hpp>
-#include <rwslibs/swig/lua/LuaState.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
 #include "LuaExecutionThread.hpp"
 
 namespace rws {
@@ -49,7 +49,7 @@ namespace rws {
 
         void reset();
 
-        void setLuaState(LuaState *lstate);
+        void setLuaState(rwlibs::swig::LuaState *lstate);
 
         bool event(QEvent *event);
     protected:
@@ -89,7 +89,7 @@ namespace rws {
         rw::common::LogWriter::Ptr _logWriter;
 
         rws::LuaExecutionThread *_luaRunner;
-        LuaState *_luastate;
+        rwlibs::swig::LuaState *_luastate;
     };
 }
 

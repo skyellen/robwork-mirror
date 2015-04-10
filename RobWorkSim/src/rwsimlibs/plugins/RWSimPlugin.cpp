@@ -540,18 +540,18 @@ void RWSimPlugin::updateStatus(){
 void RWSimPlugin::open(rw::models::WorkCell* workcell){
 
 #ifdef RWSIM_HAVE_LUA
-	struct RWSimLuaLibrary: public LuaState::LuaLibrary {
+	struct RWSimLuaLibrary: public rwlibs::swig::LuaState::LuaLibrary {
 		const std::string getId(){ return "RWSimLuaLibrary"; }
-		bool initLibrary(LuaState& lstate){
+		bool initLibrary(rwlibs::swig::LuaState& lstate){
 			//std::cout << "CALLING INIT" << std::endl;
 			return rwsim::swig::openLuaLibRWSim(lstate.get())==0;}
 	};
     // check if the lua state is there and if RobWorkSim libraries has been added
-    LuaState::Ptr lstate = getRobWorkStudio()->getPropertyMap().get<LuaState::Ptr>("LuaState", NULL);
+	rwlibs::swig::LuaState::Ptr lstate = getRobWorkStudio()->getPropertyMap().get<rwlibs::swig::LuaState::Ptr>("LuaState", NULL);
     if(lstate!=NULL && lstate!=_luastate){
         _luastate = lstate;
         rwsim::swig::openLuaLibRWSim(_luastate->get() );
-        _luastate->addLibrary( rw::common::Ptr<LuaState::LuaLibrary>(new RWSimLuaLibrary()) );
+        _luastate->addLibrary( rw::common::Ptr<rwlibs::swig::LuaState::LuaLibrary>(new RWSimLuaLibrary()) );
 
         //_luastate->removeLibrary( "LuaLibRWSim" );
     }

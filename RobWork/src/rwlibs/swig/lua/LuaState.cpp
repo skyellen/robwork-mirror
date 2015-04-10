@@ -19,12 +19,12 @@
 
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rwlibs/swig/lua/Lua.hpp>
-#include "ScriptTypes.hpp"
+
 #include "Lua.hpp"
 
-using namespace rws;
+using namespace rwlibs::swig;
 
-LuaState::LuaState():_lua(NULL),_rws(NULL)
+LuaState::LuaState():_lua(NULL)
 {}
 
 LuaState::~LuaState(){
@@ -69,16 +69,58 @@ void LuaState::reset(){
 
     rwlibs::swig::openLuaLibRW( _lua );
 
-    rwslibs::swig::openLuaLibRWS( _lua );
-
-    rws::swig::setRobWorkStudio( _rws );
-
     BOOST_FOREACH(LuaLibrary::Ptr cb, _libraryCBs){
         cb->initLibrary( *this );
     }
 
+    // get extension point libs
+    std::vector<LuaLibrary::Ptr> libs = LuaState::Factory::getLuaLibraries();
+    BOOST_FOREACH(LuaLibrary::Ptr cb, libs){
+        cb->initLibrary( *this );
+    }
+
+
     // add rw and rws namespaces
     runCmd("rw = rwlua.rw");
-    runCmd("rws = rws.lua.rwstudio");
-    runCmd("rwstudio = rws.getRobWorkStudio()");
 }
+
+
+std::vector<LuaState::LuaLibrary::Ptr> LuaState::Factory::getLuaLibraries(){
+	using namespace rw::common;
+	LuaState::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	std::vector<LuaState::LuaLibrary::Ptr> libs;
+	BOOST_FOREACH(Extension::Ptr ext, exts){
+		// else try casting to ImageLoader
+		LuaState::LuaLibrary::Ptr lib = ext->getObject().cast<LuaState::LuaLibrary>();
+		libs.push_back(lib);
+	}
+	return libs;
+}
+
+std::vector<std::string> LuaState::Factory::getLuaLibraryIDs(){
+	using namespace rw::common;
+	LuaState::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	std::vector<std::string> libs;
+	BOOST_FOREACH(Extension::Ptr ext, exts){
+		// else try casting to ImageLoader
+		//LuaState::LuaLibrary::Ptr lib = ext->getObject().cast<LuaState::LuaLibrary>();
+		libs.push_back( ext->getId() );
+	}
+	return libs;
+}
+
+LuaState::LuaLibrary::Ptr LuaState::Factory::getLuaLibrary(const std::string& id){
+	using namespace rw::common;
+	LuaState::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr ext, exts){
+		if(ext->getId()!=id)
+			continue;
+		LuaState::LuaLibrary::Ptr lib = ext->getObject().cast<LuaState::LuaLibrary>();
+		return lib;
+	}
+	return NULL;
+}
+

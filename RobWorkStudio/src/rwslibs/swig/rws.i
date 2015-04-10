@@ -59,6 +59,8 @@ MovableFrame* findMovableFrame(const std::string& name);
 
   Transform3D wTf(Frame* frame);
  Transform3D fTf(Frame* frame,Frame* frame);
+  Transform3D wTf(const std::string& frame);
+ Transform3D fTf(const std::string& frame,const std::string& frame);
 
 
 /*
@@ -340,15 +342,6 @@ namespace rws{
       local state = rws.getState()
       frame:setTransform(trans, state)
       setState(state)
-    end
-
-	
-    function wTf(frame)
-      return rw.worldTframe(frame, rws.getState() )
-    end
-
-    function fTf(frameA, frameB)
-      return rw.worldTframe(frameA, frameB, rws.getState() )
     end
 }
 #endif

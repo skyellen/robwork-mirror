@@ -407,7 +407,7 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     return true;
 }
 
-void LuaConsoleWidget::setLuaState(LuaState *lstate){
+void LuaConsoleWidget::setLuaState(rwlibs::swig::LuaState *lstate){
     //_luaRunner->_lua = lstate;
     _luastate=lstate;
 }

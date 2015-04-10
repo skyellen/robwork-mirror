@@ -25,7 +25,7 @@
 
 #include <rws/RobWorkStudio.hpp>
 #include <rwslibs/swig/ScriptTypes.hpp>
-#include <rwslibs/swig/lua/LuaState.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
 
 extern "C" {
     #include <lua.h>
@@ -100,8 +100,8 @@ Lua::Lua()
 
     //this->setWidget(vwidget);  // Sets the widget on the QDockWidget
 
-    _lua = rw::common::ownedPtr( new LuaState() );
-    _lua->setRobWorkStudio( getRobWorkStudio() );
+    _lua = rw::common::ownedPtr( new rwlibs::swig::LuaState() );
+    //_lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
 }
 
@@ -113,7 +113,8 @@ Lua::~Lua()
 
 void Lua::initialize()
 {
-    _lua->setRobWorkStudio( getRobWorkStudio() );
+	
+	rws::swig::setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
     _console->setLuaState(_lua.get());
 
@@ -124,7 +125,7 @@ void Lua::initialize()
             _1), this);
 
     // register the lua state in the propertymap
-    getRobWorkStudio()->getPropertyMap().add<LuaState::Ptr>(
+    getRobWorkStudio()->getPropertyMap().add<rwlibs::swig::LuaState::Ptr>(
             "LuaState",
             "A lua state handle",
             _lua );
@@ -148,13 +149,13 @@ void Lua::luaPathChangedListener(const StatePath& path)
 
 void Lua::open(WorkCell* workcell)
 {
-    _lua->setRobWorkStudio( getRobWorkStudio() );
+    //_lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
     stateChangedListener(getRobWorkStudio()->getState());
 }
 
 void Lua::resetLua(){
-    _lua->setRobWorkStudio( getRobWorkStudio() );
+    //_lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
 
     if(_editor!=NULL){

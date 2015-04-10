@@ -44,7 +44,7 @@ namespace {
 }
 
 void LuaExecutionThread::set(const std::string& cmd,
-             LuaState::Ptr lstate,
+             rwlibs::swig::LuaState::Ptr lstate,
              rw::common::LogWriter::Ptr output)
 {
     _cmd = cmd;

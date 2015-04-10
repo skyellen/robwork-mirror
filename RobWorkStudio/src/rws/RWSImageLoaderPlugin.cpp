@@ -54,20 +54,20 @@ namespace {
 RWSImageLoaderPlugin::RWSImageLoaderPlugin():Plugin("RWSImageLoaderPlugin", "RWSImageLoaderPlugin", "0.1")
 {
 
-
 };
-RWSImageLoaderPlugin::~RWSImageLoaderPlugin(){}
+RWSImageLoaderPlugin::~RWSImageLoaderPlugin(){
+}
 
 std::vector<Extension::Descriptor> RWSImageLoaderPlugin::getExtensionDescriptors(){
-    std::vector<Extension::Descriptor> exts;
+	std::vector<Extension::Descriptor> exts;
     exts.push_back(Extension::Descriptor("QImageLoader","rw.loaders.ImageLoader"));
-
-    QList<QByteArray> formats = QImageReader::supportedImageFormats();
-    BOOST_FOREACH(QByteArray& format, formats){
+    //QList<QByteArray> formats = QImageReader::supportedImageFormats();
+    std::string formats[] = {"BMP","GIF","JPG","JPEG","MNG","PNG","PBM","PGM","PPM","TIFF","XBM","XPM","SVG","TGA"};
+    //BOOST_FOREACH(QByteArray& format, formats){
+    BOOST_FOREACH(std::string& format, formats){
     	//std::cout << "setting format: " << format.toUpper().data() << std::endl;
-    	exts.back().getProperties().set(format.toUpper().data(), true);
+    	exts.back().getProperties().set(format, true);
     }
-
     return exts;
 }
 

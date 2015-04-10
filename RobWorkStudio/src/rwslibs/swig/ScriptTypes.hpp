@@ -88,7 +88,9 @@ namespace swig {
     void setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3D wTframe );
 
     rwlibs::swig::Transform3D wTf(rwlibs::swig::Frame* frame);
+    rwlibs::swig::Transform3D wTf(const std::string& name);
     rwlibs::swig::Transform3D fTf(rwlibs::swig::Frame* frame,rwlibs::swig::Frame* to);
+    rwlibs::swig::Transform3D fTf(const std::string& from,const std::string& to);
 
 }
 }

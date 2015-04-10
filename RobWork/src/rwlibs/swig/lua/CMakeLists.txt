@@ -32,7 +32,7 @@ IF( build )
 	# lua interface generation
 	SET(SWIG_MODULE_rw_lua_EXTRA_DEPS ../rwmath.i ../rwplanning.i)
 	STRING(REPLACE "rw_lua" "" LIBS_WITHOUT_RW_LUA ${ROBWORK_LIBRARIES})
-    SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp)
+    SWIG_ADD_MODULE(rw_lua lua ../rw.i ../ScriptTypes.cpp LuaState.cpp)
 	
 	SWIG_LINK_LIBRARIES(rw_lua rw_algorithms
                               rw_pathplanners
@@ -71,7 +71,7 @@ IF( build )
                           ${MINIZIP_LIBRARIES}
 )
     
-    ADD_LIBRARY(rw_lua_s STATIC Lua.cpp ${swig_generated_sources} ${swig_other_sources})
+    ADD_LIBRARY(rw_lua_s STATIC Lua.cpp LuaState.cpp ${swig_generated_sources} ${swig_other_sources})
     LINK_LIBRARIES(rw_lua_s rw)
 
 	# the dynamic version

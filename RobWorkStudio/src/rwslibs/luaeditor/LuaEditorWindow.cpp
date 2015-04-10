@@ -38,6 +38,7 @@ extern "C" {
 using namespace rw::common;
 using namespace rw::math;
 using namespace rws;
+using namespace rwlibs;
 
 namespace {
 
@@ -52,7 +53,7 @@ namespace {
 
 }
 
-LuaEditorWindow::LuaEditorWindow(LuaState::Ptr lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent):
+LuaEditorWindow::LuaEditorWindow(rwlibs::swig::LuaState::Ptr lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent):
 	QMainWindow(parent),
 	_lua(lua),
 	_output(output),
@@ -163,7 +164,7 @@ void LuaEditorWindow::setCheckAction(QAction * action){
         sstr << q[q.size()-1] << "})";
         getCurrentTab()->_editor->insertCompletion(sstr.str().c_str());
     } else if( actionStr=="View Transform (RPY)"){
-        Transform3D<> t3d = _rws->getView()->getSceneViewer()->getTransform();
+        rw::math::Transform3D<> t3d = _rws->getView()->getSceneViewer()->getTransform();
         RPY<> rpy(t3d.R());
         std::stringstream sstr;
         sstr << "rw.Transform3D( rw.Vector3D(" << t3d.P()[0] << "," << t3d.P()[1] << "," << t3d.P()[2] << "),"

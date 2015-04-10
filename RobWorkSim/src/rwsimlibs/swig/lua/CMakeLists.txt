@@ -42,4 +42,8 @@ IF( build )
 	    SET_TARGET_PROPERTIES(rwsim_lua_s PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
 	ENDIF()
 	
+	ADD_LIBRARY(rwsimlua_plugin.rwplugin MODULE LuaPlugin.cpp LuaPlugin.hpp)
+    TARGET_LINK_LIBRARIES(rwsimlua_plugin.rwplugin rwsim_lua_s ${ROBWORKSIM_LIBRARIES})
+	
+	
 ENDIF()

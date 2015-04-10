@@ -14,3 +14,4 @@ extern "C" {
 int rwsim::swig::openLuaLibRWSim(lua_State* L){
     return luaopen_rwsim(L);
 }
+

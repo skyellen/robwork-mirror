@@ -24,7 +24,7 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rws/RobWorkStudio.hpp>
-#include <rwslibs/swig/lua/LuaState.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
 
@@ -59,7 +59,7 @@ public:
      * @param output
      * @param parent
      */
-    LuaExecutionThread(const std::string& cmd, LuaState::Ptr lstate, rw::common::LogWriter::Ptr output, QWidget *parent =
+    LuaExecutionThread(const std::string& cmd, rwlibs::swig::LuaState::Ptr lstate, rw::common::LogWriter::Ptr output, QWidget *parent =
                                NULL) :
             QThread(parent), _cmd(cmd), _lua(lstate), _output(output)
     {
@@ -72,7 +72,7 @@ public:
      * @param lstate [in] the current lua state
      * @param output [in] the log in which to print result
      */
-    void set(const std::string& cmd, LuaState::Ptr lstate, rw::common::LogWriter::Ptr output);
+    void set(const std::string& cmd, rwlibs::swig::LuaState::Ptr lstate, rw::common::LogWriter::Ptr output);
 
     //! @brief executes the command
     void run();
@@ -113,7 +113,7 @@ public:
 private:
     std::string _cmd, _resstring;
     int _resVal;
-    LuaState::Ptr _lua;
+    rwlibs::swig::LuaState::Ptr _lua;
     rw::common::LogWriter::Ptr _output;
 };
 

@@ -30,7 +30,7 @@ IF( build )
 	SET_SOURCE_FILES_PROPERTIES(../rws.i PROPERTIES SWIG_FLAGS "-includeall")
 	
 	# lua interface generation
-    SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp LuaState.cpp ../ScriptTypes.cpp)
+    SWIG_ADD_MODULE(rws_lua lua ../rws.i Lua.cpp ../ScriptTypes.cpp)
     SWIG_LINK_LIBRARIES(rws_lua rws rws_rwstudioapp
                 ${RWS_COMPONENT_LIBRARIES} 
                 ${RWS_PLUGIN_LIBRARIES} 
@@ -55,5 +55,9 @@ IF( build )
 	    SET_TARGET_PROPERTIES(rws_lua_s PROPERTIES COMPILE_FLAGS "-DSTATIC_LINKED")
 	ENDIF()
     	
+    	
+	ADD_LIBRARY(rwslua_plugin.rwplugin MODULE LuaPlugin.cpp LuaPlugin.hpp)
+    TARGET_LINK_LIBRARIES(rwslua_plugin.rwplugin rws_lua_s ${ROBWORKSIM_LIBRARIES})
+	
 	
 ENDIF()
