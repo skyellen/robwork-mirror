@@ -166,7 +166,7 @@ int main(int argc, char** argv)
                 }
 
                 rwstudio.show();
-                RW_WARN("");
+
                 app.exec();
             }
         } catch (const Exception& e) {
