@@ -79,8 +79,9 @@ public:
 	/**
 	 * @brief Add a new object to the broad-phase checker.
 	 * @param object [in] the object to add.
+	 * @param dynamic [in] true (default) if the object is a dynamic object, false otherwise.
 	 */
-	void addObject(rw::common::Ptr<rw::models::Object> object);
+	void addObject(rw::common::Ptr<rw::models::Object> object, bool dynamic = true);
 
 	/**
 	 * @brief Remove a object from the broad-phase checker.
@@ -124,6 +125,7 @@ private:
 	rw::proximity::CollisionStrategy* const _collisionStrategy;
 
 	std::set<const rw::kinematics::Frame*> _frames;
+	std::set<const rw::kinematics::Frame*> _dynFrames;
 	rw::kinematics::FrameMap<std::list<rw::proximity::ProximitySetupRule> >* _frameToBPRule;
 	rw::kinematics::FrameMap<std::map<rw::common::Ptr<rw::geometry::Geometry>, rw::common::Ptr<rw::proximity::ProximityModel> > >* _frameGeoToPModel;
 

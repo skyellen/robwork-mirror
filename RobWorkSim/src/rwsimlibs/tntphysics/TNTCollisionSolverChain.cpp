@@ -107,6 +107,7 @@ public:
 
 	void solveChain(const std::set<std::size_t>& indices) {
 		BOOST_FOREACH(const std::size_t index, indices) {
+			RW_ASSERT(index <= _chain.bodies.size());
 			if (index == 0 || index == _chain.bodies.size()) {
 				const TNTRigidBody* rigidBody;
 				std::vector<const TNTFixedBody*> fixedBodies;
@@ -659,7 +660,6 @@ std::set<std::size_t> TNTCollisionSolverChain::getIndices(
 					break;
 				}
 			}
-			i++;
 		}
 		if (!found)
 			RW_THROW("TNTCollisionSolverChain (getIndices): could not find the contact in the chain.");

@@ -51,7 +51,7 @@ TNTBroadPhase::~TNTBroadPhase() {
 	delete _frameGeoToPModel;
 }
 
-void TNTBroadPhase::addObject(Object::Ptr object) {
+void TNTBroadPhase::addObject(Object::Ptr object, bool dynamic) {
 	_collisionStrategy->addModel(object);
 	const std::vector<ProximitySetupRule>& defaultRules = _defaultProximitySetup->getProximitySetupRules();
 	const bool defaultIncludeAll = _defaultProximitySetup->useIncludeAll();
@@ -63,34 +63,41 @@ void TNTBroadPhase::addObject(Object::Ptr object) {
         ProximityModel::Ptr pmodel = _collisionStrategy->createModel();
         (*_frameGeoToPModel)[*geoframe][geom] = pmodel;
         _collisionStrategy->addGeometry(pmodel.get(),geom);
-        // Find rules that match on the geoframe (no matter if they are include/exclude)
-        std::vector<ProximitySetupRule> candidateRules;
-        BOOST_FOREACH(const ProximitySetupRule& rule, defaultRules) {
-        	if (rule.matchOne(geoframe->getName()))
-        		candidateRules.push_back(rule);
-        }
-        if (defaultIncludeAll || candidateRules.size() > 0) {
-        	BOOST_FOREACH(const Frame* frameB, _frames){
-        		bool addRule = defaultIncludeAll;
-        		// Find the first rule that also match on the second frame.
-        		BOOST_FOREACH(const ProximitySetupRule& rule, candidateRules) {
-        			if (rule.match(geoframe->getName(),frameB->getName())) {
-        				if (rule.type() == ProximitySetupRule::INCLUDE_RULE)
-        					addRule = true;
-        				else if (rule.type() == ProximitySetupRule::EXCLUDE_RULE)
-        					addRule = false;
-        				break;
-        			}
-        		}
-        		if (addRule) {
-        			const ProximitySetupRule rule = ProximitySetupRule::makeInclude(geoframe->getName(),frameB->getName());
-        			_bpStrategy->addRule(rule);
-        			(*_frameToBPRule)[*geoframe].push_back(rule);
-        			(*_frameToBPRule)[*frameB].push_back(rule);
-        		}
-        	}
-        }
-		_frames.insert(geoframe);
+    	// Find rules that match on the geoframe (no matter if they are include/exclude)
+    	std::vector<ProximitySetupRule> candidateRules;
+    	BOOST_FOREACH(const ProximitySetupRule& rule, defaultRules) {
+    		if (rule.matchOne(geoframe->getName()))
+    			candidateRules.push_back(rule);
+    	}
+    	if (defaultIncludeAll || candidateRules.size() > 0) {
+    		std::set<const Frame*> framesB;
+    		if (dynamic)
+    			framesB = _frames;
+    		else
+    			framesB = _dynFrames;
+    		BOOST_FOREACH(const Frame* frameB, framesB){
+    			bool addRule = defaultIncludeAll;
+    			// Find the first rule that also match on the second frame.
+    			BOOST_FOREACH(const ProximitySetupRule& rule, candidateRules) {
+    				if (rule.match(geoframe->getName(),frameB->getName())) {
+    					if (rule.type() == ProximitySetupRule::INCLUDE_RULE)
+    						addRule = true;
+    					else if (rule.type() == ProximitySetupRule::EXCLUDE_RULE)
+    						addRule = false;
+    					break;
+    				}
+    			}
+    			if (addRule) {
+    				const ProximitySetupRule rule = ProximitySetupRule::makeInclude(geoframe->getName(),frameB->getName());
+    				_bpStrategy->addRule(rule);
+    				(*_frameToBPRule)[*geoframe].push_back(rule);
+    				(*_frameToBPRule)[*frameB].push_back(rule);
+    			}
+    		}
+    	}
+    	if (dynamic)
+	        _dynFrames.insert(geoframe);
+        _frames.insert(geoframe);
 	}
 }
 
@@ -108,6 +115,7 @@ void TNTBroadPhase::removeObject(Object::Ptr object) {
         if (model->getGeometryIDs().size() == 1) {
             if (_frames.erase(geoframe)!=1)
             	RW_THROW("TNTContactDetector (removeObject): did not erase frame \"" << geoframe->getName() << "\" exactly once in set of frames.");
+            _dynFrames.erase(geoframe);
             if (_frameToBPRule->has(*geoframe)) {
             	BOOST_FOREACH(const ProximitySetupRule& rule, (*_frameToBPRule)[*geoframe]){
             		_bpStrategy->removeRule(rule);

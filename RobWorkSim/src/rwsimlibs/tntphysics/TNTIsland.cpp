@@ -259,7 +259,7 @@ void TNTIsland::initPhysics(State& state) {
 	_bp = new TNTBroadPhase(_dwc);
 	const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 	BOOST_FOREACH(const TNTBody* body, bodies) {
-		_bp->addObject(body->get()->getObject());
+		_bp->addObject(body->get()->getObject(), dynamic_cast<const TNTRigidBody*>(body) != NULL);
 	}
 	_detector->setProximityFilterStrategy(_bp->getProximityFilterStrategy());
 
