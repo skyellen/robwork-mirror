@@ -98,7 +98,8 @@ RobWorkStudio::RobWorkStudio(const PropertyMap& map)
 {
 	//Always create the about box.
 	_aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
-    rw::common::ExtensionRegistry::getInstance()->registerExtensions( ownedPtr( new RWSImageLoaderPlugin() ) );
+	// should load dynamically
+    //rw::common::ExtensionRegistry::getInstance()->registerExtensions( ownedPtr( new RWSImageLoaderPlugin() ) );
     //_robwork->getPluginRepository().addPlugin(ownedPtr( new ColladaLoaderPlugin() ), true);
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
