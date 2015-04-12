@@ -20,8 +20,18 @@ FIND_PACKAGE(RobWork REQUIRED)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
-
-SET(CALIBRATION_DEPENDENCIES rw_calibration)
+SET(CALIBRATION_DEPENDENCIES 
+    rw 
+    rw_assembly
+    rw_algorithms 
+    rw_calibration
+    rw_opengl
+    rw_pathoptimization 
+    rw_pathplanners 
+    rw_proximitystrategies
+    rw_simulation
+    rw_task
+)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/)
 

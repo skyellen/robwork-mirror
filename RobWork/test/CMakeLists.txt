@@ -57,7 +57,9 @@ SET(DEFAULT_TEST_ARGS "--log_level=all")
 
 SET(TEST_DEPENDENCIES 
     rw 
+    rw_assembly
     rw_algorithms 
+    rw_calibration
     rw_opengl
     rw_pathoptimization 
     rw_pathplanners 
