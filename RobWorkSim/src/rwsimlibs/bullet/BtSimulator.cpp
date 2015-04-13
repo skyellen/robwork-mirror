@@ -1,207 +1,66 @@
-// changles to BtSimulator class made by simat (jan 2015) is fitted to bullet-2.82
+/********************************************************************************
+ * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "BtSimulator.hpp"
 #include "BtDebugRender.hpp"
+#include "BtBody.hpp"
+#include "BtUtil.hpp"
+#include "BtConstraint.hpp"
+#include "BtTactileSensor.hpp"
+#include "BtDevice.hpp"
 
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
 
+#if 0
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
-
-#include <rwsim/dynamics/FixedBody.hpp>
-#include <rwsim/dynamics/KinematicBody.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 
-#include <rwsim/contacts/ContactDetector.hpp>
+using namespace rw::math;
+using namespace rw::models;
+#endif
+
+#include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 #include <boost/foreach.hpp>
 
+using namespace rw::common;
 using namespace rw::kinematics;
-using namespace rw::geometry;
-using namespace rw::math;
-using namespace rw::models;
 
 using namespace rwsim::contacts;
 using namespace rwsim::dynamics;
 using namespace rwsim::drawable;
-using namespace rwsim::simulator;
+using namespace rwsim::sensor;
 using namespace rwlibs::simulation;
+using namespace rwsimlibs::bullet;
 
 // define the maximum number of objects
 #define MAX_PROXIES (1024)
-#define COL_MARGIN 0.001
 
 // TODO: simat - fix this terrible hack to be able to have actual friction- and restitution-values for object specific collisions
 #define commonFriction 1.05;
 #define commonRestitution 0.01;
-
-namespace {
-
-	btVector3 makeBtVector(const Vector3D<>& v3d){
-		return btVector3(v3d(0),v3d(1),v3d(2));
-	}
-
-	Vector3D<> toVector3D(const btVector3& v){
-        return Vector3D<>(v[0],v[1],v[2]);
-    }
-
-	btTransform makeBtTransform(const Transform3D<> &t3d){
-		btTransform btt3d;
-		Quaternion<> quat(t3d.R());
-
-		btVector3 btPos(t3d.P()[0],t3d.P()[1],t3d.P()[2]);
-		btQuaternion btRot(quat.getQx(),quat.getQy(),quat.getQz(),quat.getQw());
-
-		btt3d.setOrigin(btPos);
-	    btt3d.setRotation(btRot);
-	    return btt3d;
-	}
-
-	btCollisionShape* createColShape(Geometry::Ptr geometry, State state, double margin){
-	    TriMesh* mesh = dynamic_cast<TriMesh*>(geometry->getGeometryData().get());
-	    if( mesh==NULL ){
-	        return NULL;
-	    }
-
-	    btTriangleMesh* trimesh = new btTriangleMesh();
-
-	    Transform3D<> rw_pTf = geometry->getTransform();
-
-	    btTransform pTf = makeBtTransform( rw_pTf );
-
-	    // TODO: remember to transform any geometry reference to root nodes reference
-	    for (size_t i=0; i<mesh->getSize(); i++)
-	    {
-	        Triangle<> tri = mesh->getTriangle(i);
-	        btVector3 v1(tri[0][0], tri[0][1], tri[0][2]);
-	        btVector3 v2(tri[1][0], tri[1][1], tri[1][2]);
-	        btVector3 v3(tri[2][0], tri[2][1], tri[2][2]);
-	        v1 = pTf * v1;
-	        v2 = pTf * v2;
-	        v3 = pTf * v3;
-
-	        trimesh->addTriangle(v1, v2, v3);
-	    }
-	    if (trimesh->getNumTriangles() == 0) {
-	        delete trimesh;
-	        return NULL;
-	    }
-	    // create the collision shape from the trimesh data
-	    btGImpactMeshShape *colShape = new btGImpactMeshShape(trimesh);
-	    colShape->setMargin(margin);
-
-	    colShape->postUpdate();
-	    colShape->updateBound();// Call this method once before doing collisions
-
-	    return colShape;
-	}
-
-
-	btCollisionShape* getColShape( Geometry::Ptr geometry,
-        const State &state,
-        double margin)
-    {
-	    btTransform btTrans;
-	    btTrans.setIdentity();
-
-	    return createColShape( geometry , state, margin);
-	}
-
-	void addKinematicDevice(){
-
-	}
-
-
-}
-
-typedef std::pair<Frame*,btRigidBody*> FrameBodyPair;
-
-class btPositionDevice: public BtSimulator::btDevice {
-
-public:
-    btPositionDevice(KinematicDevice::Ptr dev,
-                     std::vector<FrameBodyPair > frameToBtBody):
-        _kdev(dev),
-        _frameToBtBody(frameToBtBody)
-    {
-    }
-
-    virtual ~btPositionDevice(){};
-
-    void update(double dt, State& state){
-        _kdev->getModel().setQ( _kdev->getQ(state), state);
-        // for each joint update the position of the corresponding btRigidBody
-
-        BOOST_FOREACH( FrameBodyPair& pair, _frameToBtBody ){
-            Transform3D<> t3d = Kinematics::worldTframe( pair.first, state);
-            pair.second->getMotionState()->setWorldTransform( makeBtTransform(t3d) );
-        }
-    }
-
-    void postUpdate(State& state){
-
-    }
-
-private:
-    KinematicDevice::Ptr _kdev;
-    std::vector<std::pair<Frame*,btRigidBody*> > _frameToBtBody;
-};
-
-class btVelocityDevice: public BtSimulator::btDevice {
-public:
-
-    btVelocityDevice(RigidDevice::Ptr rdev,std::vector<btTypedConstraint*> constraints):
-        _rdev(rdev),
-        _constraints(constraints)
-    {
-
-    }
-
-    virtual ~btVelocityDevice(){};
-
-    void update(double dt, State& state){
-        Q velQ = _rdev->getVelocity(state);
-        for(unsigned int i = 0; i<_constraints.size(); i++){
-            double vel = velQ[i];
-            if(dynamic_cast<btHingeConstraint*>(_constraints[i])){
-                btHingeConstraint* hinge = dynamic_cast<btHingeConstraint*>(_constraints[i]);
-                hinge->enableAngularMotor(true, vel, 20);
-            } else if( dynamic_cast<btSliderConstraint*>(_constraints[i]) ){
-                btSliderConstraint* slider = dynamic_cast<btSliderConstraint*>(_constraints[i]);
-                slider->setTargetLinMotorVelocity(vel);
-            }
-
-        }
-    }
-
-    void postUpdate(State& state){
-        Q q = _rdev->getModel().getQ(state);
-        for(unsigned int i = 0; i<_constraints.size(); i++){
-            if(dynamic_cast<btHingeConstraint*>(_constraints[i])){
-                btHingeConstraint* hinge = dynamic_cast<btHingeConstraint*>(_constraints[i]);
-                q[i] = hinge->getHingeAngle();
-            } else if( dynamic_cast<btSliderConstraint*>(_constraints[i]) ){
-//                btSliderConstraint* slider = dynamic_cast<btSliderConstraint*>(_constraints[i]); // simat - not used so commented to suppress warning
-            }
-        }
-        _rdev->getModel().setQ(q, state);
-    }
-
-private:
-    RigidDevice::Ptr _rdev;
-    std::vector<btTypedConstraint*> _constraints;
-
-};
 
 BtSimulator::BtSimulator():
 	m_dynamicsWorld(NULL),
@@ -217,8 +76,7 @@ BtSimulator::BtSimulator():
 {
 };
 
-
-BtSimulator::BtSimulator(DynamicWorkCell* dwc):
+BtSimulator::BtSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc):
 	m_dynamicsWorld(NULL),
 	m_overlappingPairCache(NULL),
 	m_dispatcher(NULL),
@@ -232,9 +90,18 @@ BtSimulator::BtSimulator(DynamicWorkCell* dwc):
 {
 }
 
-SimulatorDebugRender::Ptr BtSimulator::createDebugRender(){
-	return NULL;
-	//    return _render;
+BtSimulator::~BtSimulator()	{
+	exitPhysics();
+}
+
+void BtSimulator::load(DynamicWorkCell::Ptr dwc){
+	_dwc = dwc;
+	_materialMap = dwc->getMaterialData();
+	_contactMap = dwc->getContactData();
+}
+
+bool BtSimulator::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
+	return false;
 }
 
 void BtSimulator::step(double dt, State& state){
@@ -243,25 +110,28 @@ void BtSimulator::step(double dt, State& state){
 	// these need to be set before we make the update
 
     //std::cout << "Controller" << std::endl;
-    BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
-        controller->update(dt, state);
+	Simulator::UpdateInfo info(dt);
+	info.dt_prev = dt;
+    BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ) {
+        controller->update(info, state);
 
     }
     //std::cout << "Dev" << std::endl;
-    BOOST_FOREACH(btDevice *dev, _btDevices){
+    BOOST_FOREACH(BtDevice *dev, _btDevices){
         dev->update(dt,state);
     }
+
     //std::cout << "Step" << std::endl;
 	// update all device force/velocity input
     // then for kinematic bodies
 
-	for(size_t i=0; i<_btLinks.size(); i++){
-		Transform3D<> t3d = Kinematics::worldTframe( _rwLinks[i]->getBodyFrame(), state);
-		Vector3D<> posDisplacement(_rwLinks[i]->getLinVel(state)[0]*dt,_rwLinks[i]->getLinVel(state)[1]*dt,_rwLinks[i]->getLinVel(state)[2]*dt);
-		Rotation3D<> rotDisplacement( RPY<>( _rwLinks[i]->getAngVel(state)[0]*dt, _rwLinks[i]->getAngVel(state)[1]*dt, _rwLinks[i]->getAngVel(state)[2]*dt).toRotation3D());
-		t3d = t3d * Transform3D<> (posDisplacement,rotDisplacement);
-		_btLinks[i]->getMotionState()->setWorldTransform( makeBtTransform(t3d) );
-	}
+    BOOST_FOREACH(BtBody* const body, _btBodies) {
+    	body->update(dt, state); // updates velocities for kinematic objects
+    }
+
+    BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+    	constraint->update(dt, state); // apply spring forces
+    }
 
 	///step the simulation
 	if (m_dynamicsWorld)
@@ -271,104 +141,101 @@ void BtSimulator::step(double dt, State& state){
 		_time += dt;
 	}
 
+    BOOST_FOREACH(BtTactileSensor* const sensor, _btSensors) {
+    	sensor->update(info, state);
+    }
 
-    BOOST_FOREACH(btDevice *dev, _btDevices){
+    BOOST_FOREACH(BtDevice *dev, _btDevices){
         dev->postUpdate(state);
     }
 
-	// update the kinematic bodies of robwork to match the motion handled by bullet
-	for(size_t i=0; i<_btLinks.size(); i++){
-		KinematicBody::Ptr b = _rwLinks[i];
-		MovableFrame &mframe = *(b->getMovableFrame());
-		btRigidBody *btb = _btLinks[i];
-		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
-		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
-
-		Vector3D<> ang = toVector3D( btb->getAngularVelocity() );
-        Vector3D<> lin = toVector3D( btb->getLinearVelocity() );
-
-		Vector3D<> pos(v[0],v[1],v[2]);
-		Quaternion<> quat(q[0],q[1],q[2],q[3]);
-		Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
-		mframe.setTransform( inverse(wTp) * Transform3D<>(pos,quat), state );
-
-        b->setAngVel( ang , state);
-        b->setLinVel( lin , state);
-	}
+    BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+    	constraint->postUpdate(state);
+    }
 
 	// now copy all transforms into state
-	for(size_t i=0; i<_btBodies.size(); i++){
-		RigidBody::Ptr b = _rwBodies[i];
-		MovableFrame &mframe = *(b->getMovableFrame());
-		btRigidBody *btb = _btBodies[i];
-		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
-		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
-
-		Vector3D<> ang = toVector3D( btb->getAngularVelocity() );
-        Vector3D<> lin = toVector3D( btb->getLinearVelocity() );
-		Vector3D<> pos(v[0],v[1],v[2]);
-		Quaternion<> quat(q[0],q[1],q[2],q[3]);
-		Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
-		mframe.setTransform( inverse(wTp) * Transform3D<>(pos,quat), state );
-
-
-        b->setAngVel( ang , state);
-        b->setLinVel( lin , state);
+    BOOST_FOREACH(BtBody* const body, _btBodies) {
+		body->postupdate(state);
 	}
 }
 
-btRigidBody* BtSimulator::createRigidBody(Geometry::Ptr geometry,
-                                          double mass,
-                                          const State& state,
-                                          double margin){
-    btCollisionShape* colShape =
-        getColShape(geometry, state, margin);
-    if( colShape==NULL)
-        return NULL;
-    // if the colShape already is in the m_collisionShapes then don't add it
-    bool isInList = false;
-    for(int m=0;m<m_collisionShapes.size();m++){
-        if( m_collisionShapes[m]==colShape )
-            isInList = true;
-    }
-    if( !isInList ){
-//        std::cout << "Col shape added!!!" << std::endl;
-        m_collisionShapes.push_back(colShape);
-    }
+void BtSimulator::resetScene(State& state)
+{
+	if(!_initPhysicsHasBeenRun) {
+		RW_THROW("BtSimulator (resetScene): initPhysics has not been run!");
+	}
 
-    //rigidbody is dynamic if and only if mass is non zero, otherwise static
-    bool isDynamic = (mass != 0.f);
+	/*int numObjects = 0;
+	if (m_dynamicsWorld) {
+		m_dynamicsWorld->stepSimulation(1.f/60.f,0);
+		numObjects = m_dynamicsWorld->getNumCollisionObjects();
+	}
 
-    Transform3D<> t3d = geometry->getFrame()->getTransform(state);
-    btTransform startTransform = makeBtTransform(t3d);
+	for (int i=0;i<numObjects;i++) {
+		btCollisionObject* colObj = m_dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(colObj);
+		if (body) {
+			if (body->getMotionState())	{
+				btDefaultMotionState* myMotionState = (btDefaultMotionState*)body->getMotionState();
+				myMotionState->m_graphicsWorldTrans = myMotionState->m_startWorldTrans;
+				colObj->setWorldTransform( myMotionState->m_graphicsWorldTrans );
+				colObj->setInterpolationWorldTransform( myMotionState->m_startWorldTrans );
+				colObj->activate();
+			}
+			//removed cached contact points
+			m_dynamicsWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(colObj->getBroadphaseHandle(),m_dispatcher);
 
-    btVector3 localInertia(1,1,1);
-    if (isDynamic)
-        colShape->calculateLocalInertia(mass,localInertia);
+			//btRigidBody* body = btRigidBody::upcast(colObj);
+			if (body && !body->isStaticObject()) {
+			    body->setLinearVelocity(btVector3(0,0,0));
+			    body->setAngularVelocity(btVector3(0,0,0));
+			}
+		}
+	}*/
 
-    //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+	// Delete all sensors
+	BOOST_FOREACH(BtTactileSensor* const sensor, _btSensors) {
+		delete sensor;
+	}
+	_btSensors.clear();
+	_sensors.clear();
 
-    btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
-// TODO: should damping be enabled at what should the value be?
-//    rbInfo.m_additionalDamping = true;
-//    rbInfo.m_additionalDampingFactor = 1.5;
+	// Delete all constraints (sensors must be deleted first)
+	BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+		delete constraint;
+	}
+	_constraints.clear();
 
-// TODO: simat - fix friction
-// bullets set "friction" on objects and as default when bodies collidied the 2 m_friction values are multiplied together. This is not correct and is currently overridden in the CustomMaterialCombinerCallback()
-    rbInfo.m_friction = 0.5;
-    rbInfo.m_restitution = 0.01;
+	// Delete all bodies (constraints must be deleted first)
+	BOOST_FOREACH(BtBody* const btBody, _btBodies) {
+		delete btBody;
+	}
+	_btBodies.clear();
+	_rwFrameToBtBody.clear();
+	_rwBtBodyToFrame.clear();
 
-    btRigidBody* btbody = new btRigidBody(rbInfo);
-    m_dynamicsWorld->addRigidBody(btbody);
+	// Now add new bodies with new initial state
+	BOOST_FOREACH(const Body::Ptr body, _dwc->getBodies()) {
+		addBody(body,state);
+	}
 
-    // add rigid body to to map
+	// Add the constraints
+	const DynamicWorkCell::ConstraintList& constraints = _dwc->getConstraints();
+	BOOST_FOREACH(const Constraint::Ptr constraint, constraints) {
+		addConstraint(constraint);
+	}
 
-    _rwBtBodyToFrame[btbody] = geometry->getFrame();
-    if( isDynamic ){
-        _rwFrameToBtBody[geometry->getFrame()] = btbody;
-    }
-    return btbody;
+	// Add the sensors
+	const DynamicWorkCell::SensorList& sensors = _dwc->getSensors();
+	BOOST_FOREACH(const SimulatedSensor::Ptr sensor, sensors) {
+		addSensor(sensor, state);
+	}
+
+    //std::cout << "Dev" << std::endl;
+    /*BOOST_FOREACH(btDevice *dev, _btDevices){
+        dev->update(0,state);
+    }*/
+
 }
 
 //typedef void (*btNearCallback)(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, const btDispatcherInfo& dispatchInfo);
@@ -381,7 +248,6 @@ void MyNearCallback(btBroadphasePair& collisionPair,
     // Only dispatch the bullet collision information if you want the physics to continue
     dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);
 }
-
 
 // TODO: simat - fix this bad friction fix to allow for multiobject individual friction and restitution
 // current problem is that from this function there is no access to object material on the btCollisionObjectWrapper passed to this function
@@ -397,17 +263,10 @@ static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisio
 // simat - needed to register the CustomMaterialCombinerCallback to bullet
 extern ContactAddedCallback		gContactAddedCallback;
 
-bool BtSimulator::setContactDetector(ContactDetector::Ptr detector) {
-	return false;
-}
-
 void BtSimulator::initPhysics(State& state)
 {
 	// simat - needed to register the CustomMaterialCombinerCallback to bullet
     gContactAddedCallback = CustomMaterialCombinerCallback;
-
-
-    int nrFixedBody(0),nrRigidBody(0),nrLinkBody(0);
 
 	///collision configuration contains default setup for memory, collision setup
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -430,56 +289,14 @@ void BtSimulator::initPhysics(State& state)
 
 	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_overlappingPairCache,m_solver,m_collisionConfiguration);
 
-	m_dynamicsWorld->getSolverInfo().m_splitImpulse = true;
+	m_dynamicsWorld->getSolverInfo().m_splitImpulse = true; // Default true
+	m_dynamicsWorld->getSolverInfo().m_erp = 0.0; // Default 0.2 (Baumgarte - used as default for constraints)
+	m_dynamicsWorld->getSolverInfo().m_erp2 = 0.0; // Default 0.8 (split impulse - only for contacts?)
+	m_dynamicsWorld->getSolverInfo().m_globalCfm = 0; // Default 0.
 
-	m_dynamicsWorld->setGravity(btVector3(0,0,-10));
+	m_dynamicsWorld->setGravity(BtUtil::makeBtVector(_dwc->getGravity()));
 
-	std::vector<RigidBody::Ptr> rbodies = _dwc->findBodies<RigidBody>();
-
-	for(size_t i=0; i<rbodies.size(); i++){
-		std::string fname = rbodies[i]->getBodyFrame()->getName();
-//		std::cout << "Body: " << fname << std::endl;
-//		std::cout << "RigidBody: " << rbodies[i]->getBodyFrame()->getName() << std::endl;
-		// create a triangle mesh for all staticly connected nodes
-		btRigidBody *btbody = createRigidBody(rbodies[i]->getGeometry()[0],rbodies[i]->getMass(), state, COL_MARGIN);
-		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);// flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
-
-		_btBodies.push_back(btbody);
-		_rwBodies.push_back(rbodies[i]);
-		nrRigidBody++;
-	}
-
-	std::vector<FixedBody::Ptr> fbodies = _dwc->findBodies<FixedBody>();
-	for(size_t i=0; i<fbodies.size(); i++){
-		std::string fname = fbodies[i]->getBodyFrame()->getName();
-//		std::cout << "Body: " << fname << std::endl;
-
-//		std::cout << "FixedBody: " << fbodies[i]->getBodyFrame()->getName() << std::endl;
-
-		btRigidBody *btbody = createRigidBody(fbodies[i]->getGeometry()[0],0.f,state,COL_MARGIN);
-		btbody->setCollisionFlags( btbody->getCollisionFlags() |
-								   btCollisionObject::CF_STATIC_OBJECT );
-		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK); // flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
-
-		nrFixedBody++;
-	}
-
-	std::vector<KinematicBody::Ptr> kbodies = _dwc->findBodies<KinematicBody>();
-	for(size_t i=0; i<kbodies.size(); i++){
-			// use kinematic objects for visualising
-//			std::cout << "KinematicBody: " << kbodies[i]->getBodyFrame()->getName() << std::endl;
-
-            btRigidBody *btbody = createRigidBody(kbodies[i]->getGeometry()[0], 0.f, state, COL_MARGIN);
-            btbody->setCollisionFlags( btbody->getCollisionFlags() |
-                                       btCollisionObject::CF_KINEMATIC_OBJECT );
-            btbody->setActivationState(DISABLE_DEACTIVATION);
-    		btbody->setCollisionFlags(btbody->getCollisionFlags()  | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);// flag set to enable the CustomMaterialCombinerCallback to handle friction- and restitution coefficients
-
-            _btLinks.push_back(btbody);
-            _rwLinks.push_back(kbodies[i]);
-			nrLinkBody++;
-	}
-
+#if 0
 	// ok, now add constraints
 	BOOST_FOREACH(DynamicDevice::Ptr device, _dwc->getDynamicDevices() ){
 		if( device.cast<RigidDevice>()!=NULL ){
@@ -601,10 +418,11 @@ void BtSimulator::initPhysics(State& state)
 		}
 		_devices.push_back(device);
 	}
-
-	resetScene(state);
+#endif
 
 	_initPhysicsHasBeenRun=true;
+
+	resetScene(state);
 
 //    std::cout << "BtSimulator: initializing physics" << std::endl
 //              << " - Collision Margin: " << _dwc->getCollisionMargin() << std::endl
@@ -614,74 +432,35 @@ void BtSimulator::initPhysics(State& state)
 
 }
 
-void BtSimulator::resetScene(State& state)
-{
-	int numObjects = 0;
-	if (m_dynamicsWorld)
-	{
-		m_dynamicsWorld->stepSimulation(1.f/60.f,0);
-		numObjects = m_dynamicsWorld->getNumCollisionObjects();
-	}
-
-	for (int i=0;i<numObjects;i++)
-	{
-		btCollisionObject* colObj = m_dynamicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(colObj);
-		if (body)
-		{
-			if (body->getMotionState())
-			{
-				btDefaultMotionState* myMotionState = (btDefaultMotionState*)body->getMotionState();
-				myMotionState->m_graphicsWorldTrans = myMotionState->m_startWorldTrans;
-				colObj->setWorldTransform( myMotionState->m_graphicsWorldTrans );
-				colObj->setInterpolationWorldTransform( myMotionState->m_startWorldTrans );
-				colObj->activate();
-			}
-			//removed cached contact points
-			m_dynamicsWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(colObj->getBroadphaseHandle(),m_dispatcher);
-
-			//btRigidBody* body = btRigidBody::upcast(colObj);
-			if (body && !body->isStaticObject())
-			{
-			    body->setLinearVelocity(btVector3(0,0,0));
-			    body->setAngularVelocity(btVector3(0,0,0));
-			}
-		}
-	}
-
-    // now set the new position of all bodies
-    for(size_t i=0; i<_btBodies.size(); i++){
-        RigidBody::Ptr b = _rwBodies[i];
-        MovableFrame &mframe = *(b->getMovableFrame());
-        Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
-        Transform3D<> t3d = wTp * mframe.getTransform( state );
-
-        btTransform bttrans = makeBtTransform(t3d);
-
-        btRigidBody *btb = _btBodies[i];
-        btb->setCenterOfMassTransform(bttrans);
-    }
-
-
-    //std::cout << "Dev" << std::endl;
-    /*BOOST_FOREACH(btDevice *dev, _btDevices){
-        dev->update(0,state);
-    }*/
-
-}
-
 void BtSimulator::exitPhysics(){
 	//cleanup in the reverse order of creation/initialization
 	//remove the rigidbodies from the dynamics world and delete them
 	if(_initPhysicsHasBeenRun){
-		int i;
-	   //removed/delete constraints
-		for (i=m_dynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
-		{
-			btTypedConstraint* constraint = m_dynamicsWorld->getConstraint(i);
-			m_dynamicsWorld->removeConstraint(constraint);
+
+		BOOST_FOREACH(BtTactileSensor* const sensor, _btSensors) {
+			delete sensor;
+		}
+		_btSensors.clear();
+		_sensors.clear();
+
+		BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
 			delete constraint;
 		}
+		_constraints.clear();
+
+		BOOST_FOREACH(BtBody* const btBody, _btBodies) {
+			delete btBody;
+		}
+		_btBodies.clear();
+
+		int i;
+		//removed/delete constraints
+		//for (i=m_dynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
+		//{
+			//btTypedConstraint* constraint = m_dynamicsWorld->getConstraint(i);
+			//m_dynamicsWorld->removeConstraint(constraint);
+			//delete constraint;
+		//}
 
 		for (i=m_dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--){
 			btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
@@ -694,112 +473,144 @@ void BtSimulator::exitPhysics(){
 		}
 
 		//delete collision shapes
-		for (int j=0;j<m_collisionShapes.size();j++){
-			btCollisionShape* shape = m_collisionShapes[j];
+		/*for (int j=0;j<m_collisionShapes.size();j++){
+			const btCollisionShape* const shape = m_collisionShapes[j];
+			//for (int childNo = 0; childNo < shape->get)
 			delete shape;
-		}
+		}*/
+
 		//delete dynamics world
 		delete m_dynamicsWorld;
 
-	//delete solver
-	delete m_solver;
+		//delete solver
+		delete m_solver;
 
-//delete broadphase
-	delete m_overlappingPairCache;
+		//delete broadphase
+		delete m_overlappingPairCache;
 
-//delete dispatcher
+		//delete dispatcher
 
-	delete m_dispatcher;
+		delete m_dispatcher;
 
-	delete m_collisionConfiguration;
+		delete m_collisionConfiguration;
+		_initPhysicsHasBeenRun = false;
 	}
 
 }
 
-btDynamicsWorld* BtSimulator::getBtWorld() const {
-    return m_dynamicsWorld;
-}
-
-void BtSimulator::load(DynamicWorkCell::Ptr dwc){
-	_dwc = dwc;
-	_materialMap = dwc->getMaterialData();
-	_contactMap = dwc->getContactData();
-}
-
-// simat - functions below is not used but were essential for succesful compile
-void BtSimulator::addDevice(DynamicDevice::Ptr dev, State& nstate){
-	std::cout << "DANGER: called not finished function: a12" << std::endl;
-
-	// TODO: implement method
-}
-
-void BtSimulator::attach(Body::Ptr b1, Body::Ptr b2){
-	std::cout << "DANGER: called not finished function: a11" << std::endl;
-
-	 // TODO: implement method
-}
-
-void BtSimulator::detach(Body::Ptr b1, Body::Ptr b2){
-	std::cout << "DANGER: called not finished function: a10" << std::endl;
-
-	 // TODO: implement method
-}
-
-void BtSimulator::addSensor(SimulatedSensor::Ptr sensor, State& state){
-	std::cout << "DANGER: called not finished function: a9" << std::endl;
-
-	 // TODO: implement method
-}
-
-void BtSimulator::setDynamicsEnabled(Body::Ptr body, bool enabled){
-	std::cout << "DANGER: called not finished function: a9" << std::endl;
-
-	 // TODO: implement method
-}
-
-void BtSimulator::DWCChangedListener(DynamicWorkCell::DWCEventType type, boost::any data){
-	std::cout << "DANGER: called not finished function: a8" << std::endl;
-
-	 // TODO: implement method
+double BtSimulator::getTime() {
+	return _time;
 }
 
 void BtSimulator::setEnabled(Body::Ptr body, bool enabled){
-	std::cout << "DANGER: called not finished function: a7" << std::endl;
-
-	 // TODO: implement method
+	RW_THROW("BtSimulator (setEnabled): not implemented yet!");
 }
 
-void BtSimulator::emitPropertyChanged(){
-	std::cout << "DANGER: called not finished function: a6" << std::endl;
+void BtSimulator::setDynamicsEnabled(Body::Ptr body, bool enabled){
+	RW_THROW("BtSimulator (setDynamicsEnabled): not implemented yet!");
+}
 
-	 // TODO: implement method
+SimulatorDebugRender::Ptr BtSimulator::createDebugRender(){
+	return _render;
+}
+
+PropertyMap& BtSimulator::getPropertyMap() {
+	return _propertyMap;
+};
+
+void BtSimulator::emitPropertyChanged(){
+	RW_THROW("BtSimulator (emitPropertyChanged): not implemented yet!");
+}
+
+void BtSimulator::addController(rwlibs::simulation::SimulatedController::Ptr controller) {
+	_controllers.push_back(controller);
+}
+
+void BtSimulator::removeController(rwlibs::simulation::SimulatedController::Ptr controller) {
 }
 
 void BtSimulator::addBody(Body::Ptr body, State& state){
-	std::cout << "DANGER: called not finished function: a5" << std::endl;
-
-	 // TODO: implement method
+	BtBody* const exists = _rwFrameToBtBody[body->getBodyFrame()];
+	if (!exists) {
+		BtBody* const btbody = new BtBody(body, m_dynamicsWorld, state);
+		_btBodies.push_back(btbody);
+		_rwFrameToBtBody[body->getBodyFrame()] = btbody;
+		_rwBtBodyToFrame[btbody] = body->getBodyFrame();
+	}
 }
 
-void BtSimulator::addConstraint(Constraint::Ptr constraint) {
-	std::cout << "DANGER: called not finished function: a4" << std::endl;
+void BtSimulator::addDevice(DynamicDevice::Ptr dev, State& nstate){
+	RW_THROW("BtSimulator (addDevice): not implemented yet!");
+}
 
-	 // TODO: implement method
+void BtSimulator::addSensor(SimulatedSensor::Ptr sensor, State& state){
+	if(const rw::common::Ptr<SimulatedFTSensor> tsensor = sensor.cast<SimulatedFTSensor>()){
+		Frame* const parentFrame = tsensor->getBody1()->getBodyFrame();
+		Frame* const sensorFrame = tsensor->getBody2()->getBodyFrame();
+
+		if(_rwFrameToBtBody.find(sensorFrame) == _rwFrameToBtBody.end()){
+			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+		}
+		if( _rwFrameToBtBody.find(parentFrame)== _rwFrameToBtBody.end()){
+			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+		}
+		BtBody* const parentBtBody = _rwFrameToBtBody[parentFrame];
+		BtBody* const sensorBtBody = _rwFrameToBtBody[sensorFrame];
+
+		BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
+		_btSensors.push_back(btsensor);
+		_sensors.push_back(sensor);
+
+		// Find all constraints between the two bodies
+		BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+			btRigidBody* const parent = constraint->getBtParent();
+			btRigidBody* const child = constraint->getBtChild();
+			if (parent == parentBtBody->getBulletBody() || parent == sensorBtBody->getBulletBody()) {
+				if (child == parentBtBody->getBulletBody() || child == sensorBtBody->getBulletBody()) {
+					btsensor->addFeedback(constraint);
+				}
+			}
+		}
+
+/*	} else if(const SimulatedTactileSensor::Ptr tsensor = sensor.cast<SimulatedTactileSensor>()){
+		Frame* const bframe = tsensor->getFrame();
+		RW_ASSERT(bframe!=NULL);
+
+		if(_rwFrameToBtBody.find(bframe) == _rwFrameToBtBody.end()){
+			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+		}
+		BtBody* btBody = _rwFrameToBtBody[bframe];
+
+		BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
+		_sensors.push_back(btsensor);*/
+	} else {
+		RW_THROW("BtSimulator (addSensor): the type of sensor is not supported yet!");
+	}
 }
 
 void BtSimulator::removeSensor(SimulatedSensor::Ptr sensor){
-	std::cout << "DANGER: called not finished function: a3" << std::endl;
-
-	 // TODO: implement method
+	RW_THROW("BtSimulator (removeSensor): not implemented yet!");
 }
 
-void BtSimulator::disableCollision(Body::Ptr b1, Body::Ptr b2){
-	std::cout << "DANGER: called not finished function: a2" << std::endl;
-
-	 // TODO: implement method
+void BtSimulator::attach(Body::Ptr b1, Body::Ptr b2){
+	RW_THROW("BtSimulator (attach): not implemented yet!");
 }
 
-void BtSimulator::enableCollision(Body::Ptr b1, Body::Ptr b2){
-	std::cout << "DANGER: called not finished function: a1" << std::endl;
-	 // TODO: implement method
+void BtSimulator::detach(Body::Ptr b1, Body::Ptr b2){
+	RW_THROW("BtSimulator (detach): not implemented yet!");
+}
+
+std::vector<SimulatedSensor::Ptr> BtSimulator::getSensors() {
+	return _sensors;
+}
+
+void BtSimulator::addConstraint(rw::common::Ptr<const Constraint> constraint) {
+	BtBody* const parent = _rwFrameToBtBody[constraint->getBody1()->getBodyFrame()];
+	BtBody* const child = _rwFrameToBtBody[constraint->getBody2()->getBodyFrame()];
+	if (parent == NULL)
+		RW_THROW("BtSimulator (addConstraint): could not find the parent body for the given constraint.");
+	if (child == NULL)
+		RW_THROW("BtSimulator (addConstraint): could not find the child body for the given constraint.");
+	BtConstraint* const btconstraint = new BtConstraint(constraint, parent, child, m_dynamicsWorld);
+	_constraints.push_back(btconstraint);
 }

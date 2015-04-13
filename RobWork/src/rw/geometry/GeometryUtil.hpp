@@ -23,6 +23,7 @@
 #include <rw/math/InertiaMatrix.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VectorND.hpp>
+#include <rw/math/LinearAlgebra.hpp>
 
 #include "Geometry.hpp"
 
@@ -122,6 +123,28 @@ public:
              double mass,
              const std::vector<Geometry::Ptr> &geoms,
              const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
+
+     /**
+      * @brief Find the principal axes and the principal inertia.
+      * @param inertia [in] the inertia matrix to calculate principal values for.
+      * @return a rotation matrix giving the principal axes, and a vector of principal inertia values for these axes.
+      */
+     template<class T>
+     static std::pair<rw::math::Rotation3D<T>, rw::math::Vector3D<T> > calculatePrincipalInertia(
+    		const rw::math::InertiaMatrix<T>& inertia)
+     {
+    	 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> inertiaEigen(inertia.e());
+    	 std::pair<typename rw::math::LinearAlgebra::EigenMatrix<T>::type, typename rw::math::LinearAlgebra::EigenVector<T>::type > dec = rw::math::LinearAlgebra::eigenDecompositionSymmetric(inertiaEigen);
+    	 const rw::math::Vector3D<T> principalInertia = rw::math::Vector3D<T>(dec.second);
+    	 if (dec.first.determinant() < 0) {
+    		 // reflect in z=0 plane
+    		 dec.first(2,0) = -dec.first(2,0);
+    		 dec.first(2,1) = -dec.first(2,1);
+    		 dec.first(2,2) = -dec.first(2,2);
+    	 }
+    	 const rw::math::Rotation3D<T> rotation = rw::math::Rotation3D<T>(dec.first);
+    	 return std::pair<rw::math::Rotation3D<T>, rw::math::Vector3D<T> >(rotation, principalInertia);
+     }
 
     /**
      * @brief Estimates the center of gravity (COG) of a list of geometries.

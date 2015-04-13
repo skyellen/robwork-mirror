@@ -24,7 +24,6 @@
 #include <vector>
 
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>

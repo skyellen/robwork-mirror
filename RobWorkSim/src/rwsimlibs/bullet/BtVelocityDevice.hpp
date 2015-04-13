@@ -15,53 +15,52 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIMLIBS_BULLET_BTDEBUGRENDER_HPP_
-#define RWSIMLIBS_BULLET_BTDEBUGRENDER_HPP_
+#ifndef RWSIMLIBS_BULLET_BTVELOCITYDEVICE_HPP_
+#define RWSIMLIBS_BULLET_BTVELOCITYDEVICE_HPP_
 
 /**
- * @file BtDebugRender.hpp
+ * @file BtVelocityDevice.hpp
  *
- * \copydoc rwsimlibs::bullet::BtDebugRender
+ * \copydoc rwsimlibs::bullet::BtVelocityDevice
  */
 
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
-//#include <OpenGl/GLDebugDrawer.h>
+#include "BtDevice.hpp"
+
+#include <rw/common/Ptr.hpp>
+
+#include <vector>
+
+namespace rwsim { namespace dynamics { class RigidDevice; } }
+
+class btTypedConstraint;
 
 namespace rwsimlibs {
 namespace bullet {
-class BtSimulator;
-
 //! @addtogroup rwsimlibs_bullet
 
 //! @{
 /**
- * @brief Debug render for the Bullet engine.
+ * @brief A velocity device.
  */
-class BtDebugRender: public rwsim::drawable::SimulatorDebugRender {
+class BtVelocityDevice: public BtDevice {
 public:
-	/**
-	 * @brief Constructor.
-	 * @param sim the simulator the debug render is associated to.
-	 */
-	BtDebugRender(BtSimulator *sim);
+	//! @brief Constructor.
+	BtVelocityDevice(rw::common::Ptr<rwsim::dynamics::RigidDevice> rdev, const std::vector<btTypedConstraint*>& constraints);
 
-	//! @brief Destructor
-	virtual ~BtDebugRender();
+	//! @brief Destructor.
+	virtual ~BtVelocityDevice();
 
-    //! @copydoc rw::graphics::Render::draw
-	virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info,
-			DrawType draw,
-			double alpha) const;
+	//! @brief @copydoc BtDevice::udpate
+	virtual void update(double dt, rw::kinematics::State& state);
 
-    //! @copydoc rwsim::drawable::SimulatorDebugRender::setDrawMask
-	virtual void setDrawMask(unsigned int mask);
+	//! @brief @copydoc BtDevice::postUpdate
+	virtual void postUpdate(rw::kinematics::State& state);
 
 private:
-	BtSimulator *_sim;
-	//GLDebugDrawer *_debugDrawer;
-	unsigned int _drawMask;
+	const rw::common::Ptr<rwsim::dynamics::RigidDevice> _rdev;
+    const std::vector<btTypedConstraint*> _constraints;
 };
 //! @}
 } /* namespace bullet */
 } /* namespace rwsimlibs */
-#endif /* RWSIMLIBS_BULLET_BTDEBUGRENDER_HPP_ */
+#endif /* RWSIMLIBS_BULLET_BTVELOCITYDEVICE_HPP_ */

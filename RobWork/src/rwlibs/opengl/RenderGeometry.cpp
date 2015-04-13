@@ -18,7 +18,6 @@
 
 #include "RenderGeometry.hpp"
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/GeometryUtil.hpp>
 #include "DrawableUtil.hpp"
 
 using namespace rwlibs::opengl;

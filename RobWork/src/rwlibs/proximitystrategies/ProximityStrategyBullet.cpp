@@ -20,7 +20,6 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
-#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>

@@ -15,20 +15,20 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIM_SIMULATOR_BTPLUGIN_HPP_
-#define RWSIM_SIMULATOR_BTPLUGIN_HPP_
+#ifndef RWSIMLIBS_BULLET_BTPLUGIN_HPP_
+#define RWSIMLIBS_BULLET_BTPLUGIN_HPP_
 
 /**
  * @file BtPlugin.hpp
  *
- * \copydoc rwsim::simulator::BtPlugin
+ * \copydoc rwsimlibs::bullet::BtPlugin
  */
 
 #include <rw/common/Plugin.hpp>
 
-namespace rwsim {
-namespace simulator {
-//! @addtogroup rwsimlibs
+namespace rwsimlibs {
+namespace bullet {
+//! @addtogroup rwsimlibs_bullet
 
 //! @{
 /**
@@ -53,6 +53,6 @@ public:
 	rw::common::Ptr<rw::common::Extension> makeExtension(const std::string& str);
 };
 //! @}
-} /* namespace simulator */
-} /* namespace rwsim */
-#endif /* RWSIM_SIMULATOR_BTPLUGIN_HPP_ */
+} /* namespace bullet */
+} /* namespace rwsimlibs */
+#endif /* RWSIMLIBS_BULLET_BTPLUGIN_HPP_ */

@@ -15,27 +15,41 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "BtDebugRender.hpp"
-#include "BtSimulator.hpp"
+#include "BtUtil.hpp"
 
-using namespace rw::graphics;
+#include <rw/math/Quaternion.hpp>
+
+using namespace rw::math;
 using namespace rwsimlibs::bullet;
 
-BtDebugRender::BtDebugRender(BtSimulator * sim):
-    _sim(sim),
-	_drawMask(0)
-{
-    //_debugDrawer = new GLDebugDrawer();
-    //_debugDrawer->setDebugMode(1+2+4+8);
-    //_sim->getBtWorld()->setDebugDrawer(_debugDrawer);
+BtUtil::BtUtil() {
 }
 
-BtDebugRender::~BtDebugRender(){}
-
-void BtDebugRender::draw(const DrawableNode::RenderInfo& info, DrawType draw, double alpha) const {
-    //_sim->getBtWorld()->debugDrawWorld();
+BtUtil::~BtUtil() {
 }
 
-void BtDebugRender::setDrawMask(unsigned int mask){
-    _drawMask = mask;
+btVector3 BtUtil::makeBtVector(const Vector3D<>& v3d) {
+	return btVector3(v3d(0),v3d(1),v3d(2));
+}
+
+Vector3D<> BtUtil::toVector3D(const btVector3& v) {
+    return Vector3D<>(v[0],v[1],v[2]);
+}
+
+btTransform BtUtil::makeBtTransform(const Transform3D<> &t3d) {
+	btTransform btt3d;
+	const Quaternion<> quat(t3d.R());
+
+	const btVector3 btPos(t3d.P()[0],t3d.P()[1],t3d.P()[2]);
+	const btQuaternion btRot(quat.getQx(),quat.getQy(),quat.getQz(),quat.getQw());
+
+	btt3d.setOrigin(btPos);
+    btt3d.setRotation(btRot);
+    return btt3d;
+}
+
+Transform3D<> BtUtil::toTransform3D(const btVector3& v, const btQuaternion &q) {
+	const Vector3D<> pos(v[0],v[1],v[2]);
+	const Quaternion<> quat(q[0],q[1],q[2],q[3]);
+	return Transform3D<>(pos,quat);
 }

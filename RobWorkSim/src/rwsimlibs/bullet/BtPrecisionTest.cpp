@@ -15,27 +15,19 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "BtDebugRender.hpp"
-#include "BtSimulator.hpp"
+#include <iostream>
 
-using namespace rw::graphics;
-using namespace rwsimlibs::bullet;
+#include <bullet/LinearMath/btVector3.h>
+#include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
 
-BtDebugRender::BtDebugRender(BtSimulator * sim):
-    _sim(sim),
-	_drawMask(0)
-{
-    //_debugDrawer = new GLDebugDrawer();
-    //_debugDrawer->setDebugMode(1+2+4+8);
-    //_sim->getBtWorld()->setDebugDrawer(_debugDrawer);
-}
-
-BtDebugRender::~BtDebugRender(){}
-
-void BtDebugRender::draw(const DrawableNode::RenderInfo& info, DrawType draw, double alpha) const {
-    //_sim->getBtWorld()->debugDrawWorld();
-}
-
-void BtDebugRender::setDrawMask(unsigned int mask){
-    _drawMask = mask;
+int main() {
+	const btSphereShape sphere(1);
+	btVector3 res;
+	sphere.calculateLocalInertia(1,res); // linking fails with undefined symbol if BT_USE_DOUBLE_PRECISION is wrong
+#ifdef BT_USE_DOUBLE_PRECISION
+	std::cout << "DOUBLE" << std::endl;
+#else
+	std::cout << "SINGLE" << std::endl;
+#endif
+	return 0;
 }

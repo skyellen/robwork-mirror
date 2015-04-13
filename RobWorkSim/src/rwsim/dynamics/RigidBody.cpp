@@ -19,6 +19,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
@@ -48,7 +49,8 @@ RigidBody::RigidBody(const BodyInfo& info,rw::models::Object::Ptr obj):
         _mframe( NULL ),
         _bodyType(0),
         _Ibody(info.inertia),
-        _IbodyInv( inverse(info.inertia) )
+        _IbodyInv( inverse(info.inertia) ),
+        _IbodyPrincipal(GeometryUtil::calculatePrincipalInertia(info.inertia))
         //_rstate(this)
 {
     _mframe = dynamic_cast<MovableFrame*>(obj->getBase());

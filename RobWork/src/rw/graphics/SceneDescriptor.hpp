@@ -20,15 +20,11 @@
 
 #include <vector>
 #include <map>
-#include <boost/thread/mutex.hpp>
 
 #include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/FKTable.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/geometry/PointCloud.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/geometry.hpp>
 
 #include "Model3D.hpp"
 #include "DrawableNode.hpp"

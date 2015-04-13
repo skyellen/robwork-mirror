@@ -29,6 +29,7 @@
 #include <rwlibs/control/SyncVelocityRamp.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rw/trajectory/Trajectory.hpp>
+#include <boost/thread/mutex.hpp>
 #include <list>
 
 namespace rwsim {

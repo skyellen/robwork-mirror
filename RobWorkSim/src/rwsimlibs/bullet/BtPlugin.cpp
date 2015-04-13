@@ -19,7 +19,7 @@
 #include "BtSimulator.hpp"
 
 using namespace rw::common;
-using namespace rwsim::simulator;
+using namespace rwsimlibs::bullet;
 
 RW_ADD_PLUGIN(BtPlugin)
 
@@ -43,7 +43,7 @@ Extension::Ptr BtPlugin::makeExtension(const std::string& str)
     if(str=="BtPhysicsEngine"){
         Extension::Ptr extension = rw::common::ownedPtr(
         		new Extension("BtPhysicsEngine","rwsim.simulator.PhysicsEngine",
-                this, ownedPtr(new rwsim::simulator::BtSimulator()) ) );
+                this, ownedPtr(new BtSimulator()) ) );
 
         // todo: add possible properties to the extension descriptor
         extension->getProperties().set<std::string>("engineID", "Bullet");

@@ -247,6 +247,15 @@ namespace dynamics {
         };
 
         /**
+         * @brief Get the principal inertia of this body. The inertia is described
+         * around the center of mass for the principal axes.
+         * @return the principal inertia and the principal axes as a rotation matrix.
+         */
+        const std::pair<rw::math::Rotation3D<>, rw::math::Vector3D<> >& getBodyPrincipalInertia() const {
+        	return _IbodyPrincipal;
+        };
+
+        /**
          * @brief returns the inverse of the inertia tensor described in
          * parent frame.
          */
@@ -307,7 +316,9 @@ namespace dynamics {
         int _bodyType;
 
         // inertia tensors
-        rw::math::InertiaMatrix<> _Ibody, _IbodyInv;
+        const rw::math::InertiaMatrix<> _Ibody;
+        const rw::math::InertiaMatrix<> _IbodyInv;
+        const std::pair<rw::math::Rotation3D<>, rw::math::Vector3D<> > _IbodyPrincipal;
 
         // state variables
         rw::math::InertiaMatrix<> _ITensorInv,_ITensor; // inverse inertia tensor in parent frame

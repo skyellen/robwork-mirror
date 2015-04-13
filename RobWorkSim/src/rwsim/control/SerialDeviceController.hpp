@@ -18,6 +18,10 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>
 
+#include <boost/thread/mutex.hpp>
+
+#include <deque>
+
 // Forward declarations
 namespace rw { namespace sensor { class FTSensor; }}
 

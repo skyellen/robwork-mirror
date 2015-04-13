@@ -1,213 +1,169 @@
-#ifndef BT_SIMULATOR_HPP_
-#define BT_SIMULATOR_HPP_
+/********************************************************************************
+ * Copyright 2015 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
-#include <rw/common/Cache.hpp>
+#ifndef RWSIMLIBS_BULLET_BTSIMULATOR_HPP_
+#define RWSIMLIBS_BULLET_BTSIMULATOR_HPP_
+
+/**
+ * @file BtSimulator.hpp
+ *
+ * \copydoc rwsimlibs::bullet::BtSimulator
+ */
+
 #include <rwsim/simulator/PhysicsEngine.hpp>
-
-// Bullet includes
-#include <bullet/LinearMath/btAlignedObjectArray.h>
-#include <bullet/LinearMath/btQuickprof.h>
 
 // Forward Declarations
 class btDynamicsWorld;
 class btDiscreteDynamicsWorld;
-class btRigidBody;
 class btTypedConstraint;
 class btBroadphaseInterface;
-class btCollisionShape;
 class btCollisionDispatcher;
 class btConstraintSolver;
 class btDefaultCollisionConfiguration;
 
-namespace rwsim { namespace dynamics { class KinematicBody; } }
+namespace rwsimlibs {
+namespace bullet {
+class BtBody;
+class BtDevice;
+class BtConstraint;
+class BtTactileSensor;
 
-namespace rwsim {
-namespace simulator {
-	class BtDebugRender;
+//! @addtogroup rwsimlibs_bullet
+/**
+ * @brief A physics engine that uses Bullet Physics as the underlying engine.
+ */
+class BtSimulator: public rwsim::simulator::PhysicsEngine {
+public:
+	//! Construct new simulator.
+	BtSimulator();
 
-    class BtSimulator: public PhysicsEngine
-    {
-    public:
-        typedef rw::common::Cache<std::string, btCollisionShape> ColCache;
+	/**
+	 * @brief Construct new simulator.
+	 * @param dwc [in] the dynamic workcell.
+	 */
+	BtSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
-        //! empty constructor
-        BtSimulator();
+	//! @brief Destructor.
+	virtual ~BtSimulator();
 
-		//! @copydoc PhysicsEngine::load
-		void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+	//! @copydoc PhysicsEngine::load
+	void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
+	//! @copydoc PhysicsEngine::setContactDetector
+	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
 
-        class btDevice
-        {
-        public:
+	//! @copydoc PhysicsEngine::step
+	void step(double dt, rw::kinematics::State& state);
 
-            virtual ~btDevice()
-            {
-            }
-            ;
+	//! @copydoc PhysicsEngine::resetScene
+	void resetScene(rw::kinematics::State& state);
 
-            virtual void update(double dt, rw::kinematics::State& state) = 0;
+	//! @copydoc PhysicsEngine::initPhysics
+	void initPhysics(rw::kinematics::State& state);
 
-            virtual void postUpdate(rw::kinematics::State& state) = 0;
-        protected:
-            btDevice()
-            {
-            }
-            ;
-        };
+	//! @copydoc PhysicsEngine::exitPhysics
+	void exitPhysics();
 
-    private:
-        ColCache _colCache;
-        ///this is the most important class
-        btDiscreteDynamicsWorld* m_dynamicsWorld;
+	//! @copydoc PhysicsEngine::getTime
+	double getTime();
 
-        //keep the collision shapes, for deletion/cleanup
-        btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
+	//! @copydoc PhysicsEngine::setEnabled
+	void setEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
 
-        btBroadphaseInterface* m_overlappingPairCache;
+	//! @copydoc PhysicsEngine::setDynamicsEnabled
+	void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
 
-        btCollisionDispatcher* m_dispatcher;
+	//! @copydoc PhysicsEngine::createDebugRender
+	rwsim::drawable::SimulatorDebugRender::Ptr createDebugRender();
 
-        btConstraintSolver* m_solver;
+	//! @copydoc PhysicsEngine::getPropertyMap
+	rw::common::PropertyMap& getPropertyMap();
 
-        btDefaultCollisionConfiguration* m_collisionConfiguration;
+	//! @copydoc PhysicsEngine::emitPropertyChanged
+	void emitPropertyChanged();
 
-        dynamics::DynamicWorkCell::Ptr _dwc;
-        dynamics::MaterialDataMap _materialMap;
-		dynamics::ContactDataMap _contactMap;
+	//! @copydoc PhysicsEngine::addController
+	void addController(rwlibs::simulation::SimulatedController::Ptr controller);
 
-        std::vector<btRigidBody*> _btBodies;
-        std::vector<dynamics::RigidBody::Ptr> _rwBodies;
+	//! @copydoc PhysicsEngine::removeController
+	void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
 
-        std::vector<btRigidBody*> _btLinks;
-        std::vector<rw::common::Ptr<dynamics::KinematicBody> > _rwLinks;
+	//! @copydoc PhysicsEngine::addBody
+	void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state);
 
-        std::vector<dynamics::DynamicDevice::Ptr> _devices;
+	//! @copydoc PhysicsEngine::addDevice
+	void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
 
-        std::vector<btDevice*> _btDevices;
+	//! @copydoc PhysicsEngine::addSensor
+	void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
 
-        // map from rw frame to its bullet rigidbody equivalent
-        std::map<rw::kinematics::Frame*, btRigidBody*> _rwFrameToBtBody;
-        std::map<btRigidBody*, rw::kinematics::Frame*> _rwBtBodyToFrame;
+	//! @copydoc PhysicsEngine::removeSensor
+	void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
-        std::map<rw::models::Joint*, btTypedConstraint*> _jointToConstraintMap;
+	//! @copydoc PhysicsEngine::attach
+	void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
-        rw::common::Ptr<BtDebugRender> _render;
+	//! @copydoc PhysicsEngine::detach
+	void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
 
-        std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
-        btClock m_clock;
+	//! @copydoc PhysicsEngine::getSensors
+	std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors();
 
-        double _time, _dt;
-        bool _initPhysicsHasBeenRun;
+	/**
+	 * @brief Add a Constraint between two bodies.
+	 * @param constraint [in] a pointer to the RobWork constraint.
+	 */
+	void addConstraint(rw::common::Ptr<const rwsim::dynamics::Constraint> constraint);
 
-    public:
-        BtSimulator(dynamics::DynamicWorkCell *dwc);
+private:
+	rw::common::PropertyMap _propertyMap;
+	std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 
-        virtual ~BtSimulator()
-        {
-            exitPhysics();
-        }
+	btDiscreteDynamicsWorld* m_dynamicsWorld;
+	btBroadphaseInterface* m_overlappingPairCache;
+	btCollisionDispatcher* m_dispatcher;
+	btConstraintSolver* m_solver;
+	btDefaultCollisionConfiguration* m_collisionConfiguration;
 
-        std::vector<btRigidBody*> getBodies(){
-        	return _btBodies;
-        }
+	rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> _dwc;
+	rwsim::dynamics::MaterialDataMap _materialMap;
+	rwsim::dynamics::ContactDataMap _contactMap;
 
-        btAlignedObjectArray<btCollisionShape*> getCollisionShapes(){
-        	return m_collisionShapes;
-        }
+	std::vector<rwsimlibs::bullet::BtBody*> _btBodies;
+	std::map<rw::kinematics::Frame*, rwsimlibs::bullet::BtBody*> _rwFrameToBtBody;
+	std::map<rwsimlibs::bullet::BtBody*, rw::kinematics::Frame*> _rwBtBodyToFrame;
 
-    	//! @copydoc PhysicsEngine::setContactDetector
-    	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
+	std::vector<BtConstraint*> _constraints;
+	std::vector<BtTactileSensor*> _btSensors;
 
-        void initPhysics(rw::kinematics::State& state);
+	std::vector<rwsim::dynamics::DynamicDevice::Ptr> _devices;
 
-        void step(double dt, rw::kinematics::State& state);
+	std::vector<BtDevice*> _btDevices;
 
-        /**
-         * @brief reset velocity and acceleration of all bodies to 0. And sets the position of all bodies
-         * to that described in state
-         */
-        void resetScene(rw::kinematics::State& state);
+	std::map<rw::models::Joint*, btTypedConstraint*> _jointToConstraintMap;
 
-        /**
-         * @brief cleans up the allocated storage for bullet physics
-         */
-        void exitPhysics();
+	rwsim::drawable::SimulatorDebugRender::Ptr _render;
 
-    	//! @copydoc Simulator::createDebugRender
-		drawable::SimulatorDebugRender::Ptr createDebugRender();
+	std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
 
-        double getTime()
-        {
-            return _time;
-        }
-
-        btDynamicsWorld* getBtWorld() const;
-
-        btRigidBody* createRigidBody(rw::geometry::Geometry::Ptr geometry, double mass, const rw::kinematics::State& state,
-                                     double margin);
-        void setEnabled(dynamics::RigidBody* body, bool enabled)
-        {
-        }
-        ;
-
-        rw::common::PropertyMap& getPropertyMap()
-        {
-            return _propertyMap;
-        }
-        ;
-
-        void emitPropertyChanged();
-
-		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
-			_controllers.push_back(controller);
-		}
-		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
-
-        void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
-        void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
-
-		dynamics::DynamicWorkCell::Ptr getDynamicWorkCell(){ return _dwc;};
-
-		//! get current gravity
-		rw::math::Vector3D<> getGravity(){ return _dwc->getGravity(); }
-
-        // -------------- under here is so far just to compile
-		void DWCChangedListener(dynamics::DynamicWorkCell::DWCEventType type, boost::any data);
-
-		//! @copydoc Simulator::setEnabled
-		void setEnabled(dynamics::Body::Ptr body, bool enabled);
-
-		void setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled);
-
-		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state);
-		/**
-		 * @brief Add a Constraint between two bodies.
-		 * @param constraint [in] a pointer to the RobWork constraint.
-		 */
-		void addConstraint(rwsim::dynamics::Constraint::Ptr constraint);
-		void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
-		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
-
-
-		void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
-		void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
-
-		void disableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
-
-		void enableCollision(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
-
-		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){
-			return _sensors;
-		}
-
-    private:
-        rw::common::PropertyMap _propertyMap;
-		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
-
-
-    };
-
-}
-}
-#endif /*BtSimulator_HPP_*/
+	double _time, _dt;
+	bool _initPhysicsHasBeenRun;
+};
+//! @}
+} /* namespace bullet */
+} /* namespace rwsimlibs */
+#endif /* RWSIMLIBS_BULLET_BTSIMULATOR_HPP_ */

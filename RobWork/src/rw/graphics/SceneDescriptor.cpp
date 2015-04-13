@@ -17,23 +17,11 @@
 
 #include "SceneDescriptor.hpp"
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/common/StringUtil.hpp>
-#include <rw/common/Property.hpp>
-#include <rw/common/macros.hpp>
 #include <rw/graphics/DrawableNode.hpp>
 
 #include <boost/foreach.hpp>
 
-#include <vector>
-#include <stack>
-
-using namespace rw::math;
 using namespace rw::graphics;
-using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::geometry;
 using namespace rw::common;

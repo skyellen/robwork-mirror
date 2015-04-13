@@ -3,6 +3,7 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <rw/geometry/Box.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rwlibs/opengl/Drawable.hpp>

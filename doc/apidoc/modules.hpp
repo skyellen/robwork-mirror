@@ -399,6 +399,9 @@ namespace rwsimlibs {
 //! @brief The TNTPhysics engine implementation.
 namespace tntphysics {}
 
+//! @brief The Bullet engine implementation.
+namespace bullet {}
+
 }
 
 /**
