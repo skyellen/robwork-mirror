@@ -44,11 +44,12 @@ namespace simulator {
 
         void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
-        void addFeedbackGlobal(dJointFeedback*, dynamics::Body::Ptr b, int body);
+        void addFeedbackGlobal(dJointFeedback*, rwsim::dynamics::Body::Ptr a, rwsim::dynamics::Body::Ptr b, int body);
 
 		void addFeedback(const std::vector<dJointFeedback*>& fback,
 		                 const std::vector<dContactGeom> &g,
-		                 dynamics::Body::Ptr b,
+		                 rwsim::dynamics::Body::Ptr a,
+						 rwsim::dynamics::Body::Ptr b,
 		                 int body);
 
 		// this is for contacts that are not directly specified by the physics solver, eg. if you emulate
@@ -72,10 +73,12 @@ namespace simulator {
 		//std::vector<rw::proximity::MultiDistanceResult> _contacts;
 
 		std::vector<dynamics::Body::Ptr> _rwBody;
+		std::vector<int> _bodyFixed;
 		sensor::SimulatedTactileSensor *_rwsensor;
 		//rw::math::Vector3D<> point;
 		std::vector<int> _bodyIdx, _bodyGlobalIdx;
 		std::vector<dynamics::Body::Ptr> _bodyGlobal;
+		std::vector<int> _bodyGlobalFixed;
 
 		struct DirectContact {
 		    DirectContact(const rw::math::Vector3D<>& pos,

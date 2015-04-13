@@ -1444,27 +1444,26 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         //attach(parentOdeBody->getRwBody(), sensorOdeBody->getRwBody());
 
         // we find any permanent constraints between sensor frame and other bodies that are not the parent frame
-        int nrJoints = dBodyGetNumJoints(sensorOdeBody->getBodyID());
+        const ODEBody* const nonstaticBody = (sensorOdeBody->getType() == ODEBody::FIXED) ? parentOdeBody : sensorOdeBody;
+        int nrJoints = dBodyGetNumJoints(nonstaticBody->getBodyID());
 
         for(int i=0;i<nrJoints;i++){
-            dJointID joint = dBodyGetJoint(sensorOdeBody->getBodyID(), i);
+            const dJointID joint = dBodyGetJoint(nonstaticBody->getBodyID(), i);
+            const dBodyID cbody1 = dJointGetBody(joint,0);
+            const dBodyID cbody2 = dJointGetBody(joint,1);
 
-            dBodyID cbody1 = dJointGetBody(joint,0);
-            dBodyID cbody2 = dJointGetBody(joint,1);
-
-            if(cbody1==parentOdeBody->getBodyID() ||  cbody2==parentOdeBody->getBodyID())
-                continue;
-
-            if(cbody1==sensorOdeBody->getBodyID()){
-                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
-                _nextFeedbackGlobalIdx++;
-                dJointSetFeedback( joint, feedback );
-                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 0);
-            } else if( cbody2==sensorOdeBody->getBodyID() ) {
-                dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
-                _nextFeedbackGlobalIdx++;
-                dJointSetFeedback( joint, feedback );
-                odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), 1);
+            if (cbody1 == parentOdeBody->getBodyID() || cbody2 == parentOdeBody->getBodyID()) {
+            	if(cbody1==sensorOdeBody->getBodyID()){
+            		dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+            		_nextFeedbackGlobalIdx++;
+            		dJointSetFeedback( joint, feedback );
+            		odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), tsensor->getBody2(), 0);
+            	} else if( cbody2==sensorOdeBody->getBodyID() ) {
+            		dJointFeedback *feedback = &_sensorFeedbacksGlobal[_nextFeedbackGlobalIdx];
+            		_nextFeedbackGlobalIdx++;
+            		dJointSetFeedback( joint, feedback );
+            		odesensor->addFeedbackGlobal(feedback, tsensor->getBody1(), tsensor->getBody2(), 1);
+            	}
             }
         }
 
@@ -1582,7 +1581,7 @@ void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
 
 using namespace rw::proximity;
 
-void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& state) {
+void ODESimulator::detectCollisionsContactDetector(const State& state) {
     /*if(_logContactingBodies){
         //_contactingBodies.clear();
     }*/
@@ -1688,12 +1687,12 @@ void ODESimulator::detectCollisionsContactDetector(const rw::kinematics::State& 
 
 	    if(enableFeedback && odeSensorb1.size()>0){
 	    	BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
-	    		sen->addFeedback(feedbacks, feedbackContacts, a_data->getRwBody(), 0);
+	    		sen->addFeedback(feedbacks, feedbackContacts, a_data->getRwBody(), b_data->getRwBody(), 0);
 	    	}
 	    }
 	    if(enableFeedback && odeSensorb2.size()>0){
 	    	BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
-	    		sen->addFeedback(feedbacks, feedbackContacts, b_data->getRwBody(), 1);
+	    		sen->addFeedback(feedbacks, feedbackContacts, b_data->getRwBody(), a_data->getRwBody(), 1);
 	    	}
 	    }
 
@@ -2294,14 +2293,14 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     if(enableFeedback && odeSensorb1.size()>0){
     	//std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
-            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), dataB1->getRwBody(), 0);
         }
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
     if(enableFeedback && odeSensorb2.size()>0){
     	//std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
-    	        sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+    	        sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), dataB2->getRwBody(), 1);
         }
         //odeSensorb2->setContacts(result,wTa,wTb);
     }
@@ -2400,14 +2399,14 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
     if(enableFeedback && odeSensorb1.size()>0){
         //std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb1){
-            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
+            sen->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), dataB1->getRwBody(), 0);
         }
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
     if(enableFeedback && odeSensorb2.size()>0){
         //std::cout << "----------- ADD FEEDBACK\n";
         BOOST_FOREACH(ODETactileSensor* sen, odeSensorb2){
-                sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+                sen->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), dataB2->getRwBody(), 1);
         }
         //odeSensorb2->setContacts(result,wTa,wTb);
     }
