@@ -37,7 +37,8 @@ namespace sensor {
  * range scanners.
  *
  *  The model supports any range scanner that measures distance in
- * an arc around the origin of the sensor.
+ * an arc around the origin of the sensor. The scanner scans in the z-x plane
+ * with z-axis being the 0 angle measurement.
  *
  * TODO: enable the selection of internal format, either pointcloud (large) or
  * range-array (compact).
@@ -51,10 +52,13 @@ public:
 
     /**
      * @brief constructor
-     * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
+     * @param angularRangeInRad [in] angular range in rad, with middle scan
+     * point pointin along z-axis
+     * @brief maxDataPoints [in] the number of scan points
+     * @brief frame [in] the sensor frame
      */
-    Scanner2DModel(const std::string& name, double angularRange, int maxDataPoints, rw::kinematics::Frame* frame );
+    Scanner2DModel(const std::string& name, double angularRangeInRad, int maxDataPoints, rw::kinematics::Frame* frame );
 
     /**
      * @brief Destructor. Closes scanner connection if not already closed.
@@ -75,16 +79,37 @@ public:
     void setScan(const rw::geometry::PointCloud& data, const rw::kinematics::State& state);
 
     /**
-     * @brief Returns the angular range of the scanner.
+     * @brief Returns the min and max angular range of the scanner, where
+     * the angles represent the beginning and end of scanning in the z-x plane.
+     * Hence, angles represent rotation of z-axis around the y-axis. Normally range would
+     * be something like -170 to 170 degree for a Hokyo or Sick scanner
      *
      * @return Angular range in radians
      */
-    double getAngularRange() const { return _angleRange;}
+    std::pair<double,double> getAngularRange() const { return _angleRange;}
 
     /**
      * @brief Returns the number of scan points
      */
     size_t getMeasurementCount() const{ return _width;}
+
+    /**
+     * @brief get the min an max range in meters that is scannable by the 2D scanner
+     * @return range in meters
+     */
+    std::pair<double,double> getDistanceRange() const{ return _distRange;}
+
+    /**
+     * @brief set distance range
+     * @param range
+     */
+    void setDistanceRange(const std::pair<double,double>& range) { _distRange = range;}
+
+    /**
+     * @brief set distance range
+     * @param range
+     */
+    void setDistanceRange(double min, double max ) { _distRange = std::make_pair(min,max);}
 
 protected:
     //! cache to allow storing state information
@@ -109,7 +134,7 @@ protected:
 
     rw::kinematics::StatelessData<int> _sstate;
     size_t _width;
-    double _angleRange;
+    std::pair<double,double> _angleRange, _distRange;
 
 };
 /*@}*/

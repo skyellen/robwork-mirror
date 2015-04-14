@@ -54,6 +54,7 @@
 #include <rwlibs/opengl/TactileArrayRender.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
+#include <rwsim/sensor/TactileArraySensor.hpp>
 
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
@@ -308,14 +309,14 @@ void RWSimulatorPlugin::open(rw::models::WorkCell* workcell)
 
     _engineBox->setDisabled(true);
 
-    const State &state = getRobWorkStudio()->getState();
-    _dState = state;
+    State state = getRobWorkStudio()->getState();
+    //_dState = state;
 
     _jointState = getRobWorkStudio()->getState();
 
     RW_DEBUGRWS("---------------- InitPhysics:");
 
-    _simulator->init(_dState);
+    _simulator->init(state);
     RW_DEBUGRWS("---------------- InitPhysics: FINISHED");
 
     RW_DEBUGRWS("Create render");
@@ -329,16 +330,14 @@ void RWSimulatorPlugin::open(rw::models::WorkCell* workcell)
     }
 
     BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dworkcell->getSensors()){
-        if( dynamic_cast<TactileArray*>(sensor.get()) ){
-            //std::cout << "ADDING TACTILE SENSOR DRAWER..." << std::endl;
-            TactileArray *tsensor = dynamic_cast<TactileArray*>(sensor.get());
-            TactileArrayRender *render = new TactileArrayRender(tsensor);
+        if( sensor.cast<rwsim::sensor::TactileArraySensor>() ){
+        	rwsim::sensor::TactileArraySensor::Ptr tsensor = sensor.cast<rwsim::sensor::TactileArraySensor>();
+            TactileArrayRender *render = new TactileArrayRender(tsensor->getTactileArrayModel());
             Drawable *drawable = new Drawable(boost::shared_ptr<Render>(render), tsensor->getName());
-            //getRobWorkStudio()->getWorkCellGLDrawer()->addDrawableToFrame(workcell->getWorldFrame(), drawable);
-            //std::cout << "TO: " << sensor->getFrame()->getName() << std::endl;
             getRobWorkStudio()->getWorkCellScene()->addDrawable(drawable, tsensor->getFrame());
         }
     }
+
 
    // std::cout  << "Adding simulator too property map" << std::endl;
     getRobWorkStudio()->getPropertyMap().add<DynamicSimulator::Ptr>(
@@ -429,7 +428,6 @@ void RWSimulatorPlugin::resetSimulation(){
 	stopSimulation();
 	State state = getRobWorkStudio()->getState();
 	_simulator->reset(state);
-	_dState = state;
 	getRobWorkStudio()->updateAndRepaint();
 }
 
@@ -445,7 +443,7 @@ void RWSimulatorPlugin::update(){
     // get dt and make a simulation step
     double dt = _dtBox->value();
     try{
-    	_simulator->step(dt, _dState);
+    	_simulator->step(dt);
     } catch(...){
     	std::cout << "catched error" << std::endl;
     }
@@ -453,7 +451,7 @@ void RWSimulatorPlugin::update(){
 
     // if requestet add the state to the state trajectory
     if(_save)
-        _statePath.push_back( Timed<State>(time, _dState) );
+        _statePath.push_back( Timed<State>(time, _simulator->getState() ) );
 
 
     // update the time label
@@ -462,7 +460,7 @@ void RWSimulatorPlugin::update(){
 
     // and last signal that workcell state has changed if user request it
     if(_forceUpdateBox->isChecked()){
-        getRobWorkStudio()->setState(_dState);
+        getRobWorkStudio()->setState( _simulator->getState() );
         getRobWorkStudio()->updateAndRepaint();
     }
 }
@@ -526,7 +524,7 @@ void RWSimulatorPlugin::open(const std::string& file)
 
         RW_DEBUGRWS("Adding controllers to list: ");
         // add controllers to the devices
-        _dState = _dworkcell->getWorkcell()->getDefaultState();
+        //_dState = _dworkcell->getWorkcell()->getDefaultState();
 
         std::string engineId = _engineBox->currentText().toStdString();
         RW_DEBUGRWS("- Selected physics engine: " << engineId);

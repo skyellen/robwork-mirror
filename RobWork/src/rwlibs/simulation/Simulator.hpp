@@ -36,7 +36,7 @@ namespace simulation {
     class Simulator
     {
     public:
-
+		//! smart pointer type of simulator
     	typedef rw::common::Ptr<Simulator> Ptr;
 
         /**
@@ -78,15 +78,14 @@ namespace simulation {
         /**
          * @brief take a step forward in time with timestep \b dt.
          * @param dt [in] the time step
-         * @param state [in/out] current state and output as updated state
          */
-        virtual void step(double dt, rw::kinematics::State& state) = 0;
+        virtual void step(double dt) = 0;
 
         /**
          * @brief reset velocity and acceleration of all bodies to 0. And sets the position of all bodies
          * to that described in state
          */
-        virtual void reset(rw::kinematics::State& state) = 0;
+        virtual void reset(const rw::kinematics::State& state) = 0;
 
         /**
          * @brief initialize simulator with state variables
@@ -97,6 +96,12 @@ namespace simulation {
          * @brief gets the the current simulated time
          */
         virtual double getTime() = 0;
+
+        /**
+         * @brief get current state of simulator
+         * @return current state of simulator
+         */
+        virtual rw::kinematics::State& getState() = 0;
 
         /**
          * Enables or disables simulation of a frame

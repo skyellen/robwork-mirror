@@ -42,7 +42,6 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
     //_period(-1),
     _dt(0.001),
     _timescale(0.0),
-    _state(state),
     _tmpState(state),
     _running(false),
     _stepcb(NULL),
@@ -58,7 +57,6 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator):
     //_period(-1),
     _dt(0.001),
     _timescale(0.0),
-    _state( simulator->getDynamicWorkCell()->getWorkcell()->getDefaultState()),
     _tmpState(simulator->getDynamicWorkCell()->getWorkcell()->getDefaultState()),
     _running(false),
     _stepcb(NULL),
@@ -115,11 +113,11 @@ void ThreadSimulator::stop(){
 void ThreadSimulator::step(){
     {
         boost::mutex::scoped_lock lock(_simMutex);
-        _simulator->step(_dt, _state);
+        _simulator->step(_dt);
     }
     {
         boost::mutex::scoped_lock lock(_stateMutex);
-        _tmpState = _state;
+        _tmpState = _simulator->getState();
     }
 }
 
@@ -134,15 +132,14 @@ rw::kinematics::State ThreadSimulator::getState(){
 
 void ThreadSimulator::setState(const rw::kinematics::State& state){
     boost::mutex::scoped_lock lock(_simMutex);
-    _state = state;
+    _simulator->getState() = state;
     //_simulator->reset(_state);
     _inError = false;
 }
 
 void ThreadSimulator::reset(const rw::kinematics::State& state){
     boost::mutex::scoped_lock lock(_simMutex);
-    _state = state;
-    _simulator->reset(_state);
+    _simulator->reset(state);
     _inError = false;
 }
 
@@ -159,7 +156,7 @@ void ThreadSimulator::stepperLoop(){
     bool running = true;
     // we call the callback once before starting
     if(_stepcb!=NULL)
-         _stepcb(this, _state);
+         _stepcb(this, _simulator->getState());
 
     while(running){
 		//std::cout << "!" << std::endl;
@@ -178,7 +175,7 @@ void ThreadSimulator::stepperLoop(){
             boost::mutex::scoped_lock lock(_simMutex);
             //nextTime = time+_period;
             try {
-            	_simulator->step(_dt, _state);
+            	_simulator->step(_dt);
 
             } catch (std::exception& e){
                 std::cout << "Error stepping" << std::endl;
@@ -208,7 +205,7 @@ void ThreadSimulator::stepperLoop(){
 
         {
             boost::mutex::scoped_lock lock(_stateMutex);
-            _tmpState = _state;
+            _tmpState = _simulator->getState();
         }
     	if(_inError)
     	    nextTime = (int)(time+_dt*_timescale);
@@ -218,7 +215,7 @@ void ThreadSimulator::stepperLoop(){
     		boost::thread::yield();
 
         if(_stepcb!=NULL)
-        	_stepcb(this, _state);
+        	_stepcb(this, _simulator->getState());
 
         time = TimerUtil::currentTimeMs();
         //std::cout << time << " --> " << nextTime << std::endl;

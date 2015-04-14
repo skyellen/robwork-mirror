@@ -569,14 +569,11 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
 
 	// add sensor drawables to the workcell drawer
     BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dwc->getSensors()){
-        if( dynamic_cast<TactileArray*>(sensor.get()) ){
+        if( TactileArraySensor::Ptr tsensor = sensor.cast<TactileArraySensor>() ){
             //std::cout << "ADDING TACTILE SENSOR DRAWER..." << std::endl;
-            TactileArray *tsensor = dynamic_cast<TactileArray*>(sensor.get());
-            TactileArrayRender *render = new TactileArrayRender(tsensor);
+        	log().debug() << "Adding tactile sensor render to \"" << sensor->getSensorModel()->getName() << "\"!" << std::endl;
+            TactileArrayRender *render = new TactileArrayRender( tsensor->getTactileArrayModel() );
             Drawable *drawable = new Drawable(ownedPtr<Render>(render), sensor->getSensorModel()->getName() );
-            //getRobWorkStudio()->getWorkCellGLDrawer()->addDrawableToFrame(workcell->getWorldFrame(), drawable);
-            //std::cout << "TO: " << sensor->getFrame()->getName() << std::endl;
-
             getRobWorkStudio()->getWorkCellScene()->addDrawable(drawable, tsensor->getFrame() );
         }
     }

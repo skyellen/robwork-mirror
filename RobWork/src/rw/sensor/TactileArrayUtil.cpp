@@ -33,8 +33,8 @@ namespace {
      */
     std::pair<double,Vector3D<> > getWeightAverage(
                           size_t i, size_t j,
-                          const TactileArray::ValueMatrix& tMatrix,
-                          const TactileArray::VertexMatrix& vMatrix)
+                          const TactileArrayModel::ValueMatrix& tMatrix,
+                          const TactileArrayModel::VertexMatrix& vMatrix)
     {
         int i_low = (int)i-1,i_upp=(int)i+1;
         if(i_low<0) i_low = 0;
@@ -58,15 +58,15 @@ namespace {
 }
 
 std::vector<Contact3D> TactileArrayUtil::estimateContacts(
-    const TactileArray& arraySensor, const State& state, double minContactForce)
+    const TactileArrayModel& arraySensor, const State& state, double minContactForce)
 {
     // search for point contacts using a 3x3 mask. only save the 3
     std::vector<Contact3D> contacts;
-    const TactileArray::ValueMatrix& data = arraySensor.getTexelData(state);
-    const TactileArray::VertexMatrix& centers = arraySensor.getCenters();
-    const TactileArray::VertexMatrix& normals = arraySensor.getNormals();
+    const TactileArrayModel::ValueMatrix& data = arraySensor.getTexelData(state);
+    const TactileArrayModel::VertexMatrix& centers = arraySensor.getCenters();
+    const TactileArrayModel::VertexMatrix& normals = arraySensor.getNormals();
     const Transform3D<> fTgeom = arraySensor.getTransform();
-    Transform3D<> wTf = Kinematics::worldTframe(arraySensor.getSensorModel()->getFrame(), state);
+    Transform3D<> wTf = Kinematics::worldTframe(arraySensor.getFrame(), state);
 
     for(Eigen::DenseIndex i=0;i<data.rows(); i++){
         for(Eigen::DenseIndex j=0;j<data.cols(); j++){

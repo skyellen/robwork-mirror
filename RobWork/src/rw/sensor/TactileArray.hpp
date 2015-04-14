@@ -21,11 +21,9 @@
 
 #include "Sensor.hpp"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/multi_array.hpp>
-
 #include <rw/kinematics/State.hpp>
 
+#include "TactileArrayModel.hpp"
 #include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -43,9 +41,9 @@ public:
     typedef rw::common::Ptr<TactileArray> Ptr;
 
     //! type of tactile array readings
-    typedef Eigen::MatrixXf ValueMatrix;
+    typedef TactileArrayModel::ValueMatrix ValueMatrix;
     //! type of vertices describing geometry of sensor
-    typedef boost::multi_array<rw::math::Vector3D<>, 2> VertexMatrix;
+    typedef TactileArrayModel::VertexMatrix VertexMatrix;
 
     /**
      * @brief constructor
@@ -116,15 +114,14 @@ public:
     /**
      * @brief acquires force data from the tactile cells
      */
-    virtual void acquire(rw::kinematics::State& state) = 0;
+    virtual void acquire() = 0;
 
     /**
      * @brief returns the pressure on each texel of the TactileArray in
      * the unit N/m^2.
      * @return matrix of texel pressure values
      */
-    virtual ValueMatrix& getTexelData( rw::kinematics::State& state) const = 0;
-    virtual const ValueMatrix& getTexelData( const rw::kinematics::State& state) const = 0;
+    virtual const TactileArrayModel::ValueMatrix& getTexelData( ) const = 0;
 
     //virtual boost::numeric::ublas::matrix<bool> getMatrixMask() = 0;
 

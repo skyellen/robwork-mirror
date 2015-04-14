@@ -179,8 +179,8 @@ struct AssemblySimulator::SimState {
 	Body::Ptr maleBodyControl;
 	Body::Ptr femaleBodyControl;
 
-	FTSensor* maleFTSensor;
-	FTSensor* femaleFTSensor;
+	FTSensor::Ptr maleFTSensor;
+	FTSensor::Ptr femaleFTSensor;
 	Body::Ptr male;
 	Body::Ptr female;
 	Frame* maleTCP;
@@ -274,22 +274,9 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		running = false;
 	}
 
-	if (task->maleFTSensor != "") {
-		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->maleFTSensor);
-		if (ftsensor != NULL) {
-			simState.maleFTSensor = ftsensor->getFTSensor(state).get();
-			if (simState.maleController != NULL)
-				simState.maleController->setFTSensor(simState.maleFTSensor);
-		}
-	}
-	if (task->femaleFTSensor != "") {
-		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->femaleFTSensor);
-		if (ftsensor != NULL) {
-			simState.femaleFTSensor = ftsensor->getFTSensor(state).get();
-			if (simState.femaleController != NULL)
-				simState.femaleController->setFTSensor(simState.femaleFTSensor);
-		}
-	}
+
+
+
 	if (simState.maleTCP == NULL && simState.femaleTCP == NULL) {
 		std::cout << "Simulation could NOT be started! - no FTSensor found." << std::endl;
 		running = false;
@@ -370,6 +357,24 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	}
 	simulator->addSensor(simState.femaleContactSensor, state);
 
+
+	if (task->maleFTSensor != "") {
+		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->maleFTSensor);
+		if (ftsensor != NULL) {
+			simState.maleFTSensor = ftsensor->getFTSensor(simulator).get();
+			if (simState.maleController != NULL)
+				simState.maleController->setFTSensor(simState.maleFTSensor.get());
+		}
+	}
+	if (task->femaleFTSensor != "") {
+		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->femaleFTSensor);
+		if (ftsensor != NULL) {
+			simState.femaleFTSensor = ftsensor->getFTSensor(simulator);
+			if (simState.femaleController != NULL)
+				simState.femaleController->setFTSensor(simState.femaleFTSensor.get());
+		}
+	}
+
 	BOOST_FOREACH(const std::string &name, task->bodyContactSensors) {
 		SimulatedSensor::Ptr sensor = _dwc->findSensor(name);
 		if (sensor != NULL) {
@@ -398,7 +403,8 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		std::string errorstring;
 		if(!inError){
 			try {
-				simulator->step(dt, state);
+				simulator->step(dt);
+				state = simulator->getState();
 
 			} catch (std::exception& e){
 				std::cout << "Error stepping" << std::endl;
@@ -469,9 +475,9 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 	FTSensor* ftSensorMale;
 	FTSensor* ftSensorFemale;
 	if (simState.maleFTSensor != NULL)
-		ftSensorMale = simState.maleFTSensor;
+		ftSensorMale = simState.maleFTSensor.get();
 	if (simState.femaleFTSensor != NULL)
-		ftSensorFemale = simState.femaleFTSensor;
+		ftSensorFemale = simState.femaleFTSensor.get();
 
 	AssemblyState realState;
 	realState.femaleTmale = Kinematics::frameTframe(simState.femaleTCP,simState.maleTCP,simState.state);

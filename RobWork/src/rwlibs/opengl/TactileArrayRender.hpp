@@ -21,7 +21,7 @@
 //! @file TactileArrayRender.hpp
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/sensor/TactileArray.hpp>
+#include <rw/sensor/TactileArrayModel.hpp>
 #include <rw/graphics/Render.hpp>
 #include <rwlibs/os/rwgl.hpp>
 
@@ -43,7 +43,7 @@ namespace opengl {
     	 * @brief constructor
     	 * @param sensor [in] the tactile array that is to be rendered
     	 */
-        TactileArrayRender(rw::sensor::TactileArray *sensor):
+        TactileArrayRender(rw::sensor::TactileArrayModel::Ptr sensor):
             _sensor(sensor)
         {
         }
@@ -59,7 +59,7 @@ namespace opengl {
                   double alpha) const;
 
     private:
-        rw::sensor::TactileArray *_sensor;
+        rw::sensor::TactileArrayModel::Ptr _sensor;
     };
     //! @}
 }

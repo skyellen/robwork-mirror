@@ -22,7 +22,7 @@ using namespace rw::kinematics;
 
 Scanner2DModel::Scanner2DModel(const std::string& name, double angleRange, int width, rw::kinematics::Frame* frame )
 	: SensorModel(name, frame),_sstate(1, rw::common::ownedPtr( new Scanner2DModelCache(width)).cast<StateCache>() ),
-	  _width(width),_angleRange(angleRange)
+	  _width(width),_angleRange(-angleRange/2,angleRange/2),_distRange(0,15)
 {
 	add(_sstate);
 }

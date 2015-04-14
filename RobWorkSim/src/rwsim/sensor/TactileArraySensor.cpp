@@ -98,13 +98,15 @@ namespace {
     class TactileArrayWrapper: public rw::sensor::TactileArray {
     private:
         TactileArraySensor* _sensor;
+        rwlibs::simulation::Simulator::Ptr _sim;
     public:
 
-        TactileArrayWrapper(TactileArraySensor* sensor, Frame* bframe, const std::string& name):
-            TactileArray(name),
-            _sensor(sensor)
+        TactileArrayWrapper(TactileArraySensor* sensor, rwlibs::simulation::Simulator::Ptr sim):
+            TactileArray(sensor->getName()),
+            _sensor(sensor),
+    		_sim(sim)
         {
-            //this->attachTo( bframe );
+            this->setSensorModel(sensor->getSensorModel());
         }
 
         rw::math::Vector2D<> getTexelSize(int x, int y) const{ return _sensor->getTexelSize(x,y); }
@@ -116,9 +118,8 @@ namespace {
         int getWidth() const{ return _sensor->getWidth(); }
         int getHeight() const{ return _sensor->getHeight(); }
 
-        void acquire(rw::kinematics::State& state){ } //_sensor->acquire(state); }
-        rw::sensor::TactileArrayModel::ValueMatrix& getTexelData( rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
-        const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData( const rw::kinematics::State& state) const{ return _sensor->getTexelData(state); };
+        void acquire(){ /*_sensor->acquire(_sim->getState());*/ }
+        const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData( ) const{ return _sensor->getTexelData(_sim->getState()); };
 
     };
 
@@ -129,11 +130,19 @@ const std::vector<rw::sensor::Contact3D>& TactileArraySensor::getActualContacts(
 	return _sdata.getStateCache<ClassState>(state)->getActualContacts();
 }
 
-rw::sensor::TactileArray::Ptr TactileArraySensor::getTactileArraySensor(){
-    return _tactileArraySensorWrapper;
+rw::sensor::TactileArray::Ptr TactileArraySensor::getTactileArraySensor(rwlibs::simulation::Simulator::Ptr sim){
+	// check if handle has already been added to simulator
+	TactileArray::Ptr sensor;
+	if(!sim->hasHandle(this)){
+		sensor = rw::common::ownedPtr( new TactileArrayWrapper(this, sim) );
+		sim->addHandle(this, sensor);
+	} else {
+		sensor = sim->getSensorHandle(this).cast<TactileArray>();
+	}
+	return sensor;
 }
-rw::sensor::Sensor::Ptr TactileArraySensor::getSensor(){
-    return _tactileArraySensorWrapper;
+rw::sensor::Sensor::Ptr TactileArraySensor::getSensor(rwlibs::simulation::Simulator::Ptr sim){
+    return getTactileArraySensor(sim);
 }
 
 TactileArraySensor::~TactileArraySensor(){
@@ -164,7 +173,6 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 	_tmodel = getSensorModel().cast<TactileArrayModel>();
 	_tmodel->setPressureLimit(0,250); // in kPa
 
-	_tactileArraySensorWrapper = ownedPtr( new TactileArrayWrapper( this, _body->getBodyFrame(), name ) );
 
 	int w = getWidth();
 	int h = getHeight();

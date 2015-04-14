@@ -174,7 +174,7 @@ namespace simulator {
 		boost::thread *_thread;
 		//long _period;
 		double _dt, _timescale;
-		rw::kinematics::State _state, _tmpState;
+		rw::kinematics::State _tmpState;
 		bool _running;
 		StepCallback _stepcb;
 		bool _inError, _postStop;

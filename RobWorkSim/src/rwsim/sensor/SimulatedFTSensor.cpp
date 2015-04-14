@@ -31,21 +31,25 @@ namespace {
     class FTSensorWrapper: public FTSensor {
     private:
         SimulatedFTSensor* _sensor;
+        rwlibs::simulation::Simulator::Ptr _simHandle;
     public:
-        FTSensorWrapper(SimulatedFTSensor* sensor, Frame* bframe, const std::string& name):
-            FTSensor(name),
-            _sensor(sensor)
+
+        FTSensorWrapper(SimulatedFTSensor* sensor, rwlibs::simulation::Simulator::Ptr sim):
+            FTSensor(sensor->getName()),
+            _sensor(sensor),
+            _simHandle(sim)
         {
-            //this->attachTo(bframe);
         }
 
+        // direct mappings
         double getMaxForce(){ return _sensor->getMaxForce().normInf(); };
         double getMaxTorque(){ return _sensor->getMaxTorque().normInf(); };
         Transform3D<> getTransform(){ return _sensor->getTransform(); };
 
+        // mappings that require state
         void acquire(){ _sensor->acquire(); }
-        Vector3D<> getForce(){ /*return _sensor->getForce();*/ };
-        Vector3D<> getTorque(){ /*return _sensor->getTorque();*/ };
+        Vector3D<> getForce(){ return _sensor->getForce( _simHandle->getState() ); };
+        Vector3D<> getTorque(){ return _sensor->getTorque( _simHandle->getState() ); };
     };
 
     Frame* getFrameFromBodyOr(Frame* frame, Body::Ptr b){
@@ -77,7 +81,6 @@ SimulatedFTSensor::SimulatedFTSensor(const std::string& name,
     if(frame!=NULL){
         _sframe = frame;
     }
-    _ftsensorWrapper = rw::common::ownedPtr( new FTSensorWrapper(this, _sframe, "SimulatedFTSensor") );
     add(_sdata);
 }
 
@@ -185,8 +188,15 @@ void SimulatedFTSensor::reset(const State& state){
 	data._torque = Vector3D<>();
 }
 
-FTSensor::Ptr SimulatedFTSensor::getFTSensor(State& state)
+FTSensor::Ptr SimulatedFTSensor::getFTSensor(rwlibs::simulation::Simulator::Ptr sim)
 {
-	// TODO the handle should come from the state cache
-	return _ftsensorWrapper;
+	// check if handle has already been added to simulator
+	FTSensor::Ptr sensor;
+	if(!sim->hasHandle(this)){
+		sensor = rw::common::ownedPtr( new FTSensorWrapper(this, sim) );
+		sim->addHandle(this, sensor);
+	} else {
+		sensor = sim->getSensorHandle(this).cast<FTSensor>();
+	}
+	return sensor;
 };

@@ -15,10 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Sensor.hpp"
-
-#include <rw/kinematics/Frame.hpp>
 
 using namespace rw::sensor;
 using namespace rw::kinematics;
@@ -26,12 +23,14 @@ using namespace rw::kinematics;
 Sensor::Sensor(const std::string& name, const std::string& description)
     :
     _name(name),
-    _description(description)
+    _description(description),
+    _sensormodel(NULL)
 {
 }
 
 Sensor::Sensor(const std::string& name):
-    _name(name)
+    _name(name),
+    _sensormodel(NULL)
 
 {
 }

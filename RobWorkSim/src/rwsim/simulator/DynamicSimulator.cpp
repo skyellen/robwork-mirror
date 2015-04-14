@@ -21,17 +21,24 @@ DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkce
     _pengine->addController(_bodyController);
 }
 
-void DynamicSimulator::step(double dt, rw::kinematics::State& state){
-    _pengine->step(dt, state);
+void DynamicSimulator::step(double dt){
+	_pengine->step(dt, _state);
 }
 
-void DynamicSimulator::reset(rw::kinematics::State& state){
-    _bodyController->reset(state);
-    _pengine->resetScene(state);
+rw::kinematics::State& DynamicSimulator::getState(){
+	return _state;
+}
+
+
+void DynamicSimulator::reset(const rw::kinematics::State& state){
+    _state = state;
+	_bodyController->reset(_state);
+    _pengine->resetScene(_state);
 }
 
 void DynamicSimulator::init(rw::kinematics::State& state){
-    _pengine->initPhysics(state);
+    _state = state;
+	_pengine->initPhysics(_state);
 }
 
 void DynamicSimulator::exitPhysics(){

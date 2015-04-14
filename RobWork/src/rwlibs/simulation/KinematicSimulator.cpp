@@ -20,7 +20,7 @@
 
 using namespace rwlibs::simulation;
 
-void KinematicSimulator::step(double dt, rw::kinematics::State &state){
+void KinematicSimulator::step(double dt){
 
 	// step all sensors
 

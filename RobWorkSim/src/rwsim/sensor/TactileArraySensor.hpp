@@ -80,8 +80,13 @@ namespace sensor {
 
 		/**
 		 * @brief get last sampled texel pressure values
+		 * @param state [in] state in which values are to be found
 		 */
 		rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(rw::kinematics::State& state)  const{ return _tmodel->getTexelData(state);}
+
+		/**
+		 * @brief get last sampled texel pressure values
+		 */
 		const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(const rw::kinematics::State& state)  const{ return _tmodel->getTexelData(state);}
 
 
@@ -155,8 +160,15 @@ namespace sensor {
 
 		rw::sensor::TactileArrayModel::Ptr getTactileArrayModel(){ return _tmodel;}
 
-		rw::sensor::Sensor::Ptr getSensor();
-		rw::sensor::TactileArray::Ptr getTactileArraySensor();
+		//! @copydoc rwlibs::simulation::SimulatedSensor::getSensor
+		rw::sensor::Sensor::Ptr getSensor(rwlibs::simulation::Simulator::Ptr sim);
+
+		/**
+		 * @brief get a handle to the statefull instance of the simulated sensor
+		 * @param sim [in] simulator in which instance is active.
+		 * @return handle to instance of simulated sensor
+		 */
+		rw::sensor::TactileArray::Ptr getTactileArraySensor(rwlibs::simulation::Simulator::Ptr sim);
 
 
 		////////////// following belongs to the specific modeling of this type of tactile array
@@ -184,7 +196,11 @@ namespace sensor {
 			double dist;
 		};
 
-		const rw::geometry::PlainTriMesh<rw::geometry::Triangle<> >& getMesh(){return *_ntrimesh;}
+		/**
+		 * @brief get triangle mesh representing the tactile array
+		 * @return triangle mesh
+		 */
+		const rw::geometry::PlainTriMeshD& getMesh(){return *_ntrimesh;}
 
 
 	protected:
@@ -295,7 +311,6 @@ namespace sensor {
 		rw::common::Ptr<rw::geometry::PlainTriMesh<rw::geometry::Triangle<> > > _ntrimesh;
 		rw::proximity::ProximityModel::Ptr _nmodel;
 		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
-        rw::sensor::TactileArray::Ptr _tactileArraySensorWrapper;
 
         rw::sensor::TactileArrayModel::Ptr _tmodel;
 	};

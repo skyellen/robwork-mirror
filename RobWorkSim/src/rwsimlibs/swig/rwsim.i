@@ -1020,7 +1020,7 @@ public:
 	virtual ~PhysicsEngine(){};
 	virtual void load(rw::common::Ptr<DynamicWorkCell> dwc) = 0;
 	virtual bool setContactDetector(rw::common::Ptr<ContactDetector> detector) = 0;
-	virtual void step(double dt, State& state) = 0;
+	virtual void step(double dt, State &state) = 0;
 	virtual void resetScene(State& state) = 0;
 	virtual void initPhysics(State& state) = 0;
 	virtual void exitPhysics() = 0;
@@ -1077,7 +1077,7 @@ public:
 	std::vector<rw::common::Ptr<SimulatedSensor> > getSensors();
 
 	 // Simulator interface
-     void step(double dt, State& state);
+     void step(double dt);
      void reset(State& state);
 	 void init(State& state);
 	 void setEnabled(Frame* f, bool enabled);

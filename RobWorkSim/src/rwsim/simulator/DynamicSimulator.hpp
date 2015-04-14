@@ -119,12 +119,16 @@ namespace simulator {
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
 
 		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state);
+		void addBody(rwsim::dynamics::Body::Ptr body){ addBody(body,_state); };
+
 		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state);
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev){ addDevice(dev,_state);};
 
 		/**
 		 * @brief add a simulated sensor to this simulator
 		 */
 		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State &state);
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){ addSensor(sensor,_state);};
 
 		/**
 		 * @brief add a simulated sensor to this simulator
@@ -142,7 +146,9 @@ namespace simulator {
          /**
           * @copydoc Simulator::step
           */
-         void step(double dt, rw::kinematics::State& state);
+         void step(double dt);
+
+         rw::kinematics::State& getState();
 
          /**
           * @copydoc Simulator::reset
@@ -150,7 +156,7 @@ namespace simulator {
           * @note resets position, velocity and acceleration of all bodies to that defined in state or
           * by the default behavior of body/device interfaces.
           */
-         void reset(rw::kinematics::State& state);
+         void reset(const rw::kinematics::State& state);
 
          /**
           * @copydoc Simulator::init
@@ -176,9 +182,10 @@ namespace simulator {
 		  * @param state [in] current state
 		  */
 		 void setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
+		 void setTarget(dynamics::Body::Ptr body, const rw::math::Transform3D<>& t3d){ setTarget(body,t3d,_state);}
 
 		 void setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state);
-
+		 void setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj){ setTarget(body,traj,_state);}
 		 /**
 		  * @brief Set a velocity target.
 		  * @param body [in] the body that should move.
@@ -206,6 +213,7 @@ namespace simulator {
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 PhysicsEngine::Ptr _pengine;
 		 rwsim::control::BodyController::Ptr _bodyController;
+		 rw::kinematics::State _state;
 	};
 
 	//! @}

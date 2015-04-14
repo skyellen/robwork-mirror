@@ -36,7 +36,7 @@ void TactileArrayRender::draw(const DrawableNode::RenderInfo& info, Render::Draw
         return;
     Eigen::MatrixXf values = _sensor->getTexelData(*info._state);
 
-    const TactileArray::VertexMatrix& verts = _sensor->getVertexGrid();
+    const TactileArrayModel::VertexMatrix& verts = _sensor->getVertexGrid();
     Transform3D<> fTverts = _sensor->getTransform();
     double maxForce = _sensor->getPressureLimit().second;
     //draw all texels
@@ -65,8 +65,8 @@ void TactileArrayRender::draw(const DrawableNode::RenderInfo& info, Render::Draw
 
     // now draw the normals
 
-    const TactileArray::VertexMatrix& normals = _sensor->getNormals();
-    const TactileArray::VertexMatrix& centers = _sensor->getCenters();
+    const TactileArrayModel::VertexMatrix& normals = _sensor->getNormals();
+    const TactileArrayModel::VertexMatrix& centers = _sensor->getCenters();
     glBegin(GL_LINES);
     for(int x=0; x<(int)values.rows(); x++){
         for(int y=0; y<(int)values.cols(); y++){

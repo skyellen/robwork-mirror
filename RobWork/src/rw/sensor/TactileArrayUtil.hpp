@@ -23,7 +23,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/sensor/Contact3D.hpp>
-#include <rw/sensor/TactileArray.hpp>
+#include <rw/sensor/TactileArrayModel.hpp>
 
 namespace rw {
 namespace sensor {
@@ -45,7 +45,7 @@ public:
 	 * @return All estimated contacts
 	 */
     static std::vector<Contact3D>
-        estimateContacts(const rw::sensor::TactileArray& arraySensor,
+        estimateContacts(const rw::sensor::TactileArrayModel& arraySensor,
                          const rw::kinematics::State& state,
                          double minContactForce);
 

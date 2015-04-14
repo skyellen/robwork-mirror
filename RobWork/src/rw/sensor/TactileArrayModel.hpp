@@ -21,7 +21,6 @@
 
 #include "SensorModel.hpp"
 
-#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/multi_array.hpp>
 
 #include <rw/kinematics/State.hpp>

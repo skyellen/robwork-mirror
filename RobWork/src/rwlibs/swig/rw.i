@@ -2044,11 +2044,12 @@ public:
    */
    
    virtual ~Simulator();
-   virtual void step(double dt, State& state) = 0;
+   virtual void step(double dt) = 0;
    virtual void reset(State& state) = 0;
    virtual void init(State& state) = 0;
    virtual double getTime() = 0;
    virtual void setEnabled(Frame* frame, bool enabled) = 0;
+   virtual State& getState() = 0;
    virtual PropertyMap& getPropertyMap() = 0;
 
 };

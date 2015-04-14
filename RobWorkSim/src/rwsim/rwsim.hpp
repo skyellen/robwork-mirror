@@ -140,4 +140,13 @@
         using namespace rwsimlibs::lua; \
         using namespace rwsimlibs::plugins; \
     }
+
+#define RWSIM_USE_RWP_NAMESPACE \
+    USE_ROBWORKSIM_NAMESPACE \
+    namespace rwp \
+    { \
+        using namespace robworksim; \
+    }
+
+
 #endif /* RWSIM_HPP_ */

@@ -99,7 +99,7 @@ private:
     std::string _previousOpenDirectory;
     rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dworkcell;
 //    rw::kinematics::State *_state;
-    rw::kinematics::State _dState,_jointState;
+    rw::kinematics::State _jointState;
     rwsim::simulator::ConstantForceManipulator *_gravity;
     QTimer *_timer;
 

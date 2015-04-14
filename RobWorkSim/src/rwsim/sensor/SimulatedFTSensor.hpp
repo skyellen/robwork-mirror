@@ -129,10 +129,10 @@ namespace sensor {
 
 		/**
 		 * @brief Get a FTSensor version of this sensor.
-		 * @param state [in] the state.
-		 * @return a smart pointer to a FTSensor .
+		 * @param sim [in] the simulator in which the simulated sensor is instantiated
+		 * @return a smart pointer to a FTSensor
 		 */
-		 rw::sensor::FTSensor::Ptr getFTSensor(rw::kinematics::State& state);
+		 rw::sensor::FTSensor::Ptr getFTSensor(rwlibs::simulation::Simulator::Ptr sim);
 
 		/**
 		 * @brief Get the first body (the body influencing the sensor body)
@@ -145,12 +145,12 @@ namespace sensor {
 		 * @return the Body.
 		 */
 		 rwsim::dynamics::Body::Ptr getBody2() const { return _body1; }
+
 	private:
 		SimulatedFTSensor();
 
 	private:
 		rwsim::dynamics::Body::Ptr _body, _body1;
-		rw::sensor::FTSensor::Ptr _ftsensorWrapper;
 		rw::kinematics::Frame *_sframe;
 		rw::common::Ptr<rw::sensor::FTSensorModel> _ftmodel;
 
