@@ -205,9 +205,14 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
 
 		_pluginChangedMap[key] = time;
 		Log::infoLog() << "\t " <<  pfilename << std::endl;
-
-		rw::common::Ptr<Plugin> plugin = Plugin::load( pfilename );
-		reg->registerExtensions(plugin);
+		try {
+			rw::common::Ptr<Plugin> plugin = Plugin::load( pfilename );
+			reg->registerExtensions(plugin);
+		} catch (const std::exception& e ){
+			Log::errorLog() << "Error loading plugin: \n\t\"" << pfilename << "\" "
+							<< "\n\t Error description: " << e.what()
+							<< "\n\t Please fix error, ignoring plugin for now.." << std::endl;
+		}
     }
 }
 
