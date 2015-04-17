@@ -57,7 +57,7 @@ IF( build )
     	
     	
 	ADD_LIBRARY(rwslua_plugin.rwplugin MODULE LuaPlugin.cpp LuaPlugin.hpp)
-    TARGET_LINK_LIBRARIES(rwslua_plugin.rwplugin rws_lua_s ${ROBWORKSIM_LIBRARIES})
+    TARGET_LINK_LIBRARIES(rwslua_plugin.rwplugin rws_lua_s rws_rwstudioapp ${RWS_PLUGIN_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 	
 	
 ENDIF()
