@@ -109,16 +109,21 @@ public:
 	 * before work added to ThreadTask has finished.
 	 *
 	 * @param dt [in] the timestep.
-	 * @param state [in/out] the state.
 	 * @param task [in] the task to add work to.
 	 */
-	void step(double dt, rw::kinematics::State& state, rw::common::Ptr<rw::common::ThreadTask> task);
+	void step(double dt, rw::common::Ptr<rw::common::ThreadTask> task);
 
 	/**
 	 * @brief Get a copy of the internal state of the engine.
 	 * @return a copy of the state.
 	 */
-	TNTIslandState getState() const;
+	TNTIslandState getTNTState() const;
+
+	/**
+	 * @brief Get the current internal state of the simulator.
+	 * @return a copy of the internal state.
+	 */
+	rw::kinematics::State getState() const;
 
 	/**
 	 * @brief Reset the internal engine state.
@@ -131,6 +136,9 @@ public:
 
 	//! @copydoc PhysicsEngine::setContactDetector
 	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
+
+	//! @copydoc PhysicsEngine::step
+	void step(double dt);
 
 	//! @copydoc PhysicsEngine::step
 	void step(double dt, rw::kinematics::State& state);
@@ -236,7 +244,7 @@ private:
 	};
 	typedef std::set<IntegrateSample, IntegrateSampleCompare> IntegrateBuffer;
 
-	void doStep(double dt, rw::kinematics::State& state);
+	void doStep(double dt);
 	void velocityAndForce(double dt, bool discontinuity, const IntegrateSample& sample0, IntegrateSample& sampleH) const;
 	void position(IntegrateSample& sample, rwsim::contacts::ContactDetectorData& cdData) const;
 	bool collisionSolver(TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const;
@@ -261,6 +269,7 @@ private:
 	rw::common::Ptr<rw::common::ThreadTask> _task;
 	TNTBodyConstraintManager* _bc;
 	TNTIslandState* _state;
+	rw::kinematics::State _rwstate;
 	rw::math::Vector3D<> _gravity;
 
 	rwsim::drawable::SimulatorDebugRender::Ptr _render;

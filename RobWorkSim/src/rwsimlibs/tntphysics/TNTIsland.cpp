@@ -52,23 +52,21 @@ using namespace rwsimlibs::tntphysics;
 
 class TNTIsland::StepTask: public ThreadTask {
 public:
-	StepTask(TNTIsland* engine, double dt, const State &state, ThreadTask::Ptr parent):
+	StepTask(TNTIsland* engine, double dt, ThreadTask::Ptr parent):
 		ThreadTask(parent),
 		_engine(engine),
-		_dt(dt),
-		_state(state)
+		_dt(dt)
 	{
 	}
 
 	void run() {
 		while(_engine->_state->getRepetitions() > 0)
-			_engine->doStep(_dt,_state);
+			_engine->doStep(_dt);
 	}
 
 private:
 	TNTIsland* const _engine;
 	const double _dt;
-	State _state;
 };
 
 struct TNTIsland::IntegrateSample {
@@ -176,19 +174,23 @@ void TNTIsland::setGravity(const Vector3D<> &gravity) {
 	_gravity = gravity;
 }
 
-void TNTIsland::step(double dt, State& state, rw::common::Ptr<ThreadTask> task) {
+void TNTIsland::step(double dt, rw::common::Ptr<ThreadTask> task) {
 	if (task == NULL) {
 		while(_state->getRepetitions() > 0) {
-			TNT_TIMING("Complete step",	doStep(dt,state));
+			TNT_TIMING("Complete step",	doStep(dt));
 		}
 	} else {
-		_task = ownedPtr(new StepTask(this,dt,state,task));
+		_task = ownedPtr(new StepTask(this,dt,task));
 		task->addSubTask(_task);
 	}
 }
 
-TNTIslandState TNTIsland::getState() const {
+TNTIslandState TNTIsland::getTNTState() const {
 	return *_state;
+}
+
+State TNTIsland::getState() const {
+	return _rwstate;
 }
 
 void TNTIsland::resetScene(const TNTIslandState &state) {
@@ -215,27 +217,34 @@ void TNTIsland::load(rw::common::Ptr<DynamicWorkCell> dwc) {
 	_map = dwc->getEngineSettings();
 }
 
+void TNTIsland::step(double dt) {
+	TNT_TIMING("Complete step",	doStep(dt));
+}
+
 void TNTIsland::step(double dt, State& state) {
-	TNT_TIMING("Complete step",	doStep(dt,state));
+	TNT_TIMING("Complete step",	doStep(dt));
+	state = _rwstate;
 }
 
 void TNTIsland::resetScene(State& state) {
 	if (_state == NULL)
 		RW_THROW("TNTIsland (resetScene): please call initPhysics first!");
+	_rwstate = state;
+
 	const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 	BOOST_FOREACH(const TNTBody* body, bodies) {
-		body->reset(*_state,state);
+		body->reset(*_state,_rwstate);
 	}
 	const TNTBodyConstraintManager::ConstraintList constraints = _bc->getPersistentConstraints();
 	BOOST_FOREACH(TNTConstraint* constraint, constraints) {
-		constraint->reset(*_state,state);
+		constraint->reset(*_state,_rwstate);
 	}
 	_bc->clearTemporaryConstraints(*_state);
 	BOOST_FOREACH(SimulatedController::Ptr controller, _controllers) {
-		controller->reset(state);
+		controller->reset(_rwstate);
 	}
 	BOOST_FOREACH(SimulatedSensor::Ptr sensor, _sensors) {
-		sensor->reset(state);
+		sensor->reset(_rwstate);
 	}
 	_state->getContactData().clear();
 	_state->setContacts(std::vector<Contact>(),ContactDetectorTracking());
@@ -285,6 +294,7 @@ void TNTIsland::exitPhysics() {
 	if (_state != NULL)
 		delete _state;
 	_state = NULL;
+	_rwstate = State();
 	if (_bp != NULL)
 		delete _bp;
 	_bp = NULL;
@@ -386,7 +396,7 @@ std::vector<SimulatedSensor::Ptr> TNTIsland::getSensors() {
 	return std::vector<SimulatedSensor::Ptr>(_sensors.begin(), _sensors.end());
 }
 
-void TNTIsland::doStep(double dt, State& state) {
+void TNTIsland::doStep(double dt) {
 	TNT_DEBUG_DELIMITER()
 	TNT_DEBUG_GENERAL("Time: " << _state->getTime())
 
@@ -421,7 +431,7 @@ void TNTIsland::doStep(double dt, State& state) {
 					info.time = _state->getTime();
 					info.rollback = false;
 					BOOST_FOREACH(SimulatedController::Ptr controller, _controllers) {
-						controller->update(info,state);
+						controller->update(info,_rwstate);
 					}
 				} else {
 					TNT_DEBUG_GENERAL("Repetitions: " << _state->getRepetitions())
@@ -429,10 +439,10 @@ void TNTIsland::doStep(double dt, State& state) {
 			}
 	);
 
-	IntegrateSample sampleInitial(0,*_state,state);
+	IntegrateSample sampleInitial(0,*_state,_rwstate);
 
 	bool discontinuity;
-	TNT_TIMING("Collision Solver", discontinuity = collisionSolver(*_state,state))
+	TNT_TIMING("Collision Solver", discontinuity = collisionSolver(*_state,_rwstate))
 	if (_state->getTime() == 0)
 		discontinuity = true;
 
@@ -443,7 +453,7 @@ void TNTIsland::doStep(double dt, State& state) {
 					TNTBodyConstraintManager::ConstraintList constraints = _bc->getConstraints(*_state);
 					BOOST_FOREACH(TNTConstraint* constraint, constraints) {
 						constraint->clearWrenchApplied(*_state);
-						constraint->update(*_state,state);
+						constraint->update(*_state,_rwstate);
 					}
 
 					if (discontinuity) {
@@ -456,7 +466,7 @@ void TNTIsland::doStep(double dt, State& state) {
 			}
 	);
 
-	IntegrateSample sample0(0,*_state,state);
+	IntegrateSample sample0(0,*_state,_rwstate);
 	IntegrateSample sampleH;
 	TNT_TIMING("Broad-phase Rollback",
 			{
@@ -534,12 +544,12 @@ void TNTIsland::doStep(double dt, State& state) {
 	_state->setTime(_state->getTime()+sample.time);
 	);
 	TNT_TIMING("RW state update (copy)",
-	state = sample.rwstate;
+	_rwstate = sample.rwstate;
 
 	// Update RobWork bodies
 	const TNTBodyConstraintManager::BodyList bodies = _bc->getBodies();
 	BOOST_FOREACH(const TNTBody* body, bodies) {
-		body->updateRW(state,*_state);
+		body->updateRW(_rwstate,*_state);
 	}
 	);
 
@@ -556,7 +566,7 @@ void TNTIsland::doStep(double dt, State& state) {
 	TNT_DEBUG_ROLLBACK("After removing contacts outside threshold: " << sample.forwardContacts.size());
 
 	// Update the constraints
-	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,*_state,state);
+	TNTUtil::updateTemporaryContacts(sample.forwardContacts,sample.forwardTrack,_bc,*_state,_rwstate);
 
 	// Store contact information in state
 	_state->setContactData(cdData);
@@ -565,7 +575,7 @@ void TNTIsland::doStep(double dt, State& state) {
 
 	// Update tactile sensors
 	if (sample.time > 0 && _sensors.size() > 0) {
-		TNTUtil::updateSensors(_sensors,_state->getTime(),sample.time,_state->getLastTimeStep(),_bc,*_state,state);
+		TNTUtil::updateSensors(_sensors,_state->getTime(),sample.time,_state->getLastTimeStep(),_bc,*_state,_rwstate);
 	}
 
 	if (_render != NULL) {
