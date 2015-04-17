@@ -170,8 +170,8 @@ int runTaskEmpty() {
 	task->setKeepAlive(false);
 
 	task->waitUntilDone();
-	BOOST_CHECK(subtask1->getState() == ThreadTask::DONE);
-	BOOST_CHECK(subtask2->getState() == ThreadTask::DONE);
+	BOOST_CHECK(subtask1->getState() == ThreadTask::DONE || subtask2->getState() == ThreadTask::POSTWORK);
+	BOOST_CHECK(subtask2->getState() == ThreadTask::DONE || subtask2->getState() == ThreadTask::POSTWORK);
 	BOOST_CHECK(task->getState() == ThreadTask::DONE);
 
 	return 0;
