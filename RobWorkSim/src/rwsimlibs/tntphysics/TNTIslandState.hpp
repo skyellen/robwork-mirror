@@ -38,6 +38,8 @@ namespace tntphysics {
 
 // Forward declarations
 class TNTConstraint;
+class TNTContact;
+class TNTFrictionModelData;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -209,6 +211,32 @@ public:
 	///@}
 
 	/**
+	 * @name Frictional state for contacts.
+	 * Functions related to the temporary constraints (the contact constraints).
+	 */
+	///@{
+	/**
+	 * @brief Get friction data associated to specific contact.
+	 * @param contact [in] a pointer to the contact to find data for.
+	 * @return a pointer (not owned by caller) to the friction data, or NULL if no data is registered.
+	 */
+	TNTFrictionModelData* getFrictionData(const TNTContact* contact) const;
+
+	/**
+	 * @brief Set new friction data for the contact.
+	 * @param contact [in] a pointer to the contact to set data for.
+	 * @param data [in] a pointer to the friction data (this function takes ownership).
+	 */
+	void setFrictionData(const TNTContact* contact, TNTFrictionModelData* data);
+
+	/**
+	 * @brief Destroy data associated to contact.
+	 * @param contact [in] the contact to destroy friction data for.
+	 */
+	void clearFrictionData(const TNTContact* contact);
+	///@}
+
+	/**
 	 * @name Temporary Constraints.
 	 * Functions related to the temporary constraints (the contact constraints).
 	 */
@@ -263,6 +291,8 @@ private:
 
 	std::vector<rwsim::contacts::Contact> _contacts;
 	rwsim::contacts::ContactDetectorTracking _tracking;
+
+	std::map<const TNTContact*, TNTFrictionModelData*> _contactToFrictionData;
 
 	std::list<TNTConstraint*> _tempConstraints;
 	std::map<const TNTBody*, std::list<const TNTConstraint*> > _bodyToTempConstraints;

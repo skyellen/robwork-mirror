@@ -170,7 +170,7 @@ void TNTSolver::saveSolution(const Eigen::VectorXd& solution, TNTIslandState &st
 				}
 			}
 			// Rotate back to world frame
-			const Rotation3D<> Rlin = constraint->getLinearRotationParentW(state);
+			const Rotation3D<> Rlin = constraint->getLinearRotationParentForceW(state);
 			const Rotation3D<> Rang = constraint->getAngularRotationParentW(state);
 			const Wrench6D<> wrench(Rlin*velLin,Rang*velAng);
 			state.setWrenchConstraint(constraint,wrench);

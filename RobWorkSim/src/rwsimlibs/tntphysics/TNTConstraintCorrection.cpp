@@ -95,7 +95,7 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 		}
 		if (contact) {
 			bool match = false;
-			std::list<TNTConstraint*>::const_iterator itB = itA;
+			/*std::list<TNTConstraint*>::const_iterator itB = itA;
 			for (itB++; itB != constraints.end(); itB++) {
 				const TNTConstraint* const constraintB = *itB;
 				const TNTContact* const contactB = dynamic_cast<const TNTContact*>(constraintB);
@@ -122,11 +122,11 @@ void TNTConstraintCorrection::correct(const std::list<TNTConstraint*>& constrain
 				const double distP = (pAp-pBp).norm2();
 				const double distC = (pAc-pBc).norm2();
 				const double distN = acos(dot(nA,nB));
-				/*if (distN > std::max(distP,distC)*threshold*Deg2Rad) {
+				if (distN > std::max(distP,distC)*threshold*Deg2Rad) {
 					match = true;
 					break;
-				}*/
-			}
+				}
+			}*/
 			if (!match) {
 				nrOfConstraints += 1;
 				reducedConstraints.push_back(constraint);

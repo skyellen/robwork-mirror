@@ -25,6 +25,7 @@
  */
 
 #include <rw/common/ExtensionPoint.hpp>
+#include <rw/math/Wrench6D.hpp>
 
 // Forward declarations
 namespace rw { namespace kinematics { class State; } }
@@ -35,6 +36,7 @@ namespace tntphysics {
 // Forward declarations
 class TNTContact;
 class TNTIslandState;
+class TNTFrictionModelData;
 
 //! @addtogroup rwsimlibs_tntphysics
 
@@ -44,22 +46,22 @@ class TNTIslandState;
  */
 class TNTFrictionModel {
 public:
-    //! @brief The possible friction values.
-    struct Values {
+    //! @brief Specification of the dry friction.
+    struct DryFriction {
     	//! @brief Default constructor - no friction used.
-    	Values(): enableTangent(false), tangent(0), tangentAbsolute(0), enableAngular(false), angular(0), angularAbsolute(0) {};
+    	DryFriction(): enableTangent(false), tangent(0), enableAngular(false), angular(0) {};
     	//! @brief Solve for tangential friction.
     	bool enableTangent;
     	//! @brief Friction coefficient - apply friction proportional to normal force.
     	double tangent;
-    	//! @brief Apply friction independent of normal force.
-    	double tangentAbsolute;
+    	//! @brief The direction for tangential friction.
+    	rw::math::Vector3D<> tangentDirection;
     	//! @brief Solve for angular friction.
     	bool enableAngular;
     	//! @brief Angular friction coefficient - apply friction proportional to normal force.
     	double angular;
-    	//! @brief Apply angular friction independent of normal force.
-    	double angularAbsolute;
+    	//! @brief The direction for angular friction.
+    	rw::math::Vector3D<> angularDirection;
     };
 
     //! @brief Constructor.
@@ -76,13 +78,44 @@ public:
 	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const = 0;
 
 	/**
+	 * @brief Create a new data structure (for use in stateful friction models).
+	 *
+	 * If model is not stateful, a NULL pointer can be returned.
+	 *
+	 * @return a pointer to internal data - owned by the caller.
+	 */
+	virtual TNTFrictionModelData* makeDataStructure() const;
+
+	/**
+	 * @brief Update the internal data.
+	 * @param contact [in] the contact to update data for.
+	 * @param tntstate [in] the current state of the system.
+	 * @param rwstate [in] the current state of the system.
+	 * @param h [in] the step size.
+	 * @param data [in/out] internal data to update.
+	 */
+	virtual void updateData(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, double h, TNTFrictionModelData* data) const;
+
+	/**
 	 * @brief Get the friction coefficients.
 	 * @param contact [in] the contact to find coefficient for.
 	 * @param tntstate [in] the current state of the system.
 	 * @param rwstate [in] the current state of the system.
+	 * @param h [in] the step size.
+	 * @param data [in] pointer to internal data.
 	 * @return the Values.
 	 */
-	virtual Values getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const = 0;
+	virtual DryFriction getDryFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const = 0;
+
+	/**
+	 * @brief Get the viscuous friction.
+	 * @param contact [in] the contact to find friction for.
+	 * @param tntstate [in] the current state of the system.
+	 * @param rwstate [in] the current state of the system.
+	 * @param data [in] pointer to internal data.
+	 * @return the wrench to apply.
+	 */
+	virtual rw::math::Wrench6D<> getViscuousFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const = 0;
 
 	/**
 	 * @addtogroup extensionpoints

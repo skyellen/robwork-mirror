@@ -18,9 +18,18 @@
 #include "TNTFrictionModel.hpp"
 #include "TNTFrictionModelNone.hpp"
 #include "TNTFrictionModelCoulomb.hpp"
+#include "TNTFrictionModelMicroSlip.hpp"
 
 using namespace rw::common;
+using namespace rw::kinematics;
 using namespace rwsimlibs::tntphysics;
+
+TNTFrictionModelData* TNTFrictionModel::makeDataStructure() const {
+	return NULL;
+}
+
+void TNTFrictionModel::updateData(const TNTContact& contact, const TNTIslandState& tntstate, const State& rwstate, double h, TNTFrictionModelData* data) const {
+}
 
 TNTFrictionModel::Factory::Factory():
 	ExtensionPoint<TNTFrictionModel>("rwsimlibs.tntphysics.TNTFrictionModel", "TNTFrictionModel extension point.")
@@ -33,6 +42,7 @@ std::vector<std::string> TNTFrictionModel::Factory::getModels() {
     std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
     ids.push_back("None");
     ids.push_back("Coulomb");
+    ids.push_back("MicroSlip");
     BOOST_FOREACH(Extension::Descriptor& ext, exts){
         ids.push_back( ext.getProperties().get("modelID",ext.name) );
     }
@@ -43,6 +53,8 @@ bool TNTFrictionModel::Factory::hasModel(const std::string& model) {
     if( model == "None")
         return true;
     else if( model == "Coulomb")
+        return true;
+    else if( model == "MicroSlip")
         return true;
     TNTFrictionModel::Factory ep;
     std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
@@ -58,6 +70,8 @@ const TNTFrictionModel* TNTFrictionModel::Factory::makeModel(const std::string& 
         return new TNTFrictionModelNone();
     else if( model == "Coulomb")
         return new TNTFrictionModelCoulomb(properties);
+    else if( model == "MicroSlip")
+        return new TNTFrictionModelMicroSlip(properties);
     TNTFrictionModel::Factory ep;
 	std::vector<Extension::Ptr> exts = ep.getExtensions();
 	BOOST_FOREACH(Extension::Ptr& ext, exts){

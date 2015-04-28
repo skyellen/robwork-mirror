@@ -31,6 +31,10 @@
 
 namespace rwsimlibs {
 namespace tntphysics {
+
+class TNTFrictionModel;
+class TNTFrictionModelData;
+
 //! @addtogroup rwsimlibs_tntphysics
 
 //! @{
@@ -50,17 +54,19 @@ public:
 	 * @brief Construct new unspecified contact between two bodies.
 	 * @param parent [in] first body.
 	 * @param child [in] second body.
+	 * @param friction [in] the friction model to use.
 	 */
-	TNTContact(const TNTBody* parent, const TNTBody* child);
+	TNTContact(const TNTBody* parent, const TNTBody* child, const TNTFrictionModel& friction);
 
 	/**
 	 * @brief Construct new specified contact between two bodies.
 	 * @param parent [in] first body.
 	 * @param child [in] second body.
+	 * @param friction [in] the friction model to use.
 	 * @param contact [in] the contact.
 	 * @param state [in] the state where the contact was found.
 	 */
-	TNTContact(const TNTBody* parent, const TNTBody* child, const rwsim::contacts::Contact &contact, const rw::kinematics::State &state);
+	TNTContact(const TNTBody* parent, const TNTBody* child, const TNTFrictionModel& friction, const rwsim::contacts::Contact &contact, const rw::kinematics::State &state);
 
 	//! @brief Destructor.
 	~TNTContact();
@@ -112,6 +118,9 @@ public:
 	//! @copydoc TNTConstraint::reset
 	virtual void reset(TNTIslandState &tntstate, const rw::kinematics::State &rwstate);
 
+	//! @copydoc TNTConstraint::step
+	virtual void step(TNTIslandState &tntstate, const rw::kinematics::State &rwstate, double h);
+
 	//! @copydoc TNTConstraint::getConstraintModes
 	virtual std::vector<Mode> getConstraintModes() const;
 
@@ -123,6 +132,12 @@ public:
 
 	//! @copydoc TNTConstraint::getDimFree
 	virtual std::size_t getDimFree() const;
+
+	//! @copydoc TNTConstraint::getLinearRotationParentForceW
+	virtual rw::math::Rotation3D<> getLinearRotationParentForceW(const TNTIslandState &state) const;
+
+	//! @copydoc TNTConstraint::getLinearRotationChildForceW
+	virtual rw::math::Rotation3D<> getLinearRotationChildForceW(const TNTIslandState &state) const;
 
 	/**
 	 * @brief Get the normal of the contact in world coordinates.
@@ -139,52 +154,20 @@ public:
 	rw::math::Vector3D<> getFrictionDirW(const TNTIslandState &tntstate) const;
 
 	/**
-	 * @brief Set the friction direction in local coordinates.
-	 * @param frictionDir [in] the new tangential friction direction.
-	 * @note The direction is forced to be perpendicular to the normal direction.
-	 */
-	void setFrictionDir(const rw::math::Vector3D<>& frictionDir);
-
-	/**
-	 * @brief Set the friction direction in world coordinates.
-	 * @param frictionDir [in] the new tangential friction direction.
-	 * @param state [in] the state.
-	 * @note The direction is forced to be perpendicular to the normal direction.
-	 */
-	void setFrictionDirW(const rw::math::Vector3D<>& frictionDir, const rw::kinematics::State &state);
-
-	/**
-	 * @brief Set the friction parameters to use if in sliding mode.
-	 * @param linearCoefficient [in] friction coefficient that applies force proportional to the normal force.
-	 * @param angularCoefficient [in] friction coefficient that applies torque proportional to the normal force.
-	 * @param absoluteLinear [in] viscuous friction that is independent from forces.
-	 * @param absoluteAngular [in] viscuous friction that is independent from forces.
-	 */
-	void setFriction(double linearCoefficient, double angularCoefficient, double absoluteLinear, double absoluteAngular);
-
-	/**
 	 * @brief Get a string representation of the contact Type.
 	 * @param type [in] the type.
 	 * @return the type as a string.
 	 */
 	static std::string toString(Type type);
 
-protected:
-	//! @copydoc TNTConstraint::getWrenchModelLHS
-	virtual Eigen::MatrixXd getWrenchModelLHS(const TNTConstraint* constraint) const;
-
-	//! @copydoc TNTConstraint::getWrenchModelRHS
-	virtual Eigen::VectorXd getWrenchModelRHS() const;
-
 private:
 	bool _leaving;
 	Type _linearType;
 	Type _angularType;
 	rwsim::contacts::Contact _contact;
-	double _muLin;
-	double _muAng;
-	double _muLinViscuous;
-	double _muAngViscuous;
+	const TNTFrictionModel& _friction;
+	rw::math::Rotation3D<> _offsetParent;
+	rw::math::Rotation3D<> _offsetChild;
 };
 //! @}
 } /* namespace tntphysics */

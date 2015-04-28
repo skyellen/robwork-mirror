@@ -17,7 +17,6 @@
 
 #include "TNTContactResolver.hpp"
 #include "TNTContactResolverNonPenetration.hpp"
-#include "TNTContactResolverHeuristic.hpp"
 #include "TNTContactResolverFull.hpp"
 
 #include <boost/foreach.hpp>
@@ -36,7 +35,6 @@ TNTContactResolver::Factory::Factory():
 std::vector<std::string> TNTContactResolver::Factory::getResolvers() {
 	std::vector<std::string> resolvers;
 	resolvers.push_back("NonPenetration");
-	resolvers.push_back("Heuristic");
 	resolvers.push_back("Full");
 	TNTContactResolver::Factory factory;
 	std::vector<Extension::Descriptor> exts = factory.getExtensionDescriptors();
@@ -47,9 +45,7 @@ std::vector<std::string> TNTContactResolver::Factory::getResolvers() {
 }
 
 bool TNTContactResolver::Factory::hasResolver(const std::string& resolverType) {
-	if (resolverType == "Heuristic")
-		return true;
-	else if (resolverType == "NonPenetration")
+	if (resolverType == "NonPenetration")
 		return true;
 	else if (resolverType == "Full")
 		return true;
@@ -63,8 +59,6 @@ bool TNTContactResolver::Factory::hasResolver(const std::string& resolverType) {
 }
 
 const TNTContactResolver* TNTContactResolver::Factory::makeResolver(const std::string& resolverType, const TNTSolver* solver) {
-	if (resolverType == "Heuristic")
-		return new TNTContactResolverHeuristic(solver);
 	if (resolverType == "NonPenetration")
 		return new TNTContactResolverNonPenetration(solver);
 	if (resolverType == "Full")

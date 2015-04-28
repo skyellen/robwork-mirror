@@ -75,6 +75,9 @@ public:
 	//! @copydoc TNTConstraint::reset
 	virtual void reset(TNTIslandState &tntstate, const rw::kinematics::State &rwstate);
 
+	//! @copydoc TNTConstraint::step
+	virtual void step(TNTIslandState &tntstate, const rw::kinematics::State &rwstate, double h);
+
 	//! @copydoc TNTConstraint::getConstraintModes
 	virtual std::vector<Mode> getConstraintModes() const;
 

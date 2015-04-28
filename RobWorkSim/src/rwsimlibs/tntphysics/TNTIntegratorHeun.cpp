@@ -38,6 +38,7 @@ TNTIntegratorHeun::TNTIntegratorHeun(const TNTRigidBody* body):
 }
 
 TNTIntegratorHeun::~TNTIntegratorHeun() {
+	delete _euler;
 }
 
 const TNTIntegrator* TNTIntegratorHeun::makeIntegrator(const TNTRigidBody* body) const {

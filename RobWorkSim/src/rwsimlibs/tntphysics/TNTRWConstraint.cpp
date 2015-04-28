@@ -251,6 +251,9 @@ void TNTRWConstraint::reset(TNTIslandState &tntstate, const State &rwstate) {
 	_spring = NULL;
 }
 
+void TNTRWConstraint::step(TNTIslandState &tntstate, const State &rwstate, double h) {
+}
+
 std::vector<TNTConstraint::Mode> TNTRWConstraint::getConstraintModes() const {
 	if (_spring != NULL)
 		return _spring->cDec.modes;

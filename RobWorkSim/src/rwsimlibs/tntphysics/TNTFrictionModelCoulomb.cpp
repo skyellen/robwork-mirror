@@ -48,11 +48,33 @@ const TNTFrictionModel* TNTFrictionModelCoulomb::withProperties(const PropertyMa
 	return new TNTFrictionModelCoulomb(map);
 }
 
-TNTFrictionModel::Values TNTFrictionModelCoulomb::getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const State& rwstate) const {
-	Values res;
+TNTFrictionModel::DryFriction TNTFrictionModelCoulomb::getDryFriction(
+	const TNTContact& contact,
+	const TNTIslandState& tntstate,
+	const State& rwstate,
+	const TNTFrictionModelData* data) const
+{
+	// Find the current relative velocity:
+	const Vector3D<> n = contact.getNormalW(tntstate);
+	const Vector3D<> velP = contact.getVelocityParentW(tntstate,rwstate).linear();
+	const Vector3D<> velC = contact.getVelocityChildW(tntstate,rwstate).linear();
+	const Vector3D<> relVel = velP-velC;
+	const Vector3D<> relVelDir = normalize(relVel-dot(relVel,n)*n);
+
+	DryFriction res;
 	if (_mu > 0) {
 		res.enableTangent = true;
 		res.tangent = _mu;
+		res.tangentDirection = relVelDir;
 	}
 	return res;
+}
+
+Wrench6D<> TNTFrictionModelCoulomb::getViscuousFriction(
+	const TNTContact& contact,
+	const TNTIslandState& tntstate,
+	const State& rwstate,
+	const TNTFrictionModelData* data) const
+{
+	return Wrench6D<>(Vector3D<>::zero(),Vector3D<>::zero());
 }

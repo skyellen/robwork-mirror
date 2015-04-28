@@ -55,7 +55,7 @@ void TNTContactResolverFull::solve(const std::vector<TNTContact*>& persistentCon
 	std::vector<TNTContact*> contacts;
 	BOOST_FOREACH(TNTConstraint* const constraint, constraints) {
 		if (TNTContact* const contact = dynamic_cast<TNTContact*>(constraint)) {
-			contact->setType(TNTContact::None,TNTContact::None);
+			contact->setType(TNTContact::Sliding,TNTContact::None);
 			contacts.push_back(contact);
 		}
 	}

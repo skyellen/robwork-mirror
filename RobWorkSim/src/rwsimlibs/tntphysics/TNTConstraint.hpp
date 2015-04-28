@@ -163,11 +163,25 @@ public:
 	virtual rw::math::Rotation3D<> getLinearRotationParentW(const TNTIslandState &state) const;
 
 	/**
+	 * @brief Get the linear orthonormal force basis on the parent object in world coordinates.
+	 * @param state [in] the current state of the system.
+	 * @return rotation from world coordinate system.
+	 */
+	virtual rw::math::Rotation3D<> getLinearRotationParentForceW(const TNTIslandState &state) const;
+
+	/**
 	 * @brief Get the linear orthonormal basis on the child object in world coordinates.
 	 * @param state [in] the current state of the system.
 	 * @return rotation from world coordinate system.
 	 */
 	virtual rw::math::Rotation3D<> getLinearRotationChildW(const TNTIslandState &state) const;
+
+	/**
+	 * @brief Get the linear orthonormal force basis on the child object in world coordinates.
+	 * @param state [in] the current state of the system.
+	 * @return rotation from world coordinate system.
+	 */
+	virtual rw::math::Rotation3D<> getLinearRotationChildForceW(const TNTIslandState &state) const;
 
 	/**
 	 * @brief Get the angular orthonormal basis on the parent object in world coordinates.
@@ -220,6 +234,13 @@ public:
 	 */
 	virtual void reset(TNTIslandState &tntstate, const rw::kinematics::State &rwstate) = 0;
 
+	/**
+	 * @brief Step a stateful constraint forward in time.
+	 * @param tntstate [in/out] the state to update.
+	 * @param rwstate [in] the input to reset to.
+	 * @param h [in] the stepsize.
+	 */
+	virtual void step(TNTIslandState &tntstate, const rw::kinematics::State &rwstate, double h) = 0;
 
 	/**
 	 * @name Wrenches

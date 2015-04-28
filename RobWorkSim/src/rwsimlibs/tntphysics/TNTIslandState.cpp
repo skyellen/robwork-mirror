@@ -17,7 +17,9 @@
 
 #include "TNTIslandState.hpp"
 #include "TNTConstraint.hpp"
+#include "TNTContact.hpp"
 #include "TNTUtil.hpp"
+#include "TNTFrictionModelData.hpp"
 
 using namespace rw::math;
 using namespace rwsim::contacts;
@@ -48,14 +50,21 @@ TNTIslandState::TNTIslandState(const TNTIslandState& state):
 		std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
 		_bodyToConfiguration[entry.first] = entry.second->clone();
 	}
+	std::map<const TNTContact*, TNTFrictionModelData*>::const_iterator itFriction;
+	for (itFriction = state._contactToFrictionData.begin(); itFriction != state._contactToFrictionData.end(); itFriction++) {
+		_contactToFrictionData[itFriction->first] = itFriction->second->clone();
+	}
 }
 
 TNTIslandState::~TNTIslandState()
 {
 	std::map<const TNTBody*, TNTBody::Configuration*>::const_iterator it;
 	for (it = _bodyToConfiguration.begin(); it != _bodyToConfiguration.end(); it++) {
-		std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
-		delete entry.second;
+		delete it->second;
+	}
+	std::map<const TNTContact*, TNTFrictionModelData*>::const_iterator itFriction;
+	for (itFriction = _contactToFrictionData.begin(); itFriction != _contactToFrictionData.end(); itFriction++) {
+		delete itFriction->second;
 	}
 };
 
@@ -74,12 +83,19 @@ TNTIslandState& TNTIslandState::operator=(const TNTIslandState &state) {
 		_bodyToTempConstraints = state._bodyToTempConstraints;
 		std::map<const TNTBody*, TNTBody::Configuration*>::const_iterator it;
 		for (it = _bodyToConfiguration.begin(); it != _bodyToConfiguration.end(); it++) {
-			std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
-			delete entry.second;
+			delete it->second;
 		}
+		_bodyToConfiguration.clear();
 		for (it = state._bodyToConfiguration.begin(); it != state._bodyToConfiguration.end(); it++) {
-			std::pair<const TNTBody*, TNTBody::Configuration*> entry = *it;
-			_bodyToConfiguration[entry.first] = entry.second->clone();
+			_bodyToConfiguration[it->first] = it->second->clone();
+		}
+		std::map<const TNTContact*, TNTFrictionModelData*>::const_iterator itFriction;
+		for (itFriction = _contactToFrictionData.begin(); itFriction != _contactToFrictionData.end(); itFriction++) {
+			delete itFriction->second;
+		}
+		_contactToFrictionData.clear();
+		for (itFriction = state._contactToFrictionData.begin(); itFriction != state._contactToFrictionData.end(); itFriction++) {
+			_contactToFrictionData[itFriction->first] = itFriction->second->clone();
 		}
 	}
 	return *this;
@@ -175,6 +191,28 @@ void TNTIslandState::setContacts(const std::vector<Contact>& contacts, const Con
 	_tracking = data;
 }
 
+TNTFrictionModelData* TNTIslandState::getFrictionData(const TNTContact* contact) const {
+	const std::map<const TNTContact*, TNTFrictionModelData*>::const_iterator it = _contactToFrictionData.find(contact);
+	if (it != _contactToFrictionData.end()) {
+		return it->second;
+	}
+	return NULL;
+}
+
+void TNTIslandState::setFrictionData(const TNTContact* contact, TNTFrictionModelData* data) {
+	clearFrictionData(contact);
+	if (data != NULL) {
+		_contactToFrictionData[contact] = data;
+	}
+}
+
+void TNTIslandState::clearFrictionData(const TNTContact* contact) {
+	TNTFrictionModelData* const data = getFrictionData(contact);
+	if (data != NULL)
+		delete data;
+	_contactToFrictionData.erase(contact);
+}
+
 std::list<TNTConstraint*> TNTIslandState::getTemporaryConstraints() const {
 	return _tempConstraints;
 }
@@ -228,6 +266,14 @@ void TNTIslandState::removeTemporaryConstraint(const TNTConstraint* constraint) 
 		} else {
 			it++;
 		}
+	}
+	const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint);
+	if (contact == NULL)
+		return;
+	std::map<const TNTContact*, TNTFrictionModelData*>::iterator itFriction = _contactToFrictionData.find(contact);
+	if (itFriction != _contactToFrictionData.end()) {
+		delete itFriction->second;
+		_contactToFrictionData.erase(itFriction);
 	}
 }
 

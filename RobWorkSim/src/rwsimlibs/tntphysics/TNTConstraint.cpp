@@ -85,7 +85,15 @@ Rotation3D<> TNTConstraint::getLinearRotationParentW(const TNTIslandState &state
 	return _parent->getWorldTcom(state).R()*_rotLinParent;
 }
 
+Rotation3D<> TNTConstraint::getLinearRotationParentForceW(const TNTIslandState &state) const {
+	return _parent->getWorldTcom(state).R()*_rotLinParent;
+}
+
 Rotation3D<> TNTConstraint::getLinearRotationChildW(const TNTIslandState &state) const {
+	return _child->getWorldTcom(state).R()*_rotLinChild;
+}
+
+Rotation3D<> TNTConstraint::getLinearRotationChildForceW(const TNTIslandState &state) const {
 	return _child->getWorldTcom(state).R()*_rotLinChild;
 }
 
@@ -285,7 +293,7 @@ Eigen::MatrixXd TNTConstraint::getLHS(const TNTConstraint* constraint, double h,
 	// Now we rotate the constraints and change to force and torque in local coordinates
 	const Rotation3D<> Rlin = getLinearRotationParentW(tntstate);
 	const Rotation3D<> Rang = getAngularRotationParentW(tntstate);
-	const Rotation3D<> RlinB = constraint->getLinearRotationParentW(tntstate);
+	const Rotation3D<> RlinB = constraint->getLinearRotationParentForceW(tntstate);
 	const Rotation3D<> RangB = constraint->getAngularRotationParentW(tntstate);
 	Eigen::Matrix<double,6,6> Rgen, RgenInv;
 	Rgen << inverse(Rlin).e(), Eigen::Matrix3d::Zero(),

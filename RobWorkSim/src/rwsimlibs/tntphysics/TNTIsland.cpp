@@ -104,11 +104,11 @@ PropertyMap TNTIsland::getDefaultPropertyMap() {
 	map.add<std::string>("TNTCollisionSolver","Default collision solver.","Chain");
 	TNTCollisionSolver::Factory::makeSolver("Chain")->addDefaultProperties(map);
 	map.add<std::string>("TNTSolver","Default constraint solver.","IterativeSVD");
-	const TNTSolver* const solver = TNTSolver::Factory::makeSolver("SVD",NULL,Vector3D<>::zero());
+	const TNTSolver* const solver = TNTSolver::Factory::makeSolver("IterativeSVD",NULL,Vector3D<>::zero());
 	solver->addDefaultProperties(map);
 	delete solver;
 	map.add<std::string>("TNTRollbackMethod","Default constraint solver.","Ridder");
-	map.add<std::string>("TNTContactResolver","Default contact resolver.","Heuristic");
+	map.add<std::string>("TNTContactResolver","Default contact resolver.","Full");
 	const TNTContactResolver* const resolver = TNTContactResolver::Factory::makeResolver("Full",NULL);
 	resolver->addDefaultProperties(map);
 	delete resolver;
@@ -410,7 +410,6 @@ void TNTIsland::doStep(double dt) {
 		const TNTBodyConstraintManager::ConstraintList constraints = _bc->getTemporaryConstraints(_state);
 		BOOST_FOREACH(const TNTConstraint* const constraint, constraints) {
 			if (const TNTContact* const contact = dynamic_cast<const TNTContact*>(constraint)) {
-				const TNTContact c = *contact;
 				TNT_DEBUG_CONTACTS(" - Known: " << contact->getContact());
 			}
 		}
@@ -461,6 +460,10 @@ void TNTIsland::doStep(double dt) {
 						// Hence these are set to zero.
 						BOOST_FOREACH(TNTConstraint* constraint, constraints) {
 							constraint->clearWrenchConstraint(*_state);
+							TNTContact* const contact = dynamic_cast<TNTContact*>(constraint);
+							if (contact != NULL) {
+								contact->reset(*_state,_rwstate);
+							}
 						}
 					}
 			}
@@ -603,7 +606,7 @@ void TNTIsland::position(IntegrateSample& sample, ContactDetectorData& cdData) c
 				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameA()->getName() << "\".");
 			if (bodyB == NULL)
 				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
-			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,sample.rwstate);
+			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,_materialMap->getFrictionModel(*bodyA,*bodyB),c,sample.rwstate);
 			tntcontacts.push_back(tntcontact);
 			constraints.push_back(tntcontact);
 		}
@@ -660,6 +663,7 @@ void TNTIsland::velocityAndForce(double dt, bool discontinuity, const IntegrateS
 			BOOST_FOREACH(TNTConstraint* constraint, constraints) {
 				constraint->clearWrench(sampleH.tntstate);
 				constraint->update(sampleH.tntstate,sampleH.rwstate);
+				constraint->step(sampleH.tntstate,sampleH.rwstate,dt);
 			}
 		}
 		// Contact & Constraint Force Resolution
@@ -695,7 +699,7 @@ bool TNTIsland::collisionSolver(TNTIslandState& tntstate, const State& rwstate) 
 			RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameA()->getName() << "\".");
 		if (bodyB == NULL)
 			RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
-		TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,rwstate);
+		TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,_materialMap->getFrictionModel(*bodyA,*bodyB),c,rwstate);
 		tracking.setUserData(id,TNTUtil::TNTUserData::make(tntcontact));
 		const Vector3D<> velI = tntcontact->getVelocityParentW(tntstate,rwstate).linear();
 		const Vector3D<> velJ = tntcontact->getVelocityChildW(tntstate,rwstate).linear();
@@ -777,8 +781,7 @@ double TNTIsland::rollbackBroadPhase(double dt, bool discontinuity, const Integr
 
 			const TNTRigidBody* const rbody = dynamic_cast<const TNTRigidBody*>(body);
 			if (rbody) {
-				const VelocityScrew6D<> vel = rbody->getVelocityW(first.tntstate);
-				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()) << " vel: " << vel.linear() << " " << vel.angular());
+				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()) << " vel: " << rbody->getVelocityW(first.tntstate).linear() << " " << rbody->getVelocityW(first.tntstate).angular());
 			} else {
 				TNT_DEBUG_INTEGRATOR(" - " << body->get()->getName() << " pos: " << pos.P() << " " << RPY<>(pos.R()));
 			}
@@ -1025,7 +1028,7 @@ void TNTIsland::storeResults(ContactDetectorData& cdData, IntegrateSample& sampl
 				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameA()->getName() << "\".");
 			if (bodyB == NULL)
 				RW_THROW("Could not find a TNTBody for frame \"" << c.getFrameB()->getName() << "\".");
-			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,c,sample.rwstate);
+			TNTContact* const tntcontact = new TNTContact(bodyA,bodyB,_materialMap->getFrictionModel(*bodyA,*bodyB),c,sample.rwstate);
 			tntcontacts.push_back(tntcontact);
 			constraints.push_back(tntcontact);
 		}

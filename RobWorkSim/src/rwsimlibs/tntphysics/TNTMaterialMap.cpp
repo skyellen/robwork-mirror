@@ -47,27 +47,29 @@ TNTMaterialMap::TNTMaterialMap(const ContactDataMap &contactDataMap, const Mater
 	_frictionModels.resize(maxMatId+1,std::vector<const TNTFrictionModel*>(maxMatId+1,NULL));
 	for (int i = 0; i < maxMatId; i++) {
 		for (int j = i; j < maxMatId; j++) {
-			const std::string modelId = "Coulomb";
+			std::string modelId;
 			PropertyMap parameters;
-			FrictionData data;
-			if (materialDataMap.hasFrictionData(i,j,Coulomb)) {
-				data = materialDataMap.getFrictionData(i,j,Coulomb);
-			} else {
-				data = materialDataMap.getDefaultFriction(Coulomb);
-			}
+			std::vector<FrictionData> datas = materialDataMap.getFrictionDatas(i,j);
 			bool found = false;
-			BOOST_FOREACH(const FrictionParam& pars, data.parameters) {
-				std::string parName = pars.first;
-				std::transform(parName.begin(), parName.end(),parName.begin(), ::toupper);
-				if (parName == "MU") {
-					RW_ASSERT(pars.second.size() > 0);
-					parameters.set("mu",pars.second[0]);
+			if (datas.size() == 0) {
+				const FrictionData& defData = materialDataMap.getDefaultFriction(Coulomb);
+				datas.push_back(defData);
+				datas.back().typeName = "Coulomb";
+			}
+			BOOST_FOREACH(const FrictionData& data, datas) {
+				modelId = data.typeName;
+				if (TNTFrictionModel::Factory::hasModel(modelId)) {
+					BOOST_FOREACH(const FrictionParam& pars, data.parameters) {
+						if (pars.second.size() == 1)
+							parameters.set(pars.first,pars.second[0]);
+					}
 					found = true;
 					break;
 				}
 			}
-			if (!found)
-				RW_THROW("TNTMaterialMap (TNTMaterialMap): Could not find correct friction data.");
+			if (!found) {
+				RW_THROW("TNTMaterialMap (TNTMaterialMap): Could not find correct friction data for \"" << _idToMat[i] << "\" and \"" << _idToMat[j] << "\".");
+			}
 			const TNTFrictionModel* model = TNTFrictionModel::Factory::makeModel(modelId, parameters);
 			_frictionModels[i][j] = model;
 			if (i != j)

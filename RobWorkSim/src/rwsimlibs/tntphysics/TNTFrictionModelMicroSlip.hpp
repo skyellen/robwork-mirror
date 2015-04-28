@@ -15,13 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELCOULOMB_HPP_
-#define RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELCOULOMB_HPP_
+#ifndef RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELMICROSLIP_HPP_
+#define RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELMICROSLIP_HPP_
 
 /**
- * @file TNTFrictionModelCoulomb.hpp
+ * @file TNTFrictionModelMicroSlip.hpp
  *
- * \copydoc rwsimlibs::tntphysics::TNTFrictionModelCoulomb
+ * \copydoc rwsimlibs::tntphysics::TNTFrictionModelMicroSlip
  */
 
 #include "TNTFrictionModel.hpp"
@@ -32,31 +32,39 @@ namespace tntphysics {
 
 //! @{
 /**
- * @brief A simple friction model with only tangential friction that is the same and constant
- * with respect to relative velocity.
+ * @brief A micro-slip friction model that models friction with hysteresis for small velocities,
+ * and uses Stribeck friction for large velocities.
  */
-class TNTFrictionModelCoulomb: public rwsimlibs::tntphysics::TNTFrictionModel {
+class TNTFrictionModelMicroSlip: public TNTFrictionModel {
 public:
 	//! @brief Default constructor.
-	TNTFrictionModelCoulomb();
+	TNTFrictionModelMicroSlip();
 
 	/**
 	 * @brief Construct from parameter map.
 	 * @param map [in] a map of properties with the required parameters for the model.
 	 */
-	TNTFrictionModelCoulomb(const rw::common::PropertyMap &map);
+	TNTFrictionModelMicroSlip(const rw::common::PropertyMap &map);
 
 	/**
 	 * @brief Create a model with given tangential friction.
-	 * @param mu [in] the coefficient of friction.
+	 * @param gamma [in]
+	 * @param r [in]
+	 * @param grossModel [in] the model to use for gross friction.
 	 */
-	TNTFrictionModelCoulomb(double mu);
+	TNTFrictionModelMicroSlip(double gamma, double r, const TNTFrictionModel* grossModel);
 
 	//! @brief Destructor.
-	virtual ~TNTFrictionModelCoulomb();
+	virtual ~TNTFrictionModelMicroSlip();
 
 	//! @copydoc TNTFrictionModel::withProperties
 	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const;
+
+	//! @copydoc TNTFrictionModel::makeDataStructure
+	virtual TNTFrictionModelData* makeDataStructure() const;
+
+	//! @copydoc TNTFrictionModel::updateData
+	virtual void updateData(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, double h, TNTFrictionModelData* data) const;
 
 	//! @copydoc TNTFrictionModel::getDryFriction
 	virtual DryFriction getDryFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const;
@@ -65,9 +73,14 @@ public:
 	virtual rw::math::Wrench6D<> getViscuousFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const;
 
 private:
-	double _mu;
+	class Data;
+
+	const double _gamma;
+	const double _r;
+	const TNTFrictionModel* const _grossModel;
+	const bool _ownsGrossModel;
 };
 //! @}
 } /* namespace tntphysics */
 } /* namespace rwsimlibs */
-#endif /* RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELCOULOMB_HPP_ */
+#endif /* RWSIMLIBS_TNTPHYSICS_TNTFRICTIONMODELMICROSLIP_HPP_ */

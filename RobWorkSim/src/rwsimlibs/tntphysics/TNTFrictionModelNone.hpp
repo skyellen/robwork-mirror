@@ -37,16 +37,19 @@ namespace tntphysics {
 class TNTFrictionModelNone: public rwsimlibs::tntphysics::TNTFrictionModel {
 public:
 	//! @brief Default constructor.
-	TNTFrictionModelNone() {};
+	TNTFrictionModelNone();
 
 	//! @brief Destructor.
-	virtual ~TNTFrictionModelNone() {};
+	virtual ~TNTFrictionModelNone();
 
 	//! @copydoc TNTFrictionModel::withProperties
-	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const { return this; };
+	virtual const TNTFrictionModel* withProperties(const rw::common::PropertyMap &map) const;
 
-	//! @copydoc TNTFrictionModel::getFriction
-	virtual Values getFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate) const { return Values(); };
+	//! @copydoc TNTFrictionModel::getDryFriction
+	virtual DryFriction getDryFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const;
+
+	//! @copydoc TNTFrictionModel::getViscuousFriction
+	virtual rw::math::Wrench6D<> getViscuousFriction(const TNTContact& contact, const TNTIslandState& tntstate, const rw::kinematics::State& rwstate, const TNTFrictionModelData* data) const;
 };
 //! @}
 } /* namespace tntphysics */

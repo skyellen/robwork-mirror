@@ -22,8 +22,10 @@ SET(SRC_FILES
 	TNTBodyConstraintManager.cpp
 	
 	TNTFrictionModel.cpp
+	TNTFrictionModelData.cpp
 	TNTFrictionModelNone.cpp
 	TNTFrictionModelCoulomb.cpp
+	TNTFrictionModelMicroSlip.cpp
 	
 	TNTRestitutionModel.cpp
 	TNTRestitutionModelNewton.cpp
@@ -47,7 +49,7 @@ SET(SRC_FILES
 	TNTContactResolver.cpp
 	TNTContactResolverNonPenetration.cpp
 	TNTContactResolverFull.cpp
-	TNTContactResolverHeuristic.cpp
+	#TNTContactResolverHeuristic.cpp
 	
 	TNTRollbackMethod.cpp
 	TNTRollbackMethodRidder.cpp
