@@ -1,6 +1,7 @@
-def myprog():
+def rwhw_urscript():
+	textmsg("PROGRAM STARTED")
     global qtarget = [ 0,0,0,0,0,0]
-    global posetarget = [ 0,0,0,0,0,0]
+    global posetarget = p[ 0,0,0,0,0,0]
     global dqtarget = [ 0,0,0,0,0,0 ]
     global speed = 0.75
     global thrd  = -1
@@ -14,7 +15,9 @@ def myprog():
     global wrench = [ 0,0,0,0,0,0]
     global force_limits = [ 0,0,0,0,0,0]
     global force_frame = p[0,0,0,0,0,0]
-
+    global mass = 0.0
+    global center_of_gravity = [0, 0, 0]
+	
     def stopRobot():
         enter_critical	  
         if thrd != -1:
@@ -112,28 +115,35 @@ def myprog():
     end
 
     def moveT():
+		textmsg("MOVET")
         #Reads in x,y,z,ax,ay,az,speed
         motionFinished = 0
-        #pose = socket_read_ascii_float(7)
-        #textmsg(pose)
-        #cnt = 0
-        #while cnt < pose[0]-1:
-            #posetarget[cnt] = pose[cnt+1]
-            #cnt = cnt + 1
-        #end
-        #q[0] is the length of the data, hence q[q[0]] is the last element
-        #speed = pose[pose[0]]
-        #textmsg("speed ")
-        #textmsg(speed)
-        #if thrd != -1:
-            #Kill thrd
-        #end
-        #enter_critical
+		cnt = 0
+		enter_critical
+        while cnt < 6:
+            posetarget[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
+            cnt = cnt + 1
+        end
+		exit_critical
+		
+        textmsg(posetarget)
+        
+        speed = receive_buffer[7]*FLOAT_SCALE
+    
+		enter_critical		
+        if thrd != -1:			
+            kill thrd
+            isServoing = 0
+            thrd = -1
+        end
+        exit_critical
+        
+        enter_critical
         #We only wish to start a new thread if our previous motion is finished
-        #if thrd == -1:
-            #thrd = run moveLthread()
-        #end
-        #exit_critical
+        if thrd == -1:
+            thrd = run moveLthread()
+        end
+        exit_critical
     end
 
     def servoQ():
@@ -198,8 +208,6 @@ def myprog():
             wrench[cnt] = receive_buffer[cnt+2]*FLOAT_SCALE
             cnt = cnt + 1
         end
-        textmsg("Wrench Update:")
-        textmsg(wrench)
 
         force_mode(force_frame, force_selection, wrench, 2, force_limits)
 
@@ -208,7 +216,7 @@ def myprog():
 	
 	
 	def force_mode_end():
-        force_mode_end()
+        end_force_mode()
 	end
 	
 	
@@ -236,10 +244,29 @@ $CB3    end_teach_mode()
 	end
 	
 	
+	def set_tcp_payload():
+		textmsg("Setting payload")
+    	cnt = 0
+		mass = receive_buffer[cnt+2]*FLOAT_SCALE
+		cnt = cnt + 1
+		while cnt < 4:
+			center_of_gravity[cnt - 1] = receive_buffer[cnt+2]*FLOAT_SCALE
+			cnt = cnt + 1
+		end
+	
+		textmsg("New payload: ")
+		textmsg(mass)
+		textmsg("Center of gravity: ")
+		textmsg(center_of_gravity)
+		
+		set_payload(mass, center_of_gravity) 
+    end
+
+	
 #
 # The main loop is running below
 #
-
+	
     #Setup the host name
     host = HOST
     port = PORT
@@ -281,7 +308,7 @@ $CB3    end_teach_mode()
         	isStopped = 0
             moveQ()
         elif receive_buffer[1] == 2: #2: Move to T
-        	isStopped = 0
+			isStopped = 0
             moveT()
         elif receive_buffer[1] == 3: #3: Servo to T
 			textmsg("servo")
@@ -302,6 +329,8 @@ $CB3    end_teach_mode()
             teach_mode_end()
 		elif receive_buffer[1] == 9: #9: Set IO
 			set_io()
+		elif receive_buffer[1] == 10: #10: Set Payload
+			set_tcp_payload()	
         elif receive_buffer[1] == 9999: #1: Do nothing
         	isStopped = 0
             #Right motion already taken

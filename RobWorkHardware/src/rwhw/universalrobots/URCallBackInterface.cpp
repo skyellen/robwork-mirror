@@ -15,6 +15,10 @@ using namespace rw::math;
 using namespace rwhw; 
 using namespace boost::asio::ip;
 
+namespace {
+	const double FLOAT_TO_INT_SCALE = 10000;
+}
+
 URCallBackInterface::URCallBackInterface():
     _stopServer(false),
     _robotStopped(true),
@@ -59,10 +63,9 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
     // load UR script
     std::string script;
     if (!filename.empty()) { // load UR script from file
-        RW_LOG_DEBUG("Loading UR script from the file: " << filename);
-        std::cout << "Loading UR script from file " << filename << "..." << std::endl;
+		RW_LOG_INFO("Loading UR script from the file: " << filename);
         std::ifstream infile(filename.c_str());
-        std::cout << "Script loaded." << std::endl;
+        RW_LOG_INFO("Script loaded.");
         // get length of file:
         infile.seekg (0, std::ios::end);
         long long length = infile.tellg();
@@ -124,20 +127,13 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
 
 	n = script.find("$");
 	while (n != std::string::npos) {	
-		std::cout<<"Found $"<<script.substr(n+1,3)<<std::endl;
 		if (script.substr(n+1,3) != cbId) {			
-			std::cout<<"Erase line "<<n<<" to "<<script.find("\n", n)<<std::endl;
 			script.erase(n, script.find("\n", n)-n+1);
 		} else {
-			std::cout<<"Erase symbol"<<std::endl;
 			script.erase(n, 4);
 		}
 		n = script.find("$");
 	}
-
-	std::ofstream outfile("d:\\temp\\scriptTestOut.txt");
-	outfile<<script<<std::endl;
-	outfile.close();
 
     // send script to robot
     RW_LOG_DEBUG("Sending script to the robot");
@@ -166,31 +162,43 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 namespace {
 
     void q2intVector(const Q& q, std::vector<int>& integers, int offset) {
+		RW_ASSERT(offset+q.size()-1 < integers.size());
         for (size_t i = 0; i<q.size(); i++) {
-            integers[offset+i] = (int)(q(i)*10000);
+            integers[offset+i] = static_cast<int>(q(i)*FLOAT_TO_INT_SCALE);
         }
     }
 
     void t2intVector(const Transform3D<>& transform, std::vector<int>& integers, int offset) {
-	const Vector3D<>& p = transform.P();
-	EAA<> eaa(transform.R());
+		RW_ASSERT(offset+5 < integers.size());
+		const Vector3D<>& p = transform.P();
+		EAA<> eaa(transform.R());
     
-        integers[offset] = p(0);
-        integers[offset+1] = p(1);
-        integers[offset+2] = p(2);
-        integers[offset+3] = eaa(0);
-        integers[offset+4] = eaa(1);
-        integers[offset+5] = eaa(2);
+        integers[offset] = p(0)*FLOAT_TO_INT_SCALE;
+        integers[offset+1] = p(1)*FLOAT_TO_INT_SCALE;
+        integers[offset+2] = p(2)*FLOAT_TO_INT_SCALE;
+        integers[offset+3] = eaa(0)*FLOAT_TO_INT_SCALE;
+        integers[offset+4] = eaa(1)*FLOAT_TO_INT_SCALE;
+        integers[offset+5] = eaa(2)*FLOAT_TO_INT_SCALE;
 
     }
 
+
+    void vector3d2intVector(const Vector3D<>& vec, std::vector<int>& integers, int offset) {
+		RW_ASSERT(offset+2 < integers.size());
+        integers[offset] = vec[0]*FLOAT_TO_INT_SCALE;
+		integers[offset+1] = vec[1]*FLOAT_TO_INT_SCALE;
+		integers[offset+2] = vec[2]*FLOAT_TO_INT_SCALE;
+    }
+
+
     void wrench2intVector(const Wrench6D<>& wrench, std::vector<int>& integers, int offset) {
-	integers[offset] = wrench.force()(0)*10000;
-	integers[offset+1] = wrench.force()(1)*10000;
-	integers[offset+2] = wrench.force()(2)*10000;
-	integers[offset+3] = wrench.torque()(0)*10000;
-	integers[offset+4] = wrench.torque()(1)*10000;
-	integers[offset+5] = wrench.torque()(2)*10000;
+		RW_ASSERT(offset+5 < integers.size());
+		integers[offset] = wrench.force()(0)*FLOAT_TO_INT_SCALE;
+		integers[offset+1] = wrench.force()(1)*FLOAT_TO_INT_SCALE;
+		integers[offset+2] = wrench.force()(2)*FLOAT_TO_INT_SCALE;
+		integers[offset+3] = wrench.torque()(0)*FLOAT_TO_INT_SCALE;
+		integers[offset+4] = wrench.torque()(1)*FLOAT_TO_INT_SCALE;
+		integers[offset+5] = wrench.torque()(2)*FLOAT_TO_INT_SCALE;
     }
 
 }
@@ -227,12 +235,12 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         break;
     case URScriptCommand::MOVEQ:
         q2intVector(cmd._q, integers, 1);
-        integers[7] = cmd._speed*10000;
+        integers[7] = cmd._speed*FLOAT_TO_INT_SCALE;
         _isMoving = true;
         break;
     case URScriptCommand::MOVET: 
         t2intVector(cmd._transform, integers, 1);
-        integers[7] = cmd._speed*10000;
+        integers[7] = cmd._speed*FLOAT_TO_INT_SCALE;
         _isMoving = true;
         break;
     case URScriptCommand::SERVOQ:
@@ -256,18 +264,19 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
         //_isMoving = true;
         break;
     case URScriptCommand::FORCE_MODE_END:
-        // Why nothing?
         break;
 	case URScriptCommand::TEACH_MODE_START:
-		//std::cout<<__FILE__<<"Teach Mode Start Command"<<std::endl;
 		break;
 	case URScriptCommand::TEACH_MODE_END:
-		//std::cout<<__FILE__<<"Teach Mode End Command"<<std::endl;
 		break;
 	case URScriptCommand::SET_DIGOUT:
 		integers[1] = cmd._id;
 		integers[2] = cmd._bValue;
 		break;
+    case URScriptCommand::SET_PAYLOAD:
+		integers[1] = cmd._mass*FLOAT_TO_INT_SCALE;
+		vector3d2intVector(cmd._centerOfGravity, integers, 2);
+        break;    
 	default:
         RW_LOG_DEBUG("Unsupported command: " << cmd._type);
         RW_THROW("Unsupported command type: " << cmd._type);
@@ -276,10 +285,6 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket) {
     RW_LOG_DEBUG("Sending command to robot...");
     URCommon::send(&socket, integers);
     RW_LOG_DEBUG("Command to robot sent");
-    //std::cout<<"Sends: "<<std::endl;
-    //BOOST_FOREACH(int i, integers) {
-    //	std::cout<<i<<" "<<std::endl;
-    //}
 
     if (cmd._type != URScriptCommand::SERVOQ) {                
         RW_LOG_DEBUG("Popping commands as the command type was not SERVOQ");
@@ -370,6 +375,7 @@ void URCallBackInterface::run() {
 
 
 void URCallBackInterface::stopRobot() {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::stopRobot()");
     //std::cout<<"RWHW Stop UR"<<std::endl;
     //_commands.push(URScriptCommand(URScriptCommand::STOP));
     boost::mutex::scoped_lock lock(_mutex);
@@ -389,32 +395,27 @@ void URCallBackInterface::popAllUpdateCommands() {
 }
 
 void URCallBackInterface::moveQ(const rw::math::Q& q, float speed) {
-    //std::cout<<"Received a moveQ to "<<q<<std::endl;
+    RW_LOG_DEBUG("rwhw::URCallBackInterface::moveQ("<<q<<","<<speed<<")");
     boost::mutex::scoped_lock lock(_mutex);
     
     popAllUpdateCommands();
 
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q, speed));
-/* FIXME:
- * These kinds of output messages should be converted to RobWork debug (and/or log) messages, so they can easily be enabled and disabled.
- */
-    //std::cout<<"Number of commands on queue = "<<_commands.size()<<std::endl;
     _robotStopped = false;
-//    _isMoving = true;
 }
 
 void URCallBackInterface::moveT(const rw::math::Transform3D<>& transform, float speed) {
-    //std::cout<<"Received a moveT to "<<transform<<std::endl;
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::moveT("<<transform<<","<<speed<<")");
     boost::mutex::scoped_lock lock(_mutex);
 
     popAllUpdateCommands();
 
     _commands.push(URScriptCommand(URScriptCommand::MOVET, transform));
     _robotStopped = false;
-//    _isMoving = true;
 } 
 
 void URCallBackInterface::servo(const rw::math::Q& q) {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::servo("<<q<<")");
     boost::mutex::scoped_lock lock(_mutex);
 
     popAllUpdateCommands();
@@ -426,7 +427,8 @@ void URCallBackInterface::servo(const rw::math::Q& q) {
 
 
 void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref, const rw::math::Q& selection, const rw::math::Wrench6D<>& wrench, const rw::math::Q& limits) {
-    boost::mutex::scoped_lock lock(_mutex);
+    RW_LOG_DEBUG("rwhw::URCallBackInterface::forceModeStart("<<base2ref<<","<<selection<<","<<wrench<<","<<limits<<")");
+	boost::mutex::scoped_lock lock(_mutex);
 
     popAllUpdateCommands();
 
@@ -435,6 +437,7 @@ void URCallBackInterface::forceModeStart(const rw::math::Transform3D<>& base2ref
 }
 
 void URCallBackInterface::forceModeUpdate(const rw::math::Wrench6D<>& wrench) {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::forceModeUpdate("<<wrench<<")");
     boost::mutex::scoped_lock lock(_mutex);
 
     popAllUpdateCommands();
@@ -444,6 +447,7 @@ void URCallBackInterface::forceModeUpdate(const rw::math::Wrench6D<>& wrench) {
 
 
 void URCallBackInterface::forceModeEnd() {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::forceModeEnd()");
     boost::mutex::scoped_lock lock(_mutex);
     popAllUpdateCommands();
 	URScriptCommand cmd(URScriptCommand::FORCE_MODE_END);
@@ -452,6 +456,7 @@ void URCallBackInterface::forceModeEnd() {
 
 
 void URCallBackInterface::teachModeStart() {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::teachModeStart()");
 	if (_cb < CB3)
 		RW_THROW("Teach Mode Start is not supported on controller boxes older than CB3");
 	boost::mutex::scoped_lock lock(_mutex);
@@ -461,6 +466,7 @@ void URCallBackInterface::teachModeStart() {
 }
 
 void URCallBackInterface::teachModeEnd() {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::teachModeEnd()");
 	if (_cb < CB3)
 		RW_THROW("Teach Mode End is not supported on controller boxes older than CB3");
 
@@ -470,7 +476,17 @@ void URCallBackInterface::teachModeEnd() {
 }
 
 void URCallBackInterface::setDigitalOutput(int id, bool value) {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::setDigitalOutput(id="<<id<<", value="<<value<<")");
 	boost::mutex::scoped_lock lock(_mutex);
 	_commands.push(URScriptCommand(URScriptCommand::SET_DIGOUT, id, value));
 	_robotStopped = false;
+}
+
+void URCallBackInterface::setPayload(double mass, const Vector3D<>& centerOfGravity) {
+	RW_LOG_DEBUG("rwhw::URCallBackInterface::setPayLoad("<<mass<<","<<centerOfGravity<<")");
+    boost::mutex::scoped_lock lock(_mutex);
+    popAllUpdateCommands();
+
+    _commands.push(URScriptCommand(URScriptCommand::SET_PAYLOAD, mass, centerOfGravity));
+    _robotStopped = false;
 }

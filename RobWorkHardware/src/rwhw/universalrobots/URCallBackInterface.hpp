@@ -161,6 +161,13 @@ public:
 	 * @param value [in] True means the Output is high
 	 */
 	void setDigitalOutput(int id, bool value);
+
+	/**
+	 * @brief Sets the payload of the tcp and the center of gravity.
+	 * @param mass [in] The mass in kg
+	 * @param centerOfGravity [in] The center of gravity relative to the tool mount 
+	 */
+	void setPayload(double mass, const rw::math::Vector3D<>& centerOfGravity);
 	 
 private:
     private:
@@ -183,7 +190,7 @@ private:
 	class URScriptCommand {
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, DO_NOTHING = 9999 };
+		enum CmdType { STOP = 0, MOVEQ = 1, MOVET = 2, SERVOQ = 3, FORCE_MODE_START = 4, FORCE_MODE_UPDATE = 5, FORCE_MODE_END = 6, TEACH_MODE_START = 7, TEACH_MODE_END = 8, SET_DIGOUT = 9, SET_PAYLOAD = 10, DO_NOTHING = 9999 };
 
             URScriptCommand(CmdType type, const rw::math::Q& q, float speed):
                 _type(type),
@@ -236,6 +243,12 @@ private:
 				_bValue(bValue)
 			{}
 
+			 URScriptCommand(CmdType type, double mass, const rw::math::Vector3D<>& centerOfGravity):
+				_type(type),
+				_mass(mass),
+				_centerOfGravity(centerOfGravity)
+			{}
+
             CmdType _type;
             rw::math::Q _q;
             rw::math::Transform3D<> _transform;
@@ -246,6 +259,8 @@ private:
             float _speed;
 			int _id;
 			bool _bValue;
+			float _mass;
+			rw::math::Vector3D<> _centerOfGravity;
 	};
 
 	std::queue<URScriptCommand> _commands;
