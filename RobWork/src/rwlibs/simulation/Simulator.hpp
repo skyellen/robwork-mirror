@@ -23,6 +23,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/sensor/Sensor.hpp>
+#include <rwlibs/control/Controller.hpp>
 
 namespace rwlibs {
 namespace simulation {
@@ -114,6 +115,13 @@ namespace simulation {
          * @brief get propertymap of this simulator
          */
         virtual rw::common::PropertyMap& getPropertyMap() = 0;
+
+        //! get sensor with specific name
+        virtual rw::sensor::Sensor::Ptr getSensor(const std::string& name){ return NULL; }
+
+        //! get controller with specific name
+        virtual rwlibs::control::Controller::Ptr getController(const std::string& name){ return NULL; };
+
 
         /**
          * @brief get sensorhandle to a statefull instance of the simulated sensor, controlling
