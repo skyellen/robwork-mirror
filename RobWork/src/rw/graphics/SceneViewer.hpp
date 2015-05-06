@@ -1,6 +1,6 @@
 
-#ifndef SCENEVIEWER_HPP_
-#define SCENEVIEWER_HPP_
+#ifndef RW_GRAPHICS_SCENEVIEWER_HPP_
+#define RW_GRAPHICS_SCENEVIEWER_HPP_
 
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
