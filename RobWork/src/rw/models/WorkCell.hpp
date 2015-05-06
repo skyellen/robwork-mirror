@@ -352,6 +352,63 @@ namespace rw { namespace models {
         }
 
 
+        /**
+         * @brief Returns controller with the specified name.
+         *
+         * If multiple controlelrs has the same name, the first controller encountered
+         * will be returned. If no controller is found, the method returns NULL.
+         *
+         * @param name [in] name of controller.
+         *
+         * @return The controller with name \b name or NULL if no such controller.
+         */
+        rw::models::ControllerModel::Ptr findController(const std::string& name) const;
+
+        /**
+         * @brief Returns controller with the specified name and type \b T.
+         *
+         * @param name [in] name of controller.
+         *
+         * @return The sensor with name \b name or NULL if no such sensor or the sensor is not of type \b T.
+         */
+        template<class T>
+        rw::common::Ptr<T> findController(const std::string& name) const{
+            ControllerModel::Ptr sensor = findController(name);
+            if(sensor==NULL)
+                return NULL;
+            return sensor.cast<T>();
+        }
+
+        /**
+         * @brief Returns all controllers of a specific type \b T.
+         */
+        template<class T>
+        std::vector<rw::common::Ptr<T> > findControllers() const{
+            const std::vector<ControllerModel::Ptr> sensors = _controllers;
+            std::vector<rw::common::Ptr<T> > result;
+            BOOST_FOREACH(ControllerModel::Ptr f, sensors){
+                rw::common::Ptr<T> res = f.cast<T>();
+                if(res!=NULL)
+                    result.push_back(res);
+            }
+            return result;
+        }
+
+        /**
+         * @brief Returns all frames in workcell
+         * @return List of all frames
+         */
+        std::vector<ControllerModel::Ptr> getControllers() const {
+            std::vector<ControllerModel::Ptr> sensors;
+            BOOST_FOREACH(ControllerModel::Ptr sensor, _controllers){
+                if(sensor!=NULL)
+                    sensors.push_back(sensor);
+            }
+
+            return sensors;
+        }
+
+
 		/**
 		 * @brief Returns all object in the work cell
 		 *

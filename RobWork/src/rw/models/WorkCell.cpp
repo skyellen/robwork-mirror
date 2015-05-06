@@ -242,6 +242,15 @@ rw::sensor::SensorModel::Ptr WorkCell::findSensor(const std::string& name) const
     return NULL;
 }
 
+rw::models::ControllerModel::Ptr WorkCell::findController(const std::string& name) const
+{
+    BOOST_FOREACH(ControllerModel::Ptr controller, _controllers){
+        if(name == controller->getName())
+            return controller;
+    }
+    return NULL;
+}
+
 Object::Ptr WorkCell::findObject(const std::string& name) const
 {
     BOOST_FOREACH(Object::Ptr obj, _objects){
