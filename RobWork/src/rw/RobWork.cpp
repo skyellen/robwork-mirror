@@ -67,7 +67,7 @@ RobWork::~RobWork(void)
 }
 
 void RobWork::initialize(const std::vector<std::string>& plugins){
-    Log::infoLog() << "Initializing ROBWORK" << std::endl;
+    Log::debugLog() << "Initializing ROBWORK" << std::endl;
 
     // user supplied arguments will always be taken into account
 
@@ -81,7 +81,7 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     char* rwRootVar = getenv("RW_ROOT");
 
     if( rwRootVar != NULL ){
-    	Log::infoLog() << "Found RobWork root dir in environment variable RW_ROOT..." << std::endl;
+    	Log::debugLog() << "Found RobWork root dir in environment variable RW_ROOT..." << std::endl;
         // create the file in default current location
         PropertyMap plugins;
 
@@ -106,17 +106,17 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
         _settings.add("plugins","List of plugins or plugin locations",plugins);
 
     } else if( exists(rwsettingsPath) ){
-    	Log::infoLog() << "Found robwork configuration file in execution directory..." << std::endl;
+    	Log::debugLog() << "Found robwork configuration file in execution directory..." << std::endl;
         _settings = DOMPropertyMapLoader::load( rwsettingsPath );
         _settings.add("cfgfile", "", rwsettingsPath );
     } else if( exists( RWCFGFILE ) ){
-    	Log::infoLog() << "Found robwork configuration filr in global configuration directory:\n\t" << std::string(RWCFGFILE) << std::endl;
+    	Log::debugLog() << "Found robwork configuration filr in global configuration directory:\n\t" << std::string(RWCFGFILE) << std::endl;
     	rwsettingsPath = std::string(RWCFGFILE);
         _settings = DOMPropertyMapLoader::load( rwsettingsPath );
     	_settings.add("cfgfile", "", rwsettingsPath );
     } else if( exists( std::string(RW_BUILD_DIR) ) ){
     	// check if the build directory exist
-    	Log::infoLog() << "Found robwork in build directory: \"" << std::string(RW_BUILD_DIR) << "\""<< std::endl;
+    	Log::debugLog() << "Found robwork in build directory: \"" << std::string(RW_BUILD_DIR) << "\""<< std::endl;
     	std::string buildDir( RW_BUILD_DIR );
 
         // create the file in default current location
@@ -136,14 +136,14 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     PropertyMap pluginsMap = _settings.get<PropertyMap>("plugins",PropertyMap());
 
     // add user defined plugin hints
-    Log::infoLog() << "Adding plugins from arguments:\n";
+    Log::debugLog() << "Adding plugins from arguments:\n";
     for(size_t i=0;i<plugins.size();i++){
     	std::stringstream sstr;
     	sstr << "loc-from-arg-" << i;
     	pluginsMap.add(sstr.str(), "Plugin location from init arguments", plugins[i]);
     }
 
-    Log::infoLog() << "Looking for RobWork plugins in following directories:\n";
+    Log::debugLog() << "Looking for RobWork plugins in following directories:\n";
     BOOST_FOREACH( PropertyBase::Ptr prop , pluginsMap.getProperties()){
     	// check if its a
     	Property<std::string>::Ptr propstr = prop.cast<Property<std::string> >();
@@ -151,11 +151,11 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     		continue;
 
     	cfgDirs.push_back( propstr->getValue() );
-    	Log::infoLog() << "\t" << propstr->getValue() << std::endl;
+    	Log::debugLog() << "\t" << propstr->getValue() << std::endl;
     }
 
     std::vector<std::string> pluginsFiles;
-    Log::infoLog() << "Loading plugins:\n";
+    Log::debugLog() << "Loading plugins:\n";
     BOOST_FOREACH(std::string dir, cfgDirs){
     	path file( dir );
     	Log::debugLog() << " processing hint: " << dir << std::endl;
@@ -204,7 +204,7 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     	}
 
 		_pluginChangedMap[key] = time;
-		Log::infoLog() << "\t " <<  pfilename << std::endl;
+		Log::debugLog() << "\t " <<  pfilename << std::endl;
 		try {
 			rw::common::Ptr<Plugin> plugin = Plugin::load( pfilename );
 			reg->registerExtensions(plugin);
@@ -262,9 +262,10 @@ void RobWork::init(int argc, const char* const * argv){
         ("rwplugin", value<std::vector<std::string> >()->multitoken(), "Specific RobWork plugins or plugin directories to load. ")
     	("rwroot", value<std::string>(), "Directory of RobWork installation or development environment.")
     ;
+    //command_line_parser(argc,argv);
     positional_options_description optionDesc;
     variables_map vm;
-    store(command_line_parser(argc, argv).
+    store(command_line_parser(argc, argv).allow_unregistered().
               options(desc).positional(optionDesc).run(), vm);
     notify(vm);
 
