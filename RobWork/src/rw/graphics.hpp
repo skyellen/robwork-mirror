@@ -21,8 +21,8 @@
  */
 
 
-#ifndef RW_TRAJECTORY_HPP_
-#define RW_TRAJECTORY_HPP_
+#ifndef RW_GRAPHICS_HPP_
+#define RW_GRAPHICS_HPP_
 
 #include "./graphics/DrawableGeometryNode.hpp"
 #include "./graphics/DrawableNode.hpp"
