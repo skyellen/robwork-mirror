@@ -289,7 +289,7 @@ int ProgramOptions::parse(const std::string& str){
 #else
         std::vector<std::string> args = po::split_unix(str);
 #endif
-        po::store(po::command_line_parser(args).
+        po::store(po::command_line_parser(args).allow_unregistered().
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
         po::notify(vm);
         return checkVariablesMap(vm);
@@ -304,7 +304,7 @@ int ProgramOptions::parse(const std::string& str){
 int ProgramOptions::parse(int argc, char** argv){
 	try {
         po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).
+        po::store(po::command_line_parser(argc, argv).allow_unregistered().
                   options(_optionDesc).positional(_posOptionDesc).run(), vm);
 		po::notify(vm);
 		return checkVariablesMap(vm);
