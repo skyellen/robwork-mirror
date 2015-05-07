@@ -24,8 +24,6 @@
 #include <rw/math/Q.hpp>
 #include <boost/foreach.hpp>
 
-using namespace rw::math;
-
 namespace rw {
 namespace trajectory {
 
@@ -254,7 +252,7 @@ private:
 			 * @copydoc TrajectoryIterator::x()
 			 */
 			T x() const {
-				const Trajectory<Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
+				const Trajectory<rw::math::Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
 				return traj->x(_trajectory->time(_time, _currentIndex));
 			}
 
@@ -262,7 +260,7 @@ private:
 			 * @copydoc TrajectoryIterator::dx()
 			 */
 			T dx() const {
-				const Trajectory<Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
+				const Trajectory<rw::math::Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
 				return traj->dx(_trajectory->time(_time, _currentIndex));
 			}
 
@@ -270,7 +268,7 @@ private:
 			 * @copydoc TrajectoryIterator::ddx()
 			 */
 			T ddx() const {
-				const Trajectory<Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
+				const Trajectory<rw::math::Q>::Ptr& traj = _trajectory->_trajectories[_currentIndex];
 				return traj->ddx(_trajectory->time(_time, _currentIndex));
 			}
 
