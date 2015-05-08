@@ -27,6 +27,7 @@
 using namespace rwlibs::calibration;
 using namespace rw::common;
 using namespace rw::loaders;
+using namespace rw::math;
 using namespace rw;
 
 namespace { 
@@ -52,9 +53,16 @@ DOMElem::Ptr ElementCreator::createElement<FixedFrameCalibration::Ptr>(
 	DOMElem::Ptr element = parent->addChild("FixedFrameCalibration");
 	element->addAttribute("frame")->setValue(calibration->getFrame()->getName());
 	DOMElem::Ptr transformElement = element->addChild("Transform3D");//Name does not matter, it is overwritten in the DOMBasisTypes::write anyway.
-//	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );
+//	transformElement->addAttribute("isPostCorrection")->setValue( calibration->isPostCorrection() );	
 	rw::math::Transform3D<> correction = calibration->getCorrectionTransform();
 	DOMBasisTypes::write(correction, transformElement, true);
+
+
+	//Add the rotation in RPY just to make it easier for the user to see it.
+	DOMElem::Ptr rpyElement = element->addChild("RPY");//Name does not matter, it is overwritten in the DOMBasisTypes::write anyway.	
+	DOMBasisTypes::createRPY(RPY<>(correction.R()), element);
+
+
 
 	return element;
 }

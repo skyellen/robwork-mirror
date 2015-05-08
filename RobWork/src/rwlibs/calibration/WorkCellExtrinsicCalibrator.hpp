@@ -64,6 +64,15 @@ public:
 	 */
 	void setMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements);
 
+
+	void setUseRotation(bool useRotation) {
+		_useRotation = useRotation;
+	}
+
+	void setUsePosition(bool usePosition) {
+		_usePosition = usePosition;
+	}
+
 	/**
 	 * @brief Set the name of the primary device in the calibration.
 	 * The base of the primary device is kept fixed, hence other frames are moved relative to it.
@@ -84,7 +93,7 @@ private:
 	public:
 		std::string device;
 		std::string sensor;
-		rw::math::Transform3D<> base2sensor;
+		rw::math::Transform3D<> sensor2base;
 		rw::math::Transform3D<> tool2marker;
 		int cnt;
 	};
@@ -95,6 +104,9 @@ private:
 
 	rw::math::Transform3D<> getFK(const std::string& device, const std::string& markerFrame, const rw::math::Q& q);
 	rw::math::Transform3D<> getFK(CalibrationMeasurement::Ptr measurement);
+
+	bool _useRotation;
+	bool _usePosition;
 };
 
 

@@ -7,6 +7,8 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 
+#include <iomanip>
+
 
 using namespace rw::math;
 using namespace rw::models;
@@ -43,6 +45,7 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 
 	std::vector<Device2SensorResult> results;	
 	for (StringMeasurementMap::iterator it = sortedMeasurements.begin(); it != sortedMeasurements.end(); ++it) {
+		//std::cout<<"Calibrate "<<(*it).first<<" which has "<<(*it).second.size()<<" measurements "<<std::endl;		
 		calibrateForSingleDevice((*it).first, (*it).second, results);
 	}
 
@@ -71,66 +74,95 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 		const std::string name = (*it).first;
 		Vector3D<> pos = positions[name] /= (double)cnts[name];
 		Vector3D<> eaavec = eaas[name] /= (double)cnts[name];
-		//std::cout<<"Marker Correction Pos = "<<pos<<"  EAA="<<eaavec<<std::endl;
+		//std::cout<<"Marker "<<(*it).first<<" Correction Pos = "<<pos<<"  EAA="<<eaavec<<std::endl;
 		workcellCalibration->getFixedFrameCalibrationForMarker((*it).first)->setCorrectionTransform(Transform3D<>(pos, EAA<>(eaavec(0), eaavec(1), eaavec(2)))); 		
 	}
 
 
 	//Find the offset of the sensors
 	std::string primaryDevice = workcellCalibration->getDeviceMarkerPairs().front().first->getName();
-	//std::cout<<"Primary Device = "<<primaryDevice<<std::endl;
+	//std::cout<<"Primary Device = "<<primaryDevice<<std::endl;	
+	std::map<std::string, Transform3D<> > primaryDevice2Sensor;
+	std::map<std::pair<std::string, std::string>, Transform3D<>> secondaryDeviceTransforms;
 	BOOST_FOREACH(Device2SensorResult res, results) {		
-		//std::cout<<"Result: "<<std::endl;
-		//std::cout<<" base2sensor = "<<res.base2sensor<<std::endl;
+		//std::cout<<"Result: "<<res.device<<std::endl;
+		//std::cout<<" base2sensor = "<<res.sensor2base<<std::endl;
 		//std::cout<<" end2marker = "<<res.tool2marker<<std::endl;
 
 		if (res.device == primaryDevice) {
 			Frame* baseFrame = _workcell->findDevice(res.device)->getBase();
 			Frame* sensorFrame = _workcell->findFrame(res.sensor);
 			Transform3D<> Tsensor2base = Kinematics::frameTframe(sensorFrame, baseFrame, _workcell->getDefaultState());
-			Transform3D<> Tcorrection = Tsensor2base * inverse(res.base2sensor);
-//			std::cout<<"Sensor Correction = "<<Tcorrection<<std::endl;
+			Transform3D<> Tcorrection = Tsensor2base * inverse(res.sensor2base);
 			workcellCalibration->getFixedFrameCalibrationForSensor(res.sensor)->setCorrectionTransform(Tcorrection);
-
+			//std::cout<<"Sensor "<<res.sensor<<" correction = "<<Tcorrection<<std::endl;
 			Transform3D<> Tbase2sensor= Kinematics::frameTframe(baseFrame, sensorFrame, _workcell->getDefaultState());
+			primaryDevice2Sensor[res.sensor] = Tcorrection;
 		} else {
-			RW_THROW("Inconsistency between the primary device and the device for which the result has been computed.");			
+			if (secondaryDeviceTransforms.find(std::make_pair(res.device, res.sensor)) != secondaryDeviceTransforms.end()) {
+				RW_THROW("For some reason the device sensor pair "<<res.device<<" and "<<res.sensor<<" is represented several times in the result!");
+			}
+			secondaryDeviceTransforms[std::make_pair(res.device, res.sensor)] = res.sensor2base;
 		}
 	}
+
+	//Runs through the device, sensor pairs and compute the corresponding corrections.
+	std::map<std::string, std::vector<Transform3D<> > > deviceBaseCorrections;
+	for (std::map<std::pair<std::string, std::string>, Transform3D<> >::iterator it = secondaryDeviceTransforms.begin(); it != secondaryDeviceTransforms.end(); ++it) {
+		const std::string& deviceName = (*it).first.first;
+		const std::string& sensorName = (*it).first.second;
+		const Transform3D<>& sensor2base = (*it).second;
+		
+		Frame* baseFrame = _workcell->findDevice(deviceName)->getBase();
+		Frame* sensorFrame = _workcell->findFrame(sensorName);
+		Transform3D<> Tsensor2baseModel = Kinematics::frameTframe(sensorFrame, baseFrame, _workcell->getDefaultState());
+		Transform3D<> Tcorrection = inverse(Tsensor2baseModel)*primaryDevice2Sensor[sensorName] * sensor2base;
+		//std::cout<<"Sensor Correction for Secondary Device = "<<Tcorrection<<std::endl;		
+		deviceBaseCorrections[deviceName].push_back(Tcorrection);
+	}
+
+	//Average the corrections
+	for (std::map<std::string, std::vector<Transform3D<> > >::iterator it = deviceBaseCorrections.begin(); it != deviceBaseCorrections.end(); ++it) {
+		const std::vector<Transform3D<> >& corrections = (*it).second;
+		Vector3D<> eaas(0,0,0);
+		Vector3D<> pos(0,0,0);
+		BOOST_FOREACH(const Transform3D<>& correction, corrections) {
+			EAA<> eaa(correction.R());
+			eaas += eaa.axis() * eaa.angle();
+			pos += correction.P();
+		}
+		eaas /= (*it).second.size();
+		pos /= (*it).second.size();
+		Transform3D<> Tcorrection(pos, EAA<>(eaas(0), eaas(1), eaas(2)));
+	//	std::cout<<"Final Correction for Secondary Device = "<<Tcorrection<<std::endl;		
+		workcellCalibration->getFixedFrameCalibrationForDevice((*it).first)->setCorrectionTransform(Tcorrection);
+	}
+
 }
 
 void WorkCellExtrinsicCalibrator::calibrateForSingleDevice(const std::string& deviceName, const std::vector<CalibrationMeasurement::Ptr>& measurements, std::vector<Device2SensorResult>& results) {
 	typedef std::map<std::string, std::vector<CalibrationMeasurement::Ptr> > StringMeasurementMap;
 	StringMeasurementMap sortedMeasurements;
 
-	BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, _measurements) {
+	BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, measurements) {
+		//std::cout<<"\tMeasurement = "<<measurement->getDeviceName()<<" "<<measurement->getMarkerFrameName()<<" "<<measurement->getSensorFrameName()<<" "<<measurement->getQ()(0)<<std::endl;
 		sortedMeasurements[measurement->getSensorFrameName()].push_back(measurement);
 	}
-	Vector3D<> eaaAvg(0,0,0);
-	Vector3D<> posAvg(0,0,0);
+//	std::cout<<"Measurement Count = "<<measurements.size()<<std::endl;
 	int cnt = 0;
 	for (StringMeasurementMap::iterator it = sortedMeasurements.begin(); it != sortedMeasurements.end(); ++it) {
 		Device2SensorResult result;
 		result.device = deviceName;
 		result.sensor = (*it).first; //The sensor name
 		//std::pair<Transform3D<>, Transform3D<> > res = 
+//		std::cout<<"Calibrate "<<deviceName<<" and "<<(*it).first<<" with "<<(*it).second.size()<<" measurements "<<std::endl;
 		calibrateSingleDeviceAndSensor((*it).second, result);
 		results.push_back(result);
-		EAA<> eaaBase(result.base2sensor.R());
+		//std::cout<<"Result = "<<result.device<<std::endl;
+		//std::cout<<"\tsensor = "<<result.sensor<<std::endl;
+		//std::cout<<"\tsensor2base = "<<result.sensor2base<<std::endl;
+		//std::cout<<"\ttool2marker = "<<result.tool2marker<<std::endl;
 	}
-/*
-	eaaAvg /= (double)cnt;
-	posAvg /= (double)cnt;
-	std::cout<<"Final Result = "<<std::endl;
-	std::cout<<"eaa = "<<eaaAvg<<std::endl;
-	std::cout<<"Pos = "<<posAvg<<std::endl;*/
-	//char ch[3]; std::cin.getline(ch, 1);
-
-	/*
-	FixedFrameCalibration::Ptr calibration = workcellCalibration->getFixedFrameCalibrationForMarker(markerFrameName);
-	calibration->setCorrectionTransform(Transform3D<>(posAvg, EAA<>(eaaAvg(0), eaaAvg(1), eaaAvg(2)));
-	*/
-
 }
 
 Transform3D<> WorkCellExtrinsicCalibrator::getFK(const std::string& device, const std::string& markerFrame, const Q& q) {
@@ -158,6 +190,7 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, measurements) {
 		//std::cout<<"p org="<<measurement->getTransform().P()<<std::endl;
 		p_avg += measurement->getTransform().P().e();
+		//std::cout<<"Measurement: "<<measurement->getTransform().P()<<std::endl;
 	}
 	p_avg /= K;
 	//std::cout<<"p_avg = "<<p_avg<<std::endl;
@@ -174,26 +207,39 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	Transform3D<>** Bij = new Transform3D<>*[K];
 	EAA<>** alphaij = new EAA<>*[K];
 	EAA<>** betaij = new EAA<>*[K];
+//	std::cout<<"=================="<<std::endl;
 	for (size_t i = 0; i<K; i++) {
+		//if (i < 2) {
+		//	std::cout<<i<<": Q = "<<measurements[i]->getQ()<<std::endl<<std::endl;
+		//	std::cout<<i<<": FK = "<<getFK(measurements[i])<<std::endl<<std::endl;
+		//	std::cout<<i<<": Measurement = "<<measurements[i]->getTransform()<<std::endl<<std::endl;
+		//}
 		Aij[i] = new Transform3D<>[K];
 		Bij[i] = new Transform3D<>[K];
 		alphaij[i] = new EAA<>[K];
 		betaij[i] = new EAA<>[K];
 		for (size_t j = 0; j<K; j++) {
+			//if (j < 2) {
+			//	std::cout<<j<<": Q = "<<measurements[j]->getQ()<<std::endl<<std::endl;
+			//	std::cout<<j<<": FK = "<<getFK(measurements[j])<<std::endl<<std::endl;
+			//	std::cout<<j<<": Measurement = "<<measurements[j]->getTransform()<<std::endl<<std::endl;
+			//}
+
 			Aij[i][j] = measurements[i]->getTransform() * inverse(measurements[j]->getTransform());
 			//std::cout<<"Measumement["<<i<<"] = "<<measurements[i]->getTransform()<<std::endl;
-			//std::cout<<"Measumement["<<j<<"] = "<<measurements[j]->getTransform()<<std::endl;
+			//std::cout<<"Measumement["<<j<<"] = "<<measurements[j]->getTransform()<<std::endl;			
 			Bij[i][j] = getFK(measurements[i]) * inverse(getFK(measurements[j]));
 			alphaij[i][j] = EAA<>(Aij[i][j].R());
 			betaij[i][j] = EAA<>(Bij[i][j].R());
-			////if (i == 0 && j == 1) 
+			//if (i == 0 && j == 1) 
 			//{
 			//	std::cout<<"Aij["<<i<<","<<j<<"] = "<<Aij[i][j]<<std::endl;
 			//	std::cout<<"Bij["<<i<<","<<j<<"] = "<<Bij[i][j].P()<<std::endl;
 			//	std::cout<<"alphaij["<<i<<","<<j<<"] = "<<alphaij[i][j]<<std::endl;
 			//	std::cout<<"betaij["<<i<<","<<j<<"] = "<<betaij[i][j]<<std::endl;
+			//	char ch[4]; std::cin.getline(ch, 1);
 			//}
-			//char ch[4]; std::cin.getline(ch, 1);
+			
 		}
 	}
 
@@ -234,8 +280,9 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 		//	std::cout<<"beta["<<k<<"] = "<<beta.transpose()<<std::endl;
 		//	std::cout<<"Gamma["<<k<<"] = "<<Gamma<<std::endl;
 		//	std::cout<<"p["<<k<<"] = "<<p.transpose()<<std::endl;
+		//	char ch[2]; std::cin.getline(ch, 1);
 		//}
-		//char ch[2]; std::cin.getline(ch, 1);
+		
 	}
 	//BOOST_FOREACH(const Eigen::MatrixXd& ra, RA_k) {		
 	//	Rotation3D<> R(ra);
@@ -282,7 +329,8 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 		for (size_t i = 0; i<K; i++) {
 			const Eigen::MatrixXd I_Gammai_inv = (Eigen::MatrixXd::Identity(3,3) - Gamma_k[i].inverse());
 			const Eigen::MatrixXd I_Gammak_inv = (Eigen::MatrixXd::Identity(3,3) - Gamma_k[k]).inverse();
-			Z += U(k, i)*I_Gammai_inv * I_Gammak_inv * Gamma_k[k];
+			//Z += U(k, i)*I_Gammai_inv * I_Gammak_inv * Gamma_k[k];
+			Z += U(k, i)*I_Gammai_inv * (Eigen::MatrixXd::Identity(3,3) - Gamma_k[k].inverse()).inverse() * Gamma_k[k];
 			z += U(k, i)*( (-1*(Gamma_k[i].inverse()*pi_k[i]))-I_Gammai_inv*(Eigen::MatrixXd::Identity(3,3) - Gamma_k[k]).inverse()*pi_k[k]);
 		}
 
@@ -294,19 +342,35 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	//15: Compute v_k
 	std::vector<Eigen::MatrixXd> v_k;
 	for (size_t k = 0; k<K; k++) {
-		Eigen::MatrixXd v = (Eigen::MatrixXd::Identity(3,3) + Zk[k]).inverse() * zk[k];
+		Eigen::MatrixXd v = (Eigen::MatrixXd::Identity(3,3) - Zk[k]).inverse() * zk[k];
 		v_k.push_back(v);
 	//	std::cout<<"vk = "<<v_k.back()<<std::endl;
 	}
+	
+
+	//std::ofstream outfile("d:\\temp\\MComponents.txt");
 
 	//Step 16: Compute M
 	Eigen::MatrixXd M(Eigen::MatrixXd::Zero(3,3));
 	for (size_t k = 0; k<K; k++) {
+		//outfile<<"beta["<<k<<"] = "<<beta_k[k]<<std::endl;
+		//outfile<<"alpha["<<k<<"] = "<<alpha_k[k]<<std::endl;
+		//outfile<<"v["<<k<<"] = "<<v_k[k]<<std::endl;
+		//outfile<<"p["<<k<<"] = "<<p_k[k]<<std::endl;
+		//outfile<<"z["<<k<<"] = "<<zk[k]<<std::endl;
+		//outfile<<"Z["<<k<<"] = "<<Zk[k]<<std::endl;
+		//outfile<<"Gamma["<<k<<" = "<<Gamma_k[k]<<std::endl<<std::endl;
+		if (_useRotation)
+			M += beta_k[k]*alpha_k[k].transpose();
+		if (_usePosition)
+			M += v_k[k]*p_k[k].transpose();
 		//M += (beta_k[k]*alpha_k[k].transpose() + p_k[k]*v_k[k].transpose());
-		M += (beta_k[k]*alpha_k[k].transpose() + v_k[k]*p_k[k].transpose());
+		//M += (beta_k[k]*alpha_k[k].transpose() + v_k[k]*p_k[k].transpose());
 	}
-	//std::cout<<"M = "<<M<<std::endl;
-	
+	//std::cout<<"UseRotation: "<<_useRotation<<std::endl;
+	//std::cout<<"UsePosition: "<<_usePosition<<std::endl;
+	//std::cout<<"M = "<<std::setprecision(16)<<M<<std::endl;
+	//
 	//Step 17: Compute RX=(M^T M)^(-1/2) M^T
 	Eigen::MatrixXd MTM = M.transpose()*M;
 	//std::cout<<"MTM = "<<MTM<<std::endl;
@@ -343,7 +407,8 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 //	Eigen::MatrixXd sqrtM =  ldl.matrixL() * sqrtDiagonal * ldl.matrixU();
 	//std::cout<<"sqrtM = "<<sqrtM<<std::endl;
 	Eigen::MatrixXd RX = (sqrtM).inverse()*M.transpose();
-	//std::cout<<"RX = "<<RX<<std::endl;
+	//std::cout<<"RX = "<<std::setprecision(16)<<RX<<std::endl;
+	//std::cout<<"Det(RX) = "<<RX.determinant()<<std::endl;
 
 	//Step 18: Compute C as 3K x 3 stacked with (I-RBk) RX^T
 	Eigen::MatrixXd C(3*K, 3);
@@ -410,8 +475,24 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	//std::cout<<"posTool = "<<posTool<<std::endl;
 	//std::cout<<"eaaTool = "<<eaaAxis<<"  "<<eaaAngle<<std::endl;
 	//std::cout<<"Ttool = "<<Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle))<<std::endl;
-	result.base2sensor = Tbase;
+	result.sensor2base = Tbase;
 	result.tool2marker = Transform3D<>(posTool, EAA<>(eaaAxis, eaaAngle));
 	result.cnt = measurements.size();
 	//return std::make_pair(Tbase, Transform3D<>(posTool, EAA<>(eaaTool(0), eaaTool(1), eaaTool(2))));
+
+
+	for (size_t i = 0; i<K; ++i) {
+		delete[] Aij[i];
+		delete[] Bij[i];
+		delete[] alphaij[i];
+		delete[] betaij[i];
+	}
+
+	delete[] Aij;
+	delete[] Bij;
+	delete[] alphaij;
+	delete[] betaij;
+
+
+
 }
