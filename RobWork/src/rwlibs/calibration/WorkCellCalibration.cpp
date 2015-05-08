@@ -22,7 +22,7 @@ using namespace rwlibs::calibration;
 
 WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr, Frame*> > deviceMarkerPairs,
 										 const std::vector<Frame*>& sensorFrames) 
-										 :	_deviceMarkerPairs(deviceMarkerPairs)
+										 :	_primaryDevice(NULL), _deviceMarkerPairs(deviceMarkerPairs)
 {
 
 	//The calibration of the moving frame. Typically the camera frame, but could also be other frames.
@@ -36,26 +36,36 @@ WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr
 		_fixedFrameCalibrations->addCalibration(sensorFrameCalibration);
 		_sensorFrameCalibrations[sensorFrame->getName()] = sensorFrameCalibration;
 	}
-
-	//_movingFrameCalibration = rw::common::ownedPtr(new FixedFrameCalibration(movingFrame, true));
-
 	
+
+	_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
+	_compositeJointEncoderCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
+
+
 	BOOST_FOREACH(DeviceMarkerPair deviceMarkerPair, deviceMarkerPairs) {
+		SerialDevice::Ptr device = deviceMarkerPair.first;
+		if (_primaryDevice == NULL) {
+			_primaryDevice = device;
+		}
+		if (_primaryDevice != device) {
+			FixedFrameCalibration::Ptr secondaryBaseCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(device->getBase()).cast<rw::kinematics::FixedFrame>()));
+			_baseCalibrations[device->getName()] = secondaryBaseCalibration;
+			_fixedFrameCalibrations->addCalibration(secondaryBaseCalibration);
+		}
 		FixedFrameCalibration::Ptr endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(rw::kinematics::Frame::Ptr(deviceMarkerPair.second).cast<rw::kinematics::FixedFrame>()));
 		_markerCalibrations[deviceMarkerPair.first->getName()] = endCalibration;
 		_fixedFrameCalibrations->addCalibration(endCalibration);
 		
 	//_endCalibration = rw::common::ownedPtr(new FixedFrameCalibration(device->getEnd(), false));
 	
-		_compositeLinkCalibration = rw::common::ownedPtr(new CompositeCalibration<ParallelAxisDHCalibration>());
-		_compositeJointEncoderCalibration = rw::common::ownedPtr(new CompositeCalibration<JointEncoderCalibration>());
 
 		std::vector<rw::models::Joint*> joints = deviceMarkerPair.first->getJoints();
 		for (std::vector<rw::models::Joint*>::iterator jointIterator = joints.begin(); jointIterator != joints.end(); jointIterator++) {
 			rw::models::Joint::Ptr joint = (*jointIterator);
 
 			// Add link calibrations for intermediate links.
-			if (jointIterator != joints.begin() ) {
+			if (jointIterator != joints.begin() ) 
+			{
 				ParallelAxisDHCalibration::Ptr linkCalibration = rw::common::ownedPtr(new ParallelAxisDHCalibration(joint));
 				_compositeLinkCalibration->addCalibration(linkCalibration);
 
@@ -80,7 +90,7 @@ WorkCellCalibration::WorkCellCalibration(std::vector<std::pair<SerialDevice::Ptr
 		}
 	}
 
-	((CompositeCalibration<Calibration>*) this)->addCalibration(_fixedFrameCalibrations.cast<Calibration>());
+	((CompositeCalibration<Calibration>*) this)->addCalibration(_fixedFrameCalibrations.cast<Calibration>());	
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeLinkCalibration.cast<Calibration>());
 	((CompositeCalibration<Calibration>*) this)->addCalibration(_compositeJointEncoderCalibration.cast<Calibration>());
 }
@@ -117,15 +127,26 @@ FixedFrameCalibration::Ptr WorkCellCalibration::getFixedFrameCalibrationForSenso
 	if (_sensorFrameCalibrations.find(sensor) != _sensorFrameCalibrations.end()) {
 		return _sensorFrameCalibrations[sensor];
 	}
-	return NULL;
+	RW_THROW("Unable to find a calibration for the sensor with name: '"<<sensor<<"'");
 }
 
 FixedFrameCalibration::Ptr WorkCellCalibration::getFixedFrameCalibrationForMarker(const std::string& marker) {
 	if (_markerCalibrations.find(marker) != _markerCalibrations.end()) {
 		return _markerCalibrations[marker];
 	}
-	return NULL;
+	RW_THROW("Unable to find a calibration for the marker with name: '"<<marker<<"'");
 
+}
+
+FixedFrameCalibration::Ptr WorkCellCalibration::getFixedFrameCalibrationForDevice(const std::string& deviceName) 
+{
+	if (_baseCalibrations.find(deviceName) != _baseCalibrations.end()) {
+		return _baseCalibrations[deviceName];
+	}
+	if (deviceName == _primaryDevice->getName()) {
+		RW_THROW("The device requested is the primary device in the work cell which do not have a base calibration");
+	}
+	RW_THROW("Unable to find a calibration for the device with name: '"<<deviceName<<"'");
 }
 
 
@@ -193,6 +214,14 @@ void WorkCellCalibration::prependCalibration(WorkCellCalibration::Ptr calibratio
 		(*it).second->setCorrectionTransform(newTransform);
 	}
 	
+	for (StringCalibMap::iterator it = _baseCalibrations.begin(); it != _baseCalibrations.end(); ++it) {
+		FixedFrameCalibration::Ptr ffc = calibration->getFixedFrameCalibrationForDevice((*it).first);
+		Transform3D<> oldTransform = (*it).second->getCorrectionTransform();
+		Transform3D<> preTransform = ffc->getCorrectionTransform();
+		Transform3D<> newTransform = preTransform*oldTransform;
+		(*it).second->setCorrectionTransform(newTransform);
+	}
+
 
 	for (StringCalibMap::iterator it = _sensorFrameCalibrations.begin(); it != _sensorFrameCalibrations.end(); ++it) {
 		FixedFrameCalibration::Ptr ffc = calibration->getFixedFrameCalibrationForSensor((*it).first);

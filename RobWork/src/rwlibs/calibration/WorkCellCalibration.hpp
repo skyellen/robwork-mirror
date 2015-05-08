@@ -116,6 +116,12 @@ public:
 	 */
 	FixedFrameCalibration::Ptr getFixedFrameCalibrationForMarker(const std::string& marker);
 
+	/**
+	 * @brief Returns the calibration for the calibration with name \bmarker
+	 */
+	FixedFrameCalibration::Ptr getFixedFrameCalibrationForDevice(const std::string& deviceName);
+
+
 	/** 
 	 * @brief Returns the device/marker pairs
 	 */
@@ -134,9 +140,11 @@ public:
 	void prependCalibration(WorkCellCalibration::Ptr calibration);
 
 private:
+	rw::models::SerialDevice::Ptr _primaryDevice;
 	std::vector<DeviceMarkerPair> _deviceMarkerPairs;
 	std::map<std::string, FixedFrameCalibration::Ptr> _sensorFrameCalibrations;
 	std::map<std::string, FixedFrameCalibration::Ptr> _markerCalibrations;
+	std::map<std::string, FixedFrameCalibration::Ptr> _baseCalibrations;
 	CompositeCalibration<FixedFrameCalibration>::Ptr _fixedFrameCalibrations;
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr _compositeLinkCalibration;
 	CompositeCalibration<JointEncoderCalibration>::Ptr _compositeJointEncoderCalibration;
