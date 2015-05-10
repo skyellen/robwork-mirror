@@ -83,7 +83,7 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 	std::string primaryDevice = workcellCalibration->getDeviceMarkerPairs().front().first->getName();
 	//std::cout<<"Primary Device = "<<primaryDevice<<std::endl;	
 	std::map<std::string, Transform3D<> > primaryDevice2Sensor;
-	std::map<std::pair<std::string, std::string>, Transform3D<>> secondaryDeviceTransforms;
+	std::map<std::pair<std::string, std::string>, Transform3D<> > secondaryDeviceTransforms;
 	BOOST_FOREACH(Device2SensorResult res, results) {		
 		//std::cout<<"Result: "<<res.device<<std::endl;
 		//std::cout<<" base2sensor = "<<res.sensor2base<<std::endl;
