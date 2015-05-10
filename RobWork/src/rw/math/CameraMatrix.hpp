@@ -15,11 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#ifndef RW_MATH_CameraMatrix_HPP
-#define RW_MATH_CameraMatrix_HPP
-
-#include <boost/numeric/ublas/matrix.hpp>
+#ifndef RW_MATH_CAMERAMATRIX_HPP
+#define RW_MATH_CAMERAMATRIX_HPP
 
 #include "Vector3D.hpp"
 
@@ -30,22 +27,15 @@ namespace math {
 	 * @brief The PerspectiveTransform2D is a perspective transform in 2D.
 	 * The homographic transform can be used to map one arbitrary 2D quadrilateral
 	 * into another.
-	 *
-	 *
-	 *
-	 *
-	 *
 	 */
 
 	template<class T = double>
 	class CameraMatrix
 	{
-	private:
-		typedef boost::numeric::ublas::bounded_matrix<T, 4, 4> BoostBase;
-
+	public:
+		//! @brief The type of the underlying Eigen data type.
 		typedef Eigen::Matrix<T, 4, 4> Base;
 
-	public:
 		//! A pair of Vector3D
 		typedef std::pair<rw::math::Vector3D<T>,rw::math::Vector3D<T> > Vector3DPair;
 
@@ -136,11 +126,11 @@ namespace rw{ namespace common {
     class OutputArchive; class InputArchive;
 namespace serialization {
 	template<> void write(const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-    template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<> void write(const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+	template<> void write(const rw::math::CameraMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
+    template<> void read(rw::math::CameraMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
     template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
 
 }}} // end namespaces
 
 
-#endif /*rw_math_CameraMatrix_HPP*/
+#endif /*RW_MATH_CAMERAMATRIX_HPP*/

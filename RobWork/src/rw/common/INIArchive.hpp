@@ -231,7 +231,7 @@ protected:
 			std::pair<std::string,std::string> valname = getNameValue();
 			if(id!=valname.first)
 				RW_WARN("mismatched ids: " << id << " ---- " << valname.first);
-			std::cout << "Reading: " << id << "= " << valname.second << "\n";
+			//std::cout << "Reading: " << id << "= " << valname.second << "\n";
 			val = boost::lexical_cast<T>(valname.second);
 		 }
 

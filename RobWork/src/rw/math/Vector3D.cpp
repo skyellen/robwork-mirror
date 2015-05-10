@@ -22,6 +22,7 @@
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"
 
+using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template specifications.
@@ -32,22 +33,22 @@ template class Vector3D<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void writeImpl(const rw::math::Vector3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3);
+    void writeImpl(const Vector3D<T>& tmp, OutputArchive& oar, const std::string& id){
+        std::vector<double> data = Math::toStdVector(tmp, 3);
         oar.write( data , id );
     }
 
     template<class T>
-    void readImpl(rw::math::Vector3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(Vector3D<T>& tmp, InputArchive& iar, const std::string& id){
         std::vector<T> data;
         iar.read(data, id);
-        rw::math::Math::fromStdVector(data, tmp );
+        Math::fromStdVector(data, tmp );
     }
 
     // we need these to explicitly instantiate these functions
-    template<> void write( const rw::math::Vector3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
-    template<> void write( const rw::math::Vector3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
-    template<> void read(rw::math::Vector3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
-    template<> void read(rw::math::Vector3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void write( const Vector3D<double>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void write( const Vector3D<float>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);}
+    template<> void read(Vector3D<double>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
+    template<> void read(Vector3D<float>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);}
 
 }}}

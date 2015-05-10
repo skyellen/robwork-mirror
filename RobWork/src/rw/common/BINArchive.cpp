@@ -86,7 +86,7 @@ void BINArchive::flush(){
 void BINArchive::doRead(std::vector<bool>& val, const std::string& id){
     boost::uint32_t s = 0;
     _ifs->read((char*)&s, sizeof(boost::uint32_t) );
-    std::cout << "LEN:" << s << std::endl;
+    //std::cout << "LEN:" << s << std::endl;
     val.resize(s);
     for( boost::uint32_t i=0; i<s;i++){
         uint8_t tmp;

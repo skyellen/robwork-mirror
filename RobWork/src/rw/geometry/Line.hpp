@@ -21,6 +21,8 @@
 
 #include "Primitive.hpp"
 
+#include <rw/math/Metric.hpp>
+
 #include <iostream>
 
 namespace rw {

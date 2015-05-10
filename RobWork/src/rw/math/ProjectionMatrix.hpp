@@ -18,11 +18,7 @@
 #ifndef RW_MATH_PROJECTIONMATRIX_HPP_
 #define RW_MATH_PROJECTIONMATRIX_HPP_
 
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-
-#include <rw/common/PropertyMap.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace rw {
 namespace math {

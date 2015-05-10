@@ -18,10 +18,10 @@
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 
-#include "Math.hpp"
 #include "RPY.hpp"
 #include "Constants.hpp"
 
+using namespace rw::common;
 using namespace rw::math;
 
 template<class T>
@@ -105,7 +105,7 @@ template class RPY<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void write(const rw::math::RPY<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
+    void writeImpl(const RPY<T>& tmp, OutputArchive& oar, const std::string& id){
         oar.writeEnterScope(id);
         oar.write( tmp[0]*Rad2Deg , "r" );
         oar.write( tmp[1]*Rad2Deg , "p" );
@@ -114,7 +114,7 @@ namespace rw{ namespace common { namespace serialization {
     }
 
     template<class T>
-    void read(rw::math::RPY<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(RPY<T>& tmp, InputArchive& iar, const std::string& id){
         double r,p,y;
         iar.readEnterScope(id);
         iar.read( r , "r" );
@@ -127,9 +127,9 @@ namespace rw{ namespace common { namespace serialization {
     }
 
     // we need these to explicitly instantiate these functions
-    template void write<double>( const rw::math::RPY<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void write<float>( const rw::math::RPY<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void read<double>(rw::math::RPY<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read<float>(rw::math::RPY<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const RPY<double>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void write(const RPY<float>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void read(RPY<double>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
+    template<> void read(RPY<float>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
 
 }}}

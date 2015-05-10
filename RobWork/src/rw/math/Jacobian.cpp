@@ -15,24 +15,15 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Jacobian.hpp"
-
 
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
-#include <rw/common/macros.hpp>
 
 #include "Math.hpp"
-#include "LinearAlgebra.hpp"
-
 
 using namespace rw::math;
-using namespace boost::numeric::ublas;
 using namespace Eigen;
-
-typedef matrix_range<Jacobian::Base> Range;
-typedef zero_matrix<double> ZeroMatrix;
 
 Jacobian::Jacobian(const Rotation3D<>& aRb) : _jac(6, 6)
 {
@@ -40,10 +31,6 @@ Jacobian::Jacobian(const Rotation3D<>& aRb) : _jac(6, 6)
 	_jac.block<3,3>(0,3) = Matrix<double, 3, 3>::Zero();
 	_jac.block<3,3>(3,0) = Matrix<double, 3, 3>::Zero();
 	_jac.block<3,3>(3,3) = aRb.e();
-    //Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
-    //Range(_jac, range(0, 3), range(3, 6)) = ZeroMatrix(3, 3);
-    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
-    //Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
 Jacobian::Jacobian(const Vector3D<>& aPb) : _jac(6, 6)
@@ -52,10 +39,6 @@ Jacobian::Jacobian(const Vector3D<>& aPb) : _jac(6, 6)
 	_jac.block<3,3>(0,3) = Math::skew(aPb);
 	_jac.block<3,3>(3,0) = Matrix<double, 3, 3>::Zero();
 	_jac.block<3,3>(3,3) = Matrix<double, 3, 3>::Identity();
-    //Range(_jac, range(0, 3), range(0, 3)) = Rotation3D<>::identity().m();
-    //Range(_jac, range(0, 3), range(3, 6)) = Math::skew(aPb.m());
-    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
-    //Range(_jac, range(3, 6), range(3, 6)) = Rotation3D<>::identity().m();
 }
 
 Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
@@ -67,11 +50,6 @@ Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
 	_jac.block<3,3>(0,3) = Math::skew(aPb) * aRb.e();
 	_jac.block<3,3>(3,0) = Matrix<double,3,3>::Zero();
 	_jac.block<3,3>(3,3) = aRb.e();
-
-    //Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
-    //Range(_jac, range(0, 3), range(3, 6)) = prod(Math::skew(aPb.m()), aRb.m());
-    //Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
-    //Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
 const Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
@@ -102,7 +80,7 @@ void Jacobian::addRotation(const Vector3D<>& rot, size_t row, size_t col) {
 
 
 template<>
-void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar, const std::string& id){
+void rw::common::serialization::read(Jacobian& tmp, InputArchive& iar, const std::string& id){
     std::vector<double> arr;
     size_t size1,size2;
     iar.readEnterScope(id);
@@ -110,13 +88,12 @@ void rw::common::serialization::read(rw::math::Jacobian& tmp, InputArchive& iar,
     iar.read( size2, "size2" );
     iar.read( arr, "data" );
     iar.readLeaveScope(id);
-    tmp = rw::math::Jacobian(size1,size2);
-    iar.read(arr, id);
+    tmp = Jacobian(size1,size2);
     Math::fromStdVectorToMat(arr, tmp, (int)tmp.size1(), (int)tmp.size2());
 }
 
 template<>
-void rw::common::serialization::write(const rw::math::Jacobian& tmp, OutputArchive& oar, const std::string& id){
+void rw::common::serialization::write(const Jacobian& tmp, OutputArchive& oar, const std::string& id){
     oar.writeEnterScope(id);
     oar.write( tmp.size1(), "size1" );
     oar.write( tmp.size2(), "size2" );

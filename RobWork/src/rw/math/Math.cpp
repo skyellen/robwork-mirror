@@ -15,13 +15,12 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "Math.hpp"
-#include "MetricUtil.hpp"
 #include "MetricFactory.hpp"
 #include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 
+#include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/random.hpp>
 
 #include <cassert>
@@ -172,4 +171,8 @@ int Math::ceilLog2(const int n)
         return cnt;
     else
         return cnt + 1;
+}
+
+bool Math::isNaN(double d) {
+	return boost::math::isnan(d);
 }

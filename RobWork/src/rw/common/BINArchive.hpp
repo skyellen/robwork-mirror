@@ -192,7 +192,7 @@ namespace common {
 		 void readValue(std::vector<T>& val, const std::string& id){
             boost::uint32_t s = 0;
             _ifs->read((char*)&s, sizeof(boost::uint32_t) );
-            std::cout << "LEN:" << s << std::endl;
+            //std::cout << "LEN:" << s << std::endl;
             val.resize(s);
             for( boost::uint32_t i=0; i<s;i++){
                 T &tmp = val[i];
@@ -204,7 +204,7 @@ namespace common {
 		 template<class T>
 		 void readValue(T& val, const std::string& id){
 		     _ifs->read((char*)&val, sizeof(val) );
-		     std::cout << val << " ";
+		     //std::cout << val << " ";
 		 }
 
 

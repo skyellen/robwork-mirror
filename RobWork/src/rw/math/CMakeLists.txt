@@ -1,4 +1,5 @@
 SET(FILES_CPP
+  CameraMatrix.cpp
   EAA.cpp
   Jacobian.cpp
   Line2D.cpp
@@ -18,6 +19,7 @@ SET(FILES_CPP
   Rotation3DVector.cpp
   RPY.cpp
   Statistics.cpp
+  Transform2D.cpp
   Transform3D.cpp
   Vector2D.cpp
   Vector3D.cpp
@@ -34,6 +36,7 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
+  CameraMatrix.hpp
   EAA.hpp
   Jacobian.hpp
   Line2D.hpp
@@ -53,6 +56,7 @@ SET(FILES_HPP
   Rotation3DVector.hpp
   RPY.hpp
   #Statistics.hpp
+  Transform2D.cpp
   Transform3D.hpp
   Vector2D.hpp
   Vector3D.hpp

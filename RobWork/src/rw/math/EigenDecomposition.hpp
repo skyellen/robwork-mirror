@@ -8,11 +8,9 @@
 #ifndef EIGENDECOMPOSITION_HPP_
 #define EIGENDECOMPOSITION_HPP_
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
+#include <Eigen/Eigen>
 
+#include <vector>
 
 namespace rw {
 namespace math {

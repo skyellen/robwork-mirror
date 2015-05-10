@@ -23,9 +23,6 @@
  * @file MetricUtil.hpp
  */
 
-#include "Metric.hpp"
-#include "Q.hpp"
-#include "Vector3D.hpp"
 #include "Math.hpp"
 
 namespace rw { namespace math {

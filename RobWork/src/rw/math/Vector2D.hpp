@@ -28,7 +28,6 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <rw/common/Serializable.hpp>
 #include <Eigen/Eigen>
-#include "Constants.hpp"
 
 namespace rw { namespace math {
     /** @addtogroup math */

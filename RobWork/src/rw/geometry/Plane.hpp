@@ -19,8 +19,9 @@
 #ifndef RW_GEOMETRY_PLANE_HPP_
 #define RW_GEOMETRY_PLANE_HPP_
 
-
 #include "Primitive.hpp"
+
+#include <rw/math/Metric.hpp>
 
 namespace rw {
 namespace geometry {

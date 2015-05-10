@@ -21,7 +21,6 @@
 #include "Pose2D.hpp"
 #include "Line2D.hpp"
 #include "Vector2D.hpp"
-#include <boost/numeric/ublas/vector.hpp>
 
 #include <rw/common/Serializable.hpp>
 
@@ -114,10 +113,6 @@ public:
 
 	// Print the line to stdout.
 	//static void print(const LinePolar& line);
-
-	// An ublas vector of (rho, theta).
-	//static
-	//boost::numeric::ublas::vector<double> toUblas(const LinePolar& line);
 
 	// 'line' given relative to the coordinate frame of 'pose'.
 	static

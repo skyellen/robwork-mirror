@@ -24,16 +24,12 @@
  */
 #include <cmath>
 
-#include <rw/common/Serializable.hpp>
-
 #include "LinearAlgebra.hpp"
 #include "EAA.hpp"
 #include "RPY.hpp"
 #include "Quaternion.hpp"
 #include "Q.hpp"
-#include "Metric.hpp"
-
-#include <boost/math/special_functions/fpclassify.hpp>
+#include "Transform3D.hpp"
 
 namespace rw { namespace math {
 
@@ -706,7 +702,7 @@ namespace rw { namespace math {
             std::vector<double> qvec(size1*size2);
             for(int i=0;i<size1;i++){
                 for(int j=0;j<size2;j++){
-                    qvec[i] = tmp(i,j);
+                    qvec[i*size2+j] = tmp(i,j);
                 }
             }
             return qvec;
@@ -720,7 +716,7 @@ namespace rw { namespace math {
          * @return reference to tmp
          */
         template <class T, class ARR>
-        static ARR fromStdVector(std::vector<T>& data, ARR& tmp){
+        static ARR fromStdVector(const std::vector<T>& data, ARR& tmp){
             for(size_t i=0;i<data.size();i++){
                 tmp(i) = data[i];
             }
@@ -735,10 +731,10 @@ namespace rw { namespace math {
          * @return reference to tmp
          */
         template <class T, class MAT>
-        static MAT fromStdVectorToMat(std::vector<T>& data, MAT& tmp, int size1, int size2){
+        static MAT fromStdVectorToMat(const std::vector<T>& data, MAT& tmp, int size1, int size2){
             for(size_t i=0;(int)i<size1;i++){
                 for(size_t j=0;(int)j<size2;j++){
-                    tmp(i,j) = data[i];
+                    tmp(i,j) = data[i*size2+j];
                 }
             }
             return tmp;
@@ -749,9 +745,7 @@ namespace rw { namespace math {
 		 *
 		 * Use to make sure code is independent of specific compile specific implementations
 		 */
-		static bool isNaN(double d) {
-			return boost::math::isnan(d);
-		}
+		static bool isNaN(double d);
 
     };
 

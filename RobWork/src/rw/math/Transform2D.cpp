@@ -22,33 +22,32 @@
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"
 
+using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template instantiations.
 template class Transform2D<double>;
 template class Transform2D<float>;
 
-
-
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void write(const rw::math::Transform2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        std::vector<double> data = rw::math::Math::toStdVector(tmp, 2, 3);
+    void writeImpl(const Transform2D<T>& tmp, OutputArchive& oar, const std::string& id){
+        std::vector<double> data = Math::toStdVector(tmp, 2, 3);
         oar.write( data , id );
     }
 
     template<class T>
-    void read(rw::math::Transform2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(Transform2D<T>& tmp, InputArchive& iar, const std::string& id){
         std::vector<double> data;
         iar.read(data, id);
-        rw::math::Math::fromStdVectorToMat(data, tmp, 2, 3 );
+        Math::fromStdVectorToMat(data, tmp, 2, 3 );
     }
 
     // we need these to explicitly instantiate these functions
-    template void write<double>( const rw::math::Transform2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void write<float>( const rw::math::Transform2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void read<double>(rw::math::Transform2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read<float>(rw::math::Transform2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write(const Transform2D<double>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void write(const Transform2D<float>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void read(Transform2D<double>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
+    template<> void read(Transform2D<float>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
 
 }}}

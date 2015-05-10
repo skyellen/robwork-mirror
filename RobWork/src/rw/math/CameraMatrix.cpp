@@ -15,30 +15,38 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "CameraMatrix.hpp"
+#include "Math.hpp"
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
 
+using namespace rw::common;
+using namespace rw::math;
+
+// Explicit template instantiations.
+template class CameraMatrix<double>;
+template class CameraMatrix<float>;
 
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void writeImpl(const rw::math::CameraMatrix<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3, 3);
+    void writeImpl(const CameraMatrix<T>& tmp, OutputArchive& oar, const std::string& id){
+        std::vector<double> data = Math::toStdVector(tmp, 3, 3);
         oar.write( data , id, "CameraMatrix" );
     }
 
     template<class T>
-    void readImpl(rw::math::CameraMatrix<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
-    	std::vector<double> data(9,0);
+    void readImpl(CameraMatrix<T>& tmp, InputArchive& iar, const std::string& id){
+    	std::vector<T> data(9,0);
         iar.read(data, id, "CameraMatrix");
-        rw::math::Math::fromStdVectorToMat(data, tmp, 3, 3 );
+        Math::fromStdVectorToMat(data, tmp, 3, 3 );
     }
 
     // we need these to explicitly instantiate these functions
-    template<> void write( const rw::math::CameraMatrix<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){ writeImpl(tmp,oar,id);};
-    template<> void write( const rw::math::CameraMatrix<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){ writeImpl(tmp,oar,id);};
-    template<> void read(rw::math::CameraMatrix<double>& tmp, rw::common::InputArchive& iar, const std::string& id){ readImpl(tmp,iar,id);};
-    template<> void read(rw::math::CameraMatrix<float>& tmp, rw::common::InputArchive& iar, const std::string& id){ readImpl(tmp,iar,id);};
+    template<> void write( const CameraMatrix<double>& tmp, OutputArchive& oar, const std::string& id ){ writeImpl(tmp,oar,id); }
+    template<> void write( const CameraMatrix<float>& tmp, OutputArchive& oar, const std::string& id ){ writeImpl(tmp,oar,id); }
+    template<> void read(CameraMatrix<double>& tmp, InputArchive& iar, const std::string& id){ readImpl(tmp,iar,id); }
+    template<> void read(CameraMatrix<float>& tmp, InputArchive& iar, const std::string& id){ readImpl(tmp,iar,id); }
 
 }}}

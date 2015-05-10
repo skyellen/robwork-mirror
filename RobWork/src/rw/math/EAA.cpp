@@ -19,8 +19,6 @@
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"
 #include "EAA.hpp"
-#include "Rotation3D.hpp"
-#include "Constants.hpp"
 
 using namespace rw::math;
 

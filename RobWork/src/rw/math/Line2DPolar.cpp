@@ -17,7 +17,6 @@
 
 #include "Line2DPolar.hpp"
 #include <rw/common/macros.hpp>
-#include <rw/math/Constants.hpp>
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"

@@ -21,8 +21,7 @@
 #include <rw/common/OutputArchive.hpp>
 #include "Math.hpp"
 
-
-
+using namespace rw::common;
 using namespace rw::math;
 
 // Explicit template specifications.
@@ -33,22 +32,22 @@ template class Rotation2D<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void writeImpl(const rw::math::Rotation2D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        std::vector<double> data = rw::math::Math::toStdVector(tmp, 2, 2);
+    void writeImpl(const Rotation2D<T>& tmp, OutputArchive& oar, const std::string& id){
+        std::vector<double> data = Math::toStdVector(tmp, 2, 2);
         oar.write( data , id , "Rotation2D");
     }
 
     template<class T>
-    void readImpl(rw::math::Rotation2D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(Rotation2D<T>& tmp, InputArchive& iar, const std::string& id){
         std::vector<T> data;
         iar.read(data, id, "Rotation2D");
-        rw::math::Math::fromStdVectorToMat(data, tmp, 2, 2 );
+        Math::fromStdVectorToMat(data, tmp, 2, 2 );
     }
 
     // we need these to explicitly instantiate these functions
-    template<> void write( const rw::math::Rotation2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void write( const rw::math::Rotation2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
-    template<> void read(rw::math::Rotation2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
-    template<> void read(rw::math::Rotation2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
+    template<> void write( const Rotation2D<double>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
+    template<> void write( const Rotation2D<float>& tmp, OutputArchive& oar, const std::string& id ){writeImpl(tmp,oar,id);};
+    template<> void read(Rotation2D<double>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
+    template<> void read(Rotation2D<float>& tmp, InputArchive& iar, const std::string& id){readImpl(tmp,iar,id);};
 
 }}}

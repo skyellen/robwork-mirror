@@ -200,3 +200,15 @@ BOOST_AUTO_TEST_CASE(ranTransform3D) {
         BOOST_CHECK(transform.R().isProperRotation(1.0e-06));
     }
 }
+
+BOOST_AUTO_TEST_CASE(MatrixVectorConvertionTest) {
+    BOOST_MESSAGE("- Testing matrix to/from vector utiliy functions");
+    // Test Math convenience functions for serialization and deserialization of matrix types.
+    Math::seed(829);
+    const Transform3D<> T = Math::ranTransform3D<double>();
+    std::vector<double> Tserialized = Math::toStdVector(T, 3, 4);
+    BOOST_CHECK(Tserialized.size() == 12);
+    Transform3D<> Trestored;
+    Math::fromStdVectorToMat(Tserialized, Trestored, 3, 4);
+    BOOST_CHECK(T.equal(Trestored));
+}

@@ -23,16 +23,17 @@
 #include "Math.hpp"
 #include <rw/math/LinearAlgebra.hpp>
 
+using namespace rw::common;
 using namespace rw::math;
 
 template<class T>
 bool Rotation3D<T>::isProperRotation() const {
-    return rw::math::LinearAlgebra::isSO(e());
+    return LinearAlgebra::isSO(e());
 }
 
 template<class T>
 bool Rotation3D<T>::isProperRotation(T precision) const {
-    return rw::math::LinearAlgebra::isSO(e(), precision);
+    return LinearAlgebra::isSO(e(), precision);
 }
 
 template<class T>
@@ -258,22 +259,22 @@ template class Rotation3D<float>;
 namespace rw{ namespace common { namespace serialization {
 
     template<class T>
-    void write(const rw::math::Rotation3D<T>& tmp, rw::common::OutputArchive& oar, const std::string& id){
-        std::vector<double> data = rw::math::Math::toStdVector(tmp, 3, 3);
+    void writeImpl(const Rotation3D<T>& tmp, OutputArchive& oar, const std::string& id){
+        std::vector<double> data = Math::toStdVector(tmp, 3, 3);
         oar.write( data , id );
     }
 
     template<class T>
-    void read(rw::math::Rotation3D<T>& tmp, rw::common::InputArchive& iar, const std::string& id){
+    void readImpl(Rotation3D<T>& tmp, InputArchive& iar, const std::string& id){
         std::vector<T> data;
         iar.read(data, id);
-        rw::math::Math::fromStdVectorToMat(data, tmp, 3, 3 );
+        Math::fromStdVectorToMat(data, tmp, 3, 3 );
     }
 
     // we need these to explicitly instantiate these functions
-    template void write<double>( const rw::math::Rotation3D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void write<float>( const rw::math::Rotation3D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id );
-    template void read<double>(rw::math::Rotation3D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-    template void read<float>(rw::math::Rotation3D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+    template<> void write( const Rotation3D<double>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void write( const Rotation3D<float>& tmp, OutputArchive& oar, const std::string& id ) { writeImpl(tmp,oar,id); }
+    template<> void read(Rotation3D<double>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
+    template<> void read(Rotation3D<float>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
 
 }}}

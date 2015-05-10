@@ -17,9 +17,13 @@
 
 
 #include "PerspectiveTransform2D.hpp"
-
+#include "Math.hpp"
 #include "LinearAlgebra.hpp"
 
+#include <rw/common/InputArchive.hpp>
+#include <rw/common/OutputArchive.hpp>
+
+using namespace rw::common;
 using namespace rw::math;
 using namespace boost::numeric;
 
@@ -95,9 +99,22 @@ template class PerspectiveTransform2D<float>;
 namespace rw{ namespace common {
 namespace serialization {
 
-	template<> void write(const rw::math::PerspectiveTransform2D<double>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void write(const rw::math::PerspectiveTransform2D<float>& tmp, rw::common::OutputArchive& oar, const std::string& id);
-	template<> void read(rw::math::PerspectiveTransform2D<double>& tmp, rw::common::InputArchive& iar, const std::string& id);
-	template<> void read(rw::math::PerspectiveTransform2D<float>& tmp, rw::common::InputArchive& iar, const std::string& id);
+	template<class T>
+	void writeImpl(const PerspectiveTransform2D<T>& tmp, OutputArchive& oar, const std::string& id){
+		std::vector<double> data = Math::toStdVector(tmp, 3, 3);
+		oar.write( data , id );
+	}
+
+	template<class T>
+	void readImpl(PerspectiveTransform2D<T>& tmp, InputArchive& iar, const std::string& id){
+		std::vector<T> data;
+		iar.read(data, id);
+		Math::fromStdVectorToMat(data, tmp, 3, 3);
+	}
+
+	template<> void write(const PerspectiveTransform2D<double>& tmp, OutputArchive& oar, const std::string& id) { writeImpl(tmp,oar,id); }
+	template<> void write(const PerspectiveTransform2D<float>& tmp, OutputArchive& oar, const std::string& id) { writeImpl(tmp,oar,id); }
+	template<> void read(PerspectiveTransform2D<double>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
+	template<> void read(PerspectiveTransform2D<float>& tmp, InputArchive& iar, const std::string& id) { readImpl(tmp,iar,id); }
 }}} // end namespaces
 

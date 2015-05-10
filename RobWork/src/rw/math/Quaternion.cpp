@@ -21,30 +21,31 @@
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
 
+using namespace rw::common;
 using namespace rw::math;
 
 template class Quaternion<double>;
 template class Quaternion<float>;
 
 template<>
-void rw::common::serialization::write(const Quaternion<double>& tmp, rw::common::OutputArchive& oar, const std::string& id)
+void rw::common::serialization::write(const Quaternion<double>& tmp, OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id , "Quaternion");
+    oar.write( Math::toStdVector(tmp, (int)tmp.size()), id , "Quaternion");
 }
 template<>
-void rw::common::serialization::read(Quaternion<double>& tmp, rw::common::InputArchive& iar, const std::string& id){
+void rw::common::serialization::read(Quaternion<double>& tmp, InputArchive& iar, const std::string& id){
     std::vector<double> arr;
     iar.read(arr, id, "Quaternion");
-    rw::math::Math::fromStdVector(arr, tmp);
+    Math::fromStdVector(arr, tmp);
 }
 template<>
-void rw::common::serialization::write(const Quaternion<float>& tmp, rw::common::OutputArchive& oar, const std::string& id)
+void rw::common::serialization::write(const Quaternion<float>& tmp, OutputArchive& oar, const std::string& id)
 {
-    oar.write( rw::math::Math::toStdVector(tmp, (int)tmp.size()), id ,"Quaternion");
+    oar.write( Math::toStdVector(tmp, (int)tmp.size()), id ,"Quaternion");
 }
 template<>
-void rw::common::serialization::read(Quaternion<float>& tmp, rw::common::InputArchive& iar, const std::string& id){
+void rw::common::serialization::read(Quaternion<float>& tmp, InputArchive& iar, const std::string& id){
     std::vector<float> arr;
     iar.read(arr, id, "Quaternion");
-    rw::math::Math::fromStdVector(arr, tmp);
+    Math::fromStdVector(arr, tmp);
 }

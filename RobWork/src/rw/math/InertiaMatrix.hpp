@@ -24,9 +24,7 @@
  */
 
 #include "Vector3D.hpp"
-#include "InertiaMatrix.hpp"
 #include "Rotation3D.hpp"
-#include "LinearAlgebra.hpp"
 #include <rw/common/Serializable.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_expression.hpp>
