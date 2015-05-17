@@ -136,10 +136,10 @@ ADD_TEST( rw_planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_planner-test ${DE
 ADD_DEPENDENCIES(rw_planner-test ${TEST_DEPENDENCIES})
 
 IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
-    ADD_EXECUTABLE( rw_sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp)       
+    ADD_EXECUTABLE( rw_sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp sandbox/ClosedFormURSolverTest.cpp)       
     TARGET_LINK_LIBRARIES( rw_sandbox-test ${TEST_LIBRARIES} )
     ADD_TEST( rw_sandbox-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_sandbox-test ${DEFAULT_TEST_ARGS})
-    ADD_DEPENDENCIES(rw_sandbox-test ${TEST_DEPENDENCIES})
+    ADD_DEPENDENCIES(rw_sandbox-test ${TEST_DEPENDENCIES} rw_sandbox)
     SET(SANDBOX_TEST rw_sandbox-test) 
 ENDIF()
 
