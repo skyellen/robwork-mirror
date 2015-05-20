@@ -19,6 +19,8 @@
 #ifndef RW_MATH_FUNCTION_HPP
 #define RW_MATH_FUNCTION_HPP
 
+#include <rw/common/Ptr.hpp>
+
 /**
  * @file rw/math/Math.hpp
  */
