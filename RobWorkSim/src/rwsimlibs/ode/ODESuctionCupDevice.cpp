@@ -295,7 +295,7 @@ void ODESuctionCupDevice::update(const rwlibs::simulation::Simulator::UpdateInfo
 
     // if we are in a rollback then no state changes should happen
     Q sp1;
-    if( _isInContact ){
+    if(_dev->isClosed(state)){// _isInContact ){
         sp1 = _dev->getSpringParamsClosed();
     } else {
         sp1 = _dev->getSpringParamsOpen();
@@ -382,7 +382,8 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     Body::Ptr base = scup->getBase();
     _odeBase = odebase;
     RW_ASSERT(_odeBase);
-    _odeEnd = ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);
+    //_odeEnd = ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);
+    _odeEnd = sim->getODEBody(scup->getEndBody()->getBodyFrame());//ODEBody::makeRigidBody( scup->getEndBody(), sim->getODESpace(), sim);
     _ode_bodies.push_back(_odeBase);
     _ode_bodies.push_back(_odeEnd);
 
@@ -419,7 +420,7 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     double lostop = scup->getSpringParamsClosed()(4);
     double highstop = scup->getSpringParamsOpen()(4);
     dJointSetSliderParam(slider, dParamLoStop, lostop-0.01 );
-    dJointSetSliderParam(slider, dParamHiStop, highstop+0.01 );
+    //dJointSetSliderParam(slider, dParamHiStop, highstop+0.01 );
     dJointSetSliderParam(slider, dParamCFM, 0.01);
 
     sim->addODEJoint(slider);

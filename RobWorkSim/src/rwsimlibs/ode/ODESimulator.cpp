@@ -969,6 +969,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     RW_DEBUGS( "- CREATING MATERIAL MAP " );
     _odeMaterialMap = new ODEMaterialMap(_materialMap, _contactMap, _odeBodies);
 
+	state.upgrade();
     RW_DEBUGS( "- RESETTING SCENE " );
 	resetScene(state);
 }
