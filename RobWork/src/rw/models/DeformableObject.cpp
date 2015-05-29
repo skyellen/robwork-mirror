@@ -110,7 +110,11 @@ void DeformableObject::setNode(int id, const rw::math::Vector3D<float>& v, rw::k
  {
 	 if(_rstate.getStateCache<DeformableObjectCache>(state)->_models.size()>0)
 		 return _rstate.getStateCache<DeformableObjectCache>(state)->_models;
-	 std::vector<rw::graphics::Model3D::Ptr> models;
+	 std::vector<rw::graphics::Model3D::Ptr> models(0);
+	 models.push_back(_model);
+	_rstate.getStateCache<DeformableObjectCache>(state)->_models = models;
+	return _rstate.getStateCache<DeformableObjectCache>(state)->_models;
+
 	 // get a copy of the models with the configuration from the state
 	 BOOST_FOREACH(rw::graphics::Model3D::Ptr model, getModels()){
 	 	 models.push_back( rw::common::ownedPtr( new rw::graphics::Model3D(*model)) );
