@@ -88,6 +88,20 @@ SET(SRC_FILES
      algorithms/StablePose1DModel.cpp
     algorithms/ConstraintModel.cpp
     #algorithms/StablePoseConstraint.cpp
+
+    optimization/Optimizer.cpp
+    optimization/StopCondition.cpp
+    optimization/OptimizerFactory.cpp
+    optimization/DownhillOptimizer.cpp
+    optimization/LineSearch.cpp
+    optimization/GoldenSectionLineSearch.cpp
+    optimization/DirectionSetOptimizer.cpp
+    optimization/TaxiCabOptimizer.cpp
+    optimization/PowellOptimizer.cpp
+    optimization/GradientOptimizer.cpp
+    optimization/GradientDescentOptimizer.cpp
+    optimization/BFGSOptimizer.cpp
+    optimization/SimulatedAnnealingOptimizer.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -127,6 +141,20 @@ SET(SRC_FILES_HPP
     algorithms/StablePose1DModel.hpp
     algorithms/ConstraintModel.hpp
     #algorithms/StablePoseConstraint.hpp
+
+    optimization/Optimizer.hpp
+    optimization/StopCondition.hpp
+    optimization/OptimizerFactory.hpp
+    optimization/LineSearch.hpp
+    optimization/GoldenSectionLineSearch.hpp
+    optimization/DownhillOptimizer.hpp
+    optimization/DirectionSetOptimizer.hpp
+    optimization/TaxiCabOptimizer.hpp
+    optimization/PowellOptimizer.hpp
+    optimization/GradientOptimizer.hpp
+    optimization/GradientDescentOptimizer.hpp
+    optimization/BFGSOptimizer.hpp
+    optimization/SimulatedAnnealingOptimizer.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
