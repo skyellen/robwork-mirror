@@ -10,7 +10,7 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Function.hpp>
-#include <rwlibs/algorithms/IteratedAlgorithm.hpp>
+//#include <rwlibs/algorithms/IteratedAlgorithm.hpp>
 #include "StopCondition.hpp"
 #include "Types.hpp"
 

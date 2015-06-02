@@ -5,7 +5,7 @@
  *      Author: dagothar
  */
 
-#include <rw/math/FunctionWithNumericalDerivative.hpp>
+#include "FunctionWithNumericalDerivative.hpp"
 
 #include "GradientOptimizer.hpp"
 

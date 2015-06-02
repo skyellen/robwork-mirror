@@ -8,8 +8,8 @@
 #ifndef SRC_RWLIBS_OPTIMIZATION_GRADIENTOPTIMIZER_HPP_
 #define SRC_RWLIBS_OPTIMIZATION_GRADIENTOPTIMIZER_HPP_
 
-#include <rw/math/NumericalDerivative.hpp>
-#include <rw/math/FirstDifferences.hpp>
+#include "NumericalDerivative.hpp"
+#include "FirstDifferences.hpp"
 #include "Optimizer.hpp"
 #include "Types.hpp"
 
