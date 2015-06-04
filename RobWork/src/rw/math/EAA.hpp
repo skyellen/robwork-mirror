@@ -159,13 +159,14 @@ namespace rw { namespace math {
         	}
         	*/
 
-            const T epsilon = (T)0.00001;
+            const T epsilon = (T)1e-15;
             T dval = dot(v1,v2);
-            if(fabs(dval-1)<epsilon){
-                // if the projection is close to 1 then the angle between the vectors are allmost 0 and we do nothing
-                _eaa = v1;
+            if(fabs(dval-1)<epsilon) {
+                // if the projection is close to 1 then the angle between the vectors are almost 0 and we cannot reliably determine the perpendicular axis. 
+				// A good approximation is therefore just to set the EAA equal to 0.
+				_eaa = Vector3D<T>(0,0,0);
             } else if(fabs(dval+1)<epsilon){
-                // if the projection is close to -1 then the angle between the vectors are allmost 180 and we choose
+                // if the projection is close to -1 then the angle between the vectors are almost 180 and we choose
                 // a rotation axis perpendicular to the vector
                 int idx = 0;
                 if( fabs(v1(0))>fabs(v1(1)) )
