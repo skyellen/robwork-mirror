@@ -161,7 +161,7 @@ std::vector<Contact> BallBallStrategy::findContacts(
 				newModels.push_back(ballTracking->modelIDs[oldId]);
 				newUserData.push_back(ballTracking->userData[oldId]);
 			} else {
-				newModels.push_back(std::make_pair<std::size_t,std::size_t>(i,j));
+				newModels.push_back(std::make_pair(i,j));
 				newUserData.push_back(NULL);
 			}
 		}

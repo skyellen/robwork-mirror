@@ -1308,9 +1308,9 @@ namespace
         for (CI p = tree.begin(); p != tree.end(); ++p) {
         	const int freeDOF = constraint->getDOF();
         	if (p->first == "Compliance") {
-        		params.compliance = readMatrixD(p->second, std::make_pair<int,int>(freeDOF,freeDOF));
+        		params.compliance = readMatrixD(p->second, std::make_pair(freeDOF,freeDOF));
         	} else if (p->first == "Damping") {
-        		params.damping = readMatrixD(p->second, std::make_pair<int,int>(freeDOF,freeDOF));
+        		params.damping = readMatrixD(p->second, std::make_pair(freeDOF,freeDOF));
         	} else if(p->first!="<xmlcomment>" && p->first != "<xmlattr>"){
         		RW_THROW("Unknown element");
         	}

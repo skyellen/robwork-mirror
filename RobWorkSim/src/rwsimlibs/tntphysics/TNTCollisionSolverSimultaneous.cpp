@@ -594,13 +594,13 @@ void TNTCollisionSolverSimultaneous::applySolution(
 			std::size_t i = 0;
 			BOOST_FOREACH(const TNTRigidBody* const body, component) {
 				if (body == rcParent)
-					impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rij,Wrench6D<>(impF,impN)));
+					impulses[i].push_back(std::make_pair(rij,Wrench6D<>(impF,impN)));
 				else
-					impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rij,Wrench6D<>(-impF,-impN)));
+					impulses[i].push_back(std::make_pair(rij,Wrench6D<>(-impF,-impN)));
 				if (body == rcChild)
-					impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rji,Wrench6D<>(-impF,-impN)));
+					impulses[i].push_back(std::make_pair(rji,Wrench6D<>(-impF,-impN)));
 				else
-					impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rji,Wrench6D<>(impF,impN)));
+					impulses[i].push_back(std::make_pair(rji,Wrench6D<>(impF,impN)));
 				i++;
 			}
 		}
@@ -643,9 +643,9 @@ void TNTCollisionSolverSimultaneous::applySolution(
 		std::size_t i = 0;
 		BOOST_FOREACH(const TNTRigidBody* const body, component) {
 			if (body == rcParent)
-				impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rij,Wrench6D<>(impF,impN)));
+				impulses[i].push_back(std::make_pair(rij,Wrench6D<>(impF,impN)));
 			else if (body == rcChild)
-				impulses[i].push_back(std::make_pair<Vector3D<>, Wrench6D<> >(rji,Wrench6D<>(-impF,-impN)));
+				impulses[i].push_back(std::make_pair(rji,Wrench6D<>(-impF,-impN)));
 			i++;
 		}
 	}
