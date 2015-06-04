@@ -92,7 +92,7 @@ TARGET_LINK_LIBRARIES( rw_models-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_models-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_models-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_models-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_invkin-test ${DO_EXCLUDE} test-main.cpp invkin/InvKinTest.cpp)       
+ADD_EXECUTABLE( rw_invkin-test ${DO_EXCLUDE} test-main.cpp invkin/InvKinTest.cpp invkin/ClosedFormIKSolverURTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_invkin-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_invkin-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_invkin-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_invkin-test ${TEST_DEPENDENCIES})
