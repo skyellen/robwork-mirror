@@ -32,12 +32,12 @@
 #include <rw/geometry/Tube.hpp>
 #include <rw/geometry/Sphere.hpp>
 #include <rw/geometry/PointCloud.hpp>
+#include <rw/geometry/Pyramid.hpp>
 
 /*
 #include "Line.hpp"
 #include "Point.hpp"
 #include "Plane.hpp"
-#include "Pyramid.hpp"
 
 #include "Triangle.hpp"
 */
@@ -131,7 +131,13 @@ namespace
 	}
 
 	Geometry::Ptr constructPyramid(std::stringstream& sstr){
-		RW_THROW("Could not read (radius, height, divisions).");
+		float dx, dy, height;
+		if (sstr >> dx >> dy >> height) {
+			return ownedPtr(new Geometry(ownedPtr(new Pyramid(dx, dy, height))));
+		} else {
+			RW_THROW("Could not read (dx, dy, height).");
+			return NULL;
+		}
 		return NULL;
 	}
 
@@ -139,39 +145,7 @@ namespace
 		return ownedPtr(new Geometry(ownedPtr(new Plane(Vector3D<>::z(),0))));
 	}
 }
-/*
 
-Geometry::Ptr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
-    std::string geofile = info.getGeoString();
-    Transform3D<> fTgeo = info.getTransform();
-	Geometry::Ptr geo = GeometryFactory::load(geofile);
-    geo->setTransform(fTgeo);
-    return geo;
-}
-
-std::vector<Geometry::Ptr> GeometryFactory::loadCollisionGeometry(const rw::kinematics::Frame &f){
-	std::vector<Geometry::Ptr> geoms;
-    const Frame *frame = &f;
-    // std::vector<Face<float> > faces;
-    // Log::debug() << "- for all nodes: " << std::endl;
-    if( frame==NULL )
-        return geoms;
-    // check if frame has collision descriptor
-    if( CollisionModelInfo::get(frame).size()==0 )
-        return geoms;
-
-    // get the geo descriptor
-    std::vector<CollisionModelInfo> infos =  CollisionModelInfo::get(frame);
-
-    BOOST_FOREACH(CollisionModelInfo &info, infos){
-		Geometry::Ptr geo = loadCollisionGeometry(info);
-        if(geo!=NULL)
-            geoms.push_back( geo );
-    }
-    return geoms;
-}
-
-*/
 Geometry::Ptr GeometryFactory::load(const std::string& raw_filename, bool useCache){
 	return getGeometry(raw_filename, useCache);
 }
@@ -224,16 +198,6 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
 			GeometryData::Ptr data = model->toGeometryData();
 			getCache().add(filename, data);
 			return ownedPtr(new Geometry(getCache().get(filename)));
-
-			/*
-			RW_THROW(
-				"Unknown extension "
-				<< StringUtil::quote(StringUtil::getFileExtension(filename))
-				<< " for file "
-				<< StringUtil::quote(raw_filename)
-				<< " that was resolved to file name "
-				<< filename);
-				*/
 		}
     }
 
@@ -255,8 +219,6 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
         return constructLine(sstr);
     if (type == "#Sphere")
         return constructSphere(sstr);
-    if (type == "#Plane")
-        return constructPlane(sstr);
     if (type == "#Pyramid")
         return constructPyramid(sstr);
     else {

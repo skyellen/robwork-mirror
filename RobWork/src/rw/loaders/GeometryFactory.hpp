@@ -49,8 +49,22 @@ namespace rw { namespace loaders {
      * Sphere:
      * Syntax: "#Sphere radi"
      * where radi is the radius of the sphere
+     * 
+     * Tube:
+     * Syntax: "#Tube radius height level
+     * where "radius" and "height" are float specifying radius and
+     * height and "level" is a non-negative integer specifying the
+     * discretization level.
      *
-     *
+     * Cone:
+     * Syntax: "#Cone radius height
+     * where  "height" is a float specifying cone height,
+     * and "radius" is a float specyfying cone radius at at the bottom.
+     * 
+     * Pyramid:
+     * Syntax: "#Pyramid dx dy height"
+     * where "dx", "dy" are floats specifying the base dimensions,
+     * and "height" is a float specyfying the pyramid height.
      */
     class GeometryFactory
     {
@@ -71,23 +85,6 @@ namespace rw { namespace loaders {
 
     	//! @copydoc load
 		static rw::geometry::Geometry::Ptr getGeometry(const std::string& str, bool useCache=true);
-
-        /**
-         * @brief loads collision geometry as specified by properties on the frame.
-         *
-         * Each CollisionModelInfo that is in the PropertyMap of the frame \b f is
-         * loaded and returned.
-         * @param f [in] the frame where the properties are specified
-         * @return a vector of all geometries that was successfully loaded
-         */
-		//static std::vector<Geometry::Ptr> loadCollisionGeometry(const rw::kinematics::Frame &f);
-
-        /**
-         * @brief loads geometry which is specified in a CollisionModelInfo
-         * @param info [in]
-         * @return geometry if load was successfull, NULL otherwise
-         */
-		//static Geometry::Ptr loadCollisionGeometry(const rw::models::CollisionModelInfo& info);
 
     private:
         typedef rw::common::Cache<std::string, rw::geometry::GeometryData> Cache;

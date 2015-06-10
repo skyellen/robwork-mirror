@@ -124,7 +124,6 @@ public:
 	}
 
 	void setInitialState(rw::kinematics::State& state) {
-		//std::cout << "Set initial state on " << _frame->getName() << std::endl;
 		_frame->setTransform(_t3d, state);
 	}
 };
@@ -156,7 +155,7 @@ void addPropertyToMap(const DummyProperty &dprop, common::PropertyMap& map){
     if(dprop._type=="string"){
         map.add(dprop._name, dprop._desc, dprop._val);
     } else if(dprop._type=="double"){
-        //std::cout << "casting from string to double. type:" << dprop._type <<  " value: " << dprop._val << std::endl;
+        
     	try {
     		double val = boost::lexical_cast<double>(dprop._val);
         	map.add(dprop._name, dprop._desc, val);
@@ -220,32 +219,9 @@ std::string createScopedName(std::string str, std::vector<std::string> scope) {
 }
 
 typedef std::map<std::string, Frame*> FrameMap;
-/*
- bool isIdentity(rw::math::Transform3D<>& t3d)
- {
- const double eps = 0.000001;
- if( ( fabs( t3d(0,0) - 1)< eps) &&
- ( fabs( t3d(1,1) - 1)< eps) &&
- ( fabs( t3d(2,2) - 1)< eps) &&
- ( fabs( t3d(0,1) ) < eps )  &&
- ( fabs( t3d(0,2) ) < eps )  &&
- ( fabs( t3d(0,3) ) < eps )  &&
- ( fabs( t3d(1,0) ) < eps )  &&
- ( fabs( t3d(1,2) ) < eps )  &&
- ( fabs( t3d(1,3) ) < eps )  &&
- ( fabs( t3d(2,0) ) < eps )  &&
- ( fabs( t3d(2,1) ) < eps )  &&
- ( fabs( t3d(2,3) ) < eps )  &&
- ( fabs( t3d(3,0) ) < eps )  &&
- ( fabs( t3d(3,1) ) < eps )  &&
- ( fabs( t3d(3,2) ) < eps ) )
- return true;
- return false;
- }
- */
+
 
 Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, DummySetup &setup) {
-	// test if identity
 	Frame *modelframe = parent;
 	std::vector<std::string> scope = model._scope;
 
