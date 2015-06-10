@@ -4,9 +4,9 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/common/types.hpp>
-#include <string.h>
+#include <string>
 
-
+namespace rwhw {
 
 class UniversalRobotsData {
 
@@ -82,6 +82,6 @@ class UniversalRobotsData {
   private:
 };
 
-
+} // end namespace
 
 #endif //end include guard

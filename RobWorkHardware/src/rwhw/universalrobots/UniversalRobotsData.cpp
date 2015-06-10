@@ -1,6 +1,6 @@
 #include "UniversalRobotsData.hpp"
 
-
+using namespace rwhw;
 
 UniversalRobotsData::UniversalRobotsData()
 {

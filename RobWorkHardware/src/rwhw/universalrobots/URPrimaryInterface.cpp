@@ -8,7 +8,6 @@
 #include "URPrimaryInterface.hpp"
 #include "URCommon.hpp"
 
-
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Log.hpp>
 
@@ -19,9 +18,6 @@
 #include <string>
 #include <float.h>
 
-
-
-
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::common;
@@ -29,8 +25,6 @@ using namespace rw::trajectory;
 
 using namespace rwhw;
 using namespace boost::asio::ip;
-
-
 
 URPrimaryInterface::URPrimaryInterface():
 	_haveReceivedSize(false),
