@@ -397,6 +397,32 @@ ELSE ()
     MESSAGE( STATUS "RobWork: Assimp DISABLED!" )
 ENDIF ()
 
+# Mathematica
+CMAKE_DEPENDENT_OPTION(RW_USE_MATHEMATICA "Set to ON to include Mathematica support."
+      ON "RW_ENABLE_MATHEMATICA" OFF)
+IF(RW_USE_MATHEMATICA)
+	FIND_PACKAGE(Mathematica QUIET)
+	IF( Mathematica_WSTP_FOUND )
+		MESSAGE(STATUS "RobWork: Mathematica WSTP installation FOUND!")
+		FOREACH(math_lib_dirs ${Mathematica_LIBRARY_DIRS})
+			IF (${math_lib_dirs} MATCHES "/Libraries/")
+				SET (UUID_LIB_DIR ${math_lib_dirs})
+			ENDIF()
+		ENDFOREACH()
+		IF (DEFINED UUID_LIB_DIR)
+			SET(Mathematica_WSTP_LIBRARIES ${Mathematica_WSTP_LIBRARIES} ${UUID_LIB_DIR}/libuuid.a)
+		ENDIF()
+		SET(RW_MATHEMATICA_LIB rw_mathematica)
+		SET(RW_HAVE_MATHEMATICA TRUE)
+	ELSE ()
+    	MESSAGE( STATUS "RobWork: Mathematica NOT FOUND!" )
+		SET(RW_HAVE_MATHEMATICA FALSE)
+	ENDIF()
+ELSE ()
+    MESSAGE( STATUS "RobWork: Mathematica DISABLED!" )
+	SET(RW_HAVE_MATHEMATICA FALSE)
+ENDIF ()
+
 #######################################################################
 # COMPILER FLAGS AND MACRO SETUP
 #
@@ -559,6 +585,7 @@ SET(ROBWORK_INCLUDE_DIR
     ${ZLIB_INCLUDE_DIRS}
     ${MINIZIP_INCLUDE_DIRS}
     ${ASSIMP_INCLUDE_DIRS}
+    ${Mathematica_WSTP_INCLUDE_DIR}
 )
 
 #
@@ -579,6 +606,7 @@ SET(ROBWORK_LIBRARY_DIRS
     ${ZLIB_LIBRARY_DIRS}
     ${MINIZIP_LIBRARY_DIRS}
     ${ASSIMP_LIBRARY_DIRS}
+    ${Mathematica_WSTP_INCLUDE_DIR}
 )
 
 
@@ -597,6 +625,7 @@ SET(ROBWORK_LIBRARIES_TMP
   rw_assembly
   rw_task
   rw_calibration
+  ${RW_MATHEMATICA_LIB}
   ${RW_LUA_LIBS}
   ${LUA_LIBRARIES}
   rw_proximitystrategies
@@ -615,6 +644,7 @@ SET(ROBWORK_LIBRARIES_TMP
   ${MINIZIP_LIBRARIES}
   ${ZLIB_LIBRARIES}
   ${CMAKE_DL_LIBS}
+  ${Mathematica_WSTP_LIBRARIES}
 )
 
 SET(ROBWORK_LIBRARIES)

@@ -168,6 +168,14 @@ ADD_TEST( rw_ransac-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_ransac-test ${DEFA
 ADD_DEPENDENCIES( rw_ransac-test ${TEST_DEPENDENCIES} )
 SET( RANSAC_TEST rw_ransac-test )
 
+# Mathematica
+IF ( RW_HAVE_MATHEMATICA )
+	ADD_EXECUTABLE( rw_mathematica-test ${DO_EXCLUDE} test-main.cpp mathematica/MathematicaTest.cpp)       
+	TARGET_LINK_LIBRARIES( rw_mathematica-test ${ROBWORK_LIBRARIES} )
+	ADD_TEST( rw_mathematica-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_mathematica-test ${DEFAULT_TEST_ARGS})
+	ADD_DEPENDENCIES(rw_mathematica-test ${TEST_DEPENDENCIES} rw_mathematica)
+ENDIF()
+
 ADD_CUSTOM_TARGET(rw_all-tests ctest -V 
   DEPENDS rw_math-test rw_common-test rw_geometry-test rw_models-test rw_invkin-test 
           rw_loader-test rw_kinematics-test 

@@ -99,6 +99,9 @@ namespace rwlibs {
 	 */
 	namespace assembly {}
 
+	//! @copydoc rwlibs::mathematica::Mathematica
+	namespace mathematica {}
+
 	/**
 	 * @brief Dynamic library loading
 	 */

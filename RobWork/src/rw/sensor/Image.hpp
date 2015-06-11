@@ -19,7 +19,9 @@
 #define RW_SENSOR_IMAGE_HPP
 
 /**
- * @file Image.hpp
+ * @file rw/sensor/Image.hpp
+ *
+ * @copydoc rw::sensor::Image
  */
 
 #include <utility>
