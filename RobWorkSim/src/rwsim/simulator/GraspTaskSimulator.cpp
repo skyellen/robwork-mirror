@@ -319,7 +319,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 	SimState &sstate = _simStates[sim];
 
 	int delay = _stepDelayMs;
-	RW_WARN("");
+
 	if (delay != 0)
 		TimerUtil::sleepMs(delay);
 	if (_requestSimulationStop) {
@@ -358,7 +358,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 
 		graspFinished(sstate);
 	}
-	RW_WARN("");
+
 	if (sim->isInError() && sstate._currentState != NEW_GRASP) {
 		// the simulator is in error, reinitialize or fix the error
 		_simfailed++;
@@ -371,7 +371,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 
 		graspFinished(sstate);
 	}
-	RW_WARN("");
+
 	if (sstate._currentState != NEW_GRASP) {
 		if (getMaxObjectDistance(_objects, _homeState, state)
 				> _maxObjectGripperDistanceThreshold) {
@@ -387,7 +387,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 			graspFinished(sstate);
 		}
 	}
-	RW_WARN("");
+
 	if (sstate._currentState == APPROACH) {
 		Transform3D<> ct3d = Kinematics::worldTframe(_mbase, state);
 		bool isApproachReached = MetricUtil::dist2(ct3d.P(),
@@ -404,7 +404,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 			sstate._target->getResult()->objectTtcpApproach = inverse(t3d);
 		}
 	}
-	RW_WARN("");
+
 	if (sstate._currentState == GRASPING) {
 		//std::cout << "grasping" << std::endl;
 		if (sim->getTime() > sstate._approachedTime + 0.5) {
@@ -811,6 +811,7 @@ GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(
 
 rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state,
 		SimState &sstate) {
+	std::cout << "Compute Grasp quality!" << std::endl;
 	GraspedObject gobj = getObjectContacts(state, sstate);
 	std::vector < Contact3D > contacts = gobj.contacts;
 	RigidBody *object = gobj.object;
