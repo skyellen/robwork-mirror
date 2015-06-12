@@ -153,6 +153,13 @@ public:
 	void setStoreTimedStatePaths(bool enabled) { _storeTimedStatePaths = enabled; }
 
 	/**
+	 * @brief force the simulation of all tasks, even those that already have results
+	 * in specified in the task
+	 * @param enabled
+	 */
+	void forceSimulateAll(bool enabled){ _forceSimulateAll = enabled; }
+
+	/**
 	 * @brief Get the current map of stored TimedStatePaths.
 	 *
 	 * Note that setStoreTimedStatePaths must be set to enabled before running the simulation or
@@ -296,7 +303,7 @@ protected:
 	double _wallTimeLimit;
 	double _simTimeLimit;
 
-	bool _storeTimedStatePaths;
+	bool _storeTimedStatePaths, _forceSimulateAll;
 	std::map<rwlibs::task::GraspSubTask*, std::map<rwlibs::task::GraspTarget*,rw::trajectory::TimedStatePath> > _timedStatePaths;
 };
 

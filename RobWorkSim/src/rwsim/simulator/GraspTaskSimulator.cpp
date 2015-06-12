@@ -60,7 +60,7 @@ GraspTaskSimulator::GraspTaskSimulator(
 				40), _maxObjectGripperDistanceThreshold(50), _stat(
 				GraspResult::SizeOfStatusArray, 0), _initialized(false), _nrOfThreads(
 				1), _currentTargetIndex(0), _alwaysResting(false), _wallTimeLimit(
-				30.0), _simTimeLimit(30.0) {
+				30.0), _simTimeLimit(30.0), _storeTimedStatePaths(false), _forceSimulateAll(false){
 	if (nrThreads > 0 && nrThreads < 8)
 		_nrOfThreads = nrThreads;
 
@@ -246,6 +246,7 @@ void GraspTaskSimulator::startSimulation(
 									_objects[j]->getBodyFrame())));
 			sim->addSensor(sstate._bsensors.back(), sstate._state);
 		}
+		_homeState.upgrade();
 
 		_simulators[i]->setRealTimeScale(0);
 		_simulators[i]->setTimeStep(0.005);
@@ -324,11 +325,11 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 	if (_requestSimulationStop) {
 		return;
 	}
-	RW_WARN("");
+
 	sstate._state = state;
 
 	Q currentQ = _hand->getQ(state);
-	RW_WARN("");
+
 	if (_storeTimedStatePaths) {
 		std::map<GraspTarget*, TimedStatePath> &targetPaths =
 				_timedStatePaths[sstate._task];
@@ -336,7 +337,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 		TimedState timedState(sim->getTime(), state);
 		targetPath.push_back(timedState);
 	}
-	RW_WARN("");
+
 	if (sstate._wallTimer.getTime() > _wallTimeLimit
 			&& sim->getTime() > _simTimeLimit) { //seconds
 		_timeout++;
@@ -347,7 +348,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 
 		graspFinished(sstate);
 	}
-	RW_WARN("");
+
 	if (sim->getTime() > 10.0 && sstate._currentState != NEW_GRASP) {
 		_timeout++;
 		sstate._target->getResult()->gripperConfigurationGrasp = currentQ;
@@ -621,22 +622,23 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 				return;
 			}
 
-			if (sstate._target->getResult()->testStatus
-					!= GraspResult::UnInitialized
-					&& sstate._target->getResult()->testStatus
-							!= GraspResult::SimulationFailure
-					&& sstate._target->getResult()->testStatus
-							!= GraspResult::Filtered) {
-				// if test status is set then we allready processed this task.
+			if(!_forceSimulateAll){
 				if (sstate._target->getResult()->testStatus
-						< GraspResult::SizeOfStatusArray)
-					_stat[sstate._target->getResult()->testStatus]++;
-				_skipped++;
-				_nrOfExperiments++;
-				colFreeSetup = false;
-				continue;
+						!= GraspResult::UnInitialized
+						&& sstate._target->getResult()->testStatus
+								!= GraspResult::Success
+						&& sstate._target->getResult()->testStatus
+								!= GraspResult::Filtered) {
+					// if test status is set then we allready processed this task.
+					if (sstate._target->getResult()->testStatus
+							< GraspResult::SizeOfStatusArray)
+						_stat[sstate._target->getResult()->testStatus]++;
+					_skipped++;
+					_nrOfExperiments++;
+					colFreeSetup = false;
+					continue;
+				}
 			}
-
 			Transform3D<> wTref = Kinematics::worldTframe(sstate._taskRefFrame,
 					_homeState);
 			Transform3D<> refToffset = sstate._taskOffset;
@@ -681,6 +683,13 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim,
 			CollisionDetector::QueryResult res;
 			colFreeSetup = !_collisionDetector->inCollision(nstate, &res,
 					false);
+			if (_storeTimedStatePaths) {
+				std::map<GraspTarget*, TimedStatePath> &targetPaths =
+						_timedStatePaths[sstate._task];
+				TimedStatePath &targetPath = targetPaths[sstate._target];
+				TimedState timedState(sim->getTime(), nstate);
+				targetPath.push_back(timedState);
+			}
 			if (!colFreeSetup) {
 
 				// check if its the object or the environment that is in collision
