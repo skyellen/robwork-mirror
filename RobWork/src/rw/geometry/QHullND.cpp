@@ -61,6 +61,7 @@ using namespace boost::numeric;
 // Contact pos, normal, hastighed, depth, idA, idB
 
 boost::mutex _qhullMutex;
+static bool firstCalll = true;
 
 void qhull::build(size_t dim,
                   double *coords,
@@ -85,22 +86,33 @@ void qhull::build(size_t dim,
     int argc = 0;
     char** argv = NULL;
 
-        qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
-        //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
-        //char flags[] = "qhull Qt Pp Qs";
+    #if qh_QHpointer==1
+    if( firstCalll ){
+    	qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
+    	firstCalll = false;
+    }
+	#else
+    	qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
+	#endif
 
-        //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
-        //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
-        //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
-        //char flags[] = "qhull Qs Pp Qt n";
+	//qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
+	//char flags[] = "qhull Qt Pp Qs";
 
-        char flags[] = "qhull Pp QJ";
+	//char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
+	//char flags[] = "qhull Pp Qs QJ C-0.0001 n";
+	//char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
+	//char flags[] = "qhull Qs Pp Qt n";
 
+	char flags[] = "qhull Pp QJ";
 
-
-        exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
-
-
+	// WHEN DYNAMIC LINKING qh_QHpointer gets set to 1. Requires some fixes
+	#if qh_QHpointer==1
+	// for some reason i had to apply this HACK in order to get QHull working...
+	qhT *qht = qh_save_qhull();
+	exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
+	#else
+	exitcode = qh_new_qhull((int)dim, (int)nrCoords, coords, ismalloc, flags, NULL, stderr);
+	#endif
 
 
     if (!exitcode) {
@@ -180,5 +192,10 @@ void qhull::build(size_t dim,
     if (curlong || totlong)
         fprintf (stderr, "qhull internal warning (main): did not free %d bytes of long memory (%d pieces)\n",totlong, curlong);
     //delete[] coords;
+
+	#if qh_QHpointer
+	qh_restore_qhull(&qht);
+	#endif
+
 
 }
