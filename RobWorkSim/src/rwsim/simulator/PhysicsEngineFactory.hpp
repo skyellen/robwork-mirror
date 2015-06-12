@@ -42,39 +42,8 @@ namespace simulator {
 	/**
 	 * @brief Factory for creating physics engines
 	 */
-	class PhysicsEngineFactory {
-	public:
-		static std::vector<std::string> getEngineIDs();
+	typedef PhysicsEngine::Factory PhysicsEngineFactory;
 
-		static bool hasEngineID(const std::string& engineID);
-
-		static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
-
-        static PhysicsEngine::Ptr makePhysicsEngine(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
-
-        typedef boost::function<PhysicsEngine*(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell>)> makePhysicsEngineFunctor;
-        static void addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor);
-
-        /*
-        template<class T>
-        class Register{
-        public:
-            static bool _Register(const std::string& name){
-
-                PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
-                        boost::lambda::bind( boost::lambda::new_ptr<T>(), boost::lambda::_1);
-
-                PhysicsEngineFactory::addPhysicsEngine(name, odephysics);
-                return true;
-            };
-        private:
-            Register(){};
-            ~Register(){};
-            //static std::string type;
-        };
-        */
-
-	};
 }
 }
 

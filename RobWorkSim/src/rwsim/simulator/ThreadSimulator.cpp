@@ -35,7 +35,7 @@ namespace {
 }
 
 
-ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
+ThreadSimulator::ThreadSimulator(rwlibs::simulation::Simulator::Ptr simulator,
                                  const rw::kinematics::State &state):
     _simulator(simulator),
     _thread(NULL),
@@ -51,13 +51,13 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
 
 }
 
-ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator):
+ThreadSimulator::ThreadSimulator(rwlibs::simulation::Simulator::Ptr simulator):
     _simulator(simulator),
     _thread(NULL),
     //_period(-1),
     _dt(0.001),
     _timescale(0.0),
-    _tmpState(simulator->getDynamicWorkCell()->getWorkcell()->getDefaultState()),
+    _tmpState(simulator->getState()),
     _running(false),
     _stepcb(NULL),
     _inError(false),

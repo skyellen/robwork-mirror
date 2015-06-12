@@ -40,12 +40,12 @@ namespace simulator {
 		/**
 		 * @brief constructor - using the default workcell state as starting state
 		 */
-		ThreadSimulator(DynamicSimulator::Ptr simulator);
+		ThreadSimulator(rwlibs::simulation::Simulator::Ptr simulator);
 
 		/**
 		 * @brief constructor
 		 */
-		ThreadSimulator(DynamicSimulator::Ptr simulator, const rw::kinematics::State &state);
+		ThreadSimulator(rwlibs::simulation::Simulator::Ptr simulator, const rw::kinematics::State &state);
 
 		/**
 		 * @brief destructor
@@ -135,7 +135,7 @@ namespace simulator {
 		 * @return pointer to simulator
 		 */
 		DynamicSimulator::Ptr getSimulator(){
-			return _simulator;
+			return _simulator.cast<DynamicSimulator>();
 		};
 
 		//! The callback type for a hook into the step call
@@ -170,7 +170,7 @@ namespace simulator {
 		void stepperLoop();
 
 	private:
-		DynamicSimulator::Ptr _simulator;
+		rwlibs::simulation::Simulator::Ptr _simulator;
 		boost::thread *_thread;
 		//long _period;
 		double _dt, _timescale;
