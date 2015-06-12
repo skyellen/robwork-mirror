@@ -110,7 +110,7 @@ namespace swig {
     typedef rwsim::simulator::ThreadSimulator ThreadSimulator;
     typedef rwsim::simulator::ThreadSimulator::StepCallback ThreadSimulatorStepCallback;
     typedef rwsim::simulator::PhysicsEngine PhysicsEngine;
-    typedef rwsim::simulator::PhysicsEngineFactory PhysicsEngineFactory;
+    typedef rwsim::simulator::PhysicsEngine::Factory PhysicsEngineFactory;
     typedef rwsim::simulator::GraspTaskSimulator GraspTaskSimulator;
 
 	// util

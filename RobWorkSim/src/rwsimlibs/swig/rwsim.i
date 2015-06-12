@@ -83,19 +83,8 @@ void java_ThreadSimulatorStepCallback(ThreadSimulator* sim, State &state, void *
 
 %include <stl.i>
 
-/********************************************
- * General utility functions
- ********************************************/
+%template (DynamicWorkCellPtr) rw::common::Ptr<DynamicWorkCell>;
 
-rw::common::Ptr<DynamicWorkCell> getDynamicWorkCell();
-void setDynamicWorkCell(rw::common::Ptr<DynamicWorkCell> dwc);
-
-rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
-void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);
-rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
-rw::common::Ptr<ThreadSimulator> getSimulatorInstance();
-void removeSimulatorInstance(const std::string& id);
-std::vector<std::string> getSimulatorInstances();
 
 /********************************************
  * Boost
@@ -228,27 +217,27 @@ public:
 	virtual bool match(rw::common::Ptr<GeometryData> geoA, rw::common::Ptr<GeometryData> geoB) = 0;
 	/*
 	virtual std::vector<Contact> findContacts(rw::common::Ptr<ProximityModel> a,
-			const Transform3D& wTa,
+			const Transform3d& wTa,
 			rw::common::Ptr<ProximityModel> b,
-			const Transform3D& wTb) = 0;
+			const Transform3d& wTb) = 0;
 	virtual std::vector<Contact> findContacts(
 			rw::common::Ptr<ProximityModel> a,
-			const Transform3D& wTa,
+			const Transform3d& wTa,
 			rw::common::Ptr<ProximityModel> b,
-			const Transform3D& wTb,
+			const Transform3d& wTb,
 			ContactStrategyData &data) = 0;
 	virtual std::vector<Contact> findContacts(
 			rw::common::Ptr<ProximityModel> a,
-			const Transform3D& wTa,
+			const Transform3d& wTa,
 			rw::common::Ptr<ProximityModel> b,
-			const Transform3D& wTb,
+			const Transform3d& wTb,
 			ContactStrategyData &data,
 			ContactStrategyTracking& tracking) = 0;
 	virtual std::vector<Contact> updateContacts(
 			rw::common::Ptr<ProximityModel> a,
-			const Transform3D& wTa,
+			const Transform3d& wTa,
 			rw::common::Ptr<ProximityModel> b,
-			const Transform3D& wTb,
+			const Transform3d& wTb,
 			ContactStrategyData& data,
 			ContactStrategyTracking& tracking) const = 0;
 	*/
@@ -281,7 +270,7 @@ public:
 //	ContactModel::Ptr getModelB() const;
 	const Frame* getFrameA() const;
 	const Frame* getFrameB() const;
-	Transform3D aTb() const;
+	Transform3d aTb() const;
 	rw::math::Vector3D<double> getPointA() const;
 	rw::math::Vector3D<double> getPointB() const;
 	rw::math::Vector3D<double> getNormal() const;
@@ -290,7 +279,7 @@ public:
 //	void setModelB(ContactModel::Ptr modelB);
 	void setFrameA(const Frame* frame);
 	void setFrameB(const Frame* frame);
-	void setTransform(Transform3D aTb);
+	void setTransform(Transform3d aTb);
 	void setPointA(rw::math::Vector3D<double> pointA);
 	void setPointB(rw::math::Vector3D<double> pointB);
 	void setPoints(rw::math::Vector3D<double> pointA, rw::math::Vector3D<double> pointB);
@@ -337,9 +326,9 @@ public:
 
     bool isEnabled();
 
-    void setTarget(const Transform3D& target);
+    void setTarget(const Transform3d& target);
 
-    void setTarget(const Transform3D& target, const VelocityScrew6D& vals);
+    void setTarget(const Transform3d& target, const Screw6d& vals);
 
 };
 
@@ -415,28 +404,28 @@ public:
 	virtual ~SerialDeviceController();
 
 	//! @brief move robot in a linear Cartesian path
-	bool moveLin(const Transform3D& target, float speed=100, float blend=0);
+	bool moveLin(const Transform3d& target, float speed=100, float blend=0);
 
 	//! @brief move robot from point to point
 	bool movePTP(const Q& target, float speed=100, float blend=0);
 
 	//! @brief move robot from point to point but using a pose as target (require invkin)
-	virtual bool movePTP_T(const Transform3D& target, float speed=100, float blend=0);
+	virtual bool movePTP_T(const Transform3d& target, float speed=100, float blend=0);
 
 	//! @brief move robot in a servoing fasion
 	virtual bool moveVelQ(const Q& target_joint_velocity);
 
-	virtual bool moveVelT(const VelocityScrew6D& vel);
+	virtual bool moveVelT(const Screw6d& vel);
 
 	//! move robot with a hybrid position/force control
 
     %extend {
 
-    	bool moveLinFC(const Transform3D& target,
-    							  const Wrench6D& wtarget,
+    	bool moveLinFC(const Transform3d& target,
+    							  const Wrench6d& wtarget,
     							  Q selection,
     							  std::string refframe,
-    							  Rotation3D offset,
+    							  Rotation3d offset,
     							  float speed=100,
     							  float blend=0)
     	{
@@ -505,7 +494,7 @@ public:
     std::string objectType;
     double mass;
     rw::math::Vector3D<double> masscenter;
-    InertiaMatrix inertia;
+    InertiaMatrixd inertia;
     std::string integratorType;
     //std::vector<Frame*> frames;
 
@@ -529,7 +518,7 @@ public:
 
     const std::string& getName() const;
     const std::string& getMaterialID() const;
-    const InertiaMatrix& getInertia() const;
+    const InertiaMatrixd& getInertia() const;
 
     //typedef enum{MassChangedEvent} BodyEventType;
 
@@ -539,8 +528,8 @@ public:
     //BodyChangedEvent _bodyChangedEvent;
 
     void setMass(double m);
-    void setMass(double m, const InertiaMatrix& inertia);
-    void setMass(double m, const InertiaMatrix& inertia, const rw::math::Vector3D<double>& com);
+    void setMass(double m, const InertiaMatrixd& inertia);
+    void setMass(double m, const InertiaMatrixd& inertia, const rw::math::Vector3D<double>& com);
 
     //! interface functions
     virtual rw::math::Vector3D<double> getPointVelW(const rw::math::Vector3D<double>& p, const State& state) const = 0;
@@ -566,23 +555,23 @@ public:
     virtual void setTorqueW(const rw::math::Vector3D<double>& t, State& state);
     virtual void addTorqueW(const rw::math::Vector3D<double>& t, State& state);
     virtual rw::math::Vector3D<double> getTorqueW(State& state);
-    virtual Transform3D getTransformW(const State& state);
+    virtual Transform3d getTransformW(const State& state);
 
-    Transform3D pTbf(const State& state);
+    Transform3d pTbf(const State& state);
 
-    Transform3D pTcom(const State& state);
+    Transform3d pTcom(const State& state);
 
-    Transform3D wTbf(const State& state);
+    Transform3d wTbf(const State& state);
     // world
-    Transform3D wTcom(const State& state);
+    Transform3d wTcom(const State& state);
 
     %extend {
 
-        Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state, const rw::math::Vector3D<double>& dir){
+        Transform3d place(rw::common::Ptr<CollisionDetector> coldect, const State& state, const rw::math::Vector3D<double>& dir){
             return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, dir);
         }
 
-        Transform3D place(rw::common::Ptr<CollisionDetector> coldect, const State& state){
+        Transform3d place(rw::common::Ptr<CollisionDetector> coldect, const State& state){
             return rwsim::dynamics::BodyUtil::placeBody($self, coldect, state, -rw::math::Vector3D<double>::z());
         }
         
@@ -621,13 +610,13 @@ public:
         const std::vector<rw::common::Ptr<Geometry> >& geoms
         );
 
-    //InertiaMatrix getEffectiveMassW(const rw::math::Vector3D<double>& wPc);
+    //InertiaMatrixd getEffectiveMassW(const rw::math::Vector3D<double>& wPc);
     Frame* getParent(State& state) const;
-    Transform3D getPTBody(const State& state) const;
-    void setPTBody(const Transform3D& pTb, State& state);
-    Transform3D getWTBody(const State& state) const;
+    Transform3d getPTBody(const State& state) const;
+    void setPTBody(const Transform3d& pTb, State& state);
+    Transform3d getWTBody(const State& state) const;
 
-    Transform3D getWTParent(const State& state) const;
+    Transform3d getWTParent(const State& state) const;
     rw::math::Vector3D<double> getLinVel(const State& state) const;
 
     /**
@@ -642,16 +631,16 @@ public:
     void setAngVelW(const rw::math::Vector3D<double> &avel, State& state);
     rw::math::Vector3D<double> getPointVel(const rw::math::Vector3D<double>& p, const State& state);
     double getMass() const;
-    const InertiaMatrix& getBodyInertia() const;
-    const InertiaMatrix& getBodyInertiaInv() const;
-    InertiaMatrix calcInertiaTensorInv(const State& state) const;
-    //InertiaMatrix calcInertiaTensorInvW(const State& state) const;
-    InertiaMatrix calcInertiaTensor(const State& state) const;
+    const InertiaMatrixd& getBodyInertia() const;
+    const InertiaMatrixd& getBodyInertiaInv() const;
+    InertiaMatrixd calcInertiaTensorInv(const State& state) const;
+    //InertiaMatrixd calcInertiaTensorInvW(const State& state) const;
+    InertiaMatrixd calcInertiaTensor(const State& state) const;
     MovableFrame* getMovableFrame();
-    InertiaMatrix calcEffectiveMass(const rw::math::Vector3D<double>& wPc, const State& state) const;
-    InertiaMatrix calcEffectiveMassW(const rw::math::Vector3D<double>& wPc, const State& state) const;
-    //InertiaMatrix calcEffectiveInertia(const State& state) const;
-    //InertiaMatrix calcEffectiveInertiaInv(const State& state) const;
+    InertiaMatrixd calcEffectiveMass(const rw::math::Vector3D<double>& wPc, const State& state) const;
+    InertiaMatrixd calcEffectiveMassW(const rw::math::Vector3D<double>& wPc, const State& state) const;
+    //InertiaMatrixd calcEffectiveInertia(const State& state) const;
+    //InertiaMatrixd calcEffectiveInertiaInv(const State& state) const;
 };
 
 %template (RigidBodyPtr) rw::common::Ptr<RigidBody>;
@@ -690,8 +679,8 @@ public:
 	size_t getDOF() const;
 	size_t getDOFLinear() const;
 	size_t getDOFAngular() const;
-	Transform3D getTransform() const;
-	void setTransform(const Transform3D &parentTconstraint);
+	Transform3d getTransform() const;
+	void setTransform(const Transform3d &parentTconstraint);
 	SpringParams getSpringParams() const;
 	void setSpringParams(const SpringParams &params);
 	//static bool toConstraintType(const std::string &string, Constraint::ConstraintType &type);
@@ -775,7 +764,7 @@ public:
 
     rw::common::Ptr<Body> getEndBody();
 
-    //void addToWorkCell(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
+    //void addToWorkCell(rw::common::Ptr<DynamicWorkCell> dwc);
 
     double getRadius();
 
@@ -791,7 +780,7 @@ public:
 
     void addForceTorque(const Q &forceTorque, State& state);
 
-    Transform3D getOffset();
+    Transform3d getOffset();
 
     std::vector<rw::common::Ptr<Body> > getLinks();
 
@@ -922,7 +911,6 @@ public:
 
 };
 
-%template (DynamicWorkCellPtr) rw::common::Ptr<DynamicWorkCell>;
 
 /********************************************
  * LOADERS
@@ -987,7 +975,7 @@ public:
                   State& state,
                   rw::common::Ptr<Body> body=NULL);
 
-    Transform3D getTransform();
+    Transform3d getTransform();
 
     rw::math::Vector3D<double> getForce( State& state );
     
@@ -1060,6 +1048,11 @@ public:
     DynamicSimulator(rw::common::Ptr<DynamicWorkCell> dworkcell);
     virtual ~DynamicSimulator();
 
+	%extend {
+		static rw::common::Ptr<DynamicSimulator> make(rw::common::Ptr<DynamicWorkCell> dworkcell, rw::common::Ptr<PhysicsEngine> pengine){
+			return rw::common::ownedPtr( new rwsim::simulator::DynamicSimulator(dworkcell,pengine) );
+		 }
+    }
     void exitPhysics();
 	double getTime();
 	void setEnabled(rw::common::Ptr<Body> body, bool enabled);
@@ -1083,8 +1076,8 @@ public:
 	 void setEnabled(Frame* f, bool enabled);
 	 void setDynamicsEnabled(rw::common::Ptr<Body> body, bool enabled);
 	 // interfaces for manipulating/controlling bodies
-	 void setTarget(rw::common::Ptr<Body> body, const Transform3D& t3d, State& state);
-	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<Trajectory<Transform3D> > traj, State& state);
+	 void setTarget(rw::common::Ptr<Body> body, const Transform3d& t3d, State& state); 
+	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<Trajectory<Transform3d> > traj, State& state);
 
 	 void disableBodyControl( rw::common::Ptr<Body> body );
 	 void disableBodyControl( );
@@ -1098,6 +1091,28 @@ public:
 };
 
 %template (DynamicSimulatorPtr) rw::common::Ptr<DynamicSimulator>;
+%extend rw::common::Ptr<DynamicSimulator> { 
+		rw::common::Ptr<Simulator> toSimulator(){
+			std::cout << "Casting" << std::endl;
+		 	rw::common::Ptr<Simulator> ssim = *$self;
+		 	std::cout << "Cast result: " << ssim.isNull() << std::endl;
+		 	return ssim;
+		 }
+		 
+		 rw::common::Ptr<rwlibs::swig::Simulator> toSimulator1(){
+			std::cout << "Casting" << std::endl;
+		 	rw::common::Ptr<rwlibs::simulation::Simulator> ssim = *$self;
+		 	std::cout << "Cast result: " << ssim.isNull() << std::endl;
+		 	return ssim;
+		 }
+		 rw::common::Ptr<Simulator> toSimulator2(){
+			std::cout << "Casting" << std::endl;
+		 	rw::common::Ptr<Simulator> ssim = *$self;
+		 	std::cout << "Cast result: " << ssim.isNull() << std::endl;
+		 	return ssim;
+		 }
+		 
+}
 
 class ThreadSimulator {
 	public:
@@ -1297,3 +1312,20 @@ public:
 /********************************************
  * RWSIMLIBS TOOLS
  ********************************************/
+ 
+ 
+ 
+/********************************************
+ * General utility functions
+ ********************************************/
+
+rw::common::Ptr<DynamicWorkCell> getDynamicWorkCell();
+void setDynamicWorkCell(rw::common::Ptr<DynamicWorkCell> dwc);
+
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
+void addSimulatorInstance(rw::common::Ptr<ThreadSimulator> sim, const std::string& id);
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance(const std::string& id);
+rw::common::Ptr<ThreadSimulator> getSimulatorInstance();
+void removeSimulatorInstance(const std::string& id);
+std::vector<std::string> getSimulatorInstances();
+ 
