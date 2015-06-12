@@ -48,21 +48,21 @@ FixedFrame* rws::swig::findFixedFrame(const std::string& name){
     return getRobWorkStudio()->getWorkCell()->findFrame<FixedFrame>(name);
 }
 
-void rws::swig::moveTo(MovableFrame* mframe, Transform3D wTframe ){
+void rws::swig::moveTo(MovableFrame* mframe, Transform3d wTframe ){
     State state = getState();
     mframe->moveTo(wTframe, state);
     setState(state);
 }
 
-void rws::swig::moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp ){
+void rws::swig::moveTo(Frame* frame, MovableFrame* mframe, Transform3d wTtcp ){
     State state = getState();
-    Transform3D tcpTbase = rw::kinematics::Kinematics::frameTframe(frame, mframe, state);
-    Transform3D wTbase_target = wTtcp * tcpTbase;
+    Transform3d tcpTbase = rw::kinematics::Kinematics::frameTframe(frame, mframe, state);
+    Transform3d wTbase_target = wTtcp * tcpTbase;
     mframe->moveTo(wTbase_target, state);
     setState(state);
 }
 
-void rws::swig::moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe ){
+void rws::swig::moveTo(const std::string& fname, const std::string& mname, Transform3d wTframe ){
     Frame *fframe = findFrame(fname);
     MovableFrame *mframe = findMovableFrame(mname);
     moveTo(fframe, mframe, wTframe);
@@ -105,7 +105,7 @@ void rws::swig::setQ(rw::common::Ptr<rwlibs::swig::Device> dev, rwlibs::swig::Q 
     setState(state);
 }
 
-void rws::swig::setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3D wTframe ){
+void rws::swig::setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3d wTframe ){
     if(FixedFrame *ff = dynamic_cast<FixedFrame*>(mframe) ){
         ff->setTransform( wTframe );
     } else if( MovableFrame *mf = dynamic_cast<MovableFrame*>(mframe) ){
@@ -115,15 +115,28 @@ void rws::swig::setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transfor
     }
 }
 
-rwlibs::swig::Transform3D rws::swig::wTf(rwlibs::swig::Frame* frame){
+rwlibs::swig::Transform3d rws::swig::wTf(rwlibs::swig::Frame* frame){
     return rw::kinematics::Kinematics::worldTframe(frame, getState());
 }
-rwlibs::swig::Transform3D rws::swig::fTf(rwlibs::swig::Frame* frame, rwlibs::swig::Frame* to){
+rwlibs::swig::Transform3d rws::swig::fTf(rwlibs::swig::Frame* frame, rwlibs::swig::Frame* to){
     return rw::kinematics::Kinematics::frameTframe(frame, to, getState());
 }
-rwlibs::swig::Transform3D rws::swig::wTf(const std::string& name){
+rwlibs::swig::Transform3d rws::swig::wTf(const std::string& name){
     return rw::kinematics::Kinematics::worldTframe(findFrame(name), getState());
 }
-rwlibs::swig::Transform3D rws::swig::fTf(const std::string& frame, const std::string& to){
+rwlibs::swig::Transform3d rws::swig::fTf(const std::string& frame, const std::string& to){
     return rw::kinematics::Kinematics::frameTframe(findFrame(frame), findFrame(to), getState());
 }
+
+void rws::swig::addGeometry( const std::string& objName, rw::geometry::Geometry::Ptr geom ){
+
+}
+
+void rws::swig::addObject( const std::string& baseFrameName, rw::geometry::Geometry::Ptr geom ){
+
+}
+
+void rws::swig::removeObject( const std::string& objName){
+
+}
+

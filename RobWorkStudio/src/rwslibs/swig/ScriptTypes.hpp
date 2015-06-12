@@ -75,22 +75,38 @@ namespace swig {
 
     rwlibs::swig::FixedFrame* findFixedFrame(const std::string& name);
 
-    void moveTo(rwlibs::swig::MovableFrame* mframe, rwlibs::swig::Transform3D wTframe );
+    void moveTo(rwlibs::swig::MovableFrame* mframe, rwlibs::swig::Transform3d wTframe );
 
-    void moveTo(rwlibs::swig::Frame* frame, rwlibs::swig::MovableFrame* mframe, rwlibs::swig::Transform3D wTtcp );
+    void moveTo(rwlibs::swig::Frame* frame, rwlibs::swig::MovableFrame* mframe, rwlibs::swig::Transform3d wTtcp );
 
-    void moveTo(const std::string& fname, const std::string& mname, rwlibs::swig::Transform3D wTframe );
+    void moveTo(const std::string& fname, const std::string& mname, rwlibs::swig::Transform3d wTframe );
 
     // utility functions for
     rwlibs::swig::Q getQ(rw::common::Ptr<rwlibs::swig::Device> dev);
     void setQ(rw::common::Ptr<rwlibs::swig::Device> dev, rwlibs::swig::Q);
 
-    void setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3D wTframe );
+    void setTransform(rwlibs::swig::Frame* mframe, rwlibs::swig::Transform3d wTframe );
 
-    rwlibs::swig::Transform3D wTf(rwlibs::swig::Frame* frame);
-    rwlibs::swig::Transform3D wTf(const std::string& name);
-    rwlibs::swig::Transform3D fTf(rwlibs::swig::Frame* frame,rwlibs::swig::Frame* to);
-    rwlibs::swig::Transform3D fTf(const std::string& from,const std::string& to);
+    rwlibs::swig::Transform3d wTf(rwlibs::swig::Frame* frame);
+    rwlibs::swig::Transform3d wTf(const std::string& name);
+    rwlibs::swig::Transform3d fTf(rwlibs::swig::Frame* frame,rwlibs::swig::Frame* to);
+    rwlibs::swig::Transform3d fTf(const std::string& from,const std::string& to);
+
+    /**
+     * @brief add geometry to an existing frame or object with name objName
+     * @param frameName
+     * @param geom
+     */
+    void addGeometry( const std::string& objName, rw::geometry::Geometry::Ptr geom );
+
+    /**
+     * @brief adds an rigid object to the scene. If a frame with the objName allready exist then
+     * the object will not be created.
+     * @param objName
+     * @param geom
+     */
+    void addObject( const std::string& objName, rw::geometry::Geometry::Ptr geom );
+    void removeObject( const std::string& objName);
 
 }
 }

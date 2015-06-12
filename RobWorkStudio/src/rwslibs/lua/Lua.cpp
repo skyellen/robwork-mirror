@@ -150,7 +150,7 @@ void Lua::luaPathChangedListener(const StatePath& path)
 void Lua::open(WorkCell* workcell)
 {
     //_lua->setRobWorkStudio( getRobWorkStudio() );
-    _lua->reset();
+    //_lua->reset();
     stateChangedListener(getRobWorkStudio()->getState());
 }
 

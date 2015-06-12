@@ -46,21 +46,21 @@ MovableFrame* findMovableFrame(const std::string& name);
 
  FixedFrame* findFixedFrame(const std::string& name);
 
- void moveTo(MovableFrame* mframe, Transform3D wTframe );
+ void moveTo(MovableFrame* mframe, Transform3d wTframe );
 
- void moveTo(Frame* frame, MovableFrame* mframe, Transform3D wTtcp );
+ void moveTo(Frame* frame, MovableFrame* mframe, Transform3d wTtcp );
 
- void moveTo(const std::string& fname, const std::string& mname, Transform3D wTframe );
+ void moveTo(const std::string& fname, const std::string& mname, Transform3d wTframe );
 
  Q getQ(rw::common::Ptr<Device> dev);
  void setQ(rw::common::Ptr<Device> dev, Q);
 
- void setTransform(Frame* mframe, Transform3D wTframe );
+ void setTransform(Frame* mframe, rwlibs::swig::Transform3d wTframe );
 
-  Transform3D wTf(Frame* frame);
- Transform3D fTf(Frame* frame,Frame* frame);
-  Transform3D wTf(const std::string& frame);
- Transform3D fTf(const std::string& frame,const std::string& frame);
+rw::math::Transform3D<double> wTf(Frame* frame);
+rw::math::Transform3D<double> fTf(Frame* frame,Frame* frame);
+rw::math::Transform3D<double> wTf(const std::string& frame);
+rw::math::Transform3D<double> fTf(const std::string& frame,const std::string& frame);
 
 
 /*
@@ -161,11 +161,11 @@ public:
             $self->postSaveViewGL( filename );
         }
 
-        Transform3D getViewTransform(){
+        Transform3d getViewTransform(){
             return $self->getView()->getSceneViewer()->getTransform();
         }
 
-        void setViewTransform(Transform3D t3d){
+        void setViewTransform(Transform3d t3d){
             $self->getView()->getSceneViewer()->setTransform(t3d);
             $self->postUpdateAndRepaint();
         }

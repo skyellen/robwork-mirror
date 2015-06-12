@@ -45,8 +45,8 @@ namespace {
 	void luaLineHook(lua_State *L, lua_Debug *ar){
 		lua_getinfo(L, "nS", ar);
         if (ar->name != NULL && ar->namewhat != NULL) {
-		    std::cout << "Name: " << ar->name << " " << ar->namewhat << std::endl;
-		    std::cout << "Line: " << ar->currentline << " " << ar->linedefined << std::endl;
+		    //std::cout << "Name: " << ar->name << " " << ar->namewhat << std::endl;
+		    //std::cout << "Line: " << ar->currentline << " " << ar->linedefined << std::endl;
         }
 	}
 
