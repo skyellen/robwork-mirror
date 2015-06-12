@@ -19,49 +19,57 @@
  * This file tests the force torque sensor
  */
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <csignal>
-#include <sys/stat.h>
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
+#include <rw/loaders/path/PathLoader.hpp>
 
-#include <vector>
-
-#include <rw/geometry/STLFile.hpp>
-#include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/ContactCluster.hpp>
-
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/ContactManifold.hpp>
+//#include <rws/rws.hpp>
+#include <rwsim/rwsim.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
 USE_ROBWORK_NAMESPACE
+RWSIM_USE_RWP_NAMESPACE
 using namespace std;
 using namespace robwork;
+using namespace rwp;
 
-
-#include "../TestSuiteConfig.hpp"
-
-#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
-
-using namespace rwsim::loaders;
-
-
-
-BOOST_AUTO_TEST_CASE( FTSensorTest )
+BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
 {
-    // add loading tests here
+	// load a scene with a FT sensor mounted in between a kinematic body and a dynamic
+	// place the kinematic body in different poses and pla
     DynamicWorkCellLoader loader;
+    DynamicWorkCell::Ptr dwc = loader.load( testFilePath() + "/scene/sensors/single_object_tactile_array.dwc.xml" );
+
+    ODESimulator::Ptr odesim = ownedPtr( new ODESimulator( dwc ) );
+    State state = dwc->getWorkcell()->getStateStructure()->getDefaultState();
+
+    KinematicBody::Ptr kbody = dwc->findBody<KinematicBody>("Floor");
+    RigidBody::Ptr body = dwc->findBody<RigidBody>("Tray");
+
+    TactileArraySensor::Ptr sensor = dwc->findSensor<TactileArraySensor>("FTArraySensor");
+    TimedStatePath tpath;
+    // test that the control interface works
+    odesim->initPhysics(state);
+    BOOST_CHECK_EQUAL(odesim->getTime(), 0.0 );
+    rw::loaders::PathLoader ploader;
+    for(int i=0; i<1000; i++){
+    	std::cout << i << "\t";
+    	odesim->step(0.01, state);
+    	// print the ft sensor readings
+    	TactileArrayModel::ValueMatrix values = sensor->getTexelData(state);
+    	std::cout << odesim->getTime() << "\t";
+    	for(int x=0;x<values.cols();x++ )
+    		for(int y=0;y<values.cols();y++ ){
+    			std::cout << values(x,y) << "\t";
+    		}
+    	std::cout << std::endl;
+    	tpath.push_back( TimedState(odesim->getTime(),state));
+
+    }
+    ploader.storeTimedStatePath(*dwc->getWorkcell(), tpath,"tpath.rwplay");
+
 
 
 }

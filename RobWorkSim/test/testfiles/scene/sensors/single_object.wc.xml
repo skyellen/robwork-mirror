@@ -1,0 +1,20 @@
+<WorkCell name="single_object_scene">
+
+  <Frame name="Floor" refframe="WORLD" type="Movable">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+    <Drawable name="PlaneGeo">
+	 <RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+	 <Polytope file="../../objects/plane_5x5"/>
+    </Drawable>  
+  </Frame>
+
+  <Frame name="Tray" refframe="WORLD" type="Movable">
+    <RPY>-89.961 0.700 0</RPY><Pos>0 0 0.1</Pos>
+    <Drawable name="ObjectCup2Geo">
+	 <RPY>-90 0 90</RPY><Pos>0 0 0</Pos>
+  	 <Polytope file="../../objects/BlueSupport"/>
+    </Drawable>  
+  </Frame>
+
+ </WorkCell>
+ 

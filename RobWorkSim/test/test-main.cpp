@@ -32,7 +32,7 @@ std::string testFilePath() { return _testfilesDir; }
 
 boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
 {
-
+	rw::RobWork::init(argc,argv);
 
     // Get the top level suite from the registry
     boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_successful_tests);

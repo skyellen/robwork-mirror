@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( GraspTaskSimulatorTest )
 {
 	std::string dwc_file = testFilePath() + "/scene/grasping/pg70_box.dwc.xml";
 	std::string grasptask_file = testFilePath() + "/scene/grasping/grasptask_pg70_box.rwtask.xml";
-
+	//rw::common::Log::getInstance()->setLevel( rw::common::Log::Debug );
     // add loading tests here
     DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(dwc_file);
     State initState = dwc->getWorkcell()->getDefaultState();
@@ -69,17 +69,44 @@ BOOST_AUTO_TEST_CASE( GraspTaskSimulatorTest )
     GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
 
     GraspTask::Ptr grasptask = GraspTask::load( grasptask_file );
-
+    graspSim->setStoreTimedStatePaths(true);
+    graspSim->forceSimulateAll(true);
     graspSim->load( grasptask );
     graspSim->startSimulation(initState);
     Timer timeoutTimer;
     do{
-        TimerUtil::sleepMs(100);
-        if(timeoutTimer.getTimeSec()>50){
-        	BOOST_CHECK_MESSAGE(timeoutTimer.getTimeSec()<50, "Tasks where not simulated fast enough! Assumed errors in simulation.");
+        TimerUtil::sleepMs(500);
+        //std::cout << "\r";
+        //BOOST_FOREACH(int val, graspSim->getStat() ){ std::cout << val << " \t "; }
+        //std::cout << std::endl;
+        if(timeoutTimer.getTimeSec()>200){
+        	BOOST_CHECK_MESSAGE(timeoutTimer.getTimeSec()<200, "Tasks where not simulated fast enough! Assumed errors in simulation.");
         	break;
         }
     } while(graspSim->isRunning());
+
+    // check outcome
+
+
+    // merge and save all times states to get debug feedback
+    typedef std::map<rwlibs::task::GraspSubTask*, std::map<rwlibs::task::GraspTarget*,rw::trajectory::TimedStatePath> > TStateMap;
+    typedef std::map<rwlibs::task::GraspTarget*,rw::trajectory::TimedStatePath> TStateMap2;
+    TStateMap paths = graspSim->getTimedStatePaths();
+
+    rw::trajectory::TimedStatePath spath;
+    double timeOffset = 0;
+    BOOST_FOREACH(TStateMap::value_type val, paths ){
+    	// take each timed state from the map
+		BOOST_FOREACH(TStateMap2::value_type val2, val.second ){
+			for(int i=0;i<val2.second.size();i++){
+				spath.push_back( val2.second[i] );
+				spath.back().getTime() = spath.back().getTime()+timeOffset;
+			}
+			// increase timeoffset
+			timeOffset = spath.back().getTime();
+		}
+    }
+    rw::loaders::PathLoader::storeTimedStatePath(*wc,spath,"spath-grasptasksim-test.rwplay");
 
     GraspTask::Ptr grasptask_result = graspSim->getResult();
 

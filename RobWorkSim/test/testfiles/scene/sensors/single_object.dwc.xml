@@ -1,0 +1,33 @@
+<DynamicWorkcell workcell="single_object.wc.xml">
+  <PhysicsEngine>
+   <!--CollisionMargin>0.001</CollisionMargin-->
+   <RestitutionModel>Newton</RestitutionModel>
+   <ContactModel>Guendel</ContactModel>
+   <AutoDisable>false</AutoDisable>
+   <Property name="StepMethod">WorldStep</Property>
+   <!-- Property name="ContactSurfaceLayer" type="float">0.0004</Property -->
+   <!-- Property name="MaxSepDistance" type="float">0.001</Property -->
+ </PhysicsEngine>
+
+ <Gravity>0 0 -9.82</Gravity>
+ 
+ <Include file="../DynamicMaterialDataBase.xml"/>
+ 
+ <!-- Now define all the rigid bodies that exist in the workcell, remember to
+      reference the RigidBody to a movableframe -->
+
+ <KinematicBody frame="Floor">
+  <MaterialID>Plastic</MaterialID> 
+ </KinematicBody>
+ 
+ <RigidBody frame="Tray">
+  <Mass>0.1</Mass>
+  <EstimateInertia />
+  <Integrator>Euler</Integrator>
+  <MaterialID>Plastic</MaterialID> 
+ </RigidBody>
+
+ <TactileMultiAxisSensor name="FTSensor" body="Floor" body1="Tray">
+ </TactileMultiAxisSensor>
+ 
+</DynamicWorkcell>
