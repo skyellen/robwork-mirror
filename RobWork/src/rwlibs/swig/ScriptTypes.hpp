@@ -63,6 +63,7 @@
 #include <rwlibs/task/GraspTarget.hpp>
 #include <rwlibs/task/GraspResult.hpp>
 #include <rwlibs/task/GraspSubTask.hpp>
+#include <rw/graphics/SceneViewer.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -152,29 +153,29 @@ namespace swig {
 	typedef rw::loaders::STLFile STLFile;
 
 	// math types
-	typedef rw::math::Vector2D<double> Vector2;
+	typedef rw::math::Vector2D<double> Vector2d;
 	typedef rw::math::Vector2D<float> Vector2f;
-	typedef rw::math::Vector3D<double> Vector3;
+	typedef rw::math::Vector3D<double> Vector3d;
 	typedef rw::math::Vector3D<float> Vector3f;
-	typedef rw::math::Rotation3D<double> Rotation3D;
-	typedef rw::math::Rotation3D<float> Rotation3Df;
-	typedef rw::math::EAA<double> EAA;
+	typedef rw::math::Rotation3D<double> Rotation3d;
+	typedef rw::math::Rotation3D<float> Rotation3f;
+	typedef rw::math::EAA<double> EAAd;
 	typedef rw::math::EAA<float> EAAf;
-	typedef rw::math::RPY<double> RPY;
+	typedef rw::math::RPY<double> RPYd;
 	typedef rw::math::RPY<float> RPYf;
-	typedef rw::math::RPY<double> ZYX;
+	typedef rw::math::RPY<double> ZYXd;
 	typedef rw::math::RPY<float> ZYXf;
-	typedef rw::math::Quaternion<double> Quaternion;
+	typedef rw::math::Quaternion<double> Quaterniond;
 	typedef rw::math::Quaternion<float> Quaternionf;
-	typedef rw::math::Transform3D<double> Transform3D;
-	typedef rw::math::Transform3D<float> Transform3Df;
-	typedef rw::math::Pose6D<double> Pose6D;
-	typedef rw::math::Pose6D<float> Pose6Df;
-	typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
-	typedef rw::math::VelocityScrew6D<float> VelocityScrew6Df;
-	typedef rw::math::Wrench6D<double> Wrench6D;
-	typedef rw::math::Wrench6D<float> Wrench6Df;
-	typedef rw::math::InertiaMatrix<double> InertiaMatrix;
+	typedef rw::math::Transform3D<double> Transform3d;
+	typedef rw::math::Transform3D<float> Transform3f;
+	typedef rw::math::Pose6D<double> Pose6d;
+	typedef rw::math::Pose6D<float> Pose6f;
+	typedef rw::math::VelocityScrew6D<double> Screw6d;
+	typedef rw::math::VelocityScrew6D<float> Screw6f;
+	typedef rw::math::Wrench6D<double> Wrench6d;
+	typedef rw::math::Wrench6D<float> Wrench6f;
+	typedef rw::math::InertiaMatrix<double> InertiaMatrixd;
 	typedef rw::math::InertiaMatrix<float> InertiaMatrixf;
 	typedef rw::math::Q Q;
 	typedef rw::math::Jacobian Jacobian;
@@ -220,14 +221,15 @@ namespace swig {
 
 	// sensor
 	typedef rw::sensor::Image Image;
+    typedef rw::sensor::Sensor Sensor;
 
 	// trajectory
 	typedef rw::trajectory::Blend<Q> BlendQ;
 	typedef rw::trajectory::Blend<double> BlendR1;
-	typedef rw::trajectory::Blend<Vector2> BlendR2;
-	typedef rw::trajectory::Blend<Vector3> BlendR3;
-	typedef rw::trajectory::Blend<Rotation3D> BlendSO3;
-	typedef rw::trajectory::Blend<Transform3D> BlendSE3;
+	typedef rw::trajectory::Blend<Vector2d> BlendR2;
+	typedef rw::trajectory::Blend<Vector3d> BlendR3;
+	typedef rw::trajectory::Blend<Rotation3d> BlendSO3;
+	typedef rw::trajectory::Blend<Transform3d> BlendSE3;
 
 	typedef rw::trajectory::TimedState TimedState;
 	typedef rw::trajectory::Path<Q> PathQ;
@@ -235,22 +237,22 @@ namespace swig {
 	typedef rw::trajectory::Trajectory<State> TrajectoryState;
 	typedef rw::trajectory::Trajectory<Q> TrajectoryQ;
 	typedef rw::trajectory::Trajectory<double> TrajectoryR1;
-	typedef rw::trajectory::Trajectory<Vector2> TrajectoryR2;
-	typedef rw::trajectory::Trajectory<Vector3> TrajectoryR3;
-	typedef rw::trajectory::Trajectory<Rotation3D> TrajectorySO3;
-	typedef rw::trajectory::Trajectory<Transform3D> TrajectorySE3;
+	typedef rw::trajectory::Trajectory<Vector2d> TrajectoryR2;
+	typedef rw::trajectory::Trajectory<Vector3d> TrajectoryR3;
+	typedef rw::trajectory::Trajectory<Rotation3d> TrajectorySO3;
+	typedef rw::trajectory::Trajectory<Transform3d> TrajectorySE3;
 
 	typedef rw::trajectory::LinearInterpolator<double> LinearInterpolator;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Q> LinearInterpolatorQ;
-	typedef rw::trajectory::LinearInterpolator<Vector2 > LinearInterpolatorR2;
+	typedef rw::trajectory::LinearInterpolator<Vector2d > LinearInterpolatorR2;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorR3;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Rotation3D<double> > LinearInterpolatorSO3;
 	typedef rw::trajectory::LinearInterpolator<rw::math::Transform3D<double> > LinearInterpolatorSE3;
 
 	typedef rw::trajectory::RampInterpolator<double> RampInterpolator;
 	typedef rw::trajectory::RampInterpolator<rw::math::Q> RampInterpolatorQ;
-	typedef rw::trajectory::RampInterpolator<Vector2 > RampInterpolatorR2;
-	typedef rw::trajectory::RampInterpolator<Vector3 > RampInterpolatorR3;
+	typedef rw::trajectory::RampInterpolator<Vector2d > RampInterpolatorR2;
+	typedef rw::trajectory::RampInterpolator<Vector3d > RampInterpolatorR3;
 	typedef rw::trajectory::RampInterpolator<rw::math::Rotation3D<double> > RampInterpolatorSO3;
 	typedef rw::trajectory::RampInterpolator<rw::math::Transform3D<double> > RampInterpolatorSE3;
 
@@ -319,6 +321,17 @@ namespace swig {
 	}
 
 	template <typename T>
+	char * printCString(const std::vector<T>& x)
+	{
+		static char tmp[2048];
+		int idx = sprintf(tmp,"[");
+		for(int i=0;i<x.size();i++)
+			idx += sprintf(&tmp[idx],"%s,", toString<T>(x[i]).c_str());
+		sprintf(&tmp[idx],"]");
+		return tmp;
+	}
+
+	template <typename T>
 	char * printCString(const T& x)
 	{
 		static char tmp[256];
@@ -342,8 +355,8 @@ namespace swig {
         // Math helper function to obtain random rotation and transform
         // They have been manually specified as the Rotation3D and Transform3D classes are not specified in rw.i as templated classes,
         // so I/mband could not get the templated functions in Math.hpp to easily be integrated into swig.
-        Rotation3D getRandomRotation3D();
-        Transform3D getRandomTransform3D(const double translationLength = 1);
+        Rotation3d getRandomRotation3D();
+        Transform3d getRandomTransform3D(const double translationLength = 1);
 	/*@}*/
 }
 }

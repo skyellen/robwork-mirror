@@ -12,6 +12,7 @@
 
 using namespace rwlibs::swig;
 using rw::math::Metric;
+using namespace rw::math;
 using rw::trajectory::Interpolator;
 using rw::trajectory::Blend;
 using rw::trajectory::Path;
@@ -43,6 +44,17 @@ using rwlibs::task::Task;
 #endif
 
 %include <stl.i>
+
+/*
+%define COVARIANT(DERIVED, BASE)
+%types(rw::common::Ptr<DERIVED> = rw::common::Ptr<BASE>) %{
+        *newmemory = SWIG_CAST_NEW_MEMORY;
+        return (void*) new rw::common::Ptr<BASE>(*(rw::common::Ptr<DERIVED>*)$from);
+%}
+%enddef
+
+%COVARIANT(Apple, Fruit)
+*/
 
 void writelog(const std::string& msg);
 
@@ -89,6 +101,9 @@ void writelog(const std::string& msg);
 /********************************************
  * STL vectors (primitive types)
  ********************************************/
+#if (defined(SWIGLUA) || defined(SWIGPYTHON))
+	%extend std::vector<std::string> { char *__str__() { return printCString(*$self); } }
+#endif
 
 namespace std {
 	%template(StringVector) std::vector<string>;
@@ -132,6 +147,8 @@ public:
 };
 }}
 
+
+
 /** @addtogroup swig */
 /* @{ */
 
@@ -154,24 +171,31 @@ public:
 		
 		std::string& getString(const std::string& id){ return $self->get<std::string>(id); }
 		void setString(const std::string& id, std::string val){  $self->set<std::string>(id,val); }
+		void set(const std::string& id, std::string val){  $self->set<std::string>(id,val); }
 		
 		std::vector<std::string>& getStringList(const std::string& id){ return $self->get<std::vector<std::string> >(id); }
 		void setStringList(const std::string& id, std::vector<std::string> val){ $self->set<std::vector<std::string> >(id,val); }
+		void set(const std::string& id, std::vector<std::string> val){ $self->set<std::vector<std::string> >(id,val); }
 		
 		Q& getQ(const std::string& id){ return $self->get<Q>(id); }
 		void setQ(const std::string& id, Q q){ $self->set<Q>(id, q); }
+		void set(const std::string& id, Q q){ $self->set<Q>(id, q); }
 
-		Pose6D& getPose(const std::string& id){ return $self->get<Pose6D>(id); }
-		void setPose6D(const std::string& id, Pose6D p){  $self->set<Pose6D>(id, p); }
+		Pose6d& getPose(const std::string& id){ return $self->get<Pose6d>(id); }
+		void setPose6D(const std::string& id, Pose6d p){  $self->set<Pose6d>(id, p); }
+		void set(const std::string& id, Pose6d p){  $self->set<Pose6d>(id, p); }
 		
 		rw::math::Vector3D<double>& getVector3(const std::string& id){ return $self->get<rw::math::Vector3D<double> >(id); }
 		void setVector3(const std::string& id, rw::math::Vector3D<double> p){  $self->set<rw::math::Vector3D<double> >(id, p); }
+		void set(const std::string& id, rw::math::Vector3D<double> p){  $self->set<rw::math::Vector3D<double> >(id, p); }
 
-		Transform3D& getTransform3D(const std::string& id){ return $self->get<Transform3D>(id); }
-		void setTransform3D(const std::string& id, Transform3D p){  $self->set<Transform3D>(id, p); }
+		rw::math::Transform3D<double> & getTransform3(const std::string& id){ return $self->get<rw::math::Transform3D<double> >(id); }
+		void setTransform3(const std::string& id, rw::math::Transform3D<double>  p){  $self->set<rw::math::Transform3D<double> >(id, p); }
+		void set(const std::string& id, rw::math::Transform3D<double>  p){  $self->set<rw::math::Transform3D<double> >(id, p); }
 
 		PropertyMap& getMap(const std::string& id){ return $self->get<PropertyMap>(id); }
 		void setMap(const std::string& id, PropertyMap p){  $self->set<PropertyMap>(id, p); }
+		void set(const std::string& id, PropertyMap p){  $self->set<PropertyMap>(id, p); }
 		
 		void load(const std::string& filename){ *($self) = rw::loaders::XMLPropertyLoader::load(filename); }
 		void save(const std::string& filename){ rw::loaders::XMLPropertySaver::save( *($self), filename ); }
@@ -268,6 +292,56 @@ public:
 };
 
 %template (ExtensionRegistryPtr) rw::common::Ptr<ExtensionRegistry>;
+
+
+
+
+/********************************************
+ * RWLIBS SIMULATION
+ ********************************************/
+
+struct UpdateInfo {
+	UpdateInfo();
+	UpdateInfo(double dt_step);
+	
+	double dt;
+	double dt_prev;
+	double time;
+	bool rollback;
+};
+
+%nestedworkaround Simulator::UpdateInfo;
+%nodefaultctor Simulator;
+class Simulator {
+public:
+
+	/*
+	 * Nested structs not supported
+	 * 
+   struct UpdateInfo {
+	   UpdateInfo();
+	   UpdateInfo(double dt_step);
+
+	   double dt;
+	   double dt_prev;
+	   double time;
+	   bool rollback;
+   };
+   */
+   
+   virtual ~Simulator();
+   virtual void step(double dt) = 0;
+   virtual void reset(State& state) = 0;
+   virtual void init(State& state) = 0;
+   virtual double getTime() = 0;
+   virtual void setEnabled(Frame* frame, bool enabled) = 0;
+   virtual State& getState() = 0;
+   virtual PropertyMap& getPropertyMap() = 0;
+
+};
+
+%template (SimulatorPtr) rw::common::Ptr<Simulator>;
+
 
 /********************************************
  * ROBWORK CLASS
@@ -404,13 +478,13 @@ public:
     Geometry(rw::common::Ptr<GeometryData> data, double scale=1.0);
 
     Geometry(rw::common::Ptr<GeometryData> data,
-             const Transform3D& t3d,
+             const rw::math::Transform3D<double> & t3d,
              double scale=1.0);
 
     double getScale() const;
     void setScale(double scale);
-    void setTransform(const Transform3D& t3d);
-    const Transform3D& getTransform() const;
+    void setTransform(const rw::math::Transform3D<double> & t3d);
+    const rw::math::Transform3D<double> & getTransform() const;
     rw::common::Ptr<GeometryData> getGeometryData();
 #if !defined(SWIGJAVA)
     const rw::common::Ptr<GeometryData> getGeometryData() const;
@@ -527,9 +601,9 @@ public:
 
     virtual bool isVisible() = 0;
 
-    virtual const Transform3D& getTransform() const  = 0;
+    virtual const rw::math::Transform3D<double> & getTransform() const  = 0;
 
-    virtual void setTransform(const Transform3D& t3d) = 0;
+    virtual void setTransform(const rw::math::Transform3D<double> & t3d) = 0;
 
     virtual void setMask(unsigned int mask) = 0;
     virtual unsigned int getMask() const = 0;
@@ -616,7 +690,7 @@ class WorkCellScene {
 class InvKinSolver
 {
 public:
-    virtual std::vector<Q> solve(const Transform3D& baseTend, const State& state) const = 0;
+    virtual std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const = 0;
     virtual void setCheckJointLimits(bool check) = 0;
 };
 
@@ -651,13 +725,13 @@ public:
 
     JacobianIKSolver(rw::common::Ptr<Device> device, Frame *foi, const State& state);
 
-    std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     void setInterpolatorStep(double interpolatorStep);
 
      void setEnableInterpolation(bool enableInterpolation);
 
-     bool solveLocal(const Transform3D &bTed,
+     bool solveLocal(const rw::math::Transform3D<double>  &bTed,
                      double maxError,
                      State &state,
                      int maxIter) const;
@@ -683,7 +757,7 @@ public:
     //    const rw::common::Ptr<Device> device,
     //    rw::common::Ptr<QConstraint> constraint);
 
-    std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     void setMaxAttempts(size_t maxAttempts);
 
@@ -693,7 +767,7 @@ public:
 
     void setCheckJointLimits(bool check);
 
-    std::vector<Q> solve(const Transform3D& baseTend, const State& state, size_t cnt, bool stopatfirst) const;
+    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state, size_t cnt, bool stopatfirst) const;
 
 };
 
@@ -709,12 +783,12 @@ public:
 class PieperSolver: public ClosedFormIK {
 public:
     PieperSolver(const std::vector<DHParameterSet>& dhparams,
-                 const Transform3D& joint6Tend,
-                 const Transform3D& baseTdhRef = Transform3D::identity());
+                 const rw::math::Transform3D<double> & joint6Tend,
+                 const rw::math::Transform3D<double> & baseTdhRef = rw::math::Transform3D<double> ::identity());
 
-    PieperSolver(SerialDevice& dev, const Transform3D& joint6Tend, const State& state);
+    PieperSolver(SerialDevice& dev, const rw::math::Transform3D<double> & joint6Tend, const State& state);
 
-    virtual std::vector<Q> solve(const Transform3D& baseTend, const State& state) const;
+    virtual std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     virtual void setCheckJointLimits(bool check);
 
@@ -761,7 +835,7 @@ class Frame : public StateData
 {
 public:
 
-    Transform3D getTransform(const State& state) const;
+    rw::math::Transform3D<double>  getTransform(const State& state) const;
     PropertyMap& getPropertyMap();
     int getDOF() const ;
     Frame* getParent() ;
@@ -789,11 +863,11 @@ public:
     iterator_pair getDafChildren(const State& state);
 */
     %extend {
-        Transform3D wTt(const State& state) const{
+        rw::math::Transform3D<double>  wTt(const State& state) const{
             return ::rw::kinematics::Kinematics::worldTframe($self, state);
         }
 
-        Transform3D fTf(const Frame* frame, const State& state) const{
+        rw::math::Transform3D<double>  fTf(const Frame* frame, const State& state) const{
             return ::rw::kinematics::Kinematics::frameTframe($self, frame, state);
         }
     }
@@ -813,23 +887,23 @@ class MovableFrame: public Frame{
 public:
    explicit MovableFrame(const std::string& name);
 
-   void setTransform(const Transform3D& transform, State& state);
+   void setTransform(const rw::math::Transform3D<double> & transform, State& state);
 };
 
 class FixedFrame: public Frame {
 public:
-    FixedFrame(const std::string& name, const Transform3D& transform);
-    void setTransform(const Transform3D& transform);
+    FixedFrame(const std::string& name, const rw::math::Transform3D<double> & transform);
+    void setTransform(const rw::math::Transform3D<double> & transform);
 
-    const Transform3D& getFixedTransform() const;
+    const rw::math::Transform3D<double> & getFixedTransform() const;
 };
 
 %inline %{
-    Transform3D frameTframe(const Frame* from, const Frame* to, const State& state){
+    rw::math::Transform3D<double>  frameTframe(const Frame* from, const Frame* to, const State& state){
         return ::rw::kinematics::Kinematics::frameTframe(from, to, state );
     }
 
-    Transform3D worldTframe(const Frame* to, const State& state){
+    rw::math::Transform3D<double>  worldTframe(const Frame* to, const State& state){
         return ::rw::kinematics::Kinematics::worldTframe( to,  state);
     }
 
@@ -891,8 +965,8 @@ public:
     Type getType();
     rw::common::Ptr<Trajectory<Q> > getQTrajectory();
     rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > > getVector3DTrajectory();
-    rw::common::Ptr<Trajectory<Rotation3D> > getRotation3DTrajectory();
-    rw::common::Ptr<Trajectory<Transform3D> > getTransform3DTrajectory();
+    rw::common::Ptr<Trajectory<rw::math::Rotation3D<double> > > getRotation3DTrajectory();
+    rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > > getTransform3DTrajectory();
 };
 
 class XMLTrajectorySaver
@@ -900,12 +974,12 @@ class XMLTrajectorySaver
 public:
     static bool save(const Trajectory<Q>& trajectory, const std::string& filename);
     static bool save(const Trajectory<rw::math::Vector3D<double> >& trajectory, const std::string& filename);
-    static bool save(const Trajectory<Rotation3D>& trajectory, const std::string& filename);
-    static bool save(const Trajectory<Transform3D>& trajectory, const std::string& filename);
+    static bool save(const Trajectory<rw::math::Rotation3D<double> >& trajectory, const std::string& filename);
+    static bool save(const Trajectory<rw::math::Transform3D<double> >& trajectory, const std::string& filename);
     static bool write(const Trajectory<Q>& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<rw::math::Vector3D<double> >& trajectory, std::ostream& outstream);
-    static bool write(const Trajectory<Rotation3D>& trajectory, std::ostream& outstream);
-    static bool write(const Trajectory<Transform3D>& trajectory, std::ostream& outstream);
+    static bool write(const Trajectory<rw::math::Rotation3D<double> >& trajectory, std::ostream& outstream);
+    static bool write(const Trajectory<rw::math::Transform3D<double> >& trajectory, std::ostream& outstream);
 private:
     XMLTrajectorySaver();
 };
@@ -916,8 +990,8 @@ private:
 %include <rwlibs/swig/rwmath.i>
 
 // Utility function within rw::Math
-Rotation3D getRandomRotation3D();
-Transform3D getRandomTransform3D(const double translationLength = 1);
+rw::math::Rotation3D<double> getRandomRotation3D();
+rw::math::Transform3D<double>  getRandomTransform3D(const double translationLength = 1);
 
 namespace rw { namespace math {
     class Math
@@ -1056,7 +1130,7 @@ public:
     const std::vector<rw::common::Ptr<Model3D> >& getModels(const State& state) const;
     virtual double getMass(State& state) const = 0;
     virtual rw::math::Vector3D<> getCOM(State& state) const = 0;
-    virtual rw::math::InertiaMatrix<> getInertia(State& state) const = 0;
+    virtual rw::math::InertiaMatrix<double> getInertia(State& state) const = 0;
 };
 %template (ObjectPtr) rw::common::Ptr<Object>;
 
@@ -1074,8 +1148,8 @@ public:
 	void removeModel(rw::graphics::Model3D::Ptr model);
     double getMass() const;
     void setMass(double mass);
-    rw::math::InertiaMatrix<> getInertia() const;
-    void setInertia(const rw::math::InertiaMatrix<>& inertia);
+    rw::math::InertiaMatrix<double> getInertia() const;
+    void setInertia(const rw::math::InertiaMatrix<double>& inertia);
     rw::math::Vector3D<> getCOM() const;
     void setCOM(const rw::math::Vector3D<>& com);
     void approximateInertia();
@@ -1083,7 +1157,7 @@ public:
     const std::vector<rw::geometry::Geometry::Ptr>& getGeometry() const ;
     const std::vector<rw::graphics::Model3D::Ptr>& getModels() const;
     double getMass(rw::kinematics::State& state) const;
-    rw::math::InertiaMatrix<> getInertia(rw::kinematics::State& state) const;
+    rw::math::InertiaMatrix<double> getInertia(rw::kinematics::State& state) const;
     rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const;
 };
 %template (RigidObjectPtr) rw::common::Ptr<RigidObject>;
@@ -1115,7 +1189,7 @@ public:
     
     double getMass(State& state) const;
     rw::math::Vector3D<double> getCOM(rw::kinematics::State& state) const;
-    InertiaMatrix getInertia(State& state) const;
+    rw::math::InertiaMatrix<double> getInertia(State& state) const;
     void update(rw::graphics::Model3D::Ptr model, const State& state);
 };
 %template (DeformableObjectPtr) rw::common::Ptr<DeformableObject>;
@@ -1142,9 +1216,9 @@ public:
     virtual const Frame* getBase() const = 0;
     virtual const Frame* getEnd() const = 0;
 #endif
-    Transform3D baseTframe(const Frame* f, const State& state) const;
-    Transform3D baseTend(const State& state) const;
-    Transform3D worldTbase(const State& state) const;
+    rw::math::Transform3D<double>  baseTframe(const Frame* f, const State& state) const;
+    rw::math::Transform3D<double>  baseTend(const State& state) const;
+    rw::math::Transform3D<double>  worldTbase(const State& state) const;
     virtual Jacobian baseJend(const State& state) const = 0;
     virtual Jacobian baseJframe(const Frame* frame,const State& state) const;
     virtual Jacobian baseJframes(const std::vector<Frame*>& frames,const State& state) const;
@@ -1353,8 +1427,8 @@ public:
 %template (TimedQVectorPtr) rw::common::Ptr<std::vector<Timed<Q> > >;
 %template (TimedStateVectorPtr) rw::common::Ptr<std::vector<Timed<State> > >;
 
-%template (PathSE3) Path<Transform3D>;
-%template (PathSE3Ptr) rw::common::Ptr<Path<Transform3D> >;
+%template (PathSE3) Path<rw::math::Transform3D<double> >;
+%template (PathSE3Ptr) rw::common::Ptr<Path<rw::math::Transform3D<double> > >;
 %template (PathQ) Path<Q>;
 %template (PathQPtr) rw::common::Ptr<Path<Q> >;
 %template (PathTimedQ) Path<Timed<Q> >;
@@ -1459,17 +1533,17 @@ public:
 };
 
 %template (BlendR1) Blend<double>;
-%template (BlendR2) Blend<Vector2>;
+%template (BlendR2) Blend<Vector2d>;
 %template (BlendR3) Blend<rw::math::Vector3D<double> >;
-%template (BlendSO3) Blend<Rotation3D>;
-%template (BlendSE3) Blend<Transform3D>;
+%template (BlendSO3) Blend<rw::math::Rotation3D<double> >;
+%template (BlendSE3) Blend<rw::math::Transform3D<double> >;
 %template (BlendQ) Blend<Q>;
 
 %template (BlendR1Ptr) rw::common::Ptr<Blend<double> >;
-%template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2> >;
+%template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2d> >;
 %template (BlendR3Ptr) rw::common::Ptr<Blend<rw::math::Vector3D<double> > >;
-%template (BlendSO3Ptr) rw::common::Ptr<Blend<Rotation3D> >;
-%template (BlendSE3Ptr) rw::common::Ptr<Blend<Transform3D> >;
+%template (BlendSO3Ptr) rw::common::Ptr<Blend<rw::math::Rotation3D<double> > >;
+%template (BlendSE3Ptr) rw::common::Ptr<Blend<rw::math::Transform3D<double> > >;
 %template (BlendQPtr) rw::common::Ptr<Blend<Q> >;
 
 template <class T>
@@ -1483,17 +1557,17 @@ public:
 };
 
 %template (InterpolatorR1) Interpolator<double>;
-%template (InterpolatorR2) Interpolator<Vector2>;
+%template (InterpolatorR2) Interpolator<Vector2d>;
 %template (InterpolatorR3) Interpolator<rw::math::Vector3D<double> >;
-%template (InterpolatorSO3) Interpolator<Rotation3D>;
-%template (InterpolatorSE3) Interpolator<Transform3D>;
+%template (InterpolatorSO3) Interpolator<rw::math::Rotation3D<double> >;
+%template (InterpolatorSE3) Interpolator<rw::math::Transform3D<double> >;
 %template (InterpolatorQ) Interpolator<Q>;
 
 %template (InterpolatorR1Ptr) rw::common::Ptr<Interpolator<double> >;
-%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2> >;
+%template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2d> >;
 %template (InterpolatorR3Ptr) rw::common::Ptr<Interpolator<rw::math::Vector3D<double> > >;
-%template (InterpolatorSO3Ptr) rw::common::Ptr<Interpolator<Rotation3D> >;
-%template (InterpolatorSE3Ptr) rw::common::Ptr<Interpolator<Transform3D> >;
+%template (InterpolatorSO3Ptr) rw::common::Ptr<Interpolator<rw::math::Rotation3D<double> > >;
+%template (InterpolatorSE3Ptr) rw::common::Ptr<Interpolator<rw::math::Transform3D<double> > >;
 %template (InterpolatorQPtr) rw::common::Ptr<Interpolator<Q> >;
 
 class LinearInterpolator: public Interpolator<double> {
@@ -1525,39 +1599,39 @@ public:
     double duration() const;
 };
 
-class LinearInterpolatorR3: public Interpolator<Rotation3D> {
+class LinearInterpolatorR3: public Interpolator<rw::math::Rotation3D<double> > {
 public:
-    LinearInterpolatorR3(const Rotation3D& start,
-                          const Rotation3D& end,
+    LinearInterpolatorR3(const rw::math::Rotation3D<double> & start,
+                          const rw::math::Rotation3D<double> & end,
                           double duration);
 
-    Rotation3D x(double t) const;
-    Rotation3D dx(double t) const;
-    Rotation3D ddx(double t) const;
+    rw::math::Rotation3D<double>  x(double t) const;
+    rw::math::Rotation3D<double>  dx(double t) const;
+    rw::math::Rotation3D<double>  ddx(double t) const;
     double duration() const;
 };
 
-class LinearInterpolatorSO3: public Interpolator<Rotation3D> {
+class LinearInterpolatorSO3: public Interpolator<rw::math::Rotation3D<double> > {
 public:
-    LinearInterpolatorSO3(const Rotation3D& start,
-                          const Rotation3D& end,
+    LinearInterpolatorSO3(const rw::math::Rotation3D<double> & start,
+                          const rw::math::Rotation3D<double> & end,
                           double duration);
 
-    Rotation3D x(double t) const;
-    Rotation3D dx(double t) const;
-    Rotation3D ddx(double t) const;
+    rw::math::Rotation3D<double>  x(double t) const;
+    rw::math::Rotation3D<double>  dx(double t) const;
+    rw::math::Rotation3D<double>  ddx(double t) const;
     double duration() const;
 };
 
-class LinearInterpolatorSE3: public Interpolator<Transform3D> {
+class LinearInterpolatorSE3: public Interpolator<rw::math::Transform3D<double> > {
 public:
-    LinearInterpolatorSE3(const Transform3D& start,
-                          const Transform3D& end,
+    LinearInterpolatorSE3(const rw::math::Transform3D<double> & start,
+                          const rw::math::Transform3D<double> & end,
                           double duration);
 
-    Transform3D x(double t) const;
-    Transform3D dx(double t) const;
-    Transform3D ddx(double t) const;
+    rw::math::Transform3D<double>  x(double t) const;
+    rw::math::Transform3D<double>  dx(double t) const;
+    rw::math::Transform3D<double>  ddx(double t) const;
     double duration() const;
 };
 
@@ -1576,28 +1650,28 @@ public:
     double duration() const;
 };
 
-class RampInterpolatorSO3: public Interpolator<Rotation3D> {
+class RampInterpolatorSO3: public Interpolator<rw::math::Rotation3D<double> > {
 public:
-    RampInterpolatorSO3(const Rotation3D& start,
-                          const Rotation3D& end,
+    RampInterpolatorSO3(const rw::math::Rotation3D<double> & start,
+                          const rw::math::Rotation3D<double> & end,
                           double vellimit,double acclimit);
 
-    Rotation3D x(double t) const;
-    Rotation3D dx(double t) const;
-    Rotation3D ddx(double t) const;
+    rw::math::Rotation3D<double>  x(double t) const;
+    rw::math::Rotation3D<double>  dx(double t) const;
+    rw::math::Rotation3D<double>  ddx(double t) const;
     double duration() const;
 };
 
-class RampInterpolatorSE3: public Interpolator<Transform3D> {
+class RampInterpolatorSE3: public Interpolator<rw::math::Transform3D<double> > {
 public:
-    RampInterpolatorSE3(const Transform3D& start,
-                          const Transform3D& end,
+    RampInterpolatorSE3(const rw::math::Transform3D<double> & start,
+                          const rw::math::Transform3D<double> & end,
                           double linvellimit,double linacclimit,
                           double angvellimit,double angacclimit);
 
-    Transform3D x(double t) const;
-    Transform3D dx(double t) const;
-    Transform3D ddx(double t) const;
+    rw::math::Transform3D<double>  x(double t) const;
+    rw::math::Transform3D<double>  dx(double t) const;
+    rw::math::Transform3D<double>  ddx(double t) const;
     double duration() const;
 };
 
@@ -1648,18 +1722,18 @@ protected:
 
 %template (TrajectoryState) Trajectory<State>;
 %template (TrajectoryR1) Trajectory<double>;
-%template (TrajectoryR2) Trajectory<Vector2>;
+%template (TrajectoryR2) Trajectory<Vector2d>;
 %template (TrajectoryR3) Trajectory<rw::math::Vector3D<double> >;
-%template (TrajectorySO3) Trajectory<Rotation3D>;
-%template (TrajectorySE3) Trajectory<Transform3D>;
+%template (TrajectorySO3) Trajectory<rw::math::Rotation3D<double> >;
+%template (TrajectorySE3) Trajectory<rw::math::Transform3D<double> >;
 %template (TrajectoryQ) Trajectory<Q>;
 
 %template (TrajectoryStatePtr) rw::common::Ptr<Trajectory<State> >;
 %template (TrajectoryR1Ptr) rw::common::Ptr<Trajectory<double> >;
-%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<Vector2> >;
+%template (TrajectoryR2Ptr) rw::common::Ptr<Trajectory<Vector2d> >;
 %template (TrajectoryR3Ptr) rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > >;
-%template (TrajectorySO3Ptr) rw::common::Ptr<Trajectory<Rotation3D> >;
-%template (TrajectorySE3Ptr) rw::common::Ptr<Trajectory<Transform3D> >;
+%template (TrajectorySO3Ptr) rw::common::Ptr<Trajectory<rw::math::Rotation3D<double> > >;
+%template (TrajectorySE3Ptr) rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > >;
 %template (TrajectoryQPtr) rw::common::Ptr<Trajectory<Q> >;
 
 template <class T>
@@ -1678,10 +1752,10 @@ public:
 };
 
 %template (InterpolatorTrajectoryR1) InterpolatorTrajectory<double>;
-%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2>;
+%template (InterpolatorTrajectoryR2) InterpolatorTrajectory<Vector2d>;
 %template (InterpolatorTrajectoryR3) InterpolatorTrajectory<rw::math::Vector3D<double> >;
-%template (InterpolatorTrajectorySO3) InterpolatorTrajectory<Rotation3D>;
-%template (InterpolatorTrajectorySE3) InterpolatorTrajectory<Transform3D>;
+%template (InterpolatorTrajectorySO3) InterpolatorTrajectory<rw::math::Rotation3D<double> >;
+%template (InterpolatorTrajectorySE3) InterpolatorTrajectory<rw::math::Transform3D<double> >;
 %template (InterpolatorTrajectoryQ) InterpolatorTrajectory<Q>;
 
 
@@ -1731,12 +1805,12 @@ public:
 	Type type;
 	*/
 	
-	Transform3D femaleTmaleTarget;
-	rw::common::Ptr<Trajectory<Transform3D> > worldTendTrajectory;
-	VelocityScrew6D femaleTmaleVelocityTarget;
-	Rotation3D offset;
+	rw::math::Transform3D<double>  femaleTmaleTarget;
+	rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > > worldTendTrajectory;
+	rw::math::VelocityScrew6D<double>  femaleTmaleVelocityTarget;
+	rw::math::Rotation3D<double>  offset;
 	//VectorND<6,bool> selection;
-	Wrench6D force_torque;
+	Wrench6d force_torque;
 	bool done;
 	bool success;
 };
@@ -1765,7 +1839,7 @@ public:
 	*/
 	
 	//virtual rw::common::Ptr<AssemblyControlResponse> update(rw::common::Ptr<AssemblyParameterization> parameters, rw::common::Ptr<AssemblyState> real, rw::common::Ptr<AssemblyState> assumed, rw::common::Ptr<ControlState> controlState, State &state, FTSensor* ftSensor, double time) const = 0;
-	virtual Transform3D getApproach(rw::common::Ptr<AssemblyParameterization> parameters) = 0;
+	virtual rw::math::Transform3D<double>  getApproach(rw::common::Ptr<AssemblyParameterization> parameters) = 0;
 	virtual std::string getID() = 0;
 	virtual std::string getDescription() = 0;
 	virtual rw::common::Ptr<AssemblyParameterization> createParameterization(const rw::common::Ptr<PropertyMap> map) = 0;
@@ -1802,10 +1876,10 @@ class AssemblyResult
 {
 public:
 	AssemblyResult();
-	AssemblyResult(rw::common::Ptr<Task<Transform3D> > task);
+	AssemblyResult(rw::common::Ptr<Task<rw::math::Transform3D<double> > > task);
 	virtual ~AssemblyResult();
 	rw::common::Ptr<AssemblyResult> clone() const;
-	rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+	rw::common::Ptr<Task<rw::math::Transform3D<double> > > toCartesianTask();
 	static void saveRWResult(rw::common::Ptr<AssemblyResult> result, const std::string& name);
 	static void saveRWResult(std::vector<rw::common::Ptr<AssemblyResult> > results, const std::string& name);
 	static std::vector<rw::common::Ptr<AssemblyResult> > load(const std::string& name);
@@ -1813,14 +1887,14 @@ public:
 	
 	bool success;
 	//Error error;
-	Transform3D femaleTmaleEnd;
+	rw::math::Transform3D<double>  femaleTmaleEnd;
 
 	std::string taskID;
 	std::string resultID;
     
     Path<Timed<AssemblyState> > realState;
 	Path<Timed<AssemblyState> > assumedState;
-	Transform3D approach;
+	rw::math::Transform3D<double>  approach;
 	std::string errorMessage;
 };
 
@@ -1831,20 +1905,20 @@ class AssemblyState
 {
 public:
 	AssemblyState();
-	//AssemblyState(rw::common::Ptr<Target<Transform3D> > target);
+	//AssemblyState(rw::common::Ptr<Target<rw::math::Transform3D<double> > > target);
 	virtual ~AssemblyState();
-	//static rw::common::Ptr<Target<Transform3D> > toCartesianTarget(const AssemblyState &state);
+	//static rw::common::Ptr<Target<rw::math::Transform3D<double> > > toCartesianTarget(const AssemblyState &state);
 
 	std::string phase;
-	Transform3D femaleOffset;
-	Transform3D maleOffset;
-	Transform3D femaleTmale;
-	Wrench6D ftSensorMale;
-	Wrench6D ftSensorFemale;
+	rw::math::Transform3D<double>  femaleOffset;
+	rw::math::Transform3D<double>  maleOffset;
+	rw::math::Transform3D<double>  femaleTmale;
+	Wrench6d ftSensorMale;
+	Wrench6d ftSensorFemale;
 	bool contact;
-	Path<Transform3D> maleflexT;
-	Path<Transform3D> femaleflexT;
-	Path<Transform3D> contacts;
+	Path<rw::math::Transform3D<double> > maleflexT;
+	Path<rw::math::Transform3D<double> > femaleflexT;
+	Path<rw::math::Transform3D<double> > contacts;
 	rw::math::Vector3D<double> maxContactForce;
 };
 
@@ -1857,9 +1931,9 @@ class AssemblyTask
 {
 public:
 	AssemblyTask();
-	AssemblyTask(rw::common::Ptr<Task<Transform3D> > task, rw::common::Ptr<AssemblyRegistry> registry = NULL);
+	AssemblyTask(rw::common::Ptr<Task<rw::math::Transform3D<double> > > task, rw::common::Ptr<AssemblyRegistry> registry = NULL);
 	virtual ~AssemblyTask();
-	rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+	rw::common::Ptr<Task<rw::math::Transform3D<double> > > toCartesianTask();
 	static void saveRWTask(rw::common::Ptr<AssemblyTask> task, const std::string& name);
 	static void saveRWTask(std::vector<rw::common::Ptr<AssemblyTask> > tasks, const std::string& name);
 	static std::vector<rw::common::Ptr<AssemblyTask> > load(const std::string& name, rw::common::Ptr<AssemblyRegistry> registry = NULL);
@@ -1868,7 +1942,7 @@ public:
 
 	std::string maleID;
     std::string femaleID;
-    Transform3D femaleTmaleTarget;
+    rw::math::Transform3D<double>  femaleTmaleTarget;
     rw::common::Ptr<AssemblyControlStrategy> strategy;
     rw::common::Ptr<AssemblyParameterization> parameters;
     
@@ -2010,49 +2084,8 @@ public:
  * RWLIBS PROXIMITYSTRATEGIES
  ********************************************/
 
-/********************************************
- * RWLIBS SIMULATION
- ********************************************/
 
-struct UpdateInfo {
-	UpdateInfo();
-	UpdateInfo(double dt_step);
-	
-	double dt;
-	double dt_prev;
-	double time;
-	bool rollback;
-};
-
-%nestedworkaround Simulator::UpdateInfo;
-
-class Simulator {
-public:
-
-	/*
-	 * Nested structs not supported
-	 * 
-   struct UpdateInfo {
-	   UpdateInfo();
-	   UpdateInfo(double dt_step);
-
-	   double dt;
-	   double dt_prev;
-	   double time;
-	   bool rollback;
-   };
-   */
-   
-   virtual ~Simulator();
-   virtual void step(double dt) = 0;
-   virtual void reset(State& state) = 0;
-   virtual void init(State& state) = 0;
-   virtual double getTime() = 0;
-   virtual void setEnabled(Frame* frame, bool enabled) = 0;
-   virtual State& getState() = 0;
-   virtual PropertyMap& getPropertyMap() = 0;
-
-};
+ 
 
 /********************************************
  * RWLIBS SOFTBODY
@@ -2071,15 +2104,15 @@ class Task
 {
 };
 
-%template (TaskSE3) Task<Transform3D>;
+%template (TaskSE3) Task<rw::math::Transform3D<double> >;
 
-%template (TaskSE3Ptr) rw::common::Ptr<Task<Transform3D> >;
+%template (TaskSE3Ptr) rw::common::Ptr<Task<rw::math::Transform3D<double> > >;
 
 class GraspTask {
 public:
     GraspTask():
-    GraspTask(rw::common::Ptr<Task<Transform3D> > task);
-    rw::common::Ptr<Task<Transform3D> > toCartesianTask();
+    GraspTask(rw::common::Ptr<Task<rw::math::Transform3D<double> > > task);
+    rw::common::Ptr<Task<rw::math::Transform3D<double> > > toCartesianTask();
     std::string getGripperID();
     std::string getTCPID();
     std::string getGraspControllerID();
@@ -2132,6 +2165,7 @@ public:
 /********************************************
  * LUA functions
  ********************************************/
+
 
 #if defined (SWIGLUA)
 %luacode {

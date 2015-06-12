@@ -28,12 +28,12 @@ void rwlibs::swig::setlog(::rw::common::LogWriter::Ptr writer){
     ::rw::common::Log::log().setWriter(::rw::common::Log::User8, writer);
 }
 
-rwlibs::swig::Rotation3D rwlibs::swig::getRandomRotation3D()
+rw::math::Rotation3D<> rwlibs::swig::getRandomRotation3D()
 {
   return ::rw::math::Math::ranRotation3D<double>();
 }
 
-rwlibs::swig::Transform3D rwlibs::swig::getRandomTransform3D(const double translationLength)
+rw::math::Transform3D<> rwlibs::swig::getRandomTransform3D(const double translationLength)
 {
   return ::rw::math::Math::ranTransform3D<double>(translationLength);
 }

@@ -142,26 +142,26 @@ public:
 
     %extend {
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3D to, rw::common::Ptr<StopCriteria> stop){
+        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to, rw::common::Ptr<StopCriteria> stop){
             rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3D>::query(from,to,*path,*stop);
+            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path,*stop);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3D to, double time){
+        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to, double time){
             rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3D>::query(from,to,*path,time);
+            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path,time);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3D to){
+        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to){
             rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3D>::query(from,to,*path);
+            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path);
             return path;
         }
 
         PropertyMap& getProperties(){
-            return $self->rw::pathplanning::PathPlanner<Q,const Transform3D>::getProperties();
+            return $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::getProperties();
         }
 	}	
 };
