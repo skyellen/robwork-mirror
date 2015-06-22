@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( GraspTaskSimulatorTest )
     WorkCell::Ptr wc = dwc->getWorkcell();
 
     // create GraspTaskSimulator
-    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 1) );
+    GraspTaskSimulator::Ptr graspSim = ownedPtr( new GraspTaskSimulator(dwc, 2) );
 
     GraspTask::Ptr grasptask = GraspTask::load( grasptask_file );
     graspSim->setStoreTimedStatePaths(true);
