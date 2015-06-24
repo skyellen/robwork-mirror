@@ -720,7 +720,7 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         const QString& pluginname = plugins.at(i);
 
 
-        std::cout << "Plugin = " << pluginname.toStdString() << "\n";
+        Log::debugLog()  << "Plugin = " << pluginname.toStdString() << "\n";
 
         settings.beginGroup(pluginname);
 
@@ -840,7 +840,7 @@ void RobWorkStudio::dropEvent(QDropEvent* event)
 			openFile(urls[0].toLocalFile().toStdString());
 		}
     } else if (event->mimeData()->hasHtml()) {
-        std::cout << "html dropped: "  << std::endl;
+        Log::debugLog() << "html dropped: "  << std::endl;
 
     } else if (event->mimeData()->hasText()) {
         QString text = event->mimeData()->text();
@@ -1105,19 +1105,19 @@ namespace {
         }
 
         virtual ~RobWorkStudioEvent(){
-        	std::cout << "RobWorkStudioEvent: destruct" << std::endl;
+        	Log::debugLog() << "RobWorkStudioEvent: destruct" << std::endl;
             done();
         }
 
         void done(){
 
             if(_hs!=NULL){
-            	std::cout << "Done: " << std::endl;
-            	std::cout << "set hs "<<std::endl;
+            	Log::debugLog() << "Done: " << std::endl;
+            	Log::debugLog() << "set hs "<<std::endl;
                 *_hs = true;
-                std::cout << "hs " << *_hs <<std::endl;
+                Log::debugLog() << "hs " << *_hs <<std::endl;
             } else {
-            	std::cout << "Done: hs==NULL" << std::endl;
+            	Log::debugLog() << "Done: hs==NULL" << std::endl;
             }
         }
 
