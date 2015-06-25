@@ -100,7 +100,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(ODEBody *base,
     // create the spiked cup geometry
     _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.002, dev->getRadius(), 1, NR_OF_SPIKES);
 
-    _spikedCup = new Geometry(_spikedCupMesh);
+    _spikedCup = ownedPtr(new Geometry(_spikedCupMesh));
 
     _spikedCupModel = _narrowStrategy->createModel(  );
     _spikedCupModel->addGeometry( *_spikedCup );
