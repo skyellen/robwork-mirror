@@ -1,0 +1,49 @@
+<WorkCell name="Custom geometry test">
+	
+	<!-- box shaped finger -->
+	<Frame name="object1" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 -0.2 0</Pos>
+		<Drawable name="object1Geo">
+			<Custom type="simplefinger" param="0.1 0.02 0.01 0 0 0 0 0 0"/>
+		</Drawable>
+	</Frame>
+	
+	<!-- chamfered finger -->
+	<Frame name="object2" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 -0.1 0</Pos>
+		<Drawable name="object2Geo">
+			<Custom type="simplefinger" param="0.1 0.02 0.01 0.02 0.005 0 0 0 0"/>
+		</Drawable>
+	</Frame>
+	
+	<!-- box finger with cutout -->
+	<Frame name="object3" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0.0 0</Pos>
+		<Drawable name="object3Geo">
+			<Custom type="simplefinger" param="0.1 0.02 0.01 0.0 0.0 0.075 0.005 120 0"/>
+		</Drawable>
+	</Frame>
+	
+	<!-- chamfered finger with cutout -->
+	<Frame name="object4" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0.1 0</Pos>
+		<Drawable name="object4Geo">
+			<Custom type="simplefinger" param="0.1 0.02 0.01 0.02 0.005 0.075 0.005 120 0"/>
+		</Drawable>
+	</Frame>
+	
+	<!-- chamfered finger with tilted cutout -->
+	<Frame name="object5" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0.2 0</Pos>
+		<Drawable name="object5Geo">
+			<Custom type="simplefinger" param="0.1 0.02 0.01 0.02 0.005 0.075 0.005 120 45"/>
+		</Drawable>
+	</Frame>
+	
+</WorkCell>
+

@@ -36,6 +36,10 @@ namespace geometry {
      * by a set of parameters.
      */
     class Primitive: public GeometryData {
+	public:
+		//! Smart pointer to this type of class.
+		typedef rw::common::Ptr<Primitive> Ptr;
+		
     public:
 
         //! @brief destructor
@@ -57,9 +61,14 @@ namespace geometry {
 		virtual TriMesh::Ptr createMesh(int resolution) const = 0;
 
         /**
-         * @brief the set of parameters that defines this primitive
+         * @brief get the parameters that define this primitive
          */
         virtual rw::math::Q getParameters() const = 0;
+        
+        /**
+         * @brief set the parameters that define this primitive
+         */
+        virtual void setParameters(const rw::math::Q& q) = 0;
 
         //! @copydoc GeometryData::isConvex
         virtual bool isConvex() { return true; }

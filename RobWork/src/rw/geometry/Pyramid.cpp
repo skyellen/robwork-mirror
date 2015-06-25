@@ -24,9 +24,7 @@ using namespace rw::common;
 using namespace rw::math;
 
  Pyramid::Pyramid(const rw::math::Q& initQ){
-     _widthX=initQ(0);
-     _widthY=initQ(1);
-     _height=initQ(2);
+     setParameters(initQ);
  }
 
  Pyramid::Pyramid(double widthx, double widthy, double height)
@@ -70,6 +68,16 @@ TriMesh::Ptr Pyramid::createMesh(int resolution) const{
 
 rw::math::Q Pyramid::getParameters() const{
     return rw::math::Q(3, _widthX, _widthY, _height);
+}
+
+void Pyramid::setParameters(const rw::math::Q& q) {
+	if (q.size() != 3) {
+		RW_THROW("Size of parameter list must equal 3!");
+	}
+	
+	_widthX = q(0);
+	_widthY = q(1);
+	_height = q(2);
 }
 
 bool Pyramid::doIsInside(const rw::math::Vector3D<>& point){

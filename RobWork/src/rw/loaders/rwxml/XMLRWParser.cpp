@@ -283,6 +283,14 @@ namespace {
                                    XMLAtt_p("z",real_p[ var( _geo._z ) = arg1 ]
                                                       [ var( _geo._type ) = TubeType ] ),
                                    eps_p)
+                    | XMLAttElem_p("Custom",
+                        XMLAtt_p("type", attrstr_p
+                           [ var( _geo._filename ) = arg1 ]
+                           [ var( _geo._type ) = CustomType ] ) >>
+                        XMLAtt_p("param", attrstr_p
+                           [ var( _geo._parameters ) = arg1 ] ),
+                        eps_p
+                     )
                     )[ geometry_r.result_ = var( _geo ) ];
             }
 

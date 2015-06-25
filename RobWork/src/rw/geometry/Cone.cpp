@@ -26,10 +26,8 @@ using namespace rw::geometry;
 using namespace rw::math;
 using namespace rw::common;
 
-Cone::Cone(const rw::math::Q& initQ){
-    _height=initQ(0);
-    _radiusTop=initQ(1);
-    _radiusBottom=initQ(2);
+Cone::Cone(const rw::math::Q& initQ) {
+	setParameters(initQ);
 }
 
 Cone::Cone(double height, double radiusTop, double radiusBot):
@@ -41,6 +39,16 @@ Cone::Cone(double height, double radiusTop, double radiusBot):
 
 rw::math::Q Cone::getParameters() const{
     return Q::zero(3);
+}
+
+void Cone::setParameters(const rw::math::Q& q) {
+	if(q.size()!=3) {
+		RW_THROW("Size of parameter list must equal 3!");
+	}
+	
+	_height = q(0);
+    _radiusTop = q(1);
+    _radiusBottom = q(2);
 }
 
 

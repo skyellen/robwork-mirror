@@ -32,11 +32,8 @@ Line::Line() :
 {
 }
 
-Line::Line(const rw::math::Q& p) {
-	RW_ASSERT (p.size() == 6);
-	
-	_p1 = Vector3D<>(p[0], p[1], p[2]);
-	_p2 = Vector3D<>(p[3], p[4], p[5]);
+Line::Line(const rw::math::Q& initQ) {
+	setParameters(initQ);
 }
 
 Line::Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) :
@@ -45,6 +42,19 @@ Line::Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2) :
 {}
 
 Line::~Line() {}
+
+void Line::setParameters(const rw::math::Q& q) {
+	if (q.size() != 6) {
+		RW_THROW("Size of parameter list must equal 6!");
+	}
+	
+	_p1[0] = q(0);
+	_p1[1] = q(1);
+	_p1[2] = q(2);
+	_p2[0] = q(3);
+	_p2[1] = q(4);
+	_p2[2] = q(5);
+}
 
 double Line::distance(const rw::math::Vector3D<>& point) const {
 	return fabs(cross(point - _p1, point - _p2).norm2() / (_p2 - _p1).norm2());

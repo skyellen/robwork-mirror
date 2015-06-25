@@ -52,7 +52,7 @@ typedef enum{Fixed=0,Movable,Prismatic,Revolute,DependRevolute,
 typedef enum{SerialType,ParallelType,TreeType,MobileType,
              CompositeType,ConveyorType} DeviceType;
 typedef enum{AccLimitType,VelLimitType,PosLimitType} LimitType;
-typedef enum{PolyType,CubeType,SphereType,ConeType, CylinderType, TubeType} GeoType;
+typedef enum{PolyType,CubeType,SphereType,ConeType, CylinderType, TubeType, CustomType} GeoType;
 typedef enum{ActiveState, PassiveState} FrameState;
 typedef enum{MatrixType, LambdaType} InertiaType;
 
@@ -119,6 +119,7 @@ struct DummyGeometry {
     double _z; // cube, cone
     boost::spirit::classic::file_position _pos;
     std::string _filename;
+    std::string _parameters;
     GeoType _type;
 };
 

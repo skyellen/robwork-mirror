@@ -119,3 +119,5 @@ ENDIF()
 #          DESTINATION "${LIB_INSTALL_DIR}")
 #ENDIF()
 
+add_subdirectory(csgjs)
+

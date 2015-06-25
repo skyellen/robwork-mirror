@@ -171,7 +171,10 @@ namespace geometry {
 
 
 		//! @copydoc Primitive::getParameters()
-		rw::math::Q getParameters() const;
+		virtual rw::math::Q getParameters() const;
+		
+		//! @copydoc Primitive::setParameters
+		virtual void setParameters(const rw::math::Q& q);
 
 		//! @copydoc Primitive::getType()
 		GeometryType getType() const { return PlanePrim; }

@@ -120,7 +120,10 @@ namespace geometry {
 			TriMesh::Ptr createMesh(int resolution) const { return NULL; }
 
 			//! @copydoc Primitive::getParameters
-			rw::math::Q getParameters() const { return rw::math::Q(6, _p1[0], _p1[1], _p1[2], _p2[0], _p2[1], _p2[2]); }
+			virtual rw::math::Q getParameters() const { return rw::math::Q(6, _p1[0], _p1[1], _p1[2], _p2[0], _p2[1], _p2[2]); }
+			
+			//! @copydoc Primitive::setParameters
+			virtual void setParameters(const rw::math::Q& q);
 
 			//! @copydoc Primitive::getType
 			GeometryType getType() const { return LinePrim; }

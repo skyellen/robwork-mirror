@@ -50,7 +50,10 @@ namespace geometry {
 		TriMesh::Ptr createMesh(int resolution) const;
 
 		//! @copydoc Primitive::getParameters
-		rw::math::Q getParameters() const{ return rw::math::Q(1,_radius);};
+		virtual rw::math::Q getParameters() const{ return rw::math::Q(1,_radius);};
+		
+		//! @copydoc Primitive::setParameters
+		virtual void setParameters(const rw::math::Q& q);
 
 		//! @copydoc GeometryData::getType
 		GeometryData::GeometryType getType() const { return GeometryData::SpherePrim; };

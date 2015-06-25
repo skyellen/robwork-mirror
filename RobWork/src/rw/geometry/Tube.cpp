@@ -31,9 +31,9 @@ Tube::Tube(float radius, float height):
 {
 }
 
-Tube::Tube(const rw::math::Q& initQ):
-	_radius((float)initQ[0]),_height((float)initQ[1])
+Tube::Tube(const rw::math::Q& initQ)
 {
+	setParameters(initQ);
 }
 
 Tube::~Tube()
@@ -106,6 +106,15 @@ rw::math::Q Tube::getParameters() const {
 	q(0) = _height;
 	q(1) = _radius;
 	return q;
+}
+
+void Tube::setParameters(const rw::math::Q& q) {
+	if (q.size() != 2) {
+		RW_THROW("Size of parameter list must equal 2!");
+	}
+	
+	_height = q(0);
+	_radius = q(1);
 }
 
 bool Tube::doIsInside(const rw::math::Vector3D<>& point){

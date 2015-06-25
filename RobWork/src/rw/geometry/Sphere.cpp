@@ -79,3 +79,11 @@ TriMesh::Ptr Sphere::createMesh(int granulation) const{
 	PlainTriMeshD *mesh = new PlainTriMeshD(*trimesh_src);
 	return ownedPtr(mesh);
 }
+
+void Sphere::setParameters(const rw::math::Q& q) {
+	if(q.size()!=1) {
+		RW_THROW("Size of parameter list must equal 1!");
+	}
+	
+	_radius = q(0);
+}

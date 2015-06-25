@@ -12,6 +12,8 @@ add_subdirectory(task)
 add_subdirectory(simulation)
 add_subdirectory(swig)
 add_subdirectory(softbody)
+add_subdirectory(geometry)
+add_subdirectory(csg)
 
 #add_subdirectory(grasper)
 

@@ -36,6 +36,17 @@ Q Plane::getParameters() const {
     return q;
 }
 
+void Plane::setParameters(const rw::math::Q& q) {
+	if (q.size() != 4) {
+		RW_THROW("Size of parameter list must equal 4!");
+	}
+	
+	_normal(0) = q(0);
+	_normal(1) = q(1);
+	_normal(2) = q(2);
+	_d = q(3);
+}
+
 TriMesh::Ptr Plane::createMesh(int resolution, double size) const  {
     size *= 0.5; //Scale s.t. the real size becomes size.
 

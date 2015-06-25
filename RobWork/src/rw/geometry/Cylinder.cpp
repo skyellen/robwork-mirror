@@ -48,6 +48,10 @@ Cylinder::Cylinder(float radius, float height):
 {
 }
 
+Cylinder::Cylinder(const rw::math::Q& initQ) {
+	setParameters(initQ);
+}
+
 Cylinder::~Cylinder(){}
 
 
@@ -90,4 +94,13 @@ rw::math::Q Cylinder::getParameters() const {
 	q(0) = _height;
 	q(1) = _radius;
 	return q;
+}
+
+void Cylinder::setParameters(const rw::math::Q& q) {
+	if(q.size()!=2) {
+		RW_THROW("Size of parameter list must equal 2!");
+	}
+	
+	_height = q(0);
+	_radius = q(1);
 }

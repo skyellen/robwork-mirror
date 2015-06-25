@@ -20,7 +20,9 @@
 #define RW_LOADERS_GEOMETRYFACTORY_HPP_
 
 #include <rw/common/Cache.hpp>
+#include <rw/common/ExtensionPoint.hpp>
 #include <rw/geometry/Geometry.hpp>
+#include <rw/geometry/Primitive.hpp>
 #include <rw/geometry/GeometryData.hpp>
 
 //! @file rw/geometry/GeometryFactory.hpp
@@ -65,10 +67,18 @@ namespace rw { namespace loaders {
      * Syntax: "#Pyramid dx dy height"
      * where "dx", "dy" are floats specifying the base dimensions,
      * and "height" is a float specyfying the pyramid height.
+     * 
+     * Custom:
+     * Syntax: "#Custom type parameters
+     * where "type" is a custom geometry type provided by extensions,
+     * "parameters" is a space separated string with custom geometry parameters.
      */
-    class GeometryFactory
+    class GeometryFactory: public rw::common::ExtensionPoint<rw::geometry::Primitive>
     {
     public:
+		//! Constructor.
+		GeometryFactory();
+    
         /**
          * @brief Factory method for geometric primitive
          *
@@ -83,7 +93,7 @@ namespace rw { namespace loaders {
          */
 		static rw::geometry::Geometry::Ptr load(const std::string& str, bool useCache=true);
 
-    	//! @copydoc load
+		//! @copydoc load
 		static rw::geometry::Geometry::Ptr getGeometry(const std::string& str, bool useCache=true);
 
     private:

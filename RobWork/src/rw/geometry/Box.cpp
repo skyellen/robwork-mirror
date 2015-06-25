@@ -34,11 +34,7 @@ namespace
 }
 
 Box::Box(const rw::math::Q& initQ){
-	if(initQ.size()!=3)
-		RW_THROW("Size of parameter list must equal 3!");
-	_dx = (initQ(0));
-	_dy = (initQ(1));
-	_dz = (initQ(2));
+	setParameters(initQ);
 }
 
 Box::Box(double dx, double dy, double dz):
@@ -103,6 +99,16 @@ rw::math::Q Box::getParameters() const {
 	q(1) = _dy;
 	q(2) = _dz;
 	return q;
+}
+
+void Box::setParameters(const rw::math::Q& q) {
+	if(q.size()!=3) {
+		RW_THROW("Size of parameter list must equal 3!");
+	}
+	
+	_dx = q(0);
+	_dy = q(1);
+	_dz = q(2);
 }
 
 bool Box::doIsInside(const rw::math::Vector3D<>& point){

@@ -20,6 +20,7 @@
 
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
+#include <rw/common/Extension.hpp>
 #include <rw/math/Transform3D.hpp>
 
 #include <rw/graphics/Model3DFactory.hpp>
@@ -42,6 +43,7 @@
 #include "Triangle.hpp"
 */
 #include <boost/foreach.hpp>
+#include <string>
 
 using namespace rw::loaders;
 
@@ -49,6 +51,8 @@ using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::kinematics;
 using namespace rw::math;
+
+using namespace std;
 
 
 namespace
@@ -101,6 +105,45 @@ namespace
 			RW_THROW("Could not read (radius, height, divisions).");
 			return NULL;
 		}
+	}
+	
+	Geometry::Ptr constructCustom(std::stringstream& sstr)
+	{
+		/*
+		 * Extract custom geometry parameters.
+		 */
+		string geometryType, parameterString;
+		
+		if (sstr >> geometryType && getline(sstr, parameterString)) {
+			
+			pair<bool, vector<double> > parameters = StringUtil::toDoubles(StringUtil::words(parameterString));
+			Q q(parameters.second);
+		
+			/*
+			 * Look up the geometry type in extensions.
+			 */
+			GeometryFactory geoFactory;
+			vector<Extension::Ptr> extensions = geoFactory.getExtensions();
+		
+			BOOST_FOREACH (Extension::Ptr& extension, extensions) {
+			
+				if (extension->getProperties().get("type", extension->getName()) == geometryType) {
+				
+					Primitive::Ptr primitive = extension->getObject().cast<Primitive>();
+					
+					if (q.size() > 0) {
+						primitive->setParameters(q);
+					}
+					
+					return ownedPtr(new Geometry(primitive));
+				}
+			}
+		} else {
+			RW_THROW("Could not read (type, parameters).");
+			return NULL;
+		}
+		
+		return NULL;
 	}
 
 	Geometry::Ptr constructSphere(std::stringstream& sstr){
@@ -221,6 +264,8 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
         return constructSphere(sstr);
     if (type == "#Pyramid")
         return constructPyramid(sstr);
+    if (type == "#Custom")
+		return constructCustom(sstr);
     else {
         RW_THROW("Unable to construct geometry from string: \"" << raw_filename << "\"");
         // To avoid a compiler warning.
@@ -229,6 +274,11 @@ Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool
 
     RW_ASSERT(!"Impossible");
     return NULL; // To avoid a compiler warning.
+}
+
+GeometryFactory::GeometryFactory() :
+	ExtensionPoint<Primitive>("rw.loaders.GeometryFactory", "extension point for adding custom geometry primitives to the XML workcell format")
+{
 }
 
 GeometryFactory::Cache& GeometryFactory::getCache(){

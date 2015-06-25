@@ -250,6 +250,9 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 		case TubeType:
 			val << "#Tube " << model._geo[i]._radius << " " << model._geo[i]._z << " " << 20;
 			break;
+		case CustomType:
+			val << "#Custom " << model._geo[i]._filename << " " << model._geo[i]._parameters;
+			break;
 		default:
 			val << "";
 			break;
