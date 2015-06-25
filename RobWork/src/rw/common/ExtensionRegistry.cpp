@@ -62,7 +62,7 @@ void ExtensionRegistry::registerExtensions(rw::common::Ptr<Plugin> plugin){
 		if(_descMap.find(desc.point)!=_descMap.end() ){
 			// check if plugin/extension allready exists
 			std::vector< std::pair<Extension::Descriptor, rw::common::Ptr<Plugin> > > &res = _descMap[desc.point];
-			for(int i=0;i<res.size();i++){
+			for(size_t i=0;i<res.size();i++){
 				if(res[i].first.id == desc.id && res[i].second->getId() == plugin->getId()){
 					continue;
 				}
