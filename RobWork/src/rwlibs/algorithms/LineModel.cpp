@@ -72,7 +72,6 @@ bool LineModel::same(const LineModel& model, double threshold) const
 	rw::math::Metric<rw::geometry::Line>::Ptr metric = rw::geometry::Line::makeMetric();
 	
 	double d = metric->distance(_model, model._model);
-	//std::cout << "distance= " << d << std::endl;
 	
 	return (d <= threshold);
 }

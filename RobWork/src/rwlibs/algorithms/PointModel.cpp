@@ -73,7 +73,5 @@ bool PointModel::same(const PointModel& model, double threshold) const
 {
 	double d = (model._model - _model).norm2();
 	
-	//std::cout << d << std::endl;
-	
 	return d <= threshold;
 }

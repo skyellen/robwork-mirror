@@ -55,8 +55,6 @@ double StablePose1DModel::fitError(const rw::math::Rotation3D<>& sample) const
 	
 	double error = Vector3D<>(dx, dy, dz).norm2();
 	
-	//cout << "Fit error for sample " << sample << "= " << error << " " << dx << ", " << dy << ", " << dz << endl;
-	
 	return error;
 }
 
@@ -97,27 +95,19 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	if (x_error < best_error) {
 		best_plane = &x_plane;
 		best_error = x_error;
-		
-		//cout << "best plane: x" << endl;
 	}
 	
 	if (y_error < best_error) {
 		best_plane = &y_plane;
 		best_error = y_error;
-		
-		//cout << "best plane: y" << endl;
 	}
 	
 	if (z_error < best_error) {
 		best_plane = &z_plane;
 		best_error = z_error;
-		
-		//cout << "best plane: z" << endl;
 	}
 	
 	if (!best_plane) {
-		//cout << "best plane: not found" << endl;
-		
 		_invalid = true;
 		return 0.0;
 	} else {
@@ -173,8 +163,6 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 	error /= (n > 0 ? n : 1);
 	setQuality(error);
 	
-	//cout << "error= " << error << endl;
-	
 	return error;
 
 	
@@ -184,8 +172,6 @@ double StablePose1DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 
 bool StablePose1DModel::same(const StablePose1DModel& model, double threshold) const
 {
-	//*
-	// naive approach
 	double dx = _dx - model._dx;
 	double dy = _dy - model._dy;
 	double dz = _dz - model._dz;

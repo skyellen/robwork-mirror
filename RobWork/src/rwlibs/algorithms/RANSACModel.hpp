@@ -85,7 +85,7 @@ public:
 		int n = MODEL().getMinReqData();
 
 		if (data.size() < n || data.size() < dataRequired) {
-			RW_WARN("Too few samples to create a proper model.");
+			//RW_WARN("Too few samples to create a proper model.");
 
 			return std::vector<MODEL>();
 		}
@@ -104,7 +104,6 @@ public:
 			for (size_t i = 0; i < n; ++i) {
 				maybeInliers.push_back(data[indices[i]]);
 			}
-			//maybeInliers.insert(maybeInliers.end(), samples.begin(), samples.begin()+n);
 
 			// create a model based on the maybeInliers
 			MODEL maybeModel;
@@ -112,7 +111,6 @@ public:
 				maybeModel = maybeModel.make(maybeInliers);
 
 				if (maybeModel.invalid()) {
-					//std::cout << "model was invalid" << std::endl;
 					continue;
 				}
 			} catch (...) {
@@ -126,24 +124,18 @@ public:
 			for (size_t i = 0; i < data.size(); i++) {
 				if (maybeModel.fitError(data[i]) < dataThreshold) {
 					consensusSet.push_back(data[i]);
-				} else {
-					//std::cout << "cannot add sample to consensus set" << std::endl;
 				}
 			}
 
 			// if consensus set size is large enough, we have a model
 			if (consensusSet.size() > dataRequired) {
-				//std::cout << "We have a model!" << std::endl;
 				models.push_back(
 						std::pair<MODEL, int>(maybeModel, consensusSet.size()));
 			}
 
 		}
 
-		//std::cout << "N of maybe models= " << models.size() << std::endl;
-
 		// merging models
-		//std::cout << "Merging models" << std::endl;
 		if (models.size() == 0) {
 			// if no models found, return empty vector
 			return std::vector<MODEL>();
@@ -162,7 +154,6 @@ public:
 
 			try {
 				models[0].first.refit(consensusSet);
-				//models[0].first._data = consensusSet;
 				models[0].first._indices = consensusSetIndices;
 
 				if (models[0].first.invalid()
@@ -171,7 +162,6 @@ public:
 					return std::vector<MODEL>();
 				}
 			} catch (...) {
-				//std::cout << " crash" << std::endl;
 				return std::vector<MODEL>();
 			}
 
@@ -199,11 +189,8 @@ public:
 					modelsPtr[i].second);
 			for (size_t j = i + 1; j < modelsPtr.size(); j++) {
 
-				//std::cout << "Comparing model " << i << " with model " << j;
-
 				if (modelsPtr[j].first == NULL) {
 					// the model was looked at already
-					//std::cout << " 1st == null" << std::endl;
 					continue;
 				}
 
@@ -211,7 +198,6 @@ public:
 				bool res = models[i].first.same(models[j].first,
 						modelThreshold);
 				if (!res) {
-					//std::cout << " m1 != m2" << std::endl;
 					continue;
 				}
 
@@ -223,11 +209,9 @@ public:
 
 				// mark the model as processed
 				modelsPtr[j].first = NULL;
-				//std::cout << " merged" << std::endl;
 			}
 
 			if (bestCloseModel.first == NULL) {
-				//std::cout << " best == null" << std::endl;
 				continue;
 			}
 
@@ -243,7 +227,6 @@ public:
 
 			try {
 				bestCloseModel.first->refit(consensusSet);
-				//bestCloseModel.first->_data = consensusSet;
 				bestCloseModel.first->_indices = consensusSetIndices;
 
 				if (bestCloseModel.first->invalid()
@@ -252,23 +235,11 @@ public:
 					continue;
 				}
 			} catch (...) {
-				//std::cout << " crash" << std::endl;
 				continue;
 			}
 
-			//std::cout << "BestModel: " << consensusSet.size() << std::endl;
 			newModels.push_back(*bestCloseModel.first);
-			//std::cout << " saved" << std::endl;
 		}
-
-		//std::cout << "Nr of models found: " << models.size() << std::endl;
-		//std::cout << "filtered to       : " << newModels.size() << std::endl;
-
-		// sort models SEGFAULTS for some reason
-		/*if (newModels.size() > 0) { // it shouldn't be 0 at this point though
-		 std::sort(newModels.begin(), newModels.end());
-		 std::reverse(newModels.begin(), newModels.end());
-		 }*/
 
 		return newModels;
 	}
@@ -283,22 +254,9 @@ public:
 			return *(new MODEL());
 		}
 
-		//size_t inliers = 0;
 		size_t idx = 0;
-		//double quality = std::numeric_limits<double>::max();
 
 		for (size_t i = 0; i < models.size(); ++i) {
-			/*size_t curInliers = models[i].getNumberOfInliers();
-			 double curQuality = models[i].getQuality();
-
-			 if (curInliers > inliers) {
-			 inliers = curInliers;
-			 idx = i;
-			 quality = models[i].getQuality();
-			 } else if (curInliers == inliers && curQuality < quality) {
-			 idx = i;
-			 quality = curQuality;
-			 }*/
 
 			if (models[idx] < models[i]) {
 				idx = i;
@@ -366,7 +324,7 @@ public:
 	}
 
 	/**
-	 * @brief 'Bettter than' operator.
+	 * @brief 'Better than' operator.
 	 *
 	 * Used for sorting. Compares the number of inliers the models have.
 	 * In case of ties, compares quality.
@@ -473,11 +431,10 @@ protected:
 	std::vector<DATA> _data;
 	double _quality;
 
-	/* <hack>
+	/* 
 	 * For some calculations, it is neccesary to know which data points given to findModels()
 	 * function were actualy fitted in the model. This vector holds the indices of inliers.
 	 * Use at your own risk, if you know what you are doing.
-	 * </hack>
 	 */
 	std::vector<size_t> _indices;
 };

@@ -28,7 +28,6 @@
 using namespace std;
 using namespace boost;
 using namespace rw::math;
-//using namespace rw::geometry;
 using namespace rwlibs::algorithms;
  
  
@@ -43,9 +42,7 @@ double StablePose0DModel::fitError(const rw::math::Rotation3D<>& sample) const
 	double az = angle(rot * Vector3D<>::z(), sample * Vector3D<>::z());
 	
 	double error = sqrt(ax*ax + ay*ay + az*az);
-	
-	//cout << "fiterror: " << error << endl;
-	
+
 	return error;
 }
 
@@ -74,12 +71,9 @@ double StablePose0DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 		++i;
 		model = model.slerp(Quaternion<>(s), weight / i);
 	}
-	
-	//if (n > 0) model = 1.0 / n * model;
+
 	_rot = model.toRotation3D();
-	
-	//cout << "fitted: " << model << endl;
-	
+
 	// calculate fitting error
 	double error = 0.0;
 	for (std::vector<rw::math::Rotation3D<> >::iterator i = _data.begin(); i != _data.end(); ++i) {
@@ -89,9 +83,7 @@ double StablePose0DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 
 	error /= (n > 0 ? n : 1);
 	setQuality(error);
-	
-	//cout << "error= " << error << endl;
-	
+
 	return error;
 }
 
@@ -99,8 +91,6 @@ double StablePose0DModel::refit(const std::vector<rw::math::Rotation3D<> >& samp
 
 bool StablePose0DModel::same(const StablePose0DModel& model, double threshold) const
 {
-	//Rotation3D<> rot = _rot.toRotation3D();
-	
 	double ax = angle(_rot * Vector3D<>::x(), model.orientation() * Vector3D<>::x());
 	double ay = angle(_rot * Vector3D<>::y(), model.orientation() * Vector3D<>::y());
 	double az = angle(_rot * Vector3D<>::z(), model.orientation() * Vector3D<>::z());

@@ -57,40 +57,6 @@ bool StructuredLineModel::invalid() const
 
 
 
-/*double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval) const
-{
-	double error = 0.0;
-	
-	//cout << "interval= " << interval << endl;
-	
-	BOOST_FOREACH (const Vector3D<>& p, samples) {
-		// 1. find the closest point on line
-		Vector3D<> closestPoint = _line.closestPoint(p);
-		
-		//cout << "closestpoint= " << closestPoint << endl;
-		
-		// 2. find the closest 'grid spot' on the line
-		double cells = Math::round((closestPoint - _start).norm2() / interval);
-		//cout << "cells = " << cells << endl;
-		Vector3D<> closestSpot = _start + cells * interval * _line.dir();
-		
-		//cout << "closestspot= " << closestSpot << endl;
-		
-		// 3. calculate p2p distance of a sample to the closest grid spot
-		double distance = (p - closestSpot).norm2();
-		
-		//cout << "distance= " << distance << endl;
-		
-		error += distance * distance;
-	}
-	
-	cout << "interval= " << interval << " error= " << error << endl;
-	
-	return error;
-}*/
-
-
-
 double StructuredLineModel::testInterval(const std::vector<rw::math::Vector3D<> >& samples, double interval, rw::math::Vector3D<> start, double maxDist) const
 {
 	if (interval == 0.0) {
@@ -176,7 +142,6 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 		}
 	}
 	_start = start;
-	//cout << "Start: " << start << endl;
 	
 	// find point furthest away from the beginning
 	Vector3D<> end = samples[0];
@@ -189,7 +154,6 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 		}
 	}
 	double maxDist = (end - _start).norm2();
-	//cout << "maxDist: " << maxDist << endl;
 	
 	// 3. line spacing
 	typedef pair<double, double> IntervalQuality;
@@ -205,15 +169,12 @@ double StructuredLineModel::refit(const std::vector<rw::math::Vector3D<> >& samp
 	// find interval with best quality
 	IntervalQuality bestInterval = intervals[0];
 	BOOST_FOREACH (const IntervalQuality& iq, intervals) {
-		//cout << "int= " << iq.first << " q= " << iq.second << endl;
 		if (iq.second < bestInterval.second) {
-			//quality = iq.second;
 			bestInterval = iq;
 		}
 	}
 	
 	_interval = bestInterval.first;
-	//cout << "best interval: " << _interval << " q: " << bestInterval.second << endl;
 	
 	// calculate total fit error
 	double error = 0.0;
@@ -237,7 +198,6 @@ bool StructuredLineModel::same(const StructuredLineModel& model, double threshol
 	rw::math::Metric<rw::geometry::Line>::Ptr metric = rw::geometry::Line::makeMetric();
 	
 	double d = metric->distance(_line, model._line);
-	//std::cout << "distance= " << d << std::endl;
 	
 	return (d <= threshold);
 }
