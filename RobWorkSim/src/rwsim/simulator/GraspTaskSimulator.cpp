@@ -185,7 +185,7 @@ void GraspTaskSimulator::load(GraspTask::Ptr graspTasks) {
 	std::string tcpName = _gtask->getTCPID(); //_roottask->getPropertyMap().get<std::string>("TCP");
 	_tcp = _dwc->getWorkcell()->findFrame(tcpName);
 
-	Log::infoLog() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets
+	Log::debugLog() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets
 			<< std::endl;
 }
 

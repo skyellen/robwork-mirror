@@ -178,11 +178,11 @@ void ThreadSimulator::stepperLoop(){
             	_simulator->step(_dt);
 
             } catch (std::exception& e){
-                std::cout << "Error stepping" << std::endl;
-                std::cout << e.what() << std::endl;
+                Log::errorLog() << "Error stepping" << std::endl;
+                Log::errorLog() << e.what() << std::endl;
                 _inError = true;
             } catch (...){
-				std::cout << "Error stepping" << std::endl;
+				Log::errorLog() << "Error stepping" << std::endl;
             	_inError = true;
             }
 
