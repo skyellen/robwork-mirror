@@ -811,7 +811,7 @@ GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(
 
 rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state,
 		SimState &sstate) {
-	std::cout << "Compute Grasp quality!" << std::endl;
+
 	GraspedObject gobj = getObjectContacts(state, sstate);
 	std::vector < Contact3D > contacts = gobj.contacts;
 	RigidBody *object = gobj.object;
