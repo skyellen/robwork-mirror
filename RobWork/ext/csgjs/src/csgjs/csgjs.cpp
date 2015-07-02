@@ -20,10 +20,10 @@
 
 struct csgjs_vector
 {
-	float x, y, z;
+	double x, y, z;
 
 	csgjs_vector() : x(0.0f), y(0.0f), z(0.0f) {}
-	explicit csgjs_vector(float x, float y, float z) : x(x), y(y), z(z) {}
+	explicit csgjs_vector(double x, double y, double z) : x(x), y(y), z(z) {}
 };
 
 struct csgjs_vertex
@@ -53,7 +53,7 @@ csgjs_model csgjs_difference(const csgjs_model & a, const csgjs_model & b);
 
 // `CSG.Plane.EPSILON` is the tolerance used by `splitPolygon()` to decide if a
 // point is on the plane.
-static const float csgjs_EPSILON = 0.00001f;
+static const double csgjs_EPSILON = 0.00001f;
 
 struct csgjs_plane;
 struct csgjs_polygon;
@@ -63,7 +63,7 @@ struct csgjs_node;
 struct csgjs_plane
 {
 	csgjs_vector normal;
-	float w;
+	double w;
 
 	csgjs_plane();
 	csgjs_plane(const csgjs_vector & a, const csgjs_vector & b, const csgjs_vector & c);
@@ -118,12 +118,12 @@ struct csgjs_csgnode
 
 inline static csgjs_vector operator + (const csgjs_vector & a, const csgjs_vector & b) { return csgjs_vector(a.x + b.x, a.y + b.y, a.z + b.z); }
 inline static csgjs_vector operator - (const csgjs_vector & a, const csgjs_vector & b) { return csgjs_vector(a.x - b.x, a.y - b.y, a.z - b.z); }
-inline static csgjs_vector operator * (const csgjs_vector & a, float b) { return csgjs_vector(a.x * b, a.y * b, a.z * b); }
-inline static csgjs_vector operator / (const csgjs_vector & a, float b) { return a * (1.0f / b); }
-inline static float dot(const csgjs_vector & a, const csgjs_vector & b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
-inline static csgjs_vector lerp(const csgjs_vector & a, const csgjs_vector & b, float v) { return a + (b - a) * v; }
+inline static csgjs_vector operator * (const csgjs_vector & a, double b) { return csgjs_vector(a.x * b, a.y * b, a.z * b); }
+inline static csgjs_vector operator / (const csgjs_vector & a, double b) { return a * (1.0f / b); }
+inline static double dot(const csgjs_vector & a, const csgjs_vector & b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+inline static csgjs_vector lerp(const csgjs_vector & a, const csgjs_vector & b, double v) { return a + (b - a) * v; }
 inline static csgjs_vector negate(const csgjs_vector & a) { return a * -1.0f; }
-inline static float length(const csgjs_vector & a) { return sqrtf(dot(a, a)); }
+inline static double length(const csgjs_vector & a) { return sqrtf(dot(a, a)); }
 inline static csgjs_vector unit(const csgjs_vector & a) { return a / length(a); }
 inline static csgjs_vector cross(const csgjs_vector & a, const csgjs_vector & b) { return csgjs_vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 
@@ -140,7 +140,7 @@ inline static csgjs_vertex flip(csgjs_vertex v)
 // Create a new vertex between this vertex and `other` by linearly
 // interpolating all properties using a parameter of `t`. Subclasses should
 // override this to interpolate additional properties.
-inline static csgjs_vertex interpolate(const csgjs_vertex & a, const csgjs_vertex & b, float t)
+inline static csgjs_vertex interpolate(const csgjs_vertex & a, const csgjs_vertex & b, double t)
 {
 	csgjs_vertex ret;
 	ret.pos = lerp(a.pos, b.pos, t);
@@ -194,7 +194,7 @@ void csgjs_plane::splitPolygon(const csgjs_polygon & polygon, std::vector<csgjs_
 
 	for (size_t i = 0; i < polygon.vertices.size(); i++) 
 	{
-		float t = dot(this->normal, polygon.vertices[i].pos) - this->w;
+		double t = dot(this->normal, polygon.vertices[i].pos) - this->w;
 		int type = (t < -csgjs_EPSILON) ? BACK : ((t > csgjs_EPSILON) ? FRONT : COPLANAR);
 		polygonType |= type;
 		types.push_back(type);
@@ -233,7 +233,7 @@ void csgjs_plane::splitPolygon(const csgjs_polygon & polygon, std::vector<csgjs_
 				if (ti != FRONT) b.push_back(vi);
 				if ((ti | tj) == SPANNING) 
 				{
-					float t = (this->w - dot(this->normal, vi.pos)) / dot(this->normal, vj.pos - vi.pos);
+					double t = (this->w - dot(this->normal, vi.pos)) / dot(this->normal, vj.pos - vi.pos);
 					csgjs_vertex v = interpolate(vi, vj, t);
 					f.push_back(v);
 					b.push_back(v);
