@@ -35,7 +35,7 @@ using namespace rwlibs::csg;
 CSGModel::Ptr CSGModelFactory::makeBox(float x, float y, float z)
 {
 	Box box(x, y, z);
-	
+
 	return ownedPtr(new CSGModel(*(box.createMesh(0))));
 }
 
@@ -53,12 +53,12 @@ CSGModel::Ptr CSGModelFactory:: makeSphere(float r)
 	return ownedPtr(new CSGModel(*(sph.createMesh(3))));
 }
 
-CSGModel::Ptr CSGModelFactory::makePlane(Vector3D<> point, Vector3D<> normal)
+CSGModel::Ptr CSGModelFactory::makePlane(const Vector3D<>& point, const Vector3D<>& normal)
 {
 	const float planeSize = 100.0;
 	
-	normal = normalize(normal);
-	Transform3D<> t = Transform3D<>::makeLookAt(point, point+normal, Vector3D<>::y());
+	Vector3D<> n = normalize(normal);
+	Transform3D<> t = Transform3D<>::makeLookAt(point, point+n, Vector3D<>::y()); 
 	
 	CSGModel::Ptr csgmodel = makeBox(planeSize, planeSize, planeSize);
 	
@@ -71,7 +71,9 @@ CSGModel::Ptr CSGModelFactory::makePlane(Vector3D<> point, Vector3D<> normal)
 CSGModel::Ptr CSGModelFactory::makeWedge(float angle)
 {
 	CSGModel::Ptr wedge = makePlane(Vector3D<>(), Vector3D<>(-sin(angle/2), -cos(angle/2), 0));
-	(*wedge) *= (*makePlane(Vector3D<>(), Vector3D<>(-sin(angle/2), cos(angle/2), 0)));
+	CSGModel::Ptr plane = makePlane(Vector3D<>(), Vector3D<>(-sin(angle/2), cos(angle/2), 0));
+	
+	wedge->intersect(plane);
 	
 	return wedge;
 }

@@ -61,7 +61,7 @@ public:
 	 * Creates fake half-space, approximated by a large cube.
 	 * @param point, normal point and normal
 	 */
-	static CSGModel::Ptr makePlane(rw::math::Vector3D<> point=rw::math::Vector3D<>(), rw::math::Vector3D<> normal=rw::math::Vector3D<>::z());
+	static CSGModel::Ptr makePlane(const rw::math::Vector3D<>& point=rw::math::Vector3D<>(), const rw::math::Vector3D<>& normal=rw::math::Vector3D<>::z());
 	
 	/**
 	 * @brief Constructs wedge. \n

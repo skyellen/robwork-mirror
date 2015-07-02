@@ -70,15 +70,15 @@ Ptr<csgjs_model> CSGConvert::TriMesh2csgjs_model(const geometry::TriMesh& mesh)
 
 
 
-TriMesh::Ptr CSGConvert::csgjs_model2TriMesh(const csgjs_model& model)
+TriMesh::Ptr CSGConvert::csgjs_model2TriMesh(rw::common::Ptr<csgjs_model> model)
 {
 	PlainTriMeshD* mesh = new PlainTriMeshD;
 	
 	// loop over all triangles
-	for (unsigned i = 0; i < (model.indices.size() / 3); ++i) {
-		csgjs_vector v1 = model.vertices[model.indices[3*i+0]].pos;
-		csgjs_vector v2 = model.vertices[model.indices[3*i+1]].pos;
-		csgjs_vector v3 = model.vertices[model.indices[3*i+2]].pos;
+	for (unsigned i = 0; i < (model->indices.size() / 3); ++i) {
+		csgjs_vector v1 = model->vertices[model->indices[3*i+0]].pos;
+		csgjs_vector v2 = model->vertices[model->indices[3*i+1]].pos;
+		csgjs_vector v3 = model->vertices[model->indices[3*i+2]].pos;
 			
 		Vector3D<double> p1(v1.x, v1.y, v1.z);
 		Vector3D<double> p2(v2.x, v2.y, v2.z);

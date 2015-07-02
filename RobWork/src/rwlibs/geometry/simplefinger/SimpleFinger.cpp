@@ -54,21 +54,22 @@ SimpleFinger::SimpleFinger(const rw::math::Q& initQ) {
 
 TriMesh::Ptr SimpleFinger::createMesh(int resolution) const {
 	/* make base geometry */
-	CSGModel base = (*CSGModelFactory::makeBox(_length, _width, _depth)).translate(_length/2, 0, _depth/2);
+	CSGModel::Ptr base = CSGModelFactory::makeBox(_length, _width, _depth);
+	base->translate(_length/2, 0, _depth/2);
 	
 	/* make chamfering */
 	Vector3D<> point(_length - _chflength, 0.0, _depth);
 	Vector3D<> normal = Vector3D<>(_chfdepth, 0.0, _chflength);
-	base -= *CSGModelFactory::makePlane(point, -normal);
+	base->subtract(CSGModelFactory::makePlane(point, -normal));
 	
 	/* make cutout */
-	CSGModel cutout = *CSGModelFactory::makeWedge(_cutangle*Deg2Rad);
-	base -= cutout
-		.rotate(-90*Deg2Rad, 90*Deg2Rad, 0)
-		.rotate(_cuttilt*Deg2Rad, 0, 0)
-		.translate(_cutpos, 0, _cutdepth);
+	CSGModel::Ptr cutout = CSGModelFactory::makeWedge(_cutangle*Deg2Rad);
+	cutout->rotate(-90*Deg2Rad, 90*Deg2Rad, 0);
+	cutout->rotate(_cuttilt*Deg2Rad, 0, 0);
+	cutout->translate(_cutpos, 0, _cutdepth);
+	base->subtract(cutout);
 	
-	TriMesh::Ptr mesh = base.getTriMesh();
+	TriMesh::Ptr mesh = base->getTriMesh();
 
 	return mesh;
 }

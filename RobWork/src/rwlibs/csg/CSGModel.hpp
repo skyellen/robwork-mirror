@@ -55,71 +55,37 @@ public:
 	CSGModel(const rw::geometry::TriMesh& trimesh);
 	
 	/* TRANSFORMATIONS */	
-	/** @brief Translates the csgmodel. */
-	CSGModel& translate(float x, float y, float z);
+	/** @brief Translates the model. */
+	void translate(float x, float y, float z);
 	
-	/** @brief Returns translated copy of the model. */
-	CSGModel translated(float x, float y, float z) const;
+	/** @brief Rotates the model. */
+	void rotate(float r, float p, float y);
 	
-	/** @brief Rotates the csgmodel. */
-	CSGModel& rotate(float r, float p, float y);
-	
-	/** @brief Returns rotated copy of the model. */
-	CSGModel rotated(float r, float p, float y) const;
-	
-	/** @brief Applies RobWork transformation. */
-	CSGModel& transform(const rw::math::Transform3D<>& T);
-	
-	/** @brief Returns copy of the model after transformation. */
-	CSGModel transformed(const rw::math::Transform3D<>& T) const;
+	/** @brief Applies RobWork transformation to the model. */
+	void transform(const rw::math::Transform3D<>& T);
 	
 	/* OPERATIONS */
-	//! Performs addition of models.
-	CSGModel& operator+=(const CSGModel& csgmodel);
-	
-	//! Performs addition of models.
-	CSGModel operator+(const CSGModel& csgmodel);
-	
-	//! Performs subtraction of models.
-	CSGModel& operator-=(const CSGModel& csgmodel);
-	
-	//! Performs subtraction of models.
-	CSGModel operator-(const CSGModel& csgmodel);
+	/**
+	 * @brief Adds a volume.
+	 */
+	void add(CSGModel::Ptr model); 
 	
 	/**
-	 * @brief Performs intersection of models.
-	 * @return Returns a model consisting of volume common to both models.
+	 * @brief Subtracts a volume.
 	 */
-	CSGModel& operator*=(const CSGModel& csgmodel);
+	void subtract(CSGModel::Ptr model);
 	
 	/**
-	 * @brief Performs intersection of models.
-	 * @return Returns a model consisting of volume common to both models.
+	 * @brief Intersects volumes.
 	 */
-	CSGModel operator*(const CSGModel& csgmodel);
+	void intersect(CSGModel::Ptr model);
 	
-	/**
-	 * @brief Performs XOR operation on models.
-	 * @return Returns a model consisting of volume which is not shared by both models.
-	 */
-	CSGModel& operator/=(const CSGModel& csgmodel);
-	
-	/**
-	 * @brief Performs XOR operation on models.
-	 * @return Returns a model consisting of volume which is not shared by both models.
-	 */
-	CSGModel operator/(const CSGModel& csgmodel);
-	
+	/* UTILITIES */
 	/** @brief Returns RobWork geometry representation. */
 	rw::geometry::TriMesh::Ptr getTriMesh();
-	
-	/** @brief Print the CSGModel */
-	void print() const;
-	
+
 	/** @brief Saves the CSGModel in Stl format. */
 	void saveToStl(const std::string& filename);
-	
-	friend std::ostream& operator<<(std::ostream& stream, const CSGModel& csgmodel);
 	
 private:
 	/** @brief Converts internal csgjs geometry representation to TriMesh. */
@@ -127,11 +93,9 @@ private:
 	
 	bool _needsConversion; // is it neccessary to convert to TriMesh?
 	
-	csgjs_model _model; // csgjs library geometry representation
+	rw::common::Ptr<csgjs_model> _model; // csgjs library geometry representation
 	rw::geometry::TriMesh::Ptr _mesh; // RobWork geometry representation
 };
-
-std::ostream& operator<<(std::ostream& stream, const CSGModel& csgmodel);
 
 } /* csg */
 } /* rwlibs */
