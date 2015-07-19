@@ -176,69 +176,80 @@ public:
 			modelsPtr[i].second = models[i].second;
 		}
 
+		bool merging = false;
+		do {
+			merging = false;
+			
+			for (size_t i = 0; i < modelsPtr.size() - 1; i++) {
+
+				if (modelsPtr[i].first == NULL) {
+					continue;
+				}
+
+				// compare with all following models...
+				std::pair<MODEL*, int> bestCloseModel(modelsPtr[i].first, modelsPtr[i].second);
+				for (size_t j = i + 1; j < modelsPtr.size(); j++) {
+
+					if (modelsPtr[j].first == NULL) {
+						// the model was looked at already
+						continue;
+					}
+
+					// (disregard, if those models are different)
+					bool res = models[i].first.same(models[j].first, modelThreshold);
+					if (!res) {
+						continue;
+					}
+
+					// ...to see which model has more inliers
+					// merge those models
+					if (bestCloseModel.second < modelsPtr[j].second) {
+						bestCloseModel = modelsPtr[j];
+					}
+
+					// mark the model as processed
+					modelsPtr[j].first = NULL;
+					
+					merging = true;
+				}
+
+				if (bestCloseModel.first == NULL) {
+					continue;
+				}
+
+				// re-fit data to the best close model found
+				std::vector<DATA> consensusSet;
+				std::vector<size_t> consensusSetIndices;
+				for (size_t k = 0; k < data.size(); ++k) {
+					
+					if (bestCloseModel.first->belongsTo(data[k], dataThreshold)) {
+						consensusSet.push_back(data[k]);
+						consensusSetIndices.push_back(k);
+					}
+				}
+
+				try {
+					bestCloseModel.first->refit(consensusSet);
+					bestCloseModel.first->_indices = consensusSetIndices;
+
+					if (bestCloseModel.first->invalid()
+						|| bestCloseModel.first->getNumberOfInliers() < dataRequired
+					) {
+						continue;
+					}
+				} catch (...) {
+					continue;
+				}
+
+				
+			}
+		} while (merging);
+		
 		std::vector<MODEL> newModels;
-		// for all found models...
 		for (size_t i = 0; i < modelsPtr.size() - 1; i++) {
-
-			if (modelsPtr[i].first == NULL) {
-				continue;
+			if (modelsPtr[i].first != NULL) {
+				newModels.push_back(*modelsPtr[i].first);
 			}
-
-			// compare with all following models...
-			std::pair<MODEL*, int> bestCloseModel(modelsPtr[i].first,
-					modelsPtr[i].second);
-			for (size_t j = i + 1; j < modelsPtr.size(); j++) {
-
-				if (modelsPtr[j].first == NULL) {
-					// the model was looked at already
-					continue;
-				}
-
-				// (disregard, if those models are different)
-				bool res = models[i].first.same(models[j].first,
-						modelThreshold);
-				if (!res) {
-					continue;
-				}
-
-				// ...to see which model has more inliers
-				// merge those models
-				if (bestCloseModel.second < modelsPtr[j].second) {
-					bestCloseModel = modelsPtr[j];
-				}
-
-				// mark the model as processed
-				modelsPtr[j].first = NULL;
-			}
-
-			if (bestCloseModel.first == NULL) {
-				continue;
-			}
-
-			// re-fit data to the best close model found
-			std::vector<DATA> consensusSet;
-			std::vector<size_t> consensusSetIndices;
-			for (size_t k = 0; k < data.size(); ++k) {
-				if (bestCloseModel.first->belongsTo(data[k], dataThreshold)) {
-					consensusSet.push_back(data[k]);
-					consensusSetIndices.push_back(k);
-				}
-			}
-
-			try {
-				bestCloseModel.first->refit(consensusSet);
-				bestCloseModel.first->_indices = consensusSetIndices;
-
-				if (bestCloseModel.first->invalid()
-						|| bestCloseModel.first->getNumberOfInliers()
-								< dataRequired) {
-					continue;
-				}
-			} catch (...) {
-				continue;
-			}
-
-			newModels.push_back(*bestCloseModel.first);
 		}
 
 		return newModels;
