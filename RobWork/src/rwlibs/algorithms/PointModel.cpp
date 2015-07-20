@@ -61,7 +61,7 @@ double PointModel::refit(const std::vector<rw::math::Vector3D<> >& samples)
 		error += sample_error * sample_error;
 	}
 	
-	error /= (n > 0 ? n : 1);
+	error = sqrt(error) / (n > 0 ? n : 1);
 	setQuality(error);
 	
 	return error;
