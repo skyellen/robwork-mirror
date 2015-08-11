@@ -20,20 +20,15 @@
 
 #include "SceneGraph.hpp"
 
-#include <vector>
 #include <map>
-#include <boost/thread/mutex.hpp>
 
 #include <rw/kinematics/FKTable.hpp>
-#include <rw/sensor/Image.hpp>
-#include <rw/geometry/PointCloud.hpp>
 #include <rw/models/DeformableObject.hpp>
-#include <rw/models/RigidObject.hpp>
 
-#include "SceneGraph.hpp"
-
-namespace rw { namespace models { class WorkCell;}}
+namespace rw { namespace geometry { class PointCloud;}}
 namespace rw { namespace kinematics { class Frame; class State; }}
+namespace rw { namespace models { class WorkCell;}}
+namespace rw { namespace sensor { class Image;}}
 
 namespace rw {
 namespace graphics {
@@ -111,77 +106,77 @@ namespace graphics {
          * @param f [in] the frame.
          * @param visible [in] true if frame should be visible, false otherwise
          */
-        void setVisible(bool visible, rw::kinematics::Frame* f);
+        void setVisible(bool visible, const rw::kinematics::Frame* f);
 
         /**
          * @brief test if a frame is visible or not
          * @param f [in] the frame
          * @return true if frame is visible, false if not
          */
-        bool isVisible(rw::kinematics::Frame* f);
+        bool isVisible(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief sets a frame to be highlighted or not.
          * @param f [in] the frame.
          * @param highlighted [in] true if frame should be highlighted, false otherwise
          */
-        void setHighlighted( bool highlighted, rw::kinematics::Frame* f);
+        void setHighlighted(bool highlighted, const rw::kinematics::Frame* f);
 
         /**
          * @brief test if a frame is highlighted or not
          * @param f [in] the frame
          * @return true if frame is highlighted, false if not
          */
-        bool isHighlighted( rw::kinematics::Frame* f);
+        bool isHighlighted(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief enables the drawing of the frame-axis of a frame.
          * @param visible [in] true if frame axis should be drawn, false otherwise
          * @param f [in] the frame
          */
-        void setFrameAxisVisible( bool visible, rw::kinematics::Frame* f);
+        void setFrameAxisVisible(bool visible, rw::kinematics::Frame* f);
 
         /**
          * @brief test if frame-axis is visible
          * @param f [in] the frame
          * @return true if frame axis of frame is set to be drawn, false otherwise
          */
-        bool isFrameAxisVisible( rw::kinematics::Frame* f);
+        bool isFrameAxisVisible(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief set how drawables of a specific frame should be rendered
          * @param type [in] the drawtype
          * @param f [in] the Frame
          */
-        void setDrawType( DrawableNode::DrawType type, rw::kinematics::Frame* f);
+        void setDrawType(DrawableNode::DrawType type, const rw::kinematics::Frame* f);
 
         /**
          * @brief get how drawables of a specific frame is to be rendered
          * @param f [in] the Frame
          * @return the drawtype
          */
-        DrawableNode::DrawType getDrawType( rw::kinematics::Frame* f );
+        DrawableNode::DrawType getDrawType(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief set the draw mask of the drawables of a specific frame
          * @param mask [in] draw mask
          * @param f [in] the frame
          */
-        void setDrawMask( unsigned int mask, rw::kinematics::Frame* f);
+        void setDrawMask(unsigned int mask, const rw::kinematics::Frame* f);
 
         /**
          * @brief get the draw mask of the drawables of a specific frame
          * @param f [in] the frame
          * @return the drawmask
          */
-        unsigned int getDrawMask( rw::kinematics::Frame* f );
+        unsigned int getDrawMask(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief set drawables of a frame to be translusent
          * @param alpha [in] range [0-1] where 1 is fully opaque and 0 is folly transparent
          * @param f [in] frame
          */
-        void setTransparency(double alpha, rw::kinematics::Frame* f);
+        void setTransparency(double alpha, const rw::kinematics::Frame* f);
 
         //******************************** interface for adding drawables  ***/
         /**
@@ -192,7 +187,7 @@ namespace graphics {
          * @param dmask [in] the drawable mask
          * @return the drawable node geometry
          */
-        DrawableGeometryNode::Ptr addLines( const std::string& name, const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+        DrawableGeometryNode::Ptr addLines( const std::string& name, const std::vector<rw::geometry::Line>& lines, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
 
         /**
          * @brief create and add a drawable geometry node of any type of geometry to the scene
@@ -283,7 +278,7 @@ namespace graphics {
          * @param f [in] the frame
          * @return a list of drawables
          */
-        std::vector<DrawableNode::Ptr> getDrawables(rw::kinematics::Frame* f);
+        std::vector<DrawableNode::Ptr> getDrawables(const rw::kinematics::Frame* f) const;
 
         /**
          * @brief get all drawables of a frame and all frames that kinematicly is connected to
@@ -306,7 +301,7 @@ namespace graphics {
          * @param name [in] the name of the drawable
          * @return a drawable with name \b name or NULL if no such drawable exist in the scene
          */
-        DrawableNode::Ptr findDrawable(const std::string& name, rw::kinematics::Frame* frame);
+        DrawableNode::Ptr findDrawable(const std::string& name, const rw::kinematics::Frame* frame);
 
         /**
          * @brief find all drawables by name \b name.
@@ -320,7 +315,7 @@ namespace graphics {
          * @param f [in] the frame
          * @return true if successfull
          */
-        bool removeDrawables(rw::kinematics::Frame* f);
+        bool removeDrawables(const rw::kinematics::Frame* f);
 
         /**
          * @brief remove all drawables with name \n name
@@ -342,7 +337,7 @@ namespace graphics {
          * @param f [in] the frame
          * @return true if successfull
          */
-        bool removeDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* f);
+        bool removeDrawable(DrawableNode::Ptr drawable, const rw::kinematics::Frame* f);
 
         /**
          * @brief remove first drawable by name \b name
@@ -357,18 +352,16 @@ namespace graphics {
          * @param f [in] the frame
          * @return true if successfull
          */
-        bool removeDrawable(const std::string& name, rw::kinematics::Frame* f);
+        bool removeDrawable(const std::string& name, const rw::kinematics::Frame* f);
 
         /**
          * @brief get the frame that a specific drawable \b d is associated to
          * @param d [in] the drawable
          * @return the first frame that the drawable is associated to, or NULL if there are no associations
          */
-        rw::kinematics::Frame* getFrame(DrawableNode::Ptr d);
+        rw::kinematics::Frame* getFrame(DrawableNode::Ptr d) const;
 
-        rw::graphics::GroupNode::Ptr getNode(rw::kinematics::Frame* frame){
-            return _frameNodeMap[frame];
-        }
+        rw::graphics::GroupNode::Ptr getNode(const rw::kinematics::Frame* frame) const;
 
     private:
         /**
@@ -382,7 +375,7 @@ namespace graphics {
         rw::common::Ptr<rw::models::WorkCell> _wc;
         rw::kinematics::FKTable _fk;
 
-        typedef std::map<rw::kinematics::Frame*, GroupNode::Ptr> FrameNodeMap;
+        typedef std::map<const rw::kinematics::Frame*, GroupNode::Ptr> FrameNodeMap;
         typedef std::map<GroupNode::Ptr, rw::kinematics::Frame*> NodeFrameMap;
 
         //! the mapping from frame to group nodes 1:1
@@ -390,23 +383,13 @@ namespace graphics {
         //! the mapping from group nodes to frames 1:1
         NodeFrameMap _nodeFrameMap;
 
-        /**
-         * @brief struct for keeping track of the visual state of each frame
-         */
-        struct FrameVisualState {
-            FrameVisualState():visible(true),highlighted(false),alpha(1.0),frameAxisVisible(false),dtype(DrawableNode::SOLID){}
-            bool visible;
-            bool highlighted;
-            double alpha;
-            bool frameAxisVisible;
-            DrawableNode::DrawType dtype;
-            unsigned int dmask;
-        };
+        //! @brief Struct for keeping track of the visual state of each frame between reloads of workcell
+        struct FrameVisualState;
 
         //! mapping from frame to visualization state, 1:1
-        std::map<rw::kinematics::Frame*, FrameVisualState> _frameStateMap;
+        std::map<const rw::kinematics::Frame*, FrameVisualState> _frameStateMap;
         //! mapping from frame to all its drawables, 1:many
-        std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> > _frameDrawableMap;
+        std::map<const rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> > _frameDrawableMap;
 
         std::map< rw::models::DeformableObject::Ptr, std::vector<Model3D::Ptr>  > _deformableObjectsMap;
 

@@ -283,6 +283,11 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr wc){
     if(_wc==NULL){
         RW_THROW("Workcell is null!");
     }
+    BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
+        _wcscene->setHighlighted(false, pair.first);
+        _wcscene->setHighlighted(false, pair.second);
+    }
+    _qryResult.collidingFrames.clear();
 	resetCameraViewMenu();
 
 	_wcscene->setWorkCell( _wc );
@@ -599,6 +604,7 @@ void RWStudioView3D::clear(){
     _sensorCameraViews.clear();
     _wc = NULL;
     _wcscene->setWorkCell(_wc);
+    _qryResult.collidingFrames.clear();
     _view->setWorldNode( _wcscene->getWorldNode() );
 	resetCameraViewMenu();
 }
