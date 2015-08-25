@@ -175,6 +175,7 @@ namespace rw { namespace math {
             return S;
         }
 
+
         /**
          * @brief clamp val to either min or max
          *
@@ -525,7 +526,7 @@ namespace rw { namespace math {
             assert(a.size() == b.size());
 
             T result(a.size());
-            for (size_t i = 1; i<a.size(); i++)
+            for (size_t i = 0; i<a.size(); i++)
                 result[i] = std::min(a[i], b[i]);
             return result;
         }
@@ -543,7 +544,7 @@ namespace rw { namespace math {
             assert(a.size() == b.size());
 
             T result(a.size());
-            for (size_t i = 1; i<a.size(); i++)
+            for (size_t i = 0; i<a.size(); i++)
                 result(i) = std::max(a[i], b[i]);
             return result;
         }
@@ -609,7 +610,7 @@ namespace rw { namespace math {
         static Vector3D<T> min(const Vector3D<T>& a, const Vector3D<T>& b)
         {
             Vector3D<T> result;
-            for (size_t i = 1; i<3; i++)
+            for (size_t i = 0; i<3; i++)
                 result(i) = std::min(a[i], b[i]);
             return result;
         }
@@ -625,7 +626,7 @@ namespace rw { namespace math {
         static Vector3D<T> max(const Vector3D<T>& a, const Vector3D<T>& b)
         {
             Vector3D<T> result;
-            for (size_t i = 1; i<3; i++)
+            for (size_t i = 0; i<3; i++)
                 result(i) = std::max(a[i], b[i]);
             return result;
         }
@@ -747,6 +748,7 @@ namespace rw { namespace math {
 		 */
 		static bool isNaN(double d);
 
+		static double NaN();
     };
 
     /*@}*/
