@@ -9,7 +9,8 @@ Robotiq3::Robotiq3():
             rw::math::Q(4,0,0,0,0),
             rw::math::Q(4,0,0,0,0),
             rw::math::Q(4,0xFF,0xFF,0xFF,0xFF),
-            rw::math::Q(4,0xFF,0xFF,0xFF,0xFF)),
+            rw::math::Q(4,0xFF,0xFF,0xFF,0xFF),
+            4),
     _statusDataValid(false)
 {
 }

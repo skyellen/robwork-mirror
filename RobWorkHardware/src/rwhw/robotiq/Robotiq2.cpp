@@ -9,7 +9,8 @@ Robotiq2::Robotiq2():
             rw::math::Q(1,0.0),
             rw::math::Q(1,0.0),
             rw::math::Q(1,255.0),
-            rw::math::Q(1,255.0)),
+            rw::math::Q(1,255.0),
+            1),
     _statusDataValid(false)
 {
 }

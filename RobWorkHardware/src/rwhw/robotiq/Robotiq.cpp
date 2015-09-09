@@ -22,7 +22,8 @@ Robotiq::Robotiq(rw::math::Q currentQ,
                  rw::math::Q currentCurrent,
                  rw::math::Q target,
                  rw::math::Q speed,
-                 rw::math::Q force) :
+                 rw::math::Q force,
+                 unsigned int numberOfJoints):
         _stop(true),
         _haveReceivedSize(false),
         _socket(0),
@@ -32,7 +33,13 @@ Robotiq::Robotiq(rw::math::Q currentQ,
         _currentCurrent(currentCurrent),
         _target(target),
         _speed(speed),
-        _force(force) {
+        _force(force),
+        _numberOfJoints(numberOfJoints){
+    assert(numberOfJoints == _currentQ.size());
+    assert(numberOfJoints == _currentCurrent.size());
+    assert(numberOfJoints == _target.size());
+    assert(numberOfJoints == _speed.size());
+    assert(numberOfJoints == _force.size());
 }
 
 Robotiq::~Robotiq() {
@@ -314,6 +321,10 @@ double Robotiq::getCurrentInAmpereFromTicks(int ticks) const {
     // ticks are 0..255 (as coming back from hand)
     // return in ampere
     return 0.1 * ticks / 1000.0;
+}
+
+unsigned int Robotiq::getNumberOfJoints() const {
+    return _numberOfJoints;
 }
 
 void Robotiq::setReg(boost::uint8_t& reg, const boost::uint8_t& val)  const{

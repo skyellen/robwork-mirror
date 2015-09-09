@@ -189,6 +189,11 @@ public:
       */
     double getCurrentInAmpereFromTicks(int ticks) const;
 
+    /**
+      * @brief Returns the number of joints the device has. Zero indicates a problem.
+      */
+    unsigned int getNumberOfJoints() const;
+
 private:
     rw::common::Ptr<boost::thread> _thread;
     mutable boost::mutex _mutex;
@@ -218,7 +223,7 @@ private:
     std::queue<ModbusPackage> _packagesRecieved;
 
 protected:
-    Robotiq(rw::math::Q currentQ, rw::math::Q currentCurrent, rw::math::Q target, rw::math::Q speed, rw::math::Q force);
+    Robotiq(rw::math::Q currentQ, rw::math::Q currentCurrent, rw::math::Q target, rw::math::Q speed, rw::math::Q force, unsigned int numberOfJoints);
 
     ModbusPackage send(ModbusPackage package);
 
@@ -244,6 +249,8 @@ protected:
 
     static const boost::uint16_t FC04 = 0x04;
     static const boost::uint16_t FC16 = 0x10;
+
+    unsigned int _numberOfJoints;
 
 };
 
