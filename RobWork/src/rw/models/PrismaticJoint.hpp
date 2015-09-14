@@ -196,7 +196,6 @@ namespace rw { namespace models {
                 const double b12 = _transform.R()(1, 2);
                 const double b22 = _transform.R()(2, 2);
                 const rw::math::Vector3D<> p(bx + b02 * q, by + b12 * q, bz + b22 * q);
-
                 rw::math::Rotation3D<>::multiply(parent.R(), p, result.P());
                 result.P() += parent.P();
             }
@@ -231,7 +230,6 @@ namespace rw { namespace models {
 
             virtual ~PrismaticJointZeroOffsetImpl(){};
 
-        private:
             void multiplyTransform(const rw::math::Transform3D<>& parent,
                                    double q,
                                    rw::math::Transform3D<>& result) const
@@ -268,12 +266,12 @@ namespace rw { namespace models {
 
             virtual ~PrismaticJointZeroRotationImpl(){};
 
-        private:
             void multiplyTransform(const rw::math::Transform3D<>& parent,
                                    double q,
                                    rw::math::Transform3D<>& result) const
             {
-                result.P() = parent.P() + rw::math::Vector3D<>(0, 0, q) + _translation;
+				rw::math::Rotation3D<>::multiply(parent.R(), rw::math::Vector3D<>(0, 0, q) + _translation, result.P());
+                result.P() += parent.P();
             }
 
             rw::math::Transform3D<> getTransform(double q) {

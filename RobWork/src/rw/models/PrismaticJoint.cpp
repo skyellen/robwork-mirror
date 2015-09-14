@@ -44,7 +44,6 @@ PrismaticJoint::PrismaticJoint(const std::string& name, const Transform3D<>& tra
         _impl = new PrismaticJointZeroOffsetImpl(transform.R());
     else
         _impl = new PrismaticJointImplBasic(transform);
-
 }
 
 PrismaticJoint::~PrismaticJoint(){
