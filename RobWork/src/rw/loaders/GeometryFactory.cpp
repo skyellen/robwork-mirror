@@ -92,17 +92,14 @@ namespace
 
 	Geometry::Ptr constructTube(std::stringstream& sstr)
 	{
-		float radius, height;
+		float radius, thickness, height;
 		int divisions;
-		if (sstr >> radius >> height >> divisions) {
+		if (sstr >> radius >> thickness >> height >> divisions) {
 			if (divisions < 0)
-				RW_THROW(
-					"Negative discretization level "
-					<< divisions);
-
-			return ownedPtr(new Geometry(ownedPtr(new Tube(radius, height))));
+				RW_THROW("Negative discretization level " << divisions);
+			return ownedPtr(new Geometry(ownedPtr(new Tube(radius, thickness, height))));
 		} else {
-			RW_THROW("Could not read (radius, height, divisions).");
+			RW_THROW("Could not read (radius, thickness, height, divisions).");
 			return NULL;
 		}
 	}

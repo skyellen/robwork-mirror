@@ -86,10 +86,11 @@ BOOST_AUTO_TEST_CASE( EstimateVolumeTest ){
 	{
 		// Tube test
 		const double radius = 0.02;
+		const double thickness = 0.005;
 		const double height = 0.1;
-		const Tube tube(radius, height);
+		const Tube tube(radius, thickness, height);
 		const double volEst = GeometryUtil::estimateVolume(*tube.createMesh(26));
-		BOOST_CHECK_SMALL(volEst,1e-6);
+		BOOST_CHECK_CLOSE(volEst,Pi*height*((radius+thickness)*(radius+thickness)-radius*radius),1);
 	}
 	{
 		// STL table test
@@ -205,8 +206,9 @@ BOOST_AUTO_TEST_CASE( EstimateCOGTest ){
 	{
 		// Tube test
 		const double radius = 0.02;
+		const double thickness = 0.005;
 		const double height = 0.1;
-		const Tube tube(radius, height);
+		const Tube tube(radius, thickness, height);
 		const Vector3D<> cogEst = GeometryUtil::estimateCOG(*tube.createMesh(26));
 		BOOST_CHECK_SMALL(dot(cogEst,Vector3D<>::x()),std::numeric_limits<double>::epsilon());
 		BOOST_CHECK_SMALL(dot(cogEst,Vector3D<>::y()),std::numeric_limits<double>::epsilon());
@@ -355,14 +357,15 @@ BOOST_AUTO_TEST_CASE( EstimateInertiaTest ){
 	{
 		// Tube test
 		const double radius = 0.02;
+		const double thickness = 0.005;
 		const double height = 0.1;
-		const Tube tube(radius, height);
+		const Tube tube(radius, thickness, height);
 		const std::vector<Geometry::Ptr> geoms(1,ownedPtr(new Geometry(tube.createMesh(26))));
 		const InertiaMatrix<> inertiaEst = GeometryUtil::estimateInertia(mass, geoms, ref);
-		const double Ix = mass*(6.*radius*radius+height*height)/12.;
-		const double Iz = mass*radius*radius;
-		BOOST_CHECK_CLOSE(dot(inertiaEst*Vector3D<>::x(),Vector3D<>::x()),Ix,0.2);
-		BOOST_CHECK_CLOSE(dot(inertiaEst*Vector3D<>::y(),Vector3D<>::y()),Ix,0.2);
+		const double Ix = mass*(3*radius*radius+3*(radius+thickness)*(radius+thickness)+height*height)/12.;
+		const double Iz = mass*(radius*radius+(radius+thickness)*(radius+thickness))/2.;
+		BOOST_CHECK_CLOSE(dot(inertiaEst*Vector3D<>::x(),Vector3D<>::x()),Ix,0.25);
+		BOOST_CHECK_CLOSE(dot(inertiaEst*Vector3D<>::y(),Vector3D<>::y()),Ix,0.25);
 		BOOST_CHECK_CLOSE(dot(inertiaEst*Vector3D<>::z(),Vector3D<>::z()),Iz,1);
 	}
 	{

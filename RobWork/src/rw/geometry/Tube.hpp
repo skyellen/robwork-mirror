@@ -36,10 +36,11 @@ public:
 	 * The tube is aligned with the height in the z-direction such that tube extends height/2
 	 * above and below the xy-plane.
 	 *
-	 * @param radius [in] radius of the tube.
+	 * @param radius [in] inner radius of the tube.
+	 * @param thickness [in] thickness of the tube.
 	 * @param height [in] height of the cylinder.
 	 */
-	Tube(float radius, float height);
+	Tube(float radius, float thickness, float height);
 
 	/**
 	 * @brief Constructs tube primitive based on vector with parameters
@@ -52,10 +53,16 @@ public:
 	virtual ~Tube();
 
 	/**
-	 * @brief Get the radius of the tube.
+	 * @brief Get the inner radius of the tube.
 	 * @return the radius
 	 */
-	float getRadius() const;
+	float getInnerRadius() const;
+
+	/**
+	 * @brief Get the thickness of the tube.
+	 * @return the thickness.
+	 */
+	float getThickness() const;
 
 	/**
 	 * @brief Get the height of the tube.
@@ -82,6 +89,7 @@ protected:
 
 private:
 	float _radius;
+	float _thickness;
 	float _height;
 };
 //! @}

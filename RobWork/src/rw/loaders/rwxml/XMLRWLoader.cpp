@@ -248,7 +248,8 @@ Frame* addModelToFrame(DummyModel& model, Frame *parent, StateStructure *tree, D
 			val << "#Cylinder " << model._geo[i]._radius << " " << model._geo[i]._z << " " << 20;
 			break;
 		case TubeType:
-			val << "#Tube " << model._geo[i]._radius << " " << model._geo[i]._z << " " << 20;
+			// #Tube radius thickness height divisions
+			val << "#Tube " << model._geo[i]._radius << " " << model._geo[i]._x << " " << model._geo[i]._z << " " << 20;
 			break;
 		case CustomType:
 			val << "#Custom " << model._geo[i]._filename << " " << model._geo[i]._parameters;

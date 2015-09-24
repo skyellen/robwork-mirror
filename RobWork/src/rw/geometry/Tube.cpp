@@ -26,8 +26,8 @@ using namespace rw::geometry;
 using namespace rw::math;
 using namespace rw::common;
 
-Tube::Tube(float radius, float height):
-	_radius(radius),_height(height)
+Tube::Tube(float radius, float thickness, float height):
+	_radius(radius),_thickness(thickness),_height(height)
 {
 }
 
@@ -40,19 +40,20 @@ Tube::~Tube()
 {
 }
 
-float Tube::getRadius() const {
+float Tube::getInnerRadius() const {
 	return _radius;
+}
+
+float Tube::getThickness() const {
+	return _thickness;
 }
 
 float Tube::getHeight() const {
 	return _height;
 }
 
-TriMesh::Ptr Tube::createMesh(int resolution) const{
-	static double THICKNESS = 0.00001; // plus/minus 0.01 mm for inside/outside surface
-
-	int level = resolution;
-	if(resolution<0)
+TriMesh::Ptr Tube::createMesh(int level) const{
+	if(level < 0)
 		level = 16; // default
 
 	PlainTriMeshF *mesh = new PlainTriMeshF(8*level);
@@ -60,17 +61,17 @@ TriMesh::Ptr Tube::createMesh(int resolution) const{
 	float z = _height/2.0f;
 
 	for (int i = 0; i < level; i++) {
-		float x1in = (float)((_radius-THICKNESS) * cos(i * 2 * Pi/level));
-		float y1in = (float)((_radius-THICKNESS) * sin(i * 2 * Pi/level));
+		float x1in = static_cast<float>((_radius) * cos(i * 2 * Pi/level));
+		float y1in = static_cast<float>((_radius) * sin(i * 2 * Pi/level));
 
-		float x2in = (float)((_radius-THICKNESS) * cos((i+1) * 2 * Pi/level));
-		float y2in = (float)((_radius-THICKNESS) * sin((i+1) * 2 * Pi/level));
+		float x2in = static_cast<float>((_radius) * cos((i+1) * 2 * Pi/level));
+		float y2in = static_cast<float>((_radius) * sin((i+1) * 2 * Pi/level));
 
-		float x1out = (float)((_radius+THICKNESS) * cos(i * 2 * Pi/level));
-		float y1out = (float)((_radius+THICKNESS) * sin(i * 2 * Pi/level));
+		float x1out = static_cast<float>((_radius+_thickness) * cos(i * 2 * Pi/level));
+		float y1out = static_cast<float>((_radius+_thickness) * sin(i * 2 * Pi/level));
 
-		float x2out = (float)((_radius+THICKNESS) * cos((i+1) * 2 * Pi/level));
-		float y2out = (float)((_radius+THICKNESS) * sin((i+1) * 2 * Pi/level));
+		float x2out = static_cast<float>((_radius+_thickness) * cos((i+1) * 2 * Pi/level));
+		float y2out = static_cast<float>((_radius+_thickness) * sin((i+1) * 2 * Pi/level));
 
 		Vector3D<float> p1in(x1in, y1in, z);
 		Vector3D<float> p2in(x1in, y1in, -z);
@@ -102,21 +103,24 @@ TriMesh::Ptr Tube::createMesh(int resolution) const{
 }
 
 rw::math::Q Tube::getParameters() const {
-	Q q(2);
-	q(0) = _height;
-	q(1) = _radius;
+	Q q(3);
+	q(0) = _radius;
+	q(1) = _thickness;
+	q(2) = _height;
 	return q;
 }
 
 void Tube::setParameters(const rw::math::Q& q) {
-	if (q.size() != 2) {
-		RW_THROW("Size of parameter list must equal 2!");
+	if (q.size() != 3) {
+		RW_THROW("Size of parameter list must equal to 3!");
 	}
 	
-	_height = q(0);
-	_radius = q(1);
+	_radius = q(0);
+	_thickness = q(1);
+	_height = q(2);
 }
 
-bool Tube::doIsInside(const rw::math::Vector3D<>& point){
-    return point[2]<_height && rw::math::Vector2D<>(point[0],point[1]).norm2()<_radius;
+bool Tube::doIsInside(const Vector3D<>& point) {
+	const double distXY = Vector2D<>(point[0],point[1]).norm2();
+    return fabs(point[2])<=_height/2. && distXY >= _radius && distXY <= _radius+_thickness;
 }

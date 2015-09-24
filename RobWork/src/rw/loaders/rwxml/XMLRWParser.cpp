@@ -280,6 +280,7 @@ namespace {
                                    eps_p)
                     | XMLAttElem_p("Tube",
                                    XMLAtt_p("radius",real_p[ var( _geo._radius ) = arg1 ]) >>
+                                   XMLAtt_p("thickness",real_p[ var( _geo._x ) = arg1 ]) >>
                                    XMLAtt_p("z",real_p[ var( _geo._z ) = arg1 ]
                                                       [ var( _geo._type ) = TubeType ] ),
                                    eps_p)
