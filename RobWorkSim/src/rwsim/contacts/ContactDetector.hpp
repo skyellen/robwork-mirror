@@ -205,7 +205,7 @@ public:
 	 * @param geometryB [in] the second geometry.
 	 * @return a new strategy table that includes only strategies matching the given frame pair, and uses the given geometries.
 	 */
-	virtual StrategyTable getContactStrategies(const std::string& frameA, rw::common::Ptr<const rw::geometry::Geometry> geometryA, const std::string& frameB, rw::common::Ptr<const rw::geometry::Geometry> geometryB) const;
+	virtual StrategyTable getContactStrategies(const std::string& frameA, rw::common::Ptr<const rw::geometry::GeometryData> geometryA, const std::string& frameB, rw::common::Ptr<const rw::geometry::GeometryData> geometryB) const;
 
 	/**
 	 * @brief Add a strategy to the strategy table that matches all frames.

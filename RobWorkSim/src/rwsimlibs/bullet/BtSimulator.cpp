@@ -22,9 +22,15 @@
 #include "BtConstraint.hpp"
 #include "BtTactileSensor.hpp"
 #include "BtDevice.hpp"
+#include "BtMaterial.hpp"
+#include "BtContactStrategy.hpp"
+#include "BtRWCollisionConfiguration.hpp"
 
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
+
+#include <rwsim/contacts/ContactDetector.hpp>
+#include <rwsim/contacts/ContactDetectorData.hpp>
 
 #if 0
 #include <rw/models/JointDevice.hpp>
@@ -58,36 +64,31 @@ using namespace rwsimlibs::bullet;
 // define the maximum number of objects
 #define MAX_PROXIES (1024)
 
-// TODO: simat - fix this terrible hack to be able to have actual friction- and restitution-values for object specific collisions
-#define commonFriction 1.05;
-#define commonRestitution 0.01;
-
 BtSimulator::BtSimulator():
 	m_dynamicsWorld(NULL),
 	m_overlappingPairCache(NULL),
 	m_dispatcher(NULL),
 	m_solver(NULL),
 	m_collisionConfiguration(NULL),
-	_dwc(NULL),
 	_render( rw::common::ownedPtr(new BtDebugRender(this)) ),
 	_time(0.0),
 	_dt(0.001),
 	_initPhysicsHasBeenRun(false)
 {
-};
+}
 
-BtSimulator::BtSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc):
+BtSimulator::BtSimulator(DynamicWorkCell::Ptr dwc):
 	m_dynamicsWorld(NULL),
 	m_overlappingPairCache(NULL),
 	m_dispatcher(NULL),
 	m_solver(NULL),
 	m_collisionConfiguration(NULL),
-	_dwc(dwc),
 	_render( rw::common::ownedPtr(new BtDebugRender(this)) ),
 	_time(0.0),
 	_dt(0.001),
 	_initPhysicsHasBeenRun(false)
 {
+	load(dwc);
 }
 
 BtSimulator::~BtSimulator()	{
@@ -98,10 +99,19 @@ void BtSimulator::load(DynamicWorkCell::Ptr dwc){
 	_dwc = dwc;
 	_materialMap = dwc->getMaterialData();
 	_contactMap = dwc->getContactData();
+
+	_detector = ownedPtr(new ContactDetector(_dwc->getWorkcell()));
+	_detectorData = ownedPtr(new ContactDetectorData());
+	const ContactStrategy::Ptr strat = ownedPtr(new BtContactStrategy());
+	strat->setPropertyMap(_dwc->getEngineSettings());
+	_detector->addContactStrategy(strat);
+	_detector->printStrategyTable(std::cout);
 }
 
-bool BtSimulator::setContactDetector(rw::common::Ptr<ContactDetector> detector) {
-	return false;
+bool BtSimulator::setContactDetector(ContactDetector::Ptr detector) {
+	_detector = detector;
+	_detectorData = ownedPtr(new ContactDetectorData());
+	return true;
 }
 
 void BtSimulator::step(double dt, State& state){
@@ -136,13 +146,25 @@ void BtSimulator::step(double dt, State& state){
 	///step the simulation
 	if (m_dynamicsWorld)
 	{
-//		m_dynamicsWorld->stepSimulation(dt,100,1.0/500.0);
-	    m_dynamicsWorld->stepSimulation(dt,0);
+		m_dynamicsWorld->stepSimulation(dt,1,dt); // Fixed time-stepping
 		_time += dt;
 	}
 
+	for (int i = 0; i < m_dynamicsWorld->getDispatcher()->getNumManifolds(); i++) {
+		const btPersistentManifold* const manifold = m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		const btCollisionObject* const objectA = manifold->getBody0();
+		const btCollisionObject* const objectB = manifold->getBody1();
+		const BtBody::BodyMetaData* const dataA = static_cast<BtBody::BodyMetaData*>(objectA->getUserPointer());
+		const BtBody::BodyMetaData* const dataB = static_cast<BtBody::BodyMetaData*>(objectB->getUserPointer());
+		const BtBody* const bodyA = _rwFrameToBtBody[dataA->frame];
+		const BtBody* const bodyB = _rwFrameToBtBody[dataB->frame];
+	    BOOST_FOREACH(BtTactileSensor* const sensor, _btSensors) {
+	    	sensor->addContactManifold(info, state, manifold, bodyA, bodyB);
+	    }
+	}
+
     BOOST_FOREACH(BtTactileSensor* const sensor, _btSensors) {
-    	sensor->update(info, state);
+    	sensor->addConstraintsFeedback(info, state);
     }
 
     BOOST_FOREACH(BtDevice *dev, _btDevices){
@@ -252,9 +274,15 @@ void MyNearCallback(btBroadphasePair& collisionPair,
 // TODO: simat - fix this bad friction fix to allow for multiobject individual friction and restitution
 // current problem is that from this function there is no access to object material on the btCollisionObjectWrapper passed to this function
 static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisionObjectWrapper* colObj0Wrap,int partId0,int index0,const btCollisionObjectWrapper* colObj1Wrap,int partId1,int index1){
-    // Apply material properties
-	cp.m_combinedFriction = commonFriction;//colObj0Wrap->getCollisionObject()->getFriction();
-	cp.m_combinedRestitution = commonRestitution;//colObj0Wrap->getCollisionObject()->getRestitution();
+	const BtBody::BodyMetaData* const dataA = static_cast<BtBody::BodyMetaData*>(colObj0Wrap->getCollisionObject()->getUserPointer());
+	const BtBody::BodyMetaData* const dataB = static_cast<BtBody::BodyMetaData*>(colObj1Wrap->getCollisionObject()->getUserPointer());
+	const BtMaterial* const matA = dataA->material;
+	const BtMaterial* const matB = dataB->material;
+	if (!matA || !matB)
+		RW_THROW("Material for one or both of the bodies was not set!");
+	// Apply material properties
+	cp.m_combinedFriction = BtMaterial::getFriction(matA,matB);
+	cp.m_combinedRestitution = BtMaterial::getRestitution(matA,matB);
 
     //FROM BULLET documentation: this return value is currently ignored, but to be on the safe side: return false if you don't calculate friction
     return true;
@@ -263,20 +291,23 @@ static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisio
 // simat - needed to register the CustomMaterialCombinerCallback to bullet
 extern ContactAddedCallback		gContactAddedCallback;
 
-void BtSimulator::initPhysics(State& state)
-{
+void BtSimulator::initPhysics(State& state) {
+	if (_dwc.isNull())
+		RW_THROW("BtSimulator could not initialize physics as the dynamic workcell was null!");
+	_propertyMap = _dwc->getEngineSettings();
+
 	// simat - needed to register the CustomMaterialCombinerCallback to bullet
     gContactAddedCallback = CustomMaterialCombinerCallback;
 
 	///collision configuration contains default setup for memory, collision setup
-	m_collisionConfiguration = new btDefaultCollisionConfiguration();
+    m_collisionConfiguration = new BtRWCollisionConfiguration(_detector);
 
 	///use the default collision dispatcher. For parallel processing you can use a different dispatcher (see Extras/BulletMultiThreaded)
 	m_dispatcher = new	btCollisionDispatcher(m_collisionConfiguration);
 
 	m_dispatcher->setNearCallback(MyNearCallback);
 
-	btGImpactCollisionAlgorithm::registerAlgorithm(m_dispatcher);
+	//btGImpactCollisionAlgorithm::registerAlgorithm(m_dispatcher);
 
 	///the maximum size of the collision world. Make sure objects stay within these boundaries
 	///Don't make the world AABB size too large, it will harm simulation quality and performance
@@ -289,10 +320,11 @@ void BtSimulator::initPhysics(State& state)
 
 	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_overlappingPairCache,m_solver,m_collisionConfiguration);
 
+	const PropertyMap& propertyMap = _propertyMap;
 	m_dynamicsWorld->getSolverInfo().m_splitImpulse = true; // Default true
-	m_dynamicsWorld->getSolverInfo().m_erp = 0.0; // Default 0.2 (Baumgarte - used as default for constraints)
-	m_dynamicsWorld->getSolverInfo().m_erp2 = 0.0; // Default 0.8 (split impulse - only for contacts?)
-	m_dynamicsWorld->getSolverInfo().m_globalCfm = 0; // Default 0.
+	m_dynamicsWorld->getSolverInfo().m_erp = propertyMap.get<double>("WorldERP", 0.2); // Default 0.2 (Baumgarte - used as default for constraints)
+	m_dynamicsWorld->getSolverInfo().m_erp2 = propertyMap.get<double>("WorldERP", 0.8); // Default 0.8 (split impulse - only for contacts?)
+	m_dynamicsWorld->getSolverInfo().m_globalCfm = propertyMap.get<double>("WorldCFM", 0); // Default 0.
 
 	m_dynamicsWorld->setGravity(BtUtil::makeBtVector(_dwc->getGravity()));
 
@@ -532,7 +564,7 @@ void BtSimulator::removeController(rwlibs::simulation::SimulatedController::Ptr 
 void BtSimulator::addBody(Body::Ptr body, State& state){
 	BtBody* const exists = _rwFrameToBtBody[body->getBodyFrame()];
 	if (!exists) {
-		BtBody* const btbody = new BtBody(body, m_dynamicsWorld, state);
+		BtBody* const btbody = new BtBody(body, &_dwc->getMaterialData(), &_dwc->getContactData(), m_dynamicsWorld, state);
 		_btBodies.push_back(btbody);
 		_rwFrameToBtBody[body->getBodyFrame()] = btbody;
 		_rwBtBodyToFrame[btbody] = body->getBodyFrame();
@@ -544,45 +576,57 @@ void BtSimulator::addDevice(DynamicDevice::Ptr dev, State& nstate){
 }
 
 void BtSimulator::addSensor(SimulatedSensor::Ptr sensor, State& state){
-	if(const rw::common::Ptr<SimulatedFTSensor> tsensor = sensor.cast<SimulatedFTSensor>()){
-		Frame* const parentFrame = tsensor->getBody1()->getBodyFrame();
-		Frame* const sensorFrame = tsensor->getBody2()->getBodyFrame();
+	if(const rw::common::Ptr<SimulatedTactileSensor> tsensor = sensor.cast<SimulatedTactileSensor>()){
+		if(const rw::common::Ptr<SimulatedFTSensor> ftsensor = tsensor.cast<SimulatedFTSensor>()){
+			Frame* const parentFrame = ftsensor->getBody1()->getBodyFrame();
+			Frame* const sensorFrame = ftsensor->getBody2()->getBodyFrame();
 
-		if(_rwFrameToBtBody.find(sensorFrame) == _rwFrameToBtBody.end()){
-			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
-		}
-		if( _rwFrameToBtBody.find(parentFrame)== _rwFrameToBtBody.end()){
-			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
-		}
-		BtBody* const parentBtBody = _rwFrameToBtBody[parentFrame];
-		BtBody* const sensorBtBody = _rwFrameToBtBody[sensorFrame];
+			if(_rwFrameToBtBody.find(sensorFrame) == _rwFrameToBtBody.end()){
+				RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+			}
+			if( _rwFrameToBtBody.find(parentFrame)== _rwFrameToBtBody.end()){
+				RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+			}
+			BtBody* const parentBtBody = _rwFrameToBtBody[parentFrame];
+			BtBody* const sensorBtBody = _rwFrameToBtBody[sensorFrame];
 
-		BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
-		_btSensors.push_back(btsensor);
-		_sensors.push_back(sensor);
+			BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
+			_btSensors.push_back(btsensor);
+			_sensors.push_back(sensor);
 
-		// Find all constraints between the two bodies
-		BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
-			btRigidBody* const parent = constraint->getBtParent();
-			btRigidBody* const child = constraint->getBtChild();
-			if (parent == parentBtBody->getBulletBody() || parent == sensorBtBody->getBulletBody()) {
-				if (child == parentBtBody->getBulletBody() || child == sensorBtBody->getBulletBody()) {
+			// Find all constraints between the two bodies
+			BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+				btRigidBody* const parent = constraint->getBtParent();
+				btRigidBody* const child = constraint->getBtChild();
+				if (parent == parentBtBody->getBulletBody() || parent == sensorBtBody->getBulletBody()) {
+					if (child == parentBtBody->getBulletBody() || child == sensorBtBody->getBulletBody()) {
+						btsensor->addFeedback(constraint);
+					}
+				}
+			}
+
+		} else {
+			Frame* const bframe = tsensor->getFrame();
+			RW_ASSERT(bframe!=NULL);
+
+			if(_rwFrameToBtBody.find(bframe) == _rwFrameToBtBody.end()){
+				RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
+			}
+			BtBody* btBody = _rwFrameToBtBody[bframe];
+
+			BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
+			_btSensors.push_back(btsensor);
+			_sensors.push_back(sensor);
+
+			// Find all constraints between the two bodies
+			BOOST_FOREACH(BtConstraint* const constraint, _constraints) {
+				btRigidBody* const parent = constraint->getBtParent();
+				btRigidBody* const child = constraint->getBtChild();
+				if (parent == btBody->getBulletBody() || child == btBody->getBulletBody()) {
 					btsensor->addFeedback(constraint);
 				}
 			}
 		}
-
-/*	} else if(const SimulatedTactileSensor::Ptr tsensor = sensor.cast<SimulatedTactileSensor>()){
-		Frame* const bframe = tsensor->getFrame();
-		RW_ASSERT(bframe!=NULL);
-
-		if(_rwFrameToBtBody.find(bframe) == _rwFrameToBtBody.end()){
-			RW_THROW("BtSimulator (addSensor): The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics?");
-		}
-		BtBody* btBody = _rwFrameToBtBody[bframe];
-
-		BtTactileSensor* const btsensor = new BtTactileSensor(tsensor);
-		_sensors.push_back(btsensor);*/
 	} else {
 		RW_THROW("BtSimulator (addSensor): the type of sensor is not supported yet!");
 	}

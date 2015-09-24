@@ -30,13 +30,15 @@
 #include <vector>
 
 // Forward declarations
-class btJointFeedback;
+class btPersistentManifold;
+
 namespace rw { namespace kinematics { class State; } }
 namespace rwsim { namespace sensor { class SimulatedTactileSensor; } }
 
 namespace rwsimlibs {
 namespace bullet {
 
+class BtBody;
 class BtConstraint;
 
 //! @addtogroup rwsimlibs_bullet
@@ -58,11 +60,21 @@ public:
 	virtual ~BtTactileSensor();
 
 	/**
-	 * @brief Update the sensor.
+	 * @brief Add the feedbacks from constraints that have been added in addFeedback.
 	 * @param info [in] information about the simulation update (not used currently).
 	 * @param state [in/out] the state to update with new sensor information.
 	 */
-    void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) const;
+    void addConstraintsFeedback(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) const;
+
+    /**
+     * @brief Add feedback from contacts.
+     * @param info [in] information about time-step (used to transform from impulse to force).
+     * @param state [in/out] the state to add information to.
+     * @param manifold [in] the contact manifold with contact information from bullet solver.
+     * @param bodyA [in] the first BtBody.
+     * @param bodyB [in] the second BtBody.
+     */
+    void addContactManifold(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state, const btPersistentManifold* manifold, const BtBody* bodyA, const BtBody* bodyB) const;
 
     /**
      * @brief Add a constraint that should be measured by the sensor.
@@ -73,7 +85,6 @@ public:
 private:
     rw::common::Ptr<rwsim::sensor::SimulatedTactileSensor> _rwSensor;
     std::vector<BtConstraint*> _constraints;
-    std::vector<btJointFeedback*> _feedbacks;
 };
 //! @}
 } /* namespace bullet */

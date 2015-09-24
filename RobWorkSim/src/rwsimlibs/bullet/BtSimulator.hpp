@@ -33,7 +33,9 @@ class btTypedConstraint;
 class btBroadphaseInterface;
 class btCollisionDispatcher;
 class btConstraintSolver;
-class btDefaultCollisionConfiguration;
+class btCollisionConfiguration;
+
+namespace rwsim { namespace contacts { class ContactDetectorData; } }
 
 namespace rwsimlibs {
 namespace bullet {
@@ -137,14 +139,14 @@ private:
 	btBroadphaseInterface* m_overlappingPairCache;
 	btCollisionDispatcher* m_dispatcher;
 	btConstraintSolver* m_solver;
-	btDefaultCollisionConfiguration* m_collisionConfiguration;
+	btCollisionConfiguration* m_collisionConfiguration;
 
 	rw::common::Ptr<const rwsim::dynamics::DynamicWorkCell> _dwc;
 	rwsim::dynamics::MaterialDataMap _materialMap;
 	rwsim::dynamics::ContactDataMap _contactMap;
 
 	std::vector<rwsimlibs::bullet::BtBody*> _btBodies;
-	std::map<rw::kinematics::Frame*, rwsimlibs::bullet::BtBody*> _rwFrameToBtBody;
+	std::map<const rw::kinematics::Frame*, rwsimlibs::bullet::BtBody*> _rwFrameToBtBody;
 	std::map<rwsimlibs::bullet::BtBody*, rw::kinematics::Frame*> _rwBtBodyToFrame;
 
 	std::vector<BtConstraint*> _constraints;
@@ -159,6 +161,9 @@ private:
 	rwsim::drawable::SimulatorDebugRender::Ptr _render;
 
 	std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
+
+	rw::common::Ptr<rwsim::contacts::ContactDetector> _detector;
+	rw::common::Ptr<rwsim::contacts::ContactDetectorData> _detectorData;
 
 	double _time, _dt;
 	bool _initPhysicsHasBeenRun;

@@ -100,7 +100,7 @@ BallBallStrategy::~BallBallStrategy()
 {
 }
 
-bool BallBallStrategy::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
+bool BallBallStrategy::match(rw::common::Ptr<const GeometryData> geoA, rw::common::Ptr<const GeometryData> geoB) {
 	if (geoA->getType() == GeometryData::SpherePrim && geoB->getType() == GeometryData::SpherePrim)
 		return true;
 	return false;

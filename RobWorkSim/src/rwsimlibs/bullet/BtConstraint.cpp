@@ -23,10 +23,10 @@
 
 #include <bullet/BulletDynamics/Dynamics/btDynamicsWorld.h>
 #include <bullet/BulletDynamics/ConstraintSolver/btGeneric6DofConstraint.h>
+#include <bullet/BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
 #include <bullet/BulletDynamics/ConstraintSolver/btPoint2PointConstraint.h>
 #include <bullet/BulletDynamics/ConstraintSolver/btHingeConstraint.h>
 #include <bullet/BulletDynamics/ConstraintSolver/btSliderConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btFixedConstraint.h>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -38,12 +38,15 @@ BtConstraint::BtConstraint(rw::common::Ptr<const Constraint> constraint, const B
 	_parent(parent),
 	_child(child),
 	_btDynamicsWorld(btWorld),
-	_btConstraint(NULL)
+	_btConstraint(NULL),
+	_feedback(NULL)
 {
 	createJoint();
 }
 
 BtConstraint::~BtConstraint() {
+	if (_feedback)
+		delete _feedback;
 	destroyJoint();
 }
 
@@ -86,6 +89,7 @@ void BtConstraint::createJoint() {
 	const Transform3D<>& wTc_com = _child->getWorldTcom();
 	const Transform3D<>& wTp_com = _parent->getWorldTcom();
 	const Transform3D<> frameInB = inverse(wTc_com)*wTp_com*comTconstraint;
+	const Constraint::SpringParams spring = _rwConstraint->getSpringParams();
 	static const bool useLinearReferenceFrameA = true;
 	const Constraint::ConstraintType type = _rwConstraint->getType();
 	/*if (type == Constraint::Fixed) {
@@ -119,24 +123,64 @@ void BtConstraint::createJoint() {
 		}
 		_btConstraint = btConstraint;
 	} else if (type == Constraint::Prismatic) {
-		// Rotation is about x in Bullet and around z in RobWork, so we must apply rotation.
-		const Rotation3D<> xRz(0, 0, -1, 0, 1, 0, 1, 0, 0); // -90 about y
-		const Transform3D<> btTransformA(frameInA.P(),frameInA.R()*xRz);
-		const Transform3D<> btTransformB(frameInB.P(),frameInB.R()*xRz);
-		btSliderConstraint* const btConstraint = new btSliderConstraint(first, second, BtUtil::makeBtTransform(btTransformA), BtUtil::makeBtTransform(btTransformB), useLinearReferenceFrameA);
-		// btSliderConstraint is a piston, angular part is fixed, and linear part is free
-		btConstraint->setLowerLinLimit(1);
-		btConstraint->setUpperLinLimit(-1);
-		btConstraint->setLowerAngLimit(0);
-		btConstraint->setUpperAngLimit(0);
-		_btConstraint = btConstraint;
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btConstraint = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			btConstraint->enableSpring(2,true);
+			btConstraint->setStiffness(2,1./spring.compliance(0,0));
+			btConstraint->setDamping(2,spring.damping(0,0));
+			// Now limits are used to make translation along z possible
+			btConstraint->setLinearLowerLimit(btVector3(0,0,1));
+			btConstraint->setLinearUpperLimit(btVector3(0,0,-1));
+			btConstraint->setAngularLowerLimit(btVector3(0,0,0));
+			btConstraint->setAngularUpperLimit(btVector3(0,0,0));
+			_btConstraint = btConstraint;
+		} else {
+			// Rotation is about x in Bullet and around z in RobWork, so we must apply rotation.
+			const Rotation3D<> xRz(0, 0, -1, 0, 1, 0, 1, 0, 0); // -90 about y
+			const Transform3D<> btTransformA(frameInA.P(),frameInA.R()*xRz);
+			const Transform3D<> btTransformB(frameInB.P(),frameInB.R()*xRz);
+			btSliderConstraint* const btConstraint = new btSliderConstraint(first, second, BtUtil::makeBtTransform(btTransformA), BtUtil::makeBtTransform(btTransformB), useLinearReferenceFrameA);
+			// btSliderConstraint is a piston, angular part is fixed, and linear part is free
+			btConstraint->setLowerLinLimit(1);
+			btConstraint->setUpperLinLimit(-1);
+			btConstraint->setLowerAngLimit(0);
+			btConstraint->setUpperAngLimit(0);
+			_btConstraint = btConstraint;
+		}
 	} else if (type == Constraint::Revolute) {
-		_btConstraint = new btHingeConstraint(first, second,
-				BtUtil::makeBtVector(frameInA.P()), BtUtil::makeBtVector(frameInB.P()),
-				BtUtil::makeBtVector(frameInA.R().getCol(2)), BtUtil::makeBtVector(frameInB.R().getCol(2)),
-				useLinearReferenceFrameA);
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btConstraint = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			btConstraint->enableSpring(5,true);
+			btConstraint->setStiffness(5,1./spring.compliance(0,0));
+			btConstraint->setDamping(5,spring.damping(0,0));
+			// Now limits are used to make rotation around z possible
+			btConstraint->setLinearLowerLimit(btVector3(0,0,0));
+			btConstraint->setLinearUpperLimit(btVector3(0,0,0));
+			btConstraint->setAngularLowerLimit(btVector3(0,0,1));
+			btConstraint->setAngularUpperLimit(btVector3(0,0,-1));
+			_btConstraint = btConstraint;
+		} else {
+			_btConstraint = new btHingeConstraint(first, second,
+					BtUtil::makeBtVector(frameInA.P()), BtUtil::makeBtVector(frameInB.P()),
+					BtUtil::makeBtVector(frameInA.R().getCol(2)), BtUtil::makeBtVector(frameInB.R().getCol(2)),
+					useLinearReferenceFrameA);
+		}
 	} else if (type == Constraint::Universal) {
-		btGeneric6DofConstraint* const btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		btGeneric6DofConstraint* btConstraint;
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btSpring = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			btConstraint = btSpring;
+			unsigned int dirs[] = {3,4};
+			for (unsigned int dof = 0; dof < 2; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btSpring->enableSpring(dirs[dof],true);
+					btSpring->setStiffness(dirs[dof],1./spring.compliance(dof,dof));
+					btSpring->setDamping(dirs[dof],spring.damping(dof,dof));
+				}
+			}
+		} else {
+			btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		}
 		// Now limits are used to make rotation about x and y free
 		btConstraint->setLinearLowerLimit(btVector3(0,0,0));
 		btConstraint->setLinearUpperLimit(btVector3(0,0,0));
@@ -144,21 +188,71 @@ void BtConstraint::createJoint() {
 		btConstraint->setAngularUpperLimit(btVector3(-1,-1,0));
 		_btConstraint = btConstraint;
 	} else if (type == Constraint::Spherical) {
-		_btConstraint = new btPoint2PointConstraint(first, second, BtUtil::makeBtVector(frameInA.P()), BtUtil::makeBtVector(frameInB.P()));
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btConstraint = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			unsigned int dirs[] = {3,4,5};
+			for (unsigned int dof = 0; dof < 3; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btConstraint->enableSpring(dirs[dof],true);
+					btConstraint->setStiffness(dirs[dof],1./spring.compliance(dof,dof));
+					btConstraint->setDamping(dirs[dof],spring.damping(dof,dof));
+				}
+			}
+			// Now limits are used to make rotation possible
+			btConstraint->setLinearLowerLimit(btVector3(0,0,0));
+			btConstraint->setLinearUpperLimit(btVector3(0,0,0));
+			btConstraint->setAngularLowerLimit(btVector3(1,1,1));
+			btConstraint->setAngularUpperLimit(btVector3(-1,-1,-1));
+			_btConstraint = btConstraint;
+		} else {
+			_btConstraint = new btPoint2PointConstraint(first, second, BtUtil::makeBtVector(frameInA.P()), BtUtil::makeBtVector(frameInB.P()));
+		}
 	} else if (type == Constraint::Piston) {
-		// Rotation is about x in Bullet and around z in RobWork, so we must apply rotation.
-		const Rotation3D<> xRz(0, 0, -1, 0, 1, 0, 1, 0, 0); // -90 about y
-		const Transform3D<> btTransformA(frameInA.P(),frameInA.R()*xRz);
-		const Transform3D<> btTransformB(frameInB.P(),frameInB.R()*xRz);
-		btSliderConstraint* const btConstraint = new btSliderConstraint(first, second, BtUtil::makeBtTransform(btTransformA), BtUtil::makeBtTransform(btTransformB), useLinearReferenceFrameA);
-		// btSliderConstraint is a piston, we set angular and linear part as free
-		btConstraint->setLowerLinLimit(1);
-		btConstraint->setUpperLinLimit(-1);
-		btConstraint->setLowerAngLimit(1);
-		btConstraint->setUpperAngLimit(-1);
-		_btConstraint = btConstraint;
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btConstraint = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			unsigned int dirs[] = {2,5};
+			for (unsigned int dof = 0; dof < 2; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btConstraint->enableSpring(dirs[dof],true);
+					btConstraint->setStiffness(dirs[dof],1./spring.compliance(dof,dof));
+					btConstraint->setDamping(dirs[dof],spring.damping(dof,dof));
+				}
+			}
+			// Now limits are used to make rotation possible around z, and to make linear motion possible along z
+			btConstraint->setLinearLowerLimit(btVector3(0,0,1));
+			btConstraint->setLinearUpperLimit(btVector3(0,0,-1));
+			btConstraint->setAngularLowerLimit(btVector3(0,0,1));
+			btConstraint->setAngularUpperLimit(btVector3(0,0,-1));
+			_btConstraint = btConstraint;
+		} else {
+			// Rotation is about x in Bullet and around z in RobWork, so we must apply rotation.
+			const Rotation3D<> xRz(0, 0, -1, 0, 1, 0, 1, 0, 0); // -90 about y
+			const Transform3D<> btTransformA(frameInA.P(),frameInA.R()*xRz);
+			const Transform3D<> btTransformB(frameInB.P(),frameInB.R()*xRz);
+			btSliderConstraint* const btConstraint = new btSliderConstraint(first, second, BtUtil::makeBtTransform(btTransformA), BtUtil::makeBtTransform(btTransformB), useLinearReferenceFrameA);
+			// btSliderConstraint is a piston, we set angular and linear part as free
+			btConstraint->setLowerLinLimit(1);
+			btConstraint->setUpperLinLimit(-1);
+			btConstraint->setLowerAngLimit(1);
+			btConstraint->setUpperAngLimit(-1);
+			_btConstraint = btConstraint;
+		}
 	} else if (type == Constraint::PrismaticRotoid) {
-		btGeneric6DofConstraint* const btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		btGeneric6DofConstraint* btConstraint;
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btSpring = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			btConstraint = btSpring;
+			unsigned int dirs[] = {2,3};
+			for (unsigned int dof = 0; dof < 2; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btSpring->enableSpring(dirs[dof],true);
+					btSpring->setStiffness(dirs[dof],1./spring.compliance(dof,dof));
+					btSpring->setDamping(dirs[dof],spring.damping(dof,dof));
+				}
+			}
+		} else {
+			btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		}
 		// Now limits are used to make translation along z possible, as well as rotation about x
 		btConstraint->setLinearLowerLimit(btVector3(0,0,1));
 		btConstraint->setLinearUpperLimit(btVector3(0,0,-1));
@@ -166,7 +260,21 @@ void BtConstraint::createJoint() {
 		btConstraint->setAngularUpperLimit(btVector3(-1,0,0));
 		_btConstraint = btConstraint;
 	} else if (type == Constraint::PrismaticUniversal) {
-		btGeneric6DofConstraint* const btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		btGeneric6DofConstraint* btConstraint;
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btSpring = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			btConstraint = btSpring;
+			unsigned int dirs[] = {2,3,4};
+			for (unsigned int dof = 0; dof < 3; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btSpring->enableSpring(dirs[dof],true);
+					btSpring->setStiffness(dirs[dof],1./spring.compliance(dof,dof));
+					btSpring->setDamping(dirs[dof],spring.damping(dof,dof));
+				}
+			}
+		} else {
+			btConstraint = new btGeneric6DofConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+		}
 		// Now limits are used to make translation along z possible, as well as rotation about x and y
 		btConstraint->setLinearLowerLimit(btVector3(0,0,1));
 		btConstraint->setLinearUpperLimit(btVector3(0,0,-1));
@@ -174,7 +282,17 @@ void BtConstraint::createJoint() {
 		btConstraint->setAngularUpperLimit(btVector3(-1,-1,0));
 		_btConstraint = btConstraint;
 	} else if (type == Constraint::Free) {
-		// Do nothing
+		if (spring.enabled) {
+			btGeneric6DofSpringConstraint* const btConstraint = new btGeneric6DofSpringConstraint(first, second, BtUtil::makeBtTransform(frameInA), BtUtil::makeBtTransform(frameInB), useLinearReferenceFrameA);
+			for (unsigned int dof = 0; dof < 6; dof++) {
+				if (spring.compliance(dof,dof) > 0) {
+					btConstraint->enableSpring(dof,true);
+					btConstraint->setStiffness(dof,1./spring.compliance(dof,dof));
+					btConstraint->setDamping(dof,spring.damping(dof,dof));
+				}
+			}
+			_btConstraint = btConstraint;
+		}
 	} else {
 		RW_THROW("Unsupported Constraint type!");
 	}
@@ -196,4 +314,10 @@ void BtConstraint::update(const double dt, State& state) {
 
 void BtConstraint::postUpdate(rw::kinematics::State& state) {
 	//std::cout << "applied impulse a: " << _btConstraint->getAppliedImpulse() << " " << _btConstraint->getAppliedImpulse()/0.0052 << std::endl;
+}
+
+btJointFeedback* BtConstraint::getFeedback() {
+	if (!_feedback)
+		_feedback = new btJointFeedback();
+	return _feedback;
 }

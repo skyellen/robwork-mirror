@@ -31,6 +31,8 @@
 class btDynamicsWorld;
 class btTypedConstraint;
 class btRigidBody;
+class btJointFeedback;
+
 namespace rw { namespace kinematics { class State; } }
 namespace rwsim { namespace dynamics { class Constraint; } }
 
@@ -111,6 +113,12 @@ public:
 	 */
 	void postUpdate(rw::kinematics::State& state);
 
+	/**
+	 * @brief Get the feedback for the constraint.
+	 * @return the bullet feedback.
+	 */
+	btJointFeedback* getFeedback();
+
 private:
 	void createJoint();
 	void destroyJoint();
@@ -121,6 +129,7 @@ private:
 	const BtBody* const _child;
     btDynamicsWorld* const _btDynamicsWorld;
 	btTypedConstraint* _btConstraint;
+	btJointFeedback* _feedback;
 };
 //! @}
 } /* namespace bullet */

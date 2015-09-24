@@ -151,7 +151,7 @@ bool TNTBroadPhase::maxPenetrationExceeded(rw::common::Ptr<const ContactDetector
 			for (itB = geoToPModelB.begin(); itB != geoToPModelB.end(); itB++) {
 				const Geometry::Ptr geoA = (*itA).first;
 				const Geometry::Ptr geoB = (*itB).first;
-				const ContactDetector::StrategyTable strategies = detector->getContactStrategies(pair.first->getName(),geoA,pair.second->getName(),geoB);
+				const ContactDetector::StrategyTable strategies = detector->getContactStrategies(pair.first->getName(),geoA->getGeometryData(),pair.second->getName(),geoB->getGeometryData());
 				if (strategies.size() > 0) {
 					if (strategies.front().strategy->getName() != "ContactStrategyPQP")
 						continue;

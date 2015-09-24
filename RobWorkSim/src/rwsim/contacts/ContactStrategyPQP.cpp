@@ -145,7 +145,7 @@ ContactStrategyPQP::~ContactStrategyPQP() {
 	delete _narrowStrategy;
 }
 
-bool ContactStrategyPQP::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
+bool ContactStrategyPQP::match(rw::common::Ptr<const GeometryData> geoA, rw::common::Ptr<const GeometryData> geoB) {
 	if (_matchAll)
 		return true;
 	else {

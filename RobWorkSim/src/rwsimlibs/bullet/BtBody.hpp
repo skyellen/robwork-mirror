@@ -21,7 +21,7 @@
 /**
  * @file BtBody.hpp
  *
- * \copydoc rwsim::simulator::BtBody
+ * \copydoc rwsimlibs::bullet::BtBody
  */
 
 #include <rw/common/Ptr.hpp>
@@ -33,14 +33,20 @@ class btRigidBody;
 class btCollisionShape;
 class btCompoundShape;
 namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace kinematics { class Frame; } }
 namespace rw { namespace kinematics { class State; } }
 namespace rwsim { namespace dynamics { class Body; } }
 namespace rwsim { namespace dynamics { class RigidBody; } }
 namespace rwsim { namespace dynamics { class KinematicBody; } }
 namespace rwsim { namespace dynamics { class FixedBody; } }
+namespace rwsim { namespace dynamics { class MaterialDataMap; } }
+namespace rwsim { namespace dynamics { class ContactDataMap; } }
 
 namespace rwsimlibs {
 namespace bullet {
+
+class BtMaterial;
+
 //! @addtogroup rwsimlibs_bullet
 
 //! @{
@@ -52,12 +58,18 @@ public:
 	/**
 	 * @brief Construct new bullet body for the given world.
 	 * @param body [in] the RobWork body to create bullet body for.
+	 * @param frictionMap [in] the friction map to look up in (must point to the same map for two objects in contact).
+	 * @param collisionMap [in] the collision map to look up in (must point to the same map for two objects in contact).
 	 * @param btWorld [in] the Bullet world to add the body to.
 	 * @param state [in] the initial state with the initial position and velocity for the body.
 	 * @note The initial body state is set when the body is constructed. It is not possible to reset
 	 * the body position and velocity after creation. Instead the body must be deleted and created again.
 	 */
-	BtBody(rw::common::Ptr<rwsim::dynamics::Body> body, btDynamicsWorld* btWorld, const rw::kinematics::State& state);
+	BtBody(rw::common::Ptr<rwsim::dynamics::Body> body,
+			const rwsim::dynamics::MaterialDataMap* frictionMap,
+			const rwsim::dynamics::ContactDataMap* collisionMap,
+			btDynamicsWorld* btWorld,
+			const rw::kinematics::State& state);
 
 	//! @brief Destructor
 	virtual ~BtBody();
@@ -114,8 +126,46 @@ public:
 	 */
 	rw::math::Transform3D<> getWorldTcom() const;
 
+	//! @brief Data structure to attach to bullet bodies, allowing friction and restitution to be specified separately for each pair of bodies.
+	struct BodyMetaData {
+		/**
+		 * @brief Constructor.
+		 * @param frame [in] the body frame.
+		 * @param material [in] the BtMaterial (the map, and information about the material of this specific body).
+		 */
+		BodyMetaData(const rw::kinematics::Frame* frame, const BtMaterial* material);
+
+		//! @brief Destructor.
+		~BodyMetaData();
+
+		//! @brief The body frame.
+		const rw::kinematics::Frame* const frame;
+
+		//! @brief Material info (friction and restitution parameters).
+		const BtMaterial* const material;
+	};
+
+	//! @brief Data structure to attch to bullet collision shapes.
+	struct GeometryMetaData {
+		/**
+		 * @brief Constructor.
+		 * @param geometry [in] the geometry.
+		 */
+		GeometryMetaData(rw::common::Ptr<const rw::geometry::Geometry> geometry);
+
+		//! @brief Destrcutor.
+		~GeometryMetaData();
+
+		//! @brief The geometry.
+		const rw::common::Ptr<const rw::geometry::Geometry> geometry;
+	};
+
 private:
-	btRigidBody* createRigidBody(rw::common::Ptr<rwsim::dynamics::Body> body, const rw::kinematics::State& state) const;
+	btRigidBody* createRigidBody(
+			const rwsim::dynamics::MaterialDataMap* frictionMap,
+			const rwsim::dynamics::ContactDataMap* collisionMap,
+			rw::common::Ptr<rwsim::dynamics::Body> body,
+			const rw::kinematics::State& state) const;
 	btCollisionShape* createColShape(rw::common::Ptr<const rw::geometry::Geometry> geometry) const;
 	btCompoundShape* getColShape(rw::common::Ptr<rwsim::dynamics::Body> body, const rw::math::Transform3D<>& bTcom) const;
 

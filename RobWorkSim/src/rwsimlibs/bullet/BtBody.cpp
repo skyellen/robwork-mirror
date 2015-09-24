@@ -17,8 +17,11 @@
 
 #include "BtBody.hpp"
 #include "BtUtil.hpp"
+#include "BtMaterial.hpp"
 
 #include <rw/geometry/Cylinder.hpp>
+#include <rw/geometry/Sphere.hpp>
+#include <rw/geometry/Plane.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
@@ -29,6 +32,8 @@
 #include <bullet/BulletCollision/CollisionDispatch/btCollisionObject.h>
 #include <bullet/BulletCollision/CollisionShapes/btCompoundShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btCylinderShape.h>
+#include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
+#include <bullet/BulletCollision/CollisionShapes/btStaticPlaneShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btTriangleMesh.h>
 #include <bullet/BulletCollision/Gimpact/btGImpactShape.h>
 #include <bullet/LinearMath/btDefaultMotionState.h>
@@ -41,7 +46,9 @@ using namespace rwsimlibs::bullet;
 
 #define COL_MARGIN 0.001
 
-BtBody::BtBody(Body::Ptr body, btDynamicsWorld* btWorld, const State& state):
+BtBody::BtBody(Body::Ptr body,
+		const MaterialDataMap* frictionMap, const ContactDataMap* collisionMap,
+		btDynamicsWorld* btWorld, const State& state):
 	_rwBody(body),
 	_rwBodyDynamic(_rwBody.cast<RigidBody>()),
 	_rwBodyKinematic(_rwBody.cast<KinematicBody>()),
@@ -49,7 +56,7 @@ BtBody::BtBody(Body::Ptr body, btDynamicsWorld* btWorld, const State& state):
 	_btDynamicsWorld(btWorld),
 	_bTcom(isDynamic() ? Transform3D<>(body->getInfo().masscenter,_rwBodyDynamic->getBodyPrincipalInertia().first) : Transform3D<>::identity()),
 	_collisionShape(getColShape(body, _bTcom)),
-	_btRigidBody(createRigidBody(body,state))
+	_btRigidBody(createRigidBody(frictionMap, collisionMap, body,state))
 {
 }
 
@@ -60,11 +67,19 @@ BtBody::~BtBody() {
 			if (btGImpactMeshShape* const gimpact = dynamic_cast<btGImpactMeshShape*>(shape)) {
 				delete gimpact->getMeshInterface();
 			}
+			RW_ASSERT(shape->getUserPointer());
+			GeometryMetaData* const data = static_cast<GeometryMetaData*>(shape->getUserPointer());
+			RW_ASSERT(data);
+			delete data;
 			delete shape;
 		}
 		delete _collisionShape;
 	}
 	if (_btRigidBody != NULL) {
+		RW_ASSERT(_btRigidBody->getUserPointer());
+		BodyMetaData* const data = static_cast<BodyMetaData*>(_btRigidBody->getUserPointer());
+		RW_ASSERT(data);
+		delete data;
 		_btDynamicsWorld->removeRigidBody(_btRigidBody);
 		if (_btRigidBody->getMotionState()){
 			delete _btRigidBody->getMotionState();
@@ -134,7 +149,10 @@ Transform3D<> BtBody::getWorldTcom() const {
 	return BtUtil::toTransform3D(v,q);
 }
 
-btRigidBody* BtBody::createRigidBody(Body::Ptr body, const State& state) const {
+btRigidBody* BtBody::createRigidBody(
+		const MaterialDataMap* frictionMap, const ContactDataMap* collisionMap,
+		Body::Ptr body, const State& state) const
+{
 	const Transform3D<> wTb = Kinematics::worldTframe(_rwBody->getBodyFrame(),state);
 	const Transform3D<> t3d = wTb*_bTcom;
 	const btTransform startTransform = BtUtil::makeBtTransform(t3d);
@@ -155,8 +173,8 @@ btRigidBody* BtBody::createRigidBody(Body::Ptr body, const State& state) const {
 
 	// TODO: simat - fix friction
 	// bullets set "friction" on objects and as default when bodies collidied the 2 m_friction values are multiplied together. This is not correct and is currently overridden in the CustomMaterialCombinerCallback()
-	rbInfo.m_friction = 0.5;
-	rbInfo.m_restitution = 0.01;
+	//rbInfo.m_friction = 0.5;
+	//rbInfo.m_restitution = 0.01;
 
 	btRigidBody* const btbody = new btRigidBody(rbInfo);
     if (!_rwBodyStatic) {
@@ -165,6 +183,11 @@ btRigidBody* BtBody::createRigidBody(Body::Ptr body, const State& state) const {
     	btbody->setLinearVelocity(BtUtil::makeBtVector(linVel));
     	btbody->setAngularVelocity(BtUtil::makeBtVector(angVel));
     }
+
+    BtMaterial* const material = new BtMaterial(frictionMap,body->getMaterialID(),collisionMap,body->getInfo().objectType);
+    BodyMetaData* const data = new BodyMetaData(_rwBody->getBodyFrame(),material); // takes ownership of material
+    btbody->setUserPointer(data);
+
 	_btDynamicsWorld->addRigidBody(btbody);
 
 	if (_rwBodyStatic) {
@@ -182,10 +205,15 @@ btRigidBody* BtBody::createRigidBody(Body::Ptr body, const State& state) const {
 }
 
 btCollisionShape* BtBody::createColShape(rw::common::Ptr<const Geometry> geometry) const {
-	if(const Cylinder* const cyl = dynamic_cast<const Cylinder*>(geometry->getGeometryData().get()) ){
+	btCollisionShape* shape = NULL;
+	if(Cylinder* const cyl = dynamic_cast<Cylinder*>(geometry->getGeometryData().get()) ){
 		const btVector3 halfExtents(cyl->getRadius(),0,cyl->getHeight()/2.);
-		btCylinderShape* const shape = new btCylinderShapeZ(halfExtents);
-		return shape;
+		shape = new btCylinderShapeZ(halfExtents);
+	} else if(Sphere* const sphere = dynamic_cast<Sphere*>(geometry->getGeometryData().get()) ){
+		shape = new btSphereShape(sphere->getRadius());
+	} else if(Plane* const plane = dynamic_cast<Plane*>(geometry->getGeometryData().get()) ){
+		const btVector3 n = BtUtil::makeBtVector(plane->normal());
+		shape = new btStaticPlaneShape(n,plane->d());
 	} else {
 		const TriMesh::Ptr mesh = geometry->getGeometryData()->getTriMesh();
 		btTriangleMesh* const trimesh = new btTriangleMesh();
@@ -207,12 +235,16 @@ btCollisionShape* BtBody::createColShape(rw::common::Ptr<const Geometry> geometr
 		colShape->setMargin(COL_MARGIN);
 		colShape->postUpdate();
 		colShape->updateBound();// Call this method once before doing collisions
-		return colShape;
+		shape = colShape;
 	}
-	return NULL;
+
+	if (shape)
+		shape->setUserPointer(new GeometryMetaData(geometry));
+
+	return shape;
 }
 
-btCompoundShape* BtBody::getColShape(Body::Ptr  body, const Transform3D<>& bTcom) const {
+btCompoundShape* BtBody::getColShape(Body::Ptr body, const Transform3D<>& bTcom) const {
 	btCompoundShape* const composite = new btCompoundShape();
 	BOOST_FOREACH(const Geometry::Ptr geometry, body->getGeometry()) {
 		const Transform3D<> rw_comTgeo = inverse(bTcom)*geometry->getTransform();
@@ -227,4 +259,23 @@ btCompoundShape* BtBody::getColShape(Body::Ptr  body, const Transform3D<>& bTcom
 		return NULL;
 	}
     return composite;
+}
+
+BtBody::BodyMetaData::BodyMetaData(const Frame* frame, const BtMaterial* material):
+	frame(frame),
+	material(material)
+{
+}
+
+BtBody::BodyMetaData::~BodyMetaData() {
+	if (material)
+		delete material;
+}
+
+BtBody::GeometryMetaData::GeometryMetaData(rw::common::Ptr<const Geometry> geometry):
+	geometry(geometry)
+{
+}
+
+BtBody::GeometryMetaData::~GeometryMetaData() {
 }

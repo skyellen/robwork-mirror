@@ -67,7 +67,7 @@ public:
 	 * @param geoB [in] geometry data for the second object.
 	 * @return true if this strategy can be used for the given geometries.
 	 */
-	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB) = 0;
+	virtual bool match(rw::common::Ptr<const rw::geometry::GeometryData> geoA, rw::common::Ptr<const rw::geometry::GeometryData> geoB) = 0;
 
 	/**
 	 * @brief Check if there is contact between two contact models.

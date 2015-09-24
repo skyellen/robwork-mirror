@@ -30,6 +30,14 @@ ContactDataMap::~ContactDataMap()
 {
 }
 
+int ContactDataMap::getDataID(const std::string& objType) const {
+	const std::map<std::string, int>::const_iterator it = _nameToID.find(objType);
+    if (it == _nameToID.end())
+        RW_THROW("Object type \"" << objType << "\" does not exist!");
+    else
+    	return it->second;
+}
+
 void ContactDataMap::addNewtonData(const std::string &nameA,
                                    const std::string &nameB,
                                    const NewtonData& data)
@@ -52,7 +60,7 @@ void ContactDataMap::addChatterjeeData(const std::string &nameA,
 }
 
 const ContactDataMap::NewtonData&
-    ContactDataMap::getNewtonData(const std::string &nameA, const std::string &nameB)
+    ContactDataMap::getNewtonData(const std::string &nameA, const std::string &nameB) const
 {
     int idA = getDataID(nameA);
     int idB = getDataID(nameB);
@@ -75,13 +83,14 @@ const ContactDataMap::NewtonData& ContactDataMap::getNewtonData(int idA, int idB
 }
 
 const ContactDataMap::ChatterjeeData& ContactDataMap::getChatterjeeData(const std::string &nameA,
-                                                 const std::string nameB)
+                                                 const std::string nameB) const
 {
     int idA = getDataID(nameA);
     int idB = getDataID(nameB);
-    ChatterjeeMap::iterator res = _chatterjeeDataMap.find(std::make_pair(idA,idB));
-    if( res == _chatterjeeDataMap.end() )
+    const ChatterjeeMap::const_iterator res = _chatterjeeDataMap.find(std::make_pair(idA,idB));
+    if (res == _chatterjeeDataMap.end())
         RW_THROW("Data not available!");
-    return (*res).second;
+    else
+    	return (*res).second;
 
 }

@@ -77,12 +77,7 @@ namespace dynamics {
            * @param material [in] name of material
            * @return
            */
-         int getDataID( const std::string& objType ){
-             if(_nameToID.find(objType)==_nameToID.end() ){
-                 RW_THROW("Object type \"" << objType << "\" does not exist!");
-             }
-             return _nameToID[objType];
-         }
+         int getDataID( const std::string& objType ) const;
 
          const std::string& getObjectTypeName( int id ) const {
              return _objectNames[id];
@@ -110,7 +105,7 @@ namespace dynamics {
                            const ChatterjeeData& data);
 
         const NewtonData& getNewtonData(const std::string &nameA,
-                                        const std::string &nameB);
+                                        const std::string &nameB) const;
 
         const NewtonData& getNewtonData(int idA, int idB) const ;
 
@@ -119,7 +114,7 @@ namespace dynamics {
     	 *
     	 */
     	const ChatterjeeData& getChatterjeeData(const std::string &nameA,
-    	                                        const std::string nameB);
+    	                                        const std::string nameB) const;
 
 
     private:

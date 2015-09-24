@@ -211,7 +211,7 @@ bool ODEContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom
 	} else if (const Tube* const geo = dynamic_cast<Tube*>(geomData.get())) {
 		// Only valid for tube to plane
 		newModel.movable = true;
-		newModel.geomId = dCreateCylinder(bmodel->space,geo->getRadius(),geo->getHeight());
+		newModel.geomId = dCreateCylinder(bmodel->space,geo->getInnerRadius(),geo->getHeight());
 		bmodel->models.push_back(newModel);
 		return true;
 	} else if (const Plane* const geo = dynamic_cast<Plane*>(geomData.get())) {

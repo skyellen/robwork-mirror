@@ -27,6 +27,10 @@ IF(build)
     	BtDebugRender.cpp
 		BtConstraint.cpp
 		BtTactileSensor.cpp
+		BtMaterial.cpp
+		BtContactStrategy.cpp
+		BtRWCollisionAlgorithm.cpp
+		BtRWCollisionConfiguration.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -39,6 +43,10 @@ IF(build)
     	BtDebugRender.hpp
 		BtConstraint.hpp
 		BtTactileSensor.hpp
+		BtMaterial.hpp
+		BtContactStrategy.hpp
+		BtRWCollisionAlgorithm.hpp
+		BtRWCollisionConfiguration.hpp
     )
 
 	# Detect if Bullet is compiled in single or double precision by doing a test compilation 

@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
 					GeometryData::Ptr geo = hole->getGeometry()[0]->getGeometryData();
 					if (geo->getType() == GeometryData::TubePrim) {
 						Tube* tube = (geo.cast<Tube>()).get();
-						hrad = tube->getRadius();
+						hrad = tube->getInnerRadius();
 						hlen = tube->getHeight();
 						dataFound = true;
 					}

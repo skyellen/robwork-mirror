@@ -130,14 +130,13 @@ ContactDetector::StrategyTable ContactDetector::getContactStrategies(const std::
 	return res;
 }
 
-ContactDetector::StrategyTable ContactDetector::getContactStrategies(const std::string& frameA, rw::common::Ptr<const Geometry> geometryA, const std::string& frameB, rw::common::Ptr<const Geometry> geometryB) const {
+ContactDetector::StrategyTable ContactDetector::getContactStrategies(const std::string& frameA, rw::common::Ptr<const GeometryData> geometryA, const std::string& frameB, rw::common::Ptr<const GeometryData> geometryB) const {
 	StrategyTable res;
 	StrategyTable table = getContactStrategies(frameA,frameB);
 	std::list<StrategyTableRow>::const_iterator it;
-	for (it = table.begin(); (it != table.end()); it++) {
-		StrategyTableRow stratMatch = *it;
-		if (stratMatch.strategy->match(geometryA->getGeometryData(),geometryB->getGeometryData())) {
-			res.push_back(stratMatch);
+	for (it = table.begin(); it != table.end(); it++) {
+		if (it->strategy->match(geometryA,geometryB)) {
+			res.push_back(*it);
 		}
 	}
 	return res;
