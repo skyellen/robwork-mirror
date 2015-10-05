@@ -23,7 +23,7 @@
 
 using namespace rw::common;
 
-BOOST_AUTO_TEST_CASE( StringUtilTest )
+BOOST_AUTO_TEST_CASE( StringUtilGetFileExtensionTest )
 {
     typedef std::pair<std::string, std::string> Pair;
     const Pair pairs[] = {
@@ -38,11 +38,19 @@ BOOST_AUTO_TEST_CASE( StringUtilTest )
         Pair("foo.bar/baz", ""),
         Pair("foo.bar\\baz", ""),
         Pair("foo.bar/baz.txt", ".txt"),
-        Pair("foo.bar\\baz.txt", ".txt"),
+        Pair("foo.bar\\baz.txt", ".txt")
     };
     const int len = sizeof(pairs) / sizeof(*pairs);
     for (int i = 0; i < len; i++) {
         const Pair& pair = pairs[i];
         BOOST_CHECK(StringUtil::getFileExtension(pair.first) == pair.second);
     }
+	
+}
+
+BOOST_AUTO_TEST_CASE( StringUtilGetFileNameTest )
+{
+	BOOST_CHECK(StringUtil::getFileName("d:\\test\\folder1\\filename.txt") == "filename.txt");
+	BOOST_CHECK(StringUtil::getFileName("/test/folder1/filename.txt") == "filename.txt");
+	BOOST_CHECK(StringUtil::getFileName("d:\\test\\folder1\\filename") == "filename");
 }
