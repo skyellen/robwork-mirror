@@ -69,6 +69,17 @@ namespace rw { namespace common {
          */
         static std::string getDirectoryName(const std::string& path);
 
+        /**
+         * @brief Extract the file name (including extension) from a string containing full name including the directory.
+         *
+         * The function simply returns everything efter the last slash
+         * or backslash. If there is no such slash or backslash, the original string is returned
+         *
+         * @param pathAndFileName [in] The path and filename .
+         *
+         * @return The file name.
+         */
+		static std::string getFileName(const std::string& pathAndFileName);
 
         /**
          * @brief The extension of a file name.

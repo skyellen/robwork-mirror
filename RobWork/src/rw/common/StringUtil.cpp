@@ -65,6 +65,18 @@ std::string StringUtil::getDirectoryName(const std::string& path)
 }
 
 
+std::string StringUtil::getFileName(const std::string& pathAndFilename)
+{
+    const std::string::size_type pos = pathAndFilename.find_last_of("/\\");
+
+    if (pos != std::string::npos)
+        return pathAndFilename.substr(pos + 1, std::string::npos);
+    else
+        return pathAndFilename;
+}
+
+
+
 /**
  * @brief Removes space, tab and new line from string
  */
