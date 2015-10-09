@@ -45,6 +45,7 @@ public:
 		Interference,
 		WrenchInsufficient,
 		Filtered,
+                Skip,
 		SizeOfStatusArray
 	};
 
@@ -86,7 +87,7 @@ public:
 				"InvKinFailure", "PoseEstimateFailure", "CollisionFiltered",
 				"CollisionObjectInitially", "CollisionEnvironmentInitially",
 				"CollisionDuringExecution", "Interference",
-				"WrenchInsufficient", "Filtered", "SizeOfStatusArray" };
+				"WrenchInsufficient", "Filtered", "Skip", "SizeOfStatusArray" };
 
 		return strArr[status];
 	}
