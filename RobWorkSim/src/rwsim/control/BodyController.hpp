@@ -24,13 +24,13 @@
  * \copydoc rwsim::control::BodyController
  */
 
+#include <rw/trajectory/Trajectory.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwlibs/control/SyncVelocityRamp.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
-#include <rw/trajectory/Trajectory.hpp>
+#include <rwsim/dynamics/Body.hpp>
 #include <boost/thread/mutex.hpp>
-#include <list>
+
+namespace rwsim { namespace dynamics { class KinematicBody; } }
 
 namespace rwsim {
 namespace control {
@@ -38,89 +38,89 @@ namespace control {
 	//! @{
 
 	/**
-	 * @brief a Controller that use a PD loop to follow a trajectory
+	 * @brief A Controller that use a PD loop to follow a trajectory
 	 * generated from different target types. If the body is a Kinematic body then
-	 * the velocities of the body is directly controlled. else wrenches are used to
+	 * the velocities of the body is directly controlled, else wrenches are used to
 	 * control the body.
 	 */
 	class BodyController: public rwlibs::control::Controller, public rwlibs::simulation::SimulatedController {
 	public:
-
+    	//! @brief Smart pointer type to this class
 	    typedef rw::common::Ptr<BodyController> Ptr;
 
+	    /**
+	     * @brief Construct new controller.
+	     * @param name [in] the name of the controller.
+	     */
 		BodyController(const std::string& name);
 
-		/**
-		 * @brief destructor
-		 */
-		virtual ~BodyController(){};
+		//! @brief Destructor.
+		virtual ~BodyController();
 
 		/**
-		 * @brief sets the target transform of a body. The target is defined in world frame.
-		 * @param body
-		 * @param target
-		 * @param state
+		 * @brief Sets the target transform of a body. The target is defined in world frame.
+		 * @param body [in] the body to set target for.
+		 * @param target [in] the target transformation in world frame.
+		 * @param state [in] the state giving the current position.
 		 */
-		void setTarget(rwsim::dynamics::Body::Ptr body, const rw::math::Transform3D<>& target, rw::kinematics::State& state);
+		void setTarget(rwsim::dynamics::Body::Ptr body, const rw::math::Transform3D<>& target, const rw::kinematics::State& state);
 
 		/**
-		 * @brief set a target trajectory of a body. The initial configuration of the trajectory must match
+		 * @brief Set a target trajectory of a body. The initial configuration of the trajectory must match
 		 * the current configuration of the body.
 		 *
 		 * A Kinematic body will follow the exact path of the trajectory whereas a RigidBody
 		 * will use a PD controller to follow the trajectory
 		 *
 		 * @param body [in] the body that should be moved
-		 * @param traj
-		 * @param state
+		 * @param traj [in] the trajectory.
 		 */
 		void setTarget(rwsim::dynamics::Body::Ptr body,
-		               rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj,
-		               rw::kinematics::State& state);
-
-	/**
-	 * @brief Set a velocity target.
-	 * @param body [in] the body that should move.
-	 * @param velocity [in] the velocity target.
-	 * @param state [in/out] the state to update with the new targets.
-	 */
-	void setTarget(rwsim::dynamics::Body::Ptr body,
-			const rw::math::VelocityScrew6D<> &velocity,
-			rw::kinematics::State& state);
+		               rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj);
 
 		/**
-		 * @brief set the force target of a body, the forces will be added such that the force
+		 * @brief Set a velocity target.
+		 * @param body [in] the body that should move.
+		 * @param velocity [in] the velocity target.
+		 */
+		void setTarget(rwsim::dynamics::Body::Ptr body,
+				const rw::math::VelocityScrew6D<> &velocity);
+
+		/**
+		 * @brief Set the force target of a body, the forces will be added such that the force
 		 * on the body in each timestep will be timestep/[force;torque]. In other words the wrench
 		 * [force;torque] is stretched over one second.
 		 *
 		 * The wrench is defined in world coordinates.
-		 * @param body
-		 * @param force
-		 * @param torque
-		 * @param state
+		 * @param body [in] the body.
+		 * @param force [in] the force.
+		 * @param torque [in] the torque.
 		 */
 		void setForceTarget(rwsim::dynamics::Body::Ptr body,
 		                    rw::math::Vector3D<> force,
-		                    rw::math::Vector3D<> torque,
-		                    rw::kinematics::State& state);
+		                    rw::math::Vector3D<> torque);
 
 		/**
-		 * @brief get the current Cartesian target
+		 * @brief Get the current Cartesian target
 		 * @param body [in] the body for which to get the target
 		 * @return 6D Cartesian target
 		 */
 		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body::Ptr body);
 
 		/**
-		 * @brief get the current target trajectory for body \b body
+		 * @brief Get the current target trajectory for body \b body
 		 * @param body [in] body for which to get the target
 		 * @return target trajectory
 		 */
 		rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr getTargetTrajectory(rwsim::dynamics::Body::Ptr body);
 
-
+		/**
+		 * @brief Disable control of a specific body.
+		 * @param body [in] the body.
+		 */
 		void disableBodyControl(rwsim::dynamics::Body::Ptr body);
 
+		//! @brief Disable control of all bodies.
 		void disableBodyControl();
 
 		//! @copydoc SimulatedController::update
@@ -129,45 +129,35 @@ namespace control {
 		//! @copydoc SimulatedController::reset
 		void reset(const rw::kinematics::State& state);
 
-		//! @copydoc SimulatedController::getController
-		Controller* getController(){ return this; };
-
+		//! @copydoc SimulatedController::getControllerName
 		std::string getControllerName(){ return getName(); };
 
+		//! @copydoc SimulatedController::setEnabled
         void setEnabled(bool enabled){ _enabled = enabled; };
 
+		//! @copydoc SimulatedController::isEnabled
         bool isEnabled() const { return _enabled; } ;
 
-
+		//! @copydoc SimulatedController::getControllerHandle
         rwlibs::control::Controller::Ptr getControllerHandle(rwlibs::simulation::Simulator::Ptr sim){ return this;}
-
-
-        typedef enum {Pose6DController, TrajectoryController, VelocityController, ForceController} ControlType;
-        struct TargetData {
-            TargetData():_type(Pose6DController),_enabled(false){ reset();}
-            TargetData(ControlType type):_type(type),_enabled(true){ reset(); }
-            void reset(){
-                _time = 0;
-                _lastTime = 0;
-                _lastDt = 0;
-            }
-            ControlType _type;
-            rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr _traj;
-			rw::math::VelocityScrew6D<> _velocity;
-            rw::math::Transform3D<> _target;
-            rw::math::Vector3D<> _force, _torque;
-            double _time, // current time on the trajectory
-                   _lastTime, // the time on the trajectory taken at the last non-rollback step
-                   _lastDt; // the simulated starting time
-            bool _enabled;
-        };
 
 	private:
 		BodyController();
 
 	private:
-		std::map<rwsim::dynamics::Body*, TargetData> _bodyMap;
-		std::list<rwsim::dynamics::Body::Ptr> _bodies;
+        struct TargetData;
+
+        static void updateKinematicBody(rwsim::dynamics::KinematicBody* body,
+        		TargetData& tdata,
+				const rwlibs::simulation::Simulator::UpdateInfo& info,
+				rw::kinematics::State& state);
+
+        static void updateBody(rwsim::dynamics::Body* body,
+        		TargetData& tdata,
+        		const rwlibs::simulation::Simulator::UpdateInfo& info,
+				rw::kinematics::State& state);
+
+		std::map<rwsim::dynamics::Body*, TargetData*> _bodyMap;
 		bool _enabled;
 		boost::mutex _mutex;
 	};
@@ -176,4 +166,4 @@ namespace control {
 }
 }
 
-#endif /*PDController_HPP_*/
+#endif /*RWSIM_CONTROL_BODYCONTROLLER_HPP_*/

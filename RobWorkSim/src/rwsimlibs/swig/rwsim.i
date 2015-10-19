@@ -1077,7 +1077,7 @@ public:
 	 void setDynamicsEnabled(rw::common::Ptr<Body> body, bool enabled);
 	 // interfaces for manipulating/controlling bodies
 	 void setTarget(rw::common::Ptr<Body> body, const Transform3d& t3d, State& state); 
-	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<Trajectory<Transform3d> > traj, State& state);
+	 void setTarget(rw::common::Ptr<Body> body, rw::common::Ptr<Trajectory<Transform3d> > traj);
 
 	 void disableBodyControl( rw::common::Ptr<Body> body );
 	 void disableBodyControl( );

@@ -104,12 +104,12 @@ void DynamicSimulator::setTarget(dynamics::Body::Ptr body, const rw::math::Trans
     _bodyController->setTarget(body, t3d, state);
 }
 
-void DynamicSimulator::setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj, rw::kinematics::State& state){
-    _bodyController->setTarget(body, traj, state);
+void DynamicSimulator::setTarget(dynamics::Body::Ptr body, rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj){
+    _bodyController->setTarget(body, traj);
 }
 
-void DynamicSimulator::setTarget(dynamics::Body::Ptr body, const rw::math::VelocityScrew6D<>& velocity, rw::kinematics::State& state){
-    _bodyController->setTarget(body, velocity, state);
+void DynamicSimulator::setTarget(dynamics::Body::Ptr body, const rw::math::VelocityScrew6D<>& velocity){
+    _bodyController->setTarget(body, velocity);
 }
 
 void DynamicSimulator::disableBodyControl( dynamics::Body::Ptr body ){

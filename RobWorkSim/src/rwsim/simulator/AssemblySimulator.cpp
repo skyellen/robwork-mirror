@@ -648,7 +648,7 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 					if (simState.maleController != NULL) {
 						simState.maleController->moveVelT(velocity);
 					} else {
-						simState.simulator->setTarget(simState.maleBodyControl,velocity,simState.state);
+						simState.simulator->setTarget(simState.maleBodyControl,velocity);
 					}
 				} else {
 					bool ftControl = (response->type == AssemblyControlResponse::HYBRID_FT_POS);
@@ -677,7 +677,7 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 						else if (response->type == AssemblyControlResponse::POSITION_TRAJECTORY) {
 							const Trajectory<Transform3D<> >::Ptr traj = response->worldTendTrajectory;
 							RW_ASSERT(traj != NULL);
-							simState.simulator->setTarget(simState.maleBodyControl,traj,simState.state);
+							simState.simulator->setTarget(simState.maleBodyControl,traj);
 						}
 					}
 				}
