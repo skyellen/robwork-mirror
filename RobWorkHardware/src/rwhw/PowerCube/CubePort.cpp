@@ -194,3 +194,7 @@ CubePort* CubePort::make(rwhw::SerialPort *port){
 CubePort* CubePort::make(rwhw::CanPort *port){
     return new CANCubePort(port);
 }
+
+CubePort::~CubePort() {
+  /* Empty */
+}
