@@ -37,6 +37,9 @@ namespace rwhw {
     class CubePort {
     public:
 
+      /* virtual destructor, making this class appropriate for inheritance */
+      virtual ~CubePort();
+
         /**
          * @brief The structure for transmitting and recieving can messg  es
          */
