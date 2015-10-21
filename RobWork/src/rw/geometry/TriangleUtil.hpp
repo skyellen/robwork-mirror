@@ -24,6 +24,7 @@
 #include "TriMesh.hpp"
 #include "IndexedTriMesh.hpp"
 #include "PlainTriMesh.hpp"
+#include "Plane.hpp"
 
 #include <rw/math/Vector3D.hpp>
 #include <stack>
@@ -104,9 +105,7 @@ namespace rw { namespace geometry {
             axis = 0;
             std::sort(verticesIdx->begin(),verticesIdx->end());
 
-            //int bmi=0;
             // run through the semi sorted list and merge vertices that are alike
-            //std::stack<VertexCmp<T>*>
             std::stack<SortJob> sjobs;
             sjobs.push(SortJob(0,0,(int)(verticesIdx->size()-1)));
             while( !sjobs.empty() ){
@@ -114,15 +113,12 @@ namespace rw { namespace geometry {
                 sjobs.pop();
                 if(job.from==job.to)
                     continue;
-                //job.print();
                 // locate the next end
                 int j = job.from;
                 RW_ASSERT_MSG(j<(int)verticesIdx->size(), j << "<" << verticesIdx->size());
                 RW_ASSERT(job.axis<3);
                 T axisVal, lastAxisVal = (*verticesIdx)[j].n[job.axis];
                 do{
-                    //std::cout << "j" << j << "," << job.axis << " ";
-                    //RW_ASSERT(j<verticesIdx->size());
                     j++;
                     axisVal = (*verticesIdx)[j].n[job.axis];
                 } while(axisVal<lastAxisVal+epsilon && j<job.to);
@@ -141,15 +137,6 @@ namespace rw { namespace geometry {
 
                 axis = job.axis+1;
                 std::sort(verticesIdx->begin()+job.from, verticesIdx->begin()+j);
-
-                //std::cout << axis << ", " << job.from << " --> " << j << "   \n";
-                //if(axis==2){
-                //    for(int i=job.from;i<j;i++){
-                //        std::cout << bmi << ": "<< (*verticesIdx)[i].n << " " << std::endl;;
-                //        bmi++;
-                //    }
-                //}
-
             }
 
             return verticesIdx;
@@ -158,15 +145,7 @@ namespace rw { namespace geometry {
 
 	public:
 		/**
-		 * @brief offsets the surface in the direction of the normal.
-
-		 * @param triMesh [in] the tri mesh that is to be converted
-		 * @param dist [in] offset distance in direction of normal
-		 */
-		//static rw::common::Ptr<TriMesh> offsetSurface(const TriMesh& triMesh, double dist);
-
-		/**
-		 * @brief takes a general triangle mesh and creates an indexed
+		 * @brief Takes a general triangle mesh and creates an indexed
 		 * triangle mesh. All data is copied.
 		 *
 		 * The order of the triangles in the new mesh will be the same as that of
@@ -187,21 +166,15 @@ namespace rw { namespace geometry {
 		        RW_THROW("Size of mesh must be more than 0!");
 
 		    // create a sorted vertice list with backreference to the triangle list
-		    std::vector<VertexCmp<T> >* verticesIdx =
-		    		createSortedVerticeIdxList<T>(triMesh, epsilon);
-		    //int myi=0;
-		    //BOOST_FOREACH(VertexCmp<T> c, *verticesIdx){
-		    //    std::cout << myi << ": " << c.n << "\n";
-		    //    myi++;
-		    //}
-		    // Now copy all sorted vertices into the vertice array
+		    std::vector<VertexCmp<T> >* verticesIdx = createSortedVerticeIdxList<T>(triMesh, epsilon);
+
+			// Now copy all sorted vertices into the vertice array
             // and make sure vertices that are close to each other are discarded
             std::vector<Vector3D<T> > *vertices =
                 new std::vector<Vector3D<T> >(triMesh.getSize()*3);
 
 		    // allocate enough memory
-            std::vector<TRI> *triangles =
-                new std::vector<TRI>(triMesh.getSize());
+            std::vector<TRI> *triangles = new std::vector<TRI>(triMesh.getSize());
 
             S vertCnt = 0;
             Vector3D<T> lastVert = (*verticesIdx)[0].n;
@@ -221,9 +194,7 @@ namespace rw { namespace geometry {
                 S triIdx = (*verticesIdx)[i].triIdx;
                 S vertTriIdx = (*verticesIdx)[i].vertIdx;
                 // update the triangle index for this vertice
-                //std::cout <<  "vertIdx: " << (*verticesIdx)[i].vertIdx << std::endl;
                 ((*triangles)[ triIdx ])[vertTriIdx] = vertCnt;
-                //std::cout << (*verticesIdx)[i].n << std::endl;
             }
 
             vertices->resize(vertCnt+1);
@@ -235,51 +206,8 @@ namespace rw { namespace geometry {
 
 
 		/**
-		 * @brief takes a indexed triangle mesh and creates a generel
-		 * triangle mesh. All data is copied.
-		 * @param triMesh [in] the tri mesh that is to be converted
+		 * @brief Recalculate the normals of \b trimesh
 		 */
-		//template <class TRI=Triangle<double> >
-		//static TriMesh<TRI>* toTriMesh( const IndexedTriMesh<TRI>& iTriMesh );
-
-
-		//template <class TRI=Triangle<double> >
-		//static TriMesh<TRI>* toMesh( const IndexedTriMesh<TRI>& iTriMesh );
-
-		// calculate and add vertex normals from/to TriMesh
-/*		template <class T>
-		static void CalcVertexNormals( const TriMesh<T>& triMesh,
-									   PlainTriMesh<T>& result)
-		{
-
-		}
-*/
-		// calculate and add vertex normals from/to TriMesh
-/*		template <class T, TriType TRI>
-		static void CalcVertexNormals( const IndexedTriMesh<T, TRI>& triMesh,
-									   IndexedTriMesh<T>& result)
-		{
-
-		}
-*/
-		/*
-		template <class TRI>
-		static PlainTriMesh< TRI >*
-        toTriangleMesh( std::vector<rw::geometry::Face<float> >& faces){
-		    using namespace rw::math;
-		    typedef typename TRI::value_type T;
-		    PlainTriMesh<TRI > *mesh = new PlainTriMesh<TRI >(faces.size());
-
-		    for(size_t i=0;i<faces.size();i++){
-		        Vector3D<T> v3d1(faces[i]._vertex1[0],faces[i]._vertex1[1],faces[i]._vertex1[2]);
-		        Vector3D<T> v3d2(faces[i]._vertex2[0],faces[i]._vertex2[1],faces[i]._vertex2[2]);
-		        Vector3D<T> v3d3(faces[i]._vertex3[0],faces[i]._vertex3[1],faces[i]._vertex3[2]);
-		        (*mesh)[i] = TRI(v3d1,v3d2,v3d3);
-		    }
-		    return mesh;
-		}
-*/
-
 		template <class T>
 		static void recalcNormals(PlainTriMesh<TriangleN1<T> >& trimesh){
 		    using namespace rw::math;
@@ -288,13 +216,104 @@ namespace rw { namespace geometry {
 		        trimesh[i].getFaceNormal() = normal;
 		    }
 		}
-	private:
 
 
+		/**
+		 * @brief Divided \b trimesh using the specified plane
+		 * 
+		 * Triangles is cut by the plane and replaced with new triangles.
+		 * Triangles lying in the plane is placed with the triangles behind.
+		 *
+		 * @return First item in the pair is the triangles in front of the plane and second item is the triangles behind or in the plane.
+		 */
+		template <class TRI>
+		static std::pair<TriMesh::Ptr, TriMesh::Ptr> divide(TriMesh::Ptr trimesh, Plane::Ptr plane) {		
+			typedef typename TRI::value_type T;
+			PlainTriMesh<TRI>::Ptr front =  ownedPtr(new PlainTriMesh<TRI>());
+			PlainTriMesh<TRI>::Ptr back =  ownedPtr(new PlainTriMesh<TRI>());
+			for (size_t i = 0; i<trimesh->size(); i++) {
+				Triangle<>& tri = trimesh->getTriangle(i);
+				double d0 = plane->distance(tri.getVertex(0));
+				double d1 = plane->distance(tri.getVertex(1));
+				double d2 = plane->distance(tri.getVertex(2));
+				//std::cout<<"d0 = "<<d0<<" d1 = "<<d1<<" d2 = "<<d2<<std::endl;
+				if (d0 <= 0 && d1<= 0 && d2 <= 0) {
+					back->add(tri);
+				} else if (d0 >= 0 && d1 >= 0 && d2 >= 0) {
+					front->add(tri);
+				} else {
+					std::vector<int> behind;
+					std::vector<int> infront;
+					if (d0 < 0) 
+						behind.push_back(0);
+					else
+						infront.push_back(0);
 
+					if (d1 < 0) 
+						behind.push_back(1);
+					else
+						infront.push_back(1);
 
+					if (d2 < 0) 
+						behind.push_back(2);
+					else
+						infront.push_back(2);
 
+					if (behind.size() == 2) {
+						Vector3D<T> b1 = tri.getVertex(behind[0]);
+						Vector3D<T> b2 = tri.getVertex(behind[1]);
+						Vector3D<T> f1 = tri.getVertex(infront[0]);
 
+						Vector3D<T> i1 = plane->intersection(b1, f1);
+						Vector3D<T> i2 = plane->intersection(b2, f1);
+
+						if (d0 > 0 || d2 > 0) {
+							TRI trib1(b1, i2, i1);
+							TRI trib2(b1, b2, i2);
+							TRI trif1(i1, i2, f1);
+							back->add(trib1);
+							back->add(trib2);
+							front->add(trif1);
+						} else {
+							TRI trib1(b1, i1, i2);
+							TRI trib2(b1, i2, b2);
+							TRI trif1(i1, f1, i2);
+							back->add(trib1);
+							back->add(trib2);
+							front->add(trif1);
+						}
+
+					} else { //inFront.size() == 2
+						Vector3D<T> b1 = tri.getVertex(behind[0]);
+						Vector3D<T> f1 = tri.getVertex(infront[0]);
+						Vector3D<T> f2 = tri.getVertex(infront[1]);
+
+						Vector3D<T> i1 = plane->intersection(b1, f1);
+						Vector3D<T> i2 = plane->intersection(b1, f2);
+
+						if (d0 < 0 || d2 < 0) {
+							TRI trif1(f1, i2, i1);
+							TRI trif2(f1, f2, i2);
+							TRI trib1(b1, i1, i2);
+
+							front->add(trif1);
+							front->add(trif2);
+							back->add(trib1);
+						} else {
+							TRI trif1(f1, i1, i2);
+							TRI trif2(f1, i2, f2);
+							TRI trib1(b1, i2, i1);
+
+							front->add(trif1);
+							front->add(trif2);
+							back->add(trib1);
+						}
+					}
+				}
+			}
+			return std::make_pair(front, back);
+		
+		}
     };
 
 
