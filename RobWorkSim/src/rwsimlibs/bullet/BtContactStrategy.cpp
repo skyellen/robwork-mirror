@@ -107,6 +107,20 @@ public:
 		bool movable;
 	};
 
+	BtModel& newModel() {
+		models.resize(models.size()+1);
+		return models.back();
+	}
+
+	void abortNewModel() {
+		models.resize(models.size()-1);
+	}
+
+	const std::vector<BtModel>& getModels() const {
+		return models;
+	}
+
+private:
 	std::vector<BtModel> models;
 };
 }
@@ -167,8 +181,8 @@ std::vector<Contact> BtContactStrategy::findContacts(
 	RW_ASSERT(mB != NULL);
 
 	std::vector<Contact> res;
-	BOOST_FOREACH(const BtContactModel::BtModel& modelA, mA->models) {
-		BOOST_FOREACH(const BtContactModel::BtModel& modelB, mB->models) {
+	BOOST_FOREACH(const BtContactModel::BtModel& modelA, mA->getModels()) {
+		BOOST_FOREACH(const BtContactModel::BtModel& modelB, mB->getModels()) {
 			const btTransform transformA = BtUtil::makeBtTransform(wTa*modelA.transform);
 			const btTransform transformB = BtUtil::makeBtTransform(wTb*modelB.transform);
 			btRigidBody* bodyA = modelA.body;
@@ -251,7 +265,7 @@ bool BtContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom)
 	RW_ASSERT(bmodel);
 	GeometryData::Ptr geomData = geom.getGeometryData();
 
-	BtContactModel::BtModel newModel;
+	BtContactModel::BtModel& newModel = bmodel->newModel();
 	newModel.geoId = geom.getId();
 	newModel.transform = geom.getTransform();
 	newModel.frame = geom.getFrame();
@@ -285,6 +299,7 @@ bool BtContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom)
 			trimesh->addTriangle(v1, v2, v3);
 		}
 		if (trimesh->getNumTriangles() == 0) {
+			bmodel->abortNewModel();
 			delete trimesh;
 			return NULL;
 		}
@@ -333,6 +348,7 @@ bool BtContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom)
 
 		return true;
 	} else {
+		bmodel->abortNewModel();
 		return false;
 	}
 }
@@ -350,7 +366,8 @@ bool BtContactStrategy::removeGeometry(ProximityModel* model, const std::string&
 std::vector<std::string> BtContactStrategy::getGeometryIDs(ProximityModel* model) {
 	BtContactModel* bmodel = dynamic_cast<BtContactModel*>(model);
 	std::vector<std::string> res;
-	for (std::vector<BtContactModel::BtModel>::iterator it = bmodel->models.begin(); it != bmodel->models.end(); it++) {
+	const std::vector<BtContactModel::BtModel>& models = bmodel->getModels();
+	for (std::vector<BtContactModel::BtModel>::const_iterator it = models.begin(); it != models.end(); it++) {
 		res.push_back(it->geoId);
 	}
 	return res;
