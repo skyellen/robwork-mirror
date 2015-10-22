@@ -32,7 +32,7 @@ namespace geometry {
 	/**
 	 * @brief plain triangle class. The second template argument specify
 	 * the number of normals associated with the triangle.
-	 *  The triangle vertices should be arranged counter clock whise.
+	 *  The triangle vertices should be arranged counter clock wise.
 	 */
 	template <class T=double>
 	class Triangle {
@@ -103,7 +103,7 @@ namespace geometry {
 
 		/**
 		 * @brief calculates the face normal of this triangle. It is assumed
-		 * that the triangle vertices are arranged counter lock wise.
+		 * that the triangle vertices are arranged counter clock wise.
 		 */
 		rw::math::Vector3D<T> calcFaceNormal() const {
 	        rw::math::Vector3D<T> n =

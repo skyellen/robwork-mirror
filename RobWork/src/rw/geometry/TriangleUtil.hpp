@@ -227,91 +227,92 @@ namespace rw { namespace geometry {
 		 * @return First item in the pair is the triangles in front of the plane and second item is the triangles behind or in the plane.
 		 */
 		template <class TRI>
-		static std::pair<TriMesh::Ptr, TriMesh::Ptr> divide(TriMesh::Ptr trimesh, Plane::Ptr plane) {		
-			typedef typename TRI::value_type T;
-			PlainTriMesh<TRI>::Ptr front =  ownedPtr(new PlainTriMesh<TRI>());
-			PlainTriMesh<TRI>::Ptr back =  ownedPtr(new PlainTriMesh<TRI>());
-			for (size_t i = 0; i<trimesh->size(); i++) {
-				Triangle<>& tri = trimesh->getTriangle(i);
-				double d0 = plane->distance(tri.getVertex(0));
-				double d1 = plane->distance(tri.getVertex(1));
-				double d2 = plane->distance(tri.getVertex(2));
-				//std::cout<<"d0 = "<<d0<<" d1 = "<<d1<<" d2 = "<<d2<<std::endl;
-				if (d0 <= 0 && d1<= 0 && d2 <= 0) {
-					back->add(tri);
-				} else if (d0 >= 0 && d1 >= 0 && d2 >= 0) {
-					front->add(tri);
-				} else {
-					std::vector<int> behind;
-					std::vector<int> infront;
-					if (d0 < 0) 
-						behind.push_back(0);
-					else
-						infront.push_back(0);
+                static std::pair<TriMesh::Ptr, TriMesh::Ptr> divide(TriMesh::Ptr trimesh, Plane::Ptr plane) {
+                        typedef typename TRI::value_type T;
+                        using namespace rw::math;
+                        typename PlainTriMesh<TRI>::Ptr front = ownedPtr(new PlainTriMesh<TRI>());
+                        typename PlainTriMesh<TRI>::Ptr back = ownedPtr(new PlainTriMesh<TRI>());
+                        for (size_t i = 0; i<trimesh->size(); i++) {
+                                Triangle<>& tri = trimesh->getTriangle(i);
+                                double d0 = plane->distance(tri.getVertex(0));
+                                double d1 = plane->distance(tri.getVertex(1));
+                                double d2 = plane->distance(tri.getVertex(2));
+                                //std::cout<<"d0 = "<<d0<<" d1 = "<<d1<<" d2 = "<<d2<<std::endl;
+                                if (d0 <= 0 && d1<= 0 && d2 <= 0) {
+                                        back->add(tri);
+                                } else if (d0 >= 0 && d1 >= 0 && d2 >= 0) {
+                                        front->add(tri);
+                                } else {
+                                        std::vector<int> behind;
+                                        std::vector<int> infront;
+                                        if (d0 < 0) 
+                                                behind.push_back(0);
+                                        else
+                                                infront.push_back(0);
 
-					if (d1 < 0) 
-						behind.push_back(1);
-					else
-						infront.push_back(1);
+                                        if (d1 < 0) 
+                                                behind.push_back(1);
+                                        else
+                                                infront.push_back(1);
 
-					if (d2 < 0) 
-						behind.push_back(2);
-					else
-						infront.push_back(2);
+                                        if (d2 < 0) 
+                                                behind.push_back(2);
+                                        else
+                                                infront.push_back(2);
 
-					if (behind.size() == 2) {
-						Vector3D<T> b1 = tri.getVertex(behind[0]);
-						Vector3D<T> b2 = tri.getVertex(behind[1]);
-						Vector3D<T> f1 = tri.getVertex(infront[0]);
+                                        if (behind.size() == 2) {
+                                                Vector3D<T> b1 = tri.getVertex(behind[0]);
+                                                Vector3D<T> b2 = tri.getVertex(behind[1]);
+                                                Vector3D<T> f1 = tri.getVertex(infront[0]);
 
-						Vector3D<T> i1 = plane->intersection(b1, f1);
-						Vector3D<T> i2 = plane->intersection(b2, f1);
+                                                Vector3D<T> i1 = plane->intersection(b1, f1);
+                                                Vector3D<T> i2 = plane->intersection(b2, f1);
 
-						if (d0 > 0 || d2 > 0) {
-							TRI trib1(b1, i2, i1);
-							TRI trib2(b1, b2, i2);
-							TRI trif1(i1, i2, f1);
-							back->add(trib1);
-							back->add(trib2);
-							front->add(trif1);
-						} else {
-							TRI trib1(b1, i1, i2);
-							TRI trib2(b1, i2, b2);
-							TRI trif1(i1, f1, i2);
-							back->add(trib1);
-							back->add(trib2);
-							front->add(trif1);
-						}
+                                                if (d0 > 0 || d2 > 0) {
+                                                        TRI trib1(b1, i2, i1);
+                                                        TRI trib2(b1, b2, i2);
+                                                        TRI trif1(i1, i2, f1);
+                                                        back->add(trib1);
+                                                        back->add(trib2);
+                                                        front->add(trif1);
+                                                } else {
+                                                        TRI trib1(b1, i1, i2);
+                                                        TRI trib2(b1, i2, b2);
+                                                        TRI trif1(i1, f1, i2);
+                                                        back->add(trib1);
+                                                        back->add(trib2);
+                                                        front->add(trif1);
+                                                }
 
-					} else { //inFront.size() == 2
-						Vector3D<T> b1 = tri.getVertex(behind[0]);
-						Vector3D<T> f1 = tri.getVertex(infront[0]);
-						Vector3D<T> f2 = tri.getVertex(infront[1]);
+                                        } else { //inFront.size() == 2
+                                                Vector3D<T> b1 = tri.getVertex(behind[0]);
+                                                Vector3D<T> f1 = tri.getVertex(infront[0]);
+                                                Vector3D<T> f2 = tri.getVertex(infront[1]);
 
-						Vector3D<T> i1 = plane->intersection(b1, f1);
-						Vector3D<T> i2 = plane->intersection(b1, f2);
+                                                Vector3D<T> i1 = plane->intersection(b1, f1);
+                                                Vector3D<T> i2 = plane->intersection(b1, f2);
 
-						if (d0 < 0 || d2 < 0) {
-							TRI trif1(f1, i2, i1);
-							TRI trif2(f1, f2, i2);
-							TRI trib1(b1, i1, i2);
+                                                if (d0 < 0 || d2 < 0) {
+                                                        TRI trif1(f1, i2, i1);
+                                                        TRI trif2(f1, f2, i2);
+                                                        TRI trib1(b1, i1, i2);
 
-							front->add(trif1);
-							front->add(trif2);
-							back->add(trib1);
-						} else {
-							TRI trif1(f1, i1, i2);
-							TRI trif2(f1, i2, f2);
-							TRI trib1(b1, i2, i1);
+                                                        front->add(trif1);
+                                                        front->add(trif2);
+                                                        back->add(trib1);
+                                                } else {
+                                                        TRI trif1(f1, i1, i2);
+                                                        TRI trif2(f1, i2, f2);
+                                                        TRI trib1(b1, i2, i1);
 
-							front->add(trif1);
-							front->add(trif2);
-							back->add(trib1);
-						}
-					}
-				}
-			}
-			return std::make_pair(front, back);
+                                                        front->add(trif1);
+                                                        front->add(trif2);
+                                                        back->add(trib1);
+                                                }
+                                        }
+                                }
+                        }
+                        return std::make_pair(front, back);
 		
 		}
     };
