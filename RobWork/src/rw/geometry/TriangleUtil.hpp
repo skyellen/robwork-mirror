@@ -230,10 +230,10 @@ namespace rw { namespace geometry {
                 static std::pair<TriMesh::Ptr, TriMesh::Ptr> divide(TriMesh::Ptr trimesh, Plane::Ptr plane) {
                         typedef typename TRI::value_type T;
                         using namespace rw::math;
-                        typename PlainTriMesh<TRI>::Ptr front = ownedPtr(new PlainTriMesh<TRI>());
-                        typename PlainTriMesh<TRI>::Ptr back = ownedPtr(new PlainTriMesh<TRI>());
+                        typename PlainTriMesh<TRI>::Ptr front = rw::common::ownedPtr(new PlainTriMesh<TRI>());
+                        typename PlainTriMesh<TRI>::Ptr back = rw::common::ownedPtr(new PlainTriMesh<TRI>());
                         for (size_t i = 0; i<trimesh->size(); i++) {
-                                Triangle<>& tri = trimesh->getTriangle(i);
+                                const Triangle<>& tri = trimesh->getTriangle(i);
                                 double d0 = plane->distance(tri.getVertex(0));
                                 double d1 = plane->distance(tri.getVertex(1));
                                 double d2 = plane->distance(tri.getVertex(2));

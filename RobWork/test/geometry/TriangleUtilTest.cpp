@@ -54,12 +54,12 @@ BOOST_AUTO_TEST_CASE( DivideTriMeshBox ){
 	//Check that all vertices are in front and behind, respectively
 	double EPS = 1e-15;
 	for (size_t i = 0; i<frontAndBack.first->getSize(); i++) {
-		Triangle<>& tri = frontAndBack.first->getTriangle(i);
+		const Triangle<>& tri = frontAndBack.first->getTriangle(i);
 		for (size_t j = 0; j<3; j++)
 			BOOST_CHECK(plane.distance(tri.getVertex(j)) >= -EPS);
 	}
 	for (size_t i = 0; i<frontAndBack.second->getSize(); i++) {
-		Triangle<>& tri = frontAndBack.second->getTriangle(i);
+		const Triangle<>& tri = frontAndBack.second->getTriangle(i);
 		for (size_t j = 0; j<3; j++)
 			BOOST_CHECK(plane.distance(tri.getVertex(j)) <= EPS);
 	}
@@ -90,19 +90,19 @@ BOOST_AUTO_TEST_CASE( DivideTriMeshNormalTest){
 	//Check that all vertices are in front and behind, respectively
 	double EPS = 1e-15;
 	for (size_t i = 0; i<frontAndBack1.first->getSize(); i++) {
-		Triangle<>& tri = frontAndBack1.first->getTriangle(i);
+		const Triangle<>& tri = frontAndBack1.first->getTriangle(i);
 		BOOST_CHECK( (tri.calcFaceNormal() - tri.calcFaceNormal()).norm2() < EPS);
 	}
 	for (size_t i = 0; i<frontAndBack1.second->getSize(); i++) {
-		Triangle<>& tri = frontAndBack1.second->getTriangle(i);
+		const Triangle<>& tri = frontAndBack1.second->getTriangle(i);
 		BOOST_CHECK( (tri.calcFaceNormal() - tri.calcFaceNormal()).norm2() < EPS);
 	}
 	for (size_t i = 0; i<frontAndBack2.first->getSize(); i++) {
-		Triangle<>& tri = frontAndBack2.first->getTriangle(i);
+		const Triangle<>& tri = frontAndBack2.first->getTriangle(i);
 		BOOST_CHECK( (tri.calcFaceNormal() - tri.calcFaceNormal()).norm2() < EPS);
 	}
 	for (size_t i = 0; i<frontAndBack2.second->getSize(); i++) {
-		Triangle<>& tri = frontAndBack2.second->getTriangle(i);
+		const Triangle<>& tri = frontAndBack2.second->getTriangle(i);
 		BOOST_CHECK( (tri.calcFaceNormal() - tri.calcFaceNormal()).norm2() < EPS);
 	}
 
