@@ -26,7 +26,7 @@ SchunkPG70::SchunkPG70() :
 _defMinPos(0), _defMaxPos(0), _defMaxDeltaVel(0),
 _defTorqueRatio(0), _defCurRatio(0),
 _defMinVel(0), _defMaxVel(0), _defMinAcc(0), _defMaxAcc(0),
-_defMinCur(0), _defMacCur(0)
+_defMinCur(0), _defMaxCur(0)
 {
 	_connected = false;
 	_cubePort = NULL;

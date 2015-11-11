@@ -260,7 +260,7 @@ float Cube::moveRampExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -278,7 +278,7 @@ Cube::CubeExtAckData Cube::moveRampExtCmdWithState(float val)
         return data;
 	}
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
 	return data; // should not end here..
 }
 
@@ -292,7 +292,7 @@ float Cube::moveStepExtCmd(float pos, double time)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -304,7 +304,7 @@ float Cube::moveVelExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -321,7 +321,7 @@ Cube::CubeExtAckData Cube::moveVelExtCmdWithState(float val)
         return data;
 	}
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
 	return data; // should not end here..
 }
 
@@ -334,7 +334,7 @@ float Cube::moveCurExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -345,7 +345,7 @@ int Cube::moveRampTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_ACK)),msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -357,7 +357,7 @@ int Cube::moveStepTicksExtCmd(int pos, double time)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK)), msg ) )
         return PCubeProtocol::toInt(msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -369,7 +369,7 @@ int Cube::moveVelTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_ACK)), msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -381,7 +381,7 @@ int Cube::moveCurTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_ACK)), msg) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -432,7 +432,7 @@ float Cube::getFloatParam( unsigned char paramid )
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -442,7 +442,7 @@ int Cube::getInt32Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -452,7 +452,7 @@ int Cube::getInt16Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( 0, 0, msg.data[2], msg.data[3]);
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -462,7 +462,7 @@ char Cube::getInt8Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( 0, 0, 0, msg.data[2]);
     else
-    	RW_THROW("No acknoledge recieved!");
+    	RW_THROW("No acknowledge received!");
     return 0; // should not end here..
 }
 
@@ -478,13 +478,13 @@ bool Cube::ackext(const Cmd& cmd, CubePort::Message& msg)
     }
 
     if( msg.msgType != CubePort::Message::ACK ){
-        RW_THROW("Ack error: recieved bad id!");
+        RW_THROW("Ack error: received bad id!");
         return false;
     }
 /*
     for(int i=0; i < (int)cmd.data.size(); i++){
         if( msg.data[i] != cmd.data[i] ){
-            RW_WARN("Ack error: recieved bad data!");
+            RW_WARN("Ack error: received bad data!");
             return false;
         }
     }
@@ -505,7 +505,7 @@ bool Cube::ack(const Cmd& cmd)
     }
 
 	if( msg.msgType != CubePort::Message::ACK ){
-    	RW_WARN("Ack error: recieved bad id!" );
+    	RW_WARN("Ack error: received bad id!" );
         return false;
     }
 
