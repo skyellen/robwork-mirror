@@ -354,10 +354,6 @@ public:
 %template (RPYf) rw::math::RPY<float>;
 %template (RPYdVector) std::vector< rw::math::RPY<double> >;
 
-%template (ZYXd) rw::math::RPY<double>;
-%template (ZYXf) rw::math::RPY<float>;
-
-
 //! @copydoc rw::math::Quaternion
 namespace rw { namespace math {
 template<class T> class Quaternion

@@ -163,8 +163,6 @@ namespace swig {
 	typedef rw::math::EAA<float> EAAf;
 	typedef rw::math::RPY<double> RPYd;
 	typedef rw::math::RPY<float> RPYf;
-	typedef rw::math::RPY<double> ZYXd;
-	typedef rw::math::RPY<float> ZYXf;
 	typedef rw::math::Quaternion<double> Quaterniond;
 	typedef rw::math::Quaternion<float> Quaternionf;
 	typedef rw::math::Transform3D<double> Transform3d;
