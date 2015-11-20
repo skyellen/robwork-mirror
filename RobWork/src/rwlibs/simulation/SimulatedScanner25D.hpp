@@ -38,6 +38,10 @@ namespace rwlibs { namespace simulation {
     class SimulatedScanner25D : public SimulatedSensor
     {
     public:
+        //! @brief smart pointer type of this class
+        typedef rw::common::Ptr<SimulatedScanner25D> Ptr;
+
+    public:
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
