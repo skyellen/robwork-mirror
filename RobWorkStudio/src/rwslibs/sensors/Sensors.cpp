@@ -207,25 +207,23 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         iss >> fovy >> width >> height;
 
         Scan25DView* scanview = new Scan25DView();
-        //scanview->makeCurrent();
         GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(width, height,fovy) );
-        gldrawer->updateView();
         framegrabber25d->init(gldrawer);
-        gldrawer->updateView();
-        framegrabber25d->grab(frame, getRobWorkStudio()->getState());
-        gldrawer->updateView();
-        gldrawer->updateView();
-        const rw::geometry::PointCloud& img = framegrabber25d->getImage();
-        rw::geometry::PointCloud::savePCD(img,"mytestfile.pcd");
-
 
         SimulatedScanner25D* simscan25 = new SimulatedScanner25D("SimulatedScanner25D", frame, framegrabber25d);
         sensor = simscan25;
-
         simscan25->open();
 
-        //getRobWorkStudio()->getWorkCellScene()->addRender("scanrender", ownedPtr(new RenderScan(simscan25->getScanner25DSensor())),frame);
-        //scanview->initialize(simscan25->getScanner25DSensor());
+        simscan25->acquire();
+        Simulator::UpdateInfo info(1.0);
+        simscan25->update(info, _state);
+        const rw::geometry::PointCloud& img = simscan25->getScan();
+        rw::geometry::PointCloud::savePCD(img,"mytestfile25D.pcd");
+
+        RenderScan::Ptr scanRender = ownedPtr( new RenderScan() );
+        getRobWorkStudio()->getWorkCellScene()->addRender("Scan25DView", scanRender, frame);
+
+        scanview->initialize(simscan25);
         view = scanview;
         view->resize(512,512);
     }
@@ -240,20 +238,22 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         iss >> fovy >> cnt;
 
         Scan2DView* scanview = new Scan2DView();
-        scanview->makeCurrent();
         GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(1, cnt,fovy) );
         framegrabber25d->init(gldrawer);
-        framegrabber25d->grab(frame, getRobWorkStudio()->getState());
-        const rw::geometry::PointCloud& img = framegrabber25d->getImage();
-        rw::geometry::PointCloud::savePCD(img,"mytestfile.pcd");
 
 
         SimulatedScanner2D* simscan2D = new SimulatedScanner2D("SimulatedScanner2D", frame, framegrabber25d);
         sensor = simscan2D;
         simscan2D->open();
 
+        simscan2D->acquire();
+        Simulator::UpdateInfo info(1.0);
+        simscan2D->update(info, _state);
+        const rw::geometry::PointCloud& img = simscan2D->getScan();
+        rw::geometry::PointCloud::savePCD(img,"mytestfile2D.pcd");
+
         RenderScan::Ptr scanRender = ownedPtr( new RenderScan() );
-        DrawableNode::Ptr node = getRobWorkStudio()->getWorkCellScene()->addRender("Scan25DView", scanRender, frame);
+        DrawableNode::Ptr node = getRobWorkStudio()->getWorkCellScene()->addRender("Scan2DView", scanRender, frame);
 
         scanview->initialize(simscan2D);
         view = scanview;

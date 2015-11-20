@@ -87,14 +87,14 @@ class Scan25DView: public SensorView {
 public:
     Scan25DView(QWidget* parent = NULL);
 
-	virtual void initialize(rw::sensor::Scanner25D::Ptr scanner);
+	virtual void initialize(rwlibs::simulation::SimulatedScanner25D::Ptr scanner);
 
     virtual void update();
 
     virtual void makeCurrent();
 
 private:
-	rw::sensor::Scanner25D::Ptr _scanner;
+    rwlibs::simulation::SimulatedScanner25D::Ptr _scanner;
 	rwlibs::opengl::RenderScan::Ptr _scanRender;
 	ImageView* _pImageView;
 
@@ -113,7 +113,7 @@ public:
 private:
 	rwlibs::simulation::SimulatedScanner2D::Ptr _scanner;
 	rwlibs::opengl::RenderScan::Ptr _scanRender;
-	SceneOpenGLViewer::Ptr _pGLView;
+	ImageView* _pImageView;
 
 };
 

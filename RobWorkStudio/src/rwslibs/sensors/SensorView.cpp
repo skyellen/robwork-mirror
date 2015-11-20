@@ -48,9 +48,9 @@ CameraView::CameraView(Camera::Ptr camera, QWidget* parent):
 }
 
 void CameraView::update() {
-    //_camera->acquire();
     const Image* img = _camera->getImage();
     _pImageView->display(*img);
+    _camera->acquire();
 }
 
 
@@ -67,7 +67,7 @@ Scan25DView::Scan25DView(QWidget* parent):
     layout->addWidget(_pImageView);
 }
 
-void Scan25DView::initialize(rw::sensor::Scanner25D::Ptr scanner) {
+void Scan25DView::initialize(rwlibs::simulation::SimulatedScanner25D::Ptr scanner) {
     _scanner = scanner;
 }
 
@@ -76,18 +76,18 @@ void Scan25DView::makeCurrent() {
 
 void Scan25DView::update() {
 
-    if(_scanner != NULL && _scanner->isScanReady() ){
-        //Image::Ptr img = _scanner->getImage().asImage(_scanner->getRange().first, _scanner->getRange().second);
-        Image::Ptr img = ImageUtil::makeDepthImage(_scanner->getScan());
+    if(_scanner != NULL) {
+    	if (_scanner->isScanReady() ){
+    		//Image::Ptr img = _scanner->getImage().asImage(_scanner->getRange().first, _scanner->getRange().second);
+    		Image::Ptr img = ImageUtil::makeDepthImage(_scanner->getScan());
 
-        //_scanRender->setScan(img);
-        // convert to depth image
-        _pImageView->display(*img);
+    		//_scanRender->setScan(img);
+    		// convert to depth image
+    		_pImageView->display(*img);
 
-    }
-
-    _scanner->acquire();
-    //_pGLView->update();
+    	}
+    	_scanner->acquire();
+	}
 }
 
 
@@ -100,15 +100,12 @@ Scan2DView::Scan2DView(QWidget* parent):
     SensorView(parent),
     _scanner(NULL)
 {
-    _pGLView = new SceneOpenGLViewer(this);
+    _pImageView = new ImageView();
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
-    layout->addWidget(_pGLView.get());
-
-    _scanRender = ownedPtr( new RenderScan() );
-    DrawableNode::Ptr node = _pGLView->getScene()->makeDrawable("Scan2DView",_scanRender);
-    _pGLView->getScene()->addChild(node, _pGLView->getWorldNode());
+    //layout->addWidget(new QLabel("Test Label"));
+    layout->addWidget(_pImageView);
 }
 
 void Scan2DView::initialize(rw::common::Ptr<SimulatedScanner2D> scanner) {
@@ -120,12 +117,17 @@ void Scan2DView::makeCurrent() {
 }
 
 void Scan2DView::update() {
-    if(_scanner != NULL && _scanner->isScanReady() ){
-        const rw::geometry::PointCloud& scan = _scanner->getScan();
-        _scanRender->setScan(scan);
-    }
+	if(_scanner != NULL) {
+		if (_scanner->isScanReady() ){
+			//Image::Ptr img = _scanner->getImage().asImage(_scanner->getRange().first, _scanner->getRange().second);
+			Image::Ptr img = ImageUtil::makeDepthImage(_scanner->getScan());
 
-    _scanner->acquire();
-    _pGLView->update();
+			//_scanRender->setScan(img);
+			// convert to depth image
+			_pImageView->display(*img);
+
+		}
+		_scanner->acquire();
+	}
 }
 
