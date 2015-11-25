@@ -78,7 +78,7 @@ bool Robotiq::connect(const std::string& ip, unsigned int port) {
     start();
     // if gripper is not activated then activate it
     if (!isActivated()) {
-        activate();
+        return activate(30);
     }
 
     return true;
@@ -112,7 +112,7 @@ ModbusPackage Robotiq::send(ModbusPackage package) {
     return _packagesIntransit[package.header.data.transactionID].first;
 }
 
-void Robotiq::activate() {
+bool Robotiq::activate( unsigned int timeout) {
 
     RW_LOG_DEBUG("Activating hand");
 
@@ -132,10 +132,15 @@ void Robotiq::activate() {
         RW_THROW("Received message is wrong size (is " << n << " should be " << 6 << ") or wrong content");
     }
 
+    double startTime = TimerUtil::currentTime();
     TimerUtil::sleepMs(20);
     getAllStatusCMD();
     // get status until activation is complete
     while (isGripperInActivationProcess()) {
+        if ((timeout != 0) && ((TimerUtil::currentTime() - startTime) > timeout)) {
+            RW_LOG_DEBUG("Hand activation process timed out!");
+            return false;
+        }
         if (isGripperInReset()) {
             TimerUtil::sleepMs(20);
             send(package);
@@ -143,7 +148,14 @@ void Robotiq::activate() {
         TimerUtil::sleepMs(20);
         getAllStatusCMD();
     }
+
+    if (handAfterActivationConnected() != true) {
+        RW_LOG_DEBUG("Heuristics say that the hand is not connected!");
+        return false;
+    }
+
     RW_LOG_DEBUG("Hand activated");
+    return true;
 }
 
 void Robotiq::run() {
@@ -325,6 +337,15 @@ double Robotiq::getCurrentInAmpereFromTicks(int ticks) const {
 
 unsigned int Robotiq::getNumberOfJoints() const {
     return _numberOfJoints;
+}
+
+bool Robotiq::handAfterActivationConnected() const {
+    for (size_t i=0; i < _currentCurrent.size(); ++i) {
+        if ((_currentCurrent(i) != 0) || (_currentQ(i) != 0)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Robotiq::setReg(boost::uint8_t& reg, const boost::uint8_t& val)  const{

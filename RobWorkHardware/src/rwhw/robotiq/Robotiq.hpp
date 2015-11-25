@@ -198,7 +198,7 @@ private:
     rw::common::Ptr<boost::thread> _thread;
     mutable boost::mutex _mutex;
     bool _stop;
-    void activate();
+    bool activate(unsigned int timeout = 0);
     void run();
     void start();
     void stop();
@@ -236,6 +236,8 @@ protected:
     virtual ModbusPackage getStopCMDRequestPackage() const = 0;
     virtual void validateStopCMDResponseMessage(const ModbusPackage & answer) const = 0;
     virtual ModbusPackage getActivateRequestPackage() const = 0;
+
+    virtual bool handAfterActivationConnected() const;
 
 
     // Helper functions for big endian / little endian conversion for modbus
