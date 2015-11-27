@@ -262,11 +262,9 @@ void RobWork::init(int argc, const char* const * argv){
         ("rwplugin", value<std::vector<std::string> >()->multitoken(), "Specific RobWork plugins or plugin directories to load. ")
     	("rwroot", value<std::string>(), "Directory of RobWork installation or development environment.")
     ;
-    //command_line_parser(argc,argv);
-    positional_options_description optionDesc;
     variables_map vm;
     store(command_line_parser(argc, argv).allow_unregistered().
-              options(desc).positional(optionDesc).run(), vm);
+              options(desc).run(), vm);
     notify(vm);
 
     if (vm.count("help")) {

@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 {
     Q_INIT_RESOURCE(rwstudio_resources);
 
-    // now initialize robwork, such that plugins ad stuff might work
+    // now initialize robwork, such that plugins and stuff might work
     RobWork::init(argc,argv);
 
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);

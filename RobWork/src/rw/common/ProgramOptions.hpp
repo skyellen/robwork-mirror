@@ -15,7 +15,7 @@ namespace rw {
 namespace common {
 
 	/**
-	 * @brief a class for parsing program comand line into a PropertyMap
+	 * @brief a class for parsing program command line into a PropertyMap
 	 */
 	class ProgramOptions {
 	public:
