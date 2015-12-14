@@ -324,9 +324,8 @@ bool BtContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom)
         btbody->setActivationState(DISABLE_DEACTIVATION);
 
         newModel.body = btbody;
-		bmodel->models.push_back(newModel);
 
-		// Create alternative shapes
+		/*// Create alternative shapes
 		btCollisionShape* shapeAlt = NULL;
 		if(Tube* const tube = dynamic_cast<Tube*>(geomData.get()) ){
 			const btVector3 halfExtents(tube->getInnerRadius()+tube->getThickness(),0,tube->getHeight()/2.);
@@ -344,7 +343,7 @@ bool BtContactStrategy::addGeometry(ProximityModel* model, const Geometry& geom)
 	        btbody->setActivationState(DISABLE_DEACTIVATION);
 
 			bmodel->models.back().bodyAlternative = btbody;
-		}
+		}*/
 
 		return true;
 	} else {
