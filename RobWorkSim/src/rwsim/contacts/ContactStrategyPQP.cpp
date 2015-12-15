@@ -219,7 +219,8 @@ std::vector<Contact> ContactStrategyPQP::findContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
 		ContactStrategyData& data,
-		ContactStrategyTracking& tracking) const
+		ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	std::vector<Contact> contacts;
 	const TriMeshModel::Ptr mA = a.cast<TriMeshModel>();
@@ -330,7 +331,8 @@ std::vector<Contact> ContactStrategyPQP::updateContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
 		ContactStrategyData& data,
-		ContactStrategyTracking& tracking) const
+		ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	std::vector<Contact> contacts;
 	const TriMeshModel::Ptr mA = a.cast<TriMeshModel>();

@@ -36,6 +36,8 @@
 #include <rw/proximity/ProximitySetup.hpp>
 #include <rw/proximity/ProximityFilterStrategy.hpp>
 
+namespace rwsim { namespace log { class SimulatorLogScope; } }
+
 namespace rwsim {
 namespace contacts {
 
@@ -72,6 +74,9 @@ public:
 	 * @brief One row in the strategy table, with a priority, match-rules, a strategy and associated ContactModels.
 	 */
 	struct StrategyTableRow {
+		//! @brief Constructor.
+		StrategyTableRow(): priority(0) {};
+
 		//! The priority of this rule in the strategy table, where 0 is the highest priority.
 		std::size_t priority;
 
@@ -143,10 +148,11 @@ public:
 	 * @param data [in/out] allows caching between contact detection calls,
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @param tracking [in/out] the tracking data with information about known contacts.
+	 * @param log [in/out] (optional) store detailed logging information.
 	 * @return a vector of new contacts.
 	 */
 	virtual std::vector<Contact> findContacts(const rw::kinematics::State& state,
-			ContactDetectorData &data, ContactDetectorTracking& tracking);
+			ContactDetectorData &data, ContactDetectorTracking& tracking, rwsim::log::SimulatorLogScope* log = NULL);
 
 	/**
 	 * @brief Updates previously found contacts.
@@ -155,10 +161,11 @@ public:
 	 * @param data [in/out] allows caching between contact detection calls,
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @param tracking [in/out] the tracking data with information about known contacts.
+	 * @param log [in/out] (optional) store detailed logging information.
 	 * @return a vector of contacts.
 	 */
 	virtual std::vector<Contact> updateContacts(const rw::kinematics::State& state,
-			ContactDetectorData &data, ContactDetectorTracking& tracking);
+			ContactDetectorData &data, ContactDetectorTracking& tracking, rwsim::log::SimulatorLogScope* log = NULL);
 
 	/**
 	 * @brief The broad-phase filter strategy used by the contact detector.
@@ -325,6 +332,8 @@ public:
 	 * @return the same ostream as out parameter.
 	 */
 	friend std::ostream& operator<<(std::ostream& out, ContactDetector::Ptr detector) {
+		if (detector == NULL)
+			out << "ContactDetector was NULL!" << std::endl;
 		detector->printStrategyTable(out);
 		return out;
 	}

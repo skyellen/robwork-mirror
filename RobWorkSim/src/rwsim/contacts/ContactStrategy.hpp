@@ -35,6 +35,8 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
+namespace rwsim { namespace log { class SimulatorLogScope; } }
+
 namespace rwsim {
 namespace contacts {
 
@@ -118,6 +120,7 @@ public:
 	 * @param data [in/out] allows caching between contact detection calls,
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @param tracking [in/out] meta-data for previously found contacts.
+	 * @param log [in/out] (optional) store detailed logging information.
 	 * @return a list of contacts.
 	 */
 	virtual std::vector<Contact> findContacts(
@@ -126,7 +129,8 @@ public:
 			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
 			ContactStrategyData& data,
-			ContactStrategyTracking& tracking) const = 0;
+			ContactStrategyTracking& tracking,
+			rwsim::log::SimulatorLogScope* log = NULL) const = 0;
 
 	/**
 	 * @brief Update known contacts between two contact models.
@@ -138,6 +142,7 @@ public:
 	 * @param data [in/out] allows caching between contact detection calls,
 	 * and makes it possible for detection algorithms to exploit spatial and temporal coherence.
 	 * @param tracking [in/out] meta-data for previously found contacts.
+	 * @param log [in/out] (optional) store detailed logging information.
 	 * @return a list of updated contacts.
 	 */
 	virtual std::vector<Contact> updateContacts(
@@ -146,7 +151,8 @@ public:
 			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
 			ContactStrategyData& data,
-			ContactStrategyTracking& tracking) const = 0;
+			ContactStrategyTracking& tracking,
+			rwsim::log::SimulatorLogScope* log = NULL) const = 0;
 
 	/**
 	 * @brief Get the name of the strategy as a string.

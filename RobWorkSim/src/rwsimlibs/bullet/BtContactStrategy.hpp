@@ -50,23 +50,25 @@ public:
 	//! @copydoc rwsim::contacts::ContactStrategy::match
 	virtual bool match(rw::common::Ptr<const rw::geometry::GeometryData> geoA, rw::common::Ptr<const rw::geometry::GeometryData> geoB);
 
-	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rwsim::contacts::ContactStrategyData& data,rwsim::contacts::ContactStrategyTracking& tracking)
+	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rwsim::contacts::ContactStrategyData& data,rwsim::contacts::ContactStrategyTracking& tracking,rwsim::log::SimulatorLogScope*)
 	virtual std::vector<rwsim::contacts::Contact> findContacts(
 			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
 			rwsim::contacts::ContactStrategyData& data,
-			rwsim::contacts::ContactStrategyTracking& tracking) const;
+			rwsim::contacts::ContactStrategyTracking& tracking,
+			rwsim::log::SimulatorLogScope* log = NULL) const;
 
-	//! @copydoc rwsim::contacts::ContactStrategy::updateContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rwsim::contacts::ContactStrategyData& data,rwsim::contacts::ContactStrategyTracking& tracking)
+	//! @copydoc rwsim::contacts::ContactStrategy::updateContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rwsim::contacts::ContactStrategyData& data,rwsim::contacts::ContactStrategyTracking& tracking,rwsim::log::SimulatorLogScope*)
 	virtual std::vector<rwsim::contacts::Contact> updateContacts(
 			rw::proximity::ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
 			const rw::math::Transform3D<>& wTb,
 			rwsim::contacts::ContactStrategyData& data,
-			rwsim::contacts::ContactStrategyTracking& tracking) const;
+			rwsim::contacts::ContactStrategyTracking& tracking,
+			rwsim::log::SimulatorLogScope* log = NULL) const;
 
 	//! @copydoc rwsim::contacts::ContactStrategy::getName
 	virtual std::string getName();

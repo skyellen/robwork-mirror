@@ -173,7 +173,8 @@ bool BtContactStrategy::match(rw::common::Ptr<const GeometryData> geoA, rw::comm
 std::vector<Contact> BtContactStrategy::findContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
-		ContactStrategyData& data, ContactStrategyTracking& tracking) const
+		ContactStrategyData& data, ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	const BtContactModel::Ptr mA = a.cast<BtContactModel>();
 	const BtContactModel::Ptr mB = b.cast<BtContactModel>();
@@ -239,7 +240,8 @@ std::vector<Contact> BtContactStrategy::findContacts(
 std::vector<Contact> BtContactStrategy::updateContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
-		ContactStrategyData& data, ContactStrategyTracking& tracking) const
+		ContactStrategyData& data, ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	std::vector<Contact> res;
 	RW_THROW("BtContactStrategy does not implement udpateContacts!");

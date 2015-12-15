@@ -21,6 +21,7 @@
 #include "ContactDetectorTracking.hpp"
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
+#include <rwsim/log/SimulatorLogScope.hpp>
 
 #include <iomanip>
 
@@ -31,6 +32,7 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::proximity;
 using namespace rwsim::contacts;
+using namespace rwsim::log;
 
 ContactDetector::ContactDetector(WorkCell::Ptr wc, ProximityFilterStrategy::Ptr filter):
 	_wc(wc),
@@ -326,7 +328,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 	return res;
 }
 
-std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking) {
+std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking, SimulatorLogScope* log) {
 	long tstart = (long)TimerUtil::currentTimeUs();
 
 	std::vector<Contact> res;
@@ -370,6 +372,14 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 					Geometry::Ptr geoA = (*pairIt).first;
 					Geometry::Ptr geoB = (*pairIt).second;
 					if (stratMatch.strategy->match(geoA->getGeometryData(),geoB->getGeometryData())) {
+						SimulatorLogScope::Ptr stratLog = NULL;
+						if (log != NULL) {
+							stratLog = ownedPtr(new SimulatorLogScope(log));
+							stratLog->setDescription(pair.first->getName() + "-" + pair.second->getName());
+							stratLog->setFilename(__FILE__);
+							stratLog->setLineBegin(__LINE__);
+							log->appendChild(stratLog);
+						}
 						std::map<std::string, ContactModel::Ptr> &mapA = stratMatch.models[*pair.first];
 						std::map<std::string, ContactModel::Ptr> &mapB = stratMatch.models[*pair.second];
 						if (mapA.find(geoA->getId())==mapA.end()) {
@@ -384,7 +394,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 						ContactModel::Ptr modelB = mapB[geoB->getId()];
 						ContactStrategyData& stratData = data.getStrategyData(modelA.get(),modelB.get());
 						ContactStrategyTracking& stratTracking = tracking.getStrategyTracking(modelA.get(),modelB.get());
-						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData, stratTracking);
+						contacts = stratMatch.strategy->findContacts(modelA.get(), aT, modelB.get(), bT, stratData, stratTracking, stratLog.get());
 						pairIt = geoPairs.erase(pairIt);
 						pairIt--;
 						if( contacts.size() > 0 ){
@@ -400,6 +410,9 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 							}
 							res.insert(res.end(),contacts.begin(),contacts.end());
 						}
+						if (stratLog != NULL) {
+							stratLog->setLineEnd(__LINE__);
+						}
 					}
 				}
 			}
@@ -414,7 +427,7 @@ std::vector<Contact> ContactDetector::findContacts(const State& state, ContactDe
 	return res;
 }
 
-std::vector<Contact> ContactDetector::updateContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking) {
+std::vector<Contact> ContactDetector::updateContacts(const State& state, ContactDetectorData &data, ContactDetectorTracking& tracking, SimulatorLogScope* log) {
 	std::vector<Contact> res;
 	const FKTable fk(state);
 	std::vector<ContactDetectorTracking::ContactInfo>& infos = tracking.getInfo();
@@ -425,6 +438,14 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 			continue;
 		const Frame* const frameA = info.frames.first;
 		const Frame* const frameB = info.frames.second;
+		SimulatorLogScope::Ptr stratLog = NULL;
+		if (log != NULL) {
+			stratLog = ownedPtr(new SimulatorLogScope(log));
+			stratLog->setDescription(frameA->getName() + "-" + frameB->getName());
+			stratLog->setFilename(__FILE__);
+			stratLog->setLineBegin(__LINE__);
+			log->appendChild(stratLog);
+		}
 		RW_ASSERT(frameA != NULL);
 		RW_ASSERT(frameB != NULL);
 		ContactModel* const modelA = info.models.first;
@@ -434,7 +455,7 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 		const Transform3D<> aT = fk.get(frameA);
 		const Transform3D<> bT = fk.get(frameB);
 		ContactStrategyData& stratData = data.getStrategyData(modelA,modelB);
-		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, *info.tracking);
+		const std::vector<Contact> contacts = info.strategy->updateContacts(modelA, aT, modelB, bT, stratData, *info.tracking, stratLog.get());
 		const std::size_t total = info.total;
 		if (contacts.size() < total) {
 			const std::size_t remove = total-contacts.size();
@@ -466,6 +487,9 @@ std::vector<Contact> ContactDetector::updateContacts(const State& state, Contact
 			//	it--; // Skipped in beginning of for loop anyway!
 		}
 		res.insert(res.end(),contacts.begin(),contacts.end());
+		if (stratLog != NULL) {
+			stratLog->setLineEnd(__LINE__);
+		}
 	}
 	return res;
 }
@@ -495,7 +519,7 @@ void ContactDetector::printStrategyTable() const {
 
 void ContactDetector::printStrategyTable(std::ostream& out) const {
 	if (_strategies.size() == 0)
-			out << "No strategies registered." << std::endl;
+		out << "No strategies registered." << std::endl;
 	std::vector<std::vector<ContactDetector::Cell> > table;
 	constructTable(table);
 	printTable(table, out, true);

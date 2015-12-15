@@ -6,7 +6,7 @@
 add_subdirectory(gui)
 
 add_subdirectory(ode)
-add_subdirectory(tntphysics)
+add_subdirectory(rwpe)
 add_subdirectory(bullet) 
 add_subdirectory(swig)
 

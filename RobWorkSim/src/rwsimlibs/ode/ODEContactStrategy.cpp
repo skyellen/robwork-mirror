@@ -122,7 +122,8 @@ std::vector<Contact> ODEContactStrategy::findContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
 		ContactStrategyData& data,
-		ContactStrategyTracking& tracking) const
+		ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	const ODEContactModel::Ptr mA = a.cast<ODEContactModel>();
 	const ODEContactModel::Ptr mB = b.cast<ODEContactModel>();
@@ -162,7 +163,8 @@ std::vector<Contact> ODEContactStrategy::updateContacts(
 		ProximityModel::Ptr a, const Transform3D<>& wTa,
 		ProximityModel::Ptr b, const Transform3D<>& wTb,
 		ContactStrategyData& data,
-		ContactStrategyTracking& tracking) const
+		ContactStrategyTracking& tracking,
+		rwsim::log::SimulatorLogScope* log) const
 {
 	if (!tracking.isInitialized())
 		tracking.setStrategyData(new ODETracking());

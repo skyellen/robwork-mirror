@@ -30,6 +30,7 @@
 
 // Forward declarations
 namespace rwsim { namespace contacts { class ContactDetector; } }
+namespace rwsim { namespace log { class SimulatorLogScope; } }
 
 namespace rwsim {
 namespace simulator {
@@ -193,6 +194,15 @@ namespace simulator {
 		 */
 		virtual std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors() = 0;
 
+		/**
+		 * @brief Store internal info during simulation.
+		 *
+		 * This can be used for debugging, statistics, visualization of internal subresults,
+		 * timing, benchmark and similar.
+		 *
+		 * @param log [in] a pointer to the log structure to store to.
+		 */
+		virtual void setSimulatorLog(rw::common::Ptr<rwsim::log::SimulatorLogScope> log) {};
 
 		/**
          * @addtogroup extensionpoints
