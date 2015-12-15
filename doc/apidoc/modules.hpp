@@ -388,6 +388,9 @@ namespace rwsim {
  */
 namespace contacts {}
 
+//! @brief Logging system for dynamic simulation
+namespace log {}
+
 /**
    @brief Dynamic simulation
  */
@@ -399,11 +402,14 @@ namespace simulator {}
 //! @brief RobWorkSim libraries: Physics engines, plugins, and script interface.
 namespace rwsimlibs {
 
-//! @brief The TNTPhysics engine implementation.
-namespace tntphysics {}
-
 //! @brief The Bullet engine implementation.
 namespace bullet {}
+
+//! @brief GUI elements related to RobWorkSim.
+namespace gui {}
+
+//! @brief The TNTPhysics engine implementation.
+namespace tntphysics {}
 
 }
 
@@ -426,6 +432,11 @@ namespace bullet {}
     @defgroup rwsim_dynamics Dynamics
     @{
         @copydoc rwsim::dynamics
+    @}
+
+    @defgroup rwsim_log Log
+    @{
+        @copydoc rwsim::log
     @}
 
     @defgroup rwsim_simulator Simulator
@@ -453,6 +464,11 @@ namespace bullet {}
 @defgroup rwsimlibs RobWorkSim libraries
 @{
     @brief Physics engines, GUI & Plugins, and script interface.
+
+    @defgroup rwsimlibs_gui RobWorkSim GUI
+    @{
+        @copydoc rwsimlibs::gui
+    @}
 
     @defgroup rwsimlibs_tntphysics TNTPhysics
     @{

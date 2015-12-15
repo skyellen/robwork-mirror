@@ -77,6 +77,7 @@ namespace opengl {
          */
 		void setGeometry(rw::geometry::Geometry::Ptr geom);
 
+		rw::geometry::Geometry::Ptr getGeometry() const { return _geometry; }
 
         //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
         void draw(const rw::graphics::DrawableNode::RenderInfo& info,

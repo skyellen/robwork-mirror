@@ -17,6 +17,8 @@
 
 #include "RenderContacts.hpp"
 
+#include <boost/foreach.hpp>
+
 using namespace rw::math;
 using namespace rw::graphics;
 using namespace rwsim::contacts;

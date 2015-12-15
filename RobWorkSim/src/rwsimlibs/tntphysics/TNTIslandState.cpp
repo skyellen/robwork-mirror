@@ -21,6 +21,8 @@
 #include "TNTUtil.hpp"
 #include "TNTFrictionModelData.hpp"
 
+#include <boost/foreach.hpp>
+
 using namespace rw::math;
 using namespace rwsim::contacts;
 using namespace rwsimlibs::tntphysics;

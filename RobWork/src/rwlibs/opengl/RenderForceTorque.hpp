@@ -43,15 +43,10 @@ public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<RenderForceTorque> Ptr;
 
-	/**
-	 * @brief Constructs a RenderFrame
-	 * @param size [in] size of the frame coordinate system
-	 */
+	//! @brief Constructs a RenderForceTorque
 	RenderForceTorque();
 
-	/**
-	 * @brief Destructor
-	 */
+	//! @brief Destructor
 	virtual ~RenderForceTorque();
 
 	/**
@@ -145,8 +140,6 @@ public:
 			double alpha) const;
 
 private:
-	void drawTorus(float R, float r, int N, int n);
-
 	rw::math::Vector3D<> _force, _torque;
 	float _scaleForce, _scaleTorque;
 	rw::math::Vector3D<float> _colorForce, _colorTorque;

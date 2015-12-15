@@ -22,6 +22,8 @@
 
 #include <rwlibs/opengl/DrawableUtil.hpp>
 
+#include <boost/foreach.hpp>
+
 using namespace rw::graphics;
 using namespace rw::math;
 using namespace rwlibs::opengl;

@@ -40,6 +40,7 @@ IF(build)
       DrawableGeometry.cpp
       RenderSmoothSkin.cpp
       RenderForceTorque.cpp
+      RenderVelocity.cpp
     )
     
     SET(SRC_FILES_HPP
@@ -63,6 +64,7 @@ IF(build)
       DrawableGeometry.hpp
       RenderSmoothSkin.hpp
       RenderForceTorque.hpp
+      RenderVelocity.hpp
     )
     
     RW_ADD_LIBRARY(${SUBSYS_NAME} opengl ${SRC_FILES} ${SRC_FILES_HPP})

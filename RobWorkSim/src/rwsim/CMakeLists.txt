@@ -89,6 +89,20 @@ SET(FILES_CPP
     #control/TrajectoryController.cpp
 	control/PoseController.cpp
 	control/SerialDeviceController.cpp
+	
+	log/SimulatorLog.cpp
+	log/SimulatorLogEntry.cpp
+	log/LogCollisionResult.cpp
+	log/LogContactForceTorque.cpp
+	log/LogContactSet.cpp
+	log/LogContactVelocities.cpp
+	log/LogPositions.cpp
+	log/LogMessage.cpp
+	log/LogValues.cpp
+	log/LogVelocities.cpp
+	log/SimulatorLogScope.cpp
+	log/LogStep.cpp
+	log/SimulatorStatistics.cpp
     
 	simulator/DynamicSimulator.cpp
 	simulator/ThreadSimulator.cpp
@@ -209,6 +223,20 @@ SET(FILES_HPP
     #control/TrajectoryController.hpp
 	control/PoseController.hpp
 	control/SerialDeviceController.hpp
+	
+	log/SimulatorLog.hpp
+	log/SimulatorLogEntry.hpp
+	log/LogCollisionResult.hpp
+	log/LogContactForceTorque.hpp
+	log/LogContactSet.hpp
+	log/LogContactVelocities.hpp
+	log/LogPositions.hpp
+	log/LogMessage.hpp
+	log/LogValues.hpp
+	log/LogVelocities.hpp
+	log/SimulatorLogScope.hpp
+	log/LogStep.hpp
+	log/SimulatorStatistics.hpp
     
 	simulator/DynamicSimulator.hpp
 	simulator/ThreadSimulator.hpp

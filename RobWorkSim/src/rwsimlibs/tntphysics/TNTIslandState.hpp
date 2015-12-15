@@ -32,6 +32,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 namespace rwsimlibs {
 namespace tntphysics {

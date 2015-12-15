@@ -19,6 +19,15 @@ SET(FILES_UI
 	SDHPlugin.ui
 	TactileSensorDialog.ui
 	#GraspTableGeneratorPlugin.ui
+	
+	log/SimulatorLogWidget.ui
+	log/BodyMotionWidget.ui
+	log/CollisionResultWidget.ui
+	log/ContactForceTorqueWidget.ui
+	log/ContactSetWidget.ui
+	log/ContactVelocitiesWidget.ui
+	log/LogValuesWidget.ui
+	log/SimulatorStatisticsWidget.ui
 )
 IF (RWS_USE_QT5)
 	QT5_WRAP_UI(UIS_OUT_H ${FILES_UI})
@@ -42,6 +51,19 @@ SET(SrcFiles_HPP
 	BodyControllerWidget.hpp
 	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
+	
+	log/SimulatorLogWidget.hpp
+	log/SimulatorLogModel.hpp
+	log/SimulatorLogEntryWidget.hpp
+	log/BodyMotionWidget.hpp
+	log/CollisionResultWidget.hpp
+	log/ContactForceTorqueWidget.hpp
+	log/ContactSetWidget.hpp
+	log/ContactVelocitiesWidget.hpp
+	log/LogValuesWidget.hpp
+	log/LogMessageWidget.hpp
+	log/SimulatorLogWidget.hpp
+	log/SimulatorStatisticsWidget.hpp
 )
 IF (RWS_USE_QT5)
 	QT5_WRAP_CPP(MocSrcFiles ${SrcFiles_HPP} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED OPTIONS -DBOOST_LEXICAL_CAST_INCLUDED
@@ -73,12 +95,26 @@ SET(SrcFiles
 	#SensorOutputGui.cpp
 	#TactilePadItem.cpp
 	TactileSensorDialog.cpp
+	
+	log/SimulatorLogModel.cpp
+	log/SimulatorLogEntryWidget.cpp
+	log/SimulatorLogWidget.cpp
+	log/BodyMotionWidget.cpp
+	log/CollisionResultWidget.cpp
+	log/ContactForceTorqueWidget.cpp
+	log/ContactSetWidget.cpp
+	log/ContactVelocitiesWidget.cpp
+	log/LogValuesWidget.cpp
+	log/LogMessageWidget.cpp
+	log/SimulatorLogWidget.cpp
+	log/SimulatorStatisticsWidget.cpp
+	log/MathematicaPlotWidget.cpp
 )
 IF(RWSIM_HAVE_ODE)
 	SET(SrcFiles ${SrcFiles} ODESimCfgDialog.cpp)
 ENDIF()
 
-set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
+#set_source_files_properties(${SrcFiles} PROPERTIES OBJECT_DEPENDS "${UIS_OUT_H}")
 
 # The static library to build:
 ADD_LIBRARY(rwsim_gui ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles} ${UIS_OUT_H})
