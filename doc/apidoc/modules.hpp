@@ -408,8 +408,8 @@ namespace bullet {}
 //! @brief GUI elements related to RobWorkSim.
 namespace gui {}
 
-//! @brief The TNTPhysics engine implementation.
-namespace tntphysics {}
+//! @brief The RobWorkPhysicsEngine implementation.
+namespace rwpe {}
 
 }
 
@@ -465,14 +465,19 @@ namespace tntphysics {}
 @{
     @brief Physics engines, GUI & Plugins, and script interface.
 
+    @defgroup rwsimlibs_bullet Bullet
+    @{
+        @copydoc rwsimlibs::bullet
+    @}
+
     @defgroup rwsimlibs_gui RobWorkSim GUI
     @{
         @copydoc rwsimlibs::gui
     @}
 
-    @defgroup rwsimlibs_tntphysics TNTPhysics
+    @defgroup rwsimlibs_rwpe RobWorkPhysicsEngine
     @{
-        @copydoc rwsimlibs::tntphysics
+        @copydoc rwsimlibs::rwpe
     @}
 
 @}

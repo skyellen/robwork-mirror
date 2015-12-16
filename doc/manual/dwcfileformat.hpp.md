@@ -125,7 +125,7 @@ All properties are optional, and the example shows the default values used for O
 </PhysicsEngine>
 \endverbatim
 
-For similar options for the TNT engine, please see rwsimlibs::tntphysics::TNTIsland::getDefaultPropertyMap documentation.
+For similar options for the RobWorkPhysicsEngine (RWPE), please see rwsimlibs::rwpe::RWPEIsland::getDefaultPropertyMap documentation.
 
 ## Gravity ##  {#sec_rwsimxml_gravity}
 Set the gravity in world coordinates.
