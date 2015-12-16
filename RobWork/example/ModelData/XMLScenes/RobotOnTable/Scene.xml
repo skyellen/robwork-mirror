@@ -1,0 +1,16 @@
+<WorkCell name="Scene">
+
+  <Frame name="Table" refframe="WORLD" >
+    <RPY>0 0 0</RPY><Pos>0.2 0.2 -0.408</Pos>
+  </Frame>
+  <Drawable name="Table" refframe="Table" >
+    <RPY> 0 0 0</RPY> <Pos> 0 0 0 </Pos>
+    <Box x="0.8" y="0.8" z="0.816" />
+  </Drawable>
+
+  <Frame name="URMount">
+    <RPY>90 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+  <Include file="../../XMLDevices/UR-6-85-5-A/UR.wc.xml" />
+
+</WorkCell>
