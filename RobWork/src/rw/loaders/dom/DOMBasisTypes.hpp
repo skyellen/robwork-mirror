@@ -108,19 +108,32 @@ public:
     /** @brief Indetifier for specifying a State */
     static const std::string TreeStateId;
 
-
+    /** @brief Indetifier for specifying a boolean*/
     static const std::string BooleanId;
+
+    /** @brief Indetifier for specifying a double */
     static const std::string DoubleId;
+
+    /** @brief Indetifier for specifying a float */
     static const std::string FloatId;
+
+    /** @brief Indetifier for specifying an integer */
     static const std::string IntegerId;
 
-
+    /** @brief Indetifier for specifying a string */
     static const std::string StringId;
-    static const std::string StringListId;
-    static const std::string IntListId;
-    static const std::string DoubleListId;
-    static const std::string StringPairId;
 
+    /** @brief Indetifier for specifying a list of strings */
+    static const std::string StringListId;
+
+    /** @brief Indetifier for specifying a list of integers */
+    static const std::string IntListId;
+
+    /** @brief Indetifier for specifying a list of doubles */
+    static const std::string DoubleListId;
+
+    /** @brief Indetifier for specifying a pair of strings */
+    static const std::string StringPairId;
 
     /** @brief Identifier for the unit attribute */
     static const std::string UnitAttributeId;
@@ -387,8 +400,28 @@ public:
      */
     static int readInt(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
 
+    /**
+     * @brief Reads in a list of integers from \b element
+     *
+     * Read in \b element and converts the content to a list of integers
+     * Throws a rw::common::Exception if failing to read or parse.
+     *
+     * @param element [in] Element to read in
+     * @param doCheckHeader [in] True if the element name should be checked
+     * @return std::vector<int> represented in \b element
+     */
     static std::vector<int> readIntList(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
-
+    
+    /**
+     * @brief Reads in a list of doubles from \b element
+     *
+     * Read in \b element and converts the content to a list of doubles
+     * Throws a rw::common::Exception if failing to read or parse.
+     *
+     * @param element [in] Element to read in
+     * @param doCheckHeader [in] True if the element name should be checked
+     * @return std::vector<double> represented in \b element
+     */
     static std::vector<double> readDoubleList(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
 
     /**
@@ -408,18 +441,99 @@ public:
 
 
 
-
-
-
     //------------------------ writing value of DOMElem
 
+	/** 
+	 * @brief Writes \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+     * @return newly created DOMElem
+	 */
+	static rw::common::DOMElem::Ptr write(int val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
 
-    static rw::common::DOMElem::Ptr write(const rw::math::Q& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
-    static rw::common::DOMElem::Ptr write(const rw::math::Transform2D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
-    static rw::common::DOMElem::Ptr write(const rw::math::Transform3D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
-    static rw::common::DOMElem::Ptr write(const Eigen::MatrixXd& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+	/** 
+	 * @brief Writes \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(double val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
 
-    static Eigen::MatrixXd readMatrix( rw::common::DOMElem::Ptr elem );
+
+	/** 
+	 * @brief Writes \bstr to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const std::string& str, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+
+
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const rw::math::Q& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const rw::math::Vector3D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const rw::math::Vector2D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+
+
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const rw::math::Transform2D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+    
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const rw::math::Transform3D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+    
+	/** 
+	 * @brief Writes the content of \bval to \belem.
+	 * @param val [in] Value to write
+	 * @param elem [in] Element to which to write
+	 * @param addHeader [in] Whether or not to set the header of \belem
+	 * @return newly created DOMElem
+     */
+	static rw::common::DOMElem::Ptr write(const Eigen::MatrixXd& val, rw::common::DOMElem::Ptr elem, bool addHeader=true);
+
+	
+	/**
+	 * @brief Reads in a matrix from \belement
+	 * @param elem [in] The element from which to read
+	 * @return Eigen matrix 
+	 */
+	static Eigen::MatrixXd readMatrix( rw::common::DOMElem::Ptr elem );
 
 
     //------------------------ creating and writing DOMElem
@@ -687,7 +801,30 @@ public:
      */
     static rw::common::DOMElem::Ptr createStringList(const std::vector<std::string>& strings, rw::common::DOMElem::Ptr doc);
 
+    /**
+     * @brief Creates an element to represent \b ints.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b ints
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param ints [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static rw::common::DOMElem::Ptr createIntList(const std::vector<int>& ints, rw::common::DOMElem::Ptr doc);
+    
+    /**
+     * @brief Creates an element to represent \b doubles.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b doubles
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param doubles [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static rw::common::DOMElem::Ptr createDoubleList(const std::vector<double>& doubles, rw::common::DOMElem::Ptr doc);
 
     /**

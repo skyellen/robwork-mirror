@@ -539,8 +539,41 @@ namespace {
     }
 }
 
+DOMElem::Ptr DOMBasisTypes::write(int val, DOMElem::Ptr elem, bool addHeader) {
+	if(addHeader)
+		elem->setName(IntegerId);
 
-rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Q& val, rw::common::DOMElem::Ptr elem, bool addHeader){
+	std::stringstream sstr;
+	sstr<<val;
+
+	elem->setValue( sstr.str() );
+	return elem;
+
+}
+
+DOMElem::Ptr DOMBasisTypes::write(double val, DOMElem::Ptr elem, bool addHeader) {
+	if(addHeader)
+		elem->setName(DoubleId);
+
+	std::stringstream sstr;
+	sstr<<val;
+
+	elem->setValue( sstr.str() );
+	return elem;
+
+}
+
+
+DOMElem::Ptr DOMBasisTypes::write(const std::string& str, DOMElem::Ptr elem, bool addHeader) {
+	if(addHeader)
+		elem->setName(StringId);
+
+	elem->setValue( str );
+	return elem;
+
+}
+
+DOMElem::Ptr DOMBasisTypes::write(const Q& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
 		elem->setName(QId);
 
@@ -548,7 +581,28 @@ rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Q& val, rw::common
 	return elem;
 }
 
-rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Transform2D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader){
+
+DOMElem::Ptr DOMBasisTypes::write(const Vector3D<>& val, DOMElem::Ptr elem, bool addHeader) {
+	if(addHeader)
+		elem->setName(Vector3DId);
+
+	elem->setValue( createStringFromArray(val) );
+	return elem;
+
+}
+
+DOMElem::Ptr DOMBasisTypes::write(const Vector2D<>& val, DOMElem::Ptr elem, bool addHeader) {
+	if(addHeader)
+		elem->setName(Vector2DId);
+
+	elem->setValue( createStringFromArray(val) );
+	return elem;
+
+}
+
+
+
+DOMElem::Ptr DOMBasisTypes::write(const Transform2D<>& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
 		elem->setName(Transform2DId);
 
@@ -564,7 +618,7 @@ rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Transform2D<>& val
 	return elem;
 }
 
-rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Transform3D<>& val, rw::common::DOMElem::Ptr elem, bool addHeader){
+DOMElem::Ptr DOMBasisTypes::write(const Transform3D<>& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
 		elem->setName(Transform3DId);
 
@@ -581,7 +635,7 @@ rw::common::DOMElem::Ptr DOMBasisTypes::write(const rw::math::Transform3D<>& val
 	return elem;
 }
 
-rw::common::DOMElem::Ptr DOMBasisTypes::write(const Eigen::MatrixXd& val, rw::common::DOMElem::Ptr elem, bool addHeader){
+DOMElem::Ptr DOMBasisTypes::write(const Eigen::MatrixXd& val, DOMElem::Ptr elem, bool addHeader){
 	if(addHeader)
 		elem->setName(MatrixId);
 
@@ -600,7 +654,7 @@ rw::common::DOMElem::Ptr DOMBasisTypes::write(const Eigen::MatrixXd& val, rw::co
 }
 
 
-Eigen::MatrixXd DOMBasisTypes::readMatrix( rw::common::DOMElem::Ptr elem ){
+Eigen::MatrixXd DOMBasisTypes::readMatrix( DOMElem::Ptr elem ){
 	std::vector<double> res = elem->getValueAsDoubleList();
 	int cols = (int)res[0];
 	int rows = (int)res[1];
@@ -626,27 +680,27 @@ DOMElem::Ptr DOMBasisTypes::createVector3D(const Vector3D<>& v, DOMElem::Ptr doc
     return createElement(Vector3DId, createStringFromArray(v), doc);
 }
 
-DOMElem::Ptr DOMBasisTypes::createVector2D(const rw::math::Vector2D<>& v, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createVector2D(const Vector2D<>& v, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(Vector2DId);
     element->setValue(createStringFromArray(v) );
     return element;
 }
 
-DOMElem::Ptr DOMBasisTypes::createRPY(const rw::math::RPY<>& v, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createRPY(const RPY<>& v, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(RPYId);
     element->setValue(createStringFromArray(v, 3));
 
     return element;
 }
 
-DOMElem::Ptr DOMBasisTypes::createEAA(const rw::math::EAA<>& v, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createEAA(const EAA<>& v, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(EAAId);
     element->setValue(createStringFromArray(v, 3));
 
     return element;
 }
 
-DOMElem::Ptr DOMBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createQuaternion(const Quaternion<>& q, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(QuaternionId);
     element->setValue(createStringFromArray(q, 4));
 
@@ -658,7 +712,7 @@ DOMElem::Ptr DOMBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, DO
 
 
 
-DOMElem::Ptr DOMBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createRotation3D(const Rotation3D<>& r, DOMElem::Ptr doc) {
     //DOMElem::Ptr element = doc->addChild(Rotation3DId);
 
     // check if rotation is proper orthogonal before saving it
@@ -677,7 +731,7 @@ DOMElem::Ptr DOMBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, DO
     return createElement(Rotation3DId, std::string(str.str()), doc);
 }
 
-DOMElem::Ptr DOMBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createRotation2D(const Rotation2D<>& r, DOMElem::Ptr doc) {
     std::ostringstream str;
     str.unsetf(std::ios::floatfield);            // floatfield not set
     str.precision(17);
@@ -685,14 +739,14 @@ DOMElem::Ptr DOMBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, DO
     return createElement(Rotation2DId, std::string(str.str()), doc);
 }
 
-DOMElem::Ptr DOMBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createTransform3D(const Transform3D<>& t, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(Transform3DId);
     createElement(PosId, createStringFromArray(t.P()), element);
     createRotation3D(t.R(), element);
     return element;
 }
 
-DOMElem::Ptr DOMBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, DOMElem::Ptr doc) {
+DOMElem::Ptr DOMBasisTypes::createVelocityScrew6D(const VelocityScrew6D<>& v, DOMElem::Ptr doc) {
     DOMElem::Ptr element = doc->addChild(VelocityScrew6DId);
     createElement(PosId, createStringFromArray(v.linear()), element);
     createEAA(v.angular(), element);

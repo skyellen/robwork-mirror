@@ -105,19 +105,32 @@ public:
     /** @brief Indetifier for specifying a State */
     static const XMLCh* TreeStateId;
 
-
+    /** @brief Indetifier for specifying a boolean*/
     static const XMLCh* BooleanId;
+
+    /** @brief Indetifier for specifying a double */
     static const XMLCh* DoubleId;
+
+    /** @brief Indetifier for specifying a float */
     static const XMLCh* FloatId;
+
+    /** @brief Indetifier for specifying an integer */
     static const XMLCh* IntegerId;
 
-
+    /** @brief Indetifier for specifying a string */
     static const XMLCh* StringId;
-    static const XMLCh* StringListId;
-    static const XMLCh* IntListId;
-    static const XMLCh* DoubleListId;
-    static const XMLCh* StringPairId;
 
+    /** @brief Indetifier for specifying a list of strings */
+    static const XMLCh* StringListId;
+
+    /** @brief Indetifier for specifying a list of integers */
+    static const XMLCh* IntListId;
+
+    /** @brief Indetifier for specifying a list of doubles */
+    static const XMLCh* DoubleListId;
+
+    /** @brief Indetifier for specifying a pair of strings*/
+    static const XMLCh* StringPairId;
 
     /** @brief Identifier for the unit attribute */
     static const XMLCh* UnitAttributeId;
@@ -390,8 +403,28 @@ public:
      */
     static int readInt(xercesc::DOMElement* element, bool doCheckHeader = false);
 
+    /**
+     * @brief Reads in a list of integers from \ element
+     *
+     * Read in \b element and converts the content to a list of integers
+     * Throws a rw::common::Exception if failing to read or parse.
+     *
+     * @param element [in] Element to read in
+     * @param doCheckHeader [in] True if the element name should be checked
+     * @return std::vector<int> represented in \b element
+     */
     static std::vector<int> readIntList(xercesc::DOMElement* element, bool doCheckHeader = false);
 
+    /**
+     * @brief Reads in a list of doubles from \ element
+     *
+     * Read in \b element and converts the content to a list of doubles
+     * Throws a rw::common::Exception if failing to read or parse.
+     *
+     * @param element [in] Element to read in
+     * @param doCheckHeader [in] True if the element name should be checked
+     * @return std::vector<double> represented in \b element
+     */    
     static std::vector<double> readDoubleList(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
@@ -424,6 +457,20 @@ public:
      */
     static std::string readElementText(xercesc::DOMElement* element, bool exceptionOnEmpty = true);
 
+    /**
+     * @brief Read element text and return as XMLCh*.
+     *
+     * Runs through all children of \b element until a DOMText-node if found. The value of this
+     * node is the returned. In case of multiple nodes only the content of the first is
+     * returned.
+     *
+     * If no DOMText-nodes can be found and \b exceptionOnEmpty is true it throws a rw::common::Exception.
+     * Otherwise an empty string is returned.
+     *
+     * @param element [in] Element to read in
+     * @param exceptionOnEmpty [in] Determines whether to throw an exception or return an empty string.
+     * @return string content of first child DOMText-node
+     */
     static const XMLCh* readElementTextXMLCh(xercesc::DOMElement* element, bool exceptionOnEmpty = true);
 
     /**
@@ -690,7 +737,30 @@ public:
      */
     static xercesc::DOMElement* createStringList(const std::vector<std::string>& strings, xercesc::DOMDocument* doc);
 
+    /**
+     * @brief Creates an element to represent \b ints.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b ints
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param ints [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createIntList(const std::vector<int>& ints, xercesc::DOMDocument* doc);
+    
+    /**
+     * @brief Creates an element to represent \b doubles.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b doubles
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param doubles [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createDoubleList(const std::vector<double>& doubles, xercesc::DOMDocument* doc);
 
     /**

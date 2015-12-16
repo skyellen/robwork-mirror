@@ -61,6 +61,14 @@ SET(FILES_HPP
   rwxml/XMLErrorHandler.hpp
   rwxml/XMLParser.hpp
   rwxml/XML.hpp
+  
+  dom/DOMBasisTypes.hpp
+  dom/DOMPropertyMapLoader.hpp
+  dom/DOMPathLoader.hpp
+  dom/DOMPathSaver.hpp
+  dom/DOMTrajectoryLoader.hpp
+  dom/DOMTrajectorySaver.hpp
+  dom/DOMProximitySetupLoader.hpp
 
   colsetup/CollisionSetupLoader.hpp
   image/PGMLoader.hpp

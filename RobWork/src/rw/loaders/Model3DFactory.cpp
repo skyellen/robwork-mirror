@@ -159,7 +159,7 @@ Model3D::Ptr Model3DFactory::loadModel(const std::string &raw_filename, const st
         Geometry::Ptr geom = ownedPtr( new Geometry(img) );
         // convert to model3d
         Model3D::Ptr model = ownedPtr( new Model3D(filename) );
-        Model3D::Material mat_gray("gray_pcd",0.7,0.7,0.7);
+        Model3D::Material mat_gray("gray_pcd",0.7f,0.7f,0.7f);
         model->addGeometry( mat_gray , geom );
 
         getCache().add(filename, model, moddate);
