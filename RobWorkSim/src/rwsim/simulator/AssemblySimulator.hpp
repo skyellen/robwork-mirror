@@ -39,6 +39,7 @@ namespace rwlibs { namespace assembly { class AssemblyResult; }}
 namespace rwsim { namespace contacts { class ContactDetector; }}
 namespace rwsim { namespace dynamics { class Body; }}
 namespace rwsim { namespace dynamics { class DynamicWorkCell; }}
+namespace rwsim { namespace log { class SimulatorLogScope; }}
 namespace rwsim { namespace sensor { class BodyContactSensor; }}
 
 namespace rwsim {
@@ -63,8 +64,9 @@ public:
 	 * @param dwc [in] the dynamic workcell.
 	 * @param engineID [in] the simulator to use for dynamic simulation (for instance "ODE").
 	 * @param contactDetector [in] (optional) set a contact detector that should be used by the PhysicsEngine.
+	 * @param verbose [in] (optional) set a logging structure to log to.
 	 */
-	AssemblySimulator(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<rwsim::contacts::ContactDetector> contactDetector = NULL);
+	AssemblySimulator(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<rwsim::contacts::ContactDetector> contactDetector = NULL, rw::common::Ptr<rwsim::log::SimulatorLogScope> verbose = NULL);
 
 	//! @brief Destructor.
 	virtual ~AssemblySimulator();
@@ -151,7 +153,7 @@ private:
 	class TaskDispatcher;
 	class TaskSimulation;
 	struct SimState;
-	void runSingle(std::size_t taskIndex);
+	void runSingle(std::size_t taskIndex, rw::common::Ptr<rwsim::log::SimulatorLogScope> verbose);
 	void runAll();
 	void stateMachine(SimState &state, rw::common::Ptr<rwlibs::assembly::AssemblyTask> task, rw::common::Ptr<rwlibs::assembly::AssemblyResult> result);
 	static std::vector<rw::math::Q> orderSolutions(const std::vector<rw::math::Q> &solutions, const rw::math::Q &curQ);
@@ -162,6 +164,7 @@ private:
 	const std::string _engineID;
 	const rw::common::Ptr<rwsim::contacts::ContactDetector> _contactDetector;
 	const rw::common::Ptr<rw::proximity::CollisionDetector> _collisionDetector;
+	const rw::common::Ptr<rwsim::log::SimulatorLogScope> _log;
 
 	std::vector<rw::common::Ptr<rwlibs::assembly::AssemblyTask> > _tasks;
 	std::vector<rw::common::Ptr<rwlibs::assembly::AssemblyResult> > _results;

@@ -35,6 +35,8 @@
 
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
+#include <rwsim/log/LogMessage.hpp>
+#include <rwsim/log/SimulatorLogScope.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
@@ -54,6 +56,7 @@ using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::simulation;
 using namespace rwsim::control;
 using namespace rwsim::dynamics;
+using namespace rwsim::log;
 using namespace rwsim::sensor;
 using namespace rwsim::simulator;
 
@@ -103,11 +106,12 @@ private:
 	AssemblySimulator* _simulator;
 };*/
 
-AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<rwsim::contacts::ContactDetector> contactDetector):
+AssemblySimulator::AssemblySimulator(rw::common::Ptr<DynamicWorkCell> dwc, const std::string &engineID, rw::common::Ptr<rwsim::contacts::ContactDetector> contactDetector, SimulatorLogScope::Ptr verbose):
 	_dwc(dwc),
 	_engineID(engineID),
 	_contactDetector(contactDetector),
 	_collisionDetector(ownedPtr(new CollisionDetector(dwc->getWorkcell(),ProximityStrategyFactory::makeDefaultCollisionStrategy()))),
+	_log(verbose),
 	_storeExecutionData(false),
 	_postStopFinish(false),
 	_postStopCancel(false),
@@ -144,7 +148,7 @@ void AssemblySimulator::start(rw::common::Ptr<ThreadTask> task) {
 	BOOST_FOREACH(AssemblyResult::Ptr &res, _results) {
 		res = ownedPtr(new AssemblyResult());
 	}
-	if (task == NULL) {
+	if (task.isNull()) {
 		runAll();
 		boost::mutex::scoped_lock lock(_mutex);
 		_running = false;
@@ -198,7 +202,7 @@ struct AssemblySimulator::SimState {
 	Q maleTarget;
 };
 
-void AssemblySimulator::runSingle(std::size_t taskIndex) {
+void AssemblySimulator::runSingle(std::size_t taskIndex, SimulatorLogScope::Ptr log) {
 	State state = _dwc->getWorkcell()->getDefaultState();
 	//long long time = TimerUtil::currentTimeMs();
 	double simTime = 0;
@@ -273,9 +277,6 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		std::cout << "Simulation could NOT be started! - hole tcp frame could not be found." << std::endl;
 		running = false;
 	}
-
-
-
 
 	if (simState.maleTCP == NULL && simState.femaleTCP == NULL) {
 		std::cout << "Simulation could NOT be started! - no FTSensor found." << std::endl;
@@ -357,7 +358,6 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 	}
 	simulator->addSensor(simState.femaleContactSensor, state);
 
-
 	if (task->maleFTSensor != "") {
 		SimulatedFTSensor::Ptr ftsensor = _dwc->findSensor<SimulatedFTSensor>(task->maleFTSensor);
 		if (ftsensor != NULL) {
@@ -385,13 +385,16 @@ void AssemblySimulator::runSingle(std::size_t taskIndex) {
 		}
 	}
 	
-	{
+	if (!_contactDetector.isNull()) {
 		const bool setCD = pe->setContactDetector(_contactDetector);
-		if (_contactDetector != NULL && !setCD)
+		if (!setCD)
 			RW_THROW("AssemblySimulator could not set ContactDetector on the used PhysicsEngine!");
 	}
 
-	while(running){
+	if (!log.isNull())
+		pe->setSimulatorLog(log);
+
+	while(running) {
 		{
 			boost::mutex::scoped_lock lock(_mutex);
 			if(_postStopCancel){
@@ -464,7 +467,20 @@ void AssemblySimulator::runAll() {
 			if (_postStopFinish || _postStopCancel)
 				break;
 		}
-		runSingle(i);
+		SimulatorLogScope::Ptr scope = NULL;
+		if (!_log.isNull()) {
+			scope = ownedPtr(new SimulatorLogScope(_log.get()));
+			scope->setFilename(__FILE__);
+			scope->setLineBegin(__LINE__);
+			std::stringstream desc;
+			desc << "Assembly Task " << i << std::endl;
+			scope->setDescription(desc.str());
+			_log->appendChild(scope);
+		}
+		runSingle(i, scope);
+		if (!scope.isNull()) {
+			scope->setLineEnd(__LINE__);
+		}
 	}
 }
 
@@ -493,8 +509,6 @@ void AssemblySimulator::stateMachine(SimState &simState, AssemblyTask::Ptr task,
 	realState.femaleOffset = inverse(Kinematics::worldTframe(simState.femaleTCP,defState))*Kinematics::worldTframe(simState.femaleTCP,simState.state);
 	if (simState.maleFTSensor != NULL)
 		realState.ftSensorMale = Wrench6D<>(ftSensorMale->getForce(),ftSensorMale->getTorque());
-	if (simState.femaleFTSensor != NULL)
-		std::cout << "found female sensor!" << std::endl;
 	if (simState.femaleFTSensor != NULL)
 		realState.ftSensorFemale = Wrench6D<>(ftSensorFemale->getForce(),ftSensorFemale->getTorque());
 	realState.contact = hasContact(simState.femaleContactSensor,simState.male, simState.state);
