@@ -54,7 +54,7 @@ namespace rw { namespace common {
         void write(const std::string& str);
 
         /**
-        * @brief Calls flush on the ostream
+        * @brief Calls flush on the individual writers
         */
         void flush();
 
