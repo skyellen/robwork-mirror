@@ -1154,8 +1154,8 @@ public:
     void setCOM(const rw::math::Vector3D<>& com);
     void approximateInertia();
     void approximateInertiaCOM();
-    const std::vector<rw::geometry::Geometry::Ptr>& getGeometry() const ;
-    const std::vector<rw::graphics::Model3D::Ptr>& getModels() const;
+    const std::vector<rw::common::Ptr<Geometry> >& getGeometry() const ;
+    const std::vector<rw::common::Ptr<Model3D> >& getModels() const;
     double getMass(rw::kinematics::State& state) const;
     rw::math::InertiaMatrix<double> getInertia(rw::kinematics::State& state) const;
     rw::math::Vector3D<> getCOM(rw::kinematics::State& state) const;

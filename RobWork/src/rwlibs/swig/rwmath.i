@@ -578,7 +578,7 @@ public:
     friend InertiaMatrix<T> operator*(const rw::math::Rotation3D<T>& aRb, const InertiaMatrix<T>& bRc);
     friend InertiaMatrix<T> operator*(const InertiaMatrix<T>& aRb, const Rotation3D<T>& bRc);
     friend InertiaMatrix<T> operator+(const InertiaMatrix<T>& I1, const InertiaMatrix<T>& I2);
-    friend Vector3<T> operator*(const InertiaMatrix<T>& aRb, const Vector3<T>& bVc);
+    friend Vector3D<T> operator*(const InertiaMatrix<T>& aRb, const Vector3D<T>& bVc);
     //friend InertiaMatrix<T> inverse(const InertiaMatrix<T>& aRb);
     //friend std::ostream& operator<<(std::ostream &os, const InertiaMatrix<T>& r);
 
