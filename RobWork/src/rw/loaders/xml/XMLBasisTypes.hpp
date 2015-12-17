@@ -96,40 +96,40 @@ public:
     /** @brief Identifier for specifying the angular part in a VelocityScrew6D  */
     static const XMLCh* AngularId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const XMLCh* StateId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const XMLCh* QStateId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const XMLCh* TreeStateId;
 
-    /** @brief Indetifier for specifying a boolean*/
+    /** @brief Identifier for specifying a boolean*/
     static const XMLCh* BooleanId;
 
-    /** @brief Indetifier for specifying a double */
+    /** @brief Identifier for specifying a double */
     static const XMLCh* DoubleId;
 
-    /** @brief Indetifier for specifying a float */
+    /** @brief Identifier for specifying a float */
     static const XMLCh* FloatId;
 
-    /** @brief Indetifier for specifying an integer */
+    /** @brief Identifier for specifying an integer */
     static const XMLCh* IntegerId;
 
-    /** @brief Indetifier for specifying a string */
+    /** @brief Identifier for specifying a string */
     static const XMLCh* StringId;
 
-    /** @brief Indetifier for specifying a list of strings */
+    /** @brief Identifier for specifying a list of strings */
     static const XMLCh* StringListId;
 
-    /** @brief Indetifier for specifying a list of integers */
+    /** @brief Identifier for specifying a list of integers */
     static const XMLCh* IntListId;
 
-    /** @brief Indetifier for specifying a list of doubles */
+    /** @brief Identifier for specifying a list of doubles */
     static const XMLCh* DoubleListId;
 
-    /** @brief Indetifier for specifying a pair of strings*/
+    /** @brief Identifier for specifying a pair of strings*/
     static const XMLCh* StringPairId;
 
     /** @brief Identifier for the unit attribute */
@@ -404,7 +404,7 @@ public:
     static int readInt(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
-     * @brief Reads in a list of integers from \ element
+     * @brief Reads in a list of integers from \b element
      *
      * Read in \b element and converts the content to a list of integers
      * Throws a rw::common::Exception if failing to read or parse.
@@ -416,7 +416,7 @@ public:
     static std::vector<int> readIntList(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
-     * @brief Reads in a list of doubles from \ element
+     * @brief Reads in a list of doubles from \b element
      *
      * Read in \b element and converts the content to a list of doubles
      * Throws a rw::common::Exception if failing to read or parse.

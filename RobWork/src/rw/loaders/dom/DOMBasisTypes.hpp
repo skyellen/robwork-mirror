@@ -99,40 +99,40 @@ public:
     /** @brief Identifier for specifying the angular part in a VelocityScrew6D  */
     static const std::string AngularId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const std::string StateId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const std::string QStateId;
 
-    /** @brief Indetifier for specifying a State */
+    /** @brief Identifier for specifying a State */
     static const std::string TreeStateId;
 
-    /** @brief Indetifier for specifying a boolean*/
+    /** @brief Identifier for specifying a boolean*/
     static const std::string BooleanId;
 
-    /** @brief Indetifier for specifying a double */
+    /** @brief Identifier for specifying a double */
     static const std::string DoubleId;
 
-    /** @brief Indetifier for specifying a float */
+    /** @brief Identifier for specifying a float */
     static const std::string FloatId;
 
-    /** @brief Indetifier for specifying an integer */
+    /** @brief Identifier for specifying an integer */
     static const std::string IntegerId;
 
-    /** @brief Indetifier for specifying a string */
+    /** @brief Identifier for specifying a string */
     static const std::string StringId;
 
-    /** @brief Indetifier for specifying a list of strings */
+    /** @brief Identifier for specifying a list of strings */
     static const std::string StringListId;
 
-    /** @brief Indetifier for specifying a list of integers */
+    /** @brief Identifier for specifying a list of integers */
     static const std::string IntListId;
 
-    /** @brief Indetifier for specifying a list of doubles */
+    /** @brief Identifier for specifying a list of doubles */
     static const std::string DoubleListId;
 
-    /** @brief Indetifier for specifying a pair of strings */
+    /** @brief Identifier for specifying a pair of strings */
     static const std::string StringPairId;
 
     /** @brief Identifier for the unit attribute */
