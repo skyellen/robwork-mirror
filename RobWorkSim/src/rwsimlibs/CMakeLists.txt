@@ -6,7 +6,12 @@
 add_subdirectory(gui)
 
 add_subdirectory(ode)
-add_subdirectory(rwpe)
+
+FIND_FILE(RWPE CMakeLists.txt PATHS rwpe NO_DEFAULT_PATH)
+IF(RWPE)
+	ADD_SUBDIRECTORY(rwpe)
+ENDIF()
+
 add_subdirectory(bullet) 
 add_subdirectory(swig)
 
