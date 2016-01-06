@@ -2,7 +2,6 @@ SET(SUBSYS_NAME rw_java )
 SET(SUBSYS_DESC "Interface for accessing RobWorkSim from java." )
 SET(SUBSYS_DEPS rw )
 
-# make sure that SDH can be found
 SET(build TRUE)
 
 FIND_PACKAGE(SWIG 1.3 QUIET)

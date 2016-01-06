@@ -2,11 +2,10 @@ SET(SUBSYS_NAME rws_java )
 SET(SUBSYS_DESC "Interface for accessing RobWorkStudio from java." )
 SET(SUBSYS_DEPS rw )
 
-# make sure that SDH can be found
 SET(build TRUE)
 
 FIND_PACKAGE(SWIG 1.3 QUIET)
-set(DEFAULT FALSE)
+set(DEFAULT TRUE)
 set(REASON )
 IF( NOT SWIG_FOUND)
     set(DEFAULT false)
@@ -50,7 +49,7 @@ IF( build )
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/CleanDep
         COMMAND cmake -E remove_directory java_src
         COMMAND cmake -E touch ${CMAKE_CURRENT_BINARY_DIR}/CleanDep
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/rws.i"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../rws.i"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Removing old Java source..."
     )

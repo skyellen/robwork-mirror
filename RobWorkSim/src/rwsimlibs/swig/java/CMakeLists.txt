@@ -2,11 +2,10 @@ SET(SUBSYS_NAME rwsim_java )
 SET(SUBSYS_DESC "Interface for accessing RobWorkSim from java." )
 SET(SUBSYS_DEPS rw )
 
-# make sure that SDH can be found
 SET(build TRUE)
 
 FIND_PACKAGE(SWIG 1.3 QUIET)
-set(DEFAULT FALSE)
+set(DEFAULT TRUE)
 set(REASON )
 IF( NOT SWIG_FOUND)
     set(DEFAULT false)
@@ -80,9 +79,5 @@ IF( build )
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     SET(CMAKE_SWIG_OUTDIR ${RWSIM_CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-    
-    #RW_ADD_LIBRARY(rwhw_camera camera ${SRC_CPP} ${SRC_HPP} )
-    #RW_ADD_INCLUDES(camera "rwhw/camera" ${SRC_HPP})
-    #set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_camera;")
     
 ENDIF()
