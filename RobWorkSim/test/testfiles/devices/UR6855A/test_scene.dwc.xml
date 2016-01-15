@@ -4,6 +4,6 @@
  
  <Include file="../../scene/DynamicMaterialDataBase.xml" />
 
- <Include file="PG70.dwc.xml" />
+ <Include file="UR6855A.dwc.xml" />
  
 </DynamicWorkcell>

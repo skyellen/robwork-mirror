@@ -2,7 +2,7 @@
  
  <Gravity>0 0 -9.8</Gravity>
  
- <Include file="../../../properties/DynamicMaterialDataBase.xml" />
+ <Include file="../../scene/DynamicMaterialDataBase.xml" />
 
  <Include file="SchunkHandTactile0.dwc.xml" />
  

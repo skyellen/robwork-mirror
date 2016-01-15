@@ -1,0 +1,37 @@
+<IncludeData>
+	<Gravity>0 0 -9.82</Gravity>
+ 
+	<MaterialData>
+		<Default>Plastic</Default>
+		<Material id="Plastic" />
+	</MaterialData>
+
+	<FrictionMap>
+		<Pair first="Plastic" second="Plastic"><FrictionData type="Coulomb"><Mu>0.5</Mu></FrictionData></Pair>
+	</FrictionMap>
+
+	<ObjectTypeData>
+		<Default>hardObj</Default>
+		<ObjectType id="hardObj"><Description>A hard object. with low elasticity</Description></ObjectType>
+	</ObjectTypeData>
+
+	<ContactMap>
+		<Pair first="hardObj" second="hardObj"><ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+	</ContactMap>
+	
+	<FixedBody frame="Fixed">
+		<MaterialID>Plastic</MaterialID>
+	</FixedBody>
+
+	<RigidBody frame="Dynamic">
+		<Mass>0.12</Mass>
+		<Inertia>
+			0.000103 0 0
+			0 0.000103 0
+			0 0 0.000006
+		</Inertia>
+		<COG>0 0 0.05</COG>
+		<Integrator>Heun</Integrator>
+		<MaterialID>Plastic</MaterialID>
+	</RigidBody>
+</IncludeData>

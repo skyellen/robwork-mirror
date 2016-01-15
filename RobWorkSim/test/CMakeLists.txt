@@ -41,6 +41,10 @@ SET(COMMON_TEST_SRC
   common/CommonTest.cpp
 )
 
+SET(DYNAMICS_TEST_SRC
+  dynamics/ConstraintTest.cpp
+)
+
 SET(TEST_DEPENDENCIES 
     ${ROBWORKSIM_LIBRARIES}
 )
@@ -50,6 +54,11 @@ ADD_EXECUTABLE( rwsim_common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC}
 TARGET_LINK_LIBRARIES( rwsim_common-test ${TEST_LIBRARIES} )
 ADD_TEST( rwsim_common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_common-test )
 ADD_DEPENDENCIES(rwsim_common-test ${TEST_DEPENDENCIES})
+
+ADD_EXECUTABLE( rwsim_dynamics-test ${DO_EXCLUDE} test-main.cpp ${DYNAMICS_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rwsim_dynamics-test ${TEST_LIBRARIES} )
+ADD_TEST( rwsim_dynamics-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_dynamics-test )
+ADD_DEPENDENCIES(rwsim_dynamics-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rwsim_tasksimulation-test ${DO_EXCLUDE} test-main.cpp tasksimulation/GraspTaskSimulation.cpp)       
 TARGET_LINK_LIBRARIES( rwsim_tasksimulation-test ${TEST_LIBRARIES} )

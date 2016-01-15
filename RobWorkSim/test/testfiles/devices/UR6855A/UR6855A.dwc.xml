@@ -22,39 +22,45 @@
 
 <!-- if a rigidbase is created then make sure it references a movable frame-->
   <Link object="Joint0">
-   <Mass>1.0</Mass>
+   <Mass>3.80543</Mass>
+   <COG>0 -0.00151 0.07379</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
   </Link>
 
   <Link object="Joint1">
-  <Mass>1.0</Mass>
+  <Mass>8.45759</Mass>
+   <COG>-0.2125 0 0.11343</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
   </Link>
 
   <Link object="Joint2">
-  <Mass>1.0</Mass>
+  <Mass>2.14558</Mass>
+   <COG>-0.27447 0 0.02512</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
   </Link>
   <Link object="Joint3">
-  <Mass>0.5</Mass>
+  <Mass>1.18844</Mass>
+   <COG>0 -0.01541 0.10749</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
   </Link>
 
   <Link object="Joint4">
-  <Mass>0.3</Mass>
+  <Mass>1.18884</Mass>
+   <COG>0 0.01541 0.09149</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
   </Link>
 
   <Link object="Joint5">
-   <Mass>0.1</Mass>
+   <Mass>0.163184</Mass>
+   <COG>0 0 0.0692</COG>
    <EstimateInertia />
    <MaterialID>Aluminum</MaterialID>
-   <Associate object="PG70.Base" />
+   <!--<Associate object="PG70.Base" />-->
   </Link>
 
  </RigidDevice>

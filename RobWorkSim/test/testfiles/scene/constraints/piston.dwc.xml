@@ -1,0 +1,16 @@
+<DynamicWorkcell workcell="constraint.wc.xml">
+
+	<Include file="common.xml" />
+
+	<Constraint name="Constraint" type="Piston" parent="Fixed" child="Dynamic">
+		<Transform3D>
+			<Pos>0 0 0.01</Pos>
+			<RPY>0.78539816339 0.78539816339 1.57079632679</RPY>
+		</Transform3D>
+	</Constraint>
+
+	<FTSensor name="FTSensor" body="Fixed" body1="Dynamic">
+		<RefFrame>ConstraintVisUniversal</RefFrame>
+	</FTSensor>
+	
+</DynamicWorkcell>

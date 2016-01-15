@@ -18,13 +18,10 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rwsim/rwsim.hpp>
-#ifdef RWSIM_HAVE_ODE
-#include <rwsimlibs/ode/ODESimulator.hpp>
-#endif
+#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 using namespace rwsim::dynamics;
 using namespace rwsim::loaders;
-using namespace rwsim::simulator;
 
 BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
 {
@@ -44,5 +41,38 @@ BOOST_AUTO_TEST_CASE( DynamicWorkCellLoaderTest )
     BOOST_CHECK( dwc_pg70->findBody("PG70.Base") != NULL );
     BOOST_CHECK( dwc_pg70->findBody("PG70.RightFinger") != NULL );
 
+    // check different constraints
+    DynamicWorkCell::Ptr fixed, prismatic, revolute, universal, spherical, piston, prismaticRotoid, prismaticUniversal, free, free_spring, revolute_limits;
+    BOOST_CHECK_NO_THROW( fixed = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/fixed.dwc.xml") );
+    BOOST_CHECK_NO_THROW( prismatic = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/prismatic.dwc.xml") );
+    BOOST_CHECK_NO_THROW( revolute = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/revolute.dwc.xml") );
+    BOOST_CHECK_NO_THROW( universal = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/universal.dwc.xml") );
+    BOOST_CHECK_NO_THROW( spherical = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/spherical.dwc.xml") );
+    BOOST_CHECK_NO_THROW( piston = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/piston.dwc.xml") );
+    BOOST_CHECK_NO_THROW( prismaticRotoid = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/prismaticRotoid.dwc.xml") );
+    BOOST_CHECK_NO_THROW( prismaticUniversal = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/prismaticUniversal.dwc.xml") );
+    BOOST_CHECK_NO_THROW( free = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/free.dwc.xml") );
+    BOOST_CHECK_NO_THROW( free_spring = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/free_spring.dwc.xml") );
+    BOOST_CHECK_NO_THROW( revolute_limits = DynamicWorkCellLoader::load(testFilePath() + "/scene/constraints/revolute_limits.dwc.xml") );
+
+    // check information
+    BOOST_CHECK(!fixed->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!prismatic->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!revolute->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!universal->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!spherical->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!piston->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!prismaticRotoid->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!prismaticUniversal->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!free->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!free_spring->findConstraint("Constraint").isNull());
+    BOOST_CHECK(!revolute_limits->findConstraint("Constraint").isNull());
+
+    BOOST_CHECK(!prismatic->findConstraint("Constraint")->getSpringParams().enabled);
+    BOOST_CHECK(free_spring->findConstraint("Constraint")->getSpringParams().enabled);
+    BOOST_CHECK(!revolute->findConstraint("Constraint")->getLimit(0).lowOn);
+    BOOST_CHECK(!revolute->findConstraint("Constraint")->getLimit(0).highOn);
+    BOOST_CHECK(revolute_limits->findConstraint("Constraint")->getLimit(0).lowOn);
+    BOOST_CHECK(revolute_limits->findConstraint("Constraint")->getLimit(0).highOn);
 }
 

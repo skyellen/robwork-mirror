@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<ProximitySetup UseIncludeAll="true" UseExcludeStaticPairs="true">
+	<Exclude PatternA="Fixed" PatternB="Dynamic"/>
+</ProximitySetup>

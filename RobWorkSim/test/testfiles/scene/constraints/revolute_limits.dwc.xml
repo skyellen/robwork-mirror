@@ -1,0 +1,19 @@
+<DynamicWorkcell workcell="constraint.wc.xml">
+
+	<Include file="common.xml" />
+
+	<Constraint name="Constraint" type="Revolute" parent="Fixed" child="Dynamic">
+		<Transform3D>
+			<Pos>0 0 0.01</Pos>
+			<RPY>0 1.57079632679 -0.78539816339</RPY>
+		</Transform3D>
+		<Limits>
+			<Limit low="-1.0" high="0.1"/>
+		</Limits>
+	</Constraint>
+
+	<FTSensor name="FTSensor" body="Fixed" body1="Dynamic">
+		<RefFrame>ConstraintVisRevolute</RefFrame>
+	</FTSensor>
+	
+</DynamicWorkcell>

@@ -95,12 +95,12 @@
   <RPY> 90 0 90 </RPY> <Pos> 0 0 0</Pos>
   <Polytope file="geometry/FingerBase_hull" /></Drawable>
   
- <Drawable name="F2BaseGeo" refframe="F2Joint1Rev" >
-  <RPY> 90 0 90 </RPY> <Pos> 0 0 0</Pos>
+ <Drawable name="F2BaseGeo" refframe="F2Joint1" >
+  <RPY> -90 0 -90 </RPY> <Pos> 0 0 0</Pos>
   <Polytope file="geometry/FingerBase_hull" /></Drawable>
   
- <Drawable name="F3BaseGeo" refframe="F3Joint1Rev" >
-  <RPY> 90 0 90 </RPY> <Pos> 0 0 0</Pos>
+ <Drawable name="F3BaseGeo" refframe="F3Joint1" >
+  <RPY> -90 0 -90 </RPY> <Pos> 0 0 0</Pos>
   <Polytope file="geometry/FingerBase_hull" /></Drawable>
  
  <Q name="Home">0 0 0 0 0 0 0</Q>

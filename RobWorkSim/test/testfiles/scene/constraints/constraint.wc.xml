@@ -1,0 +1,50 @@
+<WorkCell name="constraint">
+
+	<Frame name="Fixed" refframe="WORLD" type="Movable">
+		<RPY>0 -90 0</RPY>
+		<Pos>0.11 0 0.15</Pos>
+		<Drawable name="CupGeo">
+			<RPY>0 0 0</RPY>
+			<Pos>0 0 0</Pos>
+			<Box x="0.02" y="0.02" z="0.01" />
+		</Drawable>
+	</Frame>
+
+	<Frame name="Dynamic" refframe="Fixed" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.01</Pos>
+		<Drawable name="CylinderGeo">
+			<RPY>0 0 0</RPY>
+			<Pos>0 0 0.05</Pos>
+			<Cylinder radius="0.01" z="0.1" />
+		</Drawable>
+	</Frame>
+
+	<Frame name="DynamicCOM" refframe="Dynamic">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.05</Pos>
+	</Frame>
+
+	<Frame name="ConstraintVisFixed" refframe="Dynamic">
+			<Pos>0 0 0</Pos>
+			<RPY>0 90 0</RPY>
+	</Frame>
+
+	<Frame name="ConstraintVisPrismatic" refframe="Dynamic">
+			<Pos>0 0 0</Pos>
+			<RPY>0 135 0</RPY>
+	</Frame>
+
+	<Frame name="ConstraintVisRevolute" refframe="Dynamic">
+			<Pos>0 0 0</Pos>
+			<RPY>0 90 -45</RPY>
+	</Frame>
+
+	<Frame name="ConstraintVisUniversal" refframe="Dynamic">
+			<Pos>0 0 0</Pos>
+			<RPY>45 45 90</RPY>
+	</Frame>
+
+	<ProximitySetup file="ProximitySetup.xml" />
+
+</WorkCell>
