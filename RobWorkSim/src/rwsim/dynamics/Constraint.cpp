@@ -28,7 +28,8 @@ Constraint::Constraint(const std::string& name, const ConstraintType &type, Body
 	StateData(0,name),
 	_type(type),
 	_body1(b1),
-	_body2(b2)
+	_body2(b2),
+	_limits(getDOF(type))
 {
 }
 
@@ -77,6 +78,18 @@ Constraint::SpringParams Constraint::getSpringParams() const {
 void Constraint::setSpringParams(const SpringParams &params) {
 	boost::mutex::scoped_lock lock(_springParams_mutex);
 	_springParams = params;
+}
+
+Constraint::Limit Constraint::getLimit(std::size_t i) const {
+	boost::mutex::scoped_lock lock(_limits_mutex);
+	RW_ASSERT(i < _limits.size());
+	return _limits[i];
+}
+
+void Constraint::setLimit(std::size_t i, const Limit& limit) {
+	boost::mutex::scoped_lock lock(_limits_mutex);
+	RW_ASSERT(i < _limits.size());
+	_limits[i] = limit;
 }
 
 size_t Constraint::getDOF(ConstraintType type) {

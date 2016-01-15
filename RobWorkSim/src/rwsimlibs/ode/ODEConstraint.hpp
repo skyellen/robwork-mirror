@@ -68,8 +68,23 @@ public:
 	 */
 	void update(const rwlibs::simulation::Simulator::UpdateInfo& dt, rw::kinematics::State& state);
 
+	/**
+	 * Set or change a lower limit for a constraint.
+	 * @param dof [in] the degree of freedom to set (0 or 1).
+	 * @param limit [in] the limit to set.
+	 */
+	void setLoStop(std::size_t dof, double limit) const;
+
+	/**
+	 * Set or change a higher limit for a constraint.
+	 * @param dof [in] the degree of freedom to set (0 or 1).
+	 * @param limit [in] the limit to set.
+	 */
+	void setHiStop(std::size_t dof, double limit) const;
+
 private:
 	void createJoint();
+	void setLimits() const;
 	void destroyJoint();
 
 	struct ComplianceDecomposition {

@@ -39,6 +39,7 @@ ODEConstraint::ODEConstraint(rw::common::Ptr<const Constraint> constraint, const
 	_springFrictionAng(0.01)
 {
 	createJoint();
+	setLimits();
 }
 
 ODEConstraint::~ODEConstraint() {
@@ -105,6 +106,17 @@ void ODEConstraint::createJoint() {
 		// Do nothing
 	} else {
 		RW_THROW("Unsupported Constraint type!");
+	}
+}
+
+void ODEConstraint::setLimits() const {
+	const std::size_t dof = _rwConstraint->getDOF();
+	for (std::size_t i = 0; i < dof; i++) {
+		const Constraint::Limit limit = _rwConstraint->getLimit(i);
+		if (limit.lowOn)
+			setLoStop(i,limit.low);
+		if (limit.highOn)
+			setHiStop(i,limit.high);
 	}
 }
 
@@ -559,4 +571,71 @@ void ODEConstraint::deleteSpring() {
 		dJointDestroy (_spring->motorAng);
 	delete _spring;
 	_spring = NULL;
+}
+
+void ODEConstraint::setLoStop(std::size_t dof, double limit) const {
+	const Constraint::ConstraintType type = _rwConstraint->getType();
+	RW_ASSERT(dof == 0 || dof == 1);
+	if (type == Constraint::Fixed) {
+	} else if (type == Constraint::Prismatic && dof == 0) {
+		dJointSetSliderParam(_jointId,dParamLoStop, limit);
+	} else if (type == Constraint::Revolute && dof == 0) {
+		dJointSetHingeParam(_jointId,dParamLoStop, limit);
+	} else if (type == Constraint::Universal) {
+		if (dof == 0)
+			dJointSetUniversalParam(_jointId,dParamLoStop, limit);
+		else if (dof == 1)
+			dJointSetUniversalParam(_jointId,dParamLoStop2, limit);
+	} else if (type == Constraint::Spherical) {
+		RW_THROW("Spherical constraint is unsupported for lower limit");
+	} else if (type == Constraint::Piston && dof == 0) {
+		dJointSetPistonParam(_jointId,dParamLoStop, limit);
+	} else if (type == Constraint::PrismaticRotoid) {
+		if (dof == 0)
+			dJointSetPRParam (_jointId,dParamLoStop,limit);
+		else if (dof == 1)
+			dJointSetPRParam (_jointId,dParamLoStop2,limit);
+	} else if (type == Constraint::PrismaticUniversal) {
+		if (dof == 0)
+			dJointSetPUParam(_jointId,dParamLoStop,limit);
+		else if (dof == 1)
+			dJointSetPUParam(_jointId,dParamLoStop2,limit);
+	} else if (type == Constraint::Free) {
+		// Do nothing
+	} else {
+		RW_THROW("Constraint is unsupported for lower limit");
+	}
+}
+void ODEConstraint::setHiStop(std::size_t dof, double limit) const {
+	const Constraint::ConstraintType type = _rwConstraint->getType();
+	RW_ASSERT(dof == 0 || dof == 1);
+	if (type == Constraint::Fixed) {
+	} else if (type == Constraint::Prismatic && dof == 0) {
+		dJointSetSliderParam(_jointId,dParamHiStop, limit);
+	} else if (type == Constraint::Revolute && dof == 0) {
+		dJointSetHingeParam(_jointId,dParamHiStop, limit);
+	} else if (type == Constraint::Universal) {
+		if (dof == 0)
+			dJointSetUniversalParam(_jointId,dParamHiStop, limit);
+		else if (dof == 1)
+			dJointSetUniversalParam(_jointId,dParamHiStop2, limit);
+	} else if (type == Constraint::Spherical) {
+		RW_THROW("Spherical constraint is unsupported for higher limit");
+	} else if (type == Constraint::Piston && dof == 0) {
+		dJointSetPistonParam(_jointId,dParamHiStop, limit);
+	} else if (type == Constraint::PrismaticRotoid) {
+		if (dof == 0)
+			dJointSetPRParam (_jointId,dParamHiStop,limit);
+		else if (dof == 1)
+			dJointSetPRParam (_jointId,dParamHiStop2,limit);
+	} else if (type == Constraint::PrismaticUniversal) {
+		if (dof == 0)
+			dJointSetPUParam(_jointId,dParamHiStop,limit);
+		else if (dof == 1)
+			dJointSetPUParam(_jointId,dParamHiStop2,limit);
+	} else if (type == Constraint::Free) {
+		// Do nothing
+	} else {
+		RW_THROW("Constraint is unsupported for higher limit");
+	}
 }

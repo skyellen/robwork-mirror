@@ -162,6 +162,34 @@ public:
 	 */
 	void setSpringParams(const SpringParams &params);
 
+	//! @brief Definition of a limit for one single degree of freedom.
+	struct Limit {
+		//! @brief Constructor.
+		Limit(): lowOn(false), highOn(false), low(0), high(0) {}
+		//! @brief Enable low limit.
+		bool lowOn;
+		//! @brief Enable high limit.
+		bool highOn;
+		//! @brief Value for low limit.
+		double low;
+		//! @brief Value for high limit.
+		double high;
+	};
+
+	/**
+	 * @brief Get limit information.
+	 * @param i [in] the degree of freedom to get limit information for.
+	 * @return the limit.
+	 */
+	Limit getLimit(std::size_t i) const;
+
+	/**
+	 * @brief Set limit.
+	 * @param i [in] the degree of freedom to set limit information for.
+	 * @param limit [in] the limit information.
+	 */
+	void setLimit(std::size_t i, const Limit& limit);
+
 	/**
 	 * @brief Convert a string to a ConstraintType.
 	 * @param string [in] the string to convert.
@@ -184,6 +212,9 @@ private:
 
 	SpringParams _springParams;
 	mutable boost::mutex _springParams_mutex;
+
+	std::vector<Limit> _limits;
+	mutable boost::mutex _limits_mutex;
 };
 //! @}
 } /* namespace dynamics */
