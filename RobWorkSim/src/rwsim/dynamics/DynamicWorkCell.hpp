@@ -159,8 +159,9 @@ namespace dynamics {
 
     	/**
     	 * @brief gets a list of all dynamic devices in the dynamic workcell
+    	 * @return a list of dynamic devices.
     	 */
-    	const DeviceList& getDynamicDevices(){ return _devices; };
+    	const DeviceList& getDynamicDevices() const { return _devices; };
 
         /**
          * @brief add a sensor to the dynamic workcell
@@ -323,10 +324,10 @@ namespace dynamics {
 
         /**
          * @brief tests if a body is part of a device
-         * @param
-         * @return
+         * @param [in] the body to test for.
+         * @return true if body is part of the device.
          */
-        bool inDevice(Body::Ptr body);
+        bool inDevice(rw::common::Ptr<const Body> body) const;
 
         /**
          * @brief Set the gravity in this dynamic workcell

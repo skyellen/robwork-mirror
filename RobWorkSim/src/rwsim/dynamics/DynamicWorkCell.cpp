@@ -94,7 +94,7 @@ DynamicDevice::Ptr DynamicWorkCell::findDevice(const std::string& name) const {
     return NULL;
 }
 
-bool DynamicWorkCell::inDevice(Body::Ptr body){
+bool DynamicWorkCell::inDevice(rw::common::Ptr<const Body> body) const {
 	// inspect name scope, if its the same as any device then
 	const std::string& bname = body->getName();
     BOOST_FOREACH(DynamicDevice::Ptr dev, _devices){
