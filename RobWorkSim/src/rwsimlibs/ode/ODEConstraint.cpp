@@ -250,10 +250,10 @@ Eigen::VectorXd ODEConstraint::getX(const Transform3D<> &wTchild, const Transfor
 }
 
 Eigen::VectorXd ODEConstraint::getXd(const Transform3D<> &wTparent, const Transform3D<> &wTconstraint, const State &state) const {
-	const Vector3D<> linVelP = ODEUtil::toVector3D(dBodyGetLinearVel(_parent->getBodyID()));
-	const Vector3D<> linVelC = ODEUtil::toVector3D(dBodyGetLinearVel(_child->getBodyID()));
-	const Vector3D<> angVelP = ODEUtil::toVector3D(dBodyGetAngularVel(_parent->getBodyID()));
-	const Vector3D<> angVelC = ODEUtil::toVector3D(dBodyGetAngularVel(_child->getBodyID()));
+	const Vector3D<> linVelP = (_parent->getType() == ODEBody::FIXED)? Vector3D<>::zero() : ODEUtil::toVector3D(dBodyGetLinearVel(_parent->getBodyID()));
+	const Vector3D<> linVelC = (_child->getType() == ODEBody::FIXED)? Vector3D<>::zero() : ODEUtil::toVector3D(dBodyGetLinearVel(_child->getBodyID()));
+	const Vector3D<> angVelP = (_parent->getType() == ODEBody::FIXED)? Vector3D<>::zero() : ODEUtil::toVector3D(dBodyGetAngularVel(_parent->getBodyID()));
+	const Vector3D<> angVelC = (_child->getType() == ODEBody::FIXED)? Vector3D<>::zero() : ODEUtil::toVector3D(dBodyGetAngularVel(_child->getBodyID()));
 	const Vector3D<> angVelCon = angVelP+cross(angVelP,wTconstraint.P()-wTparent.P());
 	const VelocityScrew6D<> relVelP(linVelC-linVelP, EAA<>(angVelC-angVelCon));
 	const VelocityScrew6D<> relVelCon(inverse(wTconstraint.R())*relVelP);

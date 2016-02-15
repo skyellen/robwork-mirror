@@ -159,7 +159,7 @@ namespace simulator {
 		void setTransformCOM(const rw::math::Transform3D<>& wTcom);
 
 		//! get type of ODEBody
-		ODEBodyType getType(){return _type; }
+		ODEBodyType getType() const {return _type; }
 
 		//! get material id
 		int getMaterialID(){ return _materialID; }
