@@ -87,7 +87,7 @@ TARGET_LINK_LIBRARIES( rw_geometry-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_geometry-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_geometry-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_geometry-test ${TEST_DEPENDENCIES})
 
-ADD_EXECUTABLE( rw_models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp)       
+ADD_EXECUTABLE( rw_models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp models/PrismaticJointTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_models-test ${TEST_LIBRARIES} )
 ADD_TEST( rw_models-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_models-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_models-test ${TEST_DEPENDENCIES})

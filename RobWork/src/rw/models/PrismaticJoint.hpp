@@ -272,6 +272,7 @@ namespace rw { namespace models {
             {
 				rw::math::Rotation3D<>::multiply(parent.R(), rw::math::Vector3D<>(0, 0, q) + _translation, result.P());
                 result.P() += parent.P();
+                result.R() = parent.R();
             }
 
             rw::math::Transform3D<> getTransform(double q) {
