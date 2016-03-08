@@ -54,7 +54,7 @@ public:
 	virtual ~ODEContactStrategy();
 
 	//! @copydoc rwsim::contacts::ContactStrategy::match
-	virtual bool match(rw::geometry::GeometryData::Ptr geoA, rw::geometry::GeometryData::Ptr geoB);
+	virtual bool match(rw::common::Ptr<const rw::geometry::GeometryData> geoA, rw::common::Ptr<const rw::geometry::GeometryData> geoB);
 
 	//! @copydoc rwsim::contacts::ContactStrategy::findContacts(rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rw::proximity::ProximityModel::Ptr,const rw::math::Transform3D<>&,rwsim::contacts::ContactStrategyData& data,rwsim::contacts::ContactStrategyTracking& tracking,rwsim::log::SimulatorLogScope*)
 	virtual std::vector<rwsim::contacts::Contact> findContacts(

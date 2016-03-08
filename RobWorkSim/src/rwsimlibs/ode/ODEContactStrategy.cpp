@@ -106,7 +106,7 @@ ODEContactStrategy::ODEContactStrategy() {
 ODEContactStrategy::~ODEContactStrategy() {
 }
 
-bool ODEContactStrategy::match(GeometryData::Ptr geoA, GeometryData::Ptr geoB) {
+bool ODEContactStrategy::match(rw::common::Ptr<const GeometryData> geoA, rw::common::Ptr<const GeometryData> geoB) {
 	if (geoA->getType() == GeometryData::PlanePrim && geoB->getType() == GeometryData::CylinderPrim)
 		return true;
 	if (geoA->getType() == GeometryData::CylinderPrim && geoB->getType() == GeometryData::PlanePrim)
