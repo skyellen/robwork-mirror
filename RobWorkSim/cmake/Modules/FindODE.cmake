@@ -15,6 +15,7 @@
 # created by RobWork, based on code by David Guthrie.  Based on code by Robert Osfield 
 
 FIND_PATH(ODE_INCLUDE_DIR ode/ode.h
+    HINTS
     ${ODE_DIR}/include
     $ENV{ODE_DIR}/include
     $ENV{ODE_DIR}
@@ -38,7 +39,7 @@ MACRO(FIND_ODE_LIBRARY MYLIBRARY MYLIBRARYNAME)
 	set(CMAKE_FIND_LIBRARY_SUFFIXES .so .a .lib)
     FIND_LIBRARY(${MYLIBRARY}
         NAMES ${ODE_LIBRARY_NAME} ${MYLIBRARYNAME}
-        PATHS
+        HINTS
         ${ODE_LIBRARY_DIR}
         ${ODE_DIR}/lib
         $ENV{ODE_DIR}/lib
