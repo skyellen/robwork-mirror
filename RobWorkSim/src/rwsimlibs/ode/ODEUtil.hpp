@@ -116,7 +116,7 @@ namespace simulator {
         struct TriGeomData {
         public:
             TriGeomData(TriMeshData::Ptr triData):
-            	refframe(NULL), tridata(triData), mBuffIdx(0)
+            	refframe(NULL), tridata(triData), mBuffIdx(0), isPlaceable(true)
             {
                 for (int j=0; j<16; j++){
                     mBuff[0][j] = 0.0f;
@@ -133,6 +133,7 @@ namespace simulator {
             dGeomID geomId;
             int mBuffIdx;
             bool isGeomTriMesh;
+            bool isPlaceable;
         };
 
 

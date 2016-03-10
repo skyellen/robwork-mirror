@@ -52,13 +52,21 @@ void ODEUtil::setODEGeomT3D(dGeomID geoId, const rw::math::Transform3D<>& t3d){
 }
 
 rw::math::Transform3D<> ODEUtil::getODEGeomT3D(dGeomID geomId){
-    const dReal *v = dGeomGetPosition(geomId);
-    dReal q[4];
-    dGeomGetQuaternion(geomId, q);
+	if (dGeomGetClass(geomId) == dPlaneClass) {
+		dVector4 result;
+		dGeomPlaneGetParams(geomId, result);
+		const Vector3D<> n(result[0],result[1],result[2]);
+		const double d = result[3];
+		return Transform3D<>(d*n,EAA<>(Vector3D<>::z(),n).toRotation3D());
+	} else {
+		const dReal *v = dGeomGetPosition(geomId);
+		dReal q[4];
+		dGeomGetQuaternion(geomId, q);
 
-    Vector3D<> pos(v[0],v[1],v[2]);
-    Quaternion<> quat(q[1],q[2],q[3],q[0]);
-    return Transform3D<>(pos,quat);
+		Vector3D<> pos(v[0],v[1],v[2]);
+		Quaternion<> quat(q[1],q[2],q[3],q[0]);
+		return Transform3D<>(pos,quat);
+	}
 }
 rw::math::Transform3D<> ODEUtil::getODEBodyT3D(dBodyID bodyId){
     const dReal *v = dBodyGetPosition(bodyId);
@@ -229,6 +237,7 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
 
         dGeomID geoId;
         bool isTriMesh=false;
+        bool placeable=true;
         if( Sphere* sphere_rw = dynamic_cast<Sphere*>(rwgdata.get()) ){
             geoId = dCreateSphere(spaceid, (dReal)sphere_rw->getRadius());
         } else if( Cylinder* cyl_rw = dynamic_cast<Cylinder*>(rwgdata.get()) ){
@@ -236,6 +245,7 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
         } else if( Plane* plane_rw = dynamic_cast<Plane*>(rwgdata.get()) ){
             Vector3D<> n = plane_rw->normal();
             geoId = dCreatePlane(spaceid, (dReal)n[0], (dReal)n[1], (dReal)n[2], (dReal)plane_rw->d());
+            placeable = false;
         } else {
             geoId = dCreateTriMesh(spaceid, triMeshData->triMeshID, NULL, NULL, NULL);
             isTriMesh = true;
@@ -249,6 +259,7 @@ std::vector<ODEUtil::TriGeomData*> ODEUtil::buildTriGeom(std::vector<Geometry::P
         gdata->t3d = transform;
         triGeomDatas.push_back(gdata);
         gdata->geomId = geoId;
+        gdata->isPlaceable = placeable;
     }
     // create geo
     return triGeomDatas;

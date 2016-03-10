@@ -68,6 +68,8 @@ void ODEDebugRender::draw(const rw::graphics::DrawableNode::RenderInfo& info, Dr
                 //std::cout << "- tri" << std::endl;
                 ODEUtil::TriMeshData::Ptr trimesh = trigeom->tridata;
                 // multiply stack transform with geom transform
+                if (!trigeom->isPlaceable)
+                	continue;
                 const dReal* pos = dGeomGetPosition(trigeom->geomId);
                 const dReal* rot = dGeomGetRotation(trigeom->geomId);
 

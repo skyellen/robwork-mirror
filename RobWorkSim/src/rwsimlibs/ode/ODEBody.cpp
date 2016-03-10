@@ -255,8 +255,10 @@ void ODEBody::setTransform(const rw::math::Transform3D<>& wTbody){
     if(_type==FIXED){
         // fixed object only has geometries. These may be offset individually
         BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
-            Transform3D<> gt3d = wTbody * gdata->t3d;
-            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	if (gdata->isPlaceable) {
+        		Transform3D<> gt3d = wTbody * gdata->t3d;
+        		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	}
         }
     } else {
         Transform3D<> wTcom = wTbody;
@@ -269,8 +271,10 @@ void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
     if(_type==FIXED){
         // fixed object only has geometries. These may be offset individually
         BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
-            Transform3D<> gt3d = wTcom * gdata->t3d;
-            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	if (gdata->isPlaceable) {
+        		Transform3D<> gt3d = wTcom * gdata->t3d;
+        		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	}
         }
     } else {
         ODEUtil::setODEBodyT3D( _bodyId, wTcom );
@@ -279,7 +283,7 @@ void ODEBody::setTransformCOM(const rw::math::Transform3D<>& wTcom){
 
 rw::math::Transform3D<> ODEBody::getTransform() const {
     if(_type==FIXED){
-        if(_triGeomDatas.size()>0){
+        if(_triGeomDatas.size()>0 && _triGeomDatas[0]->isPlaceable){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
             return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
         }
@@ -293,7 +297,7 @@ rw::math::Transform3D<> ODEBody::getTransform() const {
 
 rw::math::Transform3D<> ODEBody::getTransformCOM() const {
     if(_type==FIXED){
-        if(_triGeomDatas.size()>0){
+        if(_triGeomDatas.size()>0 && _triGeomDatas[0]->isPlaceable){
             Transform3D<> wTgeom_off = ODEUtil::getODEGeomT3D(_triGeomDatas[0]->geomId);
             return wTgeom_off * inverse(_triGeomDatas[0]->t3d);
         }
@@ -392,8 +396,10 @@ void ODEBody::reset(const rw::kinematics::State& state){
         wTb.P() += wTb.R()*_offset;
 
         BOOST_FOREACH(ODEUtil::TriGeomData* gdata, _triGeomDatas){
-            Transform3D<> gt3d = wTb * gdata->t3d;
-            ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	if (gdata->isPlaceable) {
+        		Transform3D<> gt3d = wTb * gdata->t3d;
+        		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        	}
         }
     }
     break;
@@ -451,6 +457,8 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body::Ptr rwbody,  dSpaceID spaceId, O
 
     // now associate all geometry with the body
     BOOST_FOREACH(ODEUtil::TriGeomData* gdata, gdatas){
+    	if (!gdata->isPlaceable)
+    		RW_THROW("ODE can not use Plane geometry for rigid objects!");
         odeBody->getTriGeomData().push_back(gdata);
         //Vector3D<> mc = gdata->t3d.R() * bmc;
         dGeomSetBody(gdata->geomId, bodyId);
@@ -511,6 +519,9 @@ ODEBody* ODEBody::makeKinematicBody(Body::Ptr kbody, dSpaceID spaceid, ODESimula
     //_rwFrameToODEBody[kbody->getBodyFrame()] = odeBody;
 
     BOOST_FOREACH(ODEUtil::TriGeomData* gdata, gdatas){
+    	if (!gdata->isPlaceable)
+    		RW_THROW("ODE can not use Plane geometry for kinematic objects!");
+
         odeBody->getTriGeomData().push_back(gdata);
 
         dGeomSetBody(gdata->geomId, bodyId);
@@ -563,8 +574,10 @@ ODEBody* ODEBody::makeFixedBody(Body::Ptr rwbody, dSpaceID spaceid, ODESimulator
         odeBody->getTriGeomData().push_back(gdata);
         // set position and rotation of body
         dGeomSetData(gdata->geomId, odeBody);
-        Transform3D<> gt3d = /*wTb* */ gdata->t3d;
-        ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        if (gdata->isPlaceable) {
+        	Transform3D<> gt3d = /*wTb* */ gdata->t3d;
+        	ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
+        }
     }
 
     return odeBody;

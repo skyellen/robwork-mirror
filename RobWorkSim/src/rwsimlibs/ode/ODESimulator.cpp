@@ -687,6 +687,8 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	    dGeomID geom = data->geomId;
 	    //if( dGeomGetClass(geom) != dTriMeshClass )
 	    //    continue;
+	    if (!data->isPlaceable)
+	    	continue;
 	    const dReal* Pos = dGeomGetPosition(geom);
 	    const dReal* Rot = dGeomGetRotation(geom);
 
