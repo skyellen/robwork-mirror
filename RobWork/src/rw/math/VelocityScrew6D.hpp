@@ -232,38 +232,6 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Comparison operator.
-         *
-         * The comparison operator makes a element wise comparison.
-         * Returns true only if all elements are equal.
-         *
-         * @param rhs [in] VelocityScrew6D to compare with
-         * @return True if equal.
-         */
-        bool operator==(const VelocityScrew6D<T> &rhs) const {
-            for (int i = 0; i<6; ++i) {
-                if (!(_screw[i] == rhs(i))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /**
-         * @brief Comparison operator.
-         *
-         * The comparison operator makes a element wise comparison.
-         * Returns true if any of the elements are different.
-         *
-         * @param rhs [in] VelocityScrew6D to compare with
-         * @return True if not equal.
-         */
-        bool operator!=(const VelocityScrew6D<T> &rhs) const {
-            return !(*this == rhs);
-        }
-
-
-        /**
          * @brief Scales velocity screw and returns scaled version
          *
          * @param s [in] scaling value

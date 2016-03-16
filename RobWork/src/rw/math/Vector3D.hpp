@@ -336,20 +336,6 @@ namespace rw { namespace math {
         bool operator==(const Vector3D<T>& b) const
         { return _vec[0] == b[0] && _vec[1] == b[1] && _vec[2] == b[2]; }
 
-        /**
-           @brief Compares \b a and \b b for inequality.
-
-           @relates Vector3D
-
-           @param a [in]
-           @param b [in]
-           @return True if a and b are different, false otherwise.
-        */
-        bool operator!=(const Vector3D<T>& b) const {
-            return !(*this == b);
-        }
-
-
         static Vector3D<T> zero(){ return Vector3D<T>(0,0,0); }
         static Vector3D<T> x(){ return Vector3D<T>(1.0,0,0); }
         static Vector3D<T> y(){ return Vector3D<T>(0,1.0,0); }

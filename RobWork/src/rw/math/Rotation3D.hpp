@@ -235,7 +235,7 @@ namespace rw { namespace math {
         /**
          * @brief Comparison operator.
          *
-         * The comparison operator makes a element wise comparison.
+         * The comparison operator makes a element wise comparison with the precision of T.
          * Returns true only if all elements are equal.
          *
          * @param rhs [in] Rotation to compare with
@@ -247,19 +247,6 @@ namespace rw { namespace math {
                     if (!(_m[i][j] == rhs(i,j)))
                         return false;
             return true;
-        }
-
-        /**
-         * @brief Comparison operator.
-         *
-         * The comparison operator makes a element wise comparison.
-         * Returns true if any of the elements are different.
-         *
-         * @param rhs [in] Rotation to compare with
-         * @return True if not equal.
-         */
-        bool operator!=(const Rotation3D<T> &rhs) const {
-            return !(*this == rhs);
         }
 
         /**

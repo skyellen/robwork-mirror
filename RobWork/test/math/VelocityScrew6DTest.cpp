@@ -107,22 +107,4 @@ BOOST_AUTO_TEST_CASE(VelocityScrew6DTest) {
     for (size_t i = 0; i<6; i++)
     	BOOST_CHECK(eigen(i) == screw(i));
   }
-
-  {
-    /* Test comparison operators operator== and operator!= */
-    Vector3D<> linear1(1, 2, 3);
-    EAA<> angular1(4, 5, 6);
-    VelocityScrew6D<> screw1(linear1, angular1);
-    Vector3D<> linear2(1, 2, 3);
-    EAA<> angular2(4, 5, 6);
-    VelocityScrew6D<> screw2(linear2, angular2);
-    BOOST_CHECK(screw1 == screw2);
-    BOOST_CHECK(!(screw1 != screw2));
-    Vector3D<> linear3(1, 4, 3);
-    EAA<> angular3(4, 5, 2);
-    VelocityScrew6D<> screw3(linear3, angular3);
-    BOOST_CHECK(screw1 != screw3);
-    BOOST_CHECK(!(screw1 == screw3));
-  }
-
 }
