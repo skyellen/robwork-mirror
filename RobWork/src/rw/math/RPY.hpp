@@ -117,6 +117,32 @@ namespace rw { namespace math {
         T& operator[](size_t i) { return (*this)(i); }
 
         /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true only if all elements are equal.
+         *
+         * @param rhs [in] RPY to compare with
+         * @return True if equal.
+         */
+        bool operator==(const RPY<T> &rhs) const {
+          return (_rpy(0) == rhs(0) && _rpy(1) == rhs(1) && _rpy(2) == rhs(2));
+        }
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true if any of the elements are different.
+         *
+         * @param rhs [in] RPY to compare with
+         * @return True if not equal.
+         */
+        bool operator!=(const RPY<T> &rhs) const {
+            return !(*this == rhs);
+        }
+
+        /**
          * @brief size of this RPY.
          * @return the value 3
          */

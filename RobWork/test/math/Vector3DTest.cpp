@@ -67,4 +67,14 @@ BOOST_AUTO_TEST_CASE(Vector3DTest)
     BOOST_CHECK(vi(0) == 1);
     BOOST_CHECK(vi(1) == 5);
     BOOST_CHECK(vi(2) == -10);
+
+    /* Test comparison operators operator== and operator!= */
+    const Vector3D<double> comp1(1.1, -2.2, 3.3);
+    const Vector3D<double> comp2(1.1, -2.2, 3.3);
+    BOOST_CHECK(comp1 == comp2);
+    BOOST_CHECK(!(comp1 != comp2));
+    const Vector3D<double> comp3(1.1, 2.2, -3.3);
+    BOOST_CHECK(comp1 != comp3);
+    BOOST_CHECK(!(comp1 == comp3));
+
 }

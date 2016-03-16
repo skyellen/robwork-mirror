@@ -278,6 +278,33 @@ namespace rw { namespace math {
             return _eaa[i];
         }
 
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true only if all elements are equal.
+         *
+         * @param rhs [in] EAA to compare with
+         * @return True if equal.
+         */
+        bool operator==(const EAA<T> &rhs) const {
+          return (_eaa(0) == rhs(0) && _eaa(1) == rhs(1) && _eaa(2) == rhs(2));
+        }
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true if any of the elements are different.
+         *
+         * @param rhs [in] EAA to compare with
+         * @return True if not equal.
+         */
+        bool operator!=(const EAA<T> &rhs) const {
+            return !(*this == rhs);
+        }
+
+
         size_t size() const { return 3; }
 
         /**
