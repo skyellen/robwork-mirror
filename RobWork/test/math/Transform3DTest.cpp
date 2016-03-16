@@ -56,4 +56,25 @@ BOOST_AUTO_TEST_CASE(Transform3DTest){
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 4; j++)
             BOOST_CHECK(tf(i, j) == (float)t(i, j));
+
+    /* Test comparison operators operator== and operator!= */
+    const EAA<> eaacomp1(Pi / 2, 0, 0);
+    const Rotation3D<> rotcomp1 = eaacomp1.toRotation3D();
+    const Vector3D<double> comp1(1.1, -2.2, 3.3);
+    const Transform3D<double> tcomp1(comp1, rotcomp1);
+    
+    const EAA<> eaacomp2(Pi / 2, 0, 0);
+    const Rotation3D<> rotcomp2 = eaacomp2.toRotation3D();
+    const Vector3D<double> comp2(1.1, -2.2, 3.3);
+    const Transform3D<double> tcomp2(comp2, rotcomp2);
+
+    BOOST_CHECK(tcomp1 == tcomp2);
+    BOOST_CHECK(!(tcomp1 != tcomp2));
+
+    const EAA<> eaacomp3(Pi / 4, 0, 0);
+    const Rotation3D<> rotcomp3 = eaacomp3.toRotation3D();
+    const Vector3D<double> comp3(1.1, -2.2, 3.3);
+    const Transform3D<double> tcomp3(comp3, rotcomp3);
+    BOOST_CHECK(tcomp1 != tcomp3);
+    BOOST_CHECK(!(tcomp1 == tcomp3));
 }

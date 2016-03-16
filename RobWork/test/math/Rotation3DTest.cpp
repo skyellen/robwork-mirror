@@ -140,6 +140,17 @@ BOOST_AUTO_TEST_CASE(Rotation2DTest)
     for (size_t i = 0; i < 2; i++)
         for (size_t j = 0; j < 2; j++)
             BOOST_CHECK((int)r1(i, j) == ri(i, j));
+
+    /* Test comparison operators operator== and operator!= */
+    const Rotation2D<> rotcomp1(1.1, -2.2, 3.3, 4.4);
+    const Rotation2D<> rotcomp2(1.1, -2.2, 3.3, 4.4);
+    BOOST_CHECK(rotcomp1 == rotcomp2);
+    BOOST_CHECK(!(rotcomp1 != rotcomp2));
+
+    const Rotation2D<> rotcomp3(-1.1, 2.2, 3.3, 4.4);
+    BOOST_CHECK(rotcomp1 != rotcomp3);
+    BOOST_CHECK(!(rotcomp1 == rotcomp3));
+
 }
 
 BOOST_AUTO_TEST_CASE(Rotation3DTest)
@@ -171,6 +182,22 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++)
             BOOST_CHECK((int)r3(i, j) == ri(i, j));
+
+    /* Test comparison operators operator== and operator!= */
+    const EAA<> eaacomp1(Pi / 2, 0, 0);
+    const Rotation3D<> rotcomp1 = eaacomp1.toRotation3D();
+        
+    const EAA<> eaacomp2(Pi / 2, 0, 0);
+    const Rotation3D<> rotcomp2 = eaacomp2.toRotation3D();
+
+    BOOST_CHECK(rotcomp1 == rotcomp2);
+    BOOST_CHECK(!(rotcomp1 != rotcomp2));
+
+    const EAA<> eaacomp3(Pi / 4, 0, 0);
+    const Rotation3D<> rotcomp3 = eaacomp3.toRotation3D();
+    BOOST_CHECK(rotcomp1 != rotcomp3);
+    BOOST_CHECK(!(rotcomp1 == rotcomp3));
+
 }
 
 

@@ -104,4 +104,14 @@ BOOST_AUTO_TEST_CASE( EAATest ){
     EAA<> e2(rot);
     BOOST_CHECK_EQUAL(norm_inf( e1.axis() - e2.axis() ), 0);
     BOOST_CHECK_CLOSE( e1.angle() , e2.angle(), 1e-16 );
+
+    /* Test comparison operators operator== and operator!= */
+    const EAA<double> comp1(1.1, -2.2, 3.3);
+    const EAA<double> comp2(1.1, -2.2, 3.3);
+    BOOST_CHECK(comp1 == comp2);
+    BOOST_CHECK(!(comp1 != comp2));
+    const EAA<double> comp3(1.1, 2.2, -3.3);
+    BOOST_CHECK(comp1 != comp3);
+    BOOST_CHECK(!(comp1 == comp3));
+    
 }

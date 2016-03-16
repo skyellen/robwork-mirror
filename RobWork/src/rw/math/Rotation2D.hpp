@@ -241,6 +241,39 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true only if all elements are equal.
+         *
+         * @param rhs [in] Rotation2D to compare with
+         * @return True if equal.
+         */
+        bool operator==(const Rotation2D<T> &rhs) const {
+            for (int i = 0; i<2; ++i) {
+                for (int j = 0; j<2; ++j) {
+                    if (!(_m[i][j] == rhs(i,j))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true if any of the elements are different.
+         *
+         * @param rhs [in] Rotation2D to compare with
+         * @return True if not equal.
+         */
+        bool operator!=(const Rotation2D<T> &rhs) const {
+            return !(*this == rhs);
+        }
+
+        /**
          * @brief Returns a boost 2x2 matrix @f$ \mathbf{M}\in SO(2)
          * @f$ that represents this rotation
          *

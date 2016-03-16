@@ -405,6 +405,19 @@ namespace rw { namespace math {
     bool operator==(const Vector2D<T>& a, const Vector2D<T>& b)
     { return a[0] == b[0] && a[1] == b[1]; }
 
+    /**
+       @brief Compares \b a and \b b for inequality.
+
+       @relates Vector2D
+
+       @param a [in]
+       @param b [in]
+       @return True if a and b are different, false otherwise.
+    */
+    template <class T>
+    bool operator!=(const Vector2D<T>& a, const Vector2D<T>& b)
+    { return !(a == b); }
+
     /**@}*/
 }} // end namespaces
 

@@ -69,4 +69,13 @@ BOOST_AUTO_TEST_CASE(RPYTest)
     RPY<float> rpyf = cast<float>(rpy1);
     for (size_t i = 0; i<3; i++)
         BOOST_CHECK(rpyf(i) == (float)rpy1(i));
+
+    /* Test comparison operators operator== and operator!= */
+    const RPY<double> comp1(1.1, -2.2, 3.3);
+    const RPY<double> comp2(1.1, -2.2, 3.3);
+    BOOST_CHECK(comp1 == comp2);
+    BOOST_CHECK(!(comp1 != comp2));
+    const RPY<double> comp3(1.1, 2.2, -3.3);
+    BOOST_CHECK(comp1 != comp3);
+    BOOST_CHECK(!(comp1 == comp3));
 }

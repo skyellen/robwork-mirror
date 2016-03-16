@@ -252,7 +252,7 @@ namespace rw { namespace math {
         /**
          * @brief Comparison operator.
          *
-         * The comparison operator makes a element wise comparison with the precision of T.
+         * The comparison operator makes a element wise comparison.
          * Returns true only if all elements are equal.
          *
          * @param rhs [in] Transform to compare with
@@ -260,6 +260,19 @@ namespace rw { namespace math {
          */
         bool operator==(const Transform3D<T> &rhs) const {
             return (R() == rhs.R()) && (P() == rhs.P());
+        }
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison.
+         * Returns true if any of the elements are different.
+         *
+         * @param rhs [in] Transform to compare with
+         * @return True if not equal.
+         */
+        bool operator!=(const Transform3D<T> &rhs) const {
+            return !(*this == rhs);
         }
 
 
