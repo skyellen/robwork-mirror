@@ -55,6 +55,10 @@ BOOST_AUTO_TEST_CASE(Vector2DTest)
     BOOST_CHECK(vi(0) == 1);
     BOOST_CHECK(vi(1) == -2);
 
+    Vector2D<double> vd1(0.4, -0.7);
+    Vector2D<double> vd2(0.9, 0.1);
+    BOOST_CHECK(fabs(dot(vd1,vd2) - 0.29) < 1e-15);
+
     /* Test comparison operators operator== and operator!= */
     const Vector2D<double> comp1(1.1, -2.2);
     const Vector2D<double> comp2(1.1, -2.2);
