@@ -16,10 +16,9 @@
  ********************************************************************************/
 
 #include "DOMPropertyMapLoader.hpp"
-
 #include "DOMBasisTypes.hpp"
 #include "DOMPathLoader.hpp"
-
+#include <rw/loaders/dom/DOMPropertyMapFormat.hpp>
 #include <rw/common/DOMParser.hpp>
 
 using namespace rw;
@@ -38,20 +37,18 @@ DOMPropertyMapLoader::~DOMPropertyMapLoader()
 }
 
 PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool checkHeader) {
-    //std::cout<<"Read Property"<<std::endl;
-
     if (checkHeader)
-         if ( !element->isName("Property") )
+      if ( !element->isName(DOMPropertyMapFormat::PropertyId) )
              RW_THROW("Parse error: Expected \"Property\" Got \"" + element->getName() + "\"!");
 
 	std::string name = "", description = "";
 	DOMElem::Ptr value = NULL;
 	BOOST_FOREACH( DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName("Name") ) {
+		if (child->isName(DOMPropertyMapFormat::PropertyNameId) ) {
 			name = child->getValue();
-		} else if (child->isName("Description")) {
+		} else if (child->isName(DOMPropertyMapFormat::PropertyDescriptionId)) {
 			description = child->getValue();
-		} else if (child->isName("Value")) {
+		} else if (child->isName(DOMPropertyMapFormat::PropertyValueId)) {
 			value = child;
 		} else {
 			RW_THROW("Parse Error: child element \" << child->getName() << \" not recognized in Property with name \""<< name << "\"!");
@@ -64,48 +61,48 @@ PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool 
 		RW_THROW("Parse Error: data value not defined in Property with name \""<< name << "\"!");
 
 	BOOST_FOREACH( DOMElem::Ptr child, value->getChildren() ){
-		if (child->isName("PropertyMap")) {
+		if (child->isName(DOMPropertyMapFormat::PropertyMapId)) {
 			return ownedPtr(new Property<PropertyMap>(name, description, DOMPropertyMapLoader::readProperties(child, true)));
-		} else if (child->isName("String")) {
+		} else if (child->isName(DOMBasisTypes::StringId)) {
 			return ownedPtr(new Property<std::string>(name, description, DOMBasisTypes::readString(child)));
-		} else if (child->isName("StringList")) {
+		} else if (child->isName(DOMBasisTypes::StringListId)) {
 			return ownedPtr(new Property<std::vector<std::string> >(name, description, DOMBasisTypes::readStringList(child)));
-		} else if (child->isName("IntList")) {
+		} else if (child->isName(DOMBasisTypes::IntListId)) {
 			return ownedPtr(new Property<std::vector<int> >(name, description, DOMBasisTypes::readIntList(child)));
-		} else if (child->isName("DoubleList")) {
+		} else if (child->isName(DOMBasisTypes::DoubleListId)) {
 			return ownedPtr(new Property<std::vector<double> >(name, description, DOMBasisTypes::readDoubleList(child)));
-		} else if (child->isName("Double")) {
+		} else if (child->isName(DOMBasisTypes::DoubleId)) {
 			return ownedPtr(new Property<double>(name, description, DOMBasisTypes::readDouble(child)));
-		} else if (child->isName("Float")) {
+		} else if (child->isName(DOMBasisTypes::FloatId)) {
 			return ownedPtr(new Property<float>(name, description, DOMBasisTypes::readFloat(child)));
-		} else if (child->isName("Integer")) {
+		} else if (child->isName(DOMBasisTypes::IntegerId)) {
 			return ownedPtr(new Property<int>(name, description, DOMBasisTypes::readInt(child)));
-		} else if (child->isName("Boolean")) {
+		} else if (child->isName(DOMBasisTypes::BooleanId)) {
 			return ownedPtr(new Property<bool>(name, description, DOMBasisTypes::readBool(child)));
-		} else if (child->isName("Vector3D")){
+		} else if (child->isName(DOMBasisTypes::Vector3DId)){
 			return ownedPtr(new Property<Vector3D<> >(name, description, DOMBasisTypes::readVector3D(child)));
-		} else if (child->isName("Vector2D")) {
+		} else if (child->isName(DOMBasisTypes::Vector2DId)) {
 			return ownedPtr(new Property<Vector2D<> >(name, description, DOMBasisTypes::readVector2D(child)));
-		} else if (child->isName("Q")) {
+		} else if (child->isName(DOMBasisTypes::QId)) {
 			return ownedPtr(new Property<Q>(name, description, DOMBasisTypes::readQ(child)));
-		} else if (child->isName("Transform3D")) {
+		} else if (child->isName(DOMBasisTypes::Transform3DId)) {
 			return ownedPtr(new Property<Transform3D<> >(name, description, DOMBasisTypes::readTransform3D(child)));
-		} else if (child->isName("Rotation3D")) {
+		} else if (child->isName(DOMBasisTypes::Rotation3DId)) {
 			return ownedPtr(new Property<Rotation3D<> >(name, description, DOMBasisTypes::readRotation3D(child)));
-		} else if (child->isName("EAA")) {
+		} else if (child->isName(DOMBasisTypes::EAAId)) {
 			return ownedPtr(new Property<EAA<> >(name, description, DOMBasisTypes::readEAA(child)));
-		} else if (child->isName("RPY")) {
+		} else if (child->isName(DOMBasisTypes::RPYId)) {
 			return ownedPtr(new Property<RPY<> >(name, description, DOMBasisTypes::readRPY(child)));
-		} else if (child->isName("Quaternion")) {
+		} else if (child->isName(DOMBasisTypes::QuaternionId)) {
 			return ownedPtr(new Property<Quaternion<> >(name, description, DOMBasisTypes::readQuaternion(child)));
-		} else if (child->isName("Rotation2D")) {
+		} else if (child->isName(DOMBasisTypes::Rotation2DId)) {
 			return ownedPtr(new Property<Rotation2D<> >(name, description, DOMBasisTypes::readRotation2D(child)));
-		} else if (child->isName("VelocityScrew6D")) {
+		} else if (child->isName(DOMBasisTypes::VelocityScrew6DId)) {
 			return ownedPtr(new Property<VelocityScrew6D<> >(name, description, DOMBasisTypes::readVelocityScrew6D(child)));
-		} else if (child->isName("QPath")){
+		} else if (child->isName(DOMPathLoader::QPathId)){
 			DOMPathLoader loader(child);
 			return ownedPtr(new Property<QPath>(name, description,*loader.getQPath()));
-		} else if (child->isName("T3DPath")){
+		} else if (child->isName(DOMPathLoader::T3DPathId)){
 			DOMPathLoader loader(child);
 			return ownedPtr(new Property<Transform3DPath >(name, description, *loader.getTransform3DPath()));
 		} else {
@@ -118,18 +115,18 @@ PropertyBase::Ptr DOMPropertyMapLoader::readProperty(DOMElem::Ptr element, bool 
 
 
 bool DOMPropertyMapLoader::hasProperties(DOMElem::Ptr element) {
-    return element->isName("PropertyMap");
+  return element->isName(DOMPropertyMapFormat::PropertyMapId);
 }
 
 PropertyMap DOMPropertyMapLoader::readProperties(DOMElem::Ptr element, bool checkHeader) {
 
     if (checkHeader)
-    	if(!element->isName("PropertyMap"))
+    	if(!element->isName(DOMPropertyMapFormat::PropertyMapId))
     	    RW_THROW("Parse error: Expected \"PropertyMap\" got \"" + element->getName() + "\"!");
 
     PropertyMap properties;
     BOOST_FOREACH(DOMElem::Ptr child, element->getChildren()){
-		if ( child->isName("Property") ) {
+		if ( child->isName(DOMPropertyMapFormat::PropertyId) ) {
 			PropertyBase::Ptr property = readProperty(child, false);
 			if (property != NULL)
 				properties.add(property);
@@ -139,25 +136,23 @@ PropertyMap DOMPropertyMapLoader::readProperties(DOMElem::Ptr element, bool chec
     return properties;
 }
 
-
-
 PropertyMap DOMPropertyMapLoader::load(std::istream& instream, const std::string& schemaFileName) {
-	DOMParser::Ptr parser = DOMParser::make();
+    DOMParser::Ptr parser = DOMParser::make();
     // todo: add schema load to interface
     parser->load(instream);
     DOMElem::Ptr elementRoot = parser->getRootElement();
-    DOMElem::Ptr pmapRoot = elementRoot->getChild("PropertyMap",false);
+    DOMElem::Ptr pmapRoot = elementRoot->getChild(DOMPropertyMapFormat::PropertyMapId, false);
     PropertyMap map = readProperties(pmapRoot);
     //map.set<std::string>("PropertyMapFileName", "");
     return map;
 }
 
 PropertyMap DOMPropertyMapLoader::load(const std::string& filename, const std::string& schemaFileName) {
-	DOMParser::Ptr parser = DOMParser::make();
+    DOMParser::Ptr parser = DOMParser::make();
     // todo: add schema load to interface
     parser->load(filename);
     DOMElem::Ptr elementRoot = parser->getRootElement();
-    DOMElem::Ptr pmapRoot = elementRoot->getChild("PropertyMap",false);
+    DOMElem::Ptr pmapRoot = elementRoot->getChild(DOMPropertyMapFormat::PropertyMapId, false);
     PropertyMap map = readProperties(pmapRoot);
     //map.set<std::string>("PropertyMapFileName", filename);
     return map;

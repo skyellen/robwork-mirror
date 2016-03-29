@@ -196,6 +196,29 @@ public:
      */
     static void write(const rw::trajectory::TimedStatePath& path, std::ostream& outstream);
 
+    //-------------------------------- Creating and writing DOMElem
+    /**
+     * @brief Creates a DOMElem to represent \b path
+     *
+     * Creates a DOMElement owned by \b doc and representing \b path
+     *
+     * @param path [in] path to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElem
+     */
+    static rw::common::DOMElem::Ptr createTransform3DPath(const rw::trajectory::Transform3DPath &path, rw::common::DOMElem::Ptr doc);
+
+    /**
+     * @brief Creates a DOMElem to represent \b path
+     *
+     * Creates a DOMElement owned by \b doc and representing \b path
+     *
+     * @param path [in] path to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElem
+     */
+    static rw::common::DOMElem::Ptr createQPath(const rw::trajectory::QPath &path, rw::common::DOMElem::Ptr doc);
+
 private:
     DOMPathSaver() {};
 };

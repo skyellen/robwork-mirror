@@ -20,11 +20,11 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 
-#include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/random.hpp>
 
 #include <cassert>
 #include <cmath>
+#include <limits>
 
 using namespace rw::math;
 
@@ -175,4 +175,8 @@ int Math::ceilLog2(const int n)
 
 bool Math::isNaN(double d) {
 	return boost::math::isnan(d);
+}
+
+double Math::NaN() {
+    return std::numeric_limits<double>::quiet_NaN();
 }

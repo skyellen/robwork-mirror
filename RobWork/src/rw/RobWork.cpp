@@ -20,7 +20,7 @@
 #include <rw/common/os.hpp>
 #include <boost/filesystem.hpp>
 #include <rw/loaders/dom/DOMPropertyMapLoader.hpp>
-#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/common/ExtensionRegistry.hpp>
 #include <rw/common/Plugin.hpp>
 
@@ -62,8 +62,8 @@ RobWork::RobWork(void)
 RobWork::~RobWork(void)
 {
     if(!_settingsFile.empty()) {
-        XMLPropertySaver::save( _settings, _settingsFile );
-	}
+        DOMPropertyMapSaver::save(_settings, _settingsFile);
+    }
 }
 
 void RobWork::initialize(const std::vector<std::string>& plugins){
@@ -110,7 +110,7 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
         _settings = DOMPropertyMapLoader::load( rwsettingsPath );
         _settings.add("cfgfile", "", rwsettingsPath );
     } else if( exists( RWCFGFILE ) ){
-    	Log::debugLog() << "Found robwork configuration filr in global configuration directory:\n\t" << std::string(RWCFGFILE) << std::endl;
+    	Log::debugLog() << "Found robwork configuration file in global configuration directory:\n\t" << std::string(RWCFGFILE) << std::endl;
     	rwsettingsPath = std::string(RWCFGFILE);
         _settings = DOMPropertyMapLoader::load( rwsettingsPath );
     	_settings.add("cfgfile", "", rwsettingsPath );
@@ -311,6 +311,10 @@ rw::common::Log::Ptr RobWork::getLogPtr()
 	if(_log==NULL)
 		_log =  rw::common::ownedPtr( new rw::common::Log() );
 	return _log;
+}
+
+rw::common::PropertyMap& RobWork::getSettings() {
+    return _settings;
 }
 
 void RobWork::init(){

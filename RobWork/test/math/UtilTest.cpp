@@ -212,3 +212,10 @@ BOOST_AUTO_TEST_CASE(MatrixVectorConvertionTest) {
     Math::fromStdVectorToMat(Tserialized, Trestored, 3, 4);
     BOOST_CHECK(T.equal(Trestored));
 }
+
+BOOST_AUTO_TEST_CASE(NanFunctionality) {
+    double aNumber = 0.3;
+    double aNaN = Math::NaN();
+    BOOST_CHECK(!Math::isNaN(aNumber));
+    BOOST_CHECK(Math::isNaN(aNaN));
+}

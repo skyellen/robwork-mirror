@@ -158,8 +158,7 @@ void DOMPathSaver::save(const TimedStatePath& path, const std::string& filename)
     savePath<TimedState, TimedStatePath>(path, DOMPathLoader::TimedStatePathId, filename);
 }
 
-
-
+//------------------------------------------------------------------------
 
 void DOMPathSaver::write(const QPath& path, std::ostream& outstream) {
     writePath<Q,  QPath>(path, DOMPathLoader::QPathId, outstream);
@@ -188,4 +187,14 @@ void DOMPathSaver::write(const TimedQPath& path, std::ostream& outstream) {
 
 void DOMPathSaver::write(const TimedStatePath& path, std::ostream& outstream) {
     writePath<TimedState, TimedStatePath>(path, DOMPathLoader::TimedStatePathId, outstream);
+}
+
+//------------------------------------------------------------------------
+
+rw::common::DOMElem::Ptr DOMPathSaver::createTransform3DPath(const rw::trajectory::Transform3DPath &path, rw::common::DOMElem::Ptr doc) {
+    return createElement<Transform3D<>, Transform3DPath>(path, DOMPathLoader::T3DPathId, doc);
+}
+
+rw::common::DOMElem::Ptr DOMPathSaver::createQPath(const rw::trajectory::QPath &path, rw::common::DOMElem::Ptr doc) {
+    return createElement<Q, QPath>(path, DOMPathLoader::QPathId, doc);
 }
