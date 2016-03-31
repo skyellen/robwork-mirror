@@ -468,7 +468,7 @@ ODEBody* ODEBody::makeRigidBody(dynamics::Body::Ptr rwbody,  dSpaceID spaceId, O
         dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
         dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
     }
-    dBodySetMaxAngularSpeed(bodyId, 10);
+    //dBodySetMaxAngularSpeed(bodyId, 10);
 
     //_rwODEBodyToFrame[odeBody] = rwbody->getBodyFrame();
     //_rwFrameToODEBody[rwbody->getBodyFrame()] = odeBody;

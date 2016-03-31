@@ -92,6 +92,16 @@ void BtConstraint::createJoint() {
 	const Constraint::SpringParams spring = _rwConstraint->getSpringParams();
 	static const bool useLinearReferenceFrameA = true;
 	const Constraint::ConstraintType type = _rwConstraint->getType();
+
+	if (spring.enabled) {
+		if (!spring.compliance.isDiagonal(1e-8))
+			RW_THROW("Bullet does not support springs with non-diagonal compliance!");
+		if (!spring.damping.isDiagonal(1e-8))
+			RW_THROW("Bullet does not support springs with non-diagonal damping!");
+		if (spring.damping.diagonal().maxCoeff() > 0)
+			RW_THROW("Bullet spring damping is currently not implemented.");
+	}
+
 	/*if (type == Constraint::Fixed) {
 		btFixedConstraint* const btConstraint = new btFixedConstraint(second, first, BtUtil::makeBtTransform(frameInB), BtUtil::makeBtTransform(frameInA));
 		_btConstraint = btConstraint;
@@ -288,8 +298,17 @@ void BtConstraint::createJoint() {
 				if (spring.compliance(dof,dof) > 0) {
 					btConstraint->enableSpring(dof,true);
 					btConstraint->setStiffness(dof,1./spring.compliance(dof,dof));
-					btConstraint->setDamping(dof,spring.damping(dof,dof));
+					if (spring.damping(dof,dof) <= 0.)
+						btConstraint->setDamping(dof,1.); // between 0 and 1 (1 is undamped)
+					else
+						btConstraint->setDamping(dof,0); // how to set this?!
+					btConstraint->setLinearLowerLimit(btVector3(1,1,1));
+					btConstraint->setLinearUpperLimit(btVector3(-1,-1,-1));
 				}
+			}
+			for (unsigned int dof = 0; dof < 3; dof++) {
+				const Transform3D<> constraintTchildP = inverse(comTconstraint)*inverse(wTp_com)*wTc_com;
+				btConstraint->setEquilibriumPoint(dof,-constraintTchildP.P()[dof]);
 			}
 			_btConstraint = btConstraint;
 		}

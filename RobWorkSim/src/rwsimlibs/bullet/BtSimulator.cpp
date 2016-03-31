@@ -105,7 +105,6 @@ void BtSimulator::load(DynamicWorkCell::Ptr dwc){
 	const ContactStrategy::Ptr strat = ownedPtr(new BtContactStrategy());
 	strat->setPropertyMap(_dwc->getEngineSettings());
 	_detector->addContactStrategy(strat);
-	_detector->printStrategyTable(std::cout);
 }
 
 bool BtSimulator::setContactDetector(ContactDetector::Ptr detector) {
