@@ -37,14 +37,14 @@ ListPlot::ListPlot(const Expression& data):
 	_data = data.clone();
 }
 
-ListPlot::ListPlot(const Expression& data, const std::list<Rule::Ptr>& options):
+ListPlot::ListPlot(const Expression& data, const std::list<Expression::Ptr>& options):
 	Mathematica::FunctionBase("ListPlot")
 {
 	_data = data.clone();
 	_options = options;
 }
 
-ListPlot::ListPlot(const std::vector<double>& x, const std::vector<double>& y, const std::list<Rule::Ptr>& options):
+ListPlot::ListPlot(const std::vector<double>& x, const std::vector<double>& y, const std::list<Expression::Ptr>& options):
 	Mathematica::FunctionBase("ListPlot")
 {
 	RW_ASSERT(x.size() == y.size());
@@ -79,10 +79,12 @@ Mathematica::Expression::Ptr ListPlot::clone() const {
 
 void ListPlot::option(const std::string& name, const Mathematica::Expression& value) {
 	Rule::Ptr option = NULL;
-	BOOST_FOREACH(const Rule::Ptr o, _options) {
-		if (o->getId() == name) {
-			option = o;
-			break;
+	BOOST_FOREACH(const Mathematica::Expression::Ptr o, _options) {
+		if (const Rule::Ptr r = o.cast<Rule>()) {
+			if (r->getId() == name) {
+				option = r;
+				break;
+			}
 		}
 	}
 	if (!option.isNull())
@@ -96,10 +98,12 @@ void ListPlot::setImageSize(int width, int height) {
 	size.add(width);
 	size.add(height);
 	Rule::Ptr option = NULL;
-	BOOST_FOREACH(const Rule::Ptr o, _options) {
-		if (o->getId() == "ImageSize") {
-			option = o;
-			break;
+	BOOST_FOREACH(const Expression::Ptr o, _options) {
+		if (const Rule::Ptr r = o.cast<Rule>()) {
+			if (r->getId() == "ImageSize") {
+				option = r;
+				break;
+			}
 		}
 	}
 	if (!option.isNull())

@@ -61,7 +61,7 @@ public:
 	 * @param data [in] the data expression (e.g. a variable name, table/list expression, or data array).
 	 * @param options [in] the options to use (such as PlotRange, AxesLabels etc.)
 	 */
-	ListPlot(const Mathematica::Expression& data, const std::list<rw::common::Ptr<Rule> >& options);
+	ListPlot(const Mathematica::Expression& data, const std::list<Mathematica::Expression::Ptr>& options);
 
 	/**
 	 * @brief Construct a ListPlot expression.
@@ -69,7 +69,7 @@ public:
 	 * @param y [in] a list of y-values.
 	 * @param options [in] (optional) the options to use (such as PlotRange, AxesLabels etc.)
 	 */
-	ListPlot(const std::vector<double>& x, const std::vector<double>& y, const std::list<rw::common::Ptr<Rule> >& options = std::list<rw::common::Ptr<Rule> >());
+	ListPlot(const std::vector<double>& x, const std::vector<double>& y, const std::list<Mathematica::Expression::Ptr>& options = std::list<Mathematica::Expression::Ptr>());
 
 #if __cplusplus >= 201103L
 	/**
@@ -91,7 +91,7 @@ public:
 			list->add(inner);
 		}
 		_data = list;
-		toList<Rule>(_options,options...);
+		toList<Expression>(_options,options...);
 	}
 #endif
 
@@ -130,7 +130,7 @@ private:
 	ListPlot();
 
 	Mathematica::Expression::Ptr _data;
-	std::list<rw::common::Ptr<Rule> > _options;
+	std::list<Mathematica::Expression::Ptr> _options;
 };
 //! @}
 } /* namespace mathematica */

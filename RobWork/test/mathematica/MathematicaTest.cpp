@@ -116,7 +116,10 @@ BOOST_AUTO_TEST_CASE( MathematicaTest ){
 				x.push_back(i);
 				y.push_back(i*i);
 			}
-			std::list<Rule::Ptr> options = Rule::toRules(properties);
+			std::list<Mathematica::Expression::Ptr> options;
+			BOOST_FOREACH(const Rule::Ptr option, Rule::toRules(properties)) {
+				options.push_back(option);
+			}
 			List imageSize;
 			imageSize.add(400).add(250);
 			options.push_back(ownedPtr(new Rule("ImageSize",imageSize)));
