@@ -73,7 +73,9 @@ namespace {
 
          virtual void reset(rw::kinematics::State &state){}
 
-         virtual double calcEnergy(const rw::kinematics::State& state){
+         virtual double calcEnergy(const State& state,
+         		const Vector3D<>& gravity = Vector3D<>::zero(),
+ 				const Vector3D<>& potZero = Vector3D<>::zero()) const {
              return 0;
          }
 

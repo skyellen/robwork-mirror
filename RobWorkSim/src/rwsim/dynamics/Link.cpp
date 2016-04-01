@@ -51,7 +51,7 @@ void Link::reset(State &state){
     return _ddev->reset(p, this, state);
 }
 
-double Link::calcEnergy(const State& state){
+double Link::calcEnergy(const State& state, const Vector3D<>& gravity, const Vector3D<>& potZero) const {
     return _ddev->calcEnergy(this, state);
 }
 

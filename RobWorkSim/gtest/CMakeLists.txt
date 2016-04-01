@@ -1,0 +1,19 @@
+INCLUDE_DIRECTORIES(${RW_BUILD_WITH_GTEST_INCLUDE_DIRS})
+
+SET(DEFAULT_TEST_ARGS "--log_level=all")
+
+SET(SIMULATOR_TEST_LIBRARIES
+  rwsim_test
+  rwsim_ode
+  ${ODE_LIBRARIES}
+  rwsim
+  ${RW_BUILD_WITH_LIBRARIES_GTEST}
+  ${ROBWORK_LIBRARIES}
+)
+
+SET(SIMULATOR_TEST_SRC
+  simulator/PhysicsEngineTest.cpp
+)
+ADD_EXECUTABLE( rwsim_simulator-gtest ${SIMULATOR_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rwsim_simulator-gtest ${SIMULATOR_TEST_LIBRARIES})
+ADD_TEST(rwsim_simulator-gtest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rwsim_simulator-gtest ${DEFAULT_TEST_ARGS})

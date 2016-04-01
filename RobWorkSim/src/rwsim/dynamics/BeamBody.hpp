@@ -30,11 +30,10 @@ namespace dynamics {
          */
         virtual void reset(rw::kinematics::State &state) = 0;
 
-        /**
-         * @brief calculates and returns the total energy of this body
-         * @return
-         */
-        virtual double calcEnergy(const rw::kinematics::State& state) = 0;
+        //! @copydoc Body::calcEnergy
+        double calcEnergy(const rw::kinematics::State& state,
+        		const rw::math::Vector3D<>& gravity = rw::math::Vector3D<>::zero(),
+				const rw::math::Vector3D<>& potZero = rw::math::Vector3D<>::zero()) const { return 0; };
 
         /**
          * @brief Sets the force described in parent frame acting on

@@ -408,8 +408,32 @@ namespace bullet {}
 //! @brief GUI elements related to RobWorkSim.
 namespace gui {}
 
+//! @brief RobWorkStudio plugins providing RobWorkSim functionality.
+namespace plugins {}
+
 //! @brief The RobWorkPhysicsEngine implementation.
 namespace rwpe {}
+
+/**
+ * @brief Test case library for RobWorkSim.
+ *
+ * Library that defines a standard set of tests that are more or less generic to all engines.
+ * The purpose of the library is to make one unified interface for tests, that can be used
+ * for multiple purposes:
+ *
+ * - Interactive testing in RobWorkStudio. Allows detailed debugging of the internal workings of
+ * an engine.
+ * - Automated testing in unit tests. Makes code changes easier, and makes sure that the engines
+ * keep functioning as they are supposed to.
+ * - Data output. Makes it possible to automatically generate graphs for documentation purposes.
+ *
+ * All of these can be based on one common test definition. In the case of test failures, debugging is
+ * much easier as the exact same test can be repeated in interactive mode with advanced debugging facilities.
+ *
+ * The library defines an extension point, that makes it possible for individual engines to provide
+ * their own engine-specific tests. Users can also define specific tests that fits specific applications.
+ */
+namespace test {}
 
 }
 
@@ -475,9 +499,19 @@ namespace rwpe {}
         @copydoc rwsimlibs::gui
     @}
 
+    @defgroup rwsimlibs_plugins RobWorkSim Plugins
+    @{
+        @copydoc rwsimlibs::plugins
+    @}
+
     @defgroup rwsimlibs_rwpe RobWorkPhysicsEngine
     @{
         @copydoc rwsimlibs::rwpe
+    @}
+
+    @defgroup rwsimlibs_test RobWorkSim Test Case Library
+    @{
+        @copydoc rwsimlibs::test
     @}
 
 @}

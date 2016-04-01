@@ -98,13 +98,13 @@ rw::math::InertiaMatrix<> RigidBody::calcEffectiveMass(const rw::math::Vector3D<
 	 return K;
 }
 
-double RigidBody::calcEnergy(const rw::kinematics::State& state){
-	//InertiaMatrix<> ITensor = calcInertiaTensor(state);
-    //Vector3D<> angVel = getAngVel(state);
-    Vector3D<> linVel = getLinVel(state);
-    double mass = getMass();
-	//double Iw2 = dot((ITensor*angVel), angVel);
-    double energy = 0.5*(mass*dot(linVel,linVel)+ mass*9.8*getWTBody(state).P()[2]);
+double RigidBody::calcEnergy(const State& state, const Vector3D<>& gravity, const Vector3D<>& potZero) const {
+	const InertiaMatrix<> ITensor = calcInertiaTensor(state);
+    const Vector3D<> angVel = getAngVel(state);
+    const Vector3D<> linVel = getLinVel(state);
+    const double mass = getMass();
+	const double Iw2 = dot((ITensor*angVel), angVel);
+    const double energy = 0.5*(mass*dot(linVel,linVel) + Iw2) - mass*dot(gravity,getWTBody(state).P()-potZero);
     return energy;
 }
 

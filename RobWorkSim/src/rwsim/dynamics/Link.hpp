@@ -62,7 +62,10 @@ namespace dynamics {
 
     	 virtual void reset(rw::kinematics::State &state);
 
-    	 virtual double calcEnergy(const rw::kinematics::State& state);
+     	//! @copydoc Body::calcEnergy
+         virtual double calcEnergy(const rw::kinematics::State& state,
+         		const rw::math::Vector3D<>& gravity = rw::math::Vector3D<>::zero(),
+ 				const rw::math::Vector3D<>& potZero = rw::math::Vector3D<>::zero()) const;
 
     	 virtual void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state);
 
