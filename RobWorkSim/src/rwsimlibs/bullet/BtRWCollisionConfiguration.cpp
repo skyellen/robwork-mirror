@@ -24,7 +24,6 @@
 #include "bullet/BulletCollision/CollisionDispatch/btCompoundCompoundCollisionAlgorithm.h"
 #endif
 #include "bullet/BulletCollision/CollisionDispatch/btCompoundCollisionAlgorithm.h"
-#include "bullet/BulletCollision/CollisionDispatch/btEmptyCollisionAlgorithm.h"
 #include "bullet/BulletCollision/BroadphaseCollision/btBroadphaseProxy.h"
 #include "bullet/BulletCollision/NarrowPhaseCollision/btPersistentManifold.h"
 #include "bullet/LinearMath/btPoolAllocator.h"
@@ -38,33 +37,32 @@ using namespace rwsimlibs::bullet;
 BtRWCollisionConfiguration::BtRWCollisionConfiguration(rw::common::Ptr<const ContactDetector> detector) {
 	void* mem;
 
+	int maxSize = 0;
+
 #if BT_BULLET_VERSION > 281
 	mem = btAlignedAlloc(sizeof(btCompoundCompoundCollisionAlgorithm::CreateFunc),16);
 	m_compoundCompoundCreateFunc = new (mem)btCompoundCompoundCollisionAlgorithm::CreateFunc;
+	maxSize = btMax(maxSize,static_cast<int>(sizeof(btCompoundCompoundCollisionAlgorithm)));
 #else
 	m_compoundCompoundCreateFunc = NULL;
 #endif
 
+	mem = btAlignedAlloc(sizeof(btCompoundCollisionAlgorithm::CreateFunc),16);
 	m_compoundCreateFunc = new (mem)btCompoundCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc(sizeof(btCompoundCollisionAlgorithm::SwappedCreateFunc),16);
 
+	mem = btAlignedAlloc(sizeof(btCompoundCollisionAlgorithm::SwappedCreateFunc),16);
 	m_swappedCompoundCreateFunc = new (mem)btCompoundCollisionAlgorithm::SwappedCreateFunc;
-	mem = btAlignedAlloc(sizeof(btEmptyAlgorithm::CreateFunc),16);
+
+	maxSize = btMax(maxSize,static_cast<int>(sizeof(btCompoundCollisionAlgorithm)));
 
 	mem = btAlignedAlloc(sizeof(BtRWCollisionAlgorithm::CreateFunc),16);
 	_func = new(mem) BtRWCollisionAlgorithm::CreateFunc(detector);
+	maxSize = btMax(maxSize,static_cast<int>(sizeof(BtRWCollisionAlgorithm)));
 
 	mem = btAlignedAlloc(sizeof(btPoolAllocator),16);
 	m_persistentManifoldPool = new (mem) btPoolAllocator(sizeof(btPersistentManifold),4096);
 
 	mem = btAlignedAlloc(sizeof(btPoolAllocator),16);
-#if BT_BULLET_VERSION > 281
-	const int size1 = sizeof(btCompoundCompoundCollisionAlgorithm);
-	const int size2 = sizeof(BtRWCollisionAlgorithm);
-	const int maxSize = btMax(size1,size2);
-#else
-	const int maxSize = sizeof(BtRWCollisionAlgorithm);
-#endif
 	m_collisionAlgorithmPool = new(mem) btPoolAllocator(maxSize,4096);
 
 #if BT_BULLET_VERSION < 282
