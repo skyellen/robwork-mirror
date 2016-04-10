@@ -1,6 +1,7 @@
 %module rwsim
 
 %{
+#include <RobWorkSimConfig.hpp>
 #include <rwlibs/swig/ScriptTypes.hpp>
 #include <rwsimlibs/swig/ScriptTypes.hpp>
 #if defined (SWIGLUA)
@@ -72,6 +73,8 @@ void java_ThreadSimulatorStepCallback(ThreadSimulator* sim, State &state, void *
 }
 #endif
 %}
+
+#include <RobWorkSimConfig.hpp>
 
 %include <std_string.i>
 %include <std_vector.i>
@@ -1215,6 +1218,7 @@ public:
  * RWSIMLIBS ODE
  ********************************************/
 
+#if defined(RWSIM_HAVE_ODE)
 %nodefaultctor ODESimulator;
 class ODESimulator: public PhysicsEngine
 {
@@ -1300,6 +1304,7 @@ public:
 };
 
 %template (ODESimulatorPtr) rw::common::Ptr<ODESimulator>;
+#endif
 
 /********************************************
  * RWSIMLIBS PLUGINS

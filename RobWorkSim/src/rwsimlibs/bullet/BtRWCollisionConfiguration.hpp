@@ -27,6 +27,7 @@
 #include <rw/common/Ptr.hpp>
 
 #include <bullet/BulletCollision/CollisionDispatch/btCollisionConfiguration.h>
+#include <bullet/LinearMath/btScalar.h>
 
 namespace rwsim { namespace contacts { class ContactDetector; } }
 
@@ -61,6 +62,15 @@ public:
 	 */
 	virtual btPoolAllocator* getCollisionAlgorithmPool();
 
+#if BT_BULLET_VERSION < 282
+	/**
+	 * @brief Get stack allocator (for older versions of Bullet).
+	 * @return pointer to the stack allocator.
+	 * @deprecated Only defined for backwards compatibility with Bullet 2.81.
+	 */
+	virtual btStackAlloc* getStackAllocator();
+#endif
+
 	/**
 	 * @brief Get the algorithm allocator to use.
 	 *
@@ -74,9 +84,14 @@ public:
 
 private:
 	btCollisionAlgorithmCreateFunc*	m_compoundCompoundCreateFunc;
+	btCollisionAlgorithmCreateFunc*	m_compoundCreateFunc;
+	btCollisionAlgorithmCreateFunc*	m_swappedCompoundCreateFunc;
 	btCollisionAlgorithmCreateFunc*	_func;
 	btPoolAllocator* m_persistentManifoldPool;
 	btPoolAllocator* m_collisionAlgorithmPool;
+#if BT_BULLET_VERSION < 282
+	btStackAlloc* m_stackAlloc;
+#endif
 };
 //! @}
 } /* namespace bullet */

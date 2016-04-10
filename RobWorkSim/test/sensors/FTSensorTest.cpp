@@ -21,6 +21,9 @@
 
 #include "../TestSuiteConfig.hpp"
 
+#include <RobWorkSimConfig.hpp>
+#ifdef RWSIM_HAVE_ODE
+
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -68,3 +71,9 @@ BOOST_AUTO_TEST_CASE( FTSensorTest )
 
 
 }
+
+#else
+BOOST_AUTO_TEST_CASE( FTSensorTest ) {
+	BOOST_FAIL("Not compiled with ODE simulator.");
+}
+#endif // RWSIM_HAVE_ODE

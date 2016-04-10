@@ -52,7 +52,9 @@
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rwsim/simulator/GraspTaskSimulator.hpp>
 
+#ifdef RWSIM_HAVE_ODE
 #include <rwsimlibs/ode/ODESimulator.hpp>
+#endif
 
 /**
 #ifdef __cplusplus
@@ -120,7 +122,9 @@ namespace swig {
 	// rwsimlibs gui
 
 	// rwsimlibs ode
+#ifdef RWSIM_HAVE_ODE
     typedef rwsim::simulator::ODESimulator ODESimulator;
+#endif
 
 	// rwsimlibs plugins
 
