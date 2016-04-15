@@ -29,7 +29,9 @@
 using namespace rw::common;
 using namespace rwhw;
 
+namespace helper {
 inline double round(double d) { return floor(d + 0.5); }
+}
 
 namespace {
 /*
@@ -199,7 +201,7 @@ bool Cube::moveRampCmd(float val)
 bool Cube::moveStepCmd(float pos, double time)
 {
     // Convert to ms.
-    const int ms = (int)round(time * 1000);
+    const int ms = (int)helper::round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, pos, ms)) );
     return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, 0x64)) );
 }
@@ -226,7 +228,7 @@ bool Cube::moveRampTicksCmd(int val)
 
 bool Cube::moveStepTicksCmd(int pos, double time)
 {
-    const int ms = (int)round(time * 1000);
+    const int ms = (int)helper::round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, pos, ms)) );
     return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, 0x64)) );
 }
@@ -286,7 +288,7 @@ Cube::CubeExtAckData Cube::moveRampExtCmdWithState(float val)
 float Cube::moveStepExtCmd(float pos, double time)
 {
     // Convert to ms.
-    const int ms = (int)round(time * 1000);
+    const int ms = (int)helper::round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK, pos, ms)) );
     CubePort::Message msg;
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK)),msg ) )
@@ -351,7 +353,7 @@ int Cube::moveRampTicksExtCmd(int val)
 
 int Cube::moveStepTicksExtCmd(int pos, double time)
 {
-    const int ms = (int)round(time * 1000);
+    const int ms = (int)helper::round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK, pos, ms)) );
     CubePort::Message msg;
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK)), msg ) )
