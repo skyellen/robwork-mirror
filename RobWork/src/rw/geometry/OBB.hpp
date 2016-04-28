@@ -23,15 +23,9 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
 
-#include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Math.hpp>
-
-#include <boost/numeric/ublas/matrix.hpp>
 
 #include "BV.hpp"
 

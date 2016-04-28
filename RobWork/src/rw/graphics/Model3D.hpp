@@ -23,7 +23,6 @@
 #include "TextureData.hpp"
 
 #include <vector>
-#include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/IndexedTriangle.hpp>
 #include <rw/geometry/IndexedPolygon.hpp>
 #include <rw/geometry/Geometry.hpp>

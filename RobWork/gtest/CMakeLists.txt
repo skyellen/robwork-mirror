@@ -49,6 +49,24 @@ TARGET_LINK_LIBRARIES( rw_common-gtest ${COMMON_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_common-gtest)
 
 ########################################################################
+# Geometry
+########################################################################
+SET(GEOMETRY_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+ ${XERCESC_LIBRARIES}
+ ${ASSIMP_LIBRARIES}
+ ${QHULL_LIBRARIES}
+)
+
+SET(GEOMETRY_TEST_SRC
+  geometry/IndexedTriMeshTest.cpp
+)
+ADD_EXECUTABLE( rw_geometry-gtest ${GEOMETRY_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_geometry-gtest ${GEOMETRY_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_geometry-gtest)
+
+########################################################################
 # Loaders
 ########################################################################
 

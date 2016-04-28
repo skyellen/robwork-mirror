@@ -14,7 +14,7 @@
 
 #include "OBB.hpp"
 #include "BVDistanceCalc.hpp"
-#include "DistanceUtil.hpp"
+//#include "DistanceUtil.hpp"
 
 
 namespace rw {

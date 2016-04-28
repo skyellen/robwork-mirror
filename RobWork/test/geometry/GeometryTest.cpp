@@ -103,8 +103,18 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 			tri = imeshf16->getIndexedTriangle(i);
 			tri = imeshf16->getIndexedTriangle(i);
 		}
-	BOOST_MESSAGE( "toIdxMesh float uint16 get indirect time: " << timer.getTime() );
+	BOOST_MESSAGE( "IndexedTriMeshN0::getIndexedTriangle float uint16 get indirect time: " << timer.getTime() );
 
+	timer.resetAndResume();
+	IndexedTriMesh<float>::Ptr imesh = imeshf16;
+	for(int j=0;j<100;j++)
+		for(size_t i=0;i<imesh->getSize();i++){
+			tri = imesh->getIndexedTriangle(i);
+			tri = imesh->getIndexedTriangle(i);
+			tri = imesh->getIndexedTriangle(i);
+			tri = imesh->getIndexedTriangle(i);
+		}
+	BOOST_MESSAGE( "IndexedTriMesh::getIndexedTriangle float uint16 get indirect time: " << timer.getTime() );
 
 	timer.resetAndResume();
 	IndexedTriangle<uint16_t> tri16;
@@ -115,7 +125,7 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 			tri16 = (*imeshf16)[(int)i];
 			tri16 = (*imeshf16)[(int)i];
 		}
-	BOOST_MESSAGE( "toIdxMesh float uint16 get direct1 time: " << timer.getTime() );
+	BOOST_MESSAGE( "IndexedTriMeshN0::operator[] float uint16 get direct1 time: " << timer.getTime() );
 
 
 	timer.resetAndResume();
@@ -127,7 +137,7 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 			tri16 = tris[i];
 			tri16 = tris[i];
 		}
-	BOOST_MESSAGE("toIdxMesh float uint16 get direct2 time: " << timer.getTime());
+	BOOST_MESSAGE("IndexedTriMeshN0::getTriangles float uint16 get direct2 time: " << timer.getTime());
 
 	timer.resetAndResume();
 	const IndexedTriangle<uint16_t> *triarray = &tris[0];
@@ -138,7 +148,7 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 			tri16 = triarray[i];
 			tri16 = triarray[i];
 		}
-	BOOST_MESSAGE("toIdxMesh float uint16 get direct3 time: " << timer.getTime());
+	BOOST_MESSAGE("Raw triangle array float uint16 get direct3 time: " << timer.getTime());
 
 	// now test if the indexed data is the same as the plain
 	const float epsilon = (float)1e-5;

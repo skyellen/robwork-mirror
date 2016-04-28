@@ -25,6 +25,7 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include <rw/geometry/Geometry.hpp>
+#include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/graphics/Model3D.hpp>
 
 #include "Object.hpp"

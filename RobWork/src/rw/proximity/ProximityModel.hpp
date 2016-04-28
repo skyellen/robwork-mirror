@@ -41,7 +41,8 @@ namespace proximity {
          * @param pOwner the ProximityStrategy owning this ProximityModel
          **/
         ProximityModel(ProximityStrategy* pOwner):
-            owner(pOwner)
+            owner(pOwner),
+			_frame(NULL)
         {}
 
         virtual ~ProximityModel();

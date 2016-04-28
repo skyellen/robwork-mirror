@@ -23,10 +23,10 @@
 #include <map>
 
 #include <rw/kinematics/FKTable.hpp>
-#include <rw/models/DeformableObject.hpp>
 
 namespace rw { namespace geometry { class PointCloud;}}
 namespace rw { namespace kinematics { class Frame; class State; }}
+namespace rw { namespace models { class DeformableObject;}}
 namespace rw { namespace models { class WorkCell;}}
 namespace rw { namespace sensor { class Image;}}
 
@@ -391,7 +391,7 @@ namespace graphics {
         //! mapping from frame to all its drawables, 1:many
         std::map<const rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> > _frameDrawableMap;
 
-        std::map< rw::models::DeformableObject::Ptr, std::vector<Model3D::Ptr>  > _deformableObjectsMap;
+        std::map<rw::common::Ptr<rw::models::DeformableObject>, std::vector<Model3D::Ptr>  > _deformableObjectsMap;
 
         //! the drawable used to draw the frame axis
         DrawableNode::Ptr _frameAxis;

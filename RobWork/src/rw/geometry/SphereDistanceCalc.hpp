@@ -11,8 +11,6 @@
 #include <sandbox/geometry/OBB.hpp>
 #include "BVDistanceCalc.hpp"
 #include <rw/math/Vector3D.hpp>
-#include "DistanceUtil.hpp"
-#include <rw/math/Math.hpp>
 #include "BSphere.hpp"
 namespace rw {
 namespace proximity {

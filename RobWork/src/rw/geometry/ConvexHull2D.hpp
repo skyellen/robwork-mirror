@@ -20,11 +20,6 @@
 
 //! @file ConvexHull2D.hpp
 
-#include "Triangle.hpp"
-#include "IndexedTriangle.hpp"
-#include "IndexedTriMesh.hpp"
-#include "PlainTriMesh.hpp"
-
 #include <rw/math/Vector2D.hpp>
 
 namespace rw {

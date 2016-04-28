@@ -18,6 +18,7 @@
 #include "ContactStrategyPQP.hpp"
 #include "ContactStrategyTracking.hpp"
 
+#include <rw/geometry/TriMesh.hpp>
 #include <rw/proximity/ProximityCache.hpp>
 
 #include <rwsim/dynamics/ContactPoint.hpp>

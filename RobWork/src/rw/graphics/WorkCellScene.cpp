@@ -24,6 +24,7 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/models/DeformableObject.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/sensor/Image.hpp>
 

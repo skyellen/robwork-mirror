@@ -11,7 +11,7 @@
 #include "OBB.hpp"
 #include "BVDistanceCalc.hpp"
 #include <rw/math/Vector3D.hpp>
-#include "DistanceUtil.hpp"
+//#include "DistanceUtil.hpp"
 #include <rw/math/Math.hpp>
 
 namespace rw {
