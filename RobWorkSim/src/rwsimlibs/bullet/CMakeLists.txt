@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Bullet based physics engine plugin for RobWorkSim")
 SET(SUBSYS_DEPS rwsim rw)
 
 SET(build FALSE)
-set(DEFAULT FALSE)
+set(DEFAULT ${RWSIM_HAVE_BULLET})
 
 find_package(Bullet QUIET)
 IF( NOT BULLET_FOUND )
