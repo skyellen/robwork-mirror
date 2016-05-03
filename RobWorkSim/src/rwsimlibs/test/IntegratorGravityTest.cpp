@@ -96,16 +96,20 @@ void IntegratorGravityTest::updateResults(const EngineLoopInfo& info) {
 	if (time > 0) {
 		if (engineID == "RWPEIsland")
 			handle->getResult("Deviation").checkLastValues(eulerStepError,1e-14);
+		else if (engineID == "Bullet")
+			handle->getResult("Deviation").checkLastValues(-eulerStepError*steps,1e-5);
 		else
-			handle->getResult("Deviation").checkLastValues(-eulerStepError*steps,1e-14); // ODE+Bullet
+			handle->getResult("Deviation").checkLastValues(-eulerStepError*steps,1e-14); // ODE
 	}
 	if (time > 0) {
 		if (engineID == "RWPEIsland")
 			handle->getResult("Energy").checkLastValues(rbody->getMass()*gravity*eulerStepError,1e-12);
+		else if (engineID == "Bullet")
+			handle->getResult("Energy").checkLastValues(-rbody->getMass()*gravity*eulerStepError*steps,1e-4);
 		else
-			handle->getResult("Energy").checkLastValues(-rbody->getMass()*gravity*eulerStepError*steps,1e-12); // ODE+Bullet
+			handle->getResult("Energy").checkLastValues(-rbody->getMass()*gravity*eulerStepError*steps,1e-12); // ODE
 	}
 	handle->getResult("Velocity in xy").checkLastValues(0);
-	handle->getResult("Velocity in z").checkLastValues(gravity*time,1e-14);
+	handle->getResult("Velocity in z").checkLastValues(gravity*time,1e-5);
 	handle->getResult("Angular Velocity").checkLastValues(0);
 }
