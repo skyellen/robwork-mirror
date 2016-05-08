@@ -82,12 +82,13 @@ namespace sensor {
 		 * @brief get last sampled texel pressure values
 		 * @param state [in] state in which values are to be found
 		 */
-		rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(rw::kinematics::State& state)  const{ return _tmodel->getTexelData(state);}
+		rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(rw::kinematics::State& state) const;
 
 		/**
 		 * @brief get last sampled texel pressure values
+		 * @param state [in] state in which values are to be found
 		 */
-		const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(const rw::kinematics::State& state)  const{ return _tmodel->getTexelData(state);}
+		const rw::sensor::TactileArrayModel::ValueMatrix& getTexelData(const rw::kinematics::State& state) const;
 
 
 

@@ -52,6 +52,7 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
     RigidBody::Ptr body = dwc->findBody<RigidBody>("Tray");
 
     TactileArraySensor::Ptr sensor = dwc->findSensor<TactileArraySensor>("FTArraySensor");
+    BOOST_REQUIRE(!sensor.isNull());
     TimedStatePath tpath;
     // test that the control interface works
     odesim->initPhysics(state);
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE( TactileArraySensorTest )
     	// print the ft sensor readings
     	TactileArrayModel::ValueMatrix values = sensor->getTexelData(state);
     	std::cout << odesim->getTime() << "\t";
-    	for(int x=0;x<values.cols();x++ )
+    	for(int x=0;x<values.rows();x++ )
     		for(int y=0;y<values.cols();y++ ){
     			std::cout << values(x,y) << "\t";
     		}

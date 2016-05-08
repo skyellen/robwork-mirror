@@ -27,8 +27,8 @@ TactileArrayModel::TactileArrayModel(const std::string& name,
 			const ValueMatrix& heightMap,
 			double cw, double ch):
 					SensorModel(name, frame),
-					_sdata(1, rw::common::ownedPtr( new TactileModelCache()).cast<rw::kinematics::StateCache>()),
-					_fThmap(fThmap),_heightMap(heightMap),_cellWidth(cw),_cellHeight(ch)
+					_fThmap(fThmap),_heightMap(heightMap),_cellWidth(cw),_cellHeight(ch),
+					_sdata(1, rw::common::ownedPtr( new TactileModelCache()).cast<rw::kinematics::StateCache>())
 {
 	_minPressure = 0;
 	_maxPressure = 1000;
@@ -39,6 +39,7 @@ TactileArrayModel::TactileArrayModel(const std::string& name,
     // calculate the normals and centers of all texels
     // first calculate the 3D vertexes of the grid from the heightmap specification
     double tw = _cellWidth, th = _cellHeight;
+    _vertexGrid.resize(boost::extents[h+1][w+1]);
     for(int y=0;y<h+1; y++){
         for(int x=0;x<w+1; x++){
             _vertexGrid[x][y](0) = x*tw;
@@ -47,6 +48,8 @@ TactileArrayModel::TactileArrayModel(const std::string& name,
         }
     }
 
+    _cellCenters.resize(boost::extents[h][w]);
+    _cellNormals.resize(boost::extents[h][w]);
     for(int j=0;j<h; j++){
      	for(int i=0;i<w; i++){
             Vector3D<> p = _vertexGrid[i][j]  +_vertexGrid[i+1][j]+

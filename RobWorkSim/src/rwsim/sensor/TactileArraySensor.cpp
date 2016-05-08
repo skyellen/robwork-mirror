@@ -154,7 +154,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     const rw::math::Transform3D<>& fThmap,
     const ValueMatrix& heightMap,
     const rw::math::Vector2D<>& texelSize):
-        SimulatedTactileSensor( ownedPtr( new rw::sensor::TactileArrayModel(name, _body->getBodyFrame(), fThmap, heightMap, texelSize[0], texelSize[1])  ) ),
+        SimulatedTactileSensor( ownedPtr( new rw::sensor::TactileArrayModel(name, obj->getBodyFrame(), fThmap, heightMap, texelSize[0], texelSize[1])  ) ),
         _contactMatrix(getShape(heightMap,-1,-1)),
         _distCenterMatrix(getShape(heightMap,-1,-1)),
         _distDefMatrix(Eigen::MatrixXf::Zero(heightMap.rows()-1,heightMap.cols()-1)),
@@ -232,7 +232,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     _narrowStrategy->addGeometry(_nmodel.get(), *_ngeom );
 	_frameToGeoms[_body->getBodyFrame()] = _body->getGeometry();
 	std::vector<Geometry::Ptr> &geoms = _frameToGeoms[_body->getBodyFrame()];
-    _narrowStrategy->setFirstContact(false);
+    //_narrowStrategy->setFirstContact(false);
     //std::cout << "DMask: " << _dmask << std::endl;
     //std::cout << "Finger pad dimensions: (" << _texelSize(0)*(_w+1) << "," << (_h+1)*_texelSize(1) <<")" <<  std::endl;
 
@@ -240,8 +240,15 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 
 	Transform3D<> wTb = Transform3D<>::identity();
 	//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-	ProximityModel::Ptr model = _narrowStrategy->getModel(_body->getBodyFrame());
+	//ProximityModel::Ptr model = _narrowStrategy->getModel(_body->getBodyFrame());
+	//if (model.isNull())
+	//	RW_THROW("No geometry has been associated with the frame " << _body->getBodyFrame()->getName());
+	ProximityModel::Ptr model = _narrowStrategy->createModel();
+	BOOST_FOREACH(const Geometry::Ptr geom, _body->getGeometry()) {
+		_narrowStrategy->addGeometry(model.get(),geom,false);
+	}
 	ProximityStrategyData pdata;
+	pdata.setCollisionQueryType(CollisionStrategy::FirstContact);
 	_narrowStrategy->inCollision(_nmodel, _fThmap, model, wTb, pdata);
 	CollisionResult &data = pdata.getCollisionData();
 	if(data._collisionPairs.size()>0){
@@ -294,6 +301,14 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     // create state object and add it to
 	_sdata = StatelessData<int>(1, rw::common::ownedPtr( new ClassState(this, getWidth(), getHeight())).cast<rw::kinematics::StateCache>()),
     add( _sdata );
+}
+
+TactileArrayModel::ValueMatrix& TactileArraySensor::getTexelData(State& state) const {
+	return _sdata.getStateCache<ClassState>(state)->_pressure;
+}
+
+const TactileArrayModel::ValueMatrix& TactileArraySensor::getTexelData(const State& state) const {
+	return _sdata.getStateCache<ClassState>(state)->_pressure;
 }
 
 TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, size_t dim_x, size_t dim_y):
@@ -616,7 +631,11 @@ void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator:
 		Transform3D<> wTa = Kinematics::worldTframe(tframe, state)*_tsensor->_fThmap;
 		Transform3D<> wTb = Kinematics::worldTframe(bframe, state);
 		//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-		ProximityModel::Ptr modelB = _tsensor->_narrowStrategy->getModel(bframe);
+		//ProximityModel::Ptr modelB = _tsensor->_narrowStrategy->getModel(bframe);
+		ProximityModel::Ptr modelB = _tsensor->_narrowStrategy->createModel();
+		BOOST_FOREACH(const Geometry::Ptr geom, body->getGeometry()) {
+			_tsensor->_narrowStrategy->addGeometry(modelB.get(),geom,false);
+		}
 
 		bool collides = _tsensor->_narrowStrategy->inCollision(_tsensor->_nmodel, wTa, modelB, wTb, _pdata); //wTa*_fThmap
 		CollisionResult &data = _pdata.getCollisionData();
