@@ -98,6 +98,12 @@ public:
     void setExtensionRegistry(rw::common::Ptr<rw::common::ExtensionRegistry> extreg);
 
     /**
+     * @brief Check if RobWork has been initialized.
+     * @return true if initialized, false otherwise.
+     */
+    bool isInitialized() const;
+
+    /**
      * @brief returns an RobWork instance
      */
     static RobWork::Ptr getInstance();
@@ -122,6 +128,7 @@ private:
     rw::common::PropertyMap _settings;
     std::string _settingsFile;
     std::map<std::string, std::time_t> _pluginChangedMap;
+    bool _initialized;
 };
 
 } //end namespace rw

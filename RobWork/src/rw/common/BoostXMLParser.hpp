@@ -50,9 +50,24 @@ namespace common {
 		bool isDebug(){return _debug;};
 		DOMElem::Ptr getRootElement(){ return _root;};
 
-		// extra stuff that can be added in top of document
+		/**
+		 * @brief Utility class which initializes Boost local static variables.
+		 *
+		 * If the BoostXMLParser is used outside main (as a part of global initialization/destruction), the BoostInitializer
+		 * should be used explicitly to control the static initialization/destruction order.
+		 *
+		 * Notice that the BoostInitializer is automatically defined as a global variable, hence it should not
+		 * be necessary to specify the initializer explicitly if BoostXMLParser is to be used in local static
+		 * initialization/destruction.
+		 */
+		class BoostInitializer {
+		public:
+		    //! @brief Initializes BoostXMLParser when constructed.
+			BoostInitializer();
+		};
 
 	private:
+		static const BoostInitializer initializer;
 		bool _debug;
 		DOMElem::Ptr _root;
 		rw::common::Ptr< boost::property_tree::ptree > _tree;

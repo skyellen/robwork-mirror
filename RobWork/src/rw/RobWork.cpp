@@ -55,7 +55,7 @@ using namespace boost::program_options;
     #define RWCFGFILE std::string(std::getenv("HOME")) + "/.config/robwork/robwork-" + RW_BUILD_TYPE + "-" + RW_VERSION + ".cfg.xml"
 #endif
 
-RobWork::RobWork(void) 
+RobWork::RobWork(void): _initialized(false)
 {
 }
 
@@ -67,6 +67,7 @@ RobWork::~RobWork(void)
 }
 
 void RobWork::initialize(const std::vector<std::string>& plugins){
+	_initialized = true; // must be set before logging to avoid infinite loop
     Log::debugLog() << "Initializing ROBWORK" << std::endl;
 
     // user supplied arguments will always be taken into account
@@ -219,7 +220,22 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
 namespace {
     rw::common::Ptr<rw::common::ExtensionRegistry> _extensionReg;
     rw::common::Log::Ptr _log;
-    RobWork::Ptr _rwinstance;
+
+    RobWork::Ptr* _newInstance = NULL; // must be pointer such that lifetime is controlled with the local static in rwinstance()
+
+    // The instance must be defined as a local static to give us necessary control of the lifetime (RobWork depends on other global static variables):
+    RobWork::Ptr rwinstance() {
+    	// Local static variable used, such that variables in BoostXMLParser is still available at destruction of RobWork
+    	// (BoostXMLParser is currently used by DOMPropertyMapSaver in the RobWork destructor)
+    	static RobWork::Ptr _rwinstance = ownedPtr(new RobWork());
+    	if (_newInstance != NULL) {
+    		// Allow switching with a new instance
+    		// _newInstance can not be of type Ptr as this would cause RobWork to be destructed too late!
+    		_rwinstance = *_newInstance;
+    		_newInstance = NULL;
+    	}
+    	return _rwinstance;
+    }
 
     // this is used for initializing variables on program startup
     // hence, any program linked with this code will execute the constructor
@@ -250,7 +266,9 @@ void RobWork::setExtensionRegistry(rw::common::Ptr<rw::common::ExtensionRegistry
     _extensionReg = extreg;
 }
 
-
+bool RobWork::isInitialized() const {
+	return _initialized;
+}
 
 void RobWork::init(int argc, const char* const * argv){
 	// get log level, plugins, or plugin directories
@@ -281,10 +299,7 @@ void RobWork::init(int argc, const char* const * argv){
     	plugins = vm["rwplugin"].as<std::vector<std::string> >();
     }
 
-	if(_rwinstance==NULL){
-		_rwinstance = ownedPtr( new RobWork() );
-	}
-	_rwinstance->initialize(plugins);
+	rwinstance()->initialize(plugins);
 
 	std::string rwloglevel_arg = vm["rwloglevel"].as<std::string>();
 	if(rwloglevel_arg=="debug"){ Log::getInstance()->setLevel( Log::Debug ); }
@@ -318,21 +333,16 @@ rw::common::PropertyMap& RobWork::getSettings() {
 }
 
 void RobWork::init(){
-	if(_rwinstance==NULL){
-		_rwinstance = ownedPtr( new RobWork() );
-	}
-	_rwinstance->initialize();
+	rwinstance()->initialize();
 }
 
 RobWork::Ptr RobWork::getInstance(){
-	// test for NULL, to avoid problems with 'static initialization order fiasco'
-	if(_rwinstance==NULL){
-		_rwinstance = ownedPtr( new RobWork() );
-		_rwinstance->initialize();
-	}
-	return _rwinstance;
+	RobWork::Ptr instance = rwinstance();
+	if (!instance->isInitialized())
+		instance->initialize();
+	return instance;
 }
 
 void RobWork::setInstance(RobWork::Ptr rw){
-    _rwinstance = rw;
+	_newInstance = &rw;
 }

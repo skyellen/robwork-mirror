@@ -29,6 +29,19 @@ using namespace rw::common;
 
 //////////////// stuff for loader
 
+BoostXMLParser::BoostInitializer::BoostInitializer() {
+	static bool done = false;
+	if (!done) {
+		done = true;
+		boost::property_tree::xml_parser::xmlattr<char>();
+		boost::property_tree::xml_parser::xmltext<char>();
+		boost::property_tree::xml_parser::xmlcomment<char>();
+		boost::property_tree::xml_parser::xmldecl<char>();
+	}
+}
+
+const BoostXMLParser::BoostInitializer BoostXMLParser::initializer;
+
 BoostXMLParser::BoostXMLParser():_debug(false){
 	_tree = ownedPtr( new boost::property_tree::ptree() );
 	_root = rw::common::ownedPtr(new BoostDOMElem("",_tree, NULL, _tree, this));
@@ -83,8 +96,6 @@ void BoostXMLParser::save(std::ostream& output){
         RW_THROW(e.what());
     }
 }
-
-
 
 
 std::vector<std::string> BoostDOMElem::getValueAsStringList(char stringseperator) const {
