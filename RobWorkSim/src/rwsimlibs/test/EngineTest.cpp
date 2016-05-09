@@ -35,7 +35,19 @@ using namespace rwsim::log;
 using namespace rwsim::simulator;
 using namespace rwsimlibs::test;
 
+#define EP_NAME "rwsimlibs.test.EngineTest"
+#define QUOTE(name) #name
+#define ADD_EXTENSION(vector,name) \
+		vector.push_back(Extension(QUOTE(name),EP_NAME,NULL,ownedPtr(new name()))); \
+		vector.back().getProperties().set<std::string>("testID", QUOTE(name))
+
 namespace {
+void makeInternalExtensions(std::vector<rw::common::Extension>& internal) {
+	ADD_EXTENSION(internal,IntegratorGravityTest);
+	ADD_EXTENSION(internal,IntegratorRotationTest);
+	ADD_EXTENSION(internal,IntegratorSpringTest);
+}
+
 class RunTask: public ThreadTask {
 private:
 	EngineTest* const _test;
@@ -221,34 +233,42 @@ PropertyMap::Ptr EngineTest::getDefaultParameters() const {
 	return ownedPtr(new PropertyMap());
 }
 
+std::vector<PropertyMap::Ptr> EngineTest::getPredefinedParameters() const {
+	std::vector<PropertyMap::Ptr> parms;
+	return parms;
+}
+
+std::vector<rw::common::Extension> EngineTest::Factory::_internal;
+
 EngineTest::Factory::Factory():
-	ExtensionPoint<EngineTest>("rwsimlibs.test.EngineTest", "EngineTest extension point.")
-{
+	ExtensionPoint<EngineTest>(EP_NAME, "EngineTest extension point.")
+	{
+	if (_internal.size() == 0) {
+		makeInternalExtensions(_internal);
+	}
 }
 
 std::vector<std::string> EngineTest::Factory::getTests() {
+	const EngineTest::Factory ep;
     std::vector<std::string> ids;
-    EngineTest::Factory ep;
-    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
-    ids.push_back("IntegratorGravityTest");
-    ids.push_back("IntegratorRotationTest");
-    ids.push_back("IntegratorSpringTest");
-    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+    BOOST_FOREACH(const Extension& ext, ep._internal) {
+    	ids.push_back(ext.getProperties().get<std::string>("testID"));
+    }
+    const std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(const Extension::Descriptor& ext, exts){
         ids.push_back( ext.getProperties().get("testID",ext.name) );
     }
     return ids;
 }
 
 bool EngineTest::Factory::hasTest(const std::string& test) {
-    if(test == "IntegratorGravityTest")
-        return true;
-    else if(test == "IntegratorRotationTest")
-        return true;
-    else if(test == "IntegratorSpringTest")
-        return true;
-    EngineTest::Factory ep;
-    std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
-    BOOST_FOREACH(Extension::Descriptor& ext, exts){
+	const EngineTest::Factory ep;
+    BOOST_FOREACH(Extension& ext, _internal) {
+        if(ext.getProperties().get<std::string>("testID") == test)
+            return true;
+    }
+    const std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
+    BOOST_FOREACH(const Extension::Descriptor& ext, exts){
         if(ext.getProperties().get("testID",ext.name) == test)
             return true;
     }
@@ -256,15 +276,13 @@ bool EngineTest::Factory::hasTest(const std::string& test) {
 }
 
 EngineTest::Ptr EngineTest::Factory::getTest(const std::string& test) {
-    if( test == "IntegratorGravityTest")
-        return ownedPtr(new IntegratorGravityTest());
-    else if( test == "IntegratorRotationTest")
-        return ownedPtr(new IntegratorRotationTest());
-    else if( test == "IntegratorSpringTest")
-        return ownedPtr(new IntegratorSpringTest());
-    EngineTest::Factory ep;
-	std::vector<Extension::Ptr> exts = ep.getExtensions();
-	BOOST_FOREACH(Extension::Ptr& ext, exts){
+	const EngineTest::Factory ep;
+    BOOST_FOREACH(Extension& ext, _internal) {
+        if(ext.getProperties().get<std::string>("testID") == test)
+			return ext.getObject().cast<EngineTest>();
+    }
+    const std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(const Extension::Ptr& ext, exts){
 		const PropertyMap& props = ext->getProperties();
 		if(props.get("testID",ext->getName() ) == test){
 			return ext->getObject().cast<EngineTest>();

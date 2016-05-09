@@ -269,6 +269,12 @@ public:
 	virtual rw::common::Ptr<rw::common::PropertyMap> getDefaultParameters() const;
 
 	/**
+	 * @brief Get a vector of predefined parameters.
+	 * @return the predefines parameters.
+	 */
+	virtual std::vector<rw::common::Ptr<rw::common::PropertyMap> > getPredefinedParameters() const;
+
+	/**
      * @addtogroup extensionpoints
      * @extensionpoint{rwsimlibs::test::EngineTest::Factory,rwsimlibs::test::EngineTest,rwsimlibs.test.EngineTest}
      */
@@ -298,6 +304,7 @@ public:
 		static EngineTest::Ptr getTest(const std::string& test);
 
 	private:
+		static std::vector<rw::common::Extension> _internal;
 		Factory();
 	};
 	//! @}

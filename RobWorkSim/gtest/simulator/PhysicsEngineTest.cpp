@@ -45,13 +45,19 @@ TEST(PhysicsEngineTest, EnginesInFactory) {
 }
 
 struct TestParam {
-	TestParam(const std::string& test, const std::string& engine):
+	TestParam(EngineTest::Ptr test, const std::string& testName, const std::string& engine, int id, PropertyMap::Ptr parameters):
+		testName(testName),
 		test(test),
-		engine(engine)
+		engine(engine),
+		id(id),
+		parameters(parameters)
 	{
 	}
-	std::string test;
+	std::string testName;
+	EngineTest::Ptr test;
 	std::string engine;
+	int id;
+	PropertyMap::Ptr parameters;
 };
 
 class PhysicsEngineTest : public ::testing::TestWithParam<TestParam> {
@@ -59,28 +65,25 @@ protected:
 	PhysicsEngineTest(): handle(ownedPtr(new EngineTest::TestHandle())) {
 	}
 
-	virtual void SetUp() {
-		etest = EngineTest::Factory::getTest(GetParam().test);
-		if (!etest.isNull())
-			pars = etest->getDefaultParameters();
-	}
-
 	const EngineTest::TestHandle::Ptr handle;
-	EngineTest::Ptr etest;
-	PropertyMap::Ptr pars;
 };
 
 ::std::ostream& operator<<(::std::ostream& os, const TestParam& combo) {
-    os << "(" << combo.test << ", " << combo.engine << ")";
+	if (combo.id < 0)
+		os << "(" << combo.testName << ", " << combo.engine << ") default";
+	else
+		os << "(" << combo.testName << ", " << combo.engine << ") predefined #" << combo.id;
     return os;
 }
 
-std::list<TestParam> tests;
-INSTANTIATE_TEST_CASE_P(TestEnginePair, PhysicsEngineTest, ::testing::ValuesIn(tests));
+std::list<TestParam> defaultTests;
+std::list<TestParam> predefinedTests;
+INSTANTIATE_TEST_CASE_P(DefaultParameter, PhysicsEngineTest, ::testing::ValuesIn(defaultTests));
+INSTANTIATE_TEST_CASE_P(PredefinedParameters, PhysicsEngineTest, ::testing::ValuesIn(predefinedTests));
 
-TEST_P(PhysicsEngineTest, RunDefaultTest) {
-	ASSERT_TRUE(!etest.isNull());
-	etest->run(handle, GetParam().engine, *pars);
+TEST_P(PhysicsEngineTest, TestEngineParameterTest) {
+	ASSERT_TRUE(!GetParam().test.isNull());
+	GetParam().test->run(handle, GetParam().engine, *GetParam().parameters);
 	EXPECT_EQ(handle->getError(),"");
 	BOOST_FOREACH(const EngineTest::Result& result, handle->getResults()) {
 		BOOST_FOREACH(const EngineTest::Failure& failure, result.failures) {
@@ -96,7 +99,12 @@ int main(int argc, char **argv) {
 		const EngineTest::Ptr etest = EngineTest::Factory::getTest(testName);
 		BOOST_FOREACH(const std::string& engineName, engines) {
 			if (etest->isEngineSupported(engineName)) {
-				tests.push_back(TestParam(testName,engineName));
+				const PropertyMap::Ptr def = etest->getDefaultParameters();
+				defaultTests.push_back(TestParam(etest,testName,engineName,-1,def));
+				const std::vector<PropertyMap::Ptr> predefined = etest->getPredefinedParameters();
+				for (std::size_t i = 0; i < predefined.size(); i++) {
+					predefinedTests.push_back(TestParam(etest,testName,engineName,i,predefined[i]));
+				}
 			}
 		}
 	}

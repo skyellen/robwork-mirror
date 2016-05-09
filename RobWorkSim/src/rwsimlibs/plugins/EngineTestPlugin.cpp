@@ -88,6 +88,7 @@ EngineTestPlugin::EngineTestPlugin():
     connect(_ui->verboseCheck, SIGNAL(stateChanged(int)), this, SLOT(logCheck(int)) );
     connect(_ui->logCheck, SIGNAL(stateChanged(int)), this, SLOT(logCheck(int)) );
     connect(_inputEditor, SIGNAL(propertyChanged(const std::string&)), this, SLOT(inputChanged()));
+    connect(_ui->predefined, SIGNAL(currentIndexChanged(int)), this, SLOT(predefinedChoice(int)));
 
     _ui->toolBox->setCurrentWidget(_ui->selectionBox);
     toolBoxChanged(_ui->toolBox->currentIndex());
@@ -156,11 +157,20 @@ void EngineTestPlugin::toolBoxChanged(int index) {
 		}
 
 		message("Fetching parameters of test...");
-		if (_input.isNull())
+		if (_input.isNull()) {
+			const std::vector<PropertyMap::Ptr> predefined = _test->getPredefinedParameters();
+			_ui->predefined->clear();
+			_ui->predefined->addItem("Default",0);
+			for (int i = 0; i < static_cast<int>(predefined.size()); i++) {
+				_ui->predefined->addItem(QString::number(i+1),i+1);
+			}
 			_input = _test->getDefaultParameters();
+		}
+	    disconnect(_inputEditor, SIGNAL(propertyChanged(const std::string&)), this, SLOT(inputChanged()));
 		_inputEditor->setPropertyMap(_input);
+	    connect(_inputEditor, SIGNAL(propertyChanged(const std::string&)), this, SLOT(inputChanged()));
 
-		inputChanged(); // load the workcell
+		updateInput(); // load the workcell
 
 		message("Adjust the default parameters if required.");
 
@@ -191,7 +201,7 @@ void EngineTestPlugin::toolBoxChanged(int index) {
 
 		if (_input.isNull()) {
 			_input = _test->getDefaultParameters();
-			inputChanged(); // load the workcell
+			updateInput(); // load the workcell
 		}
 
 		_engine = _ui->engineList->currentItem()->text().toStdString();
@@ -334,6 +344,18 @@ void EngineTestPlugin::verbose() {
 }
 
 void EngineTestPlugin::inputChanged() {
+	// Called if user modifies the standard parameters from the test
+	if (_ui->predefined->itemText(0) != "(User)") {
+	    disconnect(_ui->predefined, SIGNAL(currentIndexChanged(int)), this, SLOT(predefinedChoice(int)));
+		_ui->predefined->insertItem(0,"(User)",-1);
+	    connect(_ui->predefined, SIGNAL(currentIndexChanged(int)), this, SLOT(predefinedChoice(int)));
+	}
+	_ui->predefined->setCurrentIndex(0);
+
+	updateInput();
+}
+
+void EngineTestPlugin::updateInput() {
 	RW_ASSERT(!_test.isNull());
 	message("Updating workcell with new parameters...");
 
@@ -351,6 +373,31 @@ void EngineTestPlugin::inputChanged() {
     getRobWorkStudio()->setWorkcell( _dwc->getWorkcell() );
 
 	message("Workcell updated with new parameters.");
+}
+
+void EngineTestPlugin::predefinedChoice(int choice) {
+	if (choice < 0) // Combobox was cleared
+		return;
+	const QString text = _ui->predefined->itemText(choice);
+	if (text == "(User)") {
+		return;
+	} else {
+		if (_ui->predefined->itemText(0) == "(User)")
+			_ui->predefined->removeItem(0);
+		if (text == "Default") { // Choose Default parameter set
+			_input = _test->getDefaultParameters();
+		} else {
+			const unsigned int id = _ui->predefined->itemData(choice).toUInt();
+			RW_ASSERT(id >= 1);
+			const std::vector<PropertyMap::Ptr> pars = _test->getPredefinedParameters();
+			RW_ASSERT(id <= pars.size());
+			_input = pars[id-1];
+		}
+	    disconnect(_inputEditor, SIGNAL(propertyChanged(const std::string&)), this, SLOT(inputChanged()));
+		_inputEditor->setPropertyMap(_input);
+	    connect(_inputEditor, SIGNAL(propertyChanged(const std::string&)), this, SLOT(inputChanged()));
+		updateInput(); // load the workcell
+	}
 }
 
 void EngineTestPlugin::message(const std::string& msg) {

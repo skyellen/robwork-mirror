@@ -67,6 +67,8 @@ private slots:
 	void run();
 	void verbose();
 	void inputChanged();
+	void updateInput();
+	void predefinedChoice(int choice);
 	void resultShow();
 	void logCheck(int state);
 
