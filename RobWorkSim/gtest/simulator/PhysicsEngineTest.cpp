@@ -36,8 +36,6 @@ TEST(PhysicsEngineTest, EnginesInFactory) {
 			foundODE = true;
 		else if (name == "Bullet")
 			foundBullet = true;
-		else if (name == "RWPEIsland")
-			foundRWPE = true;
 	}
 	EXPECT_TRUE(foundODE);
 	EXPECT_TRUE(foundBullet);

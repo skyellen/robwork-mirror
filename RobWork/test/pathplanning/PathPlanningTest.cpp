@@ -200,7 +200,7 @@ void testPathPlanning(const CollisionStrategy::Ptr& strategy)
         	BOOST_FOREACH(Q to, samples){
                 QPath path;
 
-                res = planner.second->query(from, to, path, 4);
+                res = planner.second->query(from, to, path, 15);
                 BOOST_CHECK(res);
                 BOOST_CHECK(!PlannerUtil::inCollision(constraint, path));
             }
