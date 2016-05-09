@@ -30,7 +30,6 @@ TEST(PhysicsEngineTest, EnginesInFactory) {
 	const std::vector<std::string> engines = PhysicsEngine::Factory::getEngineIDs();
 	bool foundODE = false;
 	bool foundBullet = false;
-	bool foundRWPE = false;
 	BOOST_FOREACH(const std::string& name, engines) {
 		if (name == "ODE")
 			foundODE = true;
@@ -39,7 +38,6 @@ TEST(PhysicsEngineTest, EnginesInFactory) {
 	}
 	EXPECT_TRUE(foundODE);
 	EXPECT_TRUE(foundBullet);
-	EXPECT_TRUE(foundRWPE);
 }
 
 struct TestParam {
