@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
 
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
@@ -99,7 +100,12 @@ void BoostXMLParser::save(std::ostream& output){
 
 
 std::vector<std::string> BoostDOMElem::getValueAsStringList(char stringseperator) const {
-	return std::vector<std::string>();
+	const std::string value = _node->get_value<std::string>();
+    std::vector<std::string> values;
+    boost::char_separator<char> sep(std::string(1,stringseperator).c_str());
+    boost::tokenizer< boost::char_separator<char> > tok(value, sep);
+    values.assign(tok.begin(),tok.end());
+    return values;
 }
 
 std::vector<double> BoostDOMElem::getValueAsDoubleList() const {

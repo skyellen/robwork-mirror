@@ -61,7 +61,7 @@ void DOMPropertyMapSaver::save(const PropertyBase::Ptr property, DOMElem::Ptr pa
     }
     case PropertyType::Float: {
         const Property<float>* prop = toProperty<float>(property);
-        DOMBasisTypes::createDouble(prop->getValue(), element);
+        DOMBasisTypes::createFloat(prop->getValue(), element);
         break;
     }
     case PropertyType::Double: {

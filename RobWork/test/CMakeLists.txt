@@ -120,7 +120,7 @@ ADD_DEPENDENCIES(rw_collision-test ${TEST_DEPENDENCIES})
 # This depends on RW_DRAWABLE_LIBRARY_LIST.
 ADD_EXECUTABLE( rw_drawables-test ${DO_EXCLUDE} test-main.cpp drawable/DrawableTest.cpp)       
 TARGET_LINK_LIBRARIES( rw_drawables-test ${TEST_LIBRARIES} )
-ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/drawables-test ${DEFAULT_TEST_ARGS})
+ADD_TEST( rw_drawables-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rw_drawables-test ${DEFAULT_TEST_ARGS})
 ADD_DEPENDENCIES(rw_drawables-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( rw_graphics-test ${DO_EXCLUDE} test-main.cpp graphics/GraphicsTest.cpp)       

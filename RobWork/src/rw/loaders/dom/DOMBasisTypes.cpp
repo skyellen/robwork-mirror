@@ -415,14 +415,7 @@ std::string DOMBasisTypes::readString(DOMElem::Ptr element, bool doCheckHeader) 
 }
 
 std::vector<std::string> DOMBasisTypes::readStringList(DOMElem::Ptr element) {
-    std::vector<std::string> result;
-    BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-    	if (child->isName( StringId)) {
-			std::string str = readString(child, false);
-			result.push_back(str);
-    	}
-    }
-    return result;
+    return element->getValueAsStringList();
 }
 
 //typedef std::pair<std::string,std::string> StringPair;
@@ -431,14 +424,7 @@ StringPair DOMBasisTypes::readStringPair(DOMElem::Ptr element, bool doCheckHeade
     if (doCheckHeader)
         checkHeader(element, StringPairId);
 
-    std::vector<std::string> result;
-
-    BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
-		if (child->isName( StringId)) {
-			std::string str = readString(child, false);
-			result.push_back(str);
-		}
-    }
+    const std::vector<std::string> result = readStringList(element);
 
     if (result.size() != 2)
         RW_THROW("Expected 2 string in StringPair but found"<<result.size());
@@ -717,9 +703,9 @@ DOMElem::Ptr DOMBasisTypes::createRotation3D(const Rotation3D<>& r, DOMElem::Ptr
 
     // check if rotation is proper orthogonal before saving it
     //RW_ASSERT( fabs(LinearAlgebra::det( target.R().m() ))-1.0 < 0.00000001 );
-	double detVal = r.e().determinant()-1.0;
-    if( fabs(detVal) > 0.0000001 ){
-        RW_WARN("A rotation matrix that is being streamed does not have a determinant of 1, det="<<detVal);
+	double detVal = r.e().determinant();
+    if( fabs(detVal-1.0) > 0.0000001 ){
+        RW_WARN("A rotation matrix that is being streamed does not have a determinant of 1, det="<<detVal << ", difference: " << fabs(detVal-1.0));
     }
 
     std::ostringstream str;

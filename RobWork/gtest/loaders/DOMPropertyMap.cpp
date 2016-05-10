@@ -10,11 +10,6 @@
 #include <algorithm>
 #include <sstream>
 
-// Currently enabling these cause the generated binary to cause a memory error / segmentation fault
-#define ENABLE_TRANSFORM3DPATH 1
-#define ENABLE_TRANSFORM3D 1
-#define ENABLE_ROTATION3D 1
-
 using namespace rw::math;
 using namespace rw::trajectory;
 
@@ -67,61 +62,79 @@ namespace {
         case rw::common::PropertyType::Vector3D: {
             const rw::common::Property<Vector3D<> >* pa = rw::common::toProperty<Vector3D<> >(a);
             const rw::common::Property<Vector3D<> >* pb = rw::common::toProperty<Vector3D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_DOUBLE_EQ(pa->getValue()[0],pb->getValue()[0]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[1],pb->getValue()[1]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[2],pb->getValue()[2]);
             break;
         }
         case rw::common::PropertyType::Vector2D: {
             const rw::common::Property<Vector2D<> >* pa = rw::common::toProperty<Vector2D<> >(a);
             const rw::common::Property<Vector2D<> >* pb = rw::common::toProperty<Vector2D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_DOUBLE_EQ(pa->getValue()[0],pb->getValue()[0]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[1],pb->getValue()[1]);
             break;
         }
         case rw::common::PropertyType::Q: {
             const rw::common::Property<Q>* pa = rw::common::toProperty<Q>(a);
             const rw::common::Property<Q>* pb = rw::common::toProperty<Q>(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_EQ(pa->getValue().size(), pb->getValue().size());
+            for (std::size_t i = 0; i < pa->getValue().size(); i++) {
+            	EXPECT_DOUBLE_EQ(pa->getValue()[i], pb->getValue()[i]);
+            }
             break;
         }
         case rw::common::PropertyType::Transform3D: {
             const rw::common::Property<Transform3D<> >* pa = rw::common::toProperty<Transform3D<> >(a);
             const rw::common::Property<Transform3D<> >* pb = rw::common::toProperty<Transform3D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_TRUE(pa->getValue().equal(pb->getValue()));
             break;
         }
         case rw::common::PropertyType::Rotation3D: {
             const rw::common::Property<Rotation3D<> >* pa = rw::common::toProperty<Rotation3D<> >(a);
             const rw::common::Property<Rotation3D<> >* pb = rw::common::toProperty<Rotation3D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_TRUE(pa->getValue().equal(pb->getValue()));
             break;
         }
         case rw::common::PropertyType::RPY: {
             const rw::common::Property<RPY<> >* pa = rw::common::toProperty<RPY<> >(a);
             const rw::common::Property<RPY<> >* pb = rw::common::toProperty<RPY<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_DOUBLE_EQ(pa->getValue()[0],pb->getValue()[0]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[1],pb->getValue()[1]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[2],pb->getValue()[2]);
             break;
         }
         case rw::common::PropertyType::EAA: {
             const rw::common::Property<EAA<> >* pa = rw::common::toProperty<EAA<> >(a);
             const rw::common::Property<EAA<> >* pb = rw::common::toProperty<EAA<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_DOUBLE_EQ(pa->getValue()[0],pb->getValue()[0]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[1],pb->getValue()[1]);
+            EXPECT_DOUBLE_EQ(pa->getValue()[2],pb->getValue()[2]);
             break;
         }
         case rw::common::PropertyType::Quaternion: {
             const rw::common::Property<Quaternion<> >* pa = rw::common::toProperty<Quaternion<> >(a);
             const rw::common::Property<Quaternion<> >* pb = rw::common::toProperty<Quaternion<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_NEAR(pa->getValue()(0),pb->getValue()(0),1e-6);
+            EXPECT_NEAR(pa->getValue()(1),pb->getValue()(1),1e-6);
+            EXPECT_NEAR(pa->getValue()(2),pb->getValue()(2),1e-6);
+            EXPECT_NEAR(pa->getValue()(3),pb->getValue()(3),1e-6);
             break;
         }
         case rw::common::PropertyType::Rotation2D: {
             const rw::common::Property<Rotation2D<> >* pa = rw::common::toProperty<Rotation2D<> >(a);
             const rw::common::Property<Rotation2D<> >* pb = rw::common::toProperty<Rotation2D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            EXPECT_DOUBLE_EQ(pa->getValue()(0,0),pb->getValue()(0,0));
+            EXPECT_DOUBLE_EQ(pa->getValue()(0,1),pb->getValue()(0,1));
+            EXPECT_DOUBLE_EQ(pa->getValue()(1,0),pb->getValue()(1,0));
+            EXPECT_DOUBLE_EQ(pa->getValue()(1,1),pb->getValue()(1,1));
             break;
         }
         case rw::common::PropertyType::VelocityScrew6D: {
             const rw::common::Property<VelocityScrew6D<> >* pa = rw::common::toProperty<VelocityScrew6D<> >(a);
             const rw::common::Property<VelocityScrew6D<> >* pb = rw::common::toProperty<VelocityScrew6D<> >(b);
-            EXPECT_EQ(pa->getValue(), pb->getValue());
+            for (std::size_t i = 0; i < 6; i++) {
+            	EXPECT_DOUBLE_EQ(pa->getValue()[i],pb->getValue()[i]);
+            }
             break;
         }
         case rw::common::PropertyType::QPath: {
@@ -137,7 +150,12 @@ namespace {
                 } else if (index >= pb->getValue().size()) {
                     EXPECT_EQ(pa->getValue().at(index), Q());
                 } else {
-                    EXPECT_EQ(pa->getValue().at(index), pb->getValue().at(index));
+                	const Q& qa = pa->getValue().at(index);
+                	const Q& qb = pb->getValue().at(index);
+                	EXPECT_EQ(qa.size(),qb.size());
+                	for (std::size_t i = 0; i < qa.size(); i++) {
+                		EXPECT_DOUBLE_EQ(qa[i], qb[i]);
+                	}
                 }
             }
             break;
@@ -155,7 +173,7 @@ namespace {
                 } else if (index >= pb->getValue().size()) {
                     EXPECT_EQ(pa->getValue().at(index), Transform3D<>());
                 } else {
-                    EXPECT_EQ(pa->getValue().at(index), pb->getValue().at(index));
+                    EXPECT_TRUE(pa->getValue().at(index).equal(pb->getValue().at(index)));
                 }
             }
             break;
@@ -414,19 +432,18 @@ TEST(DOMPropertyMapSaveAndLoad, Q) {
         testSaverAndLoader(map);
     }
 }
-#if ENABLE_TRANSFORM3D
+
 TEST(DOMPropertyMapSaveAndLoad, Transform3D) {
     std::vector<Transform3D<> > items;
-
-    items.push_back(Transform3D<>(Vector3D<>(0.296485, -0.950844, -0.0893953), Rotation3D<>(-0.550979, -0.833006, -0.0502317, -0.823557, 0.55248, -0.128527, 0.134816, -0.0294471, -0.990433)));
-    items.push_back(Transform3D<>(Vector3D<>(0.347301, 0.809361, -0.47362), Rotation3D<>(0.682813, 0.178469, 0.70846, -0.593669, 0.700723, 0.395657, -0.425822, -0.69075, 0.584415)));
-    items.push_back(Transform3D<>(Vector3D<>(-0.998239, -0.0229768, 0.0546927), Rotation3D<>(-0.116715, -0.771598, -0.625311, -0.438901, -0.524726, 0.729403, -0.890923, 0.359582, -0.277412)));
-    items.push_back(Transform3D<>(Vector3D<>(-0.167873, 0.902236, -0.397227), Rotation3D<>(-0.769948, -0.241163, -0.59078, -0.37299, -0.581107, 0.723321, -0.517745, 0.777274, 0.35747)));
-    items.push_back(Transform3D<>(Vector3D<>(-0.0504132, -0.856888, -0.513031), Rotation3D<>(-0.0272354, 0.191063, -0.9812, 0.881021, -0.459169, -0.113866, -0.472292, -0.867559, -0.155825)));
-    items.push_back(Transform3D<>(Vector3D<>(0.182764, 0.467202, 0.865054), Rotation3D<>(0.893885, -0.439516, 0.0882938, 0.110409, 0.406725, 0.906854, -0.434488, -0.800875, 0.412092)));
-    items.push_back(Transform3D<>(Vector3D<>(-0.392463, 0.883221, 0.256696), Rotation3D<>(-0.143229, 0.810344, 0.568179, 0.788136, 0.440629, -0.429754, -0.598605, 0.386249, -0.701772)));
-    items.push_back(Transform3D<>(Vector3D<>(-0.118084, 0.44222, -0.889099), Rotation3D<>(-0.461415, 0.82405, 0.328691, -0.213709, -0.462817, 0.860308, 0.86106, 0.326715, 0.389657)));
-    items.push_back(Transform3D<>(Vector3D<>(0.0857885, -0.990521, -0.10728), Rotation3D<>(-0.249034, -0.897682, -0.363524, 0.429445, 0.23408, -0.872229, 0.868078, -0.373328, 0.327211)));
+    items.push_back(Transform3D<>(Vector3D<>(0.296485, -0.950844, -0.0893953), Rotation3D<>(-0.25984695, -0.17568155, 0.94953439, 0.49147629, -0.87048585, -0.026560061, 0.83122237, 0.45977209, 0.31253641)));
+    items.push_back(Transform3D<>(Vector3D<>(0.347301, 0.809361, -0.47362), Rotation3D<>(0.10857248, 0.031855376, 0.993578, -0.37274339, -0.92526036, 0.070396274, 0.92156084, -0.37799273, -0.08858393)));
+    items.push_back(Transform3D<>(Vector3D<>(-0.998239, -0.0229768, 0.0546927), Rotation3D<>(0.7102421, -0.1698931, -0.68314895, 0.60260283, -0.35492908, 0.71476931, -0.3639038, -0.91932676, -0.14970751)));
+    items.push_back(Transform3D<>(Vector3D<>(-0.167873, 0.902236, -0.397227), Rotation3D<>(-0.43729678, -0.82973847, 0.34685098, -0.23221789, 0.47678372, 0.84779251, -0.86881896, 0.29019193, -0.4011761)));
+    items.push_back(Transform3D<>(Vector3D<>(-0.0504132, -0.856888, -0.513031), Rotation3D<>(-0.095453794, 0.36948604, 0.92432064, 0.24084522, -0.89239941, 0.38159779, 0.96585825, 0.25904316, -0.0038060374)));
+    items.push_back(Transform3D<>(Vector3D<>(0.182764, 0.467202, 0.865054), Rotation3D<>(-0.67616195, 0.039425984, 0.73569736, -0.70164803, 0.27010537, -0.65934295, -0.22471105, -0.96202322, -0.15497181)));
+    items.push_back(Transform3D<>(Vector3D<>(-0.392463, 0.883221, 0.256696), Rotation3D<>(0.674934, -0.73590954, -0.053863268, -0.62684432, -0.5333322, -0.56799909, 0.38926893, 0.41712578, -0.82126475)));
+    items.push_back(Transform3D<>(Vector3D<>(-0.118084, 0.44222, -0.889099), Rotation3D<>(-0.71277384, -0.23857637, 0.65957166, 0.33265399, 0.71289515, 0.61735066, -0.61749071, 0.65944054, -0.42876963)));
+    items.push_back(Transform3D<>(Vector3D<>(0.0857885, -0.990521, -0.10728), Rotation3D<>(-0.17678865, 0.8856797, 0.42932184, 0.75682682, 0.40119343, -0.51600097, -0.62925268, 0.23369917, -0.7412326)));
     for (std::vector<Transform3D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
         EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Transform3D"), *it));
@@ -434,20 +451,18 @@ TEST(DOMPropertyMapSaveAndLoad, Transform3D) {
         testSaverAndLoader(map);
     }
 }
-#endif
-#if ENABLE_ROTATION3D
+
 TEST(DOMPropertyMapSaveAndLoad, Rotation3D) {
     std::vector<Rotation3D<> > items;
-
-    items.push_back(Rotation3D<>(0.331766, 0.938162, 0.0989146, -0.570816, 0.283121, -0.770722, -0.751066, 0.199237, 0.629447));
-    items.push_back(Rotation3D<>(0.776038, 0.483342, 0.405148, -0.153462, 0.7678, -0.622038, -0.61173, 0.420551, 0.670017));
-    items.push_back(Rotation3D<>(-0.00339915, -0.878634, -0.477484, 0.940312, -0.165296, 0.297473, -0.340296, -0.447973, 0.826752));
-    items.push_back(Rotation3D<>(0.021466, 0.478732, -0.877699, 0.823371, 0.489505, 0.287133, 0.567098, -0.728835, -0.383666));
-    items.push_back(Rotation3D<>(0.747352, 0.349749, -0.564926, 0.659237, -0.284252, 0.696137, 0.0828922, -0.89268, -0.443004));
-    items.push_back(Rotation3D<>(0.985772, 0.040514, 0.163132, -0.0477604, 0.998027, 0.0407447, -0.161159, -0.0479563, 0.985763));
-    items.push_back(Rotation3D<>(-0.416719, -0.898851, 0.135691, 0.87112, -0.352204, 0.342202, -0.259798, 0.260806, 0.929777));
-    items.push_back(Rotation3D<>(0.449831, 0.0716641, 0.890234, -0.269712, 0.961137, 0.0589122, -0.851415, -0.266607, 0.451678));
-    items.push_back(Rotation3D<>(0.93295, 0.216975, -0.287274, -0.132855, 0.949148, 0.285425, 0.334596, -0.228121, 0.914334));
+    items.push_back(Rotation3D<>(-0.80117532, -0.21512602, 0.55842538, 0.1676601, 0.81508895, 0.55454495, -0.5744634, 0.53791338, -0.6169611));
+    items.push_back(Rotation3D<>(0.0027003767, -0.93557444, 0.3531192, 0.6786974, 0.26105192, 0.68645592, -0.73441306, 0.23780739, 0.63567689));
+    items.push_back(Rotation3D<>(-0.52334027, 0.23196375, 0.81994377, -0.34581175, -0.93725135, 0.04443124, 0.77879984, -0.26029353, 0.57071717));
+    items.push_back(Rotation3D<>(-0.13875231, -0.85541813, 0.49900664, 0.77736297, -0.40625753, -0.48027246, 0.61355897, 0.32127037, 0.72133955));
+    items.push_back(Rotation3D<>(0.35755596, 0.60382316, -0.71242637, 0.2683868, -0.79711527, -0.54090273, -0.89449554, 0.0021971638, -0.44707148));
+    items.push_back(Rotation3D<>(-0.49590912, -0.83547488, 0.2367612, 0.64985797, -0.17621344, 0.73934663, -0.57598503, 0.52050989, 0.63032587));
+    items.push_back(Rotation3D<>(-0.20145729, 0.97889118, 0.034453107, -0.73229358, -0.17388078, 0.65841597, 0.65050832, 0.10741291, 0.75186528));
+    items.push_back(Rotation3D<>(-0.97428403, 0.014469281, 0.22485834, 0.01021749, 0.99974655, -0.020060972, -0.22509161, -0.017247597, -0.97418493));
+    items.push_back(Rotation3D<>(-0.44357068, -0.57814221, -0.68483329, 0.039335173, -0.77594071, 0.62957824, -0.89537579, 0.25232441, 0.36692587));
     for (std::vector<Rotation3D<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
         EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Rotation3D"), *it));
@@ -455,7 +470,6 @@ TEST(DOMPropertyMapSaveAndLoad, Rotation3D) {
         testSaverAndLoader(map);
     }
 }
-#endif
 
 TEST(DOMPropertyMapSaveAndLoad, RPY) {
     std::vector<RPY<> > items;
@@ -509,6 +523,9 @@ TEST(DOMPropertyMapSaveAndLoad, Quaternion) {
     items.push_back(Quaternion<>(-1.1, -2.2, -3.0, 3.7));
     items.push_back(Quaternion<>(3.1, 2.7, 1.7, 0.68));
     items.push_back(Quaternion<>(-0.44, -4.0, -4.4, -4.7));
+    for (std::vector<Quaternion<> >::iterator it = items.begin(); it != items.end(); ++it) {
+    	it->normalize();
+    }
     for (std::vector<Quaternion<> >::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
         EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Quaternion"), *it));
@@ -654,63 +671,62 @@ TEST(DOMPropertyMapSaveAndLoad, QPath) {
     }
 }
 
-#if ENABLE_TRANSFORM3DPATH
 TEST(DOMPropertyMapSaveAndLoad, Transform3DPath) {
     std::vector<Transform3DPath> items;
     std::vector<Transform3D<> > titems;
 
     titems.clear();
 
-    titems.push_back(Transform3D<>(Vector3D<>(0.128173, -0.297606, 0.946046), Rotation3D<>(-0.74816, -0.220389, 0.625848, -0.445398, 0.865945, -0.227507, -0.49181, -0.448963, -0.746026)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.599348, 0.144885, 0.787268), Rotation3D<>(0.021466, 0.478732, -0.877699, 0.823371, 0.489505, 0.287133, 0.567098, -0.728835, -0.383666)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.0373863, 0.206556, -0.97772), Rotation3D<>(0.823355, 0.407011, 0.395511, -0.410789, 0.908257, -0.0795062, -0.391585, -0.0970095, 0.915014)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.841704, 0.528854, -0.108845), Rotation3D<>(0.449831, 0.0716641, 0.890234, -0.269712, 0.961137, 0.0589122, -0.851415, -0.266607, 0.451678)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.25201, -0.0695093, -0.965225), Rotation3D<>(-0.00270293, -0.89361, 0.448835, 0.67105, -0.334393, -0.66172, 0.741407, 0.299402, 0.600561)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.154929, 0.987479, 0.0296881), Rotation3D<>(-0.455489, -0.884303, -0.102657, -0.663233, 0.413999, -0.623479, 0.593844, -0.215902, -0.775071)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.228879, -0.842727, 0.487263), Rotation3D<>(0.874495, -0.479529, 0.072871, 0.0894627, 0.307127, 0.947454, -0.476712, -0.822025, 0.311481)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.128173, -0.297606, 0.946046), Rotation3D<>(0.3317661, 0.9381616, 0.09891459, -0.5708159, 0.2831207, -0.7707217, -0.7510662, 0.1992373, 0.6294474)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.599348, 0.144885, 0.787268), Rotation3D<>(0.7760383, 0.4833419, 0.4051483, -0.1534619, 0.7678005, -0.6220385, -0.6117303, 0.4205509, 0.6700172)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.0373863, 0.206556, -0.97772), Rotation3D<>(-0.003399149, -0.8786336, -0.4774845, 0.9403121, -0.1652964, 0.297473, -0.3402963, -0.4479733, 0.8267517)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.841704, 0.528854, -0.108845), Rotation3D<>(0.02146604, 0.4787316, -0.8776988, 0.8233708, 0.4895051, 0.2871328, 0.5670976, -0.7288352, -0.3836659)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.25201, -0.0695093, -0.965225), Rotation3D<>(0.7473519, 0.3497489, -0.5649255, 0.6592374, -0.2842517, 0.6961372, 0.08289218, -0.8926795, -0.4430036)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.154929, 0.987479, 0.0296881), Rotation3D<>(0.9857721, 0.04051401, 0.1631317, -0.04776038, 0.9980275, 0.04074474, -0.1611592, -0.04795626, 0.9857626)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.228879, -0.842727, 0.487263), Rotation3D<>(-0.4167191, -0.898851, 0.1356912, 0.87112, -0.3522036, 0.3422024, -0.2597981, 0.2608056, 0.9297771)));
 
     items.push_back(titems);
     titems.clear();
 
-    titems.push_back(Transform3D<>(Vector3D<>(-0.15146, -0.636242, 0.756476), Rotation3D<>(-0.67002, -0.74222, -0.0135248, -0.420302, 0.394308, -0.817231, 0.611898, -0.541876, -0.576151)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.431606, -0.898602, 0.0789323), Rotation3D<>(-0.0844332, 0.64567, 0.758934, -0.805904, 0.403674, -0.433088, -0.585994, -0.648195, 0.486265)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.747131, -0.58661, 0.312543), Rotation3D<>(0.314855, 0.796397, 0.51635, 0.585303, -0.59118, 0.554911, 0.747186, 0.127505, -0.65227)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.245954, -0.867831, 0.431713), Rotation3D<>(0.254963, -0.874508, 0.412589, -0.570891, 0.208245, 0.794177, -0.780434, -0.438029, -0.446154)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.358033, 0.553017, 0.752319), Rotation3D<>(-0.611566, 0.776147, 0.153568, -0.785608, -0.618723, -0.00150003, 0.0938517, -0.121561, 0.988137)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.202799, -0.561398, -0.802312), Rotation3D<>(0.813152, -0.404463, -0.418561, 0.392717, 0.912012, -0.11835, 0.429602, -0.0681394, 0.900444)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.821768, -0.294349, -0.48791), Rotation3D<>(-0.182442, -0.931498, 0.314686, -0.810775, -0.0385244, -0.584088, 0.5562, -0.361702, -0.748207)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.0947497, -0.968762, 0.229179), Rotation3D<>(-0.149109, -0.717196, 0.680732, -0.765136, 0.519767, 0.380011, -0.626365, -0.46419, -0.626255)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.15146, -0.636242, 0.756476), Rotation3D<>(0.93294987, 0.21697526, -0.28727387, -0.13285456, 0.94914826, 0.28542467, 0.33459559, -0.22812127, 0.9143339)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.431606, -0.898602, 0.0789323), Rotation3D<>(-0.49982241, 0.32544564, -0.80265976, -0.56393633, -0.82565545, 0.016398039, -0.65738374, 0.46084511, 0.59621171)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.747131, -0.58661, 0.312543), Rotation3D<>(-0.77790463, 0.16963775, -0.60505159, -0.066535663, 0.93522296, 0.34775137, 0.6248499, 0.31077491, -0.71622731)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.245954, -0.867831, 0.431713), Rotation3D<>(-0.45548892, -0.88430274, -0.10265719, -0.66323347, 0.41399864, -0.62347935, 0.59384444, -0.21590225, -0.77507097)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.358033, 0.553017, 0.752319), Rotation3D<>(0.68281284, 0.17846936, 0.70845982, -0.59366858, 0.70072349, 0.39565668, -0.42582184, -0.69074979, 0.58441465)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.202799, -0.561398, -0.802312), Rotation3D<>(-0.22803737, 0.74510213, 0.62675495, 0.17442213, -0.60204016, 0.77918199, 0.95790181, 0.28700254, 0.007325355)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.821768, -0.294349, -0.48791), Rotation3D<>(0.15385748, -0.91617989, -0.37005713, -0.98386199, -0.17667041, 0.028339799, -0.091342498, 0.35972485, -0.92857664)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.0947497, -0.968762, 0.229179), Rotation3D<>(-0.67001955, -0.74222023, -0.013524834, -0.42030239, 0.39430849, -0.81723113, 0.61189844, -0.54187632, -0.57615134)));
 
     items.push_back(titems);
     titems.clear();
 
-    titems.push_back(Transform3D<>(Vector3D<>(-0.234126, -0.938533, 0.253656), Rotation3D<>(-0.279391, 0.75009, 0.599421, 0.238234, -0.550607, 0.800048, 0.930153, 0.366328, -0.0248621)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.252482, -0.967311, 0.0237235), Rotation3D<>(0.439868, 0.168623, 0.88209, 0.595296, -0.790167, -0.145804, 0.672412, 0.589239, -0.44795)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.779311, 0.626539, 0.0110964), Rotation3D<>(-0.0360424, -0.433045, -0.900652, 0.948205, -0.299441, 0.10603, -0.315608, -0.850181, 0.421408)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.39525, 0.366508, -0.842288), Rotation3D<>(-0.428594, 0.902566, 0.0410046, -0.838179, -0.380256, -0.390974, -0.337288, -0.201938, 0.919488)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.0133588, 0.714808, -0.699193), Rotation3D<>(0.969631, -0.117018, 0.214761, 0.241006, 0.60657, -0.757621, -0.0416124, 0.786371, 0.616351)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.00795702, -0.999457, -0.0319707), Rotation3D<>(-0.766306, -0.639984, 0.0565314, -0.0357374, -0.0453937, -0.99833, 0.641481, -0.767047, 0.0119141)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.660847, -0.640334, 0.391476), Rotation3D<>(-0.280558, -0.642372, -0.713193, 0.0776079, 0.725421, -0.683916, 0.956694, -0.247228, -0.15367)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.452912, -0.138448, 0.88074), Rotation3D<>(0.675763, 0.224011, 0.702256, 0.19588, -0.973023, 0.121891, 0.710616, 0.0551886, -0.701412)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.234126, -0.938533, 0.253656), Rotation3D<>(-0.7699476, -0.241163, -0.5907801, -0.3729896, -0.5811066, 0.7233214, -0.5177445, 0.7772744, 0.3574703)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.252482, -0.967311, 0.0237235), Rotation3D<>(0.9620877, 0.253362, -0.1009705, -0.2086533, 0.4453125, -0.8707242, -0.1756449, 0.8587808, 0.4812945)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.779311, 0.626539, 0.0110964), Rotation3D<>(-0.4855858, -0.8682503, 0.1017243, -0.1406307, 0.1924341, 0.9711808, -0.8628032, 0.457286, -0.215546)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.39525, 0.366508, -0.842288), Rotation3D<>(0.3148548, 0.7963973, 0.5163504, 0.5853031, -0.59118, 0.5549113, 0.7471859, 0.127505, -0.6522697)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.0133588, 0.714808, -0.699193), Rotation3D<>(0.8938847, -0.439516, 0.08829378, 0.1104089, 0.4067255, 0.906854, -0.4344882, -0.8008745, 0.4120922)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.00795702, -0.999457, -0.0319707), Rotation3D<>(0.6344802, 0.08954372, -0.7677348, -0.5432267, -0.6549324, -0.5253268, -0.5498541, 0.7503636, -0.3668991)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.660847, -0.640334, 0.391476), Rotation3D<>(0.3004718, 0.8670014, 0.3975238, 0.9537393, -0.2687901, -0.1346595, -0.00989952, 0.4195955, -0.9076572)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.452912, -0.138448, 0.88074), Rotation3D<>(-0.6115657, 0.7761471, 0.1535677, -0.7856076, -0.6187233, -0.001500034, 0.09385167, -0.1215613, 0.988137)));
 
     items.push_back(titems);
     titems.clear();
 
-    titems.push_back(Transform3D<>(Vector3D<>(0.560012, 0.3037, -0.770813), Rotation3D<>(-0.49229, 0.849918, 0.18786, -0.851152, -0.515213, 0.100475, 0.182184, -0.110434, 0.977043)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.393007, -0.919501, 0.00795375), Rotation3D<>(-0.222513, 0.91203, 0.344513, -0.855417, -0.352164, 0.379792, 0.467707, -0.210194, 0.858527)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.241934, 0.810525, -0.533402), Rotation3D<>(0.868004, 0.45241, -0.204683, -0.456537, 0.564967, -0.687303, -0.195303, 0.690027, 0.696936)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.381532, -0.340843, -0.85922), Rotation3D<>(-0.613499, 0.785703, 0.0793119, 0.187979, 0.242845, -0.951677, -0.766996, -0.568944, -0.296681)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.349149, 0.253494, -0.902128), Rotation3D<>(-0.909548, 0.109696, 0.40086, 0.364712, -0.251789, 0.89643, 0.199267, 0.961545, 0.189007)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.847659, -0.485661, -0.213557), Rotation3D<>(-0.808799, -0.201601, -0.55245, -0.272542, -0.703939, 0.65589, -0.521119, 0.681049, 0.5144)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.83263, -0.512919, -0.208908), Rotation3D<>(-0.325428, 0.525985, 0.785772, 0.666313, 0.71719, -0.204123, -0.670913, 0.457143, -0.583864)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.560012, 0.3037, -0.770813), Rotation3D<>(-0.4614149, 0.8240499, 0.3286913, -0.2137088, -0.4628167, 0.8603077, 0.8610603, 0.3267146, 0.3896572)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.393007, -0.919501, 0.00795375), Rotation3D<>(0.5668984, -0.04821849, -0.8223753, -0.2284423, 0.9499324, -0.2131726, 0.7914798, 0.3087125, 0.5275)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.241934, 0.810525, -0.533402), Rotation3D<>(0.4749964, 0.8781155, 0.05737278, 0.830169, -0.4255265, -0.3602035, -0.2918866, 0.2187245, -0.9311078)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.381532, -0.340843, -0.85922), Rotation3D<>(-0.1824416, -0.9314975, 0.3146862, -0.8107753, -0.03852444, -0.5840884, 0.5562, -0.3617019, -0.7482067)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.349149, 0.253494, -0.902128), Rotation3D<>(-0.8328868, 0.5525161, -0.0320247, -0.2710974, -0.4577427, -0.8467454, -0.4824995, -0.6965612, 0.5310336)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.847659, -0.485661, -0.213557), Rotation3D<>(0.6909343, 0.7199057, 0.06592143, 0.6534732, -0.6609578, 0.3689275, 0.3091643, -0.2118268, -0.9271175)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.83263, -0.512919, -0.208908), Rotation3D<>(-0.06111007, 0.05237271, 0.9967561, -0.5664258, 0.8204289, -0.0778349, -0.8218439, -0.5693449, -0.02047121)));
 
     items.push_back(titems);
     titems.clear();
 
-    titems.push_back(Transform3D<>(Vector3D<>(0.672228, 0.347075, 0.653949), Rotation3D<>(-0.680129, 0.621592, 0.388648, 0.241143, -0.310952, 0.919325, 0.692296, 0.71898, 0.0615951)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.131866, -0.614153, 0.778092), Rotation3D<>(-0.346729, -0.86472, 0.36337, 0.934655, -0.351046, 0.0564578, 0.0787393, 0.359201, 0.929933)));
-    titems.push_back(Transform3D<>(Vector3D<>(-0.651956, -0.300922, -0.695989), Rotation3D<>(0.941499, 0.292745, -0.166971, 0.271587, -0.952407, -0.138428, -0.199549, 0.0849824, -0.976196)));
-    titems.push_back(Transform3D<>(Vector3D<>(0.30307, -0.728787, 0.614019), Rotation3D<>(0.705911, 0.628831, -0.325977, -0.70543, 0.582778, -0.403409, -0.063704, 0.514724, 0.854986)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.672228, 0.347075, 0.653949), Rotation3D<>(-0.2793909, 0.75009029, 0.59942079, 0.23823365, -0.55060706, 0.80004787, 0.93015346, 0.3663283, -0.024862146)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.131866, -0.614153, 0.778092), Rotation3D<>(-0.86655317, -0.2019111, 0.45641813, -0.28541823, -0.54971672, -0.78507832, 0.40941671, -0.81058216, 0.41872966)));
+    titems.push_back(Transform3D<>(Vector3D<>(-0.651956, -0.300922, -0.695989), Rotation3D<>(-0.50373103, -0.48787172, -0.71290689, 0.36421346, -0.86826616, 0.33684186, -0.78332854, -0.089972589, 0.61506205)));
+    titems.push_back(Transform3D<>(Vector3D<>(0.30307, -0.728787, 0.614019), Rotation3D<>(-0.57108981, -0.62032119, -0.53764119, 0.64300468, 0.069103091, -0.76273832, 0.51029541, -0.78129789, 0.35940536)));
     
     items.push_back(titems);
     titems.clear();
@@ -725,7 +741,6 @@ TEST(DOMPropertyMapSaveAndLoad, Transform3DPath) {
         testSaverAndLoader(map);
     }
 }
-#endif
 
 TEST(DOMPropertyMapSaveAndLoad, StringList) {
     rw::common::PropertyMap map;
