@@ -52,12 +52,10 @@ public:
 	/**
 	 * @brief Creates a new model of this type using provided data.
 	 */
-	virtual MODEL& make(const std::vector<DATA>& data) const {
-		typename MODEL::Ptr newModel = new MODEL();
-
-		newModel->refit(data);
-
-		return *newModel;
+	virtual MODEL make(const std::vector<DATA>& data) const {
+		MODEL newModel;
+		newModel.refit(data);
+		return newModel;
 	}
 
 	//! @brief Destructor.
