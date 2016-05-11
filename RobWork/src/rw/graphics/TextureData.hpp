@@ -61,19 +61,19 @@ namespace graphics {
 		 * @brief check if this texture has image data
 		 * @return true if it has image data, false otherwise
 		 */
-		bool hasImageData(){ return _imageData!=NULL; };
+		bool hasImageData() const { return _imageData!=NULL; };
 
 		/**
 		 * @brief get image data
 		 * @return
 		 */
-		rw::sensor::Image::Ptr getImageData(){ return _imageData; }
+		rw::sensor::Image::Ptr getImageData() const { return _imageData; }
 
 		/**
 		 * @brief get RGB data
 		 * @return
 		 */
-		rw::math::Vector3D<float> getRGBData(){
+		rw::math::Vector3D<float> getRGBData() const {
 			return rw::math::Vector3D<float>(_rgb[0],_rgb[1],_rgb[2]);
 		}
 
