@@ -41,34 +41,14 @@ RWGLTexture::RWGLTexture(const rw::sensor::Image& img):
 RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
     _width(2),_height(2),_textureID(0)
 {
-    unsigned char data[14]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
-
-    // Store the data
-    for(int i = 0; i < 12; i += 3)
-    {
-        data[i] = r;
-        data[i+1] = g;
-        data[i+2] = b;
-    }
-    // Generate the OpenGL texture id
     glGenTextures(1, &_textureID);
     if(_textureID==0)
         RW_THROW("Texture cannot be allocated! Make sure constructor is called after a valid OpenGl context has been created!");
-    // Bind this texture to its id
-    glBindTexture(GL_TEXTURE_2D, _textureID);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // Use mipmapping filter
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-    // Generate the texture
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
+    init(r,g,b);
 }
 
 void RWGLTexture::init(const rw::sensor::Image& img){
-
     if(_textureID==0){
         glGenTextures(1, &_textureID);
         if(_textureID==0)
@@ -163,6 +143,35 @@ void RWGLTexture::init(const rw::sensor::Image& img){
 
 }
 
+void RWGLTexture::init(unsigned char r, unsigned char g, unsigned char b) {
+    if(_textureID==0){
+        glGenTextures(1, &_textureID);
+        if(_textureID==0)
+            RW_THROW("Texture cannot be allocated! Make sure this method is called after a valid OpenGl context has been created!");
+    }
+
+	unsigned char data[14]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
+
+	// Store the data
+	for(int i = 0; i < 12; i += 3) {
+		data[i] = r;
+		data[i+1] = g;
+		data[i+2] = b;
+	}
+	// Bind this texture to its id
+	glBindTexture(GL_TEXTURE_2D, _textureID);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// Use mipmapping filter
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+	// Generate the texture
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
+}
+
 RWGLTexture::~RWGLTexture(){
-    glDeleteTextures( 1, &_textureID );
+	if (_textureID != 0)
+		glDeleteTextures( 1, &_textureID );
 }

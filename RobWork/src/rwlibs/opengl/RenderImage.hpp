@@ -24,10 +24,11 @@
 #include <rw/sensor/Image.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/os/rwgl.hpp>
-#include "RWGLTexture.hpp"
 #include <rw/graphics/Render.hpp>
 
 namespace rwlibs { namespace opengl {
+
+class RWGLTexture;
 
 //! @addtogroup opengl
 // @{
@@ -78,7 +79,7 @@ namespace rwlibs { namespace opengl {
     private:
         int _w, _h;
         float _scale;
-        RWGLTexture _tex;
+        rw::common::Ptr<RWGLTexture> _tex;
     };
 
     typedef rw::common::Ptr<RenderImage> RenderImagePtr;

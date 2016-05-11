@@ -2,7 +2,6 @@
 
 #include "DrawableUtil.hpp"
 #include <boost/foreach.hpp>
-#include <rw/math/Math.hpp>
 
 using namespace rw::math;
 
@@ -13,15 +12,8 @@ RenderModel3D::RenderModel3D(Model3D::Ptr model):
 	_model(model)
 {
     // create list of textures
-    BOOST_FOREACH(TextureData& texdata, _model->_textures){
-        if( texdata.hasImageData() ){
-            RWGLTexture::Ptr gltex = rw::common::ownedPtr( new RWGLTexture( *texdata.getImageData() ) );
-            _textures.push_back(gltex);
-        } else {
-            rw::math::Vector3D<float> rgb = texdata.getRGBData();
-            RWGLTexture::Ptr gltex = rw::common::ownedPtr( new RWGLTexture((unsigned char)(255*rgb[0]), (unsigned char)(255*rgb[1]), (unsigned char)(255*rgb[2])) );
-            _textures.push_back(gltex);
-        }
+    for(std::size_t i = 0; i < _model->_textures.size(); i++) {
+        _textures.push_back(rw::common::ownedPtr(new RWGLTexture()));
     }
 }
 
@@ -305,7 +297,15 @@ void RenderModel3D::useMaterial(const Model3D::Material& mat, DrawType type, dou
     if (mat.hasTexture()){
         //glEnable(GL_TEXTURE_2D);
         //std::cout << "TexID: " << mat.getTextureID() << " ";
-        glBindTexture(GL_TEXTURE_2D, _textures[mat.getTextureID() ]->getTextureID() );
+    	const RWGLTexture::Ptr tex = _textures[mat.getTextureID()];
+    	const TextureData& tdata = _model->_textures[mat.getTextureID()];
+    	if (tdata.hasImageData()) {
+    		tex->init(*tdata.getImageData());
+    	} else {
+    		const Vector3D<float> rgb = tdata.getRGBData();
+    		tex->init((unsigned char)(255*rgb[0]), (unsigned char)(255*rgb[1]), (unsigned char)(255*rgb[2]));
+    	}
+        glBindTexture(GL_TEXTURE_2D, tex->getTextureID() );
         //std::cout << " " << _textures[mat.getTextureID()]->getTextureID() << std::endl;
     }
 

@@ -22,31 +22,7 @@
  * @file SceneOpenGL.hpp
  */
 
-
-
-#include <vector>
-#include <map>
-
-#include <boost/thread/mutex.hpp>
-#include <rw/sensor/Image.hpp>
-#include <rw/models/DrawableModelInfo.hpp>
 #include <rw/graphics/SceneGraph.hpp>
-#include <rw/kinematics/FKTable.hpp>
-#include <rw/geometry/PointCloud.hpp>
-
-#include <rwlibs/opengl/Drawable.hpp>
-#include <rwlibs/opengl/RenderFrame.hpp>
-#include <rwlibs/opengl/RenderGeometry.hpp>
-#include <rwlibs/opengl/RenderModel3D.hpp>
-#include <rwlibs/opengl/RenderScan.hpp>
-#include <rwlibs/opengl/RenderLines.hpp>
-#include <rwlibs/opengl/RenderMatrix.hpp>
-#include <rwlibs/opengl/RenderPointCloud.hpp>
-#include <rwlibs/opengl/RenderImage.hpp>
-
-
-namespace rw { namespace models { class WorkCell; }}
-namespace rw { namespace kinematics { class Frame; class State; }}
 
 namespace rwlibs { namespace opengl {
 

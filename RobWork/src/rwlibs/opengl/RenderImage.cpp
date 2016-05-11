@@ -16,9 +16,11 @@
  ********************************************************************************/
 
 #include "RenderImage.hpp"
+#include "RWGLTexture.hpp"
 
 #include <iostream>
 
+using rw::common::ownedPtr;
 using namespace rwlibs::opengl;
 using namespace rw::graphics;
 
@@ -29,7 +31,7 @@ RenderImage::RenderImage(float scale):
 }
 
 RenderImage::RenderImage(const rw::sensor::Image& img, float scale):
-    _w(img.getWidth()),_h(img.getHeight()),_scale(scale),_tex(img)
+    _w(img.getWidth()),_h(img.getHeight()),_scale(scale),_tex(ownedPtr(new RWGLTexture(img)))
 {
 
 }
@@ -37,7 +39,7 @@ RenderImage::RenderImage(const rw::sensor::Image& img, float scale):
 void RenderImage::setImage(const rw::sensor::Image& img){
 	_w = img.getWidth();
 	_h = img.getHeight();
-	_tex.init(img);
+	_tex->init(img);
 }
 
 void RenderImage::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
@@ -51,7 +53,7 @@ void RenderImage::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawT
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST );
 
-    glBindTexture(GL_TEXTURE_2D, _tex.getTextureID() );
+    glBindTexture(GL_TEXTURE_2D, _tex->getTextureID() );
 
     /*
     glTexCoord2f(0, 0);

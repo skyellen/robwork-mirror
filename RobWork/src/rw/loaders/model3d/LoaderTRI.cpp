@@ -40,8 +40,8 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
     int   width;
     char input[LINE_MAX_LENGTH];
     int nb_points = 0;
-    Model3D *model = new Model3D(filename);
-    Model3D::Object3D *obj = new Model3D::Object3D("TRIModel");
+    Model3D::Ptr model = ownedPtr(new Model3D(filename));
+    Model3D::Object3D::Ptr obj = ownedPtr(new Model3D::Object3D("TRIModel"));
 
     int currentMatIdx = model->addMaterial(Model3D::Material("defcol",0.5,0.5,0.5));
     Model3D::MaterialFaces *mface = new Model3D::MaterialFaces();
@@ -98,6 +98,7 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
         }
     }
     //obj->_matFaces.push_back(mface);
+    delete mface;
 
     // order stuff in matrial faces
 

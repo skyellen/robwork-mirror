@@ -284,6 +284,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             }
         }
         setlocale(LC_ALL, locale.c_str());
+        delete object;
         delete model;
         rwmodel->optimize(45*Deg2Rad);
         return ownedPtr(rwmodel);

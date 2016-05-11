@@ -26,36 +26,25 @@
 #include <vector>
 
 #include <QObject>
-#include <QString>
 
 #include <QGLWidget>
 
 #include <QMouseEvent>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QImage>
-#include <QAction>
-#include <QToolBar>
-#include <QMenu>
 
 #include <rw/common/PropertyMap.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
 
 #include <rwlibs/opengl/SceneOpenGL.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rwlibs/opengl/DrawableUtil.hpp>
 
 #include <rw/graphics/Render.hpp>
 #include <rw/graphics/SceneCamera.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "CameraController.hpp"
-#include "RobWorkStudioPlugin.hpp"
 #include "SceneViewerWidget.hpp"
 
 namespace rws {

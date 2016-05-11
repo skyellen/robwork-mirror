@@ -23,36 +23,26 @@
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/graphics/Render.hpp>
 
-#include <rwlibs/opengl/RenderGeometry.hpp>
 #include <rwlibs/opengl/DrawableGeometry.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/opengl/DrawableFactory.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
+#include <rwlibs/opengl/RenderModel3D.hpp>
+#include <rwlibs/opengl/RenderScan.hpp>
+#include <rwlibs/opengl/RenderImage.hpp>
 #include <rwlibs/opengl/RWGLFrameBuffer.hpp>
 
 #include <rw/graphics/SceneCamera.hpp>
 
-#include <rw/kinematics/Kinematics.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
-
-#include <rw/models/WorkCell.hpp>
-
-#include <rw/common/StringUtil.hpp>
-#include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
 
 #include <boost/foreach.hpp>
 #include <vector>
 #include <stack>
 
+using namespace rw::common;
 using namespace rw::graphics;
 using namespace rw::math;
-using namespace rw::models;
-using namespace rw::kinematics;
-using namespace rw::geometry;
-using namespace rw::common;
-using namespace rw::sensor;
 
 using namespace rwlibs::opengl;
 
@@ -107,7 +97,7 @@ namespace {
             _renderToImage(false),
             _renderToDepth(false),
             _samples(0),
-            _fbId(-1),_fbTmpId(-1),_renderColorTmpId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
+            _fbId(-1),_fbTmpId(-1),_renderColorTmpId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1),_aMultisampleTexture(-1)
             {}
 
         virtual ~SimpleCameraGroup(){};
@@ -314,7 +304,6 @@ namespace {
         };
 
         void setOffscreenRenderColor(rw::sensor::Image::ColorCode color){
-            _color = color;
             _initialized=false;
         }
 
@@ -361,7 +350,6 @@ namespace {
 
         bool _initialized, _renderToImage, _renderToDepth;
         int _samples;
-        rw::sensor::Image::ColorCode _color;
         GLuint _fbId,_fbTmpId,_renderColorTmpId,_renderId,_renderDepthId,textureId,_aMultisampleTexture;
         rw::sensor::Image::Ptr _img;
         rw::geometry::PointCloud::Ptr _scan25;
@@ -641,7 +629,7 @@ namespace {
                     RW_WARN("error: " << glGetError());
 
                 //std::cout << "render to depth" << std::endl;
-                if(scam->_depthData.size() != scam->_scan25->getWidth()*scam->_scan25->getHeight() )
+                if(scam->_depthData.size() != (unsigned int)(scam->_scan25->getWidth()*scam->_scan25->getHeight()) )
                     scam->_depthData.resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
 
                 SceneCamera::Ptr maincam = scam->getMainCamera();
@@ -698,11 +686,11 @@ namespace {
 
                 std::vector<rw::math::Vector3D<float> >* result = &scam->_scan25->getData();
                 // now unproject all pixel values
-                if (result != NULL && result->size() != scam->_scan25->getWidth()*scam->_scan25->getHeight())
+                if (result != NULL && result->size() != (unsigned int)(scam->_scan25->getWidth()*scam->_scan25->getHeight()))
                     result->resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
 
-                for(size_t y=0;y<scam->_scan25->getHeight();y++){
-                    for(size_t x=0;x<scam->_scan25->getWidth();x++){
+                for(size_t y=0;y<(unsigned int)scam->_scan25->getHeight();y++){
+                    for(size_t x=0;x<(unsigned int)scam->_scan25->getWidth();x++){
                         GLfloat depth24_8 = scam->_depthData[x+y*scam->_scan25->getWidth()];
                         double winZ=  depth24_8; //(depth24_8>>8)&0x00FFFFFF;
                         //double winZ= scam->_depthData[x+y*scam->_scan25->getWidth()];

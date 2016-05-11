@@ -24,10 +24,7 @@
 #include <rw/graphics/Model3D.hpp>
 #include <rw/graphics/Render.hpp>
 
-#include <rwlibs/os/rwgl.hpp>
 #include "RWGLTexture.hpp"
-#include <cstring>
-#include <iostream>
 
 namespace rwlibs { namespace opengl {
 
@@ -104,7 +101,7 @@ namespace rwlibs { namespace opengl {
 
     private:
         std::vector<rwlibs::opengl::RWGLTexture::Ptr> _textures;
-        bool _shownormals;
+        //bool _shownormals;
     };
 
     /*@}*/
