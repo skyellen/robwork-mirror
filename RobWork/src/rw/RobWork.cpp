@@ -232,6 +232,7 @@ namespace {
     		// Allow switching with a new instance
     		// _newInstance can not be of type Ptr as this would cause RobWork to be destructed too late!
     		_rwinstance = *_newInstance;
+    		delete _newInstance;
     		_newInstance = NULL;
     	}
     	return _rwinstance;
@@ -344,5 +345,5 @@ RobWork::Ptr RobWork::getInstance(){
 }
 
 void RobWork::setInstance(RobWork::Ptr rw){
-	_newInstance = &rw;
+	_newInstance = new Ptr(rw);
 }
