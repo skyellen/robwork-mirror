@@ -77,7 +77,7 @@ namespace {
         case rw::common::PropertyType::Q: {
             const rw::common::Property<Q>* pa = rw::common::toProperty<Q>(a);
             const rw::common::Property<Q>* pb = rw::common::toProperty<Q>(b);
-            EXPECT_EQ(pa->getValue().size(), pb->getValue().size());
+            ASSERT_EQ(pa->getValue().size(), pb->getValue().size());
             for (std::size_t i = 0; i < pa->getValue().size(); i++) {
             	EXPECT_DOUBLE_EQ(pa->getValue()[i], pb->getValue()[i]);
             }
@@ -152,7 +152,7 @@ namespace {
                 } else {
                 	const Q& qa = pa->getValue().at(index);
                 	const Q& qb = pb->getValue().at(index);
-                	EXPECT_EQ(qa.size(),qb.size());
+                	ASSERT_EQ(qa.size(),qb.size());
                 	for (std::size_t i = 0; i < qa.size(); i++) {
                 		EXPECT_DOUBLE_EQ(qa[i], qb[i]);
                 	}
@@ -523,6 +523,7 @@ TEST(DOMPropertyMapSaveAndLoad, Quaternion) {
     items.push_back(Quaternion<>(-1.1, -2.2, -3.0, 3.7));
     items.push_back(Quaternion<>(3.1, 2.7, 1.7, 0.68));
     items.push_back(Quaternion<>(-0.44, -4.0, -4.4, -4.7));
+    // Normalize the quaternions as they are normalized within the serialization and deserialization process
     for (std::vector<Quaternion<> >::iterator it = items.begin(); it != items.end(); ++it) {
     	it->normalize();
     }

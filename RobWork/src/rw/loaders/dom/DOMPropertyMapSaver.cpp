@@ -116,7 +116,9 @@ void DOMPropertyMapSaver::save(const PropertyBase::Ptr property, DOMElem::Ptr pa
     }
     case PropertyType::Quaternion: {
         const Property<Quaternion<> >* prop = toProperty<Quaternion<> >(property);
-        DOMBasisTypes::createQuaternion(prop->getValue(), element);
+        Quaternion<> normalizedQuaternion(prop->getValue());
+        normalizedQuaternion.normalize();
+        DOMBasisTypes::createQuaternion(normalizedQuaternion, element);
         break;
     }
     case PropertyType::Rotation2D: {
