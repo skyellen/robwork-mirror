@@ -21,6 +21,7 @@
 #include <rw/common/TimerUtil.hpp>
 
 #include <boost/random.hpp>
+#include <boost/math/special_functions/fpclassify.hpp> // boost::math::isnan()
 
 #include <cassert>
 #include <cmath>
