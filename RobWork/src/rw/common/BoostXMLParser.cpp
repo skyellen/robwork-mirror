@@ -17,13 +17,14 @@
 
 #include "BoostXMLParser.hpp"
 
-
-#include <sstream>
+#include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
+
+#include <sstream>
 
 using namespace rw;
 using namespace rw::common;
