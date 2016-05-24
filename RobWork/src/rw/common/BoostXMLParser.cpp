@@ -34,7 +34,7 @@ BoostXMLParser::BoostInitializer::BoostInitializer() {
 	static bool done = false;
 	if (!done) {
 		done = true;
-#if(BOOST_VERSION<105600)
+#if (BOOST_VERSION<105600)
                 boost::property_tree::xml_parser::xmlattr<char>();
                 boost::property_tree::xml_parser::xmltext<char>();
                 boost::property_tree::xml_parser::xmlcomment<char>();
@@ -87,7 +87,11 @@ void BoostXMLParser::load(std::istream& input){
 
 void BoostXMLParser::save(const std::string& filename){
     try {
-    	boost::property_tree::xml_writer_settings<std::string> settings(' ', 1);
+#if (BOOST_VERSION<105600)
+    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
+#else
+        boost::property_tree::xml_writer_settings<std::string> settings(' ', 1);
+#endif
        write_xml(filename, *_tree, std::locale(), settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
@@ -97,7 +101,11 @@ void BoostXMLParser::save(const std::string& filename){
 
 void BoostXMLParser::save(std::ostream& output){
     try {
+#if (BOOST_VERSION<105600)
+    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
+#else
     	boost::property_tree::xml_writer_settings<std::string> settings(' ', 1);
+#endif
         write_xml(output, *_tree, settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
