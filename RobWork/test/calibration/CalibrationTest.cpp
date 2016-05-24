@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@
 #include <rw/models.hpp>
 #include <rw/kinematics.hpp>
 #include <rw/loaders.hpp>
-#include <rwlibs/calibration.hpp>  
+#include <rwlibs/calibration.hpp>
 
 using namespace rwlibs::calibration;
 using namespace rw::math;
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 #ifdef _WIN32
 	_CrtSetDbgFlag(0);
 #endif
-	const std::string testFilesPath = testFilePath(); 
+	const std::string testFilesPath = testFilePath();
 	BOOST_REQUIRE(!testFilesPath.empty());
 
 	const std::string workCellFilePath(testFilesPath + "calibration/Scene/SomeScene.wc.xml");
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	const std::string measurementFrameName("SomeDevice.Marker");
 	const std::string calibrationFilePath(testFilesPath + "calibration/SomeCalibration.xml");
 	const int measurementCount = 40;
-	 
+
 	// Load workcell.
 	rw::models::WorkCell::Ptr workCell = rw::loaders::XMLRWLoader::load(workCellFilePath);
 	BOOST_REQUIRE(!workCell.isNull());
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	//BOOST_CHECK(!serialDeviceCalibrationExisting.isNull());
 	//if (!workCellCalibrationExisting.isNull())
 	//	workCellCalibrationExisting->revert();
-	 
+
 	// Setup artificial calibration.
 	std::vector<rw::kinematics::Frame*> sensorFrames;
 	sensorFrames.push_back(sensorFrame1.get());
@@ -76,32 +76,32 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	deviceMarkerPairs.push_back(std::make_pair(serialDevice, measurementFrame.get()));
 
 	WorkCellCalibration::Ptr artificialCalibration(rw::common::ownedPtr(new WorkCellCalibration(deviceMarkerPairs, sensorFrames)));
-	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0), 
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(0)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(10.0 / 1000.0, -8.0 / 1000.0, 7 / 1000.0),
 																														  rw::math::RPY<>(1.7 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad, -2.0 * rw::math::Deg2Rad)));
-	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0), 
+	artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(-9.0 / 1000.0, 11.0 / 1000.0, 17.0 / 1000.0),
 																														  rw::math::RPY<>(1 * rw::math::Deg2Rad, 1.3 * rw::math::Deg2Rad, -1.4 * rw::math::Deg2Rad)));
 	//artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(3.0 / 1000.0, -11.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(1.3 * rw::math::Deg2Rad, -1.2 * rw::math::Deg2Rad, 0.7 * rw::math::Deg2Rad)));
 	artificialCalibration->getFixedFrameCalibrations()->getCalibration(2)->setCorrectionTransform(rw::math::Transform3D<>(rw::math::Vector3D<>(1.0 / 1000.0, 2.0 / 1000.0, -3.0 / 1000.0), rw::math::RPY<>(-0.3 * rw::math::Deg2Rad, 0.2 * rw::math::Deg2Rad, 0.1 * rw::math::Deg2Rad)));
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr artificialCompositeLinkCalibration = artificialCalibration->getCompositeLinkCalibration();
-	for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
 		ParallelAxisDHCalibration::Ptr artificialLinkCalibration = artificialCompositeLinkCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialLinkCalibration->getParameterSet();
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_A).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_A) = 0.3 / 100.0;
-		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_B).isEnabled())  
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_B).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_B) = -0.2 / 100.0;
-		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled()) 
+		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_D).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_D) = -0.1 / 100.0;
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA).isEnabled())
-			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad; 
+			parameterSet(ParallelAxisDHCalibration::PARAMETER_ALPHA) = -0.6 * rw::math::Deg2Rad;
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_BETA) = 0.5 * rw::math::Deg2Rad;
 		if (parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA).isEnabled())
 			parameterSet(ParallelAxisDHCalibration::PARAMETER_THETA) = 0.4 * rw::math::Deg2Rad;
-		artificialLinkCalibration->setParameterSet(parameterSet); 
+		artificialLinkCalibration->setParameterSet(parameterSet);
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr artificialCompositeJointCalibration = artificialCalibration->getCompositeJointEncoderCalibration();
-	for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+	for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
 		JointEncoderCalibration::Ptr artificialJointCalibration = artificialCompositeJointCalibration->getCalibration(calibrationIndex);
 		CalibrationParameterSet parameterSet = artificialJointCalibration->getParameterSet();
 		if (parameterSet(JointEncoderCalibration::PARAMETER_TAU).isEnabled())
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		artificialJointCalibration->setParameterSet(parameterSet);
 	}
 
-	artificialCalibration->apply(); 
+	artificialCalibration->apply();
 
 	// Load robot pose measurements from file.
 	const std::vector<CalibrationMeasurement::Ptr> measurements = generateMeasurements(serialDevice, sensorFrames, measurementFrame, state, measurementCount, false);
@@ -137,19 +137,19 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 		calibrator->calibrate(state);
 	} catch (rw::common::Exception& ex) {
 		BOOST_ERROR(ex.getMessage());
-	} 
-	 
-	const int iterationCount = calibrator->getSolver()->getIterationLogs().back().getIterationNumber();
+	}
+
+	// const int iterationCount = calibrator->getSolver()->getIterationLogs().back().getIterationNumber();  // not used
 	//BOOST_CHECK_EQUAL(iterationCount, 6);
 
 	//// Verify that the calibration match the artificial calibration.
-	for (size_t i = 0; i<calibration->getFixedFrameCalibrations()->getCalibrationCount(); i++) {
+	for (size_t i = 0; i < static_cast<size_t>(calibration->getFixedFrameCalibrations()->getCalibrationCount()); i++) {
 		FixedFrameCalibration::Ptr ffCalibration = calibration->getFixedFrameCalibrations()->getCalibration(i);
 		if (ffCalibration->isEnabled()) {
 			FixedFrameCalibration::Ptr artificialFFCalibration = artificialCalibration->getFixedFrameCalibrations()->getCalibration(i);
 			const rw::math::Transform3D<> artificialCorrection = artificialFFCalibration->getCorrectionTransform();
 			const rw::math::Transform3D<> actualCorrection = ffCalibration->getCorrectionTransform();
-		
+
 			std::cout<<"FixedFrameCalibration: "<<artificialFFCalibration->getFrame()->getName()<<" Artificial: "<<artificialFFCalibration->getParameterSet()<<" Calibrated: "<<ffCalibration->getParameterSet()<<std::endl;
 			std::cout<<"FixedFrameCalibration: "<<artificialFFCalibration->getFrame()->getName()<<" Artificial: "<<artificialCorrection.P()<<" Calibrated: "<<actualCorrection.P()<<std::endl;
 			//std::cout<<"Artificial.P() = "<<correctionSensorFrame1Transform.P()<<" vs. "<<baseCorrectionTransform.P()<<" Distance = "<<(artificialBaseCorrectionTransform.P() - baseCorrectionTransform.P()).norm2()<<std::endl;
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
 			ParallelAxisDHCalibration::Ptr calibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 	}
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < artificialCompositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(artificialCompositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
 			JointEncoderCalibration::Ptr calibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			if (calibration->isEnabled()) {
 				const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 			toEigen(artificialCalibration->getFixedFrameCalibrations()->getCalibration(1)->getCorrectionTransform()), 10e-5));
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr internalLinkCalibrationsLoaded =
 			calibrationLoaded->getCompositeLinkCalibration();
-	for (size_t calibrationIndex = 0; calibrationIndex < internalLinkCalibrationsLoaded->getCalibrationCount(); calibrationIndex++){
+	for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(internalLinkCalibrationsLoaded->getCalibrationCount()); calibrationIndex++){
 		for (int parameterIndex = 0; parameterIndex < 4; parameterIndex++){
 			/*
 			if (artificialInternalLinkCalibrations[calibrationIndex]->isParameterEnabled(parameterIndex)) {
@@ -258,9 +258,9 @@ BOOST_AUTO_TEST_CASE( CalibratorTest ) {
 
 
 BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
-	
+
 	const std::string testFilesPath = testFilePath();
-	BOOST_REQUIRE(!testFilesPath.empty());	
+	BOOST_REQUIRE(!testFilesPath.empty());
 	const std::string workCellFilePath(testFilesPath + "calibration/Scene/SomeScene.wc.xml");
 	const std::string deviceName("SomeDevice");
 	const std::string referenceFrameName("SomeSensorFrame1");
@@ -295,16 +295,16 @@ BOOST_AUTO_TEST_CASE( CalibrationMeasureSaveLoad ) {
 	std::cout<<"Loaded Data"<<std::endl;
 	BOOST_CHECK_EQUAL(measurements.size(), loadedMeasurements.size());
 
-	for (size_t i = 0; i<measurements.size(); i++) 
+	for (size_t i = 0; i<measurements.size(); i++)
 	{
 		//Check the configuration
 		BOOST_CHECK_SMALL((measurements[i]->getQ() - loadedMeasurements[i]->getQ()).normInf(), 1e-9);
-		
+
 		//Check the transform
 		Transform3D<> t3d1 = measurements[i]->getTransform();
 		Transform3D<> t3d2 = loadedMeasurements[i]->getTransform();
 		BOOST_CHECK_SMALL((t3d1.P() - t3d2.P()).normInf(), 1e-9);
-			
+
 		Rotation3D<> r3d = t3d1.R() * inverse(t3d2.R());
 		BOOST_CHECK_SMALL(EAA<>(r3d).angle(), 1e-9);
 
@@ -343,10 +343,9 @@ std::vector<CalibrationMeasurement::Ptr> generateMeasurements(rw::models::Serial
 				transform.P() = rw::math::Vector3D<>(mvndVector(0), mvndVector(1), mvndVector(2)) + transform.P();
 				transform.R() = rw::math::RPY<>(mvndVector(3), mvndVector(4), mvndVector(5)).toRotation3D() * transform.R();
 			}
-		
+
 			measurements.push_back(rw::common::ownedPtr(new CalibrationMeasurement(q, transform, covariance, serialDevice->getName(), sensorFrame->getName(), markerFrame->getName())));
 		}
 	}
 	return measurements;
 }
- 

@@ -10,7 +10,7 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rwlibs::calibration;
 
-class CalibrationOptionParser { 
+class CalibrationOptionParser {
 public:
 	CalibrationOptionParser() : _optionsDescription("Options") {
 		_optionsDescription.add_options()
@@ -28,7 +28,7 @@ public:
 			("mathematicaoutputfile", boost::program_options::value<std::string>(&_mathematicaOutputFileName), "Set the file to which to write joint values")
 			("validationMeasurementPercentage", boost::program_options::value<double>(&_validationMeasurementPercentage)->default_value(0.2), "Percentage of measurements to reserve for validation");
 	}
-	
+
 	void parseArguments(int argumentCount, char** argumentArray) {
 		boost::program_options::positional_options_description positionalOptionsDescription;
 		positionalOptionsDescription.add("workCellFile", 1).add("measurementFile", 1).add("calibrationFile", 1);
@@ -89,7 +89,7 @@ public:
 	}
 
 	bool isPreCalibrateExtrinsicsEnabled() const {
-		return _isPreCalibrateExtrinsicsEnabled;	
+		return _isPreCalibrateExtrinsicsEnabled;
 	}
 
 	double getValidationMeasurementPercentage() const {
@@ -118,7 +118,7 @@ private:
 	bool _isLinkCalibrationEnabled;
 	bool _isJointCalibrationEnabled;
 	bool _isPreCalibrateExtrinsicsEnabled;
-	double _validationMeasurementPercentage;	
+	double _validationMeasurementPercentage;
 	std::string _mathematicaOutputFileName;
 };
 
@@ -160,7 +160,7 @@ int main(int argumentCount, char** argumentArray) {
 	// Load robot pose measurements from file.
 	std::string measurementFilePath = optionParser.getMeasurementFilePath();
 	std::cout << "Loading measurements [ " << measurementFilePath << " ].. ";
-	std::cout.flush(); 
+	std::cout.flush();
 	std::vector<CalibrationMeasurement::Ptr> measurements = XMLCalibrationMeasurementFile<XMLDetectionInfoBaseSerializer>::load(measurementFilePath);
 	typedef std::pair<std::string, std::string> StringPair;
 	std::set<StringPair > deviceAndFrameNames;
@@ -179,12 +179,12 @@ int main(int argumentCount, char** argumentArray) {
 			return -1;
 		}
 
-		StringPair devAndFrame(measurement->getDeviceName(), measurement->getMarkerFrameName());		
+		StringPair devAndFrame(measurement->getDeviceName(), measurement->getMarkerFrameName());
 		deviceAndFrameNames.insert(devAndFrame);
 		sensorFrameNames.insert(measurement->getSensorFrameName());
 
 		Eigen::MatrixXd cov = Eigen::MatrixXd::Zero(6,6);
-		//For BB measurements 
+		//For BB measurements
 		//cov(0,0) = 1./Math::sqr(5);
 		//cov(1,1) = 1./Math::sqr(5);
 		//cov(2,2) = 1./Math::sqr(1);
@@ -192,15 +192,15 @@ int main(int argumentCount, char** argumentArray) {
 		//cov(4,4) = 1./Math::sqr(0.2);
 		//cov(5,5) = 1./Math::sqr(0.5);
 
-		//For Kinect measurements 
+		//For Kinect measurements
 		/*cov(0,0) = 1./Math::sqr(1);
 		cov(1,1) = 1./Math::sqr(1);
 		cov(2,2) = 1./Math::sqr(1);
 		cov(3,3) = 1./Math::sqr(0.2);
 		cov(4,4) = 1./Math::sqr(0.2);
 		cov(5,5) = 1./Math::sqr(0.2);*/
-		
-		
+
+
 		cov(0,0) = 1e-10;
 		cov(1,1) = 1e-10;
 		cov(2,2) = 1e-10;
@@ -215,7 +215,7 @@ int main(int argumentCount, char** argumentArray) {
 	typedef std::pair<SerialDevice::Ptr, Frame*> SerialDeviceFramePair;
 	std::vector<SerialDeviceFramePair> devicesAndFrames;
 	for (std::set<StringPair>::iterator it = deviceAndFrameNames.begin(); it != deviceAndFrameNames.end(); ++it) {
-		std::cout<<"Device "<<(*it).first<<" has marker frame "<<(*it).second<<std::endl;		
+		std::cout<<"Device "<<(*it).first<<" has marker frame "<<(*it).second<<std::endl;
 		SerialDevice::Ptr dev = workCell->findDevice<SerialDevice>((*it).first);
 		Frame* frame = workCell->findFrame((*it).second);
 		devicesAndFrames.push_back(SerialDeviceFramePair(dev, frame));
@@ -234,31 +234,31 @@ int main(int argumentCount, char** argumentArray) {
 	//}
 
 
-	//Find the measurements to be used for calibration and validation 
+	//Find the measurements to be used for calibration and validation
 	const size_t measurementCount = measurements.size();
-	size_t calibrationMeasurementCount = (int)std::floor((double) measurementCount * (1.0 - optionParser.getValidationMeasurementPercentage()));		
+	size_t calibrationMeasurementCount = static_cast<int>(std::floor((double) measurementCount * (1.0 - optionParser.getValidationMeasurementPercentage())));
 	size_t validationMeasurementCount = measurementCount - calibrationMeasurementCount;
 	std::vector<CalibrationMeasurement::Ptr> calibrationMeasurements;
 	std::vector<CalibrationMeasurement::Ptr> validationMeasurements;
 
 	std::set<int> indices;
 	while (indices.size() < validationMeasurementCount) {
-		indices.insert(Math::ranI(0, measurementCount));	
+		indices.insert(Math::ranI(0, measurementCount));
 	}
 
-	for (int i = 0; i<measurementCount; i++) {
+	for (size_t i = 0; i < measurementCount; i++) {
 		if (indices.find(i) == indices.end()) {
 			calibrationMeasurements.push_back(measurements[i]);
 		} else {
 			validationMeasurements.push_back(measurements[i]);
 		}
 	}
-	
+
 	std::cout<<"Total Measurements = "<<measurements.size()<<std::endl;
 	std::cout<<"Calibration Measurements = "<<calibrationMeasurements.size()<<std::endl;
 	std::cout<<"Validation Measurements = "<<validationMeasurements.size()<<std::endl;
 
-	
+
 	//Run the extrinsic calibration
 	WorkCellCalibration::Ptr exCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames));
 	if (optionParser.isPreCalibrateExtrinsicsEnabled()) {
@@ -270,16 +270,16 @@ int main(int argumentCount, char** argumentArray) {
 		std::cout<<"Extrinsics precalibrated"<<std::endl;
 		exCalibration->apply();
 	}
-	
+
 	//std::cout<<"Summary without extrinsic calibration"<<std::endl;
-	//std::cout<<"Calibration Data"<<std::endl;	
+	//std::cout<<"Calibration Data"<<std::endl;
 	//CalibrationUtils::printMeasurementSummary(calibrationMeasurements, workCell, workCellState, std::cout);
 	//std::cout<<"Validation Data"<<std::endl;
 	//CalibrationUtils::printMeasurementSummary(validationMeasurements, workCell, workCellState, std::cout);
 	//
 	//std::cout<<"All data"<<std::endl;
 	//CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
-	
+
 
 	//std::cout<<"Summary after apply the extrinsic calibration"<<std::endl;
 	//std::cout<<"Calibration Data"<<std::endl;
@@ -293,10 +293,10 @@ int main(int argumentCount, char** argumentArray) {
 
 
 	if (optionParser.getMathematicaOutputFileName() != "") {
-		std::ofstream outfile(optionParser.getMathematicaOutputFileName().c_str());	
-		outfile<<std::setprecision(16);		
+		std::ofstream outfile(optionParser.getMathematicaOutputFileName().c_str());
+		outfile<<std::setprecision(16);
 		BOOST_FOREACH(CalibrationMeasurement::Ptr measurement, measurements) {
-		
+
 			const Q& q = measurement->getQ();
 			for (size_t i = 0; i<q.size(); i++) {
 				outfile<<q(i)<<" ";
@@ -320,8 +320,8 @@ int main(int argumentCount, char** argumentArray) {
 
 	// Initialize calibration, jacobian and calibrator.
 	std::cout << "Initializing calibration... "<<std::endl;
-	
-	
+
+
 	WorkCellCalibration::Ptr workcellCalibration = rw::common::ownedPtr(new WorkCellCalibration(devicesAndFrames, sensorFrames));
 	std::cout << "Initialized." << std::endl;
 
@@ -337,7 +337,7 @@ int main(int argumentCount, char** argumentArray) {
 	workcellCalibrator->setMeasurements(calibrationMeasurements);
 	workcellCalibrator->setUseWeightedMeasurements(true || isWeightingMeasurements);
 	std::cout << "Initialized." << std::endl;
-	  
+
 	try {
 		// Run calibrator.
 		bool isBaseCalibrationEnabled = optionParser.isBaseCalibrationEnabled();
@@ -350,14 +350,14 @@ int main(int argumentCount, char** argumentArray) {
 		workcellCalibration->getFixedFrameCalibrations()->getCalibration(1)->setEnabled(isEndCalibrationEnabled);
 		workcellCalibration->getCompositeLinkCalibration()->setEnabled(isLinkCalibrationEnabled);
 		workcellCalibration->getCompositeJointEncoderCalibration()->setEnabled(isJointCalibrationEnabled);
-		
+
 		std::cout<<"Measurements: "<<std::endl;
 		CalibrationUtils::printMeasurementSummary(measurements, workCell, workCellState, std::cout);
 		std::cout<<"Check that the errors are in the range that are expected."<<std::endl;
 		std::cout<<"Press enter to continue..."<<std::endl;
 		char ch[4];
-		std::cin.getline(ch, 1); 
-		   
+		std::cin.getline(ch, 1);
+
 		//exCalibration->revert();
 		std::cout<<"Calibrating...";
 		std::cout.flush();
@@ -380,13 +380,13 @@ int main(int argumentCount, char** argumentArray) {
 
 		//In case the extrinsics are precalibrated they are prepended to the workcell calibration here.
 		workcellCalibration->prependCalibration(exCalibration);
-		workcellCalibration->apply();		
+		workcellCalibration->apply();
 
 		// Save calibration.
 		std::string calibrationFilePath = optionParser.getCalibrationFilePath();
 		if (!calibrationFilePath.empty()) {
 			std::cout << "Saving calibration [" << calibrationFilePath << "].. ";
-			std::cout.flush();			
+			std::cout.flush();
 			XmlCalibrationSaver::save(workcellCalibration, calibrationFilePath);
 			std::cout << "Saved." << std::endl;
 		}
@@ -403,7 +403,7 @@ int main(int argumentCount, char** argumentArray) {
 	std::cout << "   " << workcellCalibrator << std::endl;
 
 	// Print differences between model and measurements.
-	
+
 	//std::cout<<"=========== WITHOUT CALIBRATION ============="<<std::endl;
 	//std::cout << "Residual summary:" << std::endl;
 	//printMeasurementSummary(calibrationMeasurements, serialDevice, referenceFrame, measurementFrame, workCellState);
@@ -445,7 +445,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 	bool hasPrevious = false;
 
 	CompositeCalibration<FixedFrameCalibration>::Ptr ffCalibrations = calibration->getFixedFrameCalibrations();
-	for (size_t i = 0; i<ffCalibrations->getCalibrationCount(); i++) {
+	for (size_t i = 0; i < static_cast<size_t>(ffCalibrations->getCalibrationCount()); i++) {
 		if (ffCalibrations->getCalibration(i)->isEnabled()) {
 			if (hasPrevious)
 				out<<std::endl;
@@ -470,7 +470,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 
 	CompositeCalibration<ParallelAxisDHCalibration>::Ptr compositeLinkCalibration = calibration->getCompositeLinkCalibration();
 	if (compositeLinkCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < compositeLinkCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(compositeLinkCalibration->getCalibrationCount()); calibrationIndex++) {
 			ParallelAxisDHCalibration::Ptr linkCalibration = compositeLinkCalibration->getCalibration(calibrationIndex);
 			if (linkCalibration->isEnabled()) {
 				if (hasPrevious)
@@ -483,7 +483,7 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 
 	CompositeCalibration<JointEncoderCalibration>::Ptr compositeJointCalibration = calibration->getCompositeJointEncoderCalibration();
 	if (compositeJointCalibration->isEnabled()) {
-		for (size_t calibrationIndex = 0; calibrationIndex < compositeJointCalibration->getCalibrationCount(); calibrationIndex++) {
+		for (size_t calibrationIndex = 0; calibrationIndex < static_cast<size_t>(compositeJointCalibration->getCalibrationCount()); calibrationIndex++) {
 			JointEncoderCalibration::Ptr jointCalibration = compositeJointCalibration->getCalibration(calibrationIndex);
 			if (jointCalibration->isEnabled()) {
 				if (hasPrevious)
@@ -499,13 +499,13 @@ std::ostream& operator<<(std::ostream& out, const WorkCellCalibration::Ptr calib
 
 std::ostream& operator<<(std::ostream& out, const FixedFrameCalibration::Ptr calibration) {
 	out << "Frame [ " << calibration->getFrame()->getName() << " ]";
-	
+
 	const rw::math::Transform3D<> correctionTransform = calibration->getCorrectionTransform();
 	out << " Summary [";
 	out << " Translation: " << correctionTransform.P().norm2() * 1000.0 << " mm";
 	out << " Rotation: " << rw::math::EAA<>(correctionTransform.R()).angle() * rw::math::Rad2Deg << " \u00B0";
 	out << " ]";
-	
+
 	out << " Type [ RPY ]";
 
 	const CalibrationParameterSet parameterSet = calibration->getParameterSet();
@@ -553,7 +553,7 @@ std::ostream& operator<<(std::ostream& out, const FixedFrameCalibration::Ptr cal
 /*
 std::ostream& operator<<(std::ostream& out, const DHLinkCalibration::Ptr calibration) {
 	out << "Joint [ " << calibration->getJoint()->getName() << " ]";
-	
+
 	out << " Type [ DH ]";
 
 	out << " Parameters [";
@@ -601,7 +601,7 @@ std::ostream& operator<<(std::ostream& out, const DHLinkCalibration::Ptr calibra
 */
 std::ostream& operator<<(std::ostream& out, const JointEncoderCalibration::Ptr calibration) {
 	out << "Joint [ " << calibration->getJoint()->getName() << " ]";
-	
+
 	out << " Type [ Encoder ]";
 
 	out << " Parameters [";
@@ -617,5 +617,3 @@ std::ostream& operator<<(std::ostream& out, const JointEncoderCalibration::Ptr c
 
 	return out;
 }
-
-

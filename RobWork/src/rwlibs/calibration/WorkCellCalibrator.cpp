@@ -18,15 +18,15 @@ namespace rwlibs {
 		public:
 			typedef rw::common::Ptr<WorkCellCalibrationSystem> Ptr;
 
-			WorkCellCalibrationSystem(rw::models::WorkCell::Ptr workcell, rw::kinematics::State workCellState, const std::vector<CalibrationMeasurement::Ptr>& measurements, Calibration::Ptr calibration, Jacobian::Ptr jacobian, bool useWeightedMeasurements) : 
-				_workcell(workcell), 
+			WorkCellCalibrationSystem(rw::models::WorkCell::Ptr workcell, rw::kinematics::State workCellState, const std::vector<CalibrationMeasurement::Ptr>& measurements, Calibration::Ptr calibration, Jacobian::Ptr jacobian, bool useWeightedMeasurements) :
+				_workcell(workcell),
 				_workCellState(workCellState), /*
-				_referenceFrame(referenceFrame), 
+				_referenceFrame(referenceFrame),
 				_measurementFrame(measurementFrame), */
-				_measurements(measurements), 
-				_calibration(calibration), 
-				_jacobian(jacobian), 
-				_useWeightedMeasurements(useWeightedMeasurements) 
+				_measurements(measurements),
+				_calibration(calibration),
+				_jacobian(jacobian),
+				_useWeightedMeasurements(useWeightedMeasurements)
 			{
 
 			}
@@ -91,13 +91,13 @@ namespace rwlibs {
 						stackedJacobians.block(rowIndex, 0, 6, columnCount) = weightMatrix * stackedJacobians.block(rowIndex, 0, 6, columnCount);
 					}
 				}
-				
+
 			}
 
 			virtual void computeResiduals(Eigen::VectorXd& stackedResiduals) {
 				const int measurementCount = _measurements.size();
 
-				const int rowCount = 6 * measurementCount;
+				// const int rowCount = 6 * measurementCount;  // not used
 				stackedResiduals.resize(6 * measurementCount);
 				rw::kinematics::State workCellState = _workCellState;
 				for (int measurementIndex = 0; measurementIndex < measurementCount; measurementIndex++) {
@@ -118,7 +118,7 @@ namespace rwlibs {
 					//std::cout<<"Error Reference Frame = "<<_referenceFrame->getName()<<std::endl;
 					const rw::math::Transform3D<> tfmModel = rw::kinematics::Kinematics::frameTframe(sensorFrame, markerFrame, workCellState);
 					//std::cout<<"Model Transform = "<<tfmModel<<std::endl;
-						
+
 					//rw::math::Vector3D<> dP = tfmModel.P() - tfmMeasurement.P();
 					rw::math::Vector3D<> dP = tfmMeasurement.P() - tfmModel.P();
 					//std::cout<<"dP = "<<dP<<std::endl;
@@ -196,7 +196,7 @@ namespace rwlibs {
 
 		rw::kinematics::Frame::Ptr WorkCellCalibrator::getMeasurementFrame() const {
 			return _measurementFrame;
-		} 
+		}
 
 		void WorkCellCalibrator::setMeasurementFrame(rw::kinematics::Frame::Ptr measurementFrame) {
 			_measurementFrame = measurementFrame;
@@ -253,14 +253,14 @@ namespace rwlibs {
 			const bool wasApplied = _calibration->isApplied();
 			if (!wasApplied)
 				_calibration->apply();
-				
+
 
 			// Solve non-linear least square system.
 			try {
 				WorkCellCalibrationSystem::Ptr system = rw::common::ownedPtr(new WorkCellCalibrationSystem(_workcell, workCellState, _measurements, _calibration, _jacobian, _useWeightedMeasurements));
 				_solver = rw::common::ownedPtr(new NLLSNewtonSolver(system));
 				_solver->solve();
-				
+
 				// Compute variances if weighting was enabled.
 				if (_useWeightedMeasurements) {
 					Eigen::MatrixXd covarianceMatrix = _solver->estimateCovarianceMatrix();

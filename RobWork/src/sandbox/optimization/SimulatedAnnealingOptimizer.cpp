@@ -39,7 +39,7 @@ void SimulatedAnnealingOptimizer::step(VectorType& currentGuess,
 	 * Pick a random neighbour
 	 */
 	VectorType previousGuess = currentGuess;
-	ResultType previousValue = currentValue;
+	// ResultType previousValue = currentValue;  // not used
 	VectorType newState = generateNewState(previousGuess,
 			_deviation * (_T / _initialT));
 

@@ -34,11 +34,18 @@ BoostXMLParser::BoostInitializer::BoostInitializer() {
 	static bool done = false;
 	if (!done) {
 		done = true;
-		boost::property_tree::xml_parser::xmlattr<char>();
-		boost::property_tree::xml_parser::xmltext<char>();
-		boost::property_tree::xml_parser::xmlcomment<char>();
-		boost::property_tree::xml_parser::xmldecl<char>();
-	}
+#if(BOOST_VERSION<105600)
+                boost::property_tree::xml_parser::xmlattr<char>();
+                boost::property_tree::xml_parser::xmltext<char>();
+                boost::property_tree::xml_parser::xmlcomment<char>();
+                boost::property_tree::xml_parser::xmldecl<char>();
+#else
+                boost::property_tree::xml_parser::xmlattr<std::string>();
+                boost::property_tree::xml_parser::xmltext<std::string>();
+                boost::property_tree::xml_parser::xmlcomment<std::string>();
+                boost::property_tree::xml_parser::xmldecl<std::string>();
+#endif
+        }
 }
 
 const BoostXMLParser::BoostInitializer BoostXMLParser::initializer;
@@ -80,8 +87,8 @@ void BoostXMLParser::load(std::istream& input){
 
 void BoostXMLParser::save(const std::string& filename){
     try {
-    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
-    	write_xml(filename, *_tree, std::locale(), settings);
+    	boost::property_tree::xml_writer_settings<std::string> settings(' ', 1);
+       write_xml(filename, *_tree, std::locale(), settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
         RW_THROW(e.what());
@@ -90,7 +97,7 @@ void BoostXMLParser::save(const std::string& filename){
 
 void BoostXMLParser::save(std::ostream& output){
     try {
-    	boost::property_tree::xml_writer_settings<char> settings(' ', 1);
+    	boost::property_tree::xml_writer_settings<std::string> settings(' ', 1);
         write_xml(output, *_tree, settings);
     } catch (const boost::property_tree::ptree_error& e) {
         // Convert from parse errors to RobWork errors.
@@ -272,4 +279,3 @@ DOMElem::Iterator BoostDOMElem::end(){
 bool BoostDOMElem::hasChildren() const{
 	return !_node->empty();
 }
-

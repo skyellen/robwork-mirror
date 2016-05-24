@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,7 +46,7 @@ using namespace rw::trajectory;
 
 PRMPlanner::PRMPlanner(rw::pathplanning::QConstraint::Ptr constraint,
 	rw::pathplanning::QSampler::Ptr sampler,
-    double resolution,	
+    double resolution,
     const rw::models::Device& device,
     const rw::kinematics::State& state)
     :
@@ -183,7 +183,7 @@ bool PRMPlanner::inCollision(const Q& a, const Q& b) const
 
 bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
 {
-    Q q1 = _graph[n1].q; 
+    Q q1 = _graph[n1].q;
     Q q2 = _graph[n2].q;
 
     switch (_collisionCheckingStrategy) {
@@ -418,7 +418,7 @@ bool PRMPlanner::doQuery(
     }
 
     // test if qInit and qGoal is within bounds of robot
-    typedef boost::graph_traits<PRM>::vertex_iterator NodePointer;
+    // typedef boost::graph_traits<PRM>::vertex_iterator NodePointer; //not used
 
     Node nInit = addNode(qInit, true);
     addEdges(nInit);
@@ -444,7 +444,7 @@ bool PRMPlanner::doQuery(
             //std::cout<<"No Path Enhance Roadmap"<<std::endl;
             enhanceRoadmap();
             continue;
-        } 
+        }
 
         bool inCol = inCollision(nodepath);
         if (!inCol) {
@@ -532,7 +532,7 @@ bool PRMPlanner::inCollision(std::list<Node>& path)
         edgeQueue.pop();
 
         bool enhanced = enhanceEdgeCheck(edge);
-        if (!enhanced) {            
+        if (!enhanced) {
             _seeds.push_back((_graph[edge].q1 + _graph[edge].q2)/2.0);
 			removeCollidingEdge(edge);
             return true;

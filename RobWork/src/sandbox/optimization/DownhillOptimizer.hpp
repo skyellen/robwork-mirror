@@ -52,7 +52,7 @@ public:
 	 * @brief Constructor.
 	 */
 	DownhillOptimizer(typename FunctionType::Ptr function, double simplexSize =
-			1.0, const Parameters& parameters = { 1.0, 2.0, -0.5, 0.5 });
+			1.0, const Parameters& parameters = {1.0, 2.0, -0.5, 0.5 });
 
 	//! Destructor.
 	virtual ~DownhillOptimizer();

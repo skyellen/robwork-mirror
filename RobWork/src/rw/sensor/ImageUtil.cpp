@@ -363,8 +363,8 @@ Image::Ptr ImageUtil::makeDepthImage(const rw::geometry::PointCloud& cloud, floa
     Image::Ptr outImg = rw::common::ownedPtr( new Image(cloud.getWidth(),cloud.getHeight() , Image::GRAY, Image::Depth8U));
     float offset = min;
     float scale = 1.0f/(max - offset);
-    for(unsigned int i = 0; i < cloud.getWidth(); i++) {
-        for(unsigned int j = 0; j < cloud.getHeight(); j++) {
+    for(unsigned int i = 0; i < static_cast<unsigned int>(cloud.getWidth()); i++) {
+        for(unsigned int j = 0; j < static_cast<unsigned int>(cloud.getHeight()); j++) {
 
             float val = -(cloud.getData()[j*cloud.getWidth()+i](2));
             val = std::max(min, val);

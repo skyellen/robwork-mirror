@@ -166,7 +166,7 @@ namespace proximity {
         typedef typename Traits<BVTREE>::BVType BVType;
         typedef typename Traits<BVTREE>::PRIMType PRIMType;
         typedef typename Traits<BVType>::value_type value_type;
-        typedef typename Traits<BVType>::value_type T;
+        // typedef typename Traits<BVType>::value_type T;
 
         using namespace rw::math;
         using namespace rw::geometry;
