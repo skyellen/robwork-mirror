@@ -355,7 +355,7 @@ Device::Ptr Planning::getDevice() {
         // create a composite device that contain all other devices
 		std::vector<Device::Ptr> all = _workcell->getDevices();
 		std::vector<Device::Ptr> devices(all.begin(), all.end());
-        _compositeDevice = std::auto_ptr<Device>(
+                _compositeDevice = ownedPtr(
             new rw::models::CompositeDevice(
                 devices.front()->getBase(),
                 devices,
@@ -363,7 +363,7 @@ Device::Ptr Planning::getDevice() {
                 "Composite",
                 _state));
 
-        return _compositeDevice.get();
+        return _compositeDevice;
     } else {
         return _workcell->getDevices().at(deviceIndex);
     }

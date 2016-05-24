@@ -479,7 +479,7 @@ void PathLoader::storeStatePath(
     writeFile(result, file);
 }
 
-std::auto_ptr<StatePath> PathLoader::loadStatePath(
+StatePath PathLoader::loadStatePath(
     const WorkCell& workcell,
     const std::string& file)
 {
@@ -487,10 +487,7 @@ std::auto_ptr<StatePath> PathLoader::loadStatePath(
     readFile(file, input);
     Reader reader(file, &input);
 
-    typedef std::auto_ptr<StatePath> T;
-    T result(new StatePath());
-    *result = reader.getStatePath(workcell);
-    return result;
+    return reader.getStatePath(workcell);
 }
 
 //----------------------------------------------------------------------
@@ -523,14 +520,12 @@ void PathLoader::storeVelocityTimedStatePath(
         file);
 }
 
-std::auto_ptr<TimedStatePath> PathLoader::loadTimedStatePath(
+TimedStatePath PathLoader::loadTimedStatePath(
     const WorkCell& workcell, const std::string& file)
 {
     std::vector<char> input;
     readFile(file, input);
     Reader reader(file, &input);
 
-    std::auto_ptr<TimedStatePath> result(new TimedStatePath);
-    *result = reader.getTimedStatePath(workcell);
-    return result;
+    return reader.getTimedStatePath(workcell);
 }

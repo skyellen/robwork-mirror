@@ -442,12 +442,9 @@ void PlayBack::rawOpenPlayFile(const std::string& file)
 {
     if (!file.empty() && _workcell) {
         // Load the sequence of states.
-        std::auto_ptr<TimedStatePath> path =
-            PathLoader::loadTimedStatePath(
-                *_workcell,
-                file);
+        TimedStatePath path = PathLoader::loadTimedStatePath(*_workcell, file);
 
-        getRobWorkStudio()->setTimedStatePath(*path);
+        getRobWorkStudio()->setTimedStatePath(path);
 
         // Store the file name.
         _file = file;
