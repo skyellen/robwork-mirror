@@ -87,19 +87,6 @@ namespace rw { namespace common {
             _owned_ptr(ptr)
         {}
 
-        /**
-           @brief Take ownership of \b ptr.
-
-           \b ptr can be null.
-
-           The constructor is implicit on purpose.
-        */
-        Ptr(std::auto_ptr<T> ptr) :
-            _ptr(ptr.get()),
-            _owned_ptr(ptr.release())
-        {}
-
-
         template <class S>
         Ptr<S> cast() {
         	// this should test if we cast FROM an Any type
