@@ -142,12 +142,12 @@ namespace
         return result;
     }
 
-    std::auto_ptr<Tree> makeTree(const Q& q)
+    rw::common::Ptr<Tree> makeTree(const Q& q)
     {
-        QPath path; 
-		path.push_back(q); 
-		path.push_back(q);
-        return std::auto_ptr<Tree>(new Tree(NodeValue(q, path)));
+        QPath path;
+        path.push_back(q); 
+        path.push_back(q);
+        return rw::common::ownedPtr<Tree>(new Tree(NodeValue(q, path)));
     }
 }
 
@@ -177,8 +177,8 @@ bool Z3QToQPlanner::doQuery(
          !stop.stop() && (_repeatCnt < 0 || repeat < _repeatCnt);
          repeat++)
     {
-        std::auto_ptr<Tree> startTree = makeTree(start);
-        std::auto_ptr<Tree> goalTree = makeTree(goal);
+        rw::common::Ptr<Tree> startTree = makeTree(start);
+        rw::common::Ptr<Tree> goalTree = makeTree(goal);
 
         std::vector<Q> startQs = sampleConfigurations(_nodeCnt, *_sampler);
         std::vector<Q> goalQs = sampleConfigurations(_nodeCnt, *_sampler);

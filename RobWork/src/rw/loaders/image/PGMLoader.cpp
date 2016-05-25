@@ -198,7 +198,7 @@ rw::sensor::Image::Ptr PGMLoader::load(const std::string& filename)
     typedef position_iterator<V::const_iterator> iterator_t;
     iterator_t first(input.begin(),input.end());
     iterator_t last;
-    std::auto_ptr<V> output(new V());
+    rw::common::Ptr<V> output = rw::common::ownedPtr(new V());
     PGMParser p(*output);
 
     parse_info<iterator_t> info =
@@ -212,11 +212,10 @@ rw::sensor::Image::Ptr PGMLoader::load(const std::string& filename)
     if(p.maxgrayval<256)
     	depth = Image::Depth8U;
 
-    std::vector<char> *vec = output.release();
-    char *data = new char[vec->size()];
-    for(size_t i=0;i<vec->size();i++)
-    	data[i] = (*vec)[i];
-    return ownedPtr(
-        new Image(data, p.width, p.height, coding, depth));
+    char *data = new char[output->size()];
+    for (size_t i = 0; i < output->size(); i++) {
+    	data[i] = (*output)[i];
+    }
 
+    return ownedPtr(new Image(data, p.width, p.height, coding, depth));
 }
