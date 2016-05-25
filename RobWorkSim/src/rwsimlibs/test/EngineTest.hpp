@@ -304,7 +304,7 @@ public:
 		static EngineTest::Ptr getTest(const std::string& test);
 
 	private:
-		static std::vector<rw::common::Extension> _internal;
+		static std::vector<rw::common::Extension>& internalExtensions();
 		Factory();
 	};
 	//! @}
