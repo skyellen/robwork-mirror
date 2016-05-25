@@ -25,17 +25,17 @@ SceneCamera::SceneCamera(const std::string& name, SceneNode::Ptr subGraph):
         SceneNode("Camera", SceneNode::CameraType),
     _x(0),_y(0),_w(640),_h(480),
     _drawMask(DrawableNode::ALL ),
+    _clearMask(1),
+    _depthTestEnabled(true),
+    _lightningEnabled(true),
     _clearBufferEnabled(false),
     _enabled(true),
     _subGraph(subGraph),
     _name(name),
-    _ratioControl(Auto),
-    _depthTestEnabled(true),
-    _lightningEnabled(true),
-    _clearMask(true)
+    _ratioControl(Auto)
 {
-    _aspectRatio = _w/(double)_h;
-    _pmatrix.setPerspective(45, _w/(double)_h, 0.1, 30);
+    _aspectRatio = _w / static_cast<double>(_h);
+    _pmatrix.setPerspective(45, _w / static_cast<double>(_h), 0.1, 30);
 }
 
 SceneCamera::~SceneCamera(){

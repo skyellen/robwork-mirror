@@ -96,7 +96,7 @@ void WorkCellExtrinsicCalibrator::calibrate(WorkCellCalibration::Ptr workcellCal
 			Transform3D<> Tcorrection = Tsensor2base * inverse(res.sensor2base);
 			workcellCalibration->getFixedFrameCalibrationForSensor(res.sensor)->setCorrectionTransform(Tcorrection);
 			//std::cout<<"Sensor "<<res.sensor<<" correction = "<<Tcorrection<<std::endl;
-			Transform3D<> Tbase2sensor= Kinematics::frameTframe(baseFrame, sensorFrame, _workcell->getDefaultState());
+			// Transform3D<> Tbase2sensor= Kinematics::frameTframe(baseFrame, sensorFrame, _workcell->getDefaultState()); // Not used
 			primaryDevice2Sensor[res.sensor] = Tcorrection;
 		} else {
 			if (secondaryDeviceTransforms.find(std::make_pair(res.device, res.sensor)) != secondaryDeviceTransforms.end()) {
@@ -149,7 +149,7 @@ void WorkCellExtrinsicCalibrator::calibrateForSingleDevice(const std::string& de
 		sortedMeasurements[measurement->getSensorFrameName()].push_back(measurement);
 	}
 //	std::cout<<"Measurement Count = "<<measurements.size()<<std::endl;
-	int cnt = 0;
+//	int cnt = 0; // Not used
 	for (StringMeasurementMap::iterator it = sortedMeasurements.begin(); it != sortedMeasurements.end(); ++it) {
 		Device2SensorResult result;
 		result.device = deviceName;
@@ -434,12 +434,13 @@ void WorkCellExtrinsicCalibrator::calibrateSingleDeviceAndSensor(const std::vect
 	Eigen::MatrixXd px = (C.transpose()*C).inverse()*C.transpose() * c + p_avg;
 	//std::cout<<"px = "<<px<<std::endl;
 	//Find the Tbase2cam
-	Transform3D<> TbaseCorrection = Transform3D<>(Vector3D<>(px), Rotation3D<>(RX));
-	for (size_t k = 0; k<K; k++) {
-		CalibrationMeasurement::Ptr measurement = measurements[k];
-		Transform3D<> fk = getFK(measurement);
-		Transform3D<> Ttcp = inverse(TbaseCorrection*fk) * measurement->getTransform();
-	}
+        /* mband: commented the following to get rid of a warning regarding unused variable, and this functionality doesn't seem to do anything, unless it relies on non-intuitive side-effects... */
+	// Transform3D<> TbaseCorrection = Transform3D<>(Vector3D<>(px), Rotation3D<>(RX));
+	// for (size_t k = 0; k<K; k++) {
+	// 	CalibrationMeasurement::Ptr measurement = measurements[k];
+	// 	Transform3D<> fk = getFK(measurement);
+	// 	Transform3D<> Ttcp = inverse(TbaseCorrection*fk) * measurement->getTransform();
+	// }
 
 	Transform3D<> Tbase = Transform3D<>(Vector3D<>(px), Rotation3D<>(RX));
 	//std::cout<<"Tbase = "<<Tbase<<std::endl;

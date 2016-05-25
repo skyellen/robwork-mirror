@@ -245,7 +245,7 @@ namespace proximity {
 									size_t maxTrisInLeaf)
 		{
             typedef typename Traits<BVTREE>::BVType BVType;
-            typedef typename Traits<BVType>::value_type value_type;
+            //typedef typename Traits<BVType>::value_type value_type;
             typedef typename Traits<BVTREE>::NodeIterator NodeIterator;
 
 			if(mesh.getSize()==0){
