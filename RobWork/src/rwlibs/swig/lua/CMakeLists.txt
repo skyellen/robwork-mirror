@@ -1,3 +1,7 @@
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0046 OLD)
+endif(COMMAND cmake_policy)
+
 SET(SUBSYS_NAME rw_lua )
 SET(SUBSYS_DESC "Interface for accessing RobWorkSim from lua." )
 SET(SUBSYS_DEPS rw )
