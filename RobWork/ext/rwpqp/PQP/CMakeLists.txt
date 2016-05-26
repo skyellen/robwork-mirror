@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
-if(COMMAND cmake_policy)
+if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
-endif(COMMAND cmake_policy)
+endif()
 
 project(PQP)
 

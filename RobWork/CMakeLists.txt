@@ -1,9 +1,9 @@
 # Test CMake version
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-if(COMMAND cmake_policy)
+if(POLICY CMP0045)
   cmake_policy(SET CMP0045 OLD)
-endif(COMMAND cmake_policy)
+endif()
 
 IF(DEFINED CMAKE_BUILD_TYPE)
    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of

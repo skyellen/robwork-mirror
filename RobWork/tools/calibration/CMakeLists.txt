@@ -9,9 +9,9 @@
 
 # Test CMake version
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-if(COMMAND cmake_policy)
+if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD)
-endif(COMMAND cmake_policy)
+endif()
 
 # The name of the project. 
 PROJECT(rw_calibration_tools)
