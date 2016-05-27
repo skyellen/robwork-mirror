@@ -1,7 +1,3 @@
-if(POLICY CMP0046)
-  cmake_policy(SET CMP0046 OLD)
-endif()
-
 SET(SUBSYS_NAME rw_csg)
 SET(SUBSYS_DESC "A module for doing constructive solid geometry")
 SET(SUBSYS_DEPS rw rw_csgjs)

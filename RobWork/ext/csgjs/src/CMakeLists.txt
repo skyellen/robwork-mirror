@@ -7,13 +7,13 @@ set(
 
 file(GLOB csgjs_hdr csgjs/*.cpp)
 
-add_library(csgjs STATIC ${csgjs_src})
-set_property(TARGET csgjs PROPERTY OUTPUT_NAME "rw_csgjs")
+add_library(rw_csgjs STATIC ${csgjs_src})
+set_property(TARGET rw_csgjs PROPERTY OUTPUT_NAME "rw_csgjs")
 
 # this does not compile on some versions of gcc
  
 INSTALL(TARGETS
-    csgjs 
+    rw_csgjs 
 	RUNTIME DESTINATION ${BIN_INSTALL_DIR}
 	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
 	ARCHIVE DESTINATION ${LIB_INSTALL_DIR})

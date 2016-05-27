@@ -1,3 +1,4 @@
+# Setting CMP0046 to OLD, because the yaobi, pqp and assimp libraries in add_dependencies can point to non-existing targets when using the external libraries (e.g. '/usr/lib/x86_64-linux-gnu/libassimp.so' and not those distributed with RobWork 'assimp')
 if(POLICY CMP0046)
   cmake_policy(SET CMP0046 OLD)
 endif()
