@@ -214,7 +214,7 @@ IF(doc_executable)
     ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
   ELSEIF(doc_executable)  
     ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/../apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORKSTUDIO_VERSION}.qch)
-    ADD_DEPENDENCIES(qtrwdoc apidoc_rw)
+    ADD_DEPENDENCIES(qtrwdoc apidoc)
   ENDIF()
   
 ENDIF()

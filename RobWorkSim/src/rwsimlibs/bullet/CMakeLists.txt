@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME rwsim_bullet)
 set(SUBSYS_DESC "Bullet based physics engine plugin for RobWorkSim")
-SET(SUBSYS_DEPS rwsim rw)
+SET(SUBSYS_DEPS rwsim) # mband: The target 'rw' was not found, so removed it from this dependency list
 
 SET(build FALSE)
 set(DEFAULT ${RWSIM_HAVE_BULLET})
