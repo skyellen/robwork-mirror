@@ -110,7 +110,7 @@ IF(NOT RWSIM_DISABLE_BULLET)
 
         # BULLET_LIBRARIES
         MESSAGE(STATUS "RobWorkSim: Bullet enabled and found.")
-        SET(RW_BULLET_INCLUDE_DIR ${BULLET_INCLUDE_DIR} ${BULLET_ROOT}/Demos/ )
+        SET(RW_BULLET_INCLUDE_DIR ${BULLET_INCLUDE_DIR})
     ELSE()
         SET(RWSIM_HAVE_BULLET FALSE)
         MESSAGE(SEND_ERROR "RobWorkSim: Bullet enabled but not found. Please setup BULLET_ROOT." ${RWSIM_USE_BULLET})
