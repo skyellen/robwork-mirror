@@ -202,11 +202,27 @@ namespace simulator {
 		 *
 		 * @param log [in] a pointer to the log structure to store to.
 		 */
-		virtual void setSimulatorLog(rw::common::Ptr<rwsim::log::SimulatorLogScope> log) {};
+		virtual void setSimulatorLog(rw::common::Ptr<rwsim::log::SimulatorLogScope> log) {}
+
+		//! @brief Each engine implements a dispatcher that creates instances of the engine.
+		class Dispatcher {
+		public:
+			//! @brief Constructor.
+			Dispatcher() {};
+
+			//! @brief Destructor.
+			virtual ~Dispatcher() {};
+
+            /**
+             * @brief Create a physics engine.
+             * @return the physics engine.
+             */
+            virtual PhysicsEngine::Ptr makePhysicsEngine() const = 0;
+		};
 
 		/**
          * @addtogroup extensionpoints
-         * @extensionpoint{rwsim::simulator::PhysicsEngine::Factory,rwsim::simulator::PhysicsEngine,rwsim.simulator.PhysicsEngine}
+         * @extensionpoint{rwsim::simulator::PhysicsEngine::Factory,rwsim::simulator::PhysicsEngine::Dispatcher,rwsim.simulator.PhysicsEngine}
          */
 
         /**
@@ -215,10 +231,10 @@ namespace simulator {
          * Required properties on an extension is:
          *  - name: engineID value:string desc:identifies the engine to the user
          */
-        class Factory: public rw::common::ExtensionPoint<PhysicsEngine> {
+        class Factory: public rw::common::ExtensionPoint<Dispatcher> {
         private:
             //! constructor
-            Factory():rw::common::ExtensionPoint<PhysicsEngine>("rwsim.simulator.PhysicsEngine", "Example extension point"){};
+            Factory();
 
         public:
 
@@ -235,7 +251,7 @@ namespace simulator {
             static std::vector<std::string> getEngineIDs();
 
             /**
-             * @brief create the first/default available physics engine using a dynamic workcell
+             * @brief Create a physics engine using a dynamic workcell
              * @param dwc [in] the dynamic workcell
              * @return physics engine
              */

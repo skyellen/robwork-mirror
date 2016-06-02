@@ -23,6 +23,18 @@ using namespace rw::common;
 
 RW_ADD_PLUGIN(ODEPlugin)
 
+namespace {
+	class Dispatcher: public PhysicsEngine::Dispatcher {
+	public:
+		Dispatcher() {}
+		virtual ~Dispatcher() {}
+
+		virtual PhysicsEngine::Ptr makePhysicsEngine() const {
+			return ownedPtr(new ODESimulator());
+		}
+	};
+}
+
 ODEPlugin::ODEPlugin():Plugin("ODEPlugin", "ODEPlugin", "0.1")
 {
 }
@@ -47,7 +59,7 @@ rw::common::Ptr<rw::common::Extension> ODEPlugin::makeExtension(const std::strin
 {
     if(str=="ODEPhysicsEngine"){
         Extension::Ptr extension = rw::common::ownedPtr( new Extension("ODEPhysicsEngine","rwsim.simulator.PhysicsEngine",
-                this, ownedPtr(new rwsim::simulator::ODESimulator()) ) );
+                this, ownedPtr(new Dispatcher()) ) );
 
         // todo: add posible properties to the extension descriptor
         //exts.back().getProperties().set<std::string>(propid, value);

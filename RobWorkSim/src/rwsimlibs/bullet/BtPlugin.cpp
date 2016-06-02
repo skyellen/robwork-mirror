@@ -19,9 +19,22 @@
 #include "BtSimulator.hpp"
 
 using namespace rw::common;
+using rwsim::simulator::PhysicsEngine;
 using namespace rwsimlibs::bullet;
 
 RW_ADD_PLUGIN(BtPlugin)
+
+namespace {
+	class Dispatcher: public PhysicsEngine::Dispatcher {
+	public:
+		Dispatcher() {}
+		virtual ~Dispatcher() {}
+
+		virtual PhysicsEngine::Ptr makePhysicsEngine() const {
+			return ownedPtr(new BtSimulator());
+		}
+	};
+}
 
 BtPlugin::BtPlugin():Plugin("BtPlugin", "BtPlugin", "0.1") {}
 
@@ -43,7 +56,7 @@ Extension::Ptr BtPlugin::makeExtension(const std::string& str)
     if(str=="BtPhysicsEngine"){
         Extension::Ptr extension = rw::common::ownedPtr(
         		new Extension("BtPhysicsEngine","rwsim.simulator.PhysicsEngine",
-                this, ownedPtr(new BtSimulator()) ) );
+                this, ownedPtr(new Dispatcher()) ) );
 
         // todo: add possible properties to the extension descriptor
         extension->getProperties().set<std::string>("engineID", "Bullet");
