@@ -76,7 +76,7 @@ private slots:
 private:
     rw::models::WorkCell* _workcell;
 	rw::models::Device::Ptr _device;
-    std::auto_ptr<rw::models::Device> _compositeDevice;
+    rw::models::Device::Ptr _compositeDevice;
 
     QComboBox* _cmbDevices;
     QCheckBox* _planAllDev;

@@ -1,3 +1,7 @@
+if(POLICY CMP0046)
+  cmake_policy(SET CMP0046 OLD)
+endif()
+
 SET(SUBSYS_NAME rw_java )
 SET(SUBSYS_DESC "Interface for accessing RobWorkSim from java." )
 SET(SUBSYS_DEPS rw )

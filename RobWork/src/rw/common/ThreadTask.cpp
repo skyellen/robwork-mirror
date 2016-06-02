@@ -76,19 +76,22 @@ ThreadPool::Ptr ThreadTask::getThreadPool() {
 }
 
 void ThreadTask::run() {
-};
+
+}
 
 void ThreadTask::subTaskDone(ThreadTask* subtask) {
 	BOOST_FOREACH(const Exception& e, subtask->getExceptions()) {
 		registerFailure(e);
 	}
-};
+}
 
 void ThreadTask::idle() {
-};
+
+}
 
 void ThreadTask::done() {
-};
+
+}
 
 bool ThreadTask::execute() {
 	// Do a quick check on the state

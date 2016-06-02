@@ -85,12 +85,12 @@ namespace
 
 BOOST_AUTO_TEST_CASE(JointTest)
 {
-    std::auto_ptr<RevoluteJoint> rjoint(new RevoluteJoint("RevoluteJointA", Transform3D<>::identity()));
+    rw::common::Ptr<RevoluteJoint> rjoint = rw::common::ownedPtr(new RevoluteJoint("RevoluteJointA", Transform3D<>::identity()));
 
     BOOST_CHECK(rjoint->getBounds().first(0) < -1000000.0);
     BOOST_CHECK(rjoint->getBounds().second(0) > 1000000.0);
 
-	std::auto_ptr<PrismaticJoint> pjoint(new PrismaticJoint("PrismaticJointB",Transform3D<>::identity()));
+    rw::common::Ptr<PrismaticJoint> pjoint = rw::common::ownedPtr(new PrismaticJoint("PrismaticJointB",Transform3D<>::identity()));
     BOOST_CHECK(pjoint->getBounds().first(0) < -1000000.0);
     BOOST_CHECK(pjoint->getBounds().second(0) > 1000000.0);
 }

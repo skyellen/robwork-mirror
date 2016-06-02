@@ -323,7 +323,7 @@ namespace swig {
 	{
 		static char tmp[2048];
 		int idx = sprintf(tmp,"[");
-		for(int i=0;i<x.size();i++)
+		for (size_t i = 0; i < x.size(); i++)
 			idx += sprintf(&tmp[idx],"%s,", toString<T>(x[i]).c_str());
 		sprintf(&tmp[idx],"]");
 		return tmp;

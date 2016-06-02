@@ -159,11 +159,12 @@ namespace graphics {
         int _drawMask, _clearMask;
         //! reference frame
 
+        bool _depthTestEnabled;
+        bool _lightningEnabled;
         bool _clearBufferEnabled, _enabled;
         rw::graphics::DrawableNode::RenderInfo _renderInfo;
         SceneNode::Ptr _subGraph, _attachedTo;
         std::string _name;
-        bool _depthTestEnabled, _lightningEnabled;
 
         rw::math::Transform3D<> _t3d;
 

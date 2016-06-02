@@ -232,8 +232,8 @@ namespace {
         double center_x = scan->getWidth()/2.0;
         double center_y = scan->getHeight()/2.0;
 
-        for(size_t y=0;y<scan->getHeight();y++){
-            for(size_t x=0;x<scan->getWidth();x++){
+        for(size_t y = 0; y < static_cast<size_t>(scan->getHeight()); y++){
+            for(size_t x = 0; x < static_cast<size_t>(scan->getWidth()); x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
                 double r = std::sqrt( Math::sqr(x - center_x) + Math::sqr(y - center_y) );
                 // we convert to mm
@@ -307,6 +307,3 @@ void SimulatedKinect::reset(const rw::kinematics::State& state){
 rw::sensor::Sensor::Ptr SimulatedKinect::getSensorHandle(rwlibs::simulation::Simulator::Ptr simulator){
 	return _rsensor;
 }
-
-
-

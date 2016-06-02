@@ -50,7 +50,7 @@ Geometry::Geometry(GeometryData::Ptr data, double scale):
 	_mask(Geometry::CollisionGroup)
 {
 
-};
+}
 
 
 Geometry::Geometry(GeometryData::Ptr data, const std::string& name, double scale):
@@ -62,7 +62,7 @@ Geometry::Geometry(GeometryData::Ptr data, const std::string& name, double scale
 	_mask(Geometry::CollisionGroup)
 {
 
-};
+}
 	
 
 Geometry::Geometry(GeometryData::Ptr data,
@@ -75,9 +75,13 @@ Geometry::Geometry(GeometryData::Ptr data,
 	_name(makeName(data->getType())),
 	_mask(Geometry::CollisionGroup)
 {
-};
 
-Geometry::~Geometry(){};
+}
+
+Geometry::~Geometry()
+{
+
+}
 
 Geometry::Ptr Geometry::makeSphere(double radi){
     return ownedPtr(new Geometry(ownedPtr(new Sphere(radi))));

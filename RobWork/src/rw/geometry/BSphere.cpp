@@ -7,7 +7,7 @@
 using namespace rw::geometry;
 
 template <class T>
-BSphere<T> BSphere<T>::fitEigen(const rw::geometry::TriMesh& tris){
+BSphere<T> BSphere<T>::fitEigen(const rw::geometry::TriMesh& tris) {
     using namespace boost::numeric;
     using namespace rw::math;
     using namespace rw::geometry;
@@ -104,7 +104,7 @@ BSphere<T> BSphere<T>::fitEigen(const rw::geometry::TriMesh& tris){
     //Transform3D<T> trans(midPoint,rot);
     //std::cout << "Trans mid: " << trans.P() << std::endl;
     return BSphere<T>(midPoint, halfLength.norm2() );
-};
+}
 
 template class rw::geometry::BSphere<double>;
 template class rw::geometry::BSphere<float>;

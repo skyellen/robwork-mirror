@@ -65,6 +65,7 @@ bool ProximityStrategy::addModel(rw::models::Object::Ptr object)
 		}
 		return true;
     }
+    return false;
 }
 
 /*

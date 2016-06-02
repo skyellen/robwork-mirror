@@ -1,3 +1,8 @@
+IF(POLICY CMP0046)
+  # TEST_DEPENDENCIES is listed to contain too many targets that can't be found (such as paths to actual system libraries, etc.)
+  cmake_policy(SET CMP0046 OLD)
+ENDIF()
+
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp)

@@ -261,7 +261,8 @@ void SupportPoseAnalyserDialog::btnPressed(){
     	if(filename.empty())
     		return;
     	try{
-    		_path = PathLoader::loadTimedStatePath(*_wc,filename).release();
+                _path = ownedPtr(new rw::trajectory::TimedStatePath);
+    		*_path = PathLoader::loadTimedStatePath(*_wc,filename);
     	} catch(const Exception&) {
     		_path = NULL;
     		_ui->_dataLoadedLbl->setText("Load failed!");
@@ -274,7 +275,8 @@ void SupportPoseAnalyserDialog::btnPressed(){
     	if(filename.empty())
     		return;
     	try{
-    		_startPath = PathLoader::loadTimedStatePath(*_wc,filename).release();
+                _startPath = ownedPtr(new rw::trajectory::TimedStatePath);
+                *_startPath = PathLoader::loadTimedStatePath(*_wc,filename);
     	} catch(const Exception&) {
     		_startPath = NULL;
     		_ui->_dataLoadedLbl->setText("Load start poses failed!");

@@ -33,7 +33,6 @@ void INIArchive::doWriteEnterScope(const std::string& id)
     _scope.push_back(id);
     (*_ofs) << "[" << getScope() << "]\n";
 }
-;
 
 void INIArchive::doWriteLeaveScope(const std::string& id)
 {
@@ -42,7 +41,6 @@ void INIArchive::doWriteLeaveScope(const std::string& id)
     }
     _scope.pop_back();
 }
-;
 
 void INIArchive::doReadEnterScope(const std::string& id)
 {
@@ -50,7 +48,6 @@ void INIArchive::doReadEnterScope(const std::string& id)
     _ifs->getline(_line, MAX_LINE_WIDTH);
     //(*_ofs) << "[" << getScope() << "]\n";
 }
-;
 
 void INIArchive::doReadLeaveScope(const std::string& id)
 {
@@ -59,7 +56,6 @@ void INIArchive::doReadLeaveScope(const std::string& id)
     }
     _scope.pop_back();
 }
-;
 
 void INIArchive::doOpenArchive(const std::string& filename)
 {
@@ -99,7 +95,7 @@ void INIArchive::doWrite(boost::int8_t val, const std::string& id)
 
     //boost::int32_t tmp=val;std::cout << "uint stuff" << std::endl; writeValue<int>(tmp,id);
 }
-;
+
 void INIArchive::doWrite(boost::uint8_t val, const std::string& id)
 {
     (*_ofs) << id << "=" << (int) val << "\n";
@@ -169,4 +165,3 @@ bool INIArchive::getLine()
     }
     return valid;
 }
-

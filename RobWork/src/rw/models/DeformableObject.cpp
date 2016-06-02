@@ -139,17 +139,17 @@ void DeformableObject::setNode(int id, const rw::math::Vector3D<float>& v, rw::k
  void DeformableObject::update(rw::graphics::Model3D::Ptr model, const rw::kinematics::State& state){
 	 // check what model it is and update it with the nodes.
 	 // for now we assume only one model.
-	 typedef Vector3D<float> Vector3Df;
+	//  typedef Vector3D<float> Vector3Df;
 	 const std::vector<Vector3D<float> > &nodes = _rstate.getStateCache<DeformableObjectCache>(state)->_nodes;
 	 std::vector<Model3D::Object3D::Ptr> objects = model->getObjects();
 	 int objIndex=0, offset=0;
-	 for( int i = 0; i<nodes.size(); i++){
-		 if(objects[objIndex]->_vertices.size()>(i-offset)){
+	 for (int i = 0; i < static_cast<int>(nodes.size()); i++) {
+		 if(static_cast<int>(objects[objIndex]->_vertices.size()) > (i - offset)){
 			 objects[objIndex]->_vertices[i - offset] = nodes[i];
 			 std::cout << objects[objIndex]->_vertices[i - offset] << std::endl;
 		 } else {
 			 // check to see if the object should be changed
-			 if(objects.size()<objIndex+1){
+			 if(static_cast<int>(objects.size()) < objIndex + 1){
 				 objIndex++;
 				 offset = i;
 			 }
@@ -157,7 +157,7 @@ void DeformableObject::setNode(int id, const rw::math::Vector3D<float>& v, rw::k
 	 }
 
 	 // check if the number of faces has changed
-	 if( objects[0]->_faces.size() != _mesh->getNrTris() ){
+	 if (static_cast<int>(objects[0]->_faces.size()) != _mesh->getNrTris() ){
 		 // copy all ids
 		 objects[0]->_faces.resize( _mesh->getNrTris() );
 		 for(int i=0;i<_mesh->getNrTris();i++){

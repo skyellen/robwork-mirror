@@ -50,12 +50,6 @@ class AnyPtr {
         }
 
         template<typename ValueType>
-        AnyPtr(const std::auto_ptr<ValueType> & value)
-          : content(new holder<ValueType>(value))
-        {
-        }
-
-        template<typename ValueType>
         AnyPtr(const rw::common::Ptr<ValueType> & value)
           : content(new holder<ValueType>(value))
         {
@@ -145,7 +139,6 @@ class AnyPtr {
         public: // structors
 
             holder(ValueType* value): _ptr(value){}
-            holder(std::auto_ptr<ValueType> value):  _ptr(value){}
             holder(boost::shared_ptr<ValueType> value):  _ptr(value){}
             holder(Ptr<ValueType> value):  _ptr(value){}
 

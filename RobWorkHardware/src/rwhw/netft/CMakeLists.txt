@@ -30,7 +30,7 @@ IF( build )
     
     RW_ADD_LIBRARY(rwhw_netft netft ${SRC_CPP} ${SRC_HPP})
     RW_ADD_INCLUDES(netft "rwhw/netft" ${SRC_HPP})
-    ADD_DEPENDENCIES(rwhw_netft ${SUBSYS_DEPS} )    
+
     SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_netft;${Boost_LIBRARIES};")
 ENDIF()
 

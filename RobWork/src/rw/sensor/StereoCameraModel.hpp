@@ -33,18 +33,18 @@
 #include <rw/math/ProjectionMatrix.hpp>
 
 namespace rw { namespace sensor {
-   
+
    /** @addtogroup sensor */
    /* @{ */
-   
+
    /**
     * @brief The Camera class defines a general interface to a stereo camera.
     * A stereo camera consists of two cameras with the same intrinsic parameters,
     * but with different extrinsic parameters.
-    * 
+    *
     * Since ideal cameras are assumed, the intrinsics are given as a horizontal/vertical
     * pixel resolution as well as a horizontal field of view (FOV).
-    * 
+    *
     * The extrinsic parameters are given simply as two transformation matrices,
     * which give the pose of the cameras relative some external frame.
     *
@@ -58,13 +58,13 @@ namespace rw { namespace sensor {
          enum CalibrationFormat {
             OPENCV
          };
-         
+
          //! @brief FOV direction
          enum FOVDirection {
             HORIZONTAL,
             VERTICAL
          };
-         
+
          /**
           * @brief constructor
           * @param name [in] name of sensor
@@ -98,10 +98,10 @@ namespace rw { namespace sensor {
 
          //! set right image
          void setRightImage(Image::Ptr img, rw::kinematics::State& state);
-         
+
          /**
           * @brief utility function for saving a stereo calibration to a file
-          * 
+          *
           * @param filename [in] file to save to
           * @param fov [in] field of view (FOV) [rad]
           * @param wx [in] horizontal pixels
@@ -118,10 +118,10 @@ namespace rw { namespace sensor {
                                      const rw::math::Transform3D<>& TR,
                                      FOVDirection direction = HORIZONTAL,
                                      CalibrationFormat format = OPENCV);
-      
+
          /**
           * @brief utility function for writing a camera calibration to a stream
-          * 
+          *
           * @param os the stream to write to
           * @param fov field of view (FOV) [rad]
           * @param wx horizontal pixels
@@ -172,14 +172,14 @@ namespace rw { namespace sensor {
      	};
 
          //! name of camera model information
+         rw::kinematics::StatelessData<int> _sdata;
          rw::math::ProjectionMatrix _pmatrix;
          rw::math::Transform3D<> _TR, _TL;
-         rw::kinematics::StatelessData<int> _sdata;
-      
+
    };
-   
+
    /* @} */
-   
+
 }} // end namespaces
 
 #endif // end include guard

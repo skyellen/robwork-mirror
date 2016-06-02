@@ -1461,8 +1461,9 @@ public:
 %extend Path<Timed<State> > {
 	
 	static rw::common::Ptr<Path<Timed<State> > > load(const std::string& filename, rw::common::Ptr<WorkCell> wc){
-		std::auto_ptr<rw::trajectory::TimedStatePath> spath = 
-			rw::loaders::PathLoader::loadTimedStatePath(*wc, filename);
+		rw::common::Ptr<rw::trajectory::TimedStatePath> spath = 
+                    rw::common::ownedPtr(new rw::trajectory::TimedStatePath);
+                *spath = rw::loaders::PathLoader::loadTimedStatePath(*wc, filename);
 		return rw::common::Ptr<rw::trajectory::TimedStatePath>( spath );
 	}
 	
@@ -1487,8 +1488,8 @@ public:
 %extend Path<State > {
 	
 	static rw::common::Ptr<Path<State> > load(const std::string& filename, rw::common::Ptr<WorkCell> wc){
-		std::auto_ptr<rw::trajectory::StatePath> spath = 
-			rw::loaders::PathLoader::loadStatePath(*wc, filename);
+            rw::common::Ptr<rw::trajectory::StatePath> spath = rw::common::ownedPtr(new rw::trajectory::StatePath);
+            *spath = rw::loaders::PathLoader::loadStatePath(*wc, filename);
 		return rw::common::ownedPtr( spath );
 	}
 	

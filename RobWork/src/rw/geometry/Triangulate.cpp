@@ -69,7 +69,7 @@ bool Triangulate::insideTriangle2D(
     bCROSScp = bx*cpy - by*cpx;
 
     return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
-};
+}
 
 bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,int v,int w,int n,int *V)
 {

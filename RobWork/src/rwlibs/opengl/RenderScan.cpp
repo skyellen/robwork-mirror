@@ -57,15 +57,15 @@ void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawTy
 	// ignores drawstate
 	glPushMatrix();
 	float dist = _maxDepth-_minDepth;
-    for(size_t y=0; y<_img.getHeight(); y++){
+    for (size_t y = 0; y < static_cast<size_t>(_img.getHeight()); y++) {
     	// we only draw stuff that is within range
 
 		glBegin(GL_LINE_STRIP);
-        for(size_t x=0; x<_img.getWidth(); x++){
+        for (size_t x = 0; x < static_cast<size_t>(_img.getWidth()); x++) {
         	//Unused: const Vector3D<float> &v1 = _img.getData()[x+y*_img.getWidth()];
         	//if(fabs(v1[2])>_maxDepth || fabs(v1[2])<_minDepth)
         	//	continue;
-            
+
           //  for(size_t j=x; j<_img.getWidth(); j++){
         	const Vector3D<float> &v = _img.getData()[x+y*_img.getWidth()];
 //        	x = j;
@@ -75,7 +75,7 @@ void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawTy
 			glColor3f(col, 0.0, 1.0f-col);
 			glVertex3d(v(0), v(1), Math::clamp( (double)v(2) , -2, 0 ));    // Bottom Left
 	//        }
-            
+
         }
 		glEnd();
 
