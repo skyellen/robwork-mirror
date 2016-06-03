@@ -21,7 +21,6 @@ SET(SRC_FILES
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
-    invkin/ClosedFormURSolver.cpp
     
     #proximity/Raycast.cpp
     #proximity/BVTree.cpp
@@ -132,8 +131,6 @@ SET(SRC_FILES_HPP
 	#algorithms/PlaneConstraint.hpp
 	#algorithms/FixtureConstraint.hpp
 	#algorithms/ConstraintSandbox.hpp
-
-    invkin/ClosedFormURSolver.hpp
     
     algorithms/RANSACModel.hpp
     algorithms/PointModel.hpp
