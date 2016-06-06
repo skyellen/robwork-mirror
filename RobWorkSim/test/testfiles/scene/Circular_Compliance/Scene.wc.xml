@@ -1,0 +1,36 @@
+<WorkCell name="Circular_Compliant_KUKA_scene">
+
+    <Frame name="Hole" refframe="WORLD" type="Movable">
+	<RPY>0 0 0</RPY><Pos>0 0 0.0</Pos>
+
+    <Drawable name="Hole_geo">
+	<RPY>0 0 0</RPY><Pos>0 0 0.0</Pos>
+	<Polytope file="geometry/Hole_Ø32" />
+    </Drawable>
+
+    </Frame>
+
+
+   <Frame name="Robot" refframe="WORLD" type="Movable">
+	<RPY>0 0 0</RPY><Pos>0 0 0.25</Pos>
+    <Drawable name="Cup_geo" >
+	<RPY>0 180 0</RPY><Pos>0 0 0</Pos>
+	<Polytope file="geometry/Hole_Ø31" />
+    </Drawable>
+    </Frame>
+
+
+    <Frame name="Peg" refframe="Robot" type="Movable">
+	<RPY>180 0 180</RPY><Pos>0 0 -0.178</Pos>
+
+    <Drawable name="Peg_geo">
+	<RPY>0 0 90</RPY><Pos>0 0 -0.128</Pos>
+	<Polytope file="geometry/Circular_Ø32_tool" />  
+    </Drawable>
+
+    </Frame>
+    
+<!-- Collision setup  -->
+  <ProximitySetup file="ProximitySetup.xml" />
+
+</WorkCell>

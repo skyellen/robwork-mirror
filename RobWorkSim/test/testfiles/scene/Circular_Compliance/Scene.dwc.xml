@@ -1,0 +1,90 @@
+<DynamicWorkcell workcell="Scene.wc.xml">
+	<PhysicsEngine>
+		<!--CollisionMargin>0.001</CollisionMargin -->
+		<RestitutionModel>Newton</RestitutionModel>
+		<ContactModel>Guendel</ContactModel>
+		<AutoDisable>true</AutoDisable>
+		<Property name="StepMethod">WorldStep</Property>
+		<Property name="ContactSurfaceLayer" type="float">0.00005</Property><!--Default: 0.0001 -->
+		<Property name="MaxSepDistance" type="float">0.0001</Property><!--Default: 0.0005 -->
+		<Property name="WorldCFM" type="float">0.00000001</Property><!--Default: 0.0000001 -->
+	</PhysicsEngine>
+	<Gravity>0 0 -9.82</Gravity>
+	<Include file="DynamicMaterialDataBase.xml" />
+
+
+    <FixedBody frame="Hole">
+	<MaterialID>Plastic</MaterialID>
+    </FixedBody>
+
+    <KinematicBody frame="Robot">
+	<MaterialID>Plastic</MaterialID>
+    </KinematicBody>
+
+<!--
+    <RigidBody frame="Cup">
+	<Mass>0.1</Mass>
+
+	<Inertia>
+	0.000001 0 0
+	0 0.000001 0
+	0 0 0.000001
+	</inertia>
+	<COG>
+	0 0 0
+	</COG>
+	<Integrator>Euler</Integrator>
+	<MaterialID>Plastic</MaterialID>
+    </RigidBody>
+
+<!--
+    <RigidBody frame="Ball">
+	<Mass>2</Mass>
+	<EstimateInertia />
+	<Integrator>Euler</Integrator>
+	<MaterialID>Steel</MaterialID>
+	</RigidBody>
+-->
+    <RigidBody frame="Peg">
+	<Mass>0.3</Mass>
+	<Inertia>
+	0.00025 0 0
+	0 0.00025 0
+	0 0 0.000045
+	</inertia>
+	<COG>
+	0 0 0.05
+	</COG>
+	<Integrator>Euler</Integrator>
+	<MaterialID>Plastic</MaterialID>
+    </RigidBody>
+
+    <Constraint name="Spring" type="Free" parent="Robot" child="Peg">
+	<Transform3D>
+	    <Pos>0 0 -0.178</Pos>
+            <RPY>3.14159 0 3.14159</RPY>
+	</Transform3D>
+
+<Spring>
+        <Compliance>
+	0.001 0 0 0 0 0
+	0 0.001 0 0 0 0
+	0 0 0.001 0 0 0
+	0 0 0 0.33 0 0
+	0 0 0 0 0.33 0
+	0 0 0 0 0 0.33
+        </Compliance>
+        <Damping>
+	34 0 0 0 0 0
+	0 34 0 0 0 0
+	0 0 34 0 0 0
+	0 0 0 0.0001 0 0
+	0 0 0 0 0.0001 0
+	0 0 0 0 0 0.0001
+        </Damping>
+   	</Spring>
+    </Constraint>
+
+ <BodyContactSensor name="NutContactSensor" body="Peg" />
+
+</DynamicWorkcell>

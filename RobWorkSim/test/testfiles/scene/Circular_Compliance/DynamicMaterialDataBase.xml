@@ -1,0 +1,175 @@
+ <IncludeData>
+ 
+ <!-- define different materials. and for each material define properties for the material -->
+ <MaterialData>
+ 	<Default>Plastic</Default>
+    <Material id="Plastic"/>
+	<Material id="Rubber"><Description></Description> </Material>
+
+	<Material id="Aluminum"><Description></Description> </Material>
+	<Material id="Brake"><Description></Description> </Material>
+	<Material id="Brass"><Description></Description> </Material>
+	<Material id="Brick"><Description></Description> </Material>
+	<Material id="Bronze"><Description></Description> </Material>
+	<Material id="Bronze"><Description></Description> </Material>
+	<Material id="Cadmium"><Description></Description> </Material>
+	<Material id="CastIron"><Description></Description> </Material>
+	<Material id="Chromium"><Description></Description> </Material>
+	<Material id="Copper"><Description></Description> </Material>
+	<Material id="CopperLead"><Description></Description> </Material>
+	<Material id="Diamond"><Description></Description> </Material>
+	<Material id="Glass"><Description></Description> </Material>
+	<Material id="Graphite"><Description></Description> </Material>
+	<Material id="Hard"><Description></Description> </Material>
+	<Material id="Iron"><Description></Description> </Material>
+	<Material id="Lead"><Description></Description> </Material>
+	<Material id="Leather"><Description></Description> </Material>
+	<Material id="Magnesium"><Description></Description> </Material>
+	<Material id="Nickel"><Description></Description> </Material>
+	<Material id="Nylon"><Description></Description> </Material>
+	<Material id="Oak"><Description></Description> </Material>
+	<Material id="Platinum"><Description></Description> </Material>
+	<Material id="Plexiglas"><Description></Description> </Material>
+	<Material id="Polystyrene"><Description></Description> </Material>
+	<Material id="Polythene"><Description></Description> </Material>
+	<Material id="AsphaltDry"><Description></Description> </Material>
+	<Material id="AsphaltWet"><Description></Description> </Material>
+	<Material id="ConcreteDry"><Description></Description> </Material>
+	<Material id="ConcreteWet"><Description></Description> </Material>
+	<Material id="Saphire"><Description></Description> </Material>
+	<Material id="Silver"><Description></Description> </Material>
+	<Material id="MildSteel"><Description></Description> </Material>
+	<Material id="BrakeMaterial"><Description></Description> </Material>
+	<Material id="Steel"><Description></Description> </Material>
+	<Material id="SteelStainless"><Description></Description> </Material>
+	<Material id="HardCarbon"><Description></Description> </Material>
+	<Material id="OakParGrain"><Description>parallel grained oak</Description> </Material>
+	<Material id="OakCrossGrain"><Description>Cross grained oak</Description> </Material>
+	<Material id="Wood"><Description></Description> </Material>
+	<Material id="Metal"><Description></Description> </Material>
+	<Material id="MetalClean"><Description></Description> </Material>
+	<Material id="MetalWet"><Description></Description> </Material>
+ </MaterialData>
+ 
+ <!-- define the material data map. which is a map that defines properties between ma -->
+ <FrictionMap>
+	<Pair first="Plastic" second="Plastic"> <FrictionData type="Coulomb"> <Mu>0.0</Mu> </FrictionData> </Pair>
+	<Pair first="Rubber" second="Rubber"> <FrictionData type="Coulomb"> <Mu>1.0</Mu> </FrictionData> </Pair>
+	<Pair first="Plastic" second="Rubber"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> </FrictionData> </Pair>
+	<Pair first="Aluminum" second="Rubber"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> </FrictionData> </Pair>
+	<Pair first="Aluminum" second="Plastic"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> </FrictionData> </Pair>
+	
+	
+	<Pair first="Aluminum" second="Aluminum"> <FrictionData type="Coulomb"> <Mu>1.05</Mu> <Mud>1.0</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Aluminum" second="MildSteel"> <FrictionData type="Coulomb"> <Mu>0.61</Mu> <Mud>0.47</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="BrakeMaterial" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.4</Mu> <Mud>0.4</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="BrakeMaterial" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> <Mud>0.2</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="Brass" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.3</Mu> <Mud>0.3</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Brick" second="Wood"> <FrictionData type="Coulomb"> <Mu>0.6</Mu> <Mud>0.6</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="Bronze" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.22</Mu> <Mud>0.22</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Bronze" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.16</Mu> </FrictionData></Pair>	 	 	   
+	<Pair first="Cadmium" second="Cadmium"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> <Mud>0.5</Mud> </FrictionData></Pair>	 	
+	<Pair first="Cadmium" second="MildSteel"> <FrictionData type="Coulomb"> <Mu>0.46</Mu> <Mud>0.46</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="CastIron" second="CastIron"> <FrictionData type="Coulomb"> <Mu>1.1</Mu> <Mud>0.15</Mud> </FrictionData></Pair>
+	<Pair first="CastIron" second="Oak"> <FrictionData type="Coulomb"> <Mu>0.49</Mu> <Mud>0.49</Mud> </FrictionData></Pair>	 
+	<Pair first="Chromium" second="Chromium"> <FrictionData type="Coulomb"> <Mu>0.41</Mu> <Mud>0.41</Mud> </FrictionData></Pair>
+	<Pair first="Copper" second="CastIron"> <FrictionData type="Coulomb"> <Mu>1.05</Mu> <Mud>0.29</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Copper" second="Copper"> <FrictionData type="Coulomb"> <Mu>1.0</Mu> <Mud>1.0</Mud> </FrictionData></Pair>	 
+	<Pair first="Copper" second="MildSteel"> <FrictionData type="Coulomb"> <Mu>0.53</Mu> <Mud>0.36</Mud> </FrictionData></Pair>	
+	<Pair first="Copper" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.8</Mu> <Mud>0.8</Mud> </FrictionData></Pair>	 	 	
+	<Pair first="Copper" second="SteelStainless"> <FrictionData type="Coulomb"> <Mu>0.23</Mu> <Mud>0.21</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="CopperLead" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.22</Mu> </FrictionData></Pair>	 	 	 
+	<Pair first="Diamond" second="Diamond"> <FrictionData type="Coulomb"> <Mu>0.1</Mu> <Mud>0.1</Mud> </FrictionData></Pair>
+	<Pair first="Diamond" second="Metal"> <FrictionData type="Coulomb"> <Mu>0.1</Mu> <Mud>0.1</Mud> </FrictionData></Pair> 
+	<Pair first="Glass" second="Glass"> <FrictionData type="Coulomb"> <Mu>0.9</Mu> <Mud>0.4</Mud> </FrictionData></Pair>
+	<Pair first="Glass" second="Metal"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> <Mud>0.5</Mud> </FrictionData></Pair>
+	<Pair first="Glass" second="Nickel"> <FrictionData type="Coulomb"> <Mu>0.78</Mu> <Mud>0.56</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Graphite" second="Graphite"> <FrictionData type="Coulomb"> <Mu>0.1</Mu> <Mud>0.1</Mud> </FrictionData></Pair>
+	<Pair first="Graphite" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.1</Mu> <Mud>0.1</Mud> </FrictionData></Pair>
+	<Pair first="HardCarbon" second="HardCarbon"> <FrictionData type="Coulomb"> <Mu>0.16</Mu> <Mud>0.16</Mud> </FrictionData></Pair>	
+	<Pair first="HardCarbon" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.14</Mu> <Mud>0.14</Mud> </FrictionData></Pair>
+	<Pair first="Iron" second="Iron"> <FrictionData type="Coulomb"> <Mu>1.0</Mu> <Mud>1.0</Mud> </FrictionData></Pair>
+	<Pair first="Lead" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.43</Mu> <Mud>0.43</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Lead" second="Steel"> <FrictionData type="Coulomb"> <Mu>1.4</Mu> <Mud>1.4</Mud> </FrictionData></Pair>
+	<Pair first="Leather" second="Wood"> <FrictionData type="Coulomb"> <Mu>0.3</Mu> <Mud>0.3</Mud> </FrictionData></Pair> 	 	 	 	 
+	<Pair first="Leather" second="MetalClean"> <FrictionData type="Coulomb"> <Mu>0.6</Mu> <Mud>0.2</Mud> </FrictionData></Pair>
+	<Pair first="Leather" second="MetalWet"> <FrictionData type="Coulomb"> <Mu>0.4</Mu> <Mud></Mud> </FrictionData></Pair>
+	<Pair first="Leather" second="OakParGrain"> <FrictionData type="Coulomb"> <Mu>0.61</Mu> <Mud>0.52</Mud> </FrictionData></Pair>
+	<Pair first="Magnesium" second="Magnesium"> <FrictionData type="Coulomb"> <Mu>0.6</Mu> <Mud>0.6</Mud> </FrictionData></Pair>	 	 
+	<Pair first="Nickel" second="Nickel"> <FrictionData type="Coulomb"> <Mu>0.7</Mu> <Mud>0.53</Mud> </FrictionData></Pair>
+	<Pair first="Nickel" second="MildSteel"> <FrictionData type="Coulomb"> <Mu>0.64</Mu> <Mud>0.64</Mud> </FrictionData></Pair>
+	<Pair first="Nylon" second="Nylon"> <FrictionData type="Coulomb"> <Mu>0.15</Mu> <Mud>0.15</Mud> </FrictionData></Pair>
+	<Pair first="Oak" second="OakParGrain"> <FrictionData type="Coulomb"> <Mu>0.62</Mu> <Mud>0.48</Mud> </FrictionData></Pair>
+	<Pair first="Oak" second="OakCrossGrain"> <FrictionData type="Coulomb"> <Mu>0.54</Mu> <Mud>0.32</Mud> </FrictionData></Pair>
+	<Pair first="Platinum" second="Platinum"> <FrictionData type="Coulomb"> <Mu>1.2</Mu> <Mud>1.2</Mud> </FrictionData></Pair>
+	<Pair first="Plexiglas" second="Plexiglas"> <FrictionData type="Coulomb"> <Mu>0.8</Mu> <Mud>0.8</Mud> </FrictionData></Pair>
+	<Pair first="Plexiglas" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.4</Mu> <Mud>0.4</Mud> </FrictionData></Pair> 
+	<Pair first="Polystyrene" second="Polystyrene"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> <Mud>0.5</Mud> </FrictionData></Pair>
+	<!--Pair first="Polystyrene" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.3</Mu> <Mud>0.3</Mud> </FrictionData></Pair>
+	<Pair first="Polythene" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> <Mud>0.2</Mud> </FrictionData></Pair>
+	<Pair first="Rubber" second="Asphalt (Dry)"> <FrictionData type="Coulomb"> <Mu>0.5</Mu></FrictionData></Pair>
+	<Pair first="Rubber" second="Asphalt (Wet)"> <FrictionData type="Coulomb"> <Mu>0.25</Mu></FrictionData></Pair>  	 
+	<Pair first="Rubber" second="Concrete (Dry)"> <FrictionData type="Coulomb"> <Mu>0.6</Mu></FrictionData></Pair>
+	<Pair first="Rubber" second="Concrete (Wet)"> <FrictionData type="Coulomb"> <Mu>0.45</Mu> </FrictionData></Pair>
+	<Pair first="Saphire" second="Saphire"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> <Mud>0.2</Mud> </FrictionData></Pair>	 	
+	<Pair first="Silver" second="Silver"> <FrictionData type="Coulomb"> <Mu>1.4</Mu> <Mud>1.4</Mud> </FrictionData></Pair>
+	<Pair first="Sintered Bronze" second="Steel"> <FrictionData type="Coulomb">0.13</Mu> </FrictionData></Pair>
+	<Pair first="Solids" second="Rubber"> <FrictionData type="Coulomb"> <Mu>1.0</Mu> <Mud>1.0</Mud> </FrictionData></Pair> 
+	<Pair first="Steel" second="Aluminium Bros"> <FrictionData type="Coulomb"> <Mu>0.45</Mu> <Mud>0.45</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="Brass"> <FrictionData type="Coulomb"> <Mu>0.35</Mu> <Mud>0.35</Mud> </FrictionData></Pair>
+	<Pair first="Steel(Mild)" second="Brass"> <FrictionData type="Coulomb"> <Mu>0.51</Mu> <Mud>0.51</Mud> </FrictionData></Pair>
+	<Pair first="Steel (Mild)" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.23</Mu> <Mud>0.23</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.4</Mu> <Mud>0.4</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="Copper Lead Alloy"> <FrictionData type="Coulomb"> <Mu>0.22</Mu> <Mud>0.22</Mud> </FrictionData></Pair>
+	<Pair first="Steel (Hard)" second="Graphite"> <FrictionData type="Coulomb"> <Mu>0.21</Mu> <Mud>0.21</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="Graphite"> <FrictionData type="Coulomb"> <Mu>0.1</Mu> <Mud>0.1</Mud> </FrictionData></Pair>
+	<Pair first="Steel (Mild)" second="Lead"> <FrictionData type="Coulomb"> <Mu>0.95</Mu> <Mud>0.95</Mud> </FrictionData></Pair-->	
+	<!--Pair first="Steel (Mild)" second="Phos. Bros"> <FrictionData type="Coulomb"> <Mu>0.34</Mu> <Mud>0.173</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="Phos Bros"> <FrictionData type="Coulomb"> <Mu>0.35</Mu> <Mud>0.35</Mud> </FrictionData></Pair>	  	 	 	 
+	<Pair first="Steel(Hard)" second="Polythened"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> <Mud>0.2</Mud> </FrictionData></Pair>
+	<Pair first="Steel(Hard)" second="Polystyrene"> <FrictionData type="Coulomb"> <Mu>0.3</Mu> <Mud>0.3</Mud> </FrictionData></Pair>	 
+	<Pair first="Steel(Mild)" second="Steel(Mild)"> <FrictionData type="Coulomb"> <Mu>0.74</Mu> <Mud>0.57</Mud> </FrictionData></Pair>
+	<Pair first="Steel (Mild)" second="Steel (Mild)"> <FrictionData type="Coulomb"> <Mu>0.62</Mu> <Mud></Mud> </FrictionData></Pair>
+	<Pair first="Steel(Hard)" second="Steel (Hard)"> <FrictionData type="Coulomb"> <Mu>0.78</Mu> <Mud>0.42</Mud> </FrictionData></Pair>
+	<Pair first="Steel" second="ZincPlated"> <FrictionData type="Coulomb"> <Mu>0.5</Mu> <Mud>0.45</Mud> </FrictionData></Pair>
+	<Pair first="Teflon" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.04</Mu> <Mud>0.04</Mud> </FrictionData></Pair>
+	<Pair first="Teflon" second="Teflon"> <FrictionData type="Coulomb"> <Mu>0.04</Mu> <Mud>0.04</Mud> </FrictionData></Pair>
+	<Pair first="Tin" second="CastIron"> <FrictionData type="Coulomb"> <Mu>.32</Mu> <Mud>.32</Mud> </FrictionData></Pair>	 	 	 
+	<Pair first="Titanium(Grade 5)" second="Aluminium Alloy 6061-T6"> <FrictionData type="Coulomb"> <Mu>0.41</Mu> <Mud>0.38</Mud> </FrictionData></Pair>
+	<Pair first="Titanium(Grade 5)" second="Titanium Alloy Ti-6Al-4V(Grade 5)"> <FrictionData type="Coulomb"> <Mu>0.36</Mu> <Mud>0.30</Mud> </FrictionData></Pair>
+	<Pair first="Titanium(Grade 5)" second="Bronze"> <FrictionData type="Coulomb"> <Mu>0.36</Mu> <Mud>0.27</Mud> </FrictionData></Pair>
+	<Pair first="Tungsten Carbide" second="Tungsten Carbide"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> <Mud>0.2</Mud> </FrictionData></Pair>
+	<Pair first="Tungsten Carbide" second="Steel"> <FrictionData type="Coulomb"> <Mu>0.4</Mu> <Mud>0.4</Mud> </FrictionData></Pair> 
+	<Pair first="Tungsten Carbide" second="Copper"> <FrictionData type="Coulomb"> <Mu>0.35</Mu> <Mud>0.35</Mud> </FrictionData></Pair>
+	<Pair first="Tungsten Carbide" second="Iron"> <FrictionData type="Coulomb"> <Mu>0.8</Mu> <Mud>0.8</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="Wood" second="Wood(clean)"> <FrictionData type="Coulomb"> <Mu>0.25</Mu> </FrictionData></Pair>
+	<Pair first="Wood" second="Wood (Wet)"> <FrictionData type="Coulomb"> <Mu>0.2</Mu>  </FrictionData></Pair>
+	<Pair first="Wood" second="Metals(Clean)"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> </FrictionData></Pair>
+	<Pair first="Wood" second="Metals (Wet)"> <FrictionData type="Coulomb"> <Mu>0.2</Mu> </FrictionData></Pair>
+	<Pair first="Wood" second="Brick"> <FrictionData type="Coulomb"> <Mu>0.6</Mu> <Mud>0.6</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="Wood" second="Concrete"> <FrictionData type="Coulomb"> <Mu>0.62</Mu> <Mud>0.62</Mud> </FrictionData></Pair>	 	 	 	 
+	<Pair first="Zinc" second="Zinc"> <FrictionData type="Coulomb"> <Mu>0.6</Mu> <Mud>0.6</Mud> </FrictionData></Pair>	 	 
+	<Pair first="Zinc" second="CastIron"> <FrictionData type="Coulomb"> <Mu>0.85</Mu> <Mud>0.21</Mud> </FrictionData></Pair-->	 	 	  
+ </FrictionMap>
+ 
+ <!-- specify the object types that are available -->
+ <ObjectTypeData>
+  <Default>hardObj</Default>
+  <ObjectType id="hardObj">
+   <Description>A hard object. with low elasticity</Description> </ObjectType>
+  <ObjectType id="softObj">
+ 	<Description>A soft object. with high elasticity</Description> </ObjectType>	
+ </ObjectTypeData>
+ 
+  <!-- We all so need a contact data map. This map will contain contact 
+ 	    data information such as restitution coefficients between possible contacts -->
+ <ContactMap>
+  <Pair first="hardObj" second="hardObj"> 
+	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+  <Pair first="hardObj" second="softObj"> 
+  	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+  <Pair first="softObj" second="softObj"> 
+  	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+ </ContactMap>
+ 
+ </IncludeData>
