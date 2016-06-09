@@ -21,10 +21,10 @@
 
 
     <Frame name="Peg" refframe="Robot" type="Movable">
-	<RPY>180 0 180</RPY><Pos>0 0 -0.178</Pos>
+	<RPY>0 0 0</RPY><Pos>0 0 -0.178</Pos>
 
     <Drawable name="Peg_geo">
-	<RPY>0 0 90</RPY><Pos>0 0 -0.128</Pos>
+	<RPY>0 0 -90</RPY><Pos>0 0 0.128</Pos>
 	<Polytope file="geometry/Circular_Ø32_tool" />  
     </Drawable>
 
