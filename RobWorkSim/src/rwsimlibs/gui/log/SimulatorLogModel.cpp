@@ -36,7 +36,7 @@ SimulatorLogModel::~SimulatorLogModel() {
 
 void SimulatorLogModel::setRoot(rw::common::Ptr<const SimulatorLog> root) {
 	_root = root;
-	reset();
+	beginResetModel();
 }
 
 int SimulatorLogModel::rowCount(const QModelIndex &parent) const {
@@ -126,7 +126,7 @@ QModelIndex SimulatorLogModel::parent(const QModelIndex &child) const {
 }
 
 void SimulatorLogModel::update() {
-	reset();
+	beginResetModel();
 }
 
 bool SimulatorLogModel::setData(const QModelIndex& index, const QVariant& value, int role) {

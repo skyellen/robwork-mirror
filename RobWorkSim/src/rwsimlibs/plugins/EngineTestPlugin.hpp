@@ -27,6 +27,8 @@
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rwsimlibs/test/EngineTest.hpp>
 
+#include <QListWidgetItem>
+
 class PropertyViewEditor;
 namespace rw { namespace common { class ThreadPool; } }
 namespace rw { namespace common { class ThreadTask; } }

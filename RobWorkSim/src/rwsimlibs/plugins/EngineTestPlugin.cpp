@@ -21,6 +21,7 @@
 #include <rw/common/ThreadPool.hpp>
 #include <rw/common/ThreadTask.hpp>
 
+#include <RobWorkStudioConfig.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rws/propertyview/PropertyViewEditor.hpp>
 
@@ -97,7 +98,11 @@ EngineTestPlugin::EngineTestPlugin():
     header.push_back("Name");
     header.push_back("View");
     _ui->results->setHorizontalHeaderLabels(header);
+#if RWS_USE_QT5
+	_ui->results->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
 	_ui->results->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
 	_ui->results->horizontalHeader()->setStretchLastSection(true);
 
     // Test

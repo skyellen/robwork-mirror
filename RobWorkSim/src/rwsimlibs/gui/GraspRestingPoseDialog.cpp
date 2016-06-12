@@ -399,7 +399,7 @@ void GraspRestingPoseDialog::initializeStart(){
 
     std::ofstream file( filename.str().c_str() );
     if(!file.is_open())
-        RW_THROW("CANNOT OPEN FILE! "<< filename);
+        RW_THROW("CANNOT OPEN FILE! " << filename.str());
 
     pmap_filename << pathPre << "/progress.xml";
 

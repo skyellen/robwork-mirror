@@ -183,13 +183,13 @@ void ContactSetWidget::contactSetPairsChanged(const QItemSelection&, const QItem
 		itemB->setData(Qt::ToolTipRole,hover);
 		itemC->setData(Qt::ToolTipRole,hover);
 		if (c.getDepth() > 0) {
-			itemA->setData(Qt::ForegroundRole,Qt::red);
-			itemB->setData(Qt::ForegroundRole,Qt::red);
-			itemC->setData(Qt::ForegroundRole,Qt::red);
+			itemA->setData(Qt::ForegroundRole, QColor(Qt::red));
+			itemB->setData(Qt::ForegroundRole, QColor(Qt::red));
+			itemC->setData(Qt::ForegroundRole, QColor(Qt::red));
 		} else {
-			itemA->setData(Qt::ForegroundRole,Qt::green);
-			itemB->setData(Qt::ForegroundRole,Qt::green);
-			itemC->setData(Qt::ForegroundRole,Qt::green);
+			itemA->setData(Qt::ForegroundRole, QColor(Qt::green));
+			itemB->setData(Qt::ForegroundRole, QColor(Qt::green));
+			itemC->setData(Qt::ForegroundRole, QColor(Qt::green));
 		}
 		itemA->setData(Qt::UserRole,QVariant::fromValue(i));
 		_ui->_contactTable->setItem(row,0,itemA);
