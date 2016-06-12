@@ -39,10 +39,10 @@ Transform3D<> halfTransform(const Transform3D<>& T1, const Transform3D<>& T2) {
 }
 
 BOOST_AUTO_TEST_CASE( TrajectoryFactoryTest ){
-	BOOST_MESSAGE(" - TrajectoryFactoryTest");
+	BOOST_TEST_MESSAGE(" - TrajectoryFactoryTest");
 
 	{
-		BOOST_MESSAGE(" - - makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times)");
+		BOOST_TEST_MESSAGE(" - - makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times)");
 		Transform3DPath path;
 		std::vector<double> times;
 		const Transform3D<> T1 = Transform3D<>::identity();

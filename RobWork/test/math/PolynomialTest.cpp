@@ -22,7 +22,7 @@
 using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(PolynomialTest){
-    BOOST_MESSAGE("- Testing Polynomial");
+    BOOST_TEST_MESSAGE("- Testing Polynomial");
 
     // Test polynomial: 3 t^8 - 3 t^7 + 14 t^6 + 85 t^5 + 2000 t^4 - 100 t^3 - 2500 t^2 + 50 t + 600
     const double coef[] = {600,50,-2500,-100,2000,85,14,-3,3};

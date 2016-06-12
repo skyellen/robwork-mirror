@@ -6,7 +6,7 @@
 using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(Wrench6DTest) {
-    BOOST_MESSAGE("- Testing Wrench6D");
+    BOOST_TEST_MESSAGE("- Testing Wrench6D");
   {
       /* Verify that a default wrench contains 0 */
       Wrench6D<> wrench;

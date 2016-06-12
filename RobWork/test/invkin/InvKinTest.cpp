@@ -36,7 +36,7 @@ int testIKSolver(
     MakeIKSolver maker,
     double relativeDisplacement)
 {
-    BOOST_MESSAGE("- Testing " << solverName);
+    BOOST_TEST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
     WorkCell::Ptr workcell = WorkCellFactory::load(testFilePath() + "PA10/pa10.xml");
     Device* any_device = workcell->getDevices().at(0).get();
@@ -99,7 +99,7 @@ int testMultiIKSolver(
     MakeMultiIKSolver maker,  
     double relativeDisplacement) 
 {
-    BOOST_MESSAGE("- Testing " << solverName);
+    BOOST_TEST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     WorkCell::Ptr workcell = WorkCellFactory::load(
         testFilePath() + "SchunkHand/SchunkHand.xml");  
@@ -237,7 +237,7 @@ IterativeMultiIK::Ptr makeJacobianIKSolverMDLS(TreeDevice* device, State& state)
 BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
 {
     int errcnt = 0;
-    BOOST_MESSAGE("InverseKinematicsTestSuite");
+    BOOST_TEST_MESSAGE("InverseKinematicsTestSuite");
     // We seed the random number generator so that we get reproducible results.
     Math::seed(0);
 

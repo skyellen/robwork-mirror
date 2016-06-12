@@ -39,7 +39,7 @@ using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(MetricTest)
 {
-	BOOST_MESSAGE("- Testing MetricFactory");
+	BOOST_TEST_MESSAGE("- Testing MetricFactory");
 	Vector2D<> v21(0.1, 0.2);
 	Vector3D<> v31(0.1, 0.2, 0.3);
 	Q q1(3, 0.1, 0.2, 0.3);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(MetricTest)
 
 BOOST_AUTO_TEST_CASE(Rotation2DTest)
 {
-    BOOST_MESSAGE("- Testing Rotation2D");
+    BOOST_TEST_MESSAGE("- Testing Rotation2D");
 
     const Vector2D<std::string> i("i1", "i2");
     const Vector2D<std::string> j("j1", "j2");
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(Rotation2DTest)
 
 BOOST_AUTO_TEST_CASE(Rotation3DTest)
 {
-    BOOST_MESSAGE("- Testing Rotation3D");
+    BOOST_TEST_MESSAGE("- Testing Rotation3D");
 
     const Vector3D<std::string> i("i1", "i2", "i3");
     const Vector3D<std::string> j("j1", "j2", "j3");
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(Rotation3DTest)
 
 BOOST_AUTO_TEST_CASE(QTest)
 {
-	BOOST_MESSAGE("- Testing Q");
+	BOOST_TEST_MESSAGE("- Testing Q");
 	{
 		double arr[] = {0.1, 0.2, 0.3};
 		Q q1(3,arr);

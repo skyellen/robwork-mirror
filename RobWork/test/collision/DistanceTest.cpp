@@ -66,7 +66,7 @@ namespace
 
 void testStrategy0(const DistanceStrategy::Ptr& strategy)
 {
-    BOOST_MESSAGE("- Test Strategy0");
+    BOOST_TEST_MESSAGE("- Test Strategy0");
 
     strategy->clear();
 
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( mainDistanceTest )
 
 
     if (strategies.empty()) {
-        BOOST_MESSAGE("No collision strategies available!\n");
+		BOOST_TEST_MESSAGE("No collision strategies available!\n");
     } else {
         //testCollisionStrategies( strategies);
     }

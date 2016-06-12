@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( TrajectorySequenceTest ) {
 BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 
     {
-        BOOST_MESSAGE("Testing if exceptions are cast when too small paths are given as arguments!");
+        BOOST_TEST_MESSAGE("Testing if exceptions are cast when too small paths are given as arguments!");
         // check throw on empty QPath
         QPath::Ptr path = ownedPtr(new QPath());
         BOOST_CHECK_THROW( CubicSplineFactory::makeNaturalSpline(path), rw::common::Exception );
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 
     // here we test the cubic path interpolation
     {
-        BOOST_MESSAGE("Testing natural spline generation on PATH");
+        BOOST_TEST_MESSAGE("Testing natural spline generation on PATH");
         QPath::Ptr path = ownedPtr(new QPath());
         Q q = Q::zero(7);
         q(0) = 1;
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
         //}
 
-        BOOST_MESSAGE("Testing clamped spline generation on PATH");
+        BOOST_TEST_MESSAGE("Testing clamped spline generation on PATH");
         Q start = Q::zero(7), end = Q::zero(7);
         start[0] = 1;
         end[0] = -1;
@@ -297,7 +297,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
     // here we test the cubic path interpolation
     //////// ************ for some reason this makes assertion
     {
-        BOOST_MESSAGE("Testing natural spline generation on TIMEDPATH");
+        BOOST_TEST_MESSAGE("Testing natural spline generation on TIMEDPATH");
         Ptr< TimedQPath > path = rw::common::ownedPtr(new TimedQPath());
         Q q = Q::zero(7);
         q(0) = 1;
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
         //}
 
-        BOOST_MESSAGE("Testing clamped spline generation on TIMEDPATH");
+        BOOST_TEST_MESSAGE("Testing clamped spline generation on TIMEDPATH");
         Q start = Q::zero(7), end = Q::zero(7);
         start[0] = 1;
         end[0] = -1;

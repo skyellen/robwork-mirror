@@ -167,7 +167,7 @@ Quaternion<> toQuat( const Rotation3D<>& rot){
 
 
 BOOST_AUTO_TEST_CASE(QuaternionConversionTest){
-    BOOST_MESSAGE("- Testing Quaternion - Rotation conversion test");
+    BOOST_TEST_MESSAGE("- Testing Quaternion - Rotation conversion test");
     // we generate a large amount of random rotations and and convert to and from rotation3d
     const size_t count = 100000;
     std::vector<Rotation3D<> > rotations(count);
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(QuaternionConversionTest){
 }
 
 BOOST_AUTO_TEST_CASE(QuaternionTest){
-    BOOST_MESSAGE("- Testing Quaternion");
+    BOOST_TEST_MESSAGE("- Testing Quaternion");
 
     //std::cout << "after \n" << Quaternion<>(r3d_after) << std::endl;
     //std::cout << "RPY bfore \n" << RPY<>(r3d) << std::endl;

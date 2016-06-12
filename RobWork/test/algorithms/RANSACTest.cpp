@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(RANSACLineTest) {
 	 * Test file contains 10 points lying on a line with noise of sigma=0.1 added to their position.
 	 * Test file also contains 5 random outliers.
 	 */
-	BOOST_MESSAGE("- Testing line fitting with RANSAC");
+	BOOST_TEST_MESSAGE("- Testing line fitting with RANSAC");
 	
 	std::srand(2); // fix permutation order in findModels
 	
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(RANSACStructuredLineTest) {
 	 * Test file contains 10 points lying on a line with noise of sigma=0.1 added to their position.
 	 * Test file also contains 5 random outliers.
 	 */
-	BOOST_MESSAGE("- Testing structured line fitting with RANSAC");
+	BOOST_TEST_MESSAGE("- Testing structured line fitting with RANSAC");
 	
 	std::srand(3);
 	
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(RANSACPlaneTest) {
 	 * Test file contains 10 points lying on a line with noise of sigma=0.1 added to their position.
 	 * Test file also contains 5 random outliers.
 	 */
-	BOOST_MESSAGE("- Testing plane fitting with RANSAC");
+	BOOST_TEST_MESSAGE("- Testing plane fitting with RANSAC");
 	
 	std::srand(3547); // This is extremely random - a seed between 0 and 3546 causes the test to fail!
 	
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(RANSACStablePose1DTest) {
 	 * Test file contains 10 points with orientations matching a stable pose with noise of sigma=5deg.
 	 * Test file also contains 5 random outliers.
 	 */
-	BOOST_MESSAGE("- Testing stable pose 1 dof fitting with RANSAC");
+	BOOST_TEST_MESSAGE("- Testing stable pose 1 dof fitting with RANSAC");
 	
 	std::srand(0);
 	
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(RANSACStablePose0DTest) {
 	 * Test file contains 10 points with orientations matching a stable pose with noise of sigma=5deg.
 	 * Test file also contains 5 random outliers.
 	 */
-	BOOST_MESSAGE("- Testing stable pose 0 dof fitting with RANSAC");
+	BOOST_TEST_MESSAGE("- Testing stable pose 0 dof fitting with RANSAC");
 	
 	std::srand(0);
 	

@@ -36,7 +36,7 @@ using rwlibs::opengl::DrawableFactory;
 //using namespace rw::kinematics;
 
 BOOST_AUTO_TEST_CASE( testSTLLoading ){
-    BOOST_MESSAGE("- testing loading");
+	BOOST_TEST_MESSAGE("- testing loading");
     // test loading stl file
     rwlibs::opengl::Drawable::Ptr stlaObject =
     		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/chair.stla", "chair" );
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( testIVGLoading ){
 
 BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
-    BOOST_MESSAGE("- testing DrawableFactory");
+	BOOST_TEST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
     rwlibs::opengl::Drawable::Ptr stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/chair", "chair3");
     rwlibs::opengl::Drawable::Ptr stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/cube", "cube3");

@@ -6,15 +6,19 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/version.hpp>
 #include <iostream>
 
 #ifdef RW_USE_BOOST_STATIC_TEST_LIBS
 #include <boost/test/unit_test.hpp>
-#include <boost/test/detail/unit_test_parameters.hpp>
 #else
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/detail/unit_test_parameters.hpp>
 #endif
+//#if BOOST_VERSION >= 105900
+//#include <boost/test/unit_test_parameters.hpp>
+//#else
+//#include <boost/test/detail/unit_test_parameters.hpp>
+//#endif
 using boost::unit_test::test_suite;
 
 /**
@@ -29,7 +33,7 @@ public:
 	~InitRobWork(){ }
 };
 
-BOOST_GLOBAL_FIXTURE( InitRobWork )
+BOOST_GLOBAL_FIXTURE(InitRobWork);
 
 std::string _testfilesDir;
 std::string testFilePath() { return _testfilesDir; }

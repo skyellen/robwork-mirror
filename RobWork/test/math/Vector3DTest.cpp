@@ -35,7 +35,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(Vector3DTest)
 {
-    BOOST_MESSAGE("- Testing Vector3D");
+    BOOST_TEST_MESSAGE("- Testing Vector3D");
     const Vector3D<> v1(1.0, 2.0, 3.0);
     const Vector3D<> v2(v1);
     const Vector3D<> v3 = v1 + v2;

@@ -27,7 +27,7 @@ using namespace Eigen;
 using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
-    BOOST_MESSAGE("- Testing LinearAlgebra");
+    BOOST_TEST_MESSAGE("- Testing LinearAlgebra");
     EAA<> eaa(Vector3D<>(1.0, 0.0, 0.0), Pi/4.0);
     Rotation3D<> r = eaa.toRotation3D();
 
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     A(3,0) = 1;
     A(0,3) = 1;
 
-    BOOST_MESSAGE("-- Check Symmetric Matrix EigenValue Decomposition...");
+    BOOST_TEST_MESSAGE("-- Check Symmetric Matrix EigenValue Decomposition...");
     std::pair<Eigen::MatrixXd, Eigen::VectorXd > val1 = LinearAlgebra::eigenDecompositionSymmetric(A);
     for (size_t i = 0; i<(size_t)A.cols(); i++) {
 		Eigen::VectorXd x = val1.first.col(i);
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
 		BOOST_CHECK((r1-r2).lpNorm<Eigen::Infinity>() < 1e-12);
     }
 
-    BOOST_MESSAGE("-- Check Matrix EigenValue Decomposition...");
+    BOOST_TEST_MESSAGE("-- Check Matrix EigenValue Decomposition...");
     A(1,2) = 5; //make it unsymmetric
 
     std::pair<Eigen::MatrixXcd, Eigen::VectorXcd > val2 = LinearAlgebra::eigenDecomposition(A);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
         BOOST_CHECK(norm_inf(r1-r2) < 1e-12);
     }*/
 
-    BOOST_MESSAGE("-- Check Matrix Inverse...");
+    BOOST_TEST_MESSAGE("-- Check Matrix Inverse...");
     {
     	const Eigen::MatrixXd inv = LinearAlgebra::inverse(A);
     	Eigen::MatrixXd invExp(4,4);

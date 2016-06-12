@@ -25,7 +25,7 @@ public:
     ~InitRobWorkSim(){ }
 };
 
-BOOST_GLOBAL_FIXTURE( InitRobWorkSim )
+BOOST_GLOBAL_FIXTURE(InitRobWorkSim);
 
 std::string _testfilesDir;
 std::string testFilePath() { return _testfilesDir; }

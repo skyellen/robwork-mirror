@@ -29,7 +29,7 @@ using namespace rw::models;
 using namespace rwsim::dynamics;
 
 BOOST_AUTO_TEST_CASE( ConstraintTest ) {
-	BOOST_MESSAGE("- ConstraintTest");
+	BOOST_TEST_MESSAGE("- ConstraintTest");
 
 	const RigidObject::Ptr objectA = ownedPtr(new RigidObject(new MovableFrame("BodyA")));
 	const RigidObject::Ptr objectB = ownedPtr(new RigidObject(new MovableFrame("BodyB")));
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 	const Transform3D<> pTc(Vector3D<>(-1.1,2.2,-3.3),EAA<>(0,-Pi,0).toRotation3D());
 
 	{
-		BOOST_MESSAGE("- - Fixed");
+		BOOST_TEST_MESSAGE("- - Fixed");
 		Constraint c("Constraint",Constraint::Fixed,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Fixed);
 		BOOST_CHECK_EQUAL(c.getDOF(), 0);
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK_EQUAL(c.getDOFAngular(), 0);
 	}
 	{
-		BOOST_MESSAGE("- - Prismatic");
+		BOOST_TEST_MESSAGE("- - Prismatic");
 		Constraint c("Constraint",Constraint::Prismatic,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Prismatic);
 		BOOST_CHECK_EQUAL(c.getDOF(), 1);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK(c.getLimit(0).lowOn == limit.lowOn);
 	}
 	{
-		BOOST_MESSAGE("- - Revolute");
+		BOOST_TEST_MESSAGE("- - Revolute");
 		Constraint c("Constraint",Constraint::Revolute,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Revolute);
 		BOOST_CHECK_EQUAL(c.getDOF(), 1);
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK(c.getTransform() == pTc);
 	}
 	{
-		BOOST_MESSAGE("- - Universal");
+		BOOST_TEST_MESSAGE("- - Universal");
 		Constraint c("Constraint",Constraint::Universal,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Universal);
 		BOOST_CHECK_EQUAL(c.getDOF(), 2);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK(c.getBody2() == &bodyB);
 	}
 	{
-		BOOST_MESSAGE("- - Spherical");
+		BOOST_TEST_MESSAGE("- - Spherical");
 		Constraint c("Constraint",Constraint::Spherical,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Spherical);
 		BOOST_CHECK_EQUAL(c.getDOF(), 3);
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK_EQUAL(c.getDOFAngular(), 3);
 	}
 	{
-		BOOST_MESSAGE("- - Piston");
+		BOOST_TEST_MESSAGE("- - Piston");
 		Constraint c("Constraint",Constraint::Piston,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Piston);
 		BOOST_CHECK_EQUAL(c.getDOF(), 2);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK_EQUAL(c.getDOFAngular(), 1);
 	}
 	{
-		BOOST_MESSAGE("- - PrismaticRotoid");
+		BOOST_TEST_MESSAGE("- - PrismaticRotoid");
 		Constraint c("Constraint",Constraint::PrismaticRotoid,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::PrismaticRotoid);
 		BOOST_CHECK_EQUAL(c.getDOF(), 2);
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK_CLOSE(c.getSpringParams().damping(0,1), 4.321, std::numeric_limits<double>::epsilon());
 	}
 	{
-		BOOST_MESSAGE("- - PrismaticUniversal");
+		BOOST_TEST_MESSAGE("- - PrismaticUniversal");
 		Constraint c("Constraint",Constraint::PrismaticUniversal,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::PrismaticUniversal);
 		BOOST_CHECK_EQUAL(c.getDOF(), 3);
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( ConstraintTest ) {
 		BOOST_CHECK(!c.getLimit(2).lowOn);
 	}
 	{
-		BOOST_MESSAGE("- - Free");
+		BOOST_TEST_MESSAGE("- - Free");
 		Constraint c("Constraint",Constraint::Free,&bodyA,&bodyB);
 		BOOST_CHECK(c.getType() == Constraint::Free);
 		BOOST_CHECK_EQUAL(c.getDOF(), 6);

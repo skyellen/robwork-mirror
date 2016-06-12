@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( testPartialIndexTable )
 
 void testPathPlanning(const CollisionStrategy::Ptr& strategy)
 {
-    BOOST_MESSAGE("PathPlanningTestSuite");
+    BOOST_TEST_MESSAGE("PathPlanningTestSuite");
     WorkCell::Ptr workcell = WorkCellLoader::Factory::load(testFilePath() + "simple/workcell.wc.xml");
 
     Device::Ptr device = workcell->findDevice("PA10");

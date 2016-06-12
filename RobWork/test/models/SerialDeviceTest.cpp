@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(forwardKinematicsTest)
     // frames added to the tree.
     // Which means they have to be allocated with new
     // Define the world frame and construct the frame Tree
-    BOOST_MESSAGE("- testing serialdevice forward kinematics ");
+    BOOST_TEST_MESSAGE("- testing serialdevice forward kinematics ");
     boost::shared_ptr<StateStructure> tree =
         boost::shared_ptr<StateStructure>(new StateStructure());
     Frame *world = tree->getRoot();

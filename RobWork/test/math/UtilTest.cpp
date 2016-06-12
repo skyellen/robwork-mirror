@@ -28,7 +28,7 @@ using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(UtilTest)
 {
-    BOOST_MESSAGE("- Testing Utils");
+    BOOST_TEST_MESSAGE("- Testing Utils");
     Quaternion<> q(0.1, 0.2, 0.3, 0.4);
     q.normalize();
     const EAA<> eaa(1,2,3);
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
 {
 	// The boost random generator uses Mersenne twister pseudo-random generator
 	// The random values should therefore be deterministic for a given seed
-    BOOST_MESSAGE("- Testing Random Seeds");
+    BOOST_TEST_MESSAGE("- Testing Random Seeds");
     // Check that the correct values are obtained, and that seeding with the same
     // value gives same result.
     for (unsigned int i = 0; i < 2; i++) {
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(ranTransform3D) {
 }
 
 BOOST_AUTO_TEST_CASE(MatrixVectorConvertionTest) {
-    BOOST_MESSAGE("- Testing matrix to/from vector utiliy functions");
+    BOOST_TEST_MESSAGE("- Testing matrix to/from vector utiliy functions");
     // Test Math convenience functions for serialization and deserialization of matrix types.
     Math::seed(829);
     const Transform3D<> T = Math::ranTransform3D<double>();

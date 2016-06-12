@@ -22,7 +22,7 @@ using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(Vector2DTest)
 {
-    BOOST_MESSAGE("- Testing Vector2D");
+    BOOST_TEST_MESSAGE("- Testing Vector2D");
     Vector2D<> v1(1.0, 2.0);
     Vector2D<> v2(v1);
     Vector2D<> v3 = v1+v2;

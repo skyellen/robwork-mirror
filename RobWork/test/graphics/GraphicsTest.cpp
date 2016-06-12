@@ -40,7 +40,7 @@ using namespace rw::kinematics;
 using namespace rw::loaders;
 
 BOOST_AUTO_TEST_CASE( testSTLLoading ){
-    BOOST_MESSAGE("- testing loading");
+	BOOST_TEST_MESSAGE("- testing loading");
     // test loading stl file
     Model3D::Ptr stlaObject =
     		Model3DFactory::loadModel( testFilePath() + "geoms/chair.stla", "chair" );
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( testIVGLoading ){
 
 BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
-    BOOST_MESSAGE("- testing DrawableFactory");
+	BOOST_TEST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
     Model3D::Ptr stlaObject = Model3DFactory::loadModel(testFilePath() + "geoms/chair", "chair3");
     Model3D::Ptr stlbObject = Model3DFactory::loadModel(testFilePath() + "geoms/cube", "cube3");

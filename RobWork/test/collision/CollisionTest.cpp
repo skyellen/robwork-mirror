@@ -171,7 +171,7 @@ void testCollisionStrategies(const std::vector<CollisionStrategyPtr>& strategies
 */
 void testStrategy0(const CollisionStrategy::Ptr& strategy)
 {
-    BOOST_MESSAGE("- Test Strategy0");
+	BOOST_TEST_MESSAGE("- Test Strategy0");
 
     strategy->clear();
 
@@ -199,7 +199,7 @@ void testStrategy0(const CollisionStrategy::Ptr& strategy)
 
 void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
 {
-    BOOST_MESSAGE("- Test Strategy1");
+	BOOST_TEST_MESSAGE("- Test Strategy1");
 
     strategy->clear();
 
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE( mainCollisionTest )
 
 
     if (strategies.empty()) {
-        BOOST_MESSAGE("No collision strategies available!\n");
+		BOOST_TEST_MESSAGE("No collision strategies available!\n");
     } else {
         //testCollisionStrategies( strategies);
     }

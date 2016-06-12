@@ -25,7 +25,7 @@
 using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(Pose6DTest){
-    BOOST_MESSAGE("- Testing Pose6D");
+	BOOST_TEST_MESSAGE("- Testing Pose6D");
     Pose6D<double> p(1.1,2.2,3.3,4.4,5.5,6.6);
 
     BOOST_CHECK(p(0) == 1.1);

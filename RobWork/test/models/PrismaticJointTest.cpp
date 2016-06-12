@@ -23,7 +23,7 @@ using namespace rw::math;
 using namespace rw::models;
 
 BOOST_AUTO_TEST_CASE(PrismaticJointTest) {
-	BOOST_MESSAGE("- Basic Implementation");
+	BOOST_TEST_MESSAGE("- Basic Implementation");
 	{
 		const Rotation3D<> rot = RPY<>(0,Pi/2,0).toRotation3D();
 		const PrismaticJoint joint("Joint",Transform3D<>(Vector3D<>::z()*0.1,rot));
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(PrismaticJointTest) {
 		BOOST_CHECK_SMALL((post.P()-expPos).normInf(),std::numeric_limits<double>::epsilon());
 	}
 
-	BOOST_MESSAGE("- Zero Rotation Implementation");
+	BOOST_TEST_MESSAGE("- Zero Rotation Implementation");
 	{
 		const PrismaticJoint joint("Joint",Transform3D<>(Vector3D<>::z()*0.1));
 		const Transform3D<> wTp(Vector3D<>::x()*0.05,RPY<>(0,-Pi/4,0).toRotation3D());
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(PrismaticJointTest) {
 		BOOST_CHECK_SMALL((post.P()-expPos).normInf(),std::numeric_limits<double>::epsilon());
 	}
 
-	BOOST_MESSAGE("- Zero Translation Implementation");
+	BOOST_TEST_MESSAGE("- Zero Translation Implementation");
 	{
 		const Rotation3D<> rot = RPY<>(0,Pi/2,0).toRotation3D();
 		const PrismaticJoint joint("Joint",Transform3D<>(rot));

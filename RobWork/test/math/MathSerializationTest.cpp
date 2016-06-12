@@ -31,7 +31,7 @@ const static double EPS = 5*std::numeric_limits<double>::epsilon();
 const static double EPS_ROT = 1e-5;
 
 BOOST_AUTO_TEST_CASE(MathSerializationTest) {
-    BOOST_MESSAGE("- Testing serialization of math types.");
+    BOOST_TEST_MESSAGE("- Testing serialization of math types.");
 
     std::list<Archive*> archives;
     archives.push_back(new INIArchive());
@@ -42,10 +42,10 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
         OutputArchive* const oar = dynamic_cast<OutputArchive*>(archive);
         if (iar == NULL || oar == NULL)
         	continue;
-		BOOST_MESSAGE("- - Testing with Archive class " << std::string(typeid(*archive).name()));
+		BOOST_TEST_MESSAGE("- - Testing with Archive class " << std::string(typeid(*archive).name()));
 
     	{
-    		BOOST_MESSAGE("- - - CameraMatrix");
+    		BOOST_TEST_MESSAGE("- - - CameraMatrix");
     		const CameraMatrix<> write(1.,2.,3.,4.,5.,6.,7.,8.,9.);
     		CameraMatrix<> read(0,0,0,0,0,0,0,0,0);
     		std::stringstream stream;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - EAA");
+    		BOOST_TEST_MESSAGE("- - - EAA");
     		const EAA<> write(1.2,2.3,3.4);
     		EAA<> read;
     		std::stringstream stream;
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - InertiaMatrix");
+    		BOOST_TEST_MESSAGE("- - - InertiaMatrix");
     		const Rotation3D<> R = EAA<>(0.1,0.2,0.3).toRotation3D();
     		const InertiaMatrix<> write(R.e());
     		InertiaMatrix<> read;
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Jacobian");
+    		BOOST_TEST_MESSAGE("- - - Jacobian");
     		const Rotation3D<> R = EAA<>(0.1,0.2,0.3).toRotation3D();
     		const Jacobian write(R.e());
     		Jacobian read(3,3);
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Line2D");
+    		BOOST_TEST_MESSAGE("- - - Line2D");
     		const Line2D write(1.2,2.3,3.4,4.5);
     		Line2D read;
     		std::stringstream stream;
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Line2DPolar");
+    		BOOST_TEST_MESSAGE("- - - Line2DPolar");
     		const Line2DPolar write(1.2,2.3);
     		Line2DPolar read;
     		std::stringstream stream;
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - PerspectiveTransform2D");
+    		BOOST_TEST_MESSAGE("- - - PerspectiveTransform2D");
     		const PerspectiveTransform2D<> write(EAA<>(0.1,0.2,0.3).toRotation3D().e());
     		PerspectiveTransform2D<> read;
     		std::stringstream stream;
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Polynomial");
+    		BOOST_TEST_MESSAGE("- - - Polynomial");
     		Polynomial<> write(4);
     		write[0] = 1.2;
     		write[1] = 2.3;
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Pose2D");
+    		BOOST_TEST_MESSAGE("- - - Pose2D");
     		const Pose2D<> write(1.2,2.3,3.4);
     		Pose2D<> read;
     		std::stringstream stream;
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Pose6D");
+    		BOOST_TEST_MESSAGE("- - - Pose6D");
     		const Pose6D<> write(Vector3D<>(1.2,2.3,3.4),EAA<>(0.1,0.2,0.3));
     		Pose6D<> read;
     		std::stringstream stream;
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Q");
+    		BOOST_TEST_MESSAGE("- - - Q");
     		const Q write(4,1.2,2.3,3.4,4.5);
     		Q read;
     		std::stringstream stream;
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Quaternion");
+    		BOOST_TEST_MESSAGE("- - - Quaternion");
     		const Quaternion<> write(EAA<>(0.1,0.2,0.3).toRotation3D());
     		Quaternion<> read;
     		std::stringstream stream;
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Rotation2D");
+    		BOOST_TEST_MESSAGE("- - - Rotation2D");
     		const Rotation2D<> write(0.1);
     		Rotation2D<> read;
     		std::stringstream stream;
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Rotation3D");
+    		BOOST_TEST_MESSAGE("- - - Rotation3D");
     		const Rotation3D<> write = EAA<>(0.1,0.2,0.3).toRotation3D();
     		Rotation3D<> read;
     		std::stringstream stream;
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - RPY");
+    		BOOST_TEST_MESSAGE("- - - RPY");
     		const RPY<> write(1.2,2.3,3.4);
     		RPY<> read;
     		std::stringstream stream;
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Transform2D");
+    		BOOST_TEST_MESSAGE("- - - Transform2D");
     		const Transform2D<> write(Vector2D<>(1.2,2.3),Rotation2D<>(0.1));
     		Transform2D<> read;
     		std::stringstream stream;
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Transform3D");
+    		BOOST_TEST_MESSAGE("- - - Transform3D");
     		const Transform3D<> write(Vector3D<>(1.2,2.3,3.4),EAA<>(0.1,0.2,0.3).toRotation3D());
     		Transform3D<> read;
     		std::stringstream stream;
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Vector2D");
+    		BOOST_TEST_MESSAGE("- - - Vector2D");
     		const Vector2D<> write(1.2,2.3);
     		Vector2D<> read;
     		std::stringstream stream;
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Vector3D");
+    		BOOST_TEST_MESSAGE("- - - Vector3D");
     		const Vector3D<> write(1.2,2.3,3.4);
     		Vector3D<> read;
     		std::stringstream stream;
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - VectorND");
+    		BOOST_TEST_MESSAGE("- - - VectorND");
     		VectorND<5> write;
     		write[0] = 1.2;
     		write[1] = 2.3;
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - VelocityScrew6D");
+    		BOOST_TEST_MESSAGE("- - - VelocityScrew6D");
     		const VelocityScrew6D<> write(1.2,2.3,3.4,4.5,5.6,6.7);
     		VelocityScrew6D<> read;
     		std::stringstream stream;
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE(MathSerializationTest) {
     	}
 
     	{
-    		BOOST_MESSAGE("- - - Wrench6D");
+    		BOOST_TEST_MESSAGE("- - - Wrench6D");
     		const Wrench6D<> write(1.2,2.3,3.4,4.5,5.6,6.7);
     		Wrench6D<> read;
     		std::stringstream stream;

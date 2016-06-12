@@ -37,7 +37,7 @@ namespace
 }
 
 BOOST_AUTO_TEST_CASE( EAATest ){
-    BOOST_MESSAGE("- Testing EAA");
+    BOOST_TEST_MESSAGE("- Testing EAA");
     // 0 degree
     EAA<> e0(0.0, 0.0, 0.0);
     BOOST_CHECK(e0.angle() == 0);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_CHECK_CLOSE(xe180_3.angle() , e180_3.angle(),1e-16);
     BOOST_CHECK_EQUAL(norm_inf(xe180_3.axis() - e180_3.axis()),0);
 
-    BOOST_MESSAGE("-- Testing different sign combinations for 180 degree rotations");
+    BOOST_TEST_MESSAGE("-- Testing different sign combinations for 180 degree rotations");
     double val1 = 0.3;
     double val2 = 0.4;
     double val3 = 0.5;
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( EAATest ){
                 if (sign1 == 0 && sign2 == 0 && sign3 == 0)
                 	continue; // the zero case is not tested here
             	Vector3D<> axisInput(sign1*val1, sign2*val2, sign3*val3);
-                BOOST_MESSAGE("--- Sign combination: " << axisInput);
+                BOOST_TEST_MESSAGE("--- Sign combination: " << axisInput);
             	axisInput = normalize(axisInput);
                 EAA<> e180(axisInput*Pi);
                 BOOST_CHECK_CLOSE(e180.angle(), Pi, 1e-13);

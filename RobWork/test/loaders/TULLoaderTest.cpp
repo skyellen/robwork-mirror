@@ -53,14 +53,14 @@ namespace
 /*
 BOOST_AUTO_TEST_CASE( TULLoaderTest )
 {
-    BOOST_MESSAGE("TULTestTestSuite");
-    BOOST_MESSAGE("- Loading workcell file");
+    BOOST_TEST_MESSAGE("TULTestTestSuite");
+    BOOST_TEST_MESSAGE("- Loading workcell file");
     WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
 
     BOOST_REQUIRE(NULL != workcell.get());
     BOOST_REQUIRE(workcell->getDevices().size() == 1);
 
-    BOOST_MESSAGE("- Testing nr of devices");
+    BOOST_TEST_MESSAGE("- Testing nr of devices");
     SerialDevice* device = (SerialDevice*)workcell->getDevices()[0];
     State state = workcell->getDefaultState();
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( TULLoaderTest )
 
 BOOST_AUTO_TEST_CASE( WorkCellLoaderTest ) 
 {
-    BOOST_MESSAGE("- Testing WorkCellLoader");
+    BOOST_TEST_MESSAGE("- Testing WorkCellLoader");
     // Load a tree device that has revolute joints only.
 	std::string file = testFilePath() + "SchunkHand/SchunkHand.xml";
 	WorkCell::Ptr workcell = WorkCellFactory::load(file);
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( WorkCellLoaderTest )
 
 BOOST_AUTO_TEST_CASE( PathLoaderTest )
 {
-    BOOST_MESSAGE("- Testing PathLoader");
+    BOOST_TEST_MESSAGE("- Testing PathLoader");
     QPath path;
     Q q(3);
     for (int i = 0; i < 100; i++) {

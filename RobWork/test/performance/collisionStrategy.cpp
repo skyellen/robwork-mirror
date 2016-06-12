@@ -293,7 +293,7 @@ std::vector<std::pair<std::string, double> > testStrategy(CollisionStrategy::Ptr
 
 BOOST_AUTO_TEST_CASE( testCollisionQueryPerformance )
 {
-    BOOST_MESSAGE("Collission Query Performance Tests.");
+    BOOST_TEST_MESSAGE("Collission Query Performance Tests.");
     // We seed the random number generator so that we get reproducible results.
     Math::seed(0);
     std::vector<std::string> colids;

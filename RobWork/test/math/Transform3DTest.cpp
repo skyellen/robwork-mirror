@@ -35,7 +35,7 @@ namespace
 }
 
 BOOST_AUTO_TEST_CASE(Transform3DTest){
-    BOOST_MESSAGE("- Testing Transform3D");
+    BOOST_TEST_MESSAGE("- Testing Transform3D");
     const Vector3D<> d(1, 2, 3);
     const Transform3D<> t(d);
 

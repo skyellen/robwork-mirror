@@ -27,7 +27,7 @@ using namespace rw::math;
 
 BOOST_AUTO_TEST_CASE(RPYTest)
 {
-    BOOST_MESSAGE("- Testing RPY");
+    BOOST_TEST_MESSAGE("- Testing RPY");
     //Test default constructor
     RPY<> rpy0;
     BOOST_CHECK(rpy0(0) == 0.);

@@ -473,13 +473,13 @@ int runTask() {
 }
 
 BOOST_AUTO_TEST_CASE(ThreadTest) {
-    BOOST_MESSAGE("- ThreadTest");
+    BOOST_TEST_MESSAGE("- ThreadTest");
 
-    BOOST_MESSAGE("-- ThreadPoolTest");
+	BOOST_TEST_MESSAGE("-- ThreadPoolTest");
     // get the execution monitor instance
     boost::unit_test::unit_test_monitor_t& theMonitor = boost::unit_test::unit_test_monitor_t::instance();
 
-    BOOST_MESSAGE("--- Ordinary test");
+	BOOST_TEST_MESSAGE("--- Ordinary test");
     // Do a test where thread pool is allowed to finish all work (timeout = 5 seconds)
     theMonitor.p_timeout.set( 5 );
     try {
@@ -492,7 +492,7 @@ BOOST_AUTO_TEST_CASE(ThreadTest) {
     		throw(e);
     	}
     }
-    BOOST_MESSAGE("--- Abort test");
+	BOOST_TEST_MESSAGE("--- Abort test");
     // Do a test where thread pool is stopped before work is finished (timeout = 10 seconds)
     theMonitor.p_timeout.set( 20 );
     try {
@@ -506,8 +506,8 @@ BOOST_AUTO_TEST_CASE(ThreadTest) {
     	}
     }
 
-    BOOST_MESSAGE("-- ThreadTaskTest");
-    BOOST_MESSAGE("--- Simple test");
+	BOOST_TEST_MESSAGE("-- ThreadTaskTest");
+	BOOST_TEST_MESSAGE("--- Simple test");
     // Do a simple test with empty tasks
     theMonitor.p_timeout.set( 5 );
     try {
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(ThreadTest) {
     		throw(e);
     	}
     }
-    BOOST_MESSAGE("--- Invocation order test");
+	BOOST_TEST_MESSAGE("--- Invocation order test");
     // Do a complex test where order of function calls is tested
     theMonitor.p_timeout.set( 20 );
     try {

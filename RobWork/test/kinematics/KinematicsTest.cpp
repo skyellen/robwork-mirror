@@ -36,7 +36,7 @@ using namespace rw::kinematics;
 using namespace rw::math;
 /*
 void sharedPtrTest(){
-    BOOST_MESSAGE("Shared PTR test");
+    BOOST_TEST_MESSAGE("Shared PTR test");
     typedef std::vector<boost::shared_ptr<Frame> > SharedVector;
     int N=10;
     SharedVector f1,f2;
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( StatelessObjectTest )
 	obj._ival.get(state) = 25;
 	obj._v3d.get(state) = Vector3D<>(0,1,2);
 
-	BOOST_MESSAGE("-- Testing QState func");
+	BOOST_TEST_MESSAGE("-- Testing QState func");
 	BOOST_CHECK_EQUAL(25, obj._ival.get(state));
 
 
@@ -151,26 +151,26 @@ BOOST_AUTO_TEST_CASE( StatelessObjectTest )
 BOOST_AUTO_TEST_CASE( StateStructureTest )
 {
     //sharedPtrTest();
-    BOOST_MESSAGE("KinematicsTestSuite");
-    BOOST_MESSAGE("- Testing StateStructure ");
+    BOOST_TEST_MESSAGE("KinematicsTestSuite");
+    BOOST_TEST_MESSAGE("- Testing StateStructure ");
 
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3)));
     MovableFrame* m1 = new MovableFrame("m1");
     FixedFrame* daf = new FixedFrame("daf", Transform3D<>(Vector3D<>(1,2,3)));
 
-    BOOST_MESSAGE("-- Creating StateStructure");
+    BOOST_TEST_MESSAGE("-- Creating StateStructure");
     boost::shared_ptr<StateStructure> tree( new StateStructure() );
     Frame* world = tree->getRoot();
-    BOOST_MESSAGE("-- Testing insertion in tree");
+    BOOST_TEST_MESSAGE("-- Testing insertion in tree");
     tree->addFrame(l1,world);
     tree->addFrame(m1,world);
     tree->addDAF(daf,world);
     // Todo: check if frames are in the tree, and if parents was set correctly
 
-    BOOST_MESSAGE("-- Getting default state");
+    BOOST_TEST_MESSAGE("-- Getting default state");
     State state = tree->getDefaultState();
 
-    BOOST_MESSAGE("-- Testing QState func");
+    BOOST_TEST_MESSAGE("-- Testing QState func");
     Transform3D<> m1_t3d( Vector3D<>(1,2,3));
     m1->setTransform(m1_t3d, state);
     Transform3D<> m1_t3d_b;
@@ -179,14 +179,14 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[1], m1_t3d.P()[1] , 1e-6);
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[2], m1_t3d.P()[2] , 1e-6);
 
-    BOOST_MESSAGE("-- Testing daf func");
+    BOOST_TEST_MESSAGE("-- Testing daf func");
     BOOST_REQUIRE_EQUAL( world , daf->getParent(state) );
     daf->attachTo(m1, state);
     BOOST_REQUIRE_EQUAL( m1 , daf->getParent(state) );
     daf->attachTo(l1, state);
     BOOST_REQUIRE_EQUAL( l1 , daf->getParent(state) );
 
-    BOOST_MESSAGE("-- Testing adding and deleting of frames");
+    BOOST_TEST_MESSAGE("-- Testing adding and deleting of frames");
     tree->setDefaultState(state);
     // todo: test delete func, adding has allready been tested
     tree->remove(l1);
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
     daf->attachTo(l1, state);
     tree->setDefaultState(state);
 
-    BOOST_MESSAGE("-- Testing copy and upgrade of State");
+    BOOST_TEST_MESSAGE("-- Testing copy and upgrade of State");
     // todo: test copy of state func
     MovableFrame* m2 = new MovableFrame("m2");
     tree->addFrame(m2,world);
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[2], m1_t3d.P()[2] , 1e-6);
 
 
-    BOOST_MESSAGE("-- Testing StateCache ");
+    BOOST_TEST_MESSAGE("-- Testing StateCache ");
     // this should test the influence on StateCache when state is copied/deep-copied
 
     StateDataWithCache *o1 = new StateDataWithCache();
@@ -265,13 +265,13 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
 
 
 
-    BOOST_MESSAGE("-- Testing Kinematic utils");
+    BOOST_TEST_MESSAGE("-- Testing Kinematic utils");
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
 }
 
 BOOST_AUTO_TEST_CASE( removeFramesTest )
 {
-    BOOST_MESSAGE("- remove frames test");
+    BOOST_TEST_MESSAGE("- remove frames test");
 
     FixedFrame* l1 = new FixedFrame("l1",Transform3D<>());
     FixedFrame* l2 = new FixedFrame("l2",Transform3D<>());
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( removeFramesTest )
 
 BOOST_AUTO_TEST_CASE( removeMovableFramesTest )
 {
-    BOOST_MESSAGE("- remove movable frames test");
+    BOOST_TEST_MESSAGE("- remove movable frames test");
 
 	MovableFrame *l1 = new MovableFrame("l1");     
     boost::shared_ptr<StateStructure> tree(new StateStructure());
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE( removeMovableFramesTest )
 
 BOOST_AUTO_TEST_CASE( singleChainTest )
 {
-    BOOST_MESSAGE("- testing single chain");
+    BOOST_TEST_MESSAGE("- testing single chain");
 
     FixedFrame* l1 = new FixedFrame(
         "l1",
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE( singleChainTest )
 
 BOOST_AUTO_TEST_CASE( multipleChainTest )
 {
-    BOOST_MESSAGE("- testing multiple chain");
+    BOOST_TEST_MESSAGE("- testing multiple chain");
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3)));
     FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4)));
 
