@@ -11,8 +11,8 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <RobWorkSimConfig.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
 #include <rw/common/TimerUtil.hpp>
@@ -49,8 +49,10 @@ SimCfgDialog::SimCfgDialog(rw::common::Ptr<DynamicSimulator> sim, QWidget *paren
 
 	//std::string id = _sim->getID();
 	//_tabPane->addItem(id);
+#ifdef RWSIM_HAVE_ODE
 	ODESimCfgDialog *dialog = new ODESimCfgDialog(sim, this);
 	_ui->_tabPane->addTab(dialog, "ODE");
+#endif
 	//BOOST_FOREACH(const std::string& engineID, engineIDs){
 		//_tabPane->addTab(this, engineID.c_str() );
 		//_spaceMethodBox->addItem(engineID.c_str());
