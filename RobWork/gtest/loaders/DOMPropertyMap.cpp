@@ -292,7 +292,7 @@ TEST(DOMPropertyMapSaveAndLoad, PropertyMap) {
         EXPECT_TRUE(item.add(std::string("int"), std::string("The description of an Int"), 100));
         EXPECT_TRUE(m.add(std::string("int"), std::string("The description of an Int"), 1001));
         EXPECT_TRUE(item.add(std::string("propertymap"), std::string("The description of a PropertyMap"), m));
-        EXPECT_TRUE(item.add(std::string("double"), std::string("The description of a Double"), 0.4d));
+        EXPECT_TRUE(item.add(std::string("double"), std::string("The description of a Double"), 0.4));
 
         items.push_back(item);
     }
@@ -342,13 +342,13 @@ TEST(DOMPropertyMapSaveAndLoad, Float) {
 
 TEST(DOMPropertyMapSaveAndLoad, Double) {
     std::vector<double> items;
-    items.push_back(-0.1823d);
-    items.push_back(-0.0d);
-    items.push_back(0.0d);
-    items.push_back(-1.86d);
-    items.push_back(1.982d);
-    items.push_back(-1235.2d);
-    items.push_back(7823.9332d);
+    items.push_back(-0.1823);
+    items.push_back(-0.0);
+    items.push_back(0.0);
+    items.push_back(-1.86);
+    items.push_back(1.982);
+    items.push_back(-1235.2);
+    items.push_back(7823.9332);
     for (std::vector<double>::const_iterator it = items.begin(); it != items.end(); ++it) {
         rw::common::PropertyMap map;
         EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a Double"), *it));
@@ -768,9 +768,9 @@ TEST(DOMPropertyMapSaveAndLoad, IntList) {
 TEST(DOMPropertyMapSaveAndLoad, DoubleList) {
     rw::common::PropertyMap map;
     std::vector<double> list;
-    list.push_back(3.5d);
-    list.push_back(0.45d);
-    list.push_back(3.1d);
+    list.push_back(3.5);
+    list.push_back(0.45);
+    list.push_back(3.1);
     EXPECT_TRUE(map.add(std::string("identifier"), std::string("The description of a DoubleList"), list));
 
     testSaverAndLoader(map);

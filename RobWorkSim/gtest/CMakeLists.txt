@@ -55,4 +55,10 @@ ADD_RWSIM_GTEST(rwsim_simulator-gtest)
 ADD_CUSTOM_TARGET(rwsim-gtest_reports
 	DEPENDS ${REPORT_TARGETS}
 	COMMENT "Running Google Tests to generate detailed reports."
-)       
+)
+
+########################################################################
+# Do not build these as part of an ordinary build
+########################################################################
+
+SET_TARGET_PROPERTIES(rwsim-gtest_reports ${REPORT_TARGETS} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
