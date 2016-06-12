@@ -9,9 +9,9 @@ public:
 
     //PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
 
-    bool inCollision(const Q& q);
+    bool inCollision(const rw::math::Q& q);
 
-    bool inCollision(const Q& q1, const Q& q2);
+    bool inCollision(const rw::math::Q& q1, const rw::math::Q& q2);
 
     //QConstraint& getQConstraint() const { return *_constraint; }
 
@@ -88,7 +88,7 @@ public:
 
 };
 %nodefaultctor QToQPathPlanner;
-%template (QToQPathPlanner) PathPlanner<Q,const Q,QPath>;
+%template (QToQPathPlanner) PathPlanner<rw::math::Q,const rw::math::Q,QPath>;
 */
 %nodefaultctor QToQPlanner;
 class QToQPlanner {
@@ -96,26 +96,26 @@ public:
 
     %extend {
 
-        rw::common::Ptr<Path<Q> > query(Q from, Q to, rw::common::Ptr<StopCriteria> stop){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,*stop);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Q to, rw::common::Ptr<StopCriteria> stop){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Q>::query(from,to,*path,*stop);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Q to, double time){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path,time);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Q to, double time){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Q>::query(from,to,*path,time);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Q to){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Q>::query(from,to,*path);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, rw::math::Q to){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Q>::query(from,to,*path);
             return path;
         }
 
         PropertyMap& getProperties(){
-            return $self->rw::pathplanning::PathPlanner<Q,const Q>::getProperties();
+            return $self->rw::pathplanning::PathPlanner<rw::math::Q,const rw::math::Q>::getProperties();
         }
 
         static rw::common::Ptr<QToQPlanner> makeRRT(rw::common::Ptr<CollisionDetector> cdect, rw::common::Ptr<Device> dev, const State& state){
@@ -142,26 +142,26 @@ public:
 
     %extend {
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to, rw::common::Ptr<StopCriteria> stop){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path,*stop);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to, rw::common::Ptr<StopCriteria> stop){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path,*stop);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to, double time){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path,time);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to, double time){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path,time);
             return path;
         }
 
-        rw::common::Ptr<Path<Q> > query(Q from, Transform3d to){
-            rw::common::Ptr<Path<Q> > path = rw::common::ownedPtr(new PathQ());
-            $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::query(from,to,*path);
+        rw::common::Ptr<Path<rw::math::Q> > query(rw::math::Q from, Transform3d to){
+            rw::common::Ptr<Path<rw::math::Q> > path = rw::common::ownedPtr(new PathQ());
+            $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::query(from,to,*path);
             return path;
         }
 
         PropertyMap& getProperties(){
-            return $self->rw::pathplanning::PathPlanner<Q,const Transform3d>::getProperties();
+            return $self->rw::pathplanning::PathPlanner<rw::math::Q,const Transform3d>::getProperties();
         }
 	}	
 };

@@ -70,6 +70,7 @@ public:
 	
 };
 
+namespace rw { namespace math {
 /**
  * @copydoc rw::math::Q 
  */
@@ -120,20 +121,21 @@ public:
     %extend {
 		
 #if (defined(SWIGLUA) || defined(SWIGPYTHON))
-        char *__str__() { return printCString<Q>(*$self); }
+        char *__str__() { return printCString<rw::math::Q>(*$self); }
         double __getitem__(int i)const {return (*$self)[i]; }
         void __setitem__(int i,double d){ (*$self)[i] = d; }
 #elif defined(SWIGJAVA)
-        std::string toString() const { return toString<Q>(*$self); }
+        std::string toString() const { return toString<rw::math::Q>(*$self); }
         double get(std::size_t i) const { return (*$self)[i]; }
         void set(std::size_t i,double d){ (*$self)[i] = d; }
 #endif
     };
 
 };
+} }
 
-%template (QVector) std::vector<Q>;
-%template(QPair) std::pair<Q, Q>;
+%template (QVector) std::vector<rw::math::Q>;
+%template(QPair) std::pair<rw::math::Q, rw::math::Q>;
 
 namespace rw {
 namespace math {
@@ -606,6 +608,7 @@ public:
 %template (InertiaMatrixdVector) std::vector<rw::math::InertiaMatrix<double> >;
 
 
+namespace rw { namespace math {
 class Jacobian
 {
 public:
@@ -618,20 +621,20 @@ public:
     double& elem(int i, int j);
 
     %extend {
-        char *__str__() { return printCString<Jacobian>(*$self); }
+        char *__str__() { return printCString<rw::math::Jacobian>(*$self); }
         double __getitem__(std::size_t row, std::size_t column)const {return (*$self)(row, column); }
         void __setitem__(std::size_t row, std::size_t column,double d){ (*$self)(row, column) = d; }
     };
 #elif defined(SWIGJAVA)
     %extend {
-        std::string toString() const { return toString<Jacobian>(*$self); }
+        std::string toString() const { return toString<rw::math::Jacobian>(*$self); }
         double elem(std::size_t row, std::size_t column) const { return (*$self)(row, column); }
         double get(std::size_t row, std::size_t column) const { return (*$self)(row, column); }
         void set(std::size_t row, std::size_t column, double d){ (*$self)(row, column) = d; }
     };
 #endif
 };
-
+} }
 
 
 
@@ -649,7 +652,7 @@ public:
 
 };
 
-%template (MetricQ) Metric<Q>;
-%template (MetricQPtr) rw::common::Ptr<Metric<Q> >;
+%template (MetricQ) Metric<rw::math::Q>;
+%template (MetricQPtr) rw::common::Ptr<Metric<rw::math::Q> >;
 %template (MetricSE3) Metric<rw::math::Transform3D<double> >;
 %template (MetricSE3Ptr) rw::common::Ptr<Metric<rw::math::Transform3D<double> > >;

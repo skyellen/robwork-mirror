@@ -177,9 +177,9 @@ public:
 		void setStringList(const std::string& id, std::vector<std::string> val){ $self->set<std::vector<std::string> >(id,val); }
 		void set(const std::string& id, std::vector<std::string> val){ $self->set<std::vector<std::string> >(id,val); }
 		
-		Q& getQ(const std::string& id){ return $self->get<Q>(id); }
-		void setQ(const std::string& id, Q q){ $self->set<Q>(id, q); }
-		void set(const std::string& id, Q q){ $self->set<Q>(id, q); }
+		rw::math::Q& getQ(const std::string& id){ return $self->get<rw::math::Q>(id); }
+		void setQ(const std::string& id, rw::math::Q q){ $self->set<rw::math::Q>(id, q); }
+		void set(const std::string& id, rw::math::Q q){ $self->set<rw::math::Q>(id, q); }
 
 		Pose6d& getPose(const std::string& id){ return $self->get<Pose6d>(id); }
 		void setPose6D(const std::string& id, Pose6d p){  $self->set<Pose6d>(id, p); }
@@ -396,17 +396,17 @@ class Primitive: public GeometryData {
 public:
     rw::common::Ptr<TriMesh> getTriMesh(bool forceCopy=true);
     virtual rw::common::Ptr<TriMesh> createMesh(int resolution) const = 0;
-    virtual Q getParameters() const = 0;
+    virtual rw::math::Q getParameters() const = 0;
 };
 
 class Sphere: public Primitive {
 public:
     //! constructor
-    Sphere(const Q& initQ);
+    Sphere(const rw::math::Q& initQ);
     Sphere(double radi):_radius(radi);
     double getRadius();
     rw::common::Ptr<TriMesh> createMesh(int resolution) const;
-    Q getParameters() const;
+    rw::math::Q getParameters() const;
     GeometryData::GeometryType getType() const;
 };
 
@@ -414,27 +414,27 @@ class Box: public Primitive {
 public:
     Box();
     Box(double x, double y, double z);
-    Box(const Q& initQ);
+    Box(const rw::math::Q& initQ);
     rw::common::Ptr<TriMesh> createMesh(int resolution) const;
-    Q getParameters() const;
+    rw::math::Q getParameters() const;
     GeometryType getType() const;
 };
 
 class Cone: public Primitive {
 public:
-    Cone(const Q& initQ);
+    Cone(const rw::math::Q& initQ);
     Cone(double height, double radiusTop, double radiusBot);
     double getHeight();
     double getTopRadius();
     double getBottomRadius();
     rw::common::Ptr<TriMesh> createMesh(int resolution) const;
-    Q getParameters() const;
+    rw::math::Q getParameters() const;
     GeometryType getType() const;
 };
 
 class Plane: public Primitive {
 public:
-    Plane(const Q& q);
+    Plane(const rw::math::Q& q);
     Plane(const rw::math::Vector3D<double>& n, double d);
     Plane(const rw::math::Vector3D<double>& p1,
           const rw::math::Vector3D<double>& p2,
@@ -447,7 +447,7 @@ public:
     double distance(const rw::math::Vector3D<double>& point);
     double refit( std::vector<rw::math::Vector3D<double> >& data );
     rw::common::Ptr<TriMesh> createMesh(int resolution) const ;
-    Q getParameters() const;
+    rw::math::Q getParameters() const;
     GeometryType getType() const;
 };
 
@@ -459,7 +459,7 @@ public:
 	double getRadius() const;
 	double getHeight() const;
 	rw::common::Ptr<TriMesh> createMesh(int resolution) const;
-	Q getParameters() const;
+	rw::math::Q getParameters() const;
 	GeometryType getType() const;
 };
 
@@ -690,7 +690,7 @@ class WorkCellScene {
 class InvKinSolver
 {
 public:
-    virtual std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const = 0;
+    virtual std::vector<rw::math::Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const = 0;
     virtual void setCheckJointLimits(bool check) = 0;
 };
 
@@ -725,7 +725,7 @@ public:
 
     JacobianIKSolver(rw::common::Ptr<Device> device, Frame *foi, const State& state);
 
-    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
+    std::vector<rw::math::Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     void setInterpolatorStep(double interpolatorStep);
 
@@ -757,7 +757,7 @@ public:
     //    const rw::common::Ptr<Device> device,
     //    rw::common::Ptr<QConstraint> constraint);
 
-    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
+    std::vector<rw::math::Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     void setMaxAttempts(size_t maxAttempts);
 
@@ -767,7 +767,7 @@ public:
 
     void setCheckJointLimits(bool check);
 
-    std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state, size_t cnt, bool stopatfirst) const;
+    std::vector<rw::math::Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state, size_t cnt, bool stopatfirst) const;
 
 };
 
@@ -788,7 +788,7 @@ public:
 
     PieperSolver(SerialDevice& dev, const rw::math::Transform3D<double> & joint6Tend, const State& state);
 
-    virtual std::vector<Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
+    virtual std::vector<rw::math::Q> solve(const rw::math::Transform3D<double> & baseTend, const State& state) const;
 
     virtual void setCheckJointLimits(bool check);
 
@@ -963,7 +963,7 @@ public:
 
     enum Type { QType = 0, Vector3DType, Rotation3DType, Transform3DType};
     Type getType();
-    rw::common::Ptr<Trajectory<Q> > getQTrajectory();
+    rw::common::Ptr<Trajectory<rw::math::Q> > getQTrajectory();
     rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > > getVector3DTrajectory();
     rw::common::Ptr<Trajectory<rw::math::Rotation3D<double> > > getRotation3DTrajectory();
     rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > > getTransform3DTrajectory();
@@ -972,11 +972,11 @@ public:
 class XMLTrajectorySaver
 {
 public:
-    static bool save(const Trajectory<Q>& trajectory, const std::string& filename);
+    static bool save(const Trajectory<rw::math::Q>& trajectory, const std::string& filename);
     static bool save(const Trajectory<rw::math::Vector3D<double> >& trajectory, const std::string& filename);
     static bool save(const Trajectory<rw::math::Rotation3D<double> >& trajectory, const std::string& filename);
     static bool save(const Trajectory<rw::math::Transform3D<double> >& trajectory, const std::string& filename);
-    static bool write(const Trajectory<Q>& trajectory, std::ostream& outstream);
+    static bool write(const Trajectory<rw::math::Q>& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<rw::math::Vector3D<double> >& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<rw::math::Rotation3D<double> >& trajectory, std::ostream& outstream);
     static bool write(const Trajectory<rw::math::Transform3D<double> >& trajectory, std::ostream& outstream);
@@ -1032,19 +1032,19 @@ namespace rw { namespace math {
 
         static double round(double d);
 
-        static Q sqr(const Q& q);
+        static rw::math::Q sqr(const rw::math::Q& q);
 
-        static Q sqrt(const Q& q);
+        static rw::math::Q sqrt(const rw::math::Q& q);
 
-        static Q abs(const Q& v);
+        static rw::math::Q abs(const rw::math::Q& v);
 
-        static double min(const Q& v);
+        static double min(const rw::math::Q& v);
 
-        static double max(const Q& v);
+        static double max(const rw::math::Q& v);
 
         static double sign(double s);
 
-        static Q sign(const Q& q);
+        static rw::math::Q sign(const rw::math::Q& q);
 
         static int ceilLog2(int n);
         
@@ -1200,13 +1200,13 @@ class Device
 public:
     Device(const std::string& name);
     //void registerStateData(rw::kinematics::StateStructure::Ptr sstruct);
-    virtual void setQ(const Q& q, State& state) const = 0;
-    virtual Q getQ(const State& state) const = 0;
-    virtual std::pair<Q,Q> getBounds() const = 0;
-    virtual Q getVelocityLimits() const = 0;
-    virtual void setVelocityLimits(const Q& vellimits) = 0;
-    virtual Q getAccelerationLimits() const = 0;
-    virtual void setAccelerationLimits(const Q& acclimits) = 0;
+    virtual void setQ(const rw::math::Q& q, State& state) const = 0;
+    virtual rw::math::Q getQ(const State& state) const = 0;
+    virtual std::pair<rw::math::Q,rw::math::Q> getBounds() const = 0;
+    virtual rw::math::Q getVelocityLimits() const = 0;
+    virtual void setVelocityLimits(const rw::math::Q& vellimits) = 0;
+    virtual rw::math::Q getAccelerationLimits() const = 0;
+    virtual void setAccelerationLimits(const rw::math::Q& acclimits) = 0;
     virtual size_t getDOF() const = 0;
     std::string getName() const;
     void setName(const std::string& name);
@@ -1219,9 +1219,9 @@ public:
     rw::math::Transform3D<double>  baseTframe(const Frame* f, const State& state) const;
     rw::math::Transform3D<double>  baseTend(const State& state) const;
     rw::math::Transform3D<double>  worldTbase(const State& state) const;
-    virtual Jacobian baseJend(const State& state) const = 0;
-    virtual Jacobian baseJframe(const Frame* frame,const State& state) const;
-    virtual Jacobian baseJframes(const std::vector<Frame*>& frames,const State& state) const;
+    virtual rw::math::Jacobian baseJend(const State& state) const = 0;
+    virtual rw::math::Jacobian baseJframe(const Frame* frame,const State& state) const;
+    virtual rw::math::Jacobian baseJframes(const std::vector<Frame*>& frames,const State& state) const;
     //virtual rw::common::Ptr<JacobianCalculator> baseJCend(const kinematics::State& state) const;
     //virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
     //virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
@@ -1237,16 +1237,16 @@ class JointDevice: public Device
 {
 public:
     const std::vector<Joint*>& getJoints() const;
-    void setQ(const Q& q, State& state) const;
-    Q getQ(const State& state) const;
+    void setQ(const rw::math::Q& q, State& state) const;
+    rw::math::Q getQ(const State& state) const;
     size_t getDOF() const;
-    std::pair<Q, Q> getBounds() const;
-    void setBounds(const std::pair<Q, Q>& bounds);
-    Q getVelocityLimits() const;
-    void setVelocityLimits(const Q& vellimits);
-    Q getAccelerationLimits() const;
-    void setAccelerationLimits(const Q& acclimits);
-    Jacobian baseJend(const State& state) const;
+    std::pair<rw::math::Q, rw::math::Q> getBounds() const;
+    void setBounds(const std::pair<rw::math::Q, rw::math::Q>& bounds);
+    rw::math::Q getVelocityLimits() const;
+    void setVelocityLimits(const rw::math::Q& vellimits);
+    rw::math::Q getAccelerationLimits() const;
+    void setAccelerationLimits(const rw::math::Q& acclimits);
+    rw::math::Jacobian baseJend(const State& state) const;
 
     //JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames,
     //                                   const kinematics::State& state) const;
@@ -1403,7 +1403,7 @@ public:
     };
 };
 
-%template (TimedQ) Timed<Q>;
+%template (TimedQ) Timed<rw::math::Q>;
 %template (TimedState) Timed<State>;
 
 template <class T>
@@ -1422,28 +1422,28 @@ public:
     };
 };
 
-%template (TimedQVector) std::vector<Timed<Q> >;
+%template (TimedQVector) std::vector<Timed<rw::math::Q> >;
 %template (TimedStateVector) std::vector<Timed<State> >;
-%template (TimedQVectorPtr) rw::common::Ptr<std::vector<Timed<Q> > >;
+%template (TimedQVectorPtr) rw::common::Ptr<std::vector<Timed<rw::math::Q> > >;
 %template (TimedStateVectorPtr) rw::common::Ptr<std::vector<Timed<State> > >;
 
 %template (PathSE3) Path<rw::math::Transform3D<double> >;
 %template (PathSE3Ptr) rw::common::Ptr<Path<rw::math::Transform3D<double> > >;
-%template (PathQ) Path<Q>;
-%template (PathQPtr) rw::common::Ptr<Path<Q> >;
-%template (PathTimedQ) Path<Timed<Q> >;
-%template (PathTimedQPtr) rw::common::Ptr<Path<Timed<Q> > >;
+%template (PathQ) Path<rw::math::Q>;
+%template (PathQPtr) rw::common::Ptr<Path<rw::math::Q> >;
+%template (PathTimedQ) Path<Timed<rw::math::Q> >;
+%template (PathTimedQPtr) rw::common::Ptr<Path<Timed<rw::math::Q> > >;
 %template (PathTimedState) Path<Timed<State> >;
 %template (PathTimedStatePtr) rw::common::Ptr<Path<Timed<State> > >;
 
-%extend Path<Q> {
-    rw::common::Ptr<Path<Timed<Q> > > toTimedQPath(Q speed){
+%extend Path<rw::math::Q> {
+    rw::common::Ptr<Path<Timed<rw::math::Q> > > toTimedQPath(rw::math::Q speed){
         rw::trajectory::TimedQPath tpath =
                 rw::trajectory::TimedUtil::makeTimedQPath(speed, *$self);
         return rw::common::ownedPtr( new rw::trajectory::TimedQPath(tpath) );
     }
 
-    rw::common::Ptr<Path<Timed<Q> > > toTimedQPath(rw::common::Ptr<Device> dev){
+    rw::common::Ptr<Path<Timed<rw::math::Q> > > toTimedQPath(rw::common::Ptr<Device> dev){
         rw::trajectory::TimedQPath tpath =
                 rw::trajectory::TimedUtil::makeTimedQPath(*dev, *$self);
         return rw::common::ownedPtr( new rw::trajectory::TimedQPath(tpath) );
@@ -1538,14 +1538,14 @@ public:
 %template (BlendR3) Blend<rw::math::Vector3D<double> >;
 %template (BlendSO3) Blend<rw::math::Rotation3D<double> >;
 %template (BlendSE3) Blend<rw::math::Transform3D<double> >;
-%template (BlendQ) Blend<Q>;
+%template (BlendQ) Blend<rw::math::Q>;
 
 %template (BlendR1Ptr) rw::common::Ptr<Blend<double> >;
 %template (BlendR2Ptr) rw::common::Ptr<Blend<Vector2d> >;
 %template (BlendR3Ptr) rw::common::Ptr<Blend<rw::math::Vector3D<double> > >;
 %template (BlendSO3Ptr) rw::common::Ptr<Blend<rw::math::Rotation3D<double> > >;
 %template (BlendSE3Ptr) rw::common::Ptr<Blend<rw::math::Transform3D<double> > >;
-%template (BlendQPtr) rw::common::Ptr<Blend<Q> >;
+%template (BlendQPtr) rw::common::Ptr<Blend<rw::math::Q> >;
 
 template <class T>
 class Interpolator
@@ -1562,14 +1562,14 @@ public:
 %template (InterpolatorR3) Interpolator<rw::math::Vector3D<double> >;
 %template (InterpolatorSO3) Interpolator<rw::math::Rotation3D<double> >;
 %template (InterpolatorSE3) Interpolator<rw::math::Transform3D<double> >;
-%template (InterpolatorQ) Interpolator<Q>;
+%template (InterpolatorQ) Interpolator<rw::math::Q>;
 
 %template (InterpolatorR1Ptr) rw::common::Ptr<Interpolator<double> >;
 %template (InterpolatorR2Ptr) rw::common::Ptr<Interpolator<Vector2d> >;
 %template (InterpolatorR3Ptr) rw::common::Ptr<Interpolator<rw::math::Vector3D<double> > >;
 %template (InterpolatorSO3Ptr) rw::common::Ptr<Interpolator<rw::math::Rotation3D<double> > >;
 %template (InterpolatorSE3Ptr) rw::common::Ptr<Interpolator<rw::math::Transform3D<double> > >;
-%template (InterpolatorQPtr) rw::common::Ptr<Interpolator<Q> >;
+%template (InterpolatorQPtr) rw::common::Ptr<Interpolator<rw::math::Q> >;
 
 class LinearInterpolator: public Interpolator<double> {
 public:
@@ -1586,17 +1586,17 @@ public:
 };
 
 
-class LinearInterpolatorQ: public Interpolator<Q> {
+class LinearInterpolatorQ: public Interpolator<rw::math::Q> {
 public:
-    LinearInterpolatorQ(const Q& start,
-                          const Q& end,
+    LinearInterpolatorQ(const rw::math::Q& start,
+                          const rw::math::Q& end,
                           double duration);
 
     virtual ~LinearInterpolatorQ();
 
-    Q x(double t) const;
-    Q dx(double t) const;
-    Q ddx(double t) const;
+    rw::math::Q x(double t) const;
+    rw::math::Q dx(double t) const;
+    rw::math::rw::math::Qddx(double t) const;
     double duration() const;
 };
 
@@ -1687,14 +1687,14 @@ public:
     double duration() const;
 };
 
-class RampInterpolatorQ: public Interpolator<Q> {
+class RampInterpolatorQ: public Interpolator<rw::math::Q> {
 public:
-    RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits);
-    //RampInterpolatorQ(const Q& start, const Q& end, const Q& vellimits, const Q& acclimits, double duration);
+    RampInterpolatorQ(const rw::math::Q& start, const rw::math::Q& end, const rw::math::Q& vellimits, const rw::math::Q& acclimits);
+    //RampInterpolatorQ(const rw::math::Q& start, const rw::math::Q& end, const rw::math::Q& vellimits, const rw::math::Q& acclimits, double duration);
 
-    Q x(double t) const;
-    Q dx(double t) const;
-    Q ddx(double t) const;
+    rw::math::Qx(double t) const;
+    rw::math::Qdx(double t) const;
+    rw::math::Qddx(double t) const;
     double duration() const;
 };
 
@@ -1727,7 +1727,7 @@ protected:
 %template (TrajectoryR3) Trajectory<rw::math::Vector3D<double> >;
 %template (TrajectorySO3) Trajectory<rw::math::Rotation3D<double> >;
 %template (TrajectorySE3) Trajectory<rw::math::Transform3D<double> >;
-%template (TrajectoryQ) Trajectory<Q>;
+%template (TrajectoryQ) Trajectory<rw::math::Q>;
 
 %template (TrajectoryStatePtr) rw::common::Ptr<Trajectory<State> >;
 %template (TrajectoryR1Ptr) rw::common::Ptr<Trajectory<double> >;
@@ -1735,7 +1735,7 @@ protected:
 %template (TrajectoryR3Ptr) rw::common::Ptr<Trajectory<rw::math::Vector3D<double> > >;
 %template (TrajectorySO3Ptr) rw::common::Ptr<Trajectory<rw::math::Rotation3D<double> > >;
 %template (TrajectorySE3Ptr) rw::common::Ptr<Trajectory<rw::math::Transform3D<double> > >;
-%template (TrajectoryQPtr) rw::common::Ptr<Trajectory<Q> >;
+%template (TrajectoryQPtr) rw::common::Ptr<Trajectory<rw::math::Q> >;
 
 template <class T>
 class InterpolatorTrajectory: public Trajectory<T> {
@@ -1757,7 +1757,7 @@ public:
 %template (InterpolatorTrajectoryR3) InterpolatorTrajectory<rw::math::Vector3D<double> >;
 %template (InterpolatorTrajectorySO3) InterpolatorTrajectory<rw::math::Rotation3D<double> >;
 %template (InterpolatorTrajectorySE3) InterpolatorTrajectory<rw::math::Transform3D<double> >;
-%template (InterpolatorTrajectoryQ) InterpolatorTrajectory<Q>;
+%template (InterpolatorTrajectoryQ) InterpolatorTrajectory<rw::math::Q>;
 
 
 /*
@@ -1993,12 +1993,12 @@ public:
     virtual ~JointController();
     virtual unsigned int getControlModes() = 0;
     virtual void setControlMode(ControlMode mode) = 0;
-    virtual void setTargetPos(const Q& vals) = 0;
-    virtual void setTargetVel(const Q& vals) = 0;
-    virtual void setTargetAcc(const Q& vals) = 0;
+    virtual void setTargetPos(const rw::math::Q& vals) = 0;
+    virtual void setTargetVel(const rw::math::Q& vals) = 0;
+    virtual void setTargetAcc(const rw::math::Q& vals) = 0;
     virtual Device& getModel();
-    virtual Q getQ() = 0;
-    virtual Q getQd() = 0;
+    virtual rw::math::QgetQ() = 0;
+    virtual rw::math::QgetQd() = 0;
 };
 
 %template (JointControllerPtr) rw::common::Ptr<JointController>;
@@ -2027,12 +2027,12 @@ public:
         {
             rw::pathplanning::PlannerConstraint constraint =
                     rw::pathplanning::PlannerConstraint::make(cd.get(), dev, state);
-            return new PathLengthOptimizer(constraint, rw::math::MetricFactory::makeEuclidean< Q>());
+            return new PathLengthOptimizer(constraint, rw::math::MetricFactory::makeEuclidean< rw::math::Q>());
         }
 
         PathLengthOptimizer(rw::common::Ptr<CollisionDetector> cd,
                             rw::common::Ptr<Device> dev,
-                            rw::common::Ptr<Metric<Q> > metric,
+                            rw::common::Ptr<Metric<rw::math::Q> > metric,
                             const State &state)
         {
             rw::pathplanning::PlannerConstraint constraint =
@@ -2041,32 +2041,32 @@ public:
         }
 
         PathLengthOptimizer(rw::common::Ptr<PlannerConstraint> constraint,
-                            rw::common::Ptr<Metric<Q> > metric)
+                            rw::common::Ptr<Metric<rw::math::Q> > metric)
         {
             return new PathLengthOptimizer(*constraint, metric);
         }
 
-        rw::common::Ptr<Path<Q> > pathPruning(rw::common::Ptr<Path<Q> > path){
+        rw::common::Ptr<Path<rw::math::Q> > pathPruning(rw::common::Ptr<Path<rw::math::Q> > path){
             PathQ res = $self->rwlibs::pathoptimization::PathLengthOptimizer::pathPruning(*path);
             return rw::common::ownedPtr( new PathQ(res) );
         }
 /*
-        rw::common::Ptr<Path<Q> > shortCut(rw::common::Ptr<Path<Q> > path,
+        rw::common::Ptr<Path<rw::math::Q> > shortCut(rw::common::Ptr<Path<rw::math::Q> > path,
                                        size_t cnt,
                                        double time,
                                        double subDivideLength);
 */
-        rw::common::Ptr<Path<Q> > shortCut(rw::common::Ptr<Path<Q> > path){
+        rw::common::Ptr<Path<rw::math::Q> > shortCut(rw::common::Ptr<Path<rw::math::Q> > path){
             PathQ res = $self->rwlibs::pathoptimization::PathLengthOptimizer::shortCut(*path);
             return rw::common::ownedPtr( new PathQ(res) );
         }
 
-        rw::common::Ptr<Path<Q> > partialShortCut(rw::common::Ptr<Path<Q> > path){
+        rw::common::Ptr<Path<rw::math::Q> > partialShortCut(rw::common::Ptr<Path<rw::math::Q> > path){
             PathQ res = $self->rwlibs::pathoptimization::PathLengthOptimizer::partialShortCut(*path);
             return rw::common::ownedPtr( new PathQ(res) );
         }
 /*
-        rw::common::Ptr<Path<Q> > partialShortCut(rw::common::Ptr<Path<Q> > path,
+        rw::common::Ptr<Path<rw::math::Q> > partialShortCut(rw::common::Ptr<Path<rw::math::Q> > path,
                                               size_t cnt,
                                               double time,
                                               double subDivideLength);

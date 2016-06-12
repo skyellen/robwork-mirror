@@ -71,13 +71,13 @@ namespace {
 	};
 
 	rw::common::Ptr<CameraModel> makeDefaultCameraModel(const std::string& name,
-			rw::kinematics::Frame *frame, double fov, int w, int h, double near, double far)
+			rw::kinematics::Frame *frame, double fov, int w, int h, double nearVal, double farVal)
 	{
-		return rw::common::ownedPtr( new CameraModel(ProjectionMatrix::makePerspective(fov*Deg2Rad,w,h,near,far), name, frame ) );
+		return rw::common::ownedPtr( new CameraModel(ProjectionMatrix::makePerspective(fov*Deg2Rad,w,h,nearVal,farVal), name, frame ) );
 	}
 
 	rw::common::Ptr<Scanner25DModel> makeDefaultScannerModel(const std::string& name,
-			rw::kinematics::Frame *frame, double fov, int w, int h, double near, double far)
+			rw::kinematics::Frame *frame, double fov, int w, int h, double nearVal, double farVal)
 	{
 		return rw::common::ownedPtr( new Scanner25DModel(name, w, h, frame ) );
 	}
