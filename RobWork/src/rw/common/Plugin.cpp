@@ -69,17 +69,22 @@ rw::common::Ptr<Plugin> Plugin::loadDirect(const std::string& filename){
     *tmp = (void*)GetProcAddress(h, sym_name);
 	if (*tmp == NULL){
 		LPTSTR buffer = NULL;
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		const DWORD errId = GetLastError();
+		const DWORD res = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 				  FORMAT_MESSAGE_FROM_SYSTEM |
 				  FORMAT_MESSAGE_IGNORE_INSERTS,
 				  NULL,             // Instance
-				  GetLastError(),   // Message Number
+				  errId,            // Message Number
 				  0,                // Language
-				  buffer,           // Buffer
+				  (LPSTR)&buffer,   // Buffer
 				  0,                // Min/Max Buffer size
 				  NULL);            // Arguments
-		RW_WARN(buffer);
-		return false;
+		if (!res) {
+			RW_WARN("FormatMessage returned error: " << GetLastError() << "!");
+		} else {
+			RW_WARN("Error " << errId << ": " << buffer);
+		}
+		return NULL;
 	}
 
 	// call factory function and create plugin

@@ -209,7 +209,12 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
 		Log::debugLog() << "\t " <<  pfilename << std::endl;
 		try {
 			rw::common::Ptr<Plugin> plugin = Plugin::load( pfilename );
-			reg->registerExtensions(plugin);
+			if (!plugin.isNull()) {
+				reg->registerExtensions(plugin);
+			} else {
+				Log::errorLog() << "Error loading plugin: \n\t\"" << pfilename << "\" "
+					<< "\n\t Please fix error, ignoring plugin for now.." << std::endl;
+			}
 		} catch (const std::exception& e ){
 			Log::errorLog() << "Error loading plugin: \n\t\"" << pfilename << "\" "
 							<< "\n\t Error description: " << e.what()
