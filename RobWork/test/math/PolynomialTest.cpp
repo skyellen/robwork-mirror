@@ -82,10 +82,10 @@ BOOST_AUTO_TEST_CASE(PolynomialTest){
 		BOOST_CHECK_SMALL(der1A[2]-dd1,derr1[2]);
 		BOOST_CHECK_SMALL(der2A[2]-dd2,derr2[2]);
     	// Are the uncertainty reasonable?
-    	BOOST_CHECK_SMALL(derr1[1],d1*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(derr1[2],dd1*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(derr2[1],d2*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(derr2[2],dd2*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(derr1[1], std::fabs(d1)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(derr1[2], std::fabs(dd1)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(derr2[1], std::fabs(d2)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(derr2[2], std::fabs(dd2)*10*std::numeric_limits<double>::epsilon());
 
     	// Get polynomial for second derivative and again check that it evaluates as expected
     	const Polynomial<> dpol = p.derivative(2);
@@ -127,14 +127,14 @@ BOOST_AUTO_TEST_CASE(PolynomialTest){
     	const double c2 = -1193.6104584750124;
     	const double c1 = -1833.2256855423295;
     	const double c0 = 1074.0759797676228;
-    	BOOST_CHECK_SMALL(def[7]-c7,c7*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[6]-c6,c6*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[5]-c5,c5*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[4]-c4,c4*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[3]-c3,c3*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[2]-c2,c2*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[1]-c1,c1*10*std::numeric_limits<double>::epsilon());
-    	BOOST_CHECK_SMALL(def[0]-c0,c0*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[7]-c7, std::fabs(c7)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[6]-c6, std::fabs(c6)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[5]-c5, std::fabs(c5)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[4]-c4, std::fabs(c4)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[3]-c3, std::fabs(c3)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[2]-c2, std::fabs(c2)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[1]-c1, std::fabs(c1)*10*std::numeric_limits<double>::epsilon());
+    	BOOST_CHECK_SMALL(def[0]-c0, std::fabs(c0)*10*std::numeric_limits<double>::epsilon());
     }
 
     {
