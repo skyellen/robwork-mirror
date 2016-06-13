@@ -181,8 +181,9 @@ void RobWork::initialize(const std::vector<std::string>& plugins){
     		std::vector<std::string> pl_files =
     				IOUtil::getFilesInFolder(file.string(), false, true, "*.rwplugin.*");
     		BOOST_FOREACH(std::string pl_file, pl_files){
-
-    		    pluginsFiles.push_back(pl_file);
+				const std::string ext = StringUtil::getFileExtension(pl_file);
+				if (ext == ".xml" || ext == ".dll" || ext == ".so")
+    				pluginsFiles.push_back(pl_file);
     		}
     	} else {
     		pluginsFiles.push_back(file.string());
