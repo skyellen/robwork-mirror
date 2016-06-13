@@ -19,8 +19,8 @@
 
 #include <rwsim/dynamics/RigidDevice.hpp>
 
-#include <bullet/BulletDynamics/ConstraintSolver/btHingeConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btSliderConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btHingeConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btSliderConstraint.h>
 
 using namespace rw::kinematics;
 using namespace rw::math;

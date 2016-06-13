@@ -58,6 +58,7 @@ IF(build)
     	MESSAGE( STATUS "Bullet will be compiled with double precision." )
     ELSE()
     	MESSAGE( STATUS "Testing Bullet for use of double precision..." )
+	    SET(CMAKE_TRY_COMPILE_CONFIGURATION ${CMAKE_BUILD_TYPE})
 	    TRY_COMPILE( COMPILE_SUCCESS ${CMAKE_BINARY_DIR}
 	        ${CMAKE_CURRENT_SOURCE_DIR}/BtPrecisionTest.cpp
 	        CMAKE_FLAGS

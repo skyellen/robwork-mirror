@@ -27,7 +27,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
-#include <bullet/LinearMath/btTransform.h>
+#include <LinearMath/btTransform.h>
 
 namespace rwsimlibs {
 namespace bullet {

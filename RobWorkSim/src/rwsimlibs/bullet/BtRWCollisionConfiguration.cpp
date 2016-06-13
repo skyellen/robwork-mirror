@@ -21,14 +21,14 @@
 #include <rw/common/macros.hpp>
 
 #if BT_BULLET_VERSION > 281
-#include "bullet/BulletCollision/CollisionDispatch/btCompoundCompoundCollisionAlgorithm.h"
+#include "BulletCollision/CollisionDispatch/btCompoundCompoundCollisionAlgorithm.h"
 #endif
-#include "bullet/BulletCollision/CollisionDispatch/btCompoundCollisionAlgorithm.h"
-#include "bullet/BulletCollision/BroadphaseCollision/btBroadphaseProxy.h"
-#include "bullet/BulletCollision/NarrowPhaseCollision/btPersistentManifold.h"
-#include "bullet/LinearMath/btPoolAllocator.h"
+#include "BulletCollision/CollisionDispatch/btCompoundCollisionAlgorithm.h"
+#include "BulletCollision/BroadphaseCollision/btBroadphaseProxy.h"
+#include "BulletCollision/NarrowPhaseCollision/btPersistentManifold.h"
+#include "LinearMath/btPoolAllocator.h"
 #if BT_BULLET_VERSION < 282
-#include "bullet/LinearMath/btStackAlloc.h"
+#include "LinearMath/btStackAlloc.h"
 #endif
 
 using namespace rwsim::contacts;

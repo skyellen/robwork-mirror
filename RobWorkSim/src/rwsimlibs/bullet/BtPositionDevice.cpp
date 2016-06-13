@@ -20,7 +20,7 @@
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 
-#include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
+#include <BulletDynamics/Dynamics/btRigidBody.h>
 
 using namespace rw::kinematics;
 using namespace rw::math;

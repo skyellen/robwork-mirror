@@ -19,10 +19,10 @@
 #include "BtBody.hpp"
 #include "BtUtil.hpp"
 
-#include "bullet/BulletCollision/BroadphaseCollision/btDispatcher.h"
-#include "bullet/BulletCollision/CollisionDispatch/btCollisionObjectWrapper.h"
-#include "bullet/BulletCollision/CollisionDispatch/btManifoldResult.h"
-#include "bullet/BulletCollision/CollisionShapes/btCollisionShape.h"
+#include "BulletCollision/BroadphaseCollision/btDispatcher.h"
+#include "BulletCollision/CollisionDispatch/btCollisionObjectWrapper.h"
+#include "BulletCollision/CollisionDispatch/btManifoldResult.h"
+#include "BulletCollision/CollisionShapes/btCollisionShape.h"
 
 #include <rwsim/contacts/ContactDetector.hpp>
 

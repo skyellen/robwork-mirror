@@ -17,8 +17,8 @@
 
 #include <iostream>
 
-#include <bullet/LinearMath/btVector3.h>
-#include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
+#include <LinearMath/btVector3.h>
+#include <BulletCollision/CollisionShapes/btSphereShape.h>
 
 int main() {
 	const btSphereShape sphere(1);

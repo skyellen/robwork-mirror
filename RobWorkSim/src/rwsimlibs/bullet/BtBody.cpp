@@ -27,16 +27,16 @@
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 
-#include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
-#include <bullet/BulletDynamics/Dynamics/btDynamicsWorld.h>
-#include <bullet/BulletCollision/CollisionDispatch/btCollisionObject.h>
-#include <bullet/BulletCollision/CollisionShapes/btCompoundShape.h>
-#include <bullet/BulletCollision/CollisionShapes/btCylinderShape.h>
-#include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
-#include <bullet/BulletCollision/CollisionShapes/btStaticPlaneShape.h>
-#include <bullet/BulletCollision/CollisionShapes/btTriangleMesh.h>
-#include <bullet/BulletCollision/Gimpact/btGImpactShape.h>
-#include <bullet/LinearMath/btDefaultMotionState.h>
+#include <BulletDynamics/Dynamics/btRigidBody.h>
+#include <BulletDynamics/Dynamics/btDynamicsWorld.h>
+#include <BulletCollision/CollisionDispatch/btCollisionObject.h>
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
+#include <BulletCollision/CollisionShapes/btCylinderShape.h>
+#include <BulletCollision/CollisionShapes/btSphereShape.h>
+#include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <BulletCollision/Gimpact/btGImpactShape.h>
+#include <LinearMath/btDefaultMotionState.h>
 
 using namespace rw::geometry;
 using namespace rw::kinematics;

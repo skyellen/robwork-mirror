@@ -24,8 +24,8 @@
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 
-#include <bullet/BulletCollision/NarrowPhaseCollision/btPersistentManifold.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btTypedConstraint.h>
+#include <BulletCollision/NarrowPhaseCollision/btPersistentManifold.h>
+#include <BulletDynamics/ConstraintSolver/btTypedConstraint.h>
 
 #include <boost/foreach.hpp>
 

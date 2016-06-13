@@ -26,8 +26,8 @@
 
 #include <rw/common/Ptr.hpp>
 
-#include <bullet/BulletCollision/BroadphaseCollision/btCollisionAlgorithm.h>
-#include <bullet/BulletCollision/CollisionDispatch/btCollisionCreateFunc.h>
+#include <BulletCollision/BroadphaseCollision/btCollisionAlgorithm.h>
+#include <BulletCollision/CollisionDispatch/btCollisionCreateFunc.h>
 
 namespace rwsim { namespace contacts { class ContactDetector; } }
 namespace rwsim { namespace contacts { class ContactStrategyData; } }

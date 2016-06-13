@@ -21,12 +21,12 @@
 
 #include <rwsim/dynamics/Constraint.hpp>
 
-#include <bullet/BulletDynamics/Dynamics/btDynamicsWorld.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btGeneric6DofConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btPoint2PointConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btHingeConstraint.h>
-#include <bullet/BulletDynamics/ConstraintSolver/btSliderConstraint.h>
+#include <BulletDynamics/Dynamics/btDynamicsWorld.h>
+#include <BulletDynamics/ConstraintSolver/btGeneric6DofConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btPoint2PointConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btHingeConstraint.h>
+#include <BulletDynamics/ConstraintSolver/btSliderConstraint.h>
 
 using namespace rw::math;
 using namespace rw::kinematics;

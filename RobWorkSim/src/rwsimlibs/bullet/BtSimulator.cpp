@@ -26,8 +26,8 @@
 #include "BtContactStrategy.hpp"
 #include "BtRWCollisionConfiguration.hpp"
 
-#include <bullet/btBulletDynamicsCommon.h>
-#include <bullet/BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
+#include <btBulletDynamicsCommon.h>
+#include <BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
 
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/contacts/ContactDetectorData.hpp>
