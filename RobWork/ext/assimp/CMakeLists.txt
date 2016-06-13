@@ -1,4 +1,9 @@
 cmake_minimum_required( VERSION 2.6 )
+
+if(POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif()
+
 PROJECT( Assimp )
 
 # Define here the needed parameters
@@ -8,7 +13,7 @@ set (ASSIMP_VERSION_MINOR 0)
 set (ASSIMP_VERSION_PATCH ${ASSIMP_SV_REVISION}) # subversion revision?
 set (ASSIMP_VERSION ${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}.${ASSIMP_VERSION_PATCH})
 set (ASSIMP_SOVERSION 3)
-SET ( PROJECT_VERSION "${ASSIMP_VERSION}" )
+#SET ( PROJECT_VERSION "${ASSIMP_VERSION}" ) # not allowed in CMake 3.0 and higher - policy CMP0048
 IF (PROJECT_SHARED_LIBS)
 	SET(BUILD_STATIC_LIB OFF)
 ELSE()
