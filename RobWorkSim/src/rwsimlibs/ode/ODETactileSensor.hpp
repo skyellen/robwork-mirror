@@ -20,13 +20,14 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <rwlibs/simulation/Simulator.hpp>
 
-#include <rwsim/sensor/SimulatedTactileSensor.hpp>
 #include <rwsim/dynamics/Body.hpp>
 
 #include <vector>
 #include <ode/ode.h>
+
+namespace rwsim { namespace sensor { class SimulatedTactileSensor; } }
 
 namespace rwsim {
 namespace simulator {

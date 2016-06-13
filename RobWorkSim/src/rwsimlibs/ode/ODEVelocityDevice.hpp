@@ -23,15 +23,14 @@
 
 #include <vector>
 
-#include "ODEJoint.hpp"
 #include <rw/math/Q.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
-#include "ODEJoint.hpp"
 #include "ODEDevice.hpp"
 
 namespace rwsim {
 namespace simulator {
     class ODESimulator;
+	class ODEJoint;
     /**
      * @brief A bridge between the RW RigidDevice and a set
      * of connected joints and rigid bodies.

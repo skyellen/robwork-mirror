@@ -21,7 +21,6 @@
 
 #include <rwlibs/os/rwgl.hpp>
 #include <ode/ode.h>
-#include <boost/foreach.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 #include <rw/math.hpp>
 #include <rw/kinematics.hpp>

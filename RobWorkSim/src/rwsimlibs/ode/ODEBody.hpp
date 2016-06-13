@@ -19,15 +19,15 @@
 #define RWSIM_SIMULATOR_ODEBODY_HPP_
 
 #include <ode/ode.h>
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/RigidJoint.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwlibs/simulation/Simulator.hpp>
 #include <rw/math/Vector3D.hpp>
 #include "ODEUtil.hpp"
+
+namespace rw { namespace kinematics { class MovableFrame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

@@ -22,41 +22,36 @@
 
 #include <ode/ode.h>
 
-#include <rw/sensor/Sensor.hpp>
-#include <rw/math/MetricUtil.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 #include <rw/kinematics/FramePairMap.hpp>
-#include <rw/proximity/BasicFilterStrategy.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
-#include <rwsim/sensor/SimulatedTactileSensor.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactManifold.hpp>
+#include <rwsim/simulator/PhysicsEngine.hpp>
 
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
-
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/unordered_map.hpp>
 
 #include "ODEUtil.hpp"
-#include "ODEMaterialMap.hpp"
 #include "ODEJoint.hpp"
-#include "ODEConstraint.hpp"
 #include "ODEDevice.hpp"
 #include "ODEBody.hpp"
 #include "ODETactileSensor.hpp"
 
-namespace rwsim { namespace contacts { class ContactDetector; }}
+namespace rw { namespace proximity { class BasicFilterStrategy; } }
+namespace rw { namespace proximity { class ProximityModel; } }
+namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+namespace rwsim { namespace contacts { class ContactDetector; } }
+namespace rwsim { namespace dynamics { class RigidBody; } }
 
 namespace rwsim {
 namespace simulator {
 
+	class ODEConstraint;
 	class ODEDebugRender;
+	class ODEMaterialMap;
 
 	/**
 	 * @brief an implementation that use the physics engine ODE to implement
@@ -131,9 +126,7 @@ namespace simulator {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~ODESimulator(){
-			delete _narrowStrategy;
-		}
+		virtual ~ODESimulator();
 
 		//! @copydoc PhysicsEngine::load
 		void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
@@ -471,8 +464,8 @@ namespace simulator {
 
 		bool _isSimulatorInitialized;
 
-		rw::proximity::BasicFilterStrategy::Ptr _bpstrategy;
-		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
+		rw::common::Ptr<rw::proximity::BasicFilterStrategy> _bpstrategy;
+		rw::kinematics::FrameMap<rw::common::Ptr<rw::proximity::ProximityModel> > _frameToModels;
 		boost::mutex _contactMutex;
 
 		rw::common::Ptr<rwsim::contacts::ContactDetector> _detector;

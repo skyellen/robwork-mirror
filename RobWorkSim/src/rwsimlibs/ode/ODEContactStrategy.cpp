@@ -18,6 +18,10 @@
 #include "ODEContactStrategy.hpp"
 #include "ODEUtil.hpp"
 
+#include <rw/geometry/Cylinder.hpp>
+#include <rw/geometry/Plane.hpp>
+#include <rw/geometry/Tube.hpp>
+
 #include <rwsim/contacts/ContactStrategyTracking.hpp>
 
 using namespace rw::common;

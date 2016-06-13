@@ -19,7 +19,10 @@
 #include "ODESuctionCupDevice.hpp"
 
 #include "ODEBody.hpp"
+#include "ODESimulator.hpp"
 
+#include <rw/geometry/TriMesh.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
 

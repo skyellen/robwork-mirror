@@ -21,8 +21,12 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/InertiaMatrix.hpp>
-#include <rw/rw.hpp>
 #include <ode/ode.h>
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace geometry { class GeometryData; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {
@@ -137,9 +141,9 @@ namespace simulator {
         };
 
 
-        static TriMeshData::Ptr buildTriMesh(rw::geometry::GeometryData::Ptr gdata,bool invert = false);
+        static TriMeshData::Ptr buildTriMesh(rw::common::Ptr<rw::geometry::GeometryData> gdata,bool invert = false);
 
-        static std::vector<TriGeomData*> buildTriGeom(std::vector<rw::geometry::Geometry::Ptr> geoms,
+        static std::vector<TriGeomData*> buildTriGeom(std::vector<rw::common::Ptr<rw::geometry::Geometry> > geoms,
                                                       dSpaceID spaceid,
                                                       rw::kinematics::Frame* ref,
                                                       const rw::kinematics::State& state,

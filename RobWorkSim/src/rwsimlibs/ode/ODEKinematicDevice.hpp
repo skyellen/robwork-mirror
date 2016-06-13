@@ -24,11 +24,11 @@
 #include <vector>
 
 #include <rw/math/Q.hpp>
-#include <rwsim/dynamics/KinematicDevice.hpp>
 
 #include "ODEBody.hpp"
-#include "ODEJoint.hpp"
 #include "ODEDevice.hpp"
+
+namespace rwsim { namespace dynamics { class KinematicDevice; } }
 
 namespace rwsim {
 namespace simulator {

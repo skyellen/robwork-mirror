@@ -25,55 +25,46 @@
 #include <rw/math/Quaternion.hpp>
 
 #include <rw/models/JointDevice.hpp>
-#include <rw/models/Joint.hpp>
-#include <rw/models/RevoluteJoint.hpp>
-#include <rw/models/PrismaticJoint.hpp>
-
-#include <rw/geometry/TriangleUtil.hpp>
+//#include <rw/models/RevoluteJoint.hpp>
+//#include <rw/models/PrismaticJoint.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicUtil.hpp>
 
 #include <boost/foreach.hpp>
 
 #include <rw/kinematics/FramePairMap.hpp>
 
-#include <rw/models/DependentRevoluteJoint.hpp>
-#include <rw/models/DependentPrismaticJoint.hpp>
+//#include <rw/models/DependentRevoluteJoint.hpp>
+//#include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/common/TimerUtil.hpp>
-#include <rw/geometry/Sphere.hpp>
-#include <rw/geometry/Plane.hpp>
-#include <rw/geometry/Cylinder.hpp>
 
+#include "ODEConstraint.hpp"
 #include "ODEKinematicDevice.hpp"
 #include "ODEVelocityDevice.hpp"
 #include "ODEDebugRender.hpp"
 #include "ODEUtil.hpp"
 #include "ODESuctionCupDevice.hpp"
+#include "ODEMaterialMap.hpp"
 
 #include <rwsim/dynamics/OBRManifold.hpp>
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rw/common/Log.hpp>
 
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp> // !
-#include <boost/lambda/construct.hpp>
-#include <boost/function.hpp>
+#include <boost/lambda/bind.hpp>
 
-#include <fstream>
-#include <iostream>
+#include <sstream>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
@@ -254,6 +245,9 @@ ODESimulator::ODESimulator():
         _dwc->changedEvent().add( boost::bind(&ODESimulator::DWCChangedListener, this, _1, _2), this);
 }
 
+ODESimulator::~ODESimulator() {
+	delete _narrowStrategy;
+}
 
 void ODESimulator::load(rwsim::dynamics::DynamicWorkCell::Ptr dwc){
     _dwc = dwc;

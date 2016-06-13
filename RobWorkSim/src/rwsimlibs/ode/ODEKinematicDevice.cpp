@@ -17,13 +17,12 @@
 
 #include "ODEKinematicDevice.hpp"
 
-#include "ODEJoint.hpp"
 #include "ODEUtil.hpp"
 #include "ODESimulator.hpp"
 #include <ode/ode.h>
 #include <boost/foreach.hpp>
 #include <rw/math/Math.hpp>
-
+#include <rwsim/dynamics/KinematicDevice.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;

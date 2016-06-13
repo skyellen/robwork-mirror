@@ -17,17 +17,17 @@
 
 #include "ODEJoint.hpp"
 
-#include <rw/rw.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/PrismaticJoint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 #include <ode/ode.h>
 
-#include "ODEUtil.hpp"
 #include "ODESimulator.hpp"
-
 
 using namespace rw::kinematics;
 using namespace rw::models;

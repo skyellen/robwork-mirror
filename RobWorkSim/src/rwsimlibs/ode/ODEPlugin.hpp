@@ -19,7 +19,6 @@
 #define RWSIM_SIMULATOR_ODEPLUGIN_HPP_
 
 #include <rw/common/Plugin.hpp>
-#include "ODESimulator.hpp"
 
 namespace rwsim {
 namespace simulator {

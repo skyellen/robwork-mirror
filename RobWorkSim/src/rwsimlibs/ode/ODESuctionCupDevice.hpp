@@ -17,21 +17,23 @@
 
 #ifndef RWSIM_SIMULATOR_ODESUCTIONCUPDEVICE_HPP_
 #define RWSIM_SIMULATOR_ODESUCTIONCUPDEVICE_HPP_
-#include <rwlibs/simulation/SimulatedController.hpp>
+
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/proximity/ProximityStrategyData.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
 #include <rwsim/dynamics/Body.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
 
-#include <rw/rw.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-
-#include <rw/kinematics/State.hpp>
 #include <ode/ode.h>
 #include "ODEBody.hpp"
 #include "ODEDevice.hpp"
-#include "ODESimulator.hpp"
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace proximity { class ProximityModel; } }
+namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+
 namespace rwsim {
 namespace simulator {
+	class ODESimulator;
 
 	/**
 	 * @brief interface for classes (ODEDevices) that control a set of ode bodies
@@ -110,11 +112,11 @@ namespace simulator {
         bool _isInContact;
         rwsim::dynamics::Body::Ptr _object;
 
-        rw::geometry::PlainTriMesh<>::Ptr  _spikedCupMesh;
+        rw::geometry::TriMesh::Ptr  _spikedCupMesh;
         rw::geometry::Geometry::Ptr _spikedCup;
-        rw::proximity::ProximityModel::Ptr _spikedCupModel;
+        rw::common::Ptr<rw::proximity::ProximityModel> _spikedCupModel;
 
-        rwlibs::proximitystrategies::ProximityStrategyPQP::Ptr _narrowStrategy;
+        rw::common::Ptr<rwlibs::proximitystrategies::ProximityStrategyPQP> _narrowStrategy;
         rw::proximity::ProximityStrategyData _pdata;
         ODESimulator* _odesim;
         dWorldID _worldId;
