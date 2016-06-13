@@ -57,8 +57,8 @@ IF( build )
     # This is required as types may be removed or change name
     # (in this case previous java classes would interfere with current compilation).
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/CleanDep
-        COMMAND cmake -E remove_directory java_src
-        COMMAND cmake -E touch ${CMAKE_CURRENT_BINARY_DIR}/CleanDep
+        COMMAND ${CMAKE_COMMAND} -E remove_directory java_src
+        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/CleanDep
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../rw.i"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Removing old Java source..."
@@ -68,18 +68,18 @@ IF( build )
     # Compile java code and create JAR and Javadoc
 	ADD_CUSTOM_COMMAND(TARGET rw_jni
 		POST_BUILD
-		COMMAND cmake -E echo "Removing old Java compilation..."
-        COMMAND cmake -E remove_directory "${CMAKE_CURRENT_BINARY_DIR}/java_build"
-    	COMMAND cmake -E remove_directory "${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc"
-		COMMAND cmake -E echo "Copying Java source..."
-        COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LoaderRW.java java_src/dk/robwork/LoaderRW.java
-		COMMAND cmake -E echo "Compiling Java files..."
-        COMMAND cmake -E make_directory java_build/dk/robwork
+		COMMAND ${CMAKE_COMMAND} -E echo "Removing old Java compilation..."
+        COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_CURRENT_BINARY_DIR}/java_build"
+    	COMMAND ${CMAKE_COMMAND} -E remove_directory "${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc"
+		COMMAND ${CMAKE_COMMAND} -E echo "Copying Java source..."
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LoaderRW.java java_src/dk/robwork/LoaderRW.java
+		COMMAND ${CMAKE_COMMAND} -E echo "Compiling Java files..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory java_build/dk/robwork
         COMMAND ${Java_JAVAC_EXECUTABLE} -d ${CMAKE_CURRENT_BINARY_DIR}/java_build java_src/dk/robwork/*.java
-        COMMAND cmake -E echo "Creating jar file..."
+        COMMAND ${CMAKE_COMMAND} -E echo "Creating jar file..."
         COMMAND ${Java_JAR_EXECUTABLE} cvf ${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/rw_java.jar  -C java_build .
-		COMMAND cmake -E echo "Creating Javadoc..."
-    	COMMAND cmake -E make_directory ${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc
+		COMMAND ${CMAKE_COMMAND} -E echo "Creating Javadoc..."
+    	COMMAND ${CMAKE_COMMAND} -E make_directory ${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc
     	COMMAND ${Java_JAVADOC_EXECUTABLE} -d ${RW_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/javadoc -windowtitle "RobWork Java API Documentation" -public -sourcepath java_src dk.robwork
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )

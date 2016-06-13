@@ -11,7 +11,7 @@ ENDIF()
 
 SET(REPORT_DIR ${TEST_RUN_OUTPUT_DIR}/gtest_reports)
 ADD_CUSTOM_TARGET(rw-gtest_report-makedir
-    COMMAND cmake -E make_directory ${REPORT_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${REPORT_DIR}
 	COMMENT "Creating directory ${REPORT_DIR} if it does not exist."
 )
 SET(REPORT_TARGETS)
