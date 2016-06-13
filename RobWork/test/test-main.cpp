@@ -48,14 +48,15 @@ boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
     boost::property_tree::ptree tree;
     // load test configuration file
 
-    boost::filesystem::path full_path( boost::filesystem::current_path() );
+	//boost::filesystem::path full_path( boost::filesystem::current_path() );
     boost::filesystem::path path( argv[0] );
+	boost::filesystem::path full_path = boost::filesystem::canonical(path);
 
     rw::RobWork::init(argc,(const char**)argv);
 
     try{
-        boost::property_tree::read_xml(path.parent_path().string() + "/TestSuiteConfig.xml", tree);
-        //log << "TestConfig: " << path.parent_path().string() + "/TestSuiteConfig.xml" << std::endl;
+        boost::property_tree::read_xml(full_path.parent_path().string() + "/TestSuiteConfig.xml", tree);
+        //log << "TestConfig: " << full_path.parent_path().string() + "/TestSuiteConfig.xml" << std::endl;
         boost::property_tree::ptree &child = tree.get_child("RobWorkTest");
         _testfilesDir = child.get<std::string>("TestfilesDIR","testfiles") + "/";
         //log << "TESTDIR: " << _testfilesDir << std::endl;
