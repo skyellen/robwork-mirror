@@ -125,11 +125,23 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
    	BOOST_CHECK_CLOSE(ran,0.77132064313627779,1.0e-06);
     	BOOST_CHECK_CLOSE(ranFromTo,-0.020743304910138233,1.0e-06);
     	BOOST_CHECK_EQUAL(ranI,-51);
-    	BOOST_CHECK_CLOSE(ranNormalDist,-2.1159354853352048,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQ[0],0.27720597842708228,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQ[1],0.87440194131340832,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQpair[0],0.43276454471051695,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQpair[1],0.74925350688863546,1.0e-06);
+
+		// Values depending on normal distribution (can be different according to Boost version)
+#if BOOST_VERSION >= 105600 // Uses Ziggurat algorithm
+		BOOST_CHECK_CLOSE(ranNormalDist, 1.4202744938961578, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[0], 1.1510367394955425, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[1], 1.320001765811462, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[2], -0.060350434510439331, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[3], 1.1571808793963436, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[0], -0.01586616670934473, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[1], -0.0079894098272859024, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[2], 0.032477243445557302, 1.0e-06);
+#else // Uses Box-Muller algorithm
+		BOOST_CHECK_CLOSE(ranNormalDist, -2.1159354853352048, 1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[0],0.10420574144754288,1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[1],-1.3371934765112323,1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[2],-0.77189916796530089,1.0e-06);
@@ -137,6 +149,7 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
     	BOOST_CHECK_CLOSE(ranWeightedDir[0],0.0021004772778212945,1.0e-06);
     	BOOST_CHECK_CLOSE(ranWeightedDir[1],-0.0086033368952058847,1.0e-06);
     	BOOST_CHECK_CLOSE(ranWeightedDir[2],-0.03282871096443158,1.0e-06);
+#endif
     }
     // Check another seed
     for (unsigned int i = 0; i < 2; i++) {
@@ -152,11 +165,23 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
     	BOOST_CHECK_CLOSE(ran,0.12696982943452895,1.0e-06);
     	BOOST_CHECK_CLOSE(ranFromTo,0.5149132558144629,1.0e-06);
     	BOOST_CHECK_EQUAL(ranI,6760);
-    	BOOST_CHECK_CLOSE(ranNormalDist,2.3707402760475729,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQ[0],0.38232804937288167,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQ[1],0.94861826102714986,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQpair[0],0.41153188152238729,1.0e-06);
     	BOOST_CHECK_CLOSE(ranQpair[1],0.68837485776748508,1.0e-06);
+
+		// Values depending on normal distribution (can be different according to Boost version)
+#if BOOST_VERSION >= 105600 // Uses Ziggurat algorithm
+		BOOST_CHECK_CLOSE(ranNormalDist, 1.403451703065415, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[0], -1.0179557466375477, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[1], -0.48580514389579094, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[2], -0.45149359697442121, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranDir[3], -1.7128668926519315, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[0], 0.0132146851122913, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[1], -0.0028023557193167545, 1.0e-06);
+		BOOST_CHECK_CLOSE(ranWeightedDir[2], -0.032988144852141181, 1.0e-06);
+#else // Uses Box-Muller algorithm
+		BOOST_CHECK_CLOSE(ranNormalDist, 2.3707402760475729, 1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[0],-0.76867727692667076,1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[1],1.3635143841520583,1.0e-06);
     	BOOST_CHECK_CLOSE(ranDir[2],-0.62472325234244208,1.0e-06);
@@ -164,6 +189,7 @@ BOOST_AUTO_TEST_CASE(RandomSeedTest)
     	BOOST_CHECK_CLOSE(ranWeightedDir[0],-0.014881418304403815,1.0e-06);
     	BOOST_CHECK_CLOSE(ranWeightedDir[1],-0.019235042703143274,1.0e-06);
     	BOOST_CHECK_CLOSE(ranWeightedDir[2],0.030365543188295908,1.0e-06);
+#endif
     }
 }
 
@@ -179,7 +205,7 @@ BOOST_AUTO_TEST_CASE(ranRotation3D) {
 
     for (int i = 0; i < times; ++i) {
         Rotation3D<float> rot = Math::ranRotation3D<float>();
-        BOOST_CHECK(rot.isProperRotation(1.0e-06));
+        BOOST_CHECK(rot.isProperRotation(1.0e-06f));
         // BOOST_CHECK_EQUAL(rot.e().determinant(), 1.0);
     }
 }
@@ -197,7 +223,7 @@ BOOST_AUTO_TEST_CASE(ranTransform3D) {
 
     for (int i = 0; i < times; ++i) {
         Transform3D<float> transform = Math::ranTransform3D<float>();
-        BOOST_CHECK(transform.R().isProperRotation(1.0e-06));
+        BOOST_CHECK(transform.R().isProperRotation(1.0e-06f));
     }
 }
 
