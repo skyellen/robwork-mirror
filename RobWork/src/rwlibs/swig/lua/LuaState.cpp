@@ -63,8 +63,8 @@ void LuaState::reset(){
     if (_lua!=NULL)
         lua_close(_lua);
 
-    // Open the Lua state.
-    _lua = lua_open();
+    _lua = luaL_newstate();
+
     luaL_openlibs(_lua);
 
     rwlibs::swig::openLuaLibRW( _lua );
