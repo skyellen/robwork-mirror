@@ -1,30 +1,18 @@
 INCLUDE_DIRECTORIES(${RW_BUILD_WITH_GTEST_INCLUDE_DIRS})
 
-SET(TEST_RUN_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-IF(MSVC)
-	SET(TEST_RUN_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE} )
-ENDIF()
-
-########################################################################
-# Setup structure for detailed reporting
-########################################################################
-
-SET(REPORT_DIR ${TEST_RUN_OUTPUT_DIR}/gtest_reports)
-ADD_CUSTOM_TARGET(rwsim-gtest_report-makedir
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${REPORT_DIR}
-	COMMENT "Creating directory ${REPORT_DIR} if it does not exist."
-)
-SET(REPORT_TARGETS)
-
 ########################################################################
 # Standard Macro
 ########################################################################
 
 MACRO(ADD_RWSIM_GTEST target)
-	ADD_TEST(${target} ${TEST_RUN_OUTPUT_DIR}/${target})
+	ADD_TEST(NAME ${target} COMMAND $<TARGET_FILE:${target}>)
+	ADD_CUSTOM_TARGET(${target}_report-makedir
+		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${target}>/gtest_reports
+		COMMENT "Creating directory gtest_reports if it does not exist."
+	)
 	ADD_CUSTOM_TARGET(${target}_report
-		COMMAND ${TEST_RUN_OUTPUT_DIR}/${target} --gtest_output=xml:${REPORT_DIR}/${target}.xml
-		DEPENDS ${target} rwsim-gtest_report-makedir
+		COMMAND $<TARGET_FILE:${target}> --gtest_output=xml:$<TARGET_FILE_DIR:${target}>/gtest_reports/${target}.xml
+		DEPENDS ${target} ${target}_report-makedir
 	)
 	SET(REPORT_TARGETS ${REPORT_TARGETS} ${target}_report)
 ENDMACRO(ADD_RWSIM_GTEST)
