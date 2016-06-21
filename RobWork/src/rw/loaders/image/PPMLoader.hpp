@@ -42,8 +42,11 @@ namespace rw { namespace loaders {
 	class PPMLoader : public ImageLoader
 	{
 	public:
+        //! @copydoc ImageLoader::loadImage
+        rw::sensor::Image::Ptr loadImage(const std::string& filename);
 
-	    rw::sensor::Image::Ptr loadImage(const std::string& filename);
+        //! @copydoc ImageLoader::getImageFormats
+        std::vector<std::string> getImageFormats();
 
 	    /**
 	     * @param filename [in] name of the file that is to be loaded.

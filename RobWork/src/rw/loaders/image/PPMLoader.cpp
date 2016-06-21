@@ -260,6 +260,12 @@ rw::sensor::Image::Ptr PPMLoader::loadImage(const std::string& filename){
     return PPMLoader::load(filename);
 }
 
+std::vector<std::string> PPMLoader::getImageFormats() {
+	std::vector<std::string> formats;
+	formats.push_back("PPM");
+	return formats;
+}
+
 rw::sensor::Image::Ptr PPMLoader::load(const std::string& filename)
 {
 	RW_DEBUG("PPMLoader start to load " << StringUtil::quote(filename) );

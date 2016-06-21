@@ -30,6 +30,26 @@ MACRO(ADD_RW_GTEST target)
 ENDMACRO(ADD_RW_GTEST)
 
 ########################################################################
+# RobWork main function for initialization (link with this if needed).
+########################################################################
+
+SET(RWMAIN_TEST_LIBRARIES
+ ${GTEST_BOTH_LIBRARIES}
+ rw
+ ${XERCESC_LIBRARIES}
+ ${ASSIMP_LIBRARIES}
+ ${QHULL_LIBRARIES}
+ ${CMAKE_DL_LIBS}
+ )
+
+SET(RWMAIN_TEST_SRC
+  TestEnvironment.cpp
+  test-main.cpp
+)
+ADD_LIBRARY( rw-gtest-main STATIC ${RWMAIN_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw-gtest-main ${RWMAIN_TEST_LIBRARIES})
+
+########################################################################
 # Common
 ########################################################################
 
@@ -72,7 +92,8 @@ ADD_RW_GTEST(rw_geometry-gtest)
 ########################################################################
 
 SET(LOADERS_TEST_LIBRARIES
- ${GTEST_BOTH_LIBRARIES}
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
  rw
  ${XERCESC_LIBRARIES}
  ${ASSIMP_LIBRARIES}
@@ -82,6 +103,7 @@ SET(LOADERS_TEST_LIBRARIES
 
 SET(LOADERS_TEST_SRC
   loaders/DOMPropertyMap.cpp
+  loaders/ImageLoaderTest.cpp
 )
 ADD_EXECUTABLE( rw_loaders-gtest ${LOADERS_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})

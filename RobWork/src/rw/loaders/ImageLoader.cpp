@@ -44,7 +44,18 @@ bool ImageLoader::isImageSupported(const std::string& format){
 
 
 rw::common::Ptr<ImageLoader> ImageLoader::Factory::getImageLoader(const std::string& format){
-	using namespace rw::common;
+    const std::string ext = StringUtil::toUpper(format);
+	if (ext == "PGM" ){
+		return ownedPtr(new PGMLoader());
+	} else if (ext == "PPM" ){
+		return ownedPtr(new PPMLoader());
+	} else if (ext == "RGB" ){
+		return ownedPtr(new RGBLoader());
+	//} else if (ext == "TGA" ){
+	//	return ownedPtr(new TGALoader());
+	//} else if (ext == "BMP" ){
+	//	return ownedPtr(new BMPLoader());
+	}
 	ImageLoader::Factory ep;
 	std::vector<Extension::Ptr> exts = ep.getExtensions();
 	BOOST_FOREACH(Extension::Ptr ext, exts){
@@ -59,7 +70,13 @@ rw::common::Ptr<ImageLoader> ImageLoader::Factory::getImageLoader(const std::str
 }
 
 bool ImageLoader::Factory::hasImageLoader(const std::string& format){
-	using namespace rw::common;
+    const std::string ext = StringUtil::toUpper(format);
+    if (ext == "PGM")
+    	return true;
+    else if (ext == "PPM")
+    	return true;
+    else if (ext == "RGB")
+    	return true;
 	ImageLoader::Factory ep;
 	std::vector<Extension::Descriptor> exts = ep.getExtensionDescriptors();
 	BOOST_FOREACH(Extension::Descriptor& ext, exts){
@@ -70,6 +87,22 @@ bool ImageLoader::Factory::hasImageLoader(const std::string& format){
 	return false;
 }
 
+std::vector<std::string> ImageLoader::Factory::getSupportedFormats() {
+    std::set<std::string> formats;
+    formats.insert("PGM");
+    formats.insert("PPM");
+    formats.insert("RGB");
+	ImageLoader::Factory ep;
+	std::vector<Extension::Ptr> exts = ep.getExtensions();
+	BOOST_FOREACH(Extension::Ptr ext, exts){
+		ImageLoader::Ptr loader = ext->getObject().cast<ImageLoader>();
+		if (!loader.isNull()) {
+			const std::vector<std::string> extFormats = loader->getImageFormats();
+			formats.insert(extFormats.begin(),extFormats.end());
+		}
+	}
+	return std::vector<std::string>(formats.begin(),formats.end());
+}
 
 rw::sensor::Image::Ptr ImageLoader::Factory::load(const std::string& file)
 {
@@ -77,26 +110,14 @@ rw::sensor::Image::Ptr ImageLoader::Factory::load(const std::string& file)
     if(ext2.empty())
     	RW_THROW("Image file: " << file << " has no readable file extension!");
     const std::string ext = StringUtil::toUpper(ext2.substr(1,ext2.length()-1));
-	if (ext == "PGM" ){
-        return PGMLoader::load( file );
-	} else if (ext == "PPM" ){
-	    return PPMLoader::load( file );
-	} else if (ext == "RGB" ){
-	    return RGBLoader::load( file );
-	//} else if (ext == "TGA" ){
-	    //return TGALoader::load( file );
-    //} else if (ext == "BMP" ){
-        //return BMPLoader::load( file );
-    } else {
-        // tjeck if any plugins support the file format
-    	ImageLoader::Ptr loader = getImageLoader(ext);
-    	if(loader!=NULL){
-			try {
-				Image::Ptr img = loader->loadImage( file );
-				return img;
-			} catch (...){
-				Log::debugLog() << "Tried loading image with extension, but failed!\n";
-			}
+    // tjeck if any plugins support the file format
+    ImageLoader::Ptr loader = getImageLoader(ext);
+    if(loader!=NULL){
+    	try {
+    		Image::Ptr img = loader->loadImage( file );
+    		return img;
+    	} catch (...){
+    		Log::debugLog() << "Tried loading image with extension, but failed!\n";
     	}
     }
 	RW_THROW("Image file: " << file << " with extension " << ext << " is not supported!");

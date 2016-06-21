@@ -323,6 +323,12 @@ rw::sensor::Image::Ptr RGBLoader::loadImage(const std::string& fname){
     return RGBLoader::load(fname);
 }
 
+std::vector<std::string> RGBLoader::getImageFormats() {
+	std::vector<std::string> formats;
+	formats.push_back("RGB");
+	return formats;
+}
+
 rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     const char *fileName = fname.c_str();
     rawImageRec *raw;
