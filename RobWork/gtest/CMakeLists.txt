@@ -79,7 +79,7 @@ SET_TARGET_PROPERTIES(test_plugin.rwplugin
 )
 
 # Create XML file for lazy-loading of Test plugin
-FILE(GENERATE OUTPUT "${RW_CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_plugin.rwplugin.xml" INPUT ${CMAKE_CURRENT_SOURCE_DIR}/common/test_plugin.rwplugin.xml.in)
+FILE(GENERATE OUTPUT "$<TARGET_FILE_DIR:test_plugin.rwplugin>/test_plugin.rwplugin.xml" INPUT ${CMAKE_CURRENT_SOURCE_DIR}/common/test_plugin.rwplugin.xml.in)
 
 ########################################################################
 # Geometry
