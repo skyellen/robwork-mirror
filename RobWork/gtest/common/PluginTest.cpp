@@ -19,14 +19,19 @@
 
 #include "../TestEnvironment.hpp"
 
+#include <rw/common/DOMParser.hpp>
 #include <rw/common/Plugin.hpp>
-#include "TestPlugin.hpp"
 
+using rw::common::DOMParser;
 using rw::common::Extension;
 using rw::common::Plugin;
 
 TEST(PluginTest, loadDirectPlugin) {
-	const rw::common::Ptr<Plugin> plugin = Plugin::load(TestEnvironment::executableDir() + "libtest_plugin.rwplugin.so");
+	const DOMParser::Ptr parser = DOMParser::make();
+	parser->load(TestEnvironment::executableDir() + "test_plugin.rwplugin.xml");
+	const std::string libpath = parser->getRootElement()->getChild("plugin")->getChild("runtime")->getAttributeValue("library");
+
+	const rw::common::Ptr<Plugin> plugin = Plugin::load(libpath);
 
 	EXPECT_EQ("TestPlugin", plugin->getId());
 	EXPECT_EQ("Name of test plugin", plugin->getName());
