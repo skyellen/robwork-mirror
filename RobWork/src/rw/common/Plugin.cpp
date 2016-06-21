@@ -17,6 +17,13 @@ Plugin::Plugin(const std::string& id,
 }
 Plugin::~Plugin(){}
 
+std::vector<std::string> Plugin::getExtensionPointIDs() {
+	std::vector<std::string> ids;
+	const std::vector<Extension::Descriptor> desc = getExtensionDescriptors();
+	for (std::size_t i = 0; i < desc.size(); i++)
+		ids.push_back(desc[i].id);
+	return ids;
+}
 
 rw::common::Ptr<Plugin> Plugin::load(const std::string& filename){
     boost::filesystem::path file(filename);

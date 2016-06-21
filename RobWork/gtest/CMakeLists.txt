@@ -54,7 +54,8 @@ TARGET_LINK_LIBRARIES( rw-gtest-main ${RWMAIN_TEST_LIBRARIES})
 ########################################################################
 
 SET(COMMON_TEST_LIBRARIES
- ${GTEST_BOTH_LIBRARIES}
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
  rw
  ${XERCESC_LIBRARIES}
  ${ASSIMP_LIBRARIES}
@@ -63,10 +64,22 @@ SET(COMMON_TEST_LIBRARIES
 
 SET(COMMON_TEST_SRC
   common/CommonTest.cpp
+  common/PluginTest.cpp
 )
 ADD_EXECUTABLE( rw_common-gtest ${COMMON_TEST_SRC})       
 TARGET_LINK_LIBRARIES( rw_common-gtest ${COMMON_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_common-gtest)
+
+# Create dummy plugins for testing
+ADD_LIBRARY(test_plugin.rwplugin MODULE common/TestPlugin.cpp)
+TARGET_LINK_LIBRARIES(test_plugin.rwplugin rw)
+SET_TARGET_PROPERTIES(test_plugin.rwplugin
+  PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${RW_CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+)
+
+# Create XML file for lazy-loading of Test plugin
+FILE(GENERATE OUTPUT "${RW_CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_plugin.rwplugin.xml" INPUT ${CMAKE_CURRENT_SOURCE_DIR}/common/test_plugin.rwplugin.xml.in)
 
 ########################################################################
 # Geometry

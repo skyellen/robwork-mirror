@@ -42,6 +42,12 @@ public:
 	void init(int argc, char** argv);
 
 	/**
+	 * @brief Get the test executable directory.
+	 * @return the path.
+	 */
+	static std::string executableDir();
+
+	/**
 	 * @brief Get the test-files directory.
 	 * @return the path.
 	 */

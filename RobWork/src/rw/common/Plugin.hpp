@@ -52,8 +52,11 @@ public:
     //! @brief get a specific extension using the unique extendion ID
     virtual rw::common::Ptr<Extension> makeExtension(const std::string& id) = 0;
 
-    //! @brief get a list of extension point ids which this plugin define
-    virtual std::vector<std::string> getExtensionPointIDs(){ return std::vector<std::string>(); };
+    /**
+     * @brief get a list of extension point ids which this plugin define
+     * @return list of extension points ids.
+     */
+    virtual std::vector<std::string> getExtensionPointIDs();
 
     //! @brief get a
     //virtual rw::common::Ptr<ExtensionPoint> makeExtensionPoint(const std::string& id){ return NULL; };

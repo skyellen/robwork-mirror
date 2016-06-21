@@ -45,13 +45,21 @@ void TestEnvironment::init(int argc, char** argv) {
 	_argv = argv;
 }
 
+std::string TestEnvironment::executableDir() {
+	static std::string executableDir;
+	if (executableDir.empty()) {
+	    boost::filesystem::path path(get()->_argv[0]);
+		boost::filesystem::path full_path = boost::filesystem::canonical(path);
+	    executableDir = full_path.parent_path().string()+"/";
+	}
+	return executableDir;
+}
+
 std::string TestEnvironment::testfilesDir() {
 	static std::string testfilesDir;
 	if (testfilesDir.empty()) {
-	    boost::filesystem::path path(get()->_argv[0]);
-		boost::filesystem::path full_path = boost::filesystem::canonical(path);
 	    const DOMParser::Ptr parser = DOMParser::make();
-	    parser->load(full_path.parent_path().string() + "/TestSuiteConfig.xml");
+	    parser->load(executableDir() + "/TestSuiteConfig.xml");
 	    const DOMElem::Ptr testElem = parser->getRootElement()->getChild("RobWorkTest",false);
 	    const DOMElem::Ptr dirElem = testElem->getChild("TestfilesDIR",false);
 	    testfilesDir = dirElem->getValue()+"/";

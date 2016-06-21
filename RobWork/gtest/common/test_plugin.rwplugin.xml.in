@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin id="TestLazyPlugin" name="Name of plugin for test." version="1.0"
+xmlns="http://www.robwork.dk/Plugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.robwork.dk/Plugin ../../xml-schemas/rwxml_plugin.xsd">
+	<runtime library="$<TARGET_FILE:test_plugin.rwplugin>" />
+	<extension id="ExtensionId1" name="Name of first extension." point="rw_common-gtest.ExtensionPointA" />
+	<extension id="ExtensionId2" name="Name of second extension." point="rw_common-gtest.ExtensionPointA" />
+	<extension id="ExtensionId3" name="Name of third extension." point="rw_common-gtest.ExtensionPointB" />
+</plugin>
