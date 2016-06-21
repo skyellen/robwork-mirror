@@ -75,7 +75,7 @@ ADD_LIBRARY(test_plugin.rwplugin MODULE common/TestPlugin.cpp)
 TARGET_LINK_LIBRARIES(test_plugin.rwplugin rw)
 SET_TARGET_PROPERTIES(test_plugin.rwplugin
   PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY ${RW_CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 )
 
 # Create XML file for lazy-loading of Test plugin
