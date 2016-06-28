@@ -29,6 +29,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
+#include <rw/trajectory/Path.hpp>
 
 #include <rwlibs/opengl/Drawable.hpp>
 
