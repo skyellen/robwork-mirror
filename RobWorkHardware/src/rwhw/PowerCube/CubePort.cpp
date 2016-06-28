@@ -168,7 +168,7 @@ namespace {
 
             if( (int)cmd.data.size()!=n-3) {
                 // Correct lower part of TELID
-                buff[2] = ((moduleAddr&0x7)<<5) | n-3; // TELID_SENDDAT
+                buff[2] = ((moduleAddr&0x7)<<5) | (n-3); // TELID_SENDDAT
             }
             //int bcc = ((buff[1]<<8) | buff[2]) +  ;
             buff[n++] = 0x11; // BCC

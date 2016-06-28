@@ -20,7 +20,7 @@
 #include "DC1394CameraFactory.hpp"
 
 
-#include <iostream>;
+#include <iostream>
 
 
 namespace rwhw { namespace camera {

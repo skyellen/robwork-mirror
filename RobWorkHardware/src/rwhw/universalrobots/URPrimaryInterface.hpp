@@ -115,7 +115,7 @@ private:
 	bool _hasURData;
 	UniversalRobotsData _data;
 
-	bool _lastTimeRunningProgram;
+	//bool _lastTimeRunningProgram;
 
 	std::vector<char> _dataStorage;
 

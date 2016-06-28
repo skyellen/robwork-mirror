@@ -23,14 +23,12 @@ RobolabFT::RobolabFT(){
 }
 RobolabFT::~RobolabFT(){
 	_serialPort.close();
-	delete _dataIn;
-	delete _dataOut;
 
 }
 bool RobolabFT::init(const std::string& port, SerialPort::Baudrate baudrate, int sensors){
 	 if(connect(port,baudrate)){
-			_dataIn[7*sensors+1];
-			_dataOut[7*sensors+1];
+			//_dataIn[7*sensors+1];
+			//_dataOut[7*sensors+1];
 			_sensors=sensors;
 		 _receiveThread = boost::thread(&RobolabFT::runReceive, this);
 		 _stopThread=false;

@@ -25,7 +25,6 @@ Robotiq::Robotiq(rw::math::Q currentQ,
                  rw::math::Q force,
                  unsigned int numberOfJoints):
         _stop(true),
-        _haveReceivedSize(false),
         _socket(0),
         _connected(false),
         _packageIDCounter(0),

@@ -221,7 +221,7 @@ namespace rwhw {
         int _timeStamp;
         bool _useCompression;
         unsigned short _fps;
-        bool _isDataAckRunning;
+        //bool _isDataAckRunning;
 
         ControllerConfig _cConfig;
         SensorConfig _sConfig;
@@ -229,7 +229,7 @@ namespace rwhw {
         std::vector<TactileMatrix> _pads;
         std::vector<TactileMaskMatrix> _staticMasks;
 
-        unsigned char _buffer[2048];
+        //unsigned char _buffer[2048];
         long _lastDataAcqTime;
 
         static size_t _preambleIdx;

@@ -285,7 +285,7 @@ namespace rwhw { namespace camera {
         bool getFormat7RecommendedPacketSize(const CameraFirewire::Format7Mode mode, unsigned int &packetSize);
 
     private:
-        bool _connected;
+        //bool _connected;
         CameraFirewire::CapturePolicy _policy;
         bool _isAcquired;
         dc1394camera_t* _dccamera;

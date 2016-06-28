@@ -22,11 +22,11 @@ const float SchunkPG70::MAXCUR = 8.5f;
 
 
 // Constructor
-SchunkPG70::SchunkPG70() : 
-_defMinPos(0), _defMaxPos(0), _defMaxDeltaVel(0),
-_defTorqueRatio(0), _defCurRatio(0),
-_defMinVel(0), _defMaxVel(0), _defMinAcc(0), _defMaxAcc(0),
-_defMinCur(0), _defMaxCur(0)
+SchunkPG70::SchunkPG70() //:
+//_defMinPos(0), _defMaxPos(0), _defMaxDeltaVel(0),
+//_defTorqueRatio(0), _defCurRatio(0),
+//_defMinVel(0), _defMaxVel(0), _defMinAcc(0), _defMaxAcc(0),
+//_defMinCur(0), _defMaxCur(0)
 {
 	_connected = false;
 	_cubePort = NULL;
@@ -46,9 +46,9 @@ SchunkPG70::~SchunkPG70() {
 bool SchunkPG70::connectSerial(const std::string& port) {
 	if(initialize(port)) {
 		std::cout<<"Port Initialized"<<std::endl;
-		unsigned int statusMem = 0;
-		bool getStatusMem = false;
-		bool dataComOK = false;
+		//unsigned int statusMem = 0;
+		//bool getStatusMem = false;
+		//bool dataComOK = false;
 		_connected = true;
 
 		home();
@@ -63,7 +63,8 @@ std::cout<<"_defMaxPos = "<<_defMaxPos<<std::endl;
 				_port->clean();
 				_defMinPos = _cube->getDefMaxPos();
 std::cout<<"_defMinPos = "<<_defMinPos<<std::endl;*/
-				float maxcur = _cube->getMaxCur();
+				//float maxcur = _cube->getMaxCur();
+				_cube->getMaxCur();
 				//std::cout<<"MAXIMAL CURRENT = "<<maxcur<<std::endl;
 				tmp=false;
 			} catch(rw::common::Exception& e) {

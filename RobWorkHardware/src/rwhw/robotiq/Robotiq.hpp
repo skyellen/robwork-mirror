@@ -203,7 +203,7 @@ private:
     void start();
     void stop();
 
-    bool _haveReceivedSize;
+    //bool _haveReceivedSize;
 
     boost::asio::ip::tcp::socket* _socket;
     boost::asio::io_service _ioService;
@@ -212,8 +212,8 @@ private:
 
     bool _connected;
 
-    static const unsigned int max_buf_len = 5000000;
-    char buf[max_buf_len];
+    //static const unsigned int max_buf_len = 5000000;
+    //char buf[max_buf_len];
 
     boost::uint8_t _packageIDCounter;
 

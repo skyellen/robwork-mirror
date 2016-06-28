@@ -268,7 +268,7 @@ public:
                         /*socket->send(boost::asio::buffer(buffer, n));*/
                         std::size_t bytesTransfered = 0;
                         bytesTransfered = boost::asio::write(*socket, boost::asio::buffer(buffer, n));
-                        if (bytesTransfered == n) {
+                        if (static_cast<int>(bytesTransfered) == n) {
                             /* Successful send */
                             RW_LOG_DEBUG("Sent all of the '" << bytesTransfered << "' bytes.");
                         } else {

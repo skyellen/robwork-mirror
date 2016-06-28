@@ -36,9 +36,9 @@ DC1394Camera::DC1394Camera(
     dc1394camera_t* dc1394cam)
     :
     CameraFirewire(dc1394cam->model, dc1394cam->vendor),
-    _dccamera(dc1394cam),
-    _isAcquired(false),
     _policy(SINGLE_SHOT),
+    _isAcquired(false),
+    _dccamera(dc1394cam),
     _captureMode(M640x480),
     _colorMode(MONO8),
     _frameRate(DC1394_FRAMERATE_30),
@@ -763,7 +763,7 @@ CameraFirewire::Format7Mode DC1394Camera::modeConverter(dc1394video_mode_t color
 
 CameraFirewire::Format7Mode DC1394Camera::getFormat7Mode()
 {
-	CameraFirewire::Format7Mode mode = F7MODE0;
+	//CameraFirewire::Format7Mode mode = F7MODE0;
     dc1394video_mode_t captureMode;
     if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
     	RW_WARN("Unable to read mode from camera.");

@@ -23,7 +23,7 @@
 
 
 namespace rwhw {
-    class Cmd;
+    struct Cmd;
 
         /** @addtogroup PowerCube */
         /*@{*/

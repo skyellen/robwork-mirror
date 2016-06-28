@@ -87,7 +87,7 @@ void URCallBackInterface::startCommunication(const std::string& callbackIP, cons
 	
     // replace PORT placeholder with correct port value
     std::stringstream sstr_port;
-    int n = script.find("PORT");
+    std::size_t n = script.find("PORT");
     if (n == std::string::npos) {
         RW_WARN("Unable to find PORT in script");
         sstr_port << script;
@@ -312,7 +312,7 @@ void URCallBackInterface::run() {
 			//Timer timer2;
             //timer.resetAndResume();  
 			//Statistics<double> stats;
-			int cnt = 0;
+			//int cnt = 0;
             while (!_stopServer) {
 			//  std::cout<<"\b\b\b\b\bm = "<<_isMoving;
 //          std::cout<<"Time = "<<TimerUtil::currentTimeUs()<<std::endl; 

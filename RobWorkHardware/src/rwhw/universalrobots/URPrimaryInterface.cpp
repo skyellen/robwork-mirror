@@ -271,7 +271,8 @@ void URPrimaryInterface::readRobotMessage(const std::vector<char>& data, unsigne
 {
 	//uint32_t messageOffset = 0;
 	_data.controllerTimeStamp = URCommon::getUInt64(data, messageOffset);
-	char source = URCommon::getUChar(data, messageOffset);
+	//char source = URCommon::getUChar(data, messageOffset);
+	URCommon::getUChar(data, messageOffset);
 	char robotMessageType = URCommon::getUChar(data, messageOffset);
 
 	switch (robotMessageType) {
@@ -490,7 +491,8 @@ void URPrimaryInterface::readRobotsState(const std::vector<char>& data) {
 		// secret stuff, masterSafetyState, master
 		messageOffset+=2;
 
-		unsigned char euroMap = URCommon::getUChar(data, messageOffset);
+		//unsigned char euroMap = URCommon::getUChar(data, messageOffset);
+		URCommon::getUChar(data, messageOffset);
 	/*	if(euroMap==1){
 			uint32_t it1 = euromapInputBits=getUINT32(messageOffset);
 			uint32_t it2 = data.euromapOutputBits=getUINT32(messageOffset);

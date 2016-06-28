@@ -197,13 +197,13 @@ DSACON32::DSACON32(SerialPort &port, const ControllerConfig &cConfig,
                    const SensorConfig &sConfig, MatrixConfig *mConfigs,
                    const std::vector<TactileMaskMatrix> &staticMasks):
     _sPort(&port),
+    _useCompression(false),
+    _fps(5),
     _cConfig(cConfig),
     _sConfig(sConfig),
     _mConfigs(mConfigs),
     _staticMasks(staticMasks),
-    _useCompression(false),
-    _fps(5),
-    _isDataAckRunning(false),
+//    _isDataAckRunning(false),
     _lastDataAcqTime(0)
 {
     for(int i=0; i<_sConfig.numMatrices; i++)
