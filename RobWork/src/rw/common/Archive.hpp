@@ -19,6 +19,7 @@
 #define RW_COMMON_ARCHIVE_HPP
 
 #include <iosfwd>
+#include <string>
 
 namespace rw {
 namespace common {
