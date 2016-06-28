@@ -26,6 +26,8 @@
 
 #include <ode/ode.h>
 
+#include <boost/bind.hpp>
+
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::geometry;

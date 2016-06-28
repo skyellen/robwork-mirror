@@ -3,15 +3,10 @@
 
 //! @file RenderPlanes.hpp
 
-#include <list>
-#include <vector>
-
-#include <rw/kinematics/State.hpp>
-#include <rw/math/Vector3D.hpp>
-
 #include <rw/graphics/Render.hpp>
-
 #include <rwsim/util/PlaneModel.hpp>
+
+#include <vector>
 
 namespace rwsim {
 namespace drawable {

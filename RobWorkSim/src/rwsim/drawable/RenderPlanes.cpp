@@ -17,14 +17,12 @@
 
 #include "RenderPlanes.hpp"
 
+#include <rwlibs/os/rwgl.hpp>
+
 #include <boost/foreach.hpp>
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-
-using namespace rw::kinematics;
-using namespace rw::math;
 using namespace rw::graphics;
+using namespace rw::math;
 using namespace rwsim::drawable;
 using namespace rwsim::util;
 

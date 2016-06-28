@@ -20,6 +20,8 @@
 #include "SimulatorLogEntryWidget.hpp"
 #include "SimulatorStatisticsWidget.hpp"
 
+#include <rw/geometry/Line.hpp>
+
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rws/SceneOpenGLViewer.hpp>
 #include <RobWorkStudioConfig.hpp>

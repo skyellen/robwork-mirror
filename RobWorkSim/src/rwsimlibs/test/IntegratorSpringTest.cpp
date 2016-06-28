@@ -24,6 +24,8 @@
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 
+#include <boost/bind.hpp>
+
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::math;

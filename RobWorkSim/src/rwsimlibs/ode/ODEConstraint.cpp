@@ -19,6 +19,7 @@
 #include "ODEBody.hpp"
 #include "ODESimulator.hpp"
 
+#include <rw/math/LinearAlgebra.hpp>
 #include <rwsim/dynamics/Constraint.hpp>
 
 using namespace rw::kinematics;

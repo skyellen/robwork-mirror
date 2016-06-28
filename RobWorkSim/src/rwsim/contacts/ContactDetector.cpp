@@ -20,6 +20,8 @@
 #include "ContactStrategyPQP.hpp"
 #include "ContactDetectorTracking.hpp"
 
+#include <rw/common/TimerUtil.hpp>
+#include <rw/kinematics/FKTable.hpp>
 #include <rw/proximity/BasicFilterStrategy.hpp>
 #include <rwsim/log/SimulatorLogScope.hpp>
 

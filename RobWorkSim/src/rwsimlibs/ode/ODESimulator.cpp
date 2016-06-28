@@ -19,6 +19,7 @@
 
 #include <ode/ode.h>
 
+#include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -62,7 +63,7 @@
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 #include <rw/common/Log.hpp>
 
-#include <boost/lambda/bind.hpp>
+#include <boost/bind.hpp>
 
 #include <sstream>
 

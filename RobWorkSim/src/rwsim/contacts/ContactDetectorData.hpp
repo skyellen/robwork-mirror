@@ -26,6 +26,8 @@
 
 #include "ContactStrategyData.hpp"
 
+#include <map>
+
 namespace rwsim {
 namespace contacts {
 //! @addtogroup rwsim_contacts

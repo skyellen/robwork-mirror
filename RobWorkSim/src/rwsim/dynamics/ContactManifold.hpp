@@ -100,7 +100,6 @@ namespace dynamics {
 			double thres);
 
 	private:
-		int _deepestIdx;
 		ContactPoint _deepest[5];
 
 	};

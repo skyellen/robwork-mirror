@@ -15,6 +15,8 @@
 #include <vector>
 #include "SupportPose.hpp"
 
+namespace rw { namespace kinematics { class State; } }
+
 namespace rwsim {
 namespace util {
 

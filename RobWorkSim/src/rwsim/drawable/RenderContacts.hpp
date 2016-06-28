@@ -5,7 +5,7 @@
 
 #include <rw/sensor/Contact3D.hpp>
 #include <rw/graphics/Render.hpp>
-
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwsim {
 namespace drawable {

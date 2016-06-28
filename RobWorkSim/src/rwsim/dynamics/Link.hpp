@@ -57,8 +57,8 @@ namespace dynamics {
 
     public: // functions that need to be implemented by specialized class
 
-    	//! @copydoc Body::getPointVelW
-    	virtual rw::math::VelocityScrew6D<> getVelocity(rw::kinematics::State &state) = 0;
+    	//! @copydoc Body::getVelocity
+    	virtual rw::math::VelocityScrew6D<> getVelocity(const rw::kinematics::State &state) const = 0;
 
     	 virtual void reset(rw::kinematics::State &state);
 

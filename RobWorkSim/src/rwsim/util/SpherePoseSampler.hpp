@@ -20,6 +20,7 @@
 
 #include "StateSampler.hpp"
 
+#include <rw/math/RPY.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/State.hpp>

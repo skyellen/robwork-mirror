@@ -20,6 +20,7 @@
 
 #include "Contact.hpp"
 #include <rw/graphics/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 /**
  * @file RenderContacts.hpp

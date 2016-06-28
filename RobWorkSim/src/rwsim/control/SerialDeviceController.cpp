@@ -23,7 +23,6 @@ SerialDeviceController::SerialDeviceController(
 		const std::string& name, DynamicDevice::Ptr ddev):
 		SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,ddev->getKinematicModel()->getBase()))),
 	_ddev(ddev),
-	_time(0.0),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
 	_targetAdded(false),
@@ -49,7 +48,6 @@ SerialDeviceController::SerialDeviceController(
 		SimulatedController(rw::common::ownedPtr(new rw::models::ControllerModel(name,ddev->getKinematicModel()->getBase()))),
 	_ddev(ddev),
 	_rdev(ddev),
-	_time(0.0),
 	_currentQ(Q::zero(ddev->getModel().getDOF())),
 	_currentQd(Q::zero(ddev->getModel().getDOF())),
 	_targetAdded(false),

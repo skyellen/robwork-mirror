@@ -29,6 +29,8 @@
 
 #include <QListWidgetItem>
 
+#include <boost/any.hpp>
+
 class PropertyViewEditor;
 namespace rw { namespace common { class ThreadPool; } }
 namespace rw { namespace common { class ThreadTask; } }

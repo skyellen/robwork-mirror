@@ -20,6 +20,7 @@
 
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/proximity/ProximityCache.hpp>
+#include <rw/math/EAA.hpp>
 
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>

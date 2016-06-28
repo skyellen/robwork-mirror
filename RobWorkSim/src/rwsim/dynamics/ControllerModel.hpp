@@ -19,8 +19,9 @@ namespace dynamics {
 
         bool isInitialized(rw::kinematics::State& state){
             if(_controllerStateMap.find( state.getUniqueId() )==_controllerStateMap.end() ){
-                return NULL;
+                return false;
             }
+            return true;
         }
 
         rwlibs::simulation::SimulatedController::Ptr getController(rw::kinematics::State& state)

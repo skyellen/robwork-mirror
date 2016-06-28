@@ -20,6 +20,8 @@
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 
+#include <boost/bind.hpp>
+
 using rw::common::PropertyMap;
 using rw::kinematics::State;
 using namespace rw::math;

@@ -10,6 +10,7 @@
 
 #include "PoseSampler.hpp"
 #include <rw/geometry/Geometry.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/geometry/TriMesh.hpp>
 /**

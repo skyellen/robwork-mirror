@@ -52,7 +52,7 @@ namespace control1 {
 
         void setEnabled(bool enabled){ _enabled = enabled; };
 
-        bool isEnabled(){ return _enabled; } ;
+        bool isEnabled() const { return _enabled; }
 
     private:
         rwsim::dynamics::SuctionCup::Ptr _dev;

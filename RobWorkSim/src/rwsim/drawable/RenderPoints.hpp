@@ -3,13 +3,11 @@
 
 //! @file RenderPoints.hpp
 
-#include <list>
-#include <vector>
-
 #include <rw/math/Vector3D.hpp>
-#include <rw/kinematics/State.hpp>
-
 #include <rw/graphics/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
+
+#include <vector>
 
 namespace rwsim {
 namespace drawable {

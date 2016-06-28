@@ -1,5 +1,7 @@
 #include "OBRManifold.hpp"
 
+#include <rw/math/LinearAlgebra.hpp>
+
 using namespace boost::numeric;
 using namespace rw::math;
 using namespace rwsim::dynamics;

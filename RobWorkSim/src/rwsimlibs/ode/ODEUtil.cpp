@@ -25,6 +25,7 @@
 #include <rw/geometry/Sphere.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/math/EAA.hpp>
 
 #include <boost/foreach.hpp>
 

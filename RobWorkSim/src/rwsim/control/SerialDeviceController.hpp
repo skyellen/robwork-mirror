@@ -21,6 +21,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include <deque>
+#include <fstream>
 
 // Forward declarations
 namespace rw { namespace sensor { class FTSensor; }}
@@ -219,7 +220,6 @@ namespace control {
 	private:
 		dynamics::DynamicDevice::Ptr _ddev;
 		dynamics::RigidDevice::Ptr _rdev;
-		double _time;
 		rw::math::Q _target;
 		rw::math::Q _currentQ, _currentQd;
 		bool _enabled, _stop, _pause;
@@ -232,7 +232,6 @@ namespace control {
 
 		void addTarget(const Target& target);
 		std::vector<Target> _targetQueue;
-		int _currentTargetIdx;
 		boost::mutex _targetMutex;
 		rw::trajectory::QTrajectory::Ptr _currentTraj;
 		double _currentTrajTime;
@@ -241,13 +240,9 @@ namespace control {
 
 		double _linVelMax, _angVelMax;
 
-		int _currentCompiledTarget;
 		std::deque<CompiledTarget> _compiledTargets;
 		CompiledTarget _executingTarget;
 		unsigned int _idCnt;
-
-		bool _isRunning;
-
 
 		// Hybrid/Force torque control
 		Eigen::VectorXd _q_error, _q_error_last;

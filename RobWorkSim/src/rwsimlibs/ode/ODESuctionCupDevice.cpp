@@ -421,7 +421,7 @@ void ODESuctionCupDevice::init(ODEBody *odebase, rwsim::dynamics::SuctionCup* sc
     dJointAttach(slider, bTmp1, _odeBase->getBodyID());
     dJointSetSliderAxis(slider, saxis(0) , saxis(1), saxis(2));
     double lostop = scup->getSpringParamsClosed()(4);
-    double highstop = scup->getSpringParamsOpen()(4);
+    //double highstop = scup->getSpringParamsOpen()(4);
     dJointSetSliderParam(slider, dParamLoStop, lostop-0.01 );
     //dJointSetSliderParam(slider, dParamHiStop, highstop+0.01 );
     dJointSetSliderParam(slider, dParamCFM, 0.01);

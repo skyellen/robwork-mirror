@@ -22,8 +22,9 @@ namespace dynamics {
 
         bool isInitialized(rw::kinematics::State& state){
             if(_sensorStateMap.find( state.getUniqueId() )==_sensorStateMap.end() ){
-                return NULL;
+                return false;
             }
+            return true;
         }
 
         rwlibs::simulation::SimulatedSensor::Ptr getSensor(rw::kinematics::State& state){

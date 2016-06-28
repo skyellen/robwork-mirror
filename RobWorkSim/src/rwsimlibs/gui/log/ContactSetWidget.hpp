@@ -25,6 +25,9 @@
  */
 
 #include "SimulatorLogEntryWidget.hpp"
+
+#include <rw/math/Vector3D.hpp>
+
 #include <QItemSelection>
 
 namespace rwsim { namespace contacts { class Contact; } }

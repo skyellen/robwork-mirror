@@ -802,10 +802,9 @@ std::vector<Q> AssemblySimulator::orderSolutions(const std::vector<Q> &solutions
 
 bool AssemblySimulator::hasContact(BodyContactSensor::Ptr sensor, Body::Ptr body, rw::kinematics::State& state)
 {
-	const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts(state);
 	const std::vector<Body::Ptr>& bodies = sensor->getBodies(state);
 
-	RW_ASSERT(bodies.size() == contacts.size() );
+	RW_ASSERT(bodies.size() == sensor->getContacts(state).size() );
 
 	for(size_t i=0; i<bodies.size(); i++){
 		if (bodies[i] == body)

@@ -41,6 +41,7 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Log.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/common/TimerUtil.hpp>
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -1455,10 +1456,10 @@ namespace
         const string workcell_name =  child.get<string>("workcell");
 
         if(StringUtil::isAbsoluteFileName(workcell_name)){
-            state.wc = WorkCellFactory::load(workcell_name);
+            state.wc = WorkCellLoader::Factory::load(workcell_name);
         } else {
             std::string directory = StringUtil::getDirectoryName(state.dwcfile);
-            state.wc = WorkCellFactory::load(directory+workcell_name);
+            state.wc = WorkCellLoader::Factory::load(directory+workcell_name);
         }
     }
 

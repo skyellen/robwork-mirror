@@ -62,7 +62,7 @@ namespace util {
 			std::vector<MODEL_T> models;
 			std::vector<Vector3D<> > bestConsensusSet;
 			std::vector<Vector3D<> > maybeInliers(n);
-			double bestError = 100000.0;
+			//double bestError = 100000.0;
 			while( ++iterations < k ){
 				std::vector<Vector3D<> > consensusSet;
 
@@ -93,7 +93,8 @@ namespace util {
 					//std::cout << "- Maybe model: "<< consensusSet.size() << std::endl;
 					//maybeModel.print();
 					//maybeModel.print();
-					double error = maybeModel.refit( consensusSet );
+					//double error = maybeModel.refit( consensusSet );
+					maybeModel.refit( consensusSet );
 
 					models.push_back( maybeModel );
 
