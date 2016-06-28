@@ -28,9 +28,6 @@ using namespace rw::models;
 using namespace rw::trajectory;
 using namespace rw::common;
 using namespace rws;
-namespace {
-    const int RECORD_NUM_OF_DIGITS = 6;
-}
 
 Player::Player(
     TimedStatePath path,

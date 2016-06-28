@@ -243,7 +243,7 @@ protected:
     //! Overridden from QGLWidget
     void wheelEvent(QWheelEvent* event);
 
-    void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene){
+    void setWorkCellScene(rw::common::Ptr<rw::graphics::WorkCellScene> wcscene){
         _wcscene = wcscene;
     }
 
@@ -261,7 +261,7 @@ private:
 private:
 
 	rwlibs::opengl::SceneOpenGL::Ptr _scene;
-	rw::graphics::WorkCellScene::Ptr _wcscene;
+	rw::common::Ptr<rw::graphics::WorkCellScene> _wcscene;
 
 	// the main camera which is controlled by the gui
     rw::graphics::SceneCamera::Ptr _mainCam, _backCam, frontCam;

@@ -38,8 +38,8 @@ using namespace rws;
     class WriterWrapper: public LogWriter {
     public:
         typedef std::pair<std::string, QColor> Message;
-        WriterWrapper(ShowLog* slog, QColor color, Log::LogIndex id):
-            _slog(slog),_color(color),_id(id)
+        WriterWrapper(ShowLog* slog, QColor color):
+            _slog(slog),_color(color)
         {
 
         }
@@ -104,7 +104,6 @@ using namespace rws;
     private:
         ShowLog *_slog;
         QColor _color;
-        Log::LogIndex _id;
         bool _isNewLine;
 		int _tabLevel;
 
@@ -128,9 +127,9 @@ ShowLog::ShowLog():
 
     setWidget(_editor);  // Sets the widget on the QDockWidget
 
-    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::black, Log::Info) ) );
-    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkYellow, Log::Warning) ) );
-    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkRed, Log::Error) ) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::black) ) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkYellow) ) );
+    _writers.push_back( ownedPtr( new WriterWrapper(this, Qt::darkRed) ) );
 
 }
 

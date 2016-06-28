@@ -43,7 +43,7 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
-#include <rw/loaders/WorkCellFactory.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
@@ -970,7 +970,7 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     WorkCell::Ptr wc;
 
     try{
-        wc = WorkCellFactory::load(filename.toStdString());
+        wc = WorkCellLoader::Factory::load(filename.toStdString());
         if(wc==NULL){
             RW_THROW("Loading of workcell failed!");
         }

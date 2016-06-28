@@ -27,6 +27,8 @@
 #include "ui_ATaskVisPlugin.h"
 #include <rws/RobWorkStudioPlugin.hpp>
 
+#include <boost/any.hpp>
+
 // Forward declarations
 class PropertyViewEditor;
 namespace rw { namespace models { class WorkCell; } }

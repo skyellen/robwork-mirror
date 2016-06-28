@@ -104,12 +104,10 @@ namespace rws{
 		rw::math::Vector3D<> _enVec;          // Saved drag vector
 		double _adjustWidth;    // Mouse bounds width
 		double _adjustHeight;   // Mouse bounds height
-		float _ArcBallControllerRadi; // radius of ArcBallController
 		double _height, _width;
 		rw::math::Transform3D<> _viewTransform;
 		//rw::math::Rotation3D<> _viewRotation;
 		rw::math::Vector3D<> _lastPos,_pivotPoint;
-		double _zoomFactor, _zoomScale;
 		rw::math::Transform3D<> _camTransform;
 
 	};

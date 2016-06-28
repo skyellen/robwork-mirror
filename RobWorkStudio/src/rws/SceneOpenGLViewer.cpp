@@ -22,6 +22,7 @@
 
 #include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/RPY.hpp>
 
@@ -31,6 +32,7 @@
 #include "ArcBallController.hpp"
 
 #include <QThread>
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::proximity;
@@ -49,9 +51,6 @@ namespace
     class RenderQuad : public Render
     {
     private:
-        float _size;
-        GLUquadricObj *_quadratic;
-        GLuint _displayListId;
         GLfloat _colorTop[4],_colorBottom[4];
         int _x,_y,_width,_height;
     public:

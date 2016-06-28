@@ -101,17 +101,6 @@ namespace {
         rw::geometry::TriMesh::Ptr mesh;
 
     };
-
-
-    class FrameComboBox {
-    public:
-        FrameComboBox(QComboBox* box):_box(box){}
-
-
-    private:
-        QComboBox* _box;
-    };
-
 }
 
 GTaskVisPlugin::GTaskVisPlugin():

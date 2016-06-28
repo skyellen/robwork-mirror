@@ -35,6 +35,8 @@
 #endif
 #endif
 
+#include <boost/program_options/parsers.hpp>
+
 #include <rw/rw.hpp>
 USE_ROBWORK_NAMESPACE
 using namespace robwork;

@@ -21,6 +21,7 @@
 
 #include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/geometry/Line.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/kinematics/Kinematics.hpp>
