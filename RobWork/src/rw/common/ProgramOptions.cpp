@@ -1,23 +1,19 @@
 #include "ProgramOptions.hpp"
 
-#include <boost/program_options/cmdline.hpp>
+#include <rw/math/Q.hpp>
+
+//#include <boost/program_options/cmdline.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/phoenix1.hpp>
 #include <boost/foreach.hpp>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-
-
 using namespace phoenix;
 using namespace boost::program_options;
 using namespace boost::spirit::classic;
 using namespace rw::common;
-//using namespace rw::math;
 
 namespace po = boost::program_options;
 

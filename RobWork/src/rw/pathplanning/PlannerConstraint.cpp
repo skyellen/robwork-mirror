@@ -19,6 +19,7 @@
 #include "PlannerConstraint.hpp"
 
 #include <rw/proximity/BasicFilterStrategy.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::proximity;
@@ -45,8 +46,8 @@ PlannerConstraint PlannerConstraint::make(QConstraint::Ptr constraint, QEdgeCons
 }
 
 PlannerConstraint PlannerConstraint::make(CollisionDetector::Ptr detector,
-										  Device::Ptr device,
-										  const State& state)
+		rw::common::Ptr<Device> device,
+		const State& state)
 {
 	QConstraint::Ptr constraint =
         QConstraint::make(detector, device, state);
@@ -58,9 +59,9 @@ PlannerConstraint PlannerConstraint::make(CollisionDetector::Ptr detector,
 }
 
 PlannerConstraint PlannerConstraint::make(
-	CollisionStrategy::Ptr strategy,
-	WorkCell::Ptr workcell,
-	Device::Ptr device,
+	rw::common::Ptr<CollisionStrategy> strategy,
+	rw::common::Ptr<WorkCell> workcell,
+	rw::common::Ptr<Device> device,
     const State& state)
 {
 	CollisionDetector::Ptr cdect = ownedPtr(new CollisionDetector(workcell, strategy));
@@ -68,10 +69,10 @@ PlannerConstraint PlannerConstraint::make(
 }
 
 PlannerConstraint PlannerConstraint::make(
-	CollisionStrategy::Ptr strategy,
+	rw::common::Ptr<CollisionStrategy> strategy,
     const CollisionSetup& setup,
-	WorkCell::Ptr workcell,
-	Device::Ptr device,
+	rw::common::Ptr<WorkCell> workcell,
+	rw::common::Ptr<Device> device,
     const State& state)
 {
 	BasicFilterStrategy::Ptr bpfilter = ownedPtr(new BasicFilterStrategy(workcell, setup));

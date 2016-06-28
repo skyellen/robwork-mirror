@@ -19,12 +19,9 @@
 #ifndef RW_MODELS_DEVICEJACOBIANCALCULATOR_HPP
 #define RW_MODELS_DEVICEJACOBIANCALCULATOR_HPP
 
-
-#include <rw/kinematics/State.hpp>
-
 #include "JacobianCalculator.hpp"
-#include "Joint.hpp"
-#include "JointDevice.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace models {

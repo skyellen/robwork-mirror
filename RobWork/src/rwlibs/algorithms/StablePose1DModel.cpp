@@ -14,18 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ********************************************************************************/
- 
- 
- 
+
 #include "StablePose1DModel.hpp"
+#include "PlaneModel.hpp"
+
+#include <rw/math/Math.hpp>
 
 #include <cmath>
 #include <algorithm>
 #include <boost/foreach.hpp>
-
-#include "PlaneModel.hpp"
-
-
 
 using namespace std;
 using namespace boost;

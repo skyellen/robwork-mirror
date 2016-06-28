@@ -32,13 +32,12 @@ namespace rw { namespace math {
 namespace rw { namespace kinematics {
     class State;
     class Frame;
-    class FKTable;
 }}
 
 namespace rw { namespace models {
 
-    class BasicDevice;
-    class DependentRevoluteJoint;
+    //class BasicDevice;
+    //class DependentRevoluteJoint;
 
     /** @addtogroup models */
     /*@{*/

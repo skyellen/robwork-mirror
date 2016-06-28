@@ -22,14 +22,11 @@
 
 #include "Triangle.hpp"
 #include "TriMesh.hpp"
-#include "IndexedTriMesh.hpp"
 #include "PlainTriMesh.hpp"
 #include "Plane.hpp"
 
 #include <rw/math/Vector3D.hpp>
 #include <stack>
-#include <rw/math/MetricUtil.hpp>
-#include <boost/foreach.hpp>
 
 namespace rw { namespace geometry {
 	//! @addtogroup geometry

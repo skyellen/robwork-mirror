@@ -37,8 +37,6 @@
 #include <rw/math/Rotation2D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
-#include <rw/common/Property.hpp>
-
 #include <rw/loaders/xml/XercesUtils.hpp>
 #include <rw/loaders/xml/XMLBasisTypes.hpp>
 #include <rw/loaders/xml/XMLPathSaver.hpp>

@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "CMDistCCPMeasure3D.hpp"
+#include "Grasp3D.hpp"
 
 #include <boost/foreach.hpp>
 #include <rw/math/MetricUtil.hpp>

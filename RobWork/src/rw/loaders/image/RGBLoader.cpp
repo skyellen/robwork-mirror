@@ -335,7 +335,7 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
 	Image::Ptr img;
     ACImage *final = new ACImage();
 
-    printf("Loading texture: %s\n", fileName);
+    //printf("Loading texture: %s\n", fileName);
 
     raw = RawImageOpen(fileName);
     if (raw == NULL)
@@ -351,7 +351,7 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     RawImageGetData(raw, final);
     RawImageClose(raw);
 
-    printf("loaded RGB image %dx%d (%d)\n", final->width, final->height, final->depth);
+    //printf("loaded RGB image %dx%d (%d)\n", final->width, final->height, final->depth);
 
     Image::PixelDepth pdepth = Image::Depth8U;
     Image::ColorCode ccode = Image::RGB;
@@ -376,7 +376,6 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
 
     img = new Image(final->width, final->height, ccode, pdepth);
     char *imgData = img->getImageData();
-    img->getDataSize();
     for(size_t y=0;y<final->height; y++){
         unsigned int rowidx = (int)y*widthStep;
         unsigned char *dstrow = (unsigned char *) &(imgData[rowidx]);
@@ -385,6 +384,5 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
             dstrow[x] = srcrow[x];
         }
     }
-    img->saveAsPPM(fname+".ppm");
     return img;
 }

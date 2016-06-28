@@ -17,6 +17,7 @@
 
 
 #include "JointDeviceJacobianCalculator.hpp"
+#include "JointDevice.hpp"
 #include "JacobianUtil.hpp"
 
 #include <rw/models/DependentJoint.hpp>

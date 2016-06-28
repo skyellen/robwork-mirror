@@ -19,7 +19,6 @@
 #include "FKTable.hpp"
 
 #include "Frame.hpp"
-#include <boost/foreach.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;

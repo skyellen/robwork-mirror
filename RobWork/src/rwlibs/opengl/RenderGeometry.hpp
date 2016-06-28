@@ -20,6 +20,8 @@
 
 //! @file RenderGeometry.hpp
 
+#include <rwlibs/os/rwgl.hpp>
+
 #include <rw/graphics/Render.hpp>
 
 #include <rw/geometry/Geometry.hpp>
@@ -87,12 +89,6 @@ namespace opengl {
     protected:
         void render() const;
     private:
-        mutable GLfloat _diffuse[4];
-        GLfloat _ambient[4];
-        GLfloat _emission[4];
-        GLfloat _specular[4];
-        GLfloat _shininess[1];
-
         rw::geometry::Geometry::Ptr _geometry;
         rw::geometry::TriMesh::Ptr _mesh;
         float _r, _g, _b;

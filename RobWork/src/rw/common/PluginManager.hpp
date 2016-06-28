@@ -2,10 +2,7 @@
 #ifndef RW_PLUGIN_PLUGINMANAGER_HPP
 #define RW_PLUGIN_PLUGINMANAGER_HPP
 
-#include "Extension.hpp"
-#include "ExtensionPoint.hpp"
-#include "Plugin.hpp"
-
+#include <string>
 
 /**
  * @brief The plugin manager will manage all plugins in the system. It will handle
@@ -21,8 +18,8 @@
  */
 class PluginManagerRegistry {
 public:
-    //! smart pointer type of ExtensionPoint
-    typedef rw::common::Ptr<ExtensionPoint> Ptr;
+    //! smart pointer type of PluginManagerRegistry
+    typedef rw::common::Ptr<PluginManagerRegistry> Ptr;
 
 protected:
 

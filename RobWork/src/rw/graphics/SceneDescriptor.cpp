@@ -152,7 +152,7 @@ SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addFrameAxis(const std::str
     return proxy;
 }
 
-SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addGeometry(const std::string& name,rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask){
+SceneDescriptor::DrawableProxy::Ptr SceneDescriptor::addGeometry(const std::string& name, rw::common::Ptr<class rw::geometry::Geometry> geom, rw::kinematics::Frame* frame, int dmask){
     DrawableProxy::Ptr proxy = ownedPtr( new DrawableProxy());
     proxy->name = name;
     proxy->dmask = dmask;

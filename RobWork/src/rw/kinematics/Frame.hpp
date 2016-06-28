@@ -24,12 +24,10 @@
  */
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/common/PropertyBase.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/ConcatVectorIterator.hpp>
 #include <vector>
 #include <set>
-#include <boost/foreach.hpp>
 #include "StateData.hpp"
 
 namespace rw { namespace kinematics {

@@ -21,12 +21,7 @@
 #include <rw/geometry/OBB.hpp>
 #include <rw/geometry/OBBCollider.hpp>
 #include <rw/geometry/TriTriIntersectDeviller.hpp>
-#include <rw/proximity/ProximityStrategyData.hpp>
 
-#include <boost/foreach.hpp>
-
-#include "BVTree.hpp"
-#include "BinaryBVTree.hpp"
 //#include "OBBToleranceCollider.hpp"
 #include "BVTreeCollider.hpp"
 #include "OBVTreeDFSCollider.hpp"

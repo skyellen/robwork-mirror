@@ -23,15 +23,12 @@
  * @file FKRange.hpp
  */
 
-#include "State.hpp"
-
 #include <rw/math/Transform3D.hpp>
-
-#include <map>
 
 namespace rw { namespace kinematics {
 
     class Frame;
+    class State;
 
     /** @addtogroup kinematics */
     /*@{*/

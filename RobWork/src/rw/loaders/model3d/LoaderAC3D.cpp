@@ -21,15 +21,13 @@
 #include <rw/common/macros.hpp>
 
 #include <rw/common/TimerUtil.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/loaders/ImageFactory.hpp>
+//#include <rw/math/Constants.hpp>
+#include <rw/math/EAA.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rw/loaders/ImageLoader.hpp>
 #include <rw/geometry/Triangulate.hpp>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stack>
-
 #include <fstream>
 
 #include <boost/foreach.hpp>
@@ -789,7 +787,7 @@ int LoaderAC3D::loadTexture(const std::string& filename, ModelAC3D* model){
     // if we did not find the texture then load it
     rw::sensor::Image::Ptr image;
     try{
-        image = rw::loaders::ImageFactory::load( filename );
+        image = rw::loaders::ImageLoader::Factory::load( filename );
     } catch(...){
         return -1;
     }

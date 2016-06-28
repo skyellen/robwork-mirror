@@ -21,10 +21,9 @@
 //! @file RenderPointCloud.hpp
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Line.hpp>
-#include <list>
 
 #include <rw/graphics/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace opengl {
 /** @addtogroup opengl */
@@ -130,7 +129,6 @@ namespace rwlibs { namespace opengl {
 
         std::string _id;
 		std::vector<rw::math::Vector3D<float> > _points;
-        GLuint _displayListId;
 
         float _r;
         float _g;

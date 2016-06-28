@@ -99,7 +99,6 @@ namespace rwlibs { namespace algorithms {
 
         double _h;
         size_t _n;
-        size_t _cnt;
         rw::models::Device* _device;
         rw::kinematics::State _state;
 

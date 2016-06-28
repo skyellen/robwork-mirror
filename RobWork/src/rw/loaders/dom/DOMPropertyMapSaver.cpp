@@ -15,12 +15,14 @@
  * limitations under the License.
  ********************************************************************************/
 
+#include <rw/common/DOMParser.hpp>
+#include <rw/common/Property.hpp>
+#include <rw/common/PropertyBase.hpp>
+#include <rw/common/PropertyMap.hpp>
 #include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
 #include <rw/loaders/dom/DOMPropertyMapFormat.hpp>
 #include <rw/loaders/dom/DOMPathSaver.hpp>
-
-#include <utility>
 
 using namespace rw::common;
 using namespace rw::loaders;

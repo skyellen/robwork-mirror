@@ -1,5 +1,9 @@
 #include "TriMeshSurfaceSampler.hpp"
 
+#include <rw/math/Math.hpp>
+
+#include <boost/foreach.hpp>
+
 using namespace rw::geometry;
 
 TriMeshSurfaceSampler::TriMeshSurfaceSampler(rw::geometry::Geometry::Ptr geom):

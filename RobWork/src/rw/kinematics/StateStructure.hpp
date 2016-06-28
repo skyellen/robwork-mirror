@@ -23,15 +23,19 @@
    @file StateStructure.hpp
 */
 
-#include "Frame.hpp"
-#include <vector>
 #include "State.hpp"
-#include "StateCache.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Event.hpp>
 
+#include <boost/function.hpp>
+
+#include <vector>
+#include <map>
+
 namespace rw { namespace kinematics {
+
+	class Frame;
     class StateSetup;
 
     /** @addtogroup kinematics */

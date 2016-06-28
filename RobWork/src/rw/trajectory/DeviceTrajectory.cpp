@@ -17,8 +17,6 @@
 
 #include "DeviceTrajectory.hpp"
 
-#include <rw/math/Math.hpp>
-
 using namespace rw::math;
 using namespace rw::trajectory;
 using namespace rw::models;

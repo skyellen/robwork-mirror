@@ -27,7 +27,7 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <Eigen/Eigen>
 #include <rw/common/macros.hpp>
-#include <cstdarg>
+//#include <cstdarg>
 
 #include <rw/common/Serializable.hpp>
 

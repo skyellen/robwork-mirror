@@ -18,8 +18,7 @@
 
 #include "Log.hpp"
 
-#include <rw/common/macros.hpp>
-#include <boost/foreach.hpp>
+//#include <rw/common/macros.hpp>
 
 #include <rw/common/LogStreamWriter.hpp>
 #include <rw/RobWork.hpp>

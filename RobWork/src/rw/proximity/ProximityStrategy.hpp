@@ -25,14 +25,13 @@
 
 #include <string>
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/geometry/Geometry.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-#include <rw/models/Object.hpp>
 
 #include "ProximityModel.hpp"
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class Object; } }
 
 namespace rw { namespace proximity {
 
@@ -67,7 +66,7 @@ namespace rw { namespace proximity {
          * with the frame; false otherwise.
          */
         //virtual bool addModel(const kinematics::Frame* frame);
-        virtual bool addModel(models::Object::Ptr object);
+        virtual bool addModel(rw::common::Ptr<rw::models::Object> object);
 
         /**
          * @brief Adds a Proximity model to a frame where the geometry is copied
@@ -99,7 +98,7 @@ namespace rw { namespace proximity {
          */
         virtual bool addModel(
             const rw::kinematics::Frame* frame,
-            rw::geometry::Geometry::Ptr faces,
+            rw::common::Ptr<rw::geometry::Geometry> faces,
             bool forceCopy = false
             );
 
@@ -164,7 +163,7 @@ namespace rw { namespace proximity {
          * @param forceCopy
          * @return
          */
-        virtual bool addGeometry(ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false) = 0;
+        virtual bool addGeometry(ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool forceCopy=false) = 0;
 
         /**
          * @brief removes a geometry from a specific proximity model

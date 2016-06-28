@@ -18,15 +18,11 @@
 #ifndef RW_COMMON_INIARCHIVE_HPP
 #define RW_COMMON_INIARCHIVE_HPP
 
-#include <cstdlib>
-#include <cmath>
 #include <string>
-
-#include <boost/any.hpp>
-#include <cstdio>
+#include <iostream>
 #include <fstream>
+
 #include <rw/common/macros.hpp>
-#include <boost/any.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>

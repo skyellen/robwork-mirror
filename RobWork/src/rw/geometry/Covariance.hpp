@@ -10,18 +10,13 @@
 
 #include <vector>
 
-#include <rw/geometry/Triangle.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/geometry/Geometry.hpp>
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/EigenDecomposition.hpp>
-#include <rw/math/Math.hpp>
 
 
 namespace rw {

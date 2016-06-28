@@ -17,10 +17,12 @@
 
 
 #include "QConstraint.hpp"
+#include "QNormalizer.hpp"
 #include "StateConstraint.hpp"
 
 #include <rw/models/Models.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/kinematics/State.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::math;
@@ -211,7 +213,7 @@ QConstraint::Ptr QConstraint::make(
             state));
 }
 
-QConstraint::Ptr QConstraint::make(CollisionDetector::Ptr detector,
+QConstraint::Ptr QConstraint::make(rw::common::Ptr<CollisionDetector> detector,
 	Device::Ptr device,
     const State& state)
 {

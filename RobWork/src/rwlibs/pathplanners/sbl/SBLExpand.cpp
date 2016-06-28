@@ -18,7 +18,7 @@
 
 #include "SBLExpand.hpp"
 #include <rw/pathplanning/QSampler.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Constants.hpp>
@@ -55,7 +55,7 @@ namespace
                     q[i] + scale * inner.second[i]);
 
             if (lower <= upper) {
-                result[i] = Math::ran(lower, upper);
+                result[i] = Random::ran(lower, upper);
             }
             else
                 return Q();

@@ -23,25 +23,19 @@
    @file QConstraint.hpp
 */
 
-#include "StateConstraint.hpp"
-#include "QNormalizer.hpp"
-
 #include <rw/math/Q.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
 
 namespace rw { namespace pathplanning {
+	class StateConstraint;
+	class QNormalizer;
 
     /** @addtogroup pathplanning */
     /** @{*/
-#ifdef RW_USE_DEPRECATED
-    class QConstraint;
-
-    //! A pointer to a QConstraint.
-    typedef rw::common::Ptr<QConstraint> QConstraintPtr;
-#endif
 
     /**
        @brief Interface for the checking for collisions for work cell states.
@@ -96,7 +90,7 @@ namespace rw { namespace pathplanning {
            @brief Map a state constraint to a configuration constraint.
         */
 		static QConstraint::Ptr make(
-			StateConstraint::Ptr detector,
+			rw::common::Ptr<StateConstraint> detector,
 			rw::models::Device::Ptr device,
             const rw::kinematics::State& state);
 
@@ -104,7 +98,7 @@ namespace rw { namespace pathplanning {
            @brief Map a collision detector to a configuration constraint.
         */
 		static QConstraint::Ptr make(
-			rw::proximity::CollisionDetector::Ptr detector,
+			rw::common::Ptr<rw::proximity::CollisionDetector> detector,
 			rw::models::Device::Ptr device,
             const rw::kinematics::State& state);
 

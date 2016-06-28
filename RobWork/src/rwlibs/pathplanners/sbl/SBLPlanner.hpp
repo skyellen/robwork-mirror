@@ -67,7 +67,7 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToTPlanner::Ptr makeQToTPlanner(
             const SBLSetup& setup,
-			rw::pathplanning::QIKSampler::Ptr ikSampler);
+			rw::common::Ptr<rw::pathplanning::QIKSampler> ikSampler);
 
     private:
         SBLPlanner();

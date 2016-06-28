@@ -27,11 +27,11 @@
 #include "SensorModel.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/ProjectionMatrix.hpp>
 
-#include <vector>
 #include <string>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace sensor {
 

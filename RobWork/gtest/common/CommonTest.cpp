@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <rw/common/AnyPtr.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/common/Event.hpp>
@@ -56,6 +57,21 @@ TEST(PtrTest, CastToSubType) {
     B* const bcast = dynamic_cast<B*>(a);
     EXPECT_TRUE(bcast != NULL);
     const BPtr bptr = aptr.cast<B>();
+    EXPECT_TRUE(bptr != NULL);
+    EXPECT_FALSE(bptr.isNull());
+}
+
+TEST(AnyPtrTest, CastToTypes) {
+    std::vector<AnyPtr> anyptrs;
+    B* const b = new B();
+    anyptrs.push_back( ownedPtr(b) );
+
+    std::vector<AnyPtr> anyptrsCopy = anyptrs;
+    AnyPtr anyptr = anyptrsCopy[0];
+    A* const a  = anyptr.get<A>();
+    B* const bcast = dynamic_cast<B*>(a);
+    EXPECT_TRUE(bcast != NULL);
+    const BPtr bptr = anyptr.cast<B>();
     EXPECT_TRUE(bptr != NULL);
     EXPECT_FALSE(bptr.isNull());
 }

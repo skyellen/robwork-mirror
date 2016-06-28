@@ -25,8 +25,6 @@
 
 #include <rw/common/Ptr.hpp>
 
-#include <vector>
-
 namespace rw { namespace trajectory {
 
     /** @addtogroup trajectory */

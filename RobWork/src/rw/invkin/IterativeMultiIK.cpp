@@ -18,10 +18,7 @@
 
 #include "IterativeMultiIK.hpp"
 
-#include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
-
-#include <boost/shared_ptr.hpp>
 
 using namespace rw::invkin;
 using namespace rw::common;

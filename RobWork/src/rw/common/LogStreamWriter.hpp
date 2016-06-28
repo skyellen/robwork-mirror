@@ -19,7 +19,7 @@
 #ifndef RW_COMMON_LOGSTREAMWRITER_HPP
 #define RW_COMMON_LOGSTREAMWRITER_HPP
 
-#include <ostream>
+#include <iosfwd>
 #include "LogWriter.hpp"
 
 namespace rw { namespace common {

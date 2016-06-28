@@ -24,15 +24,12 @@
  */
 
 #include <string>
-#include <memory>
-#include <vector>
 
 #include <rw/trajectory/Timed.hpp>
 #include <rw/trajectory/Path.hpp>
 
 // Forward declarations
 namespace rw { namespace models { class WorkCell; }}
-namespace rw { namespace kinematics { class State; }}
 
 namespace rw { namespace loaders {
 

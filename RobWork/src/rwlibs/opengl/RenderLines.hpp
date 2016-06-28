@@ -25,6 +25,7 @@
 #include <list>
 
 #include <rw/graphics/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace opengl {
 /** @addtogroup opengl */
@@ -115,7 +116,6 @@ namespace rwlibs { namespace opengl {
 
         std::string _id;
         std::vector<rw::geometry::Line> _lines;
-        GLuint _displayListId;
 
         float _r;
         float _g;

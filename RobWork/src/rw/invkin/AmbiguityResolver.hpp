@@ -20,9 +20,10 @@
 
 #include "InvKinSolver.hpp"
 
-#include <rw/models/JointDevice.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
+
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace models { class JointDevice; } }
 
 namespace rw {
 namespace invkin {
@@ -46,7 +47,7 @@ public:
      * @param invkin [in] The inverse kinematics solver to obtain solutions from
      * @param device [in] the device for which to calculate inverse kinematics
      */
-	AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models::JointDevice::Ptr device);
+	AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::common::Ptr<rw::models::JointDevice> device);
 
     /**
      * @brief Destructor
@@ -57,7 +58,7 @@ public:
      * @brief Calls the InvKinSolver provided and resolves ambiguities.
      * @copydoc InvKinSolver::solve
      */
-    virtual std::vector<math::Q> solve(const rw::math::Transform3D<>& baseTend, const rw::kinematics::State& state) const;
+    virtual std::vector<math::Q> solve(const rw::math::Transform3D<>& baseTend, const class rw::kinematics::State& state) const;
 
     /** 
      * @brief No effect. The AmbiguityResolver always tests for joint limits.
@@ -67,7 +68,7 @@ public:
 
 private:
 	InvKinSolver::Ptr _invkin;
-	rw::models::Device::Ptr _device;
+	rw::common::Ptr<rw::models::Device> _device;
     std::vector<size_t> _indices;
     rw::math::Q _lower;
     rw::math::Q _upper;

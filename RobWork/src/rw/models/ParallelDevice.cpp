@@ -20,13 +20,9 @@
 #include "ParallelLeg.hpp"
 #include "Joint.hpp"
 
-
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
-
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 
 using namespace rw::models;
 using namespace rw::math;

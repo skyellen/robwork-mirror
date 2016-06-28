@@ -19,6 +19,7 @@
  
 #include "StructuredLineModel.hpp"
 
+#include <rw/math/Math.hpp>
 #include <rw/math/Metric.hpp>
 #include <boost/foreach.hpp>
 #include <cmath>

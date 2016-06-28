@@ -4,7 +4,7 @@
 
 #include <rw/geometry/Triangle.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <PQP/PQP.h>
+//#include <PQP/PQP.h>
 namespace rw {
 namespace geometry {
 

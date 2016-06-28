@@ -18,7 +18,6 @@
 
 #include "CollisionDetector.hpp"
 #include "CollisionStrategy.hpp"
-#include "CollisionSetup.hpp"
 
 #include <rw/common/ScopedTimer.hpp>
 #include <rw/models/WorkCell.hpp>
@@ -26,7 +25,6 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 
 #include "BasicFilterStrategy.hpp"
 
@@ -178,43 +176,6 @@ bool CollisionDetector::inCollision(const State& state,
 	    return result->collidingFrames.size()>0;
     return false;
 }
-
-#ifdef RW_USE_DEPRECATED
-void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom){
-	_bpfilter->addModel(frame, geom);
-	// todo: remember to update all midphase filters
-
-	_npstrategy->addModel(frame, geom);
-	// now remember to add the proximity model to the framemap
-	// todo: make sure to check if the model is allready there
-	_frameToModels[*frame] = _npstrategy->getModel(frame);
-}
-
-void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geom) {
-	_bpfilter->addModel(frame, *geom);
-	// todo: remember to update all midphase filters
-
-	_npstrategy->addModel(frame, *geom);
-	// now remember to add the proximity model to the framemap
-	// todo: make sure to check if the model is allready there
-	_frameToModels[*frame] = _npstrategy->getModel(frame);
-}
-
-void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::string& geoid){
-	_bpfilter->removeModel(frame, geoid);
-	// todo: remember to update all midphase filters
-
-	// now use the dispatcher to find the right ProximityModel to add the geom to
-	if(!_npstrategy->hasModel(frame)){
-		RW_THROW("Frame does not have any proximity models attached!");
-	}
-
-	ProximityModel::Ptr model = _npstrategy->getModel(frame);
-	_npstrategy->removeGeometry(model.get(), geoid);
-	_frameToModels[*frame] = _npstrategy->getModel(frame);
-}
-
-#endif //RW_USE_DEPRECATED
 
 void CollisionDetector::addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry) {
 	if (geometry == NULL) {

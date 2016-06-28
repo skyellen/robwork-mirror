@@ -17,7 +17,6 @@
 
 
 #include "LogBufferedChar.hpp"
-#include <iostream>
 #include <iomanip>
 #include <cstring>
 

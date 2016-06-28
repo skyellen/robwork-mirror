@@ -1,11 +1,18 @@
 ﻿#include "MultivariateNormalDistribution.hpp"
-#include <rw/common.hpp>
-#include <rw/loaders.hpp>
-#include <rw/math/Statistics.hpp>
-#include <rwlibs/calibration.hpp>
 
-using namespace rw::math;
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
+#include <rw/math/Function.hpp>
+#include <rwlibs/calibration/CalibrationMeasurement.hpp>
+#include <rwlibs/calibration/CalibrationUtils.hpp>
+#include <rwlibs/calibration/WorkCellCalibration.hpp>
+#include <rwlibs/calibration/xml/XmlCalibrationLoader.hpp>
+#include <rwlibs/calibration/xml/XMLCalibrationMeasurementFile.hpp>
+
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
+
 using namespace rw::kinematics;
+using namespace rw::math;
 using namespace rw::models;
 using namespace rwlibs::calibration;
 

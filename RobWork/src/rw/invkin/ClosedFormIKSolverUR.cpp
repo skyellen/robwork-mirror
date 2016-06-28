@@ -19,8 +19,7 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Models.hpp>
 #include <rw/models/SerialDevice.hpp>
-
-#include <iomanip>
+#include <rw/models/Joint.hpp>
 
 using namespace rw::common;
 using namespace rw::math;

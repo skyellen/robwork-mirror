@@ -4,6 +4,7 @@
 
 #include "Extension.hpp"
 #include <rw/common/Ptr.hpp>
+#include <map>
 
 namespace rw {
 namespace common {

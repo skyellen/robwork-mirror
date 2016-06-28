@@ -280,7 +280,6 @@ namespace
         }
 
         RRTStruct _rrt;
-        bool _balanceTrees;
     };
 
     class RDTBalancedBidirectional : public QToQPlanner

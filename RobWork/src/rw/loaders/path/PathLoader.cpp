@@ -21,12 +21,10 @@
 #include <rw/models/Models.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
-#include <rw/math/Q.hpp>
 
 #include <fstream>
 

@@ -18,11 +18,9 @@
 #ifndef RW_SENSOR_SCANNER25DMODEL_HPP
 #define RW_SENSOR_SCANNER25DMODEL_HPP
 
-#include "Scanner.hpp"
 #include <rw/geometry/PointCloud.hpp>
 #include "SensorModel.hpp"
 #include <rw/common/Ptr.hpp>
-#include <rw/geometry/PointCloud.hpp>
 
 namespace rw {
 namespace sensor {

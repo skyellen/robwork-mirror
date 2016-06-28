@@ -23,8 +23,6 @@
  * @file Jacobian.hpp
  */
 
-#include "Q.hpp"
-
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>

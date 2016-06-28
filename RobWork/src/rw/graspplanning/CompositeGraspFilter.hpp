@@ -18,9 +18,9 @@
 #ifndef RW_GRASPPLANNING_COMPOSITEGRASPFILTER_HPP_
 #define RW_GRASPPLANNING_COMPOSITEGRASPFILTER_HPP_
 
-#include <rw/math/Transform3D.hpp>
-#include "Grasp3D.hpp"
 #include "GraspValidateFilter.hpp"
+
+#include <vector>
 
 namespace rw {
 namespace graspplanning {

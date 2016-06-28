@@ -21,11 +21,6 @@
 //! @file LoaderOBJ.hpp
 
 #include <string>
-#include <vector>
-#include <cstring>
-
-#include <rw/common/macros.hpp>
-#include <rw/math/Vector3D.hpp>
 
 #include "../Model3DLoader.hpp"
 

@@ -19,8 +19,10 @@
 #ifndef RW_GRASPPLANNING_GRASPTABLE_HPP_
 #define RW_GRASPPLANNING_GRASPTABLE_HPP_
 
-#include <rw/math.hpp>
-#include <rw/common.hpp>
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/Q.hpp>
+#include <rw/math/Pose6D.hpp>
+#include <rw/common/PropertyMap.hpp>
 #include "Grasp3D.hpp"
 #include <rw/sensor/TactileArray.hpp>
 

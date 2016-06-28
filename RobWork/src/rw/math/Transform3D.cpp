@@ -18,7 +18,6 @@
 
 #include "Transform3D.hpp"
 
-#include <cassert>
 #include <math.h>
 
 #include <rw/common/InputArchive.hpp>

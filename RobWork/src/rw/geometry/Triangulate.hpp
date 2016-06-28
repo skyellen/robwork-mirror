@@ -22,7 +22,7 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Vector2D.hpp>
-#include "PlainTriMesh.hpp"
+//#include "PlainTriMesh.hpp"
 
 namespace rw {
 namespace geometry {

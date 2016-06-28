@@ -23,7 +23,6 @@
  * @file ParabolicBlend.hpp
  */
 
-#include <rw/math/Q.hpp>
 #include <rw/math/Math.hpp>
 #include "LinearInterpolator.hpp"
 #include "Blend.hpp"

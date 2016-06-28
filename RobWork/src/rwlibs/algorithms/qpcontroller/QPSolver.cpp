@@ -17,10 +17,16 @@
 
 
 #include "QPSolver.hpp"
-#include <cmath>
+
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/common/macros.hpp>
+
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/vector_proxy.hpp>
+
+#include <cmath>
+
 using namespace boost::numeric::ublas;
 using namespace rw::math;
 

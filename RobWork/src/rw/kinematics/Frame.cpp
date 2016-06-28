@@ -21,10 +21,6 @@
 #include "State.hpp"
 #include "TreeState.hpp"
 
-#include <rw/common/macros.hpp>
-#include <rw/common/Property.hpp>
-
-#include <rw/kinematics/FKRange.hpp>
 #include "Kinematics.hpp"
 using namespace rw::math;
 using namespace rw::common;

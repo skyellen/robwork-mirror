@@ -16,9 +16,13 @@
  ********************************************************************************/
 
 #include "CubicSplineFactory.hpp"
+#include "CubicSplineInterpolator.hpp"
 
 #include <rw/common/Ptr.hpp>
+
+#ifdef RW_USE_UBLAS_LAPACK
 #include <rw/math/LinearAlgebra.hpp>
+#endif
 
 #include <Eigen/Sparse>
 

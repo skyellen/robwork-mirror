@@ -20,7 +20,7 @@
 
 #include <rw/common/Property.hpp>
 #include <rw/common/Timer.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -253,7 +253,7 @@ Q ClearanceOptimizer::randomDirection() {
 	Q q(_dof);
 	do {
 	    for (size_t i = 0; i<_dof; i++)
-	        q(i) = Math::ran(-_stepsize, _stepsize);
+	        q(i) = Random::ran(-_stepsize, _stepsize);
 	} while (_metric->distance(q) > _stepsize);
 
 	q *= _stepsize / _metric->distance(q);

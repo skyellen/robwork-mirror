@@ -18,8 +18,6 @@
 
 #include "MovableFrame.hpp"
 
-#include <rw/math/RPY.hpp>
-#include <rw/math/Quaternion.hpp>
 #include "Kinematics.hpp"
 using namespace rw::kinematics;
 using namespace rw::math;

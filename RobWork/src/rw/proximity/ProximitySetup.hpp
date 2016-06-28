@@ -18,16 +18,20 @@
 #ifndef RW_COLLISION_PROXIMITYSETUP_HPP
 #define RW_COLLISION_PROXIMITYSETUP_HPP
 
-#include "CollisionSetup.hpp"
 #include "ProximitySetupRule.hpp"
-#include <rw/models/WorkCell.hpp>
+
+#include <rw/common/Ptr.hpp>
+#include <rw/common/PropertyMap.hpp>
 
 #include <string>
 #include <vector>
 
+namespace rw { namespace models { class WorkCell; } }
+
 namespace rw {
 namespace proximity {
 
+class CollisionSetup;
 
 /** @addtogroup proximity */
 /*@{*/
@@ -104,10 +108,10 @@ public:
 
 
     static ProximitySetup get(const rw::models::WorkCell& wc);
-    static ProximitySetup get(rw::models::WorkCell::Ptr wc);
+    static ProximitySetup get(rw::common::Ptr<rw::models::WorkCell> wc);
     static ProximitySetup get(const rw::common::PropertyMap& map);
 
-    static void set(const ProximitySetup& setup, rw::models::WorkCell::Ptr wc);
+    static void set(const ProximitySetup& setup, rw::common::Ptr<rw::models::WorkCell> wc);
     static void set(const ProximitySetup& setup, rw::common::PropertyMap& map);
 
 private:

@@ -19,16 +19,15 @@
 #define RW_MODELS_RIGIDOBJECT_HPP_
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/StateStructure.hpp>
-#include <rw/kinematics/Stateless.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/graphics/Model3D.hpp>
 
 #include "Object.hpp"
 
 #include <vector>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace models {
 

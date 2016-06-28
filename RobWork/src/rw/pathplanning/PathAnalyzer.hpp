@@ -22,13 +22,14 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Metric.hpp>
-#include <rw/models/Device.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rw/proximity/DistanceCalculator.hpp>
 
 /**
  * @file PathAnalyzer.hpp
  */
+
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace proximity { class DistanceCalculator; } }
 
 namespace rw {
 namespace pathplanning {
@@ -131,7 +132,7 @@ public:
      * @param device [in] Device to be associated with the path
      * @param state [in] State of the workcell
      */
-	PathAnalyzer(rw::models::Device::Ptr device, const rw::kinematics::State& state);
+	PathAnalyzer(rw::common::Ptr<rw::models::Device> device, const rw::kinematics::State& state);
 
 	/**
 	 * @brief Destructor
@@ -181,7 +182,7 @@ public:
 	 * @param distanceCalculator [in] DistanceCalculator to be used in the analysis
 	 * @return Result of the analysis.
 	 */
-	ClearanceAnalysis analyzeClearance(const rw::trajectory::QPath& path, rw::proximity::DistanceCalculator::Ptr distanceCalculator);
+	ClearanceAnalysis analyzeClearance(const rw::trajectory::QPath& path, rw::common::Ptr<rw::proximity::DistanceCalculator> distanceCalculator);
 
     //TODO: Move to path statistics
 	/**
@@ -218,7 +219,7 @@ public:
 
 
 private:
-	rw::models::Device::Ptr _device;
+	rw::common::Ptr<rw::models::Device> _device;
     rw::kinematics::State _state;
 };
 

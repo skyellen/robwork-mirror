@@ -18,9 +18,6 @@
 
 #include "RevoluteJoint.hpp"
 
-#include <rw/math/EAA.hpp>
-#include <rw/kinematics/State.hpp>
-
 using namespace rw::common;
 using namespace rw::models;
 using namespace rw::kinematics;

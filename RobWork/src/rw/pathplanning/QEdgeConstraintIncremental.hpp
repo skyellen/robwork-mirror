@@ -23,24 +23,18 @@
    @file QEdgeConstraintIncremental.hpp
 */
 
-#include "QConstraint.hpp"
-#include "StopCriteria.hpp"
-#include <rw/common/PropertyMap.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Metric.hpp>
-#include <rw/models/Device.hpp>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rw { namespace pathplanning {
+	class QConstraint;
 
     /** @addtogroup pathplanning */
     /*@{*/
-#ifdef RW_USE_DEPRECATED
-    class QEdgeConstraintIncremental;
 
-    //! A pointer to a QEdgeConstraint.
-    typedef rw::common::Ptr<QEdgeConstraintIncremental> QEdgeConstraintIncrementalPtr;
-#endif
     /**
        @brief Edge constraint interface for incremental testing of an edge
 
@@ -167,7 +161,7 @@ namespace rw { namespace pathplanning {
            empty configuration.
         */
 		static QEdgeConstraintIncremental::Ptr make(
-			QConstraint::Ptr constraint,
+			rw::common::Ptr<QConstraint> constraint,
 			rw::math::QMetric::Ptr metric,
             double resolution = 1);
 
@@ -180,8 +174,8 @@ namespace rw { namespace pathplanning {
            resolution.
         */
 		static QEdgeConstraintIncremental::Ptr makeDefault(
-			QConstraint::Ptr constraint,
-			rw::models::Device::Ptr device);
+			rw::common::Ptr<QConstraint> constraint,
+			rw::common::Ptr<rw::models::Device> device);
 
         /**
            @brief A fixed edge constraint.

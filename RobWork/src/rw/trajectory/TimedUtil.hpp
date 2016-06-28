@@ -29,11 +29,8 @@
    @brief Class rw::trajectory::TimedUtil
 */
 
-#include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
-#include <boost/foreach.hpp>
-
+namespace rw { namespace kinematics { class State; }}
+namespace rw { namespace models { class Device; }}
 namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {

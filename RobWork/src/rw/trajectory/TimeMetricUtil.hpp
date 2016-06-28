@@ -19,10 +19,10 @@
 #ifndef RW_TRAJECTORY_TIMEMETRICUTIL_HPP
 #define RW_TRAJECTORY_TIMEMETRICUTIL_HPP
 
-#include <rw/math/Q.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
+namespace rw { namespace kinematics { class State; }}
+namespace rw { namespace math { class Q; }}
+namespace rw { namespace models { class Device; }}
+namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {
 	/**

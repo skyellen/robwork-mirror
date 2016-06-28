@@ -19,11 +19,10 @@
 
 #include "RenderCameraFrustum.hpp"
 
-#include <boost/foreach.hpp>
+#include <rw/math/Constants.hpp>
 
 using namespace rw::math;
 using namespace rwlibs::opengl;
-using namespace rw::geometry;
 
 RenderCameraFrustum::RenderCameraFrustum()
 {

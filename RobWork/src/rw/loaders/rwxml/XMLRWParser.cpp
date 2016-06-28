@@ -20,13 +20,15 @@
 
 using namespace rw::math;
 
-#include <rw/common/macros.hpp>
-
 #include "XMLParser.hpp"
 #include "XMLErrorHandler.hpp"
-#include "XMLParserUtil.hpp"
 #include "XMLRWPreParser.hpp"
 #include "MultipleFileIterator.hpp"
+
+#include <rw/common/macros.hpp>
+#include <rw/math/Constants.hpp>
+
+#include <boost/spirit/include/classic_parse_tree.hpp>
 
 using namespace phoenix;
 using namespace boost::spirit::classic;

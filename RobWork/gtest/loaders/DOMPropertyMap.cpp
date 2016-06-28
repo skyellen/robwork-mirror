@@ -6,6 +6,10 @@
 #include <rw/trajectory/Path.hpp>
 
 #include <rw/math/Math.hpp>
+#include <rw/math/Vector2D.hpp>
+#include <rw/math/Rotation2D.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
+#include <rw/math/Transform3D.hpp>
 
 #include <algorithm>
 #include <sstream>

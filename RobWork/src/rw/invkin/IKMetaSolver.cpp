@@ -20,6 +20,8 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 
 using namespace rw::invkin;
 

@@ -17,10 +17,8 @@
 
 
 #include "PropertyMap.hpp"
-#include <boost/foreach.hpp>
 
 using namespace rw::common;
-using namespace boost;
 
 PropertyMap::PropertyMap() {}
 
@@ -36,7 +34,8 @@ PropertyMap::~PropertyMap()
 PropertyMap::PropertyMap(const PropertyMap& other)
 {
     // Clone all property base objects.
-    BOOST_FOREACH(PropertyBase::Ptr base, other._properties) {
+	for (MapType::iterator it = other._properties.begin(); it != other._properties.end(); it++) {
+		const PropertyBase::Ptr base = *it;
         this->insert(ownedPtr(base->clone()));
     }
 }

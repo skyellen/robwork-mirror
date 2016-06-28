@@ -24,14 +24,9 @@
  */
 
 #include "JointDevice.hpp"
-#include "JacobianCalculator.hpp"
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-
 namespace rw { namespace models {
-
-    class Joint;
 
     /** @addtogroup models */
     /*@{*/
@@ -136,7 +131,7 @@ namespace rw { namespace models {
     private:
 		std::vector<Device::Ptr> _devices;
         std::vector<kinematics::Frame*> _ends;
-        JacobianCalculatorPtr _djmulti;
+        rw::common::Ptr<class JacobianCalculator> _djmulti;
     };
 
     /*@}*/

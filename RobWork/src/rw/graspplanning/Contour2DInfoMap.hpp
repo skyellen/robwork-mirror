@@ -21,9 +21,6 @@
 #include <rw/sensor/Contact2D.hpp>
 #include <rw/geometry/Contour2D.hpp>
 
-#include <rw/math/Constants.hpp>
-#include <rw/math/Vector2D.hpp>
-
 namespace rw {
 namespace graspplanning {
 
@@ -111,7 +108,6 @@ private:
     const double _resStepInv;
     double _minCurvature,_maxCurvature,_avgCurvature;
     //double _resStep;
-    bool _counterClock;
 
     // contact info per contour point
     std::vector<rw::sensor::Contact2D> _contacts;

@@ -25,7 +25,7 @@
 
 #include "Message.hpp"
 #include <exception>
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 namespace rw { namespace common {

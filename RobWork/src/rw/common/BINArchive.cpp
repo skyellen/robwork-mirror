@@ -17,7 +17,10 @@
 
 #include "BINArchive.hpp"
 
+#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+
+#include <fstream>
 
 using namespace rw::common;
 
@@ -142,4 +145,12 @@ void BINArchive::doWrite(const std::vector<std::string>& val, const std::string&
      }
  }
 
-
+ std::string BINArchive::getScope(){
+	 if(_scope.size()==0)
+		 return "";
+	 std::stringstream sstr;
+	 for(size_t i=0;i<_scope.size()-1;i++)
+		 sstr << _scope[i] << ".";
+	 sstr << _scope.back();
+	 return sstr.str();
+ }

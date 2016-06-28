@@ -23,6 +23,7 @@
 #include <rw/loaders/dom/DOMPropertyMapSaver.hpp>
 #include <rw/common/ExtensionRegistry.hpp>
 #include <rw/common/Plugin.hpp>
+#include <rw/common/StringUtil.hpp>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>

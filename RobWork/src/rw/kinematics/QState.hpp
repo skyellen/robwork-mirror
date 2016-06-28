@@ -24,7 +24,6 @@
  */
 
 #include <boost/shared_ptr.hpp>
-#include <vector>
 #include <rw/math/Q.hpp>
 #include <rw/common/macros.hpp>
 

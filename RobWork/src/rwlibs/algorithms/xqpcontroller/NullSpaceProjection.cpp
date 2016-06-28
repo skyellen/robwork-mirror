@@ -23,6 +23,9 @@
 #include <rw/math/Jacobian.hpp>
 #include <rwlibs/algorithms/qpcontroller/QPSolver.hpp>
 
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/vector_proxy.hpp>
+
 using namespace rwlibs::algorithms;
 
 using namespace rw::math;

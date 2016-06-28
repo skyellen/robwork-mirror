@@ -20,14 +20,10 @@
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
-#include <rw/math/Quaternion.hpp>
-#include <rw/kinematics/FKTable.hpp>
-#include <rw/common/Property.hpp>
 
 #include <rw/models/Models.hpp>
 #include <rw/models/Device.hpp>
 
-#include <boost/shared_ptr.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
 
 using namespace boost;

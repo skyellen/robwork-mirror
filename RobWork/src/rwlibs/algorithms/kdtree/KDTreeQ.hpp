@@ -24,6 +24,7 @@
 #include <list>
 #include <algorithm>
 #include <queue>
+#include <map>
 #include <rw/math/Q.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include "KDTree.hpp"

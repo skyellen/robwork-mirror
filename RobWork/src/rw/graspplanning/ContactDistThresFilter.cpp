@@ -16,8 +16,10 @@
  ********************************************************************************/
 
 #include "ContactDistThresFilter.hpp"
+#include "Grasp3D.hpp"
 
 #include <rw/math/MetricUtil.hpp>
+#include <rw/sensor/Contact3D.hpp>
 
 using namespace rw::math;
 using namespace rw::graspplanning;

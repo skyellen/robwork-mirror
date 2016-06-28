@@ -18,7 +18,6 @@
 
 #include "ProximitySetupRule.hpp"
 #include <rw/common/StringUtil.hpp>
-#include <boost/foreach.hpp>
 
 using namespace rw::common;
 using namespace rw::proximity;

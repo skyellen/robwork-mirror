@@ -16,13 +16,10 @@
  ********************************************************************************/
 
 #include "ApproachMeasure3D.hpp"
-
-#include <boost/foreach.hpp>
-#include <rw/math/MetricUtil.hpp>
+#include "Grasp3D.hpp"
 
 using namespace rw::graspplanning;
 using namespace rw::math;
-using namespace rw::sensor;
 
 double ApproachMeasure3D::quality(const Grasp3D& grasp) const {
     double quality = 0;

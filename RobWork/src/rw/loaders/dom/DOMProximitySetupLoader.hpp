@@ -21,7 +21,8 @@
 
 #include <rw/proximity/ProximitySetup.hpp>
 #include <string>
-#include <rw/common/DOMElem.hpp>
+
+namespace rw { namespace common { class DOMElem; } }
 
 namespace rw {
 namespace loaders {
@@ -67,11 +68,11 @@ public:
 	 * @param element [in] Element containing ProximitySetup
 	 * @return The ProximitySetup
 	 */
-	static rw::proximity::ProximitySetup readProximitySetup(rw::common::DOMElem::Ptr element);
+	static rw::proximity::ProximitySetup readProximitySetup(rw::common::Ptr<rw::common::DOMElem> element);
 
 
 private:
-	static std::pair<std::string, std::string> readFramePatternAttributes(rw::common::DOMElem::Ptr element);
+	static std::pair<std::string, std::string> readFramePatternAttributes(rw::common::Ptr<rw::common::DOMElem> element);
 
 };
 

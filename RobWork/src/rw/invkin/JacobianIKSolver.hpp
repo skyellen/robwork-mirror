@@ -24,16 +24,12 @@
  */
 
 #include <rw/invkin/IterativeIK.hpp>
-#include <rw/math/Q.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
-#include <rw/models/JacobianCalculator.hpp>
-#include <rw/trajectory/Interpolator.hpp>
 #include <vector>
 
 namespace rw { namespace models {
     class Device;
+    class JacobianCalculator;
 }} // end namespaces
 
 namespace rw { namespace invkin {
@@ -94,13 +90,13 @@ namespace rw { namespace invkin {
          * @brief Constructs JacobianIKSolver for device \b device, where the
          * @param device [in] the Device that
          */
-        JacobianIKSolver(models::Device::Ptr device, const kinematics::State& state);
+        JacobianIKSolver(rw::common::Ptr<rw::models::Device> device, const kinematics::State& state);
 
         /**
          * @brief Constructs JacobianIKSolver for device, where the frame \b foi will
          * be used as end effector.
          */
-        JacobianIKSolver(models::Device::Ptr device,
+        JacobianIKSolver(rw::common::Ptr<rw::models::Device> device,
                      rw::kinematics::Frame *foi,
                      const kinematics::State& state);
 
@@ -162,7 +158,7 @@ namespace rw { namespace invkin {
         }
 
     private:
-        models::Device::Ptr _device;
+        rw::common::Ptr<rw::models::Device> _device;
         double _interpolationStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;

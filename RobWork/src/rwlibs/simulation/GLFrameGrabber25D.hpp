@@ -107,15 +107,12 @@ namespace rwlibs { namespace simulation {
 
     private:
         double _fieldOfView; // in the y-axis
-        double _near, _far;
         rw::graphics::SceneViewer::Ptr _drawer;
         rw::math::Transform3D<double> _perspTrans;
         rw::graphics::SceneViewer::View::Ptr _view;
 
         double _minDepth, _maxDepth;
         std::vector<float> _depthData;
-
-        GLuint _fbId,_renderId,_renderDepthId,textureId;
 
     };
 

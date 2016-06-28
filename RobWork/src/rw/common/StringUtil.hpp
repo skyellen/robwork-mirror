@@ -26,7 +26,6 @@
 
 #include <string>
 #include <vector>
-#include <rw/math/Math.hpp>
 
 namespace rw { namespace common {
 
@@ -207,12 +206,7 @@ namespace rw { namespace common {
 		 * @param prefix
 		 * @return
 		 */
-        static std::string ranName(const std::string& prefix){
-            int ri = rw::math::Math::ranI(0xFF,0xFFFFFF);
-            std::stringstream sstr;
-            sstr << prefix << "_" << ri;
-            return sstr.str();
-        }
+        static std::string ranName(const std::string& prefix);
 
 	};
 

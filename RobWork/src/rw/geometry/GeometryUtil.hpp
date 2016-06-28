@@ -25,14 +25,14 @@
 #include <rw/math/VectorND.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
-#include "Geometry.hpp"
-
 namespace rw { namespace geometry { class TriMesh; } }
 namespace rw { namespace kinematics { class Frame; } }
 namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace geometry {
+class Geometry;
+
 /** @addtogroup geometry */
 /*@{*/
 /**
@@ -51,7 +51,7 @@ public:
      * @param geoms [in] the list of geometries.
 	 * @return the total volume of the geometries.
 	 */
-    static double estimateVolume(const std::vector<Geometry::Ptr> &geoms);
+    static double estimateVolume(const std::vector<rw::common::Ptr<Geometry> > &geoms);
 
     /**
 	 * @brief Estimates the volume of a trimesh.
@@ -78,7 +78,7 @@ public:
      */
     static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(
     		double mass,
-    		const std::vector<Geometry::Ptr> &geoms,
+    		const std::vector<rw::common::Ptr<Geometry> > &geoms,
     		const rw::kinematics::Frame* ref,
     		const rw::kinematics::State& state,
     		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
@@ -100,7 +100,7 @@ public:
      */
     static rw::math::InertiaMatrix<> estimateInertia(
     		double mass,
-    		const std::vector<Geometry::Ptr> &geoms,
+    		const std::vector<rw::common::Ptr<Geometry> > &geoms,
     		const rw::kinematics::Frame* ref,
     		const rw::kinematics::State& state,
     		const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
@@ -121,7 +121,7 @@ public:
      */
      static rw::math::InertiaMatrix<> estimateInertia(
              double mass,
-             const std::vector<Geometry::Ptr> &geoms,
+             const std::vector<rw::common::Ptr<Geometry> > &geoms,
              const rw::math::Transform3D<>& reftrans = rw::math::Transform3D<>::identity());
 
      /**
@@ -157,7 +157,7 @@ public:
      * @param geoms [in] the list of geometries.
      * @return the center of gravity for the geometries.
      */
-    static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
+    static rw::math::Vector3D<> estimateCOG(const std::vector<rw::common::Ptr<Geometry> > &geoms);
 
     /**
      * @brief Estimates the center of gravity (COG) of a list of geometries.
@@ -169,7 +169,7 @@ public:
      * @param state [in] the state which gives the position of the geometries relative to the reference frame.
      * @return the center of gravity for the geometries.
      */
-	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms,
+	static rw::math::Vector3D<> estimateCOG(const std::vector<rw::common::Ptr<Geometry> > &geoms,
 			const rw::kinematics::Frame* ref,
 			const rw::kinematics::State& state);
 
@@ -188,7 +188,7 @@ public:
       * @param center [in] the point to calculate the distance from
       * @return the maximum distance to any triangle in the geometries
       */
-    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
+    static double calcMaxDist(const std::vector<rw::common::Ptr<Geometry> > &geoms,
     		const rw::math::Vector3D<> center,
 			rw::kinematics::Frame* ref,
 			const rw::kinematics::State& state);

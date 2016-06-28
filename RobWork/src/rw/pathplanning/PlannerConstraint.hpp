@@ -26,12 +26,12 @@
 #include "QConstraint.hpp"
 #include "QEdgeConstraint.hpp"
 
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/CollisionStrategy.hpp>
-#include <rw/proximity/CollisionSetup.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/kinematics/State.hpp>
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace models { class WorkCell; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rw { namespace proximity { class CollisionSetup; } }
+namespace rw { namespace proximity { class CollisionStrategy; } }
 
 namespace rw { namespace pathplanning {
 
@@ -117,11 +117,11 @@ namespace rw { namespace pathplanning {
            Path are checked discretely for a default device dependent
            resolution.
         */
-		static PlannerConstraint make(rw::proximity::CollisionDetector::Ptr detector,
-									  rw::models::Device::Ptr device,
-									  const rw::kinematics::State& state);
+		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionDetector> detector,
+				rw::common::Ptr<rw::models::Device> device,
+				const rw::kinematics::State& state);
 
-        /**
+		/**
            @brief Planner constraint for a collision strategy.
 
            Path are checked discretely for a default device dependent
@@ -129,9 +129,9 @@ namespace rw { namespace pathplanning {
 
            The default collision setup of the workcell is used.
         */
-		static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
-			rw::models::WorkCell::Ptr workcell,
-			rw::models::Device::Ptr device,
+		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionStrategy> strategy,
+			rw::common::Ptr<rw::models::WorkCell> workcell,
+			rw::common::Ptr<rw::models::Device> device,
 			const rw::kinematics::State& state);
 
         /**
@@ -141,10 +141,10 @@ namespace rw { namespace pathplanning {
            Path are checked discretely for a default device dependent
            resolution.
         */
-		static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
+		static PlannerConstraint make(rw::common::Ptr<rw::proximity::CollisionStrategy> strategy,
 			const rw::proximity::CollisionSetup& setup,
-			rw::models::WorkCell::Ptr workcell,
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::WorkCell> workcell,
+			rw::common::Ptr<rw::models::Device> device,
 			const rw::kinematics::State& state);
 
     private:

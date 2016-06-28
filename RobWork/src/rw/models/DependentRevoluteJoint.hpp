@@ -25,7 +25,6 @@
 
 #include "DependentJoint.hpp"
 #include "RevoluteJoint.hpp"
-#include <memory>
 
 namespace rw { namespace kinematics {
     class State;

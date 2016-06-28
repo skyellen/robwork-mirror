@@ -2,15 +2,12 @@
 #ifndef RW_COMMON_PLUGIN_HPP
 #define RW_COMMON_PLUGIN_HPP
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <rw/common/Ptr.hpp>
-#include <rw/common/PropertyMap.hpp>
 #include <rw/common/os.hpp>
 
 #include "Extension.hpp"
-#include "ExtensionPoint.hpp"
 
 namespace rw {
 namespace common {

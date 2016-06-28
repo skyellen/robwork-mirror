@@ -1,6 +1,5 @@
 SET(FILES_CPP
   WorkCellLoader.cpp
-  WorkCellFactory.cpp
 
   model3d/LoaderAC3D.cpp
   model3d/Loader3DS.cpp
@@ -42,13 +41,11 @@ SET(FILES_CPP
   image/PGMLoader.cpp
   image/PPMLoader.cpp
   image/RGBLoader.cpp
-  ImageFactory.cpp
   ImageLoader.cpp
 )
 
 SET(FILES_HPP
   WorkCellLoader.hpp
-  WorkCellFactory.hpp
   
   path/PathLoader.hpp
   tul/Tag.hpp
@@ -78,7 +75,6 @@ SET(FILES_HPP
   image/PGMLoader.hpp
   image/PPMLoader.hpp
   image/RGBLoader.hpp
-  ImageFactory.hpp
   ImageLoader.hpp
 )
 

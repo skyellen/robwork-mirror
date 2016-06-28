@@ -21,8 +21,9 @@
 
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/math/Q.hpp>
 #include <boost/foreach.hpp>
+
+namespace rw { namespace math { class Q; } }
 
 namespace rw {
 namespace trajectory {

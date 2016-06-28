@@ -22,6 +22,8 @@
 #include <rwlibs/task/loader/XMLTaskLoader.hpp>
 #include <rwlibs/task/loader/XMLTaskSaver.hpp>
 
+#include <fstream>
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::trajectory;

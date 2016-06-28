@@ -18,6 +18,8 @@
 
 #include "StateConstraint.hpp"
 #include <rw/common/macros.hpp>
+#include <rw/common/Log.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::pathplanning;

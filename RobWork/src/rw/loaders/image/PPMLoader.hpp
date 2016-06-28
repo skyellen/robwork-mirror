@@ -24,7 +24,6 @@
  */
 
 #include <rw/sensor/Image.hpp>
-#include <rw/common/macros.hpp>
 
 #include "../ImageLoader.hpp"
 

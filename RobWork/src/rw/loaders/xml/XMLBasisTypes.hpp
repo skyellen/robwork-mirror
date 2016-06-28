@@ -30,12 +30,12 @@
 #include <rw/math/VelocityScrew6D.hpp>
 
 #include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
 
 #include <xercesc/dom/DOMElement.hpp>
 
-#include <map>
 #include <string>
+
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw {
 namespace loaders {
@@ -307,7 +307,7 @@ public:
      * @return The State read from \b element
      */
     static rw::kinematics::State readState(xercesc::DOMElement* element,
-		rw::models::WorkCell::Ptr workcell,
+		rw::common::Ptr<rw::models::WorkCell> workcell,
 		bool doCheckHeader = false);
 
 

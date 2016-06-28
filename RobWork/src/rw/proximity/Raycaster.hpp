@@ -18,15 +18,18 @@
 #ifndef RW_PROXIMITY_RAYCASTER_HPP_
 #define RW_PROXIMITY_RAYCASTER_HPP_
 
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/proximity/CollisionStrategy.hpp>
-#include <rw/kinematics/Frame.hpp>
+#include "ProximityModel.hpp"
+#include "ProximityStrategyData.hpp"
+
 #include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/math/Vector3D.hpp>
 
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw {
 namespace proximity {
+	class CollisionStrategy;
 
 	/**
 	 * @brief a raycast implementation that relies on a collision strategy for finding the
@@ -78,11 +81,11 @@ namespace proximity {
 
 		void setRayFrame(rw::kinematics::Frame* rayframe);
 
-		void add(rw::geometry::Geometry::Ptr geom);
+		void add(rw::common::Ptr<rw::geometry::Geometry> geom);
 
-		void add(rw::models::Object::Ptr object);
+		void add(rw::common::Ptr<rw::models::Object> object);
 
-		void add(rw::models::WorkCell::Ptr wc);
+		void add(rw::common::Ptr<rw::models::WorkCell> wc);
 
 		/**
 		 * @brief shoots a ray in the direction of the vector \b direction starting from
@@ -106,13 +109,11 @@ namespace proximity {
 
 		//rw::proximity::CollisionDetectorPtr _detector;
 		std::vector<rw::kinematics::Frame*> _frames;
-		rw::proximity::CollisionStrategy::Ptr _cdstrategy;
+		rw::common::Ptr<rw::proximity::CollisionStrategy> _cdstrategy;
 		rw::geometry::PlainTriMeshF::Ptr _ray;
 		rw::kinematics::Frame *_rayFrame;
 
 		rw::proximity::ProximityModel::Ptr _rayModel;
-
-		rw::proximity::CollisionDetector::Ptr _cdetector;
 
 		std::vector<rw::proximity::ProximityModel::Ptr> _obstacles;
 

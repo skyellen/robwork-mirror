@@ -19,7 +19,7 @@
 #ifndef RW_GRASPPLANNING_CONTACTVALIDATEFILTER_HPP_
 #define RW_GRASPPLANNING_CONTACTVALIDATEFILTER_HPP_
 
-#include <rw/sensor/Contact3D.hpp>
+namespace rw { namespace sensor { class Contact3D; } }
 
 namespace rw {
 namespace graspplanning {

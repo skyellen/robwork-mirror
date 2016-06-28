@@ -18,11 +18,8 @@
 #ifndef RW_COMMON_SERIALIZABLE_HPP
 #define RW_COMMON_SERIALIZABLE_HPP
 
-#include <cstdlib>
-#include <cmath>
 #include <string>
 #include <rw/common/macros.hpp>
-#include "Archive.hpp"
 
 namespace rw {
 namespace common {

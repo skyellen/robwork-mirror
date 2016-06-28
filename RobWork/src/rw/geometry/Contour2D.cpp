@@ -18,15 +18,15 @@
 
 #include <boost/foreach.hpp>
 
-#include <rw/math/Constants.hpp>
+#include <rw/common/StringUtil.hpp>
 #include <rw/math/Rotation2D.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Line2D.hpp>
 
 #include "Triangulate.hpp"
 
-using namespace boost::numeric;
+#include <fstream>
+
 using namespace rw::math;
 using namespace rw::geometry;
 

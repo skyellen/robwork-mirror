@@ -36,8 +36,6 @@ using namespace rw::kinematics;
 using namespace rw::geometry;
 using namespace rw::loaders;
 
-const int TRI_MESH_SIZE=10000;
-
 #define PRINT_TYPE_SIZE(arg) BOOST_TEST_MESSAGE("sizeof(" \
 		<< typeid(arg).name() << ") = " << sizeof(arg))
 

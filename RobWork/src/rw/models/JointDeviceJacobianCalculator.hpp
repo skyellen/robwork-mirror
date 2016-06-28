@@ -19,12 +19,11 @@
 #ifndef RW_MODELS_JOINTDEVICEJACOBIANCALCULATOR_HPP
 #define RW_MODELS_JOINTDEVICEJACOBIANCALCULATOR_HPP
 
-
-#include <rw/kinematics/State.hpp>
-
 #include "JacobianCalculator.hpp"
-#include "Joint.hpp"
-#include "JointDevice.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Joint; } }
 
 namespace rw {
 namespace models {
@@ -51,7 +50,7 @@ public:
      * @param tcps [in] List of tool end-effectors for which to calculate the Jacobian.
      * @param state [in] State giving how frame are connected
      */
-	JointDeviceJacobianCalculator(JointDevice::Ptr device,
+	JointDeviceJacobianCalculator(rw::common::Ptr<class JointDevice> device,
                                   const kinematics::Frame* base,
                                   const std::vector<kinematics::Frame*>& tcps,
                                   const kinematics::State& state);

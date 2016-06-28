@@ -25,6 +25,7 @@
 
 #include "Frame.hpp"
 #include "StateStructure.hpp"
+#include "StateData.hpp"
 #include <boost/shared_ptr.hpp>
 
 namespace rw { namespace kinematics {

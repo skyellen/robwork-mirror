@@ -18,6 +18,7 @@
 #include "BlendedTrajectory.hpp"
 
 #include <rw/math/Math.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::math;
 using namespace rw::trajectory;
@@ -983,8 +984,3 @@ double BlendedTrajectory<T>::ddphistarmax(double v0, double v, double a, double 
             return 0.0;
     }
 }
-
-
-
-//Explicit template specification
-template class BlendedTrajectory<rw::math::Q>;

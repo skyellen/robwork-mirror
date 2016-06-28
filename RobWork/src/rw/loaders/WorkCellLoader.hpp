@@ -24,7 +24,6 @@
  */
 
 #include <string>
-#include <memory>
 #include <rw/graphics/WorkCellScene.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/common/ExtensionPoint.hpp>
@@ -85,7 +84,6 @@ namespace rw { namespace loaders {
 
 	        static rw::common::Ptr<WorkCellLoader> getWorkCellLoader(const std::string& format);
 
-			/////////// Factory methods for backwards compatibility, use WorkCellFactory instead
 			/**
 			 * @brief Loads/imports a workcell from a file.
 			 * An exception is thrown if the file can't be loaded.
@@ -93,14 +91,6 @@ namespace rw { namespace loaders {
 			 * @param filename [in] name of workcell file.
 			 */
 			static models::WorkCell::Ptr load(const std::string& filename);
-
-			/**
-			 * @brief Loads/imports a workcell from a file.
-			 * An exception is thrown if the file can't be loaded.
-			 * XML as well as TUL workcell formats are supported.
-			 * @param filename [in] name of workcell file.
-			 */
-			static models::WorkCell::Ptr load(const std::string& filename, rw::graphics::WorkCellScene::Ptr wcscene);
 
 	    };
 

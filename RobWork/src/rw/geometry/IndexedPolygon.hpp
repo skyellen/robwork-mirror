@@ -21,7 +21,7 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/types.hpp>
-#include <rw/math/Vector3D.hpp>
+//#include <rw/math/Vector3D.hpp>
 
 
 

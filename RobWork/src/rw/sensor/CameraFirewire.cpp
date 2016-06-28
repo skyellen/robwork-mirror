@@ -18,8 +18,6 @@
 
 #include "CameraFirewire.hpp"
 
-#include <algorithm>
-
 using namespace rw::sensor;
 using namespace rw::kinematics;
 

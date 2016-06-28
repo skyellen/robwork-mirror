@@ -20,20 +20,14 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rw/math/Constants.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/FrameType.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
-#include <rw/common/Property.hpp>
-
-#include <boost/foreach.hpp>
-
 #include <float.h>
+
+namespace rw { namespace kinematics { class State; } }
 
 using namespace rw::math;
 using namespace rw::common;
@@ -194,8 +188,6 @@ namespace
 }
 
 CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
-    _worin(1),
-    _scale(30),
     _maxQuatStep(0.4),
     _device(device),
     _fkrange( device->getBase(), device->getEnd(), state),

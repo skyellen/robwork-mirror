@@ -19,7 +19,7 @@
 
 #include "CSGConvert.hpp"
 
-
+#include <rw/math/RPY.hpp>
 
 using namespace std;
 using namespace rw;

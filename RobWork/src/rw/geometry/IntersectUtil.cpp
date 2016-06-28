@@ -17,6 +17,11 @@
 
 #include "IntersectUtil.hpp"
 
+#include "Plane.hpp"
+#include "Line.hpp"
+
+#include <rw/math/Math.hpp>
+
 using namespace rw::geometry;
 using namespace rw::math;
 

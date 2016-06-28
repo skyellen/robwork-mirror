@@ -18,7 +18,6 @@
 #ifndef RW_COLLISION_PROXIMITYFILTERRULE_HPP
 #define RW_COLLISION_PROXIMITYFILTERRULE_HPP
 
-#include <rw/kinematics/Frame.hpp>
 #include <boost/regex.hpp>
 
 namespace rw {

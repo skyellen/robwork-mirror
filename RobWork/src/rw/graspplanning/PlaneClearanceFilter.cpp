@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "PlaneClearanceFilter.hpp"
+#include "Grasp3D.hpp"
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Constants.hpp>

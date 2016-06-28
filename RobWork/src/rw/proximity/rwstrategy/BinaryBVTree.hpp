@@ -20,7 +20,7 @@
 
 #include <stack>
 #include "BVTree.hpp"
-#include <boost/tuple/tuple.hpp>
+//#include <boost/tuple/tuple.hpp>
 
 namespace rw {
 namespace proximity {

@@ -26,7 +26,6 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/Ptr.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 
 #include "Trajectory.hpp"

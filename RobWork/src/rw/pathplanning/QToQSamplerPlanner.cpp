@@ -15,5 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "QToQSamplerPlanner.hpp"

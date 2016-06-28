@@ -18,10 +18,10 @@
 #ifndef RW_GRASPPLANNING_GRASPVALIDATEFILTER_HPP_
 #define RW_GRASPPLANNING_GRASPVALIDATEFILTER_HPP_
 
-#include "Grasp3D.hpp"
-
 namespace rw {
 namespace graspplanning {
+
+class Grasp3D;
 
 /**
  * @brief tests if a grasp is valid in respect to some criterias implemented

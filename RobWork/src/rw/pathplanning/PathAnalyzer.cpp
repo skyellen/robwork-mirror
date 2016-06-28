@@ -21,6 +21,8 @@
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/math/MetricFactory.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/proximity/DistanceCalculator.hpp>
 #include <rw/kinematics/FKRange.hpp>
 
 using namespace rw::math;

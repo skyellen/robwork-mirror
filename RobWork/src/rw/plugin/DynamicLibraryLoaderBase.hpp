@@ -21,7 +21,6 @@
 
 
 #include <string>
-#include <iostream>
 
 #include <rw/common/os.hpp>
 
@@ -29,8 +28,6 @@
     #include <windows.h>
     #include <winbase.h>
 #endif
-
-#include <rw/common/macros.hpp>
 
 namespace rw {
 namespace plugin {

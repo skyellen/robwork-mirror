@@ -19,14 +19,10 @@
 #ifndef RW_GRASPPLANNING_APPROACHMEASURE_HPP_
 #define RW_GRASPPLANNING_APPROACHMEASURE_HPP_
 
-#include "Grasp3D.hpp"
 #include "GraspQualityMeasure3D.hpp"
-
-#include <vector>
 
 namespace rw {
 namespace graspplanning {
-
     /**
      * @brief computes the quality as a function of the angle between
      * the approach angle and some planar surface.

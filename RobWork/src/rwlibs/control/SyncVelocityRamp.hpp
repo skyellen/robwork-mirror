@@ -120,7 +120,6 @@ private:
     rw::math::Q _taus;
     rw::math::Q _qstart;
     rw::math::Q _qend;
-    double _maxtime;
 
 
     double _ws;

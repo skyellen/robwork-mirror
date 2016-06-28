@@ -20,7 +20,6 @@
 
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
-#include "Math.hpp"
 #include <rw/math/Constants.hpp>
 
 using namespace rw::math;

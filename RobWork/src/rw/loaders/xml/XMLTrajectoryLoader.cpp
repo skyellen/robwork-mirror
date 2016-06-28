@@ -17,15 +17,15 @@
 
 #include "XMLTrajectoryLoader.hpp"
 #include "XMLTrajectoryFormat.hpp"
+#include "XMLBasisTypes.hpp"
 
 #include <iostream>
-
-
 
 #include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
+#include <xercesc/util/XMLDouble.hpp>
 
 
 #include <rw/math/Q.hpp>

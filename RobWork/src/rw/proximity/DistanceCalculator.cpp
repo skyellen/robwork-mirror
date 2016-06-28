@@ -22,11 +22,10 @@
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/geometry/TriMesh.hpp>
 
 //#include <omp.h>
 #include <float.h>
-#include <algorithm>
+//#include <algorithm>
 #include "ProximityStrategyData.hpp"
 
 using namespace rw;

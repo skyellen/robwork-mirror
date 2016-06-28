@@ -19,6 +19,10 @@
 #include "TimedUtil.hpp"
 #include "TimeMetricUtil.hpp"
 
+#include <rw/models/Device.hpp>
+
+#include <boost/foreach.hpp>
+
 using namespace rw::trajectory;
 using namespace rw::math;
 using namespace rw::models;

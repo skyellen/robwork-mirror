@@ -25,11 +25,9 @@
 
 #include "PropertyBase.hpp"
 #include "Property.hpp"
-#include "StringUtil.hpp"
 #include "macros.hpp"
 
 #include <set>
-#include <memory>
 
 namespace rw { namespace common {
 
@@ -236,7 +234,7 @@ namespace rw { namespace common {
             if (!p) {
                 RW_THROW(
                     "Property "
-                    << StringUtil::quote(identifier)
+                    << "'" << identifier << "'"
                     << " could not be found");
             }
             return *p;
@@ -351,24 +349,7 @@ namespace rw { namespace common {
          * @return Property object with that identifier
          */
         template<class T>
-        rw::common::Ptr< Property<T> > findProperty(const std::string& identifier)
-        {
-            return findPropertyBase(identifier).cast<Property<T> >();
-        }
-
-        /**
-         * @brief Find the property for an identifier.
-         *
-         * The method finds the Property<T> object having a given identifier. If
-         * no property with that identifier exists or if the value of the
-         * property is not of type T then NULL is returned.
-         *
-         * @param identifier [in] property identifier
-         *
-         * @return Property object with that identifier
-         */
-        template<class T>
-        const rw::common::Ptr<Property<T> > findProperty(const std::string& identifier) const
+        rw::common::Ptr<Property<T> > findProperty(const std::string& identifier) const
         {
             return findPropertyBase(identifier).cast<Property<T> >();
         }

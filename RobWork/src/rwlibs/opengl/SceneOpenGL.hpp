@@ -68,19 +68,19 @@ namespace rwlibs { namespace opengl {
         //! @copydoc SceneGraph::addFrameAxis
         rw::graphics::DrawableGeometryNode::Ptr makeDrawableFrameAxis(const std::string& name, double size, int dmask);
         //! @copydoc SceneGraph::addGeometry
-        rw::graphics::DrawableGeometryNode::Ptr makeDrawable(const std::string& name, rw::geometry::Geometry::Ptr geom, int dmask);
+        rw::graphics::DrawableGeometryNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<rw::geometry::Geometry> geom, int dmask);
         //! @copydoc SceneGraph::addLines
         rw::graphics::DrawableGeometryNode::Ptr makeDrawable(const std::string& name, const std::vector<rw::geometry::Line >& lines, int dmask);
 
         //! @copydoc SceneGraph::makeDrawable
-        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Model3D::Ptr model, int dmask);
+        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<rw::graphics::Model3D> model, int dmask);
         //! @copydoc SceneGraph::makeDrawable
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image& img, int dmask);
         //! @copydoc SceneGraph::makeDrawable
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const rw::geometry::PointCloud& scan, int dmask);
         //! @copydoc SceneGraph::makeDrawable
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, const std::string& text);
-        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask);
+        rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<rw::graphics::Render> render, int dmask);
         rw::graphics::DrawableNode::Ptr makeDrawable(const std::string& filename, int dmask);
         //rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info);
         //rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info);

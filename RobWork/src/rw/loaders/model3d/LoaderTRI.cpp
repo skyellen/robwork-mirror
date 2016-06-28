@@ -1,12 +1,10 @@
 
 #include "LoaderTRI.hpp"
 
-#include <cmath>                       // Header file for the math library
-#include <iostream>
 #include <fstream>
 
 #include <rw/common/macros.hpp>
-#include <rw/common/StringUtil.hpp>
+#include <rw/math/Constants.hpp>
 
 using namespace rw::loaders;
 using namespace rw::common;
@@ -29,7 +27,7 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
 
     std::ifstream input_stream(filename.c_str());
     if (!input_stream.is_open()) {
-        RW_THROW("Can't open file " << StringUtil::quote(filename));
+        RW_THROW("Can't open file " << "'" << filename << "'");
     }
    	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
 	std::string locale = setlocale(LC_ALL, NULL); 
@@ -94,7 +92,7 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
             }
         } else {
             setlocale(LC_ALL, locale.c_str());
-            RW_THROW("unrecognized keyword " << StringUtil::quote(token));
+            RW_THROW("unrecognized keyword " << "'" << token << "'");
         }
     }
     //obj->_matFaces.push_back(mface);

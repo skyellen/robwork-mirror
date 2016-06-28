@@ -17,8 +17,3 @@
 
 
 #include "MetricUtil.hpp"
-#include "Metric.hpp"
-
-#include <rw/common/macros.hpp>
-
-using namespace rw::math;

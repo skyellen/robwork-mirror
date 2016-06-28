@@ -35,31 +35,24 @@
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
-//#include <boost/spirit.hpp>
-//#include <boost/spirit/core.hpp>
 #include <boost/spirit/include/phoenix1.hpp>
 #include <boost/spirit/include/classic_symbols.hpp>
 
 #include <boost/spirit/include/classic_common.hpp>
 #include <boost/spirit/include/classic_ast.hpp>
 #include <boost/spirit/include/classic_parse_tree.hpp>
-#include <boost/spirit/include/classic_position_iterator.hpp>
 #include <boost/spirit/iterator/file_iterator.hpp>
 
-#include <boost/lambda/lambda.hpp>
-#include <boost/bind.hpp>
-
 #else
-#include <boost/spirit/include/support_istream_iterator.hpp>
+//#include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #endif
 
-#include <fstream>
-#include <iostream>
-#include <cassert>
-#include <algorithm>
+#include <boost/bind.hpp>
+//#include <boost/lambda/lambda.hpp>
+
+//#include <cassert>
+//#include <algorithm>
 
 #if !(defined __MINGW32__) && !(defined _WIN32)
 #include <unistd.h>	// for getcwd on linux

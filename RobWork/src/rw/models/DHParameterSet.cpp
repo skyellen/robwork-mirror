@@ -17,6 +17,7 @@
 
 #include "DHParameterSet.hpp"
 #include <rw/models/Joint.hpp>
+#include <rw/models/SerialDevice.hpp>
 #include <boost/foreach.hpp>
 using namespace rw::models;
 

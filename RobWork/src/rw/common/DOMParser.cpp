@@ -1,6 +1,7 @@
 #include "DOMParser.hpp"
 
 #include "BoostXMLParser.hpp"
+#include "StringUtil.hpp"
 
 using namespace rw::common;
 

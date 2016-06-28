@@ -18,11 +18,10 @@
 #ifndef RW_GEOMETRY_OBB_HPP_
 #define RW_GEOMETRY_OBB_HPP_
 
-#include <vector>
-
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriMesh.hpp>
 
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>

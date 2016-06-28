@@ -46,6 +46,7 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
+  AnyPtr.hpp
   Common.hpp
   ConcatVectorIterator.hpp
   IOUtil.hpp

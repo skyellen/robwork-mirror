@@ -21,8 +21,6 @@
 
 #include "Sensor.hpp"
 
-#include <rw/kinematics/State.hpp>
-
 #include "TactileArrayModel.hpp"
 #include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>

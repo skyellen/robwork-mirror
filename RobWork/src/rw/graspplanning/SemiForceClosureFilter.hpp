@@ -18,8 +18,9 @@
 #ifndef RW_GRASPPLANNING_SEMIFORCECLOSUREFILTER_HPP_
 #define RW_GRASPPLANNING_SEMIFORCECLOSUREFILTER_HPP_
 
-#include "Grasp3D.hpp"
 #include "GraspValidateFilter.hpp"
+
+#include <cstddef>
 
 namespace rw {
 namespace graspplanning {

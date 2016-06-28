@@ -19,32 +19,13 @@
 #ifndef RW_LOADERS_XMLPREPARSER_HPP
 #define RW_LOADERS_XMLPREPARSER_HPP
 
-
-
-#include <boost/spirit/include/classic.hpp>
-#include <boost/spirit/include/classic_core.hpp>
-#include <boost/spirit/include/phoenix1.hpp>
-#include <boost/spirit/include/classic_common.hpp>
-#include <boost/spirit/include/classic_ast.hpp>
-#include <boost/spirit/include/classic_parse_tree.hpp>
-#include <boost/spirit/include/classic_position_iterator.hpp>
-#include <boost/spirit/include/classic_functor_parser.hpp>
-#include <boost/spirit/include/classic_exceptions.hpp>
-#include <boost/spirit/include/classic_actor.hpp>
-#include <iostream>
-#include <cassert>
+#include <boost/spirit/home/classic/iterator/position_iterator_fwd.hpp>
 #include <vector>
-
-#include <sstream>
-
-#include <boost/numeric/ublas/vector.hpp>
-
-#include "DependencyGraph.hpp"
-
-#include <rw/common/StringUtil.hpp>
 
 namespace rw {
 namespace loaders {
+	class DependencyGraph;
+
 	/** @addtogroup loaders */
 	/*@{*/
 

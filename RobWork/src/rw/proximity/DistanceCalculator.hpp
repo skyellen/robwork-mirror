@@ -22,12 +22,13 @@
 #include "DistanceStrategy.hpp"
 #include <rw/common/Timer.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
 
-#include <rw/kinematics/State.hpp>
 /**
  * @file DistanceCalculator.hpp
  */
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw { namespace proximity {
 
@@ -84,7 +85,7 @@ namespace rw { namespace proximity {
          * @param workcell [in] the workcell to check
          * @param strategy [in] the distance calculation strategy to use
          */
-		DistanceCalculator(rw::models::WorkCell::Ptr workcell,
+		DistanceCalculator(rw::common::Ptr<rw::models::WorkCell> workcell,
 			DistanceStrategy::Ptr strategy);
 
 
@@ -122,8 +123,8 @@ namespace rw { namespace proximity {
         DistanceStrategy::Result distance(const kinematics::State& state,
                                 std::vector<DistanceStrategy::Result>* result = 0) const;
 
-		DistanceResult distanceOMP(const kinematics::State& state,
-					  			   std::vector<DistanceResult>* result = 0) const;
+        DistanceStrategy::Result distanceOMP(const kinematics::State& state,
+					  			   std::vector<DistanceStrategy::Result>* result = 0) const;
 
         /**
          * @brief Calculates the distance between frame and the rest of the tree

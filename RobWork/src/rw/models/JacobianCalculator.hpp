@@ -21,8 +21,8 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/FKTable.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace models {

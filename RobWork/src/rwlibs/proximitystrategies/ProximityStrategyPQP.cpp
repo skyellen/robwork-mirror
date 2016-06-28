@@ -23,6 +23,7 @@
 #include <float.h>
 #include <vector>
 
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
 #include <rw/kinematics/Frame.hpp>

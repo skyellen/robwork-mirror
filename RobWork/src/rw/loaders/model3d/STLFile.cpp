@@ -25,10 +25,6 @@
 
 #include <iostream>
 #include <string>
-#include <cstdlib>
-#include <cmath>
-#include <cstdio>
-#include <iomanip>
 #include <fstream>
 
 using namespace rw::loaders;

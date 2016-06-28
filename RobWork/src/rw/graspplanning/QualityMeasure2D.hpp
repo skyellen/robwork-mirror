@@ -18,10 +18,10 @@
 #ifndef RW_GRASPPLANNING_QUALITYMEASURE_HPP_
 #define RW_GRASPPLANNING_QUALITYMEASURE_HPP_
 
-#include "Grasp2D.hpp"
-
 namespace rw {
 namespace graspplanning {
+
+class Grasp2D;
 
 class QualityMeasure2D {
 public:

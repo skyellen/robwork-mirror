@@ -90,7 +90,6 @@ namespace rwlibs { namespace simulation {
         rw::graphics::SceneViewer::Ptr _drawer;
         rw::math::Transform3D<double> _perspTrans;
         rw::graphics::SceneViewer::View::Ptr _view;
-        GLuint _fbId,_renderId,_renderDepthId,textureId;
         double _near, _far;
     };
 

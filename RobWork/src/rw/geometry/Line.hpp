@@ -23,7 +23,7 @@
 
 #include <rw/math/Metric.hpp>
 
-#include <iostream>
+#include <iosfwd>
 
 namespace rw {
 namespace geometry {

@@ -22,6 +22,7 @@
    @file MetricFactory.hpp
 */
 
+#include "EAA.hpp"
 #include "Metric.hpp"
 #include "MetricUtil.hpp"
 

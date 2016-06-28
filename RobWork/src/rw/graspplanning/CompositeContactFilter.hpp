@@ -18,8 +18,9 @@
 #ifndef RW_GRASPPLANNING_COMPOSITECONTACTFILTER_HPP_
 #define RW_GRASPPLANNING_COMPOSITECONTACTFILTER_HPP_
 
-#include <rw/math/Transform3D.hpp>
 #include "ContactValidateFilter.hpp"
+
+#include <vector>
 
 namespace rw {
 namespace graspplanning {

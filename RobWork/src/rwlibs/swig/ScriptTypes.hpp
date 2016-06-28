@@ -144,9 +144,10 @@ namespace swig {
 	typedef rw::kinematics::StateStructure StateStructure;
 
 	// loaders
-	typedef rw::loaders::ImageFactory ImageFactory;
+	typedef rw::loaders::ImageLoader ImageLoader;
+	typedef rw::loaders::ImageLoader::Factory ImageLoaderFactory;
 	typedef rw::loaders::WorkCellLoader WorkCellLoader;
-	typedef rw::loaders::WorkCellFactory WorkCellFactory;
+	typedef rw::loaders::WorkCellLoader::Factory WorkCellLoaderFactory;
 	typedef rw::loaders::XMLTrajectoryLoader XMLTrajectoryLoader;
 	typedef rw::loaders::XMLTrajectorySaver XMLTrajectorySaver;
 

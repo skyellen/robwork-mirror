@@ -28,7 +28,7 @@
 #include <rw/graphics/SceneViewer.hpp>
 #include <rw/sensor/CameraModel.hpp>
 #include <rw/sensor/Scanner25DModel.hpp>
-
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace simulation {
     //! @addtogroup simulation

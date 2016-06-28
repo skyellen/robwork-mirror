@@ -20,10 +20,8 @@
 
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
-#include <xercesc/sax/SAXException.hpp>
 #include <xercesc/dom/DOM.hpp>
 
-#include <iostream>
 #include <sstream>
 
 namespace rw {

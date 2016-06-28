@@ -24,11 +24,12 @@
  */
 
 #include <rw/math/Q.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 #include <vector>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace invkin {
 

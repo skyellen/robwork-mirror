@@ -23,10 +23,8 @@
  * @file DrawableNodeClone.hpp
  */
 
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 
 #include "DrawableNode.hpp"
 

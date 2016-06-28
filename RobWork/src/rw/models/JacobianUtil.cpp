@@ -17,14 +17,8 @@
 
 #include "JacobianUtil.hpp"
 
-//#include "BasicDevice.hpp"
-#include "RevoluteJoint.hpp"
-#include "PrismaticJoint.hpp"
-#include "DependentRevoluteJoint.hpp"
-
+#include <rw/kinematics/Frame.hpp>
 #include <rw/math/Jacobian.hpp>
-
-#include <algorithm>
 
 using namespace rw::models;
 using namespace rw::math;

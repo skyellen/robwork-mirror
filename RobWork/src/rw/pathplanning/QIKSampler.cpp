@@ -17,9 +17,12 @@
 
 
 #include "QIKSampler.hpp"
+#include "QConstraint.hpp"
+#include "QSampler.hpp"
 #include <boost/foreach.hpp>
-
+#include <rw/models/Device.hpp>
 #include <rw/models/Models.hpp>
+#include <rw/invkin/IterativeIK.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::math;

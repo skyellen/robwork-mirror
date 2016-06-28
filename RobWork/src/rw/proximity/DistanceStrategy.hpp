@@ -22,11 +22,12 @@
  * @file DistanceStrategy.hpp
  */
 
-#include <rw/kinematics/Frame.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rw { namespace proximity {
 

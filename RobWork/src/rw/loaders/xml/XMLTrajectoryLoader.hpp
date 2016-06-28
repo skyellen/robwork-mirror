@@ -26,12 +26,10 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
-#include "XercesErrorHandler.hpp"
-#include "XMLBasisTypes.hpp"
-#include "XercesUtils.hpp"
-
+//#include "XercesErrorHandler.hpp"
 
 #include <xercesc/dom/DOMElement.hpp>
+/*
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMDocumentType.hpp>
@@ -44,7 +42,7 @@
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/XMLUni.hpp>
-#include <xercesc/util/XMLDouble.hpp>
+*/
 #include <string>
 
 namespace rw {

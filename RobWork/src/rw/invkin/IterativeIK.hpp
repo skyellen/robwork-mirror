@@ -26,13 +26,10 @@
 #include "InvKinSolver.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/math/Q.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/math/Transform3D.hpp>
 #include <rw/common/PropertyMap.hpp>
 
-#include <vector>
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rw { namespace invkin {
 
@@ -118,7 +115,7 @@ namespace rw { namespace invkin {
            @param device [in] Device for which to solve IK.
            @param state [in] Fixed state for which IK is solved.
         */
-		static IterativeIK::Ptr makeDefault(rw::models::Device::Ptr device,
+		static IterativeIK::Ptr makeDefault(rw::common::Ptr<rw::models::Device> device,
                                             const rw::kinematics::State& state);
 
     protected:

@@ -18,10 +18,12 @@
 
 #include "QToTPlanner.hpp"
 #include "QSampler.hpp"
+#include "QToQSamplerPlanner.hpp"
+#include "QIKSampler.hpp"
+#include "QToQPlanner.hpp"
 
 using namespace rw::math;
 using namespace rw::pathplanning;
-using namespace rw::invkin;
 using namespace rw::models;
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -33,7 +35,7 @@ namespace
     {
     public:
         RegionPlanner(
-			QToQSamplerPlanner::Ptr planner,
+        	QToQSamplerPlanner::Ptr planner,
 			QIKSampler::Ptr ikSampler)
             :
             _planner(planner),
@@ -55,15 +57,15 @@ namespace
         }
 
     private:
-		QToQSamplerPlanner::Ptr _planner;
-		QIKSampler::Ptr _ikSampler;
+        QToQSamplerPlanner::Ptr _planner;
+        QIKSampler::Ptr _ikSampler;
     };
 
     class QToTNearestPlanner : public QToTPlanner
     {
 	public:
         QToTNearestPlanner(
-			QToQPlanner::Ptr planner,
+        	QToQPlanner::Ptr planner,
 			QIKSampler::Ptr sampler,
 			QMetric::Ptr metric,
             int cnt)
@@ -103,8 +105,8 @@ namespace
         }
 
     private:
-		QToQPlanner::Ptr _planner;
-		QIKSampler::Ptr _sampler;
+        QToQPlanner::Ptr _planner;
+        QIKSampler::Ptr _sampler;
 		QMetric::Ptr _metric;
         int _cnt;
     };

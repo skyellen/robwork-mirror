@@ -25,15 +25,15 @@
 
 #include "Image.hpp"
 #include "Sensor.hpp"
-#include "CameraListener.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 
 #include <vector>
 #include <string>
 
 namespace rw { namespace sensor {
+
+	class CameraListener;
 
     /** @addtogroup sensor */
     /* @{ */

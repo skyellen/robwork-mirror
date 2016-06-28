@@ -24,16 +24,15 @@
  */
 
 #include <rw/common/Ptr.hpp>
+#include <rw/common/PropertyMap.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/VelocityScrew6D.hpp>
-#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include "JacobianCalculator.hpp"
 
 
 #include <string>
-#include <ostream>
+#include <iosfwd>
 
 namespace rw { namespace math { class Jacobian; }}
 
@@ -43,9 +42,6 @@ namespace rw { namespace kinematics {
 }}
 
 namespace rw { namespace models {
-
-    class Joint;
-
     /** @addtogroup models */
     /*@{*/
 

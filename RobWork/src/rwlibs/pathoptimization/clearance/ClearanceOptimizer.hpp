@@ -157,7 +157,6 @@ private:
 	rw::math::QMetric::Ptr _metric;
 	ClearanceCalculatorPtr _clearanceCalculator;
 	double _stepsize;
-	size_t _maxcount;
 	size_t _dof;
 
 	rw::math::Q _qupper;

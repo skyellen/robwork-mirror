@@ -17,15 +17,13 @@
 
 
 #include "QToQPlanner.hpp"
-
-#include <rw/proximity/CollisionStrategy.hpp>
-#include <rw/math/Math.hpp>
+#include "QToQSamplerPlanner.hpp"
+#include "PlannerConstraint.hpp"
 
 using namespace rw::pathplanning;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::common;
-using namespace rw::proximity;
 using namespace rw::trajectory;
 
 namespace
@@ -52,7 +50,7 @@ namespace
         }
 
     private:
-		QToQSamplerPlanner::Ptr _planner;
+        QToQSamplerPlanner::Ptr _planner;
     };
 
     class EdgePlanner : public QToQPlanner

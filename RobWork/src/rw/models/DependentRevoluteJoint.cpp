@@ -18,9 +18,6 @@
 
 #include "DependentRevoluteJoint.hpp"
 #include "RevoluteJoint.hpp"
-
-#include <rw/math/EAA.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/common/macros.hpp>
 
 using namespace rw::models;

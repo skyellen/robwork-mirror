@@ -23,12 +23,10 @@
  * @file State.hpp
  */
 
-#include <boost/shared_ptr.hpp>
 #include <vector>
 
 #include "QState.hpp"
 #include "TreeState.hpp"
-#include "StateCache.hpp"
 #include <rw/common/Ptr.hpp>
 
 
@@ -36,9 +34,8 @@
 namespace rw { namespace kinematics {
 
     class Frame;
-    class StateSetup;
-
 	class StateStructure;
+	class StateCache;
 	
 
 //    typedef rw::common::Ptr<StateStructure> StateStructurePtr;

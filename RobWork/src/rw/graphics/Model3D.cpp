@@ -18,7 +18,6 @@
 #include "Model3D.hpp"
 
 #include <rw/math/Vector3D.hpp>
-#include <boost/foreach.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/Geometry.hpp>

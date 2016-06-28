@@ -1,8 +1,19 @@
 ﻿#include "MultivariateNormalDistribution.hpp"
-#include <rw/common.hpp>
-#include <rw/loaders.hpp>
-#include <rw/math/Statistics.hpp>
-#include <rwlibs/calibration.hpp>
+
+#include <rw/loaders/rwxml/XMLRWLoader.hpp>
+#include <rwlibs/calibration/CalibrationMeasurement.hpp>
+#include <rwlibs/calibration/CalibrationUtils.hpp>
+#include <rwlibs/calibration/WorkCellCalibrator.hpp>
+#include <rwlibs/calibration/WorkCellExtrinsicCalibrator.hpp>
+#include <rwlibs/calibration/WorkCellJacobian.hpp>
+#include <rwlibs/calibration/nlls/NLLSSolver.hpp>
+#include <rwlibs/calibration/xml/XmlCalibrationSaver.hpp>
+#include <rwlibs/calibration/xml/XMLCalibrationMeasurementFile.hpp>
+
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
+
+#include <fstream>
 #include <iomanip>
 
 using namespace rw::math;

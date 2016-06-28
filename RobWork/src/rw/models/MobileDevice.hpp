@@ -22,12 +22,14 @@
 #include "Device.hpp"
 
 #include "JointDevice.hpp"
-#include "RevoluteJoint.hpp"
 
-#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/math/Q.hpp>
 
+namespace rw { namespace kinematics { class MovableFrame; } }
+
 namespace rw { namespace models {
+
+	class RevoluteJoint;
 
     /** @addtogroup models */
     /*@{*/
@@ -175,8 +177,6 @@ namespace rw { namespace models {
     private:
         rw::kinematics::MovableFrame* _base;
         std::vector<rw::kinematics::Frame*> _axillaryFrames;
-        RevoluteJoint* _wheel1;
-        RevoluteJoint* _wheel2;
         double _width;
 
         std::pair<rw::math::Q, rw::math::Q> _posLimits;

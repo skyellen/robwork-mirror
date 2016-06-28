@@ -20,7 +20,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 
 #include "DOMElem.hpp"
 #include "ExtensionPoint.hpp"

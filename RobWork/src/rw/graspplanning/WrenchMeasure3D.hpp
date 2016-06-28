@@ -19,12 +19,6 @@
 #ifndef RW_GRASPPLANNING_WRENCHMEASURE3D_HPP_
 #define RW_GRASPPLANNING_WRENCHMEASURE3D_HPP_
 
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
-#include "GraspQualityMeasure3D.hpp"
-#include <rw/sensor/Contact3D.hpp>
-#include <rw/geometry/ConvexHull3D.hpp>
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 
 namespace rw {

@@ -17,18 +17,3 @@
 
 
 #include "LinearInterpolator.hpp"
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Q.hpp>
-#include <rw/math/Vector2D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Transform3D.hpp>
-
-using namespace rw::trajectory;
-
-template class LinearInterpolator<double>;
-template class LinearInterpolator<rw::math::Vector2D<double> >;
-template class LinearInterpolator<rw::math::Vector3D<double> >;
-template class LinearInterpolator<rw::math::Q>;
-template class LinearInterpolator<rw::math::Rotation3D<double> >;
-template class LinearInterpolator<rw::math::Transform3D<double> >;

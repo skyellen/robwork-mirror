@@ -20,11 +20,11 @@
 
 
 #include <rw/math/Q.hpp>
-#include <rw/models/WorkCell.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/FixedInterpolator.hpp>
-#include <cfloat>
+//#include <cfloat>
 
 using namespace rw::trajectory;
 using namespace rw::models;

@@ -23,15 +23,12 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 
-#include <rw/graphics/TextureData.hpp>
-
-#include <list>
 #include <vector>
 #include <map>
 
-
-
 #include "../Model3DLoader.hpp"
+
+namespace rw { namespace graphics { class TextureData; } }
 
 namespace rw { namespace loaders {
 

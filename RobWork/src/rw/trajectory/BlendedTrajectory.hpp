@@ -22,13 +22,10 @@
 #include "Trajectory.hpp"
 #include "Path.hpp"
 
-#include <rw/models/Device.hpp>
-#include <rw/common/macros.hpp>
-
 // STL
 #include <vector>
-#include <cmath>
-#include <limits>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rw { 
 namespace trajectory {
@@ -62,7 +59,7 @@ namespace trajectory {
          * @param ascaleIn [in] The acceleration scale [0;1]
          * @param verbose [in] True to print our debug text
          */
-		BlendedTrajectory(rw::models::Device::Ptr deviceIn,
+		BlendedTrajectory(rw::common::Ptr<rw::models::Device> deviceIn,
 		                  const rw::trajectory::QPath& pathIn,
 		                  const std::vector<double>& betaIn,
 		                  const double vscaleIn,
@@ -135,7 +132,7 @@ namespace trajectory {
 
         // Class variables
         bool verbose;
-		rw::models::Device::Ptr device; // Device
+        rw::common::Ptr<rw::models::Device> device; // Device
         unsigned int K; // DOF
         rw::trajectory::QPath path; // Path
         unsigned int Npath; // Path size

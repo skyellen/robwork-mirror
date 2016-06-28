@@ -19,18 +19,18 @@
 #define RW_MODELS_DEFORMABLEOBJECT_HPP_
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Stateless.hpp>
-#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
-#include <rw/graphics/Model3D.hpp>
 
 #include "Object.hpp"
 
 #include <vector>
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace graphics { class Model3D; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class MovableFrame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace models {
 
@@ -71,7 +71,7 @@ namespace rw { namespace models {
          * @param baseframe [in] base frame of object
          * @param model [in]
          */
-        DeformableObject(rw::kinematics::Frame* baseframe, rw::graphics::Model3D::Ptr model);
+        DeformableObject(rw::kinematics::Frame* baseframe, rw::common::Ptr<rw::graphics::Model3D> model);
 
         /**
          * @brief constructor - control nodes are taken from a triangle mesh generated from triangulating the
@@ -84,7 +84,7 @@ namespace rw { namespace models {
          * @param baseframe [in] base frame of object
          * @param geom [in] geometry to define the faces and nodes
          */
-        DeformableObject(rw::kinematics::Frame* baseframe, rw::geometry::Geometry::Ptr geom);
+        DeformableObject(rw::kinematics::Frame* baseframe, rw::common::Ptr<rw::geometry::Geometry> geom);
 
         //! destructor
         virtual ~DeformableObject();
@@ -161,22 +161,22 @@ namespace rw { namespace models {
  	     * @param model [in/out] model to be updated
  	     * @param state
  	     */
- 	    void update(rw::graphics::Model3D::Ptr model, const rw::kinematics::State& state);
+ 	    void update(rw::common::Ptr<rw::graphics::Model3D> model, const rw::kinematics::State& state);
 
  	    //void update(rw::geometry::Geometry::Ptr geom, const rw::kinematics::State& state);
 
     protected:
         friend class WorkCell;
 
-        const std::vector<rw::geometry::Geometry::Ptr>& doGetGeometry(const rw::kinematics::State& state) const;
-        const std::vector<rw::graphics::Model3D::Ptr>& doGetModels(const rw::kinematics::State& state) const;
+        const std::vector<rw::common::Ptr<rw::geometry::Geometry> >& doGetGeometry(const rw::kinematics::State& state) const;
+        const std::vector<rw::common::Ptr<rw::graphics::Model3D> >& doGetModels(const rw::kinematics::State& state) const;
 
         class DeformableObjectCache: public rw::kinematics::StateCache {
         public:
         	typedef rw::common::Ptr<DeformableObjectCache> Ptr;
         	std::vector<rw::math::Vector3D<float> > _nodes;
-        	std::vector<rw::graphics::Model3D::Ptr> _models;
-        	std::vector<rw::geometry::Geometry::Ptr> _geoms;
+        	std::vector<rw::common::Ptr<rw::graphics::Model3D> > _models;
+        	std::vector<rw::common::Ptr<rw::geometry::Geometry> > _geoms;
 
         	DeformableObjectCache(int nr_of_nodes):
         		_nodes(nr_of_nodes, rw::math::Vector3D<float>(0,0,0) )
@@ -198,8 +198,8 @@ namespace rw { namespace models {
         rw::kinematics::StatelessData<int> _rstate;
         rw::common::Ptr<rw::geometry::IndexedTriMeshN0<float> > _mesh;
         std::vector< std::pair<int,rw::kinematics::MovableFrame*> > _frames;
-        rw::graphics::Model3D::Ptr _model;
-        rw::geometry::Geometry::Ptr _geom;
+        rw::common::Ptr<rw::graphics::Model3D> _model;
+        rw::common::Ptr<rw::geometry::Geometry> _geom;
     };
 
     /*@}*/

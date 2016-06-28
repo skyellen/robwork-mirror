@@ -18,9 +18,7 @@
 #ifndef RW_GRASPPLANNING_PLANECLEARANCEFILTER_HPP_
 #define RW_GRASPPLANNING_PLANECLEARANCEFILTER_HPP_
 
-#include "Grasp3D.hpp"
 #include <rw/math/Transform3D.hpp>
-#include <rw/sensor/Contact3D.hpp>
 
 #include "GraspValidateFilter.hpp"
 #include "ContactValidateFilter.hpp"

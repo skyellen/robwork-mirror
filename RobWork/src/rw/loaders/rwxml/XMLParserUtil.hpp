@@ -28,15 +28,9 @@
 #include <rw/math/RPY.hpp>
 
 #include <rw/common/Property.hpp>
-#include <rw/common/StringUtil.hpp>
 
 #include <vector>
 #include <map>
-#include <iostream>
-
-#include <fstream>
-
-#include "DependencyGraph.hpp"
 
 template < typename ResultT >
 struct result_closure: public boost::spirit::classic::closure<result_closure<ResultT>, ResultT> {

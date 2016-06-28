@@ -22,9 +22,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
-#include <rw/common/TimerUtil.hpp>
-#include <iostream>
-
 namespace rw {
 namespace common {
 

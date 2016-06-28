@@ -19,9 +19,10 @@
 #define RW_GEOMETRY_GEOMETRY_HPP_
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/common/Ptr.hpp>
 #include "GeometryData.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rw { namespace geometry {
 	//! @addtogroup geometry

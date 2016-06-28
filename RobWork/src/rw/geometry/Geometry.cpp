@@ -18,7 +18,7 @@
 
 #include "Geometry.hpp"
 
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 
 #include "Sphere.hpp"
 #include "Box.hpp"
@@ -33,7 +33,7 @@ using namespace rw::common;
 namespace {
 
 	std::string makeName(GeometryData::GeometryType gtype){
-		int ri = Math::ranI(0xFF,0xFFFFFF);
+		int ri = Random::ranI(0xFF,0xFFFFFF);
 		std::stringstream sstr;
 		sstr << GeometryData::toString(gtype) << "_" << ri;
 		return sstr.str();

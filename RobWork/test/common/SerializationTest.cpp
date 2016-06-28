@@ -29,6 +29,7 @@
 
 #include <rw/common/Serializable.hpp>
 
+#include <rw/math/Math.hpp>
 
 using namespace rw::common;
 using namespace rw::math;

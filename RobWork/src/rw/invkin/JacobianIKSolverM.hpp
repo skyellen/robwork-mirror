@@ -25,19 +25,18 @@
 
 #include <rw/invkin/IterativeMultiIK.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/common/PropertyMap.hpp>
-#include <rw/kinematics/FKRange.hpp>
-
-#include <rw/models/JacobianCalculator.hpp>
 
 #include <vector>
 
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class FKRange; } }
+namespace rw { namespace kinematics { class State; } }
+
 namespace rw { namespace models {
     class JointDevice;
-    class SerialDevice;
     class TreeDevice;
     class Device;
+    class JacobianCalculator;
 }} // end namespaces
 
 namespace rw { namespace invkin {

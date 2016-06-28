@@ -17,6 +17,8 @@
 
 #include "DrawableGeometry.hpp"
 
+#include <boost/foreach.hpp>
+
 using namespace rwlibs::opengl;
 using namespace rw::common;
 using namespace rw::math;

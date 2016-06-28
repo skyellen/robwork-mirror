@@ -18,14 +18,14 @@
 #ifndef RW_KINEMATICS_STATELESS_HPP_
 #define RW_KINEMATICS_STATELESS_HPP_
 
-#include <rw/common/StringUtil.hpp>
-
-#include "StateData.hpp"
 #include "StateStructure.hpp"
 #include "StatelessData.hpp"
-#include "State.hpp"
+
 namespace rw {
 namespace kinematics {
+
+	class State;
+	class StateData;
 
     /**
      * @brief interface for a stateless or typically a part stateless class.

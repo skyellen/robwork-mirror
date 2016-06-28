@@ -26,7 +26,6 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/common/PropertyMap.hpp>
-#include <rw/models/ParallelDevice.hpp>
 #include "IterativeIK.hpp"
 
 namespace rw { namespace models { class ParallelDevice; }}

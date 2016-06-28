@@ -32,6 +32,7 @@ SET(FILES_CPP
   Pose2D.cpp
   Wrench6D.cpp
   ProjectionMatrix.cpp
+  Random.cpp
   #serialization.cpp
 )
 
@@ -65,6 +66,7 @@ SET(FILES_HPP
   PerspectiveTransform2D.hpp
   EigenDecomposition.hpp
   ProjectionMatrix.hpp
+  Random.hpp
 )
 
 SOURCE_GROUP(math FILES ${FILES_CPP} ${FILES_HPP})

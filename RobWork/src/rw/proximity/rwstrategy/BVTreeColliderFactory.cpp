@@ -1,5 +1,3 @@
-#include <rw/math/Transform3D.hpp>
-
 #include "BVTreeColliderFactory.hpp"
 
 using namespace rw::proximity;

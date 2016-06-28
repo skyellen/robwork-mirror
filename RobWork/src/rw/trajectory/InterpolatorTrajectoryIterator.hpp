@@ -23,9 +23,7 @@
  * @file TrajectoryIterator.hpp
  */
 
-#include "Trajectory.hpp"
-
-#include <vector>
+#include "TrajectoryIterator.hpp"
 
 namespace rw { namespace trajectory {
 

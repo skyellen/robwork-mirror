@@ -23,6 +23,7 @@
 #include <boost/foreach.hpp>
 #include <rw/geometry/IndexedPolygon.hpp>
 #include <rw/geometry/Triangulate.hpp>
+#include <rw/math/EAA.hpp>
 
 using namespace rw::loaders;
 using namespace rw::graphics;

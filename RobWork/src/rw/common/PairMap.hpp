@@ -23,7 +23,6 @@
  * @file PairMap.hpp
  */
 
-#include <vector>
 #include <map>
 
 namespace rw { namespace common {

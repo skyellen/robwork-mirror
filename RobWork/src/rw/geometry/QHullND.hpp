@@ -18,11 +18,8 @@
 #ifndef RW_GEOMETRY_QHULLND_HPP_
 #define RW_GEOMETRY_QHULLND_HPP_
 
-#include <stack>
-#include <set>
 #include <vector>
 #include <float.h>
-#include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/VectorND.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/common/macros.hpp>
@@ -124,9 +121,8 @@ namespace geometry {
             double minDist = DBL_MAX;
             for(size_t i=0; i<_faceIdxs.size()/N; i++){
                 RW_ASSERT(_faceIdxs.size()> i*N);
-                int faceVerticeIdx = _faceIdxs[i*N];
                 //RW_ASSERT(faceVerticeIdx<(int)vertices.size());
-                RW_ASSERT(faceVerticeIdx<(int)_hullVertices.size());
+                RW_ASSERT(_faceIdxs[i*N]<(int)_hullVertices.size());
                 RW_ASSERT(i<_faceNormals.size());
                 double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
                 // dist will be negative if point is inside, and positive if point is outside

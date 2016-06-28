@@ -18,7 +18,6 @@ SET(FILES_CPP
 
 SET(FILES_HPP
   Model3D.hpp
-  Model3DFactory.hpp
   DrawableGeometryNode.hpp
   ProjectionMatrix.hpp
   SceneGraph.hpp

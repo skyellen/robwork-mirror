@@ -23,7 +23,6 @@
  * @file CameraFirewire.hpp
  */
 
-#include "Image.hpp"
 #include "Camera.hpp"
 
 namespace rw { namespace sensor {

@@ -24,9 +24,10 @@
  */
 
 #include "Frame.hpp"
-#include "State.hpp"
 
 namespace rw { namespace kinematics {
+
+	class State;
 
     /** @addtogroup kinematics */
     /* @{ */

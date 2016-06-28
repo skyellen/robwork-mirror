@@ -21,7 +21,6 @@
 #include <vector>
 #include <map>
 
-#include <rw/kinematics/Frame.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/geometry/PointCloud.hpp>
 #include <rw/common/Ptr.hpp>
@@ -29,6 +28,8 @@
 #include "Model3D.hpp"
 #include "DrawableNode.hpp"
 #include "Render.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rw {
 namespace graphics {
@@ -62,7 +63,7 @@ namespace graphics {
             // possible data types
             std::string filename;
             Model3D::Ptr model;
-            rw::geometry::Geometry::Ptr geom;
+            rw::common::Ptr<class rw::geometry::Geometry> geom;
             double frameSize;
             rw::sensor::Image::Ptr img;
             rw::geometry::PointCloud::Ptr scan;
@@ -197,7 +198,7 @@ namespace graphics {
          * @param dmask [in] the drawable mask
          * @return the drawable node geometry
          */
-        DrawableProxy::Ptr  addGeometry(const std::string& name, rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+        DrawableProxy::Ptr  addGeometry(const std::string& name, rw::common::Ptr<class rw::geometry::Geometry> geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
 
         /**
          * @brief create and add a drawable node of a frame axis to the scene

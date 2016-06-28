@@ -20,11 +20,9 @@
 #include "PPMLoader.hpp"
 
 #include <rw/common/StringUtil.hpp>
-#include <rw/common/IOUtil.hpp>
 #include <rw/common/macros.hpp>
 #include <boost/cstdint.hpp>
 //#include <ctype.h>
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <locale>

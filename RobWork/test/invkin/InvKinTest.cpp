@@ -38,7 +38,7 @@ int testIKSolver(
 {
     BOOST_TEST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCell::Ptr workcell = WorkCellFactory::load(testFilePath() + "PA10/pa10.xml");
+    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(testFilePath() + "PA10/pa10.xml");
     Device* any_device = workcell->getDevices().at(0).get();
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -101,7 +101,7 @@ int testMultiIKSolver(
 {
     BOOST_TEST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
-    WorkCell::Ptr workcell = WorkCellFactory::load(
+    WorkCell::Ptr workcell = WorkCellLoader::Factory::load(
         testFilePath() + "SchunkHand/SchunkHand.xml");  
 
     Device* any_device = workcell->getDevices().at(0).get();

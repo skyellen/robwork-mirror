@@ -23,7 +23,6 @@
    @file PathPlanner.hpp
 */
 
-#include <rw/math/Q.hpp>
 #include <rw/trajectory/Path.hpp>
 #include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>

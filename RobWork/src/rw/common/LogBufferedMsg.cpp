@@ -19,7 +19,6 @@
 #include "LogBufferedMsg.hpp"
 
 #include <boost/foreach.hpp>
-#include <iostream>
 #include <iomanip>
 
 using namespace rw::common;

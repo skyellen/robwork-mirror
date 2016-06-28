@@ -20,8 +20,9 @@
 
 #include "Device.hpp"
 #include <rw/kinematics/StateStructure.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
+
+#include <boost/bind.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;

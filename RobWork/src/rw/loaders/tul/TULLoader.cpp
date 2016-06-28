@@ -40,7 +40,6 @@
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 
-#include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
 
@@ -52,9 +51,6 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/common/Property.hpp>
-#include <rw/common/macros.hpp>
-#include <rw/common/StringUtil.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
@@ -62,11 +58,7 @@
 #include <string>
 #include <map>
 #include <cfloat>
-#include <fstream>
 #include <vector>
-#include <map>
-#include <stack>
-#include <list>
 
 using namespace rw;
 using namespace rw::math;
@@ -1852,6 +1844,9 @@ namespace
     }
 }
 
+WorkCell::Ptr TULLoader::loadWorkCell(const std::string& filename) {
+	return load(filename);
+}
 
 WorkCell::Ptr TULLoader::load(const string& filename)
 {

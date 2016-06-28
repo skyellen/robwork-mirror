@@ -25,7 +25,6 @@
 
 
 #include "InterpolatorTrajectory.hpp"
-#include "CubicSplineInterpolator.hpp"
 #include "Path.hpp"
 
 namespace rw {

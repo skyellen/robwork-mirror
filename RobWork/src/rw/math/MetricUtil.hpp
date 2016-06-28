@@ -23,7 +23,10 @@
  * @file MetricUtil.hpp
  */
 
-#include "Math.hpp"
+#include <rw/math/Constants.hpp>
+
+#include <cstddef>
+#include <cmath>
 
 namespace rw { namespace math {
     /** @addtogroup math */
@@ -111,7 +114,7 @@ namespace rw { namespace math {
             typename VectorType::value_type result = 0;
             const size_t len = q.size();
             for (size_t i = 0; i < len; i++) {
-                result += Math::sqr(q[i]);
+                result += q[i]*q[i];
             }
             return result;
         }
@@ -135,7 +138,7 @@ namespace rw { namespace math {
             typename VectorType::value_type result = 0;
             const size_t len = a.size();
             for (size_t i = 0; i < len; i++) {
-                result += Math::sqr(a[i]-b[i]);
+                result += (a[i]-b[i])*(a[i]-b[i]);
             }
             return result;
         }
@@ -158,7 +161,7 @@ namespace rw { namespace math {
             typename VectorType::value_type result = 0;
             const size_t len = q.size();
             for (size_t i = 0; i < len; i++) {
-                result += Math::sqr(q[i]*scale[i]);
+                result += (q[i]*scale[i])*(q[i]*scale[i]);
             }
             return result;
         }
@@ -184,7 +187,7 @@ namespace rw { namespace math {
             typename VectorType::value_type result = 0;
             const size_t len = a.size();
             for (size_t i = 0; i < len; i++) {
-                result += Math::sqr( (a[i]-b[i])*scale[i] );
+                result += ( (a[i]-b[i])*scale[i] )*( (a[i]-b[i])*scale[i] );
             }
             return result;
         }

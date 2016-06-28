@@ -18,7 +18,6 @@
 #include "GeometryUtil.hpp"
 #include "Geometry.hpp"
 #include "TriMesh.hpp"
-#include "PlainTriMesh.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/FixedFrame.hpp>

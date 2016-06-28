@@ -19,9 +19,7 @@
 #ifndef RW_GEOMETRY_TRIANGLE_HPP_
 #define RW_GEOMETRY_TRIANGLE_HPP_
 
-#include "GeometryData.hpp"
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Transform3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/MetricUtil.hpp>
 

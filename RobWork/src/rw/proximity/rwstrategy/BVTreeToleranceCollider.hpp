@@ -18,19 +18,13 @@
 #ifndef RW_PROXIMITY_BVTREETOLERANCECOLLIDER_HPP_
 #define RW_PROXIMITY_BVTREETOLERANCECOLLIDER_HPP_
 
-#include <rw/geometry/OBB.hpp>
-#include <rw/geometry/BVCollider.hpp>
-#include <rw/geometry/TriTriIntersectDeviller.hpp>
-#include <rw/proximity/ProximityStrategyData.hpp>
+//#include <rw/geometry/OBB.hpp>
+//#include <rw/geometry/BVCollider.hpp>
+//#include <rw/geometry/TriTriIntersectDeviller.hpp>
 
-#include <boost/foreach.hpp>
-
-#include "BVTree.hpp"
-#include "BinaryBVTree.hpp"
-
-
-
-
+#include <rw/common/Ptr.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/proximity/CollisionStrategy.hpp>
 
 namespace rw {
 namespace proximity {

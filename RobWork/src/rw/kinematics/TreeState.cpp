@@ -21,8 +21,6 @@
 #include "Frame.hpp"
 #include "StateSetup.hpp"
 
-#include <boost/foreach.hpp>
-
 #include <rw/common/StringUtil.hpp>
 
 using namespace rw::kinematics;

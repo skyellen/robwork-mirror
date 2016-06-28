@@ -23,7 +23,7 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/FrameType.hpp>
+//#include <rw/kinematics/FrameType.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 
@@ -41,10 +41,8 @@
 #include <rw/loaders/GeometryFactory.hpp>
 #include <boost/lexical_cast.hpp>
 #include <rw/math/Constants.hpp>
-#include <rw/math/EAA.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/Vector3D.hpp>
 
 #include <rw/common/Property.hpp>
 #include <rw/common/StringUtil.hpp>
@@ -53,13 +51,13 @@
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/loaders/xml/XMLProximitySetupLoader.hpp>
+#include <rw/loaders/Model3DFactory.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/ProximitySetup.hpp>
 
 #include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/graphics/SceneDescriptor.hpp>
-#include <rw/graphics/Model3DFactory.hpp>
 #include <stack>
 
 #include <boost/foreach.hpp>

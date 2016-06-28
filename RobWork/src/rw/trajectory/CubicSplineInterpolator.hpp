@@ -23,7 +23,6 @@
  * @file CubicSplineInterpolator.hpp
  */
 
-#include <iostream>
 #include "Interpolator.hpp"
 #include <rw/common/macros.hpp>
 #include <rw/math/Transform3D.hpp>

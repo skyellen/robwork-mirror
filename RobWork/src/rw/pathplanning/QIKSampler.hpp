@@ -23,26 +23,21 @@
    @file QIKSampler.hpp
 */
 
-#include "QSampler.hpp"
-#include "QConstraint.hpp"
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/invkin/IterativeIK.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace invkin { class IterativeIK; } }
 
 namespace rw { namespace pathplanning {
+	class QConstraint;
+	class QSampler;
 
     /** @addtogroup pathplanning */
     /** @{*/
 
-#ifdef RW_USE_DEPRECATED
-    class QIKSampler;
-
-    //! A pointer to a QIKSampler.
-    typedef rw::common::Ptr<QIKSampler> QIKSamplerPtr;
-#endif
     /**
        @brief Interface for the sampling a configuration that solves an IK
        problem.
@@ -93,10 +88,10 @@ namespace rw { namespace pathplanning {
            maxAttempts is chosen.
         */
 		static QIKSampler::Ptr make(
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::Device> device,
             const rw::kinematics::State& state,
-			rw::invkin::IterativeIK::Ptr solver = NULL,
-			QSampler::Ptr seed = NULL,
+			rw::common::Ptr<rw::invkin::IterativeIK> solver = NULL,
+			rw::common::Ptr<QSampler> seed = NULL,
             int maxAttempts = -1);
 
         /**
@@ -113,7 +108,7 @@ namespace rw { namespace pathplanning {
         */
         static QIKSampler::Ptr makeConstrained(
 		    QIKSampler::Ptr sampler,
-			QConstraint::Ptr constraint,
+			rw::common::Ptr<QConstraint> constraint,
             int maxAttempts = -1);
 
     protected:

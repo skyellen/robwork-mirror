@@ -80,13 +80,13 @@
 
 #include "Model3DS.hpp"
 
-#include <rw/loaders/ImageFactory.hpp>
-#include <cmath>                       // Header file for the math library
-
-#include <iostream>
+#include <rw/loaders/ImageLoader.hpp>
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
+
+#include <cstdio>
+
 using namespace rw::common;
 using namespace rw::graphics;
 
@@ -762,7 +762,7 @@ void Model3DS::MapNameChunkProcessor(long length, long findex, int matindex)
     // Load the name and indicate that the material has a texture
     char fullname[80];
     sprintf(fullname, "%s%s", &path.at(0), name);
-	rw::sensor::Image::Ptr img = rw::loaders::ImageFactory::load(fullname);
+	rw::sensor::Image::Ptr img = rw::loaders::ImageLoader::Factory::load(fullname);
     Materials.at(matindex).tex = TextureData(name, img);
     Materials.at(matindex).textured = true;
 

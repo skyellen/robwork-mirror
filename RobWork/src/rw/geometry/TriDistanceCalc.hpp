@@ -20,14 +20,10 @@
 
 #include <rw/geometry/Triangle.hpp>
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Math.hpp>
-
 #include <PQP/PQP.h>
 #include <PQP/TriDist.h>
 
 #include "BVDistanceCalc.hpp"
-#include "DistanceUtil.hpp"
 
 namespace rw {
 namespace geometry {

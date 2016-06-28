@@ -23,9 +23,7 @@
  * @file Render.hpp
  */
 
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/common/Ptr.hpp>
-#include <iostream>
 #include "DrawableNode.hpp"
 namespace rw { namespace graphics {
 

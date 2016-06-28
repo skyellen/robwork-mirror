@@ -25,8 +25,6 @@
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
 
-#include <rw/geometry/Triangulate.hpp>
-
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rw::graphics;

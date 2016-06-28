@@ -25,12 +25,9 @@
 
 #include "JointDevice.hpp"
 
-#include <rw/math/Transform3D.hpp>
 #include <vector>
 
 namespace rw { namespace models {
-
-    class Joint;
 
     /** @addtogroup models */
     /*@{*/

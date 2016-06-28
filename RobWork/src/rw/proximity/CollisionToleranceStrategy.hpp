@@ -26,23 +26,18 @@
 #include <string>
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
 //#include "ProximityStrategyData.hpp"
 
+namespace rw { namespace kinematics { class Frame; } }
+
 namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
-#ifdef RW_USE_DEPRECATED
-    class CollisionToleranceStrategy;
 
-    //! A pointer to a CollisionToleranceStrategy.
-    typedef rw::common::Ptr<CollisionToleranceStrategy> CollisionToleranceStrategyPtr;
-#endif
     /**
      * @brief This is a collision strategy that detects collisions between objects
      * that are closer than a specified tolerance.

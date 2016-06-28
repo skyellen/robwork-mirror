@@ -10,9 +10,10 @@
 
 #include <vector>
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Line.hpp>
-#include <rw/geometry/Geometry.hpp>
 #include "DrawableNode.hpp"
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace geometry { class Line; } }
 
 namespace rw {
 namespace graphics {
@@ -71,7 +72,7 @@ public:
      * @brief add a geometry to this render
      * @param geom [in] a geometry that should be rendered
      */
-    virtual void addGeometry(rw::geometry::Geometry::Ptr geom) = 0;
+    virtual void addGeometry(rw::common::Ptr<class rw::geometry::Geometry> geom) = 0;
 
     /**
      * @brief add a frame axis to this geometry

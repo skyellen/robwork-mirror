@@ -16,7 +16,8 @@
  ********************************************************************************/
 
 #include "ProjectionMatrix.hpp"
-#include "Constants.hpp"
+
+#include <rw/math/Constants.hpp>
 
 using namespace rw::math;
 

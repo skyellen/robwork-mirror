@@ -22,13 +22,7 @@
 #include "Trajectory.hpp"
 #include "Path.hpp"
 
-#include <rw/models/Device.hpp>
-#include <rw/common/macros.hpp>
-
-// STL
-#include <vector>
-#include <cmath>
-#include <limits>
+namespace rw { namespace models { class Device; } }
 
 namespace rw { 
 namespace trajectory {
@@ -45,7 +39,7 @@ namespace trajectory {
         /**
          * @brief Default constructor creating an empty trajectory
          */
-        DeviceTrajectory(rw::models::Device::Ptr deviceIn, const rw::kinematics::State& state);
+        DeviceTrajectory(rw::common::Ptr<rw::models::Device> deviceIn, const rw::kinematics::State& state);
 
         /**
          * @brief Destructor
@@ -93,7 +87,7 @@ namespace trajectory {
 
 
     private:
-		rw::models::Device::Ptr _dev;
+		rw::common::Ptr<rw::models::Device> _dev;
 		InterpolatorTrajectory<rw::math::Q>::Ptr _trajectory;
         double _time, _timeTotal;
         double _dt;

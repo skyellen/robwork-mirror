@@ -23,15 +23,14 @@
    @file QEdgeConstraint.hpp
 */
 
-#include "QConstraint.hpp"
-#include "StopCriteria.hpp"
-#include <rw/common/PropertyMap.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Metric.hpp>
-#include <rw/models/Device.hpp>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rw { namespace pathplanning {
+	class QConstraint;
 
     /** @addtogroup pathplanning */
     /*@{*/
@@ -98,7 +97,7 @@ namespace rw { namespace pathplanning {
 		   \param metric [in] Metric with which the resolution it to be measured
 		   \param resolution [in] The test resolution
         */
-		static QEdgeConstraint::Ptr make(QConstraint::Ptr constraint,
+		static QEdgeConstraint::Ptr make(rw::common::Ptr<QConstraint> constraint,
 										 rw::math::QMetric::Ptr metric,
 										 double resolution);
 
@@ -110,8 +109,8 @@ namespace rw { namespace pathplanning {
            configuration space and are checked by a default collision checking
            resolution.
         */
-		static QEdgeConstraint::Ptr makeDefault(QConstraint::Ptr constraint,
-			rw::models::Device::Ptr device);
+		static QEdgeConstraint::Ptr makeDefault(rw::common::Ptr<QConstraint> constraint,
+			rw::common::Ptr<rw::models::Device> device);
 
 
 		/**

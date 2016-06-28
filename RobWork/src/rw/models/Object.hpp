@@ -20,7 +20,6 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include <rw/geometry/Geometry.hpp>
@@ -28,6 +27,8 @@
 #include <rw/math/InertiaMatrix.hpp>
 
 #include <vector>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace models {
 

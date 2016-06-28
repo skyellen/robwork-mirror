@@ -18,17 +18,13 @@
 #ifndef RW_GRAPHICS_SCENEGRAPH_HPP_
 #define RW_GRAPHICS_SCENEGRAPH_HPP_
 
-#include <rw/sensor/Image.hpp>
-#include <rw/geometry/Geometry.hpp>
-#include <rw/geometry/Line.hpp>
-#include <rw/graphics/Model3D.hpp>
-#include <rw/graphics/Render.hpp>
 #include <rw/graphics/DrawableNode.hpp>
 #include <rw/graphics/DrawableGeometryNode.hpp>
 
 #include "SceneCamera.hpp"
-#include "SceneNode.hpp"
 #include "GroupNode.hpp"
+
+#include <boost/function.hpp>
 
 namespace rw {
 namespace graphics {
@@ -120,15 +116,15 @@ namespace graphics {
 
         // interface for adding drawables
         virtual DrawableGeometryNode::Ptr makeDrawableFrameAxis(const std::string& name, double size, int dmask=DrawableNode::Physical)= 0;
-        virtual DrawableGeometryNode::Ptr makeDrawable(const std::string& name, rw::geometry::Geometry::Ptr geom, int dmask=DrawableNode::Physical) = 0;
-        virtual DrawableGeometryNode::Ptr makeDrawable(const std::string& name, const std::vector<rw::geometry::Line >& lines, int dmask=DrawableNode::Physical)= 0;
+        virtual DrawableGeometryNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<class rw::geometry::Geometry> geom, int dmask=DrawableNode::Physical) = 0;
+        virtual DrawableGeometryNode::Ptr makeDrawable(const std::string& name, const std::vector<class rw::geometry::Line >& lines, int dmask=DrawableNode::Physical)= 0;
 
-        virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::sensor::Image& img, int dmask=DrawableNode::Virtual)= 0;
+        virtual DrawableNode::Ptr makeDrawable(const std::string& name, const class rw::sensor::Image& img, int dmask=DrawableNode::Virtual)= 0;
 
         virtual DrawableNode::Ptr makeDrawable(const std::string& name, const rw::geometry::PointCloud& scan, int dmask=DrawableNode::Virtual)= 0;
 
-        virtual DrawableNode::Ptr makeDrawable(const std::string& name, Model3D::Ptr model, int dmask=DrawableNode::Physical) = 0;
-        virtual DrawableNode::Ptr makeDrawable(const std::string& name, rw::graphics::Render::Ptr render, int dmask=DrawableNode::Physical)= 0;
+        virtual DrawableNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<class Model3D> model, int dmask=DrawableNode::Physical) = 0;
+        virtual DrawableNode::Ptr makeDrawable(const std::string& name, rw::common::Ptr<class Render> render, int dmask=DrawableNode::Physical)= 0;
         //virtual DrawableNode::Ptr makeDrawable(const rw::models::DrawableModelInfo& info) = 0;
         //virtual DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info) = 0;
         virtual DrawableNode::Ptr makeDrawable(const std::string& filename, int dmask=DrawableNode::Physical) = 0;
@@ -152,7 +148,7 @@ namespace graphics {
         /**
          * @brief add a drawable to a node
          */
-        virtual void addChild(SceneNode::Ptr child, GroupNode::Ptr parent);
+        virtual void addChild(rw::common::Ptr<SceneNode> child, GroupNode::Ptr parent);
 
         /**
          * @brief get all drawables in the scene.
@@ -165,7 +161,7 @@ namespace graphics {
          * @param node
          * @return
          */
-        virtual std::vector<DrawableNode::Ptr> getDrawables(SceneNode::Ptr node);
+        virtual std::vector<DrawableNode::Ptr> getDrawables(rw::common::Ptr<SceneNode> node);
 
         /**
          * @brief get all drawable nodes in the subtree of \b node. nodes of type camera will
@@ -173,16 +169,16 @@ namespace graphics {
          * @param node [in]
          * @return
          */
-        virtual std::vector<DrawableNode::Ptr> getDrawablesRec(SceneNode::Ptr node);
+        virtual std::vector<DrawableNode::Ptr> getDrawablesRec(rw::common::Ptr<SceneNode> node);
 
         virtual DrawableNode::Ptr findDrawable(const std::string& name);
-        virtual DrawableNode::Ptr findDrawable(const std::string& name, SceneNode::Ptr node);
+        virtual DrawableNode::Ptr findDrawable(const std::string& name, rw::common::Ptr<SceneNode> node);
         virtual std::vector<DrawableNode::Ptr> findDrawables(const std::string& name);
 
         virtual bool removeDrawables(GroupNode::Ptr node);
         virtual bool removeDrawables(const std::string& name);
         virtual bool removeDrawable(DrawableNode::Ptr drawable);
-        virtual bool removeDrawable(DrawableNode::Ptr drawable, SceneNode::Ptr node);
+        virtual bool removeDrawable(DrawableNode::Ptr drawable, rw::common::Ptr<SceneNode> node);
         virtual bool removeDrawable(const std::string& name);
 		/**
 		 * @brief Removes child with the specified name from the \b node.
@@ -194,13 +190,13 @@ namespace graphics {
         virtual bool removeChild(const std::string& name, GroupNode::Ptr node);
 
         //! returns true if visit is done
-        typedef boost::function<bool(SceneNode::Ptr& node, SceneNode::Ptr& parent)> NodeVisitor;
-        typedef boost::function<bool(const SceneNode::Ptr& node)> NodeFilter;
+        typedef boost::function<bool(rw::common::Ptr<SceneNode>& node, rw::common::Ptr<SceneNode>& parent)> NodeVisitor;
+        typedef boost::function<bool(const rw::common::Ptr<SceneNode>& node)> NodeFilter;
 
-        void traverse(SceneNode::Ptr& node, NodeVisitor& visitor);
-        void traverse(SceneNode::Ptr& node, NodeVisitor& visitor, NodeVisitor& postvisitor);
-        void traverse(SceneNode::Ptr& node, NodeVisitor& visitor, const NodeFilter& filter);
-        void traverse(SceneNode::Ptr& node, NodeVisitor& visitor, NodeVisitor& postvisitor, const NodeFilter& filter);
+        void traverse(rw::common::Ptr<SceneNode>& node, NodeVisitor& visitor);
+        void traverse(rw::common::Ptr<SceneNode>& node, NodeVisitor& visitor, NodeVisitor& postvisitor);
+        void traverse(rw::common::Ptr<SceneNode>& node, NodeVisitor& visitor, const NodeFilter& filter);
+        void traverse(rw::common::Ptr<SceneNode>& node, NodeVisitor& visitor, NodeVisitor& postvisitor, const NodeFilter& filter);
 
     protected:
         SceneGraph():_root(rw::common::ownedPtr(new GroupNode("Root"))){}

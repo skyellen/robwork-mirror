@@ -18,15 +18,11 @@
 
 #include "PieperSolver.hpp"
 #include <rw/common/macros.hpp>
-#include <rw/common/Timer.hpp>
 #include <rw/models/Joint.hpp>
-#include <rw/math/Constants.hpp>
+#include <rw/models/DHParameterSet.hpp>
+#include <rw/models/SerialDevice.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-
-#include <boost/foreach.hpp>
-
-#include <complex>
 
 using namespace rw::invkin;
 using namespace rw::math;

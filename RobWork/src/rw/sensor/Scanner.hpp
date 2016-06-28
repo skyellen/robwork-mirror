@@ -19,7 +19,6 @@
 #define RW_SENSOR_SCANNER_HPP
 
 #include "Sensor.hpp"
-#include <rw/kinematics/State.hpp>
 
 namespace rw {
 namespace sensor {

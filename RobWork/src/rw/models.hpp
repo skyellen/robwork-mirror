@@ -58,5 +58,6 @@
 #include "./models/Object.hpp"
 #include "./models/RigidObject.hpp"
 #include "./models/DeformableObject.hpp"
+#include "./models/DHParameterSet.hpp"
 
 #endif /* MODELS_HPP_ */

@@ -66,8 +66,6 @@ namespace rwlibs { namespace proximitystrategies {
 
 
     private:
-        bool _firstContact;
-
         rw::common::Cache<std::string, yaobi::CollModel> _modelCache;
         std::vector<RWYaobiModel> _allmodels;
         std::map<std::string, std::vector<int> > _geoIdToModelIdx;
@@ -93,8 +91,8 @@ namespace rwlibs { namespace proximitystrategies {
          */
         bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-        //! @copydoc rw::proximity::ProximityStrategy::addGeometry(ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false)
-        bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
+        //! @copydoc rw::proximity::ProximityStrategy::addGeometry(ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool forceCopy=false)
+        bool addGeometry(rw::proximity::ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool forceCopy=false);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry

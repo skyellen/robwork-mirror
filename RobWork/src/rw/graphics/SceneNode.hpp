@@ -18,8 +18,10 @@
 #ifndef RW_GRAPHICS_SCENENODE_HPP_
 #define RW_GRAPHICS_SCENENODE_HPP_
 
-#include <rw/math/Transform3D.hpp>
+#include <rw/common/Ptr.hpp>
+
 #include <list>
+#include <string>
 
 namespace rw {
 namespace graphics {

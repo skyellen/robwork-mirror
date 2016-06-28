@@ -23,8 +23,6 @@
  * @file Constants.hpp
  */
 
-#include <cmath>
-
 namespace rw { namespace math {
 
     /** @addtogroup math */

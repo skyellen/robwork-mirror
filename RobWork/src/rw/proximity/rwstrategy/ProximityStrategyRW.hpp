@@ -22,30 +22,20 @@
  * @file ProximityStrategyRW.hpp
  */
 
-#include <map>
 #include <vector>
-#include <list>
-
-#include <boost/shared_ptr.hpp>
 
 #include <rw/common/Cache.hpp>
 
-#include <rw/kinematics/Frame.hpp>
 //#include <rw/proximity/CollisionData.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
-#include <rw/proximity/DistanceMultiStrategy.hpp>
 
 #include <rw/proximity/ProximityCache.hpp>
 
 #include "BinaryBVTree.hpp"
-#include "BinaryIdxBVTree.hpp"
-#include "BVTreeFactory.hpp"
 #include "BVTreeCollider.hpp"
-#include "BVTreeColliderFactory.hpp"
 
-#include <rw/geometry/OBBCollider.hpp>
 #include <rw/geometry/OBBToleranceCollider.hpp>
 
 //#include "RSSDistanceCalc.hpp"
@@ -153,7 +143,7 @@ namespace rw { namespace proximity {
          */
         bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-        bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool);
+        bool addGeometry(rw::proximity::ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry

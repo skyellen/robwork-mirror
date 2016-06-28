@@ -197,7 +197,7 @@ namespace graphics {
          * @param dmask [in] the drawable mask
          * @return the drawable node geometry
          */
-        DrawableGeometryNode::Ptr addGeometry(const std::string& name, rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+        DrawableGeometryNode::Ptr addGeometry(const std::string& name, rw::common::Ptr<rw::geometry::Geometry> geom, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
 
         /**
          * @brief create and add a drawable node of a frame axis to the scene
@@ -217,7 +217,7 @@ namespace graphics {
          * @param dmask [in] the drawable mask
          * @return the drawable node geometry
          */
-        DrawableNode::Ptr addModel3D(const std::string& name, Model3D::Ptr model, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+        DrawableNode::Ptr addModel3D(const std::string& name, rw::common::Ptr<class Model3D> model, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
 
         /**
          * @brief create and add a drawable node of an image to the scene
@@ -248,7 +248,7 @@ namespace graphics {
          * @param dmask [in] the drawable mask
          * @return the drawable node
          */
-        DrawableNode::Ptr addRender(const std::string& name, rw::graphics::Render::Ptr render, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
+        DrawableNode::Ptr addRender(const std::string& name, rw::common::Ptr<class Render> render, rw::kinematics::Frame* frame, int dmask=DrawableNode::Physical);
 
         /**
          * @brief create and add a drawable node from a filename to the scene
@@ -391,7 +391,7 @@ namespace graphics {
         //! mapping from frame to all its drawables, 1:many
         std::map<const rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> > _frameDrawableMap;
 
-        std::map<rw::common::Ptr<rw::models::DeformableObject>, std::vector<Model3D::Ptr>  > _deformableObjectsMap;
+        std::map<rw::common::Ptr<rw::models::DeformableObject>, std::vector<rw::common::Ptr<class Model3D> >  > _deformableObjectsMap;
 
         //! the drawable used to draw the frame axis
         DrawableNode::Ptr _frameAxis;

@@ -21,7 +21,6 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
-#include <rw/models/Device.hpp>
 
 namespace rw { namespace loaders {
 	/** @addtogroup loaders */

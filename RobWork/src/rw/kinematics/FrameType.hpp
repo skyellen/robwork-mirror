@@ -23,15 +23,6 @@
  * @file FrameType.hpp
  */
 
-#include "Frame.hpp"
-
-#include <rw/math/Transform3D.hpp>
-
-#include <cfloat>
-#include <vector>
-#include <map>
-#include <string>
-
 namespace rw { namespace kinematics {
 
     /** @addtogroup kinematics */

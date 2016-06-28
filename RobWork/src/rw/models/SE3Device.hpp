@@ -25,9 +25,8 @@
 
 #include "Device.hpp"
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 
 namespace rw { namespace models {
 

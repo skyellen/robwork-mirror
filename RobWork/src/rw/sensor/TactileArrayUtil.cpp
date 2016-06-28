@@ -20,6 +20,8 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/sensor/TactileArrayModel.hpp>
+
 using namespace rw::math;
 using namespace rw::sensor;
 using namespace rw::kinematics;

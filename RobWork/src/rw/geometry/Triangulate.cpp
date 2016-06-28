@@ -15,15 +15,11 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cassert>
-
 #include <boost/foreach.hpp>
 
+#include <rw/math/Math.hpp>
+
 #include "Triangulate.hpp"
-#include "Plane.hpp"
 
 using namespace rw::math;
 using namespace rw::geometry;

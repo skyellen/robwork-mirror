@@ -20,11 +20,8 @@
 
 //! @file RenderCameraFrustum.hpp
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Line.hpp>
-#include <list>
-
 #include <rw/graphics/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace opengl {
 /** @addtogroup opengl */

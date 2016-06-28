@@ -19,6 +19,7 @@
 #include "QEdgeConstraintIncremental.hpp"
 #include "PlannerUtil.hpp"
 #include <rw/math/Math.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::common;
 using namespace rw::math;

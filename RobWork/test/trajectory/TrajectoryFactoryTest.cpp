@@ -17,6 +17,8 @@
 
 #include "../TestSuiteConfig.hpp"
 
+#include <rw/math/Constants.hpp>
+#include <rw/math/EAA.hpp>
 #include <rw/trajectory/TrajectoryFactory.hpp>
 
 using namespace rw::math;

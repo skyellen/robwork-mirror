@@ -17,7 +17,6 @@
 
 #include "Message.hpp"
 
-#include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 
 using namespace rw::common;

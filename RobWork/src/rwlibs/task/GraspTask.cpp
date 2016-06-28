@@ -9,7 +9,6 @@
 #include <rw/rw.hpp>
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
-using namespace std;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 using namespace rwlibs::task;
@@ -27,7 +26,7 @@ void writeOutcome(std::ostream& out, GraspTarget& target) {
 	// if success we write all informal qualities
 
 	if (status == GraspResult::Success || status == GraspResult::ObjectSlipped) {
-		for (size_t i = 0; i < quality.size(); i++) {
+		for (std::size_t i = 0; i < quality.size(); i++) {
 			out << "     <informal uri=\"rwgq" << i << "\" quality=\""
 					<< quality[i] << "\" />\n";
 		}
@@ -101,7 +100,7 @@ void writeUIBK(GraspTask::Ptr gtask, const std::string& outfile) {
 	//rwlibs::task::CartesianTask::Ptr grasptask = gtask->getRootTask();
 
 	std::ofstream fstr(outfile.c_str());
-	fstr << setprecision(16);
+	fstr << std::setprecision(16);
 	fstr << "<?xml version=\"1.0\"?> \n"
 			<< "<experiments xmlns=\"http://iis.uibk.ac.at/ns/grasping\">\n";
 	fstr
@@ -325,7 +324,7 @@ void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name) {
 	std::ofstream outfile(name.c_str());
 	if (!outfile.is_open())
 		RW_THROW("Could not open file: " << name);
-	outfile << setprecision(16);
+	outfile << std::setprecision(16);
 	//int gripperDim = 0;
 	std::string sep(";");
 	// outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<gripperDim<<"), "
@@ -471,7 +470,7 @@ public:
 bool isName(const std::string& elemName, const std::string& matchName) {
 	// first we extract the name without namespaces (xmlns)
 	std::string elem = elemName;
-	size_t found = elemName.find_last_of(':');
+	std::size_t found = elemName.find_last_of(':');
 	if (found != std::string::npos) {
 		elem = elemName.substr(found + 1);
 	}
@@ -488,26 +487,26 @@ bool has_child(PTree& tree, const std::string& name) {
 
 std::pair<bool, double> toDouble(const std::string& str) {
 	std::pair<bool, double> nothing(false, 0);
-	istringstream buf(str);
+	std::istringstream buf(str);
 	double x;
 	buf >> x;
 	if (!buf)
 		return nothing;
-	string rest;
+	std::string rest;
 	buf >> rest;
 	if (buf)
 		return nothing;
 	else
-		return make_pair(true, x);
+		return std::make_pair(true, x);
 }
 
 std::vector<double> readArray(PTree& tree) {
-	istringstream buf(tree.get_value<string>());
+	std::istringstream buf(tree.get_value<std::string>());
 	std::vector<double> values;
 
 	std::string str;
 	while (buf >> str) {
-		const pair<bool, double> okNum = toDouble(str);
+		const std::pair<bool, double> okNum = toDouble(str);
 		if (!okNum.first)
 			RW_THROW("Number expected. Got \"" << str << "\" ");
 		values.push_back(okNum.second);
@@ -582,7 +581,7 @@ rwlibs::task::CartesianTarget::Ptr readGrasp(PTree& tree, ParserState& state) {
 			//ctask->getPropertyMap().set<std::string>("GripperName", gripperType);
 			target->get() = Transform3D<>(pos, rot);
 		} else if (isName(p->first, "prediction")) {
-			double prediction = toDouble(p->second.get_value<string>()).second;
+			double prediction = toDouble(p->second.get_value<std::string>()).second;
 			//double squal = p->second.get<double>("quality",0.0);
 			qualities.push_back(prediction);
 
@@ -665,13 +664,13 @@ rwlibs::task::CartesianTask::Ptr readExperiment(PTree& tree,
 
 		//std::cout << p->first << "\n";
 		if (isName(p->first, "gripper")) {
-			string gripperType = p->second.get_child("<xmlattr>").get<
+			std::string gripperType = p->second.get_child("<xmlattr>").get<
 					std::string>("type");
 			Q params = readQ(p->second.get_child("params"));
 			ctask->getPropertyMap().set<std::string>("Gripper", gripperType);
 			// TODO: get notes
 		} else if (isName(p->first, "object")) {
-			string objectName =
+			std::string objectName =
 					p->second.get_child("<xmlattr>").get<std::string>("type");
 			ctask->getPropertyMap().set<std::string>("Object", objectName);
 			// TODO: get notes

@@ -28,6 +28,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <sstream>
 #include <map>
 #include <vector>

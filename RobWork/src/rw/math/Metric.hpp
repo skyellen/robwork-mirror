@@ -25,7 +25,6 @@
 
 #include "Q.hpp"
 #include "Transform3D.hpp"
-#include <rw/common/macros.hpp>
 #include <rw/common/Ptr.hpp>
 
 namespace rw { namespace math {
@@ -119,11 +118,6 @@ namespace rw { namespace math {
 
 	//! Metric on Transdform3D
 	typedef Metric<Transform3D<> > Transform3DMetric;
-
-#ifdef RW_USE_DEPRECATED
-    //! A pointer to a QMetric.
-    typedef QMetric::Ptr QMetricPtr;
-#endif
     /* @} */
 }} // end namespaces
 

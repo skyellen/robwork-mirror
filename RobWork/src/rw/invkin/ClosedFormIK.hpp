@@ -23,12 +23,9 @@
  * @file ClosedFormIK.hpp
  */
 #include "InvKinSolver.hpp"
-#include <rw/math/Q.hpp>
-#include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/models/Device.hpp>
 
-#include <vector>
+namespace rw { namespace models { class Device; } }
 
 namespace rw { namespace invkin {
 

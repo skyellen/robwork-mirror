@@ -3,13 +3,12 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Constants.hpp>
-#include <rw/geometry/TriMesh.hpp>
 
 #include "BV.hpp"
 
 namespace rw {
 namespace geometry {
-
+	class TriMesh;
 
     /**
      * @brief class representing an Oriented Bounding Box (OBB)

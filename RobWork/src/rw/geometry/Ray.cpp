@@ -16,12 +16,3 @@
  ********************************************************************************/
 
 #include "Ray.hpp"
-
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/EAA.hpp>
-#include <boost/foreach.hpp>
-#include <iostream>
-
-using namespace rw::geometry;
-using namespace rw::math;

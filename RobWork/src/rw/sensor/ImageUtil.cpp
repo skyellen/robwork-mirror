@@ -17,9 +17,12 @@
 
 
 #include "ImageUtil.hpp"
+#include "Image.hpp"
 
-#include <limits.h>
+#include <rw/geometry/PointCloud.hpp>
+
 #include <boost/foreach.hpp>
+
 using namespace rw::sensor;
 using namespace rw::geometry;
 

@@ -17,7 +17,7 @@
 
 
 #include "CollisionSetup.hpp"
-#include <boost/foreach.hpp>
+#include <rw/models/WorkCell.hpp>
 
 using namespace rw::proximity;
 

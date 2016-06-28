@@ -17,13 +17,15 @@
 
 
 #include "CompositeJointDevice.hpp"
+#include "JacobianCalculator.hpp"
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <boost/foreach.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 using namespace rw::models;
 using namespace rw::kinematics;

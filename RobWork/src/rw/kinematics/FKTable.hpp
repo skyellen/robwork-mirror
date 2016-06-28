@@ -34,8 +34,6 @@
 #include <boost/multi_index/member.hpp>
 */
 
-#include <map>
-
 namespace rw { namespace kinematics {
 
     class Frame;

@@ -18,16 +18,10 @@
 #ifndef RW_PROXIMITY_OBVTREECOLLIDERDFS_HPP_
 #define RW_PROXIMITY_OBVTREECOLLIDERDFS_HPP_
 
-#include <rw/geometry/OBB.hpp>
-#include <rw/geometry/OBBCollider.hpp>
-#include <rw/geometry/TriTriIntersectDeviller.hpp>
-#include <rw/proximity/ProximityStrategyData.hpp>
-
-#include <boost/foreach.hpp>
-
 #include "BVTree.hpp"
-#include "BinaryBVTree.hpp"
 #include "BVTreeCollider.hpp"
+
+#include <rw/math/Transform3D.hpp>
 
 namespace rw {
 namespace proximity {

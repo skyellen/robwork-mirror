@@ -15,14 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <fstream>
-#include <cctype>
-
 #include <RobWorkConfig.hpp>
 
 #include "Model3DFactory.hpp"
 
-#include <rw/math/Constants.hpp>
 #include <rw/geometry/PointCloud.hpp>
 
 #include <rw/loaders/model3d/Loader3DS.hpp>
@@ -43,10 +39,8 @@
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
 #include <string>
-#include <istream>
 #include <sstream>
 
-#include <sys/types.h>
 #include <sys/stat.h>
 
 using namespace rw;

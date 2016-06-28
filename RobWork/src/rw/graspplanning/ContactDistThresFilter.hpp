@@ -18,10 +18,9 @@
 #ifndef RW_GRASPPLANNING_CONTACTDISTTHRESFILTER_HPP_
 #define RW_GRASPPLANNING_CONTACTDISTTHRESFILTER_HPP_
 
-#include "Grasp3D.hpp"
 #include "GraspValidateFilter.hpp"
 
-#include <rw/sensor/Contact3D.hpp>
+namespace rw { namespace sensor { class Contact3D; } }
 
 namespace rw {
 namespace graspplanning {

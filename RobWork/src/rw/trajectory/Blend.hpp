@@ -23,7 +23,7 @@
  * @file Blend.hpp
  */
 
-#include <rw/math/Q.hpp>
+#include <rw/common/Ptr.hpp>
 
 namespace rw {
 namespace trajectory {

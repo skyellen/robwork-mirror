@@ -22,7 +22,6 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/common/types.hpp>
 #include <boost/cstdint.hpp>
-#include "Triangle.hpp"
 
 namespace rw {
 namespace geometry {

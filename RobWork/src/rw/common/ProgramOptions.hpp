@@ -3,11 +3,7 @@
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/parsers.hpp>
-
-#include <rw/math/Q.hpp>
-#include <boost/foreach.hpp>
+#include <boost/program_options/positional_options.hpp>
 
 #include "PropertyMap.hpp"
 

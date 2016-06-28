@@ -23,11 +23,11 @@
  * @file kinematics/Kinematics.hpp
  */
 
-#include "Frame.hpp"
+#include <rw/kinematics/Frame.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <map>
 
 namespace rw { namespace kinematics {
-
     class MovableFrame;
 
     /** @addtogroup kinematics */

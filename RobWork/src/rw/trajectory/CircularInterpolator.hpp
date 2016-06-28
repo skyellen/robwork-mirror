@@ -28,6 +28,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/common/macros.hpp>
 
@@ -109,16 +110,14 @@ namespace rw { namespace trajectory {
             const double y3 = sin(theta)*p3p1Length;
 
             _r = sqrt(
-                (rw::math::Math::sqr(x2) +
-                 rw::math::Math::sqr(
-                     -(x2*x3)
-                     + rw::math::Math::sqr(x3)
-                     + rw::math::Math::sqr(y3)) / rw::math::Math::sqr(y3))) / 2;
+            		(x2*x2 +
+            				(-(x2*x3) + x3*x3 + y3*y3)*
+							(-(x2*x3) + x3*x3 + y3*y3) / y3*y3)) / 2;
 
             _cx = x2 / 2.0;
             _cy = (-x2 * x3 +
-                   rw::math::Math::sqr(x3) +
-                   rw::math::Math::sqr(y3)) / (2. * y3);
+                   x3*x3 +
+				   y3*y3) / (2. * y3);
 
             _tstart = atan2(-_cy/_r, -_cx/_r);
             _tend = atan2((y3-_cy)/_r, (x3-_cx)/_r);

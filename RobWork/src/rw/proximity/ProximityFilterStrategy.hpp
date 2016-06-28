@@ -18,15 +18,13 @@
 #ifndef RW_PROXIMITY_BROADPHASEDETECTOR_HPP
 #define RW_PROXIMITY_BROADPHASEDETECTOR_HPP
 
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
-
-#include <rw/kinematics/Frame.hpp>
-#include <rw/geometry/Geometry.hpp>
-
 #include "ProximitySetup.hpp"
 #include "ProximityFilter.hpp"
 #include "ProximityCache.hpp"
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace proximity {
 
@@ -97,27 +95,12 @@ public:
 	 */
 	virtual ProximitySetup& getProximitySetup() = 0;
 
-
-	
-#ifdef RW_USE_DEPRECATED
-	/**
-	 * @brief this will associate a model (based on the geometry) with the \b frame.
-	 */
-	virtual std::string addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom) = 0;
-
-	/**
-	 * @brief removes the geometric model with id \b geoid associated with
-	 * Frame \b frame from this strategy.
-	 */
-	virtual void removeModel(rw::kinematics::Frame* frame, const std::string& geoid) = 0;
-#endif // RW_USE_DEPRECATED
-
 	/** 
 	 * @brief Adds geometry associated to frame
 	 * @param frame [in] Frame which has the geometry associated
 	 * @param geo [in] Geometry
 	 */ 
-	virtual void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geo) = 0;
+	virtual void addGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry> geo) = 0;
 
 	/** 
 	 * @brief Removes the geometric model \b geo associated with
@@ -126,7 +109,7 @@ public:
 	 * @param frame [in] Frame which has the geometry associated
 	 * @param geo [in] Geometry
 	 */ 
-	virtual void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geo) = 0;
+	virtual void removeGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry> geo) = 0;
 
 	/** 
 	 * @brief Removes the geometric model with name \b geoName and which is associated with
@@ -152,10 +135,6 @@ public:
 	virtual void removeRule(const ProximitySetupRule& rule) = 0;
 
 };
-
-#ifdef RW_USE_DEPRECATED
-typedef rw::common::Ptr<ProximityFilterStrategy> ProximityFilterStrategyPtr;
-#endif
 
 }
 }

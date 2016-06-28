@@ -17,7 +17,7 @@
 
 #include "AmbiguityResolver.hpp"
 
-#include <rw/models/Joint.hpp>
+#include <rw/models/JointDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 
 #include <boost/foreach.hpp>
@@ -35,7 +35,7 @@ AmbiguityResolver::AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models
     
     const std::vector<Joint*>& joints = device->getJoints();
     size_t index = 0;
-    BOOST_FOREACH(const Joint* joint, joints) {
+    BOOST_FOREACH(const class Joint* joint, joints) {
         if (dynamic_cast<RevoluteJoint*>(joints[index])) {
             for (int i = 0; i<joint->getDOF(); i++) {
                 _indices.push_back(index);

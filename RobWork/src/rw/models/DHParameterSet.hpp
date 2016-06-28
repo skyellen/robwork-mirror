@@ -18,11 +18,19 @@
 #ifndef RW_MODELS_DHPARAMETERSET_HPP
 #define RW_MODELS_DHPARAMETERSET_HPP
 
-#include "SerialDevice.hpp"
+#include <rw/common/Ptr.hpp>
+
+#include <string>
 #include <vector>
+
+namespace rw { namespace common { class PropertyMap; } }
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rw {
 namespace models {
+
+class SerialDevice;
+class Joint;
 
 /**
  * @brief Simple class to help represent a set of Denavit-Hartenberg
@@ -139,7 +147,7 @@ public:
      * @param device [in] SerialDevice for which to get the DH parameters
      * @return The set of DH parameters
      */
-	static std::vector<DHParameterSet> getDHParameters(SerialDevice::Ptr device);
+	static std::vector<DHParameterSet> getDHParameters(rw::common::Ptr<SerialDevice> device);
 
 	static const DHParameterSet* get(const rw::common::PropertyMap& pmap);
 

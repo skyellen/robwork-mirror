@@ -24,8 +24,8 @@
  */
 
 #include <string>
-#include <memory>
 #include <rw/models/WorkCell.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 
 
 namespace rw { namespace loaders {
@@ -36,9 +36,12 @@ namespace rw { namespace loaders {
     /**
      * @brief Loader for the AMROSE TUL format
      */
-    class TULLoader
+    class TULLoader: public WorkCellLoader
     {
     public:
+    	//! @copydoc WorkCellLoader::loadWorkCell
+		rw::models::WorkCell::Ptr loadWorkCell(const std::string& filename);
+
         /**
          * @brief Loads/imports TUL file
          *

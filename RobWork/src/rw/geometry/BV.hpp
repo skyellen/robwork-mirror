@@ -21,13 +21,12 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Traits.hpp>
-#include <rw/geometry/Primitive.hpp>
-#include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/GeometryData.hpp>
-
 
 namespace rw{
 namespace geometry {
+	class GeometryData;
+	class Primitive;
+	class TriMesh;
 
     /**
      * @brief a general bounding volume class for template inheritance. This class

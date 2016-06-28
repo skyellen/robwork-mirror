@@ -18,10 +18,8 @@
 #ifndef RW_GRASPPLANNING_CURVATURETHRESFILTER_HPP_
 #define RW_GRASPPLANNING_CURVATURETHRESFILTER_HPP_
 
-#include "Grasp3D.hpp"
 #include "GraspValidateFilter.hpp"
 #include "ContactValidateFilter.hpp"
-#include <rw/sensor/Contact3D.hpp>
 
 namespace rw {
 namespace graspplanning {

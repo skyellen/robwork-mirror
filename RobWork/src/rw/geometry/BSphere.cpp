@@ -1,8 +1,9 @@
 #include "BSphere.hpp"
 
-#include <rw/math/Transform3D.hpp>
+//#include <rw/math/Transform3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include "Triangle.hpp"
+#include "TriMesh.hpp"
 
 using namespace rw::geometry;
 
@@ -105,7 +106,3 @@ BSphere<T> BSphere<T>::fitEigen(const rw::geometry::TriMesh& tris) {
     //std::cout << "Trans mid: " << trans.P() << std::endl;
     return BSphere<T>(midPoint, halfLength.norm2() );
 }
-
-template class rw::geometry::BSphere<double>;
-template class rw::geometry::BSphere<float>;
-

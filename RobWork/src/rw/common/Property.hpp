@@ -23,7 +23,6 @@
  * @file Property.hpp
  */
 
-#include <iostream>
 #include "PropertyBase.hpp"
 
 namespace rw { namespace common {

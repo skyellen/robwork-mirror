@@ -23,16 +23,14 @@
    @file QSampler.hpp
 */
 
-#include "QConstraint.hpp"
-#include "QNormalizer.hpp"
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/invkin/IterativeIK.hpp>
-#include <memory>
 
 namespace rw { namespace pathplanning {
+	class QConstraint;
+	class QNormalizer;
 
     /** @addtogroup pathplanning */
     /** @{*/
@@ -40,12 +38,6 @@ namespace rw { namespace pathplanning {
     // Forward declaration.
     class QIKSampler;
 
-#ifdef RW_USE_DEPRECATED
-    class QSampler;
-
-    //! A pointer to a QSampler.
-    typedef rw::common::Ptr<QSampler> QSamplerPtr;
-#endif
     /**
        @brief Interface for the sampling a configuration.
     */
@@ -161,7 +153,7 @@ namespace rw { namespace pathplanning {
         */
 		static QSampler::Ptr makeConstrained(
 			QSampler::Ptr sampler,
-			QConstraint::Ptr constraint,
+			rw::common::Ptr<QConstraint> constraint,
             int maxAttempts = -1);
 
         /**

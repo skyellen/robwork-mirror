@@ -23,10 +23,13 @@
  * @file ImageUtil.hpp
  */
 
-#include <rw/common/macros.hpp>
-#include "Image.hpp"
-#include <rw/geometry/PointCloud.hpp>
+#include <rw/common/Ptr.hpp>
+
+namespace rw { namespace geometry { class PointCloud; } }
+
 namespace rw { namespace sensor {
+
+class Image;
 
 /** @addtogroup sensor */
 /*@{*/
@@ -79,7 +82,7 @@ public:
      * @param cloud [in] cloud to convert to image
      * @return image showing the pointcloud as a depth image
      */
-    static rw::sensor::Image::Ptr makeDepthImage(const rw::geometry::PointCloud& cloud) ;
+    static rw::common::Ptr<rw::sensor::Image> makeDepthImage(const rw::geometry::PointCloud& cloud) ;
 
     /**
      * convert pointcloud to a depth image. Colors are scaled to min and max distance
@@ -89,7 +92,7 @@ public:
      * @param max [in] the maximum distance corresponding to white
      * @return image showing the pointcloud as a depth image
      */
-    static rw::sensor::Image::Ptr makeDepthImage(const rw::geometry::PointCloud& cloud, float min, float max);
+    static rw::common::Ptr<rw::sensor::Image> makeDepthImage(const rw::geometry::PointCloud& cloud, float min, float max);
 private:
     ImageUtil();
 };

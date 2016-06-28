@@ -20,8 +20,6 @@
 
 #include <rw/math/Transform2D.hpp>
 #include <boost/numeric/ublas/vector.hpp>
-#include <iostream>
-
 
 namespace rw {
 namespace math {

@@ -19,7 +19,6 @@
 #include "Timer.hpp"
 #include "TimerUtil.hpp"
 
-#include <iostream>
 #include <sstream>
 
 using namespace rw::common;

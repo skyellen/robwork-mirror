@@ -18,11 +18,8 @@
 
 #include "CompositeGraspFilter.hpp"
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Constants.hpp>
-#include <boost/foreach.hpp>
+#include <cstddef>
 
-using namespace rw::math;
 using namespace rw::graspplanning;
 
 CompositeGraspFilter::CompositeGraspFilter()

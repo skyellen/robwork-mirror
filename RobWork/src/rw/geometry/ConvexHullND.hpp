@@ -18,11 +18,7 @@
 #ifndef RW_GEOMETRY_CONVEXHULLHULLND_HPP_
 #define RW_GEOMETRY_CONVEXHULLHULLND_HPP_
 
-#include <stack>
-#include <set>
 #include <vector>
-#include <float.h>
-#include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/VectorND.hpp>
 #include <rw/common/Ptr.hpp>
 

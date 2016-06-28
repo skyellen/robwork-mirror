@@ -19,11 +19,8 @@
 #define RW_COMMON_DOMELEM_HPP
 
 #include <rw/common/Ptr.hpp>
-#include <rw/common/StringUtil.hpp>
-#include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
-#include <list>
 
 namespace rw {
 namespace common {
@@ -180,13 +177,7 @@ namespace common {
 			return default_value;
 		}
 
-		bool getValueAsBool(){
-			std::string val = getValue();
-			std::string valu = rw::common::StringUtil::toUpper(val);
-			if(valu=="TRUE") return true;
-			if(valu=="FALSE") return true;
-			return boost::lexical_cast<bool>(val);
-		}
+		bool getValueAsBool();
 
 		bool getAttributeValueAsBool(const std::string& name){
 			return getAttribute(name)->getValueAsBool();

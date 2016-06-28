@@ -34,7 +34,6 @@
 #include "Device.hpp"
 #include "Object.hpp"
 #include <vector>
-#include <map>
 #include <string>
 #include <ostream>
 

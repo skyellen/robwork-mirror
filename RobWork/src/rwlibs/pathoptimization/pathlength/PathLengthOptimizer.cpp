@@ -21,7 +21,7 @@
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/common/Timer.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/pathplanning/PathAnalyzer.hpp>
 
@@ -143,8 +143,8 @@ void PathLengthOptimizer::shortCut(QList& result,
 
         it1 = result.begin();
         it2 = result.begin();
-        const int i1 = Math::ranI(0, (int)n - 2);
-        const int i2 = Math::ranI(i1 + 2, (int)n);
+        const int i1 = Random::ranI(0, (int)n - 2);
+        const int i2 = Random::ranI(i1 + 2, (int)n);
 
         inc(it1, i1);
         inc(it2, i2);
@@ -200,9 +200,9 @@ void PathLengthOptimizer::partialShortCut(
         it1 = result.begin();
         it2 = result.begin();
 
-        int i1 = Math::ranI(0, (int)n-2);
-        int i2 = Math::ranI(i1+2, (int)n);
-        int index = Math::ranI(0, (int)result.front().size());
+        int i1 = Random::ranI(0, (int)n-2);
+        int i2 = Random::ranI(i1+2, (int)n);
+        int index = Random::ranI(0, (int)result.front().size());
 
         inc(it1, i1);
         inc(it2, i2);

@@ -18,11 +18,12 @@
 #ifndef RW_GRASPPLANNING_GRASPQUALITYMEASURE3D_HPP_
 #define RW_GRASPPLANNING_GRASPQUALITYMEASURE3D_HPP_
 
-#include "Grasp3D.hpp"
 #include <rw/common/Ptr.hpp>
 
 namespace rw {
 namespace graspplanning {
+
+class Grasp3D;
 
 /**
  * @brief an interface for methods evaluating the quality of a specific grasp

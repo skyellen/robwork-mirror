@@ -21,7 +21,6 @@
 
 
 
-using namespace std;
 using namespace rw::common;
 using namespace rw::geometry;
 using namespace rwlibs::geometry::simplefinger;
@@ -41,12 +40,12 @@ SimpleFingerPlugin::~SimpleFingerPlugin() {
 }
 
 
-vector<Extension::Descriptor> SimpleFingerPlugin::getExtensionDescriptors() {
+std::vector<Extension::Descriptor> SimpleFingerPlugin::getExtensionDescriptors() {
 	
-	vector<Extension::Descriptor> descriptors;
+	std::vector<Extension::Descriptor> descriptors;
 	
 	Extension::Descriptor descriptor("SimpleFinger", "rw.loaders.GeometryFactory");
-	descriptor.getProperties().set<string>("type", "simplefinger");
+	descriptor.getProperties().set<std::string>("type", "simplefinger");
 	
 	descriptors.push_back(descriptor);
 	
@@ -54,7 +53,7 @@ vector<Extension::Descriptor> SimpleFingerPlugin::getExtensionDescriptors() {
 }
 
 
-Ptr<Extension> SimpleFingerPlugin::makeExtension(const string& str) {
+Ptr<Extension> SimpleFingerPlugin::makeExtension(const std::string& str) {
 	
 	if (str == "SimpleFinger") {
 		
@@ -64,7 +63,7 @@ Ptr<Extension> SimpleFingerPlugin::makeExtension(const string& str) {
 			this,
 			ownedPtr(new SimpleFinger())
 		));
-		extension->getProperties().set<string>("type", "simplefinger");
+		extension->getProperties().set<std::string>("type", "simplefinger");
 		
 		return extension;
 	}

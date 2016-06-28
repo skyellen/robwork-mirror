@@ -21,8 +21,6 @@
 #include <rw/math/Pose6D.hpp>
 
 #include <fstream>
-#include <iostream>
-#include <cstdio>
 
 using namespace rw::math;
 using namespace rw::graspplanning;

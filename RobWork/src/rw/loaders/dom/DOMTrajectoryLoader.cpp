@@ -16,9 +16,11 @@
  ********************************************************************************/
 
 #include "DOMTrajectoryLoader.hpp"
+#include "DOMBasisTypes.hpp"
 
 #include <iostream>
 
+#include <rw/common/DOMElem.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>

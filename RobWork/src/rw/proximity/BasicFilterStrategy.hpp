@@ -19,10 +19,11 @@
 #define RW_PROXIMITY_BasicFilterStrategy_HPP_
 
 #include "ProximityFilterStrategy.hpp"
-#include <rw/models/WorkCell.hpp>
 #include "ProximitySetup.hpp"
 #include <rw/kinematics/Frame.hpp>
-#include "CollisionStrategy.hpp"
+#include <rw/kinematics/FrameMap.hpp>
+
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw { namespace proximity {
 
@@ -84,14 +85,14 @@ public:
 	 *
 	 * @param workcell [in] the workcell.
 	 */
-	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell);
+	BasicFilterStrategy(rw::common::Ptr<rw::models::WorkCell> workcell);
 
 	/**
 	 * @brief constructor - constructs frame pairs based on the \b setup
 	 * @param workcell [in] the workcell
 	 * @param setup [in] the ProximitySetup describing exclude/include relations
 	 */
-	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell, const ProximitySetup& setup);
+	BasicFilterStrategy(rw::common::Ptr<rw::models::WorkCell> workcell, const ProximitySetup& setup);
 
 
 	//! @brief destructor
@@ -153,12 +154,12 @@ public:
 	/**
 	 * @copydoc ProximityFilterStrategy::addGeometry
 	 */
-	virtual void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
+	virtual void addGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry>);
 
 	/**
-	 * @copydoc ProximityFilterStrategy::removeGeometry(rw::kinematics::Frame*, const rw::geometry::Geometry::Ptr)
+	 * @copydoc ProximityFilterStrategy::removeGeometry(rw::kinematics::Frame*, const rw::common::Ptr<rw::geometry::Geometry>)
 	 */
-	virtual void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
+	virtual void removeGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry>);
 
 	/**
 	 * @copydoc ProximityFilterStrategy::removeGeometry(rw::kinematics::Frame*, const std::string&)
@@ -178,14 +179,13 @@ public:
 
 private:
 
-    rw::models::WorkCell::Ptr _workcell;
+	rw::common::Ptr<rw::models::WorkCell> _workcell;
     ProximitySetup _psetup;
 	kinematics::FramePairSet _collisionPairs;
-	rw::proximity::CollisionStrategy::Ptr _strategy;
 	
 	kinematics::FrameMap<std::vector<std::string> > _frameToGeoIdMap;
 
-	void applyRule(const ProximitySetupRule& rule, rw::models::WorkCell::Ptr workcell, rw::kinematics::FramePairSet& result);
+	void applyRule(const ProximitySetupRule& rule, rw::common::Ptr<rw::models::WorkCell> workcell, rw::kinematics::FramePairSet& result);
 	void initialize();
 	void initializeCollisionFramePairs(const rw::kinematics::State& state);
 };

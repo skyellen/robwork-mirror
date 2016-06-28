@@ -20,14 +20,13 @@
 
 #if !(defined __MINGW32__) && !(defined _WIN32)
 #include <sys/time.h>
-#include <time.h>
 #include <unistd.h>
 #endif
 #include <iostream>
 #ifdef _WIN32
 #include <windows.h>
-#include <time.h>
 #endif
+#include <time.h>
 
 #include <cmath>
 

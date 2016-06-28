@@ -9,8 +9,6 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/BVCollider.hpp>
-#include <rw/geometry/BVDistanceCalc.hpp>
 #include <rw/geometry/TriDistanceCalc.hpp>
 
 using namespace rw::math;

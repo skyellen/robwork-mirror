@@ -1,7 +1,5 @@
 #include "Extension.hpp"
 
-#include "Plugin.hpp"
-
 using namespace rw::common;
 
 Extension::Extension(const std::string& id, const std::string& point, Plugin* owner):

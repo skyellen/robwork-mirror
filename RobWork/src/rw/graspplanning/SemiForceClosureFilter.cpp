@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "SemiForceClosureFilter.hpp"
+#include "Grasp3D.hpp"
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Constants.hpp>

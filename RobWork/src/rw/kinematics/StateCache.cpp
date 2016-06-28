@@ -16,9 +16,4 @@
  ********************************************************************************/
 
 
-#include "StateData.hpp"
-
-#include "State.hpp"
-#include <rw/common/macros.hpp>
-
-using namespace rw::kinematics;
+#include "StateCache.hpp"

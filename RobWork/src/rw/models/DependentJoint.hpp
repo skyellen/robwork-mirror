@@ -19,10 +19,8 @@
 #ifndef RW_MODELS_DEPENDENTJOINT_HPP
 #define RW_MODELS_DEPENDENTJOINT_HPP
 
-#include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/models/Joint.hpp>
+
 namespace rw {
 namespace models {
 

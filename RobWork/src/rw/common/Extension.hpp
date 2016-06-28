@@ -2,9 +2,7 @@
 #ifndef RW_PLUGIN_EXTENSION_HPP
 #define RW_PLUGIN_EXTENSION_HPP
 
-#include <iostream>
 #include <string>
-#include <vector>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/AnyPtr.hpp>

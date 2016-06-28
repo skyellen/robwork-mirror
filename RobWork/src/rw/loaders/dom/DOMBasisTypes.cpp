@@ -20,10 +20,12 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <sstream>
 #include <map>
 #include <vector>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include <rw/common/DOMElem.hpp>
 

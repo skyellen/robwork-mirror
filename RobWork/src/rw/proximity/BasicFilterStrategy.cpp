@@ -17,22 +17,11 @@
 
 #include "BasicFilterStrategy.hpp"
 
-
-#include <rw/models/Models.hpp>
-#include <rw/models/JointDevice.hpp>
-#include <rw/kinematics/FixedFrame.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rw/models/VirtualJoint.hpp>
-#include <rw/models/PrismaticJoint.hpp>
-#include <rw/models/RevoluteJoint.hpp>
-#include <rw/models/DependentPrismaticJoint.hpp>
-#include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/WorkCell.hpp>
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <boost/foreach.hpp>
-#include <map>
 
 using namespace rw;
 using namespace rw::kinematics;
@@ -73,57 +62,6 @@ void BasicFilterStrategy::initialize() {
         }
     }
 }
-#ifdef RW_USE_DEPRECATED
-
-
-void BasicFilterStrategy::include(const kinematics::FramePair& framepair)
-{
-	_collisionPairs.insert(framepair);
-}
-
-void BasicFilterStrategy::include(kinematics::Frame* frame, const std::vector<Frame*>& frames)
-{
-	BOOST_FOREACH(Frame* f, frames) {
-		if (f != frame) {
-			include(FramePair(frame, f));
-		}
-	}
-
-}
-
-void BasicFilterStrategy::exclude(const kinematics::FramePair& framepair)
-{
-	_collisionPairs.erase(framepair);
-}
-
-void BasicFilterStrategy::exclude(kinematics::Frame* frame)
-{
-	FramePairSet::iterator it = _collisionPairs.begin(); 
-	while (it != _collisionPairs.end()) {
-		if ((*it).first == frame || (*it).second == frame) {
-	        // Since post-increment is used, erase() gets a temporary object and
-		    // iter has moved beyond the item being erased so it remains valid.
-			//it = _collisionPairs.erase(it++);
-		    _collisionPairs.erase(it++);
-		} else {
-			++it;
-		}
-	}	
-}
-
-
-std::string BasicFilterStrategy::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom)
-{
-	include(frame);
-	return frame->getName();
-}
-
-void BasicFilterStrategy::removeModel(rw::kinematics::Frame* frame, const std::string& geoid)
-{
-	exclude(frame);
-}
-
-#endif //#ifdef RW_USE_DEPRECATED
 
 	//////// interface inherited from BroadPhaseStrategy
 void BasicFilterStrategy::reset(const rw::kinematics::State& state)

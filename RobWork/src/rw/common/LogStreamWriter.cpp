@@ -18,8 +18,9 @@
 
 #include "LogStreamWriter.hpp"
 
-#include "macros.hpp"
+#include <ostream>
 #include <iomanip>
+
 using namespace rw::common;
 
 LogStreamWriter::LogStreamWriter(std::ostream* stream) :

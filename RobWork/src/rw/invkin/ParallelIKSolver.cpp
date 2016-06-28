@@ -26,16 +26,15 @@
 
 #include <rw/math/Jacobian.hpp>
 #include <rw/models/Joint.hpp>
+#include <rw/models/ParallelDevice.hpp>
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
-#include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
 using namespace rw;

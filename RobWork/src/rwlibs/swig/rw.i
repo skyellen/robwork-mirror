@@ -935,19 +935,43 @@ class Joint: public Frame
  * LOADERS
  ********************************************/
 
-class WorkCellFactory{
+class WorkCellLoader {
 public:
-    static rw::common::Ptr<WorkCell> load(const std::string& filename);
-private:
-    WorkCellFactory();
+	virtual ~WorkCellLoader();
+	virtual rw::models::WorkCell::Ptr loadWorkCell(const std::string& filename) = 0;
+	virtual void setScene( rw::graphics::WorkCellScene::Ptr scene );
+	virtual rw::graphics::WorkCellScene::Ptr getScene();
+
+protected:
+	WorkCellLoader();
+	WorkCellLoader(rw::graphics::WorkCellScene::Ptr scene);
 };
 
+%template (WorkCellLoaderPtr) rw::common::Ptr<WorkCellLoader>;
 
-class ImageFactory{
+
+class WorkCellLoaderFactory {
 public:
-    static rw::common::Ptr<Image> load(const std::string& filename);
-private:
-    ImageFactory();
+	WorkCellLoaderFactory();
+	static rw::common::Ptr<WorkCellLoader> getWorkCellLoader(const std::string& format);
+};
+
+class ImageLoader {
+public:
+	virtual ~ImageLoader();
+	virtual rw::sensor::Image::Ptr loadImage(const std::string& filename) = 0;
+	virtual std::vector<std::string> getImageFormats() = 0;
+	virtual bool isImageSupported(const std::string& format);
+};
+
+%template (ImageLoaderPtr) rw::common::Ptr<ImageLoader>;
+
+class ImageLoaderFactory {
+public:
+	ImageLoaderFactory();
+	static rw::common::Ptr<ImageLoader> getImageLoader(const std::string& format);
+	static bool hasImageLoader(const std::string& format);
+	static std::vector<std::string> getSupportedFormats();
 };
 
 class Image {

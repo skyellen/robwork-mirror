@@ -19,19 +19,9 @@
 #ifndef RW_GEOMETRY_STLFILE_HPP_
 #define RW_GEOMETRY_STLFILE_HPP_
 
-#include <rw/common/macros.hpp>
-#include <rw/common/TimerUtil.hpp>
-#include <rw/math/Vector3D.hpp>
-
-#include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
 
-#include "../GeometryLoader.hpp"
-//#include "../MeshLoader.hpp"
-
-#include <vector>
-#include <iostream>
-#include <fstream>
+namespace rw { namespace geometry { class TriMesh; } }
 
 namespace rw {
 namespace loaders {

@@ -19,29 +19,11 @@
 
 #include "PGMLoader.hpp"
 
-//#include <boost/spirit.hpp>
-//#include <boost/spirit/core.hpp>
-//#include <boost/spirit/actor.hpp>
-//#include <boost/spirit/dynamic.hpp>
-//#include <boost/spirit/symbols.hpp>
-//#include <boost/spirit/phoenix.hpp>
-//#include <boost/spirit/error_handling.hpp>
-//#include <boost/spirit/iterator.hpp>
-
 #include <boost/spirit/include/classic.hpp>
-#include <boost/spirit/include/classic_core.hpp>
-#include <boost/spirit/include/classic_position_iterator.hpp>
-#include <boost/spirit/include/classic_symbols.hpp>
-#include <boost/spirit/include/classic_error_handling.hpp>
-#include <boost/spirit/include/classic_common.hpp>
-#include <boost/spirit/include/classic_ast.hpp>
-#include <boost/spirit/include/classic_parse_tree.hpp>
-#include <boost/spirit/include/classic_position_iterator.hpp>
 #include <boost/spirit/include/classic_dynamic.hpp>
 #include <boost/spirit/include/classic_actor.hpp>
 #include <boost/spirit/include/phoenix1.hpp>
 
-#include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/macros.hpp>
 
@@ -51,7 +33,6 @@ using namespace rw::loaders;
 using namespace rw::sensor;
 
 using namespace boost::spirit::classic;
-//using namespace boost::spirit;
 using namespace phoenix;
 
 
@@ -83,7 +64,7 @@ namespace {
 
         template < typename IteratorT >
         void operator()(IteratorT const& first, IteratorT const& last) const {
-        	std::cout << "Resizeing to: " << _width*_height*_factor << " factor: " << _factor << std::endl;
+        	//std::cout << "Resizeing to: " << _width*_height*_factor << " factor: " << _factor << std::endl;
 	    	_v.resize(_width*_height*_factor);
 	    }
 
@@ -199,7 +180,7 @@ rw::sensor::Image::Ptr PGMLoader::load(const std::string& filename)
 
     V input;
     IOUtil::readFile(filename, input);
-    std::cout << "Size of input: " << input.size() << std::endl;
+    //std::cout << "Size of input: " << input.size() << std::endl;
 
     typedef position_iterator<V::const_iterator> iterator_t;
     iterator_t first(input.begin(),input.end());

@@ -1,9 +1,8 @@
 #ifndef INDEXEDARRAY_HPP_
 #define INDEXEDARRAY_HPP_
 
-#include <boost/shared_ptr.hpp>
 #include <vector>
-
+#include <cstddef>
 
 
 template<class OBJ, class T=int>

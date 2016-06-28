@@ -23,11 +23,6 @@
    @file StateCache.hpp
 */
 
-#include <string>
-#include <ostream>
-#include <iostream>
-
-#include "State.hpp"
 #include <rw/common/Ptr.hpp>
 
 

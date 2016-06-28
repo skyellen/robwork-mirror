@@ -18,8 +18,8 @@
 
 #include "PrismaticJoint.hpp"
 
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Rotation3D.hpp>
+
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;

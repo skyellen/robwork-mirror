@@ -17,8 +17,6 @@
 
 #include "SensorModel.hpp"
 
-#include <rw/kinematics/Frame.hpp>
-
 using namespace rw::sensor;
 using namespace rw::kinematics;
 

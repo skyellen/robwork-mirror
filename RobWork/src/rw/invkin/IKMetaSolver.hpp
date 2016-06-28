@@ -24,10 +24,10 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/pathplanning/QConstraint.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace pathplanning { class QConstraint; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
 
 namespace rw { namespace invkin {
 
@@ -81,8 +81,8 @@ namespace rw { namespace invkin {
          * collision detection used.
          */
 		IKMetaSolver(IterativeIK::Ptr iksolver,
-			const rw::models::Device::Ptr device,
-			rw::proximity::CollisionDetector::Ptr collisionDetector = NULL);
+			const rw::common::Ptr<class rw::models::Device> device,
+			rw::common::Ptr<rw::proximity::CollisionDetector> collisionDetector = NULL);
 
         /**
          * @brief Constructs IKMetaSolver
@@ -97,8 +97,8 @@ namespace rw { namespace invkin {
          * constraints is applied
          */
 		IKMetaSolver(IterativeIK::Ptr iksolver,
-			const rw::models::Device::Ptr device,
-			rw::pathplanning::QConstraint::Ptr constraint);
+			const rw::common::Ptr<class rw::models::Device> device,
+			rw::common::Ptr<rw::pathplanning::QConstraint> constraint);
 
 
         /**
@@ -167,9 +167,9 @@ namespace rw { namespace invkin {
 
     private:
 		IterativeIK::Ptr _iksolver;
-		rw::proximity::CollisionDetector::Ptr _collisionDetector;
-		mutable rw::pathplanning::QConstraint::Ptr _constraint;
-		const rw::models::Device::Ptr _device;
+		rw::common::Ptr<rw::proximity::CollisionDetector> _collisionDetector;
+		mutable rw::common::Ptr<rw::pathplanning::QConstraint> _constraint;
+		const rw::common::Ptr<class rw::models::Device> _device;
 
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;

@@ -18,17 +18,12 @@
 
 #include "StringUtil.hpp"
 
-#include "macros.hpp"
+#include <rw/math/Random.hpp>
 
 #include <limits>
-#include <fstream>
-#include <iostream>
-#include <cassert>
-#include <algorithm>
-#include <cstring>
 #include <sstream>
-#include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
+//#include <boost/foreach.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 using namespace rw::common;
 
@@ -195,7 +190,9 @@ namespace
         typedef std::vector<X> V;
         std::pair<bool, V> nothing(false, V());
         V vals;
-        BOOST_FOREACH(const std::string& str, words) {
+        //BOOST_FOREACH(const std::string& str, words) {
+        for (std::size_t i = 0; i < words.size(); i++) {
+        	const std::string& str = words[i];
             std::pair<bool, X> okX = toX<X>(str);
             if (okX.first) vals.push_back(okX.second);
             else return nothing;
@@ -276,3 +273,9 @@ std::string StringUtil::patternToRegEx(const std::string& pattern) {
 	return reg;
 } 
 
+std::string StringUtil::ranName(const std::string& prefix) {
+	int ri = rw::math::Random::ranI(0xFF,0xFFFFFF);
+	std::stringstream sstr;
+	sstr << prefix << "_" << ri;
+	return sstr.str();
+}

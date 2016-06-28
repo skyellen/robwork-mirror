@@ -9,7 +9,6 @@
 #define RW_PROXIMITY_PROXIMITYDATA_HPP_
 
 #include "ProximityCache.hpp"
-#include "ProximityStrategyData.hpp"
 #include "CollisionDetector.hpp"
 
 namespace rw {

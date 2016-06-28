@@ -18,7 +18,6 @@
 #include "WorkCellScene.hpp"
 
 #include <rw/common/macros.hpp>
-#include <rw/geometry/PointCloud.hpp>
 #include <rw/graphics/DrawableNode.hpp>
 #include <rw/graphics/DrawableNodeClone.hpp>
 #include <rw/kinematics/Kinematics.hpp>
@@ -26,12 +25,14 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/models/DeformableObject.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/sensor/Image.hpp>
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 #include <vector>
 #include <stack>
+
+namespace rw { namespace kinematics { class Frame; } }
 
 using namespace rw::common;
 using namespace rw::geometry;
@@ -530,14 +531,14 @@ DrawableNode::Ptr WorkCellScene::addModel3D(const std::string& name, Model3D::Pt
     return drawable;
 }
 
-DrawableNode::Ptr WorkCellScene::addImage(const std::string& name, const Image& img, Frame* frame, int dmask) {
+DrawableNode::Ptr WorkCellScene::addImage(const std::string& name, const class Image& img, Frame* frame, int dmask) {
     DrawableNode::Ptr drawable = _scene->makeDrawable(name, img);
     drawable->setMask(dmask);
     addDrawable(drawable, frame);
     return drawable;
 }
 
-DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::geometry::PointCloud& scan, Frame* frame, int dmask) {
+DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const class rw::geometry::PointCloud& scan, Frame* frame, int dmask) {
     DrawableNode::Ptr drawable = _scene->makeDrawable(name, scan);
     drawable->setMask(dmask);
     addDrawable(drawable, frame);

@@ -25,16 +25,13 @@
 
 #include <string>
 #include <vector>
-#include <map>
-#include <sstream>
-#include <iostream>
 
 #include <rw/common/LogWriter.hpp>
-#include <rw/common/Message.hpp>
 #include <rw/common/Ptr.hpp>
 
 namespace rw { namespace common {
     class Log;
+    class Message;
 
 
 	/** @addtogroup common */

@@ -20,7 +20,7 @@
 
 #include <limits.h>
 
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/math/MetricFactory.hpp>
 
@@ -344,7 +344,7 @@ void PRMPlanner::enhanceAround(const Q& q)
     for (size_t cnt = 0; cnt<_enhanceAroundSeedCount; cnt++) {
         for (size_t i = 0; i<q.size(); i++) {
             double stddev = _Rneighbor/(1+_metricWeights(i));
-            ran(i) = Math::ranNormalDist(q(i), 2*stddev);
+            ran(i) = Random::ranNormalDist(q(i), 2*stddev);
         }
         ran = PlannerUtil::clampPosition(_bounds, ran);
         if (_collisionCheckingStrategy != LAZY) {
@@ -364,7 +364,7 @@ void PRMPlanner::enhanceRoadmap()
     for (size_t cnt = 0; cnt < std::min(
              _seeds.size(),_enhanceRandomFromSeedsCnt); cnt++)
     {
-        int index = Math::ranI(0, (int)_seeds.size());
+        int index = Random::ranI(0, (int)_seeds.size());
         enhanceAround(_seeds[index]);
     }
 

@@ -4,9 +4,6 @@
 #include <rw/graphics/Model3D.hpp>
 #include "../Model3DLoader.hpp"
 
-#include <cstdio>
-#include <cstring>
-#include <vector>
 #include <string>
 
 namespace rw {

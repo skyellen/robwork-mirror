@@ -6,7 +6,6 @@
 #include <boost/foreach.hpp>
 #include <vector>
 #include <iostream>
-#include <algorithm>
 #include <cmath>
 #include "Math.hpp"
 

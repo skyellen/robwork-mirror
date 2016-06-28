@@ -23,11 +23,14 @@
 #include "TextureData.hpp"
 
 #include <vector>
+#include <rw/geometry/GeometryData.hpp>
 #include <rw/geometry/IndexedTriangle.hpp>
 #include <rw/geometry/IndexedPolygon.hpp>
-#include <rw/geometry/Geometry.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector2D.hpp>
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace geometry { class TriMesh; } }
 
 namespace rw {
 namespace graphics {
@@ -293,7 +296,7 @@ namespace graphics {
          * @param obj
          * @return
          */
-        void addGeometry(const Material& mat, rw::geometry::Geometry::Ptr geom);
+        void addGeometry(const Material& mat, rw::common::Ptr<class rw::geometry::Geometry> geom);
 
         /**
          * add a triangle mesh to this model3d

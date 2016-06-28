@@ -19,10 +19,9 @@
 #define RW_PROXIMITY_SAPFilterStrategy_HPP_
 
 #include "ProximityFilterStrategy.hpp"
-#include <rw/models/WorkCell.hpp>
 #include "ProximitySetup.hpp"
-#include <rw/kinematics/Frame.hpp>
-#include "CollisionStrategy.hpp"
+
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw { namespace proximity {
 
@@ -78,14 +77,14 @@ public:
 	 *
 	 * @param workcell [in] the workcell.
 	 */
-	SAPFilterStrategy(rw::models::WorkCell::Ptr workcell);
+	SAPFilterStrategy(rw::common::Ptr<rw::models::WorkCell> workcell);
 
 	/**
 	 * @brief constructor - constructs frame pairs based on the \b setup
 	 * @param workcell [in] the workcell
 	 * @param setup [in] the ProximitySetup describing exclude/include relations
 	 */
-	SAPFilterStrategy(rw::models::WorkCell::Ptr workcell, const ProximitySetup& setup);
+	SAPFilterStrategy(rw::common::Ptr<rw::models::WorkCell> workcell, const ProximitySetup& setup);
 
 
 	//! @brief destructor
@@ -138,14 +137,13 @@ public:
 
 private:
 
-    rw::models::WorkCell::Ptr _workcell;
+	rw::common::Ptr<rw::models::WorkCell> _workcell;
     ProximitySetup _psetup;
 	kinematics::FramePairSet _collisionPairs;
-	rw::proximity::CollisionStrategy::Ptr _strategy;
 	
 	kinematics::FrameMap<std::vector<std::string> > _frameToGeoIdMap;
 
-	void applyRule(const ProximitySetupRule& rule, rw::models::WorkCell::Ptr workcell, rw::kinematics::FramePairSet& result);
+	void applyRule(const ProximitySetupRule& rule, rw::common::Ptr<rw::models::WorkCell> workcell, rw::kinematics::FramePairSet& result);
 	void initialize();
 	void initializeCollisionFramePairs(const rw::kinematics::State& state);
 };

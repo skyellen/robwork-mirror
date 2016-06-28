@@ -19,7 +19,6 @@
 
 #include "PlainTriMesh.hpp"
 
-#include <iostream>
 #include <fstream>
 #include <boost/foreach.hpp>
 

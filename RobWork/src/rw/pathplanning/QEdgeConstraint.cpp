@@ -19,6 +19,7 @@
 #include "QEdgeConstraint.hpp"
 #include "PlannerUtil.hpp"
 #include <rw/math/Math.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::common;
 using namespace rw::math;
@@ -38,7 +39,7 @@ namespace
     class ExpandedBinary: public QEdgeConstraint
     {
     public:
-        ExpandedBinary(QConstraint::Ptr constraint,
+        ExpandedBinary(rw::common::Ptr<QConstraint> constraint,
 				QMetric::Ptr metric,
 				double resolution)
             :
@@ -103,7 +104,7 @@ namespace
         // These are fixed.
 		QMetric::Ptr _metric;
         double _resolution;
-		QConstraint::Ptr _constraint;
+        rw::common::Ptr<QConstraint> _constraint;
     };
 
 	class MergedEdgeConstraint: public QEdgeConstraint {
@@ -125,14 +126,14 @@ namespace
 
 }
 
-QEdgeConstraint::Ptr QEdgeConstraint::make(QConstraint::Ptr constraint,
+QEdgeConstraint::Ptr QEdgeConstraint::make(rw::common::Ptr<QConstraint> constraint,
 	QMetric::Ptr metric,
     double resolution)
 {
     return ownedPtr(new ExpandedBinary(constraint, metric, resolution));
 }
 
-QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(QConstraint::Ptr constraint,
+QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(rw::common::Ptr<QConstraint> constraint,
 												  Device::Ptr device)
 {
     // We can be much more clever here, but this is what we are currently using:

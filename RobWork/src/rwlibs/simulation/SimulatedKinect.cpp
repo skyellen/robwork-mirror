@@ -19,7 +19,7 @@
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Constants.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 
 using namespace rwlibs::simulation;
 using namespace rw::sensor;
@@ -235,12 +235,12 @@ namespace {
         for(size_t y = 0; y < static_cast<size_t>(scan->getHeight()); y++){
             for(size_t x = 0; x < static_cast<size_t>(scan->getWidth()); x++){
                 Vector3D<float> &v = data[y*scan->getWidth() + x];
-                double r = std::sqrt( Math::sqr(x - center_x) + Math::sqr(y - center_y) );
+                double r = std::sqrt( (x - center_x)*(x - center_x) + (y - center_y)*(y - center_y) );
                 // we convert to mm
                 double d = (double)fabs(v[2])*1000.0;
                 double sigma = calcSigma(r, d);
                 // this will produce the error in m
-                double noise_err = Math::ranNormalDist( 0 , sigma )/1000.0;
+                double noise_err = Random::ranNormalDist( 0 , sigma )/1000.0;
                 v[2] += (float)noise_err;
 
             }

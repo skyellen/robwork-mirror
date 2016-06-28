@@ -18,9 +18,7 @@
 
 #include "StereoCameraModel.hpp"
 
-#include <algorithm>
 #include <fstream>
-#include <cmath>
 
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>

@@ -18,12 +18,14 @@
 
 #include "ProximityStrategyRW.hpp"
 
-#include <float.h>
+#include "BVTreeFactory.hpp"
+#include "BVTreeColliderFactory.hpp"
+
+#include <rw/proximity/ProximityStrategyData.hpp>
+
 #include <vector>
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/common/Exception.hpp>
 
 #include <boost/foreach.hpp>
 

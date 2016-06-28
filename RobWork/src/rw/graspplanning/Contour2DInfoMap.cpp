@@ -21,11 +21,12 @@
 #include <rw/math/Constants.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/math/Line2D.hpp>
 
 #include <rw/geometry/Contour2D.hpp>
 
 #include <boost/foreach.hpp>
+
+#include <cstdio>
 
 using namespace rw::math;
 using namespace rw::graspplanning;

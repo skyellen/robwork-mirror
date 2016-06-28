@@ -18,7 +18,6 @@
 
 #include "XML.hpp"
 
-#include <rw/math/Q.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 #include <boost/property_tree/ptree.hpp>
@@ -36,7 +35,6 @@
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <string>
-#include <sstream>
 
 typedef boost::property_tree::ptree PTree;
 

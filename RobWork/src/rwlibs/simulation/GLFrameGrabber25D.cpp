@@ -21,6 +21,7 @@
 #include <rw/common/Log.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rwlibs/os/rwgl.hpp>
 #include <cmath>
 
 using namespace rw::math;

@@ -21,13 +21,13 @@
 
 #include <vector>
 
-#include <rw/kinematics/State.hpp>
 #include <rw/sensor/Contact3D.hpp>
-#include <rw/sensor/TactileArrayModel.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace sensor {
-
+class TactileArrayModel;
 
 /**
  * @brief Utillity class for general computations on a tactile array

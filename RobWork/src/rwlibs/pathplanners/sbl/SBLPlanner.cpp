@@ -19,7 +19,7 @@
 #include "SBLPlanner.hpp"
 #include "SBLInternal.hpp"
 
-#include <boost/foreach.hpp>
+#include <rw/pathplanning/QIKSampler.hpp>
 
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;

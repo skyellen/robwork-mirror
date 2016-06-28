@@ -17,6 +17,7 @@
 
 #include "../TestSuiteConfig.hpp"
 
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/Box.hpp>
 #include <rw/geometry/Cone.hpp>
@@ -25,6 +26,7 @@
 #include <rw/geometry/Sphere.hpp>
 #include <rw/geometry/Tube.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/kinematics/State.hpp>
 
 #if RW_HAVE_ASSIMP
 #include <rw/loaders/model3d/LoaderAssimp.hpp>

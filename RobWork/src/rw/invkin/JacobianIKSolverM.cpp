@@ -17,18 +17,15 @@
 
 #include "JacobianIKSolverM.hpp"
 
+#include <rw/kinematics/FKRange.hpp>
+
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/math/Math.hpp>
 
-#include <rw/common/Property.hpp>
-
-#include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/models/JacobianCalculator.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>

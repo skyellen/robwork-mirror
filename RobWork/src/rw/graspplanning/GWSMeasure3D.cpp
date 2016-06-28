@@ -16,12 +16,12 @@
  ********************************************************************************/
 
 #include "GWSMeasure3D.hpp"
+#include "Grasp3D.hpp"
 
 #include <rw/math/EAA.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Constants.hpp>
 #include <boost/foreach.hpp>
-#include <iostream>
 
 using namespace rw::math;
 using namespace rw::geometry;

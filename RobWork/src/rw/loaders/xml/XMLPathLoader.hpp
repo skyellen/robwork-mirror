@@ -25,10 +25,10 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
-#include <rw/models/WorkCell.hpp>
-
 #include <xercesc/dom/DOMElement.hpp>
 #include <string>
+
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw {
 namespace loaders {
@@ -63,7 +63,7 @@ public:
      * @param filename [in] The file to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
-	XMLPathLoader(const std::string& filename, rw::models::WorkCell::Ptr workcell = NULL, const std::string& schemaFileName = "");
+	XMLPathLoader(const std::string& filename, rw::common::Ptr<rw::models::WorkCell> workcell = NULL, const std::string& schemaFileName = "");
 
 
     /**
@@ -77,7 +77,7 @@ public:
      * @param instream [in] The input stream to read from
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
-	XMLPathLoader(std::istream& instream, rw::models::WorkCell::Ptr workcell = NULL, const std::string& schemaFileName = "");
+	XMLPathLoader(std::istream& instream, rw::common::Ptr<rw::models::WorkCell> workcell = NULL, const std::string& schemaFileName = "");
 
 
     /**
@@ -193,7 +193,7 @@ private:
    rw::trajectory::TimedStatePath::Ptr _timedStatePath;
 
     Type _type;
-	rw::models::WorkCell::Ptr _workcell;
+    rw::common::Ptr<rw::models::WorkCell> _workcell;
 };
 
 /** @} */

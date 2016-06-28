@@ -17,15 +17,12 @@
 
 
 #include "QSampler.hpp"
+#include "QNormalizer.hpp"
 #include "QIKSampler.hpp"
+#include "QConstraint.hpp"
 
 #include <rw/math/Math.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-#include <rw/models/Models.hpp>
-#include <boost/foreach.hpp>
 
-using namespace rw::invkin;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::models;
@@ -149,7 +146,7 @@ namespace
     {
     public:
         IKSampler(
-			QIKSampler::Ptr sampler,
+        	QIKSampler::Ptr sampler,
             const Transform3D<>& target)
             :
             _sampler(sampler),
@@ -165,7 +162,7 @@ namespace
         bool doEmpty() const { return _sampler->empty(); }
 
     private:
-		QIKSampler::Ptr _sampler;
+        QIKSampler::Ptr _sampler;
         const Transform3D<> _target;
     };
 

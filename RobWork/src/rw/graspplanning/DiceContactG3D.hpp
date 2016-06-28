@@ -18,18 +18,18 @@
 #ifndef RW_GRASPPLANNING_DICECONTACTG3D_HPP_
 #define RW_GRASPPLANNING_DICECONTACTG3D_HPP_
 
-#include <rw/geometry/TriMesh.hpp>
-#include "Grasp3D.hpp"
-
-#include "ContactValidateFilter.hpp"
-
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
 #include <vector>
 
+namespace rw { namespace geometry { class TriMesh; } }
+
 namespace rw {
 namespace graspplanning {
+
+class ContactValidateFilter;
+class Grasp3D;
 
 /**
  * @brief generates candidate contact point sets (contact grasps) for

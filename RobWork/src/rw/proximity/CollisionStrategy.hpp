@@ -26,8 +26,6 @@
 #include <string>
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/ExtensionPoint.hpp>
 #include <rw/kinematics/FrameMap.hpp>
@@ -35,10 +33,12 @@
 
 
 #include "ProximityStrategy.hpp"
-#include "CollisionToleranceStrategy.hpp"
 //#include "ProximityStrategyData.hpp"
 
+namespace rw { namespace kinematics { class Frame; } }
+
 namespace rw { namespace proximity {
+	class CollisionToleranceStrategy;
 
     /** @addtogroup proximity */
     /*@{*/
@@ -218,7 +218,7 @@ namespace rw { namespace proximity {
            be in collision if \b strategy claim they are in collision for a
            tolerance of \b tolerance.
         */
-		static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
+		static CollisionStrategy::Ptr make(rw::common::Ptr<CollisionToleranceStrategy> strategy,
                          double tolerance);
 
         /**
@@ -229,7 +229,7 @@ namespace rw { namespace proximity {
            be in collision if \b strategy claim they are in collision for a
            tolerance of \b tolerance.
         */
-        static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
+        static CollisionStrategy::Ptr make(rw::common::Ptr<CollisionToleranceStrategy> strategy,
                          const rw::kinematics::FrameMap<double>& frameToTolerance,
                          double defaultTolerance);
 

@@ -18,10 +18,7 @@
 #include "Line.hpp"
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/EAA.hpp>
-#include <boost/foreach.hpp>
-#include <iostream>
+#include <rw/math/LinearAlgebra.hpp>
 
 using namespace rw::geometry;
 using namespace rw::math;
@@ -95,7 +92,8 @@ double Line::refit(std::vector<rw::math::Vector3D<> >& data) {
 	/* perform singular value decomposition of data points */
 	// create covariance matrix
 	Eigen::MatrixXd covar(Eigen::MatrixXd::Zero(3, 3));
-	BOOST_FOREACH (const Vector3D<>& p, data) {
+	for (std::vector<Vector3D<> >::const_iterator it = data.begin(); it != data.end(); it++) {
+		const Vector3D<>& p = *it;
 		for (size_t i = 0; i < 3; ++i) {
 			for (size_t j = 0; j < 3; ++j) {
 				covar(i, j) += (p(i)-centroid(i)) * (p(j)-centroid(j));

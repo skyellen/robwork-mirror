@@ -16,21 +16,24 @@
  ********************************************************************************/
 
 #include "DiceContactG3D.hpp"
+#include "ContactValidateFilter.hpp"
+#include "Grasp3D.hpp"
 
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/common/Timer.hpp>
+#include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriMesh.hpp>
 
 using namespace rw::geometry;
 using namespace rw::common;
-using namespace rw::sensor;
 using namespace rw::math;
 using namespace rw::graspplanning;
 
 namespace {
 
     Vector3D<> calcRandomPtInTriangle(const Triangle<>& tri){
-        double b0 = Math::ran(0.0,1.0);
-        double b1 = ( 1.0f - b0 ) * Math::ran(0.0,1.0);
+        double b0 = Random::ran(0.0,1.0);
+        double b1 = ( 1.0f - b0 ) * Random::ran(0.0,1.0);
         double b2 = 1 - b0 - b1;
 
         Vector3D<> vertex1 = tri[1]-tri[0];
@@ -89,8 +92,8 @@ std::vector<Grasp3D> DiceContactG3D::generateContactSet(int maxNrOfContacts, dou
         nrOfTries++;
 		// generate a randomly choosen grasp contact
 		for(int i=0; i<_nrOfContacts;i++){
-            int idx = Math::ranI(min,max);
-            int idx2 = Math::ranI(min,max);
+            int idx = Random::ranI(min,max);
+            int idx2 = Random::ranI(min,max);
             double area1 = _obj->getTriangle(idx).calcArea();
             double area2 = _obj->getTriangle(idx2).calcArea();
             if(area2>area1)
@@ -150,8 +153,8 @@ Grasp3D DiceContactG3D::generateNext(){
 
         // generate a randomly choosen grasp contact
         for(int i=0; i<_nrOfContacts;i++){
-            int idx = Math::ranI(min,max);
-            int idx2 = Math::ranI(min,max);
+            int idx = Random::ranI(min,max);
+            int idx2 = Random::ranI(min,max);
             double area1 = _obj->getTriangle(idx).calcArea();
             double area2 = _obj->getTriangle(idx2).calcArea();
             if(area2>area1)

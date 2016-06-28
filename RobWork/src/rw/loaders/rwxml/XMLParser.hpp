@@ -19,7 +19,6 @@
 #ifndef RW_LOADERS_XMLPARSER_HPP
 #define RW_LOADERS_XMLPARSER_HPP
 
-#include <limits.h>
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/phoenix1.hpp>

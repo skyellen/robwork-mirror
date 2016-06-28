@@ -18,6 +18,7 @@
 #include "DOMProximitySetupLoader.hpp"
 
 #include <iostream>
+#include <rw/common/DOMElem.hpp>
 #include <rw/common/DOMParser.hpp>
 
 using namespace rw::common;

@@ -16,7 +16,6 @@
  ********************************************************************************/
 
 #include "ProximityModel.hpp"
-
 #include "ProximityStrategy.hpp"
 
 using namespace rw::proximity;

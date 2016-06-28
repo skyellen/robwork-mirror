@@ -23,17 +23,13 @@
  * @file RampInterpolator.hpp
  */
 
-#include <rw/common/macros.hpp>
-
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rw/math/MetricFactory.hpp>
-#include <rw/math/Metric.hpp>
 #include <rw/math/Math.hpp>
 
 #include "Interpolator.hpp"
-#include "InterpolatorUtil.hpp"
+//#include "InterpolatorUtil.hpp"
 
 namespace rw { namespace trajectory {
 
@@ -636,19 +632,6 @@ namespace rw { namespace trajectory {
      * @brief RampInterpolator with T=rw:math::Transform3D<>
      */
     typedef RampInterpolator<rw::math::Transform3D<> > CartesianRampInterpolator;
-
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief Pointer to QRampInterpolator
-     */
-    typedef rw::common::Ptr<QRampInterpolator> QRampInterpolatorPtr;
-
-
-    /**
-     * @brief Pointer to CartesianRampInterpolator
-     */
-    typedef rw::common::Ptr<CartesianRampInterpolator> CartesianRampInterpolatorPtr;
-#endif
 
     /** @} */
 

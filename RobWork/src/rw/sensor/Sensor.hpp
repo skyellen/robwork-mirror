@@ -27,11 +27,6 @@
 #include <rw/common/PropertyMap.hpp>
 #include "SensorModel.hpp"
 
-namespace rw {
-    namespace kinematics { class Frame;}
-    namespace models { class WorkCell;}
-} // end namespaces
-
 namespace rw { namespace sensor {
 
     /** @addtogroup sensor */

@@ -16,5 +16,5 @@
  ********************************************************************************/
 
 
-#include "TrajectoryIterator.hpp"
+#include "InterpolatorTrajectoryIterator.hpp"
 

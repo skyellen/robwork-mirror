@@ -23,7 +23,6 @@
  * @file State.hpp
  */
 
-#include <boost/shared_ptr.hpp>
 #include <vector>
 
 #include "QState.hpp"
@@ -37,7 +36,7 @@
 namespace rw { namespace kinematics {
 
     class Frame;
-    class StateSetup;
+    //class StateSetup;
 	class StateStructure;
 
     /** @addtogroup kinematics */

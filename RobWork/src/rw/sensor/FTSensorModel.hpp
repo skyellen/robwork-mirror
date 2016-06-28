@@ -19,14 +19,6 @@
 #ifndef RW_SENSOR_FTSENSORMODEL_HPP
 #define RW_SENSOR_FTSENSORMODEL_HPP
 
-#include "Sensor.hpp"
-
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/multi_array.hpp>
-
-#include <rw/kinematics/State.hpp>
-
-#include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>

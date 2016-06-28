@@ -21,6 +21,7 @@
 
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/DHParameterSet.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
 #include <boost/foreach.hpp>

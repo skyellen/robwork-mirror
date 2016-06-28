@@ -17,6 +17,7 @@
 
 #include "DOMPathSaver.hpp"
 
+#include <rw/common/DOMParser.hpp>
 #include <rw/loaders/dom/DOMPathLoader.hpp>
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
 

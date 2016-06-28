@@ -17,14 +17,14 @@
 
 
 #include "ProximitySetup.hpp"
-#include <rw/common/StringUtil.hpp>
+#include "CollisionSetup.hpp"
+
+#include <rw/models/WorkCell.hpp>
+
 #include <boost/foreach.hpp>
 
 using namespace rw::common;
 using namespace rw::proximity;
-
-
-
 
 ProximitySetup::ProximitySetup():
 _useIncludeAll(true),

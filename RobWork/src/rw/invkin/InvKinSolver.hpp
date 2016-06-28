@@ -3,7 +3,9 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/State.hpp>
+#include <rw/math/Q.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw {
 namespace invkin {

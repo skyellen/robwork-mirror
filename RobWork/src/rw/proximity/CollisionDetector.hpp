@@ -24,28 +24,24 @@
  * \copydoc rw::proximity::CollisionDetector
  */
 
-#include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
 #include "ProximityFilterStrategy.hpp"
-#include "ProximityFilter.hpp"
 #include "ProximityStrategyData.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Timer.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Device.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-
 
 #include <vector>
 
 namespace rw {
 namespace kinematics {
 class Frame;
+class State;
 }
 }
+
+namespace rw { namespace models { class WorkCell; } }
 
 namespace rw {
 namespace proximity {
@@ -116,7 +112,7 @@ public:
 
      @param strategy [in] the collision checker strategy to use.
      */
-	CollisionDetector(rw::models::WorkCell::Ptr workcell);
+	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell);
 
     /**
      * @brief Collision detector for a workcell
@@ -127,7 +123,7 @@ public:
      * broad phase collision filtering as a static filter list.
      *
      */
-	CollisionDetector(rw::models::WorkCell::Ptr workcell, CollisionStrategy::Ptr strategy);
+	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell, CollisionStrategy::Ptr strategy);
 
     /**
      * @brief Collision detector for a workcell.
@@ -137,7 +133,7 @@ public:
      * @param strategy [in] the collision checker strategy to use.
      * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
      */
-	CollisionDetector(rw::models::WorkCell::Ptr workcell, 
+	CollisionDetector(rw::common::Ptr<rw::models::WorkCell> workcell,
 		CollisionStrategy::Ptr strategy,
 		ProximityFilterStrategy::Ptr filter);
 
@@ -178,29 +174,6 @@ public:
         return _npstrategy;
     }
 
-
-#ifdef RW_USE_DEPRECATED
-    /**
-     * @brief adds collision model describing the geometry \b geom. The collision
-     * model is associated to the frame.
-     */
-
-    void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
-
-    /**
-     * @brief adds collision model describing the geometry \b geometry. The collision
-     * model is associated to the frame. 
-     */
-	void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
-
-    /**
-     * @brief removes a geometry from the specified frame
-     */
-    void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
-
-
-#endif // RW_USE_DEPRECATED
-
 	/**
 	 * @brief Add Geometry associated to \b frame
 	 * 
@@ -209,7 +182,7 @@ public:
 	 * @param frame [in] Frame to associated geometry to
 	 * @param geometry [in] Geometry to add
 	 */
-	void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+	void addGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry> geometry);
 
 	/**
 	 * @brief Removes geometry from CollisionDetector
@@ -219,7 +192,7 @@ public:
 	 * @param frame [in] The frame which has the geometry associated
 	 * @param geometry [in] Geometry with the id to be removed
 	 */
-	void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+	void removeGeometry(rw::kinematics::Frame* frame, const rw::common::Ptr<rw::geometry::Geometry> geometry);
 	
 	/**
 	 * @brief Removes geometry from CollisionDetector
@@ -263,7 +236,7 @@ public:
 	bool hasGeometry(rw::kinematics::Frame* frame, const std::string& geometryId);
 
 private:
-    void initialize(rw::models::WorkCell::Ptr wc);
+    void initialize(rw::common::Ptr<rw::models::WorkCell> wc);
 
     // the broad phase collision strategy
 	mutable rw::common::Timer _timer;

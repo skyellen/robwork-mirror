@@ -21,7 +21,7 @@
 #include <rw/trajectory/Trajectory.hpp>
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 
 namespace rw {
 namespace loaders {

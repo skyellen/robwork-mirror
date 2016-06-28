@@ -17,6 +17,10 @@
 
 #include "Raycaster.hpp"
 
+#include <rw/geometry/Geometry.hpp>
+#include <rw/kinematics/FKTable.hpp>
+#include <rw/proximity/CollisionStrategy.hpp>
+
 #define TRI_WIDTH 0.00001
 
 #include <boost/foreach.hpp>

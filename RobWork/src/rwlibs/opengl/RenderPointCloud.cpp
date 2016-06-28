@@ -23,7 +23,6 @@
 
 using namespace rw::math;
 using namespace rwlibs::opengl;
-using namespace rw::geometry;
 using namespace rw::graphics;
 
 

@@ -23,22 +23,8 @@
 
 #include <vector>
 
-#include <boost/numeric/ublas/vector.hpp>
-
-#include <boost/spirit/include/classic.hpp>
-#include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
-//#include <boost/spirit.hpp>
-//#include <boost/spirit/core.hpp>
-#include <boost/spirit/include/phoenix1.hpp>
-#include <boost/spirit/include/classic_symbols.hpp>
-
-#include <boost/spirit/include/classic_common.hpp>
-#include <boost/spirit/include/classic_ast.hpp>
-#include <boost/spirit/include/classic_parse_tree.hpp>
-#include <boost/spirit/include/classic_position_iterator.hpp>
-
-#include <rw/math/Constants.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace rw { namespace loaders {
 	/** @addtogroup loaders */

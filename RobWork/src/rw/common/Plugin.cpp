@@ -1,8 +1,8 @@
 #include "Plugin.hpp"
+#include "DOMParser.hpp"
+#include "DOMElem.hpp"
 
 #include <boost/filesystem.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
 
 #include <rw/common/StringUtil.hpp>
 
@@ -182,16 +182,16 @@ private:
 };
 
 rw::common::Ptr<Plugin> Plugin::loadLazy(const std::string& filename){
-    using namespace boost::property_tree;
     // parse xml file
-    ptree tree;
-    read_xml(filename, tree);
-    ptree plugin = tree.get_child("plugin");
-    std::string id = plugin.get_child("<xmlattr>").get<std::string>("id");
-    std::string name = plugin.get_child("<xmlattr>").get<std::string>("name");
-    std::string version = plugin.get_child("<xmlattr>").get<std::string>("version");
+    const DOMParser::Ptr parser = DOMParser::Factory::getDOMParser("XML");
+    parser->load(filename);
+    const DOMElem::Ptr root = parser->getRootElement();
+    const DOMElem::Ptr plugin = root->getChild("plugin");
+    const std::string id = plugin->getAttributeValue("id");
+    const std::string name = plugin->getAttributeValue("name");
+    const std::string version = plugin->getAttributeValue("version");
 
-    std::string runtimelib = plugin.get_child("runtime").get_child("<xmlattr>").get<std::string>("library");
+    const std::string runtimelib = plugin->getChild("runtime")->getAttributeValue("library");
     boost::filesystem::path libfile(runtimelib);
 
 #if(BOOST_FILESYSTEM_VERSION==2)
@@ -210,12 +210,12 @@ rw::common::Ptr<Plugin> Plugin::loadLazy(const std::string& filename){
         RW_THROW("The plugin file specified in \n" << filename << "\n does not exist.");
 
     std::vector<Extension::Descriptor> ext_descriptors;
-    for (ptree::iterator p = plugin.begin(); p != plugin.end(); ++p) {
-        if(p->first == "extension") {
+    for (DOMElem::Iterator p = plugin->begin(); p != plugin->end(); ++p) {
+        if(p->getName() == "extension") {
             Extension::Descriptor extension;
-            extension.id = p->second.get_child("<xmlattr>").get<std::string>("id");
-            extension.name = p->second.get_child("<xmlattr>").get<std::string>("name");
-            extension.point = p->second.get_child("<xmlattr>").get<std::string>("point");
+            extension.id = p->getAttributeValue("id");
+            extension.name = p->getAttributeValue("name");
+            extension.point = p->getAttributeValue("point");
             ext_descriptors.push_back(extension);
         }
     }

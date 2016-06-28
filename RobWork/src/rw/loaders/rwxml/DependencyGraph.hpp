@@ -18,12 +18,7 @@
 #ifndef RW_LOADERS_DEPENDENCYGRAPH_HPP
 #define RW_LOADERS_DEPENDENCYGRAPH_HPP
 
-#include <iostream>
-#include <iterator>
-#include <algorithm>
-#include <time.h>
 #include <map>
-#include <limits.h>
 
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>

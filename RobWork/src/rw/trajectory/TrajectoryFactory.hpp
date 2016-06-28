@@ -25,12 +25,10 @@
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
 
 #include <vector>
-#include <memory>
 
+namespace rw { namespace models { class Device; }}
 namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {

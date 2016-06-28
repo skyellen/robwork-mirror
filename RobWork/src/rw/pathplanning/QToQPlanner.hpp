@@ -24,20 +24,15 @@
 */
 
 #include "PathPlanner.hpp"
-#include "QToQSamplerPlanner.hpp"
-#include "PlannerConstraint.hpp"
 #include <rw/common/Ptr.hpp>
 
 namespace rw { namespace pathplanning {
+	class PlannerConstraint;
+	class QToQSamplerPlanner;
 
     /** @addtogroup pathplanning */
     /*@{*/
-#ifdef RW_USE_DEPRECATED
-    class QToQPlanner;
 
-    //! A pointer to a QToQPlanner.
-    typedef rw::common::Ptr<QToQPlanner> QToQPlannerPtr;
-#endif
     /**
        @brief Path planner interface.
 
@@ -58,7 +53,7 @@ namespace rw { namespace pathplanning {
 
            @param planner [in] A planner for a region given by a QSampler.
         */
-		static QToQPlanner::Ptr make(QToQSamplerPlanner::Ptr planner);
+		static QToQPlanner::Ptr make(rw::common::Ptr<QToQSamplerPlanner> planner);
 
         /**
            @brief Construct a path planner from an edge constraint.

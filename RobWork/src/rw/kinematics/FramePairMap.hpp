@@ -24,9 +24,9 @@
  */
 
 #include <rw/common/PairMap.hpp>
-#include <rw/kinematics/Frame.hpp>
 
 namespace rw { namespace kinematics {
+	class Frame;
 /** @addtogroup kinematics */
     /*@{*/
 

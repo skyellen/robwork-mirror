@@ -15,16 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "RampInterpolator.hpp"
-
-#include <rw/math/Q.hpp>
-
-using namespace rw::trajectory;
-
-
-//template class RampInterpolator<double>; //Cannot compile on Visual Studio 2005
-template class RampInterpolator<rw::math::Q>;
-template class RampInterpolator<rw::math::Rotation3D<double> >;
-template class RampInterpolator<rw::math::Vector3D<double> >;
-template class RampInterpolator<rw::math::Transform3D<double> >;

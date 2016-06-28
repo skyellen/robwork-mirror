@@ -24,6 +24,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 
 #include <boost/foreach.hpp>

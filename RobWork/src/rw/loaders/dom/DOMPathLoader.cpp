@@ -22,6 +22,8 @@
 
 #include <rw/common/DOMParser.hpp>
 
+#include <rw/models/WorkCell.hpp>
+
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/CircularInterpolator.hpp>

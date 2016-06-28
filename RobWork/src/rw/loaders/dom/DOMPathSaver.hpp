@@ -18,18 +18,10 @@
 #ifndef RW_LOADERS_DOMPATHSAVER_HPP
 #define RW_LOADERS_DOMPATHSAVER_HPP
 
-
-#include <rw/loaders/dom/DOMBasisTypes.hpp>
-
+#include <rw/common/DOMElem.hpp>
 
 #include <rw/trajectory/Path.hpp>
 #include <rw/trajectory/Timed.hpp>
-
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/dom/DOMElement.hpp>
-#include <xercesc/util/OutOfMemoryException.hpp>
-#include <xercesc/dom/DOMImplementationLS.hpp>
-
 
 #include <string>
 

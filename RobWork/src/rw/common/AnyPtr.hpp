@@ -2,17 +2,11 @@
 #ifndef RW_COMMON_ANY_HPP
 #define RW_COMMON_ANY_HPP
 
-#include <boost/type_traits.hpp>
-#include <algorithm>
 #include <typeinfo>
 
-#include "boost/config.hpp"
-#include <boost/type_traits/remove_reference.hpp>
-#include <boost/type_traits/is_reference.hpp>
-#include <boost/type_traits/is_scalar.hpp>
-#include <boost/throw_exception.hpp>
-#include <boost/static_assert.hpp>
 #include <rw/common/Ptr.hpp>
+
+#include <boost/shared_ptr.hpp>
 
 namespace rw {
 namespace common {

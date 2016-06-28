@@ -19,12 +19,9 @@
 #define RW_GEOMETRY_CONTOUR2D_HPP_
 
 #include <vector>
+#include <rw/math/Rotation2D.hpp>
 #include <rw/math/Vector2D.hpp>
-#include <rw/common/StringUtil.hpp>
-#include <rw/common/macros.hpp>
 #include "Covariance.hpp"
-#include <fstream>
-#include <iostream>
 
 namespace rw {
 namespace geometry {
@@ -243,10 +240,6 @@ namespace geometry {
 
 	};
 
-#ifdef RW_USE_DEPRECATED
-	//! smart pointer of contour2d
-	typedef rw::common::Ptr<Contour2D> Contour2D::Ptr;
-#endif
 	//! @}
 }
 }

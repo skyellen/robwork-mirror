@@ -20,6 +20,8 @@
 
 #include <rw/common/macros.hpp>
 
+#include <Eigen/SVD>
+
 using namespace rw::math;
 using namespace boost::numeric::ublas;
 typedef LinearAlgebra::BoostMatrix<double>::type BoostMatrixType;
@@ -187,6 +189,13 @@ Eigen::MatrixXd LinearAlgebra::pseudoInverse(const Eigen::MatrixXd& am, double p
     }
 }
 
+void LinearAlgebra::svd(const Eigen::MatrixXd& M, Eigen::MatrixXd& U, Eigen::VectorXd& sigma, Eigen::MatrixXd& V) {
+	const Eigen::JacobiSVD<Eigen::MatrixXd> svd = M.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+	U = svd.matrixU();
+	sigma = svd.singularValues();
+	V = svd.matrixV();
+}
+
 #ifdef RW_USE_UBLAS_LAPACK
 
 bool LinearAlgebra::checkPenroseConditions(
@@ -241,3 +250,17 @@ void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, double *D, double
 }
 
 #endif //RW_USE_UBLAS_LAPACK
+
+template<>
+std::pair<LinearAlgebra::EigenMatrix<double>::type, LinearAlgebra::EigenVector<double>::type> LinearAlgebra::eigenDecompositionSymmetric<double>(const Eigen::MatrixXd& Am1) {
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver;
+	eigenSolver.compute(Am1);
+	return std::make_pair(eigenSolver.eigenvectors(), eigenSolver.eigenvalues());
+}
+
+template<>
+std::pair<LinearAlgebra::EigenMatrix<std::complex<double> >::type, LinearAlgebra::EigenVector<std::complex<double> >::type > LinearAlgebra::eigenDecomposition<double>(const Eigen::MatrixXd& Am1) {
+	Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver;
+	eigenSolver.compute(Am1);
+	return std::make_pair(eigenSolver.eigenvectors(), eigenSolver.eigenvalues());
+}

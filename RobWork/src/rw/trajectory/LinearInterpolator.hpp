@@ -28,10 +28,9 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rw/math/MetricFactory.hpp>
-#include <rw/math/Metric.hpp>
+#include <rw/math/Math.hpp>
 #include "Interpolator.hpp"
-#include "InterpolatorUtil.hpp"
+//#include "InterpolatorUtil.hpp"
 
 namespace rw { namespace trajectory {
 

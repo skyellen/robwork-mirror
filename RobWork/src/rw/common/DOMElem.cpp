@@ -17,7 +17,18 @@
 
 #include "DOMElem.hpp"
 
+#include <rw/common/StringUtil.hpp>
+#include <boost/lexical_cast.hpp>
+
 using namespace rw::common;
+
+bool DOMElem::getValueAsBool(){
+	std::string val = getValue();
+	std::string valu = rw::common::StringUtil::toUpper(val);
+	if(valu=="TRUE") return true;
+	if(valu=="FALSE") return true;
+	return boost::lexical_cast<bool>(val);
+}
 
 void DOMElem::setValue(bool val){
 	setValue( boost::lexical_cast<std::string>(val) );

@@ -21,7 +21,7 @@
 #include "JointDeviceJacobianCalculator.hpp"
 
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/FKTable.hpp>
+//#include <rw/kinematics/FKTable.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;

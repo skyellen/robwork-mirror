@@ -19,7 +19,6 @@
 #include "LogFileWriter.hpp"
 
 #include "macros.hpp"
-#include <iostream>
 #include <fstream>
 #include <iomanip>
 

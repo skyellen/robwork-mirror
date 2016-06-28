@@ -28,7 +28,6 @@
 #include "SensorModel.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/ProjectionMatrix.hpp>
 

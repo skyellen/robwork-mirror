@@ -23,12 +23,12 @@
  * @file DrawableNode.hpp
  */
 
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
 
 #include "SceneNode.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace graphics {
 

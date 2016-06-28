@@ -19,10 +19,8 @@
 #include "IterativeIK.hpp"
 #include "JacobianIKSolver.hpp"
 
-#include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
-
-#include <boost/shared_ptr.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::invkin;
 using namespace rw::common;

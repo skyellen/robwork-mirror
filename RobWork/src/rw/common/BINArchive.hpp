@@ -18,18 +18,8 @@
 #ifndef RW_COMMON_BINARCHIVE_HPP
 #define RW_COMMON_BINARCHIVE_HPP
 
-#include <cstdlib>
-#include <cmath>
 #include <string>
-
-#include <boost/any.hpp>
-#include <cstdio>
-#include <fstream>
-#include <rw/common/macros.hpp>
-#include <boost/any.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+#include <iosfwd>
 
 #include "InputArchive.hpp"
 #include "OutputArchive.hpp"
@@ -66,9 +56,6 @@ namespace common {
 
 
 	protected:
-
-		static const int MAX_LINE_WIDTH = 1000;
-
 		void doOpenArchive(const std::string& filename);
 
 		void doOpenArchive(std::iostream& stream);
@@ -139,7 +126,8 @@ namespace common {
 		void writeValue( const std::vector<T>& val, const std::string& id ){
 		    boost::uint32_t s = val.size();
 		    _ofs->write((char*)&s, sizeof(s) );
-			BOOST_FOREACH(const T& rval, val){
+		    for (boost::uint32_t i = 0; i < s; i++) {
+				const T& rval = val[i];
 			    _ofs->write((char*)&rval, sizeof(rval) );
 			}
 		}
@@ -209,15 +197,8 @@ namespace common {
 
 
 	private:
-		std::string getScope(){
-			if(_scope.size()==0)
-				return "";
-			std::stringstream sstr;
-			for(size_t i=0;i<_scope.size()-1;i++)
-				sstr << _scope[i] << ".";
-			sstr << _scope.back();
-			return sstr.str();
-		}
+		std::string getScope();
+
 	private:
 		std::ostream *_ofs;
 		std::istream *_ifs;
@@ -225,7 +206,6 @@ namespace common {
 		std::iostream *_iostr;
 
 
-		char _line[MAX_LINE_WIDTH];
 		bool _isopen;
 		std::vector<std::string> _scope;
 	};

@@ -24,19 +24,15 @@
 */
 
 #include <string>
+#include <vector>
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Vector2D.hpp>
-#include <rw/math/Q.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/RPY.hpp>
-#include <rw/math/EAA.hpp>
-#include <rw/math/Quaternion.hpp>
-#include <rw/math/Rotation2D.hpp>
-#include <rw/math/VelocityScrew6D.hpp>
+#include <rw/math_fwd.hpp>
 
-#include <rw/trajectory/Path.hpp>
+namespace rw { namespace trajectory {
+	template <class T> class Path;
+	typedef Path<rw::math::Transform3D<double> > Transform3DPath;
+	typedef Path<rw::math::Q> QPath;
+} }
 
 namespace rw { namespace common {
 
@@ -121,16 +117,16 @@ namespace rw { namespace common {
         static PropertyType getType(double) { return PropertyType(Double); }
         static PropertyType getType(int) { return PropertyType(Int); }
         static PropertyType getType(bool) { return PropertyType(Bool); }
-        static PropertyType getType(const rw::math::Vector3D<>&) { return PropertyType(Vector3D); }
-        static PropertyType getType(const rw::math::Vector2D<>&) { return PropertyType(Vector2D); }
+        static PropertyType getType(const rw::math::Vector3D<double>&) { return PropertyType(Vector3D); }
+        static PropertyType getType(const rw::math::Vector2D<double>&) { return PropertyType(Vector2D); }
         static PropertyType getType(const rw::math::Q&) { return PropertyType(Q); }
-        static PropertyType getType(const rw::math::Transform3D<>&) { return PropertyType(Transform3D); }
-        static PropertyType getType(const rw::math::Rotation3D<>&) { return PropertyType(Rotation3D); }
-        static PropertyType getType(const rw::math::RPY<>&) { return PropertyType(RPY); }
-        static PropertyType getType(const rw::math::EAA<>&) { return PropertyType(EAA); }
-        static PropertyType getType(const rw::math::Quaternion<>&) { return PropertyType(Quaternion); }
-        static PropertyType getType(const rw::math::Rotation2D<>&) { return PropertyType(Rotation2D); }
-        static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VelocityScrew6D); }
+        static PropertyType getType(const rw::math::Transform3D<double>&) { return PropertyType(Transform3D); }
+        static PropertyType getType(const rw::math::Rotation3D<double>&) { return PropertyType(Rotation3D); }
+        static PropertyType getType(const rw::math::RPY<double>&) { return PropertyType(RPY); }
+        static PropertyType getType(const rw::math::EAA<double>&) { return PropertyType(EAA); }
+        static PropertyType getType(const rw::math::Quaternion<double>&) { return PropertyType(Quaternion); }
+        static PropertyType getType(const rw::math::Rotation2D<double>&) { return PropertyType(Rotation2D); }
+        static PropertyType getType(const rw::math::VelocityScrew6D<double>&) { return PropertyType(VelocityScrew6D); }
         static PropertyType getType(const rw::trajectory::QPath&) { return PropertyType(QPath); }
         static PropertyType getType(const rw::trajectory::Transform3DPath&) { return PropertyType(Transform3DPath); }
         static PropertyType getType(const std::vector<std::string>&) { return PropertyType(StringList); }

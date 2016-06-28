@@ -16,10 +16,12 @@
  ********************************************************************************/
 
 #include "SceneGraph.hpp"
+#include "SceneCamera.hpp"
+
+#include <boost/foreach.hpp>
 
 #include <stack>
-
-#include "SceneCamera.hpp"
+#include <map>
 
 using namespace rw::graphics;
 using namespace rw::common;
@@ -375,7 +377,7 @@ namespace {
             _color = color;
         }
         void setCopyToImage(rw::sensor::Image::Ptr img){}
-        void setCopyToScan25D(rw::geometry::PointCloud::Ptr img){}
+        void setCopyToScan25D(rw::common::Ptr<class rw::geometry::PointCloud> img){}
         void setMultiSample(int samples){};
         void setMainCamera(SceneCamera::Ptr cam){
             _maincam = cam;

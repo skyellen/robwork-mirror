@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( WorkCellLoaderTest )
     BOOST_TEST_MESSAGE("- Testing WorkCellLoader");
     // Load a tree device that has revolute joints only.
 	std::string file = testFilePath() + "SchunkHand/SchunkHand.xml";
-	WorkCell::Ptr workcell = WorkCellFactory::load(file);
+	WorkCell::Ptr workcell = WorkCellLoader::Factory::load(file);
 
 
 	BOOST_CHECK(workcell != NULL);

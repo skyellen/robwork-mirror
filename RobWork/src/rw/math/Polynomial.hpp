@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <limits>
+#include <cmath>
 
 /**
  * @file Polynomial.hpp

@@ -17,11 +17,11 @@
 
 #include "BoostXMLParser.hpp"
 
+#include <boost/property_tree/xml_parser.hpp>
 #include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
-#include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
 
 #include <sstream>
@@ -114,6 +114,43 @@ void BoostXMLParser::save(std::ostream& output){
     }
 }
 
+class BoostDOMElem::ElemIterImpl: public DOMElem::ItImpl {
+public:
+	boost::property_tree::ptree::iterator _begin,_end;
+	rw::common::Ptr< boost::property_tree::ptree > _parent,_root;
+	BoostXMLParser *_parser;
+
+	ElemIterImpl(boost::property_tree::ptree::iterator begin,
+			boost::property_tree::ptree::iterator end,
+			rw::common::Ptr< boost::property_tree::ptree > parent,
+			rw::common::Ptr< boost::property_tree::ptree > root,
+			BoostXMLParser *parser):
+				_begin(begin),_end(end),_parent(parent),_root(root),_parser(parser)
+	{
+		while(_begin!=_end && _begin->first=="<xmlattr>")
+			_begin++;
+	}
+
+	ItImpl* clone(){
+		return new ElemIterImpl(_begin, _end, _parent, _root,_parser);
+	}
+
+	void increment(){
+		_begin++;
+		while(_begin!=_end && _begin->first=="<xmlattr>")
+			_begin++;
+	}
+
+	//void add(int right){ _begin+=right; }
+
+	DOMElem::Ptr getElem(){
+		return rw::common::ownedPtr( new BoostDOMElem( _begin->first, &(_begin->second), _parent, _root, _parser) );
+	}
+
+	bool equal(ItImpl* iter) const{
+		return _begin == ((ElemIterImpl*)iter)->_begin;
+	}
+};
 
 std::vector<std::string> BoostDOMElem::getValueAsStringList(char stringseperator) const {
 	const std::string value = _node->get_value<std::string>();

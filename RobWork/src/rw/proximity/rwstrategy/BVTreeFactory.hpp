@@ -20,36 +20,25 @@
 
 
 #include <rw/geometry/Triangle.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/Primitive.hpp>
 
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Math.hpp>
 
 #include <rw/common/Timer.hpp>
 
-#include <vector>
-#include <stack>
 #include <float.h>
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/foreach.hpp>
-
+//#include <boost/foreach.hpp>
 
 #include <rw/geometry/BV.hpp>
 #include <rw/geometry/OBB.hpp>
 #include <rw/geometry/OBBFactory.hpp>
-#include <rw/geometry/IndexedArray.hpp>
 #include <rw/geometry/IndexedTriArray.hpp>
 
 #include "BinaryBVTree.hpp"
-#include "BinaryIdxBVTree.hpp"
 
 namespace rw {
 namespace proximity {

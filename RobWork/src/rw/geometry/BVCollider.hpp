@@ -19,7 +19,6 @@
 #define RW_GEOMETRY_BVCOLLIDER_HPP_
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/OBB.hpp>
 
 namespace rw {
 namespace geometry {

@@ -17,8 +17,6 @@
 
 #include "ControllerModel.hpp"
 
-#include <rw/kinematics/Frame.hpp>
-
 using namespace rw::models;
 using namespace rw::kinematics;
 

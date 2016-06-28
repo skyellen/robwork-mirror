@@ -93,10 +93,7 @@
 #ifndef RW_GRAPHICS_3DS_MODEL3DS_HPP
 #define RW_GRAPHICS_3DS_MODEL3DS_HPP
 
-#include <cstdio>
-#include <cstring>
 #include <vector>
-
 #include <string>
 #include <rw/graphics/TextureData.hpp>
 #include <rw/common/types.hpp>

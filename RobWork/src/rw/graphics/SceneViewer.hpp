@@ -2,18 +2,12 @@
 #ifndef RW_GRAPHICS_SCENEVIEWER_HPP_
 #define RW_GRAPHICS_SCENEVIEWER_HPP_
 
-#include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
 
 #include "SceneGraph.hpp"
 #include "SceneCamera.hpp"
-#include "WorkCellScene.hpp"
 
 #include <rw/common/PropertyMap.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/graphics/WorkCellScene.hpp>
-
 
 namespace rw {
 namespace graphics {
@@ -50,7 +44,7 @@ namespace graphics {
 
         virtual void setWorldNode(rw::graphics::GroupNode::Ptr wnode) = 0;
         
-        virtual void setWorkCellScene(rw::graphics::WorkCellScene::Ptr wcscene) { _wcscene = wcscene; }
+        virtual void setWorkCellScene(rw::common::Ptr<class WorkCellScene> wcscene) { _wcscene = wcscene; }
 
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;
 
@@ -157,7 +151,7 @@ namespace graphics {
 
     protected:
         PositionSelectedEvent _positionSelectedEvent;
-        rw::graphics::WorkCellScene::Ptr _wcscene;
+        rw::common::Ptr<class WorkCellScene> _wcscene;
         
         //View::Ptr _mainView;
         //std::vector<View::Ptr> _views;

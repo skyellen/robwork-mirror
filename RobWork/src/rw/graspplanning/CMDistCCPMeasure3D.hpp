@@ -18,14 +18,12 @@
 #ifndef RW_GRASPPLANNING_CMDISTCCPMEASURE_HPP_
 #define RW_GRASPPLANNING_CMDISTCCPMEASURE_HPP_
 
-#include "Grasp3D.hpp"
 #include "GraspQualityMeasure3D.hpp"
-#include <rw/geometry/TriMesh.hpp>
-#include <vector>
+
+#include <rw/math/Vector3D.hpp>
 
 namespace rw {
 namespace graspplanning {
-
 
 /**
  * @brief computes the quality as a function of the distance between

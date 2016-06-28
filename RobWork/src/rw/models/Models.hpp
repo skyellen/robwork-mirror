@@ -23,20 +23,21 @@
  * @file rw/models/Models.hpp
  */
 
-#include "Joint.hpp"
 #include "Device.hpp"
-#include "WorkCell.hpp"
 
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rw/math/Q.hpp>
 
 #include <utility>
 #include <vector>
-#include <list>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rw { namespace models {
+
+	class Joint;
+	class WorkCell;
 
     /** @addtogroup models */
     /*@{*/

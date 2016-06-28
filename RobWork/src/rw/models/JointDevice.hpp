@@ -25,13 +25,11 @@
 
 #include "Device.hpp"
 #include "JacobianCalculator.hpp"
-#include "Joint.hpp"
 #include <vector>
 
 namespace rw { namespace models {
 
-    //class Joint;
-
+    class Joint;
 
     /** @addtogroup models */
     /*@{*/

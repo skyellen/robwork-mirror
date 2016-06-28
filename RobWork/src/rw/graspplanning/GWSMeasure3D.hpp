@@ -21,10 +21,7 @@
 
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/graspplanning/GraspQualityMeasure3D.hpp>
-#include <rw/sensor/Contact3D.hpp>
-#include <rw/geometry/ConvexHull3D.hpp>
 #include <rw/geometry/QHullND.hpp>
 
 namespace rw {

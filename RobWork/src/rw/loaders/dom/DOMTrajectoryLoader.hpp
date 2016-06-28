@@ -26,11 +26,9 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
-#include <rw/common/DOMElem.hpp>
-
-#include <rw/loaders/dom/DOMBasisTypes.hpp>
-
 #include <string>
+
+namespace rw { namespace common { class DOMElem; } }
 
 namespace rw {
 namespace loaders {
@@ -198,7 +196,7 @@ public:
 
 private:
 
-    void readTrajectory(rw::common::DOMElem::Ptr element);
+    void readTrajectory(rw::common::Ptr<rw::common::DOMElem> element);
 
     rw::common::Ptr<rw::trajectory::Trajectory<rw::math::Q> > _qTrajectory;
     rw::common::Ptr<rw::trajectory::Trajectory<rw::math::Vector3D<> > > _v3dTrajectory;

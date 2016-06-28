@@ -31,12 +31,6 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /*@{*/
 
-#ifdef RW_USE_DEPRECATED
-    class QToQSamplerPlanner;
-
-    //! A pointer to a QToQSamplerPlanner.
-    typedef rw::common::Ptr<QToQSamplerPlanner> QToQSamplerPlannerPtr;
-#endif
     /**
        @brief Sampled region planner interface.
 

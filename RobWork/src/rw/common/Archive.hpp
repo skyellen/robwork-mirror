@@ -18,23 +18,10 @@
 #ifndef RW_COMMON_ARCHIVE_HPP
 #define RW_COMMON_ARCHIVE_HPP
 
-#include <cstdlib>
-#include <cmath>
-#include <string>
-
-#include <boost/any.hpp>
-#include <cstdio>
-#include <fstream>
-#include <rw/common/macros.hpp>
-#include <boost/any.hpp>
+#include <iosfwd>
 
 namespace rw {
 namespace common {
-
-	class InputArchive;
-	class OutputArchive;
-
-
 	/**
 	 * @brief archive interface for serializaion classes.
 	 */

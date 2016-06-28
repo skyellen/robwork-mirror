@@ -24,15 +24,13 @@
  */
 
 #include <rw/math/Transform3D.hpp>
-#include <rw/models/SerialDevice.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
-#include <rw/models/JacobianCalculator.hpp>
 
 #include "IterativeIK.hpp"
 
-
 namespace rw { namespace models {
+	class JacobianCalculator;
     class SerialDevice;
 }} // end namespaces
 
@@ -91,10 +89,6 @@ namespace rw { namespace invkin {
         virtual void setCheckJointLimits(bool check) {};
 
     private:
-        double _wpos;
-        double _worin;
-        double _scale;
-
         double _maxQuatStep;
 
         const models::SerialDevice* _device;
@@ -102,7 +96,7 @@ namespace rw { namespace invkin {
         common::PropertyMap _properties;
 
         kinematics::FKRange _fkrange;
-        rw::common::Ptr<models::JacobianCalculator> _devJac;
+        rw::common::Ptr<rw::models::JacobianCalculator> _devJac;
 
     };
 

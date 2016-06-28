@@ -21,7 +21,6 @@
 #include <stack>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
-#include <rw/common/TimerUtil.hpp>
 
 
 namespace rw { namespace common {

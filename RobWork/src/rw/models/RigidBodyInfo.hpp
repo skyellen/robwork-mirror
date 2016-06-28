@@ -19,9 +19,6 @@
 #ifndef RW_MODELS_RIGIDBODYINFO_HPP
 #define RW_MODELS_RIGIDBODYINFO_HPP
 
-#include <rw/kinematics/Frame.hpp>
-
-#include <rw/math/Transform3D.hpp>
 #include <rw/math/InertiaMatrix.hpp>
 
 namespace rw{

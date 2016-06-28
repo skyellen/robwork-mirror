@@ -18,7 +18,6 @@
 
 #include "Device.hpp"
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
 using namespace rw::models;

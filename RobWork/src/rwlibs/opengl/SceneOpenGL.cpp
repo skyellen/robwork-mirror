@@ -903,7 +903,7 @@ DrawableGeometryNode::Ptr SceneOpenGL::makeDrawableFrameAxis(const std::string& 
     return drawable;
 }
 
-DrawableGeometryNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,rw::geometry::Geometry::Ptr geom, int dmask){
+DrawableGeometryNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, rw::common::Ptr<rw::geometry::Geometry> geom, int dmask){
     DrawableGeometry::Ptr drawable = ownedPtr( new DrawableGeometry(name, dmask) );
     drawable->addGeometry(geom);
     return drawable;
@@ -917,7 +917,7 @@ DrawableGeometryNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,cons
 
 
 
-DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, Model3D::Ptr model, int dmask){
+DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, rw::common::Ptr<Model3D> model, int dmask){
     RenderModel3D::Ptr render = ownedPtr(new RenderModel3D(model));
     Drawable::Ptr drawable = ownedPtr( new Drawable(render, name, dmask) );
     return drawable;
@@ -936,7 +936,7 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name,const rw::ge
 }
 
 
-DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, Render::Ptr render, int dmask) {
+DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& name, rw::common::Ptr<Render> render, int dmask) {
     Drawable::Ptr drawable = ownedPtr( new Drawable(render, name, dmask) );
     return drawable;
 }

@@ -18,12 +18,11 @@
 #ifndef RW_LOADERS_DOMPROPERTYMAPSAVER_HPP
 #define RW_LOADERS_DOMPROPERTYMAPSAVER_HPP
 
-
-#include <rw/common/PropertyMap.hpp>
-#include <rw/common/PropertyBase.hpp>
-
 #include <rw/common/DOMElem.hpp>
-#include <rw/common/DOMParser.hpp>
+
+namespace rw { namespace common { class DOMParser; } }
+namespace rw { namespace common { class PropertyBase; } }
+namespace rw { namespace common { class PropertyMap; } }
 
 namespace rw {
 namespace loaders {
@@ -51,7 +50,7 @@ public:
      * @param property [in] Property to save
      * @param parent [in] DOMDocument which should contain the property representation
      */
-    static void save(rw::common::PropertyBase::Ptr property, rw::common::DOMElem::Ptr parent);
+    static void save(rw::common::Ptr<rw::common::PropertyBase> property, rw::common::DOMElem::Ptr parent);
 
     /**
      * @brief Saves properties of a PropertyMap as childs to \b element.
@@ -94,7 +93,7 @@ public:
      * @param parser [in] DOMParser to use
      * @return DOMDocument containing properties.
      */
-    static rw::common::DOMElem::Ptr createDOMDocument(const rw::common::PropertyMap& map, rw::common::DOMParser::Ptr parser);
+    static rw::common::DOMElem::Ptr createDOMDocument(const rw::common::PropertyMap& map, rw::common::Ptr<rw::common::DOMParser> parser);
 
 private:
     DOMPropertyMapSaver() {};

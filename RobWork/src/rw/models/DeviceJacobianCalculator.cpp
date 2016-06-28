@@ -17,10 +17,7 @@
 
 
 #include "DeviceJacobianCalculator.hpp"
-#include "JacobianUtil.hpp"
-#include "Accessor.hpp"
 
-#include <rw/models/DependentJoint.hpp>
 #include <rw/kinematics/FKTable.hpp>
 
 #include <boost/foreach.hpp>

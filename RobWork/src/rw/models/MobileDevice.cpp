@@ -17,10 +17,12 @@
 
 
 #include "MobileDevice.hpp"
+#include "RevoluteJoint.hpp"
 
 #include <rw/math/RPY.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 
 using namespace rw::math;
 using namespace rw::models;
@@ -46,8 +48,6 @@ MobileDevice::MobileDevice(
     :
     Device(name),
     _base(base),
-    _wheel1(wheel1),
-    _wheel2(wheel2),
     _jointDevice(name, base, wheel2, collectJoints(wheel1, wheel2), state)
 {
     setDevicePose(Transform3D<>::identity(), state);

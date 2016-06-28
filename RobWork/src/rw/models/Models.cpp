@@ -18,6 +18,9 @@
 
 #include "Models.hpp"
 #include "CompositeDevice.hpp"
+#include "Joint.hpp"
+#include "WorkCell.hpp"
+
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>

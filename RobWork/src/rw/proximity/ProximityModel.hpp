@@ -19,7 +19,11 @@
 #define PROXIMITYMODEL_HPP_
 
 #include <rw/common/Ptr.hpp>
-#include <rw/geometry/Geometry.hpp>
+
+#include <vector>
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rw {
 namespace proximity {
