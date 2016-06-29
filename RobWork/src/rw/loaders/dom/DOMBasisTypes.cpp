@@ -47,6 +47,7 @@ const std::string DOMBasisTypes::EAAId("EAA");
 const std::string DOMBasisTypes::QuaternionId("Quaternion");
 
 const std::string DOMBasisTypes::Rotation2DId("Rotation2D");
+const std::string DOMBasisTypes::Rotation2DAngleId("Rotation2DAngle");
 const std::string DOMBasisTypes::Transform3DId("Transform3D");
 const std::string DOMBasisTypes::Transform2DId("Transform2D");
 const std::string DOMBasisTypes::VelocityScrew6DId("VelocityScrew6D");
@@ -278,6 +279,19 @@ Rotation3D<> DOMBasisTypes::readRotation3DStructure(DOMElem::Ptr element) {
     return Rotation3D<>();
 }
 
+Rotation2D<> DOMBasisTypes::readRotation2DStructure(DOMElem::Ptr element) {
+    if (element->isName(Rotation2DId))
+        return readRotation2D(element, false);
+    if (element->isName(Rotation2DAngleId)) {
+        double angle = readDouble(element, false);
+        return Rotation2D<>(angle);
+    }
+    
+    RW_THROW("Unable to find match \""<<element->getName()<<"\" with (Rotation2D|Angle)");
+    return Rotation2D<>();
+}
+
+
 Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, Transform3DId);
@@ -331,6 +345,50 @@ Transform3D<> DOMBasisTypes::readTransform3D(DOMElem::Ptr element, bool doCheckH
     //rotation.normalize();
     return Transform3D<>(position, rotation);
 }
+
+
+Transform2D<> DOMBasisTypes::readTransform2D(DOMElem::Ptr element, bool doCheckHeader) {
+    if (doCheckHeader)
+        checkHeader(element, Transform3DId);
+
+    Vector2D<> position(0,0);
+    Rotation2D<> rotation(Rotation2D<>::identity());
+
+    {
+    	std::vector<double> values = element->getValueAsDoubleList();
+		if (values.size() == 6) {
+			rotation(0,0) = values[0];
+			rotation(0,1) = values[1];
+			rotation(1,0) = values[2];
+			rotation(1,1) = values[3];			
+
+			position(0) = values[4];
+			position(1) = values[5];			
+		}
+    }
+
+    BOOST_FOREACH(DOMElem::Ptr child, element->getChildren() ){
+		if (child->isName(MatrixId)) {
+			std::vector<double> values = child->getValueAsDoubleList();
+			if (values.size() != 6)
+				RW_THROW("Expected <Matrix> with 6 doubles when parsing Transform2D. Found "<<values.size()<<" values");
+			rotation(0,0) = values[0];
+			rotation(0,1) = values[1];
+			rotation(1,0) = values[2];
+			rotation(1,1) = values[3];
+
+			position(0) = values[4];
+			position(1) = values[5];			
+		} else if (child->isName( PosId)) {
+			position = readVector2D(child, false);
+		} else {
+			rotation = readRotation2D(child);
+		}
+    }
+    //rotation.normalize();
+    return Transform2D<>(position, rotation);
+}
+
 
 VelocityScrew6D<> DOMBasisTypes::readVelocityScrew6D(DOMElem::Ptr element, bool doCheckHeader) {
     if (doCheckHeader)
@@ -479,7 +537,7 @@ bool DOMBasisTypes::readBool(DOMElem::Ptr element, bool doCheckHeader) {
     } catch (...){
     	if(str=="true"){
     		return true;
-    	} else if(str=="true"){
+    	} else if(str=="false"){
     		return false;
     	} else {
     		RW_THROW("Parse error: Could not parse bool, expected true,false,1 or 0 got \""<< str << "\"");
@@ -731,6 +789,13 @@ DOMElem::Ptr DOMBasisTypes::createTransform3D(const Transform3D<>& t, DOMElem::P
     DOMElem::Ptr element = doc->addChild(Transform3DId);
     createElement(PosId, createStringFromArray(t.P()), element);
     createRotation3D(t.R(), element);
+    return element;
+}
+
+DOMElem::Ptr DOMBasisTypes::createTransform2D(const rw::math::Transform2D<>& t, rw::common::DOMElem::Ptr doc) {
+    DOMElem::Ptr element = doc->addChild(Transform2DId);
+    createElement(PosId, createStringFromArray(t.P()), element);
+    createRotation2D(t.R(), element);
     return element;
 }
 

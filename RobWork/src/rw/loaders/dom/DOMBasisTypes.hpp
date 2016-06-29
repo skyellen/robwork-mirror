@@ -75,6 +75,9 @@ public:
     /** @brief Identifier for rw::math::Rotation2D<> in the XML format  */
     static const std::string Rotation2DId;
 
+    /** @brief Identifier for single angle used to specify rw::math::Rotation2D<> in the XML format  */
+    static const std::string Rotation2DAngleId;
+
     /** @brief Identifier for rw::math::Transform2D<> in the XML format  */
     static const std::string Transform2DId;
 
@@ -245,6 +248,19 @@ public:
     static rw::math::Rotation3D<> readRotation3D(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
 
     /**
+     * @brief Returns rw::math::Rotation3D<> element read from \b element
+     *
+     * Read in \b element and returns a rw::math::Rotation3D corresponding to the content.
+     * The content can be either a RPY, EAA, Quaternion or Rotation3D.
+     * If the name does not an exception is thrown.
+     *
+     * @param element [in] Element to read
+     * @return The element read
+     */
+    static rw::math::Rotation3D<> readRotation3DStructure(rw::common::DOMElem::Ptr element);
+
+
+    /**
      * @brief Returns rw::math::Rotation2D<> element read from \b element
      *
      * Read in \b element and returns a rw::math::Rotation2D<> corresponding to the content.
@@ -257,17 +273,19 @@ public:
      */
     static rw::math::Rotation2D<> readRotation2D(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
 
+
     /**
-     * @brief Returns rw::math::Rotation3D<> element read from \b element
+     * @brief Returns rw::math::Rotation2D<> element read from \b element
      *
-     * Read in \b element and returns a rw::math::Rotation3D corresponding to the content.
-     * The content can be either a RPY, EAA, Quaternion or Rotation3D.
+     * Read in \b element and returns a rw::math::Rotation2D corresponding to the content.
+     * The content can be either a Rotation3D or and angle.
      * If the name does not an exception is thrown.
      *
      * @param element [in] Element to read
      * @return The element read
      */
-    static rw::math::Rotation3D<> readRotation3DStructure(rw::common::DOMElem::Ptr element);
+    static rw::math::Rotation2D<> readRotation2DStructure(rw::common::DOMElem::Ptr element);
+
 
     /**
      * @brief Returns rw::math::Transform3D<> element read from \b element
@@ -281,6 +299,20 @@ public:
      * @return The element read
      */
     static rw::math::Transform3D<> readTransform3D(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
+
+    /**
+     * @brief Returns rw::math::Transform2D<> element read from \b element
+     *
+     * Read in \b element and returns a rw::math::Transform2D<> corresponding to the content.
+     * If \b doCheckHeader = true it checks that the elements tag name matches Transform2D.
+     * If the name does not an exception is thrown.
+     *
+     * @param element [in] Element to read
+     * @param doCheckHeader [in] True if the header name should be checked
+     * @return The element read
+     */
+    static rw::math::Transform2D<> readTransform2D(rw::common::DOMElem::Ptr element, bool doCheckHeader = false);
+
 
     /**
      * @brief Returns rw::math::VelocityScrew6D<> element read from \b element
@@ -668,6 +700,21 @@ public:
      * @return Pointer to the newly created DOMElement
      */
     static rw::common::DOMElem::Ptr createTransform3D(const rw::math::Transform3D<>& trans, rw::common::DOMElem::Ptr doc);
+
+
+    /**
+     * @brief Creates a DOMElement to represent \b trans
+     *
+     * Creates a DOMElement owned by \b doc and representing \b trans
+     *
+     * This method may throw a rw::comon::Exception in case of errors
+     *
+     * @param trans [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
+    static rw::common::DOMElem::Ptr createTransform2D(const rw::math::Transform2D<>& trans, rw::common::DOMElem::Ptr doc);
+
 
     /**
      * @brief Creates a DOMElement to represent \b vs
