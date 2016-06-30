@@ -19,10 +19,6 @@
 #define _RWLIBS_CSG_CSGMODELFACTORY_HPP
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/geometry/TriMesh.hpp>
-
-#include <iostream>
 
 #include "CSGModel.hpp"
 

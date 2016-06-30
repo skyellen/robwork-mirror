@@ -23,7 +23,6 @@
 #include <rw/math/Vector3D.hpp>
 
 #include <rw/graphics/Render.hpp>
-#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace opengl {
 /** @addtogroup opengl */

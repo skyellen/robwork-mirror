@@ -6,6 +6,8 @@
  */
 #include "RenderScan.hpp"
 #include <rw/math/Math.hpp>
+#include <rw/sensor/Scanner25DModel.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using namespace rwlibs::opengl;
 using namespace rw::math;
@@ -26,7 +28,7 @@ RenderScan::RenderScan():
 
 RenderScan::RenderScan(const rw::sensor::Scanner25DModel::Ptr scanner)
 {
-    _scanner = scanner;
+    //_scanner = scanner;
     _minDepth = (float)scanner->getRange().first;
     _maxDepth = (float)scanner->getRange().second;
 

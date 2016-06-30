@@ -19,17 +19,17 @@
 #ifndef RWLIBS_CALIBRATION_JOINTENCODERJACOBIAN_HPP_
 #define RWLIBS_CALIBRATION_JOINTENCODERJACOBIAN_HPP_
 
-#include <rw/math.hpp>
 //#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
-#include "DHLinkJacobian.hpp"
-#include "JointEncoderCalibration.hpp"
 #include "JacobianBase.hpp"
-#include <Eigen/Geometry>
-#include <rw/models.hpp>
+#include <Eigen/Core>
+
+namespace rw { namespace models { class Joint; } }
+namespace rw { namespace models { class JointDevice; } }
 
 namespace rwlibs {
 namespace calibration {
+class JointEncoderCalibration;
 
 /** @addtogroup calibration */
 /*@{*/
@@ -47,7 +47,7 @@ public:
 	/**
 	 * @brief Constructs JointEncoderJacobian for \bcalibration
 	 */
-	JointEncoderJacobian(JointEncoderCalibration::Ptr calibration);
+	JointEncoderJacobian(rw::common::Ptr<JointEncoderCalibration> calibration);
 
 	/**
 	 * @brief Destructor
@@ -58,12 +58,12 @@ protected:
 	/**
 	 * @copydoc Jacobian::doComputeJacobian
 	 */
-	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
+	virtual Eigen::MatrixXd doComputeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state);
 
 private:
-	JointEncoderCalibration::Ptr _calibration;
-	rw::models::JointDevice::Ptr _device;
-	rw::models::Joint::Ptr _joint;
+	rw::common::Ptr<JointEncoderCalibration> _calibration;
+	rw::common::Ptr<rw::models::JointDevice> _device;
+	rw::common::Ptr<rw::models::Joint> _joint;
 	int _jointIndex;
 };
 

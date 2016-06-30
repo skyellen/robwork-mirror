@@ -23,9 +23,6 @@
    @file RRTNode.hpp
 */
 
-#include <vector>
-#include <boost/foreach.hpp>
-
 namespace rwlibs { namespace pathplanners {
 
     /** @addtogroup pathplanners */

@@ -17,8 +17,13 @@
 
 
 #include "WorkCellJacobian.hpp"
+#include "WorkCellCalibration.hpp"
+#include "CompositeJacobian.hpp"
+#include "ParallelAxisDHJacobian.hpp"
+#include "FixedFrameJacobian.hpp"
+#include "JointEncoderJacobian.hpp"
 
-#include <rw/models.hpp>
+#include <rw/models/DHParameterSet.hpp>
 
 namespace rwlibs {
 namespace calibration {

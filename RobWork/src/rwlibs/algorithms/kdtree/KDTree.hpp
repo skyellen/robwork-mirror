@@ -24,8 +24,6 @@
 #include <list>
 #include <algorithm>
 #include <queue>
-#include <rw/math/Q.hpp>
-#include <rw/math/MetricUtil.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/common/macros.hpp>
 #include <float.h>

@@ -18,7 +18,6 @@ limitations under the License.
 #include "BeamGeometry.hpp"
 
 #include <math.h>
-#include <iostream>
 
 #include <rw/common/macros.hpp>
 

@@ -20,6 +20,8 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/Random.hpp>
+#include <rw/sensor/Scanner25D.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using namespace rwlibs::simulation;
 using namespace rw::sensor;

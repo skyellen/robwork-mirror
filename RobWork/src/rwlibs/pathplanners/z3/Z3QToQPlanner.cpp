@@ -19,7 +19,7 @@
 #include "Z3QToQPlanner.hpp"
 
 #include <rwlibs/pathplanners/rrt/RRTTree.hpp>
-#include <rw/pathplanning/PlannerUtil.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 
 using namespace rw::math;
 using namespace rw::pathplanning;

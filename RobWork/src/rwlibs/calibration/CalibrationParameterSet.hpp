@@ -21,7 +21,6 @@
 
 #include "CalibrationParameter.hpp"
 #include <Eigen/Core>
-#include <rw/kinematics.hpp>
 
 namespace rwlibs {
 	namespace calibration {

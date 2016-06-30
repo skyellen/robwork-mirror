@@ -18,7 +18,6 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 #include "BeamGeometryCuboid.hpp"
 
 #include <math.h>
-#include <iostream>
 
 #include "rwlibs/softbody/numerics/TrapMethod.hpp"
 

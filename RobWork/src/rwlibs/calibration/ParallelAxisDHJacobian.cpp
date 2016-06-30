@@ -6,6 +6,9 @@
 */
 
 #include "ParallelAxisDHJacobian.hpp"
+#include "ParallelAxisDHCalibration.hpp"
+
+#include <rw/kinematics/Kinematics.hpp>
 
 namespace rwlibs {
 	namespace calibration { 

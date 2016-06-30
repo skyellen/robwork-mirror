@@ -24,19 +24,12 @@
 */
 
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/math/Metric.hpp>
 
-#include <rw/kinematics/State.hpp>
-
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
-
-#include <vector>
-#include <list>
-#include <cmath>
-#include <climits>
+namespace rw { namespace pathplanning { class PlannerConstraint; } }
+namespace rw { namespace pathplanning { class QConstraint; } }
+namespace rw { namespace pathplanning { class QSampler; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -69,7 +62,7 @@ namespace rwlibs { namespace pathplanners {
            the stop criteria returns true.
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::pathplanning::QToQPlanner::Ptr localPlanner,
             int nodeCnt = -1,
             int repeatCnt = -1);
@@ -87,7 +80,7 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::models::Device::Ptr device);
+			rw::common::Ptr<rw::models::Device> device);
 
         /**
            @brief Sliding local planner.
@@ -118,8 +111,8 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeSlidingQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr directionSampler,
-			rw::pathplanning::QConstraint::Ptr boundsConstraint,
+			rw::common::Ptr<rw::pathplanning::QSampler> directionSampler,
+			rw::common::Ptr<rw::pathplanning::QConstraint> boundsConstraint,
 			rw::math::QMetric::Ptr metric,
             double extend,
             double slideImprovement = -1);
@@ -149,7 +142,7 @@ namespace rwlibs { namespace pathplanners {
         */
         static rw::pathplanning::QToQPlanner::Ptr makeSlidingQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::Device> device,
 			rw::math::QMetric::Ptr metric = 0,
             double extend = -1,
             double slideImprovement = -1);

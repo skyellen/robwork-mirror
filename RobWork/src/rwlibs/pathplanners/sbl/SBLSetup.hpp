@@ -24,11 +24,11 @@
 */
 
 #include "SBLOptions.hpp"
-#include "SBLExpand.hpp"
-#include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rw/models/Device.hpp>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs { namespace pathplanners {
+class SBLExpand;
 
     /** @addtogroup pathplanners */
     /*@{*/
@@ -72,7 +72,7 @@ namespace rwlibs { namespace pathplanners {
         SBLSetup make(
 			rw::pathplanning::QConstraint::Ptr constraint,
 			rw::pathplanning::QEdgeConstraintIncremental::Ptr edgeConstraint,
-            SBLExpandPtr expansion,
+            rw::common::Ptr<SBLExpand> expansion,
 			rw::math::QMetric::Ptr metric,
             double connectRadius);
 
@@ -107,7 +107,7 @@ namespace rwlibs { namespace pathplanners {
 			rw::pathplanning::QConstraint::Ptr constraint,
 			rw::pathplanning::QEdgeConstraintIncremental::Ptr edgeConstraint,
 //            const rw::pathplanning::PlannerConstraint& constraint,
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::Device> device,
             double expandRadius = -1,
             double connectRadius = -1);
 

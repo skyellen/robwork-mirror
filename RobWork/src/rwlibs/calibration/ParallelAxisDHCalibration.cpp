@@ -3,6 +3,9 @@
 */
 
 #include "ParallelAxisDHCalibration.hpp"
+
+#include <rw/models/DHParameterSet.hpp>
+
 using namespace rw::math;
 
 namespace rwlibs {

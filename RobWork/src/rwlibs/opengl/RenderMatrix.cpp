@@ -17,8 +17,8 @@
 
 #include "RenderMatrix.hpp"
 
-#include <iostream>
 #include <rw/math/Math.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using namespace rwlibs::opengl;
 using namespace rw::math;

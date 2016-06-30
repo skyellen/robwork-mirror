@@ -27,9 +27,9 @@
 
 #include "SBLSetup.hpp"
 
-#include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/StopCriteria.hpp>
-#include <rw/math/Q.hpp>
+namespace rw { namespace math { class Q; } }
+namespace rw { namespace pathplanning { class StopCriteria; } }
+namespace rw { namespace pathplanning { class QSampler; } }
 
 namespace rwlibs { namespace pathplanners {
 

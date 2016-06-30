@@ -17,12 +17,10 @@
 
 
 #include "SimulatedCamera.hpp"
+#include "FrameGrabber.hpp"
 
-#include <rw/kinematics/Frame.hpp>
+#include <rw/sensor/CameraModel.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/math/Transform3D.hpp>
-
-#include <cmath>
 
 using namespace rw::sensor;
 using namespace rw::kinematics;
@@ -165,3 +163,10 @@ void SimulatedCamera::setFrameRate(double framerate)
     _frameRate = framerate;
 }
 
+unsigned int SimulatedCamera::getWidth() const {
+	return _frameGrabber->getWidth();
+}
+
+unsigned int SimulatedCamera::getHeight() const {
+	return _frameGrabber->getHeight();
+}

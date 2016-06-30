@@ -5,8 +5,6 @@
 
 #include "CalibrationMeasurement.hpp"
 
-#include <rw/kinematics.hpp>
-
 using namespace rwlibs::calibration;
 
 

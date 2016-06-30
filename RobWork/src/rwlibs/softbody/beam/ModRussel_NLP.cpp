@@ -17,9 +17,6 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include "ModRussel_NLP.hpp"
 
-#include <cassert>
-#include <iostream>
-
 #include "rwlibs/softbody/beam/RusselIntegrand.hpp"
 #include "ModRusselBeamBase.hpp"
 #include "rwlibs/softbody/numerics/FdUtil.hpp"

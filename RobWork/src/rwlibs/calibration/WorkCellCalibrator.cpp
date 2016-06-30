@@ -1,7 +1,9 @@
 #include "WorkCellCalibrator.hpp"
-#include "WorkCellExtrinsicCalibrator.hpp"
+#include "Calibration.hpp"
+#include "CalibrationMeasurement.hpp"
 #include "nlls/NLLSNewtonSolver.hpp"
 
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/EAA.hpp>
 
 #include <Eigen/Eigenvalues>

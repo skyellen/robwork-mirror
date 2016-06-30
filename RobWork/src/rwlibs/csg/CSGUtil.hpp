@@ -18,12 +18,12 @@
 #ifndef _RWLIBS_CSG_CSGUTIL_HPP
 #define _RWLIBS_CSG_CSGUTIL_HPP
 
-#include "CSGModel.hpp"
-
-
+#include <string>
 
 namespace rwlibs {
 namespace csg {
+
+class CSGModel;
 	
 /**
  * @brief A CSG utility class

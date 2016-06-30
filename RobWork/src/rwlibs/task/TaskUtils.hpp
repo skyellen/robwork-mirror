@@ -21,7 +21,6 @@
 #define RWLIBS_TASK_TASKUTILS_HPP
 
 #include "Task.hpp"
-#include "Motion.hpp"
 #include "Target.hpp"
 
 namespace rwlibs {

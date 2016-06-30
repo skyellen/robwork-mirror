@@ -26,9 +26,6 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/common/PropertyMap.hpp>
-// Forward declarations
-
-//namespace rw { namespace common { class PropertyMap; }}
 
 namespace rwlibs {
 namespace assembly {

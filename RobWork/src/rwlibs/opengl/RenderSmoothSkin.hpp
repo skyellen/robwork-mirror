@@ -21,8 +21,9 @@
 #include <rw/graphics/Render.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs { namespace opengl {
 

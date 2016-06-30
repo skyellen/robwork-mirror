@@ -27,12 +27,8 @@
 
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rw/models/Device.hpp>
 
 #include <vector>
-#include <list>
-#include <cmath>
-#include <climits>
 
 namespace rwlibs { namespace pathplanners {
 

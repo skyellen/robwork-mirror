@@ -21,7 +21,6 @@
 
 //! @file RenderMatrix.hpp
 
-#include <rwlibs/os/rwgl.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include <rw/graphics/Render.hpp>

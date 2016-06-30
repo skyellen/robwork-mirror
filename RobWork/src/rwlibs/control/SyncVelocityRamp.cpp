@@ -20,6 +20,7 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::math;
 using namespace rw::models;

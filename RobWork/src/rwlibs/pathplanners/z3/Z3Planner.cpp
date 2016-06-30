@@ -21,6 +21,7 @@
 
 #include <rw/math/MetricUtil.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 
 using namespace rw::math;
 using namespace rw::pathplanning;

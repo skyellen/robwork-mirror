@@ -22,6 +22,7 @@
 #include <rw/invkin/JacobianIKSolver.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
 #include <rwlibs/assembly/AssemblyResult.hpp>

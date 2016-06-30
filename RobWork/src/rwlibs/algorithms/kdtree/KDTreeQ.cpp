@@ -17,8 +17,3 @@
 
 
 #include "KDTreeQ.hpp"
-
-using namespace rwlibs::algorithms;
-
-
-

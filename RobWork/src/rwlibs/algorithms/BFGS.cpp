@@ -1,5 +1,6 @@
 #include "BFGS.hpp"
-#include "rw/common/macros.hpp"
+
+#include <rw/common/Log.hpp>
 
 using namespace rwlibs::algorithms;
 

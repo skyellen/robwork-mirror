@@ -20,9 +20,7 @@
 
 //! @file SimulatedScanner2D.hpp
 
-#include <rw/math/Constants.hpp>
 #include <rw/sensor/Scanner2D.hpp>
-#include "FrameGrabber25D.hpp"
 #include "SimulatedSensor.hpp"
 #include <rw/sensor/Scanner2DModel.hpp>
 
@@ -30,6 +28,7 @@
 namespace rwlibs { namespace simulation {
     // forward declaration
 	class Simulator;
+	class FrameGrabber25D;
 	//! @addtogroup simulation
 	// @{
 
@@ -48,7 +47,7 @@ namespace rwlibs { namespace simulation {
          * @param framegrabber [in] the framegrabber used for grabbing 2.5D images
          */
         SimulatedScanner2D(const std::string& name, rw::kinematics::Frame* frame,
-                FrameGrabber25D::Ptr framegrabber);
+        		rw::common::Ptr<FrameGrabber25D> framegrabber);
 
         /**
          * @brief constructor
@@ -59,7 +58,7 @@ namespace rwlibs { namespace simulation {
         SimulatedScanner2D(const std::string& name,
                 const std::string& desc,
                 rw::kinematics::Frame* frame,
-                FrameGrabber25D::Ptr framegrabber);
+				rw::common::Ptr<FrameGrabber25D> framegrabber);
 
         /**
          * @brief destructor
@@ -114,16 +113,13 @@ namespace rwlibs { namespace simulation {
         rw::sensor::Scanner2DModel::Ptr getSensorModel();
 
         //! @copydoc SimulatedSensor::getAngularRange
-        virtual double getAngularRange() {
-            return _framegrabber->getFieldOfViewY();
-        }
+        virtual double getAngularRange();
 
         //! @copydoc SimulatedSensor::getWidth
-        virtual size_t getMeasurementCount() const {
-            return _framegrabber->getWidth()*_framegrabber->getHeight();
-        }
+        virtual size_t getMeasurementCount() const;
+
     private:
-        FrameGrabber25D::Ptr _framegrabber;
+        rw::common::Ptr<FrameGrabber25D> _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
         rw::sensor::Scanner2DModel::Ptr _smodel;

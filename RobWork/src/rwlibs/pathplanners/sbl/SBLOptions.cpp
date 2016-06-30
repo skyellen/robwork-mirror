@@ -17,7 +17,6 @@
 
 
 #include "SBLOptions.hpp"
-#include <rw/pathplanning/PlannerUtil.hpp>
 
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;

@@ -22,12 +22,12 @@
 //! @file KinematicSimulator.hpp
 
 #include "Simulator.hpp"
-#include "SimulatedSensor.hpp"
-#include "SimulatedController.hpp"
-#include <rwlibs/control/Controller.hpp>
 
 namespace rwlibs {
 namespace simulation {
+	class SimulatedSensor;
+	class SimulatedController;
+
     //! @addtogroup simulation
 	// @{
     /**

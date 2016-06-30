@@ -16,6 +16,10 @@
  ********************************************************************************/
 
 #include "DrawableGeometry.hpp"
+#include "Drawable.hpp"
+#include "RenderLines.hpp"
+#include "RenderFrame.hpp"
+#include "RenderGeometry.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -35,6 +39,10 @@ DrawableGeometry::DrawableGeometry(
 
 DrawableGeometry::~DrawableGeometry(){}
 
+
+std::vector<rw::common::Ptr<rw::graphics::Render> > DrawableGeometry::getRenders() const{
+	return _drawable->getRenders();
+}
 
 void DrawableGeometry::setColor(double r, double g, double b, double alpha){
     _rgb = Vector3D<>(r,g,b);
@@ -93,3 +101,31 @@ void DrawableGeometry::initLines(){
         _drawable->addRender(_rlines);
     }
 }
+
+void DrawableGeometry::draw(const rw::graphics::DrawableNode::RenderInfo& info) const{ _drawable->draw(info); };
+
+void DrawableGeometry::setHighlighted(bool b){ _drawable->setHighlighted(b); }
+
+bool DrawableGeometry::isHighlighted() const{ return _drawable->isHighlighted(); }
+
+void DrawableGeometry::setDrawType(rw::graphics::DrawableNode::DrawType drawType){ _drawable->setDrawType(drawType); }
+
+void DrawableGeometry::setTransparency(float alpha){ _drawable->setTransparency(alpha); }
+
+float DrawableGeometry::getTransparency(){ return _drawable->getTransparency(); }
+
+void DrawableGeometry::setScale(float scale){ _drawable->setScale(scale); }
+
+float DrawableGeometry::getScale() const{ return _drawable->getScale(); }
+
+void DrawableGeometry::setVisible(bool enable) { _drawable->setVisible(enable); }
+
+bool DrawableGeometry::isVisible() { return _drawable->isVisible(); }
+
+const rw::math::Transform3D<>& DrawableGeometry::getTransform() const{ return _drawable->getTransform(); }
+
+void DrawableGeometry::setTransform(const rw::math::Transform3D<>& t3d){ _drawable->setTransform(t3d); }
+
+void DrawableGeometry::setMask(unsigned int mask){ _drawable->setMask(mask); }
+
+unsigned int DrawableGeometry::getMask() const { return _drawable->getMask(); }

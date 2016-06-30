@@ -17,6 +17,8 @@
 
 #include "RenderForceTorque.hpp"
 
+#include <rw/math/EAA.hpp>
+
 using namespace rw::graphics;
 using namespace rw::math;
 using namespace rwlibs::opengl;

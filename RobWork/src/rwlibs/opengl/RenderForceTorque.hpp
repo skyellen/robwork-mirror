@@ -27,7 +27,6 @@
 #include <rwlibs/os/rwgl.hpp>
 
 #include <rw/graphics/Render.hpp>
-#include <rw/math/EAA.hpp>
 
 namespace rwlibs {
 namespace opengl {

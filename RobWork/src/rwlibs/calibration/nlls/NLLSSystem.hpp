@@ -19,7 +19,7 @@
 #define RWLIBS_CALIBRATION_NLLSSYSTEM_HPP_
 
 #include <Eigen/Core>
-#include <rw/common.hpp>
+#include <rw/common/Ptr.hpp>
 
 namespace rwlibs {
 namespace calibration {

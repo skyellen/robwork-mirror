@@ -20,12 +20,11 @@
 
 //! @file RenderScan.hpp
 
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/geometry/PointCloud.hpp>
-#include <rw/sensor/Scanner25DModel.hpp>
 
-#include "RWGLTexture.hpp"
 #include <rw/graphics/Render.hpp>
+
+namespace rw { namespace sensor { class Scanner25DModel; } }
 
 namespace rwlibs {
 namespace opengl {
@@ -53,7 +52,7 @@ namespace opengl {
          * @param scanner
          * @return
          */
-        RenderScan(const rw::sensor::Scanner25DModel::Ptr scanner);
+        RenderScan(const rw::common::Ptr<rw::sensor::Scanner25DModel> scanner);
 
         //! @brief destructor
 		virtual ~RenderScan();
@@ -90,7 +89,7 @@ namespace opengl {
                   double alpha) const;
 
 	private:
-        rw::sensor::Scanner25DModel::Ptr _scanner;
+        //rw::sensor::Scanner25DModel::Ptr _scanner;
         rw::geometry::PointCloud _img;
         float _minDepth,_maxDepth;
 	};

@@ -35,7 +35,7 @@
 
 
 
-#include <rw/common/LogWriter.hpp>
+namespace rw { namespace common { class LogWriter; } }
 
 
 /*

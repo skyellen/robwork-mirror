@@ -19,8 +19,9 @@
 #define RWLIBS_CALIBRATION_PARALLELAXISDHCALIBRATION_HPP_
 
 #include "CalibrationBase.hpp"
-#include <rw/models.hpp>
-#include <rw/models/DHParameterSet.hpp>
+#include <rw/models/Joint.hpp>
+
+namespace rw { namespace models { class DHParameterSet; } }
 
 namespace rwlibs {
 namespace calibration {

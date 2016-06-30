@@ -18,20 +18,11 @@
 #include "CSGUtil.hpp"
 
 #include <rw/loaders/model3d/STLFile.hpp>
-#include "CSGConvert.hpp"
+#include "CSGModel.hpp"
 
-
-
-using namespace std;
-using namespace rw;
-using namespace rw::common;
-using namespace rw::math;
-using namespace rw::geometry;
-using namespace rwlibs::csg;
 using namespace rw::loaders;
-
+using namespace rwlibs::csg;
 	
 void CSGUtil::saveToStl(const std::string& filename, CSGModel& csgmodel) {
 	STLFile::save(*csgmodel.getTriMesh(), filename);
 }
-

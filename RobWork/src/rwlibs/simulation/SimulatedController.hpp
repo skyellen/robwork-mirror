@@ -20,12 +20,13 @@
 
 //! @file SimulatedController.hpp
 
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rw/models/ControllerModel.hpp>
 #include <rw/kinematics/Stateless.hpp>
 #include "Simulator.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 namespace simulation {

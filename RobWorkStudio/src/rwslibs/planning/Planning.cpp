@@ -484,7 +484,7 @@ void Planning::optimize() {
                     _state));
 
 			ClearanceCalculatorPtr clearanceCalculator = ownedPtr(new MinimumClearanceCalculator(distanceCalculator));
-            ClearanceOptimizer optimizer(_workcell,
+            ClearanceOptimizer optimizer(//_workcell,
                                          device,
                                          _state,
                                          getMetric(),

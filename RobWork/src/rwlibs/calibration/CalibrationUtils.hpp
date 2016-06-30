@@ -18,9 +18,10 @@
 #ifndef RWLIBS_CALIBRATION_CALIBRATION_UTILS_HPP_
 #define RWLIBS_CALIBRATION_CALIBRATION_UTILS_HPP_
 
-#include <rw/kinematics.hpp>
-#include <rw/models.hpp>
 #include "CalibrationMeasurement.hpp"
+
+namespace rw { namespace models { class WorkCell; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 	namespace calibration {
@@ -42,7 +43,7 @@ namespace rwlibs {
 			 * @param workcellState [in] The state of the workcell to use.
 			 * @param output [in/out] The log write to which the information is written.
 			 */
-			static void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::WorkCell::Ptr workcell, const rw::kinematics::State& workcellState, rw::common::LogWriter& output);
+			static void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::common::Ptr<rw::models::WorkCell> workcell, const rw::kinematics::State& workcellState, rw::common::LogWriter& output);
 			
 			/**
 			 * @brief Prints a summary of the errors between model and measurements.
@@ -53,7 +54,7 @@ namespace rwlibs {
 			 * @param workcellState [in] The state of the workcell to use.
 			 * @param output [in/out] The output stream to which the information is written.
 			 */
-			static void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::models::WorkCell::Ptr workcell, const rw::kinematics::State& workcellState, std::ostream& outstream);
+			static void printMeasurementSummary(const std::vector<CalibrationMeasurement::Ptr>& measurements, rw::common::Ptr<rw::models::WorkCell> workcell, const rw::kinematics::State& workcellState, std::ostream& outstream);
 		private:
 
 			/**

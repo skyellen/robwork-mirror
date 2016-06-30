@@ -22,6 +22,7 @@
 #include <rw/math/Math.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::math;
 using namespace rw::models;

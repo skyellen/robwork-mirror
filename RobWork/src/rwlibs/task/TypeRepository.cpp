@@ -15,9 +15,17 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "TypeRepository.hpp"
+
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
 
 using namespace rwlibs::task;
 
 TypeRepository* TypeRepository::_repository = NULL;
+
+TypeRepository::TypeRepository() {
+    _typeMap[typeid(rw::math::Q).name()] = Type::Q;
+    _typeMap[typeid(rw::math::Transform3D<>).name()] = Type::Transform3D;
+    _next = Type::User;
+}

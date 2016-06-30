@@ -22,9 +22,9 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
-#include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs {
 namespace algorithms {

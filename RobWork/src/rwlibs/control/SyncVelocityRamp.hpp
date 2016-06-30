@@ -19,8 +19,9 @@
 #ifndef RW_CONTROL_SYNCVELOCITYRAMP_HPP
 #define RW_CONTROL_SYNCVELOCITYRAMP_HPP
 
-#include <rw/models/Device.hpp>
 #include <rw/math/Q.hpp>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rw {
 namespace control {

@@ -4,9 +4,9 @@
 */
 
 #include "FixedFrameJacobian.hpp"
+#include "FixedFrameCalibration.hpp"
 
-#include <rw/kinematics.hpp>
-
+#include <rw/kinematics/Kinematics.hpp>
 
 //#include "DHLinkJacobian.hpp"
 

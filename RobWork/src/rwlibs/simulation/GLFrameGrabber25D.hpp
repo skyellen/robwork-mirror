@@ -23,10 +23,10 @@
 #include "FrameGrabber25D.hpp"
 
 #include <rw/graphics/SceneViewer.hpp>
-#include <rw/math/Constants.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs { namespace simulation {
     //! @addtogroup simulation
@@ -101,9 +101,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc FrameGrapper25D::getFieldOfViewY
          */
-        virtual double getFieldOfViewY() {
-            return _fieldOfView * rw::math::Deg2Rad;
-        }
+        virtual double getFieldOfViewY();
 
     private:
         double _fieldOfView; // in the y-axis

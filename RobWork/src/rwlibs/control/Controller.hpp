@@ -18,7 +18,6 @@
 #ifndef RWLIBS_CONTROL_CONTROLLER_HPP_
 #define RWLIBS_CONTROL_CONTROLLER_HPP_
 
-#include <iostream>
 #include <string>
 
 #include <rw/common/Ptr.hpp>

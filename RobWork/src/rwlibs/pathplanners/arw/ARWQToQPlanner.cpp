@@ -19,10 +19,8 @@
 #include "ARWQToQPlanner.hpp"
 #include <rw/common/macros.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
-#include <rw/models/Models.hpp>
 #include <boost/foreach.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rw/math/Math.hpp>
 
 using namespace rw::math;
 using namespace rw::models;

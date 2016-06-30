@@ -18,7 +18,8 @@
 #include "RenderImage.hpp"
 #include "RWGLTexture.hpp"
 
-#include <iostream>
+#include <rw/sensor/Image.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using rw::common::ownedPtr;
 using namespace rwlibs::opengl;

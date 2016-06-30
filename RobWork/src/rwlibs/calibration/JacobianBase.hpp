@@ -11,6 +11,10 @@
 #include "CalibrationBase.hpp"
 #include "Jacobian.hpp"
 
+#include <rw/math/Transform3D.hpp>
+
+#include <Eigen/Geometry>
+
 namespace rwlibs {
 namespace calibration {
 /** @addtogroup calibration */
@@ -35,7 +39,7 @@ public:
 	/**
 	 * @copydoc Jacobian::computeJacobian()
 	 */
-	virtual Eigen::MatrixXd computeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
+	virtual Eigen::MatrixXd computeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state);
 	
 	/**
 	 * @copydoc Jacobian::takeStep()
@@ -51,7 +55,7 @@ protected:
 	/**
 	 * @copydoc Jacobian::doComputeJacobian()
 	 */
-	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state) = 0;
+	virtual Eigen::MatrixXd doComputeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state) = 0;
 	
 	/**
 	 * @brief Jacobian::doTakeStep()

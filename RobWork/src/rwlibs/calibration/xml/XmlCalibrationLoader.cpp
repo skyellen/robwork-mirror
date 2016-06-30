@@ -21,6 +21,8 @@
 #include <rw/common/DOMParser.hpp>
 
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/WorkCell.hpp>
 
 using namespace rwlibs::calibration;
 using namespace rw::common;

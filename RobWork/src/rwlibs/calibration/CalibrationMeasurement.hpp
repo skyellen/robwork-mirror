@@ -18,11 +18,10 @@
 #ifndef RWLIBS_CALIBRATION_CalibrationMeasurement_HPP
 #define RWLIBS_CALIBRATION_CalibrationMeasurement_HPP
 
-#include <rw/math.hpp>
-#include <rw/models.hpp>
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
 
 #include <Eigen/Core>
-#include <Eigen/StdVector>
 
 namespace rwlibs {
 namespace calibration {

@@ -18,15 +18,16 @@
 #ifndef RWLIBS_CALIBRATION_WORKCELLEXTRINSICCALIBRATOR_HPP
 #define RWLIBS_CALIBRATION_WORKCELLEXTRINSICCALIBRATOR_HPP
 
-#include <rw/math.hpp>
+#include <rw/math/Transform3D.hpp>
+
 #define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
-#include "CalibrationMeasurement.hpp"
-#include "WorkCellCalibration.hpp"
-#include <rw/models.hpp>
+#include <rw/models/WorkCell.hpp>
 
 namespace rwlibs {
 namespace calibration {
+class CalibrationMeasurement;
+class WorkCellCalibration;
 
 /** @addtogroup calibration */
 /*@{*/
@@ -62,7 +63,7 @@ public:
 	/** 
 	 * @brief Set the measurements to use
 	 */
-	void setMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements);
+	void setMeasurements(const std::vector<rw::common::Ptr<CalibrationMeasurement> >& measurements);
 
 
 	void setUseRotation(bool useRotation) {
@@ -83,11 +84,11 @@ public:
 	 * @brief Run the calibration and store result in \bworkcellCalibration
 	 * @param workcellCalibration [out] The result is stored in this parameter.
 	 */
-	void calibrate(WorkCellCalibration::Ptr workcellCalibration);
+	void calibrate(rw::common::Ptr<WorkCellCalibration> workcellCalibration);
 
 private:
 	rw::models::WorkCell::Ptr _workcell;
-	std::vector<CalibrationMeasurement::Ptr> _measurements;
+	std::vector<rw::common::Ptr<CalibrationMeasurement> > _measurements;
 
 	class Device2SensorResult {
 	public:
@@ -98,12 +99,12 @@ private:
 		int cnt;
 	};
 
-	void calibrateForSingleDevice(const std::string& deviceName, const std::vector<CalibrationMeasurement::Ptr>& measurements, std::vector<Device2SensorResult>& results);
+	void calibrateForSingleDevice(const std::string& deviceName, const std::vector<rw::common::Ptr<CalibrationMeasurement> >& measurements, std::vector<Device2SensorResult>& results);
 	
-	void calibrateSingleDeviceAndSensor(const std::vector<CalibrationMeasurement::Ptr>& measurements, Device2SensorResult& result);
+	void calibrateSingleDeviceAndSensor(const std::vector<rw::common::Ptr<CalibrationMeasurement> >& measurements, Device2SensorResult& result);
 
 	rw::math::Transform3D<> getFK(const std::string& device, const std::string& markerFrame, const rw::math::Q& q);
-	rw::math::Transform3D<> getFK(CalibrationMeasurement::Ptr measurement);
+	rw::math::Transform3D<> getFK(rw::common::Ptr<CalibrationMeasurement> measurement);
 
 	bool _useRotation;
 	bool _usePosition;

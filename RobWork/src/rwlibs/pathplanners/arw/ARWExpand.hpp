@@ -26,8 +26,9 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/trajectory/Path.hpp>
+
+namespace rw { namespace pathplanning { class PlannerConstraint; } }
 
 namespace rwlibs { namespace pathplanners {
 

@@ -7,7 +7,7 @@
 
 #include "WorkCellCalibration.hpp"
 
-#include <rw/models.hpp>
+#include <rw/models/SerialDevice.hpp>
 
 #include <boost/foreach.hpp>
 

@@ -20,16 +20,12 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/ublas/vector.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Vector2D.hpp>
-
-#include "BeamGeometryCuboid.hpp"
-#include "ModRusselBeamBase.hpp"
-
-
 
 namespace rwlibs {
 namespace softbody {
+class BeamGeometryCuboid;
+class ModRusselBeamBase;
+
 /** @addtogroup softbody */
 /*@{*/
     /**

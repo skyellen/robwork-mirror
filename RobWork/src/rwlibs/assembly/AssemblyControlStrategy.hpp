@@ -25,12 +25,11 @@
  */
 
 #include <rw/common/Ptr.hpp>
-#include <rw/common/ExtensionPoint.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
 
 // Forward declarations
 namespace rw { namespace common { class PropertyMap; }}
+namespace rw { namespace kinematics { class State; }}
 namespace rw { namespace models { class WorkCell; }}
 namespace rw { namespace sensor { class FTSensor; }}
 

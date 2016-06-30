@@ -18,17 +18,18 @@
 #ifndef RWLIBS_CALIBRATION_FIXEDFRAMEJACOBIAN_HPP_
 #define RWLIBS_CALIBRATION_FIXEDFRAMEJACOBIAN_HPP_
 
-#include <rw/math.hpp>
 //#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
 #include "JacobianBase.hpp"
-#include "FixedFrameCalibration.hpp"
 #include <Eigen/Geometry>
-#include <rw/kinematics.hpp>
-#include <rw/models.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class FixedFrame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 namespace calibration {
+class FixedFrameCalibration;
 
 /** @addtogroup calibration */
 /*@{*/
@@ -45,7 +46,7 @@ public:
 	/**
 	 * @brief Constructs FixedFrameJacobian for \bcalibration
 	 */
-	FixedFrameJacobian(FixedFrameCalibration::Ptr calibration);
+	FixedFrameJacobian(rw::common::Ptr<FixedFrameCalibration> calibration);
 
 	/**
 	 * @destructor
@@ -56,11 +57,11 @@ protected:
 	/**
 	 * @copydoc JacobianBase::doComputeJacobian
 	 */
-	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
+	virtual Eigen::MatrixXd doComputeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state);
 
 private:
-	FixedFrameCalibration::Ptr _calibration;
-	rw::kinematics::FixedFrame::Ptr _fixedFrame;	
+	rw::common::Ptr<FixedFrameCalibration> _calibration;
+	rw::common::Ptr<rw::kinematics::FixedFrame> _fixedFrame;
 
 	bool inKinematicChain(rw::kinematics::Frame* start, rw::kinematics::Frame* end);
 };

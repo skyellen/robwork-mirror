@@ -20,15 +20,8 @@
 #define RWLIBS_PATHPLANNERS_PRMPLANNER_HPP
 
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/QConstraint.hpp>
-#include <rw/pathplanning/QEdgeConstraint.hpp>
 
 #include <rw/math/Metric.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/common/Timer.hpp>
 
 #include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
@@ -42,6 +35,12 @@
 
 
 #include "PartialIndexTable.hpp"
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace pathplanning { class QConstraint; } }
+namespace rw { namespace pathplanning { class QEdgeConstraint; } }
+namespace rw { namespace pathplanning { class QSampler; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
 
 namespace rwlibs { namespace pathplanners {
     /** @addtogroup pathplanners */
@@ -129,8 +128,8 @@ namespace rwlibs { namespace pathplanners {
            @param state [in] State of rest of the workcell
         */
         PRMPlanner(
-			rw::pathplanning::QConstraint::Ptr constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+        	rw::common::Ptr<rw::pathplanning::QConstraint> constraint,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
             double resolution,
             const rw::models::Device& device,
             const rw::kinematics::State& state);
@@ -249,11 +248,11 @@ namespace rwlibs { namespace pathplanners {
 
     private:
         bool _roadmap_initialized;
-		rw::pathplanning::QConstraint::Ptr _constraint;
-		rw::pathplanning::QSampler::Ptr _sampler;
+        rw::common::Ptr<rw::pathplanning::QConstraint> _constraint;
+		rw::common::Ptr<rw::pathplanning::QSampler> _sampler;
         double _resolution;
 
-		rw::pathplanning::QEdgeConstraint::Ptr _edge;
+		rw::common::Ptr<rw::pathplanning::QEdgeConstraint> _edge;
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;
 

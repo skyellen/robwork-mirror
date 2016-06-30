@@ -16,14 +16,3 @@
  ********************************************************************************/
 
 #include "XMLCalibrationMeasurementFile.hpp"
-
-#include <rw/loaders/dom/DOMBasisTypes.hpp>
-
-#include <rw/common.hpp>
-#include <rw/common/DOMParser.hpp>
-#include <rw/common/DOMElem.hpp>
-
-using namespace rwlibs::calibration;
-using namespace rw::common;
-using namespace rw::loaders;
-using namespace rw;

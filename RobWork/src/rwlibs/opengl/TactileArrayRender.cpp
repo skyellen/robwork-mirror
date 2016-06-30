@@ -18,7 +18,9 @@
 
 #include "TactileArrayRender.hpp"
 
+#include <rw/sensor/TactileArrayModel.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using namespace rw::math;
 using namespace rw::sensor;

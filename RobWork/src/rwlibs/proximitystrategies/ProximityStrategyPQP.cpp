@@ -26,9 +26,7 @@
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/common/Exception.hpp>
 
 #include <boost/foreach.hpp>
 

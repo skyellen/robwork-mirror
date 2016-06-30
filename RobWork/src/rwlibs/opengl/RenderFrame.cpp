@@ -17,8 +17,6 @@
 
 #include "RenderFrame.hpp"
 
-#include <iostream>
-
 using namespace rwlibs::opengl;
 using namespace rw::graphics;
 

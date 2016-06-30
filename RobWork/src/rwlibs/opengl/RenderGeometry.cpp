@@ -17,6 +17,7 @@
 
 
 #include "RenderGeometry.hpp"
+#include <rw/geometry/TriMesh.hpp>
 #include <rw/math/Vector3D.hpp>
 #include "DrawableUtil.hpp"
 

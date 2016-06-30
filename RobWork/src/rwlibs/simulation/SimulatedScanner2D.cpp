@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "SimulatedScanner2D.hpp"
+#include "FrameGrabber25D.hpp"
 
 using namespace rwlibs::simulation;
 using namespace rw::sensor;
@@ -149,4 +150,10 @@ rw::sensor::Scanner2D::Ptr SimulatedScanner2D::getScanner2DSensor(rwlibs::simula
 	return handle;
 }
 
+double SimulatedScanner2D::getAngularRange() {
+    return _framegrabber->getFieldOfViewY();
+}
 
+size_t SimulatedScanner2D::getMeasurementCount() const {
+    return _framegrabber->getWidth()*_framegrabber->getHeight();
+}

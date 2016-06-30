@@ -16,7 +16,9 @@
  ********************************************************************************/
 
 #include "SimulatedScanner25D.hpp"
+#include "FrameGrabber25D.hpp"
 
+#include <rw/sensor/Scanner25DModel.hpp>
 #include <rwlibs/simulation/Simulator.hpp>
 
 using namespace rwlibs::simulation;

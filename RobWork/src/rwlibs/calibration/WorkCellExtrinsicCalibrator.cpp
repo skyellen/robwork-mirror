@@ -1,13 +1,15 @@
 #include "WorkCellExtrinsicCalibrator.hpp"
+#include "CalibrationMeasurement.hpp"
+#include "WorkCellCalibration.hpp"
 
-#include "nlls/NLLSNewtonSolver.hpp"
-
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/EAA.hpp>
+#include <rw/models/SerialDevice.hpp>
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 
-#include <iomanip>
+//#include <iomanip>
 
 
 using namespace rw::math;

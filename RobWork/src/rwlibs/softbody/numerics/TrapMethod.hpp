@@ -18,8 +18,6 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 #ifndef RWLIBS_SOFTBODY_TRAPMETHOD_HPP
 #define RWLIBS_SOFTBODY_TRAPMETHOD_HPP
 
-#include <iostream>
-
 namespace rwlibs {
 namespace softbody {
 /** @addtogroup softbody */

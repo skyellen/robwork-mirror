@@ -22,7 +22,6 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/kinematics/State.hpp>
 
 #include <rw/common/Ptr.hpp>
 

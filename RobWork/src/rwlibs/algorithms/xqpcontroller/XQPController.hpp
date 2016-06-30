@@ -20,12 +20,13 @@
 #define RWLIBS_ALGORITHMS_XQPCONTROLLER_HPP
 
 #include <list>
-#include <rw/math/Jacobian.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/models/Device.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
 #include <rw/kinematics/State.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
+
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs {
 namespace algorithms {
@@ -80,7 +81,7 @@ public:
      * @param state [in] State specifying how frames are assempled
      * @param dt [in] time step size
      */
-	XQPController(rw::models::Device::Ptr device,
+	XQPController(rw::common::Ptr<rw::models::Device> device,
 				  rw::kinematics::Frame* controlFrame,
 				  const rw::kinematics::State& state,
 				  double dt);
@@ -162,7 +163,7 @@ public:
 	 */
 	void setVelScale(double scale);
 private:
-	rw::models::Device::Ptr _device;
+	rw::common::Ptr<rw::models::Device> _device;
 	rw::kinematics::Frame* _controlFrame;
 	rw::kinematics::State _state;
 	double _dt;

@@ -24,7 +24,6 @@
  * \copydoc rwlibs::assembly::AssemblyTask
  */
 
-#include <rw/common/Serializable.hpp>
 #include <rw/math/Transform3D.hpp>
 
 // Forward declarations

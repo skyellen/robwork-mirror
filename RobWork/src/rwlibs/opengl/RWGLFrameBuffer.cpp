@@ -18,7 +18,6 @@
 #include "RWGLFrameBuffer.hpp"
 
 #include <rw/common/Log.hpp>
-#include <iostream>
 
 using namespace rw::common;
 using namespace rwlibs::opengl;

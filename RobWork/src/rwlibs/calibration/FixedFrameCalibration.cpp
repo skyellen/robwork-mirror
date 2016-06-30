@@ -4,7 +4,7 @@
 
 #include "FixedFrameCalibration.hpp"
 
-#include <rw/kinematics.hpp>
+#include <rw/math/RPY.hpp>
 
 
 namespace rwlibs {

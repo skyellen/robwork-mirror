@@ -23,8 +23,6 @@
  * @file QPSolver.hpp
  */
 
-#include <list>
-
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 

@@ -17,6 +17,9 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include "RusselIntegrand.hpp"
 
+#include <rw/common/macros.hpp>
+#include <rwlibs/softbody/beam/BeamGeometry.hpp>
+
 using namespace rwlibs::softbody;
 
 RusselIntegrand::RusselIntegrand ( const BeamGeometry& geom, const boost::numeric::ublas::vector< double, boost::numeric::ublas::unbounded_array< double, std::allocator< double > > >& a, const boost::numeric::ublas::vector< double, boost::numeric::ublas::unbounded_array< double, std::allocator< double > > >& da ) :

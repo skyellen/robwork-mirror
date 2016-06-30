@@ -20,6 +20,7 @@
 #include "RenderCameraFrustum.hpp"
 
 #include <rw/math/Constants.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 using namespace rw::math;
 using namespace rwlibs::opengl;

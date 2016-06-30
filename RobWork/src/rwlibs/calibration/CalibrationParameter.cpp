@@ -7,6 +7,8 @@
 
 #include "CalibrationParameter.hpp"
 
+#include <cmath>
+
 namespace rwlibs {
 	namespace calibration {
 

@@ -21,6 +21,8 @@
 
 #include "Calibration.hpp"
 
+#include <vector>
+
 namespace rwlibs {
 namespace calibration {
 /** @addtogroup calibration */

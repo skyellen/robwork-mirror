@@ -18,8 +18,7 @@
 
 #include "SBLPlanner.hpp"
 #include "SBLInternal.hpp"
-
-#include <rw/pathplanning/QIKSampler.hpp>
+#include "SBLSetup.hpp"
 
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
@@ -74,7 +73,7 @@ QToQPlanner::Ptr SBLPlanner::makeQToQPlanner(const SBLSetup& setup)
 }
 
 rw::pathplanning::QToTPlanner::Ptr SBLPlanner::makeQToTPlanner(const SBLSetup& setup,
-															   QIKSampler::Ptr ikSampler)
+															   rw::common::Ptr<QIKSampler> ikSampler)
 {
     return QToTPlanner::make(makeQToQSamplerPlanner(setup), ikSampler);
 }

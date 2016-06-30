@@ -18,20 +18,20 @@
 #ifndef RWLIBS_CALIBRATION_WORKCELLJACOBIAN_HPP
 #define RWLIBS_CALIBRATION_WORKCELLJACOBIAN_HPP
 
-#include <rw/math.hpp>
+#include <rw/math/Transform3D.hpp>
+
 #define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
 #include "CompositeJacobian.hpp"
-#include "ParallelAxisDHJacobian.hpp"
-#include "FixedFrameJacobian.hpp"
-#include "JointEncoderJacobian.hpp"
-#include "WorkCellCalibration.hpp"
 #include <Eigen/Geometry>
-#include <rw/models.hpp>
-#include <rw/kinematics.hpp>
 
 namespace rwlibs {
 namespace calibration {
+class Jacobian;
+class ParallelAxisDHJacobian;
+class FixedFrameJacobian;
+class JointEncoderJacobian;
+class WorkCellCalibration;
 
 /** @addtogroup calibration */
 /*@{*/
@@ -48,7 +48,7 @@ public:
 	 * @brief Constructs jacobian for \bcalibration
 	 * @param calibration [in] The calibration for which to construct the Jacobian.
 	 */
-	WorkCellJacobian(WorkCellCalibration::Ptr calibration);
+	WorkCellJacobian(rw::common::Ptr<WorkCellCalibration> calibration);
 
 	/**
 	 * @brief Destructor

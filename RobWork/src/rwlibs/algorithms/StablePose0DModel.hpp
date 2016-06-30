@@ -27,7 +27,6 @@
  */
 
 #include <rw/math/Rotation3D.hpp>
-#include <rw/math/Quaternion.hpp>
 
 #include "RANSACModel.hpp"
 

@@ -24,19 +24,11 @@
  */
 
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/math/Metric.hpp>
 
-#include <rw/kinematics/State.hpp>
-
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
-
-#include <vector>
-#include <list>
-#include <cmath>
-#include <climits>
+namespace rw { namespace pathplanning { class PlannerConstraint; } }
+namespace rw { namespace pathplanning { class QSampler; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -107,7 +99,7 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::math::QMetric::Ptr metric,
             double extend,
             PlannerType type = RRTBalancedBidirectional);
@@ -127,7 +119,7 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::Device> device,
             PlannerType type = RRTBalancedBidirectional);
 
     private:

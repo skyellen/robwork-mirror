@@ -24,8 +24,8 @@
 #include "JointEncoderCalibration.hpp"
 #include "FixedFrameCalibration.hpp"
 
-#include <rw/models.hpp>
-#include <rw/kinematics.hpp>
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class SerialDevice; } }
 
 namespace rwlibs {
 namespace calibration { 
@@ -43,7 +43,7 @@ public:
 	typedef rw::common::Ptr<WorkCellCalibration> Ptr;
 
 	/** @brief Pair consisting of a device and the associated marker frame */
-	typedef std::pair<rw::models::SerialDevice::Ptr, rw::kinematics::Frame*> DeviceMarkerPair;
+	typedef std::pair<rw::common::Ptr<rw::models::SerialDevice>, rw::kinematics::Frame*> DeviceMarkerPair;
 
 	/**
 	 * @brief Construct a calibration for the specified device/marker pairs and sensor frames.
@@ -140,7 +140,7 @@ public:
 	void prependCalibration(WorkCellCalibration::Ptr calibration);
 
 private:
-	rw::models::SerialDevice::Ptr _primaryDevice;
+	rw::common::Ptr<rw::models::SerialDevice> _primaryDevice;
 	std::vector<DeviceMarkerPair> _deviceMarkerPairs;
 	std::map<std::string, FixedFrameCalibration::Ptr> _sensorFrameCalibrations;
 	std::map<std::string, FixedFrameCalibration::Ptr> _markerCalibrations;

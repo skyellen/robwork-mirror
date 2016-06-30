@@ -18,9 +18,6 @@
 #ifndef RWLIBS_CALIBRATION_CALIBRATIONPARAMETER_HPP_
 #define RWLIBS_CALIBRATION_CALIBRATIONPARAMETER_HPP_
 
-#include <Eigen/Core>
-#include <rw/kinematics.hpp>
-
 namespace rwlibs {
 namespace calibration {
 /** @addtogroup calibration */

@@ -23,11 +23,13 @@
    @file SBLExpand.hpp
 */
 
-#include <rw/pathplanning/QConstraint.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/kinematics/State.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace models { class JacobianCalculator; } }
+namespace rw { namespace pathplanning { class QConstraint; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -130,7 +132,7 @@ namespace rwlibs { namespace pathplanners {
            makeUniformBox().
         */
         static SBLExpandPtr makeShrinkingUniformBox(
-			rw::pathplanning::QConstraint::Ptr constraint,
+        	rw::common::Ptr<rw::pathplanning::QConstraint> constraint,
             const QBox& outer,
             const QBox& inner);
 
@@ -146,7 +148,7 @@ namespace rwlibs { namespace pathplanners {
            makeUniformBox().
         */
         static SBLExpandPtr makeShrinkingUniformBox(
-			rw::pathplanning::QConstraint::Ptr constraint,
+        	rw::common::Ptr<rw::pathplanning::QConstraint> constraint,
             const QBox& outer,
             double ratio);
 
@@ -171,10 +173,10 @@ namespace rwlibs { namespace pathplanners {
            The inner box shrinks in size as 1, 1/2, 1/3, ...
         */
         static SBLExpandPtr makeShrinkingUniformJacobianBox(
-			rw::pathplanning::QConstraint::Ptr constraint,
-			rw::models::Device::Ptr device,
+        	rw::common::Ptr<rw::pathplanning::QConstraint> constraint,
+			rw::common::Ptr<rw::models::Device> device,
             const rw::kinematics::State& state,
-            rw::models::JacobianCalculatorPtr jacobian,
+            rw::common::Ptr<rw::models::JacobianCalculator> jacobian,
             double angle_max = -1,
             double disp_max = -1);
 

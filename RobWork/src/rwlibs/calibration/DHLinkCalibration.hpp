@@ -9,7 +9,7 @@
 #define RWLIBS_CALIBRATION_DHLINKCALIBRATION_HPP_
 
 #include "CalibrationBase.hpp"
-#include <rw/models.hpp>
+#include <rw/models/Joint.hpp>
 #include <rw/models/DHParameterSet.hpp>
 
 namespace rwlibs {

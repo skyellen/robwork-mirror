@@ -19,7 +19,6 @@
 #define _SIMPLEFINGER_HPP
 
 #include <rw/geometry/Primitive.hpp>
-#include <rw/geometry/Geometry.hpp>
 
 namespace rwlibs {
 namespace geometry {

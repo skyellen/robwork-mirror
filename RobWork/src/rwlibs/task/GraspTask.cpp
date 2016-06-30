@@ -1,12 +1,13 @@
 #include "GraspTask.hpp"
 
+#include <rw/math/Quaternion.hpp>
+
 #include <rwlibs/task/loader/XMLTaskSaver.hpp>
 #include <rwlibs/task/loader/XMLTaskLoader.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-#include <rw/rw.hpp>
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 using namespace boost::numeric;

@@ -7,6 +7,8 @@
 
 #include "JacobianBase.hpp"
 
+#include <rw/kinematics/Frame.hpp>
+
 namespace rwlibs {
 	namespace calibration {
 

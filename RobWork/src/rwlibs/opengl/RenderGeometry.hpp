@@ -20,12 +20,9 @@
 
 //! @file RenderGeometry.hpp
 
-#include <rwlibs/os/rwgl.hpp>
-
 #include <rw/graphics/Render.hpp>
 
 #include <rw/geometry/Geometry.hpp>
-#include <rw/geometry/TriMesh.hpp>
 
 namespace rwlibs {
 namespace opengl {
@@ -58,7 +55,7 @@ namespace opengl {
          *
          * @param mesh [in] the triangle mesh to draw
          */
-        RenderGeometry(rw::geometry::TriMesh::Ptr mesh);
+        RenderGeometry(rw::common::Ptr<rw::geometry::TriMesh> mesh);
 
         /**
          * @brief Destructor
@@ -90,7 +87,7 @@ namespace opengl {
         void render() const;
     private:
         rw::geometry::Geometry::Ptr _geometry;
-        rw::geometry::TriMesh::Ptr _mesh;
+        rw::common::Ptr<rw::geometry::TriMesh> _mesh;
         float _r, _g, _b;
     };
 

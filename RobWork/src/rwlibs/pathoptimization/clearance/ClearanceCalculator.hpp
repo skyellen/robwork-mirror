@@ -19,8 +19,9 @@
 #ifndef RWLIBS_PATHOPTIMIZATION_CLEARANCECALCULATOR_HPP
 #define RWLIBS_PATHOPTIMIZATION_CLEARANCECALCULATOR_HPP
 
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 namespace pathoptimization{

@@ -18,10 +18,10 @@
 
 #include "MinimumClearanceCalculator.hpp"
 
-#include <rw/common/Timer.hpp>
 //#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
+#include <rw/models/WorkCell.hpp>
 
 using namespace rwlibs::pathoptimization;
 using namespace rwlibs::proximitystrategies;

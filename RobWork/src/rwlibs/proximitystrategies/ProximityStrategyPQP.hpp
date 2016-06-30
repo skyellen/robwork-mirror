@@ -25,13 +25,9 @@
 
 #include <map>
 #include <vector>
-#include <list>
-
-#include <boost/shared_ptr.hpp>
 
 #include <rw/common/Cache.hpp>
 
-#include <rw/kinematics/Frame.hpp>
 //#include <rw/proximity/CollisionData.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
@@ -40,9 +36,9 @@
 #include <rw/proximity/ProximityCache.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
 
-#include <rw/geometry/GeometryData.hpp>
-
 #include <PQP/PQP.h>
+
+namespace rw { namespace geometry { class GeometryData; } }
 
 namespace PQP { class PQP_Model; }
 

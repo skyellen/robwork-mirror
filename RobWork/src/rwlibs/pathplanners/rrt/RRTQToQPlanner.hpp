@@ -23,13 +23,11 @@
    @file RRTQToQPlanner.hpp
 */
 
-#include "RRTTree.hpp"
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/math/Metric.hpp>
 
-#include <vector>
+namespace rw { namespace pathplanning { class PlannerConstraint; } }
+namespace rw { namespace pathplanning { class QSampler; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -65,7 +63,7 @@ namespace rwlibs { namespace pathplanners {
         */
         static rw::pathplanning::QToQPlanner::Ptr makeBasic(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::math::QMetric::Ptr metric,
             double extend);
 
@@ -88,7 +86,7 @@ namespace rwlibs { namespace pathplanners {
         static
 			rw::pathplanning::QToQPlanner::Ptr makeConnect(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::math::QMetric::Ptr metric,
             double extend);
 
@@ -112,7 +110,7 @@ namespace rwlibs { namespace pathplanners {
         static
 			rw::pathplanning::QToQPlanner::Ptr makeBidirectional(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::math::QMetric::Ptr metric,
             double extend);
 
@@ -135,7 +133,7 @@ namespace rwlibs { namespace pathplanners {
         static
 			rw::pathplanning::QToQPlanner::Ptr makeBalancedBidirectional(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::pathplanning::QSampler::Ptr sampler,
+			rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::math::QMetric::Ptr metric,
             double extend);
 

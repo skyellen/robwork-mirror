@@ -26,7 +26,6 @@
 #include "SBLExpand.hpp"
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/QEdgeConstraintIncremental.hpp>
-#include <rw/models/Device.hpp>
 
 namespace rwlibs { namespace pathplanners {
 

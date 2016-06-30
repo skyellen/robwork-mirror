@@ -18,6 +18,9 @@
 #include "Drawable.hpp"
 
 #include "DrawableUtil.hpp"
+
+#include <rw/graphics/Render.hpp>
+
 #include <boost/foreach.hpp>
 
 using namespace rwlibs::opengl;

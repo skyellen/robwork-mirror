@@ -21,10 +21,8 @@
 
 #include "ClearanceCalculator.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <rw/proximity/DistanceCalculator.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/WorkCell.hpp>
+namespace rw { namespace models { class WorkCell; } }
+namespace rw { namespace proximity { class DistanceCalculator; } }
 
 namespace rwlibs {
 namespace pathoptimization {
@@ -48,14 +46,14 @@ public:
      *
      * @param distancecalculator [in] The distance calculator to use
      */
-	MinimumClearanceCalculator(rw::proximity::DistanceCalculator::Ptr distancecalculator);
+	MinimumClearanceCalculator(rw::common::Ptr<rw::proximity::DistanceCalculator> distancecalculator);
 
 	/**
 	 * @brief Constructs a MinimumClearanceCalculator for a workcell
 	 * @param workcell [in] WorkCell for which to calculate the minimum clearance
 	 * @param state [in] State of the workcell
 	 */
-	MinimumClearanceCalculator(rw::models::WorkCell::Ptr workcell,
+	MinimumClearanceCalculator(rw::common::Ptr<rw::models::WorkCell> workcell,
 	                           const rw::kinematics::State& state);
 
 	/**
@@ -69,7 +67,7 @@ public:
 	double clearance(rw::kinematics::State& state);
 
 private:
-	rw::proximity::DistanceCalculator::Ptr _distancecalculator;
+	rw::common::Ptr<rw::proximity::DistanceCalculator> _distancecalculator;
 };
 
 

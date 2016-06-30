@@ -19,8 +19,10 @@
 #define RWLIBS_CALIBRATION_NLLSSOLVER_HPP_
 
 #include "NLLSIterationLog.hpp"
-#include "NLLSSystem.hpp"
+#include <rw/common/Ptr.hpp>
 #include <Eigen/Core>
+
+#include <vector>
 
 namespace rwlibs {
 namespace calibration {

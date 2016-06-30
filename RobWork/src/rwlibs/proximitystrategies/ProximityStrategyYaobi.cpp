@@ -18,12 +18,9 @@
 
 #include "ProximityStrategyYaobi.hpp"
 
-#include <cfloat>
 #include <vector>
 
-#include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
-#include <rw/common/Exception.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 
@@ -31,6 +28,7 @@
 
 #include <rw/proximity/ProximityStrategyData.hpp>
 
+#include <yaobi/yaobi.h>
 #include <yaobi/yaobi_mesh_interface.h>
 #include <yaobi/yaobi_tree_builder.h>
 

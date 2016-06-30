@@ -19,7 +19,6 @@
 #define RWLIBS_ALGORITHMS_MOVINGAVERAGE_HPP_
 
 #include <vector>
-#include <rw/common/macros.hpp>
 
 /**
  * @brief calculates the moving average over a continues input of samples.
@@ -35,14 +34,8 @@ public:
      * @brief constructor creates a MovingAverage filter over a window of
      * \b N samples.
      * @param N [in] the size of the window of samples
-     * @return
      */
-    MovingAverage(size_t N):
-        _len((int)N),_invLen(1.0),_cb(_len,0.0),_sum(0.0),_idx(0)
-    {
-        RW_ASSERT(N!=0);
-        _invLen = 1.0/N;
-    }
+    MovingAverage(std::size_t N);
 
     /**
      * @brief adds a sample

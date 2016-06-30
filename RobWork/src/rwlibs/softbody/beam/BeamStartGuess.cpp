@@ -14,11 +14,10 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
     limitations under the License.
 */
 
-
 #include "BeamStartGuess.hpp"
+#include "BeamGeometryCuboid.hpp"
+#include "ModRusselBeamBase.hpp"
 
-#include <rw/math/Rotation2D.hpp>
-#include <rw/math/Vector2D.hpp>
 #include <rwlibs/softbody/beam/EBBeam.hpp>
 
 #include <rw/common/macros.hpp>

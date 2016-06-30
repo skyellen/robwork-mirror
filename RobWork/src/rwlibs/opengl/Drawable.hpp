@@ -23,13 +23,12 @@
  * @file Drawable.hpp
  */
 
-#include <rw/graphics/Render.hpp>
-
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/graphics/DrawableNode.hpp>
+
+namespace rw { namespace graphics { class Render; } }
 
 namespace rwlibs { namespace opengl {
 
@@ -189,7 +188,7 @@ namespace rwlibs { namespace opengl {
         	return _renders;
         }
 
-        void addRender( rw::graphics::Render::Ptr render ){
+        void addRender( rw::common::Ptr<rw::graphics::Render> render ){
             _renders.push_back(render);
         }
 

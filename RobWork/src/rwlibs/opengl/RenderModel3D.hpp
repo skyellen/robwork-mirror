@@ -24,9 +24,8 @@
 #include <rw/graphics/Model3D.hpp>
 #include <rw/graphics/Render.hpp>
 
-#include "RWGLTexture.hpp"
-
 namespace rwlibs { namespace opengl {
+	class RWGLTexture;
 
 //! @addtogroup opengl
 // @{
@@ -100,7 +99,7 @@ namespace rwlibs { namespace opengl {
         void useMaterial(const rw::graphics::Model3D::Material& mat, rw::graphics::DrawableNode::DrawType type, double alpha) const;
 
     private:
-        std::vector<rwlibs::opengl::RWGLTexture::Ptr> _textures;
+        std::vector<rw::common::Ptr<rwlibs::opengl::RWGLTexture> > _textures;
         //bool _shownormals;
     };
 

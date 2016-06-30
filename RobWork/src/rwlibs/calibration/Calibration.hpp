@@ -19,8 +19,9 @@
 #define RWLIBS_CALIBRATION_CALIBRATION_HPP_
 
 #include "CalibrationParameterSet.hpp"
-#include <Eigen/Core>
-#include <rw/kinematics.hpp>
+
+#include <rw/common/Ptr.hpp>
+#include <rw/common/macros.hpp>
 
 namespace rwlibs {
 	namespace calibration {

@@ -25,9 +25,10 @@
 
 #include "ARWExpand.hpp"
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rw/models/Device.hpp>
 #include <rw/math/Metric.hpp>
+
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace pathplanning { class PlannerConstraint; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -96,7 +97,7 @@ namespace rwlibs { namespace pathplanners {
         */
 		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-			rw::models::Device::Ptr device,
+			rw::common::Ptr<rw::models::Device> device,
 			rw::math::QMetric::Ptr metric = NULL,
             double nearDistance = -1,
             int historySize = -1);

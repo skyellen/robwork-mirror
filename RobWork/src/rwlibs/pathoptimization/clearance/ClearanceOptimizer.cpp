@@ -17,29 +17,29 @@
 
 
 #include "ClearanceOptimizer.hpp"
+#include "ClearanceCalculator.hpp"
 
-#include <rw/common/Property.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Random.hpp>
+#include <rw/models/Device.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::trajectory;
-using namespace rw::proximity;
 using namespace rwlibs::pathoptimization;
 
 const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
 const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
 
-ClearanceOptimizer::ClearanceOptimizer(WorkCell::Ptr workcell,
+ClearanceOptimizer::ClearanceOptimizer(//WorkCell::Ptr workcell,
 									   Device::Ptr device,
                                        const State& state,
 									   QMetric::Ptr metric,
                                        ClearanceCalculatorPtr clearanceCalculator) :
-	_workcell(workcell),
+	//_workcell(workcell),
 	_device(device),
 	_state(state),
 	_metric(metric),

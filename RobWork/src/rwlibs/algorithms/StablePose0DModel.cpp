@@ -19,8 +19,9 @@
  
 #include "StablePose0DModel.hpp"
 
+#include <rw/math/Quaternion.hpp>
+
 #include <cmath>
-#include <algorithm>
 #include <boost/foreach.hpp>
 
 

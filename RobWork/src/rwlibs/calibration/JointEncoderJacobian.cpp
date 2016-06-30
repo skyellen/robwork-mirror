@@ -6,6 +6,9 @@
 */
 
 #include "JointEncoderJacobian.hpp"
+#include "JointEncoderCalibration.hpp"
+
+#include <rw/kinematics/Kinematics.hpp>
 
 namespace rwlibs {
 	namespace calibration {

@@ -18,11 +18,8 @@
 #ifndef _RWLIBS_CSG_CSGMODEL_HPP
 #define _RWLIBS_CSG_CSGMODEL_HPP
 
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/TriMesh.hpp>
-
-#include <iostream>
 
 #define CSGJS_HEADER_ONLY
 #include <csgjs/csgjs.cpp>

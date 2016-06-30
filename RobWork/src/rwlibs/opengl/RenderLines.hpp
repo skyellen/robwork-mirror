@@ -21,11 +21,10 @@
 //! @file RenderLines.hpp
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/geometry/Line.hpp>
-#include <list>
 
 #include <rw/graphics/Render.hpp>
-#include <rwlibs/os/rwgl.hpp>
+
+namespace rw { namespace geometry { class Line; } }
 
 namespace rwlibs { namespace opengl {
 /** @addtogroup opengl */

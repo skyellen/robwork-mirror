@@ -21,10 +21,10 @@
 
 //! @file RenderImage.hpp
 
-#include <rw/sensor/Image.hpp>
 #include <rw/common/Ptr.hpp>
-#include <rwlibs/os/rwgl.hpp>
 #include <rw/graphics/Render.hpp>
+
+namespace rw { namespace sensor { class Image; } }
 
 namespace rwlibs { namespace opengl {
 

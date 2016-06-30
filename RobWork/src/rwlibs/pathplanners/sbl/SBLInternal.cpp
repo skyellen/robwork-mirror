@@ -21,7 +21,8 @@
 #include <rw/pathplanning/QEdgeConstraintIncremental.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/math/Random.hpp>
-#include <rw/math/MetricUtil.hpp>
+#include <rw/pathplanning/QSampler.hpp>
+#include <rw/pathplanning/StopCriteria.hpp>
 
 #include <cmath>
 #include <cassert>

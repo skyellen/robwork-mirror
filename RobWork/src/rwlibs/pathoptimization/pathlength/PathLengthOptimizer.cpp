@@ -18,7 +18,6 @@
 
 #include "PathLengthOptimizer.hpp"
 
-#include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Random.hpp>

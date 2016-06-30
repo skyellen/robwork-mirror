@@ -15,9 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <fstream>
-#include <cctype>
-
 #include "DrawableFactory.hpp"
 #include "RenderGeometry.hpp"
 #include "RenderModel3D.hpp"
@@ -25,7 +22,7 @@
 #include <rw/math/Constants.hpp>
 
 
-#include <RobWorkConfig.hpp>
+//#include <RobWorkConfig.hpp>
 
 #include <rw/loaders/Model3DFactory.hpp>
 
@@ -34,12 +31,10 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/Ptr.hpp>
 
-#include <rw/geometry/Geometry.hpp>
 #include <rw/loaders/GeometryFactory.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
 
 #include <string>
-#include <istream>
 #include <sstream>
 
 #include <sys/types.h>
@@ -97,7 +92,7 @@ RWDrawablePtr DrawableFactory::constructFromGeometry(const std::string& str, con
     	if (getCache().isInCache(str,""))
     		return ownedPtr(new Drawable(getCache().get(str), name));
     }
-	Geometry::Ptr geometry = GeometryFactory::getGeometry(str);
+	rw::common::Ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
     Render *render = new RenderGeometry(geometry);
 
     if( useCache ) {

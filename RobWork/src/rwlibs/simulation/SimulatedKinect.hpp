@@ -21,14 +21,12 @@
 //! @file SimulatedKinect.hpp
 
 #include <rw/common/Ptr.hpp>
-#include <rw/sensor/Scanner25D.hpp>
 #include "SimulatedSensor.hpp"
-#include "FrameGrabber25D.hpp"
-#include "SimulatedScanner25D.hpp"
 #include <rw/graphics/SceneViewer.hpp>
 #include <rw/sensor/CameraModel.hpp>
 #include <rw/sensor/Scanner25DModel.hpp>
-#include <rwlibs/os/rwgl.hpp>
+
+namespace rw { namespace sensor { class Scanner25D; } }
 
 namespace rwlibs { namespace simulation {
     //! @addtogroup simulation
@@ -151,7 +149,7 @@ namespace rwlibs { namespace simulation {
 
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned, _noiseEnabled;
-        rw::sensor::Scanner25D::Ptr _rsensor;
+        rw::common::Ptr<rw::sensor::Scanner25D> _rsensor;
 
         rw::graphics::SceneViewer::Ptr _drawer;
         rw::graphics::SceneViewer::View::Ptr _view;

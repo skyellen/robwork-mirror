@@ -24,7 +24,9 @@
  */
 
 #include <rw/sensor/Image.hpp>
-#include <rw/kinematics/Frame.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs { namespace simulation {
     /** @addtogroup simulation */

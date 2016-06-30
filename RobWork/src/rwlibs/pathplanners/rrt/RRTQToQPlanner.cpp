@@ -17,8 +17,11 @@
 
 
 #include "RRTQToQPlanner.hpp"
+#include "RRTTree.hpp"
 
-#include <climits>
+#include <rw/pathplanning/PlannerConstraint.hpp>
+#include <rw/pathplanning/QSampler.hpp>
+
 #include <cfloat>
 #include <algorithm>
 #include <boost/foreach.hpp>
@@ -26,8 +29,6 @@
 using namespace rw;
 using namespace rw::math;
 using namespace rw::common;
-using namespace rw::models;
-using namespace rw::proximity;
 using namespace rw::pathplanning;
 using namespace rw::trajectory;
 using namespace rwlibs::pathplanners;

@@ -22,6 +22,7 @@
 
 #include <rw/loaders/dom/DOMBasisTypes.hpp>
 
+#include "../WorkCellCalibration.hpp"
 #include "../JointEncoderCalibration.hpp"
 
 using namespace rwlibs::calibration;

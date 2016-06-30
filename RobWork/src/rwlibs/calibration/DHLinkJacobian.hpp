@@ -8,18 +8,16 @@
 #ifndef RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_
 #define RWLIBS_CALIBRATION_DHLINKJACOBIAN_HPP_
 
-#include <rw/math.hpp>
 //#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
-#include "DHLinkCalibration.hpp"
 #include "JacobianBase.hpp"
 #include <Eigen/Geometry>
-#include <rw/models.hpp>
-#include <rw/models/DHParameterSet.hpp>
+
+namespace rw { namespace models { class Joint; } }
 
 namespace rwlibs {
 namespace calibration {
-
+class DHLinkCalibration;
 
 
 class DHLinkJacobian: public JacobianBase {
@@ -28,16 +26,16 @@ public:
 
 	typedef rw::common::Ptr<DHLinkJacobian> Ptr;
 
-	DHLinkJacobian(DHLinkCalibration::Ptr calibration);
+	DHLinkJacobian(rw::common::Ptr<DHLinkCalibration> calibration);
 
 	virtual ~DHLinkJacobian();
 
 protected:
-	virtual Eigen::MatrixXd doComputeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state);
+	virtual Eigen::MatrixXd doComputeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state);
 
 private:
-	DHLinkCalibration::Ptr _calibration;
-	rw::models::Joint::Ptr _joint;
+	rw::common::Ptr<DHLinkCalibration> _calibration;
+	rw::common::Ptr<rw::models::Joint> _joint;
 };
 
 }

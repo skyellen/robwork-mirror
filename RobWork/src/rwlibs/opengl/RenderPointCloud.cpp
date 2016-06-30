@@ -19,6 +19,8 @@
 
 #include "RenderPointCloud.hpp"
 
+#include <rwlibs/os/rwgl.hpp>
+
 #include <boost/foreach.hpp>
 
 using namespace rw::math;

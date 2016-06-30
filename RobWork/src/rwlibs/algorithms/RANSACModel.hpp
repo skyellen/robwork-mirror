@@ -25,7 +25,6 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Random.hpp>
 
-#include <iostream>
 #include <vector>
 #include <algorithm>
 

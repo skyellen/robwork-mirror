@@ -19,9 +19,8 @@
 #include "IKQPSolver.hpp"
 
 #include <rw/math/VelocityScrew6D.hpp>
-#include <rw/common/Property.hpp>
-#include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/models/SerialDevice.hpp>
 
 using namespace rwlibs::algorithms;
 

@@ -20,6 +20,10 @@
 
 #include "Jacobian.hpp"
 
+#include <rw/common/macros.hpp>
+
+#include <vector>
+
 namespace rwlibs {
 namespace calibration {
 /** @addtogroup calibration */
@@ -66,7 +70,7 @@ public:
 	/**
 	 * @copydoc Jacobian::computeJacobian()
 	 */
-	virtual Eigen::MatrixXd computeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame,
+	virtual Eigen::MatrixXd computeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame,
 			const rw::kinematics::State& state);
 
 	/**
@@ -113,7 +117,7 @@ int CompositeJacobian<T>::getColumnCount() const {
 }
 
 template<class T>
-Eigen::MatrixXd CompositeJacobian<T>::computeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame,
+Eigen::MatrixXd CompositeJacobian<T>::computeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame,
 		const rw::kinematics::State& state) {
 	RW_ASSERT(getColumnCount() != 0);
 

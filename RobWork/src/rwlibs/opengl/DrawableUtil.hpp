@@ -28,8 +28,6 @@
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 namespace rwlibs { namespace opengl {
 
     /** @addtogroup opengl */

@@ -26,6 +26,7 @@
 #include <boost/numeric/ublas/vector_proxy.hpp>
 
 #include <cmath>
+#include <list>
 
 using namespace boost::numeric::ublas;
 using namespace rw::math;

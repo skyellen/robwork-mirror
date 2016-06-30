@@ -19,9 +19,9 @@
 #include "XQPController.hpp"
 
 #include <rwlibs/algorithms/qpcontroller/QPSolver.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/common/macros.hpp>
-#include <float.h>
 
 using namespace rwlibs::algorithms;
 using namespace rw::math;

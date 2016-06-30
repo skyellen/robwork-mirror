@@ -6,6 +6,7 @@
 */
 
 #include "DHLinkJacobian.hpp"
+#include "DHLinkCalibration.hpp"
 
 namespace rwlibs {
 	namespace calibration {

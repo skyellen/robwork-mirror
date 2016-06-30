@@ -23,8 +23,6 @@
 #include <list>
 #include <vector>
 #include <queue>
-#include <iostream>
-#include <boost/function.hpp>
 
 #include <rw/common/macros.hpp>
 #include <rw/models/Device.hpp>

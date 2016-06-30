@@ -19,10 +19,13 @@
 #ifndef RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 #define RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 
-#include <rw/models/Device.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
+
+#include <boost/numeric/ublas/matrix.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs {
 namespace algorithms {

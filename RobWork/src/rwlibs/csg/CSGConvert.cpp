@@ -17,8 +17,7 @@
  
 #include "CSGConvert.hpp"
 
-#include <rw/rw.hpp>
-#include <rw/geometry/TriMesh.hpp>
+#include <rw/geometry/PlainTriMesh.hpp>
 
 #define CSGJS_HEADER_ONLY
 #include <csgjs/csgjs.cpp>

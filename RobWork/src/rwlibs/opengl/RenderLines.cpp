@@ -19,6 +19,9 @@
 
 #include "RenderLines.hpp"
 
+#include <rw/geometry/Line.hpp>
+#include <rwlibs/os/rwgl.hpp>
+
 #include <boost/foreach.hpp>
 
 using namespace rw::math;

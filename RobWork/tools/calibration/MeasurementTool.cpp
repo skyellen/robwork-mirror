@@ -1,6 +1,8 @@
 #include "MultivariateNormalDistribution.hpp"
 
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
+#include <rw/models/SerialDevice.hpp>
 #include <rwlibs/calibration/CalibrationMeasurement.hpp>
 #include <rwlibs/calibration/WorkCellCalibration.hpp>
 #include <rwlibs/calibration/xml/XMLCalibrationMeasurementFile.hpp>

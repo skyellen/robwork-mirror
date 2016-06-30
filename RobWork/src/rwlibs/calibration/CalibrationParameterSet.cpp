@@ -7,6 +7,8 @@
 
 #include "CalibrationParameterSet.hpp"
 
+#include <rw/common/macros.hpp>
+
 namespace rwlibs {
 	namespace calibration {
 

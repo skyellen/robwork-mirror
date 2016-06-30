@@ -9,7 +9,6 @@
 #define RWLIBS_TASK_GRASPTASK_HPP_
 
 #include <rw/common/Ptr.hpp>
-#include <rw/sensor/Contact3D.hpp>
 #include "Task.hpp"
 #include "GraspSubTask.hpp"
 

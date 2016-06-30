@@ -19,8 +19,12 @@
 #ifndef RWLIBS_CALIBRATION_JACOBIAN_HPP_
 #define RWLIBS_CALIBRATION_JACOBIAN_HPP_
 
+#include <rw/common/Ptr.hpp>
+
 #include <Eigen/Core>
-#include <rw/kinematics.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 namespace calibration {
@@ -51,7 +55,7 @@ public:
 	 * @param[in]	state			State of the work cell.
 	 * @return Jacobian matrix.
 	 */
-	virtual Eigen::MatrixXd computeJacobian(rw::kinematics::Frame::Ptr referenceFrame, rw::kinematics::Frame::Ptr targetFrame, const rw::kinematics::State& state) = 0;
+	virtual Eigen::MatrixXd computeJacobian(rw::common::Ptr<rw::kinematics::Frame> referenceFrame, rw::common::Ptr<rw::kinematics::Frame> targetFrame, const rw::kinematics::State& state) = 0;
 	
 	/** 
 	 * @brief Method for updating internal state of the Jacobian used during calibration.

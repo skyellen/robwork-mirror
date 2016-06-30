@@ -18,19 +18,16 @@
 #ifndef RWLIBS_CALIBRATION_WORKCELLCALIBRATOR_HPP
 #define RWLIBS_CALIBRATION_WORKCELLCALIBRATOR_HPP
 
-#include <rw/math.hpp>
 //#define EIGEN_TRANSFORM_PLUGIN "rwlibs/calibration/EigenTransformPlugin.hpp"
 
 #include "nlls/NLLSSolver.hpp"
-#include "Calibration.hpp"
 #include "Jacobian.hpp"
-#include "CalibrationMeasurement.hpp"
-#include <Eigen/Geometry>
-#include <rw/models.hpp>
+#include <rw/models/WorkCell.hpp>
 
 namespace rwlibs {
 namespace calibration {
-
+class Calibration;
+class CalibrationMeasurement;
 /** @addtogroup calibration */
 /*@{*/
 
@@ -51,7 +48,7 @@ public:
 	 * @param calibration [in] The calibration to use. This calibration is updated when calling calibrate()
 	 * @param jacobian [in] The jacobian for the system to calibrate
 	 */
-	WorkCellCalibrator(rw::models::WorkCell::Ptr workcell, Calibration::Ptr calibration, Jacobian::Ptr jacobian);
+	WorkCellCalibrator(rw::models::WorkCell::Ptr workcell, rw::common::Ptr<Calibration> calibration, Jacobian::Ptr jacobian);
 
 	/**
 	 * @brief Destructor
@@ -78,12 +75,12 @@ public:
 	 * @brief Add a measurement to the calibration
 	 * @param measurement [in] The calibration measurement
 	 */
-	void addMeasurement(CalibrationMeasurement::Ptr measurement);
+	void addMeasurement(rw::common::Ptr<CalibrationMeasurement> measurement);
 
 	/**
 	 * @brief Sets the measurements to be used in the calibration
 	 */
-	void setMeasurements(const std::vector<CalibrationMeasurement::Ptr>& measurements);
+	void setMeasurements(const std::vector<rw::common::Ptr<CalibrationMeasurement> >& measurements);
 
 	/** 
 	 * @brief Returns whether to use weighted measurements
@@ -110,8 +107,8 @@ public:
 
 private:
 	rw::models::WorkCell::Ptr _workcell;
-	std::vector<CalibrationMeasurement::Ptr> _measurements;
-	Calibration::Ptr _calibration;
+	std::vector<rw::common::Ptr<CalibrationMeasurement> > _measurements;
+	rw::common::Ptr<Calibration> _calibration;
 	Jacobian::Ptr _jacobian;
 	bool _useWeightedMeasurements;
 	NLLSSolver::Ptr _solver;

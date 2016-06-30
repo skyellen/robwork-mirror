@@ -7,9 +7,9 @@
 
 #include "NLLSNewtonSolver.hpp"
 
+#include <rw/common/macros.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <Eigen/SVD>
-#include <rw/common.hpp>
 
 namespace rwlibs {
 namespace calibration {

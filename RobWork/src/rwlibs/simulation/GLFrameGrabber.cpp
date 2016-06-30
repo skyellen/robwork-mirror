@@ -17,11 +17,9 @@
 
 
 #include "GLFrameGrabber.hpp"
-#include <rw/common/Log.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rwlibs/os/rwgl.hpp>
-#include <cmath>
 
 using namespace rw::common;
 using namespace rw::graphics;

@@ -20,8 +20,10 @@
 
 //! @file RWGLTexture.hpp
 
+#include <rw/common/Ptr.hpp>
 #include <rwlibs/os/rwgl.hpp>
-#include <rw/sensor/Image.hpp>
+
+namespace rw { namespace sensor { class Image; } }
 
 namespace rwlibs { namespace opengl {
 

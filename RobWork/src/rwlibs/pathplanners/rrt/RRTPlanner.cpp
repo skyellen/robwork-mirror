@@ -20,6 +20,7 @@
 
 #include "RRTQToQPlanner.hpp"
 #include <rw/pathplanning/PlannerUtil.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;

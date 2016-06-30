@@ -1,5 +1,6 @@
 #include "RenderModel3D.hpp"
 
+#include "RWGLTexture.hpp"
 #include "DrawableUtil.hpp"
 #include <boost/foreach.hpp>
 

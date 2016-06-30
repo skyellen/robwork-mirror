@@ -19,9 +19,9 @@
 #define RWLIBS_CALIBRATION_JOINTENCODERCALIBRATION_HPP_
 
 #include "CalibrationBase.hpp"
-#include <rw/kinematics.hpp>
-#include <rw/math.hpp>
-#include <rw/models.hpp>
+#include <rw/math/Function.hpp>
+#include <rw/models/Joint.hpp>
+#include <rw/models/JointDevice.hpp>
 
 namespace rwlibs {
 namespace calibration {

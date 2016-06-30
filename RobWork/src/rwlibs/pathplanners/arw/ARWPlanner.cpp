@@ -18,7 +18,6 @@
 
 #include "ARWPlanner.hpp"
 #include "ARWQToQPlanner.hpp"
-#include <rw/math/Math.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 
 using namespace rwlibs::pathplanners;

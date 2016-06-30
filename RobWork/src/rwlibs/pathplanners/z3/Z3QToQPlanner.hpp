@@ -24,9 +24,8 @@
 */
 
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rw/pathplanning/QSampler.hpp>
 
-#include <vector>
+namespace rw { namespace pathplanning { class QSampler; } }
 
 namespace rwlibs { namespace pathplanners {
 
@@ -54,7 +53,7 @@ namespace rwlibs { namespace pathplanners {
            the stop criteria returns true).
         */
         Z3QToQPlanner(
-			rw::pathplanning::QSampler::Ptr sampler,
+        	rw::common::Ptr<rw::pathplanning::QSampler> sampler,
 			rw::pathplanning::QToQPlanner::Ptr localPlanner,
             int nodeCnt,
             int repeatCnt);
@@ -68,7 +67,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::pathplanning::StopCriteria& stop);
 
     private:
-		rw::pathplanning::QSampler::Ptr _sampler;
+        rw::common::Ptr<rw::pathplanning::QSampler> _sampler;
 		rw::pathplanning::QToQPlanner::Ptr _localPlanner;
         int _nodeCnt;
         int _repeatCnt;

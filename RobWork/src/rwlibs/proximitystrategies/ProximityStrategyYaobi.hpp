@@ -25,16 +25,14 @@
 
 #include <map>
 #include <vector>
-#include <list>
 
-#include <yaobi/yaobi.h>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/Cache.hpp>
 
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/FrameMap.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 //#include <rw/proximity/ProximityStrategyFactory.hpp>
+
+namespace yaobi { class CollModel; }
 
 namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */

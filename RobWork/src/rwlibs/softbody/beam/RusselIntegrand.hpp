@@ -20,12 +20,10 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include <boost/numeric/ublas/vector.hpp>
 
-#include <rw/common/macros.hpp>
-
-#include <rwlibs/softbody/beam/BeamGeometry.hpp>
-
 namespace rwlibs {
 namespace softbody {
+class BeamGeometry;
+
 /** @addtogroup softbody */
 /*@{*/
 

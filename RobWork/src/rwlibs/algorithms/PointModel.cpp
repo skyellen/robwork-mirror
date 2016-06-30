@@ -19,10 +19,6 @@
  
 #include "PointModel.hpp"
 
-#include <rw/math/Metric.hpp>
-
-
-
 using namespace rwlibs::algorithms;
  
  

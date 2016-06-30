@@ -21,11 +21,12 @@
 
 //! @file SimulatedSensor.hpp
 
-#include <rw/kinematics/State.hpp>
 #include <rw/sensor/SensorModel.hpp>
 #include <rw/common/Ptr.hpp>
 #include "Simulator.hpp"
-#include <rw/kinematics/Frame.hpp>
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwlibs {
 namespace simulation {

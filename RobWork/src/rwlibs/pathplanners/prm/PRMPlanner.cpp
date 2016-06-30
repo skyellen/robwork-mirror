@@ -18,19 +18,17 @@
 
 #include "PRMPlanner.hpp"
 
-#include <limits.h>
-
 #include <rw/math/Random.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/math/MetricFactory.hpp>
+#include <rw/pathplanning/PlannerUtil.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
+#include <rw/pathplanning/QEdgeConstraint.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 
-#include <boost/tuple/tuple.hpp>
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/random.hpp>
-#include <boost/random.hpp>
-#include <boost/graph/graphviz.hpp>
 #include <queue>
 
 #include "PartialIndexTable.hpp"

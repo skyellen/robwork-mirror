@@ -22,16 +22,16 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rw/math/Metric.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/proximity/DistanceCalculator.hpp>
+//#include <rw/models/WorkCell.hpp>
 
-#include "ClearanceCalculator.hpp"
 #include <list>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwlibs {
 namespace pathoptimization {
+	class ClearanceCalculator;
 
     /** @addtogroup pathoptimization */
     /*@{*/
@@ -65,11 +65,11 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-	ClearanceOptimizer(rw::models::WorkCell::Ptr workcell,
-		rw::models::Device::Ptr device,
+	ClearanceOptimizer(//rw::models::WorkCell::Ptr workcell,
+		rw::common::Ptr<rw::models::Device> device,
 		const rw::kinematics::State& state,
 		rw::math::QMetric::Ptr metric,
-		ClearanceCalculatorPtr clearanceCalculator);
+		rw::common::Ptr<ClearanceCalculator> clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -151,11 +151,11 @@ private:
 
 	rw::common::PropertyMap _propertymap;
 
-	rw::models::WorkCell::Ptr _workcell;
-	rw::models::Device::Ptr _device;
+	//rw::models::WorkCell::Ptr _workcell;
+	rw::common::Ptr<rw::models::Device> _device;
 	rw::kinematics::State _state;
 	rw::math::QMetric::Ptr _metric;
-	ClearanceCalculatorPtr _clearanceCalculator;
+	rw::common::Ptr<ClearanceCalculator> _clearanceCalculator;
 	double _stepsize;
 	size_t _dof;
 

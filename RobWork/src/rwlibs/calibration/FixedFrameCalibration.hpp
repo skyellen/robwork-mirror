@@ -19,8 +19,7 @@
 #define RWLIBS_CALIBRATION_FIXEDFRAMECALIBRATION_HPP_
 
 #include "CalibrationBase.hpp"
-#include <rw/kinematics.hpp>
-#include <rw/models.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
 
 namespace rwlibs {
 namespace calibration {

@@ -18,11 +18,9 @@
 
 #include "GLFrameGrabber25D.hpp"
 
-#include <rw/common/Log.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Constants.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rwlibs/os/rwgl.hpp>
-#include <cmath>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -101,4 +99,6 @@ void GLFrameGrabber25D::grab(rw::kinematics::Frame *frame,
     _drawer->renderView(_view);
 }
 
-
+double GLFrameGrabber25D::getFieldOfViewY() {
+	return _fieldOfView * Deg2Rad;
+}

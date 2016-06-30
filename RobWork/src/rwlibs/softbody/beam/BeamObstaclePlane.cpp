@@ -17,6 +17,8 @@ Copyright 2013 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
 
 #include "BeamObstaclePlane.hpp"
 
+#include <rw/math/EAA.hpp>
+
 using namespace rw::math;
 using namespace rwlibs::softbody;
 

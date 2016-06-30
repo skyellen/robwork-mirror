@@ -16,16 +16,13 @@
  ********************************************************************************/
 
 #include "StablePose1DModel.hpp"
-#include "PlaneModel.hpp"
 
+#include <rw/geometry/Plane.hpp>
 #include <rw/math/Math.hpp>
 
-#include <cmath>
-#include <algorithm>
 #include <boost/foreach.hpp>
 
 using namespace std;
-using namespace boost;
 using namespace rw::math;
 using namespace rw::geometry;
 using namespace rwlibs::algorithms;

@@ -7,6 +7,7 @@
 
 #include "RenderUtil.hpp"
 
+#include <rw/geometry/Line.hpp>
 #include <rw/math/Vector3D.hpp>
 
 using namespace rwlibs::opengl;

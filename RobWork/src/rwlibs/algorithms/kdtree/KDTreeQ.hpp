@@ -31,7 +31,6 @@
 #include <rw/common/macros.hpp>
 #include <float.h>
 #include <rw/math/Math.hpp>
-#include <boost/any.hpp>
 
 #include <rw/common/InputArchive.hpp>
 #include <rw/common/OutputArchive.hpp>
