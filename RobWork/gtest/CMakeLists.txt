@@ -111,6 +111,28 @@ TARGET_LINK_LIBRARIES( rw_loaders-gtest ${LOADERS_TEST_LIBRARIES})
 ADD_RW_GTEST(rw_loaders-gtest)
 
 ########################################################################
+# Task
+########################################################################
+
+SET(TASK_TEST_LIBRARIES
+ rw-gtest-main
+ ${GTEST_LIBRARIES}
+ rw_task
+ rw
+ ${XERCESC_LIBRARIES}
+ ${ASSIMP_LIBRARIES}
+ ${QHULL_LIBRARIES}
+ ${CMAKE_DL_LIBS}
+ )
+
+SET(TASK_TEST_SRC
+  task/GraspTaskTest.cpp
+)
+ADD_EXECUTABLE( rw_task-gtest ${TASK_TEST_SRC})       
+TARGET_LINK_LIBRARIES( rw_task-gtest ${TASK_TEST_LIBRARIES})
+ADD_RW_GTEST(rw_task-gtest)
+
+########################################################################
 # Target for generation of all detailed reports
 ########################################################################
 

@@ -187,6 +187,8 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask() {
 		subtask->getPropertyMap().set<Q>("CloseQ", stask.closeQ);
 		subtask->getPropertyMap().set<Q>("TauMax", stask.tauMax);
 		subtask->setId(stask.getTaskID());
+		if (stask.objectID != "")
+			subtask->getPropertyMap().set<std::string>("ObjectID", stask.objectID);
 
 		//std::cout << "Size targets: " << stask.targets.size() << std::endl;
 		BOOST_FOREACH(GraspTarget &gtarget, stask.targets) {
@@ -309,15 +311,18 @@ rwlibs::task::CartesianTask::Ptr GraspTask::toCartesianTask() {
 
 void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name) {
 	std::ofstream outfile(name.c_str());
+	saveRWTask(task,outfile);
+	outfile.close();
+}
+
+void GraspTask::saveRWTask(GraspTask::Ptr task, std::ostream& stream) {
 	rwlibs::task::CartesianTask::Ptr ctask = task->toCartesianTask();
 	try {
 		XMLTaskSaver saver;
-		saver.save(ctask, outfile);
+		saver.save(ctask, stream);
 	} catch (const Exception& exp) {
 		RW_THROW("Unable to save task: " << exp.what());
 	}
-
-	outfile.close();
 }
 
 void GraspTask::saveText(GraspTask::Ptr gtask, const std::string& name) {
@@ -841,6 +846,7 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task) {
 		_subtasks[i].closeQ = stask->getPropertyMap().get<Q>("CloseQ", Q());
 		_subtasks[i].tauMax = stask->getPropertyMap().get<Q>("TauMax", Q());
 		_subtasks[i].setTaskID(stask->getId());
+		_subtasks[i].objectID = stask->getPropertyMap().get<std::string>("ObjectID", "");
 
 		_subtasks[i].targets.resize(stask->getTargets().size());
 		// std::cout << "Targets size: " <<  stask->getTargets().size() << std::endl;
@@ -916,6 +922,12 @@ GraspTask::GraspTask(rwlibs::task::CartesianTask::Ptr task) {
 					result->contactsLift.push_back(contact);
 				}
 			}
+
+			result->interferenceTs = ctarget->getPropertyMap().get<std::vector<rw::math::Transform3D<> > >("InterferenceTs",std::vector<rw::math::Transform3D<> >());
+			result->interferenceDistances = ctarget->getPropertyMap().get<std::vector<double> >("InterferenceDistances",std::vector<double>());
+			result->interferenceAngles = ctarget->getPropertyMap().get<std::vector<double> >("InterferenceAngles",std::vector<double>());
+			result->interferences = ctarget->getPropertyMap().get<std::vector<double> >("Interferences",std::vector<double>());
+			result->interference = ctarget->getPropertyMap().get<double>("Interference",0);
 
 		}
 	}
