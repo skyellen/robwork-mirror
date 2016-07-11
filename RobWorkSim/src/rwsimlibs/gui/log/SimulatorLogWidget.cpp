@@ -36,7 +36,7 @@
 
 #include <iostream>
 #include <queue>
-#include "../../../rwsim/log/LogStep.hpp"
+#include <rwsim/log/LogStep.hpp>
 
 using namespace rw::common;
 using namespace rw::geometry;

@@ -21,11 +21,10 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rw/models/JointDevice.hpp>
-#include <rwsim/dynamics/DynamicDevice.hpp>
-#include <rwlibs/control/JointController.hpp>
 
 #include "GraspPolicy.hpp"
+
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
 
 namespace rwsim {
 namespace util {

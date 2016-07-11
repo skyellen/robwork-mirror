@@ -26,6 +26,8 @@
 
 #include "SimulatorLogEntry.hpp"
 
+#include <rwsim/contacts/Contact.hpp>
+
 namespace rwsim {
 namespace log {
 //! @addtogroup rwsim_log

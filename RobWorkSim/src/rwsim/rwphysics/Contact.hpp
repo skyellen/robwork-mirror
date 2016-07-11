@@ -1,9 +1,6 @@
 #ifndef RWSIM_SIMULATOR_CONTACT_HPP_
 #define RWSIM_SIMULATOR_CONTACT_HPP_
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/proximity/DistanceMultiStrategy.hpp>
-
 #include "RWBody.hpp"
 #include <rwsim/dynamics/ContactPoint.hpp>
 

@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "KinematicDevice.hpp"
+#include <rw/models/Joint.hpp>
 
 #include <rw/common/macros.hpp>
 

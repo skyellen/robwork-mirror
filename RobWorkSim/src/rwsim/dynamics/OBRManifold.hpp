@@ -13,7 +13,6 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Vector2D.hpp>
-#include <rw/math/Rotation2D.hpp>
 
 namespace rwsim {
 namespace dynamics {

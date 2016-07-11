@@ -7,6 +7,7 @@
 
 #include "RK4Integrator.hpp"
 
+#include <dynamics/RigidBody.hpp>
 
 using namespace rwsim::simulator;
 using namespace rw::math;

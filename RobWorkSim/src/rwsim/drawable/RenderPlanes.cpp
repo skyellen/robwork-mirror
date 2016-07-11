@@ -18,6 +18,7 @@
 #include "RenderPlanes.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
+#include <rwsim/util/PlaneModel.hpp>
 
 #include <boost/foreach.hpp>
 

@@ -26,6 +26,8 @@
 
 #include "SimulatorLogEntry.hpp"
 
+#include <rw/math/VelocityScrew6D.hpp>
+
 namespace rwsim {
 namespace log {
 

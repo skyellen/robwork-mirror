@@ -30,6 +30,8 @@
 
 namespace rwsim {
 namespace contacts {
+class ContactModel;
+
 //! @addtogroup rwsim_contacts
 
 //! @{

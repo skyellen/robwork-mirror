@@ -19,11 +19,10 @@
 #define RWSIM_DYNAMICS_RIGIDDEVICE_HPP_
 
 #include <rw/math/Q.hpp>
-#include <rw/math/Math.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/models/JointDevice.hpp>
 #include "DynamicDevice.hpp"
-#include "RigidJoint.hpp"
+//#include "RigidJoint.hpp"
 
 namespace rwsim {
 namespace dynamics {

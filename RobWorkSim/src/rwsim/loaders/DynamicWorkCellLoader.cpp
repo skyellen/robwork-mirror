@@ -18,7 +18,7 @@
 
 #include "DynamicWorkCellLoader.hpp"
 
-#include <iostream>
+#include <sstream>
 #include <string>
 
 #include <boost/property_tree/ptree.hpp>
@@ -27,14 +27,13 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <rw/math/Rotation3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Vector3D.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/rwxml/DependencyGraph.hpp>
+#include <rw/models/Joint.hpp>
 #include <rw/models/JointDevice.hpp>
 
 #include <rw/common/macros.hpp>
@@ -43,10 +42,8 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/common/TimerUtil.hpp>
 
-#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/math/Constants.hpp>
 
 #include <rwsim/dynamics/Body.hpp>
@@ -63,7 +60,7 @@
 
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
-#include <rwsim/dynamics/DynamicUtil.hpp>
+//#include <rwsim/dynamics/DynamicUtil.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
 
 #include <rwsim/sensor/TactileArraySensor.hpp>
@@ -75,7 +72,6 @@
 
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/common/PropertyMap.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <rw/models/RigidObject.hpp>
 
 #include <rwlibs/simulation/SimulatedController.hpp>
@@ -83,15 +79,10 @@
 #include <rwlibs/control/JointController.hpp>
 
 #include <rw/geometry/Geometry.hpp>
-#include <rw/loaders/GeometryFactory.hpp>
-#include <rw/geometry/IndexedTriMesh.hpp>
-#include <rw/geometry/TriangleUtil.hpp>
+//#include <rw/loaders/GeometryFactory.hpp>
 
 #include <rwsim/control/PDController.hpp>
-#include <rwsim/control/SyncPDController.hpp>
-#include <rwsim/control/VelRampController.hpp>
-//#include <rwsim/control/TrajectoryController.hpp>
-#include <rwsim/control/SuctionCupController.hpp>
+//#include <rwsim/control/SyncPDController.hpp>
 #include <rwsim/control/PoseController.hpp>
 
 typedef boost::property_tree::ptree PTree;

@@ -19,7 +19,6 @@
 #define RWSIM_DYNAMICS_THREADSIMULATOR_HPP_
 
 #include <boost/thread.hpp>
-#include <boost/bind.hpp>
 
 #include "DynamicSimulator.hpp"
 

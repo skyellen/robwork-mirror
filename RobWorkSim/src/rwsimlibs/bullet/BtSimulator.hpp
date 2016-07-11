@@ -26,6 +26,9 @@
 
 #include <rwsim/simulator/PhysicsEngine.hpp>
 
+#include <rwsim/dynamics/MaterialDataMap.hpp>
+#include <rwsim/dynamics/ContactDataMap.hpp>
+
 // Forward Declarations
 class btDynamicsWorld;
 class btDiscreteDynamicsWorld;
@@ -35,7 +38,9 @@ class btCollisionDispatcher;
 class btConstraintSolver;
 class btCollisionConfiguration;
 
+namespace rw { namespace models { class Joint; } }
 namespace rwsim { namespace contacts { class ContactDetectorData; } }
+namespace rwsim { namespace dynamics { class Constraint; } }
 
 namespace rwsimlibs {
 namespace bullet {
@@ -57,13 +62,13 @@ public:
 	 * @brief Construct new simulator.
 	 * @param dwc [in] the dynamic workcell.
 	 */
-	BtSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+	BtSimulator(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
 	//! @brief Destructor.
 	virtual ~BtSimulator();
 
 	//! @copydoc PhysicsEngine::load
-	void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+	void load(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
 	//! @copydoc PhysicsEngine::setContactDetector
 	bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
@@ -84,10 +89,10 @@ public:
 	double getTime();
 
 	//! @copydoc PhysicsEngine::setEnabled
-	void setEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
+	void setEnabled(rw::common::Ptr<rwsim::dynamics::Body> body, bool enabled);
 
 	//! @copydoc PhysicsEngine::setDynamicsEnabled
-	void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled);
+	void setDynamicsEnabled(rw::common::Ptr<rwsim::dynamics::Body> body, bool enabled);
 
 	//! @copydoc PhysicsEngine::createDebugRender
 	rwsim::drawable::SimulatorDebugRender::Ptr createDebugRender();
@@ -99,16 +104,16 @@ public:
 	void emitPropertyChanged();
 
 	//! @copydoc PhysicsEngine::addController
-	void addController(rwlibs::simulation::SimulatedController::Ptr controller);
+	void addController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
 	//! @copydoc PhysicsEngine::removeController
-	void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
+	void removeController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
 	//! @copydoc PhysicsEngine::addBody
-	void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state);
+	void addBody(rw::common::Ptr<rwsim::dynamics::Body> body, rw::kinematics::State& state);
 
 	//! @copydoc PhysicsEngine::addDevice
-	void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
+	void addDevice(rw::common::Ptr<rwsim::dynamics::DynamicDevice> device, rw::kinematics::State& state);
 
 	//! @copydoc PhysicsEngine::addSensor
 	void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
@@ -117,10 +122,10 @@ public:
 	void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
 	//! @copydoc PhysicsEngine::attach
-	void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+	void attach(rw::common::Ptr<rwsim::dynamics::Body> b1, rw::common::Ptr<rwsim::dynamics::Body> b2);
 
 	//! @copydoc PhysicsEngine::detach
-	void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+	void detach(rw::common::Ptr<rwsim::dynamics::Body> b1, rw::common::Ptr<rwsim::dynamics::Body> b2);
 
 	//! @copydoc PhysicsEngine::getSensors
 	std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors();
@@ -152,7 +157,7 @@ private:
 	std::vector<BtConstraint*> _constraints;
 	std::vector<BtTactileSensor*> _btSensors;
 
-	std::vector<rwsim::dynamics::DynamicDevice::Ptr> _devices;
+	std::vector<rw::common::Ptr<rwsim::dynamics::DynamicDevice> > _devices;
 
 	std::vector<BtDevice*> _btDevices;
 
@@ -160,7 +165,7 @@ private:
 
 	rwsim::drawable::SimulatorDebugRender::Ptr _render;
 
-	std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
+	std::vector<rw::common::Ptr<rwlibs::simulation::SimulatedController> > _controllers;
 
 	rw::common::Ptr<rwsim::contacts::ContactDetector> _detector;
 	rw::common::Ptr<rwsim::contacts::ContactDetectorData> _detectorData;

@@ -5,7 +5,6 @@
 #include "ConstraintEdge.hpp"
 
 #include <vector>
-#include <list>
 #include <stack>
 
 namespace rwsim {

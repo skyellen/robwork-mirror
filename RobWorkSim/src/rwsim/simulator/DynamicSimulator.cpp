@@ -1,6 +1,6 @@
 #include "DynamicSimulator.hpp"
 
-#include "PhysicsEngineFactory.hpp"
+#include "PhysicsEngine.hpp"
 
 using namespace rwsim::simulator;
 using namespace rw::common;
@@ -17,7 +17,7 @@ DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkce
 DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell):
         _dwc(dworkcell)
 {
-    _pengine = PhysicsEngineFactory::makePhysicsEngine(_dwc);
+    _pengine = PhysicsEngine::Factory::makePhysicsEngine(_dwc);
     _pengine->addController(_bodyController);
 }
 

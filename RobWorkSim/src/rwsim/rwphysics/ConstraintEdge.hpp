@@ -5,12 +5,6 @@
 
 #include "Contact.hpp"
 
-#include <map>
-#include <vector>
-#include <list>
-
-#include <rw/math/Transform3D.hpp>
-
 namespace rwsim {
 namespace simulator {
 

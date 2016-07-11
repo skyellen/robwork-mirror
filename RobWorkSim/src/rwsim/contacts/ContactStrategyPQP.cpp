@@ -16,10 +16,12 @@
  ********************************************************************************/
 
 #include "ContactStrategyPQP.hpp"
+#include "ContactModel.hpp"
+#include "ContactStrategyData.hpp"
 #include "ContactStrategyTracking.hpp"
 
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
-#include <rw/proximity/ProximityCache.hpp>
 #include <rw/math/EAA.hpp>
 
 #include <rwsim/dynamics/ContactPoint.hpp>

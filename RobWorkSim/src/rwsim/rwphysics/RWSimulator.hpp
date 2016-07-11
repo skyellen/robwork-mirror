@@ -1,31 +1,31 @@
 #ifndef RWSIMULATOR_HPP_
 #define RWSIMULATOR_HPP_
 
-#include "ContactGraph.hpp"
-
 #include <rwsim/simulator/PhysicsEngine.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
-#include <rw/kinematics/State.hpp>
-#include "ConstraintSolver.hpp"
-#include "RWDebugRender.hpp"
-#include "BodyIntegrator.hpp"
-#include "BodyController.hpp"
-#include "ConstantForceManipulator.hpp"
 #include "RWBodyPool.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace dynamics{
+	class DynamicWorkCell;
 	class RigidBody;
 	class KinematicBody;
+	class BodyController;
 }
 
 namespace simulator {
 
     class CNodePool;
     class ContactModelFactory;
-
+    class ContactGraph;
+    class ConstantForceManipulator;
+    class BodyController;
+    class BodyIntegrator;
+    class RWDebugRender;
+    class ConstraintSolver;
 
 	class RWSimulator: public PhysicsEngine
 	{
@@ -36,7 +36,7 @@ namespace simulator {
 		/**
 		 * @brief constructor
 		 */
-		RWSimulator(dynamics::DynamicWorkCell::Ptr dwc);
+		RWSimulator(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
 		/**
 		 * @brief default destructor
@@ -46,7 +46,7 @@ namespace simulator {
 		}
 
 		//! @copydoc PhysicsEngine::load
-		void load(dynamics::DynamicWorkCell::Ptr dwc);
+		void load(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
 		//! @copydoc PhysicsEngine::setContactDetector
 		bool setContactDetector(rw::common::Ptr<rwsim::contacts::ContactDetector> detector);
@@ -83,9 +83,7 @@ namespace simulator {
 		/**
 		 * @copydoc Simulator::createDebugRender
 		 */
-		drawable::SimulatorDebugRender::Ptr createDebugRender(){
-			return rw::common::ownedPtr( new RWDebugRender(*_dwc) );
-		}
+		drawable::SimulatorDebugRender::Ptr createDebugRender();
 
 		virtual void setEnabled(dynamics::Body::Ptr body, bool enabled){}
 
@@ -94,7 +92,7 @@ namespace simulator {
 
 		void emitPropertyChanged(){}
 
-		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
+		void addController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller){
 			_controllers.push_back(controller);
 		}
 
@@ -102,7 +100,7 @@ namespace simulator {
 
 		}
 
-		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state){
+		void addDevice(rw::common::Ptr<rwsim::dynamics::DynamicDevice> dev, rw::kinematics::State &state){
 
 		}
 
@@ -110,7 +108,7 @@ namespace simulator {
 			_sensors.push_back(sensor);
 		}
 
-		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
+		void removeController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller){}
 
 		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
 		void setDynamicsEnabled(rwsim::dynamics::Body::Ptr body, bool enabled){}
@@ -131,7 +129,7 @@ namespace simulator {
 		void rollBack(rw::kinematics::State &state);
 
 	private:
-		rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
+		rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> _dwc;
 
 		CNodePool *_pool;
 		ContactModelFactory *_factory;
@@ -153,7 +151,7 @@ namespace simulator {
 
 		ConstantForceManipulator *_gravityManipulator;
 
-		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
+		std::vector<rw::common::Ptr<rwlibs::simulation::SimulatedController> > _controllers;
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 	};
 

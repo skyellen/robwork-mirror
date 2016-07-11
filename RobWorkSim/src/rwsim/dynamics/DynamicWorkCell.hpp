@@ -22,8 +22,6 @@
 #include <map>
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-
 
 #include "Body.hpp"
 #include "Constraint.hpp"

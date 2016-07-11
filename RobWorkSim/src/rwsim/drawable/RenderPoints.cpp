@@ -17,21 +17,30 @@
 
 #include "RenderPoints.hpp"
 
+#include <rwlibs/os/rwgl.hpp>
+
 #include <boost/foreach.hpp>
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-
-using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::graphics;
 using namespace rwsim::drawable;
 
-RenderPoints::RenderPoints(){
-	_sphereObj = gluNewQuadric();
+struct RenderPoints::GLData {
+	GLData(): sphereObj(gluNewQuadric()) {}
+	~GLData() {
+		gluDeleteQuadric(sphereObj);
+	}
+	GLUquadricObj* sphereObj;
+};
+
+RenderPoints::RenderPoints():
+	_gl(new GLData())
+{
 }
 
-RenderPoints::~RenderPoints(){}
+RenderPoints::~RenderPoints() {
+	delete _gl;
+}
 
 void RenderPoints::addPoints(const std::vector<rw::math::Vector3D<> >& points){
 	int origSize = (int)_points.size();
@@ -65,7 +74,7 @@ void RenderPoints::draw(const DrawableNode::RenderInfo& info, DrawType type, dou
         //glColor3fv(_color);
         BOOST_FOREACH(const Vector3D<> &p, _points){
         	glTranslatef((float)p(0), (float)p(1), (float)p(2));
-        	gluSphere(_sphereObj, 0.01, 3, 3);
+        	gluSphere(_gl->sphereObj, 0.01, 3, 3);
         	glTranslatef((float)-p(0), (float)-p(1), (float)-p(2));
         }
         glPopMatrix();

@@ -23,7 +23,6 @@
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/RampInterpolator.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
 
 using namespace rw::common;
 using namespace rw::kinematics;

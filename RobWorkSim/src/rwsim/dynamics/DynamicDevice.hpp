@@ -21,14 +21,13 @@
 //! @file DynamicDevice.hpp
 
 #include <rw/math/Q.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
 
 #include <rw/kinematics/Stateless.hpp>
 
 #include "Body.hpp"
-#include "Link.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace dynamics {

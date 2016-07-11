@@ -7,9 +7,9 @@
 #include <rwlibs/control/SyncVelocityRamp.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 
-#include <rwsim/dynamics/RigidDevice.hpp>
-
 #include "PDController.hpp"
+
+namespace rwsim { namespace dynamics { class RigidDevice; } }
 
 namespace rwsim {
 namespace control {

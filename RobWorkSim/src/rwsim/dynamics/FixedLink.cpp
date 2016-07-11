@@ -17,7 +17,6 @@
 
 #include "FixedLink.hpp"
 
-#include <rw/models/BasicDeviceJacobian.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Q.hpp>

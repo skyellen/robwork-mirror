@@ -17,7 +17,6 @@
 
 #include "ContactDetectorTracking.hpp"
 #include "ContactStrategy.hpp"
-#include "ContactStrategyTracking.hpp"
 
 using namespace rwsim::contacts;
 

@@ -18,10 +18,9 @@
 #ifndef RWSIM_DYNAMICS_CONTACTDATAMAP_HPP_
 #define RWSIM_DYNAMICS_CONTACTDATAMAP_HPP_
 
-#include <rw/common/macros.hpp>
-#include <iostream>
 #include <map>
 #include <vector>
+#include <string>
 
 namespace rwsim {
 namespace dynamics {

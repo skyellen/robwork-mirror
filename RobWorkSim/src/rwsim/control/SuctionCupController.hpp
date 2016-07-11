@@ -9,8 +9,8 @@
 #define SUCTIONCUPCONTROLLER_HPP_
 
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/dynamics/SuctionCup.hpp>
 
+namespace rwsim { namespace dynamics { class SuctionCup; } }
 
 namespace rwsim {
 namespace control1 {
@@ -35,7 +35,7 @@ namespace control1 {
 
         typedef rw::common::Ptr<SuctionCupController> Ptr;
 
-        SuctionCupController(const std::string& name, rwsim::dynamics::SuctionCup::Ptr dev);
+        SuctionCupController(const std::string& name, rw::common::Ptr<rwsim::dynamics::SuctionCup> dev);
 
         virtual ~SuctionCupController();
 
@@ -55,7 +55,7 @@ namespace control1 {
         bool isEnabled() const { return _enabled; }
 
     private:
-        rwsim::dynamics::SuctionCup::Ptr _dev;
+        rw::common::Ptr<rwsim::dynamics::SuctionCup> _dev;
 
         //rwsim::sensor::SuctionCupSensor::Ptr _sensor;
         std::vector<Spring> _springs;

@@ -30,6 +30,7 @@
 namespace rw { namespace kinematics { class State; } }
 namespace rw { namespace proximity { class ProximityModel; } }
 namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+namespace rwsim { namespace sensor { class BodyContactSensor; } }
 
 namespace rwsim {
 namespace simulator {
@@ -105,7 +106,7 @@ namespace simulator {
         //std::vector<rw::math::Transform3D<> > _bodyTransforms;
         std::string _name;
         rwsim::dynamics::SuctionCup::Ptr _dev;
-        rwsim::sensor::BodyContactSensor::Ptr _sensor;
+        rw::common::Ptr<rwsim::sensor::BodyContactSensor> _sensor;
         rwsim::dynamics::Body::Ptr _tcp;
         double _v;
 

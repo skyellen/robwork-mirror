@@ -1,11 +1,13 @@
 #include "RWSimulator.hpp"
 
-#include <boost/foreach.hpp>
+#include "ContactModelFactory.hpp"
+#include "ContactGraph.hpp"
+#include "ConstantForceManipulator.hpp"
+#include "RWDebugRender.hpp"
 
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
 
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
@@ -27,8 +29,6 @@
 // #define RWSIMULATOR_DEBUG
 
 using namespace rwsim::simulator;
-using namespace rwsim::sensor;
-using namespace rwsim::control;
 using namespace rwsim::dynamics;
 using namespace rwsim;
 using namespace rw::math;
@@ -167,6 +167,10 @@ void RWSimulator::resetScene(State& state){
 void RWSimulator::exitPhysics(){
     // destruct every thing...
 
+}
+
+drawable::SimulatorDebugRender::Ptr RWSimulator::createDebugRender() {
+	return ownedPtr( new RWDebugRender(*_dwc) );
 }
 
 void RWSimulator::step(double dt, State& state){

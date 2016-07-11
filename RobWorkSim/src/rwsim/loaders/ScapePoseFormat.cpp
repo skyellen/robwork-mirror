@@ -17,10 +17,10 @@
 
 #include "ScapePoseFormat.hpp"
 
-#include <iostream>
 #include <fstream>
 
 #include <rwsim/dynamics/RigidBody.hpp>
+#include <rw/kinematics/State.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 
@@ -33,7 +33,7 @@ using namespace rw::math;
 // saving poses to SCAPE file
 void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
 								const std::vector<RigidBody::Ptr>& bodies,
-								const rw::kinematics::State state,
+								const rw::kinematics::State& state,
 								const std::string& ObjectName,
 								const std::string& SimulationDescription)
 {

@@ -17,6 +17,8 @@
 
 #include "CollisionFreeSampler.hpp"
 
+#include <rw/proximity/CollisionDetector.hpp>
+
 using namespace rw::proximity;
 using namespace rwsim::util;
 

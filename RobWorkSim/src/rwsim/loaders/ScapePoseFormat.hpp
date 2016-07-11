@@ -19,8 +19,11 @@
 #define RWSIM_DYNAMICS_SCAPEPOSEFORMAT_HPP_
 
 #include <vector>
-#include <rw/kinematics/State.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
+
+#include <rw/common/Ptr.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rwsim { namespace dynamics { class RigidBody; } }
 
 namespace rwsim {
 namespace dynamics {
@@ -55,8 +58,8 @@ namespace dynamics {
 		 * @brief save a single pose of all rigid bodies in a workcell.
 		 */
 		static void savePoses(const std::string& FileNameAndPath,
-				const std::vector<dynamics::RigidBody::Ptr>& bodies,
-				const rw::kinematics::State state,
+				const std::vector<rw::common::Ptr<rwsim::dynamics::RigidBody> >& bodies,
+				const rw::kinematics::State& state,
 				const std::string& ObjectName,
 				const std::string& SimulationDescription);
 
@@ -64,7 +67,7 @@ namespace dynamics {
 		 * @brief save a multiple pose of all rigid bodies in a workcell.
 		 */
 		static void savePoses(const std::string& FileNameAndPath,
-				const std::vector<dynamics::RigidBody::Ptr>& bodies,
+				const std::vector<rw::common::Ptr<rwsim::dynamics::RigidBody> >& bodies,
 				const std::vector< rw::kinematics::State> states,
 				const std::string& ObjectName,
 				const std::string& SimulationDescription);

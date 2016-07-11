@@ -20,7 +20,6 @@
 
 //! @file Body.hpp
 
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Object.hpp>
@@ -30,12 +29,12 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
-#include <boost/foreach.hpp>
+//#include <boost/foreach.hpp>
 #include <rw/geometry/Geometry.hpp>
-#include <rw/kinematics/State.hpp>
 
-#include <rw/kinematics/StateData.hpp>
 #include <rw/kinematics/Stateless.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace dynamics {

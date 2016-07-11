@@ -6,7 +6,7 @@
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 
-#include <rwsim/dynamics/RigidDevice.hpp>
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
 
 namespace rwsim {
 namespace control {
@@ -41,7 +41,7 @@ namespace control {
 		 */
 		PDController(
 		        const std::string& name,
-		        dynamics::DynamicDevice::Ptr rdev,
+		        rw::common::Ptr<rwsim::dynamics::DynamicDevice> rdev,
 				ControlMode cmode,
 				const std::vector<PDParam>& pdparams,
 				double dt
@@ -57,7 +57,7 @@ namespace control {
 		 */
 		PDController(
 		        const std::string& name,
-		        dynamics::DynamicDevice::Ptr rdev,
+				rw::common::Ptr<rwsim::dynamics::DynamicDevice> rdev,
 				ControlMode cmode,
 				const PDParam& pdparam,
 				double dt
@@ -141,7 +141,7 @@ namespace control {
 		PDController();
 
 	private:
-		dynamics::DynamicDevice::Ptr _ddev;
+		rw::common::Ptr<rwsim::dynamics::DynamicDevice> _ddev;
 		rw::math::Q _maxVel;
 		rw::math::Q _lastError, _currentError, _target, _currentQ, _currentVel;
 		rw::math::Q _targetVel;

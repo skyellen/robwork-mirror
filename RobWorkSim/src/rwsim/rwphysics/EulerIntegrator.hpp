@@ -3,12 +3,9 @@
 
 #include "BodyIntegrator.hpp"
 
-#include <rw/math/EAA.hpp>
-
-#include "RWBody.hpp"
-
 namespace rwsim {
 namespace simulator {
+	class RWBody;
 
 	/**
 	 * @brief body motion integrator that use an implicit Euler formulation to calculate

@@ -1,12 +1,11 @@
 #ifndef CONTACTNODE_HPP_
 #define CONTACTNODE_HPP_
 
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
-
 #include <list>
 
 #include "RWBody.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
 
 namespace rwsim {
 namespace simulator {

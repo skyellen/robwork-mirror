@@ -1,5 +1,7 @@
 #include "SyncPDController.hpp"
 
+#include <rwsim/dynamics/RigidDevice.hpp>
+
 using namespace rwsim::control;
 
 SyncPDController::SyncPDController(const std::string& name, rwsim::dynamics::RigidDevice* rdev, const rw::kinematics::State& state):

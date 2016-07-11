@@ -16,8 +16,10 @@
  ********************************************************************************/
 
 #include "BallBallStrategy.hpp"
+#include "ContactModel.hpp"
 #include "ContactStrategyTracking.hpp"
 
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/Sphere.hpp>
 
 using namespace rw::common;

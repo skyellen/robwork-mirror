@@ -18,11 +18,6 @@
 #ifndef RWSIM_UTIL_PLANEMODEL_HPP_
 #define RWSIM_UTIL_PLANEMODEL_HPP_
 
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Math.hpp>
-
 #include <vector>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/MetricUtil.hpp>

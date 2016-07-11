@@ -1,4 +1,5 @@
 #include "ConstantForceManipulator.hpp"
+#include "RWBody.hpp"
 
 #include <boost/foreach.hpp>
 

@@ -3,20 +3,16 @@
 
 //! @file SerialDeviceController.hpp
 
-#include <rwlibs/control/JointController.hpp>
-#include <rwlibs/control/SyncVelocityRamp.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-
-#include <rwsim/dynamics/KinematicDevice.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
 
 #include <rw/trajectory/Trajectory.hpp>
 
-#include <rw/invkin/JacobianIKSolver.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Wrench6D.hpp>
+
+#include <rwsim/dynamics/DynamicDevice.hpp>
 
 #include <boost/thread/mutex.hpp>
 
@@ -24,7 +20,9 @@
 #include <fstream>
 
 // Forward declarations
+namespace rw { namespace invkin { class JacobianIKSolver; }}
 namespace rw { namespace sensor { class FTSensor; }}
+namespace rwsim { namespace dynamics { class RigidDevice; }}
 
 namespace rwsim {
 namespace control {
@@ -53,7 +51,7 @@ namespace control {
 		 * @param name [in] name of controller
 		 * @param ddev [in] the RigidDevice that should be controlled
 		 */
-		SerialDeviceController(const std::string& name, dynamics::RigidDevice::Ptr ddev);
+		SerialDeviceController(const std::string& name, rw::common::Ptr<rwsim::dynamics::RigidDevice> ddev);
 
 		//! destructor
 		virtual ~SerialDeviceController();
@@ -218,12 +216,12 @@ namespace control {
 
 
 	private:
-		dynamics::DynamicDevice::Ptr _ddev;
-		dynamics::RigidDevice::Ptr _rdev;
+        dynamics::DynamicDevice::Ptr _ddev;
+		rw::common::Ptr<rwsim::dynamics::RigidDevice> _rdev;
 		rw::math::Q _target;
 		rw::math::Q _currentQ, _currentQd;
 		bool _enabled, _stop, _pause;
-		rw::invkin::JacobianIKSolver::Ptr _solver;
+		rw::common::Ptr<rw::invkin::JacobianIKSolver> _solver;
 
 		bool _targetAdded;
 

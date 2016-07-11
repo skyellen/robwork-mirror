@@ -19,15 +19,16 @@
 
 #include <stack>
 
-#include <rw/kinematics/Kinematics.hpp>
+//#include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
+#include <rw/math/MetricUtil.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 
 #include <rwsim/dynamics/RigidDevice.hpp>
-#include <rw/geometry/Geometry.hpp>
-#include <rw/geometry/TriMesh.hpp>
-#include <rw/geometry/PlainTriMesh.hpp>
+//#include <rw/geometry/Geometry.hpp>
+//#include <rw/geometry/TriMesh.hpp>
+//#include <rw/geometry/PlainTriMesh.hpp>
 
 #include <boost/foreach.hpp>
 

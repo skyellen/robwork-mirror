@@ -9,18 +9,13 @@
 #define RWBODY_HPP_
 
 #include <vector>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
-#include <rw/math/InertiaMatrix.hpp>
 
-#include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-
-#include <rw/kinematics/Kinematics.hpp>
-
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/InertiaMatrix.hpp>
 #include <rwsim/dynamics/Body.hpp>
 
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

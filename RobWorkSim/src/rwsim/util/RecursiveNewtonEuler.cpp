@@ -21,6 +21,7 @@
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/SerialDevice.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
 using namespace rw::math;
 using namespace rw::models;

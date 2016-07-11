@@ -18,10 +18,9 @@
 #ifndef RWSIM_SIMULATOR_BODYCONTROLLER_HPP_
 #define RWSIM_SIMULATOR_BODYCONTROLLER_HPP_
 
-#include <rw/kinematics/State.hpp>
+//#include <rwsim/dynamics/Body.hpp>
 
-#include <rwsim/dynamics/Body.hpp>
-
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

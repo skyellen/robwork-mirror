@@ -27,9 +27,6 @@
 #include "SimulatorLog.hpp"
 
 #include <rw/common/ExtensionPoint.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/VelocityScrew6D.hpp>
-#include <rwsim/contacts/Contact.hpp>
 
 namespace rwsim {
 namespace log {

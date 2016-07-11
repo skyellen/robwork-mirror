@@ -24,6 +24,7 @@
 #include <rw/common/ThreadTask.hpp>
 #include <rw/common/ThreadSafeVariable.hpp>
 
+#include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
 
 using namespace rw::common;

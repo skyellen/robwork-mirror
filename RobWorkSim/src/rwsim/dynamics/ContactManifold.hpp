@@ -24,6 +24,7 @@
 
 namespace rwsim {
 namespace dynamics {
+	class ContactPoint;
 
 	/**
 	 * @brief A contact manifold is an area of contact between two objects,

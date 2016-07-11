@@ -18,23 +18,24 @@
 #ifndef RWSIM_SIMULATOR_SIMULATOR_HPP_
 #define RWSIM_SIMULATOR_SIMULATOR_HPP_
 
-#include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 
 #include <rwlibs/simulation/Simulator.hpp>
 
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include "PhysicsEngine.hpp"
 
-#include <rw/kinematics/State.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
 #include <rw/trajectory/Trajectory.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwsim/control/BodyController.hpp>
 #include <rw/math/Transform3D.hpp>
 
+namespace rw { namespace kinematics { class State; } }
+namespace rwlibs { namespace simulation { class SimulatedController; } }
+
 namespace rwsim {
 namespace simulator {
+	class PhysicsEngine;
+
 	//! @addtogroup rwsim_simulator
 	//! @{
 
@@ -65,7 +66,7 @@ namespace simulator {
 	     * @param pengine
 	     * @return
 	     */
-	    DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, PhysicsEngine::Ptr pengine);
+	    DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, rw::common::Ptr<PhysicsEngine> pengine);
 
 	    /**
 	     * @brief constructor
@@ -110,13 +111,13 @@ namespace simulator {
 		/**
 		 * @brief add a simulated controller to this simulator
 		 */
-		void addController(rwlibs::simulation::SimulatedController::Ptr controller);
+		void addController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
 		/**
 		 * @brief removes a simulated controller from this simulator
 		 * @param controller
 		 */
-		void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
+		void removeController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller);
 
 		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state);
 		void addBody(rwsim::dynamics::Body::Ptr body){ addBody(body,_state); };
@@ -209,7 +210,7 @@ namespace simulator {
 		 rwsim::dynamics::DynamicWorkCell::Ptr getDynamicWorkCell(){ return _dwc; }
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
-		 PhysicsEngine::Ptr _pengine;
+		 rw::common::Ptr<PhysicsEngine> _pengine;
 		 rwsim::control::BodyController::Ptr _bodyController;
 		 rw::kinematics::State _state;
 	};

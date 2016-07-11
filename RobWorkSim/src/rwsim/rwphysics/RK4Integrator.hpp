@@ -10,9 +10,7 @@
 
 #include "BodyIntegrator.hpp"
 
-#include <rw/math/EAA.hpp>
-
-#include <dynamics/RigidBody.hpp>
+namespace rwsim { namespace dynamics { class RigidBody; } }
 
 namespace rwsim {
 namespace simulator {

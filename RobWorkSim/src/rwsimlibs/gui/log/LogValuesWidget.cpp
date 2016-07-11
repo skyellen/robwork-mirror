@@ -19,15 +19,13 @@
 
 #include <RobWorkStudioConfig.hpp>
 
-#include "../../../rwsim/log/LogValues.hpp"
+#include <rwsim/log/LogValues.hpp>
 #include "ui_LogValuesWidget.h"
 
 
 using namespace rw::common;
 using namespace rw::graphics;
-using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rw::models;
 using namespace rwsim::dynamics;
 using namespace rwsim::log;
 using namespace rwsimlibs::gui;

@@ -1,11 +1,10 @@
 #include "OBRManifold.hpp"
 
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Rotation2D.hpp>
 
-using namespace boost::numeric;
 using namespace rw::math;
 using namespace rwsim::dynamics;
-
 
 bool OBRManifold::addPoint(ContactPoint& p){
     //if( !inManifold(p) )

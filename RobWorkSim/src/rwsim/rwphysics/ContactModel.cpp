@@ -1,13 +1,12 @@
 #include "ContactModel.hpp"
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/InertiaMatrix.hpp>
-#include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Math.hpp>
+//#include <rw/math/InertiaMatrix.hpp>
 
 #include "RWBody.hpp"
 #include "Contact.hpp"
 #include <rwsim/dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/FixedLink.hpp>
 
 #include "ContactModelFactory.hpp"
 

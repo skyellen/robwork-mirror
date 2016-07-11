@@ -6,8 +6,9 @@
 #include <rw/models/Device.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwlibs/algorithms/xqpcontroller/XQPController.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
+
+namespace rwlibs { namespace algorithms { class XQPController; } }
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
 
 namespace rwsim {
 namespace control {
@@ -35,7 +36,7 @@ namespace control {
 		 */
 		PoseController(
 		        const std::string& name,
-		        dynamics::DynamicDevice::Ptr rdev,
+		        rw::common::Ptr<rwsim::dynamics::DynamicDevice> rdev,
 		        const rw::kinematics::State& state,
 				double dt
 				);
@@ -50,7 +51,7 @@ namespace control {
 		 */
 		PoseController(
 		        const std::string& name,
-		        dynamics::DynamicDevice::Ptr rdev,
+				rw::common::Ptr<rwsim::dynamics::DynamicDevice> rdev,
 		        const rw::kinematics::State& state,
 				double dt,
 				rw::kinematics::Frame* endframe
@@ -112,7 +113,7 @@ namespace control {
 		PoseController();
 
 	private:
-		dynamics::DynamicDevice::Ptr _ddev;
+		rw::common::Ptr<rwsim::dynamics::DynamicDevice> _ddev;
 		rw::common::Ptr<rw::models::Device> _device;
         rw::kinematics::Frame *_endframe;
 

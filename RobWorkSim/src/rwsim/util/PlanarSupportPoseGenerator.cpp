@@ -4,11 +4,12 @@
 //#include <rw/geometry/IncrementalHull.hpp>
 #include <rw/common/Ptr.hpp>
 #include <boost/foreach.hpp>
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 #include <rw/geometry/Plane.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
 #include <rw/loaders/model3d/STLFile.hpp>
@@ -414,7 +415,7 @@ void PlanarSupportPoseGenerator::calculateDistribution(int i, std::vector<rw::ma
     for(int sample=0;sample<20000;sample++){
         //Rotation3D<> rot = rand_rotation(d,1.0,d);
         //Rotation3D<> rot = RPY<>(Math::ran(-d,d),Math::ran(-d,d),Math::ran(-d,d)).toRotation3D();
-        Rotation3D<> rot = RPY<>(0,Math::ran(-d,d),Math::ran(-d,d)).toRotation3D()*R;
+        Rotation3D<> rot = RPY<>(0,Random::ran(-d,d),Random::ran(-d,d)).toRotation3D()*R;
         Vector3D<> rotV = rot*supPlane.normal();
         Vector3D<> ray = inverse(R)*rotV;
 

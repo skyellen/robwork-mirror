@@ -21,8 +21,8 @@
 #include <rw/graphics/SceneGraph.hpp>
 #include <rwlibs/opengl/RenderVelocity.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include "../../../rwsim/log/LogContactSet.hpp"
-#include "../../../rwsim/log/LogContactVelocities.hpp"
+#include <rwsim/log/LogContactSet.hpp>
+#include <rwsim/log/LogContactVelocities.hpp>
 
 #include "ui_ContactVelocitiesWidget.h"
 

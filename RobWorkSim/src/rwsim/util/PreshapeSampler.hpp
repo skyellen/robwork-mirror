@@ -20,9 +20,10 @@
 
 #include "StateSampler.hpp"
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/pathplanning/QSampler.hpp>
+#include <rw/kinematics/State.hpp>
+
+namespace rw { namespace pathplanning { class QSampler; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwsim {
 namespace util {
@@ -45,7 +46,7 @@ namespace util {
 		 * @param initState [in] the initial state
 		 */
 		PreshapeSampler(rw::models::Device* dev,
-						rw::pathplanning::QSampler::Ptr qsampler,
+						rw::common::Ptr<rw::pathplanning::QSampler> qsampler,
 						rw::kinematics::State& initState);
 
 		/**
@@ -63,7 +64,7 @@ namespace util {
 
 	private:
 		rw::models::Device* _dev;
-		rw::pathplanning::QSampler::Ptr _qsampler;
+		rw::common::Ptr<rw::pathplanning::QSampler> _qsampler;
 		rw::kinematics::State _initState;
 	};
 }

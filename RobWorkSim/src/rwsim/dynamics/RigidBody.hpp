@@ -19,10 +19,8 @@
 #define RWSIM_DYNAMICS_RIGIDBODY_HPP_
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/math/InertiaMatrix.hpp>
 
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 

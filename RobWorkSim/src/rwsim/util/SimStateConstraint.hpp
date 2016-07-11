@@ -19,8 +19,9 @@
 #define RWSIM_UTIL_SIMSTATECONSTRAINT_HPP_
 
 #include <rw/common/Ptr.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rwsim/simulator/DynamicSimulator.hpp>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
 
 namespace rwsim {
 namespace util {

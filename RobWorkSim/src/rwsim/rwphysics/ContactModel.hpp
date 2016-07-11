@@ -1,30 +1,15 @@
 #ifndef RWSIM_SIMULATOR_CONTACTMODEL_HPP_
 #define RWSIM_SIMULATOR_CONTACTMODEL_HPP_
 
-#include <rw/models/Device.hpp>
-
-#include <rw/kinematics/Kinematics.hpp>
-
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Vector3D.hpp>
-
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/ContactPoint.hpp>
-#include <rwsim/dynamics/FixedLink.hpp>
-
-#include <boost/numeric/ublas/matrix.hpp>
-
 #include "RWBody.hpp"
-#include "Contact.hpp"
-#include "ConstraintNode.hpp"
 
-//#define DYNAMIC_TEST 1
+namespace rwsim { namespace dynamics { class ContactPoint; } }
 
 namespace rwsim {
 namespace simulator {
-
-
+	class Contact;
 	class ContactModelFactory;
+	class ConstraintNode;
 
     /**
      * @brief The ContactModel describe how impulses between two bodies

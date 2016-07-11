@@ -23,8 +23,6 @@
 #include <rw/sensor/Sensor.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/multi_array.hpp>
 
 namespace rwsim {
 namespace sensor {
@@ -68,26 +66,26 @@ namespace sensor {
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body::Ptr body = NULL);
+					   rw::common::Ptr<rwsim::dynamics::Body> body = NULL);
 
 		void addForce(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
 					   rw::kinematics::State& state,
-					   dynamics::Body::Ptr body = NULL);
+					   rw::common::Ptr<rwsim::dynamics::Body> = NULL);
 
 
         void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body::Ptr body=NULL){ };
+					  rw::common::Ptr<rwsim::dynamics::Body> body=NULL){ };
 
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body::Ptr body=NULL){};
+					  rw::common::Ptr<rwsim::dynamics::Body> body=NULL){};
 
 
 		// now for the functions belonging to this class
@@ -102,7 +100,7 @@ namespace sensor {
 			return _sdata.getStateCache<ClassState>(state)->_contacts;
 		}
 
-		std::vector<rwsim::dynamics::Body::Ptr> getBodies(const rw::kinematics::State& state){
+		std::vector<rw::common::Ptr<rwsim::dynamics::Body> > getBodies(const rw::kinematics::State& state){
 			return _sdata.getStateCache<ClassState>(state)->_bodies;
 		}
 
@@ -111,11 +109,11 @@ namespace sensor {
 		class ClassState: public rw::kinematics::StateCache {
 		public:
 			std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
-			std::vector<rwsim::dynamics::Body::Ptr> _bodiesTmp, _bodies;
+			std::vector<rw::common::Ptr<rwsim::dynamics::Body> > _bodiesTmp, _bodies;
 
             size_t size() const{
                 return (_contacts.size()+_contactsTmp.size())*sizeof(rw::sensor::Contact3D) +
-                		(_bodiesTmp.size()+_bodies.size())*sizeof(rwsim::dynamics::Body::Ptr);
+                		(_bodiesTmp.size()+_bodies.size())*sizeof(rw::common::Ptr<rwsim::dynamics::Body>);
             }
 
             /**

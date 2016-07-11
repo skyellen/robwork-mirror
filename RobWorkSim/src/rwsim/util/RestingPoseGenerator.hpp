@@ -22,18 +22,16 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <rw/kinematics/State.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/simulator/ThreadSimulator.hpp>
 
-#include "StateSampler.hpp"
-#include "SimStateConstraint.hpp"
-
+namespace rw { namespace kinematics { class State; } }
+namespace rwsim { namespace simulator { class DynamicSimulator; } }
+namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
 namespace rwsim {
 namespace util {
-
+	class StateSampler;
+	class SimStateConstraint;
 
 	/**
 	 * @brief finds resting poses of a dynamic scene.
@@ -59,9 +57,9 @@ namespace util {
 		 * @param initState
 		 * @param restConstraint
 		 */
-		RestingPoseGenerator(simulator::DynamicSimulator::Ptr sim,
+		RestingPoseGenerator(rw::common::Ptr<rwsim::simulator::DynamicSimulator> sim,
 				const rw::kinematics::State& initState,
-				SimStateConstraint::Ptr restConstraint);
+				rw::common::Ptr<SimStateConstraint> restConstraint);
 
 		/**
 		 *
@@ -71,10 +69,10 @@ namespace util {
 		 * @param restConstraint
 		 * @return
 		 */
-		RestingPoseGenerator(simulator::DynamicSimulator::Ptr sim,
+		RestingPoseGenerator(rw::common::Ptr<rwsim::simulator::DynamicSimulator> sim,
 				const rw::kinematics::State& initState,
-				StateSampler::Ptr sampler,
-				SimStateConstraint::Ptr restConstraint);
+				rw::common::Ptr<StateSampler> sampler,
+				rw::common::Ptr<SimStateConstraint> restConstraint);
 
 		/**
 		 * @brief destructor
@@ -85,7 +83,7 @@ namespace util {
 		 * @brief set the sampler used for initial state
 		 * @param sampler [in] state sampler
 		 */
-		void setInitStateSample(StateSampler::Ptr sampler){
+		void setInitStateSample(rw::common::Ptr<StateSampler> sampler){
 			_sampler = sampler;
 		}
 
@@ -93,7 +91,7 @@ namespace util {
 		 * @brief resting state contraint
 		 * @param restconstraint [in] constraint
 		 */
-		void setRestingCriteria(SimStateConstraint::Ptr restconstraint){
+		void setRestingCriteria(rw::common::Ptr<SimStateConstraint> restconstraint){
 			_restConstraint = restconstraint;
 		}
 
@@ -155,10 +153,10 @@ namespace util {
 	protected:
 		void stepperLoop();
 	private:
-		simulator::ThreadSimulator::Ptr _sim;
+		rw::common::Ptr<rwsim::simulator::ThreadSimulator> _sim;
 
-		StateSampler::Ptr _sampler;
-		SimStateConstraint::Ptr _restConstraint;
+		rw::common::Ptr<StateSampler> _sampler;
+		rw::common::Ptr<SimStateConstraint> _restConstraint;
 
 		bool _running, _stopRunning;
 

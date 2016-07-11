@@ -21,7 +21,7 @@
 #include <rw/graphics/SceneGraph.hpp>
 #include <rwsim/contacts/RenderContacts.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include "../../../rwsim/log/LogContactSet.hpp"
+#include <rwsim/log/LogContactSet.hpp>
 #include "ui_ContactSetWidget.h"
 
 using namespace rw::common;

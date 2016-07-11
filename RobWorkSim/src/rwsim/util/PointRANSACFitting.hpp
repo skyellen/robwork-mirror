@@ -19,12 +19,11 @@
 #define RWSIM_UTIL_POINTRANSACFITTING_HPP_
 
 #include <vector>
-#include <rw/math/Vector3D.hpp>
 #include "PlaneModel.hpp"
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/Random.hpp>
 
-#include <boost/foreach.hpp>
+//#include <boost/foreach.hpp>
 
 namespace rwsim {
 namespace util {
@@ -68,7 +67,7 @@ namespace util {
 
 				// generate n randomly selected values from data
 				for(int i=0; i<n; i++){
-					int idx = Math::ranI(0,data.size());
+					int idx = Random::ranI(0,data.size());
 					maybeInliers[i] = data[idx];
 				}
 

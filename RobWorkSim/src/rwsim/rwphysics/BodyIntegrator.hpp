@@ -1,10 +1,7 @@
 #ifndef RWSIM_SIMULATOR_BODYINTEGRATOR_HPP_
 #define RWSIM_SIMULATOR_BODYINTEGRATOR_HPP_
 
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/InertiaMatrix.hpp>
-#include <rw/kinematics/State.hpp>
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

@@ -24,12 +24,13 @@
  * \copydoc rwsim::control::BodyController
  */
 
+#include <rw/math/VelocityScrew6D.hpp>
 #include <rw/trajectory/Trajectory.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/dynamics/Body.hpp>
 #include <boost/thread/mutex.hpp>
 
+namespace rwsim { namespace dynamics { class Body; } }
 namespace rwsim { namespace dynamics { class KinematicBody; } }
 
 namespace rwsim {
@@ -63,7 +64,7 @@ namespace control {
 		 * @param target [in] the target transformation in world frame.
 		 * @param state [in] the state giving the current position.
 		 */
-		void setTarget(rwsim::dynamics::Body::Ptr body, const rw::math::Transform3D<>& target, const rw::kinematics::State& state);
+		void setTarget(rw::common::Ptr<rwsim::dynamics::Body> body, const rw::math::Transform3D<>& target, const rw::kinematics::State& state);
 
 		/**
 		 * @brief Set a target trajectory of a body. The initial configuration of the trajectory must match
@@ -75,7 +76,7 @@ namespace control {
 		 * @param body [in] the body that should be moved
 		 * @param traj [in] the trajectory.
 		 */
-		void setTarget(rwsim::dynamics::Body::Ptr body,
+		void setTarget(rw::common::Ptr<rwsim::dynamics::Body> body,
 		               rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr traj);
 
 		/**
@@ -83,7 +84,7 @@ namespace control {
 		 * @param body [in] the body that should move.
 		 * @param velocity [in] the velocity target.
 		 */
-		void setTarget(rwsim::dynamics::Body::Ptr body,
+		void setTarget(rw::common::Ptr<rwsim::dynamics::Body> body,
 				const rw::math::VelocityScrew6D<> &velocity);
 
 		/**
@@ -96,7 +97,7 @@ namespace control {
 		 * @param force [in] the force.
 		 * @param torque [in] the torque.
 		 */
-		void setForceTarget(rwsim::dynamics::Body::Ptr body,
+		void setForceTarget(rw::common::Ptr<rwsim::dynamics::Body> body,
 		                    rw::math::Vector3D<> force,
 		                    rw::math::Vector3D<> torque);
 
@@ -105,20 +106,20 @@ namespace control {
 		 * @param body [in] the body for which to get the target
 		 * @return 6D Cartesian target
 		 */
-		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body::Ptr body);
+		rw::math::Transform3D<> getTarget(rw::common::Ptr<rwsim::dynamics::Body> body);
 
 		/**
 		 * @brief Get the current target trajectory for body \b body
 		 * @param body [in] body for which to get the target
 		 * @return target trajectory
 		 */
-		rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr getTargetTrajectory(rwsim::dynamics::Body::Ptr body);
+		rw::trajectory::Trajectory<rw::math::Transform3D<> >::Ptr getTargetTrajectory(rw::common::Ptr<rwsim::dynamics::Body> body);
 
 		/**
 		 * @brief Disable control of a specific body.
 		 * @param body [in] the body.
 		 */
-		void disableBodyControl(rwsim::dynamics::Body::Ptr body);
+		void disableBodyControl(rw::common::Ptr<rwsim::dynamics::Body> body);
 
 		//! @brief Disable control of all bodies.
 		void disableBodyControl();

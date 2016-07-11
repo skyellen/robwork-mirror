@@ -19,7 +19,7 @@
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Constants.hpp>
+#include <rwsim/dynamics/Body.hpp>
 
 using namespace rw::sensor;
 using namespace rw::kinematics;

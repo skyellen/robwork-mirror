@@ -1,6 +1,7 @@
 #include "SpringJointController.hpp"
 
 #include <rw/common/macros.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
 using namespace rwsim::control;
 using namespace rwsim::dynamics;

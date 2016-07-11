@@ -21,8 +21,8 @@
 #include <rw/graphics/SceneGraph.hpp>
 #include <rwlibs/opengl/RenderVelocity.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include "../../../rwsim/log/LogContactForceTorque.hpp"
-#include "../../../rwsim/log/LogContactSet.hpp"
+#include <rwsim/log/LogContactForceTorque.hpp>
+#include <rwsim/log/LogContactSet.hpp>
 #include "ui_ContactForceTorqueWidget.h"
 
 using namespace rw::common;

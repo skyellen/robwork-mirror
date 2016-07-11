@@ -36,7 +36,8 @@
 
 #include <rwsim/contacts/ContactDetector.hpp>
 #include <rwsim/control/SerialDeviceController.hpp>
-#include <rwsim/log/LogMessage.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/log/SimulatorLogScope.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>

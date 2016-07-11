@@ -82,8 +82,8 @@ public:
 	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,const rw::geometry::Geometry&)
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
-	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
-	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=true);
+	//! @copydoc rwsim::contacts::ContactStrategy::addGeometry(rw::proximity::ProximityModel*,rw::common::Ptr<rw::geometry::Geometry>,bool)
+	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool forceCopy=true);
 
 	//! @copydoc rwsim::contacts::ContactStrategy::removeGeometry
 	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);

@@ -60,7 +60,7 @@ std::vector<PlaneModel>
 
         // generate n randomly selected values from data
         for(int i=0; i<n; i++){
-            int idx = Math::ranI(0,(int)data.size());
+            int idx = Random::ranI(0,(int)data.size());
             maybeInliers[i] = data[idx];
         }
 

@@ -7,7 +7,7 @@
 #include <rwlibs/control/SyncVelocityRamp.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 
-#include <rwsim/dynamics/KinematicDevice.hpp>
+namespace rwsim { namespace dynamics { class KinematicDevice; } }
 
 namespace rwsim {
 namespace control {

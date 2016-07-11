@@ -11,9 +11,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/bind.hpp>
 
-#include <rw/kinematics/State.hpp>
-
-#include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 
 using namespace rw::common;

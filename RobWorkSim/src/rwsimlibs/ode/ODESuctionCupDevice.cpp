@@ -25,6 +25,7 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
 
 #include <ode/ode.h>
 #include <vector>

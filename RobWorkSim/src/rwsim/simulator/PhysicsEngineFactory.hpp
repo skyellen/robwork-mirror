@@ -19,22 +19,6 @@
 #define RWSIM_SIMULATOR_PHYSICSENGINEFACTORY_HPP_
 
 #include "PhysicsEngine.hpp"
-//#include <RobWorkSimConfig.hpp>
-
-//#include "DynamicSimulator.hpp"
-
-//#include <rwsim/dynamics/DynamicWorkCell.hpp>
-//#include <rwsim/rwphysics/RWSimulator.hpp>
-
-#include <boost/function.hpp>
-
-/*
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp> // !
-#include <boost/lambda/construct.hpp>
-#include <boost/function.hpp>
-*/
-#include <vector>
 
 namespace rwsim {
 namespace simulator {

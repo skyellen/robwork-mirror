@@ -17,17 +17,10 @@
 
 #include "KinematicBody.hpp"
 
-#include <rw/math/Q.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rw/models/Joint.hpp>
 
-
-using namespace boost::numeric;
 using namespace rw::math;
-using namespace rw::models;
 using namespace rw::kinematics;
-using namespace rw::geometry;
 
 using namespace rwsim::dynamics;
 

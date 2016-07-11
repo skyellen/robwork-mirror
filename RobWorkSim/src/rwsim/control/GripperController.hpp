@@ -6,8 +6,6 @@
 #include <rwlibs/control/JointController.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 
-#include <rwsim/dynamics/RigidDevice.hpp>
-
 namespace rwsim {
 namespace control {
 	//! @addtogroup rwsim_control

@@ -27,6 +27,9 @@
 #include "ContactStrategy.hpp"
 #include "ContactModelGeometry.hpp"
 
+#include <rw/geometry/Geometry.hpp>
+#include <rw/geometry/GeometryData.hpp>
+
 namespace rwsim {
 namespace contacts {
 //! @addtogroup rwsim_contacts

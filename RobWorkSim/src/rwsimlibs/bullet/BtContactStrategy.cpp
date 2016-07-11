@@ -26,6 +26,8 @@
 #include <rw/geometry/Box.hpp>
 #include <rw/geometry/Plane.hpp>
 
+#include <rwsim/contacts/ContactModel.hpp>
+
 #include <BulletCollision/BroadphaseCollision/btCollisionAlgorithm.h>
 
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>

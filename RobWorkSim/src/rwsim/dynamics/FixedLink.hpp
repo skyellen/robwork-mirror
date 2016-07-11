@@ -21,19 +21,13 @@
 //! @file FixedLink.hpp
 
 #include <rw/models/Joint.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/math/Q.hpp>
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/models/Device.hpp>
-
-#include <rw/kinematics/Kinematics.hpp>
-
-#include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Rotation3D.hpp>
 
 #include "Body.hpp"
+
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class Device; } }
 
 namespace rwsim {
 namespace dynamics {

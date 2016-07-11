@@ -18,11 +18,8 @@
 #include "HughLineExtractor.hpp"
 
 #include <rw/math/Constants.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/sensor/Image.hpp>
-#include <rw/sensor/ImageUtil.hpp>
 
 using namespace rw::math;
 using namespace rw::sensor;

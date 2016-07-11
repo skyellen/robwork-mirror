@@ -17,14 +17,15 @@
 
 #include "RigidDevice.hpp"
 
-#include <rw/models/RevoluteJoint.hpp>
-#include <rw/models/PrismaticJoint.hpp>
+//#include <rw/models/RevoluteJoint.hpp>
+//#include <rw/models/PrismaticJoint.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/models/Joint.hpp>
+
 using namespace rwsim::dynamics;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
-
 
 namespace {
 

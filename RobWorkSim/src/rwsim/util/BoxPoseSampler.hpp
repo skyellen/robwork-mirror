@@ -10,7 +10,7 @@
 
 #include "PoseSampler.hpp"
 
-#include <rw/math.hpp>
+#include <rw/math/Math.hpp>
 
 class BoxPoseSampler: public PoseSampler {
 public:

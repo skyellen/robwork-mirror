@@ -18,9 +18,7 @@
 #ifndef RWSIM_CONTACTS_RENDERCONTACTS_HPP_
 #define RWSIM_CONTACTS_RENDERCONTACTS_HPP_
 
-#include "Contact.hpp"
 #include <rw/graphics/Render.hpp>
-#include <rwlibs/os/rwgl.hpp>
 
 /**
  * @file RenderContacts.hpp
@@ -30,6 +28,8 @@
 
 namespace rwsim {
 namespace contacts {
+class Contact;
+
 //! @addtogroup rwsim_contacts
 
 //! @{
@@ -112,7 +112,8 @@ public:
 private:
 	std::vector<Contact> _contacts;
 	rw::math::Vector3D<float> _colorPoint, _colorNormal;
-	GLUquadricObj *_quadratic;
+	struct GLData;
+	const GLData* const _gl;
 };
 //! @}
 } /* namespace contacts */

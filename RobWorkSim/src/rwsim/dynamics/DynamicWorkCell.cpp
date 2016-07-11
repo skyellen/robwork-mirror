@@ -17,11 +17,8 @@
 
 #include "DynamicWorkCell.hpp"
 
-#include <rw/common/macros.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Math.hpp>
 #include <rw/models/WorkCell.hpp>
 
 #include "Body.hpp"

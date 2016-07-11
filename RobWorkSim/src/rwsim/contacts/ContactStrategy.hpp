@@ -25,22 +25,20 @@
  */
 
 #include "Contact.hpp"
-#include "ContactModel.hpp"
-#include "ContactStrategyData.hpp"
 
 #include <rw/common/Ptr.hpp>
-#include <rw/geometry/Geometry.hpp>
 #include <rw/proximity/ProximityStrategy.hpp>
 #include <rw/proximity/ProximityModel.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/State.hpp>
 
+namespace rw { namespace geometry { class Geometry; } }
+namespace rw { namespace geometry { class GeometryData; } }
 namespace rwsim { namespace log { class SimulatorLogScope; } }
 
 namespace rwsim {
 namespace contacts {
 
 // Forward declarations
+class ContactStrategyData;
 class ContactStrategyTracking;
 
 //! @addtogroup rwsim_contacts
@@ -171,7 +169,7 @@ public:
 	virtual bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom) = 0;
 
 	//! @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel*,rw::geometry::Geometry::Ptr,bool)
-	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false) = 0;
+	virtual bool addGeometry(rw::proximity::ProximityModel* model, rw::common::Ptr<rw::geometry::Geometry> geom, bool forceCopy=false) = 0;
 
 	//! @copydoc rw::proximity::ProximityStrategy::removeGeometry
 	virtual bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId) = 0;

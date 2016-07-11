@@ -1,16 +1,13 @@
 #include "SuctionCup.hpp"
+#include "DynamicWorkCell.hpp"
 
-#include <rw/geometry/Geometry.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include <string>
-#include <iostream>
 
 using namespace rwsim::dynamics;
-using namespace rwsim::sensor;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rw::geometry;
 using namespace rw::math;
 using namespace rw::common;
 

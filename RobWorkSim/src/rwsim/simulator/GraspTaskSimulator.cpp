@@ -1,24 +1,23 @@
 #include "GraspTaskSimulator.hpp"
 
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwsim/drawable/SimulatorDebugRender.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
+#include "PhysicsEngine.hpp"
+
 //#include <rw/proximity/ProximityStrategyFactory.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/graspplanning/Grasp3D.hpp>
-#include <rwlibs/task.hpp>
-#include <fstream>
-#include <iostream>
 #include <stack>
-#include <boost/lexical_cast.hpp>
 #include <rwsim/dynamics/DynamicUtil.hpp>
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
+#include <rw/graspplanning/GWSMeasure3D.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rwlibs/control/JointController.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/simulator/DynamicSimulator.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/dynamics/SuctionCup.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -35,7 +34,6 @@ using namespace rw::sensor;
 using rw::graspplanning::CMDistCCPMeasure3D;
 using rw::geometry::GeometryUtil;
 using rw::graspplanning::Grasp3D;
-using rwlibs::simulation::SimulatedController;
 using std::endl;
 
 const int NR_OF_QUALITY_MEASURES = 3;

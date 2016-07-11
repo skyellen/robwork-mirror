@@ -1,5 +1,7 @@
 #include "EulerIntegrator.hpp"
 
+#include "RWBody.hpp"
+
 using namespace rwsim::simulator;
 using namespace rw::math;
 

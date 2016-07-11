@@ -10,12 +10,9 @@
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 
-#include <boost/numeric/ublas/matrix.hpp>
-
-#include <rw/math/LinearAlgebra.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 
-using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rwsim::simulator;

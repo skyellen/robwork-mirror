@@ -1,5 +1,7 @@
 #include "SuctionCupController.hpp"
 
+#include <rwsim/dynamics/SuctionCup.hpp>
+
 using namespace rwsim::control;
 using namespace rwlibs::control;
 using namespace rwlibs::simulation;

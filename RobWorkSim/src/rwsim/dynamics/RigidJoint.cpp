@@ -17,12 +17,9 @@
 
 #include "RigidJoint.hpp"
 
-#include <boost/numeric/ublas/matrix.hpp>
-
-#include <rw/math/LinearAlgebra.hpp>
+#ifdef zkdaslkdiasdn
 #include <rw/kinematics/Kinematics.hpp>
 
-using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rwsim::dynamics;
@@ -38,7 +35,7 @@ namespace {
     }
 
 }
-#ifdef zkdaslkdiasdn
+
 RigidJoint::RigidJoint(
     const BodyInfo& info,
     rw::models::Joint* joint,

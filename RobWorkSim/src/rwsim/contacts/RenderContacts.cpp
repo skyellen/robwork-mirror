@@ -16,6 +16,9 @@
  ********************************************************************************/
 
 #include "RenderContacts.hpp"
+#include "Contact.hpp"
+
+#include <rwlibs/os/rwgl.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -23,18 +26,27 @@ using namespace rw::math;
 using namespace rw::graphics;
 using namespace rwsim::contacts;
 
-RenderContacts::RenderContacts() {
-	_quadratic = gluNewQuadric();
+struct RenderContacts::GLData {
+	GLData(): quadratic(gluNewQuadric()) {}
+	~GLData() {
+		gluDeleteQuadric(quadratic);
+	}
+	GLUquadricObj* quadratic;
+};
+
+RenderContacts::RenderContacts():
+	_gl(new GLData())
+{
 }
 
 RenderContacts::RenderContacts(const std::vector<Contact> &contacts):
-	_contacts(contacts)
+	_contacts(contacts),
+	_gl(new GLData())
 {
-	_quadratic = gluNewQuadric();
 }
 
 RenderContacts::~RenderContacts() {
-	gluDeleteQuadric(_quadratic);
+	delete _gl;
 }
 
 void RenderContacts::setContacts(const std::vector<Contact> &contacts) {
@@ -57,7 +69,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dr
 
 		glColor3f(1.0, 0.0, 0.0);
 		glTranslatef((GLfloat)posA(0),(GLfloat)posA(1),(GLfloat)posA(2));// Center The Cone
-		gluSphere( _quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
+		gluSphere( _gl->quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
 
 		glBegin(GL_LINES);
 		glColor3f(1.0, 0.0, 0.0);
@@ -71,7 +83,7 @@ void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dr
 
 		glColor3f(1.0, 0.0, 0.0);
 		glTranslatef((GLfloat)posB(0),(GLfloat)posB(1),(GLfloat)posB(2));// Center The Cone
-		gluSphere( _quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
+		gluSphere( _gl->quadratic, SPHERE_RADIUS, 32, 32);    // Draw Our Sphere
 
 		glBegin(GL_LINES);
 		glColor3f(1.0, 0.0, 0.0);

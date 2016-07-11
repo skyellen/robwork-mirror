@@ -18,18 +18,18 @@
 #ifndef RWSIM_SIMULATOR_PHYSICSENGINE_HPP_
 #define RWSIM_SIMULATOR_PHYSICSENGINE_HPP_
 
-#include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 
-#include <rw/kinematics/State.hpp>
-#include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicDevice.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rw/common/ExtensionPoint.hpp>
 
 // Forward declarations
+namespace rw { namespace kinematics { class State; } }
+namespace rwlibs { namespace simulation { class SimulatedController; } }
 namespace rwsim { namespace contacts { class ContactDetector; } }
+namespace rwsim { namespace dynamics { class Body; } }
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 namespace rwsim { namespace log { class SimulatorLogScope; } }
 
 namespace rwsim {
@@ -68,7 +68,7 @@ namespace simulator {
         /**
          * @brief adds dynamic workcell
          */
-		virtual void load(rwsim::dynamics::DynamicWorkCell::Ptr dwc) = 0;
+		virtual void load(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc) = 0;
 
 		/**
 		 * @brief Change the contact detector used by the engine.
@@ -110,14 +110,14 @@ namespace simulator {
 		 * @param body [in] the body to enable/disable
 		 * @param enabled [in]
 		 */
-		virtual void setEnabled(dynamics::Body::Ptr body, bool enabled) = 0;
+		virtual void setEnabled(rw::common::Ptr<rwsim::dynamics::Body> body, bool enabled) = 0;
 
 		/**
 		 * @brief disables the dynamics of a body.
 		 * @param body
 		 * @param enabled
 		 */
-		virtual void setDynamicsEnabled(dynamics::Body::Ptr body, bool enabled) = 0;
+		virtual void setDynamicsEnabled(rw::common::Ptr<rwsim::dynamics::Body> body, bool enabled) = 0;
 
 		/**
 		 * @brief create a debug render for the specific implementation
@@ -139,27 +139,27 @@ namespace simulator {
 		/**
 		 * @brief add a simulated controller to this simulator
 		 */
-		virtual void addController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
+		virtual void addController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller) = 0;
 
 		/**
 		 * @brief removes a simulated controller from this simulator
 		 * @param controller
 		 */
-		virtual void removeController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
+		virtual void removeController(rw::common::Ptr<rwlibs::simulation::SimulatedController> controller) = 0;
 
 		/**
 		 * @brief add a body to the physics engine
 		 * @param body [in] body to add
 		 * @param state [in] current state
 		 */
-		virtual void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state) = 0;
+		virtual void addBody(rw::common::Ptr<rwsim::dynamics::Body> body, rw::kinematics::State &state) = 0;
 
         /**
          * @brief add a dynamic device to the physics engine
          * @param dev [in] device to add
          * @param state [in] current state
          */
-		virtual void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state) = 0;
+		virtual void addDevice(rw::common::Ptr<rwsim::dynamics::DynamicDevice> dev, rw::kinematics::State &state) = 0;
 
 		/**
 		 * @brief add a simulated sensor to this simulator
@@ -176,14 +176,14 @@ namespace simulator {
 		 * @param b1
 		 * @param b2
 		 */
-		virtual void attach(dynamics::Body::Ptr b1, dynamics::Body::Ptr b2) = 0;
+		virtual void attach(rw::common::Ptr<rwsim::dynamics::Body> b1, rw::common::Ptr<rwsim::dynamics::Body> b2) = 0;
 
 		/**
 		 * @brief removes the 6dof constraint between bodies \b b1 and \b b2 if there is any
 		 * @param b1
 		 * @param b2
 		 */
-		virtual void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2) = 0;
+		virtual void detach(rw::common::Ptr<rwsim::dynamics::Body> b1, rw::common::Ptr<rwsim::dynamics::Body> b2) = 0;
 
 		// this should be a flexible version of the above
 		//virtual void addConstraint( );
@@ -255,7 +255,7 @@ namespace simulator {
              * @param dwc [in] the dynamic workcell
              * @return physics engine
              */
-            static PhysicsEngine::Ptr makePhysicsEngine(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+            static PhysicsEngine::Ptr makePhysicsEngine(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
             /**
              * @brief construct a physics engine with \b engineID and
@@ -263,7 +263,7 @@ namespace simulator {
              * @param dwc [in] dynamic workcell
              * @return physics engine
              */
-            static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+            static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
             /**
              * @brief construct a physics engine with \b engineID

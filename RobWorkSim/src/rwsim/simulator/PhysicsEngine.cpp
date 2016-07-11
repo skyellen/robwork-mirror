@@ -37,7 +37,7 @@ bool PhysicsEngine::Factory::hasEngineID(const std::string& engineID){
     return false;
 }
 
-PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(DynamicWorkCell::Ptr dwc)
+PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(rw::common::Ptr<DynamicWorkCell> dwc)
 {
     // select an engine ID
     std::vector<std::string> ids = getEngineIDs();
@@ -66,7 +66,7 @@ PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(const std::string& 
     return NULL;
 }
 
-PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(const std::string& engineID, DynamicWorkCell::Ptr dwc)
+PhysicsEngine::Ptr PhysicsEngine::Factory::makePhysicsEngine(const std::string& engineID, rw::common::Ptr<DynamicWorkCell> dwc)
 {
     if( engineID == "RWPhysics"){
         rwsim::simulator::RWSimulator::Ptr rwphys = ownedPtr( new rwsim::simulator::RWSimulator(dwc) );

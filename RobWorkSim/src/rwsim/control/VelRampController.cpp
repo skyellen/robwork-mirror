@@ -1,5 +1,7 @@
 #include "VelRampController.hpp"
 
+#include <rwsim/dynamics/KinematicDevice.hpp>
+
 using namespace rwsim::control;
 
 VelRampController::VelRampController(const std::string& name, rwsim::dynamics::KinematicDevice* kdev, const rw::kinematics::State& state):

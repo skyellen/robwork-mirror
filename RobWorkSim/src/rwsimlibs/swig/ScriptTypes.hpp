@@ -38,6 +38,7 @@
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/BodyUtil.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 

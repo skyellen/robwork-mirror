@@ -18,9 +18,10 @@
 #ifndef RWSIM_UTIL_HUGHLINEEXTRACTOR_HPP_
 #define RWSIM_UTIL_HUGHLINEEXTRACTOR_HPP_
 
-#include <rw/sensor/Image.hpp>
 #include <rw/math/Line2D.hpp>
 #include <vector>
+
+namespace rw { namespace sensor { class Image; } }
 
 namespace rwsim {
 namespace util {

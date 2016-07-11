@@ -18,7 +18,7 @@
 #include "PlaneModel.hpp"
 
 #include <boost/foreach.hpp>
-#include <rw/math/Math.hpp>
+#include <rw/math/LinearAlgebra.hpp>
 #include <rw/common/macros.hpp>
 
 using namespace rw::math;
@@ -101,7 +101,8 @@ double PlaneModel::refit( std::vector<rw::math::Vector3D<> >& data ){
 	// calculate the fit error as the squared mean over the distance of a point from the plane
 	double sum = 0;
 	BOOST_FOREACH(Vector3D<> &p, data){
-		sum = Math::sqr( fitError(p) );
+		const double fitE = fitError(p);
+		sum = fitE*fitE;
 	}
 	sum /= data.size();
 

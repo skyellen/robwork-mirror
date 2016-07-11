@@ -26,6 +26,8 @@
 
 #include "SimulatorLogEntry.hpp"
 
+#include <rw/math/Transform3D.hpp>
+
 namespace rwsim {
 namespace log {
 //! @addtogroup rwsim_log

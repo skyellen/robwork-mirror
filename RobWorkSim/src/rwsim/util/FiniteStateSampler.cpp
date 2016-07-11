@@ -1,7 +1,9 @@
 #include "FiniteStateSampler.hpp"
 
 #include <boost/foreach.hpp>
-#include <rw/math/Math.hpp>
+
+#include <rw/kinematics/State.hpp>
+#include <rw/math/Random.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;
@@ -47,7 +49,7 @@ bool FiniteStateSampler::sample(rw::kinematics::State& state){
 				break;
 			}
 			case(RANDOM_SAMPLING):{
-				int idx = Math::ranI(0,(int)_states.size());
+				int idx = Random::ranI(0,(int)_states.size());
 				state = _states[idx];
 				_n--;
 				break;

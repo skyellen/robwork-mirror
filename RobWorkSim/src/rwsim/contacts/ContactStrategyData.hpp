@@ -24,7 +24,7 @@
  * \copydoc rwsim::contacts::ContactStrategyData
  */
 
-#include "Contact.hpp"
+#include <rw/common/Ptr.hpp>
 
 namespace rwsim {
 namespace contacts {

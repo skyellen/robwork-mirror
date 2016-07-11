@@ -18,9 +18,10 @@
 #ifndef RWSIM_UTIL_GRASPPOLICYFACTORY_HPP_
 #define RWSIM_UTIL_GRASPPOLICYFACTORY_HPP_
 
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-#include <rw/models/JointDevice.hpp>
 #include "GraspPolicy.hpp"
+
+namespace rwsim { namespace dynamics { class DynamicDevice; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 
 namespace rwsim {
 namespace util {

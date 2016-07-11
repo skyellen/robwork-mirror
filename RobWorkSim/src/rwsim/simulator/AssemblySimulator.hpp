@@ -25,13 +25,13 @@
  */
 
 #include <vector>
-#include <rw/kinematics/State.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <rw/common/Ptr.hpp>
 
 // Forward declarations
 namespace rw { namespace common { class ThreadTask; }}
+namespace rw { namespace kinematics { class State; }}
 namespace rw { namespace math { class Q; }}
 namespace rw { namespace proximity { class CollisionDetector; }}
 namespace rwlibs { namespace assembly { class AssemblyTask; }}

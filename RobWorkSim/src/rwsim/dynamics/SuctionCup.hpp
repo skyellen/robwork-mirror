@@ -2,16 +2,14 @@
 #ifndef RWSIM_DYNAMICS_SUCTIONCUP_HPP_
 #define RWSIM_DYNAMICS_SUCTIONCUP_HPP_
 
-
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include "DynamicDevice.hpp"
 
 namespace rwsim {
 namespace dynamics {
+	class DynamicWorkCell;
+
     /**
      * @brief a suction cup with circular end effector.
      *
@@ -45,7 +43,7 @@ namespace dynamics {
 
         rwsim::dynamics::Body::Ptr getEndBody(){ return _endBody; };
 
-        void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
+        void addToWorkCell(rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> dwc);
 
         double getRadius(){ return _radius; }
 

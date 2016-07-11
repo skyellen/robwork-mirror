@@ -19,9 +19,11 @@
 
 #include <boost/foreach.hpp>
 
+#include <rw/graphics/DrawableNode.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
+#include <rwlibs/opengl/RenderFrame.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;

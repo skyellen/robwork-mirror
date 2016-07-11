@@ -1,25 +1,17 @@
 #ifndef RWSIM_SIMULATOR_CONTACTMODELFACTORY_HPP_
 #define RWSIM_SIMULATOR_CONTACTMODELFACTORY_HPP_
 
-#include <rw/kinematics/State.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-
-#include <rw/models/WorkCell.hpp>
-
-#include <rwsim/dynamics/Body.hpp>
-#include <rwsim/dynamics/DynamicWorkCell.hpp>
-
-#include "ContactModel.hpp"
 #include "ConstraintEdge.hpp"
 #include "ConstraintNode.hpp"
-#include "CNodePool.hpp"
 
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
+namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 
 namespace rwsim {
 namespace simulator {
-
-
+	class CNodePool;
     struct FilteredPoint;
 
     /**

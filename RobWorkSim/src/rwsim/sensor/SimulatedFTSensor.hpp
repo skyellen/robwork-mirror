@@ -21,7 +21,7 @@
 #include "SimulatedTactileSensor.hpp"
 #include <rw/sensor/FTSensor.hpp>
 #include <rw/sensor/FTSensorModel.hpp>
-
+#include <rwsim/dynamics/Body.hpp>
 
 namespace rwsim {
 namespace sensor {

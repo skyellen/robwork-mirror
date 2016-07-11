@@ -1,5 +1,7 @@
 #include "TrajectoryController.hpp"
 
+#include <rwsim/dynamics/RigidDevice.hpp>
+
 using namespace rwsim::control;
 
 void TrajectoryController::setControlMode(ControlMode mode){

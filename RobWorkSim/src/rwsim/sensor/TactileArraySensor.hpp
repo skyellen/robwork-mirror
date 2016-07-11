@@ -24,16 +24,16 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <boost/multi_array.hpp>
-#include <rw/models/Object.hpp>
-#include <rw/geometry.hpp>
+#include <rw/geometry/PlainTriMesh.hpp>
 #include <rw/proximity/ProximityStrategyData.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <vector>
 #include <map>
 
 #include "SimulatedTactileSensor.hpp"
+
+namespace rw { namespace geometry { class Geometry; } }
+namespace rwlibs { namespace proximitystrategies { class ProximityStrategyPQP; } }
 
 namespace rwsim {
 namespace sensor {
@@ -66,7 +66,7 @@ namespace sensor {
 		 * @param texelSize [in]
 		 */
 		TactileArraySensor(const std::string& name,
-		                    dynamics::Body::Ptr obj,
+							rw::common::Ptr<rwsim::dynamics::Body> obj,
 							const rw::math::Transform3D<>& fThmap,
 							const ValueMatrix& heightMap,
 							const rw::math::Vector2D<double>& texelSize);
@@ -102,28 +102,28 @@ namespace sensor {
                        const rw::math::Vector3D<>& force,
                        const rw::math::Vector3D<>& snormal,
                        rw::kinematics::State& state,
-                       dynamics::Body::Ptr body = NULL);
+					   rw::common::Ptr<rwsim::dynamics::Body> body = NULL);
 
         //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
         void addForce(const rw::math::Vector3D<>& point,
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& snormal,
                       rw::kinematics::State& state,
-                      dynamics::Body::Ptr body = NULL);
+					  rw::common::Ptr<rwsim::dynamics::Body> body = NULL);
 
         //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addWrenchToCOM
         void addWrenchToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body::Ptr body=NULL);
+					  rw::common::Ptr<rwsim::dynamics::Body> body=NULL);
 
         //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addWrenchWToCOM
         void addWrenchWToCOM(
                       const rw::math::Vector3D<>& force,
                       const rw::math::Vector3D<>& torque,
                       rw::kinematics::State& state,
-                      dynamics::Body::Ptr body=NULL);
+					  rw::common::Ptr<rwsim::dynamics::Body> body=NULL);
 
         //! @copydoc rwlibs::simulation::SimulatedSensor::update
         void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -231,13 +231,13 @@ namespace sensor {
 	         void addForceW(const rw::math::Vector3D<>& point,
 	                       const rw::math::Vector3D<>& force,
 	                       const rw::math::Vector3D<>& snormal,
-	                       dynamics::Body::Ptr body = NULL);
+						   rw::common::Ptr<rwsim::dynamics::Body> body = NULL);
 
 	        //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
 	         void addForce(const rw::math::Vector3D<>& point,
 	                      const rw::math::Vector3D<>& force,
 	                      const rw::math::Vector3D<>& snormal,
-	                      dynamics::Body::Ptr body = NULL);
+						  rw::common::Ptr<rwsim::dynamics::Body> body = NULL);
 
             //! @copydoc rwlibs::simulation::SimulatedSensor::update
              void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -266,7 +266,7 @@ namespace sensor {
             double _accTime, _stime;
             rw::math::Transform3D<> _wTf, _fTw;
             std::vector<rw::sensor::Contact3D> _allAccForces,_allForces;
-            std::map<dynamics::Body::Ptr, std::vector<rw::sensor::Contact3D> > _forces;
+            std::map<rw::common::Ptr<rwsim::dynamics::Body>, std::vector<rw::sensor::Contact3D> > _forces;
             rw::proximity::ProximityStrategyData _pdata;
 
         };
@@ -299,7 +299,7 @@ namespace sensor {
 		// lowpass filter time constant
 		double _tau;
 
-		dynamics::Body::Ptr _body;
+		rw::common::Ptr<rwsim::dynamics::Body> _body;
 
 		double _maskWidth, _maskHeight;
 
@@ -308,10 +308,10 @@ namespace sensor {
 		//std::vector<Contact3D> _forces;
 
 
-		rw::geometry::Geometry::Ptr _ngeom;
+		rw::common::Ptr<rw::geometry::Geometry> _ngeom;
 		rw::common::Ptr<rw::geometry::PlainTriMesh<rw::geometry::Triangle<> > > _ntrimesh;
 		rw::proximity::ProximityModel::Ptr _nmodel;
-		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
+		std::map<rw::kinematics::Frame*, std::vector<rw::common::Ptr<rw::geometry::Geometry> > > _frameToGeoms;
 
         rw::sensor::TactileArrayModel::Ptr _tmodel;
 	};

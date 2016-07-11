@@ -18,10 +18,10 @@
 #ifndef RWSIM_DYNAMICS_CONTACTCLUSTER_HPP_
 #define RWSIM_DYNAMICS_CONTACTCLUSTER_HPP_
 
-#include "ContactPoint.hpp"
-
 namespace rwsim {
 namespace dynamics {
+	class ContactPoint;
+
 	//! @addtogroup @{
 
 	/**

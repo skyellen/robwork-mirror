@@ -4,15 +4,15 @@
 //! @file RenderGhost.hpp
 
 #include <list>
-#include <vector>
-
-#include <rw/kinematics/State.hpp>
+//#include <vector>
 
 #include <rw/graphics/Render.hpp>
-#include <rwlibs/opengl/RenderFrame.hpp>
-#include <rw/graphics/WorkCellScene.hpp>
+#include <rw/kinematics/State.hpp>
 
 #include <boost/circular_buffer.hpp>
+
+namespace rw { namespace graphics { class WorkCellScene; } }
+namespace rwlibs { namespace opengl { class RenderFrame; } }
 
 namespace rwsim {
 namespace drawable {
@@ -37,8 +37,8 @@ namespace drawable {
 		 * @param N [in] max nr of states that is to be rendered
 		 */
 		RenderGhost(rw::kinematics::Frame *frame,
-					  rw::graphics::WorkCellScene::Ptr drawer,
-					  size_t N);
+				rw::common::Ptr<rw::graphics::WorkCellScene> drawer,
+				size_t N);
 	
 		/**
 		 * @brief constructor - for rendering multiple frames
@@ -47,8 +47,8 @@ namespace drawable {
 		 * @param N [in] max nr of states that is to be rendered
 		 */
 		RenderGhost(std::list<rw::kinematics::Frame*> frames,
-		            rw::graphics::WorkCellScene::Ptr drawer,
-					  size_t N);
+				rw::common::Ptr<rw::graphics::WorkCellScene> drawer,
+				size_t N);
 
 		/**
 		 * @brief destructor
@@ -82,7 +82,7 @@ namespace drawable {
 	
 	private:
 		std::list<rw::kinematics::Frame*> _frames;
-		rw::graphics::WorkCellScene::Ptr _drawer;
+		rw::common::Ptr<rw::graphics::WorkCellScene> _drawer;
 		//std::vector<rw::kinematics::State> _states;
 		rwlibs::opengl::RenderFrame *_drawFrame;
 

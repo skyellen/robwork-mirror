@@ -17,9 +17,9 @@
 
 #include "RenderCircles.hpp"
 
-#include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
 #include <rwlibs/os/rwgl.hpp>
+#include <rwsim/util/CircleModel.hpp>
 
 #include <boost/foreach.hpp>
 

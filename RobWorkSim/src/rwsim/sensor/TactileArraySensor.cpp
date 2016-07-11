@@ -25,9 +25,10 @@
 
 #include <rw/sensor/Contact3D.hpp>
 
-#include <rw/geometry.hpp>
-#include <rw/common.hpp>
-//#include <rw/proximity/Proximity.hpp>
+
+#include <rw/geometry/IntersectUtil.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <rwsim/dynamics/Body.hpp>
 
 #include <boost/foreach.hpp>
 

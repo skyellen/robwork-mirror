@@ -47,6 +47,8 @@ using namespace rw::math;
 using namespace rw::models;
 #endif
 
+#include <rwsim/dynamics/Body.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/sensor/SimulatedFTSensor.hpp>
 
 #include <boost/foreach.hpp>

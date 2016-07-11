@@ -16,6 +16,7 @@
  ********************************************************************************/
 
 #include "ContactStrategy.hpp"
+#include "ContactStrategyData.hpp"
 #include "ContactStrategyTracking.hpp"
 
 using namespace rw::common;

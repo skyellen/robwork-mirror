@@ -1,10 +1,15 @@
 #include "ContactModelFactory.hpp"
 
+#include "ContactModel.hpp"
+#include "CNodePool.hpp"
+
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
 //#include <rw/proximity/ProximityStrategyFactory.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 
 #include <boost/foreach.hpp>
 

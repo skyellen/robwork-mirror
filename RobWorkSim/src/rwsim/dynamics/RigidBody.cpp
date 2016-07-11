@@ -17,13 +17,8 @@
 
 #include "RigidBody.hpp"
 
-#include <boost/numeric/ublas/matrix.hpp>
-
 #include <rw/geometry/GeometryUtil.hpp>
-#include <rw/math/LinearAlgebra.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-
-using namespace boost::numeric;
 
 using namespace rw::math;
 using namespace rw::kinematics;

@@ -1,9 +1,11 @@
 #include "SerialDeviceController.hpp"
 
+#include <rw/invkin/JacobianIKSolver.hpp>
 #include <rw/trajectory/CubicSplineFactory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/math/MetricFactory.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/util/RecursiveNewtonEuler.hpp>
 
 #include <rw/common/macros.hpp>

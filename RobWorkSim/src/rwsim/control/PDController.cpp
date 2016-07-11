@@ -1,6 +1,7 @@
 #include "PDController.hpp"
 
 #include <rw/common/macros.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
 
 using namespace rwsim::control;
 using namespace rwsim::dynamics;

@@ -1,7 +1,6 @@
 #include "ContactGraph.hpp"
-
-#include <rw/math/Transform3D.hpp>
-#include <rw/kinematics/Kinematics.hpp>
+#include "ContactModelFactory.hpp"
+#include "CNodePool.hpp"
 
 #include <stack>
 #include <boost/foreach.hpp>

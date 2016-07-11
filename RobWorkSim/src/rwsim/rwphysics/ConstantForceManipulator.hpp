@@ -7,10 +7,9 @@
 
 #include "BodyController.hpp"
 
-#include "RWBody.hpp"
-
 namespace rwsim {
 namespace simulator {
+	class RWBody;
 
 	/**
 	 * @brief class for adding a constant force to any body it controls

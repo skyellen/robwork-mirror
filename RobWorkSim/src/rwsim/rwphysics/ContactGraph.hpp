@@ -1,30 +1,21 @@
 #ifndef RWSIM_SIMULATOR_CONTACTGRAPH_HPP_
 #define RWSIM_SIMULATOR_CONTACTGRAPH_HPP_
 
-#include <map>
 #include <vector>
-#include <list>
 
-#include <rw/math/Transform3D.hpp>
-
-#include <rw/models/Device.hpp>
-
-#include <rw/proximity/CollisionDetector.hpp>
-
-#include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
-#include <rwsim/dynamics/Body.hpp>
 #include "ConstraintEdge.hpp"
 #include "ConstraintNode.hpp"
-#include "ContactModelFactory.hpp"
 #include "CNodePairMap.hpp"
-#include "CNodePool.hpp"
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {
-
+	class ContactModelFactory;
+	class CNodePool;
 
     /**
      * @brief creates a graph where nodes can be physical, logical and

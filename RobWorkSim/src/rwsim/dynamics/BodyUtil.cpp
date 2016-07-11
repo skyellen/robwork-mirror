@@ -1,12 +1,14 @@
 
 #include "BodyUtil.hpp"
+#include "DynamicWorkCell.hpp"
 
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
+
+using namespace rw::kinematics;
+using namespace rw::math;
+using rw::proximity::CollisionDetector;
 using namespace rwsim::dynamics;
-
-#include <rw/rw.hpp>
-USE_ROBWORK_NAMESPACE
-
-using namespace robwork;
 
 namespace {
 

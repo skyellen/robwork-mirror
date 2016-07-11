@@ -1,6 +1,7 @@
 #include "PoseController.hpp"
 
-#include <rw/common/macros.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
+#include <rwlibs/algorithms/xqpcontroller/XQPController.hpp>
 
 using namespace rwsim::control;
 using namespace rwsim::dynamics;

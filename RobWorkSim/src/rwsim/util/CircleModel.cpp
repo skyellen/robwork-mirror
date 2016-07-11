@@ -18,20 +18,15 @@
 #include "CircleModel.hpp"
 
 #include <rw/math/MetricUtil.hpp>
-
-#include "PlaneModel.hpp"
 #include <rw/math/Vector2D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Line2D.hpp>
 #include <boost/foreach.hpp>
-#include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Math.hpp>
 
 #include <vector>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/MetricUtil.hpp>
 
 using namespace rw::math;
 using namespace rwsim::util;

@@ -29,9 +29,13 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Wrench6D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rw/math/InertiaMatrix.hpp>
 
 #include <vector>
+
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class JointDevice; } }
+namespace rwsim { namespace dynamics { class RigidDevice; } }
 
 namespace rwsim {
 namespace util {
@@ -50,7 +54,7 @@ public:
 	 * @brief Constructor for inverse dynamics for a RigidDevice
 	 * @param device [in] a rigid device
 	 */
-	RecursiveNewtonEuler(rwsim::dynamics::RigidDevice::Ptr device);
+	RecursiveNewtonEuler(rw::common::Ptr<rwsim::dynamics::RigidDevice> device);
 
 	/**
 	 * @brief Destructor
@@ -168,8 +172,8 @@ private:
 	static std::string invalidMsg();
 	static rw::math::Vector3D<> toVector3D(const rw::math::EAA<> &eaa);
 
-	const rwsim::dynamics::RigidDevice::Ptr _rdev;
-	const rw::models::JointDevice::Ptr _jdev;
+	const rw::common::Ptr<rwsim::dynamics::RigidDevice> _rdev;
+	const rw::common::Ptr<rw::models::JointDevice> _jdev;
 	rw::math::Vector3D<> _gravity;
 	rw::math::Vector3D<> _payloadCOM;
 	double _payloadMass;

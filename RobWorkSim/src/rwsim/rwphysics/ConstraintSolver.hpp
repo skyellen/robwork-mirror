@@ -4,7 +4,7 @@
 #include "ConstraintEdge.hpp"
 #include <vector>
 
-#include <rw/kinematics/State.hpp>
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace simulator {

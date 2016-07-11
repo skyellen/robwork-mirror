@@ -18,8 +18,9 @@
 #ifndef RWSIM_UTIL_STATESAMPLER_HPP_
 #define RWSIM_UTIL_STATESAMPLER_HPP_
 
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
+
+namespace rw { namespace kinematics { class State; } }
 
 namespace rwsim {
 namespace util {

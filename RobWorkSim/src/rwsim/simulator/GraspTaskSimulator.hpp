@@ -8,19 +8,22 @@
 #ifndef GRASPTASKSIMULATOR_HPP_
 #define GRASPTASKSIMULATOR_HPP_
 
-#include <rw/rw.hpp>
-#include <rwlibs/task.hpp>
+#include <rw/common/Timer.hpp>
+#include <rw/trajectory/Path.hpp>
+#include <rw/trajectory/Trajectory.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/control/BodyController.hpp>
-#include <rwlibs/control/JointController.hpp>
-#include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rw/sensor/Contact3D.hpp>
-#include "DynamicSimulator.hpp"
 #include "ThreadSimulator.hpp"
 #include <stack>
-#include <rwsim/dynamics/KinematicBody.hpp>
-#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwlibs/task/GraspTask.hpp>
+
+namespace rw { namespace proximity { class CollisionDetector; } }
+namespace rwlibs { namespace control { class JointController; } }
+namespace rwsim { namespace dynamics { class KinematicBody; } }
+namespace rwsim { namespace dynamics { class RigidBody; } }
+namespace rwsim { namespace dynamics { class RigidDevice; } }
+namespace rwsim { namespace sensor { class BodyContactSensor; } }
 
 namespace rwsim {
 namespace simulator {
@@ -204,7 +207,7 @@ public:
 
         rw::kinematics::State _postLiftObjState;
 
-        std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
+        std::vector< rw::common::Ptr<rwsim::sensor::BodyContactSensor> > _bsensors;
         int _restCount;
         // the explicit values from _task
         rw::kinematics::Frame* _taskRefFrame;
@@ -241,8 +244,8 @@ private:
 
     GraspedObject getObjectContacts(const rw::kinematics::State& state, SimState &sstate);
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
-                                                         rwsim::dynamics::RigidBody::Ptr object,
-                                                         rwsim::sensor::BodyContactSensor::Ptr sensor,
+                                                         rw::common::Ptr<rwsim::dynamics::RigidBody> object,
+                                                         rw::common::Ptr<rwsim::sensor::BodyContactSensor> sensor,
                                                          std::vector<rwsim::dynamics::Body::Ptr>& bodies);
 
 
@@ -276,11 +279,11 @@ protected:
 	    _nrOfExperiments, _lastSaveTaskIndex;
 	int _totalNrOfExperiments;
 
-	std::vector<rwsim::dynamics::RigidBody::Ptr> _objects;
+	std::vector<rw::common::Ptr<rwsim::dynamics::RigidBody> > _objects;
 	rwsim::dynamics::DynamicDevice::Ptr _dhand;
-	rwsim::dynamics::RigidDevice::Ptr _rhand;
+	rw::common::Ptr<rwsim::dynamics::RigidDevice> _rhand;
     rw::models::Device::Ptr _hand;
-    rwsim::dynamics::KinematicBody::Ptr _hbase;
+    rw::common::Ptr<rwsim::dynamics::KinematicBody> _hbase;
     rw::kinematics::MovableFrame *_mbase;
 
     rwlibs::simulation::SimulatedController::Ptr _simGraspController;
@@ -296,7 +299,7 @@ protected:
 	rwlibs::task::GraspTask::Ptr _gtask;
 	std::stack<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _taskQueue;
 
-	rw::proximity::CollisionDetector::Ptr _collisionDetector;
+	rw::common::Ptr<rw::proximity::CollisionDetector> _collisionDetector;
 
 	boost::mutex _nextTargetLock;
 	

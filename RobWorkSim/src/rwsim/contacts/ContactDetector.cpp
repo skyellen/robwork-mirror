@@ -17,12 +17,16 @@
 
 #include "ContactDetector.hpp"
 #include "BallBallStrategy.hpp"
+#include "ContactStrategy.hpp"
 #include "ContactStrategyPQP.hpp"
+#include "ContactDetectorData.hpp"
 #include "ContactDetectorTracking.hpp"
+#include "ContactModel.hpp"
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/proximity/BasicFilterStrategy.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <rwsim/log/SimulatorLogScope.hpp>
 
 #include <iomanip>

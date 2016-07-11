@@ -19,6 +19,7 @@
 #include "TargetConfigGraspPolicy.hpp"
 
 #include <rwsim/control/PDController.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
 
 using namespace rw::math;
 using namespace rw::common;

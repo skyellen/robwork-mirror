@@ -4,9 +4,10 @@
 //! @file RenderPlanes.hpp
 
 #include <rw/graphics/Render.hpp>
-#include <rwsim/util/PlaneModel.hpp>
 
 #include <vector>
+
+namespace rwsim { namespace util { class PlaneModel; } }
 
 namespace rwsim {
 namespace drawable {

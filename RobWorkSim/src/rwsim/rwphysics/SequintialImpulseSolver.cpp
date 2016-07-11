@@ -7,11 +7,9 @@
 
 #include "SequintialImpulseSolver.hpp"
 #include "ConstraintEdge.hpp"
-#include "ConstraintNode.hpp"
 
 #include "ContactModel.hpp"
 
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Math.hpp>
 
 using namespace rw::kinematics;

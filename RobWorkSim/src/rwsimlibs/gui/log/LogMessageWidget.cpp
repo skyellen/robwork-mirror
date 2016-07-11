@@ -20,7 +20,7 @@
 #include <QTextBrowser>
 #include <QVBoxLayout>
 
-#include "../../../rwsim/log/LogMessage.hpp"
+#include <rwsim/log/LogMessage.hpp>
 
 using namespace rw::graphics;
 using namespace rwsim::dynamics;
