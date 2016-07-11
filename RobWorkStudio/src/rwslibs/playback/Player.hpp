@@ -18,19 +18,16 @@
 #ifndef RW_STUDIO_PLAYER_MODULE_H
 #define RW_STUDIO_PLAYER_MODULE_H
 
-#include "StateDraw.hpp"
-
-#include <rws/RobWorkStudio.hpp>
-
 #include <rw/common/Ptr.hpp>
+#include <rw/trajectory/Path.hpp>
 #include <rw/trajectory/Trajectory.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-
-#include <boost/shared_ptr.hpp>
 
 #include <QTimer>
 #include <QObject>
+
+class StateDraw;
+
+namespace rws { class RobWorkStudio; }
 
 // The controls of the playback interface are forwarded to this utility.
 class Player : public QObject
@@ -42,7 +39,7 @@ public:
     // states but by a sequence of states together with the instant in time of
     // each state. We will take care of that later.
     Player(rw::trajectory::TimedStatePath statePath,
-           StateDrawPtr drawer,
+           rw::common::Ptr<StateDraw> drawer,
            double tickInterval,
            rws::RobWorkStudio* rwstudio);
 
@@ -129,7 +126,7 @@ public:
 	rw::trajectory::TimedStatePath _path;
 private:
     // How to do the drawing.
-    StateDrawPtr _drawer;
+	rw::common::Ptr<StateDraw> _drawer;
 
     // The time between calls to tick().
     double _tickInterval;
@@ -163,7 +160,7 @@ typedef rw::common::Ptr<Player> PlayerPtr;
 PlayerPtr makeEmptyPlayer();
 
 PlayerPtr makePlayer(const rw::trajectory::TimedStatePath& path,
-                     StateDrawPtr drawer,
+					rw::common::Ptr<StateDraw> drawer,
                      double tickInterval,
                      rws::RobWorkStudio* rwstudio);
 

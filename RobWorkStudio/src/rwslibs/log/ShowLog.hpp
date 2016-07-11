@@ -18,17 +18,16 @@
 #ifndef RW_STUDIO_LOG_MODULE_H
 #define RW_STUDIO_LOG_MODULE_H
 
-#include <QTextEdit>
+#include <QObject>
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/TreeState.hpp>
-#include <rw/kinematics/StateSetup.hpp>
-#include <rw/kinematics/StateStructure.hpp>
-#include <rw/common/Message.hpp>
+namespace rw { namespace common { class Message; } }
 
 class WriterWrapper;
+
+class QTextCursor;
+class QTextEdit;
 
 namespace rws {
 /**
@@ -89,7 +88,7 @@ public:
 
     void write(const std::string& str, const QColor& color);
 
-    void flush(){ _editor->clear(); };
+    void flush();
 
     bool event(QEvent *event);
 

@@ -14,6 +14,10 @@
 #include <rws/RobWorkStudio.hpp>
 #include <rws/propertyview/PropertyViewEditor.hpp>
 
+#include <QFileDialog>
+
+#include <boost/bind.hpp>
+
 using namespace rw::common;
 using namespace rw::math;
 using namespace rw::models;
@@ -401,5 +405,6 @@ PropertyMap& ATaskVisPlugin::settings() {
 }
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(ATaskVisPlugin);
 #endif

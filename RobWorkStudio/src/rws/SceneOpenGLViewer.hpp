@@ -29,23 +29,24 @@
 
 #include <QGLWidget>
 
-#include <QMouseEvent>
-
 #include <rw/common/PropertyMap.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
 #include <rw/math/Vector3D.hpp>
 
 #include <rwlibs/opengl/SceneOpenGL.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
 
-#include <rw/graphics/Render.hpp>
 #include <rw/graphics/SceneCamera.hpp>
 
 #include <boost/thread/mutex.hpp>
 
 #include "CameraController.hpp"
 #include "SceneViewerWidget.hpp"
+
+namespace rw { namespace graphics { class Render; } }
+namespace rw { namespace kinematics { class Frame; } }
+namespace rw { namespace models { class WorkCell; } }
+namespace rwlibs { namespace opengl { class SceneOpenGL; } }
+
+class QMouseEvent;
 
 namespace rws {
 
@@ -125,12 +126,7 @@ public:
     //virtual rwlibs::drawable::SceneCamera::Ptr getCurrentCamera(){ return _cameraViews[0];}
     //virtual void setCurrentCamera(const std::string& name){};
 
-    void updateState(const rw::kinematics::State& state) {
-        if(_state==NULL)
-            _state = rw::common::ownedPtr(new rw::kinematics::State());
-        *_state = state;
-        _renderInfo._state = _state.get();
-    }
+    void updateState(const rw::kinematics::State& state);
 
     void updateView(){
         updateGL();
@@ -272,7 +268,7 @@ private:
 
     rw::common::Ptr<rw::kinematics::State> _state;
 
-    rw::models::WorkCell::Ptr _wc;
+    rw::common::Ptr<rw::models::WorkCell> _wc;
 
     QFont _logoFont;
     std::string _viewLogo;

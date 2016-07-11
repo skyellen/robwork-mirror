@@ -18,27 +18,29 @@
 
 #define QT_NO_EMIT
 #include <QApplication>
-#include <QIcon>
 #include <QAction>
-#include <QActionGroup>
-#include <QMenuBar>
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QIcon>
 #include <QMenu>
-#include <QToolBar>
-#include <QStringList>
-#include <QPluginLoader>
+#include <QMenuBar>
+#include <QMessageBox>
 #include <QObject>
+#include <QPluginLoader>
+#include <QSettings>
+#include <QStringList>
+#include <QToolBar>
+#include <QUrl>
 
 #include "RobWorkStudio.hpp"
 #include "AboutBox.hpp"
-#include "SceneOpenGLViewer.hpp"
+#include "RobWorkStudioPlugin.hpp"
+#include "HelpAssistant.hpp"
 
 #include <rw/common/os.hpp>
 #include <rw/common/Exception.hpp>
 #include <rw/common/StringUtil.hpp>
-#include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-#include <rw/kinematics/FixedFrame.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
@@ -47,11 +49,12 @@
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 
+#include <rws/propertyview/PropertyViewEditor.hpp>
+
 #include <RobWorkConfig.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/bind.hpp>
 #include <sstream>
-#include "RWSImageLoaderPlugin.hpp"
 
 //#include <sandbox/loaders/ColladaLoader.hpp>
 

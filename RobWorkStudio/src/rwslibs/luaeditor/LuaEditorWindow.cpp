@@ -16,10 +16,15 @@
  ********************************************************************************/
 
 #include "LuaEditorWindow.hpp"
+#include "CodeEditor.hpp"
+#include "LuaHighlighter.hpp"
 
-#include <QtGui>
-#include <QMessageBox>
+#include <QFileDialog>
+//#include <QMessageBox>
+#include <QStandardItem>
+#include <QStringListModel>
 #include <QTabWidget>
+#include <QTextStream>
 #include <boost/filesystem.hpp>
 
 extern "C" {
@@ -30,7 +35,10 @@ extern "C" {
 
 #include "TreeModelCompleter.hpp"
 #include "LuaExecutionThread.hpp"
+#include <rw/common/Log.hpp>
 #include <rwlibs/swig/ScriptTypes.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
+#include <rws/RobWorkStudio.hpp>
 
 #include "ui_LuaEditorWindow.h"
 

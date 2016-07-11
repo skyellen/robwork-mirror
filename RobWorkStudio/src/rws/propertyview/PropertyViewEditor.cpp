@@ -18,6 +18,11 @@
 
 #include "PropertyViewEditor.hpp"
 
+#include <rw/common/PropertyMap.hpp>
+
+#include <QtVariantEditorFactory>
+#include <QtVariantPropertyManager>
+
 using namespace rw::common;
 using namespace rw::math;
 

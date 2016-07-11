@@ -15,8 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <QtGui>
-
  #include "LuaHighlighter.hpp"
 
  LuaHighlighter::LuaHighlighter(QTextDocument *parent)

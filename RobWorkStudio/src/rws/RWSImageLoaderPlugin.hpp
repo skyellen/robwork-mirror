@@ -1,7 +1,6 @@
 #ifndef RWS_RWSIMAGELOADERPLUGIN_HPP_
 #define RWS_RWSIMAGELOADERPLUGIN_HPP_
 
-#include <rw/loaders/ImageLoader.hpp>
 #include <rw/common/Plugin.hpp>
 
 namespace rws {

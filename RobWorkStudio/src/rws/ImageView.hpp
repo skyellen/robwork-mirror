@@ -19,7 +19,8 @@
 #define RWSTUDIO_COMPONENTS_IMAGEVIEW_HPP
 
 #include <QLabel>
-#include <rw/sensor/Image.hpp>
+
+namespace rw { namespace sensor { class Image; } }
 
 class ImageView: public QLabel
 {

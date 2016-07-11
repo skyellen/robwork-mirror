@@ -17,18 +17,24 @@
 
 
 #include "PlayBack.hpp"
+#include "Player.hpp"
 
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QSlider>
+#include <QCheckBox>
+#include <QKeyEvent>
+#include <QMessageBox>
+#include <QDoubleSpinBox>
+#include <QFileDialog>
+#include <QToolBar>
 
 #include <rws/RobWorkStudio.hpp>
 
 #include <rw/common/StringUtil.hpp>
-#include <rw/trajectory/TrajectoryFactory.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
-#include <rw/trajectory/Path.hpp>
 
-#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 #include "StateDraw.hpp"
 
@@ -494,6 +500,7 @@ void PlayBack::keyPressEvent(QKeyEvent* e){
 //----------------------------------------------------------------------
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(PlayBack, PlayBack)
 #endif
 #endif

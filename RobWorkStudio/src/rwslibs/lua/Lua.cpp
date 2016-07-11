@@ -18,12 +18,14 @@
 #include "Lua.hpp"
 
 #include <QVBoxLayout>
+#include <QMenu>
+#include <QToolBar>
 
-#include <sstream>
-#include <rw/common/StringUtil.hpp>
 #include <rwlibs/swig/ScriptTypes.hpp>
 
 #include <rws/RobWorkStudio.hpp>
+#include <rwslibs/luaeditor/LuaEditorWindow.hpp>
+#include <rwslibs/luaeditor/LuaConsoleWidget.hpp>
 #include <rwslibs/swig/ScriptTypes.hpp>
 #include <rwlibs/swig/lua/LuaState.hpp>
 
@@ -206,6 +208,7 @@ void Lua::setupMenu(QMenu* pluginmenu){
 //----------------------------------------------------------------------
 #ifndef RW_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(Lua, Lua)
 #endif
 #endif

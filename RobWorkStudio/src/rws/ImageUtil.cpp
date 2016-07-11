@@ -1,11 +1,11 @@
 
 #include "ImageUtil.hpp"
 
+#include <QImage>
+
 using namespace rws;
 using namespace rw::sensor;
 using namespace rw::common;
-
-#include <QColor>
 
 rw::sensor::Image::Ptr ImageUtil::toRwImage( const QImage& srcimg ){
     if(srcimg.isNull())

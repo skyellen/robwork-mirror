@@ -18,7 +18,6 @@
 #ifndef PROPERTYVIEWDIALOG_HPP_
 #define PROPERTYVIEWDIALOG_HPP_
 
-#include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 #include <QDialog>

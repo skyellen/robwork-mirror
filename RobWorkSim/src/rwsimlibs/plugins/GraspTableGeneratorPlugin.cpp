@@ -21,6 +21,9 @@
 
 #include "ui_GraspTableGeneratorPlugin.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTimer>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
@@ -1137,5 +1140,6 @@ void GraspTableGeneratorPlugin::genericEventListener(const std::string& event){
 #endif
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(GraspTableGeneratorPlugin);
 #endif

@@ -528,5 +528,6 @@ void EngineTestPlugin::genericAnyEventListener(const std::string& event, boost::
 }
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(EngineTestPlugin);
 #endif

@@ -18,24 +18,20 @@
 
 #include "SceneOpenGLViewer.hpp"
 
-#include <cmath> 
-
-#include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/geometry/Geometry.hpp>
+#include <rw/graphics/Render.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/math/RPY.hpp>
 
-#include <rw/kinematics/Kinematics.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
 
 #include "ArcBallController.hpp"
 
-#include <QThread>
+#include <QMouseEvent>
+
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::graphics;
 using namespace rw::math;
@@ -613,7 +609,12 @@ void SceneOpenGLViewer::destroyView(View::Ptr view){
     _scene->removeCameraGroup( view->_camGroup );
 }
 
-
+void SceneOpenGLViewer::updateState(const State& state) {
+	if(_state==NULL)
+		_state = rw::common::ownedPtr(new State());
+	*_state = state;
+	_renderInfo._state = _state.get();
+}
 
 /*
 

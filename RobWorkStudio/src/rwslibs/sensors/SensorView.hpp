@@ -21,17 +21,13 @@
 #include <QWidget>
 
 #include <rw/common/Ptr.hpp>
-#include <rw/sensor/Camera.hpp>
-#include <rw/sensor/Scanner25D.hpp>
-#include <rw/sensor/Scanner2D.hpp>
-#include <rw/graphics/WorkCellScene.hpp>
-#include <rwlibs/opengl/RenderScan.hpp>
 
-#include <rwlibs/simulation/SimulatedScanner2D.hpp>
-#include <rwlibs/simulation/SimulatedScanner25D.hpp>
+namespace rw { namespace sensor { class Camera; } }
+namespace rwlibs { namespace opengl { class RenderScan; } }
+namespace rwlibs { namespace simulation { class SimulatedScanner2D; } }
+namespace rwlibs { namespace simulation { class SimulatedScanner25D; } }
 
-#include <rws/ImageView.hpp>
-#include <rws/SceneOpenGLViewer.hpp>
+class ImageView;
 
 namespace rws {
 
@@ -71,14 +67,14 @@ signals:
  */
 class CameraView: public SensorView {
 public:
-	CameraView(rw::sensor::Camera::Ptr camera, QWidget* parent = NULL);
+	CameraView(rw::common::Ptr<rw::sensor::Camera> camera, QWidget* parent = NULL);
 
     virtual void update();
 
     virtual void makeCurrent() {};
 
 private:
-	rw::sensor::Camera::Ptr _camera;
+	rw::common::Ptr<rw::sensor::Camera> _camera;
     ImageView* _pImageView;    
 };
 
@@ -87,15 +83,15 @@ class Scan25DView: public SensorView {
 public:
     Scan25DView(QWidget* parent = NULL);
 
-	virtual void initialize(rwlibs::simulation::SimulatedScanner25D::Ptr scanner);
+	virtual void initialize(rw::common::Ptr<rwlibs::simulation::SimulatedScanner25D> scanner);
 
     virtual void update();
 
     virtual void makeCurrent();
 
 private:
-    rwlibs::simulation::SimulatedScanner25D::Ptr _scanner;
-	rwlibs::opengl::RenderScan::Ptr _scanRender;
+    rw::common::Ptr<rwlibs::simulation::SimulatedScanner25D> _scanner;
+    rw::common::Ptr<rwlibs::opengl::RenderScan> _scanRender;
 	ImageView* _pImageView;
 
 };
@@ -111,8 +107,8 @@ public:
     virtual void makeCurrent();
 
 private:
-	rwlibs::simulation::SimulatedScanner2D::Ptr _scanner;
-	rwlibs::opengl::RenderScan::Ptr _scanRender;
+    rw::common::Ptr<rwlibs::simulation::SimulatedScanner2D> _scanner;
+	rw::common::Ptr<rwlibs::opengl::RenderScan> _scanRender;
 	ImageView* _pImageView;
 
 };

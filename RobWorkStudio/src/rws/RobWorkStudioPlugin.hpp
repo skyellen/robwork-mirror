@@ -25,23 +25,24 @@
 
 #include <QObject>
 #include <QDockWidget>
-#include <QMenu>
-#include <QToolBar>
-#include <QIcon>
-#include <QtGui>
+#include <QAction>
+#include <QString>
 
 #include <rw/RobWork.hpp>
-#include <rw/common/Message.hpp>
-#include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/kinematics/Frame.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
 
+// Make the RWS_USE_QT5 definition available to all plugins:
 #include <RobWorkStudioConfig.hpp>
 
 #include <boost/tuple/tuple.hpp>
 
 #include <rw/common/Log.hpp>
+
+namespace rw { namespace models { class WorkCell; } }
+
+class QMenu;
+class QToolBar;
+class QIcon;
 
 namespace rws {
 	// forward declaration

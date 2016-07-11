@@ -19,8 +19,13 @@
 #include "PropertyView.hpp"
 
 #include <QGridLayout>
+#include <QComboBox>
 
 #include <rws/RobWorkStudio.hpp>
+
+#include <rws/propertyview/PropertyViewEditor.hpp>
+
+#include <boost/bind.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::models;
@@ -142,6 +147,7 @@ void PropertyView::propertyChanged(const std::string& identifier) {
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(PropertyView, PropertyView)
 #endif
 #endif

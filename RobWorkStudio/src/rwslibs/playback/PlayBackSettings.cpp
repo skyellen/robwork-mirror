@@ -13,9 +13,9 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QFileDialog>
-
-#include <iostream>
-
+#include <QDoubleSpinBox>
+#include <QLineEdit>
+#include <QComboBox>
 
 namespace {
     const double DEFAULT_UPDATERATE = 0.040;

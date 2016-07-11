@@ -18,29 +18,12 @@
 #ifndef RWS_LUAEXECUTIONTHREAD_HPP_
 #define RWS_LUAEXECUTIONTHREAD_HPP_
 
-#include <QMainWindow>
-#include <QModelIndex>
-
-#include <rw/common/Log.hpp>
-#include <rw/common/PropertyMap.hpp>
-#include <rws/RobWorkStudio.hpp>
-#include <rwlibs/swig/lua/LuaState.hpp>
-#include "LuaHighlighter.hpp"
-#include "CodeEditor.hpp"
-
-#include <QMainWindow>
 #include <QThread>
 
-class TreeModelCompleter;
-class QAbstractItemModel;
-class QComboBox;
-class QLabel;
-class QLineEdit;
-class QProgressBar;
-class QCheckBox;
-class QTreeView;
+#include <rw/common/Ptr.hpp>
 
-class QTextEdit;
+namespace rw { namespace common { class LogWriter; } }
+namespace rwlibs { namespace swig { class LuaState; } }
 
 namespace rws {
 
@@ -59,7 +42,7 @@ public:
      * @param output
      * @param parent
      */
-    LuaExecutionThread(const std::string& cmd, rwlibs::swig::LuaState::Ptr lstate, rw::common::LogWriter::Ptr output, QWidget *parent =
+    LuaExecutionThread(const std::string& cmd, rw::common::Ptr<rwlibs::swig::LuaState> lstate, rw::common::Ptr<rw::common::LogWriter> output, QObject *parent =
                                NULL) :
             QThread(parent), _cmd(cmd), _lua(lstate), _output(output)
     {
@@ -72,7 +55,7 @@ public:
      * @param lstate [in] the current lua state
      * @param output [in] the log in which to print result
      */
-    void set(const std::string& cmd, rwlibs::swig::LuaState::Ptr lstate, rw::common::LogWriter::Ptr output);
+    void set(const std::string& cmd, rw::common::Ptr<rwlibs::swig::LuaState> lstate, rw::common::Ptr<rw::common::LogWriter> output);
 
     //! @brief executes the command
     void run();
@@ -113,8 +96,8 @@ public:
 private:
     std::string _cmd, _resstring;
     int _resVal;
-    rwlibs::swig::LuaState::Ptr _lua;
-    rw::common::LogWriter::Ptr _output;
+    rw::common::Ptr<rwlibs::swig::LuaState> _lua;
+    rw::common::Ptr<rw::common::LogWriter> _output;
 };
 
 } // namespace

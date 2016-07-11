@@ -20,26 +20,21 @@
 
 #include <RobWorkStudioConfig.hpp>
 
-#include <QTabWidget>
-#include <QTextEdit>
-#include <QSlider>
-#if RWS_USE_QT5
-#include <QtWidgets>
-#else
-#include <QtGui>
-#endif
+#include <QObject>
 
-#include <list>
 #include <vector>
 
-#include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include "SliderTab.hpp"
+
+namespace rw { namespace kinematics { class MovableFrame; } }
+namespace rw { namespace models { class Device; } }
+
+class QTabWidget;
 
 namespace rws {
 
@@ -116,7 +111,7 @@ private:
 
     rw::models::WorkCell* _workcell;
     rw::kinematics::State _state;
-	rw::models::Device::Ptr _selectedDevice;
+	rw::common::Ptr<rw::models::Device> _selectedDevice;
     JointSliderWidget* _jointSliderWidget;
 
     rw::kinematics::MovableFrame* _selectedFrame;
@@ -126,7 +121,7 @@ private:
 
     QComboBox* _cmbDevices;
     QTabWidget* _tabWidget;
-	std::vector<std::pair<rw::models::Device::Ptr, rw::kinematics::MovableFrame*> > _items;
+	std::vector<std::pair<rw::common::Ptr<rw::models::Device>, rw::kinematics::MovableFrame*> > _items;
     std::vector<unsigned int> _chosenTabs;
     QComboBox *_cmbAngleUnit, *_cmbDistanceUnit;
 
@@ -137,7 +132,7 @@ private:
     QTabWidget* _tabWidget;
 */
     void removeTabs();
-	void constructTabs(rw::models::Device::Ptr device);
+	void constructTabs(rw::common::Ptr<rw::models::Device> device);
     void constructCartTab(rw::kinematics::MovableFrame* device);
 
     void stateChangedListener(const rw::kinematics::State& state);

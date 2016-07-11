@@ -3,12 +3,12 @@
 #ifndef PLAYBACKSETTINGS_HPP
 #define PLAYBACKSETTINGS_HPP
 
-#include <QWidget>
 #include <QDialog>
-#include <QDoubleSpinBox>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QShowEvent>
+
+class QDoubleSpinBox;
+class QLineEdit;
+class QComboBox;
+class QShowEvent;
 
 class PlayBackSettings: public QDialog
 {

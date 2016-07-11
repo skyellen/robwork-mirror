@@ -20,18 +20,16 @@
 
 #include <rws/RobWorkStudioPlugin.hpp>
 
-#include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/common/Message.hpp>
 #include <rw/trajectory/Path.hpp>
-
-#include <rwslibs/luaeditor/LuaEditorWindow.hpp>
-#include <rwslibs/luaeditor/LuaConsoleWidget.hpp>
 
 struct lua_State;
 
-namespace rws {
+namespace rwlibs { namespace swig { class LuaState; } }
 
+namespace rws {
+	class LuaEditorWindow;
+	class LuaConsoleWidget;
     /**
      * @brief this plugin provides access to editing and executing lua commands.
      */
@@ -77,7 +75,7 @@ namespace rws {
         void resetLua();
 
     private:
-        rwlibs::swig::LuaState::Ptr _lua;
+        rw::common::Ptr<rwlibs::swig::LuaState> _lua;
         rw::kinematics::State _state;
         std::string _previousOpenDirectory;
 

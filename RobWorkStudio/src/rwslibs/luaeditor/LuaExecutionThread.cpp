@@ -17,15 +17,15 @@
 
 #include "LuaExecutionThread.hpp"
 
-#include <QtGui>
-
 extern "C" {
 	#include <lua.h>
 	#include <lualib.h>
 	#include <lauxlib.h>
 }
 
-#include <rwlibs/swig/ScriptTypes.hpp>
+#include <rw/common/LogWriter.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
+
 using namespace rw::common;
 using namespace rws;
 

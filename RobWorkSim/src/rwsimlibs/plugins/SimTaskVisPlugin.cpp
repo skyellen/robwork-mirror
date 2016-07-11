@@ -6,6 +6,7 @@
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <rws/RobWorkStudio.hpp>
+#include <RobWorkStudioConfig.hpp>
 #include <QPushButton>
 #include <boost/lexical_cast.hpp>
 #include <fstream>
@@ -601,4 +602,7 @@ void SimTaskVisPlugin::genericEventListener(const std::string& event){
 
 }
 
+#if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SimTaskVisPlugin);
+#endif

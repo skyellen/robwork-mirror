@@ -15,16 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <RobWorkStudioConfig.hpp>
 #include "LuaConsoleWidget.hpp"
+#include "LuaExecutionThread.hpp"
 
-#if RWS_USE_QT5
-#include <QtWidgets>
-#else
-#include <QtGui>
-#endif
-
-#include <iostream>
+#include <sstream>
 #include <iomanip>
 
 extern "C" {
@@ -33,8 +27,13 @@ extern "C" {
     #include <lauxlib.h>
 }
 
+#include <rw/common/LogWriter.hpp>
 #include <rwlibs/swig/ScriptTypes.hpp>
+#include <rwlibs/swig/lua/LuaState.hpp>
 
+#include <QApplication>
+#include <QKeyEvent>
+#include <QScrollBar>
 
 using namespace rw::common;
 using namespace rws;

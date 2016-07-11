@@ -18,8 +18,6 @@
 
 #include "StateDraw.hpp"
 
-#include <rw/kinematics/State.hpp>
-
 using namespace rw::common;
 
 namespace

@@ -21,14 +21,12 @@
  #include <QPlainTextEdit>
  #include <QObject>
 
-#include <iostream>
+//#include <iostream>
 
  class QPaintEvent;
  class QResizeEvent;
  class QSize;
  class QWidget;
-
- class LineNumberArea;
 
  class QCompleter;
 
@@ -48,7 +46,7 @@
 
      typedef enum{Nothing, Executed, ExecutedError, HighLighted} LineState;
      void setLineState(size_t linenr, LineState state){
-    	 std::cout << "setLineState: " << linenr << std::endl;
+    	 //std::cout << "setLineState: " << linenr << std::endl;
     	 if(linenr<0)
     		 return;
     	 if(_executedLines.size()<=linenr)

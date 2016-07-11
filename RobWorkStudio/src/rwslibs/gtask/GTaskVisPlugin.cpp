@@ -6,14 +6,18 @@
 #include <rw/geometry/Box.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rwlibs/opengl/DrawableUtil.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
 #include <rwlibs/task/GraspTask.hpp>
 
 #include <rws/RobWorkStudio.hpp>
+
+#include <QFileDialog>
 #include <QPushButton>
-#include <boost/lexical_cast.hpp>
-#include <fstream>
-#include <iostream>
+#include <QMessageBox>
+#include <QTimer>
+
+#include <boost/bind.hpp>
+
+#include <sstream>
 
 //#define PHOENIX_LIMIT 15
 
@@ -632,5 +636,6 @@ void GTaskVisPlugin::on_btnRecordVideo_clicked() {
 }
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(GTaskVisPlugin);
 #endif

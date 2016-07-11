@@ -27,32 +27,26 @@
 #include <vector>
 
 #include <QObject>
-#include <QString>
+#include <QWidget>
 
-#include <QMouseEvent>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QImage>
-#include <QAction>
-#include <QToolBar>
-#include <QMenu>
-
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Vector3D.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rw/graphics/DrawableGeometryNode.hpp>
 #include <rw/graphics/SceneViewer.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
-#include <rwlibs/opengl/RenderCameraFrustum.hpp>
-#include <rw/graphics/SceneViewer.hpp>
 
-//#include "RobWorkStudioPlugin.hpp"
-#include "SceneViewerWidget.hpp"
+namespace rw { namespace graphics { class DrawableGeometryNode; } }
+namespace rw { namespace kinematics { class State; } }
+namespace rw { namespace models { class WorkCell; } }
+namespace rwlibs { namespace opengl { class RenderCameraFrustum; } }
+
+class QAction;
+class QMainWindow;
+class QMenu;
+class QMouseEvent;
+class QString;
 
 namespace rws {
 class RobWorkStudio;
+class SceneViewerWidget;
 
     //! @addtogroup rws
     //! @{ 
@@ -146,7 +140,7 @@ public:
 
     rw::graphics::SceneViewer::Ptr getSceneViewer(){ return _view; }
 
-    void setWorkCell(rw::models::WorkCell::Ptr workcell);
+    void setWorkCell(rw::common::Ptr<rw::models::WorkCell> workcell);
 
     void clear();
 
@@ -211,10 +205,10 @@ protected:
     rws::SceneViewerWidget* _viewWidget;
     rw::graphics::SceneViewer* _view;
     rw::graphics::WorkCellScene::Ptr _wcscene;
-    rw::models::WorkCell::Ptr _wc;
+    rw::common::Ptr<rw::models::WorkCell> _wc;
     RobWorkStudio *_rws;
 
-    rw::graphics::DrawableGeometryNode::Ptr _floorDrawable;
+    rw::common::Ptr<rw::graphics::DrawableGeometryNode> _floorDrawable;
 
     rw::common::Property<rw::common::PropertyMap>::Ptr _pmap;
     std::string _viewLogo;
@@ -250,7 +244,7 @@ protected:
     std::vector<std::pair<QAction*,rw::math::Transform3D<> > > _customViews;
     rw::proximity::CollisionDetector::QueryResult _qryResult;
 
-    std::vector<std::pair<SensorCameraView, rwlibs::opengl::RenderCameraFrustumPtr> > _sensorCameraViews;
+    std::vector<std::pair<SensorCameraView, rw::common::Ptr<rwlibs::opengl::RenderCameraFrustum> > > _sensorCameraViews;
 };
 
 //! @}

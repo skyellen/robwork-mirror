@@ -17,18 +17,31 @@
 
 #include "TreeView.hpp"
 
-#include <rws/RobWorkStudio.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/graphics/DrawableNode.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <vector>
-#include <rw/models.hpp>
+#include <rw/loaders/GeometryFactory.hpp>
+#include <rw/models/Joint.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/models/ParallelDevice.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/models/MobileDevice.hpp>
+#include <rw/models/TreeDevice.hpp>
+#include <rws/RobWorkStudio.hpp>
+
 #include <QLayout>
 #include <QVariant>
 #include <QTreeWidgetItem>
 #include <QInputDialog>
+#include <QTreeWidget>
+#include <QKeyEvent>
+#include <QMenu>
+#include <QToolBar>
+#include <QFileDialog>
 
-#include <rw/loaders/GeometryFactory.hpp>
+#include <boost/bind.hpp>
+
+#include <vector>
 
 using namespace rw::graphics;
 using namespace rws;
@@ -836,6 +849,7 @@ void TreeView::keyPressEvent ( QKeyEvent * event ){
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(treeview, TreeView)
 #endif
 #endif

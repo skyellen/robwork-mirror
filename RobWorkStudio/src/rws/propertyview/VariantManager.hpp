@@ -19,10 +19,8 @@
 #ifndef VARIANTMANAGER_HPP_
 #define VARIANTMANAGER_HPP_
 
-#include <QApplication>
+#include <QObject>
 #include "qtvariantproperty.h"
-#include "qteditorfactory.h"
-#include "qttreepropertybrowser.h"
 
 class VariantManager : public QtVariantPropertyManager
 {

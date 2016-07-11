@@ -26,38 +26,35 @@
 #endif
 
 #include <vector>
-#include <memory>
 
 #include <QMainWindow>
-#include <QCloseEvent>
-#include <QSettings>
 
-
-#include <rw/RobWork.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rw/common/Log.hpp>
 #include <rw/common/Event.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
-#include <rws/propertyview/PropertyViewEditor.hpp>
-
-#include "RobWorkStudioPlugin.hpp"
 #include "RWStudioView3D.hpp"
-#include "HelpAssistant.hpp"
-
 
 #include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/any.hpp>
+
+class QCloseEvent;
 class QDragEnterEvent;
 class QDragDropEvent;
 class QDragMoveEvent;
+class QSettings;
+class QToolBar;
+
+class PropertyViewEditor;
+class HelpAssistant;
+
+namespace rw { class RobWork; }
 
 namespace rws {
 
 	class AboutBox;
+	class RobWorkStudioPlugin;
 
     /** @addtogroup rws
         @{ */
@@ -530,7 +527,7 @@ namespace rws {
 		void openDrawable(const QString& filename);
 		void openWorkCellFile(const QString& filename);
 
-		rw::RobWork::Ptr _robwork;
+		rw::common::Ptr<rw::RobWork> _robwork;
 
 		RWStudioView3D* _view;
 		AboutBox* _aboutBox;
@@ -542,7 +539,7 @@ namespace rws {
 		std::vector<RobWorkStudioPlugin*> _plugins;
 
 		QMenu* _pluginsMenu, *_fileMenu, *_viewMenu, *_toolMenu;
-		QToolBar* _pluginsToolBar, _viewToolBar;
+		QToolBar* _pluginsToolBar;
 
 		PropertyViewEditor *_propEditor;
 		

@@ -19,11 +19,12 @@
 #ifndef RWS_QDRAW_HPP
 #define RWS_QDRAW_HPP
 
-#include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 
 class StateDraw;
 typedef rw::common::Ptr<StateDraw> StateDrawPtr;
+
+namespace rw { namespace kinematics { class State; } }
 
 /**
    @brief Interface for the drawing of the work cell for a given state.

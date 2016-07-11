@@ -22,11 +22,13 @@
 #include <QTextEdit>
 #include <QObject>
 
-#include <rw/common/LogWriter.hpp>
-#include <rwlibs/swig/lua/LuaState.hpp>
-#include "LuaExecutionThread.hpp"
+#include <rw/common/Ptr.hpp>
+
+namespace rw { namespace common { class LogWriter; } }
+namespace rwlibs { namespace swig { class LuaState; } }
 
 namespace rws {
+	class LuaExecutionThread;
 
     /**
      * @brief a widget that mimics console functionality for executing lua commands
@@ -86,7 +88,7 @@ namespace rws {
         int _histIdx;
         int _lastBlockNumber;
 
-        rw::common::LogWriter::Ptr _logWriter;
+        rw::common::Ptr<rw::common::LogWriter> _logWriter;
 
         rws::LuaExecutionThread *_luaRunner;
         rwlibs::swig::LuaState *_luastate;

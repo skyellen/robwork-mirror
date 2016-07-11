@@ -17,7 +17,8 @@
 
 #include <iomanip>
 
-#include <QVBoxLayout>
+#include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -30,9 +31,11 @@
 
 #include <rw/math/RPY.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/Joint.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/invkin/IKMetaSolver.hpp>
 #include <rw/invkin/JacobianIKSolver.hpp>
 
 using namespace rw::math;

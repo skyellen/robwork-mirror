@@ -19,22 +19,15 @@
 #ifndef PROPERTYVIEW_HPP
 #define PROPERTYVIEW_HPP
 
-#include <map>
 #include <string>
 
-#include <QObject>
-#include <QTreeWidget>
-#include <QActionGroup>
-#include <QComboBox>
-
-#include <rws/propertyview/PropertyViewEditor.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
-#include <rw/models/Device.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/kinematics/Frame.hpp>
+namespace rw { namespace kinematics { class Frame; } }
 
-#include <QtGui>
+class PropertyViewEditor;
+
+class QComboBox;
 
 namespace rws {
 

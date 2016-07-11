@@ -1,7 +1,7 @@
 #include "LuaPlugin.hpp"
+#include "Lua.hpp"
 
 #include <rwlibs/swig/lua/LuaState.hpp>
-#include <rwslibs/swig/ScriptTypes.hpp>
 
 using namespace rwslibs::swig;
 using namespace rw::common;

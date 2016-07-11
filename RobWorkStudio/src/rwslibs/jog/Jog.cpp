@@ -17,19 +17,22 @@
 
 #include "Jog.hpp"
 
-#include <iostream>
 #include <sstream>
-#include <typeinfo>
 
 #include <boost/bind.hpp>
 
-#include <QMessageBox>
+#include <QComboBox>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QLabel>
+#include <QScrollArea>
 
 #include <rws/RobWorkStudio.hpp>
 
-#include <rw/math/RPY.hpp>
-#include <rw/math/Constants.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
+#include <rw/models/JointDevice.hpp>
+#include <rw/models/SerialDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
@@ -585,13 +588,14 @@ void Jog::frameSelectedListener(Frame* frame) {
 void Jog::genericEventListener(const std::string& event)
 {
 	if (event == "WorkcellUpdated") {
-		log().info() << "WorkcellUpdated event" << endl;
+		log().info() << "WorkcellUpdated event" << std::endl;
 		open(_workcell);
 	}
 }
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(Jog, Jog)
 #endif
 #endif

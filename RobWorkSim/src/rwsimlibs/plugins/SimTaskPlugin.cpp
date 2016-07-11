@@ -4,6 +4,7 @@
 
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rws/RobWorkStudio.hpp>
+#include <RobWorkStudioConfig.hpp>
 
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
@@ -842,5 +843,6 @@ void SimTaskPlugin::genericEventListener(const std::string& event){
 }
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(SimTaskPlugin);
 #endif

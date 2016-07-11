@@ -32,6 +32,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 #include <RobWorkStudio.hpp>
@@ -552,5 +553,6 @@ void RWSimulatorPlugin::initialize(){
 }
 
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(RWSimulatorPlugin);
 #endif

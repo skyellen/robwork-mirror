@@ -15,18 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include <RobWorkStudioConfig.hpp>
+#include "CodeEditor.hpp"
 
-#if RWS_USE_QT5
-#include <QtWidgets>
-#else
-#include <QtGui>
-#endif
-
- #include "CodeEditor.hpp"
-
-#include <iostream>
-
+#include <QAbstractItemView>
+#include <QCompleter>
+#include <QPainter>
+#include <QScrollBar>
+#include <QTextBlock>
 
  CodeEditor::CodeEditor(QWidget *parent) :
      QPlainTextEdit(parent),_c(NULL)

@@ -18,30 +18,18 @@
 #ifndef RW_STUDIO_SENSORS_MODULE_H
 #define RW_STUDIO_SENSORS_MODULE_H
 
-#include "SensorView.hpp"
-
 #include <rws/RobWorkStudioPlugin.hpp>
 
-#include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/common/Message.hpp>
-#include <rw/trajectory/Path.hpp>
 
-#include <rw/sensor/Scanner25D.hpp>
-#include <rw/sensor/Scanner2D.hpp>
-#include <rw/sensor/Scanner1D.hpp>
-#include <rw/sensor/Camera.hpp>
-
-#include <rwlibs/simulation/SimulatedSensor.hpp>
-
-#include <rwlibs/simulation/GLFrameGrabber.hpp>
-#include <rwlibs/simulation/GLFrameGrabber25D.hpp>
+namespace rwlibs { namespace simulation { class SimulatedSensor; } }
 
 namespace Ui {
     class SensorsPlugin;
 }
 
 namespace rws {
+class SensorView;
 
 class Sensors : public RobWorkStudioPlugin
 {
@@ -88,12 +76,12 @@ private:
 
     struct SensorSet {
     public:
-        SensorSet(rwlibs::simulation::SimulatedSensor::Ptr sensor, SensorView::Ptr view):
+        SensorSet(rw::common::Ptr<rwlibs::simulation::SimulatedSensor> sensor, rw::common::Ptr<SensorView> view):
             sensor(sensor), view(view)
         {}
 
-        rwlibs::simulation::SimulatedSensor::Ptr sensor;
-        SensorView::Ptr view;
+        rw::common::Ptr<rwlibs::simulation::SimulatedSensor> sensor;
+        rw::common::Ptr<SensorView> view;
     };
 
     std::vector<SensorSet> _sensors;

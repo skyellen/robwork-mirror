@@ -1,20 +1,21 @@
 #ifndef GTaskVisPlugin_HPP
 #define GTaskVisPlugin_HPP
 
-#include <rw/common/Timer.hpp>
-#include <rw/graphics/Render.hpp>
-#include <rwlibs/task.hpp>
-#include <rwlibs/task/GraspTask.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <QObject>
-#include <QtGui>
-#include <QTimer>
 
 #include <boost/any.hpp>
 
 #include "ui_GTaskVisPlugin.h"
+
+namespace rw { namespace graphics { class DrawableNode; } }
+namespace rw { namespace graphics { class Render; } }
+namespace rwlibs { namespace task { class GraspTask; } }
+namespace rwlibs { namespace task { class GraspSubTask; } }
+namespace rwlibs { namespace task { class GraspTarget; } }
+
+class QTimer;
 
 /**
  * @brief A plugin that continuesly grasps an object from a target pose whereafter it is
@@ -79,10 +80,10 @@ private:
     int _nrOfExperiments, _totalNrOfExperiments;
 
     QTimer *_timer;
-    rwlibs::task::GraspTask::Ptr _graspTask;
+    rw::common::Ptr<rwlibs::task::GraspTask> _graspTask;
     std::vector<std::pair<rwlibs::task::GraspSubTask*, rwlibs::task::GraspTarget*> > _ymtargets;
-    rw::graphics::Render::Ptr _render;
-    rw::graphics::DrawableNode::Ptr _targetDrawable;
+    rw::common::Ptr<rw::graphics::Render> _render;
+    rw::common::Ptr<rw::graphics::DrawableNode> _targetDrawable;
 };
 
 #endif

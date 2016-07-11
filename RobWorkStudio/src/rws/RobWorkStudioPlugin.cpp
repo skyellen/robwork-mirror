@@ -15,17 +15,15 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "RobWorkStudioPlugin.hpp"
 
 #include "RobWorkStudio.hpp"
 
-//#include <rw/common/Log.hpp>
+#include <QMenu>
+#include <QToolBar>
 
-using namespace rw;
+using rw::RobWork;
 using namespace rw::common;
-using namespace rw::proximity;
-using namespace rw::kinematics;
 using namespace rw::models;
 
 using namespace rws;

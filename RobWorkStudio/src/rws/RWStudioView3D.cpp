@@ -19,18 +19,24 @@
 
 #include "RWStudioView3D.hpp"
 
-#include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/geometry/Line.hpp>
-#include <rw/math/Constants.hpp>
-#include <rw/math/RPY.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rwlibs/opengl/RenderCameraFrustum.hpp>
 #include <rws/propertyview/PropertyViewDialog.hpp>
 #include "RobWorkStudio.hpp"
 #include "SceneOpenGLViewer.hpp"
-#include <QThread>
+
+#include <QAction>
+#include <QFileDialog>
+#include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
+#include <QMainWindow>
+#include <QMouseEvent>
+#include <QToolBar>
 #include <QVBoxLayout>
+
 #include <boost/foreach.hpp>
 
 using namespace rw::graphics;

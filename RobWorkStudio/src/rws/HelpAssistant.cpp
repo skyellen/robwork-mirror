@@ -11,8 +11,6 @@
 #include "HelpAssistant.hpp"
 #include "../RobWorkStudioConfig.hpp"
 
-#include <iostream>
-
 HelpAssistant::HelpAssistant()
     : proc(0)
 {

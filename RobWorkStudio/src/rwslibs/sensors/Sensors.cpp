@@ -16,34 +16,29 @@
  ********************************************************************************/
 
 #include "Sensors.hpp"
+#include "SensorView.hpp"
 
 #include <rws/RobWorkStudio.hpp>
 
-#include <sstream>
-
-#include <boost/foreach.hpp>
-
-#include <rw/sensor.hpp>
-#include <rw/common/macros.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Quaternion.hpp>
 
+#include <rwlibs/simulation/GLFrameGrabber.hpp>
+#include <rwlibs/simulation/GLFrameGrabber25D.hpp>
 #include <rwlibs/simulation/SimulatedCamera.hpp>
 #include <rwlibs/simulation/SimulatedScanner25D.hpp>
 #include <rwlibs/simulation/SimulatedScanner2D.hpp>
 #include <rwlibs/opengl/RenderScan.hpp>
 //#include <rwlibs/simulation/SimulatedScanner1D.hpp>
 
-
-#include <boost/foreach.hpp>
 #include <QMessageBox>
+#include <QTimer>
 
 #include <sstream>
 
 #include "ui_SensorsPlugin.h"
 
+#include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -291,6 +286,7 @@ void Sensors::viewClosed(SensorView* view) {
 //----------------------------------------------------------------------
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(Sensors, Sensors)
 #endif
 #endif

@@ -9,7 +9,7 @@
 #define RWSIM_SWIG_LUAPLUGIN_HPP_
 
 #include <rw/common/Plugin.hpp>
-#include "Lua.hpp"
+
 namespace rwslibs {
 namespace swig {
 

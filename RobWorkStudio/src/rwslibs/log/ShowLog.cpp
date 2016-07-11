@@ -19,11 +19,15 @@
 
 #include <iomanip>
 
+#include <rw/common/Log.hpp>
 #include <rws/RobWorkStudio.hpp>
+
 #include <sstream>
 #include <QEvent>
 #include <QApplication>
-#include <rw/common/Log.hpp>
+#include <QTextEdit>
+
+#include <boost/bind.hpp>
 
 #define MESSAGE_ADDED_EVENT 2345
 
@@ -220,11 +224,15 @@ void ShowLog::initialize() {
 
 }
 
+void ShowLog::flush(){
+	_editor->clear();
+}
 
 //----------------------------------------------------------------------
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN2(Log, ShowLog)
 #endif
 #endif

@@ -22,6 +22,8 @@
 #include <math.h> // Needed for sqrtf
 #include <rw/math/Math.hpp>
 
+#include <QMouseEvent>
+
 using namespace rw;
 using namespace rw::math;
 using namespace rws;

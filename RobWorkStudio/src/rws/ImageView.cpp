@@ -17,10 +17,10 @@
 
 #include "ImageView.hpp"
 
+#include <rw/sensor/Image.hpp>
+
 #include <QImage>
 #include <QPixmap>
-
-#include <iostream>
 
 using namespace rw::sensor;
 

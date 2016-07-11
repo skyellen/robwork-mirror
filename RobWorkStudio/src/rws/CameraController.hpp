@@ -21,10 +21,9 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Vector2D.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/common/Ptr.hpp>
 
-#include <QMouseEvent>
+#include <QEvent>
 
 namespace rws {
 

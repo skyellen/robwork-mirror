@@ -20,23 +20,23 @@
 #define DEVICETAB_H
 
 #include <QWidget>
-#include <QDoubleSpinBox>
-#include <QSlider>
-#include <QGridLayout>
-#include <QComboBox>
-#include <QLabel>
 
 #include <rw/kinematics/State.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/FKRange.hpp>
 #include <rw/math/Q.hpp>
 
 #include <rw/common/Ptr.hpp>
-#include <rw/invkin/IKMetaSolver.hpp>
 
+namespace rw { namespace invkin { class IterativeIK; } }
+namespace rw { namespace kinematics { class MovableFrame; } }
+namespace rw { namespace models { class Device; } }
+namespace rw { namespace models { class WorkCell; } }
+
+class QDoubleSpinBox;
+class QSlider;
+class QGridLayout;
+class QComboBox;
+class QLabel;
 
 // The widget for a single joint.
 class Slider : public QWidget
@@ -210,7 +210,7 @@ class CartesianDeviceTab: public QWidget {
     Q_OBJECT
 public:
     CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>& bounds,
-		rw::models::Device::Ptr device,
+    	rw::common::Ptr<rw::models::Device> device,
 		rw::models::WorkCell* workcell,
         const rw::kinematics::State& state);
 
@@ -232,7 +232,7 @@ private:
     QComboBox* _cmbTcpFrame;
 
     rw::kinematics::State _state;
-	rw::models::Device::Ptr _device;
+	rw::common::Ptr<rw::models::Device> _device;
     std::vector<rw::kinematics::Frame*> _frames;
     rw::kinematics::Frame* _tcpFrame;
     rw::kinematics::Frame* _refFrame;

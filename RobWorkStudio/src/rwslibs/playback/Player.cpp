@@ -16,11 +16,13 @@
  ********************************************************************************/
 
 #include "Player.hpp"
+#include "StateDraw.hpp"
 
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/trajectory/TrajectoryFactory.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
+#include <rws/RobWorkStudio.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;

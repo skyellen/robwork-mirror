@@ -9,7 +9,8 @@
 #define RWS_IMAGEUTIL_HPP_
 
 #include <rw/sensor/Image.hpp>
-#include <QImage>
+
+class QImage;
 
 namespace rws {
 

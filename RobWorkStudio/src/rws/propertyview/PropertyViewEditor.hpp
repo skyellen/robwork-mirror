@@ -20,16 +20,20 @@
 #ifndef PROPERTYVIEWEDITOR_HPP_
 #define PROPERTYVIEWEDITOR_HPP_
 
+#include <rw/common/Ptr.hpp>
 
 #include <QtTreePropertyBrowser>
-#include <QtVariantEditorFactory>
-#include <QtVariantPropertyManager>
-#include <rw/common/Log.hpp>
-#include <rw/common/PropertyMap.hpp>
 
-#include <QMainWindow>
-#include <QCloseEvent>
-#include <QSettings>
+#include <QObject>
+
+namespace rw { namespace common { class PropertyBase; } }
+namespace rw { namespace common { class PropertyMap; } }
+
+class QtProperty;
+class QtVariantEditorFactory;
+class QtVariantPropertyManager;
+
+class QWidget;
 
 class PropertyViewEditor : public QtTreePropertyBrowser {
 Q_OBJECT
@@ -43,7 +47,7 @@ public:
      * @brief set the propertymap and update it.
      * @param map
      */
-    void setPropertyMap(rw::common::PropertyMap::Ptr map){
+    void setPropertyMap(rw::common::Ptr< rw::common::PropertyMap > map){
         _map = map;
         update();
     }
@@ -78,13 +82,13 @@ private slots:
     void slotPropertyDestroyed(QtProperty *property);
 
 private:
-	QtProperty* update(rw::common::PropertyMap::Ptr map, std::string propname);
+	QtProperty* update(rw::common::Ptr< rw::common::PropertyMap > map, std::string propname);
 
 private:
     QtVariantEditorFactory *_variantFactory;
     QtVariantPropertyManager *_variantManager;
-    rw::common::PropertyMap::Ptr _map;
-	std::map<QtProperty*, rw::common::PropertyBase::Ptr > _qtPropToRwProp;
+    rw::common::Ptr< rw::common::PropertyMap > _map;
+	std::map<QtProperty*, rw::common::Ptr< rw::common::PropertyBase > > _qtPropToRwProp;
     std::map<QtProperty*, rw::common::Ptr< rw::common::PropertyMap > > _qtPropToRwPropMap;
 
 	int _decimals;

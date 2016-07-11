@@ -23,16 +23,9 @@
 #include <rw/common/Exception.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Message.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Pose6D.hpp>
-#include <rw/math/RPY.hpp>
-#include <rw/math/Constants.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricFactory.hpp>
-#include <rw/math/MetricUtil.hpp>
-#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
-#include <rw/pathplanning/PathPlanner.hpp>
 #include <rw/models/CompositeDevice.hpp>
 #include <rw/models/Models.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -54,16 +47,13 @@
 
 #include <vector>
 
-#include <QLayout>
-#include <QVariant>
-#include <QTreeWidgetItem>
-#include <QInputDialog>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QLabel>
-#include <QShortcut>
-#include <QKeySequence>
 #include <QMessageBox>
-
+#include <QComboBox>
+#include <QCheckBox>
+#include <QFileDialog>
 
 using namespace rw::kinematics;
 using namespace rw::models;
@@ -409,7 +399,7 @@ void Planning::plan()
     }
 
     //Get the CDStrategy
-	CollisionStrategy::Ptr cdstrategy =
+	const rw::common::Ptr<CollisionStrategy> cdstrategy =
         ProximityStrategyFactory::makeCollisionStrategy(_cmbCollisionDetectors->currentText().toStdString());
         //getCollisionStrategy(_cmbCollisionDetectors->currentIndex());
 
@@ -618,6 +608,7 @@ namespace {
 
 #ifndef RWS_USE_STATIC_LINK_PLUGINS
 #if !RWS_USE_QT5
+#include <QtCore/qplugin.h>
 Q_EXPORT_PLUGIN(Planning);
 #endif
 #endif

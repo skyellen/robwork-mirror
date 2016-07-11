@@ -18,10 +18,16 @@
 
 #include "SensorView.hpp"
 
-
 #include <QVBoxLayout>
 
+#include <rw/sensor/Camera.hpp>
 #include <rw/sensor/ImageUtil.hpp>
+
+#include <rwlibs/opengl/RenderScan.hpp>
+#include <rwlibs/simulation/SimulatedScanner2D.hpp>
+#include <rwlibs/simulation/SimulatedScanner25D.hpp>
+
+#include <rws/ImageView.hpp>
 
 using namespace rws;
 using namespace rw::common;
