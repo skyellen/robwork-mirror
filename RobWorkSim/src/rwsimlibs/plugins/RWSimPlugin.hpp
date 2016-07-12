@@ -25,6 +25,7 @@
 #include <QObject>
 
 namespace rwlibs { namespace opengl { class Drawable; } }
+namespace rwsim { namespace drawable { class SimulatorDebugRender; } }
 namespace rwsim { namespace dynamics { class DynamicWorkCell; } }
 namespace rwsim { namespace simulator { class ThreadSimulator; } }
 
@@ -129,7 +130,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
         rw::trajectory::TimedStatePath _path;
         rwlibs::opengl::Drawable *_debugDrawable;
-        rwsim::drawable::SimulatorDebugRender::Ptr _debugRender;
+        rw::common::Ptr<rwsim::drawable::SimulatorDebugRender> _debugRender;
 
         bool _openCalled;
 

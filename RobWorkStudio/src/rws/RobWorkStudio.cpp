@@ -31,6 +31,7 @@
 #include <QStringList>
 #include <QToolBar>
 #include <QUrl>
+#include <QMimeData>
 
 #include "RobWorkStudio.hpp"
 #include "AboutBox.hpp"

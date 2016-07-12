@@ -57,9 +57,9 @@ public:
 
 
 private:
-	CompositeJacobian<FixedFrameJacobian>::Ptr _compositeFixedFrameJacobian;
-	CompositeJacobian<ParallelAxisDHJacobian>::Ptr _compositeLinkJacobian;
-	CompositeJacobian<JointEncoderJacobian>::Ptr _compositeJointEncoderJacobian;
+	rw::common::Ptr<CompositeJacobian<FixedFrameJacobian> > _compositeFixedFrameJacobian;
+	rw::common::Ptr<CompositeJacobian<ParallelAxisDHJacobian> > _compositeLinkJacobian;
+	rw::common::Ptr<CompositeJacobian<JointEncoderJacobian> > _compositeJointEncoderJacobian;
 };
 
 /* @} */

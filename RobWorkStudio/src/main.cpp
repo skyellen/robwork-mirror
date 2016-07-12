@@ -17,9 +17,9 @@
 
 #define QT_NO_EMIT
  
-#ifdef __WIN32
+#ifdef _WIN32
 #include <windows.h>
-#endif //#ifdef __WIN32
+#endif //#ifdef _WIN32
 #include <QApplication>
 #include <QSplashScreen>
 #include <QMessageBox>
@@ -32,7 +32,7 @@
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 #include <rw/loaders/xml/XMLPathFormat.hpp>
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <omp.h> //Needed because otherwise Visual Studio results in run-time linking problems.
 #endif
 

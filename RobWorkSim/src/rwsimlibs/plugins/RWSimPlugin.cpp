@@ -10,6 +10,8 @@
 
 #include <RobWorkStudio.hpp>
 
+#include <rw/models/JointDevice.hpp> 
+
 #include <rwlibs/opengl/TactileArrayRender.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
@@ -19,6 +21,7 @@
 #include <rwsim/control/BodyController.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
+#include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <rwsimlibs/gui/BodyControllerWidget.hpp>
 #include <rwsimlibs/gui/CreateEngineDialog.hpp>
